@@ -33,6 +33,7 @@ namespace vl
 					elements::GuiSolidLabelElement*			text = nullptr;
 
 					void									OnInitialize()override;
+					void									OnRefresh()override;
 					void									OnFontChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				public:
 					BigIconListViewItemTemplate();
@@ -46,6 +47,7 @@ namespace vl
 					elements::GuiSolidLabelElement*			text = nullptr;
 
 					void									OnInitialize()override;
+					void									OnRefresh()override;
 					void									OnFontChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				public:
 					SmallIconListViewItemTemplate();
@@ -59,6 +61,7 @@ namespace vl
 					elements::GuiSolidLabelElement*			text = nullptr;
 
 					void									OnInitialize()override;
+					void									OnRefresh()override;
 					void									OnFontChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				public:
 					ListListViewItemTemplate();
@@ -75,8 +78,9 @@ namespace vl
 					DataTextElementArray					dataTexts;
 
 					elements::GuiSolidLabelElement*			CreateTextElement(vint textRow);
-					void									ResetTextTable(vint textRows);
+					void									ResetTextTable(vint dataColumnCount);
 					void									OnInitialize()override;
+					void									OnRefresh()override;
 					void									OnFontChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				public:
 					TileListViewItemTemplate();
@@ -95,7 +99,9 @@ namespace vl
 					elements::GuiSolidBackgroundElement*	bottomLine = nullptr;
 					compositions::GuiBoundsComposition*		bottomLineComposition = nullptr;
 
+					void									ResetTextTable(vint dataColumnCount);
 					void									OnInitialize()override;
+					void									OnRefresh()override;
 					void									OnFontChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				public:
 					InformationListViewItemTemplate();
@@ -104,19 +110,22 @@ namespace vl
 
 				class DetailListViewItemTemplate
 					: public DefaultListViewItemTemplate
-					, public virtual ListViewColumnItemArranger::IColumnItemViewCallback
 				{
-					typedef collections::Array<elements::GuiSolidLabelElement*>		SubItemList;
+					typedef collections::Array<compositions::GuiCellComposition*>	SubItemCellList;
+					typedef collections::Array<elements::GuiSolidLabelElement*>		SubItemTestList;
 					typedef ListViewColumnItemArranger::IColumnItemView				IColumnItemView;
 				protected:
 					IColumnItemView*						columnItemView = nullptr;
 					elements::GuiImageFrameElement*			image = nullptr;
 					elements::GuiSolidLabelElement*			text = nullptr;
 					compositions::GuiTableComposition*		textTable = nullptr;
-					SubItemList								subItems;
+					SubItemCellList							subItemCells;
+					SubItemTestList							subItemTexts;
 
+					void									UpdateSubItemSize();
+					void									ResetTextTable(vint subColumnCount);
 					void									OnInitialize()override;
-					void									OnColumnChanged()override;
+					void									OnRefresh()override;
 					void									OnFontChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				public:
 					DetailListViewItemTemplate();

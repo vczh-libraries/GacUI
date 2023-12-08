@@ -86,6 +86,10 @@ DefaultTextListItemTemplate
 					CheckedChanged.Execute(compositions::GuiEventArgs(this));
 				}
 
+				void DefaultTextListItemTemplate::OnRefresh()
+				{
+				}
+
 				void DefaultTextListItemTemplate::OnFontChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 				{
 					textElement->SetFont(GetFont());
@@ -166,6 +170,22 @@ DefaultRadioTextListItemTemplate
 TextItem
 ***********************************************************************/
 
+				void TextItem::NotifyUpdate(bool raiseCheckEvent)
+				{
+					if (owner)
+					{
+						vint index = owner->IndexOf(this);
+						owner->InvokeOnItemModified(index, 1, 1, false);
+
+						if (raiseCheckEvent)
+						{
+							GuiItemEventArgs arguments;
+							arguments.itemIndex = index;
+							owner->listControl->ItemChecked.Execute(arguments);
+						}
+					}
+				}
+
 				TextItem::TextItem()
 					:owner(0)
 					, checked(false)
@@ -193,11 +213,7 @@ TextItem
 					if (text != value)
 					{
 						text = value;
-						if (owner)
-						{
-							vint index = owner->IndexOf(this);
-							owner->InvokeOnItemModified(index, 1, 1);
-						}
+						NotifyUpdate(false);
 					}
 				}
 
@@ -211,15 +227,7 @@ TextItem
 					if (checked != value)
 					{
 						checked = value;
-						if (owner)
-						{
-							vint index = owner->IndexOf(this);
-							owner->InvokeOnItemModified(index, 1, 1);
-
-							GuiItemEventArgs arguments;
-							arguments.itemIndex = index;
-							owner->listControl->ItemChecked.Execute(arguments);
-						}
+						NotifyUpdate(true);
 					}
 				}
 
@@ -293,15 +301,22 @@ GuiTextList
 			{
 			}
 
-			void GuiVirtualTextList::OnStyleInstalled(vint itemIndex, ItemStyle* style)
+			void GuiVirtualTextList::OnStyleInstalled(vint itemIndex, ItemStyle* style, bool refreshPropertiesOnly)
 			{
-				GuiSelectableListControl::OnStyleInstalled(itemIndex, style);
+				GuiSelectableListControl::OnStyleInstalled(itemIndex, style, refreshPropertiesOnly);
 				if (auto textItemStyle = dynamic_cast<templates::GuiTextListItemTemplate*>(style))
 				{
 					textItemStyle->SetTextColor(TypedControlTemplateObject(true)->GetTextColor());
 					if (auto textItemView = dynamic_cast<list::ITextItemView*>(itemProvider->RequestView(list::ITextItemView::Identifier)))
 					{
 						textItemStyle->SetChecked(textItemView->GetChecked(itemIndex));
+					}
+				}
+				if (refreshPropertiesOnly)
+				{
+					if (auto predefinedItemStyle = dynamic_cast<list::DefaultTextListItemTemplate*>(style))
+					{
+						predefinedItemStyle->RefreshItem();
 					}
 				}
 			}

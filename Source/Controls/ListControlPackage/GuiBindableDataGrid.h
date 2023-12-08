@@ -205,7 +205,8 @@ DataColumn
 					Ptr<IDataVisualizerFactory>							visualizerFactory;
 					Ptr<IDataEditorFactory>								editorFactory;
 
-					void												NotifyAllColumnsUpdate(bool affectItem);
+					void												NotifyRebuilt();
+					void												NotifyChanged(bool needToRefreshItems);
 				public:
 					DataColumn();
 					~DataColumn();
@@ -306,7 +307,8 @@ DataColumn
 					DataProvider*										dataProvider = nullptr;
 					bool												affectItemFlag = true;
 
-					void												NotifyColumnUpdated(vint index, bool affectItem);
+					void												NotifyColumnRebuilt(vint column);
+					void												NotifyColumnChanged(vint column, bool needToRefreshItems);
 					void												NotifyUpdateInternal(vint start, vint count, vint newCount)override;
 					bool												QueryInsert(vint index, const Ptr<DataColumn>& value)override;
 					void												AfterInsert(vint index, const Ptr<DataColumn>& value)override;
@@ -332,10 +334,11 @@ DataProvider
 					friend class DataColumn;
 					friend class DataColumns;
 					friend class controls::GuiBindableDataGrid;
+					typedef collections::List<ListViewColumnItemArranger::IColumnItemViewCallback*>		ColumnItemViewCallbackList;
 				protected:
 					ListViewDataColumns										dataColumns;
 					DataColumns												columns;
-					ListViewColumnItemArranger::IColumnItemViewCallback*	columnItemViewCallback = nullptr;
+					ColumnItemViewCallbackList								columnItemViewCallbacks;
 					Ptr<description::IValueReadonlyList>					itemSource;
 					Ptr<EventHandler>										itemChangedEventHandler;
 
@@ -344,8 +347,11 @@ DataProvider
 					Ptr<IDataSorter>										currentSorter;
 					collections::List<vint>									virtualRowToSourceRow;
 
-					void													NotifyAllItemsUpdate()override;
-					void													NotifyAllColumnsUpdate()override;
+					bool													NotifyUpdate(vint start, vint count, bool itemReferenceUpdated);
+					void													RebuildAllItems() override;
+					void													RefreshAllItems() override;
+					void													NotifyColumnRebuilt() override;
+					void													NotifyColumnChanged() override;
 					GuiListControl::IItemProvider*							GetItemProvider()override;
 
 					void													OnProcessorChanged()override;
@@ -477,6 +483,12 @@ GuiBindableDataGrid
 				/// <summary>Get the selected cell.</summary>
 				/// <returns>Returns the selected item. If there are multiple selected items, or there is no selected item, null will be returned.</returns>
 				description::Value									GetSelectedCellValue();
+
+				/// <summary>Notify the control that data in some items are modified.</summary>
+				/// <param name="start">The index of the first item.</param>
+				/// <param name="count">The number of items</param>
+				/// <returns>Returns true if this operation succeeded.</returns>
+				bool												NotifyItemDataModified(vint start, vint count);
 			};
 		}
 	}

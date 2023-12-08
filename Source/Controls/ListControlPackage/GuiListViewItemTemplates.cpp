@@ -71,6 +71,12 @@ BigIconListViewItemTemplate
 						}
 					}
 
+					FontChanged.AttachMethod(this, &BigIconListViewItemTemplate::OnFontChanged);
+					FontChanged.Execute(compositions::GuiEventArgs(this));
+				}
+
+				void BigIconListViewItemTemplate::OnRefresh()
+				{
 					if (auto listView = dynamic_cast<GuiVirtualListView*>(listControl))
 					{
 						auto itemIndex = GetIndex();
@@ -89,10 +95,6 @@ BigIconListViewItemTemplate
 							text->SetColor(listView->TypedControlTemplateObject(true)->GetPrimaryTextColor());
 						}
 					}
-
-					FontChanged.AttachMethod(this, &BigIconListViewItemTemplate::OnFontChanged);
-
-					FontChanged.Execute(compositions::GuiEventArgs(this));
 				}
 
 				void BigIconListViewItemTemplate::OnFontChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
@@ -149,6 +151,12 @@ SmallIconListViewItemTemplate
 						}
 					}
 
+					FontChanged.AttachMethod(this, &SmallIconListViewItemTemplate::OnFontChanged);
+					FontChanged.Execute(compositions::GuiEventArgs(this));
+				}
+
+				void SmallIconListViewItemTemplate::OnRefresh()
+				{
 					if (auto listView = dynamic_cast<GuiVirtualListView*>(listControl))
 					{
 						auto itemIndex = GetIndex();
@@ -167,10 +175,6 @@ SmallIconListViewItemTemplate
 							text->SetColor(listView->TypedControlTemplateObject(true)->GetPrimaryTextColor());
 						}
 					}
-
-					FontChanged.AttachMethod(this, &SmallIconListViewItemTemplate::OnFontChanged);
-
-					FontChanged.Execute(compositions::GuiEventArgs(this));
 				}
 
 				void SmallIconListViewItemTemplate::OnFontChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
@@ -230,6 +234,12 @@ ListListViewItemTemplate
 						}
 					}
 
+					FontChanged.AttachMethod(this, &ListListViewItemTemplate::OnFontChanged);
+					FontChanged.Execute(compositions::GuiEventArgs(this));
+				}
+
+				void ListListViewItemTemplate::OnRefresh()
+				{
 					if (auto listView = dynamic_cast<GuiVirtualListView*>(listControl))
 					{
 						auto itemIndex = GetIndex();
@@ -248,10 +258,6 @@ ListListViewItemTemplate
 							text->SetColor(listView->TypedControlTemplateObject(true)->GetPrimaryTextColor());
 						}
 					}
-
-					FontChanged.AttachMethod(this, &ListListViewItemTemplate::OnFontChanged);
-
-					FontChanged.Execute(compositions::GuiEventArgs(this));
 				}
 
 				void ListListViewItemTemplate::OnFontChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
@@ -284,16 +290,39 @@ TileListViewItemTemplate
 					return textElement.Obj();
 				}
 
-				void TileListViewItemTemplate::ResetTextTable(vint textRows)
+				void TileListViewItemTemplate::ResetTextTable(vint dataColumnCount)
 				{
-					textTable->SetRowsAndColumns(textRows + 2, 1);
-					textTable->SetRowOption(0, GuiCellOption::PercentageOption(0.5));
-					for (vint i = 0; i<textRows; i++)
+					if (dataTexts.Count() == dataColumnCount) return;
+					for (vint i = textTable->Children().Count() - 1; i >= 0; i--)
 					{
-						textTable->SetRowOption(i + 1, GuiCellOption::MinSizeOption());
+						if (auto cell = dynamic_cast<GuiCellComposition*>(textTable->Children()[i]))
+						{
+							SafeDeleteComposition(cell);
+						}
 					}
-					textTable->SetRowOption(textRows + 1, GuiCellOption::PercentageOption(0.5));
-					textTable->SetColumnOption(0, GuiCellOption::PercentageOption(1.0));
+
+					{
+						vint textRows = dataColumnCount + 1;
+						textTable->SetRowsAndColumns(textRows + 2, 1);
+						textTable->SetRowOption(0, GuiCellOption::PercentageOption(0.5));
+						for (vint i = 0; i < textRows; i++)
+						{
+							textTable->SetRowOption(i + 1, GuiCellOption::MinSizeOption());
+						}
+						textTable->SetRowOption(textRows + 1, GuiCellOption::PercentageOption(0.5));
+						textTable->SetColumnOption(0, GuiCellOption::PercentageOption(1.0));
+					}
+
+					text = CreateTextElement(0);
+					text->SetFont(GetFont());
+					{
+						dataTexts.Resize(dataColumnCount);
+						for (vint i = 0; i < dataColumnCount; i++)
+						{
+							dataTexts[i] = CreateTextElement(i + 1);
+							dataTexts[i]->SetFont(GetFont());
+						}
+					}
 				}
 
 				void TileListViewItemTemplate::OnInitialize()
@@ -329,15 +358,18 @@ TileListViewItemTemplate
 							textTable = new GuiTableComposition;
 							textTable->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 							textTable->SetCellPadding(1);
-							ResetTextTable(1);
 							textTable->SetAlignmentToParent(Margin(0, 0, 0, 0));
 							cell->AddChild(textTable);
-							{
-								text = CreateTextElement(0);
-							}
 						}
 					}
 
+					ResetTextTable(0);
+					FontChanged.AttachMethod(this, &TileListViewItemTemplate::OnFontChanged);
+					FontChanged.Execute(compositions::GuiEventArgs(this));
+				}
+
+				void TileListViewItemTemplate::OnRefresh()
+				{
 					if (auto listView = dynamic_cast<GuiVirtualListView*>(listControl))
 					{
 						auto itemIndex = GetIndex();
@@ -352,36 +384,30 @@ TileListViewItemTemplate
 							{
 								image->SetImage(nullptr);
 							}
+
+							vint subColumnCount = view->GetColumnCount() - 1;
+							vint dataColumnCount = view->GetDataColumnCount();
+							if (dataColumnCount > subColumnCount) dataColumnCount = subColumnCount;
+							if (dataColumnCount < 0) dataColumnCount = 0;
+							ResetTextTable(dataColumnCount);
+
 							text->SetText(view->GetText(itemIndex));
 							text->SetColor(listView->TypedControlTemplateObject(true)->GetPrimaryTextColor());
-
-							vint dataColumnCount = view->GetDataColumnCount();
-							ResetTextTable(dataColumnCount + 1);
-							dataTexts.Resize(dataColumnCount);
 							for (vint i = 0; i < dataColumnCount; i++)
 							{
-								dataTexts[i] = CreateTextElement(i + 1);
 								dataTexts[i]->SetText(view->GetSubItem(itemIndex, view->GetDataColumn(i)));
 								dataTexts[i]->SetColor(listView->TypedControlTemplateObject(true)->GetSecondaryTextColor());
 							}
 						}
 					}
-
-					FontChanged.AttachMethod(this, &TileListViewItemTemplate::OnFontChanged);
-
-					FontChanged.Execute(compositions::GuiEventArgs(this));
 				}
 
 				void TileListViewItemTemplate::OnFontChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 				{
-					text->SetFont(GetFont());
-					if (auto view = dynamic_cast<IListViewItemView*>(listControl->GetItemProvider()->RequestView(IListViewItemView::Identifier)))
+					if (text) text->SetFont(GetFont());
+					for (auto dataText : dataTexts)
 					{
-						vint dataColumnCount = view->GetDataColumnCount();
-						for (vint i = 0; i < dataColumnCount; i++)
-						{
-							dataTexts[i]->SetFont(GetFont());
-						}
+						dataText->SetFont(GetFont());
 					}
 				}
 
@@ -396,6 +422,67 @@ TileListViewItemTemplate
 /***********************************************************************
 InformationListViewItemTemplate
 ***********************************************************************/
+
+				void InformationListViewItemTemplate::ResetTextTable(vint dataColumnCount)
+				{
+					if (dataTexts.Count() == dataColumnCount) return;
+					for (vint i = textTable->Children().Count() - 1; i >= 0; i--)
+					{
+						if (auto cell = dynamic_cast<GuiCellComposition*>(textTable->Children()[i]))
+						{
+							SafeDeleteComposition(cell);
+						}
+					}
+
+					{
+						textTable->SetRowsAndColumns(dataColumnCount + 2, 1);
+						textTable->SetRowOption(0, GuiCellOption::PercentageOption(0.5));
+						for (vint i = 0; i < dataColumnCount; i++)
+						{
+							textTable->SetRowOption(i + 1, GuiCellOption::MinSizeOption());
+						}
+						textTable->SetRowOption(dataColumnCount + 1, GuiCellOption::PercentageOption(0.5));
+						textTable->SetColumnOption(0, GuiCellOption::PercentageOption(1.0));
+					}
+
+					columnTexts.Resize(dataColumnCount);
+					dataTexts.Resize(dataColumnCount);
+
+					for (vint i = 0; i < dataColumnCount; i++)
+					{
+						auto cell = new GuiCellComposition;
+						textTable->AddChild(cell);
+						cell->SetSite(i + 1, 0, 1, 1);
+
+						auto dataTable = new GuiTableComposition;
+						dataTable->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
+						dataTable->SetRowsAndColumns(1, 2);
+						dataTable->SetRowOption(0, GuiCellOption::MinSizeOption());
+						dataTable->SetColumnOption(0, GuiCellOption::MinSizeOption());
+						dataTable->SetColumnOption(1, GuiCellOption::PercentageOption(1.0));
+						dataTable->SetAlignmentToParent(Margin(0, 0, 0, 0));
+						cell->AddChild(dataTable);
+						{
+							auto cell = new GuiCellComposition;
+							dataTable->AddChild(cell);
+							cell->SetSite(0, 0, 1, 1);
+
+							columnTexts[i] = GuiSolidLabelElement::Create();
+							columnTexts[i]->SetFont(GetFont());
+							cell->SetOwnedElement(Ptr(columnTexts[i]));
+						}
+						{
+							auto cell = new GuiCellComposition;
+							dataTable->AddChild(cell);
+							cell->SetSite(0, 1, 1, 1);
+
+							dataTexts[i] = GuiSolidLabelElement::Create();
+							dataTexts[i]->SetFont(GetFont());
+							dataTexts[i]->SetEllipse(true);
+							cell->SetOwnedElement(Ptr(dataTexts[i]));
+						}
+					}
+				}
 
 				void InformationListViewItemTemplate::OnInitialize()
 				{
@@ -452,6 +539,12 @@ InformationListViewItemTemplate
 						}
 					}
 
+					FontChanged.AttachMethod(this, &InformationListViewItemTemplate::OnFontChanged);
+					FontChanged.Execute(compositions::GuiEventArgs(this));
+				}
+
+				void InformationListViewItemTemplate::OnRefresh()
+				{
 					if (auto listView = dynamic_cast<GuiVirtualListView*>(listControl))
 					{
 						auto itemIndex = GetIndex();
@@ -470,61 +563,24 @@ InformationListViewItemTemplate
 							text->SetColor(listView->TypedControlTemplateObject(true)->GetPrimaryTextColor());
 							bottomLine->SetColor(listView->TypedControlTemplateObject(true)->GetItemSeparatorColor());
 
+							vint subColumnCount = view->GetColumnCount() - 1;
 							vint dataColumnCount = view->GetDataColumnCount();
-							columnTexts.Resize(dataColumnCount);
-							dataTexts.Resize(dataColumnCount);
-
-							textTable->SetRowsAndColumns(dataColumnCount + 2, 1);
-							textTable->SetRowOption(0, GuiCellOption::PercentageOption(0.5));
+							if (dataColumnCount > subColumnCount) dataColumnCount = subColumnCount;
+							if (dataColumnCount < 0) dataColumnCount = 0;
+							ResetTextTable(dataColumnCount);
 							for (vint i = 0; i < dataColumnCount; i++)
 							{
-								textTable->SetRowOption(i + 1, GuiCellOption::MinSizeOption());
-							}
-							textTable->SetRowOption(dataColumnCount + 1, GuiCellOption::PercentageOption(0.5));
-							textTable->SetColumnOption(0, GuiCellOption::PercentageOption(1.0));
-
-							for (vint i = 0; i < dataColumnCount; i++)
-							{
-								auto cell = new GuiCellComposition;
-								textTable->AddChild(cell);
-								cell->SetSite(i + 1, 0, 1, 1);
-
-								auto dataTable = new GuiTableComposition;
-								dataTable->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
-								dataTable->SetRowsAndColumns(1, 2);
-								dataTable->SetRowOption(0, GuiCellOption::MinSizeOption());
-								dataTable->SetColumnOption(0, GuiCellOption::MinSizeOption());
-								dataTable->SetColumnOption(1, GuiCellOption::PercentageOption(1.0));
-								dataTable->SetAlignmentToParent(Margin(0, 0, 0, 0));
-								cell->AddChild(dataTable);
 								{
-									auto cell = new GuiCellComposition;
-									dataTable->AddChild(cell);
-									cell->SetSite(0, 0, 1, 1);
-
-									columnTexts[i] = GuiSolidLabelElement::Create();
 									columnTexts[i]->SetText(view->GetColumnText(view->GetDataColumn(i) + 1) + L": ");
 									columnTexts[i]->SetColor(listView->TypedControlTemplateObject(true)->GetSecondaryTextColor());
-									cell->SetOwnedElement(Ptr(columnTexts[i]));
 								}
 								{
-									auto cell = new GuiCellComposition;
-									dataTable->AddChild(cell);
-									cell->SetSite(0, 1, 1, 1);
-
-									dataTexts[i]= GuiSolidLabelElement::Create();
-									dataTexts[i]->SetEllipse(true);
 									dataTexts[i]->SetText(view->GetSubItem(itemIndex, view->GetDataColumn(i)));
 									dataTexts[i]->SetColor(listView->TypedControlTemplateObject(true)->GetPrimaryTextColor());
-									cell->SetOwnedElement(Ptr(dataTexts[i]));
 								}
 							}
 						}
 					}
-
-					FontChanged.AttachMethod(this, &InformationListViewItemTemplate::OnFontChanged);
-
-					FontChanged.Execute(compositions::GuiEventArgs(this));
 				}
 
 				void InformationListViewItemTemplate::OnFontChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
@@ -534,14 +590,14 @@ InformationListViewItemTemplate
 						font.size = (vint)(font.size * 1.2);
 						text->SetFont(font);
 					}
-					if (auto view = dynamic_cast<IListViewItemView*>(listControl->GetItemProvider()->RequestView(IListViewItemView::Identifier)))
+
+					for (auto columnText : columnTexts)
 					{
-						vint dataColumnCount = view->GetDataColumnCount();
-						for (vint i = 0; i < dataColumnCount; i++)
-						{
-							columnTexts[i]->SetFont(GetFont());
-							dataTexts[i]->SetFont(GetFont());
-						}
+						columnText->SetFont(GetFont());
+					}
+					for (auto dataText : dataTexts)
+					{
+						dataText->SetFont(GetFont());
 					}
 				}
 
@@ -556,6 +612,59 @@ InformationListViewItemTemplate
 /***********************************************************************
 DetailListViewItemTemplate
 ***********************************************************************/
+
+				void DetailListViewItemTemplate::UpdateSubItemSize()
+				{
+					if (auto view = dynamic_cast<IListViewItemView*>(listControl->GetItemProvider()->RequestView(IListViewItemView::Identifier)))
+					{
+						if (columnItemView)
+						{
+							vint columnCount = view->GetColumnCount();
+							if (columnCount > textTable->GetColumns())
+							{
+								columnCount = textTable->GetColumns();
+							}
+							for (vint i = 0; i < columnCount; i++)
+							{
+								textTable->SetColumnOption(i, GuiCellOption::AbsoluteOption(columnItemView->GetColumnSize(i)));
+							}
+						}
+					}
+				}
+
+				void DetailListViewItemTemplate::ResetTextTable(vint subColumnCount)
+				{
+					if (subItemCells.Count() == subColumnCount) return;
+
+					for (auto cell : subItemCells)
+					{
+						SafeDeleteComposition(cell);
+					}
+					subItemCells.Resize(subColumnCount);
+					subItemTexts.Resize(subColumnCount);
+
+					textTable->SetRowsAndColumns(1, subColumnCount + 1);
+					for (vint i = 0; i < subColumnCount; i++)
+					{
+						auto cell = new GuiCellComposition;
+						textTable->AddChild(cell);
+						cell->SetSite(0, i + 1, 1, 1);
+
+						auto textBounds = new GuiBoundsComposition;
+						cell->AddChild(textBounds);
+						textBounds->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElement);
+						textBounds->SetAlignmentToParent(Margin(8, 0, 8, 0));
+
+						auto subText = GuiSolidLabelElement::Create();
+						subText->SetAlignments(Alignment::Left, Alignment::Center);
+						subText->SetFont(GetFont());
+						subText->SetEllipse(true);
+						textBounds->SetOwnedElement(Ptr(subText));
+
+						subItemCells[i] = cell;
+						subItemTexts[i] = subText;
+					}
+				}
 
 				void DetailListViewItemTemplate::OnInitialize()
 				{
@@ -607,17 +716,28 @@ DetailListViewItemTemplate
 
 								text = GuiSolidLabelElement::Create();
 								text->SetAlignments(Alignment::Left, Alignment::Center);
+								text->SetFont(GetFont());
 								text->SetEllipse(true);
 								textBounds->SetOwnedElement(Ptr(text));
 							}
 						}
 					}
 
+					FontChanged.AttachMethod(this, &DetailListViewItemTemplate::OnFontChanged);
+					FontChanged.Execute(compositions::GuiEventArgs(this));
+				}
+
+				void DetailListViewItemTemplate::OnRefresh()
+				{
 					if (auto listView = dynamic_cast<GuiVirtualListView*>(listControl))
 					{
 						auto itemIndex = GetIndex();
 						if (auto view = dynamic_cast<IListViewItemView*>(listView->GetItemProvider()->RequestView(IListViewItemView::Identifier)))
 						{
+							vint subColumnCount = view->GetColumnCount() - 1;
+							if (subColumnCount < 0) subColumnCount = 0;
+							ResetTextTable(subColumnCount);
+
 							auto imageData = view->GetSmallImage(itemIndex);
 							if (imageData)
 							{
@@ -627,69 +747,26 @@ DetailListViewItemTemplate
 							{
 								image->SetImage(0);
 							}
+
 							text->SetText(view->GetText(itemIndex));
 							text->SetColor(listView->TypedControlTemplateObject(true)->GetPrimaryTextColor());
 
-							vint columnCount = view->GetColumnCount() - 1;
-							subItems.Resize(columnCount);
-							textTable->SetRowsAndColumns(1, columnCount + 1);
-							for (vint i = 0; i < columnCount; i++)
+							for (vint i = 0; i < subColumnCount; i++)
 							{
-								auto cell = new GuiCellComposition;
-								textTable->AddChild(cell);
-								cell->SetSite(0, i + 1, 1, 1);
-
-								auto textBounds = new GuiBoundsComposition;
-								cell->AddChild(textBounds);
-								textBounds->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElement);
-								textBounds->SetAlignmentToParent(Margin(8, 0, 8, 0));
-
-								subItems[i] = GuiSolidLabelElement::Create();
-								subItems[i]->SetAlignments(Alignment::Left, Alignment::Center);
-								subItems[i]->SetFont(text->GetFont());
-								subItems[i]->SetEllipse(true);
-								subItems[i]->SetText(view->GetSubItem(itemIndex, i));
-								subItems[i]->SetColor(listView->TypedControlTemplateObject(true)->GetSecondaryTextColor());
-								textBounds->SetOwnedElement(Ptr(subItems[i]));
-							}
-							OnColumnChanged();
-						}
-					}
-
-					FontChanged.AttachMethod(this, &DetailListViewItemTemplate::OnFontChanged);
-
-					FontChanged.Execute(compositions::GuiEventArgs(this));
-				}
-
-				void DetailListViewItemTemplate::OnColumnChanged()
-				{
-					if (auto view = dynamic_cast<IListViewItemView*>(listControl->GetItemProvider()->RequestView(IListViewItemView::Identifier)))
-					{
-						if (columnItemView)
-						{
-							vint columnCount = view->GetColumnCount();
-							if (columnCount>textTable->GetColumns())
-							{
-								columnCount = textTable->GetColumns();
-							}
-							for (vint i = 0; i<columnCount; i++)
-							{
-								textTable->SetColumnOption(i, GuiCellOption::AbsoluteOption(columnItemView->GetColumnSize(i)));
+								subItemTexts[i]->SetText(view->GetSubItem(itemIndex, i));
+								subItemTexts[i]->SetColor(listView->TypedControlTemplateObject(true)->GetSecondaryTextColor());
 							}
 						}
 					}
+					UpdateSubItemSize();
 				}
 
 				void DetailListViewItemTemplate::OnFontChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 				{
 					text->SetFont(GetFont());
-					if (auto view = dynamic_cast<IListViewItemView*>(listControl->GetItemProvider()->RequestView(IListViewItemView::Identifier)))
+					for (auto subText : subItemTexts)
 					{
-						vint columnCount = view->GetColumnCount() - 1;
-						for (vint i = 0; i < columnCount; i++)
-						{
-							subItems[i]->SetFont(GetFont());
-						}
+						subText->SetFont(GetFont());
 					}
 				}
 

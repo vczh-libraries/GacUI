@@ -57,7 +57,7 @@ GuiBindableTextList::ItemSource
 						itemSource = ol;
 						itemChangedEventHandler = ol->ItemChanged.Add([this](vint start, vint oldCount, vint newCount)
 						{
-							InvokeOnItemModified(start, oldCount, newCount);
+							InvokeOnItemModified(start, oldCount, newCount, true);
 						});
 					}
 					else if (auto rl = _itemSource.Cast<IValueReadonlyList>())
@@ -70,7 +70,7 @@ GuiBindableTextList::ItemSource
 					}
 				}
 
-				InvokeOnItemModified(0, oldCount, itemSource ? itemSource->GetCount() : 0);
+				InvokeOnItemModified(0, oldCount, itemSource ? itemSource->GetCount() : 0, true);
 			}
 
 			description::Value GuiBindableTextList::ItemSource::Get(vint index)
@@ -81,9 +81,23 @@ GuiBindableTextList::ItemSource
 
 			void GuiBindableTextList::ItemSource::UpdateBindingProperties()
 			{
-				InvokeOnItemModified(0, Count(), Count());
+				InvokeOnItemModified(0, Count(), Count(), false);
 			}
-					
+
+			bool GuiBindableTextList::ItemSource::NotifyUpdate(vint start, vint count, bool itemReferenceUpdated)
+			{
+				if (!itemSource) return false;
+				if (start<0 || start >= itemSource->GetCount() || count <= 0 || start + count > itemSource->GetCount())
+				{
+					return false;
+				}
+				else
+				{
+					InvokeOnItemModified(start, count, count, itemReferenceUpdated);
+					return true;
+				}
+			}
+
 			// ===================== GuiListControl::IItemProvider =====================
 			
 			vint GuiBindableTextList::ItemSource::Count()
@@ -152,7 +166,7 @@ GuiBindableTextList::ItemSource
 					{
 						auto thisValue = itemSource->Get(itemIndex);
 						WriteProperty(thisValue, checkedProperty, value);
-						InvokeOnItemModified(itemIndex, 1, 1);
+						InvokeOnItemModified(itemIndex, 1, 1, false);
 					}
 				}
 			}
@@ -221,6 +235,11 @@ GuiBindableTextList
 				return itemSource->Get(index);
 			}
 
+			bool GuiBindableTextList::NotifyItemDataModified(vint start, vint count)
+			{
+				return itemSource->NotifyUpdate(start, count, false);
+			}
+
 /***********************************************************************
 GuiBindableListView::ItemSource
 ***********************************************************************/
@@ -268,7 +287,7 @@ GuiBindableListView::ItemSource
 						itemSource = ol;
 						itemChangedEventHandler = ol->ItemChanged.Add([this](vint start, vint oldCount, vint newCount)
 						{
-							InvokeOnItemModified(start, oldCount, newCount);
+							InvokeOnItemModified(start, oldCount, newCount, true);
 						});
 					}
 					else if (auto rl = _itemSource.Cast<IValueReadonlyList>())
@@ -281,7 +300,7 @@ GuiBindableListView::ItemSource
 					}
 				}
 
-				InvokeOnItemModified(0, oldCount, itemSource ? itemSource->GetCount() : 0);
+				InvokeOnItemModified(0, oldCount, itemSource ? itemSource->GetCount() : 0, true);
 			}
 
 			description::Value GuiBindableListView::ItemSource::Get(vint index)
@@ -292,10 +311,10 @@ GuiBindableListView::ItemSource
 
 			void GuiBindableListView::ItemSource::UpdateBindingProperties()
 			{
-				InvokeOnItemModified(0, Count(), Count());
+				InvokeOnItemModified(0, Count(), Count(), false);
 			}
 
-			bool GuiBindableListView::ItemSource::NotifyUpdate(vint start, vint count)
+			bool GuiBindableListView::ItemSource::NotifyUpdate(vint start, vint count, bool itemReferenceUpdated)
 			{
 				if (!itemSource) return false;
 				if (start<0 || start >= itemSource->GetCount() || count <= 0 || start + count > itemSource->GetCount())
@@ -304,7 +323,7 @@ GuiBindableListView::ItemSource
 				}
 				else
 				{
-					InvokeOnItemModified(start, count, count);
+					InvokeOnItemModified(start, count, count, itemReferenceUpdated);
 					return true;
 				}
 			}
@@ -321,18 +340,32 @@ GuiBindableListView::ItemSource
 					
 			// ===================== list::IListViewItemProvider =====================
 
-			void GuiBindableListView::ItemSource::NotifyAllItemsUpdate()
+			void GuiBindableListView::ItemSource::RebuildAllItems()
 			{
-				NotifyUpdate(0, Count());
+				InvokeOnItemModified(0, Count(), Count(), true);
 			}
 
-			void GuiBindableListView::ItemSource::NotifyAllColumnsUpdate()
+			void GuiBindableListView::ItemSource::RefreshAllItems()
 			{
-				// TODO: (enumerable) foreach
-				for (vint i = 0; i < columnItemViewCallbacks.Count(); i++)
+				InvokeOnItemModified(0, Count(), Count(), false);
+			}
+
+			void GuiBindableListView::ItemSource::NotifyColumnRebuilt()
+			{
+				for (auto callback : columnItemViewCallbacks)
 				{
-					columnItemViewCallbacks[i]->OnColumnChanged();
+					callback->OnColumnRebuilt();
 				}
+				RebuildAllItems();
+			}
+
+			void GuiBindableListView::ItemSource::NotifyColumnChanged()
+			{
+				for (auto callback : columnItemViewCallbacks)
+				{
+					callback->OnColumnChanged(true);
+				}
+				RefreshAllItems();
 			}
 
 			// ===================== GuiListControl::IItemProvider =====================
@@ -600,6 +633,11 @@ GuiBindableListView
 				return itemSource->Get(index);
 			}
 
+			bool GuiBindableListView::NotifyItemDataModified(vint start, vint count)
+			{
+				return itemSource->NotifyUpdate(start, count, false);
+			}
+
 /***********************************************************************
 GuiBindableTreeView::ItemSourceNode
 ***********************************************************************/
@@ -636,7 +674,7 @@ GuiBindableTreeView::ItemSourceNode
 					{
 						itemChangedEventHandler = ol->ItemChanged.Add([this](vint start, vint oldCount, vint newCount)
 						{
-							callback->OnBeforeItemModified(this, start, oldCount, newCount);
+							callback->OnBeforeItemModified(this, start, oldCount, newCount, true);
 							children.RemoveRange(start, oldCount);
 							for (vint i = 0; i < newCount; i++)
 							{
@@ -644,7 +682,7 @@ GuiBindableTreeView::ItemSourceNode
 								auto node = Ptr(new ItemSourceNode(value, this));
 								children.Insert(start + i, node);
 							}
-							callback->OnAfterItemModified(this, start, oldCount, newCount);
+							callback->OnAfterItemModified(this, start, oldCount, newCount, true);
 						});
 					}
 
@@ -709,11 +747,11 @@ GuiBindableTreeView::ItemSourceNode
 				vint oldCount = childrenVirtualList ? childrenVirtualList->GetCount() : 0;
 				vint newCount = newVirtualList->GetCount();
 
-				callback->OnBeforeItemModified(this, 0, oldCount, newCount);
+				callback->OnBeforeItemModified(this, 0, oldCount, newCount, true);
 				UnprepareChildren();
 				itemSource = _itemSource;
 				PrepareChildren(newVirtualList);
-				callback->OnAfterItemModified(this, 0, oldCount, newCount);
+				callback->OnAfterItemModified(this, 0, oldCount, newCount, true);
 			}
 
 			bool GuiBindableTreeView::ItemSourceNode::GetExpanding()
@@ -754,6 +792,16 @@ GuiBindableTreeView::ItemSourceNode
 					count += child->CalculateTotalVisibleNodes();
 				}
 				return count;
+			}
+
+			void GuiBindableTreeView::ItemSourceNode::NotifyDataModified()
+			{
+				if (parent)
+				{
+					vint index = parent->children.IndexOf(this);
+					callback->OnBeforeItemModified(parent, index, 1, 1, false);
+					callback->OnAfterItemModified(parent, index, 1, 1, false);
+				}
 			}
 
 			vint GuiBindableTreeView::ItemSourceNode::GetChildCount()
@@ -814,8 +862,8 @@ GuiBindableTreeView::ItemSource
 					rootNode->UnprepareChildren();
 				}
 				vint newCount = rootNode->GetChildCount();
-				OnBeforeItemModified(rootNode.Obj(), 0, oldCount, newCount);
-				OnAfterItemModified(rootNode.Obj(), 0, oldCount, newCount);
+				OnBeforeItemModified(rootNode.Obj(), 0, oldCount, newCount, updateChildrenProperty);
+				OnAfterItemModified(rootNode.Obj(), 0, oldCount, newCount, updateChildrenProperty);
 			}
 
 			// ===================== tree::INodeRootProvider =====================

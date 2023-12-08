@@ -111,6 +111,7 @@ GuiBindableTextList
 
 					description::Value								Get(vint index);
 					void											UpdateBindingProperties();
+					bool											NotifyUpdate(vint start, vint count, bool itemReferenceUpdated);
 					
 					// ===================== GuiListControl::IItemProvider =====================
 
@@ -163,6 +164,12 @@ GuiBindableTextList
 				/// <summary>Get the selected item.</summary>
 				/// <returns>Returns the selected item. If there are multiple selected items, or there is no selected item, null will be returned.</returns>
 				description::Value									GetSelectedItem();
+
+				/// <summary>Notify the control that data in some items are modified.</summary>
+				/// <param name="start">The index of the first item.</param>
+				/// <param name="count">The number of items</param>
+				/// <returns>Returns true if this operation succeeded.</returns>
+				bool												NotifyItemDataModified(vint start, vint count);
 			};
 
 /***********************************************************************
@@ -200,14 +207,16 @@ GuiBindableListView
 					
 					description::Value								Get(vint index);
 					void											UpdateBindingProperties();
-					bool											NotifyUpdate(vint start, vint count);
+					bool											NotifyUpdate(vint start, vint count, bool itemReferenceUpdated);
 					list::ListViewDataColumns&						GetDataColumns();
 					list::ListViewColumns&							GetColumns();
 					
 					// ===================== list::IListViewItemProvider =====================
 
-					void											NotifyAllItemsUpdate()override;
-					void											NotifyAllColumnsUpdate()override;
+					void											RebuildAllItems() override;
+					void											RefreshAllItems() override;
+					void											NotifyColumnRebuilt() override;
+					void											NotifyColumnChanged() override;
 					
 					// ===================== GuiListControl::IItemProvider =====================
 
@@ -282,6 +291,12 @@ GuiBindableListView
 				/// <summary>Get the selected item.</summary>
 				/// <returns>Returns the selected item. If there are multiple selected items, or there is no selected item, null will be returned.</returns>
 				description::Value									GetSelectedItem();
+
+				/// <summary>Notify the control that data in some items are modified.</summary>
+				/// <param name="start">The index of the first item.</param>
+				/// <param name="count">The number of items</param>
+				/// <returns>Returns true if this operation succeeded.</returns>
+				bool												NotifyItemDataModified(vint start, vint count);
 			};
 
 /***********************************************************************
@@ -328,6 +343,7 @@ GuiBindableTreeView
 					bool											GetExpanding()override;
 					void											SetExpanding(bool value)override;
 					vint											CalculateTotalVisibleNodes()override;
+					void											NotifyDataModified()override;
 
 					vint											GetChildCount()override;
 					Ptr<tree::INodeProvider>						GetParent()override;
@@ -360,7 +376,6 @@ GuiBindableTreeView
 					WString											GetTextValue(tree::INodeProvider* node)override;
 					description::Value								GetBindingValue(tree::INodeProvider* node)override;
 					IDescriptable*									RequestView(const WString& identifier)override;
-
 
 					// ===================== tree::ITreeViewItemView =====================
 

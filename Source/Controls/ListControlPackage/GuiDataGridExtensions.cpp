@@ -326,7 +326,6 @@ SubColumnVisualizerTemplate
 
 				void SubColumnVisualizerTemplate::Initialize(bool fixTextColor)
 				{
-
 					SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 
 					auto textBounds = new GuiBoundsComposition;

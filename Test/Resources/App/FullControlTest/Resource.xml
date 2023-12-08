@@ -91,6 +91,20 @@
                 </att.Pages>
               </Tab>
             </TabPage>
+            <TabPage Alt="L" Text="Refresh List">
+              <Tab>
+                <att.BoundsComposition-set AlignmentToParent="left:5 top:5 right:5 bottom:5"/>
+                <att.Pages>
+                  <demo:RefreshTextListTabPage Alt="T"/>
+                  <demo:RefreshBindableTextListTabPage Alt="BT"/>
+                  <demo:RefreshListViewTabPage Alt="L"/>
+                  <demo:RefreshBindableListViewTabPage Alt="BL"/>
+                  <demo:RefreshTreeViewTabPage Alt="T"/>
+                  <demo:RefreshBindableTreeViewTabPage Alt="BT"/>
+                  <demo:RefreshBindableDataGridTabPage Alt="D"/>
+                </att.Pages>
+              </Tab>
+            </TabPage>
             <TabPage Alt="L" Text="Layout">
               <Tab>
                 <att.BoundsComposition-set AlignmentToParent="left:5 top:5 right:5 bottom:5"/>
@@ -144,6 +158,7 @@
   <Instance name="TreeViewTabPageResource" content="File">TreeViewTabPage.xml</Instance>
   <Instance name="DataGridTabPageResource" content="File">DataGridTabPage.xml</Instance>
   <Folder name="DataGridComponents" content="Link">DataGridComponents.xml</Folder>
+  <Folder name="RefreshListTabPages" content="Link">RefreshListTabPages.xml</Folder>
 
   <Instance name="RepeatTabPageResource" content="File">RepeatTabPage.xml</Instance>
   <Folder name="ResponsiveTabPage" content="Link">ResponsiveTabPage.xml</Folder>

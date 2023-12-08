@@ -143,9 +143,73 @@ DefaultDataGridItemTemplate
 					}
 				}
 
-				void DefaultDataGridItemTemplate::OnColumnChanged()
+				void DefaultDataGridItemTemplate::DeleteAllVisualizers()
 				{
-					UpdateSubItemSize();
+					for (vint i = 0; i < dataVisualizers.Count(); i++)
+					{
+						DeleteVisualizer(i);
+					}
+				}
+
+				void DefaultDataGridItemTemplate::DeleteVisualizer(vint column)
+				{
+					auto visualizer = dataVisualizers[column];
+					auto composition = visualizer->GetTemplate();
+					visualizer->NotifyDeletedTemplate();
+					if (composition->GetParent())
+					{
+						composition->GetParent()->RemoveChild(composition);
+					}
+					SafeDeleteComposition(composition);
+					dataVisualizers[column] = nullptr;
+				}
+
+				void DefaultDataGridItemTemplate::ResetDataTable(vint columnCount)
+				{
+					vint itemIndex = GetIndex();
+
+					if (dataVisualizers.Count() == columnCount)
+					{
+						for (vint i = 0; i < columnCount; i++)
+						{
+							auto factory = GetDataVisualizerFactory(itemIndex, i);
+							if (dataVisualizerFactories[i] != factory)
+							{
+								DeleteVisualizer(i);
+								dataVisualizerFactories[i] = factory;
+							}
+						}
+					}
+					else
+					{
+						DeleteAllVisualizers();
+						dataVisualizerFactories.Resize(columnCount);
+						dataVisualizers.Resize(columnCount);
+
+						for (auto cell : dataCells)
+						{
+							SafeDeleteComposition(cell);
+						}
+						dataCells.Resize(columnCount);
+						
+						for (vint i = 0; i < columnCount; i++)
+						{
+							dataVisualizerFactories[i] = GetDataVisualizerFactory(itemIndex, i);
+						}
+
+						textTable->SetRowsAndColumns(1, columnCount);
+						for (vint i = 0; i < columnCount; i++)
+						{
+							auto cell = new GuiCellComposition;
+							textTable->AddChild(cell);
+							cell->SetSite(0, i, 1, 1);
+							cell->GetEventReceiver()->leftButtonDown.AttachMethod(this, &DefaultDataGridItemTemplate::OnCellButtonDown);
+							cell->GetEventReceiver()->rightButtonDown.AttachMethod(this, &DefaultDataGridItemTemplate::OnCellButtonDown);
+							cell->GetEventReceiver()->leftButtonUp.AttachMethod(this, &DefaultDataGridItemTemplate::OnCellLeftButtonUp);
+							cell->GetEventReceiver()->rightButtonUp.AttachMethod(this, &DefaultDataGridItemTemplate::OnCellRightButtonUp);
+							dataCells[i] = cell;
+						}
+					}
 				}
 
 				void DefaultDataGridItemTemplate::OnInitialize()
@@ -160,38 +224,40 @@ DefaultDataGridItemTemplate
 						AddChild(textTable);
 					}
 
+					SelectedChanged.AttachMethod(this, &DefaultDataGridItemTemplate::OnSelectedChanged);
+					FontChanged.AttachMethod(this, &DefaultDataGridItemTemplate::OnFontChanged);
+					ContextChanged.AttachMethod(this, &DefaultDataGridItemTemplate::OnContextChanged);
+					VisuallyEnabledChanged.AttachMethod(this, &DefaultDataGridItemTemplate::OnVisuallyEnabledChanged);
+
+					SelectedChanged.Execute(compositions::GuiEventArgs(this));
+					FontChanged.Execute(compositions::GuiEventArgs(this));
+					ContextChanged.Execute(compositions::GuiEventArgs(this));
+					VisuallyEnabledChanged.Execute(compositions::GuiEventArgs(this));
+				}
+
+				void DefaultDataGridItemTemplate::OnRefresh()
+				{
 					if (auto dataGrid = dynamic_cast<GuiVirtualDataGrid*>(listControl))
 					{
 						vint columnCount = dataGrid->listViewItemView->GetColumnCount();
 						vint itemIndex = GetIndex();
+						ResetDataTable(columnCount);
 
-						dataVisualizers.Resize(columnCount);
-						for (vint i = 0; i < dataVisualizers.Count(); i++)
-						{
-							auto factory = GetDataVisualizerFactory(itemIndex, i);
-							dataVisualizers[i] = factory->CreateVisualizer(dataGrid);
-						}
-
-						textTable->SetRowsAndColumns(1, columnCount);
 						for (vint i = 0; i < columnCount; i++)
 						{
-							auto cell = new GuiCellComposition;
-							textTable->AddChild(cell);
-							cell->SetSite(0, i, 1, 1);
-							cell->GetEventReceiver()->leftButtonDown.AttachMethod(this, &DefaultDataGridItemTemplate::OnCellButtonDown);
-							cell->GetEventReceiver()->rightButtonDown.AttachMethod(this, &DefaultDataGridItemTemplate::OnCellButtonDown);
-							cell->GetEventReceiver()->leftButtonUp.AttachMethod(this, &DefaultDataGridItemTemplate::OnCellLeftButtonUp);
-							cell->GetEventReceiver()->rightButtonUp.AttachMethod(this, &DefaultDataGridItemTemplate::OnCellRightButtonUp);
+							auto& dataVisualizer = dataVisualizers[i];
+							if (!dataVisualizer)
+							{
+								dataVisualizer = dataVisualizerFactories[i]->CreateVisualizer(dataGrid);
+								dataVisualizer->GetTemplate()->SetFont(GetFont());
+								dataVisualizers[i] = dataVisualizer;
 
-							auto composition = dataVisualizers[i]->GetTemplate();
-							composition->SetAlignmentToParent(Margin(0, 0, 0, 0));
-							cell->AddChild(composition);
-						}
-
-						// TODO: (enumerable) foreach
-						for (vint i = 0; i < dataVisualizers.Count(); i++)
-						{
-							dataVisualizers[i]->BeforeVisualizeCell(dataGrid->GetItemProvider(), itemIndex, i);
+								auto cell = dataCells[i];
+								auto composition = dataVisualizer->GetTemplate();
+								composition->SetAlignmentToParent(Margin(0, 0, 0, 0));
+								cell->AddChild(composition);
+							}
+							dataVisualizer->BeforeVisualizeCell(dataGrid->GetItemProvider(), itemIndex, i);
 						}
 
 						GridPos selectedCell = dataGrid->GetSelectedCell();
@@ -203,18 +269,8 @@ DefaultDataGridItemTemplate
 						{
 							NotifySelectCell(-1);
 						}
-						UpdateSubItemSize();
 					}
-
-					SelectedChanged.AttachMethod(this, &DefaultDataGridItemTemplate::OnSelectedChanged);
-					FontChanged.AttachMethod(this, &DefaultDataGridItemTemplate::OnFontChanged);
-					ContextChanged.AttachMethod(this, &DefaultDataGridItemTemplate::OnContextChanged);
-					VisuallyEnabledChanged.AttachMethod(this, &DefaultDataGridItemTemplate::OnVisuallyEnabledChanged);
-
-					SelectedChanged.Execute(compositions::GuiEventArgs(this));
-					FontChanged.Execute(compositions::GuiEventArgs(this));
-					ContextChanged.Execute(compositions::GuiEventArgs(this));
-					VisuallyEnabledChanged.Execute(compositions::GuiEventArgs(this));
+					UpdateSubItemSize();
 				}
 
 				void DefaultDataGridItemTemplate::OnSelectedChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
@@ -383,18 +439,18 @@ GuiVirtualDataGrid (Editor)
 				return GuiVirtualListView::GetActivatingAltHost();
 			}
 
-			void GuiVirtualDataGrid::OnItemModified(vint start, vint count, vint newCount)
+			void GuiVirtualDataGrid::OnItemModified(vint start, vint count, vint newCount, bool itemReferenceUpdated)
 			{
-				GuiVirtualListView::OnItemModified(start, count, newCount);
-				if(!GetItemProvider()->IsEditing())
+				GuiVirtualListView::OnItemModified(start, count, newCount, itemReferenceUpdated);
+				if (!GetItemProvider()->IsEditing())
 				{
 					StopEdit();
 				}
 			}
 
-			void GuiVirtualDataGrid::OnStyleInstalled(vint index, ItemStyle* style)
+			void GuiVirtualDataGrid::OnStyleInstalled(vint index, ItemStyle* style, bool refreshPropertiesOnly)
 			{
-				GuiVirtualListView::OnStyleInstalled(index, style);
+				GuiVirtualListView::OnStyleInstalled(index, style, refreshPropertiesOnly);
 				if (auto itemStyle = dynamic_cast<DefaultDataGridItemTemplate*>(style))
 				{
 					if (selectedCell.row == index && selectedCell.column != -1)

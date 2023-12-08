@@ -234,14 +234,11 @@ GuiComboBoxListControl
 			{
 			}
 
-			void GuiComboBoxListControl::OnItemModified(vint start, vint count, vint newCount)
+			void GuiComboBoxListControl::OnItemModified(vint start, vint count, vint newCount, bool itemReferenceUpdated)
 			{
-				if (count == newCount)
+				if (count == newCount && start <= selectedIndex && selectedIndex < start + count)
 				{
-					if (start <= selectedIndex && selectedIndex < start + count)
-					{
-						DisplaySelectedContent(selectedIndex);
-					}
+					DisplaySelectedContent(selectedIndex);
 				}
 				else
 				{

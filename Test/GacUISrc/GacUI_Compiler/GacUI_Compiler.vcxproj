@@ -215,6 +215,7 @@
     <Xml Include="..\..\Resources\App\FullControlTest\LocalizedComponents.xml" />
     <Xml Include="..\..\Resources\App\FullControlTest\LocalizedDialogsTabPage.xml" />
     <Xml Include="..\..\Resources\App\FullControlTest\LocalizedStringsTabPage.xml" />
+    <Xml Include="..\..\Resources\App\FullControlTest\RefreshListTabPages.xml" />
     <Xml Include="..\..\Resources\App\FullControlTest\RepeatComponents.xml" />
     <Xml Include="..\..\Resources\App\FullControlTest\RepeatTabPage.xml" />
     <Xml Include="..\..\Resources\App\FullControlTest\Resource.xml" />

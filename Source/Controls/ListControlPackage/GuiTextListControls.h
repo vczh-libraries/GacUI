@@ -55,6 +55,7 @@ DefaultTextListItemTemplate
 
 					virtual TemplateProperty<BulletStyle>	CreateBulletStyle();
 					void									OnInitialize()override;
+					void									OnRefresh()override;
 					void									OnFontChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 					void									OnTextChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 					void									OnTextColorChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
@@ -94,6 +95,7 @@ TextItemProvider
 					WString										text;
 					bool										checked;
 
+					void										NotifyUpdate(bool raiseCheckEvent);
 				public:
 					/// <summary>Create an empty text item.</summary>
 					TextItem();
@@ -166,7 +168,7 @@ GuiVirtualTextList
 			protected:
 				TextListView											view = TextListView::Unknown;
 
-				void													OnStyleInstalled(vint itemIndex, ItemStyle* style)override;
+				void													OnStyleInstalled(vint itemIndex, ItemStyle* style, bool refreshPropertiesOnly)override;
 				void													OnItemTemplateChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 			public:
 				/// <summary>Create a Text list control in virtual mode.</summary>

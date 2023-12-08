@@ -143,6 +143,7 @@ Ribbon Gallery List
 
 			namespace ribbon_impl
 			{
+				class GalleryItemArrangerRepeatComposition;
 				class GalleryItemArranger;
 				class GalleryResponsiveLayout;
 			}
@@ -150,7 +151,7 @@ Ribbon Gallery List
 			/// <summary>Auto resizable ribbon gallyer list.</summary>
 			class GuiBindableRibbonGalleryList : public GuiRibbonGallery, public list::GroupedDataSource, private IGuiMenuDropdownProvider, public Description<GuiBindableRibbonGalleryList>
 			{
-				friend class ribbon_impl::GalleryItemArranger;
+				friend class ribbon_impl::GalleryItemArrangerRepeatComposition;
 
 				using IValueEnumerable = reflection::description::IValueEnumerable;
 				using IValueObservableList = reflection::description::IValueObservableList;

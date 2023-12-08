@@ -713,9 +713,9 @@ Interface Proxy (Controls)
 					INVOKE_INTERFACE_PROXY(OnAttached, provider);
 				}
 
-				void OnItemModified(vint start, vint count, vint newCount)override
+				void OnItemModified(vint start, vint count, vint newCount, bool itemReferenceUpdated)override
 				{
-					INVOKE_INTERFACE_PROXY(OnItemModified, start, count, newCount);
+					INVOKE_INTERFACE_PROXY(OnItemModified, start, count, newCount, itemReferenceUpdated);
 				}
 			END_INTERFACE_PROXY(presentation::controls::GuiListControl::IItemProviderCallback)
 
@@ -816,9 +816,9 @@ Interface Proxy (Controls)
 					INVOKE_INTERFACE_PROXY(OnViewChanged, bounds);
 				}
 
-				vint FindItem(vint itemIndex, presentation::compositions::KeyDirection key)override
+				vint FindItemByVirtualKeyDirection(vint itemIndex, presentation::compositions::KeyDirection key)override
 				{
-					INVOKEGET_INTERFACE_PROXY(FindItem, itemIndex, key);
+					INVOKEGET_INTERFACE_PROXY(FindItemByVirtualKeyDirection, itemIndex, key);
 				}
 
 				presentation::controls::GuiListControl::EnsureItemVisibleResult EnsureItemVisible(vint itemIndex)override
@@ -936,6 +936,11 @@ Interface Proxy (Controls)
 				vint CalculateTotalVisibleNodes()override
 				{
 					INVOKEGET_INTERFACE_PROXY_NOPARAMS(CalculateTotalVisibleNodes);
+				}
+
+				void NotifyDataModified()override
+				{
+					INVOKE_INTERFACE_PROXY_NOPARAMS(NotifyDataModified);
 				}
 
 				vint GetChildCount()override

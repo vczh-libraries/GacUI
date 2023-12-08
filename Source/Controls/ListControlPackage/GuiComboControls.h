@@ -98,7 +98,7 @@ ComboBox with GuiListControl
 				// ===================== GuiListControl::IItemProviderCallback =====================
 
 				void										OnAttached(GuiListControl::IItemProvider* provider)override;
-				void										OnItemModified(vint start, vint count, vint newCount)override;
+				void										OnItemModified(vint start, vint count, vint newCount, bool itemReferenceUpdated)override;
 			public:
 				/// <summary>Create a control with a specified default theme and a list control that will be put in the popup control to show all items.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>

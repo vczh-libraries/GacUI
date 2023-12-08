@@ -46,6 +46,16 @@ GuiVirtualRepeatCompositionBase
 				return bounds;
 			}
 
+			void GuiVirtualRepeatCompositionBase::Layout_ResetLayout()
+			{
+				viewBounds = Rect({ 0,0 }, { 0,0 });
+				ViewLocationChanged.Execute(GuiEventArgs(this));
+				OnResetViewLocation();
+				itemSourceUpdated = true;
+				Layout_InvalidateItemSizeCache();
+				AdoptedSizeInvalidated.Execute(GuiEventArgs(this));
+			}
+
 			void GuiVirtualRepeatCompositionBase::Layout_SetStyleAlignmentToParent(ItemStyleRecord style, Margin value)
 			{
 				style->SetAlignmentToParent(axis->VirtualMarginToRealMargin(value));
@@ -134,11 +144,7 @@ GuiVirtualRepeatCompositionBase
 					DeleteStyle(style);
 				}
 				visibleStyles.Clear();
-				viewBounds = Rect({ 0,0 },{ 0,0 });
-				OnResetViewLocation();
-				itemSourceUpdated = true;
-				Layout_InvalidateItemSizeCache();
-				AdoptedSizeInvalidated.Execute(GuiEventArgs(this));
+				Layout_ResetLayout();
 			}
 
 			void GuiVirtualRepeatCompositionBase::OnInstallItems()
@@ -157,6 +163,19 @@ GuiVirtualRepeatCompositionBase
 
 			void GuiVirtualRepeatCompositionBase::OnResetViewLocation()
 			{
+			}
+
+			GuiVirtualRepeatCompositionBase::ItemStyleRecord GuiVirtualRepeatCompositionBase::CreateStyleInternal(vint index)
+			{
+				auto source = itemSource->Get(index);
+				auto itemStyle = itemTemplate(source);
+				itemStyle->SetContext(itemContext);
+				return itemStyle;
+			}
+
+			void GuiVirtualRepeatCompositionBase::DeleteStyleInternal(ItemStyleRecord style)
+			{
+				SafeDeleteComposition(style);
 			}
 
 			vint GuiVirtualRepeatCompositionBase::CalculateAdoptedSize(vint expectedSize, vint count, vint itemSize)
@@ -180,9 +199,7 @@ GuiVirtualRepeatCompositionBase
 
 			GuiVirtualRepeatCompositionBase::ItemStyleRecord GuiVirtualRepeatCompositionBase::CreateStyle(vint index)
 			{
-				auto source = itemSource->Get(index);
-				auto itemStyle = itemTemplate(source);
-				itemStyle->SetContext(itemContext);
+				auto itemStyle = CreateStyleInternal(index);
 				AddChild(itemStyle);
 				itemStyle->ForceCalculateSizeImmediately();
 				return itemStyle;
@@ -190,7 +207,7 @@ GuiVirtualRepeatCompositionBase
 
 			void GuiVirtualRepeatCompositionBase::DeleteStyle(ItemStyleRecord style)
 			{
-				SafeDeleteComposition(style);
+				DeleteStyleInternal(style);
 			}
 
 			void GuiVirtualRepeatCompositionBase::OnViewChangedInternal(Rect oldBounds, Rect newBounds, bool forceUpdateTotalSize)
@@ -350,9 +367,21 @@ GuiVirtualRepeatCompositionBase
 				return -1;
 			}
 
-			void GuiVirtualRepeatCompositionBase::ReloadVisibleStyles()
+			void GuiVirtualRepeatCompositionBase::ResetLayout(bool recreateVisibleStyles)
 			{
-				OnClearItems();
+				if (recreateVisibleStyles)
+				{
+					OnClearItems();
+				}
+				else
+				{
+					Layout_ResetLayout();
+				}
+			}
+
+			void GuiVirtualRepeatCompositionBase::InvalidateLayout()
+			{
+				itemSourceUpdated = true;
 			}
 
 			vint GuiVirtualRepeatCompositionBase::FindItemByRealKeyDirection(vint itemIndex, compositions::KeyDirection key)
@@ -792,8 +821,7 @@ GuiRepeatFixedHeightItemComposition
 				if (itemWidth != value)
 				{
 					itemWidth = value;
-					itemSourceUpdated = true;
-					ReloadVisibleStyles();
+					InvalidateLayout();
 				}
 			}
 
@@ -808,8 +836,7 @@ GuiRepeatFixedHeightItemComposition
 				if (itemYOffset != value)
 				{
 					itemYOffset = value;
-					itemSourceUpdated = true;
-					ReloadVisibleStyles();
+					InvalidateLayout();
 				}
 			}
 
@@ -1078,7 +1105,7 @@ GuiRepeatFixedHeightMultiColumnItemComposition
 						{
 							CHECK_ERROR(newRows < pi_rows, ERROR_MESSAGE_INTERNAL_ERROR);
 							vint oldFirstIndex = pi_firstColumn * pi_rows;
-							pi_rows = newRows;
+							pi_rows = newRows > 0 ? newRows : 1;
 							vint newFirstIndex = pi_firstColumn * pi_rows;
 
 							if (oldFirstIndex == newFirstIndex)

@@ -109,19 +109,23 @@ ListViewColumnItemArranger
 ***********************************************************************/
 
 				/// <summary>List view column item arranger. This arranger contains column headers. When an column header is resized, all items will be notified via the [T:vl.presentation.controls.list.ListViewColumnItemArranger.IColumnItemView] for <see cref="GuiListControl::IItemProvider"/>.</summary>
-				class ListViewColumnItemArranger : public FixedHeightItemArranger, public Description<ListViewColumnItemArranger>
+				class ListViewColumnItemArranger : public VirtualRepeatRangedItemArrangerBase<compositions::GuiRepeatFixedHeightItemComposition>, public Description<ListViewColumnItemArranger>
 				{
+					using TBase = VirtualRepeatRangedItemArrangerBase<compositions::GuiRepeatFixedHeightItemComposition>;
 					typedef collections::List<GuiListViewColumnHeader*>					ColumnHeaderButtonList;
 					typedef collections::List<compositions::GuiBoundsComposition*>		ColumnHeaderSplitterList;
 				public:
-					static const vint							SplitterWidth=8;
+					static const vint							SplitterWidth = 8;
 					
 					/// <summary>Callback for [T:vl.presentation.controls.list.ListViewColumnItemArranger.IColumnItemView]. Column item view use this interface to notify column related modification.</summary>
 					class IColumnItemViewCallback : public virtual IDescriptable, public Description<IColumnItemViewCallback>
 					{
 					public:
-						/// <summary>Called when any column is changed (inserted, removed, text changed, etc.).</summary>
-						virtual void							OnColumnChanged()=0;
+						/// <summary>Called when any column object is changed (inserted, removed, updated binding, etc.).</summary>
+						virtual void							OnColumnRebuilt()=0;
+
+						/// <summary>Called when any property of a column is changed (size changed, text changed, etc.).</summary>
+						virtual void							OnColumnChanged(bool needToRefreshItems)=0;
 					};
 					
 					/// <summary>The required <see cref="GuiListControl::IItemProvider"/> view for <see cref="ListViewColumnItemArranger"/>.</summary>
@@ -162,12 +166,25 @@ ListViewColumnItemArranger
 					class ColumnItemViewCallback : public Object, public virtual IColumnItemViewCallback
 					{
 					protected:
-						ListViewColumnItemArranger*				arranger;
+						ListViewColumnItemArranger*				arranger = nullptr;
+
 					public:
 						ColumnItemViewCallback(ListViewColumnItemArranger* _arranger);
 						~ColumnItemViewCallback();
 
-						void									OnColumnChanged();
+						void									OnColumnRebuilt() override;
+						void									OnColumnChanged(bool needToRefreshItems) override;
+					};
+
+					class ColumnItemArrangerRepeatComposition : public TBase::ArrangerRepeatComposition
+					{
+					protected:
+						ListViewColumnItemArranger*				arranger = nullptr;
+
+						void									Layout_EndLayout(bool totalSizeUpdated) override;
+						Size									Layout_CalculateTotalSize() override;
+					public:
+						ColumnItemArrangerRepeatComposition(ListViewColumnItemArranger* _arranger);
 					};
 
 					GuiListViewBase*							listView = nullptr;
@@ -180,22 +197,25 @@ ListViewColumnItemArranger
 					bool										splitterDragging = false;
 					vint										splitterLatestX = 0;
 
+					void										OnViewLocationChanged(compositions::GuiGraphicsComposition* composition, compositions::GuiEventArgs& arguments);
 					void										ColumnClicked(vint index, compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 					void										ColumnCachedBoundsChanged(vint index, compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 					void										ColumnHeaderSplitterLeftButtonDown(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments);
 					void										ColumnHeaderSplitterLeftButtonUp(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments);
 					void										ColumnHeaderSplitterMouseMove(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments);
 
-					void										RearrangeItemBounds()override;
-					vint										GetWidth()override;
-					vint										GetYOffset()override;
-					Size										OnCalculateTotalSize()override;
+					void										FixColumnsAfterViewLocationChanged();
+					void										FixColumnsAfterLayout();
+					vint										GetColumnsWidth();
+					vint										GetColumnsYOffset();
 					void										DeleteColumnButtons();
 					void										RebuildColumns();
+					void										RefreshColumns();
 				public:
 					ListViewColumnItemArranger();
 					~ListViewColumnItemArranger();
 
+					Size										GetTotalSize()override;
 					void										AttachListControl(GuiListControl* value)override;
 					void										DetachListControl()override;
 				};
@@ -283,7 +303,8 @@ ListViewItemProvider
 					GuiMenu*										dropdownPopup = nullptr;
 					ColumnSortingState								sortingState = ColumnSortingState::NotSorted;
 					
-					void											NotifyUpdate(bool affectItem);
+					void											NotifyRebuilt();
+					void											NotifyChanged(bool needToRefreshItems);
 				public:
 					/// <summary>Create a column with the specified text and size.</summary>
 					/// <param name="_text">The specified text.</param>
@@ -332,8 +353,10 @@ ListViewItemProvider
 				class IListViewItemProvider : public virtual Interface
 				{
 				public:
-					virtual void									NotifyAllItemsUpdate() = 0;
-					virtual void									NotifyAllColumnsUpdate() = 0;
+					virtual void									RebuildAllItems() = 0;
+					virtual void									RefreshAllItems() = 0;
+					virtual void									NotifyColumnRebuilt() = 0;
+					virtual void									NotifyColumnChanged() = 0;
 				};
 
 				/// <summary>List view data column container.</summary>
@@ -358,7 +381,8 @@ ListViewItemProvider
 					IListViewItemProvider*							itemProvider;
 					bool											affectItemFlag = true;
 
-					void											NotifyColumnUpdated(vint column, bool affectItem);
+					void											NotifyColumnRebuilt(vint column);
+					void											NotifyColumnChanged(vint column, bool needToRefreshItems);
 					void											AfterInsert(vint index, const Ptr<ListViewColumn>& value)override;
 					void											BeforeRemove(vint index, const Ptr<ListViewColumn>& value)override;
 					void											NotifyUpdateInternal(vint start, vint count, vint newCount)override;
@@ -389,8 +413,24 @@ ListViewItemProvider
 					void												AfterInsert(vint index, const Ptr<ListViewItem>& value)override;
 					void												BeforeRemove(vint index, const Ptr<ListViewItem>& value)override;
 
-					void												NotifyAllItemsUpdate()override;
-					void												NotifyAllColumnsUpdate()override;
+					// ===================== list::IListViewItemProvider =====================
+
+					void												RebuildAllItems() override;
+					void												RefreshAllItems() override;
+					void												NotifyColumnRebuilt() override;
+					void												NotifyColumnChanged() override;
+
+				public:
+					ListViewItemProvider();
+					~ListViewItemProvider();
+
+					// ===================== GuiListControl::IItemProvider =====================
+
+					WString												GetTextValue(vint itemIndex)override;
+					description::Value									GetBindingValue(vint itemIndex)override;
+					IDescriptable*										RequestView(const WString& identifier)override;
+
+					// ===================== list::ListViewItemStyleProvider::IListViewItemView =====================
 
 					Ptr<GuiImageData>									GetSmallImage(vint itemIndex)override;
 					Ptr<GuiImageData>									GetLargeImage(vint itemIndex)override;
@@ -399,7 +439,9 @@ ListViewItemProvider
 					vint												GetDataColumnCount()override;
 					vint												GetDataColumn(vint index)override;
 					vint												GetColumnCount()override;
-					WString												GetColumnText(vint index)override;;
+					WString												GetColumnText(vint index)override;
+
+					// ===================== list::ListViewColumnItemArranger::IColumnItemView =====================
 
 					bool												AttachCallback(ListViewColumnItemArranger::IColumnItemViewCallback* value)override;
 					bool												DetachCallback(ListViewColumnItemArranger::IColumnItemViewCallback* value)override;
@@ -407,14 +449,6 @@ ListViewItemProvider
 					void												SetColumnSize(vint index, vint value)override;
 					GuiMenu*											GetDropdownPopup(vint index)override;
 					ColumnSortingState									GetSortingState(vint index)override;
-
-					WString												GetTextValue(vint itemIndex)override;
-					description::Value									GetBindingValue(vint itemIndex)override;
-				public:
-					ListViewItemProvider();
-					~ListViewItemProvider();
-
-					IDescriptable*										RequestView(const WString& identifier)override;
 
 					/// <summary>Get all data columns indices in columns.</summary>
 					/// <returns>All data columns indices in columns.</returns>
@@ -446,7 +480,7 @@ GuiVirtualListView
 			protected:
 				ListViewView											view = ListViewView::Unknown;
 
-				void													OnStyleInstalled(vint itemIndex, ItemStyle* style)override;
+				void													OnStyleInstalled(vint itemIndex, ItemStyle* style, bool refreshPropertiesOnly)override;
 				void													OnItemTemplateChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 			public:
 				/// <summary>Create a list view control in virtual mode.</summary>

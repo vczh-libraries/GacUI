@@ -237,14 +237,26 @@ DataReverseSorter
 DataColumn
 ***********************************************************************/
 
-				void DataColumn::NotifyAllColumnsUpdate(bool affectItem)
+				void DataColumn::NotifyRebuilt()
 				{
 					if (dataProvider)
 					{
 						vint index = dataProvider->columns.IndexOf(this);
 						if (index != -1)
 						{
-							dataProvider->columns.NotifyColumnUpdated(index, affectItem);
+							dataProvider->columns.NotifyColumnRebuilt(index);
+						}
+					}
+				}
+
+				void DataColumn::NotifyChanged(bool needToRefreshItems)
+				{
+					if (dataProvider)
+					{
+						vint index = dataProvider->columns.IndexOf(this);
+						if (index != -1)
+						{
+							dataProvider->columns.NotifyColumnChanged(index, needToRefreshItems);
 						}
 					}
 				}
@@ -271,7 +283,7 @@ DataColumn
 					if (text != value)
 					{
 						text = value;
-						NotifyAllColumnsUpdate(false);
+						NotifyChanged(false);
 					}
 				}
 
@@ -285,7 +297,7 @@ DataColumn
 					if (size != value)
 					{
 						size = value;
-						NotifyAllColumnsUpdate(false);
+						NotifyChanged(true);
 					}
 				}
 
@@ -309,7 +321,7 @@ DataColumn
 					if (popup != value)
 					{
 						popup = value;
-						NotifyAllColumnsUpdate(false);
+						NotifyChanged(false);
 					}
 				}
 
@@ -323,7 +335,7 @@ DataColumn
 					if (associatedFilter) associatedFilter->SetCallback(nullptr);
 					associatedFilter = value;
 					if (associatedFilter) associatedFilter->SetCallback(dataProvider);
-					NotifyAllColumnsUpdate(false);
+					NotifyChanged(false);
 				}
 
 				Ptr<IDataSorter> DataColumn::GetSorter()
@@ -336,7 +348,7 @@ DataColumn
 					if (associatedSorter) associatedSorter->SetCallback(nullptr);
 					associatedSorter = value;
 					if (associatedSorter) associatedSorter->SetCallback(dataProvider);
-					NotifyAllColumnsUpdate(false);
+					NotifyChanged(false);
 				}
 
 				Ptr<IDataVisualizerFactory> DataColumn::GetVisualizerFactory()
@@ -347,7 +359,7 @@ DataColumn
 				void DataColumn::SetVisualizerFactory(Ptr<IDataVisualizerFactory> value)
 				{
 					visualizerFactory = value;
-					NotifyAllColumnsUpdate(true);
+					NotifyRebuilt();
 				}
 
 				Ptr<IDataEditorFactory> DataColumn::GetEditorFactory()
@@ -358,7 +370,7 @@ DataColumn
 				void DataColumn::SetEditorFactory(Ptr<IDataEditorFactory> value)
 				{
 					editorFactory = value;
-					NotifyAllColumnsUpdate(true);
+					NotifyRebuilt();
 				}
 
 				WString DataColumn::GetCellText(vint row)
@@ -385,7 +397,7 @@ DataColumn
 					{
 						auto rowValue = dataProvider->GetBindingValue(row);
 						WriteProperty(rowValue, valueProperty, value);
-						dataProvider->InvokeOnItemModified(row, 1, 1);
+						dataProvider->InvokeOnItemModified(row, 1, 1, false);
 					}
 				}
 
@@ -399,7 +411,7 @@ DataColumn
 					if (textProperty != value)
 					{
 						textProperty = value;
-						NotifyAllColumnsUpdate(true);
+						NotifyRebuilt();
 						compositions::GuiEventArgs arguments;
 						TextPropertyChanged.Execute(arguments);
 					}
@@ -415,7 +427,7 @@ DataColumn
 					if (valueProperty != value)
 					{
 						valueProperty = value;
-						NotifyAllColumnsUpdate(true);
+						NotifyRebuilt();
 						compositions::GuiEventArgs arguments;
 						ValuePropertyChanged.Execute(arguments);
 					}
@@ -425,20 +437,19 @@ DataColumn
 DataColumns
 ***********************************************************************/
 
-				void DataColumns::NotifyColumnUpdated(vint index, bool affectItem)
+				void DataColumns::NotifyColumnRebuilt(vint column)
 				{
-					affectItemFlag = affectItem;
-					NotifyUpdateInternal(index, 1, 1);
-					affectItemFlag = true;
+					NotifyUpdate(column, 1);
+				}
+
+				void DataColumns::NotifyColumnChanged(vint column, bool needToRefreshItems)
+				{
+					dataProvider->NotifyColumnChanged();
 				}
 
 				void DataColumns::NotifyUpdateInternal(vint start, vint count, vint newCount)
 				{
-					dataProvider->NotifyAllColumnsUpdate();
-					if (affectItemFlag)
-					{
-						dataProvider->NotifyAllItemsUpdate();
-					}
+					dataProvider->NotifyColumnRebuilt();
 				}
 
 				bool DataColumns::QueryInsert(vint index, const Ptr<DataColumn>& value)
@@ -469,17 +480,46 @@ DataColumns
 DataProvider
 ***********************************************************************/
 
-				void DataProvider::NotifyAllItemsUpdate()
+				bool DataProvider::NotifyUpdate(vint start, vint count, bool itemReferenceUpdated)
 				{
-					InvokeOnItemModified(0, Count(), Count());
+					if (!itemSource) return false;
+					if (start<0 || start >= itemSource->GetCount() || count <= 0 || start + count > itemSource->GetCount())
+					{
+						return false;
+					}
+					else
+					{
+						InvokeOnItemModified(start, count, count, itemReferenceUpdated);
+						return true;
+					}
 				}
 
-				void DataProvider::NotifyAllColumnsUpdate()
+				void DataProvider::RebuildAllItems()
 				{
-					if (columnItemViewCallback)
+					NotifyUpdate(0, Count(), true);
+				}
+
+				void DataProvider::RefreshAllItems()
+				{
+					NotifyUpdate(0, Count(), false);
+				}
+
+				void DataProvider::NotifyColumnRebuilt()
+				{
+					for (auto callback : columnItemViewCallbacks)
 					{
-						columnItemViewCallback->OnColumnChanged();
+						callback->OnColumnRebuilt();
 					}
+					RefreshAllItems();
+				}
+
+				void DataProvider::NotifyColumnChanged()
+				{
+					for (auto callback : columnItemViewCallbacks)
+					{
+						callback->OnColumnChanged(true);
+					}
+					RefreshAllItems();
 				}
 
 				GuiListControl::IItemProvider* DataProvider::GetItemProvider()
@@ -497,7 +537,7 @@ DataProvider
 				{
 					if (!currentSorter && !currentFilter && count == newCount)
 					{
-						InvokeOnItemModified(start, count, newCount);
+						InvokeOnItemModified(start, count, newCount, true);
 					}
 					else
 					{
@@ -632,7 +672,7 @@ DataProvider
 
 					if (invokeCallback)
 					{
-						NotifyAllItemsUpdate();
+						RefreshAllItems();
 					}
 				}
 
@@ -757,16 +797,29 @@ DataProvider
 
 				bool DataProvider::AttachCallback(ListViewColumnItemArranger::IColumnItemViewCallback* value)
 				{
-					if (columnItemViewCallback)return false;
-					columnItemViewCallback = value;
-					return true;
+					if (columnItemViewCallbacks.Contains(value))
+					{
+						return false;
+					}
+					else
+					{
+						columnItemViewCallbacks.Add(value);
+						return true;
+					}
 				}
 
 				bool DataProvider::DetachCallback(ListViewColumnItemArranger::IColumnItemViewCallback* value)
 				{
-					if (!columnItemViewCallback) return false;
-					columnItemViewCallback = nullptr;
-					return true;
+					vint index = columnItemViewCallbacks.IndexOf(value);
+					if (index == -1)
+					{
+						return false;
+					}
+					else
+					{
+						columnItemViewCallbacks.Remove(value);
+						return true;
+					}
 				}
 
 				vint DataProvider::GetColumnSize(vint index)
@@ -830,7 +883,7 @@ DataProvider
 							ColumnSortingState::Descending
 							;
 					}
-					NotifyAllColumnsUpdate();
+					NotifyColumnChanged();
 					ReorderRows(true);
 				}
 
@@ -942,7 +995,7 @@ GuiBindableDataGrid
 				if (dataProvider->largeImageProperty != value)
 				{
 					dataProvider->largeImageProperty = value;
-					dataProvider->NotifyAllItemsUpdate();
+					dataProvider->RefreshAllItems();
 					LargeImagePropertyChanged.Execute(GetNotifyEventArguments());
 				}
 			}
@@ -957,7 +1010,7 @@ GuiBindableDataGrid
 				if (dataProvider->smallImageProperty != value)
 				{
 					dataProvider->smallImageProperty = value;
-					dataProvider->NotifyAllItemsUpdate();
+					dataProvider->RefreshAllItems();
 					SmallImagePropertyChanged.Execute(GetNotifyEventArguments());
 				}
 			}
@@ -980,6 +1033,12 @@ GuiBindableDataGrid
 					return Value();
 				}
 				return dataProvider->GetColumns()[pos.column]->GetCellValue(pos.row);
+			}
+
+			bool GuiBindableDataGrid::NotifyItemDataModified(vint start, vint count)
+			{
+				StopEdit();
+				return dataProvider->NotifyUpdate(start, count, false);
 			}
 		}
 	}

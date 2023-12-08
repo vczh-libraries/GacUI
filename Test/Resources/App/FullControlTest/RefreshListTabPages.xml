@@ -1,0 +1,1011 @@
+<Folder>
+  <Script name="RefreshViewModelResource">
+    <Workflow><![CDATA[
+      module refresh_viewmodel;
+      using system::*;
+      using presentation::*;
+
+      namespace demo
+      {
+        class RefreshItem
+        {
+          prop Name : string = "" {not observe}
+          prop Title : string = "" {not observe}
+          prop Sub1 : string = "One" {not observe}
+          prop Sub2 : string = "Two" {not observe}
+          prop Sub3 : string = "Three" {not observe}
+          prop Selected : bool = false {not observe}
+          prop LargeImage : GuiImageData^ = null {not observe}
+          prop SmallImage : GuiImageData^ = null {not observe}
+          prop Children : observe RefreshItem^[] = {} {const, not observe}
+
+          new (name:string, title:string)
+          {
+            Name = name;
+            Title = title;
+          }
+
+          new (name:string, title:string, children:RefreshItem^{})
+          {
+            Name = name;
+            Title = title;
+            for (child in children)
+            {
+              Children.Add(child);
+            }
+          }
+        }
+      }
+    ]]></Workflow>
+  </Script>
+
+  <Instance name="RefreshTextListTabPageResource">
+    <Instance ref.CodeBehind="false" ref.Class="demo::RefreshTextListTabPage">
+      <TabPage ref.Name="self" Text="TextList">
+        <Table CellPadding="5" BorderVisible="false" MinSizeLimitation="LimitToElementAndChildren" AlignmentToParent="left:5 top:5 right:5 bottom:5">
+          <att.Rows>
+            <_>composeType:MinSize</_>
+            <_>composeType:Percentage percentage:1.0</_>
+          </att.Rows>
+          <att.Columns>
+            <_>composeType:MinSize</_>
+            <_>composeType:MinSize</_>
+            <_>composeType:MinSize</_>
+            <_>composeType:Percentage percentage:1.0</_>
+          </att.Columns>
+          <Cell Site="row:0 column:0">
+            <Button Text="Check First">
+              <ev.Clicked-eval><![CDATA[
+                {
+                  textList.Items[0].Checked = true;
+                }
+              ]]></ev.Clicked-eval>
+            </Button>
+          </Cell>
+          <Cell Site="row:0 column:1">
+            <Button Text="Uncheck First">
+              <ev.Clicked-eval>
+                <![CDATA[
+                {
+                  textList.Items[0].Checked = false;
+                }
+              ]]></ev.Clicked-eval>
+            </Button>
+          </Cell>
+          <Cell Site="row:0 column:2">
+            <Button ref.Name="buttonRead" Text="Read (false)">
+              <ev.Clicked-eval>
+                <![CDATA[
+                {
+                  if (textList.Items[0].Checked)
+                  {
+                    buttonRead.Text = "Read (true)";
+                  }
+                  else
+                  {
+                    buttonRead.Text = "Read (false)";
+                  }
+                }
+              ]]></ev.Clicked-eval>
+            </Button>
+          </Cell>
+          <Cell Site="row:1 column:0 columnSpan:4">
+            <TextList ref.Name="textList" MultiSelect="true" View="Check">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+              <att.Items>
+                <_ Text="First"/>
+                <_ Text="Second"/>
+                <_ Text="Third"/>
+                <_ Text="Fourth"/>
+                <_ Text="Fifth"/>
+                <_ Text="Sixth"/>
+              </att.Items>
+            </TextList>
+          </Cell>
+        </Table>
+      </TabPage>
+    </Instance>
+  </Instance>
+
+  <Instance name="RefreshBindableTextListTabPageResource">
+    <Instance ref.CodeBehind="false" ref.Class="demo::RefreshBindableTextListTabPage">
+      <ref.Members><![CDATA[
+        var items : observe RefreshItem^[] = {
+          new RefreshItem^("First", "1st")
+          new RefreshItem^("Second", "2nd")
+          new RefreshItem^("Third", "3rd")
+        };
+      ]]></ref.Members>
+      <TabPage ref.Name="self" Text="BindableTextList">
+        <Table CellPadding="5" BorderVisible="false" MinSizeLimitation="LimitToElementAndChildren" AlignmentToParent="left:5 top:5 right:5 bottom:5">
+          <att.Rows>
+            <_>composeType:MinSize</_>
+            <_>composeType:Percentage percentage:1.0</_>
+          </att.Rows>
+          <att.Columns>
+            <_>composeType:MinSize</_>
+            <_>composeType:MinSize</_>
+            <_>composeType:MinSize</_>
+            <_>composeType:MinSize</_>
+            <_>composeType:MinSize</_>
+            <_>composeType:Percentage percentage:1.0</_>
+          </att.Columns>
+          <Cell Site="row:0 column:0">
+            <Button Text="Use Name">
+              <ev.Clicked-eval><![CDATA[
+                {
+                  textList.TextProperty = func(value:object):string
+                  {
+                    return (cast (RefreshItem^) value).Name;
+                  };
+                }
+              ]]></ev.Clicked-eval>
+            </Button>
+          </Cell>
+          <Cell Site="row:0 column:1">
+            <Button Text="Use Title">
+              <ev.Clicked-eval><![CDATA[
+                {
+                  textList.TextProperty = func(value:object):string
+                  {
+                    return (cast (RefreshItem^) value).Title;
+                  };
+                }
+              ]]></ev.Clicked-eval>
+            </Button>
+          </Cell>
+          <Cell Site="row:0 column:2">
+            <Button Text="Check First">
+              <ev.Clicked-eval><![CDATA[
+                {
+                  self.items[0].Selected = true;
+                  textList.NotifyItemDataModified(0, 1);
+                }
+              ]]></ev.Clicked-eval>
+            </Button>
+          </Cell>
+          <Cell Site="row:0 column:3">
+            <Button Text="Uncheck First">
+              <ev.Clicked-eval>
+                <![CDATA[
+                {
+                  self.items[0].Selected = false;
+                  textList.NotifyItemDataModified(0, 1);
+                }
+              ]]></ev.Clicked-eval>
+            </Button>
+          </Cell>
+          <Cell Site="row:0 column:4">
+            <Button ref.Name="buttonRead" Text="Read (false)">
+              <ev.Clicked-eval><![CDATA[
+                {
+                  if (self.items[0].Selected)
+                  {
+                    buttonRead.Text = "Read (true)";
+                  }
+                  else
+                  {
+                    buttonRead.Text = "Read (false)";
+                  }
+                }
+              ]]></ev.Clicked-eval>
+            </Button>
+          </Cell>
+          <Cell Site="row:1 column:0 columnSpan:6">
+            <BindableTextList ref.Name="textList" MultiSelect="true" View="Check" env.ItemType="demo::RefreshItem^">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+              <att.ItemSource-eval>self.items</att.ItemSource-eval>
+              <att.TextProperty>Name</att.TextProperty>
+              <att.CheckedProperty>Selected</att.CheckedProperty>
+            </BindableTextList>
+          </Cell>
+        </Table>
+      </TabPage>
+    </Instance>
+  </Instance>
+
+  <Instance name="RefreshListViewTabPageResource">
+    <Instance ref.CodeBehind="false" ref.Class="demo::RefreshListViewTabPage">
+      <TabPage ref.Name="self" Text="ListView">
+        <Table CellPadding="5" BorderVisible="false" MinSizeLimitation="LimitToElementAndChildren" AlignmentToParent="left:5 top:5 right:5 bottom:5">
+          <att.Rows>
+            <_>composeType:MinSize</_>
+            <_>composeType:Percentage percentage:1.0</_>
+          </att.Rows>
+          <att.Columns>
+            <_>composeType:MinSize</_>
+            <_>composeType:MinSize</_>
+            <_>composeType:MinSize</_>
+            <_>composeType:MinSize</_>
+            <_>composeType:MinSize</_>
+            <_>composeType:Percentage percentage:1.0</_>
+          </att.Columns>
+          <Cell Site="row:0 column:0">
+            <ComboBox ref.Name="comboView" Alt="V" SelectedIndex="5">
+              <att.BoundsComposition-set PreferredMinSize="x:120"/>
+              <att.ListControl>
+                <TextList HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
+                  <att.Items>
+                    <TextItem Text="BigIcon"/>
+                    <TextItem Text="SmallIcon"/>
+                    <TextItem Text="List"/>
+                    <TextItem Text="Tile"/>
+                    <TextItem Text="Information"/>
+                    <TextItem Text="Detail"/>
+                  </att.Items>
+                </TextList>
+              </att.ListControl>
+              <ev.SelectedIndexChanged-eval>
+                <![CDATA[
+                  {
+                    switch (comboView.SelectedIndex)
+                    {
+                      case 0:
+                      {
+                        listView.View = BigIcon;
+                      }
+                      case 1:
+                      {
+                        listView.View = SmallIcon;
+                      }
+                      case 2:
+                      {
+                        listView.View = ListViewView::List;
+                      }
+                      case 3:
+                      {
+                        listView.View = Tile;
+                      }
+                      case 4:
+                      {
+                        listView.View = Information;
+                      }
+                      case 5:
+                      {
+                        listView.View = Detail;
+                      }
+                    }
+                  }
+                ]]>
+              </ev.SelectedIndexChanged-eval>
+            </ComboBox>
+          </Cell>
+          <Cell Site="row:0 column:1">
+            <Button Text="*MainColumn">
+              <ev.Clicked-eval><![CDATA[
+                {
+                  var s = listView.Items[0].Text;
+                  listView.Items[0].Text = s == "First" ? "MainColumn" : "First";
+                }
+              ]]></ev.Clicked-eval>
+            </Button>
+          </Cell>
+          <Cell Site="row:0 column:2">
+            <Button Text="*SubColumn">
+              <ev.Clicked-eval><![CDATA[
+                {
+                  var s = listView.Items[0].SubItems[0];
+                  listView.Items[0].SubItems[0] = s == "One" ? "SubColumn" : "One";
+                }
+              ]]></ev.Clicked-eval>
+            </Button>
+          </Cell>
+          <Cell Site="row:0 column:3">
+            <Button Text="*DataColumn">
+              <ev.Clicked-eval><![CDATA[
+                {
+                  var s = listView.DataColumns[0];
+                  var c = listView.DataColumns.Count;
+                  if (c == 3)
+                  {
+                    if (s == 0)
+                    {
+                      listView.DataColumns[0] = 1;
+                    }
+                    else
+                    {
+                      listView.DataColumns.RemoveAt(2);
+                    }
+                  }
+                  else
+                  {
+                    if (s == 0)
+                    {
+                      listView.DataColumns.Add(2);
+                    }
+                    else
+                    {
+                      listView.DataColumns[0] = 0;
+                    }
+                  }
+                }
+              ]]></ev.Clicked-eval>
+            </Button>
+          </Cell>
+          <Cell Site="row:0 column:4">
+            <Button Text="*Column">
+              <ev.Clicked-eval><![CDATA[
+                {
+                  var s = listView.Columns[1].Text;
+                  var c = listView.Columns.Count;
+                  if (c == 4)
+                  {
+                    if (s == "Category")
+                    {
+                      listView.Columns[1].Text = "What?";
+                      listView.Columns[2].Text = "Wait?";
+                    }
+                    else
+                    {
+                      listView.Columns.RemoveAt(1);
+                    }
+                  }
+                  else
+                  {
+                    if (s == "Size")
+                    {
+                      var column = new ListViewColumn^();
+                      column.Text = "Category";
+                      listView.Columns.Insert(1, column);
+                    }
+                    else
+                    {
+                      listView.Columns[1].Text = "Size";
+                    }
+                  }
+                }
+              ]]></ev.Clicked-eval>
+            </Button>
+          </Cell>
+          <Cell Site="row:1 column:0 columnSpan:6">
+            <ListView ref.Name="listView">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+
+              <att.Columns>
+                <_ Text="Id"/>
+                <_ Text="Category"/>
+                <_ Text="Size"/>
+                <_ Text="File"/>
+              </att.Columns>
+
+              <att.DataColumns>
+                <_>0</_>
+                <_>1</_>
+                <_>2</_>
+              </att.DataColumns>
+
+              <att.Items>
+                <_ Text="First" LargeImage-uri="res://LargeImages/Task" SmallImage-uri="res://SmallImages/Task"><att.SubItems><_>One</_><_>Two</_><_>Three</_></att.SubItems></_>
+                <_ Text="Second" LargeImage-uri="res://LargeImages/Reminder" SmallImage-uri="res://SmallImages/Reminder"><att.SubItems><_>One</_><_>Two</_><_>Three</_></att.SubItems></_>
+                <_ Text="Third" LargeImage-uri="res://LargeImages/Tip" SmallImage-uri="res://SmallImages/Tip"><att.SubItems><_>One</_><_>Two</_><_>Three</_></att.SubItems></_>
+                <_ Text="Fourth" LargeImage-uri="res://LargeImages/Tip" SmallImage-uri="res://SmallImages/Tip"><att.SubItems><_>One</_><_>Two</_><_>Three</_></att.SubItems></_>
+              </att.Items>
+            </ListView>
+          </Cell>
+        </Table>
+      </TabPage>
+    </Instance>
+  </Instance>
+
+  <Instance name="RefreshBindableListViewTabPageResource">
+    <Instance ref.CodeBehind="false" ref.Class="demo::RefreshBindableListViewTabPage">
+      <ref.Members><![CDATA[
+        var items : observe RefreshItem^[] = {
+          new RefreshItem^("First", "1st")
+          new RefreshItem^("Second", "2nd")
+          new RefreshItem^("Third", "3rd")
+          new RefreshItem^("Fourth", "4th")
+        };
+      ]]></ref.Members>
+      <ref.Ctor><![CDATA[
+        {
+          items[0].LargeImage = (cast (GuiImageData^) self.ResolveResource("res", "LargeImages/Task", true));
+          items[0].SmallImage = (cast (GuiImageData^) self.ResolveResource("res", "SmallImages/Task", true));
+          items[1].LargeImage = (cast (GuiImageData^) self.ResolveResource("res", "LargeImages/Reminder", true));
+          items[1].SmallImage = (cast (GuiImageData^) self.ResolveResource("res", "SmallImages/Reminder", true));
+          items[2].LargeImage = (cast (GuiImageData^) self.ResolveResource("res", "LargeImages/Tip", true));
+          items[2].SmallImage = (cast (GuiImageData^) self.ResolveResource("res", "SmallImages/Tip", true));
+          items[3].LargeImage = (cast (GuiImageData^) self.ResolveResource("res", "LargeImages/Tip", true));
+          items[3].SmallImage = (cast (GuiImageData^) self.ResolveResource("res", "SmallImages/Tip", true));
+        }
+      ]]></ref.Ctor>
+      <TabPage ref.Name="self" Text="BindableListView">
+        <Table CellPadding="5" BorderVisible="false" MinSizeLimitation="LimitToElementAndChildren" AlignmentToParent="left:5 top:5 right:5 bottom:5">
+          <att.Rows>
+            <_>composeType:MinSize</_>
+            <_>composeType:Percentage percentage:1.0</_>
+          </att.Rows>
+          <att.Columns>
+            <_>composeType:MinSize</_>
+            <_>composeType:MinSize</_>
+            <_>composeType:MinSize</_>
+            <_>composeType:MinSize</_>
+            <_>composeType:MinSize</_>
+            <_>composeType:MinSize</_>
+            <_>composeType:Percentage percentage:1.0</_>
+          </att.Columns>
+          <Cell Site="row:0 column:0">
+            <ComboBox ref.Name="comboView" Alt="V" SelectedIndex="5">
+              <att.BoundsComposition-set PreferredMinSize="x:120"/>
+              <att.ListControl>
+                <TextList HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
+                  <att.Items>
+                    <TextItem Text="BigIcon"/>
+                    <TextItem Text="SmallIcon"/>
+                    <TextItem Text="List"/>
+                    <TextItem Text="Tile"/>
+                    <TextItem Text="Information"/>
+                    <TextItem Text="Detail"/>
+                  </att.Items>
+                </TextList>
+              </att.ListControl>
+              <ev.SelectedIndexChanged-eval>
+                <![CDATA[
+                  {
+                    switch (comboView.SelectedIndex)
+                    {
+                      case 0:
+                      {
+                        listView.View = BigIcon;
+                      }
+                      case 1:
+                      {
+                        listView.View = SmallIcon;
+                      }
+                      case 2:
+                      {
+                        listView.View = ListViewView::List;
+                      }
+                      case 3:
+                      {
+                        listView.View = Tile;
+                      }
+                      case 4:
+                      {
+                        listView.View = Information;
+                      }
+                      case 5:
+                      {
+                        listView.View = Detail;
+                      }
+                    }
+                  }
+                ]]>
+              </ev.SelectedIndexChanged-eval>
+            </ComboBox>
+          </Cell>
+          <Cell Site="row:0 column:1">
+            <Button Text="Use Name">
+              <ev.Clicked-eval><![CDATA[
+                {
+                  listView.Columns[0].TextProperty = func(value:object):string
+                  {
+                    return (cast (RefreshItem^) value).Name;
+                  };
+                }
+              ]]></ev.Clicked-eval>
+            </Button>
+          </Cell>
+          <Cell Site="row:0 column:2">
+            <Button Text="Use Title">
+              <ev.Clicked-eval><![CDATA[
+                {
+                  listView.Columns[0].TextProperty = func(value:object):string
+                  {
+                    return (cast (RefreshItem^) value).Title;
+                  };
+                }
+              ]]></ev.Clicked-eval>
+            </Button>
+          </Cell>
+          <Cell Site="row:0 column:3">
+            <Button Text="*Sub1">
+              <ev.Clicked-eval><![CDATA[
+                {
+                  var s = self.items[0].Sub1;
+                  self.items[0].Sub1 = s == "One" ? "SubColumn" : "One";
+                  listView.NotifyItemDataModified(0, 1);
+                }
+              ]]></ev.Clicked-eval>
+            </Button>
+          </Cell>
+          <Cell Site="row:0 column:4">
+            <Button Text="*DataColumn">
+              <ev.Clicked-eval><![CDATA[
+                {
+                  var s = listView.DataColumns[0];
+                  var c = listView.DataColumns.Count;
+                  if (c == 3)
+                  {
+                    if (s == 0)
+                    {
+                      listView.DataColumns[0] = 1;
+                    }
+                    else
+                    {
+                      listView.DataColumns.RemoveAt(2);
+                    }
+                  }
+                  else
+                  {
+                    if (s == 0)
+                    {
+                      listView.DataColumns.Add(2);
+                    }
+                    else
+                    {
+                      listView.DataColumns[0] = 0;
+                    }
+                  }
+                }
+              ]]></ev.Clicked-eval>
+            </Button>
+          </Cell>
+          <Cell Site="row:0 column:5">
+            <Button Text="*Column">
+              <ev.Clicked-eval><![CDATA[
+                {
+                  var s = listView.Columns[1].Text;
+                  var c = listView.Columns.Count;
+                  if (c == 4)
+                  {
+                    if (s == "Category")
+                    {
+                      listView.Columns[1].Text = "What?";
+                      listView.Columns[2].Text = "Wait?";
+                    }
+                    else
+                    {
+                      listView.Columns.RemoveAt(1);
+                    }
+                  }
+                  else
+                  {
+                    if (s == "Size")
+                    {
+                      var column = new ListViewColumn^();
+                      column.Text = "Category";
+                      column.TextProperty = func(value:object):string
+                      {
+                        return (cast (RefreshItem^) value).Sub1;
+                      };
+                      listView.Columns.Insert(1, column);
+                    }
+                    else
+                    {
+                      listView.Columns[1].Text = "Size";
+                    }
+                  }
+                }
+              ]]></ev.Clicked-eval>
+            </Button>
+          </Cell>
+          <Cell Site="row:1 column:0 columnSpan:7">
+            <BindableListView ref.Name="listView" env.ItemType="demo::RefreshItem^">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+              <att.ItemSource-eval>self.items</att.ItemSource-eval>
+              <att.LargeImageProperty>LargeImage</att.LargeImageProperty>
+              <att.SmallImageProperty>SmallImage</att.SmallImageProperty>
+
+              <att.Columns>
+                <_ Text="Id" TextProperty="Name"/>
+                <_ Text="Category" TextProperty="Sub1"/>
+                <_ Text="Size" TextProperty="Sub2"/>
+                <_ Text="File" TextProperty="Sub3"/>
+              </att.Columns>
+
+              <att.DataColumns>
+                <_>0</_>
+                <_>1</_>
+                <_>2</_>
+              </att.DataColumns>
+            </BindableListView>
+          </Cell>
+        </Table>
+      </TabPage>
+    </Instance>
+  </Instance>
+
+  <Instance name="RefreshTreeViewTabPageResource">
+    <Instance ref.CodeBehind="false" ref.Class="demo::RefreshTreeViewTabPage">
+      <TabPage ref.Name="self" Text="TreeView">
+        <Table CellPadding="5" BorderVisible="false" MinSizeLimitation="LimitToElementAndChildren" AlignmentToParent="left:5 top:5 right:5 bottom:5">
+          <att.Rows>
+            <_>composeType:MinSize</_>
+            <_>composeType:Percentage percentage:1.0</_>
+          </att.Rows>
+          <att.Columns>
+            <_>composeType:MinSize</_>
+            <_>composeType:MinSize</_>
+            <_>composeType:Percentage percentage:1.0</_>
+          </att.Columns>
+          <Cell Site="row:0 column:0">
+            <Button Text="*First">
+              <ev.Clicked-eval><![CDATA[
+                {
+                  var node = treeView.Nodes.RootNode.GetChild(0);
+                  var data = treeView.Nodes.GetTreeViewData(cast * node);
+                  data.text = data.text == "First" ? "One" : "First";
+                  treeView.Nodes.UpdateTreeViewData(cast * node);
+                }
+              ]]></ev.Clicked-eval>
+            </Button>
+          </Cell>
+          <Cell Site="row:0 column:1">
+            <Button Text="*First/Second">
+              <ev.Clicked-eval><![CDATA[
+                {
+                  var node = treeView.Nodes.RootNode.GetChild(0).GetChild(1);
+                  var data = treeView.Nodes.GetTreeViewData(cast * node);
+                  data.text = data.text == "Second (1)" ? "Two (1)" : "Second (1)";
+                  treeView.Nodes.UpdateTreeViewData(cast * node);
+                }
+              ]]></ev.Clicked-eval>
+            </Button>
+          </Cell>
+          <Cell Site="row:1 column:0 columnSpan:3">
+            <TreeView ref.Name="treeView">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+              <att.Nodes>
+                <TreeNode Text="First" Image-uri="res://SmallImages/Task">
+                  <TreeNode Text="First (1)" Image-uri="res://SmallImages/Task"/>
+                  <TreeNode Text="Second (1)" Image-uri="res://SmallImages/Reminder"/>
+                  <TreeNode Text="Third (1)" Image-uri="res://SmallImages/Tip"/>
+                </TreeNode>
+                <TreeNode Text="Second" Image-uri="res://SmallImages/Reminder">
+                  <TreeNode Text="First (2)" Image-uri="res://SmallImages/Task"/>
+                  <TreeNode Text="Second (2)" Image-uri="res://SmallImages/Reminder"/>
+                  <TreeNode Text="Third (2)" Image-uri="res://SmallImages/Tip"/>
+                </TreeNode>
+                <TreeNode Text="Third" Image-uri="res://SmallImages/Tip"/>
+                <TreeNode Text="Fourth" Image-uri="res://SmallImages/Tip"/>
+              </att.Nodes>
+            </TreeView>
+          </Cell>
+        </Table>
+      </TabPage>
+    </Instance>
+  </Instance>
+
+  <Instance name="RefreshBindableTreeViewTabPageResource">
+    <Instance ref.CodeBehind="false" ref.Class="demo::RefreshBindableTreeViewTabPage">
+      <ref.Members><![CDATA[
+        var rootItem : RefreshItem^ = new RefreshItem^("", "", {
+          new RefreshItem^("First", "1st", {
+            new RefreshItem^("First (1)", "1st (1)")
+            new RefreshItem^("Second (1)", "2nd (1)")
+            new RefreshItem^("Third (1)", "3rd (1)")
+          })
+          new RefreshItem^("Second", "2nd", {
+            new RefreshItem^("First (2)", "1st (2)")
+            new RefreshItem^("Second (2)", "2nd (2)")
+            new RefreshItem^("Third (2)", "3rd (2)")
+          })
+          new RefreshItem^("Third", "3rd")
+          new RefreshItem^("Fourth", "4th")
+        });
+      ]]></ref.Members>
+      <ref.Ctor><![CDATA[
+        {
+          rootItem.Children[0].SmallImage = (cast (GuiImageData^) self.ResolveResource("res", "SmallImages/Task", true));
+          rootItem.Children[1].SmallImage = (cast (GuiImageData^) self.ResolveResource("res", "SmallImages/Reminder", true));
+          rootItem.Children[2].SmallImage = (cast (GuiImageData^) self.ResolveResource("res", "SmallImages/Tip", true));
+          rootItem.Children[3].SmallImage = (cast (GuiImageData^) self.ResolveResource("res", "SmallImages/Tip", true));
+
+          rootItem.Children[0].Children[0].SmallImage = (cast (GuiImageData^) self.ResolveResource("res", "SmallImages/Task", true));
+          rootItem.Children[0].Children[1].SmallImage = (cast (GuiImageData^) self.ResolveResource("res", "SmallImages/Reminder", true));
+          rootItem.Children[0].Children[2].SmallImage = (cast (GuiImageData^) self.ResolveResource("res", "SmallImages/Tip", true));
+
+          rootItem.Children[1].Children[0].SmallImage = (cast (GuiImageData^) self.ResolveResource("res", "SmallImages/Task", true));
+          rootItem.Children[1].Children[1].SmallImage = (cast (GuiImageData^) self.ResolveResource("res", "SmallImages/Reminder", true));
+          rootItem.Children[1].Children[2].SmallImage = (cast (GuiImageData^) self.ResolveResource("res", "SmallImages/Tip", true));
+        }
+      ]]></ref.Ctor>
+      <TabPage ref.Name="self" Text="BindableTreeView">
+        <Table CellPadding="5" BorderVisible="false" MinSizeLimitation="LimitToElementAndChildren" AlignmentToParent="left:5 top:5 right:5 bottom:5">
+          <att.Rows>
+            <_>composeType:MinSize</_>
+            <_>composeType:Percentage percentage:1.0</_>
+          </att.Rows>
+          <att.Columns>
+            <_>composeType:MinSize</_>
+            <_>composeType:MinSize</_>
+            <_>composeType:Percentage percentage:1.0</_>
+          </att.Columns>
+          <Cell Site="row:0 column:0">
+            <Button Text="Use Name">
+              <ev.Clicked-eval><![CDATA[
+                {
+                  treeView.TextProperty = func(value:object):string
+                  {
+                    return (cast (RefreshItem^) value).Name;
+                  };
+                }
+              ]]></ev.Clicked-eval>
+            </Button>
+          </Cell>
+          <Cell Site="row:0 column:1">
+            <Button Text="Use Title">
+              <ev.Clicked-eval><![CDATA[
+                {
+                  treeView.TextProperty = func(value:object):string
+                  {
+                    return (cast (RefreshItem^) value).Title;
+                  };
+                }
+              ]]></ev.Clicked-eval>
+            </Button>
+          </Cell>
+          <Cell Site="row:1 column:0 columnSpan:3">
+            <BindableTreeView ref.Name="treeView" env.ItemType="demo::RefreshItem^">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+              <att.ItemSource-eval>self.rootItem</att.ItemSource-eval>
+              <att.TextProperty>Name</att.TextProperty>
+              <att.ImageProperty>SmallImage</att.ImageProperty>
+              <att.ChildrenProperty>Children</att.ChildrenProperty>
+            </BindableTreeView>
+          </Cell>
+        </Table>
+      </TabPage>
+    </Instance>
+  </Instance>
+
+  <Instance name="RefreshBindableDataGridTabPageResource">
+    <Instance ref.CodeBehind="false" ref.Class="demo::RefreshBindableDataGridTabPage" xmlns:demo="demo::*">
+      <ref.Members><![CDATA[
+        var items : observe RefreshItem^[] = {
+          new RefreshItem^("First", "1st")
+          new RefreshItem^("Second", "2nd")
+          new RefreshItem^("Third", "3rd")
+          new RefreshItem^("Fourth", "4th")
+        };
+      ]]></ref.Members>
+      <ref.Ctor><![CDATA[
+        {
+          items[0].LargeImage = (cast (GuiImageData^) self.ResolveResource("res", "LargeImages/Task", true));
+          items[0].SmallImage = (cast (GuiImageData^) self.ResolveResource("res", "SmallImages/Task", true));
+          items[1].LargeImage = (cast (GuiImageData^) self.ResolveResource("res", "LargeImages/Reminder", true));
+          items[1].SmallImage = (cast (GuiImageData^) self.ResolveResource("res", "SmallImages/Reminder", true));
+          items[2].LargeImage = (cast (GuiImageData^) self.ResolveResource("res", "LargeImages/Tip", true));
+          items[2].SmallImage = (cast (GuiImageData^) self.ResolveResource("res", "SmallImages/Tip", true));
+          items[3].LargeImage = (cast (GuiImageData^) self.ResolveResource("res", "LargeImages/Tip", true));
+          items[3].SmallImage = (cast (GuiImageData^) self.ResolveResource("res", "SmallImages/Tip", true));
+        }
+      ]]></ref.Ctor>
+      <TabPage ref.Name="self" Text="BindableDataGrid">
+        <Table CellPadding="5" BorderVisible="false" MinSizeLimitation="LimitToElementAndChildren" AlignmentToParent="left:5 top:5 right:5 bottom:5">
+          <att.Rows>
+            <_>composeType:MinSize</_>
+            <_>composeType:Percentage percentage:1.0</_>
+          </att.Rows>
+          <att.Columns>
+            <_>composeType:MinSize</_>
+            <_>composeType:MinSize</_>
+            <_>composeType:MinSize</_>
+            <_>composeType:MinSize</_>
+            <_>composeType:MinSize</_>
+            <_>composeType:MinSize</_>
+            <_>composeType:Percentage percentage:1.0</_>
+          </att.Columns>
+          <Cell Site="row:0 column:0">
+            <ComboBox ref.Name="comboView" Alt="V" SelectedIndex="6">
+              <att.BoundsComposition-set PreferredMinSize="x:120"/>
+              <att.ListControl>
+                <TextList HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
+                  <att.Items>
+                    <TextItem Text="BigIcon"/>
+                    <TextItem Text="SmallIcon"/>
+                    <TextItem Text="List"/>
+                    <TextItem Text="Tile"/>
+                    <TextItem Text="Information"/>
+                    <TextItem Text="Detail"/>
+                    <TextItem Text="DataGrid"/>
+                  </att.Items>
+                </TextList>
+              </att.ListControl>
+              <ev.SelectedIndexChanged-eval>
+                <![CDATA[
+                  {
+                    switch (comboView.SelectedIndex)
+                    {
+                      case 0:
+                      {
+                        dataGrid.View = BigIcon;
+                      }
+                      case 1:
+                      {
+                        dataGrid.View = SmallIcon;
+                      }
+                      case 2:
+                      {
+                        dataGrid.View = ListViewView::List;
+                      }
+                      case 3:
+                      {
+                        dataGrid.View = Tile;
+                      }
+                      case 4:
+                      {
+                        dataGrid.View = Information;
+                      }
+                      case 5:
+                      {
+                        dataGrid.View = Detail;
+                      }
+                      case 6:
+                      {
+                        dataGrid.SetViewToDefault();
+                      }
+                    }
+                  }
+                ]]>
+              </ev.SelectedIndexChanged-eval>
+            </ComboBox>
+          </Cell>
+          <Cell Site="row:0 column:1">
+            <Button Text="Use Name">
+              <ev.Clicked-eval><![CDATA[
+                {
+                  dataGrid.Columns[0].TextProperty = func(value:object):string
+                  {
+                    return (cast (RefreshItem^) value).Name;
+                  };
+                }
+              ]]></ev.Clicked-eval>
+            </Button>
+          </Cell>
+          <Cell Site="row:0 column:2">
+            <Button Text="Use Title">
+              <ev.Clicked-eval><![CDATA[
+                {
+                  dataGrid.Columns[0].TextProperty = func(value:object):string
+                  {
+                    return (cast (RefreshItem^) value).Title;
+                  };
+                }
+              ]]></ev.Clicked-eval>
+            </Button>
+          </Cell>
+          <Cell Site="row:0 column:3">
+            <Button Text="*Sub1">
+              <ev.Clicked-eval><![CDATA[
+                {
+                  var s = self.items[0].Sub1;
+                  self.items[0].Sub1 = s == "One" ? "SubColumn" : "One";
+                  dataGrid.NotifyItemDataModified(0, 1);
+                }
+              ]]></ev.Clicked-eval>
+            </Button>
+          </Cell>
+          <Cell Site="row:0 column:4">
+            <Button Text="*DataColumn">
+              <ev.Clicked-eval><![CDATA[
+                {
+                  var s = dataGrid.DataColumns[0];
+                  var c = dataGrid.DataColumns.Count;
+                  if (c == 3)
+                  {
+                    if (s == 0)
+                    {
+                      dataGrid.DataColumns[0] = 1;
+                    }
+                    else
+                    {
+                      dataGrid.DataColumns.RemoveAt(2);
+                    }
+                  }
+                  else
+                  {
+                    if (s == 0)
+                    {
+                      dataGrid.DataColumns.Add(2);
+                    }
+                    else
+                    {
+                      dataGrid.DataColumns[0] = 0;
+                    }
+                  }
+                }
+              ]]></ev.Clicked-eval>
+            </Button>
+          </Cell>
+          <Cell Site="row:0 column:5">
+            <Button Text="*Column">
+              <ev.Clicked-eval><![CDATA[
+                {
+                  var s = dataGrid.Columns[1].Text;
+                  var c = dataGrid.Columns.Count;
+                  if (c == 4)
+                  {
+                    if (s == "Category")
+                    {
+                      dataGrid.Columns[1].Text = "What?";
+                      dataGrid.Columns[2].Text = "Wait?";
+                    }
+                    else
+                    {
+                      dataGrid.Columns.RemoveAt(1);
+                    }
+                  }
+                  else
+                  {
+                    if (s == "Size")
+                    {
+                      var column = new DataColumn^();
+                      column.Text = "Category";
+                      column.TextProperty = func(value:object):string
+                      {
+                        return (cast (RefreshItem^) value).Sub1;
+                      };
+                      column.ValueProperty = func(value:object, field:object, update:bool):object
+                      {
+                        var item = cast (RefreshItem^) value;
+                        if (update)
+                        {
+                          item.Sub1 = cast * field;
+                          return null;
+                        }
+                        else
+                        {
+                          return item.Sub1;
+                        }
+                      };
+                      dataGrid.Columns.Insert(1, column);
+                    }
+                    else
+                    {
+                      dataGrid.Columns[1].Text = "Size";
+                    }
+                  }
+                }
+              ]]></ev.Clicked-eval>
+            </Button>
+          </Cell>
+          <Cell Site="row:1 column:0 columnSpan:7">
+            <BindableDataGrid ref.Name="dataGrid" env.ItemType="demo::RefreshItem^">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+              <att.ItemSource-eval>self.items</att.ItemSource-eval>
+              <att.LargeImageProperty>LargeImage</att.LargeImageProperty>
+              <att.SmallImageProperty>SmallImage</att.SmallImageProperty>
+
+              <att.Columns>
+                <_ Text="Id"        TextProperty="Name" ValueProperty="Name"/>
+                <_ Text="Category"  TextProperty="Sub1" ValueProperty="Sub1"/>
+                <_ Text="Size"      TextProperty="Sub2" ValueProperty="Sub2"/>
+                <_ Text="File"      TextProperty="Sub3" ValueProperty="Sub3">
+                  <att.VisualizerFactory>HyperlinkVisualizerTemplate;FocusRectangleVisualizerTemplate;CellBorderVisualizerTemplate</att.VisualizerFactory>
+                  <att.EditorFactory>demo:TextEditor</att.EditorFactory>
+                </_>
+              </att.Columns>
+
+              <att.DataColumns>
+                <_>0</_>
+                <_>1</_>
+                <_>2</_>
+              </att.DataColumns>
+            </BindableDataGrid>
+          </Cell>
+        </Table>
+      </TabPage>
+    </Instance>
+  </Instance>
+
+  <Instance name="MainWindowResource">
+    <Instance ref.CodeBehind="false" ref.Class="demo::TestWindow" xmlns:demo="demo::*">
+      <Window ref.Name="self" Text="MainWindow" ClientSize="x:640 y:480">
+        <Tab>
+          <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+          <att.Pages>
+            <demo:RefreshTextListTabPage/>
+            <demo:RefreshBindableTextListTabPage/>
+            <demo:RefreshListViewTabPage/>
+            <demo:RefreshBindableListViewTabPage/>
+            <demo:RefreshTreeViewTabPage/>
+            <demo:RefreshBindableTreeViewTabPage/>
+            <demo:RefreshBindableDataGridTabPage/>
+          </att.Pages>
+        </Tab>
+      </Window>
+    </Instance>
+  </Instance>
+</Folder>

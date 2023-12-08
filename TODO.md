@@ -10,17 +10,32 @@
   - `FakeDialogServiceBase::ShowModalDialogAndDelete` place the window in the center of `owner` instead of the screen.
   - Specify multiple extensions in one filter, exactly like Win32 API.
   - Extensions not applied before checking file existance.
+- Expanding collapsing tree nodes cause the whole list to rebuild, which glitch during multiple passes of layout.
+  - Only affected items need to rebuild.
+- Bindable list control (optional)
+  - When a property referenced by `<att.XXXProperty>` is updated, the list item is not refreshed.
+    - Need to find a way to listen to the event.
 
 ## Progressing (before release)
 
 Turn `GuiListControl::IItemArranger` implementations into compositions.
   - New `GuiListControl::IItemArranger` that can accept a `GuiRepeatCompositionBase`.
+    - Test `GetAdoptedSize`.
   - List control (or scroll view) should layout content during layouting composition, not driven by event.
+    - Ribbon gallary (not list) cannot scroll or display the selected item.
+    - In `BindableTreeView` tabs, add buttons that notify the list control when item data is changed.
+      - Consider add a reverse property binding so that item knows its `INodeProvider`
 - MISC
   - Check everywhere that uses `CachedBoundsChanged.Attach`.
   - Enlarging window slower than shrinking.
 - Examine all demo projects.
 - `FlowAlignment::Right` in demo.
+- Document
+  - new virtual repeat compositions.
+  - `GuiBindableTextList::NotifyItemDataModified`
+  - `GuiBindableListView::NotifyItemDataModified`
+  - Calling `INodeProvider::NotifyDataModified` in `GuiBindableTreeView`
+  - Check `IItemArranger` and `IItemArrangerCallback` document (if exists)
 - Make document v2 without auto generated content.
 
 ## Progressing

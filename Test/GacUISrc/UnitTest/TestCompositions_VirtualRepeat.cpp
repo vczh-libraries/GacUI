@@ -896,18 +896,21 @@ Common
 			TEST_CASE(L"ItemWidth")
 			{
 				root->SetItemWidth(80);
+				root->ResetLayout(false);
 				testHorizontal(
 					0, -100, -200,
 					0, 100, 200,
 					15, 80, 0);
 			
 				root->SetItemWidth(-1);
+				root->ResetLayout(false);
 				testDown();
 			});
 
 			TEST_CASE(L"ItemYOffset")
 			{
 				root->SetItemYOffset(30);
+				root->ResetLayout(false);
 				root->SetPreferredMinSize({ 100,130 });
 				testHorizontal(
 					30, -70, -170,
@@ -915,6 +918,7 @@ Common
 					15, 0, 330);
 
 				root->SetItemYOffset(0);
+				root->ResetLayout(false);
 				root->SetPreferredMinSize({ 100,100 });
 				testDown();
 			});

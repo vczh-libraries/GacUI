@@ -43,13 +43,15 @@ NodeItemProvider
 					/// <param name="start">The index of the first sub item.</param>
 					/// <param name="count">The number of sub items to be modified.</param>
 					/// <param name="newCount">The new number of modified sub items.</param>
-					virtual void					OnBeforeItemModified(INodeProvider* parentNode, vint start, vint count, vint newCount)=0;
+					/// <param name="itemReferenceUpdated">True when items are replaced, false when only content in items are updated.</param>
+					virtual void					OnBeforeItemModified(INodeProvider* parentNode, vint start, vint count, vint newCount, bool itemReferenceUpdated)=0;
 					/// <summary>Called after sub items of a node are modified.</summary>
 					/// <param name="parentNode">The node containing modified sub items.</param>
 					/// <param name="start">The index of the first sub item.</param>
 					/// <param name="count">The number of sub items to be modified.</param>
 					/// <param name="newCount">The new number of modified sub items.</param>
-					virtual void					OnAfterItemModified(INodeProvider* parentNode, vint start, vint count, vint newCount)=0;
+					/// <param name="itemReferenceUpdated">True when items are replaced, false when only content in items are updated.</param>
+					virtual void					OnAfterItemModified(INodeProvider* parentNode, vint start, vint count, vint newCount, bool itemReferenceUpdated)=0;
 					/// <summary>Called when a node is expanded.</summary>
 					/// <param name="node">The node.</param>
 					virtual void					OnItemExpanded(INodeProvider* node)=0;
@@ -75,6 +77,8 @@ NodeItemProvider
 					/// <summary>Calculate the number of total visible nodes of this node. The number of total visible nodes includes the node itself, and all total visible nodes of all visible sub nodes. If this node is collapsed, this number will be 1.</summary>
 					/// <returns>The number of total visible nodes.</returns>
 					virtual vint					CalculateTotalVisibleNodes()=0;
+					/// <summary>Notify that the state in the binded data object is modified.</summary>
+					virtual void					NotifyDataModified()=0;
 
 					/// <summary>Get the number of all sub nodes.</summary>
 					/// <returns>The number of all sub nodes.</returns>
@@ -163,8 +167,8 @@ NodeItemProvider
 
 					Ptr<INodeProvider>				GetNodeByOffset(Ptr<INodeProvider> provider, vint offset);
 					void							OnAttached(INodeRootProvider* provider)override;
-					void							OnBeforeItemModified(INodeProvider* parentNode, vint start, vint count, vint newCount)override;
-					void							OnAfterItemModified(INodeProvider* parentNode, vint start, vint count, vint newCount)override;
+					void							OnBeforeItemModified(INodeProvider* parentNode, vint start, vint count, vint newCount, bool itemReferenceUpdated)override;
+					void							OnAfterItemModified(INodeProvider* parentNode, vint start, vint count, vint newCount, bool itemReferenceUpdated)override;
 					void							OnItemExpanded(INodeProvider* node)override;
 					void							OnItemCollapsed(INodeProvider* node)override;
 					vint							CalculateNodeVisibilityIndexInternal(INodeProvider* node);
@@ -245,8 +249,6 @@ MemoryNodeProvider
 					/// <summary>Set the data object.</summary>
 					/// <param name="value">The data object.</param>
 					void							SetData(const Ptr<DescriptableObject>& value);
-					/// <summary>Notify that the state in the binded data object is modified.</summary>
-					void							NotifyDataModified();
 					/// <summary>Get all sub nodes.</summary>
 					/// <returns>All sub nodes.</returns>
 					NodeCollection&					Children();
@@ -254,6 +256,7 @@ MemoryNodeProvider
 					bool							GetExpanding()override;
 					void							SetExpanding(bool value)override;
 					vint							CalculateTotalVisibleNodes()override;
+					void							NotifyDataModified()override;
 
 					vint							GetChildCount()override;
 					Ptr<INodeProvider>				GetParent()override;
@@ -266,8 +269,8 @@ MemoryNodeProvider
 					collections::List<INodeProviderCallback*>			callbacks;
 				protected:
 					void							OnAttached(INodeRootProvider* provider)override;
-					void							OnBeforeItemModified(INodeProvider* parentNode, vint start, vint count, vint newCount)override;
-					void							OnAfterItemModified(INodeProvider* parentNode, vint start, vint count, vint newCount)override;
+					void							OnBeforeItemModified(INodeProvider* parentNode, vint start, vint count, vint newCount, bool itemReferenceUpdated)override;
+					void							OnAfterItemModified(INodeProvider* parentNode, vint start, vint count, vint newCount, bool itemReferenceUpdated)override;
 					void							OnItemExpanded(INodeProvider* node)override;
 					void							OnItemCollapsed(INodeProvider* node)override;
 				public:
@@ -313,8 +316,8 @@ GuiVirtualTreeListControl
 				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(TreeViewTemplate, GuiSelectableListControl)
 			protected:
 				void								OnAttached(tree::INodeRootProvider* provider)override;
-				void								OnBeforeItemModified(tree::INodeProvider* parentNode, vint start, vint count, vint newCount)override;
-				void								OnAfterItemModified(tree::INodeProvider* parentNode, vint start, vint count, vint newCount)override;
+				void								OnBeforeItemModified(tree::INodeProvider* parentNode, vint start, vint count, vint newCount, bool itemReferenceUpdated)override;
+				void								OnAfterItemModified(tree::INodeProvider* parentNode, vint start, vint count, vint newCount, bool itemReferenceUpdated)override;
 				void								OnItemExpanded(tree::INodeProvider* node)override;
 				void								OnItemCollapsed(tree::INodeProvider* node)override;
 
@@ -453,10 +456,10 @@ GuiVirtualTreeView
 				templates::GuiTreeItemTemplate*							GetStyleFromNode(tree::INodeProvider* node);
 				void													SetStyleExpanding(tree::INodeProvider* node, bool expanding);
 				void													SetStyleExpandable(tree::INodeProvider* node, bool expandable);
-				void													OnAfterItemModified(tree::INodeProvider* parentNode, vint start, vint count, vint newCount)override;
+				void													OnAfterItemModified(tree::INodeProvider* parentNode, vint start, vint count, vint newCount, bool itemReferenceUpdated)override;
 				void													OnItemExpanded(tree::INodeProvider* node)override;
 				void													OnItemCollapsed(tree::INodeProvider* node)override;
-				void													OnStyleInstalled(vint itemIndex, ItemStyle* style)override;
+				void													OnStyleInstalled(vint itemIndex, ItemStyle* style, bool refreshPropertiesOnly)override;
 			public:
 				/// <summary>Create a tree view control in virtual mode.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
@@ -504,6 +507,7 @@ DefaultTreeItemTemplate
 					elements::GuiSolidLabelElement*			textElement = nullptr;
 
 					void									OnInitialize()override;
+					void									OnRefresh()override;
 					void									OnFontChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 					void									OnTextChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 					void									OnTextColorChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);

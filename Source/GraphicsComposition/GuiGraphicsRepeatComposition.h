@@ -175,6 +175,7 @@ GuiVirtualRepeatCompositionBase
 				void												Layout_UpdateViewBounds(Rect value, bool forceUpdateTotalSize);
 				void												Layout_UpdateViewLocation(Point value);
 				Rect												Layout_CalculateBounds(Size parentSize) override;
+				void												Layout_ResetLayout();
 
 				void												Layout_SetStyleAlignmentToParent(ItemStyleRecord style, Margin value);
 				Size												Layout_GetStylePreferredSize(ItemStyleRecord style);
@@ -186,6 +187,8 @@ GuiVirtualRepeatCompositionBase
 				void												OnInstallItems() override;
 				void												OnUpdateContext() override;
 				virtual void										OnResetViewLocation();
+				virtual ItemStyleRecord								CreateStyleInternal(vint index);
+				virtual void										DeleteStyleInternal(ItemStyleRecord style);
 
 				vint												CalculateAdoptedSize(vint expectedSize, vint count, vint itemSize);
 				ItemStyleRecord										CreateStyle(vint index);
@@ -218,7 +221,8 @@ GuiVirtualRepeatCompositionBase
 
 				ItemStyleRecord										GetVisibleStyle(vint itemIndex);
 				vint												GetVisibleIndex(ItemStyleRecord style);
-				void												ReloadVisibleStyles();
+				void												ResetLayout(bool recreateVisibleStyles);
+				void												InvalidateLayout();
 
 				vint												FindItemByRealKeyDirection(vint itemIndex, compositions::KeyDirection key);
 				virtual vint										FindItemByVirtualKeyDirection(vint itemIndex, compositions::KeyDirection key) = 0;

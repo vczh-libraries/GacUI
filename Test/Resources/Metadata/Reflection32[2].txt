@@ -3885,7 +3885,8 @@ class presentation::compositions::GuiVirtualRepeatCompositionBase : presentation
     function GetViewLocation() : presentation::Point;
     function GetVisibleIndex(style : presentation::templates::GuiTemplate*) : system::Int32;
     function GetVisibleStyle(itemIndex : system::Int32) : presentation::templates::GuiTemplate*;
-    function ReloadVisibleStyles() : system::Void;
+    function InvalidateLayout() : system::Void;
+    function ResetLayout(recreateVisibleStyles : system::Boolean) : system::Void;
     function SetAxis(value : presentation::compositions::IGuiAxis^) : system::Void;
     function SetViewLocation(value : presentation::Point) : system::Void;
 
@@ -4101,6 +4102,7 @@ class presentation::controls::GuiBindableDataGrid : presentation::controls::GuiV
     function GetSelectedCellValue() : system::Object;
     function GetSelectedRowValue() : system::Object;
     function GetSmallImageProperty() : system::Function<presentation::GuiImageData^, system::Object>^;
+    function NotifyItemDataModified(start : system::Int32, count : system::Int32) : system::Boolean;
     function SetAdditionalFilter(value : presentation::controls::list::IDataFilter^) : system::Void;
     function SetItemSource(value : system::Enumerable^) : system::Void;
     function SetLargeImageProperty(value : system::Function<presentation::GuiImageData^, system::Object>^) : system::Void;
@@ -4130,6 +4132,7 @@ class presentation::controls::GuiBindableListView : presentation::controls::GuiV
     function GetLargeImageProperty() : system::Function<presentation::GuiImageData^, system::Object>^;
     function GetSelectedItem() : system::Object;
     function GetSmallImageProperty() : system::Function<presentation::GuiImageData^, system::Object>^;
+    function NotifyItemDataModified(start : system::Int32, count : system::Int32) : system::Boolean;
     function SetItemSource(value : system::Enumerable^) : system::Void;
     function SetLargeImageProperty(value : system::Function<presentation::GuiImageData^, system::Object>^) : system::Void;
     function SetSmallImageProperty(value : system::Function<presentation::GuiImageData^, system::Object>^) : system::Void;
@@ -4194,6 +4197,7 @@ class presentation::controls::GuiBindableTextList : presentation::controls::GuiV
     function GetItemSource() : system::Enumerable^;
     function GetSelectedItem() : system::Object;
     function GetTextProperty() : system::Function<system::String, system::Object>^;
+    function NotifyItemDataModified(start : system::Int32, count : system::Int32) : system::Boolean;
     function SetCheckedProperty(value : system::Function<system::Boolean, system::Object, system::Boolean, system::Boolean>^) : system::Void;
     function SetItemSource(value : system::Enumerable^) : system::Void;
     function SetTextProperty(value : system::Function<system::String, system::Object>^) : system::Void;
@@ -4784,7 +4788,7 @@ interface presentation::controls::GuiListControl::IItemArranger : presentation::
     function AttachListControl(value : presentation::controls::GuiListControl*) : system::Void;
     function DetachListControl() : system::Void;
     function EnsureItemVisible(itemIndex : system::Int32) : presentation::controls::GuiListControl::EnsureItemVisibleResult;
-    function FindItem(itemIndex : system::Int32, key : presentation::compositions::KeyDirection) : system::Int32;
+    function FindItemByVirtualKeyDirection(itemIndex : system::Int32, key : presentation::compositions::KeyDirection) : system::Int32;
     function GetAdoptedSize(expectedSize : presentation::Size) : presentation::Size;
     function GetCallback() : presentation::controls::GuiListControl::IItemArrangerCallback*;
     function GetTotalSize() : presentation::Size;
@@ -4800,14 +4804,13 @@ interface presentation::controls::GuiListControl::IItemArranger : presentation::
 }
 
 interface presentation::controls::GuiListControl::IItemArrangerCallback : system::Interface {
+    function CreateItem(itemIndex : system::Int32) : presentation::templates::GuiListItemTemplate*;
     function GetContainerComposition() : presentation::compositions::GuiGraphicsComposition*;
-    function GetStyleBounds(style : presentation::compositions::GuiBoundsComposition*) : presentation::Rect;
-    function GetStylePreferredSize(style : presentation::compositions::GuiBoundsComposition*) : presentation::Size;
+    function GetItem(bounds : presentation::templates::GuiTemplate*) : presentation::templates::GuiListItemTemplate*;
+    function GetItemBounds(style : presentation::templates::GuiListItemTemplate*) : presentation::templates::GuiTemplate*;
+    function OnAdoptedSizeChanged() : system::Void;
     function OnTotalSizeChanged() : system::Void;
     function ReleaseItem(style : presentation::templates::GuiListItemTemplate*) : system::Void;
-    function RequestItem(itemIndex : system::Int32, itemComposition : presentation::compositions::GuiBoundsComposition*) : presentation::templates::GuiListItemTemplate*;
-    function SetStyleAlignmentToParent(style : presentation::compositions::GuiBoundsComposition*, margin : presentation::Margin) : system::Void;
-    function SetStyleBounds(style : presentation::compositions::GuiBoundsComposition*, bounds : presentation::Rect) : system::Void;
     function SetViewLocation(value : presentation::Point) : system::Void;
 
 }
@@ -4830,7 +4833,7 @@ interface presentation::controls::GuiListControl::IItemProvider : system::Interf
 
 interface presentation::controls::GuiListControl::IItemProviderCallback : system::Interface {
     function OnAttached(provider : presentation::controls::GuiListControl::IItemProvider*) : system::Void;
-    function OnItemModified(start : system::Int32, count : system::Int32, newCount : system::Int32) : system::Void;
+    function OnItemModified(start : system::Int32, count : system::Int32, newCount : system::Int32, itemReferenceUpdated : system::Boolean) : system::Void;
 
     @InvokeTemplate:::vl::reflection::description::ValueInterfaceProxy<GuiListControl::IItemProviderCallback>::Create($Arguments)
     @ClosureTemplate:::vl::Func<$Func>(&::vl::reflection::description::ValueInterfaceProxy<GuiListControl::IItemProviderCallback>::Create)
@@ -6066,7 +6069,8 @@ interface presentation::controls::list::ListViewColumnItemArranger::IColumnItemV
 }
 
 class presentation::controls::list::ListViewColumnItemArranger::IColumnItemViewCallback : system::ReferenceType {
-    function OnColumnChanged() : system::Void;
+    function OnColumnChanged(needToRefreshItems : system::Boolean) : system::Void;
+    function OnColumnRebuilt() : system::Void;
 
 }
 
@@ -6143,6 +6147,7 @@ interface presentation::controls::tree::INodeProvider : system::Interface {
     function GetChildCount() : system::Int32;
     function GetExpanding() : system::Boolean;
     function GetParent() : presentation::controls::tree::INodeProvider^;
+    function NotifyDataModified() : system::Void;
     function SetExpanding(value : system::Boolean) : system::Void;
 
     @InvokeTemplate:::vl::reflection::description::ValueInterfaceProxy<INodeProvider>::Create($Arguments)
@@ -6151,9 +6156,9 @@ interface presentation::controls::tree::INodeProvider : system::Interface {
 }
 
 interface presentation::controls::tree::INodeProviderCallback : system::Interface {
-    function OnAfterItemModified(parentNode : presentation::controls::tree::INodeProvider*, start : system::Int32, count : system::Int32, newCount : system::Int32) : system::Void;
+    function OnAfterItemModified(parentNode : presentation::controls::tree::INodeProvider*, start : system::Int32, count : system::Int32, newCount : system::Int32, itemReferenceUpdated : system::Boolean) : system::Void;
     function OnAttached(provider : presentation::controls::tree::INodeRootProvider*) : system::Void;
-    function OnBeforeItemModified(parentNode : presentation::controls::tree::INodeProvider*, start : system::Int32, count : system::Int32, newCount : system::Int32) : system::Void;
+    function OnBeforeItemModified(parentNode : presentation::controls::tree::INodeProvider*, start : system::Int32, count : system::Int32, newCount : system::Int32, itemReferenceUpdated : system::Boolean) : system::Void;
     function OnItemCollapsed(node : presentation::controls::tree::INodeProvider*) : system::Void;
     function OnItemExpanded(node : presentation::controls::tree::INodeProvider*) : system::Void;
 
@@ -6195,7 +6200,6 @@ class presentation::controls::tree::MemoryNodeProvider : presentation::controls:
     @ClosureTemplate:::vl::Func<$Func>($This, &$Type::Children)
     function GetChildren() : system::List<presentation::controls::tree::MemoryNodeProvider^>^;
     function GetData() : system::ReferenceType^;
-    function NotifyDataModified() : system::Void;
     function SetData(value : system::ReferenceType^) : system::Void;
 
     constructor () : presentation::controls::tree::MemoryNodeProvider^;
