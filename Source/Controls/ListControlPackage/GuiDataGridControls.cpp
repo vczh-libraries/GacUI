@@ -161,6 +161,7 @@ DefaultDataGridItemTemplate
 						composition->GetParent()->RemoveChild(composition);
 					}
 					SafeDeleteComposition(composition);
+					dataVisualizers[column] = nullptr;
 				}
 
 				void DefaultDataGridItemTemplate::ResetDataTable(vint columnCount)
@@ -184,6 +185,11 @@ DefaultDataGridItemTemplate
 						DeleteAllVisualizers();
 						dataVisualizerFactories.Resize(columnCount);
 						dataVisualizers.Resize(columnCount);
+
+						for (auto cell : dataCells)
+						{
+							SafeDeleteComposition(cell);
+						}
 						dataCells.Resize(columnCount);
 						
 						for (vint i = 0; i < columnCount; i++)
