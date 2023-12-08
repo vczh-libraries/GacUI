@@ -25,7 +25,6 @@ Turn `GuiListControl::IItemArranger` implementations into compositions.
     - Ribbon gallary (not list) cannot scroll or display the selected item.
     - In `BindableTreeView` tabs, add buttons that notify the list control when item data is changed.
       - Consider add a reverse property binding so that item knows its `INodeProvider`
-    - Update reflection and add the `Playground` test to `FullControlTest`.
 - MISC
   - Check everywhere that uses `CachedBoundsChanged.Attach`.
   - Enlarging window slower than shrinking.
