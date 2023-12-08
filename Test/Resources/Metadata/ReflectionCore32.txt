@@ -2021,6 +2021,7 @@ class presentation::controls::GuiBindableDataGrid : presentation::controls::GuiV
     function GetSelectedCellValue() : system::Object;
     function GetSelectedRowValue() : system::Object;
     function GetSmallImageProperty() : system::Function<presentation::GuiImageData^, system::Object>^;
+    function NotifyItemDataModified(start : system::Int32, count : system::Int32) : system::Boolean;
     function SetAdditionalFilter(value : presentation::controls::list::IDataFilter^) : system::Void;
     function SetItemSource(value : system::Enumerable^) : system::Void;
     function SetLargeImageProperty(value : system::Function<presentation::GuiImageData^, system::Object>^) : system::Void;
