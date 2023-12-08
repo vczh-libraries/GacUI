@@ -250,27 +250,27 @@
                   {
                     switch (comboView.SelectedIndex)
                     {
-                    case 0:
+                      case 0:
                       {
                         listView.View = BigIcon;
                       }
-                    case 1:
+                      case 1:
                       {
                         listView.View = SmallIcon;
                       }
-                    case 2:
+                      case 2:
                       {
                         listView.View = ListViewView::List;
                       }
-                    case 3:
+                      case 3:
                       {
                         listView.View = Tile;
                       }
-                    case 4:
+                      case 4:
                       {
                         listView.View = Information;
                       }
-                    case 5:
+                      case 5:
                       {
                         listView.View = Detail;
                       }
@@ -454,27 +454,27 @@
                   {
                     switch (comboView.SelectedIndex)
                     {
-                    case 0:
+                      case 0:
                       {
                         listView.View = BigIcon;
                       }
-                    case 1:
+                      case 1:
                       {
                         listView.View = SmallIcon;
                       }
-                    case 2:
+                      case 2:
                       {
                         listView.View = ListViewView::List;
                       }
-                    case 3:
+                      case 3:
                       {
                         listView.View = Tile;
                       }
-                    case 4:
+                      case 4:
                       {
                         listView.View = Information;
                       }
-                    case 5:
+                      case 5:
                       {
                         listView.View = Detail;
                       }
@@ -576,9 +576,9 @@
                       var column = new ListViewColumn^();
                       column.Text = "Category";
                       column.TextProperty = func(value:object):string
-                        {
-                          return (cast (RefreshItem^) value).Sub1;
-                        };
+                      {
+                        return (cast (RefreshItem^) value).Sub1;
+                      };
                       listView.Columns.Insert(1, column);
                     }
                     else
@@ -828,31 +828,31 @@
                   {
                     switch (comboView.SelectedIndex)
                     {
-                    case 0:
+                      case 0:
                       {
                         dataGrid.View = BigIcon;
                       }
-                    case 1:
+                      case 1:
                       {
                         dataGrid.View = SmallIcon;
                       }
-                    case 2:
+                      case 2:
                       {
                         dataGrid.View = ListViewView::List;
                       }
-                    case 3:
+                      case 3:
                       {
                         dataGrid.View = Tile;
                       }
-                    case 4:
+                      case 4:
                       {
                         dataGrid.View = Information;
                       }
-                    case 5:
+                      case 5:
                       {
                         dataGrid.View = Detail;
                       }
-                    case 6:
+                      case 6:
                       {
                         dataGrid.SetViewToDefault();
                       }
@@ -951,12 +951,25 @@
                   {
                     if (s == "Size")
                     {
-                      var column = new ListViewColumn^();
+                      var column = new DataColumn^();
                       column.Text = "Category";
                       column.TextProperty = func(value:object):string
+                      {
+                        return (cast (RefreshItem^) value).Sub1;
+                      };
+                      column.ValueProperty = func(value:object, field:object, update:bool):object
+                      {
+                        var item = cast (RefreshItem^) value;
+                        if (update)
                         {
-                          return (cast (RefreshItem^) value).Sub1;
-                        };
+                          item.Sub1 = cast * field;
+                          return null;
+                        }
+                        else
+                        {
+                          return item.Sub1;
+                        }
+                      };
                       dataGrid.Columns.Insert(1, column);
                     }
                     else
