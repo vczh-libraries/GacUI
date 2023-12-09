@@ -22,7 +22,6 @@ Turn `GuiListControl::IItemArranger` implementations into compositions.
   - New `GuiListControl::IItemArranger` that can accept a `GuiRepeatCompositionBase`.
     - Test `GetAdoptedSize`.
   - List control (or scroll view) should layout content during layouting composition, not driven by event.
-    - Ribbon gallary (not list) cannot scroll or display the selected item.
     - In `BindableTreeView` tabs, add buttons that notify the list control when item data is changed.
       - Consider add a reverse property binding so that item knows its `INodeProvider`
 - MISC

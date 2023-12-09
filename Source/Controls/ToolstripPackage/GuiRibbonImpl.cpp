@@ -38,7 +38,7 @@ GalleryItemArrangerRepeatComposition
 						}
 					}
 
-					if (bounds.Right() + pim_itemWidth >= viewBounds.Right())
+					if (bounds.Right() + pim_itemWidth > viewBounds.Right())
 					{
 						return VirtualRepeatPlaceItemResult::HitLastItem;
 					}
@@ -138,15 +138,17 @@ GalleryItemArrangerRepeatComposition
 					}
 
 					vint groupCount = viewBounds.Width() / itemWidth;
+					if (groupCount == 0) groupCount = 1;
+
 					if (itemIndex < firstIndex)
 					{
 						firstIndex = itemIndex;
-						InvokeOnCompositionStateChanged();
+						InvalidateLayout();
 					}
 					else if (itemIndex >= firstIndex + groupCount)
 					{
 						firstIndex = itemIndex - groupCount + 1;
-						InvokeOnCompositionStateChanged();
+						InvalidateLayout();
 					}
 					return VirtualRepeatEnsureItemVisibleResult::NotMoved;
 				}
@@ -160,6 +162,8 @@ GalleryItemArrangerRepeatComposition
 				{
 					vint count = itemSource->GetCount();
 					vint groupCount = viewBounds.Width() / itemWidth;
+					if (groupCount == 0) groupCount = 1;
+
 					if (count > groupCount)
 					{
 						firstIndex -= groupCount;
@@ -167,7 +171,7 @@ GalleryItemArrangerRepeatComposition
 						{
 							firstIndex = 0;
 						}
-						InvokeOnCompositionStateChanged();
+						InvalidateLayout();
 					}
 				}
 
@@ -175,6 +179,8 @@ GalleryItemArrangerRepeatComposition
 				{
 					vint count = itemSource->GetCount();
 					vint groupCount = viewBounds.Width() / itemWidth;
+					if (groupCount == 0) groupCount = 1;
+
 					if (count > groupCount)
 					{
 						firstIndex += groupCount;
@@ -182,7 +188,7 @@ GalleryItemArrangerRepeatComposition
 						{
 							firstIndex = count - groupCount;
 						}
-						InvokeOnCompositionStateChanged();
+						InvalidateLayout();
 					}
 				}
 
@@ -192,6 +198,8 @@ GalleryItemArrangerRepeatComposition
 
 					vint count = itemSource->GetCount();
 					vint groupCount = viewBounds.Width() / pim_itemWidth;
+					if (groupCount == 0) groupCount = 1;
+
 					owner->SetScrollUpEnabled(firstIndex > 0);
 					owner->SetScrollDownEnabled(firstIndex + groupCount < count);
 					if (owner->layout->GetItemWidth() != pim_itemWidth)
