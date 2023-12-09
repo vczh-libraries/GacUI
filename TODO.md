@@ -35,7 +35,12 @@ Turn `GuiListControl::IItemArranger` implementations into compositions.
   - `GuiBindableListView::NotifyItemDataModified`
   - Calling `INodeProvider::NotifyDataModified` in `GuiBindableTreeView`
   - Check `IItemArranger` and `IItemArrangerCallback` document (if exists)
-- Make document v2 without auto generated content.
+- DarkSkin
+  - Need to hardcode a minimum size for scroll bar handler. When list has too many items, the handler will disappear.
+  - Add minimum size control to `<PartialView>` (should have been done).
+  - Use it in `<PartialView ref.Name="handle">`.
+  - https://github.com/vczh-libraries/GacUI/issues/73
+- https://github.com/vczh-libraries/GacUI/issues/100
 
 ## Progressing
 
@@ -45,10 +50,6 @@ Turn `GuiListControl::IItemArranger` implementations into compositions.
     - Each character takes exactly `FontSize x FontSize`
     - Deal with `\r` and `\n` when multiline is enabled
   - Test against more code as many as possible
-- DarkSkin
-  - Need to hardcode a minimum size for scroll bar handler. When list has too many items, the handler will disappear.
-  - Add minimum size control to `<PartialView>` (should have been done).
-  - Use it in `<PartialView ref.Name="handle">`.
 - DarkSkin Color Theme.
   - Move all hardcoded colors to Style.xml or a general place.
   - Move all colors from Style.xml to a general place.
