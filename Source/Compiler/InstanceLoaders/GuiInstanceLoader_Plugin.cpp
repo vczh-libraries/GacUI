@@ -22,9 +22,11 @@ GuiInstanceLoader_Document.cpp
 		default: Ptr<GuiDocumentItem>
 GuiInstanceLoader_List.cpp
 	GuiComboBox
-		ctor: _ListControl(GuiListControl*)
-	GuiTreeView, GuiBindableTreeView
+		ctor: ListControl(GuiListControl*)
+	GuiTreeView
 		Nodes: array(Ptr<tree::MemoryNodeProvider>)
+	GuiBindableTreeView
+		ctor: ReverseMappingProperty(WritableItemProperty<Value>)
 	tree::TreeNode
 		ctor: Text, Image
 		Tag
@@ -279,6 +281,7 @@ GuiPredefinedInstanceLoadersPlugin
 					ADD_TEMPLATE_CONTROL	(							GuiBindableTextList,			TextList											);
 					ADD_TEMPLATE_CONTROL	(							GuiListView,					ListView											);
 					ADD_TEMPLATE_CONTROL	(							GuiBindableListView,			ListView											);
+					ADD_TEMPLATE_CONTROL	(							GuiBindableDataGrid,			ListView											);
 					ADD_TEMPLATE_CONTROL	(							GuiMultilineTextBox,			MultilineTextBox									);
 					ADD_TEMPLATE_CONTROL	(							GuiSinglelineTextBox,			SinglelineTextBox									);
 					ADD_TEMPLATE_CONTROL	(							GuiDatePicker,					DatePicker											);

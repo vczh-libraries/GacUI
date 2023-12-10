@@ -459,30 +459,6 @@ GuiTreeNodeInstanceLoader
 			};
 
 /***********************************************************************
-GuiBindableDataGridInstanceLoader
-***********************************************************************/
-
-#define BASE_TYPE GuiTemplateControlInstanceLoader<GuiBindableDataGrid>
-			class GuiBindableDataGridInstanceLoader : public BASE_TYPE
-			{
-			protected:
-				GlobalStringKey		typeName;
-				
-			public:
-				GuiBindableDataGridInstanceLoader()
-					:BASE_TYPE(description::TypeInfo<GuiBindableDataGrid>::content.typeName, theme::ThemeName::ListView)
-				{
-					typeName = GlobalStringKey::Get(description::TypeInfo<GuiBindableDataGrid>::content.typeName);
-				}
-
-				GlobalStringKey GetTypeName()override
-				{
-					return typeName;
-				}
-			};
-#undef BASE_TYPE
-
-/***********************************************************************
 Initialization
 ***********************************************************************/
 
@@ -496,7 +472,6 @@ Initialization
 				manager->SetLoader(Ptr(new GuiComboButtonInstanceLoader));
 				manager->SetLoader(Ptr(new GuiTreeViewInstanceLoader));
 				manager->SetLoader(Ptr(new GuiBindableTreeViewInstanceLoader));
-				manager->SetLoader(Ptr(new GuiBindableDataGridInstanceLoader));
 				
 				manager->CreateVirtualType(
 					GlobalStringKey::Get(description::TypeInfo<tree::MemoryNodeProvider>::content.typeName),
