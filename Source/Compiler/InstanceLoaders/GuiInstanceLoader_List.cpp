@@ -224,6 +224,14 @@ GuiBindableTreeViewInstanceLoader
 			protected:
 				GlobalStringKey		_ReverseMappingProperty;
 
+				void AddAdditionalArguments(types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, GuiResourceError::List& errors, Ptr<WfNewClassExpression> createControl)override
+				{
+					vint indexReverseMappingProperty = arguments.Keys().IndexOf(_ReverseMappingProperty);
+					if (indexReverseMappingProperty != -1)
+					{
+						createControl->arguments.Add(arguments.GetByIndex(indexReverseMappingProperty)[0].expression);
+					}
+				}
 			public:
 				GuiBindableTreeViewInstanceLoader()
 					:BASE_TYPE(description::TypeInfo<GuiBindableTreeView>::content.typeName, theme::ThemeName::TreeView)
