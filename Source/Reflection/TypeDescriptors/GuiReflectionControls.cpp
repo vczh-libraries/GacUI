@@ -1445,6 +1445,7 @@ Type Declaration (Class)
 				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(ImageProperty)
 				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(ChildrenProperty)
 				CLASS_MEMBER_PROPERTY_EVENT_READONLY_FAST(SelectedItem, SelectionChanged)
+				CLASS_MEMBER_METHOD(NotifyNodeDataModified, {L"value"})
 			END_CLASS_MEMBER(GuiBindableTreeView)
 
 			BEGIN_CLASS_MEMBER(GuiBindableDataGrid)

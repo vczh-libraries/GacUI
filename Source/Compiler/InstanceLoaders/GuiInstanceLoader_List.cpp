@@ -150,6 +150,7 @@ GuiTreeViewInstanceLoader
 			protected:
 				bool				bindable;
 				GlobalStringKey		_Nodes;
+				GlobalStringKey		_ReverseMappingProperty;
 
 			public:
 				GuiTreeViewInstanceLoaderBase(bool _bindable)
@@ -157,14 +158,13 @@ GuiTreeViewInstanceLoader
 					, bindable(_bindable)
 				{
 					_Nodes = GlobalStringKey::Get(L"Nodes");
+					_ReverseMappingProperty = GlobalStringKey::Get(L"ReverseMappingProperty");
 				}
 
 				void GetPropertyNames(GuiResourcePrecompileContext& precompileContext, const typename BASE_TYPE::TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
 				{
-					if (!bindable)
-					{
-						propertyNames.Add(_Nodes);
-					}
+					if (!bindable) propertyNames.Add(_Nodes);
+					if (bindable) propertyNames.Add(_ReverseMappingProperty);
 					BASE_TYPE::GetPropertyNames(precompileContext, typeInfo, propertyNames);
 				}
 
@@ -175,6 +175,15 @@ GuiTreeViewInstanceLoader
 						if (!bindable)
 						{
 							return GuiInstancePropertyInfo::Collection(TypeInfoRetriver<Ptr<tree::MemoryNodeProvider>>::CreateTypeInfo());
+						}
+					}
+					else if (propertyInfo.propertyName == _ReverseMappingProperty)
+					{
+						if (bindable)
+						{
+							auto info = GuiInstancePropertyInfo::Assign(TypeInfoRetriver<WritableItemProperty<description::Value>>::CreateTypeInfo());
+							info->usage = GuiInstancePropertyInfo::ConstructorArgument;
+							return info;
 						}
 					}
 					return BASE_TYPE::GetPropertyType(precompileContext, propertyInfo);

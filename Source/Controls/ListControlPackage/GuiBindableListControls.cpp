@@ -1004,6 +1004,11 @@ GuiBindableTreeView
 				}
 				return result;
 			}
+
+			bool GuiBindableTreeView::NotifyNodeDataModified(description::Value value)
+			{
+				CHECK_FAIL(L"Not Implemented!");
+			}
 		}
 	}
 }

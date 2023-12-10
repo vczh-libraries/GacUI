@@ -440,6 +440,11 @@ GuiBindableTreeView
 				/// <summary>Get the selected item.</summary>
 				/// <returns>Returns the selected item. If there are multiple selected items, or there is no selected item, null will be returned.</returns>
 				description::Value									GetSelectedItem();
+
+				/// <summary>Notify the control that data in an item is modified. Child nodes are not notified.</summary>
+				/// <param name="value">The item from the item source.</param>
+				/// <returns>Returns true if this operation succeeded.</returns>
+				bool												NotifyNodeDataModified(description::Value value);
 			};
 		}
 	}
