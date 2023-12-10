@@ -356,6 +356,7 @@ GuiBindableTreeView
 				{
 					friend class ItemSourceNode;
 				public:
+					WritableItemProperty<description::Value>		reverseMappingProperty;
 					ItemProperty<WString>							textProperty;
 					ItemProperty<Ptr<GuiImageData>>					imageProperty;
 					ItemProperty<Ptr<IValueEnumerable>>				childrenProperty;
@@ -388,7 +389,8 @@ GuiBindableTreeView
 			public:
 				/// <summary>Create a bindable Tree view control.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
-				GuiBindableTreeView(theme::ThemeName themeName);
+				/// <param name="reverseMappingProperty">(Optional): The value of <see cref="GuiBindableTreeView::GetReverseMappingProperty"/>.</param>
+				GuiBindableTreeView(theme::ThemeName themeName, WritableItemProperty<description::Value> reverseMappingProperty = {});
 				~GuiBindableTreeView();
 				
 				/// <summary>Text property name changed event.</summary>
@@ -404,6 +406,15 @@ GuiBindableTreeView
 				/// <summary>Set the item source.</summary>
 				/// <param name="_itemSource">The item source. Null is acceptable if you want to clear all data.</param>
 				void												SetItemSource(description::Value _itemSource);
+
+				/// <summary>
+				/// Get the reverse mapping property name to store the internal tree view node for an item.
+				/// The value is set in the constructor.
+				/// Using this property makes items in item source exclusive to a treeview control.
+				/// Sharing such item in different treeview controls causes exceptions.
+				/// </summary>
+				/// <returns>The reverse mapping property name.</returns>
+				WritableItemProperty<description::Value>			GetReverseMappingProperty();
 				
 				/// <summary>Get the text property name to get the item text from an item.</summary>
 				/// <returns>The text property name.</returns>

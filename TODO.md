@@ -33,7 +33,7 @@ Turn `GuiListControl::IItemArranger` implementations into compositions.
   - new virtual repeat compositions.
   - `GuiBindableTextList::NotifyItemDataModified`
   - `GuiBindableListView::NotifyItemDataModified`
-  - Calling `INodeProvider::NotifyDataModified` in `GuiBindableTreeView`
+  - Calling `INodeProvider::NotifyDataModified` in `GuiBindableTreeView` using `ReverseMappingProperty`
   - Check `IItemArranger` and `IItemArrangerCallback` document (if exists)
 - DarkSkin
   - Need to hardcode a minimum size for scroll bar handler. When list has too many items, the handler will disappear.

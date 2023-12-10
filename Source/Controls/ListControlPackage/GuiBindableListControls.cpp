@@ -914,10 +914,11 @@ GuiBindableTreeView::ItemSource
 GuiBindableTreeView
 ***********************************************************************/
 
-			GuiBindableTreeView::GuiBindableTreeView(theme::ThemeName themeName)
+			GuiBindableTreeView::GuiBindableTreeView(theme::ThemeName themeName, WritableItemProperty<description::Value> reverseMappingProperty)
 				:GuiVirtualTreeView(themeName, Ptr(new ItemSource))
 			{
 				itemSource = dynamic_cast<ItemSource*>(GetNodeRootProvider());
+				itemSource->reverseMappingProperty = reverseMappingProperty;
 
 				TextPropertyChanged.SetAssociatedComposition(boundsComposition);
 				ImagePropertyChanged.SetAssociatedComposition(boundsComposition);
@@ -936,6 +937,11 @@ GuiBindableTreeView
 			void GuiBindableTreeView::SetItemSource(description::Value _itemSource)
 			{
 				itemSource->SetItemSource(_itemSource);
+			}
+			
+			WritableItemProperty<description::Value> GuiBindableTreeView::GetReverseMappingProperty()
+			{
+				return itemSource->reverseMappingProperty;
 			}
 
 			ItemProperty<WString> GuiBindableTreeView::GetTextProperty()
