@@ -164,6 +164,10 @@ TsfTestWindow
 	};
 }
 
+// also need ITextStoreACP to receive edited text
+// CHECKED(pDocumentMgr->CreateContext(g_TfClientId, 0, NULL, &pContext, &pecTextStore));
+// put it in NULL
+// https://github.com/vczh-libraries/GacUI/issues/88
 #ifdef COPY_FROM_YANGFF
 #include <Windows.h>
 #include <msctf.h>
