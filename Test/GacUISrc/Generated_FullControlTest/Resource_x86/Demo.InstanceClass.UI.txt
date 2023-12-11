@@ -25530,7 +25530,19 @@ namespace demo
         var <precompile>5 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
 
         @cpp:Protected
-        var <precompile>6 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+        var <precompile>6 : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
+
+        @cpp:Protected
+        var <precompile>7 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
+
+        @cpp:Protected
+        var <precompile>8 : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
+
+        @cpp:Protected
+        var <precompile>9 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
+
+        @cpp:Protected
+        var <precompile>10 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
         func <demo-RefreshBindableTreeViewTabPage>Initialize(<this> : ::demo::RefreshBindableTreeViewTabPage*) : (::system::Void)
@@ -25553,12 +25565,14 @@ namespace demo
                 (<precompile>0.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
             }
             {
-                <precompile>0.SetRowsAndColumns(2, 3);
+                <precompile>0.SetRowsAndColumns(2, 5);
                 <precompile>0.SetRowOption(0, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
                 <precompile>0.SetRowOption(1, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
                 <precompile>0.SetColumnOption(0, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
                 <precompile>0.SetColumnOption(1, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
-                <precompile>0.SetColumnOption(2, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
+                <precompile>0.SetColumnOption(2, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
+                <precompile>0.SetColumnOption(3, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
+                <precompile>0.SetColumnOption(4, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
             }
             (<precompile>1 = new (::presentation::compositions::GuiCellComposition*)());
             {
@@ -25594,10 +25608,54 @@ namespace demo
             }
             (<precompile>5 = new (::presentation::compositions::GuiCellComposition*)());
             {
-                <precompile>5.SetSite(1, 0, 1, 3);
+                <precompile>5.SetSite(0, 2, 1, 1);
             }
             {
-                (treeView = new (::presentation::controls::GuiBindableTreeView*)(::presentation::theme::ThemeName::TreeView));
+                (<precompile>6 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
+            }
+            {
+                (<precompile>6.Text = "*First");
+            }
+            {
+                <precompile>5.AddChild(<precompile>6.BoundsComposition);
+            }
+            {
+                <precompile>0.AddChild(<precompile>5);
+            }
+            (<precompile>7 = new (::presentation::compositions::GuiCellComposition*)());
+            {
+                <precompile>7.SetSite(0, 3, 1, 1);
+            }
+            {
+                (<precompile>8 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
+            }
+            {
+                (<precompile>8.Text = "*First/Second");
+            }
+            {
+                <precompile>7.AddChild(<precompile>8.BoundsComposition);
+            }
+            {
+                <precompile>0.AddChild(<precompile>7);
+            }
+            (<precompile>9 = new (::presentation::compositions::GuiCellComposition*)());
+            {
+                <precompile>9.SetSite(1, 0, 1, 5);
+            }
+            {
+                (treeView = new (::presentation::controls::GuiBindableTreeView*)(::presentation::theme::ThemeName::TreeView, func (<item> : ::system::Object, <value> : ::system::Object, <update> : ::system::Boolean) : (::system::Object)
+                {
+                    var item = (cast (demo::RefreshItem^) <item>);
+                    if (<update>)
+                    {
+                        (item.DoNotUse = (cast (::system::Object) <value>));
+                        return null of (::system::Object);
+                    }
+                    else
+                    {
+                        return item.DoNotUse;
+                    }
+                }));
             }
             {
                 (treeView.ImageProperty = func (<item> : ::system::Object) : (::presentation::GuiImageData^)
@@ -25620,15 +25678,15 @@ namespace demo
                     return item.Name;
                 });
             }
-            (<precompile>6 = treeView.BoundsComposition);
+            (<precompile>10 = treeView.BoundsComposition);
             {
-                (<precompile>6.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+                (<precompile>10.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
-                <precompile>5.AddChild(treeView.BoundsComposition);
+                <precompile>9.AddChild(treeView.BoundsComposition);
             }
             {
-                <precompile>0.AddChild(<precompile>5);
+                <precompile>0.AddChild(<precompile>9);
             }
             {
                 self.ContainerComposition.AddChild(<precompile>0);
@@ -25652,6 +25710,26 @@ namespace demo
                     });
                 };
                 attach(<precompile>4.Clicked, <event-handler>);
+            }
+            {
+                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                {
+                    var data = self.rootItem.Children[0];
+                    (data.Name = (data.Name == "First") ? "One" : "First");
+                    (data.Title = (data.Title == "1st") ? "One" : "1st");
+                    treeView.NotifyNodeDataModified(data);
+                };
+                attach(<precompile>6.Clicked, <event-handler>);
+            }
+            {
+                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                {
+                    var data = self.rootItem.Children[0].Children[1];
+                    (data.Name = (data.Name == "Second (1)") ? "Two (1)" : "Second (1)");
+                    (data.Title = (data.Title == "2nd (1)") ? "Two (1)" : "2nd (1)");
+                    treeView.NotifyNodeDataModified(data);
+                };
+                attach(<precompile>8.Clicked, <event-handler>);
             }
             {
                 (treeView.ItemSource = self.rootItem);
@@ -33362,6 +33440,21 @@ namespace demo
         }
 
         prop Children : observe RefreshItem^[]{GetChildren}
+
+        @cpp:Private
+        var <prop>DoNotUse : object = null;
+
+        func GetDoNotUse() : (object)
+        {
+            return <prop>DoNotUse;
+        }
+
+        func SetDoNotUse(<value> : object) : (void)
+        {
+            (<prop>DoNotUse = <value>);
+        }
+
+        prop DoNotUse : object{GetDoNotUse, SetDoNotUse}
 
         new (name : string, title : string)
         {
