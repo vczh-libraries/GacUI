@@ -21,10 +21,6 @@
 Turn `GuiListControl::IItemArranger` implementations into compositions.
   - New `GuiListControl::IItemArranger` that can accept a `GuiRepeatCompositionBase`.
     - Test `GetAdoptedSize`.
-  - List control (or scroll view) should layout content during layouting composition, not driven by event.
-    - Ribbon gallary (not list) cannot scroll or display the selected item.
-    - In `BindableTreeView` tabs, add buttons that notify the list control when item data is changed.
-      - Consider add a reverse property binding so that item knows its `INodeProvider`
 - MISC
   - Check everywhere that uses `CachedBoundsChanged.Attach`.
   - Enlarging window slower than shrinking.
@@ -34,9 +30,14 @@ Turn `GuiListControl::IItemArranger` implementations into compositions.
   - new virtual repeat compositions.
   - `GuiBindableTextList::NotifyItemDataModified`
   - `GuiBindableListView::NotifyItemDataModified`
-  - Calling `INodeProvider::NotifyDataModified` in `GuiBindableTreeView`
+  - Calling `INodeProvider::NotifyNodeDataModified` in `GuiBindableTreeView` using `ReverseMappingProperty`
   - Check `IItemArranger` and `IItemArrangerCallback` document (if exists)
-- Make document v2 without auto generated content.
+- DarkSkin
+  - Need to hardcode a minimum size for scroll bar handler. When list has too many items, the handler will disappear.
+  - Add minimum size control to `<PartialView>` (should have been done).
+  - Use it in `<PartialView ref.Name="handle">`.
+  - https://github.com/vczh-libraries/GacUI/issues/73
+- https://github.com/vczh-libraries/GacUI/issues/100
 
 ## Progressing
 
@@ -46,10 +47,6 @@ Turn `GuiListControl::IItemArranger` implementations into compositions.
     - Each character takes exactly `FontSize x FontSize`
     - Deal with `\r` and `\n` when multiline is enabled
   - Test against more code as many as possible
-- DarkSkin
-  - Need to hardcode a minimum size for scroll bar handler. When list has too many items, the handler will disappear.
-  - Add minimum size control to `<PartialView>` (should have been done).
-  - Use it in `<PartialView ref.Name="handle">`.
 - DarkSkin Color Theme.
   - Move all hardcoded colors to Style.xml or a general place.
   - Move all colors from Style.xml to a general place.

@@ -4219,20 +4219,24 @@ class presentation::controls::GuiBindableTreeView : presentation::controls::GuiV
     property ChildrenProperty : system::Function<system::Enumerable^, system::Object>^ { get:GetChildrenProperty set:SetChildrenProperty event:ChildrenPropertyChanged }
     property ImageProperty : system::Function<presentation::GuiImageData^, system::Object>^ { get:GetImageProperty set:SetImageProperty event:ImagePropertyChanged }
     property ItemSource : system::Object { get:GetItemSource set:SetItemSource }
+    property ReverseMappingProperty : system::Function<system::Object, system::Object, system::Object, system::Boolean>^ { get:GetReverseMappingProperty }
     property SelectedItem : system::Object { get:GetSelectedItem event:SelectionChanged }
     property TextProperty : system::Function<system::String, system::Object>^ { get:GetTextProperty set:SetTextProperty event:TextPropertyChanged }
 
     function GetChildrenProperty() : system::Function<system::Enumerable^, system::Object>^;
     function GetImageProperty() : system::Function<presentation::GuiImageData^, system::Object>^;
     function GetItemSource() : system::Object;
+    function GetReverseMappingProperty() : system::Function<system::Object, system::Object, system::Object, system::Boolean>^;
     function GetSelectedItem() : system::Object;
     function GetTextProperty() : system::Function<system::String, system::Object>^;
+    function NotifyNodeDataModified(value : system::Object) : system::Void;
     function SetChildrenProperty(value : system::Function<system::Enumerable^, system::Object>^) : system::Void;
     function SetImageProperty(value : system::Function<presentation::GuiImageData^, system::Object>^) : system::Void;
     function SetItemSource(value : system::Object) : system::Void;
     function SetTextProperty(value : system::Function<system::String, system::Object>^) : system::Void;
 
     constructor (themeName : presentation::theme::ThemeName) : presentation::controls::GuiBindableTreeView*;
+    constructor (themeName : presentation::theme::ThemeName, reverseMappingProperty : system::Function<system::Object, system::Object, system::Object, system::Boolean>^) : presentation::controls::GuiBindableTreeView*;
 }
 
 class presentation::controls::GuiButton : presentation::controls::GuiControl {

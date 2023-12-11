@@ -712,12 +712,37 @@ GuiBindableTreeView::ItemSourceNode
 				children.Clear();
 			}
 
+			void GuiBindableTreeView::ItemSourceNode::PrepareReverseMapping()
+			{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::controls::GuiBindableTreeView::ItemSourceNode::PrepareReverseMapping()#"
+				if (rootProvider->reverseMappingProperty && !itemSource.IsNull())
+				{
+					auto oldValue = ReadProperty(itemSource, rootProvider->reverseMappingProperty);
+					CHECK_ERROR(oldValue.IsNull(), ERROR_MESSAGE_PREFIX L"The reverse mapping property of an item has been unexpectedly changed.");
+					WriteProperty(itemSource, rootProvider->reverseMappingProperty, Value::From(this));
+				}
+#undef ERROR_MESSAGE_PREFIX
+			}
+
+			void GuiBindableTreeView::ItemSourceNode::UnprepareReverseMapping()
+			{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::controls::GuiBindableTreeView::ItemSourceNode::PrepareReverseMapping()#"
+				if (rootProvider->reverseMappingProperty && !itemSource.IsNull())
+				{
+					auto oldValue = ReadProperty(itemSource, rootProvider->reverseMappingProperty);
+					CHECK_ERROR(oldValue.GetRawPtr() == this, ERROR_MESSAGE_PREFIX L"The reverse mapping property of an item has been unexpectedly changed.");
+					WriteProperty(itemSource, rootProvider->reverseMappingProperty, {});
+				}
+#undef ERROR_MESSAGE_PREFIX
+			}
+
 			GuiBindableTreeView::ItemSourceNode::ItemSourceNode(const description::Value& _itemSource, ItemSourceNode* _parent)
 				:itemSource(_itemSource)
 				, rootProvider(_parent->rootProvider)
 				, parent(_parent)
 				, callback(_parent->callback)
 			{
+				PrepareReverseMapping();
 			}
 
 			GuiBindableTreeView::ItemSourceNode::ItemSourceNode(ItemSource* _rootProvider)
@@ -729,6 +754,7 @@ GuiBindableTreeView::ItemSourceNode
 
 			GuiBindableTreeView::ItemSourceNode::~ItemSourceNode()
 			{
+				UnprepareReverseMapping();
 				if (itemChangedEventHandler)
 				{
 					auto ol = childrenVirtualList.Cast<IValueObservableList>();
@@ -749,7 +775,9 @@ GuiBindableTreeView::ItemSourceNode
 
 				callback->OnBeforeItemModified(this, 0, oldCount, newCount, true);
 				UnprepareChildren();
+				UnprepareReverseMapping();
 				itemSource = _itemSource;
+				PrepareReverseMapping();
 				PrepareChildren(newVirtualList);
 				callback->OnAfterItemModified(this, 0, oldCount, newCount, true);
 			}
@@ -914,10 +942,11 @@ GuiBindableTreeView::ItemSource
 GuiBindableTreeView
 ***********************************************************************/
 
-			GuiBindableTreeView::GuiBindableTreeView(theme::ThemeName themeName)
+			GuiBindableTreeView::GuiBindableTreeView(theme::ThemeName themeName, WritableItemProperty<description::Value> reverseMappingProperty)
 				:GuiVirtualTreeView(themeName, Ptr(new ItemSource))
 			{
 				itemSource = dynamic_cast<ItemSource*>(GetNodeRootProvider());
+				itemSource->reverseMappingProperty = reverseMappingProperty;
 
 				TextPropertyChanged.SetAssociatedComposition(boundsComposition);
 				ImagePropertyChanged.SetAssociatedComposition(boundsComposition);
@@ -936,6 +965,11 @@ GuiBindableTreeView
 			void GuiBindableTreeView::SetItemSource(description::Value _itemSource)
 			{
 				itemSource->SetItemSource(_itemSource);
+			}
+			
+			WritableItemProperty<description::Value> GuiBindableTreeView::GetReverseMappingProperty()
+			{
+				return itemSource->reverseMappingProperty;
 			}
 
 			ItemProperty<WString> GuiBindableTreeView::GetTextProperty()
@@ -997,6 +1031,29 @@ GuiBindableTreeView
 					}
 				}
 				return result;
+			}
+
+			void GuiBindableTreeView::NotifyNodeDataModified(description::Value value)
+			{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::controls::GuiBindableTreeView::NotifyNodeDataModified(Value)#"
+
+				CHECK_ERROR(itemSource->reverseMappingProperty, ERROR_MESSAGE_PREFIX L"This function can only be called when the ReverseMappingProperty is in use.");
+				CHECK_ERROR(!value.IsNull(), ERROR_MESSAGE_PREFIX L"The item cannot be null.");
+				auto mapping = ReadProperty(value, itemSource->reverseMappingProperty);
+				auto node = dynamic_cast<tree::INodeProvider*>(mapping.GetRawPtr());
+				CHECK_ERROR(node, ERROR_MESSAGE_PREFIX L"The item is not binded to a GuiBindableTreeView control or its reverse mapping property has been unexpectedly changed.");
+
+				auto rootNode = node;
+				while (rootNode->GetParent())
+				{
+					rootNode = rootNode->GetParent().Obj();
+				}
+
+				CHECK_ERROR(rootNode == itemSource->rootNode.Obj(), ERROR_MESSAGE_PREFIX L"The item is not binded to this control.");
+				CHECK_ERROR(node != itemSource->rootNode.Obj(), ERROR_MESSAGE_PREFIX L"The item should not be the root item, which is the item source assigned to this control.");
+				node->NotifyDataModified();
+
+#undef ERROR_MESSAGE_PREFIX
 			}
 		}
 	}

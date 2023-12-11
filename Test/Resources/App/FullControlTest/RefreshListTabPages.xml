@@ -18,6 +18,7 @@
           prop LargeImage : GuiImageData^ = null {not observe}
           prop SmallImage : GuiImageData^ = null {not observe}
           prop Children : observe RefreshItem^[] = {} {const, not observe}
+          prop DoNotUse : object = null {not observe}
 
           new (name:string, title:string)
           {
@@ -710,6 +711,8 @@
           <att.Columns>
             <_>composeType:MinSize</_>
             <_>composeType:MinSize</_>
+            <_>composeType:MinSize</_>
+            <_>composeType:MinSize</_>
             <_>composeType:Percentage percentage:1.0</_>
           </att.Columns>
           <Cell Site="row:0 column:0">
@@ -736,10 +739,35 @@
               ]]></ev.Clicked-eval>
             </Button>
           </Cell>
-          <Cell Site="row:1 column:0 columnSpan:3">
+          <Cell Site="row:0 column:2">
+            <Button Text="*First">
+              <ev.Clicked-eval><![CDATA[
+                {
+                  var data = self.rootItem.Children[0];
+                  data.Name = data.Name == "First" ? "One" : "First";
+                  data.Title = data.Title == "1st" ? "One" : "1st";
+                  treeView.NotifyNodeDataModified(data);
+                }
+              ]]></ev.Clicked-eval>
+            </Button>
+          </Cell>
+          <Cell Site="row:0 column:3">
+            <Button Text="*First/Second">
+              <ev.Clicked-eval><![CDATA[
+                {
+                  var data = self.rootItem.Children[0].Children[1];
+                  data.Name = data.Name == "Second (1)" ? "Two (1)" : "Second (1)";
+                  data.Title = data.Title == "2nd (1)" ? "Two (1)" : "2nd (1)";
+                  treeView.NotifyNodeDataModified(data);
+                }
+              ]]></ev.Clicked-eval>
+            </Button>
+          </Cell>
+          <Cell Site="row:1 column:0 columnSpan:5">
             <BindableTreeView ref.Name="treeView" env.ItemType="demo::RefreshItem^">
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
               <att.ItemSource-eval>self.rootItem</att.ItemSource-eval>
+              <att.ReverseMappingProperty>DoNotUse</att.ReverseMappingProperty>
               <att.TextProperty>Name</att.TextProperty>
               <att.ImageProperty>SmallImage</att.ImageProperty>
               <att.ChildrenProperty>Children</att.ChildrenProperty>

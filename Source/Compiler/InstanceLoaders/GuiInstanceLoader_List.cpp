@@ -143,28 +143,22 @@ GuiComboBoxInstanceLoader
 GuiTreeViewInstanceLoader
 ***********************************************************************/
 
-#define BASE_TYPE GuiTemplateControlInstanceLoader<TControl>
-			template<typename TControl>
-			class GuiTreeViewInstanceLoaderBase : public BASE_TYPE
+#define BASE_TYPE GuiTemplateControlInstanceLoader<GuiTreeView>
+			class GuiTreeViewInstanceLoader : public BASE_TYPE
 			{
 			protected:
-				bool				bindable;
 				GlobalStringKey		_Nodes;
 
 			public:
-				GuiTreeViewInstanceLoaderBase(bool _bindable)
-					:BASE_TYPE(description::TypeInfo<TControl>::content.typeName, theme::ThemeName::TreeView)
-					, bindable(_bindable)
+				GuiTreeViewInstanceLoader()
+					:BASE_TYPE(description::TypeInfo<GuiTreeView>::content.typeName, theme::ThemeName::TreeView)
 				{
 					_Nodes = GlobalStringKey::Get(L"Nodes");
 				}
 
 				void GetPropertyNames(GuiResourcePrecompileContext& precompileContext, const typename BASE_TYPE::TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
 				{
-					if (!bindable)
-					{
-						propertyNames.Add(_Nodes);
-					}
+					propertyNames.Add(_Nodes);
 					BASE_TYPE::GetPropertyNames(precompileContext, typeInfo, propertyNames);
 				}
 
@@ -172,10 +166,7 @@ GuiTreeViewInstanceLoader
 				{
 					if (propertyInfo.propertyName == _Nodes)
 					{
-						if (!bindable)
-						{
-							return GuiInstancePropertyInfo::Collection(TypeInfoRetriver<Ptr<tree::MemoryNodeProvider>>::CreateTypeInfo());
-						}
+						return GuiInstancePropertyInfo::Collection(TypeInfoRetriver<Ptr<tree::MemoryNodeProvider>>::CreateTypeInfo());
 					}
 					return BASE_TYPE::GetPropertyType(precompileContext, propertyInfo);
 				}
@@ -223,23 +214,49 @@ GuiTreeViewInstanceLoader
 			};
 #undef BASE_TYPE
 
-			class GuiTreeViewInstanceLoader : public GuiTreeViewInstanceLoaderBase<GuiTreeView>
-			{
-			public:
-				GuiTreeViewInstanceLoader()
-					:GuiTreeViewInstanceLoaderBase<GuiTreeView>(false)
-				{
-				}
-			};
+/***********************************************************************
+GuiBindableTreeViewInstanceLoader
+***********************************************************************/
 
-			class GuiBindableTreeViewInstanceLoader : public GuiTreeViewInstanceLoaderBase<GuiBindableTreeView>
+#define BASE_TYPE GuiTemplateControlInstanceLoader<GuiBindableTreeView>
+			class GuiBindableTreeViewInstanceLoader : public BASE_TYPE
 			{
+			protected:
+				GlobalStringKey		_ReverseMappingProperty;
+
+				void AddAdditionalArguments(types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, GuiResourceError::List& errors, Ptr<WfNewClassExpression> createControl)override
+				{
+					vint indexReverseMappingProperty = arguments.Keys().IndexOf(_ReverseMappingProperty);
+					if (indexReverseMappingProperty != -1)
+					{
+						createControl->arguments.Add(arguments.GetByIndex(indexReverseMappingProperty)[0].expression);
+					}
+				}
 			public:
 				GuiBindableTreeViewInstanceLoader()
-					:GuiTreeViewInstanceLoaderBase<GuiBindableTreeView>(true)
+					:BASE_TYPE(description::TypeInfo<GuiBindableTreeView>::content.typeName, theme::ThemeName::TreeView)
 				{
+					_ReverseMappingProperty = GlobalStringKey::Get(L"ReverseMappingProperty");
+				}
+
+				void GetPropertyNames(GuiResourcePrecompileContext& precompileContext, const typename BASE_TYPE::TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
+				{
+					propertyNames.Add(_ReverseMappingProperty);
+					BASE_TYPE::GetPropertyNames(precompileContext, typeInfo, propertyNames);
+				}
+
+				Ptr<GuiInstancePropertyInfo> GetPropertyType(GuiResourcePrecompileContext& precompileContext, const typename BASE_TYPE::PropertyInfo& propertyInfo)override
+				{
+					if (propertyInfo.propertyName == _ReverseMappingProperty)
+					{
+						auto info = GuiInstancePropertyInfo::Assign(TypeInfoRetriver<WritableItemProperty<description::Value>>::CreateTypeInfo());
+						info->usage = GuiInstancePropertyInfo::ConstructorArgument;
+						return info;
+					}
+					return BASE_TYPE::GetPropertyType(precompileContext, propertyInfo);
 				}
 			};
+#undef BASE_TYPE
 
 /***********************************************************************
 GuiTreeNodeInstanceLoader
@@ -442,30 +459,6 @@ GuiTreeNodeInstanceLoader
 			};
 
 /***********************************************************************
-GuiBindableDataGridInstanceLoader
-***********************************************************************/
-
-#define BASE_TYPE GuiTemplateControlInstanceLoader<GuiBindableDataGrid>
-			class GuiBindableDataGridInstanceLoader : public BASE_TYPE
-			{
-			protected:
-				GlobalStringKey		typeName;
-				
-			public:
-				GuiBindableDataGridInstanceLoader()
-					:BASE_TYPE(description::TypeInfo<GuiBindableDataGrid>::content.typeName, theme::ThemeName::ListView)
-				{
-					typeName = GlobalStringKey::Get(description::TypeInfo<GuiBindableDataGrid>::content.typeName);
-				}
-
-				GlobalStringKey GetTypeName()override
-				{
-					return typeName;
-				}
-			};
-#undef BASE_TYPE
-
-/***********************************************************************
 Initialization
 ***********************************************************************/
 
@@ -479,7 +472,6 @@ Initialization
 				manager->SetLoader(Ptr(new GuiComboButtonInstanceLoader));
 				manager->SetLoader(Ptr(new GuiTreeViewInstanceLoader));
 				manager->SetLoader(Ptr(new GuiBindableTreeViewInstanceLoader));
-				manager->SetLoader(Ptr(new GuiBindableDataGridInstanceLoader));
 				
 				manager->CreateVirtualType(
 					GlobalStringKey::Get(description::TypeInfo<tree::MemoryNodeProvider>::content.typeName),
