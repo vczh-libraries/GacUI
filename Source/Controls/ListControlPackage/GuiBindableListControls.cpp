@@ -1033,9 +1033,27 @@ GuiBindableTreeView
 				return result;
 			}
 
-			bool GuiBindableTreeView::NotifyNodeDataModified(description::Value value)
+			void GuiBindableTreeView::NotifyNodeDataModified(description::Value value)
 			{
-				CHECK_FAIL(L"Not Implemented!");
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::controls::GuiBindableTreeView::NotifyNodeDataModified(Value)#"
+
+				CHECK_ERROR(itemSource->reverseMappingProperty, ERROR_MESSAGE_PREFIX L"This function can only be called when the ReverseMappingProperty is in use.");
+				CHECK_ERROR(!value.IsNull(), ERROR_MESSAGE_PREFIX L"The item cannot be null.");
+				auto mapping = ReadProperty(value, itemSource->reverseMappingProperty);
+				auto node = dynamic_cast<tree::INodeProvider*>(mapping.GetRawPtr());
+				CHECK_ERROR(node, ERROR_MESSAGE_PREFIX L"The item is not binded to a GuiBindableTreeView control or its reverse mapping property has been unexpectedly changed.");
+
+				auto rootNode = node;
+				while (rootNode->GetParent())
+				{
+					rootNode = rootNode->GetParent().Obj();
+				}
+
+				CHECK_ERROR(rootNode == itemSource->rootNode.Obj(), ERROR_MESSAGE_PREFIX L"The item is not binded to this control.");
+				CHECK_ERROR(node != itemSource->rootNode.Obj(), ERROR_MESSAGE_PREFIX L"The item should not be the root item, which is the item source assigned to this control.");
+				node->NotifyDataModified();
+
+#undef ERROR_MESSAGE_PREFIX
 			}
 		}
 	}

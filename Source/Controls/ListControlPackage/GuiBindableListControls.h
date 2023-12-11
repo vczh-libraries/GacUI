@@ -446,7 +446,7 @@ GuiBindableTreeView
 				/// <summary>Notify the control that data in an item is modified. Child nodes are not notified.</summary>
 				/// <param name="value">The item from the item source.</param>
 				/// <returns>Returns true if this operation succeeded.</returns>
-				bool												NotifyNodeDataModified(description::Value value);
+				void												NotifyNodeDataModified(description::Value value);
 			};
 		}
 	}
