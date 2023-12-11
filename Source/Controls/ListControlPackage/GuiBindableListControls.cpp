@@ -712,12 +712,37 @@ GuiBindableTreeView::ItemSourceNode
 				children.Clear();
 			}
 
+			void GuiBindableTreeView::ItemSourceNode::PrepareReverseMapping()
+			{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::controls::GuiBindableTreeView::ItemSourceNode::PrepareReverseMapping()#"
+				if (rootProvider->reverseMappingProperty && !itemSource.IsNull())
+				{
+					auto oldValue = ReadProperty(itemSource, rootProvider->reverseMappingProperty);
+					CHECK_ERROR(oldValue.IsNull(), ERROR_MESSAGE_PREFIX L"The reverse mapping property of an item has been unexpectedly changed.");
+					WriteProperty(itemSource, rootProvider->reverseMappingProperty, Value::From(this));
+				}
+#undef ERROR_MESSAGE_PREFIX
+			}
+
+			void GuiBindableTreeView::ItemSourceNode::UnprepareReverseMapping()
+			{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::controls::GuiBindableTreeView::ItemSourceNode::PrepareReverseMapping()#"
+				if (rootProvider->reverseMappingProperty && !itemSource.IsNull())
+				{
+					auto oldValue = ReadProperty(itemSource, rootProvider->reverseMappingProperty);
+					CHECK_ERROR(oldValue.GetRawPtr() == this, ERROR_MESSAGE_PREFIX L"The reverse mapping property of an item has been unexpectedly changed.");
+					WriteProperty(itemSource, rootProvider->reverseMappingProperty, {});
+				}
+#undef ERROR_MESSAGE_PREFIX
+			}
+
 			GuiBindableTreeView::ItemSourceNode::ItemSourceNode(const description::Value& _itemSource, ItemSourceNode* _parent)
 				:itemSource(_itemSource)
 				, rootProvider(_parent->rootProvider)
 				, parent(_parent)
 				, callback(_parent->callback)
 			{
+				PrepareReverseMapping();
 			}
 
 			GuiBindableTreeView::ItemSourceNode::ItemSourceNode(ItemSource* _rootProvider)
@@ -729,6 +754,7 @@ GuiBindableTreeView::ItemSourceNode
 
 			GuiBindableTreeView::ItemSourceNode::~ItemSourceNode()
 			{
+				UnprepareReverseMapping();
 				if (itemChangedEventHandler)
 				{
 					auto ol = childrenVirtualList.Cast<IValueObservableList>();
@@ -749,7 +775,9 @@ GuiBindableTreeView::ItemSourceNode
 
 				callback->OnBeforeItemModified(this, 0, oldCount, newCount, true);
 				UnprepareChildren();
+				UnprepareReverseMapping();
 				itemSource = _itemSource;
+				PrepareReverseMapping();
 				PrepareChildren(newVirtualList);
 				callback->OnAfterItemModified(this, 0, oldCount, newCount, true);
 			}

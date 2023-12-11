@@ -330,6 +330,8 @@ GuiBindableTreeView
 					Ptr<description::IValueReadonlyList>			PrepareValueList(const description::Value& inputItemSource);
 					void											PrepareChildren(Ptr<description::IValueReadonlyList> newValueList);
 					void											UnprepareChildren();
+					void											PrepareReverseMapping();
+					void											UnprepareReverseMapping();
 				public:
 					ItemSourceNode(const description::Value& _itemSource, ItemSourceNode* _parent);
 					ItemSourceNode(ItemSource* _rootProvider);
