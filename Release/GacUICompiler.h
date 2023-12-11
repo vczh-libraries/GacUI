@@ -709,11 +709,11 @@ Instance Loader
 		public:
 			enum Support
 			{
-				NotSupport,
-				SupportAssign,
-				SupportArray,
-				SupportCollection,
-				SupportSet,
+				NotSupport,			// cannot assign
+				SupportAssign,		// assign value directly
+				SupportArray,		// assign a collection to that property directly
+				SupportCollection,	// calling Add to add all items to that property
+				SupportSet,			// allow <att.PROP-set/>
 			};
 
 			enum PropertyUsage
@@ -724,13 +724,13 @@ Instance Loader
 
 			enum PropertyBindability
 			{
-				Bindable,
+				Bindable,			// a property is bindable
 				NotBindable,
 			};
 
 			enum PropertyMergability
 			{
-				MergeWithParent,
+				MergeWithParent,	// when type check of the property failed, search in base types
 				NotMerge,
 			};
 
