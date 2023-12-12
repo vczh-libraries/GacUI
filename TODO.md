@@ -27,7 +27,6 @@ Turn `GuiListControl::IItemArranger` implementations into compositions.
 - Examine all demo projects.
 - `FlowAlignment::Right` in demo.
 - Document
-  - new virtual repeat compositions.
   - `GuiBindableTextList::NotifyItemDataModified`
   - `GuiBindableListView::NotifyItemDataModified`
   - Calling `INodeProvider::NotifyNodeDataModified` in `GuiBindableTreeView` using `ReverseMappingProperty`
