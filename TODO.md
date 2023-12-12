@@ -26,6 +26,7 @@ Turn `GuiListControl::IItemArranger` implementations into compositions.
   - Enlarging window slower than shrinking.
 - Examine all demo projects.
 - `FlowAlignment::Right` in demo.
+- Review `AddressBook` demo to ensure all list controls are refreshed correctly (e.g. change contact name and refresh treeview/listview)
 - DarkSkin
   - Need to hardcode a minimum size for scroll bar handler. When list has too many items, the handler will disappear.
   - Add minimum size control to `<PartialView>` (should have been done).
