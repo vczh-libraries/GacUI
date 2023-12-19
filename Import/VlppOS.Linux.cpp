@@ -44,7 +44,7 @@ FilePath
 			}
 
 			if (fullPath.Length() == 0)
-				fullPath = L"/";
+				fullPath = WString::Unmanaged(L"/");
 
 			if (fullPath[0] != Delimiter)
 			{

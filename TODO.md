@@ -32,6 +32,7 @@ Turn `GuiListControl::IItemArranger` implementations into compositions.
   - Add minimum size control to `<PartialView>` (should have been done).
   - Use it in `<PartialView ref.Name="handle">`.
   - https://github.com/vczh-libraries/GacUI/issues/73
+- Check makefiles in Release repo
 
 ## Progressing
 

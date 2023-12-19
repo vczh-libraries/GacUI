@@ -367,6 +367,10 @@ namespace vl
 			};
 		}
 
+		// G++ workaround
+		template<typename K, typename V, size_t Index>
+		struct PairGet;
+
 		/// <summary>A type representing a pair of key and value.</summary>
 		/// <typeparam name="K">Type of the key.</typeparam>
 		/// <typeparam name="V">Type of the value.</typeparam>
@@ -427,25 +431,32 @@ namespace vl
 				return key == p.key && value == p.value;
 			}
 
-			/////////////////////////////////////////////////////////////////////
+			template<size_t Index>
+			decltype(auto) get()
+			{
+				return PairGet<K, V, Index>::get(*this);
+			}
 
 			template<size_t Index>
-			typename pair_internal::TypePairElementRetriver<Index, Pair<K, V>>::Type& get() = delete;
+			decltype(auto) get() const
+			{
+				return PairGet<K, V, Index>::get(*this);
+			}
+		};
 
-			template<>
-			typename pair_internal::TypePairElementRetriver<0, Pair<K, V>>::Type& get<0>() { return key; }
+		template<typename K, typename V>
+		struct PairGet<K, V, 0>
+		{
+			static typename pair_internal::TypePairElementRetriver<0, Pair<K, V>>::Type& get(Pair<K, V>& p) { return p.key; }
+			static typename pair_internal::TypePairElementRetriver<0, const Pair<K, V>>::Type& get(const Pair<K, V>& p) { return p.key; }
+		};
 
-			template<>
-			typename pair_internal::TypePairElementRetriver<1, Pair<K, V>>::Type& get<1>() { return value; }
 
-			template<size_t Index>
-			typename pair_internal::TypePairElementRetriver<Index, const Pair<K, V>>::Type& get() const = delete;
-
-			template<>
-			typename pair_internal::TypePairElementRetriver<0, const Pair<K, V>>::Type& get<0>() const { return key; }
-
-			template<>
-			typename pair_internal::TypePairElementRetriver<1, const Pair<K, V>>::Type& get<1>() const { return value; }
+		template<typename K, typename V>
+		struct PairGet<K, V, 1>
+		{
+			static typename pair_internal::TypePairElementRetriver<1, Pair<K, V>>::Type& get(Pair<K, V>& p) { return p.value; }
+			static typename pair_internal::TypePairElementRetriver<1, const Pair<K, V>>::Type& get(const Pair<K, V>& p) { return p.value; }
 		};
 
 		template<typename K, typename V>

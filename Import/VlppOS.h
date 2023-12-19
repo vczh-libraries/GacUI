@@ -1907,7 +1907,7 @@ namespace vl
 
 			/// <summary>Create a root path.</summary>
 			/// <remarks><see cref="GetFullPath"/> returns different values for root path on different platforms. Do not rely on the value.</remarks>
-			FilePath() = default;
+			FilePath();
 			/// <summary>Create a file path.</summary>
 			/// <param name="_filePath">Content of the file path. If it is a relative path, it will be converted to an absolute path.</param>
 			FilePath(const WString& _filePath);
