@@ -49,6 +49,10 @@ Turn `GuiListControl::IItemArranger` implementations into compositions.
   - Allow changing colors.
   - A window can be called to update all its controls' and components' template.
 - Consider -ani binding, create an animation controller object that change the binded property, with predefined interpolation and other stuff.
+  - All types that can do interpolation are value types, consider following formats:
+    - "NAME:initial value"
+    - "NAME(initial value in expression)"
+    - Need to be consistent with animation object
 
 ## Optional
 
