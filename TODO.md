@@ -33,8 +33,12 @@ Turn `GuiListControl::IItemArranger` implementations into compositions.
   - Use it in `<PartialView ref.Name="handle">`.
   - https://github.com/vczh-libraries/GacUI/issues/73
 - Check makefiles in Release repo
+- Check Workflow tutorial in Release repo
+  - Compile it in `Build.ps1 -Project Release`
+- Check GacUI document tutorial in Release repo
+  - Compile it in `Build.ps1 -Project Release`
 
-## Progressing
+## Unit Test Framework
 
 - UnitTest.vcxproj
   - Complete `TestCompositions_Bounds.cpp`.
@@ -42,6 +46,15 @@ Turn `GuiListControl::IItemArranger` implementations into compositions.
     - Each character takes exactly `FontSize x FontSize`
     - Deal with `\r` and `\n` when multiline is enabled
   - Test against more code as many as possible
+- Add above functionality to `GacUI.UnitTest.cpp`, `GacUI.UnitTest.h`, `GacUI.UnitTest.Reflection ...`
+- In release repo add more tools that just call `GacUI.UnitTest.cpp`:
+  - Load x86 bin + workflow script and execute.
+  - Load x64 bin + workflow script and execute.
+  - Render unit test results, especially each frame of intermediate rendering result.
+    - Can navigate to workflow script.
+
+## Progressing
+
 - DarkSkin Color Theme.
   - Move all hardcoded colors to Style.xml or a general place.
   - Move all colors from Style.xml to a general place.
