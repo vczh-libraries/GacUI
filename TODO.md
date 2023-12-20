@@ -33,10 +33,6 @@ Turn `GuiListControl::IItemArranger` implementations into compositions.
   - Use it in `<PartialView ref.Name="handle">`.
   - https://github.com/vczh-libraries/GacUI/issues/73
 - Check makefiles in Release repo
-- Check Workflow tutorial in Release repo
-  - Compile it in `Build.ps1 -Project Release`
-- Check GacUI document tutorial in Release repo
-  - Compile it in `Build.ps1 -Project Release`
 
 ## Unit Test Framework
 
