@@ -33,6 +33,14 @@ Turn `GuiListControl::IItemArranger` implementations into compositions.
   - Use it in `<PartialView ref.Name="handle">`.
   - https://github.com/vczh-libraries/GacUI/issues/73
 - Check makefiles in Release repo
+- SampleForDoc
+  - `control_basic_datepicker` combo glitch
+  - `control_basic_window` crash when adding tabs after all tabs are closed
+  - `control_datagrid_base;control_datagrid_editor` always jump to second item
+    - `control_datagrid_base;control_datagrid_filter` has the same issue but only before applying a filter
+    - `control_datagrid_base;control_datagrid_filter` has the same issue but only when sorting (clear all sort state and the issue comes back)
+  - `control_list_listview_bindable` rendering glitch when selecting something, maybe items get recreated unexpectedly
+  - `control_ribbon_empty` expanding button of a group is inaccessible when it is collapsed into a dropdown
 
 ## Unit Test Framework
 
