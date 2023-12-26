@@ -71,6 +71,15 @@ Turn `GuiListControl::IItemArranger` implementations into compositions.
     - "NAME(initial value in expression)"
     - Need to be consistent with animation object
   - Consider multiple `-ani` batch control, state configuration and transition, story board, connection to animation coroutine, etc.
+- Facade
+  - If `<XFacade>` or `<x:XFacade>` is an accessible and default constructible object, then `<X>` or `<x:X>` triggers a facade.
+  - A facade is a class with following methods:
+    - **AddChild**: Accept a child facade or a child object.
+    - **ApplyTo**: Accept a parent object, which is not a facade.
+    - **Initialize** (optional): Called on the instance object between construction and `<ref.Ctor>`.
+  - A facade could have properties but only accept assignment or `-eval` binding.
+  - A facade could have an optional **InstanceFacadeVerifier** executed on GacGen compile time.
+  - Built-in Layout and Form facade.
 
 ## Optional
 
