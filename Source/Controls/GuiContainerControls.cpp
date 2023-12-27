@@ -68,17 +68,24 @@ GuiTabPageList
 				tab->containerComposition->RemoveChild(value->boundsComposition);
 				value->tab = nullptr;
 
-				if (items.Count() <= 1)
+				if (items.Count() > 1)
+				{
+					if (items.Count() > index + 1)
+					{
+						tab->SetSelectedPage(items[index + 1]);
+					}
+					else if (items.Count() == index + 1)
+					{
+						tab->SetSelectedPage(items[index - 1]);
+					}
+				}
+			}
+
+			void GuiTabPageList::AfterRemove(vint index, vint count)
+			{
+				if (items.Count() == 0)
 				{
 					tab->SetSelectedPage(nullptr);
-				}
-				else if (items.Count() > index + 1)
-				{
-					tab->SetSelectedPage(items[index + 1]);
-				}
-				else if (items.Count() == index + 1)
-				{
-					tab->SetSelectedPage(items[index - 1]);
 				}
 			}
 

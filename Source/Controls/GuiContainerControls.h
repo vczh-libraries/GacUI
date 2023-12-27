@@ -49,6 +49,7 @@ Tab Control
 				bool											QueryInsert(vint index, GuiTabPage* const& value)override;
 				void											AfterInsert(vint index, GuiTabPage* const& value)override;
 				void											BeforeRemove(vint index, GuiTabPage* const& value)override;
+				void											AfterRemove(vint index, vint count)override;
 			public:
 				GuiTabPageList(GuiTab* _tab);
 				~GuiTabPageList();
