@@ -32,7 +32,6 @@ Turn `GuiListControl::IItemArranger` implementations into compositions.
 - Check makefiles in Release repo
 - SampleForDoc
   - `control_basic_datepicker` combo glitch
-  - `control_basic_window` crash when adding tabs after all tabs are closed
   - `control_datagrid_base;control_datagrid_editor` always jump to second item
     - `control_datagrid_base;control_datagrid_filter` has the same issue but only before applying a filter
     - `control_datagrid_base;control_datagrid_filter` has the same issue but only when sorting (clear all sort state and the issue comes back)
