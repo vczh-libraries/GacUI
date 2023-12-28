@@ -27900,7 +27900,7 @@ GuiVirtualRepeatCompositionBase
 				visibleStyles.RemoveRange(0, visibleCount);
 				for (auto [style, i] : indexed(visibleStyles))
 				{
-					Layout_UpdateIndex(style, startIndex + 1);
+					Layout_UpdateIndex(style, startIndex + i);
 				}
 			}
 
