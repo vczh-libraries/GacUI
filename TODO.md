@@ -32,7 +32,10 @@ Turn `GuiListControl::IItemArranger` implementations into compositions.
 - Check makefiles in Release repo
 - SampleForDoc
   - `control_basic_datepicker` Select locales other than `en-US` make dropdown list render glitch, like layout never stops.
+    - When the list control calculate its adopted size, it adds (bounds-container) to repeat's adopted size.
+    - When the adopted size changed, list size changed, hscroll appears and disappears, causing the adopted size to change again.
   - `control_ribbon_empty` expanding button of a group is inaccessible when it is collapsed into a dropdown.
+    - This is a new feature, need to consider how to do it.
 
 ## Unit Test Framework
 
