@@ -32,7 +32,6 @@ Turn `GuiListControl::IItemArranger` implementations into compositions.
 - Check makefiles in Release repo
 - SampleForDoc
   - `control_basic_datepicker` Select locales other than `en-US` make dropdown list render glitch, like layout never stops.
-  - `control_list_listview_bindable` rendering glitch when selecting something (except Detail view), maybe items get recreated unexpectedly.
   - `control_ribbon_empty` expanding button of a group is inaccessible when it is collapsed into a dropdown.
 
 ## Unit Test Framework
