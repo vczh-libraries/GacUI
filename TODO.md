@@ -52,6 +52,7 @@ Turn `GuiListControl::IItemArranger` implementations into compositions.
 ## Progressing
 
 - Rewrite `GacBuild.ps1` in C++
+- Get rid of `Deploy.bat` in `GacGen.ps1` and `GacGen.exe`
 - DarkSkin Color Theme.
   - Move all hardcoded colors to Style.xml or a general place.
   - Move all colors from Style.xml to a general place.
