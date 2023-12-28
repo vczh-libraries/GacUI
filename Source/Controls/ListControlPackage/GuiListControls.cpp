@@ -299,12 +299,6 @@ GuiListControl
 				}
 			}
 
-			void GuiListControl::OnClientCachedBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
-			{
-				auto args = GetNotifyEventArguments();
-				AdoptedSizeInvalidated.Execute(args);
-			}
-
 			void GuiListControl::OnVisuallyEnabledChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
 				for (auto style : visibleStyles.Keys())
@@ -430,7 +424,6 @@ GuiListControl
 			{
 				ContextChanged.AttachMethod(this, &GuiListControl::OnContextChanged);
 				VisuallyEnabledChanged.AttachMethod(this, &GuiListControl::OnVisuallyEnabledChanged);
-				containerComposition->CachedBoundsChanged.AttachMethod(this, &GuiListControl::OnClientCachedBoundsChanged);
 
 				ItemTemplateChanged.SetAssociatedComposition(boundsComposition);
 				ArrangerChanged.SetAssociatedComposition(boundsComposition);

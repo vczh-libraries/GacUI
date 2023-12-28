@@ -72,7 +72,6 @@ GuiComboBoxListControl
 				{
 					itemStyleController->SetFont(GetDisplayFont());
 				}
-				AdoptSubMenuSize();
 			}
 
 			void GuiComboBoxListControl::BeforeControlTemplateUninstalled()
@@ -171,7 +170,6 @@ GuiComboBoxListControl
 				{
 					itemStyleController->SetContext(GetContext());
 				}
-				AdoptSubMenuSize();
 			}
 
 			void GuiComboBoxListControl::OnVisuallyEnabledChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
@@ -189,11 +187,6 @@ GuiComboBoxListControl
 			}
 
 			void GuiComboBoxListControl::OnListControlAdoptedSizeInvalidated(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
-			{
-				AdoptSubMenuSize();
-			}
-
-			void GuiComboBoxListControl::OnListControlCachedBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
 				auto flag = GetDisposedFlag();
 				GetApplication()->InvokeLambdaInMainThread(GetRelatedControlHost(), [=]()
@@ -260,7 +253,6 @@ GuiComboBoxListControl
 				containedListControl->AdoptedSizeInvalidated.AttachMethod(this, &GuiComboBoxListControl::OnListControlAdoptedSizeInvalidated);
 				containedListControl->ItemLeftButtonDown.AttachMethod(this, &GuiComboBoxListControl::OnListControlItemMouseDown);
 				containedListControl->ItemRightButtonDown.AttachMethod(this, &GuiComboBoxListControl::OnListControlItemMouseDown);
-				boundsChangedHandler = containedListControl->GetBoundsComposition()->CachedBoundsChanged.AttachMethod(this, &GuiComboBoxListControl::OnListControlCachedBoundsChanged);
 				boundsComposition->GetEventReceiver()->keyDown.AttachMethod(this, &GuiComboBoxListControl::OnKeyDown);
 
 				auto itemProvider = containedListControl->GetItemProvider();
