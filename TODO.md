@@ -116,6 +116,8 @@
 - ListView.
   - `GroupedListView` and `BindableGroupedListView` from `GuiVirtualListView`: Group headers on all views.
   - `TreeListView` and `BindableTreeListView` from `GuiVirtualTreeView`.
+    - Or add such feature to `GuiBindableDataGrid` or a new class `GuiBindableTreeGrid`.
+      - Try to reuse code from treeview.
 - Chart control.
 - Code editor (need VlppParser2)
 - Dock container.
