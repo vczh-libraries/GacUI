@@ -3873,6 +3873,7 @@ class presentation::compositions::GuiVirtualRepeatCompositionBase : presentation
     property AdoptedSize : presentation::Size { get:GetAdoptedSize event:AdoptedSizeInvalidated }
     property Axis : presentation::compositions::IGuiAxis^ { get:GetAxis set:SetAxis event:AxisChanged }
     property TotalSize : presentation::Size { get:GetTotalSize event:TotalSizeChanged }
+    property UseMinimumTotalSize : system::Boolean { get:GetUseMinimumTotalSize set:SetUseMinimumTotalSize }
     property ViewLocation : presentation::Point { get:GetViewLocation set:SetViewLocation event:ViewLocationChanged }
 
     function EnsureItemVisible(itemIndex : system::Int64) : presentation::compositions::VirtualRepeatEnsureItemVisibleResult;
@@ -3882,12 +3883,14 @@ class presentation::compositions::GuiVirtualRepeatCompositionBase : presentation
     function GetAdoptedSize(expectedSize : presentation::Size) : presentation::Size;
     function GetAxis() : presentation::compositions::IGuiAxis^;
     function GetTotalSize() : presentation::Size;
+    function GetUseMinimumTotalSize() : system::Boolean;
     function GetViewLocation() : presentation::Point;
     function GetVisibleIndex(style : presentation::templates::GuiTemplate*) : system::Int64;
     function GetVisibleStyle(itemIndex : system::Int64) : presentation::templates::GuiTemplate*;
     function InvalidateLayout() : system::Void;
     function ResetLayout(recreateVisibleStyles : system::Boolean) : system::Void;
     function SetAxis(value : presentation::compositions::IGuiAxis^) : system::Void;
+    function SetUseMinimumTotalSize(value : system::Boolean) : system::Void;
     function SetViewLocation(value : presentation::Point) : system::Void;
 
 }
