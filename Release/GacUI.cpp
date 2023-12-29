@@ -10143,7 +10143,6 @@ GuiComboBoxListControl
 				{
 					itemStyleController->SetFont(GetDisplayFont());
 				}
-				AdoptSubMenuSize();
 			}
 
 			void GuiComboBoxListControl::BeforeControlTemplateUninstalled()
@@ -10242,7 +10241,6 @@ GuiComboBoxListControl
 				{
 					itemStyleController->SetContext(GetContext());
 				}
-				AdoptSubMenuSize();
 			}
 
 			void GuiComboBoxListControl::OnVisuallyEnabledChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
@@ -10260,11 +10258,6 @@ GuiComboBoxListControl
 			}
 
 			void GuiComboBoxListControl::OnListControlAdoptedSizeInvalidated(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
-			{
-				AdoptSubMenuSize();
-			}
-
-			void GuiComboBoxListControl::OnListControlCachedBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
 				auto flag = GetDisposedFlag();
 				GetApplication()->InvokeLambdaInMainThread(GetRelatedControlHost(), [=]()
@@ -10331,7 +10324,6 @@ GuiComboBoxListControl
 				containedListControl->AdoptedSizeInvalidated.AttachMethod(this, &GuiComboBoxListControl::OnListControlAdoptedSizeInvalidated);
 				containedListControl->ItemLeftButtonDown.AttachMethod(this, &GuiComboBoxListControl::OnListControlItemMouseDown);
 				containedListControl->ItemRightButtonDown.AttachMethod(this, &GuiComboBoxListControl::OnListControlItemMouseDown);
-				boundsChangedHandler = containedListControl->GetBoundsComposition()->CachedBoundsChanged.AttachMethod(this, &GuiComboBoxListControl::OnListControlCachedBoundsChanged);
 				boundsComposition->GetEventReceiver()->keyDown.AttachMethod(this, &GuiComboBoxListControl::OnKeyDown);
 
 				auto itemProvider = containedListControl->GetItemProvider();
@@ -12249,12 +12241,6 @@ GuiListControl
 				}
 			}
 
-			void GuiListControl::OnClientCachedBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
-			{
-				auto args = GetNotifyEventArguments();
-				AdoptedSizeInvalidated.Execute(args);
-			}
-
 			void GuiListControl::OnVisuallyEnabledChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
 				for (auto style : visibleStyles.Keys())
@@ -12380,7 +12366,6 @@ GuiListControl
 			{
 				ContextChanged.AttachMethod(this, &GuiListControl::OnContextChanged);
 				VisuallyEnabledChanged.AttachMethod(this, &GuiListControl::OnVisuallyEnabledChanged);
-				containerComposition->CachedBoundsChanged.AttachMethod(this, &GuiListControl::OnClientCachedBoundsChanged);
 
 				ItemTemplateChanged.SetAssociatedComposition(boundsComposition);
 				ArrangerChanged.SetAssociatedComposition(boundsComposition);
@@ -12496,8 +12481,34 @@ GuiListControl
 				{
 					Size controlSize = boundsComposition->GetCachedBounds().GetSize();
 					Size viewSize = containerComposition->GetCachedBounds().GetSize();
-					vint x = controlSize.x - viewSize.x;
-					vint y = controlSize.y - viewSize.y;
+					vint dx = controlSize.x - viewSize.x;
+					vint dy = controlSize.y - viewSize.y;
+					if (dx < 0) dx = 0;
+					if (dy < 0) dy = 0;
+
+					auto hscroll = GetHorizontalScroll();
+					auto vscroll = GetVerticalScroll();
+
+					if (!vscroll || vscroll->GetBoundsComposition()->GetEventuallyVisible())
+					{
+						if (adoptedSizeDiffWithScroll.x < dx) adoptedSizeDiffWithScroll.x = dx;
+					}
+					if (!vscroll || !vscroll->GetBoundsComposition()->GetEventuallyVisible())
+					{
+						if (adoptedSizeDiffWithoutScroll.x < dx) adoptedSizeDiffWithoutScroll.x = dx;
+					}
+
+					if (!hscroll || hscroll->GetBoundsComposition()->GetEventuallyVisible())
+					{
+						if (adoptedSizeDiffWithScroll.y < dy) adoptedSizeDiffWithScroll.y = dy;
+					}
+					if (!hscroll || !hscroll->GetBoundsComposition()->GetEventuallyVisible())
+					{
+						if (adoptedSizeDiffWithoutScroll.y < dy) adoptedSizeDiffWithoutScroll.y = dy;
+					}
+
+					vint x = adoptedSizeDiffWithoutScroll.x != -1 ? adoptedSizeDiffWithoutScroll.x : adoptedSizeDiffWithScroll.x;
+					vint y = adoptedSizeDiffWithoutScroll.y != -1 ? adoptedSizeDiffWithoutScroll.y : adoptedSizeDiffWithScroll.y;
 
 					Size expectedViewSize(expectedSize.x - x, expectedSize.y - y);
 					if (axis)
@@ -28098,6 +28109,21 @@ GuiVirtualRepeatCompositionBase
 				return realFullSize;
 			}
 
+			bool GuiVirtualRepeatCompositionBase::GetUseMinimumTotalSize()
+			{
+				return useMinimumFullSize;
+			}
+
+			void GuiVirtualRepeatCompositionBase::SetUseMinimumTotalSize(bool value)
+			{
+				if (useMinimumFullSize != value)
+				{
+					useMinimumFullSize = value;
+					realFullSize = axis->VirtualSizeToRealSize(Layout_CalculateTotalSize());
+					TotalSizeChanged.Execute(GuiEventArgs(this));
+				}
+			}
+
 			Point GuiVirtualRepeatCompositionBase::GetViewLocation()
 			{
 				return axis->VirtualRectToRealRect(realFullSize, viewBounds).LeftTop();
@@ -28261,7 +28287,9 @@ GuiRepeatFreeHeightItemComposition
 			{
 				if (heights.Count() == 0) return Size(0, 0);
 				EnsureOffsetForItem(heights.Count());
-				return Size(viewBounds.Width(), offsets[heights.Count() - 1] + heights[heights.Count() - 1]);
+				vint w = useMinimumFullSize ? 0 : viewBounds.Width();
+				vint h = offsets[heights.Count() - 1] + heights[heights.Count() - 1];
+				return Size(w, h);
 			}
 
 			void GuiRepeatFreeHeightItemComposition::OnItemChanged(vint start, vint oldCount, vint newCount)
@@ -28467,7 +28495,7 @@ GuiRepeatFixedHeightItemComposition
 				if (!itemSource || itemSource->GetCount() == 0) return Size(0, 0);
 
 				vint width = itemWidth;
-				if (width == -1) width = viewBounds.Width();
+				if (width == -1) width = useMinimumFullSize ? 0 : viewBounds.Width();
 				return Size(width, rowHeight * itemSource->GetCount() + itemYOffset);
 			}
 
@@ -28682,7 +28710,7 @@ GuiRepeatFixedSizeMultiColumnItemComposition
 				vint rows = itemSource->GetCount() / rowItems;
 				if (itemSource->GetCount() % rowItems) rows++;
 
-				return Size(itemSize.x * rowItems, itemSize.y * rows);
+				return Size(itemSize.x * (useMinimumFullSize ? 1 : rowItems), itemSize.y * rows);
 			}
 
 			vint GuiRepeatFixedSizeMultiColumnItemComposition::FindItemByVirtualKeyDirection(vint itemIndex, compositions::KeyDirection key)
@@ -28965,7 +28993,7 @@ GuiRepeatFixedHeightMultiColumnItemComposition
 				if (rows < 1) rows = 1;
 				vint columns = (itemSource->GetCount() + rows - 1) / rows;
 
-				return Size(viewBounds.Width() * (columns + 1), (rows * itemHeight));
+				return Size(viewBounds.Width() * (columns + 1), (useMinimumFullSize ? 0 : rows * itemHeight));
 			}
 
 			vint GuiRepeatFixedHeightMultiColumnItemComposition::FindItemByVirtualKeyDirection(vint itemIndex, compositions::KeyDirection key)

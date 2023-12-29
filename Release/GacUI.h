@@ -6075,6 +6075,7 @@ GuiVirtualRepeatCompositionBase
 
 				Ptr<IGuiAxis>										axis = Ptr(new GuiDefaultAxis);
 				bool												itemSourceUpdated = false;
+				bool												useMinimumFullSize = false;
 				Size												realFullSize;
 				Rect												viewBounds;
 				vint												startIndex = 0;
@@ -6131,6 +6132,8 @@ GuiVirtualRepeatCompositionBase
 				Ptr<IGuiAxis>										GetAxis();
 				void												SetAxis(Ptr<IGuiAxis> value);
 
+				bool												GetUseMinimumTotalSize();
+				void												SetUseMinimumTotalSize(bool value);
 				Size												GetTotalSize();
 				Point												GetViewLocation();
 				void												SetViewLocation(Point value);
@@ -14095,6 +14098,8 @@ List Control
 				Ptr<IItemArranger>								itemArranger;
 				Ptr<compositions::IGuiAxis>						axis;
 				Size											fullSize;
+				Size											adoptedSizeDiffWithScroll = { -1,-1 };
+				Size											adoptedSizeDiffWithoutScroll = { -1,-1 };
 				bool											displayItemBackground = true;
 
 				virtual void									OnItemModified(vint start, vint count, vint newCount, bool itemReferenceUpdated);
@@ -14134,7 +14139,6 @@ List Control
 				collections::Dictionary<ItemStyle*, Ptr<VisibleStyleHelper>>		visibleStyles;
 
 				void											UpdateDisplayFont()override;
-				void											OnClientCachedBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void											OnVisuallyEnabledChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void											OnContextChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void											OnItemMouseEvent(compositions::GuiItemMouseEvent& itemEvent, ItemStyle* style, compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments);
@@ -14480,6 +14484,7 @@ Predefined ItemArranger
 							: TVirtualRepeatComposition(std::forward<TArgs&&>(args)...)
 							, arranger(_arranger)
 						{
+							this->SetUseMinimumTotalSize(true);
 						}
 					};
 
@@ -17874,7 +17879,6 @@ ComboBox with GuiListControl
 				void										OnVisuallyEnabledChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void										OnAfterSubMenuOpening(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void										OnListControlAdoptedSizeInvalidated(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
-				void										OnListControlCachedBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void										OnListControlItemMouseDown(compositions::GuiGraphicsComposition* sender, compositions::GuiItemMouseEventArgs& arguments);
 				void										OnKeyDown(compositions::GuiGraphicsComposition* sender, compositions::GuiKeyEventArgs& arguments);
 
