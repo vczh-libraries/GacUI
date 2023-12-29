@@ -238,6 +238,8 @@ List Control
 				Ptr<IItemArranger>								itemArranger;
 				Ptr<compositions::IGuiAxis>						axis;
 				Size											fullSize;
+				Size											adoptedSizeDiffWithScroll = { -1,-1 };
+				Size											adoptedSizeDiffWithoutScroll = { -1,-1 };
 				bool											displayItemBackground = true;
 
 				virtual void									OnItemModified(vint start, vint count, vint newCount, bool itemReferenceUpdated);

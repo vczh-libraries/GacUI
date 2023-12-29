@@ -539,8 +539,34 @@ GuiListControl
 				{
 					Size controlSize = boundsComposition->GetCachedBounds().GetSize();
 					Size viewSize = containerComposition->GetCachedBounds().GetSize();
-					vint x = controlSize.x - viewSize.x;
-					vint y = controlSize.y - viewSize.y;
+					vint dx = controlSize.x - viewSize.x;
+					vint dy = controlSize.y - viewSize.y;
+					if (dx < 0) dx = 0;
+					if (dy < 0) dy = 0;
+
+					auto hscroll = GetHorizontalScroll();
+					auto vscroll = GetVerticalScroll();
+
+					if (!vscroll || vscroll->GetBoundsComposition()->GetEventuallyVisible())
+					{
+						if (adoptedSizeDiffWithScroll.x < dx) adoptedSizeDiffWithScroll.x = dx;
+					}
+					if (!vscroll || !vscroll->GetBoundsComposition()->GetEventuallyVisible())
+					{
+						if (adoptedSizeDiffWithoutScroll.x < dx) adoptedSizeDiffWithoutScroll.x = dx;
+					}
+
+					if (!hscroll || hscroll->GetBoundsComposition()->GetEventuallyVisible())
+					{
+						if (adoptedSizeDiffWithScroll.y < dy) adoptedSizeDiffWithScroll.y = dy;
+					}
+					if (!hscroll || !hscroll->GetBoundsComposition()->GetEventuallyVisible())
+					{
+						if (adoptedSizeDiffWithoutScroll.y < dy) adoptedSizeDiffWithoutScroll.y = dy;
+					}
+
+					vint x = adoptedSizeDiffWithoutScroll.x != -1 ? adoptedSizeDiffWithoutScroll.x : adoptedSizeDiffWithScroll.x;
+					vint y = adoptedSizeDiffWithoutScroll.y != -1 ? adoptedSizeDiffWithoutScroll.y : adoptedSizeDiffWithScroll.y;
 
 					Size expectedViewSize(expectedSize.x - x, expectedSize.y - y);
 					if (axis)
