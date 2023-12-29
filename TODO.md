@@ -18,9 +18,6 @@
 
 ## Progressing (before release)
 
-Turn `GuiListControl::IItemArranger` implementations into compositions.
-  - New `GuiListControl::IItemArranger` that can accept a `GuiRepeatCompositionBase`.
-    - Test `GetAdoptedSize`.
 - MISC
   - Check everywhere that uses `CachedBoundsChanged.Attach`.
   - Enlarging window slower than shrinking.
@@ -34,6 +31,8 @@ Turn `GuiListControl::IItemArranger` implementations into compositions.
   - `control_ribbon_empty` expanding button of a group is inaccessible when it is collapsed into a dropdown.
     - This is a new feature, need to consider how to do it.
 - Document `GuiVirtualRepeatCompositionBase`'s `UseMinimumTotalSize` property.
+- Test `GuiVirtualRepeatCompositionBase::GetAdoptedSize`.
+- Test `GuiVirtualRepeatCompositionBase::GetTotalSize` with `UseMinimumTotalSize`.
 
 ## Unit Test Framework
 
