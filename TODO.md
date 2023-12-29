@@ -36,6 +36,7 @@ Turn `GuiListControl::IItemArranger` implementations into compositions.
     - When the adopted size changed, list size changed, hscroll appears and disappears, causing the adopted size to change again.
   - `control_ribbon_empty` expanding button of a group is inaccessible when it is collapsed into a dropdown.
     - This is a new feature, need to consider how to do it.
+- Document `GuiVirtualRepeatCompositionBase`'s `UseMinimumTotalSize` property.
 
 ## Unit Test Framework
 

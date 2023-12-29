@@ -159,6 +159,7 @@ GuiVirtualRepeatCompositionBase
 
 				Ptr<IGuiAxis>										axis = Ptr(new GuiDefaultAxis);
 				bool												itemSourceUpdated = false;
+				bool												useMinimumFullSize = false;
 				Size												realFullSize;
 				Rect												viewBounds;
 				vint												startIndex = 0;
@@ -215,6 +216,8 @@ GuiVirtualRepeatCompositionBase
 				Ptr<IGuiAxis>										GetAxis();
 				void												SetAxis(Ptr<IGuiAxis> value);
 
+				bool												GetUseMinimumTotalSize();
+				void												SetUseMinimumTotalSize(bool value);
 				Size												GetTotalSize();
 				Point												GetViewLocation();
 				void												SetViewLocation(Point value);

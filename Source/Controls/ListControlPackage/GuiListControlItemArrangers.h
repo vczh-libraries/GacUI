@@ -96,6 +96,7 @@ Predefined ItemArranger
 							: TVirtualRepeatComposition(std::forward<TArgs&&>(args)...)
 							, arranger(_arranger)
 						{
+							this->SetUseMinimumTotalSize(true);
 						}
 					};
 
