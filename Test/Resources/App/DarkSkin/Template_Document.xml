@@ -1,19 +1,4 @@
 <Folder>
-  <Doc name="BaselineDocument">
-    <Doc>
-      <Content/>
-      <Styles>
-        <Style name="#Default-Override">
-          <color>#FFFFFF</color>
-        </Style>
-        <Style name="#Selection-Override">
-          <color>#FFFFFF</color>
-          <bkcolor>#007ACC</bkcolor>
-        </Style>
-      </Styles>
-    </Doc>
-  </Doc>
-
   <Instance name="DocumentLabelTemplateResource">
     <Instance ref.CodeBehind="false" ref.Class="darkskin::DocumentLabelTemplate" ref.Styles="res://DarkSkin/Style">
       <DocumentLabelTemplate ref.Name="self" ref.Style="documentBoxBackgroundAndColor" MinSizeLimitation="LimitToElementAndChildren"/>

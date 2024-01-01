@@ -1,0 +1,16 @@
+<Folder>
+  <Doc name="Dark">
+    <Doc>
+      <Content/>
+      <Styles>
+        <Style name="#Default-Override">
+          <color>#FFFFFF</color>
+        </Style>
+        <Style name="#Selection-Override">
+          <color>#FFFFFF</color>
+          <bkcolor>#007ACC</bkcolor>
+        </Style>
+      </Styles>
+    </Doc>
+  </Doc>
+</Folder>

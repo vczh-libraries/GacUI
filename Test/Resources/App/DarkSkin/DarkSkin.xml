@@ -1,6 +1,7 @@
 <Folder>
   <Instance name="DarkSkinThemeResource" content="File">Index.xml</Instance>
   <InstanceStyle name="Style" content="File">Style.xml</InstanceStyle>
+  <Folder name="BaselineDocuments" content="Link">BaselineDocuments.xml</Folder>
 
   <Folder name="Window" content="Link">Template_Window.xml</Folder>
   <Folder name="Tab" content="Link">Template_Tab.xml</Folder>
