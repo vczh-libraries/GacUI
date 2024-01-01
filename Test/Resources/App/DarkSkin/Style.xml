@@ -26,6 +26,23 @@
     </att.Color-bind>
   </Style>
   <Style ref.Path="//*.tooltipBorder" Color="#017ACC"/>
+  <Style ref.Path="//*.groupText" Color="#C7C7C7"/>
+  <Style ref.Path="//*.labelDefaultText" DefaultTextColor="#F1F1F1"/>
+  <Style ref.Path="//*.labelText">
+    <att.Color-bind>
+      <![CDATA[
+        cast Color (
+          not self.VisuallyEnabled ? "#6D6D6D" :
+          self.TextColor
+        )
+      ]]>
+    </att.Color-bind>
+  </Style>
+  <Style ref.Path="//*.datePickerColors">
+    <att.BackgroundColor>#2D2D30</att.BackgroundColor>
+    <att.PrimaryTextColor>#FFFFFF</att.PrimaryTextColor>
+    <att.SecondaryTextColor>#999999</att.SecondaryTextColor>
+  </Style>
   <Style ref.Path="//*.buttonBackground">
     <att.Color-bind>
       <![CDATA[
