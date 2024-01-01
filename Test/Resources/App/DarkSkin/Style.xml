@@ -23,6 +23,7 @@
       ]]>
     </att.Color-bind>
   </Style>
+  <Style ref.Path="//*.tooltipBorder" Color="#017ACC"/>
   <Style ref.Path="//*.buttonBackground">
     <att.Color-bind>
       <![CDATA[
