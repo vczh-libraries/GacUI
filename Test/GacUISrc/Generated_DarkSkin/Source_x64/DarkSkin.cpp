@@ -32779,13 +32779,13 @@ Class (::darkskin::ToolstripSplitterTemplateConstructor)
 		}
 		(this->__vwsn_precompile_3 = ::vl::Ptr<::vl::presentation::elements::Gui3DSplitterElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::Gui3DSplitterElement>()));
 		{
+			::vl::__vwsn::This(this->__vwsn_precompile_3.Obj())->SetDirection(::vl::presentation::elements::Gui3DSplitterElement::Direction::Vertical);
+		}
+		{
 			::vl::__vwsn::This(this->__vwsn_precompile_3.Obj())->SetColor2(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#464648")));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_3.Obj())->SetColor1(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#222224")));
-		}
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_3.Obj())->SetDirection(::vl::presentation::elements::Gui3DSplitterElement::Direction::Vertical);
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_2)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_3));

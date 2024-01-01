@@ -2,7 +2,7 @@
   <Instance name="ToolstripTemplateResource">
     <Instance ref.CodeBehind="false" ref.Class="darkskin::ToolstripTemplate" ref.Styles="res://DarkSkin/Style">
       <ControlTemplate ContainerComposition-ref="container" MinSizeLimitation="LimitToElementAndChildren">
-        <SolidBackground Color="#2D2D30"/>
+        <SolidBackground ref.Style="generalBackground"/>
         <Bounds ref.Name="container" AlignmentToParent="left:2 top:2 right:2 bottom:2"/>
       </ControlTemplate>
     </Instance>
@@ -11,9 +11,9 @@
   <Instance name="ToolstripMenuTemplateResource">
     <Instance ref.CodeBehind="false" ref.Class="darkskin::ToolstripMenuTemplate" ref.Styles="res://DarkSkin/Style">
       <MenuTemplate ContainerComposition-ref="container" MinSizeLimitation="LimitToElementAndChildren">
-        <SolidBackground Color="#1B1B1C"/>
+        <SolidBackground ref.Style="toolstripMenuBackground"/>
         <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
-          <SolidBorder Color="#333337"/>
+          <SolidBorder ref.Style="toolstripMenuBorder"/>
           <Bounds ref.Name="container" AlignmentToParent="left:3 top:3 right:3 bottom:3"/>
         </Bounds>
       </MenuTemplate>
@@ -23,9 +23,9 @@
   <Instance name="ToolstripSplitterTemplateResource">
     <Instance ref.CodeBehind="false" ref.Class="darkskin::ToolstripSplitterTemplate" ref.Styles="res://DarkSkin/Style">
       <ControlTemplate MinSizeLimitation="LimitToElementAndChildren">
-        <SolidBackground Color="#2D2D30"/>
+        <SolidBackground ref.Style="generalBackground"/>
         <Bounds AlignmentToParent="left:3 top:1 right:3 bottom:1">
-          <Gui3DSplitterElement Direction="Vertical" Color1="#222224" Color2="#464648"/>
+          <Gui3DSplitterElement Direction="Vertical" ref.Style="toolstripSplitter"/>
         </Bounds>
       </ControlTemplate>
     </Instance>
@@ -34,9 +34,9 @@
   <Instance name="MenuSplitterTemplateResource">
     <Instance ref.CodeBehind="false" ref.Class="darkskin::MenuSplitterTemplate" ref.Styles="res://DarkSkin/Style">
       <ControlTemplate MinSizeLimitation="LimitToElementAndChildren">
-        <SolidBackground Color="#1B1B1C"/>
+        <SolidBackground ref.Style="toolstripMenuBackground"/>
         <Bounds AlignmentToParent="left:0 top:1 right:0 bottom:1" PreferredMinSize="x:0 y:1">
-          <SolidBackground Color="#333337"/>
+          <SolidBackground ref.Style="toolstripMenuBorder"/>
         </Bounds>
       </ControlTemplate>
     </Instance>

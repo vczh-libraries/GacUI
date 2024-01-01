@@ -220,6 +220,9 @@
       ]]>
     </att.Color-bind>
   </Style>
+  <Style ref.Path="//*.toolstripMenuBackground" Color="#1B1B1C"/>
+  <Style ref.Path="//*.toolstripMenuBorder" Color="#333337"/>
+  <Style ref.Path="//*.toolstripSplitter" Color1="#222224" Color2="#464648"/>
   <Style ref.Path="//*.toolstripBackground">
     <att.Color-bind>
       <![CDATA[
