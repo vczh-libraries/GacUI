@@ -24,6 +24,7 @@
 - Check makefiles in Release repo
 - Test `GuiVirtualRepeatCompositionBase::GetAdoptedSize`.
 - Test `GuiVirtualRepeatCompositionBase::GetTotalSize` with `UseMinimumTotalSize`.
+- https://github.com/vczh-libraries/Vlpp/issues/9
 
 ## Unit Test Framework
 
