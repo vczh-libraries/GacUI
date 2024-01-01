@@ -19,13 +19,12 @@ namespace vl
 	{
 		namespace controls
 		{
-
-/***********************************************************************
-Ribbon Containers
-***********************************************************************/
-
 			class GuiRibbonTabPage;
 			class GuiRibbonGroup;
+
+/***********************************************************************
+Ribbon Tab
+***********************************************************************/
 
 			/// <summary>Ribbon tab control, for displaying ribbon tab pages.</summary>
 			class GuiRibbonTab : public GuiTab, public Description<GuiRibbonTab>
@@ -93,6 +92,10 @@ Ribbon Containers
 				/// <returns>The collection of ribbon groups.</returns>
 				collections::ObservableListBase<GuiRibbonGroup*>&	GetGroups();
 			};
+
+/***********************************************************************
+Ribbon Group
+***********************************************************************/
 
 			class GuiRibbonGroupItemCollection : public collections::ObservableListBase<GuiControl*>
 			{

@@ -27,10 +27,8 @@
   - Use it in `<PartialView ref.Name="handle">`.
   - https://github.com/vczh-libraries/GacUI/issues/73
 - Check makefiles in Release repo
-- Ribbon
-  - Expanding button of a group is inaccessible when it is collapsed into a dropdown.
-    - Check document
 - Document `GuiVirtualRepeatCompositionBase`'s `UseMinimumTotalSize` property.
+- Document `GuiRibbonGroupTemplate::SubMenuTemplate` if exists.
 - Test `GuiVirtualRepeatCompositionBase::GetAdoptedSize`.
 - Test `GuiVirtualRepeatCompositionBase::GetTotalSize` with `UseMinimumTotalSize`.
 

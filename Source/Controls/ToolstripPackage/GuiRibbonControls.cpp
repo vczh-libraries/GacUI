@@ -270,12 +270,20 @@ GuiRibbonGroup
 
 			void GuiRibbonGroup::AfterControlTemplateInstalled_(bool initialize)
 			{
-				auto ct = TypedControlTemplateObject(true);
-				ct->SetExpandable(expandable);
-				ct->SetCollapsed(responsiveView->GetCurrentView() == responsiveFixedButton);
-				ct->SetCommands(commandExecutor.Obj());
-				dropdownButton->SetControlTemplate(ct->GetLargeDropdownButtonTemplate());
-				dropdownMenu->SetControlTemplate(ct->GetSubMenuTemplate());
+				{
+					auto ct = TypedControlTemplateObject(true);
+					ct->SetExpandable(expandable);
+					ct->SetCollapsed(responsiveView->GetCurrentView() == responsiveFixedButton);
+					ct->SetCommands(commandExecutor.Obj());
+					dropdownButton->SetControlTemplate(ct->GetLargeDropdownButtonTemplate());
+					dropdownMenu->SetControlTemplate(ct->GetSubMenuTemplate());
+				}
+
+				if (auto ct = dynamic_cast<GuiRibbonGroupMenuTemplate*>(dropdownMenu->TypedControlTemplateObject(true)))
+				{
+					ct->SetExpandable(expandable);
+					ct->SetCommands(commandExecutor.Obj());
+				}
 			}
 
 			bool GuiRibbonGroup::IsAltAvailable()
@@ -413,6 +421,10 @@ GuiRibbonGroup
 				{
 					expandable = value;
 					TypedControlTemplateObject(true)->SetExpandable(expandable);
+					if (auto ct = dynamic_cast<GuiRibbonGroupMenuTemplate*>(dropdownMenu->TypedControlTemplateObject(true)))
+					{
+						ct->SetExpandable(expandable);
+					}
 					ExpandableChanged.Execute(GetNotifyEventArguments());
 				}
 			}

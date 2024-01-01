@@ -411,11 +411,34 @@
 
   <Instance name="RibbonGroupMenuTemplateResource">
     <Instance ref.CodeBehind="false" ref.Class="darkskin::RibbonGroupMenuTemplate" ref.Styles="res://DarkSkin/Style">
-      <RibbonGroupMenuTemplate ContainerComposition-ref="container" MinSizeLimitation="LimitToElementAndChildren">
+      <RibbonGroupMenuTemplate ref.Name="self" ContainerComposition-ref="container" MinSizeLimitation="LimitToElementAndChildren">
         <SolidBackground ref.Style="generalBackground"/>
         <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
           <SolidBorder ref.Style="ribbonMenuBorder"/>
-          <Bounds ref.Name="container" AlignmentToParent="left:3 top:3 right:3 bottom:3"/>
+          <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="3">
+            <att.Rows>
+              <_>composeType:Percentage percentage:1.0</_>
+              <_>composeType:MinSize</_>
+            </att.Rows>
+            <att.Columns>
+              <_>composeType:Percentage percentage:1.0</_>
+              <_>composeType:MinSize</_>
+            </att.Columns>
+
+            <Cell ref.Name="container" Site="row:0 column:0 columnSpan:2"/>
+            <Cell Site="row:1 column:1">
+              <Button AutoFocus="false" Visible-bind="self.Expandable" ControlTemplate="darkskin::RibbonGroupExpandButtonTemplate">
+                <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+                <ev.Clicked-eval>
+                  <![CDATA[
+                    {
+                      self.Commands.NotifyExpandButtonClicked();
+                    }
+                  ]]>
+                </ev.Clicked-eval>
+              </Button>
+            </Cell>
+          </Table>
         </Bounds>
       </RibbonGroupMenuTemplate>
     </Instance>
