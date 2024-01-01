@@ -85,7 +85,7 @@
         <att.Highlighted-bind>(cast (RibbonTabPage*) self.SelectedTabPage).Highlighted ?? false</att.Highlighted-bind>
         
         <Table AlignmentToParent="left:0 top:0 right:0 bottom:0">
-          <SolidBackground Color="#2D2D30"/>
+          <SolidBackground ref.Style="generalBackground"/>
           <att.Rows>
             <CellOption>composeType:MinSize</CellOption>
             <CellOption>composeType:Absolute absolute:2</CellOption>
@@ -127,7 +127,7 @@
             <SolidBackground ref.Style="tabHeaderBottomLine"/>
           </Cell>
           <Cell Site="row:2 column:0 columnSpan:3">
-            <SolidBorder Color="#434346"/>
+            <SolidBorder ref.Style="generalBorder"/>
             <Bounds ref.Name="container" AlignmentToParent="left:1 top:1 right:1 bottom:1"/>
           </Cell>
         </Table>

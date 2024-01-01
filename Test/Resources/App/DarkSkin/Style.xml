@@ -1,5 +1,7 @@
 <Styles>
   <Style ref.Path="(//Bounds + //Table + //RepeatStack + //RepeatFlow)" MinSizeLimitation="LimitToElementAndChildren"/>
+  <Style ref.Path="//*.generalBackground" Color="#2D2D30"/>
+  <Style ref.Path="//*.generalBorder" Color="#434346"/>
   <Style ref.Path="//*.windowBorder">
     <att.Color-bind>
       <![CDATA[
