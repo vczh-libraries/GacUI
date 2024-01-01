@@ -22,8 +22,6 @@
   - Check everywhere that uses `CachedBoundsChanged.Attach`.
   - Enlarging window slower than shrinking.
 - Check makefiles in Release repo
-- Document `GuiVirtualRepeatCompositionBase`'s `UseMinimumTotalSize` property.
-- Document `GuiRibbonGroupTemplate::SubMenuTemplate` if exists.
 - Test `GuiVirtualRepeatCompositionBase::GetAdoptedSize`.
 - Test `GuiVirtualRepeatCompositionBase::GetTotalSize` with `UseMinimumTotalSize`.
 

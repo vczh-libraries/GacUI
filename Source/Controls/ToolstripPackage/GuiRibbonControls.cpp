@@ -382,7 +382,7 @@ GuiRibbonGroup
 					responsiveFixedButton->SetAlignmentToParent(Margin(0, 0, 0, 0));
 					responsiveFixedButton->AddChild(dropdownButton->GetBoundsComposition());
 
-					dropdownMenu = new GuiRibbonGroupMenu(theme::ThemeName::Menu, dropdownButton);
+					dropdownMenu = new GuiRibbonGroupMenu(theme::ThemeName::RibbonGroupMenu, dropdownButton);
 				}
 
 				responsiveView = new GuiResponsiveViewComposition();
