@@ -29,7 +29,6 @@
 - Check makefiles in Release repo
 - Ribbon
   - Expanding button of a group is inaccessible when it is collapsed into a dropdown.
-  - When gallery selection is cleared, the list selection should also be cleared.
 - Document `GuiVirtualRepeatCompositionBase`'s `UseMinimumTotalSize` property.
 - Test `GuiVirtualRepeatCompositionBase::GetAdoptedSize`.
 - Test `GuiVirtualRepeatCompositionBase::GetTotalSize` with `UseMinimumTotalSize`.

@@ -308,20 +308,17 @@ GuiBindableRibbonGalleryList
 			void GuiBindableRibbonGalleryList::OnItemListSelectionChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
 				auto pos = IndexToGalleryPos(itemList->GetSelectedItemIndex());
-				if (pos.group != -1 && pos.item != -1)
+				// TODO: (enumerable) foreach
+				for (vint i = 0; i < groupedItemSource.Count(); i++)
 				{
-					// TODO: (enumerable) foreach
-					for (vint i = 0; i < groupedItemSource.Count(); i++)
+					auto group = groupedItemSource[i];
+					if (group->GetItemValues())
 					{
-						auto group = groupedItemSource[i];
-						if (group->GetItemValues())
+						vint count = group->GetItemValues()->GetCount();
+						for (vint j = 0; j < count; j++)
 						{
-							vint count = group->GetItemValues()->GetCount();
-							for (vint j = 0; j < count; j++)
-							{
-								auto background = MenuGetGroupItemBackground(i, j);
-								background->SetSelected(pos.group == i && pos.item == j);
-							}
+							auto background = MenuGetGroupItemBackground(i, j);
+							background->SetSelected(pos.group == i && pos.item == j);
 						}
 					}
 				}
