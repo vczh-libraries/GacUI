@@ -166,7 +166,7 @@
           </Button>
         </SideAligned>
         <Bounds ref.Name="handleContainer" AlignmentToParent="left:20 top:0 right:20 bottom:0" MinSizeLimitation="NoLimit">
-          <PartialView ref.Name="handle">
+          <PartialView ref.Name="handle" PreferredMinSize="x:10">
             <att.WidthPageSize-bind>(cast double self.PageSize) / self.TotalSize</att.WidthPageSize-bind>
             <att.WidthRatio-bind>(cast double self.Position) / self.TotalSize</att.WidthRatio-bind>
             <Button AutoFocus="false" ControlTemplate="darkskin::HScrollHandleTemplate">
@@ -209,7 +209,7 @@
           </Button>
         </SideAligned>
         <Bounds ref.Name="handleContainer" AlignmentToParent="left:0 top:20 right:0 bottom:20" MinSizeLimitation="NoLimit">
-          <PartialView ref.Name="handle">
+          <PartialView ref.Name="handle" PreferredMinSize="y:10">
             <att.HeightPageSize-bind>(cast double self.PageSize) / self.TotalSize</att.HeightPageSize-bind>
             <att.HeightRatio-bind>(cast double self.Position) / self.TotalSize</att.HeightRatio-bind>
             <Button AutoFocus="false" ControlTemplate="darkskin::VScrollHandleTemplate">

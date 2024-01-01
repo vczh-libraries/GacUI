@@ -26863,6 +26863,9 @@ Class (::darkskin::HScrollTemplateConstructor)
 		}
 		(this->handle = new ::vl::presentation::compositions::GuiPartialViewComposition());
 		{
+			::vl::__vwsn::This(this->handle)->SetPreferredMinSize([&](){ ::vl::presentation::Size __vwsn_temp__; __vwsn_temp__.x = static_cast<::vl::vint64_t>(10L); return __vwsn_temp__; }());
+		}
+		{
 			(this->__vwsn_precompile_7 = new ::vl::presentation::controls::GuiButton(::vl::presentation::theme::ThemeName::Button));
 		}
 		(this->__vwsn_precompile_8 = ::vl::__vwsn::This(this->__vwsn_precompile_7)->GetBoundsComposition());
@@ -33443,6 +33446,9 @@ Class (::darkskin::VScrollTemplateConstructor)
 			::vl::__vwsn::This(this->handleContainer)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::NoLimit);
 		}
 		(this->handle = new ::vl::presentation::compositions::GuiPartialViewComposition());
+		{
+			::vl::__vwsn::This(this->handle)->SetPreferredMinSize([&](){ ::vl::presentation::Size __vwsn_temp__; __vwsn_temp__.y = static_cast<::vl::vint64_t>(10L); return __vwsn_temp__; }());
+		}
 		{
 			(this->__vwsn_precompile_7 = new ::vl::presentation::controls::GuiButton(::vl::presentation::theme::ThemeName::Button));
 		}

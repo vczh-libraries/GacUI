@@ -12,74 +12,37 @@
 
   <Instance name="MainWindowResource">
     <Instance ref.Class="demo::TestWindow">
-      <Window ref.Name="self" Text="control_ribbon_empty" ClientSize="x:640 y:480">
-        <MessageDialog ref.Name="dialogMessage" Title="You Expanded a Group!" Text="GuiRibbonGroup::ExpandButtonClicked is executed!"/>
-
-        <ToolstripCommand ref.Name="commandUndo" Text="Undo" Image-uri="res://ToolbarImages/Undo" LargeImage-uri="res://ToolbarImages/UndoLarge" ShortcutBuilder="Ctrl+Z"/>
-        <ToolstripCommand ref.Name="commandRedo" Text="Redo" Image-uri="res://ToolbarImages/Redo" LargeImage-uri="res://ToolbarImages/RedoLarge" ShortcutBuilder="Ctrl+Y"/>
-        <ToolstripCommand ref.Name="commandCopy" Text="Copy" Image-uri="res://ToolbarImages/Copy" LargeImage-uri="res://ToolbarImages/CopyLarge" ShortcutBuilder="Ctrl+C"/>
-        <ToolstripCommand ref.Name="commandCut" Text="Cut" Image-uri="res://ToolbarImages/Cut" LargeImage-uri="res://ToolbarImages/CutLarge" ShortcutBuilder="Ctrl+X"/>
-        <ToolstripCommand ref.Name="commandPaste" Text="Paste" Image-uri="res://ToolbarImages/Paste" LargeImage-uri="res://ToolbarImages/PasteLarge" ShortcutBuilder="Ctrl+V"/>
-        <ToolstripCommand ref.Name="commandDelete" Text="Delete" Image-uri="res://ToolbarImages/Delete" LargeImage-uri="res://ToolbarImages/DeleteLarge"/>
-
+      <Window ref.Name="self" Text="TestWindow" ClientSize="x:640 y:480">
         <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
           <att.Rows>
+            <CellOption>composeType:Percentage percentage:0.5</CellOption>
+            <CellOption>composeType:Absolute absolute:20</CellOption>
+            <CellOption>composeType:Absolute absolute:10</CellOption>
+            <CellOption>composeType:Absolute absolute:20</CellOption>
+            <CellOption>composeType:Absolute absolute:10</CellOption>
             <CellOption>composeType:MinSize</CellOption>
-            <CellOption>composeType:Percentage percentage:1.0</CellOption>
+            <CellOption>composeType:Percentage percentage:0.5</CellOption>
           </att.Rows>
           <att.Columns>
-            <CellOption>composeType:Percentage percentage:1.0</CellOption>
+            <CellOption>composeType:Percentage percentage:0.5</CellOption>
+            <CellOption>composeType:Absolute absolute:200</CellOption>
+            <CellOption>composeType:Percentage percentage:0.5</CellOption>
           </att.Columns>
 
-          <Cell Site="row:0 column:0">
-            <RibbonTab>
+          <Cell Site="row:1 column:1">
+            <HScroll ref.Name="scroll" TotalSize="10000" PageSize="1">
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-
-              <att.BeforeHeaders-set>
-                <Button Text="BeforeHeaders">
-                  <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-                </Button>
-              </att.BeforeHeaders-set>
-              <att.AfterHeaders-set>
-                <Button Text="AfterHeaders">
-                  <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-                </Button>
-              </att.AfterHeaders-set>
-
-              <att.Pages>
-                <RibbonTabPage Text="Page One">
-                  <att.ContainerComposition-set PreferredMinSize="y:110"/>
-                  <att.Groups>
-                    <RibbonGroup Text="Group One" Expandable="true" LargeImage-uri="res://ToolbarImages/PasteLarge" ev.ExpandButtonClicked-eval="dialogMessage.ShowDialog();">
-                      <att.Items>
-                        <RibbonButtons MaxSize="Large" MinSize="Icon">
-                          <att.Buttons>
-                            <ToolstripButton Command-eval="self.commandUndo"/>
-                            <ToolstripButton Command-eval="self.commandRedo"/>
-                          </att.Buttons>
-                        </RibbonButtons>
-                        <RibbonSplitter/>
-                        <RibbonButtons MaxSize="Large" MinSize="Icon">
-                          <att.Buttons>
-                            <ToolstripButton Command-eval="self.commandCopy"/>
-                            <ToolstripButton Command-eval="self.commandCut"/>
-                            <ToolstripButton Command-eval="self.commandPaste"/>
-                          </att.Buttons>
-                        </RibbonButtons>
-                        <RibbonSplitter/>
-                        <RibbonLargeButton Command-eval="self.commandDelete"/>
-                      </att.Items>
-                    </RibbonGroup>
-                    <RibbonGroup Text="Group Two"/>
-                    <RibbonGroup Text="Group Three"/>
-                  </att.Groups>
-                </RibbonTabPage>
-
-                <RibbonTabPage Text="Page Two"/>
-
-                <RibbonTabPage Text="Page Three" Highlighted="true"/>
-              </att.Pages>
-            </RibbonTab>
+            </HScroll>
+          </Cell>
+          <Cell Site="row:3 column:1">
+            <ProgressBar TotalSize="10000" Position-bind="scroll.Position">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+            </ProgressBar>
+          </Cell>
+          <Cell Site="row:5 column:1">
+            <Label Text-format="Position: $(scroll.Position)/$(scroll.TotalSize)">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+            </Label>
           </Cell>
         </Table>
       </Window>
