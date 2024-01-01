@@ -27,9 +27,9 @@
   - Use it in `<PartialView ref.Name="handle">`.
   - https://github.com/vczh-libraries/GacUI/issues/73
 - Check makefiles in Release repo
-- SampleForDoc
-  - `control_ribbon_empty` expanding button of a group is inaccessible when it is collapsed into a dropdown.
-    - This is a new feature, need to consider how to do it.
+- Ribbon
+  - Expanding button of a group is inaccessible when it is collapsed into a dropdown.
+  - When gallery selection is cleared, the list selection should also be cleared.
 - Document `GuiVirtualRepeatCompositionBase`'s `UseMinimumTotalSize` property.
 - Test `GuiVirtualRepeatCompositionBase::GetAdoptedSize`.
 - Test `GuiVirtualRepeatCompositionBase::GetTotalSize` with `UseMinimumTotalSize`.
@@ -54,11 +54,11 @@
 - Rewrite `GacBuild.ps1` in C++
 - Get rid of `Deploy.bat` in `GacGen.ps1` and `GacGen.exe`
 - DarkSkin Color Theme.
-  - Move all hardcoded colors to Style.xml or a general place.
-  - Move all colors from Style.xml to a general place.
-  - Export darkskin control template colors.
-  - Allow changing colors.
-  - A window can be called to update all its controls' and components' template.
+  - Create a `DarkSkinPalette` class with a static getter method to retrive default colors.
+    - Update all `Style.xml` colors to use `DarkSkinPalette`.
+  - Add a static setter to `DarkSkinPalette`.
+    - A window can be called to update all its controls' and components' template.
+    - The above function will be called inside the setter.
 - Consider `-ani` binding, create an animation controller object that change the binded property, with predefined interpolation and other stuff.
   - All types that can do interpolation are value types, consider following formats:
     - "NAME:initial value"
