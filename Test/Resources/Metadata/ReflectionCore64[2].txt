@@ -5093,6 +5093,25 @@ class presentation::templates::GuiRibbonGalleryTemplate : presentation::template
     constructor () : presentation::templates::GuiRibbonGalleryTemplate*;
 }
 
+class presentation::templates::GuiRibbonGroupMenuTemplate : presentation::templates::GuiMenuTemplate {
+    event CommandsChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        Commands,
+    }
+    event ExpandableChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        Expandable,
+    }
+
+    property Commands : presentation::controls::IRibbonGroupCommandExecutor* { get:GetCommands set:SetCommands event:CommandsChanged }
+    property Expandable : system::Boolean { get:GetExpandable set:SetExpandable event:ExpandableChanged }
+
+    function GetCommands() : presentation::controls::IRibbonGroupCommandExecutor*;
+    function GetExpandable() : system::Boolean;
+    function SetCommands(value : presentation::controls::IRibbonGroupCommandExecutor*) : system::Void;
+    function SetExpandable(value : system::Boolean) : system::Void;
+
+    constructor () : presentation::templates::GuiRibbonGroupMenuTemplate*;
+}
+
 class presentation::templates::GuiRibbonGroupTemplate : presentation::templates::GuiControlTemplate {
     event CollapsedChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
         Collapsed,
@@ -5114,18 +5133,18 @@ class presentation::templates::GuiRibbonGroupTemplate : presentation::templates:
     property Commands : presentation::controls::IRibbonGroupCommandExecutor* { get:GetCommands set:SetCommands event:CommandsChanged }
     property Expandable : system::Boolean { get:GetExpandable set:SetExpandable event:ExpandableChanged }
     property LargeDropdownButtonTemplate : system::Function<presentation::templates::GuiToolstripButtonTemplate*, system::Object>^ { get:GetLargeDropdownButtonTemplate set:SetLargeDropdownButtonTemplate event:LargeDropdownButtonTemplateChanged }
-    property SubMenuTemplate : system::Function<presentation::templates::GuiMenuTemplate*, system::Object>^ { get:GetSubMenuTemplate set:SetSubMenuTemplate event:SubMenuTemplateChanged }
+    property SubMenuTemplate : system::Function<presentation::templates::GuiRibbonGroupMenuTemplate*, system::Object>^ { get:GetSubMenuTemplate set:SetSubMenuTemplate event:SubMenuTemplateChanged }
 
     function GetCollapsed() : system::Boolean;
     function GetCommands() : presentation::controls::IRibbonGroupCommandExecutor*;
     function GetExpandable() : system::Boolean;
     function GetLargeDropdownButtonTemplate() : system::Function<presentation::templates::GuiToolstripButtonTemplate*, system::Object>^;
-    function GetSubMenuTemplate() : system::Function<presentation::templates::GuiMenuTemplate*, system::Object>^;
+    function GetSubMenuTemplate() : system::Function<presentation::templates::GuiRibbonGroupMenuTemplate*, system::Object>^;
     function SetCollapsed(value : system::Boolean) : system::Void;
     function SetCommands(value : presentation::controls::IRibbonGroupCommandExecutor*) : system::Void;
     function SetExpandable(value : system::Boolean) : system::Void;
     function SetLargeDropdownButtonTemplate(value : system::Function<presentation::templates::GuiToolstripButtonTemplate*, system::Object>^) : system::Void;
-    function SetSubMenuTemplate(value : system::Function<presentation::templates::GuiMenuTemplate*, system::Object>^) : system::Void;
+    function SetSubMenuTemplate(value : system::Function<presentation::templates::GuiRibbonGroupMenuTemplate*, system::Object>^) : system::Void;
 
     constructor () : presentation::templates::GuiRibbonGroupTemplate*;
 }
@@ -5612,20 +5631,20 @@ interface presentation::theme::ITheme : system::Interface {
 
 @ValueType
 enum presentation::theme::ThemeName {
-    Button = 52,
-    CheckBox = 53,
+    Button = 53,
+    CheckBox = 54,
     CheckTextListItem = 22,
     ComboBox = 11,
     CustomControl = 4,
     CustomFrameWindow = 3,
-    DateComboBox = 56,
-    DatePicker = 55,
+    DateComboBox = 57,
+    DatePicker = 56,
     DocumentLabel = 15,
     DocumentTextBox = 16,
     DocumentViewer = 14,
     GroupBox = 9,
-    HScroll = 57,
-    HTracker = 59,
+    HScroll = 58,
+    HTracker = 60,
     Label = 6,
     ListItemBackground = 20,
     ListView = 17,
@@ -5635,27 +5654,28 @@ enum presentation::theme::ThemeName {
     MenuItemButton = 28,
     MenuSplitter = 26,
     MultilineTextBox = 12,
-    ProgressBar = 61,
-    RadioButton = 54,
+    ProgressBar = 62,
+    RadioButton = 55,
     RadioTextListItem = 23,
-    RibbonButtons = 38,
-    RibbonGallery = 40,
-    RibbonGalleryItemList = 43,
-    RibbonGalleryList = 42,
+    RibbonButtons = 39,
+    RibbonGallery = 41,
+    RibbonGalleryItemList = 44,
+    RibbonGalleryList = 43,
     RibbonGroup = 35,
-    RibbonIconLabel = 36,
-    RibbonLargeButton = 47,
-    RibbonLargeDropdownButton = 48,
-    RibbonLargeSplitButton = 49,
-    RibbonSmallButton = 44,
-    RibbonSmallDropdownButton = 45,
-    RibbonSmallIconLabel = 37,
-    RibbonSmallSplitButton = 46,
-    RibbonSplitter = 50,
+    RibbonGroupMenu = 36,
+    RibbonIconLabel = 37,
+    RibbonLargeButton = 48,
+    RibbonLargeDropdownButton = 49,
+    RibbonLargeSplitButton = 50,
+    RibbonSmallButton = 45,
+    RibbonSmallDropdownButton = 46,
+    RibbonSmallIconLabel = 38,
+    RibbonSmallSplitButton = 47,
+    RibbonSplitter = 51,
     RibbonTab = 34,
-    RibbonToolstripHeader = 51,
-    RibbonToolstripMenu = 41,
-    RibbonToolstrips = 39,
+    RibbonToolstripHeader = 52,
+    RibbonToolstripMenu = 42,
+    RibbonToolstrips = 40,
     ScrollView = 8,
     ShortcutKey = 7,
     SinglelineTextBox = 13,
@@ -5671,8 +5691,8 @@ enum presentation::theme::ThemeName {
     TreeItemExpander = 21,
     TreeView = 18,
     Unknown = 0,
-    VScroll = 58,
-    VTracker = 60,
+    VScroll = 59,
+    VTracker = 61,
     Window = 1,
 }
 
@@ -5710,6 +5730,7 @@ class presentation::theme::ThemeTemplates : presentation::controls::GuiInstanceR
     property RibbonGalleryItemList : system::Function<presentation::templates::GuiTextListTemplate*, system::Object>^;
     property RibbonGalleryList : system::Function<presentation::templates::GuiRibbonGalleryListTemplate*, system::Object>^;
     property RibbonGroup : system::Function<presentation::templates::GuiRibbonGroupTemplate*, system::Object>^;
+    property RibbonGroupMenu : system::Function<presentation::templates::GuiRibbonGroupMenuTemplate*, system::Object>^;
     property RibbonIconLabel : system::Function<presentation::templates::GuiRibbonIconLabelTemplate*, system::Object>^;
     property RibbonLargeButton : system::Function<presentation::templates::GuiToolstripButtonTemplate*, system::Object>^;
     property RibbonLargeDropdownButton : system::Function<presentation::templates::GuiToolstripButtonTemplate*, system::Object>^;

@@ -813,7 +813,7 @@ namespace vl
 			END_CLASS_MEMBER(::darkskin::RibbonGroupExpandButtonTemplateConstructor)
 
 			BEGIN_CLASS_MEMBER(::darkskin::RibbonGroupMenuTemplate)
-				CLASS_MEMBER_BASE(::vl::presentation::templates::GuiMenuTemplate)
+				CLASS_MEMBER_BASE(::vl::presentation::templates::GuiRibbonGroupMenuTemplate)
 				CLASS_MEMBER_BASE(::darkskin::RibbonGroupMenuTemplateConstructor)
 				CLASS_MEMBER_CONSTRUCTOR(::darkskin::RibbonGroupMenuTemplate*(), NO_PARAMETER)
 			END_CLASS_MEMBER(::darkskin::RibbonGroupMenuTemplate)

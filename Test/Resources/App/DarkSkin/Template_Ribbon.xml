@@ -411,13 +411,13 @@
 
   <Instance name="RibbonGroupMenuTemplateResource">
     <Instance ref.CodeBehind="false" ref.Class="darkskin::RibbonGroupMenuTemplate" ref.Styles="res://DarkSkin/Style">
-      <MenuTemplate ContainerComposition-ref="container" MinSizeLimitation="LimitToElementAndChildren">
+      <RibbonGroupMenuTemplate ContainerComposition-ref="container" MinSizeLimitation="LimitToElementAndChildren">
         <SolidBackground ref.Style="generalBackground"/>
         <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
           <SolidBorder ref.Style="ribbonMenuBorder"/>
           <Bounds ref.Name="container" AlignmentToParent="left:3 top:3 right:3 bottom:3"/>
         </Bounds>
-      </MenuTemplate>
+      </RibbonGroupMenuTemplate>
     </Instance>
   </Instance>
 

@@ -1437,10 +1437,10 @@ Closures
 	{
 	}
 
-	::vl::presentation::templates::GuiMenuTemplate* __vwsnf178_DarkSkin_darkskin_RibbonGroupTemplateConstructor___vwsn_darkskin_RibbonGroupTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	::vl::presentation::templates::GuiRibbonGroupMenuTemplate* __vwsnf178_DarkSkin_darkskin_RibbonGroupTemplateConstructor___vwsn_darkskin_RibbonGroupTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
-			return static_cast<::vl::presentation::templates::GuiMenuTemplate*>(new ::darkskin::RibbonGroupMenuTemplate());
+			return static_cast<::vl::presentation::templates::GuiRibbonGroupMenuTemplate*>(new ::darkskin::RibbonGroupMenuTemplate());
 		}
 	}
 

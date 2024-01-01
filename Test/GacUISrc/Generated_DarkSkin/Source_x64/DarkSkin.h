@@ -2376,7 +2376,7 @@ namespace darkskin
 		RibbonGroupMenuTemplateConstructor();
 	};
 
-	class RibbonGroupMenuTemplate : public ::vl::presentation::templates::GuiMenuTemplate, public ::darkskin::RibbonGroupMenuTemplateConstructor, public ::vl::reflection::Description<RibbonGroupMenuTemplate>
+	class RibbonGroupMenuTemplate : public ::vl::presentation::templates::GuiRibbonGroupMenuTemplate, public ::darkskin::RibbonGroupMenuTemplateConstructor, public ::vl::reflection::Description<RibbonGroupMenuTemplate>
 	{
 		friend class ::darkskin::RibbonGroupMenuTemplateConstructor;
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
@@ -4955,7 +4955,7 @@ Closures
 
 		__vwsnf178_DarkSkin_darkskin_RibbonGroupTemplateConstructor___vwsn_darkskin_RibbonGroupTemplate_Initialize_(::darkskin::RibbonGroupTemplateConstructor* __vwsnctorthis_0);
 
-		::vl::presentation::templates::GuiMenuTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
+		::vl::presentation::templates::GuiRibbonGroupMenuTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
 	};
 
 	struct __vwsnf179_DarkSkin_darkskin_RibbonGroupTemplateConstructor___vwsn_darkskin_RibbonGroupTemplate_Initialize_

@@ -12037,7 +12037,7 @@ using presentation::theme::*;
 namespace darkskin
 {
     @cpp:Friend(typeof(RibbonGroupMenuTemplateConstructor))
-    class RibbonGroupMenuTemplate : ::presentation::templates::GuiMenuTemplate, RibbonGroupMenuTemplateConstructor
+    class RibbonGroupMenuTemplate : ::presentation::templates::GuiRibbonGroupMenuTemplate, RibbonGroupMenuTemplateConstructor
     {
         new* ()
         {
@@ -12117,7 +12117,7 @@ namespace darkskin
         {
             (self = <this>);
             {
-                (self.SubMenuTemplate = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiMenuTemplate*)
+                (self.SubMenuTemplate = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiRibbonGroupMenuTemplate*)
                 {
                     {
                         return new (::darkskin::RibbonGroupMenuTemplate*)();

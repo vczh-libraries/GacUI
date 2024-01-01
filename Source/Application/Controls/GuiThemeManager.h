@@ -48,6 +48,9 @@ Theme Builders
 #define GUI_TEMPLATE_PROPERTY_EVENT_INIT(CLASS, TYPE, NAME, VALUE)\
 			NAME##Changed.SetAssociatedComposition(this);
 
+#define GUI_TEMPLATE_CLASS_FORWARD_DECL(CLASS, BASE)\
+			class CLASS;\
+
 #define GUI_TEMPLATE_CLASS_DECL(CLASS, BASE)\
 			class CLASS : public BASE, public AggregatableDescription<CLASS>\
 			{\
@@ -180,6 +183,7 @@ Theme Names
 			F(ControlTemplate,				ToolstripSplitter)			\
 			F(RibbonTabTemplate,			RibbonTab)					\
 			F(RibbonGroupTemplate,			RibbonGroup)				\
+			F(RibbonGroupMenuTemplate,		RibbonGroupMenu)			\
 			F(RibbonIconLabelTemplate,		RibbonIconLabel)			\
 			F(RibbonIconLabelTemplate,		RibbonSmallIconLabel)		\
 			F(RibbonButtonsTemplate,		RibbonButtons)				\

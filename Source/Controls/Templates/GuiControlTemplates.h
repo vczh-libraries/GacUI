@@ -175,6 +175,7 @@ Templates
 			F(GuiDateComboBoxTemplate,			GuiComboBoxTemplate)		\
 			F(GuiRibbonTabTemplate,				GuiTabTemplate)				\
 			F(GuiRibbonGroupTemplate,			GuiControlTemplate)			\
+			F(GuiRibbonGroupMenuTemplate,		GuiMenuTemplate)			\
 			F(GuiRibbonIconLabelTemplate,		GuiControlTemplate)			\
 			F(GuiRibbonButtonsTemplate,			GuiControlTemplate)			\
 			F(GuiRibbonToolstripsTemplate,		GuiControlTemplate)			\
@@ -285,7 +286,11 @@ Control Template
 				F(GuiRibbonGroupTemplate, bool, Expandable, false)\
 				F(GuiRibbonGroupTemplate, bool, Collapsed, false)\
 				F(GuiRibbonGroupTemplate, TemplateProperty<GuiToolstripButtonTemplate>, LargeDropdownButtonTemplate, {})\
-				F(GuiRibbonGroupTemplate, TemplateProperty<GuiMenuTemplate>, SubMenuTemplate, {})\
+				F(GuiRibbonGroupTemplate, TemplateProperty<GuiRibbonGroupMenuTemplate>, SubMenuTemplate, {})\
+
+#define GuiRibbonGroupMenuTemplate_PROPERTIES(F)\
+				F(GuiRibbonGroupMenuTemplate, controls::IRibbonGroupCommandExecutor*, Commands, nullptr)\
+				F(GuiRibbonGroupMenuTemplate, bool, Expandable, false)\
 
 #define GuiRibbonIconLabelTemplate_PROPERTIES(F)\
 				F(GuiRibbonIconLabelTemplate, Ptr<GuiImageData>, Image, {})\
@@ -361,6 +366,9 @@ Item Template
 /***********************************************************************
 Template Declarations
 ***********************************************************************/
+
+			GUI_CONTROL_TEMPLATE_DECL(GUI_TEMPLATE_CLASS_FORWARD_DECL)
+			GUI_ITEM_TEMPLATE_DECL(GUI_TEMPLATE_CLASS_FORWARD_DECL)
 
 			GUI_CONTROL_TEMPLATE_DECL(GUI_TEMPLATE_CLASS_DECL)
 			GUI_ITEM_TEMPLATE_DECL(GUI_TEMPLATE_CLASS_DECL)
