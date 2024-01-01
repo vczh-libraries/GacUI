@@ -2,6 +2,8 @@
   <Style ref.Path="(//Bounds + //Table + //RepeatStack + //RepeatFlow)" MinSizeLimitation="LimitToElementAndChildren"/>
   <Style ref.Path="//*.generalBackground" Color="#2D2D30"/>
   <Style ref.Path="//*.generalBorder" Color="#434346"/>
+  <Style ref.Path="//*.contentBackground" Color="#252526"/>
+  <Style ref.Path="//*.contentBorder" Color="#3F3F46"/>
   <Style ref.Path="//*.windowBorder">
     <att.Color-bind>
       <![CDATA[
@@ -162,6 +164,7 @@
       ]]>
     </att.Color-bind>
   </Style>
+  <Style ref.Path="//*.scrollBackground" Color="#3D3D42"/>
   <Style ref.Path="//*.scrollArrowColor">
     <att.Color-bind>
       <![CDATA[
@@ -208,6 +211,11 @@
       ]]>
     </att.Color-bind>
   </Style>
+  <Style ref.Path="//*.trackerBackground" Color="#3F3F47"/>
+  <Style ref.Path="//*.trackerBorder" Color="#55545A"/>
+  <Style ref.Path="//*.progressBackground" Color="#3F3F47"/>
+  <Style ref.Path="//*.progressBorder" Color="#55545A"/>
+  <Style ref.Path="//*.progressFilling" Color="#07B023"/>
   <Style ref.Path="//*.itemBackground">
     <att.Color-bind>
       <![CDATA[
