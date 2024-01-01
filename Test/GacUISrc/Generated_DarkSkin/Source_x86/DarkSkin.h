@@ -1846,9 +1846,9 @@ namespace darkskin
 	protected:
 		::darkskin::ListViewTemplate* self;
 		::vl::presentation::templates::GuiCommonScrollViewLook* look;
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_0;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_1;
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_2;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_0;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_1;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_2;
 		void __vwsn_darkskin_ListViewTemplate_Initialize(::darkskin::ListViewTemplate* __vwsn_this_);
 	public:
 		ListViewTemplateConstructor();
@@ -3475,9 +3475,9 @@ namespace darkskin
 	protected:
 		::darkskin::TextListTemplate* self;
 		::vl::presentation::templates::GuiCommonScrollViewLook* look;
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_0;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_1;
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_2;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_0;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_1;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_2;
 		void __vwsn_darkskin_TextListTemplate_Initialize(::darkskin::TextListTemplate* __vwsn_this_);
 	public:
 		TextListTemplateConstructor();
@@ -4012,9 +4012,9 @@ namespace darkskin
 	protected:
 		::darkskin::TreeViewTemplate* self;
 		::vl::presentation::templates::GuiCommonScrollViewLook* look;
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_0;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_1;
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_2;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_0;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_1;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_2;
 		void __vwsn_darkskin_TreeViewTemplate_Initialize(::darkskin::TreeViewTemplate* __vwsn_this_);
 	public:
 		TreeViewTemplateConstructor();

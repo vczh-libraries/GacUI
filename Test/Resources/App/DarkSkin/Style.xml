@@ -86,6 +86,21 @@
       ]]>
     </att.Color-bind>
   </Style>
+  <Style ref.Path="//*.listColumnBorder" Color="#404042"/>
+  <Style ref.Path="//*.textListBackgroundAndColor">
+    <att.TextColor>#F1F1F1</att.TextColor>
+    <SolidBackground Color="#252526"/>
+  </Style>
+  <Style ref.Path="//*.listViewBackgroundAndColor">
+    <att.PrimaryTextColor>#F1F1F1</att.PrimaryTextColor>
+    <att.SecondaryTextColor>#F1F1F1</att.SecondaryTextColor>
+    <att.ItemSeparatorColor>#F1F1F1</att.ItemSeparatorColor>
+    <SolidBackground Color="#252526"/>
+  </Style>
+  <Style ref.Path="//*.treeViewBackgroundAndColor">
+    <att.TextColor>#F1F1F1</att.TextColor>
+    <SolidBackground Color="#252526"/>
+  </Style>
   <Style ref.Path="//*.tabHeaderBackground">
     <att.Color-bind>
       <![CDATA[
