@@ -2,6 +2,7 @@
   <Style ref.Path="(//Bounds + //Table + //RepeatStack + //RepeatFlow)" MinSizeLimitation="LimitToElementAndChildren"/>
   <Style ref.Path="//*.generalBackground" Color="#2D2D30"/>
   <Style ref.Path="//*.generalBorder" Color="#434346"/>
+  <Style ref.Path="//*.generalFocused" Color="#007ACC"/>
   <Style ref.Path="//*.contentBackground" Color="#252526"/>
   <Style ref.Path="//*.contentBorder" Color="#3F3F46"/>
   <Style ref.Path="//*.windowBorder">
@@ -465,6 +466,9 @@
       ]]>
     </att.BackgroundColor-bind>
   </Style>
+  <Style ref.Path="//*.ribbonGroupBorder" Color="#3F3F46"/>
+  <Style ref.Path="//*.ribbonGroupTitle" Color="#6D6D6D"/>
+  <Style ref.Path="//*.ribbonMenuBorder" Color="#333337"/>
   <Style ref.Path="//*.ribbonExpandableArrow">
     <att.BorderColor-bind>
       <![CDATA[
