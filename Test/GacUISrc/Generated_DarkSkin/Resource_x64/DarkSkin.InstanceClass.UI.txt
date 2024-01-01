@@ -11947,63 +11947,200 @@ namespace darkskin
     class RibbonGroupMenuTemplateConstructor
     {
         @cpp:Protected
-        var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+        var container : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
 
         @cpp:Protected
-        var <precompile>0 : ::darkskin::RibbonGroupMenuTemplate* = null of (::darkskin::RibbonGroupMenuTemplate*);
+        var self : ::darkskin::RibbonGroupMenuTemplate* = null of (::darkskin::RibbonGroupMenuTemplate*);
 
         @cpp:Protected
-        var <precompile>1 : ::presentation::elements::GuiSolidBackgroundElement^ = null of (::presentation::elements::GuiSolidBackgroundElement^);
+        var <precompile>0 : ::presentation::elements::GuiSolidBackgroundElement^ = null of (::presentation::elements::GuiSolidBackgroundElement^);
 
         @cpp:Protected
-        var <precompile>2 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+        var <precompile>1 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
-        var <precompile>3 : ::presentation::elements::GuiSolidBorderElement^ = null of (::presentation::elements::GuiSolidBorderElement^);
+        var <precompile>2 : ::presentation::elements::GuiSolidBorderElement^ = null of (::presentation::elements::GuiSolidBorderElement^);
+
+        @cpp:Protected
+        var <precompile>3 : ::presentation::compositions::GuiTableComposition* = null of (::presentation::compositions::GuiTableComposition*);
+
+        @cpp:Protected
+        var <precompile>4 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
+
+        @cpp:Protected
+        var <precompile>5 : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
+
+        @cpp:Protected
+        var <precompile>6 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
         func <darkskin-RibbonGroupMenuTemplate>Initialize(<this> : ::darkskin::RibbonGroupMenuTemplate*) : (::system::Void)
         {
-            (<precompile>0 = <this>);
+            (self = <this>);
             {
-                (<precompile>0.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+                (self.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
             }
-            (<precompile>1 = new (::presentation::elements::GuiSolidBackgroundElement^)());
+            (<precompile>0 = new (::presentation::elements::GuiSolidBackgroundElement^)());
             {
-                (<precompile>1.Color = (cast (::presentation::Color) "#2D2D30"));
-            }
-            {
-                (<precompile>0.OwnedElement = <precompile>1);
-            }
-            (<precompile>2 = new (::presentation::compositions::GuiBoundsComposition*)());
-            {
-                (<precompile>2.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+                (<precompile>0.Color = (cast (::presentation::Color) "#2D2D30"));
             }
             {
-                (<precompile>2.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+                (self.OwnedElement = <precompile>0);
             }
-            (<precompile>3 = new (::presentation::elements::GuiSolidBorderElement^)());
+            (<precompile>1 = new (::presentation::compositions::GuiBoundsComposition*)());
             {
-                (<precompile>3.Color = (cast (::presentation::Color) "#333337"));
-            }
-            {
-                (<precompile>2.OwnedElement = <precompile>3);
-            }
-            (container = new (::presentation::compositions::GuiBoundsComposition*)());
-            {
-                (container.AlignmentToParent = {left : 3; top : 3; right : 3; bottom : 3;} of (::presentation::Margin));
+                (<precompile>1.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
-                (container.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+                (<precompile>1.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+            }
+            (<precompile>2 = new (::presentation::elements::GuiSolidBorderElement^)());
+            {
+                (<precompile>2.Color = (cast (::presentation::Color) "#333337"));
             }
             {
-                <precompile>2.AddChild(container);
+                (<precompile>1.OwnedElement = <precompile>2);
+            }
+            (<precompile>3 = new (::presentation::compositions::GuiTableComposition*)());
+            {
+                (<precompile>3.CellPadding = 3 of (::system::Int64));
             }
             {
-                <precompile>0.AddChild(<precompile>2);
+                (<precompile>3.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
-                (<precompile>0.ContainerComposition = container);
+                (<precompile>3.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+            }
+            {
+                <precompile>3.SetRowsAndColumns(2, 2);
+                <precompile>3.SetRowOption(0, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
+                <precompile>3.SetRowOption(1, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
+                <precompile>3.SetColumnOption(0, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
+                <precompile>3.SetColumnOption(1, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
+            }
+            (container = new (::presentation::compositions::GuiCellComposition*)());
+            {
+                container.SetSite(0, 0, 1, 2);
+            }
+            {
+                <precompile>3.AddChild(container);
+            }
+            (<precompile>4 = new (::presentation::compositions::GuiCellComposition*)());
+            {
+                <precompile>4.SetSite(1, 1, 1, 1);
+            }
+            {
+                (<precompile>5 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
+            }
+            (<precompile>6 = <precompile>5.BoundsComposition);
+            {
+                (<precompile>6.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (<precompile>5.AutoFocus = false);
+            }
+            {
+                (<precompile>5.ControlTemplate = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiControlTemplate*)
+                {
+                    {
+                        return new (::darkskin::RibbonGroupExpandButtonTemplate*)();
+                    }
+                });
+            }
+            {
+                <precompile>4.AddChild(<precompile>5.BoundsComposition);
+            }
+            {
+                <precompile>3.AddChild(<precompile>4);
+            }
+            {
+                <precompile>1.AddChild(<precompile>3);
+            }
+            {
+                self.AddChild(<precompile>1);
+            }
+            {
+                var <created-subscription> = new (::system::Subscription^)
+                {
+                    var <bind-cache>0 : ::darkskin::RibbonGroupMenuTemplate* = null of (::darkskin::RibbonGroupMenuTemplate*);
+
+                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-opened> : ::system::Boolean = false;
+
+                    var <bind-closed> : ::system::Boolean = false;
+
+                    func <bind-activator>() : (::system::Void)
+                    {
+                        var <bind-activator-result> = <bind-cache>0.Expandable of (::system::Boolean);
+                        ValueChanged(<bind-activator-result>);
+                    }
+
+                    func <bind-callback>0_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    override func Open() : (::system::Boolean)
+                    {
+                        if ((!<bind-opened>))
+                        {
+                            (<bind-opened> = true);
+                            (<bind-cache>0 = (self ?? null of (::darkskin::RibbonGroupMenuTemplate*)));
+                            (<bind-handler>0_0 = (attach(<bind-cache>0.ExpandableChanged, <bind-callback>0_0) ?? null));
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Update() : (::system::Boolean)
+                    {
+                        if ((<bind-opened> and (!<bind-closed>)))
+                        {
+                            <bind-activator>();
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Close() : (::system::Boolean)
+                    {
+                        if ((!<bind-closed>))
+                        {
+                            (<bind-closed> = true);
+                            if (<bind-handler>0_0 is not null)
+                            {
+                                detach(<bind-cache>0.ExpandableChanged, <bind-handler>0_0);
+                                (<bind-handler>0_0 = null);
+                            }
+                            (<bind-cache>0 = null of (::darkskin::RibbonGroupMenuTemplate*));
+                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
+                            return true;
+                        }
+                        return false;
+                    }
+                };
+                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
+                {
+                    var <old> = <precompile>5.Visible;
+                    var <new> = (cast (::system::Boolean) <value>);
+                    if ((<old> == <new>))
+                    {
+                        return;
+                    }
+                    (<precompile>5.Visible = <new>);
+                });
+                <this>.AddSubscription(<created-subscription>);
+            }
+            {
+                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                {
+                    self.Commands.NotifyExpandButtonClicked();
+                };
+                attach(<precompile>5.Clicked, <event-handler>);
+            }
+            {
+                (self.ContainerComposition = container);
             }
         }
 
@@ -20876,6 +21013,9 @@ namespace darkskin
             }
             (handle = new (::presentation::compositions::GuiPartialViewComposition*)());
             {
+                (handle.PreferredMinSize = {x : 10;} of (::presentation::Size));
+            }
+            {
                 (<precompile>7 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
             }
             (<precompile>8 = <precompile>7.BoundsComposition);
@@ -23343,6 +23483,9 @@ namespace darkskin
                 (handleContainer.MinSizeLimitation = NoLimit of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
             }
             (handle = new (::presentation::compositions::GuiPartialViewComposition*)());
+            {
+                (handle.PreferredMinSize = {y : 10;} of (::presentation::Size));
+            }
             {
                 (<precompile>7 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
             }
