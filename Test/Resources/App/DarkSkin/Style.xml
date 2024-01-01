@@ -446,4 +446,8 @@
     <att.CaretColor>#FFFFFF</att.CaretColor>
     <SolidBackground Color="#252526"/>
   </Style>
+  <Style ref.Path="//*.documentBoxBackgroundAndColor" BaselineDocument-uri="res://DarkSkin/Document/BaselineDocument">
+    <att.CaretColor>#FFFFFF</att.CaretColor>
+    <SolidBackground Color="#252526"/>
+  </Style>
 </Styles>

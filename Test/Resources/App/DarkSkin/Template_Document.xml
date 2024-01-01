@@ -16,17 +16,13 @@
 
   <Instance name="DocumentLabelTemplateResource">
     <Instance ref.CodeBehind="false" ref.Class="darkskin::DocumentLabelTemplate" ref.Styles="res://DarkSkin/Style">
-      <DocumentLabelTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren" BaselineDocument-uri="res://DarkSkin/Document/BaselineDocument">
-        <att.CaretColor>#FFFFFF</att.CaretColor>
-      </DocumentLabelTemplate>
+      <DocumentLabelTemplate ref.Name="self" ref.Style="documentBoxBackgroundAndColor" MinSizeLimitation="LimitToElementAndChildren"/>
     </Instance>
   </Instance>
 
   <Instance name="DocumentTextBoxTemplateResource">
     <Instance ref.CodeBehind="false" ref.Class="darkskin::DocumentTextBoxTemplate" ref.Styles="res://DarkSkin/Style">
-      <DocumentLabelTemplate ref.Name="self" ContainerComposition-ref="container" MinSizeLimitation="LimitToElementAndChildren" BaselineDocument-uri="res://DarkSkin/Document/BaselineDocument">
-        <att.CaretColor>#FFFFFF</att.CaretColor>
-        <SolidBackground Color="#252526"/>
+      <DocumentLabelTemplate ref.Name="self" ref.Style="documentBoxBackgroundAndColor" ContainerComposition-ref="container" MinSizeLimitation="LimitToElementAndChildren">
         <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
           <SolidBorder ref.Style="listBorder"/>
           <Bounds ref.Name="container" AlignmentToParent="left:1 top:1 right:1 bottom:1"/>
@@ -37,14 +33,10 @@
 
   <Instance name="DocumentViewerTemplateResource">
     <Instance ref.CodeBehind="false" ref.Class="darkskin::DocumentViewerTemplate" ref.Styles="res://DarkSkin/Style">
-      <DocumentViewerTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren" BaselineDocument-uri="res://DarkSkin/Document/BaselineDocument">
+      <DocumentViewerTemplate ref.Name="self" ref.Style="documentBoxBackgroundAndColor" MinSizeLimitation="LimitToElementAndChildren">
         <att.ContainerComposition-eval>look.ContainerComposition</att.ContainerComposition-eval>
         <att.HorizontalScroll-eval>look.HScroll</att.HorizontalScroll-eval>
         <att.VerticalScroll-eval>look.VScroll</att.VerticalScroll-eval>
-
-        <att.CaretColor>#FFFFFF</att.CaretColor>
-
-        <SolidBackground Color="#252526"/>
         <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
           <SolidBorder ref.Style="listBorder"/>
           <CommonScrollViewLook ref.Name="look" AlignmentToParent="left:1 top:1 right:1 bottom:1">

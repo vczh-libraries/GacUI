@@ -1329,6 +1329,7 @@ namespace darkskin
 #endif
 	protected:
 		::darkskin::DocumentLabelTemplate* self;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_0;
 		void __vwsn_darkskin_DocumentLabelTemplate_Initialize(::darkskin::DocumentLabelTemplate* __vwsn_this_);
 	public:
 		DocumentLabelTemplateConstructor();
@@ -1355,9 +1356,9 @@ namespace darkskin
 	protected:
 		::vl::presentation::compositions::GuiBoundsComposition* container;
 		::darkskin::DocumentTextBoxTemplate* self;
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_0;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_1;
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_2;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_0;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_1;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_2;
 		void __vwsn_darkskin_DocumentTextBoxTemplate_Initialize(::darkskin::DocumentTextBoxTemplate* __vwsn_this_);
 	public:
 		DocumentTextBoxTemplateConstructor();
@@ -1388,9 +1389,9 @@ namespace darkskin
 	protected:
 		::darkskin::DocumentViewerTemplate* self;
 		::vl::presentation::templates::GuiCommonScrollViewLook* look;
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_0;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_1;
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_2;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_0;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_1;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_2;
 		void __vwsn_darkskin_DocumentViewerTemplate_Initialize(::darkskin::DocumentViewerTemplate* __vwsn_this_);
 	public:
 		DocumentViewerTemplateConstructor();
