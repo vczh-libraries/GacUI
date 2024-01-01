@@ -441,4 +441,9 @@
       ]]>
     </att.BackgroundColor-bind>
   </Style>
+  <Style ref.Path="//*.textBoxBackgroundAndColor">
+    <att.TextColor>normal:{text:(cast Color "#FFFFFF") background:(cast Color "#00000000")} selectedFocused:{text:(cast Color "#FFFFFF") background:(cast Color "#007ACC")} selectedUnfocused:{text:(cast Color "#FFFFFF") background:(cast Color "#007ACC")}</att.TextColor>
+    <att.CaretColor>#FFFFFF</att.CaretColor>
+    <SolidBackground Color="#252526"/>
+  </Style>
 </Styles>
