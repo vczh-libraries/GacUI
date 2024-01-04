@@ -149,7 +149,13 @@
 
 - SyncTree architecture that streams layout/element changes, requiring Hosted for the first version.
 - ViewModel architecture that streams object changes.
-  - Requires all pointers are shared.
+  - Requires all pointers are shared (optional)
+    - The native side need to provide functions for controlling lifetime:
+      - AllocateObjectId():int, this is called when the object is sent to the native side for the first time. The default reference counter is 0.
+      - IncreaseReference(int):void
+      - DecreaseReference(int):void
+      - When reference counter is not 0, the object must be kept alive and querable by id.
+  - Think about async view model (functions or properties returning Task) in data binding.
 - Port GacUI to other platforms:
   - Unit Test
     - Simplified CLI (Hosted)
