@@ -136,18 +136,18 @@ Compiler
 void GuiMain()
 {
 	List<WString> dependencies;
-	//LoadResource(CompileResources(
-	//	targetCpuArchitecture,
-	//	L"GuiFakeDialogServiceUI",
-	//	L"GacGen.exe Resource.xml",
-	//	L"../../../../GacUI.h",
-	//	L"../../../../Reflection/TypeDescriptors/GuiReflectionPlugin.h",
-	//	dependencies,
-	//	(GetResourcePath() / L"../../Source/Utilities/FakeServices/Dialogs/Resource.xml"),
-	//	(GetResourcePath() / DIALOGS_BINARY_FOLDER()),
-	//	(GetResourcePath() / DIALOGS_SOURCE_FOLDER()),
-	//	false
-	//));
+	LoadResource(CompileResources(
+		targetCpuArchitecture,
+		L"GuiFakeDialogServiceUI",
+		L"GacGen.exe Resource.xml",
+		L"../../../../GacUI.h",
+		L"../../../../Reflection/TypeDescriptors/GuiReflectionPlugin.h",
+		dependencies,
+		(GetResourcePath() / L"../../Source/Utilities/FakeServices/Dialogs/Resource.xml"),
+		(GetResourcePath() / DIALOGS_BINARY_FOLDER()),
+		(GetResourcePath() / DIALOGS_SOURCE_FOLDER()),
+		false
+	));
 	LoadResource(CompileResources(
 		targetCpuArchitecture,
 		L"DarkSkin",
@@ -160,18 +160,18 @@ void GuiMain()
 		(GetResourcePath() / DARKSKIN_SOURCE_FOLDER()),
 		true
 	));
-	//LoadResource(CompileResources(
-	//	targetCpuArchitecture,
-	//	L"Demo",
-	//	L"Source: Generated_FullControlTest",
-	//	L"../../../../Source/GacUI.h;../../../../Source/Utilities/FakeServices/Dialogs/Source/GuiFakeDialogServiceUI.h",
-	//	L"../../../../Source/Reflection/TypeDescriptors/GuiReflectionPlugin.h;../../../../Source/Utilities/FakeServices/Dialogs/Source/GuiFakeDialogServiceUIReflection.h",
-	//	dependencies,
-	//	(GetResourcePath() / L"App/FullControlTest/Resource.xml"),
-	//	(GetResourcePath() / FULLCONTROLTEST_BINARY_FOLDER()),
-	//	(GetResourcePath() / FULLCONTROLTEST_SOURCE_FOLDER()),
-	//	false
-	//));
+	LoadResource(CompileResources(
+		targetCpuArchitecture,
+		L"Demo",
+		L"Source: Generated_FullControlTest",
+		L"../../../../Source/GacUI.h;../../../../Source/Utilities/FakeServices/Dialogs/Source/GuiFakeDialogServiceUI.h",
+		L"../../../../Source/Reflection/TypeDescriptors/GuiReflectionPlugin.h;../../../../Source/Utilities/FakeServices/Dialogs/Source/GuiFakeDialogServiceUIReflection.h",
+		dependencies,
+		(GetResourcePath() / L"App/FullControlTest/Resource.xml"),
+		(GetResourcePath() / FULLCONTROLTEST_BINARY_FOLDER()),
+		(GetResourcePath() / FULLCONTROLTEST_SOURCE_FOLDER()),
+		false
+	));
 }
 
 /***********************************************************************
