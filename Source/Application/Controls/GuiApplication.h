@@ -144,11 +144,16 @@ Application
 				/// <param name="proc">The specified function.</param>
 				/// <param name="milliseconds">Time to delay.</param>
 				Ptr<INativeDelay>								DelayExecuteInMainThread(const Func<void()>& proc, vint milliseconds);
-				/// <summary>Run the specified function in the main thread. If the caller is in the main thread, then run the specified function directly.</summary>
+				/// <summary>Run the specified function in the main thread and wait until it finishes. If the caller is in the main thread, then run the specified function directly.</summary>
 				/// <param name="controlHost">A control host to access the corressponding main thread.</param>
 				/// <param name="proc">The specified function.</param>
 				void											RunGuiTask(GuiControlHost* controlHost, const Func<void()>& proc);
 
+				/// <summary>Run the specified function in the main thread and wait until it finishes. If the caller is in the main thread, then run the specified function directly.</summary>
+				/// <typeparam name="T">The return value of the function</typeparam>
+				/// <param name="controlHost">A control host to access the corressponding main thread.</param>
+				/// <param name="proc">The specified function.</param>
+				/// <returns>The result of the function.</returns>
 				template<typename T>
 				T RunGuiValue(GuiControlHost* controlHost, const Func<T()>& proc)
 				{
@@ -158,18 +163,6 @@ Application
 						result=proc();
 					});
 					return result;
-				}
-
-				template<typename T>
-				void InvokeLambdaInMainThread(GuiControlHost* controlHost, const T& proc)
-				{
-					InvokeInMainThread(controlHost, Func<void()>(proc));
-				}
-				
-				template<typename T>
-				bool InvokeLambdaInMainThreadAndWait(GuiControlHost* controlHost, const T& proc, vint milliseconds=-1)
-				{
-					return InvokeInMainThreadAndWait(controlHost, Func<void()>(proc), milliseconds);
 				}
 			};
 

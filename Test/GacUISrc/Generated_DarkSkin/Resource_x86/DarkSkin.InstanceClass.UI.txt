@@ -111,6 +111,14 @@ namespace darkskin
                 });
             }
             {
+                (<precompile>0.RibbonGroupMenu = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiRibbonGroupMenuTemplate*)
+                {
+                    {
+                        return new (::darkskin::RibbonGroupMenuTemplate*)();
+                    }
+                });
+            }
+            {
                 (<precompile>0.RibbonGroup = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiRibbonGroupTemplate*)
                 {
                     {

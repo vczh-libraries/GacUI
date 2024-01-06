@@ -369,9 +369,9 @@ GuiApplication
 
 			void GuiApplication::RunGuiTask(GuiControlHost* controlHost, const Func<void()>& proc)
 			{
-				if(IsInMainThread(controlHost))
+				if (IsInMainThread(controlHost))
 				{
-					return proc();
+					proc();
 				}
 				else
 				{

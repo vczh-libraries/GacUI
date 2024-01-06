@@ -18,9 +18,7 @@
 
 ## Progressing (before release)
 
-- MISC
-  - Check everywhere that uses `CachedBoundsChanged.Attach`.
-  - Enlarging window slower than shrinking.
+- Enlarging window slower than shrinking.
 - Check makefiles in Release repo
 - Test `GuiVirtualRepeatCompositionBase::GetAdoptedSize`.
 - Test `GuiVirtualRepeatCompositionBase::GetTotalSize` with `UseMinimumTotalSize`.
