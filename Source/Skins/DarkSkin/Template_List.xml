@@ -10,17 +10,14 @@
 
   <Instance name="TextListTemplateResource">
     <Instance ref.CodeBehind="false" ref.Class="darkskin::TextListTemplate" ref.Styles="res://DarkSkin/Style">
-      <TextListTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
+      <TextListTemplate ref.Name="self" ref.Style="textListBackgroundAndColor" MinSizeLimitation="LimitToElementAndChildren">
         <att.ContainerComposition-eval>look.ContainerComposition</att.ContainerComposition-eval>
         <att.HorizontalScroll-eval>look.HScroll</att.HorizontalScroll-eval>
         <att.VerticalScroll-eval>look.VScroll</att.VerticalScroll-eval>
-
         <att.BackgroundTemplate>darkskin::ItemBackgroundTemplate</att.BackgroundTemplate>
         <att.CheckBulletTemplate>darkskin::CheckBoxTemplate</att.CheckBulletTemplate>
         <att.RadioBulletTemplate>darkskin::RadioButtonTemplate</att.RadioBulletTemplate>
-        <att.TextColor>#F1F1F1</att.TextColor>
 
-        <SolidBackground Color="#252526"/>
         <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
           <SolidBorder ref.Style="listBorder"/>
           <CommonScrollViewLook ref.Name="look" AlignmentToParent="left:1 top:1 right:1 bottom:1">
@@ -81,10 +78,10 @@
         <att.SubMenuTemplate>darkskin::ToolstripMenuTemplate</att.SubMenuTemplate>
         <SolidBackground ref.Style="columnHeaderBackground"/>
         <Bounds AlignmentToParent="left:-1 top:0 right:0 bottom:0" PreferredMinSize="x:1 y:0">
-          <SolidBorder Color="#404042"/>
+          <SolidBorder ref.Style="listColumnBorder"/>
         </Bounds>
         <Bounds AlignmentToParent="left:0 top:-1 right:0 bottom:0" PreferredMinSize="x:0 y:1">
-          <SolidBorder Color="#404042"/>
+          <SolidBorder ref.Style="listColumnBorder"/>
         </Bounds>
         <Bounds ref.Name="container" AlignmentToParent="left:1 top:1 right:11 bottom:1">
           <Table AlignmentToParent="left:0 top:1 right:0 bottom:-1">
@@ -134,18 +131,13 @@
 
   <Instance name="ListViewTemplateResource">
     <Instance ref.CodeBehind="false" ref.Class="darkskin::ListViewTemplate" ref.Styles="res://DarkSkin/Style">
-      <ListViewTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
+      <ListViewTemplate ref.Name="self" ref.Style="listViewBackgroundAndColor" MinSizeLimitation="LimitToElementAndChildren">
         <att.ContainerComposition-eval>look.ContainerComposition</att.ContainerComposition-eval>
         <att.HorizontalScroll-eval>look.HScroll</att.HorizontalScroll-eval>
         <att.VerticalScroll-eval>look.VScroll</att.VerticalScroll-eval>
-
         <att.BackgroundTemplate>darkskin::ItemBackgroundTemplate</att.BackgroundTemplate>
         <att.ColumnHeaderTemplate>darkskin::ListViewColumnHeaderTemplate</att.ColumnHeaderTemplate>
-        <att.PrimaryTextColor>#F1F1F1</att.PrimaryTextColor>
-        <att.SecondaryTextColor>#F1F1F1</att.SecondaryTextColor>
-        <att.ItemSeparatorColor>#F1F1F1</att.ItemSeparatorColor>
 
-        <SolidBackground Color="#252526"/>
         <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
           <SolidBorder ref.Style="listBorder"/>
           <CommonScrollViewLook ref.Name="look" AlignmentToParent="left:1 top:1 right:1 bottom:1">
@@ -200,16 +192,13 @@
 
   <Instance name="TreeViewTemplateResource">
     <Instance ref.CodeBehind="false" ref.Class="darkskin::TreeViewTemplate" ref.Styles="res://DarkSkin/Style">
-      <TreeViewTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
+      <TreeViewTemplate ref.Name="self" ref.Style="treeViewBackgroundAndColor" MinSizeLimitation="LimitToElementAndChildren">
         <att.ContainerComposition-eval>look.ContainerComposition</att.ContainerComposition-eval>
         <att.HorizontalScroll-eval>look.HScroll</att.HorizontalScroll-eval>
         <att.VerticalScroll-eval>look.VScroll</att.VerticalScroll-eval>
-
         <att.BackgroundTemplate>darkskin::ItemBackgroundTemplate</att.BackgroundTemplate>
         <att.ExpandingDecoratorTemplate>darkskin::ExpandingDecoratorTemplate</att.ExpandingDecoratorTemplate>
-        <att.TextColor>#F1F1F1</att.TextColor>
 
-        <SolidBackground Color="#252526"/>
         <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
           <SolidBorder ref.Style="listBorder"/>
           <CommonScrollViewLook ref.Name="look" AlignmentToParent="left:1 top:1 right:1 bottom:1">

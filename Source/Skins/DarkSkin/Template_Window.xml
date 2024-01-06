@@ -8,9 +8,9 @@
   <Instance name="TooltipTemplateResource">
     <Instance ref.CodeBehind="false" ref.Class="darkskin::TooltipTemplate" ref.Styles="res://DarkSkin/Style">
       <WindowTemplate ContainerComposition-ref="container" MinSizeLimitation="LimitToElementAndChildren">
-        <SolidBackground Color="#2D2D30"/>
+        <SolidBackground ref.Style="generalBackground"/>
         <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
-          <SolidBorder Color="#017ACC"/>
+          <SolidBorder ref.Style="tooltipBorder"/>
           <Bounds ref.Name="container" AlignmentToParent="left:1 top:1 right:1 bottom:1"/>
         </Bounds>
       </WindowTemplate>
@@ -20,7 +20,7 @@
   <Instance name="SystemFrameWindowTemplateResource">
     <Instance ref.CodeBehind="false" ref.Class="darkskin::SystemFrameWindowTemplate" ref.Styles="res://DarkSkin/Style">
       <WindowTemplate ContainerComposition-ref="container" CustomFrameEnabled="false" MinSizeLimitation="LimitToElementAndChildren">
-        <SolidBackground Color="#2D2D30"/>
+        <SolidBackground ref.Style="generalBackground"/>
         <Bounds ref.Name="container" AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
       </WindowTemplate>
     </Instance>
@@ -59,7 +59,7 @@
           ]]>
         </ev.CustomFramePaddingChanged-eval>
 
-        <SolidBackground Color="#2D2D30"/>
+        <SolidBackground ref.Style="generalBackground"/>
         <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
           <SolidBorder ref.Style="windowBorder"/>
 

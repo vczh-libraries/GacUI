@@ -539,9 +539,9 @@ GuiApplication
 
 			void GuiApplication::RunGuiTask(GuiControlHost* controlHost, const Func<void()>& proc)
 			{
-				if(IsInMainThread(controlHost))
+				if (IsInMainThread(controlHost))
 				{
-					return proc();
+					proc();
 				}
 				else
 				{
@@ -10259,14 +10259,7 @@ GuiComboBoxListControl
 
 			void GuiComboBoxListControl::OnListControlAdoptedSizeInvalidated(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
-				auto flag = GetDisposedFlag();
-				GetApplication()->InvokeLambdaInMainThread(GetRelatedControlHost(), [=]()
-				{
-					if (!flag->IsDisposed())
-					{
-						AdoptSubMenuSize();
-					}
-				});
+				TryDelayExecuteIfNotDeleted([=]() { AdoptSubMenuSize(); });
 			}
 
 			void GuiComboBoxListControl::OnListControlItemMouseDown(compositions::GuiGraphicsComposition* sender, compositions::GuiItemMouseEventArgs& arguments)
@@ -23854,12 +23847,20 @@ GuiRibbonGroup
 
 			void GuiRibbonGroup::AfterControlTemplateInstalled_(bool initialize)
 			{
-				auto ct = TypedControlTemplateObject(true);
-				ct->SetExpandable(expandable);
-				ct->SetCollapsed(responsiveView->GetCurrentView() == responsiveFixedButton);
-				ct->SetCommands(commandExecutor.Obj());
-				dropdownButton->SetControlTemplate(ct->GetLargeDropdownButtonTemplate());
-				dropdownMenu->SetControlTemplate(ct->GetSubMenuTemplate());
+				{
+					auto ct = TypedControlTemplateObject(true);
+					ct->SetExpandable(expandable);
+					ct->SetCollapsed(responsiveView->GetCurrentView() == responsiveFixedButton);
+					ct->SetCommands(commandExecutor.Obj());
+					dropdownButton->SetControlTemplate(ct->GetLargeDropdownButtonTemplate());
+					dropdownMenu->SetControlTemplate(ct->GetSubMenuTemplate());
+				}
+
+				if (auto ct = dynamic_cast<GuiRibbonGroupMenuTemplate*>(dropdownMenu->TypedControlTemplateObject(true)))
+				{
+					ct->SetExpandable(expandable);
+					ct->SetCommands(commandExecutor.Obj());
+				}
 			}
 
 			bool GuiRibbonGroup::IsAltAvailable()
@@ -23958,7 +23959,7 @@ GuiRibbonGroup
 					responsiveFixedButton->SetAlignmentToParent(Margin(0, 0, 0, 0));
 					responsiveFixedButton->AddChild(dropdownButton->GetBoundsComposition());
 
-					dropdownMenu = new GuiRibbonGroupMenu(theme::ThemeName::Menu, dropdownButton);
+					dropdownMenu = new GuiRibbonGroupMenu(theme::ThemeName::RibbonGroupMenu, dropdownButton);
 				}
 
 				responsiveView = new GuiResponsiveViewComposition();
@@ -23997,6 +23998,10 @@ GuiRibbonGroup
 				{
 					expandable = value;
 					TypedControlTemplateObject(true)->SetExpandable(expandable);
+					if (auto ct = dynamic_cast<GuiRibbonGroupMenuTemplate*>(dropdownMenu->TypedControlTemplateObject(true)))
+					{
+						ct->SetExpandable(expandable);
+					}
 					ExpandableChanged.Execute(GetNotifyEventArguments());
 				}
 			}
@@ -25004,20 +25009,17 @@ GuiBindableRibbonGalleryList
 			void GuiBindableRibbonGalleryList::OnItemListSelectionChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
 				auto pos = IndexToGalleryPos(itemList->GetSelectedItemIndex());
-				if (pos.group != -1 && pos.item != -1)
+				// TODO: (enumerable) foreach
+				for (vint i = 0; i < groupedItemSource.Count(); i++)
 				{
-					// TODO: (enumerable) foreach
-					for (vint i = 0; i < groupedItemSource.Count(); i++)
+					auto group = groupedItemSource[i];
+					if (group->GetItemValues())
 					{
-						auto group = groupedItemSource[i];
-						if (group->GetItemValues())
+						vint count = group->GetItemValues()->GetCount();
+						for (vint j = 0; j < count; j++)
 						{
-							vint count = group->GetItemValues()->GetCount();
-							for (vint j = 0; j < count; j++)
-							{
-								auto background = MenuGetGroupItemBackground(i, j);
-								background->SetSelected(pos.group == i && pos.item == j);
-							}
+							auto background = MenuGetGroupItemBackground(i, j);
+							background->SetSelected(pos.group == i && pos.item == j);
 						}
 					}
 				}

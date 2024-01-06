@@ -368,6 +368,7 @@ namespace vl
 				CLASS_MEMBER_BASE(::vl::reflection::DescriptableObject)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::darkskin::DocumentLabelTemplateConstructor>(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(__vwsn_darkskin_DocumentLabelTemplate_Initialize, { L"__vwsn_this_" })
+				CLASS_MEMBER_FIELD(__vwsn_precompile_0)
 				CLASS_MEMBER_FIELD(self)
 			END_CLASS_MEMBER(::darkskin::DocumentLabelTemplateConstructor)
 
@@ -812,7 +813,7 @@ namespace vl
 			END_CLASS_MEMBER(::darkskin::RibbonGroupExpandButtonTemplateConstructor)
 
 			BEGIN_CLASS_MEMBER(::darkskin::RibbonGroupMenuTemplate)
-				CLASS_MEMBER_BASE(::vl::presentation::templates::GuiMenuTemplate)
+				CLASS_MEMBER_BASE(::vl::presentation::templates::GuiRibbonGroupMenuTemplate)
 				CLASS_MEMBER_BASE(::darkskin::RibbonGroupMenuTemplateConstructor)
 				CLASS_MEMBER_CONSTRUCTOR(::darkskin::RibbonGroupMenuTemplate*(), NO_PARAMETER)
 			END_CLASS_MEMBER(::darkskin::RibbonGroupMenuTemplate)
@@ -825,7 +826,11 @@ namespace vl
 				CLASS_MEMBER_FIELD(__vwsn_precompile_1)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_2)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_3)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_4)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_5)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_6)
 				CLASS_MEMBER_FIELD(container)
+				CLASS_MEMBER_FIELD(self)
 			END_CLASS_MEMBER(::darkskin::RibbonGroupMenuTemplateConstructor)
 
 			BEGIN_CLASS_MEMBER(::darkskin::RibbonGroupTemplate)

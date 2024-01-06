@@ -1,5 +1,10 @@
 <Styles>
   <Style ref.Path="(//Bounds + //Table + //RepeatStack + //RepeatFlow)" MinSizeLimitation="LimitToElementAndChildren"/>
+  <Style ref.Path="//*.generalBackground" Color="#2D2D30"/>
+  <Style ref.Path="//*.generalBorder" Color="#434346"/>
+  <Style ref.Path="//*.generalFocused" Color="#007ACC"/>
+  <Style ref.Path="//*.contentBackground" Color="#252526"/>
+  <Style ref.Path="//*.contentBorder" Color="#3F3F46"/>
   <Style ref.Path="//*.windowBorder">
     <att.Color-bind>
       <![CDATA[
@@ -20,6 +25,24 @@
         )
       ]]>
     </att.Color-bind>
+  </Style>
+  <Style ref.Path="//*.tooltipBorder" Color="#017ACC"/>
+  <Style ref.Path="//*.groupText" Color="#C7C7C7"/>
+  <Style ref.Path="//*.labelDefaultText" DefaultTextColor="#F1F1F1"/>
+  <Style ref.Path="//*.labelText">
+    <att.Color-bind>
+      <![CDATA[
+        cast Color (
+          not self.VisuallyEnabled ? "#6D6D6D" :
+          self.TextColor
+        )
+      ]]>
+    </att.Color-bind>
+  </Style>
+  <Style ref.Path="//*.datePickerColors">
+    <att.BackgroundColor>#2D2D30</att.BackgroundColor>
+    <att.PrimaryTextColor>#FFFFFF</att.PrimaryTextColor>
+    <att.SecondaryTextColor>#999999</att.SecondaryTextColor>
   </Style>
   <Style ref.Path="//*.buttonBackground">
     <att.Color-bind>
@@ -86,6 +109,21 @@
       ]]>
     </att.Color-bind>
   </Style>
+  <Style ref.Path="//*.listColumnBorder" Color="#404042"/>
+  <Style ref.Path="//*.textListBackgroundAndColor">
+    <att.TextColor>#F1F1F1</att.TextColor>
+    <SolidBackground Color="#252526"/>
+  </Style>
+  <Style ref.Path="//*.listViewBackgroundAndColor">
+    <att.PrimaryTextColor>#F1F1F1</att.PrimaryTextColor>
+    <att.SecondaryTextColor>#F1F1F1</att.SecondaryTextColor>
+    <att.ItemSeparatorColor>#F1F1F1</att.ItemSeparatorColor>
+    <SolidBackground Color="#252526"/>
+  </Style>
+  <Style ref.Path="//*.treeViewBackgroundAndColor">
+    <att.TextColor>#F1F1F1</att.TextColor>
+    <SolidBackground Color="#252526"/>
+  </Style>
   <Style ref.Path="//*.tabHeaderBackground">
     <att.Color-bind>
       <![CDATA[
@@ -144,6 +182,7 @@
       ]]>
     </att.Color-bind>
   </Style>
+  <Style ref.Path="//*.scrollBackground" Color="#3D3D42"/>
   <Style ref.Path="//*.scrollArrowColor">
     <att.Color-bind>
       <![CDATA[
@@ -190,6 +229,11 @@
       ]]>
     </att.Color-bind>
   </Style>
+  <Style ref.Path="//*.trackerBackground" Color="#3F3F47"/>
+  <Style ref.Path="//*.trackerBorder" Color="#55545A"/>
+  <Style ref.Path="//*.progressBackground" Color="#3F3F47"/>
+  <Style ref.Path="//*.progressBorder" Color="#55545A"/>
+  <Style ref.Path="//*.progressFilling" Color="#07B023"/>
   <Style ref.Path="//*.itemBackground">
     <att.Color-bind>
       <![CDATA[
@@ -202,6 +246,9 @@
       ]]>
     </att.Color-bind>
   </Style>
+  <Style ref.Path="//*.toolstripMenuBackground" Color="#1B1B1C"/>
+  <Style ref.Path="//*.toolstripMenuBorder" Color="#333337"/>
+  <Style ref.Path="//*.toolstripSplitter" Color1="#222224" Color2="#464648"/>
   <Style ref.Path="//*.toolstripBackground">
     <att.Color-bind>
       <![CDATA[
@@ -419,6 +466,9 @@
       ]]>
     </att.BackgroundColor-bind>
   </Style>
+  <Style ref.Path="//*.ribbonGroupBorder" Color="#3F3F46"/>
+  <Style ref.Path="//*.ribbonGroupTitle" Color="#6D6D6D"/>
+  <Style ref.Path="//*.ribbonMenuBorder" Color="#333337"/>
   <Style ref.Path="//*.ribbonExpandableArrow">
     <att.BorderColor-bind>
       <![CDATA[
@@ -440,5 +490,14 @@
         )
       ]]>
     </att.BackgroundColor-bind>
+  </Style>
+  <Style ref.Path="//*.textBoxBackgroundAndColor">
+    <att.TextColor>normal:{text:(cast Color "#FFFFFF") background:(cast Color "#00000000")} selectedFocused:{text:(cast Color "#FFFFFF") background:(cast Color "#007ACC")} selectedUnfocused:{text:(cast Color "#FFFFFF") background:(cast Color "#007ACC")}</att.TextColor>
+    <att.CaretColor>#FFFFFF</att.CaretColor>
+    <SolidBackground Color="#252526"/>
+  </Style>
+  <Style ref.Path="//*.documentBoxBackgroundAndColor" BaselineDocument-uri="res://DarkSkin/BaselineDocuments/Dark">
+    <att.CaretColor>#FFFFFF</att.CaretColor>
+    <SolidBackground Color="#252526"/>
   </Style>
 </Styles>

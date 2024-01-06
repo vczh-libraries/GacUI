@@ -364,7 +364,7 @@
             <CellOption>composeType:Percentage percentage:1.0</CellOption>
           </att.Columns>
 
-          <SolidBorder Color="#3F3F46"/>
+          <SolidBorder ref.Style="ribbonGroupBorder"/>
 
           <Cell Site="row:0 column:0">
             <Bounds ref.Name="container" AlignmentToParent="left:1 top:1 right:1 bottom:1"/>
@@ -373,7 +373,7 @@
           <Cell Site="row:1 column:0" PreferredMinSize="x:5 y:5">
             <Bounds AlignmentToParent="left:2 top:1 right:2 bottom:2">
               <Bounds AlignmentToParent="left:10 top:2 right:10 bottom:2">
-                <SolidLabel Text-bind="self.Text" Font-bind="self.Font" Color="#6D6D6D" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <SolidLabel Text-bind="self.Text" Font-bind="self.Font" ref.Style="ribbonGroupTitle" HorizontalAlignment="Center" VerticalAlignment="Center"/>
               </Bounds>
 
               <Button AutoFocus="false" Visible-bind="self.Expandable" ControlTemplate="darkskin::RibbonGroupExpandButtonTemplate">
@@ -411,13 +411,36 @@
 
   <Instance name="RibbonGroupMenuTemplateResource">
     <Instance ref.CodeBehind="false" ref.Class="darkskin::RibbonGroupMenuTemplate" ref.Styles="res://DarkSkin/Style">
-      <MenuTemplate ContainerComposition-ref="container" MinSizeLimitation="LimitToElementAndChildren">
-        <SolidBackground Color="#2D2D30"/>
+      <RibbonGroupMenuTemplate ref.Name="self" ContainerComposition-ref="container" MinSizeLimitation="LimitToElementAndChildren">
+        <SolidBackground ref.Style="generalBackground"/>
         <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
-          <SolidBorder Color="#333337"/>
-          <Bounds ref.Name="container" AlignmentToParent="left:3 top:3 right:3 bottom:3"/>
+          <SolidBorder ref.Style="ribbonMenuBorder"/>
+          <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="3">
+            <att.Rows>
+              <_>composeType:Percentage percentage:1.0</_>
+              <_>composeType:MinSize</_>
+            </att.Rows>
+            <att.Columns>
+              <_>composeType:Percentage percentage:1.0</_>
+              <_>composeType:MinSize</_>
+            </att.Columns>
+
+            <Cell ref.Name="container" Site="row:0 column:0 columnSpan:2"/>
+            <Cell Site="row:1 column:1">
+              <Button AutoFocus="false" Visible-bind="self.Expandable" ControlTemplate="darkskin::RibbonGroupExpandButtonTemplate">
+                <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+                <ev.Clicked-eval>
+                  <![CDATA[
+                    {
+                      self.Commands.NotifyExpandButtonClicked();
+                    }
+                  ]]>
+                </ev.Clicked-eval>
+              </Button>
+            </Cell>
+          </Table>
         </Bounds>
-      </MenuTemplate>
+      </RibbonGroupMenuTemplate>
     </Instance>
   </Instance>
 
@@ -437,7 +460,7 @@
     <Instance ref.CodeBehind="false" ref.Class="darkskin::RibbonToolstripHeaderTemplate" ref.Styles="res://DarkSkin/Style">
       <ControlTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
         <Bounds AlignmentToParent="left:2 top:2 right:2 bottom:2">
-          <SolidLabel Color="#6D6D6D" Text-bind="self.Text" Font-bind="self.Font" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+          <SolidLabel Text-bind="self.Text" Font-bind="self.Font" ref.Style="ribbonGroupTitle" HorizontalAlignment="Left" VerticalAlignment="Center"/>
         </Bounds>
       </ControlTemplate>
     </Instance>
@@ -506,9 +529,9 @@
       <RibbonToolstripMenuTemplate ContainerComposition-ref="container" ContentComposition-ref="content" MinSizeLimitation="LimitToElementAndChildren">
         <att.SizeBoxOption>AlwaysTrue</att.SizeBoxOption>
 
-        <SolidBackground Color="#1B1B1C"/>
+        <SolidBackground ref.Style="toolstripMenuBackground"/>
         <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
-          <SolidBorder Color="#333337"/>
+          <SolidBorder ref.Style="ribbonMenuBorder"/>
 
           <Table AlignmentToParent="left:1 top:1 right:1 bottom:1">
             <att.Rows>
@@ -526,7 +549,7 @@
 
             <Cell Site="row:1 column:0 columnSpan:2">
               <Bounds AlignmentToParent="left:3 top:1 right:3 bottom:1">
-                <SolidBackground Color="#333337"/>
+                <SolidBackground ref.Style="ribbonMenuBorder"/>
               </Bounds>
             </Cell>
 
@@ -535,10 +558,10 @@
             </Cell>
 
             <Cell Site="row:3 column:0" AssociatedHitTestResult="BorderBottom">
-              <SolidBackground Color="#007ACC"/>
+              <SolidBackground ref.Style="generalFocused"/>
             </Cell>
             <Cell Site="row:3 column:1" AssociatedHitTestResult="BorderRightBottom">
-              <SolidBackground Color="#007ACC"/>
+              <SolidBackground ref.Style="generalFocused"/>
             </Cell>
           </Table>
         </Bounds>

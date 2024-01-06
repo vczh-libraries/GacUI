@@ -2,15 +2,15 @@
   <Instance name="GroupBoxTemplateResource">
     <Instance ref.CodeBehind="false" ref.Class="darkskin::GroupBoxTemplate" ref.Styles="res://DarkSkin/Style">
       <ControlTemplate ref.Name="self" ContainerComposition-ref="container" MinSizeLimitation="LimitToElementAndChildren">
-        <SolidBackground Color="#2D2D30"/>
+        <SolidBackground ref.Style="generalBackground"/>
         <Bounds AlignmentToParent-bind="{left:0 top:(titleBounds.CachedBounds.y2/2) right:0 bottom:0}">
-          <SolidBorder Color="#3F3F46"/>
+          <SolidBorder ref.Style="contentBorder"/>
           <Bounds ref.Name="container" AlignmentToParent-bind="{left:1 top:(1+titleBounds.CachedBounds.y2/2) right:1 bottom:1}"/>
         </Bounds>
         <Bounds ref.Name="titleBounds" AlignmentToParent="left:5 top:0 right:-1 bottom:-1">
-          <SolidBackground Color="#2D2D30"/>
+          <SolidBackground ref.Style="generalBackground"/>
           <Bounds AlignmentToParent="left:2 top:0 right:2 bottom:0">
-            <SolidLabel Text-bind="self.Text" Font-bind="self.Font" Color="#C7C7C7" VerticalAlignment="Center"/>
+            <SolidLabel Text-bind="self.Text" ref.Style="groupText" Font-bind="self.Font" VerticalAlignment="Center"/>
           </Bounds>
         </Bounds>
       </ControlTemplate>
@@ -19,27 +19,18 @@
 
   <Instance name="LabelTemplateResource">
     <Instance ref.CodeBehind="false" ref.Class="darkskin::LabelTemplate" ref.Styles="res://DarkSkin/Style">
-      <LabelTemplate ref.Name="self" DefaultTextColor="#F1F1F1" MinSizeLimitation="LimitToElementAndChildren">
-        <SolidLabel Text-bind="self.Text" Font-bind="self.Font">
-          <att.Color-bind>
-            <![CDATA[
-              cast Color (
-                not self.VisuallyEnabled ? "#6D6D6D" :
-                self.TextColor
-              )
-            ]]>
-          </att.Color-bind>
-        </SolidLabel>
+      <LabelTemplate ref.Name="self" ref.Style="labelDefaultText" MinSizeLimitation="LimitToElementAndChildren">
+        <SolidLabel Text-bind="self.Text" Font-bind="self.Font" ref.Style="labelText"/>
       </LabelTemplate>
     </Instance>
   </Instance>
 
   <Instance name="ShortcutKeyTemplateResource">
     <Instance ref.CodeBehind="false" ref.Class="darkskin::ShortcutKeyTemplate" ref.Styles="res://DarkSkin/Style">
-      <LabelTemplate ref.Name="self" DefaultTextColor="#F1F1F1" MinSizeLimitation="LimitToElementAndChildren">
-        <SolidBorder Color="#3F3F46"/>
+      <LabelTemplate ref.Name="self" ref.Style="labelDefaultText" MinSizeLimitation="LimitToElementAndChildren">
+        <SolidBorder ref.Style="contentBorder"/>
         <Bounds AlignmentToParent="left:1 top:1 right:1 bottom:1">
-          <SolidBackground Color="#252526"/>
+          <SolidBackground ref.Style="contentBackground"/>
           <Bounds AlignmentToParent="left:0 top:0 right:1 bottom:0">
             <SolidLabel Text-bind="self.Text" Font-bind="self.Font" Color-bind="self.TextColor"/>
           </Bounds>
@@ -63,13 +54,10 @@
   <Instance name="DatePickerTemplateResource">
     <Instance ref.CodeBehind="false" ref.Class="darkskin::DatePickerTemplate" ref.Styles="res://DarkSkin/Style">
       <DatePickerTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren" Date-bind="look.Date">
-        <CommonDatePickerLook ref.Name="look" AlignmentToParent="left:0 top:0 right:0 bottom:0" Font-bind="self.Font" Date-bind="self.Date" DateLocale-bind="self.DateLocale" Commands-bind="self.Commands">
+        <CommonDatePickerLook ref.Name="look" ref.Style="datePickerColors" AlignmentToParent="left:0 top:0 right:0 bottom:0" Font-bind="self.Font" Date-bind="self.Date" DateLocale-bind="self.DateLocale" Commands-bind="self.Commands">
           <att.DateButtonTemplate>darkskin::DateButtonTemplate</att.DateButtonTemplate>
           <att.DateTextListTemplate>darkskin::TextListTemplate</att.DateTextListTemplate>
           <att.DateComboBoxTemplate>darkskin::ComboBoxTemplate</att.DateComboBoxTemplate>
-          <att.BackgroundColor>#2D2D30</att.BackgroundColor>
-          <att.PrimaryTextColor>#FFFFFF</att.PrimaryTextColor>
-          <att.SecondaryTextColor>#999999</att.SecondaryTextColor>
         </CommonDatePickerLook>
       </DatePickerTemplate>
     </Instance>

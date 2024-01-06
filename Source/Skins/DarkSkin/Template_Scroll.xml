@@ -150,7 +150,7 @@
       <ScrollTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
         <CommonScrollBehavior ref.Name="behavior"/>
 
-        <SolidBackground Color="#3D3D42"/>
+        <SolidBackground ref.Style="scrollBackground"/>
         <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
           <SolidBorder ref.Style="controlBorder"/>
         </Bounds>
@@ -166,7 +166,7 @@
           </Button>
         </SideAligned>
         <Bounds ref.Name="handleContainer" AlignmentToParent="left:20 top:0 right:20 bottom:0" MinSizeLimitation="NoLimit">
-          <PartialView ref.Name="handle">
+          <PartialView ref.Name="handle" PreferredMinSize="x:10">
             <att.WidthPageSize-bind>(cast double self.PageSize) / self.TotalSize</att.WidthPageSize-bind>
             <att.WidthRatio-bind>(cast double self.Position) / self.TotalSize</att.WidthRatio-bind>
             <Button AutoFocus="false" ControlTemplate="darkskin::HScrollHandleTemplate">
@@ -193,7 +193,7 @@
       <ScrollTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
         <CommonScrollBehavior ref.Name="behavior"/>
 
-        <SolidBackground Color="#3D3D42"/>
+        <SolidBackground ref.Style="scrollBackground"/>
         <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
           <SolidBorder ref.Style="controlBorder"/>
         </Bounds>
@@ -209,7 +209,7 @@
           </Button>
         </SideAligned>
         <Bounds ref.Name="handleContainer" AlignmentToParent="left:0 top:20 right:0 bottom:20" MinSizeLimitation="NoLimit">
-          <PartialView ref.Name="handle">
+          <PartialView ref.Name="handle" PreferredMinSize="y:10">
             <att.HeightPageSize-bind>(cast double self.PageSize) / self.TotalSize</att.HeightPageSize-bind>
             <att.HeightRatio-bind>(cast double self.Position) / self.TotalSize</att.HeightRatio-bind>
             <Button AutoFocus="false" ControlTemplate="darkskin::VScrollHandleTemplate">
@@ -234,7 +234,7 @@
       <ScrollTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
         <CommonScrollBehavior ref.Name="behavior"/>
 
-        <SolidBackground Color="#3F3F47"/>
+        <SolidBackground ref.Style="trackerBackground"/>
         <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
           <SolidBorder ref.Style="controlBorder"/>
           
@@ -249,7 +249,7 @@
             </att.Columns>
 
             <Cell Site="row:1 column:0">
-              <SolidBorder Color="#55545A"/>
+              <SolidBorder ref.Style="trackerBorder"/>
             </Cell>
           </Table>
 
@@ -277,7 +277,7 @@
       <ScrollTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
         <CommonScrollBehavior ref.Name="behavior"/>
 
-        <SolidBackground Color="#3F3F47"/>
+        <SolidBackground ref.Style="trackerBackground"/>
         <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
           <SolidBorder ref.Style="controlBorder"/>
 
@@ -292,7 +292,7 @@
             </att.Columns>
 
             <Cell Site="row:0 column:1">
-              <SolidBorder Color="#55545A"/>
+              <SolidBorder ref.Style="trackerBorder"/>
             </Cell>
           </Table>
 
@@ -310,9 +310,9 @@
   <Instance name="ProgressBarTemplateResource">
     <Instance ref.CodeBehind="false" ref.Class="darkskin::ProgressBarTemplate" ref.Styles="res://DarkSkin/Style">
       <ScrollTemplate ref.Name="self" ContainerComposition-ref="container" MinSizeLimitation="LimitToElementAndChildren">
-        <SolidBackground Color="#3F3F47"/>
+        <SolidBackground ref.Style="progressBackground"/>
         <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
-          <SolidBorder Color="#55545A"/>
+          <SolidBorder ref.Style="progressBorder"/>
           <Bounds ref.Name="container" AlignmentToParent="left:1 top:1 right:1 bottom:1">
             <PartialView>
               <att.WidthPageSize-bind>
@@ -323,7 +323,7 @@
                     in ((cast double a) / (a > b ? a : b))
                 ]]>
               </att.WidthPageSize-bind>
-              <SolidBackground Color="#07B023"/>
+              <SolidBackground ref.Style="progressFilling"/>
             </PartialView>
           </Bounds>
         </Bounds>
@@ -338,9 +338,9 @@
         <att.HorizontalScroll-eval>look.HScroll</att.HorizontalScroll-eval>
         <att.VerticalScroll-eval>look.VScroll</att.VerticalScroll-eval>
         
-        <SolidBackground Color="#252526"/>
+        <SolidBackground ref.Style="contentBackground"/>
         <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
-          <SolidBorder Color="#3F3F46"/>
+          <SolidBorder ref.Style="contentBorder"/>
           <CommonScrollViewLook ref.Name="look" AlignmentToParent="left:1 top:1 right:1 bottom:1">
             <att.HScrollTemplate>darkskin::HScrollTemplate</att.HScrollTemplate>
             <att.VScrollTemplate>darkskin::VScrollTemplate</att.VScrollTemplate>
