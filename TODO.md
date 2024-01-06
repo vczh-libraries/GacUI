@@ -18,6 +18,8 @@
 
 ## Progressing (before release)
 
+- DataGrid demo
+  - Adding items works but only render first few of them.
 - Unit Test Framework
   - UnitTest.vcxproj
     - Test `GuiVirtualRepeatCompositionBase::GetAdoptedSize`.
