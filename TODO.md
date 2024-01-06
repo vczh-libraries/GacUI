@@ -18,25 +18,24 @@
 
 ## Progressing (before release)
 
+- Unit Test Framework
+  - UnitTest.vcxproj
+    - Test `GuiVirtualRepeatCompositionBase::GetAdoptedSize`.
+    - Test `GuiVirtualRepeatCompositionBase::GetTotalSize` with `UseMinimumTotalSize`.
+    - Complete `TestCompositions_Bounds.cpp`.
+    - Test controls with a unit test only platform provider running in hosted mode
+      - Each character takes exactly `FontSize x FontSize`
+      - Deal with `\r` and `\n` when multiline is enabled
+    - Test against more code as many as possible
+  - Add above functionality to `GacUI.UnitTest.cpp`, `GacUI.UnitTest.h`, `GacUI.UnitTest.Reflection ...`
+  - In release repo add more tools that just call `GacUI.UnitTest.cpp`:
+    - Load x86 bin + workflow script and execute.
+    - Load x64 bin + workflow script and execute.
+    - Render unit test results, especially each frame of intermediate rendering result.
+      - Can navigate to workflow script.
 - Enlarging window slower than shrinking.
-- Test `GuiVirtualRepeatCompositionBase::GetAdoptedSize`.
-- Test `GuiVirtualRepeatCompositionBase::GetTotalSize` with `UseMinimumTotalSize`.
 - https://github.com/vczh-libraries/Vlpp/issues/9
-
-## Unit Test Framework
-
-- UnitTest.vcxproj
-  - Complete `TestCompositions_Bounds.cpp`.
-  - Test controls with a unit test only platform provider running in hosted mode
-    - Each character takes exactly `FontSize x FontSize`
-    - Deal with `\r` and `\n` when multiline is enabled
-  - Test against more code as many as possible
-- Add above functionality to `GacUI.UnitTest.cpp`, `GacUI.UnitTest.h`, `GacUI.UnitTest.Reflection ...`
-- In release repo add more tools that just call `GacUI.UnitTest.cpp`:
-  - Load x86 bin + workflow script and execute.
-  - Load x64 bin + workflow script and execute.
-  - Render unit test results, especially each frame of intermediate rendering result.
-    - Can navigate to workflow script.
+- Document: Change titles of `Upgrading from 1.0` to `Breaking changes from 1.0`.
 
 ## Progressing
 
