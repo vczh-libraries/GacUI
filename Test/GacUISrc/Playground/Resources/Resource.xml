@@ -100,6 +100,7 @@
                     item.Name = Sys::LoremIpsumTitle(25);
                     item.Website = Sys::LoremIpsumTitle(60);
                     self.itemSource.Add(item);
+                    self.ForceCalculateSizeImmediately();
                   }
                 ]]>
               </ev.Clicked-eval>
