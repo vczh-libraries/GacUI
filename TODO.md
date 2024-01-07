@@ -15,6 +15,8 @@
 - Bindable list control (optional)
   - When a property referenced by `<att.XXXProperty>` is updated, the list item is not refreshed.
     - Need to find a way to listen to the event.
+- For all list controls, adding item could cause flashing during rendering for about 1 flame.
+  - If this issue is solved, remove document in `Breaking changes from 1.0` and `List Controls`
 
 ## Progressing (before release)
 
@@ -35,7 +37,6 @@
       - Can navigate to workflow script.
 - Enlarging window slower than shrinking.
 - https://github.com/vczh-libraries/Vlpp/issues/9
-- Document: Change titles of `Upgrading from 1.0` to `Breaking changes from 1.0`.
 
 ## Progressing
 
