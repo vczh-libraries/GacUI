@@ -8632,7 +8632,7 @@ DataProvider
 
 					if (invokeCallback)
 					{
-						RefreshAllItems();
+						RebuildAllItems();
 					}
 				}
 
