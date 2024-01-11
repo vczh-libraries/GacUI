@@ -29,6 +29,11 @@
       - Each character takes exactly `FontSize x FontSize`
       - Deal with `\r` and `\n` when multiline is enabled
     - Test against more code as many as possible
+  - A general remoting `INativeController` implementation
+    - It sends batched requests to a receiver and wait for respond
+    - Two backend could be unit test and streaming
+    - Save image metadata (width, height, type, etc) to binary resource
+      - For `INativeImageService::CreateImage*` functions it sends binary data to the receiver and wait for respond of metadata
   - Add above functionality to `GacUI.UnitTest.cpp`, `GacUI.UnitTest.h`, `GacUI.UnitTest.Reflection ...`
   - In release repo add more tools that just call `GacUI.UnitTest.cpp`:
     - Load x86 bin + workflow script and execute.
