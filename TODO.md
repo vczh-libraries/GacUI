@@ -1,7 +1,5 @@
 # TODO
 
-## Done but not Released
-
 ## Known Issues
 
 - `GuiVirtualRepeatCompositionBase`.
@@ -34,6 +32,7 @@
     - Two backend could be unit test and streaming
     - Save image metadata (width, height, type, etc) to binary resource
       - For `INativeImageService::CreateImage*` functions it sends binary data to the receiver and wait for respond of metadata
+    - Metadata from requests are needed from the beginning for codegen, metadata will be included in release.
   - Add above functionality to `GacUI.UnitTest.cpp`, `GacUI.UnitTest.h`, `GacUI.UnitTest.Reflection ...`
   - In release repo add more tools that just call `GacUI.UnitTest.cpp`:
     - Load x86 bin + workflow script and execute.
@@ -43,7 +42,30 @@
 - Enlarging window slower than shrinking.
 - https://github.com/vczh-libraries/Vlpp/issues/9
 
-## Progressing
+## Progressing (next release)
+
+- SyncDom architecture that streams layout/element changes, requiring Hosted for the first version.
+  - An implementation of remoting.
+  - Requires hosted mode.
+- SyncObj architecture that streams ViewModel object changes.
+  - Requires all pointers are shared (optional)
+    - The native side need to provide functions for controlling lifetime:
+      - AllocateObjectId():int, this is called when the object is sent to the native side for the first time. The default reference counter is 0.
+      - IncreaseReference(int):void
+      - DecreaseReference(int):void
+      - When reference counter is not 0, the object must be kept alive and querable by id.
+  - Think about async view model (functions or properties returning Task) in data binding.
+  - Attributes on ViewModel Workflow interfaces
+    - GacGen offers Metadata of interfaces
+- Network protocols are not included as default implementation
+- New tutorials
+  - A GacUI D2D process connecting to a server process for streaming ViewModel
+    - ViewModel implements in C++ and C#
+  - A GacUI SyncDom process connecting to a server process for streaming graphics
+    - GDI+ implements in C#
+    - D2D implements in C++
+
+## Progressing (low priority)
 
 - Rewrite `GacBuild.ps1` in C++
 - Get rid of `Deploy.bat` in `GacGen.ps1` and `GacGen.exe`
@@ -87,8 +109,8 @@
   - Write maketools.sh
 - Rewrite GacBuild.ps1 in C++
 - Add `MoveToScreenCenterAfterLayout` as what is done in `FakeDialogServiceBase::ShowModalDialogAndDelete`.
-
-## Document
+- New default control templates with animation, written in XML generated C++ code.
+- Use the embedded data codegen / compress / decompress functions from `VlppParser2` to replace one in `GacUI`.
 
 ## OS Provider Features
 
@@ -98,6 +120,8 @@
   - Substitute DragAndDrop by default optionally.
 - Windows
   - `INativeImage::SaveToStream` handle correctly for git format. It is possible that LoadFromStream need to process diff between git raw frames.
+- UI Automation.
+- Test Automation on Tutorials.
 
 ## Control Features
 
@@ -121,15 +145,6 @@
   - A "binary tree layout/control" for implementing VS-like dock container
 - Touch support.
 
-## Architecture
-
-- New skin.
-  - New default control templates with animation, written in XML generated C++ code.
-- UI Automation.
-- Test Automation on virtual command line mode by comparing characters rendered on a very small viewport.
-- Test Automation on Tutorials.
-- Use the embedded data codegen / compress / decompress functions from `VlppParser2` to replace one in `GacUI`.
-
 ## GacUI Resource Compiler
 
 - `<eval Eval="expression"/>` tags.
@@ -149,56 +164,30 @@
 
 ## Porting to New Platforms
 
-- SyncTree architecture that streams layout/element changes, requiring Hosted for the first version.
-- ViewModel architecture that streams object changes.
-  - Requires all pointers are shared (optional)
-    - The native side need to provide functions for controlling lifetime:
-      - AllocateObjectId():int, this is called when the object is sent to the native side for the first time. The default reference counter is 0.
-      - IncreaseReference(int):void
-      - DecreaseReference(int):void
-      - When reference counter is not 0, the object must be kept alive and querable by id.
-  - Think about async view model (functions or properties returning Task) in data binding.
 - Port GacUI to other platforms:
-  - Unit Test
-    - Simplified CLI (Hosted)
+  - Unit Test (Hosted)
   - Windows
-    - Command-line/Powershell in Windows (Hosted)
-    - GDI (Hosted or SyncTree)
-    - Direct2d (Hosted or SyncTree)
-    - UWP (Hosted and SyncTree)
+    - GDI (**Hosted**, SyncDom)
+    - Direct2d (Hosted, SyncDom)
+    - UWP (**Hosted** + SyncDom)
   - Linux
-    - Ncurses on Ubuntu (Hosted)
-    - gGac repo: complete development process for release
+    - gGac repo: improve development process for release
   - macOS
-    - iGac repo: complete development process for release
-  - Web Assembly (Hosted + SyncTree)
+    - iGac repo: improve development process for release
+  - Web Assembly (Hosted + SyncDom)
     - Canvas?
     - DOM?
-
-## Binders for other Programming Languages
-
-- User need to specify which ViewModel interfaces are involved in streaming
-  - Metadata are offered so that users could write their own codegen
-  - Client side implementation for interfaces. These objects are given to the UI, they send out commands and waiting for receiving real view model data
-  - ViewModel streaming implementation for server side. You give them all implementations of interfaces, it handles commands and send back real view model data
-    - Users could use metadata to implement it in other languages other than C++
-- Applications written in other language can:
-  - Implement view model.
-  - Render the UI via SyncTree.
-- Languages:
-  - JavaScript / TypeScript through Web assembly
-  - .NET (core?)
-  - Python
-
-## Streaming Tutorials
-
-- A GacUI D2D process connecting to a server process for streaming ViewModel
-  - ViewModel implements in C++ and C#
-- A GacUI SyncTree process connecting to a server process for streaming graphics
-  - GDI+ implements in C#
-  - D2D implements in C++
-
-## GacStudio
+  - CLI (optional, needs dedicated skin)
+    - Command-line/Powershell in Windows (Hosted)
+    - Ncurses on Ubuntu (Hosted)
+- Port GacUI to other languages:
+  - Applications written in other language can:
+    - Implement view model (SyncObj).
+    - Render the UI (SyncDom).
+  - Languages:
+    - JavaScript / TypeScript through Web assembly
+    - .NET
+    - Python
 
 ## GacUI Resource Compiler
 
@@ -213,6 +202,10 @@
   - Calculate dependencies by only parsing.
   - Cache workflow assembly per resource in file.
   - Codegen c++ from multiple workflow assembly.
+
+## New C++/Doc Compiler based on VlppParser2
+
+## GacStudio
 
 ## MISC
 
