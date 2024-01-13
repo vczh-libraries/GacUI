@@ -33,6 +33,8 @@
     - Save image metadata (width, height, type, etc) to binary resource
       - For `INativeImageService::CreateImage*` functions it sends binary data to the receiver and wait for respond of metadata
     - Metadata from requests are needed from the beginning for codegen, metadata will be included in release.
+    - Upgrade GacUI XML Resource to 1.3, force on all instead of only depended or depending resource.
+    - Require binary pattern "[GMR-1.3]" at the beginning of the binary resource.
   - Add above functionality to `GacUI.UnitTest.cpp`, `GacUI.UnitTest.h`, `GacUI.UnitTest.Reflection ...`
   - In release repo add more tools that just call `GacUI.UnitTest.cpp`:
     - Load x86 bin + workflow script and execute.
@@ -67,7 +69,7 @@
 
 ## Progressing (low priority)
 
-- Rewrite `GacBuild.ps1` in C++
+- Rewrite `GacBuild.ps1` and `GacClear.ps1` in C++, but still keep them just doing redirection for backward compatibility.
 - Get rid of `Deploy.bat` in `GacGen.ps1` and `GacGen.exe`
 - DarkSkin Color Theme.
   - Create a `DarkSkinPalette` class with a static getter method to retrive default colors.
