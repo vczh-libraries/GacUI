@@ -50,15 +50,8 @@
   - An implementation of remoting.
   - Requires hosted mode.
 - SyncObj architecture that streams ViewModel object changes.
-  - Requires all pointers are shared.
-  - The native side need to provide functions for controlling lifetime:
-    - AllocateObjectId():int, this is called when the object is sent to the native side for the first time. The default reference counter is 0.
-    - IncreaseReference(int):void
-    - DecreaseReference(int):void
-    - When reference counter is not 0, the object must be kept alive and querable by id.
-  - Think about async view model (functions or properties returning Task) in data binding (see README.md in Workflow repo).
-  - Attributes on ViewModel Workflow interfaces
-    - GacGen offers Metadata of interfaces
+  - See README.md in Workflow repo (**ViewModel Remoting C++ Codegen**).
+  - GacGen offers Metadata of interfaces
 - Network protocols are not included as default implementation
 - New tutorials
   - A GacUI D2D process connecting to a server process for streaming ViewModel
