@@ -31,6 +31,9 @@
     <Filter Include="Utilities\SharedServices">
       <UniqueIdentifier>{f290caa9-2684-4617-b82c-2bd460eb4fa5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="PlatformProviders\Remote">
+      <UniqueIdentifier>{12c45e4c-1575-4ad9-827f-05724cb43d4a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiDocument.cpp">
@@ -150,6 +153,9 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Utilities\SharedServices\GuiSharedCallbackService.cpp">
       <Filter>Utilities\SharedServices</Filter>
     </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Remote\GuiRemoteController.cpp">
+      <Filter>PlatformProviders\Remote</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiDocument.h">
@@ -212,6 +218,9 @@
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Utilities\SharedServices\GuiSharedCallbackService.h">
       <Filter>Utilities\SharedServices</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Remote\GuiRemoteController.h">
+      <Filter>PlatformProviders\Remote</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

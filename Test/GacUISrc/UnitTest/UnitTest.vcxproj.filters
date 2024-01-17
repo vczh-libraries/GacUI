@@ -16,6 +16,9 @@
     <Filter Include="Source Files\Compositions">
       <UniqueIdentifier>{1cd7ff9b-05e3-4674-a794-4f7bacf35b1d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Remote">
+      <UniqueIdentifier>{46c53123-9b2f-47b2-8c68-68425b3d4587}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -62,6 +65,12 @@
     </ClCompile>
     <ClCompile Include="TestCompositions_VirtualRepeat.cpp">
       <Filter>Source Files\Compositions</Filter>
+    </ClCompile>
+    <ClCompile Include="TestRemote_UnitTestFramework.cpp">
+      <Filter>Source Files\Remote</Filter>
+    </ClCompile>
+    <ClCompile Include="TestRemote_Startup.cpp">
+      <Filter>Source Files\Remote</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

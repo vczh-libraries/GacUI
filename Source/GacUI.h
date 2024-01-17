@@ -42,6 +42,13 @@ using namespace vl::presentation::templates;
 // GacUI Compiler
 extern int SetupGacGenNativeController();
 
+// Remote
+namespace vl::presentation
+{
+	class IGuiRemoteProtocol;
+}
+extern int SetupRemoteNativeController(vl::presentation::IGuiRemoteProtocol* protocol);
+
 // Windows
 extern int SetupWindowsGDIRenderer();
 extern int SetupWindowsDirect2DRenderer();
