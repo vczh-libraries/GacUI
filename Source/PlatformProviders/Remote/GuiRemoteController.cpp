@@ -43,7 +43,7 @@ GuiRemoteController::INativeResourceService
 
 			INativeCursor* GuiRemoteController::GetDefaultSystemCursor()
 			{
-				CHECK_FAIL(L"Not Implemented (from config)!");
+				return GetSystemCursor(INativeCursor::SystemCursorType::Arrow);
 			}
 
 			FontProperties GuiRemoteController::GetDefaultFont()
