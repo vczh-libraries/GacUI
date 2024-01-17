@@ -5,6 +5,22 @@ namespace vl
 	namespace presentation
 	{
 		using namespace collections;
+
+/***********************************************************************
+GuiRemoteCursor
+***********************************************************************/
+
+		class GuiRemoteCursor : public Object, public virtual INativeCursor
+		{
+		protected:
+			INativeCursor::SystemCursorType								cursorType;
+
+		public:
+			GuiRemoteCursor(INativeCursor::SystemCursorType _cursorType) : cursorType(_cursorType) {}
+
+			bool				IsSystemCursor() { return true; }
+			SystemCursorType	GetSystemCursorType() { return cursorType; }
+		};
 		
 /***********************************************************************
 GuiRemoteController::INativeResourceService
@@ -12,7 +28,17 @@ GuiRemoteController::INativeResourceService
 
 			INativeCursor* GuiRemoteController::GetSystemCursor(INativeCursor::SystemCursorType type)
 			{
-				CHECK_FAIL(L"Not Implemented!");
+				vint index = cursors.Keys().IndexOf(type);
+				if (index == -1)
+				{
+					auto cursor = Ptr(new GuiRemoteCursor(type));
+					cursors.Add(type, cursor);
+					return cursor.Obj();
+				}
+				else
+				{
+					return cursors.Values()[index].Obj();
+				}
 			}
 
 			INativeCursor* GuiRemoteController::GetDefaultSystemCursor()

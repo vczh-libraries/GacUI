@@ -18,6 +18,7 @@ namespace vl
 {
 	namespace presentation
 	{
+
 /***********************************************************************
 IGuiRemoteProtocol
 ***********************************************************************/
@@ -40,9 +41,11 @@ GuiRemoteController
 			, protected INativeScreen
 			, protected INativeWindowService
 		{
+			using CursorMap = collections::Dictionary<INativeCursor::SystemCursorType, Ptr<INativeCursor>>;
 		protected:
 			SharedCallbackService										callbackService;
 			SharedAsyncService											asyncService;
+			CursorMap													cursors;
 			INativeWindow*												mainWindow = nullptr;
 
 			// =============================================================
