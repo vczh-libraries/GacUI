@@ -2832,9 +2832,8 @@ Licensed under https://github.com/vczh-libraries/License
 #ifndef VCZH_REFLECTION_TYPES_TYPEDVALUESERIALIZERPROVIDER
 #define VCZH_REFLECTION_TYPES_TYPEDVALUESERIALIZERPROVIDER
 
-#ifdef VCZH_GCC
+#include <limits.h>
 #include <float.h>
-#endif
 
 namespace vl
 {
