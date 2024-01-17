@@ -34,12 +34,40 @@ GuiRemoteController
 		class GuiRemoteController
 			: public Object
 			, public INativeController
+			, protected INativeResourceService
+			, protected INativeInputService
 			, protected INativeScreenService
+			, protected INativeScreen
 			, protected INativeWindowService
 		{
 		protected:
 			SharedCallbackService										callbackService;
 			SharedAsyncService											asyncService;
+			INativeWindow*												mainWindow = nullptr;
+
+			// =============================================================
+			// INativeResourceService
+			// =============================================================
+
+			INativeCursor*					GetSystemCursor(INativeCursor::SystemCursorType type) override;
+			INativeCursor*					GetDefaultSystemCursor() override;
+			FontProperties					GetDefaultFont() override;
+			void							SetDefaultFont(const FontProperties& value) override;
+			void							EnumerateFonts(collections::List<WString>& fonts) override;
+
+			// =============================================================
+			// INativeInputService
+			// =============================================================
+
+			void							StartTimer() override;
+			void							StopTimer() override;
+			bool							IsTimerEnabled() override;
+			bool							IsKeyPressing(VKEY code) override;
+			bool							IsKeyToggled(VKEY code) override;
+			WString							GetKeyName(VKEY code) override;
+			VKEY							GetKey(const WString& name) override;
+			vint							RegisterGlobalShortcutKey(bool ctrl, bool shift, bool alt, VKEY key) override;
+			bool							UnregisterGlobalShortcutKey(vint id) override;
 
 			// =============================================================
 			// INativeScreenService
@@ -48,6 +76,17 @@ GuiRemoteController
 			vint							GetScreenCount() override;
 			INativeScreen*					GetScreen(vint index) override;
 			INativeScreen*					GetScreen(INativeWindow* window) override;
+
+			// =============================================================
+			// INativeScreen
+			// =============================================================
+
+			NativeRect						GetBounds() override;
+			NativeRect						GetClientBounds() override;
+			WString							GetName() override;
+			bool							IsPrimary() override;
+			double							GetScalingX() override;
+			double							GetScalingY() override;
 
 			// =============================================================
 			// INativeWindowService

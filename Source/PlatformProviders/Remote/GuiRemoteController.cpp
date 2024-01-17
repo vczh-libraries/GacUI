@@ -5,6 +5,84 @@ namespace vl
 	namespace presentation
 	{
 		using namespace collections;
+		
+/***********************************************************************
+GuiRemoteController::INativeResourceService
+***********************************************************************/
+
+			INativeCursor* GuiRemoteController::GetSystemCursor(INativeCursor::SystemCursorType type)
+			{
+				CHECK_FAIL(L"Not Implemented!");
+			}
+
+			INativeCursor* GuiRemoteController::GetDefaultSystemCursor()
+			{
+				CHECK_FAIL(L"Not Implemented (from config)!");
+			}
+
+			FontProperties GuiRemoteController::GetDefaultFont()
+			{
+				CHECK_FAIL(L"Not Implemented (from config)!");
+			}
+
+			void GuiRemoteController::SetDefaultFont(const FontProperties& value)
+			{
+				CHECK_FAIL(L"Not Implemented!");
+			}
+
+			void GuiRemoteController::EnumerateFonts(collections::List<WString>& fonts)
+			{
+				CHECK_FAIL(L"Not Implemented (from config)!");
+			}
+			
+/***********************************************************************
+GuiRemoteController::INativeInputService
+***********************************************************************/
+
+			void GuiRemoteController::StartTimer()
+			{
+				CHECK_FAIL(L"Not Implemented!");
+			}
+
+			void GuiRemoteController::StopTimer()
+			{
+				CHECK_FAIL(L"Not Implemented!");
+			}
+
+			bool GuiRemoteController::IsTimerEnabled()
+			{
+				CHECK_FAIL(L"Not Implemented!");
+			}
+
+			bool GuiRemoteController::IsKeyPressing(VKEY code)
+			{
+				CHECK_FAIL(L"Not Implemented!");
+			}
+
+			bool GuiRemoteController::IsKeyToggled(VKEY code)
+			{
+				CHECK_FAIL(L"Not Implemented!");
+			}
+
+			WString GuiRemoteController::GetKeyName(VKEY code)
+			{
+				CHECK_FAIL(L"Not Implemented!");
+			}
+
+			VKEY GuiRemoteController::GetKey(const WString& name)
+			{
+				CHECK_FAIL(L"Not Implemented!");
+			}
+
+			vint GuiRemoteController::RegisterGlobalShortcutKey(bool ctrl, bool shift, bool alt, VKEY key)
+			{
+				CHECK_FAIL(L"Not Implemented!");
+			}
+			
+			bool GuiRemoteController::UnregisterGlobalShortcutKey(vint id)
+			{
+				CHECK_FAIL(L"Not Implemented!");
+			}
 
 /***********************************************************************
 GuiRemoteController::INativeScreenService
@@ -12,15 +90,50 @@ GuiRemoteController::INativeScreenService
 
 		vint GuiRemoteController::GetScreenCount()
 		{
-			CHECK_FAIL(L"Not Implemented!");
+			return 1;
 		}
 
 		INativeScreen* GuiRemoteController::GetScreen(vint index)
 		{
-			CHECK_FAIL(L"Not Implemented!");
+			CHECK_ERROR(index == 0, L"vl::presentation::GuiRemoteController::GetScreen(vint)#Index out of range.");
+			return this;
 		}
 
 		INativeScreen* GuiRemoteController::GetScreen(INativeWindow* window)
+		{
+			return this;
+		}
+
+/***********************************************************************
+GuiHostedController::INativeScreen
+***********************************************************************/
+
+		NativeRect GuiRemoteController::GetBounds()
+		{
+			CHECK_FAIL(L"vl::presentation::GuiRemoteController::GetBounds()#GuiHostedController is not supposed to call this function.");
+		}
+
+		NativeRect GuiRemoteController::GetClientBounds()
+		{
+			CHECK_FAIL(L"vl::presentation::GuiRemoteController::GetClientBounds()#GuiHostedController is not supposed to call this function.");
+		}
+
+		WString GuiRemoteController::GetName()
+		{
+			return WString::Unmanaged(L"GacUI Virtual Remote Screen");
+		}
+
+		bool GuiRemoteController::IsPrimary()
+		{
+			return true;
+		}
+
+		double GuiRemoteController::GetScalingX()
+		{
+			CHECK_FAIL(L"Not Implemented!");
+		}
+
+		double GuiRemoteController::GetScalingY()
 		{
 			CHECK_FAIL(L"Not Implemented!");
 		}
@@ -51,12 +164,12 @@ GuiRemoteController::INativeWindowService
 
 		INativeWindow* GuiRemoteController::GetMainWindow()
 		{
-			CHECK_FAIL(L"Not Implemented!");
+			return mainWindow;
 		}
 
 		INativeWindow* GuiRemoteController::GetWindow(NativePoint location)
 		{
-			CHECK_FAIL(L"Not Implemented!");
+			CHECK_FAIL(L"vl::presentation::GuiRemoteController::GetWindow(NativePoint)#GuiHostedController is not supposed to call this function.");
 		}
 
 		void GuiRemoteController::Run(INativeWindow* window)
@@ -92,7 +205,7 @@ GuiRemoteController::INativeController
 
 		INativeResourceService* GuiRemoteController::ResourceService()
 		{
-			CHECK_FAIL(L"Not Implemented!");
+			return this;
 		}
 
 		INativeAsyncService* GuiRemoteController::AsyncService()
@@ -112,7 +225,7 @@ GuiRemoteController::INativeController
 
 		INativeInputService* GuiRemoteController::InputService()
 		{
-			CHECK_FAIL(L"Not Implemented!");
+			return this;
 		}
 
 		INativeDialogService* GuiRemoteController::DialogService()
@@ -123,7 +236,7 @@ GuiRemoteController::INativeController
 
 		WString GuiRemoteController::GetExecutablePath()
 		{
-			CHECK_FAIL(L"Not Implemented!");
+			CHECK_FAIL(L"Not Implemented (from config)!");
 		}
 		
 		INativeScreenService* GuiRemoteController::ScreenService()
