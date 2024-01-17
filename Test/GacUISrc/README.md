@@ -29,4 +29,4 @@
 
 - Run **Metadata_Generate** in both Win32 and X64 to generate binary files.
 - Run **Metadata_Test** to update types.
-- Run **GacUI_Compiler** if DarkSkin or FullControlTest is changed.
+- Run **GacUI_Compiler** if Utilities_Controls, DarkSkin or FullControlTest is changed.

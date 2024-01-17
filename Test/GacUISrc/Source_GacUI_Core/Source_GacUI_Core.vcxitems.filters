@@ -25,6 +25,12 @@
     <Filter Include="PlatformProviders\GacGen">
       <UniqueIdentifier>{0de502fc-a6e3-4061-a107-80814e08eaca}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Utilities">
+      <UniqueIdentifier>{3c027ba9-3010-43d5-b011-d663581d1b48}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utilities\SharedServices">
+      <UniqueIdentifier>{f290caa9-2684-4617-b82c-2bd460eb4fa5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiDocument.cpp">
@@ -138,6 +144,12 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\GacGen\GacGenController.cpp">
       <Filter>PlatformProviders\GacGen</Filter>
     </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Utilities\SharedServices\GuiSharedAsyncService.cpp">
+      <Filter>Utilities\SharedServices</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Utilities\SharedServices\GuiSharedCallbackService.cpp">
+      <Filter>Utilities\SharedServices</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiDocument.h">
@@ -194,6 +206,12 @@
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Hosted\GuiHostedWindowManager.h">
       <Filter>PlatformProviders\Hosted</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Utilities\SharedServices\GuiSharedAsyncService.h">
+      <Filter>Utilities\SharedServices</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Utilities\SharedServices\GuiSharedCallbackService.h">
+      <Filter>Utilities\SharedServices</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

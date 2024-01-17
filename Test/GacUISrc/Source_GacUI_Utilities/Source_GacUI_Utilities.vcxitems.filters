@@ -4,20 +4,11 @@
     <Filter Include="Utilities">
       <UniqueIdentifier>{fa5817d5-d143-4b15-b7ba-0a9602b903a3}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Utilities\SharedServices">
-      <UniqueIdentifier>{5fb50237-f73a-45af-9067-62eb5d9711b6}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Utilities\FakeServices">
       <UniqueIdentifier>{f73f23cf-411f-4a19-a7e3-40a1c948046e}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Utilities\SharedServices\GuiSharedAsyncService.h">
-      <Filter>Utilities\SharedServices</Filter>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Utilities\SharedServices\GuiSharedCallbackService.h">
-      <Filter>Utilities\SharedServices</Filter>
-    </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Utilities\FakeServices\GuiFakeClipboardService.h">
       <Filter>Utilities\FakeServices</Filter>
     </ClInclude>
@@ -26,12 +17,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Utilities\SharedServices\GuiSharedAsyncService.cpp">
-      <Filter>Utilities\SharedServices</Filter>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Utilities\SharedServices\GuiSharedCallbackService.cpp">
-      <Filter>Utilities\SharedServices</Filter>
-    </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Utilities\FakeServices\GuiFakeClipboardService.cpp">
       <Filter>Utilities\FakeServices</Filter>
     </ClCompile>
