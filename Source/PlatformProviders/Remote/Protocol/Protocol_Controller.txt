@@ -1,3 +1,32 @@
+[@Cpp(::vl::presentation::NativeCoordinate)]
+struct NativeCoordinate
+{
+    var value : int;
+}
+
+[@Cpp(::vl::presentation::NativePoint)]
+struct NativePoint
+{
+    var x : NativeCoordinate;
+    var y : NativeCoordinate;
+}
+
+[@Cpp(::vl::presentation::NativeSize)]
+struct NativeSize
+{
+    var x : NativeCoordinate;
+    var y : NativeCoordinate;
+}
+
+[@Cpp(::vl::presentation::NativeRect)]
+struct NativeRect
+{
+    var x1 : NativeCoordinate;
+    var y1 : NativeCoordinate;
+    var x2 : NativeCoordinate;
+    var y2 : NativeCoordinate;
+}
+
 [@Cpp(::vl::presentation::FontProperties)]
 struct FontProperties
 {
@@ -24,6 +53,8 @@ message GetFontConfig
 
 struct ScreenConfig
 {
+    var bounds : NativeRect;
+    var clientBounds : NativeRect;
     var scalingX : double;
     var scalingY : double;
 }

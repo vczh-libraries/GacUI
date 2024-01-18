@@ -18,6 +18,8 @@ namespace vl::presentation::remoteprotocol
 
 	struct ScreenConfig
 	{
+		::vl::presentation::NativeRect bounds;
+		::vl::presentation::NativeRect clientBounds;
 		double scalingX;
 		double scalingY;
 	};

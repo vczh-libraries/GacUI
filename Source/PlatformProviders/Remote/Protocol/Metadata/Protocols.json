@@ -1,155 +1,268 @@
 {
     "$ast": { "type": "Schema", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
     "declarations": [{
-        "$ast": { "type": "StructDecl", "codeRange": {"start": {"row": 0, "column": 0, "index": 0}, "end": {"row": 11, "column": 0, "index": 284}, "codeIndex": 0}},
+        "$ast": { "type": "StructDecl", "codeRange": {"start": {"row": 0, "column": 0, "index": 0}, "end": {"row": 4, "column": 0, "index": 96}, "codeIndex": 0}},
         "attributes": [{
-            "$ast": { "type": "Attribute", "codeRange": {"start": {"row": 0, "column": 0, "index": 0}, "end": {"row": 0, "column": 41, "index": 41}, "codeIndex": 0}},
-            "cppType": { "value": "::vl::presentation::FontProperties", "codeRange": {"start": {"row": 0, "column": 6, "index": 6}, "end": {"row": 0, "column": 39, "index": 39}, "codeIndex": 0}},
+            "$ast": { "type": "Attribute", "codeRange": {"start": {"row": 0, "column": 0, "index": 0}, "end": {"row": 0, "column": 43, "index": 43}, "codeIndex": 0}},
+            "cppType": { "value": "::vl::presentation::NativeCoordinate", "codeRange": {"start": {"row": 0, "column": 6, "index": 6}, "end": {"row": 0, "column": 41, "index": 41}, "codeIndex": 0}},
             "name": { "value": "@Cpp", "codeRange": {"start": {"row": 0, "column": 1, "index": 1}, "end": {"row": 0, "column": 4, "index": 4}, "codeIndex": 0}}
         }],
-        "name": { "value": "FontProperties", "codeRange": {"start": {"row": 1, "column": 7, "index": 51}, "end": {"row": 1, "column": 20, "index": 64}, "codeIndex": 0}},
+        "name": { "value": "NativeCoordinate", "codeRange": {"start": {"row": 1, "column": 7, "index": 53}, "end": {"row": 1, "column": 22, "index": 68}, "codeIndex": 0}},
         "members": [{
-            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 3, "column": 4, "index": 74}, "end": {"row": 3, "column": 27, "index": 97}, "codeIndex": 0}},
-            "name": { "value": "fontFamily", "codeRange": {"start": {"row": 3, "column": 8, "index": 78}, "end": {"row": 3, "column": 17, "index": 87}, "codeIndex": 0}},
+            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 3, "column": 4, "index": 78}, "end": {"row": 3, "column": 19, "index": 93}, "codeIndex": 0}},
+            "name": { "value": "value", "codeRange": {"start": {"row": 3, "column": 8, "index": 82}, "end": {"row": 3, "column": 12, "index": 86}, "codeIndex": 0}},
             "type": {
-                "$ast": { "type": "PrimitiveType", "codeRange": {"start": {"row": 3, "column": 21, "index": 91}, "end": {"row": 3, "column": 26, "index": 96}, "codeIndex": 0}},
+                "$ast": { "type": "PrimitiveType", "codeRange": {"start": {"row": 3, "column": 16, "index": 90}, "end": {"row": 3, "column": 18, "index": 92}, "codeIndex": 0}},
+                "type": "Integer"
+            }
+        }]
+    }, {
+        "$ast": { "type": "StructDecl", "codeRange": {"start": {"row": 6, "column": 0, "index": 101}, "end": {"row": 11, "column": 0, "index": 227}, "codeIndex": 0}},
+        "attributes": [{
+            "$ast": { "type": "Attribute", "codeRange": {"start": {"row": 6, "column": 0, "index": 101}, "end": {"row": 6, "column": 38, "index": 139}, "codeIndex": 0}},
+            "cppType": { "value": "::vl::presentation::NativePoint", "codeRange": {"start": {"row": 6, "column": 6, "index": 107}, "end": {"row": 6, "column": 36, "index": 137}, "codeIndex": 0}},
+            "name": { "value": "@Cpp", "codeRange": {"start": {"row": 6, "column": 1, "index": 102}, "end": {"row": 6, "column": 4, "index": 105}, "codeIndex": 0}}
+        }],
+        "name": { "value": "NativePoint", "codeRange": {"start": {"row": 7, "column": 7, "index": 149}, "end": {"row": 7, "column": 17, "index": 159}, "codeIndex": 0}},
+        "members": [{
+            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 9, "column": 4, "index": 169}, "end": {"row": 9, "column": 28, "index": 193}, "codeIndex": 0}},
+            "name": { "value": "x", "codeRange": {"start": {"row": 9, "column": 8, "index": 173}, "end": {"row": 9, "column": 8, "index": 173}, "codeIndex": 0}},
+            "type": {
+                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 9, "column": 12, "index": 177}, "end": {"row": 9, "column": 27, "index": 192}, "codeIndex": 0}},
+                "name": { "value": "NativeCoordinate", "codeRange": {"start": {"row": 9, "column": 12, "index": 177}, "end": {"row": 9, "column": 27, "index": 192}, "codeIndex": 0}}
+            }
+        }, {
+            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 10, "column": 4, "index": 200}, "end": {"row": 10, "column": 28, "index": 224}, "codeIndex": 0}},
+            "name": { "value": "y", "codeRange": {"start": {"row": 10, "column": 8, "index": 204}, "end": {"row": 10, "column": 8, "index": 204}, "codeIndex": 0}},
+            "type": {
+                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 10, "column": 12, "index": 208}, "end": {"row": 10, "column": 27, "index": 223}, "codeIndex": 0}},
+                "name": { "value": "NativeCoordinate", "codeRange": {"start": {"row": 10, "column": 12, "index": 208}, "end": {"row": 10, "column": 27, "index": 223}, "codeIndex": 0}}
+            }
+        }]
+    }, {
+        "$ast": { "type": "StructDecl", "codeRange": {"start": {"row": 13, "column": 0, "index": 232}, "end": {"row": 18, "column": 0, "index": 356}, "codeIndex": 0}},
+        "attributes": [{
+            "$ast": { "type": "Attribute", "codeRange": {"start": {"row": 13, "column": 0, "index": 232}, "end": {"row": 13, "column": 37, "index": 269}, "codeIndex": 0}},
+            "cppType": { "value": "::vl::presentation::NativeSize", "codeRange": {"start": {"row": 13, "column": 6, "index": 238}, "end": {"row": 13, "column": 35, "index": 267}, "codeIndex": 0}},
+            "name": { "value": "@Cpp", "codeRange": {"start": {"row": 13, "column": 1, "index": 233}, "end": {"row": 13, "column": 4, "index": 236}, "codeIndex": 0}}
+        }],
+        "name": { "value": "NativeSize", "codeRange": {"start": {"row": 14, "column": 7, "index": 279}, "end": {"row": 14, "column": 16, "index": 288}, "codeIndex": 0}},
+        "members": [{
+            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 16, "column": 4, "index": 298}, "end": {"row": 16, "column": 28, "index": 322}, "codeIndex": 0}},
+            "name": { "value": "x", "codeRange": {"start": {"row": 16, "column": 8, "index": 302}, "end": {"row": 16, "column": 8, "index": 302}, "codeIndex": 0}},
+            "type": {
+                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 16, "column": 12, "index": 306}, "end": {"row": 16, "column": 27, "index": 321}, "codeIndex": 0}},
+                "name": { "value": "NativeCoordinate", "codeRange": {"start": {"row": 16, "column": 12, "index": 306}, "end": {"row": 16, "column": 27, "index": 321}, "codeIndex": 0}}
+            }
+        }, {
+            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 17, "column": 4, "index": 329}, "end": {"row": 17, "column": 28, "index": 353}, "codeIndex": 0}},
+            "name": { "value": "y", "codeRange": {"start": {"row": 17, "column": 8, "index": 333}, "end": {"row": 17, "column": 8, "index": 333}, "codeIndex": 0}},
+            "type": {
+                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 17, "column": 12, "index": 337}, "end": {"row": 17, "column": 27, "index": 352}, "codeIndex": 0}},
+                "name": { "value": "NativeCoordinate", "codeRange": {"start": {"row": 17, "column": 12, "index": 337}, "end": {"row": 17, "column": 27, "index": 352}, "codeIndex": 0}}
+            }
+        }]
+    }, {
+        "$ast": { "type": "StructDecl", "codeRange": {"start": {"row": 20, "column": 0, "index": 361}, "end": {"row": 27, "column": 0, "index": 551}, "codeIndex": 0}},
+        "attributes": [{
+            "$ast": { "type": "Attribute", "codeRange": {"start": {"row": 20, "column": 0, "index": 361}, "end": {"row": 20, "column": 37, "index": 398}, "codeIndex": 0}},
+            "cppType": { "value": "::vl::presentation::NativeRect", "codeRange": {"start": {"row": 20, "column": 6, "index": 367}, "end": {"row": 20, "column": 35, "index": 396}, "codeIndex": 0}},
+            "name": { "value": "@Cpp", "codeRange": {"start": {"row": 20, "column": 1, "index": 362}, "end": {"row": 20, "column": 4, "index": 365}, "codeIndex": 0}}
+        }],
+        "name": { "value": "NativeRect", "codeRange": {"start": {"row": 21, "column": 7, "index": 408}, "end": {"row": 21, "column": 16, "index": 417}, "codeIndex": 0}},
+        "members": [{
+            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 23, "column": 4, "index": 427}, "end": {"row": 23, "column": 29, "index": 452}, "codeIndex": 0}},
+            "name": { "value": "x1", "codeRange": {"start": {"row": 23, "column": 8, "index": 431}, "end": {"row": 23, "column": 9, "index": 432}, "codeIndex": 0}},
+            "type": {
+                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 23, "column": 13, "index": 436}, "end": {"row": 23, "column": 28, "index": 451}, "codeIndex": 0}},
+                "name": { "value": "NativeCoordinate", "codeRange": {"start": {"row": 23, "column": 13, "index": 436}, "end": {"row": 23, "column": 28, "index": 451}, "codeIndex": 0}}
+            }
+        }, {
+            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 24, "column": 4, "index": 459}, "end": {"row": 24, "column": 29, "index": 484}, "codeIndex": 0}},
+            "name": { "value": "y1", "codeRange": {"start": {"row": 24, "column": 8, "index": 463}, "end": {"row": 24, "column": 9, "index": 464}, "codeIndex": 0}},
+            "type": {
+                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 24, "column": 13, "index": 468}, "end": {"row": 24, "column": 28, "index": 483}, "codeIndex": 0}},
+                "name": { "value": "NativeCoordinate", "codeRange": {"start": {"row": 24, "column": 13, "index": 468}, "end": {"row": 24, "column": 28, "index": 483}, "codeIndex": 0}}
+            }
+        }, {
+            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 25, "column": 4, "index": 491}, "end": {"row": 25, "column": 29, "index": 516}, "codeIndex": 0}},
+            "name": { "value": "x2", "codeRange": {"start": {"row": 25, "column": 8, "index": 495}, "end": {"row": 25, "column": 9, "index": 496}, "codeIndex": 0}},
+            "type": {
+                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 25, "column": 13, "index": 500}, "end": {"row": 25, "column": 28, "index": 515}, "codeIndex": 0}},
+                "name": { "value": "NativeCoordinate", "codeRange": {"start": {"row": 25, "column": 13, "index": 500}, "end": {"row": 25, "column": 28, "index": 515}, "codeIndex": 0}}
+            }
+        }, {
+            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 26, "column": 4, "index": 523}, "end": {"row": 26, "column": 29, "index": 548}, "codeIndex": 0}},
+            "name": { "value": "y2", "codeRange": {"start": {"row": 26, "column": 8, "index": 527}, "end": {"row": 26, "column": 9, "index": 528}, "codeIndex": 0}},
+            "type": {
+                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 26, "column": 13, "index": 532}, "end": {"row": 26, "column": 28, "index": 547}, "codeIndex": 0}},
+                "name": { "value": "NativeCoordinate", "codeRange": {"start": {"row": 26, "column": 13, "index": 532}, "end": {"row": 26, "column": 28, "index": 547}, "codeIndex": 0}}
+            }
+        }]
+    }, {
+        "$ast": { "type": "StructDecl", "codeRange": {"start": {"row": 29, "column": 0, "index": 556}, "end": {"row": 40, "column": 0, "index": 840}, "codeIndex": 0}},
+        "attributes": [{
+            "$ast": { "type": "Attribute", "codeRange": {"start": {"row": 29, "column": 0, "index": 556}, "end": {"row": 29, "column": 41, "index": 597}, "codeIndex": 0}},
+            "cppType": { "value": "::vl::presentation::FontProperties", "codeRange": {"start": {"row": 29, "column": 6, "index": 562}, "end": {"row": 29, "column": 39, "index": 595}, "codeIndex": 0}},
+            "name": { "value": "@Cpp", "codeRange": {"start": {"row": 29, "column": 1, "index": 557}, "end": {"row": 29, "column": 4, "index": 560}, "codeIndex": 0}}
+        }],
+        "name": { "value": "FontProperties", "codeRange": {"start": {"row": 30, "column": 7, "index": 607}, "end": {"row": 30, "column": 20, "index": 620}, "codeIndex": 0}},
+        "members": [{
+            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 32, "column": 4, "index": 630}, "end": {"row": 32, "column": 27, "index": 653}, "codeIndex": 0}},
+            "name": { "value": "fontFamily", "codeRange": {"start": {"row": 32, "column": 8, "index": 634}, "end": {"row": 32, "column": 17, "index": 643}, "codeIndex": 0}},
+            "type": {
+                "$ast": { "type": "PrimitiveType", "codeRange": {"start": {"row": 32, "column": 21, "index": 647}, "end": {"row": 32, "column": 26, "index": 652}, "codeIndex": 0}},
                 "type": "String"
             }
         }, {
-            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 4, "column": 4, "index": 104}, "end": {"row": 4, "column": 18, "index": 118}, "codeIndex": 0}},
-            "name": { "value": "size", "codeRange": {"start": {"row": 4, "column": 8, "index": 108}, "end": {"row": 4, "column": 11, "index": 111}, "codeIndex": 0}},
+            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 33, "column": 4, "index": 660}, "end": {"row": 33, "column": 18, "index": 674}, "codeIndex": 0}},
+            "name": { "value": "size", "codeRange": {"start": {"row": 33, "column": 8, "index": 664}, "end": {"row": 33, "column": 11, "index": 667}, "codeIndex": 0}},
             "type": {
-                "$ast": { "type": "PrimitiveType", "codeRange": {"start": {"row": 4, "column": 15, "index": 115}, "end": {"row": 4, "column": 17, "index": 117}, "codeIndex": 0}},
+                "$ast": { "type": "PrimitiveType", "codeRange": {"start": {"row": 33, "column": 15, "index": 671}, "end": {"row": 33, "column": 17, "index": 673}, "codeIndex": 0}},
                 "type": "Integer"
             }
         }, {
-            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 5, "column": 4, "index": 125}, "end": {"row": 5, "column": 19, "index": 140}, "codeIndex": 0}},
-            "name": { "value": "bold", "codeRange": {"start": {"row": 5, "column": 8, "index": 129}, "end": {"row": 5, "column": 11, "index": 132}, "codeIndex": 0}},
+            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 34, "column": 4, "index": 681}, "end": {"row": 34, "column": 19, "index": 696}, "codeIndex": 0}},
+            "name": { "value": "bold", "codeRange": {"start": {"row": 34, "column": 8, "index": 685}, "end": {"row": 34, "column": 11, "index": 688}, "codeIndex": 0}},
             "type": {
-                "$ast": { "type": "PrimitiveType", "codeRange": {"start": {"row": 5, "column": 15, "index": 136}, "end": {"row": 5, "column": 18, "index": 139}, "codeIndex": 0}},
+                "$ast": { "type": "PrimitiveType", "codeRange": {"start": {"row": 34, "column": 15, "index": 692}, "end": {"row": 34, "column": 18, "index": 695}, "codeIndex": 0}},
                 "type": "Boolean"
             }
         }, {
-            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 6, "column": 4, "index": 147}, "end": {"row": 6, "column": 21, "index": 164}, "codeIndex": 0}},
-            "name": { "value": "italic", "codeRange": {"start": {"row": 6, "column": 8, "index": 151}, "end": {"row": 6, "column": 13, "index": 156}, "codeIndex": 0}},
+            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 35, "column": 4, "index": 703}, "end": {"row": 35, "column": 21, "index": 720}, "codeIndex": 0}},
+            "name": { "value": "italic", "codeRange": {"start": {"row": 35, "column": 8, "index": 707}, "end": {"row": 35, "column": 13, "index": 712}, "codeIndex": 0}},
             "type": {
-                "$ast": { "type": "PrimitiveType", "codeRange": {"start": {"row": 6, "column": 17, "index": 160}, "end": {"row": 6, "column": 20, "index": 163}, "codeIndex": 0}},
+                "$ast": { "type": "PrimitiveType", "codeRange": {"start": {"row": 35, "column": 17, "index": 716}, "end": {"row": 35, "column": 20, "index": 719}, "codeIndex": 0}},
                 "type": "Boolean"
             }
         }, {
-            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 7, "column": 4, "index": 171}, "end": {"row": 7, "column": 24, "index": 191}, "codeIndex": 0}},
-            "name": { "value": "underline", "codeRange": {"start": {"row": 7, "column": 8, "index": 175}, "end": {"row": 7, "column": 16, "index": 183}, "codeIndex": 0}},
+            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 36, "column": 4, "index": 727}, "end": {"row": 36, "column": 24, "index": 747}, "codeIndex": 0}},
+            "name": { "value": "underline", "codeRange": {"start": {"row": 36, "column": 8, "index": 731}, "end": {"row": 36, "column": 16, "index": 739}, "codeIndex": 0}},
             "type": {
-                "$ast": { "type": "PrimitiveType", "codeRange": {"start": {"row": 7, "column": 20, "index": 187}, "end": {"row": 7, "column": 23, "index": 190}, "codeIndex": 0}},
+                "$ast": { "type": "PrimitiveType", "codeRange": {"start": {"row": 36, "column": 20, "index": 743}, "end": {"row": 36, "column": 23, "index": 746}, "codeIndex": 0}},
                 "type": "Boolean"
             }
         }, {
-            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 8, "column": 4, "index": 198}, "end": {"row": 8, "column": 25, "index": 219}, "codeIndex": 0}},
-            "name": { "value": "strikeline", "codeRange": {"start": {"row": 8, "column": 8, "index": 202}, "end": {"row": 8, "column": 17, "index": 211}, "codeIndex": 0}},
+            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 37, "column": 4, "index": 754}, "end": {"row": 37, "column": 25, "index": 775}, "codeIndex": 0}},
+            "name": { "value": "strikeline", "codeRange": {"start": {"row": 37, "column": 8, "index": 758}, "end": {"row": 37, "column": 17, "index": 767}, "codeIndex": 0}},
             "type": {
-                "$ast": { "type": "PrimitiveType", "codeRange": {"start": {"row": 8, "column": 21, "index": 215}, "end": {"row": 8, "column": 24, "index": 218}, "codeIndex": 0}},
+                "$ast": { "type": "PrimitiveType", "codeRange": {"start": {"row": 37, "column": 21, "index": 771}, "end": {"row": 37, "column": 24, "index": 774}, "codeIndex": 0}},
                 "type": "Boolean"
             }
         }, {
-            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 9, "column": 4, "index": 226}, "end": {"row": 9, "column": 24, "index": 246}, "codeIndex": 0}},
-            "name": { "value": "antialias", "codeRange": {"start": {"row": 9, "column": 8, "index": 230}, "end": {"row": 9, "column": 16, "index": 238}, "codeIndex": 0}},
+            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 38, "column": 4, "index": 782}, "end": {"row": 38, "column": 24, "index": 802}, "codeIndex": 0}},
+            "name": { "value": "antialias", "codeRange": {"start": {"row": 38, "column": 8, "index": 786}, "end": {"row": 38, "column": 16, "index": 794}, "codeIndex": 0}},
             "type": {
-                "$ast": { "type": "PrimitiveType", "codeRange": {"start": {"row": 9, "column": 20, "index": 242}, "end": {"row": 9, "column": 23, "index": 245}, "codeIndex": 0}},
+                "$ast": { "type": "PrimitiveType", "codeRange": {"start": {"row": 38, "column": 20, "index": 798}, "end": {"row": 38, "column": 23, "index": 801}, "codeIndex": 0}},
                 "type": "Boolean"
             }
         }, {
-            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 10, "column": 4, "index": 253}, "end": {"row": 10, "column": 32, "index": 281}, "codeIndex": 0}},
-            "name": { "value": "verticalAntialias", "codeRange": {"start": {"row": 10, "column": 8, "index": 257}, "end": {"row": 10, "column": 24, "index": 273}, "codeIndex": 0}},
+            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 39, "column": 4, "index": 809}, "end": {"row": 39, "column": 32, "index": 837}, "codeIndex": 0}},
+            "name": { "value": "verticalAntialias", "codeRange": {"start": {"row": 39, "column": 8, "index": 813}, "end": {"row": 39, "column": 24, "index": 829}, "codeIndex": 0}},
             "type": {
-                "$ast": { "type": "PrimitiveType", "codeRange": {"start": {"row": 10, "column": 28, "index": 277}, "end": {"row": 10, "column": 31, "index": 280}, "codeIndex": 0}},
+                "$ast": { "type": "PrimitiveType", "codeRange": {"start": {"row": 39, "column": 28, "index": 833}, "end": {"row": 39, "column": 31, "index": 836}, "codeIndex": 0}},
                 "type": "Boolean"
             }
         }]
     }, {
-        "$ast": { "type": "StructDecl", "codeRange": {"start": {"row": 13, "column": 0, "index": 289}, "end": {"row": 17, "column": 0, "index": 386}, "codeIndex": 0}},
+        "$ast": { "type": "StructDecl", "codeRange": {"start": {"row": 42, "column": 0, "index": 845}, "end": {"row": 46, "column": 0, "index": 942}, "codeIndex": 0}},
         "attributes": [],
-        "name": { "value": "FontConfig", "codeRange": {"start": {"row": 13, "column": 7, "index": 296}, "end": {"row": 13, "column": 16, "index": 305}, "codeIndex": 0}},
+        "name": { "value": "FontConfig", "codeRange": {"start": {"row": 42, "column": 7, "index": 852}, "end": {"row": 42, "column": 16, "index": 861}, "codeIndex": 0}},
         "members": [{
-            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 15, "column": 4, "index": 315}, "end": {"row": 15, "column": 36, "index": 347}, "codeIndex": 0}},
-            "name": { "value": "defaultFont", "codeRange": {"start": {"row": 15, "column": 8, "index": 319}, "end": {"row": 15, "column": 18, "index": 329}, "codeIndex": 0}},
+            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 44, "column": 4, "index": 871}, "end": {"row": 44, "column": 36, "index": 903}, "codeIndex": 0}},
+            "name": { "value": "defaultFont", "codeRange": {"start": {"row": 44, "column": 8, "index": 875}, "end": {"row": 44, "column": 18, "index": 885}, "codeIndex": 0}},
             "type": {
-                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 15, "column": 22, "index": 333}, "end": {"row": 15, "column": 35, "index": 346}, "codeIndex": 0}},
-                "name": { "value": "FontProperties", "codeRange": {"start": {"row": 15, "column": 22, "index": 333}, "end": {"row": 15, "column": 35, "index": 346}, "codeIndex": 0}}
+                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 44, "column": 22, "index": 889}, "end": {"row": 44, "column": 35, "index": 902}, "codeIndex": 0}},
+                "name": { "value": "FontProperties", "codeRange": {"start": {"row": 44, "column": 22, "index": 889}, "end": {"row": 44, "column": 35, "index": 902}, "codeIndex": 0}}
             }
         }, {
-            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 16, "column": 4, "index": 354}, "end": {"row": 16, "column": 33, "index": 383}, "codeIndex": 0}},
-            "name": { "value": "supportedFonts", "codeRange": {"start": {"row": 16, "column": 8, "index": 358}, "end": {"row": 16, "column": 21, "index": 371}, "codeIndex": 0}},
+            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 45, "column": 4, "index": 910}, "end": {"row": 45, "column": 33, "index": 939}, "codeIndex": 0}},
+            "name": { "value": "supportedFonts", "codeRange": {"start": {"row": 45, "column": 8, "index": 914}, "end": {"row": 45, "column": 21, "index": 927}, "codeIndex": 0}},
             "type": {
-                "$ast": { "type": "ArrayType", "codeRange": {"start": {"row": 16, "column": 25, "index": 375}, "end": {"row": 16, "column": 32, "index": 382}, "codeIndex": 0}},
+                "$ast": { "type": "ArrayType", "codeRange": {"start": {"row": 45, "column": 25, "index": 931}, "end": {"row": 45, "column": 32, "index": 938}, "codeIndex": 0}},
                 "element": {
-                    "$ast": { "type": "PrimitiveType", "codeRange": {"start": {"row": 16, "column": 25, "index": 375}, "end": {"row": 16, "column": 30, "index": 380}, "codeIndex": 0}},
+                    "$ast": { "type": "PrimitiveType", "codeRange": {"start": {"row": 45, "column": 25, "index": 931}, "end": {"row": 45, "column": 30, "index": 936}, "codeIndex": 0}},
                     "type": "String"
                 }
             }
         }]
     }, {
-        "$ast": { "type": "MessageDecl", "codeRange": {"start": {"row": 19, "column": 0, "index": 391}, "end": {"row": 22, "column": 0, "index": 444}, "codeIndex": 0}},
+        "$ast": { "type": "MessageDecl", "codeRange": {"start": {"row": 48, "column": 0, "index": 947}, "end": {"row": 51, "column": 0, "index": 1000}, "codeIndex": 0}},
         "attributes": [],
-        "name": { "value": "GetFontConfig", "codeRange": {"start": {"row": 19, "column": 8, "index": 399}, "end": {"row": 19, "column": 20, "index": 411}, "codeIndex": 0}},
+        "name": { "value": "GetFontConfig", "codeRange": {"start": {"row": 48, "column": 8, "index": 955}, "end": {"row": 48, "column": 20, "index": 967}, "codeIndex": 0}},
         "request": null,
         "response": {
-            "$ast": { "type": "MessageResponse", "codeRange": {"start": {"row": 21, "column": 4, "index": 421}, "end": {"row": 21, "column": 24, "index": 441}, "codeIndex": 0}},
+            "$ast": { "type": "MessageResponse", "codeRange": {"start": {"row": 50, "column": 4, "index": 977}, "end": {"row": 50, "column": 24, "index": 997}, "codeIndex": 0}},
             "type": {
-                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 21, "column": 14, "index": 431}, "end": {"row": 21, "column": 23, "index": 440}, "codeIndex": 0}},
-                "name": { "value": "FontConfig", "codeRange": {"start": {"row": 21, "column": 14, "index": 431}, "end": {"row": 21, "column": 23, "index": 440}, "codeIndex": 0}}
+                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 50, "column": 14, "index": 987}, "end": {"row": 50, "column": 23, "index": 996}, "codeIndex": 0}},
+                "name": { "value": "FontConfig", "codeRange": {"start": {"row": 50, "column": 14, "index": 987}, "end": {"row": 50, "column": 23, "index": 996}, "codeIndex": 0}}
             }
         }
     }, {
-        "$ast": { "type": "StructDecl", "codeRange": {"start": {"row": 24, "column": 0, "index": 449}, "end": {"row": 28, "column": 0, "index": 529}, "codeIndex": 0}},
+        "$ast": { "type": "StructDecl", "codeRange": {"start": {"row": 53, "column": 0, "index": 1005}, "end": {"row": 59, "column": 0, "index": 1151}, "codeIndex": 0}},
         "attributes": [],
-        "name": { "value": "ScreenConfig", "codeRange": {"start": {"row": 24, "column": 7, "index": 456}, "end": {"row": 24, "column": 18, "index": 467}, "codeIndex": 0}},
+        "name": { "value": "ScreenConfig", "codeRange": {"start": {"row": 53, "column": 7, "index": 1012}, "end": {"row": 53, "column": 18, "index": 1023}, "codeIndex": 0}},
         "members": [{
-            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 26, "column": 4, "index": 477}, "end": {"row": 26, "column": 25, "index": 498}, "codeIndex": 0}},
-            "name": { "value": "scalingX", "codeRange": {"start": {"row": 26, "column": 8, "index": 481}, "end": {"row": 26, "column": 15, "index": 488}, "codeIndex": 0}},
+            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 55, "column": 4, "index": 1033}, "end": {"row": 55, "column": 27, "index": 1056}, "codeIndex": 0}},
+            "name": { "value": "bounds", "codeRange": {"start": {"row": 55, "column": 8, "index": 1037}, "end": {"row": 55, "column": 13, "index": 1042}, "codeIndex": 0}},
             "type": {
-                "$ast": { "type": "PrimitiveType", "codeRange": {"start": {"row": 26, "column": 19, "index": 492}, "end": {"row": 26, "column": 24, "index": 497}, "codeIndex": 0}},
+                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 55, "column": 17, "index": 1046}, "end": {"row": 55, "column": 26, "index": 1055}, "codeIndex": 0}},
+                "name": { "value": "NativeRect", "codeRange": {"start": {"row": 55, "column": 17, "index": 1046}, "end": {"row": 55, "column": 26, "index": 1055}, "codeIndex": 0}}
+            }
+        }, {
+            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 56, "column": 4, "index": 1063}, "end": {"row": 56, "column": 33, "index": 1092}, "codeIndex": 0}},
+            "name": { "value": "clientBounds", "codeRange": {"start": {"row": 56, "column": 8, "index": 1067}, "end": {"row": 56, "column": 19, "index": 1078}, "codeIndex": 0}},
+            "type": {
+                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 56, "column": 23, "index": 1082}, "end": {"row": 56, "column": 32, "index": 1091}, "codeIndex": 0}},
+                "name": { "value": "NativeRect", "codeRange": {"start": {"row": 56, "column": 23, "index": 1082}, "end": {"row": 56, "column": 32, "index": 1091}, "codeIndex": 0}}
+            }
+        }, {
+            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 57, "column": 4, "index": 1099}, "end": {"row": 57, "column": 25, "index": 1120}, "codeIndex": 0}},
+            "name": { "value": "scalingX", "codeRange": {"start": {"row": 57, "column": 8, "index": 1103}, "end": {"row": 57, "column": 15, "index": 1110}, "codeIndex": 0}},
+            "type": {
+                "$ast": { "type": "PrimitiveType", "codeRange": {"start": {"row": 57, "column": 19, "index": 1114}, "end": {"row": 57, "column": 24, "index": 1119}, "codeIndex": 0}},
                 "type": "Double"
             }
         }, {
-            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 27, "column": 4, "index": 505}, "end": {"row": 27, "column": 25, "index": 526}, "codeIndex": 0}},
-            "name": { "value": "scalingY", "codeRange": {"start": {"row": 27, "column": 8, "index": 509}, "end": {"row": 27, "column": 15, "index": 516}, "codeIndex": 0}},
+            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 58, "column": 4, "index": 1127}, "end": {"row": 58, "column": 25, "index": 1148}, "codeIndex": 0}},
+            "name": { "value": "scalingY", "codeRange": {"start": {"row": 58, "column": 8, "index": 1131}, "end": {"row": 58, "column": 15, "index": 1138}, "codeIndex": 0}},
             "type": {
-                "$ast": { "type": "PrimitiveType", "codeRange": {"start": {"row": 27, "column": 19, "index": 520}, "end": {"row": 27, "column": 24, "index": 525}, "codeIndex": 0}},
+                "$ast": { "type": "PrimitiveType", "codeRange": {"start": {"row": 58, "column": 19, "index": 1142}, "end": {"row": 58, "column": 24, "index": 1147}, "codeIndex": 0}},
                 "type": "Double"
             }
         }]
     }, {
-        "$ast": { "type": "MessageDecl", "codeRange": {"start": {"row": 30, "column": 0, "index": 534}, "end": {"row": 33, "column": 0, "index": 591}, "codeIndex": 0}},
+        "$ast": { "type": "MessageDecl", "codeRange": {"start": {"row": 61, "column": 0, "index": 1156}, "end": {"row": 64, "column": 0, "index": 1213}, "codeIndex": 0}},
         "attributes": [],
-        "name": { "value": "GetScreenConfig", "codeRange": {"start": {"row": 30, "column": 8, "index": 542}, "end": {"row": 30, "column": 22, "index": 556}, "codeIndex": 0}},
+        "name": { "value": "GetScreenConfig", "codeRange": {"start": {"row": 61, "column": 8, "index": 1164}, "end": {"row": 61, "column": 22, "index": 1178}, "codeIndex": 0}},
         "request": null,
         "response": {
-            "$ast": { "type": "MessageResponse", "codeRange": {"start": {"row": 32, "column": 4, "index": 566}, "end": {"row": 32, "column": 26, "index": 588}, "codeIndex": 0}},
+            "$ast": { "type": "MessageResponse", "codeRange": {"start": {"row": 63, "column": 4, "index": 1188}, "end": {"row": 63, "column": 26, "index": 1210}, "codeIndex": 0}},
             "type": {
-                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 32, "column": 14, "index": 576}, "end": {"row": 32, "column": 25, "index": 587}, "codeIndex": 0}},
-                "name": { "value": "ScreenConfig", "codeRange": {"start": {"row": 32, "column": 14, "index": 576}, "end": {"row": 32, "column": 25, "index": 587}, "codeIndex": 0}}
+                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 63, "column": 14, "index": 1198}, "end": {"row": 63, "column": 25, "index": 1209}, "codeIndex": 0}},
+                "name": { "value": "ScreenConfig", "codeRange": {"start": {"row": 63, "column": 14, "index": 1198}, "end": {"row": 63, "column": 25, "index": 1209}, "codeIndex": 0}}
             }
         }
     }, {
-        "$ast": { "type": "MessageDecl", "codeRange": {"start": {"row": 35, "column": 0, "index": 596}, "end": {"row": 37, "column": 0, "index": 630}, "codeIndex": 0}},
+        "$ast": { "type": "MessageDecl", "codeRange": {"start": {"row": 66, "column": 0, "index": 1218}, "end": {"row": 68, "column": 0, "index": 1252}, "codeIndex": 0}},
         "attributes": [],
-        "name": { "value": "ConnectionEstablished", "codeRange": {"start": {"row": 35, "column": 8, "index": 604}, "end": {"row": 35, "column": 28, "index": 624}, "codeIndex": 0}},
+        "name": { "value": "ConnectionEstablished", "codeRange": {"start": {"row": 66, "column": 8, "index": 1226}, "end": {"row": 66, "column": 28, "index": 1246}, "codeIndex": 0}},
         "request": null,
         "response": null
     }, {
-        "$ast": { "type": "EventDecl", "codeRange": {"start": {"row": 39, "column": 0, "index": 635}, "end": {"row": 41, "column": 0, "index": 653}, "codeIndex": 0}},
+        "$ast": { "type": "EventDecl", "codeRange": {"start": {"row": 70, "column": 0, "index": 1257}, "end": {"row": 72, "column": 0, "index": 1275}, "codeIndex": 0}},
         "attributes": [],
-        "name": { "value": "Connect", "codeRange": {"start": {"row": 39, "column": 6, "index": 641}, "end": {"row": 39, "column": 12, "index": 647}, "codeIndex": 0}},
+        "name": { "value": "Connect", "codeRange": {"start": {"row": 70, "column": 6, "index": 1263}, "end": {"row": 70, "column": 12, "index": 1269}, "codeIndex": 0}},
         "request": null
     }, {
-        "$ast": { "type": "EventDecl", "codeRange": {"start": {"row": 43, "column": 0, "index": 658}, "end": {"row": 45, "column": 0, "index": 679}, "codeIndex": 0}},
+        "$ast": { "type": "EventDecl", "codeRange": {"start": {"row": 74, "column": 0, "index": 1280}, "end": {"row": 76, "column": 0, "index": 1301}, "codeIndex": 0}},
         "attributes": [],
-        "name": { "value": "Disconnect", "codeRange": {"start": {"row": 43, "column": 6, "index": 664}, "end": {"row": 43, "column": 15, "index": 673}, "codeIndex": 0}},
+        "name": { "value": "Disconnect", "codeRange": {"start": {"row": 74, "column": 6, "index": 1286}, "end": {"row": 74, "column": 15, "index": 1295}, "codeIndex": 0}},
         "request": null
     }, {
-        "$ast": { "type": "EventDecl", "codeRange": {"start": {"row": 47, "column": 0, "index": 684}, "end": {"row": 49, "column": 0, "index": 699}, "codeIndex": 0}},
+        "$ast": { "type": "EventDecl", "codeRange": {"start": {"row": 78, "column": 0, "index": 1306}, "end": {"row": 80, "column": 0, "index": 1321}, "codeIndex": 0}},
         "attributes": [],
-        "name": { "value": "Exit", "codeRange": {"start": {"row": 47, "column": 6, "index": 690}, "end": {"row": 47, "column": 9, "index": 693}, "codeIndex": 0}},
+        "name": { "value": "Exit", "codeRange": {"start": {"row": 78, "column": 6, "index": 1312}, "end": {"row": 78, "column": 9, "index": 1315}, "codeIndex": 0}},
         "request": null
     }]
 }
