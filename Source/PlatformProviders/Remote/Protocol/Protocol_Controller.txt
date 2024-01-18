@@ -22,7 +22,7 @@ message GetFontConfig
     response: FontConfig;
 }
 
-struct ScreenFonfig
+struct ScreenConfig
 {
     var scalingX : double;
     var scalingY : double;

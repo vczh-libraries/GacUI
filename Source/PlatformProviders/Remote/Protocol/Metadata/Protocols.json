@@ -102,7 +102,7 @@
     }, {
         "$ast": { "type": "StructDecl", "codeRange": {"start": {"row": 24, "column": 0, "index": 449}, "end": {"row": 28, "column": 0, "index": 529}, "codeIndex": 0}},
         "attributes": [],
-        "name": { "value": "ScreenFonfig", "codeRange": {"start": {"row": 24, "column": 7, "index": 456}, "end": {"row": 24, "column": 18, "index": 467}, "codeIndex": 0}},
+        "name": { "value": "ScreenConfig", "codeRange": {"start": {"row": 24, "column": 7, "index": 456}, "end": {"row": 24, "column": 18, "index": 467}, "codeIndex": 0}},
         "members": [{
             "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 26, "column": 4, "index": 477}, "end": {"row": 26, "column": 25, "index": 498}, "codeIndex": 0}},
             "name": { "value": "scalingX", "codeRange": {"start": {"row": 26, "column": 8, "index": 481}, "end": {"row": 26, "column": 15, "index": 488}, "codeIndex": 0}},

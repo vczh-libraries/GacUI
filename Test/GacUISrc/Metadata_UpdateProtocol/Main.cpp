@@ -85,6 +85,7 @@ int main(int argc, char* argv[])
 
 	List<GuiRpError> errors;
 	auto symbols = CheckRemoteProtocolSchema(mergedSchema, errors);
+	CHECK_ERROR(errors.Count() == 0, L"Error detected in schema.");
 
 	WriteFileIfChanged(
 		FilePath(GetRemoteProtocolPath()) / L"Metadata" / L"Protocols.json",

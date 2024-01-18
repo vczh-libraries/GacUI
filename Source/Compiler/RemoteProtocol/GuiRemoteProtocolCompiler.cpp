@@ -97,6 +97,16 @@ CheckRemoteProtocolSchema
 				return;
 			}
 
+			if (node->request)
+			{
+				node->request->type->Accept(this);
+			}
+
+			if (node->response)
+			{
+				node->response->type->Accept(this);
+			}
+
 			for (auto att : node->attributes)
 			{
 				errors.Add({ att->name.codeRange,L"Unrecognized attribute: \"" + att->name.value + L"\"." });
@@ -110,6 +120,11 @@ CheckRemoteProtocolSchema
 			{
 				errors.Add({ node->name.codeRange,L"Event \"" + node->name.value + L"\" already exists." });
 				return;
+			}
+
+			if (node->request)
+			{
+				node->request->type->Accept(this);
 			}
 
 			for (auto att : node->attributes)
