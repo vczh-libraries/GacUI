@@ -6,7 +6,10 @@
 #endif
 
 using namespace vl;
+using namespace vl::collections;
+using namespace vl::filesystem;
 using namespace vl::presentation;
+using namespace vl::presentation::remoteprotocol;
 
 #if defined VCZH_MSVC
 WString GetExePath()
@@ -47,5 +50,16 @@ int wmain(int argc, wchar_t* argv[])
 int main(int argc, char* argv[])
 #endif
 {
+	remoteprotocol::Parser parser;
+	List<WString> schemaNames;
+	Dictionary<WString, Ptr<GuiRpSchema>> schemas;
+
+	File(FilePath(GetRemoteProtocolPath()) / L"Protocols.txt").ReadAllLinesByBom(schemaNames);
+	for (auto schemaName : schemaNames)
+	{
+		WString code = File(FilePath(GetRemoteProtocolPath()) / (schemaName + L".txt")).ReadAllTextByBom();
+		auto schema = parser.ParseSchema(code);
+		schemas.Add(schemaName, schema);
+	}
 	return 0;
 }

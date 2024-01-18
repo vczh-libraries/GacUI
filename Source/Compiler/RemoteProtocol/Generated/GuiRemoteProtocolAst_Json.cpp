@@ -97,6 +97,12 @@ namespace vl::presentation::remoteprotocol::json_visitor
 		}
 		EndField();
 	}
+	void AstVisitor::PrintFields(GuiRpReferenceType* node)
+	{
+		BeginField(L"name");
+		WriteToken(node->name);
+		EndField();
+	}
 	void AstVisitor::PrintFields(GuiRpSchema* node)
 	{
 		BeginField(L"declarations");
@@ -147,6 +153,20 @@ namespace vl::presentation::remoteprotocol::json_visitor
 		WriteType(L"PrimitiveType", node);
 		PrintFields(static_cast<GuiRpType*>(node));
 		PrintFields(static_cast<GuiRpPrimitiveType*>(node));
+		EndObject();
+	}
+
+	void AstVisitor::Visit(GuiRpReferenceType* node)
+	{
+		if (!node)
+		{
+			WriteNull();
+			return;
+		}
+		BeginObject();
+		WriteType(L"ReferenceType", node);
+		PrintFields(static_cast<GuiRpType*>(node));
+		PrintFields(static_cast<GuiRpReferenceType*>(node));
 		EndObject();
 	}
 

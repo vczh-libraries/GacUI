@@ -16,6 +16,11 @@ class PrimitiveType : Type
 	var type : PrimitiveTypes;
 }
 
+class ReferenceType : Type
+{
+	var name : token;
+}
+
 class ArrayType : Type
 {
 	var element : Type;

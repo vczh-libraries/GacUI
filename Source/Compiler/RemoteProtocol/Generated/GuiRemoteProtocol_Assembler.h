@@ -22,10 +22,11 @@ namespace vl::presentation::remoteprotocol
 		MessageRequest = 6,
 		MessageResponse = 7,
 		PrimitiveType = 8,
-		Schema = 9,
-		StructDecl = 10,
-		StructMember = 11,
-		Type = 12,
+		ReferenceType = 9,
+		Schema = 10,
+		StructDecl = 11,
+		StructMember = 12,
+		Type = 13,
 	};
 
 	enum class GuiRemoteProtocolFields : vl::vint32_t
@@ -42,10 +43,11 @@ namespace vl::presentation::remoteprotocol
 		MessageRequest_type = 9,
 		MessageResponse_type = 10,
 		PrimitiveType_type = 11,
-		Schema_declarations = 12,
-		StructDecl_members = 13,
-		StructMember_name = 14,
-		StructMember_type = 15,
+		ReferenceType_name = 12,
+		Schema_declarations = 13,
+		StructDecl_members = 14,
+		StructMember_name = 15,
+		StructMember_type = 16,
 	};
 
 	extern const wchar_t* GuiRemoteProtocolTypeName(GuiRemoteProtocolClasses type);

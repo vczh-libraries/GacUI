@@ -20,6 +20,7 @@ namespace vl::presentation::remoteprotocol
 	class GuiRpMessageRequest;
 	class GuiRpMessageResponse;
 	class GuiRpPrimitiveType;
+	class GuiRpReferenceType;
 	class GuiRpSchema;
 	class GuiRpStructDecl;
 	class GuiRpStructMember;
@@ -42,6 +43,7 @@ namespace vl::presentation::remoteprotocol
 		{
 		public:
 			virtual void Visit(GuiRpPrimitiveType* node) = 0;
+			virtual void Visit(GuiRpReferenceType* node) = 0;
 			virtual void Visit(GuiRpArrayType* node) = 0;
 		};
 
@@ -53,6 +55,14 @@ namespace vl::presentation::remoteprotocol
 	{
 	public:
 		GuiRpPrimitiveTypes type = GuiRpPrimitiveTypes::UNDEFINED_ENUM_ITEM_VALUE;
+
+		void Accept(GuiRpType::IVisitor* visitor) override;
+	};
+
+	class GuiRpReferenceType : public GuiRpType, vl::reflection::Description<GuiRpReferenceType>
+	{
+	public:
+		vl::glr::ParsingToken name;
 
 		void Accept(GuiRpType::IVisitor* visitor) override;
 	};
@@ -152,6 +162,7 @@ namespace vl::reflection::description
 	DECL_TYPE_INFO(vl::presentation::remoteprotocol::GuiRpType::IVisitor)
 	DECL_TYPE_INFO(vl::presentation::remoteprotocol::GuiRpPrimitiveTypes)
 	DECL_TYPE_INFO(vl::presentation::remoteprotocol::GuiRpPrimitiveType)
+	DECL_TYPE_INFO(vl::presentation::remoteprotocol::GuiRpReferenceType)
 	DECL_TYPE_INFO(vl::presentation::remoteprotocol::GuiRpArrayType)
 	DECL_TYPE_INFO(vl::presentation::remoteprotocol::GuiRpAttribute)
 	DECL_TYPE_INFO(vl::presentation::remoteprotocol::GuiRpDeclaration)
@@ -169,6 +180,11 @@ namespace vl::reflection::description
 
 	BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(vl::presentation::remoteprotocol::GuiRpType::IVisitor)
 		void Visit(vl::presentation::remoteprotocol::GuiRpPrimitiveType* node) override
+		{
+			INVOKE_INTERFACE_PROXY(Visit, node);
+		}
+
+		void Visit(vl::presentation::remoteprotocol::GuiRpReferenceType* node) override
 		{
 			INVOKE_INTERFACE_PROXY(Visit, node);
 		}

@@ -1,13 +1,10 @@
-RPrimitiveType
+RType
 	::= "bool" as PrimitiveType {type = Boolean}
 	::= "int" as PrimitiveType {type = Integer}
 	::= "float" as PrimitiveType {type = Float}
 	::= "double" as PrimitiveType {type = Double}
 	::= "string" as PrimitiveType {type = String}
-	;
-
-RType
-	::= !RPrimitiveType
+	::= NAME:name as ReferenceType
 	::= RType:element "[" "]" as ArrayType
 	;
 
@@ -16,7 +13,7 @@ RAttributeParameter
 	;
 
 RAttribute
-	::= "[" ATT_NAME:name "(" RAttributeParameter ")" "]" as Attribute
+	::= "[" ATT_NAME:name ["(" RAttributeParameter ")"] "]" as Attribute
 	;
 
 RStructMember
@@ -48,7 +45,7 @@ REvent
 	;
 
 RDeclDetail
-	::= !RType
+	::= !RStruct
 	::= !RMessage
 	::= !REvent
 	;
