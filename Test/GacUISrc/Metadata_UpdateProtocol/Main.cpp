@@ -7,6 +7,7 @@
 
 using namespace vl;
 using namespace vl::collections;
+using namespace vl::stream;
 using namespace vl::filesystem;
 using namespace vl::presentation;
 using namespace vl::presentation::remoteprotocol;
@@ -55,11 +56,22 @@ int main(int argc, char* argv[])
 	Dictionary<WString, Ptr<GuiRpSchema>> schemas;
 
 	File(FilePath(GetRemoteProtocolPath()) / L"Protocols.txt").ReadAllLinesByBom(schemaNames);
-	for (auto schemaName : schemaNames)
+	for (auto [schemaName, index] : indexed(schemaNames))
 	{
 		WString code = File(FilePath(GetRemoteProtocolPath()) / (schemaName + L".txt")).ReadAllTextByBom();
-		auto schema = parser.ParseSchema(code);
+		auto schema = parser.ParseSchema(code, index);
 		schemas.Add(schemaName, schema);
 	}
+
+	auto mergedSchema = Ptr(new GuiRpSchema);
+	for (auto schema : schemas.Values())
+	{
+		CopyFrom(mergedSchema->declarations, schema->declarations, true);
+	}
+	File(FilePath(GetRemoteProtocolPath()) / L"Protocols.json").WriteAllText(
+		GenerateToStream([&](StreamWriter& writer)
+		{
+			json_visitor::AstVisitor(writer).Print(mergedSchema.Obj());
+		}), false, BomEncoder::Utf8);
 	return 0;
 }

@@ -9,6 +9,7 @@ Licensed under https://github.com/vczh-libraries/License
 
 #include "GuiRemoteProtocol_Assembler.h"
 #include "GuiRemoteProtocol_Lexer.h"
+#include "GuiRemoteProtocolAst_Json.h"
 
 namespace vl::presentation::remoteprotocol
 {
