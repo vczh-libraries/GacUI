@@ -139,11 +139,13 @@ GenerateRemoteProtocolHeaderFile
 	{
 	protected:
 		Ptr<GuiRpSymbols>			symbols;
+		GuiRpCppConfig&				config;
 		stream::TextWriter&			writer;
 
 	public:
-		GuiRpPrintTypeVisitor(Ptr<GuiRpSymbols> _symbols, stream::TextWriter& _writer)
+		GuiRpPrintTypeVisitor(Ptr<GuiRpSymbols> _symbols, GuiRpCppConfig& _config, stream::TextWriter& _writer)
 			: symbols(_symbols)
+			, config(_config)
 			, writer(_writer)
 		{
 		}
@@ -179,7 +181,7 @@ GenerateRemoteProtocolHeaderFile
 			vint index = symbols->structCppMapping.Keys().IndexOf(node->name.value);
 			if (index == -1)
 			{
-				writer.WriteString(node->name.value);
+				writer.WriteString(config.cppNamespace + L"::" + node->name.value);
 			}
 			else
 			{
@@ -210,7 +212,7 @@ GenerateRemoteProtocolHeaderFile
 		writer.WriteLine(L"namespace " + config.cppNamespace);
 		writer.WriteLine(L"{");
 
-		GuiRpPrintTypeVisitor printTypeVisitor(symbols, writer);
+		GuiRpPrintTypeVisitor printTypeVisitor(symbols, config, writer);
 		for (auto structDecl : From(schema->declarations).FindType<GuiRpStructDecl>())
 		{
 			if (!symbols->structCppMapping.Keys().Contains(structDecl->name.value))
@@ -227,6 +229,64 @@ GenerateRemoteProtocolHeaderFile
 				writer.WriteLine(L"");
 			}
 		}
+
+		writer.WriteLine(L"#define " + config.builderMacroPrefix + L"_MESSAGES(NOREQ_NORES, NOREQ_RES, REQ_NORES, REQ_RES)\\");
+		for (auto messageDecl : From(schema->declarations).FindType<GuiRpMessageDecl>())
+		{
+			if (!messageDecl->request)
+			{
+				if (!messageDecl->response)
+				{
+					writer.WriteString(L"\tNOREQ_NORES(" + messageDecl->name.value );
+				}
+				else
+				{
+					writer.WriteString(L"\tNOREQ_RES(" + messageDecl->name.value);
+				}
+			}
+			else
+			{
+				if (!messageDecl->response)
+				{
+					writer.WriteString(L"\tREQ_NORES(" + messageDecl->name.value);
+				}
+				else
+				{
+					writer.WriteString(L"\tREQ_RES(" + messageDecl->name.value);
+				}
+			}
+
+			if (messageDecl->request)
+			{
+				writer.WriteString(L", ");
+				messageDecl->request->type->Accept(&printTypeVisitor);
+			}
+
+			if (messageDecl->response && messageDecl->response->type)
+			{
+				writer.WriteString(L", ");
+				messageDecl->response->type->Accept(&printTypeVisitor);
+			}
+
+			writer.WriteLine(L")\\");
+		}
+		writer.WriteLine(L"");
+
+		writer.WriteLine(L"#define " + config.builderMacroPrefix + L"_EVENTS(NOREQ, REQ)\\");
+		for (auto eventDecl : From(schema->declarations).FindType<GuiRpEventDecl>())
+		{
+			if (!eventDecl->request)
+			{
+				writer.WriteLine(L"\tNOREQ(" + eventDecl->name.value + L")\\");
+			}
+			else
+			{
+				writer.WriteString(L"\tREQ(" + eventDecl->name.value + L", ");
+				eventDecl->request->type->Accept(&printTypeVisitor);
+				writer.WriteLine(L")\\");
+			}
+		}
+		writer.WriteLine(L"");
 
 		writer.WriteLine(L"}");
 		writer.WriteLine(L"");

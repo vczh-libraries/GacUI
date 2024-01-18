@@ -33,6 +33,7 @@ namespace vl::presentation
 		WString						headerGuard;
 		WString						headerInclude;
 		WString						cppNamespace;
+		WString						builderMacroPrefix;
 	};
 
 	extern Ptr<GuiRpSymbols>		CheckRemoteProtocolSchema(Ptr<remoteprotocol::GuiRpSchema> schema, collections::List<GuiRpError>& errors);

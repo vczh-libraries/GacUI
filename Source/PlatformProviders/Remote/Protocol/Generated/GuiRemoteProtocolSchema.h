@@ -22,6 +22,16 @@ namespace vl::presentation::remoteprotocol
 		double scalingY;
 	};
 
+#define GACUI_REMOTEPROTOCOL__MESSAGES(NOREQ_NORES, NOREQ_RES, REQ_NORES, REQ_RES)\
+	NOREQ_RES(GetFontConfig, vl::presentation::remoteprotocol::FontConfig)\
+	NOREQ_RES(GetScreenConfig, vl::presentation::remoteprotocol::ScreenConfig)\
+	NOREQ_NORES(ConnectionEstablished)\
+
+#define GACUI_REMOTEPROTOCOL__EVENTS(NOREQ, REQ)\
+	NOREQ(Connect)\
+	NOREQ(Disconnect)\
+	NOREQ(Exit)\
+
 }
 
 #endif
