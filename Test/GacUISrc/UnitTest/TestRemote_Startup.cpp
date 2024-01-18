@@ -46,6 +46,17 @@ TEST_FILE
 		StartUpProtocol protocol;
 		SetGuiMainProxy([]()
 		{
+			// TODO: Check fonts and screens
+		});
+		SetupRemoteNativeController(&protocol);
+		SetGuiMainProxy(nullptr);
+	});
+	
+	TEST_CASE(L"Create one window and exit immediately")
+	{
+		StartUpProtocol protocol;
+		SetGuiMainProxy([]()
+		{
 		});
 		SetupRemoteNativeController(&protocol);
 		SetGuiMainProxy(nullptr);
