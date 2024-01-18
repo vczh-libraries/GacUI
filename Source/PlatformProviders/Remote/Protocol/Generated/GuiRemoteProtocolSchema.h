@@ -10,6 +10,18 @@ Licensed under https ://github.com/vczh-libraries/License
 
 namespace vl::presentation::remoteprotocol
 {
+	struct FontConfig
+	{
+		::vl::presentation::FontProperties defaultFont;
+		::vl::collections::List<::vl::WString> supportedFonts;
+	};
+
+	struct ScreenFonfig
+	{
+		double scalingX;
+		double scalingY;
+	};
+
 }
 
 #endif
