@@ -55,9 +55,19 @@ IGuiRemoteProtocol
 #undef MESSAGE_NOREQ_NORES
 	};
 
-	class IGuiRemoteProtocol : public virtual Interface
+	class IGuiRemoteProtocolConfig : public virtual Interface
 	{
 	public:
+		virtual WString			GetExecutablePath() = 0;
+	};
+
+	class IGuiRemoteProtocol
+		: public virtual IGuiRemoteProtocolConfig
+		, public virtual IGuiRemoteProtocolMessages
+	{
+	public:
+		virtual void			Initialize(IGuiRemoteProtocolEvents* events) = 0;
+		virtual void			Submit() = 0;
 	};
 
 /***********************************************************************
