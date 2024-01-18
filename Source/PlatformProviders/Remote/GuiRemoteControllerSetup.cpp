@@ -1,12 +1,28 @@
 #include "GuiRemoteController.h"
 #include "../Hosted/GuiHostedController.h"
 
+using namespace vl;
+using namespace vl::presentation;
+
 /***********************************************************************
 SetupRemoteNativeController
 ***********************************************************************/
 
+extern void GuiApplicationMain();
+
 int SetupRemoteNativeController(vl::presentation::IGuiRemoteProtocol* protocol)
 {
-	vl::presentation::GuiRemoteController();
+	auto remoteController = new GuiRemoteController;
+	auto hostedController = new GuiHostedController(remoteController);
+	SetNativeController(hostedController);
+	{
+		// TODO: register element renderers;
+		hostedController->Initialize();
+		GuiApplicationMain();
+		hostedController->Finalize();
+	}
+	SetNativeController(nullptr);
+	delete hostedController;
+	delete remoteController;
 	return 0;
 }
