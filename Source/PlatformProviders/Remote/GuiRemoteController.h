@@ -21,6 +21,40 @@ namespace vl::presentation
 IGuiRemoteProtocol
 ***********************************************************************/
 
+	class IGuiRemoteProtocolEvents : public virtual Interface
+	{
+	public:
+#define EVENT_NOREQ(NAME)			virtual void On ## NAME() = 0;
+#define EVENT_REQ(NAME, REQUEST)	virtual void On ## NAME(const REQUEST& arguments) = 0;
+		GACUI_REMOTEPROTOCOL_EVENTS(EVENT_NOREQ, EVENT_REQ)
+#undef EVENT_REQ
+#undef EVENT_NOREQ
+
+#define MESSAGE_NOREQ_NORES(NAME)
+#define MESSAGE_NOREQ_RES(NAME, RESPONSE)			virtual void Respond ## NAME(vint id, const RESPONSE& arguments) = 0;
+#define MESSAGE_REQ_NORES(NAME, REQUEST)
+#define MESSAGE_REQ_RES(NAME, REQUEST, RESPONSE)	virtual void Respond ## NAME(vint id, const REQUEST& arguments) = 0;
+			GACUI_REMOTEPROTOCOL_MESSAGES(MESSAGE_NOREQ_NORES, MESSAGE_NOREQ_RES, MESSAGE_REQ_NORES, MESSAGE_REQ_RES)
+#undef MESSAGE_REQ_RES
+#undef MESSAGE_REQ_NORES
+#undef MESSAGE_NOREQ_RES
+#undef MESSAGE_NOREQ_NORES
+	};
+
+	class IGuiRemoteProtocolMessages : public virtual Interface
+	{
+	public:
+#define MESSAGE_NOREQ_NORES(NAME)					virtual void Request ## NAME() = 0;
+#define MESSAGE_NOREQ_RES(NAME, RESPONSE)			virtual void Request ## NAME(vint id) = 0;
+#define MESSAGE_REQ_NORES(NAME, REQUEST)			virtual void Request ## NAME(const REQUEST& arguments) = 0;
+#define MESSAGE_REQ_RES(NAME, REQUEST, RESPONSE)	virtual void Request ## NAME(vint id, const REQUEST& arguments) = 0;
+		GACUI_REMOTEPROTOCOL_MESSAGES(MESSAGE_NOREQ_NORES, MESSAGE_NOREQ_RES, MESSAGE_REQ_NORES, MESSAGE_REQ_RES)
+#undef MESSAGE_REQ_RES
+#undef MESSAGE_REQ_NORES
+#undef MESSAGE_NOREQ_RES
+#undef MESSAGE_NOREQ_NORES
+	};
+
 	class IGuiRemoteProtocol : public virtual Interface
 	{
 	public:

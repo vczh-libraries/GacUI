@@ -98,7 +98,7 @@ int main(int argc, char* argv[])
 	config.headerGuard = L"VCZH_PRESENTATION_GUIREMOTECONTROLLER_REMOTEPROTOCOLSCHEMA";
 	config.headerInclude = L"../../../../GuiTypes.h";
 	config.cppNamespace = L"vl::presentation::remoteprotocol";
-	config.builderMacroPrefix = L"GACUI_REMOTEPROTOCOL_";
+	config.builderMacroPrefix = L"GACUI_REMOTEPROTOCOL";
 
 	WriteFileIfChanged(
 		FilePath(GetRemoteProtocolPath()) / L"Generated" / L"GuiRemoteProtocolSchema.h",

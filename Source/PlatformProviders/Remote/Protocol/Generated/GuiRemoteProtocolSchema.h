@@ -16,18 +16,18 @@ namespace vl::presentation::remoteprotocol
 		::vl::collections::List<::vl::WString> supportedFonts;
 	};
 
-	struct ScreenFonfig
+	struct ScreenConfig
 	{
 		double scalingX;
 		double scalingY;
 	};
 
-#define GACUI_REMOTEPROTOCOL__MESSAGES(NOREQ_NORES, NOREQ_RES, REQ_NORES, REQ_RES)\
+#define GACUI_REMOTEPROTOCOL_MESSAGES(NOREQ_NORES, NOREQ_RES, REQ_NORES, REQ_RES)\
 	NOREQ_RES(GetFontConfig, vl::presentation::remoteprotocol::FontConfig)\
 	NOREQ_RES(GetScreenConfig, vl::presentation::remoteprotocol::ScreenConfig)\
 	NOREQ_NORES(ConnectionEstablished)\
 
-#define GACUI_REMOTEPROTOCOL__EVENTS(NOREQ, REQ)\
+#define GACUI_REMOTEPROTOCOL_EVENTS(NOREQ, REQ)\
 	NOREQ(Connect)\
 	NOREQ(Disconnect)\
 	NOREQ(Exit)\
