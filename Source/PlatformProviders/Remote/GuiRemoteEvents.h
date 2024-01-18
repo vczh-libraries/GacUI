@@ -37,12 +37,20 @@ GuiRemoteEvents
 		// IGuiRemoteProtocolEvents
 		// =============================================================
 
+		// message
+
 		void	RespondGetFontConfig(vint id, const remoteprotocol::FontConfig& arguments) override;
 		void	RespondGetScreenConfig(vint id, const remoteprotocol::ScreenConfig& arguments) override;
+
+		// controlling
 
 		void	OnConnect() override;
 		void	OnDisconnect() override;
 		void	OnExit() override;
+
+		// system
+
+		void	OnScreenUpdated(const remoteprotocol::ScreenConfig& arguments) override;
 	};
 }
 

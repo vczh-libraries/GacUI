@@ -15,6 +15,10 @@ GuiRemoteEvents
 	{
 	}
 
+/***********************************************************************
+GuiRemoteEvents (message)
+***********************************************************************/
+
 	void GuiRemoteEvents::RespondGetFontConfig(vint id, const remoteprotocol::FontConfig& arguments)
 	{
 	}
@@ -22,6 +26,10 @@ GuiRemoteEvents
 	void GuiRemoteEvents::RespondGetScreenConfig(vint id, const remoteprotocol::ScreenConfig& arguments)
 	{
 	}
+
+/***********************************************************************
+GuiRemoteEvents (controlling)
+***********************************************************************/
 
 	void GuiRemoteEvents::OnConnect()
 	{
@@ -32,6 +40,13 @@ GuiRemoteEvents
 	}
 
 	void GuiRemoteEvents::OnExit()
+	{
+	}
+/***********************************************************************
+GuiRemoteEvents (system)
+***********************************************************************/
+
+	void GuiRemoteEvents::OnScreenUpdated(const remoteprotocol::ScreenConfig& arguments)
 	{
 	}
 }

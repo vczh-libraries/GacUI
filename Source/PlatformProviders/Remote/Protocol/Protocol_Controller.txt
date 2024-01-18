@@ -68,14 +68,7 @@ message ConnectionEstablished
 {
 }
 
-event Connect
-{
-}
-
-event Disconnect
-{
-}
-
-event Exit
-{
-}
+event Connect           {}
+event Disconnect        {}
+event Exit              {}
+event ScreenUpdated     { request: ScreenConfig; }

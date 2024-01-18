@@ -33,6 +33,7 @@ namespace vl::presentation::remoteprotocol
 	NOREQ(Connect)\
 	NOREQ(Disconnect)\
 	NOREQ(Exit)\
+	REQ(ScreenUpdated, vl::presentation::remoteprotocol::ScreenConfig)\
 
 }
 

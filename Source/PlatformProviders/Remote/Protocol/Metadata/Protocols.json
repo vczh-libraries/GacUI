@@ -250,19 +250,30 @@
         "request": null,
         "response": null
     }, {
-        "$ast": { "type": "EventDecl", "codeRange": {"start": {"row": 70, "column": 0, "index": 1257}, "end": {"row": 72, "column": 0, "index": 1275}, "codeIndex": 0}},
+        "$ast": { "type": "EventDecl", "codeRange": {"start": {"row": 70, "column": 0, "index": 1257}, "end": {"row": 70, "column": 25, "index": 1282}, "codeIndex": 0}},
         "attributes": [],
         "name": { "value": "Connect", "codeRange": {"start": {"row": 70, "column": 6, "index": 1263}, "end": {"row": 70, "column": 12, "index": 1269}, "codeIndex": 0}},
         "request": null
     }, {
-        "$ast": { "type": "EventDecl", "codeRange": {"start": {"row": 74, "column": 0, "index": 1280}, "end": {"row": 76, "column": 0, "index": 1301}, "codeIndex": 0}},
+        "$ast": { "type": "EventDecl", "codeRange": {"start": {"row": 71, "column": 0, "index": 1285}, "end": {"row": 71, "column": 25, "index": 1310}, "codeIndex": 0}},
         "attributes": [],
-        "name": { "value": "Disconnect", "codeRange": {"start": {"row": 74, "column": 6, "index": 1286}, "end": {"row": 74, "column": 15, "index": 1295}, "codeIndex": 0}},
+        "name": { "value": "Disconnect", "codeRange": {"start": {"row": 71, "column": 6, "index": 1291}, "end": {"row": 71, "column": 15, "index": 1300}, "codeIndex": 0}},
         "request": null
     }, {
-        "$ast": { "type": "EventDecl", "codeRange": {"start": {"row": 78, "column": 0, "index": 1306}, "end": {"row": 80, "column": 0, "index": 1321}, "codeIndex": 0}},
+        "$ast": { "type": "EventDecl", "codeRange": {"start": {"row": 72, "column": 0, "index": 1313}, "end": {"row": 72, "column": 25, "index": 1338}, "codeIndex": 0}},
         "attributes": [],
-        "name": { "value": "Exit", "codeRange": {"start": {"row": 78, "column": 6, "index": 1312}, "end": {"row": 78, "column": 9, "index": 1315}, "codeIndex": 0}},
+        "name": { "value": "Exit", "codeRange": {"start": {"row": 72, "column": 6, "index": 1319}, "end": {"row": 72, "column": 9, "index": 1322}, "codeIndex": 0}},
         "request": null
+    }, {
+        "$ast": { "type": "EventDecl", "codeRange": {"start": {"row": 73, "column": 0, "index": 1341}, "end": {"row": 73, "column": 49, "index": 1390}, "codeIndex": 0}},
+        "attributes": [],
+        "name": { "value": "ScreenUpdated", "codeRange": {"start": {"row": 73, "column": 6, "index": 1347}, "end": {"row": 73, "column": 18, "index": 1359}, "codeIndex": 0}},
+        "request": {
+            "$ast": { "type": "EventRequest", "codeRange": {"start": {"row": 73, "column": 26, "index": 1367}, "end": {"row": 73, "column": 47, "index": 1388}, "codeIndex": 0}},
+            "type": {
+                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 73, "column": 35, "index": 1376}, "end": {"row": 73, "column": 46, "index": 1387}, "codeIndex": 0}},
+                "name": { "value": "ScreenConfig", "codeRange": {"start": {"row": 73, "column": 35, "index": 1376}, "end": {"row": 73, "column": 46, "index": 1387}, "codeIndex": 0}}
+            }
+        }
     }]
 }
