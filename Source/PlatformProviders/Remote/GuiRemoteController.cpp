@@ -65,17 +65,17 @@ GuiRemoteController::INativeInputService
 
 		void GuiRemoteController::StartTimer()
 		{
-			CHECK_FAIL(L"Not Implemented!");
+			timerEnabled = true;
 		}
 
 		void GuiRemoteController::StopTimer()
 		{
-			CHECK_FAIL(L"Not Implemented!");
+			timerEnabled = false;
 		}
 
 		bool GuiRemoteController::IsTimerEnabled()
 		{
-			CHECK_FAIL(L"Not Implemented!");
+			return timerEnabled;
 		}
 
 		bool GuiRemoteController::IsKeyPressing(VKEY code)
@@ -134,12 +134,12 @@ GuiHostedController::INativeScreen
 
 	NativeRect GuiRemoteController::GetBounds()
 	{
-		CHECK_FAIL(L"vl::presentation::GuiRemoteController::GetBounds()#GuiHostedController is not supposed to call this function.");
+		CHECK_FAIL(L"Not Implemented!");
 	}
 
 	NativeRect GuiRemoteController::GetClientBounds()
 	{
-		CHECK_FAIL(L"vl::presentation::GuiRemoteController::GetClientBounds()#GuiHostedController is not supposed to call this function.");
+		CHECK_FAIL(L"Not Implemented!");
 	}
 
 	WString GuiRemoteController::GetName()
@@ -178,22 +178,36 @@ GuiRemoteController::INativeWindowService
 
 	INativeWindow* GuiRemoteController::CreateNativeWindow(INativeWindow::WindowMode windowMode)
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		CHECK_ERROR(!windowCreated, L"vl::presentation::GuiRemoteController::CreateNativeWindow(INativeWindow::WindowMode)#GuiHostedController is not supposed to call this function twice.");
+		windowCreated = true;
+		callbackService.InvokeNativeWindowCreated(&remoteWindow);
+		return &remoteWindow;
 	}
 
 	void GuiRemoteController::DestroyNativeWindow(INativeWindow* window)
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		CHECK_ERROR(!windowDestroyed, L"vl::presentation::GuiRemoteController::CreateNativeWindow(INativeWindow::WindowMode)#GuiHostedController is not supposed to call this function twice.");
+		windowDestroyed = true;
+
+		for (auto listener : remoteWindow.listeners)
+		{
+			listener->Destroying();
+		}
+		callbackService.InvokeNativeWindowDestroying(&remoteWindow);
+		for (auto listener : remoteWindow.listeners)
+		{
+			listener->Destroyed();
+		}
 	}
 
 	INativeWindow* GuiRemoteController::GetMainWindow()
 	{
-		return &remoteWindow;
+		return windowCreated  && !windowDestroyed ? &remoteWindow : nullptr;
 	}
 
 	INativeWindow* GuiRemoteController::GetWindow(NativePoint location)
 	{
-		CHECK_FAIL(L"vl::presentation::GuiRemoteController::GetWindow(NativePoint)#GuiHostedController is not supposed to call this function.");
+		return GetMainWindow();
 	}
 
 	void GuiRemoteController::Run(INativeWindow* window)

@@ -25,6 +25,7 @@ GuiRemoteEvents
 
 	class GuiRemoteEvents : public Object, public virtual IGuiRemoteProtocolEvents
 	{
+		friend class GuiRemoteController;
 	protected:
 		GuiRemoteController*		remote;
 

@@ -347,12 +347,28 @@ GuiRemoteWindow
 
 	bool GuiRemoteWindow::InstallListener(INativeWindowListener* listener)
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		if (listeners.Contains(listener))
+		{
+			return false;
+		}
+		else
+		{
+			listeners.Add(listener);
+			return true;
+		}
 	}
 
 	bool GuiRemoteWindow::UninstallListener(INativeWindowListener* listener)
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		if (listeners.Contains(listener))
+		{
+			listeners.Remove(listener);
+			return true;
+		}
+		else
+		{
+			return false;
+		}
 	}
 
 	void GuiRemoteWindow::RedrawContent()

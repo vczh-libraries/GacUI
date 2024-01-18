@@ -23,8 +23,10 @@ GuiRemoteWindow
 
 	class GuiRemoteWindow : public Object, public virtual INativeWindow
 	{
+		friend class GuiRemoteController;
 	protected:
-		GuiRemoteController*				remote;
+		GuiRemoteController*								remote;
+		collections::List<INativeWindowListener*>			listeners;
 
 	public:
 		GuiRemoteWindow(GuiRemoteController* _remote);

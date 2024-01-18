@@ -983,7 +983,10 @@ GuiHostedController::INativeWindowService
 		{
 			if (nativeWindow)
 			{
-				wmManager->Stop();
+				if (wmManager->mainWindow)
+				{
+					wmManager->Stop();
+				}
 
 				// TODO: (enumerable) foreach:indexed(alterable(reversed))
 				for (vint i = createdWindows.Count() - 1; i >= 0; i--)

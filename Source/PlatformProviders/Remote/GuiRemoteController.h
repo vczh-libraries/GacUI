@@ -36,13 +36,16 @@ GuiRemoteController
 		friend class GuiRemoteWindow;
 		using CursorMap = collections::Dictionary<INativeCursor::SystemCursorType, Ptr<INativeCursor>>;
 	protected:
-		IGuiRemoteProtocol*											remoteProtocol;
-		GuiRemoteEvents												remoteEvent;
-		GuiRemoteWindow												remoteWindow;
+		IGuiRemoteProtocol*				remoteProtocol;
+		GuiRemoteEvents					remoteEvent;
+		GuiRemoteWindow					remoteWindow;
 
-		SharedCallbackService										callbackService;
-		SharedAsyncService											asyncService;
-		CursorMap													cursors;
+		SharedCallbackService			callbackService;
+		SharedAsyncService				asyncService;
+		CursorMap						cursors;
+		bool							timerEnabled = false;
+		bool							windowCreated = false;
+		bool							windowDestroyed = false;
 
 		// =============================================================
 		// INativeResourceService
