@@ -1,0 +1,26 @@
+<Parser name="GuiRemoteProtocol">
+  <Includes>&lt;VlppGlrParser.h&gt;</Includes>
+  <CppNamespace>vl::presentation::remoteprotocol</CppNamespace>
+  <HeaderGuard>VCZH_PRESENTATION_REMOTEPROTOCOL</HeaderGuard>
+  <OutputDir>../Generated</OutputDir>
+
+  <Asts>
+    <Ast name="Ast">
+      <CppNamespace>vl::presentation::remoteprotocol</CppNamespace>
+      <ReflectionNamespace>presentation::remoteprotocol</ReflectionNamespace>
+      <ClassPrefix>GuiIq</ClassPrefix>
+      <BlockedUtilities>
+        <Empty/>
+        <Copy/>
+        <Traverse/>
+        <Builder/>
+      </BlockedUtilities>
+      <File file="Ast.txt"/>
+    </Ast>
+  </Asts>
+
+  <Lexer file="Lexer.txt"/>
+  <Syntax name="Parser">
+    <File file="Syntax.txt"/>
+  </Syntax>
+</Parser>

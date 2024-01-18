@@ -1,0 +1,16 @@
+class Declaration
+{
+}
+
+class Type : Declaration
+{
+}
+
+class Protocol : Declaration
+{
+}
+
+class RemoteProtocolDefinition
+{
+	var declarations : Declaration[];
+}

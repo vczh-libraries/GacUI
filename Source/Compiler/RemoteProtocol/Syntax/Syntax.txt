@@ -1,0 +1,16 @@
+RType
+	::= "type" "{" "}" as Type
+	;
+
+RProtocol
+	::= "protocol" "{" "}" as Protocol
+	;
+
+RDecl
+	::= !RType
+	::= !RProtocol
+	;
+
+@parser RemoteProtocol
+	::= RDecl : declarations {RDecl : declarations} as RemoteProtocolDefinition
+	;

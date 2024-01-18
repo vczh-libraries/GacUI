@@ -1,0 +1,20 @@
+TYPE:type
+PROTOCOL:protocol
+REQUEST:request
+RESPONSE:respond
+
+VOID:void
+BOOLEAN:bool
+INTEGER:int
+FLOAT:float
+DOUBLE:double
+STRING:string
+CPP_NAME:(::[a-zA-Z_][a-zA-Z0-9<>]*){1,}
+NAME:[a-zA-Z_][a-zA-Z0-9]*
+
+OPEN_BRACE:/{
+CLOSE_BRACE:/}
+COLON::
+SEMICOLON:;
+
+discard SPACE:/s+

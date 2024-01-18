@@ -1,0 +1,4 @@
+[@Cpp(::vl::presentation::FontProperties)]
+type FontProperties
+{
+}
