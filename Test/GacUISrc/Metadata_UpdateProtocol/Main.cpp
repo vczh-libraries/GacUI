@@ -45,6 +45,20 @@ WString GetRemoteProtocolPath()
 }
 #endif
 
+void WriteFileIfChanged(FilePath filePath, WString code)
+{
+	File file = filePath;
+	if (file.Exists())
+	{
+		auto originalCode = file.ReadAllTextByBom();
+		if (originalCode == code)
+		{
+			return;
+		}
+	}
+	file.WriteAllText(code, false, BomEncoder::Utf8);
+}
+
 #if defined VCZH_MSVC
 int wmain(int argc, wchar_t* argv[])
 #elif defined VCZH_GCC
@@ -72,11 +86,12 @@ int main(int argc, char* argv[])
 	List<GuiRpError> errors;
 	auto symbols = CheckRemoteProtocolSchema(mergedSchema, errors);
 
-	File(FilePath(GetRemoteProtocolPath()) / L"Metadata" / L"Protocols.json").WriteAllText(
+	WriteFileIfChanged(
+		FilePath(GetRemoteProtocolPath()) / L"Metadata" / L"Protocols.json",
 		GenerateToStream([&](StreamWriter& writer)
 		{
 			json_visitor::AstVisitor(writer).Print(mergedSchema.Obj());
-		}), false, BomEncoder::Utf8);
+		}));
 
 	GuiRpCppConfig config;
 	config.headerFileName = L"GuiRemoteProtocolSchema.h";
@@ -84,16 +99,18 @@ int main(int argc, char* argv[])
 	config.headerInclude = L"../../../../GuiTypes.h";
 	config.cppNamespace = L"vl::presentation::remoteprotocol";
 
-	File(FilePath(GetRemoteProtocolPath()) / L"Generated" / L"GuiRemoteProtocolSchema.h").WriteAllText(
+	WriteFileIfChanged(
+		FilePath(GetRemoteProtocolPath()) / L"Generated" / L"GuiRemoteProtocolSchema.h",
 		GenerateToStream([&](StreamWriter& writer)
 		{
 			GenerateRemoteProtocolHeaderFile(mergedSchema, symbols, config, writer);
-		}), false, BomEncoder::Utf8);
+		}));
 
-	File(FilePath(GetRemoteProtocolPath()) / L"Generated" / L"GuiRemoteProtocolSchema.cpp").WriteAllText(
+	WriteFileIfChanged(
+		FilePath(GetRemoteProtocolPath()) / L"Generated" / L"GuiRemoteProtocolSchema.cpp",
 		GenerateToStream([&](StreamWriter& writer)
 		{
 			GenerateRemoteProtocolCppFile(mergedSchema, symbols, config, writer);
-		}), false, BomEncoder::Utf8);
+		}));
 	return 0;
 }
