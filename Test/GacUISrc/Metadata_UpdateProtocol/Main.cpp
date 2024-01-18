@@ -70,12 +70,30 @@ int main(int argc, char* argv[])
 	}
 
 	List<GuiRpError> errors;
-	CheckRemoteProtocolSchema(mergedSchema, errors);
+	auto symbols = CheckRemoteProtocolSchema(mergedSchema, errors);
 
 	File(FilePath(GetRemoteProtocolPath()) / L"Metadata" / L"Protocols.json").WriteAllText(
 		GenerateToStream([&](StreamWriter& writer)
 		{
 			json_visitor::AstVisitor(writer).Print(mergedSchema.Obj());
+		}), false, BomEncoder::Utf8);
+
+	GuiRpCppConfig config;
+	config.headerFileName = L"GuiRemoteProtocolSchema.h";
+	config.headerGuard = L"VCZH_PRESENTATION_GUIREMOTECONTROLLER_REMOTEPROTOCOLSCHEMA";
+	config.headerInclude = L"../../../../GuiTypes.h";
+	config.cppNamespace = L"vl::presentation::remoteprotocol";
+
+	File(FilePath(GetRemoteProtocolPath()) / L"Generated" / L"GuiRemoteProtocolSchema.h").WriteAllText(
+		GenerateToStream([&](StreamWriter& writer)
+		{
+			GenerateRemoteProtocolHeaderFile(mergedSchema, symbols, config, writer);
+		}), false, BomEncoder::Utf8);
+
+	File(FilePath(GetRemoteProtocolPath()) / L"Generated" / L"GuiRemoteProtocolSchema.cpp").WriteAllText(
+		GenerateToStream([&](StreamWriter& writer)
+		{
+			GenerateRemoteProtocolCppFile(mergedSchema, symbols, config, writer);
 		}), false, BomEncoder::Utf8);
 	return 0;
 }

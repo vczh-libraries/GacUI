@@ -13,6 +13,7 @@ Interfaces:
 
 #include "../../Utilities/SharedServices/GuiSharedCallbackService.h"
 #include "../../Utilities/SharedServices/GuiSharedAsyncService.h"
+#include "Protocol/Generated/GuiRemoteProtocolSchema.h"
 
 namespace vl::presentation
 {

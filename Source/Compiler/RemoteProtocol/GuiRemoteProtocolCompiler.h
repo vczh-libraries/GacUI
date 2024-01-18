@@ -27,7 +27,17 @@ namespace vl::presentation
 		collections::Dictionary<WString, remoteprotocol::GuiRpEventDecl*>		eventDecls;
 	};
 
+	struct GuiRpCppConfig
+	{
+		WString						headerFileName;
+		WString						headerGuard;
+		WString						headerInclude;
+		WString						cppNamespace;
+	};
+
 	extern Ptr<GuiRpSymbols>		CheckRemoteProtocolSchema(Ptr<remoteprotocol::GuiRpSchema> schema, collections::List<GuiRpError>& errors);
+	extern void						GenerateRemoteProtocolHeaderFile(Ptr<remoteprotocol::GuiRpSchema> schema, Ptr<GuiRpSymbols> symbols, GuiRpCppConfig& config, stream::TextWriter& writer);
+	extern void						GenerateRemoteProtocolCppFile(Ptr<remoteprotocol::GuiRpSchema> schema, Ptr<GuiRpSymbols> symbols, GuiRpCppConfig& config, stream::TextWriter& writer);
 }
 
 #endif
