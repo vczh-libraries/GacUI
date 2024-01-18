@@ -15,9 +15,9 @@ namespace vl::presentation::remoteprotocol
 	enum class ParserStates
 	{
 		RType = 0,
-		RProtocol = 5,
-		RDecl = 10,
-		RemoteProtocol = 14,
+		RMessage = 6,
+		RDecl = 12,
+		Schema = 16,
 	};
 
 	const wchar_t* ParserRuleName(vl::vint index);
@@ -34,8 +34,8 @@ namespace vl::presentation::remoteprotocol
 	public:
 		Parser();
 
-		vl::Ptr<vl::presentation::remoteprotocol::GuiIqRemoteProtocolDefinition> ParseRemoteProtocol(const vl::WString& input, vl::vint codeIndex = -1) const;
-		vl::Ptr<vl::presentation::remoteprotocol::GuiIqRemoteProtocolDefinition> ParseRemoteProtocol(vl::collections::List<vl::regex::RegexToken>& tokens, vl::vint codeIndex = -1) const;
+		vl::Ptr<vl::presentation::remoteprotocol::GuiRpSchema> ParseSchema(const vl::WString& input, vl::vint codeIndex = -1) const;
+		vl::Ptr<vl::presentation::remoteprotocol::GuiRpSchema> ParseSchema(vl::collections::List<vl::regex::RegexToken>& tokens, vl::vint codeIndex = -1) const;
 	};
 }
 #endif

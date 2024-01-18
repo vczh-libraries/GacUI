@@ -1,5 +1,5 @@
 TYPE:type
-PROTOCOL:protocol
+MESSAGE:message
 REQUEST:request
 RESPONSE:respond
 

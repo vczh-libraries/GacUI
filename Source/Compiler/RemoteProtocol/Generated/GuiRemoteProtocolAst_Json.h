@@ -14,23 +14,23 @@ namespace vl::presentation::remoteprotocol::json_visitor
 	/// <summary>A JSON visitor, overriding all abstract methods with AST to JSON serialization code.</summary>
 	class AstVisitor
 		: public vl::glr::JsonVisitorBase
-		, protected virtual GuiIqDeclaration::IVisitor
+		, protected virtual GuiRpDeclaration::IVisitor
 	{
 	protected:
-		virtual void PrintFields(GuiIqDeclaration* node);
-		virtual void PrintFields(GuiIqProtocol* node);
-		virtual void PrintFields(GuiIqRemoteProtocolDefinition* node);
-		virtual void PrintFields(GuiIqType* node);
+		virtual void PrintFields(GuiRpDeclaration* node);
+		virtual void PrintFields(GuiRpMessage* node);
+		virtual void PrintFields(GuiRpSchema* node);
+		virtual void PrintFields(GuiRpType* node);
 
 	protected:
-		void Visit(GuiIqType* node) override;
-		void Visit(GuiIqProtocol* node) override;
+		void Visit(GuiRpType* node) override;
+		void Visit(GuiRpMessage* node) override;
 
 	public:
 		AstVisitor(vl::stream::StreamWriter& _writer);
 
-		void Print(GuiIqDeclaration* node);
-		void Print(GuiIqRemoteProtocolDefinition* node);
+		void Print(GuiRpDeclaration* node);
+		void Print(GuiRpSchema* node);
 	};
 }
 #endif

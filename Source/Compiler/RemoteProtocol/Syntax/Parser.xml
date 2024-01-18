@@ -8,7 +8,7 @@
     <Ast name="Ast">
       <CppNamespace>vl::presentation::remoteprotocol</CppNamespace>
       <ReflectionNamespace>presentation::remoteprotocol</ReflectionNamespace>
-      <ClassPrefix>GuiIq</ClassPrefix>
+      <ClassPrefix>GuiRp</ClassPrefix>
       <BlockedUtilities>
         <Empty/>
         <Copy/>

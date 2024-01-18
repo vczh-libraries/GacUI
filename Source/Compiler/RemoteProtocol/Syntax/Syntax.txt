@@ -1,16 +1,16 @@
 RType
-	::= "type" "{" "}" as Type
+	::= "type" NAME:name "{" "}" as Type
 	;
 
-RProtocol
-	::= "protocol" "{" "}" as Protocol
+RMessage
+	::= "message" NAME:name "{" "}" as Message
 	;
 
 RDecl
 	::= !RType
-	::= !RProtocol
+	::= !RMessage
 	;
 
-@parser RemoteProtocol
-	::= RDecl : declarations {RDecl : declarations} as RemoteProtocolDefinition
+@parser Schema
+	::= RDecl : declarations {RDecl : declarations} as Schema
 	;

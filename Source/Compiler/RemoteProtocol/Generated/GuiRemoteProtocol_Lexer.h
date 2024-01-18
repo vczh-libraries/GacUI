@@ -14,7 +14,7 @@ namespace vl::presentation::remoteprotocol
 	enum class GuiRemoteProtocolTokens : vl::vint32_t
 	{
 		TYPE = 0,
-		PROTOCOL = 1,
+		MESSAGE = 1,
 		REQUEST = 2,
 		RESPONSE = 3,
 		VOID = 4,

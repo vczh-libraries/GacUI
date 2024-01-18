@@ -11,68 +11,69 @@ Licensed under https://github.com/vczh-libraries/License
 
 namespace vl::presentation::remoteprotocol
 {
-	class GuiIqDeclaration;
-	class GuiIqProtocol;
-	class GuiIqRemoteProtocolDefinition;
-	class GuiIqType;
+	class GuiRpDeclaration;
+	class GuiRpMessage;
+	class GuiRpSchema;
+	class GuiRpType;
 
-	class GuiIqDeclaration abstract : public vl::glr::ParsingAstBase, vl::reflection::Description<GuiIqDeclaration>
+	class GuiRpDeclaration abstract : public vl::glr::ParsingAstBase, vl::reflection::Description<GuiRpDeclaration>
 	{
 	public:
 		class IVisitor : public virtual vl::reflection::IDescriptable, vl::reflection::Description<IVisitor>
 		{
 		public:
-			virtual void Visit(GuiIqType* node) = 0;
-			virtual void Visit(GuiIqProtocol* node) = 0;
+			virtual void Visit(GuiRpType* node) = 0;
+			virtual void Visit(GuiRpMessage* node) = 0;
 		};
 
-		virtual void Accept(GuiIqDeclaration::IVisitor* visitor) = 0;
+		virtual void Accept(GuiRpDeclaration::IVisitor* visitor) = 0;
 
+		vl::glr::ParsingToken name;
 	};
 
-	class GuiIqType : public GuiIqDeclaration, vl::reflection::Description<GuiIqType>
+	class GuiRpType : public GuiRpDeclaration, vl::reflection::Description<GuiRpType>
 	{
 	public:
 
-		void Accept(GuiIqDeclaration::IVisitor* visitor) override;
+		void Accept(GuiRpDeclaration::IVisitor* visitor) override;
 	};
 
-	class GuiIqProtocol : public GuiIqDeclaration, vl::reflection::Description<GuiIqProtocol>
+	class GuiRpMessage : public GuiRpDeclaration, vl::reflection::Description<GuiRpMessage>
 	{
 	public:
 
-		void Accept(GuiIqDeclaration::IVisitor* visitor) override;
+		void Accept(GuiRpDeclaration::IVisitor* visitor) override;
 	};
 
-	class GuiIqRemoteProtocolDefinition : public vl::glr::ParsingAstBase, vl::reflection::Description<GuiIqRemoteProtocolDefinition>
+	class GuiRpSchema : public vl::glr::ParsingAstBase, vl::reflection::Description<GuiRpSchema>
 	{
 	public:
-		vl::collections::List<vl::Ptr<GuiIqDeclaration>> declarations;
+		vl::collections::List<vl::Ptr<GuiRpDeclaration>> declarations;
 	};
 }
 namespace vl::reflection::description
 {
 #ifndef VCZH_DEBUG_NO_REFLECTION
-	DECL_TYPE_INFO(vl::presentation::remoteprotocol::GuiIqDeclaration)
-	DECL_TYPE_INFO(vl::presentation::remoteprotocol::GuiIqDeclaration::IVisitor)
-	DECL_TYPE_INFO(vl::presentation::remoteprotocol::GuiIqType)
-	DECL_TYPE_INFO(vl::presentation::remoteprotocol::GuiIqProtocol)
-	DECL_TYPE_INFO(vl::presentation::remoteprotocol::GuiIqRemoteProtocolDefinition)
+	DECL_TYPE_INFO(vl::presentation::remoteprotocol::GuiRpDeclaration)
+	DECL_TYPE_INFO(vl::presentation::remoteprotocol::GuiRpDeclaration::IVisitor)
+	DECL_TYPE_INFO(vl::presentation::remoteprotocol::GuiRpType)
+	DECL_TYPE_INFO(vl::presentation::remoteprotocol::GuiRpMessage)
+	DECL_TYPE_INFO(vl::presentation::remoteprotocol::GuiRpSchema)
 
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 
-	BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(vl::presentation::remoteprotocol::GuiIqDeclaration::IVisitor)
-		void Visit(vl::presentation::remoteprotocol::GuiIqType* node) override
+	BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(vl::presentation::remoteprotocol::GuiRpDeclaration::IVisitor)
+		void Visit(vl::presentation::remoteprotocol::GuiRpType* node) override
 		{
 			INVOKE_INTERFACE_PROXY(Visit, node);
 		}
 
-		void Visit(vl::presentation::remoteprotocol::GuiIqProtocol* node) override
+		void Visit(vl::presentation::remoteprotocol::GuiRpMessage* node) override
 		{
 			INVOKE_INTERFACE_PROXY(Visit, node);
 		}
 
-	END_INTERFACE_PROXY(vl::presentation::remoteprotocol::GuiIqDeclaration::IVisitor)
+	END_INTERFACE_PROXY(vl::presentation::remoteprotocol::GuiRpDeclaration::IVisitor)
 
 #endif
 #endif

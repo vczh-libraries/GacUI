@@ -14,14 +14,15 @@ namespace vl::presentation::remoteprotocol
 	enum class GuiRemoteProtocolClasses : vl::vint32_t
 	{
 		Declaration = 0,
-		Protocol = 1,
-		RemoteProtocolDefinition = 2,
+		Message = 1,
+		Schema = 2,
 		Type = 3,
 	};
 
 	enum class GuiRemoteProtocolFields : vl::vint32_t
 	{
-		RemoteProtocolDefinition_declarations = 0,
+		Declaration_name = 0,
+		Schema_declarations = 1,
 	};
 
 	extern const wchar_t* GuiRemoteProtocolTypeName(GuiRemoteProtocolClasses type);

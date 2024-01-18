@@ -8,13 +8,16 @@ Licensed under https://github.com/vczh-libraries/License
 
 namespace vl::presentation::remoteprotocol::json_visitor
 {
-	void AstVisitor::PrintFields(GuiIqDeclaration* node)
+	void AstVisitor::PrintFields(GuiRpDeclaration* node)
+	{
+		BeginField(L"name");
+		WriteToken(node->name);
+		EndField();
+	}
+	void AstVisitor::PrintFields(GuiRpMessage* node)
 	{
 	}
-	void AstVisitor::PrintFields(GuiIqProtocol* node)
-	{
-	}
-	void AstVisitor::PrintFields(GuiIqRemoteProtocolDefinition* node)
+	void AstVisitor::PrintFields(GuiRpSchema* node)
 	{
 		BeginField(L"declarations");
 		BeginArray();
@@ -27,11 +30,11 @@ namespace vl::presentation::remoteprotocol::json_visitor
 		EndArray();
 		EndField();
 	}
-	void AstVisitor::PrintFields(GuiIqType* node)
+	void AstVisitor::PrintFields(GuiRpType* node)
 	{
 	}
 
-	void AstVisitor::Visit(GuiIqType* node)
+	void AstVisitor::Visit(GuiRpType* node)
 	{
 		if (!node)
 		{
@@ -40,12 +43,12 @@ namespace vl::presentation::remoteprotocol::json_visitor
 		}
 		BeginObject();
 		WriteType(L"Type", node);
-		PrintFields(static_cast<GuiIqDeclaration*>(node));
-		PrintFields(static_cast<GuiIqType*>(node));
+		PrintFields(static_cast<GuiRpDeclaration*>(node));
+		PrintFields(static_cast<GuiRpType*>(node));
 		EndObject();
 	}
 
-	void AstVisitor::Visit(GuiIqProtocol* node)
+	void AstVisitor::Visit(GuiRpMessage* node)
 	{
 		if (!node)
 		{
@@ -53,9 +56,9 @@ namespace vl::presentation::remoteprotocol::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"Protocol", node);
-		PrintFields(static_cast<GuiIqDeclaration*>(node));
-		PrintFields(static_cast<GuiIqProtocol*>(node));
+		WriteType(L"Message", node);
+		PrintFields(static_cast<GuiRpDeclaration*>(node));
+		PrintFields(static_cast<GuiRpMessage*>(node));
 		EndObject();
 	}
 
@@ -64,17 +67,17 @@ namespace vl::presentation::remoteprotocol::json_visitor
 	{
 	}
 
-	void AstVisitor::Print(GuiIqDeclaration* node)
+	void AstVisitor::Print(GuiRpDeclaration* node)
 	{
 		if (!node)
 		{
 			WriteNull();
 			return;
 		}
-		node->Accept(static_cast<GuiIqDeclaration::IVisitor*>(this));
+		node->Accept(static_cast<GuiRpDeclaration::IVisitor*>(this));
 	}
 
-	void AstVisitor::Print(GuiIqRemoteProtocolDefinition* node)
+	void AstVisitor::Print(GuiRpSchema* node)
 	{
 		if (!node)
 		{
@@ -82,8 +85,8 @@ namespace vl::presentation::remoteprotocol::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"RemoteProtocolDefinition", node);
-		PrintFields(static_cast<GuiIqRemoteProtocolDefinition*>(node));
+		WriteType(L"Schema", node);
+		PrintFields(static_cast<GuiRpSchema*>(node));
 		EndObject();
 	}
 

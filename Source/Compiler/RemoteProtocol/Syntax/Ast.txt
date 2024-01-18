@@ -1,16 +1,17 @@
 class Declaration
 {
+	var name : token;
 }
 
 class Type : Declaration
 {
 }
 
-class Protocol : Declaration
+class Message : Declaration
 {
 }
 
-class RemoteProtocolDefinition
+class Schema
 {
 	var declarations : Declaration[];
 }

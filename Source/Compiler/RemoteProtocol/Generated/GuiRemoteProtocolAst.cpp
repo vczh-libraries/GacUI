@@ -12,12 +12,12 @@ namespace vl::presentation::remoteprotocol
 Visitor Pattern Implementation
 ***********************************************************************/
 
-	void GuiIqType::Accept(GuiIqDeclaration::IVisitor* visitor)
+	void GuiRpType::Accept(GuiRpDeclaration::IVisitor* visitor)
 	{
 		visitor->Visit(this);
 	}
 
-	void GuiIqProtocol::Accept(GuiIqDeclaration::IVisitor* visitor)
+	void GuiRpMessage::Accept(GuiRpDeclaration::IVisitor* visitor)
 	{
 		visitor->Visit(this);
 	}
@@ -26,45 +26,46 @@ namespace vl::reflection::description
 {
 #ifndef VCZH_DEBUG_NO_REFLECTION
 
-	IMPL_TYPE_INFO_RENAME(vl::presentation::remoteprotocol::GuiIqDeclaration, presentation::remoteprotocol::GuiIqDeclaration)
-	IMPL_TYPE_INFO_RENAME(vl::presentation::remoteprotocol::GuiIqDeclaration::IVisitor, presentation::remoteprotocol::GuiIqDeclaration::IVisitor)
-	IMPL_TYPE_INFO_RENAME(vl::presentation::remoteprotocol::GuiIqType, presentation::remoteprotocol::GuiIqType)
-	IMPL_TYPE_INFO_RENAME(vl::presentation::remoteprotocol::GuiIqProtocol, presentation::remoteprotocol::GuiIqProtocol)
-	IMPL_TYPE_INFO_RENAME(vl::presentation::remoteprotocol::GuiIqRemoteProtocolDefinition, presentation::remoteprotocol::GuiIqRemoteProtocolDefinition)
+	IMPL_TYPE_INFO_RENAME(vl::presentation::remoteprotocol::GuiRpDeclaration, presentation::remoteprotocol::GuiRpDeclaration)
+	IMPL_TYPE_INFO_RENAME(vl::presentation::remoteprotocol::GuiRpDeclaration::IVisitor, presentation::remoteprotocol::GuiRpDeclaration::IVisitor)
+	IMPL_TYPE_INFO_RENAME(vl::presentation::remoteprotocol::GuiRpType, presentation::remoteprotocol::GuiRpType)
+	IMPL_TYPE_INFO_RENAME(vl::presentation::remoteprotocol::GuiRpMessage, presentation::remoteprotocol::GuiRpMessage)
+	IMPL_TYPE_INFO_RENAME(vl::presentation::remoteprotocol::GuiRpSchema, presentation::remoteprotocol::GuiRpSchema)
 
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 
-	BEGIN_CLASS_MEMBER(vl::presentation::remoteprotocol::GuiIqDeclaration)
+	BEGIN_CLASS_MEMBER(vl::presentation::remoteprotocol::GuiRpDeclaration)
 		CLASS_MEMBER_BASE(vl::glr::ParsingAstBase)
 
-	END_CLASS_MEMBER(vl::presentation::remoteprotocol::GuiIqDeclaration)
+		CLASS_MEMBER_FIELD(name)
+	END_CLASS_MEMBER(vl::presentation::remoteprotocol::GuiRpDeclaration)
 
-	BEGIN_CLASS_MEMBER(vl::presentation::remoteprotocol::GuiIqType)
-		CLASS_MEMBER_BASE(vl::presentation::remoteprotocol::GuiIqDeclaration)
+	BEGIN_CLASS_MEMBER(vl::presentation::remoteprotocol::GuiRpType)
+		CLASS_MEMBER_BASE(vl::presentation::remoteprotocol::GuiRpDeclaration)
 
-		CLASS_MEMBER_CONSTRUCTOR(vl::Ptr<vl::presentation::remoteprotocol::GuiIqType>(), NO_PARAMETER)
+		CLASS_MEMBER_CONSTRUCTOR(vl::Ptr<vl::presentation::remoteprotocol::GuiRpType>(), NO_PARAMETER)
 
-	END_CLASS_MEMBER(vl::presentation::remoteprotocol::GuiIqType)
+	END_CLASS_MEMBER(vl::presentation::remoteprotocol::GuiRpType)
 
-	BEGIN_CLASS_MEMBER(vl::presentation::remoteprotocol::GuiIqProtocol)
-		CLASS_MEMBER_BASE(vl::presentation::remoteprotocol::GuiIqDeclaration)
+	BEGIN_CLASS_MEMBER(vl::presentation::remoteprotocol::GuiRpMessage)
+		CLASS_MEMBER_BASE(vl::presentation::remoteprotocol::GuiRpDeclaration)
 
-		CLASS_MEMBER_CONSTRUCTOR(vl::Ptr<vl::presentation::remoteprotocol::GuiIqProtocol>(), NO_PARAMETER)
+		CLASS_MEMBER_CONSTRUCTOR(vl::Ptr<vl::presentation::remoteprotocol::GuiRpMessage>(), NO_PARAMETER)
 
-	END_CLASS_MEMBER(vl::presentation::remoteprotocol::GuiIqProtocol)
+	END_CLASS_MEMBER(vl::presentation::remoteprotocol::GuiRpMessage)
 
-	BEGIN_CLASS_MEMBER(vl::presentation::remoteprotocol::GuiIqRemoteProtocolDefinition)
+	BEGIN_CLASS_MEMBER(vl::presentation::remoteprotocol::GuiRpSchema)
 		CLASS_MEMBER_BASE(vl::glr::ParsingAstBase)
 
-		CLASS_MEMBER_CONSTRUCTOR(vl::Ptr<vl::presentation::remoteprotocol::GuiIqRemoteProtocolDefinition>(), NO_PARAMETER)
+		CLASS_MEMBER_CONSTRUCTOR(vl::Ptr<vl::presentation::remoteprotocol::GuiRpSchema>(), NO_PARAMETER)
 
 		CLASS_MEMBER_FIELD(declarations)
-	END_CLASS_MEMBER(vl::presentation::remoteprotocol::GuiIqRemoteProtocolDefinition)
+	END_CLASS_MEMBER(vl::presentation::remoteprotocol::GuiRpSchema)
 
-	BEGIN_INTERFACE_MEMBER(vl::presentation::remoteprotocol::GuiIqDeclaration::IVisitor)
-		CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(vl::presentation::remoteprotocol::GuiIqDeclaration::IVisitor::*)(vl::presentation::remoteprotocol::GuiIqType* node))
-		CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(vl::presentation::remoteprotocol::GuiIqDeclaration::IVisitor::*)(vl::presentation::remoteprotocol::GuiIqProtocol* node))
-	END_INTERFACE_MEMBER(vl::presentation::remoteprotocol::GuiIqDeclaration)
+	BEGIN_INTERFACE_MEMBER(vl::presentation::remoteprotocol::GuiRpDeclaration::IVisitor)
+		CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(vl::presentation::remoteprotocol::GuiRpDeclaration::IVisitor::*)(vl::presentation::remoteprotocol::GuiRpType* node))
+		CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(vl::presentation::remoteprotocol::GuiRpDeclaration::IVisitor::*)(vl::presentation::remoteprotocol::GuiRpMessage* node))
+	END_INTERFACE_MEMBER(vl::presentation::remoteprotocol::GuiRpDeclaration)
 
 #endif
 
@@ -74,11 +75,11 @@ namespace vl::reflection::description
 	public:
 		void Load(ITypeManager* manager)
 		{
-			ADD_TYPE_INFO(vl::presentation::remoteprotocol::GuiIqDeclaration)
-			ADD_TYPE_INFO(vl::presentation::remoteprotocol::GuiIqDeclaration::IVisitor)
-			ADD_TYPE_INFO(vl::presentation::remoteprotocol::GuiIqType)
-			ADD_TYPE_INFO(vl::presentation::remoteprotocol::GuiIqProtocol)
-			ADD_TYPE_INFO(vl::presentation::remoteprotocol::GuiIqRemoteProtocolDefinition)
+			ADD_TYPE_INFO(vl::presentation::remoteprotocol::GuiRpDeclaration)
+			ADD_TYPE_INFO(vl::presentation::remoteprotocol::GuiRpDeclaration::IVisitor)
+			ADD_TYPE_INFO(vl::presentation::remoteprotocol::GuiRpType)
+			ADD_TYPE_INFO(vl::presentation::remoteprotocol::GuiRpMessage)
+			ADD_TYPE_INFO(vl::presentation::remoteprotocol::GuiRpSchema)
 		}
 
 		void Unload(ITypeManager* manager)
