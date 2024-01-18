@@ -8,8 +8,8 @@ Interfaces:
 
 ***********************************************************************/
 
-#ifndef VCZH_PRESENTATION_GUIHOSTEDWINDOW
-#define VCZH_PRESENTATION_GUIHOSTEDWINDOW
+#ifndef VCZH_PRESENTATION_GUIHOSTEDCONTROLLER_GUIHOSTEDWINDOW
+#define VCZH_PRESENTATION_GUIHOSTEDCONTROLLER_GUIHOSTEDWINDOW
 
 #include "../../NativeWindow/GuiNativeWindow.h"
 #include "GuiHostedWindowManager.h"
@@ -118,7 +118,7 @@ GuiHostedWindow
 			~GuiHostedWindow();
 
 			// =============================================================
-			// INativeWindowListener
+			// INativeWindow
 			// =============================================================
 
 			bool							IsActivelyRefreshing() override;

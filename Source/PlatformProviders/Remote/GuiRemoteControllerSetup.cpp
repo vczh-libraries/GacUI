@@ -12,7 +12,7 @@ extern void GuiApplicationMain();
 
 int SetupRemoteNativeController(vl::presentation::IGuiRemoteProtocol* protocol)
 {
-	auto remoteController = new GuiRemoteController;
+	auto remoteController = new GuiRemoteController(protocol);
 	auto hostedController = new GuiHostedController(remoteController);
 	SetNativeController(hostedController);
 	{

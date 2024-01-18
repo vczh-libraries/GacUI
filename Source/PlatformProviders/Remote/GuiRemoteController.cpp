@@ -188,7 +188,7 @@ GuiRemoteController::INativeWindowService
 
 	INativeWindow* GuiRemoteController::GetMainWindow()
 	{
-		return mainWindow;
+		return &remoteWindow;
 	}
 
 	INativeWindow* GuiRemoteController::GetWindow(NativePoint location)
@@ -210,7 +210,10 @@ GuiRemoteController::INativeWindowService
 GuiRemoteController
 ***********************************************************************/
 
-	GuiRemoteController::GuiRemoteController()
+	GuiRemoteController::GuiRemoteController(IGuiRemoteProtocol* _remoteProtocol)
+		: remoteProtocol(_remoteProtocol)
+		, remoteEvent(this)
+		, remoteWindow(this)
 	{
 	}
 

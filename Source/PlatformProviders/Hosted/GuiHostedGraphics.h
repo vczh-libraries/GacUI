@@ -8,8 +8,8 @@ Interfaces:
 
 ***********************************************************************/
 
-#ifndef VCZH_PRESENTATION_GUIHOSTEDGRAPHICS
-#define VCZH_PRESENTATION_GUIHOSTEDGRAPHICS
+#ifndef VCZH_PRESENTATION_GUIHOSTEDCONTROLLER_GUIHOSTEDGRAPHICS
+#define VCZH_PRESENTATION_GUIHOSTEDCONTROLLER_GUIHOSTEDGRAPHICS
 
 #include "../../GraphicsElement/GuiGraphicsResourceManager.h"
 
