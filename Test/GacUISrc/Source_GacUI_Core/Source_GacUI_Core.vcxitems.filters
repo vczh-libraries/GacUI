@@ -40,6 +40,9 @@
     <Filter Include="PlatformProviders\Remote\Protocol\Generated">
       <UniqueIdentifier>{322b7fd1-5263-4c5b-9a05-52843c6e0108}</UniqueIdentifier>
     </Filter>
+    <Filter Include="PlatformProviders\Remote\Protocol\Metadata">
+      <UniqueIdentifier>{4dac0ff7-cdf1-490c-9a48-243cb8ae6025}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiDocument.cpp">
