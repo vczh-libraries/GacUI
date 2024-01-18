@@ -11,11 +11,23 @@ Interfaces:
 
 #include "Generated/GuiRemoteProtocolParser.h"
 
-namespace vl
+namespace vl::presentation
 {
-	namespace presentation
+	struct GuiRpError
 	{
-	}
+		glr::ParsingTextRange		position;
+		WString						errorMessage;
+	};
+
+	struct GuiRpSymbols
+	{
+		collections::Dictionary<WString, WString>								structCppMapping;
+		collections::Dictionary<WString, remoteprotocol::GuiRpStructDecl*>		structDecls;
+		collections::Dictionary<WString, remoteprotocol::GuiRpMessageDecl*>		messageDecls;
+		collections::Dictionary<WString, remoteprotocol::GuiRpEventDecl*>		eventDecls;
+	};
+
+	extern Ptr<GuiRpSymbols>		CheckRemoteProtocolSchema(Ptr<remoteprotocol::GuiRpSchema> schema, collections::List<GuiRpError>& errors);
 }
 
 #endif

@@ -68,6 +68,10 @@ int main(int argc, char* argv[])
 	{
 		CopyFrom(mergedSchema->declarations, schema->declarations, true);
 	}
+
+	List<GuiRpError> errors;
+	CheckRemoteProtocolSchema(mergedSchema, errors);
+
 	File(FilePath(GetRemoteProtocolPath()) / L"Metadata" / L"Protocols.json").WriteAllText(
 		GenerateToStream([&](StreamWriter& writer)
 		{
