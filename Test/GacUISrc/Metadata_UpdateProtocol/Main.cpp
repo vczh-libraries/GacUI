@@ -68,7 +68,7 @@ int main(int argc, char* argv[])
 	{
 		CopyFrom(mergedSchema->declarations, schema->declarations, true);
 	}
-	File(FilePath(GetRemoteProtocolPath()) / L"Protocols.json").WriteAllText(
+	File(FilePath(GetRemoteProtocolPath()) / L"Metadata" / L"Protocols.json").WriteAllText(
 		GenerateToStream([&](StreamWriter& writer)
 		{
 			json_visitor::AstVisitor(writer).Print(mergedSchema.Obj());

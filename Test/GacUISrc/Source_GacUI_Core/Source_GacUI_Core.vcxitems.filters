@@ -240,4 +240,9 @@
       <Filter>PlatformProviders\Remote\Protocol</Filter>
     </Text>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Remote\Protocol\Metadata\Protocols.json">
+      <Filter>PlatformProviders\Remote\Protocol\Metadata</Filter>
+    </None>
+  </ItemGroup>
 </Project>
