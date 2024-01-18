@@ -48,7 +48,7 @@ GuiRemoteController::INativeResourceService
 
 			FontProperties GuiRemoteController::GetDefaultFont()
 			{
-				CHECK_FAIL(L"Not Implemented (from config)!");
+				CHECK_FAIL(L"Not Implemented (from init)!");
 			}
 
 			void GuiRemoteController::SetDefaultFont(const FontProperties& value)
@@ -58,7 +58,7 @@ GuiRemoteController::INativeResourceService
 
 			void GuiRemoteController::EnumerateFonts(collections::List<WString>& fonts)
 			{
-				CHECK_FAIL(L"Not Implemented (from config)!");
+				CHECK_FAIL(L"Not Implemented (from init)!");
 			}
 			
 /***********************************************************************

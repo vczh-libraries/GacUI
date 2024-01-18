@@ -13,16 +13,39 @@ namespace vl::presentation::remoteprotocol
 {
 	enum class GuiRemoteProtocolClasses : vl::vint32_t
 	{
-		Declaration = 0,
-		Message = 1,
-		Schema = 2,
-		Type = 3,
+		ArrayType = 0,
+		Attribute = 1,
+		Declaration = 2,
+		EventDecl = 3,
+		EventRequest = 4,
+		MessageDecl = 5,
+		MessageRequest = 6,
+		MessageResponse = 7,
+		PrimitiveType = 8,
+		Schema = 9,
+		StructDecl = 10,
+		StructMember = 11,
+		Type = 12,
 	};
 
 	enum class GuiRemoteProtocolFields : vl::vint32_t
 	{
-		Declaration_name = 0,
-		Schema_declarations = 1,
+		ArrayType_element = 0,
+		Attribute_cppType = 1,
+		Attribute_name = 2,
+		Declaration_attributes = 3,
+		Declaration_name = 4,
+		EventDecl_request = 5,
+		EventRequest_type = 6,
+		MessageDecl_request = 7,
+		MessageDecl_response = 8,
+		MessageRequest_type = 9,
+		MessageResponse_type = 10,
+		PrimitiveType_type = 11,
+		Schema_declarations = 12,
+		StructDecl_members = 13,
+		StructMember_name = 14,
+		StructMember_type = 15,
 	};
 
 	extern const wchar_t* GuiRemoteProtocolTypeName(GuiRemoteProtocolClasses type);

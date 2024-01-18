@@ -1,14 +1,73 @@
+class Type
+{
+}
+
+enum PrimitiveTypes
+{
+	Boolean,
+	Integer,
+	Float,
+	Double,
+	String,
+}
+
+class PrimitiveType : Type
+{
+	var type : PrimitiveTypes;
+}
+
+class ArrayType : Type
+{
+	var element : Type;
+}
+
+class Attribute
+{
+	var name : token;
+	var cppType : token;
+}
+
 class Declaration
 {
+	var attributes : Attribute[];
 	var name : token;
 }
 
-class Type : Declaration
+class StructMember
 {
+	var name : token;
+	var type : Type;
 }
 
-class Message : Declaration
+class StructDecl : Declaration
 {
+	var members : StructMember[];
+}
+
+class MessageRequest
+{
+	var type : Type;
+}
+
+class MessageResponse
+{
+	var type : Type;
+}
+
+class MessageDecl : Declaration
+{
+	var request : MessageRequest;
+	var response : MessageResponse;
+}
+
+class EventRequest
+{
+	var type : Type;
+}
+
+class EventDecl : Declaration
+{
+	var request : EventRequest;
 }
 
 class Schema

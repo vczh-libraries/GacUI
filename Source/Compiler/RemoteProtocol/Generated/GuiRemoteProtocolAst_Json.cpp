@@ -8,14 +8,94 @@ Licensed under https://github.com/vczh-libraries/License
 
 namespace vl::presentation::remoteprotocol::json_visitor
 {
-	void AstVisitor::PrintFields(GuiRpDeclaration* node)
+	void AstVisitor::PrintFields(GuiRpArrayType* node)
 	{
+		BeginField(L"element");
+		Print(node->element.Obj());
+		EndField();
+	}
+	void AstVisitor::PrintFields(GuiRpAttribute* node)
+	{
+		BeginField(L"cppType");
+		WriteToken(node->cppType);
+		EndField();
 		BeginField(L"name");
 		WriteToken(node->name);
 		EndField();
 	}
-	void AstVisitor::PrintFields(GuiRpMessage* node)
+	void AstVisitor::PrintFields(GuiRpDeclaration* node)
 	{
+		BeginField(L"attributes");
+		BeginArray();
+		for (auto&& listItem : node->attributes)
+		{
+			BeginArrayItem();
+			Print(listItem.Obj());
+			EndArrayItem();
+		}
+		EndArray();
+		EndField();
+		BeginField(L"name");
+		WriteToken(node->name);
+		EndField();
+	}
+	void AstVisitor::PrintFields(GuiRpEventDecl* node)
+	{
+		BeginField(L"request");
+		Print(node->request.Obj());
+		EndField();
+	}
+	void AstVisitor::PrintFields(GuiRpEventRequest* node)
+	{
+		BeginField(L"type");
+		Print(node->type.Obj());
+		EndField();
+	}
+	void AstVisitor::PrintFields(GuiRpMessageDecl* node)
+	{
+		BeginField(L"request");
+		Print(node->request.Obj());
+		EndField();
+		BeginField(L"response");
+		Print(node->response.Obj());
+		EndField();
+	}
+	void AstVisitor::PrintFields(GuiRpMessageRequest* node)
+	{
+		BeginField(L"type");
+		Print(node->type.Obj());
+		EndField();
+	}
+	void AstVisitor::PrintFields(GuiRpMessageResponse* node)
+	{
+		BeginField(L"type");
+		Print(node->type.Obj());
+		EndField();
+	}
+	void AstVisitor::PrintFields(GuiRpPrimitiveType* node)
+	{
+		BeginField(L"type");
+		switch (node->type)
+		{
+		case vl::presentation::remoteprotocol::GuiRpPrimitiveTypes::Boolean:
+			WriteString(L"Boolean");
+			break;
+		case vl::presentation::remoteprotocol::GuiRpPrimitiveTypes::Double:
+			WriteString(L"Double");
+			break;
+		case vl::presentation::remoteprotocol::GuiRpPrimitiveTypes::Float:
+			WriteString(L"Float");
+			break;
+		case vl::presentation::remoteprotocol::GuiRpPrimitiveTypes::Integer:
+			WriteString(L"Integer");
+			break;
+		case vl::presentation::remoteprotocol::GuiRpPrimitiveTypes::String:
+			WriteString(L"String");
+			break;
+		default:
+			WriteNull();
+		}
+		EndField();
 	}
 	void AstVisitor::PrintFields(GuiRpSchema* node)
 	{
@@ -30,11 +110,33 @@ namespace vl::presentation::remoteprotocol::json_visitor
 		EndArray();
 		EndField();
 	}
+	void AstVisitor::PrintFields(GuiRpStructDecl* node)
+	{
+		BeginField(L"members");
+		BeginArray();
+		for (auto&& listItem : node->members)
+		{
+			BeginArrayItem();
+			Print(listItem.Obj());
+			EndArrayItem();
+		}
+		EndArray();
+		EndField();
+	}
+	void AstVisitor::PrintFields(GuiRpStructMember* node)
+	{
+		BeginField(L"name");
+		WriteToken(node->name);
+		EndField();
+		BeginField(L"type");
+		Print(node->type.Obj());
+		EndField();
+	}
 	void AstVisitor::PrintFields(GuiRpType* node)
 	{
 	}
 
-	void AstVisitor::Visit(GuiRpType* node)
+	void AstVisitor::Visit(GuiRpPrimitiveType* node)
 	{
 		if (!node)
 		{
@@ -42,13 +144,13 @@ namespace vl::presentation::remoteprotocol::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"Type", node);
-		PrintFields(static_cast<GuiRpDeclaration*>(node));
+		WriteType(L"PrimitiveType", node);
 		PrintFields(static_cast<GuiRpType*>(node));
+		PrintFields(static_cast<GuiRpPrimitiveType*>(node));
 		EndObject();
 	}
 
-	void AstVisitor::Visit(GuiRpMessage* node)
+	void AstVisitor::Visit(GuiRpArrayType* node)
 	{
 		if (!node)
 		{
@@ -56,15 +158,67 @@ namespace vl::presentation::remoteprotocol::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"Message", node);
+		WriteType(L"ArrayType", node);
+		PrintFields(static_cast<GuiRpType*>(node));
+		PrintFields(static_cast<GuiRpArrayType*>(node));
+		EndObject();
+	}
+
+	void AstVisitor::Visit(GuiRpStructDecl* node)
+	{
+		if (!node)
+		{
+			WriteNull();
+			return;
+		}
+		BeginObject();
+		WriteType(L"StructDecl", node);
 		PrintFields(static_cast<GuiRpDeclaration*>(node));
-		PrintFields(static_cast<GuiRpMessage*>(node));
+		PrintFields(static_cast<GuiRpStructDecl*>(node));
+		EndObject();
+	}
+
+	void AstVisitor::Visit(GuiRpMessageDecl* node)
+	{
+		if (!node)
+		{
+			WriteNull();
+			return;
+		}
+		BeginObject();
+		WriteType(L"MessageDecl", node);
+		PrintFields(static_cast<GuiRpDeclaration*>(node));
+		PrintFields(static_cast<GuiRpMessageDecl*>(node));
+		EndObject();
+	}
+
+	void AstVisitor::Visit(GuiRpEventDecl* node)
+	{
+		if (!node)
+		{
+			WriteNull();
+			return;
+		}
+		BeginObject();
+		WriteType(L"EventDecl", node);
+		PrintFields(static_cast<GuiRpDeclaration*>(node));
+		PrintFields(static_cast<GuiRpEventDecl*>(node));
 		EndObject();
 	}
 
 	AstVisitor::AstVisitor(vl::stream::StreamWriter& _writer)
 		: vl::glr::JsonVisitorBase(_writer)
 	{
+	}
+
+	void AstVisitor::Print(GuiRpType* node)
+	{
+		if (!node)
+		{
+			WriteNull();
+			return;
+		}
+		node->Accept(static_cast<GuiRpType::IVisitor*>(this));
 	}
 
 	void AstVisitor::Print(GuiRpDeclaration* node)
@@ -75,6 +229,71 @@ namespace vl::presentation::remoteprotocol::json_visitor
 			return;
 		}
 		node->Accept(static_cast<GuiRpDeclaration::IVisitor*>(this));
+	}
+
+	void AstVisitor::Print(GuiRpAttribute* node)
+	{
+		if (!node)
+		{
+			WriteNull();
+			return;
+		}
+		BeginObject();
+		WriteType(L"Attribute", node);
+		PrintFields(static_cast<GuiRpAttribute*>(node));
+		EndObject();
+	}
+
+	void AstVisitor::Print(GuiRpStructMember* node)
+	{
+		if (!node)
+		{
+			WriteNull();
+			return;
+		}
+		BeginObject();
+		WriteType(L"StructMember", node);
+		PrintFields(static_cast<GuiRpStructMember*>(node));
+		EndObject();
+	}
+
+	void AstVisitor::Print(GuiRpMessageRequest* node)
+	{
+		if (!node)
+		{
+			WriteNull();
+			return;
+		}
+		BeginObject();
+		WriteType(L"MessageRequest", node);
+		PrintFields(static_cast<GuiRpMessageRequest*>(node));
+		EndObject();
+	}
+
+	void AstVisitor::Print(GuiRpMessageResponse* node)
+	{
+		if (!node)
+		{
+			WriteNull();
+			return;
+		}
+		BeginObject();
+		WriteType(L"MessageResponse", node);
+		PrintFields(static_cast<GuiRpMessageResponse*>(node));
+		EndObject();
+	}
+
+	void AstVisitor::Print(GuiRpEventRequest* node)
+	{
+		if (!node)
+		{
+			WriteNull();
+			return;
+		}
+		BeginObject();
+		WriteType(L"EventRequest", node);
+		PrintFields(static_cast<GuiRpEventRequest*>(node));
+		EndObject();
 	}
 
 	void AstVisitor::Print(GuiRpSchema* node)

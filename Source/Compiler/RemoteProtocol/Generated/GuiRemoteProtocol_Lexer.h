@@ -13,26 +13,32 @@ namespace vl::presentation::remoteprotocol
 {
 	enum class GuiRemoteProtocolTokens : vl::vint32_t
 	{
-		TYPE = 0,
-		MESSAGE = 1,
-		REQUEST = 2,
-		RESPONSE = 3,
-		VOID = 4,
-		BOOLEAN = 5,
-		INTEGER = 6,
-		FLOAT = 7,
-		DOUBLE = 8,
-		STRING = 9,
-		CPP_NAME = 10,
-		NAME = 11,
-		OPEN_BRACE = 12,
-		CLOSE_BRACE = 13,
-		COLON = 14,
-		SEMICOLON = 15,
-		SPACE = 16,
+		VAR = 0,
+		STRUCT = 1,
+		MESSAGE = 2,
+		REQUEST = 3,
+		RESPONSE = 4,
+		EVENT = 5,
+		BOOLEAN = 6,
+		INTEGER = 7,
+		FLOAT = 8,
+		DOUBLE = 9,
+		STRING = 10,
+		CPP_NAME = 11,
+		ATT_NAME = 12,
+		NAME = 13,
+		OPEN_BRACE = 14,
+		CLOSE_BRACE = 15,
+		OPEN_ARRAY = 16,
+		CLOSE_ARRAY = 17,
+		OPEN = 18,
+		CLOSE = 19,
+		COLON = 20,
+		SEMICOLON = 21,
+		SPACE = 22,
 	};
 
-	constexpr vl::vint GuiRemoteProtocolTokenCount = 17;
+	constexpr vl::vint GuiRemoteProtocolTokenCount = 23;
 	extern bool GuiRemoteProtocolTokenDeleter(vl::vint token);
 	extern const wchar_t* GuiRemoteProtocolTokenId(GuiRemoteProtocolTokens token);
 	extern const wchar_t* GuiRemoteProtocolTokenDisplayText(GuiRemoteProtocolTokens token);

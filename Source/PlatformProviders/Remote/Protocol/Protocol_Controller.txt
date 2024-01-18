@@ -1,4 +1,50 @@
 [@Cpp(::vl::presentation::FontProperties)]
-type FontProperties
+struct FontProperties
+{
+    var fontFamily : string;
+    var size : int;
+    var bold : bool;
+    var italic : bool;
+    var underline : bool;
+    var strikeline : bool;
+    var antialias : bool;
+    var verticalAntialias : bool;
+}
+
+struct FontConfig
+{
+    var defaultFont : FontProperties;
+    var supportedFonts : string[];
+}
+
+message GetFontConfig
+{
+    response: FontConfig;
+}
+
+struct ScreenFonfig
+{
+    var scalingX : double;
+    var scalingY : double;
+}
+
+message GetScreenConfig
+{
+    response: ScreenConfig;
+}
+
+message ConnectionEstablished
+{
+}
+
+event Connect
+{
+}
+
+event Disconnect
+{
+}
+
+event Exit
 {
 }

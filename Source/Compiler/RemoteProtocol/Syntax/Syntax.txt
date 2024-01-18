@@ -1,14 +1,60 @@
+RPrimitiveType
+	::= "bool" as PrimitiveType {type = Boolean}
+	::= "int" as PrimitiveType {type = Integer}
+	::= "float" as PrimitiveType {type = Float}
+	::= "double" as PrimitiveType {type = Double}
+	::= "string" as PrimitiveType {type = String}
+	;
+
 RType
-	::= "type" NAME:name "{" "}" as Type
+	::= !RPrimitiveType
+	::= RType:element "[" "]" as ArrayType
+	;
+
+RAttributeParameter
+	::=	CPP_NAME:cppType as partial Attribute
+	;
+
+RAttribute
+	::= "[" ATT_NAME:name "(" RAttributeParameter ")" "]" as Attribute
+	;
+
+RStructMember
+	::= "var" NAME:name ":" RType:type ";" as StructMember
+	;
+
+RStruct
+	::= "struct" NAME:name "{" {RStructMember : members} "}" as StructDecl
+	;
+
+RMessageRequest
+	::= "request" ":" RType:type ";" as MessageRequest
+	;
+
+RMessageResponse
+	::= "response" ":" RType:type ";" as MessageResponse
 	;
 
 RMessage
-	::= "message" NAME:name "{" "}" as Message
+	::= "message" NAME:name "{" [RMessageRequest:request] [RMessageResponse:response] "}" as MessageDecl
+	;
+
+REventRequest
+	::= "request" ":" RType:type ";" as EventRequest
+	;
+
+REvent
+	::= "event" NAME:name "{" [REventRequest:request] "}" as EventDecl
+	;
+
+RDeclDetail
+	::= !RType
+	::= !RMessage
+	::= !REvent
 	;
 
 RDecl
-	::= !RType
-	::= !RMessage
+	::= {RAttribute : attributes} !RDeclDetail
 	;
 
 @parser Schema

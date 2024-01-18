@@ -11,10 +11,66 @@ Licensed under https://github.com/vczh-libraries/License
 
 namespace vl::presentation::remoteprotocol
 {
+	class GuiRpArrayType;
+	class GuiRpAttribute;
 	class GuiRpDeclaration;
-	class GuiRpMessage;
+	class GuiRpEventDecl;
+	class GuiRpEventRequest;
+	class GuiRpMessageDecl;
+	class GuiRpMessageRequest;
+	class GuiRpMessageResponse;
+	class GuiRpPrimitiveType;
 	class GuiRpSchema;
+	class GuiRpStructDecl;
+	class GuiRpStructMember;
 	class GuiRpType;
+
+	enum class GuiRpPrimitiveTypes
+	{
+		UNDEFINED_ENUM_ITEM_VALUE = -1,
+		Boolean = 0,
+		Integer = 1,
+		Float = 2,
+		Double = 3,
+		String = 4,
+	};
+
+	class GuiRpType abstract : public vl::glr::ParsingAstBase, vl::reflection::Description<GuiRpType>
+	{
+	public:
+		class IVisitor : public virtual vl::reflection::IDescriptable, vl::reflection::Description<IVisitor>
+		{
+		public:
+			virtual void Visit(GuiRpPrimitiveType* node) = 0;
+			virtual void Visit(GuiRpArrayType* node) = 0;
+		};
+
+		virtual void Accept(GuiRpType::IVisitor* visitor) = 0;
+
+	};
+
+	class GuiRpPrimitiveType : public GuiRpType, vl::reflection::Description<GuiRpPrimitiveType>
+	{
+	public:
+		GuiRpPrimitiveTypes type = GuiRpPrimitiveTypes::UNDEFINED_ENUM_ITEM_VALUE;
+
+		void Accept(GuiRpType::IVisitor* visitor) override;
+	};
+
+	class GuiRpArrayType : public GuiRpType, vl::reflection::Description<GuiRpArrayType>
+	{
+	public:
+		vl::Ptr<GuiRpType> element;
+
+		void Accept(GuiRpType::IVisitor* visitor) override;
+	};
+
+	class GuiRpAttribute : public vl::glr::ParsingAstBase, vl::reflection::Description<GuiRpAttribute>
+	{
+	public:
+		vl::glr::ParsingToken name;
+		vl::glr::ParsingToken cppType;
+	};
 
 	class GuiRpDeclaration abstract : public vl::glr::ParsingAstBase, vl::reflection::Description<GuiRpDeclaration>
 	{
@@ -22,25 +78,63 @@ namespace vl::presentation::remoteprotocol
 		class IVisitor : public virtual vl::reflection::IDescriptable, vl::reflection::Description<IVisitor>
 		{
 		public:
-			virtual void Visit(GuiRpType* node) = 0;
-			virtual void Visit(GuiRpMessage* node) = 0;
+			virtual void Visit(GuiRpStructDecl* node) = 0;
+			virtual void Visit(GuiRpMessageDecl* node) = 0;
+			virtual void Visit(GuiRpEventDecl* node) = 0;
 		};
 
 		virtual void Accept(GuiRpDeclaration::IVisitor* visitor) = 0;
 
+		vl::collections::List<vl::Ptr<GuiRpAttribute>> attributes;
 		vl::glr::ParsingToken name;
 	};
 
-	class GuiRpType : public GuiRpDeclaration, vl::reflection::Description<GuiRpType>
+	class GuiRpStructMember : public vl::glr::ParsingAstBase, vl::reflection::Description<GuiRpStructMember>
 	{
 	public:
+		vl::glr::ParsingToken name;
+		vl::Ptr<GuiRpType> type;
+	};
+
+	class GuiRpStructDecl : public GuiRpDeclaration, vl::reflection::Description<GuiRpStructDecl>
+	{
+	public:
+		vl::collections::List<vl::Ptr<GuiRpStructMember>> members;
 
 		void Accept(GuiRpDeclaration::IVisitor* visitor) override;
 	};
 
-	class GuiRpMessage : public GuiRpDeclaration, vl::reflection::Description<GuiRpMessage>
+	class GuiRpMessageRequest : public vl::glr::ParsingAstBase, vl::reflection::Description<GuiRpMessageRequest>
 	{
 	public:
+		vl::Ptr<GuiRpType> type;
+	};
+
+	class GuiRpMessageResponse : public vl::glr::ParsingAstBase, vl::reflection::Description<GuiRpMessageResponse>
+	{
+	public:
+		vl::Ptr<GuiRpType> type;
+	};
+
+	class GuiRpMessageDecl : public GuiRpDeclaration, vl::reflection::Description<GuiRpMessageDecl>
+	{
+	public:
+		vl::Ptr<GuiRpMessageRequest> request;
+		vl::Ptr<GuiRpMessageResponse> response;
+
+		void Accept(GuiRpDeclaration::IVisitor* visitor) override;
+	};
+
+	class GuiRpEventRequest : public vl::glr::ParsingAstBase, vl::reflection::Description<GuiRpEventRequest>
+	{
+	public:
+		vl::Ptr<GuiRpType> type;
+	};
+
+	class GuiRpEventDecl : public GuiRpDeclaration, vl::reflection::Description<GuiRpEventDecl>
+	{
+	public:
+		vl::Ptr<GuiRpEventRequest> request;
 
 		void Accept(GuiRpDeclaration::IVisitor* visitor) override;
 	};
@@ -54,21 +148,50 @@ namespace vl::presentation::remoteprotocol
 namespace vl::reflection::description
 {
 #ifndef VCZH_DEBUG_NO_REFLECTION
+	DECL_TYPE_INFO(vl::presentation::remoteprotocol::GuiRpType)
+	DECL_TYPE_INFO(vl::presentation::remoteprotocol::GuiRpType::IVisitor)
+	DECL_TYPE_INFO(vl::presentation::remoteprotocol::GuiRpPrimitiveTypes)
+	DECL_TYPE_INFO(vl::presentation::remoteprotocol::GuiRpPrimitiveType)
+	DECL_TYPE_INFO(vl::presentation::remoteprotocol::GuiRpArrayType)
+	DECL_TYPE_INFO(vl::presentation::remoteprotocol::GuiRpAttribute)
 	DECL_TYPE_INFO(vl::presentation::remoteprotocol::GuiRpDeclaration)
 	DECL_TYPE_INFO(vl::presentation::remoteprotocol::GuiRpDeclaration::IVisitor)
-	DECL_TYPE_INFO(vl::presentation::remoteprotocol::GuiRpType)
-	DECL_TYPE_INFO(vl::presentation::remoteprotocol::GuiRpMessage)
+	DECL_TYPE_INFO(vl::presentation::remoteprotocol::GuiRpStructMember)
+	DECL_TYPE_INFO(vl::presentation::remoteprotocol::GuiRpStructDecl)
+	DECL_TYPE_INFO(vl::presentation::remoteprotocol::GuiRpMessageRequest)
+	DECL_TYPE_INFO(vl::presentation::remoteprotocol::GuiRpMessageResponse)
+	DECL_TYPE_INFO(vl::presentation::remoteprotocol::GuiRpMessageDecl)
+	DECL_TYPE_INFO(vl::presentation::remoteprotocol::GuiRpEventRequest)
+	DECL_TYPE_INFO(vl::presentation::remoteprotocol::GuiRpEventDecl)
 	DECL_TYPE_INFO(vl::presentation::remoteprotocol::GuiRpSchema)
 
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 
-	BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(vl::presentation::remoteprotocol::GuiRpDeclaration::IVisitor)
-		void Visit(vl::presentation::remoteprotocol::GuiRpType* node) override
+	BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(vl::presentation::remoteprotocol::GuiRpType::IVisitor)
+		void Visit(vl::presentation::remoteprotocol::GuiRpPrimitiveType* node) override
 		{
 			INVOKE_INTERFACE_PROXY(Visit, node);
 		}
 
-		void Visit(vl::presentation::remoteprotocol::GuiRpMessage* node) override
+		void Visit(vl::presentation::remoteprotocol::GuiRpArrayType* node) override
+		{
+			INVOKE_INTERFACE_PROXY(Visit, node);
+		}
+
+	END_INTERFACE_PROXY(vl::presentation::remoteprotocol::GuiRpType::IVisitor)
+
+	BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(vl::presentation::remoteprotocol::GuiRpDeclaration::IVisitor)
+		void Visit(vl::presentation::remoteprotocol::GuiRpStructDecl* node) override
+		{
+			INVOKE_INTERFACE_PROXY(Visit, node);
+		}
+
+		void Visit(vl::presentation::remoteprotocol::GuiRpMessageDecl* node) override
+		{
+			INVOKE_INTERFACE_PROXY(Visit, node);
+		}
+
+		void Visit(vl::presentation::remoteprotocol::GuiRpEventDecl* node) override
 		{
 			INVOKE_INTERFACE_PROXY(Visit, node);
 		}

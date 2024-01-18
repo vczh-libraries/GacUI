@@ -1,19 +1,27 @@
-TYPE:type
+VAR:var
+STRUCT:struct
 MESSAGE:message
 REQUEST:request
-RESPONSE:respond
+RESPONSE:response
+EVENT:event
 
-VOID:void
 BOOLEAN:bool
 INTEGER:int
 FLOAT:float
 DOUBLE:double
 STRING:string
+
+$NAME:[a-zA-Z_][a-zA-Z0-9]*
 CPP_NAME:(::[a-zA-Z_][a-zA-Z0-9<>]*){1,}
-NAME:[a-zA-Z_][a-zA-Z0-9]*
+ATT_NAME:@{$NAME}
+NAME:{$NAME}
 
 OPEN_BRACE:/{
 CLOSE_BRACE:/}
+OPEN_ARRAY:/[
+CLOSE_ARRAY:/]
+OPEN:/(
+CLOSE:/)
 COLON::
 SEMICOLON:;
 

@@ -18,12 +18,28 @@ GuiRemoteProtocolAstInsReceiver : public vl::glr::AstInsReceiverBase
 		auto cppTypeName = GuiRemoteProtocolCppTypeName((GuiRemoteProtocolClasses)type);
 		switch((GuiRemoteProtocolClasses)type)
 		{
-		case GuiRemoteProtocolClasses::Message:
-			return vl::Ptr(new vl::presentation::remoteprotocol::GuiRpMessage);
+		case GuiRemoteProtocolClasses::ArrayType:
+			return vl::Ptr(new vl::presentation::remoteprotocol::GuiRpArrayType);
+		case GuiRemoteProtocolClasses::Attribute:
+			return vl::Ptr(new vl::presentation::remoteprotocol::GuiRpAttribute);
+		case GuiRemoteProtocolClasses::EventDecl:
+			return vl::Ptr(new vl::presentation::remoteprotocol::GuiRpEventDecl);
+		case GuiRemoteProtocolClasses::EventRequest:
+			return vl::Ptr(new vl::presentation::remoteprotocol::GuiRpEventRequest);
+		case GuiRemoteProtocolClasses::MessageDecl:
+			return vl::Ptr(new vl::presentation::remoteprotocol::GuiRpMessageDecl);
+		case GuiRemoteProtocolClasses::MessageRequest:
+			return vl::Ptr(new vl::presentation::remoteprotocol::GuiRpMessageRequest);
+		case GuiRemoteProtocolClasses::MessageResponse:
+			return vl::Ptr(new vl::presentation::remoteprotocol::GuiRpMessageResponse);
+		case GuiRemoteProtocolClasses::PrimitiveType:
+			return vl::Ptr(new vl::presentation::remoteprotocol::GuiRpPrimitiveType);
 		case GuiRemoteProtocolClasses::Schema:
 			return vl::Ptr(new vl::presentation::remoteprotocol::GuiRpSchema);
-		case GuiRemoteProtocolClasses::Type:
-			return vl::Ptr(new vl::presentation::remoteprotocol::GuiRpType);
+		case GuiRemoteProtocolClasses::StructDecl:
+			return vl::Ptr(new vl::presentation::remoteprotocol::GuiRpStructDecl);
+		case GuiRemoteProtocolClasses::StructMember:
+			return vl::Ptr(new vl::presentation::remoteprotocol::GuiRpStructMember);
 		default:
 			return vl::glr::AssemblyThrowCannotCreateAbstractType(type, cppTypeName);
 		}
@@ -34,8 +50,28 @@ GuiRemoteProtocolAstInsReceiver : public vl::glr::AstInsReceiverBase
 		auto cppFieldName = GuiRemoteProtocolCppFieldName((GuiRemoteProtocolFields)field);
 		switch((GuiRemoteProtocolFields)field)
 		{
+		case GuiRemoteProtocolFields::ArrayType_element:
+			return vl::glr::AssemblerSetObjectField(&vl::presentation::remoteprotocol::GuiRpArrayType::element, object, field, value, cppFieldName);
+		case GuiRemoteProtocolFields::Declaration_attributes:
+			return vl::glr::AssemblerSetObjectField(&vl::presentation::remoteprotocol::GuiRpDeclaration::attributes, object, field, value, cppFieldName);
+		case GuiRemoteProtocolFields::EventDecl_request:
+			return vl::glr::AssemblerSetObjectField(&vl::presentation::remoteprotocol::GuiRpEventDecl::request, object, field, value, cppFieldName);
+		case GuiRemoteProtocolFields::EventRequest_type:
+			return vl::glr::AssemblerSetObjectField(&vl::presentation::remoteprotocol::GuiRpEventRequest::type, object, field, value, cppFieldName);
+		case GuiRemoteProtocolFields::MessageDecl_request:
+			return vl::glr::AssemblerSetObjectField(&vl::presentation::remoteprotocol::GuiRpMessageDecl::request, object, field, value, cppFieldName);
+		case GuiRemoteProtocolFields::MessageDecl_response:
+			return vl::glr::AssemblerSetObjectField(&vl::presentation::remoteprotocol::GuiRpMessageDecl::response, object, field, value, cppFieldName);
+		case GuiRemoteProtocolFields::MessageRequest_type:
+			return vl::glr::AssemblerSetObjectField(&vl::presentation::remoteprotocol::GuiRpMessageRequest::type, object, field, value, cppFieldName);
+		case GuiRemoteProtocolFields::MessageResponse_type:
+			return vl::glr::AssemblerSetObjectField(&vl::presentation::remoteprotocol::GuiRpMessageResponse::type, object, field, value, cppFieldName);
 		case GuiRemoteProtocolFields::Schema_declarations:
 			return vl::glr::AssemblerSetObjectField(&vl::presentation::remoteprotocol::GuiRpSchema::declarations, object, field, value, cppFieldName);
+		case GuiRemoteProtocolFields::StructDecl_members:
+			return vl::glr::AssemblerSetObjectField(&vl::presentation::remoteprotocol::GuiRpStructDecl::members, object, field, value, cppFieldName);
+		case GuiRemoteProtocolFields::StructMember_type:
+			return vl::glr::AssemblerSetObjectField(&vl::presentation::remoteprotocol::GuiRpStructMember::type, object, field, value, cppFieldName);
 		default:
 			return vl::glr::AssemblyThrowFieldNotObject(field, cppFieldName);
 		}
@@ -46,8 +82,14 @@ GuiRemoteProtocolAstInsReceiver : public vl::glr::AstInsReceiverBase
 		auto cppFieldName = GuiRemoteProtocolCppFieldName((GuiRemoteProtocolFields)field);
 		switch((GuiRemoteProtocolFields)field)
 		{
+		case GuiRemoteProtocolFields::Attribute_cppType:
+			return vl::glr::AssemblerSetTokenField(&vl::presentation::remoteprotocol::GuiRpAttribute::cppType, object, field, token, tokenIndex, cppFieldName);
+		case GuiRemoteProtocolFields::Attribute_name:
+			return vl::glr::AssemblerSetTokenField(&vl::presentation::remoteprotocol::GuiRpAttribute::name, object, field, token, tokenIndex, cppFieldName);
 		case GuiRemoteProtocolFields::Declaration_name:
 			return vl::glr::AssemblerSetTokenField(&vl::presentation::remoteprotocol::GuiRpDeclaration::name, object, field, token, tokenIndex, cppFieldName);
+		case GuiRemoteProtocolFields::StructMember_name:
+			return vl::glr::AssemblerSetTokenField(&vl::presentation::remoteprotocol::GuiRpStructMember::name, object, field, token, tokenIndex, cppFieldName);
 		default:
 			return vl::glr::AssemblyThrowFieldNotToken(field, cppFieldName);
 		}
@@ -56,51 +98,103 @@ GuiRemoteProtocolAstInsReceiver : public vl::glr::AstInsReceiverBase
 	void GuiRemoteProtocolAstInsReceiver::SetField(vl::glr::ParsingAstBase* object, vl::vint32_t field, vl::vint32_t enumItem, bool weakAssignment)
 	{
 		auto cppFieldName = GuiRemoteProtocolCppFieldName((GuiRemoteProtocolFields)field);
-		return vl::glr::AssemblyThrowFieldNotEnum(field, cppFieldName);
+		switch((GuiRemoteProtocolFields)field)
+		{
+		case GuiRemoteProtocolFields::PrimitiveType_type:
+			return vl::glr::AssemblerSetEnumField(&vl::presentation::remoteprotocol::GuiRpPrimitiveType::type, object, field, enumItem, weakAssignment, cppFieldName);
+		default:
+			return vl::glr::AssemblyThrowFieldNotEnum(field, cppFieldName);
+		}
 	}
 
 	const wchar_t* GuiRemoteProtocolTypeName(GuiRemoteProtocolClasses type)
 	{
 		const wchar_t* results[] = {
+			L"ArrayType",
+			L"Attribute",
 			L"Declaration",
-			L"Message",
+			L"EventDecl",
+			L"EventRequest",
+			L"MessageDecl",
+			L"MessageRequest",
+			L"MessageResponse",
+			L"PrimitiveType",
 			L"Schema",
+			L"StructDecl",
+			L"StructMember",
 			L"Type",
 		};
 		vl::vint index = (vl::vint)type;
-		return 0 <= index && index < 4 ? results[index] : nullptr;
+		return 0 <= index && index < 13 ? results[index] : nullptr;
 	}
 
 	const wchar_t* GuiRemoteProtocolCppTypeName(GuiRemoteProtocolClasses type)
 	{
 		const wchar_t* results[] = {
+			L"vl::presentation::remoteprotocol::GuiRpArrayType",
+			L"vl::presentation::remoteprotocol::GuiRpAttribute",
 			L"vl::presentation::remoteprotocol::GuiRpDeclaration",
-			L"vl::presentation::remoteprotocol::GuiRpMessage",
+			L"vl::presentation::remoteprotocol::GuiRpEventDecl",
+			L"vl::presentation::remoteprotocol::GuiRpEventRequest",
+			L"vl::presentation::remoteprotocol::GuiRpMessageDecl",
+			L"vl::presentation::remoteprotocol::GuiRpMessageRequest",
+			L"vl::presentation::remoteprotocol::GuiRpMessageResponse",
+			L"vl::presentation::remoteprotocol::GuiRpPrimitiveType",
 			L"vl::presentation::remoteprotocol::GuiRpSchema",
+			L"vl::presentation::remoteprotocol::GuiRpStructDecl",
+			L"vl::presentation::remoteprotocol::GuiRpStructMember",
 			L"vl::presentation::remoteprotocol::GuiRpType",
 		};
 		vl::vint index = (vl::vint)type;
-		return 0 <= index && index < 4 ? results[index] : nullptr;
+		return 0 <= index && index < 13 ? results[index] : nullptr;
 	}
 
 	const wchar_t* GuiRemoteProtocolFieldName(GuiRemoteProtocolFields field)
 	{
 		const wchar_t* results[] = {
+			L"ArrayType::element",
+			L"Attribute::cppType",
+			L"Attribute::name",
+			L"Declaration::attributes",
 			L"Declaration::name",
+			L"EventDecl::request",
+			L"EventRequest::type",
+			L"MessageDecl::request",
+			L"MessageDecl::response",
+			L"MessageRequest::type",
+			L"MessageResponse::type",
+			L"PrimitiveType::type",
 			L"Schema::declarations",
+			L"StructDecl::members",
+			L"StructMember::name",
+			L"StructMember::type",
 		};
 		vl::vint index = (vl::vint)field;
-		return 0 <= index && index < 2 ? results[index] : nullptr;
+		return 0 <= index && index < 16 ? results[index] : nullptr;
 	}
 
 	const wchar_t* GuiRemoteProtocolCppFieldName(GuiRemoteProtocolFields field)
 	{
 		const wchar_t* results[] = {
+			L"vl::presentation::remoteprotocol::GuiRpArrayType::element",
+			L"vl::presentation::remoteprotocol::GuiRpAttribute::cppType",
+			L"vl::presentation::remoteprotocol::GuiRpAttribute::name",
+			L"vl::presentation::remoteprotocol::GuiRpDeclaration::attributes",
 			L"vl::presentation::remoteprotocol::GuiRpDeclaration::name",
+			L"vl::presentation::remoteprotocol::GuiRpEventDecl::request",
+			L"vl::presentation::remoteprotocol::GuiRpEventRequest::type",
+			L"vl::presentation::remoteprotocol::GuiRpMessageDecl::request",
+			L"vl::presentation::remoteprotocol::GuiRpMessageDecl::response",
+			L"vl::presentation::remoteprotocol::GuiRpMessageRequest::type",
+			L"vl::presentation::remoteprotocol::GuiRpMessageResponse::type",
+			L"vl::presentation::remoteprotocol::GuiRpPrimitiveType::type",
 			L"vl::presentation::remoteprotocol::GuiRpSchema::declarations",
+			L"vl::presentation::remoteprotocol::GuiRpStructDecl::members",
+			L"vl::presentation::remoteprotocol::GuiRpStructMember::name",
+			L"vl::presentation::remoteprotocol::GuiRpStructMember::type",
 		};
 		vl::vint index = (vl::vint)field;
-		return 0 <= index && index < 2 ? results[index] : nullptr;
+		return 0 <= index && index < 16 ? results[index] : nullptr;
 	}
 
 	vl::Ptr<vl::glr::ParsingAstBase> GuiRemoteProtocolAstInsReceiver::ResolveAmbiguity(vl::vint32_t type, vl::collections::Array<vl::Ptr<vl::glr::ParsingAstBase>>& candidates)

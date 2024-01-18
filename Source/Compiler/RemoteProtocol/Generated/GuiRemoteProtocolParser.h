@@ -14,10 +14,20 @@ namespace vl::presentation::remoteprotocol
 {
 	enum class ParserStates
 	{
-		RType = 0,
-		RMessage = 6,
-		RDecl = 12,
-		Schema = 16,
+		RPrimitiveType = 0,
+		RType = 7,
+		RAttributeParameter = 13,
+		RAttribute = 16,
+		RStructMember = 24,
+		RStruct = 31,
+		RMessageRequest = 38,
+		RMessageResponse = 44,
+		RMessage = 50,
+		REventRequest = 58,
+		REvent = 64,
+		RDeclDetail = 71,
+		RDecl = 76,
+		Schema = 80,
 	};
 
 	const wchar_t* ParserRuleName(vl::vint index);
