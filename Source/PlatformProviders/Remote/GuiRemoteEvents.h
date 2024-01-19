@@ -46,7 +46,7 @@ GuiRemoteEvents
 		// IGuiRemoteProtocolEvents
 		// =============================================================
 
-		// message
+		// messages
 
 #define MESSAGE_NOREQ_NORES(NAME)					void Request ## NAME();
 #define MESSAGE_NOREQ_RES(NAME, RESPONSE)			vint Request ## NAME();
@@ -69,15 +69,12 @@ GuiRemoteEvents
 
 		void	ClearResponses();
 
-		// controlling
+		// events
 
-		void	OnConnect() override;
-		void	OnDisconnect() override;
-		void	OnExit() override;
-
-		// system
-
-		void	OnScreenUpdated(const remoteprotocol::ScreenConfig& arguments) override;
+		void	OnControllerConnect() override;
+		void	OnControllerDisconnect() override;
+		void	OnControllerExit() override;
+		void	OnControllerScreenUpdated(const remoteprotocol::ScreenConfig& arguments) override;
 	};
 }
 

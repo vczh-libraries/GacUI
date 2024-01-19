@@ -16,7 +16,7 @@ GuiRemoteEvents
 	}
 
 /***********************************************************************
-GuiRemoteEvents (message)
+GuiRemoteEvents (messages)
 ***********************************************************************/
 
 #define MESSAGE_NOREQ_NORES(NAME)\
@@ -78,25 +78,28 @@ GuiRemoteEvents (message)
 	}
 
 /***********************************************************************
-GuiRemoteEvents (controlling)
+GuiRemoteEvents (events)
 ***********************************************************************/
 
-	void GuiRemoteEvents::OnConnect()
+	void GuiRemoteEvents::OnControllerConnect()
+	{
+		vint idGetFontConfig = RequestControllerGetFontConfig();
+		vint idGetScreenConfig = RequestControllerGetScreenConfig();
+		remote->remoteProtocol->Submit();
+		remote->remoteFontConfig = RetrieveControllerGetFontConfig(idGetFontConfig);
+		remote->remoteScreenConfig = RetrieveControllerGetScreenConfig(idGetScreenConfig);
+		ClearResponses();
+	}
+
+	void GuiRemoteEvents::OnControllerDisconnect()
 	{
 	}
 
-	void GuiRemoteEvents::OnDisconnect()
+	void GuiRemoteEvents::OnControllerExit()
 	{
 	}
 
-	void GuiRemoteEvents::OnExit()
-	{
-	}
-/***********************************************************************
-GuiRemoteEvents (system)
-***********************************************************************/
-
-	void GuiRemoteEvents::OnScreenUpdated(const remoteprotocol::ScreenConfig& arguments)
+	void GuiRemoteEvents::OnControllerScreenUpdated(const remoteprotocol::ScreenConfig& arguments)
 	{
 		remote->remoteScreenConfig = arguments;
 	}

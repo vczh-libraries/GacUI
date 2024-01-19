@@ -41,7 +41,7 @@ public:
 		return L"/StartUp/Protocol.exe";
 	}
 
-	void RequestGetFontConfig(vint id) override
+	void RequestControllerGetFontConfig(vint id) override
 	{
 		FontConfig response;
 		response.defaultFont.fontFamily = L"StartUpDefault";
@@ -50,21 +50,27 @@ public:
 		response.supportedFonts->Add(L"StartUpDefault");
 		response.supportedFonts->Add(L"Another");
 		response.supportedFonts->Add(L"YetAnother");
-		events->RespondGetFontConfig(id, response);
+		events->RespondControllerGetFontConfig(id, response);
 	}
 
-	void RequestGetScreenConfig(vint id) override
+	void RequestControllerGetScreenConfig(vint id) override
 	{
 		ScreenConfig response;
 		response.bounds = { 0,0,30,20 };
 		response.clientBounds = { 1,1,29,19 };
 		response.scalingX = 1;
 		response.scalingY = 1;
-		events->RespondGetScreenConfig(id, response);
+		events->RespondControllerGetScreenConfig(id, response);
 	}
 
-	void RequestConnectionEstablished() override
+	void RequestControllerConnectionEstablished() override
 	{
+	}
+
+	void RequestWindowGetBounds(vint id) override
+	{
+		NativeRect response = { 0,0,50,40 };
+		events->RespondWindowGetBounds(id, response);
 	}
 };
 StartUpProtocol* StartUpProtocol::instance = nullptr;
@@ -76,6 +82,8 @@ TEST_FILE
 		StartUpProtocol protocol;
 		SetGuiMainProxy([]()
 		{
+			StartUpProtocol::instance->events->OnControllerConnect();
+
 			auto rs = GetCurrentController()->ResourceService();
 			auto ss = GetCurrentController()->ScreenService();
 
@@ -99,8 +107,8 @@ TEST_FILE
 				TEST_ASSERT(ss->GetScreenCount() == 1);
 				auto screen = ss->GetScreen(0);
 				TEST_ASSERT(screen->IsPrimary() == true);
-				//TEST_ASSERT(screen->GetBounds() == NativeRect(0, 0, 30, 20));
-				//TEST_ASSERT(screen->GetClientBounds() == NativeRect(1, 1, 29, 19));
+				TEST_ASSERT(screen->GetBounds() == NativeRect(0, 0, 50, 40));
+				TEST_ASSERT(screen->GetClientBounds() == NativeRect(0, 0, 50, 40));
 				TEST_ASSERT(screen->GetScalingX() == 1);
 				TEST_ASSERT(screen->GetScalingY() == 1);
 			});
@@ -113,16 +121,19 @@ TEST_FILE
 					response.clientBounds = { 2,2,18,28 };
 					response.scalingX = 1.2;
 					response.scalingY = 1.5;
-					StartUpProtocol::instance->events->OnScreenUpdated(response);
+					StartUpProtocol::instance->events->OnControllerScreenUpdated(response);
 				}
 				TEST_ASSERT(ss->GetScreenCount() == 1);
 				auto screen = ss->GetScreen(0);
 				TEST_ASSERT(screen->IsPrimary() == true);
-				//TEST_ASSERT(screen->GetBounds() == NativeRect(1, 1, 19, 29));
-				//TEST_ASSERT(screen->GetClientBounds() == NativeRect(2, 2, 18, 28));
+				TEST_ASSERT(screen->GetBounds() == NativeRect(0, 0, 50, 40));
+				TEST_ASSERT(screen->GetClientBounds() == NativeRect(0, 0, 50, 40));
 				TEST_ASSERT(screen->GetScalingX() == 1.2);
 				TEST_ASSERT(screen->GetScalingY() == 1.5);
 			});
+
+			StartUpProtocol::instance->events->OnControllerDisconnect();
+			StartUpProtocol::instance->events->OnControllerExit();
 		});
 		SetupRemoteNativeController(&protocol);
 		SetGuiMainProxy(nullptr);

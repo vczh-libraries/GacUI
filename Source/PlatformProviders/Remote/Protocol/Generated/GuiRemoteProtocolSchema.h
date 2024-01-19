@@ -25,15 +25,16 @@ namespace vl::presentation::remoteprotocol
 	};
 
 #define GACUI_REMOTEPROTOCOL_MESSAGES(NOREQ_NORES, NOREQ_RES, REQ_NORES, REQ_RES)\
-	NOREQ_RES(GetFontConfig, vl::presentation::remoteprotocol::FontConfig)\
-	NOREQ_RES(GetScreenConfig, vl::presentation::remoteprotocol::ScreenConfig)\
-	NOREQ_NORES(ConnectionEstablished)\
+	NOREQ_RES(ControllerGetFontConfig, vl::presentation::remoteprotocol::FontConfig)\
+	NOREQ_RES(ControllerGetScreenConfig, vl::presentation::remoteprotocol::ScreenConfig)\
+	NOREQ_NORES(ControllerConnectionEstablished)\
+	NOREQ_RES(WindowGetBounds, ::vl::presentation::NativeRect)\
 
 #define GACUI_REMOTEPROTOCOL_EVENTS(NOREQ, REQ)\
-	NOREQ(Connect)\
-	NOREQ(Disconnect)\
-	NOREQ(Exit)\
-	REQ(ScreenUpdated, vl::presentation::remoteprotocol::ScreenConfig)\
+	NOREQ(ControllerConnect)\
+	NOREQ(ControllerDisconnect)\
+	NOREQ(ControllerExit)\
+	REQ(ControllerScreenUpdated, vl::presentation::remoteprotocol::ScreenConfig)\
 
 }
 

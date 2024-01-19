@@ -187,92 +187,104 @@
             }
         }]
     }, {
-        "$ast": { "type": "MessageDecl", "codeRange": {"start": {"row": 48, "column": 0, "index": 947}, "end": {"row": 51, "column": 0, "index": 1000}, "codeIndex": 0}},
+        "$ast": { "type": "MessageDecl", "codeRange": {"start": {"row": 48, "column": 0, "index": 947}, "end": {"row": 51, "column": 0, "index": 1010}, "codeIndex": 0}},
         "attributes": [],
-        "name": { "value": "GetFontConfig", "codeRange": {"start": {"row": 48, "column": 8, "index": 955}, "end": {"row": 48, "column": 20, "index": 967}, "codeIndex": 0}},
+        "name": { "value": "ControllerGetFontConfig", "codeRange": {"start": {"row": 48, "column": 8, "index": 955}, "end": {"row": 48, "column": 30, "index": 977}, "codeIndex": 0}},
         "request": null,
         "response": {
-            "$ast": { "type": "MessageResponse", "codeRange": {"start": {"row": 50, "column": 4, "index": 977}, "end": {"row": 50, "column": 24, "index": 997}, "codeIndex": 0}},
+            "$ast": { "type": "MessageResponse", "codeRange": {"start": {"row": 50, "column": 4, "index": 987}, "end": {"row": 50, "column": 24, "index": 1007}, "codeIndex": 0}},
             "type": {
-                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 50, "column": 14, "index": 987}, "end": {"row": 50, "column": 23, "index": 996}, "codeIndex": 0}},
-                "name": { "value": "FontConfig", "codeRange": {"start": {"row": 50, "column": 14, "index": 987}, "end": {"row": 50, "column": 23, "index": 996}, "codeIndex": 0}}
+                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 50, "column": 14, "index": 997}, "end": {"row": 50, "column": 23, "index": 1006}, "codeIndex": 0}},
+                "name": { "value": "FontConfig", "codeRange": {"start": {"row": 50, "column": 14, "index": 997}, "end": {"row": 50, "column": 23, "index": 1006}, "codeIndex": 0}}
             }
         }
     }, {
-        "$ast": { "type": "StructDecl", "codeRange": {"start": {"row": 53, "column": 0, "index": 1005}, "end": {"row": 59, "column": 0, "index": 1151}, "codeIndex": 0}},
+        "$ast": { "type": "StructDecl", "codeRange": {"start": {"row": 53, "column": 0, "index": 1015}, "end": {"row": 59, "column": 0, "index": 1161}, "codeIndex": 0}},
         "attributes": [],
-        "name": { "value": "ScreenConfig", "codeRange": {"start": {"row": 53, "column": 7, "index": 1012}, "end": {"row": 53, "column": 18, "index": 1023}, "codeIndex": 0}},
+        "name": { "value": "ScreenConfig", "codeRange": {"start": {"row": 53, "column": 7, "index": 1022}, "end": {"row": 53, "column": 18, "index": 1033}, "codeIndex": 0}},
         "members": [{
-            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 55, "column": 4, "index": 1033}, "end": {"row": 55, "column": 27, "index": 1056}, "codeIndex": 0}},
-            "name": { "value": "bounds", "codeRange": {"start": {"row": 55, "column": 8, "index": 1037}, "end": {"row": 55, "column": 13, "index": 1042}, "codeIndex": 0}},
+            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 55, "column": 4, "index": 1043}, "end": {"row": 55, "column": 27, "index": 1066}, "codeIndex": 0}},
+            "name": { "value": "bounds", "codeRange": {"start": {"row": 55, "column": 8, "index": 1047}, "end": {"row": 55, "column": 13, "index": 1052}, "codeIndex": 0}},
             "type": {
-                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 55, "column": 17, "index": 1046}, "end": {"row": 55, "column": 26, "index": 1055}, "codeIndex": 0}},
-                "name": { "value": "NativeRect", "codeRange": {"start": {"row": 55, "column": 17, "index": 1046}, "end": {"row": 55, "column": 26, "index": 1055}, "codeIndex": 0}}
+                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 55, "column": 17, "index": 1056}, "end": {"row": 55, "column": 26, "index": 1065}, "codeIndex": 0}},
+                "name": { "value": "NativeRect", "codeRange": {"start": {"row": 55, "column": 17, "index": 1056}, "end": {"row": 55, "column": 26, "index": 1065}, "codeIndex": 0}}
             }
         }, {
-            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 56, "column": 4, "index": 1063}, "end": {"row": 56, "column": 33, "index": 1092}, "codeIndex": 0}},
-            "name": { "value": "clientBounds", "codeRange": {"start": {"row": 56, "column": 8, "index": 1067}, "end": {"row": 56, "column": 19, "index": 1078}, "codeIndex": 0}},
+            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 56, "column": 4, "index": 1073}, "end": {"row": 56, "column": 33, "index": 1102}, "codeIndex": 0}},
+            "name": { "value": "clientBounds", "codeRange": {"start": {"row": 56, "column": 8, "index": 1077}, "end": {"row": 56, "column": 19, "index": 1088}, "codeIndex": 0}},
             "type": {
-                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 56, "column": 23, "index": 1082}, "end": {"row": 56, "column": 32, "index": 1091}, "codeIndex": 0}},
-                "name": { "value": "NativeRect", "codeRange": {"start": {"row": 56, "column": 23, "index": 1082}, "end": {"row": 56, "column": 32, "index": 1091}, "codeIndex": 0}}
+                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 56, "column": 23, "index": 1092}, "end": {"row": 56, "column": 32, "index": 1101}, "codeIndex": 0}},
+                "name": { "value": "NativeRect", "codeRange": {"start": {"row": 56, "column": 23, "index": 1092}, "end": {"row": 56, "column": 32, "index": 1101}, "codeIndex": 0}}
             }
         }, {
-            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 57, "column": 4, "index": 1099}, "end": {"row": 57, "column": 25, "index": 1120}, "codeIndex": 0}},
-            "name": { "value": "scalingX", "codeRange": {"start": {"row": 57, "column": 8, "index": 1103}, "end": {"row": 57, "column": 15, "index": 1110}, "codeIndex": 0}},
+            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 57, "column": 4, "index": 1109}, "end": {"row": 57, "column": 25, "index": 1130}, "codeIndex": 0}},
+            "name": { "value": "scalingX", "codeRange": {"start": {"row": 57, "column": 8, "index": 1113}, "end": {"row": 57, "column": 15, "index": 1120}, "codeIndex": 0}},
             "type": {
-                "$ast": { "type": "PrimitiveType", "codeRange": {"start": {"row": 57, "column": 19, "index": 1114}, "end": {"row": 57, "column": 24, "index": 1119}, "codeIndex": 0}},
+                "$ast": { "type": "PrimitiveType", "codeRange": {"start": {"row": 57, "column": 19, "index": 1124}, "end": {"row": 57, "column": 24, "index": 1129}, "codeIndex": 0}},
                 "type": "Double"
             }
         }, {
-            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 58, "column": 4, "index": 1127}, "end": {"row": 58, "column": 25, "index": 1148}, "codeIndex": 0}},
-            "name": { "value": "scalingY", "codeRange": {"start": {"row": 58, "column": 8, "index": 1131}, "end": {"row": 58, "column": 15, "index": 1138}, "codeIndex": 0}},
+            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 58, "column": 4, "index": 1137}, "end": {"row": 58, "column": 25, "index": 1158}, "codeIndex": 0}},
+            "name": { "value": "scalingY", "codeRange": {"start": {"row": 58, "column": 8, "index": 1141}, "end": {"row": 58, "column": 15, "index": 1148}, "codeIndex": 0}},
             "type": {
-                "$ast": { "type": "PrimitiveType", "codeRange": {"start": {"row": 58, "column": 19, "index": 1142}, "end": {"row": 58, "column": 24, "index": 1147}, "codeIndex": 0}},
+                "$ast": { "type": "PrimitiveType", "codeRange": {"start": {"row": 58, "column": 19, "index": 1152}, "end": {"row": 58, "column": 24, "index": 1157}, "codeIndex": 0}},
                 "type": "Double"
             }
         }]
     }, {
-        "$ast": { "type": "MessageDecl", "codeRange": {"start": {"row": 61, "column": 0, "index": 1156}, "end": {"row": 64, "column": 0, "index": 1213}, "codeIndex": 0}},
+        "$ast": { "type": "MessageDecl", "codeRange": {"start": {"row": 61, "column": 0, "index": 1166}, "end": {"row": 64, "column": 0, "index": 1233}, "codeIndex": 0}},
         "attributes": [],
-        "name": { "value": "GetScreenConfig", "codeRange": {"start": {"row": 61, "column": 8, "index": 1164}, "end": {"row": 61, "column": 22, "index": 1178}, "codeIndex": 0}},
+        "name": { "value": "ControllerGetScreenConfig", "codeRange": {"start": {"row": 61, "column": 8, "index": 1174}, "end": {"row": 61, "column": 32, "index": 1198}, "codeIndex": 0}},
         "request": null,
         "response": {
-            "$ast": { "type": "MessageResponse", "codeRange": {"start": {"row": 63, "column": 4, "index": 1188}, "end": {"row": 63, "column": 26, "index": 1210}, "codeIndex": 0}},
+            "$ast": { "type": "MessageResponse", "codeRange": {"start": {"row": 63, "column": 4, "index": 1208}, "end": {"row": 63, "column": 26, "index": 1230}, "codeIndex": 0}},
             "type": {
-                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 63, "column": 14, "index": 1198}, "end": {"row": 63, "column": 25, "index": 1209}, "codeIndex": 0}},
-                "name": { "value": "ScreenConfig", "codeRange": {"start": {"row": 63, "column": 14, "index": 1198}, "end": {"row": 63, "column": 25, "index": 1209}, "codeIndex": 0}}
+                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 63, "column": 14, "index": 1218}, "end": {"row": 63, "column": 25, "index": 1229}, "codeIndex": 0}},
+                "name": { "value": "ScreenConfig", "codeRange": {"start": {"row": 63, "column": 14, "index": 1218}, "end": {"row": 63, "column": 25, "index": 1229}, "codeIndex": 0}}
             }
         }
     }, {
-        "$ast": { "type": "MessageDecl", "codeRange": {"start": {"row": 66, "column": 0, "index": 1218}, "end": {"row": 68, "column": 0, "index": 1252}, "codeIndex": 0}},
+        "$ast": { "type": "MessageDecl", "codeRange": {"start": {"row": 66, "column": 0, "index": 1238}, "end": {"row": 68, "column": 0, "index": 1282}, "codeIndex": 0}},
         "attributes": [],
-        "name": { "value": "ConnectionEstablished", "codeRange": {"start": {"row": 66, "column": 8, "index": 1226}, "end": {"row": 66, "column": 28, "index": 1246}, "codeIndex": 0}},
+        "name": { "value": "ControllerConnectionEstablished", "codeRange": {"start": {"row": 66, "column": 8, "index": 1246}, "end": {"row": 66, "column": 38, "index": 1276}, "codeIndex": 0}},
         "request": null,
         "response": null
     }, {
-        "$ast": { "type": "EventDecl", "codeRange": {"start": {"row": 70, "column": 0, "index": 1257}, "end": {"row": 70, "column": 25, "index": 1282}, "codeIndex": 0}},
+        "$ast": { "type": "EventDecl", "codeRange": {"start": {"row": 70, "column": 0, "index": 1287}, "end": {"row": 70, "column": 35, "index": 1322}, "codeIndex": 0}},
         "attributes": [],
-        "name": { "value": "Connect", "codeRange": {"start": {"row": 70, "column": 6, "index": 1263}, "end": {"row": 70, "column": 12, "index": 1269}, "codeIndex": 0}},
+        "name": { "value": "ControllerConnect", "codeRange": {"start": {"row": 70, "column": 6, "index": 1293}, "end": {"row": 70, "column": 22, "index": 1309}, "codeIndex": 0}},
         "request": null
     }, {
-        "$ast": { "type": "EventDecl", "codeRange": {"start": {"row": 71, "column": 0, "index": 1285}, "end": {"row": 71, "column": 25, "index": 1310}, "codeIndex": 0}},
+        "$ast": { "type": "EventDecl", "codeRange": {"start": {"row": 71, "column": 0, "index": 1325}, "end": {"row": 71, "column": 35, "index": 1360}, "codeIndex": 0}},
         "attributes": [],
-        "name": { "value": "Disconnect", "codeRange": {"start": {"row": 71, "column": 6, "index": 1291}, "end": {"row": 71, "column": 15, "index": 1300}, "codeIndex": 0}},
+        "name": { "value": "ControllerDisconnect", "codeRange": {"start": {"row": 71, "column": 6, "index": 1331}, "end": {"row": 71, "column": 25, "index": 1350}, "codeIndex": 0}},
         "request": null
     }, {
-        "$ast": { "type": "EventDecl", "codeRange": {"start": {"row": 72, "column": 0, "index": 1313}, "end": {"row": 72, "column": 25, "index": 1338}, "codeIndex": 0}},
+        "$ast": { "type": "EventDecl", "codeRange": {"start": {"row": 72, "column": 0, "index": 1363}, "end": {"row": 72, "column": 35, "index": 1398}, "codeIndex": 0}},
         "attributes": [],
-        "name": { "value": "Exit", "codeRange": {"start": {"row": 72, "column": 6, "index": 1319}, "end": {"row": 72, "column": 9, "index": 1322}, "codeIndex": 0}},
+        "name": { "value": "ControllerExit", "codeRange": {"start": {"row": 72, "column": 6, "index": 1369}, "end": {"row": 72, "column": 19, "index": 1382}, "codeIndex": 0}},
         "request": null
     }, {
-        "$ast": { "type": "EventDecl", "codeRange": {"start": {"row": 73, "column": 0, "index": 1341}, "end": {"row": 73, "column": 49, "index": 1390}, "codeIndex": 0}},
+        "$ast": { "type": "EventDecl", "codeRange": {"start": {"row": 73, "column": 0, "index": 1401}, "end": {"row": 73, "column": 59, "index": 1460}, "codeIndex": 0}},
         "attributes": [],
-        "name": { "value": "ScreenUpdated", "codeRange": {"start": {"row": 73, "column": 6, "index": 1347}, "end": {"row": 73, "column": 18, "index": 1359}, "codeIndex": 0}},
+        "name": { "value": "ControllerScreenUpdated", "codeRange": {"start": {"row": 73, "column": 6, "index": 1407}, "end": {"row": 73, "column": 28, "index": 1429}, "codeIndex": 0}},
         "request": {
-            "$ast": { "type": "EventRequest", "codeRange": {"start": {"row": 73, "column": 26, "index": 1367}, "end": {"row": 73, "column": 47, "index": 1388}, "codeIndex": 0}},
+            "$ast": { "type": "EventRequest", "codeRange": {"start": {"row": 73, "column": 36, "index": 1437}, "end": {"row": 73, "column": 57, "index": 1458}, "codeIndex": 0}},
             "type": {
-                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 73, "column": 35, "index": 1376}, "end": {"row": 73, "column": 46, "index": 1387}, "codeIndex": 0}},
-                "name": { "value": "ScreenConfig", "codeRange": {"start": {"row": 73, "column": 35, "index": 1376}, "end": {"row": 73, "column": 46, "index": 1387}, "codeIndex": 0}}
+                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 73, "column": 45, "index": 1446}, "end": {"row": 73, "column": 56, "index": 1457}, "codeIndex": 0}},
+                "name": { "value": "ScreenConfig", "codeRange": {"start": {"row": 73, "column": 45, "index": 1446}, "end": {"row": 73, "column": 56, "index": 1457}, "codeIndex": 0}}
+            }
+        }
+    }, {
+        "$ast": { "type": "MessageDecl", "codeRange": {"start": {"row": 0, "column": 0, "index": 0}, "end": {"row": 3, "column": 0, "index": 55}, "codeIndex": 1}},
+        "attributes": [],
+        "name": { "value": "WindowGetBounds", "codeRange": {"start": {"row": 0, "column": 8, "index": 8}, "end": {"row": 0, "column": 22, "index": 22}, "codeIndex": 1}},
+        "request": null,
+        "response": {
+            "$ast": { "type": "MessageResponse", "codeRange": {"start": {"row": 2, "column": 4, "index": 32}, "end": {"row": 2, "column": 24, "index": 52}, "codeIndex": 1}},
+            "type": {
+                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 2, "column": 14, "index": 42}, "end": {"row": 2, "column": 23, "index": 51}, "codeIndex": 1}},
+                "name": { "value": "NativeRect", "codeRange": {"start": {"row": 2, "column": 14, "index": 42}, "end": {"row": 2, "column": 23, "index": 51}, "codeIndex": 1}}
             }
         }
     }]

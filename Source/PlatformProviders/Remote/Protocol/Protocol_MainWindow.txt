@@ -1,0 +1,4 @@
+message WindowGetBounds
+{
+    response: NativeRect;
+}

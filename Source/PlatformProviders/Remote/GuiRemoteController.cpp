@@ -241,12 +241,6 @@ GuiRemoteController
 	void GuiRemoteController::Initialize()
 	{
 		remoteProtocol->Initialize(&remoteEvents);
-		vint idGetFontConfig = remoteEvents.RequestGetFontConfig();
-		vint idGetScreenConfig = remoteEvents.RequestGetScreenConfig();
-		remoteProtocol->Submit();
-		remoteFontConfig = remoteEvents.RetrieveGetFontConfig(idGetFontConfig);
-		remoteScreenConfig = remoteEvents.RetrieveGetScreenConfig(idGetScreenConfig);
-		remoteEvents.ClearResponses();
 	}
 
 	void GuiRemoteController::Finalize()

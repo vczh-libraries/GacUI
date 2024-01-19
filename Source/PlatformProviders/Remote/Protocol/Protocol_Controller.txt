@@ -46,7 +46,7 @@ struct FontConfig
     var supportedFonts : string[];
 }
 
-message GetFontConfig
+message ControllerGetFontConfig
 {
     response: FontConfig;
 }
@@ -59,16 +59,16 @@ struct ScreenConfig
     var scalingY : double;
 }
 
-message GetScreenConfig
+message ControllerGetScreenConfig
 {
     response: ScreenConfig;
 }
 
-message ConnectionEstablished
+message ControllerConnectionEstablished
 {
 }
 
-event Connect           {}
-event Disconnect        {}
-event Exit              {}
-event ScreenUpdated     { request: ScreenConfig; }
+event ControllerConnect           {}
+event ControllerDisconnect        {}
+event ControllerExit              {}
+event ControllerScreenUpdated     { request: ScreenConfig; }
