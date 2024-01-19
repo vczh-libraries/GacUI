@@ -98,5 +98,6 @@ GuiRemoteEvents (system)
 
 	void GuiRemoteEvents::OnScreenUpdated(const remoteprotocol::ScreenConfig& arguments)
 	{
+		remote->remoteScreenConfig = arguments;
 	}
 }

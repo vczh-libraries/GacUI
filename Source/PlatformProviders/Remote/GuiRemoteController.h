@@ -40,6 +40,9 @@ GuiRemoteController
 		GuiRemoteEvents					remoteEvent;
 		GuiRemoteWindow					remoteWindow;
 
+		remoteprotocol::FontConfig		remoteFontConfig;
+		remoteprotocol::ScreenConfig	remoteScreenConfig;
+
 		SharedCallbackService			callbackService;
 		SharedAsyncService				asyncService;
 		CursorMap						cursors;

@@ -46,17 +46,20 @@ GuiRemoteController::INativeResourceService
 
 		FontProperties GuiRemoteController::GetDefaultFont()
 		{
-			CHECK_FAIL(L"Not Implemented (from init)!");
+			return remoteFontConfig.defaultFont;
 		}
 
 		void GuiRemoteController::SetDefaultFont(const FontProperties& value)
 		{
-			CHECK_FAIL(L"Not Implemented!");
+			remoteFontConfig.defaultFont = value;
 		}
 
 		void GuiRemoteController::EnumerateFonts(collections::List<WString>& fonts)
 		{
-			CHECK_FAIL(L"Not Implemented (from init)!");
+			if (remoteFontConfig.supportedFonts)
+			{
+				CopyFrom(fonts, *remoteFontConfig.supportedFonts.Obj());
+			}
 		}
 			
 /***********************************************************************
@@ -134,12 +137,12 @@ GuiHostedController::INativeScreen
 
 	NativeRect GuiRemoteController::GetBounds()
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		return remoteScreenConfig.bounds;
 	}
 
 	NativeRect GuiRemoteController::GetClientBounds()
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		return remoteScreenConfig.clientBounds;
 	}
 
 	WString GuiRemoteController::GetName()
@@ -154,12 +157,12 @@ GuiHostedController::INativeScreen
 
 	double GuiRemoteController::GetScalingX()
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		return remoteScreenConfig.scalingX;
 	}
 
 	double GuiRemoteController::GetScalingY()
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		return remoteScreenConfig.scalingY;
 	}
 
 /***********************************************************************
@@ -277,7 +280,7 @@ GuiRemoteController::INativeController
 
 	WString GuiRemoteController::GetExecutablePath()
 	{
-		CHECK_FAIL(L"Not Implemented (from config)!");
+		return remoteProtocol->GetExecutablePath();
 	}
 		
 	INativeScreenService* GuiRemoteController::ScreenService()
