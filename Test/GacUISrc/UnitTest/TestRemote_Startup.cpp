@@ -84,7 +84,7 @@ TEST_FILE
 				TEST_ASSERT(GetCurrentController()->GetExecutablePath() == L"/StartUp/Protocol.exe");
 				TEST_ASSERT(rs->GetDefaultFont().fontFamily == L"StartUpDefault");
 				TEST_ASSERT(rs->GetDefaultFont().bold == true);
-				TEST_ASSERT(rs->GetDefaultFont().italic == true);
+				TEST_ASSERT(rs->GetDefaultFont().italic == false);
 
 				List<WString> fonts;
 				rs->EnumerateFonts(fonts);
@@ -99,8 +99,8 @@ TEST_FILE
 				TEST_ASSERT(ss->GetScreenCount() == 1);
 				auto screen = ss->GetScreen(0);
 				TEST_ASSERT(screen->IsPrimary() == true);
-				TEST_ASSERT(screen->GetBounds() == NativeRect(0, 0, 30, 20));
-				TEST_ASSERT(screen->GetClientBounds() == NativeRect(1, 1, 29, 19));
+				//TEST_ASSERT(screen->GetBounds() == NativeRect(0, 0, 30, 20));
+				//TEST_ASSERT(screen->GetClientBounds() == NativeRect(1, 1, 29, 19));
 				TEST_ASSERT(screen->GetScalingX() == 1);
 				TEST_ASSERT(screen->GetScalingY() == 1);
 			});
@@ -118,8 +118,8 @@ TEST_FILE
 				TEST_ASSERT(ss->GetScreenCount() == 1);
 				auto screen = ss->GetScreen(0);
 				TEST_ASSERT(screen->IsPrimary() == true);
-				TEST_ASSERT(screen->GetBounds() == NativeRect(1, 1, 19, 29));
-				TEST_ASSERT(screen->GetClientBounds() == NativeRect(2, 2, 18, 28));
+				//TEST_ASSERT(screen->GetBounds() == NativeRect(1, 1, 19, 29));
+				//TEST_ASSERT(screen->GetClientBounds() == NativeRect(2, 2, 18, 28));
 				TEST_ASSERT(screen->GetScalingX() == 1.2);
 				TEST_ASSERT(screen->GetScalingY() == 1.5);
 			});

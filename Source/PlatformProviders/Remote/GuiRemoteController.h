@@ -37,7 +37,7 @@ GuiRemoteController
 		using CursorMap = collections::Dictionary<INativeCursor::SystemCursorType, Ptr<INativeCursor>>;
 	protected:
 		IGuiRemoteProtocol*				remoteProtocol;
-		GuiRemoteEvents					remoteEvent;
+		GuiRemoteEvents					remoteEvents;
 		GuiRemoteWindow					remoteWindow;
 
 		remoteprotocol::FontConfig		remoteFontConfig;

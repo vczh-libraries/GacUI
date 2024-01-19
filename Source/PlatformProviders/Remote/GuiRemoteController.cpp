@@ -229,7 +229,7 @@ GuiRemoteController
 
 	GuiRemoteController::GuiRemoteController(IGuiRemoteProtocol* _remoteProtocol)
 		: remoteProtocol(_remoteProtocol)
-		, remoteEvent(this)
+		, remoteEvents(this)
 		, remoteWindow(this)
 	{
 	}
@@ -240,12 +240,13 @@ GuiRemoteController
 
 	void GuiRemoteController::Initialize()
 	{
-		vint idGetFontConfig = remoteEvent.RequestGetFontConfig();
-		vint idGetScreenConfig = remoteEvent.RequestGetScreenConfig();
+		remoteProtocol->Initialize(&remoteEvents);
+		vint idGetFontConfig = remoteEvents.RequestGetFontConfig();
+		vint idGetScreenConfig = remoteEvents.RequestGetScreenConfig();
 		remoteProtocol->Submit();
-		remoteFontConfig = remoteEvent.RetrieveGetFontConfig(idGetFontConfig);
-		remoteScreenConfig = remoteEvent.RetrieveGetScreenConfig(idGetScreenConfig);
-		remoteEvent.ClearResponses();
+		remoteFontConfig = remoteEvents.RetrieveGetFontConfig(idGetFontConfig);
+		remoteScreenConfig = remoteEvents.RetrieveGetScreenConfig(idGetScreenConfig);
+		remoteEvents.ClearResponses();
 	}
 
 	void GuiRemoteController::Finalize()
