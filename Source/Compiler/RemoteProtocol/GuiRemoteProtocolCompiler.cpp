@@ -206,9 +206,9 @@ GenerateRemoteProtocolHeaderFile
 
 		void Visit(GuiRpArrayType* node) override
 		{
-			writer.WriteString(L"::vl::collections::List<");
+			writer.WriteString(L"::vl::Ptr<::vl::collections::List<");
 			node->element->Accept(this);
-			writer.WriteString(L">");
+			writer.WriteString(L">>");
 		}
 	};
 

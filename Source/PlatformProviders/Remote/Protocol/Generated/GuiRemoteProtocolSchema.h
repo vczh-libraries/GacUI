@@ -13,7 +13,7 @@ namespace vl::presentation::remoteprotocol
 	struct FontConfig
 	{
 		::vl::presentation::FontProperties defaultFont;
-		::vl::collections::List<::vl::WString> supportedFonts;
+		::vl::Ptr<::vl::collections::List<::vl::WString>> supportedFonts;
 	};
 
 	struct ScreenConfig

@@ -19,12 +19,28 @@ GuiRemoteEvents
 GuiRemoteEvents (message)
 ***********************************************************************/
 
-	void GuiRemoteEvents::RespondGetFontConfig(vint id, const remoteprotocol::FontConfig& arguments)
-	{
-	}
+#define MESSAGE_NOREQ_RES(NAME, RESPONSE)\
+	void GuiRemoteEvents::Respond ## NAME(vint id, const RESPONSE& arguments)\
+	{\
+		response ## NAME.Add(id, arguments);\
+	}\
+	const RESPONSE& GuiRemoteEvents::Retrive ## NAME(vint id)\
+	{\
+		return response ## NAME[id];\
+	}\
 
-	void GuiRemoteEvents::RespondGetScreenConfig(vint id, const remoteprotocol::ScreenConfig& arguments)
+#define MESSAGE_REQ_RES(NAME, REQUEST, RESPONSE) MESSAGE_NOREQ_RES(NAME, RESPONSE)
+	GACUI_REMOTEPROTOCOL_MESSAGE_RESPONDS(MESSAGE_NOREQ_RES, MESSAGE_REQ_RES)
+#undef MESSAGE_REQ_RES
+#undef MESSAGE_NOREQ_RES
+
+	void GuiRemoteEvents::ClearResponses()
 	{
+#define MESSAGE_NOREQ_RES(NAME, RESPONSE)			response ## NAME.Clear();
+#define MESSAGE_REQ_RES(NAME, REQUEST, RESPONSE)	MESSAGE_NOREQ_RES(NAME, RESPONSE)
+		GACUI_REMOTEPROTOCOL_MESSAGE_RESPONDS(MESSAGE_NOREQ_RES, MESSAGE_REQ_RES)
+#undef MESSAGE_REQ_RES
+#undef MESSAGE_NOREQ_RES
 	}
 
 /***********************************************************************

@@ -27,7 +27,15 @@ GuiRemoteEvents
 	{
 		friend class GuiRemoteController;
 	protected:
-		GuiRemoteController*		remote;
+		GuiRemoteController*						remote;
+
+#define MESSAGE_NOREQ_RES(NAME, RESPONSE)\
+		collections::Dictionary<vint, RESPONSE>		response ## NAME;
+
+#define MESSAGE_REQ_RES(NAME, REQUEST, RESPONSE) MESSAGE_NOREQ_RES(NAME, RESPONSE)
+		GACUI_REMOTEPROTOCOL_MESSAGE_RESPONDS(MESSAGE_NOREQ_RES, MESSAGE_REQ_RES)
+#undef MESSAGE_REQ_RES
+#undef MESSAGE_NOREQ_RES
 
 	public:
 		GuiRemoteEvents(GuiRemoteController* _remote);
@@ -39,8 +47,16 @@ GuiRemoteEvents
 
 		// message
 
-		void	RespondGetFontConfig(vint id, const remoteprotocol::FontConfig& arguments) override;
-		void	RespondGetScreenConfig(vint id, const remoteprotocol::ScreenConfig& arguments) override;
+#define MESSAGE_NOREQ_RES(NAME, RESPONSE)\
+		void Respond ## NAME(vint id, const RESPONSE& arguments) override;\
+		const RESPONSE& Retrive ## NAME(vint id);\
+
+#define MESSAGE_REQ_RES(NAME, REQUEST, RESPONSE) MESSAGE_NOREQ_RES(NAME, RESPONSE)
+		GACUI_REMOTEPROTOCOL_MESSAGE_RESPONDS(MESSAGE_NOREQ_RES, MESSAGE_REQ_RES)
+#undef MESSAGE_REQ_RES
+#undef MESSAGE_NOREQ_RES
+
+		void	ClearResponses();
 
 		// controlling
 
