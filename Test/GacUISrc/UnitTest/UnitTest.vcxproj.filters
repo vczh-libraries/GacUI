@@ -72,6 +72,9 @@
     <ClCompile Include="TestRemote_Startup.cpp">
       <Filter>Source Files\Remote</Filter>
     </ClCompile>
+    <ClCompile Include="TestRemote_EmptyWindow.cpp">
+      <Filter>Source Files\Remote</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\..\Resources\Resource.FailedInstance.Ctor3.xml.txt">
@@ -206,6 +209,9 @@
   <ItemGroup>
     <ClInclude Include="TestCompositions.h">
       <Filter>Source Files\Compositions</Filter>
+    </ClInclude>
+    <ClInclude Include="TestRemote.h">
+      <Filter>Source Files\Remote</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

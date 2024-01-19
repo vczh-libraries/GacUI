@@ -118,6 +118,8 @@ GuiRemoteEvents (events)
 	void GuiRemoteEvents::OnControllerConnect()
 	{
 		remote->OnControllerConnect();
+		remote->remoteMessages.RequestControllerConnectionEstablished();
+		remote->remoteMessages.Submit();
 	}
 
 	void GuiRemoteEvents::OnControllerDisconnect()

@@ -193,6 +193,7 @@
     <ClCompile Include="TestPtrDescriptableObject.cpp" />
     <ClCompile Include="TestQueryParser.cpp" />
     <ClCompile Include="TestReflectionTypeList.cpp" />
+    <ClCompile Include="TestRemote_EmptyWindow.cpp" />
     <ClCompile Include="TestRemote_Startup.cpp" />
     <ClCompile Include="TestRemote_UnitTestFramework.cpp" />
     <ClCompile Include="TestResource.cpp" />
@@ -250,6 +251,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="TestCompositions.h" />
+    <ClInclude Include="TestRemote.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

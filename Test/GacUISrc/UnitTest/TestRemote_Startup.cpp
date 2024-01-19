@@ -1,14 +1,6 @@
-#include "../../../Source/GacUI.h"
-#include "../../../Source/PlatformProviders/Remote/GuiRemoteController.h"
+#include "TestRemote.h"
 
-extern void SetGuiMainProxy(void(*proxy)());
-
-using namespace vl;
-using namespace vl::collections;
-using namespace vl::presentation;
-using namespace vl::presentation::remoteprotocol;
-
-class StartUpProtocol : public Object, public IGuiRemoteProtocol
+class StartUpProtocol : public NotImplementedProtocolBase
 {
 public:
 	static StartUpProtocol*		instance;
@@ -137,16 +129,6 @@ TEST_FILE
 
 			StartUpProtocol::instance->events->OnControllerDisconnect();
 			StartUpProtocol::instance->events->OnControllerExit();
-		});
-		SetupRemoteNativeController(&protocol);
-		SetGuiMainProxy(nullptr);
-	});
-	
-	TEST_CATEGORY(L"Create one window and exit immediately")
-	{
-		StartUpProtocol protocol;
-		SetGuiMainProxy([]()
-		{
 		});
 		SetupRemoteNativeController(&protocol);
 		SetGuiMainProxy(nullptr);
