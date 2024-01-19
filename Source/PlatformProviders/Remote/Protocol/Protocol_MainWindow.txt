@@ -2,6 +2,7 @@ struct WindowSizingConfig
 {
     var bounds: NativeRect;
     var clientBounds: NativeRect;
+    var customFramePadding: NativeMargin;
 }
 
 message WindowGetBounds

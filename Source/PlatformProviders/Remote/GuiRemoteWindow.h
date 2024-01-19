@@ -29,11 +29,13 @@ GuiRemoteWindow
 		IGuiRemoteProtocol*									remoteProtocol;
 		GuiRemoteEvents&									remoteEvents;
 		collections::List<INativeWindowListener*>			listeners;
+		INativeWindow::WindowMode							windowMode = INativeWindow::Normal;
 
 		remoteprotocol::WindowSizingConfig					remoteWindowSizingConfig;
-
 		vint												dpiX = 96;
 		vint												dpiY = 96;
+
+		bool												customFrameMode = false;
 
 	public:
 		GuiRemoteWindow(GuiRemoteController* _remote);

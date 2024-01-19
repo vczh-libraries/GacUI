@@ -72,6 +72,7 @@ public:
 		WindowSizingConfig response;
 		response.bounds = { 0,0,50,40 };
 		response.clientBounds = { 1,1,49,39 };
+		response.customFramePadding = { 8,8,8,8 };
 		events->RespondWindowGetBounds(id, response);
 	}
 };
@@ -109,7 +110,7 @@ TEST_FILE
 				TEST_ASSERT(ss->GetScreenCount() == 1);
 				auto screen = ss->GetScreen(0);
 				TEST_ASSERT(screen->IsPrimary() == true);
-				TEST_ASSERT(screen->GetBounds() == NativeRect(0, 0, 50, 40));
+				TEST_ASSERT(screen->GetBounds() == NativeRect(0, 0, 48, 38));
 				TEST_ASSERT(screen->GetClientBounds() == NativeRect(0, 0, 48, 38));
 				TEST_ASSERT(screen->GetScalingX() == 1);
 				TEST_ASSERT(screen->GetScalingY() == 1);
@@ -128,7 +129,7 @@ TEST_FILE
 				TEST_ASSERT(ss->GetScreenCount() == 1);
 				auto screen = ss->GetScreen(0);
 				TEST_ASSERT(screen->IsPrimary() == true);
-				TEST_ASSERT(screen->GetBounds() == NativeRect(0, 0, 50, 40));
+				TEST_ASSERT(screen->GetBounds() == NativeRect(0, 0, 48, 38));
 				TEST_ASSERT(screen->GetClientBounds() == NativeRect(0, 0, 48, 38));
 				TEST_ASSERT(screen->GetScalingX() == 1.2);
 				TEST_ASSERT(screen->GetScalingY() == 1.5);

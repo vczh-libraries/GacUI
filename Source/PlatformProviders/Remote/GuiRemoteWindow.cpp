@@ -37,12 +37,14 @@ GuiRemoteWindow
 	{
 		dpiX = (vint)(arguments.scalingX * 96);
 		dpiY = (vint)(arguments.scalingY * 96);
+		for (auto l : listeners) l->DpiChanged(true);
+		for (auto l : listeners) l->DpiChanged(false);
 	}
 
 	void GuiRemoteWindow::OnWindowBoundsUpdated(const remoteprotocol::WindowSizingConfig& arguments)
 	{
 		remoteWindowSizingConfig = arguments;
-		// TODO: fire events
+		for (auto l : listeners) l->Moved();
 	}
 
 	bool GuiRemoteWindow::IsActivelyRefreshing()
@@ -117,7 +119,12 @@ GuiRemoteWindow
 
 	NativeRect GuiRemoteWindow::GetClientBoundsInScreen()
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		auto bounds = remoteWindowSizingConfig.clientBounds;
+		bounds.x1.value += remoteWindowSizingConfig.bounds.x1.value;
+		bounds.y1.value += remoteWindowSizingConfig.bounds.y1.value;
+		bounds.x2.value += remoteWindowSizingConfig.bounds.x1.value;
+		bounds.y2.value += remoteWindowSizingConfig.bounds.y1.value;
+		return bounds;
 	}
 
 	WString GuiRemoteWindow::GetTitle()
@@ -152,37 +159,37 @@ GuiRemoteWindow
 
 	INativeWindow* GuiRemoteWindow::GetParent()
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		return nullptr;
 	}
 
 	void GuiRemoteWindow::SetParent(INativeWindow* parent)
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		CHECK_FAIL(L"vl::presentation::GuiRemoteWindow::SetParent(INativeWindow*)#GuiHostedController is not supposed to call this.");
 	}
 
 	INativeWindow::WindowMode GuiRemoteWindow::GetWindowMode()
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		return windowMode;
 	}
 
 	void GuiRemoteWindow::EnableCustomFrameMode()
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		customFrameMode = true;
 	}
 
 	void GuiRemoteWindow::DisableCustomFrameMode()
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		customFrameMode = false;
 	}
 
 	bool GuiRemoteWindow::IsCustomFrameModeEnabled()
 	{
-		return true;
+		return customFrameMode;
 	}
 
 	NativeMargin GuiRemoteWindow::GetCustomFramePadding()
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		return remoteWindowSizingConfig.customFramePadding;
 	}
 
 	Ptr<GuiImageData> GuiRemoteWindow::GetIcon()

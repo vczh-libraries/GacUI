@@ -181,26 +181,21 @@ GuiRemoteController::INativeWindowService
 
 	INativeWindow* GuiRemoteController::CreateNativeWindow(INativeWindow::WindowMode windowMode)
 	{
-		CHECK_ERROR(!windowCreated, L"vl::presentation::GuiRemoteController::CreateNativeWindow(INativeWindow::WindowMode)#GuiHostedController is not supposed to call this function twice.");
+		CHECK_ERROR(!windowCreated, L"vl::presentation::GuiRemoteController::CreateNativeWindow(INativeWindow::WindowMode)#GuiHostedController is not supposed to call this function for twice.");
 		windowCreated = true;
+		remoteWindow.windowMode = windowMode;
 		callbackService.InvokeNativeWindowCreated(&remoteWindow);
 		return &remoteWindow;
 	}
 
 	void GuiRemoteController::DestroyNativeWindow(INativeWindow* window)
 	{
-		CHECK_ERROR(!windowDestroyed, L"vl::presentation::GuiRemoteController::CreateNativeWindow(INativeWindow::WindowMode)#GuiHostedController is not supposed to call this function twice.");
+		CHECK_ERROR(!windowDestroyed, L"vl::presentation::GuiRemoteController::CreateNativeWindow(INativeWindow::WindowMode)#GuiHostedController is not supposed to call this function for twice.");
 		windowDestroyed = true;
 
-		for (auto listener : remoteWindow.listeners)
-		{
-			listener->Destroying();
-		}
+		for (auto l : remoteWindow.listeners) l->Destroying();
 		callbackService.InvokeNativeWindowDestroying(&remoteWindow);
-		for (auto listener : remoteWindow.listeners)
-		{
-			listener->Destroyed();
-		}
+		for (auto l : remoteWindow.listeners) l->Destroyed();
 	}
 
 	INativeWindow* GuiRemoteController::GetMainWindow()

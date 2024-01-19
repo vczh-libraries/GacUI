@@ -28,6 +28,7 @@ namespace vl::presentation::remoteprotocol
 	{
 		::vl::presentation::NativeRect bounds;
 		::vl::presentation::NativeRect clientBounds;
+		::vl::presentation::NativeMargin customFramePadding;
 	};
 
 #define GACUI_REMOTEPROTOCOL_MESSAGES(NOREQ_NORES, NOREQ_RES, REQ_NORES, REQ_RES)\

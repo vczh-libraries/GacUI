@@ -27,6 +27,15 @@ struct NativeRect
     var y2 : NativeCoordinate;
 }
 
+[@Cpp(::vl::presentation::NativeMargin)]
+struct NativeMargin
+{
+    var left : NativeCoordinate;
+    var top : NativeCoordinate;
+    var right : NativeCoordinate;
+    var bottom : NativeCoordinate;
+}
+
 [@Cpp(::vl::presentation::FontProperties)]
 struct FontProperties
 {
