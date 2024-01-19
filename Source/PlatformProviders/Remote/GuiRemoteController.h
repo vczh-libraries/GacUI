@@ -109,6 +109,9 @@ GuiRemoteController
 		GuiRemoteController(IGuiRemoteProtocol* _remoteProtocol);
 		~GuiRemoteController();
 
+		void							Initialize();
+		void							Finalize();
+
 		// =============================================================
 		// INativeController
 		// =============================================================

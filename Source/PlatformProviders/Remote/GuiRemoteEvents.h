@@ -60,7 +60,7 @@ GuiRemoteEvents
 
 #define MESSAGE_NOREQ_RES(NAME, RESPONSE)\
 		void Respond ## NAME(vint id, const RESPONSE& arguments) override;\
-		const RESPONSE& Retrive ## NAME(vint id);\
+		const RESPONSE& Retrieve ## NAME(vint id);\
 
 #define MESSAGE_REQ_RES(NAME, REQUEST, RESPONSE) MESSAGE_NOREQ_RES(NAME, RESPONSE)
 		GACUI_REMOTEPROTOCOL_MESSAGE_RESPONDS(MESSAGE_NOREQ_RES, MESSAGE_REQ_RES)

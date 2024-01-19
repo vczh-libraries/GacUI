@@ -17,9 +17,11 @@ int SetupRemoteNativeController(vl::presentation::IGuiRemoteProtocol* protocol)
 	SetNativeController(hostedController);
 	{
 		// TODO: register element renderers;
+		remoteController->Initialize();
 		hostedController->Initialize();
 		GuiApplicationMain();
 		hostedController->Finalize();
+		remoteController->Finalize();
 	}
 	SetNativeController(nullptr);
 	delete hostedController;

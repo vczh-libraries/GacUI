@@ -58,7 +58,7 @@ GuiRemoteEvents (message)
 	{\
 		response ## NAME.Add(id, arguments);\
 	}\
-	const RESPONSE& GuiRemoteEvents::Retrive ## NAME(vint id)\
+	const RESPONSE& GuiRemoteEvents::Retrieve ## NAME(vint id)\
 	{\
 		return response ## NAME[id];\
 	}\
