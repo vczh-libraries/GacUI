@@ -28,6 +28,7 @@ GuiRemoteEvents
 		friend class GuiRemoteController;
 	protected:
 		GuiRemoteController*						remote;
+		vint										id = 0;
 
 #define MESSAGE_NOREQ_RES(NAME, RESPONSE)\
 		collections::Dictionary<vint, RESPONSE>		response ## NAME;
@@ -46,6 +47,16 @@ GuiRemoteEvents
 		// =============================================================
 
 		// message
+
+#define MESSAGE_NOREQ_NORES(NAME)					void Request ## NAME();
+#define MESSAGE_NOREQ_RES(NAME, RESPONSE)			vint Request ## NAME();
+#define MESSAGE_REQ_NORES(NAME, REQUEST)			void Request ## NAME(const REQUEST& arguments);
+#define MESSAGE_REQ_RES(NAME, REQUEST, RESPONSE)	vint Request ## NAME(const REQUEST& arguments);
+		GACUI_REMOTEPROTOCOL_MESSAGES(MESSAGE_NOREQ_NORES, MESSAGE_NOREQ_RES, MESSAGE_REQ_NORES, MESSAGE_REQ_RES)
+#undef MESSAGE_REQ_RES
+#undef MESSAGE_REQ_NORES
+#undef MESSAGE_NOREQ_RES
+#undef MESSAGE_NOREQ_NORES
 
 #define MESSAGE_NOREQ_RES(NAME, RESPONSE)\
 		void Respond ## NAME(vint id, const RESPONSE& arguments) override;\
