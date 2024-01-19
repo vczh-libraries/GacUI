@@ -32,11 +32,13 @@ GuiRemoteController
 		, protected INativeScreen
 		, protected INativeWindowService
 	{
+		friend class GuiRemoteMessages;
 		friend class GuiRemoteEvents;
 		friend class GuiRemoteWindow;
 		using CursorMap = collections::Dictionary<INativeCursor::SystemCursorType, Ptr<INativeCursor>>;
 	protected:
 		IGuiRemoteProtocol*				remoteProtocol;
+		GuiRemoteMessages				remoteMessages;
 		GuiRemoteEvents					remoteEvents;
 		GuiRemoteWindow					remoteWindow;
 

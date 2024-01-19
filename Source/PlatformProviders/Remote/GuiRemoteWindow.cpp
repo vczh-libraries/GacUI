@@ -8,7 +8,7 @@ GuiRemoteWindow
 
 	GuiRemoteWindow::GuiRemoteWindow(GuiRemoteController* _remote)
 		: remote(_remote)
-		, remoteProtocol(_remote->remoteProtocol)
+		, remoteMessages(_remote->remoteMessages)
 		, remoteEvents(_remote->remoteEvents)
 	{
 	}
@@ -19,10 +19,10 @@ GuiRemoteWindow
 
 	void GuiRemoteWindow::OnControllerConnect()
 	{
-		vint idGetBounds = remoteEvents.RequestWindowGetBounds();
-		remoteProtocol->Submit();
-		OnWindowBoundsUpdated(remoteEvents.RetrieveWindowGetBounds(idGetBounds));
-		remoteEvents.ClearResponses();
+		vint idGetBounds = remoteMessages.RequestWindowGetBounds();
+		remoteMessages.Submit();
+		OnWindowBoundsUpdated(remoteMessages.RetrieveWindowGetBounds(idGetBounds));
+		remoteMessages.ClearResponses();
 	}
 
 	void GuiRemoteWindow::OnControllerDisconnect()

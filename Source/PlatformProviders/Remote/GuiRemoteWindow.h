@@ -26,7 +26,7 @@ GuiRemoteWindow
 		friend class GuiRemoteController;
 	protected:
 		GuiRemoteController*								remote;
-		IGuiRemoteProtocol*									remoteProtocol;
+		GuiRemoteMessages&									remoteMessages;
 		GuiRemoteEvents&									remoteEvents;
 		collections::List<INativeWindowListener*>			listeners;
 		INativeWindow::WindowMode							windowMode = INativeWindow::Normal;

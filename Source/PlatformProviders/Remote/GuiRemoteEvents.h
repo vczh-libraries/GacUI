@@ -20,10 +20,10 @@ namespace vl::presentation
 	class GuiRemoteController;
 
 /***********************************************************************
-GuiRemoteEvents
+GuiRemoteMessages
 ***********************************************************************/
 
-	class GuiRemoteEvents : public Object, public virtual IGuiRemoteProtocolEvents
+	class GuiRemoteMessages : public Object
 	{
 		friend class GuiRemoteController;
 	protected:
@@ -39,12 +39,11 @@ GuiRemoteEvents
 #undef MESSAGE_NOREQ_RES
 
 	public:
-		GuiRemoteEvents(GuiRemoteController* _remote);
-		~GuiRemoteEvents();
+		GuiRemoteMessages(GuiRemoteController* _remote);
+		~GuiRemoteMessages();
 
-		// =============================================================
-		// IGuiRemoteProtocolEvents
-		// =============================================================
+		void	Submit();
+		void	ClearResponses();
 
 		// messages
 
@@ -59,9 +58,36 @@ GuiRemoteEvents
 #undef MESSAGE_NOREQ_NORES
 
 #define MESSAGE_NOREQ_RES(NAME, RESPONSE)\
-		void Respond ## NAME(vint id, const RESPONSE& arguments) override;\
+		void Respond ## NAME(vint id, const RESPONSE& arguments);\
 		const RESPONSE& Retrieve ## NAME(vint id);\
 
+#define MESSAGE_REQ_RES(NAME, REQUEST, RESPONSE) MESSAGE_NOREQ_RES(NAME, RESPONSE)
+		GACUI_REMOTEPROTOCOL_MESSAGE_RESPONDS(MESSAGE_NOREQ_RES, MESSAGE_REQ_RES)
+#undef MESSAGE_REQ_RES
+#undef MESSAGE_NOREQ_RES
+	};
+
+/***********************************************************************
+GuiRemoteEvents
+***********************************************************************/
+
+	class GuiRemoteEvents : public Object, public virtual IGuiRemoteProtocolEvents
+	{
+		friend class GuiRemoteController;
+	protected:
+		GuiRemoteController*						remote;
+
+	public:
+		GuiRemoteEvents(GuiRemoteController* _remote);
+		~GuiRemoteEvents();
+
+		// =============================================================
+		// IGuiRemoteProtocolEvents
+		// =============================================================
+
+		// messages
+
+#define MESSAGE_NOREQ_RES(NAME, RESPONSE)		void Respond ## NAME(vint id, const RESPONSE& arguments) override;
 #define MESSAGE_REQ_RES(NAME, REQUEST, RESPONSE) MESSAGE_NOREQ_RES(NAME, RESPONSE)
 		GACUI_REMOTEPROTOCOL_MESSAGE_RESPONDS(MESSAGE_NOREQ_RES, MESSAGE_REQ_RES)
 #undef MESSAGE_REQ_RES
