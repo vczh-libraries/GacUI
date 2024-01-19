@@ -8,11 +8,41 @@ GuiRemoteWindow
 
 	GuiRemoteWindow::GuiRemoteWindow(GuiRemoteController* _remote)
 		: remote(_remote)
+		, remoteProtocol(_remote->remoteProtocol)
+		, remoteEvents(_remote->remoteEvents)
 	{
 	}
 
 	GuiRemoteWindow::~GuiRemoteWindow()
 	{
+	}
+
+	void GuiRemoteWindow::OnControllerConnect()
+	{
+		vint idGetBounds = remoteEvents.RequestWindowGetBounds();
+		remoteProtocol->Submit();
+		OnWindowBoundsUpdated(remoteEvents.RetrieveWindowGetBounds(idGetBounds));
+		remoteEvents.ClearResponses();
+	}
+
+	void GuiRemoteWindow::OnControllerDisconnect()
+	{
+	}
+
+	void GuiRemoteWindow::OnControllerExit()
+	{
+	}
+
+	void GuiRemoteWindow::OnControllerScreenUpdated(const remoteprotocol::ScreenConfig& arguments)
+	{
+		dpiX = (vint)(arguments.scalingX * 96);
+		dpiY = (vint)(arguments.scalingY * 96);
+	}
+
+	void GuiRemoteWindow::OnWindowBoundsUpdated(const remoteprotocol::WindowSizingConfig& arguments)
+	{
+		remoteWindowSizingConfig = arguments;
+		// TODO: fire events
 	}
 
 	bool GuiRemoteWindow::IsActivelyRefreshing()
@@ -27,37 +57,47 @@ GuiRemoteWindow
 
 	Point GuiRemoteWindow::Convert(NativePoint value)
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		return Point((vint)value.x.value * 96 / dpiX, (vint)value.y.value * 96 / dpiY);
 	}
 
 	NativePoint GuiRemoteWindow::Convert(Point value)
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		return NativePoint(value.x * dpiX / 96, value.y * dpiY / 96);
 	}
 
 	Size GuiRemoteWindow::Convert(NativeSize value)
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		return Size((vint)value.x.value * 96 / dpiX, (vint)value.y.value * 96 / dpiY);
 	}
 
 	NativeSize GuiRemoteWindow::Convert(Size value)
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		return NativeSize(value.x * dpiX / 96, value.y * dpiY / 96);
 	}
 
 	Margin GuiRemoteWindow::Convert(NativeMargin value)
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		return Margin(
+			(vint)value.left.value * 96 / dpiX,
+			(vint)value.top.value * 96 / dpiY,
+			(vint)value.right.value * 96 / dpiX,
+			(vint)value.bottom.value * 96 / dpiY
+		);
 	}
 
 	NativeMargin GuiRemoteWindow::Convert(Margin value)
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		return NativeMargin(
+			(vint)value.left * dpiX / 96,
+			(vint)value.top * dpiY / 96,
+			(vint)value.right * dpiX / 96,
+			(vint)value.bottom * dpiY / 96
+		);
 	}
 
 	NativeRect GuiRemoteWindow::GetBounds()
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		return remoteWindowSizingConfig.bounds;
 	}
 
 	void GuiRemoteWindow::SetBounds(const NativeRect& bounds)
@@ -67,7 +107,7 @@ GuiRemoteWindow
 
 	NativeSize GuiRemoteWindow::GetClientSize()
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		return remoteWindowSizingConfig.clientBounds.GetSize();
 	}
 
 	void GuiRemoteWindow::SetClientSize(NativeSize size)
@@ -137,7 +177,7 @@ GuiRemoteWindow
 
 	bool GuiRemoteWindow::IsCustomFrameModeEnabled()
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		return true;
 	}
 
 	NativeMargin GuiRemoteWindow::GetCustomFramePadding()

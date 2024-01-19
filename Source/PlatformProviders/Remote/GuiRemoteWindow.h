@@ -26,11 +26,24 @@ GuiRemoteWindow
 		friend class GuiRemoteController;
 	protected:
 		GuiRemoteController*								remote;
+		IGuiRemoteProtocol*									remoteProtocol;
+		GuiRemoteEvents&									remoteEvents;
 		collections::List<INativeWindowListener*>			listeners;
+
+		remoteprotocol::WindowSizingConfig					remoteWindowSizingConfig;
+
+		vint												dpiX = 96;
+		vint												dpiY = 96;
 
 	public:
 		GuiRemoteWindow(GuiRemoteController* _remote);
 		~GuiRemoteWindow();
+
+		void							OnControllerConnect();
+		void							OnControllerDisconnect();
+		void							OnControllerExit();
+		void							OnControllerScreenUpdated(const remoteprotocol::ScreenConfig& arguments);
+		void							OnWindowBoundsUpdated(const remoteprotocol::WindowSizingConfig& arguments);
 
 		// =============================================================
 		// INativeWindow

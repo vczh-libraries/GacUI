@@ -112,6 +112,11 @@ GuiRemoteController
 		void							Initialize();
 		void							Finalize();
 
+		void							OnControllerConnect();
+		void							OnControllerDisconnect();
+		void							OnControllerExit();
+		void							OnControllerScreenUpdated(const remoteprotocol::ScreenConfig& arguments);
+
 		// =============================================================
 		// INativeController
 		// =============================================================

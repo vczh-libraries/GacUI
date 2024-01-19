@@ -69,7 +69,9 @@ public:
 
 	void RequestWindowGetBounds(vint id) override
 	{
-		NativeRect response = { 0,0,50,40 };
+		WindowSizingConfig response;
+		response.bounds = { 0,0,50,40 };
+		response.clientBounds = { 1,1,49,39 };
 		events->RespondWindowGetBounds(id, response);
 	}
 };
@@ -108,7 +110,7 @@ TEST_FILE
 				auto screen = ss->GetScreen(0);
 				TEST_ASSERT(screen->IsPrimary() == true);
 				TEST_ASSERT(screen->GetBounds() == NativeRect(0, 0, 50, 40));
-				TEST_ASSERT(screen->GetClientBounds() == NativeRect(0, 0, 50, 40));
+				TEST_ASSERT(screen->GetClientBounds() == NativeRect(0, 0, 48, 38));
 				TEST_ASSERT(screen->GetScalingX() == 1);
 				TEST_ASSERT(screen->GetScalingY() == 1);
 			});
@@ -127,7 +129,7 @@ TEST_FILE
 				auto screen = ss->GetScreen(0);
 				TEST_ASSERT(screen->IsPrimary() == true);
 				TEST_ASSERT(screen->GetBounds() == NativeRect(0, 0, 50, 40));
-				TEST_ASSERT(screen->GetClientBounds() == NativeRect(0, 0, 50, 40));
+				TEST_ASSERT(screen->GetClientBounds() == NativeRect(0, 0, 48, 38));
 				TEST_ASSERT(screen->GetScalingX() == 1.2);
 				TEST_ASSERT(screen->GetScalingY() == 1.5);
 			});

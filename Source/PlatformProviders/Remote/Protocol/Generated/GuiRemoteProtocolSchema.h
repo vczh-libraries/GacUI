@@ -24,17 +24,24 @@ namespace vl::presentation::remoteprotocol
 		double scalingY;
 	};
 
+	struct WindowSizingConfig
+	{
+		::vl::presentation::NativeRect bounds;
+		::vl::presentation::NativeRect clientBounds;
+	};
+
 #define GACUI_REMOTEPROTOCOL_MESSAGES(NOREQ_NORES, NOREQ_RES, REQ_NORES, REQ_RES)\
 	NOREQ_RES(ControllerGetFontConfig, vl::presentation::remoteprotocol::FontConfig)\
 	NOREQ_RES(ControllerGetScreenConfig, vl::presentation::remoteprotocol::ScreenConfig)\
 	NOREQ_NORES(ControllerConnectionEstablished)\
-	NOREQ_RES(WindowGetBounds, ::vl::presentation::NativeRect)\
+	NOREQ_RES(WindowGetBounds, vl::presentation::remoteprotocol::WindowSizingConfig)\
 
 #define GACUI_REMOTEPROTOCOL_EVENTS(NOREQ, REQ)\
 	NOREQ(ControllerConnect)\
 	NOREQ(ControllerDisconnect)\
 	NOREQ(ControllerExit)\
 	REQ(ControllerScreenUpdated, vl::presentation::remoteprotocol::ScreenConfig)\
+	REQ(WindowBoundsUpdated, vl::presentation::remoteprotocol::WindowSizingConfig)\
 
 }
 

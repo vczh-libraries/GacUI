@@ -83,24 +83,26 @@ GuiRemoteEvents (events)
 
 	void GuiRemoteEvents::OnControllerConnect()
 	{
-		vint idGetFontConfig = RequestControllerGetFontConfig();
-		vint idGetScreenConfig = RequestControllerGetScreenConfig();
-		remote->remoteProtocol->Submit();
-		remote->remoteFontConfig = RetrieveControllerGetFontConfig(idGetFontConfig);
-		remote->remoteScreenConfig = RetrieveControllerGetScreenConfig(idGetScreenConfig);
-		ClearResponses();
+		remote->OnControllerConnect();
 	}
 
 	void GuiRemoteEvents::OnControllerDisconnect()
 	{
+		remote->OnControllerDisconnect();
 	}
 
 	void GuiRemoteEvents::OnControllerExit()
 	{
+		remote->OnControllerExit();
 	}
 
 	void GuiRemoteEvents::OnControllerScreenUpdated(const remoteprotocol::ScreenConfig& arguments)
 	{
-		remote->remoteScreenConfig = arguments;
+		remote->OnControllerScreenUpdated(arguments);
+	}
+
+	void GuiRemoteEvents::OnWindowBoundsUpdated(const remoteprotocol::WindowSizingConfig& arguments)
+	{
+		remote->remoteWindow.OnWindowBoundsUpdated(arguments);
 	}
 }

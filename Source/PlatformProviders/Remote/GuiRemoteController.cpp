@@ -247,6 +247,32 @@ GuiRemoteController
 	{
 	}
 
+	void GuiRemoteController::OnControllerConnect()
+	{
+		vint idGetFontConfig = remoteEvents.RequestControllerGetFontConfig();
+		vint idGetScreenConfig = remoteEvents.RequestControllerGetScreenConfig();
+		remoteProtocol->Submit();
+		remoteFontConfig = remoteEvents.RetrieveControllerGetFontConfig(idGetFontConfig);
+		remoteScreenConfig = remoteEvents.RetrieveControllerGetScreenConfig(idGetScreenConfig);
+		remoteEvents.ClearResponses();
+		remoteWindow.OnControllerConnect();
+	}
+
+	void GuiRemoteController::OnControllerDisconnect()
+	{
+		remoteWindow.OnControllerDisconnect();
+	}
+
+	void GuiRemoteController::OnControllerExit()
+	{
+		remoteWindow.OnControllerExit();
+	}
+
+	void GuiRemoteController::OnControllerScreenUpdated(const remoteprotocol::ScreenConfig& arguments)
+	{
+		remoteScreenConfig = arguments;
+	}
+
 /***********************************************************************
 GuiRemoteController::INativeController
 ***********************************************************************/

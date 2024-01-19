@@ -1,4 +1,12 @@
+struct WindowSizingConfig
+{
+    var bounds: NativeRect;
+    var clientBounds: NativeRect;
+}
+
 message WindowGetBounds
 {
-    response: NativeRect;
+    response: WindowSizingConfig;
 }
+
+event WindowBoundsUpdated       { request: WindowSizingConfig; }
