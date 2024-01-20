@@ -43,8 +43,13 @@ GuiRemoteWindow
 
 	void GuiRemoteWindow::OnWindowBoundsUpdated(const remoteprotocol::WindowSizingConfig& arguments)
 	{
-		remoteWindowSizingConfig = arguments;
-		for (auto l : listeners) l->Moved();
+		if (remoteWindowSizingConfig.bounds != arguments.bounds ||
+			remoteWindowSizingConfig.clientBounds != arguments.clientBounds ||
+			remoteWindowSizingConfig.customFramePadding != arguments.customFramePadding)
+		{
+			remoteWindowSizingConfig = arguments;
+			for (auto l : listeners) l->Moved();
+		}
 	}
 
 	bool GuiRemoteWindow::IsActivelyRefreshing()

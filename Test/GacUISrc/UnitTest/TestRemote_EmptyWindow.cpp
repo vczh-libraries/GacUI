@@ -68,6 +68,22 @@ public:
 		events->RespondWindowGetBounds(id, sizingConfig);
 	}
 
+	void RequestWindowNotifySetTitle(const ::vl::WString& arguments) override
+	{
+	}
+
+	void RequestWindowNotifySetEnabled(const bool& arguments) override
+	{
+	}
+
+	void RequestWindowNotifySetTopMost(const bool& arguments) override
+	{
+	}
+
+	void RequestWindowNotifySetShowInTaskBar(const bool& arguments) override
+	{
+	}
+
 	void RequestWindowSetBounds(vint id, const ::vl::presentation::NativeRect& arguments) override
 	{
 		sizingConfig.bounds = arguments;
@@ -82,48 +98,39 @@ public:
 		events->RespondWindowGetBounds(id, sizingConfig);
 	}
 
-	void RequestWindowNotifySetTitle(const ::vl::WString& arguments) override
+	void RequestWindowSetCustomFrameMode(vint id, const bool& arguments) override
 	{
+		events->RespondWindowGetBounds(id, sizingConfig);
 	}
 
-	void RequestWindowNotifySetEnabled(const bool& arguments) override
+	void RequestWindowSetMaximizedBox(vint id, const bool& arguments) override
 	{
+		events->RespondWindowGetBounds(id, sizingConfig);
 	}
 
-	void RequestWindowNotifySetTopMost(const bool& arguments) override
+	void RequestWindowSetMinimizedBox(vint id, const bool& arguments) override
 	{
+		events->RespondWindowGetBounds(id, sizingConfig);
 	}
 
-	void RequestWindowNotifySetMaximizedBox(const bool& arguments) override
+	void RequestWindowSetBorder(vint id, const bool& arguments) override
 	{
+		events->RespondWindowGetBounds(id, sizingConfig);
 	}
 
-	void RequestWindowNotifySetMinimizedBox(const bool& arguments) override
+	void RequestWindowSetSizeBox(vint id, const bool& arguments) override
 	{
+		events->RespondWindowGetBounds(id, sizingConfig);
 	}
 
-	void RequestWindowNotifySetBorder(const bool& arguments) override
+	void RequestWindowSetIconVisible(vint id, const bool& arguments) override
 	{
+		events->RespondWindowGetBounds(id, sizingConfig);
 	}
 
-	void RequestWindowNotifySetSizeBox(const bool& arguments) override
+	void RequestWindowSetTitleBar(vint id, const bool& arguments) override
 	{
-	}
-
-	void RequestWindowNotifySetIconVisible(const bool& arguments) override
-	{
-	}
-
-	void RequestWindowNotifySetTitleBar(const bool& arguments) override
-	{
-	}
-
-	void RequestWindowNotifySetShowInTaskBar(const bool& arguments) override
-	{
-	}
-
-	void RequestWindowNotifySetCustomFrameMode(const bool& arguments) override
-	{
+		events->RespondWindowGetBounds(id, sizingConfig);
 	}
 };
 EmptyWindowProtocol* EmptyWindowProtocol::instance = nullptr;
