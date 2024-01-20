@@ -33,10 +33,13 @@ GuiRemoteWindow
 		remoteMessages.Submit();
 		OnWindowBoundsUpdated(remoteMessages.RetrieveWindowGetBounds(idGetBounds));
 		remoteMessages.ClearResponses();
+
+		// TODO: sync styles and status
 	}
 
 	void GuiRemoteWindow::OnControllerDisconnect()
 	{
+		// TODO: reset styles and status if necessary
 	}
 
 	void GuiRemoteWindow::OnControllerExit()
@@ -327,32 +330,40 @@ GuiRemoteWindow
 
 	void GuiRemoteWindow::ShowInTaskBar()
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		if (styleShowInTaskBar != true)
+		{
+			styleShowInTaskBar = true;
+			remoteMessages.RequestWindowNotifySetShowInTaskBar(true);
+		}
 	}
 
 	void GuiRemoteWindow::HideInTaskBar()
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		if (styleShowInTaskBar != false)
+		{
+			styleShowInTaskBar = false;
+			remoteMessages.RequestWindowNotifySetShowInTaskBar(false);
+		}
 	}
 
 	bool GuiRemoteWindow::IsAppearedInTaskBar()
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		return styleShowInTaskBar;
 	}
 
 	void GuiRemoteWindow::EnableActivate()
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		CHECK_FAIL(L"vl::presentation::GuiRemoteWindow::EnableActivate()#GuiHostedController is not supposed to call this.");
 	}
 
 	void GuiRemoteWindow::DisableActivate()
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		CHECK_FAIL(L"vl::presentation::GuiRemoteWindow::EnableActivate()#GuiHostedController is not supposed to call this.");
 	}
 
 	bool GuiRemoteWindow::IsEnabledActivate()
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		return true;
 	}
 
 	bool GuiRemoteWindow::RequireCapture()
@@ -367,77 +378,81 @@ GuiRemoteWindow
 
 	bool GuiRemoteWindow::IsCapturing()
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		return statusCapturing;
 	}
 
 	bool GuiRemoteWindow::GetMaximizedBox()
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		return styleMaximizedBox;
 	}
 
 	void GuiRemoteWindow::SetMaximizedBox(bool visible)
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		SYNC_REMOTE_WINDOW_STYLE(MaximizedBox, visible);
 	}
 
 	bool GuiRemoteWindow::GetMinimizedBox()
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		return styleMinimizedBox;
 	}
 
 	void GuiRemoteWindow::SetMinimizedBox(bool visible)
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		SYNC_REMOTE_WINDOW_STYLE(MinimizedBox, visible);
 	}
 
 	bool GuiRemoteWindow::GetBorder()
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		return styleBorder;
 	}
 
 	void GuiRemoteWindow::SetBorder(bool visible)
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		SYNC_REMOTE_WINDOW_STYLE(Border, visible);
 	}
 
 	bool GuiRemoteWindow::GetSizeBox()
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		return styleSizeBox;
 	}
 
 	void GuiRemoteWindow::SetSizeBox(bool visible)
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		SYNC_REMOTE_WINDOW_STYLE(SizeBox, visible);
 	}
 
 	bool GuiRemoteWindow::GetIconVisible()
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		return styleIconVisible;
 	}
 
 	void GuiRemoteWindow::SetIconVisible(bool visible)
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		SYNC_REMOTE_WINDOW_STYLE(IconVisible, visible);
 	}
 
 	bool GuiRemoteWindow::GetTitleBar()
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		return styleTitleBar;
 	}
 
 	void GuiRemoteWindow::SetTitleBar(bool visible)
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		SYNC_REMOTE_WINDOW_STYLE(TitleBar, visible);
 	}
 
 	bool GuiRemoteWindow::GetTopMost()
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		return styleTopMost;
 	}
 
 	void GuiRemoteWindow::SetTopMost(bool topmost)
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		if (styleTopMost != topmost)
+		{
+			styleTopMost = topmost;
+			remoteMessages.RequestWindowNotifySetTopMost(topmost);
+		}
 	}
 
 	void GuiRemoteWindow::SupressAlt()

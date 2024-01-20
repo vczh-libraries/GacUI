@@ -41,7 +41,7 @@ GuiRemoteWindow
 		Ptr<GuiImageData>				styleIcon;
 		bool							styleEnabled = true;
 		bool							styleVisible = false;
-		bool							styleTopmost = false;
+		bool							styleTopMost = false;
 
 		bool							styleMaximizedBox = true;
 		bool							styleMinimizedBox = true;
@@ -54,6 +54,7 @@ GuiRemoteWindow
 		
 		INativeWindow::WindowSizeState	statusSizeState = INativeWindow::Restored;
 		bool							statusActivated = false;
+		bool							statusCapturing = false;
 
 	public:
 		GuiRemoteWindow(GuiRemoteController* _remote);

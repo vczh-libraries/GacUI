@@ -174,7 +174,6 @@ TEST_FILE
 				ws->DestroyNativeWindow(window);
 			});
 
-			EmptyWindowProtocol::instance->events->OnControllerDisconnect();
 			EmptyWindowProtocol::instance->events->OnControllerExit();
 		});
 		SetupRemoteNativeController(&protocol);

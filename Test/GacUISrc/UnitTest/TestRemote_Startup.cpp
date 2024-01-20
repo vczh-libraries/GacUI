@@ -127,7 +127,6 @@ TEST_FILE
 				TEST_ASSERT(screen->GetScalingY() == 1.5);
 			});
 
-			StartUpProtocol::instance->events->OnControllerDisconnect();
 			StartUpProtocol::instance->events->OnControllerExit();
 		});
 		SetupRemoteNativeController(&protocol);
@@ -158,7 +157,6 @@ TEST_FILE
 				GetCurrentController()->WindowService()->DestroyNativeWindow(window2);
 			});
 
-			StartUpProtocol::instance->events->OnControllerDisconnect();
 			StartUpProtocol::instance->events->OnControllerExit();
 		});
 		SetupRemoteNativeController(&protocol);
