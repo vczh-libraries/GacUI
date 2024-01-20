@@ -211,10 +211,19 @@ GuiRemoteController::INativeWindowService
 	void GuiRemoteController::Run(INativeWindow* window)
 	{
 		// TODO:
+		// Make many WindowSetXXX to WindowNotifySetXXX without response, set dirty mark if necessary
+		// Mark some messages (without response) and events (without request) with [@Override], means if multiple of same messages/events are sent only the last one count
+		// Window's GetBounds and GetClientSize will check a dirty mark and send message asking for size if necessary
+		// Using [@Override] to generate a IGuiRemoteProtocol (only for unit test and later becomes part of a standard implementation):
+		//   Only send accumulated messages when Submit() is called
+		//   If a batch of messages are sent, results will be sent back when both conditions are satisfies:
+		//     1) All messages are processed
+		//     2) All messages are responded
+		//   Error will happen if new batch of messages come before sending back results of the last batch
 		// consider making a loop
 		// there is a test to decide whether going into a new loop or just quit
 		// inside the loop RunOneCycle is called
-		// in RunOneCycle, it calls a callback (not request) to protocol
+		// in RunOneCycle, it calls a callback (not request) to protocol (to post IO messages in UI thread)
 		// RunOneCycle will just return if it sees a mark to tell Run to stop
 		CHECK_FAIL(L"Not Implemented!");
 		remoteMessages.RequestControllerConnectionStopped();
