@@ -116,7 +116,8 @@ GuiRemoteController
 
 		void							OnControllerConnect();
 		void							OnControllerDisconnect();
-		void							OnControllerExit();
+		void							OnControllerRequestExit();
+		void							OnControllerForceExit();
 		void							OnControllerScreenUpdated(const remoteprotocol::ScreenConfig& arguments);
 
 		// =============================================================

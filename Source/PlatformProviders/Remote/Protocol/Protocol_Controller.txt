@@ -73,11 +73,11 @@ message ControllerGetScreenConfig
     response: ScreenConfig;
 }
 
-message ControllerConnectionEstablished
-{
-}
+message ControllerConnectionEstablished {}
+message ControllerConnectionStopped     {}
 
-event ControllerConnect           {}
-event ControllerDisconnect        {}
-event ControllerExit              {}
-event ControllerScreenUpdated     { request: ScreenConfig; }
+event ControllerConnect         {}
+event ControllerDisconnect      {}
+event ControllerRequestExit     {}
+event ControllerForceExit       {}
+event ControllerScreenUpdated   { request: ScreenConfig; }

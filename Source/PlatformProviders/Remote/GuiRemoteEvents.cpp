@@ -127,9 +127,14 @@ GuiRemoteEvents (events)
 		remote->OnControllerDisconnect();
 	}
 
-	void GuiRemoteEvents::OnControllerExit()
+	void GuiRemoteEvents::OnControllerRequestExit()
 	{
-		remote->OnControllerExit();
+		remote->OnControllerRequestExit();
+	}
+
+	void GuiRemoteEvents::OnControllerForceExit()
+	{
+		remote->OnControllerForceExit();
 	}
 
 	void GuiRemoteEvents::OnControllerScreenUpdated(const remoteprotocol::ScreenConfig& arguments)

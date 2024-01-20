@@ -127,7 +127,7 @@ TEST_FILE
 				TEST_ASSERT(screen->GetScalingY() == 1.5);
 			});
 
-			StartUpProtocol::instance->events->OnControllerExit();
+			StartUpProtocol::instance->events->OnControllerForceExit();
 		});
 		SetupRemoteNativeController(&protocol);
 		SetGuiMainProxy(nullptr);
@@ -157,7 +157,7 @@ TEST_FILE
 				GetCurrentController()->WindowService()->DestroyNativeWindow(window2);
 			});
 
-			StartUpProtocol::instance->events->OnControllerExit();
+			StartUpProtocol::instance->events->OnControllerForceExit();
 		});
 		SetupRemoteNativeController(&protocol);
 		SetGuiMainProxy(nullptr);

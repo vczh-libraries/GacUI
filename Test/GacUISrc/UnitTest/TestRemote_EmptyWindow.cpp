@@ -5,6 +5,9 @@ class EmptyWindowProtocol : public NotImplementedProtocolBase
 public:
 	static EmptyWindowProtocol*	instance;
 	IGuiRemoteProtocolEvents*	events = nullptr;
+	bool						connectionEstablished = false;
+	bool						connectionStopped = false;
+	bool						connectionStoppedAndSubmitted = false;
 	WindowSizingConfig			sizingConfig;
 
 	EmptyWindowProtocol()
@@ -29,8 +32,8 @@ public:
 
 	void Submit() override
 	{
-		// respond to messages immediately in this test
-		// no need to submit
+		TEST_ASSERT(!connectionStoppedAndSubmitted);
+		if (connectionStopped) connectionStoppedAndSubmitted = true;
 	}
 
 	WString GetExecutablePath() override
@@ -61,6 +64,14 @@ public:
 
 	void RequestControllerConnectionEstablished() override
 	{
+		TEST_ASSERT(!connectionEstablished);
+		connectionEstablished = true;
+	}
+
+	void RequestControllerConnectionStopped() override
+	{
+		TEST_ASSERT(!connectionStopped);
+		connectionStopped = true;
 	}
 
 	void RequestWindowGetBounds(vint id) override
@@ -162,7 +173,12 @@ TEST_FILE
 		EmptyWindowProtocol protocol;
 		SetGuiMainProxy([]()
 		{
-			EmptyWindowProtocol::instance->events->OnControllerConnect();
+			TEST_CASE(L"Establish connection")
+			{
+				TEST_ASSERT(!EmptyWindowProtocol::instance->connectionEstablished);
+				EmptyWindowProtocol::instance->events->OnControllerConnect();
+				TEST_ASSERT(EmptyWindowProtocol::instance->connectionEstablished);
+			});
 
 			TEST_CASE(L"Create and destroy a window")
 			{
@@ -173,8 +189,6 @@ TEST_FILE
 				ws->Run(window);
 				ws->DestroyNativeWindow(window);
 			});
-
-			EmptyWindowProtocol::instance->events->OnControllerExit();
 		});
 		SetupRemoteNativeController(&protocol);
 		SetGuiMainProxy(nullptr);

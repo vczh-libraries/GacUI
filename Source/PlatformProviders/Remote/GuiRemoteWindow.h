@@ -62,7 +62,6 @@ GuiRemoteWindow
 
 		void							OnControllerConnect();
 		void							OnControllerDisconnect();
-		void							OnControllerExit();
 		void							OnControllerScreenUpdated(const remoteprotocol::ScreenConfig& arguments);
 		void							OnWindowBoundsUpdated(const remoteprotocol::WindowSizingConfig& arguments);
 

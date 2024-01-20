@@ -35,6 +35,7 @@ namespace vl::presentation::remoteprotocol
 	NOREQ_RES(ControllerGetFontConfig, vl::presentation::remoteprotocol::FontConfig)\
 	NOREQ_RES(ControllerGetScreenConfig, vl::presentation::remoteprotocol::ScreenConfig)\
 	NOREQ_NORES(ControllerConnectionEstablished)\
+	NOREQ_NORES(ControllerConnectionStopped)\
 	NOREQ_RES(WindowGetBounds, vl::presentation::remoteprotocol::WindowSizingConfig)\
 	REQ_NORES(WindowNotifySetTitle, ::vl::WString)\
 	REQ_NORES(WindowNotifySetEnabled, bool)\
@@ -58,7 +59,8 @@ namespace vl::presentation::remoteprotocol
 #define GACUI_REMOTEPROTOCOL_EVENTS(NOREQ, REQ)\
 	NOREQ(ControllerConnect)\
 	NOREQ(ControllerDisconnect)\
-	NOREQ(ControllerExit)\
+	NOREQ(ControllerRequestExit)\
+	NOREQ(ControllerForceExit)\
 	REQ(ControllerScreenUpdated, vl::presentation::remoteprotocol::ScreenConfig)\
 	REQ(WindowBoundsUpdated, vl::presentation::remoteprotocol::WindowSizingConfig)\
 

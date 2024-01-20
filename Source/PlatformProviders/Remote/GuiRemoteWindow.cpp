@@ -42,10 +42,6 @@ GuiRemoteWindow
 		// TODO: reset styles and status if necessary
 	}
 
-	void GuiRemoteWindow::OnControllerExit()
-	{
-	}
-
 	void GuiRemoteWindow::OnControllerScreenUpdated(const remoteprotocol::ScreenConfig& arguments)
 	{
 		if (scalingX != arguments.scalingX || scalingY != arguments.scalingY)

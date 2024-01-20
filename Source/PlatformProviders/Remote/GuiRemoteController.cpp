@@ -211,6 +211,8 @@ GuiRemoteController::INativeWindowService
 	void GuiRemoteController::Run(INativeWindow* window)
 	{
 		CHECK_FAIL(L"Not Implemented!");
+		remoteMessages.RequestControllerConnectionStopped();
+		remoteMessages.Submit();
 	}
 
 	bool GuiRemoteController::RunOneCycle()
@@ -259,9 +261,12 @@ GuiRemoteController
 		remoteWindow.OnControllerDisconnect();
 	}
 
-	void GuiRemoteController::OnControllerExit()
+	void GuiRemoteController::OnControllerRequestExit()
 	{
-		remoteWindow.OnControllerExit();
+	}
+
+	void GuiRemoteController::OnControllerForceExit()
+	{
 	}
 
 	void GuiRemoteController::OnControllerScreenUpdated(const remoteprotocol::ScreenConfig& arguments)

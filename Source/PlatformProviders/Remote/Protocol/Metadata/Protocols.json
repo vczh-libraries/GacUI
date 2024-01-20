@@ -281,35 +281,46 @@
             }
         }
     }, {
-        "$ast": { "type": "MessageDecl", "codeRange": {"start": {"row": 75, "column": 0, "index": 1447}, "end": {"row": 77, "column": 0, "index": 1491}, "codeIndex": 0}},
+        "$ast": { "type": "MessageDecl", "codeRange": {"start": {"row": 75, "column": 0, "index": 1447}, "end": {"row": 75, "column": 41, "index": 1488}, "codeIndex": 0}},
         "attributes": [],
         "name": { "value": "ControllerConnectionEstablished", "codeRange": {"start": {"row": 75, "column": 8, "index": 1455}, "end": {"row": 75, "column": 38, "index": 1485}, "codeIndex": 0}},
         "request": null,
         "response": null
     }, {
-        "$ast": { "type": "EventDecl", "codeRange": {"start": {"row": 79, "column": 0, "index": 1496}, "end": {"row": 79, "column": 35, "index": 1531}, "codeIndex": 0}},
+        "$ast": { "type": "MessageDecl", "codeRange": {"start": {"row": 76, "column": 0, "index": 1491}, "end": {"row": 76, "column": 41, "index": 1532}, "codeIndex": 0}},
         "attributes": [],
-        "name": { "value": "ControllerConnect", "codeRange": {"start": {"row": 79, "column": 6, "index": 1502}, "end": {"row": 79, "column": 22, "index": 1518}, "codeIndex": 0}},
+        "name": { "value": "ControllerConnectionStopped", "codeRange": {"start": {"row": 76, "column": 8, "index": 1499}, "end": {"row": 76, "column": 34, "index": 1525}, "codeIndex": 0}},
+        "request": null,
+        "response": null
+    }, {
+        "$ast": { "type": "EventDecl", "codeRange": {"start": {"row": 78, "column": 0, "index": 1537}, "end": {"row": 78, "column": 33, "index": 1570}, "codeIndex": 0}},
+        "attributes": [],
+        "name": { "value": "ControllerConnect", "codeRange": {"start": {"row": 78, "column": 6, "index": 1543}, "end": {"row": 78, "column": 22, "index": 1559}, "codeIndex": 0}},
         "request": null
     }, {
-        "$ast": { "type": "EventDecl", "codeRange": {"start": {"row": 80, "column": 0, "index": 1534}, "end": {"row": 80, "column": 35, "index": 1569}, "codeIndex": 0}},
+        "$ast": { "type": "EventDecl", "codeRange": {"start": {"row": 79, "column": 0, "index": 1573}, "end": {"row": 79, "column": 33, "index": 1606}, "codeIndex": 0}},
         "attributes": [],
-        "name": { "value": "ControllerDisconnect", "codeRange": {"start": {"row": 80, "column": 6, "index": 1540}, "end": {"row": 80, "column": 25, "index": 1559}, "codeIndex": 0}},
+        "name": { "value": "ControllerDisconnect", "codeRange": {"start": {"row": 79, "column": 6, "index": 1579}, "end": {"row": 79, "column": 25, "index": 1598}, "codeIndex": 0}},
         "request": null
     }, {
-        "$ast": { "type": "EventDecl", "codeRange": {"start": {"row": 81, "column": 0, "index": 1572}, "end": {"row": 81, "column": 35, "index": 1607}, "codeIndex": 0}},
+        "$ast": { "type": "EventDecl", "codeRange": {"start": {"row": 80, "column": 0, "index": 1609}, "end": {"row": 80, "column": 33, "index": 1642}, "codeIndex": 0}},
         "attributes": [],
-        "name": { "value": "ControllerExit", "codeRange": {"start": {"row": 81, "column": 6, "index": 1578}, "end": {"row": 81, "column": 19, "index": 1591}, "codeIndex": 0}},
+        "name": { "value": "ControllerRequestExit", "codeRange": {"start": {"row": 80, "column": 6, "index": 1615}, "end": {"row": 80, "column": 26, "index": 1635}, "codeIndex": 0}},
         "request": null
     }, {
-        "$ast": { "type": "EventDecl", "codeRange": {"start": {"row": 82, "column": 0, "index": 1610}, "end": {"row": 82, "column": 59, "index": 1669}, "codeIndex": 0}},
+        "$ast": { "type": "EventDecl", "codeRange": {"start": {"row": 81, "column": 0, "index": 1645}, "end": {"row": 81, "column": 33, "index": 1678}, "codeIndex": 0}},
         "attributes": [],
-        "name": { "value": "ControllerScreenUpdated", "codeRange": {"start": {"row": 82, "column": 6, "index": 1616}, "end": {"row": 82, "column": 28, "index": 1638}, "codeIndex": 0}},
+        "name": { "value": "ControllerForceExit", "codeRange": {"start": {"row": 81, "column": 6, "index": 1651}, "end": {"row": 81, "column": 24, "index": 1669}, "codeIndex": 0}},
+        "request": null
+    }, {
+        "$ast": { "type": "EventDecl", "codeRange": {"start": {"row": 82, "column": 0, "index": 1681}, "end": {"row": 82, "column": 57, "index": 1738}, "codeIndex": 0}},
+        "attributes": [],
+        "name": { "value": "ControllerScreenUpdated", "codeRange": {"start": {"row": 82, "column": 6, "index": 1687}, "end": {"row": 82, "column": 28, "index": 1709}, "codeIndex": 0}},
         "request": {
-            "$ast": { "type": "EventRequest", "codeRange": {"start": {"row": 82, "column": 36, "index": 1646}, "end": {"row": 82, "column": 57, "index": 1667}, "codeIndex": 0}},
+            "$ast": { "type": "EventRequest", "codeRange": {"start": {"row": 82, "column": 34, "index": 1715}, "end": {"row": 82, "column": 55, "index": 1736}, "codeIndex": 0}},
             "type": {
-                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 82, "column": 45, "index": 1655}, "end": {"row": 82, "column": 56, "index": 1666}, "codeIndex": 0}},
-                "name": { "value": "ScreenConfig", "codeRange": {"start": {"row": 82, "column": 45, "index": 1655}, "end": {"row": 82, "column": 56, "index": 1666}, "codeIndex": 0}}
+                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 82, "column": 43, "index": 1724}, "end": {"row": 82, "column": 54, "index": 1735}, "codeIndex": 0}},
+                "name": { "value": "ScreenConfig", "codeRange": {"start": {"row": 82, "column": 43, "index": 1724}, "end": {"row": 82, "column": 54, "index": 1735}, "codeIndex": 0}}
             }
         }
     }, {

@@ -99,7 +99,8 @@ GuiRemoteEvents
 
 		void	OnControllerConnect() override;
 		void	OnControllerDisconnect() override;
-		void	OnControllerExit() override;
+		void	OnControllerRequestExit() override;
+		void	OnControllerForceExit() override;
 		void	OnControllerScreenUpdated(const remoteprotocol::ScreenConfig& arguments) override;
 
 		void	OnWindowBoundsUpdated(const remoteprotocol::WindowSizingConfig& arguments) override;
