@@ -133,4 +133,35 @@ TEST_FILE
 		SetupRemoteNativeController(&protocol);
 		SetGuiMainProxy(nullptr);
 	});
+
+	TEST_CATEGORY(L"Create windows without calling INativeWindowService::Run")
+	{
+		StartUpProtocol protocol;
+		SetGuiMainProxy([]()
+		{
+			// by not calling INativeWindowService::Run
+			// non of them will be connected to the native window
+			// so no interaction with the native window will happen
+			StartUpProtocol::instance->events->OnControllerConnect();
+
+			TEST_CASE(L"Create and destroy a window")
+			{
+				auto window = GetCurrentController()->WindowService()->CreateNativeWindow(INativeWindow::Normal);
+				GetCurrentController()->WindowService()->DestroyNativeWindow(window);
+			});
+
+			TEST_CASE(L"Create and destroy two windows")
+			{
+				auto window1 = GetCurrentController()->WindowService()->CreateNativeWindow(INativeWindow::Normal);
+				auto window2 = GetCurrentController()->WindowService()->CreateNativeWindow(INativeWindow::Normal);
+				GetCurrentController()->WindowService()->DestroyNativeWindow(window1);
+				GetCurrentController()->WindowService()->DestroyNativeWindow(window2);
+			});
+
+			StartUpProtocol::instance->events->OnControllerDisconnect();
+			StartUpProtocol::instance->events->OnControllerExit();
+		});
+		SetupRemoteNativeController(&protocol);
+		SetGuiMainProxy(nullptr);
+	});
 }

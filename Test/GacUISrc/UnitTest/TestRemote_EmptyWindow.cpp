@@ -35,10 +35,23 @@ public:
 
 	void RequestControllerGetFontConfig(vint id) override
 	{
+		FontConfig response;
+		response.defaultFont.fontFamily = L"One";
+		response.supportedFonts = Ptr(new List<WString>());
+		response.supportedFonts->Add(L"One");
+		response.supportedFonts->Add(L"Two");
+		response.supportedFonts->Add(L"Three");
+		events->RespondControllerGetFontConfig(id, response);
 	}
 
 	void RequestControllerGetScreenConfig(vint id) override
 	{
+		ScreenConfig response;
+		response.bounds = { 0,0,640,480};
+		response.clientBounds = { 10,10,630,470 };
+		response.scalingX = 1;
+		response.scalingY = 1;
+		events->RespondControllerGetScreenConfig(id, response);
 	}
 
 	void RequestControllerConnectionEstablished() override
@@ -47,6 +60,11 @@ public:
 
 	void RequestWindowGetBounds(vint id) override
 	{
+		WindowSizingConfig response;
+		response.bounds = { 0,0,0,0 };
+		response.clientBounds = { 0,0,0,0 };
+		response.customFramePadding = { 8,8,8,8 };
+		events->RespondWindowGetBounds(id, response);
 	}
 };
 EmptyWindowProtocol* EmptyWindowProtocol::instance = nullptr;
@@ -58,6 +76,20 @@ TEST_FILE
 		EmptyWindowProtocol protocol;
 		SetGuiMainProxy([]()
 		{
+			EmptyWindowProtocol::instance->events->OnControllerConnect();
+
+			TEST_CASE(L"Create and destroy a window")
+			{
+				auto ws = GetCurrentController()->WindowService();
+				auto window = ws->CreateNativeWindow(INativeWindow::Normal);
+				window->SetTitle(L"EmptyWindow");
+				window->SetClientSize({ 100,200 });
+				ws->Run(window);
+				ws->DestroyNativeWindow(window);
+			});
+
+			EmptyWindowProtocol::instance->events->OnControllerDisconnect();
+			EmptyWindowProtocol::instance->events->OnControllerExit();
 		});
 		SetupRemoteNativeController(&protocol);
 		SetGuiMainProxy(nullptr);
