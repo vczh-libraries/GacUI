@@ -132,6 +132,26 @@ public:
 	{
 		events->RespondWindowGetBounds(id, sizingConfig);
 	}
+
+	void RequestWindowNotifyActivate() override
+	{
+	}
+
+	void RequestWindowNotifyShowActivated() override
+	{
+	}
+
+	void RequestWindowNotifyShowDeactivated() override
+	{
+	}
+
+	void RequestWindowNotifyShowMaximized() override
+	{
+	}
+
+	void RequestWindowNotifyShowMinimized() override
+	{
+	}
 };
 EmptyWindowProtocol* EmptyWindowProtocol::instance = nullptr;
 

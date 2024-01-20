@@ -25,4 +25,10 @@ message WindowSetSizeBox                { request: bool;          response: Wind
 message WindowSetIconVisible            { request: bool;          response: WindowSizingConfig; }
 message WindowSetTitleBar               { request: bool;          response: WindowSizingConfig; }
 
+message WindowNotifyActivate            {}
+message WindowNotifyShowActivated       {}
+message WindowNotifyShowDeactivated     {}
+message WindowNotifyShowMaximized       {}
+message WindowNotifyShowMinimized       {}
+
 event WindowBoundsUpdated               { request: WindowSizingConfig; }

@@ -6,6 +6,16 @@ namespace vl::presentation
 GuiRemoteWindow
 ***********************************************************************/
 
+#define SYNC_REMOTE_WINDOW_STYLE(STYLE, VALUE)\
+		if (style ## STYLE != true)\
+		{\
+			style ## STYLE = true;\
+			vint id = remoteMessages.RequestWindowSet ## STYLE(VALUE);\
+			remoteMessages.Submit();\
+			OnWindowBoundsUpdated(remoteMessages.RetrieveWindowSet ## STYLE(id));\
+			remoteMessages.ClearResponses();\
+		}\
+
 	GuiRemoteWindow::GuiRemoteWindow(GuiRemoteController* _remote)
 		: remote(_remote)
 		, remoteMessages(_remote->remoteMessages)
@@ -35,10 +45,13 @@ GuiRemoteWindow
 
 	void GuiRemoteWindow::OnControllerScreenUpdated(const remoteprotocol::ScreenConfig& arguments)
 	{
-		dpiX = (vint)(arguments.scalingX * 96);
-		dpiY = (vint)(arguments.scalingY * 96);
-		for (auto l : listeners) l->DpiChanged(true);
-		for (auto l : listeners) l->DpiChanged(false);
+		if (scalingX != arguments.scalingX || scalingY != arguments.scalingY)
+		{
+			scalingX = arguments.scalingX;
+			scalingY = arguments.scalingY;
+			for (auto l : listeners) l->DpiChanged(true);
+			for (auto l : listeners) l->DpiChanged(false);
+		}
 	}
 
 	void GuiRemoteWindow::OnWindowBoundsUpdated(const remoteprotocol::WindowSizingConfig& arguments)
@@ -64,41 +77,41 @@ GuiRemoteWindow
 
 	Point GuiRemoteWindow::Convert(NativePoint value)
 	{
-		return Point((vint)value.x.value * 96 / dpiX, (vint)value.y.value * 96 / dpiY);
+		return Point((vint)(value.x.value / scalingX), (vint)(value.y.value / scalingY));
 	}
 
 	NativePoint GuiRemoteWindow::Convert(Point value)
 	{
-		return NativePoint(value.x * dpiX / 96, value.y * dpiY / 96);
+		return NativePoint((vint)(value.x * scalingX), (vint)(value.y * scalingY));
 	}
 
 	Size GuiRemoteWindow::Convert(NativeSize value)
 	{
-		return Size((vint)value.x.value * 96 / dpiX, (vint)value.y.value * 96 / dpiY);
+		return Size((vint)(value.x.value / scalingX), (vint)(value.y.value / scalingY));
 	}
 
 	NativeSize GuiRemoteWindow::Convert(Size value)
 	{
-		return NativeSize(value.x * dpiX / 96, value.y * dpiY / 96);
+		return NativeSize((vint)(value.x * scalingX), (vint)(value.y * scalingY));
 	}
 
 	Margin GuiRemoteWindow::Convert(NativeMargin value)
 	{
 		return Margin(
-			(vint)value.left.value * 96 / dpiX,
-			(vint)value.top.value * 96 / dpiY,
-			(vint)value.right.value * 96 / dpiX,
-			(vint)value.bottom.value * 96 / dpiY
+			(vint)(value.left.value / scalingX),
+			(vint)(value.top.value / scalingY),
+			(vint)(value.right.value / scalingX),
+			(vint)(value.bottom.value / scalingY)
 		);
 	}
 
 	NativeMargin GuiRemoteWindow::Convert(Margin value)
 	{
 		return NativeMargin(
-			(vint)value.left * dpiX / 96,
-			(vint)value.top * dpiY / 96,
-			(vint)value.right * dpiX / 96,
-			(vint)value.bottom * dpiY / 96
+			(vint)(value.left * scalingX),
+			(vint)(value.top * scalingY),
+			(vint)(value.right * scalingX),
+			(vint)(value.bottom * scalingY)
 		);
 	}
 
@@ -109,7 +122,13 @@ GuiRemoteWindow
 
 	void GuiRemoteWindow::SetBounds(const NativeRect& bounds)
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		if (remoteWindowSizingConfig.bounds != bounds)
+		{
+			vint id = remoteMessages.RequestWindowSetBounds(bounds);
+			remoteMessages.Submit();
+			OnWindowBoundsUpdated(remoteMessages.RetrieveWindowSetBounds(id));
+			remoteMessages.ClearResponses();
+		}
 	}
 
 	NativeSize GuiRemoteWindow::GetClientSize()
@@ -119,7 +138,13 @@ GuiRemoteWindow
 
 	void GuiRemoteWindow::SetClientSize(NativeSize size)
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		if (remoteWindowSizingConfig.clientBounds.GetSize() != size)
+		{
+			vint id = remoteMessages.RequestWindowSetClientSize(size);
+			remoteMessages.Submit();
+			OnWindowBoundsUpdated(remoteMessages.RetrieveWindowSetClientSize(id));
+			remoteMessages.ClearResponses();
+		}
 	}
 
 	NativeRect GuiRemoteWindow::GetClientBoundsInScreen()
@@ -134,32 +159,40 @@ GuiRemoteWindow
 
 	WString GuiRemoteWindow::GetTitle()
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		return styleTitle;
 	}
 
 	void GuiRemoteWindow::SetTitle(const WString& title)
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		if (styleTitle != title)
+		{
+			styleTitle = title;
+			remoteMessages.RequestWindowNotifySetTitle(title);
+		}
 	}
 
 	INativeCursor* GuiRemoteWindow::GetWindowCursor()
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		if (!styleCursor)
+		{
+			styleCursor = remote->ResourceService()->GetDefaultSystemCursor();
+		}
+		return styleCursor;
 	}
 
 	void GuiRemoteWindow::SetWindowCursor(INativeCursor* cursor)
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		styleCursor = cursor;
 	}
 
 	NativePoint GuiRemoteWindow::GetCaretPoint()
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		return styleCaret;
 	}
 
 	void GuiRemoteWindow::SetCaretPoint(NativePoint point)
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		styleCaret = point;
 	}
 
 	INativeWindow* GuiRemoteWindow::GetParent()
@@ -179,17 +212,17 @@ GuiRemoteWindow
 
 	void GuiRemoteWindow::EnableCustomFrameMode()
 	{
-		customFrameMode = true;
+		SYNC_REMOTE_WINDOW_STYLE(CustomFrameMode, true);
 	}
 
 	void GuiRemoteWindow::DisableCustomFrameMode()
 	{
-		customFrameMode = false;
+		SYNC_REMOTE_WINDOW_STYLE(CustomFrameMode, false);
 	}
 
 	bool GuiRemoteWindow::IsCustomFrameModeEnabled()
 	{
-		return customFrameMode;
+		return styleCustomFrameMode;
 	}
 
 	NativeMargin GuiRemoteWindow::GetCustomFramePadding()
@@ -199,17 +232,17 @@ GuiRemoteWindow
 
 	Ptr<GuiImageData> GuiRemoteWindow::GetIcon()
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		return styleIcon;
 	}
 
 	void GuiRemoteWindow::SetIcon(Ptr<GuiImageData> icon)
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		styleIcon = icon;
 	}
 
 	INativeWindow::WindowSizeState GuiRemoteWindow::GetSizeState()
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		return statusSizeState;
 	}
 
 	void GuiRemoteWindow::Show()
@@ -249,32 +282,47 @@ GuiRemoteWindow
 
 	void GuiRemoteWindow::Enable()
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		if (styleEnabled != true)
+		{
+			styleEnabled = true;
+			remoteMessages.RequestWindowNotifySetEnabled(true);
+			for (auto l : listeners) l->Enabled();
+		}
 	}
 
 	void GuiRemoteWindow::Disable()
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		if (styleEnabled != false)
+		{
+			styleEnabled = false;
+			remoteMessages.RequestWindowNotifySetEnabled(false);
+			for (auto l : listeners) l->Disabled();
+		}
 	}
 
 	bool GuiRemoteWindow::IsEnabled()
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		return styleEnabled;
 	}
 
 	void GuiRemoteWindow::SetActivate()
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		if (statusActivated != true)
+		{
+			statusActivated = true;
+			remoteMessages.RequestWindowNotifyActivate();
+			for (auto l : listeners) l->RenderingAsActivated();
+		}
 	}
 
 	bool GuiRemoteWindow::IsActivated()
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		return statusActivated;
 	}
 
 	bool GuiRemoteWindow::IsRenderingAsActivated()
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		return statusActivated;
 	}
 
 	void GuiRemoteWindow::ShowInTaskBar()
@@ -427,4 +475,6 @@ GuiRemoteWindow
 	{
 		CHECK_FAIL(L"Not Implemented!");
 	}
+
+#undef SYNC_REMOTE_WINDOW_STYLE
 }

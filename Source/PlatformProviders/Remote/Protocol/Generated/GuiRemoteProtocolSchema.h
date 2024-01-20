@@ -49,6 +49,11 @@ namespace vl::presentation::remoteprotocol
 	REQ_RES(WindowSetSizeBox, bool, vl::presentation::remoteprotocol::WindowSizingConfig)\
 	REQ_RES(WindowSetIconVisible, bool, vl::presentation::remoteprotocol::WindowSizingConfig)\
 	REQ_RES(WindowSetTitleBar, bool, vl::presentation::remoteprotocol::WindowSizingConfig)\
+	NOREQ_NORES(WindowNotifyActivate)\
+	NOREQ_NORES(WindowNotifyShowActivated)\
+	NOREQ_NORES(WindowNotifyShowDeactivated)\
+	NOREQ_NORES(WindowNotifyShowMaximized)\
+	NOREQ_NORES(WindowNotifyShowMinimized)\
 
 #define GACUI_REMOTEPROTOCOL_EVENTS(NOREQ, REQ)\
 	NOREQ(ControllerConnect)\

@@ -561,14 +561,44 @@
             }
         }
     }, {
-        "$ast": { "type": "EventDecl", "codeRange": {"start": {"row": 27, "column": 0, "index": 1347}, "end": {"row": 27, "column": 71, "index": 1418}, "codeIndex": 1}},
+        "$ast": { "type": "MessageDecl", "codeRange": {"start": {"row": 27, "column": 0, "index": 1347}, "end": {"row": 27, "column": 41, "index": 1388}, "codeIndex": 1}},
         "attributes": [],
-        "name": { "value": "WindowBoundsUpdated", "codeRange": {"start": {"row": 27, "column": 6, "index": 1353}, "end": {"row": 27, "column": 24, "index": 1371}, "codeIndex": 1}},
+        "name": { "value": "WindowNotifyActivate", "codeRange": {"start": {"row": 27, "column": 8, "index": 1355}, "end": {"row": 27, "column": 27, "index": 1374}, "codeIndex": 1}},
+        "request": null,
+        "response": null
+    }, {
+        "$ast": { "type": "MessageDecl", "codeRange": {"start": {"row": 28, "column": 0, "index": 1391}, "end": {"row": 28, "column": 41, "index": 1432}, "codeIndex": 1}},
+        "attributes": [],
+        "name": { "value": "WindowNotifyShowActivated", "codeRange": {"start": {"row": 28, "column": 8, "index": 1399}, "end": {"row": 28, "column": 32, "index": 1423}, "codeIndex": 1}},
+        "request": null,
+        "response": null
+    }, {
+        "$ast": { "type": "MessageDecl", "codeRange": {"start": {"row": 29, "column": 0, "index": 1435}, "end": {"row": 29, "column": 41, "index": 1476}, "codeIndex": 1}},
+        "attributes": [],
+        "name": { "value": "WindowNotifyShowDeactivated", "codeRange": {"start": {"row": 29, "column": 8, "index": 1443}, "end": {"row": 29, "column": 34, "index": 1469}, "codeIndex": 1}},
+        "request": null,
+        "response": null
+    }, {
+        "$ast": { "type": "MessageDecl", "codeRange": {"start": {"row": 30, "column": 0, "index": 1479}, "end": {"row": 30, "column": 41, "index": 1520}, "codeIndex": 1}},
+        "attributes": [],
+        "name": { "value": "WindowNotifyShowMaximized", "codeRange": {"start": {"row": 30, "column": 8, "index": 1487}, "end": {"row": 30, "column": 32, "index": 1511}, "codeIndex": 1}},
+        "request": null,
+        "response": null
+    }, {
+        "$ast": { "type": "MessageDecl", "codeRange": {"start": {"row": 31, "column": 0, "index": 1523}, "end": {"row": 31, "column": 41, "index": 1564}, "codeIndex": 1}},
+        "attributes": [],
+        "name": { "value": "WindowNotifyShowMinimized", "codeRange": {"start": {"row": 31, "column": 8, "index": 1531}, "end": {"row": 31, "column": 32, "index": 1555}, "codeIndex": 1}},
+        "request": null,
+        "response": null
+    }, {
+        "$ast": { "type": "EventDecl", "codeRange": {"start": {"row": 33, "column": 0, "index": 1569}, "end": {"row": 33, "column": 71, "index": 1640}, "codeIndex": 1}},
+        "attributes": [],
+        "name": { "value": "WindowBoundsUpdated", "codeRange": {"start": {"row": 33, "column": 6, "index": 1575}, "end": {"row": 33, "column": 24, "index": 1593}, "codeIndex": 1}},
         "request": {
-            "$ast": { "type": "EventRequest", "codeRange": {"start": {"row": 27, "column": 42, "index": 1389}, "end": {"row": 27, "column": 69, "index": 1416}, "codeIndex": 1}},
+            "$ast": { "type": "EventRequest", "codeRange": {"start": {"row": 33, "column": 42, "index": 1611}, "end": {"row": 33, "column": 69, "index": 1638}, "codeIndex": 1}},
             "type": {
-                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 27, "column": 51, "index": 1398}, "end": {"row": 27, "column": 68, "index": 1415}, "codeIndex": 1}},
-                "name": { "value": "WindowSizingConfig", "codeRange": {"start": {"row": 27, "column": 51, "index": 1398}, "end": {"row": 27, "column": 68, "index": 1415}, "codeIndex": 1}}
+                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 33, "column": 51, "index": 1620}, "end": {"row": 33, "column": 68, "index": 1637}, "codeIndex": 1}},
+                "name": { "value": "WindowSizingConfig", "codeRange": {"start": {"row": 33, "column": 51, "index": 1620}, "end": {"row": 33, "column": 68, "index": 1637}, "codeIndex": 1}}
             }
         }
     }]

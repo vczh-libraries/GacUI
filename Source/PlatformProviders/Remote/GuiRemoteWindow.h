@@ -32,21 +32,28 @@ GuiRemoteWindow
 		INativeWindow::WindowMode							windowMode = INativeWindow::Normal;
 
 		remoteprotocol::WindowSizingConfig					remoteWindowSizingConfig;
-		vint												dpiX = 96;
-		vint												dpiY = 96;
+		double												scalingX = 1;
+		double												scalingY = 1;
 
-		Ptr<GuiImageData>	styleIcon;
-		WString				styleTitle;
-		bool				styleEnabled = true;
-		bool				styleTopmost = true;
-		bool				styleMaximizedBox = true;
-		bool				styleMinimizedBox = true;
-		bool				styleBorder = true;
-		bool				styleSizeBox = true;
-		bool				styleIconVisible = true;
-		bool				styleTitleBar = true;
-		bool				styleShowInTaskBar = true;
-		bool				styleCustomFrameMode = false;
+		WString							styleTitle;
+		INativeCursor*					styleCursor = nullptr;
+		NativePoint						styleCaret;
+		Ptr<GuiImageData>				styleIcon;
+		bool							styleEnabled = true;
+		bool							styleVisible = false;
+		bool							styleTopmost = false;
+
+		bool							styleMaximizedBox = true;
+		bool							styleMinimizedBox = true;
+		bool							styleBorder = true;
+		bool							styleSizeBox = true;
+		bool							styleIconVisible = true;
+		bool							styleTitleBar = true;
+		bool							styleShowInTaskBar = true;
+		bool							styleCustomFrameMode = false;
+		
+		INativeWindow::WindowSizeState	statusSizeState = INativeWindow::Restored;
+		bool							statusActivated = false;
 
 	public:
 		GuiRemoteWindow(GuiRemoteController* _remote);
