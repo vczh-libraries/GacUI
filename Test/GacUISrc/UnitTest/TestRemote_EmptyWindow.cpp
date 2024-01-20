@@ -65,19 +65,21 @@ public:
 
 	void RequestWindowGetBounds(vint id) override
 	{
-		WindowSizingConfig response;
-		response.bounds = { 0,0,0,0 };
-		response.clientBounds = { 0,0,0,0 };
-		response.customFramePadding = { 8,8,8,8 };
-		events->RespondWindowGetBounds(id, response);
+		events->RespondWindowGetBounds(id, sizingConfig);
 	}
 
 	void RequestWindowSetBounds(vint id, const ::vl::presentation::NativeRect& arguments) override
 	{
+		sizingConfig.bounds = arguments;
+		sizingConfig.clientBounds = sizingConfig.bounds;
+		events->RespondWindowGetBounds(id, sizingConfig);
 	}
 
 	void RequestWindowSetClientSize(vint id, const ::vl::presentation::NativeSize& arguments) override
 	{
+		sizingConfig.bounds = { sizingConfig.bounds.LeftTop(), arguments };
+		sizingConfig.clientBounds = sizingConfig.bounds;
+		events->RespondWindowGetBounds(id, sizingConfig);
 	}
 
 	void RequestWindowNotifySetTitle(const ::vl::WString& arguments) override
