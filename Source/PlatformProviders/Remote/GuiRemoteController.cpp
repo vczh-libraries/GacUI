@@ -210,6 +210,12 @@ GuiRemoteController::INativeWindowService
 
 	void GuiRemoteController::Run(INativeWindow* window)
 	{
+		// TODO:
+		// consider making a loop
+		// there is a test to decide whether going into a new loop or just quit
+		// inside the loop RunOneCycle is called
+		// in RunOneCycle, it calls a callback (not request) to protocol
+		// RunOneCycle will just return if it sees a mark to tell Run to stop
 		CHECK_FAIL(L"Not Implemented!");
 		remoteMessages.RequestControllerConnectionStopped();
 		remoteMessages.Submit();
