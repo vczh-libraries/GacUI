@@ -10,4 +10,17 @@ message WindowGetBounds
     response: WindowSizingConfig;
 }
 
-event WindowBoundsUpdated       { request: WindowSizingConfig; }
+message WindowNotifySetClientSize       { request: NativeSize; }
+message WindowNotifySetTitle            { request: string; }
+message WindowNotifySetEnabled          { request: bool; }
+message WindowNotifySetTopMost          { request: bool; }
+message WindowNotifySetMaximizedBox     { request: bool; }
+message WindowNotifySetMinimizedBox     { request: bool; }
+message WindowNotifySetBorder           { request: bool; }
+message WindowNotifySetSizeBox          { request: bool; }
+message WindowNotifySetIconVisible      { request: bool; }
+message WindowNotifySetTitleBar         { request: bool; }
+message WindowNotifySetShowInTaskBar    { request: bool; }
+message WindowNotifySetCustomFrameMode  { request: bool; }
+
+event WindowBoundsUpdated               { request: WindowSizingConfig; }

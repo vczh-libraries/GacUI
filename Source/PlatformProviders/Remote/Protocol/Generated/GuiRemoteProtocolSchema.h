@@ -36,6 +36,18 @@ namespace vl::presentation::remoteprotocol
 	NOREQ_RES(ControllerGetScreenConfig, vl::presentation::remoteprotocol::ScreenConfig)\
 	NOREQ_NORES(ControllerConnectionEstablished)\
 	NOREQ_RES(WindowGetBounds, vl::presentation::remoteprotocol::WindowSizingConfig)\
+	REQ_NORES(WindowNotifySetClientSize, ::vl::presentation::NativeSize)\
+	REQ_NORES(WindowNotifySetTitle, ::vl::WString)\
+	REQ_NORES(WindowNotifySetEnabled, bool)\
+	REQ_NORES(WindowNotifySetTopMost, bool)\
+	REQ_NORES(WindowNotifySetMaximizedBox, bool)\
+	REQ_NORES(WindowNotifySetMinimizedBox, bool)\
+	REQ_NORES(WindowNotifySetBorder, bool)\
+	REQ_NORES(WindowNotifySetSizeBox, bool)\
+	REQ_NORES(WindowNotifySetIconVisible, bool)\
+	REQ_NORES(WindowNotifySetTitleBar, bool)\
+	REQ_NORES(WindowNotifySetShowInTaskBar, bool)\
+	REQ_NORES(WindowNotifySetCustomFrameMode, bool)\
 
 #define GACUI_REMOTEPROTOCOL_EVENTS(NOREQ, REQ)\
 	NOREQ(ControllerConnect)\
