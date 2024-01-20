@@ -188,6 +188,8 @@ TEST_FILE
 				window->SetClientSize({ 100,200 });
 				ws->Run(window);
 				ws->DestroyNativeWindow(window);
+
+				// TODO: find a place to test if window is shown with the expected size
 			});
 		});
 		SetupRemoteNativeController(&protocol);
