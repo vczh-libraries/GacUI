@@ -88,49 +88,49 @@ public:
 	{
 		sizingConfig.bounds = arguments;
 		sizingConfig.clientBounds = sizingConfig.bounds;
-		events->RespondWindowGetBounds(id, sizingConfig);
+		events->RespondWindowSetBounds(id, sizingConfig);
 	}
 
 	void RequestWindowSetClientSize(vint id, const ::vl::presentation::NativeSize& arguments) override
 	{
 		sizingConfig.bounds = { sizingConfig.bounds.LeftTop(), arguments };
 		sizingConfig.clientBounds = sizingConfig.bounds;
-		events->RespondWindowGetBounds(id, sizingConfig);
+		events->RespondWindowSetClientSize(id, sizingConfig);
 	}
 
 	void RequestWindowSetCustomFrameMode(vint id, const bool& arguments) override
 	{
-		events->RespondWindowGetBounds(id, sizingConfig);
+		events->RespondWindowSetCustomFrameMode(id, sizingConfig);
 	}
 
 	void RequestWindowSetMaximizedBox(vint id, const bool& arguments) override
 	{
-		events->RespondWindowGetBounds(id, sizingConfig);
+		events->RespondWindowSetMaximizedBox(id, sizingConfig);
 	}
 
 	void RequestWindowSetMinimizedBox(vint id, const bool& arguments) override
 	{
-		events->RespondWindowGetBounds(id, sizingConfig);
+		events->RespondWindowSetMinimizedBox(id, sizingConfig);
 	}
 
 	void RequestWindowSetBorder(vint id, const bool& arguments) override
 	{
-		events->RespondWindowGetBounds(id, sizingConfig);
+		events->RespondWindowSetBorder(id, sizingConfig);
 	}
 
 	void RequestWindowSetSizeBox(vint id, const bool& arguments) override
 	{
-		events->RespondWindowGetBounds(id, sizingConfig);
+		events->RespondWindowSetSizeBox(id, sizingConfig);
 	}
 
 	void RequestWindowSetIconVisible(vint id, const bool& arguments) override
 	{
-		events->RespondWindowGetBounds(id, sizingConfig);
+		events->RespondWindowSetIconVisible(id, sizingConfig);
 	}
 
 	void RequestWindowSetTitleBar(vint id, const bool& arguments) override
 	{
-		events->RespondWindowGetBounds(id, sizingConfig);
+		events->RespondWindowSetTitleBar(id, sizingConfig);
 	}
 
 	void RequestWindowNotifyActivate() override
