@@ -10,7 +10,9 @@ message WindowGetBounds
     response: WindowSizingConfig;
 }
 
-message WindowNotifySetClientSize       { request: NativeSize; }
+message WindowSetBounds           { request: NativeRect; response: WindowSizingConfig; }
+message WindowSetClientSize       { request: NativeSize; response: WindowSizingConfig; }
+
 message WindowNotifySetTitle            { request: string; }
 message WindowNotifySetEnabled          { request: bool; }
 message WindowNotifySetTopMost          { request: bool; }

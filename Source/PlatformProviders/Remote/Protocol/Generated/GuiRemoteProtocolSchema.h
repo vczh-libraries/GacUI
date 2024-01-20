@@ -36,7 +36,8 @@ namespace vl::presentation::remoteprotocol
 	NOREQ_RES(ControllerGetScreenConfig, vl::presentation::remoteprotocol::ScreenConfig)\
 	NOREQ_NORES(ControllerConnectionEstablished)\
 	NOREQ_RES(WindowGetBounds, vl::presentation::remoteprotocol::WindowSizingConfig)\
-	REQ_NORES(WindowNotifySetClientSize, ::vl::presentation::NativeSize)\
+	REQ_RES(WindowSetBounds, ::vl::presentation::NativeRect, vl::presentation::remoteprotocol::WindowSizingConfig)\
+	REQ_RES(WindowSetClientSize, ::vl::presentation::NativeSize, vl::presentation::remoteprotocol::WindowSizingConfig)\
 	REQ_NORES(WindowNotifySetTitle, ::vl::WString)\
 	REQ_NORES(WindowNotifySetEnabled, bool)\
 	REQ_NORES(WindowNotifySetTopMost, bool)\

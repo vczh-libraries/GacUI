@@ -5,11 +5,16 @@ class EmptyWindowProtocol : public NotImplementedProtocolBase
 public:
 	static EmptyWindowProtocol*	instance;
 	IGuiRemoteProtocolEvents*	events = nullptr;
+	WindowSizingConfig			sizingConfig;
 
 	EmptyWindowProtocol()
 	{
 		CHECK_ERROR(instance == nullptr, L"EmptyWindowProtocol can only have one instance");
 		instance = this;
+
+		sizingConfig.bounds = { 0,0,0,0 };
+		sizingConfig.clientBounds = { 0,0,0,0 };
+		sizingConfig.customFramePadding = { 8,8,8,8 };
 	}
 
 	~EmptyWindowProtocol()
@@ -65,6 +70,58 @@ public:
 		response.clientBounds = { 0,0,0,0 };
 		response.customFramePadding = { 8,8,8,8 };
 		events->RespondWindowGetBounds(id, response);
+	}
+
+	void RequestWindowSetBounds(vint id, const ::vl::presentation::NativeRect& arguments) override
+	{
+	}
+
+	void RequestWindowSetClientSize(vint id, const ::vl::presentation::NativeSize& arguments) override
+	{
+	}
+
+	void RequestWindowNotifySetTitle(const ::vl::WString& arguments) override
+	{
+	}
+
+	void RequestWindowNotifySetEnabled(const bool& arguments) override
+	{
+	}
+
+	void RequestWindowNotifySetTopMost(const bool& arguments) override
+	{
+	}
+
+	void RequestWindowNotifySetMaximizedBox(const bool& arguments) override
+	{
+	}
+
+	void RequestWindowNotifySetMinimizedBox(const bool& arguments) override
+	{
+	}
+
+	void RequestWindowNotifySetBorder(const bool& arguments) override
+	{
+	}
+
+	void RequestWindowNotifySetSizeBox(const bool& arguments) override
+	{
+	}
+
+	void RequestWindowNotifySetIconVisible(const bool& arguments) override
+	{
+	}
+
+	void RequestWindowNotifySetTitleBar(const bool& arguments) override
+	{
+	}
+
+	void RequestWindowNotifySetShowInTaskBar(const bool& arguments) override
+	{
+	}
+
+	void RequestWindowNotifySetCustomFrameMode(const bool& arguments) override
+	{
 	}
 };
 EmptyWindowProtocol* EmptyWindowProtocol::instance = nullptr;

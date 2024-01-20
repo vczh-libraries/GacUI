@@ -35,7 +35,18 @@ GuiRemoteWindow
 		vint												dpiX = 96;
 		vint												dpiY = 96;
 
-		bool												customFrameMode = false;
+		Ptr<GuiImageData>	styleIcon;
+		WString				styleTitle;
+		bool				styleEnabled = true;
+		bool				styleTopmost = true;
+		bool				styleMaximizedBox = true;
+		bool				styleMinimizedBox = true;
+		bool				styleBorder = true;
+		bool				styleSizeBox = true;
+		bool				styleIconVisible = true;
+		bool				styleTitleBar = true;
+		bool				styleShowInTaskBar = true;
+		bool				styleCustomFrameMode = false;
 
 	public:
 		GuiRemoteWindow(GuiRemoteController* _remote);

@@ -55,7 +55,7 @@ GuiRemoteMessages (messages)
 	}\
 
 #define MESSAGE_REQ_RES(NAME, REQUEST, RESPONSE)\
-	vint GuiRemoteMessages::Request ## NAME(, const REQUEST& arguments)\
+	vint GuiRemoteMessages::Request ## NAME(const REQUEST& arguments)\
 	{\
 		vint requestId = ++id;\
 		remote->remoteProtocol->Request ## NAME(requestId, arguments);\
