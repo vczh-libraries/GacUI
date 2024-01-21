@@ -4,13 +4,16 @@ class EmptyWindowProtocol : public NotImplementedProtocolBase
 {
 public:
 	static EmptyWindowProtocol*	instance;
+
+	Func<void()>				processRemoteEvents;
 	IGuiRemoteProtocolEvents*	events = nullptr;
 	bool						connectionEstablished = false;
 	bool						connectionStopped = false;
 	bool						connectionStoppedAndSubmitted = false;
 	WindowSizingConfig			sizingConfig;
 
-	EmptyWindowProtocol()
+	EmptyWindowProtocol(Func<void()> _processRemoteEvents)
+		: processRemoteEvents(_processRemoteEvents)
 	{
 		CHECK_ERROR(instance == nullptr, L"EmptyWindowProtocol can only have one instance");
 		instance = this;
@@ -34,6 +37,11 @@ public:
 	{
 		TEST_ASSERT(!connectionStoppedAndSubmitted);
 		if (connectionStopped) connectionStoppedAndSubmitted = true;
+	}
+
+	void ProcessRemoteEvents() override
+	{
+		processRemoteEvents();
 	}
 
 	WString GetExecutablePath() override
@@ -127,7 +135,15 @@ TEST_FILE
 {
 	TEST_CATEGORY(L"Create one window and exit immediately")
 	{
-		EmptyWindowProtocol protocol;
+		EmptyWindowProtocol protocol([]()
+		{
+			auto window = GetCurrentController()->WindowService()->GetMainWindow();
+			TEST_ASSERT(window);
+			TEST_ASSERT(window->GetBounds() == NativeRect(0, 0, 100, 200));
+			TEST_ASSERT(window->GetClientSize() == NativeSize(100, 200));
+			TEST_ASSERT(EmptyWindowProtocol::instance->sizingConfig.bounds == NativeRect(0, 0, 100, 200));
+			TEST_ASSERT(EmptyWindowProtocol::instance->sizingConfig.clientBounds == NativeRect(0, 0, 100, 200));
+		});
 		SetGuiMainProxy([]()
 		{
 			TEST_CASE(L"Establish connection")
@@ -144,9 +160,12 @@ TEST_FILE
 				window->SetTitle(L"EmptyWindow");
 				window->SetClientSize({ 100,200 });
 				ws->Run(window);
-				ws->DestroyNativeWindow(window);
+			});
 
-				// TODO: find a place to test if window is shown with the expected size
+			TEST_CASE(L"Ensure stopped")
+			{
+				TEST_ASSERT(EmptyWindowProtocol::instance->connectionStopped);
+				TEST_ASSERT(EmptyWindowProtocol::instance->connectionStoppedAndSubmitted);
 			});
 		});
 		SetupRemoteNativeController(&protocol);

@@ -4,6 +4,7 @@ class StartUpProtocol : public NotImplementedProtocolBase
 {
 public:
 	static StartUpProtocol*		instance;
+
 	IGuiRemoteProtocolEvents*	events = nullptr;
 
 	StartUpProtocol()
