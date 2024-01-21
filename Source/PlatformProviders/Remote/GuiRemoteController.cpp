@@ -219,6 +219,8 @@ GuiRemoteController::INativeWindowService
 		//     1) All messages are processed
 		//     2) All messages are responded
 		//   Error will happen if new batch of messages come before sending back results of the last batch
+		CHECK_ERROR(window == &remoteWindow, L"vl::presentation::GuiRemoteController::Run(INativeWindow*)#GuiHostedController should call this function with the native window.");
+		window->Show();
 		while (RunOneCycle());
 		remoteMessages.Submit();
 	}
