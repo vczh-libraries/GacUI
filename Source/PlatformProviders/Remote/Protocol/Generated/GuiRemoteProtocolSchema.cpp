@@ -9,7 +9,9 @@ namespace vl::presentation::remoteprotocol
 {
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<bool>(const bool& value)
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		auto node = Ptr(new glr::json::JsonLiteral);
+		node->value = value ? glr::json::JsonLiteralValue::True : glr::json::JsonLiteralValue::False;
+		return node;
 	}
 
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::vint>(const ::vl::vint& value)
@@ -35,7 +37,9 @@ namespace vl::presentation::remoteprotocol
 
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::WString>(const ::vl::WString& value)
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		auto node = Ptr(new glr::json::JsonString);
+		node->content.value = value;
+		return node;
 	}
 
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::INativeWindow::WindowSizeState>(const ::vl::presentation::INativeWindow::WindowSizeState& value)
@@ -95,7 +99,16 @@ namespace vl::presentation::remoteprotocol
 
 	template<> void ConvertJsonToCustomType<bool>(vl::Ptr<vl::glr::json::JsonNode> node, bool& value)
 	{
-		CHECK_FAIL(L"Not Implemented!");
+	#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<bool>(Ptr<JsonNode>)#"
+		auto jsonNode = node.Cast<glr::json::JsonLiteral>();
+		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
+		switch (jsonNode->value)
+		{
+		case glr::json::JsonLiteralValue::True: value = true; break;
+		case glr::json::JsonLiteralValue::False: value = false; break;
+		default: CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported json literal.");
+		}
+	#undef ERROR_MESSAGE_PREFIX
 	}
 
 	template<> void ConvertJsonToCustomType<vint>(vl::Ptr<vl::glr::json::JsonNode> node, vint& value)
@@ -125,9 +138,13 @@ namespace vl::presentation::remoteprotocol
 	#undef ERROR_MESSAGE_PREFIX
 	}
 
-	template<> void ConvertJsonToCustomType<::vl::WString>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::WString& value)
+	template<> void ConvertJsonToCustomType<WString>(vl::Ptr<vl::glr::json::JsonNode> node, WString& value)
 	{
-		CHECK_FAIL(L"Not Implemented!");
+	#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<bool>(Ptr<JsonNode>)#"
+		auto jsonNode = node.Cast<glr::json::JsonString>();
+		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
+		value = jsonNode->content.value;
+	#undef ERROR_MESSAGE_PREFIX
 	}
 
 	template<> void ConvertJsonToCustomType<::vl::presentation::INativeWindow::WindowSizeState>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::INativeWindow::WindowSizeState& value)

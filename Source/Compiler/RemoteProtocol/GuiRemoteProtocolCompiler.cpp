@@ -423,10 +423,11 @@ GenerateRemoteProtocolCppFile
 	void GeneratePrimitiveSerializerFunctionImpl(stream::TextWriter& writer)
 	{
 		{
-			WString cppName = L"bool";
-			GenerateSerializerFunctionHeader(cppName, false, writer);
+			GenerateSerializerFunctionHeader(L"bool", false, writer);
 			writer.WriteLine(L"\t{");
-			writer.WriteLine(L"\t\tCHECK_FAIL(L\"Not Implemented!\");");
+			writer.WriteLine(L"\t\tauto node = Ptr(new glr::json::JsonLiteral);");
+			writer.WriteLine(L"\t\tnode->value = value ? glr::json::JsonLiteralValue::True : glr::json::JsonLiteralValue::False;");
+			writer.WriteLine(L"\t\treturn node;");
 			writer.WriteLine(L"\t}");
 			writer.WriteLine(L"");
 		}
@@ -444,10 +445,11 @@ GenerateRemoteProtocolCppFile
 			}
 		}
 		{
-			WString cppName = L"::vl::WString";
-			GenerateSerializerFunctionHeader(cppName, false, writer);
+			GenerateSerializerFunctionHeader(L"::vl::WString", false, writer);
 			writer.WriteLine(L"\t{");
-			writer.WriteLine(L"\t\tCHECK_FAIL(L\"Not Implemented!\");");
+			writer.WriteLine(L"\t\tauto node = Ptr(new glr::json::JsonString);");
+			writer.WriteLine(L"\t\tnode->content.value = value;");
+			writer.WriteLine(L"\t\treturn node;");
 			writer.WriteLine(L"\t}");
 			writer.WriteLine(L"");
 		}
@@ -476,10 +478,18 @@ GenerateRemoteProtocolCppFile
 	void GeneratePrimitiveDeserializerFunctionImpl(stream::TextWriter& writer)
 	{
 		{
-			WString cppName = L"bool";
-			GenerateDeserializerFunctionHeader(cppName, false, writer);
+			GenerateDeserializerFunctionHeader(L"bool", false, writer);
 			writer.WriteLine(L"\t{");
-			writer.WriteLine(L"\t\tCHECK_FAIL(L\"Not Implemented!\");");
+			writer.WriteLine(L"\t#define ERROR_MESSAGE_PREFIX L\"vl::presentation::remoteprotocol::ConvertJsonToCustomType<bool>(Ptr<JsonNode>)#\"");
+			writer.WriteLine(L"\t\tauto jsonNode = node.Cast<glr::json::JsonLiteral>();");
+			writer.WriteLine(L"\t\tCHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L\"Json node does not match the expected type.\");");
+			writer.WriteLine(L"\t\tswitch (jsonNode->value)");
+			writer.WriteLine(L"\t\t{");
+			writer.WriteLine(L"\t\tcase glr::json::JsonLiteralValue::True: value = true; break;");
+			writer.WriteLine(L"\t\tcase glr::json::JsonLiteralValue::False: value = false; break;");
+			writer.WriteLine(L"\t\tdefault: CHECK_FAIL(ERROR_MESSAGE_PREFIX L\"Unsupported json literal.\");");
+			writer.WriteLine(L"\t\t}");
+			writer.WriteLine(L"\t#undef ERROR_MESSAGE_PREFIX");
 			writer.WriteLine(L"\t}");
 			writer.WriteLine(L"");
 		}
@@ -499,10 +509,13 @@ GenerateRemoteProtocolCppFile
 			}
 		}
 		{
-			WString cppName = L"::vl::WString";
-			GenerateDeserializerFunctionHeader(cppName, false, writer);
+			GenerateDeserializerFunctionHeader(L"WString", false, writer);
 			writer.WriteLine(L"\t{");
-			writer.WriteLine(L"\t\tCHECK_FAIL(L\"Not Implemented!\");");
+			writer.WriteLine(L"\t#define ERROR_MESSAGE_PREFIX L\"vl::presentation::remoteprotocol::ConvertJsonToCustomType<bool>(Ptr<JsonNode>)#\"");
+			writer.WriteLine(L"\t\tauto jsonNode = node.Cast<glr::json::JsonString>();");
+			writer.WriteLine(L"\t\tCHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L\"Json node does not match the expected type.\");");
+			writer.WriteLine(L"\t\tvalue = jsonNode->content.value;");
+			writer.WriteLine(L"\t#undef ERROR_MESSAGE_PREFIX");
 			writer.WriteLine(L"\t}");
 			writer.WriteLine(L"");
 		}
