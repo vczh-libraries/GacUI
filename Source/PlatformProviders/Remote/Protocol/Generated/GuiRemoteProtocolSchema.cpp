@@ -7,18 +7,9 @@ Licensed under https ://github.com/vczh-libraries/License
 
 namespace vl::presentation::remoteprotocol
 {
-	template<typename T>
-	void ConvertCustomTypeToJsonField(Ptr<glr::json::JsonObject> node, const wchar_t* name, const T& value)
-	{
-		auto field = Ptr(new glr::json::JsonObjectField);
-		field->name.value = WString::Unmanaged(name);
-		field->value = ConvertCustomTypeToJson(value);
-		node->fields.Add(field);
-	}
-
 	vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson(const ::vl::presentation::INativeWindow::WindowSizeState& value)
 	{
-	#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertCustomTypeToJson(const ::vl::presentation::INativeWindow::WindowSizeState&)#"
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertCustomTypeToJson(const ::vl::presentation::INativeWindow::WindowSizeState&)#"
 		auto node = Ptr(new glr::json::JsonString);
 		switch (value)
 		{
@@ -28,7 +19,7 @@ namespace vl::presentation::remoteprotocol
 		default: CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported enum value.");
 		}
 		return node;
-	#undef ERROR_MESSAGE_PREFIX
+#undef ERROR_MESSAGE_PREFIX
 	}
 
 	vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson(const ::vl::presentation::NativeCoordinate& value)
@@ -126,19 +117,19 @@ namespace vl::presentation::remoteprotocol
 
 	void ConvertJsonToCustomType(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::INativeWindow::WindowSizeState& value)
 	{
-	#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType(Ptr<JsonNode>, ::vl::presentation::INativeWindow::WindowSizeState&)#"
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType(Ptr<JsonNode>, ::vl::presentation::INativeWindow::WindowSizeState&)#"
 		auto jsonNode = node.Cast<glr::json::JsonString>();
 		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
 		if (jsonNode->content.value == L"Minimized") value = ::vl::presentation::INativeWindow::WindowSizeState::Minimized; else
 		if (jsonNode->content.value == L"Restored") value = ::vl::presentation::INativeWindow::WindowSizeState::Restored; else
 		if (jsonNode->content.value == L"Maximized") value = ::vl::presentation::INativeWindow::WindowSizeState::Maximized; else
 		CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported enum value.");
-	#undef ERROR_MESSAGE_PREFIX
+#undef ERROR_MESSAGE_PREFIX
 	}
 
 	void ConvertJsonToCustomType(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::NativeCoordinate& value)
 	{
-	#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType(Ptr<JsonNode>, ::vl::presentation::NativeCoordinate&)#"
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType(Ptr<JsonNode>, ::vl::presentation::NativeCoordinate&)#"
 		auto jsonNode = node.Cast<glr::json::JsonObject>();
 		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
 		for (auto field : jsonNode->fields)
@@ -146,12 +137,12 @@ namespace vl::presentation::remoteprotocol
 			if (field->name.value == L"value") ConvertJsonToCustomType(field->value, value.value); else
 			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
 		}
-	#undef ERROR_MESSAGE_PREFIX
+#undef ERROR_MESSAGE_PREFIX
 	}
 
 	void ConvertJsonToCustomType(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::NativePoint& value)
 	{
-	#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType(Ptr<JsonNode>, ::vl::presentation::NativePoint&)#"
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType(Ptr<JsonNode>, ::vl::presentation::NativePoint&)#"
 		auto jsonNode = node.Cast<glr::json::JsonObject>();
 		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
 		for (auto field : jsonNode->fields)
@@ -160,12 +151,12 @@ namespace vl::presentation::remoteprotocol
 			if (field->name.value == L"y") ConvertJsonToCustomType(field->value, value.y); else
 			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
 		}
-	#undef ERROR_MESSAGE_PREFIX
+#undef ERROR_MESSAGE_PREFIX
 	}
 
 	void ConvertJsonToCustomType(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::NativeSize& value)
 	{
-	#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType(Ptr<JsonNode>, ::vl::presentation::NativeSize&)#"
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType(Ptr<JsonNode>, ::vl::presentation::NativeSize&)#"
 		auto jsonNode = node.Cast<glr::json::JsonObject>();
 		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
 		for (auto field : jsonNode->fields)
@@ -174,12 +165,12 @@ namespace vl::presentation::remoteprotocol
 			if (field->name.value == L"y") ConvertJsonToCustomType(field->value, value.y); else
 			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
 		}
-	#undef ERROR_MESSAGE_PREFIX
+#undef ERROR_MESSAGE_PREFIX
 	}
 
 	void ConvertJsonToCustomType(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::NativeRect& value)
 	{
-	#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType(Ptr<JsonNode>, ::vl::presentation::NativeRect&)#"
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType(Ptr<JsonNode>, ::vl::presentation::NativeRect&)#"
 		auto jsonNode = node.Cast<glr::json::JsonObject>();
 		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
 		for (auto field : jsonNode->fields)
@@ -190,12 +181,12 @@ namespace vl::presentation::remoteprotocol
 			if (field->name.value == L"y2") ConvertJsonToCustomType(field->value, value.y2); else
 			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
 		}
-	#undef ERROR_MESSAGE_PREFIX
+#undef ERROR_MESSAGE_PREFIX
 	}
 
 	void ConvertJsonToCustomType(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::NativeMargin& value)
 	{
-	#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType(Ptr<JsonNode>, ::vl::presentation::NativeMargin&)#"
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType(Ptr<JsonNode>, ::vl::presentation::NativeMargin&)#"
 		auto jsonNode = node.Cast<glr::json::JsonObject>();
 		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
 		for (auto field : jsonNode->fields)
@@ -206,12 +197,12 @@ namespace vl::presentation::remoteprotocol
 			if (field->name.value == L"bottom") ConvertJsonToCustomType(field->value, value.bottom); else
 			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
 		}
-	#undef ERROR_MESSAGE_PREFIX
+#undef ERROR_MESSAGE_PREFIX
 	}
 
 	void ConvertJsonToCustomType(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::FontProperties& value)
 	{
-	#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType(Ptr<JsonNode>, ::vl::presentation::FontProperties&)#"
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType(Ptr<JsonNode>, ::vl::presentation::FontProperties&)#"
 		auto jsonNode = node.Cast<glr::json::JsonObject>();
 		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
 		for (auto field : jsonNode->fields)
@@ -226,12 +217,12 @@ namespace vl::presentation::remoteprotocol
 			if (field->name.value == L"verticalAntialias") ConvertJsonToCustomType(field->value, value.verticalAntialias); else
 			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
 		}
-	#undef ERROR_MESSAGE_PREFIX
+#undef ERROR_MESSAGE_PREFIX
 	}
 
 	void ConvertJsonToCustomType(vl::Ptr<vl::glr::json::JsonNode> node, vl::presentation::remoteprotocol::FontConfig& value)
 	{
-	#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType(Ptr<JsonNode>, vl::presentation::remoteprotocol::FontConfig&)#"
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType(Ptr<JsonNode>, vl::presentation::remoteprotocol::FontConfig&)#"
 		auto jsonNode = node.Cast<glr::json::JsonObject>();
 		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
 		for (auto field : jsonNode->fields)
@@ -240,12 +231,12 @@ namespace vl::presentation::remoteprotocol
 			if (field->name.value == L"supportedFonts") ConvertJsonToCustomType(field->value, value.supportedFonts); else
 			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
 		}
-	#undef ERROR_MESSAGE_PREFIX
+#undef ERROR_MESSAGE_PREFIX
 	}
 
 	void ConvertJsonToCustomType(vl::Ptr<vl::glr::json::JsonNode> node, vl::presentation::remoteprotocol::ScreenConfig& value)
 	{
-	#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType(Ptr<JsonNode>, vl::presentation::remoteprotocol::ScreenConfig&)#"
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType(Ptr<JsonNode>, vl::presentation::remoteprotocol::ScreenConfig&)#"
 		auto jsonNode = node.Cast<glr::json::JsonObject>();
 		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
 		for (auto field : jsonNode->fields)
@@ -256,12 +247,12 @@ namespace vl::presentation::remoteprotocol
 			if (field->name.value == L"scalingY") ConvertJsonToCustomType(field->value, value.scalingY); else
 			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
 		}
-	#undef ERROR_MESSAGE_PREFIX
+#undef ERROR_MESSAGE_PREFIX
 	}
 
 	void ConvertJsonToCustomType(vl::Ptr<vl::glr::json::JsonNode> node, vl::presentation::remoteprotocol::WindowSizingConfig& value)
 	{
-	#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType(Ptr<JsonNode>, vl::presentation::remoteprotocol::WindowSizingConfig&)#"
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType(Ptr<JsonNode>, vl::presentation::remoteprotocol::WindowSizingConfig&)#"
 		auto jsonNode = node.Cast<glr::json::JsonObject>();
 		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
 		for (auto field : jsonNode->fields)
@@ -272,12 +263,12 @@ namespace vl::presentation::remoteprotocol
 			if (field->name.value == L"customFramePadding") ConvertJsonToCustomType(field->value, value.customFramePadding); else
 			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
 		}
-	#undef ERROR_MESSAGE_PREFIX
+#undef ERROR_MESSAGE_PREFIX
 	}
 
 	void ConvertJsonToCustomType(vl::Ptr<vl::glr::json::JsonNode> node, vl::presentation::remoteprotocol::WindowShowing& value)
 	{
-	#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType(Ptr<JsonNode>, vl::presentation::remoteprotocol::WindowShowing&)#"
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType(Ptr<JsonNode>, vl::presentation::remoteprotocol::WindowShowing&)#"
 		auto jsonNode = node.Cast<glr::json::JsonObject>();
 		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
 		for (auto field : jsonNode->fields)
@@ -286,7 +277,7 @@ namespace vl::presentation::remoteprotocol
 			if (field->name.value == L"sizeState") ConvertJsonToCustomType(field->value, value.sizeState); else
 			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
 		}
-	#undef ERROR_MESSAGE_PREFIX
+#undef ERROR_MESSAGE_PREFIX
 	}
 
 }
