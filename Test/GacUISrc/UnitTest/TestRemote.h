@@ -81,7 +81,10 @@ protected:
 #define MESSAGE_RES(NAME, RESPONSE)\
 	void Respond ## NAME(vint id, const RESPONSE& arguments) override\
 	{\
-		events->Respond ## NAME(id, arguments);\
+		RESPONSE deserialized;\
+		auto json = ConvertCustomTypeToJson<RESPONSE>(arguments);\
+		ConvertJsonToCustomType<RESPONSE>(json, deserialized);\
+		events->Respond ## NAME(id, deserialized);\
 	}\
 
 #define MESSAGE_HANDLER(NAME, REQUEST, RESPONSE, REQTAG, RESTAG, ...)	MESSAGE_ ## RESTAG(NAME, RESPONSE)
@@ -109,13 +112,19 @@ public:
 #define MESSAGE_REQ_NORES(NAME, REQUEST, RESPONSE)\
 	void Request ## NAME(const REQUEST& arguments) override\
 	{\
-		protocol->Request ## NAME(arguments);\
+		REQUEST deserialized;\
+		auto json = ConvertCustomTypeToJson<REQUEST>(arguments);\
+		ConvertJsonToCustomType<REQUEST>(json, deserialized);\
+		protocol->Request ## NAME(deserialized);\
 	}\
 
 #define MESSAGE_REQ_RES(NAME, REQUEST, RESPONSE)\
 	void Request ## NAME(vint id, const REQUEST& arguments) override\
 	{\
-		protocol->Request ## NAME(id, arguments);\
+		REQUEST deserialized;\
+		auto json = ConvertCustomTypeToJson<REQUEST>(arguments);\
+		ConvertJsonToCustomType<REQUEST>(json, deserialized);\
+		protocol->Request ## NAME(id, deserialized);\
 	}\
 
 #define MESSAGE_HANDLER(NAME, REQUEST, RESPONSE, REQTAG, RESTAG, ...)	MESSAGE_ ## REQTAG ## _ ## RESTAG(NAME, REQUEST, RESPONSE)
