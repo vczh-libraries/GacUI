@@ -479,7 +479,18 @@ GenerateRemoteProtocolCppFile
 		writer.WriteString(L"\t");
 		GenerateDeserializerFunctionHeader(cppName, false, writer);
 		writer.WriteLine(L"\t{");
-		writer.WriteLine(L"\t\tCHECK_FAIL(L\"Not Implemented!\");");
+		writer.WriteLine(L"\t#define ERROR_MESSAGE_PREFIX L\"vl::presentation::remoteprotocol::ConvertJsonToCustomType(Ptr<JsonNode>, " + cppName + L"&)#\"");
+		writer.WriteLine(L"\t\tauto jsonNode = node.Cast<glr::json::JsonObject>();");
+		writer.WriteLine(L"\t\tCHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L\"Json node does not match the expected type.\");");
+		writer.WriteLine(L"\t\tfor (auto field : jsonNode->fields)");
+		writer.WriteLine(L"\t\t{");
+		for (auto member : structDecl->members)
+		{
+			writer.WriteLine(L"\t\t\tif (field->name.value == L\"" + member->name.value + L"\") ConvertJsonToCustomType(field->value, value." + member->name.value + L") else");
+		}
+		writer.WriteLine(L"\t\t\tCHECK_FAIL(ERROR_MESSAGE_PREFIX L\"Unsupported struct member.\");");
+		writer.WriteLine(L"\t\t}");
+		writer.WriteLine(L"\t#undef ERROR_MESSAGE_PREFIX");
 		writer.WriteLine(L"\t}");
 		writer.WriteLine(L"");
 	}

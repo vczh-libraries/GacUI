@@ -17,14 +17,15 @@ Interfaces:
 namespace vl::presentation::remoteprotocol
 {
 	template<typename T>
-	Ptr<glr::json::JsonNode> ConvertCustomTypeToJson(const collections::List<T>& value)
+	Ptr<glr::json::JsonNode> ConvertCustomTypeToJson(const Ptr<collections::List<T>>& value)
 	{
-		CHECK_FAIL(L"");
+		CHECK_FAIL(L"Not Implemented!");
 	}
 
 	template<typename T>
-	void ConvertJsonToCustomType(Ptr<glr::json::JsonNode> node, collections::List<T>& value)
+	void ConvertJsonToCustomType(Ptr<glr::json::JsonNode> node, Ptr<collections::List<T>>& value)
 	{
+		CHECK_FAIL(L"Not Implemented!");
 	}
 
 	extern Ptr<glr::json::JsonNode> ConvertCustomTypeToJson(const bool& value);
