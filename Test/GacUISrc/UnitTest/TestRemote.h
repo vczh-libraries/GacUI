@@ -40,15 +40,41 @@ public:
 	}
 };
 
+struct BatchedRequest
+{
+	vint			id = -1;
+	const wchar_t*	name = nullptr;
+	WString			arguments;
+};
+
 class BatchedProtocol
 	: public Object
 	, public virtual IGuiRemoteProtocol
 	, protected virtual IGuiRemoteProtocolEvents
 {
 protected:
+	glr::json::Parser					jsonParser;
 	IGuiRemoteProtocol*					protocol = nullptr;
 	IGuiRemoteProtocolEvents*			events = nullptr;
+	collections::List<BatchedRequest>	batchedRequests;
 
+	template<typename T>
+	WString ToJson(const T& value)
+	{
+		return stream::GenerateToStream([&](stream::TextWriter& writer)
+		{
+			auto node = Ptr(new glr::json::JsonArray);
+			node->items.Add(ConvertCustomTypeToJson<T>(value));
+			JsonPrint(node, writer);
+		});
+	}
+
+	template<typename T>
+	void FromJson(const WString& json, T& value)
+	{
+		auto node = JsonParse(json, jsonParser);
+		ConvertJsonToCustomType<T>(node, value);
+	}
 public:
 	BatchedProtocol(IGuiRemoteProtocol* _protocol)
 		: protocol(_protocol)
@@ -100,31 +126,37 @@ public:
 #define MESSAGE_NOREQ_NORES(NAME, REQUEST, RESPONSE)\
 	void Request ## NAME() override\
 	{\
-		protocol->Request ## NAME();\
+		BatchedRequest request;\
+		request.name = L ## #NAME;\
+		batchedRequests.Add(request);\
 	}\
 
 #define MESSAGE_NOREQ_RES(NAME, REQUEST, RESPONSE)\
 	void Request ## NAME(vint id) override\
 	{\
-		protocol->Request ## NAME(id);\
+		BatchedRequest request;\
+		request.id = id;\
+		request.name = L ## #NAME;\
+		batchedRequests.Add(request);\
 	}\
 
 #define MESSAGE_REQ_NORES(NAME, REQUEST, RESPONSE)\
 	void Request ## NAME(const REQUEST& arguments) override\
 	{\
-		REQUEST deserialized;\
-		auto json = ConvertCustomTypeToJson<REQUEST>(arguments);\
-		ConvertJsonToCustomType<REQUEST>(json, deserialized);\
-		protocol->Request ## NAME(deserialized);\
+		BatchedRequest request;\
+		request.name = L ## #NAME;\
+		request.arguments = ToJson<REQUEST>(arguments);\
+		batchedRequests.Add(request);\
 	}\
 
 #define MESSAGE_REQ_RES(NAME, REQUEST, RESPONSE)\
 	void Request ## NAME(vint id, const REQUEST& arguments) override\
 	{\
-		REQUEST deserialized;\
-		auto json = ConvertCustomTypeToJson<REQUEST>(arguments);\
-		ConvertJsonToCustomType<REQUEST>(json, deserialized);\
-		protocol->Request ## NAME(id, deserialized);\
+		BatchedRequest request;\
+		request.id = id;\
+		request.name = L ## #NAME;\
+		request.arguments = ToJson<REQUEST>(arguments);\
+		batchedRequests.Add(request);\
 	}\
 
 #define MESSAGE_HANDLER(NAME, REQUEST, RESPONSE, REQTAG, RESTAG, ...)	MESSAGE_ ## REQTAG ## _ ## RESTAG(NAME, REQUEST, RESPONSE)
