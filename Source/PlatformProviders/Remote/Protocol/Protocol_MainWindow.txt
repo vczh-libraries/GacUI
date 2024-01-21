@@ -1,7 +1,16 @@
+[@Cpp(::vl::presentation::INativeWindow::WindowSizeState)]
+enum WindowSizeState
+{
+    Minimized,
+    Restored,
+    Maximized,
+}
+
 struct WindowSizingConfig
 {
     var bounds: NativeRect;
     var clientBounds: NativeRect;
+    var sizeState: WindowSizeState;
     var customFramePadding: NativeMargin;
 }
 
@@ -28,16 +37,12 @@ message WindowSetClientSize             { request: NativeSize; response: WindowS
 struct WindowShowing
 {
     var activate: bool;
+    var sizeState: WindowSizeState;
 }
 
 message WindowNotifyActivate            {}
-message WindowNotifyShowRestored        { request: WindowShowing; }
-message WindowNotifyShowMaximized       { request: WindowShowing; }
-message WindowNotifyShowMinimized       { request: WindowShowing; }
+message WindowNotifyShow                { request: WindowShowing; }
 
 event WindowBoundsUpdated               { request: WindowSizingConfig; }
-event WindowActivated                   {}
-event WindowDeactivated                 {}
-event WindowRestored                    {}
-event WindowMaximized                   {}
-event WindowMinimized                   {}
+event WindowActivatedUpdated            { request: bool; }
+event WindowFocusedUpdated              { request: bool; }

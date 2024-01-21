@@ -38,6 +38,16 @@ class Declaration
 	var name : token;
 }
 
+class EnumMember
+{
+	var name : token;
+}
+
+class EnumDecl : Declaration
+{
+	var members : EnumMember[];
+}
+
 class StructMember
 {
 	var name : token;

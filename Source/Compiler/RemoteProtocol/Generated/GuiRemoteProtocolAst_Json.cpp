@@ -39,6 +39,25 @@ namespace vl::presentation::remoteprotocol::json_visitor
 		WriteToken(node->name);
 		EndField();
 	}
+	void AstVisitor::PrintFields(GuiRpEnumDecl* node)
+	{
+		BeginField(L"members");
+		BeginArray();
+		for (auto&& listItem : node->members)
+		{
+			BeginArrayItem();
+			Print(listItem.Obj());
+			EndArrayItem();
+		}
+		EndArray();
+		EndField();
+	}
+	void AstVisitor::PrintFields(GuiRpEnumMember* node)
+	{
+		BeginField(L"name");
+		WriteToken(node->name);
+		EndField();
+	}
 	void AstVisitor::PrintFields(GuiRpEventDecl* node)
 	{
 		BeginField(L"request");
@@ -184,6 +203,20 @@ namespace vl::presentation::remoteprotocol::json_visitor
 		EndObject();
 	}
 
+	void AstVisitor::Visit(GuiRpEnumDecl* node)
+	{
+		if (!node)
+		{
+			WriteNull();
+			return;
+		}
+		BeginObject();
+		WriteType(L"EnumDecl", node);
+		PrintFields(static_cast<GuiRpDeclaration*>(node));
+		PrintFields(static_cast<GuiRpEnumDecl*>(node));
+		EndObject();
+	}
+
 	void AstVisitor::Visit(GuiRpStructDecl* node)
 	{
 		if (!node)
@@ -261,6 +294,19 @@ namespace vl::presentation::remoteprotocol::json_visitor
 		BeginObject();
 		WriteType(L"Attribute", node);
 		PrintFields(static_cast<GuiRpAttribute*>(node));
+		EndObject();
+	}
+
+	void AstVisitor::Print(GuiRpEnumMember* node)
+	{
+		if (!node)
+		{
+			WriteNull();
+			return;
+		}
+		BeginObject();
+		WriteType(L"EnumMember", node);
+		PrintFields(static_cast<GuiRpEnumMember*>(node));
 		EndObject();
 	}
 

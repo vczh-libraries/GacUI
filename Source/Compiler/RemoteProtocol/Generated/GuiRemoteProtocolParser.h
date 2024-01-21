@@ -9,7 +9,6 @@ Licensed under https://github.com/vczh-libraries/License
 
 #include "GuiRemoteProtocol_Assembler.h"
 #include "GuiRemoteProtocol_Lexer.h"
-#include "GuiRemoteProtocolAst_Json.h"
 
 namespace vl::presentation::remoteprotocol
 {
@@ -18,16 +17,18 @@ namespace vl::presentation::remoteprotocol
 		RType = 0,
 		RAttributeParameter = 11,
 		RAttribute = 14,
-		RStructMember = 22,
-		RStruct = 29,
-		RMessageRequest = 36,
-		RMessageResponse = 42,
-		RMessage = 48,
-		REventRequest = 56,
-		REvent = 62,
-		RDeclDetail = 69,
-		RDecl = 74,
-		Schema = 78,
+		REnumMember = 22,
+		REnum = 26,
+		RStructMember = 33,
+		RStruct = 40,
+		RMessageRequest = 47,
+		RMessageResponse = 53,
+		RMessage = 59,
+		REventRequest = 67,
+		REvent = 73,
+		RDeclDetail = 80,
+		RDecl = 86,
+		Schema = 90,
 	};
 
 	const wchar_t* ParserRuleName(vl::vint index);

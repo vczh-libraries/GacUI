@@ -14,6 +14,8 @@ namespace vl::presentation::remoteprotocol
 	class GuiRpArrayType;
 	class GuiRpAttribute;
 	class GuiRpDeclaration;
+	class GuiRpEnumDecl;
+	class GuiRpEnumMember;
 	class GuiRpEventDecl;
 	class GuiRpEventRequest;
 	class GuiRpMessageDecl;
@@ -88,6 +90,7 @@ namespace vl::presentation::remoteprotocol
 		class IVisitor : public virtual vl::reflection::IDescriptable, vl::reflection::Description<IVisitor>
 		{
 		public:
+			virtual void Visit(GuiRpEnumDecl* node) = 0;
 			virtual void Visit(GuiRpStructDecl* node) = 0;
 			virtual void Visit(GuiRpMessageDecl* node) = 0;
 			virtual void Visit(GuiRpEventDecl* node) = 0;
@@ -97,6 +100,20 @@ namespace vl::presentation::remoteprotocol
 
 		vl::collections::List<vl::Ptr<GuiRpAttribute>> attributes;
 		vl::glr::ParsingToken name;
+	};
+
+	class GuiRpEnumMember : public vl::glr::ParsingAstBase, vl::reflection::Description<GuiRpEnumMember>
+	{
+	public:
+		vl::glr::ParsingToken name;
+	};
+
+	class GuiRpEnumDecl : public GuiRpDeclaration, vl::reflection::Description<GuiRpEnumDecl>
+	{
+	public:
+		vl::collections::List<vl::Ptr<GuiRpEnumMember>> members;
+
+		void Accept(GuiRpDeclaration::IVisitor* visitor) override;
 	};
 
 	class GuiRpStructMember : public vl::glr::ParsingAstBase, vl::reflection::Description<GuiRpStructMember>
@@ -167,6 +184,8 @@ namespace vl::reflection::description
 	DECL_TYPE_INFO(vl::presentation::remoteprotocol::GuiRpAttribute)
 	DECL_TYPE_INFO(vl::presentation::remoteprotocol::GuiRpDeclaration)
 	DECL_TYPE_INFO(vl::presentation::remoteprotocol::GuiRpDeclaration::IVisitor)
+	DECL_TYPE_INFO(vl::presentation::remoteprotocol::GuiRpEnumMember)
+	DECL_TYPE_INFO(vl::presentation::remoteprotocol::GuiRpEnumDecl)
 	DECL_TYPE_INFO(vl::presentation::remoteprotocol::GuiRpStructMember)
 	DECL_TYPE_INFO(vl::presentation::remoteprotocol::GuiRpStructDecl)
 	DECL_TYPE_INFO(vl::presentation::remoteprotocol::GuiRpMessageRequest)
@@ -197,6 +216,11 @@ namespace vl::reflection::description
 	END_INTERFACE_PROXY(vl::presentation::remoteprotocol::GuiRpType::IVisitor)
 
 	BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(vl::presentation::remoteprotocol::GuiRpDeclaration::IVisitor)
+		void Visit(vl::presentation::remoteprotocol::GuiRpEnumDecl* node) override
+		{
+			INVOKE_INTERFACE_PROXY(Visit, node);
+		}
+
 		void Visit(vl::presentation::remoteprotocol::GuiRpStructDecl* node) override
 		{
 			INVOKE_INTERFACE_PROXY(Visit, node);

@@ -1,4 +1,5 @@
 VAR:var
+ENUM:enum
 STRUCT:struct
 MESSAGE:message
 REQUEST:request
@@ -24,5 +25,6 @@ OPEN:/(
 CLOSE:/)
 COLON::
 SEMICOLON:;
+COMMA:,
 
 discard SPACE:/s+

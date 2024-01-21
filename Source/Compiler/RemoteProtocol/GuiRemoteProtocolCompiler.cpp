@@ -33,9 +33,9 @@ CheckRemoteProtocolSchema
 
 		void Visit(GuiRpReferenceType* node) override
 		{
-			if (!symbols->structDecls.Keys().Contains(node->name.value))
+			if (!symbols->enumDecls.Keys().Contains(node->name.value) && !symbols->structDecls.Keys().Contains(node->name.value))
 			{
-				errors.Add({ node->name.codeRange,L"Struct \"" + node->name.value + L"\" not found." });
+				errors.Add({ node->name.codeRange,L"Custom type \"" + node->name.value + L"\" not found." });
 			}
 		}
 
@@ -46,13 +46,62 @@ CheckRemoteProtocolSchema
 
 		// GuiRpDeclaration::IVisitor
 
+		bool EnsureTypeUndefined(const glr::ParsingToken& name)
+		{
+			if (symbols->enumDecls.Keys().Contains(name.value))
+			{
+				errors.Add({ name.codeRange,L"Enum \"" + name.value + L"\" already defined." });
+				return false;
+			}
+			if (symbols->structDecls.Keys().Contains(name.value))
+			{
+				errors.Add({ name.codeRange,L"Struct \"" + name.value + L"\" already defined." });
+				return false;
+			}
+			return true;
+		}
+
+		void Visit(GuiRpEnumDecl* node) override
+		{
+			if (!EnsureTypeUndefined(node->name)) return;
+
+			SortedList<WString> memberNames;
+			for (auto member : node->members)
+			{
+				if (memberNames.Contains(member->name.value))
+				{
+					errors.Add({ member->name.codeRange,L"Enum member \"" + node->name.value + L"::" + member->name.value + L"\" already exists." });
+				}
+				else
+				{
+					memberNames.Add(member->name.value);
+				}
+			}
+
+			for (auto att : node->attributes)
+			{
+				if (att->name.value == L"@Cpp")
+				{
+					if (!att->cppType)
+					{
+						errors.Add({ att->name.codeRange,L"Missing parameter for attribute: \"" + att->name.value + L"\"." });
+					}
+					else
+					{
+						symbols->cppMapping.Add(node->name.value, att->cppType.value);
+					}
+				}
+				else
+				{
+					errors.Add({ att->name.codeRange,L"Unsupported attribute: \"" + att->name.value + L"\" on enum \"" + node->name.value + L"\"." });
+				}
+			}
+			symbols->enumDecls.Add(node->name.value, node);
+		}
+
 		void Visit(GuiRpStructDecl* node) override
 		{
-			if (symbols->structDecls.Keys().Contains(node->name.value))
-			{
-				errors.Add({ node->name.codeRange,L"Struct \"" + node->name.value + L"\" already exists." });
-				return;
-			}
+			if (!EnsureTypeUndefined(node->name)) return;
 
 			SortedList<WString> memberNames;
 			for (auto member : node->members)
@@ -78,12 +127,12 @@ CheckRemoteProtocolSchema
 					}
 					else
 					{
-						symbols->structCppMapping.Add(node->name.value, att->cppType.value);
+						symbols->cppMapping.Add(node->name.value, att->cppType.value);
 					}
 				}
 				else
 				{
-					errors.Add({ att->name.codeRange,L"Unrecognized attribute: \"" + att->name.value + L"\"." });
+					errors.Add({ att->name.codeRange,L"Unsupported attribute: \"" + att->name.value + L"\" on struct \"" + node->name.value + L"\"." });
 				}
 			}
 			symbols->structDecls.Add(node->name.value, node);
@@ -109,7 +158,7 @@ CheckRemoteProtocolSchema
 
 			for (auto att : node->attributes)
 			{
-				errors.Add({ att->name.codeRange,L"Unrecognized attribute: \"" + att->name.value + L"\"." });
+				errors.Add({ att->name.codeRange,L"Unsupported attribute: \"" + att->name.value + L"\" on message \"" + node->name.value + L"\"." });
 			}
 			symbols->messageDecls.Add(node->name.value, node);
 		}
@@ -129,7 +178,7 @@ CheckRemoteProtocolSchema
 
 			for (auto att : node->attributes)
 			{
-				errors.Add({ att->name.codeRange,L"Unrecognized attribute: \"" + att->name.value + L"\"." });
+				errors.Add({ att->name.codeRange,L"Unsupported attribute: \"" + att->name.value + L"\" on event \"" + node->name.value + L"\"." });
 			}
 			symbols->eventDecls.Add(node->name.value, node);
 		}
@@ -193,14 +242,14 @@ GenerateRemoteProtocolHeaderFile
 
 		void Visit(GuiRpReferenceType* node) override
 		{
-			vint index = symbols->structCppMapping.Keys().IndexOf(node->name.value);
+			vint index = symbols->cppMapping.Keys().IndexOf(node->name.value);
 			if (index == -1)
 			{
 				writer.WriteString(config.cppNamespace + L"::" + node->name.value);
 			}
 			else
 			{
-				writer.WriteString(symbols->structCppMapping.Values()[index]);
+				writer.WriteString(symbols->cppMapping.Values()[index]);
 			}
 		}
 
@@ -228,9 +277,25 @@ GenerateRemoteProtocolHeaderFile
 		writer.WriteLine(L"{");
 
 		GuiRpPrintTypeVisitor printTypeVisitor(symbols, config, writer);
+
+		for (auto enumDecl : From(schema->declarations).FindType<GuiRpEnumDecl>())
+		{
+			if (!symbols->cppMapping.Keys().Contains(enumDecl->name.value))
+			{
+				writer.WriteLine(L"\tenum class " + enumDecl->name.value);
+				writer.WriteLine(L"\t{");
+				for (auto member : enumDecl->members)
+				{
+					writer.WriteLine(L"\t\t" + member->name.value + L",");
+				}
+				writer.WriteLine(L"\t};");
+				writer.WriteLine(L"");
+			}
+		}
+
 		for (auto structDecl : From(schema->declarations).FindType<GuiRpStructDecl>())
 		{
-			if (!symbols->structCppMapping.Keys().Contains(structDecl->name.value))
+			if (!symbols->cppMapping.Keys().Contains(structDecl->name.value))
 			{
 				writer.WriteLine(L"\tstruct " + structDecl->name.value);
 				writer.WriteLine(L"\t{");

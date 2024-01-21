@@ -16,6 +16,14 @@ RAttribute
 	::= "[" ATT_NAME:name ["(" RAttributeParameter ")"] "]" as Attribute
 	;
 
+REnumMember
+	::= NAME:name "," as EnumMember
+	;
+
+REnum
+	::= "enum" NAME:name "{" {REnumMember : members} "}" as EnumDecl
+	;
+
 RStructMember
 	::= "var" NAME:name ":" RType:type ";" as StructMember
 	;
@@ -45,6 +53,7 @@ REvent
 	;
 
 RDeclDetail
+	::= !REnum
 	::= !RStruct
 	::= !RMessage
 	::= !REvent

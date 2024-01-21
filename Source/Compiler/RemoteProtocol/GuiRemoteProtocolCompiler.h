@@ -10,6 +10,7 @@ Interfaces:
 #define VCZH_PRESENTATION_REFLECTION_REMOTEPROTOCOL_GUIREMOTEPROTOCOL
 
 #include "Generated/GuiRemoteProtocolParser.h"
+#include "Generated/GuiRemoteProtocolAst_Json.h"
 
 namespace vl::presentation
 {
@@ -21,7 +22,8 @@ namespace vl::presentation
 
 	struct GuiRpSymbols
 	{
-		collections::Dictionary<WString, WString>								structCppMapping;
+		collections::Dictionary<WString, WString>								cppMapping;
+		collections::Dictionary<WString, remoteprotocol::GuiRpEnumDecl*>		enumDecls;
 		collections::Dictionary<WString, remoteprotocol::GuiRpStructDecl*>		structDecls;
 		collections::Dictionary<WString, remoteprotocol::GuiRpMessageDecl*>		messageDecls;
 		collections::Dictionary<WString, remoteprotocol::GuiRpEventDecl*>		eventDecls;

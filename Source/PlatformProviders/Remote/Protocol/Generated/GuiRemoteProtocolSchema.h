@@ -28,12 +28,14 @@ namespace vl::presentation::remoteprotocol
 	{
 		::vl::presentation::NativeRect bounds;
 		::vl::presentation::NativeRect clientBounds;
+		::vl::presentation::INativeWindow::WindowSizeState sizeState;
 		::vl::presentation::NativeMargin customFramePadding;
 	};
 
 	struct WindowShowing
 	{
 		bool activate;
+		::vl::presentation::INativeWindow::WindowSizeState sizeState;
 	};
 
 #define GACUI_REMOTEPROTOCOL_MESSAGES(HANDLER)\
@@ -56,9 +58,7 @@ namespace vl::presentation::remoteprotocol
 	HANDLER(WindowSetBounds, ::vl::presentation::NativeRect, vl::presentation::remoteprotocol::WindowSizingConfig, REQ, RES)\
 	HANDLER(WindowSetClientSize, ::vl::presentation::NativeSize, vl::presentation::remoteprotocol::WindowSizingConfig, REQ, RES)\
 	HANDLER(WindowNotifyActivate, void, void, NOREQ, NORES)\
-	HANDLER(WindowNotifyShowRestored, vl::presentation::remoteprotocol::WindowShowing, void, REQ, NORES)\
-	HANDLER(WindowNotifyShowMaximized, vl::presentation::remoteprotocol::WindowShowing, void, REQ, NORES)\
-	HANDLER(WindowNotifyShowMinimized, vl::presentation::remoteprotocol::WindowShowing, void, REQ, NORES)\
+	HANDLER(WindowNotifyShow, vl::presentation::remoteprotocol::WindowShowing, void, REQ, NORES)\
 
 #define GACUI_REMOTEPROTOCOL_EVENTS(HANDLER)\
 	HANDLER(ControllerConnect, void, NOREQ)\
@@ -67,11 +67,8 @@ namespace vl::presentation::remoteprotocol
 	HANDLER(ControllerForceExit, void, NOREQ)\
 	HANDLER(ControllerScreenUpdated, vl::presentation::remoteprotocol::ScreenConfig, REQ)\
 	HANDLER(WindowBoundsUpdated, vl::presentation::remoteprotocol::WindowSizingConfig, REQ)\
-	HANDLER(WindowActivated, void, NOREQ)\
-	HANDLER(WindowDeactivated, void, NOREQ)\
-	HANDLER(WindowRestored, void, NOREQ)\
-	HANDLER(WindowMaximized, void, NOREQ)\
-	HANDLER(WindowMinimized, void, NOREQ)\
+	HANDLER(WindowActivatedUpdated, bool, REQ)\
+	HANDLER(WindowFocusedUpdated, bool, REQ)\
 
 }
 

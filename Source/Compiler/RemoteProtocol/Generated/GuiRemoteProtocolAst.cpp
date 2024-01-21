@@ -27,6 +27,11 @@ Visitor Pattern Implementation
 		visitor->Visit(this);
 	}
 
+	void GuiRpEnumDecl::Accept(GuiRpDeclaration::IVisitor* visitor)
+	{
+		visitor->Visit(this);
+	}
+
 	void GuiRpStructDecl::Accept(GuiRpDeclaration::IVisitor* visitor)
 	{
 		visitor->Visit(this);
@@ -55,6 +60,8 @@ namespace vl::reflection::description
 	IMPL_TYPE_INFO_RENAME(vl::presentation::remoteprotocol::GuiRpAttribute, presentation::remoteprotocol::GuiRpAttribute)
 	IMPL_TYPE_INFO_RENAME(vl::presentation::remoteprotocol::GuiRpDeclaration, presentation::remoteprotocol::GuiRpDeclaration)
 	IMPL_TYPE_INFO_RENAME(vl::presentation::remoteprotocol::GuiRpDeclaration::IVisitor, presentation::remoteprotocol::GuiRpDeclaration::IVisitor)
+	IMPL_TYPE_INFO_RENAME(vl::presentation::remoteprotocol::GuiRpEnumMember, presentation::remoteprotocol::GuiRpEnumMember)
+	IMPL_TYPE_INFO_RENAME(vl::presentation::remoteprotocol::GuiRpEnumDecl, presentation::remoteprotocol::GuiRpEnumDecl)
 	IMPL_TYPE_INFO_RENAME(vl::presentation::remoteprotocol::GuiRpStructMember, presentation::remoteprotocol::GuiRpStructMember)
 	IMPL_TYPE_INFO_RENAME(vl::presentation::remoteprotocol::GuiRpStructDecl, presentation::remoteprotocol::GuiRpStructDecl)
 	IMPL_TYPE_INFO_RENAME(vl::presentation::remoteprotocol::GuiRpMessageRequest, presentation::remoteprotocol::GuiRpMessageRequest)
@@ -119,6 +126,22 @@ namespace vl::reflection::description
 		CLASS_MEMBER_FIELD(attributes)
 		CLASS_MEMBER_FIELD(name)
 	END_CLASS_MEMBER(vl::presentation::remoteprotocol::GuiRpDeclaration)
+
+	BEGIN_CLASS_MEMBER(vl::presentation::remoteprotocol::GuiRpEnumMember)
+		CLASS_MEMBER_BASE(vl::glr::ParsingAstBase)
+
+		CLASS_MEMBER_CONSTRUCTOR(vl::Ptr<vl::presentation::remoteprotocol::GuiRpEnumMember>(), NO_PARAMETER)
+
+		CLASS_MEMBER_FIELD(name)
+	END_CLASS_MEMBER(vl::presentation::remoteprotocol::GuiRpEnumMember)
+
+	BEGIN_CLASS_MEMBER(vl::presentation::remoteprotocol::GuiRpEnumDecl)
+		CLASS_MEMBER_BASE(vl::presentation::remoteprotocol::GuiRpDeclaration)
+
+		CLASS_MEMBER_CONSTRUCTOR(vl::Ptr<vl::presentation::remoteprotocol::GuiRpEnumDecl>(), NO_PARAMETER)
+
+		CLASS_MEMBER_FIELD(members)
+	END_CLASS_MEMBER(vl::presentation::remoteprotocol::GuiRpEnumDecl)
 
 	BEGIN_CLASS_MEMBER(vl::presentation::remoteprotocol::GuiRpStructMember)
 		CLASS_MEMBER_BASE(vl::glr::ParsingAstBase)
@@ -193,6 +216,7 @@ namespace vl::reflection::description
 	END_INTERFACE_MEMBER(vl::presentation::remoteprotocol::GuiRpType)
 
 	BEGIN_INTERFACE_MEMBER(vl::presentation::remoteprotocol::GuiRpDeclaration::IVisitor)
+		CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(vl::presentation::remoteprotocol::GuiRpDeclaration::IVisitor::*)(vl::presentation::remoteprotocol::GuiRpEnumDecl* node))
 		CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(vl::presentation::remoteprotocol::GuiRpDeclaration::IVisitor::*)(vl::presentation::remoteprotocol::GuiRpStructDecl* node))
 		CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(vl::presentation::remoteprotocol::GuiRpDeclaration::IVisitor::*)(vl::presentation::remoteprotocol::GuiRpMessageDecl* node))
 		CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(vl::presentation::remoteprotocol::GuiRpDeclaration::IVisitor::*)(vl::presentation::remoteprotocol::GuiRpEventDecl* node))
@@ -215,6 +239,8 @@ namespace vl::reflection::description
 			ADD_TYPE_INFO(vl::presentation::remoteprotocol::GuiRpAttribute)
 			ADD_TYPE_INFO(vl::presentation::remoteprotocol::GuiRpDeclaration)
 			ADD_TYPE_INFO(vl::presentation::remoteprotocol::GuiRpDeclaration::IVisitor)
+			ADD_TYPE_INFO(vl::presentation::remoteprotocol::GuiRpEnumMember)
+			ADD_TYPE_INFO(vl::presentation::remoteprotocol::GuiRpEnumDecl)
 			ADD_TYPE_INFO(vl::presentation::remoteprotocol::GuiRpStructMember)
 			ADD_TYPE_INFO(vl::presentation::remoteprotocol::GuiRpStructDecl)
 			ADD_TYPE_INFO(vl::presentation::remoteprotocol::GuiRpMessageRequest)
