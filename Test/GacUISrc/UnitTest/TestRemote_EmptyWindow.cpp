@@ -177,7 +177,6 @@ TEST_FILE
 	// TODO: test ControllerRequestExit with success and blocked
 	// TODO: test ControllerForceExit and ensure it skipped INativeWindowListener::(Before|After)Closing
 	// TODO: test ControllerDisconnect and ControllerConnect
-	// TODO: test focus/enabled with RenderingAsActivated
-	// TODO: test activate/showactivated from INativeWindow and event (bidirectional controlling)
+	// TODO: test enabled/activate/showactivated from INativeWindow and event (bidirectional controlling)
 	// TODO: test size status from INativeWindow and event (bidirectional controlling)
 }

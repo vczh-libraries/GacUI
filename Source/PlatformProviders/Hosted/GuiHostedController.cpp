@@ -94,6 +94,7 @@ GuiHostedController::WindowManager<GuiHostedWindow*>
 
 		void GuiHostedController::OnGotFocus(hosted_window_manager::Window<GuiHostedWindow*>* window)
 		{
+			window->id->BecomeFocusedWindow();
 			for (auto listener : window->id->listeners)
 			{
 				listener->GotFocus();
@@ -102,7 +103,6 @@ GuiHostedController::WindowManager<GuiHostedWindow*>
 
 		void GuiHostedController::OnLostFocus(hosted_window_manager::Window<GuiHostedWindow*>* window)
 		{
-			window->id->BecomeFocusedWindow();
 			for (auto listener : window->id->listeners)
 			{
 				listener->LostFocus();

@@ -46,10 +46,12 @@ GuiRemoteWindow
 			statusActivated = activated;
 			if (statusActivated)
 			{
+				for (auto l : listeners)l->GotFocus();
 				for (auto l : listeners)l->RenderingAsActivated();
 			}
 			else
 			{
+				for (auto l : listeners)l->LostFocus();
 				for (auto l : listeners)l->RenderingAsDeactivated();
 			}
 		}
