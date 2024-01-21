@@ -7,9 +7,9 @@ Licensed under https ://github.com/vczh-libraries/License
 
 namespace vl::presentation::remoteprotocol
 {
-	vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson(const ::vl::presentation::INativeWindow::WindowSizeState& value)
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::INativeWindow::WindowSizeState>(const ::vl::presentation::INativeWindow::WindowSizeState & value)
 	{
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertCustomTypeToJson(const ::vl::presentation::INativeWindow::WindowSizeState&)#"
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertCustomTypeToJson<::vl::presentation::INativeWindow::WindowSizeState>(const ::vl::presentation::INativeWindow::WindowSizeState&)#"
 		auto node = Ptr(new glr::json::JsonString);
 		switch (value)
 		{
@@ -22,14 +22,14 @@ namespace vl::presentation::remoteprotocol
 #undef ERROR_MESSAGE_PREFIX
 	}
 
-	vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson(const ::vl::presentation::NativeCoordinate& value)
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::NativeCoordinate>(const ::vl::presentation::NativeCoordinate & value)
 	{
 		auto node = Ptr(new glr::json::JsonObject);
 		ConvertCustomTypeToJsonField(node, L"value", value.value);
 		return node;
 	}
 
-	vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson(const ::vl::presentation::NativePoint& value)
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::NativePoint>(const ::vl::presentation::NativePoint & value)
 	{
 		auto node = Ptr(new glr::json::JsonObject);
 		ConvertCustomTypeToJsonField(node, L"x", value.x);
@@ -37,7 +37,7 @@ namespace vl::presentation::remoteprotocol
 		return node;
 	}
 
-	vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson(const ::vl::presentation::NativeSize& value)
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::NativeSize>(const ::vl::presentation::NativeSize & value)
 	{
 		auto node = Ptr(new glr::json::JsonObject);
 		ConvertCustomTypeToJsonField(node, L"x", value.x);
@@ -45,7 +45,7 @@ namespace vl::presentation::remoteprotocol
 		return node;
 	}
 
-	vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson(const ::vl::presentation::NativeRect& value)
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::NativeRect>(const ::vl::presentation::NativeRect & value)
 	{
 		auto node = Ptr(new glr::json::JsonObject);
 		ConvertCustomTypeToJsonField(node, L"x1", value.x1);
@@ -55,7 +55,7 @@ namespace vl::presentation::remoteprotocol
 		return node;
 	}
 
-	vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson(const ::vl::presentation::NativeMargin& value)
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::NativeMargin>(const ::vl::presentation::NativeMargin & value)
 	{
 		auto node = Ptr(new glr::json::JsonObject);
 		ConvertCustomTypeToJsonField(node, L"left", value.left);
@@ -65,7 +65,7 @@ namespace vl::presentation::remoteprotocol
 		return node;
 	}
 
-	vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson(const ::vl::presentation::FontProperties& value)
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::FontProperties>(const ::vl::presentation::FontProperties & value)
 	{
 		auto node = Ptr(new glr::json::JsonObject);
 		ConvertCustomTypeToJsonField(node, L"fontFamily", value.fontFamily);
@@ -79,7 +79,7 @@ namespace vl::presentation::remoteprotocol
 		return node;
 	}
 
-	vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson(const vl::presentation::remoteprotocol::FontConfig& value)
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<vl::presentation::remoteprotocol::FontConfig>(const vl::presentation::remoteprotocol::FontConfig & value)
 	{
 		auto node = Ptr(new glr::json::JsonObject);
 		ConvertCustomTypeToJsonField(node, L"defaultFont", value.defaultFont);
@@ -87,7 +87,7 @@ namespace vl::presentation::remoteprotocol
 		return node;
 	}
 
-	vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson(const vl::presentation::remoteprotocol::ScreenConfig& value)
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<vl::presentation::remoteprotocol::ScreenConfig>(const vl::presentation::remoteprotocol::ScreenConfig & value)
 	{
 		auto node = Ptr(new glr::json::JsonObject);
 		ConvertCustomTypeToJsonField(node, L"bounds", value.bounds);
@@ -97,7 +97,7 @@ namespace vl::presentation::remoteprotocol
 		return node;
 	}
 
-	vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson(const vl::presentation::remoteprotocol::WindowSizingConfig& value)
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<vl::presentation::remoteprotocol::WindowSizingConfig>(const vl::presentation::remoteprotocol::WindowSizingConfig & value)
 	{
 		auto node = Ptr(new glr::json::JsonObject);
 		ConvertCustomTypeToJsonField(node, L"bounds", value.bounds);
@@ -107,7 +107,7 @@ namespace vl::presentation::remoteprotocol
 		return node;
 	}
 
-	vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson(const vl::presentation::remoteprotocol::WindowShowing& value)
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<vl::presentation::remoteprotocol::WindowShowing>(const vl::presentation::remoteprotocol::WindowShowing & value)
 	{
 		auto node = Ptr(new glr::json::JsonObject);
 		ConvertCustomTypeToJsonField(node, L"activate", value.activate);
@@ -115,9 +115,9 @@ namespace vl::presentation::remoteprotocol
 		return node;
 	}
 
-	void ConvertJsonToCustomType(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::INativeWindow::WindowSizeState& value)
+	template<> void ConvertJsonToCustomType<::vl::presentation::INativeWindow::WindowSizeState>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::INativeWindow::WindowSizeState& value)
 	{
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType(Ptr<JsonNode>, ::vl::presentation::INativeWindow::WindowSizeState&)#"
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<::vl::presentation::INativeWindow::WindowSizeState>(Ptr<JsonNode>, ::vl::presentation::INativeWindow::WindowSizeState&)#"
 		auto jsonNode = node.Cast<glr::json::JsonString>();
 		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
 		if (jsonNode->content.value == L"Minimized") value = ::vl::presentation::INativeWindow::WindowSizeState::Minimized; else
@@ -127,9 +127,9 @@ namespace vl::presentation::remoteprotocol
 #undef ERROR_MESSAGE_PREFIX
 	}
 
-	void ConvertJsonToCustomType(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::NativeCoordinate& value)
+	template<> void ConvertJsonToCustomType<::vl::presentation::NativeCoordinate>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::NativeCoordinate& value)
 	{
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType(Ptr<JsonNode>, ::vl::presentation::NativeCoordinate&)#"
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<::vl::presentation::NativeCoordinate>(Ptr<JsonNode>, ::vl::presentation::NativeCoordinate&)#"
 		auto jsonNode = node.Cast<glr::json::JsonObject>();
 		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
 		for (auto field : jsonNode->fields)
@@ -140,9 +140,9 @@ namespace vl::presentation::remoteprotocol
 #undef ERROR_MESSAGE_PREFIX
 	}
 
-	void ConvertJsonToCustomType(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::NativePoint& value)
+	template<> void ConvertJsonToCustomType<::vl::presentation::NativePoint>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::NativePoint& value)
 	{
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType(Ptr<JsonNode>, ::vl::presentation::NativePoint&)#"
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<::vl::presentation::NativePoint>(Ptr<JsonNode>, ::vl::presentation::NativePoint&)#"
 		auto jsonNode = node.Cast<glr::json::JsonObject>();
 		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
 		for (auto field : jsonNode->fields)
@@ -154,9 +154,9 @@ namespace vl::presentation::remoteprotocol
 #undef ERROR_MESSAGE_PREFIX
 	}
 
-	void ConvertJsonToCustomType(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::NativeSize& value)
+	template<> void ConvertJsonToCustomType<::vl::presentation::NativeSize>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::NativeSize& value)
 	{
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType(Ptr<JsonNode>, ::vl::presentation::NativeSize&)#"
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<::vl::presentation::NativeSize>(Ptr<JsonNode>, ::vl::presentation::NativeSize&)#"
 		auto jsonNode = node.Cast<glr::json::JsonObject>();
 		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
 		for (auto field : jsonNode->fields)
@@ -168,9 +168,9 @@ namespace vl::presentation::remoteprotocol
 #undef ERROR_MESSAGE_PREFIX
 	}
 
-	void ConvertJsonToCustomType(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::NativeRect& value)
+	template<> void ConvertJsonToCustomType<::vl::presentation::NativeRect>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::NativeRect& value)
 	{
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType(Ptr<JsonNode>, ::vl::presentation::NativeRect&)#"
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<::vl::presentation::NativeRect>(Ptr<JsonNode>, ::vl::presentation::NativeRect&)#"
 		auto jsonNode = node.Cast<glr::json::JsonObject>();
 		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
 		for (auto field : jsonNode->fields)
@@ -184,9 +184,9 @@ namespace vl::presentation::remoteprotocol
 #undef ERROR_MESSAGE_PREFIX
 	}
 
-	void ConvertJsonToCustomType(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::NativeMargin& value)
+	template<> void ConvertJsonToCustomType<::vl::presentation::NativeMargin>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::NativeMargin& value)
 	{
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType(Ptr<JsonNode>, ::vl::presentation::NativeMargin&)#"
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<::vl::presentation::NativeMargin>(Ptr<JsonNode>, ::vl::presentation::NativeMargin&)#"
 		auto jsonNode = node.Cast<glr::json::JsonObject>();
 		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
 		for (auto field : jsonNode->fields)
@@ -200,9 +200,9 @@ namespace vl::presentation::remoteprotocol
 #undef ERROR_MESSAGE_PREFIX
 	}
 
-	void ConvertJsonToCustomType(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::FontProperties& value)
+	template<> void ConvertJsonToCustomType<::vl::presentation::FontProperties>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::FontProperties& value)
 	{
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType(Ptr<JsonNode>, ::vl::presentation::FontProperties&)#"
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<::vl::presentation::FontProperties>(Ptr<JsonNode>, ::vl::presentation::FontProperties&)#"
 		auto jsonNode = node.Cast<glr::json::JsonObject>();
 		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
 		for (auto field : jsonNode->fields)
@@ -220,9 +220,9 @@ namespace vl::presentation::remoteprotocol
 #undef ERROR_MESSAGE_PREFIX
 	}
 
-	void ConvertJsonToCustomType(vl::Ptr<vl::glr::json::JsonNode> node, vl::presentation::remoteprotocol::FontConfig& value)
+	template<> void ConvertJsonToCustomType<vl::presentation::remoteprotocol::FontConfig>(vl::Ptr<vl::glr::json::JsonNode> node, vl::presentation::remoteprotocol::FontConfig& value)
 	{
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType(Ptr<JsonNode>, vl::presentation::remoteprotocol::FontConfig&)#"
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<vl::presentation::remoteprotocol::FontConfig>(Ptr<JsonNode>, vl::presentation::remoteprotocol::FontConfig&)#"
 		auto jsonNode = node.Cast<glr::json::JsonObject>();
 		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
 		for (auto field : jsonNode->fields)
@@ -234,9 +234,9 @@ namespace vl::presentation::remoteprotocol
 #undef ERROR_MESSAGE_PREFIX
 	}
 
-	void ConvertJsonToCustomType(vl::Ptr<vl::glr::json::JsonNode> node, vl::presentation::remoteprotocol::ScreenConfig& value)
+	template<> void ConvertJsonToCustomType<vl::presentation::remoteprotocol::ScreenConfig>(vl::Ptr<vl::glr::json::JsonNode> node, vl::presentation::remoteprotocol::ScreenConfig& value)
 	{
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType(Ptr<JsonNode>, vl::presentation::remoteprotocol::ScreenConfig&)#"
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<vl::presentation::remoteprotocol::ScreenConfig>(Ptr<JsonNode>, vl::presentation::remoteprotocol::ScreenConfig&)#"
 		auto jsonNode = node.Cast<glr::json::JsonObject>();
 		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
 		for (auto field : jsonNode->fields)
@@ -250,9 +250,9 @@ namespace vl::presentation::remoteprotocol
 #undef ERROR_MESSAGE_PREFIX
 	}
 
-	void ConvertJsonToCustomType(vl::Ptr<vl::glr::json::JsonNode> node, vl::presentation::remoteprotocol::WindowSizingConfig& value)
+	template<> void ConvertJsonToCustomType<vl::presentation::remoteprotocol::WindowSizingConfig>(vl::Ptr<vl::glr::json::JsonNode> node, vl::presentation::remoteprotocol::WindowSizingConfig& value)
 	{
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType(Ptr<JsonNode>, vl::presentation::remoteprotocol::WindowSizingConfig&)#"
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<vl::presentation::remoteprotocol::WindowSizingConfig>(Ptr<JsonNode>, vl::presentation::remoteprotocol::WindowSizingConfig&)#"
 		auto jsonNode = node.Cast<glr::json::JsonObject>();
 		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
 		for (auto field : jsonNode->fields)
@@ -266,9 +266,9 @@ namespace vl::presentation::remoteprotocol
 #undef ERROR_MESSAGE_PREFIX
 	}
 
-	void ConvertJsonToCustomType(vl::Ptr<vl::glr::json::JsonNode> node, vl::presentation::remoteprotocol::WindowShowing& value)
+	template<> void ConvertJsonToCustomType<vl::presentation::remoteprotocol::WindowShowing>(vl::Ptr<vl::glr::json::JsonNode> node, vl::presentation::remoteprotocol::WindowShowing& value)
 	{
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType(Ptr<JsonNode>, vl::presentation::remoteprotocol::WindowShowing&)#"
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<vl::presentation::remoteprotocol::WindowShowing>(Ptr<JsonNode>, vl::presentation::remoteprotocol::WindowShowing&)#"
 		auto jsonNode = node.Cast<glr::json::JsonObject>();
 		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
 		for (auto field : jsonNode->fields)

@@ -268,13 +268,13 @@ GenerateRemoteProtocolHeaderFile
 
 	void GenerateSerializerFunctionHeader(const WString& type, bool semicolon, stream::TextWriter& writer)
 	{
-		writer.WriteString(L"vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson(const " + type + L"& value)");
+		writer.WriteString(L"\ttemplate<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<" + type + L">(const " + type + L" & value)");
 		writer.WriteLine(semicolon ? L";" : L"");
 	}
 
 	void GenerateDeserializerFunctionHeader(const WString& type, bool semicolon, stream::TextWriter& writer)
 	{
-		writer.WriteString(L"void ConvertJsonToCustomType(vl::Ptr<vl::glr::json::JsonNode> node, " + type + L"& value)");
+		writer.WriteString(L"\ttemplate<> void ConvertJsonToCustomType<" + type + L">(vl::Ptr<vl::glr::json::JsonNode> node, " + type + L"& value)");
 		writer.WriteLine(semicolon ? L";" : L"");
 	}
 
@@ -329,24 +329,20 @@ GenerateRemoteProtocolHeaderFile
 
 		for (auto enumDecl : From(schema->declarations).FindType<GuiRpEnumDecl>())
 		{
-			writer.WriteString(L"\textern ");
 			GenerateSerializerFunctionHeader(GuiRpPrintTypeVisitor::GetCppType(enumDecl->name.value, symbols, config), true, writer);
 		}
 		for (auto structDecl : From(schema->declarations).FindType<GuiRpStructDecl>())
 		{
-			writer.WriteString(L"\textern ");
 			GenerateSerializerFunctionHeader(GuiRpPrintTypeVisitor::GetCppType(structDecl->name.value, symbols, config), true, writer);
 		}
 		writer.WriteLine(L"");
 
 		for (auto enumDecl : From(schema->declarations).FindType<GuiRpEnumDecl>())
 		{
-			writer.WriteString(L"\textern ");
 			GenerateDeserializerFunctionHeader(GuiRpPrintTypeVisitor::GetCppType(enumDecl->name.value, symbols, config), true, writer);
 		}
 		for (auto structDecl : From(schema->declarations).FindType<GuiRpStructDecl>())
 		{
-			writer.WriteString(L"\textern ");
 			GenerateDeserializerFunctionHeader(GuiRpPrintTypeVisitor::GetCppType(structDecl->name.value, symbols, config), true, writer);
 		}
 		writer.WriteLine(L"");
@@ -414,10 +410,9 @@ GenerateRemoteProtocolCppFile
 	void GenerateEnumSerializerFunctionImpl(Ptr<GuiRpEnumDecl> enumDecl, Ptr<GuiRpSymbols> symbols, GuiRpCppConfig& config, stream::TextWriter& writer)
 	{
 		WString cppName = GuiRpPrintTypeVisitor::GetCppType(enumDecl->name.value, symbols, config);
-		writer.WriteString(L"\t");
 		GenerateSerializerFunctionHeader(cppName, false, writer);
 		writer.WriteLine(L"\t{");
-		writer.WriteLine(L"#define ERROR_MESSAGE_PREFIX L\"vl::presentation::remoteprotocol::ConvertCustomTypeToJson(const " + cppName + L"&)#\"");
+		writer.WriteLine(L"#define ERROR_MESSAGE_PREFIX L\"vl::presentation::remoteprotocol::ConvertCustomTypeToJson<" + cppName + L">(const " + cppName + L"&)#\"");
 		writer.WriteLine(L"\t\tauto node = Ptr(new glr::json::JsonString);");
 		writer.WriteLine(L"\t\tswitch (value)");
 		writer.WriteLine(L"\t\t{");
@@ -436,7 +431,6 @@ GenerateRemoteProtocolCppFile
 	void GenerateStructSerializerFunctionImpl(Ptr<GuiRpStructDecl> structDecl, Ptr<GuiRpSymbols> symbols, GuiRpCppConfig& config, stream::TextWriter& writer)
 	{
 		WString cppName = GuiRpPrintTypeVisitor::GetCppType(structDecl->name.value, symbols, config);
-		writer.WriteString(L"\t");
 		GenerateSerializerFunctionHeader(cppName, false, writer);
 		writer.WriteLine(L"\t{");
 		writer.WriteLine(L"\t\tauto node = Ptr(new glr::json::JsonObject);");
@@ -452,10 +446,9 @@ GenerateRemoteProtocolCppFile
 	void GenerateEnumDeserializerFunctionImpl(Ptr<GuiRpEnumDecl> enumDecl, Ptr<GuiRpSymbols> symbols, GuiRpCppConfig& config, stream::TextWriter& writer)
 	{
 		WString cppName = GuiRpPrintTypeVisitor::GetCppType(enumDecl->name.value, symbols, config);
-		writer.WriteString(L"\t");
 		GenerateDeserializerFunctionHeader(cppName, false, writer);
 		writer.WriteLine(L"\t{");
-		writer.WriteLine(L"#define ERROR_MESSAGE_PREFIX L\"vl::presentation::remoteprotocol::ConvertJsonToCustomType(Ptr<JsonNode>, " + cppName + L"&)#\"");
+		writer.WriteLine(L"#define ERROR_MESSAGE_PREFIX L\"vl::presentation::remoteprotocol::ConvertJsonToCustomType<" + cppName + L">(Ptr<JsonNode>, " + cppName + L"&)#\"");
 		writer.WriteLine(L"\t\tauto jsonNode = node.Cast<glr::json::JsonString>();");
 		writer.WriteLine(L"\t\tCHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L\"Json node does not match the expected type.\");");
 		for (auto member : enumDecl->members)
@@ -471,10 +464,9 @@ GenerateRemoteProtocolCppFile
 	void GenerateStructDeserializerFunctionImpl(Ptr<GuiRpStructDecl> structDecl, Ptr<GuiRpSymbols> symbols, GuiRpCppConfig& config, stream::TextWriter& writer)
 	{
 		WString cppName = GuiRpPrintTypeVisitor::GetCppType(structDecl->name.value, symbols, config);
-		writer.WriteString(L"\t");
 		GenerateDeserializerFunctionHeader(cppName, false, writer);
 		writer.WriteLine(L"\t{");
-		writer.WriteLine(L"#define ERROR_MESSAGE_PREFIX L\"vl::presentation::remoteprotocol::ConvertJsonToCustomType(Ptr<JsonNode>, " + cppName + L"&)#\"");
+		writer.WriteLine(L"#define ERROR_MESSAGE_PREFIX L\"vl::presentation::remoteprotocol::ConvertJsonToCustomType<" + cppName + L">(Ptr<JsonNode>, " + cppName + L"&)#\"");
 		writer.WriteLine(L"\t\tauto jsonNode = node.Cast<glr::json::JsonObject>();");
 		writer.WriteLine(L"\t\tCHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L\"Json node does not match the expected type.\");");
 		writer.WriteLine(L"\t\tfor (auto field : jsonNode->fields)");

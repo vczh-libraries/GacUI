@@ -38,29 +38,29 @@ namespace vl::presentation::remoteprotocol
 		::vl::presentation::INativeWindow::WindowSizeState sizeState;
 	};
 
-	extern vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson(const ::vl::presentation::INativeWindow::WindowSizeState& value);
-	extern vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson(const ::vl::presentation::NativeCoordinate& value);
-	extern vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson(const ::vl::presentation::NativePoint& value);
-	extern vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson(const ::vl::presentation::NativeSize& value);
-	extern vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson(const ::vl::presentation::NativeRect& value);
-	extern vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson(const ::vl::presentation::NativeMargin& value);
-	extern vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson(const ::vl::presentation::FontProperties& value);
-	extern vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson(const vl::presentation::remoteprotocol::FontConfig& value);
-	extern vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson(const vl::presentation::remoteprotocol::ScreenConfig& value);
-	extern vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson(const vl::presentation::remoteprotocol::WindowSizingConfig& value);
-	extern vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson(const vl::presentation::remoteprotocol::WindowShowing& value);
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::INativeWindow::WindowSizeState>(const ::vl::presentation::INativeWindow::WindowSizeState & value);
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::NativeCoordinate>(const ::vl::presentation::NativeCoordinate & value);
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::NativePoint>(const ::vl::presentation::NativePoint & value);
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::NativeSize>(const ::vl::presentation::NativeSize & value);
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::NativeRect>(const ::vl::presentation::NativeRect & value);
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::NativeMargin>(const ::vl::presentation::NativeMargin & value);
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::FontProperties>(const ::vl::presentation::FontProperties & value);
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<vl::presentation::remoteprotocol::FontConfig>(const vl::presentation::remoteprotocol::FontConfig & value);
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<vl::presentation::remoteprotocol::ScreenConfig>(const vl::presentation::remoteprotocol::ScreenConfig & value);
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<vl::presentation::remoteprotocol::WindowSizingConfig>(const vl::presentation::remoteprotocol::WindowSizingConfig & value);
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<vl::presentation::remoteprotocol::WindowShowing>(const vl::presentation::remoteprotocol::WindowShowing & value);
 
-	extern void ConvertJsonToCustomType(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::INativeWindow::WindowSizeState& value);
-	extern void ConvertJsonToCustomType(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::NativeCoordinate& value);
-	extern void ConvertJsonToCustomType(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::NativePoint& value);
-	extern void ConvertJsonToCustomType(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::NativeSize& value);
-	extern void ConvertJsonToCustomType(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::NativeRect& value);
-	extern void ConvertJsonToCustomType(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::NativeMargin& value);
-	extern void ConvertJsonToCustomType(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::FontProperties& value);
-	extern void ConvertJsonToCustomType(vl::Ptr<vl::glr::json::JsonNode> node, vl::presentation::remoteprotocol::FontConfig& value);
-	extern void ConvertJsonToCustomType(vl::Ptr<vl::glr::json::JsonNode> node, vl::presentation::remoteprotocol::ScreenConfig& value);
-	extern void ConvertJsonToCustomType(vl::Ptr<vl::glr::json::JsonNode> node, vl::presentation::remoteprotocol::WindowSizingConfig& value);
-	extern void ConvertJsonToCustomType(vl::Ptr<vl::glr::json::JsonNode> node, vl::presentation::remoteprotocol::WindowShowing& value);
+	template<> void ConvertJsonToCustomType<::vl::presentation::INativeWindow::WindowSizeState>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::INativeWindow::WindowSizeState& value);
+	template<> void ConvertJsonToCustomType<::vl::presentation::NativeCoordinate>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::NativeCoordinate& value);
+	template<> void ConvertJsonToCustomType<::vl::presentation::NativePoint>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::NativePoint& value);
+	template<> void ConvertJsonToCustomType<::vl::presentation::NativeSize>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::NativeSize& value);
+	template<> void ConvertJsonToCustomType<::vl::presentation::NativeRect>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::NativeRect& value);
+	template<> void ConvertJsonToCustomType<::vl::presentation::NativeMargin>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::NativeMargin& value);
+	template<> void ConvertJsonToCustomType<::vl::presentation::FontProperties>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::FontProperties& value);
+	template<> void ConvertJsonToCustomType<vl::presentation::remoteprotocol::FontConfig>(vl::Ptr<vl::glr::json::JsonNode> node, vl::presentation::remoteprotocol::FontConfig& value);
+	template<> void ConvertJsonToCustomType<vl::presentation::remoteprotocol::ScreenConfig>(vl::Ptr<vl::glr::json::JsonNode> node, vl::presentation::remoteprotocol::ScreenConfig& value);
+	template<> void ConvertJsonToCustomType<vl::presentation::remoteprotocol::WindowSizingConfig>(vl::Ptr<vl::glr::json::JsonNode> node, vl::presentation::remoteprotocol::WindowSizingConfig& value);
+	template<> void ConvertJsonToCustomType<vl::presentation::remoteprotocol::WindowShowing>(vl::Ptr<vl::glr::json::JsonNode> node, vl::presentation::remoteprotocol::WindowShowing& value);
 
 #define GACUI_REMOTEPROTOCOL_MESSAGES(HANDLER)\
 	HANDLER(ControllerGetFontConfig, void, vl::presentation::remoteprotocol::FontConfig, NOREQ, RES)\
