@@ -196,6 +196,7 @@ GuiRemoteController::INativeWindowService
 		for (auto l : remoteWindow.listeners) l->Destroying();
 		callbackService.InvokeNativeWindowDestroying(&remoteWindow);
 		for (auto l : remoteWindow.listeners) l->Destroyed();
+		connectionStopped = true;
 	}
 
 	INativeWindow* GuiRemoteController::GetMainWindow()
@@ -257,6 +258,8 @@ GuiRemoteController
 
 	void GuiRemoteController::Finalize()
 	{
+		remoteMessages.RequestControllerConnectionStopped();
+		remoteMessages.Submit();
 	}
 
 	void GuiRemoteController::OnControllerConnect()
@@ -277,10 +280,13 @@ GuiRemoteController
 
 	void GuiRemoteController::OnControllerRequestExit()
 	{
+		remoteWindow.Hide(true);
 	}
 
 	void GuiRemoteController::OnControllerForceExit()
 	{
+		connectionForcedToStop = true;
+		remoteWindow.Hide(true);
 	}
 
 	void GuiRemoteController::OnControllerScreenUpdated(const remoteprotocol::ScreenConfig& arguments)

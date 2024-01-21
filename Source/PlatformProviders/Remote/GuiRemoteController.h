@@ -43,6 +43,7 @@ GuiRemoteController
 		GuiRemoteWindow					remoteWindow;
 		SharedCallbackService			callbackService;
 		SharedAsyncService				asyncService;
+		bool							connectionForcedToStop = false;
 		bool							connectionStopped = false;
 
 		remoteprotocol::FontConfig		remoteFontConfig;

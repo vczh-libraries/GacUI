@@ -53,6 +53,10 @@ public:
 	{
 	}
 
+	void RequestControllerConnectionStopped() override
+	{
+	}
+
 	void RequestWindowGetBounds(vint id) override
 	{
 		WindowSizingConfig response;

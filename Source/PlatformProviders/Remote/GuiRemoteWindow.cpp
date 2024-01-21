@@ -279,7 +279,17 @@ GuiRemoteWindow
 
 	void GuiRemoteWindow::Hide(bool closeWindow)
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		if (!remote->connectionForcedToStop)
+		{
+			bool cancel = false;
+			for (auto l : listeners)
+			{
+				l->BeforeClosing(cancel);
+				if (cancel) return;
+			}
+		}
+		for (auto l : listeners) l->AfterClosing();
+		remote->DestroyNativeWindow(this);
 	}
 
 	bool GuiRemoteWindow::IsVisible()
