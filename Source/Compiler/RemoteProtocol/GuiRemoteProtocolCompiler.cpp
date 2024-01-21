@@ -274,7 +274,7 @@ GenerateRemoteProtocolHeaderFile
 
 	void GenerateDeserializerFunctionHeader(const WString& type, bool semicolon, stream::TextWriter& writer)
 	{
-		writer.WriteString(L"\ttemplate<> " + type + L" ConvertJsonToCustomType<" + type + L">(vl::Ptr<vl::glr::json::JsonNode>)");
+		writer.WriteString(L"\ttemplate<> " + type + L" ConvertJsonToCustomType<" + type + L">(vl::Ptr<vl::glr::json::JsonNode> node)");
 		writer.WriteLine(semicolon ? L";" : L"");
 	}
 
@@ -420,13 +420,37 @@ GenerateRemoteProtocolHeaderFile
 GenerateRemoteProtocolCppFile
 ***********************************************************************/
 
-	void GeneratePrimitiveSerializerFunctionImpl(const WString& type, stream::TextWriter& writer)
+	void GeneratePrimitiveSerializerFunctionImpl(stream::TextWriter& writer)
 	{
-		GenerateSerializerFunctionHeader(type, false, writer);
-		writer.WriteLine(L"\t{");
-		writer.WriteLine(L"\t\tCHECK_FAIL(L\"Not Implemented!\");");
-		writer.WriteLine(L"\t}");
-		writer.WriteLine(L"");
+		{
+			WString cppName = L"bool";
+			GenerateSerializerFunctionHeader(cppName, false, writer);
+			writer.WriteLine(L"\t{");
+			writer.WriteLine(L"\t\tCHECK_FAIL(L\"Not Implemented!\");");
+			writer.WriteLine(L"\t}");
+			writer.WriteLine(L"");
+		}
+		{
+			WString numericTypes[] = { L"::vl::vint",L"float",L"double" };
+			for (auto type : numericTypes)
+			{
+				GenerateSerializerFunctionHeader(type, false, writer);
+				writer.WriteLine(L"\t{");
+				writer.WriteLine(L"\t\tauto node = Ptr(new glr::json::JsonNumber);");
+				writer.WriteLine(L"\t\treflection::description::TypedValueSerializerProvider<" + type + L">::Serialize(value, node->content.value);");
+				writer.WriteLine(L"\t\treturn node;");
+				writer.WriteLine(L"\t}");
+				writer.WriteLine(L"");
+			}
+		}
+		{
+			WString cppName = L"::vl::WString";
+			GenerateSerializerFunctionHeader(cppName, false, writer);
+			writer.WriteLine(L"\t{");
+			writer.WriteLine(L"\t\tCHECK_FAIL(L\"Not Implemented!\");");
+			writer.WriteLine(L"\t}");
+			writer.WriteLine(L"");
+		}
 	}
 
 	void GenerateEnumSerializerFunctionImpl(Ptr<GuiRpEnumDecl> enumDecl, Ptr<GuiRpSymbols> symbols, GuiRpCppConfig& config, stream::TextWriter& writer)
@@ -449,13 +473,41 @@ GenerateRemoteProtocolCppFile
 		writer.WriteLine(L"");
 	}
 
-	void GeneratePrimitiveDeserializerFunctionImpl(const WString& type, stream::TextWriter& writer)
+	void GeneratePrimitiveDeserializerFunctionImpl(stream::TextWriter& writer)
 	{
-		GenerateDeserializerFunctionHeader(type, false, writer);
-		writer.WriteLine(L"\t{");
-		writer.WriteLine(L"\t\tCHECK_FAIL(L\"Not Implemented!\");");
-		writer.WriteLine(L"\t}");
-		writer.WriteLine(L"");
+		{
+			WString cppName = L"bool";
+			GenerateDeserializerFunctionHeader(cppName, false, writer);
+			writer.WriteLine(L"\t{");
+			writer.WriteLine(L"\t\tCHECK_FAIL(L\"Not Implemented!\");");
+			writer.WriteLine(L"\t}");
+			writer.WriteLine(L"");
+		}
+		{
+			WString numericTypes[] = { L"vint",L"float",L"double" };
+			for (auto cppName : numericTypes)
+			{
+				GenerateDeserializerFunctionHeader(cppName, false, writer);
+				writer.WriteLine(L"\t{");
+				writer.WriteLine(L"\t#define ERROR_MESSAGE_PREFIX L\"vl::presentation::remoteprotocol::ConvertJsonToCustomType<" + cppName + L">(Ptr<JsonNode>)#\"");
+				writer.WriteLine(L"\t\tauto jsonNode = node.Cast<glr::json::JsonNumber>();");
+				writer.WriteLine(L"\t\tCHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L\"Json node does not match the expected type.\");");
+				writer.WriteLine(L"\t\t" + cppName + L" value;");
+				writer.WriteLine(L"\t\tCHECK_ERROR(reflection::description::TypedValueSerializerProvider<" + cppName + L">::Deserialize(jsonNode->content.value, value), ERROR_MESSAGE_PREFIX L\"Json node does not match the expected type.\");");
+				writer.WriteLine(L"\t\treturn value;");
+				writer.WriteLine(L"\t#undef ERROR_MESSAGE_PREFIX");
+				writer.WriteLine(L"\t}");
+				writer.WriteLine(L"");
+			}
+		}
+		{
+			WString cppName = L"::vl::WString";
+			GenerateDeserializerFunctionHeader(cppName, false, writer);
+			writer.WriteLine(L"\t{");
+			writer.WriteLine(L"\t\tCHECK_FAIL(L\"Not Implemented!\");");
+			writer.WriteLine(L"\t}");
+			writer.WriteLine(L"");
+		}
 	}
 
 	void GenerateEnumDeserializerFunctionImpl(Ptr<GuiRpEnumDecl> enumDecl, Ptr<GuiRpSymbols> symbols, GuiRpCppConfig& config, stream::TextWriter& writer)
@@ -490,11 +542,7 @@ GenerateRemoteProtocolCppFile
 		writer.WriteLine(L"namespace " + config.cppNamespace);
 		writer.WriteLine(L"{");
 
-		GeneratePrimitiveSerializerFunctionImpl(L"bool", writer);
-		GeneratePrimitiveSerializerFunctionImpl(L"::vl::vint", writer);
-		GeneratePrimitiveSerializerFunctionImpl(L"float", writer);
-		GeneratePrimitiveSerializerFunctionImpl(L"double", writer);
-		GeneratePrimitiveSerializerFunctionImpl(L"::vl::WString", writer);
+		GeneratePrimitiveSerializerFunctionImpl(writer);
 		for (auto enumDecl : From(schema->declarations).FindType<GuiRpEnumDecl>())
 		{
 			GenerateEnumSerializerFunctionImpl(enumDecl, symbols, config, writer);
@@ -504,11 +552,7 @@ GenerateRemoteProtocolCppFile
 			GenerateStructSerializerFunctionImpl(structDecl, symbols, config, writer);
 		}
 
-		GeneratePrimitiveDeserializerFunctionImpl(L"bool", writer);
-		GeneratePrimitiveDeserializerFunctionImpl(L"::vl::vint", writer);
-		GeneratePrimitiveDeserializerFunctionImpl(L"float", writer);
-		GeneratePrimitiveDeserializerFunctionImpl(L"double", writer);
-		GeneratePrimitiveDeserializerFunctionImpl(L"::vl::WString", writer);
+		GeneratePrimitiveDeserializerFunctionImpl(writer);
 		for (auto enumDecl : From(schema->declarations).FindType<GuiRpEnumDecl>())
 		{
 			GenerateEnumDeserializerFunctionImpl(enumDecl, symbols, config, writer);

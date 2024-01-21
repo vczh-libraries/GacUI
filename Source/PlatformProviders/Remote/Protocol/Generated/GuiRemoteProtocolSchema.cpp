@@ -14,17 +14,23 @@ namespace vl::presentation::remoteprotocol
 
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::vint>(const ::vl::vint& value)
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		auto node = Ptr(new glr::json::JsonNumber);
+		reflection::description::TypedValueSerializerProvider<::vl::vint>::Serialize(value, node->content.value);
+		return node;
 	}
 
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<float>(const float& value)
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		auto node = Ptr(new glr::json::JsonNumber);
+		reflection::description::TypedValueSerializerProvider<float>::Serialize(value, node->content.value);
+		return node;
 	}
 
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<double>(const double& value)
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		auto node = Ptr(new glr::json::JsonNumber);
+		reflection::description::TypedValueSerializerProvider<double>::Serialize(value, node->content.value);
+		return node;
 	}
 
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::WString>(const ::vl::WString& value)
@@ -87,82 +93,100 @@ namespace vl::presentation::remoteprotocol
 		CHECK_FAIL(L"Not Implemented!");
 	}
 
-	template<> bool ConvertJsonToCustomType<bool>(vl::Ptr<vl::glr::json::JsonNode>)
+	template<> bool ConvertJsonToCustomType<bool>(vl::Ptr<vl::glr::json::JsonNode> node)
 	{
 		CHECK_FAIL(L"Not Implemented!");
 	}
 
-	template<> ::vl::vint ConvertJsonToCustomType<::vl::vint>(vl::Ptr<vl::glr::json::JsonNode>)
+	template<> vint ConvertJsonToCustomType<vint>(vl::Ptr<vl::glr::json::JsonNode> node)
+	{
+	#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<vint>(Ptr<JsonNode>)#"
+		auto jsonNode = node.Cast<glr::json::JsonNumber>();
+		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
+		vint value;
+		CHECK_ERROR(reflection::description::TypedValueSerializerProvider<vint>::Deserialize(jsonNode->content.value, value), ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
+		return value;
+	#undef ERROR_MESSAGE_PREFIX
+	}
+
+	template<> float ConvertJsonToCustomType<float>(vl::Ptr<vl::glr::json::JsonNode> node)
+	{
+	#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<float>(Ptr<JsonNode>)#"
+		auto jsonNode = node.Cast<glr::json::JsonNumber>();
+		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
+		float value;
+		CHECK_ERROR(reflection::description::TypedValueSerializerProvider<float>::Deserialize(jsonNode->content.value, value), ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
+		return value;
+	#undef ERROR_MESSAGE_PREFIX
+	}
+
+	template<> double ConvertJsonToCustomType<double>(vl::Ptr<vl::glr::json::JsonNode> node)
+	{
+	#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<double>(Ptr<JsonNode>)#"
+		auto jsonNode = node.Cast<glr::json::JsonNumber>();
+		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
+		double value;
+		CHECK_ERROR(reflection::description::TypedValueSerializerProvider<double>::Deserialize(jsonNode->content.value, value), ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
+		return value;
+	#undef ERROR_MESSAGE_PREFIX
+	}
+
+	template<> ::vl::WString ConvertJsonToCustomType<::vl::WString>(vl::Ptr<vl::glr::json::JsonNode> node)
 	{
 		CHECK_FAIL(L"Not Implemented!");
 	}
 
-	template<> float ConvertJsonToCustomType<float>(vl::Ptr<vl::glr::json::JsonNode>)
+	template<> ::vl::presentation::INativeWindow::WindowSizeState ConvertJsonToCustomType<::vl::presentation::INativeWindow::WindowSizeState>(vl::Ptr<vl::glr::json::JsonNode> node)
 	{
 		CHECK_FAIL(L"Not Implemented!");
 	}
 
-	template<> double ConvertJsonToCustomType<double>(vl::Ptr<vl::glr::json::JsonNode>)
+	template<> ::vl::presentation::NativeCoordinate ConvertJsonToCustomType<::vl::presentation::NativeCoordinate>(vl::Ptr<vl::glr::json::JsonNode> node)
 	{
 		CHECK_FAIL(L"Not Implemented!");
 	}
 
-	template<> ::vl::WString ConvertJsonToCustomType<::vl::WString>(vl::Ptr<vl::glr::json::JsonNode>)
+	template<> ::vl::presentation::NativePoint ConvertJsonToCustomType<::vl::presentation::NativePoint>(vl::Ptr<vl::glr::json::JsonNode> node)
 	{
 		CHECK_FAIL(L"Not Implemented!");
 	}
 
-	template<> ::vl::presentation::INativeWindow::WindowSizeState ConvertJsonToCustomType<::vl::presentation::INativeWindow::WindowSizeState>(vl::Ptr<vl::glr::json::JsonNode>)
+	template<> ::vl::presentation::NativeSize ConvertJsonToCustomType<::vl::presentation::NativeSize>(vl::Ptr<vl::glr::json::JsonNode> node)
 	{
 		CHECK_FAIL(L"Not Implemented!");
 	}
 
-	template<> ::vl::presentation::NativeCoordinate ConvertJsonToCustomType<::vl::presentation::NativeCoordinate>(vl::Ptr<vl::glr::json::JsonNode>)
+	template<> ::vl::presentation::NativeRect ConvertJsonToCustomType<::vl::presentation::NativeRect>(vl::Ptr<vl::glr::json::JsonNode> node)
 	{
 		CHECK_FAIL(L"Not Implemented!");
 	}
 
-	template<> ::vl::presentation::NativePoint ConvertJsonToCustomType<::vl::presentation::NativePoint>(vl::Ptr<vl::glr::json::JsonNode>)
+	template<> ::vl::presentation::NativeMargin ConvertJsonToCustomType<::vl::presentation::NativeMargin>(vl::Ptr<vl::glr::json::JsonNode> node)
 	{
 		CHECK_FAIL(L"Not Implemented!");
 	}
 
-	template<> ::vl::presentation::NativeSize ConvertJsonToCustomType<::vl::presentation::NativeSize>(vl::Ptr<vl::glr::json::JsonNode>)
+	template<> ::vl::presentation::FontProperties ConvertJsonToCustomType<::vl::presentation::FontProperties>(vl::Ptr<vl::glr::json::JsonNode> node)
 	{
 		CHECK_FAIL(L"Not Implemented!");
 	}
 
-	template<> ::vl::presentation::NativeRect ConvertJsonToCustomType<::vl::presentation::NativeRect>(vl::Ptr<vl::glr::json::JsonNode>)
+	template<> vl::presentation::remoteprotocol::FontConfig ConvertJsonToCustomType<vl::presentation::remoteprotocol::FontConfig>(vl::Ptr<vl::glr::json::JsonNode> node)
 	{
 		CHECK_FAIL(L"Not Implemented!");
 	}
 
-	template<> ::vl::presentation::NativeMargin ConvertJsonToCustomType<::vl::presentation::NativeMargin>(vl::Ptr<vl::glr::json::JsonNode>)
+	template<> vl::presentation::remoteprotocol::ScreenConfig ConvertJsonToCustomType<vl::presentation::remoteprotocol::ScreenConfig>(vl::Ptr<vl::glr::json::JsonNode> node)
 	{
 		CHECK_FAIL(L"Not Implemented!");
 	}
 
-	template<> ::vl::presentation::FontProperties ConvertJsonToCustomType<::vl::presentation::FontProperties>(vl::Ptr<vl::glr::json::JsonNode>)
+	template<> vl::presentation::remoteprotocol::WindowSizingConfig ConvertJsonToCustomType<vl::presentation::remoteprotocol::WindowSizingConfig>(vl::Ptr<vl::glr::json::JsonNode> node)
 	{
 		CHECK_FAIL(L"Not Implemented!");
 	}
 
-	template<> vl::presentation::remoteprotocol::FontConfig ConvertJsonToCustomType<vl::presentation::remoteprotocol::FontConfig>(vl::Ptr<vl::glr::json::JsonNode>)
-	{
-		CHECK_FAIL(L"Not Implemented!");
-	}
-
-	template<> vl::presentation::remoteprotocol::ScreenConfig ConvertJsonToCustomType<vl::presentation::remoteprotocol::ScreenConfig>(vl::Ptr<vl::glr::json::JsonNode>)
-	{
-		CHECK_FAIL(L"Not Implemented!");
-	}
-
-	template<> vl::presentation::remoteprotocol::WindowSizingConfig ConvertJsonToCustomType<vl::presentation::remoteprotocol::WindowSizingConfig>(vl::Ptr<vl::glr::json::JsonNode>)
-	{
-		CHECK_FAIL(L"Not Implemented!");
-	}
-
-	template<> vl::presentation::remoteprotocol::WindowShowing ConvertJsonToCustomType<vl::presentation::remoteprotocol::WindowShowing>(vl::Ptr<vl::glr::json::JsonNode>)
+	template<> vl::presentation::remoteprotocol::WindowShowing ConvertJsonToCustomType<vl::presentation::remoteprotocol::WindowShowing>(vl::Ptr<vl::glr::json::JsonNode> node)
 	{
 		CHECK_FAIL(L"Not Implemented!");
 	}
