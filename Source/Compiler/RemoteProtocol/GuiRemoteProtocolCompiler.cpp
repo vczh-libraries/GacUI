@@ -433,7 +433,17 @@ GenerateRemoteProtocolCppFile
 		WString cppName = GuiRpPrintTypeVisitor::GetCppType(structDecl->name.value, symbols, config);
 		GenerateSerializerFunctionHeader(cppName, false, writer);
 		writer.WriteLine(L"\t{");
-		writer.WriteLine(L"\t\tCHECK_FAIL(L\"Not Implemented!\");");
+		writer.WriteLine(L"\t\tauto node = Ptr(new glr::json::JsonObject);");
+		for (auto member : structDecl->members)
+		{
+			writer.WriteLine(L"\t\t{");
+			writer.WriteLine(L"\t\t\tauto field = Ptr(new glr::json::JsonObjectField);");
+			writer.WriteLine(L"\t\t\tfield->name.value = L\"" + member->name.value + L"\"; ");
+			writer.WriteLine(L"\t\t\tfield->value = ConvertCustomTypeToJson(value." + member->name.value + L");");
+			writer.WriteLine(L"\t\t\tnode->fields.Add(field);");
+			writer.WriteLine(L"\t\t}");
+		}
+		writer.WriteLine(L"\t\treturn node;");
 		writer.WriteLine(L"\t}");
 		writer.WriteLine(L"");
 	}

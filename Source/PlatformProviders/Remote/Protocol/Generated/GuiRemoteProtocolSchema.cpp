@@ -24,52 +24,260 @@ namespace vl::presentation::remoteprotocol
 
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::NativeCoordinate>(const ::vl::presentation::NativeCoordinate& value)
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		auto node = Ptr(new glr::json::JsonObject);
+		{
+			auto field = Ptr(new glr::json::JsonObjectField);
+			field->name.value = L"value"; 
+			field->value = ConvertCustomTypeToJson(value.value);
+			node->fields.Add(field);
+		}
+		return node;
 	}
 
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::NativePoint>(const ::vl::presentation::NativePoint& value)
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		auto node = Ptr(new glr::json::JsonObject);
+		{
+			auto field = Ptr(new glr::json::JsonObjectField);
+			field->name.value = L"x"; 
+			field->value = ConvertCustomTypeToJson(value.x);
+			node->fields.Add(field);
+		}
+		{
+			auto field = Ptr(new glr::json::JsonObjectField);
+			field->name.value = L"y"; 
+			field->value = ConvertCustomTypeToJson(value.y);
+			node->fields.Add(field);
+		}
+		return node;
 	}
 
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::NativeSize>(const ::vl::presentation::NativeSize& value)
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		auto node = Ptr(new glr::json::JsonObject);
+		{
+			auto field = Ptr(new glr::json::JsonObjectField);
+			field->name.value = L"x"; 
+			field->value = ConvertCustomTypeToJson(value.x);
+			node->fields.Add(field);
+		}
+		{
+			auto field = Ptr(new glr::json::JsonObjectField);
+			field->name.value = L"y"; 
+			field->value = ConvertCustomTypeToJson(value.y);
+			node->fields.Add(field);
+		}
+		return node;
 	}
 
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::NativeRect>(const ::vl::presentation::NativeRect& value)
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		auto node = Ptr(new glr::json::JsonObject);
+		{
+			auto field = Ptr(new glr::json::JsonObjectField);
+			field->name.value = L"x1"; 
+			field->value = ConvertCustomTypeToJson(value.x1);
+			node->fields.Add(field);
+		}
+		{
+			auto field = Ptr(new glr::json::JsonObjectField);
+			field->name.value = L"y1"; 
+			field->value = ConvertCustomTypeToJson(value.y1);
+			node->fields.Add(field);
+		}
+		{
+			auto field = Ptr(new glr::json::JsonObjectField);
+			field->name.value = L"x2"; 
+			field->value = ConvertCustomTypeToJson(value.x2);
+			node->fields.Add(field);
+		}
+		{
+			auto field = Ptr(new glr::json::JsonObjectField);
+			field->name.value = L"y2"; 
+			field->value = ConvertCustomTypeToJson(value.y2);
+			node->fields.Add(field);
+		}
+		return node;
 	}
 
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::NativeMargin>(const ::vl::presentation::NativeMargin& value)
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		auto node = Ptr(new glr::json::JsonObject);
+		{
+			auto field = Ptr(new glr::json::JsonObjectField);
+			field->name.value = L"left"; 
+			field->value = ConvertCustomTypeToJson(value.left);
+			node->fields.Add(field);
+		}
+		{
+			auto field = Ptr(new glr::json::JsonObjectField);
+			field->name.value = L"top"; 
+			field->value = ConvertCustomTypeToJson(value.top);
+			node->fields.Add(field);
+		}
+		{
+			auto field = Ptr(new glr::json::JsonObjectField);
+			field->name.value = L"right"; 
+			field->value = ConvertCustomTypeToJson(value.right);
+			node->fields.Add(field);
+		}
+		{
+			auto field = Ptr(new glr::json::JsonObjectField);
+			field->name.value = L"bottom"; 
+			field->value = ConvertCustomTypeToJson(value.bottom);
+			node->fields.Add(field);
+		}
+		return node;
 	}
 
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::FontProperties>(const ::vl::presentation::FontProperties& value)
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		auto node = Ptr(new glr::json::JsonObject);
+		{
+			auto field = Ptr(new glr::json::JsonObjectField);
+			field->name.value = L"fontFamily"; 
+			field->value = ConvertCustomTypeToJson(value.fontFamily);
+			node->fields.Add(field);
+		}
+		{
+			auto field = Ptr(new glr::json::JsonObjectField);
+			field->name.value = L"size"; 
+			field->value = ConvertCustomTypeToJson(value.size);
+			node->fields.Add(field);
+		}
+		{
+			auto field = Ptr(new glr::json::JsonObjectField);
+			field->name.value = L"bold"; 
+			field->value = ConvertCustomTypeToJson(value.bold);
+			node->fields.Add(field);
+		}
+		{
+			auto field = Ptr(new glr::json::JsonObjectField);
+			field->name.value = L"italic"; 
+			field->value = ConvertCustomTypeToJson(value.italic);
+			node->fields.Add(field);
+		}
+		{
+			auto field = Ptr(new glr::json::JsonObjectField);
+			field->name.value = L"underline"; 
+			field->value = ConvertCustomTypeToJson(value.underline);
+			node->fields.Add(field);
+		}
+		{
+			auto field = Ptr(new glr::json::JsonObjectField);
+			field->name.value = L"strikeline"; 
+			field->value = ConvertCustomTypeToJson(value.strikeline);
+			node->fields.Add(field);
+		}
+		{
+			auto field = Ptr(new glr::json::JsonObjectField);
+			field->name.value = L"antialias"; 
+			field->value = ConvertCustomTypeToJson(value.antialias);
+			node->fields.Add(field);
+		}
+		{
+			auto field = Ptr(new glr::json::JsonObjectField);
+			field->name.value = L"verticalAntialias"; 
+			field->value = ConvertCustomTypeToJson(value.verticalAntialias);
+			node->fields.Add(field);
+		}
+		return node;
 	}
 
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<vl::presentation::remoteprotocol::FontConfig>(const vl::presentation::remoteprotocol::FontConfig& value)
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		auto node = Ptr(new glr::json::JsonObject);
+		{
+			auto field = Ptr(new glr::json::JsonObjectField);
+			field->name.value = L"defaultFont"; 
+			field->value = ConvertCustomTypeToJson(value.defaultFont);
+			node->fields.Add(field);
+		}
+		{
+			auto field = Ptr(new glr::json::JsonObjectField);
+			field->name.value = L"supportedFonts"; 
+			field->value = ConvertCustomTypeToJson(value.supportedFonts);
+			node->fields.Add(field);
+		}
+		return node;
 	}
 
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<vl::presentation::remoteprotocol::ScreenConfig>(const vl::presentation::remoteprotocol::ScreenConfig& value)
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		auto node = Ptr(new glr::json::JsonObject);
+		{
+			auto field = Ptr(new glr::json::JsonObjectField);
+			field->name.value = L"bounds"; 
+			field->value = ConvertCustomTypeToJson(value.bounds);
+			node->fields.Add(field);
+		}
+		{
+			auto field = Ptr(new glr::json::JsonObjectField);
+			field->name.value = L"clientBounds"; 
+			field->value = ConvertCustomTypeToJson(value.clientBounds);
+			node->fields.Add(field);
+		}
+		{
+			auto field = Ptr(new glr::json::JsonObjectField);
+			field->name.value = L"scalingX"; 
+			field->value = ConvertCustomTypeToJson(value.scalingX);
+			node->fields.Add(field);
+		}
+		{
+			auto field = Ptr(new glr::json::JsonObjectField);
+			field->name.value = L"scalingY"; 
+			field->value = ConvertCustomTypeToJson(value.scalingY);
+			node->fields.Add(field);
+		}
+		return node;
 	}
 
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<vl::presentation::remoteprotocol::WindowSizingConfig>(const vl::presentation::remoteprotocol::WindowSizingConfig& value)
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		auto node = Ptr(new glr::json::JsonObject);
+		{
+			auto field = Ptr(new glr::json::JsonObjectField);
+			field->name.value = L"bounds"; 
+			field->value = ConvertCustomTypeToJson(value.bounds);
+			node->fields.Add(field);
+		}
+		{
+			auto field = Ptr(new glr::json::JsonObjectField);
+			field->name.value = L"clientBounds"; 
+			field->value = ConvertCustomTypeToJson(value.clientBounds);
+			node->fields.Add(field);
+		}
+		{
+			auto field = Ptr(new glr::json::JsonObjectField);
+			field->name.value = L"sizeState"; 
+			field->value = ConvertCustomTypeToJson(value.sizeState);
+			node->fields.Add(field);
+		}
+		{
+			auto field = Ptr(new glr::json::JsonObjectField);
+			field->name.value = L"customFramePadding"; 
+			field->value = ConvertCustomTypeToJson(value.customFramePadding);
+			node->fields.Add(field);
+		}
+		return node;
 	}
 
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<vl::presentation::remoteprotocol::WindowShowing>(const vl::presentation::remoteprotocol::WindowShowing& value)
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		auto node = Ptr(new glr::json::JsonObject);
+		{
+			auto field = Ptr(new glr::json::JsonObjectField);
+			field->name.value = L"activate"; 
+			field->value = ConvertCustomTypeToJson(value.activate);
+			node->fields.Add(field);
+		}
+		{
+			auto field = Ptr(new glr::json::JsonObjectField);
+			field->name.value = L"sizeState"; 
+			field->value = ConvertCustomTypeToJson(value.sizeState);
+			node->fields.Add(field);
+		}
+		return node;
 	}
 
 	template<> void ConvertJsonToCustomType<::vl::presentation::INativeWindow::WindowSizeState>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::INativeWindow::WindowSizeState& value)
