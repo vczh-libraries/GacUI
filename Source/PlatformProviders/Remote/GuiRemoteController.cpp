@@ -213,12 +213,12 @@ GuiRemoteController::INativeWindowService
 	void GuiRemoteController::Run(INativeWindow* window)
 	{
 		// TODO:
-		// Using [@Override] to generate a IGuiRemoteProtocol (only for unit test and later becomes part of a standard implementation):
-		//   Only send accumulated messages when Submit() is called
-		//   If a batch of messages are sent, results will be sent back when both conditions are satisfies:
-		//     1) All messages are processed
-		//     2) All messages are responded
-		//   Error will happen if new batch of messages come before sending back results of the last batch
+		// Mark
+		//   some messages without response
+		//   some events
+		// with
+		//   [@DropRepeat]: if multiple of same messages/events are sent, only the last unprocessed one count
+		//   [@DropConsecutive]: if multiple of same consecutive events are sent, only the last unprocessed one count
 		CHECK_ERROR(window == &remoteWindow, L"vl::presentation::GuiRemoteController::Run(INativeWindow*)#GuiHostedController should call this function with the native window.");
 		window->Show();
 		while (RunOneCycle());
