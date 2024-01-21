@@ -62,13 +62,16 @@ GuiRemoteMessages (messages)
 		return requestId;\
 	}\
 
-	GACUI_REMOTEPROTOCOL_MESSAGES(MESSAGE_NOREQ_NORES, MESSAGE_NOREQ_RES, MESSAGE_REQ_NORES, MESSAGE_REQ_RES)
+#define MESSAGE_HANDLER(NAME, REQUEST, RESPONSE, REQTAG, RESTAG, ...)	MESSAGE_ ## REQTAG ## _ ## RESTAG(NAME, REQUEST, RESPONSE)
+	GACUI_REMOTEPROTOCOL_MESSAGES(MESSAGE_HANDLER)
+#undef MESSAGE_HANDLER
 #undef MESSAGE_REQ_RES
 #undef MESSAGE_REQ_NORES
 #undef MESSAGE_NOREQ_RES
 #undef MESSAGE_NOREQ_NORES
 
-#define MESSAGE_NOREQ_RES(NAME, RESPONSE)\
+#define MESSAGE_NORES(NAME, RESPONSE)
+#define MESSAGE_RES(NAME, RESPONSE)\
 	void GuiRemoteMessages::Respond ## NAME(vint id, const RESPONSE& arguments)\
 	{\
 		response ## NAME.Add(id, arguments);\
@@ -78,10 +81,11 @@ GuiRemoteMessages (messages)
 		return response ## NAME[id];\
 	}\
 
-#define MESSAGE_REQ_RES(NAME, REQUEST, RESPONSE) MESSAGE_NOREQ_RES(NAME, RESPONSE)
-	GACUI_REMOTEPROTOCOL_MESSAGE_RESPONDS(MESSAGE_NOREQ_RES, MESSAGE_REQ_RES)
-#undef MESSAGE_REQ_RES
-#undef MESSAGE_NOREQ_RES
+#define MESSAGE_HANDLER(NAME, REQUEST, RESPONSE, REQTAG, RESTAG, ...)	MESSAGE_ ## RESTAG(NAME, RESPONSE)
+		GACUI_REMOTEPROTOCOL_MESSAGES(MESSAGE_HANDLER)
+#undef MESSAGE_HANDLER
+#undef MESSAGE_RES
+#undef MESSAGE_NORES
 
 /***********************************************************************
 GuiRemoteEvents
@@ -100,16 +104,18 @@ GuiRemoteEvents
 GuiRemoteEvents (messages)
 ***********************************************************************/
 
+#define MESSAGE_NORES(NAME, RESPONSE)
 #define MESSAGE_NOREQ_RES(NAME, RESPONSE)\
 	void GuiRemoteEvents::Respond ## NAME(vint id, const RESPONSE& arguments)\
 	{\
 		remote->remoteMessages.Respond ## NAME(id, arguments);\
 	}\
 
-#define MESSAGE_REQ_RES(NAME, REQUEST, RESPONSE) MESSAGE_NOREQ_RES(NAME, RESPONSE)
-	GACUI_REMOTEPROTOCOL_MESSAGE_RESPONDS(MESSAGE_NOREQ_RES, MESSAGE_REQ_RES)
-#undef MESSAGE_REQ_RES
-#undef MESSAGE_NOREQ_RES
+#define MESSAGE_HANDLER(NAME, REQUEST, RESPONSE, REQTAG, RESTAG, ...)	MESSAGE_ ## RESTAG(NAME, RESPONSE)
+	GACUI_REMOTEPROTOCOL_MESSAGES(MESSAGE_HANDLER)
+#undef MESSAGE_HANDLER
+#undef MESSAGE_RES
+#undef MESSAGE_NORES
 
 /***********************************************************************
 GuiRemoteEvents (events)

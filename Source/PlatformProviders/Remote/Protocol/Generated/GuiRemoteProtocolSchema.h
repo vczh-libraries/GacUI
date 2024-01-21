@@ -31,38 +31,38 @@ namespace vl::presentation::remoteprotocol
 		::vl::presentation::NativeMargin customFramePadding;
 	};
 
-#define GACUI_REMOTEPROTOCOL_MESSAGES(NOREQ_NORES, NOREQ_RES, REQ_NORES, REQ_RES)\
-	NOREQ_RES(ControllerGetFontConfig, vl::presentation::remoteprotocol::FontConfig)\
-	NOREQ_RES(ControllerGetScreenConfig, vl::presentation::remoteprotocol::ScreenConfig)\
-	NOREQ_NORES(ControllerConnectionEstablished)\
-	NOREQ_NORES(ControllerConnectionStopped)\
-	NOREQ_RES(WindowGetBounds, vl::presentation::remoteprotocol::WindowSizingConfig)\
-	REQ_NORES(WindowNotifySetTitle, ::vl::WString)\
-	REQ_NORES(WindowNotifySetEnabled, bool)\
-	REQ_NORES(WindowNotifySetTopMost, bool)\
-	REQ_NORES(WindowNotifySetShowInTaskBar, bool)\
-	REQ_NORES(WindowNotifySetCustomFrameMode, bool)\
-	REQ_NORES(WindowNotifySetMaximizedBox, bool)\
-	REQ_NORES(WindowNotifySetMinimizedBox, bool)\
-	REQ_NORES(WindowNotifySetBorder, bool)\
-	REQ_NORES(WindowNotifySetSizeBox, bool)\
-	REQ_NORES(WindowNotifySetIconVisible, bool)\
-	REQ_NORES(WindowNotifySetTitleBar, bool)\
-	REQ_RES(WindowSetBounds, ::vl::presentation::NativeRect, vl::presentation::remoteprotocol::WindowSizingConfig)\
-	REQ_RES(WindowSetClientSize, ::vl::presentation::NativeSize, vl::presentation::remoteprotocol::WindowSizingConfig)\
-	NOREQ_NORES(WindowNotifyActivate)\
-	NOREQ_NORES(WindowNotifyShowActivated)\
-	NOREQ_NORES(WindowNotifyShowDeactivated)\
-	NOREQ_NORES(WindowNotifyShowMaximized)\
-	NOREQ_NORES(WindowNotifyShowMinimized)\
+#define GACUI_REMOTEPROTOCOL_MESSAGES(HANDLER)\
+	HANDLER(ControllerGetFontConfig, void, vl::presentation::remoteprotocol::FontConfig, NOREQ, RES)\
+	HANDLER(ControllerGetScreenConfig, void, vl::presentation::remoteprotocol::ScreenConfig, NOREQ, RES)\
+	HANDLER(ControllerConnectionEstablished, void, void, NOREQ, NROES)\
+	HANDLER(ControllerConnectionStopped, void, void, NOREQ, NROES)\
+	HANDLER(WindowGetBounds, void, vl::presentation::remoteprotocol::WindowSizingConfig, NOREQ, RES)\
+	HANDLER(WindowNotifySetTitle, ::vl::WString, void, REQ, NROES)\
+	HANDLER(WindowNotifySetEnabled, bool, void, REQ, NROES)\
+	HANDLER(WindowNotifySetTopMost, bool, void, REQ, NROES)\
+	HANDLER(WindowNotifySetShowInTaskBar, bool, void, REQ, NROES)\
+	HANDLER(WindowNotifySetCustomFrameMode, bool, void, REQ, NROES)\
+	HANDLER(WindowNotifySetMaximizedBox, bool, void, REQ, NROES)\
+	HANDLER(WindowNotifySetMinimizedBox, bool, void, REQ, NROES)\
+	HANDLER(WindowNotifySetBorder, bool, void, REQ, NROES)\
+	HANDLER(WindowNotifySetSizeBox, bool, void, REQ, NROES)\
+	HANDLER(WindowNotifySetIconVisible, bool, void, REQ, NROES)\
+	HANDLER(WindowNotifySetTitleBar, bool, void, REQ, NROES)\
+	HANDLER(WindowSetBounds, ::vl::presentation::NativeRect, vl::presentation::remoteprotocol::WindowSizingConfig, REQ, RES)\
+	HANDLER(WindowSetClientSize, ::vl::presentation::NativeSize, vl::presentation::remoteprotocol::WindowSizingConfig, REQ, RES)\
+	HANDLER(WindowNotifyActivate, void, void, NOREQ, NROES)\
+	HANDLER(WindowNotifyShowActivated, void, void, NOREQ, NROES)\
+	HANDLER(WindowNotifyShowDeactivated, void, void, NOREQ, NROES)\
+	HANDLER(WindowNotifyShowMaximized, void, void, NOREQ, NROES)\
+	HANDLER(WindowNotifyShowMinimized, void, void, NOREQ, NROES)\
 
-#define GACUI_REMOTEPROTOCOL_EVENTS(NOREQ, REQ)\
-	NOREQ(ControllerConnect)\
-	NOREQ(ControllerDisconnect)\
-	NOREQ(ControllerRequestExit)\
-	NOREQ(ControllerForceExit)\
-	REQ(ControllerScreenUpdated, vl::presentation::remoteprotocol::ScreenConfig)\
-	REQ(WindowBoundsUpdated, vl::presentation::remoteprotocol::WindowSizingConfig)\
+#define GACUI_REMOTEPROTOCOL_EVENTS(HANDLER)\
+	HANDLER(ControllerConnect, void, NOREQ)\
+	HANDLER(ControllerDisconnect, void, NOREQ)\
+	HANDLER(ControllerRequestExit, void, NOREQ)\
+	HANDLER(ControllerForceExit, void, NOREQ)\
+	HANDLER(ControllerScreenUpdated, vl::presentation::remoteprotocol::ScreenConfig, REQ)\
+	HANDLER(WindowBoundsUpdated, vl::presentation::remoteprotocol::WindowSizingConfig, REQ)\
 
 }
 

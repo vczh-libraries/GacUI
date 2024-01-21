@@ -245,61 +245,54 @@ GenerateRemoteProtocolHeaderFile
 			}
 		}
 
-		writer.WriteLine(L"#define " + config.builderMacroPrefix + L"_MESSAGES(NOREQ_NORES, NOREQ_RES, REQ_NORES, REQ_RES)\\");
+		writer.WriteLine(L"#define " + config.builderMacroPrefix + L"_MESSAGES(HANDLER)\\");
 		for (auto messageDecl : From(schema->declarations).FindType<GuiRpMessageDecl>())
 		{
-			if (!messageDecl->request)
+			writer.WriteString(L"\tHANDLER(" + messageDecl->name.value);
+
+			writer.WriteString(L", ");
+			if (messageDecl->request)
 			{
-				if (!messageDecl->response)
-				{
-					writer.WriteString(L"\tNOREQ_NORES(" + messageDecl->name.value );
-				}
-				else
-				{
-					writer.WriteString(L"\tNOREQ_RES(" + messageDecl->name.value);
-				}
+				messageDecl->request->type->Accept(&printTypeVisitor);
 			}
 			else
 			{
-				if (!messageDecl->response)
-				{
-					writer.WriteString(L"\tREQ_NORES(" + messageDecl->name.value);
-				}
-				else
-				{
-					writer.WriteString(L"\tREQ_RES(" + messageDecl->name.value);
-				}
+				writer.WriteString(L"void");
 			}
 
-			if (messageDecl->request)
+			writer.WriteString(L", ");
+			if (messageDecl->response)
 			{
-				writer.WriteString(L", ");
-				messageDecl->request->type->Accept(&printTypeVisitor);
-			}
-
-			if (messageDecl->response && messageDecl->response->type)
-			{
-				writer.WriteString(L", ");
 				messageDecl->response->type->Accept(&printTypeVisitor);
 			}
+			else
+			{
+				writer.WriteString(L"void");
+			}
 
+			writer.WriteString(messageDecl->request ? L", REQ" : L", NOREQ");
+			writer.WriteString(messageDecl->response ? L", RES" : L", NROES");
 			writer.WriteLine(L")\\");
 		}
 		writer.WriteLine(L"");
 
-		writer.WriteLine(L"#define " + config.builderMacroPrefix + L"_EVENTS(NOREQ, REQ)\\");
+		writer.WriteLine(L"#define " + config.builderMacroPrefix + L"_EVENTS(HANDLER)\\");
 		for (auto eventDecl : From(schema->declarations).FindType<GuiRpEventDecl>())
 		{
-			if (!eventDecl->request)
+			writer.WriteString(L"\tHANDLER(" + eventDecl->name.value);
+
+			writer.WriteString(L", ");
+			if (eventDecl->request)
 			{
-				writer.WriteLine(L"\tNOREQ(" + eventDecl->name.value + L")\\");
+				eventDecl->request->type->Accept(&printTypeVisitor);
 			}
 			else
 			{
-				writer.WriteString(L"\tREQ(" + eventDecl->name.value + L", ");
-				eventDecl->request->type->Accept(&printTypeVisitor);
-				writer.WriteLine(L")\\");
+				writer.WriteString(L"void");
 			}
+
+			writer.WriteString(eventDecl->request ? L", REQ" : L", NOREQ");
+			writer.WriteLine(L")\\");
 		}
 		writer.WriteLine(L"");
 

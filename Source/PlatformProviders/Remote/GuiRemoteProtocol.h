@@ -13,15 +13,6 @@ Interfaces:
 
 #include "Protocol/Generated/GuiRemoteProtocolSchema.h"
 
-#define GACUI_REMOTEPROTOCOL_MESSAGE_EMPTY_NOREQ_NORES(NAME)
-#define GACUI_REMOTEPROTOCOL_MESSAGE_EMPTY_REQ_NORES(NAME, RESPONSE)
-#define GACUI_REMOTEPROTOCOL_MESSAGE_RESPONDS(MESSAGE_NOREQ_RES, MESSAGE_REQ_RES)\
-			GACUI_REMOTEPROTOCOL_MESSAGES(\
-				GACUI_REMOTEPROTOCOL_MESSAGE_EMPTY_NOREQ_NORES,\
-				MESSAGE_NOREQ_RES,\
-				GACUI_REMOTEPROTOCOL_MESSAGE_EMPTY_REQ_NORES,\
-				MESSAGE_REQ_RES)\
-
 namespace vl::presentation
 {
 /***********************************************************************
@@ -31,17 +22,21 @@ IGuiRemoteProtocolEvents
 	class IGuiRemoteProtocolEvents : public virtual Interface
 	{
 	public:
-#define EVENT_NOREQ(NAME)			virtual void On ## NAME() = 0;
-#define EVENT_REQ(NAME, REQUEST)	virtual void On ## NAME(const REQUEST& arguments) = 0;
-		GACUI_REMOTEPROTOCOL_EVENTS(EVENT_NOREQ, EVENT_REQ)
+#define EVENT_NOREQ(NAME, REQUEST)					virtual void On ## NAME() = 0;
+#define EVENT_REQ(NAME, REQUEST)					virtual void On ## NAME(const REQUEST& arguments) = 0;
+#define EVENT_HANDLER(NAME, REQUEST, REQTAG, ...)	EVENT_ ## REQTAG(NAME, REQUEST)
+		GACUI_REMOTEPROTOCOL_EVENTS(EVENT_HANDLER)
+#undef EVENT_HANDLER
 #undef EVENT_REQ
 #undef EVENT_NOREQ
 
-#define MESSAGE_NOREQ_RES(NAME, RESPONSE)			virtual void Respond ## NAME(vint id, const RESPONSE& arguments) = 0;
-#define MESSAGE_REQ_RES(NAME, REQUEST, RESPONSE)	MESSAGE_NOREQ_RES(NAME, RESPONSE)
-			GACUI_REMOTEPROTOCOL_MESSAGE_RESPONDS(MESSAGE_NOREQ_RES, MESSAGE_REQ_RES)
-#undef MESSAGE_REQ_RES
-#undef MESSAGE_NOREQ_RES
+#define MESSAGE_NORES(NAME, RESPONSE)
+#define MESSAGE_RES(NAME, RESPONSE)										virtual void Respond ## NAME(vint id, const RESPONSE& arguments) = 0;
+#define MESSAGE_HANDLER(NAME, REQUEST, RESPONSE, REQTAG, RESTAG, ...)	MESSAGE_ ## RESTAG(NAME, RESPONSE)
+		GACUI_REMOTEPROTOCOL_MESSAGES(MESSAGE_HANDLER)
+#undef MESSAGE_HANDLER
+#undef MESSAGE_RES
+#undef MESSAGE_NORES
 	};
 
 /***********************************************************************
@@ -51,11 +46,13 @@ IGuiRemoteProtocolMessages
 	class IGuiRemoteProtocolMessages : public virtual Interface
 	{
 	public:
-#define MESSAGE_NOREQ_NORES(NAME)					virtual void Request ## NAME() = 0;
-#define MESSAGE_NOREQ_RES(NAME, RESPONSE)			virtual void Request ## NAME(vint id) = 0;
-#define MESSAGE_REQ_NORES(NAME, REQUEST)			virtual void Request ## NAME(const REQUEST& arguments) = 0;
-#define MESSAGE_REQ_RES(NAME, REQUEST, RESPONSE)	virtual void Request ## NAME(vint id, const REQUEST& arguments) = 0;
-		GACUI_REMOTEPROTOCOL_MESSAGES(MESSAGE_NOREQ_NORES, MESSAGE_NOREQ_RES, MESSAGE_REQ_NORES, MESSAGE_REQ_RES)
+#define MESSAGE_NOREQ_NORES(NAME, REQUEST, RESPONSE)					virtual void Request ## NAME() = 0;
+#define MESSAGE_NOREQ_RES(NAME, REQUEST, RESPONSE)						virtual void Request ## NAME(vint id) = 0;
+#define MESSAGE_REQ_NORES(NAME, REQUEST, RESPONSE)						virtual void Request ## NAME(const REQUEST& arguments) = 0;
+#define MESSAGE_REQ_RES(NAME, REQUEST, RESPONSE)						virtual void Request ## NAME(vint id, const REQUEST& arguments) = 0;
+#define MESSAGE_HANDLER(NAME, REQUEST, RESPONSE, REQTAG, RESTAG, ...)	MESSAGE_ ## REQTAG ## _ ## RESTAG(NAME, REQUEST, RESPONSE)
+		GACUI_REMOTEPROTOCOL_MESSAGES(MESSAGE_HANDLER)
+#undef MESSAGE_HANDLER
 #undef MESSAGE_REQ_RES
 #undef MESSAGE_REQ_NORES
 #undef MESSAGE_NOREQ_RES
