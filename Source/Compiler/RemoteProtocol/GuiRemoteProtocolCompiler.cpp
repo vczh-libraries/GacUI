@@ -274,7 +274,7 @@ GenerateRemoteProtocolHeaderFile
 
 	void GenerateDeserializerFunctionHeader(const WString& type, bool semicolon, stream::TextWriter& writer)
 	{
-		writer.WriteString(L"\ttemplate<> " + type + L" ConvertJsonToCustomType<" + type + L">(vl::Ptr<vl::glr::json::JsonNode> node)");
+		writer.WriteString(L"\ttemplate<> void ConvertJsonToCustomType<" + type + L">(vl::Ptr<vl::glr::json::JsonNode> node, " + type + L"& value)");
 		writer.WriteLine(semicolon ? L";" : L"");
 	}
 
@@ -344,7 +344,7 @@ GenerateRemoteProtocolHeaderFile
 		}
 		writer.WriteLine(L"");
 
-		writer.WriteLine(L"\ttemplate<typename T> T ConvertJsonToCustomType(vl::Ptr<vl::glr::json::JsonNode>) = delete;");
+		writer.WriteLine(L"\ttemplate<typename T> void ConvertJsonToCustomType(vl::Ptr<vl::glr::json::JsonNode>, T&) = delete;");
 		GenerateDeserializerFunctionHeader(L"bool", true, writer);
 		GenerateDeserializerFunctionHeader(L"::vl::vint", true, writer);
 		GenerateDeserializerFunctionHeader(L"float", true, writer);
@@ -492,9 +492,7 @@ GenerateRemoteProtocolCppFile
 				writer.WriteLine(L"\t#define ERROR_MESSAGE_PREFIX L\"vl::presentation::remoteprotocol::ConvertJsonToCustomType<" + cppName + L">(Ptr<JsonNode>)#\"");
 				writer.WriteLine(L"\t\tauto jsonNode = node.Cast<glr::json::JsonNumber>();");
 				writer.WriteLine(L"\t\tCHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L\"Json node does not match the expected type.\");");
-				writer.WriteLine(L"\t\t" + cppName + L" value;");
 				writer.WriteLine(L"\t\tCHECK_ERROR(reflection::description::TypedValueSerializerProvider<" + cppName + L">::Deserialize(jsonNode->content.value, value), ERROR_MESSAGE_PREFIX L\"Json node does not match the expected type.\");");
-				writer.WriteLine(L"\t\treturn value;");
 				writer.WriteLine(L"\t#undef ERROR_MESSAGE_PREFIX");
 				writer.WriteLine(L"\t}");
 				writer.WriteLine(L"");
