@@ -103,13 +103,13 @@ GuiRemoteEvents
 
 		// events
 
-		void	OnControllerConnect() override;
-		void	OnControllerDisconnect() override;
-		void	OnControllerRequestExit() override;
-		void	OnControllerForceExit() override;
-		void	OnControllerScreenUpdated(const remoteprotocol::ScreenConfig& arguments) override;
-
-		void	OnWindowBoundsUpdated(const remoteprotocol::WindowSizingConfig& arguments) override;
+#define EVENT_NOREQ(NAME, REQUEST)					void On ## NAME() override;
+#define EVENT_REQ(NAME, REQUEST)					void On ## NAME(const REQUEST& arguments) override;
+#define EVENT_HANDLER(NAME, REQUEST, REQTAG, ...)	EVENT_ ## REQTAG(NAME, REQUEST)
+		GACUI_REMOTEPROTOCOL_EVENTS(EVENT_HANDLER)
+#undef EVENT_HANDLER
+#undef EVENT_REQ
+#undef EVENT_NOREQ
 	};
 }
 

@@ -271,7 +271,7 @@ GenerateRemoteProtocolHeaderFile
 			}
 
 			writer.WriteString(messageDecl->request ? L", REQ" : L", NOREQ");
-			writer.WriteString(messageDecl->response ? L", RES" : L", NROES");
+			writer.WriteString(messageDecl->response ? L", RES" : L", NORES");
 			writer.WriteLine(L")\\");
 		}
 		writer.WriteLine(L"");

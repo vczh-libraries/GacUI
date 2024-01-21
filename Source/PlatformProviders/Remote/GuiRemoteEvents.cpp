@@ -23,24 +23,26 @@ GuiRemoteMessages
 
 	void GuiRemoteMessages::ClearResponses()
 	{
-#define MESSAGE_NOREQ_RES(NAME, RESPONSE)			response ## NAME.Clear();
-#define MESSAGE_REQ_RES(NAME, REQUEST, RESPONSE)	MESSAGE_NOREQ_RES(NAME, RESPONSE)
-		GACUI_REMOTEPROTOCOL_MESSAGE_RESPONDS(MESSAGE_NOREQ_RES, MESSAGE_REQ_RES)
-#undef MESSAGE_REQ_RES
-#undef MESSAGE_NOREQ_RES
+#define MESSAGE_NORES(NAME, RESPONSE)
+#define MESSAGE_RES(NAME, RESPONSE)			response ## NAME.Clear();
+#define MESSAGE_HANDLER(NAME, REQUEST, RESPONSE, REQTAG, RESTAG, ...)	MESSAGE_ ## RESTAG(NAME, RESPONSE)
+		GACUI_REMOTEPROTOCOL_MESSAGES(MESSAGE_HANDLER)
+#undef MESSAGE_HANDLER
+#undef MESSAGE_RES
+#undef MESSAGE_NORES
 	}
 
 /***********************************************************************
 GuiRemoteMessages (messages)
 ***********************************************************************/
 
-#define MESSAGE_NOREQ_NORES(NAME)\
+#define MESSAGE_NOREQ_NORES(NAME, REQUEST, RESPONSE)\
 	void GuiRemoteMessages::Request ## NAME()\
 	{\
 		remote->remoteProtocol->Request ## NAME();\
 	}\
 
-#define MESSAGE_NOREQ_RES(NAME, RESPONSE)\
+#define MESSAGE_NOREQ_RES(NAME, REQUEST, RESPONSE)\
 	vint GuiRemoteMessages::Request ## NAME()\
 	{\
 		vint requestId = ++id;\
@@ -48,7 +50,7 @@ GuiRemoteMessages (messages)
 		return requestId;\
 	}\
 
-#define MESSAGE_REQ_NORES(NAME, REQUEST)\
+#define MESSAGE_REQ_NORES(NAME, REQUEST, RESPONSE)\
 	void GuiRemoteMessages::Request ## NAME(const REQUEST& arguments)\
 	{\
 		remote->remoteProtocol->Request ## NAME(arguments);\
@@ -105,7 +107,7 @@ GuiRemoteEvents (messages)
 ***********************************************************************/
 
 #define MESSAGE_NORES(NAME, RESPONSE)
-#define MESSAGE_NOREQ_RES(NAME, RESPONSE)\
+#define MESSAGE_RES(NAME, RESPONSE)\
 	void GuiRemoteEvents::Respond ## NAME(vint id, const RESPONSE& arguments)\
 	{\
 		remote->remoteMessages.Respond ## NAME(id, arguments);\
