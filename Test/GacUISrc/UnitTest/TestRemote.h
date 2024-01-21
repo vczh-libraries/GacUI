@@ -56,9 +56,12 @@ protected:
 	glr::json::Parser						jsonParser;
 	IGuiRemoteProtocol*						protocol = nullptr;
 	IGuiRemoteProtocolEvents*				events = nullptr;
+	bool									submitting = false;
 	vint									lastRequestId = -1;
-	collections::List<BatchedRequest>		batchedRequests;
 	collections::Dictionary<vint, WString>	batchedRequestIds;
+	collections::List<BatchedRequest>		batchedRequests;
+	collections::List<BatchedRequest>		batchedResponses;
+	collections::List<BatchedRequest>		batchedEvents;
 
 	template<typename T>
 	WString ToJson(const T& value)
@@ -90,15 +93,34 @@ protected:
 #define EVENT_NOREQ(NAME, REQUEST)\
 	void On ## NAME() override\
 	{\
-		events->On ## NAME();\
+		if (submitting)\
+		{\
+			BatchedRequest request;\
+			request.name = L ## #NAME;\
+			batchedEvents.Add(request);\
+		}\
+		else\
+		{\
+			events->On ## NAME();\
+		}\
 	}\
 
 #define EVENT_REQ(NAME, REQUEST)\
 	void On ## NAME(const REQUEST& arguments) override\
 	{\
-		REQUEST deserialized;\
-		FromJson<REQUEST>(ToJson<REQUEST>(arguments), deserialized);\
-		events->On ## NAME(deserialized);\
+		if (submitting)\
+		{\
+			BatchedRequest request;\
+			request.name = L ## #NAME;\
+			request.arguments = ToJson<REQUEST>(arguments);\
+			batchedEvents.Add(request);\
+		}\
+		else\
+		{\
+			REQUEST deserialized;\
+			FromJson<REQUEST>(ToJson<REQUEST>(arguments), deserialized);\
+			events->On ## NAME(deserialized);\
+		}\
 	}\
 
 #define EVENT_HANDLER(NAME, REQUEST, REQTAG, ...)	EVENT_ ## REQTAG(NAME, REQUEST)
@@ -113,9 +135,11 @@ protected:
 	{\
 		CHECK_ERROR(batchedRequestIds[id] == L ## #NAME, L"Messages sending to IGuiRemoteProtocol should be responded by calling the correct function.");\
 		batchedRequestIds.Remove(id);\
-		RESPONSE deserialized;\
-		FromJson<RESPONSE>(ToJson<RESPONSE>(arguments), deserialized);\
-		events->Respond ## NAME(id, deserialized);\
+		BatchedRequest request;\
+		request.id = id;\
+		request.name = L ## #NAME;\
+		request.arguments = ToJson<RESPONSE>(arguments);\
+		batchedResponses.Add(request);\
 	}\
 
 #define MESSAGE_HANDLER(NAME, REQUEST, RESPONSE, REQTAG, RESTAG, ...)	MESSAGE_ ## RESTAG(NAME, RESPONSE)
@@ -193,6 +217,7 @@ public:
 
 	void Submit() override
 	{
+		submitting = true;
 		protocol->Submit();
 		for (auto&& request : batchedRequests)
 		{
@@ -235,7 +260,54 @@ public:
 		}
 
 		CHECK_ERROR(batchedRequestIds.Count() == 0, L"Messages sending to IGuiRemoteProtocol should be all responded.");
+
+		for (auto&& request : batchedResponses)
+		{
+#define MESSAGE_NORES(NAME, RESPONSE)
+#define MESSAGE_RES(NAME, RESPONSE)\
+			if (request.name == L ## #NAME)\
+			{\
+				RESPONSE arguments;\
+				FromJson<RESPONSE>(request.arguments, arguments);\
+				events->Respond ## NAME(request.id, arguments);\
+			} else\
+
+#define MESSAGE_HANDLER(NAME, REQUEST, RESPONSE, REQTAG, RESTAG, ...)	MESSAGE_ ## RESTAG(NAME, RESPONSE)
+			GACUI_REMOTEPROTOCOL_MESSAGES(MESSAGE_HANDLER)
+#undef MESSAGE_HANDLER
+#undef MESSAGE_RES
+#undef MESSAGE_NORES
+			CHECK_FAIL(L"Unrecognized response!");
+		}
+
+		for (auto&& request : batchedEvents)
+		{
+#define EVENT_NOREQ(NAME, REQUEST)\
+			if (request.name == L ## #NAME)\
+			{\
+				events->On ## NAME();\
+			} else\
+
+#define EVENT_REQ(NAME, REQUEST)\
+			if (request.name == L ## #NAME)\
+			{\
+				REQUEST arguments;\
+				FromJson<REQUEST>(request.arguments, arguments);\
+				events->On ## NAME(arguments);\
+			} else\
+
+#define EVENT_HANDLER(NAME, REQUEST, REQTAG, ...)	EVENT_ ## REQTAG(NAME, REQUEST)
+			GACUI_REMOTEPROTOCOL_EVENTS(EVENT_HANDLER)
+#undef EVENT_HANDLER
+#undef EVENT_REQ
+#undef EVENT_NOREQ
+			CHECK_FAIL(L"Unrecognized event!");
+		}
+
 		batchedRequests.Clear();
+		batchedResponses.Clear();
+		batchedEvents.Clear();
+		submitting = false;
 	}
 
 	void ProcessRemoteEvents() override
