@@ -6,7 +6,7 @@ Licensed under https ://github.com/vczh-libraries/License
 #ifndef VCZH_PRESENTATION_GUIREMOTECONTROLLER_REMOTEPROTOCOLSCHEMA
 #define VCZH_PRESENTATION_GUIREMOTECONTROLLER_REMOTEPROTOCOLSCHEMA
 
-#include "../../../../GuiTypes.h"
+#include "../../../../NativeWindow/GuiNativeWindow.h"
 
 namespace vl::presentation::remoteprotocol
 {
@@ -68,7 +68,6 @@ namespace vl::presentation::remoteprotocol
 	HANDLER(ControllerScreenUpdated, vl::presentation::remoteprotocol::ScreenConfig, REQ)\
 	HANDLER(WindowBoundsUpdated, vl::presentation::remoteprotocol::WindowSizingConfig, REQ)\
 	HANDLER(WindowActivatedUpdated, bool, REQ)\
-	HANDLER(WindowFocusedUpdated, bool, REQ)\
 
 }
 

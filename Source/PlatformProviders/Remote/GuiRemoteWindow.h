@@ -55,7 +55,6 @@ GuiRemoteWindow
 		bool							styleShowInTaskBar = true;
 		bool							styleCustomFrameMode = false;
 		
-		INativeWindow::WindowSizeState	statusSizeState = INativeWindow::Restored;
 		bool							statusVisible = false;
 		bool							statusActivated = false;
 		bool							statusCapturing = false;
@@ -73,11 +72,7 @@ GuiRemoteWindow
 		void							OnControllerDisconnect();
 		void							OnControllerScreenUpdated(const remoteprotocol::ScreenConfig& arguments);
 		void							OnWindowBoundsUpdated(const remoteprotocol::WindowSizingConfig& arguments);
-		void							OnWindowActivated();
-		void							OnWindowDeactivated();
-		void							OnWindowRestored();
-		void							OnWindowMaximized();
-		void							OnWindowMinimized();
+		void							OnWindowActivatedUpdated(bool activated);
 
 	public:
 		GuiRemoteWindow(GuiRemoteController* _remote);

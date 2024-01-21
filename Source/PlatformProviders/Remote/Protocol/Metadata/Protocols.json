@@ -613,16 +613,5 @@
                 "type": "Boolean"
             }
         }
-    }, {
-        "$ast": { "type": "EventDecl", "codeRange": {"start": {"row": 47, "column": 0, "index": 1583}, "end": {"row": 47, "column": 57, "index": 1640}, "codeIndex": 1}},
-        "attributes": [],
-        "name": { "value": "WindowFocusedUpdated", "codeRange": {"start": {"row": 47, "column": 6, "index": 1589}, "end": {"row": 47, "column": 25, "index": 1608}, "codeIndex": 1}},
-        "request": {
-            "$ast": { "type": "EventRequest", "codeRange": {"start": {"row": 47, "column": 42, "index": 1625}, "end": {"row": 47, "column": 55, "index": 1638}, "codeIndex": 1}},
-            "type": {
-                "$ast": { "type": "PrimitiveType", "codeRange": {"start": {"row": 47, "column": 51, "index": 1634}, "end": {"row": 47, "column": 54, "index": 1637}, "codeIndex": 1}},
-                "type": "Boolean"
-            }
-        }
     }]
 }

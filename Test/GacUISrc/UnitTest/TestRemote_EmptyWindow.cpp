@@ -125,9 +125,11 @@ public:
 	void RequestWindowNotifySetIconVisible(const bool& arguments) override {}
 	void RequestWindowNotifySetTitleBar(const bool& arguments) override {}
 	void RequestWindowNotifyActivate() override {}
-	void RequestWindowNotifyShowRestored(const WindowShowing& arguments) override {}
-	void RequestWindowNotifyShowMaximized(const WindowShowing& arguments) override {}
-	void RequestWindowNotifyShowMinimized(const WindowShowing& arguments) override {}
+
+	void RequestWindowNotifyShow(const WindowShowing& arguments) override
+	{
+		sizingConfig.sizeState = arguments.sizeState;
+	}
 };
 EmptyWindowProtocol* EmptyWindowProtocol::instance = nullptr;
 

@@ -64,6 +64,7 @@ public:
 		response.bounds = { 0,0,50,40 };
 		response.clientBounds = { 1,1,49,39 };
 		response.customFramePadding = { 8,8,8,8 };
+		response.sizeState = INativeWindow::Restored;
 		events->RespondWindowGetBounds(id, response);
 	}
 };

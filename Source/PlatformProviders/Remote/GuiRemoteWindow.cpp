@@ -59,25 +59,15 @@ GuiRemoteWindow
 
 	void GuiRemoteWindow::ShowWithSizeState(bool activate, INativeWindow::WindowSizeState sizeState)
 	{
-		if (!statusVisible || statusSizeState != statusSizeState)
+		if (!statusVisible || remoteWindowSizingConfig.sizeState != sizeState)
 		{
 			remoteprotocol::WindowShowing windowShowing;
 			windowShowing.activate = activate;
-			switch (sizeState)
-			{
-			case INativeWindow::Restored:
-				remoteMessages.RequestWindowNotifyShowRestored(windowShowing);
-				break;
-			case INativeWindow::Maximized:
-				remoteMessages.RequestWindowNotifyShowMaximized(windowShowing);
-				break;
-			case INativeWindow::Minimized:
-				remoteMessages.RequestWindowNotifyShowMinimized(windowShowing);
-				break;
-			}
+			windowShowing.sizeState = sizeState;
+			remoteMessages.RequestWindowNotifyShow(windowShowing);
 			remoteMessages.Submit();
 
-			statusSizeState = sizeState;
+			remoteWindowSizingConfig.sizeState = sizeState;
 			Opened();
 			SetActivated(activate);
 		}
@@ -115,41 +105,23 @@ GuiRemoteWindow (events)
 
 	void GuiRemoteWindow::OnWindowBoundsUpdated(const remoteprotocol::WindowSizingConfig& arguments)
 	{
+		bool callMoved = false;
 		if (remoteWindowSizingConfig.bounds != arguments.bounds ||
-			remoteWindowSizingConfig.clientBounds != arguments.clientBounds ||
-			remoteWindowSizingConfig.customFramePadding != arguments.customFramePadding)
+			remoteWindowSizingConfig.clientBounds != arguments.clientBounds)
 		{
-			remoteWindowSizingConfig = arguments;
+			callMoved = true;
+		}
+
+		remoteWindowSizingConfig = arguments;
+		if(callMoved)
+		{
 			for (auto l : listeners) l->Moved();
 		}
 	}
 
-	void GuiRemoteWindow::OnWindowActivated()
+	void GuiRemoteWindow::OnWindowActivatedUpdated(bool activated)
 	{
-		SetActivated(true);
-	}
-
-	void GuiRemoteWindow::OnWindowDeactivated()
-	{
-		SetActivated(false);
-	}
-
-	void GuiRemoteWindow::OnWindowRestored()
-	{
-		statusSizeState = INativeWindow::Restored;
-		Opened();
-	}
-
-	void GuiRemoteWindow::OnWindowMaximized()
-	{
-		statusSizeState = INativeWindow::Maximized;
-		Opened();
-	}
-
-	void GuiRemoteWindow::OnWindowMinimized()
-	{
-		statusSizeState = INativeWindow::Minimized;
-		Opened();
+		SetActivated(activated);
 	}
 
 /***********************************************************************
@@ -161,6 +133,7 @@ GuiRemoteWindow
 		, remoteMessages(_remote->remoteMessages)
 		, remoteEvents(_remote->remoteEvents)
 	{
+		remoteWindowSizingConfig.sizeState = INativeWindow::Restored;
 	}
 
 	GuiRemoteWindow::~GuiRemoteWindow()
@@ -346,17 +319,17 @@ GuiRemoteWindow (INativeWindow)
 
 	INativeWindow::WindowSizeState GuiRemoteWindow::GetSizeState()
 	{
-		return statusSizeState;
+		return remoteWindowSizingConfig.sizeState;
 	}
 
 	void GuiRemoteWindow::Show()
 	{
-		ShowWithSizeState(true, statusSizeState);
+		ShowWithSizeState(true, remoteWindowSizingConfig.sizeState);
 	}
 
 	void GuiRemoteWindow::ShowDeactivated()
 	{
-		ShowWithSizeState(false, statusSizeState);
+		ShowWithSizeState(false, remoteWindowSizingConfig.sizeState);
 	}
 
 	void GuiRemoteWindow::ShowRestored()

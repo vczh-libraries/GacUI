@@ -45,4 +45,3 @@ message WindowNotifyShow                { request: WindowShowing; }
 
 event WindowBoundsUpdated               { request: WindowSizingConfig; }
 event WindowActivatedUpdated            { request: bool; }
-event WindowFocusedUpdated              { request: bool; }
