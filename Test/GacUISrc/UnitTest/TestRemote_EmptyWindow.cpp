@@ -35,7 +35,7 @@ public:
 
 	void Submit() override
 	{
-		TEST_ASSERT(!connectionStoppedAndSubmitted);
+		CHECK_ERROR(!connectionStoppedAndSubmitted, L"IGuiRemoteProtocol::Submit is not allowed to call after connection stopped.");
 		if (connectionStopped) connectionStoppedAndSubmitted = true;
 	}
 
@@ -72,13 +72,13 @@ public:
 
 	void RequestControllerConnectionEstablished() override
 	{
-		TEST_ASSERT(!connectionEstablished);
+		CHECK_ERROR(!connectionEstablished, L"IGuiRemoteProtocol::RequestControllerConnectionEstablished is not allowed to call twice.");
 		connectionEstablished = true;
 	}
 
 	void RequestControllerConnectionStopped() override
 	{
-		TEST_ASSERT(!connectionStopped);
+		CHECK_ERROR(!connectionStopped, L"IGuiRemoteProtocol::RequestControllerConnectionStopped is not allowed to call twice.");
 		connectionStopped = true;
 	}
 
@@ -143,6 +143,7 @@ TEST_FILE
 			TEST_ASSERT(window->GetClientSize() == NativeSize(100, 200));
 			TEST_ASSERT(EmptyWindowProtocol::instance->sizingConfig.bounds == NativeRect(270, 120, 370, 320));
 			TEST_ASSERT(EmptyWindowProtocol::instance->sizingConfig.clientBounds == NativeRect(270, 120, 370, 320));
+			window->Hide(true);
 		});
 		SetGuiMainProxy([]()
 		{
@@ -161,15 +162,15 @@ TEST_FILE
 				window->SetClientSize({ 100,200 });
 				ws->Run(window);
 			});
-
-			TEST_CASE(L"Ensure stopped")
-			{
-				TEST_ASSERT(EmptyWindowProtocol::instance->connectionStopped);
-				TEST_ASSERT(EmptyWindowProtocol::instance->connectionStoppedAndSubmitted);
-			});
 		});
 		SetupRemoteNativeController(&protocol);
 		SetGuiMainProxy(nullptr);
+
+		TEST_CASE(L"Ensure stopped")
+		{
+			TEST_ASSERT(EmptyWindowProtocol::instance->connectionStopped);
+			TEST_ASSERT(EmptyWindowProtocol::instance->connectionStoppedAndSubmitted);
+		});
 	});
 
 	// TODO: test before closing on main and non-main window, setting cancel to different values and expect to run only once

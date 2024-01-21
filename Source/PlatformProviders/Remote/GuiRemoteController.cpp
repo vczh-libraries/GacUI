@@ -233,7 +233,7 @@ GuiRemoteController::INativeWindowService
 		{
 			remoteProtocol->ProcessRemoteEvents();
 		}
-		return connectionStopped;
+		return !connectionStopped;
 	}
 
 /***********************************************************************
