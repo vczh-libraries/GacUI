@@ -96,7 +96,9 @@ protected:
 #define EVENT_REQ(NAME, REQUEST)\
 	void On ## NAME(const REQUEST& arguments) override\
 	{\
-		events->On ## NAME(arguments);\
+		REQUEST deserialized;\
+		FromJson<REQUEST>(ToJson<REQUEST>(arguments), deserialized);\
+		events->On ## NAME(deserialized);\
 	}\
 
 #define EVENT_HANDLER(NAME, REQUEST, REQTAG, ...)	EVENT_ ## REQTAG(NAME, REQUEST)
@@ -112,8 +114,7 @@ protected:
 		CHECK_ERROR(batchedRequestIds[id] == L ## #NAME, L"Messages sending to IGuiRemoteProtocol should be responded by calling the correct function.");\
 		batchedRequestIds.Remove(id);\
 		RESPONSE deserialized;\
-		auto json = ConvertCustomTypeToJson<RESPONSE>(arguments);\
-		ConvertJsonToCustomType<RESPONSE>(json, deserialized);\
+		FromJson<RESPONSE>(ToJson<RESPONSE>(arguments), deserialized);\
 		events->Respond ## NAME(id, deserialized);\
 	}\
 
