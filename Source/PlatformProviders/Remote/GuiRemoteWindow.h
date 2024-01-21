@@ -32,6 +32,7 @@ GuiRemoteWindow
 		INativeWindow::WindowMode							windowMode = INativeWindow::Normal;
 
 		remoteprotocol::WindowSizingConfig					remoteWindowSizingConfig;
+		bool												sizingConfigInvalidated = false;
 		double												scalingX = 1;
 		double												scalingY = 1;
 
@@ -55,6 +56,8 @@ GuiRemoteWindow
 		INativeWindow::WindowSizeState	statusSizeState = INativeWindow::Restored;
 		bool							statusActivated = false;
 		bool							statusCapturing = false;
+
+		void							RequestGetBounds();
 
 	public:
 		GuiRemoteWindow(GuiRemoteController* _remote);

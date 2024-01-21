@@ -41,15 +41,15 @@ namespace vl::presentation::remoteprotocol
 	REQ_NORES(WindowNotifySetEnabled, bool)\
 	REQ_NORES(WindowNotifySetTopMost, bool)\
 	REQ_NORES(WindowNotifySetShowInTaskBar, bool)\
+	REQ_NORES(WindowNotifySetCustomFrameMode, bool)\
+	REQ_NORES(WindowNotifySetMaximizedBox, bool)\
+	REQ_NORES(WindowNotifySetMinimizedBox, bool)\
+	REQ_NORES(WindowNotifySetBorder, bool)\
+	REQ_NORES(WindowNotifySetSizeBox, bool)\
+	REQ_NORES(WindowNotifySetIconVisible, bool)\
+	REQ_NORES(WindowNotifySetTitleBar, bool)\
 	REQ_RES(WindowSetBounds, ::vl::presentation::NativeRect, vl::presentation::remoteprotocol::WindowSizingConfig)\
 	REQ_RES(WindowSetClientSize, ::vl::presentation::NativeSize, vl::presentation::remoteprotocol::WindowSizingConfig)\
-	REQ_RES(WindowSetCustomFrameMode, bool, vl::presentation::remoteprotocol::WindowSizingConfig)\
-	REQ_RES(WindowSetMaximizedBox, bool, vl::presentation::remoteprotocol::WindowSizingConfig)\
-	REQ_RES(WindowSetMinimizedBox, bool, vl::presentation::remoteprotocol::WindowSizingConfig)\
-	REQ_RES(WindowSetBorder, bool, vl::presentation::remoteprotocol::WindowSizingConfig)\
-	REQ_RES(WindowSetSizeBox, bool, vl::presentation::remoteprotocol::WindowSizingConfig)\
-	REQ_RES(WindowSetIconVisible, bool, vl::presentation::remoteprotocol::WindowSizingConfig)\
-	REQ_RES(WindowSetTitleBar, bool, vl::presentation::remoteprotocol::WindowSizingConfig)\
 	NOREQ_NORES(WindowNotifyActivate)\
 	NOREQ_NORES(WindowNotifyShowActivated)\
 	NOREQ_NORES(WindowNotifyShowDeactivated)\

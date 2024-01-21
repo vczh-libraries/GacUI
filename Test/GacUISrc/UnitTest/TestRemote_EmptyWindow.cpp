@@ -109,60 +109,18 @@ public:
 		events->RespondWindowSetClientSize(id, sizingConfig);
 	}
 
-	void RequestWindowSetCustomFrameMode(vint id, const bool& arguments) override
-	{
-		events->RespondWindowSetCustomFrameMode(id, sizingConfig);
-	}
-
-	void RequestWindowSetMaximizedBox(vint id, const bool& arguments) override
-	{
-		events->RespondWindowSetMaximizedBox(id, sizingConfig);
-	}
-
-	void RequestWindowSetMinimizedBox(vint id, const bool& arguments) override
-	{
-		events->RespondWindowSetMinimizedBox(id, sizingConfig);
-	}
-
-	void RequestWindowSetBorder(vint id, const bool& arguments) override
-	{
-		events->RespondWindowSetBorder(id, sizingConfig);
-	}
-
-	void RequestWindowSetSizeBox(vint id, const bool& arguments) override
-	{
-		events->RespondWindowSetSizeBox(id, sizingConfig);
-	}
-
-	void RequestWindowSetIconVisible(vint id, const bool& arguments) override
-	{
-		events->RespondWindowSetIconVisible(id, sizingConfig);
-	}
-
-	void RequestWindowSetTitleBar(vint id, const bool& arguments) override
-	{
-		events->RespondWindowSetTitleBar(id, sizingConfig);
-	}
-
-	void RequestWindowNotifyActivate() override
-	{
-	}
-
-	void RequestWindowNotifyShowActivated() override
-	{
-	}
-
-	void RequestWindowNotifyShowDeactivated() override
-	{
-	}
-
-	void RequestWindowNotifyShowMaximized() override
-	{
-	}
-
-	void RequestWindowNotifyShowMinimized() override
-	{
-	}
+	void RequestWindowNotifySetCustomFrameMode(const bool& arguments) override {}
+	void RequestWindowNotifySetMaximizedBox(const bool& arguments) override {}
+	void RequestWindowNotifySetMinimizedBox(const bool& arguments) override {}
+	void RequestWindowNotifySetBorder(const bool& arguments) override {}
+	void RequestWindowNotifySetSizeBox(const bool& arguments) override {}
+	void RequestWindowNotifySetIconVisible(const bool& arguments) override {}
+	void RequestWindowNotifySetTitleBar(const bool& arguments) override {}
+	void RequestWindowNotifyActivate() override {}
+	void RequestWindowNotifyShowActivated() override {}
+	void RequestWindowNotifyShowDeactivated() override {}
+	void RequestWindowNotifyShowMaximized() override {}
+	void RequestWindowNotifyShowMinimized() override {}
 };
 EmptyWindowProtocol* EmptyWindowProtocol::instance = nullptr;
 

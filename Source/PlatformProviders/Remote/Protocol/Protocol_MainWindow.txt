@@ -14,16 +14,16 @@ message WindowNotifySetTitle            { request: string; }
 message WindowNotifySetEnabled          { request: bool; }
 message WindowNotifySetTopMost          { request: bool; }
 message WindowNotifySetShowInTaskBar    { request: bool; }
+message WindowNotifySetCustomFrameMode  { request: bool; }
+message WindowNotifySetMaximizedBox     { request: bool; }
+message WindowNotifySetMinimizedBox     { request: bool; }
+message WindowNotifySetBorder           { request: bool; }
+message WindowNotifySetSizeBox          { request: bool; }
+message WindowNotifySetIconVisible      { request: bool; }
+message WindowNotifySetTitleBar         { request: bool; }
 
-message WindowSetBounds                 { request: NativeRect;    response: WindowSizingConfig; }
-message WindowSetClientSize             { request: NativeSize;    response: WindowSizingConfig; }
-message WindowSetCustomFrameMode        { request: bool;          response: WindowSizingConfig; }
-message WindowSetMaximizedBox           { request: bool;          response: WindowSizingConfig; }
-message WindowSetMinimizedBox           { request: bool;          response: WindowSizingConfig; }
-message WindowSetBorder                 { request: bool;          response: WindowSizingConfig; }
-message WindowSetSizeBox                { request: bool;          response: WindowSizingConfig; }
-message WindowSetIconVisible            { request: bool;          response: WindowSizingConfig; }
-message WindowSetTitleBar               { request: bool;          response: WindowSizingConfig; }
+message WindowSetBounds                 { request: NativeRect; response: WindowSizingConfig; }
+message WindowSetClientSize             { request: NativeSize; response: WindowSizingConfig; }
 
 message WindowNotifyActivate            {}
 message WindowNotifyShowActivated       {}

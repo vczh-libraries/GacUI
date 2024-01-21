@@ -6,15 +6,29 @@ namespace vl::presentation
 GuiRemoteWindow
 ***********************************************************************/
 
-#define SYNC_REMOTE_WINDOW_STYLE(STYLE, VALUE)\
-		if (style ## STYLE != true)\
+#define SET_REMOTE_WINDOW_STYLE(STYLE, VALUE)\
+		if (style ## STYLE != VALUE)\
 		{\
-			style ## STYLE = true;\
-			vint id = remoteMessages.RequestWindowSet ## STYLE(VALUE);\
-			remoteMessages.Submit();\
-			OnWindowBoundsUpdated(remoteMessages.RetrieveWindowSet ## STYLE(id));\
-			remoteMessages.ClearResponses();\
+			style ## STYLE = VALUE;\
+			remoteMessages.RequestWindowNotifySet ## STYLE(VALUE);\
 		}\
+
+#define SET_REMOTE_WINDOW_STYLE_INVALIDATE(STYLE, VALUE)\
+		if (style ## STYLE != VALUE)\
+		{\
+			style ## STYLE = VALUE;\
+			sizingConfigInvalidated = true;\
+			remoteMessages.RequestWindowNotifySet ## STYLE(VALUE);\
+		}\
+
+	void GuiRemoteWindow::RequestGetBounds()
+	{
+		sizingConfigInvalidated = false;
+		vint idGetBounds = remoteMessages.RequestWindowGetBounds();
+		remoteMessages.Submit();
+		OnWindowBoundsUpdated(remoteMessages.RetrieveWindowGetBounds(idGetBounds));
+		remoteMessages.ClearResponses();
+	}
 
 	GuiRemoteWindow::GuiRemoteWindow(GuiRemoteController* _remote)
 		: remote(_remote)
@@ -29,11 +43,7 @@ GuiRemoteWindow
 
 	void GuiRemoteWindow::OnControllerConnect()
 	{
-		vint idGetBounds = remoteMessages.RequestWindowGetBounds();
-		remoteMessages.Submit();
-		OnWindowBoundsUpdated(remoteMessages.RetrieveWindowGetBounds(idGetBounds));
-		remoteMessages.ClearResponses();
-
+		RequestGetBounds();
 		// TODO: sync styles and status
 	}
 
@@ -116,6 +126,7 @@ GuiRemoteWindow
 
 	NativeRect GuiRemoteWindow::GetBounds()
 	{
+		if (sizingConfigInvalidated) RequestGetBounds();
 		return remoteWindowSizingConfig.bounds;
 	}
 
@@ -132,6 +143,7 @@ GuiRemoteWindow
 
 	NativeSize GuiRemoteWindow::GetClientSize()
 	{
+		if (sizingConfigInvalidated) RequestGetBounds();
 		return remoteWindowSizingConfig.clientBounds.GetSize();
 	}
 
@@ -163,11 +175,7 @@ GuiRemoteWindow
 
 	void GuiRemoteWindow::SetTitle(const WString& title)
 	{
-		if (styleTitle != title)
-		{
-			styleTitle = title;
-			remoteMessages.RequestWindowNotifySetTitle(title);
-		}
+		SET_REMOTE_WINDOW_STYLE(Title, title);
 	}
 
 	INativeCursor* GuiRemoteWindow::GetWindowCursor()
@@ -211,12 +219,12 @@ GuiRemoteWindow
 
 	void GuiRemoteWindow::EnableCustomFrameMode()
 	{
-		SYNC_REMOTE_WINDOW_STYLE(CustomFrameMode, true);
+		SET_REMOTE_WINDOW_STYLE_INVALIDATE(CustomFrameMode, true);
 	}
 
 	void GuiRemoteWindow::DisableCustomFrameMode()
 	{
-		SYNC_REMOTE_WINDOW_STYLE(CustomFrameMode, false);
+		SET_REMOTE_WINDOW_STYLE_INVALIDATE(CustomFrameMode, false);
 	}
 
 	bool GuiRemoteWindow::IsCustomFrameModeEnabled()
@@ -326,20 +334,12 @@ GuiRemoteWindow
 
 	void GuiRemoteWindow::ShowInTaskBar()
 	{
-		if (styleShowInTaskBar != true)
-		{
-			styleShowInTaskBar = true;
-			remoteMessages.RequestWindowNotifySetShowInTaskBar(true);
-		}
+		SET_REMOTE_WINDOW_STYLE(ShowInTaskBar, true);
 	}
 
 	void GuiRemoteWindow::HideInTaskBar()
 	{
-		if (styleShowInTaskBar != false)
-		{
-			styleShowInTaskBar = false;
-			remoteMessages.RequestWindowNotifySetShowInTaskBar(false);
-		}
+		SET_REMOTE_WINDOW_STYLE(ShowInTaskBar, false);
 	}
 
 	bool GuiRemoteWindow::IsAppearedInTaskBar()
@@ -384,7 +384,7 @@ GuiRemoteWindow
 
 	void GuiRemoteWindow::SetMaximizedBox(bool visible)
 	{
-		SYNC_REMOTE_WINDOW_STYLE(MaximizedBox, visible);
+		SET_REMOTE_WINDOW_STYLE_INVALIDATE(MaximizedBox, visible);
 	}
 
 	bool GuiRemoteWindow::GetMinimizedBox()
@@ -394,7 +394,7 @@ GuiRemoteWindow
 
 	void GuiRemoteWindow::SetMinimizedBox(bool visible)
 	{
-		SYNC_REMOTE_WINDOW_STYLE(MinimizedBox, visible);
+		SET_REMOTE_WINDOW_STYLE_INVALIDATE(MinimizedBox, visible);
 	}
 
 	bool GuiRemoteWindow::GetBorder()
@@ -404,7 +404,7 @@ GuiRemoteWindow
 
 	void GuiRemoteWindow::SetBorder(bool visible)
 	{
-		SYNC_REMOTE_WINDOW_STYLE(Border, visible);
+		SET_REMOTE_WINDOW_STYLE_INVALIDATE(Border, visible);
 	}
 
 	bool GuiRemoteWindow::GetSizeBox()
@@ -414,7 +414,7 @@ GuiRemoteWindow
 
 	void GuiRemoteWindow::SetSizeBox(bool visible)
 	{
-		SYNC_REMOTE_WINDOW_STYLE(SizeBox, visible);
+		SET_REMOTE_WINDOW_STYLE_INVALIDATE(SizeBox, visible);
 	}
 
 	bool GuiRemoteWindow::GetIconVisible()
@@ -424,7 +424,7 @@ GuiRemoteWindow
 
 	void GuiRemoteWindow::SetIconVisible(bool visible)
 	{
-		SYNC_REMOTE_WINDOW_STYLE(IconVisible, visible);
+		SET_REMOTE_WINDOW_STYLE_INVALIDATE(IconVisible, visible);
 	}
 
 	bool GuiRemoteWindow::GetTitleBar()
@@ -434,7 +434,7 @@ GuiRemoteWindow
 
 	void GuiRemoteWindow::SetTitleBar(bool visible)
 	{
-		SYNC_REMOTE_WINDOW_STYLE(TitleBar, visible);
+		SET_REMOTE_WINDOW_STYLE_INVALIDATE(TitleBar, visible);
 	}
 
 	bool GuiRemoteWindow::GetTopMost()
@@ -444,11 +444,7 @@ GuiRemoteWindow
 
 	void GuiRemoteWindow::SetTopMost(bool topmost)
 	{
-		if (styleTopMost != topmost)
-		{
-			styleTopMost = topmost;
-			remoteMessages.RequestWindowNotifySetTopMost(topmost);
-		}
+		SET_REMOTE_WINDOW_STYLE(TopMost, topmost);
 	}
 
 	void GuiRemoteWindow::SupressAlt()
@@ -487,5 +483,6 @@ GuiRemoteWindow
 		CHECK_FAIL(L"Not Implemented!");
 	}
 
-#undef SYNC_REMOTE_WINDOW_STYLE
+#undef SET_REMOTE_WINDOW_STYLE_INVALIDATE
+#undef SET_REMOTE_WINDOW_STYLE
 }

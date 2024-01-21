@@ -410,206 +410,164 @@
         },
         "response": null
     }, {
-        "$ast": { "type": "MessageDecl", "codeRange": {"start": {"row": 17, "column": 0, "index": 454}, "end": {"row": 17, "column": 96, "index": 550}, "codeIndex": 1}},
+        "$ast": { "type": "MessageDecl", "codeRange": {"start": {"row": 16, "column": 0, "index": 452}, "end": {"row": 16, "column": 57, "index": 509}, "codeIndex": 1}},
         "attributes": [],
-        "name": { "value": "WindowSetBounds", "codeRange": {"start": {"row": 17, "column": 8, "index": 462}, "end": {"row": 17, "column": 22, "index": 476}, "codeIndex": 1}},
+        "name": { "value": "WindowNotifySetCustomFrameMode", "codeRange": {"start": {"row": 16, "column": 8, "index": 460}, "end": {"row": 16, "column": 37, "index": 489}, "codeIndex": 1}},
         "request": {
-            "$ast": { "type": "MessageRequest", "codeRange": {"start": {"row": 17, "column": 42, "index": 496}, "end": {"row": 17, "column": 61, "index": 515}, "codeIndex": 1}},
+            "$ast": { "type": "MessageRequest", "codeRange": {"start": {"row": 16, "column": 42, "index": 494}, "end": {"row": 16, "column": 55, "index": 507}, "codeIndex": 1}},
             "type": {
-                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 17, "column": 51, "index": 505}, "end": {"row": 17, "column": 60, "index": 514}, "codeIndex": 1}},
-                "name": { "value": "NativeRect", "codeRange": {"start": {"row": 17, "column": 51, "index": 505}, "end": {"row": 17, "column": 60, "index": 514}, "codeIndex": 1}}
-            }
-        },
-        "response": {
-            "$ast": { "type": "MessageResponse", "codeRange": {"start": {"row": 17, "column": 66, "index": 520}, "end": {"row": 17, "column": 94, "index": 548}, "codeIndex": 1}},
-            "type": {
-                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 17, "column": 76, "index": 530}, "end": {"row": 17, "column": 93, "index": 547}, "codeIndex": 1}},
-                "name": { "value": "WindowSizingConfig", "codeRange": {"start": {"row": 17, "column": 76, "index": 530}, "end": {"row": 17, "column": 93, "index": 547}, "codeIndex": 1}}
-            }
-        }
-    }, {
-        "$ast": { "type": "MessageDecl", "codeRange": {"start": {"row": 18, "column": 0, "index": 553}, "end": {"row": 18, "column": 96, "index": 649}, "codeIndex": 1}},
-        "attributes": [],
-        "name": { "value": "WindowSetClientSize", "codeRange": {"start": {"row": 18, "column": 8, "index": 561}, "end": {"row": 18, "column": 26, "index": 579}, "codeIndex": 1}},
-        "request": {
-            "$ast": { "type": "MessageRequest", "codeRange": {"start": {"row": 18, "column": 42, "index": 595}, "end": {"row": 18, "column": 61, "index": 614}, "codeIndex": 1}},
-            "type": {
-                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 18, "column": 51, "index": 604}, "end": {"row": 18, "column": 60, "index": 613}, "codeIndex": 1}},
-                "name": { "value": "NativeSize", "codeRange": {"start": {"row": 18, "column": 51, "index": 604}, "end": {"row": 18, "column": 60, "index": 613}, "codeIndex": 1}}
-            }
-        },
-        "response": {
-            "$ast": { "type": "MessageResponse", "codeRange": {"start": {"row": 18, "column": 66, "index": 619}, "end": {"row": 18, "column": 94, "index": 647}, "codeIndex": 1}},
-            "type": {
-                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 18, "column": 76, "index": 629}, "end": {"row": 18, "column": 93, "index": 646}, "codeIndex": 1}},
-                "name": { "value": "WindowSizingConfig", "codeRange": {"start": {"row": 18, "column": 76, "index": 629}, "end": {"row": 18, "column": 93, "index": 646}, "codeIndex": 1}}
-            }
-        }
-    }, {
-        "$ast": { "type": "MessageDecl", "codeRange": {"start": {"row": 19, "column": 0, "index": 652}, "end": {"row": 19, "column": 96, "index": 748}, "codeIndex": 1}},
-        "attributes": [],
-        "name": { "value": "WindowSetCustomFrameMode", "codeRange": {"start": {"row": 19, "column": 8, "index": 660}, "end": {"row": 19, "column": 31, "index": 683}, "codeIndex": 1}},
-        "request": {
-            "$ast": { "type": "MessageRequest", "codeRange": {"start": {"row": 19, "column": 42, "index": 694}, "end": {"row": 19, "column": 55, "index": 707}, "codeIndex": 1}},
-            "type": {
-                "$ast": { "type": "PrimitiveType", "codeRange": {"start": {"row": 19, "column": 51, "index": 703}, "end": {"row": 19, "column": 54, "index": 706}, "codeIndex": 1}},
+                "$ast": { "type": "PrimitiveType", "codeRange": {"start": {"row": 16, "column": 51, "index": 503}, "end": {"row": 16, "column": 54, "index": 506}, "codeIndex": 1}},
                 "type": "Boolean"
             }
         },
-        "response": {
-            "$ast": { "type": "MessageResponse", "codeRange": {"start": {"row": 19, "column": 66, "index": 718}, "end": {"row": 19, "column": 94, "index": 746}, "codeIndex": 1}},
-            "type": {
-                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 19, "column": 76, "index": 728}, "end": {"row": 19, "column": 93, "index": 745}, "codeIndex": 1}},
-                "name": { "value": "WindowSizingConfig", "codeRange": {"start": {"row": 19, "column": 76, "index": 728}, "end": {"row": 19, "column": 93, "index": 745}, "codeIndex": 1}}
-            }
-        }
+        "response": null
     }, {
-        "$ast": { "type": "MessageDecl", "codeRange": {"start": {"row": 20, "column": 0, "index": 751}, "end": {"row": 20, "column": 96, "index": 847}, "codeIndex": 1}},
+        "$ast": { "type": "MessageDecl", "codeRange": {"start": {"row": 17, "column": 0, "index": 512}, "end": {"row": 17, "column": 57, "index": 569}, "codeIndex": 1}},
         "attributes": [],
-        "name": { "value": "WindowSetMaximizedBox", "codeRange": {"start": {"row": 20, "column": 8, "index": 759}, "end": {"row": 20, "column": 28, "index": 779}, "codeIndex": 1}},
+        "name": { "value": "WindowNotifySetMaximizedBox", "codeRange": {"start": {"row": 17, "column": 8, "index": 520}, "end": {"row": 17, "column": 34, "index": 546}, "codeIndex": 1}},
         "request": {
-            "$ast": { "type": "MessageRequest", "codeRange": {"start": {"row": 20, "column": 42, "index": 793}, "end": {"row": 20, "column": 55, "index": 806}, "codeIndex": 1}},
+            "$ast": { "type": "MessageRequest", "codeRange": {"start": {"row": 17, "column": 42, "index": 554}, "end": {"row": 17, "column": 55, "index": 567}, "codeIndex": 1}},
             "type": {
-                "$ast": { "type": "PrimitiveType", "codeRange": {"start": {"row": 20, "column": 51, "index": 802}, "end": {"row": 20, "column": 54, "index": 805}, "codeIndex": 1}},
+                "$ast": { "type": "PrimitiveType", "codeRange": {"start": {"row": 17, "column": 51, "index": 563}, "end": {"row": 17, "column": 54, "index": 566}, "codeIndex": 1}},
                 "type": "Boolean"
             }
         },
-        "response": {
-            "$ast": { "type": "MessageResponse", "codeRange": {"start": {"row": 20, "column": 66, "index": 817}, "end": {"row": 20, "column": 94, "index": 845}, "codeIndex": 1}},
-            "type": {
-                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 20, "column": 76, "index": 827}, "end": {"row": 20, "column": 93, "index": 844}, "codeIndex": 1}},
-                "name": { "value": "WindowSizingConfig", "codeRange": {"start": {"row": 20, "column": 76, "index": 827}, "end": {"row": 20, "column": 93, "index": 844}, "codeIndex": 1}}
-            }
-        }
+        "response": null
     }, {
-        "$ast": { "type": "MessageDecl", "codeRange": {"start": {"row": 21, "column": 0, "index": 850}, "end": {"row": 21, "column": 96, "index": 946}, "codeIndex": 1}},
+        "$ast": { "type": "MessageDecl", "codeRange": {"start": {"row": 18, "column": 0, "index": 572}, "end": {"row": 18, "column": 57, "index": 629}, "codeIndex": 1}},
         "attributes": [],
-        "name": { "value": "WindowSetMinimizedBox", "codeRange": {"start": {"row": 21, "column": 8, "index": 858}, "end": {"row": 21, "column": 28, "index": 878}, "codeIndex": 1}},
+        "name": { "value": "WindowNotifySetMinimizedBox", "codeRange": {"start": {"row": 18, "column": 8, "index": 580}, "end": {"row": 18, "column": 34, "index": 606}, "codeIndex": 1}},
         "request": {
-            "$ast": { "type": "MessageRequest", "codeRange": {"start": {"row": 21, "column": 42, "index": 892}, "end": {"row": 21, "column": 55, "index": 905}, "codeIndex": 1}},
+            "$ast": { "type": "MessageRequest", "codeRange": {"start": {"row": 18, "column": 42, "index": 614}, "end": {"row": 18, "column": 55, "index": 627}, "codeIndex": 1}},
             "type": {
-                "$ast": { "type": "PrimitiveType", "codeRange": {"start": {"row": 21, "column": 51, "index": 901}, "end": {"row": 21, "column": 54, "index": 904}, "codeIndex": 1}},
+                "$ast": { "type": "PrimitiveType", "codeRange": {"start": {"row": 18, "column": 51, "index": 623}, "end": {"row": 18, "column": 54, "index": 626}, "codeIndex": 1}},
                 "type": "Boolean"
             }
         },
-        "response": {
-            "$ast": { "type": "MessageResponse", "codeRange": {"start": {"row": 21, "column": 66, "index": 916}, "end": {"row": 21, "column": 94, "index": 944}, "codeIndex": 1}},
-            "type": {
-                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 21, "column": 76, "index": 926}, "end": {"row": 21, "column": 93, "index": 943}, "codeIndex": 1}},
-                "name": { "value": "WindowSizingConfig", "codeRange": {"start": {"row": 21, "column": 76, "index": 926}, "end": {"row": 21, "column": 93, "index": 943}, "codeIndex": 1}}
-            }
-        }
+        "response": null
     }, {
-        "$ast": { "type": "MessageDecl", "codeRange": {"start": {"row": 22, "column": 0, "index": 949}, "end": {"row": 22, "column": 96, "index": 1045}, "codeIndex": 1}},
+        "$ast": { "type": "MessageDecl", "codeRange": {"start": {"row": 19, "column": 0, "index": 632}, "end": {"row": 19, "column": 57, "index": 689}, "codeIndex": 1}},
         "attributes": [],
-        "name": { "value": "WindowSetBorder", "codeRange": {"start": {"row": 22, "column": 8, "index": 957}, "end": {"row": 22, "column": 22, "index": 971}, "codeIndex": 1}},
+        "name": { "value": "WindowNotifySetBorder", "codeRange": {"start": {"row": 19, "column": 8, "index": 640}, "end": {"row": 19, "column": 28, "index": 660}, "codeIndex": 1}},
         "request": {
-            "$ast": { "type": "MessageRequest", "codeRange": {"start": {"row": 22, "column": 42, "index": 991}, "end": {"row": 22, "column": 55, "index": 1004}, "codeIndex": 1}},
+            "$ast": { "type": "MessageRequest", "codeRange": {"start": {"row": 19, "column": 42, "index": 674}, "end": {"row": 19, "column": 55, "index": 687}, "codeIndex": 1}},
             "type": {
-                "$ast": { "type": "PrimitiveType", "codeRange": {"start": {"row": 22, "column": 51, "index": 1000}, "end": {"row": 22, "column": 54, "index": 1003}, "codeIndex": 1}},
+                "$ast": { "type": "PrimitiveType", "codeRange": {"start": {"row": 19, "column": 51, "index": 683}, "end": {"row": 19, "column": 54, "index": 686}, "codeIndex": 1}},
                 "type": "Boolean"
             }
         },
-        "response": {
-            "$ast": { "type": "MessageResponse", "codeRange": {"start": {"row": 22, "column": 66, "index": 1015}, "end": {"row": 22, "column": 94, "index": 1043}, "codeIndex": 1}},
-            "type": {
-                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 22, "column": 76, "index": 1025}, "end": {"row": 22, "column": 93, "index": 1042}, "codeIndex": 1}},
-                "name": { "value": "WindowSizingConfig", "codeRange": {"start": {"row": 22, "column": 76, "index": 1025}, "end": {"row": 22, "column": 93, "index": 1042}, "codeIndex": 1}}
-            }
-        }
+        "response": null
     }, {
-        "$ast": { "type": "MessageDecl", "codeRange": {"start": {"row": 23, "column": 0, "index": 1048}, "end": {"row": 23, "column": 96, "index": 1144}, "codeIndex": 1}},
+        "$ast": { "type": "MessageDecl", "codeRange": {"start": {"row": 20, "column": 0, "index": 692}, "end": {"row": 20, "column": 57, "index": 749}, "codeIndex": 1}},
         "attributes": [],
-        "name": { "value": "WindowSetSizeBox", "codeRange": {"start": {"row": 23, "column": 8, "index": 1056}, "end": {"row": 23, "column": 23, "index": 1071}, "codeIndex": 1}},
+        "name": { "value": "WindowNotifySetSizeBox", "codeRange": {"start": {"row": 20, "column": 8, "index": 700}, "end": {"row": 20, "column": 29, "index": 721}, "codeIndex": 1}},
         "request": {
-            "$ast": { "type": "MessageRequest", "codeRange": {"start": {"row": 23, "column": 42, "index": 1090}, "end": {"row": 23, "column": 55, "index": 1103}, "codeIndex": 1}},
+            "$ast": { "type": "MessageRequest", "codeRange": {"start": {"row": 20, "column": 42, "index": 734}, "end": {"row": 20, "column": 55, "index": 747}, "codeIndex": 1}},
             "type": {
-                "$ast": { "type": "PrimitiveType", "codeRange": {"start": {"row": 23, "column": 51, "index": 1099}, "end": {"row": 23, "column": 54, "index": 1102}, "codeIndex": 1}},
+                "$ast": { "type": "PrimitiveType", "codeRange": {"start": {"row": 20, "column": 51, "index": 743}, "end": {"row": 20, "column": 54, "index": 746}, "codeIndex": 1}},
                 "type": "Boolean"
             }
         },
-        "response": {
-            "$ast": { "type": "MessageResponse", "codeRange": {"start": {"row": 23, "column": 66, "index": 1114}, "end": {"row": 23, "column": 94, "index": 1142}, "codeIndex": 1}},
-            "type": {
-                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 23, "column": 76, "index": 1124}, "end": {"row": 23, "column": 93, "index": 1141}, "codeIndex": 1}},
-                "name": { "value": "WindowSizingConfig", "codeRange": {"start": {"row": 23, "column": 76, "index": 1124}, "end": {"row": 23, "column": 93, "index": 1141}, "codeIndex": 1}}
-            }
-        }
+        "response": null
     }, {
-        "$ast": { "type": "MessageDecl", "codeRange": {"start": {"row": 24, "column": 0, "index": 1147}, "end": {"row": 24, "column": 96, "index": 1243}, "codeIndex": 1}},
+        "$ast": { "type": "MessageDecl", "codeRange": {"start": {"row": 21, "column": 0, "index": 752}, "end": {"row": 21, "column": 57, "index": 809}, "codeIndex": 1}},
         "attributes": [],
-        "name": { "value": "WindowSetIconVisible", "codeRange": {"start": {"row": 24, "column": 8, "index": 1155}, "end": {"row": 24, "column": 27, "index": 1174}, "codeIndex": 1}},
+        "name": { "value": "WindowNotifySetIconVisible", "codeRange": {"start": {"row": 21, "column": 8, "index": 760}, "end": {"row": 21, "column": 33, "index": 785}, "codeIndex": 1}},
         "request": {
-            "$ast": { "type": "MessageRequest", "codeRange": {"start": {"row": 24, "column": 42, "index": 1189}, "end": {"row": 24, "column": 55, "index": 1202}, "codeIndex": 1}},
+            "$ast": { "type": "MessageRequest", "codeRange": {"start": {"row": 21, "column": 42, "index": 794}, "end": {"row": 21, "column": 55, "index": 807}, "codeIndex": 1}},
             "type": {
-                "$ast": { "type": "PrimitiveType", "codeRange": {"start": {"row": 24, "column": 51, "index": 1198}, "end": {"row": 24, "column": 54, "index": 1201}, "codeIndex": 1}},
+                "$ast": { "type": "PrimitiveType", "codeRange": {"start": {"row": 21, "column": 51, "index": 803}, "end": {"row": 21, "column": 54, "index": 806}, "codeIndex": 1}},
                 "type": "Boolean"
             }
         },
-        "response": {
-            "$ast": { "type": "MessageResponse", "codeRange": {"start": {"row": 24, "column": 66, "index": 1213}, "end": {"row": 24, "column": 94, "index": 1241}, "codeIndex": 1}},
-            "type": {
-                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 24, "column": 76, "index": 1223}, "end": {"row": 24, "column": 93, "index": 1240}, "codeIndex": 1}},
-                "name": { "value": "WindowSizingConfig", "codeRange": {"start": {"row": 24, "column": 76, "index": 1223}, "end": {"row": 24, "column": 93, "index": 1240}, "codeIndex": 1}}
-            }
-        }
+        "response": null
     }, {
-        "$ast": { "type": "MessageDecl", "codeRange": {"start": {"row": 25, "column": 0, "index": 1246}, "end": {"row": 25, "column": 96, "index": 1342}, "codeIndex": 1}},
+        "$ast": { "type": "MessageDecl", "codeRange": {"start": {"row": 22, "column": 0, "index": 812}, "end": {"row": 22, "column": 57, "index": 869}, "codeIndex": 1}},
         "attributes": [],
-        "name": { "value": "WindowSetTitleBar", "codeRange": {"start": {"row": 25, "column": 8, "index": 1254}, "end": {"row": 25, "column": 24, "index": 1270}, "codeIndex": 1}},
+        "name": { "value": "WindowNotifySetTitleBar", "codeRange": {"start": {"row": 22, "column": 8, "index": 820}, "end": {"row": 22, "column": 30, "index": 842}, "codeIndex": 1}},
         "request": {
-            "$ast": { "type": "MessageRequest", "codeRange": {"start": {"row": 25, "column": 42, "index": 1288}, "end": {"row": 25, "column": 55, "index": 1301}, "codeIndex": 1}},
+            "$ast": { "type": "MessageRequest", "codeRange": {"start": {"row": 22, "column": 42, "index": 854}, "end": {"row": 22, "column": 55, "index": 867}, "codeIndex": 1}},
             "type": {
-                "$ast": { "type": "PrimitiveType", "codeRange": {"start": {"row": 25, "column": 51, "index": 1297}, "end": {"row": 25, "column": 54, "index": 1300}, "codeIndex": 1}},
+                "$ast": { "type": "PrimitiveType", "codeRange": {"start": {"row": 22, "column": 51, "index": 863}, "end": {"row": 22, "column": 54, "index": 866}, "codeIndex": 1}},
                 "type": "Boolean"
             }
         },
-        "response": {
-            "$ast": { "type": "MessageResponse", "codeRange": {"start": {"row": 25, "column": 66, "index": 1312}, "end": {"row": 25, "column": 94, "index": 1340}, "codeIndex": 1}},
+        "response": null
+    }, {
+        "$ast": { "type": "MessageDecl", "codeRange": {"start": {"row": 24, "column": 0, "index": 874}, "end": {"row": 24, "column": 93, "index": 967}, "codeIndex": 1}},
+        "attributes": [],
+        "name": { "value": "WindowSetBounds", "codeRange": {"start": {"row": 24, "column": 8, "index": 882}, "end": {"row": 24, "column": 22, "index": 896}, "codeIndex": 1}},
+        "request": {
+            "$ast": { "type": "MessageRequest", "codeRange": {"start": {"row": 24, "column": 42, "index": 916}, "end": {"row": 24, "column": 61, "index": 935}, "codeIndex": 1}},
             "type": {
-                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 25, "column": 76, "index": 1322}, "end": {"row": 25, "column": 93, "index": 1339}, "codeIndex": 1}},
-                "name": { "value": "WindowSizingConfig", "codeRange": {"start": {"row": 25, "column": 76, "index": 1322}, "end": {"row": 25, "column": 93, "index": 1339}, "codeIndex": 1}}
+                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 24, "column": 51, "index": 925}, "end": {"row": 24, "column": 60, "index": 934}, "codeIndex": 1}},
+                "name": { "value": "NativeRect", "codeRange": {"start": {"row": 24, "column": 51, "index": 925}, "end": {"row": 24, "column": 60, "index": 934}, "codeIndex": 1}}
+            }
+        },
+        "response": {
+            "$ast": { "type": "MessageResponse", "codeRange": {"start": {"row": 24, "column": 63, "index": 937}, "end": {"row": 24, "column": 91, "index": 965}, "codeIndex": 1}},
+            "type": {
+                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 24, "column": 73, "index": 947}, "end": {"row": 24, "column": 90, "index": 964}, "codeIndex": 1}},
+                "name": { "value": "WindowSizingConfig", "codeRange": {"start": {"row": 24, "column": 73, "index": 947}, "end": {"row": 24, "column": 90, "index": 964}, "codeIndex": 1}}
             }
         }
     }, {
-        "$ast": { "type": "MessageDecl", "codeRange": {"start": {"row": 27, "column": 0, "index": 1347}, "end": {"row": 27, "column": 41, "index": 1388}, "codeIndex": 1}},
+        "$ast": { "type": "MessageDecl", "codeRange": {"start": {"row": 25, "column": 0, "index": 970}, "end": {"row": 25, "column": 93, "index": 1063}, "codeIndex": 1}},
         "attributes": [],
-        "name": { "value": "WindowNotifyActivate", "codeRange": {"start": {"row": 27, "column": 8, "index": 1355}, "end": {"row": 27, "column": 27, "index": 1374}, "codeIndex": 1}},
+        "name": { "value": "WindowSetClientSize", "codeRange": {"start": {"row": 25, "column": 8, "index": 978}, "end": {"row": 25, "column": 26, "index": 996}, "codeIndex": 1}},
+        "request": {
+            "$ast": { "type": "MessageRequest", "codeRange": {"start": {"row": 25, "column": 42, "index": 1012}, "end": {"row": 25, "column": 61, "index": 1031}, "codeIndex": 1}},
+            "type": {
+                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 25, "column": 51, "index": 1021}, "end": {"row": 25, "column": 60, "index": 1030}, "codeIndex": 1}},
+                "name": { "value": "NativeSize", "codeRange": {"start": {"row": 25, "column": 51, "index": 1021}, "end": {"row": 25, "column": 60, "index": 1030}, "codeIndex": 1}}
+            }
+        },
+        "response": {
+            "$ast": { "type": "MessageResponse", "codeRange": {"start": {"row": 25, "column": 63, "index": 1033}, "end": {"row": 25, "column": 91, "index": 1061}, "codeIndex": 1}},
+            "type": {
+                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 25, "column": 73, "index": 1043}, "end": {"row": 25, "column": 90, "index": 1060}, "codeIndex": 1}},
+                "name": { "value": "WindowSizingConfig", "codeRange": {"start": {"row": 25, "column": 73, "index": 1043}, "end": {"row": 25, "column": 90, "index": 1060}, "codeIndex": 1}}
+            }
+        }
+    }, {
+        "$ast": { "type": "MessageDecl", "codeRange": {"start": {"row": 27, "column": 0, "index": 1068}, "end": {"row": 27, "column": 41, "index": 1109}, "codeIndex": 1}},
+        "attributes": [],
+        "name": { "value": "WindowNotifyActivate", "codeRange": {"start": {"row": 27, "column": 8, "index": 1076}, "end": {"row": 27, "column": 27, "index": 1095}, "codeIndex": 1}},
         "request": null,
         "response": null
     }, {
-        "$ast": { "type": "MessageDecl", "codeRange": {"start": {"row": 28, "column": 0, "index": 1391}, "end": {"row": 28, "column": 41, "index": 1432}, "codeIndex": 1}},
+        "$ast": { "type": "MessageDecl", "codeRange": {"start": {"row": 28, "column": 0, "index": 1112}, "end": {"row": 28, "column": 41, "index": 1153}, "codeIndex": 1}},
         "attributes": [],
-        "name": { "value": "WindowNotifyShowActivated", "codeRange": {"start": {"row": 28, "column": 8, "index": 1399}, "end": {"row": 28, "column": 32, "index": 1423}, "codeIndex": 1}},
+        "name": { "value": "WindowNotifyShowActivated", "codeRange": {"start": {"row": 28, "column": 8, "index": 1120}, "end": {"row": 28, "column": 32, "index": 1144}, "codeIndex": 1}},
         "request": null,
         "response": null
     }, {
-        "$ast": { "type": "MessageDecl", "codeRange": {"start": {"row": 29, "column": 0, "index": 1435}, "end": {"row": 29, "column": 41, "index": 1476}, "codeIndex": 1}},
+        "$ast": { "type": "MessageDecl", "codeRange": {"start": {"row": 29, "column": 0, "index": 1156}, "end": {"row": 29, "column": 41, "index": 1197}, "codeIndex": 1}},
         "attributes": [],
-        "name": { "value": "WindowNotifyShowDeactivated", "codeRange": {"start": {"row": 29, "column": 8, "index": 1443}, "end": {"row": 29, "column": 34, "index": 1469}, "codeIndex": 1}},
+        "name": { "value": "WindowNotifyShowDeactivated", "codeRange": {"start": {"row": 29, "column": 8, "index": 1164}, "end": {"row": 29, "column": 34, "index": 1190}, "codeIndex": 1}},
         "request": null,
         "response": null
     }, {
-        "$ast": { "type": "MessageDecl", "codeRange": {"start": {"row": 30, "column": 0, "index": 1479}, "end": {"row": 30, "column": 41, "index": 1520}, "codeIndex": 1}},
+        "$ast": { "type": "MessageDecl", "codeRange": {"start": {"row": 30, "column": 0, "index": 1200}, "end": {"row": 30, "column": 41, "index": 1241}, "codeIndex": 1}},
         "attributes": [],
-        "name": { "value": "WindowNotifyShowMaximized", "codeRange": {"start": {"row": 30, "column": 8, "index": 1487}, "end": {"row": 30, "column": 32, "index": 1511}, "codeIndex": 1}},
+        "name": { "value": "WindowNotifyShowMaximized", "codeRange": {"start": {"row": 30, "column": 8, "index": 1208}, "end": {"row": 30, "column": 32, "index": 1232}, "codeIndex": 1}},
         "request": null,
         "response": null
     }, {
-        "$ast": { "type": "MessageDecl", "codeRange": {"start": {"row": 31, "column": 0, "index": 1523}, "end": {"row": 31, "column": 41, "index": 1564}, "codeIndex": 1}},
+        "$ast": { "type": "MessageDecl", "codeRange": {"start": {"row": 31, "column": 0, "index": 1244}, "end": {"row": 31, "column": 41, "index": 1285}, "codeIndex": 1}},
         "attributes": [],
-        "name": { "value": "WindowNotifyShowMinimized", "codeRange": {"start": {"row": 31, "column": 8, "index": 1531}, "end": {"row": 31, "column": 32, "index": 1555}, "codeIndex": 1}},
+        "name": { "value": "WindowNotifyShowMinimized", "codeRange": {"start": {"row": 31, "column": 8, "index": 1252}, "end": {"row": 31, "column": 32, "index": 1276}, "codeIndex": 1}},
         "request": null,
         "response": null
     }, {
-        "$ast": { "type": "EventDecl", "codeRange": {"start": {"row": 33, "column": 0, "index": 1569}, "end": {"row": 33, "column": 71, "index": 1640}, "codeIndex": 1}},
+        "$ast": { "type": "EventDecl", "codeRange": {"start": {"row": 33, "column": 0, "index": 1290}, "end": {"row": 33, "column": 71, "index": 1361}, "codeIndex": 1}},
         "attributes": [],
-        "name": { "value": "WindowBoundsUpdated", "codeRange": {"start": {"row": 33, "column": 6, "index": 1575}, "end": {"row": 33, "column": 24, "index": 1593}, "codeIndex": 1}},
+        "name": { "value": "WindowBoundsUpdated", "codeRange": {"start": {"row": 33, "column": 6, "index": 1296}, "end": {"row": 33, "column": 24, "index": 1314}, "codeIndex": 1}},
         "request": {
-            "$ast": { "type": "EventRequest", "codeRange": {"start": {"row": 33, "column": 42, "index": 1611}, "end": {"row": 33, "column": 69, "index": 1638}, "codeIndex": 1}},
+            "$ast": { "type": "EventRequest", "codeRange": {"start": {"row": 33, "column": 42, "index": 1332}, "end": {"row": 33, "column": 69, "index": 1359}, "codeIndex": 1}},
             "type": {
-                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 33, "column": 51, "index": 1620}, "end": {"row": 33, "column": 68, "index": 1637}, "codeIndex": 1}},
-                "name": { "value": "WindowSizingConfig", "codeRange": {"start": {"row": 33, "column": 51, "index": 1620}, "end": {"row": 33, "column": 68, "index": 1637}, "codeIndex": 1}}
+                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 33, "column": 51, "index": 1341}, "end": {"row": 33, "column": 68, "index": 1358}, "codeIndex": 1}},
+                "name": { "value": "WindowSizingConfig", "codeRange": {"start": {"row": 33, "column": 51, "index": 1341}, "end": {"row": 33, "column": 68, "index": 1358}, "codeIndex": 1}}
             }
         }
     }]
