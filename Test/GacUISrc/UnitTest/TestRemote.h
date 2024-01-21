@@ -80,6 +80,107 @@ protected:
 		auto node = JsonParse(json, jsonParser).Cast<glr::json::JsonArray>();
 		ConvertJsonToCustomType<T>(node->items[0], value);
 	}
+
+	void ProcessRequests()
+	{
+		for (auto&& request : batchedRequests)
+		{
+#define MESSAGE_NOREQ_NORES(NAME, REQUEST, RESPONSE)\
+			if (request.name == L ## #NAME)\
+			{\
+				protocol->Request ## NAME();\
+			} else\
+
+#define MESSAGE_NOREQ_RES(NAME, REQUEST, RESPONSE)\
+			if (request.name == L ## #NAME)\
+			{\
+				protocol->Request ## NAME(request.id);\
+			} else\
+
+#define MESSAGE_REQ_NORES(NAME, REQUEST, RESPONSE)\
+			if (request.name == L ## #NAME)\
+			{\
+				REQUEST arguments;\
+				FromJson<REQUEST>(request.arguments, arguments);\
+				protocol->Request ## NAME(arguments);\
+			} else\
+
+#define MESSAGE_REQ_RES(NAME, REQUEST, RESPONSE)\
+			if (request.name == L ## #NAME)\
+			{\
+				REQUEST arguments;\
+				FromJson<REQUEST>(request.arguments, arguments);\
+				protocol->Request ## NAME(request.id, arguments);\
+			} else\
+
+#define MESSAGE_HANDLER(NAME, REQUEST, RESPONSE, REQTAG, RESTAG, ...)	MESSAGE_ ## REQTAG ## _ ## RESTAG(NAME, REQUEST, RESPONSE)
+			GACUI_REMOTEPROTOCOL_MESSAGES(MESSAGE_HANDLER)
+#undef MESSAGE_HANDLER
+#undef MESSAGE_REQ_RES
+#undef MESSAGE_REQ_NORES
+#undef MESSAGE_NOREQ_RES
+#undef MESSAGE_NOREQ_NORES
+			CHECK_FAIL(L"Unrecognized request!");
+		}
+
+		CHECK_ERROR(batchedRequestIds.Count() == 0, L"Messages sending to IGuiRemoteProtocol should be all responded.");
+		batchedRequests.Clear();
+	}
+
+	void ProcessResponses()
+	{
+		for (auto&& request : batchedResponses)
+		{
+#define MESSAGE_NORES(NAME, RESPONSE)
+#define MESSAGE_RES(NAME, RESPONSE)\
+			if (request.name == L ## #NAME)\
+			{\
+				RESPONSE arguments;\
+				FromJson<RESPONSE>(request.arguments, arguments);\
+				events->Respond ## NAME(request.id, arguments);\
+			} else\
+
+#define MESSAGE_HANDLER(NAME, REQUEST, RESPONSE, REQTAG, RESTAG, ...)	MESSAGE_ ## RESTAG(NAME, RESPONSE)
+			GACUI_REMOTEPROTOCOL_MESSAGES(MESSAGE_HANDLER)
+#undef MESSAGE_HANDLER
+#undef MESSAGE_RES
+#undef MESSAGE_NORES
+			CHECK_FAIL(L"Unrecognized response!");
+		}
+
+		batchedResponses.Clear();
+	}
+
+	void ProcessEvents()
+	{
+		collections::List<BatchedRequest> requests;
+		CopyFrom(requests, batchedEvents);
+		batchedEvents.Clear();
+
+		for (auto&& request : requests)
+		{
+#define EVENT_NOREQ(NAME, REQUEST)\
+			if (request.name == L ## #NAME)\
+			{\
+				events->On ## NAME();\
+			} else\
+
+#define EVENT_REQ(NAME, REQUEST)\
+			if (request.name == L ## #NAME)\
+			{\
+				REQUEST arguments;\
+				FromJson<REQUEST>(request.arguments, arguments);\
+				events->On ## NAME(arguments);\
+			} else\
+
+#define EVENT_HANDLER(NAME, REQUEST, REQTAG, ...)	EVENT_ ## REQTAG(NAME, REQUEST)
+			GACUI_REMOTEPROTOCOL_EVENTS(EVENT_HANDLER)
+#undef EVENT_HANDLER
+#undef EVENT_REQ
+#undef EVENT_NOREQ
+			CHECK_FAIL(L"Unrecognized event!");
+		}
+	}
 public:
 	BatchedProtocol(IGuiRemoteProtocol* _protocol)
 		: protocol(_protocol)
@@ -93,34 +194,20 @@ protected:
 #define EVENT_NOREQ(NAME, REQUEST)\
 	void On ## NAME() override\
 	{\
-		if (submitting)\
-		{\
-			BatchedRequest request;\
-			request.name = L ## #NAME;\
-			batchedEvents.Add(request);\
-		}\
-		else\
-		{\
-			events->On ## NAME();\
-		}\
+		BatchedRequest request;\
+		request.name = L ## #NAME;\
+		batchedEvents.Add(request);\
+		if (!submitting) ProcessEvents();\
 	}\
 
 #define EVENT_REQ(NAME, REQUEST)\
 	void On ## NAME(const REQUEST& arguments) override\
 	{\
-		if (submitting)\
-		{\
-			BatchedRequest request;\
-			request.name = L ## #NAME;\
-			request.arguments = ToJson<REQUEST>(arguments);\
-			batchedEvents.Add(request);\
-		}\
-		else\
-		{\
-			REQUEST deserialized;\
-			FromJson<REQUEST>(ToJson<REQUEST>(arguments), deserialized);\
-			events->On ## NAME(deserialized);\
-		}\
+		BatchedRequest request;\
+		request.name = L ## #NAME;\
+		request.arguments = ToJson<REQUEST>(arguments);\
+		batchedEvents.Add(request);\
+		if (!submitting) ProcessEvents();\
 	}\
 
 #define EVENT_HANDLER(NAME, REQUEST, REQTAG, ...)	EVENT_ ## REQTAG(NAME, REQUEST)
@@ -219,95 +306,10 @@ public:
 	{
 		submitting = true;
 		protocol->Submit();
-		for (auto&& request : batchedRequests)
-		{
-#define MESSAGE_NOREQ_NORES(NAME, REQUEST, RESPONSE)\
-			if (request.name == L ## #NAME)\
-			{\
-				protocol->Request ## NAME();\
-			} else\
-
-#define MESSAGE_NOREQ_RES(NAME, REQUEST, RESPONSE)\
-			if (request.name == L ## #NAME)\
-			{\
-				protocol->Request ## NAME(request.id);\
-			} else\
-
-#define MESSAGE_REQ_NORES(NAME, REQUEST, RESPONSE)\
-			if (request.name == L ## #NAME)\
-			{\
-				REQUEST arguments;\
-				FromJson<REQUEST>(request.arguments, arguments);\
-				protocol->Request ## NAME(arguments);\
-			} else\
-
-#define MESSAGE_REQ_RES(NAME, REQUEST, RESPONSE)\
-			if (request.name == L ## #NAME)\
-			{\
-				REQUEST arguments;\
-				FromJson<REQUEST>(request.arguments, arguments);\
-				protocol->Request ## NAME(request.id, arguments);\
-			} else\
-
-#define MESSAGE_HANDLER(NAME, REQUEST, RESPONSE, REQTAG, RESTAG, ...)	MESSAGE_ ## REQTAG ## _ ## RESTAG(NAME, REQUEST, RESPONSE)
-			GACUI_REMOTEPROTOCOL_MESSAGES(MESSAGE_HANDLER)
-#undef MESSAGE_HANDLER
-#undef MESSAGE_REQ_RES
-#undef MESSAGE_REQ_NORES
-#undef MESSAGE_NOREQ_RES
-#undef MESSAGE_NOREQ_NORES
-			CHECK_FAIL(L"Unrecognized request!");
-		}
-
-		CHECK_ERROR(batchedRequestIds.Count() == 0, L"Messages sending to IGuiRemoteProtocol should be all responded.");
-
-		for (auto&& request : batchedResponses)
-		{
-#define MESSAGE_NORES(NAME, RESPONSE)
-#define MESSAGE_RES(NAME, RESPONSE)\
-			if (request.name == L ## #NAME)\
-			{\
-				RESPONSE arguments;\
-				FromJson<RESPONSE>(request.arguments, arguments);\
-				events->Respond ## NAME(request.id, arguments);\
-			} else\
-
-#define MESSAGE_HANDLER(NAME, REQUEST, RESPONSE, REQTAG, RESTAG, ...)	MESSAGE_ ## RESTAG(NAME, RESPONSE)
-			GACUI_REMOTEPROTOCOL_MESSAGES(MESSAGE_HANDLER)
-#undef MESSAGE_HANDLER
-#undef MESSAGE_RES
-#undef MESSAGE_NORES
-			CHECK_FAIL(L"Unrecognized response!");
-		}
-
-		for (auto&& request : batchedEvents)
-		{
-#define EVENT_NOREQ(NAME, REQUEST)\
-			if (request.name == L ## #NAME)\
-			{\
-				events->On ## NAME();\
-			} else\
-
-#define EVENT_REQ(NAME, REQUEST)\
-			if (request.name == L ## #NAME)\
-			{\
-				REQUEST arguments;\
-				FromJson<REQUEST>(request.arguments, arguments);\
-				events->On ## NAME(arguments);\
-			} else\
-
-#define EVENT_HANDLER(NAME, REQUEST, REQTAG, ...)	EVENT_ ## REQTAG(NAME, REQUEST)
-			GACUI_REMOTEPROTOCOL_EVENTS(EVENT_HANDLER)
-#undef EVENT_HANDLER
-#undef EVENT_REQ
-#undef EVENT_NOREQ
-			CHECK_FAIL(L"Unrecognized event!");
-		}
-
-		batchedRequests.Clear();
-		batchedResponses.Clear();
-		batchedEvents.Clear();
+		ProcessRequests();
+		ProcessResponses();
 		submitting = false;
+		ProcessEvents();
 	}
 
 	void ProcessRemoteEvents() override
