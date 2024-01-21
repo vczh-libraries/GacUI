@@ -64,7 +64,7 @@ public:
 	{
 		ScreenConfig response;
 		response.bounds = { 0,0,640,480};
-		response.clientBounds = { 10,10,630,470 };
+		response.clientBounds = { 0,0,640,440 };
 		response.scalingX = 1;
 		response.scalingY = 1;
 		events->RespondControllerGetScreenConfig(id, response);
@@ -141,8 +141,8 @@ TEST_FILE
 			TEST_ASSERT(window);
 			TEST_ASSERT(window->GetBounds() == NativeRect(0, 0, 100, 200));
 			TEST_ASSERT(window->GetClientSize() == NativeSize(100, 200));
-			TEST_ASSERT(EmptyWindowProtocol::instance->sizingConfig.bounds == NativeRect(0, 0, 100, 200));
-			TEST_ASSERT(EmptyWindowProtocol::instance->sizingConfig.clientBounds == NativeRect(0, 0, 100, 200));
+			TEST_ASSERT(EmptyWindowProtocol::instance->sizingConfig.bounds == NativeRect(270, 120, 370, 320));
+			TEST_ASSERT(EmptyWindowProtocol::instance->sizingConfig.clientBounds == NativeRect(270, 120, 370, 320));
 		});
 		SetGuiMainProxy([]()
 		{
