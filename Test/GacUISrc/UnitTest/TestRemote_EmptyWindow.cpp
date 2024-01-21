@@ -158,7 +158,8 @@ TEST_FILE
 				ws->Run(window);
 			});
 		});
-		SetupRemoteNativeController(&protocol);
+		BatchedProtocol batchedProtocol(&protocol);
+		SetupRemoteNativeController(&batchedProtocol);
 		SetGuiMainProxy(nullptr);
 
 		TEST_CASE(L"Ensure stopped")

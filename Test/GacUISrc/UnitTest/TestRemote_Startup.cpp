@@ -122,7 +122,8 @@ TEST_FILE
 
 			StartUpProtocol::instance->events->OnControllerForceExit();
 		});
-		SetupRemoteNativeController(&protocol);
+		BatchedProtocol batchedProtocol(&protocol);
+		SetupRemoteNativeController(&batchedProtocol);
 		SetGuiMainProxy(nullptr);
 	});
 
