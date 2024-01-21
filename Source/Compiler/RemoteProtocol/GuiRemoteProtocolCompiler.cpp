@@ -486,7 +486,7 @@ GenerateRemoteProtocolCppFile
 		writer.WriteLine(L"\t\t{");
 		for (auto member : structDecl->members)
 		{
-			writer.WriteLine(L"\t\t\tif (field->name.value == L\"" + member->name.value + L"\") ConvertJsonToCustomType(field->value, value." + member->name.value + L") else");
+			writer.WriteLine(L"\t\t\tif (field->name.value == L\"" + member->name.value + L"\") ConvertJsonToCustomType(field->value, value." + member->name.value + L"); else");
 		}
 		writer.WriteLine(L"\t\t\tCHECK_FAIL(ERROR_MESSAGE_PREFIX L\"Unsupported struct member.\");");
 		writer.WriteLine(L"\t\t}");
