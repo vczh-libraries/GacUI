@@ -28,6 +28,8 @@ namespace vl::presentation::remoteprotocol
 		CHECK_FAIL(L"Not Implemented!");
 	}
 
+	// TODO: template function to create JsonField
+
 	extern Ptr<glr::json::JsonNode> ConvertCustomTypeToJson(const bool& value);
 	extern Ptr<glr::json::JsonNode> ConvertCustomTypeToJson(const vint& value);
 	extern Ptr<glr::json::JsonNode> ConvertCustomTypeToJson(const float& value);
