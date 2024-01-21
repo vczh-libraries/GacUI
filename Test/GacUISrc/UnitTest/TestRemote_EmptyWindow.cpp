@@ -29,7 +29,6 @@ public:
 	void Submit() override
 	{
 		CHECK_ERROR(!connectionStopped, L"IGuiRemoteProtocol::Submit is not allowed to call after connection stopped.");
-		NotImplementedProtocolBase::Submit();
 	}
 
 	void ProcessRemoteEvents() override

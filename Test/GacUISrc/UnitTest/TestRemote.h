@@ -53,10 +53,12 @@ class BatchedProtocol
 	, protected virtual IGuiRemoteProtocolEvents
 {
 protected:
-	glr::json::Parser					jsonParser;
-	IGuiRemoteProtocol*					protocol = nullptr;
-	IGuiRemoteProtocolEvents*			events = nullptr;
-	collections::List<BatchedRequest>	batchedRequests;
+	glr::json::Parser						jsonParser;
+	IGuiRemoteProtocol*						protocol = nullptr;
+	IGuiRemoteProtocolEvents*				events = nullptr;
+	vint									lastRequestId = -1;
+	collections::List<BatchedRequest>		batchedRequests;
+	collections::Dictionary<vint, WString>	batchedRequestIds;
 
 	template<typename T>
 	WString ToJson(const T& value)
@@ -72,8 +74,8 @@ protected:
 	template<typename T>
 	void FromJson(const WString& json, T& value)
 	{
-		auto node = JsonParse(json, jsonParser);
-		ConvertJsonToCustomType<T>(node, value);
+		auto node = JsonParse(json, jsonParser).Cast<glr::json::JsonArray>();
+		ConvertJsonToCustomType<T>(node->items[0], value);
 	}
 public:
 	BatchedProtocol(IGuiRemoteProtocol* _protocol)
@@ -107,6 +109,8 @@ protected:
 #define MESSAGE_RES(NAME, RESPONSE)\
 	void Respond ## NAME(vint id, const RESPONSE& arguments) override\
 	{\
+		CHECK_ERROR(batchedRequestIds[id] == L ## #NAME, L"Messages sending to IGuiRemoteProtocol should be responded by calling the correct function.");\
+		batchedRequestIds.Remove(id);\
 		RESPONSE deserialized;\
 		auto json = ConvertCustomTypeToJson<RESPONSE>(arguments);\
 		ConvertJsonToCustomType<RESPONSE>(json, deserialized);\
@@ -134,10 +138,13 @@ public:
 #define MESSAGE_NOREQ_RES(NAME, REQUEST, RESPONSE)\
 	void Request ## NAME(vint id) override\
 	{\
+		CHECK_ERROR(lastRequestId < id, L"Id of a message sending to IGuiRemoteProtocol should be increasing.");\
+		lastRequestId = id;\
 		BatchedRequest request;\
 		request.id = id;\
 		request.name = L ## #NAME;\
 		batchedRequests.Add(request);\
+		batchedRequestIds.Add(id, request.name);\
 	}\
 
 #define MESSAGE_REQ_NORES(NAME, REQUEST, RESPONSE)\
@@ -152,11 +159,14 @@ public:
 #define MESSAGE_REQ_RES(NAME, REQUEST, RESPONSE)\
 	void Request ## NAME(vint id, const REQUEST& arguments) override\
 	{\
+		CHECK_ERROR(lastRequestId < id, L"Id of a message sending to IGuiRemoteProtocol should be increasing.");\
+		lastRequestId = id;\
 		BatchedRequest request;\
 		request.id = id;\
 		request.name = L ## #NAME;\
 		request.arguments = ToJson<REQUEST>(arguments);\
 		batchedRequests.Add(request);\
+		batchedRequestIds.Add(id, request.name);\
 	}\
 
 #define MESSAGE_HANDLER(NAME, REQUEST, RESPONSE, REQTAG, RESTAG, ...)	MESSAGE_ ## REQTAG ## _ ## RESTAG(NAME, REQUEST, RESPONSE)
@@ -183,6 +193,48 @@ public:
 	void Submit() override
 	{
 		protocol->Submit();
+		for (auto&& request : batchedRequests)
+		{
+#define MESSAGE_NOREQ_NORES(NAME, REQUEST, RESPONSE)\
+			if (request.name == L ## #NAME)\
+			{\
+				protocol->Request ## NAME();\
+			} else\
+
+#define MESSAGE_NOREQ_RES(NAME, REQUEST, RESPONSE)\
+			if (request.name == L ## #NAME)\
+			{\
+				protocol->Request ## NAME(request.id);\
+			} else\
+
+#define MESSAGE_REQ_NORES(NAME, REQUEST, RESPONSE)\
+			if (request.name == L ## #NAME)\
+			{\
+				REQUEST arguments;\
+				FromJson<REQUEST>(request.arguments, arguments);\
+				protocol->Request ## NAME(arguments);\
+			} else\
+
+#define MESSAGE_REQ_RES(NAME, REQUEST, RESPONSE)\
+			if (request.name == L ## #NAME)\
+			{\
+				REQUEST arguments;\
+				FromJson<REQUEST>(request.arguments, arguments);\
+				protocol->Request ## NAME(request.id, arguments);\
+			} else\
+
+#define MESSAGE_HANDLER(NAME, REQUEST, RESPONSE, REQTAG, RESTAG, ...)	MESSAGE_ ## REQTAG ## _ ## RESTAG(NAME, REQUEST, RESPONSE)
+			GACUI_REMOTEPROTOCOL_MESSAGES(MESSAGE_HANDLER)
+#undef MESSAGE_HANDLER
+#undef MESSAGE_REQ_RES
+#undef MESSAGE_REQ_NORES
+#undef MESSAGE_NOREQ_RES
+#undef MESSAGE_NOREQ_NORES
+			CHECK_FAIL(L"Unrecognized request!");
+		}
+
+		CHECK_ERROR(batchedRequestIds.Count() == 0, L"Messages sending to IGuiRemoteProtocol should be all responded.");
+		batchedRequests.Clear();
 	}
 
 	void ProcessRemoteEvents() override

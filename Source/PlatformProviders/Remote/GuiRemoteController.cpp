@@ -213,8 +213,6 @@ GuiRemoteController::INativeWindowService
 	void GuiRemoteController::Run(INativeWindow* window)
 	{
 		// TODO:
-		// Mark some messages (without response) and events (without request) with [@Override], means if multiple of same messages/events are sent only the last one count
-		// Window's GetBounds and GetClientSize will check a dirty mark and send message asking for size if necessary
 		// Using [@Override] to generate a IGuiRemoteProtocol (only for unit test and later becomes part of a standard implementation):
 		//   Only send accumulated messages when Submit() is called
 		//   If a batch of messages are sent, results will be sent back when both conditions are satisfies:
