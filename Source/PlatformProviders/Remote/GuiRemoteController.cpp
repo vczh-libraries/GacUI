@@ -219,19 +219,17 @@ GuiRemoteController::INativeWindowService
 		//     1) All messages are processed
 		//     2) All messages are responded
 		//   Error will happen if new batch of messages come before sending back results of the last batch
-		// consider making a loop
-		// there is a test to decide whether going into a new loop or just quit
-		// inside the loop RunOneCycle is called
-		// in RunOneCycle, it calls a callback (not request) to protocol (to post IO messages in UI thread)
-		// RunOneCycle will just return if it sees a mark to tell Run to stop
-		CHECK_FAIL(L"Not Implemented!");
-		remoteMessages.RequestControllerConnectionStopped();
+		while (RunOneCycle());
 		remoteMessages.Submit();
 	}
 
 	bool GuiRemoteController::RunOneCycle()
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		if (!connectionStopped)
+		{
+			remoteProtocol->ProcessRemoteEvents();
+		}
+		return connectionStopped;
 	}
 
 /***********************************************************************

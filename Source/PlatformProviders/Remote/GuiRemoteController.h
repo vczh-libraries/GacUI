@@ -41,12 +41,13 @@ GuiRemoteController
 		GuiRemoteMessages				remoteMessages;
 		GuiRemoteEvents					remoteEvents;
 		GuiRemoteWindow					remoteWindow;
+		SharedCallbackService			callbackService;
+		SharedAsyncService				asyncService;
+		bool							connectionStopped = false;
 
 		remoteprotocol::FontConfig		remoteFontConfig;
 		remoteprotocol::ScreenConfig	remoteScreenConfig;
 
-		SharedCallbackService			callbackService;
-		SharedAsyncService				asyncService;
 		CursorMap						cursors;
 		bool							timerEnabled = false;
 		bool							windowCreated = false;

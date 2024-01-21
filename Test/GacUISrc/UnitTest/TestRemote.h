@@ -22,4 +22,8 @@ public:
 #undef MESSAGE_REQ_NORES
 #undef MESSAGE_NOREQ_RES
 #undef MESSAGE_NOREQ_NORES
+
+
+	void Submit()				override {}
+	void ProcessRemoteEvents()	override { CHECK_FAIL(L"Not Implemented in NotImplementedProtocolBase!"); }
 };

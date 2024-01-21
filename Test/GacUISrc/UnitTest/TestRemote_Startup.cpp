@@ -22,12 +22,6 @@ public:
 		events = _events;
 	}
 
-	void Submit() override
-	{
-		// respond to messages immediately in this test
-		// no need to submit
-	}
-
 	WString GetExecutablePath() override
 	{
 		return L"/StartUp/Protocol.exe";

@@ -80,6 +80,7 @@ IGuiRemoteProtocol
 	public:
 		virtual void			Initialize(IGuiRemoteProtocolEvents* events) = 0;
 		virtual void			Submit() = 0;
+		virtual void			ProcessRemoteEvents() = 0;
 	};
 }
 
