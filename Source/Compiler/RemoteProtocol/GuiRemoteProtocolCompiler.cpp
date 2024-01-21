@@ -460,7 +460,18 @@ GenerateRemoteProtocolCppFile
 		WString cppName = GuiRpPrintTypeVisitor::GetCppType(enumDecl->name.value, symbols, config);
 		GenerateSerializerFunctionHeader(cppName, false, writer);
 		writer.WriteLine(L"\t{");
-		writer.WriteLine(L"\t\tCHECK_FAIL(L\"Not Implemented!\");");
+		writer.WriteLine(L"\t#define ERROR_MESSAGE_PREFIX L\"vl::presentation::remoteprotocol::ConvertCustomTypeToJson<" + cppName + L">(const " + cppName + L"&)#\"");
+		writer.WriteLine(L"\t\tauto node = Ptr(new glr::json::JsonString);");
+		writer.WriteLine(L"\t\tswitch (value)");
+		writer.WriteLine(L"\t\t{");
+		for (auto member : enumDecl->members)
+		{
+			writer.WriteLine(L"\t\tcase " + cppName + L"::" + member->name.value + L": node->content.value = L\"" + member->name.value + L"\"; break;");
+		}
+		writer.WriteLine(L"\t\tdefault: CHECK_FAIL(ERROR_MESSAGE_PREFIX L\"Unsupported enum value.\");");
+		writer.WriteLine(L"\t\t}");
+		writer.WriteLine(L"\t\treturn node;");
+		writer.WriteLine(L"\t#undef ERROR_MESSAGE_PREFIX");
 		writer.WriteLine(L"\t}");
 		writer.WriteLine(L"");
 	}
@@ -480,7 +491,7 @@ GenerateRemoteProtocolCppFile
 		{
 			GenerateDeserializerFunctionHeader(L"bool", false, writer);
 			writer.WriteLine(L"\t{");
-			writer.WriteLine(L"\t#define ERROR_MESSAGE_PREFIX L\"vl::presentation::remoteprotocol::ConvertJsonToCustomType<bool>(Ptr<JsonNode>)#\"");
+			writer.WriteLine(L"\t#define ERROR_MESSAGE_PREFIX L\"vl::presentation::remoteprotocol::ConvertJsonToCustomType<bool>(Ptr<JsonNode>, bool&)#\"");
 			writer.WriteLine(L"\t\tauto jsonNode = node.Cast<glr::json::JsonLiteral>();");
 			writer.WriteLine(L"\t\tCHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L\"Json node does not match the expected type.\");");
 			writer.WriteLine(L"\t\tswitch (jsonNode->value)");
@@ -499,7 +510,7 @@ GenerateRemoteProtocolCppFile
 			{
 				GenerateDeserializerFunctionHeader(cppName, false, writer);
 				writer.WriteLine(L"\t{");
-				writer.WriteLine(L"\t#define ERROR_MESSAGE_PREFIX L\"vl::presentation::remoteprotocol::ConvertJsonToCustomType<" + cppName + L">(Ptr<JsonNode>)#\"");
+				writer.WriteLine(L"\t#define ERROR_MESSAGE_PREFIX L\"vl::presentation::remoteprotocol::ConvertJsonToCustomType<" + cppName + L">(Ptr<JsonNode>, " + cppName + L"&)#\"");
 				writer.WriteLine(L"\t\tauto jsonNode = node.Cast<glr::json::JsonNumber>();");
 				writer.WriteLine(L"\t\tCHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L\"Json node does not match the expected type.\");");
 				writer.WriteLine(L"\t\tCHECK_ERROR(reflection::description::TypedValueSerializerProvider<" + cppName + L">::Deserialize(jsonNode->content.value, value), ERROR_MESSAGE_PREFIX L\"Json node does not match the expected type.\");");
@@ -511,7 +522,7 @@ GenerateRemoteProtocolCppFile
 		{
 			GenerateDeserializerFunctionHeader(L"WString", false, writer);
 			writer.WriteLine(L"\t{");
-			writer.WriteLine(L"\t#define ERROR_MESSAGE_PREFIX L\"vl::presentation::remoteprotocol::ConvertJsonToCustomType<bool>(Ptr<JsonNode>)#\"");
+			writer.WriteLine(L"\t#define ERROR_MESSAGE_PREFIX L\"vl::presentation::remoteprotocol::ConvertJsonToCustomType<bool>(Ptr<JsonNode>, WString&)#\"");
 			writer.WriteLine(L"\t\tauto jsonNode = node.Cast<glr::json::JsonString>();");
 			writer.WriteLine(L"\t\tCHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L\"Json node does not match the expected type.\");");
 			writer.WriteLine(L"\t\tvalue = jsonNode->content.value;");
@@ -526,7 +537,15 @@ GenerateRemoteProtocolCppFile
 		WString cppName = GuiRpPrintTypeVisitor::GetCppType(enumDecl->name.value, symbols, config);
 		GenerateDeserializerFunctionHeader(cppName, false, writer);
 		writer.WriteLine(L"\t{");
-		writer.WriteLine(L"\t\tCHECK_FAIL(L\"Not Implemented!\");");
+		writer.WriteLine(L"\t#define ERROR_MESSAGE_PREFIX L\"vl::presentation::remoteprotocol::ConvertJsonToCustomType<" + cppName + L">(Ptr<JsonNode>, " + cppName + L"&)#\"");
+		writer.WriteLine(L"\t\tauto jsonNode = node.Cast<glr::json::JsonString>();");
+		writer.WriteLine(L"\t\tCHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L\"Json node does not match the expected type.\");");
+		for (auto member : enumDecl->members)
+		{
+			writer.WriteLine(L"\t\tif (jsonNode->content.value == L\"" + member->name.value + L"\") value = " + cppName + L"::" + member->name.value + L"; else");
+		}
+		writer.WriteLine(L"\t\tCHECK_FAIL(ERROR_MESSAGE_PREFIX L\"Unsupported enum value.\");");
+		writer.WriteLine(L"\t#undef ERROR_MESSAGE_PREFIX");
 		writer.WriteLine(L"\t}");
 		writer.WriteLine(L"");
 	}

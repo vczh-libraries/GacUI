@@ -44,7 +44,17 @@ namespace vl::presentation::remoteprotocol
 
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::INativeWindow::WindowSizeState>(const ::vl::presentation::INativeWindow::WindowSizeState& value)
 	{
-		CHECK_FAIL(L"Not Implemented!");
+	#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertCustomTypeToJson<::vl::presentation::INativeWindow::WindowSizeState>(const ::vl::presentation::INativeWindow::WindowSizeState&)#"
+		auto node = Ptr(new glr::json::JsonString);
+		switch (value)
+		{
+		case ::vl::presentation::INativeWindow::WindowSizeState::Minimized: node->content.value = L"Minimized"; break;
+		case ::vl::presentation::INativeWindow::WindowSizeState::Restored: node->content.value = L"Restored"; break;
+		case ::vl::presentation::INativeWindow::WindowSizeState::Maximized: node->content.value = L"Maximized"; break;
+		default: CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported enum value.");
+		}
+		return node;
+	#undef ERROR_MESSAGE_PREFIX
 	}
 
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::NativeCoordinate>(const ::vl::presentation::NativeCoordinate& value)
@@ -99,7 +109,7 @@ namespace vl::presentation::remoteprotocol
 
 	template<> void ConvertJsonToCustomType<bool>(vl::Ptr<vl::glr::json::JsonNode> node, bool& value)
 	{
-	#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<bool>(Ptr<JsonNode>)#"
+	#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<bool>(Ptr<JsonNode>, bool&)#"
 		auto jsonNode = node.Cast<glr::json::JsonLiteral>();
 		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
 		switch (jsonNode->value)
@@ -113,7 +123,7 @@ namespace vl::presentation::remoteprotocol
 
 	template<> void ConvertJsonToCustomType<vint>(vl::Ptr<vl::glr::json::JsonNode> node, vint& value)
 	{
-	#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<vint>(Ptr<JsonNode>)#"
+	#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<vint>(Ptr<JsonNode>, vint&)#"
 		auto jsonNode = node.Cast<glr::json::JsonNumber>();
 		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
 		CHECK_ERROR(reflection::description::TypedValueSerializerProvider<vint>::Deserialize(jsonNode->content.value, value), ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
@@ -122,7 +132,7 @@ namespace vl::presentation::remoteprotocol
 
 	template<> void ConvertJsonToCustomType<float>(vl::Ptr<vl::glr::json::JsonNode> node, float& value)
 	{
-	#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<float>(Ptr<JsonNode>)#"
+	#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<float>(Ptr<JsonNode>, float&)#"
 		auto jsonNode = node.Cast<glr::json::JsonNumber>();
 		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
 		CHECK_ERROR(reflection::description::TypedValueSerializerProvider<float>::Deserialize(jsonNode->content.value, value), ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
@@ -131,7 +141,7 @@ namespace vl::presentation::remoteprotocol
 
 	template<> void ConvertJsonToCustomType<double>(vl::Ptr<vl::glr::json::JsonNode> node, double& value)
 	{
-	#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<double>(Ptr<JsonNode>)#"
+	#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<double>(Ptr<JsonNode>, double&)#"
 		auto jsonNode = node.Cast<glr::json::JsonNumber>();
 		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
 		CHECK_ERROR(reflection::description::TypedValueSerializerProvider<double>::Deserialize(jsonNode->content.value, value), ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
@@ -140,7 +150,7 @@ namespace vl::presentation::remoteprotocol
 
 	template<> void ConvertJsonToCustomType<WString>(vl::Ptr<vl::glr::json::JsonNode> node, WString& value)
 	{
-	#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<bool>(Ptr<JsonNode>)#"
+	#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<bool>(Ptr<JsonNode>, WString&)#"
 		auto jsonNode = node.Cast<glr::json::JsonString>();
 		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
 		value = jsonNode->content.value;
@@ -149,7 +159,14 @@ namespace vl::presentation::remoteprotocol
 
 	template<> void ConvertJsonToCustomType<::vl::presentation::INativeWindow::WindowSizeState>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::INativeWindow::WindowSizeState& value)
 	{
-		CHECK_FAIL(L"Not Implemented!");
+	#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<::vl::presentation::INativeWindow::WindowSizeState>(Ptr<JsonNode>, ::vl::presentation::INativeWindow::WindowSizeState&)#"
+		auto jsonNode = node.Cast<glr::json::JsonString>();
+		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
+		if (jsonNode->content.value == L"Minimized") value = ::vl::presentation::INativeWindow::WindowSizeState::Minimized; else
+		if (jsonNode->content.value == L"Restored") value = ::vl::presentation::INativeWindow::WindowSizeState::Restored; else
+		if (jsonNode->content.value == L"Maximized") value = ::vl::presentation::INativeWindow::WindowSizeState::Maximized; else
+		CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported enum value.");
+	#undef ERROR_MESSAGE_PREFIX
 	}
 
 	template<> void ConvertJsonToCustomType<::vl::presentation::NativeCoordinate>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::NativeCoordinate& value)
