@@ -97,7 +97,7 @@ int main(int argc, char* argv[])
 	GuiRpCppConfig config;
 	config.headerFileName = L"GuiRemoteProtocolSchema.h";
 	config.headerGuard = L"VCZH_PRESENTATION_GUIREMOTECONTROLLER_REMOTEPROTOCOLSCHEMA";
-	config.headerInclude = L"../../../../NativeWindow/GuiNativeWindow.h";
+	config.headerInclude = L"../../GuiRemoteProtocolSchemaShared.h";
 	config.cppNamespace = L"vl::presentation::remoteprotocol";
 	config.builderMacroPrefix = L"GACUI_REMOTEPROTOCOL";
 

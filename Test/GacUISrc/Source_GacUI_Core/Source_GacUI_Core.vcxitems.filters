@@ -165,9 +165,6 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Remote\GuiRemoteController.cpp">
       <Filter>PlatformProviders\Remote</Filter>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Remote\Protocol\Generated\GuiRemoteProtocolSchema.cpp">
-      <Filter>PlatformProviders\Remote\Protocol\Generated</Filter>
-    </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Remote\GuiRemoteControllerSetup.cpp">
       <Filter>PlatformProviders\Remote</Filter>
     </ClCompile>
@@ -175,6 +172,12 @@
       <Filter>PlatformProviders\Remote</Filter>
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Remote\GuiRemoteEvents.cpp">
+      <Filter>PlatformProviders\Remote</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Remote\Protocol\Generated\GuiRemoteProtocolSchema.cpp">
+      <Filter>PlatformProviders\Remote\Protocol\Generated</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Remote\GuiRemoteProtocolSchemaShared.cpp">
       <Filter>PlatformProviders\Remote</Filter>
     </ClCompile>
   </ItemGroup>
@@ -243,9 +246,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Remote\GuiRemoteController.h">
       <Filter>PlatformProviders\Remote</Filter>
     </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Remote\Protocol\Generated\GuiRemoteProtocolSchema.h">
-      <Filter>PlatformProviders\Remote\Protocol\Generated</Filter>
-    </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Remote\GuiRemoteWindow.h">
       <Filter>PlatformProviders\Remote</Filter>
     </ClInclude>
@@ -253,6 +253,12 @@
       <Filter>PlatformProviders\Remote</Filter>
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Remote\GuiRemoteProtocol.h">
+      <Filter>PlatformProviders\Remote</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Remote\Protocol\Generated\GuiRemoteProtocolSchema.h">
+      <Filter>PlatformProviders\Remote\Protocol\Generated</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Remote\GuiRemoteProtocolSchemaShared.h">
       <Filter>PlatformProviders\Remote</Filter>
     </ClInclude>
   </ItemGroup>

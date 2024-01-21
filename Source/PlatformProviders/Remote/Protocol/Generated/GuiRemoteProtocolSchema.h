@@ -6,8 +6,7 @@ Licensed under https ://github.com/vczh-libraries/License
 #ifndef VCZH_PRESENTATION_GUIREMOTECONTROLLER_REMOTEPROTOCOLSCHEMA
 #define VCZH_PRESENTATION_GUIREMOTECONTROLLER_REMOTEPROTOCOLSCHEMA
 
-#include <VlppGlrParser.h>
-#include "../../../../NativeWindow/GuiNativeWindow.h"
+#include "../../GuiRemoteProtocolSchemaShared.h"
 
 namespace vl::presentation::remoteprotocol
 {
@@ -39,12 +38,6 @@ namespace vl::presentation::remoteprotocol
 		::vl::presentation::INativeWindow::WindowSizeState sizeState;
 	};
 
-	template<typename T> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson(const T&) = delete;
-	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<bool>(const bool& value);
-	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::vint>(const ::vl::vint& value);
-	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<float>(const float& value);
-	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<double>(const double& value);
-	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::WString>(const ::vl::WString& value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::INativeWindow::WindowSizeState>(const ::vl::presentation::INativeWindow::WindowSizeState& value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::NativeCoordinate>(const ::vl::presentation::NativeCoordinate& value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::NativePoint>(const ::vl::presentation::NativePoint& value);
@@ -57,12 +50,6 @@ namespace vl::presentation::remoteprotocol
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<vl::presentation::remoteprotocol::WindowSizingConfig>(const vl::presentation::remoteprotocol::WindowSizingConfig& value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<vl::presentation::remoteprotocol::WindowShowing>(const vl::presentation::remoteprotocol::WindowShowing& value);
 
-	template<typename T> void ConvertJsonToCustomType(vl::Ptr<vl::glr::json::JsonNode>, T&) = delete;
-	template<> void ConvertJsonToCustomType<bool>(vl::Ptr<vl::glr::json::JsonNode> node, bool& value);
-	template<> void ConvertJsonToCustomType<::vl::vint>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::vint& value);
-	template<> void ConvertJsonToCustomType<float>(vl::Ptr<vl::glr::json::JsonNode> node, float& value);
-	template<> void ConvertJsonToCustomType<double>(vl::Ptr<vl::glr::json::JsonNode> node, double& value);
-	template<> void ConvertJsonToCustomType<::vl::WString>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::WString& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::INativeWindow::WindowSizeState>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::INativeWindow::WindowSizeState& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::NativeCoordinate>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::NativeCoordinate& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::NativePoint>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::NativePoint& value);
