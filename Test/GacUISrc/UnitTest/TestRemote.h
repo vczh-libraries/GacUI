@@ -23,7 +23,19 @@ public:
 #undef MESSAGE_NOREQ_RES
 #undef MESSAGE_NOREQ_NORES
 
+	IGuiRemoteProtocolEvents* events = nullptr;
 
-	void Submit()				override {}
-	void ProcessRemoteEvents()	override { CHECK_FAIL(L"Not Implemented in NotImplementedProtocolBase!"); }
+	void Initialize(IGuiRemoteProtocolEvents* _events)
+	{
+		events = _events;
+	}
+
+	void Submit() override
+	{
+	}
+
+	void ProcessRemoteEvents() override
+	{
+		CHECK_FAIL(L"Not Implemented in NotImplementedProtocolBase!");
+	}
 };

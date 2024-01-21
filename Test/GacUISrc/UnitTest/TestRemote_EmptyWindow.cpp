@@ -6,10 +6,8 @@ public:
 	static EmptyWindowProtocol*	instance;
 
 	Func<void()>				processRemoteEvents;
-	IGuiRemoteProtocolEvents*	events = nullptr;
 	bool						connectionEstablished = false;
 	bool						connectionStopped = false;
-	bool						connectionStoppedAndSubmitted = false;
 	WindowSizingConfig			sizingConfig;
 
 	EmptyWindowProtocol(Func<void()> _processRemoteEvents)
@@ -28,15 +26,10 @@ public:
 		instance = nullptr;
 	}
 
-	void Initialize(IGuiRemoteProtocolEvents* _events) override
-	{
-		events = _events;
-	}
-
 	void Submit() override
 	{
-		CHECK_ERROR(!connectionStoppedAndSubmitted, L"IGuiRemoteProtocol::Submit is not allowed to call after connection stopped.");
-		if (connectionStopped) connectionStoppedAndSubmitted = true;
+		CHECK_ERROR(!connectionStopped, L"IGuiRemoteProtocol::Submit is not allowed to call after connection stopped.");
+		NotImplementedProtocolBase::Submit();
 	}
 
 	void ProcessRemoteEvents() override
@@ -171,7 +164,6 @@ TEST_FILE
 		TEST_CASE(L"Ensure stopped")
 		{
 			TEST_ASSERT(EmptyWindowProtocol::instance->connectionStopped);
-			TEST_ASSERT(EmptyWindowProtocol::instance->connectionStoppedAndSubmitted);
 		});
 	});
 

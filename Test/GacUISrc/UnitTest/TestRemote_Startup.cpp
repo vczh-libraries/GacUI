@@ -5,8 +5,6 @@ class StartUpProtocol : public NotImplementedProtocolBase
 public:
 	static StartUpProtocol*		instance;
 
-	IGuiRemoteProtocolEvents*	events = nullptr;
-
 	StartUpProtocol()
 	{
 		CHECK_ERROR(instance == nullptr, L"StartUpProtocol can only have one instance");
@@ -16,11 +14,6 @@ public:
 	~StartUpProtocol()
 	{
 		instance = nullptr;
-	}
-
-	void Initialize(IGuiRemoteProtocolEvents* _events) override
-	{
-		events = _events;
 	}
 
 	WString GetExecutablePath() override
