@@ -154,4 +154,29 @@ GuiRemoteEvents (events)
 	{
 		remote->remoteWindow.OnWindowBoundsUpdated(arguments);
 	}
+
+	void GuiRemoteEvents::OnWindowActivated()
+	{
+		remote->remoteWindow.OnWindowActivated();
+	}
+
+	void GuiRemoteEvents::OnWindowDeactivated()
+	{
+		remote->remoteWindow.OnWindowDeactivated();
+	}
+
+	void GuiRemoteEvents::OnWindowRestored()
+	{
+		remote->remoteWindow.OnWindowRestored();
+	}
+
+	void GuiRemoteEvents::OnWindowMaximized()
+	{
+		remote->remoteWindow.OnWindowMaximized();
+	}
+
+	void GuiRemoteEvents::OnWindowMinimized()
+	{
+		remote->remoteWindow.OnWindowMinimized();
+	}
 }

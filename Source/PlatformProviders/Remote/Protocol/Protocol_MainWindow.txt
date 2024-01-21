@@ -25,10 +25,19 @@ message WindowNotifySetTitleBar         { request: bool; }
 message WindowSetBounds                 { request: NativeRect; response: WindowSizingConfig; }
 message WindowSetClientSize             { request: NativeSize; response: WindowSizingConfig; }
 
+struct WindowShowing
+{
+    var activate: bool;
+}
+
 message WindowNotifyActivate            {}
-message WindowNotifyShowActivated       {}
-message WindowNotifyShowDeactivated     {}
-message WindowNotifyShowMaximized       {}
-message WindowNotifyShowMinimized       {}
+message WindowNotifyShowRestored        { request: WindowShowing; }
+message WindowNotifyShowMaximized       { request: WindowShowing; }
+message WindowNotifyShowMinimized       { request: WindowShowing; }
 
 event WindowBoundsUpdated               { request: WindowSizingConfig; }
+event WindowActivated                   {}
+event WindowDeactivated                 {}
+event WindowRestored                    {}
+event WindowMaximized                   {}
+event WindowMinimized                   {}

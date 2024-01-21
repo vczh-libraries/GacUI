@@ -25,7 +25,6 @@ GuiRemoteMessages
 
 	class GuiRemoteMessages : public Object
 	{
-		friend class GuiRemoteController;
 	protected:
 		GuiRemoteController*						remote;
 		vint										id = 0;
@@ -77,7 +76,6 @@ GuiRemoteEvents
 
 	class GuiRemoteEvents : public Object, public virtual IGuiRemoteProtocolEvents
 	{
-		friend class GuiRemoteController;
 	protected:
 		GuiRemoteController*						remote;
 

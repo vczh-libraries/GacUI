@@ -95,14 +95,14 @@ public:
 	{
 	}
 
-	void RequestWindowSetBounds(vint id, const ::vl::presentation::NativeRect& arguments) override
+	void RequestWindowSetBounds(vint id, const NativeRect& arguments) override
 	{
 		sizingConfig.bounds = arguments;
 		sizingConfig.clientBounds = sizingConfig.bounds;
 		events->RespondWindowSetBounds(id, sizingConfig);
 	}
 
-	void RequestWindowSetClientSize(vint id, const ::vl::presentation::NativeSize& arguments) override
+	void RequestWindowSetClientSize(vint id, const NativeSize& arguments) override
 	{
 		sizingConfig.bounds = { sizingConfig.bounds.LeftTop(), arguments };
 		sizingConfig.clientBounds = sizingConfig.bounds;
@@ -117,10 +117,9 @@ public:
 	void RequestWindowNotifySetIconVisible(const bool& arguments) override {}
 	void RequestWindowNotifySetTitleBar(const bool& arguments) override {}
 	void RequestWindowNotifyActivate() override {}
-	void RequestWindowNotifyShowActivated() override {}
-	void RequestWindowNotifyShowDeactivated() override {}
-	void RequestWindowNotifyShowMaximized() override {}
-	void RequestWindowNotifyShowMinimized() override {}
+	void RequestWindowNotifyShowRestored(const WindowShowing& arguments) override {}
+	void RequestWindowNotifyShowMaximized(const WindowShowing& arguments) override {}
+	void RequestWindowNotifyShowMinimized(const WindowShowing& arguments) override {}
 };
 EmptyWindowProtocol* EmptyWindowProtocol::instance = nullptr;
 
@@ -158,4 +157,7 @@ TEST_FILE
 	// TODO: test ControllerRequestExit with success and blocked
 	// TODO: test ControllerForceExit and ensure it skipped INativeWindowListener::(Before|After)Closing
 	// TODO: test ControllerDisconnect and ControllerConnect
+	// TODO: test focus/enabled with RenderingAsActivated
+	// TODO: test activate/showactivated from INativeWindow and event (bidirectional controlling)
+	// TODO: test size status from INativeWindow and event (bidirectional controlling)
 }

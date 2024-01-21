@@ -30,16 +30,64 @@ GuiRemoteWindow
 		remoteMessages.ClearResponses();
 	}
 
-	GuiRemoteWindow::GuiRemoteWindow(GuiRemoteController* _remote)
-		: remote(_remote)
-		, remoteMessages(_remote->remoteMessages)
-		, remoteEvents(_remote->remoteEvents)
+	void GuiRemoteWindow::Opened()
 	{
+		if (!statusVisible)
+		{
+			statusVisible = true;
+			for (auto l : listeners)l->Opened();
+		}
 	}
 
-	GuiRemoteWindow::~GuiRemoteWindow()
+	void GuiRemoteWindow::SetActivated(bool activated)
 	{
+		if (statusActivated != activated)
+		{
+			statusActivated = activated;
+			if (statusActivated)
+			{
+				for (auto l : listeners)l->RenderingAsActivated();
+			}
+			else
+			{
+				for (auto l : listeners)l->RenderingAsDeactivated();
+			}
+		}
 	}
+
+	void GuiRemoteWindow::ShowWithSizeState(bool activate, INativeWindow::WindowSizeState sizeState)
+	{
+		if (!statusVisible || statusSizeState != statusSizeState)
+		{
+			remoteprotocol::WindowShowing windowShowing;
+			windowShowing.activate = activate;
+			switch (sizeState)
+			{
+			case INativeWindow::Restored:
+				remoteMessages.RequestWindowNotifyShowRestored(windowShowing);
+				break;
+			case INativeWindow::Maximized:
+				remoteMessages.RequestWindowNotifyShowMaximized(windowShowing);
+				break;
+			case INativeWindow::Minimized:
+				remoteMessages.RequestWindowNotifyShowMinimized(windowShowing);
+				break;
+			}
+			remoteMessages.Submit();
+
+			statusSizeState = sizeState;
+			Opened();
+			SetActivated(activate);
+		}
+		else if (!statusActivated && activate)
+		{
+			SetActivate();
+		}
+	}
+
+/***********************************************************************
+GuiRemoteWindow (events)
+***********************************************************************/
 
 	void GuiRemoteWindow::OnControllerConnect()
 	{
@@ -73,6 +121,53 @@ GuiRemoteWindow
 			for (auto l : listeners) l->Moved();
 		}
 	}
+
+	void GuiRemoteWindow::OnWindowActivated()
+	{
+		SetActivated(true);
+	}
+
+	void GuiRemoteWindow::OnWindowDeactivated()
+	{
+		SetActivated(false);
+	}
+
+	void GuiRemoteWindow::OnWindowRestored()
+	{
+		statusSizeState = INativeWindow::Restored;
+		Opened();
+	}
+
+	void GuiRemoteWindow::OnWindowMaximized()
+	{
+		statusSizeState = INativeWindow::Maximized;
+		Opened();
+	}
+
+	void GuiRemoteWindow::OnWindowMinimized()
+	{
+		statusSizeState = INativeWindow::Minimized;
+		Opened();
+	}
+
+/***********************************************************************
+GuiRemoteWindow
+***********************************************************************/
+
+	GuiRemoteWindow::GuiRemoteWindow(GuiRemoteController* _remote)
+		: remote(_remote)
+		, remoteMessages(_remote->remoteMessages)
+		, remoteEvents(_remote->remoteEvents)
+	{
+	}
+
+	GuiRemoteWindow::~GuiRemoteWindow()
+	{
+	}
+
+/***********************************************************************
+GuiRemoteWindow (INativeWindow)
+***********************************************************************/
 
 	bool GuiRemoteWindow::IsActivelyRefreshing()
 	{
@@ -254,27 +349,27 @@ GuiRemoteWindow
 
 	void GuiRemoteWindow::Show()
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		ShowWithSizeState(true, statusSizeState);
 	}
 
 	void GuiRemoteWindow::ShowDeactivated()
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		ShowWithSizeState(false, statusSizeState);
 	}
 
 	void GuiRemoteWindow::ShowRestored()
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		ShowWithSizeState(true, INativeWindow::Restored);
 	}
 
 	void GuiRemoteWindow::ShowMaximized()
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		ShowWithSizeState(true, INativeWindow::Maximized);
 	}
 
 	void GuiRemoteWindow::ShowMinimized()
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		ShowWithSizeState(true, INativeWindow::Minimized);
 	}
 
 	void GuiRemoteWindow::Hide(bool closeWindow)
@@ -294,7 +389,7 @@ GuiRemoteWindow
 
 	bool GuiRemoteWindow::IsVisible()
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		return statusVisible;
 	}
 
 	void GuiRemoteWindow::Enable()
@@ -326,9 +421,8 @@ GuiRemoteWindow
 	{
 		if (statusActivated != true)
 		{
-			statusActivated = true;
+			SetActivated(true);
 			remoteMessages.RequestWindowNotifyActivate();
-			for (auto l : listeners) l->RenderingAsActivated();
 		}
 	}
 

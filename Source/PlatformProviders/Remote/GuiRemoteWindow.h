@@ -15,6 +15,8 @@ Interfaces:
 
 namespace vl::presentation
 {
+	class GuiRemoteEvents;
+	class GuiRemoteWindow;
 	class GuiRemoteController;
 
 /***********************************************************************
@@ -23,6 +25,7 @@ GuiRemoteWindow
 
 	class GuiRemoteWindow : public Object, public virtual INativeWindow
 	{
+		friend class GuiRemoteEvents;
 		friend class GuiRemoteController;
 	protected:
 		GuiRemoteController*								remote;
@@ -41,7 +44,6 @@ GuiRemoteWindow
 		NativePoint						styleCaret;
 		Ptr<GuiImageData>				styleIcon;
 		bool							styleEnabled = true;
-		bool							styleVisible = false;
 		bool							styleTopMost = false;
 
 		bool							styleMaximizedBox = true;
@@ -54,19 +56,32 @@ GuiRemoteWindow
 		bool							styleCustomFrameMode = false;
 		
 		INativeWindow::WindowSizeState	statusSizeState = INativeWindow::Restored;
+		bool							statusVisible = false;
 		bool							statusActivated = false;
 		bool							statusCapturing = false;
 
 		void							RequestGetBounds();
+		void							Opened();
+		void							SetActivated(bool activated);
+		void							ShowWithSizeState(bool activate, INativeWindow::WindowSizeState sizeState);
 
-	public:
-		GuiRemoteWindow(GuiRemoteController* _remote);
-		~GuiRemoteWindow();
+		// =============================================================
+		// Events
+		// =============================================================
 
 		void							OnControllerConnect();
 		void							OnControllerDisconnect();
 		void							OnControllerScreenUpdated(const remoteprotocol::ScreenConfig& arguments);
 		void							OnWindowBoundsUpdated(const remoteprotocol::WindowSizingConfig& arguments);
+		void							OnWindowActivated();
+		void							OnWindowDeactivated();
+		void							OnWindowRestored();
+		void							OnWindowMaximized();
+		void							OnWindowMinimized();
+
+	public:
+		GuiRemoteWindow(GuiRemoteController* _remote);
+		~GuiRemoteWindow();
 
 		// =============================================================
 		// INativeWindow

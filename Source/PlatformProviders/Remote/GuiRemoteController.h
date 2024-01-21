@@ -109,18 +109,23 @@ GuiRemoteController
 		INativeWindow*					GetWindow(NativePoint location) override;
 		void							Run(INativeWindow* window) override;
 		bool							RunOneCycle() override;
-	public:
-		GuiRemoteController(IGuiRemoteProtocol* _remoteProtocol);
-		~GuiRemoteController();
 
-		void							Initialize();
-		void							Finalize();
+		// =============================================================
+		// Events
+		// =============================================================
 
 		void							OnControllerConnect();
 		void							OnControllerDisconnect();
 		void							OnControllerRequestExit();
 		void							OnControllerForceExit();
 		void							OnControllerScreenUpdated(const remoteprotocol::ScreenConfig& arguments);
+
+	public:
+		GuiRemoteController(IGuiRemoteProtocol* _remoteProtocol);
+		~GuiRemoteController();
+
+		void							Initialize();
+		void							Finalize();
 
 		// =============================================================
 		// INativeController

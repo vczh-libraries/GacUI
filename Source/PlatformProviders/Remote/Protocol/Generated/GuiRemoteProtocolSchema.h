@@ -31,6 +31,11 @@ namespace vl::presentation::remoteprotocol
 		::vl::presentation::NativeMargin customFramePadding;
 	};
 
+	struct WindowShowing
+	{
+		bool activate;
+	};
+
 #define GACUI_REMOTEPROTOCOL_MESSAGES(HANDLER)\
 	HANDLER(ControllerGetFontConfig, void, vl::presentation::remoteprotocol::FontConfig, NOREQ, RES)\
 	HANDLER(ControllerGetScreenConfig, void, vl::presentation::remoteprotocol::ScreenConfig, NOREQ, RES)\
@@ -51,10 +56,9 @@ namespace vl::presentation::remoteprotocol
 	HANDLER(WindowSetBounds, ::vl::presentation::NativeRect, vl::presentation::remoteprotocol::WindowSizingConfig, REQ, RES)\
 	HANDLER(WindowSetClientSize, ::vl::presentation::NativeSize, vl::presentation::remoteprotocol::WindowSizingConfig, REQ, RES)\
 	HANDLER(WindowNotifyActivate, void, void, NOREQ, NORES)\
-	HANDLER(WindowNotifyShowActivated, void, void, NOREQ, NORES)\
-	HANDLER(WindowNotifyShowDeactivated, void, void, NOREQ, NORES)\
-	HANDLER(WindowNotifyShowMaximized, void, void, NOREQ, NORES)\
-	HANDLER(WindowNotifyShowMinimized, void, void, NOREQ, NORES)\
+	HANDLER(WindowNotifyShowRestored, vl::presentation::remoteprotocol::WindowShowing, void, REQ, NORES)\
+	HANDLER(WindowNotifyShowMaximized, vl::presentation::remoteprotocol::WindowShowing, void, REQ, NORES)\
+	HANDLER(WindowNotifyShowMinimized, vl::presentation::remoteprotocol::WindowShowing, void, REQ, NORES)\
 
 #define GACUI_REMOTEPROTOCOL_EVENTS(HANDLER)\
 	HANDLER(ControllerConnect, void, NOREQ)\
@@ -63,6 +67,11 @@ namespace vl::presentation::remoteprotocol
 	HANDLER(ControllerForceExit, void, NOREQ)\
 	HANDLER(ControllerScreenUpdated, vl::presentation::remoteprotocol::ScreenConfig, REQ)\
 	HANDLER(WindowBoundsUpdated, vl::presentation::remoteprotocol::WindowSizingConfig, REQ)\
+	HANDLER(WindowActivated, void, NOREQ)\
+	HANDLER(WindowDeactivated, void, NOREQ)\
+	HANDLER(WindowRestored, void, NOREQ)\
+	HANDLER(WindowMaximized, void, NOREQ)\
+	HANDLER(WindowMinimized, void, NOREQ)\
 
 }
 

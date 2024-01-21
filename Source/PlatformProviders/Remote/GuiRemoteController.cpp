@@ -193,6 +193,7 @@ GuiRemoteController::INativeWindowService
 		CHECK_ERROR(!windowDestroyed, L"vl::presentation::GuiRemoteController::CreateNativeWindow(INativeWindow::WindowMode)#GuiHostedController is not supposed to call this function for twice.");
 		windowDestroyed = true;
 
+		for (auto l : remoteWindow.listeners) l->Closed();
 		for (auto l : remoteWindow.listeners) l->Destroying();
 		callbackService.InvokeNativeWindowDestroying(&remoteWindow);
 		for (auto l : remoteWindow.listeners) l->Destroyed();
@@ -236,31 +237,8 @@ GuiRemoteController::INativeWindowService
 	}
 
 /***********************************************************************
-GuiRemoteController
+GuiRemoteController (events)
 ***********************************************************************/
-
-	GuiRemoteController::GuiRemoteController(IGuiRemoteProtocol* _remoteProtocol)
-		: remoteProtocol(_remoteProtocol)
-		, remoteMessages(this)
-		, remoteEvents(this)
-		, remoteWindow(this)
-	{
-	}
-
-	GuiRemoteController::~GuiRemoteController()
-	{
-	}
-
-	void GuiRemoteController::Initialize()
-	{
-		remoteProtocol->Initialize(&remoteEvents);
-	}
-
-	void GuiRemoteController::Finalize()
-	{
-		remoteMessages.RequestControllerConnectionStopped();
-		remoteMessages.Submit();
-	}
 
 	void GuiRemoteController::OnControllerConnect()
 	{
@@ -295,7 +273,34 @@ GuiRemoteController
 	}
 
 /***********************************************************************
-GuiRemoteController::INativeController
+GuiRemoteController
+***********************************************************************/
+
+	GuiRemoteController::GuiRemoteController(IGuiRemoteProtocol* _remoteProtocol)
+		: remoteProtocol(_remoteProtocol)
+		, remoteMessages(this)
+		, remoteEvents(this)
+		, remoteWindow(this)
+	{
+	}
+
+	GuiRemoteController::~GuiRemoteController()
+	{
+	}
+
+	void GuiRemoteController::Initialize()
+	{
+		remoteProtocol->Initialize(&remoteEvents);
+	}
+
+	void GuiRemoteController::Finalize()
+	{
+		remoteMessages.RequestControllerConnectionStopped();
+		remoteMessages.Submit();
+	}
+
+/***********************************************************************
+GuiRemoteController (INativeController)
 ***********************************************************************/
 
 	INativeCallbackService* GuiRemoteController::CallbackService()
