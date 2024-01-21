@@ -19,20 +19,19 @@ message WindowGetBounds
     response: WindowSizingConfig;
 }
 
-message WindowNotifySetTitle            { request: string; }
-message WindowNotifySetEnabled          { request: bool; }
-message WindowNotifySetTopMost          { request: bool; }
-message WindowNotifySetShowInTaskBar    { request: bool; }
-message WindowNotifySetCustomFrameMode  { request: bool; }
-message WindowNotifySetMaximizedBox     { request: bool; }
-message WindowNotifySetMinimizedBox     { request: bool; }
-message WindowNotifySetBorder           { request: bool; }
-message WindowNotifySetSizeBox          { request: bool; }
-message WindowNotifySetIconVisible      { request: bool; }
-message WindowNotifySetTitleBar         { request: bool; }
-
-message WindowSetBounds                 { request: NativeRect; response: WindowSizingConfig; }
-message WindowSetClientSize             { request: NativeSize; response: WindowSizingConfig; }
+[@DropRepeat] message WindowNotifySetTitle              { request: string; }
+[@DropRepeat] message WindowNotifySetEnabled            { request: bool; }
+[@DropRepeat] message WindowNotifySetTopMost            { request: bool; }
+[@DropRepeat] message WindowNotifySetShowInTaskBar      { request: bool; }
+[@DropRepeat] message WindowNotifySetCustomFrameMode    { request: bool; }
+[@DropRepeat] message WindowNotifySetMaximizedBox       { request: bool; }
+[@DropRepeat] message WindowNotifySetMinimizedBox       { request: bool; }
+[@DropRepeat] message WindowNotifySetBorder             { request: bool; }
+[@DropRepeat] message WindowNotifySetSizeBox            { request: bool; }
+[@DropRepeat] message WindowNotifySetIconVisible        { request: bool; }
+[@DropRepeat] message WindowNotifySetTitleBar           { request: bool; }
+[@DropRepeat] message WindowSetBounds                   { request: NativeRect; }
+[@DropRepeat] message WindowSetClientSize               { request: NativeSize; }
 
 struct WindowShowing
 {
@@ -40,8 +39,8 @@ struct WindowShowing
     var sizeState: WindowSizeState;
 }
 
-message WindowNotifyActivate            {}
-message WindowNotifyShow                { request: WindowShowing; }
+[@DropRepeat] message WindowNotifyActivate  {}
+[@DropRepeat] message WindowNotifyShow      { request: WindowShowing; }
 
-event WindowBoundsUpdated               { request: WindowSizingConfig; }
-event WindowActivatedUpdated            { request: bool; }
+[@DropRepeat] event WindowBoundsUpdated     { request: WindowSizingConfig; }
+[@DropRepeat] event WindowActivatedUpdated  { request: bool; }
