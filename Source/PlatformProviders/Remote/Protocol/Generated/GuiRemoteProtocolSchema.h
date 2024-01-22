@@ -79,8 +79,8 @@ namespace vl::presentation::remoteprotocol
 	HANDLER(WindowNotifySetSizeBox, bool, void, REQ, NORES)\
 	HANDLER(WindowNotifySetIconVisible, bool, void, REQ, NORES)\
 	HANDLER(WindowNotifySetTitleBar, bool, void, REQ, NORES)\
-	HANDLER(WindowSetBounds, ::vl::presentation::NativeRect, vl::presentation::remoteprotocol::WindowSizingConfig, REQ, RES)\
-	HANDLER(WindowSetClientSize, ::vl::presentation::NativeSize, vl::presentation::remoteprotocol::WindowSizingConfig, REQ, RES)\
+	HANDLER(WindowNotifySetBounds, ::vl::presentation::NativeRect, void, REQ, NORES)\
+	HANDLER(WindowNotifySetClientSize, ::vl::presentation::NativeSize, void, REQ, NORES)\
 	HANDLER(WindowNotifyActivate, void, void, NOREQ, NORES)\
 	HANDLER(WindowNotifyShow, vl::presentation::remoteprotocol::WindowShowing, void, REQ, NORES)\
 

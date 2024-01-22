@@ -125,6 +125,10 @@ CheckRemoteProtocolSchema
 					{
 						errors.Add({ att->name.codeRange,L"Missing parameter for attribute: \"" + att->name.value + L"\"." });
 					}
+					else if (symbols->cppMapping.Keys().Contains(node->name.value))
+					{
+						errors.Add({ att->name.codeRange,L"Too many attributes: \"" + att->name.value + L"\"." });
+					}
 					else
 					{
 						symbols->cppMapping.Add(node->name.value, att->cppType.value);
@@ -136,6 +140,18 @@ CheckRemoteProtocolSchema
 				}
 			}
 			symbols->structDecls.Add(node->name.value, node);
+		}
+
+		void VisitDropAttribute(Ptr<remoteprotocol::GuiRpAttribute> att, const WString& name, SortedList<WString>& names)
+		{
+			if (symbols->dropRepeatDeclNames.Contains(name))
+			{
+				errors.Add({ att->name.codeRange,L"Too many attributes: \"" + att->name.value + L"\"." });
+			}
+			else
+			{
+				symbols->dropRepeatDeclNames.Add(name);
+			}
 		}
 
 		void Visit(GuiRpMessageDecl* node) override
@@ -158,7 +174,14 @@ CheckRemoteProtocolSchema
 
 			for (auto att : node->attributes)
 			{
-				errors.Add({ att->name.codeRange,L"Unsupported attribute: \"" + att->name.value + L"\" on message \"" + node->name.value + L"\"." });
+				if (att->name.value == L"@DropRepeat")
+				{
+					VisitDropAttribute(att, node->name.value, symbols->dropRepeatDeclNames);
+				}
+				else
+				{
+					errors.Add({ att->name.codeRange,L"Unsupported attribute: \"" + att->name.value + L"\" on message \"" + node->name.value + L"\"." });
+				}
 			}
 			symbols->messageDecls.Add(node->name.value, node);
 		}
@@ -178,7 +201,18 @@ CheckRemoteProtocolSchema
 
 			for (auto att : node->attributes)
 			{
-				errors.Add({ att->name.codeRange,L"Unsupported attribute: \"" + att->name.value + L"\" on event \"" + node->name.value + L"\"." });
+				if (att->name.value == L"@DropRepeat")
+				{
+					VisitDropAttribute(att, node->name.value, symbols->dropRepeatDeclNames);
+				}
+				else if (att->name.value == L"@DropConsecutive")
+				{
+					VisitDropAttribute(att, node->name.value, symbols->dropConsecutiveDeclNames);
+				}
+				else
+				{
+					errors.Add({ att->name.codeRange,L"Unsupported attribute: \"" + att->name.value + L"\" on event \"" + node->name.value + L"\"." });
+				}
 			}
 			symbols->eventDecls.Add(node->name.value, node);
 		}

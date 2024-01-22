@@ -95,18 +95,18 @@ public:
 	{
 	}
 
-	void RequestWindowSetBounds(vint id, const NativeRect& arguments) override
+	void RequestWindowNotifySetBounds(const NativeRect& arguments) override
 	{
 		sizingConfig.bounds = arguments;
 		sizingConfig.clientBounds = sizingConfig.bounds;
-		events->RespondWindowSetBounds(id, sizingConfig);
+		events->OnWindowBoundsUpdated(sizingConfig);
 	}
 
-	void RequestWindowSetClientSize(vint id, const NativeSize& arguments) override
+	void RequestWindowNotifySetClientSize(const NativeSize& arguments) override
 	{
 		sizingConfig.bounds = { sizingConfig.bounds.LeftTop(), arguments };
 		sizingConfig.clientBounds = sizingConfig.bounds;
-		events->RespondWindowSetClientSize(id, sizingConfig);
+		events->OnWindowBoundsUpdated(sizingConfig);
 	}
 
 	void RequestWindowNotifySetCustomFrameMode(const bool& arguments) override {}

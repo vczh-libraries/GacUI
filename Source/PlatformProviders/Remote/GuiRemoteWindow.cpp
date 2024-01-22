@@ -204,10 +204,8 @@ GuiRemoteWindow (INativeWindow)
 	{
 		if (remoteWindowSizingConfig.bounds != bounds)
 		{
-			vint id = remoteMessages.RequestWindowSetBounds(bounds);
-			remoteMessages.Submit();
-			OnWindowBoundsUpdated(remoteMessages.RetrieveWindowSetBounds(id));
-			remoteMessages.ClearResponses();
+			remoteMessages.RequestWindowNotifySetBounds(bounds);
+			sizingConfigInvalidated = true;
 		}
 	}
 
@@ -221,10 +219,8 @@ GuiRemoteWindow (INativeWindow)
 	{
 		if (remoteWindowSizingConfig.clientBounds.GetSize() != size)
 		{
-			vint id = remoteMessages.RequestWindowSetClientSize(size);
-			remoteMessages.Submit();
-			OnWindowBoundsUpdated(remoteMessages.RetrieveWindowSetClientSize(id));
-			remoteMessages.ClearResponses();
+			remoteMessages.RequestWindowNotifySetClientSize(size);
+			sizingConfigInvalidated = true;
 		}
 	}
 

@@ -30,8 +30,8 @@ message WindowGetBounds
 [@DropRepeat] message WindowNotifySetSizeBox            { request: bool; }
 [@DropRepeat] message WindowNotifySetIconVisible        { request: bool; }
 [@DropRepeat] message WindowNotifySetTitleBar           { request: bool; }
-[@DropRepeat] message WindowSetBounds                   { request: NativeRect; }
-[@DropRepeat] message WindowSetClientSize               { request: NativeSize; }
+[@DropRepeat] message WindowNotifySetBounds             { request: NativeRect; }
+[@DropRepeat] message WindowNotifySetClientSize         { request: NativeSize; }
 
 struct WindowShowing
 {
