@@ -448,7 +448,7 @@ ControllerListener
 								d3d11Device = CreateD3D11Device(D3D_DRIVER_TYPE_WARP);
 							}
 						}
-#if _DEBUG
+#ifdef _DEBUG
 						CHECK_ERROR(d3d11Device,
 							L"Direct2DWindowsNativeControllerListener::NativeWindowCreated(INativeWindow*)#"
 							L"Failed to create Direct3D 11 Device. "

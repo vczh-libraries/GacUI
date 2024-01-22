@@ -23,12 +23,22 @@
     - Test `GuiVirtualRepeatCompositionBase::GetAdoptedSize`.
     - Test `GuiVirtualRepeatCompositionBase::GetTotalSize` with `UseMinimumTotalSize`.
     - Complete `TestCompositions_Bounds.cpp`.
+    - Test `GuiGraphicsHost`.
     - Test controls with a unit test only platform provider running in hosted mode
       - Each character takes exactly `FontSize x FontSize`
       - Deal with `\r` and `\n` when multiline is enabled
     - Test against more code as many as possible
   - A general remoting `INativeController` implementation
     - It sends batched requests to a receiver and wait for respond
+      - Implement `[@Drop(Repeat|Consecutive)]` after unit test against remoting `INativeWindow` is done.
+        - Implement `[@DropRepeat]` message in `GuiRemoteMessageFilter` and redirect to another `IGuiRemoteProtocol`.
+        - Implement `[@Drop(Repeat|Consecutive)]` events in `GuiRemoteEventFilter` and redirect to another `IGuiRemoteEvents`.
+        - Change `GuiRemoteMessages` to take `IGuiRemoteProtocol` instead of `GuiRemoteController`.
+        - Apply `GuiRemoteMessageFilter` inside `GuiRemoteMessages`.
+        - Apply `GuiRemoteEventFilter` inside `GuiRemoteController` and redirect to `GuiRemoteEvents`.
+        - Implement `GuiRemote(Message|Event)Verifier` to verify dropped messages/events not be called.
+        - In debug mode, apply `GuiRemote(Message|Event)Verifier` inside `GuiRemoteMessages`.
+        - Remote `[@Drop(Repeat|Consecutive)]` in `BatchedProtocol`.
     - Two backend could be unit test and streaming
     - Save image metadata (width, height, type, etc) to binary resource
       - For `INativeImageService::CreateImage*` functions it sends binary data to the receiver and wait for respond of metadata
