@@ -176,6 +176,10 @@ CheckRemoteProtocolSchema
 			{
 				if (att->name.value == L"@DropRepeat")
 				{
+					if (node->response)
+					{
+						errors.Add({ node->name.codeRange,L"@DropRepeat cannot be used on message \"" + node->name.value + L"\" since it has response." });
+					}
 					VisitDropAttribute(att, node->name.value, symbols->dropRepeatDeclNames);
 				}
 				else
