@@ -214,6 +214,11 @@ CheckRemoteProtocolSchema
 					errors.Add({ att->name.codeRange,L"Unsupported attribute: \"" + att->name.value + L"\" on event \"" + node->name.value + L"\"." });
 				}
 			}
+
+			if (symbols->dropRepeatDeclNames.Contains(node->name.value) && symbols->dropConsecutiveDeclNames.Contains(node->name.value))
+			{
+				errors.Add({ node->name.codeRange,L"@DropRepeat and @DropConsecutive cannot be used together on event \"" + node->name.value + L"\"." });
+			}
 			symbols->eventDecls.Add(node->name.value, node);
 		}
 	};
@@ -408,6 +413,7 @@ GenerateRemoteProtocolHeaderFile
 
 			writer.WriteString(messageDecl->request ? L", REQ" : L", NOREQ");
 			writer.WriteString(messageDecl->response ? L", RES" : L", NORES");
+			writer.WriteString(symbols->dropRepeatDeclNames.Contains(messageDecl->name.value) ? L", DROPREP" : L", NODROP");
 			writer.WriteLine(L")\\");
 		}
 		writer.WriteLine(L"");
@@ -428,6 +434,10 @@ GenerateRemoteProtocolHeaderFile
 			}
 
 			writer.WriteString(eventDecl->request ? L", REQ" : L", NOREQ");
+			writer.WriteString(
+				symbols->dropRepeatDeclNames.Contains(eventDecl->name.value) ? L", DROPREP" :
+				symbols->dropConsecutiveDeclNames.Contains(eventDecl->name.value) ? L", DROPCON" :
+				L", NODROP");
 			writer.WriteLine(L")\\");
 		}
 		writer.WriteLine(L"");

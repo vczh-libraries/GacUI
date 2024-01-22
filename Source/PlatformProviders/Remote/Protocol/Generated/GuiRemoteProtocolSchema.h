@@ -63,35 +63,35 @@ namespace vl::presentation::remoteprotocol
 	template<> void ConvertJsonToCustomType<vl::presentation::remoteprotocol::WindowShowing>(vl::Ptr<vl::glr::json::JsonNode> node, vl::presentation::remoteprotocol::WindowShowing& value);
 
 #define GACUI_REMOTEPROTOCOL_MESSAGES(HANDLER)\
-	HANDLER(ControllerGetFontConfig, void, vl::presentation::remoteprotocol::FontConfig, NOREQ, RES)\
-	HANDLER(ControllerGetScreenConfig, void, vl::presentation::remoteprotocol::ScreenConfig, NOREQ, RES)\
-	HANDLER(ControllerConnectionEstablished, void, void, NOREQ, NORES)\
-	HANDLER(ControllerConnectionStopped, void, void, NOREQ, NORES)\
-	HANDLER(WindowGetBounds, void, vl::presentation::remoteprotocol::WindowSizingConfig, NOREQ, RES)\
-	HANDLER(WindowNotifySetTitle, ::vl::WString, void, REQ, NORES)\
-	HANDLER(WindowNotifySetEnabled, bool, void, REQ, NORES)\
-	HANDLER(WindowNotifySetTopMost, bool, void, REQ, NORES)\
-	HANDLER(WindowNotifySetShowInTaskBar, bool, void, REQ, NORES)\
-	HANDLER(WindowNotifySetCustomFrameMode, bool, void, REQ, NORES)\
-	HANDLER(WindowNotifySetMaximizedBox, bool, void, REQ, NORES)\
-	HANDLER(WindowNotifySetMinimizedBox, bool, void, REQ, NORES)\
-	HANDLER(WindowNotifySetBorder, bool, void, REQ, NORES)\
-	HANDLER(WindowNotifySetSizeBox, bool, void, REQ, NORES)\
-	HANDLER(WindowNotifySetIconVisible, bool, void, REQ, NORES)\
-	HANDLER(WindowNotifySetTitleBar, bool, void, REQ, NORES)\
-	HANDLER(WindowNotifySetBounds, ::vl::presentation::NativeRect, void, REQ, NORES)\
-	HANDLER(WindowNotifySetClientSize, ::vl::presentation::NativeSize, void, REQ, NORES)\
-	HANDLER(WindowNotifyActivate, void, void, NOREQ, NORES)\
-	HANDLER(WindowNotifyShow, vl::presentation::remoteprotocol::WindowShowing, void, REQ, NORES)\
+	HANDLER(ControllerGetFontConfig, void, vl::presentation::remoteprotocol::FontConfig, NOREQ, RES, NODROP)\
+	HANDLER(ControllerGetScreenConfig, void, vl::presentation::remoteprotocol::ScreenConfig, NOREQ, RES, NODROP)\
+	HANDLER(ControllerConnectionEstablished, void, void, NOREQ, NORES, NODROP)\
+	HANDLER(ControllerConnectionStopped, void, void, NOREQ, NORES, NODROP)\
+	HANDLER(WindowGetBounds, void, vl::presentation::remoteprotocol::WindowSizingConfig, NOREQ, RES, NODROP)\
+	HANDLER(WindowNotifySetTitle, ::vl::WString, void, REQ, NORES, DROPREP)\
+	HANDLER(WindowNotifySetEnabled, bool, void, REQ, NORES, DROPREP)\
+	HANDLER(WindowNotifySetTopMost, bool, void, REQ, NORES, DROPREP)\
+	HANDLER(WindowNotifySetShowInTaskBar, bool, void, REQ, NORES, DROPREP)\
+	HANDLER(WindowNotifySetCustomFrameMode, bool, void, REQ, NORES, DROPREP)\
+	HANDLER(WindowNotifySetMaximizedBox, bool, void, REQ, NORES, DROPREP)\
+	HANDLER(WindowNotifySetMinimizedBox, bool, void, REQ, NORES, DROPREP)\
+	HANDLER(WindowNotifySetBorder, bool, void, REQ, NORES, DROPREP)\
+	HANDLER(WindowNotifySetSizeBox, bool, void, REQ, NORES, DROPREP)\
+	HANDLER(WindowNotifySetIconVisible, bool, void, REQ, NORES, DROPREP)\
+	HANDLER(WindowNotifySetTitleBar, bool, void, REQ, NORES, DROPREP)\
+	HANDLER(WindowNotifySetBounds, ::vl::presentation::NativeRect, void, REQ, NORES, DROPREP)\
+	HANDLER(WindowNotifySetClientSize, ::vl::presentation::NativeSize, void, REQ, NORES, DROPREP)\
+	HANDLER(WindowNotifyActivate, void, void, NOREQ, NORES, DROPREP)\
+	HANDLER(WindowNotifyShow, vl::presentation::remoteprotocol::WindowShowing, void, REQ, NORES, DROPREP)\
 
 #define GACUI_REMOTEPROTOCOL_EVENTS(HANDLER)\
-	HANDLER(ControllerConnect, void, NOREQ)\
-	HANDLER(ControllerDisconnect, void, NOREQ)\
-	HANDLER(ControllerRequestExit, void, NOREQ)\
-	HANDLER(ControllerForceExit, void, NOREQ)\
-	HANDLER(ControllerScreenUpdated, vl::presentation::remoteprotocol::ScreenConfig, REQ)\
-	HANDLER(WindowBoundsUpdated, vl::presentation::remoteprotocol::WindowSizingConfig, REQ)\
-	HANDLER(WindowActivatedUpdated, bool, REQ)\
+	HANDLER(ControllerConnect, void, NOREQ, NODROP)\
+	HANDLER(ControllerDisconnect, void, NOREQ, NODROP)\
+	HANDLER(ControllerRequestExit, void, NOREQ, NODROP)\
+	HANDLER(ControllerForceExit, void, NOREQ, NODROP)\
+	HANDLER(ControllerScreenUpdated, vl::presentation::remoteprotocol::ScreenConfig, REQ, DROPREP)\
+	HANDLER(WindowBoundsUpdated, vl::presentation::remoteprotocol::WindowSizingConfig, REQ, DROPREP)\
+	HANDLER(WindowActivatedUpdated, bool, REQ, DROPREP)\
 
 }
 
