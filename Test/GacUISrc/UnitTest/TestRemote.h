@@ -62,17 +62,26 @@ protected:
 	vint									lastRequestId = -1;
 	collections::Dictionary<vint, WString>	batchedRequestIds;
 	collections::List<BatchedRequest>		batchedRequests;
+	collections::List<BatchedRequest>		batchedResponses;
+	collections::List<BatchedRequest>		batchedEvents;
 
 #define MESSAGE_NODROP(NAME)
-#define MESSAGE_DROPREP(NAME)												vint lastDroppableRequest ## NAME = -1;
+#define MESSAGE_DROPREP(NAME)												vint lastDropRepeatRequest ## NAME = -1;
 #define MESSAGE_HANDLER(NAME, REQUEST, RESPONSE, REQTAG, RESTAG, DROPTAG)	MESSAGE_ ## DROPTAG(NAME)
 	GACUI_REMOTEPROTOCOL_MESSAGES(MESSAGE_HANDLER)
 #undef MESSAGE_HANDLER
 #undef MESSAGE_DROPREP
 #undef MESSAGE_NODROP
 
-	collections::List<BatchedRequest>		batchedResponses;
-	collections::List<BatchedRequest>		batchedEvents;
+#define EVENT_NODROP(NAME)
+#define EVENT_DROPREP(NAME)									vint lastDropRepeatEvent ## NAME = -1;
+#define EVENT_DROPCON(NAME)									vint lastDropConsecutiveEvent ## NAME = -1;
+#define EVENT_HANDLER(NAME, REQUEST, REQTAG, DROPTAG, ...)	EVENT_ ## DROPTAG(NAME)
+		GACUI_REMOTEPROTOCOL_EVENTS(EVENT_HANDLER)
+#undef EVENT_HANDLER
+#undef EVENT_DROPCON
+#undef EVENT_DROPREP
+#undef EVENT_NODROP
 
 	template<typename T>
 	WString ToJson(const T& value)
@@ -94,6 +103,14 @@ protected:
 
 	void ProcessRequests()
 	{
+#define MESSAGE_NODROP(NAME)
+#define MESSAGE_DROPREP(NAME)												lastDropRepeatRequest ## NAME = -1;
+#define MESSAGE_HANDLER(NAME, REQUEST, RESPONSE, REQTAG, RESTAG, DROPTAG)	MESSAGE_ ## DROPTAG(NAME)
+		GACUI_REMOTEPROTOCOL_MESSAGES(MESSAGE_HANDLER)
+#undef MESSAGE_HANDLER
+#undef MESSAGE_DROPREP
+#undef MESSAGE_NODROP
+
 		for (auto&& request : batchedRequests)
 		{
 			CHECK_ERROR(!request.dropped || request.id == -1, L"Messages with id cannot be dropped.");
@@ -140,14 +157,6 @@ protected:
 			CHECK_FAIL(L"Unrecognized request!");
 		}
 
-#define MESSAGE_NODROP(NAME)
-#define MESSAGE_DROPREP(NAME)												lastDroppableRequest ## NAME = -1;
-#define MESSAGE_HANDLER(NAME, REQUEST, RESPONSE, REQTAG, RESTAG, DROPTAG)	MESSAGE_ ## DROPTAG(NAME)
-		GACUI_REMOTEPROTOCOL_MESSAGES(MESSAGE_HANDLER)
-#undef MESSAGE_HANDLER
-#undef MESSAGE_DROPREP
-#undef MESSAGE_NODROP
-
 		CHECK_ERROR(batchedRequestIds.Count() == 0, L"Messages sending to IGuiRemoteProtocol should be all responded.");
 		batchedRequests.Clear();
 	}
@@ -178,6 +187,16 @@ protected:
 
 	void ProcessEvents()
 	{
+#define EVENT_NODROP(NAME)
+#define EVENT_DROPREP(NAME)									lastDropRepeatEvent ## NAME = -1;
+#define EVENT_DROPCON(NAME)									lastDropConsecutiveEvent ## NAME = -1;
+#define EVENT_HANDLER(NAME, REQUEST, REQTAG, DROPTAG, ...)	EVENT_ ## DROPTAG(NAME)
+		GACUI_REMOTEPROTOCOL_EVENTS(EVENT_HANDLER)
+#undef EVENT_HANDLER
+#undef EVENT_DROPCON
+#undef EVENT_DROPREP
+#undef EVENT_NODROP
+
 		collections::List<BatchedRequest> requests;
 		CopyFrom(requests, batchedEvents);
 		batchedEvents.Clear();
@@ -221,18 +240,36 @@ protected:
 
 	// events
 
-#define EVENT_NOREQ(NAME, REQUEST)\
+#define EVENT_NODROP(NAME)
+
+#define EVENT_DROPREP(NAME)\
+		if (lastDropRepeatEvent ## NAME != -1)\
+		{\
+			batchedEvents[lastDropRepeatEvent ## NAME].dropped = true;\
+		}\
+		lastDropRepeatEvent ## NAME = batchedEvents.Count()\
+
+#define EVENT_DROPCON(NAME)\
+		if (lastDropConsecutiveEvent ## NAME == batchedEvents.Count() - 1)\
+		{\
+			batchedEvents[lastDropConsecutiveEvent ## NAME].dropped = true;\
+		}\
+		lastDropConsecutiveEvent ## NAME = batchedEvents.Count()\
+
+#define EVENT_NOREQ(NAME, REQUEST, DROPTAG)\
 	void On ## NAME() override\
 	{\
+		EVENT_ ## DROPTAG(NAME);\
 		BatchedRequest request;\
 		request.name = L ## #NAME;\
 		batchedEvents.Add(request);\
 		if (!submitting) ProcessEvents();\
 	}\
 
-#define EVENT_REQ(NAME, REQUEST)\
+#define EVENT_REQ(NAME, REQUEST, DROPTAG)\
 	void On ## NAME(const REQUEST& arguments) override\
 	{\
+		EVENT_ ## DROPTAG(NAME);\
 		BatchedRequest request;\
 		request.name = L ## #NAME;\
 		request.arguments = ToJson<REQUEST>(arguments);\
@@ -240,7 +277,7 @@ protected:
 		if (!submitting) ProcessEvents();\
 	}\
 
-#define EVENT_HANDLER(NAME, REQUEST, REQTAG, ...)	EVENT_ ## REQTAG(NAME, REQUEST)
+#define EVENT_HANDLER(NAME, REQUEST, REQTAG, DROPTAG, ...)	EVENT_ ## REQTAG(NAME, REQUEST, DROPTAG)
 	GACUI_REMOTEPROTOCOL_EVENTS(EVENT_HANDLER)
 #undef EVENT_HANDLER
 #undef EVENT_REQ
@@ -264,15 +301,22 @@ protected:
 #undef MESSAGE_HANDLER
 #undef MESSAGE_RES
 #undef MESSAGE_NORES
+#undef EVENT_DROPCON
+#undef EVENT_DROPREP
+#undef EVENT_NOREP
 
 public:
 
 	// messages
 
 #define MESSAGE_NODROP(NAME)
+
 #define MESSAGE_DROPREP(NAME)\
-		if (lastDroppableRequest ## NAME != -1) batchedRequests[lastDroppableRequest ## NAME].dropped = true;\
-		lastDroppableRequest ## NAME = batchedRequests.Count()\
+		if (lastDropRepeatRequest ## NAME != -1)\
+		{\
+			batchedRequests[lastDropRepeatRequest ## NAME].dropped = true;\
+		}\
+		lastDropRepeatRequest ## NAME = batchedRequests.Count()\
 
 #define MESSAGE_NOREQ_NORES(NAME, REQUEST, RESPONSE, DROPTAG)\
 	void Request ## NAME() override\
@@ -327,6 +371,8 @@ public:
 #undef MESSAGE_REQ_NORES
 #undef MESSAGE_NOREQ_RES
 #undef MESSAGE_NOREQ_NORES
+#undef MESSAGE_DROPREP
+#undef MESSAGE_NODROP
 
 	// protocol
 

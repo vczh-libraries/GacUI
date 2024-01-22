@@ -212,9 +212,6 @@ GuiRemoteController::INativeWindowService
 
 	void GuiRemoteController::Run(INativeWindow* window)
 	{
-		// TODO:
-		//   [@DropRepeat]: if multiple of same messages/events are sent, only the last unprocessed one count
-		//   [@DropConsecutive]: if multiple of same consecutive events are sent, only the last unprocessed one count
 		CHECK_ERROR(window == &remoteWindow, L"vl::presentation::GuiRemoteController::Run(INativeWindow*)#GuiHostedController should call this function with the native window.");
 		window->Show();
 		while (RunOneCycle());
