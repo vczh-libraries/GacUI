@@ -42,6 +42,7 @@ public:
 
 struct BatchedRequest
 {
+	bool			dropped = false;
 	vint			id = -1;
 	const wchar_t*	name = nullptr;
 	WString			arguments;
@@ -57,9 +58,19 @@ protected:
 	IGuiRemoteProtocol*						protocol = nullptr;
 	IGuiRemoteProtocolEvents*				events = nullptr;
 	bool									submitting = false;
+
 	vint									lastRequestId = -1;
 	collections::Dictionary<vint, WString>	batchedRequestIds;
 	collections::List<BatchedRequest>		batchedRequests;
+
+#define MESSAGE_NODROP(NAME)
+#define MESSAGE_DROPREP(NAME)												vint lastDroppableRequest ## NAME = -1;
+#define MESSAGE_HANDLER(NAME, REQUEST, RESPONSE, REQTAG, RESTAG, DROPTAG)	MESSAGE_ ## DROPTAG(NAME)
+	GACUI_REMOTEPROTOCOL_MESSAGES(MESSAGE_HANDLER)
+#undef MESSAGE_HANDLER
+#undef MESSAGE_DROPREP
+#undef MESSAGE_NODROP
+
 	collections::List<BatchedRequest>		batchedResponses;
 	collections::List<BatchedRequest>		batchedEvents;
 
@@ -85,6 +96,12 @@ protected:
 	{
 		for (auto&& request : batchedRequests)
 		{
+			CHECK_ERROR(!request.dropped || request.id == -1, L"Messages with id cannot be dropped.");
+			if (request.dropped)
+			{
+				continue;
+			}
+
 #define MESSAGE_NOREQ_NORES(NAME, REQUEST, RESPONSE)\
 			if (request.name == L ## #NAME)\
 			{\
@@ -123,6 +140,14 @@ protected:
 			CHECK_FAIL(L"Unrecognized request!");
 		}
 
+#define MESSAGE_NODROP(NAME)
+#define MESSAGE_DROPREP(NAME)												lastDroppableRequest ## NAME = -1;
+#define MESSAGE_HANDLER(NAME, REQUEST, RESPONSE, REQTAG, RESTAG, DROPTAG)	MESSAGE_ ## DROPTAG(NAME)
+		GACUI_REMOTEPROTOCOL_MESSAGES(MESSAGE_HANDLER)
+#undef MESSAGE_HANDLER
+#undef MESSAGE_DROPREP
+#undef MESSAGE_NODROP
+
 		CHECK_ERROR(batchedRequestIds.Count() == 0, L"Messages sending to IGuiRemoteProtocol should be all responded.");
 		batchedRequests.Clear();
 	}
@@ -159,6 +184,11 @@ protected:
 
 		for (auto&& request : requests)
 		{
+			if (request.dropped)
+			{
+				continue;
+			}
+
 #define EVENT_NOREQ(NAME, REQUEST)\
 			if (request.name == L ## #NAME)\
 			{\
@@ -239,17 +269,24 @@ public:
 
 	// messages
 
-#define MESSAGE_NOREQ_NORES(NAME, REQUEST, RESPONSE)\
+#define MESSAGE_NODROP(NAME)
+#define MESSAGE_DROPREP(NAME)\
+		if (lastDroppableRequest ## NAME != -1) batchedRequests[lastDroppableRequest ## NAME].dropped = true;\
+		lastDroppableRequest ## NAME = batchedRequests.Count()\
+
+#define MESSAGE_NOREQ_NORES(NAME, REQUEST, RESPONSE, DROPTAG)\
 	void Request ## NAME() override\
 	{\
+		MESSAGE_ ## DROPTAG(NAME);\
 		BatchedRequest request;\
 		request.name = L ## #NAME;\
 		batchedRequests.Add(request);\
 	}\
 
-#define MESSAGE_NOREQ_RES(NAME, REQUEST, RESPONSE)\
+#define MESSAGE_NOREQ_RES(NAME, REQUEST, RESPONSE, DROPTAG)\
 	void Request ## NAME(vint id) override\
 	{\
+		MESSAGE_ ## DROPTAG(NAME);\
 		CHECK_ERROR(lastRequestId < id, L"Id of a message sending to IGuiRemoteProtocol should be increasing.");\
 		lastRequestId = id;\
 		BatchedRequest request;\
@@ -259,18 +296,20 @@ public:
 		batchedRequestIds.Add(id, request.name);\
 	}\
 
-#define MESSAGE_REQ_NORES(NAME, REQUEST, RESPONSE)\
+#define MESSAGE_REQ_NORES(NAME, REQUEST, RESPONSE, DROPTAG)\
 	void Request ## NAME(const REQUEST& arguments) override\
 	{\
+		MESSAGE_ ## DROPTAG(NAME);\
 		BatchedRequest request;\
 		request.name = L ## #NAME;\
 		request.arguments = ToJson<REQUEST>(arguments);\
 		batchedRequests.Add(request);\
 	}\
 
-#define MESSAGE_REQ_RES(NAME, REQUEST, RESPONSE)\
+#define MESSAGE_REQ_RES(NAME, REQUEST, RESPONSE, DROPTAG)\
 	void Request ## NAME(vint id, const REQUEST& arguments) override\
 	{\
+		MESSAGE_ ## DROPTAG(NAME);\
 		CHECK_ERROR(lastRequestId < id, L"Id of a message sending to IGuiRemoteProtocol should be increasing.");\
 		lastRequestId = id;\
 		BatchedRequest request;\
@@ -281,7 +320,7 @@ public:
 		batchedRequestIds.Add(id, request.name);\
 	}\
 
-#define MESSAGE_HANDLER(NAME, REQUEST, RESPONSE, REQTAG, RESTAG, ...)	MESSAGE_ ## REQTAG ## _ ## RESTAG(NAME, REQUEST, RESPONSE)
+#define MESSAGE_HANDLER(NAME, REQUEST, RESPONSE, REQTAG, RESTAG, DROPTAG, ...)	MESSAGE_ ## REQTAG ## _ ## RESTAG(NAME, REQUEST, RESPONSE, DROPTAG)
 	GACUI_REMOTEPROTOCOL_MESSAGES(MESSAGE_HANDLER)
 #undef MESSAGE_HANDLER
 #undef MESSAGE_REQ_RES
