@@ -69,6 +69,8 @@
   - A GacUI SyncDom process connecting to a server process for streaming graphics
     - GDI+ implements in C#
     - D2D implements in C++
+- Windows
+  - Ensure `INativeWindow::(Before|After)Closing()` is not called on non-main-window between the main window is closed and the application exits.
 
 ## Progressing (low priority)
 
