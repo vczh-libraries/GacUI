@@ -353,6 +353,83 @@ TEST_FILE
 		SetGuiMainProxy({});
 	});
 
+	TEST_CATEGORY(L"Block closing the non-main window (2)")
+	{
+		BlockClosingWindowListener listener;
+		EmptyWindowProtocol protocol([&]()
+		{
+			listener.AssertCallbacks(
+				L"Opened()",
+				L"GotFocus()",
+				L"RenderingAsActivated()"
+			);
+
+			BlockClosingWindowListener subListener;
+			auto ws = GetCurrentController()->WindowService();
+			auto window = ws->GetMainWindow();
+			auto subWindow = ws->CreateNativeWindow(INativeWindow::Normal);
+			subWindow->InstallListener(&subListener);
+			subWindow->SetParent(window);
+			listener.AssertCallbacks();
+			subListener.AssertCallbacks();
+
+			subWindow->Hide(true);
+			listener.AssertCallbacks();
+			subListener.AssertCallbacks();
+
+			subWindow->Show();
+			listener.AssertCallbacks(
+				L"LostFocus()"
+			);
+			subListener.AssertCallbacks(
+				L"Opened()",
+				L"GotFocus()",
+				L"RenderingAsActivated()"
+			);
+
+			listener.blockClosing = true;
+			subListener.blockClosing = true;
+			window->Hide(true);
+			listener.AssertCallbacks(
+				L"BeforeClosing()"
+			);
+			subListener.AssertCallbacks();
+
+			listener.blockClosing = false;
+			window->Hide(true);
+			listener.AssertCallbacks(
+				L"BeforeClosing()",
+				L"AfterClosing()",
+				L"RenderingAsDeactivated()",
+				L"Closed()",
+				L"Destroying()",
+				L"Destroyed()"
+			);
+			subListener.AssertCallbacks(
+				L"LostFocus()",
+				L"RenderingAsDeactivated()",
+				L"Closed()",
+				L"Destroying()",
+				L"Destroyed()"
+			);
+		});
+		SetGuiMainProxy([&]()
+		{
+			protocol.events->OnControllerConnect();
+			TEST_CASE(L"Create and close a window")
+			{
+				auto ws = GetCurrentController()->WindowService();
+				auto window = ws->CreateNativeWindow(INativeWindow::Normal);
+				window->InstallListener(&listener);
+				ws->Run(window);
+				listener.AssertCallbacks();
+			});
+		});
+		BatchedProtocol batchedProtocol(&protocol);
+		SetupRemoteNativeController(&batchedProtocol);
+		SetGuiMainProxy({});
+	});
+
 	// TODO: test ControllerRequestExit with success and blocked
 	// TODO: test ControllerForceExit and ensure it skipped INativeWindowListener::(Before|After)Closing
 	// TODO: test ControllerDisconnect and ControllerConnect
