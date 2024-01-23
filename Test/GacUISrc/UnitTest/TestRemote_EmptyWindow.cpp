@@ -440,19 +440,44 @@ TEST_FILE
 				L"GotFocus()",
 				L"RenderingAsActivated()"
 			);
-			auto window = GetCurrentController()->WindowService()->GetMainWindow();
+
+			BlockClosingWindowListener subListener;
+			auto ws = GetCurrentController()->WindowService();
+			auto window = ws->GetMainWindow();
+			auto subWindow = ws->CreateNativeWindow(INativeWindow::Normal);
+			subWindow->InstallListener(&subListener);
+			subWindow->SetParent(window);
+			listener.AssertCallbacks();
+			subListener.AssertCallbacks();
+
+			subWindow->Show();
+			listener.AssertCallbacks(
+				L"LostFocus()"
+			);
+			subListener.AssertCallbacks(
+				L"Opened()",
+				L"GotFocus()",
+				L"RenderingAsActivated()"
+			);
 
 			listener.blockClosing = true;
 			protocol.events->OnControllerRequestExit();
 			listener.AssertCallbacks(
 				L"BeforeClosing()"
 			);
+			subListener.AssertCallbacks();
 
 			listener.blockClosing = false;
 			protocol.events->OnControllerRequestExit();
 			listener.AssertCallbacks(
 				L"BeforeClosing()",
 				L"AfterClosing()",
+				L"RenderingAsDeactivated()",
+				L"Closed()",
+				L"Destroying()",
+				L"Destroyed()"
+			);
+			subListener.AssertCallbacks(
 				L"LostFocus()",
 				L"RenderingAsDeactivated()",
 				L"Closed()",
@@ -487,11 +512,35 @@ TEST_FILE
 				L"GotFocus()",
 				L"RenderingAsActivated()"
 			);
-			auto window = GetCurrentController()->WindowService()->GetMainWindow();
+
+			BlockClosingWindowListener subListener;
+			auto ws = GetCurrentController()->WindowService();
+			auto window = ws->GetMainWindow();
+			auto subWindow = ws->CreateNativeWindow(INativeWindow::Normal);
+			subWindow->InstallListener(&subListener);
+			subWindow->SetParent(window);
+			listener.AssertCallbacks();
+			subListener.AssertCallbacks();
+
+			subWindow->Show();
+			listener.AssertCallbacks(
+				L"LostFocus()"
+			);
+			subListener.AssertCallbacks(
+				L"Opened()",
+				L"GotFocus()",
+				L"RenderingAsActivated()"
+			);
 
 			listener.blockClosing = true;
 			protocol.events->OnControllerForceExit();
 			listener.AssertCallbacks(
+				L"RenderingAsDeactivated()",
+				L"Closed()",
+				L"Destroying()",
+				L"Destroyed()"
+			);
+			subListener.AssertCallbacks(
 				L"LostFocus()",
 				L"RenderingAsDeactivated()",
 				L"Closed()",
