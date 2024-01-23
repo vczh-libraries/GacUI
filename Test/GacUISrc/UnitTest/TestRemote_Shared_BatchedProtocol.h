@@ -1,12 +1,12 @@
 #include "../../../Source/GacUI.h"
 #include "../../../Source/PlatformProviders/Remote/GuiRemoteController.h"
 
-extern void SetGuiMainProxy(void(*proxy)());
-
 using namespace vl;
 using namespace vl::collections;
 using namespace vl::presentation;
 using namespace vl::presentation::remoteprotocol;
+
+extern void SetGuiMainProxy(const Func<void()>& proxy);
 
 class NotImplementedProtocolBase : public Object, public virtual IGuiRemoteProtocol
 {

@@ -3,8 +3,6 @@
 class EmptyWindowProtocol : public NotImplementedProtocolBase
 {
 public:
-	static EmptyWindowProtocol*	instance;
-
 	Func<void()>				processRemoteEvents;
 	bool						connectionEstablished = false;
 	bool						connectionStopped = false;
@@ -13,17 +11,9 @@ public:
 	EmptyWindowProtocol(Func<void()> _processRemoteEvents)
 		: processRemoteEvents(_processRemoteEvents)
 	{
-		CHECK_ERROR(instance == nullptr, L"EmptyWindowProtocol can only have one instance");
-		instance = this;
-
 		sizingConfig.bounds = { 0,0,0,0 };
 		sizingConfig.clientBounds = { 0,0,0,0 };
 		sizingConfig.customFramePadding = { 8,8,8,8 };
-	}
-
-	~EmptyWindowProtocol()
-	{
-		instance = nullptr;
 	}
 
 	void Submit() override
@@ -123,29 +113,28 @@ public:
 		sizingConfig.sizeState = arguments.sizeState;
 	}
 };
-EmptyWindowProtocol* EmptyWindowProtocol::instance = nullptr;
 
 TEST_FILE
 {
 	TEST_CATEGORY(L"Create one window and exit immediately")
 	{
-		EmptyWindowProtocol protocol([]()
+		EmptyWindowProtocol protocol([&]()
 		{
 			auto window = GetCurrentController()->WindowService()->GetMainWindow();
 			TEST_ASSERT(window);
 			TEST_ASSERT(window->GetBounds() == NativeRect(0, 0, 100, 200));
 			TEST_ASSERT(window->GetClientSize() == NativeSize(100, 200));
-			TEST_ASSERT(EmptyWindowProtocol::instance->sizingConfig.bounds == NativeRect(270, 120, 370, 320));
-			TEST_ASSERT(EmptyWindowProtocol::instance->sizingConfig.clientBounds == NativeRect(270, 120, 370, 320));
+			TEST_ASSERT(protocol.sizingConfig.bounds == NativeRect(270, 120, 370, 320));
+			TEST_ASSERT(protocol.sizingConfig.clientBounds == NativeRect(270, 120, 370, 320));
 			window->Hide(true);
 		});
-		SetGuiMainProxy([]()
+		SetGuiMainProxy([&]()
 		{
 			TEST_CASE(L"Establish connection")
 			{
-				TEST_ASSERT(!EmptyWindowProtocol::instance->connectionEstablished);
-				EmptyWindowProtocol::instance->events->OnControllerConnect();
-				TEST_ASSERT(EmptyWindowProtocol::instance->connectionEstablished);
+				TEST_ASSERT(!protocol.connectionEstablished);
+				protocol.events->OnControllerConnect();
+				TEST_ASSERT(protocol.connectionEstablished);
 			});
 
 			TEST_CASE(L"Create and destroy a window")
@@ -159,11 +148,11 @@ TEST_FILE
 		});
 		BatchedProtocol batchedProtocol(&protocol);
 		SetupRemoteNativeController(&batchedProtocol);
-		SetGuiMainProxy(nullptr);
+		SetGuiMainProxy({});
 
 		TEST_CASE(L"Ensure stopped")
 		{
-			TEST_ASSERT(EmptyWindowProtocol::instance->connectionStopped);
+			TEST_ASSERT(protocol.connectionStopped);
 		});
 	});
 
@@ -189,9 +178,9 @@ TEST_FILE
 				L"Closed()"
 			);
 		});
-		SetGuiMainProxy([]()
+		SetGuiMainProxy([&]()
 		{
-			EmptyWindowProtocol::instance->events->OnControllerConnect();
+				protocol.events->OnControllerConnect();
 			TEST_CASE(L"Create and close a window")
 			{
 				auto ws = GetCurrentController()->WindowService();
@@ -207,7 +196,7 @@ TEST_FILE
 		});
 		BatchedProtocol batchedProtocol(&protocol);
 		SetupRemoteNativeController(&batchedProtocol);
-		SetGuiMainProxy(nullptr);
+		SetGuiMainProxy({});
 	});
 
 	TEST_CATEGORY(L"Block closing a window")
@@ -219,9 +208,9 @@ TEST_FILE
 			// TODO: test before closing on main and non-main window, setting cancel to different values and expect to run only once
 			window->Hide(true);
 		});
-		SetGuiMainProxy([]()
+		SetGuiMainProxy([&]()
 		{
-			EmptyWindowProtocol::instance->events->OnControllerConnect();
+				protocol.events->OnControllerConnect();
 			TEST_CASE(L"Create and block closing a window")
 			{
 				auto ws = GetCurrentController()->WindowService();
@@ -232,7 +221,7 @@ TEST_FILE
 		});
 		BatchedProtocol batchedProtocol(&protocol);
 		SetupRemoteNativeController(&batchedProtocol);
-		SetGuiMainProxy(nullptr);
+		SetGuiMainProxy({});
 	});
 
 	// TODO: test ControllerRequestExit with success and blocked

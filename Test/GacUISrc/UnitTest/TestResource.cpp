@@ -86,7 +86,7 @@ Ptr<GuiResource> LoadResource(const WString& resourceName)
 
 #undef PRINT_ERROR
 
-extern void SetGuiMainProxy(void(*proxy)());
+extern void SetGuiMainProxy(const Func<void()>& proxy);
 
 TEST_FILE
 {
@@ -117,5 +117,5 @@ TEST_FILE
 		LoadResource(L"Resource.FailedScript.Strings4.xml");
 	});
 	SetupGacGenNativeController();
-	SetGuiMainProxy(nullptr);
+	SetGuiMainProxy({});
 }

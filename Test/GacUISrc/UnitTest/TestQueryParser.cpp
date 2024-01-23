@@ -8,7 +8,7 @@ using namespace vl::stream;
 using namespace vl::presentation;
 using namespace vl::presentation::instancequery;
 
-extern void SetGuiMainProxy(void(*proxy)());
+extern void SetGuiMainProxy(const Func<void()>& proxy);
 
 TEST_FILE
 {
@@ -83,5 +83,5 @@ TEST_FILE
 		});
 	});
 	SetupGacGenNativeController();
-	SetGuiMainProxy(nullptr);
+	SetGuiMainProxy({});
 }

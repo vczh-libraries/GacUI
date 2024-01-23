@@ -35,7 +35,7 @@ void Reflection_TypeList(U&& callback)
 #define PROCESS_TYPE(TYPE) TEST_ASSERT(types.Remove(GetTypeDescriptor<TYPE>()));
 #define GUIREFLECTIONTEMPLATES_PROCESS_TYPE(NAME, BASE) TEST_ASSERT(types.Remove(GetTypeDescriptor<presentation::templates::NAME>()));
 
-extern void SetGuiMainProxy(void(*proxy)());
+extern void SetGuiMainProxy(const Func<void()>& proxy);
 
 TEST_FILE
 {
@@ -68,7 +68,7 @@ TEST_FILE
 		});
 	});
 	SetupGacGenNativeController();
-	SetGuiMainProxy(nullptr);
+	SetGuiMainProxy({});
 }
 
 #undef GUIREFLECTIONTEMPLATES_PROCESS_TYPE

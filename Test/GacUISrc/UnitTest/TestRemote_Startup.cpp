@@ -3,19 +3,6 @@
 class StartUpProtocol : public NotImplementedProtocolBase
 {
 public:
-	static StartUpProtocol*		instance;
-
-	StartUpProtocol()
-	{
-		CHECK_ERROR(instance == nullptr, L"StartUpProtocol can only have one instance");
-		instance = this;
-	}
-
-	~StartUpProtocol()
-	{
-		instance = nullptr;
-	}
-
 	WString GetExecutablePath() override
 	{
 		return L"/StartUp/Protocol.exe";
@@ -61,16 +48,15 @@ public:
 		events->RespondWindowGetBounds(id, response);
 	}
 };
-StartUpProtocol* StartUpProtocol::instance = nullptr;
 
 TEST_FILE
 {
 	TEST_CATEGORY(L"Start and Stop")
 	{
 		StartUpProtocol protocol;
-		SetGuiMainProxy([]()
+		SetGuiMainProxy([&]()
 		{
-			StartUpProtocol::instance->events->OnControllerConnect();
+			protocol.events->OnControllerConnect();
 
 			auto rs = GetCurrentController()->ResourceService();
 			auto ss = GetCurrentController()->ScreenService();
@@ -109,7 +95,7 @@ TEST_FILE
 					response.clientBounds = { 2,2,18,28 };
 					response.scalingX = 1.2;
 					response.scalingY = 1.5;
-					StartUpProtocol::instance->events->OnControllerScreenUpdated(response);
+					protocol.events->OnControllerScreenUpdated(response);
 				}
 				TEST_ASSERT(ss->GetScreenCount() == 1);
 				auto screen = ss->GetScreen(0);
@@ -120,22 +106,22 @@ TEST_FILE
 				TEST_ASSERT(screen->GetScalingY() == 1.5);
 			});
 
-			StartUpProtocol::instance->events->OnControllerForceExit();
+			protocol.events->OnControllerForceExit();
 		});
 		BatchedProtocol batchedProtocol(&protocol);
 		SetupRemoteNativeController(&batchedProtocol);
-		SetGuiMainProxy(nullptr);
+		SetGuiMainProxy({});
 	});
 
 	TEST_CATEGORY(L"Create windows without calling INativeWindowService::Run")
 	{
 		StartUpProtocol protocol;
-		SetGuiMainProxy([]()
+		SetGuiMainProxy([&]()
 		{
 			// by not calling INativeWindowService::Run
 			// non of them will be connected to the native window
 			// so no interaction with the native window will happen
-			StartUpProtocol::instance->events->OnControllerConnect();
+			protocol.events->OnControllerConnect();
 
 			TEST_CASE(L"Create and destroy a window")
 			{
@@ -151,9 +137,9 @@ TEST_FILE
 				GetCurrentController()->WindowService()->DestroyNativeWindow(window2);
 			});
 
-			StartUpProtocol::instance->events->OnControllerForceExit();
+			protocol.events->OnControllerForceExit();
 		});
 		SetupRemoteNativeController(&protocol);
-		SetGuiMainProxy(nullptr);
+		SetGuiMainProxy({});
 	});
 }

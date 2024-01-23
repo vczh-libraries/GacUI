@@ -10,7 +10,7 @@ using namespace vl::presentation::compositions;
 using namespace vl::presentation::controls;
 using namespace vl::presentation::templates;
 
-extern void SetGuiMainProxy(void(*proxy)());
+extern void SetGuiMainProxy(const Func<void()>& proxy);
 
 TEST_FILE
 {
@@ -59,5 +59,5 @@ TEST_FILE
 		});
 	});
 	SetupGacGenNativeController();
-	SetGuiMainProxy(nullptr);
+	SetGuiMainProxy({});
 }

@@ -128,16 +128,16 @@ TEST_FILE
 }
 #endif
 
-void (*GuiMainProxy)();
+Func<void()> guiMainProxy;
 
-void SetGuiMainProxy(void(*proxy)())
+void SetGuiMainProxy(const Func<void()>& proxy)
 {
-	GuiMainProxy = proxy;
+	guiMainProxy = proxy;
 }
 
 void GuiMain()
 {
-	GuiMainProxy();
+	guiMainProxy();
 }
 
 namespace vl::presentation::controls
