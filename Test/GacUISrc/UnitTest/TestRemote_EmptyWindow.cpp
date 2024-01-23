@@ -167,7 +167,30 @@ TEST_FILE
 		});
 	});
 
-	// TODO: test before closing on main and non-main window, setting cancel to different values and expect to run only once
+	TEST_CATEGORY(L"Block closing window")
+	{
+		EmptyWindowProtocol protocol([]()
+		{
+			auto window = GetCurrentController()->WindowService()->GetMainWindow();
+			// TODO: test before closing on main and non-main window, setting cancel to different values and expect to run only once
+			window->Hide(true);
+		});
+		SetGuiMainProxy([]()
+		{
+			EmptyWindowProtocol::instance->events->OnControllerConnect();
+			TEST_CASE(L"Create and block closing a window")
+			{
+				auto ws = GetCurrentController()->WindowService();
+				auto window = ws->CreateNativeWindow(INativeWindow::Normal);
+				window->SetTitle(L"EmptyWindow");
+				ws->Run(window);
+			});
+		});
+		BatchedProtocol batchedProtocol(&protocol);
+		SetupRemoteNativeController(&batchedProtocol);
+		SetGuiMainProxy(nullptr);
+	});
+
 	// TODO: test ControllerRequestExit with success and blocked
 	// TODO: test ControllerForceExit and ensure it skipped INativeWindowListener::(Before|After)Closing
 	// TODO: test ControllerDisconnect and ControllerConnect
