@@ -250,15 +250,19 @@ GuiHostedWindow
 
 		void GuiHostedWindow::Hide(bool closeWindow)
 		{
-			bool cancel = false;
-			for (auto listener : listeners)
+			if (this != controller->mainWindow)
 			{
-				listener->BeforeClosing(cancel);
-				if (cancel) return;
-			}
-			for (auto listener : listeners)
-			{
-				listener->AfterClosing();
+				// for main window, the underlying INativeWindow will run the process
+				bool cancel = false;
+				for (auto listener : listeners)
+				{
+					listener->BeforeClosing(cancel);
+					if (cancel) return;
+				}
+				for (auto listener : listeners)
+				{
+					listener->AfterClosing();
+				}
 			}
 
 			if (closeWindow)
