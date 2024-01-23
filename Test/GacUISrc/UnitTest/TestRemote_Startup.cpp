@@ -1,53 +1,57 @@
 #include "TestRemote.h"
 
-class StartUpProtocol : public NotImplementedProtocolBase
+namespace remote_startup_tests
 {
-public:
-	WString GetExecutablePath() override
+	class StartUpProtocol : public NotImplementedProtocolBase
 	{
-		return L"/StartUp/Protocol.exe";
-	}
-
-	void RequestControllerGetFontConfig(vint id) override
-	{
-		FontConfig response;
-		response.defaultFont.fontFamily = L"StartUpDefault";
-		response.defaultFont.bold = true;
-		response.supportedFonts = Ptr(new List<WString>());
-		response.supportedFonts->Add(L"StartUpDefault");
-		response.supportedFonts->Add(L"Another");
-		response.supportedFonts->Add(L"YetAnother");
-		events->RespondControllerGetFontConfig(id, response);
-	}
-
-	void RequestControllerGetScreenConfig(vint id) override
-	{
-		ScreenConfig response;
-		response.bounds = { 0,0,30,20 };
-		response.clientBounds = { 1,1,29,19 };
-		response.scalingX = 1;
-		response.scalingY = 1;
-		events->RespondControllerGetScreenConfig(id, response);
-	}
-
-	void RequestControllerConnectionEstablished() override
-	{
-	}
-
-	void RequestControllerConnectionStopped() override
-	{
-	}
-
-	void RequestWindowGetBounds(vint id) override
-	{
-		WindowSizingConfig response;
-		response.bounds = { 0,0,50,40 };
-		response.clientBounds = { 1,1,49,39 };
-		response.customFramePadding = { 8,8,8,8 };
-		response.sizeState = INativeWindow::Restored;
-		events->RespondWindowGetBounds(id, response);
-	}
-};
+	public:
+		WString GetExecutablePath() override
+		{
+			return L"/StartUp/Protocol.exe";
+		}
+	
+		void RequestControllerGetFontConfig(vint id) override
+		{
+			FontConfig response;
+			response.defaultFont.fontFamily = L"StartUpDefault";
+			response.defaultFont.bold = true;
+			response.supportedFonts = Ptr(new List<WString>());
+			response.supportedFonts->Add(L"StartUpDefault");
+			response.supportedFonts->Add(L"Another");
+			response.supportedFonts->Add(L"YetAnother");
+			events->RespondControllerGetFontConfig(id, response);
+		}
+	
+		void RequestControllerGetScreenConfig(vint id) override
+		{
+			ScreenConfig response;
+			response.bounds = { 0,0,30,20 };
+			response.clientBounds = { 1,1,29,19 };
+			response.scalingX = 1;
+			response.scalingY = 1;
+			events->RespondControllerGetScreenConfig(id, response);
+		}
+	
+		void RequestControllerConnectionEstablished() override
+		{
+		}
+	
+		void RequestControllerConnectionStopped() override
+		{
+		}
+	
+		void RequestWindowGetBounds(vint id) override
+		{
+			WindowSizingConfig response;
+			response.bounds = { 0,0,50,40 };
+			response.clientBounds = { 1,1,49,39 };
+			response.customFramePadding = { 8,8,8,8 };
+			response.sizeState = INativeWindow::Restored;
+			events->RespondWindowGetBounds(id, response);
+		}
+	};
+}
+using namespace remote_startup_tests;
 
 TEST_FILE
 {

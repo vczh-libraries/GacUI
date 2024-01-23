@@ -1,118 +1,134 @@
 #include "TestRemote.h"
 
-class EmptyWindowProtocol : public NotImplementedProtocolBase
+namespace remote_empty_window_tests
 {
-public:
-	Func<void()>				processRemoteEvents;
-	bool						connectionEstablished = false;
-	bool						connectionStopped = false;
-	WindowSizingConfig			sizingConfig;
-
-	EmptyWindowProtocol(Func<void()> _processRemoteEvents)
-		: processRemoteEvents(_processRemoteEvents)
+	class EmptyWindowProtocol : public NotImplementedProtocolBase
 	{
-		sizingConfig.bounds = { 0,0,0,0 };
-		sizingConfig.clientBounds = { 0,0,0,0 };
-		sizingConfig.customFramePadding = { 8,8,8,8 };
-	}
-
-	void Submit() override
+	public:
+		Func<void()>				processRemoteEvents;
+		bool						connectionEstablished = false;
+		bool						connectionStopped = false;
+		WindowSizingConfig			sizingConfig;
+	
+		EmptyWindowProtocol(Func<void()> _processRemoteEvents)
+			: processRemoteEvents(_processRemoteEvents)
+		{
+			sizingConfig.bounds = { 0,0,0,0 };
+			sizingConfig.clientBounds = { 0,0,0,0 };
+			sizingConfig.customFramePadding = { 8,8,8,8 };
+		}
+	
+		void Submit() override
+		{
+			CHECK_ERROR(!connectionStopped, L"IGuiRemoteProtocol::Submit is not allowed to call after connection stopped.");
+		}
+	
+		void ProcessRemoteEvents() override
+		{
+			processRemoteEvents();
+		}
+	
+		WString GetExecutablePath() override
+		{
+			return L"/EmptyWindow/Protocol.exe";
+		}
+	
+		void RequestControllerGetFontConfig(vint id) override
+		{
+			FontConfig response;
+			response.defaultFont.fontFamily = L"One";
+			response.supportedFonts = Ptr(new List<WString>());
+			response.supportedFonts->Add(L"One");
+			response.supportedFonts->Add(L"Two");
+			response.supportedFonts->Add(L"Three");
+			events->RespondControllerGetFontConfig(id, response);
+		}
+	
+		void RequestControllerGetScreenConfig(vint id) override
+		{
+			ScreenConfig response;
+			response.bounds = { 0,0,640,480};
+			response.clientBounds = { 0,0,640,440 };
+			response.scalingX = 1;
+			response.scalingY = 1;
+			events->RespondControllerGetScreenConfig(id, response);
+		}
+	
+		void RequestControllerConnectionEstablished() override
+		{
+			CHECK_ERROR(!connectionEstablished, L"IGuiRemoteProtocol::RequestControllerConnectionEstablished is not allowed to call twice.");
+			connectionEstablished = true;
+		}
+	
+		void RequestControllerConnectionStopped() override
+		{
+			CHECK_ERROR(!connectionStopped, L"IGuiRemoteProtocol::RequestControllerConnectionStopped is not allowed to call twice.");
+			connectionStopped = true;
+		}
+	
+		void RequestWindowGetBounds(vint id) override
+		{
+			events->RespondWindowGetBounds(id, sizingConfig);
+		}
+	
+		void RequestWindowNotifySetTitle(const ::vl::WString& arguments) override
+		{
+		}
+	
+		void RequestWindowNotifySetEnabled(const bool& arguments) override
+		{
+		}
+	
+		void RequestWindowNotifySetTopMost(const bool& arguments) override
+		{
+		}
+	
+		void RequestWindowNotifySetShowInTaskBar(const bool& arguments) override
+		{
+		}
+	
+		void RequestWindowNotifySetBounds(const NativeRect& arguments) override
+		{
+			sizingConfig.bounds = arguments;
+			sizingConfig.clientBounds = sizingConfig.bounds;
+			events->OnWindowBoundsUpdated(sizingConfig);
+		}
+	
+		void RequestWindowNotifySetClientSize(const NativeSize& arguments) override
+		{
+			sizingConfig.bounds = { sizingConfig.bounds.LeftTop(), arguments };
+			sizingConfig.clientBounds = sizingConfig.bounds;
+			events->OnWindowBoundsUpdated(sizingConfig);
+		}
+	
+		void RequestWindowNotifySetCustomFrameMode(const bool& arguments) override {}
+		void RequestWindowNotifySetMaximizedBox(const bool& arguments) override {}
+		void RequestWindowNotifySetMinimizedBox(const bool& arguments) override {}
+		void RequestWindowNotifySetBorder(const bool& arguments) override {}
+		void RequestWindowNotifySetSizeBox(const bool& arguments) override {}
+		void RequestWindowNotifySetIconVisible(const bool& arguments) override {}
+		void RequestWindowNotifySetTitleBar(const bool& arguments) override {}
+		void RequestWindowNotifyActivate() override {}
+	
+		void RequestWindowNotifyShow(const WindowShowing& arguments) override
+		{
+			sizingConfig.sizeState = arguments.sizeState;
+		}
+	};
+	
+	class BlockClosingWindowListener : public LoggingWindowListener
 	{
-		CHECK_ERROR(!connectionStopped, L"IGuiRemoteProtocol::Submit is not allowed to call after connection stopped.");
-	}
-
-	void ProcessRemoteEvents() override
-	{
-		processRemoteEvents();
-	}
-
-	WString GetExecutablePath() override
-	{
-		return L"/EmptyWindow/Protocol.exe";
-	}
-
-	void RequestControllerGetFontConfig(vint id) override
-	{
-		FontConfig response;
-		response.defaultFont.fontFamily = L"One";
-		response.supportedFonts = Ptr(new List<WString>());
-		response.supportedFonts->Add(L"One");
-		response.supportedFonts->Add(L"Two");
-		response.supportedFonts->Add(L"Three");
-		events->RespondControllerGetFontConfig(id, response);
-	}
-
-	void RequestControllerGetScreenConfig(vint id) override
-	{
-		ScreenConfig response;
-		response.bounds = { 0,0,640,480};
-		response.clientBounds = { 0,0,640,440 };
-		response.scalingX = 1;
-		response.scalingY = 1;
-		events->RespondControllerGetScreenConfig(id, response);
-	}
-
-	void RequestControllerConnectionEstablished() override
-	{
-		CHECK_ERROR(!connectionEstablished, L"IGuiRemoteProtocol::RequestControllerConnectionEstablished is not allowed to call twice.");
-		connectionEstablished = true;
-	}
-
-	void RequestControllerConnectionStopped() override
-	{
-		CHECK_ERROR(!connectionStopped, L"IGuiRemoteProtocol::RequestControllerConnectionStopped is not allowed to call twice.");
-		connectionStopped = true;
-	}
-
-	void RequestWindowGetBounds(vint id) override
-	{
-		events->RespondWindowGetBounds(id, sizingConfig);
-	}
-
-	void RequestWindowNotifySetTitle(const ::vl::WString& arguments) override
-	{
-	}
-
-	void RequestWindowNotifySetEnabled(const bool& arguments) override
-	{
-	}
-
-	void RequestWindowNotifySetTopMost(const bool& arguments) override
-	{
-	}
-
-	void RequestWindowNotifySetShowInTaskBar(const bool& arguments) override
-	{
-	}
-
-	void RequestWindowNotifySetBounds(const NativeRect& arguments) override
-	{
-		sizingConfig.bounds = arguments;
-		sizingConfig.clientBounds = sizingConfig.bounds;
-		events->OnWindowBoundsUpdated(sizingConfig);
-	}
-
-	void RequestWindowNotifySetClientSize(const NativeSize& arguments) override
-	{
-		sizingConfig.bounds = { sizingConfig.bounds.LeftTop(), arguments };
-		sizingConfig.clientBounds = sizingConfig.bounds;
-		events->OnWindowBoundsUpdated(sizingConfig);
-	}
-
-	void RequestWindowNotifySetCustomFrameMode(const bool& arguments) override {}
-	void RequestWindowNotifySetMaximizedBox(const bool& arguments) override {}
-	void RequestWindowNotifySetMinimizedBox(const bool& arguments) override {}
-	void RequestWindowNotifySetBorder(const bool& arguments) override {}
-	void RequestWindowNotifySetSizeBox(const bool& arguments) override {}
-	void RequestWindowNotifySetIconVisible(const bool& arguments) override {}
-	void RequestWindowNotifySetTitleBar(const bool& arguments) override {}
-	void RequestWindowNotifyActivate() override {}
-
-	void RequestWindowNotifyShow(const WindowShowing& arguments) override
-	{
-		sizingConfig.sizeState = arguments.sizeState;
-	}
-};
+	public:
+		bool			blockClosing = false;
+	
+		void BeforeClosing(bool& cancel) override
+		{
+			LoggingWindowListener::BeforeClosing(cancel);
+			cancel = blockClosing;
+		}
+	};
+}
+using namespace remote_empty_window_tests;
 
 TEST_FILE
 {
@@ -180,7 +196,7 @@ TEST_FILE
 		});
 		SetGuiMainProxy([&]()
 		{
-				protocol.events->OnControllerConnect();
+			protocol.events->OnControllerConnect();
 			TEST_CASE(L"Create and close a window")
 			{
 				auto ws = GetCurrentController()->WindowService();
@@ -196,19 +212,65 @@ TEST_FILE
 		SetGuiMainProxy({});
 	});
 
-	TEST_CATEGORY(L"Block closing a window")
+	TEST_CATEGORY(L"Block closing the main window")
+	{
+		BlockClosingWindowListener listener;
+		EmptyWindowProtocol protocol([&]()
+		{
+			listener.AssertCallbacks(
+				L"Opened()",
+				L"GotFocus()",
+				L"RenderingAsActivated()"
+			);
+			auto window = GetCurrentController()->WindowService()->GetMainWindow();
+
+			listener.blockClosing = true;
+			window->Hide(true);
+			listener.AssertCallbacks(
+				L"BeforeClosing()"
+			);
+
+			listener.blockClosing = false;
+			window->Hide(true);
+			listener.AssertCallbacks(
+				L"BeforeClosing()",
+				L"AfterClosing()",
+				L"LostFocus()",
+				L"RenderingAsDeactivated()",
+				L"Closed()",
+				L"Destroying()",
+				L"Destroyed()"
+			);
+		});
+		SetGuiMainProxy([&]()
+		{
+			protocol.events->OnControllerConnect();
+			TEST_CASE(L"Create and close a window")
+			{
+				auto ws = GetCurrentController()->WindowService();
+				auto window = ws->CreateNativeWindow(INativeWindow::Normal);
+				window->InstallListener(&listener);
+				ws->Run(window);
+			});
+		});
+		BatchedProtocol batchedProtocol(&protocol);
+		SetupRemoteNativeController(&batchedProtocol);
+		SetGuiMainProxy({});
+	});
+
+	TEST_CATEGORY(L"Block closing the non-main window")
 	{
 		LoggingWindowListener listener;
 		EmptyWindowProtocol protocol([&]()
 		{
 			auto window = GetCurrentController()->WindowService()->GetMainWindow();
-			// TODO: test before closing on main and non-main window, setting cancel to different values and expect to run only once
+			// TODO:
 			window->Hide(true);
 		});
 		SetGuiMainProxy([&]()
 		{
-				protocol.events->OnControllerConnect();
-			TEST_CASE(L"Create and block closing a window")
+			protocol.events->OnControllerConnect();
+			TEST_CASE(L"Create and close a window")
 			{
 				auto ws = GetCurrentController()->WindowService();
 				auto window = ws->CreateNativeWindow(INativeWindow::Normal);
