@@ -9,6 +9,14 @@ class LoggingWindowListener : public Object, public virtual INativeWindowListene
 public:
 	List<WString>				callbacks;
 
+	template<typename ...TArgs>
+	void AssertCallbacks(TArgs&& ...args)
+	{
+		const wchar_t* expected[] = {args...};
+		TEST_ASSERT(CompareEnumerable(callbacks, From(expected).Select(WString::Unmanaged)) == 0);
+		callbacks.Clear();
+	}
+
 	WString PrintArguments(const NativeWindowMouseInfo& info)
 	{
 		CHECK_FAIL(L"Not Implemented!");
@@ -106,7 +114,6 @@ public:
 
 	void AssignFrameConfig(const NativeWindowFrameConfig& config)
 	{
-		SHOULD_NOT_BE_CALLED(AssignFrameConfig);
 	}
 
 #undef LOG_IO_CALLBACK
