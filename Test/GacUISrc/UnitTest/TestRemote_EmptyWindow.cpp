@@ -167,7 +167,6 @@ TEST_FILE
 		});
 	});
 
-	// TODO: an INativeWindowListener to log/assert/clean callbacks
 	// TODO: test before closing on main and non-main window, setting cancel to different values and expect to run only once
 	// TODO: test ControllerRequestExit with success and blocked
 	// TODO: test ControllerForceExit and ensure it skipped INativeWindowListener::(Before|After)Closing
