@@ -251,6 +251,7 @@ TEST_FILE
 				auto window = ws->CreateNativeWindow(INativeWindow::Normal);
 				window->InstallListener(&listener);
 				ws->Run(window);
+				listener.AssertCallbacks();
 			});
 		});
 		BatchedProtocol batchedProtocol(&protocol);
@@ -258,14 +259,83 @@ TEST_FILE
 		SetGuiMainProxy({});
 	});
 
-	TEST_CATEGORY(L"Block closing the non-main window")
+	TEST_CATEGORY(L"Block closing the non-main window (1)")
 	{
-		LoggingWindowListener listener;
+		BlockClosingWindowListener listener;
 		EmptyWindowProtocol protocol([&]()
 		{
-			auto window = GetCurrentController()->WindowService()->GetMainWindow();
-			// TODO:
+			listener.AssertCallbacks(
+				L"Opened()",
+				L"GotFocus()",
+				L"RenderingAsActivated()"
+			);
+
+			BlockClosingWindowListener subListener;
+			auto ws = GetCurrentController()->WindowService();
+			auto window = ws->GetMainWindow();
+			auto subWindow = ws->CreateNativeWindow(INativeWindow::Normal);
+			subWindow->InstallListener(&subListener);
+			listener.AssertCallbacks();
+			subListener.AssertCallbacks();
+
+			subWindow->Hide(true);
+			listener.AssertCallbacks();
+			subListener.AssertCallbacks();
+
+			subWindow->Show();
+			listener.AssertCallbacks(
+				L"LostFocus()",
+				L"RenderingAsDeactivated()"
+			);
+			subListener.AssertCallbacks(
+				L"Opened()",
+				L"GotFocus()",
+				L"RenderingAsActivated()"
+			);
+
+			subListener.blockClosing = true;
+			subWindow->Hide(true);
+			listener.AssertCallbacks(
+				L"GotFocus()",
+				L"RenderingAsActivated()"
+			);
+			subListener.AssertCallbacks(
+				L"BeforeClosing()"
+			);
+
+			subListener.blockClosing = false;
+			subWindow->Hide(true);
+			listener.AssertCallbacks();
+			subListener.AssertCallbacks(
+				L"BeforeClosing()",
+				L"AfterClosing()",
+				L"LostFocus()",
+				L"RenderingAsDeactivated()",
+				L"Closed()"
+			);
+
+			listener.blockClosing = true;
 			window->Hide(true);
+			listener.AssertCallbacks(
+				L"BeforeClosing()"
+			);
+			subListener.AssertCallbacks();
+
+			listener.blockClosing = false;
+			window->Hide(true);
+			listener.AssertCallbacks(
+				L"BeforeClosing()",
+				L"AfterClosing()",
+				L"LostFocus()",
+				L"RenderingAsDeactivated()",
+				L"Closed()",
+				L"Destroying()",
+				L"Destroyed()"
+			);
+			subListener.AssertCallbacks(
+				L"Destroying()",
+				L"Destroyed()"
+			);
 		});
 		SetGuiMainProxy([&]()
 		{
@@ -276,6 +346,7 @@ TEST_FILE
 				auto window = ws->CreateNativeWindow(INativeWindow::Normal);
 				window->InstallListener(&listener);
 				ws->Run(window);
+				listener.AssertCallbacks();
 			});
 		});
 		BatchedProtocol batchedProtocol(&protocol);

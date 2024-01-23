@@ -250,6 +250,8 @@ GuiHostedWindow
 
 		void GuiHostedWindow::Hide(bool closeWindow)
 		{
+			if (!wmWindow.visible) return;
+
 			if (this != controller->mainWindow)
 			{
 				// for main window, the underlying INativeWindow will run the process
