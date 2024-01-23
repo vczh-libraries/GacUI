@@ -430,8 +430,92 @@ TEST_FILE
 		SetGuiMainProxy({});
 	});
 
-	// TODO: test ControllerRequestExit with success and blocked
-	// TODO: test ControllerForceExit and ensure it skipped INativeWindowListener::(Before|After)Closing
+	TEST_CATEGORY(L"ControllerRequestExit event")
+	{
+		BlockClosingWindowListener listener;
+		EmptyWindowProtocol protocol([&]()
+		{
+			listener.AssertCallbacks(
+				L"Opened()",
+				L"GotFocus()",
+				L"RenderingAsActivated()"
+			);
+			auto window = GetCurrentController()->WindowService()->GetMainWindow();
+
+			listener.blockClosing = true;
+			protocol.events->OnControllerRequestExit();
+			listener.AssertCallbacks(
+				L"BeforeClosing()"
+			);
+
+			listener.blockClosing = false;
+			protocol.events->OnControllerRequestExit();
+			listener.AssertCallbacks(
+				L"BeforeClosing()",
+				L"AfterClosing()",
+				L"LostFocus()",
+				L"RenderingAsDeactivated()",
+				L"Closed()",
+				L"Destroying()",
+				L"Destroyed()"
+			);
+		});
+		SetGuiMainProxy([&]()
+		{
+			protocol.events->OnControllerConnect();
+			TEST_CASE(L"Create and close a window")
+			{
+				auto ws = GetCurrentController()->WindowService();
+				auto window = ws->CreateNativeWindow(INativeWindow::Normal);
+				window->InstallListener(&listener);
+				ws->Run(window);
+				listener.AssertCallbacks();
+			});
+		});
+		BatchedProtocol batchedProtocol(&protocol);
+		SetupRemoteNativeController(&batchedProtocol);
+		SetGuiMainProxy({});
+	});
+
+	TEST_CATEGORY(L"ControllerForceExit event")
+	{
+		BlockClosingWindowListener listener;
+		EmptyWindowProtocol protocol([&]()
+		{
+			listener.AssertCallbacks(
+				L"Opened()",
+				L"GotFocus()",
+				L"RenderingAsActivated()"
+			);
+			auto window = GetCurrentController()->WindowService()->GetMainWindow();
+
+			listener.blockClosing = true;
+			protocol.events->OnControllerForceExit();
+			listener.AssertCallbacks(
+				L"LostFocus()",
+				L"RenderingAsDeactivated()",
+				L"Closed()",
+				L"Destroying()",
+				L"Destroyed()"
+			);
+		});
+		SetGuiMainProxy([&]()
+		{
+			protocol.events->OnControllerConnect();
+			TEST_CASE(L"Create and close a window")
+			{
+				auto ws = GetCurrentController()->WindowService();
+				auto window = ws->CreateNativeWindow(INativeWindow::Normal);
+				window->InstallListener(&listener);
+				ws->Run(window);
+				listener.AssertCallbacks();
+			});
+		});
+		BatchedProtocol batchedProtocol(&protocol);
+		SetupRemoteNativeController(&batchedProtocol);
+		SetGuiMainProxy({});
+	});
+
 	// TODO: test ControllerDisconnect and ControllerConnect
 	// TODO: test enabled/activate/showactivated from INativeWindow and event (bidirectional controlling)
 	// TODO: test size status from INativeWindow and event (bidirectional controlling)

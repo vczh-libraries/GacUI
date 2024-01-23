@@ -353,8 +353,8 @@ GuiRemoteWindow (INativeWindow)
 				l->BeforeClosing(cancel);
 				if (cancel) return;
 			}
+			for (auto l : listeners) l->AfterClosing();
 		}
-		for (auto l : listeners) l->AfterClosing();
 		remote->DestroyNativeWindow(this);
 	}
 
