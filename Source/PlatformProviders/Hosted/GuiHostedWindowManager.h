@@ -497,13 +497,13 @@ Window
 						{
 							current = current->parent;
 						}
+						windowManager->activeWindow = current;
+						windowManager->needRefresh = true;
 						if (current)
 						{
 							current->active = true;
 							windowManager->OnGotFocus(current);
 						}
-						windowManager->activeWindow = current;
-						windowManager->needRefresh = true;
 					}
 #undef ERROR_MESSAGE_PREFIX
 				}

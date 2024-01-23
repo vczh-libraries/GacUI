@@ -275,6 +275,7 @@ TEST_FILE
 			auto window = ws->GetMainWindow();
 			auto subWindow = ws->CreateNativeWindow(INativeWindow::Normal);
 			subWindow->InstallListener(&subListener);
+			subWindow->SetParent(window);
 			listener.AssertCallbacks();
 			subListener.AssertCallbacks();
 
@@ -284,8 +285,7 @@ TEST_FILE
 
 			subWindow->Show();
 			listener.AssertCallbacks(
-				L"LostFocus()",
-				L"RenderingAsDeactivated()"
+				L"LostFocus()"
 			);
 			subListener.AssertCallbacks(
 				L"Opened()",
@@ -295,17 +295,16 @@ TEST_FILE
 
 			subListener.blockClosing = true;
 			subWindow->Hide(true);
-			listener.AssertCallbacks(
-				L"GotFocus()",
-				L"RenderingAsActivated()"
-			);
+			listener.AssertCallbacks();
 			subListener.AssertCallbacks(
 				L"BeforeClosing()"
 			);
 
 			subListener.blockClosing = false;
 			subWindow->Hide(true);
-			listener.AssertCallbacks();
+			listener.AssertCallbacks(
+				L"GotFocus()"
+			);
 			subListener.AssertCallbacks(
 				L"BeforeClosing()",
 				L"AfterClosing()",
