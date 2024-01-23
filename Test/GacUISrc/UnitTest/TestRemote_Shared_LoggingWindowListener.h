@@ -17,6 +17,11 @@ public:
 		callbacks.Clear();
 	}
 
+	void AssertCallbacks()
+	{
+		TEST_ASSERT(callbacks.Count() == 0);
+	}
+
 	WString PrintArguments(const NativeWindowMouseInfo& info)
 	{
 		CHECK_FAIL(L"Not Implemented!");

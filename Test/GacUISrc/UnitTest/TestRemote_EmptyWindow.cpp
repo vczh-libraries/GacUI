@@ -171,11 +171,11 @@ TEST_FILE
 			listener.AssertCallbacks(
 				L"BeforeClosing()",
 				L"AfterClosing()",
-				L"BeforeClosing()",
-				L"AfterClosing()",
 				L"LostFocus()",
 				L"RenderingAsDeactivated()",
-				L"Closed()"
+				L"Closed()",
+				L"Destroying()",
+				L"Destroyed()"
 			);
 		});
 		SetGuiMainProxy([&]()
@@ -188,10 +188,7 @@ TEST_FILE
 				window->InstallListener(&listener);
 				window->SetTitle(L"EmptyWindow");
 				ws->Run(window);
-				listener.AssertCallbacks(
-					L"Destroying()",
-					L"Destroyed()"
-				);
+				listener.AssertCallbacks();
 			});
 		});
 		BatchedProtocol batchedProtocol(&protocol);
