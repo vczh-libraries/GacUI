@@ -2,6 +2,23 @@
 
 namespace remote_empty_window_tests
 {
+	struct WindowStyleConfig
+	{
+		WString						title;
+		bool						enabled = true;
+		bool						topMost = false;
+		bool						showInTaskBar = true;
+
+		bool						customFrameMode = false;
+		bool						maximizedBox = true;
+		bool						minimizedBox = true;
+		bool						border = true;
+		bool						sizeBox = true;
+		bool						iconVisible = true;
+		bool						titleBar = true;
+		bool						activated = false;
+	};
+
 	class EmptyWindowProtocol : public NotImplementedProtocolBase
 	{
 	public:
@@ -9,6 +26,7 @@ namespace remote_empty_window_tests
 		bool						connectionEstablished = false;
 		bool						connectionStopped = false;
 		WindowSizingConfig			sizingConfig;
+		WindowStyleConfig			styleConfig;
 	
 		EmptyWindowProtocol(Func<void()> _processRemoteEvents)
 			: processRemoteEvents(_processRemoteEvents)
@@ -73,18 +91,22 @@ namespace remote_empty_window_tests
 	
 		void RequestWindowNotifySetTitle(const ::vl::WString& arguments) override
 		{
+			styleConfig.title = arguments;
 		}
 	
 		void RequestWindowNotifySetEnabled(const bool& arguments) override
 		{
+			styleConfig.enabled = arguments;
 		}
 	
 		void RequestWindowNotifySetTopMost(const bool& arguments) override
 		{
+			styleConfig.topMost = arguments;
 		}
 	
 		void RequestWindowNotifySetShowInTaskBar(const bool& arguments) override
 		{
+			styleConfig.showInTaskBar = arguments;
 		}
 	
 		void RequestWindowNotifySetBounds(const NativeRect& arguments) override
@@ -101,18 +123,20 @@ namespace remote_empty_window_tests
 			events->OnWindowBoundsUpdated(sizingConfig);
 		}
 	
-		void RequestWindowNotifySetCustomFrameMode(const bool& arguments) override {}
-		void RequestWindowNotifySetMaximizedBox(const bool& arguments) override {}
-		void RequestWindowNotifySetMinimizedBox(const bool& arguments) override {}
-		void RequestWindowNotifySetBorder(const bool& arguments) override {}
-		void RequestWindowNotifySetSizeBox(const bool& arguments) override {}
-		void RequestWindowNotifySetIconVisible(const bool& arguments) override {}
-		void RequestWindowNotifySetTitleBar(const bool& arguments) override {}
-		void RequestWindowNotifyActivate() override {}
+		void RequestWindowNotifySetCustomFrameMode(const bool& arguments) override	{ styleConfig.customFrameMode = arguments;	events->OnWindowBoundsUpdated(sizingConfig); }
+		void RequestWindowNotifySetMaximizedBox(const bool& arguments) override		{ styleConfig.maximizedBox = arguments;		events->OnWindowBoundsUpdated(sizingConfig); }
+		void RequestWindowNotifySetMinimizedBox(const bool& arguments) override		{ styleConfig.minimizedBox = arguments;		events->OnWindowBoundsUpdated(sizingConfig); }
+		void RequestWindowNotifySetBorder(const bool& arguments) override			{ styleConfig.border = arguments;			events->OnWindowBoundsUpdated(sizingConfig); }
+		void RequestWindowNotifySetSizeBox(const bool& arguments) override			{ styleConfig.sizeBox = arguments;			events->OnWindowBoundsUpdated(sizingConfig); }
+		void RequestWindowNotifySetIconVisible(const bool& arguments) override		{ styleConfig.iconVisible = arguments;		events->OnWindowBoundsUpdated(sizingConfig); }
+		void RequestWindowNotifySetTitleBar(const bool& arguments) override			{ styleConfig.titleBar = arguments;			events->OnWindowBoundsUpdated(sizingConfig); }
+		void RequestWindowNotifyActivate() override									{ styleConfig.activated = true; }
 	
 		void RequestWindowNotifyShow(const WindowShowing& arguments) override
 		{
+			bool changed = sizingConfig.sizeState == arguments.sizeState;
 			sizingConfig.sizeState = arguments.sizeState;
+			if(changed) events->OnWindowBoundsUpdated(sizingConfig);
 		}
 	};
 	
