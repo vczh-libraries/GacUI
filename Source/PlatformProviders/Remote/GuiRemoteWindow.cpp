@@ -83,13 +83,32 @@ GuiRemoteWindow (events)
 
 	void GuiRemoteWindow::OnControllerConnect()
 	{
-		RequestGetBounds();
-		// TODO: sync styles and status
+		if (disconnected)
+		{
+			disconnected = false;
+			remoteMessages.RequestWindowNotifySetBounds(remoteWindowSizingConfig.bounds);
+			remoteMessages.RequestWindowNotifySetTitle(styleTitle);
+			remoteMessages.RequestWindowNotifySetEnabled(styleEnabled);
+			remoteMessages.RequestWindowNotifySetTopMost(styleTopMost);
+			remoteMessages.RequestWindowNotifySetShowInTaskBar(styleShowInTaskBar);
+			remoteMessages.RequestWindowNotifySetCustomFrameMode(styleCustomFrameMode);
+			remoteMessages.RequestWindowNotifySetMaximizedBox(styleMaximizedBox);
+			remoteMessages.RequestWindowNotifySetMinimizedBox(styleMinimizedBox);
+			remoteMessages.RequestWindowNotifySetBorder(styleBorder);
+			remoteMessages.RequestWindowNotifySetSizeBox(styleSizeBox);
+			remoteMessages.RequestWindowNotifySetIconVisible(styleIconVisible);
+			remoteMessages.RequestWindowNotifySetTitleBar(styleTitleBar);
+			remoteMessages.Submit();
+		}
+		else
+		{
+			RequestGetBounds();
+		}
 	}
 
 	void GuiRemoteWindow::OnControllerDisconnect()
 	{
-		// TODO: reset styles and status if necessary
+		disconnected = true;
 	}
 
 	void GuiRemoteWindow::OnControllerScreenUpdated(const remoteprotocol::ScreenConfig& arguments)

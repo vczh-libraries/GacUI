@@ -34,6 +34,7 @@ GuiRemoteWindow
 		collections::List<INativeWindowListener*>			listeners;
 		INativeWindow::WindowMode							windowMode = INativeWindow::Normal;
 
+		bool												disconnected = false;
 		remoteprotocol::WindowSizingConfig					remoteWindowSizingConfig;
 		bool												sizingConfigInvalidated = false;
 		double												scalingX = 1;
