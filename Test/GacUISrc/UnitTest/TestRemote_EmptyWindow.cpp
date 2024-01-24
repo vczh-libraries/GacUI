@@ -17,6 +17,8 @@ namespace remote_empty_window_tests
 		bool						iconVisible = true;
 		bool						titleBar = true;
 		bool						activated = false;
+
+		auto operator<=>(const WindowStyleConfig&) const = default;
 	};
 
 	class EmptyWindowProtocol : public NotImplementedProtocolBase
@@ -589,7 +591,79 @@ TEST_FILE
 		SetGuiMainProxy({});
 	});
 
-	// TODO: test ControllerDisconnect and ControllerConnect
+	
+	TEST_CATEGORY(L"Disconnect and connect during running")
+	{
+		EmptyWindowProtocol protocol([&]()
+		{
+			auto window = GetCurrentController()->WindowService()->GetMainWindow();
+			TEST_ASSERT(window);
+			TEST_ASSERT(window->GetBounds() == NativeRect(0, 0, 100, 200));
+			TEST_ASSERT(window->GetClientSize() == NativeSize(100, 200));
+
+			auto assertConfigs = [&]()
+			{
+				TEST_ASSERT(protocol.sizingConfig.bounds == NativeRect(270, 120, 370, 320));
+				TEST_ASSERT(protocol.sizingConfig.clientBounds == NativeRect(270, 120, 370, 320));
+				TEST_ASSERT(protocol.styleConfig.title == L"EmptyWindow");
+				TEST_ASSERT(protocol.styleConfig.enabled == true); // GuiHostedWindow won't really disable the main native window
+				TEST_ASSERT(protocol.styleConfig.topMost == false);
+				TEST_ASSERT(protocol.styleConfig.showInTaskBar == false);
+				TEST_ASSERT(protocol.styleConfig.customFrameMode == true);
+				TEST_ASSERT(protocol.styleConfig.maximizedBox == false);
+				TEST_ASSERT(protocol.styleConfig.minimizedBox == false);
+				TEST_ASSERT(protocol.styleConfig.border == false);
+				TEST_ASSERT(protocol.styleConfig.sizeBox == false);
+				TEST_ASSERT(protocol.styleConfig.iconVisible == false);
+				TEST_ASSERT(protocol.styleConfig.titleBar == false);
+			};
+
+			assertConfigs();
+			protocol.events->OnControllerDisconnect();
+			assertConfigs();
+			protocol.connectionEstablished = false;
+			protocol.styleConfig = {};
+			protocol.sizingConfig.bounds = {};
+			protocol.sizingConfig.clientBounds = {};
+			protocol.events->OnControllerConnect();
+			assertConfigs();
+
+			window->Hide(true);
+		});
+		SetGuiMainProxy([&]()
+		{
+			protocol.events->OnControllerConnect();
+			TEST_CASE(L"Create and destroy a window")
+			{
+				auto ws = GetCurrentController()->WindowService();
+				auto window = ws->CreateNativeWindow(INativeWindow::Normal);
+				window->SetTitle(L"EmptyWindow");
+				window->SetClientSize({ 100,200 });
+				window->Disable();
+				window->SetTopMost(false);
+				window->HideInTaskBar();
+				window->EnableCustomFrameMode();
+				window->SetMaximizedBox(false);
+				window->SetMinimizedBox(false);
+				window->SetBorder(false);
+				window->SetSizeBox(false);
+				window->SetIconVisible(false);
+				window->SetTitleBar(false);
+				TEST_ASSERT(protocol.styleConfig == WindowStyleConfig());
+				TEST_ASSERT(protocol.sizingConfig.bounds == NativeRect());
+				TEST_ASSERT(protocol.sizingConfig.clientBounds == NativeRect());
+				ws->Run(window);
+			});
+		});
+		BatchedProtocol batchedProtocol(&protocol);
+		SetupRemoteNativeController(&batchedProtocol);
+		SetGuiMainProxy({});
+
+		TEST_CASE(L"Ensure stopped")
+		{
+			TEST_ASSERT(protocol.connectionStopped);
+		});
+	});
 	// TODO: test enabled/activate/showactivated from INativeWindow and event (bidirectional controlling)
 	// TODO: test size status from INativeWindow and event (bidirectional controlling)
 }
