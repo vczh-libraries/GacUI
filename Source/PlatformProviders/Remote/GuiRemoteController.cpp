@@ -216,7 +216,6 @@ GuiRemoteController::INativeWindowService
 		applicationRunning = true;
 		window->Show();
 		while (RunOneCycle());
-		remoteMessages.Submit();
 		applicationRunning = false;
 	}
 
@@ -225,6 +224,7 @@ GuiRemoteController::INativeWindowService
 		if (!connectionStopped)
 		{
 			remoteProtocol->ProcessRemoteEvents();
+			remoteMessages.Submit();
 		}
 		return !connectionStopped;
 	}

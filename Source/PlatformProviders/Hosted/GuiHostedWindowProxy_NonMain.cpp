@@ -15,12 +15,14 @@ GuiNonMainHostedWindowProxy
 		{
 		protected:
 			GuiHostedWindowData*			data = nullptr;
+			INativeWindow*					nativeWindow = nullptr;
 			bool							calledAssignFrameConfig = false;
 
 		public:
 
-			GuiNonMainHostedWindowProxy(GuiHostedWindowData* _data)
+			GuiNonMainHostedWindowProxy(GuiHostedWindowData* _data, INativeWindow* _nativeWindow)
 				: data(_data)
+				, nativeWindow(_nativeWindow)
 			{
 			}
 
@@ -191,7 +193,11 @@ GuiNonMainHostedWindowProxy
 
 			void SetFocus() override
 			{
-				data->wmWindow.Activate();
+				if (data->wmWindow.visible)
+				{
+					data->wmWindow.Activate();
+					nativeWindow->SetActivate();
+				}
 			}
 		};
 
@@ -199,9 +205,9 @@ GuiNonMainHostedWindowProxy
 Helper
 ***********************************************************************/
 
-		Ptr<IGuiHostedWindowProxy> CreateNonMainHostedWindowProxy(GuiHostedWindowData* data)
+		Ptr<IGuiHostedWindowProxy> CreateNonMainHostedWindowProxy(GuiHostedWindowData* data, INativeWindow* nativeWindow)
 		{
-			return Ptr(new GuiNonMainHostedWindowProxy(data));
+			return Ptr(new GuiNonMainHostedWindowProxy(data, nativeWindow));
 		}
 	}
 }

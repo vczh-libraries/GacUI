@@ -688,6 +688,7 @@ TEST_FILE
 
 		protocol.OnNextFrame([&]()
 		{
+			TEST_ASSERT(protocol.styleConfig.activated == true);
 			listener.AssertCallbacks(
 				L"Opened()",
 				L"GotFocus()",
@@ -741,6 +742,8 @@ TEST_FILE
 		protocol.OnNextFrame([&]()
 		{
 			TEST_ASSERT(protocol.styleConfig.activated == true);
+			protocol.styleConfig.activated = false;
+			protocol.events->OnWindowActivatedUpdated(false);
 			listener.AssertCallbacks(
 				L"GotFocus()",
 				L"LostFocus()",
@@ -753,9 +756,7 @@ TEST_FILE
 
 			subWindow->SetActivate();
 			listener.AssertCallbacks(
-				L"GotFocus()",
-				L"RenderingAsActivated()",
-				L"LostFocus()"
+				L"RenderingAsActivated()"
 			);
 			subListener.AssertCallbacks(
 				L"GotFocus()",
@@ -765,6 +766,7 @@ TEST_FILE
 
 		protocol.OnNextFrame([&]()
 		{
+			TEST_ASSERT(protocol.styleConfig.activated == true);
 			subWindow->Hide(true);
 			listener.AssertCallbacks(
 				L"GotFocus()"

@@ -17,7 +17,7 @@ GuiHostedWindow
 
 		void GuiHostedWindow::BecomeNonMainWindow()
 		{
-			proxy = CreateNonMainHostedWindowProxy(this);
+			proxy = CreateNonMainHostedWindowProxy(this, controller->nativeWindow);
 			proxy->CheckAndSyncProperties();
 		}
 
