@@ -24,18 +24,25 @@ namespace remote_empty_window_tests
 	class EmptyWindowProtocol : public NotImplementedProtocolBase
 	{
 	public:
-		Func<void()>				processRemoteEvents;
+		List<Func<void()>>			processRemoteEvents;
+		vint						nextEventIndex = 0;
+
 		bool						connectionEstablished = false;
 		bool						connectionStopped = false;
 		WindowSizingConfig			sizingConfig;
 		WindowStyleConfig			styleConfig;
 	
-		EmptyWindowProtocol(Func<void()> _processRemoteEvents)
-			: processRemoteEvents(_processRemoteEvents)
+		EmptyWindowProtocol()
 		{
 			sizingConfig.bounds = { 0,0,0,0 };
 			sizingConfig.clientBounds = { 0,0,0,0 };
 			sizingConfig.customFramePadding = { 8,8,8,8 };
+		}
+
+		template<typename TCallback>
+		void OnNextFrame(TCallback&& callback)
+		{
+			processRemoteEvents.Add(std::move(callback));
 		}
 	
 		void Submit() override
@@ -45,7 +52,9 @@ namespace remote_empty_window_tests
 	
 		void ProcessRemoteEvents() override
 		{
-			processRemoteEvents();
+			TEST_ASSERT(nextEventIndex < processRemoteEvents.Count());
+			processRemoteEvents[nextEventIndex]();
+			nextEventIndex++;
 		}
 	
 		WString GetExecutablePath() override
@@ -160,7 +169,8 @@ TEST_FILE
 {
 	TEST_CATEGORY(L"Create one window and exit immediately")
 	{
-		EmptyWindowProtocol protocol([&]()
+		EmptyWindowProtocol protocol;
+		protocol.OnNextFrame([&]()
 		{
 			auto window = GetCurrentController()->WindowService()->GetMainWindow();
 			TEST_ASSERT(window);
@@ -201,7 +211,8 @@ TEST_FILE
 	TEST_CATEGORY(L"Close a window")
 	{
 		LoggingWindowListener listener;
-		EmptyWindowProtocol protocol([&]()
+		EmptyWindowProtocol protocol;
+		protocol.OnNextFrame([&]()
 		{
 			listener.AssertCallbacks(
 				L"Opened()",
@@ -241,7 +252,8 @@ TEST_FILE
 	TEST_CATEGORY(L"Block closing the main window")
 	{
 		BlockClosingWindowListener listener;
-		EmptyWindowProtocol protocol([&]()
+		EmptyWindowProtocol protocol;
+		protocol.OnNextFrame([&]()
 		{
 			listener.AssertCallbacks(
 				L"Opened()",
@@ -288,7 +300,8 @@ TEST_FILE
 	TEST_CATEGORY(L"Block closing the non-main window (1)")
 	{
 		BlockClosingWindowListener listener;
-		EmptyWindowProtocol protocol([&]()
+		EmptyWindowProtocol protocol;
+		protocol.OnNextFrame([&]()
 		{
 			listener.AssertCallbacks(
 				L"Opened()",
@@ -382,7 +395,8 @@ TEST_FILE
 	TEST_CATEGORY(L"Block closing the non-main window (2)")
 	{
 		BlockClosingWindowListener listener;
-		EmptyWindowProtocol protocol([&]()
+		EmptyWindowProtocol protocol;
+		protocol.OnNextFrame([&]()
 		{
 			listener.AssertCallbacks(
 				L"Opened()",
@@ -459,7 +473,8 @@ TEST_FILE
 	TEST_CATEGORY(L"ControllerRequestExit event")
 	{
 		BlockClosingWindowListener listener;
-		EmptyWindowProtocol protocol([&]()
+		EmptyWindowProtocol protocol;
+		protocol.OnNextFrame([&]()
 		{
 			listener.AssertCallbacks(
 				L"Opened()",
@@ -531,7 +546,8 @@ TEST_FILE
 	TEST_CATEGORY(L"ControllerForceExit event")
 	{
 		BlockClosingWindowListener listener;
-		EmptyWindowProtocol protocol([&]()
+		EmptyWindowProtocol protocol;
+		protocol.OnNextFrame([&]()
 		{
 			listener.AssertCallbacks(
 				L"Opened()",
@@ -593,7 +609,8 @@ TEST_FILE
 
 	TEST_CATEGORY(L"Disconnect and connect during running")
 	{
-		EmptyWindowProtocol protocol([&]()
+		EmptyWindowProtocol protocol;
+		protocol.OnNextFrame([&]()
 		{
 			auto window = GetCurrentController()->WindowService()->GetMainWindow();
 			TEST_ASSERT(window);
@@ -662,7 +679,8 @@ TEST_FILE
 	TEST_CATEGORY(L"Bidirectional controlling enabled/activated/focused")
 	{
 		LoggingWindowListener listener;
-		EmptyWindowProtocol protocol([&]()
+		EmptyWindowProtocol protocol;
+		protocol.OnNextFrame([&]()
 		{
 			listener.AssertCallbacks(
 				L"Opened()",
@@ -807,7 +825,8 @@ TEST_FILE
 	TEST_CATEGORY(L"Bidirectional control maximized/minimized/restore")
 	{
 		LoggingWindowListener listener;
-		EmptyWindowProtocol protocol([&]()
+		EmptyWindowProtocol protocol;
+		protocol.OnNextFrame([&]()
 		{
 			listener.AssertCallbacks(
 				L"Opened()",
