@@ -147,6 +147,7 @@ namespace remote_empty_window_tests
 		{
 			bool changed = sizingConfig.sizeState == arguments.sizeState;
 			sizingConfig.sizeState = arguments.sizeState;
+			styleConfig.activated = arguments.activate;
 			if(changed) events->OnWindowBoundsUpdated(sizingConfig);
 		}
 	};
@@ -708,56 +709,62 @@ TEST_FILE
 				L"GotFocus()",
 				L"RenderingAsActivated()"
 			);
+		});
 
-			{
-				protocol.styleConfig.activated = false;
-				protocol.events->OnWindowActivatedUpdated(false);
-				listener.AssertCallbacks(
-					L"GotFocus()",
-					L"LostFocus()",
-					L"RenderingAsDeactivated()"
-				);
-				subListener.AssertCallbacks(
-					L"LostFocus()",
-					L"RenderingAsDeactivated()"
-				);
+		protocol.OnNextFrame([&]()
+		{
+			TEST_ASSERT(protocol.styleConfig.activated == true);
+			protocol.styleConfig.activated = false;
+			protocol.events->OnWindowActivatedUpdated(false);
+			listener.AssertCallbacks(
+				L"GotFocus()",
+				L"LostFocus()",
+				L"RenderingAsDeactivated()"
+			);
+			subListener.AssertCallbacks(
+				L"LostFocus()",
+				L"RenderingAsDeactivated()"
+			);
 
-				window->SetActivate();
-				listener.AssertCallbacks(
-					L"GotFocus()",
-					L"RenderingAsActivated()",
-					L"LostFocus()"
-				);
-				subListener.AssertCallbacks(
-					L"GotFocus()",
-					L"RenderingAsActivated()"
-				);
-				TEST_ASSERT(protocol.styleConfig.activated == true);
-			}
-			{
-				listener.AssertCallbacks(
-					L"GotFocus()",
-					L"LostFocus()",
-					L"RenderingAsDeactivated()"
-				);
-				subListener.AssertCallbacks(
-					L"LostFocus()",
-					L"RenderingAsDeactivated()"
-				);
+			window->SetActivate();
+			listener.AssertCallbacks(
+				L"GotFocus()",
+				L"RenderingAsActivated()",
+				L"LostFocus()"
+			);
+			subListener.AssertCallbacks(
+				L"GotFocus()",
+				L"RenderingAsActivated()"
+			);
+		});
 
-				subWindow->SetActivate();
-				listener.AssertCallbacks(
-					L"GotFocus()",
-					L"RenderingAsActivated()",
-					L"LostFocus()"
-				);
-				subListener.AssertCallbacks(
-					L"GotFocus()",
-					L"RenderingAsActivated()"
-				);
-				TEST_ASSERT(protocol.styleConfig.activated == true);
-			}
+		protocol.OnNextFrame([&]()
+		{
+			TEST_ASSERT(protocol.styleConfig.activated == true);
+			listener.AssertCallbacks(
+				L"GotFocus()",
+				L"LostFocus()",
+				L"RenderingAsDeactivated()"
+			);
+			subListener.AssertCallbacks(
+				L"LostFocus()",
+				L"RenderingAsDeactivated()"
+			);
 
+			subWindow->SetActivate();
+			listener.AssertCallbacks(
+				L"GotFocus()",
+				L"RenderingAsActivated()",
+				L"LostFocus()"
+			);
+			subListener.AssertCallbacks(
+				L"GotFocus()",
+				L"RenderingAsActivated()"
+			);
+		});
+
+		protocol.OnNextFrame([&]()
+		{
 			subWindow->Hide(true);
 			listener.AssertCallbacks(
 				L"GotFocus()"
@@ -769,29 +776,34 @@ TEST_FILE
 				L"RenderingAsDeactivated()",
 				L"Closed()"
 			);
+		});
 
-			{
-				protocol.styleConfig.activated = false;
-				protocol.events->OnWindowActivatedUpdated(false);
-				listener.AssertCallbacks(
-					L"LostFocus()",
-					L"RenderingAsDeactivated()"
-				);
-				subListener.AssertCallbacks();
+		protocol.OnNextFrame([&]()
+		{
+			TEST_ASSERT(protocol.styleConfig.activated == true);
+			protocol.styleConfig.activated = false;
+			protocol.events->OnWindowActivatedUpdated(false);
+			listener.AssertCallbacks(
+				L"LostFocus()",
+				L"RenderingAsDeactivated()"
+			);
+			subListener.AssertCallbacks();
 
-				subWindow->SetActivate();
-				listener.AssertCallbacks();
-				subListener.AssertCallbacks();
+			subWindow->SetActivate();
+			listener.AssertCallbacks();
+			subListener.AssertCallbacks();
 
-				window->SetActivate();
-				listener.AssertCallbacks(
-					L"GotFocus()",
-					L"RenderingAsActivated()"
-				);
-				subListener.AssertCallbacks();
-				TEST_ASSERT(protocol.styleConfig.activated == true);
-			}
+			window->SetActivate();
+			listener.AssertCallbacks(
+				L"GotFocus()",
+				L"RenderingAsActivated()"
+			);
+			subListener.AssertCallbacks();
+		});
 
+		protocol.OnNextFrame([&]()
+		{
+			TEST_ASSERT(protocol.styleConfig.activated == true);
 			window->Hide(true);
 			listener.AssertCallbacks(
 				L"BeforeClosing()",
@@ -807,6 +819,7 @@ TEST_FILE
 				L"Destroyed()"
 			);
 		});
+
 		SetGuiMainProxy([&]()
 		{
 			protocol.events->OnControllerConnect();
