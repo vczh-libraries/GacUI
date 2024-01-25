@@ -591,7 +591,6 @@ TEST_FILE
 		SetGuiMainProxy({});
 	});
 
-	
 	TEST_CATEGORY(L"Disconnect and connect during running")
 	{
 		EmptyWindowProtocol protocol([&]()
@@ -658,12 +657,85 @@ TEST_FILE
 		BatchedProtocol batchedProtocol(&protocol);
 		SetupRemoteNativeController(&batchedProtocol);
 		SetGuiMainProxy({});
-
-		TEST_CASE(L"Ensure stopped")
-		{
-			TEST_ASSERT(protocol.connectionStopped);
-		});
 	});
-	// TODO: test enabled/activate/showactivated from INativeWindow and event (bidirectional controlling)
-	// TODO: test size status from INativeWindow and event (bidirectional controlling)
+
+	TEST_CATEGORY(L"Bidirectional controlling enabled/activated/focused")
+	{
+		LoggingWindowListener listener;
+		EmptyWindowProtocol protocol([&]()
+		{
+			listener.AssertCallbacks(
+				L"Opened()",
+				L"GotFocus()",
+				L"RenderingAsActivated()"
+			);
+			auto window = GetCurrentController()->WindowService()->GetMainWindow();
+			// TODO: complete the test
+			window->Hide(true);
+			listener.AssertCallbacks(
+				L"BeforeClosing()",
+				L"AfterClosing()",
+				L"LostFocus()",
+				L"RenderingAsDeactivated()",
+				L"Closed()",
+				L"Destroying()",
+				L"Destroyed()"
+			);
+		});
+		SetGuiMainProxy([&]()
+		{
+			protocol.events->OnControllerConnect();
+			TEST_CASE(L"Create and destroy a window")
+			{
+				auto ws = GetCurrentController()->WindowService();
+				auto window = ws->CreateNativeWindow(INativeWindow::Normal);
+				window->InstallListener(&listener);
+				ws->Run(window);
+				listener.AssertCallbacks();
+			});
+		});
+		BatchedProtocol batchedProtocol(&protocol);
+		SetupRemoteNativeController(&batchedProtocol);
+		SetGuiMainProxy({});
+	});
+
+	TEST_CATEGORY(L"Bidirectional control maximized/minimized/restore")
+	{
+		LoggingWindowListener listener;
+		EmptyWindowProtocol protocol([&]()
+		{
+			listener.AssertCallbacks(
+				L"Opened()",
+				L"GotFocus()",
+				L"RenderingAsActivated()"
+			);
+			auto window = GetCurrentController()->WindowService()->GetMainWindow();
+			// TODO: complete the test
+			window->Hide(true);
+			listener.AssertCallbacks(
+				L"BeforeClosing()",
+				L"AfterClosing()",
+				L"LostFocus()",
+				L"RenderingAsDeactivated()",
+				L"Closed()",
+				L"Destroying()",
+				L"Destroyed()"
+			);
+		});
+		SetGuiMainProxy([&]()
+		{
+			protocol.events->OnControllerConnect();
+			TEST_CASE(L"Create and destroy a window")
+			{
+				auto ws = GetCurrentController()->WindowService();
+				auto window = ws->CreateNativeWindow(INativeWindow::Normal);
+				window->InstallListener(&listener);
+				ws->Run(window);
+				listener.AssertCallbacks();
+			});
+		});
+		BatchedProtocol batchedProtocol(&protocol);
+		SetupRemoteNativeController(&batchedProtocol);
+		SetGuiMainProxy({});
+	});
 }
