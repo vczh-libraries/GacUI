@@ -679,7 +679,12 @@ TEST_FILE
 	TEST_CATEGORY(L"Bidirectional controlling enabled/activated/focused")
 	{
 		LoggingWindowListener listener;
+		LoggingWindowListener subListener;
+		INativeWindowService* ws = nullptr;
+		INativeWindow* window = nullptr;
+		INativeWindow* subWindow = nullptr;
 		EmptyWindowProtocol protocol;
+
 		protocol.OnNextFrame([&]()
 		{
 			listener.AssertCallbacks(
@@ -688,10 +693,7 @@ TEST_FILE
 				L"RenderingAsActivated()"
 			);
 
-			LoggingWindowListener subListener;
-			auto ws = GetCurrentController()->WindowService();
-			auto window = ws->GetMainWindow();
-			auto subWindow = ws->CreateNativeWindow(INativeWindow::Normal);
+			subWindow = ws->CreateNativeWindow(INativeWindow::Normal);
 			subWindow->InstallListener(&subListener);
 			subWindow->SetParent(window);
 			listener.AssertCallbacks();
@@ -810,8 +812,8 @@ TEST_FILE
 			protocol.events->OnControllerConnect();
 			TEST_CASE(L"Create and destroy a window")
 			{
-				auto ws = GetCurrentController()->WindowService();
-				auto window = ws->CreateNativeWindow(INativeWindow::Normal);
+				ws = GetCurrentController()->WindowService();
+				window = ws->CreateNativeWindow(INativeWindow::Normal);
 				window->InstallListener(&listener);
 				ws->Run(window);
 				listener.AssertCallbacks();
