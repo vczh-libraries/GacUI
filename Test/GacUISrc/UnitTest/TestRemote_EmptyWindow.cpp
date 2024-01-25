@@ -669,8 +669,42 @@ TEST_FILE
 				L"GotFocus()",
 				L"RenderingAsActivated()"
 			);
-			auto window = GetCurrentController()->WindowService()->GetMainWindow();
+
+			LoggingWindowListener subListener;
+			auto ws = GetCurrentController()->WindowService();
+			auto window = ws->GetMainWindow();
+			auto subWindow = ws->CreateNativeWindow(INativeWindow::Normal);
+			subWindow->InstallListener(&subListener);
+			subWindow->SetParent(window);
+			listener.AssertCallbacks();
+			subListener.AssertCallbacks();
+
+			subWindow->Show();
+			listener.AssertCallbacks(
+				L"LostFocus()"
+			);
+			subListener.AssertCallbacks(
+				L"Opened()",
+				L"GotFocus()",
+				L"RenderingAsActivated()"
+			);
+
 			// TODO: complete the test
+
+			subWindow->Hide(true);
+			listener.AssertCallbacks(
+				L"GotFocus()"
+			);
+			subListener.AssertCallbacks(
+				L"BeforeClosing()",
+				L"AfterClosing()",
+				L"LostFocus()",
+				L"RenderingAsDeactivated()",
+				L"Closed()"
+			);
+
+			// TODO: complete the test
+
 			window->Hide(true);
 			listener.AssertCallbacks(
 				L"BeforeClosing()",
@@ -678,6 +712,10 @@ TEST_FILE
 				L"LostFocus()",
 				L"RenderingAsDeactivated()",
 				L"Closed()",
+				L"Destroying()",
+				L"Destroyed()"
+			);
+			subListener.AssertCallbacks(
 				L"Destroying()",
 				L"Destroyed()"
 			);
