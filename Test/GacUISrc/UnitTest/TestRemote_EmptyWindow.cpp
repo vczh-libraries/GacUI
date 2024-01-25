@@ -618,10 +618,10 @@ TEST_FILE
 			TEST_ASSERT(window->GetBounds() == NativeRect(0, 0, 100, 200));
 			TEST_ASSERT(window->GetClientSize() == NativeSize(100, 200));
 
-			auto assertConfigs = [&]()
+			auto assertConfigs = [&](NativeRect bounds)
 			{
-				TEST_ASSERT(protocol.sizingConfig.bounds == NativeRect(270, 120, 370, 320));
-				TEST_ASSERT(protocol.sizingConfig.clientBounds == NativeRect(270, 120, 370, 320));
+				TEST_ASSERT(protocol.sizingConfig.bounds == bounds);
+				TEST_ASSERT(protocol.sizingConfig.clientBounds == bounds);
 				TEST_ASSERT(protocol.styleConfig.title == L"EmptyWindow");
 				TEST_ASSERT(protocol.styleConfig.enabled == true); // GuiHostedWindow won't really disable the main native window
 				TEST_ASSERT(protocol.styleConfig.topMost == false);
@@ -635,15 +635,15 @@ TEST_FILE
 				TEST_ASSERT(protocol.styleConfig.titleBar == false);
 			};
 
-			assertConfigs();
+			assertConfigs({ 270, 120, 370, 320 });
 			protocol.events->OnControllerDisconnect();
-			assertConfigs();
+			assertConfigs({ 270, 120, 370, 320 });
 			protocol.connectionEstablished = false;
 			protocol.styleConfig = {};
-			protocol.sizingConfig.bounds = {};
-			protocol.sizingConfig.clientBounds = {};
+			protocol.sizingConfig.bounds = { 270, 130, 370, 330 };
+			protocol.sizingConfig.clientBounds = { 270, 130, 370, 330 };
 			protocol.events->OnControllerConnect();
-			assertConfigs();
+			assertConfigs({ 270, 130, 370, 330 });
 
 			window->Hide(true);
 		});

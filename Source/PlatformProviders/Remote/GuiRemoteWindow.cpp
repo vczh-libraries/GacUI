@@ -87,10 +87,12 @@ GuiRemoteWindow (events)
 		{
 			disconnected = false;
 		}
+
+		sizingConfigInvalidated = true;
+		RequestGetBounds();
+
 		if (remote->applicationRunning)
 		{
-			sizingConfigInvalidated = true;
-			remoteMessages.RequestWindowNotifySetBounds(remoteWindowSizingConfig.bounds);
 			remoteMessages.RequestWindowNotifySetTitle(styleTitle);
 			remoteMessages.RequestWindowNotifySetEnabled(styleEnabled);
 			remoteMessages.RequestWindowNotifySetTopMost(styleTopMost);
@@ -103,10 +105,6 @@ GuiRemoteWindow (events)
 			remoteMessages.RequestWindowNotifySetIconVisible(styleIconVisible);
 			remoteMessages.RequestWindowNotifySetTitleBar(styleTitleBar);
 			remoteMessages.Submit();
-		}
-		else
-		{
-			RequestGetBounds();
 		}
 	}
 
