@@ -213,9 +213,11 @@ GuiRemoteController::INativeWindowService
 	void GuiRemoteController::Run(INativeWindow* window)
 	{
 		CHECK_ERROR(window == &remoteWindow, L"vl::presentation::GuiRemoteController::Run(INativeWindow*)#GuiHostedController should call this function with the native window.");
+		applicationRunning = true;
 		window->Show();
 		while (RunOneCycle());
 		remoteMessages.Submit();
+		applicationRunning = false;
 	}
 
 	bool GuiRemoteController::RunOneCycle()

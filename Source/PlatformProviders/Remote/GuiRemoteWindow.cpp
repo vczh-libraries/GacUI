@@ -86,6 +86,10 @@ GuiRemoteWindow (events)
 		if (disconnected)
 		{
 			disconnected = false;
+		}
+		if (remote->applicationRunning)
+		{
+			sizingConfigInvalidated = true;
 			remoteMessages.RequestWindowNotifySetBounds(remoteWindowSizingConfig.bounds);
 			remoteMessages.RequestWindowNotifySetTitle(styleTitle);
 			remoteMessages.RequestWindowNotifySetEnabled(styleEnabled);

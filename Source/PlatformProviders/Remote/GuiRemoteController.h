@@ -43,6 +43,7 @@ GuiRemoteController
 		GuiRemoteWindow					remoteWindow;
 		SharedCallbackService			callbackService;
 		SharedAsyncService				asyncService;
+		bool							applicationRunning = false;
 		bool							connectionForcedToStop = false;
 		bool							connectionStopped = false;
 
