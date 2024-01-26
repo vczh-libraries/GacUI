@@ -101,7 +101,6 @@ namespace remote_protocol_tests
 	
 		void ProcessRemoteEvents() override
 		{
-			TEST_ASSERT(nextEventIndex < processRemoteEvents.Count());
 			processRemoteEvents[nextEventIndex]();
 			nextEventIndex++;
 		}

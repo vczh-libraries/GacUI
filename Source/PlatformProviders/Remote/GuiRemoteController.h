@@ -36,6 +36,8 @@ GuiRemoteController
 		friend class GuiRemoteMessages;
 		friend class GuiRemoteEvents;
 		friend class GuiRemoteWindow;
+		friend class elements::GuiRemoteGraphicsRenderTarget;
+		friend class elements::GuiRemoteGraphicsResourceManager;
 		using CursorMap = collections::Dictionary<INativeCursor::SystemCursorType, Ptr<INativeCursor>>;
 	protected:
 		IGuiRemoteProtocol*				remoteProtocol;

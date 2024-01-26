@@ -23,15 +23,34 @@ namespace vl::presentation
 GuiRemoteGraphicsRenderTarget
 ***********************************************************************/
 
+		class GuiRemoteGraphicsRenderTarget : public GuiGraphicsRenderTarget
+		{
+		protected:
+			GuiRemoteController*				remote;
+			NativeSize							canvasSize;
+
+			void								StartRenderingOnNativeWindow() override;
+			RenderTargetFailure					StopRenderingOnNativeWindow() override;
+
+			Size								GetCanvasSize() override;
+			void								AfterPushedClipper(Rect clipper, Rect validArea) override;
+			void								AfterPushedClipperAndBecameInvalid(Rect clipper) override;
+			void								AfterPoppedClipperAndBecameValid(Rect validArea, bool clipperExists) override;
+			void								AfterPoppedClipper(Rect validArea, bool clipperExists) override;
+		public:
+			GuiRemoteGraphicsRenderTarget(GuiRemoteController* _remote);
+			~GuiRemoteGraphicsRenderTarget();
+		};
+
 /***********************************************************************
 GuiRemoteGraphicsResourceManager
 ***********************************************************************/
 
-		class GuiRemoteGraphicsResourceManager
-			: public GuiGraphicsResourceManager
+		class GuiRemoteGraphicsResourceManager : public GuiGraphicsResourceManager
 		{
 		protected:
-			GuiRemoteController*								remote;
+			GuiRemoteController*				remote;
+			GuiRemoteGraphicsRenderTarget		renderTarget;
 
 		public:
 			GuiRemoteGraphicsResourceManager(GuiRemoteController* _remote);
