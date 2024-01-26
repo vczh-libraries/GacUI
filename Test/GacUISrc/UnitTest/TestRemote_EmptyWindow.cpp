@@ -5,6 +5,9 @@ namespace remote_empty_window_tests
 	class EmptyWindowProtocol : public SingleScreenProtocol
 	{
 	public:
+		bool						connectionEstablished = false;
+		bool						connectionStopped = false;
+
 		static SingleScreenConfig MakeSingleScreenConfig()
 		{
 			SingleScreenConfig config;
@@ -12,10 +15,6 @@ namespace remote_empty_window_tests
 			config.customFramePadding = { 8,8,8,8 };
 
 			config.fontConfig.defaultFont.fontFamily = L"One";
-			config.fontConfig.supportedFonts = Ptr(new List<WString>());
-			config.fontConfig.supportedFonts->Add(L"One");
-			config.fontConfig.supportedFonts->Add(L"Two");
-			config.fontConfig.supportedFonts->Add(L"Three");
 
 			config.screenConfig.bounds = { 0,0,640,480 };
 			config.screenConfig.clientBounds = { 0,0,640,440 };
@@ -28,6 +27,23 @@ namespace remote_empty_window_tests
 		EmptyWindowProtocol()
 			: SingleScreenProtocol(MakeSingleScreenConfig())
 		{
+		}
+
+		void Submit() override
+		{
+			CHECK_ERROR(!connectionStopped, L"IGuiRemoteProtocol::Submit is not allowed to call after connection stopped.");
+		}
+
+		void RequestControllerConnectionEstablished() override
+		{
+			CHECK_ERROR(!connectionEstablished, L"IGuiRemoteProtocol::RequestControllerConnectionEstablished is not allowed to call twice.");
+			connectionEstablished = true;
+		}
+
+		void RequestControllerConnectionStopped() override
+		{
+			CHECK_ERROR(!connectionStopped, L"IGuiRemoteProtocol::RequestControllerConnectionStopped is not allowed to call twice.");
+			connectionStopped = true;
 		}
 	};
 	

@@ -76,8 +76,6 @@ namespace remote_protocol_tests
 		List<Func<void()>>			processRemoteEvents;
 		vint						nextEventIndex = 0;
 	
-		bool						connectionEstablished = false;
-		bool						connectionStopped = false;
 		WindowSizingConfig			sizingConfig;
 		WindowStyleConfig			styleConfig;
 		NativeRect					lastRestoredSize;
@@ -99,7 +97,6 @@ namespace remote_protocol_tests
 	
 		void Submit() override
 		{
-			CHECK_ERROR(!connectionStopped, L"IGuiRemoteProtocol::Submit is not allowed to call after connection stopped.");
 		}
 	
 		void ProcessRemoteEvents() override
@@ -111,7 +108,7 @@ namespace remote_protocol_tests
 	
 		WString GetExecutablePath() override
 		{
-			return L"/EmptyWindow/Protocol.exe";
+			return L"/Remote/Protocol.exe";
 		}
 	
 		void RequestControllerGetFontConfig(vint id) override
@@ -126,14 +123,10 @@ namespace remote_protocol_tests
 	
 		void RequestControllerConnectionEstablished() override
 		{
-			CHECK_ERROR(!connectionEstablished, L"IGuiRemoteProtocol::RequestControllerConnectionEstablished is not allowed to call twice.");
-			connectionEstablished = true;
 		}
 	
 		void RequestControllerConnectionStopped() override
 		{
-			CHECK_ERROR(!connectionStopped, L"IGuiRemoteProtocol::RequestControllerConnectionStopped is not allowed to call twice.");
-			connectionStopped = true;
 		}
 	
 		void RequestWindowGetBounds(vint id) override

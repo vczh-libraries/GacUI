@@ -83,7 +83,7 @@ namespace vl::presentation::remoteprotocol
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<T>(Ptr<JsonNode>, Ptr<List<T>>&)#"
 			if (auto jsonLiteral = node.Cast<glr::json::JsonLiteral>())
 			{
-				if (jsonLiteral->value != glr::json::JsonLiteralValue::Null)
+				if (jsonLiteral->value == glr::json::JsonLiteralValue::Null)
 				{
 					value = {};
 					return;
