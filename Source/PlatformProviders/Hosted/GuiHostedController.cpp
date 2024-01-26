@@ -690,36 +690,28 @@ GuiHostedController::INativeControllerListener
 					bool failureByResized = false;
 					bool failureByLostDevice = false;
 
-					// TODO: (enumerable) foreach:reversed
-					for (vint i = wmManager->ordinaryWindowsInOrder.Count() - 1; i >= 0; i--)
+					auto forceRefreshWindows = [&](List<hosted_window_manager::Window<GuiHostedWindow*>*>& windows)
 					{
-						auto hostedWindow = wmManager->ordinaryWindowsInOrder[i]->id;
-						for (auto listener : hostedWindow->listeners)
+						// TODO: (enumerable) foreach:reversed
+						for (vint i = windows.Count() - 1; i >= 0; i--)
 						{
-							bool updated = false;
-							listener->ForceRefresh(false, updated, failureByResized, failureByLostDevice);
-							windowsUpdatedInLastFrame |= updated;
-							if (failureByResized || failureByLostDevice)
+							auto hostedWindow = windows[i]->id;
+							for (auto listener : hostedWindow->listeners)
 							{
-								goto STOP_RENDERING;
+								bool updated = false;
+								listener->ForceRefresh(false, updated, failureByResized, failureByLostDevice);
+								windowsUpdatedInLastFrame |= updated;
+								if (failureByResized || failureByLostDevice)
+								{
+									return false;
+								}
 							}
 						}
-					}
-					// TODO: (enumerable) foreach:reversed
-					for (vint i = wmManager->topMostedWindowsInOrder.Count() - 1; i >= 0; i--)
-					{
-						auto hostedWindow = wmManager->topMostedWindowsInOrder[i]->id;
-						for (auto listener : hostedWindow->listeners)
-						{
-							bool updated = false;
-							listener->ForceRefresh(false, updated, failureByResized, failureByLostDevice);
-							windowsUpdatedInLastFrame |= updated;
-							if (failureByResized || failureByLostDevice)
-							{
-								goto STOP_RENDERING;
-							}
-						}
-					}
+						return true;
+					};
+
+					if (!forceRefreshWindows(wmManager->ordinaryWindowsInOrder)) goto STOP_RENDERING;
+					if (!forceRefreshWindows(wmManager->topMostedWindowsInOrder)) goto STOP_RENDERING;
 
 				STOP_RENDERING:
 					switch (renderTarget->StopHostedRendering())
