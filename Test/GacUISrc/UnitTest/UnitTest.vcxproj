@@ -254,6 +254,7 @@
     <ClInclude Include="TestRemote.h" />
     <ClInclude Include="TestRemote_Shared_BatchedProtocol.h" />
     <ClInclude Include="TestRemote_Shared_LoggingWindowListener.h" />
+    <ClInclude Include="TestRemote_Shared_NoRenderingProtocol.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

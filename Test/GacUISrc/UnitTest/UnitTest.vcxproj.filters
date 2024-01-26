@@ -222,5 +222,8 @@
     <ClInclude Include="TestRemote_Shared_LoggingWindowListener.h">
       <Filter>Source Files\Remote\Shared</Filter>
     </ClInclude>
+    <ClInclude Include="TestRemote_Shared_NoRenderingProtocol.h">
+      <Filter>Source Files\Remote\Shared</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
