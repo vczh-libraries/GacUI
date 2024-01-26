@@ -872,7 +872,7 @@ TEST_FILE
 		SetGuiMainProxy({});
 	});
 
-	TEST_CATEGORY(L"Bidirectional control maximized/minimized/restore")
+	TEST_CATEGORY(L"Bidirectional control maximized/minimized/restore (1)")
 	{
 		LoggingWindowListener listener;
 		listener.logMoved = true;
@@ -930,6 +930,89 @@ TEST_FILE
 				L"AfterClosing()",
 				L"LostFocus()",
 				L"RenderingAsDeactivated()",
+				L"Closed()",
+				L"Destroying()",
+				L"Destroyed()"
+			);
+		});
+
+		SetGuiMainProxy([&]()
+		{
+			protocol.events->OnControllerConnect();
+			TEST_CASE(L"Create and destroy a window")
+			{
+				auto ws = GetCurrentController()->WindowService();
+				window = ws->CreateNativeWindow(INativeWindow::Normal);
+				window->InstallListener(&listener);
+				window->SetClientSize({ 100,200 });
+				ws->Run(window);
+				listener.AssertCallbacks();
+			});
+		});
+		BatchedProtocol batchedProtocol(&protocol);
+		SetupRemoteNativeController(&batchedProtocol);
+		SetGuiMainProxy({});
+	});
+
+	TEST_CATEGORY(L"Bidirectional control maximized/minimized/restore (2)")
+	{
+		LoggingWindowListener listener;
+		listener.logMoved = true;
+		EmptyWindowProtocol protocol;
+		INativeWindow* window = nullptr;
+
+		protocol.OnNextFrame([&]()
+		{
+			listener.AssertCallbacks(
+				L"Opened()",
+				L"Moved()",
+				L"Moved()",
+				L"GotFocus()",
+				L"RenderingAsActivated()"
+			);
+			TEST_ASSERT(window->GetBounds() == NativeRect(0, 0, 100, 200));
+			TEST_ASSERT(protocol.sizingConfig.bounds == NativeRect(270, 120, 370, 320));
+			protocol.RequestWindowNotifyShow({ true,INativeWindow::Maximized });
+		});
+
+		protocol.OnNextFrame([&]()
+		{
+			listener.AssertCallbacks(
+				L"Moved()"
+			);
+			TEST_ASSERT(window->GetBounds() == NativeRect(0, 0, 640, 440));
+			TEST_ASSERT(protocol.sizingConfig.bounds == NativeRect(0, 0, 640, 440));
+			protocol.RequestWindowNotifyShow({ true,INativeWindow::Minimized });
+		});
+
+		protocol.OnNextFrame([&]()
+		{
+			listener.AssertCallbacks(
+				L"Moved()"
+			);
+			TEST_ASSERT(window->GetBounds() == NativeRect(0, 0, 1, 1));
+			TEST_ASSERT(protocol.sizingConfig.bounds == NativeRect(640, 480, 641, 481));
+			protocol.RequestWindowNotifyShow({ false,INativeWindow::Restored });
+			protocol.events->OnWindowActivatedUpdated(false);
+		});
+
+		protocol.OnNextFrame([&]()
+		{
+			listener.AssertCallbacks(
+				L"Moved()",
+				L"LostFocus()",
+				L"RenderingAsDeactivated()"
+			);
+			TEST_ASSERT(window->GetBounds() == NativeRect(0, 0, 100, 200));
+			TEST_ASSERT(protocol.sizingConfig.bounds == NativeRect(270, 120, 370, 320));
+		});
+
+		protocol.OnNextFrame([&]()
+		{
+			protocol.events->OnControllerRequestExit();
+			listener.AssertCallbacks(
+				L"BeforeClosing()",
+				L"AfterClosing()",
 				L"Closed()",
 				L"Destroying()",
 				L"Destroyed()"
