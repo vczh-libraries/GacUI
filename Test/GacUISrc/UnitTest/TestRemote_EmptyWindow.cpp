@@ -873,35 +873,76 @@ TEST_FILE
 	TEST_CATEGORY(L"Bidirectional control maximized/minimized/restore")
 	{
 		LoggingWindowListener listener;
+		listener.logMoved = true;
 		EmptyWindowProtocol protocol;
+		INativeWindow* window = nullptr;
+
 		protocol.OnNextFrame([&]()
 		{
 			listener.AssertCallbacks(
 				L"Opened()",
+				L"Moved()",
+				L"Moved()",
 				L"GotFocus()",
 				L"RenderingAsActivated()"
 			);
-			auto window = GetCurrentController()->WindowService()->GetMainWindow();
-			// TODO: complete the test
+			TEST_ASSERT(window->GetBounds() == NativeRect(0, 0, 100, 200));
+			TEST_ASSERT(protocol.sizingConfig.bounds == NativeRect(270, 120, 370, 320));
+			window->ShowMaximized();
+		});
+
+		protocol.OnNextFrame([&]()
+		{
+			listener.AssertCallbacks(
+				L"Moved()"
+			);
+			TEST_ASSERT(window->GetBounds() == NativeRect(0, 0, 640, 440));
+			TEST_ASSERT(protocol.sizingConfig.bounds == NativeRect(0, 0, 640, 440));
+			window->ShowMinimized();
+		});
+
+		protocol.OnNextFrame([&]()
+		{
+			listener.AssertCallbacks(
+				L"Moved()"
+			);
+			TEST_ASSERT(window->GetBounds() == NativeRect(0, 0, 1, 1));
+			TEST_ASSERT(protocol.sizingConfig.bounds == NativeRect(640, 480, 1, 10));
+			window->ShowDeactivated();
+		});
+
+		protocol.OnNextFrame([&]()
+		{
+			listener.AssertCallbacks(
+				L"Moved()",
+				L"LostFocus()",
+				L"RenderingAsDeactivated()"
+			);
+			TEST_ASSERT(window->GetBounds() == NativeRect(0, 0, 100, 200));
+			TEST_ASSERT(protocol.sizingConfig.bounds == NativeRect(270, 120, 370, 320));
+		});
+
+		protocol.OnNextFrame([&]()
+		{
 			window->Hide(true);
 			listener.AssertCallbacks(
 				L"BeforeClosing()",
 				L"AfterClosing()",
-				L"LostFocus()",
-				L"RenderingAsDeactivated()",
 				L"Closed()",
 				L"Destroying()",
 				L"Destroyed()"
 			);
 		});
+
 		SetGuiMainProxy([&]()
 		{
 			protocol.events->OnControllerConnect();
 			TEST_CASE(L"Create and destroy a window")
 			{
 				auto ws = GetCurrentController()->WindowService();
-				auto window = ws->CreateNativeWindow(INativeWindow::Normal);
+				window = ws->CreateNativeWindow(INativeWindow::Normal);
 				window->InstallListener(&listener);
+				window->SetClientSize({ 100,200 });
 				ws->Run(window);
 				listener.AssertCallbacks();
 			});

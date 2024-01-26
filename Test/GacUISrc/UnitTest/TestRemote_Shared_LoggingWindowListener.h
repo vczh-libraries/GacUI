@@ -8,6 +8,7 @@ class LoggingWindowListener : public Object, public virtual INativeWindowListene
 {
 public:
 	List<WString>				callbacks;
+	bool						logMoved = false;
 
 	template<typename ...TArgs>
 	void AssertCallbacks(TArgs&& ...args)
@@ -64,6 +65,10 @@ public:
 
 	void Moved() override
 	{
+		if (logMoved)
+		{
+			callbacks.Add(L"Moved()");
+		}
 	}
 
 	void DpiChanged(bool preparing) override
