@@ -26,22 +26,23 @@ namespace remote_protocol_tests
 #undef MESSAGE_NOREQ_RES
 #undef MESSAGE_NOREQ_NORES
 	
-	IGuiRemoteProtocolEvents* events = nullptr;
-	
-	void Initialize(IGuiRemoteProtocolEvents* _events) override
-	{
-		events = _events;
-	}
-	
-	void Submit() override
-	{
-	}
-	
-	void ProcessRemoteEvents() override
-	{
-		CHECK_FAIL(L"Not Implemented in NotImplementedProtocolBase!");
-	}
+		IGuiRemoteProtocolEvents* events = nullptr;
+		
+		void Initialize(IGuiRemoteProtocolEvents* _events) override
+		{
+			events = _events;
+		}
+		
+		void Submit() override
+		{
+		}
+		
+		void ProcessRemoteEvents() override
+		{
+			CHECK_FAIL(L"Not Implemented in NotImplementedProtocolBase!");
+		}
 	};
+
 	struct WindowStyleConfig
 	{
 		WString						title;
@@ -60,10 +61,18 @@ namespace remote_protocol_tests
 	
 		auto operator<=>(const WindowStyleConfig&) const = default;
 	};
+
+	struct SingleScreenConfig
+	{
+		NativeMargin				customFramePadding;
+		FontConfig					fontConfig;
+		ScreenConfig				screenConfig;
+	};
 	
-	class EmptyWindowProtocol : public NotImplementedProtocolBase
+	class SingleScreenProtocol : public NotImplementedProtocolBase
 	{
 	public:
+		SingleScreenConfig			globalConfig;
 		List<Func<void()>>			processRemoteEvents;
 		vint						nextEventIndex = 0;
 	
@@ -71,13 +80,14 @@ namespace remote_protocol_tests
 		bool						connectionStopped = false;
 		WindowSizingConfig			sizingConfig;
 		WindowStyleConfig			styleConfig;
-		NativeRect					lastRestoredSize{ 0,0,100,100 };
+		NativeRect					lastRestoredSize;
 	
-		EmptyWindowProtocol()
+		SingleScreenProtocol(SingleScreenConfig _globalConfig)
+			: globalConfig(_globalConfig)
 		{
 			sizingConfig.bounds = { 0,0,0,0 };
 			sizingConfig.clientBounds = { 0,0,0,0 };
-			sizingConfig.customFramePadding = { 8,8,8,8 };
+			sizingConfig.customFramePadding = globalConfig.customFramePadding;
 			sizingConfig.sizeState = INativeWindow::Restored;
 		}
 	
@@ -106,23 +116,12 @@ namespace remote_protocol_tests
 	
 		void RequestControllerGetFontConfig(vint id) override
 		{
-			FontConfig response;
-			response.defaultFont.fontFamily = L"One";
-			response.supportedFonts = Ptr(new List<WString>());
-			response.supportedFonts->Add(L"One");
-			response.supportedFonts->Add(L"Two");
-			response.supportedFonts->Add(L"Three");
-			events->RespondControllerGetFontConfig(id, response);
+			events->RespondControllerGetFontConfig(id, globalConfig.fontConfig);
 		}
 	
 		void RequestControllerGetScreenConfig(vint id) override
 		{
-			ScreenConfig response;
-			response.bounds = { 0,0,640,480};
-			response.clientBounds = { 0,0,640,440 };
-			response.scalingX = 1;
-			response.scalingY = 1;
-			events->RespondControllerGetScreenConfig(id, response);
+			events->RespondControllerGetScreenConfig(id, globalConfig.screenConfig);
 		}
 	
 		void RequestControllerConnectionEstablished() override
@@ -202,11 +201,14 @@ namespace remote_protocol_tests
 				switch (arguments.sizeState)
 				{
 				case INativeWindow::Maximized:
-					sizingConfig.bounds = { 0,0,640,440 };
+					sizingConfig.bounds = globalConfig.screenConfig.clientBounds;
 					OnBoundsUpdated();
 					break;
 				case INativeWindow::Minimized:
-					sizingConfig.bounds = { 640,480,641,481 };
+					sizingConfig.bounds = NativeRect(
+						{ globalConfig.screenConfig.bounds.x2,globalConfig.screenConfig.bounds.y2 },
+						{ 1,1 }
+					);
 					OnBoundsUpdated();
 					break;
 				case INativeWindow::Restored:

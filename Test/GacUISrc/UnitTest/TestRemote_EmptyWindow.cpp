@@ -2,6 +2,34 @@
 
 namespace remote_empty_window_tests
 {
+	class EmptyWindowProtocol : public SingleScreenProtocol
+	{
+	public:
+		static SingleScreenConfig MakeSingleScreenConfig()
+		{
+			SingleScreenConfig config;
+
+			config.customFramePadding = { 8,8,8,8 };
+
+			config.fontConfig.defaultFont.fontFamily = L"One";
+			config.fontConfig.supportedFonts = Ptr(new List<WString>());
+			config.fontConfig.supportedFonts->Add(L"One");
+			config.fontConfig.supportedFonts->Add(L"Two");
+			config.fontConfig.supportedFonts->Add(L"Three");
+
+			config.screenConfig.bounds = { 0,0,640,480 };
+			config.screenConfig.clientBounds = { 0,0,640,440 };
+			config.screenConfig.scalingX = 1;
+			config.screenConfig.scalingY = 1;
+
+			return config;
+		}
+
+		EmptyWindowProtocol()
+			: SingleScreenProtocol(MakeSingleScreenConfig())
+		{
+		}
+	};
 	
 	class BlockClosingWindowListener : public LoggingWindowListener
 	{
