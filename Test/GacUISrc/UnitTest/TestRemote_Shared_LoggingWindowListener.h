@@ -53,7 +53,7 @@ public:
 		callbacks.Add(L ## #NAME L"()");\
 	}\
 
-	HitTestResult HitTest(NativePoint location)
+	HitTestResult HitTest(NativePoint location) override
 	{
 		return INativeWindowListener::NoDecision;
 	}
@@ -117,12 +117,12 @@ public:
 		SHOULD_NOT_BE_CALLED(NeedRefresh);
 	}
 
-	void ForceRefresh(bool handleFailure, bool& updated, bool& failureByResized, bool& failureByLostDevice)
+	void ForceRefresh(bool handleFailure, bool& updated, bool& failureByResized, bool& failureByLostDevice) override
 	{
 		SHOULD_NOT_BE_CALLED(ForceRefresh);
 	}
 
-	void AssignFrameConfig(const NativeWindowFrameConfig& config)
+	void AssignFrameConfig(const NativeWindowFrameConfig& config) override
 	{
 	}
 

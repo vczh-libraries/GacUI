@@ -25,7 +25,7 @@ public:
 
 	IGuiRemoteProtocolEvents* events = nullptr;
 
-	void Initialize(IGuiRemoteProtocolEvents* _events)
+	void Initialize(IGuiRemoteProtocolEvents* _events) override
 	{
 		events = _events;
 	}
@@ -120,19 +120,19 @@ protected:
 			}
 
 #define MESSAGE_NOREQ_NORES(NAME, REQUEST, RESPONSE)\
-			if (request.name == L ## #NAME)\
+			if (wcscmp(request.name, L ## #NAME) == 0)\
 			{\
 				protocol->Request ## NAME();\
 			} else\
 
 #define MESSAGE_NOREQ_RES(NAME, REQUEST, RESPONSE)\
-			if (request.name == L ## #NAME)\
+			if (wcscmp(request.name, L ## #NAME) == 0)\
 			{\
 				protocol->Request ## NAME(request.id);\
 			} else\
 
 #define MESSAGE_REQ_NORES(NAME, REQUEST, RESPONSE)\
-			if (request.name == L ## #NAME)\
+			if (wcscmp(request.name, L ## #NAME) == 0)\
 			{\
 				REQUEST arguments;\
 				FromJson<REQUEST>(request.arguments, arguments);\
@@ -140,7 +140,7 @@ protected:
 			} else\
 
 #define MESSAGE_REQ_RES(NAME, REQUEST, RESPONSE)\
-			if (request.name == L ## #NAME)\
+			if (wcscmp(request.name, L ## #NAME) == 0)\
 			{\
 				REQUEST arguments;\
 				FromJson<REQUEST>(request.arguments, arguments);\
@@ -167,7 +167,7 @@ protected:
 		{
 #define MESSAGE_NORES(NAME, RESPONSE)
 #define MESSAGE_RES(NAME, RESPONSE)\
-			if (request.name == L ## #NAME)\
+			if (wcscmp(request.name, L ## #NAME) == 0)\
 			{\
 				RESPONSE arguments;\
 				FromJson<RESPONSE>(request.arguments, arguments);\
@@ -209,13 +209,13 @@ protected:
 			}
 
 #define EVENT_NOREQ(NAME, REQUEST)\
-			if (request.name == L ## #NAME)\
+			if (wcscmp(request.name, L ## #NAME) == 0)\
 			{\
 				events->On ## NAME();\
 			} else\
 
 #define EVENT_REQ(NAME, REQUEST)\
-			if (request.name == L ## #NAME)\
+			if (wcscmp(request.name, L ## #NAME) == 0)\
 			{\
 				REQUEST arguments;\
 				FromJson<REQUEST>(request.arguments, arguments);\

@@ -83,7 +83,7 @@ TEST_FILE
 			TEST_CASE(L"Assert screen config")
 			{
 				TEST_ASSERT(ss->GetScreenCount() == 1);
-				auto screen = ss->GetScreen(0);
+				auto screen = ss->GetScreen((vint)0);
 				TEST_ASSERT(screen->IsPrimary() == true);
 				TEST_ASSERT(screen->GetBounds() == NativeRect(0, 0, 48, 38));
 				TEST_ASSERT(screen->GetClientBounds() == NativeRect(0, 0, 48, 38));
@@ -102,7 +102,7 @@ TEST_FILE
 					protocol.events->OnControllerScreenUpdated(response);
 				}
 				TEST_ASSERT(ss->GetScreenCount() == 1);
-				auto screen = ss->GetScreen(0);
+				auto screen = ss->GetScreen((vint)0);
 				TEST_ASSERT(screen->IsPrimary() == true);
 				TEST_ASSERT(screen->GetBounds() == NativeRect(0, 0, 48, 38));
 				TEST_ASSERT(screen->GetClientBounds() == NativeRect(0, 0, 48, 38));
