@@ -160,12 +160,12 @@ namespace remote_empty_window_tests
 			styleConfig.activated = arguments.activate;
 			switch (arguments.sizeState)
 			{
-			case INativeWindow::Minimized:
+			case INativeWindow::Maximized:
 				sizingConfig.bounds = { 0,0,640,440 };
 				OnBoundsUpdated();
 				break;
-			case INativeWindow::Maximized:
-				sizingConfig.bounds = { 640,480,1,1 };
+			case INativeWindow::Minimized:
+				sizingConfig.bounds = { 640,480,641,481 };
 				OnBoundsUpdated();
 				break;
 			case INativeWindow::Restored:
@@ -907,16 +907,14 @@ TEST_FILE
 				L"Moved()"
 			);
 			TEST_ASSERT(window->GetBounds() == NativeRect(0, 0, 1, 1));
-			TEST_ASSERT(protocol.sizingConfig.bounds == NativeRect(640, 480, 1, 10));
-			window->ShowDeactivated();
+			TEST_ASSERT(protocol.sizingConfig.bounds == NativeRect(640, 480, 641, 481));
+			window->ShowRestored();
 		});
 
 		protocol.OnNextFrame([&]()
 		{
 			listener.AssertCallbacks(
-				L"Moved()",
-				L"LostFocus()",
-				L"RenderingAsDeactivated()"
+				L"Moved()"
 			);
 			TEST_ASSERT(window->GetBounds() == NativeRect(0, 0, 100, 200));
 			TEST_ASSERT(protocol.sizingConfig.bounds == NativeRect(270, 120, 370, 320));
@@ -928,6 +926,8 @@ TEST_FILE
 			listener.AssertCallbacks(
 				L"BeforeClosing()",
 				L"AfterClosing()",
+				L"LostFocus()",
+				L"RenderingAsDeactivated()",
 				L"Closed()",
 				L"Destroying()",
 				L"Destroyed()"
