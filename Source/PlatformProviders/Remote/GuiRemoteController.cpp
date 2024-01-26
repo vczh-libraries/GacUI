@@ -24,92 +24,92 @@ GuiRemoteCursor
 GuiRemoteController::INativeResourceService
 ***********************************************************************/
 
-		INativeCursor* GuiRemoteController::GetSystemCursor(INativeCursor::SystemCursorType type)
+	INativeCursor* GuiRemoteController::GetSystemCursor(INativeCursor::SystemCursorType type)
+	{
+		vint index = cursors.Keys().IndexOf(type);
+		if (index == -1)
 		{
-			vint index = cursors.Keys().IndexOf(type);
-			if (index == -1)
-			{
-				auto cursor = Ptr(new GuiRemoteCursor(type));
-				cursors.Add(type, cursor);
-				return cursor.Obj();
-			}
-			else
-			{
-				return cursors.Values()[index].Obj();
-			}
+			auto cursor = Ptr(new GuiRemoteCursor(type));
+			cursors.Add(type, cursor);
+			return cursor.Obj();
 		}
+		else
+		{
+			return cursors.Values()[index].Obj();
+		}
+	}
 
-		INativeCursor* GuiRemoteController::GetDefaultSystemCursor()
-		{
-			return GetSystemCursor(INativeCursor::SystemCursorType::Arrow);
-		}
+	INativeCursor* GuiRemoteController::GetDefaultSystemCursor()
+	{
+		return GetSystemCursor(INativeCursor::SystemCursorType::Arrow);
+	}
 
-		FontProperties GuiRemoteController::GetDefaultFont()
-		{
-			return remoteFontConfig.defaultFont;
-		}
+	FontProperties GuiRemoteController::GetDefaultFont()
+	{
+		return remoteFontConfig.defaultFont;
+	}
 
-		void GuiRemoteController::SetDefaultFont(const FontProperties& value)
-		{
-			remoteFontConfig.defaultFont = value;
-		}
+	void GuiRemoteController::SetDefaultFont(const FontProperties& value)
+	{
+		remoteFontConfig.defaultFont = value;
+	}
 
-		void GuiRemoteController::EnumerateFonts(collections::List<WString>& fonts)
+	void GuiRemoteController::EnumerateFonts(collections::List<WString>& fonts)
+	{
+		if (remoteFontConfig.supportedFonts)
 		{
-			if (remoteFontConfig.supportedFonts)
-			{
-				CopyFrom(fonts, *remoteFontConfig.supportedFonts.Obj());
-			}
+			CopyFrom(fonts, *remoteFontConfig.supportedFonts.Obj());
 		}
+	}
 			
 /***********************************************************************
 GuiRemoteController::INativeInputService
 ***********************************************************************/
 
-		void GuiRemoteController::StartTimer()
-		{
-			timerEnabled = true;
-		}
+	void GuiRemoteController::StartTimer()
+	{
+		timerEnabled = true;
+	}
 
-		void GuiRemoteController::StopTimer()
-		{
-			timerEnabled = false;
-		}
+	void GuiRemoteController::StopTimer()
+	{
+		timerEnabled = false;
+	}
 
-		bool GuiRemoteController::IsTimerEnabled()
-		{
-			return timerEnabled;
-		}
+	bool GuiRemoteController::IsTimerEnabled()
+	{
+		return timerEnabled;
+	}
 
-		bool GuiRemoteController::IsKeyPressing(VKEY code)
-		{
-			CHECK_FAIL(L"Not Implemented!");
-		}
+	bool GuiRemoteController::IsKeyPressing(VKEY code)
+	{
+		CHECK_FAIL(L"Not Implemented!");
+	}
 
-		bool GuiRemoteController::IsKeyToggled(VKEY code)
-		{
-			CHECK_FAIL(L"Not Implemented!");
-		}
+	bool GuiRemoteController::IsKeyToggled(VKEY code)
+	{
+		CHECK_FAIL(L"Not Implemented!");
+	}
 
-		WString GuiRemoteController::GetKeyName(VKEY code)
-		{
-			CHECK_FAIL(L"Not Implemented!");
-		}
+	WString GuiRemoteController::GetKeyName(VKEY code)
+	{
+		CHECK_FAIL(L"Not Implemented!");
+	}
 
-		VKEY GuiRemoteController::GetKey(const WString& name)
-		{
-			CHECK_FAIL(L"Not Implemented!");
-		}
+	VKEY GuiRemoteController::GetKey(const WString& name)
+	{
+		CHECK_FAIL(L"Not Implemented!");
+	}
 
-		vint GuiRemoteController::RegisterGlobalShortcutKey(bool ctrl, bool shift, bool alt, VKEY key)
-		{
-			CHECK_FAIL(L"Not Implemented!");
-		}
-			
-		bool GuiRemoteController::UnregisterGlobalShortcutKey(vint id)
-		{
-			CHECK_FAIL(L"Not Implemented!");
-		}
+	vint GuiRemoteController::RegisterGlobalShortcutKey(bool ctrl, bool shift, bool alt, VKEY key)
+	{
+		CHECK_FAIL(L"Not Implemented!");
+	}
+		
+	bool GuiRemoteController::UnregisterGlobalShortcutKey(vint id)
+	{
+		CHECK_FAIL(L"Not Implemented!");
+	}
 
 /***********************************************************************
 GuiRemoteController::INativeScreenService
