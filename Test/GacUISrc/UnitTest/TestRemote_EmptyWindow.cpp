@@ -155,30 +155,32 @@ namespace remote_empty_window_tests
 	
 		void RequestWindowNotifyShow(const WindowShowing& arguments) override
 		{
-			bool changed = sizingConfig.sizeState == arguments.sizeState;
-			sizingConfig.sizeState = arguments.sizeState;
 			styleConfig.activated = arguments.activate;
-			switch (arguments.sizeState)
+			if (sizingConfig.sizeState != arguments.sizeState)
 			{
-			case INativeWindow::Maximized:
-				sizingConfig.bounds = { 0,0,640,440 };
-				OnBoundsUpdated();
-				break;
-			case INativeWindow::Minimized:
-				sizingConfig.bounds = { 640,480,641,481 };
-				OnBoundsUpdated();
-				break;
-			case INativeWindow::Restored:
-				if (sizingConfig.bounds != lastRestoredSize)
+				sizingConfig.sizeState = arguments.sizeState;
+				switch (arguments.sizeState)
 				{
-					sizingConfig.bounds = lastRestoredSize;
+				case INativeWindow::Maximized:
+					sizingConfig.bounds = { 0,0,640,440 };
 					OnBoundsUpdated();
+					break;
+				case INativeWindow::Minimized:
+					sizingConfig.bounds = { 640,480,641,481 };
+					OnBoundsUpdated();
+					break;
+				case INativeWindow::Restored:
+					if (sizingConfig.bounds != lastRestoredSize)
+					{
+						sizingConfig.bounds = lastRestoredSize;
+						OnBoundsUpdated();
+					}
+					else
+					{
+						events->OnWindowBoundsUpdated(sizingConfig);
+					}
+					break;
 				}
-				else if (changed)
-				{
-					events->OnWindowBoundsUpdated(sizingConfig);
-				}
-				break;
 			}
 		}
 	};
