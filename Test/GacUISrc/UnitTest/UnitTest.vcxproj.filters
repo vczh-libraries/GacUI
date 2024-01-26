@@ -78,6 +78,9 @@
     <ClCompile Include="TestRemote_EmptyWindow.cpp">
       <Filter>Source Files\Remote</Filter>
     </ClCompile>
+    <ClCompile Include="TestRemote_ControlHost.cpp">
+      <Filter>Source Files\Remote</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\..\Resources\Resource.FailedInstance.Ctor3.xml.txt">

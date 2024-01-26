@@ -193,6 +193,7 @@
     <ClCompile Include="TestPtrDescriptableObject.cpp" />
     <ClCompile Include="TestQueryParser.cpp" />
     <ClCompile Include="TestReflectionTypeList.cpp" />
+    <ClCompile Include="TestRemote_ControlHost.cpp" />
     <ClCompile Include="TestRemote_EmptyWindow.cpp" />
     <ClCompile Include="TestRemote_Startup.cpp" />
     <ClCompile Include="TestRemote_UnitTestFramework.cpp" />

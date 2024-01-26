@@ -16,6 +16,7 @@ Interfaces:
 #include "GuiRemoteProtocol.h"
 #include "GuiRemoteEvents.h"
 #include "GuiRemoteWindow.h"
+#include "GuiRemoteGraphics.h"
 
 namespace vl::presentation
 {

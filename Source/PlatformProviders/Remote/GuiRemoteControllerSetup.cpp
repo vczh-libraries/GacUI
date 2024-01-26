@@ -3,6 +3,7 @@
 
 using namespace vl;
 using namespace vl::presentation;
+using namespace vl::presentation::elements;
 
 /***********************************************************************
 SetupRemoteNativeController
@@ -12,19 +13,22 @@ extern void GuiApplicationMain();
 
 int SetupRemoteNativeController(vl::presentation::IGuiRemoteProtocol* protocol)
 {
-	auto remoteController = new GuiRemoteController(protocol);
-	auto hostedController = new GuiHostedController(remoteController);
-	SetNativeController(hostedController);
-	{
-		// TODO: register element renderers;
-		remoteController->Initialize();
-		hostedController->Initialize();
-		GuiApplicationMain();
-		hostedController->Finalize();
-		remoteController->Finalize();
-	}
+	GuiRemoteController remoteController(protocol);
+	GuiRemoteGraphicsResourceManager remoteResourceManager(&remoteController);
+
+	GuiHostedController hostedController(&remoteController);
+	GuiHostedGraphicsResourceManager hostedResourceManager(&hostedController, &remoteResourceManager);
+
+	SetNativeController(&hostedController);
+	SetGuiGraphicsResourceManager(&hostedResourceManager);
+
+	remoteController.Initialize();
+	hostedController.Initialize();
+	GuiApplicationMain();
+	hostedController.Finalize();
+	remoteController.Finalize();
+
+	SetGuiGraphicsResourceManager(nullptr);
 	SetNativeController(nullptr);
-	delete hostedController;
-	delete remoteController;
 	return 0;
 }
