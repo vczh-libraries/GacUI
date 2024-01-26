@@ -31,12 +31,14 @@ namespace remote_empty_window_tests
 		bool						connectionStopped = false;
 		WindowSizingConfig			sizingConfig;
 		WindowStyleConfig			styleConfig;
+		NativeRect					lastRestoredSize{ 0,0,100,100 };
 	
 		EmptyWindowProtocol()
 		{
 			sizingConfig.bounds = { 0,0,0,0 };
 			sizingConfig.clientBounds = { 0,0,0,0 };
 			sizingConfig.customFramePadding = { 8,8,8,8 };
+			sizingConfig.sizeState = INativeWindow::Restored;
 		}
 
 		template<typename TCallback>
@@ -119,19 +121,27 @@ namespace remote_empty_window_tests
 		{
 			styleConfig.showInTaskBar = arguments;
 		}
+
+		void OnBoundsUpdated()
+		{
+			sizingConfig.clientBounds = sizingConfig.bounds;
+			if (sizingConfig.sizeState == INativeWindow::Restored)
+			{
+				lastRestoredSize = sizingConfig.bounds;
+			}
+			events->OnWindowBoundsUpdated(sizingConfig);
+		}
 	
 		void RequestWindowNotifySetBounds(const NativeRect& arguments) override
 		{
 			sizingConfig.bounds = arguments;
-			sizingConfig.clientBounds = sizingConfig.bounds;
-			events->OnWindowBoundsUpdated(sizingConfig);
+			OnBoundsUpdated();
 		}
 	
 		void RequestWindowNotifySetClientSize(const NativeSize& arguments) override
 		{
 			sizingConfig.bounds = { sizingConfig.bounds.LeftTop(), arguments };
-			sizingConfig.clientBounds = sizingConfig.bounds;
-			events->OnWindowBoundsUpdated(sizingConfig);
+			OnBoundsUpdated();
 		}
 	
 		void RequestWindowNotifySetCustomFrameMode(const bool& arguments) override	{ styleConfig.customFrameMode = arguments;	events->OnWindowBoundsUpdated(sizingConfig); }
@@ -148,7 +158,28 @@ namespace remote_empty_window_tests
 			bool changed = sizingConfig.sizeState == arguments.sizeState;
 			sizingConfig.sizeState = arguments.sizeState;
 			styleConfig.activated = arguments.activate;
-			if(changed) events->OnWindowBoundsUpdated(sizingConfig);
+			switch (arguments.sizeState)
+			{
+			case INativeWindow::Minimized:
+				sizingConfig.bounds = { 0,0,640,440 };
+				OnBoundsUpdated();
+				break;
+			case INativeWindow::Maximized:
+				sizingConfig.bounds = { 640,480,1,1 };
+				OnBoundsUpdated();
+				break;
+			case INativeWindow::Restored:
+				if (sizingConfig.bounds != lastRestoredSize)
+				{
+					sizingConfig.bounds = lastRestoredSize;
+					OnBoundsUpdated();
+				}
+				else if (changed)
+				{
+					events->OnWindowBoundsUpdated(sizingConfig);
+				}
+				break;
+			}
 		}
 	};
 	
