@@ -68,13 +68,13 @@ TEST_FILE
 	TEST_CATEGORY(L"Create one window and exit immediately")
 	{
 		ControlHostProtocol protocol;
-		Ptr<EmptyControlHost> controlHost;
+		EmptyControlHost* controlHost = nullptr;
 
 		protocol.OnNextFrame([&]()
 		{
 			TEST_ASSERT(controlHost->GetBoundsComposition()->GetCachedBounds() == Rect(0, 0, 100, 200));
 			TEST_ASSERT(controlHost->GetClientSize() == Size(100, 200));
-			controlHost->Close();
+			controlHost->Hide();
 		});
 		SetGuiMainProxy([&]()
 		{
@@ -83,10 +83,14 @@ TEST_FILE
 			{
 				auto theme = Ptr(new EmptyControlTheme);
 				theme::RegisterTheme(theme);
-				controlHost = Ptr(new EmptyControlHost);
-				controlHost->SetClientSize({ 100,200 });
-				controlHost->SetText(L"EmptyControlHost");
-				GetApplication()->Run(controlHost.Obj());
+
+				EmptyControlHost window;
+				window.SetClientSize({ 100,200 });
+				window.SetText(L"EmptyControlHost");
+				controlHost = &window;
+				GetApplication()->Run(&window);
+				controlHost = nullptr;
+
 				theme::UnregisterTheme(theme->Name);
 			});
 		});
