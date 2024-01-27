@@ -253,6 +253,7 @@
   <ItemGroup>
     <ClInclude Include="TestCompositions.h" />
     <ClInclude Include="TestRemote.h" />
+    <ClInclude Include="TestRemote_ControlHost_Shared.h" />
     <ClInclude Include="TestRemote_Shared_BatchedProtocol.h" />
     <ClInclude Include="TestRemote_Shared_LoggingWindowListener.h" />
     <ClInclude Include="TestRemote_Shared_NoRenderingProtocol.h" />
