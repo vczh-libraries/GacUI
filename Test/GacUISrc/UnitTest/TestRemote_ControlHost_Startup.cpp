@@ -35,4 +35,11 @@ TEST_FILE
 		SetupRemoteNativeController(&batchedProtocol);
 		SetGuiMainProxy({});
 	});
+
+	// TODO:
+	//   Mouse enter/leave/capturing
+	//   [TAB] and keyboard focus
+	//   [ALT]
+	//   Shortcut Key
+	//   Other events
 }
