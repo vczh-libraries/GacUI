@@ -38,16 +38,26 @@ namespace remote_control_host_tests
 	{
 	public:
 		EmptyControlHost()
-			: GuiWindow(theme::ThemeName::SystemFrameWindow, INativeWindow::Normal)
+			: GuiWindow(theme::ThemeName::Window, INativeWindow::Normal)
 		{
-			SetControlTemplate([](auto)
+		}
+	};
+
+	class EmptyControlTheme : public theme::ThemeTemplates
+	{
+	public:
+		EmptyControlTheme()
+		{
+			Name = WString::Unmanaged(L"EmptyControlTheme");
+			PreferCustomFrameWindow = true;
+			CustomFrameWindow = [](auto)
 			{
 				auto ct = new templates::GuiWindowTemplate;
 				ct->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 				ct->SetContainerComposition(ct);
 				ct->SetFocusableComposition(ct);
 				return ct;
-			});
+			};
 		}
 	};
 }
@@ -71,10 +81,13 @@ TEST_FILE
 			protocol.events->OnControllerConnect();
 			TEST_CASE(L"Create and destroy a control host")
 			{
+				auto theme = Ptr(new EmptyControlTheme);
+				theme::RegisterTheme(theme);
 				controlHost = Ptr(new EmptyControlHost);
 				controlHost->SetClientSize({ 100,200 });
 				controlHost->SetText(L"EmptyControlHost");
 				GetApplication()->Run(controlHost.Obj());
+				theme::UnregisterTheme(theme->Name);
 			});
 		});
 		BatchedProtocol batchedProtocol(&protocol);
