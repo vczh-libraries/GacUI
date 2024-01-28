@@ -34,6 +34,8 @@ namespace vl::presentation::remoteprotocol
 	template<> Ptr<glr::json::JsonNode> ConvertCustomTypeToJson<float>(const float& value);
 	template<> Ptr<glr::json::JsonNode> ConvertCustomTypeToJson<double>(const double& value);
 	template<> Ptr<glr::json::JsonNode> ConvertCustomTypeToJson<WString>(const WString& value);
+	template<> Ptr<glr::json::JsonNode> ConvertCustomTypeToJson<wchar_t>(const wchar_t& value);
+	template<> Ptr<glr::json::JsonNode> ConvertCustomTypeToJson<VKEY>(const VKEY& value);
 
 	template<typename T>
 	void ConvertJsonToCustomType(Ptr<glr::json::JsonNode> node, T& value)
@@ -46,6 +48,8 @@ namespace vl::presentation::remoteprotocol
 	template<> void ConvertJsonToCustomType<float>(Ptr<glr::json::JsonNode> node, float& value);
 	template<> void ConvertJsonToCustomType<double>(Ptr<glr::json::JsonNode> node, double& value);
 	template<> void ConvertJsonToCustomType<WString>(Ptr<glr::json::JsonNode> node, WString& value);
+	template<> void ConvertJsonToCustomType<wchar_t>(Ptr<glr::json::JsonNode> node, wchar_t& value);
+	template<> void ConvertJsonToCustomType<VKEY>(Ptr<glr::json::JsonNode> node, VKEY& value);
 
 	template<typename T>
 	void ConvertCustomTypeToJsonField(Ptr<glr::json::JsonObject> node, const wchar_t* name, const T& value)

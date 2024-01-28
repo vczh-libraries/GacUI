@@ -37,53 +37,80 @@ namespace vl::presentation::remoteprotocol
 		return node;
 	}
 
+	template<> Ptr<glr::json::JsonNode> ConvertCustomTypeToJson<wchar_t>(const wchar_t& value)
+	{
+		return ConvertCustomTypeToJson(WString::FromChar(value));
+	}
+
+	template<> Ptr<glr::json::JsonNode> ConvertCustomTypeToJson<VKEY>(const VKEY& value)
+	{
+		return ConvertCustomTypeToJson((vint)value);
+	}
+
 	template<> void ConvertJsonToCustomType<bool>(Ptr<glr::json::JsonNode> node, bool& value)
 	{
-	#define ERROR_MESSAGE_PREFIX L"presentation::remoteprotocol::ConvertJsonToCustomType<bool>(Ptr<JsonNode>, bool&)#"
+#define ERROR_MESSAGE_PREFIX L"presentation::remoteprotocol::ConvertJsonToCustomType<bool>(Ptr<JsonNode>, bool&)#"
 		auto jsonNode = node.Cast<glr::json::JsonLiteral>();
-		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
+		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"JSON node does not match the expected type.");
 		switch (jsonNode->value)
 		{
 		case glr::json::JsonLiteralValue::True: value = true; break;
 		case glr::json::JsonLiteralValue::False: value = false; break;
 		default: CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported json literal.");
 		}
-	#undef ERROR_MESSAGE_PREFIX
+#undef ERROR_MESSAGE_PREFIX
 	}
 
 	template<> void ConvertJsonToCustomType<vint>(Ptr<glr::json::JsonNode> node, vint& value)
 	{
-	#define ERROR_MESSAGE_PREFIX L"presentation::remoteprotocol::ConvertJsonToCustomType<vint>(Ptr<JsonNode>, vint&)#"
+#define ERROR_MESSAGE_PREFIX L"presentation::remoteprotocol::ConvertJsonToCustomType<vint>(Ptr<JsonNode>, vint&)#"
 		auto jsonNode = node.Cast<glr::json::JsonNumber>();
-		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
+		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"JSON node does not match the expected type.");
 		CHECK_ERROR(reflection::description::TypedValueSerializerProvider<vint>::Deserialize(jsonNode->content.value, value), ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
-	#undef ERROR_MESSAGE_PREFIX
+#undef ERROR_MESSAGE_PREFIX
 	}
 
 	template<> void ConvertJsonToCustomType<float>(Ptr<glr::json::JsonNode> node, float& value)
 	{
-	#define ERROR_MESSAGE_PREFIX L"presentation::remoteprotocol::ConvertJsonToCustomType<float>(Ptr<JsonNode>, float&)#"
+#define ERROR_MESSAGE_PREFIX L"presentation::remoteprotocol::ConvertJsonToCustomType<float>(Ptr<JsonNode>, float&)#"
 		auto jsonNode = node.Cast<glr::json::JsonNumber>();
-		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
+		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"JSON node does not match the expected type.");
 		CHECK_ERROR(reflection::description::TypedValueSerializerProvider<float>::Deserialize(jsonNode->content.value, value), ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
-	#undef ERROR_MESSAGE_PREFIX
+#undef ERROR_MESSAGE_PREFIX
 	}
 
 	template<> void ConvertJsonToCustomType<double>(Ptr<glr::json::JsonNode> node, double& value)
 	{
-	#define ERROR_MESSAGE_PREFIX L"presentation::remoteprotocol::ConvertJsonToCustomType<double>(Ptr<JsonNode>, double&)#"
+#define ERROR_MESSAGE_PREFIX L"presentation::remoteprotocol::ConvertJsonToCustomType<double>(Ptr<JsonNode>, double&)#"
 		auto jsonNode = node.Cast<glr::json::JsonNumber>();
-		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
+		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"JSON node does not match the expected type.");
 		CHECK_ERROR(reflection::description::TypedValueSerializerProvider<double>::Deserialize(jsonNode->content.value, value), ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
-	#undef ERROR_MESSAGE_PREFIX
+#undef ERROR_MESSAGE_PREFIX
 	}
 
 	template<> void ConvertJsonToCustomType<WString>(Ptr<glr::json::JsonNode> node, WString& value)
 	{
-	#define ERROR_MESSAGE_PREFIX L"presentation::remoteprotocol::ConvertJsonToCustomType<WString>(Ptr<JsonNode>, WString&)#"
+#define ERROR_MESSAGE_PREFIX L"presentation::remoteprotocol::ConvertJsonToCustomType<WString>(Ptr<JsonNode>, WString&)#"
 		auto jsonNode = node.Cast<glr::json::JsonString>();
-		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
+		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"JSON node does not match the expected type.");
 		value = jsonNode->content.value;
-	#undef ERROR_MESSAGE_PREFIX
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	template<> void ConvertJsonToCustomType<wchar_t>(Ptr<glr::json::JsonNode> node, wchar_t& value)
+	{
+#define ERROR_MESSAGE_PREFIX L"presentation::remoteprotocol::ConvertJsonToCustomType<wchar_t>(Ptr<JsonNode>, wchar_t&)#"
+		WString strValue;
+		ConvertJsonToCustomType(node, strValue);
+		CHECK_ERROR(strValue.Length() == 1, ERROR_MESSAGE_PREFIX L"Char in JSON should be a string with one char.");
+		value = strValue[0];
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	template<> void ConvertJsonToCustomType<VKEY>(Ptr<glr::json::JsonNode> node, VKEY& value)
+	{
+		vint intValue;
+		ConvertJsonToCustomType(node, intValue);
+		value = (VKEY)intValue;
 	}
 }
