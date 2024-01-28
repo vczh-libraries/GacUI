@@ -9,6 +9,8 @@ enum PrimitiveTypes
 	Float,
 	Double,
 	String,
+	Char,
+	Key,
 }
 
 class PrimitiveType : Type

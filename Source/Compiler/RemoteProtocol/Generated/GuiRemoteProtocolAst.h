@@ -36,6 +36,8 @@ namespace vl::presentation::remoteprotocol
 		Float = 2,
 		Double = 3,
 		String = 4,
+		Char = 5,
+		Key = 6,
 	};
 
 	class GuiRpType abstract : public vl::glr::ParsingAstBase, vl::reflection::Description<GuiRpType>

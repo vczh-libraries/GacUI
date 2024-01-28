@@ -25,22 +25,24 @@ namespace vl::presentation::remoteprotocol
 		FLOAT = 9,
 		DOUBLE = 10,
 		STRING = 11,
-		CPP_NAME = 12,
-		ATT_NAME = 13,
-		NAME = 14,
-		OPEN_BRACE = 15,
-		CLOSE_BRACE = 16,
-		OPEN_ARRAY = 17,
-		CLOSE_ARRAY = 18,
-		OPEN = 19,
-		CLOSE = 20,
-		COLON = 21,
-		SEMICOLON = 22,
-		COMMA = 23,
-		SPACE = 24,
+		CHAR = 12,
+		KEY = 13,
+		CPP_NAME = 14,
+		ATT_NAME = 15,
+		NAME = 16,
+		OPEN_BRACE = 17,
+		CLOSE_BRACE = 18,
+		OPEN_ARRAY = 19,
+		CLOSE_ARRAY = 20,
+		OPEN = 21,
+		CLOSE = 22,
+		COLON = 23,
+		SEMICOLON = 24,
+		COMMA = 25,
+		SPACE = 26,
 	};
 
-	constexpr vl::vint GuiRemoteProtocolTokenCount = 25;
+	constexpr vl::vint GuiRemoteProtocolTokenCount = 27;
 	extern bool GuiRemoteProtocolTokenDeleter(vl::vint token);
 	extern const wchar_t* GuiRemoteProtocolTokenId(GuiRemoteProtocolTokens token);
 	extern const wchar_t* GuiRemoteProtocolTokenDisplayText(GuiRemoteProtocolTokens token);

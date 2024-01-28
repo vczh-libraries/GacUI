@@ -85,6 +85,8 @@ namespace vl::reflection::description
 		ENUM_NAMESPACE_ITEM(Float)
 		ENUM_NAMESPACE_ITEM(Double)
 		ENUM_NAMESPACE_ITEM(String)
+		ENUM_NAMESPACE_ITEM(Char)
+		ENUM_NAMESPACE_ITEM(Key)
 	END_ENUM_ITEM(vl::presentation::remoteprotocol::GuiRpPrimitiveTypes)
 
 	BEGIN_CLASS_MEMBER(vl::presentation::remoteprotocol::GuiRpPrimitiveType)

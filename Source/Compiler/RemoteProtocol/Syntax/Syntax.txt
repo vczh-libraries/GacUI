@@ -4,6 +4,8 @@ RType
 	::= "float" as PrimitiveType {type = Float}
 	::= "double" as PrimitiveType {type = Double}
 	::= "string" as PrimitiveType {type = String}
+	::= "char" as PrimitiveType {type = Char}
+	::= "key" as PrimitiveType {type = Key}
 	::= NAME:name as ReferenceType
 	::= RType:element "[" "]" as ArrayType
 	;

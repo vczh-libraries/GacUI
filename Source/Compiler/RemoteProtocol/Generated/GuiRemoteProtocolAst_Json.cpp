@@ -99,6 +99,9 @@ namespace vl::presentation::remoteprotocol::json_visitor
 		case vl::presentation::remoteprotocol::GuiRpPrimitiveTypes::Boolean:
 			WriteString(L"Boolean");
 			break;
+		case vl::presentation::remoteprotocol::GuiRpPrimitiveTypes::Char:
+			WriteString(L"Char");
+			break;
 		case vl::presentation::remoteprotocol::GuiRpPrimitiveTypes::Double:
 			WriteString(L"Double");
 			break;
@@ -107,6 +110,9 @@ namespace vl::presentation::remoteprotocol::json_visitor
 			break;
 		case vl::presentation::remoteprotocol::GuiRpPrimitiveTypes::Integer:
 			WriteString(L"Integer");
+			break;
+		case vl::presentation::remoteprotocol::GuiRpPrimitiveTypes::Key:
+			WriteString(L"Key");
 			break;
 		case vl::presentation::remoteprotocol::GuiRpPrimitiveTypes::String:
 			WriteString(L"String");
