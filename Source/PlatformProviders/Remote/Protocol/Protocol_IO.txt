@@ -1,0 +1,63 @@
+enum IOMouseButton
+{
+    Left,
+    Middle,
+    Right
+}
+
+[@Cpp(::vl::presentation::NativeWindowMouseInfo)]
+struct IOMouseInfo
+{
+    var ctrl: bool;
+    var shift: boolean;
+    var left: boolean;
+    var middle: boolean;
+    var right: boolean;
+    var x: NativeCoordinate;
+    var y: NativeCoordinate;
+    var wheel: int;
+    var nonClient: bool;
+}
+
+struct IOMouseInfoWithButton
+{
+    var button: IOMouseButton;
+    var info: IOMouseInfo;
+}
+
+[@Cpp(::vl::presentation::NativeWindowKeyInfo)]
+struct IOKeyInfo
+{
+    var code: key;
+    var ctrl: bool;
+    var shift: boolean;
+    var alt: bool;
+    var capslock: boolean;
+    var autoRepeatKeyDown: boolean;
+}
+
+[@Cpp(::vl::presentation::NativeWindowCharInfo)]
+struct IOCharInfo
+{
+    var code: char;
+    var ctrl: bool;
+    var shift: boolean;
+    var alt: bool;
+    var capslock: boolean;
+}
+
+event IOButtonDown          { request: IOMouseInfoWithButton; }
+event IOButtonClick         { request: IOMouseInfoWithButton; }
+event IOButtonDoubleClick   { request: IOMouseInfoWithButton; }
+event IOButtonUp            { request: IOMouseInfoWithButton; }
+event IOHWheel              { request: IOMouseInfo; }
+event IOVWheel              { request: IOMouseInfo; }
+
+[@DropConsecutive]
+event IOMouseMoving         { request: IOMouseInfo; }
+event IOMouseEnter          { request: IOMouseInfo; }
+event IOMouseLeave          { request: IOMouseInfo; }
+
+event IOKeyDown             { request: IOKeyInfo; }
+event IOKeyUp               { request: IOKeyInfo; }
+event IOChar                { request: IOCharInfo; }
