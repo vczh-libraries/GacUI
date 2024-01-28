@@ -328,6 +328,342 @@
             }
         }
     }, {
+        "$ast": { "type": "EnumDecl", "codeRange": {"start": {"row": 0, "column": 0, "index": 0}, "end": {"row": 5, "column": 0, "index": 59}, "codeIndex": 2}},
+        "attributes": [],
+        "name": { "value": "IOMouseButton", "codeRange": {"start": {"row": 0, "column": 5, "index": 5}, "end": {"row": 0, "column": 17, "index": 17}, "codeIndex": 2}},
+        "members": [{
+            "$ast": { "type": "EnumMember", "codeRange": {"start": {"row": 2, "column": 4, "index": 27}, "end": {"row": 2, "column": 8, "index": 31}, "codeIndex": 2}},
+            "name": { "value": "Left", "codeRange": {"start": {"row": 2, "column": 4, "index": 27}, "end": {"row": 2, "column": 7, "index": 30}, "codeIndex": 2}}
+        }, {
+            "$ast": { "type": "EnumMember", "codeRange": {"start": {"row": 3, "column": 4, "index": 38}, "end": {"row": 3, "column": 10, "index": 44}, "codeIndex": 2}},
+            "name": { "value": "Middle", "codeRange": {"start": {"row": 3, "column": 4, "index": 38}, "end": {"row": 3, "column": 9, "index": 43}, "codeIndex": 2}}
+        }, {
+            "$ast": { "type": "EnumMember", "codeRange": {"start": {"row": 4, "column": 4, "index": 51}, "end": {"row": 4, "column": 9, "index": 56}, "codeIndex": 2}},
+            "name": { "value": "Right", "codeRange": {"start": {"row": 4, "column": 4, "index": 51}, "end": {"row": 4, "column": 8, "index": 55}, "codeIndex": 2}}
+        }]
+    }, {
+        "$ast": { "type": "StructDecl", "codeRange": {"start": {"row": 7, "column": 0, "index": 64}, "end": {"row": 19, "column": 0, "index": 354}, "codeIndex": 2}},
+        "attributes": [{
+            "$ast": { "type": "Attribute", "codeRange": {"start": {"row": 7, "column": 0, "index": 64}, "end": {"row": 7, "column": 48, "index": 112}, "codeIndex": 2}},
+            "cppType": { "value": "::vl::presentation::NativeWindowMouseInfo", "codeRange": {"start": {"row": 7, "column": 6, "index": 70}, "end": {"row": 7, "column": 46, "index": 110}, "codeIndex": 2}},
+            "name": { "value": "@Cpp", "codeRange": {"start": {"row": 7, "column": 1, "index": 65}, "end": {"row": 7, "column": 4, "index": 68}, "codeIndex": 2}}
+        }],
+        "name": { "value": "IOMouseInfo", "codeRange": {"start": {"row": 8, "column": 7, "index": 122}, "end": {"row": 8, "column": 17, "index": 132}, "codeIndex": 2}},
+        "members": [{
+            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 10, "column": 4, "index": 142}, "end": {"row": 10, "column": 18, "index": 156}, "codeIndex": 2}},
+            "name": { "value": "ctrl", "codeRange": {"start": {"row": 10, "column": 8, "index": 146}, "end": {"row": 10, "column": 11, "index": 149}, "codeIndex": 2}},
+            "type": {
+                "$ast": { "type": "PrimitiveType", "codeRange": {"start": {"row": 10, "column": 14, "index": 152}, "end": {"row": 10, "column": 17, "index": 155}, "codeIndex": 2}},
+                "type": "Boolean"
+            }
+        }, {
+            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 11, "column": 4, "index": 163}, "end": {"row": 11, "column": 19, "index": 178}, "codeIndex": 2}},
+            "name": { "value": "shift", "codeRange": {"start": {"row": 11, "column": 8, "index": 167}, "end": {"row": 11, "column": 12, "index": 171}, "codeIndex": 2}},
+            "type": {
+                "$ast": { "type": "PrimitiveType", "codeRange": {"start": {"row": 11, "column": 15, "index": 174}, "end": {"row": 11, "column": 18, "index": 177}, "codeIndex": 2}},
+                "type": "Boolean"
+            }
+        }, {
+            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 12, "column": 4, "index": 185}, "end": {"row": 12, "column": 18, "index": 199}, "codeIndex": 2}},
+            "name": { "value": "left", "codeRange": {"start": {"row": 12, "column": 8, "index": 189}, "end": {"row": 12, "column": 11, "index": 192}, "codeIndex": 2}},
+            "type": {
+                "$ast": { "type": "PrimitiveType", "codeRange": {"start": {"row": 12, "column": 14, "index": 195}, "end": {"row": 12, "column": 17, "index": 198}, "codeIndex": 2}},
+                "type": "Boolean"
+            }
+        }, {
+            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 13, "column": 4, "index": 206}, "end": {"row": 13, "column": 20, "index": 222}, "codeIndex": 2}},
+            "name": { "value": "middle", "codeRange": {"start": {"row": 13, "column": 8, "index": 210}, "end": {"row": 13, "column": 13, "index": 215}, "codeIndex": 2}},
+            "type": {
+                "$ast": { "type": "PrimitiveType", "codeRange": {"start": {"row": 13, "column": 16, "index": 218}, "end": {"row": 13, "column": 19, "index": 221}, "codeIndex": 2}},
+                "type": "Boolean"
+            }
+        }, {
+            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 14, "column": 4, "index": 229}, "end": {"row": 14, "column": 19, "index": 244}, "codeIndex": 2}},
+            "name": { "value": "right", "codeRange": {"start": {"row": 14, "column": 8, "index": 233}, "end": {"row": 14, "column": 12, "index": 237}, "codeIndex": 2}},
+            "type": {
+                "$ast": { "type": "PrimitiveType", "codeRange": {"start": {"row": 14, "column": 15, "index": 240}, "end": {"row": 14, "column": 18, "index": 243}, "codeIndex": 2}},
+                "type": "Boolean"
+            }
+        }, {
+            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 15, "column": 4, "index": 251}, "end": {"row": 15, "column": 27, "index": 274}, "codeIndex": 2}},
+            "name": { "value": "x", "codeRange": {"start": {"row": 15, "column": 8, "index": 255}, "end": {"row": 15, "column": 8, "index": 255}, "codeIndex": 2}},
+            "type": {
+                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 15, "column": 11, "index": 258}, "end": {"row": 15, "column": 26, "index": 273}, "codeIndex": 2}},
+                "name": { "value": "NativeCoordinate", "codeRange": {"start": {"row": 15, "column": 11, "index": 258}, "end": {"row": 15, "column": 26, "index": 273}, "codeIndex": 2}}
+            }
+        }, {
+            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 16, "column": 4, "index": 281}, "end": {"row": 16, "column": 27, "index": 304}, "codeIndex": 2}},
+            "name": { "value": "y", "codeRange": {"start": {"row": 16, "column": 8, "index": 285}, "end": {"row": 16, "column": 8, "index": 285}, "codeIndex": 2}},
+            "type": {
+                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 16, "column": 11, "index": 288}, "end": {"row": 16, "column": 26, "index": 303}, "codeIndex": 2}},
+                "name": { "value": "NativeCoordinate", "codeRange": {"start": {"row": 16, "column": 11, "index": 288}, "end": {"row": 16, "column": 26, "index": 303}, "codeIndex": 2}}
+            }
+        }, {
+            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 17, "column": 4, "index": 311}, "end": {"row": 17, "column": 18, "index": 325}, "codeIndex": 2}},
+            "name": { "value": "wheel", "codeRange": {"start": {"row": 17, "column": 8, "index": 315}, "end": {"row": 17, "column": 12, "index": 319}, "codeIndex": 2}},
+            "type": {
+                "$ast": { "type": "PrimitiveType", "codeRange": {"start": {"row": 17, "column": 15, "index": 322}, "end": {"row": 17, "column": 17, "index": 324}, "codeIndex": 2}},
+                "type": "Integer"
+            }
+        }, {
+            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 18, "column": 4, "index": 332}, "end": {"row": 18, "column": 23, "index": 351}, "codeIndex": 2}},
+            "name": { "value": "nonClient", "codeRange": {"start": {"row": 18, "column": 8, "index": 336}, "end": {"row": 18, "column": 16, "index": 344}, "codeIndex": 2}},
+            "type": {
+                "$ast": { "type": "PrimitiveType", "codeRange": {"start": {"row": 18, "column": 19, "index": 347}, "end": {"row": 18, "column": 22, "index": 350}, "codeIndex": 2}},
+                "type": "Boolean"
+            }
+        }]
+    }, {
+        "$ast": { "type": "StructDecl", "codeRange": {"start": {"row": 21, "column": 0, "index": 359}, "end": {"row": 25, "column": 0, "index": 452}, "codeIndex": 2}},
+        "attributes": [],
+        "name": { "value": "IOMouseInfoWithButton", "codeRange": {"start": {"row": 21, "column": 7, "index": 366}, "end": {"row": 21, "column": 27, "index": 386}, "codeIndex": 2}},
+        "members": [{
+            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 23, "column": 4, "index": 396}, "end": {"row": 23, "column": 29, "index": 421}, "codeIndex": 2}},
+            "name": { "value": "button", "codeRange": {"start": {"row": 23, "column": 8, "index": 400}, "end": {"row": 23, "column": 13, "index": 405}, "codeIndex": 2}},
+            "type": {
+                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 23, "column": 16, "index": 408}, "end": {"row": 23, "column": 28, "index": 420}, "codeIndex": 2}},
+                "name": { "value": "IOMouseButton", "codeRange": {"start": {"row": 23, "column": 16, "index": 408}, "end": {"row": 23, "column": 28, "index": 420}, "codeIndex": 2}}
+            }
+        }, {
+            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 24, "column": 4, "index": 428}, "end": {"row": 24, "column": 25, "index": 449}, "codeIndex": 2}},
+            "name": { "value": "info", "codeRange": {"start": {"row": 24, "column": 8, "index": 432}, "end": {"row": 24, "column": 11, "index": 435}, "codeIndex": 2}},
+            "type": {
+                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 24, "column": 14, "index": 438}, "end": {"row": 24, "column": 24, "index": 448}, "codeIndex": 2}},
+                "name": { "value": "IOMouseInfo", "codeRange": {"start": {"row": 24, "column": 14, "index": 438}, "end": {"row": 24, "column": 24, "index": 448}, "codeIndex": 2}}
+            }
+        }]
+    }, {
+        "$ast": { "type": "StructDecl", "codeRange": {"start": {"row": 27, "column": 0, "index": 457}, "end": {"row": 36, "column": 0, "index": 669}, "codeIndex": 2}},
+        "attributes": [{
+            "$ast": { "type": "Attribute", "codeRange": {"start": {"row": 27, "column": 0, "index": 457}, "end": {"row": 27, "column": 46, "index": 503}, "codeIndex": 2}},
+            "cppType": { "value": "::vl::presentation::NativeWindowKeyInfo", "codeRange": {"start": {"row": 27, "column": 6, "index": 463}, "end": {"row": 27, "column": 44, "index": 501}, "codeIndex": 2}},
+            "name": { "value": "@Cpp", "codeRange": {"start": {"row": 27, "column": 1, "index": 458}, "end": {"row": 27, "column": 4, "index": 461}, "codeIndex": 2}}
+        }],
+        "name": { "value": "IOKeyInfo", "codeRange": {"start": {"row": 28, "column": 7, "index": 513}, "end": {"row": 28, "column": 15, "index": 521}, "codeIndex": 2}},
+        "members": [{
+            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 30, "column": 4, "index": 531}, "end": {"row": 30, "column": 17, "index": 544}, "codeIndex": 2}},
+            "name": { "value": "code", "codeRange": {"start": {"row": 30, "column": 8, "index": 535}, "end": {"row": 30, "column": 11, "index": 538}, "codeIndex": 2}},
+            "type": {
+                "$ast": { "type": "PrimitiveType", "codeRange": {"start": {"row": 30, "column": 14, "index": 541}, "end": {"row": 30, "column": 16, "index": 543}, "codeIndex": 2}},
+                "type": "Key"
+            }
+        }, {
+            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 31, "column": 4, "index": 551}, "end": {"row": 31, "column": 18, "index": 565}, "codeIndex": 2}},
+            "name": { "value": "ctrl", "codeRange": {"start": {"row": 31, "column": 8, "index": 555}, "end": {"row": 31, "column": 11, "index": 558}, "codeIndex": 2}},
+            "type": {
+                "$ast": { "type": "PrimitiveType", "codeRange": {"start": {"row": 31, "column": 14, "index": 561}, "end": {"row": 31, "column": 17, "index": 564}, "codeIndex": 2}},
+                "type": "Boolean"
+            }
+        }, {
+            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 32, "column": 4, "index": 572}, "end": {"row": 32, "column": 19, "index": 587}, "codeIndex": 2}},
+            "name": { "value": "shift", "codeRange": {"start": {"row": 32, "column": 8, "index": 576}, "end": {"row": 32, "column": 12, "index": 580}, "codeIndex": 2}},
+            "type": {
+                "$ast": { "type": "PrimitiveType", "codeRange": {"start": {"row": 32, "column": 15, "index": 583}, "end": {"row": 32, "column": 18, "index": 586}, "codeIndex": 2}},
+                "type": "Boolean"
+            }
+        }, {
+            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 33, "column": 4, "index": 594}, "end": {"row": 33, "column": 17, "index": 607}, "codeIndex": 2}},
+            "name": { "value": "alt", "codeRange": {"start": {"row": 33, "column": 8, "index": 598}, "end": {"row": 33, "column": 10, "index": 600}, "codeIndex": 2}},
+            "type": {
+                "$ast": { "type": "PrimitiveType", "codeRange": {"start": {"row": 33, "column": 13, "index": 603}, "end": {"row": 33, "column": 16, "index": 606}, "codeIndex": 2}},
+                "type": "Boolean"
+            }
+        }, {
+            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 34, "column": 4, "index": 614}, "end": {"row": 34, "column": 22, "index": 632}, "codeIndex": 2}},
+            "name": { "value": "capslock", "codeRange": {"start": {"row": 34, "column": 8, "index": 618}, "end": {"row": 34, "column": 15, "index": 625}, "codeIndex": 2}},
+            "type": {
+                "$ast": { "type": "PrimitiveType", "codeRange": {"start": {"row": 34, "column": 18, "index": 628}, "end": {"row": 34, "column": 21, "index": 631}, "codeIndex": 2}},
+                "type": "Boolean"
+            }
+        }, {
+            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 35, "column": 4, "index": 639}, "end": {"row": 35, "column": 31, "index": 666}, "codeIndex": 2}},
+            "name": { "value": "autoRepeatKeyDown", "codeRange": {"start": {"row": 35, "column": 8, "index": 643}, "end": {"row": 35, "column": 24, "index": 659}, "codeIndex": 2}},
+            "type": {
+                "$ast": { "type": "PrimitiveType", "codeRange": {"start": {"row": 35, "column": 27, "index": 662}, "end": {"row": 35, "column": 30, "index": 665}, "codeIndex": 2}},
+                "type": "Boolean"
+            }
+        }]
+    }, {
+        "$ast": { "type": "StructDecl", "codeRange": {"start": {"row": 38, "column": 0, "index": 674}, "end": {"row": 46, "column": 0, "index": 855}, "codeIndex": 2}},
+        "attributes": [{
+            "$ast": { "type": "Attribute", "codeRange": {"start": {"row": 38, "column": 0, "index": 674}, "end": {"row": 38, "column": 47, "index": 721}, "codeIndex": 2}},
+            "cppType": { "value": "::vl::presentation::NativeWindowCharInfo", "codeRange": {"start": {"row": 38, "column": 6, "index": 680}, "end": {"row": 38, "column": 45, "index": 719}, "codeIndex": 2}},
+            "name": { "value": "@Cpp", "codeRange": {"start": {"row": 38, "column": 1, "index": 675}, "end": {"row": 38, "column": 4, "index": 678}, "codeIndex": 2}}
+        }],
+        "name": { "value": "IOCharInfo", "codeRange": {"start": {"row": 39, "column": 7, "index": 731}, "end": {"row": 39, "column": 16, "index": 740}, "codeIndex": 2}},
+        "members": [{
+            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 41, "column": 4, "index": 750}, "end": {"row": 41, "column": 18, "index": 764}, "codeIndex": 2}},
+            "name": { "value": "code", "codeRange": {"start": {"row": 41, "column": 8, "index": 754}, "end": {"row": 41, "column": 11, "index": 757}, "codeIndex": 2}},
+            "type": {
+                "$ast": { "type": "PrimitiveType", "codeRange": {"start": {"row": 41, "column": 14, "index": 760}, "end": {"row": 41, "column": 17, "index": 763}, "codeIndex": 2}},
+                "type": "Char"
+            }
+        }, {
+            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 42, "column": 4, "index": 771}, "end": {"row": 42, "column": 18, "index": 785}, "codeIndex": 2}},
+            "name": { "value": "ctrl", "codeRange": {"start": {"row": 42, "column": 8, "index": 775}, "end": {"row": 42, "column": 11, "index": 778}, "codeIndex": 2}},
+            "type": {
+                "$ast": { "type": "PrimitiveType", "codeRange": {"start": {"row": 42, "column": 14, "index": 781}, "end": {"row": 42, "column": 17, "index": 784}, "codeIndex": 2}},
+                "type": "Boolean"
+            }
+        }, {
+            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 43, "column": 4, "index": 792}, "end": {"row": 43, "column": 19, "index": 807}, "codeIndex": 2}},
+            "name": { "value": "shift", "codeRange": {"start": {"row": 43, "column": 8, "index": 796}, "end": {"row": 43, "column": 12, "index": 800}, "codeIndex": 2}},
+            "type": {
+                "$ast": { "type": "PrimitiveType", "codeRange": {"start": {"row": 43, "column": 15, "index": 803}, "end": {"row": 43, "column": 18, "index": 806}, "codeIndex": 2}},
+                "type": "Boolean"
+            }
+        }, {
+            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 44, "column": 4, "index": 814}, "end": {"row": 44, "column": 17, "index": 827}, "codeIndex": 2}},
+            "name": { "value": "alt", "codeRange": {"start": {"row": 44, "column": 8, "index": 818}, "end": {"row": 44, "column": 10, "index": 820}, "codeIndex": 2}},
+            "type": {
+                "$ast": { "type": "PrimitiveType", "codeRange": {"start": {"row": 44, "column": 13, "index": 823}, "end": {"row": 44, "column": 16, "index": 826}, "codeIndex": 2}},
+                "type": "Boolean"
+            }
+        }, {
+            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 45, "column": 4, "index": 834}, "end": {"row": 45, "column": 22, "index": 852}, "codeIndex": 2}},
+            "name": { "value": "capslock", "codeRange": {"start": {"row": 45, "column": 8, "index": 838}, "end": {"row": 45, "column": 15, "index": 845}, "codeIndex": 2}},
+            "type": {
+                "$ast": { "type": "PrimitiveType", "codeRange": {"start": {"row": 45, "column": 18, "index": 848}, "end": {"row": 45, "column": 21, "index": 851}, "codeIndex": 2}},
+                "type": "Boolean"
+            }
+        }]
+    }, {
+        "$ast": { "type": "EventDecl", "codeRange": {"start": {"row": 48, "column": 0, "index": 860}, "end": {"row": 48, "column": 62, "index": 922}, "codeIndex": 2}},
+        "attributes": [],
+        "name": { "value": "IOButtonDown", "codeRange": {"start": {"row": 48, "column": 6, "index": 866}, "end": {"row": 48, "column": 17, "index": 877}, "codeIndex": 2}},
+        "request": {
+            "$ast": { "type": "EventRequest", "codeRange": {"start": {"row": 48, "column": 30, "index": 890}, "end": {"row": 48, "column": 60, "index": 920}, "codeIndex": 2}},
+            "type": {
+                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 48, "column": 39, "index": 899}, "end": {"row": 48, "column": 59, "index": 919}, "codeIndex": 2}},
+                "name": { "value": "IOMouseInfoWithButton", "codeRange": {"start": {"row": 48, "column": 39, "index": 899}, "end": {"row": 48, "column": 59, "index": 919}, "codeIndex": 2}}
+            }
+        }
+    }, {
+        "$ast": { "type": "EventDecl", "codeRange": {"start": {"row": 49, "column": 0, "index": 925}, "end": {"row": 49, "column": 62, "index": 987}, "codeIndex": 2}},
+        "attributes": [],
+        "name": { "value": "IOButtonClick", "codeRange": {"start": {"row": 49, "column": 6, "index": 931}, "end": {"row": 49, "column": 18, "index": 943}, "codeIndex": 2}},
+        "request": {
+            "$ast": { "type": "EventRequest", "codeRange": {"start": {"row": 49, "column": 30, "index": 955}, "end": {"row": 49, "column": 60, "index": 985}, "codeIndex": 2}},
+            "type": {
+                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 49, "column": 39, "index": 964}, "end": {"row": 49, "column": 59, "index": 984}, "codeIndex": 2}},
+                "name": { "value": "IOMouseInfoWithButton", "codeRange": {"start": {"row": 49, "column": 39, "index": 964}, "end": {"row": 49, "column": 59, "index": 984}, "codeIndex": 2}}
+            }
+        }
+    }, {
+        "$ast": { "type": "EventDecl", "codeRange": {"start": {"row": 50, "column": 0, "index": 990}, "end": {"row": 50, "column": 62, "index": 1052}, "codeIndex": 2}},
+        "attributes": [],
+        "name": { "value": "IOButtonDoubleClick", "codeRange": {"start": {"row": 50, "column": 6, "index": 996}, "end": {"row": 50, "column": 24, "index": 1014}, "codeIndex": 2}},
+        "request": {
+            "$ast": { "type": "EventRequest", "codeRange": {"start": {"row": 50, "column": 30, "index": 1020}, "end": {"row": 50, "column": 60, "index": 1050}, "codeIndex": 2}},
+            "type": {
+                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 50, "column": 39, "index": 1029}, "end": {"row": 50, "column": 59, "index": 1049}, "codeIndex": 2}},
+                "name": { "value": "IOMouseInfoWithButton", "codeRange": {"start": {"row": 50, "column": 39, "index": 1029}, "end": {"row": 50, "column": 59, "index": 1049}, "codeIndex": 2}}
+            }
+        }
+    }, {
+        "$ast": { "type": "EventDecl", "codeRange": {"start": {"row": 51, "column": 0, "index": 1055}, "end": {"row": 51, "column": 62, "index": 1117}, "codeIndex": 2}},
+        "attributes": [],
+        "name": { "value": "IOButtonUp", "codeRange": {"start": {"row": 51, "column": 6, "index": 1061}, "end": {"row": 51, "column": 15, "index": 1070}, "codeIndex": 2}},
+        "request": {
+            "$ast": { "type": "EventRequest", "codeRange": {"start": {"row": 51, "column": 30, "index": 1085}, "end": {"row": 51, "column": 60, "index": 1115}, "codeIndex": 2}},
+            "type": {
+                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 51, "column": 39, "index": 1094}, "end": {"row": 51, "column": 59, "index": 1114}, "codeIndex": 2}},
+                "name": { "value": "IOMouseInfoWithButton", "codeRange": {"start": {"row": 51, "column": 39, "index": 1094}, "end": {"row": 51, "column": 59, "index": 1114}, "codeIndex": 2}}
+            }
+        }
+    }, {
+        "$ast": { "type": "EventDecl", "codeRange": {"start": {"row": 52, "column": 0, "index": 1120}, "end": {"row": 52, "column": 52, "index": 1172}, "codeIndex": 2}},
+        "attributes": [],
+        "name": { "value": "IOHWheel", "codeRange": {"start": {"row": 52, "column": 6, "index": 1126}, "end": {"row": 52, "column": 13, "index": 1133}, "codeIndex": 2}},
+        "request": {
+            "$ast": { "type": "EventRequest", "codeRange": {"start": {"row": 52, "column": 30, "index": 1150}, "end": {"row": 52, "column": 50, "index": 1170}, "codeIndex": 2}},
+            "type": {
+                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 52, "column": 39, "index": 1159}, "end": {"row": 52, "column": 49, "index": 1169}, "codeIndex": 2}},
+                "name": { "value": "IOMouseInfo", "codeRange": {"start": {"row": 52, "column": 39, "index": 1159}, "end": {"row": 52, "column": 49, "index": 1169}, "codeIndex": 2}}
+            }
+        }
+    }, {
+        "$ast": { "type": "EventDecl", "codeRange": {"start": {"row": 53, "column": 0, "index": 1175}, "end": {"row": 53, "column": 52, "index": 1227}, "codeIndex": 2}},
+        "attributes": [],
+        "name": { "value": "IOVWheel", "codeRange": {"start": {"row": 53, "column": 6, "index": 1181}, "end": {"row": 53, "column": 13, "index": 1188}, "codeIndex": 2}},
+        "request": {
+            "$ast": { "type": "EventRequest", "codeRange": {"start": {"row": 53, "column": 30, "index": 1205}, "end": {"row": 53, "column": 50, "index": 1225}, "codeIndex": 2}},
+            "type": {
+                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 53, "column": 39, "index": 1214}, "end": {"row": 53, "column": 49, "index": 1224}, "codeIndex": 2}},
+                "name": { "value": "IOMouseInfo", "codeRange": {"start": {"row": 53, "column": 39, "index": 1214}, "end": {"row": 53, "column": 49, "index": 1224}, "codeIndex": 2}}
+            }
+        }
+    }, {
+        "$ast": { "type": "EventDecl", "codeRange": {"start": {"row": 55, "column": 0, "index": 1232}, "end": {"row": 56, "column": 52, "index": 1304}, "codeIndex": 2}},
+        "attributes": [{
+            "$ast": { "type": "Attribute", "codeRange": {"start": {"row": 55, "column": 0, "index": 1232}, "end": {"row": 55, "column": 17, "index": 1249}, "codeIndex": 2}},
+            "cppType": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+            "name": { "value": "@DropConsecutive", "codeRange": {"start": {"row": 55, "column": 1, "index": 1233}, "end": {"row": 55, "column": 16, "index": 1248}, "codeIndex": 2}}
+        }],
+        "name": { "value": "IOMouseMoving", "codeRange": {"start": {"row": 56, "column": 6, "index": 1258}, "end": {"row": 56, "column": 18, "index": 1270}, "codeIndex": 2}},
+        "request": {
+            "$ast": { "type": "EventRequest", "codeRange": {"start": {"row": 56, "column": 30, "index": 1282}, "end": {"row": 56, "column": 50, "index": 1302}, "codeIndex": 2}},
+            "type": {
+                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 56, "column": 39, "index": 1291}, "end": {"row": 56, "column": 49, "index": 1301}, "codeIndex": 2}},
+                "name": { "value": "IOMouseInfo", "codeRange": {"start": {"row": 56, "column": 39, "index": 1291}, "end": {"row": 56, "column": 49, "index": 1301}, "codeIndex": 2}}
+            }
+        }
+    }, {
+        "$ast": { "type": "EventDecl", "codeRange": {"start": {"row": 57, "column": 0, "index": 1307}, "end": {"row": 57, "column": 52, "index": 1359}, "codeIndex": 2}},
+        "attributes": [],
+        "name": { "value": "IOMouseEnter", "codeRange": {"start": {"row": 57, "column": 6, "index": 1313}, "end": {"row": 57, "column": 17, "index": 1324}, "codeIndex": 2}},
+        "request": {
+            "$ast": { "type": "EventRequest", "codeRange": {"start": {"row": 57, "column": 30, "index": 1337}, "end": {"row": 57, "column": 50, "index": 1357}, "codeIndex": 2}},
+            "type": {
+                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 57, "column": 39, "index": 1346}, "end": {"row": 57, "column": 49, "index": 1356}, "codeIndex": 2}},
+                "name": { "value": "IOMouseInfo", "codeRange": {"start": {"row": 57, "column": 39, "index": 1346}, "end": {"row": 57, "column": 49, "index": 1356}, "codeIndex": 2}}
+            }
+        }
+    }, {
+        "$ast": { "type": "EventDecl", "codeRange": {"start": {"row": 58, "column": 0, "index": 1362}, "end": {"row": 58, "column": 52, "index": 1414}, "codeIndex": 2}},
+        "attributes": [],
+        "name": { "value": "IOMouseLeave", "codeRange": {"start": {"row": 58, "column": 6, "index": 1368}, "end": {"row": 58, "column": 17, "index": 1379}, "codeIndex": 2}},
+        "request": {
+            "$ast": { "type": "EventRequest", "codeRange": {"start": {"row": 58, "column": 30, "index": 1392}, "end": {"row": 58, "column": 50, "index": 1412}, "codeIndex": 2}},
+            "type": {
+                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 58, "column": 39, "index": 1401}, "end": {"row": 58, "column": 49, "index": 1411}, "codeIndex": 2}},
+                "name": { "value": "IOMouseInfo", "codeRange": {"start": {"row": 58, "column": 39, "index": 1401}, "end": {"row": 58, "column": 49, "index": 1411}, "codeIndex": 2}}
+            }
+        }
+    }, {
+        "$ast": { "type": "EventDecl", "codeRange": {"start": {"row": 60, "column": 0, "index": 1419}, "end": {"row": 60, "column": 50, "index": 1469}, "codeIndex": 2}},
+        "attributes": [],
+        "name": { "value": "IOKeyDown", "codeRange": {"start": {"row": 60, "column": 6, "index": 1425}, "end": {"row": 60, "column": 14, "index": 1433}, "codeIndex": 2}},
+        "request": {
+            "$ast": { "type": "EventRequest", "codeRange": {"start": {"row": 60, "column": 30, "index": 1449}, "end": {"row": 60, "column": 48, "index": 1467}, "codeIndex": 2}},
+            "type": {
+                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 60, "column": 39, "index": 1458}, "end": {"row": 60, "column": 47, "index": 1466}, "codeIndex": 2}},
+                "name": { "value": "IOKeyInfo", "codeRange": {"start": {"row": 60, "column": 39, "index": 1458}, "end": {"row": 60, "column": 47, "index": 1466}, "codeIndex": 2}}
+            }
+        }
+    }, {
+        "$ast": { "type": "EventDecl", "codeRange": {"start": {"row": 61, "column": 0, "index": 1472}, "end": {"row": 61, "column": 50, "index": 1522}, "codeIndex": 2}},
+        "attributes": [],
+        "name": { "value": "IOKeyUp", "codeRange": {"start": {"row": 61, "column": 6, "index": 1478}, "end": {"row": 61, "column": 12, "index": 1484}, "codeIndex": 2}},
+        "request": {
+            "$ast": { "type": "EventRequest", "codeRange": {"start": {"row": 61, "column": 30, "index": 1502}, "end": {"row": 61, "column": 48, "index": 1520}, "codeIndex": 2}},
+            "type": {
+                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 61, "column": 39, "index": 1511}, "end": {"row": 61, "column": 47, "index": 1519}, "codeIndex": 2}},
+                "name": { "value": "IOKeyInfo", "codeRange": {"start": {"row": 61, "column": 39, "index": 1511}, "end": {"row": 61, "column": 47, "index": 1519}, "codeIndex": 2}}
+            }
+        }
+    }, {
+        "$ast": { "type": "EventDecl", "codeRange": {"start": {"row": 62, "column": 0, "index": 1525}, "end": {"row": 62, "column": 51, "index": 1576}, "codeIndex": 2}},
+        "attributes": [],
+        "name": { "value": "IOChar", "codeRange": {"start": {"row": 62, "column": 6, "index": 1531}, "end": {"row": 62, "column": 11, "index": 1536}, "codeIndex": 2}},
+        "request": {
+            "$ast": { "type": "EventRequest", "codeRange": {"start": {"row": 62, "column": 30, "index": 1555}, "end": {"row": 62, "column": 49, "index": 1574}, "codeIndex": 2}},
+            "type": {
+                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 62, "column": 39, "index": 1564}, "end": {"row": 62, "column": 48, "index": 1573}, "codeIndex": 2}},
+                "name": { "value": "IOCharInfo", "codeRange": {"start": {"row": 62, "column": 39, "index": 1564}, "end": {"row": 62, "column": 48, "index": 1573}, "codeIndex": 2}}
+            }
+        }
+    }, {
         "$ast": { "type": "EnumDecl", "codeRange": {"start": {"row": 0, "column": 0, "index": 0}, "end": {"row": 6, "column": 0, "index": 132}, "codeIndex": 1}},
         "attributes": [{
             "$ast": { "type": "Attribute", "codeRange": {"start": {"row": 0, "column": 0, "index": 0}, "end": {"row": 0, "column": 57, "index": 57}, "codeIndex": 1}},

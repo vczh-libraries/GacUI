@@ -278,6 +278,12 @@ GenerateRemoteProtocolHeaderFile
 			case GuiRpPrimitiveTypes::String:
 				writer.WriteString(L"::vl::WString");
 				break;
+			case GuiRpPrimitiveTypes::Char:
+				writer.WriteString(L"wchar_t");
+				break;
+			case GuiRpPrimitiveTypes::Key:
+				writer.WriteString(L"::vl::presentation::VKEY");
+				break;
 			default:
 				CHECK_FAIL(L"Unrecognized type");
 			}

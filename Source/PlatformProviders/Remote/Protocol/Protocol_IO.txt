@@ -2,17 +2,17 @@ enum IOMouseButton
 {
     Left,
     Middle,
-    Right
+    Right,
 }
 
 [@Cpp(::vl::presentation::NativeWindowMouseInfo)]
 struct IOMouseInfo
 {
     var ctrl: bool;
-    var shift: boolean;
-    var left: boolean;
-    var middle: boolean;
-    var right: boolean;
+    var shift: bool;
+    var left: bool;
+    var middle: bool;
+    var right: bool;
     var x: NativeCoordinate;
     var y: NativeCoordinate;
     var wheel: int;
@@ -30,10 +30,10 @@ struct IOKeyInfo
 {
     var code: key;
     var ctrl: bool;
-    var shift: boolean;
+    var shift: bool;
     var alt: bool;
-    var capslock: boolean;
-    var autoRepeatKeyDown: boolean;
+    var capslock: bool;
+    var autoRepeatKeyDown: bool;
 }
 
 [@Cpp(::vl::presentation::NativeWindowCharInfo)]
@@ -41,9 +41,9 @@ struct IOCharInfo
 {
     var code: char;
     var ctrl: bool;
-    var shift: boolean;
+    var shift: bool;
     var alt: bool;
-    var capslock: boolean;
+    var capslock: bool;
 }
 
 event IOButtonDown          { request: IOMouseInfoWithButton; }
