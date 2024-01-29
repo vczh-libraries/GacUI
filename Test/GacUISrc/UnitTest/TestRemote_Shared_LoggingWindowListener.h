@@ -9,6 +9,19 @@ using namespace vl::presentation;
 
 namespace remote_protocol_tests
 {
+	template<typename ...TArgs>
+	void AssertEventLogs(List<WString>& eventLogs, TArgs&& ...args)
+	{
+		const wchar_t* expected[] = { args... };
+		TEST_ASSERT(CompareEnumerable(eventLogs, From(expected).Select(WString::Unmanaged)) == 0);
+		eventLogs.Clear();
+	}
+
+	inline void AssertEventLogs(List<WString>& eventLogs)
+	{
+		TEST_ASSERT(eventLogs.Count() == 0);
+	}
+
 	class LoggingWindowListener : public Object, public virtual INativeWindowListener
 	{
 	public:
@@ -18,14 +31,12 @@ namespace remote_protocol_tests
 		template<typename ...TArgs>
 		void AssertCallbacks(TArgs&& ...args)
 		{
-			const wchar_t* expected[] = {args...};
-			TEST_ASSERT(CompareEnumerable(callbacks, From(expected).Select(WString::Unmanaged)) == 0);
-			callbacks.Clear();
+			AssertEventLogs(callbacks, std::forward<TArgs&&>(args)...);
 		}
 	
 		void AssertCallbacks()
 		{
-			TEST_ASSERT(callbacks.Count() == 0);
+			AssertEventLogs(callbacks);
 		}
 	
 		WString PrintArguments(const NativeWindowMouseInfo& info)
