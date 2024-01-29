@@ -489,10 +489,10 @@ GuiGraphicsHost
 			void GuiGraphicsHost::MouseLeaved()
 			{
 				// TODO: (enumerable) foreach:reversed
-				for(vint i=mouseEnterCompositions.Count()-1;i>=0;i--)
+				for (vint i = mouseEnterCompositions.Count() - 1; i >= 0; i--)
 				{
-					GuiGraphicsComposition* composition=mouseEnterCompositions[i];
-					if(composition->HasEventReceiver())
+					GuiGraphicsComposition* composition = mouseEnterCompositions[i];
+					if (composition->HasEventReceiver())
 					{
 						composition->GetEventReceiver()->mouseLeave.Execute(GuiEventArgs(composition));
 					}

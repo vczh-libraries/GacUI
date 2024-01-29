@@ -218,14 +218,14 @@ namespace remote_protocol_tests
 			{\
 				batchedEvents[lastDropRepeatEvent ## NAME].dropped = true;\
 			}\
-			lastDropRepeatEvent ## NAME = batchedEvents.Count()\
+			lastDropRepeatEvent ## NAME = batchedEvents.Count() - 1\
 	
 #define EVENT_DROPCON(NAME)\
-			if (lastDropConsecutiveEvent ## NAME == batchedEvents.Count() - 1)\
+			if (lastDropConsecutiveEvent ## NAME != -1 && lastDropConsecutiveEvent ## NAME == batchedEvents.Count() - 1)\
 			{\
 				batchedEvents[lastDropConsecutiveEvent ## NAME].dropped = true;\
 			}\
-			lastDropConsecutiveEvent ## NAME = batchedEvents.Count()\
+			lastDropConsecutiveEvent ## NAME = batchedEvents.Count() - 1\
 	
 #define EVENT_NOREQ(NAME, REQUEST, DROPTAG)\
 		void On ## NAME() override\
