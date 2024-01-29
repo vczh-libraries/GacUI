@@ -2,15 +2,13 @@
 
 TEST_FILE
 {
-	TEST_CATEGORY(L"Create one window and exit immediately")
+	TEST_CATEGORY(L"MouseMove")
 	{
 		ControlHostProtocol protocol;
 		GuiWindow* controlHost = nullptr;
 
 		protocol.OnNextFrame([&]()
 		{
-			TEST_ASSERT(controlHost->GetBoundsComposition()->GetCachedBounds() == Rect(0, 0, 100, 200));
-			TEST_ASSERT(controlHost->GetClientSize() == Size(100, 200));
 			controlHost->Hide();
 		});
 		SetGuiMainProxy([&]()
@@ -22,8 +20,7 @@ TEST_FILE
 				theme::RegisterTheme(theme);
 
 				GuiWindow window(theme::ThemeName::Window);
-				window.SetClientSize({ 100,200 });
-				window.SetText(L"EmptyControlHost");
+				window.SetClientSize({ 640,480 });
 				controlHost = &window;
 				GetApplication()->Run(&window);
 				controlHost = nullptr;
@@ -37,9 +34,6 @@ TEST_FILE
 	});
 
 	// TODO:
-	//   Key/Char event propogation and directly focusing a control
-	//   [TAB] and keyboard focus
-	//   [ALT]
-	//   Shortcut Key
-	//   Other events
+	//   Mouse event propogation and enter/leave/moving with @DropConsecutive/dbclick
+	//   Mouse capturing
 }
