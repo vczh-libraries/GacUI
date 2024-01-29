@@ -81,11 +81,13 @@ TEST_FILE
 
 		protocol.OnNextFrame([&]()
 		{
-			controlHost->ForceCalculateSizeImmediately();
-
 			auto b = controlHost->GetBoundsComposition();
-			auto c = controlHost->GetContainerComposition();
-			TEST_ASSERT(b != c);
+
+			auto c = new GuiBoundsComposition();
+			c->SetAlignmentToParent(Margin(0, 0, 0, 0));
+			controlHost->GetContainerComposition()->AddChild(c);
+
+			controlHost->ForceCalculateSizeImmediately();
 			TEST_ASSERT(b->GetCachedBounds() == Rect({ 0,0 }, { 640,480 }));
 			TEST_ASSERT(c->GetCachedBounds() == Rect({ 0,0 }, { 640,480 }));
 
@@ -101,12 +103,12 @@ TEST_FILE
 
 			AssertEventLogs(
 				eventLogs,
-				L"host.bounds.MouseEnter()",
-				L"host.container.MouseEnter()",
-				L"host.container.MouseMove(:320,240,0)",
-				L"host.bounds.MouseMove(:320,240,0)",
-				L"host.container.MouseLeave()",
-				L"host.bounds.MouseLeave()"
+				L"host.bounds.Enter()",
+				L"host.container.Enter()",
+				L"host.container.Move(:320,240,0)",
+				L"host.bounds.Move(:320,240,0)",
+				L"host.container.Leave()",
+				L"host.bounds.Leave()"
 				);
 		});
 
