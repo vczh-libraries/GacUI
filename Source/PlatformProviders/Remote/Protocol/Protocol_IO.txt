@@ -47,7 +47,6 @@ struct IOCharInfo
 }
 
 event IOButtonDown          { request: IOMouseInfoWithButton; }
-event IOButtonClick         { request: IOMouseInfoWithButton; }
 event IOButtonDoubleClick   { request: IOMouseInfoWithButton; }
 event IOButtonUp            { request: IOMouseInfoWithButton; }
 event IOHWheel              { request: IOMouseInfo; }
@@ -55,8 +54,8 @@ event IOVWheel              { request: IOMouseInfo; }
 
 [@DropConsecutive]
 event IOMouseMoving         { request: IOMouseInfo; }
-event IOMouseEnter          { request: IOMouseInfo; }
-event IOMouseLeave          { request: IOMouseInfo; }
+event IOMouseEntered        {}
+event IOMouseLeaved         {}
 
 event IOKeyDown             { request: IOKeyInfo; }
 event IOKeyUp               { request: IOKeyInfo; }

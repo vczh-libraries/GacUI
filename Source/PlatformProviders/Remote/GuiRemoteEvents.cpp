@@ -162,61 +162,95 @@ GuiRemoteEvents (events)
 
 	void GuiRemoteEvents::OnIOButtonDown(const remoteprotocol::IOMouseInfoWithButton& arguments)
 	{
-		CHECK_FAIL(L"Not Implemented!");
-	}
-
-	void GuiRemoteEvents::OnIOButtonClick(const remoteprotocol::IOMouseInfoWithButton& arguments)
-	{
-		CHECK_FAIL(L"Not Implemented!");
+		switch (arguments.button)
+		{
+		case remoteprotocol::IOMouseButton::Left:
+			for (auto l : remote->remoteWindow.listeners) l->LeftButtonDown(arguments.info);
+			break;
+		case remoteprotocol::IOMouseButton::Middle:
+			for (auto l : remote->remoteWindow.listeners) l->MiddleButtonDown(arguments.info);
+			break;
+		case remoteprotocol::IOMouseButton::Right:
+			for (auto l : remote->remoteWindow.listeners) l->RightButtonDown(arguments.info);
+			break;
+		default:
+			CHECK_FAIL(L"vl::presentation::GuiRemoteEvents::OnIOButtonDown(const IOMouseInfoWithButton&)#Unrecognized button.");
+		}
 	}
 
 	void GuiRemoteEvents::OnIOButtonDoubleClick(const remoteprotocol::IOMouseInfoWithButton& arguments)
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		switch (arguments.button)
+		{
+		case remoteprotocol::IOMouseButton::Left:
+			for (auto l : remote->remoteWindow.listeners) l->LeftButtonDoubleClick(arguments.info);
+			break;
+		case remoteprotocol::IOMouseButton::Middle:
+			for (auto l : remote->remoteWindow.listeners) l->MiddleButtonDoubleClick(arguments.info);
+			break;
+		case remoteprotocol::IOMouseButton::Right:
+			for (auto l : remote->remoteWindow.listeners) l->RightButtonDoubleClick(arguments.info);
+			break;
+		default:
+			CHECK_FAIL(L"vl::presentation::GuiRemoteEvents::OnIOButtonDoubleClick(const IOMouseInfoWithButton&)#Unrecognized button.");
+		}
 	}
 
 	void GuiRemoteEvents::OnIOButtonUp(const remoteprotocol::IOMouseInfoWithButton& arguments)
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		switch (arguments.button)
+		{
+		case remoteprotocol::IOMouseButton::Left:
+			for (auto l : remote->remoteWindow.listeners) l->LeftButtonUp(arguments.info);
+			break;
+		case remoteprotocol::IOMouseButton::Middle:
+			for (auto l : remote->remoteWindow.listeners) l->MiddleButtonUp(arguments.info);
+			break;
+		case remoteprotocol::IOMouseButton::Right:
+			for (auto l : remote->remoteWindow.listeners) l->RightButtonUp(arguments.info);
+			break;
+		default:
+			CHECK_FAIL(L"vl::presentation::GuiRemoteEvents::OnIOButtonUp(const IOMouseInfoWithButton&)#Unrecognized button.");
+		}
 	}
 
 	void GuiRemoteEvents::OnIOHWheel(const NativeWindowMouseInfo& arguments)
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		for (auto l : remote->remoteWindow.listeners) l->HorizontalWheel(arguments);
 	}
 
 	void GuiRemoteEvents::OnIOVWheel(const NativeWindowMouseInfo& arguments)
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		for (auto l : remote->remoteWindow.listeners) l->VerticalWheel(arguments);
 	}
 
 	void GuiRemoteEvents::OnIOMouseMoving(const NativeWindowMouseInfo& arguments)
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		for (auto l : remote->remoteWindow.listeners) l->MouseMoving(arguments);
 	}
 
-	void GuiRemoteEvents::OnIOMouseEnter(const NativeWindowMouseInfo& arguments)
+	void GuiRemoteEvents::OnIOMouseEntered()
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		for (auto l : remote->remoteWindow.listeners) l->MouseEntered();
 	}
 
-	void GuiRemoteEvents::OnIOMouseLeave(const NativeWindowMouseInfo& arguments)
+	void GuiRemoteEvents::OnIOMouseLeaved()
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		for (auto l : remote->remoteWindow.listeners) l->MouseLeaved();
 	}
 
 	void GuiRemoteEvents::OnIOKeyDown(const NativeWindowKeyInfo& arguments)
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		for (auto l : remote->remoteWindow.listeners) l->KeyDown(arguments);
 	}
 
 	void GuiRemoteEvents::OnIOKeyUp(const NativeWindowKeyInfo& arguments)
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		for (auto l : remote->remoteWindow.listeners) l->KeyUp(arguments);
 	}
 
 	void GuiRemoteEvents::OnIOChar(const NativeWindowCharInfo& arguments)
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		for (auto l : remote->remoteWindow.listeners) l->Char(arguments);
 	}
 }

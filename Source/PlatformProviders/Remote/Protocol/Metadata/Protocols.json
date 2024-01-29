@@ -541,7 +541,7 @@
     }, {
         "$ast": { "type": "EventDecl", "codeRange": {"start": {"row": 49, "column": 0, "index": 925}, "end": {"row": 49, "column": 62, "index": 987}, "codeIndex": 2}},
         "attributes": [],
-        "name": { "value": "IOButtonClick", "codeRange": {"start": {"row": 49, "column": 6, "index": 931}, "end": {"row": 49, "column": 18, "index": 943}, "codeIndex": 2}},
+        "name": { "value": "IOButtonDoubleClick", "codeRange": {"start": {"row": 49, "column": 6, "index": 931}, "end": {"row": 49, "column": 24, "index": 949}, "codeIndex": 2}},
         "request": {
             "$ast": { "type": "EventRequest", "codeRange": {"start": {"row": 49, "column": 30, "index": 955}, "end": {"row": 49, "column": 60, "index": 985}, "codeIndex": 2}},
             "type": {
@@ -552,7 +552,7 @@
     }, {
         "$ast": { "type": "EventDecl", "codeRange": {"start": {"row": 50, "column": 0, "index": 990}, "end": {"row": 50, "column": 62, "index": 1052}, "codeIndex": 2}},
         "attributes": [],
-        "name": { "value": "IOButtonDoubleClick", "codeRange": {"start": {"row": 50, "column": 6, "index": 996}, "end": {"row": 50, "column": 24, "index": 1014}, "codeIndex": 2}},
+        "name": { "value": "IOButtonUp", "codeRange": {"start": {"row": 50, "column": 6, "index": 996}, "end": {"row": 50, "column": 15, "index": 1005}, "codeIndex": 2}},
         "request": {
             "$ast": { "type": "EventRequest", "codeRange": {"start": {"row": 50, "column": 30, "index": 1020}, "end": {"row": 50, "column": 60, "index": 1050}, "codeIndex": 2}},
             "type": {
@@ -561,106 +561,83 @@
             }
         }
     }, {
-        "$ast": { "type": "EventDecl", "codeRange": {"start": {"row": 51, "column": 0, "index": 1055}, "end": {"row": 51, "column": 62, "index": 1117}, "codeIndex": 2}},
+        "$ast": { "type": "EventDecl", "codeRange": {"start": {"row": 51, "column": 0, "index": 1055}, "end": {"row": 51, "column": 52, "index": 1107}, "codeIndex": 2}},
         "attributes": [],
-        "name": { "value": "IOButtonUp", "codeRange": {"start": {"row": 51, "column": 6, "index": 1061}, "end": {"row": 51, "column": 15, "index": 1070}, "codeIndex": 2}},
+        "name": { "value": "IOHWheel", "codeRange": {"start": {"row": 51, "column": 6, "index": 1061}, "end": {"row": 51, "column": 13, "index": 1068}, "codeIndex": 2}},
         "request": {
-            "$ast": { "type": "EventRequest", "codeRange": {"start": {"row": 51, "column": 30, "index": 1085}, "end": {"row": 51, "column": 60, "index": 1115}, "codeIndex": 2}},
+            "$ast": { "type": "EventRequest", "codeRange": {"start": {"row": 51, "column": 30, "index": 1085}, "end": {"row": 51, "column": 50, "index": 1105}, "codeIndex": 2}},
             "type": {
-                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 51, "column": 39, "index": 1094}, "end": {"row": 51, "column": 59, "index": 1114}, "codeIndex": 2}},
-                "name": { "value": "IOMouseInfoWithButton", "codeRange": {"start": {"row": 51, "column": 39, "index": 1094}, "end": {"row": 51, "column": 59, "index": 1114}, "codeIndex": 2}}
+                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 51, "column": 39, "index": 1094}, "end": {"row": 51, "column": 49, "index": 1104}, "codeIndex": 2}},
+                "name": { "value": "IOMouseInfo", "codeRange": {"start": {"row": 51, "column": 39, "index": 1094}, "end": {"row": 51, "column": 49, "index": 1104}, "codeIndex": 2}}
             }
         }
     }, {
-        "$ast": { "type": "EventDecl", "codeRange": {"start": {"row": 52, "column": 0, "index": 1120}, "end": {"row": 52, "column": 52, "index": 1172}, "codeIndex": 2}},
+        "$ast": { "type": "EventDecl", "codeRange": {"start": {"row": 52, "column": 0, "index": 1110}, "end": {"row": 52, "column": 52, "index": 1162}, "codeIndex": 2}},
         "attributes": [],
-        "name": { "value": "IOHWheel", "codeRange": {"start": {"row": 52, "column": 6, "index": 1126}, "end": {"row": 52, "column": 13, "index": 1133}, "codeIndex": 2}},
+        "name": { "value": "IOVWheel", "codeRange": {"start": {"row": 52, "column": 6, "index": 1116}, "end": {"row": 52, "column": 13, "index": 1123}, "codeIndex": 2}},
         "request": {
-            "$ast": { "type": "EventRequest", "codeRange": {"start": {"row": 52, "column": 30, "index": 1150}, "end": {"row": 52, "column": 50, "index": 1170}, "codeIndex": 2}},
+            "$ast": { "type": "EventRequest", "codeRange": {"start": {"row": 52, "column": 30, "index": 1140}, "end": {"row": 52, "column": 50, "index": 1160}, "codeIndex": 2}},
             "type": {
-                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 52, "column": 39, "index": 1159}, "end": {"row": 52, "column": 49, "index": 1169}, "codeIndex": 2}},
-                "name": { "value": "IOMouseInfo", "codeRange": {"start": {"row": 52, "column": 39, "index": 1159}, "end": {"row": 52, "column": 49, "index": 1169}, "codeIndex": 2}}
+                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 52, "column": 39, "index": 1149}, "end": {"row": 52, "column": 49, "index": 1159}, "codeIndex": 2}},
+                "name": { "value": "IOMouseInfo", "codeRange": {"start": {"row": 52, "column": 39, "index": 1149}, "end": {"row": 52, "column": 49, "index": 1159}, "codeIndex": 2}}
             }
         }
     }, {
-        "$ast": { "type": "EventDecl", "codeRange": {"start": {"row": 53, "column": 0, "index": 1175}, "end": {"row": 53, "column": 52, "index": 1227}, "codeIndex": 2}},
-        "attributes": [],
-        "name": { "value": "IOVWheel", "codeRange": {"start": {"row": 53, "column": 6, "index": 1181}, "end": {"row": 53, "column": 13, "index": 1188}, "codeIndex": 2}},
-        "request": {
-            "$ast": { "type": "EventRequest", "codeRange": {"start": {"row": 53, "column": 30, "index": 1205}, "end": {"row": 53, "column": 50, "index": 1225}, "codeIndex": 2}},
-            "type": {
-                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 53, "column": 39, "index": 1214}, "end": {"row": 53, "column": 49, "index": 1224}, "codeIndex": 2}},
-                "name": { "value": "IOMouseInfo", "codeRange": {"start": {"row": 53, "column": 39, "index": 1214}, "end": {"row": 53, "column": 49, "index": 1224}, "codeIndex": 2}}
-            }
-        }
-    }, {
-        "$ast": { "type": "EventDecl", "codeRange": {"start": {"row": 55, "column": 0, "index": 1232}, "end": {"row": 56, "column": 52, "index": 1304}, "codeIndex": 2}},
+        "$ast": { "type": "EventDecl", "codeRange": {"start": {"row": 54, "column": 0, "index": 1167}, "end": {"row": 55, "column": 52, "index": 1239}, "codeIndex": 2}},
         "attributes": [{
-            "$ast": { "type": "Attribute", "codeRange": {"start": {"row": 55, "column": 0, "index": 1232}, "end": {"row": 55, "column": 17, "index": 1249}, "codeIndex": 2}},
+            "$ast": { "type": "Attribute", "codeRange": {"start": {"row": 54, "column": 0, "index": 1167}, "end": {"row": 54, "column": 17, "index": 1184}, "codeIndex": 2}},
             "cppType": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
-            "name": { "value": "@DropConsecutive", "codeRange": {"start": {"row": 55, "column": 1, "index": 1233}, "end": {"row": 55, "column": 16, "index": 1248}, "codeIndex": 2}}
+            "name": { "value": "@DropConsecutive", "codeRange": {"start": {"row": 54, "column": 1, "index": 1168}, "end": {"row": 54, "column": 16, "index": 1183}, "codeIndex": 2}}
         }],
-        "name": { "value": "IOMouseMoving", "codeRange": {"start": {"row": 56, "column": 6, "index": 1258}, "end": {"row": 56, "column": 18, "index": 1270}, "codeIndex": 2}},
+        "name": { "value": "IOMouseMoving", "codeRange": {"start": {"row": 55, "column": 6, "index": 1193}, "end": {"row": 55, "column": 18, "index": 1205}, "codeIndex": 2}},
         "request": {
-            "$ast": { "type": "EventRequest", "codeRange": {"start": {"row": 56, "column": 30, "index": 1282}, "end": {"row": 56, "column": 50, "index": 1302}, "codeIndex": 2}},
+            "$ast": { "type": "EventRequest", "codeRange": {"start": {"row": 55, "column": 30, "index": 1217}, "end": {"row": 55, "column": 50, "index": 1237}, "codeIndex": 2}},
             "type": {
-                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 56, "column": 39, "index": 1291}, "end": {"row": 56, "column": 49, "index": 1301}, "codeIndex": 2}},
-                "name": { "value": "IOMouseInfo", "codeRange": {"start": {"row": 56, "column": 39, "index": 1291}, "end": {"row": 56, "column": 49, "index": 1301}, "codeIndex": 2}}
+                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 55, "column": 39, "index": 1226}, "end": {"row": 55, "column": 49, "index": 1236}, "codeIndex": 2}},
+                "name": { "value": "IOMouseInfo", "codeRange": {"start": {"row": 55, "column": 39, "index": 1226}, "end": {"row": 55, "column": 49, "index": 1236}, "codeIndex": 2}}
             }
         }
     }, {
-        "$ast": { "type": "EventDecl", "codeRange": {"start": {"row": 57, "column": 0, "index": 1307}, "end": {"row": 57, "column": 52, "index": 1359}, "codeIndex": 2}},
+        "$ast": { "type": "EventDecl", "codeRange": {"start": {"row": 56, "column": 0, "index": 1242}, "end": {"row": 56, "column": 29, "index": 1271}, "codeIndex": 2}},
         "attributes": [],
-        "name": { "value": "IOMouseEnter", "codeRange": {"start": {"row": 57, "column": 6, "index": 1313}, "end": {"row": 57, "column": 17, "index": 1324}, "codeIndex": 2}},
+        "name": { "value": "IOMouseEntered", "codeRange": {"start": {"row": 56, "column": 6, "index": 1248}, "end": {"row": 56, "column": 19, "index": 1261}, "codeIndex": 2}},
+        "request": null
+    }, {
+        "$ast": { "type": "EventDecl", "codeRange": {"start": {"row": 57, "column": 0, "index": 1274}, "end": {"row": 57, "column": 29, "index": 1303}, "codeIndex": 2}},
+        "attributes": [],
+        "name": { "value": "IOMouseLeaved", "codeRange": {"start": {"row": 57, "column": 6, "index": 1280}, "end": {"row": 57, "column": 18, "index": 1292}, "codeIndex": 2}},
+        "request": null
+    }, {
+        "$ast": { "type": "EventDecl", "codeRange": {"start": {"row": 59, "column": 0, "index": 1308}, "end": {"row": 59, "column": 50, "index": 1358}, "codeIndex": 2}},
+        "attributes": [],
+        "name": { "value": "IOKeyDown", "codeRange": {"start": {"row": 59, "column": 6, "index": 1314}, "end": {"row": 59, "column": 14, "index": 1322}, "codeIndex": 2}},
         "request": {
-            "$ast": { "type": "EventRequest", "codeRange": {"start": {"row": 57, "column": 30, "index": 1337}, "end": {"row": 57, "column": 50, "index": 1357}, "codeIndex": 2}},
+            "$ast": { "type": "EventRequest", "codeRange": {"start": {"row": 59, "column": 30, "index": 1338}, "end": {"row": 59, "column": 48, "index": 1356}, "codeIndex": 2}},
             "type": {
-                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 57, "column": 39, "index": 1346}, "end": {"row": 57, "column": 49, "index": 1356}, "codeIndex": 2}},
-                "name": { "value": "IOMouseInfo", "codeRange": {"start": {"row": 57, "column": 39, "index": 1346}, "end": {"row": 57, "column": 49, "index": 1356}, "codeIndex": 2}}
+                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 59, "column": 39, "index": 1347}, "end": {"row": 59, "column": 47, "index": 1355}, "codeIndex": 2}},
+                "name": { "value": "IOKeyInfo", "codeRange": {"start": {"row": 59, "column": 39, "index": 1347}, "end": {"row": 59, "column": 47, "index": 1355}, "codeIndex": 2}}
             }
         }
     }, {
-        "$ast": { "type": "EventDecl", "codeRange": {"start": {"row": 58, "column": 0, "index": 1362}, "end": {"row": 58, "column": 52, "index": 1414}, "codeIndex": 2}},
+        "$ast": { "type": "EventDecl", "codeRange": {"start": {"row": 60, "column": 0, "index": 1361}, "end": {"row": 60, "column": 50, "index": 1411}, "codeIndex": 2}},
         "attributes": [],
-        "name": { "value": "IOMouseLeave", "codeRange": {"start": {"row": 58, "column": 6, "index": 1368}, "end": {"row": 58, "column": 17, "index": 1379}, "codeIndex": 2}},
+        "name": { "value": "IOKeyUp", "codeRange": {"start": {"row": 60, "column": 6, "index": 1367}, "end": {"row": 60, "column": 12, "index": 1373}, "codeIndex": 2}},
         "request": {
-            "$ast": { "type": "EventRequest", "codeRange": {"start": {"row": 58, "column": 30, "index": 1392}, "end": {"row": 58, "column": 50, "index": 1412}, "codeIndex": 2}},
+            "$ast": { "type": "EventRequest", "codeRange": {"start": {"row": 60, "column": 30, "index": 1391}, "end": {"row": 60, "column": 48, "index": 1409}, "codeIndex": 2}},
             "type": {
-                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 58, "column": 39, "index": 1401}, "end": {"row": 58, "column": 49, "index": 1411}, "codeIndex": 2}},
-                "name": { "value": "IOMouseInfo", "codeRange": {"start": {"row": 58, "column": 39, "index": 1401}, "end": {"row": 58, "column": 49, "index": 1411}, "codeIndex": 2}}
+                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 60, "column": 39, "index": 1400}, "end": {"row": 60, "column": 47, "index": 1408}, "codeIndex": 2}},
+                "name": { "value": "IOKeyInfo", "codeRange": {"start": {"row": 60, "column": 39, "index": 1400}, "end": {"row": 60, "column": 47, "index": 1408}, "codeIndex": 2}}
             }
         }
     }, {
-        "$ast": { "type": "EventDecl", "codeRange": {"start": {"row": 60, "column": 0, "index": 1419}, "end": {"row": 60, "column": 50, "index": 1469}, "codeIndex": 2}},
+        "$ast": { "type": "EventDecl", "codeRange": {"start": {"row": 61, "column": 0, "index": 1414}, "end": {"row": 61, "column": 51, "index": 1465}, "codeIndex": 2}},
         "attributes": [],
-        "name": { "value": "IOKeyDown", "codeRange": {"start": {"row": 60, "column": 6, "index": 1425}, "end": {"row": 60, "column": 14, "index": 1433}, "codeIndex": 2}},
+        "name": { "value": "IOChar", "codeRange": {"start": {"row": 61, "column": 6, "index": 1420}, "end": {"row": 61, "column": 11, "index": 1425}, "codeIndex": 2}},
         "request": {
-            "$ast": { "type": "EventRequest", "codeRange": {"start": {"row": 60, "column": 30, "index": 1449}, "end": {"row": 60, "column": 48, "index": 1467}, "codeIndex": 2}},
+            "$ast": { "type": "EventRequest", "codeRange": {"start": {"row": 61, "column": 30, "index": 1444}, "end": {"row": 61, "column": 49, "index": 1463}, "codeIndex": 2}},
             "type": {
-                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 60, "column": 39, "index": 1458}, "end": {"row": 60, "column": 47, "index": 1466}, "codeIndex": 2}},
-                "name": { "value": "IOKeyInfo", "codeRange": {"start": {"row": 60, "column": 39, "index": 1458}, "end": {"row": 60, "column": 47, "index": 1466}, "codeIndex": 2}}
-            }
-        }
-    }, {
-        "$ast": { "type": "EventDecl", "codeRange": {"start": {"row": 61, "column": 0, "index": 1472}, "end": {"row": 61, "column": 50, "index": 1522}, "codeIndex": 2}},
-        "attributes": [],
-        "name": { "value": "IOKeyUp", "codeRange": {"start": {"row": 61, "column": 6, "index": 1478}, "end": {"row": 61, "column": 12, "index": 1484}, "codeIndex": 2}},
-        "request": {
-            "$ast": { "type": "EventRequest", "codeRange": {"start": {"row": 61, "column": 30, "index": 1502}, "end": {"row": 61, "column": 48, "index": 1520}, "codeIndex": 2}},
-            "type": {
-                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 61, "column": 39, "index": 1511}, "end": {"row": 61, "column": 47, "index": 1519}, "codeIndex": 2}},
-                "name": { "value": "IOKeyInfo", "codeRange": {"start": {"row": 61, "column": 39, "index": 1511}, "end": {"row": 61, "column": 47, "index": 1519}, "codeIndex": 2}}
-            }
-        }
-    }, {
-        "$ast": { "type": "EventDecl", "codeRange": {"start": {"row": 62, "column": 0, "index": 1525}, "end": {"row": 62, "column": 51, "index": 1576}, "codeIndex": 2}},
-        "attributes": [],
-        "name": { "value": "IOChar", "codeRange": {"start": {"row": 62, "column": 6, "index": 1531}, "end": {"row": 62, "column": 11, "index": 1536}, "codeIndex": 2}},
-        "request": {
-            "$ast": { "type": "EventRequest", "codeRange": {"start": {"row": 62, "column": 30, "index": 1555}, "end": {"row": 62, "column": 49, "index": 1574}, "codeIndex": 2}},
-            "type": {
-                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 62, "column": 39, "index": 1564}, "end": {"row": 62, "column": 48, "index": 1573}, "codeIndex": 2}},
-                "name": { "value": "IOCharInfo", "codeRange": {"start": {"row": 62, "column": 39, "index": 1564}, "end": {"row": 62, "column": 48, "index": 1573}, "codeIndex": 2}}
+                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 61, "column": 39, "index": 1453}, "end": {"row": 61, "column": 48, "index": 1462}, "codeIndex": 2}},
+                "name": { "value": "IOCharInfo", "codeRange": {"start": {"row": 61, "column": 39, "index": 1453}, "end": {"row": 61, "column": 48, "index": 1462}, "codeIndex": 2}}
             }
         }
     }, {
