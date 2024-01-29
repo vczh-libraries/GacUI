@@ -37,7 +37,9 @@ TEST_FILE
 	});
 
 	// TODO:
-	//   Mouse enter/leave/capturing
+	//   Mouse event propogation and enter/leave/moving with @DropConsecutive/dbclick
+	//   Mouse capturing
+	//   Key/Char event propogation and directly focusing a control
 	//   [TAB] and keyboard focus
 	//   [ALT]
 	//   Shortcut Key

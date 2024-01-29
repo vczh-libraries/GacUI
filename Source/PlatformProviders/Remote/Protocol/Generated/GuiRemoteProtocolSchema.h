@@ -90,6 +90,8 @@ namespace vl::presentation::remoteprotocol
 	HANDLER(ControllerGetScreenConfig, void, vl::presentation::remoteprotocol::ScreenConfig, NOREQ, RES, NODROP)\
 	HANDLER(ControllerConnectionEstablished, void, void, NOREQ, NORES, NODROP)\
 	HANDLER(ControllerConnectionStopped, void, void, NOREQ, NORES, NODROP)\
+	HANDLER(IORequireCapture, void, void, NOREQ, NORES, NODROP)\
+	HANDLER(IOReleaseCapture, void, void, NOREQ, NORES, NODROP)\
 	HANDLER(WindowGetBounds, void, vl::presentation::remoteprotocol::WindowSizingConfig, NOREQ, RES, NODROP)\
 	HANDLER(WindowNotifySetTitle, ::vl::WString, void, REQ, NORES, DROPREP)\
 	HANDLER(WindowNotifySetEnabled, bool, void, REQ, NORES, DROPREP)\

@@ -46,6 +46,9 @@ struct IOCharInfo
     var capslock: bool;
 }
 
+message IORequireCapture    {}
+message IOReleaseCapture    {}
+
 event IOButtonDown          { request: IOMouseInfoWithButton; }
 event IOButtonDoubleClick   { request: IOMouseInfoWithButton; }
 event IOButtonUp            { request: IOMouseInfoWithButton; }
