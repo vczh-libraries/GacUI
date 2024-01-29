@@ -119,7 +119,7 @@ namespace vl::presentation::remoteprotocol
 	HANDLER(IOButtonUp, vl::presentation::remoteprotocol::IOMouseInfoWithButton, REQ, NODROP)\
 	HANDLER(IOHWheel, ::vl::presentation::NativeWindowMouseInfo, REQ, NODROP)\
 	HANDLER(IOVWheel, ::vl::presentation::NativeWindowMouseInfo, REQ, NODROP)\
-	HANDLER(IOMouseMoving, ::vl::presentation::NativeWindowMouseInfo, REQ, DROPREP)\
+	HANDLER(IOMouseMoving, ::vl::presentation::NativeWindowMouseInfo, REQ, DROPCON)\
 	HANDLER(IOMouseEnter, ::vl::presentation::NativeWindowMouseInfo, REQ, NODROP)\
 	HANDLER(IOMouseLeave, ::vl::presentation::NativeWindowMouseInfo, REQ, NODROP)\
 	HANDLER(IOKeyDown, ::vl::presentation::NativeWindowKeyInfo, REQ, NODROP)\

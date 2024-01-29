@@ -159,4 +159,64 @@ GuiRemoteEvents (events)
 	{
 		remote->remoteWindow.OnWindowActivatedUpdated(arguments);
 	}
+
+	void GuiRemoteEvents::OnIOButtonDown(const remoteprotocol::IOMouseInfoWithButton& arguments)
+	{
+		CHECK_FAIL(L"Not Implemented!");
+	}
+
+	void GuiRemoteEvents::OnIOButtonClick(const remoteprotocol::IOMouseInfoWithButton& arguments)
+	{
+		CHECK_FAIL(L"Not Implemented!");
+	}
+
+	void GuiRemoteEvents::OnIOButtonDoubleClick(const remoteprotocol::IOMouseInfoWithButton& arguments)
+	{
+		CHECK_FAIL(L"Not Implemented!");
+	}
+
+	void GuiRemoteEvents::OnIOButtonUp(const remoteprotocol::IOMouseInfoWithButton& arguments)
+	{
+		CHECK_FAIL(L"Not Implemented!");
+	}
+
+	void GuiRemoteEvents::OnIOHWheel(const NativeWindowMouseInfo& arguments)
+	{
+		CHECK_FAIL(L"Not Implemented!");
+	}
+
+	void GuiRemoteEvents::OnIOVWheel(const NativeWindowMouseInfo& arguments)
+	{
+		CHECK_FAIL(L"Not Implemented!");
+	}
+
+	void GuiRemoteEvents::OnIOMouseMoving(const NativeWindowMouseInfo& arguments)
+	{
+		CHECK_FAIL(L"Not Implemented!");
+	}
+
+	void GuiRemoteEvents::OnIOMouseEnter(const NativeWindowMouseInfo& arguments)
+	{
+		CHECK_FAIL(L"Not Implemented!");
+	}
+
+	void GuiRemoteEvents::OnIOMouseLeave(const NativeWindowMouseInfo& arguments)
+	{
+		CHECK_FAIL(L"Not Implemented!");
+	}
+
+	void GuiRemoteEvents::OnIOKeyDown(const NativeWindowKeyInfo& arguments)
+	{
+		CHECK_FAIL(L"Not Implemented!");
+	}
+
+	void GuiRemoteEvents::OnIOKeyUp(const NativeWindowKeyInfo& arguments)
+	{
+		CHECK_FAIL(L"Not Implemented!");
+	}
+
+	void GuiRemoteEvents::OnIOChar(const NativeWindowCharInfo& arguments)
+	{
+		CHECK_FAIL(L"Not Implemented!");
+	}
 }

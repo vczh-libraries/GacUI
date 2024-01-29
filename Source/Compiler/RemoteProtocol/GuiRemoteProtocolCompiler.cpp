@@ -144,13 +144,13 @@ CheckRemoteProtocolSchema
 
 		void VisitDropAttribute(Ptr<remoteprotocol::GuiRpAttribute> att, const WString& name, SortedList<WString>& names)
 		{
-			if (symbols->dropRepeatDeclNames.Contains(name))
+			if (names.Contains(name))
 			{
 				errors.Add({ att->name.codeRange,L"Too many attributes: \"" + att->name.value + L"\"." });
 			}
 			else
 			{
-				symbols->dropRepeatDeclNames.Add(name);
+				names.Add(name);
 			}
 		}
 
