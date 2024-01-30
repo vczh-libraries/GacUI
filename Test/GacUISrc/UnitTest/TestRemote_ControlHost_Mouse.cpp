@@ -295,6 +295,9 @@ TEST_FILE
 			protocol.events->OnIOMouseMoving(MakeMouseInfo(true, false, false, 70, 70, 0));
 			AssertEventLogs(
 				eventLogs,
+				L"y.Leave()",
+				L"x.Leave()",
+				L"z.Enter()",
 				L"y.Move(L:50,50,0)",
 				L"y->x.Move(L:60,60,0)",
 				L"y->host.bounds.Move(L:70,70,0)"
@@ -332,21 +335,17 @@ TEST_FILE
 				L"y->x.HWheel(:60,60,100)",
 				L"y->host.bounds.HWheel(:70,70,100)",
 
-				L"y.VWheelVWheel50,50,-100)",
-				L"y->x.LDbClick(:60,60,-100)",
+				L"y.VWheel(:50,50,-100)",
+				L"y->x.VWheel(:60,60,-100)",
 				L"y->host.bounds.VWheel(:70,70,-100)"
 				);
 
-			protocol.events->OnIOButtonUp(MakeMouseInfoWithButton(remoteprotocol::IOMouseButton::Left, false, false, false, 30, 30, 0));
+			protocol.events->OnIOButtonUp(MakeMouseInfoWithButton(remoteprotocol::IOMouseButton::Left, false, false, false, 70, 70, 0));
 			AssertEventLogs(
 				eventLogs,
-				L"y.LUp(:10,10,0)",
-				L"y->x.LDown(:20,20,0)",
-				L"y->host.bounds.LDown(:30,30,0)",
-
-				L"y.Leave()",
-				L"x.Leave()",
-				L"z.Enter()"
+				L"y.LUp(:50,50,0)",
+				L"y->x.LUp(:60,60,0)",
+				L"y->host.bounds.LUp(:70,70,0)"
 				);
 
 			protocol.events->OnIOMouseLeaved();
