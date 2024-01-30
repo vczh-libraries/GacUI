@@ -22,11 +22,11 @@
     <Filter Include="Source Files\Remote\Shared">
       <UniqueIdentifier>{5bf531dc-7dde-47f4-b9b7-d96e24c544e2}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Remote\Rendering">
-      <UniqueIdentifier>{9b73f3fc-6408-4454-ab36-f0ec3bf0f159}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Remote\GraphicsHost">
       <UniqueIdentifier>{6efec4ed-c357-4304-b71a-585b327a8302}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Controls">
+      <UniqueIdentifier>{c392e1d3-f657-4d8f-b1a1-b2233efff208}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
