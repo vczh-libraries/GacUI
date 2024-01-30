@@ -460,12 +460,12 @@ GuiRemoteWindow (INativeWindow)
 
 	bool GuiRemoteWindow::RequireCapture()
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		return true;
 	}
 
 	bool GuiRemoteWindow::ReleaseCapture()
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		return true;
 	}
 
 	bool GuiRemoteWindow::IsCapturing()

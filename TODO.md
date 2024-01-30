@@ -29,6 +29,7 @@
       - Deal with `\r` and `\n` when multiline is enabled
     - Test against more code as many as possible
   - A general remoting `INativeController` implementation
+    - Add mouse capturing messages
     - It sends batched requests to a receiver and wait for respond
       - Implement `[@Drop(Repeat|Consecutive)]` after unit test against remoting `INativeWindow` is done.
         - Implement `[@DropRepeat]` message in `GuiRemoteMessageFilter` and redirect to another `IGuiRemoteProtocol`.
