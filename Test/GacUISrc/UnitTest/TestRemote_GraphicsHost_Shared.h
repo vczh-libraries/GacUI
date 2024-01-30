@@ -3,9 +3,9 @@
 using namespace vl::presentation::compositions;
 using namespace vl::presentation::controls;
 
-namespace remote_control_host_tests
+namespace remote_graphics_host_tests
 {
-	class ControlHostProtocol : public SingleScreenProtocol
+	class GraphicsHostProtocol : public SingleScreenProtocol
 	{
 	public:
 		static SingleScreenConfig MakeSingleScreenConfig()
@@ -28,7 +28,7 @@ namespace remote_control_host_tests
 			return config;
 		}
 
-		ControlHostProtocol()
+		GraphicsHostProtocol()
 			: SingleScreenProtocol(MakeSingleScreenConfig())
 		{
 		}
@@ -52,11 +52,11 @@ namespace remote_control_host_tests
 		}
 	};
 
-	extern Func<void()>						MakeGuiMain(ControlHostProtocol& protocol, List<WString>& eventLogs, GuiWindow*& controlHost);
+	extern Func<void()>						MakeGuiMain(GraphicsHostProtocol& protocol, List<WString>& eventLogs, GuiWindow*& controlHost);
 
 	void									AttachMouseEvents(GuiGraphicsComposition* sender, const wchar_t* name, List<WString>& eventLogs);
 
 	NativeWindowMouseInfo					MakeMouseInfo(bool left, bool middle, bool right, vint x, vint y, vint wheel);
 	remoteprotocol::IOMouseInfoWithButton	MakeMouseInfoWithButton(remoteprotocol::IOMouseButton button, bool left, bool middle, bool right, vint x, vint y, vint wheel);
 }
-using namespace remote_control_host_tests;
+using namespace remote_graphics_host_tests;

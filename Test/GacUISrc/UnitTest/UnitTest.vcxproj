@@ -193,9 +193,9 @@
     <ClCompile Include="TestPtrDescriptableObject.cpp" />
     <ClCompile Include="TestQueryParser.cpp" />
     <ClCompile Include="TestReflectionTypeList.cpp" />
-    <ClCompile Include="TestRemote_ControlHost_Mouse.cpp" />
-    <ClCompile Include="TestRemote_ControlHost_Shared.cpp" />
-    <ClCompile Include="TestRemote_ControlHost_Startup.cpp" />
+    <ClCompile Include="TestRemote_GraphicsHost_Mouse.cpp" />
+    <ClCompile Include="TestRemote_GraphicsHost_Shared.cpp" />
+    <ClCompile Include="TestRemote_GraphicsHost_Startup.cpp" />
     <ClCompile Include="TestRemote_EmptyWindow.cpp" />
     <ClCompile Include="TestRemote_Startup.cpp" />
     <ClCompile Include="TestRemote_UnitTestFramework.cpp" />
@@ -255,7 +255,7 @@
   <ItemGroup>
     <ClInclude Include="TestCompositions.h" />
     <ClInclude Include="TestRemote.h" />
-    <ClInclude Include="TestRemote_ControlHost_Shared.h" />
+    <ClInclude Include="TestRemote_GraphicsHost_Shared.h" />
     <ClInclude Include="TestRemote_Shared_BatchedProtocol.h" />
     <ClInclude Include="TestRemote_Shared_LoggingWindowListener.h" />
     <ClInclude Include="TestRemote_Shared_NoRenderingProtocol.h" />

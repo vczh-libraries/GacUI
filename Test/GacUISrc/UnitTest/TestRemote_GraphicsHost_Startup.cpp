@@ -1,10 +1,10 @@
-#include "TestRemote_ControlHost_Shared.h"
+#include "TestRemote_GraphicsHost_Shared.h"
 
 TEST_FILE
 {
 	TEST_CATEGORY(L"Create one window and exit immediately")
 	{
-		ControlHostProtocol protocol;
+		GraphicsHostProtocol protocol;
 		GuiWindow* controlHost = nullptr;
 
 		protocol.OnNextFrame([&]()

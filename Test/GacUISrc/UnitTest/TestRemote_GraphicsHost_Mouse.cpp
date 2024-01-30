@@ -1,10 +1,10 @@
-#include "TestRemote_ControlHost_Shared.h"
+#include "TestRemote_GraphicsHost_Shared.h"
 
 TEST_FILE
 {
 	TEST_CATEGORY(L"MouseEntered and MouseLeaved on ControlHost")
 	{
-		ControlHostProtocol protocol;
+		GraphicsHostProtocol protocol;
 		List<WString> eventLogs;
 		GuiWindow* controlHost = nullptr;
 
@@ -54,7 +54,7 @@ TEST_FILE
 
 	TEST_CATEGORY(L"Mouse events on compositions")
 	{
-		ControlHostProtocol protocol;
+		GraphicsHostProtocol protocol;
 		List<WString> eventLogs;
 		GuiWindow* controlHost = nullptr;
 
@@ -236,7 +236,7 @@ TEST_FILE
 
 	TEST_CATEGORY(L"Mouse capturing on compositions")
 	{
-		ControlHostProtocol protocol;
+		GraphicsHostProtocol protocol;
 		List<WString> eventLogs;
 		GuiWindow* controlHost = nullptr;
 		GuiBoundsComposition* x = nullptr, * y = nullptr, * z = nullptr;

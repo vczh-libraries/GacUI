@@ -22,11 +22,11 @@
     <Filter Include="Source Files\Remote\Shared">
       <UniqueIdentifier>{5bf531dc-7dde-47f4-b9b7-d96e24c544e2}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Remote\ControlHost">
-      <UniqueIdentifier>{6efec4ed-c357-4304-b71a-585b327a8302}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Remote\Rendering">
       <UniqueIdentifier>{9b73f3fc-6408-4454-ab36-f0ec3bf0f159}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Remote\GraphicsHost">
+      <UniqueIdentifier>{6efec4ed-c357-4304-b71a-585b327a8302}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -84,14 +84,14 @@
     <ClCompile Include="TestRemote_EmptyWindow.cpp">
       <Filter>Source Files\Remote</Filter>
     </ClCompile>
-    <ClCompile Include="TestRemote_ControlHost_Startup.cpp">
-      <Filter>Source Files\Remote\ControlHost</Filter>
+    <ClCompile Include="TestRemote_GraphicsHost_Startup.cpp">
+      <Filter>Source Files\Remote\GraphicsHost</Filter>
     </ClCompile>
-    <ClCompile Include="TestRemote_ControlHost_Mouse.cpp">
-      <Filter>Source Files\Remote\ControlHost</Filter>
+    <ClCompile Include="TestRemote_GraphicsHost_Mouse.cpp">
+      <Filter>Source Files\Remote\GraphicsHost</Filter>
     </ClCompile>
-    <ClCompile Include="TestRemote_ControlHost_Shared.cpp">
-      <Filter>Source Files\Remote\ControlHost</Filter>
+    <ClCompile Include="TestRemote_GraphicsHost_Shared.cpp">
+      <Filter>Source Files\Remote\GraphicsHost</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -240,8 +240,8 @@
     <ClInclude Include="TestRemote_Shared_NoRenderingProtocol.h">
       <Filter>Source Files\Remote\Shared</Filter>
     </ClInclude>
-    <ClInclude Include="TestRemote_ControlHost_Shared.h">
-      <Filter>Source Files\Remote\ControlHost</Filter>
+    <ClInclude Include="TestRemote_GraphicsHost_Shared.h">
+      <Filter>Source Files\Remote\GraphicsHost</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

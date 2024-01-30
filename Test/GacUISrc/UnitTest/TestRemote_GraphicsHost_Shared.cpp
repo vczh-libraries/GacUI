@@ -1,6 +1,6 @@
-#include "TestRemote_ControlHost_Shared.h"
+#include "TestRemote_GraphicsHost_Shared.h"
 
-namespace remote_control_host_tests
+namespace remote_graphics_host_tests
 {
 	class BoxedString : public Object
 	{
@@ -24,7 +24,7 @@ namespace remote_control_host_tests
 MakeGuiMain
 ***********************************************************************/
 
-	Func<void()> MakeGuiMain(ControlHostProtocol& protocol, List<WString>& eventLogs, GuiWindow*& controlHost)
+	Func<void()> MakeGuiMain(GraphicsHostProtocol& protocol, List<WString>& eventLogs, GuiWindow*& controlHost)
 	{
 		return [&]()
 		{
@@ -130,4 +130,3 @@ MakeMouseInfo
 		return info;
 	}
 }
-using namespace remote_control_host_tests;
