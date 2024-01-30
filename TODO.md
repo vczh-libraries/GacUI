@@ -41,29 +41,34 @@
         - Implement `GuiRemote(Message|Event)Verifier` to verify dropped messages/events not be called.
         - In debug mode, apply `GuiRemote(Message|Event)Verifier` inside `GuiRemoteMessages`.
         - Remote `[@Drop(Repeat|Consecutive)]` in `BatchedProtocol`.
-    - Two backend could be unit test and streaming
-    - Save image metadata (width, height, type, etc) to binary resource
-      - For `INativeImageService::CreateImage*` functions it sends binary data to the receiver and wait for respond of metadata
+    - SyncDom architecture that streams layout/element changes, requiring Hosted for the first version.
+      - An implementation of remoting.
+      - Requires hosted mode.
+      - First version: changes only sent before `IGuiGraphicsRenderer::GetMinSize`.
     - Metadata from requests are needed from the beginning for codegen, metadata will be included in release.
-    - Upgrade GacUI XML Resource to 1.3, force on all instead of only depended or depending resource.
-    - Require binary pattern "[GMR-1.3]" at the beginning of the binary resource.
-  - Add above functionality to `GacUI.UnitTest.cpp`, `GacUI.UnitTest.h`, `GacUI.UnitTest.Reflection ...`
-  - In release repo add more tools that just call `GacUI.UnitTest.cpp`:
-    - Load x86 bin + workflow script and execute.
-    - Load x64 bin + workflow script and execute.
-    - Render unit test results, especially each frame of intermediate rendering result.
-      - Can navigate to workflow script.
+  - Implement basic control unit test based on streaming
+    - Add above functionality to `GacUI.UnitTest.cpp`, `GacUI.UnitTest.h`, `GacUI.UnitTest.Reflection ...`
+    - A viewer to view unit test results logged from SyncDom and other stuff after each time when layout stops.
+    - Save image metadata (width, height, type, etc) to binary resource
+      - For `INativeImageService::CreateImage*` functions it sends binary data to the receiver and wait for respond of metadata.
+      - Unit test only `<PsuedoImage/>` to specify only the size in resource.
+      - Upgrade GacUI XML Resource to 1.3, force on all instead of only depended or depending resource.
+      - Require binary pattern "[GMR-1.3]" at the beginning of the binary resource.
+    - In release repo add more tools that just call `GacUI.UnitTest.cpp`:
+      - Load x86 bin + workflow script and execute.
+      - Load x64 bin + workflow script and execute.
+      - Render unit test results, especially each frame of intermediate rendering result.
+        - Can navigate to workflow script.
 - Enlarging window slower than shrinking.
 - https://github.com/vczh-libraries/Vlpp/issues/9
 
-## Progressing (next release)
+## Progressing (before release)
 
-- SyncDom architecture that streams layout/element changes, requiring Hosted for the first version.
-  - An implementation of remoting.
-  - Requires hosted mode.
+- More optimistic SyncDom strategy to reduce messages.
 - SyncObj architecture that streams ViewModel object changes.
   - See README.md in Workflow repo (**ViewModel Remoting C++ Codegen**).
   - GacGen offers Metadata of interfaces
+- All control unit test.
 - Network protocols are not included as default implementation
 - New tutorials
   - A GacUI D2D process connecting to a server process for streaming ViewModel
