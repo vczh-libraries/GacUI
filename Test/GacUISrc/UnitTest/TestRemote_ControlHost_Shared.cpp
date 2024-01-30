@@ -37,6 +37,7 @@ AttachMouseEvents
 		event.AttachLambda([=, &event, &eventLogs](GuiGraphicsComposition* sender, GuiEventArgs& arguments)
 		{
 			TEST_ASSERT(eventOwner == sender);
+			TEST_ASSERT(arguments.compositionSource == arguments.eventSource);
 			eventLogs.Add(WString::Unmanaged(senderName) + WString::Unmanaged(L".") + WString::Unmanaged(eventName) + WString::Unmanaged(L"()"));
 		});
 	}
@@ -46,6 +47,7 @@ AttachMouseEvents
 		event.AttachLambda([=, &event, &eventLogs](GuiGraphicsComposition* sender, GuiMouseEventArgs& arguments)
 		{
 			TEST_ASSERT(eventOwner == sender);
+			TEST_ASSERT(arguments.compositionSource == arguments.eventSource);
 			eventLogs.Add(WString::Unmanaged(senderName) + WString::Unmanaged(L".") + WString::Unmanaged(eventName) + WString::Unmanaged(L"(")
 				+ (arguments.ctrl ? WString::Unmanaged(L"C") : WString::Empty)
 				+ (arguments.shift ? WString::Unmanaged(L"S") : WString::Empty)
