@@ -90,6 +90,9 @@
     <ClCompile Include="TestRemote_ControlHost_Mouse.cpp">
       <Filter>Source Files\Remote\ControlHost</Filter>
     </ClCompile>
+    <ClCompile Include="TestRemote_ControlHost_Shared.cpp">
+      <Filter>Source Files\Remote\ControlHost</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\..\Resources\Resource.FailedInstance.Ctor3.xml.txt">

@@ -194,6 +194,7 @@
     <ClCompile Include="TestQueryParser.cpp" />
     <ClCompile Include="TestReflectionTypeList.cpp" />
     <ClCompile Include="TestRemote_ControlHost_Mouse.cpp" />
+    <ClCompile Include="TestRemote_ControlHost_Shared.cpp" />
     <ClCompile Include="TestRemote_ControlHost_Startup.cpp" />
     <ClCompile Include="TestRemote_EmptyWindow.cpp" />
     <ClCompile Include="TestRemote_Startup.cpp" />
