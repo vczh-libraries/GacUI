@@ -35,7 +35,7 @@ TEST_FILE
 				L"host.bounds.Enter()",
 				L"host.container.Enter()",
 				L"host.container.Move(:320,240,0)",
-				L"host.bounds.Move(:320,240,0)",
+				L"host.container->host.bounds.Move(:320,240,0)",
 				L"host.container.Leave()",
 				L"host.bounds.Leave()"
 				);
@@ -97,8 +97,8 @@ TEST_FILE
 				L"x.Enter()",
 				L"y.Enter()",
 				L"y.Move(:10,10,0)",
-				L"x.Move(:20,20,0)",
-				L"host.bounds.Move(:30,30,0)"
+				L"y->x.Move(:20,20,0)",
+				L"y->host.bounds.Move(:30,30,0)"
 				);
 
 			protocol.events->OnIOButtonDown(MakeMouseInfoWithButton(remoteprotocol::IOMouseButton::Left, false, false, false, 30, 30, 0));
@@ -108,24 +108,24 @@ TEST_FILE
 			AssertEventLogs(
 				eventLogs,
 				L"y.LDown(:10,10,0)",
-				L"x.LDown(:20,20,0)",
-				L"host.bounds.LDown(:30,30,0)",
+				L"y->x.LDown(:20,20,0)",
+				L"y->host.bounds.LDown(:30,30,0)",
 
 				L"y.LUp(:10,10,0)",
-				L"x.LUp(:20,20,0)",
-				L"host.bounds.LUp(:30,30,0)",
+				L"y->x.LUp(:20,20,0)",
+				L"y->host.bounds.LUp(:30,30,0)",
 
 				L"y.LDown(:10,10,0)",
-				L"x.LDown(:20,20,0)",
-				L"host.bounds.LDown(:30,30,0)",
+				L"y->x.LDown(:20,20,0)",
+				L"y->host.bounds.LDown(:30,30,0)",
 
 				L"y.LDbClick(:10,10,0)",
-				L"x.LDbClick(:20,20,0)",
-				L"host.bounds.LDbClick(:30,30,0)",
+				L"y->x.LDbClick(:20,20,0)",
+				L"y->host.bounds.LDbClick(:30,30,0)",
 
 				L"y.LUp(:10,10,0)",
-				L"x.LUp(:20,20,0)",
-				L"host.bounds.LUp(:30,30,0)"
+				L"y->x.LUp(:20,20,0)",
+				L"y->host.bounds.LUp(:30,30,0)"
 				);
 
 			protocol.events->OnIOMouseMoving(MakeMouseInfo(false, false, false, 70, 70, 0));
@@ -135,7 +135,7 @@ TEST_FILE
 				L"x.Leave()",
 				L"z.Enter()",
 				L"z.Move(:10,10,0)",
-				L"host.bounds.Move(:70,70,0)"
+				L"z->host.bounds.Move(:70,70,0)"
 				);
 
 			protocol.events->OnIOButtonDown(MakeMouseInfoWithButton(remoteprotocol::IOMouseButton::Middle, false, false, false, 70, 70, 0));
@@ -145,19 +145,19 @@ TEST_FILE
 			AssertEventLogs(
 				eventLogs,
 				L"z.MDown(:10,10,0)",
-				L"host.bounds.MDown(:70,70,0)",
+				L"z->host.bounds.MDown(:70,70,0)",
 
 				L"z.MUp(:10,10,0)",
-				L"host.bounds.MUp(:70,70,0)",
+				L"z->host.bounds.MUp(:70,70,0)",
 
 				L"z.MDown(:10,10,0)",
-				L"host.bounds.MDown(:70,70,0)",
+				L"z->host.bounds.MDown(:70,70,0)",
 
 				L"z.MDbClick(:10,10,0)",
-				L"host.bounds.MDbClick(:70,70,0)",
+				L"z->host.bounds.MDbClick(:70,70,0)",
 
 				L"z.MUp(:10,10,0)",
-				L"host.bounds.MUp(:70,70,0)"
+				L"z->host.bounds.MUp(:70,70,0)"
 				);
 
 			protocol.events->OnIOMouseMoving(MakeMouseInfo(false, false, false, 30, 30, 0));
@@ -167,8 +167,8 @@ TEST_FILE
 				L"x.Enter()",
 				L"y.Enter()",
 				L"y.Move(:10,10,0)",
-				L"x.Move(:20,20,0)",
-				L"host.bounds.Move(:30,30,0)"
+				L"y->x.Move(:20,20,0)",
+				L"y->host.bounds.Move(:30,30,0)"
 				);
 
 			protocol.events->OnIOButtonDown(MakeMouseInfoWithButton(remoteprotocol::IOMouseButton::Right, false, false, false, 30, 30, 0));
@@ -178,24 +178,24 @@ TEST_FILE
 			AssertEventLogs(
 				eventLogs,
 				L"y.RDown(:10,10,0)",
-				L"x.RDown(:20,20,0)",
-				L"host.bounds.RDown(:30,30,0)",
+				L"y->x.RDown(:20,20,0)",
+				L"y->host.bounds.RDown(:30,30,0)",
 
 				L"y.RUp(:10,10,0)",
-				L"x.RUp(:20,20,0)",
-				L"host.bounds.RUp(:30,30,0)",
+				L"y->x.RUp(:20,20,0)",
+				L"y->host.bounds.RUp(:30,30,0)",
 
 				L"y.RDown(:10,10,0)",
-				L"x.RDown(:20,20,0)",
-				L"host.bounds.RDown(:30,30,0)",
+				L"y->x.RDown(:20,20,0)",
+				L"y->host.bounds.RDown(:30,30,0)",
 
 				L"y.RDbClick(:10,10,0)",
-				L"x.RDbClick(:20,20,0)",
-				L"host.bounds.RDbClick(:30,30,0)",
+				L"y->x.RDbClick(:20,20,0)",
+				L"y->host.bounds.RDbClick(:30,30,0)",
 
 				L"y.RUp(:10,10,0)",
-				L"x.RUp(:20,20,0)",
-				L"host.bounds.RUp(:30,30,0)"
+				L"y->x.RUp(:20,20,0)",
+				L"y->host.bounds.RUp(:30,30,0)"
 				);
 
 			protocol.events->OnIOMouseMoving(MakeMouseInfo(false, false, false, 70, 70, 0));
@@ -205,7 +205,7 @@ TEST_FILE
 				L"x.Leave()",
 				L"z.Enter()",
 				L"z.Move(:10,10,0)",
-				L"host.bounds.Move(:70,70,0)"
+				L"z->host.bounds.Move(:70,70,0)"
 				);
 
 			protocol.events->OnIOHWheel(MakeMouseInfo(false, false, false, 70, 70, 0));
@@ -213,9 +213,9 @@ TEST_FILE
 			AssertEventLogs(
 				eventLogs,
 				L"z.HWheel(:10,10,0)",
-				L"host.bounds.HWheel(:70,70,0)",
+				L"z->host.bounds.HWheel(:70,70,0)",
 				L"z.VWheel(:10,10,0)",
-				L"host.bounds.VWheel(:70,70,0)"
+				L"z->host.bounds.VWheel(:70,70,0)"
 				);
 
 			protocol.events->OnIOMouseLeaved();
@@ -238,7 +238,5 @@ TEST_FILE
 	});
 
 	// TODO:
-	//   Mouse event propogation and enter/leave/moving with @DropConsecutive/dbclick
 	//   Mouse capturing
-	//   log sender/compositionSource/eventSource
 }

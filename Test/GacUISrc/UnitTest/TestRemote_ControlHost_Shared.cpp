@@ -2,6 +2,24 @@
 
 namespace remote_control_host_tests
 {
+	class BoxedString : public Object
+	{
+	public:
+		WString value;
+
+		BoxedString(WString&& _value)
+			: value(std::move(_value))
+		{
+		}
+	};
+
+	WString GetRaiserName(GuiGraphicsComposition* sender, GuiEventArgs& arguments)
+	{
+		WString& senderName = sender->GetInternalProperty(WString::Unmanaged(L"Name")).Cast<BoxedString>()->value;
+		WString& sourceName = arguments.eventSource->GetInternalProperty(WString::Unmanaged(L"Name")).Cast<BoxedString>()->value;
+		return sender == arguments.eventSource ? senderName : sourceName + L"->" + senderName;
+	}
+
 /***********************************************************************
 MakeGuiMain
 ***********************************************************************/
@@ -32,23 +50,27 @@ MakeGuiMain
 AttachMouseEvents
 ***********************************************************************/
 
-	void AttachMouseEvent(GuiGraphicsComposition* eventOwner, GuiNotifyEvent& event, const wchar_t* senderName, const wchar_t* eventName, List<WString>& eventLogs)
+	void AttachMouseEvent(GuiGraphicsComposition* eventOwner, GuiNotifyEvent& event, const wchar_t* eventName, List<WString>& eventLogs)
 	{
 		event.AttachLambda([=, &event, &eventLogs](GuiGraphicsComposition* sender, GuiEventArgs& arguments)
 		{
 			TEST_ASSERT(eventOwner == sender);
 			TEST_ASSERT(arguments.compositionSource == arguments.eventSource);
-			eventLogs.Add(WString::Unmanaged(senderName) + WString::Unmanaged(L".") + WString::Unmanaged(eventName) + WString::Unmanaged(L"()"));
+			eventLogs.Add(
+				GetRaiserName(sender, arguments)
+				+ WString::Unmanaged(L".") + WString::Unmanaged(eventName) + WString::Unmanaged(L"()"));
 		});
 	}
 
-	void AttachMouseEvent(GuiGraphicsComposition* eventOwner, GuiMouseEvent& event, const wchar_t* senderName, const wchar_t* eventName, List<WString>& eventLogs)
+	void AttachMouseEvent(GuiGraphicsComposition* eventOwner, GuiMouseEvent& event, const wchar_t* eventName, List<WString>& eventLogs)
 	{
 		event.AttachLambda([=, &event, &eventLogs](GuiGraphicsComposition* sender, GuiMouseEventArgs& arguments)
 		{
 			TEST_ASSERT(eventOwner == sender);
 			TEST_ASSERT(arguments.compositionSource == arguments.eventSource);
-			eventLogs.Add(WString::Unmanaged(senderName) + WString::Unmanaged(L".") + WString::Unmanaged(eventName) + WString::Unmanaged(L"(")
+			eventLogs.Add(
+				GetRaiserName(sender, arguments)
+				+ WString::Unmanaged(L".") + WString::Unmanaged(eventName) + WString::Unmanaged(L"(")
 				+ (arguments.ctrl ? WString::Unmanaged(L"C") : WString::Empty)
 				+ (arguments.shift ? WString::Unmanaged(L"S") : WString::Empty)
 				+ (arguments.left ? WString::Unmanaged(L"L") : WString::Empty)
@@ -63,21 +85,22 @@ AttachMouseEvents
 
 	void AttachMouseEvents(GuiGraphicsComposition* sender, const wchar_t* name, List<WString>& eventLogs)
 	{
+		sender->SetInternalProperty(WString::Unmanaged(L"Name"), Ptr(new BoxedString(WString::Unmanaged(name))));
 		auto e = sender->GetEventReceiver();
-		AttachMouseEvent(sender, e->mouseEnter, name, L"Enter", eventLogs);
-		AttachMouseEvent(sender, e->mouseLeave, name, L"Leave", eventLogs);
-		AttachMouseEvent(sender, e->mouseMove, name, L"Move", eventLogs);
-		AttachMouseEvent(sender, e->horizontalWheel, name, L"HWheel", eventLogs);
-		AttachMouseEvent(sender, e->verticalWheel, name, L"VWheel", eventLogs);
-		AttachMouseEvent(sender, e->leftButtonDown, name, L"LDown", eventLogs);
-		AttachMouseEvent(sender, e->leftButtonUp, name, L"LUp", eventLogs);
-		AttachMouseEvent(sender, e->leftButtonDoubleClick, name, L"LDbClick", eventLogs);
-		AttachMouseEvent(sender, e->middleButtonDown, name, L"MDown", eventLogs);
-		AttachMouseEvent(sender, e->middleButtonUp, name, L"MUp", eventLogs);
-		AttachMouseEvent(sender, e->middleButtonDoubleClick, name, L"MDbClick", eventLogs);
-		AttachMouseEvent(sender, e->rightButtonDown, name, L"RDown", eventLogs);
-		AttachMouseEvent(sender, e->rightButtonUp, name, L"RUp", eventLogs);
-		AttachMouseEvent(sender, e->rightButtonDoubleClick, name, L"RDbClick", eventLogs);
+		AttachMouseEvent(sender, e->mouseEnter, L"Enter", eventLogs);
+		AttachMouseEvent(sender, e->mouseLeave, L"Leave", eventLogs);
+		AttachMouseEvent(sender, e->mouseMove, L"Move", eventLogs);
+		AttachMouseEvent(sender, e->horizontalWheel, L"HWheel", eventLogs);
+		AttachMouseEvent(sender, e->verticalWheel, L"VWheel", eventLogs);
+		AttachMouseEvent(sender, e->leftButtonDown, L"LDown", eventLogs);
+		AttachMouseEvent(sender, e->leftButtonUp, L"LUp", eventLogs);
+		AttachMouseEvent(sender, e->leftButtonDoubleClick, L"LDbClick", eventLogs);
+		AttachMouseEvent(sender, e->middleButtonDown, L"MDown", eventLogs);
+		AttachMouseEvent(sender, e->middleButtonUp, L"MUp", eventLogs);
+		AttachMouseEvent(sender, e->middleButtonDoubleClick, L"MDbClick", eventLogs);
+		AttachMouseEvent(sender, e->rightButtonDown, L"RDown", eventLogs);
+		AttachMouseEvent(sender, e->rightButtonUp, L"RUp", eventLogs);
+		AttachMouseEvent(sender, e->rightButtonDoubleClick, L"RDbClick", eventLogs);
 	}
 
 /***********************************************************************
