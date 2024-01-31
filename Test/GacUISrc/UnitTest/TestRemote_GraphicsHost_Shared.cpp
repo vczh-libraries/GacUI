@@ -146,8 +146,31 @@ AttachAndLogEvents
 	}
 
 /***********************************************************************
-MakeMouseInfo
+Make*Info
 ***********************************************************************/
+
+	NativeWindowKeyInfo MakeKeyInfo(bool ctrl, bool shift, bool alt, VKEY code)
+	{
+		NativeWindowKeyInfo info;
+		info.ctrl = false;
+		info.shift = false;
+		info.alt = alt;
+		info.capslock = false;
+		info.autoRepeatKeyDown = false;
+		info.code = code;
+		return info;
+	}
+
+	NativeWindowCharInfo MakeCharInfo(bool ctrl, bool shift, bool alt, wchar_t code)
+	{
+		NativeWindowCharInfo info;
+		info.ctrl = false;
+		info.shift = false;
+		info.alt = alt;
+		info.capslock = false;
+		info.code = code;
+		return info;
+	}
 
 	NativeWindowMouseInfo MakeMouseInfo(bool left, bool middle, bool right, vint x, vint y, vint wheel)
 	{
