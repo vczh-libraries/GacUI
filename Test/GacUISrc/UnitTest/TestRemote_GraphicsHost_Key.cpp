@@ -43,6 +43,33 @@ TEST_FILE
 
 		protocol.OnNextFrame([&]()
 		{
+			y->SetFocused();
+			AssertEventLogs(
+				eventLogs
+				);
+
+			protocol.events->OnIOKeyDown(MakeKeyInfo(true, false, false, VKEY::KEY_A));
+			protocol.events->OnIOChar(MakeCharInfo(false, true, false, L'B'));
+			protocol.events->OnIOKeyDown(MakeKeyInfo(false, false, true, VKEY::KEY_C));
+			AssertEventLogs(
+				eventLogs
+				);
+
+			z->SetFocused();
+			AssertEventLogs(
+				eventLogs
+				);
+
+			protocol.events->OnIOKeyDown(MakeKeyInfo(true, false, false, VKEY::KEY_A));
+			protocol.events->OnIOChar(MakeCharInfo(false, true, false, L'B'));
+			protocol.events->OnIOKeyDown(MakeKeyInfo(false, false, true, VKEY::KEY_C));
+			AssertEventLogs(
+				eventLogs
+				);
+		});
+
+		protocol.OnNextFrame([&]()
+		{
 			controlHost->Hide();
 		});
 

@@ -28,9 +28,10 @@
       - Each character takes exactly `FontSize x FontSize`
       - Deal with `\r` and `\n` when multiline is enabled
     - Test against more code as many as possible
-  - A general remoting `INativeController` implementation
-    - Add mouse capturing messages
-    - Add hittest messages, or implement it with SyncDom
+  - A general remoting `INativeController` implementation.
+    - Add mouse capturing messages.
+    - Add hittest messages, or implement it with SyncDom.
+    - Update `GuiRemoteController::GetKey` to match the windows implementation.
     - It sends batched requests to a receiver and wait for respond
       - Implement `[@Drop(Repeat|Consecutive)]` after unit test against remoting `INativeWindow` is done.
         - Implement `[@DropRepeat]` message in `GuiRemoteMessageFilter` and redirect to another `IGuiRemoteProtocol`.

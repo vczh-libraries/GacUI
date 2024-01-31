@@ -635,7 +635,7 @@ Resources
 Keys
 ***********************************************************************/
 
-#define GUI_DEFINE_KEYBOARD_CODE(ITEM)											\
+#define GUI_DEFINE_KEYBOARD_CODE_BASIC(ITEM)									\
 /*																				\
  * Virtual Keys, Standard Set													\
  */																				\
@@ -657,7 +657,6 @@ ITEM(CAPITAL,             0x14)													\
 ITEM(KANA_HANGUL,         0x15)													\
 ITEM(JUNJA,               0x17)													\
 ITEM(FINAL,               0x18)													\
-ITEM(HANJA,               0x19)													\
 ITEM(KANJI,               0x19)													\
 ITEM(ESCAPE,              0x1B)													\
 ITEM(CONVERT,             0x1C)													\
@@ -767,10 +766,6 @@ ITEM(F24,                 0x87)													\
 ITEM(NUMLOCK,             0x90)													\
 ITEM(SCROLL,              0x91)													\
 /*																				\
- * NEC PC-9800 kbd definitions													\
- */																				\
-ITEM(OEM_NEC_EQUAL,       0x92)		/* '=' key on numpad */						\
-/*																				\
  * Fujitsu/OASYS kbd definitions												\
  */																				\
 ITEM(OEM_FJ_JISHO,        0x92)		/* 'Dictionary' key */						\
@@ -807,17 +802,10 @@ ITEM(LAUNCH_MAIL,         0xB4)													\
 ITEM(LAUNCH_MEDIA_SELECT, 0xB5)													\
 ITEM(LAUNCH_APP1,         0xB6)													\
 ITEM(LAUNCH_APP2,         0xB7)													\
-ITEM(OEM_1,               0xBA)		/* ';:' for US */							\
 ITEM(OEM_PLUS,            0xBB)		/* '+' any country */						\
 ITEM(OEM_COMMA,           0xBC)		/* ',' any country */						\
 ITEM(OEM_MINUS,           0xBD)		/* '-' any country */						\
 ITEM(OEM_PERIOD,          0xBE)		/* '.' any country */						\
-ITEM(OEM_2,               0xBF)		/* '/?' for US */							\
-ITEM(OEM_3,               0xC0)		/* '`~' for US */							\
-ITEM(OEM_4,               0xDB)		/* '[{' for US */							\
-ITEM(OEM_5,               0xDC)		/* '\|' for US */							\
-ITEM(OEM_6,               0xDD)		/* ']}' for US */							\
-ITEM(OEM_7,               0xDE)		/* ''"' for US */							\
 ITEM(OEM_8,               0xDF)													\
 /*																				\
  * Various extended or enhanced keyboards										\
@@ -865,6 +853,24 @@ ITEM(BACKSLASH,           0xDC)		/* OEM_5 */									\
 ITEM(LEFT_BRACKET,        0xDD)		/* OEM_6 */									\
 ITEM(APOSTROPHE,          0xDE)		/* OEM_7 */									\
 
+#define GUI_DEFINE_KEYBOARD_CODE_ADDITIONAL(ITEM)								\
+ITEM(OEM_1,               0xBA)		/* ';:' for US */							\
+ITEM(OEM_2,               0xBF)		/* '/?' for US */							\
+ITEM(OEM_3,               0xC0)		/* '`~' for US */							\
+ITEM(OEM_4,               0xDB)		/* '[{' for US */							\
+ITEM(OEM_5,               0xDC)		/* '\|' for US */							\
+ITEM(OEM_6,               0xDD)		/* ']}' for US */							\
+ITEM(OEM_7,               0xDE)		/* ''"' for US */							\
+ITEM(HANJA,               0x19)													\
+/*																				\
+ * NEC PC-9800 kbd definitions													\
+ */																				\
+ITEM(OEM_NEC_EQUAL,       0x92)		/* '=' key on numpad */						\
+
+#define GUI_DEFINE_KEYBOARD_CODE(ITEM)											\
+			GUI_DEFINE_KEYBOARD_CODE_BASIC(ITEM)								\
+			GUI_DEFINE_KEYBOARD_CODE_ADDITIONAL(ITEM)							\
+
 #define GUI_DEFINE_KEYBOARD_CODE_ENUM_ITEM(NAME, CODE) KEY_##NAME = CODE,
 		enum class VKEY
 		{
@@ -872,12 +878,7 @@ ITEM(APOSTROPHE,          0xDE)		/* OEM_7 */									\
 			GUI_DEFINE_KEYBOARD_CODE(GUI_DEFINE_KEYBOARD_CODE_ENUM_ITEM)
 		};
 #undef GUI_DEFINE_KEYBOARD_CODE_ENUM_ITEM
-		static bool operator == (VKEY a, VKEY b) { return (vint)a == (vint)b; }
-		static bool operator != (VKEY a, VKEY b) { return (vint)a != (vint)b; }
-		static bool operator <  (VKEY a, VKEY b) { return (vint)a <  (vint)b; }
-		static bool operator <= (VKEY a, VKEY b) { return (vint)a <= (vint)b; }
-		static bool operator >  (VKEY a, VKEY b) { return (vint)a >  (vint)b; }
-		static bool operator >= (VKEY a, VKEY b) { return (vint)a >= (vint)b; }
+		static auto operator <=> (VKEY a, VKEY b) { return (vint)a <=> (vint)b; }
 		static VKEY operator &  (VKEY a, VKEY b) { return (VKEY)((vint)a & (vint)b); }
 		static VKEY operator |  (VKEY a, VKEY b) { return (VKEY)((vint)a | (vint)b); }
 

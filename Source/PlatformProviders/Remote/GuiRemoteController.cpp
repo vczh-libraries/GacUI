@@ -93,12 +93,22 @@ GuiRemoteController::INativeInputService
 
 	WString GuiRemoteController::GetKeyName(VKEY code)
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		switch (code)
+		{
+#define DEFINE_KEY_NAME(NAME, CODE) case VKEY::KEY_ ## NAME: return WString::Unmanaged(L ## #NAME);
+			GUI_DEFINE_KEYBOARD_CODE_BASIC(DEFINE_KEY_NAME)
+#undef DEFINE_KEY_NAME
+		default:
+			CHECK_FAIL(L"vl::presentation::GuiRemoteController::GetKeyName(VKEY)#Unknown key code.");
+		}
 	}
 
 	VKEY GuiRemoteController::GetKey(const WString& name)
 	{
-		CHECK_FAIL(L"Not Implemented!");
+#define DEFINE_KEY_NAME(NAME, CODE) if (name == L ## #NAME) return VKEY::KEY_ ## NAME;
+		GUI_DEFINE_KEYBOARD_CODE(DEFINE_KEY_NAME)
+#undef DEFINE_KEY_NAME
+		CHECK_FAIL(L"vl::presentation::GuiRemoteController::GetKey(const WString&)#Unknown key name.");
 	}
 
 	vint GuiRemoteController::RegisterGlobalShortcutKey(bool ctrl, bool shift, bool alt, VKEY key)
