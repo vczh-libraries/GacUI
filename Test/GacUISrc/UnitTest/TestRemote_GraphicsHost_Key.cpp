@@ -45,7 +45,8 @@ TEST_FILE
 		{
 			y->SetFocused();
 			AssertEventLogs(
-				eventLogs
+				eventLogs,
+				L"y.GotFocus()"
 				);
 
 			protocol.events->OnIOKeyDown(MakeKeyInfo(true, false, false, VKEY::KEY_A));
@@ -78,7 +79,9 @@ TEST_FILE
 
 			z->SetFocused();
 			AssertEventLogs(
-				eventLogs
+				eventLogs,
+				L"y.LostFocus()",
+				L"z.GotFocus()"
 				);
 
 			protocol.events->OnIOKeyDown(MakeKeyInfo(true, false, false, VKEY::KEY_A));

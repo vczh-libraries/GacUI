@@ -143,6 +143,8 @@ AttachAndLogEvents
 		AttachKeyEvent(sender, e->keyUp, L"KeyUp", eventLogs);
 		AttachCharEvent(sender, e->previewCharInput, L"CharPreview", eventLogs);
 		AttachCharEvent(sender, e->charInput, L"Char", eventLogs);
+		AttachNotifyEvent(sender, e->gotFocus, L"GotFocus", eventLogs);
+		AttachNotifyEvent(sender, e->lostFocus, L"LostFocus", eventLogs);
 	}
 
 /***********************************************************************
