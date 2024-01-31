@@ -47,10 +47,10 @@ MakeGuiMain
 	}
 
 /***********************************************************************
-AttachMouseEvents
+AttachAndLogEvents
 ***********************************************************************/
 
-	void AttachMouseEvent(GuiGraphicsComposition* eventOwner, GuiNotifyEvent& event, const wchar_t* eventName, List<WString>& eventLogs)
+	void AttachNotifyEvent(GuiGraphicsComposition* eventOwner, GuiNotifyEvent& event, const wchar_t* eventName, List<WString>& eventLogs)
 	{
 		event.AttachLambda([=, &event, &eventLogs](GuiGraphicsComposition* sender, GuiEventArgs& arguments)
 		{
@@ -83,12 +83,49 @@ AttachMouseEvents
 		});
 	}
 
-	void AttachMouseEvents(GuiGraphicsComposition* sender, const wchar_t* name, List<WString>& eventLogs)
+	void AttachKeyEvent(GuiGraphicsComposition* eventOwner, GuiKeyEvent& event, const wchar_t* eventName, List<WString>& eventLogs)
+	{
+		event.AttachLambda([=, &event, &eventLogs](GuiGraphicsComposition* sender, GuiKeyEventArgs& arguments)
+		{
+			TEST_ASSERT(eventOwner == sender);
+			TEST_ASSERT(arguments.compositionSource == arguments.eventSource);
+			eventLogs.Add(
+				GetRaiserName(sender, arguments)
+				+ WString::Unmanaged(L".") + WString::Unmanaged(eventName) + WString::Unmanaged(L"(")
+				+ (arguments.ctrl ? WString::Unmanaged(L"C") : WString::Empty)
+				+ (arguments.shift ? WString::Unmanaged(L"S") : WString::Empty)
+				+ (arguments.alt ? WString::Unmanaged(L"A") : WString::Empty)
+				+ (arguments.capslock ? WString::Unmanaged(L"^") : WString::Empty)
+				+ (arguments.autoRepeatKeyDown ? WString::Unmanaged(L"~") : WString::Empty)
+				+ WString::Unmanaged(L":") + GetCurrentController()->InputService()->GetKeyName(arguments.code)
+				+ WString::Unmanaged(L")"));
+		});
+	}
+
+	void AttachCharEvent(GuiGraphicsComposition* eventOwner, GuiCharEvent& event, const wchar_t* eventName, List<WString>& eventLogs)
+	{
+		event.AttachLambda([=, &event, &eventLogs](GuiGraphicsComposition* sender, GuiCharEventArgs& arguments)
+		{
+			TEST_ASSERT(eventOwner == sender);
+			TEST_ASSERT(arguments.compositionSource == arguments.eventSource);
+			eventLogs.Add(
+				GetRaiserName(sender, arguments)
+				+ WString::Unmanaged(L".") + WString::Unmanaged(eventName) + WString::Unmanaged(L"(")
+				+ (arguments.ctrl ? WString::Unmanaged(L"C") : WString::Empty)
+				+ (arguments.shift ? WString::Unmanaged(L"S") : WString::Empty)
+				+ (arguments.alt ? WString::Unmanaged(L"A") : WString::Empty)
+				+ (arguments.capslock ? WString::Unmanaged(L"^") : WString::Empty)
+				+ WString::Unmanaged(L":") + WString::FromChar(arguments.code)
+				+ WString::Unmanaged(L")"));
+		});
+	}
+
+	void AttachAndLogEvents(GuiGraphicsComposition* sender, const wchar_t* name, List<WString>& eventLogs)
 	{
 		sender->SetInternalProperty(WString::Unmanaged(L"Name"), Ptr(new BoxedString(WString::Unmanaged(name))));
 		auto e = sender->GetEventReceiver();
-		AttachMouseEvent(sender, e->mouseEnter, L"Enter", eventLogs);
-		AttachMouseEvent(sender, e->mouseLeave, L"Leave", eventLogs);
+		AttachNotifyEvent(sender, e->mouseEnter, L"Enter", eventLogs);
+		AttachNotifyEvent(sender, e->mouseLeave, L"Leave", eventLogs);
 		AttachMouseEvent(sender, e->mouseMove, L"Move", eventLogs);
 		AttachMouseEvent(sender, e->horizontalWheel, L"HWheel", eventLogs);
 		AttachMouseEvent(sender, e->verticalWheel, L"VWheel", eventLogs);
@@ -101,6 +138,11 @@ AttachMouseEvents
 		AttachMouseEvent(sender, e->rightButtonDown, L"RDown", eventLogs);
 		AttachMouseEvent(sender, e->rightButtonUp, L"RUp", eventLogs);
 		AttachMouseEvent(sender, e->rightButtonDoubleClick, L"RDbClick", eventLogs);
+		AttachKeyEvent(sender, e->previewKey, L"KeyPreview", eventLogs);
+		AttachKeyEvent(sender, e->keyDown, L"KeyDown", eventLogs);
+		AttachKeyEvent(sender, e->keyUp, L"KeyUp", eventLogs);
+		AttachCharEvent(sender, e->previewCharInput, L"CharPreview", eventLogs);
+		AttachCharEvent(sender, e->charInput, L"Char", eventLogs);
 	}
 
 /***********************************************************************

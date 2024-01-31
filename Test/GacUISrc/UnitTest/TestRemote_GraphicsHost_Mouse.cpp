@@ -20,8 +20,8 @@ TEST_FILE
 			TEST_ASSERT(b->GetCachedBounds() == Rect({ 0,0 }, { 640,480 }));
 			TEST_ASSERT(c->GetCachedBounds() == Rect({ 0,0 }, { 640,480 }));
 
-			AttachMouseEvents(b, L"host.bounds", eventLogs);
-			AttachMouseEvents(c, L"host.container", eventLogs);
+			AttachAndLogEvents(b, L"host.bounds", eventLogs);
+			AttachAndLogEvents(c, L"host.container", eventLogs);
 		});
 
 		protocol.OnNextFrame([&]()
@@ -81,10 +81,10 @@ TEST_FILE
 			TEST_ASSERT(y->GetCachedBounds() == Rect({ 10,10 }, { 80,80 }));
 			TEST_ASSERT(z->GetCachedBounds() == Rect({ 60,60 }, { 100,100 }));
 
-			AttachMouseEvents(b, L"host.bounds", eventLogs);
-			AttachMouseEvents(x, L"x", eventLogs);
-			AttachMouseEvents(y, L"y", eventLogs);
-			AttachMouseEvents(z, L"z", eventLogs);
+			AttachAndLogEvents(b, L"host.bounds", eventLogs);
+			AttachAndLogEvents(x, L"x", eventLogs);
+			AttachAndLogEvents(y, L"y", eventLogs);
+			AttachAndLogEvents(z, L"z", eventLogs);
 		});
 
 		protocol.OnNextFrame([&]()
@@ -264,10 +264,10 @@ TEST_FILE
 			TEST_ASSERT(y->GetCachedBounds() == Rect({ 10,10 }, { 80,80 }));
 			TEST_ASSERT(z->GetCachedBounds() == Rect({ 60,60 }, { 100,100 }));
 
-			AttachMouseEvents(b, L"host.bounds", eventLogs);
-			AttachMouseEvents(x, L"x", eventLogs);
-			AttachMouseEvents(y, L"y", eventLogs);
-			AttachMouseEvents(z, L"z", eventLogs);
+			AttachAndLogEvents(b, L"host.bounds", eventLogs);
+			AttachAndLogEvents(x, L"x", eventLogs);
+			AttachAndLogEvents(y, L"y", eventLogs);
+			AttachAndLogEvents(z, L"z", eventLogs);
 		});
 
 		protocol.OnNextFrame([&]()
