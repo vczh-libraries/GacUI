@@ -29,7 +29,7 @@
       - Deal with `\r` and `\n` when multiline is enabled
     - Test against more code as many as possible
   - A general remoting `INativeController` implementation.
-    - Add mouse capturing messages.
+    - Add mouse capturing messages. Test state transition when connected/disconnected.
     - Add hittest messages, or implement it with SyncDom.
     - Update `GuiRemoteController::GetKey` to match the windows implementation.
     - It sends batched requests to a receiver and wait for respond
