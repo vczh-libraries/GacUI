@@ -41,9 +41,19 @@ namespace remote_graphics_host_tests
 		{
 			Name = WString::Unmanaged(L"EmptyControlTheme");
 			PreferCustomFrameWindow = true;
+
 			CustomFrameWindow = [](auto)
 			{
 				auto ct = new templates::GuiWindowTemplate;
+				ct->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
+				ct->SetContainerComposition(ct);
+				ct->SetFocusableComposition(ct);
+				return ct;
+			};
+
+			Button = [](auto)
+			{
+				auto ct = new templates::GuiButtonTemplate;
 				ct->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 				ct->SetContainerComposition(ct);
 				ct->SetFocusableComposition(ct);

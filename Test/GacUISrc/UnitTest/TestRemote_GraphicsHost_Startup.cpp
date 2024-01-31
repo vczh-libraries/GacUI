@@ -37,7 +37,6 @@ TEST_FILE
 	});
 
 	// TODO:
-	//   Key/Char event propogation and directly focusing a control
 	//   [TAB] and keyboard focus
 	//   [ALT]
 	//   Shortcut Key

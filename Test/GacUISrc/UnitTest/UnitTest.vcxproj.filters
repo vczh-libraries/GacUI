@@ -93,6 +93,9 @@
     <ClCompile Include="TestRemote_GraphicsHost_Shared.cpp">
       <Filter>Source Files\Remote\GraphicsHost</Filter>
     </ClCompile>
+    <ClCompile Include="TestRemote_GraphicsHost_Key.cpp">
+      <Filter>Source Files\Remote\GraphicsHost</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\..\Resources\Resource.FailedInstance.Ctor3.xml.txt">
