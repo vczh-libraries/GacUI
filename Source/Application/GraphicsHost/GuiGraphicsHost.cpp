@@ -100,17 +100,21 @@ GuiGraphicsHost
 			void GuiGraphicsHost::OnCharInput(const NativeWindowCharInfo& info, GuiGraphicsComposition* composition, GuiCharEvent GuiGraphicsEventReceiver::* eventReceiverEvent)
 			{
 				List<GuiGraphicsComposition*> compositions;
-				while(composition)
+				GuiCharEventArgs arguments(composition);
+				(NativeWindowCharInfo&)arguments = info;
+
+				while (composition)
 				{
-					if(composition->HasEventReceiver())
+					if (composition->HasEventReceiver())
 					{
+						if (!arguments.eventSource)
+						{
+							arguments.eventSource = composition;
+						}
 						compositions.Add(composition);
 					}
-					composition=composition->GetParent();
+					composition = composition->GetParent();
 				}
-
-				GuiCharEventArgs arguments(composition);
-				(NativeWindowCharInfo&)arguments=info;
 
 				// TODO: (enumerable) foreach:reversed
 				for(vint i=compositions.Count()-1;i>=0;i--)
@@ -136,20 +140,21 @@ GuiGraphicsHost
 			void GuiGraphicsHost::OnKeyInput(const NativeWindowKeyInfo& info, GuiGraphicsComposition* composition, GuiKeyEvent GuiGraphicsEventReceiver::* eventReceiverEvent)
 			{
 				List<GuiGraphicsComposition*> compositions;
-				{
-					auto current = composition;
-					while (current)
-					{
-						if (current->HasEventReceiver())
-						{
-							compositions.Add(current);
-						}
-						current = current->GetParent();
-					}
-				}
-
 				GuiKeyEventArgs arguments(composition);
 				(NativeWindowKeyInfo&)arguments = info;
+
+				while (composition)
+				{
+					if (composition->HasEventReceiver())
+					{
+						if (!arguments.eventSource)
+						{
+							arguments.eventSource = composition;
+						}
+						compositions.Add(composition);
+					}
+					composition = composition->GetParent();
+				}
 
 				// TODO: (enumerable) foreach:reversed
 				for (vint i = compositions.Count() - 1; i >= 0; i--)

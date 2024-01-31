@@ -152,8 +152,8 @@ Make*Info
 	NativeWindowKeyInfo MakeKeyInfo(bool ctrl, bool shift, bool alt, VKEY code)
 	{
 		NativeWindowKeyInfo info;
-		info.ctrl = false;
-		info.shift = false;
+		info.ctrl = ctrl;
+		info.shift = shift;
 		info.alt = alt;
 		info.capslock = false;
 		info.autoRepeatKeyDown = false;
@@ -164,8 +164,8 @@ Make*Info
 	NativeWindowCharInfo MakeCharInfo(bool ctrl, bool shift, bool alt, wchar_t code)
 	{
 		NativeWindowCharInfo info;
-		info.ctrl = false;
-		info.shift = false;
+		info.ctrl = ctrl;
+		info.shift = shift;
 		info.alt = alt;
 		info.capslock = false;
 		info.code = code;

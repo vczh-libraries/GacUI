@@ -50,9 +50,30 @@ TEST_FILE
 
 			protocol.events->OnIOKeyDown(MakeKeyInfo(true, false, false, VKEY::KEY_A));
 			protocol.events->OnIOChar(MakeCharInfo(false, true, false, L'B'));
-			protocol.events->OnIOKeyDown(MakeKeyInfo(false, false, true, VKEY::KEY_C));
+			protocol.events->OnIOKeyUp(MakeKeyInfo(false, false, true, VKEY::KEY_C));
 			AssertEventLogs(
-				eventLogs
+				eventLogs,
+
+				L"y->host.bounds.KeyPreview(C:A)",
+				L"y->x.KeyPreview(C:A)",
+				L"y.KeyPreview(C:A)",
+				L"y.KeyDown(C:A)",
+				L"y->x.KeyDown(C:A)",
+				L"y->host.bounds.KeyDown(C:A)",
+
+				L"y->host.bounds.CharPreview(S:B)",
+				L"y->x.CharPreview(S:B)",
+				L"y.CharPreview(S:B)",
+				L"y.Char(S:B)",
+				L"y->x.Char(S:B)",
+				L"y->host.bounds.Char(S:B)",
+
+				L"y->host.bounds.KeyPreview(A:C)",
+				L"y->x.KeyPreview(A:C)",
+				L"y.KeyPreview(A:C)",
+				L"y.KeyUp(A:C)",
+				L"y->x.KeyUp(A:C)",
+				L"y->host.bounds.KeyUp(A:C)"
 				);
 
 			z->SetFocused();
@@ -62,9 +83,24 @@ TEST_FILE
 
 			protocol.events->OnIOKeyDown(MakeKeyInfo(true, false, false, VKEY::KEY_A));
 			protocol.events->OnIOChar(MakeCharInfo(false, true, false, L'B'));
-			protocol.events->OnIOKeyDown(MakeKeyInfo(false, false, true, VKEY::KEY_C));
+			protocol.events->OnIOKeyUp(MakeKeyInfo(false, false, true, VKEY::KEY_C));
 			AssertEventLogs(
-				eventLogs
+				eventLogs,
+
+				L"z->host.bounds.KeyPreview(C:A)",
+				L"z.KeyPreview(C:A)",
+				L"z.KeyDown(C:A)",
+				L"z->host.bounds.KeyDown(C:A)",
+
+				L"z->host.bounds.CharPreview(S:B)",
+				L"z.CharPreview(S:B)",
+				L"z.Char(S:B)",
+				L"z->host.bounds.Char(S:B)",
+
+				L"z->host.bounds.KeyPreview(A:C)",
+				L"z.KeyPreview(A:C)",
+				L"z.KeyUp(A:C)",
+				L"z->host.bounds.KeyUp(A:C)"
 				);
 		});
 
