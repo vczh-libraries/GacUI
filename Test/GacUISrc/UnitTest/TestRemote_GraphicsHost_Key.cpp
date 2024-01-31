@@ -48,6 +48,7 @@ TEST_FILE
 				eventLogs,
 				L"y.GotFocus()"
 				);
+			y->SetFocused();
 
 			protocol.events->OnIOKeyDown(MakeKeyInfo(true, false, false, VKEY::KEY_A));
 			protocol.events->OnIOChar(MakeCharInfo(false, true, false, L'B'));
@@ -83,6 +84,7 @@ TEST_FILE
 				L"y.LostFocus()",
 				L"z.GotFocus()"
 				);
+			z->SetFocused();
 
 			protocol.events->OnIOKeyDown(MakeKeyInfo(true, false, false, VKEY::KEY_A));
 			protocol.events->OnIOChar(MakeCharInfo(false, true, false, L'B'));
