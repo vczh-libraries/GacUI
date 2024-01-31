@@ -37,7 +37,6 @@ TEST_FILE
 	});
 
 	// TODO:
-	//   [TAB] and keyboard focus
 	//   [ALT]
 	//   Shortcut Key
 	//   Other events

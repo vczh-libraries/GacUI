@@ -119,4 +119,10 @@ TEST_FILE
 		SetupRemoteNativeController(&batchedProtocol);
 		SetGuiMainProxy({});
 	});
+
+	// TODO:
+	//   Tab navigation
+	//   Delete focused control, until nothing
+	//   Delete unfocused control, until nothing
+	//   Delete container of the focused control
 }
