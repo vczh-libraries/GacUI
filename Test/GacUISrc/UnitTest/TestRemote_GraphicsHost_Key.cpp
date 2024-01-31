@@ -119,7 +119,4 @@ TEST_FILE
 		SetupRemoteNativeController(&batchedProtocol);
 		SetGuiMainProxy({});
 	});
-
-	// TODO:
-	//   Key/Char event propogation and directly focusing a control
 }
