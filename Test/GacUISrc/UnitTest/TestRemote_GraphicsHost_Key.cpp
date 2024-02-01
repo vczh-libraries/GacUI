@@ -181,6 +181,12 @@ TEST_FILE
 	(WString::Unmanaged(to) + WString::Unmanaged(L".KeyUp(:TAB)")).Buffer(),\
 	(WString::Unmanaged(to) + WString::Unmanaged(L"->host.bounds.KeyUp(:TAB)")).Buffer()\
 
+#define ASSERT_NO_FOCUS\
+	L"host.bounds.KeyPreview(:TAB)",\
+	L"host.bounds.KeyDown(:TAB)",\
+	L"host.bounds.KeyPreview(:TAB)",\
+	L"host.bounds.KeyUp(:TAB)"\
+
 	TEST_CATEGORY(L"Tab through all buttons")
 	{
 		GraphicsHostProtocol protocol;
@@ -305,6 +311,14 @@ TEST_FILE
 				);
 		};
 
+		auto assertFocusNoFocus = [&]()
+		{
+			AssertEventLogs(
+				eventLogs,
+				ASSERT_NO_FOCUS
+				);
+		};
+
 		protocol.OnNextFrame([&]()
 		{
 			auto b = controlHost->GetBoundsComposition();
@@ -340,6 +354,7 @@ TEST_FILE
 
 			SafeDeleteControl(buttons[4]);
 			pressTab();
+			assertFocusNoFocus();
 
 			buttons[1]->SetEnabled(true);
 			buttons[3]->SetVisible(true);
@@ -350,6 +365,10 @@ TEST_FILE
 			SafeDeleteControl(buttons[1]);
 			pressTab();
 			assertFocusOn(L"3");
+
+			SafeDeleteControl(buttons[3]);
+			pressTab();
+			assertFocusNoFocus();
 		});
 
 		protocol.OnNextFrame([&]()
@@ -363,6 +382,7 @@ TEST_FILE
 		SetGuiMainProxy({});
 	});
 
+#undef ASSERT_NO_FOCUS
 #undef ASSERT_FOCUS
 
 	// TODO:

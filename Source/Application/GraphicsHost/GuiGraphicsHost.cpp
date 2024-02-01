@@ -511,9 +511,13 @@ GuiGraphicsHost
 				if (tabActionManager->KeyDown(info, focusedComposition)) { return; }
 				if(shortcutKeyManager && shortcutKeyManager->Execute(info)) { return; }
 
-				if (focusedComposition && focusedComposition->HasEventReceiver())
+				auto receiver = focusedComposition;
+				if (!receiver) receiver = controlHost->GetFocusableComposition();
+				if (!receiver) receiver = controlHost->GetBoundsComposition();
+
+				if (receiver && receiver->HasEventReceiver())
 				{
-					OnKeyInput(info, focusedComposition, &GuiGraphicsEventReceiver::keyDown);
+					OnKeyInput(info, receiver, &GuiGraphicsEventReceiver::keyDown);
 				}
 			}
 
@@ -525,9 +529,13 @@ GuiGraphicsHost
 					hostRecord.nativeWindow->SupressAlt();
 				}
 
-				if(focusedComposition && focusedComposition->HasEventReceiver())
+				auto receiver = focusedComposition;
+				if (!receiver) receiver = controlHost->GetFocusableComposition();
+				if (!receiver) receiver = controlHost->GetBoundsComposition();
+
+				if(receiver && receiver->HasEventReceiver())
 				{
-					OnKeyInput(info, focusedComposition, &GuiGraphicsEventReceiver::keyUp);
+					OnKeyInput(info, receiver, &GuiGraphicsEventReceiver::keyUp);
 				}
 			}
 
@@ -536,9 +544,13 @@ GuiGraphicsHost
 				if (altActionManager->Char(info)) { return; }
 				if (tabActionManager->Char(info)) { return; }
 
-				if(focusedComposition && focusedComposition->HasEventReceiver())
+				auto receiver = focusedComposition;
+				if (!receiver) receiver = controlHost->GetFocusableComposition();
+				if (!receiver) receiver = controlHost->GetBoundsComposition();
+
+				if(receiver && receiver->HasEventReceiver())
 				{
-					OnCharInput(info, focusedComposition, &GuiGraphicsEventReceiver::charInput);
+					OnCharInput(info, receiver, &GuiGraphicsEventReceiver::charInput);
 				}
 			}
 
