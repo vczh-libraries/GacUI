@@ -551,12 +551,13 @@ GuiControl
 
 			void GuiControl::SetFocused()
 			{
-				if (focusableComposition)
+				if (!focusableComposition) return;
+				if (!isVisuallyEnabled) return;
+				if (!focusableComposition->GetEventuallyVisible()) return;
+
+				if (auto host = focusableComposition->GetRelatedGraphicsHost())
 				{
-					if (auto host = focusableComposition->GetRelatedGraphicsHost())
-					{
-						host->SetFocus(focusableComposition);
-					}
+					host->SetFocus(focusableComposition);
 				}
 			}
 

@@ -9,50 +9,37 @@ TEST_FILE
 		GuiWindow* controlHost = nullptr;
 		GuiButton* x = nullptr, * y = nullptr, * z = nullptr;
 
-		protocol.OnNextFrame([&]()
+		auto pressKeys = [&]()
 		{
-			auto b = controlHost->GetBoundsComposition();
-
-			x = new GuiButton(theme::ThemeName::Button);
-			x->GetBoundsComposition()->SetExpectedBounds(Rect({ 10,10 }, { 100,100 }));
-
-			y = new GuiButton(theme::ThemeName::Button);
-			y->GetBoundsComposition()->SetExpectedBounds(Rect({ 10,10 }, { 80,80}));
-
-			z = new GuiButton(theme::ThemeName::Button);
-			z->GetBoundsComposition()->SetExpectedBounds(Rect({ 60,60 }, { 100,100 }));
-
-			x->AddChild(y);
-			controlHost->AddChild(x);
-			controlHost->AddChild(z);
-
-			controlHost->ForceCalculateSizeImmediately();
-			TEST_ASSERT(b->GetCachedBounds() == Rect({ 0,0 }, { 640,480 }));
-			TEST_ASSERT(x->GetBoundsComposition()->GetCachedBounds() == Rect({ 10,10 }, { 100,100 }));
-			TEST_ASSERT(x->GetContainerComposition()->GetCachedBounds() == Rect({ 0,0 }, { 100,100 }));
-			TEST_ASSERT(y->GetBoundsComposition()->GetCachedBounds() == Rect({ 10,10 }, { 80,80 }));
-			TEST_ASSERT(y->GetContainerComposition()->GetCachedBounds() == Rect({ 0,0 }, { 80,80 }));
-			TEST_ASSERT(z->GetBoundsComposition()->GetCachedBounds() == Rect({ 60,60 }, { 100,100 }));
-			TEST_ASSERT(z->GetContainerComposition()->GetCachedBounds() == Rect({ 0,0 }, { 100,100 }));
-
-			AttachAndLogEvents(b, L"host.bounds", eventLogs);
-			AttachAndLogEvents(x->GetFocusableComposition(), L"x", eventLogs);
-			AttachAndLogEvents(y->GetFocusableComposition(), L"y", eventLogs);
-			AttachAndLogEvents(z->GetFocusableComposition(), L"z", eventLogs);
-		});
-
-		protocol.OnNextFrame([&]()
-		{
-			y->SetFocused();
-			AssertEventLogs(
-				eventLogs,
-				L"y.GotFocus()"
-				);
-			y->SetFocused();
-
 			protocol.events->OnIOKeyDown(MakeKeyInfo(true, false, false, VKEY::KEY_A));
 			protocol.events->OnIOChar(MakeCharInfo(false, true, false, L'B'));
 			protocol.events->OnIOKeyUp(MakeKeyInfo(false, false, true, VKEY::KEY_C));
+		};
+
+		auto assertKeysOnX = [&]()
+		{
+			AssertEventLogs(
+				eventLogs,
+
+				L"x->host.bounds.KeyPreview(C:A)",
+				L"x.KeyPreview(C:A)",
+				L"x.KeyDown(C:A)",
+				L"x->host.bounds.KeyDown(C:A)",
+
+				L"x->host.bounds.CharPreview(S:B)",
+				L"x.CharPreview(S:B)",
+				L"x.Char(S:B)",
+				L"x->host.bounds.Char(S:B)",
+
+				L"x->host.bounds.KeyPreview(A:C)",
+				L"x.KeyPreview(A:C)",
+				L"x.KeyUp(A:C)",
+				L"x->host.bounds.KeyUp(A:C)"
+				);
+		};
+
+		auto assertKeysOnY = [&]()
+		{
 			AssertEventLogs(
 				eventLogs,
 
@@ -77,18 +64,10 @@ TEST_FILE
 				L"y->x.KeyUp(A:C)",
 				L"y->host.bounds.KeyUp(A:C)"
 				);
+		};
 
-			z->SetFocused();
-			AssertEventLogs(
-				eventLogs,
-				L"y.LostFocus()",
-				L"z.GotFocus()"
-				);
-			z->SetFocused();
-
-			protocol.events->OnIOKeyDown(MakeKeyInfo(true, false, false, VKEY::KEY_A));
-			protocol.events->OnIOChar(MakeCharInfo(false, true, false, L'B'));
-			protocol.events->OnIOKeyUp(MakeKeyInfo(false, false, true, VKEY::KEY_C));
+		auto assertKeysOnZ = [&]()
+		{
 			AssertEventLogs(
 				eventLogs,
 
@@ -107,6 +86,81 @@ TEST_FILE
 				L"z.KeyUp(A:C)",
 				L"z->host.bounds.KeyUp(A:C)"
 				);
+		};
+
+		protocol.OnNextFrame([&]()
+		{
+			auto b = controlHost->GetBoundsComposition();
+			x = new GuiButton(theme::ThemeName::Button);
+			y = new GuiButton(theme::ThemeName::Button);
+			z = new GuiButton(theme::ThemeName::Button);
+
+			x->AddChild(y);
+			controlHost->AddChild(x);
+			controlHost->AddChild(z);
+
+			AttachAndLogEvents(b, L"host.bounds", eventLogs);
+			AttachAndLogEvents(x->GetFocusableComposition(), L"x", eventLogs);
+			AttachAndLogEvents(y->GetFocusableComposition(), L"y", eventLogs);
+			AttachAndLogEvents(z->GetFocusableComposition(), L"z", eventLogs);
+		});
+
+		protocol.OnNextFrame([&]()
+		{
+			y->SetFocused();
+			AssertEventLogs(
+				eventLogs,
+				L"y.GotFocus()"
+				);
+
+			y->SetFocused();
+			pressKeys();
+			assertKeysOnY();
+
+			z->SetFocused();
+			AssertEventLogs(
+				eventLogs,
+				L"y.LostFocus()",
+				L"z.GotFocus()"
+				);
+
+			z->SetFocused();
+			pressKeys();
+			assertKeysOnZ();
+
+			y->SetEnabled(false);
+			y->SetFocused();
+			pressKeys();
+			assertKeysOnZ();
+
+			y->SetEnabled(true);
+			x->SetEnabled(false);
+			y->SetFocused();
+			pressKeys();
+			assertKeysOnZ();
+
+			x->SetEnabled(true);
+			y->SetEnabled(false);
+			x->SetFocused();
+			y->SetFocused();
+			AssertEventLogs(
+				eventLogs,
+				L"z.LostFocus()",
+				L"x.GotFocus()"
+				);
+			pressKeys();
+			assertKeysOnX();
+
+			y->SetEnabled(true);
+			y->SetFocused();
+			AssertEventLogs(
+				eventLogs,
+				L"x.LostFocus()",
+				L"y.GotFocus()"
+				);
+
+			pressKeys();
+			assertKeysOnY();
 		});
 
 		protocol.OnNextFrame([&]()
