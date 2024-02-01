@@ -173,9 +173,64 @@ TEST_FILE
 		SetupRemoteNativeController(&batchedProtocol);
 		SetGuiMainProxy({});
 	});
+	TEST_CATEGORY(L"Tab through all buttons")
+	{
+		GraphicsHostProtocol protocol;
+		List<WString> eventLogs;
+		GuiWindow* controlHost = nullptr;
+		GuiButton* buttons[5];
+
+		auto pressTab = [&]()
+		{
+			protocol.events->OnIOKeyDown(MakeKeyInfo(false, false, false, VKEY::KEY_TAB));
+			protocol.events->OnIOKeyUp(MakeKeyInfo(false, false, false, VKEY::KEY_TAB));
+		};
+
+		protocol.OnNextFrame([&]()
+		{
+			auto b = controlHost->GetBoundsComposition();
+			for (auto& button : buttons)
+			{
+				button = new GuiButton(theme::ThemeName::Button);;
+				controlHost->AddChild(button);
+			}
+
+			AttachAndLogEvents(b, L"host.bounds", eventLogs);
+			AttachAndLogEvents(buttons[0]->GetFocusableComposition(), L"0", eventLogs);
+			AttachAndLogEvents(buttons[1]->GetFocusableComposition(), L"1", eventLogs);
+			AttachAndLogEvents(buttons[2]->GetFocusableComposition(), L"2", eventLogs);
+			AttachAndLogEvents(buttons[3]->GetFocusableComposition(), L"3", eventLogs);
+			AttachAndLogEvents(buttons[4]->GetFocusableComposition(), L"4", eventLogs);
+
+			buttons[1]->SetEnabled(false);
+			buttons[3]->SetVisible(false);
+		});
+
+		protocol.OnNextFrame([&]()
+		{
+			pressTab();
+			AssertEventLogs(
+				eventLogs,
+				L"0.GotFocus()",
+				L"0->host.bounds.KeyPreview(:TAB)",
+				L"0.KeyPreview(:TAB)",
+				L"0.KeyUp(:TAB)",
+				L"0->host.bounds.KeyUp(:TAB)"
+				);
+		});
+
+		protocol.OnNextFrame([&]()
+		{
+			controlHost->Hide();
+		});
+
+		SetGuiMainProxy(MakeGuiMain(protocol, eventLogs, controlHost));
+		BatchedProtocol batchedProtocol(&protocol);
+		SetupRemoteNativeController(&batchedProtocol);
+		SetGuiMainProxy({});
+	});
 
 	// TODO:
-	//   Tab navigation. One control is invisible, another control is disabled.
 	//   Delete focused control, until nothing. One control is invisible, another control is disabled.
 	//   Delete unfocused control, until nothing. One control is invisible, another control is disabled.
 	//   Delete container of the focused control. One control is invisible, another control is disabled.
