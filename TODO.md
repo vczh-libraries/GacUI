@@ -48,7 +48,13 @@
       - First version: changes only sent before `IGuiGraphicsRenderer::GetMinSize`.
     - Metadata from requests are needed from the beginning for codegen, metadata will be included in release.
   - Implement basic control unit test based on streaming
-    - Add above functionality to `GacUI.UnitTest.cpp`, `GacUI.UnitTest.h`, `GacUI.UnitTest.Reflection ...`
+    - Do not support complex text elements yet.
+  - Add above functionality to `GacUI.UnitTest.cpp`, `GacUI.UnitTest.h`, `GacUI.UnitTest.Reflection ...`
+
+## Progressing (next release)
+- Unit Test Framework
+  - Implement basic control unit test based on streaming
+    - Support complex text elements.
     - A viewer to view unit test results logged from SyncDom and other stuff after each time when layout stops.
     - Save image metadata (width, height, type, etc) to binary resource
       - For `INativeImageService::CreateImage*` functions it sends binary data to the receiver and wait for respond of metadata.
@@ -60,16 +66,13 @@
       - Load x64 bin + workflow script and execute.
       - Render unit test results, especially each frame of intermediate rendering result.
         - Can navigate to workflow script.
-- Enlarging window slower than shrinking.
-- https://github.com/vczh-libraries/Vlpp/issues/9
+- All control unit test.
 
-## Progressing (before release)
+## Progressing (next release)
 
-- More optimistic SyncDom strategy to reduce messages.
 - SyncObj architecture that streams ViewModel object changes.
   - See README.md in Workflow repo (**ViewModel Remoting C++ Codegen**).
   - GacGen offers Metadata of interfaces
-- All control unit test.
 - Network protocols are not included as default implementation
 - New tutorials
   - A GacUI D2D process connecting to a server process for streaming ViewModel
@@ -77,8 +80,14 @@
   - A GacUI SyncDom process connecting to a server process for streaming graphics
     - GDI+ implements in C#
     - D2D implements in C++
+
+## Progressing (next release)
+
+- More optimistic SyncDom strategy to reduce messages.
 - Windows
   - Ensure `INativeWindow::(Before|After)Closing()` is not called on non-main-window between the main window is closed and the application exits.
+- Enlarging window slower than shrinking.
+- https://github.com/vczh-libraries/Vlpp/issues/9
 
 ## Progressing (low priority)
 
