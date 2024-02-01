@@ -287,7 +287,7 @@ TEST_FILE
 				);
 
 			protocol.events->OnIOButtonDown(MakeMouseInfoWithButton(remoteprotocol::IOMouseButton::Left, enteringZ, false, false, 30, 30, 0));
-			if(enteringZ)
+			if (enteringZ)
 			{
 				AssertEventLogs(
 					eventLogs,
@@ -307,7 +307,7 @@ TEST_FILE
 			}
 
 			protocol.events->OnIOMouseMoving(MakeMouseInfo(enteringZ, false, false, 70, 70, 0));
-			if(enteringZ)
+			if (enteringZ)
 			{
 				AssertEventLogs(
 					eventLogs,
