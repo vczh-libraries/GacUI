@@ -286,15 +286,27 @@ TEST_FILE
 				L"y->host.bounds.Move(:30,30,0)"
 				);
 
-			protocol.events->OnIOButtonDown(MakeMouseInfoWithButton(remoteprotocol::IOMouseButton::Left, true, false, false, 30, 30, 0));
-			AssertEventLogs(
-				eventLogs,
-				L"y.LDown(L:10,10,0)",
-				L"y->x.LDown(L:20,20,0)",
-				L"y->host.bounds.LDown(L:30,30,0)"
-				);
+			protocol.events->OnIOButtonDown(MakeMouseInfoWithButton(remoteprotocol::IOMouseButton::Left, enteringZ, false, false, 30, 30, 0));
+			if(enteringZ)
+			{
+				AssertEventLogs(
+					eventLogs,
+					L"y.LDown(L:10,10,0)",
+					L"y->x.LDown(L:20,20,0)",
+					L"y->host.bounds.LDown(L:30,30,0)"
+					);
+			}
+			else
+			{
+				AssertEventLogs(
+					eventLogs,
+					L"y.LDown(:10,10,0)",
+					L"y->x.LDown(:20,20,0)",
+					L"y->host.bounds.LDown(:30,30,0)"
+					);
+			}
 
-			protocol.events->OnIOMouseMoving(MakeMouseInfo(true, false, false, 70, 70, 0));
+			protocol.events->OnIOMouseMoving(MakeMouseInfo(enteringZ, false, false, 70, 70, 0));
 			if(enteringZ)
 			{
 				AssertEventLogs(
@@ -311,9 +323,9 @@ TEST_FILE
 			{
 				AssertEventLogs(
 					eventLogs,
-					L"y.Move(L:50,50,0)",
-					L"y->x.Move(L:60,60,0)",
-					L"y->host.bounds.Move(L:70,70,0)"
+					L"y.Move(:50,50,0)",
+					L"y->x.Move(:60,60,0)",
+					L"y->host.bounds.Move(:70,70,0)"
 					);
 			}
 
