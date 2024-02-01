@@ -122,7 +122,7 @@ TEST_FILE
 
 	// TODO:
 	//   Tab navigation
-	//   Delete focused control, until nothing
-	//   Delete unfocused control, until nothing
-	//   Delete container of the focused control
+	//   Delete focused control, until nothing. One control is invisible, another control is disabled.
+	//   Delete unfocused control, until nothing. One control is invisible, another control is disabled.
+	//   Delete container of the focused control. One control is invisible, another control is disabled.
 }
