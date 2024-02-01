@@ -173,6 +173,7 @@ TEST_FILE
 		SetupRemoteNativeController(&batchedProtocol);
 		SetGuiMainProxy({});
 	});
+
 	TEST_CATEGORY(L"Tab through all buttons")
 	{
 		GraphicsHostProtocol protocol;
@@ -186,15 +187,18 @@ TEST_FILE
 			protocol.events->OnIOKeyUp(MakeKeyInfo(false, false, false, VKEY::KEY_TAB));
 		};
 
+#define ASSERT_FOCUS\
+				(WString::Unmanaged(to) + WString::Unmanaged(L".GotFocus()")).Buffer(),\
+				(WString::Unmanaged(to) + WString::Unmanaged(L"->host.bounds.KeyPreview(:TAB)")).Buffer(),\
+				(WString::Unmanaged(to) + WString::Unmanaged(L".KeyPreview(:TAB)")).Buffer(),\
+				(WString::Unmanaged(to) + WString::Unmanaged(L".KeyUp(:TAB)")).Buffer(),\
+				(WString::Unmanaged(to) + WString::Unmanaged(L"->host.bounds.KeyUp(:TAB)")).Buffer()\
+
 		auto assertFocusOn = [&](const wchar_t* to)
 		{
 			AssertEventLogs(
 				eventLogs,
-				(WString::Unmanaged(to) + WString::Unmanaged(L".GotFocus()")).Buffer(),
-				(WString::Unmanaged(to) + WString::Unmanaged(L"->host.bounds.KeyPreview(:TAB)")).Buffer(),
-				(WString::Unmanaged(to) + WString::Unmanaged(L".KeyPreview(:TAB)")).Buffer(),
-				(WString::Unmanaged(to) + WString::Unmanaged(L".KeyUp(:TAB)")).Buffer(),
-				(WString::Unmanaged(to) + WString::Unmanaged(L"->host.bounds.KeyUp(:TAB)")).Buffer()
+				ASSERT_FOCUS
 				);
 		};
 
@@ -203,13 +207,11 @@ TEST_FILE
 			AssertEventLogs(
 				eventLogs,
 				(WString::Unmanaged(from) + WString::Unmanaged(L".LostFocus()")).Buffer(),
-				(WString::Unmanaged(to) + WString::Unmanaged(L".GotFocus()")).Buffer(),
-				(WString::Unmanaged(to) + WString::Unmanaged(L"->host.bounds.KeyPreview(:TAB)")).Buffer(),
-				(WString::Unmanaged(to) + WString::Unmanaged(L".KeyPreview(:TAB)")).Buffer(),
-				(WString::Unmanaged(to) + WString::Unmanaged(L".KeyUp(:TAB)")).Buffer(),
-				(WString::Unmanaged(to) + WString::Unmanaged(L"->host.bounds.KeyUp(:TAB)")).Buffer()
+				ASSERT_FOCUS
 				);
 		};
+
+#undef ASSERT_FOCUS
 
 		protocol.OnNextFrame([&]()
 		{
@@ -247,6 +249,21 @@ TEST_FILE
 
 			buttons[1]->SetEnabled(true);
 			buttons[3]->SetVisible(true);
+
+			pressTab();
+			assertFocusTransition(L"0", L"1");
+
+			pressTab();
+			assertFocusTransition(L"1", L"2");
+
+			pressTab();
+			assertFocusTransition(L"2", L"3");
+
+			pressTab();
+			assertFocusTransition(L"3", L"4");
+
+			pressTab();
+			assertFocusTransition(L"4", L"0");
 		});
 
 		protocol.OnNextFrame([&]()
