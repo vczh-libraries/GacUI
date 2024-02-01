@@ -68,6 +68,8 @@
       - Render unit test results, especially each frame of intermediate rendering result.
         - Can navigate to workflow script.
 - All control unit test.
+- Document for unit test framework.
+- Document for remote protocol and SyncDom.
 
 ## Progressing (next release)
 
@@ -81,6 +83,7 @@
   - A GacUI SyncDom process connecting to a server process for streaming graphics
     - GDI+ implements in C#
     - D2D implements in C++
+- Document for SyncObj
 
 ## Progressing (next release)
 
