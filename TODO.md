@@ -52,6 +52,7 @@
   - Add above functionality to `GacUI.UnitTest.cpp`, `GacUI.UnitTest.h`, `GacUI.UnitTest.Reflection ...`
 
 ## Progressing (next release)
+
 - Unit Test Framework
   - Implement basic control unit test based on streaming
     - Support complex text elements.
