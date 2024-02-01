@@ -186,6 +186,31 @@ TEST_FILE
 			protocol.events->OnIOKeyUp(MakeKeyInfo(false, false, false, VKEY::KEY_TAB));
 		};
 
+		auto assertFocusOn = [&](const wchar_t* to)
+		{
+			AssertEventLogs(
+				eventLogs,
+				(WString::Unmanaged(to) + WString::Unmanaged(L".GotFocus()")).Buffer(),
+				(WString::Unmanaged(to) + WString::Unmanaged(L"->host.bounds.KeyPreview(:TAB)")).Buffer(),
+				(WString::Unmanaged(to) + WString::Unmanaged(L".KeyPreview(:TAB)")).Buffer(),
+				(WString::Unmanaged(to) + WString::Unmanaged(L".KeyUp(:TAB)")).Buffer(),
+				(WString::Unmanaged(to) + WString::Unmanaged(L"->host.bounds.KeyUp(:TAB)")).Buffer()
+				);
+		};
+
+		auto assertFocusTransition = [&](const wchar_t* from, const wchar_t* to)
+		{
+			AssertEventLogs(
+				eventLogs,
+				(WString::Unmanaged(from) + WString::Unmanaged(L".LostFocus()")).Buffer(),
+				(WString::Unmanaged(to) + WString::Unmanaged(L".GotFocus()")).Buffer(),
+				(WString::Unmanaged(to) + WString::Unmanaged(L"->host.bounds.KeyPreview(:TAB)")).Buffer(),
+				(WString::Unmanaged(to) + WString::Unmanaged(L".KeyPreview(:TAB)")).Buffer(),
+				(WString::Unmanaged(to) + WString::Unmanaged(L".KeyUp(:TAB)")).Buffer(),
+				(WString::Unmanaged(to) + WString::Unmanaged(L"->host.bounds.KeyUp(:TAB)")).Buffer()
+				);
+		};
+
 		protocol.OnNextFrame([&]()
 		{
 			auto b = controlHost->GetBoundsComposition();
@@ -209,14 +234,19 @@ TEST_FILE
 		protocol.OnNextFrame([&]()
 		{
 			pressTab();
-			AssertEventLogs(
-				eventLogs,
-				L"0.GotFocus()",
-				L"0->host.bounds.KeyPreview(:TAB)",
-				L"0.KeyPreview(:TAB)",
-				L"0.KeyUp(:TAB)",
-				L"0->host.bounds.KeyUp(:TAB)"
-				);
+			assertFocusOn(L"0");
+
+			pressTab();
+			assertFocusTransition(L"0", L"2");
+
+			pressTab();
+			assertFocusTransition(L"2", L"4");
+
+			pressTab();
+			assertFocusTransition(L"4", L"0");
+
+			buttons[1]->SetEnabled(true);
+			buttons[3]->SetVisible(true);
 		});
 
 		protocol.OnNextFrame([&]()
