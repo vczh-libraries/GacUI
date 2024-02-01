@@ -181,6 +181,15 @@ TEST_FILE
 	(WString::Unmanaged(to) + WString::Unmanaged(L".KeyUp(:TAB)")).Buffer(),\
 	(WString::Unmanaged(to) + WString::Unmanaged(L"->host.bounds.KeyUp(:TAB)")).Buffer()\
 
+#define ASSERT_FOCUS_CONTAINER\
+	(WString::Unmanaged(to) + WString::Unmanaged(L".GotFocus()")).Buffer(),\
+	(WString::Unmanaged(to) + WString::Unmanaged(L"->host.bounds.KeyPreview(:TAB)")).Buffer(),\
+	(WString::Unmanaged(to) + WString::Unmanaged(L"->") + WString::Unmanaged(container) + WString::Unmanaged(L".KeyPreview(:TAB)")).Buffer(),\
+	(WString::Unmanaged(to) + WString::Unmanaged(L".KeyPreview(:TAB)")).Buffer(),\
+	(WString::Unmanaged(to) + WString::Unmanaged(L".KeyUp(:TAB)")).Buffer(),\
+	(WString::Unmanaged(to) + WString::Unmanaged(L"->") + WString::Unmanaged(container) + WString::Unmanaged(L".KeyUp(:TAB)")).Buffer(),\
+	(WString::Unmanaged(to) + WString::Unmanaged(L"->host.bounds.KeyUp(:TAB)")).Buffer()\
+
 #define ASSERT_NO_FOCUS\
 	L"host.bounds.KeyPreview(:TAB)",\
 	L"host.bounds.KeyDown(:TAB)",\
@@ -606,6 +615,15 @@ TEST_FILE
 				);
 		};
 
+		auto assertFocusTransitionWithContainer = [&](const wchar_t* from, const wchar_t* to, const wchar_t* container)
+		{
+			AssertEventLogs(
+				eventLogs,
+				(WString::Unmanaged(from) + WString::Unmanaged(L".LostFocus()")).Buffer(),
+				ASSERT_FOCUS_CONTAINER
+				);
+		};
+
 		auto assertFocusNoFocus = [&]()
 		{
 			AssertEventLogs(
@@ -645,7 +663,7 @@ TEST_FILE
 			assertFocusOn(L"2");
 
 			pressTab();
-			assertFocusTransition(L"2", L"0");
+			assertFocusTransitionWithContainer(L"2", L"0", L"2");
 
 			pressTab();
 			assertFocusTransition(L"0", L"4");
@@ -666,6 +684,7 @@ TEST_FILE
 	});
 
 #undef ASSERT_NO_FOCUS
+#undef ASSERT_FOCUS_CONTAINER
 #undef ASSERT_FOCUS
 
 	// TODO:
