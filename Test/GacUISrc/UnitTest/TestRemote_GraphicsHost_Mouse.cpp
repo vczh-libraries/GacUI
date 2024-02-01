@@ -234,12 +234,13 @@ TEST_FILE
 		SetGuiMainProxy({});
 	});
 
-	TEST_CATEGORY(L"Mouse capturing on compositions")
+	auto mouseEventFilteringTest = [&]<typename TCallback>(TCallback&& callback)
 	{
 		GraphicsHostProtocol protocol;
 		List<WString> eventLogs;
 		GuiWindow* controlHost = nullptr;
 		GuiBoundsComposition* x = nullptr, * y = nullptr, * z = nullptr;
+		bool enteringZ = false;
 
 		protocol.OnNextFrame([&]()
 		{
@@ -253,6 +254,7 @@ TEST_FILE
 
 			z = new GuiBoundsComposition();
 			z->SetExpectedBounds(Rect({ 60,60 }, { 100,100 }));
+			enteringZ = callback(z);
 
 			x->AddChild(y);
 			controlHost->GetContainerComposition()->AddChild(x);
@@ -293,15 +295,27 @@ TEST_FILE
 				);
 
 			protocol.events->OnIOMouseMoving(MakeMouseInfo(true, false, false, 70, 70, 0));
-			AssertEventLogs(
-				eventLogs,
-				L"y.Leave()",
-				L"x.Leave()",
-				L"z.Enter()",
-				L"y.Move(L:50,50,0)",
-				L"y->x.Move(L:60,60,0)",
-				L"y->host.bounds.Move(L:70,70,0)"
-				);
+			if(enteringZ)
+			{
+				AssertEventLogs(
+					eventLogs,
+					L"y.Leave()",
+					L"x.Leave()",
+					L"z.Enter()",
+					L"y.Move(L:50,50,0)",
+					L"y->x.Move(L:60,60,0)",
+					L"y->host.bounds.Move(L:70,70,0)"
+					);
+			}
+			else
+			{
+				AssertEventLogs(
+					eventLogs,
+					L"y.Move(L:50,50,0)",
+					L"y->x.Move(L:60,60,0)",
+					L"y->host.bounds.Move(L:70,70,0)"
+					);
+			}
 
 			protocol.events->OnIOButtonDoubleClick(MakeMouseInfoWithButton(remoteprotocol::IOMouseButton::Left, false, false, false, 70, 70, 0));
 			protocol.events->OnIOButtonDoubleClick(MakeMouseInfoWithButton(remoteprotocol::IOMouseButton::Middle, false, false, false, 70, 70, 0));
@@ -349,11 +363,23 @@ TEST_FILE
 				);
 
 			protocol.events->OnIOMouseLeaved();
-			AssertEventLogs(
-				eventLogs,
-				L"z.Leave()",
-				L"host.bounds.Leave()"
-				);
+			if (enteringZ)
+			{
+				AssertEventLogs(
+					eventLogs,
+					L"z.Leave()",
+					L"host.bounds.Leave()"
+					);
+			}
+			else
+			{
+				AssertEventLogs(
+					eventLogs,
+					L"y.Leave()",
+					L"x.Leave()",
+					L"host.bounds.Leave()"
+					);
+			}
 		});
 
 		protocol.OnNextFrame([&]()
@@ -365,5 +391,31 @@ TEST_FILE
 		BatchedProtocol batchedProtocol(&protocol);
 		SetupRemoteNativeController(&batchedProtocol);
 		SetGuiMainProxy({});
+	};
+
+	TEST_CATEGORY(L"Mouse capturing on compositions")
+	{
+		mouseEventFilteringTest([](GuiBoundsComposition* z)
+		{
+			return true;
+		});
+	});
+
+	TEST_CATEGORY(L"Mouse over invisible compositions")
+	{
+		mouseEventFilteringTest([](GuiBoundsComposition* z)
+		{
+			z->SetVisible(false);
+			return false;
+		});
+	});
+
+	TEST_CATEGORY(L"Mouse over transparent compositions")
+	{
+		mouseEventFilteringTest([](GuiBoundsComposition* z)
+		{
+			z->SetTransparentToMouse(true);
+			return false;
+		});
 	});
 }
