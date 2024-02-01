@@ -174,6 +174,13 @@ TEST_FILE
 		SetGuiMainProxy({});
 	});
 
+#define ASSERT_FOCUS\
+	(WString::Unmanaged(to) + WString::Unmanaged(L".GotFocus()")).Buffer(),\
+	(WString::Unmanaged(to) + WString::Unmanaged(L"->host.bounds.KeyPreview(:TAB)")).Buffer(),\
+	(WString::Unmanaged(to) + WString::Unmanaged(L".KeyPreview(:TAB)")).Buffer(),\
+	(WString::Unmanaged(to) + WString::Unmanaged(L".KeyUp(:TAB)")).Buffer(),\
+	(WString::Unmanaged(to) + WString::Unmanaged(L"->host.bounds.KeyUp(:TAB)")).Buffer()\
+
 	TEST_CATEGORY(L"Tab through all buttons")
 	{
 		GraphicsHostProtocol protocol;
@@ -186,13 +193,6 @@ TEST_FILE
 			protocol.events->OnIOKeyDown(MakeKeyInfo(false, false, false, VKEY::KEY_TAB));
 			protocol.events->OnIOKeyUp(MakeKeyInfo(false, false, false, VKEY::KEY_TAB));
 		};
-
-#define ASSERT_FOCUS\
-				(WString::Unmanaged(to) + WString::Unmanaged(L".GotFocus()")).Buffer(),\
-				(WString::Unmanaged(to) + WString::Unmanaged(L"->host.bounds.KeyPreview(:TAB)")).Buffer(),\
-				(WString::Unmanaged(to) + WString::Unmanaged(L".KeyPreview(:TAB)")).Buffer(),\
-				(WString::Unmanaged(to) + WString::Unmanaged(L".KeyUp(:TAB)")).Buffer(),\
-				(WString::Unmanaged(to) + WString::Unmanaged(L"->host.bounds.KeyUp(:TAB)")).Buffer()\
 
 		auto assertFocusOn = [&](const wchar_t* to)
 		{
@@ -210,8 +210,6 @@ TEST_FILE
 				ASSERT_FOCUS
 				);
 		};
-
-#undef ASSERT_FOCUS
 
 		protocol.OnNextFrame([&]()
 		{
@@ -277,8 +275,97 @@ TEST_FILE
 		SetGuiMainProxy({});
 	});
 
+	TEST_CATEGORY(L"Delete focused buttons")
+	{
+		GraphicsHostProtocol protocol;
+		List<WString> eventLogs;
+		GuiWindow* controlHost = nullptr;
+		GuiButton* buttons[5];
+
+		auto pressTab = [&]()
+		{
+			protocol.events->OnIOKeyDown(MakeKeyInfo(false, false, false, VKEY::KEY_TAB));
+			protocol.events->OnIOKeyUp(MakeKeyInfo(false, false, false, VKEY::KEY_TAB));
+		};
+
+		auto assertFocusOn = [&](const wchar_t* to)
+		{
+			AssertEventLogs(
+				eventLogs,
+				ASSERT_FOCUS
+				);
+		};
+
+		auto assertFocusTransition = [&](const wchar_t* from, const wchar_t* to)
+		{
+			AssertEventLogs(
+				eventLogs,
+				(WString::Unmanaged(from) + WString::Unmanaged(L".LostFocus()")).Buffer(),
+				ASSERT_FOCUS
+				);
+		};
+
+		protocol.OnNextFrame([&]()
+		{
+			auto b = controlHost->GetBoundsComposition();
+			for (auto& button : buttons)
+			{
+				button = new GuiButton(theme::ThemeName::Button);;
+				controlHost->AddChild(button);
+			}
+
+			AttachAndLogEvents(b, L"host.bounds", eventLogs);
+			AttachAndLogEvents(buttons[0]->GetFocusableComposition(), L"0", eventLogs);
+			AttachAndLogEvents(buttons[1]->GetFocusableComposition(), L"1", eventLogs);
+			AttachAndLogEvents(buttons[2]->GetFocusableComposition(), L"2", eventLogs);
+			AttachAndLogEvents(buttons[3]->GetFocusableComposition(), L"3", eventLogs);
+			AttachAndLogEvents(buttons[4]->GetFocusableComposition(), L"4", eventLogs);
+
+			buttons[1]->SetEnabled(false);
+			buttons[3]->SetVisible(false);
+		});
+
+		protocol.OnNextFrame([&]()
+		{
+			pressTab();
+			assertFocusOn(L"0");
+
+			SafeDeleteControl(buttons[0]);
+			pressTab();
+			assertFocusOn(L"2");
+
+			SafeDeleteControl(buttons[2]);
+			pressTab();
+			assertFocusOn(L"4");
+
+			SafeDeleteControl(buttons[4]);
+			pressTab();
+
+			buttons[1]->SetEnabled(true);
+			buttons[3]->SetVisible(true);
+
+			pressTab();
+			assertFocusOn(L"1");
+
+			SafeDeleteControl(buttons[1]);
+			pressTab();
+			assertFocusOn(L"3");
+		});
+
+		protocol.OnNextFrame([&]()
+		{
+			controlHost->Hide();
+		});
+
+		SetGuiMainProxy(MakeGuiMain(protocol, eventLogs, controlHost));
+		BatchedProtocol batchedProtocol(&protocol);
+		SetupRemoteNativeController(&batchedProtocol);
+		SetGuiMainProxy({});
+	});
+
+#undef ASSERT_FOCUS
+
 	// TODO:
-	//   Delete focused control, until nothing. One control is invisible, another control is disabled.
 	//   Delete unfocused control, until nothing. One control is invisible, another control is disabled.
 	//   Delete container of the focused control. One control is invisible, another control is disabled.
 }
