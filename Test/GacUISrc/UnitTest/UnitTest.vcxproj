@@ -194,6 +194,9 @@
     <ClCompile Include="TestQueryParser.cpp" />
     <ClCompile Include="TestReflectionTypeList.cpp" />
     <ClCompile Include="TestRemote_GraphicsHost_Key.cpp" />
+    <ClCompile Include="TestRemote_GraphicsHost_KeyAlt.cpp" />
+    <ClCompile Include="TestRemote_GraphicsHost_KeyShortcut.cpp" />
+    <ClCompile Include="TestRemote_GraphicsHost_KeyTab.cpp" />
     <ClCompile Include="TestRemote_GraphicsHost_Mouse.cpp" />
     <ClCompile Include="TestRemote_GraphicsHost_Shared.cpp" />
     <ClCompile Include="TestRemote_GraphicsHost_Startup.cpp" />

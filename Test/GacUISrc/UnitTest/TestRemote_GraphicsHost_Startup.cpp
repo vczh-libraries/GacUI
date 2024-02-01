@@ -37,7 +37,8 @@ TEST_FILE
 	});
 
 	// TODO:
+	//   Delete mouse capturing controls
 	//   [ALT]
-	//   Shortcut Key
+	//   Locale/Global shortcut Key
 	//   Other events
 }
