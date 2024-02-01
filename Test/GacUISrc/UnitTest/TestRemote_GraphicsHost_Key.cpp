@@ -382,10 +382,102 @@ TEST_FILE
 		SetGuiMainProxy({});
 	});
 
+	TEST_CATEGORY(L"Delete unfocused buttons")
+	{
+		GraphicsHostProtocol protocol;
+		List<WString> eventLogs;
+		GuiWindow* controlHost = nullptr;
+		GuiButton* buttons[5];
+
+		auto pressTab = [&]()
+		{
+			protocol.events->OnIOKeyDown(MakeKeyInfo(false, false, false, VKEY::KEY_TAB));
+			protocol.events->OnIOKeyUp(MakeKeyInfo(false, false, false, VKEY::KEY_TAB));
+		};
+
+		auto assertFocusOn = [&](const wchar_t* to)
+		{
+			AssertEventLogs(
+				eventLogs,
+				ASSERT_FOCUS
+				);
+		};
+
+		auto assertFocusTransition = [&](const wchar_t* from, const wchar_t* to)
+		{
+			AssertEventLogs(
+				eventLogs,
+				(WString::Unmanaged(from) + WString::Unmanaged(L".LostFocus()")).Buffer(),
+				ASSERT_FOCUS
+				);
+		};
+
+		auto assertFocusNoFocus = [&]()
+		{
+			AssertEventLogs(
+				eventLogs,
+				ASSERT_NO_FOCUS
+				);
+		};
+
+		protocol.OnNextFrame([&]()
+		{
+			auto b = controlHost->GetBoundsComposition();
+			for (auto& button : buttons)
+			{
+				button = new GuiButton(theme::ThemeName::Button);;
+				controlHost->AddChild(button);
+			}
+
+			AttachAndLogEvents(b, L"host.bounds", eventLogs);
+			AttachAndLogEvents(buttons[0]->GetFocusableComposition(), L"0", eventLogs);
+			AttachAndLogEvents(buttons[1]->GetFocusableComposition(), L"1", eventLogs);
+			AttachAndLogEvents(buttons[2]->GetFocusableComposition(), L"2", eventLogs);
+			AttachAndLogEvents(buttons[3]->GetFocusableComposition(), L"3", eventLogs);
+			AttachAndLogEvents(buttons[4]->GetFocusableComposition(), L"4", eventLogs);
+
+			buttons[1]->SetEnabled(false);
+			buttons[3]->SetVisible(false);
+		});
+
+		protocol.OnNextFrame([&]()
+		{
+			pressTab();
+			assertFocusOn(L"0");
+
+			SafeDeleteControl(buttons[2]);
+			SafeDeleteControl(buttons[4]);
+			AssertEventLogs(eventLogs);
+
+			buttons[1]->SetEnabled(true);
+			buttons[3]->SetVisible(true);
+
+			pressTab();
+			assertFocusTransition(L"0", L"1");
+
+			SafeDeleteControl(buttons[0]);
+			SafeDeleteControl(buttons[3]);
+			AssertEventLogs(eventLogs);
+
+			SafeDeleteControl(buttons[1]);
+			pressTab();
+			assertFocusNoFocus();
+		});
+
+		protocol.OnNextFrame([&]()
+		{
+			controlHost->Hide();
+		});
+
+		SetGuiMainProxy(MakeGuiMain(protocol, eventLogs, controlHost));
+		BatchedProtocol batchedProtocol(&protocol);
+		SetupRemoteNativeController(&batchedProtocol);
+		SetGuiMainProxy({});
+	});
+
 #undef ASSERT_NO_FOCUS
 #undef ASSERT_FOCUS
 
 	// TODO:
-	//   Delete unfocused control, until nothing. One control is invisible, another control is disabled.
 	//   Delete container of the focused control. One control is invisible, another control is disabled.
 }
