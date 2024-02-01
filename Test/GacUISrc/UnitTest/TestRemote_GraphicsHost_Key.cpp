@@ -670,6 +670,17 @@ TEST_FILE
 
 			pressTab();
 			assertFocusTransition(L"4", L"2");
+
+			pressTab();
+			assertFocusTransitionWithContainer(L"2", L"0", L"2");
+
+			SafeDeleteControl(buttons[2]);
+			pressTab();
+			assertFocusOn(L"4");
+
+			SafeDeleteControl(buttons[4]);
+			pressTab();
+			assertFocusNoFocus();
 		});
 
 		protocol.OnNextFrame([&]()
@@ -686,7 +697,4 @@ TEST_FILE
 #undef ASSERT_NO_FOCUS
 #undef ASSERT_FOCUS_CONTAINER
 #undef ASSERT_FOCUS
-
-	// TODO:
-	//   Delete container of the focused control. One control is invisible, another control is disabled.
 }
