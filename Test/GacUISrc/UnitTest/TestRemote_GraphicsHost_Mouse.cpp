@@ -430,4 +430,125 @@ TEST_FILE
 			return false;
 		});
 	});
+
+	TEST_CATEGORY(L"Mouse capturing on compositions but being deleted")
+	{
+		GraphicsHostProtocol protocol;
+		List<WString> eventLogs;
+		GuiWindow* controlHost = nullptr;
+		GuiBoundsComposition* x = nullptr, * y = nullptr, * z = nullptr;
+
+		protocol.OnNextFrame([&]()
+		{
+			auto b = controlHost->GetBoundsComposition();
+
+			x = new GuiBoundsComposition();
+			x->SetExpectedBounds(Rect({ 10,10 }, { 100,100 }));
+
+			y = new GuiBoundsComposition();
+			y->SetExpectedBounds(Rect({ 10,10 }, { 80,80}));
+
+			z = new GuiBoundsComposition();
+			z->SetExpectedBounds(Rect({ 60,60 }, { 100,100 }));
+
+			x->AddChild(y);
+			controlHost->GetContainerComposition()->AddChild(x);
+			controlHost->GetContainerComposition()->AddChild(z);
+
+			controlHost->ForceCalculateSizeImmediately();
+			TEST_ASSERT(b->GetCachedBounds() == Rect({ 0,0 }, { 640,480 }));
+			TEST_ASSERT(x->GetCachedBounds() == Rect({ 10,10 }, { 100,100 }));
+			TEST_ASSERT(y->GetCachedBounds() == Rect({ 10,10 }, { 80,80 }));
+			TEST_ASSERT(z->GetCachedBounds() == Rect({ 60,60 }, { 100,100 }));
+
+			AttachAndLogEvents(b, L"host.bounds", eventLogs);
+			AttachAndLogEvents(x, L"x", eventLogs);
+			AttachAndLogEvents(y, L"y", eventLogs);
+			AttachAndLogEvents(z, L"z", eventLogs);
+		});
+
+		protocol.OnNextFrame([&]()
+		{
+			protocol.events->OnIOMouseEntered();
+			protocol.events->OnIOMouseMoving(MakeMouseInfo(false, false, false, 30, 30, 0));
+			AssertEventLogs(
+				eventLogs,
+				L"host.bounds.Enter()",
+				L"x.Enter()",
+				L"y.Enter()",
+				L"y.Move(:10,10,0)",
+				L"y->x.Move(:20,20,0)",
+				L"y->host.bounds.Move(:30,30,0)"
+				);
+
+			protocol.events->OnIOButtonDown(MakeMouseInfoWithButton(remoteprotocol::IOMouseButton::Left, true, false, false, 30, 30, 0));
+			AssertEventLogs(
+				eventLogs,
+				L"y.LDown(L:10,10,0)",
+				L"y->x.LDown(L:20,20,0)",
+				L"y->host.bounds.LDown(L:30,30,0)"
+				);
+
+			protocol.events->OnIOMouseMoving(MakeMouseInfo(true, false, false, 70, 70, 0));
+			AssertEventLogs(
+				eventLogs,
+				L"y.Leave()",
+				L"x.Leave()",
+				L"z.Enter()",
+				L"y.Move(L:50,50,0)",
+				L"y->x.Move(L:60,60,0)",
+				L"y->host.bounds.Move(L:70,70,0)"
+				);
+
+			SafeDeleteComposition(x);
+			AssertEventLogs(eventLogs);
+
+			protocol.events->OnIOButtonDoubleClick(MakeMouseInfoWithButton(remoteprotocol::IOMouseButton::Left, true, false, false, 70, 70, 0));
+			AssertEventLogs(
+				eventLogs,
+				L"z.LDown(L:10,10,0)",
+				L"z->host.bounds.LDown(L:70,70,0)",
+				L"z.LDbClick(L:10,10,0)",
+				L"z->host.bounds.LDbClick(L:70,70,0)"
+				);
+
+			protocol.events->OnIOMouseMoving(MakeMouseInfo(true, false, false, 10, 10, 0));
+			AssertEventLogs(
+				eventLogs,
+				L"z.Leave()",
+				L"host.bounds.Move(L:10,10,0)"
+				);
+
+			protocol.events->OnIOButtonDoubleClick(MakeMouseInfoWithButton(remoteprotocol::IOMouseButton::Left, true, false, false, 70, 70, 0));
+			AssertEventLogs(
+				eventLogs,
+				L"host.bounds.LDown(L:10,10,0)",
+				L"host.bounds.LDbClick(L:10,10,0)"
+				);
+
+			protocol.events->OnIOButtonUp(MakeMouseInfoWithButton(remoteprotocol::IOMouseButton::Left, false, false, false, 70, 70, 0));
+			AssertEventLogs(
+				eventLogs,
+				L"z.LUp(:10,10,0)",
+				L"z->host.bounds.LUp(:70,70,0)"
+				);
+
+			protocol.events->OnIOMouseLeaved();
+			AssertEventLogs(
+				eventLogs,
+				L"z.Leave()",
+				L"host.bounds.Leave()"
+				);
+		});
+
+		protocol.OnNextFrame([&]()
+		{
+			controlHost->Hide();
+		});
+
+		SetGuiMainProxy(MakeGuiMain(protocol, eventLogs, controlHost));
+		BatchedProtocol batchedProtocol(&protocol);
+		SetupRemoteNativeController(&batchedProtocol);
+		SetGuiMainProxy({});
+	});
 }

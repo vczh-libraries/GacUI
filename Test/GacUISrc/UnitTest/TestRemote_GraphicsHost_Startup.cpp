@@ -37,7 +37,6 @@ TEST_FILE
 	});
 
 	// TODO:
-	//   Delete mouse capturing controls
 	//   Shift+Tab
 	//   [ALT], assert label texts, on buttons, tabs and menus
 	//   Locale/Global shortcut Key
