@@ -522,7 +522,7 @@ TEST_FILE
 		SetGuiMainProxy({});
 	});
 
-	TEST_CATEGORY(L"Alt multiple level with conflict and activate")
+	TEST_CATEGORY(L"Alt multiple level with long keys")
 	{
 		GraphicsHostProtocol protocol;
 		List<WString> eventLogs;
@@ -556,7 +556,49 @@ TEST_FILE
 			AssertAltLabels(altControls, L"A[B]0", nullptr, nullptr, L"A[B]1", nullptr);
 			pressKey(VKEY::KEY_B);
 			AssertAltLabels(altControls, L"AB[0]", nullptr, nullptr, L"AB[1]", nullptr);
+			pressKey(VKEY::KEY_ESCAPE);
+			AssertAltLabels(altControls, nullptr, nullptr, nullptr, nullptr, nullptr);
+			AssertEventLogs(eventLogs);
+
+			pressKey(VKEY::KEY_MENU);
+			AssertAltLabels(altControls, L"[A]B0", nullptr, nullptr, L"[A]B1", nullptr);
+			pressKey(VKEY::KEY_A);
+			AssertAltLabels(altControls, L"A[B]0", nullptr, nullptr, L"A[B]1", nullptr);
+			pressKey(VKEY::KEY_B);
+			AssertAltLabels(altControls, L"AB[0]", nullptr, nullptr, L"AB[1]", nullptr);
 			pressKey(VKEY::KEY_0);
+			AssertAltLabels(altControls, nullptr, L"[X]Y", L"[X]Z", nullptr, nullptr);
+			pressKey(VKEY::KEY_X);
+			AssertAltLabels(altControls, nullptr, L"X[Y]", L"X[Z]", nullptr, nullptr);
+			pressKey(VKEY::KEY_ESCAPE);
+			AssertAltLabels(altControls, L"[A]B0", nullptr, nullptr, L"[A]B1", nullptr);
+			pressKey(VKEY::KEY_ESCAPE);
+			AssertAltLabels(altControls, nullptr, nullptr, nullptr, nullptr, nullptr);
+			AssertEventLogs(eventLogs);
+
+			pressKey(VKEY::KEY_MENU);
+			AssertAltLabels(altControls, L"[A]B0", nullptr, nullptr, L"[A]B1", nullptr);
+			pressKey(VKEY::KEY_A);
+			AssertAltLabels(altControls, L"A[B]0", nullptr, nullptr, L"A[B]1", nullptr);
+			pressKey(VKEY::KEY_B);
+			AssertAltLabels(altControls, L"AB[0]", nullptr, nullptr, L"AB[1]", nullptr);
+			pressKey(VKEY::KEY_BACK);
+			AssertAltLabels(altControls, L"A[B]0", nullptr, nullptr, L"A[B]1", nullptr);
+			pressKey(VKEY::KEY_BACK);
+			AssertAltLabels(altControls, L"[A]B0", nullptr, nullptr, L"[A]B1", nullptr);
+			pressKey(VKEY::KEY_BACK);
+			AssertAltLabels(altControls, L"[A]B0", nullptr, nullptr, L"[A]B1", nullptr);
+			pressKey(VKEY::KEY_A);
+			AssertAltLabels(altControls, L"A[B]0", nullptr, nullptr, L"A[B]1", nullptr);
+			pressKey(VKEY::KEY_B);
+			AssertAltLabels(altControls, L"AB[0]", nullptr, nullptr, L"AB[1]", nullptr);
+			pressKey(VKEY::KEY_0);
+			AssertAltLabels(altControls, nullptr, L"[X]Y", L"[X]Z", nullptr, nullptr);
+			pressKey(VKEY::KEY_X);
+			AssertAltLabels(altControls, nullptr, L"X[Y]", L"X[Z]", nullptr, nullptr);
+			pressKey(VKEY::KEY_BACK);
+			AssertAltLabels(altControls, nullptr, L"[X]Y", L"[X]Z", nullptr, nullptr);
+			pressKey(VKEY::KEY_BACK);
 			AssertAltLabels(altControls, nullptr, L"[X]Y", L"[X]Z", nullptr, nullptr);
 			pressKey(VKEY::KEY_X);
 			AssertAltLabels(altControls, nullptr, L"X[Y]", L"X[Z]", nullptr, nullptr);
