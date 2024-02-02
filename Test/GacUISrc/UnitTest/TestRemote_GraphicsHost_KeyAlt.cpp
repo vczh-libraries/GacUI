@@ -197,5 +197,17 @@ TEST_FILE
 		SetGuiMainProxy({});
 	});
 
+	TEST_CATEGORY(L"Alt multiple level with conflict and cancel")
+	{
+	});
+
+	TEST_CATEGORY(L"Alt multiple level with conflict and going back")
+	{
+	});
+
+	TEST_CATEGORY(L"Alt multiple level with conflict and activate")
+	{
+	});
+
 #undef CREATE_BUTTON
 }
