@@ -1,1000 +1,1000 @@
 {
-    "$ast": { "type": "Schema", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+    "$ast": "Schema",
     "declarations": [{
-        "$ast": { "type": "StructDecl", "codeRange": {"start": {"row": 0, "column": 0, "index": 0}, "end": {"row": 4, "column": 0, "index": 96}, "codeIndex": 0}},
+        "$ast": "StructDecl",
         "attributes": [{
-            "$ast": { "type": "Attribute", "codeRange": {"start": {"row": 0, "column": 0, "index": 0}, "end": {"row": 0, "column": 43, "index": 43}, "codeIndex": 0}},
-            "cppType": { "value": "::vl::presentation::NativeCoordinate", "codeRange": {"start": {"row": 0, "column": 6, "index": 6}, "end": {"row": 0, "column": 41, "index": 41}, "codeIndex": 0}},
-            "name": { "value": "@Cpp", "codeRange": {"start": {"row": 0, "column": 1, "index": 1}, "end": {"row": 0, "column": 4, "index": 4}, "codeIndex": 0}}
+            "$ast": "Attribute",
+            "cppType": "::vl::presentation::NativeCoordinate",
+            "name": "@Cpp"
         }],
-        "name": { "value": "NativeCoordinate", "codeRange": {"start": {"row": 1, "column": 7, "index": 53}, "end": {"row": 1, "column": 22, "index": 68}, "codeIndex": 0}},
+        "name": "NativeCoordinate",
         "members": [{
-            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 3, "column": 4, "index": 78}, "end": {"row": 3, "column": 19, "index": 93}, "codeIndex": 0}},
-            "name": { "value": "value", "codeRange": {"start": {"row": 3, "column": 8, "index": 82}, "end": {"row": 3, "column": 12, "index": 86}, "codeIndex": 0}},
+            "$ast": "StructMember",
+            "name": "value",
             "type": {
-                "$ast": { "type": "PrimitiveType", "codeRange": {"start": {"row": 3, "column": 16, "index": 90}, "end": {"row": 3, "column": 18, "index": 92}, "codeIndex": 0}},
+                "$ast": "PrimitiveType",
                 "type": "Integer"
             }
         }]
     }, {
-        "$ast": { "type": "StructDecl", "codeRange": {"start": {"row": 6, "column": 0, "index": 101}, "end": {"row": 11, "column": 0, "index": 227}, "codeIndex": 0}},
+        "$ast": "StructDecl",
         "attributes": [{
-            "$ast": { "type": "Attribute", "codeRange": {"start": {"row": 6, "column": 0, "index": 101}, "end": {"row": 6, "column": 38, "index": 139}, "codeIndex": 0}},
-            "cppType": { "value": "::vl::presentation::NativePoint", "codeRange": {"start": {"row": 6, "column": 6, "index": 107}, "end": {"row": 6, "column": 36, "index": 137}, "codeIndex": 0}},
-            "name": { "value": "@Cpp", "codeRange": {"start": {"row": 6, "column": 1, "index": 102}, "end": {"row": 6, "column": 4, "index": 105}, "codeIndex": 0}}
+            "$ast": "Attribute",
+            "cppType": "::vl::presentation::NativePoint",
+            "name": "@Cpp"
         }],
-        "name": { "value": "NativePoint", "codeRange": {"start": {"row": 7, "column": 7, "index": 149}, "end": {"row": 7, "column": 17, "index": 159}, "codeIndex": 0}},
+        "name": "NativePoint",
         "members": [{
-            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 9, "column": 4, "index": 169}, "end": {"row": 9, "column": 28, "index": 193}, "codeIndex": 0}},
-            "name": { "value": "x", "codeRange": {"start": {"row": 9, "column": 8, "index": 173}, "end": {"row": 9, "column": 8, "index": 173}, "codeIndex": 0}},
+            "$ast": "StructMember",
+            "name": "x",
             "type": {
-                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 9, "column": 12, "index": 177}, "end": {"row": 9, "column": 27, "index": 192}, "codeIndex": 0}},
-                "name": { "value": "NativeCoordinate", "codeRange": {"start": {"row": 9, "column": 12, "index": 177}, "end": {"row": 9, "column": 27, "index": 192}, "codeIndex": 0}}
+                "$ast": "ReferenceType",
+                "name": "NativeCoordinate"
             }
         }, {
-            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 10, "column": 4, "index": 200}, "end": {"row": 10, "column": 28, "index": 224}, "codeIndex": 0}},
-            "name": { "value": "y", "codeRange": {"start": {"row": 10, "column": 8, "index": 204}, "end": {"row": 10, "column": 8, "index": 204}, "codeIndex": 0}},
+            "$ast": "StructMember",
+            "name": "y",
             "type": {
-                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 10, "column": 12, "index": 208}, "end": {"row": 10, "column": 27, "index": 223}, "codeIndex": 0}},
-                "name": { "value": "NativeCoordinate", "codeRange": {"start": {"row": 10, "column": 12, "index": 208}, "end": {"row": 10, "column": 27, "index": 223}, "codeIndex": 0}}
+                "$ast": "ReferenceType",
+                "name": "NativeCoordinate"
             }
         }]
     }, {
-        "$ast": { "type": "StructDecl", "codeRange": {"start": {"row": 13, "column": 0, "index": 232}, "end": {"row": 18, "column": 0, "index": 356}, "codeIndex": 0}},
+        "$ast": "StructDecl",
         "attributes": [{
-            "$ast": { "type": "Attribute", "codeRange": {"start": {"row": 13, "column": 0, "index": 232}, "end": {"row": 13, "column": 37, "index": 269}, "codeIndex": 0}},
-            "cppType": { "value": "::vl::presentation::NativeSize", "codeRange": {"start": {"row": 13, "column": 6, "index": 238}, "end": {"row": 13, "column": 35, "index": 267}, "codeIndex": 0}},
-            "name": { "value": "@Cpp", "codeRange": {"start": {"row": 13, "column": 1, "index": 233}, "end": {"row": 13, "column": 4, "index": 236}, "codeIndex": 0}}
+            "$ast": "Attribute",
+            "cppType": "::vl::presentation::NativeSize",
+            "name": "@Cpp"
         }],
-        "name": { "value": "NativeSize", "codeRange": {"start": {"row": 14, "column": 7, "index": 279}, "end": {"row": 14, "column": 16, "index": 288}, "codeIndex": 0}},
+        "name": "NativeSize",
         "members": [{
-            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 16, "column": 4, "index": 298}, "end": {"row": 16, "column": 28, "index": 322}, "codeIndex": 0}},
-            "name": { "value": "x", "codeRange": {"start": {"row": 16, "column": 8, "index": 302}, "end": {"row": 16, "column": 8, "index": 302}, "codeIndex": 0}},
+            "$ast": "StructMember",
+            "name": "x",
             "type": {
-                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 16, "column": 12, "index": 306}, "end": {"row": 16, "column": 27, "index": 321}, "codeIndex": 0}},
-                "name": { "value": "NativeCoordinate", "codeRange": {"start": {"row": 16, "column": 12, "index": 306}, "end": {"row": 16, "column": 27, "index": 321}, "codeIndex": 0}}
+                "$ast": "ReferenceType",
+                "name": "NativeCoordinate"
             }
         }, {
-            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 17, "column": 4, "index": 329}, "end": {"row": 17, "column": 28, "index": 353}, "codeIndex": 0}},
-            "name": { "value": "y", "codeRange": {"start": {"row": 17, "column": 8, "index": 333}, "end": {"row": 17, "column": 8, "index": 333}, "codeIndex": 0}},
+            "$ast": "StructMember",
+            "name": "y",
             "type": {
-                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 17, "column": 12, "index": 337}, "end": {"row": 17, "column": 27, "index": 352}, "codeIndex": 0}},
-                "name": { "value": "NativeCoordinate", "codeRange": {"start": {"row": 17, "column": 12, "index": 337}, "end": {"row": 17, "column": 27, "index": 352}, "codeIndex": 0}}
+                "$ast": "ReferenceType",
+                "name": "NativeCoordinate"
             }
         }]
     }, {
-        "$ast": { "type": "StructDecl", "codeRange": {"start": {"row": 20, "column": 0, "index": 361}, "end": {"row": 27, "column": 0, "index": 551}, "codeIndex": 0}},
+        "$ast": "StructDecl",
         "attributes": [{
-            "$ast": { "type": "Attribute", "codeRange": {"start": {"row": 20, "column": 0, "index": 361}, "end": {"row": 20, "column": 37, "index": 398}, "codeIndex": 0}},
-            "cppType": { "value": "::vl::presentation::NativeRect", "codeRange": {"start": {"row": 20, "column": 6, "index": 367}, "end": {"row": 20, "column": 35, "index": 396}, "codeIndex": 0}},
-            "name": { "value": "@Cpp", "codeRange": {"start": {"row": 20, "column": 1, "index": 362}, "end": {"row": 20, "column": 4, "index": 365}, "codeIndex": 0}}
+            "$ast": "Attribute",
+            "cppType": "::vl::presentation::NativeRect",
+            "name": "@Cpp"
         }],
-        "name": { "value": "NativeRect", "codeRange": {"start": {"row": 21, "column": 7, "index": 408}, "end": {"row": 21, "column": 16, "index": 417}, "codeIndex": 0}},
+        "name": "NativeRect",
         "members": [{
-            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 23, "column": 4, "index": 427}, "end": {"row": 23, "column": 29, "index": 452}, "codeIndex": 0}},
-            "name": { "value": "x1", "codeRange": {"start": {"row": 23, "column": 8, "index": 431}, "end": {"row": 23, "column": 9, "index": 432}, "codeIndex": 0}},
+            "$ast": "StructMember",
+            "name": "x1",
             "type": {
-                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 23, "column": 13, "index": 436}, "end": {"row": 23, "column": 28, "index": 451}, "codeIndex": 0}},
-                "name": { "value": "NativeCoordinate", "codeRange": {"start": {"row": 23, "column": 13, "index": 436}, "end": {"row": 23, "column": 28, "index": 451}, "codeIndex": 0}}
+                "$ast": "ReferenceType",
+                "name": "NativeCoordinate"
             }
         }, {
-            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 24, "column": 4, "index": 459}, "end": {"row": 24, "column": 29, "index": 484}, "codeIndex": 0}},
-            "name": { "value": "y1", "codeRange": {"start": {"row": 24, "column": 8, "index": 463}, "end": {"row": 24, "column": 9, "index": 464}, "codeIndex": 0}},
+            "$ast": "StructMember",
+            "name": "y1",
             "type": {
-                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 24, "column": 13, "index": 468}, "end": {"row": 24, "column": 28, "index": 483}, "codeIndex": 0}},
-                "name": { "value": "NativeCoordinate", "codeRange": {"start": {"row": 24, "column": 13, "index": 468}, "end": {"row": 24, "column": 28, "index": 483}, "codeIndex": 0}}
+                "$ast": "ReferenceType",
+                "name": "NativeCoordinate"
             }
         }, {
-            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 25, "column": 4, "index": 491}, "end": {"row": 25, "column": 29, "index": 516}, "codeIndex": 0}},
-            "name": { "value": "x2", "codeRange": {"start": {"row": 25, "column": 8, "index": 495}, "end": {"row": 25, "column": 9, "index": 496}, "codeIndex": 0}},
+            "$ast": "StructMember",
+            "name": "x2",
             "type": {
-                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 25, "column": 13, "index": 500}, "end": {"row": 25, "column": 28, "index": 515}, "codeIndex": 0}},
-                "name": { "value": "NativeCoordinate", "codeRange": {"start": {"row": 25, "column": 13, "index": 500}, "end": {"row": 25, "column": 28, "index": 515}, "codeIndex": 0}}
+                "$ast": "ReferenceType",
+                "name": "NativeCoordinate"
             }
         }, {
-            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 26, "column": 4, "index": 523}, "end": {"row": 26, "column": 29, "index": 548}, "codeIndex": 0}},
-            "name": { "value": "y2", "codeRange": {"start": {"row": 26, "column": 8, "index": 527}, "end": {"row": 26, "column": 9, "index": 528}, "codeIndex": 0}},
+            "$ast": "StructMember",
+            "name": "y2",
             "type": {
-                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 26, "column": 13, "index": 532}, "end": {"row": 26, "column": 28, "index": 547}, "codeIndex": 0}},
-                "name": { "value": "NativeCoordinate", "codeRange": {"start": {"row": 26, "column": 13, "index": 532}, "end": {"row": 26, "column": 28, "index": 547}, "codeIndex": 0}}
+                "$ast": "ReferenceType",
+                "name": "NativeCoordinate"
             }
         }]
     }, {
-        "$ast": { "type": "StructDecl", "codeRange": {"start": {"row": 29, "column": 0, "index": 556}, "end": {"row": 36, "column": 0, "index": 760}, "codeIndex": 0}},
+        "$ast": "StructDecl",
         "attributes": [{
-            "$ast": { "type": "Attribute", "codeRange": {"start": {"row": 29, "column": 0, "index": 556}, "end": {"row": 29, "column": 39, "index": 595}, "codeIndex": 0}},
-            "cppType": { "value": "::vl::presentation::NativeMargin", "codeRange": {"start": {"row": 29, "column": 6, "index": 562}, "end": {"row": 29, "column": 37, "index": 593}, "codeIndex": 0}},
-            "name": { "value": "@Cpp", "codeRange": {"start": {"row": 29, "column": 1, "index": 557}, "end": {"row": 29, "column": 4, "index": 560}, "codeIndex": 0}}
+            "$ast": "Attribute",
+            "cppType": "::vl::presentation::NativeMargin",
+            "name": "@Cpp"
         }],
-        "name": { "value": "NativeMargin", "codeRange": {"start": {"row": 30, "column": 7, "index": 605}, "end": {"row": 30, "column": 18, "index": 616}, "codeIndex": 0}},
+        "name": "NativeMargin",
         "members": [{
-            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 32, "column": 4, "index": 626}, "end": {"row": 32, "column": 31, "index": 653}, "codeIndex": 0}},
-            "name": { "value": "left", "codeRange": {"start": {"row": 32, "column": 8, "index": 630}, "end": {"row": 32, "column": 11, "index": 633}, "codeIndex": 0}},
+            "$ast": "StructMember",
+            "name": "left",
             "type": {
-                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 32, "column": 15, "index": 637}, "end": {"row": 32, "column": 30, "index": 652}, "codeIndex": 0}},
-                "name": { "value": "NativeCoordinate", "codeRange": {"start": {"row": 32, "column": 15, "index": 637}, "end": {"row": 32, "column": 30, "index": 652}, "codeIndex": 0}}
+                "$ast": "ReferenceType",
+                "name": "NativeCoordinate"
             }
         }, {
-            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 33, "column": 4, "index": 660}, "end": {"row": 33, "column": 30, "index": 686}, "codeIndex": 0}},
-            "name": { "value": "top", "codeRange": {"start": {"row": 33, "column": 8, "index": 664}, "end": {"row": 33, "column": 10, "index": 666}, "codeIndex": 0}},
+            "$ast": "StructMember",
+            "name": "top",
             "type": {
-                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 33, "column": 14, "index": 670}, "end": {"row": 33, "column": 29, "index": 685}, "codeIndex": 0}},
-                "name": { "value": "NativeCoordinate", "codeRange": {"start": {"row": 33, "column": 14, "index": 670}, "end": {"row": 33, "column": 29, "index": 685}, "codeIndex": 0}}
+                "$ast": "ReferenceType",
+                "name": "NativeCoordinate"
             }
         }, {
-            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 34, "column": 4, "index": 693}, "end": {"row": 34, "column": 32, "index": 721}, "codeIndex": 0}},
-            "name": { "value": "right", "codeRange": {"start": {"row": 34, "column": 8, "index": 697}, "end": {"row": 34, "column": 12, "index": 701}, "codeIndex": 0}},
+            "$ast": "StructMember",
+            "name": "right",
             "type": {
-                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 34, "column": 16, "index": 705}, "end": {"row": 34, "column": 31, "index": 720}, "codeIndex": 0}},
-                "name": { "value": "NativeCoordinate", "codeRange": {"start": {"row": 34, "column": 16, "index": 705}, "end": {"row": 34, "column": 31, "index": 720}, "codeIndex": 0}}
+                "$ast": "ReferenceType",
+                "name": "NativeCoordinate"
             }
         }, {
-            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 35, "column": 4, "index": 728}, "end": {"row": 35, "column": 33, "index": 757}, "codeIndex": 0}},
-            "name": { "value": "bottom", "codeRange": {"start": {"row": 35, "column": 8, "index": 732}, "end": {"row": 35, "column": 13, "index": 737}, "codeIndex": 0}},
+            "$ast": "StructMember",
+            "name": "bottom",
             "type": {
-                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 35, "column": 17, "index": 741}, "end": {"row": 35, "column": 32, "index": 756}, "codeIndex": 0}},
-                "name": { "value": "NativeCoordinate", "codeRange": {"start": {"row": 35, "column": 17, "index": 741}, "end": {"row": 35, "column": 32, "index": 756}, "codeIndex": 0}}
+                "$ast": "ReferenceType",
+                "name": "NativeCoordinate"
             }
         }]
     }, {
-        "$ast": { "type": "StructDecl", "codeRange": {"start": {"row": 38, "column": 0, "index": 765}, "end": {"row": 49, "column": 0, "index": 1049}, "codeIndex": 0}},
+        "$ast": "StructDecl",
         "attributes": [{
-            "$ast": { "type": "Attribute", "codeRange": {"start": {"row": 38, "column": 0, "index": 765}, "end": {"row": 38, "column": 41, "index": 806}, "codeIndex": 0}},
-            "cppType": { "value": "::vl::presentation::FontProperties", "codeRange": {"start": {"row": 38, "column": 6, "index": 771}, "end": {"row": 38, "column": 39, "index": 804}, "codeIndex": 0}},
-            "name": { "value": "@Cpp", "codeRange": {"start": {"row": 38, "column": 1, "index": 766}, "end": {"row": 38, "column": 4, "index": 769}, "codeIndex": 0}}
+            "$ast": "Attribute",
+            "cppType": "::vl::presentation::FontProperties",
+            "name": "@Cpp"
         }],
-        "name": { "value": "FontProperties", "codeRange": {"start": {"row": 39, "column": 7, "index": 816}, "end": {"row": 39, "column": 20, "index": 829}, "codeIndex": 0}},
+        "name": "FontProperties",
         "members": [{
-            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 41, "column": 4, "index": 839}, "end": {"row": 41, "column": 27, "index": 862}, "codeIndex": 0}},
-            "name": { "value": "fontFamily", "codeRange": {"start": {"row": 41, "column": 8, "index": 843}, "end": {"row": 41, "column": 17, "index": 852}, "codeIndex": 0}},
+            "$ast": "StructMember",
+            "name": "fontFamily",
             "type": {
-                "$ast": { "type": "PrimitiveType", "codeRange": {"start": {"row": 41, "column": 21, "index": 856}, "end": {"row": 41, "column": 26, "index": 861}, "codeIndex": 0}},
+                "$ast": "PrimitiveType",
                 "type": "String"
             }
         }, {
-            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 42, "column": 4, "index": 869}, "end": {"row": 42, "column": 18, "index": 883}, "codeIndex": 0}},
-            "name": { "value": "size", "codeRange": {"start": {"row": 42, "column": 8, "index": 873}, "end": {"row": 42, "column": 11, "index": 876}, "codeIndex": 0}},
+            "$ast": "StructMember",
+            "name": "size",
             "type": {
-                "$ast": { "type": "PrimitiveType", "codeRange": {"start": {"row": 42, "column": 15, "index": 880}, "end": {"row": 42, "column": 17, "index": 882}, "codeIndex": 0}},
+                "$ast": "PrimitiveType",
                 "type": "Integer"
             }
         }, {
-            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 43, "column": 4, "index": 890}, "end": {"row": 43, "column": 19, "index": 905}, "codeIndex": 0}},
-            "name": { "value": "bold", "codeRange": {"start": {"row": 43, "column": 8, "index": 894}, "end": {"row": 43, "column": 11, "index": 897}, "codeIndex": 0}},
+            "$ast": "StructMember",
+            "name": "bold",
             "type": {
-                "$ast": { "type": "PrimitiveType", "codeRange": {"start": {"row": 43, "column": 15, "index": 901}, "end": {"row": 43, "column": 18, "index": 904}, "codeIndex": 0}},
+                "$ast": "PrimitiveType",
                 "type": "Boolean"
             }
         }, {
-            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 44, "column": 4, "index": 912}, "end": {"row": 44, "column": 21, "index": 929}, "codeIndex": 0}},
-            "name": { "value": "italic", "codeRange": {"start": {"row": 44, "column": 8, "index": 916}, "end": {"row": 44, "column": 13, "index": 921}, "codeIndex": 0}},
+            "$ast": "StructMember",
+            "name": "italic",
             "type": {
-                "$ast": { "type": "PrimitiveType", "codeRange": {"start": {"row": 44, "column": 17, "index": 925}, "end": {"row": 44, "column": 20, "index": 928}, "codeIndex": 0}},
+                "$ast": "PrimitiveType",
                 "type": "Boolean"
             }
         }, {
-            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 45, "column": 4, "index": 936}, "end": {"row": 45, "column": 24, "index": 956}, "codeIndex": 0}},
-            "name": { "value": "underline", "codeRange": {"start": {"row": 45, "column": 8, "index": 940}, "end": {"row": 45, "column": 16, "index": 948}, "codeIndex": 0}},
+            "$ast": "StructMember",
+            "name": "underline",
             "type": {
-                "$ast": { "type": "PrimitiveType", "codeRange": {"start": {"row": 45, "column": 20, "index": 952}, "end": {"row": 45, "column": 23, "index": 955}, "codeIndex": 0}},
+                "$ast": "PrimitiveType",
                 "type": "Boolean"
             }
         }, {
-            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 46, "column": 4, "index": 963}, "end": {"row": 46, "column": 25, "index": 984}, "codeIndex": 0}},
-            "name": { "value": "strikeline", "codeRange": {"start": {"row": 46, "column": 8, "index": 967}, "end": {"row": 46, "column": 17, "index": 976}, "codeIndex": 0}},
+            "$ast": "StructMember",
+            "name": "strikeline",
             "type": {
-                "$ast": { "type": "PrimitiveType", "codeRange": {"start": {"row": 46, "column": 21, "index": 980}, "end": {"row": 46, "column": 24, "index": 983}, "codeIndex": 0}},
+                "$ast": "PrimitiveType",
                 "type": "Boolean"
             }
         }, {
-            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 47, "column": 4, "index": 991}, "end": {"row": 47, "column": 24, "index": 1011}, "codeIndex": 0}},
-            "name": { "value": "antialias", "codeRange": {"start": {"row": 47, "column": 8, "index": 995}, "end": {"row": 47, "column": 16, "index": 1003}, "codeIndex": 0}},
+            "$ast": "StructMember",
+            "name": "antialias",
             "type": {
-                "$ast": { "type": "PrimitiveType", "codeRange": {"start": {"row": 47, "column": 20, "index": 1007}, "end": {"row": 47, "column": 23, "index": 1010}, "codeIndex": 0}},
+                "$ast": "PrimitiveType",
                 "type": "Boolean"
             }
         }, {
-            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 48, "column": 4, "index": 1018}, "end": {"row": 48, "column": 32, "index": 1046}, "codeIndex": 0}},
-            "name": { "value": "verticalAntialias", "codeRange": {"start": {"row": 48, "column": 8, "index": 1022}, "end": {"row": 48, "column": 24, "index": 1038}, "codeIndex": 0}},
+            "$ast": "StructMember",
+            "name": "verticalAntialias",
             "type": {
-                "$ast": { "type": "PrimitiveType", "codeRange": {"start": {"row": 48, "column": 28, "index": 1042}, "end": {"row": 48, "column": 31, "index": 1045}, "codeIndex": 0}},
+                "$ast": "PrimitiveType",
                 "type": "Boolean"
             }
         }]
     }, {
-        "$ast": { "type": "StructDecl", "codeRange": {"start": {"row": 51, "column": 0, "index": 1054}, "end": {"row": 55, "column": 0, "index": 1151}, "codeIndex": 0}},
+        "$ast": "StructDecl",
         "attributes": [],
-        "name": { "value": "FontConfig", "codeRange": {"start": {"row": 51, "column": 7, "index": 1061}, "end": {"row": 51, "column": 16, "index": 1070}, "codeIndex": 0}},
+        "name": "FontConfig",
         "members": [{
-            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 53, "column": 4, "index": 1080}, "end": {"row": 53, "column": 36, "index": 1112}, "codeIndex": 0}},
-            "name": { "value": "defaultFont", "codeRange": {"start": {"row": 53, "column": 8, "index": 1084}, "end": {"row": 53, "column": 18, "index": 1094}, "codeIndex": 0}},
+            "$ast": "StructMember",
+            "name": "defaultFont",
             "type": {
-                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 53, "column": 22, "index": 1098}, "end": {"row": 53, "column": 35, "index": 1111}, "codeIndex": 0}},
-                "name": { "value": "FontProperties", "codeRange": {"start": {"row": 53, "column": 22, "index": 1098}, "end": {"row": 53, "column": 35, "index": 1111}, "codeIndex": 0}}
+                "$ast": "ReferenceType",
+                "name": "FontProperties"
             }
         }, {
-            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 54, "column": 4, "index": 1119}, "end": {"row": 54, "column": 33, "index": 1148}, "codeIndex": 0}},
-            "name": { "value": "supportedFonts", "codeRange": {"start": {"row": 54, "column": 8, "index": 1123}, "end": {"row": 54, "column": 21, "index": 1136}, "codeIndex": 0}},
+            "$ast": "StructMember",
+            "name": "supportedFonts",
             "type": {
-                "$ast": { "type": "ArrayType", "codeRange": {"start": {"row": 54, "column": 25, "index": 1140}, "end": {"row": 54, "column": 32, "index": 1147}, "codeIndex": 0}},
+                "$ast": "ArrayType",
                 "element": {
-                    "$ast": { "type": "PrimitiveType", "codeRange": {"start": {"row": 54, "column": 25, "index": 1140}, "end": {"row": 54, "column": 30, "index": 1145}, "codeIndex": 0}},
+                    "$ast": "PrimitiveType",
                     "type": "String"
                 }
             }
         }]
     }, {
-        "$ast": { "type": "MessageDecl", "codeRange": {"start": {"row": 57, "column": 0, "index": 1156}, "end": {"row": 60, "column": 0, "index": 1219}, "codeIndex": 0}},
+        "$ast": "MessageDecl",
         "attributes": [],
-        "name": { "value": "ControllerGetFontConfig", "codeRange": {"start": {"row": 57, "column": 8, "index": 1164}, "end": {"row": 57, "column": 30, "index": 1186}, "codeIndex": 0}},
+        "name": "ControllerGetFontConfig",
         "request": null,
         "response": {
-            "$ast": { "type": "MessageResponse", "codeRange": {"start": {"row": 59, "column": 4, "index": 1196}, "end": {"row": 59, "column": 24, "index": 1216}, "codeIndex": 0}},
+            "$ast": "MessageResponse",
             "type": {
-                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 59, "column": 14, "index": 1206}, "end": {"row": 59, "column": 23, "index": 1215}, "codeIndex": 0}},
-                "name": { "value": "FontConfig", "codeRange": {"start": {"row": 59, "column": 14, "index": 1206}, "end": {"row": 59, "column": 23, "index": 1215}, "codeIndex": 0}}
+                "$ast": "ReferenceType",
+                "name": "FontConfig"
             }
         }
     }, {
-        "$ast": { "type": "StructDecl", "codeRange": {"start": {"row": 62, "column": 0, "index": 1224}, "end": {"row": 68, "column": 0, "index": 1370}, "codeIndex": 0}},
+        "$ast": "StructDecl",
         "attributes": [],
-        "name": { "value": "ScreenConfig", "codeRange": {"start": {"row": 62, "column": 7, "index": 1231}, "end": {"row": 62, "column": 18, "index": 1242}, "codeIndex": 0}},
+        "name": "ScreenConfig",
         "members": [{
-            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 64, "column": 4, "index": 1252}, "end": {"row": 64, "column": 27, "index": 1275}, "codeIndex": 0}},
-            "name": { "value": "bounds", "codeRange": {"start": {"row": 64, "column": 8, "index": 1256}, "end": {"row": 64, "column": 13, "index": 1261}, "codeIndex": 0}},
+            "$ast": "StructMember",
+            "name": "bounds",
             "type": {
-                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 64, "column": 17, "index": 1265}, "end": {"row": 64, "column": 26, "index": 1274}, "codeIndex": 0}},
-                "name": { "value": "NativeRect", "codeRange": {"start": {"row": 64, "column": 17, "index": 1265}, "end": {"row": 64, "column": 26, "index": 1274}, "codeIndex": 0}}
+                "$ast": "ReferenceType",
+                "name": "NativeRect"
             }
         }, {
-            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 65, "column": 4, "index": 1282}, "end": {"row": 65, "column": 33, "index": 1311}, "codeIndex": 0}},
-            "name": { "value": "clientBounds", "codeRange": {"start": {"row": 65, "column": 8, "index": 1286}, "end": {"row": 65, "column": 19, "index": 1297}, "codeIndex": 0}},
+            "$ast": "StructMember",
+            "name": "clientBounds",
             "type": {
-                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 65, "column": 23, "index": 1301}, "end": {"row": 65, "column": 32, "index": 1310}, "codeIndex": 0}},
-                "name": { "value": "NativeRect", "codeRange": {"start": {"row": 65, "column": 23, "index": 1301}, "end": {"row": 65, "column": 32, "index": 1310}, "codeIndex": 0}}
+                "$ast": "ReferenceType",
+                "name": "NativeRect"
             }
         }, {
-            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 66, "column": 4, "index": 1318}, "end": {"row": 66, "column": 25, "index": 1339}, "codeIndex": 0}},
-            "name": { "value": "scalingX", "codeRange": {"start": {"row": 66, "column": 8, "index": 1322}, "end": {"row": 66, "column": 15, "index": 1329}, "codeIndex": 0}},
+            "$ast": "StructMember",
+            "name": "scalingX",
             "type": {
-                "$ast": { "type": "PrimitiveType", "codeRange": {"start": {"row": 66, "column": 19, "index": 1333}, "end": {"row": 66, "column": 24, "index": 1338}, "codeIndex": 0}},
+                "$ast": "PrimitiveType",
                 "type": "Double"
             }
         }, {
-            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 67, "column": 4, "index": 1346}, "end": {"row": 67, "column": 25, "index": 1367}, "codeIndex": 0}},
-            "name": { "value": "scalingY", "codeRange": {"start": {"row": 67, "column": 8, "index": 1350}, "end": {"row": 67, "column": 15, "index": 1357}, "codeIndex": 0}},
+            "$ast": "StructMember",
+            "name": "scalingY",
             "type": {
-                "$ast": { "type": "PrimitiveType", "codeRange": {"start": {"row": 67, "column": 19, "index": 1361}, "end": {"row": 67, "column": 24, "index": 1366}, "codeIndex": 0}},
+                "$ast": "PrimitiveType",
                 "type": "Double"
             }
         }]
     }, {
-        "$ast": { "type": "MessageDecl", "codeRange": {"start": {"row": 70, "column": 0, "index": 1375}, "end": {"row": 73, "column": 0, "index": 1442}, "codeIndex": 0}},
+        "$ast": "MessageDecl",
         "attributes": [],
-        "name": { "value": "ControllerGetScreenConfig", "codeRange": {"start": {"row": 70, "column": 8, "index": 1383}, "end": {"row": 70, "column": 32, "index": 1407}, "codeIndex": 0}},
+        "name": "ControllerGetScreenConfig",
         "request": null,
         "response": {
-            "$ast": { "type": "MessageResponse", "codeRange": {"start": {"row": 72, "column": 4, "index": 1417}, "end": {"row": 72, "column": 26, "index": 1439}, "codeIndex": 0}},
+            "$ast": "MessageResponse",
             "type": {
-                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 72, "column": 14, "index": 1427}, "end": {"row": 72, "column": 25, "index": 1438}, "codeIndex": 0}},
-                "name": { "value": "ScreenConfig", "codeRange": {"start": {"row": 72, "column": 14, "index": 1427}, "end": {"row": 72, "column": 25, "index": 1438}, "codeIndex": 0}}
+                "$ast": "ReferenceType",
+                "name": "ScreenConfig"
             }
         }
     }, {
-        "$ast": { "type": "MessageDecl", "codeRange": {"start": {"row": 75, "column": 0, "index": 1447}, "end": {"row": 75, "column": 41, "index": 1488}, "codeIndex": 0}},
+        "$ast": "MessageDecl",
         "attributes": [],
-        "name": { "value": "ControllerConnectionEstablished", "codeRange": {"start": {"row": 75, "column": 8, "index": 1455}, "end": {"row": 75, "column": 38, "index": 1485}, "codeIndex": 0}},
+        "name": "ControllerConnectionEstablished",
         "request": null,
         "response": null
     }, {
-        "$ast": { "type": "MessageDecl", "codeRange": {"start": {"row": 76, "column": 0, "index": 1491}, "end": {"row": 76, "column": 41, "index": 1532}, "codeIndex": 0}},
+        "$ast": "MessageDecl",
         "attributes": [],
-        "name": { "value": "ControllerConnectionStopped", "codeRange": {"start": {"row": 76, "column": 8, "index": 1499}, "end": {"row": 76, "column": 34, "index": 1525}, "codeIndex": 0}},
+        "name": "ControllerConnectionStopped",
         "request": null,
         "response": null
     }, {
-        "$ast": { "type": "EventDecl", "codeRange": {"start": {"row": 78, "column": 0, "index": 1537}, "end": {"row": 78, "column": 33, "index": 1570}, "codeIndex": 0}},
+        "$ast": "EventDecl",
         "attributes": [],
-        "name": { "value": "ControllerConnect", "codeRange": {"start": {"row": 78, "column": 6, "index": 1543}, "end": {"row": 78, "column": 22, "index": 1559}, "codeIndex": 0}},
+        "name": "ControllerConnect",
         "request": null
     }, {
-        "$ast": { "type": "EventDecl", "codeRange": {"start": {"row": 79, "column": 0, "index": 1573}, "end": {"row": 79, "column": 33, "index": 1606}, "codeIndex": 0}},
+        "$ast": "EventDecl",
         "attributes": [],
-        "name": { "value": "ControllerDisconnect", "codeRange": {"start": {"row": 79, "column": 6, "index": 1579}, "end": {"row": 79, "column": 25, "index": 1598}, "codeIndex": 0}},
+        "name": "ControllerDisconnect",
         "request": null
     }, {
-        "$ast": { "type": "EventDecl", "codeRange": {"start": {"row": 80, "column": 0, "index": 1609}, "end": {"row": 80, "column": 33, "index": 1642}, "codeIndex": 0}},
+        "$ast": "EventDecl",
         "attributes": [],
-        "name": { "value": "ControllerRequestExit", "codeRange": {"start": {"row": 80, "column": 6, "index": 1615}, "end": {"row": 80, "column": 26, "index": 1635}, "codeIndex": 0}},
+        "name": "ControllerRequestExit",
         "request": null
     }, {
-        "$ast": { "type": "EventDecl", "codeRange": {"start": {"row": 81, "column": 0, "index": 1645}, "end": {"row": 81, "column": 33, "index": 1678}, "codeIndex": 0}},
+        "$ast": "EventDecl",
         "attributes": [],
-        "name": { "value": "ControllerForceExit", "codeRange": {"start": {"row": 81, "column": 6, "index": 1651}, "end": {"row": 81, "column": 24, "index": 1669}, "codeIndex": 0}},
+        "name": "ControllerForceExit",
         "request": null
     }, {
-        "$ast": { "type": "EventDecl", "codeRange": {"start": {"row": 83, "column": 0, "index": 1683}, "end": {"row": 83, "column": 71, "index": 1754}, "codeIndex": 0}},
+        "$ast": "EventDecl",
         "attributes": [{
-            "$ast": { "type": "Attribute", "codeRange": {"start": {"row": 83, "column": 0, "index": 1683}, "end": {"row": 83, "column": 12, "index": 1695}, "codeIndex": 0}},
-            "cppType": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
-            "name": { "value": "@DropRepeat", "codeRange": {"start": {"row": 83, "column": 1, "index": 1684}, "end": {"row": 83, "column": 11, "index": 1694}, "codeIndex": 0}}
+            "$ast": "Attribute",
+            "cppType": "",
+            "name": "@DropRepeat"
         }],
-        "name": { "value": "ControllerScreenUpdated", "codeRange": {"start": {"row": 83, "column": 20, "index": 1703}, "end": {"row": 83, "column": 42, "index": 1725}, "codeIndex": 0}},
+        "name": "ControllerScreenUpdated",
         "request": {
-            "$ast": { "type": "EventRequest", "codeRange": {"start": {"row": 83, "column": 48, "index": 1731}, "end": {"row": 83, "column": 69, "index": 1752}, "codeIndex": 0}},
+            "$ast": "EventRequest",
             "type": {
-                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 83, "column": 57, "index": 1740}, "end": {"row": 83, "column": 68, "index": 1751}, "codeIndex": 0}},
-                "name": { "value": "ScreenConfig", "codeRange": {"start": {"row": 83, "column": 57, "index": 1740}, "end": {"row": 83, "column": 68, "index": 1751}, "codeIndex": 0}}
+                "$ast": "ReferenceType",
+                "name": "ScreenConfig"
             }
         }
     }, {
-        "$ast": { "type": "EnumDecl", "codeRange": {"start": {"row": 0, "column": 0, "index": 0}, "end": {"row": 5, "column": 0, "index": 59}, "codeIndex": 2}},
+        "$ast": "EnumDecl",
         "attributes": [],
-        "name": { "value": "IOMouseButton", "codeRange": {"start": {"row": 0, "column": 5, "index": 5}, "end": {"row": 0, "column": 17, "index": 17}, "codeIndex": 2}},
+        "name": "IOMouseButton",
         "members": [{
-            "$ast": { "type": "EnumMember", "codeRange": {"start": {"row": 2, "column": 4, "index": 27}, "end": {"row": 2, "column": 8, "index": 31}, "codeIndex": 2}},
-            "name": { "value": "Left", "codeRange": {"start": {"row": 2, "column": 4, "index": 27}, "end": {"row": 2, "column": 7, "index": 30}, "codeIndex": 2}}
+            "$ast": "EnumMember",
+            "name": "Left"
         }, {
-            "$ast": { "type": "EnumMember", "codeRange": {"start": {"row": 3, "column": 4, "index": 38}, "end": {"row": 3, "column": 10, "index": 44}, "codeIndex": 2}},
-            "name": { "value": "Middle", "codeRange": {"start": {"row": 3, "column": 4, "index": 38}, "end": {"row": 3, "column": 9, "index": 43}, "codeIndex": 2}}
+            "$ast": "EnumMember",
+            "name": "Middle"
         }, {
-            "$ast": { "type": "EnumMember", "codeRange": {"start": {"row": 4, "column": 4, "index": 51}, "end": {"row": 4, "column": 9, "index": 56}, "codeIndex": 2}},
-            "name": { "value": "Right", "codeRange": {"start": {"row": 4, "column": 4, "index": 51}, "end": {"row": 4, "column": 8, "index": 55}, "codeIndex": 2}}
+            "$ast": "EnumMember",
+            "name": "Right"
         }]
     }, {
-        "$ast": { "type": "StructDecl", "codeRange": {"start": {"row": 7, "column": 0, "index": 64}, "end": {"row": 19, "column": 0, "index": 354}, "codeIndex": 2}},
+        "$ast": "StructDecl",
         "attributes": [{
-            "$ast": { "type": "Attribute", "codeRange": {"start": {"row": 7, "column": 0, "index": 64}, "end": {"row": 7, "column": 48, "index": 112}, "codeIndex": 2}},
-            "cppType": { "value": "::vl::presentation::NativeWindowMouseInfo", "codeRange": {"start": {"row": 7, "column": 6, "index": 70}, "end": {"row": 7, "column": 46, "index": 110}, "codeIndex": 2}},
-            "name": { "value": "@Cpp", "codeRange": {"start": {"row": 7, "column": 1, "index": 65}, "end": {"row": 7, "column": 4, "index": 68}, "codeIndex": 2}}
+            "$ast": "Attribute",
+            "cppType": "::vl::presentation::NativeWindowMouseInfo",
+            "name": "@Cpp"
         }],
-        "name": { "value": "IOMouseInfo", "codeRange": {"start": {"row": 8, "column": 7, "index": 122}, "end": {"row": 8, "column": 17, "index": 132}, "codeIndex": 2}},
+        "name": "IOMouseInfo",
         "members": [{
-            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 10, "column": 4, "index": 142}, "end": {"row": 10, "column": 18, "index": 156}, "codeIndex": 2}},
-            "name": { "value": "ctrl", "codeRange": {"start": {"row": 10, "column": 8, "index": 146}, "end": {"row": 10, "column": 11, "index": 149}, "codeIndex": 2}},
+            "$ast": "StructMember",
+            "name": "ctrl",
             "type": {
-                "$ast": { "type": "PrimitiveType", "codeRange": {"start": {"row": 10, "column": 14, "index": 152}, "end": {"row": 10, "column": 17, "index": 155}, "codeIndex": 2}},
+                "$ast": "PrimitiveType",
                 "type": "Boolean"
             }
         }, {
-            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 11, "column": 4, "index": 163}, "end": {"row": 11, "column": 19, "index": 178}, "codeIndex": 2}},
-            "name": { "value": "shift", "codeRange": {"start": {"row": 11, "column": 8, "index": 167}, "end": {"row": 11, "column": 12, "index": 171}, "codeIndex": 2}},
+            "$ast": "StructMember",
+            "name": "shift",
             "type": {
-                "$ast": { "type": "PrimitiveType", "codeRange": {"start": {"row": 11, "column": 15, "index": 174}, "end": {"row": 11, "column": 18, "index": 177}, "codeIndex": 2}},
+                "$ast": "PrimitiveType",
                 "type": "Boolean"
             }
         }, {
-            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 12, "column": 4, "index": 185}, "end": {"row": 12, "column": 18, "index": 199}, "codeIndex": 2}},
-            "name": { "value": "left", "codeRange": {"start": {"row": 12, "column": 8, "index": 189}, "end": {"row": 12, "column": 11, "index": 192}, "codeIndex": 2}},
+            "$ast": "StructMember",
+            "name": "left",
             "type": {
-                "$ast": { "type": "PrimitiveType", "codeRange": {"start": {"row": 12, "column": 14, "index": 195}, "end": {"row": 12, "column": 17, "index": 198}, "codeIndex": 2}},
+                "$ast": "PrimitiveType",
                 "type": "Boolean"
             }
         }, {
-            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 13, "column": 4, "index": 206}, "end": {"row": 13, "column": 20, "index": 222}, "codeIndex": 2}},
-            "name": { "value": "middle", "codeRange": {"start": {"row": 13, "column": 8, "index": 210}, "end": {"row": 13, "column": 13, "index": 215}, "codeIndex": 2}},
+            "$ast": "StructMember",
+            "name": "middle",
             "type": {
-                "$ast": { "type": "PrimitiveType", "codeRange": {"start": {"row": 13, "column": 16, "index": 218}, "end": {"row": 13, "column": 19, "index": 221}, "codeIndex": 2}},
+                "$ast": "PrimitiveType",
                 "type": "Boolean"
             }
         }, {
-            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 14, "column": 4, "index": 229}, "end": {"row": 14, "column": 19, "index": 244}, "codeIndex": 2}},
-            "name": { "value": "right", "codeRange": {"start": {"row": 14, "column": 8, "index": 233}, "end": {"row": 14, "column": 12, "index": 237}, "codeIndex": 2}},
+            "$ast": "StructMember",
+            "name": "right",
             "type": {
-                "$ast": { "type": "PrimitiveType", "codeRange": {"start": {"row": 14, "column": 15, "index": 240}, "end": {"row": 14, "column": 18, "index": 243}, "codeIndex": 2}},
+                "$ast": "PrimitiveType",
                 "type": "Boolean"
             }
         }, {
-            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 15, "column": 4, "index": 251}, "end": {"row": 15, "column": 27, "index": 274}, "codeIndex": 2}},
-            "name": { "value": "x", "codeRange": {"start": {"row": 15, "column": 8, "index": 255}, "end": {"row": 15, "column": 8, "index": 255}, "codeIndex": 2}},
+            "$ast": "StructMember",
+            "name": "x",
             "type": {
-                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 15, "column": 11, "index": 258}, "end": {"row": 15, "column": 26, "index": 273}, "codeIndex": 2}},
-                "name": { "value": "NativeCoordinate", "codeRange": {"start": {"row": 15, "column": 11, "index": 258}, "end": {"row": 15, "column": 26, "index": 273}, "codeIndex": 2}}
+                "$ast": "ReferenceType",
+                "name": "NativeCoordinate"
             }
         }, {
-            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 16, "column": 4, "index": 281}, "end": {"row": 16, "column": 27, "index": 304}, "codeIndex": 2}},
-            "name": { "value": "y", "codeRange": {"start": {"row": 16, "column": 8, "index": 285}, "end": {"row": 16, "column": 8, "index": 285}, "codeIndex": 2}},
+            "$ast": "StructMember",
+            "name": "y",
             "type": {
-                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 16, "column": 11, "index": 288}, "end": {"row": 16, "column": 26, "index": 303}, "codeIndex": 2}},
-                "name": { "value": "NativeCoordinate", "codeRange": {"start": {"row": 16, "column": 11, "index": 288}, "end": {"row": 16, "column": 26, "index": 303}, "codeIndex": 2}}
+                "$ast": "ReferenceType",
+                "name": "NativeCoordinate"
             }
         }, {
-            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 17, "column": 4, "index": 311}, "end": {"row": 17, "column": 18, "index": 325}, "codeIndex": 2}},
-            "name": { "value": "wheel", "codeRange": {"start": {"row": 17, "column": 8, "index": 315}, "end": {"row": 17, "column": 12, "index": 319}, "codeIndex": 2}},
+            "$ast": "StructMember",
+            "name": "wheel",
             "type": {
-                "$ast": { "type": "PrimitiveType", "codeRange": {"start": {"row": 17, "column": 15, "index": 322}, "end": {"row": 17, "column": 17, "index": 324}, "codeIndex": 2}},
+                "$ast": "PrimitiveType",
                 "type": "Integer"
             }
         }, {
-            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 18, "column": 4, "index": 332}, "end": {"row": 18, "column": 23, "index": 351}, "codeIndex": 2}},
-            "name": { "value": "nonClient", "codeRange": {"start": {"row": 18, "column": 8, "index": 336}, "end": {"row": 18, "column": 16, "index": 344}, "codeIndex": 2}},
+            "$ast": "StructMember",
+            "name": "nonClient",
             "type": {
-                "$ast": { "type": "PrimitiveType", "codeRange": {"start": {"row": 18, "column": 19, "index": 347}, "end": {"row": 18, "column": 22, "index": 350}, "codeIndex": 2}},
+                "$ast": "PrimitiveType",
                 "type": "Boolean"
             }
         }]
     }, {
-        "$ast": { "type": "StructDecl", "codeRange": {"start": {"row": 21, "column": 0, "index": 359}, "end": {"row": 25, "column": 0, "index": 452}, "codeIndex": 2}},
+        "$ast": "StructDecl",
         "attributes": [],
-        "name": { "value": "IOMouseInfoWithButton", "codeRange": {"start": {"row": 21, "column": 7, "index": 366}, "end": {"row": 21, "column": 27, "index": 386}, "codeIndex": 2}},
+        "name": "IOMouseInfoWithButton",
         "members": [{
-            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 23, "column": 4, "index": 396}, "end": {"row": 23, "column": 29, "index": 421}, "codeIndex": 2}},
-            "name": { "value": "button", "codeRange": {"start": {"row": 23, "column": 8, "index": 400}, "end": {"row": 23, "column": 13, "index": 405}, "codeIndex": 2}},
+            "$ast": "StructMember",
+            "name": "button",
             "type": {
-                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 23, "column": 16, "index": 408}, "end": {"row": 23, "column": 28, "index": 420}, "codeIndex": 2}},
-                "name": { "value": "IOMouseButton", "codeRange": {"start": {"row": 23, "column": 16, "index": 408}, "end": {"row": 23, "column": 28, "index": 420}, "codeIndex": 2}}
+                "$ast": "ReferenceType",
+                "name": "IOMouseButton"
             }
         }, {
-            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 24, "column": 4, "index": 428}, "end": {"row": 24, "column": 25, "index": 449}, "codeIndex": 2}},
-            "name": { "value": "info", "codeRange": {"start": {"row": 24, "column": 8, "index": 432}, "end": {"row": 24, "column": 11, "index": 435}, "codeIndex": 2}},
+            "$ast": "StructMember",
+            "name": "info",
             "type": {
-                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 24, "column": 14, "index": 438}, "end": {"row": 24, "column": 24, "index": 448}, "codeIndex": 2}},
-                "name": { "value": "IOMouseInfo", "codeRange": {"start": {"row": 24, "column": 14, "index": 438}, "end": {"row": 24, "column": 24, "index": 448}, "codeIndex": 2}}
+                "$ast": "ReferenceType",
+                "name": "IOMouseInfo"
             }
         }]
     }, {
-        "$ast": { "type": "StructDecl", "codeRange": {"start": {"row": 27, "column": 0, "index": 457}, "end": {"row": 36, "column": 0, "index": 669}, "codeIndex": 2}},
+        "$ast": "StructDecl",
         "attributes": [{
-            "$ast": { "type": "Attribute", "codeRange": {"start": {"row": 27, "column": 0, "index": 457}, "end": {"row": 27, "column": 46, "index": 503}, "codeIndex": 2}},
-            "cppType": { "value": "::vl::presentation::NativeWindowKeyInfo", "codeRange": {"start": {"row": 27, "column": 6, "index": 463}, "end": {"row": 27, "column": 44, "index": 501}, "codeIndex": 2}},
-            "name": { "value": "@Cpp", "codeRange": {"start": {"row": 27, "column": 1, "index": 458}, "end": {"row": 27, "column": 4, "index": 461}, "codeIndex": 2}}
+            "$ast": "Attribute",
+            "cppType": "::vl::presentation::NativeWindowKeyInfo",
+            "name": "@Cpp"
         }],
-        "name": { "value": "IOKeyInfo", "codeRange": {"start": {"row": 28, "column": 7, "index": 513}, "end": {"row": 28, "column": 15, "index": 521}, "codeIndex": 2}},
+        "name": "IOKeyInfo",
         "members": [{
-            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 30, "column": 4, "index": 531}, "end": {"row": 30, "column": 17, "index": 544}, "codeIndex": 2}},
-            "name": { "value": "code", "codeRange": {"start": {"row": 30, "column": 8, "index": 535}, "end": {"row": 30, "column": 11, "index": 538}, "codeIndex": 2}},
+            "$ast": "StructMember",
+            "name": "code",
             "type": {
-                "$ast": { "type": "PrimitiveType", "codeRange": {"start": {"row": 30, "column": 14, "index": 541}, "end": {"row": 30, "column": 16, "index": 543}, "codeIndex": 2}},
+                "$ast": "PrimitiveType",
                 "type": "Key"
             }
         }, {
-            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 31, "column": 4, "index": 551}, "end": {"row": 31, "column": 18, "index": 565}, "codeIndex": 2}},
-            "name": { "value": "ctrl", "codeRange": {"start": {"row": 31, "column": 8, "index": 555}, "end": {"row": 31, "column": 11, "index": 558}, "codeIndex": 2}},
+            "$ast": "StructMember",
+            "name": "ctrl",
             "type": {
-                "$ast": { "type": "PrimitiveType", "codeRange": {"start": {"row": 31, "column": 14, "index": 561}, "end": {"row": 31, "column": 17, "index": 564}, "codeIndex": 2}},
+                "$ast": "PrimitiveType",
                 "type": "Boolean"
             }
         }, {
-            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 32, "column": 4, "index": 572}, "end": {"row": 32, "column": 19, "index": 587}, "codeIndex": 2}},
-            "name": { "value": "shift", "codeRange": {"start": {"row": 32, "column": 8, "index": 576}, "end": {"row": 32, "column": 12, "index": 580}, "codeIndex": 2}},
+            "$ast": "StructMember",
+            "name": "shift",
             "type": {
-                "$ast": { "type": "PrimitiveType", "codeRange": {"start": {"row": 32, "column": 15, "index": 583}, "end": {"row": 32, "column": 18, "index": 586}, "codeIndex": 2}},
+                "$ast": "PrimitiveType",
                 "type": "Boolean"
             }
         }, {
-            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 33, "column": 4, "index": 594}, "end": {"row": 33, "column": 17, "index": 607}, "codeIndex": 2}},
-            "name": { "value": "alt", "codeRange": {"start": {"row": 33, "column": 8, "index": 598}, "end": {"row": 33, "column": 10, "index": 600}, "codeIndex": 2}},
+            "$ast": "StructMember",
+            "name": "alt",
             "type": {
-                "$ast": { "type": "PrimitiveType", "codeRange": {"start": {"row": 33, "column": 13, "index": 603}, "end": {"row": 33, "column": 16, "index": 606}, "codeIndex": 2}},
+                "$ast": "PrimitiveType",
                 "type": "Boolean"
             }
         }, {
-            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 34, "column": 4, "index": 614}, "end": {"row": 34, "column": 22, "index": 632}, "codeIndex": 2}},
-            "name": { "value": "capslock", "codeRange": {"start": {"row": 34, "column": 8, "index": 618}, "end": {"row": 34, "column": 15, "index": 625}, "codeIndex": 2}},
+            "$ast": "StructMember",
+            "name": "capslock",
             "type": {
-                "$ast": { "type": "PrimitiveType", "codeRange": {"start": {"row": 34, "column": 18, "index": 628}, "end": {"row": 34, "column": 21, "index": 631}, "codeIndex": 2}},
+                "$ast": "PrimitiveType",
                 "type": "Boolean"
             }
         }, {
-            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 35, "column": 4, "index": 639}, "end": {"row": 35, "column": 31, "index": 666}, "codeIndex": 2}},
-            "name": { "value": "autoRepeatKeyDown", "codeRange": {"start": {"row": 35, "column": 8, "index": 643}, "end": {"row": 35, "column": 24, "index": 659}, "codeIndex": 2}},
+            "$ast": "StructMember",
+            "name": "autoRepeatKeyDown",
             "type": {
-                "$ast": { "type": "PrimitiveType", "codeRange": {"start": {"row": 35, "column": 27, "index": 662}, "end": {"row": 35, "column": 30, "index": 665}, "codeIndex": 2}},
+                "$ast": "PrimitiveType",
                 "type": "Boolean"
             }
         }]
     }, {
-        "$ast": { "type": "StructDecl", "codeRange": {"start": {"row": 38, "column": 0, "index": 674}, "end": {"row": 46, "column": 0, "index": 855}, "codeIndex": 2}},
+        "$ast": "StructDecl",
         "attributes": [{
-            "$ast": { "type": "Attribute", "codeRange": {"start": {"row": 38, "column": 0, "index": 674}, "end": {"row": 38, "column": 47, "index": 721}, "codeIndex": 2}},
-            "cppType": { "value": "::vl::presentation::NativeWindowCharInfo", "codeRange": {"start": {"row": 38, "column": 6, "index": 680}, "end": {"row": 38, "column": 45, "index": 719}, "codeIndex": 2}},
-            "name": { "value": "@Cpp", "codeRange": {"start": {"row": 38, "column": 1, "index": 675}, "end": {"row": 38, "column": 4, "index": 678}, "codeIndex": 2}}
+            "$ast": "Attribute",
+            "cppType": "::vl::presentation::NativeWindowCharInfo",
+            "name": "@Cpp"
         }],
-        "name": { "value": "IOCharInfo", "codeRange": {"start": {"row": 39, "column": 7, "index": 731}, "end": {"row": 39, "column": 16, "index": 740}, "codeIndex": 2}},
+        "name": "IOCharInfo",
         "members": [{
-            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 41, "column": 4, "index": 750}, "end": {"row": 41, "column": 18, "index": 764}, "codeIndex": 2}},
-            "name": { "value": "code", "codeRange": {"start": {"row": 41, "column": 8, "index": 754}, "end": {"row": 41, "column": 11, "index": 757}, "codeIndex": 2}},
+            "$ast": "StructMember",
+            "name": "code",
             "type": {
-                "$ast": { "type": "PrimitiveType", "codeRange": {"start": {"row": 41, "column": 14, "index": 760}, "end": {"row": 41, "column": 17, "index": 763}, "codeIndex": 2}},
+                "$ast": "PrimitiveType",
                 "type": "Char"
             }
         }, {
-            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 42, "column": 4, "index": 771}, "end": {"row": 42, "column": 18, "index": 785}, "codeIndex": 2}},
-            "name": { "value": "ctrl", "codeRange": {"start": {"row": 42, "column": 8, "index": 775}, "end": {"row": 42, "column": 11, "index": 778}, "codeIndex": 2}},
+            "$ast": "StructMember",
+            "name": "ctrl",
             "type": {
-                "$ast": { "type": "PrimitiveType", "codeRange": {"start": {"row": 42, "column": 14, "index": 781}, "end": {"row": 42, "column": 17, "index": 784}, "codeIndex": 2}},
+                "$ast": "PrimitiveType",
                 "type": "Boolean"
             }
         }, {
-            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 43, "column": 4, "index": 792}, "end": {"row": 43, "column": 19, "index": 807}, "codeIndex": 2}},
-            "name": { "value": "shift", "codeRange": {"start": {"row": 43, "column": 8, "index": 796}, "end": {"row": 43, "column": 12, "index": 800}, "codeIndex": 2}},
+            "$ast": "StructMember",
+            "name": "shift",
             "type": {
-                "$ast": { "type": "PrimitiveType", "codeRange": {"start": {"row": 43, "column": 15, "index": 803}, "end": {"row": 43, "column": 18, "index": 806}, "codeIndex": 2}},
+                "$ast": "PrimitiveType",
                 "type": "Boolean"
             }
         }, {
-            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 44, "column": 4, "index": 814}, "end": {"row": 44, "column": 17, "index": 827}, "codeIndex": 2}},
-            "name": { "value": "alt", "codeRange": {"start": {"row": 44, "column": 8, "index": 818}, "end": {"row": 44, "column": 10, "index": 820}, "codeIndex": 2}},
+            "$ast": "StructMember",
+            "name": "alt",
             "type": {
-                "$ast": { "type": "PrimitiveType", "codeRange": {"start": {"row": 44, "column": 13, "index": 823}, "end": {"row": 44, "column": 16, "index": 826}, "codeIndex": 2}},
+                "$ast": "PrimitiveType",
                 "type": "Boolean"
             }
         }, {
-            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 45, "column": 4, "index": 834}, "end": {"row": 45, "column": 22, "index": 852}, "codeIndex": 2}},
-            "name": { "value": "capslock", "codeRange": {"start": {"row": 45, "column": 8, "index": 838}, "end": {"row": 45, "column": 15, "index": 845}, "codeIndex": 2}},
+            "$ast": "StructMember",
+            "name": "capslock",
             "type": {
-                "$ast": { "type": "PrimitiveType", "codeRange": {"start": {"row": 45, "column": 18, "index": 848}, "end": {"row": 45, "column": 21, "index": 851}, "codeIndex": 2}},
+                "$ast": "PrimitiveType",
                 "type": "Boolean"
             }
         }]
     }, {
-        "$ast": { "type": "MessageDecl", "codeRange": {"start": {"row": 48, "column": 0, "index": 860}, "end": {"row": 48, "column": 29, "index": 889}, "codeIndex": 2}},
+        "$ast": "MessageDecl",
         "attributes": [],
-        "name": { "value": "IORequireCapture", "codeRange": {"start": {"row": 48, "column": 8, "index": 868}, "end": {"row": 48, "column": 23, "index": 883}, "codeIndex": 2}},
+        "name": "IORequireCapture",
         "request": null,
         "response": null
     }, {
-        "$ast": { "type": "MessageDecl", "codeRange": {"start": {"row": 49, "column": 0, "index": 892}, "end": {"row": 49, "column": 29, "index": 921}, "codeIndex": 2}},
+        "$ast": "MessageDecl",
         "attributes": [],
-        "name": { "value": "IOReleaseCapture", "codeRange": {"start": {"row": 49, "column": 8, "index": 900}, "end": {"row": 49, "column": 23, "index": 915}, "codeIndex": 2}},
+        "name": "IOReleaseCapture",
         "request": null,
         "response": null
     }, {
-        "$ast": { "type": "EventDecl", "codeRange": {"start": {"row": 51, "column": 0, "index": 926}, "end": {"row": 51, "column": 62, "index": 988}, "codeIndex": 2}},
+        "$ast": "EventDecl",
         "attributes": [],
-        "name": { "value": "IOButtonDown", "codeRange": {"start": {"row": 51, "column": 6, "index": 932}, "end": {"row": 51, "column": 17, "index": 943}, "codeIndex": 2}},
+        "name": "IOButtonDown",
         "request": {
-            "$ast": { "type": "EventRequest", "codeRange": {"start": {"row": 51, "column": 30, "index": 956}, "end": {"row": 51, "column": 60, "index": 986}, "codeIndex": 2}},
+            "$ast": "EventRequest",
             "type": {
-                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 51, "column": 39, "index": 965}, "end": {"row": 51, "column": 59, "index": 985}, "codeIndex": 2}},
-                "name": { "value": "IOMouseInfoWithButton", "codeRange": {"start": {"row": 51, "column": 39, "index": 965}, "end": {"row": 51, "column": 59, "index": 985}, "codeIndex": 2}}
+                "$ast": "ReferenceType",
+                "name": "IOMouseInfoWithButton"
             }
         }
     }, {
-        "$ast": { "type": "EventDecl", "codeRange": {"start": {"row": 52, "column": 0, "index": 991}, "end": {"row": 52, "column": 62, "index": 1053}, "codeIndex": 2}},
+        "$ast": "EventDecl",
         "attributes": [],
-        "name": { "value": "IOButtonDoubleClick", "codeRange": {"start": {"row": 52, "column": 6, "index": 997}, "end": {"row": 52, "column": 24, "index": 1015}, "codeIndex": 2}},
+        "name": "IOButtonDoubleClick",
         "request": {
-            "$ast": { "type": "EventRequest", "codeRange": {"start": {"row": 52, "column": 30, "index": 1021}, "end": {"row": 52, "column": 60, "index": 1051}, "codeIndex": 2}},
+            "$ast": "EventRequest",
             "type": {
-                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 52, "column": 39, "index": 1030}, "end": {"row": 52, "column": 59, "index": 1050}, "codeIndex": 2}},
-                "name": { "value": "IOMouseInfoWithButton", "codeRange": {"start": {"row": 52, "column": 39, "index": 1030}, "end": {"row": 52, "column": 59, "index": 1050}, "codeIndex": 2}}
+                "$ast": "ReferenceType",
+                "name": "IOMouseInfoWithButton"
             }
         }
     }, {
-        "$ast": { "type": "EventDecl", "codeRange": {"start": {"row": 53, "column": 0, "index": 1056}, "end": {"row": 53, "column": 62, "index": 1118}, "codeIndex": 2}},
+        "$ast": "EventDecl",
         "attributes": [],
-        "name": { "value": "IOButtonUp", "codeRange": {"start": {"row": 53, "column": 6, "index": 1062}, "end": {"row": 53, "column": 15, "index": 1071}, "codeIndex": 2}},
+        "name": "IOButtonUp",
         "request": {
-            "$ast": { "type": "EventRequest", "codeRange": {"start": {"row": 53, "column": 30, "index": 1086}, "end": {"row": 53, "column": 60, "index": 1116}, "codeIndex": 2}},
+            "$ast": "EventRequest",
             "type": {
-                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 53, "column": 39, "index": 1095}, "end": {"row": 53, "column": 59, "index": 1115}, "codeIndex": 2}},
-                "name": { "value": "IOMouseInfoWithButton", "codeRange": {"start": {"row": 53, "column": 39, "index": 1095}, "end": {"row": 53, "column": 59, "index": 1115}, "codeIndex": 2}}
+                "$ast": "ReferenceType",
+                "name": "IOMouseInfoWithButton"
             }
         }
     }, {
-        "$ast": { "type": "EventDecl", "codeRange": {"start": {"row": 54, "column": 0, "index": 1121}, "end": {"row": 54, "column": 52, "index": 1173}, "codeIndex": 2}},
+        "$ast": "EventDecl",
         "attributes": [],
-        "name": { "value": "IOHWheel", "codeRange": {"start": {"row": 54, "column": 6, "index": 1127}, "end": {"row": 54, "column": 13, "index": 1134}, "codeIndex": 2}},
+        "name": "IOHWheel",
         "request": {
-            "$ast": { "type": "EventRequest", "codeRange": {"start": {"row": 54, "column": 30, "index": 1151}, "end": {"row": 54, "column": 50, "index": 1171}, "codeIndex": 2}},
+            "$ast": "EventRequest",
             "type": {
-                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 54, "column": 39, "index": 1160}, "end": {"row": 54, "column": 49, "index": 1170}, "codeIndex": 2}},
-                "name": { "value": "IOMouseInfo", "codeRange": {"start": {"row": 54, "column": 39, "index": 1160}, "end": {"row": 54, "column": 49, "index": 1170}, "codeIndex": 2}}
+                "$ast": "ReferenceType",
+                "name": "IOMouseInfo"
             }
         }
     }, {
-        "$ast": { "type": "EventDecl", "codeRange": {"start": {"row": 55, "column": 0, "index": 1176}, "end": {"row": 55, "column": 52, "index": 1228}, "codeIndex": 2}},
+        "$ast": "EventDecl",
         "attributes": [],
-        "name": { "value": "IOVWheel", "codeRange": {"start": {"row": 55, "column": 6, "index": 1182}, "end": {"row": 55, "column": 13, "index": 1189}, "codeIndex": 2}},
+        "name": "IOVWheel",
         "request": {
-            "$ast": { "type": "EventRequest", "codeRange": {"start": {"row": 55, "column": 30, "index": 1206}, "end": {"row": 55, "column": 50, "index": 1226}, "codeIndex": 2}},
+            "$ast": "EventRequest",
             "type": {
-                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 55, "column": 39, "index": 1215}, "end": {"row": 55, "column": 49, "index": 1225}, "codeIndex": 2}},
-                "name": { "value": "IOMouseInfo", "codeRange": {"start": {"row": 55, "column": 39, "index": 1215}, "end": {"row": 55, "column": 49, "index": 1225}, "codeIndex": 2}}
+                "$ast": "ReferenceType",
+                "name": "IOMouseInfo"
             }
         }
     }, {
-        "$ast": { "type": "EventDecl", "codeRange": {"start": {"row": 57, "column": 0, "index": 1233}, "end": {"row": 58, "column": 52, "index": 1305}, "codeIndex": 2}},
+        "$ast": "EventDecl",
         "attributes": [{
-            "$ast": { "type": "Attribute", "codeRange": {"start": {"row": 57, "column": 0, "index": 1233}, "end": {"row": 57, "column": 17, "index": 1250}, "codeIndex": 2}},
-            "cppType": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
-            "name": { "value": "@DropConsecutive", "codeRange": {"start": {"row": 57, "column": 1, "index": 1234}, "end": {"row": 57, "column": 16, "index": 1249}, "codeIndex": 2}}
+            "$ast": "Attribute",
+            "cppType": "",
+            "name": "@DropConsecutive"
         }],
-        "name": { "value": "IOMouseMoving", "codeRange": {"start": {"row": 58, "column": 6, "index": 1259}, "end": {"row": 58, "column": 18, "index": 1271}, "codeIndex": 2}},
+        "name": "IOMouseMoving",
         "request": {
-            "$ast": { "type": "EventRequest", "codeRange": {"start": {"row": 58, "column": 30, "index": 1283}, "end": {"row": 58, "column": 50, "index": 1303}, "codeIndex": 2}},
+            "$ast": "EventRequest",
             "type": {
-                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 58, "column": 39, "index": 1292}, "end": {"row": 58, "column": 49, "index": 1302}, "codeIndex": 2}},
-                "name": { "value": "IOMouseInfo", "codeRange": {"start": {"row": 58, "column": 39, "index": 1292}, "end": {"row": 58, "column": 49, "index": 1302}, "codeIndex": 2}}
+                "$ast": "ReferenceType",
+                "name": "IOMouseInfo"
             }
         }
     }, {
-        "$ast": { "type": "EventDecl", "codeRange": {"start": {"row": 59, "column": 0, "index": 1308}, "end": {"row": 59, "column": 29, "index": 1337}, "codeIndex": 2}},
+        "$ast": "EventDecl",
         "attributes": [],
-        "name": { "value": "IOMouseEntered", "codeRange": {"start": {"row": 59, "column": 6, "index": 1314}, "end": {"row": 59, "column": 19, "index": 1327}, "codeIndex": 2}},
+        "name": "IOMouseEntered",
         "request": null
     }, {
-        "$ast": { "type": "EventDecl", "codeRange": {"start": {"row": 60, "column": 0, "index": 1340}, "end": {"row": 60, "column": 29, "index": 1369}, "codeIndex": 2}},
+        "$ast": "EventDecl",
         "attributes": [],
-        "name": { "value": "IOMouseLeaved", "codeRange": {"start": {"row": 60, "column": 6, "index": 1346}, "end": {"row": 60, "column": 18, "index": 1358}, "codeIndex": 2}},
+        "name": "IOMouseLeaved",
         "request": null
     }, {
-        "$ast": { "type": "EventDecl", "codeRange": {"start": {"row": 62, "column": 0, "index": 1374}, "end": {"row": 62, "column": 50, "index": 1424}, "codeIndex": 2}},
+        "$ast": "EventDecl",
         "attributes": [],
-        "name": { "value": "IOKeyDown", "codeRange": {"start": {"row": 62, "column": 6, "index": 1380}, "end": {"row": 62, "column": 14, "index": 1388}, "codeIndex": 2}},
+        "name": "IOKeyDown",
         "request": {
-            "$ast": { "type": "EventRequest", "codeRange": {"start": {"row": 62, "column": 30, "index": 1404}, "end": {"row": 62, "column": 48, "index": 1422}, "codeIndex": 2}},
+            "$ast": "EventRequest",
             "type": {
-                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 62, "column": 39, "index": 1413}, "end": {"row": 62, "column": 47, "index": 1421}, "codeIndex": 2}},
-                "name": { "value": "IOKeyInfo", "codeRange": {"start": {"row": 62, "column": 39, "index": 1413}, "end": {"row": 62, "column": 47, "index": 1421}, "codeIndex": 2}}
+                "$ast": "ReferenceType",
+                "name": "IOKeyInfo"
             }
         }
     }, {
-        "$ast": { "type": "EventDecl", "codeRange": {"start": {"row": 63, "column": 0, "index": 1427}, "end": {"row": 63, "column": 50, "index": 1477}, "codeIndex": 2}},
+        "$ast": "EventDecl",
         "attributes": [],
-        "name": { "value": "IOKeyUp", "codeRange": {"start": {"row": 63, "column": 6, "index": 1433}, "end": {"row": 63, "column": 12, "index": 1439}, "codeIndex": 2}},
+        "name": "IOKeyUp",
         "request": {
-            "$ast": { "type": "EventRequest", "codeRange": {"start": {"row": 63, "column": 30, "index": 1457}, "end": {"row": 63, "column": 48, "index": 1475}, "codeIndex": 2}},
+            "$ast": "EventRequest",
             "type": {
-                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 63, "column": 39, "index": 1466}, "end": {"row": 63, "column": 47, "index": 1474}, "codeIndex": 2}},
-                "name": { "value": "IOKeyInfo", "codeRange": {"start": {"row": 63, "column": 39, "index": 1466}, "end": {"row": 63, "column": 47, "index": 1474}, "codeIndex": 2}}
+                "$ast": "ReferenceType",
+                "name": "IOKeyInfo"
             }
         }
     }, {
-        "$ast": { "type": "EventDecl", "codeRange": {"start": {"row": 64, "column": 0, "index": 1480}, "end": {"row": 64, "column": 51, "index": 1531}, "codeIndex": 2}},
+        "$ast": "EventDecl",
         "attributes": [],
-        "name": { "value": "IOChar", "codeRange": {"start": {"row": 64, "column": 6, "index": 1486}, "end": {"row": 64, "column": 11, "index": 1491}, "codeIndex": 2}},
+        "name": "IOChar",
         "request": {
-            "$ast": { "type": "EventRequest", "codeRange": {"start": {"row": 64, "column": 30, "index": 1510}, "end": {"row": 64, "column": 49, "index": 1529}, "codeIndex": 2}},
+            "$ast": "EventRequest",
             "type": {
-                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 64, "column": 39, "index": 1519}, "end": {"row": 64, "column": 48, "index": 1528}, "codeIndex": 2}},
-                "name": { "value": "IOCharInfo", "codeRange": {"start": {"row": 64, "column": 39, "index": 1519}, "end": {"row": 64, "column": 48, "index": 1528}, "codeIndex": 2}}
+                "$ast": "ReferenceType",
+                "name": "IOCharInfo"
             }
         }
     }, {
-        "$ast": { "type": "EnumDecl", "codeRange": {"start": {"row": 0, "column": 0, "index": 0}, "end": {"row": 6, "column": 0, "index": 132}, "codeIndex": 1}},
+        "$ast": "EnumDecl",
         "attributes": [{
-            "$ast": { "type": "Attribute", "codeRange": {"start": {"row": 0, "column": 0, "index": 0}, "end": {"row": 0, "column": 57, "index": 57}, "codeIndex": 1}},
-            "cppType": { "value": "::vl::presentation::INativeWindow::WindowSizeState", "codeRange": {"start": {"row": 0, "column": 6, "index": 6}, "end": {"row": 0, "column": 55, "index": 55}, "codeIndex": 1}},
-            "name": { "value": "@Cpp", "codeRange": {"start": {"row": 0, "column": 1, "index": 1}, "end": {"row": 0, "column": 4, "index": 4}, "codeIndex": 1}}
+            "$ast": "Attribute",
+            "cppType": "::vl::presentation::INativeWindow::WindowSizeState",
+            "name": "@Cpp"
         }],
-        "name": { "value": "WindowSizeState", "codeRange": {"start": {"row": 1, "column": 5, "index": 65}, "end": {"row": 1, "column": 19, "index": 79}, "codeIndex": 1}},
+        "name": "WindowSizeState",
         "members": [{
-            "$ast": { "type": "EnumMember", "codeRange": {"start": {"row": 3, "column": 4, "index": 89}, "end": {"row": 3, "column": 13, "index": 98}, "codeIndex": 1}},
-            "name": { "value": "Minimized", "codeRange": {"start": {"row": 3, "column": 4, "index": 89}, "end": {"row": 3, "column": 12, "index": 97}, "codeIndex": 1}}
+            "$ast": "EnumMember",
+            "name": "Minimized"
         }, {
-            "$ast": { "type": "EnumMember", "codeRange": {"start": {"row": 4, "column": 4, "index": 105}, "end": {"row": 4, "column": 12, "index": 113}, "codeIndex": 1}},
-            "name": { "value": "Restored", "codeRange": {"start": {"row": 4, "column": 4, "index": 105}, "end": {"row": 4, "column": 11, "index": 112}, "codeIndex": 1}}
+            "$ast": "EnumMember",
+            "name": "Restored"
         }, {
-            "$ast": { "type": "EnumMember", "codeRange": {"start": {"row": 5, "column": 4, "index": 120}, "end": {"row": 5, "column": 13, "index": 129}, "codeIndex": 1}},
-            "name": { "value": "Maximized", "codeRange": {"start": {"row": 5, "column": 4, "index": 120}, "end": {"row": 5, "column": 12, "index": 128}, "codeIndex": 1}}
+            "$ast": "EnumMember",
+            "name": "Maximized"
         }]
     }, {
-        "$ast": { "type": "StructDecl", "codeRange": {"start": {"row": 8, "column": 0, "index": 137}, "end": {"row": 14, "column": 0, "index": 311}, "codeIndex": 1}},
+        "$ast": "StructDecl",
         "attributes": [],
-        "name": { "value": "WindowSizingConfig", "codeRange": {"start": {"row": 8, "column": 7, "index": 144}, "end": {"row": 8, "column": 24, "index": 161}, "codeIndex": 1}},
+        "name": "WindowSizingConfig",
         "members": [{
-            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 10, "column": 4, "index": 171}, "end": {"row": 10, "column": 26, "index": 193}, "codeIndex": 1}},
-            "name": { "value": "bounds", "codeRange": {"start": {"row": 10, "column": 8, "index": 175}, "end": {"row": 10, "column": 13, "index": 180}, "codeIndex": 1}},
+            "$ast": "StructMember",
+            "name": "bounds",
             "type": {
-                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 10, "column": 16, "index": 183}, "end": {"row": 10, "column": 25, "index": 192}, "codeIndex": 1}},
-                "name": { "value": "NativeRect", "codeRange": {"start": {"row": 10, "column": 16, "index": 183}, "end": {"row": 10, "column": 25, "index": 192}, "codeIndex": 1}}
+                "$ast": "ReferenceType",
+                "name": "NativeRect"
             }
         }, {
-            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 11, "column": 4, "index": 200}, "end": {"row": 11, "column": 32, "index": 228}, "codeIndex": 1}},
-            "name": { "value": "clientBounds", "codeRange": {"start": {"row": 11, "column": 8, "index": 204}, "end": {"row": 11, "column": 19, "index": 215}, "codeIndex": 1}},
+            "$ast": "StructMember",
+            "name": "clientBounds",
             "type": {
-                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 11, "column": 22, "index": 218}, "end": {"row": 11, "column": 31, "index": 227}, "codeIndex": 1}},
-                "name": { "value": "NativeRect", "codeRange": {"start": {"row": 11, "column": 22, "index": 218}, "end": {"row": 11, "column": 31, "index": 227}, "codeIndex": 1}}
+                "$ast": "ReferenceType",
+                "name": "NativeRect"
             }
         }, {
-            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 12, "column": 4, "index": 235}, "end": {"row": 12, "column": 34, "index": 265}, "codeIndex": 1}},
-            "name": { "value": "sizeState", "codeRange": {"start": {"row": 12, "column": 8, "index": 239}, "end": {"row": 12, "column": 16, "index": 247}, "codeIndex": 1}},
+            "$ast": "StructMember",
+            "name": "sizeState",
             "type": {
-                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 12, "column": 19, "index": 250}, "end": {"row": 12, "column": 33, "index": 264}, "codeIndex": 1}},
-                "name": { "value": "WindowSizeState", "codeRange": {"start": {"row": 12, "column": 19, "index": 250}, "end": {"row": 12, "column": 33, "index": 264}, "codeIndex": 1}}
+                "$ast": "ReferenceType",
+                "name": "WindowSizeState"
             }
         }, {
-            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 13, "column": 4, "index": 272}, "end": {"row": 13, "column": 40, "index": 308}, "codeIndex": 1}},
-            "name": { "value": "customFramePadding", "codeRange": {"start": {"row": 13, "column": 8, "index": 276}, "end": {"row": 13, "column": 25, "index": 293}, "codeIndex": 1}},
+            "$ast": "StructMember",
+            "name": "customFramePadding",
             "type": {
-                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 13, "column": 28, "index": 296}, "end": {"row": 13, "column": 39, "index": 307}, "codeIndex": 1}},
-                "name": { "value": "NativeMargin", "codeRange": {"start": {"row": 13, "column": 28, "index": 296}, "end": {"row": 13, "column": 39, "index": 307}, "codeIndex": 1}}
+                "$ast": "ReferenceType",
+                "name": "NativeMargin"
             }
         }]
     }, {
-        "$ast": { "type": "MessageDecl", "codeRange": {"start": {"row": 16, "column": 0, "index": 316}, "end": {"row": 19, "column": 0, "index": 379}, "codeIndex": 1}},
+        "$ast": "MessageDecl",
         "attributes": [],
-        "name": { "value": "WindowGetBounds", "codeRange": {"start": {"row": 16, "column": 8, "index": 324}, "end": {"row": 16, "column": 22, "index": 338}, "codeIndex": 1}},
+        "name": "WindowGetBounds",
         "request": null,
         "response": {
-            "$ast": { "type": "MessageResponse", "codeRange": {"start": {"row": 18, "column": 4, "index": 348}, "end": {"row": 18, "column": 32, "index": 376}, "codeIndex": 1}},
+            "$ast": "MessageResponse",
             "type": {
-                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 18, "column": 14, "index": 358}, "end": {"row": 18, "column": 31, "index": 375}, "codeIndex": 1}},
-                "name": { "value": "WindowSizingConfig", "codeRange": {"start": {"row": 18, "column": 14, "index": 358}, "end": {"row": 18, "column": 31, "index": 375}, "codeIndex": 1}}
+                "$ast": "ReferenceType",
+                "name": "WindowSizingConfig"
             }
         }
     }, {
-        "$ast": { "type": "MessageDecl", "codeRange": {"start": {"row": 21, "column": 0, "index": 384}, "end": {"row": 21, "column": 75, "index": 459}, "codeIndex": 1}},
+        "$ast": "MessageDecl",
         "attributes": [{
-            "$ast": { "type": "Attribute", "codeRange": {"start": {"row": 21, "column": 0, "index": 384}, "end": {"row": 21, "column": 12, "index": 396}, "codeIndex": 1}},
-            "cppType": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
-            "name": { "value": "@DropRepeat", "codeRange": {"start": {"row": 21, "column": 1, "index": 385}, "end": {"row": 21, "column": 11, "index": 395}, "codeIndex": 1}}
+            "$ast": "Attribute",
+            "cppType": "",
+            "name": "@DropRepeat"
         }],
-        "name": { "value": "WindowNotifySetTitle", "codeRange": {"start": {"row": 21, "column": 22, "index": 406}, "end": {"row": 21, "column": 41, "index": 425}, "codeIndex": 1}},
+        "name": "WindowNotifySetTitle",
         "request": {
-            "$ast": { "type": "MessageRequest", "codeRange": {"start": {"row": 21, "column": 58, "index": 442}, "end": {"row": 21, "column": 73, "index": 457}, "codeIndex": 1}},
+            "$ast": "MessageRequest",
             "type": {
-                "$ast": { "type": "PrimitiveType", "codeRange": {"start": {"row": 21, "column": 67, "index": 451}, "end": {"row": 21, "column": 72, "index": 456}, "codeIndex": 1}},
+                "$ast": "PrimitiveType",
                 "type": "String"
             }
         },
         "response": null
     }, {
-        "$ast": { "type": "MessageDecl", "codeRange": {"start": {"row": 22, "column": 0, "index": 462}, "end": {"row": 22, "column": 73, "index": 535}, "codeIndex": 1}},
+        "$ast": "MessageDecl",
         "attributes": [{
-            "$ast": { "type": "Attribute", "codeRange": {"start": {"row": 22, "column": 0, "index": 462}, "end": {"row": 22, "column": 12, "index": 474}, "codeIndex": 1}},
-            "cppType": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
-            "name": { "value": "@DropRepeat", "codeRange": {"start": {"row": 22, "column": 1, "index": 463}, "end": {"row": 22, "column": 11, "index": 473}, "codeIndex": 1}}
+            "$ast": "Attribute",
+            "cppType": "",
+            "name": "@DropRepeat"
         }],
-        "name": { "value": "WindowNotifySetEnabled", "codeRange": {"start": {"row": 22, "column": 22, "index": 484}, "end": {"row": 22, "column": 43, "index": 505}, "codeIndex": 1}},
+        "name": "WindowNotifySetEnabled",
         "request": {
-            "$ast": { "type": "MessageRequest", "codeRange": {"start": {"row": 22, "column": 58, "index": 520}, "end": {"row": 22, "column": 71, "index": 533}, "codeIndex": 1}},
+            "$ast": "MessageRequest",
             "type": {
-                "$ast": { "type": "PrimitiveType", "codeRange": {"start": {"row": 22, "column": 67, "index": 529}, "end": {"row": 22, "column": 70, "index": 532}, "codeIndex": 1}},
+                "$ast": "PrimitiveType",
                 "type": "Boolean"
             }
         },
         "response": null
     }, {
-        "$ast": { "type": "MessageDecl", "codeRange": {"start": {"row": 23, "column": 0, "index": 538}, "end": {"row": 23, "column": 73, "index": 611}, "codeIndex": 1}},
+        "$ast": "MessageDecl",
         "attributes": [{
-            "$ast": { "type": "Attribute", "codeRange": {"start": {"row": 23, "column": 0, "index": 538}, "end": {"row": 23, "column": 12, "index": 550}, "codeIndex": 1}},
-            "cppType": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
-            "name": { "value": "@DropRepeat", "codeRange": {"start": {"row": 23, "column": 1, "index": 539}, "end": {"row": 23, "column": 11, "index": 549}, "codeIndex": 1}}
+            "$ast": "Attribute",
+            "cppType": "",
+            "name": "@DropRepeat"
         }],
-        "name": { "value": "WindowNotifySetTopMost", "codeRange": {"start": {"row": 23, "column": 22, "index": 560}, "end": {"row": 23, "column": 43, "index": 581}, "codeIndex": 1}},
+        "name": "WindowNotifySetTopMost",
         "request": {
-            "$ast": { "type": "MessageRequest", "codeRange": {"start": {"row": 23, "column": 58, "index": 596}, "end": {"row": 23, "column": 71, "index": 609}, "codeIndex": 1}},
+            "$ast": "MessageRequest",
             "type": {
-                "$ast": { "type": "PrimitiveType", "codeRange": {"start": {"row": 23, "column": 67, "index": 605}, "end": {"row": 23, "column": 70, "index": 608}, "codeIndex": 1}},
+                "$ast": "PrimitiveType",
                 "type": "Boolean"
             }
         },
         "response": null
     }, {
-        "$ast": { "type": "MessageDecl", "codeRange": {"start": {"row": 24, "column": 0, "index": 614}, "end": {"row": 24, "column": 73, "index": 687}, "codeIndex": 1}},
+        "$ast": "MessageDecl",
         "attributes": [{
-            "$ast": { "type": "Attribute", "codeRange": {"start": {"row": 24, "column": 0, "index": 614}, "end": {"row": 24, "column": 12, "index": 626}, "codeIndex": 1}},
-            "cppType": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
-            "name": { "value": "@DropRepeat", "codeRange": {"start": {"row": 24, "column": 1, "index": 615}, "end": {"row": 24, "column": 11, "index": 625}, "codeIndex": 1}}
+            "$ast": "Attribute",
+            "cppType": "",
+            "name": "@DropRepeat"
         }],
-        "name": { "value": "WindowNotifySetShowInTaskBar", "codeRange": {"start": {"row": 24, "column": 22, "index": 636}, "end": {"row": 24, "column": 49, "index": 663}, "codeIndex": 1}},
+        "name": "WindowNotifySetShowInTaskBar",
         "request": {
-            "$ast": { "type": "MessageRequest", "codeRange": {"start": {"row": 24, "column": 58, "index": 672}, "end": {"row": 24, "column": 71, "index": 685}, "codeIndex": 1}},
+            "$ast": "MessageRequest",
             "type": {
-                "$ast": { "type": "PrimitiveType", "codeRange": {"start": {"row": 24, "column": 67, "index": 681}, "end": {"row": 24, "column": 70, "index": 684}, "codeIndex": 1}},
+                "$ast": "PrimitiveType",
                 "type": "Boolean"
             }
         },
         "response": null
     }, {
-        "$ast": { "type": "MessageDecl", "codeRange": {"start": {"row": 25, "column": 0, "index": 690}, "end": {"row": 25, "column": 73, "index": 763}, "codeIndex": 1}},
+        "$ast": "MessageDecl",
         "attributes": [{
-            "$ast": { "type": "Attribute", "codeRange": {"start": {"row": 25, "column": 0, "index": 690}, "end": {"row": 25, "column": 12, "index": 702}, "codeIndex": 1}},
-            "cppType": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
-            "name": { "value": "@DropRepeat", "codeRange": {"start": {"row": 25, "column": 1, "index": 691}, "end": {"row": 25, "column": 11, "index": 701}, "codeIndex": 1}}
+            "$ast": "Attribute",
+            "cppType": "",
+            "name": "@DropRepeat"
         }],
-        "name": { "value": "WindowNotifySetCustomFrameMode", "codeRange": {"start": {"row": 25, "column": 22, "index": 712}, "end": {"row": 25, "column": 51, "index": 741}, "codeIndex": 1}},
+        "name": "WindowNotifySetCustomFrameMode",
         "request": {
-            "$ast": { "type": "MessageRequest", "codeRange": {"start": {"row": 25, "column": 58, "index": 748}, "end": {"row": 25, "column": 71, "index": 761}, "codeIndex": 1}},
+            "$ast": "MessageRequest",
             "type": {
-                "$ast": { "type": "PrimitiveType", "codeRange": {"start": {"row": 25, "column": 67, "index": 757}, "end": {"row": 25, "column": 70, "index": 760}, "codeIndex": 1}},
+                "$ast": "PrimitiveType",
                 "type": "Boolean"
             }
         },
         "response": null
     }, {
-        "$ast": { "type": "MessageDecl", "codeRange": {"start": {"row": 26, "column": 0, "index": 766}, "end": {"row": 26, "column": 73, "index": 839}, "codeIndex": 1}},
+        "$ast": "MessageDecl",
         "attributes": [{
-            "$ast": { "type": "Attribute", "codeRange": {"start": {"row": 26, "column": 0, "index": 766}, "end": {"row": 26, "column": 12, "index": 778}, "codeIndex": 1}},
-            "cppType": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
-            "name": { "value": "@DropRepeat", "codeRange": {"start": {"row": 26, "column": 1, "index": 767}, "end": {"row": 26, "column": 11, "index": 777}, "codeIndex": 1}}
+            "$ast": "Attribute",
+            "cppType": "",
+            "name": "@DropRepeat"
         }],
-        "name": { "value": "WindowNotifySetMaximizedBox", "codeRange": {"start": {"row": 26, "column": 22, "index": 788}, "end": {"row": 26, "column": 48, "index": 814}, "codeIndex": 1}},
+        "name": "WindowNotifySetMaximizedBox",
         "request": {
-            "$ast": { "type": "MessageRequest", "codeRange": {"start": {"row": 26, "column": 58, "index": 824}, "end": {"row": 26, "column": 71, "index": 837}, "codeIndex": 1}},
+            "$ast": "MessageRequest",
             "type": {
-                "$ast": { "type": "PrimitiveType", "codeRange": {"start": {"row": 26, "column": 67, "index": 833}, "end": {"row": 26, "column": 70, "index": 836}, "codeIndex": 1}},
+                "$ast": "PrimitiveType",
                 "type": "Boolean"
             }
         },
         "response": null
     }, {
-        "$ast": { "type": "MessageDecl", "codeRange": {"start": {"row": 27, "column": 0, "index": 842}, "end": {"row": 27, "column": 73, "index": 915}, "codeIndex": 1}},
+        "$ast": "MessageDecl",
         "attributes": [{
-            "$ast": { "type": "Attribute", "codeRange": {"start": {"row": 27, "column": 0, "index": 842}, "end": {"row": 27, "column": 12, "index": 854}, "codeIndex": 1}},
-            "cppType": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
-            "name": { "value": "@DropRepeat", "codeRange": {"start": {"row": 27, "column": 1, "index": 843}, "end": {"row": 27, "column": 11, "index": 853}, "codeIndex": 1}}
+            "$ast": "Attribute",
+            "cppType": "",
+            "name": "@DropRepeat"
         }],
-        "name": { "value": "WindowNotifySetMinimizedBox", "codeRange": {"start": {"row": 27, "column": 22, "index": 864}, "end": {"row": 27, "column": 48, "index": 890}, "codeIndex": 1}},
+        "name": "WindowNotifySetMinimizedBox",
         "request": {
-            "$ast": { "type": "MessageRequest", "codeRange": {"start": {"row": 27, "column": 58, "index": 900}, "end": {"row": 27, "column": 71, "index": 913}, "codeIndex": 1}},
+            "$ast": "MessageRequest",
             "type": {
-                "$ast": { "type": "PrimitiveType", "codeRange": {"start": {"row": 27, "column": 67, "index": 909}, "end": {"row": 27, "column": 70, "index": 912}, "codeIndex": 1}},
+                "$ast": "PrimitiveType",
                 "type": "Boolean"
             }
         },
         "response": null
     }, {
-        "$ast": { "type": "MessageDecl", "codeRange": {"start": {"row": 28, "column": 0, "index": 918}, "end": {"row": 28, "column": 73, "index": 991}, "codeIndex": 1}},
+        "$ast": "MessageDecl",
         "attributes": [{
-            "$ast": { "type": "Attribute", "codeRange": {"start": {"row": 28, "column": 0, "index": 918}, "end": {"row": 28, "column": 12, "index": 930}, "codeIndex": 1}},
-            "cppType": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
-            "name": { "value": "@DropRepeat", "codeRange": {"start": {"row": 28, "column": 1, "index": 919}, "end": {"row": 28, "column": 11, "index": 929}, "codeIndex": 1}}
+            "$ast": "Attribute",
+            "cppType": "",
+            "name": "@DropRepeat"
         }],
-        "name": { "value": "WindowNotifySetBorder", "codeRange": {"start": {"row": 28, "column": 22, "index": 940}, "end": {"row": 28, "column": 42, "index": 960}, "codeIndex": 1}},
+        "name": "WindowNotifySetBorder",
         "request": {
-            "$ast": { "type": "MessageRequest", "codeRange": {"start": {"row": 28, "column": 58, "index": 976}, "end": {"row": 28, "column": 71, "index": 989}, "codeIndex": 1}},
+            "$ast": "MessageRequest",
             "type": {
-                "$ast": { "type": "PrimitiveType", "codeRange": {"start": {"row": 28, "column": 67, "index": 985}, "end": {"row": 28, "column": 70, "index": 988}, "codeIndex": 1}},
+                "$ast": "PrimitiveType",
                 "type": "Boolean"
             }
         },
         "response": null
     }, {
-        "$ast": { "type": "MessageDecl", "codeRange": {"start": {"row": 29, "column": 0, "index": 994}, "end": {"row": 29, "column": 73, "index": 1067}, "codeIndex": 1}},
+        "$ast": "MessageDecl",
         "attributes": [{
-            "$ast": { "type": "Attribute", "codeRange": {"start": {"row": 29, "column": 0, "index": 994}, "end": {"row": 29, "column": 12, "index": 1006}, "codeIndex": 1}},
-            "cppType": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
-            "name": { "value": "@DropRepeat", "codeRange": {"start": {"row": 29, "column": 1, "index": 995}, "end": {"row": 29, "column": 11, "index": 1005}, "codeIndex": 1}}
+            "$ast": "Attribute",
+            "cppType": "",
+            "name": "@DropRepeat"
         }],
-        "name": { "value": "WindowNotifySetSizeBox", "codeRange": {"start": {"row": 29, "column": 22, "index": 1016}, "end": {"row": 29, "column": 43, "index": 1037}, "codeIndex": 1}},
+        "name": "WindowNotifySetSizeBox",
         "request": {
-            "$ast": { "type": "MessageRequest", "codeRange": {"start": {"row": 29, "column": 58, "index": 1052}, "end": {"row": 29, "column": 71, "index": 1065}, "codeIndex": 1}},
+            "$ast": "MessageRequest",
             "type": {
-                "$ast": { "type": "PrimitiveType", "codeRange": {"start": {"row": 29, "column": 67, "index": 1061}, "end": {"row": 29, "column": 70, "index": 1064}, "codeIndex": 1}},
+                "$ast": "PrimitiveType",
                 "type": "Boolean"
             }
         },
         "response": null
     }, {
-        "$ast": { "type": "MessageDecl", "codeRange": {"start": {"row": 30, "column": 0, "index": 1070}, "end": {"row": 30, "column": 73, "index": 1143}, "codeIndex": 1}},
+        "$ast": "MessageDecl",
         "attributes": [{
-            "$ast": { "type": "Attribute", "codeRange": {"start": {"row": 30, "column": 0, "index": 1070}, "end": {"row": 30, "column": 12, "index": 1082}, "codeIndex": 1}},
-            "cppType": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
-            "name": { "value": "@DropRepeat", "codeRange": {"start": {"row": 30, "column": 1, "index": 1071}, "end": {"row": 30, "column": 11, "index": 1081}, "codeIndex": 1}}
+            "$ast": "Attribute",
+            "cppType": "",
+            "name": "@DropRepeat"
         }],
-        "name": { "value": "WindowNotifySetIconVisible", "codeRange": {"start": {"row": 30, "column": 22, "index": 1092}, "end": {"row": 30, "column": 47, "index": 1117}, "codeIndex": 1}},
+        "name": "WindowNotifySetIconVisible",
         "request": {
-            "$ast": { "type": "MessageRequest", "codeRange": {"start": {"row": 30, "column": 58, "index": 1128}, "end": {"row": 30, "column": 71, "index": 1141}, "codeIndex": 1}},
+            "$ast": "MessageRequest",
             "type": {
-                "$ast": { "type": "PrimitiveType", "codeRange": {"start": {"row": 30, "column": 67, "index": 1137}, "end": {"row": 30, "column": 70, "index": 1140}, "codeIndex": 1}},
+                "$ast": "PrimitiveType",
                 "type": "Boolean"
             }
         },
         "response": null
     }, {
-        "$ast": { "type": "MessageDecl", "codeRange": {"start": {"row": 31, "column": 0, "index": 1146}, "end": {"row": 31, "column": 73, "index": 1219}, "codeIndex": 1}},
+        "$ast": "MessageDecl",
         "attributes": [{
-            "$ast": { "type": "Attribute", "codeRange": {"start": {"row": 31, "column": 0, "index": 1146}, "end": {"row": 31, "column": 12, "index": 1158}, "codeIndex": 1}},
-            "cppType": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
-            "name": { "value": "@DropRepeat", "codeRange": {"start": {"row": 31, "column": 1, "index": 1147}, "end": {"row": 31, "column": 11, "index": 1157}, "codeIndex": 1}}
+            "$ast": "Attribute",
+            "cppType": "",
+            "name": "@DropRepeat"
         }],
-        "name": { "value": "WindowNotifySetTitleBar", "codeRange": {"start": {"row": 31, "column": 22, "index": 1168}, "end": {"row": 31, "column": 44, "index": 1190}, "codeIndex": 1}},
+        "name": "WindowNotifySetTitleBar",
         "request": {
-            "$ast": { "type": "MessageRequest", "codeRange": {"start": {"row": 31, "column": 58, "index": 1204}, "end": {"row": 31, "column": 71, "index": 1217}, "codeIndex": 1}},
+            "$ast": "MessageRequest",
             "type": {
-                "$ast": { "type": "PrimitiveType", "codeRange": {"start": {"row": 31, "column": 67, "index": 1213}, "end": {"row": 31, "column": 70, "index": 1216}, "codeIndex": 1}},
+                "$ast": "PrimitiveType",
                 "type": "Boolean"
             }
         },
         "response": null
     }, {
-        "$ast": { "type": "MessageDecl", "codeRange": {"start": {"row": 32, "column": 0, "index": 1222}, "end": {"row": 32, "column": 79, "index": 1301}, "codeIndex": 1}},
+        "$ast": "MessageDecl",
         "attributes": [{
-            "$ast": { "type": "Attribute", "codeRange": {"start": {"row": 32, "column": 0, "index": 1222}, "end": {"row": 32, "column": 12, "index": 1234}, "codeIndex": 1}},
-            "cppType": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
-            "name": { "value": "@DropRepeat", "codeRange": {"start": {"row": 32, "column": 1, "index": 1223}, "end": {"row": 32, "column": 11, "index": 1233}, "codeIndex": 1}}
+            "$ast": "Attribute",
+            "cppType": "",
+            "name": "@DropRepeat"
         }],
-        "name": { "value": "WindowNotifySetBounds", "codeRange": {"start": {"row": 32, "column": 22, "index": 1244}, "end": {"row": 32, "column": 42, "index": 1264}, "codeIndex": 1}},
+        "name": "WindowNotifySetBounds",
         "request": {
-            "$ast": { "type": "MessageRequest", "codeRange": {"start": {"row": 32, "column": 58, "index": 1280}, "end": {"row": 32, "column": 77, "index": 1299}, "codeIndex": 1}},
+            "$ast": "MessageRequest",
             "type": {
-                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 32, "column": 67, "index": 1289}, "end": {"row": 32, "column": 76, "index": 1298}, "codeIndex": 1}},
-                "name": { "value": "NativeRect", "codeRange": {"start": {"row": 32, "column": 67, "index": 1289}, "end": {"row": 32, "column": 76, "index": 1298}, "codeIndex": 1}}
+                "$ast": "ReferenceType",
+                "name": "NativeRect"
             }
         },
         "response": null
     }, {
-        "$ast": { "type": "MessageDecl", "codeRange": {"start": {"row": 33, "column": 0, "index": 1304}, "end": {"row": 33, "column": 79, "index": 1383}, "codeIndex": 1}},
+        "$ast": "MessageDecl",
         "attributes": [{
-            "$ast": { "type": "Attribute", "codeRange": {"start": {"row": 33, "column": 0, "index": 1304}, "end": {"row": 33, "column": 12, "index": 1316}, "codeIndex": 1}},
-            "cppType": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
-            "name": { "value": "@DropRepeat", "codeRange": {"start": {"row": 33, "column": 1, "index": 1305}, "end": {"row": 33, "column": 11, "index": 1315}, "codeIndex": 1}}
+            "$ast": "Attribute",
+            "cppType": "",
+            "name": "@DropRepeat"
         }],
-        "name": { "value": "WindowNotifySetClientSize", "codeRange": {"start": {"row": 33, "column": 22, "index": 1326}, "end": {"row": 33, "column": 46, "index": 1350}, "codeIndex": 1}},
+        "name": "WindowNotifySetClientSize",
         "request": {
-            "$ast": { "type": "MessageRequest", "codeRange": {"start": {"row": 33, "column": 58, "index": 1362}, "end": {"row": 33, "column": 77, "index": 1381}, "codeIndex": 1}},
+            "$ast": "MessageRequest",
             "type": {
-                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 33, "column": 67, "index": 1371}, "end": {"row": 33, "column": 76, "index": 1380}, "codeIndex": 1}},
-                "name": { "value": "NativeSize", "codeRange": {"start": {"row": 33, "column": 67, "index": 1371}, "end": {"row": 33, "column": 76, "index": 1380}, "codeIndex": 1}}
+                "$ast": "ReferenceType",
+                "name": "NativeSize"
             }
         },
         "response": null
     }, {
-        "$ast": { "type": "StructDecl", "codeRange": {"start": {"row": 35, "column": 0, "index": 1388}, "end": {"row": 39, "column": 0, "index": 1475}, "codeIndex": 1}},
+        "$ast": "StructDecl",
         "attributes": [],
-        "name": { "value": "WindowShowing", "codeRange": {"start": {"row": 35, "column": 7, "index": 1395}, "end": {"row": 35, "column": 19, "index": 1407}, "codeIndex": 1}},
+        "name": "WindowShowing",
         "members": [{
-            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 37, "column": 4, "index": 1417}, "end": {"row": 37, "column": 22, "index": 1435}, "codeIndex": 1}},
-            "name": { "value": "activate", "codeRange": {"start": {"row": 37, "column": 8, "index": 1421}, "end": {"row": 37, "column": 15, "index": 1428}, "codeIndex": 1}},
+            "$ast": "StructMember",
+            "name": "activate",
             "type": {
-                "$ast": { "type": "PrimitiveType", "codeRange": {"start": {"row": 37, "column": 18, "index": 1431}, "end": {"row": 37, "column": 21, "index": 1434}, "codeIndex": 1}},
+                "$ast": "PrimitiveType",
                 "type": "Boolean"
             }
         }, {
-            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 38, "column": 4, "index": 1442}, "end": {"row": 38, "column": 34, "index": 1472}, "codeIndex": 1}},
-            "name": { "value": "sizeState", "codeRange": {"start": {"row": 38, "column": 8, "index": 1446}, "end": {"row": 38, "column": 16, "index": 1454}, "codeIndex": 1}},
+            "$ast": "StructMember",
+            "name": "sizeState",
             "type": {
-                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 38, "column": 19, "index": 1457}, "end": {"row": 38, "column": 33, "index": 1471}, "codeIndex": 1}},
-                "name": { "value": "WindowSizeState", "codeRange": {"start": {"row": 38, "column": 19, "index": 1457}, "end": {"row": 38, "column": 33, "index": 1471}, "codeIndex": 1}}
+                "$ast": "ReferenceType",
+                "name": "WindowSizeState"
             }
         }]
     }, {
-        "$ast": { "type": "MessageDecl", "codeRange": {"start": {"row": 41, "column": 0, "index": 1480}, "end": {"row": 41, "column": 45, "index": 1525}, "codeIndex": 1}},
+        "$ast": "MessageDecl",
         "attributes": [{
-            "$ast": { "type": "Attribute", "codeRange": {"start": {"row": 41, "column": 0, "index": 1480}, "end": {"row": 41, "column": 12, "index": 1492}, "codeIndex": 1}},
-            "cppType": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
-            "name": { "value": "@DropRepeat", "codeRange": {"start": {"row": 41, "column": 1, "index": 1481}, "end": {"row": 41, "column": 11, "index": 1491}, "codeIndex": 1}}
+            "$ast": "Attribute",
+            "cppType": "",
+            "name": "@DropRepeat"
         }],
-        "name": { "value": "WindowNotifyActivate", "codeRange": {"start": {"row": 41, "column": 22, "index": 1502}, "end": {"row": 41, "column": 41, "index": 1521}, "codeIndex": 1}},
+        "name": "WindowNotifyActivate",
         "request": null,
         "response": null
     }, {
-        "$ast": { "type": "MessageDecl", "codeRange": {"start": {"row": 42, "column": 0, "index": 1528}, "end": {"row": 42, "column": 70, "index": 1598}, "codeIndex": 1}},
+        "$ast": "MessageDecl",
         "attributes": [{
-            "$ast": { "type": "Attribute", "codeRange": {"start": {"row": 42, "column": 0, "index": 1528}, "end": {"row": 42, "column": 12, "index": 1540}, "codeIndex": 1}},
-            "cppType": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
-            "name": { "value": "@DropRepeat", "codeRange": {"start": {"row": 42, "column": 1, "index": 1529}, "end": {"row": 42, "column": 11, "index": 1539}, "codeIndex": 1}}
+            "$ast": "Attribute",
+            "cppType": "",
+            "name": "@DropRepeat"
         }],
-        "name": { "value": "WindowNotifyShow", "codeRange": {"start": {"row": 42, "column": 22, "index": 1550}, "end": {"row": 42, "column": 37, "index": 1565}, "codeIndex": 1}},
+        "name": "WindowNotifyShow",
         "request": {
-            "$ast": { "type": "MessageRequest", "codeRange": {"start": {"row": 42, "column": 46, "index": 1574}, "end": {"row": 42, "column": 68, "index": 1596}, "codeIndex": 1}},
+            "$ast": "MessageRequest",
             "type": {
-                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 42, "column": 55, "index": 1583}, "end": {"row": 42, "column": 67, "index": 1595}, "codeIndex": 1}},
-                "name": { "value": "WindowShowing", "codeRange": {"start": {"row": 42, "column": 55, "index": 1583}, "end": {"row": 42, "column": 67, "index": 1595}, "codeIndex": 1}}
+                "$ast": "ReferenceType",
+                "name": "WindowShowing"
             }
         },
         "response": null
     }, {
-        "$ast": { "type": "EventDecl", "codeRange": {"start": {"row": 44, "column": 0, "index": 1603}, "end": {"row": 44, "column": 75, "index": 1678}, "codeIndex": 1}},
+        "$ast": "EventDecl",
         "attributes": [{
-            "$ast": { "type": "Attribute", "codeRange": {"start": {"row": 44, "column": 0, "index": 1603}, "end": {"row": 44, "column": 12, "index": 1615}, "codeIndex": 1}},
-            "cppType": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
-            "name": { "value": "@DropRepeat", "codeRange": {"start": {"row": 44, "column": 1, "index": 1604}, "end": {"row": 44, "column": 11, "index": 1614}, "codeIndex": 1}}
+            "$ast": "Attribute",
+            "cppType": "",
+            "name": "@DropRepeat"
         }],
-        "name": { "value": "WindowBoundsUpdated", "codeRange": {"start": {"row": 44, "column": 20, "index": 1623}, "end": {"row": 44, "column": 38, "index": 1641}, "codeIndex": 1}},
+        "name": "WindowBoundsUpdated",
         "request": {
-            "$ast": { "type": "EventRequest", "codeRange": {"start": {"row": 44, "column": 46, "index": 1649}, "end": {"row": 44, "column": 73, "index": 1676}, "codeIndex": 1}},
+            "$ast": "EventRequest",
             "type": {
-                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 44, "column": 55, "index": 1658}, "end": {"row": 44, "column": 72, "index": 1675}, "codeIndex": 1}},
-                "name": { "value": "WindowSizingConfig", "codeRange": {"start": {"row": 44, "column": 55, "index": 1658}, "end": {"row": 44, "column": 72, "index": 1675}, "codeIndex": 1}}
+                "$ast": "ReferenceType",
+                "name": "WindowSizingConfig"
             }
         }
     }, {
-        "$ast": { "type": "EventDecl", "codeRange": {"start": {"row": 45, "column": 0, "index": 1681}, "end": {"row": 45, "column": 61, "index": 1742}, "codeIndex": 1}},
+        "$ast": "EventDecl",
         "attributes": [{
-            "$ast": { "type": "Attribute", "codeRange": {"start": {"row": 45, "column": 0, "index": 1681}, "end": {"row": 45, "column": 12, "index": 1693}, "codeIndex": 1}},
-            "cppType": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
-            "name": { "value": "@DropRepeat", "codeRange": {"start": {"row": 45, "column": 1, "index": 1682}, "end": {"row": 45, "column": 11, "index": 1692}, "codeIndex": 1}}
+            "$ast": "Attribute",
+            "cppType": "",
+            "name": "@DropRepeat"
         }],
-        "name": { "value": "WindowActivatedUpdated", "codeRange": {"start": {"row": 45, "column": 20, "index": 1701}, "end": {"row": 45, "column": 41, "index": 1722}, "codeIndex": 1}},
+        "name": "WindowActivatedUpdated",
         "request": {
-            "$ast": { "type": "EventRequest", "codeRange": {"start": {"row": 45, "column": 46, "index": 1727}, "end": {"row": 45, "column": 59, "index": 1740}, "codeIndex": 1}},
+            "$ast": "EventRequest",
             "type": {
-                "$ast": { "type": "PrimitiveType", "codeRange": {"start": {"row": 45, "column": 55, "index": 1736}, "end": {"row": 45, "column": 58, "index": 1739}, "codeIndex": 1}},
+                "$ast": "PrimitiveType",
                 "type": "Boolean"
             }
         }

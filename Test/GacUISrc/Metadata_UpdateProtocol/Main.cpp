@@ -91,7 +91,10 @@ int main(int argc, char* argv[])
 		FilePath(GetRemoteProtocolPath()) / L"Metadata" / L"Protocols.json",
 		GenerateToStream([&](StreamWriter& writer)
 		{
-			json_visitor::AstVisitor(writer).Print(mergedSchema.Obj());
+			json_visitor::AstVisitor visitor(writer);
+			visitor.printTokenCodeRange = false;
+			visitor.printAstCodeRange = false;
+			visitor.Print(mergedSchema.Obj());
 		}));
 
 	GuiRpCppConfig config;
