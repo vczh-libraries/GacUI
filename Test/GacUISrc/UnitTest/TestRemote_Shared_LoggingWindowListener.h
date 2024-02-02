@@ -13,7 +13,11 @@ namespace remote_protocol_tests
 	void AssertEventLogs(List<WString>& eventLogs, TArgs&& ...args)
 	{
 		const wchar_t* expected[] = { args... };
-		TEST_ASSERT(CompareEnumerable(eventLogs, From(expected).Select(WString::Unmanaged)) == 0);
+		TEST_ASSERT(eventLogs.Count() == sizeof...(args));
+		for (vint i = 0; i < eventLogs.Count(); i++)
+		{
+			TEST_ASSERT(eventLogs[i] == expected[i]);
+		}
 		eventLogs.Clear();
 	}
 

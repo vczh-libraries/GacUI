@@ -2,7 +2,6 @@
 
 TEST_FILE
 {
-
 #define WITH(KEYS) ) + WString::Unmanaged(KEYS) + WString::Unmanaged(
 
 #define ASSERT_FOCUS(KEYS)\
