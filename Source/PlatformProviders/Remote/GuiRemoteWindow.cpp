@@ -545,7 +545,6 @@ GuiRemoteWindow (INativeWindow)
 
 	void GuiRemoteWindow::SupressAlt()
 	{
-		CHECK_FAIL(L"Not Implemented!");
 	}
 
 	bool GuiRemoteWindow::InstallListener(INativeWindowListener* listener)

@@ -36,10 +36,14 @@ namespace remote_graphics_host_tests
 		}
 	}
 
-	GuiButton* CreateButton(List<GuiControl*>& altControls, GuiWindow* controlHost, const wchar_t* alt)
+	GuiButton* CreateButton(List<WString>& eventLogs, List<GuiControl*>& altControls, GuiWindow* controlHost, const wchar_t* alt)
 	{
 		auto control = new GuiButton(theme::ThemeName::Button);
 		control->SetAlt(alt);
+		control->Clicked.AttachLambda([&eventLogs, alt](GuiGraphicsComposition*, GuiEventArgs&)
+		{
+			eventLogs.Add(WString::Unmanaged(alt));
+		});
 		controlHost->AddChild(control);
 		altControls.Add(control);
 		return control;
@@ -49,6 +53,8 @@ using namespace remote_graphics_host_tests;
 
 TEST_FILE
 {
+#define CREATE_BUTTON(ALT) CreateButton(eventLogs, altControls, controlHost, ALT)
+
 	TEST_CATEGORY(L"Alt single level and escape / activate")
 	{
 		GraphicsHostProtocol protocol;
@@ -56,16 +62,49 @@ TEST_FILE
 		List<GuiControl*> altControls;
 		GuiWindow* controlHost = nullptr;
 
+		auto pressKey = [&](VKEY key)
+		{
+			protocol.events->OnIOKeyDown(MakeKeyInfo(false, false, false, key));
+			protocol.events->OnIOKeyUp(MakeKeyInfo(false, false, false, key));
+		};
+
 		protocol.OnNextFrame([&]()
 		{
-			CreateButton(altControls, controlHost, L"A");
-			CreateButton(altControls, controlHost, L"B");
-			CreateButton(altControls, controlHost, L"C");
+			CREATE_BUTTON(L"A");
+			CREATE_BUTTON(L"B");
+			CREATE_BUTTON(L"C");
 			AssertAltLabels(altControls, nullptr, nullptr, nullptr);
 		});
 
 		protocol.OnNextFrame([&]()
 		{
+			pressKey(VKEY::KEY_MENU);
+			AssertAltLabels(altControls, L"[A]", L"[B]", L"[C]");
+			pressKey(VKEY::KEY_BACK);
+			AssertAltLabels(altControls, L"[A]", L"[B]", L"[C]");
+			pressKey(VKEY::KEY_ESCAPE);
+			AssertAltLabels(altControls, nullptr, nullptr, nullptr);
+			AssertEventLogs(eventLogs);
+
+			pressKey(VKEY::KEY_MENU);
+			AssertAltLabels(altControls, L"[A]", L"[B]", L"[C]");
+			pressKey(VKEY::KEY_A);
+			AssertAltLabels(altControls, nullptr, nullptr, nullptr);
+			AssertEventLogs(eventLogs, L"A");
+
+			pressKey(VKEY::KEY_MENU);
+			AssertAltLabels(altControls, L"[A]", L"[B]", L"[C]");
+			pressKey(VKEY::KEY_B);
+			AssertAltLabels(altControls, nullptr, nullptr, nullptr);
+			AssertEventLogs(eventLogs, L"B");
+
+			pressKey(VKEY::KEY_MENU);
+			AssertAltLabels(altControls, L"[A]", L"[B]", L"[C]");
+			pressKey(VKEY::KEY_D);
+			AssertAltLabels(altControls, L"[A]", L"[B]", L"[C]");
+			pressKey(VKEY::KEY_C);
+			AssertAltLabels(altControls, nullptr, nullptr, nullptr);
+			AssertEventLogs(eventLogs, L"C");
 		});
 
 		protocol.OnNextFrame([&]()
@@ -78,4 +117,6 @@ TEST_FILE
 		SetupRemoteNativeController(&batchedProtocol);
 		SetGuiMainProxy({});
 	});
+
+#undef CREATE_BUTTON
 }
