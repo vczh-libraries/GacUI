@@ -500,7 +500,9 @@ TEST_FILE
 				L"y->host.bounds.Move(L:70,70,0)"
 				);
 
+			TEST_ASSERT(GetCurrentController()->WindowService()->GetMainWindow()->IsCapturing() == true);
 			SafeDeleteComposition(x);
+			TEST_ASSERT(GetCurrentController()->WindowService()->GetMainWindow()->IsCapturing() == false);
 			AssertEventLogs(eventLogs);
 
 			protocol.events->OnIOButtonDoubleClick(MakeMouseInfoWithButton(remoteprotocol::IOMouseButton::Left, true, false, false, 70, 70, 0));
@@ -519,24 +521,22 @@ TEST_FILE
 				L"host.bounds.Move(L:10,10,0)"
 				);
 
-			protocol.events->OnIOButtonDoubleClick(MakeMouseInfoWithButton(remoteprotocol::IOMouseButton::Left, true, false, false, 70, 70, 0));
+			protocol.events->OnIOButtonDoubleClick(MakeMouseInfoWithButton(remoteprotocol::IOMouseButton::Left, true, false, false, 10, 10, 0));
 			AssertEventLogs(
 				eventLogs,
 				L"host.bounds.LDown(L:10,10,0)",
 				L"host.bounds.LDbClick(L:10,10,0)"
 				);
 
-			protocol.events->OnIOButtonUp(MakeMouseInfoWithButton(remoteprotocol::IOMouseButton::Left, false, false, false, 70, 70, 0));
+			protocol.events->OnIOButtonUp(MakeMouseInfoWithButton(remoteprotocol::IOMouseButton::Left, false, false, false, 10, 10, 0));
 			AssertEventLogs(
 				eventLogs,
-				L"z.LUp(:10,10,0)",
-				L"z->host.bounds.LUp(:70,70,0)"
+				L"host.bounds.LUp(:10,10,0)"
 				);
 
 			protocol.events->OnIOMouseLeaved();
 			AssertEventLogs(
 				eventLogs,
-				L"z.Leave()",
 				L"host.bounds.Leave()"
 				);
 		});

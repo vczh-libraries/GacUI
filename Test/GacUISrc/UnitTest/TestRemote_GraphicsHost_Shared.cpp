@@ -67,7 +67,10 @@ AttachAndLogEvents
 		event.AttachLambda([=, &event, &eventLogs](GuiGraphicsComposition* sender, GuiMouseEventArgs& arguments)
 		{
 			TEST_ASSERT(eventOwner == sender);
-			TEST_ASSERT(arguments.compositionSource == arguments.eventSource);
+			TEST_ASSERT(
+				arguments.compositionSource == arguments.eventSource ||
+				dynamic_cast<GuiWindow*>(arguments.eventSource->GetAssociatedControl())
+				);
 			eventLogs.Add(
 				GetRaiserName(sender, arguments)
 				+ WString::Unmanaged(L".") + WString::Unmanaged(eventName) + WString::Unmanaged(L"(")

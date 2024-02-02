@@ -372,7 +372,8 @@ GuiGraphicsHost
 
 			void GuiGraphicsHost::LeftButtonDoubleClick(const NativeWindowMouseInfo& info)
 			{
-				LeftButtonDown(info);
+				altActionManager->CloseAltHost();
+				OnMouseInput(info, false, false, &GuiGraphicsEventReceiver::leftButtonDown);
 				OnMouseInput(info, false, false, &GuiGraphicsEventReceiver::leftButtonDoubleClick);
 			}
 
@@ -389,7 +390,8 @@ GuiGraphicsHost
 
 			void GuiGraphicsHost::RightButtonDoubleClick(const NativeWindowMouseInfo& info)
 			{
-				RightButtonDown(info);
+				altActionManager->CloseAltHost();
+				OnMouseInput(info, false, false, &GuiGraphicsEventReceiver::rightButtonDown);
 				OnMouseInput(info, false, false, &GuiGraphicsEventReceiver::rightButtonDoubleClick);
 			}
 
@@ -406,7 +408,8 @@ GuiGraphicsHost
 
 			void GuiGraphicsHost::MiddleButtonDoubleClick(const NativeWindowMouseInfo& info)
 			{
-				MiddleButtonDown(info);
+				altActionManager->CloseAltHost();
+				OnMouseInput(info, false, false, &GuiGraphicsEventReceiver::middleButtonDown);
 				OnMouseInput(info, false, false, &GuiGraphicsEventReceiver::middleButtonDoubleClick);
 			}
 
