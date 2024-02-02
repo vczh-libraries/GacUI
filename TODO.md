@@ -18,55 +18,52 @@
 
 ## Progressing (before release)
 
-- Unit Test Framework
-  - UnitTest.vcxproj
-    - Test `GuiVirtualRepeatCompositionBase::GetAdoptedSize`.
-    - Test `GuiVirtualRepeatCompositionBase::GetTotalSize` with `UseMinimumTotalSize`.
-    - Complete `TestCompositions_Bounds.cpp`.
-    - Test `GuiGraphicsHost`.
-    - Test controls with a unit test only platform provider running in hosted mode
-      - Each character takes exactly `FontSize x FontSize`
-      - Deal with `\r` and `\n` when multiline is enabled
-    - Test against more code as many as possible
-  - A general remoting `INativeController` implementation.
-    - Add mouse capturing messages. Test state transition when connected/disconnected.
-    - Add hittest messages, or implement it with SyncDom.
-    - Update `GuiRemoteController::GetKey` to match the windows implementation.
-    - It sends batched requests to a receiver and wait for respond
-      - Implement `[@Drop(Repeat|Consecutive)]` after unit test against remoting `INativeWindow` is done.
-        - Implement `[@DropRepeat]` message in `GuiRemoteMessageFilter` and redirect to another `IGuiRemoteProtocol`.
-        - Implement `[@Drop(Repeat|Consecutive)]` events in `GuiRemoteEventFilter` and redirect to another `IGuiRemoteEvents`.
-        - Change `GuiRemoteMessages` to take `IGuiRemoteProtocol` instead of `GuiRemoteController`.
-        - Apply `GuiRemoteMessageFilter` inside `GuiRemoteMessages`.
-        - Apply `GuiRemoteEventFilter` inside `GuiRemoteController` and redirect to `GuiRemoteEvents`.
-        - Implement `GuiRemote(Message|Event)Verifier` to verify dropped messages/events not be called.
-        - In debug mode, apply `GuiRemote(Message|Event)Verifier` inside `GuiRemoteMessages`.
-        - Remote `[@Drop(Repeat|Consecutive)]` in `BatchedProtocol`.
-    - SyncDom architecture that streams layout/element changes, requiring Hosted for the first version.
-      - An implementation of remoting.
-      - Requires hosted mode.
-      - First version: changes only sent before `IGuiGraphicsRenderer::GetMinSize`.
-    - Metadata from requests are needed from the beginning for codegen, metadata will be included in release.
-  - Implement basic control unit test based on streaming
-    - Do not support complex text elements yet.
-  - Add above functionality to `GacUI.UnitTest.cpp`, `GacUI.UnitTest.h`, `GacUI.UnitTest.Reflection ...`
+- A general remoting `INativeController` implementation.
+  - Add mouse capturing messages. Test state transition when connected/disconnected.
+  - Add hittest messages, or implement it with SyncDom.
+  - Add window resizing constraint messages.
+  - Update `GuiRemoteController::GetKey` to match the windows implementation.
+  - It sends batched requests to a receiver and wait for respond
+    - Implement `[@Drop(Repeat|Consecutive)]` after unit test against remoting `INativeWindow` is done.
+      - Implement `[@DropRepeat]` message in `GuiRemoteMessageFilter` and redirect to another `IGuiRemoteProtocol`.
+      - Implement `[@Drop(Repeat|Consecutive)]` events in `GuiRemoteEventFilter` and redirect to another `IGuiRemoteEvents`.
+      - Change `GuiRemoteMessages` to take `IGuiRemoteProtocol` instead of `GuiRemoteController`.
+      - Apply `GuiRemoteMessageFilter` inside `GuiRemoteMessages`.
+      - Apply `GuiRemoteEventFilter` inside `GuiRemoteController` and redirect to `GuiRemoteEvents`.
+      - Implement `GuiRemote(Message|Event)Verifier` to verify dropped messages/events not be called.
+      - In debug mode, apply `GuiRemote(Message|Event)Verifier` inside `GuiRemoteMessages`.
+      - Remote `[@Drop(Repeat|Consecutive)]` in `BatchedProtocol`.
+- SyncDom architecture that streams layout/element changes, requiring Hosted for the first version.
+  - An implementation of remoting.
+  - Requires hosted mode.
+  - First version: changes only sent before `IGuiGraphicsRenderer::GetMinSize`.
+- Implement basic control unit test based on streaming
+  - Each character takes exactly `FontSize x FontSize`
+  - Deal with `\r` and `\n` when multiline is enabled
+  - Do not support complex text elements yet.
+  - Metadata from requests are needed from the beginning for codegen, metadata will be included in release.
+    - Save image metadata (width, height, type, etc) to binary resource
+    - For `INativeImageService::CreateImage*` functions it sends binary data to the receiver and wait for respond of metadata.
+    - Unit test only `<PsuedoImage/>` to specify only the size in resource.
+- UnitTest.vcxproj
+  - Test `GuiVirtualRepeatCompositionBase::GetAdoptedSize`.
+  - Test `GuiVirtualRepeatCompositionBase::GetTotalSize` with `UseMinimumTotalSize`.
+  - Complete `TestCompositions_Bounds.cpp`.
+- Add above functionality to `GacUI.UnitTest.cpp`, `GacUI.UnitTest.h`, `GacUI.UnitTest.Reflection ...`
+- GacUI Binary Resource (can't move to next release)
+  - Upgrade GacUI XML Resource to 1.3, force on all instead of only depended or depending resource.
+  - Require binary pattern "[GMR-1.3]" at the beginning of the binary resource.
 
 ## Progressing (next release)
 
-- Unit Test Framework
-  - Implement basic control unit test based on streaming
-    - Support complex text elements.
-    - A viewer to view unit test results logged from SyncDom and other stuff after each time when layout stops.
-    - Save image metadata (width, height, type, etc) to binary resource
-      - For `INativeImageService::CreateImage*` functions it sends binary data to the receiver and wait for respond of metadata.
-      - Unit test only `<PsuedoImage/>` to specify only the size in resource.
-      - Upgrade GacUI XML Resource to 1.3, force on all instead of only depended or depending resource.
-      - Require binary pattern "[GMR-1.3]" at the beginning of the binary resource.
-    - In release repo add more tools that just call `GacUI.UnitTest.cpp`:
-      - Load x86 bin + workflow script and execute.
-      - Load x64 bin + workflow script and execute.
-      - Render unit test results, especially each frame of intermediate rendering result.
-        - Can navigate to workflow script.
+- Implement basic control unit test based on streaming (using DarkSkin)
+  - Support complex text elements.
+  - A viewer to view unit test results logged from SyncDom and other stuff after each time when layout stops.
+  - In release repo add more tools that just call `GacUI.UnitTest.cpp`:
+    - Load x86 bin + workflow script and execute.
+    - Load x64 bin + workflow script and execute.
+    - Render unit test results, especially each frame of intermediate rendering result.
+      - Can navigate to workflow script.
 - All control unit test.
 - Document for unit test framework.
 - Document for remote protocol and SyncDom.
@@ -84,6 +81,8 @@
     - GDI+ implements in C#
     - D2D implements in C++
 - Document for SyncObj
+- Rewrite `GacBuild.ps1` and `GacClear.ps1` in C++, but still keep them just doing redirection for backward compatibility.
+- Get rid of `Deploy.bat` in `GacGen.ps1` and `GacGen.exe`
 
 ## Progressing (next release)
 
@@ -93,24 +92,15 @@
 - Enlarging window slower than shrinking.
 - https://github.com/vczh-libraries/Vlpp/issues/9
 
-## Progressing (low priority)
+## GacUI Resource Compiler (low priority)
 
-- Rewrite `GacBuild.ps1` and `GacClear.ps1` in C++, but still keep them just doing redirection for backward compatibility.
-- Get rid of `Deploy.bat` in `GacGen.ps1` and `GacGen.exe`
-- DarkSkin Color Theme.
-  - Create a `DarkSkinPalette` class with a static getter method to retrive default colors.
-    - Update all `Style.xml` colors to use `DarkSkinPalette`.
-  - Add a static setter to `DarkSkinPalette`.
-    - A window can be called to update all its controls' and components' template.
-    - The above function will be called inside the setter.
 - Consider `-ani` binding, create an animation controller object that change the binded property, with predefined interpolation and other stuff.
   - All types that can do interpolation are value types, consider following formats:
     - "NAME:initial value"
     - "NAME(initial value in expression)"
     - Need to be consistent with animation object
   - Consider multiple `-ani` batch control, state configuration and transition, story board, connection to animation coroutine, etc.
-- Facade
-  - If `<XFacade>` or `<x:XFacade>` is an accessible and default constructible object, then `<X>` or `<x:X>` triggers a facade.
+- `<eval Eval="expression"/>` tags.
   - A facade is a class with following methods:
     - **AddChild**: Accept a child facade or a child object.
     - **ApplyTo**: Accept a parent object, which is not a facade.
@@ -118,9 +108,17 @@
   - A facade could have properties but only accept assignment or `-eval` binding.
   - A facade could have an optional **InstanceFacadeVerifier** executed on GacGen compile time.
   - Built-in Layout and Form facade.
+- Facade
+  - If `<XFacade>` or `<x:XFacade>` is an accessible and default constructible object, then `<X>` or `<x:X>` triggers a facade.
 
 ## Optional
 
+- DarkSkin Color Theme.
+  - Create a `DarkSkinPalette` class with a static getter method to retrive default colors.
+    - Update all `Style.xml` colors to use `DarkSkinPalette`.
+  - Add a static setter to `DarkSkinPalette`.
+    - A window can be called to update all its controls' and components' template.
+    - The above function will be called inside the setter.
 - `INativeWindow` add callback for state changing.
   - Including `MaximizedBox`, `MinimizedBox`, `Border`, `SizeBox`, `IconVisible`, `TitleBar`, `Icon`, `Title`, `SizeState`.
   - In `GuiControlHost` or `GuiWindow`, setting border or state doesn't update the control template, it is updated in that callback.
@@ -139,6 +137,8 @@
 - Add `MoveToScreenCenterAfterLayout` as what is done in `FakeDialogServiceBase::ShowModalDialogAndDelete`.
 - New default control templates with animation, written in XML generated C++ code.
 - Use the embedded data codegen / compress / decompress functions from `VlppParser2` to replace one in `GacUI`.
+- Use collection interfaces on function signatures.
+  - Only if `Vlpp` decides to add collection interfaces.
 
 ## OS Provider Features
 
@@ -149,7 +149,8 @@
 - Windows
   - `INativeImage::SaveToStream` handle correctly for git format. It is possible that LoadFromStream need to process diff between git raw frames.
 - UI Automation.
-- Test Automation on Tutorials.
+- Test Automation.
+  - Standard test for OS providers, may need a test purpose automation service to do https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-sendinput
 
 ## Control Features
 
@@ -165,19 +166,13 @@
     - Or add such feature to `GuiBindableDataGrid` or a new class `GuiBindableTreeGrid`.
       - Try to reuse code from treeview.
 - Chart control.
-- Code editor (need VlppParser2)
+- Upgraded Code editor (need VlppParser2)
 - Dock container.
   - Use drag and drop to perform docking
   - A small framework for implementing dock guiding UI
   - A predefined dockable tool window for users that are fine with the default behavior about how to transfer content to the dock container
   - A "binary tree layout/control" for implementing VS-like dock container
 - Touch support.
-
-## GacUI Resource Compiler
-
-- `<eval Eval="expression"/>` tags.
-- In the final pass, only workflow scripts are printed.
-  - Use WorkflowCompiler.exe to do codegen externally.
 
 ## Graphics
 
@@ -196,8 +191,8 @@
   - Unit Test (Hosted)
   - Windows
     - GDI (**Hosted**, SyncDom)
-    - Direct2d (Hosted, SyncDom)
-    - UWP (**Hosted** + SyncDom)
+    - Direct2d (**Hosted**, SyncDom)
+    - UWP (Hosted + SyncDom)
   - Linux
     - gGac repo: improve development process for release
   - macOS
@@ -206,8 +201,8 @@
     - Canvas?
     - DOM?
   - CLI (optional, needs dedicated skin)
-    - Command-line/Powershell in Windows (Hosted)
-    - Ncurses on Ubuntu (Hosted)
+    - Command-line/Powershell in Windows (Hosted, SyncDom)
+    - Ncurses on Ubuntu (Hosted, SyncDom)
 - Port GacUI to other languages:
   - Applications written in other language can:
     - Implement view model (SyncObj).
@@ -219,6 +214,8 @@
 
 ## GacUI Resource Compiler
 
+- In the final pass, only workflow scripts are printed.
+  - Use WorkflowCompiler.exe to do codegen externally.
 - Remove all loader implementation, enabling custom control types from developers.
   - Try not to include `GacUI.cpp` if `VCZH_DEBUG_METAONLY_REFLECTION` is on.
   - `mynamespaces::VirtualClasses_X` for adding virtual classes deriving from `mynamespaces::X`.
@@ -234,8 +231,3 @@
 ## New C++/Doc Compiler based on VlppParser2
 
 ## GacStudio
-
-## MISC
-
-- Use collection interfaces on function signatures.
-  - Only if `Vlpp` decides to add collection interfaces.
