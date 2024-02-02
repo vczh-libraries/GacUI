@@ -36,6 +36,35 @@ namespace remote_graphics_host_tests
 		}
 	}
 
+	class AltContainer : public GuiCustomControl, protected GuiAltActionHostBase
+	{
+	protected:
+
+		IGuiAltActionHost* GetActivatingAltHost() override
+		{
+			return this;
+		}
+
+	public:
+
+		AltContainer()
+			: GuiCustomControl(theme::ThemeName::CustomControl)
+		{
+			SetFocusableComposition(boundsComposition);
+			SetAltComposition(boundsComposition);
+			SetAltControl(this, false);
+		}
+	};
+
+	AltContainer* CreateContainer(List<WString>& eventLogs, List<GuiControl*>& altControls, GuiWindow* controlHost, const wchar_t* alt, const wchar_t* name)
+	{
+		auto control = new AltContainer;
+		control->SetAlt(alt);
+		controlHost->AddChild(control);
+		altControls.Add(control);
+		return control;
+	}
+
 	GuiButton* CreateButton(List<WString>& eventLogs, List<GuiControl*>& altControls, GuiWindow* controlHost, const wchar_t* alt, const wchar_t* name)
 	{
 		auto control = new GuiButton(theme::ThemeName::Button);
@@ -62,6 +91,7 @@ using namespace remote_graphics_host_tests;
 
 TEST_FILE
 {
+#define CREATE_CONTAINER(ALT, NAME) CreateContainer(eventLogs, altControls, controlHost, ALT, NAME)
 #define CREATE_BUTTON(ALT, NAME) CreateButton(eventLogs, altControls, controlHost, ALT, NAME)
 
 	TEST_CATEGORY(L"Alt single level and escape / activate")
@@ -272,7 +302,7 @@ TEST_FILE
 
 		protocol.OnNextFrame([&]()
 		{
-			auto a = CREATE_BUTTON(L"A", L"A");
+			auto a = CREATE_CONTAINER(L"A", L"A");
 			auto b = CREATE_BUTTON(L"B", L"B");
 			auto c = CREATE_BUTTON(L"C", L"C");
 			Contain(a, b);
@@ -295,6 +325,8 @@ TEST_FILE
 			pressKey(VKEY::KEY_A);
 			AssertAltLabels(altControls, nullptr, L"[B]", L"[C]");
 			pressKey(VKEY::KEY_ESCAPE);
+			AssertAltLabels(altControls, L"[A]", nullptr, nullptr);
+			pressKey(VKEY::KEY_ESCAPE);
 			AssertAltLabels(altControls, nullptr, nullptr, nullptr);
 			AssertEventLogs(eventLogs);
 
@@ -303,8 +335,10 @@ TEST_FILE
 			pressKey(VKEY::KEY_A);
 			AssertAltLabels(altControls, nullptr, L"[B]", L"[C]");
 			pressKey(VKEY::KEY_BACK);
-			AssertAltLabels(altControls, L"[A]", nullptr, nullptr);
+			AssertAltLabels(altControls, nullptr, L"[B]", L"[C]");
 			pressKey(VKEY::KEY_BACK);
+			AssertAltLabels(altControls, nullptr, L"[B]", L"[C]");
+			pressKey(VKEY::KEY_ESCAPE);
 			AssertAltLabels(altControls, L"[A]", nullptr, nullptr);
 			pressKey(VKEY::KEY_B);
 			AssertAltLabels(altControls, L"[A]", nullptr, nullptr);
@@ -351,4 +385,5 @@ TEST_FILE
 	});
 
 #undef CREATE_BUTTON
+#undef CREATE_CONTAINER
 }

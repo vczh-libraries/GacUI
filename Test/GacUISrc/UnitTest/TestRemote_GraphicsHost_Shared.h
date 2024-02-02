@@ -51,6 +51,15 @@ namespace remote_graphics_host_tests
 				return ct;
 			};
 
+			CustomControl = [](auto)
+			{
+				auto ct = new templates::GuiControlTemplate;
+				ct->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
+				ct->SetContainerComposition(ct);
+				ct->SetFocusableComposition(ct);
+				return ct;
+			};
+
 			ShortcutKey = [](auto)
 			{
 				auto ct = new templates::GuiLabelTemplate;
