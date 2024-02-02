@@ -37,8 +37,7 @@ TEST_FILE
 	});
 
 	// TODO:
-	//   Shift+Tab
-	//   [ALT], assert label texts, on buttons, tabs and menus
-	//   Locale/Global shortcut Key
+	//   [ALT]/[ESC]/[BACKSPACE], assert label texts, on buttons, tabs and menus
+	//   Locale/Global shortcut Key, implement help functions to get key names for all platforms
 	//   Other events
 }
