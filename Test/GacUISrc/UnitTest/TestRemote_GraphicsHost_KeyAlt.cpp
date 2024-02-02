@@ -374,6 +374,62 @@ TEST_FILE
 
 	TEST_CATEGORY(L"Alt multiple level with conflict and cancel")
 	{
+		GraphicsHostProtocol protocol;
+		List<WString> eventLogs;
+		List<GuiControl*> altControls;
+		GuiWindow* controlHost = nullptr;
+
+		auto pressKey = [&](VKEY key)
+		{
+			protocol.events->OnIOKeyDown(MakeKeyInfo(false, false, false, key));
+			protocol.events->OnIOKeyUp(MakeKeyInfo(false, false, false, key));
+		};
+
+		protocol.OnNextFrame([&]()
+		{
+			auto a = CREATE_CONTAINER(L"A", L"A");
+			auto b = CREATE_BUTTON(L"A", L"B");
+			auto c = CREATE_BUTTON(L"A", L"C");
+			auto d = CREATE_BUTTON(L"B", L"D");
+			Contain(a, b);
+			Contain(a, c);
+			AssertAltLabels(altControls, nullptr, nullptr, nullptr, nullptr);
+		});
+
+		protocol.OnNextFrame([&]()
+		{
+			pressKey(VKEY::KEY_MENU);
+			AssertAltLabels(altControls, L"[A]", nullptr, nullptr, L"[B]");
+			pressKey(VKEY::KEY_ESCAPE);
+			AssertAltLabels(altControls, nullptr, nullptr, nullptr, nullptr);
+			AssertEventLogs(eventLogs);
+
+			pressKey(VKEY::KEY_MENU);
+			AssertAltLabels(altControls, L"[A]", nullptr, nullptr, L"[B]");
+			pressKey(VKEY::KEY_A);
+			AssertAltLabels(altControls, nullptr, L"[A]0", L"[A]1", nullptr);
+			pressKey(VKEY::KEY_ESCAPE);
+			AssertAltLabels(altControls, L"[A]", nullptr, nullptr, L"[B]");
+			pressKey(VKEY::KEY_ESCAPE);
+			AssertAltLabels(altControls, nullptr, nullptr, nullptr, nullptr);
+			AssertEventLogs(eventLogs);
+
+			pressKey(VKEY::KEY_MENU);
+			AssertAltLabels(altControls, L"[A]", nullptr, nullptr, L"[B]");
+			pressKey(VKEY::KEY_B);
+			AssertAltLabels(altControls, nullptr, nullptr, nullptr, nullptr);
+			AssertEventLogs(eventLogs, L"D");
+		});
+
+		protocol.OnNextFrame([&]()
+		{
+			controlHost->Hide();
+		});
+
+		SetGuiMainProxy(MakeGuiMain(protocol, eventLogs, controlHost));
+		BatchedProtocol batchedProtocol(&protocol);
+		SetupRemoteNativeController(&batchedProtocol);
+		SetGuiMainProxy({});
 	});
 
 	TEST_CATEGORY(L"Alt multiple level with conflict and going back")
