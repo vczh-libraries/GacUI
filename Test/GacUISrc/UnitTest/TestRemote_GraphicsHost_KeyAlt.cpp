@@ -48,6 +48,15 @@ namespace remote_graphics_host_tests
 		altControls.Add(control);
 		return control;
 	}
+
+	void Contain(GuiControl* container, GuiControl* child)
+	{
+		if (auto parent = child->GetBoundsComposition()->GetParent())
+		{
+			parent->RemoveChild(child->GetBoundsComposition());
+		}
+		container->AddChild(child);
+	}
 }
 using namespace remote_graphics_host_tests;
 
@@ -182,6 +191,138 @@ TEST_FILE
 			pressKey(VKEY::KEY_MENU);
 			AssertAltLabels(altControls, L"[A]0", L"[A]1", L"[B]");
 			pressKey(VKEY::KEY_B);
+			AssertAltLabels(altControls, nullptr, nullptr, nullptr);
+			AssertEventLogs(eventLogs, L"C");
+		});
+
+		protocol.OnNextFrame([&]()
+		{
+			controlHost->Hide();
+		});
+
+		SetGuiMainProxy(MakeGuiMain(protocol, eventLogs, controlHost));
+		BatchedProtocol batchedProtocol(&protocol);
+		SetupRemoteNativeController(&batchedProtocol);
+		SetGuiMainProxy({});
+	});
+
+	TEST_CATEGORY(L"Alt fake multiple level and escape / activate")
+	{
+		GraphicsHostProtocol protocol;
+		List<WString> eventLogs;
+		List<GuiControl*> altControls;
+		GuiWindow* controlHost = nullptr;
+
+		auto pressKey = [&](VKEY key)
+		{
+			protocol.events->OnIOKeyDown(MakeKeyInfo(false, false, false, key));
+			protocol.events->OnIOKeyUp(MakeKeyInfo(false, false, false, key));
+		};
+
+		protocol.OnNextFrame([&]()
+		{
+			auto a = CREATE_BUTTON(L"A", L"A");
+			auto b = CREATE_BUTTON(L"B", L"B");
+			auto c = CREATE_BUTTON(L"C", L"C");
+			Contain(a, b);
+			Contain(a, c);
+			AssertAltLabels(altControls, nullptr, nullptr, nullptr);
+		});
+
+		protocol.OnNextFrame([&]()
+		{
+			pressKey(VKEY::KEY_MENU);
+			AssertAltLabels(altControls, L"[A]", nullptr, nullptr);
+			pressKey(VKEY::KEY_BACK);
+			AssertAltLabels(altControls, L"[A]", nullptr, nullptr);
+			pressKey(VKEY::KEY_ESCAPE);
+			AssertAltLabels(altControls, nullptr, nullptr, nullptr);
+			AssertEventLogs(eventLogs);
+
+			pressKey(VKEY::KEY_MENU);
+			AssertAltLabels(altControls, L"[A]", nullptr, nullptr);
+			pressKey(VKEY::KEY_A);
+			AssertAltLabels(altControls, nullptr, nullptr, nullptr);
+			AssertEventLogs(eventLogs, L"A");
+		});
+
+		protocol.OnNextFrame([&]()
+		{
+			controlHost->Hide();
+		});
+
+		SetGuiMainProxy(MakeGuiMain(protocol, eventLogs, controlHost));
+		BatchedProtocol batchedProtocol(&protocol);
+		SetupRemoteNativeController(&batchedProtocol);
+		SetGuiMainProxy({});
+	});
+
+	TEST_CATEGORY(L"Alt multiple level and escape / activate")
+	{
+		GraphicsHostProtocol protocol;
+		List<WString> eventLogs;
+		List<GuiControl*> altControls;
+		GuiWindow* controlHost = nullptr;
+
+		auto pressKey = [&](VKEY key)
+		{
+			protocol.events->OnIOKeyDown(MakeKeyInfo(false, false, false, key));
+			protocol.events->OnIOKeyUp(MakeKeyInfo(false, false, false, key));
+		};
+
+		protocol.OnNextFrame([&]()
+		{
+			auto a = CREATE_BUTTON(L"A", L"A");
+			auto b = CREATE_BUTTON(L"B", L"B");
+			auto c = CREATE_BUTTON(L"C", L"C");
+			Contain(a, b);
+			Contain(a, c);
+			AssertAltLabels(altControls, nullptr, nullptr, nullptr);
+		});
+
+		protocol.OnNextFrame([&]()
+		{
+			pressKey(VKEY::KEY_MENU);
+			AssertAltLabels(altControls, L"[A]", nullptr, nullptr);
+			pressKey(VKEY::KEY_BACK);
+			AssertAltLabels(altControls, L"[A]", nullptr, nullptr);
+			pressKey(VKEY::KEY_ESCAPE);
+			AssertAltLabels(altControls, nullptr, nullptr, nullptr);
+			AssertEventLogs(eventLogs);
+
+			pressKey(VKEY::KEY_MENU);
+			AssertAltLabels(altControls, L"[A]", nullptr, nullptr);
+			pressKey(VKEY::KEY_A);
+			AssertAltLabels(altControls, nullptr, L"[B]", L"[C]");
+			pressKey(VKEY::KEY_ESCAPE);
+			AssertAltLabels(altControls, nullptr, nullptr, nullptr);
+			AssertEventLogs(eventLogs);
+
+			pressKey(VKEY::KEY_MENU);
+			AssertAltLabels(altControls, L"[A]", nullptr, nullptr);
+			pressKey(VKEY::KEY_A);
+			AssertAltLabels(altControls, nullptr, L"[B]", L"[C]");
+			pressKey(VKEY::KEY_BACK);
+			AssertAltLabels(altControls, L"[A]", nullptr, nullptr);
+			pressKey(VKEY::KEY_BACK);
+			AssertAltLabels(altControls, L"[A]", nullptr, nullptr);
+			pressKey(VKEY::KEY_B);
+			AssertAltLabels(altControls, L"[A]", nullptr, nullptr);
+			pressKey(VKEY::KEY_C);
+			AssertAltLabels(altControls, L"[A]", nullptr, nullptr);
+			pressKey(VKEY::KEY_A);
+			AssertAltLabels(altControls, nullptr, L"[B]", L"[C]");
+			pressKey(VKEY::KEY_A);
+			AssertAltLabels(altControls, nullptr, L"[B]", L"[C]");
+			pressKey(VKEY::KEY_B);
+			AssertAltLabels(altControls, nullptr, nullptr, nullptr);
+			AssertEventLogs(eventLogs, L"B");
+
+			pressKey(VKEY::KEY_MENU);
+			AssertAltLabels(altControls, L"[A]", nullptr, nullptr);
+			pressKey(VKEY::KEY_A);
+			AssertAltLabels(altControls, nullptr, L"[B]", L"[C]");
+			pressKey(VKEY::KEY_C);
 			AssertAltLabels(altControls, nullptr, nullptr, nullptr);
 			AssertEventLogs(eventLogs, L"C");
 		});
