@@ -49,6 +49,10 @@ namespace remote_startup_tests
 			response.sizeState = INativeWindow::Restored;
 			events->RespondWindowGetBounds(id, response);
 		}
+
+		void RequestIOUpdateGlobalShortcutKey(const Ptr<List<GlobalShortcutKey>>& arguments) override
+		{
+		}
 	};
 }
 using namespace remote_startup_tests;

@@ -159,8 +159,8 @@ GuiRemoteController::INativeInputService
 		
 	bool GuiRemoteController::UnregisterGlobalShortcutKey(vint id)
 	{
-		vint index = hotKeyIds.Keys().Contains(id);
-		if (index == -1)return false;
+		vint index = hotKeyIds.Keys().IndexOf(id);
+		if (index == -1) return false;
 
 		auto entry = hotKeyIds.Values()[index];
 		hotKeyIds.Remove(id);

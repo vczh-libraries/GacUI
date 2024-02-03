@@ -35,9 +35,4 @@ TEST_FILE
 		SetupRemoteNativeController(&batchedProtocol);
 		SetGuiMainProxy({});
 	});
-
-	// TODO:
-	//   Locale shortcut key
-	//   Global shortcut key, and recover state when connected/disconnected
-	//   Other events
 }
