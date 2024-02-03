@@ -286,6 +286,16 @@ TEST_FILE
 				L"y->host.bounds.Move(:30,30,0)"
 				);
 
+			if (enteringZ)
+			{
+				TEST_ASSERT(protocol.capturing == false);
+				protocol.events->OnControllerDisconnect();
+				protocol.capturing = true;
+				protocol.events->OnControllerConnect();
+				TEST_ASSERT(protocol.capturing == false);
+			}
+
+			TEST_ASSERT(protocol.capturing == false);
 			protocol.events->OnIOButtonDown(MakeMouseInfoWithButton(remoteprotocol::IOMouseButton::Left, enteringZ, false, false, 30, 30, 0));
 			if (enteringZ)
 			{
@@ -304,6 +314,15 @@ TEST_FILE
 					L"y->x.LDown(:20,20,0)",
 					L"y->host.bounds.LDown(:30,30,0)"
 					);
+			}
+
+			if (enteringZ)
+			{
+				TEST_ASSERT(protocol.capturing == true);
+				protocol.events->OnControllerDisconnect();
+				protocol.capturing = false;
+				protocol.events->OnControllerConnect();
+				TEST_ASSERT(protocol.capturing == true);
 			}
 
 			protocol.events->OnIOMouseMoving(MakeMouseInfo(enteringZ, false, false, 70, 70, 0));
@@ -373,6 +392,7 @@ TEST_FILE
 				L"y->x.LUp(:60,60,0)",
 				L"y->host.bounds.LUp(:70,70,0)"
 				);
+			TEST_ASSERT(protocol.capturing == false);
 
 			protocol.events->OnIOMouseLeaved();
 			if (enteringZ)

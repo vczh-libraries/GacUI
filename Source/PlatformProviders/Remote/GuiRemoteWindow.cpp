@@ -104,6 +104,14 @@ GuiRemoteWindow (events)
 			remoteMessages.RequestWindowNotifySetSizeBox(styleSizeBox);
 			remoteMessages.RequestWindowNotifySetIconVisible(styleIconVisible);
 			remoteMessages.RequestWindowNotifySetTitleBar(styleTitleBar);
+			if (statusCapturing)
+			{
+				remoteMessages.RequestIORequireCapture();
+			}
+			else
+			{
+				remoteMessages.RequestIOReleaseCapture();
+			}
 			remoteMessages.Submit();
 		}
 	}

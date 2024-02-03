@@ -37,7 +37,6 @@ TEST_FILE
 	});
 
 	// TODO:
-	//   Sync mouse capturing, and recover state when connected/disconnected
 	//   Locale shortcut key
 	//   Global shortcut key, and recover state when connected/disconnected
 	//   Other events
