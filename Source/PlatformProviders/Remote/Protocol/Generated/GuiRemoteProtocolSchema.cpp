@@ -158,6 +158,17 @@ namespace vl::presentation::remoteprotocol
 		return node;
 	}
 
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<vl::presentation::remoteprotocol::GlobalShortcutKey>(const vl::presentation::remoteprotocol::GlobalShortcutKey & value)
+	{
+		auto node = Ptr(new glr::json::JsonObject);
+		ConvertCustomTypeToJsonField(node, L"id", value.id);
+		ConvertCustomTypeToJsonField(node, L"ctrl", value.ctrl);
+		ConvertCustomTypeToJsonField(node, L"shift", value.shift);
+		ConvertCustomTypeToJsonField(node, L"alt", value.alt);
+		ConvertCustomTypeToJsonField(node, L"code", value.code);
+		return node;
+	}
+
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<vl::presentation::remoteprotocol::WindowSizingConfig>(const vl::presentation::remoteprotocol::WindowSizingConfig & value)
 	{
 		auto node = Ptr(new glr::json::JsonObject);
@@ -388,6 +399,23 @@ namespace vl::presentation::remoteprotocol
 			if (field->name.value == L"shift") ConvertJsonToCustomType(field->value, value.shift); else
 			if (field->name.value == L"alt") ConvertJsonToCustomType(field->value, value.alt); else
 			if (field->name.value == L"capslock") ConvertJsonToCustomType(field->value, value.capslock); else
+			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
+		}
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	template<> void ConvertJsonToCustomType<vl::presentation::remoteprotocol::GlobalShortcutKey>(vl::Ptr<vl::glr::json::JsonNode> node, vl::presentation::remoteprotocol::GlobalShortcutKey& value)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<vl::presentation::remoteprotocol::GlobalShortcutKey>(Ptr<JsonNode>, vl::presentation::remoteprotocol::GlobalShortcutKey&)#"
+		auto jsonNode = node.Cast<glr::json::JsonObject>();
+		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
+		for (auto field : jsonNode->fields)
+		{
+			if (field->name.value == L"id") ConvertJsonToCustomType(field->value, value.id); else
+			if (field->name.value == L"ctrl") ConvertJsonToCustomType(field->value, value.ctrl); else
+			if (field->name.value == L"shift") ConvertJsonToCustomType(field->value, value.shift); else
+			if (field->name.value == L"alt") ConvertJsonToCustomType(field->value, value.alt); else
+			if (field->name.value == L"code") ConvertJsonToCustomType(field->value, value.code); else
 			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
 		}
 #undef ERROR_MESSAGE_PREFIX

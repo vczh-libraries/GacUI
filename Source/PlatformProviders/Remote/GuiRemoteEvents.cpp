@@ -160,6 +160,11 @@ GuiRemoteEvents (events)
 		remote->remoteWindow.OnWindowActivatedUpdated(arguments);
 	}
 
+	void GuiRemoteEvents::OnIOGlobalShortcutKey(const vint& arguments)
+	{
+		remote->callbackService.InvokeGlobalShortcutKeyActivated(arguments);
+	}
+
 	void GuiRemoteEvents::OnIOButtonDown(const remoteprotocol::IOMouseInfoWithButton& arguments)
 	{
 		switch (arguments.button)

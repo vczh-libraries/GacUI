@@ -528,6 +528,72 @@
             }
         }]
     }, {
+        "$ast": "StructDecl",
+        "attributes": [],
+        "name": "GlobalShortcutKey",
+        "members": [{
+            "$ast": "StructMember",
+            "name": "id",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Integer"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "ctrl",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Boolean"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "shift",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Boolean"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "alt",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Boolean"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "code",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Key"
+            }
+        }]
+    }, {
+        "$ast": "MessageDecl",
+        "attributes": [],
+        "name": "IOUpdateGlobalShortcutKey",
+        "request": {
+            "$ast": "MessageRequest",
+            "type": {
+                "$ast": "ArrayType",
+                "element": {
+                    "$ast": "ReferenceType",
+                    "name": "GlobalShortcutKey"
+                }
+            }
+        },
+        "response": null
+    }, {
+        "$ast": "EventDecl",
+        "attributes": [],
+        "name": "IOGlobalShortcutKey",
+        "request": {
+            "$ast": "EventRequest",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Integer"
+            }
+        }
+    }, {
         "$ast": "MessageDecl",
         "attributes": [],
         "name": "IORequireCapture",
@@ -539,6 +605,42 @@
         "name": "IOReleaseCapture",
         "request": null,
         "response": null
+    }, {
+        "$ast": "MessageDecl",
+        "attributes": [],
+        "name": "IOIsKeyPressing",
+        "request": {
+            "$ast": "MessageRequest",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Key"
+            }
+        },
+        "response": {
+            "$ast": "MessageResponse",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Boolean"
+            }
+        }
+    }, {
+        "$ast": "MessageDecl",
+        "attributes": [],
+        "name": "IOIsKeyToggled",
+        "request": {
+            "$ast": "MessageRequest",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Key"
+            }
+        },
+        "response": {
+            "$ast": "MessageResponse",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Boolean"
+            }
+        }
     }, {
         "$ast": "EventDecl",
         "attributes": [],

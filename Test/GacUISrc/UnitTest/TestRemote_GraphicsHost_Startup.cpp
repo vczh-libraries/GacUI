@@ -37,6 +37,9 @@ TEST_FILE
 	});
 
 	// TODO:
-	//   Locale/Global shortcut Key, implement help functions to get key names for all platforms
+	//   Sync mouse capturing, and recover state when connected/disconnected
+	//   implement helper functions to get key names for all platforms
+	//   Locale shortcut key
+	//   Global shortcut key, and recover state when connected/disconnected
 	//   Other events
 }

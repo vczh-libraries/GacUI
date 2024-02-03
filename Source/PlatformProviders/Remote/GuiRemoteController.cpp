@@ -83,12 +83,20 @@ GuiRemoteController::INativeInputService
 
 	bool GuiRemoteController::IsKeyPressing(VKEY code)
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		vint idIsKeyPressing = remoteMessages.RequestIOIsKeyPressing(code);
+		remoteMessages.Submit();
+		bool result = remoteMessages.RetrieveIOIsKeyPressing(idIsKeyPressing);
+		remoteMessages.ClearResponses();
+		return result;
 	}
 
 	bool GuiRemoteController::IsKeyToggled(VKEY code)
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		vint idIsKeyToggled = remoteMessages.RequestIOIsKeyToggled(code);
+		remoteMessages.Submit();
+		bool result = remoteMessages.RetrieveIOIsKeyToggled(idIsKeyToggled);
+		remoteMessages.ClearResponses();
+		return result;
 	}
 
 	WString GuiRemoteController::GetKeyName(VKEY code)

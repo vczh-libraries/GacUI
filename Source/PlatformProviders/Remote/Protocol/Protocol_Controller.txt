@@ -81,4 +81,4 @@ event ControllerDisconnect      {}
 event ControllerRequestExit     {}
 event ControllerForceExit       {}
 
-[@DropRepeat] event ControllerScreenUpdated   { request: ScreenConfig; }
+[@DropRepeat] event ControllerScreenUpdated     { request: ScreenConfig; }

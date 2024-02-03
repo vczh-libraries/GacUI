@@ -460,11 +460,23 @@ GuiRemoteWindow (INativeWindow)
 
 	bool GuiRemoteWindow::RequireCapture()
 	{
+		if (!statusCapturing)
+		{
+			statusCapturing = true;
+			remoteMessages.RequestIORequireCapture();
+			remoteMessages.Submit();
+		}
 		return true;
 	}
 
 	bool GuiRemoteWindow::ReleaseCapture()
 	{
+		if (statusCapturing)
+		{
+			statusCapturing = false;
+			remoteMessages.RequestIOReleaseCapture();
+			remoteMessages.Submit();
+		}
 		return true;
 	}
 

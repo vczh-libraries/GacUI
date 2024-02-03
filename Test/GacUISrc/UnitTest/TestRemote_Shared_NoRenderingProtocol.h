@@ -79,6 +79,7 @@ namespace remote_protocol_tests
 		WindowSizingConfig			sizingConfig;
 		WindowStyleConfig			styleConfig;
 		NativeRect					lastRestoredSize;
+		bool						capturing = false;
 	
 		SingleScreenProtocol(SingleScreenConfig _globalConfig)
 			: globalConfig(_globalConfig)
@@ -216,6 +217,20 @@ namespace remote_protocol_tests
 					break;
 				}
 			}
+		}
+
+		void RequestIOUpdateGlobalShortcutKey(const Ptr<List<GlobalShortcutKey>>& arguments) override
+		{
+		}
+
+		void RequestIORequireCapture() override
+		{
+			capturing = true;
+		}
+
+		void RequestIOReleaseCapture() override
+		{
+			capturing = false;
 		}
 	};
 }

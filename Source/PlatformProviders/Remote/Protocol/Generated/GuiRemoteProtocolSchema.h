@@ -37,6 +37,15 @@ namespace vl::presentation::remoteprotocol
 		::vl::presentation::NativeWindowMouseInfo info;
 	};
 
+	struct GlobalShortcutKey
+	{
+		::vl::vint id;
+		bool ctrl;
+		bool shift;
+		bool alt;
+		::vl::presentation::VKEY code;
+	};
+
 	struct WindowSizingConfig
 	{
 		::vl::presentation::NativeRect bounds;
@@ -65,6 +74,7 @@ namespace vl::presentation::remoteprotocol
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<vl::presentation::remoteprotocol::IOMouseInfoWithButton>(const vl::presentation::remoteprotocol::IOMouseInfoWithButton & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::NativeWindowKeyInfo>(const ::vl::presentation::NativeWindowKeyInfo & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::NativeWindowCharInfo>(const ::vl::presentation::NativeWindowCharInfo & value);
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<vl::presentation::remoteprotocol::GlobalShortcutKey>(const vl::presentation::remoteprotocol::GlobalShortcutKey & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<vl::presentation::remoteprotocol::WindowSizingConfig>(const vl::presentation::remoteprotocol::WindowSizingConfig & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<vl::presentation::remoteprotocol::WindowShowing>(const vl::presentation::remoteprotocol::WindowShowing & value);
 
@@ -82,6 +92,7 @@ namespace vl::presentation::remoteprotocol
 	template<> void ConvertJsonToCustomType<vl::presentation::remoteprotocol::IOMouseInfoWithButton>(vl::Ptr<vl::glr::json::JsonNode> node, vl::presentation::remoteprotocol::IOMouseInfoWithButton& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::NativeWindowKeyInfo>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::NativeWindowKeyInfo& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::NativeWindowCharInfo>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::NativeWindowCharInfo& value);
+	template<> void ConvertJsonToCustomType<vl::presentation::remoteprotocol::GlobalShortcutKey>(vl::Ptr<vl::glr::json::JsonNode> node, vl::presentation::remoteprotocol::GlobalShortcutKey& value);
 	template<> void ConvertJsonToCustomType<vl::presentation::remoteprotocol::WindowSizingConfig>(vl::Ptr<vl::glr::json::JsonNode> node, vl::presentation::remoteprotocol::WindowSizingConfig& value);
 	template<> void ConvertJsonToCustomType<vl::presentation::remoteprotocol::WindowShowing>(vl::Ptr<vl::glr::json::JsonNode> node, vl::presentation::remoteprotocol::WindowShowing& value);
 
@@ -90,8 +101,11 @@ namespace vl::presentation::remoteprotocol
 	HANDLER(ControllerGetScreenConfig, void, vl::presentation::remoteprotocol::ScreenConfig, NOREQ, RES, NODROP)\
 	HANDLER(ControllerConnectionEstablished, void, void, NOREQ, NORES, NODROP)\
 	HANDLER(ControllerConnectionStopped, void, void, NOREQ, NORES, NODROP)\
+	HANDLER(IOUpdateGlobalShortcutKey, ::vl::Ptr<::vl::collections::List<vl::presentation::remoteprotocol::GlobalShortcutKey>>, void, REQ, NORES, NODROP)\
 	HANDLER(IORequireCapture, void, void, NOREQ, NORES, NODROP)\
 	HANDLER(IOReleaseCapture, void, void, NOREQ, NORES, NODROP)\
+	HANDLER(IOIsKeyPressing, ::vl::presentation::VKEY, bool, REQ, RES, NODROP)\
+	HANDLER(IOIsKeyToggled, ::vl::presentation::VKEY, bool, REQ, RES, NODROP)\
 	HANDLER(WindowGetBounds, void, vl::presentation::remoteprotocol::WindowSizingConfig, NOREQ, RES, NODROP)\
 	HANDLER(WindowNotifySetTitle, ::vl::WString, void, REQ, NORES, DROPREP)\
 	HANDLER(WindowNotifySetEnabled, bool, void, REQ, NORES, DROPREP)\
@@ -115,6 +129,7 @@ namespace vl::presentation::remoteprotocol
 	HANDLER(ControllerRequestExit, void, NOREQ, NODROP)\
 	HANDLER(ControllerForceExit, void, NOREQ, NODROP)\
 	HANDLER(ControllerScreenUpdated, vl::presentation::remoteprotocol::ScreenConfig, REQ, DROPREP)\
+	HANDLER(IOGlobalShortcutKey, ::vl::vint, REQ, NODROP)\
 	HANDLER(IOButtonDown, vl::presentation::remoteprotocol::IOMouseInfoWithButton, REQ, NODROP)\
 	HANDLER(IOButtonDoubleClick, vl::presentation::remoteprotocol::IOMouseInfoWithButton, REQ, NODROP)\
 	HANDLER(IOButtonUp, vl::presentation::remoteprotocol::IOMouseInfoWithButton, REQ, NODROP)\

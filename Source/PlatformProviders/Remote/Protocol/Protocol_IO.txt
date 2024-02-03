@@ -46,8 +46,22 @@ struct IOCharInfo
     var capslock: bool;
 }
 
+struct GlobalShortcutKey
+{
+    var id : int;
+    var ctrl : bool;
+    var shift : bool;
+    var alt : bool;
+    var code : key;
+}
+
+message IOUpdateGlobalShortcutKey       { request: GlobalShortcutKey[]; }
+event IOGlobalShortcutKey             { request: int; }
+
 message IORequireCapture    {}
 message IOReleaseCapture    {}
+message IOIsKeyPressing     { request: key; response: bool; }
+message IOIsKeyToggled      { request: key; response: bool; }
 
 event IOButtonDown          { request: IOMouseInfoWithButton; }
 event IOButtonDoubleClick   { request: IOMouseInfoWithButton; }

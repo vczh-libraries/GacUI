@@ -19,7 +19,6 @@
 ## Progressing (before release)
 
 - A general remoting `INativeController` implementation.
-  - Add mouse capturing messages. Test state transition when connected/disconnected.
   - Add hittest messages, or implement it with SyncDom.
   - Add window resizing constraint messages.
   - Update `GuiRemoteController::GetKey` to match the windows implementation.
