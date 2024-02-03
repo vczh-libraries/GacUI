@@ -39,6 +39,9 @@ GuiRemoteController
 		friend class elements::GuiRemoteGraphicsRenderTarget;
 		friend class elements::GuiRemoteGraphicsResourceManager;
 		using CursorMap = collections::Dictionary<INativeCursor::SystemCursorType, Ptr<INativeCursor>>;
+		using HotKeyEntry = Tuple<bool, bool, bool, VKEY>;
+		using HotKeySet = collections::SortedList<HotKeyEntry>;
+		using HotKeyIds = collections::Dictionary<vint, HotKeyEntry>;
 	protected:
 		IGuiRemoteProtocol*				remoteProtocol;
 		GuiRemoteMessages				remoteMessages;
@@ -52,7 +55,10 @@ GuiRemoteController
 
 		remoteprotocol::FontConfig		remoteFontConfig;
 		remoteprotocol::ScreenConfig	remoteScreenConfig;
+
 		vint							usedHotKeys = (vint)NativeGlobalShortcutKeyResult::ValidIdBegins;
+		HotKeySet						hotKeySet;
+		HotKeyIds						hotKeyIds;
 
 		CursorMap						cursors;
 		bool							timerEnabled = false;
@@ -62,8 +68,6 @@ GuiRemoteController
 		collections::Dictionary<VKEY, WString>		keyNames;
 		collections::Dictionary<WString, VKEY>		keyCodes;
 		bool										keyInitialized = false;
-
-		void							EnsureKeyInitialized();
 
 		// =============================================================
 		// INativeResourceService
@@ -84,8 +88,10 @@ GuiRemoteController
 		bool							IsTimerEnabled() override;
 		bool							IsKeyPressing(VKEY code) override;
 		bool							IsKeyToggled(VKEY code) override;
+		void							EnsureKeyInitialized();
 		WString							GetKeyName(VKEY code) override;
 		VKEY							GetKey(const WString& name) override;
+		void							UpdateGlobalShortcutKey();
 		vint							RegisterGlobalShortcutKey(bool ctrl, bool shift, bool alt, VKEY key) override;
 		bool							UnregisterGlobalShortcutKey(vint id) override;
 

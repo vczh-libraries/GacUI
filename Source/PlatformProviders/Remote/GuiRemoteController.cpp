@@ -126,14 +126,50 @@ GuiRemoteController::INativeInputService
 		return index == -1 ? VKEY::KEY_UNKNOWN : keyCodes.Values()[index];
 	}
 
+	void GuiRemoteController::UpdateGlobalShortcutKey()
+	{
+		auto hotKeys = Ptr(new List<remoteprotocol::GlobalShortcutKey>);
+		for (auto [id, entry] : hotKeyIds)
+		{
+			remoteprotocol::GlobalShortcutKey key;
+			key.id = id;
+			key.ctrl = entry.get<0>();
+			key.shift = entry.get<1>();
+			key.alt = entry.get<2>();
+			key.code = entry.get<3>();
+			hotKeys->Add(key);
+		}
+		remoteMessages.RequestIOUpdateGlobalShortcutKey(hotKeys);
+	}
+
 	vint GuiRemoteController::RegisterGlobalShortcutKey(bool ctrl, bool shift, bool alt, VKEY key)
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		HotKeyEntry entry = { ctrl,shift,alt,key };
+		if (hotKeySet.Contains(entry)) return (vint)NativeGlobalShortcutKeyResult::Occupied;
+
+		vint id = ++usedHotKeys;
+		hotKeySet.Add(entry);
+		hotKeyIds.Add(id, entry);
+
+		UpdateGlobalShortcutKey();
+		remoteMessages.Submit();
+
+		return id;
 	}
 		
 	bool GuiRemoteController::UnregisterGlobalShortcutKey(vint id)
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		vint index = hotKeyIds.Keys().Contains(id);
+		if (index == -1)return false;
+
+		auto entry = hotKeyIds.Values()[index];
+		hotKeyIds.Remove(id);
+		hotKeySet.Remove(entry);
+
+		UpdateGlobalShortcutKey();
+		remoteMessages.Submit();
+
+		return true;
 	}
 
 /***********************************************************************
@@ -260,6 +296,7 @@ GuiRemoteController (events)
 
 	void GuiRemoteController::OnControllerConnect()
 	{
+		UpdateGlobalShortcutKey();
 		vint idGetFontConfig = remoteMessages.RequestControllerGetFontConfig();
 		vint idGetScreenConfig = remoteMessages.RequestControllerGetScreenConfig();
 		remoteMessages.Submit();
