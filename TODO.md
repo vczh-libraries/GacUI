@@ -20,7 +20,6 @@
 
 - A general remoting `INativeController` implementation.
   - Add hittest messages, or implement it with SyncDom.
-  - Add window resizing constraint messages.
   - Update `GuiRemoteController::GetKey` to match the windows implementation.
   - It sends batched requests to a receiver and wait for respond
     - Implement `[@Drop(Repeat|Consecutive)]` after unit test against remoting `INativeWindow` is done.
@@ -56,6 +55,7 @@
 ## Progressing (next release)
 
 - Implement basic control unit test based on streaming (using DarkSkin)
+  - Add window resizing constraint messages.
   - Support complex text elements.
   - A viewer to view unit test results logged from SyncDom and other stuff after each time when layout stops.
   - In release repo add more tools that just call `GacUI.UnitTest.cpp`:
