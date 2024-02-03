@@ -58,6 +58,12 @@ GuiRemoteController
 		bool							windowCreated = false;
 		bool							windowDestroyed = false;
 
+		collections::Dictionary<VKEY, WString>		keyNames;
+		collections::Dictionary<WString, VKEY>		keyCodes;
+		bool										keyInitialized = false;
+
+		void							EnsureKeyInitialized();
+
 		// =============================================================
 		// INativeResourceService
 		// =============================================================

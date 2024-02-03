@@ -107,8 +107,29 @@ void CopyWindowsKeyName()
 	writer->Submit();
 }
 
+void TestWindowsKeyName()
+{
+	Array<const wchar_t*> keyNames((vint)VKEY::KEY_MAXIMUM);
+	memset(&keyNames[0], 0, sizeof(const wchar_t*) * keyNames.Count());
+#undef KEY_EXECUTE
+#define RECORD_KEY_NAME(NAME, TEXT) keyNames[(vint)VKEY::KEY_ ## NAME] = TEXT;
+	GUI_DEFINE_KEYBOARD_WINDOWS_NAME(RECORD_KEY_NAME)
+#undef RECORD_KEY_NAME
+
+#define TEST_KEY_NAME(NAME, CODE)\
+	{\
+		auto key = GetCurrentController()->InputService()->GetKeyName(VKEY::KEY_ ## NAME);\
+		if (key == L"?") CHECK_ERROR(keyNames[(vint)VKEY::KEY_ ## NAME] == nullptr, L"Key name should not exist: " L ## #NAME);\
+		else CHECK_ERROR(keyNames[(vint)VKEY::KEY_ ## NAME] == key, L"Key name does not match: " L ## #NAME);\
+	}\
+
+	GUI_DEFINE_KEYBOARD_CODE(TEST_KEY_NAME)
+#undef TEST_KEY_NAME
+}
+
 void GuiMain()
 {
+	TestWindowsKeyName();
 	LoadDarkSkinTypes();
 
 	List<WString> names;

@@ -67,7 +67,7 @@ WindowsInputService
 			WindowsInputService::WindowsInputService()
 				:ownerHandle(NULL)
 				,isTimerEnabled(false)
-				,keyNames(255)
+				,keyNames((vint)VKEY::KEY_MAXIMUM)
 			{
 				InitializeKeyNames();
 			}
@@ -118,7 +118,7 @@ WindowsInputService
 				}
 				else
 				{
-					return L"?";
+					return WString::Unmanaged(L"?");
 				}
 			}
 

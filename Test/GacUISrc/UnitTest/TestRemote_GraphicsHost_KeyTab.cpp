@@ -6,25 +6,25 @@ TEST_FILE
 
 #define ASSERT_FOCUS(KEYS)\
 	(WString::Unmanaged(to) + WString::Unmanaged(L".GotFocus()")).Buffer(),\
-	(WString::Unmanaged(to) + WString::Unmanaged(L"->host.bounds.KeyPreview(" WITH(KEYS) L":TAB)")).Buffer(),\
-	(WString::Unmanaged(to) + WString::Unmanaged(L".KeyPreview(" WITH(KEYS) L":TAB)")).Buffer(),\
-	(WString::Unmanaged(to) + WString::Unmanaged(L".KeyUp(" WITH(KEYS) L":TAB)")).Buffer(),\
-	(WString::Unmanaged(to) + WString::Unmanaged(L"->host.bounds.KeyUp(" WITH(KEYS) L":TAB)")).Buffer()\
+	(WString::Unmanaged(to) + WString::Unmanaged(L"->host.bounds.KeyPreview(" WITH(KEYS) L":Tab)")).Buffer(),\
+	(WString::Unmanaged(to) + WString::Unmanaged(L".KeyPreview(" WITH(KEYS) L":Tab)")).Buffer(),\
+	(WString::Unmanaged(to) + WString::Unmanaged(L".KeyUp(" WITH(KEYS) L":Tab)")).Buffer(),\
+	(WString::Unmanaged(to) + WString::Unmanaged(L"->host.bounds.KeyUp(" WITH(KEYS) L":Tab)")).Buffer()\
 
 #define ASSERT_FOCUS_CONTAINER(KEYS)\
 	(WString::Unmanaged(to) + WString::Unmanaged(L".GotFocus()")).Buffer(),\
-	(WString::Unmanaged(to) + WString::Unmanaged(L"->host.bounds.KeyPreview(" WITH(KEYS) L":TAB)")).Buffer(),\
-	(WString::Unmanaged(to) + WString::Unmanaged(L"->") + WString::Unmanaged(container) + WString::Unmanaged(L".KeyPreview(" WITH(KEYS) L":TAB)")).Buffer(),\
-	(WString::Unmanaged(to) + WString::Unmanaged(L".KeyPreview(" WITH(KEYS) L":TAB)")).Buffer(),\
-	(WString::Unmanaged(to) + WString::Unmanaged(L".KeyUp(" WITH(KEYS) L":TAB)")).Buffer(),\
-	(WString::Unmanaged(to) + WString::Unmanaged(L"->") + WString::Unmanaged(container) + WString::Unmanaged(L".KeyUp(" WITH(KEYS) L":TAB)")).Buffer(),\
-	(WString::Unmanaged(to) + WString::Unmanaged(L"->host.bounds.KeyUp(" WITH(KEYS) L":TAB)")).Buffer()\
+	(WString::Unmanaged(to) + WString::Unmanaged(L"->host.bounds.KeyPreview(" WITH(KEYS) L":Tab)")).Buffer(),\
+	(WString::Unmanaged(to) + WString::Unmanaged(L"->") + WString::Unmanaged(container) + WString::Unmanaged(L".KeyPreview(" WITH(KEYS) L":Tab)")).Buffer(),\
+	(WString::Unmanaged(to) + WString::Unmanaged(L".KeyPreview(" WITH(KEYS) L":Tab)")).Buffer(),\
+	(WString::Unmanaged(to) + WString::Unmanaged(L".KeyUp(" WITH(KEYS) L":Tab)")).Buffer(),\
+	(WString::Unmanaged(to) + WString::Unmanaged(L"->") + WString::Unmanaged(container) + WString::Unmanaged(L".KeyUp(" WITH(KEYS) L":Tab)")).Buffer(),\
+	(WString::Unmanaged(to) + WString::Unmanaged(L"->host.bounds.KeyUp(" WITH(KEYS) L":Tab)")).Buffer()\
 
 #define ASSERT_NO_FOCUS(KEYS)\
-	(WString::Unmanaged(L"host.bounds.KeyPreview(" WITH(KEYS) L":TAB)")).Buffer(),\
-	(WString::Unmanaged(L"host.bounds.KeyDown(" WITH(KEYS) L":TAB)")).Buffer(),\
-	(WString::Unmanaged(L"host.bounds.KeyPreview(" WITH(KEYS) L":TAB)")).Buffer(),\
-	(WString::Unmanaged(L"host.bounds.KeyUp(" WITH(KEYS) L":TAB)")).Buffer()\
+	(WString::Unmanaged(L"host.bounds.KeyPreview(" WITH(KEYS) L":Tab)")).Buffer(),\
+	(WString::Unmanaged(L"host.bounds.KeyDown(" WITH(KEYS) L":Tab)")).Buffer(),\
+	(WString::Unmanaged(L"host.bounds.KeyPreview(" WITH(KEYS) L":Tab)")).Buffer(),\
+	(WString::Unmanaged(L"host.bounds.KeyUp(" WITH(KEYS) L":Tab)")).Buffer()\
 
 	List<WString> eventLogs;
 

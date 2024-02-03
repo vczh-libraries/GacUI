@@ -99,24 +99,31 @@ GuiRemoteController::INativeInputService
 		return result;
 	}
 
+	void GuiRemoteController::EnsureKeyInitialized()
+	{
+		if (keyInitialized) return;
+		keyInitialized = true;
+
+#define INITIALIZE_KEY_NAME(NAME, TEXT)\
+		keyNames.Add(VKEY::KEY_ ## NAME, WString::Unmanaged(TEXT));\
+		if (!keyCodes.Keys().Contains(WString::Unmanaged(TEXT))) keyCodes.Add(WString::Unmanaged(TEXT), VKEY::KEY_ ## NAME);\
+
+		GUI_DEFINE_KEYBOARD_WINDOWS_NAME(INITIALIZE_KEY_NAME)
+#undef INITIALIZE_KEY_NAME
+	}
+
 	WString GuiRemoteController::GetKeyName(VKEY code)
 	{
-		switch (code)
-		{
-#define DEFINE_KEY_NAME(NAME, CODE) case VKEY::KEY_ ## NAME: return WString::Unmanaged(L ## #NAME);
-			GUI_DEFINE_KEYBOARD_CODE_BASIC(DEFINE_KEY_NAME)
-#undef DEFINE_KEY_NAME
-		default:
-			CHECK_FAIL(L"vl::presentation::GuiRemoteController::GetKeyName(VKEY)#Unknown key code.");
-		}
+		EnsureKeyInitialized();
+		vint index = keyNames.Keys().IndexOf(code);
+		return index == -1 ? WString::Unmanaged(L"?") : keyNames.Values()[index];
 	}
 
 	VKEY GuiRemoteController::GetKey(const WString& name)
 	{
-#define DEFINE_KEY_NAME(NAME, CODE) if (name == L ## #NAME) return VKEY::KEY_ ## NAME;
-		GUI_DEFINE_KEYBOARD_CODE(DEFINE_KEY_NAME)
-#undef DEFINE_KEY_NAME
-		CHECK_FAIL(L"vl::presentation::GuiRemoteController::GetKey(const WString&)#Unknown key name.");
+		EnsureKeyInitialized();
+		vint index = keyCodes.Keys().IndexOf(name);
+		return index == -1 ? VKEY::KEY_UNKNOWN : keyCodes.Values()[index];
 	}
 
 	vint GuiRemoteController::RegisterGlobalShortcutKey(bool ctrl, bool shift, bool alt, VKEY key)
