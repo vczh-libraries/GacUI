@@ -136,6 +136,22 @@ TEST_FILE
 			TEST_ASSERT(protocol.globalShortcutKeys[1].shift == true);
 			TEST_ASSERT(protocol.globalShortcutKeys[1].alt == false);
 			TEST_ASSERT(protocol.globalShortcutKeys[1].code == VKEY::KEY_Y);
+
+			protocol.globalShortcutKeys.Clear();
+			protocol.events->OnControllerDisconnect();
+			protocol.events->OnControllerConnect();
+
+			TEST_ASSERT(protocol.globalShortcutKeys.Count() == 2);
+			TEST_ASSERT(protocol.globalShortcutKeys[0].id == 1);
+			TEST_ASSERT(protocol.globalShortcutKeys[0].ctrl == true);
+			TEST_ASSERT(protocol.globalShortcutKeys[0].shift == false);
+			TEST_ASSERT(protocol.globalShortcutKeys[0].alt == false);
+			TEST_ASSERT(protocol.globalShortcutKeys[0].code == VKEY::KEY_X);
+			TEST_ASSERT(protocol.globalShortcutKeys[1].id == 2);
+			TEST_ASSERT(protocol.globalShortcutKeys[1].ctrl == true);
+			TEST_ASSERT(protocol.globalShortcutKeys[1].shift == true);
+			TEST_ASSERT(protocol.globalShortcutKeys[1].alt == false);
+			TEST_ASSERT(protocol.globalShortcutKeys[1].code == VKEY::KEY_Y);
 		});
 
 		protocol.OnNextFrame([&]()
