@@ -52,6 +52,7 @@ GuiRemoteController
 
 		remoteprotocol::FontConfig		remoteFontConfig;
 		remoteprotocol::ScreenConfig	remoteScreenConfig;
+		vint							usedHotKeys = (vint)NativeGlobalShortcutKeyResult::ValidIdBegins;
 
 		CursorMap						cursors;
 		bool							timerEnabled = false;

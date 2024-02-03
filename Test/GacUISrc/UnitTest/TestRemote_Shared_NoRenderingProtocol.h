@@ -75,11 +75,13 @@ namespace remote_protocol_tests
 		SingleScreenConfig			globalConfig;
 		List<Func<void()>>			processRemoteEvents;
 		vint						nextEventIndex = 0;
-	
+
 		WindowSizingConfig			sizingConfig;
 		WindowStyleConfig			styleConfig;
 		NativeRect					lastRestoredSize;
 		bool						capturing = false;
+
+		List<GlobalShortcutKey>		globalShortcutKeys;
 	
 		SingleScreenProtocol(SingleScreenConfig _globalConfig)
 			: globalConfig(_globalConfig)
@@ -221,6 +223,14 @@ namespace remote_protocol_tests
 
 		void RequestIOUpdateGlobalShortcutKey(const Ptr<List<GlobalShortcutKey>>& arguments) override
 		{
+			if (arguments)
+			{
+				CopyFrom(globalShortcutKeys, *arguments.Obj());
+			}
+			else
+			{
+				globalShortcutKeys.Clear();
+			}
 		}
 
 		void RequestIORequireCapture() override
