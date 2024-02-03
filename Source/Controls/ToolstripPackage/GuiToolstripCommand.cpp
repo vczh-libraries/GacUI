@@ -20,7 +20,10 @@ GuiToolstripCommand
 
 			void GuiToolstripCommand::OnShortcutKeyItemExecuted(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
-				Executed.ExecuteWithNewSender(arguments, sender);
+				if (enabled)
+				{
+					Executed.ExecuteWithNewSender(arguments, sender);
+				}
 			}
 
 			void GuiToolstripCommand::OnRenderTargetChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
