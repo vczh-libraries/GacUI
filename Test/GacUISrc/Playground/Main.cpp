@@ -89,6 +89,24 @@ void OpenMainWindow()
 	}
 }
 
+void CopyWindowsKeyName()
+{
+	auto writer = GetCurrentController()->ClipboardService()->WriteClipboard();
+	writer->SetText(GenerateToStream([](TextWriter& writer)
+	{
+#undef KEY_EXECUTE
+#define RETRIEVE_KEY_NAME(NAME, CODE)\
+		{\
+			auto key =  GetCurrentController()->InputService()->GetKeyName(VKEY::KEY_ ## NAME);\
+			if (key != L"?") writer.WriteLine(L"ITEM(" L ## #NAME L", L\"" + GetCurrentController()->InputService()->GetKeyName(VKEY::KEY_ ## NAME) + L"\")");\
+		}\
+
+		GUI_DEFINE_KEYBOARD_CODE_BASIC(RETRIEVE_KEY_NAME)
+#undef RETRIEVE_KEY_NAME
+	}));
+	writer->Submit();
+}
+
 void GuiMain()
 {
 	LoadDarkSkinTypes();

@@ -67,7 +67,7 @@ WindowsInputService
 			WindowsInputService::WindowsInputService()
 				:ownerHandle(NULL)
 				,isTimerEnabled(false)
-				,keyNames(146)
+				,keyNames(255)
 			{
 				InitializeKeyNames();
 			}

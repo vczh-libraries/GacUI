@@ -871,6 +871,116 @@ ITEM(OEM_NEC_EQUAL,       0x92)		/* '=' key on numpad */						\
 			GUI_DEFINE_KEYBOARD_CODE_BASIC(ITEM)								\
 			GUI_DEFINE_KEYBOARD_CODE_ADDITIONAL(ITEM)							\
 
+
+#define GUI_DEFINE_KEYBOARD_WINDOWS_NAME(ITEM)									\
+ITEM(BACK,					L"Backspace")\
+ITEM(TAB,					L"Tab")\
+ITEM(RETURN,				L"Enter")\
+ITEM(SHIFT,					L"Shift")\
+ITEM(CONTROL,				L"Ctrl")\
+ITEM(MENU,					L"Alt")\
+ITEM(CAPITAL,				L"Caps Lock")\
+ITEM(ESCAPE,				L"Esc")\
+ITEM(SPACE,					L"Space")\
+ITEM(PRIOR,					L"Page Up")\
+ITEM(NEXT,					L"Page Down")\
+ITEM(END,					L"End")\
+ITEM(HOME,					L"Home")\
+ITEM(LEFT,					L"Left")\
+ITEM(UP,					L"Up")\
+ITEM(RIGHT,					L"Right")\
+ITEM(DOWN,					L"Down")\
+ITEM(SNAPSHOT,				L"Sys Req")\
+ITEM(INSERT,				L"Insert")\
+ITEM(DELETE,				L"Delete")\
+ITEM(0,						L"0")\
+ITEM(1,						L"1")\
+ITEM(2,						L"2")\
+ITEM(3,						L"3")\
+ITEM(4,						L"4")\
+ITEM(5,						L"5")\
+ITEM(6,						L"6")\
+ITEM(7,						L"7")\
+ITEM(8,						L"8")\
+ITEM(9,						L"9")\
+ITEM(A,						L"A")\
+ITEM(B,						L"B")\
+ITEM(C,						L"C")\
+ITEM(D,						L"D")\
+ITEM(E,						L"E")\
+ITEM(F,						L"F")\
+ITEM(G,						L"G")\
+ITEM(H,						L"H")\
+ITEM(I,						L"I")\
+ITEM(J,						L"J")\
+ITEM(K,						L"K")\
+ITEM(L,						L"L")\
+ITEM(M,						L"M")\
+ITEM(N,						L"N")\
+ITEM(O,						L"O")\
+ITEM(P,						L"P")\
+ITEM(Q,						L"Q")\
+ITEM(R,						L"R")\
+ITEM(S,						L"S")\
+ITEM(T,						L"T")\
+ITEM(U,						L"U")\
+ITEM(V,						L"V")\
+ITEM(W,						L"W")\
+ITEM(X,						L"X")\
+ITEM(Y,						L"Y")\
+ITEM(Z,						L"Z")\
+ITEM(NUMPAD0,				L"Num 0")\
+ITEM(NUMPAD1,				L"Num 1")\
+ITEM(NUMPAD2,				L"Num 2")\
+ITEM(NUMPAD3,				L"Num 3")\
+ITEM(NUMPAD4,				L"Num 4")\
+ITEM(NUMPAD5,				L"Num 5")\
+ITEM(NUMPAD6,				L"Num 6")\
+ITEM(NUMPAD7,				L"Num 7")\
+ITEM(NUMPAD8,				L"Num 8")\
+ITEM(NUMPAD9,				L"Num 9")\
+ITEM(MULTIPLY,				L"Num *")\
+ITEM(ADD,					L"Num +")\
+ITEM(SUBTRACT,				L"Num -")\
+ITEM(DECIMAL,				L"Num Del")\
+ITEM(DIVIDE,				L"/")\
+ITEM(F1,					L"F1")\
+ITEM(F2,					L"F2")\
+ITEM(F3,					L"F3")\
+ITEM(F4,					L"F4")\
+ITEM(F5,					L"F5")\
+ITEM(F6,					L"F6")\
+ITEM(F7,					L"F7")\
+ITEM(F8,					L"F8")\
+ITEM(F9,					L"F9")\
+ITEM(F10,					L"F10")\
+ITEM(F11,					L"F11")\
+ITEM(F12,					L"F12")\
+ITEM(NUMLOCK,				L"Pause")\
+ITEM(SCROLL,				L"Scroll Lock")\
+ITEM(BROWSER_HOME,			L"M")\
+ITEM(VOLUME_MUTE,			L"D")\
+ITEM(VOLUME_DOWN,			L"C")\
+ITEM(VOLUME_UP,				L"B")\
+ITEM(MEDIA_NEXT_TRACK,		L"P")\
+ITEM(MEDIA_PREV_TRACK,		L"Q")\
+ITEM(MEDIA_STOP,			L"J")\
+ITEM(MEDIA_PLAY_PAUSE,		L"G")\
+ITEM(LAUNCH_APP2,			L"F")\
+ITEM(OEM_PLUS,				L"=")\
+ITEM(OEM_COMMA,				L",")\
+ITEM(OEM_MINUS,				L"-")\
+ITEM(OEM_PERIOD,			L".")\
+ITEM(OEM_102,				L"\\")\
+ITEM(SEMICOLON,				L";")\
+ITEM(SLASH,					L"/")\
+ITEM(GRAVE_ACCENT,			L"`")\
+ITEM(RIGHT_BRACKET,			L"[")\
+ITEM(BACKSLASH,				L"\\")\
+ITEM(LEFT_BRACKET,			L"]")\
+ITEM(APOSTROPHE,			L"'")\
+
+
 #define GUI_DEFINE_KEYBOARD_CODE_ENUM_ITEM(NAME, CODE) KEY_##NAME = CODE,
 		enum class VKEY
 		{
