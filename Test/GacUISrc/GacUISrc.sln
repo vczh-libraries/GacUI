@@ -240,6 +240,7 @@ Global
 		Source_GacUI_Utilities_Controls\Source_GacUI_Utilities_Controls.vcxitems*{41f61ea9-e8b4-47c4-9946-36dca7e8272a}*SharedItemsImports = 4
 		Source_GacUI_Utilities_Reflection\Source_GacUI_Utilities_Reflection.vcxitems*{41f61ea9-e8b4-47c4-9946-36dca7e8272a}*SharedItemsImports = 4
 		Source_GacUI_Compiler\Source_GacUI_Compiler.vcxitems*{456fdc57-9687-4607-86a6-d43b7e72e740}*SharedItemsImports = 4
+		Source_GacUI_ProtocolCompiler\Source_GacUI_ProtocolCompiler.vcxitems*{456fdc57-9687-4607-86a6-d43b7e72e740}*SharedItemsImports = 4
 		Source_GacUI_Windows\Source_GacUI_Windows.vcxitems*{4a3faa16-fd8e-4de4-804a-95f0f45cbd82}*SharedItemsImports = 9
 		Source_GacUI_Core\Source_GacUI_Core.vcxitems*{5395cea2-f2a6-4dfa-a8c3-070e8f3b5a43}*SharedItemsImports = 9
 		Source_GacUI\Source_GacUI.vcxitems*{543b32d9-e229-472a-9d11-9bf12c7982bd}*SharedItemsImports = 4

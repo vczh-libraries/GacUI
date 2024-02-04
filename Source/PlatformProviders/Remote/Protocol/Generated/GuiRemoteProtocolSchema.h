@@ -144,6 +144,31 @@ namespace vl::presentation::remoteprotocol
 	HANDLER(WindowBoundsUpdated, vl::presentation::remoteprotocol::WindowSizingConfig, REQ, DROPREP)\
 	HANDLER(WindowActivatedUpdated, bool, REQ, DROPREP)\
 
+#define GACUI_REMOTEPROTOCOL_MESSAGE_REQUEST_TYPES(HANDLER)\
+	HANDLER(::vl::Ptr<::vl::collections::List<vl::presentation::remoteprotocol::GlobalShortcutKey>>)\
+	HANDLER(::vl::WString)\
+	HANDLER(::vl::presentation::NativeRect)\
+	HANDLER(::vl::presentation::NativeSize)\
+	HANDLER(::vl::presentation::VKEY)\
+	HANDLER(bool)\
+	HANDLER(vl::presentation::remoteprotocol::WindowShowing)\
+
+#define GACUI_REMOTEPROTOCOL_MESSAGE_RESPONSE_TYPES(HANDLER)\
+	HANDLER(bool)\
+	HANDLER(vl::presentation::remoteprotocol::FontConfig)\
+	HANDLER(vl::presentation::remoteprotocol::ScreenConfig)\
+	HANDLER(vl::presentation::remoteprotocol::WindowSizingConfig)\
+
+#define GACUI_REMOTEPROTOCOL_EVENT_REQUEST_TYPES(HANDLER)\
+	HANDLER(::vl::presentation::NativeWindowCharInfo)\
+	HANDLER(::vl::presentation::NativeWindowKeyInfo)\
+	HANDLER(::vl::presentation::NativeWindowMouseInfo)\
+	HANDLER(::vl::vint)\
+	HANDLER(bool)\
+	HANDLER(vl::presentation::remoteprotocol::IOMouseInfoWithButton)\
+	HANDLER(vl::presentation::remoteprotocol::ScreenConfig)\
+	HANDLER(vl::presentation::remoteprotocol::WindowSizingConfig)\
+
 }
 
 #endif

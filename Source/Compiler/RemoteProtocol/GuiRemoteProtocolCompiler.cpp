@@ -452,6 +452,66 @@ GenerateRemoteProtocolHeaderFile
 		}
 		writer.WriteLine(L"");
 
+		SortedList<WString> requestTypes, responseTypes, eventTypes;
+		{
+			for (auto messageDecl : From(schema->declarations).FindType<GuiRpMessageDecl>())
+			{
+				if (messageDecl->request)
+				{
+					auto type = stream::GenerateToStream([&](stream::TextWriter& writer)
+					{
+						GuiRpPrintTypeVisitor visitor(symbols, config, writer);
+						messageDecl->request->type->Accept(&visitor);
+					});
+					if (!requestTypes.Contains(type))
+					{
+						requestTypes.Add(type);
+					}
+				}
+
+				if (messageDecl->response)
+				{
+					auto type = stream::GenerateToStream([&](stream::TextWriter& writer)
+					{
+						GuiRpPrintTypeVisitor visitor(symbols, config, writer);
+						messageDecl->response->type->Accept(&visitor);
+					});
+					if (!responseTypes.Contains(type))
+					{
+						responseTypes.Add(type);
+					}
+				}
+			}
+
+			for (auto eventDecl : From(schema->declarations).FindType<GuiRpEventDecl>())
+			{
+				if (eventDecl->request)
+				{
+					auto type = stream::GenerateToStream([&](stream::TextWriter& writer)
+					{
+						GuiRpPrintTypeVisitor visitor(symbols, config, writer);
+					eventDecl->request->type->Accept(&visitor);
+					});
+					if (!eventTypes.Contains(type))
+					{
+						eventTypes.Add(type);
+					}
+				}
+			}
+		}
+
+		writer.WriteLine(L"#define GACUI_REMOTEPROTOCOL_MESSAGE_REQUEST_TYPES(HANDLER)\\");
+		for (auto type : requestTypes) writer.WriteLine(L"\tHANDLER(" + type + L")\\");
+		writer.WriteLine(L"");
+
+		writer.WriteLine(L"#define GACUI_REMOTEPROTOCOL_MESSAGE_RESPONSE_TYPES(HANDLER)\\");
+		for (auto type : responseTypes) writer.WriteLine(L"\tHANDLER(" + type + L")\\");
+		writer.WriteLine(L"");
+
+		writer.WriteLine(L"#define GACUI_REMOTEPROTOCOL_EVENT_REQUEST_TYPES(HANDLER)\\");
+		for (auto type : eventTypes) writer.WriteLine(L"\tHANDLER(" + type + L")\\");
+		writer.WriteLine(L"");
+
 		writer.WriteLine(L"}");
 		writer.WriteLine(L"");
 		writer.WriteLine(L"#endif");

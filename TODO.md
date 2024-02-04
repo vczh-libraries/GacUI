@@ -25,16 +25,8 @@
 
 - A general remoting `INativeController` implementation.
   - Add hittest messages, or implement it with SyncDom.
-  - Implement `[@Drop(Repeat|Consecutive)]` after unit test against remoting `INativeWindow` is done.
-    - `vl::Variant<T...>`.
-    - Implement `[@DropRepeat]` message in `GuiRemoteMessageFilter` and redirect to another `IGuiRemoteProtocol`.
-    - Implement `[@Drop(Repeat|Consecutive)]` events in `GuiRemoteEventFilter` and redirect to another `IGuiRemoteEvents`.
-    - Change `GuiRemoteMessages` to take `IGuiRemoteProtocol` instead of `GuiRemoteController`.
-    - Apply `GuiRemoteMessageFilter` inside `GuiRemoteMessages`.
-    - Apply `GuiRemoteEventFilter` inside `GuiRemoteController` and redirect to `GuiRemoteEvents`.
-    - Implement `GuiRemote(Message|Event)Verifier` to verify dropped messages/events not be called.
-    - In debug mode, apply `GuiRemote(Message|Event)Verifier` inside `GuiRemoteMessages`.
-    - Remote `[@Drop(Repeat|Consecutive)]` in `BatchedProtocol`.
+  - Move `GuiRemoteMessageFilter` and `GuiRemoteEventFilter` from unit test to `GuiRemoteController`.
+  - Verify dropped messages/events not be called in unit test.
 - SyncDom architecture that streams layout/element changes, requiring Hosted for the first version.
   - An implementation of remoting.
   - Requires hosted mode.
