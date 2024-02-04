@@ -1,16 +1,78 @@
-#ifndef GACUISRC_REMOTE_BATCHEDPROTOCOL
-#define GACUISRC_REMOTE_BATCHEDPROTOCOL
+#ifndef GACUISRC_REMOTE_FILTEREDPROTOCOL
+#define GACUISRC_REMOTE_FILTEREDPROTOCOL
 
 #include "../../../Source/PlatformProviders/Remote/GuiRemoteProtocol.h"
 
 namespace vl::presentation::remoteprotocol
 {
-	struct BatchedRequest
+	using FilteredRequestTypes = Variant<std::nullptr_t
+#define FILTERED_VARIANT_ELEMENT(TYPE) ,TYPE
+		GACUI_REMOTEPROTOCOL_MESSAGE_REQUEST_TYPES(FILTERED_VARIANT_ELEMENT)
+#undef FILTERED_VARIANT_ELEMENT
+		>;
+	
+	using FilteredResponseTypes = Variant<std::nullptr_t
+#define FILTERED_VARIANT_ELEMENT(TYPE) ,TYPE
+		GACUI_REMOTEPROTOCOL_MESSAGE_RESPONSE_TYPES(FILTERED_VARIANT_ELEMENT)
+#undef FILTERED_VARIANT_ELEMENT
+		>;
+	
+	using FilteredEventTypes = Variant<std::nullptr_t
+#define FILTERED_VARIANT_ELEMENT(TYPE) ,TYPE
+		GACUI_REMOTEPROTOCOL_EVENT_REQUEST_TYPES(FILTERED_VARIANT_ELEMENT)
+#undef FILTERED_VARIANT_ELEMENT
+		>;
+
+	enum class FilteredRequestNames
 	{
-		bool			dropped = false;
-		vint			id = -1;
-		const wchar_t*	name = nullptr;
-		WString			arguments;
+		Unknown,
+#define FILTERED_ENUM_ITEM(NAME, ...) NAME,
+		GACUI_REMOTEPROTOCOL_EVENTS(FILTERED_ENUM_ITEM)
+#undef FILTERED_ENUM_ITEM
+	};
+
+	enum class FilteredResponseNames
+	{
+		Unknown,
+#define FILTERED_ENUM_ITEM_NORES(NAME)
+#define FILTERED_ENUM_ITEM_RES(NAME) NAME,
+#define FILTERED_ENUN_ITEM(NAME, REQUEST, RESPONSE, REQTAG, RESTAG, ...) FILTERED_ENUM_ITEM_ ## RESTAG(NAME)
+		GACUI_REMOTEPROTOCOL_MESSAGES(FILTERED_ENUN_ITEM)
+#undef FILTERED_ENUM_ITEM
+#undef FILTERED_ENUM_ITEM_RES
+#undef FILTERED_ENUM_ITEM_NORES
+	};
+
+	enum class FilteredEventNames
+	{
+		Unknown,
+#define FILTERED_ENUM_ITEM(NAME, ...) NAME,
+		GACUI_REMOTEPROTOCOL_EVENTS(FILTERED_ENUM_ITEM)
+#undef FILTERED_ENUM_ITEM
+	};
+
+	struct FilteredRequest
+	{
+		bool					dropped = false;
+		vint					id = -1;
+		FilteredRequestNames	name = FilteredRequestNames::Unknown;
+		FilteredRequestTypes	arguments;
+	};
+
+	struct FilteredResponse
+	{
+		bool					dropped = false;
+		vint					id = -1;
+		FilteredResponseNames	name = FilteredResponseNames::Unknown;
+		FilteredResponseTypes	arguments;
+	};
+
+	struct FilteredEvent
+	{
+		bool					dropped = false;
+		vint					id = -1;
+		FilteredEventNames		name = FilteredEventNames::Unknown;
+		FilteredEventTypes		arguments;
 	};
 	
 	class BatchedProtocol
