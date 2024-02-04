@@ -38,7 +38,8 @@
   - Each character takes exactly `FontSize x FontSize`
   - Deal with `\r` and `\n` when multiline is enabled
   - Do not support complex text elements yet.
-  - Metadata from requests are needed from the beginning for codegen, metadata will be included in release.
+  - Metadata from requests are needed from the beginning for codegen, metadata will be updated and included in release.
+  - `INativeImageService`:
     - Save image metadata (width, height, type, etc) to binary resource
     - For `INativeImageService::CreateImage*` functions it sends binary data to the receiver and wait for respond of metadata.
     - Unit test only `<PsuedoImage/>` to specify only the size in resource.
