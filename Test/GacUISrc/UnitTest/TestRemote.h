@@ -1,6 +1,10 @@
+#include "TestRemote_Shared_FilterProtocol.h"
 #include "TestRemote_Shared_BatchedProtocol.h"
-#include "TestRemote_Shared_LoggingWindowListener.h"
 #include "TestRemote_Shared_NoRenderingProtocol.h"
+#include "TestRemote_Shared_LoggingWindowListener.h"
+
+#include "../../../Source/GacUI.h"
+#include "../../../Source/PlatformProviders/Remote/GuiRemoteController.h"
 
 using namespace remote_protocol_tests;
 

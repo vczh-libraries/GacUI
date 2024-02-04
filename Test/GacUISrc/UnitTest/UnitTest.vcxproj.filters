@@ -255,5 +255,8 @@
     <ClInclude Include="TestRemote_GraphicsHost_Shared.h">
       <Filter>Source Files\Remote\GraphicsHost</Filter>
     </ClInclude>
+    <ClInclude Include="TestRemote_Shared_FilterProtocol.h">
+      <Filter>Source Files\Remote\Shared</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

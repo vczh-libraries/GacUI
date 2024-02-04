@@ -1,8 +1,7 @@
 #ifndef GACUISRC_REMOTE_NORENDERINGPROTOCOL
 #define GACUISRC_REMOTE_NORENDERINGPROTOCOL
 
-#include "../../../Source/GacUI.h"
-#include "../../../Source/PlatformProviders/Remote/GuiRemoteController.h"
+#include "../../../Source/PlatformProviders/Remote/GuiRemoteProtocol.h"
 
 using namespace vl;
 using namespace vl::collections;

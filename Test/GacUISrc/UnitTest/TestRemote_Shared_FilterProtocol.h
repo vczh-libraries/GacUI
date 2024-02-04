@@ -3,12 +3,7 @@
 
 #include "../../../Source/PlatformProviders/Remote/GuiRemoteProtocol.h"
 
-using namespace vl;
-using namespace vl::collections;
-using namespace vl::presentation;
-using namespace vl::presentation::remoteprotocol;
-
-namespace remote_protocol_tests
+namespace vl::presentation::remoteprotocol
 {
 	struct BatchedRequest
 	{
