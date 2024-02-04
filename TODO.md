@@ -1,5 +1,10 @@
 # TODO
 
+## Completed but not released
+
+- `vl::Variant`
+- `vl::Overloading`
+
 ## Known Issues
 
 - `GuiVirtualRepeatCompositionBase`.
