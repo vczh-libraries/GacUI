@@ -85,6 +85,7 @@ DEVELOPER: Zihan Chen(vczh)
 #include "..\..\Source\PlatformProviders\Remote\GuiRemoteController.cpp"
 #include "..\..\Source\PlatformProviders\Remote\GuiRemoteControllerSetup.cpp"
 #include "..\..\Source\PlatformProviders\Remote\GuiRemoteEvents.cpp"
+#include "..\..\Source\PlatformProviders\Remote\GuiRemoteGraphics.cpp"
 #include "..\..\Source\PlatformProviders\Remote\GuiRemoteProtocolSchemaShared.cpp"
 #include "..\..\Source\PlatformProviders\Remote\GuiRemoteWindow.cpp"
 #include "..\..\Source\PlatformProviders\Remote\Protocol\Generated\GuiRemoteProtocolSchema.cpp"

@@ -1097,6 +1097,8 @@ namespace vl::presentation::remoteprotocol
 		Float = 2,
 		Double = 3,
 		String = 4,
+		Char = 5,
+		Key = 6,
 	};
 
 	class GuiRpType abstract : public vl::glr::ParsingAstBase, vl::reflection::Description<GuiRpType>
@@ -1476,22 +1478,24 @@ namespace vl::presentation::remoteprotocol
 		FLOAT = 9,
 		DOUBLE = 10,
 		STRING = 11,
-		CPP_NAME = 12,
-		ATT_NAME = 13,
-		NAME = 14,
-		OPEN_BRACE = 15,
-		CLOSE_BRACE = 16,
-		OPEN_ARRAY = 17,
-		CLOSE_ARRAY = 18,
-		OPEN = 19,
-		CLOSE = 20,
-		COLON = 21,
-		SEMICOLON = 22,
-		COMMA = 23,
-		SPACE = 24,
+		CHAR = 12,
+		KEY = 13,
+		CPP_NAME = 14,
+		ATT_NAME = 15,
+		NAME = 16,
+		OPEN_BRACE = 17,
+		CLOSE_BRACE = 18,
+		OPEN_ARRAY = 19,
+		CLOSE_ARRAY = 20,
+		OPEN = 21,
+		CLOSE = 22,
+		COLON = 23,
+		SEMICOLON = 24,
+		COMMA = 25,
+		SPACE = 26,
 	};
 
-	constexpr vl::vint GuiRemoteProtocolTokenCount = 25;
+	constexpr vl::vint GuiRemoteProtocolTokenCount = 27;
 	extern bool GuiRemoteProtocolTokenDeleter(vl::vint token);
 	extern const wchar_t* GuiRemoteProtocolTokenId(GuiRemoteProtocolTokens token);
 	extern const wchar_t* GuiRemoteProtocolTokenDisplayText(GuiRemoteProtocolTokens token);
@@ -1518,20 +1522,20 @@ namespace vl::presentation::remoteprotocol
 	enum class ParserStates
 	{
 		RType = 0,
-		RAttributeParameter = 11,
-		RAttribute = 14,
-		REnumMember = 22,
-		REnum = 26,
-		RStructMember = 33,
-		RStruct = 40,
-		RMessageRequest = 47,
-		RMessageResponse = 53,
-		RMessage = 59,
-		REventRequest = 67,
-		REvent = 73,
-		RDeclDetail = 80,
-		RDecl = 86,
-		Schema = 90,
+		RAttributeParameter = 13,
+		RAttribute = 16,
+		REnumMember = 24,
+		REnum = 28,
+		RStructMember = 35,
+		RStruct = 42,
+		RMessageRequest = 49,
+		RMessageResponse = 55,
+		RMessage = 61,
+		REventRequest = 69,
+		REvent = 75,
+		RDeclDetail = 82,
+		RDecl = 88,
+		Schema = 92,
 	};
 
 	const wchar_t* ParserRuleName(vl::vint index);

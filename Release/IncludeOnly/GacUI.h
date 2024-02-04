@@ -36,6 +36,7 @@ DEVELOPER: Zihan Chen(vczh)
 #include "..\..\Source\PlatformProviders\Hosted\GuiHostedGraphics.h"
 #include "..\..\Source\PlatformProviders\Hosted\GuiHostedWindowManager.h"
 #include "..\..\Source\PlatformProviders\Hosted\GuiHostedWindow.h"
+#include "..\..\Source\PlatformProviders\Remote\GuiRemoteGraphics.h"
 #include "..\..\Source\PlatformProviders\Remote\GuiRemoteProtocolSchemaShared.h"
 #include "..\..\Source\PlatformProviders\Remote\GuiRemoteWindow.h"
 #include "..\..\Source\PlatformProviders\Remote\Protocol\Generated\GuiRemoteProtocolSchema.h"

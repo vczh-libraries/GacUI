@@ -648,7 +648,7 @@ Resources
 Keys
 ***********************************************************************/
 
-#define GUI_DEFINE_KEYBOARD_CODE(ITEM)											\
+#define GUI_DEFINE_KEYBOARD_CODE_BASIC(ITEM)									\
 /*																				\
  * Virtual Keys, Standard Set													\
  */																				\
@@ -670,7 +670,6 @@ ITEM(CAPITAL,             0x14)													\
 ITEM(KANA_HANGUL,         0x15)													\
 ITEM(JUNJA,               0x17)													\
 ITEM(FINAL,               0x18)													\
-ITEM(HANJA,               0x19)													\
 ITEM(KANJI,               0x19)													\
 ITEM(ESCAPE,              0x1B)													\
 ITEM(CONVERT,             0x1C)													\
@@ -780,10 +779,6 @@ ITEM(F24,                 0x87)													\
 ITEM(NUMLOCK,             0x90)													\
 ITEM(SCROLL,              0x91)													\
 /*																				\
- * NEC PC-9800 kbd definitions													\
- */																				\
-ITEM(OEM_NEC_EQUAL,       0x92)		/* '=' key on numpad */						\
-/*																				\
  * Fujitsu/OASYS kbd definitions												\
  */																				\
 ITEM(OEM_FJ_JISHO,        0x92)		/* 'Dictionary' key */						\
@@ -820,17 +815,10 @@ ITEM(LAUNCH_MAIL,         0xB4)													\
 ITEM(LAUNCH_MEDIA_SELECT, 0xB5)													\
 ITEM(LAUNCH_APP1,         0xB6)													\
 ITEM(LAUNCH_APP2,         0xB7)													\
-ITEM(OEM_1,               0xBA)		/* ';:' for US */							\
 ITEM(OEM_PLUS,            0xBB)		/* '+' any country */						\
 ITEM(OEM_COMMA,           0xBC)		/* ',' any country */						\
 ITEM(OEM_MINUS,           0xBD)		/* '-' any country */						\
 ITEM(OEM_PERIOD,          0xBE)		/* '.' any country */						\
-ITEM(OEM_2,               0xBF)		/* '/?' for US */							\
-ITEM(OEM_3,               0xC0)		/* '`~' for US */							\
-ITEM(OEM_4,               0xDB)		/* '[{' for US */							\
-ITEM(OEM_5,               0xDC)		/* '\|' for US */							\
-ITEM(OEM_6,               0xDD)		/* ']}' for US */							\
-ITEM(OEM_7,               0xDE)		/* ''"' for US */							\
 ITEM(OEM_8,               0xDF)													\
 /*																				\
  * Various extended or enhanced keyboards										\
@@ -878,19 +866,142 @@ ITEM(BACKSLASH,           0xDC)		/* OEM_5 */									\
 ITEM(LEFT_BRACKET,        0xDD)		/* OEM_6 */									\
 ITEM(APOSTROPHE,          0xDE)		/* OEM_7 */									\
 
+#define GUI_DEFINE_KEYBOARD_CODE_ADDITIONAL(ITEM)								\
+ITEM(OEM_1,               0xBA)		/* ';:' for US */							\
+ITEM(OEM_2,               0xBF)		/* '/?' for US */							\
+ITEM(OEM_3,               0xC0)		/* '`~' for US */							\
+ITEM(OEM_4,               0xDB)		/* '[{' for US */							\
+ITEM(OEM_5,               0xDC)		/* '\|' for US */							\
+ITEM(OEM_6,               0xDD)		/* ']}' for US */							\
+ITEM(OEM_7,               0xDE)		/* ''"' for US */							\
+ITEM(HANJA,               0x19)													\
+/*																				\
+ * NEC PC-9800 kbd definitions													\
+ */																				\
+ITEM(OEM_NEC_EQUAL,       0x92)		/* '=' key on numpad */						\
+
+#define GUI_DEFINE_KEYBOARD_CODE(ITEM)											\
+			GUI_DEFINE_KEYBOARD_CODE_BASIC(ITEM)								\
+			GUI_DEFINE_KEYBOARD_CODE_ADDITIONAL(ITEM)							\
+
+
+#define GUI_DEFINE_KEYBOARD_WINDOWS_NAME(ITEM)									\
+ITEM(BACK,					L"Backspace")\
+ITEM(TAB,					L"Tab")\
+ITEM(RETURN,				L"Enter")\
+ITEM(SHIFT,					L"Shift")\
+ITEM(CONTROL,				L"Ctrl")\
+ITEM(MENU,					L"Alt")\
+ITEM(CAPITAL,				L"Caps Lock")\
+ITEM(ESCAPE,				L"Esc")\
+ITEM(SPACE,					L"Space")\
+ITEM(PRIOR,					L"Page Up")\
+ITEM(NEXT,					L"Page Down")\
+ITEM(END,					L"End")\
+ITEM(HOME,					L"Home")\
+ITEM(LEFT,					L"Left")\
+ITEM(UP,					L"Up")\
+ITEM(RIGHT,					L"Right")\
+ITEM(DOWN,					L"Down")\
+ITEM(SNAPSHOT,				L"Sys Req")\
+ITEM(INSERT,				L"Insert")\
+ITEM(DELETE,				L"Delete")\
+ITEM(0,						L"0")\
+ITEM(1,						L"1")\
+ITEM(2,						L"2")\
+ITEM(3,						L"3")\
+ITEM(4,						L"4")\
+ITEM(5,						L"5")\
+ITEM(6,						L"6")\
+ITEM(7,						L"7")\
+ITEM(8,						L"8")\
+ITEM(9,						L"9")\
+ITEM(A,						L"A")\
+ITEM(B,						L"B")\
+ITEM(C,						L"C")\
+ITEM(D,						L"D")\
+ITEM(E,						L"E")\
+ITEM(F,						L"F")\
+ITEM(G,						L"G")\
+ITEM(H,						L"H")\
+ITEM(I,						L"I")\
+ITEM(J,						L"J")\
+ITEM(K,						L"K")\
+ITEM(L,						L"L")\
+ITEM(M,						L"M")\
+ITEM(N,						L"N")\
+ITEM(O,						L"O")\
+ITEM(P,						L"P")\
+ITEM(Q,						L"Q")\
+ITEM(R,						L"R")\
+ITEM(S,						L"S")\
+ITEM(T,						L"T")\
+ITEM(U,						L"U")\
+ITEM(V,						L"V")\
+ITEM(W,						L"W")\
+ITEM(X,						L"X")\
+ITEM(Y,						L"Y")\
+ITEM(Z,						L"Z")\
+ITEM(NUMPAD0,				L"Num 0")\
+ITEM(NUMPAD1,				L"Num 1")\
+ITEM(NUMPAD2,				L"Num 2")\
+ITEM(NUMPAD3,				L"Num 3")\
+ITEM(NUMPAD4,				L"Num 4")\
+ITEM(NUMPAD5,				L"Num 5")\
+ITEM(NUMPAD6,				L"Num 6")\
+ITEM(NUMPAD7,				L"Num 7")\
+ITEM(NUMPAD8,				L"Num 8")\
+ITEM(NUMPAD9,				L"Num 9")\
+ITEM(MULTIPLY,				L"Num *")\
+ITEM(ADD,					L"Num +")\
+ITEM(SUBTRACT,				L"Num -")\
+ITEM(DECIMAL,				L"Num Del")\
+ITEM(DIVIDE,				L"/")\
+ITEM(F1,					L"F1")\
+ITEM(F2,					L"F2")\
+ITEM(F3,					L"F3")\
+ITEM(F4,					L"F4")\
+ITEM(F5,					L"F5")\
+ITEM(F6,					L"F6")\
+ITEM(F7,					L"F7")\
+ITEM(F8,					L"F8")\
+ITEM(F9,					L"F9")\
+ITEM(F10,					L"F10")\
+ITEM(F11,					L"F11")\
+ITEM(F12,					L"F12")\
+ITEM(NUMLOCK,				L"Pause")\
+ITEM(SCROLL,				L"Scroll Lock")\
+ITEM(BROWSER_HOME,			L"M")\
+ITEM(VOLUME_MUTE,			L"D")\
+ITEM(VOLUME_DOWN,			L"C")\
+ITEM(VOLUME_UP,				L"B")\
+ITEM(MEDIA_NEXT_TRACK,		L"P")\
+ITEM(MEDIA_PREV_TRACK,		L"Q")\
+ITEM(MEDIA_STOP,			L"J")\
+ITEM(MEDIA_PLAY_PAUSE,		L"G")\
+ITEM(LAUNCH_APP2,			L"F")\
+ITEM(OEM_PLUS,				L"=")\
+ITEM(OEM_COMMA,				L",")\
+ITEM(OEM_MINUS,				L"-")\
+ITEM(OEM_PERIOD,			L".")\
+ITEM(OEM_102,				L"\\")\
+ITEM(SEMICOLON,				L";")\
+ITEM(SLASH,					L"/")\
+ITEM(GRAVE_ACCENT,			L"`")\
+ITEM(RIGHT_BRACKET,			L"[")\
+ITEM(BACKSLASH,				L"\\")\
+ITEM(LEFT_BRACKET,			L"]")\
+ITEM(APOSTROPHE,			L"'")\
+
 #define GUI_DEFINE_KEYBOARD_CODE_ENUM_ITEM(NAME, CODE) KEY_##NAME = CODE,
 		enum class VKEY
 		{
 			KEY_UNKNOWN = -1,
+			KEY_MAXIMUM = 255,
 			GUI_DEFINE_KEYBOARD_CODE(GUI_DEFINE_KEYBOARD_CODE_ENUM_ITEM)
 		};
 #undef GUI_DEFINE_KEYBOARD_CODE_ENUM_ITEM
-		static bool operator == (VKEY a, VKEY b) { return (vint)a == (vint)b; }
-		static bool operator != (VKEY a, VKEY b) { return (vint)a != (vint)b; }
-		static bool operator <  (VKEY a, VKEY b) { return (vint)a <  (vint)b; }
-		static bool operator <= (VKEY a, VKEY b) { return (vint)a <= (vint)b; }
-		static bool operator >  (VKEY a, VKEY b) { return (vint)a >  (vint)b; }
-		static bool operator >= (VKEY a, VKEY b) { return (vint)a >= (vint)b; }
+		static auto operator <=> (VKEY a, VKEY b) { return (vint)a <=> (vint)b; }
 		static VKEY operator &  (VKEY a, VKEY b) { return (VKEY)((vint)a & (vint)b); }
 		static VKEY operator |  (VKEY a, VKEY b) { return (VKEY)((vint)a | (vint)b); }
 
@@ -7890,6 +8001,80 @@ GuiHostedWindow
 #endif
 
 /***********************************************************************
+.\PLATFORMPROVIDERS\REMOTE\GUIREMOTEGRAPHICS.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI::Remote Window
+
+Interfaces:
+  GuiRemoteController
+
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_GUIREMOTEGRAPHICS
+#define VCZH_PRESENTATION_GUIREMOTEGRAPHICS
+
+
+namespace vl::presentation
+{
+	class GuiRemoteController;
+
+	namespace elements
+	{
+/***********************************************************************
+GuiRemoteGraphicsRenderTarget
+***********************************************************************/
+
+		class GuiRemoteGraphicsRenderTarget : public GuiGraphicsRenderTarget
+		{
+		protected:
+			GuiRemoteController*				remote;
+			NativeSize							canvasSize;
+
+			void								StartRenderingOnNativeWindow() override;
+			RenderTargetFailure					StopRenderingOnNativeWindow() override;
+
+			Size								GetCanvasSize() override;
+			void								AfterPushedClipper(Rect clipper, Rect validArea) override;
+			void								AfterPushedClipperAndBecameInvalid(Rect clipper) override;
+			void								AfterPoppedClipperAndBecameValid(Rect validArea, bool clipperExists) override;
+			void								AfterPoppedClipper(Rect validArea, bool clipperExists) override;
+		public:
+			GuiRemoteGraphicsRenderTarget(GuiRemoteController* _remote);
+			~GuiRemoteGraphicsRenderTarget();
+		};
+
+/***********************************************************************
+GuiRemoteGraphicsResourceManager
+***********************************************************************/
+
+		class GuiRemoteGraphicsResourceManager : public GuiGraphicsResourceManager
+		{
+		protected:
+			GuiRemoteController*				remote;
+			GuiRemoteGraphicsRenderTarget		renderTarget;
+
+		public:
+			GuiRemoteGraphicsResourceManager(GuiRemoteController* _remote);
+			~GuiRemoteGraphicsResourceManager();
+
+			// =============================================================
+			// IGuiGraphicsResourceManager
+			// =============================================================
+
+			IGuiGraphicsRenderTarget*			GetRenderTarget(INativeWindow* window) override;
+			void								RecreateRenderTarget(INativeWindow* window) override;
+			void								ResizeRenderTarget(INativeWindow* window) override;
+			IGuiGraphicsLayoutProvider*			GetLayoutProvider() override;
+		};
+	}
+}
+
+#endif
+
+/***********************************************************************
 .\PLATFORMPROVIDERS\REMOTE\GUIREMOTEPROTOCOLSCHEMASHARED.H
 ***********************************************************************/
 /***********************************************************************
@@ -7926,6 +8111,8 @@ namespace vl::presentation::remoteprotocol
 	template<> Ptr<glr::json::JsonNode> ConvertCustomTypeToJson<float>(const float& value);
 	template<> Ptr<glr::json::JsonNode> ConvertCustomTypeToJson<double>(const double& value);
 	template<> Ptr<glr::json::JsonNode> ConvertCustomTypeToJson<WString>(const WString& value);
+	template<> Ptr<glr::json::JsonNode> ConvertCustomTypeToJson<wchar_t>(const wchar_t& value);
+	template<> Ptr<glr::json::JsonNode> ConvertCustomTypeToJson<VKEY>(const VKEY& value);
 
 	template<typename T>
 	void ConvertJsonToCustomType(Ptr<glr::json::JsonNode> node, T& value)
@@ -7938,6 +8125,8 @@ namespace vl::presentation::remoteprotocol
 	template<> void ConvertJsonToCustomType<float>(Ptr<glr::json::JsonNode> node, float& value);
 	template<> void ConvertJsonToCustomType<double>(Ptr<glr::json::JsonNode> node, double& value);
 	template<> void ConvertJsonToCustomType<WString>(Ptr<glr::json::JsonNode> node, WString& value);
+	template<> void ConvertJsonToCustomType<wchar_t>(Ptr<glr::json::JsonNode> node, wchar_t& value);
+	template<> void ConvertJsonToCustomType<VKEY>(Ptr<glr::json::JsonNode> node, VKEY& value);
 
 	template<typename T>
 	void ConvertCustomTypeToJsonField(Ptr<glr::json::JsonObject> node, const wchar_t* name, const T& value)
@@ -7975,7 +8164,7 @@ namespace vl::presentation::remoteprotocol
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<T>(Ptr<JsonNode>, Ptr<List<T>>&)#"
 			if (auto jsonLiteral = node.Cast<glr::json::JsonLiteral>())
 			{
-				if (jsonLiteral->value != glr::json::JsonLiteralValue::Null)
+				if (jsonLiteral->value == glr::json::JsonLiteralValue::Null)
 				{
 					value = {};
 					return;
@@ -8176,6 +8365,13 @@ Licensed under https ://github.com/vczh-libraries/License
 
 namespace vl::presentation::remoteprotocol
 {
+	enum class IOMouseButton
+	{
+		Left,
+		Middle,
+		Right,
+	};
+
 	struct FontConfig
 	{
 		::vl::presentation::FontProperties defaultFont;
@@ -8188,6 +8384,21 @@ namespace vl::presentation::remoteprotocol
 		::vl::presentation::NativeRect clientBounds;
 		double scalingX;
 		double scalingY;
+	};
+
+	struct IOMouseInfoWithButton
+	{
+		vl::presentation::remoteprotocol::IOMouseButton button;
+		::vl::presentation::NativeWindowMouseInfo info;
+	};
+
+	struct GlobalShortcutKey
+	{
+		::vl::vint id;
+		bool ctrl;
+		bool shift;
+		bool alt;
+		::vl::presentation::VKEY code;
 	};
 
 	struct WindowSizingConfig
@@ -8204,6 +8415,7 @@ namespace vl::presentation::remoteprotocol
 		::vl::presentation::INativeWindow::WindowSizeState sizeState;
 	};
 
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<vl::presentation::remoteprotocol::IOMouseButton>(const vl::presentation::remoteprotocol::IOMouseButton & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::INativeWindow::WindowSizeState>(const ::vl::presentation::INativeWindow::WindowSizeState & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::NativeCoordinate>(const ::vl::presentation::NativeCoordinate & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::NativePoint>(const ::vl::presentation::NativePoint & value);
@@ -8213,9 +8425,15 @@ namespace vl::presentation::remoteprotocol
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::FontProperties>(const ::vl::presentation::FontProperties & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<vl::presentation::remoteprotocol::FontConfig>(const vl::presentation::remoteprotocol::FontConfig & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<vl::presentation::remoteprotocol::ScreenConfig>(const vl::presentation::remoteprotocol::ScreenConfig & value);
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::NativeWindowMouseInfo>(const ::vl::presentation::NativeWindowMouseInfo & value);
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<vl::presentation::remoteprotocol::IOMouseInfoWithButton>(const vl::presentation::remoteprotocol::IOMouseInfoWithButton & value);
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::NativeWindowKeyInfo>(const ::vl::presentation::NativeWindowKeyInfo & value);
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::NativeWindowCharInfo>(const ::vl::presentation::NativeWindowCharInfo & value);
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<vl::presentation::remoteprotocol::GlobalShortcutKey>(const vl::presentation::remoteprotocol::GlobalShortcutKey & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<vl::presentation::remoteprotocol::WindowSizingConfig>(const vl::presentation::remoteprotocol::WindowSizingConfig & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<vl::presentation::remoteprotocol::WindowShowing>(const vl::presentation::remoteprotocol::WindowShowing & value);
 
+	template<> void ConvertJsonToCustomType<vl::presentation::remoteprotocol::IOMouseButton>(vl::Ptr<vl::glr::json::JsonNode> node, vl::presentation::remoteprotocol::IOMouseButton& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::INativeWindow::WindowSizeState>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::INativeWindow::WindowSizeState& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::NativeCoordinate>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::NativeCoordinate& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::NativePoint>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::NativePoint& value);
@@ -8225,6 +8443,11 @@ namespace vl::presentation::remoteprotocol
 	template<> void ConvertJsonToCustomType<::vl::presentation::FontProperties>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::FontProperties& value);
 	template<> void ConvertJsonToCustomType<vl::presentation::remoteprotocol::FontConfig>(vl::Ptr<vl::glr::json::JsonNode> node, vl::presentation::remoteprotocol::FontConfig& value);
 	template<> void ConvertJsonToCustomType<vl::presentation::remoteprotocol::ScreenConfig>(vl::Ptr<vl::glr::json::JsonNode> node, vl::presentation::remoteprotocol::ScreenConfig& value);
+	template<> void ConvertJsonToCustomType<::vl::presentation::NativeWindowMouseInfo>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::NativeWindowMouseInfo& value);
+	template<> void ConvertJsonToCustomType<vl::presentation::remoteprotocol::IOMouseInfoWithButton>(vl::Ptr<vl::glr::json::JsonNode> node, vl::presentation::remoteprotocol::IOMouseInfoWithButton& value);
+	template<> void ConvertJsonToCustomType<::vl::presentation::NativeWindowKeyInfo>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::NativeWindowKeyInfo& value);
+	template<> void ConvertJsonToCustomType<::vl::presentation::NativeWindowCharInfo>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::NativeWindowCharInfo& value);
+	template<> void ConvertJsonToCustomType<vl::presentation::remoteprotocol::GlobalShortcutKey>(vl::Ptr<vl::glr::json::JsonNode> node, vl::presentation::remoteprotocol::GlobalShortcutKey& value);
 	template<> void ConvertJsonToCustomType<vl::presentation::remoteprotocol::WindowSizingConfig>(vl::Ptr<vl::glr::json::JsonNode> node, vl::presentation::remoteprotocol::WindowSizingConfig& value);
 	template<> void ConvertJsonToCustomType<vl::presentation::remoteprotocol::WindowShowing>(vl::Ptr<vl::glr::json::JsonNode> node, vl::presentation::remoteprotocol::WindowShowing& value);
 
@@ -8233,6 +8456,11 @@ namespace vl::presentation::remoteprotocol
 	HANDLER(ControllerGetScreenConfig, void, vl::presentation::remoteprotocol::ScreenConfig, NOREQ, RES, NODROP)\
 	HANDLER(ControllerConnectionEstablished, void, void, NOREQ, NORES, NODROP)\
 	HANDLER(ControllerConnectionStopped, void, void, NOREQ, NORES, NODROP)\
+	HANDLER(IOUpdateGlobalShortcutKey, ::vl::Ptr<::vl::collections::List<vl::presentation::remoteprotocol::GlobalShortcutKey>>, void, REQ, NORES, NODROP)\
+	HANDLER(IORequireCapture, void, void, NOREQ, NORES, NODROP)\
+	HANDLER(IOReleaseCapture, void, void, NOREQ, NORES, NODROP)\
+	HANDLER(IOIsKeyPressing, ::vl::presentation::VKEY, bool, REQ, RES, NODROP)\
+	HANDLER(IOIsKeyToggled, ::vl::presentation::VKEY, bool, REQ, RES, NODROP)\
 	HANDLER(WindowGetBounds, void, vl::presentation::remoteprotocol::WindowSizingConfig, NOREQ, RES, NODROP)\
 	HANDLER(WindowNotifySetTitle, ::vl::WString, void, REQ, NORES, DROPREP)\
 	HANDLER(WindowNotifySetEnabled, bool, void, REQ, NORES, DROPREP)\
@@ -8256,6 +8484,18 @@ namespace vl::presentation::remoteprotocol
 	HANDLER(ControllerRequestExit, void, NOREQ, NODROP)\
 	HANDLER(ControllerForceExit, void, NOREQ, NODROP)\
 	HANDLER(ControllerScreenUpdated, vl::presentation::remoteprotocol::ScreenConfig, REQ, DROPREP)\
+	HANDLER(IOGlobalShortcutKey, ::vl::vint, REQ, NODROP)\
+	HANDLER(IOButtonDown, vl::presentation::remoteprotocol::IOMouseInfoWithButton, REQ, NODROP)\
+	HANDLER(IOButtonDoubleClick, vl::presentation::remoteprotocol::IOMouseInfoWithButton, REQ, NODROP)\
+	HANDLER(IOButtonUp, vl::presentation::remoteprotocol::IOMouseInfoWithButton, REQ, NODROP)\
+	HANDLER(IOHWheel, ::vl::presentation::NativeWindowMouseInfo, REQ, NODROP)\
+	HANDLER(IOVWheel, ::vl::presentation::NativeWindowMouseInfo, REQ, NODROP)\
+	HANDLER(IOMouseMoving, ::vl::presentation::NativeWindowMouseInfo, REQ, DROPCON)\
+	HANDLER(IOMouseEntered, void, NOREQ, NODROP)\
+	HANDLER(IOMouseLeaved, void, NOREQ, NODROP)\
+	HANDLER(IOKeyDown, ::vl::presentation::NativeWindowKeyInfo, REQ, NODROP)\
+	HANDLER(IOKeyUp, ::vl::presentation::NativeWindowKeyInfo, REQ, NODROP)\
+	HANDLER(IOChar, ::vl::presentation::NativeWindowCharInfo, REQ, NODROP)\
 	HANDLER(WindowBoundsUpdated, vl::presentation::remoteprotocol::WindowSizingConfig, REQ, DROPREP)\
 	HANDLER(WindowActivatedUpdated, bool, REQ, DROPREP)\
 
@@ -26435,7 +26675,12 @@ GuiRemoteController
 		friend class GuiRemoteMessages;
 		friend class GuiRemoteEvents;
 		friend class GuiRemoteWindow;
+		friend class elements::GuiRemoteGraphicsRenderTarget;
+		friend class elements::GuiRemoteGraphicsResourceManager;
 		using CursorMap = collections::Dictionary<INativeCursor::SystemCursorType, Ptr<INativeCursor>>;
+		using HotKeyEntry = Tuple<bool, bool, bool, VKEY>;
+		using HotKeySet = collections::SortedList<HotKeyEntry>;
+		using HotKeyIds = collections::Dictionary<vint, HotKeyEntry>;
 	protected:
 		IGuiRemoteProtocol*				remoteProtocol;
 		GuiRemoteMessages				remoteMessages;
@@ -26450,10 +26695,18 @@ GuiRemoteController
 		remoteprotocol::FontConfig		remoteFontConfig;
 		remoteprotocol::ScreenConfig	remoteScreenConfig;
 
+		vint							usedHotKeys = (vint)NativeGlobalShortcutKeyResult::ValidIdBegins;
+		HotKeySet						hotKeySet;
+		HotKeyIds						hotKeyIds;
+
 		CursorMap						cursors;
 		bool							timerEnabled = false;
 		bool							windowCreated = false;
 		bool							windowDestroyed = false;
+
+		collections::Dictionary<VKEY, WString>		keyNames;
+		collections::Dictionary<WString, VKEY>		keyCodes;
+		bool										keyInitialized = false;
 
 		// =============================================================
 		// INativeResourceService
@@ -26474,8 +26727,10 @@ GuiRemoteController
 		bool							IsTimerEnabled() override;
 		bool							IsKeyPressing(VKEY code) override;
 		bool							IsKeyToggled(VKEY code) override;
+		void							EnsureKeyInitialized();
 		WString							GetKeyName(VKEY code) override;
 		VKEY							GetKey(const WString& name) override;
+		void							UpdateGlobalShortcutKey();
 		vint							RegisterGlobalShortcutKey(bool ctrl, bool shift, bool alt, VKEY key) override;
 		bool							UnregisterGlobalShortcutKey(vint id) override;
 

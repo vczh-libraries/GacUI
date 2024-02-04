@@ -680,11 +680,15 @@ class darkskin::RibbonGroupMenuTemplate : presentation::templates::GuiRibbonGrou
 
 @FullName:darkskin::RibbonGroupMenuTemplateConstructor
 class darkskin::RibbonGroupMenuTemplateConstructor : system::ReferenceType {
-    property __vwsn_precompile_0 : darkskin::RibbonGroupMenuTemplate*;
-    property __vwsn_precompile_1 : presentation::elements::GuiSolidBackgroundElement^;
-    property __vwsn_precompile_2 : presentation::compositions::GuiBoundsComposition*;
-    property __vwsn_precompile_3 : presentation::elements::GuiSolidBorderElement^;
-    property container : presentation::compositions::GuiBoundsComposition*;
+    property __vwsn_precompile_0 : presentation::elements::GuiSolidBackgroundElement^;
+    property __vwsn_precompile_1 : presentation::compositions::GuiBoundsComposition*;
+    property __vwsn_precompile_2 : presentation::elements::GuiSolidBorderElement^;
+    property __vwsn_precompile_3 : presentation::compositions::GuiTableComposition*;
+    property __vwsn_precompile_4 : presentation::compositions::GuiCellComposition*;
+    property __vwsn_precompile_5 : presentation::controls::GuiButton*;
+    property __vwsn_precompile_6 : presentation::compositions::GuiBoundsComposition*;
+    property container : presentation::compositions::GuiCellComposition*;
+    property self : darkskin::RibbonGroupMenuTemplate*;
 
     function __vwsn_darkskin_RibbonGroupMenuTemplate_Initialize(__vwsn_this_ : darkskin::RibbonGroupMenuTemplate*) : system::Void;
 
