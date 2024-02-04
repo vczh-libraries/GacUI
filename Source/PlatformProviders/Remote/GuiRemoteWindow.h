@@ -12,11 +12,10 @@ Interfaces:
 #define VCZH_PRESENTATION_GUIREMOTECONTROLLER_GUIREMOTEWINDOW
 
 #include "../../NativeWindow/GuiNativeWindow.h"
+#include "GuiRemoteEvents.h"
 
 namespace vl::presentation
 {
-	class GuiRemoteEvents;
-	class GuiRemoteWindow;
 	class GuiRemoteController;
 
 /***********************************************************************

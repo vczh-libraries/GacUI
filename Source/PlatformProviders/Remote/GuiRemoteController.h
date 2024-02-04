@@ -13,8 +13,6 @@ Interfaces:
 
 #include "../../Utilities/SharedServices/GuiSharedCallbackService.h"
 #include "../../Utilities/SharedServices/GuiSharedAsyncService.h"
-#include "GuiRemoteProtocol.h"
-#include "GuiRemoteEvents.h"
 #include "GuiRemoteWindow.h"
 #include "GuiRemoteGraphics.h"
 
