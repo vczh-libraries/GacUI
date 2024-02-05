@@ -70,22 +70,29 @@
       - Can navigate to workflow script.
 - Move unit test utilities to `GacUI.UnitTest.cpp`, `GacUI.UnitTest.h`, `GacUI.UnitTest.Reflection ...`
 - Document for unit test framework.
+- Document for SyncDom.
+- Document for remote protocol.
 
-## Release Milestone (1.3.0.0)
+## Release Milestone (1.2.12.0)
 
 - SyncObj architecture that streams ViewModel object changes.
   - See README.md in Workflow repo (**ViewModel Remoting C++ Codegen**).
   - GacGen offers Metadata of interfaces
-- Network protocols are not included as default implementation
+  - Network protocols are not included as default implementation
 - New tutorials
   - A GacUI D2D process connecting to a server process for streaming ViewModel
     - ViewModel implements in C++ and C#
+- Document for SyncObj.
+
+## Release Milestone (1.3.0.0)
+
+- Delete `DEFINE_GUI_GRAPHICS_RENDERER` macro.
+- A remote protocol implementation on existing `INativeController` implementation.
+  - Network protocols are not included as default implementation
+- New tutorials
   - A GacUI SyncDom process connecting to a server process for streaming graphics
     - GDI+ implements in C#
     - GDI/D2D implements in C++
-- Document for SyncObj
-- Document for SyncDom.
-- Document for remote protocol.
 - Rewrite `GacBuild.ps1` and `GacClear.ps1` in C++, but still keep them just doing redirection for backward compatibility.
 - Get rid of `Deploy.bat` in `GacGen.ps1` and `GacGen.exe`
 
