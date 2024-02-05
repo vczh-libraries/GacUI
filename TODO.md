@@ -25,7 +25,7 @@
 
 - A general remoting `INativeController` implementation.
   - Add hittest messages, or implement it with SyncDom.
-  - Move `GuiRemoteMessageFilter` and `GuiRemoteEventFilter` from unit test to `GuiRemoteController`.
+  - Move `GuiRemoteProtocolFilter` and `GuiRemoteEventFilter` from unit test to `GuiRemoteController`.
   - Verify dropped messages/events not be called in unit test.
 - SyncDom architecture that streams layout/element changes, requiring Hosted for the first version.
   - An implementation of remoting.
