@@ -116,8 +116,9 @@ TEST_FILE
 
 			protocol.events->OnControllerForceExit();
 		});
-		BatchedProtocol batchedProtocol(&protocol);
-		SetupRemoteNativeController(&batchedProtocol);
+		JsonProtocol jsonProtocol(&protocol);
+		GuiRemoteProtocolFilter filteredProtocol(&jsonProtocol);
+		SetupRemoteNativeController(&filteredProtocol);
 		SetGuiMainProxy({});
 	});
 

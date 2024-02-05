@@ -31,8 +31,9 @@ TEST_FILE
 				theme::UnregisterTheme(theme->Name);
 			});
 		});
-		BatchedProtocol batchedProtocol(&protocol);
-		SetupRemoteNativeController(&batchedProtocol);
+		JsonProtocol jsonProtocol(&protocol);
+		GuiRemoteProtocolFilter filteredProtocol(&jsonProtocol);
+		SetupRemoteNativeController(&filteredProtocol);
 		SetGuiMainProxy({});
 	});
 }

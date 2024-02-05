@@ -250,7 +250,6 @@ namespace vl::presentation::remoteprotocol
 	class GuiRemoteProtocolFilter
 		: public Object
 		, public virtual IGuiRemoteProtocol
-		, protected virtual IGuiRemoteProtocolEvents
 	{
 	protected:
 		IGuiRemoteProtocol*										targetProtocol = nullptr;

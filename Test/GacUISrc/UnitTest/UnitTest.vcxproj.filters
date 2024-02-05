@@ -243,7 +243,7 @@
     <ClInclude Include="TestRemote.h">
       <Filter>Source Files\Remote\Shared</Filter>
     </ClInclude>
-    <ClInclude Include="TestRemote_Shared_BatchedProtocol.h">
+    <ClInclude Include="TestRemote_Shared_JsonProtocol.h">
       <Filter>Source Files\Remote\Shared</Filter>
     </ClInclude>
     <ClInclude Include="TestRemote_Shared_LoggingWindowListener.h">

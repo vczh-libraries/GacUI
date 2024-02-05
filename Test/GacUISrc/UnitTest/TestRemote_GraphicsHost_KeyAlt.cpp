@@ -152,8 +152,9 @@ TEST_FILE
 		});
 
 		SetGuiMainProxy(MakeGuiMain(protocol, eventLogs, controlHost));
-		BatchedProtocol batchedProtocol(&protocol);
-		SetupRemoteNativeController(&batchedProtocol);
+		JsonProtocol jsonProtocol(&protocol);
+		GuiRemoteProtocolFilter filteredProtocol(&jsonProtocol);
+		SetupRemoteNativeController(&filteredProtocol);
 		SetGuiMainProxy({});
 	});
 
@@ -231,8 +232,9 @@ TEST_FILE
 		});
 
 		SetGuiMainProxy(MakeGuiMain(protocol, eventLogs, controlHost));
-		BatchedProtocol batchedProtocol(&protocol);
-		SetupRemoteNativeController(&batchedProtocol);
+		JsonProtocol jsonProtocol(&protocol);
+		GuiRemoteProtocolFilter filteredProtocol(&jsonProtocol);
+		SetupRemoteNativeController(&filteredProtocol);
 		SetGuiMainProxy({});
 	});
 
@@ -282,8 +284,9 @@ TEST_FILE
 		});
 
 		SetGuiMainProxy(MakeGuiMain(protocol, eventLogs, controlHost));
-		BatchedProtocol batchedProtocol(&protocol);
-		SetupRemoteNativeController(&batchedProtocol);
+		JsonProtocol jsonProtocol(&protocol);
+		GuiRemoteProtocolFilter filteredProtocol(&jsonProtocol);
+		SetupRemoteNativeController(&filteredProtocol);
 		SetGuiMainProxy({});
 	});
 
@@ -367,8 +370,9 @@ TEST_FILE
 		});
 
 		SetGuiMainProxy(MakeGuiMain(protocol, eventLogs, controlHost));
-		BatchedProtocol batchedProtocol(&protocol);
-		SetupRemoteNativeController(&batchedProtocol);
+		JsonProtocol jsonProtocol(&protocol);
+		GuiRemoteProtocolFilter filteredProtocol(&jsonProtocol);
+		SetupRemoteNativeController(&filteredProtocol);
 		SetGuiMainProxy({});
 	});
 
@@ -427,8 +431,9 @@ TEST_FILE
 		});
 
 		SetGuiMainProxy(MakeGuiMain(protocol, eventLogs, controlHost));
-		BatchedProtocol batchedProtocol(&protocol);
-		SetupRemoteNativeController(&batchedProtocol);
+		JsonProtocol jsonProtocol(&protocol);
+		GuiRemoteProtocolFilter filteredProtocol(&jsonProtocol);
+		SetupRemoteNativeController(&filteredProtocol);
 		SetGuiMainProxy({});
 	});
 
@@ -517,8 +522,9 @@ TEST_FILE
 		});
 
 		SetGuiMainProxy(MakeGuiMain(protocol, eventLogs, controlHost));
-		BatchedProtocol batchedProtocol(&protocol);
-		SetupRemoteNativeController(&batchedProtocol);
+		JsonProtocol jsonProtocol(&protocol);
+		GuiRemoteProtocolFilter filteredProtocol(&jsonProtocol);
+		SetupRemoteNativeController(&filteredProtocol);
 		SetGuiMainProxy({});
 	});
 
@@ -639,8 +645,9 @@ TEST_FILE
 		});
 
 		SetGuiMainProxy(MakeGuiMain(protocol, eventLogs, controlHost));
-		BatchedProtocol batchedProtocol(&protocol);
-		SetupRemoteNativeController(&batchedProtocol);
+		JsonProtocol jsonProtocol(&protocol);
+		GuiRemoteProtocolFilter filteredProtocol(&jsonProtocol);
+		SetupRemoteNativeController(&filteredProtocol);
 		SetGuiMainProxy({});
 	});
 

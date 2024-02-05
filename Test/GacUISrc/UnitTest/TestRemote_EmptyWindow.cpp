@@ -94,8 +94,9 @@ TEST_FILE
 				ws->Run(window);
 			});
 		});
-		BatchedProtocol batchedProtocol(&protocol);
-		SetupRemoteNativeController(&batchedProtocol);
+		JsonProtocol jsonProtocol(&protocol);
+		GuiRemoteProtocolFilter filteredProtocol(&jsonProtocol);
+		SetupRemoteNativeController(&filteredProtocol);
 		SetGuiMainProxy({});
 
 		TEST_CASE(L"Ensure stopped")
@@ -140,8 +141,9 @@ TEST_FILE
 				listener.AssertCallbacks();
 			});
 		});
-		BatchedProtocol batchedProtocol(&protocol);
-		SetupRemoteNativeController(&batchedProtocol);
+		JsonProtocol jsonProtocol(&protocol);
+		GuiRemoteProtocolFilter filteredProtocol(&jsonProtocol);
+		SetupRemoteNativeController(&filteredProtocol);
 		SetGuiMainProxy({});
 	});
 
@@ -188,8 +190,9 @@ TEST_FILE
 				listener.AssertCallbacks();
 			});
 		});
-		BatchedProtocol batchedProtocol(&protocol);
-		SetupRemoteNativeController(&batchedProtocol);
+		JsonProtocol jsonProtocol(&protocol);
+		GuiRemoteProtocolFilter filteredProtocol(&jsonProtocol);
+		SetupRemoteNativeController(&filteredProtocol);
 		SetGuiMainProxy({});
 	});
 
@@ -283,8 +286,9 @@ TEST_FILE
 				listener.AssertCallbacks();
 			});
 		});
-		BatchedProtocol batchedProtocol(&protocol);
-		SetupRemoteNativeController(&batchedProtocol);
+		JsonProtocol jsonProtocol(&protocol);
+		GuiRemoteProtocolFilter filteredProtocol(&jsonProtocol);
+		SetupRemoteNativeController(&filteredProtocol);
 		SetGuiMainProxy({});
 	});
 
@@ -361,8 +365,9 @@ TEST_FILE
 				listener.AssertCallbacks();
 			});
 		});
-		BatchedProtocol batchedProtocol(&protocol);
-		SetupRemoteNativeController(&batchedProtocol);
+		JsonProtocol jsonProtocol(&protocol);
+		GuiRemoteProtocolFilter filteredProtocol(&jsonProtocol);
+		SetupRemoteNativeController(&filteredProtocol);
 		SetGuiMainProxy({});
 	});
 
@@ -434,8 +439,9 @@ TEST_FILE
 				listener.AssertCallbacks();
 			});
 		});
-		BatchedProtocol batchedProtocol(&protocol);
-		SetupRemoteNativeController(&batchedProtocol);
+		JsonProtocol jsonProtocol(&protocol);
+		GuiRemoteProtocolFilter filteredProtocol(&jsonProtocol);
+		SetupRemoteNativeController(&filteredProtocol);
 		SetGuiMainProxy({});
 	});
 
@@ -498,8 +504,9 @@ TEST_FILE
 				listener.AssertCallbacks();
 			});
 		});
-		BatchedProtocol batchedProtocol(&protocol);
-		SetupRemoteNativeController(&batchedProtocol);
+		JsonProtocol jsonProtocol(&protocol);
+		GuiRemoteProtocolFilter filteredProtocol(&jsonProtocol);
+		SetupRemoteNativeController(&filteredProtocol);
 		SetGuiMainProxy({});
 	});
 
@@ -567,8 +574,9 @@ TEST_FILE
 				ws->Run(window);
 			});
 		});
-		BatchedProtocol batchedProtocol(&protocol);
-		SetupRemoteNativeController(&batchedProtocol);
+		JsonProtocol jsonProtocol(&protocol);
+		GuiRemoteProtocolFilter filteredProtocol(&jsonProtocol);
+		SetupRemoteNativeController(&filteredProtocol);
 		SetGuiMainProxy({});
 	});
 
@@ -729,8 +737,9 @@ TEST_FILE
 				listener.AssertCallbacks();
 			});
 		});
-		BatchedProtocol batchedProtocol(&protocol);
-		SetupRemoteNativeController(&batchedProtocol);
+		JsonProtocol jsonProtocol(&protocol);
+		GuiRemoteProtocolFilter filteredProtocol(&jsonProtocol);
+		SetupRemoteNativeController(&filteredProtocol);
 		SetGuiMainProxy({});
 	});
 
@@ -811,8 +820,9 @@ TEST_FILE
 				listener.AssertCallbacks();
 			});
 		});
-		BatchedProtocol batchedProtocol(&protocol);
-		SetupRemoteNativeController(&batchedProtocol);
+		JsonProtocol jsonProtocol(&protocol);
+		GuiRemoteProtocolFilter filteredProtocol(&jsonProtocol);
+		SetupRemoteNativeController(&filteredProtocol);
 		SetGuiMainProxy({});
 	});
 
@@ -894,8 +904,9 @@ TEST_FILE
 				listener.AssertCallbacks();
 			});
 		});
-		BatchedProtocol batchedProtocol(&protocol);
-		SetupRemoteNativeController(&batchedProtocol);
+		JsonProtocol jsonProtocol(&protocol);
+		GuiRemoteProtocolFilter filteredProtocol(&jsonProtocol);
+		SetupRemoteNativeController(&filteredProtocol);
 		SetGuiMainProxy({});
 	});
 }
