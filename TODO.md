@@ -141,10 +141,10 @@
 ## Porting to New Platforms
 
 - Port GacUI to other platforms:
-  - Unit Test (Hosted)
+  - Unit Test (Hosted, SyncDom)
   - Windows
-    - GDI (**Hosted**, SyncDom)
-    - Direct2d (**Hosted**, SyncDom)
+    - GDI (**Normal**, **Hosted**, SyncDom)
+    - Direct2d (**Normal**, **Hosted**, SyncDom)
     - UWP (Hosted + SyncDom)
   - Linux
     - gGac repo: improve development process for release
