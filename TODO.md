@@ -21,7 +21,7 @@
 - For all list controls, adding item could cause flashing during rendering for about 1 flame.
   - If this issue is solved, remove document in `Breaking changes from 1.0` and `List Controls`
 
-## Progressing (before release)
+## Release Milestone (current: 1.2.9.0)
 
 - A general remoting `INativeController` implementation.
   - Add hittest messages, or implement it with SyncDom.
@@ -31,27 +31,30 @@
   - An implementation of remoting.
   - Requires hosted mode.
   - First version: changes only sent before `IGuiGraphicsRenderer::GetMinSize`.
-- Implement basic control unit test based on streaming
-  - Each character takes exactly `FontSize x FontSize`
-  - Deal with `\r` and `\n` when multiline is enabled
-  - Do not support complex text elements yet.
+  - Implement remote renderers without complex text elements.
+    - Each character takes exactly `FontSize x FontSize`
+    - Deal with `\r` and `\n` when multiline is enabled
+    - Do not send min size calculation request if it could be done generally.
+- UnitTest.vcxproj
+  - Test `GuiVirtualRepeatCompositionBase::GetAdoptedSize`.
+  - Test `GuiVirtualRepeatCompositionBase::GetTotalSize` with `UseMinimumTotalSize`.
+  - Complete `TestCompositions_Bounds.cpp`.
+
+## Release Milestone (1.2.10.0)
+
+- Implement basic control (`Source_GacUI_CoreApplication` controls only) unit test based on streaming
   - Metadata from requests are needed from the beginning for codegen, metadata will be updated and included in release.
   - `INativeImageService`:
     - Save image metadata (width, height, type, etc) to binary resource
     - For `INativeImageService::CreateImage*` functions it sends binary data to the receiver and wait for respond of metadata.
     - Unit test only `<PsuedoImage/>` to specify only the size in resource.
-- UnitTest.vcxproj
-  - Test `GuiVirtualRepeatCompositionBase::GetAdoptedSize`.
-  - Test `GuiVirtualRepeatCompositionBase::GetTotalSize` with `UseMinimumTotalSize`.
-  - Complete `TestCompositions_Bounds.cpp`.
-- Add above functionality to `GacUI.UnitTest.cpp`, `GacUI.UnitTest.h`, `GacUI.UnitTest.Reflection ...`
 - GacUI Binary Resource (can't move to next release)
   - Upgrade GacUI XML Resource to 1.3, force on all instead of only depended or depending resource.
   - Require binary pattern "[GMR-1.3]" at the beginning of the binary resource.
 
-## Progressing (next release)
+## Release Milestone (1.2.11.0)
 
-- Implement basic control unit test based on streaming (using DarkSkin)
+- All control unit test (using DarkSkin)
   - Add window resizing constraint messages.
   - Support complex text elements.
   - A viewer to view unit test results logged from SyncDom and other stuff after each time when layout stops.
@@ -60,11 +63,11 @@
     - Load x64 bin + workflow script and execute.
     - Render unit test results, especially each frame of intermediate rendering result.
       - Can navigate to workflow script.
-- All control unit test.
+- Move unit test utilities to `GacUI.UnitTest.cpp`, `GacUI.UnitTest.h`, `GacUI.UnitTest.Reflection ...`
 - Document for unit test framework.
 - Document for remote protocol and SyncDom.
 
-## Progressing (next release)
+## Release Milestone (1.3.0.0)
 
 - SyncObj architecture that streams ViewModel object changes.
   - See README.md in Workflow repo (**ViewModel Remoting C++ Codegen**).
@@ -80,61 +83,15 @@
 - Rewrite `GacBuild.ps1` and `GacClear.ps1` in C++, but still keep them just doing redirection for backward compatibility.
 - Get rid of `Deploy.bat` in `GacGen.ps1` and `GacGen.exe`
 
-## Progressing (next release)
+## Release Milestone (future releases)
 
+- `Variant` and `Union` with full support.
+- Strict check in different for-each loops.
 - More optimistic SyncDom strategy to reduce messages.
 - Windows
   - Ensure `INativeWindow::(Before|After)Closing()` is not called on non-main-window between the main window is closed and the application exits.
 - Enlarging window slower than shrinking.
 - https://github.com/vczh-libraries/Vlpp/issues/9
-
-## GacUI Resource Compiler (low priority)
-
-- Consider `-ani` binding, create an animation controller object that change the binded property, with predefined interpolation and other stuff.
-  - All types that can do interpolation are value types, consider following formats:
-    - "NAME:initial value"
-    - "NAME(initial value in expression)"
-    - Need to be consistent with animation object
-  - Consider multiple `-ani` batch control, state configuration and transition, story board, connection to animation coroutine, etc.
-- `<eval Eval="expression"/>` tags.
-  - A facade is a class with following methods:
-    - **AddChild**: Accept a child facade or a child object.
-    - **ApplyTo**: Accept a parent object, which is not a facade.
-    - **Initialize** (optional): Called on the instance object between construction and `<ref.Ctor>`.
-  - A facade could have properties but only accept assignment or `-eval` binding.
-  - A facade could have an optional **InstanceFacadeVerifier** executed on GacGen compile time.
-  - Built-in Layout and Form facade.
-- Facade
-  - If `<XFacade>` or `<x:XFacade>` is an accessible and default constructible object, then `<X>` or `<x:X>` triggers a facade.
-
-## Optional
-
-- DarkSkin Color Theme.
-  - Create a `DarkSkinPalette` class with a static getter method to retrive default colors.
-    - Update all `Style.xml` colors to use `DarkSkinPalette`.
-  - Add a static setter to `DarkSkinPalette`.
-    - A window can be called to update all its controls' and components' template.
-    - The above function will be called inside the setter.
-- `INativeWindow` add callback for state changing.
-  - Including `MaximizedBox`, `MinimizedBox`, `Border`, `SizeBox`, `IconVisible`, `TitleBar`, `Icon`, `Title`, `SizeState`.
-  - In `GuiControlHost` or `GuiWindow`, setting border or state doesn't update the control template, it is updated in that callback.
-  - Delete `GuiControlHost` and `GuiWindow`'s `OnVisualStatusChanged`.
-- FakeDialogService
-  - message box disable `X` button if `Cancel` is not in the button list or `OK` is the only button.
-- GDI
-  - Big cursor of document empty line (GDI)
-  - In hosted mode, non-main window doesn't shrink when moving back to low DPI monitor.
-- Hosted
-  - When dragging left/top border if the main window, the window move if the size is smaller than the minimum size.
-- Rewrite calculator state machine demo, when "+" is pressed, jump into "WaitingAnotherOperandForPlus" state machine, instead of storing the operation in a loop. So there will be no loop except for waiting for numbers.
-- Check makefile for ParserGen/GlrParserGen/CodePack/CppMerge/GacGen
-  - Write maketools.sh
-- Rewrite GacBuild.ps1 in C++
-- Add `MoveToScreenCenterAfterLayout` as what is done in `FakeDialogServiceBase::ShowModalDialogAndDelete`.
-- New default control templates with animation, written in XML generated C++ code.
-- Use the embedded data codegen / compress / decompress functions from `VlppParser2` to replace one in `GacUI`.
-- Use collection interfaces on function signatures.
-  - Only if `Vlpp` decides to add collection interfaces.
 
 ## OS Provider Features
 
@@ -208,7 +165,54 @@
     - .NET
     - Python
 
-## GacUI Resource Compiler
+## GacUI (unprioritized)
+
+- DarkSkin Color Theme.
+  - Create a `DarkSkinPalette` class with a static getter method to retrive default colors.
+    - Update all `Style.xml` colors to use `DarkSkinPalette`.
+  - Add a static setter to `DarkSkinPalette`.
+    - A window can be called to update all its controls' and components' template.
+    - The above function will be called inside the setter.
+- `INativeWindow` add callback for state changing.
+  - Including `MaximizedBox`, `MinimizedBox`, `Border`, `SizeBox`, `IconVisible`, `TitleBar`, `Icon`, `Title`, `SizeState`.
+  - In `GuiControlHost` or `GuiWindow`, setting border or state doesn't update the control template, it is updated in that callback.
+  - Delete `GuiControlHost` and `GuiWindow`'s `OnVisualStatusChanged`.
+- FakeDialogService
+  - message box disable `X` button if `Cancel` is not in the button list or `OK` is the only button.
+- GDI
+  - Big cursor of document empty line (GDI)
+  - In hosted mode, non-main window doesn't shrink when moving back to low DPI monitor.
+- Hosted
+  - When dragging left/top border if the main window, the window move if the size is smaller than the minimum size.
+- Rewrite calculator state machine demo, when "+" is pressed, jump into "WaitingAnotherOperandForPlus" state machine, instead of storing the operation in a loop. So there will be no loop except for waiting for numbers.
+- Check makefile for ParserGen/GlrParserGen/CodePack/CppMerge/GacGen
+  - Write maketools.sh
+- Add `MoveToScreenCenterAfterLayout` as what is done in `FakeDialogServiceBase::ShowModalDialogAndDelete`.
+- New default control templates with animation, written in XML generated C++ code.
+- Use the embedded data codegen / compress / decompress functions from `VlppParser2` to replace one in `GacUI`.
+- Use collection interfaces on function signatures.
+  - Only if `Vlpp` decides to add collection interfaces.
+
+## GacUI Resource Compiler (unplanned releases)
+
+- Consider `-ani` binding, create an animation controller object that change the binded property, with predefined interpolation and other stuff.
+  - All types that can do interpolation are value types, consider following formats:
+    - "NAME:initial value"
+    - "NAME(initial value in expression)"
+    - Need to be consistent with animation object
+  - Consider multiple `-ani` batch control, state configuration and transition, story board, connection to animation coroutine, etc.
+- `<eval Eval="expression"/>` tags.
+  - A facade is a class with following methods:
+    - **AddChild**: Accept a child facade or a child object.
+    - **ApplyTo**: Accept a parent object, which is not a facade.
+    - **Initialize** (optional): Called on the instance object between construction and `<ref.Ctor>`.
+  - A facade could have properties but only accept assignment or `-eval` binding.
+  - A facade could have an optional **InstanceFacadeVerifier** executed on GacGen compile time.
+  - Built-in Layout and Form facade.
+- Facade
+  - If `<XFacade>` or `<x:XFacade>` is an accessible and default constructible object, then `<X>` or `<x:X>` triggers a facade.
+
+## GacUI Resource Compiler (unprioritized)
 
 - In the final pass, only workflow scripts are printed.
   - Use WorkflowCompiler.exe to do codegen externally.
