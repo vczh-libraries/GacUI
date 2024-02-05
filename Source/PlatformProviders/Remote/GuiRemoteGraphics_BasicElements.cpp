@@ -8,6 +8,7 @@ GuiSolidBorderElementRenderer
 
 	void GuiFocusRectangleElementRenderer::InitializeInternal()
 	{
+		CHECK_FAIL(L"Not Implemented!");
 	}
 
 	void GuiFocusRectangleElementRenderer::FinalizeInternal()
@@ -32,6 +33,7 @@ GuiSolidBorderElementRenderer
 
 	void GuiSolidBorderElementRenderer::InitializeInternal()
 	{
+		CHECK_FAIL(L"Not Implemented!");
 	}
 
 	void GuiSolidBorderElementRenderer::FinalizeInternal()
@@ -58,6 +60,7 @@ Gui3DBorderElementRenderer
 
 	void Gui3DBorderElementRenderer::InitializeInternal()
 	{
+		CHECK_FAIL(L"Not Implemented!");
 	}
 
 	void Gui3DBorderElementRenderer::FinalizeInternal()
@@ -84,6 +87,7 @@ Gui3DSplitterElementRenderer
 
 	void Gui3DSplitterElementRenderer::InitializeInternal()
 	{
+		CHECK_FAIL(L"Not Implemented!");
 	}
 
 	void Gui3DSplitterElementRenderer::FinalizeInternal()
@@ -111,6 +115,7 @@ GuiSolidBackgroundElementRenderer
 
 	void GuiSolidBackgroundElementRenderer::InitializeInternal()
 	{
+		CHECK_FAIL(L"Not Implemented!");
 	}
 
 	void GuiSolidBackgroundElementRenderer::FinalizeInternal()
@@ -137,6 +142,7 @@ GuiGradientBackgroundElementRenderer
 
 	void GuiGradientBackgroundElementRenderer::InitializeInternal()
 	{
+		CHECK_FAIL(L"Not Implemented!");
 	}
 
 	void GuiGradientBackgroundElementRenderer::FinalizeInternal()
@@ -165,6 +171,7 @@ GuiSolidLabelElementRenderer
 
 	void GuiInnerShadowElementRenderer::InitializeInternal()
 	{
+		CHECK_FAIL(L"Not Implemented!");
 	}
 
 	void GuiInnerShadowElementRenderer::FinalizeInternal()
@@ -195,6 +202,7 @@ GuiSolidLabelElementRenderer
 
 	void GuiSolidLabelElementRenderer::InitializeInternal()
 	{
+		CHECK_FAIL(L"Not Implemented!");
 	}
 
 	void GuiSolidLabelElementRenderer::FinalizeInternal()
@@ -240,6 +248,7 @@ GuiImageFrameElementRenderer
 
 	void GuiImageFrameElementRenderer::InitializeInternal()
 	{
+		CHECK_FAIL(L"Not Implemented!");
 	}
 
 	void GuiImageFrameElementRenderer::FinalizeInternal()
@@ -275,6 +284,7 @@ GuiPolygonElementRenderer
 
 	void GuiPolygonElementRenderer::InitializeInternal()
 	{
+		CHECK_FAIL(L"Not Implemented!");
 	}
 
 	void GuiPolygonElementRenderer::FinalizeInternal()
@@ -312,6 +322,7 @@ GuiColorizedTextElementRenderer
 
 	void GuiColorizedTextElementRenderer::ColorChanged()
 	{
+		CHECK_FAIL(L"Not Implemented!");
 	}
 
 	void GuiColorizedTextElementRenderer::FontChanged()

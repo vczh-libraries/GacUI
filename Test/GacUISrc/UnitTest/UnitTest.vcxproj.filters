@@ -28,6 +28,9 @@
     <Filter Include="Source Files\Controls">
       <UniqueIdentifier>{c392e1d3-f657-4d8f-b1a1-b2233efff208}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Remote\Rendering">
+      <UniqueIdentifier>{cdc94559-2132-4009-b95d-6df8409d17d3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -104,6 +107,9 @@
     </ClCompile>
     <ClCompile Include="TestRemote_GraphicsHost_KeyShortcut.cpp">
       <Filter>Source Files\Remote\GraphicsHost</Filter>
+    </ClCompile>
+    <ClCompile Include="TestRemote_GraphicsHost_BasicElements.cpp">
+      <Filter>Source Files\Remote\Rendering</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
