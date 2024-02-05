@@ -27,7 +27,7 @@ namespace vl::presentation::remoteprotocol
 	{
 		Unknown,
 #define FILTERED_ENUM_ITEM(NAME, ...) NAME,
-		GACUI_REMOTEPROTOCOL_EVENTS(FILTERED_ENUM_ITEM)
+		GACUI_REMOTEPROTOCOL_MESSAGES(FILTERED_ENUM_ITEM)
 #undef FILTERED_ENUM_ITEM
 	};
 
@@ -368,7 +368,7 @@ namespace vl::presentation::remoteprotocol
 			request.id = id;\
 			request.name = FilteredRequestNames::NAME;\
 			filteredRequests.Add(request);\
-			eventFilter.responseIds.Add(id, FilteredResponseName::NAME);\
+			eventFilter.responseIds.Add(id, FilteredResponseNames::NAME);\
 		}\
 	
 #define MESSAGE_REQ_NORES(NAME, REQUEST, RESPONSE, DROPTAG)\
@@ -396,7 +396,7 @@ namespace vl::presentation::remoteprotocol
 			request.name = FilteredRequestNames::NAME;\
 			request.arguments = arguments;\
 			filteredRequests.Add(request);\
-			eventFilter.responseIds.Add(id, FilteredResponseName::NAME);\
+			eventFilter.responseIds.Add(id, FilteredResponseNames::NAME);\
 		}\
 	
 #define MESSAGE_HANDLER(NAME, REQUEST, RESPONSE, REQTAG, RESTAG, DROPTAG, ...)	MESSAGE_ ## REQTAG ## _ ## RESTAG(NAME, REQUEST, RESPONSE, DROPTAG)
