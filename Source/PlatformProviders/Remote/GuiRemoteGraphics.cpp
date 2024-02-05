@@ -63,6 +63,14 @@ GuiRemoteGraphicsResourceManager
 		: remote(_remote)
 		, renderTarget(_remote)
 	{
+	}
+
+	GuiRemoteGraphicsResourceManager::~GuiRemoteGraphicsResourceManager()
+	{
+	}
+
+	void GuiRemoteGraphicsResourceManager::Initialize()
+	{
 		elements_remoteprotocol::GuiFocusRectangleElementRenderer::Register();
 		elements_remoteprotocol::GuiSolidBorderElementRenderer::Register();
 		elements_remoteprotocol::Gui3DBorderElementRenderer::Register();
@@ -77,7 +85,7 @@ GuiRemoteGraphicsResourceManager
 		elements::GuiDocumentElement::GuiDocumentElementRenderer::Register();
 	}
 
-	GuiRemoteGraphicsResourceManager::~GuiRemoteGraphicsResourceManager()
+	void GuiRemoteGraphicsResourceManager::Finalize()
 	{
 	}
 

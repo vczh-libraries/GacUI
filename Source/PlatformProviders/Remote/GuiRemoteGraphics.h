@@ -56,6 +56,9 @@ GuiRemoteGraphicsResourceManager
 			GuiRemoteGraphicsResourceManager(GuiRemoteController* _remote);
 			~GuiRemoteGraphicsResourceManager();
 
+			void								Initialize();
+			void								Finalize();
+
 			// =============================================================
 			// IGuiGraphicsResourceManager
 			// =============================================================
