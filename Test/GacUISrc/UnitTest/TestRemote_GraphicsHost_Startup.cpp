@@ -31,9 +31,6 @@ TEST_FILE
 				theme::UnregisterTheme(theme->Name);
 			});
 		});
-		JsonProtocol jsonProtocol(&protocol);
-		GuiRemoteProtocolFilter filteredProtocol(&jsonProtocol);
-		SetupRemoteNativeController(&filteredProtocol);
-		SetGuiMainProxy({});
+		StartRemoteControllerTest(protocol);
 	});
 }

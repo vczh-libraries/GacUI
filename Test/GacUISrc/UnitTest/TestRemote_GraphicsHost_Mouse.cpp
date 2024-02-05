@@ -47,10 +47,7 @@ TEST_FILE
 		});
 
 		SetGuiMainProxy(MakeGuiMain(protocol, eventLogs, controlHost));
-		JsonProtocol jsonProtocol(&protocol);
-		GuiRemoteProtocolFilter filteredProtocol(&jsonProtocol);
-		SetupRemoteNativeController(&filteredProtocol);
-		SetGuiMainProxy({});
+		StartRemoteControllerTest(protocol);
 	});
 
 	TEST_CATEGORY(L"Mouse events on compositions")
@@ -230,10 +227,7 @@ TEST_FILE
 		});
 
 		SetGuiMainProxy(MakeGuiMain(protocol, eventLogs, controlHost));
-		JsonProtocol jsonProtocol(&protocol);
-		GuiRemoteProtocolFilter filteredProtocol(&jsonProtocol);
-		SetupRemoteNativeController(&filteredProtocol);
-		SetGuiMainProxy({});
+		StartRemoteControllerTest(protocol);
 	});
 
 	auto mouseEventFilteringTest = [&]<typename TCallback>(TCallback&& callback)
@@ -422,10 +416,7 @@ TEST_FILE
 		});
 
 		SetGuiMainProxy(MakeGuiMain(protocol, eventLogs, controlHost));
-		JsonProtocol jsonProtocol(&protocol);
-		GuiRemoteProtocolFilter filteredProtocol(&jsonProtocol);
-		SetupRemoteNativeController(&filteredProtocol);
-		SetGuiMainProxy({});
+		StartRemoteControllerTest(protocol);
 	};
 
 	TEST_CATEGORY(L"Mouse capturing on compositions")
@@ -570,9 +561,6 @@ TEST_FILE
 		});
 
 		SetGuiMainProxy(MakeGuiMain(protocol, eventLogs, controlHost));
-		JsonProtocol jsonProtocol(&protocol);
-		GuiRemoteProtocolFilter filteredProtocol(&jsonProtocol);
-		SetupRemoteNativeController(&filteredProtocol);
-		SetGuiMainProxy({});
+		StartRemoteControllerTest(protocol);
 	});
 }

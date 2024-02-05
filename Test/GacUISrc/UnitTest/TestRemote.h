@@ -9,3 +9,12 @@
 using namespace remote_protocol_tests;
 
 extern void SetGuiMainProxy(const Func<void()>& proxy);
+
+template<typename TProtocol>
+void StartRemoteControllerTest(TProtocol& protocol)
+{
+	JsonProtocol jsonProtocol(&protocol);
+	GuiRemoteProtocolFilter filteredProtocol(&jsonProtocol);
+	SetupRemoteNativeController(&filteredProtocol);
+	SetGuiMainProxy({});
+}

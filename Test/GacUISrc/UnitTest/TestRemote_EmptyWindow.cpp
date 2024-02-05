@@ -94,10 +94,7 @@ TEST_FILE
 				ws->Run(window);
 			});
 		});
-		JsonProtocol jsonProtocol(&protocol);
-		GuiRemoteProtocolFilter filteredProtocol(&jsonProtocol);
-		SetupRemoteNativeController(&filteredProtocol);
-		SetGuiMainProxy({});
+		StartRemoteControllerTest(protocol);
 
 		TEST_CASE(L"Ensure stopped")
 		{
@@ -141,10 +138,7 @@ TEST_FILE
 				listener.AssertCallbacks();
 			});
 		});
-		JsonProtocol jsonProtocol(&protocol);
-		GuiRemoteProtocolFilter filteredProtocol(&jsonProtocol);
-		SetupRemoteNativeController(&filteredProtocol);
-		SetGuiMainProxy({});
+		StartRemoteControllerTest(protocol);
 	});
 
 	TEST_CATEGORY(L"Block closing the main window")
@@ -190,10 +184,7 @@ TEST_FILE
 				listener.AssertCallbacks();
 			});
 		});
-		JsonProtocol jsonProtocol(&protocol);
-		GuiRemoteProtocolFilter filteredProtocol(&jsonProtocol);
-		SetupRemoteNativeController(&filteredProtocol);
-		SetGuiMainProxy({});
+		StartRemoteControllerTest(protocol);
 	});
 
 	TEST_CATEGORY(L"Block closing the non-main window (1)")
@@ -286,10 +277,7 @@ TEST_FILE
 				listener.AssertCallbacks();
 			});
 		});
-		JsonProtocol jsonProtocol(&protocol);
-		GuiRemoteProtocolFilter filteredProtocol(&jsonProtocol);
-		SetupRemoteNativeController(&filteredProtocol);
-		SetGuiMainProxy({});
+		StartRemoteControllerTest(protocol);
 	});
 
 	TEST_CATEGORY(L"Block closing the non-main window (2)")
@@ -365,10 +353,7 @@ TEST_FILE
 				listener.AssertCallbacks();
 			});
 		});
-		JsonProtocol jsonProtocol(&protocol);
-		GuiRemoteProtocolFilter filteredProtocol(&jsonProtocol);
-		SetupRemoteNativeController(&filteredProtocol);
-		SetGuiMainProxy({});
+		StartRemoteControllerTest(protocol);
 	});
 
 	TEST_CATEGORY(L"ControllerRequestExit event")
@@ -439,10 +424,7 @@ TEST_FILE
 				listener.AssertCallbacks();
 			});
 		});
-		JsonProtocol jsonProtocol(&protocol);
-		GuiRemoteProtocolFilter filteredProtocol(&jsonProtocol);
-		SetupRemoteNativeController(&filteredProtocol);
-		SetGuiMainProxy({});
+		StartRemoteControllerTest(protocol);
 	});
 
 	TEST_CATEGORY(L"ControllerForceExit event")
@@ -504,10 +486,7 @@ TEST_FILE
 				listener.AssertCallbacks();
 			});
 		});
-		JsonProtocol jsonProtocol(&protocol);
-		GuiRemoteProtocolFilter filteredProtocol(&jsonProtocol);
-		SetupRemoteNativeController(&filteredProtocol);
-		SetGuiMainProxy({});
+		StartRemoteControllerTest(protocol);
 	});
 
 	TEST_CATEGORY(L"Disconnect and connect during running")
@@ -574,10 +553,7 @@ TEST_FILE
 				ws->Run(window);
 			});
 		});
-		JsonProtocol jsonProtocol(&protocol);
-		GuiRemoteProtocolFilter filteredProtocol(&jsonProtocol);
-		SetupRemoteNativeController(&filteredProtocol);
-		SetGuiMainProxy({});
+		StartRemoteControllerTest(protocol);
 	});
 
 	TEST_CATEGORY(L"Bidirectional controlling enabled/activated/focused")
@@ -737,10 +713,7 @@ TEST_FILE
 				listener.AssertCallbacks();
 			});
 		});
-		JsonProtocol jsonProtocol(&protocol);
-		GuiRemoteProtocolFilter filteredProtocol(&jsonProtocol);
-		SetupRemoteNativeController(&filteredProtocol);
-		SetGuiMainProxy({});
+		StartRemoteControllerTest(protocol);
 	});
 
 	TEST_CATEGORY(L"Bidirectional control maximized/minimized/restore (1)")
@@ -820,10 +793,7 @@ TEST_FILE
 				listener.AssertCallbacks();
 			});
 		});
-		JsonProtocol jsonProtocol(&protocol);
-		GuiRemoteProtocolFilter filteredProtocol(&jsonProtocol);
-		SetupRemoteNativeController(&filteredProtocol);
-		SetGuiMainProxy({});
+		StartRemoteControllerTest(protocol);
 	});
 
 	TEST_CATEGORY(L"Bidirectional control maximized/minimized/restore (2)")
@@ -904,9 +874,6 @@ TEST_FILE
 				listener.AssertCallbacks();
 			});
 		});
-		JsonProtocol jsonProtocol(&protocol);
-		GuiRemoteProtocolFilter filteredProtocol(&jsonProtocol);
-		SetupRemoteNativeController(&filteredProtocol);
-		SetGuiMainProxy({});
+		StartRemoteControllerTest(protocol);
 	});
 }

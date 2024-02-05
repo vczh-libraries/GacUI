@@ -93,10 +93,7 @@ TEST_FILE
 		});
 
 		SetGuiMainProxy(MakeGuiMain(protocol, eventLogs, controlHost));
-		JsonProtocol jsonProtocol(&protocol);
-		GuiRemoteProtocolFilter filteredProtocol(&jsonProtocol);
-		SetupRemoteNativeController(&filteredProtocol);
-		SetGuiMainProxy({});
+		StartRemoteControllerTest(protocol);
 	});
 	TEST_CATEGORY(L"Trigger global shortcut key")
 	{
@@ -250,9 +247,6 @@ TEST_FILE
 		});
 
 		SetGuiMainProxy(MakeGuiMain(protocol, eventLogs, controlHost));
-		JsonProtocol jsonProtocol(&protocol);
-		GuiRemoteProtocolFilter filteredProtocol(&jsonProtocol);
-		SetupRemoteNativeController(&filteredProtocol);
-		SetGuiMainProxy({});
+		StartRemoteControllerTest(protocol);
 	});
 }

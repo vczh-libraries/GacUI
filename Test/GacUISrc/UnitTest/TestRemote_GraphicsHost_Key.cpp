@@ -169,9 +169,6 @@ TEST_FILE
 		});
 
 		SetGuiMainProxy(MakeGuiMain(protocol, eventLogs, controlHost));
-		JsonProtocol jsonProtocol(&protocol);
-		GuiRemoteProtocolFilter filteredProtocol(&jsonProtocol);
-		SetupRemoteNativeController(&filteredProtocol);
-		SetGuiMainProxy({});
+		StartRemoteControllerTest(protocol);
 	});
 }

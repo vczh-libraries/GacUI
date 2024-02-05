@@ -152,10 +152,7 @@ TEST_FILE
 		});
 
 		SetGuiMainProxy(MakeGuiMain(protocol, eventLogs, controlHost));
-		JsonProtocol jsonProtocol(&protocol);
-		GuiRemoteProtocolFilter filteredProtocol(&jsonProtocol);
-		SetupRemoteNativeController(&filteredProtocol);
-		SetGuiMainProxy({});
+		StartRemoteControllerTest(protocol);
 	});
 
 	TEST_CATEGORY(L"Alt single level with conflict")
@@ -232,10 +229,7 @@ TEST_FILE
 		});
 
 		SetGuiMainProxy(MakeGuiMain(protocol, eventLogs, controlHost));
-		JsonProtocol jsonProtocol(&protocol);
-		GuiRemoteProtocolFilter filteredProtocol(&jsonProtocol);
-		SetupRemoteNativeController(&filteredProtocol);
-		SetGuiMainProxy({});
+		StartRemoteControllerTest(protocol);
 	});
 
 	TEST_CATEGORY(L"Alt fake multiple level and escape / activate")
@@ -284,10 +278,7 @@ TEST_FILE
 		});
 
 		SetGuiMainProxy(MakeGuiMain(protocol, eventLogs, controlHost));
-		JsonProtocol jsonProtocol(&protocol);
-		GuiRemoteProtocolFilter filteredProtocol(&jsonProtocol);
-		SetupRemoteNativeController(&filteredProtocol);
-		SetGuiMainProxy({});
+		StartRemoteControllerTest(protocol);
 	});
 
 	TEST_CATEGORY(L"Alt multiple level and escape / activate")
@@ -370,10 +361,7 @@ TEST_FILE
 		});
 
 		SetGuiMainProxy(MakeGuiMain(protocol, eventLogs, controlHost));
-		JsonProtocol jsonProtocol(&protocol);
-		GuiRemoteProtocolFilter filteredProtocol(&jsonProtocol);
-		SetupRemoteNativeController(&filteredProtocol);
-		SetGuiMainProxy({});
+		StartRemoteControllerTest(protocol);
 	});
 
 	TEST_CATEGORY(L"Alt multiple level with conflict and cancel")
@@ -431,10 +419,7 @@ TEST_FILE
 		});
 
 		SetGuiMainProxy(MakeGuiMain(protocol, eventLogs, controlHost));
-		JsonProtocol jsonProtocol(&protocol);
-		GuiRemoteProtocolFilter filteredProtocol(&jsonProtocol);
-		SetupRemoteNativeController(&filteredProtocol);
-		SetGuiMainProxy({});
+		StartRemoteControllerTest(protocol);
 	});
 
 	TEST_CATEGORY(L"Alt multiple level with conflict and going back")
@@ -522,10 +507,7 @@ TEST_FILE
 		});
 
 		SetGuiMainProxy(MakeGuiMain(protocol, eventLogs, controlHost));
-		JsonProtocol jsonProtocol(&protocol);
-		GuiRemoteProtocolFilter filteredProtocol(&jsonProtocol);
-		SetupRemoteNativeController(&filteredProtocol);
-		SetGuiMainProxy({});
+		StartRemoteControllerTest(protocol);
 	});
 
 	TEST_CATEGORY(L"Alt multiple level with long keys")
@@ -645,10 +627,7 @@ TEST_FILE
 		});
 
 		SetGuiMainProxy(MakeGuiMain(protocol, eventLogs, controlHost));
-		JsonProtocol jsonProtocol(&protocol);
-		GuiRemoteProtocolFilter filteredProtocol(&jsonProtocol);
-		SetupRemoteNativeController(&filteredProtocol);
-		SetGuiMainProxy({});
+		StartRemoteControllerTest(protocol);
 	});
 
 #undef CREATE_BUTTON

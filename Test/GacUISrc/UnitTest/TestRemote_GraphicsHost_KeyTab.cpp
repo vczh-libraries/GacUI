@@ -133,10 +133,7 @@ TEST_FILE
 		});
 
 		SetGuiMainProxy(MakeGuiMain(protocol, eventLogs, controlHost));
-		JsonProtocol jsonProtocol(&protocol);
-		GuiRemoteProtocolFilter filteredProtocol(&jsonProtocol);
-		SetupRemoteNativeController(&filteredProtocol);
-		SetGuiMainProxy({});
+		StartRemoteControllerTest(protocol);
 	});
 
 	TEST_CATEGORY(L"Shift+Tab through all buttons")
@@ -210,10 +207,7 @@ TEST_FILE
 		});
 
 		SetGuiMainProxy(MakeGuiMain(protocol, eventLogs, controlHost));
-		JsonProtocol jsonProtocol(&protocol);
-		GuiRemoteProtocolFilter filteredProtocol(&jsonProtocol);
-		SetupRemoteNativeController(&filteredProtocol);
-		SetGuiMainProxy({});
+		StartRemoteControllerTest(protocol);
 	});
 
 	TEST_CATEGORY(L"Tab and delete focused buttons")
@@ -286,10 +280,7 @@ TEST_FILE
 		});
 
 		SetGuiMainProxy(MakeGuiMain(protocol, eventLogs, controlHost));
-		JsonProtocol jsonProtocol(&protocol);
-		GuiRemoteProtocolFilter filteredProtocol(&jsonProtocol);
-		SetupRemoteNativeController(&filteredProtocol);
-		SetGuiMainProxy({});
+		StartRemoteControllerTest(protocol);
 	});
 
 	TEST_CATEGORY(L"Tab and delete unfocused buttons")
@@ -354,10 +345,7 @@ TEST_FILE
 		});
 
 		SetGuiMainProxy(MakeGuiMain(protocol, eventLogs, controlHost));
-		JsonProtocol jsonProtocol(&protocol);
-		GuiRemoteProtocolFilter filteredProtocol(&jsonProtocol);
-		SetupRemoteNativeController(&filteredProtocol);
-		SetGuiMainProxy({});
+		StartRemoteControllerTest(protocol);
 	});
 
 	TEST_CATEGORY(L"Tab and delete container of focused button")
@@ -429,10 +417,7 @@ TEST_FILE
 		});
 
 		SetGuiMainProxy(MakeGuiMain(protocol, eventLogs, controlHost));
-		JsonProtocol jsonProtocol(&protocol);
-		GuiRemoteProtocolFilter filteredProtocol(&jsonProtocol);
-		SetupRemoteNativeController(&filteredProtocol);
-		SetGuiMainProxy({});
+		StartRemoteControllerTest(protocol);
 	});
 
 	TEST_CATEGORY(L"Shift+Tab and delete container of focused button")
@@ -507,10 +492,7 @@ TEST_FILE
 		});
 
 		SetGuiMainProxy(MakeGuiMain(protocol, eventLogs, controlHost));
-		JsonProtocol jsonProtocol(&protocol);
-		GuiRemoteProtocolFilter filteredProtocol(&jsonProtocol);
-		SetupRemoteNativeController(&filteredProtocol);
-		SetGuiMainProxy({});
+		StartRemoteControllerTest(protocol);
 	});
 
 #undef ASSERT_NO_FOCUS
