@@ -29,6 +29,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Remote\GuiRemoteController.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Remote\GuiRemoteEvents.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Remote\GuiRemoteGraphics.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Remote\GuiRemoteGraphics_BasicElements.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Remote\GuiRemoteProtocol.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Remote\GuiRemoteProtocolSchemaShared.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Remote\GuiRemoteWindow.h" />
@@ -61,6 +62,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Remote\GuiRemoteControllerSetup.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Remote\GuiRemoteEvents.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Remote\GuiRemoteGraphics.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Remote\GuiRemoteGraphics_BasicElements.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Remote\GuiRemoteProtocolSchemaShared.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Remote\GuiRemoteWindow.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Remote\Protocol\Generated\GuiRemoteProtocolSchema.cpp" />

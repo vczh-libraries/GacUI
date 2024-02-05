@@ -1,4 +1,5 @@
 #include "GuiRemoteController.h"
+#include "GuiRemoteGraphics_BasicElements.h"
 
 namespace vl::presentation::elements
 {
@@ -62,7 +63,18 @@ GuiRemoteGraphicsResourceManager
 		: remote(_remote)
 		, renderTarget(_remote)
 	{
-		// TODO: register element renderers;
+		elements_remoteprotocol::GuiFocusRectangleElementRenderer::Register();
+		elements_remoteprotocol::GuiSolidBorderElementRenderer::Register();
+		elements_remoteprotocol::Gui3DBorderElementRenderer::Register();
+		elements_remoteprotocol::Gui3DSplitterElementRenderer::Register();
+		elements_remoteprotocol::GuiSolidBackgroundElementRenderer::Register();
+		elements_remoteprotocol::GuiGradientBackgroundElementRenderer::Register();
+		elements_remoteprotocol::GuiInnerShadowElementRenderer::Register();
+		elements_remoteprotocol::GuiSolidLabelElementRenderer::Register();
+		elements_remoteprotocol::GuiImageFrameElementRenderer::Register();
+		elements_remoteprotocol::GuiPolygonElementRenderer::Register();
+		elements_remoteprotocol::GuiColorizedTextElementRenderer::Register();
+		elements::GuiDocumentElement::GuiDocumentElementRenderer::Register();
 	}
 
 	GuiRemoteGraphicsResourceManager::~GuiRemoteGraphicsResourceManager()

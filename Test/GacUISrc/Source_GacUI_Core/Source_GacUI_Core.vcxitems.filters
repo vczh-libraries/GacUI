@@ -183,6 +183,9 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Remote\GuiRemoteGraphics.cpp">
       <Filter>PlatformProviders\Remote</Filter>
     </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Remote\GuiRemoteGraphics_BasicElements.cpp">
+      <Filter>PlatformProviders\Remote</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiDocument.h">
@@ -265,6 +268,9 @@
       <Filter>PlatformProviders\Remote</Filter>
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Remote\GuiRemoteGraphics.h">
+      <Filter>PlatformProviders\Remote</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Remote\GuiRemoteGraphics_BasicElements.h">
       <Filter>PlatformProviders\Remote</Filter>
     </ClInclude>
   </ItemGroup>

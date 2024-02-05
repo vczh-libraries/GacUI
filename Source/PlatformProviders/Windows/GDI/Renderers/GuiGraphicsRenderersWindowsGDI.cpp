@@ -901,13 +901,14 @@ GuiColorizedTextElementRenderer
 			void GuiColorizedTextElementRenderer::InitializeInternal()
 			{
 				auto resourceManager=GetWindowsGDIResourceManager();
-				element->SetCallback(this);
 				oldCaretColor=element->GetCaretColor();
 				caretPen=resourceManager->CreateGdiPen(oldCaretColor);
+				element->SetCallback(this);
 			}
 
 			void GuiColorizedTextElementRenderer::FinalizeInternal()
 			{
+				element->SetCallback(nullptr);
 				auto resourceManager=GetWindowsGDIResourceManager();
 				if(font)
 				{

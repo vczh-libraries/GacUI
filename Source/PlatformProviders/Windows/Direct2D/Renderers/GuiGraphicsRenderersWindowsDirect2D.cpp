@@ -1310,6 +1310,7 @@ GuiColorizedTextElementRenderer
 
 			void GuiColorizedTextElementRenderer::FinalizeInternal()
 			{
+				element->SetCallback(nullptr);
 				DestroyTextBrush(renderTarget);
 				DestroyCaretBrush(renderTarget);
 
