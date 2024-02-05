@@ -28,14 +28,16 @@
   - Move `GuiRemoteProtocolFilter` and `GuiRemoteEventFilter` from unit test to `GuiRemoteController`.
     - Update implementation from if-chain to switch-case.
   - Verify dropped messages/events not be called in unit test.
-- SyncDom architecture that streams layout/element changes, requiring Hosted for the first version.
-  - An implementation of remoting.
-  - Requires hosted mode.
-  - First version: changes only sent before `IGuiGraphicsRenderer::GetMinSize`.
-  - Implement remote renderers without complex text elements.
+- (SyncDom) Implement all renderers except `ColorizedTextElement` and `DocumentElement`.
+  - Element changes are pushed in `StartRenderingOnNativeWindow`.
+    - Sizes of all `GuiSolidLabelElementRenderer` are sent back at this moment. Ignore elements of which sizes are not changed.
     - Each character takes exactly `FontSize x FontSize`
     - Deal with `\r` and `\n` when multiline is enabled
-    - Do not send min size calculation request if it could be done generally.
+    - Sizes of other elements could be calculated locally.
+  - Rendered elements and their locations are pushed in `StopRenderingOnNativeWindow`.
+    - Sizes of all `GuiSolidLabelElementRenderer` are sent back at this moment. Ignore elements of which sizes are not changed.
+  - On new connection established, data of all elements are sync.
+    - Sizes of all `GuiSolidLabelElementRenderer` are sent back at this moment.
 - UnitTest.vcxproj
   - Test `GuiVirtualRepeatCompositionBase::GetAdoptedSize`.
   - Test `GuiVirtualRepeatCompositionBase::GetTotalSize` with `UseMinimumTotalSize`.
@@ -57,7 +59,8 @@
 
 - All control unit test (using DarkSkin)
   - Add window resizing constraint messages.
-  - Support complex text elements.
+  - Implement `ColorizedTextElement` and `DocumentElement`.
+    - Think about how to calculate size for document.
   - A viewer to view unit test results logged from SyncDom and other stuff after each time when layout stops.
   - In release repo add more tools that just call `GacUI.UnitTest.cpp`:
     - Load x86 bin + workflow script and execute.
@@ -66,7 +69,6 @@
       - Can navigate to workflow script.
 - Move unit test utilities to `GacUI.UnitTest.cpp`, `GacUI.UnitTest.h`, `GacUI.UnitTest.Reflection ...`
 - Document for unit test framework.
-- Document for remote protocol and SyncDom.
 
 ## Release Milestone (1.3.0.0)
 
@@ -79,14 +81,17 @@
     - ViewModel implements in C++ and C#
   - A GacUI SyncDom process connecting to a server process for streaming graphics
     - GDI+ implements in C#
-    - D2D implements in C++
+    - GDI/D2D implements in C++
 - Document for SyncObj
+- Document for SyncDom.
+- Document for remote protocol.
 - Rewrite `GacBuild.ps1` and `GacClear.ps1` in C++, but still keep them just doing redirection for backward compatibility.
 - Get rid of `Deploy.bat` in `GacGen.ps1` and `GacGen.exe`
 
 ## Release Milestone (future releases)
 
 - `Variant` and `Union` with full support.
+  - Document.
 - Strict check in different for-each loops.
 - More optimistic SyncDom strategy to reduce messages.
 - Windows
