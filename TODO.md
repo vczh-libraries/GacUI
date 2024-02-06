@@ -4,6 +4,14 @@
 
 - `vl::Variant`
 - `vl::Overloading`
+- Removed `DEFINE_GUI_GRAPHICS_ELEMENT(TYPE, NAME)`
+  - private: `friend class GuiElementBase<TYPE>;`
+  - private: `static constexpr const wchar_t* ElementTypeName = NAME;`
+- Removed `DEFINE_CACHED_RESOURCE_ALLOCATOR(TKEY, TVALUE)`
+  - New base class: `GuiCachedResourceAllocatorBase<Self, TKEY, TVALUE>`
+- Removed `DEFINE_GUI_GRAPHICS_RENDERER(TELEMENT, TRENDERER, TTARGET)`
+  - New base class: `GuiElementRendererBase<TELEMENT, TRENDERER, TTARGET>`
+  - private: `friend class GuiElementRendererBase<TELEMENT, TRENDERER, TTARGET>;`
 
 ## Known Issues
 
@@ -87,7 +95,6 @@
 
 ## Release Milestone (1.3.0.0)
 
-- Delete `DEFINE_GUI_GRAPHICS_RENDERER` macro.
 - A remote protocol implementation on existing `INativeController` implementation.
   - Network protocols are not included as default implementation
 - New tutorials
