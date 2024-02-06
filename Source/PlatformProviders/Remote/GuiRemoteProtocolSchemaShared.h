@@ -13,6 +13,7 @@ Interfaces:
 
 #include <VlppGlrParser.h>
 #include "../../NativeWindow/GuiNativeWindow.h"
+#include "../../GraphicsElement/GuiGraphicsElement.h"
 
 namespace vl::presentation::remoteprotocol
 {
@@ -36,6 +37,7 @@ namespace vl::presentation::remoteprotocol
 	template<> Ptr<glr::json::JsonNode> ConvertCustomTypeToJson<WString>(const WString& value);
 	template<> Ptr<glr::json::JsonNode> ConvertCustomTypeToJson<wchar_t>(const wchar_t& value);
 	template<> Ptr<glr::json::JsonNode> ConvertCustomTypeToJson<VKEY>(const VKEY& value);
+	template<> Ptr<glr::json::JsonNode> ConvertCustomTypeToJson<Color>(const Color& value);
 
 	template<typename T>
 	void ConvertJsonToCustomType(Ptr<glr::json::JsonNode> node, T& value)
@@ -50,6 +52,7 @@ namespace vl::presentation::remoteprotocol
 	template<> void ConvertJsonToCustomType<WString>(Ptr<glr::json::JsonNode> node, WString& value);
 	template<> void ConvertJsonToCustomType<wchar_t>(Ptr<glr::json::JsonNode> node, wchar_t& value);
 	template<> void ConvertJsonToCustomType<VKEY>(Ptr<glr::json::JsonNode> node, VKEY& value);
+	template<> void ConvertJsonToCustomType<Color>(Ptr<glr::json::JsonNode> node, Color& value);
 
 	template<typename T>
 	void ConvertCustomTypeToJsonField(Ptr<glr::json::JsonObject> node, const wchar_t* name, const T& value)
@@ -59,6 +62,48 @@ namespace vl::presentation::remoteprotocol
 		field->value = ConvertCustomTypeToJson(value);
 		node->fields.Add(field);
 	}
+
+	template<typename T>
+	struct JsonHelper<Nullable<T>>
+	{
+		static Ptr<glr::json::JsonNode> ToJson(const Nullable<T>& value)
+		{
+			if (!value)
+			{
+				auto node = Ptr(new glr::json::JsonLiteral);
+				node->value = glr::json::JsonLiteralValue::Null;
+				return node;
+			}
+			else
+			{
+				return ConvertCustomTypeToJson(value.Value());
+			}
+		}
+
+		static void FromJson(Ptr<glr::json::JsonNode> node, Nullable<T>& value)
+		{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<T>(Ptr<JsonNode>, Ptr<List<T>>&)#"
+			if (auto jsonLiteral = node.Cast<glr::json::JsonLiteral>())
+			{
+				if (jsonLiteral->value == glr::json::JsonLiteralValue::Null)
+				{
+					value.Reset();
+					return;
+				}
+				else
+				{
+					CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
+				}
+			}
+			else
+			{
+				T item;
+				ConvertJsonToCustomType(node, item);
+				value = item;
+			}
+#undef ERROR_MESSAGE_PREFIX
+		}
+	};
 
 	template<typename T>
 	struct JsonHelper<Ptr<collections::List<T>>>

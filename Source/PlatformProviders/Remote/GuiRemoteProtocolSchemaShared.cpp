@@ -47,6 +47,11 @@ namespace vl::presentation::remoteprotocol
 		return ConvertCustomTypeToJson((vint)value);
 	}
 
+	template<> Ptr<glr::json::JsonNode> ConvertCustomTypeToJson<Color>(const Color& value)
+	{
+		return ConvertCustomTypeToJson(value.ToString());
+	}
+
 	template<> void ConvertJsonToCustomType<bool>(Ptr<glr::json::JsonNode> node, bool& value)
 	{
 #define ERROR_MESSAGE_PREFIX L"presentation::remoteprotocol::ConvertJsonToCustomType<bool>(Ptr<JsonNode>, bool&)#"
@@ -112,5 +117,12 @@ namespace vl::presentation::remoteprotocol
 		vint intValue;
 		ConvertJsonToCustomType(node, intValue);
 		value = (VKEY)intValue;
+	}
+
+	template<> void ConvertJsonToCustomType<Color>(Ptr<glr::json::JsonNode> node, Color& value)
+	{
+		WString strValue;
+		ConvertJsonToCustomType(node, strValue);
+		value = Color::Parse(strValue);
 	}
 }

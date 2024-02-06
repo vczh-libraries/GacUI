@@ -1315,13 +1315,6 @@
         "name": "ElementShape",
         "members": [{
             "$ast": "StructMember",
-            "name": "id",
-            "type": {
-                "$ast": "PrimitiveType",
-                "type": "Integer"
-            }
-        }, {
-            "$ast": "StructMember",
             "name": "shapeType",
             "type": {
                 "$ast": "ReferenceType",

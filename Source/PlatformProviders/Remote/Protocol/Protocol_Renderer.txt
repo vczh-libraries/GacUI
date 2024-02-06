@@ -54,7 +54,6 @@ enum ElementVerticalAlignment
 [@Cpp(::vl::presentation::elements::ElementShape)]
 struct ElementShape
 {
-    var id : int;
     var shapeType : ElementShapeType;
     var radiusX : int;
     var radiusY : int;

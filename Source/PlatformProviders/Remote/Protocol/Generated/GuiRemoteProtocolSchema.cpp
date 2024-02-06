@@ -327,7 +327,6 @@ namespace vl::presentation::remoteprotocol
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::elements::ElementShape>(const ::vl::presentation::elements::ElementShape & value)
 	{
 		auto node = Ptr(new glr::json::JsonObject);
-		ConvertCustomTypeToJsonField(node, L"id", value.id);
 		ConvertCustomTypeToJsonField(node, L"shapeType", value.shapeType);
 		ConvertCustomTypeToJsonField(node, L"radiusX", value.radiusX);
 		ConvertCustomTypeToJsonField(node, L"radiusY", value.radiusY);
@@ -855,7 +854,6 @@ namespace vl::presentation::remoteprotocol
 		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
 		for (auto field : jsonNode->fields)
 		{
-			if (field->name.value == L"id") ConvertJsonToCustomType(field->value, value.id); else
 			if (field->name.value == L"shapeType") ConvertJsonToCustomType(field->value, value.shapeType); else
 			if (field->name.value == L"radiusX") ConvertJsonToCustomType(field->value, value.radiusX); else
 			if (field->name.value == L"radiusY") ConvertJsonToCustomType(field->value, value.radiusY); else
