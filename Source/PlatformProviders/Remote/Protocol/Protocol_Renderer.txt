@@ -37,6 +37,20 @@ enum ElementSplitterDirection
     Vertical,
 }
 
+enum ElementHorizontalAlignment
+{
+    Left,
+    Right,
+    Center,
+}
+
+enum ElementVerticalAlignment
+{
+    Top,
+    Bottom,
+    Center,
+}
+
 [@Cpp(::vl::presentation::elements::ElementShape)]
 struct ElementShape
 {
@@ -91,13 +105,35 @@ struct ElementDesc_InnerShadow
     var thickness : int;
 }
 
-struct ElementDesc_Polugon
+struct ElementDesc_Polygon
 {
     var id : int;
     var size : Size;
     var borderColor : color;
     var backgroundColor : color;
     var points : Point[];
+}
+
+enum ElementSolidLabelMeasuring
+{
+    None,
+    SingleLineHeight,
+    TotalSize,
+}
+
+struct ElementDesc_SolidLabel
+{
+    var textColor : color;
+    var horizontalAlignment : ElementHorizontalAlignment;
+    var verticalAlignment : ElementVerticalAlignment;
+    var wrapLine : bool;
+    var wrapLineHeightCalculation : bool;
+    var ellipse : bool;
+    var multiline : bool;
+
+    var font : FontProperties?;
+    var text : string?;
+    var measuring : ElementSolidLabelMeasuring?;
 }
 
 struct RendererCreation
@@ -108,3 +144,34 @@ struct RendererCreation
 
 message RendererCreated             { request: RendererCreation[]; }
 message RendererDestroyed           { request: int[]; }
+
+message RendererUpdateElement_SolidBorder           { request: ElementDesc_SolidBorder; }
+message RendererUpdateElement_SinkBorder            { request: ElementDesc_SinkBorder; }
+message RendererUpdateElement_SinkSplitter          { request: ElementDesc_SinkSplitter; }
+message RendererUpdateElement_SolidBackground       { request: ElementDesc_SolidBackground; }
+message RendererUpdateElement_GradientBackground    { request: ElementDesc_GradientBackground; }
+message RendererUpdateElement_InnerShadow           { request: ElementDesc_InnerShadow; }
+message RendererUpdateElement_Polygon               { request: ElementDesc_Polygon; }
+message RendererUpdateElement_SolidLabel            { request: ElementDesc_SolidLabel; }
+
+struct ElementSolidLabelMeasuring
+{
+    var id : int;
+    var size : Size;
+}
+
+struct ElementMeasurings
+{
+    var solidLabelMeasurings : ElementSolidLabelMeasuring[];
+}
+
+struct ElementRendering
+{
+    var id : int;
+    var bounds : Rect;
+    var clipper : Rect;
+}
+
+struct RendererBeginRendering                       { response: ElementMeasurings; }
+struct RendererRenderElement                        { request: ElementRendering; }
+struct RendererEndRendering                         { response: ElementMeasurings; }

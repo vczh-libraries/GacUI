@@ -50,6 +50,15 @@ struct Size
     var y : int;
 }
 
+[@Cpp(::vl::presentation::Rect)]
+struct Rect
+{
+    var x1 : int;
+    var y1 : int;
+    var x2 : int;
+    var y2 : int;
+}
+
 [@Cpp(::vl::presentation::FontProperties)]
 struct FontProperties
 {
