@@ -91,6 +91,12 @@ namespace vl::presentation::remoteprotocol::json_visitor
 		Print(node->type.Obj());
 		EndField();
 	}
+	void AstVisitor::PrintFields(GuiRpOptionalType* node)
+	{
+		BeginField(L"element");
+		Print(node->element.Obj());
+		EndField();
+	}
 	void AstVisitor::PrintFields(GuiRpPrimitiveType* node)
 	{
 		BeginField(L"type");
@@ -101,6 +107,9 @@ namespace vl::presentation::remoteprotocol::json_visitor
 			break;
 		case vl::presentation::remoteprotocol::GuiRpPrimitiveTypes::Char:
 			WriteString(L"Char");
+			break;
+		case vl::presentation::remoteprotocol::GuiRpPrimitiveTypes::Color:
+			WriteString(L"Color");
 			break;
 		case vl::presentation::remoteprotocol::GuiRpPrimitiveTypes::Double:
 			WriteString(L"Double");
@@ -192,6 +201,20 @@ namespace vl::presentation::remoteprotocol::json_visitor
 		WriteType(L"ReferenceType", node);
 		PrintFields(static_cast<GuiRpType*>(node));
 		PrintFields(static_cast<GuiRpReferenceType*>(node));
+		EndObject();
+	}
+
+	void AstVisitor::Visit(GuiRpOptionalType* node)
+	{
+		if (!node)
+		{
+			WriteNull();
+			return;
+		}
+		BeginObject();
+		WriteType(L"OptionalType", node);
+		PrintFields(static_cast<GuiRpType*>(node));
+		PrintFields(static_cast<GuiRpOptionalType*>(node));
 		EndObject();
 	}
 

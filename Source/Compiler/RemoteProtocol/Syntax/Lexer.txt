@@ -13,6 +13,7 @@ DOUBLE:double
 STRING:string
 CHAR:char
 KEY:key
+COLOR:color
 
 $NAME:[a-zA-Z_][a-zA-Z0-9]*
 CPP_NAME:(::[a-zA-Z_][a-zA-Z0-9<>]*){1,}
@@ -28,5 +29,6 @@ CLOSE:/)
 COLON::
 SEMICOLON:;
 COMMA:,
+QUESTION:/?
 
 discard SPACE:/s+

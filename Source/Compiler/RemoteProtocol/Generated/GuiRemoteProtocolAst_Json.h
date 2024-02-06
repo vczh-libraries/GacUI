@@ -28,6 +28,7 @@ namespace vl::presentation::remoteprotocol::json_visitor
 		virtual void PrintFields(GuiRpMessageDecl* node);
 		virtual void PrintFields(GuiRpMessageRequest* node);
 		virtual void PrintFields(GuiRpMessageResponse* node);
+		virtual void PrintFields(GuiRpOptionalType* node);
 		virtual void PrintFields(GuiRpPrimitiveType* node);
 		virtual void PrintFields(GuiRpReferenceType* node);
 		virtual void PrintFields(GuiRpSchema* node);
@@ -38,6 +39,7 @@ namespace vl::presentation::remoteprotocol::json_visitor
 	protected:
 		void Visit(GuiRpPrimitiveType* node) override;
 		void Visit(GuiRpReferenceType* node) override;
+		void Visit(GuiRpOptionalType* node) override;
 		void Visit(GuiRpArrayType* node) override;
 
 		void Visit(GuiRpEnumDecl* node) override;

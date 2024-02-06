@@ -21,6 +21,7 @@ namespace vl::presentation::remoteprotocol
 	class GuiRpMessageDecl;
 	class GuiRpMessageRequest;
 	class GuiRpMessageResponse;
+	class GuiRpOptionalType;
 	class GuiRpPrimitiveType;
 	class GuiRpReferenceType;
 	class GuiRpSchema;
@@ -38,6 +39,7 @@ namespace vl::presentation::remoteprotocol
 		String = 4,
 		Char = 5,
 		Key = 6,
+		Color = 7,
 	};
 
 	class GuiRpType abstract : public vl::glr::ParsingAstBase, vl::reflection::Description<GuiRpType>
@@ -48,6 +50,7 @@ namespace vl::presentation::remoteprotocol
 		public:
 			virtual void Visit(GuiRpPrimitiveType* node) = 0;
 			virtual void Visit(GuiRpReferenceType* node) = 0;
+			virtual void Visit(GuiRpOptionalType* node) = 0;
 			virtual void Visit(GuiRpArrayType* node) = 0;
 		};
 
@@ -67,6 +70,14 @@ namespace vl::presentation::remoteprotocol
 	{
 	public:
 		vl::glr::ParsingToken name;
+
+		void Accept(GuiRpType::IVisitor* visitor) override;
+	};
+
+	class GuiRpOptionalType : public GuiRpType, vl::reflection::Description<GuiRpOptionalType>
+	{
+	public:
+		vl::Ptr<GuiRpType> element;
 
 		void Accept(GuiRpType::IVisitor* visitor) override;
 	};
@@ -182,6 +193,7 @@ namespace vl::reflection::description
 	DECL_TYPE_INFO(vl::presentation::remoteprotocol::GuiRpPrimitiveTypes)
 	DECL_TYPE_INFO(vl::presentation::remoteprotocol::GuiRpPrimitiveType)
 	DECL_TYPE_INFO(vl::presentation::remoteprotocol::GuiRpReferenceType)
+	DECL_TYPE_INFO(vl::presentation::remoteprotocol::GuiRpOptionalType)
 	DECL_TYPE_INFO(vl::presentation::remoteprotocol::GuiRpArrayType)
 	DECL_TYPE_INFO(vl::presentation::remoteprotocol::GuiRpAttribute)
 	DECL_TYPE_INFO(vl::presentation::remoteprotocol::GuiRpDeclaration)
@@ -206,6 +218,11 @@ namespace vl::reflection::description
 		}
 
 		void Visit(vl::presentation::remoteprotocol::GuiRpReferenceType* node) override
+		{
+			INVOKE_INTERFACE_PROXY(Visit, node);
+		}
+
+		void Visit(vl::presentation::remoteprotocol::GuiRpOptionalType* node) override
 		{
 			INVOKE_INTERFACE_PROXY(Visit, node);
 		}

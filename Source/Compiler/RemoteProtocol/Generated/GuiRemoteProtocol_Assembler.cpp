@@ -36,6 +36,8 @@ GuiRemoteProtocolAstInsReceiver : public vl::glr::AstInsReceiverBase
 			return vl::Ptr(new vl::presentation::remoteprotocol::GuiRpMessageRequest);
 		case GuiRemoteProtocolClasses::MessageResponse:
 			return vl::Ptr(new vl::presentation::remoteprotocol::GuiRpMessageResponse);
+		case GuiRemoteProtocolClasses::OptionalType:
+			return vl::Ptr(new vl::presentation::remoteprotocol::GuiRpOptionalType);
 		case GuiRemoteProtocolClasses::PrimitiveType:
 			return vl::Ptr(new vl::presentation::remoteprotocol::GuiRpPrimitiveType);
 		case GuiRemoteProtocolClasses::ReferenceType:
@@ -74,6 +76,8 @@ GuiRemoteProtocolAstInsReceiver : public vl::glr::AstInsReceiverBase
 			return vl::glr::AssemblerSetObjectField(&vl::presentation::remoteprotocol::GuiRpMessageRequest::type, object, field, value, cppFieldName);
 		case GuiRemoteProtocolFields::MessageResponse_type:
 			return vl::glr::AssemblerSetObjectField(&vl::presentation::remoteprotocol::GuiRpMessageResponse::type, object, field, value, cppFieldName);
+		case GuiRemoteProtocolFields::OptionalType_element:
+			return vl::glr::AssemblerSetObjectField(&vl::presentation::remoteprotocol::GuiRpOptionalType::element, object, field, value, cppFieldName);
 		case GuiRemoteProtocolFields::Schema_declarations:
 			return vl::glr::AssemblerSetObjectField(&vl::presentation::remoteprotocol::GuiRpSchema::declarations, object, field, value, cppFieldName);
 		case GuiRemoteProtocolFields::StructDecl_members:
@@ -132,6 +136,7 @@ GuiRemoteProtocolAstInsReceiver : public vl::glr::AstInsReceiverBase
 			L"MessageDecl",
 			L"MessageRequest",
 			L"MessageResponse",
+			L"OptionalType",
 			L"PrimitiveType",
 			L"ReferenceType",
 			L"Schema",
@@ -140,7 +145,7 @@ GuiRemoteProtocolAstInsReceiver : public vl::glr::AstInsReceiverBase
 			L"Type",
 		};
 		vl::vint index = (vl::vint)type;
-		return 0 <= index && index < 16 ? results[index] : nullptr;
+		return 0 <= index && index < 17 ? results[index] : nullptr;
 	}
 
 	const wchar_t* GuiRemoteProtocolCppTypeName(GuiRemoteProtocolClasses type)
@@ -156,6 +161,7 @@ GuiRemoteProtocolAstInsReceiver : public vl::glr::AstInsReceiverBase
 			L"vl::presentation::remoteprotocol::GuiRpMessageDecl",
 			L"vl::presentation::remoteprotocol::GuiRpMessageRequest",
 			L"vl::presentation::remoteprotocol::GuiRpMessageResponse",
+			L"vl::presentation::remoteprotocol::GuiRpOptionalType",
 			L"vl::presentation::remoteprotocol::GuiRpPrimitiveType",
 			L"vl::presentation::remoteprotocol::GuiRpReferenceType",
 			L"vl::presentation::remoteprotocol::GuiRpSchema",
@@ -164,7 +170,7 @@ GuiRemoteProtocolAstInsReceiver : public vl::glr::AstInsReceiverBase
 			L"vl::presentation::remoteprotocol::GuiRpType",
 		};
 		vl::vint index = (vl::vint)type;
-		return 0 <= index && index < 16 ? results[index] : nullptr;
+		return 0 <= index && index < 17 ? results[index] : nullptr;
 	}
 
 	const wchar_t* GuiRemoteProtocolFieldName(GuiRemoteProtocolFields field)
@@ -183,6 +189,7 @@ GuiRemoteProtocolAstInsReceiver : public vl::glr::AstInsReceiverBase
 			L"MessageDecl::response",
 			L"MessageRequest::type",
 			L"MessageResponse::type",
+			L"OptionalType::element",
 			L"PrimitiveType::type",
 			L"ReferenceType::name",
 			L"Schema::declarations",
@@ -191,7 +198,7 @@ GuiRemoteProtocolAstInsReceiver : public vl::glr::AstInsReceiverBase
 			L"StructMember::type",
 		};
 		vl::vint index = (vl::vint)field;
-		return 0 <= index && index < 19 ? results[index] : nullptr;
+		return 0 <= index && index < 20 ? results[index] : nullptr;
 	}
 
 	const wchar_t* GuiRemoteProtocolCppFieldName(GuiRemoteProtocolFields field)
@@ -210,6 +217,7 @@ GuiRemoteProtocolAstInsReceiver : public vl::glr::AstInsReceiverBase
 			L"vl::presentation::remoteprotocol::GuiRpMessageDecl::response",
 			L"vl::presentation::remoteprotocol::GuiRpMessageRequest::type",
 			L"vl::presentation::remoteprotocol::GuiRpMessageResponse::type",
+			L"vl::presentation::remoteprotocol::GuiRpOptionalType::element",
 			L"vl::presentation::remoteprotocol::GuiRpPrimitiveType::type",
 			L"vl::presentation::remoteprotocol::GuiRpReferenceType::name",
 			L"vl::presentation::remoteprotocol::GuiRpSchema::declarations",
@@ -218,7 +226,7 @@ GuiRemoteProtocolAstInsReceiver : public vl::glr::AstInsReceiverBase
 			L"vl::presentation::remoteprotocol::GuiRpStructMember::type",
 		};
 		vl::vint index = (vl::vint)field;
-		return 0 <= index && index < 19 ? results[index] : nullptr;
+		return 0 <= index && index < 20 ? results[index] : nullptr;
 	}
 
 	vl::Ptr<vl::glr::ParsingAstBase> GuiRemoteProtocolAstInsReceiver::ResolveAmbiguity(vl::vint32_t type, vl::collections::Array<vl::Ptr<vl::glr::ParsingAstBase>>& candidates)
