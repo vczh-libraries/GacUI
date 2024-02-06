@@ -23,6 +23,7 @@ namespace vl::presentation
 	struct GuiRpSymbols
 	{
 		collections::Dictionary<WString, WString>								cppMapping;
+		collections::Dictionary<WString, WString>								cppNamespaces;
 		collections::SortedList<WString>										dropRepeatDeclNames;
 		collections::SortedList<WString>										dropConsecutiveDeclNames;
 		collections::Dictionary<WString, remoteprotocol::GuiRpEnumDecl*>		enumDecls;

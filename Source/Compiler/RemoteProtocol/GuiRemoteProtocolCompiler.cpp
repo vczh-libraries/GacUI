@@ -39,6 +39,11 @@ CheckRemoteProtocolSchema
 			}
 		}
 
+		void Visit(GuiRpOptionalType* node) override
+		{
+			node->element->Accept(this);
+		}
+
 		void Visit(GuiRpArrayType* node) override
 		{
 			node->element->Accept(this);
@@ -86,9 +91,28 @@ CheckRemoteProtocolSchema
 					{
 						errors.Add({ att->name.codeRange,L"Missing parameter for attribute: \"" + att->name.value + L"\"." });
 					}
+					else if (symbols->cppMapping.Keys().Contains(node->name.value))
+					{
+						errors.Add({ att->name.codeRange,L"Too many attributes: \"" + att->name.value + L"\"." });
+					}
 					else
 					{
 						symbols->cppMapping.Add(node->name.value, att->cppType.value);
+					}
+				}
+				else if (att->name.value == L"@CppNamespace")
+				{
+					if (!att->cppType)
+					{
+						errors.Add({ att->name.codeRange,L"Missing parameter for attribute: \"" + att->name.value + L"\"." });
+					}
+					else if (symbols->cppNamespaces.Keys().Contains(node->name.value))
+					{
+						errors.Add({ att->name.codeRange,L"Too many attributes: \"" + att->name.value + L"\"." });
+					}
+					else
+					{
+						symbols->cppNamespaces.Add(node->name.value, att->cppType.value);
 					}
 				}
 				else
@@ -284,6 +308,9 @@ GenerateRemoteProtocolHeaderFile
 			case GuiRpPrimitiveTypes::Key:
 				writer.WriteString(L"::vl::presentation::VKEY");
 				break;
+			case GuiRpPrimitiveTypes::Color:
+				writer.WriteString(L"::vl::presentation::Color");
+				break;
 			default:
 				CHECK_FAIL(L"Unrecognized type");
 			}
@@ -302,9 +329,29 @@ GenerateRemoteProtocolHeaderFile
 			}
 		}
 
+		static WString GetCppNamespace(const WString& type, Ptr<GuiRpSymbols> symbols, GuiRpCppConfig& config)
+		{
+			vint index = symbols->cppNamespaces.Keys().IndexOf(type);
+			if (index == -1)
+			{
+				return GetCppType(type, symbols, config);
+			}
+			else
+			{
+				return symbols->cppNamespaces.Values()[index];
+			}
+		}
+
 		void Visit(GuiRpReferenceType* node) override
 		{
 			writer.WriteString(GetCppType(node->name.value, symbols, config));
+		}
+
+		void Visit(GuiRpOptionalType* node) override
+		{
+			writer.WriteString(L"::vl::Nullable<");
+			node->element->Accept(this);
+			writer.WriteString(L">");
 		}
 
 		void Visit(GuiRpArrayType* node) override
@@ -524,6 +571,7 @@ GenerateRemoteProtocolCppFile
 	void GenerateEnumSerializerFunctionImpl(Ptr<GuiRpEnumDecl> enumDecl, Ptr<GuiRpSymbols> symbols, GuiRpCppConfig& config, stream::TextWriter& writer)
 	{
 		WString cppName = GuiRpPrintTypeVisitor::GetCppType(enumDecl->name.value, symbols, config);
+		WString cppNss = GuiRpPrintTypeVisitor::GetCppNamespace(enumDecl->name.value, symbols, config);
 		GenerateSerializerFunctionHeader(cppName, false, writer);
 		writer.WriteLine(L"\t{");
 		writer.WriteLine(L"#define ERROR_MESSAGE_PREFIX L\"vl::presentation::remoteprotocol::ConvertCustomTypeToJson<" + cppName + L">(const " + cppName + L"&)#\"");
@@ -532,7 +580,7 @@ GenerateRemoteProtocolCppFile
 		writer.WriteLine(L"\t\t{");
 		for (auto member : enumDecl->members)
 		{
-			writer.WriteLine(L"\t\tcase " + cppName + L"::" + member->name.value + L": node->content.value = L\"" + member->name.value + L"\"; break;");
+			writer.WriteLine(L"\t\tcase " + cppNss + L"::" + member->name.value + L": node->content.value = L\"" + member->name.value + L"\"; break;");
 		}
 		writer.WriteLine(L"\t\tdefault: CHECK_FAIL(ERROR_MESSAGE_PREFIX L\"Unsupported enum value.\");");
 		writer.WriteLine(L"\t\t}");
@@ -560,6 +608,7 @@ GenerateRemoteProtocolCppFile
 	void GenerateEnumDeserializerFunctionImpl(Ptr<GuiRpEnumDecl> enumDecl, Ptr<GuiRpSymbols> symbols, GuiRpCppConfig& config, stream::TextWriter& writer)
 	{
 		WString cppName = GuiRpPrintTypeVisitor::GetCppType(enumDecl->name.value, symbols, config);
+		WString cppNss = GuiRpPrintTypeVisitor::GetCppNamespace(enumDecl->name.value, symbols, config);
 		GenerateDeserializerFunctionHeader(cppName, false, writer);
 		writer.WriteLine(L"\t{");
 		writer.WriteLine(L"#define ERROR_MESSAGE_PREFIX L\"vl::presentation::remoteprotocol::ConvertJsonToCustomType<" + cppName + L">(Ptr<JsonNode>, " + cppName + L"&)#\"");
@@ -567,7 +616,7 @@ GenerateRemoteProtocolCppFile
 		writer.WriteLine(L"\t\tCHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L\"Json node does not match the expected type.\");");
 		for (auto member : enumDecl->members)
 		{
-			writer.WriteLine(L"\t\tif (jsonNode->content.value == L\"" + member->name.value + L"\") value = " + cppName + L"::" + member->name.value + L"; else");
+			writer.WriteLine(L"\t\tif (jsonNode->content.value == L\"" + member->name.value + L"\") value = " + cppNss + L"::" + member->name.value + L"; else");
 		}
 		writer.WriteLine(L"\t\tCHECK_FAIL(ERROR_MESSAGE_PREFIX L\"Unsupported enum value.\");");
 		writer.WriteLine(L"#undef ERROR_MESSAGE_PREFIX");

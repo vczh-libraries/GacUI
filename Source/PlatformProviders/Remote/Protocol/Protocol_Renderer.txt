@@ -85,7 +85,7 @@ struct ElementDesc_SinkSplitter
 struct ElementDesc_SolidBackground
 {
     var id : int;
-    var backgroundColor : Color;
+    var backgroundColor : color;
     var shape : ElementShape;
 }
 
@@ -154,7 +154,7 @@ message RendererUpdateElement_InnerShadow           { request: ElementDesc_Inner
 message RendererUpdateElement_Polygon               { request: ElementDesc_Polygon; }
 message RendererUpdateElement_SolidLabel            { request: ElementDesc_SolidLabel; }
 
-struct ElementSolidLabelMeasuring
+struct ElementSolidLabelMinSize
 {
     var id : int;
     var size : Size;
@@ -162,7 +162,7 @@ struct ElementSolidLabelMeasuring
 
 struct ElementMeasurings
 {
-    var solidLabelMeasurings : ElementSolidLabelMeasuring[];
+    var solidLabelMinSizes : ElementSolidLabelMinSize[];
 }
 
 struct ElementRendering
@@ -172,6 +172,6 @@ struct ElementRendering
     var clipper : Rect;
 }
 
-struct RendererBeginRendering                       { response: ElementMeasurings; }
-struct RendererRenderElement                        { request: ElementRendering; }
-struct RendererEndRendering                         { response: ElementMeasurings; }
+message RendererBeginRendering                      { response: ElementMeasurings; }
+message RendererRenderElement                       { request: ElementRendering; }
+message RendererEndRendering                        { response: ElementMeasurings; }

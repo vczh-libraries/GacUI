@@ -17,6 +17,40 @@ namespace vl::presentation::remoteprotocol
 		Right,
 	};
 
+	enum class RendererType
+	{
+		FocusRectangle,
+		SolidBorder,
+		SinkBorder,
+		SinkSplitter,
+		SolidBackground,
+		GradientBackground,
+		InnerShadow,
+		SolidLabel,
+		Polygon,
+	};
+
+	enum class ElementHorizontalAlignment
+	{
+		Left,
+		Right,
+		Center,
+	};
+
+	enum class ElementVerticalAlignment
+	{
+		Top,
+		Bottom,
+		Center,
+	};
+
+	enum class ElementSolidLabelMeasuring
+	{
+		None,
+		SingleLineHeight,
+		TotalSize,
+	};
+
 	struct FontConfig
 	{
 		::vl::presentation::FontProperties defaultFont;
@@ -60,13 +94,115 @@ namespace vl::presentation::remoteprotocol
 		::vl::presentation::INativeWindow::WindowSizeState sizeState;
 	};
 
+	struct ElementDesc_SolidBorder
+	{
+		::vl::vint id;
+		::vl::presentation::Color borderColor;
+		::vl::presentation::elements::ElementShape shape;
+	};
+
+	struct ElementDesc_SinkBorder
+	{
+		::vl::vint id;
+		::vl::presentation::Color leftTopColor;
+		::vl::presentation::Color rightBottomColor;
+	};
+
+	struct ElementDesc_SinkSplitter
+	{
+		::vl::vint id;
+		::vl::presentation::Color leftTopColor;
+		::vl::presentation::Color rightBottomColor;
+		::vl::presentation::elements::Gui3DSplitterElement::Direction direction;
+	};
+
+	struct ElementDesc_SolidBackground
+	{
+		::vl::vint id;
+		::vl::presentation::Color backgroundColor;
+		::vl::presentation::elements::ElementShape shape;
+	};
+
+	struct ElementDesc_GradientBackground
+	{
+		::vl::vint id;
+		::vl::presentation::Color leftTopColor;
+		::vl::presentation::Color rightBottomColor;
+		::vl::presentation::elements::GuiGradientBackgroundElement::Direction direction;
+		::vl::presentation::elements::ElementShape shape;
+	};
+
+	struct ElementDesc_InnerShadow
+	{
+		::vl::vint id;
+		::vl::presentation::Color shadowColor;
+		::vl::vint thickness;
+	};
+
+	struct ElementDesc_Polygon
+	{
+		::vl::vint id;
+		::vl::presentation::Size size;
+		::vl::presentation::Color borderColor;
+		::vl::presentation::Color backgroundColor;
+		::vl::Ptr<::vl::collections::List<::vl::presentation::Point>> points;
+	};
+
+	struct ElementDesc_SolidLabel
+	{
+		::vl::presentation::Color textColor;
+		vl::presentation::remoteprotocol::ElementHorizontalAlignment horizontalAlignment;
+		vl::presentation::remoteprotocol::ElementVerticalAlignment verticalAlignment;
+		bool wrapLine;
+		bool wrapLineHeightCalculation;
+		bool ellipse;
+		bool multiline;
+		::vl::Nullable<::vl::presentation::FontProperties> font;
+		::vl::Nullable<::vl::WString> text;
+		::vl::Nullable<vl::presentation::remoteprotocol::ElementSolidLabelMeasuring> measuring;
+	};
+
+	struct RendererCreation
+	{
+		::vl::vint id;
+		vl::presentation::remoteprotocol::RendererType type;
+	};
+
+	struct ElementSolidLabelMinSize
+	{
+		::vl::vint id;
+		::vl::presentation::Size size;
+	};
+
+	struct ElementMeasurings
+	{
+		::vl::Ptr<::vl::collections::List<vl::presentation::remoteprotocol::ElementSolidLabelMinSize>> solidLabelMinSizes;
+	};
+
+	struct ElementRendering
+	{
+		::vl::vint id;
+		::vl::presentation::Rect bounds;
+		::vl::presentation::Rect clipper;
+	};
+
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<vl::presentation::remoteprotocol::IOMouseButton>(const vl::presentation::remoteprotocol::IOMouseButton & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::INativeWindow::WindowSizeState>(const ::vl::presentation::INativeWindow::WindowSizeState & value);
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<vl::presentation::remoteprotocol::RendererType>(const vl::presentation::remoteprotocol::RendererType & value);
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::elements::ElementShapeType>(const ::vl::presentation::elements::ElementShapeType & value);
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::elements::GuiGradientBackgroundElement::Direction>(const ::vl::presentation::elements::GuiGradientBackgroundElement::Direction & value);
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::elements::Gui3DSplitterElement::Direction>(const ::vl::presentation::elements::Gui3DSplitterElement::Direction & value);
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<vl::presentation::remoteprotocol::ElementHorizontalAlignment>(const vl::presentation::remoteprotocol::ElementHorizontalAlignment & value);
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<vl::presentation::remoteprotocol::ElementVerticalAlignment>(const vl::presentation::remoteprotocol::ElementVerticalAlignment & value);
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<vl::presentation::remoteprotocol::ElementSolidLabelMeasuring>(const vl::presentation::remoteprotocol::ElementSolidLabelMeasuring & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::NativeCoordinate>(const ::vl::presentation::NativeCoordinate & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::NativePoint>(const ::vl::presentation::NativePoint & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::NativeSize>(const ::vl::presentation::NativeSize & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::NativeRect>(const ::vl::presentation::NativeRect & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::NativeMargin>(const ::vl::presentation::NativeMargin & value);
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::Point>(const ::vl::presentation::Point & value);
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::Size>(const ::vl::presentation::Size & value);
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::Rect>(const ::vl::presentation::Rect & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::FontProperties>(const ::vl::presentation::FontProperties & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<vl::presentation::remoteprotocol::FontConfig>(const vl::presentation::remoteprotocol::FontConfig & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<vl::presentation::remoteprotocol::ScreenConfig>(const vl::presentation::remoteprotocol::ScreenConfig & value);
@@ -77,14 +213,37 @@ namespace vl::presentation::remoteprotocol
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<vl::presentation::remoteprotocol::GlobalShortcutKey>(const vl::presentation::remoteprotocol::GlobalShortcutKey & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<vl::presentation::remoteprotocol::WindowSizingConfig>(const vl::presentation::remoteprotocol::WindowSizingConfig & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<vl::presentation::remoteprotocol::WindowShowing>(const vl::presentation::remoteprotocol::WindowShowing & value);
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::elements::ElementShape>(const ::vl::presentation::elements::ElementShape & value);
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<vl::presentation::remoteprotocol::ElementDesc_SolidBorder>(const vl::presentation::remoteprotocol::ElementDesc_SolidBorder & value);
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<vl::presentation::remoteprotocol::ElementDesc_SinkBorder>(const vl::presentation::remoteprotocol::ElementDesc_SinkBorder & value);
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<vl::presentation::remoteprotocol::ElementDesc_SinkSplitter>(const vl::presentation::remoteprotocol::ElementDesc_SinkSplitter & value);
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<vl::presentation::remoteprotocol::ElementDesc_SolidBackground>(const vl::presentation::remoteprotocol::ElementDesc_SolidBackground & value);
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<vl::presentation::remoteprotocol::ElementDesc_GradientBackground>(const vl::presentation::remoteprotocol::ElementDesc_GradientBackground & value);
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<vl::presentation::remoteprotocol::ElementDesc_InnerShadow>(const vl::presentation::remoteprotocol::ElementDesc_InnerShadow & value);
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<vl::presentation::remoteprotocol::ElementDesc_Polygon>(const vl::presentation::remoteprotocol::ElementDesc_Polygon & value);
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<vl::presentation::remoteprotocol::ElementDesc_SolidLabel>(const vl::presentation::remoteprotocol::ElementDesc_SolidLabel & value);
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<vl::presentation::remoteprotocol::RendererCreation>(const vl::presentation::remoteprotocol::RendererCreation & value);
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<vl::presentation::remoteprotocol::ElementSolidLabelMinSize>(const vl::presentation::remoteprotocol::ElementSolidLabelMinSize & value);
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<vl::presentation::remoteprotocol::ElementMeasurings>(const vl::presentation::remoteprotocol::ElementMeasurings & value);
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<vl::presentation::remoteprotocol::ElementRendering>(const vl::presentation::remoteprotocol::ElementRendering & value);
 
 	template<> void ConvertJsonToCustomType<vl::presentation::remoteprotocol::IOMouseButton>(vl::Ptr<vl::glr::json::JsonNode> node, vl::presentation::remoteprotocol::IOMouseButton& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::INativeWindow::WindowSizeState>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::INativeWindow::WindowSizeState& value);
+	template<> void ConvertJsonToCustomType<vl::presentation::remoteprotocol::RendererType>(vl::Ptr<vl::glr::json::JsonNode> node, vl::presentation::remoteprotocol::RendererType& value);
+	template<> void ConvertJsonToCustomType<::vl::presentation::elements::ElementShapeType>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::elements::ElementShapeType& value);
+	template<> void ConvertJsonToCustomType<::vl::presentation::elements::GuiGradientBackgroundElement::Direction>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::elements::GuiGradientBackgroundElement::Direction& value);
+	template<> void ConvertJsonToCustomType<::vl::presentation::elements::Gui3DSplitterElement::Direction>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::elements::Gui3DSplitterElement::Direction& value);
+	template<> void ConvertJsonToCustomType<vl::presentation::remoteprotocol::ElementHorizontalAlignment>(vl::Ptr<vl::glr::json::JsonNode> node, vl::presentation::remoteprotocol::ElementHorizontalAlignment& value);
+	template<> void ConvertJsonToCustomType<vl::presentation::remoteprotocol::ElementVerticalAlignment>(vl::Ptr<vl::glr::json::JsonNode> node, vl::presentation::remoteprotocol::ElementVerticalAlignment& value);
+	template<> void ConvertJsonToCustomType<vl::presentation::remoteprotocol::ElementSolidLabelMeasuring>(vl::Ptr<vl::glr::json::JsonNode> node, vl::presentation::remoteprotocol::ElementSolidLabelMeasuring& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::NativeCoordinate>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::NativeCoordinate& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::NativePoint>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::NativePoint& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::NativeSize>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::NativeSize& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::NativeRect>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::NativeRect& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::NativeMargin>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::NativeMargin& value);
+	template<> void ConvertJsonToCustomType<::vl::presentation::Point>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::Point& value);
+	template<> void ConvertJsonToCustomType<::vl::presentation::Size>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::Size& value);
+	template<> void ConvertJsonToCustomType<::vl::presentation::Rect>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::Rect& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::FontProperties>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::FontProperties& value);
 	template<> void ConvertJsonToCustomType<vl::presentation::remoteprotocol::FontConfig>(vl::Ptr<vl::glr::json::JsonNode> node, vl::presentation::remoteprotocol::FontConfig& value);
 	template<> void ConvertJsonToCustomType<vl::presentation::remoteprotocol::ScreenConfig>(vl::Ptr<vl::glr::json::JsonNode> node, vl::presentation::remoteprotocol::ScreenConfig& value);
@@ -95,6 +254,19 @@ namespace vl::presentation::remoteprotocol
 	template<> void ConvertJsonToCustomType<vl::presentation::remoteprotocol::GlobalShortcutKey>(vl::Ptr<vl::glr::json::JsonNode> node, vl::presentation::remoteprotocol::GlobalShortcutKey& value);
 	template<> void ConvertJsonToCustomType<vl::presentation::remoteprotocol::WindowSizingConfig>(vl::Ptr<vl::glr::json::JsonNode> node, vl::presentation::remoteprotocol::WindowSizingConfig& value);
 	template<> void ConvertJsonToCustomType<vl::presentation::remoteprotocol::WindowShowing>(vl::Ptr<vl::glr::json::JsonNode> node, vl::presentation::remoteprotocol::WindowShowing& value);
+	template<> void ConvertJsonToCustomType<::vl::presentation::elements::ElementShape>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::elements::ElementShape& value);
+	template<> void ConvertJsonToCustomType<vl::presentation::remoteprotocol::ElementDesc_SolidBorder>(vl::Ptr<vl::glr::json::JsonNode> node, vl::presentation::remoteprotocol::ElementDesc_SolidBorder& value);
+	template<> void ConvertJsonToCustomType<vl::presentation::remoteprotocol::ElementDesc_SinkBorder>(vl::Ptr<vl::glr::json::JsonNode> node, vl::presentation::remoteprotocol::ElementDesc_SinkBorder& value);
+	template<> void ConvertJsonToCustomType<vl::presentation::remoteprotocol::ElementDesc_SinkSplitter>(vl::Ptr<vl::glr::json::JsonNode> node, vl::presentation::remoteprotocol::ElementDesc_SinkSplitter& value);
+	template<> void ConvertJsonToCustomType<vl::presentation::remoteprotocol::ElementDesc_SolidBackground>(vl::Ptr<vl::glr::json::JsonNode> node, vl::presentation::remoteprotocol::ElementDesc_SolidBackground& value);
+	template<> void ConvertJsonToCustomType<vl::presentation::remoteprotocol::ElementDesc_GradientBackground>(vl::Ptr<vl::glr::json::JsonNode> node, vl::presentation::remoteprotocol::ElementDesc_GradientBackground& value);
+	template<> void ConvertJsonToCustomType<vl::presentation::remoteprotocol::ElementDesc_InnerShadow>(vl::Ptr<vl::glr::json::JsonNode> node, vl::presentation::remoteprotocol::ElementDesc_InnerShadow& value);
+	template<> void ConvertJsonToCustomType<vl::presentation::remoteprotocol::ElementDesc_Polygon>(vl::Ptr<vl::glr::json::JsonNode> node, vl::presentation::remoteprotocol::ElementDesc_Polygon& value);
+	template<> void ConvertJsonToCustomType<vl::presentation::remoteprotocol::ElementDesc_SolidLabel>(vl::Ptr<vl::glr::json::JsonNode> node, vl::presentation::remoteprotocol::ElementDesc_SolidLabel& value);
+	template<> void ConvertJsonToCustomType<vl::presentation::remoteprotocol::RendererCreation>(vl::Ptr<vl::glr::json::JsonNode> node, vl::presentation::remoteprotocol::RendererCreation& value);
+	template<> void ConvertJsonToCustomType<vl::presentation::remoteprotocol::ElementSolidLabelMinSize>(vl::Ptr<vl::glr::json::JsonNode> node, vl::presentation::remoteprotocol::ElementSolidLabelMinSize& value);
+	template<> void ConvertJsonToCustomType<vl::presentation::remoteprotocol::ElementMeasurings>(vl::Ptr<vl::glr::json::JsonNode> node, vl::presentation::remoteprotocol::ElementMeasurings& value);
+	template<> void ConvertJsonToCustomType<vl::presentation::remoteprotocol::ElementRendering>(vl::Ptr<vl::glr::json::JsonNode> node, vl::presentation::remoteprotocol::ElementRendering& value);
 
 #define GACUI_REMOTEPROTOCOL_MESSAGES(HANDLER)\
 	HANDLER(ControllerGetFontConfig, void, vl::presentation::remoteprotocol::FontConfig, NOREQ, RES, NODROP)\
@@ -122,6 +294,19 @@ namespace vl::presentation::remoteprotocol
 	HANDLER(WindowNotifySetClientSize, ::vl::presentation::NativeSize, void, REQ, NORES, DROPREP)\
 	HANDLER(WindowNotifyActivate, void, void, NOREQ, NORES, DROPREP)\
 	HANDLER(WindowNotifyShow, vl::presentation::remoteprotocol::WindowShowing, void, REQ, NORES, DROPREP)\
+	HANDLER(RendererCreated, ::vl::Ptr<::vl::collections::List<vl::presentation::remoteprotocol::RendererCreation>>, void, REQ, NORES, NODROP)\
+	HANDLER(RendererDestroyed, ::vl::Ptr<::vl::collections::List<::vl::vint>>, void, REQ, NORES, NODROP)\
+	HANDLER(RendererUpdateElement_SolidBorder, vl::presentation::remoteprotocol::ElementDesc_SolidBorder, void, REQ, NORES, NODROP)\
+	HANDLER(RendererUpdateElement_SinkBorder, vl::presentation::remoteprotocol::ElementDesc_SinkBorder, void, REQ, NORES, NODROP)\
+	HANDLER(RendererUpdateElement_SinkSplitter, vl::presentation::remoteprotocol::ElementDesc_SinkSplitter, void, REQ, NORES, NODROP)\
+	HANDLER(RendererUpdateElement_SolidBackground, vl::presentation::remoteprotocol::ElementDesc_SolidBackground, void, REQ, NORES, NODROP)\
+	HANDLER(RendererUpdateElement_GradientBackground, vl::presentation::remoteprotocol::ElementDesc_GradientBackground, void, REQ, NORES, NODROP)\
+	HANDLER(RendererUpdateElement_InnerShadow, vl::presentation::remoteprotocol::ElementDesc_InnerShadow, void, REQ, NORES, NODROP)\
+	HANDLER(RendererUpdateElement_Polygon, vl::presentation::remoteprotocol::ElementDesc_Polygon, void, REQ, NORES, NODROP)\
+	HANDLER(RendererUpdateElement_SolidLabel, vl::presentation::remoteprotocol::ElementDesc_SolidLabel, void, REQ, NORES, NODROP)\
+	HANDLER(RendererBeginRendering, void, vl::presentation::remoteprotocol::ElementMeasurings, NOREQ, RES, NODROP)\
+	HANDLER(RendererRenderElement, vl::presentation::remoteprotocol::ElementRendering, void, REQ, NORES, NODROP)\
+	HANDLER(RendererEndRendering, void, vl::presentation::remoteprotocol::ElementMeasurings, NOREQ, RES, NODROP)\
 
 #define GACUI_REMOTEPROTOCOL_EVENTS(HANDLER)\
 	HANDLER(ControllerConnect, void, NOREQ, NODROP)\
@@ -145,16 +330,28 @@ namespace vl::presentation::remoteprotocol
 	HANDLER(WindowActivatedUpdated, bool, REQ, DROPREP)\
 
 #define GACUI_REMOTEPROTOCOL_MESSAGE_REQUEST_TYPES(HANDLER)\
+	HANDLER(::vl::Ptr<::vl::collections::List<::vl::vint>>)\
 	HANDLER(::vl::Ptr<::vl::collections::List<vl::presentation::remoteprotocol::GlobalShortcutKey>>)\
+	HANDLER(::vl::Ptr<::vl::collections::List<vl::presentation::remoteprotocol::RendererCreation>>)\
 	HANDLER(::vl::WString)\
 	HANDLER(::vl::presentation::NativeRect)\
 	HANDLER(::vl::presentation::NativeSize)\
 	HANDLER(::vl::presentation::VKEY)\
 	HANDLER(bool)\
+	HANDLER(vl::presentation::remoteprotocol::ElementDesc_GradientBackground)\
+	HANDLER(vl::presentation::remoteprotocol::ElementDesc_InnerShadow)\
+	HANDLER(vl::presentation::remoteprotocol::ElementDesc_Polygon)\
+	HANDLER(vl::presentation::remoteprotocol::ElementDesc_SinkBorder)\
+	HANDLER(vl::presentation::remoteprotocol::ElementDesc_SinkSplitter)\
+	HANDLER(vl::presentation::remoteprotocol::ElementDesc_SolidBackground)\
+	HANDLER(vl::presentation::remoteprotocol::ElementDesc_SolidBorder)\
+	HANDLER(vl::presentation::remoteprotocol::ElementDesc_SolidLabel)\
+	HANDLER(vl::presentation::remoteprotocol::ElementRendering)\
 	HANDLER(vl::presentation::remoteprotocol::WindowShowing)\
 
 #define GACUI_REMOTEPROTOCOL_MESSAGE_RESPONSE_TYPES(HANDLER)\
 	HANDLER(bool)\
+	HANDLER(vl::presentation::remoteprotocol::ElementMeasurings)\
 	HANDLER(vl::presentation::remoteprotocol::FontConfig)\
 	HANDLER(vl::presentation::remoteprotocol::ScreenConfig)\
 	HANDLER(vl::presentation::remoteprotocol::WindowSizingConfig)\

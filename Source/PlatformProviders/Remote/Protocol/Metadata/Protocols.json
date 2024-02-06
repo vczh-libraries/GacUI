@@ -140,6 +140,89 @@
         "$ast": "StructDecl",
         "attributes": [{
             "$ast": "Attribute",
+            "cppType": "::vl::presentation::Point",
+            "name": "@Cpp"
+        }],
+        "name": "Point",
+        "members": [{
+            "$ast": "StructMember",
+            "name": "x",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Integer"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "y",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Integer"
+            }
+        }]
+    }, {
+        "$ast": "StructDecl",
+        "attributes": [{
+            "$ast": "Attribute",
+            "cppType": "::vl::presentation::Size",
+            "name": "@Cpp"
+        }],
+        "name": "Size",
+        "members": [{
+            "$ast": "StructMember",
+            "name": "x",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Integer"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "y",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Integer"
+            }
+        }]
+    }, {
+        "$ast": "StructDecl",
+        "attributes": [{
+            "$ast": "Attribute",
+            "cppType": "::vl::presentation::Rect",
+            "name": "@Cpp"
+        }],
+        "name": "Rect",
+        "members": [{
+            "$ast": "StructMember",
+            "name": "x1",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Integer"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "y1",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Integer"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "x2",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Integer"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "y2",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Integer"
+            }
+        }]
+    }, {
+        "$ast": "StructDecl",
+        "attributes": [{
+            "$ast": "Attribute",
             "cppType": "::vl::presentation::FontProperties",
             "name": "@Cpp"
         }],
@@ -1098,6 +1181,724 @@
             "type": {
                 "$ast": "PrimitiveType",
                 "type": "Boolean"
+            }
+        }
+    }, {
+        "$ast": "EnumDecl",
+        "attributes": [],
+        "name": "RendererType",
+        "members": [{
+            "$ast": "EnumMember",
+            "name": "FocusRectangle"
+        }, {
+            "$ast": "EnumMember",
+            "name": "SolidBorder"
+        }, {
+            "$ast": "EnumMember",
+            "name": "SinkBorder"
+        }, {
+            "$ast": "EnumMember",
+            "name": "SinkSplitter"
+        }, {
+            "$ast": "EnumMember",
+            "name": "SolidBackground"
+        }, {
+            "$ast": "EnumMember",
+            "name": "GradientBackground"
+        }, {
+            "$ast": "EnumMember",
+            "name": "InnerShadow"
+        }, {
+            "$ast": "EnumMember",
+            "name": "SolidLabel"
+        }, {
+            "$ast": "EnumMember",
+            "name": "Polygon"
+        }]
+    }, {
+        "$ast": "EnumDecl",
+        "attributes": [{
+            "$ast": "Attribute",
+            "cppType": "::vl::presentation::elements::ElementShapeType",
+            "name": "@Cpp"
+        }],
+        "name": "ElementShapeType",
+        "members": [{
+            "$ast": "EnumMember",
+            "name": "Rectangle"
+        }, {
+            "$ast": "EnumMember",
+            "name": "Ellipse"
+        }, {
+            "$ast": "EnumMember",
+            "name": "RoundRect"
+        }]
+    }, {
+        "$ast": "EnumDecl",
+        "attributes": [{
+            "$ast": "Attribute",
+            "cppType": "::vl::presentation::elements::GuiGradientBackgroundElement::Direction",
+            "name": "@Cpp"
+        }, {
+            "$ast": "Attribute",
+            "cppType": "::vl::presentation::elements::GuiGradientBackgroundElement",
+            "name": "@CppNamespace"
+        }],
+        "name": "ElementGradientrDirection",
+        "members": [{
+            "$ast": "EnumMember",
+            "name": "Horizontal"
+        }, {
+            "$ast": "EnumMember",
+            "name": "Vertical"
+        }, {
+            "$ast": "EnumMember",
+            "name": "Slash"
+        }, {
+            "$ast": "EnumMember",
+            "name": "Backslash"
+        }]
+    }, {
+        "$ast": "EnumDecl",
+        "attributes": [{
+            "$ast": "Attribute",
+            "cppType": "::vl::presentation::elements::Gui3DSplitterElement::Direction",
+            "name": "@Cpp"
+        }, {
+            "$ast": "Attribute",
+            "cppType": "::vl::presentation::elements::Gui3DSplitterElement",
+            "name": "@CppNamespace"
+        }],
+        "name": "ElementSplitterDirection",
+        "members": [{
+            "$ast": "EnumMember",
+            "name": "Horizontal"
+        }, {
+            "$ast": "EnumMember",
+            "name": "Vertical"
+        }]
+    }, {
+        "$ast": "EnumDecl",
+        "attributes": [],
+        "name": "ElementHorizontalAlignment",
+        "members": [{
+            "$ast": "EnumMember",
+            "name": "Left"
+        }, {
+            "$ast": "EnumMember",
+            "name": "Right"
+        }, {
+            "$ast": "EnumMember",
+            "name": "Center"
+        }]
+    }, {
+        "$ast": "EnumDecl",
+        "attributes": [],
+        "name": "ElementVerticalAlignment",
+        "members": [{
+            "$ast": "EnumMember",
+            "name": "Top"
+        }, {
+            "$ast": "EnumMember",
+            "name": "Bottom"
+        }, {
+            "$ast": "EnumMember",
+            "name": "Center"
+        }]
+    }, {
+        "$ast": "StructDecl",
+        "attributes": [{
+            "$ast": "Attribute",
+            "cppType": "::vl::presentation::elements::ElementShape",
+            "name": "@Cpp"
+        }],
+        "name": "ElementShape",
+        "members": [{
+            "$ast": "StructMember",
+            "name": "id",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Integer"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "shapeType",
+            "type": {
+                "$ast": "ReferenceType",
+                "name": "ElementShapeType"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "radiusX",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Integer"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "radiusY",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Integer"
+            }
+        }]
+    }, {
+        "$ast": "StructDecl",
+        "attributes": [],
+        "name": "ElementDesc_SolidBorder",
+        "members": [{
+            "$ast": "StructMember",
+            "name": "id",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Integer"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "borderColor",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Color"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "shape",
+            "type": {
+                "$ast": "ReferenceType",
+                "name": "ElementShape"
+            }
+        }]
+    }, {
+        "$ast": "StructDecl",
+        "attributes": [],
+        "name": "ElementDesc_SinkBorder",
+        "members": [{
+            "$ast": "StructMember",
+            "name": "id",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Integer"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "leftTopColor",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Color"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "rightBottomColor",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Color"
+            }
+        }]
+    }, {
+        "$ast": "StructDecl",
+        "attributes": [],
+        "name": "ElementDesc_SinkSplitter",
+        "members": [{
+            "$ast": "StructMember",
+            "name": "id",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Integer"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "leftTopColor",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Color"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "rightBottomColor",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Color"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "direction",
+            "type": {
+                "$ast": "ReferenceType",
+                "name": "ElementSplitterDirection"
+            }
+        }]
+    }, {
+        "$ast": "StructDecl",
+        "attributes": [],
+        "name": "ElementDesc_SolidBackground",
+        "members": [{
+            "$ast": "StructMember",
+            "name": "id",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Integer"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "backgroundColor",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Color"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "shape",
+            "type": {
+                "$ast": "ReferenceType",
+                "name": "ElementShape"
+            }
+        }]
+    }, {
+        "$ast": "StructDecl",
+        "attributes": [],
+        "name": "ElementDesc_GradientBackground",
+        "members": [{
+            "$ast": "StructMember",
+            "name": "id",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Integer"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "leftTopColor",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Color"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "rightBottomColor",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Color"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "direction",
+            "type": {
+                "$ast": "ReferenceType",
+                "name": "ElementGradientrDirection"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "shape",
+            "type": {
+                "$ast": "ReferenceType",
+                "name": "ElementShape"
+            }
+        }]
+    }, {
+        "$ast": "StructDecl",
+        "attributes": [],
+        "name": "ElementDesc_InnerShadow",
+        "members": [{
+            "$ast": "StructMember",
+            "name": "id",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Integer"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "shadowColor",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Color"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "thickness",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Integer"
+            }
+        }]
+    }, {
+        "$ast": "StructDecl",
+        "attributes": [],
+        "name": "ElementDesc_Polygon",
+        "members": [{
+            "$ast": "StructMember",
+            "name": "id",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Integer"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "size",
+            "type": {
+                "$ast": "ReferenceType",
+                "name": "Size"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "borderColor",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Color"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "backgroundColor",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Color"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "points",
+            "type": {
+                "$ast": "ArrayType",
+                "element": {
+                    "$ast": "ReferenceType",
+                    "name": "Point"
+                }
+            }
+        }]
+    }, {
+        "$ast": "EnumDecl",
+        "attributes": [],
+        "name": "ElementSolidLabelMeasuring",
+        "members": [{
+            "$ast": "EnumMember",
+            "name": "None"
+        }, {
+            "$ast": "EnumMember",
+            "name": "SingleLineHeight"
+        }, {
+            "$ast": "EnumMember",
+            "name": "TotalSize"
+        }]
+    }, {
+        "$ast": "StructDecl",
+        "attributes": [],
+        "name": "ElementDesc_SolidLabel",
+        "members": [{
+            "$ast": "StructMember",
+            "name": "textColor",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Color"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "horizontalAlignment",
+            "type": {
+                "$ast": "ReferenceType",
+                "name": "ElementHorizontalAlignment"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "verticalAlignment",
+            "type": {
+                "$ast": "ReferenceType",
+                "name": "ElementVerticalAlignment"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "wrapLine",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Boolean"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "wrapLineHeightCalculation",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Boolean"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "ellipse",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Boolean"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "multiline",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Boolean"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "font",
+            "type": {
+                "$ast": "OptionalType",
+                "element": {
+                    "$ast": "ReferenceType",
+                    "name": "FontProperties"
+                }
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "text",
+            "type": {
+                "$ast": "OptionalType",
+                "element": {
+                    "$ast": "PrimitiveType",
+                    "type": "String"
+                }
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "measuring",
+            "type": {
+                "$ast": "OptionalType",
+                "element": {
+                    "$ast": "ReferenceType",
+                    "name": "ElementSolidLabelMeasuring"
+                }
+            }
+        }]
+    }, {
+        "$ast": "StructDecl",
+        "attributes": [],
+        "name": "RendererCreation",
+        "members": [{
+            "$ast": "StructMember",
+            "name": "id",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Integer"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "type",
+            "type": {
+                "$ast": "ReferenceType",
+                "name": "RendererType"
+            }
+        }]
+    }, {
+        "$ast": "MessageDecl",
+        "attributes": [],
+        "name": "RendererCreated",
+        "request": {
+            "$ast": "MessageRequest",
+            "type": {
+                "$ast": "ArrayType",
+                "element": {
+                    "$ast": "ReferenceType",
+                    "name": "RendererCreation"
+                }
+            }
+        },
+        "response": null
+    }, {
+        "$ast": "MessageDecl",
+        "attributes": [],
+        "name": "RendererDestroyed",
+        "request": {
+            "$ast": "MessageRequest",
+            "type": {
+                "$ast": "ArrayType",
+                "element": {
+                    "$ast": "PrimitiveType",
+                    "type": "Integer"
+                }
+            }
+        },
+        "response": null
+    }, {
+        "$ast": "MessageDecl",
+        "attributes": [],
+        "name": "RendererUpdateElement_SolidBorder",
+        "request": {
+            "$ast": "MessageRequest",
+            "type": {
+                "$ast": "ReferenceType",
+                "name": "ElementDesc_SolidBorder"
+            }
+        },
+        "response": null
+    }, {
+        "$ast": "MessageDecl",
+        "attributes": [],
+        "name": "RendererUpdateElement_SinkBorder",
+        "request": {
+            "$ast": "MessageRequest",
+            "type": {
+                "$ast": "ReferenceType",
+                "name": "ElementDesc_SinkBorder"
+            }
+        },
+        "response": null
+    }, {
+        "$ast": "MessageDecl",
+        "attributes": [],
+        "name": "RendererUpdateElement_SinkSplitter",
+        "request": {
+            "$ast": "MessageRequest",
+            "type": {
+                "$ast": "ReferenceType",
+                "name": "ElementDesc_SinkSplitter"
+            }
+        },
+        "response": null
+    }, {
+        "$ast": "MessageDecl",
+        "attributes": [],
+        "name": "RendererUpdateElement_SolidBackground",
+        "request": {
+            "$ast": "MessageRequest",
+            "type": {
+                "$ast": "ReferenceType",
+                "name": "ElementDesc_SolidBackground"
+            }
+        },
+        "response": null
+    }, {
+        "$ast": "MessageDecl",
+        "attributes": [],
+        "name": "RendererUpdateElement_GradientBackground",
+        "request": {
+            "$ast": "MessageRequest",
+            "type": {
+                "$ast": "ReferenceType",
+                "name": "ElementDesc_GradientBackground"
+            }
+        },
+        "response": null
+    }, {
+        "$ast": "MessageDecl",
+        "attributes": [],
+        "name": "RendererUpdateElement_InnerShadow",
+        "request": {
+            "$ast": "MessageRequest",
+            "type": {
+                "$ast": "ReferenceType",
+                "name": "ElementDesc_InnerShadow"
+            }
+        },
+        "response": null
+    }, {
+        "$ast": "MessageDecl",
+        "attributes": [],
+        "name": "RendererUpdateElement_Polygon",
+        "request": {
+            "$ast": "MessageRequest",
+            "type": {
+                "$ast": "ReferenceType",
+                "name": "ElementDesc_Polygon"
+            }
+        },
+        "response": null
+    }, {
+        "$ast": "MessageDecl",
+        "attributes": [],
+        "name": "RendererUpdateElement_SolidLabel",
+        "request": {
+            "$ast": "MessageRequest",
+            "type": {
+                "$ast": "ReferenceType",
+                "name": "ElementDesc_SolidLabel"
+            }
+        },
+        "response": null
+    }, {
+        "$ast": "StructDecl",
+        "attributes": [],
+        "name": "ElementSolidLabelMinSize",
+        "members": [{
+            "$ast": "StructMember",
+            "name": "id",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Integer"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "size",
+            "type": {
+                "$ast": "ReferenceType",
+                "name": "Size"
+            }
+        }]
+    }, {
+        "$ast": "StructDecl",
+        "attributes": [],
+        "name": "ElementMeasurings",
+        "members": [{
+            "$ast": "StructMember",
+            "name": "solidLabelMinSizes",
+            "type": {
+                "$ast": "ArrayType",
+                "element": {
+                    "$ast": "ReferenceType",
+                    "name": "ElementSolidLabelMinSize"
+                }
+            }
+        }]
+    }, {
+        "$ast": "StructDecl",
+        "attributes": [],
+        "name": "ElementRendering",
+        "members": [{
+            "$ast": "StructMember",
+            "name": "id",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Integer"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "bounds",
+            "type": {
+                "$ast": "ReferenceType",
+                "name": "Rect"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "clipper",
+            "type": {
+                "$ast": "ReferenceType",
+                "name": "Rect"
+            }
+        }]
+    }, {
+        "$ast": "MessageDecl",
+        "attributes": [],
+        "name": "RendererBeginRendering",
+        "request": null,
+        "response": {
+            "$ast": "MessageResponse",
+            "type": {
+                "$ast": "ReferenceType",
+                "name": "ElementMeasurings"
+            }
+        }
+    }, {
+        "$ast": "MessageDecl",
+        "attributes": [],
+        "name": "RendererRenderElement",
+        "request": {
+            "$ast": "MessageRequest",
+            "type": {
+                "$ast": "ReferenceType",
+                "name": "ElementRendering"
+            }
+        },
+        "response": null
+    }, {
+        "$ast": "MessageDecl",
+        "attributes": [],
+        "name": "RendererEndRendering",
+        "request": null,
+        "response": {
+            "$ast": "MessageResponse",
+            "type": {
+                "$ast": "ReferenceType",
+                "name": "ElementMeasurings"
             }
         }
     }]
