@@ -50,11 +50,10 @@ Rich Content Document (element)
 					virtual Size							OnRenderEmbeddedObject(const WString& name, const Rect& location) = 0;
 				};
 
-				class GuiDocumentElementRenderer : public Object, public IGuiGraphicsRenderer, private IGuiGraphicsParagraphCallback
+				class GuiDocumentElementRenderer : public GuiElementRendererBase<GuiDocumentElement, GuiDocumentElementRenderer, IGuiGraphicsRenderTarget>, private IGuiGraphicsParagraphCallback
 				{
 					friend class visitors::SetPropertiesVisitor;
-
-					DEFINE_GUI_GRAPHICS_RENDERER(GuiDocumentElement, GuiDocumentElementRenderer, IGuiGraphicsRenderTarget)
+					friend class GuiElementRendererBase<GuiDocumentElement, GuiDocumentElementRenderer, IGuiGraphicsRenderTarget>;
 				protected:
 					struct EmbeddedObject
 					{

@@ -17,9 +17,9 @@ namespace vl::presentation::elements_remoteprotocol
 {
 	using namespace elements;
 
-	class GuiFocusRectangleElementRenderer : public Object, public IGuiGraphicsRenderer
+	class GuiFocusRectangleElementRenderer : GuiElementRendererBase<GuiFocusRectangleElement, GuiFocusRectangleElementRenderer, GuiRemoteGraphicsRenderTarget>
 	{
-		DEFINE_GUI_GRAPHICS_RENDERER(GuiFocusRectangleElement, GuiFocusRectangleElementRenderer, GuiRemoteGraphicsRenderTarget)
+		friend class GuiElementRendererBase<GuiFocusRectangleElement, GuiFocusRectangleElementRenderer, GuiRemoteGraphicsRenderTarget>;
 	protected:
 
 		void							InitializeInternal();
@@ -30,9 +30,9 @@ namespace vl::presentation::elements_remoteprotocol
 		void							OnElementStateChanged() override;
 	};
 
-	class GuiSolidBorderElementRenderer : public Object, public IGuiGraphicsRenderer
+	class GuiSolidBorderElementRenderer : GuiElementRendererBase<GuiSolidBorderElement, GuiSolidBorderElementRenderer, GuiRemoteGraphicsRenderTarget>
 	{
-		DEFINE_GUI_GRAPHICS_RENDERER(GuiSolidBorderElement, GuiSolidBorderElementRenderer, GuiRemoteGraphicsRenderTarget)
+		friend class GuiElementRendererBase<GuiSolidBorderElement, GuiSolidBorderElementRenderer, GuiRemoteGraphicsRenderTarget>;
 	protected:
 
 		void							InitializeInternal();
@@ -43,9 +43,9 @@ namespace vl::presentation::elements_remoteprotocol
 		void							OnElementStateChanged() override;
 	};
 
-	class Gui3DBorderElementRenderer : public Object, public IGuiGraphicsRenderer
+	class Gui3DBorderElementRenderer : GuiElementRendererBase<Gui3DBorderElement, Gui3DBorderElementRenderer, GuiRemoteGraphicsRenderTarget>
 	{
-		DEFINE_GUI_GRAPHICS_RENDERER(Gui3DBorderElement, Gui3DBorderElementRenderer, GuiRemoteGraphicsRenderTarget)
+		friend class GuiElementRendererBase<Gui3DBorderElement, Gui3DBorderElementRenderer, GuiRemoteGraphicsRenderTarget>;
 	protected:
 
 		void							InitializeInternal();
@@ -56,9 +56,9 @@ namespace vl::presentation::elements_remoteprotocol
 		void							OnElementStateChanged() override;
 	};
 
-	class Gui3DSplitterElementRenderer : public Object, public IGuiGraphicsRenderer
+	class Gui3DSplitterElementRenderer : GuiElementRendererBase<Gui3DSplitterElement, Gui3DSplitterElementRenderer, GuiRemoteGraphicsRenderTarget>
 	{
-		DEFINE_GUI_GRAPHICS_RENDERER(Gui3DSplitterElement, Gui3DSplitterElementRenderer, GuiRemoteGraphicsRenderTarget)
+		friend class GuiElementRendererBase<Gui3DSplitterElement, Gui3DSplitterElementRenderer, GuiRemoteGraphicsRenderTarget>;
 	protected:
 
 		void							InitializeInternal();
@@ -69,9 +69,9 @@ namespace vl::presentation::elements_remoteprotocol
 		void							OnElementStateChanged() override;
 	};
 
-	class GuiSolidBackgroundElementRenderer : public Object, public IGuiGraphicsRenderer
+	class GuiSolidBackgroundElementRenderer : GuiElementRendererBase<GuiSolidBackgroundElement, GuiSolidBackgroundElementRenderer, GuiRemoteGraphicsRenderTarget>
 	{
-		DEFINE_GUI_GRAPHICS_RENDERER(GuiSolidBackgroundElement, GuiSolidBackgroundElementRenderer, GuiRemoteGraphicsRenderTarget)
+		friend class GuiElementRendererBase<GuiSolidBackgroundElement, GuiSolidBackgroundElementRenderer, GuiRemoteGraphicsRenderTarget>;
 	protected:
 
 		void							InitializeInternal();
@@ -82,9 +82,9 @@ namespace vl::presentation::elements_remoteprotocol
 		void							OnElementStateChanged() override;
 	};
 
-	class GuiGradientBackgroundElementRenderer : public Object, public IGuiGraphicsRenderer
+	class GuiGradientBackgroundElementRenderer : GuiElementRendererBase<GuiGradientBackgroundElement, GuiGradientBackgroundElementRenderer, GuiRemoteGraphicsRenderTarget>
 	{
-		DEFINE_GUI_GRAPHICS_RENDERER(GuiGradientBackgroundElement, GuiGradientBackgroundElementRenderer, GuiRemoteGraphicsRenderTarget)
+		friend class GuiElementRendererBase<GuiGradientBackgroundElement, GuiGradientBackgroundElementRenderer, GuiRemoteGraphicsRenderTarget>;
 	protected:
 
 		void							InitializeInternal();
@@ -95,9 +95,9 @@ namespace vl::presentation::elements_remoteprotocol
 		void							OnElementStateChanged() override;
 	};
 
-	class GuiInnerShadowElementRenderer : public Object, public IGuiGraphicsRenderer
+	class GuiInnerShadowElementRenderer : GuiElementRendererBase<GuiInnerShadowElement, GuiInnerShadowElementRenderer, GuiRemoteGraphicsRenderTarget>
 	{
-		DEFINE_GUI_GRAPHICS_RENDERER(GuiInnerShadowElement, GuiInnerShadowElementRenderer, GuiRemoteGraphicsRenderTarget)
+		friend class GuiElementRendererBase<GuiInnerShadowElement, GuiInnerShadowElementRenderer, GuiRemoteGraphicsRenderTarget>;
 	protected:
 
 		void							InitializeInternal();
@@ -110,9 +110,9 @@ namespace vl::presentation::elements_remoteprotocol
 		void							OnElementStateChanged() override;
 	};
 
-	class GuiSolidLabelElementRenderer : public Object, public IGuiGraphicsRenderer
+	class GuiSolidLabelElementRenderer : GuiElementRendererBase<GuiSolidLabelElement, GuiSolidLabelElementRenderer, GuiRemoteGraphicsRenderTarget>
 	{
-		DEFINE_GUI_GRAPHICS_RENDERER(GuiSolidLabelElement, GuiSolidLabelElementRenderer, GuiRemoteGraphicsRenderTarget)
+		friend class GuiElementRendererBase<GuiSolidLabelElement, GuiSolidLabelElementRenderer, GuiRemoteGraphicsRenderTarget>;
 	protected:
 
 		void							InitializeInternal();
@@ -125,9 +125,9 @@ namespace vl::presentation::elements_remoteprotocol
 		void							OnElementStateChanged() override;
 	};
 
-	class GuiImageFrameElementRenderer : public Object, public IGuiGraphicsRenderer
+	class GuiImageFrameElementRenderer : GuiElementRendererBase<GuiImageFrameElement, GuiImageFrameElementRenderer, GuiRemoteGraphicsRenderTarget>
 	{
-		DEFINE_GUI_GRAPHICS_RENDERER(GuiImageFrameElement, GuiImageFrameElementRenderer, GuiRemoteGraphicsRenderTarget)
+		friend class GuiElementRendererBase<GuiImageFrameElement, GuiImageFrameElementRenderer, GuiRemoteGraphicsRenderTarget>;
 	protected:
 
 		void							InitializeInternal();
@@ -140,9 +140,9 @@ namespace vl::presentation::elements_remoteprotocol
 		void							OnElementStateChanged() override;
 	};
 
-	class GuiPolygonElementRenderer : public Object, public IGuiGraphicsRenderer
+	class GuiPolygonElementRenderer : GuiElementRendererBase<GuiPolygonElement, GuiPolygonElementRenderer, GuiRemoteGraphicsRenderTarget>
 	{
-		DEFINE_GUI_GRAPHICS_RENDERER(GuiPolygonElement, GuiPolygonElementRenderer, GuiRemoteGraphicsRenderTarget)
+		friend class GuiElementRendererBase<GuiPolygonElement, GuiPolygonElementRenderer, GuiRemoteGraphicsRenderTarget>;
 	protected:
 
 		void							InitializeInternal();
@@ -156,9 +156,9 @@ namespace vl::presentation::elements_remoteprotocol
 		void							OnElementStateChanged() override;
 	};
 
-	class GuiColorizedTextElementRenderer : public Object, public IGuiGraphicsRenderer, protected GuiColorizedTextElement::ICallback
+	class GuiColorizedTextElementRenderer : GuiElementRendererBase<GuiColorizedTextElement, GuiColorizedTextElementRenderer, GuiRemoteGraphicsRenderTarget>, protected GuiColorizedTextElement::ICallback
 	{
-		DEFINE_GUI_GRAPHICS_RENDERER(GuiColorizedTextElement, GuiColorizedTextElementRenderer, GuiRemoteGraphicsRenderTarget)
+		friend class GuiElementRendererBase<GuiColorizedTextElement, GuiColorizedTextElementRenderer, GuiRemoteGraphicsRenderTarget>;
 	protected:
 		void					ColorChanged() override;
 		void					FontChanged() override;

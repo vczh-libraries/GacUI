@@ -11,86 +11,126 @@ namespace vl
 			using namespace collections;
 
 /***********************************************************************
-IMPLEMENT_BRUSH_ELEMENT_RENDERER
+GuiSolidBrushElementRenderer
 ***********************************************************************/
 
-#define IMPLEMENT_BRUSH_ELEMENT_RENDERER(TRENDERER)\
-			void TRENDERER::InitializeInternal()\
-			{\
-			}\
-			void TRENDERER::FinalizeInternal()\
-			{\
-				DestroyBrush(renderTarget);\
-			}\
-			void TRENDERER::RenderTargetChangedInternal(IWindowsDirect2DRenderTarget* oldRenderTarget, IWindowsDirect2DRenderTarget* newRenderTarget)\
-			{\
-				DestroyBrush(oldRenderTarget);\
-				CreateBrush(newRenderTarget);\
-			}\
-			TRENDERER::TRENDERER()\
-			{\
-			}\
-			void TRENDERER::Render(Rect bounds)\
+			template<typename TElement, typename TRenderer, typename TBrush, typename TBrushProperty>
+			void GuiSolidBrushElementRenderer<TElement, TRenderer, TBrush, TBrushProperty>::CreateBrush(IWindowsDirect2DRenderTarget* _renderTarget)
+			{
+				if (_renderTarget)
+				{
+					oldColor = this->element->GetColor(); 
+					brush = _renderTarget->CreateDirect2DBrush(oldColor); 
+				}
+			}
 
-#define IMPLEMENT_BRUSH_ELEMENT_RENDERER_SOLID_COLOR_BRUSH(TRENDERER)\
-			void TRENDERER::CreateBrush(IWindowsDirect2DRenderTarget* _renderTarget)\
-			{\
-				if(_renderTarget)\
-				{\
-					oldColor=element->GetColor();\
-					brush=_renderTarget->CreateDirect2DBrush(oldColor);\
-				}\
-			}\
-			void TRENDERER::DestroyBrush(IWindowsDirect2DRenderTarget* _renderTarget)\
-			{\
-				if(_renderTarget && brush)\
-				{\
-					_renderTarget->DestroyDirect2DBrush(oldColor);\
-					brush=0;\
-				}\
-			}\
-			void TRENDERER::OnElementStateChanged()\
-			{\
-				if(renderTarget)\
-				{\
-					Color color=element->GetColor();\
-					if(oldColor!=color)\
-					{\
-						DestroyBrush(renderTarget);\
-						CreateBrush(renderTarget);\
-					}\
-				}\
-			}\
+			template<typename TElement, typename TRenderer, typename TBrush, typename TBrushProperty>
+			void GuiSolidBrushElementRenderer<TElement, TRenderer, TBrush, TBrushProperty>::DestroyBrush(IWindowsDirect2DRenderTarget* _renderTarget)
+			{
+				if (_renderTarget && brush)
+				{
+					_renderTarget->DestroyDirect2DBrush(oldColor);
+					brush = 0;
+				}
+			}
 
-#define IMPLEMENT_BRUSH_ELEMENT_RENDERER_LINEAR_GRADIENT_BRUSH(TRENDERER)\
-			void TRENDERER::CreateBrush(IWindowsDirect2DRenderTarget* _renderTarget)\
-			{\
-				if(_renderTarget)\
-				{\
-					oldColor=Pair<Color, Color>(element->GetColor1(), element->GetColor2());\
-					brush=_renderTarget->CreateDirect2DLinearBrush(oldColor.key, oldColor.value);\
-				}\
-			}\
-			void TRENDERER::DestroyBrush(IWindowsDirect2DRenderTarget* _renderTarget)\
-			{\
-				if(_renderTarget && brush)\
-				{\
-					_renderTarget->DestroyDirect2DLinearBrush(oldColor.key, oldColor.value);\
-					brush=0;\
-				}\
-			}\
-			void TRENDERER::OnElementStateChanged()\
-			{\
-				if(renderTarget)\
-				{\
-					Pair<Color, Color> color=Pair<Color, Color>(element->GetColor1(), element->GetColor2());\
-					if(oldColor!=color)\
-					{\
-						DestroyBrush(renderTarget);\
-						CreateBrush(renderTarget);\
-					}\
-				}\
-			}\
+			template<typename TElement, typename TRenderer, typename TBrush, typename TBrushProperty>
+			void GuiSolidBrushElementRenderer<TElement, TRenderer, TBrush, TBrushProperty>::InitializeInternal()
+			{
+			}
+
+			template<typename TElement, typename TRenderer, typename TBrush, typename TBrushProperty>
+			void GuiSolidBrushElementRenderer<TElement, TRenderer, TBrush, TBrushProperty>::FinalizeInternal()
+			{
+				DestroyBrush(this->renderTarget);
+			}
+
+			template<typename TElement, typename TRenderer, typename TBrush, typename TBrushProperty>
+			void GuiSolidBrushElementRenderer<TElement, TRenderer, TBrush, TBrushProperty>::RenderTargetChangedInternal(IWindowsDirect2DRenderTarget* oldRenderTarget, IWindowsDirect2DRenderTarget* newRenderTarget)
+			{
+				DestroyBrush(oldRenderTarget);
+				CreateBrush(newRenderTarget);
+			}
+
+			template<typename TElement, typename TRenderer, typename TBrush, typename TBrushProperty>
+			GuiSolidBrushElementRenderer<TElement, TRenderer, TBrush, TBrushProperty>::GuiSolidBrushElementRenderer()
+			{
+			}
+
+			template<typename TElement, typename TRenderer, typename TBrush, typename TBrushProperty>
+			void GuiSolidBrushElementRenderer<TElement, TRenderer, TBrush, TBrushProperty>::OnElementStateChanged()
+			{
+				if (this->renderTarget)
+				{
+					Color color = this->element->GetColor();
+					if (oldColor != color)
+					{
+						DestroyBrush(this->renderTarget);
+						CreateBrush(this->renderTarget);
+					}
+				}
+			}
+
+/***********************************************************************
+GuiGradientBrushElementRenderer
+***********************************************************************/
+
+			template<typename TElement, typename TRenderer, typename TBrush, typename TBrushProperty>
+			void GuiGradientBrushElementRenderer<TElement, TRenderer, TBrush, TBrushProperty>::CreateBrush(IWindowsDirect2DRenderTarget* _renderTarget)
+			{
+				if (_renderTarget)
+				{
+					oldColor = Pair<Color, Color>(this->element->GetColor1(), this->element->GetColor2());
+					brush = _renderTarget->CreateDirect2DLinearBrush(oldColor.key, oldColor.value);
+				}
+			}
+
+			template<typename TElement, typename TRenderer, typename TBrush, typename TBrushProperty>
+			void GuiGradientBrushElementRenderer<TElement, TRenderer, TBrush, TBrushProperty>::DestroyBrush(IWindowsDirect2DRenderTarget* _renderTarget)
+			{
+				if (_renderTarget && brush)
+				{
+					_renderTarget->DestroyDirect2DLinearBrush(oldColor.key, oldColor.value);
+					brush = 0;
+				}
+			}
+
+			template<typename TElement, typename TRenderer, typename TBrush, typename TBrushProperty>
+			void GuiGradientBrushElementRenderer<TElement, TRenderer, TBrush, TBrushProperty>::InitializeInternal()
+			{
+			}
+
+			template<typename TElement, typename TRenderer, typename TBrush, typename TBrushProperty>
+			void GuiGradientBrushElementRenderer<TElement, TRenderer, TBrush, TBrushProperty>::FinalizeInternal()
+			{
+				DestroyBrush(this->renderTarget);
+			}
+
+			template<typename TElement, typename TRenderer, typename TBrush, typename TBrushProperty>
+			void GuiGradientBrushElementRenderer<TElement, TRenderer, TBrush, TBrushProperty>::RenderTargetChangedInternal(IWindowsDirect2DRenderTarget* oldRenderTarget, IWindowsDirect2DRenderTarget* newRenderTarget)
+			{
+				DestroyBrush(oldRenderTarget);
+				CreateBrush(newRenderTarget);
+			}
+
+			template<typename TElement, typename TRenderer, typename TBrush, typename TBrushProperty>
+			GuiGradientBrushElementRenderer<TElement, TRenderer, TBrush, TBrushProperty>::GuiGradientBrushElementRenderer()
+			{
+			}
+
+			template<typename TElement, typename TRenderer, typename TBrush, typename TBrushProperty>
+			void GuiGradientBrushElementRenderer<TElement, TRenderer, TBrush, TBrushProperty>::OnElementStateChanged()
+			{
+				if (this->renderTarget)
+				{
+					Pair<Color, Color> color = Pair<Color, Color>(this->element->GetColor1(), this->element->GetColor2());
+					if (oldColor != color)
+					{
+						DestroyBrush(this->renderTarget);
+						CreateBrush(this->renderTarget);
+					}
+				}
+			}
 
 /***********************************************************************
 GuiSolidBorderElementRenderer
@@ -152,8 +192,7 @@ GuiSolidBorderElementRenderer
 GuiSolidBorderElementRenderer
 ***********************************************************************/
 
-			IMPLEMENT_BRUSH_ELEMENT_RENDERER_SOLID_COLOR_BRUSH(GuiSolidBorderElementRenderer)
-			IMPLEMENT_BRUSH_ELEMENT_RENDERER(GuiSolidBorderElementRenderer)
+			void GuiSolidBorderElementRenderer::Render(Rect bounds)
 			{
 				ID2D1RenderTarget* d2dRenderTarget = renderTarget->GetDirect2DRenderTarget();
 				auto shape = element->GetShape();
@@ -359,9 +398,8 @@ Gui3DSplitterElementRenderer
 /***********************************************************************
 GuiSolidBackgroundElementRenderer
 ***********************************************************************/
-			
-			IMPLEMENT_BRUSH_ELEMENT_RENDERER_SOLID_COLOR_BRUSH(GuiSolidBackgroundElementRenderer)
-			IMPLEMENT_BRUSH_ELEMENT_RENDERER(GuiSolidBackgroundElementRenderer)
+
+			void GuiSolidBackgroundElementRenderer::Render(Rect bounds)
 			{
 				ID2D1RenderTarget* d2dRenderTarget=renderTarget->GetDirect2DRenderTarget();
 				auto shape = element->GetShape();
@@ -397,8 +435,7 @@ GuiSolidBackgroundElementRenderer
 GuiGradientBackgroundElementRenderer
 ***********************************************************************/
 
-			IMPLEMENT_BRUSH_ELEMENT_RENDERER_LINEAR_GRADIENT_BRUSH(GuiGradientBackgroundElementRenderer)
-			IMPLEMENT_BRUSH_ELEMENT_RENDERER(GuiGradientBackgroundElementRenderer)
+			void GuiGradientBackgroundElementRenderer::Render(Rect bounds)
 			{
 				D2D1_POINT_2F points[2];
 				switch(element->GetDirection())

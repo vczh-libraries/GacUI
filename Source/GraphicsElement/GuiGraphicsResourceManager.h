@@ -184,55 +184,65 @@ Helpers
 				}
 			};
 
-#define DEFINE_GUI_GRAPHICS_RENDERER(TELEMENT, TRENDERER, TTARGET)\
-			public:\
-				class Factory : public Object, public IGuiGraphicsRendererFactory\
-				{\
-				public:\
-					IGuiGraphicsRenderer* Create()\
-					{\
-						TRENDERER* renderer=new TRENDERER;\
-						renderer->factory=this;\
-						renderer->element=nullptr;\
-						renderer->renderTarget=nullptr;\
-						return renderer;\
-					}\
-				};\
-			protected:\
-				IGuiGraphicsRendererFactory*	factory;\
-				TELEMENT*						element;\
-				TTARGET*						renderTarget;\
-				Size							minSize;\
-			public:\
-				static void Register()\
-				{\
-					auto manager = GetGuiGraphicsResourceManager();\
-					CHECK_ERROR(manager != nullptr, L"SetGuiGraphicsResourceManager must be called before registering element renderers.");\
-					manager->RegisterRendererFactory(TELEMENT::GetElementType(), Ptr(new TRENDERER::Factory));\
-				}\
-				IGuiGraphicsRendererFactory* GetFactory()override\
-				{\
-					return factory;\
-				}\
-				void Initialize(IGuiGraphicsElement* _element)override\
-				{\
-					element=dynamic_cast<TELEMENT*>(_element);\
-					InitializeInternal();\
-				}\
-				void Finalize()override\
-				{\
-					FinalizeInternal();\
-				}\
-				void SetRenderTarget(IGuiGraphicsRenderTarget* _renderTarget)override\
-				{\
-					TTARGET* oldRenderTarget=renderTarget;\
-					renderTarget=dynamic_cast<TTARGET*>(_renderTarget);\
-					RenderTargetChangedInternal(oldRenderTarget, renderTarget);\
-				}\
-				Size GetMinSize()override\
-				{\
-					return minSize;\
-				}\
+			template<typename TElement, typename TRenderer, typename TRenderTarget>
+			class GuiElementRendererBase : public Object, public IGuiGraphicsRenderer
+			{
+			public:
+				class Factory : public Object, public IGuiGraphicsRendererFactory
+				{
+				public:
+					IGuiGraphicsRenderer* Create()
+					{
+						TRenderer* renderer=new TRenderer;
+						renderer->factory=this;
+						renderer->element=nullptr;
+						renderer->renderTarget=nullptr;
+						return renderer;
+					}
+				};
+			protected:
+
+				IGuiGraphicsRendererFactory*	factory;
+				TElement*						element;
+				TRenderTarget*						renderTarget;
+				Size							minSize;
+
+			public:
+				static void Register()
+				{
+					auto manager = GetGuiGraphicsResourceManager();
+					CHECK_ERROR(manager != nullptr, L"SetGuiGraphicsResourceManager must be called before registering element renderers.");
+					manager->RegisterRendererFactory(TElement::GetElementType(), Ptr(new TRenderer::Factory));
+				}
+
+				IGuiGraphicsRendererFactory* GetFactory()override
+				{
+					return factory;
+				}
+
+				void Initialize(IGuiGraphicsElement* _element)override
+				{
+					element=dynamic_cast<TElement*>(_element);
+					dynamic_cast<TRenderer*>(this)->InitializeInternal();
+				}
+
+				void Finalize()override
+				{
+					dynamic_cast<TRenderer*>(this)->FinalizeInternal();
+				}
+
+				void SetRenderTarget(IGuiGraphicsRenderTarget* _renderTarget)override
+				{
+					TRenderTarget* oldRenderTarget=renderTarget;
+					renderTarget=dynamic_cast<TRenderTarget*>(_renderTarget);
+					dynamic_cast<TRenderer*>(this)->RenderTargetChangedInternal(oldRenderTarget, renderTarget);
+				}
+
+				Size GetMinSize()override
+				{
+					return minSize;
+				}
+			};
 
 			template<typename TAllocator, typename TKey, typename TValue>
 			class GuiCachedResourceAllocatorBase : public Object
