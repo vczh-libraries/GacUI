@@ -11,11 +11,33 @@ namespace vl
 			using namespace collections;
 
 /***********************************************************************
-GuiSolidBrushElementRenderer
+GuiDirect2DElementRendererBase
 ***********************************************************************/
 
-			template<typename TElement, typename TRenderer, typename TBrush, typename TBrushProperty>
-			void GuiSolidBrushElementRenderer<TElement, TRenderer, TBrush, TBrushProperty>::CreateBrush(IWindowsDirect2DRenderTarget* _renderTarget)
+			template<typename TElement, typename TRenderer>
+			void GuiDirect2DElementRendererBase<TElement, TRenderer>::InitializeInternal()
+			{
+			}
+
+			template<typename TElement, typename TRenderer>
+			void GuiDirect2DElementRendererBase<TElement, TRenderer>::FinalizeInternal()
+			{
+				dynamic_cast<TRenderer*>(this)->DestroyBrush(this->renderTarget);
+			}
+
+			template<typename TElement, typename TRenderer>
+			void GuiDirect2DElementRendererBase<TElement, TRenderer>::RenderTargetChangedInternal(IWindowsDirect2DRenderTarget* oldRenderTarget, IWindowsDirect2DRenderTarget* newRenderTarget)
+			{
+				dynamic_cast<TRenderer*>(this)->DestroyBrush(oldRenderTarget);
+				dynamic_cast<TRenderer*>(this)->CreateBrush(newRenderTarget);
+			}
+
+/***********************************************************************
+GuiSolidBrushElementRendererBase
+***********************************************************************/
+
+			template<typename TElement, typename TRenderer, typename TBrush>
+			void GuiSolidBrushElementRendererBase<TElement, TRenderer, TBrush>::CreateBrush(IWindowsDirect2DRenderTarget* _renderTarget)
 			{
 				if (_renderTarget)
 				{
@@ -24,8 +46,8 @@ GuiSolidBrushElementRenderer
 				}
 			}
 
-			template<typename TElement, typename TRenderer, typename TBrush, typename TBrushProperty>
-			void GuiSolidBrushElementRenderer<TElement, TRenderer, TBrush, TBrushProperty>::DestroyBrush(IWindowsDirect2DRenderTarget* _renderTarget)
+			template<typename TElement, typename TRenderer, typename TBrush>
+			void GuiSolidBrushElementRendererBase<TElement, TRenderer, TBrush>::DestroyBrush(IWindowsDirect2DRenderTarget* _renderTarget)
 			{
 				if (_renderTarget && brush)
 				{
@@ -34,31 +56,8 @@ GuiSolidBrushElementRenderer
 				}
 			}
 
-			template<typename TElement, typename TRenderer, typename TBrush, typename TBrushProperty>
-			void GuiSolidBrushElementRenderer<TElement, TRenderer, TBrush, TBrushProperty>::InitializeInternal()
-			{
-			}
-
-			template<typename TElement, typename TRenderer, typename TBrush, typename TBrushProperty>
-			void GuiSolidBrushElementRenderer<TElement, TRenderer, TBrush, TBrushProperty>::FinalizeInternal()
-			{
-				DestroyBrush(this->renderTarget);
-			}
-
-			template<typename TElement, typename TRenderer, typename TBrush, typename TBrushProperty>
-			void GuiSolidBrushElementRenderer<TElement, TRenderer, TBrush, TBrushProperty>::RenderTargetChangedInternal(IWindowsDirect2DRenderTarget* oldRenderTarget, IWindowsDirect2DRenderTarget* newRenderTarget)
-			{
-				DestroyBrush(oldRenderTarget);
-				CreateBrush(newRenderTarget);
-			}
-
-			template<typename TElement, typename TRenderer, typename TBrush, typename TBrushProperty>
-			GuiSolidBrushElementRenderer<TElement, TRenderer, TBrush, TBrushProperty>::GuiSolidBrushElementRenderer()
-			{
-			}
-
-			template<typename TElement, typename TRenderer, typename TBrush, typename TBrushProperty>
-			void GuiSolidBrushElementRenderer<TElement, TRenderer, TBrush, TBrushProperty>::OnElementStateChanged()
+			template<typename TElement, typename TRenderer, typename TBrush>
+			void GuiSolidBrushElementRendererBase<TElement, TRenderer, TBrush>::OnElementStateChanged()
 			{
 				if (this->renderTarget)
 				{
@@ -72,11 +71,11 @@ GuiSolidBrushElementRenderer
 			}
 
 /***********************************************************************
-GuiGradientBrushElementRenderer
+GuiGradientBrushElementRendererBase
 ***********************************************************************/
 
-			template<typename TElement, typename TRenderer, typename TBrush, typename TBrushProperty>
-			void GuiGradientBrushElementRenderer<TElement, TRenderer, TBrush, TBrushProperty>::CreateBrush(IWindowsDirect2DRenderTarget* _renderTarget)
+			template<typename TElement, typename TRenderer, typename TBrush>
+			void GuiGradientBrushElementRendererBase<TElement, TRenderer, TBrush>::CreateBrush(IWindowsDirect2DRenderTarget* _renderTarget)
 			{
 				if (_renderTarget)
 				{
@@ -85,8 +84,8 @@ GuiGradientBrushElementRenderer
 				}
 			}
 
-			template<typename TElement, typename TRenderer, typename TBrush, typename TBrushProperty>
-			void GuiGradientBrushElementRenderer<TElement, TRenderer, TBrush, TBrushProperty>::DestroyBrush(IWindowsDirect2DRenderTarget* _renderTarget)
+			template<typename TElement, typename TRenderer, typename TBrush>
+			void GuiGradientBrushElementRendererBase<TElement, TRenderer, TBrush>::DestroyBrush(IWindowsDirect2DRenderTarget* _renderTarget)
 			{
 				if (_renderTarget && brush)
 				{
@@ -95,35 +94,12 @@ GuiGradientBrushElementRenderer
 				}
 			}
 
-			template<typename TElement, typename TRenderer, typename TBrush, typename TBrushProperty>
-			void GuiGradientBrushElementRenderer<TElement, TRenderer, TBrush, TBrushProperty>::InitializeInternal()
-			{
-			}
-
-			template<typename TElement, typename TRenderer, typename TBrush, typename TBrushProperty>
-			void GuiGradientBrushElementRenderer<TElement, TRenderer, TBrush, TBrushProperty>::FinalizeInternal()
-			{
-				DestroyBrush(this->renderTarget);
-			}
-
-			template<typename TElement, typename TRenderer, typename TBrush, typename TBrushProperty>
-			void GuiGradientBrushElementRenderer<TElement, TRenderer, TBrush, TBrushProperty>::RenderTargetChangedInternal(IWindowsDirect2DRenderTarget* oldRenderTarget, IWindowsDirect2DRenderTarget* newRenderTarget)
-			{
-				DestroyBrush(oldRenderTarget);
-				CreateBrush(newRenderTarget);
-			}
-
-			template<typename TElement, typename TRenderer, typename TBrush, typename TBrushProperty>
-			GuiGradientBrushElementRenderer<TElement, TRenderer, TBrush, TBrushProperty>::GuiGradientBrushElementRenderer()
-			{
-			}
-
-			template<typename TElement, typename TRenderer, typename TBrush, typename TBrushProperty>
-			void GuiGradientBrushElementRenderer<TElement, TRenderer, TBrush, TBrushProperty>::OnElementStateChanged()
+			template<typename TElement, typename TRenderer, typename TBrush>
+			void GuiGradientBrushElementRendererBase<TElement, TRenderer, TBrush>::OnElementStateChanged()
 			{
 				if (this->renderTarget)
 				{
-					Pair<Color, Color> color = Pair<Color, Color>(this->element->GetColor1(), this->element->GetColor2());
+					auto color = Pair(this->element->GetColor1(), this->element->GetColor2());
 					if (oldColor != color)
 					{
 						DestroyBrush(this->renderTarget);

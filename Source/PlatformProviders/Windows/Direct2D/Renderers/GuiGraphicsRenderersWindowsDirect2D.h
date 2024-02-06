@@ -19,38 +19,42 @@ namespace vl
 		{
 			using namespace elements;
 
-			template<typename TElement, typename TRenderer, typename TBrush, typename TBrushProperty>
-			class GuiSolidBrushElementRenderer : public GuiElementRendererBase<TElement, TRenderer, IWindowsDirect2DRenderTarget>
+			typedef collections::Pair<Color, Color> ColorPair;
+
+			template<typename TElement, typename TRenderer>
+			class GuiDirect2DElementRendererBase : public GuiElementRendererBase<TElement, TRenderer, IWindowsDirect2DRenderTarget>
 			{
 			protected:
-				TBrushProperty			oldColor;
-				TBrush*					brush = nullptr;
-
-				void					CreateBrush(IWindowsDirect2DRenderTarget* _renderTarget);
-				void					DestroyBrush(IWindowsDirect2DRenderTarget* _renderTarget);
 				void					InitializeInternal();
 				void					FinalizeInternal();
 				void					RenderTargetChangedInternal(IWindowsDirect2DRenderTarget* oldRenderTarget, IWindowsDirect2DRenderTarget* newRenderTarget);
 			public:
-				GuiSolidBrushElementRenderer();
+			};
+
+			template<typename TElement, typename TRenderer, typename TBrush>
+			class GuiSolidBrushElementRendererBase : public GuiDirect2DElementRendererBase<TElement, TRenderer>
+			{
+			protected:
+				Color					oldColor;
+				TBrush*					brush = nullptr;
+
+				void					CreateBrush(IWindowsDirect2DRenderTarget* _renderTarget);
+				void					DestroyBrush(IWindowsDirect2DRenderTarget* _renderTarget);
+			public:
 
 				void					OnElementStateChanged()override;
 			};
 
-			template<typename TElement, typename TRenderer, typename TBrush, typename TBrushProperty>
-			class GuiGradientBrushElementRenderer : public GuiElementRendererBase<TElement, TRenderer, IWindowsDirect2DRenderTarget>
+			template<typename TElement, typename TRenderer, typename TBrush>
+			class GuiGradientBrushElementRendererBase : public GuiDirect2DElementRendererBase<TElement, TRenderer>
 			{
 			protected:
-				TBrushProperty			oldColor;
+				ColorPair				oldColor;
 				TBrush*					brush = nullptr;
 
 				void					CreateBrush(IWindowsDirect2DRenderTarget* _renderTarget);
 				void					DestroyBrush(IWindowsDirect2DRenderTarget* _renderTarget);
-				void					InitializeInternal();
-				void					FinalizeInternal();
-				void					RenderTargetChangedInternal(IWindowsDirect2DRenderTarget* oldRenderTarget, IWindowsDirect2DRenderTarget* newRenderTarget);
 			public:
-				GuiGradientBrushElementRenderer();
 
 				void					OnElementStateChanged()override;
 			};
@@ -58,8 +62,6 @@ namespace vl
 /***********************************************************************
 Renderers
 ***********************************************************************/
-
-			typedef collections::Pair<Color, Color> ColorPair;
 
 			class GuiFocusRectangleElementRenderer : public GuiElementRendererBase<GuiFocusRectangleElement, GuiFocusRectangleElementRenderer, IWindowsDirect2DRenderTarget>
 			{
@@ -76,9 +78,10 @@ Renderers
 				void					OnElementStateChanged()override;
 			};
 
-			class GuiSolidBorderElementRenderer : public GuiSolidBrushElementRenderer<GuiSolidBorderElement, GuiSolidBorderElementRenderer, ID2D1SolidColorBrush, Color>
+			class GuiSolidBorderElementRenderer : public GuiSolidBrushElementRendererBase<GuiSolidBorderElement, GuiSolidBorderElementRenderer, ID2D1SolidColorBrush>
 			{
 				friend class GuiElementRendererBase<GuiSolidBorderElement, GuiSolidBorderElementRenderer, IWindowsDirect2DRenderTarget>;
+				friend class GuiDirect2DElementRendererBase<GuiSolidBorderElement, GuiSolidBorderElementRenderer>;
 			public:
 				GuiSolidBorderElementRenderer();
 
@@ -127,18 +130,20 @@ Renderers
 				void					OnElementStateChanged()override;
 			};
 
-			class GuiSolidBackgroundElementRenderer : public GuiSolidBrushElementRenderer<GuiSolidBackgroundElement, GuiSolidBackgroundElementRenderer, ID2D1SolidColorBrush, Color>
+			class GuiSolidBackgroundElementRenderer : public GuiSolidBrushElementRendererBase<GuiSolidBackgroundElement, GuiSolidBackgroundElementRenderer, ID2D1SolidColorBrush>
 			{
 				friend class GuiElementRendererBase<GuiSolidBackgroundElement, GuiSolidBackgroundElementRenderer, IWindowsDirect2DRenderTarget>;
+				friend class GuiDirect2DElementRendererBase<GuiSolidBackgroundElement, GuiSolidBackgroundElementRenderer>;
 			public:
 				GuiSolidBackgroundElementRenderer();
 
 				void					Render(Rect bounds)override;
 			};
 
-			class GuiGradientBackgroundElementRenderer : public GuiGradientBrushElementRenderer<GuiGradientBackgroundElement, GuiGradientBackgroundElementRenderer, ID2D1LinearGradientBrush, ColorPair>
+			class GuiGradientBackgroundElementRenderer : public GuiGradientBrushElementRendererBase<GuiGradientBackgroundElement, GuiGradientBackgroundElementRenderer, ID2D1LinearGradientBrush>
 			{
 				friend class GuiElementRendererBase<GuiGradientBackgroundElement, GuiGradientBackgroundElementRenderer, IWindowsDirect2DRenderTarget>;
+				friend class GuiDirect2DElementRendererBase<GuiGradientBackgroundElement, GuiGradientBackgroundElementRenderer>;
 			public:
 				GuiGradientBackgroundElementRenderer();
 
