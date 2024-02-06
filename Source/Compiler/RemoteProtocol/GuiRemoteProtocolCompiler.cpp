@@ -321,7 +321,7 @@ GenerateRemoteProtocolHeaderFile
 			vint index = symbols->cppMapping.Keys().IndexOf(type);
 			if (index == -1)
 			{
-				return config.cppNamespace + L"::" + type;
+				return L"::" + config.cppNamespace + L"::" + type;
 			}
 			else
 			{
