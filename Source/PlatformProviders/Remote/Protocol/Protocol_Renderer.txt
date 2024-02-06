@@ -1,0 +1,110 @@
+enum RendererType
+{
+    FocusRectangle,
+    SolidBorder,
+    SinkBorder,
+    SinkSplitter,
+    SolidBackground,
+    GradientBackground,
+    InnerShadow,
+    SolidLabel,
+    Polygon,
+}
+
+[@Cpp(::vl::presentation::elements::ElementShapeType)]
+enum ElementShapeType
+{
+    Rectangle,
+    Ellipse,
+    RoundRect,
+}
+
+[@Cpp(::vl::presentation::elements::GuiGradientBackgroundElement::Direction)]
+[@CppNamespace(::vl::presentation::elements::GuiGradientBackgroundElement)]
+enum ElementGradientrDirection
+{
+    Horizontal,
+    Vertical,
+    Slash,
+    Backslash,
+}
+
+[@Cpp(::vl::presentation::elements::Gui3DSplitterElement::Direction)]
+[@CppNamespace(::vl::presentation::elements::Gui3DSplitterElement)]
+enum ElementSplitterDirection
+{
+    Horizontal,
+    Vertical,
+}
+
+[@Cpp(::vl::presentation::elements::ElementShape)]
+struct ElementShape
+{
+    var id : int;
+    var shapeType : ElementShapeType;
+    var radiusX : int;
+    var radiusY : int;
+}
+
+struct ElementDesc_SolidBorder
+{
+    var id : int;
+    var borderColor : color;
+    var shape : ElementShape;
+}
+
+struct ElementDesc_SinkBorder
+{
+    var id : int;
+    var leftTopColor : color;
+    var rightBottomColor : color;
+}
+
+struct ElementDesc_SinkSplitter
+{
+    var id : int;
+    var leftTopColor : color;
+    var rightBottomColor : color;
+    var direction : ElementSplitterDirection;
+}
+
+struct ElementDesc_SolidBackground
+{
+    var id : int;
+    var backgroundColor : Color;
+    var shape : ElementShape;
+}
+
+struct ElementDesc_GradientBackground
+{
+    var id : int;
+    var leftTopColor : color;
+    var rightBottomColor : color;
+    var direction : ElementGradientrDirection;
+    var shape : ElementShape;
+}
+
+struct ElementDesc_InnerShadow
+{
+    var id : int;
+    var shadowColor : color;
+    var thickness : int;
+}
+
+struct ElementDesc_Polugon
+{
+    var id : int;
+    var size : Size;
+    var borderColor : color;
+    var backgroundColor : color;
+    var points : Point[];
+}
+
+struct RendererCreation
+{
+    var id : int;
+    var type : RendererType;
+}
+
+message RendererCreated             { request: RendererCreation[]; }
+message RendererDestroyed           { request: int[]; }

@@ -28,7 +28,7 @@
   - Move `GuiRemoteProtocolFilter` and `GuiRemoteEventFilter` from unit test to `GuiRemoteController`.
     - Update implementation from if-chain to switch-case.
   - Verify dropped messages/events not be called in unit test.
-- (SyncDom) Implement all renderers except `ColorizedTextElement` and `DocumentElement`.
+- (SyncDom) Implement all renderers except `ImageFrameElement`, `ColorizedTextElement` and `DocumentElement`.
   - Element changes are pushed in `StartRenderingOnNativeWindow`.
     - Sizes of all `GuiSolidLabelElementRenderer` are sent back at this moment. Ignore elements of which sizes are not changed.
       - Each character takes exactly `FontSize x FontSize`
@@ -47,6 +47,7 @@
 ## Release Milestone (1.2.10.0)
 
 - Implement basic control (`Source_GacUI_CoreApplication` controls only) unit test based on streaming
+  - Implement `ImageFrameElement`.
   - Metadata from requests are needed from the beginning for codegen, metadata will be updated and included in release.
   - `INativeImageService`:
     - Save image metadata (width, height, type, etc) to binary resource

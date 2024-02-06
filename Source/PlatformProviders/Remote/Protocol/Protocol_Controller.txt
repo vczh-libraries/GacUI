@@ -36,6 +36,20 @@ struct NativeMargin
     var bottom : NativeCoordinate;
 }
 
+[@Cpp(::vl::presentation::Point)]
+struct Point
+{
+    var x : int;
+    var y : int;
+}
+
+[@Cpp(::vl::presentation::Size)]
+struct Size
+{
+    var x : int;
+    var y : int;
+}
+
 [@Cpp(::vl::presentation::FontProperties)]
 struct FontProperties
 {

@@ -43,8 +43,8 @@ Elements
 			struct ElementShape
 			{
 				ElementShapeType		shapeType = ElementShapeType::Rectangle;
-				int						radiusX = 0;
-				int						radiusY = 0;
+				vint					radiusX = 0;
+				vint					radiusY = 0;
 
 				GUI_DEFINE_COMPARE_OPERATORS(ElementShape)
 			};
@@ -211,14 +211,14 @@ Elements
 				GuiSolidBackgroundElement();
 			public:
 				/// <summary>
-				/// Get the border color.
+				/// Get the background color.
 				/// </summary>
-				/// <returns>The border color.</returns>
+				/// <returns>The background color.</returns>
 				Color					GetColor();
 				/// <summary>
-				/// Set the border color.
+				/// Set the background color.
 				/// </summary>
-				/// <param name="value">The new border color.</param>
+				/// <param name="value">The new background color.</param>
 				void					SetColor(Color value);
 				/// <summary>
 				/// Get the shape.
