@@ -37,10 +37,10 @@ GuiDirect2DElement
 CachedResourceAllocator
 ***********************************************************************/
 
-			class CachedSolidBrushAllocator
-			{
-				DEFINE_CACHED_RESOURCE_ALLOCATOR(Color, ComPtr<ID2D1SolidColorBrush>)
+			typedef Pair<Color, Color> ColorPair;
 
+			class CachedSolidBrushAllocator : public GuiCachedResourceAllocatorBase<CachedSolidBrushAllocator, Color, ComPtr<ID2D1SolidColorBrush>>
+			{
 				IWindowsDirect2DRenderTarget* guiRenderTarget = nullptr;
 			public:
 				CachedSolidBrushAllocator()
@@ -62,11 +62,8 @@ CachedResourceAllocator
 				}
 			};
 
-			class CachedLinearBrushAllocator
+			class CachedLinearBrushAllocator : public GuiCachedResourceAllocatorBase<CachedLinearBrushAllocator, ColorPair, ComPtr<ID2D1LinearGradientBrush>>
 			{
-				typedef Pair<Color, Color> ColorPair;
-				DEFINE_CACHED_RESOURCE_ALLOCATOR(ColorPair, ComPtr<ID2D1LinearGradientBrush>)
-
 				IWindowsDirect2DRenderTarget*	guiRenderTarget = nullptr;
 			public:
 				CachedLinearBrushAllocator()
@@ -112,11 +109,8 @@ CachedResourceAllocator
 				}
 			};
 
-			class CachedRadialBrushAllocator
+			class CachedRadialBrushAllocator : public GuiCachedResourceAllocatorBase<CachedRadialBrushAllocator, ColorPair, ComPtr<ID2D1RadialGradientBrush>>
 			{
-				typedef Pair<Color, Color> ColorPair;
-				DEFINE_CACHED_RESOURCE_ALLOCATOR(ColorPair, ComPtr<ID2D1RadialGradientBrush>)
-
 				IWindowsDirect2DRenderTarget*	guiRenderTarget = nullptr;
 			public:
 				CachedRadialBrushAllocator()
@@ -162,10 +156,8 @@ CachedResourceAllocator
 				}
 			};
 
-			class CachedTextFormatAllocator
+			class CachedTextFormatAllocator : public GuiCachedResourceAllocatorBase<CachedTextFormatAllocator, FontProperties, Ptr<Direct2DTextFormatPackage>>
 			{
-			private:
-				DEFINE_CACHED_RESOURCE_ALLOCATOR(FontProperties, Ptr<Direct2DTextFormatPackage>)
 			public:
 
 				static ComPtr<IDWriteTextFormat> CreateDirect2DFont(const FontProperties& fontProperties)
@@ -201,10 +193,8 @@ CachedResourceAllocator
 				}
 			};
 
-			class CachedCharMeasurerAllocator
+			class CachedCharMeasurerAllocator : public GuiCachedResourceAllocatorBase<CachedCharMeasurerAllocator, FontProperties, Ptr<text::CharMeasurer>>
 			{
-				DEFINE_CACHED_RESOURCE_ALLOCATOR(FontProperties, Ptr<text::CharMeasurer>)
-
 			protected:
 				class Direct2DCharMeasurer : public text::CharMeasurer
 				{

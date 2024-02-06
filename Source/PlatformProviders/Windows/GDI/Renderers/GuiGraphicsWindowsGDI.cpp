@@ -102,9 +102,8 @@ WindowsGDIRenderTarget
 CachedResourceAllocator
 ***********************************************************************/
 
-			class CachedPenAllocator
+			class CachedPenAllocator : public GuiCachedResourceAllocatorBase<CachedPenAllocator, Color, Ptr<WinPen>>
 			{
-				DEFINE_CACHED_RESOURCE_ALLOCATOR(Color, Ptr<WinPen>)
 			public:
 				Ptr<WinPen> CreateInternal(Color color)
 				{
@@ -112,9 +111,8 @@ CachedResourceAllocator
 				}
 			};
 
-			class CachedBrushAllocator
+			class CachedBrushAllocator : public GuiCachedResourceAllocatorBase<CachedBrushAllocator, Color, Ptr<WinBrush>>
 			{
-				DEFINE_CACHED_RESOURCE_ALLOCATOR(Color, Ptr<WinBrush>)
 			public:
 				Ptr<WinBrush> CreateInternal(Color color)
 				{
@@ -122,9 +120,8 @@ CachedResourceAllocator
 				}
 			};
 
-			class CachedFontAllocator
+			class CachedFontAllocator : public GuiCachedResourceAllocatorBase<CachedFontAllocator, FontProperties, Ptr<WinFont>>
 			{
-				DEFINE_CACHED_RESOURCE_ALLOCATOR(FontProperties, Ptr<WinFont>)
 			public:
 				static Ptr<WinFont> CreateGdiFont(const FontProperties& value)
 				{
@@ -138,10 +135,8 @@ CachedResourceAllocator
 				}
 			};
 
-			class CachedCharMeasurerAllocator
+			class CachedCharMeasurerAllocator : public GuiCachedResourceAllocatorBase<CachedCharMeasurerAllocator, FontProperties, Ptr<text::CharMeasurer>>
 			{
-				DEFINE_CACHED_RESOURCE_ALLOCATOR(FontProperties, Ptr<text::CharMeasurer>)
-
 			protected:
 				class GdiCharMeasurer : public text::CharMeasurer
 				{

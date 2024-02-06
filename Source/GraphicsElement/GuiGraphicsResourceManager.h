@@ -234,82 +234,91 @@ Helpers
 					return minSize;\
 				}\
 
-#define DEFINE_CACHED_RESOURCE_ALLOCATOR(TKEY, TVALUE)\
-			public:\
-				static const vint DeadPackageMax=32;\
-				struct Package\
-				{\
-					TVALUE							resource;\
-					vint							counter;\
-					std::partial_ordering operator<=>(const Package&) const { return std::partial_ordering::unordered; }\
-					bool operator==(const Package&)const{return false;}\
-				};\
-				struct DeadPackage\
-				{\
-					TKEY							key;\
-					TVALUE							value;\
-					std::partial_ordering operator<=>(const DeadPackage&) const { return std::partial_ordering::unordered; }\
-					bool operator==(const DeadPackage&)const{return false;}\
-				};\
-				Dictionary<TKEY, Package>			aliveResources;\
-				List<DeadPackage>					deadResources;\
-			public:\
-				TVALUE Create(const TKEY& key)\
-				{\
-					vint index=aliveResources.Keys().IndexOf(key);\
-					if(index!=-1)\
-					{\
-						Package package=aliveResources.Values().Get(index);\
-						package.counter++;\
-						aliveResources.Set(key, package);\
-						return package.resource;\
-					}\
-					TVALUE resource;\
-					for(vint i=0;i<deadResources.Count();i++)\
-					{\
-						if(deadResources[i].key==key)\
-						{\
-							DeadPackage deadPackage=deadResources[i];\
-							deadResources.RemoveAt(i);\
-							resource=deadPackage.value;\
-							break;\
-						}\
-					}\
-					if(!resource)\
-					{\
-						resource=CreateInternal(key);\
-					}\
-					Package package;\
-					package.resource=resource;\
-					package.counter=1;\
-					aliveResources.Add(key, package);\
-					return package.resource;\
-				}\
-				void Destroy(const TKEY& key)\
-				{\
-					vint index=aliveResources.Keys().IndexOf(key);\
-					if(index!=-1)\
-					{\
-						Package package=aliveResources.Values().Get(index);\
-						package.counter--;\
-						if(package.counter==0)\
-						{\
-							aliveResources.Remove(key);\
-							if(deadResources.Count()==DeadPackageMax)\
-							{\
-								deadResources.RemoveAt(DeadPackageMax-1);\
-							}\
-							DeadPackage deadPackage;\
-							deadPackage.key=key;\
-							deadPackage.value=package.resource;\
-							deadResources.Insert(0, deadPackage);\
-						}\
-						else\
-						{\
-							aliveResources.Set(key, package);\
-						}\
-					}\
+			template<typename TAllocator, typename TKey, typename TValue>
+			class GuiCachedResourceAllocatorBase : public Object
+			{
+			public:
+				static const vint						DeadPackageMax = 32;
+
+				struct Package
+				{
+					TValue								resource;
+					vint								counter;
+					std::partial_ordering operator<=>(const Package&) const { return std::partial_ordering::unordered; }
+					bool operator==(const Package&)const { return false; }
+				};
+
+				struct DeadPackage
+				{
+					TKey								key;
+					TValue								value;
+					std::partial_ordering operator<=>(const DeadPackage&) const { return std::partial_ordering::unordered; }
+					bool operator==(const DeadPackage&)const { return false; }
+				};
+
+				collections::Dictionary<TKey, Package>	aliveResources;
+				collections::List<DeadPackage>			deadResources;
+
+			public:
+
+				TValue Create(const TKey& key)
+				{
+					vint index = aliveResources.Keys().IndexOf(key);
+					if (index != -1)
+					{
+						Package package = aliveResources.Values().Get(index);
+						package.counter++;
+						aliveResources.Set(key, package);
+						return package.resource;
+					}
+					TValue resource;
+					for (vint i = 0; i < deadResources.Count(); i++)
+					{
+						if (deadResources[i].key == key)
+						{
+							DeadPackage deadPackage = deadResources[i];
+							deadResources.RemoveAt(i);
+							resource = deadPackage.value;
+							break;
+						}
+					}
+					if (!resource)
+					{
+						resource = dynamic_cast<TAllocator*>(this)->CreateInternal(key);
+					}
+					Package package;
+					package.resource = resource;
+					package.counter = 1;
+					aliveResources.Add(key, package);
+					return package.resource;
 				}
+
+				void Destroy(const TKey& key)
+				{
+					vint index = aliveResources.Keys().IndexOf(key);
+					if (index != -1)
+					{
+						Package package = aliveResources.Values().Get(index);
+						package.counter--;
+						if (package.counter == 0)
+						{
+							aliveResources.Remove(key);
+							if (deadResources.Count() == DeadPackageMax)
+							{
+								deadResources.RemoveAt(DeadPackageMax - 1);
+							}
+							DeadPackage deadPackage;
+							deadPackage.key = key;
+							deadPackage.value = package.resource;
+							deadResources.Insert(0, deadPackage);
+						}
+						else
+						{
+							aliveResources.Set(key, package);
+						}
+					}
+				}
+			};
 		}
 	}
 }
