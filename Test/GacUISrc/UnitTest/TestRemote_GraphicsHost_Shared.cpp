@@ -21,32 +21,6 @@ namespace remote_graphics_host_tests
 	}
 
 /***********************************************************************
-MakeGuiMain
-***********************************************************************/
-
-	Func<void()> MakeGuiMain(GraphicsHostProtocol& protocol, List<WString>& eventLogs, GuiWindow*& controlHost)
-	{
-		return [&]()
-		{
-			protocol.events->OnControllerConnect();
-			TEST_CASE(L"Create and destroy a control host")
-			{
-				auto theme = Ptr(new EmptyControlTheme);
-				theme::RegisterTheme(theme);
-
-				GuiWindow window(theme::ThemeName::Window);
-				window.SetClientSize({ 640,480 });
-				controlHost = &window;
-				GetApplication()->Run(&window);
-				controlHost = nullptr;
-
-				theme::UnregisterTheme(theme->Name);
-				AssertEventLogs(eventLogs);
-			});
-		};
-	}
-
-/***********************************************************************
 AttachAndLogEvents
 ***********************************************************************/
 

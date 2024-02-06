@@ -1,11 +1,13 @@
 #include "TestRemote.h"
 
+using namespace vl::presentation::elements;
 using namespace vl::presentation::compositions;
 using namespace vl::presentation::controls;
 
 namespace remote_graphics_host_tests
 {
-	class GraphicsHostProtocol : public SingleScreenProtocol
+	template<typename TProtocol>
+	class GraphicsHostProtocolBase : public TProtocol
 	{
 	public:
 		static SingleScreenConfig MakeSingleScreenConfig()
@@ -28,8 +30,23 @@ namespace remote_graphics_host_tests
 			return config;
 		}
 
-		GraphicsHostProtocol()
-			: SingleScreenProtocol(MakeSingleScreenConfig())
+		GraphicsHostProtocolBase()
+			: TProtocol(MakeSingleScreenConfig())
+		{
+		}
+	};
+
+	class GraphicsHostProtocol : public GraphicsHostProtocolBase<SingleScreenProtocol>
+	{
+	};
+
+	class GraphicsHostRenderingProtocol : public GraphicsHostProtocolBase<SingleScreenRenderingProtocol>
+	{
+	public:
+		List<WString>&				eventLogs;
+
+		GraphicsHostRenderingProtocol(List<WString>& _eventLogs)
+			:eventLogs(_eventLogs)
 		{
 		}
 	};
@@ -80,7 +97,28 @@ namespace remote_graphics_host_tests
 		}
 	};
 
-	extern Func<void()>						MakeGuiMain(GraphicsHostProtocol& protocol, List<WString>& eventLogs, GuiWindow*& controlHost);
+	template<typename TProtocol>
+	Func<void()> MakeGuiMain(TProtocol& protocol, List<WString>& eventLogs, GuiWindow*& controlHost)
+	{
+		return [&]()
+		{
+			protocol.events->OnControllerConnect();
+			TEST_CASE(L"Create and destroy a control host")
+			{
+				auto theme = Ptr(new EmptyControlTheme);
+				theme::RegisterTheme(theme);
+
+				GuiWindow window(theme::ThemeName::Window);
+				window.SetClientSize({ 640,480 });
+				controlHost = &window;
+				GetApplication()->Run(&window);
+				controlHost = nullptr;
+
+				theme::UnregisterTheme(theme->Name);
+				AssertEventLogs(eventLogs);
+			});
+		};
+	}
 
 	void									AttachAndLogEvents(GuiGraphicsComposition* sender, const wchar_t* name, List<WString>& eventLogs);
 

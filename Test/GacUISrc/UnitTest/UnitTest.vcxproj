@@ -266,6 +266,7 @@
     <ClInclude Include="TestRemote_Shared_FilterProtocol.h" />
     <ClInclude Include="TestRemote_Shared_LoggingWindowListener.h" />
     <ClInclude Include="TestRemote_Shared_NoRenderingProtocol.h" />
+    <ClInclude Include="TestRemote_Shared_RenderingProtocol.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
