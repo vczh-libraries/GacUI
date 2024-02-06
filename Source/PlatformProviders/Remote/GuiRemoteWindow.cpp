@@ -595,7 +595,6 @@ GuiRemoteWindow (INativeWindow)
 
 	void GuiRemoteWindow::RedrawContent()
 	{
-		CHECK_FAIL(L"Not Implemented!");
 	}
 
 #undef SET_REMOTE_WINDOW_STYLE_INVALIDATE

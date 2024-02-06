@@ -286,6 +286,10 @@ GuiRemoteController::INativeWindowService
 		{
 			remoteProtocol->ProcessRemoteEvents();
 			remoteMessages.Submit();
+			if (timerEnabled)
+			{
+				callbackService.InvokeGlobalTimer();
+			}
 		}
 		return !connectionStopped;
 	}

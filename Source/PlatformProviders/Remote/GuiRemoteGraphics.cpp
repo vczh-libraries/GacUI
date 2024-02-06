@@ -11,10 +11,22 @@ GuiRemoteGraphicsRenderTarget
 	void GuiRemoteGraphicsRenderTarget::StartRenderingOnNativeWindow()
 	{
 		canvasSize = remote->remoteWindow.GetClientSize();
+
+		vint idRendering = remote->remoteMessages.RequestRendererBeginRendering();
+		remote->remoteMessages.Submit();
+		auto measuring = remote->remoteMessages.RetrieveRendererBeginRendering(idRendering);
+		CHECK_ERROR(!measuring.solidLabelMinSizes, L"Not Implemented!");
+		remote->remoteMessages.ClearResponses();
 	}
 
 	RenderTargetFailure GuiRemoteGraphicsRenderTarget::StopRenderingOnNativeWindow()
 	{
+		vint idRendering = remote->remoteMessages.RequestRendererEndRendering();
+		remote->remoteMessages.Submit();
+		auto measuring = remote->remoteMessages.RetrieveRendererEndRendering(idRendering);
+		CHECK_ERROR(!measuring.solidLabelMinSizes, L"Not Implemented!");
+		remote->remoteMessages.ClearResponses();
+
 		if (canvasSize == remote->remoteWindow.GetClientSize())
 		{
 			return RenderTargetFailure::None;

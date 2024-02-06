@@ -241,6 +241,18 @@ namespace remote_protocol_tests
 		{
 			capturing = false;
 		}
+
+		void RequestRendererBeginRendering(vint id) override
+		{
+			ElementMeasurings arguments;
+			events->RespondRendererBeginRendering(id, arguments);
+		}
+
+		void RequestRendererEndRendering(vint id) override
+		{
+			ElementMeasurings arguments;
+			events->RespondRendererEndRendering(id, arguments);
+		}
 	};
 }
 

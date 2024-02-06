@@ -134,12 +134,11 @@ namespace remote_protocol_tests
 	
 		bool NeedRefresh() override
 		{
-			SHOULD_NOT_BE_CALLED(NeedRefresh);
+			return false;
 		}
 	
 		void ForceRefresh(bool handleFailure, bool& updated, bool& failureByResized, bool& failureByLostDevice) override
 		{
-			SHOULD_NOT_BE_CALLED(ForceRefresh);
 		}
 	
 		void AssignFrameConfig(const NativeWindowFrameConfig& config) override
