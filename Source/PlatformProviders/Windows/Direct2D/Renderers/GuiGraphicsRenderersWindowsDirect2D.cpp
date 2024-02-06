@@ -192,6 +192,10 @@ GuiSolidBorderElementRenderer
 GuiSolidBorderElementRenderer
 ***********************************************************************/
 
+			GuiSolidBorderElementRenderer::GuiSolidBorderElementRenderer()
+			{
+			}
+
 			void GuiSolidBorderElementRenderer::Render(Rect bounds)
 			{
 				ID2D1RenderTarget* d2dRenderTarget = renderTarget->GetDirect2DRenderTarget();
@@ -399,6 +403,10 @@ Gui3DSplitterElementRenderer
 GuiSolidBackgroundElementRenderer
 ***********************************************************************/
 
+			GuiSolidBackgroundElementRenderer::GuiSolidBackgroundElementRenderer()
+			{
+			}
+
 			void GuiSolidBackgroundElementRenderer::Render(Rect bounds)
 			{
 				ID2D1RenderTarget* d2dRenderTarget=renderTarget->GetDirect2DRenderTarget();
@@ -434,6 +442,10 @@ GuiSolidBackgroundElementRenderer
 /***********************************************************************
 GuiGradientBackgroundElementRenderer
 ***********************************************************************/
+
+			GuiGradientBackgroundElementRenderer::GuiGradientBackgroundElementRenderer()
+			{
+			}
 
 			void GuiGradientBackgroundElementRenderer::Render(Rect bounds)
 			{
