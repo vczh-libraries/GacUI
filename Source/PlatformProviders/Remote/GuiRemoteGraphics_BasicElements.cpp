@@ -6,20 +6,35 @@ namespace vl::presentation::elements_remoteprotocol
 GuiSolidBorderElementRenderer
 ***********************************************************************/
 
-	void GuiFocusRectangleElementRenderer::InitializeInternal()
+	template<typename TElement, typename TRenderer>
+	void GuiRemoteProtocolElementRenderer<TElement, TRenderer>::InitializeInternal()
 	{
 		CHECK_FAIL(L"Not Implemented!");
 	}
 
-	void GuiFocusRectangleElementRenderer::FinalizeInternal()
+	template<typename TElement, typename TRenderer>
+	void GuiRemoteProtocolElementRenderer<TElement, TRenderer>::FinalizeInternal()
 	{
+		CHECK_FAIL(L"Not Implemented!");
 	}
 
-	void GuiFocusRectangleElementRenderer::RenderTargetChangedInternal(GuiRemoteGraphicsRenderTarget* oldRenderTarget, GuiRemoteGraphicsRenderTarget* newRenderTarget)
+	template<typename TElement, typename TRenderer>
+	void GuiRemoteProtocolElementRenderer<TElement, TRenderer>::RenderTargetChangedInternal(GuiRemoteGraphicsRenderTarget* oldRenderTarget, GuiRemoteGraphicsRenderTarget* newRenderTarget)
 	{
+		CHECK_FAIL(L"Not Implemented!");
 	}
 
-	void GuiFocusRectangleElementRenderer::Render(Rect bounds)
+	template<typename TElement, typename TRenderer>
+	void GuiRemoteProtocolElementRenderer<TElement, TRenderer>::Render(Rect bounds)
+	{
+		CHECK_FAIL(L"Not Implemented!");
+	}
+
+/***********************************************************************
+GuiSolidBorderElementRenderer
+***********************************************************************/
+
+	GuiFocusRectangleElementRenderer::GuiFocusRectangleElementRenderer()
 	{
 	}
 
@@ -31,20 +46,7 @@ GuiSolidBorderElementRenderer
 GuiSolidBorderElementRenderer
 ***********************************************************************/
 
-	void GuiSolidBorderElementRenderer::InitializeInternal()
-	{
-		CHECK_FAIL(L"Not Implemented!");
-	}
-
-	void GuiSolidBorderElementRenderer::FinalizeInternal()
-	{
-	}
-
-	void GuiSolidBorderElementRenderer::RenderTargetChangedInternal(GuiRemoteGraphicsRenderTarget* oldRenderTarget, GuiRemoteGraphicsRenderTarget* newRenderTarget)
-	{
-	}
-
-	void GuiSolidBorderElementRenderer::Render(Rect bounds)
+	GuiSolidBorderElementRenderer::GuiSolidBorderElementRenderer()
 	{
 	}
 
@@ -58,20 +60,7 @@ GuiSolidBorderElementRenderer
 Gui3DBorderElementRenderer
 ***********************************************************************/
 
-	void Gui3DBorderElementRenderer::InitializeInternal()
-	{
-		CHECK_FAIL(L"Not Implemented!");
-	}
-
-	void Gui3DBorderElementRenderer::FinalizeInternal()
-	{
-	}
-
-	void Gui3DBorderElementRenderer::RenderTargetChangedInternal(GuiRemoteGraphicsRenderTarget* oldRenderTarget, GuiRemoteGraphicsRenderTarget* newRenderTarget)
-	{
-	}
-
-	void Gui3DBorderElementRenderer::Render(Rect bounds)
+	Gui3DBorderElementRenderer::Gui3DBorderElementRenderer()
 	{
 	}
 
@@ -85,20 +74,7 @@ Gui3DBorderElementRenderer
 Gui3DSplitterElementRenderer
 ***********************************************************************/
 
-	void Gui3DSplitterElementRenderer::InitializeInternal()
-	{
-		CHECK_FAIL(L"Not Implemented!");
-	}
-
-	void Gui3DSplitterElementRenderer::FinalizeInternal()
-	{
-	}
-
-	void Gui3DSplitterElementRenderer::RenderTargetChangedInternal(GuiRemoteGraphicsRenderTarget* oldRenderTarget, GuiRemoteGraphicsRenderTarget* newRenderTarget)
-	{
-	}
-
-	void Gui3DSplitterElementRenderer::Render(Rect bounds)
+	Gui3DSplitterElementRenderer::Gui3DSplitterElementRenderer()
 	{
 	}
 
@@ -113,20 +89,7 @@ Gui3DSplitterElementRenderer
 GuiSolidBackgroundElementRenderer
 ***********************************************************************/
 
-	void GuiSolidBackgroundElementRenderer::InitializeInternal()
-	{
-		CHECK_FAIL(L"Not Implemented!");
-	}
-
-	void GuiSolidBackgroundElementRenderer::FinalizeInternal()
-	{
-	}
-
-	void GuiSolidBackgroundElementRenderer::RenderTargetChangedInternal(GuiRemoteGraphicsRenderTarget* oldRenderTarget, GuiRemoteGraphicsRenderTarget* newRenderTarget)
-	{
-	}
-
-	void GuiSolidBackgroundElementRenderer::Render(Rect bounds)
+	GuiSolidBackgroundElementRenderer::GuiSolidBackgroundElementRenderer()
 	{
 	}
 
@@ -140,25 +103,8 @@ GuiSolidBackgroundElementRenderer
 GuiGradientBackgroundElementRenderer
 ***********************************************************************/
 
-	void GuiGradientBackgroundElementRenderer::InitializeInternal()
+	GuiGradientBackgroundElementRenderer::GuiGradientBackgroundElementRenderer()
 	{
-		CHECK_FAIL(L"Not Implemented!");
-	}
-
-	void GuiGradientBackgroundElementRenderer::FinalizeInternal()
-	{
-	}
-
-	void GuiGradientBackgroundElementRenderer::RenderTargetChangedInternal(GuiRemoteGraphicsRenderTarget* oldRenderTarget, GuiRemoteGraphicsRenderTarget* newRenderTarget)
-	{
-	}
-
-	void GuiGradientBackgroundElementRenderer::Render(Rect bounds)
-	{
-		// Color1
-		// Color2
-		// Direction
-		// Shape
 	}
 
 	void GuiGradientBackgroundElementRenderer::OnElementStateChanged()
@@ -166,27 +112,10 @@ GuiGradientBackgroundElementRenderer
 	}
 
 /***********************************************************************
-GuiSolidLabelElementRenderer
+GuiInnerShadowElementRenderer
 ***********************************************************************/
 
-	void GuiInnerShadowElementRenderer::InitializeInternal()
-	{
-		CHECK_FAIL(L"Not Implemented!");
-	}
-
-	void GuiInnerShadowElementRenderer::FinalizeInternal()
-	{
-	}
-
-	void GuiInnerShadowElementRenderer::RenderTargetChangedInternal(GuiRemoteGraphicsRenderTarget* oldRenderTarget, GuiRemoteGraphicsRenderTarget* newRenderTarget)
-	{
-	}
-
 	GuiInnerShadowElementRenderer::GuiInnerShadowElementRenderer()
-	{
-	}
-
-	void GuiInnerShadowElementRenderer::Render(Rect bounds)
 	{
 	}
 
@@ -200,25 +129,13 @@ GuiSolidLabelElementRenderer
 GuiSolidLabelElementRenderer
 ***********************************************************************/
 
-	void GuiSolidLabelElementRenderer::InitializeInternal()
-	{
-		CHECK_FAIL(L"Not Implemented!");
-	}
-
-	void GuiSolidLabelElementRenderer::FinalizeInternal()
-	{
-	}
-
-	void GuiSolidLabelElementRenderer::RenderTargetChangedInternal(GuiRemoteGraphicsRenderTarget* oldRenderTarget, GuiRemoteGraphicsRenderTarget* newRenderTarget)
-	{
-	}
-
 	GuiSolidLabelElementRenderer::GuiSolidLabelElementRenderer()
 	{
 	}
 
 	void GuiSolidLabelElementRenderer::Render(Rect bounds)
 	{
+		GuiRemoteProtocolElementRenderer<GuiSolidLabelElement, GuiSolidLabelElementRenderer>::Render(bounds);
 		// UpdateMinSize()
 		// When text is empty, total size is the size of one space character
 		//   WrapLine == true:
@@ -246,24 +163,7 @@ GuiSolidLabelElementRenderer
 GuiImageFrameElementRenderer
 ***********************************************************************/
 
-	void GuiImageFrameElementRenderer::InitializeInternal()
-	{
-		CHECK_FAIL(L"Not Implemented!");
-	}
-
-	void GuiImageFrameElementRenderer::FinalizeInternal()
-	{
-	}
-
-	void GuiImageFrameElementRenderer::RenderTargetChangedInternal(GuiRemoteGraphicsRenderTarget* oldRenderTarget, GuiRemoteGraphicsRenderTarget* newRenderTarget)
-	{
-	}
-
 	GuiImageFrameElementRenderer::GuiImageFrameElementRenderer()
-	{
-	}
-
-	void GuiImageFrameElementRenderer::Render(Rect bounds)
 	{
 	}
 
@@ -282,28 +182,7 @@ GuiImageFrameElementRenderer
 GuiPolygonElementRenderer
 ***********************************************************************/
 
-	void GuiPolygonElementRenderer::InitializeInternal()
-	{
-		CHECK_FAIL(L"Not Implemented!");
-	}
-
-	void GuiPolygonElementRenderer::FinalizeInternal()
-	{
-	}
-
-	void GuiPolygonElementRenderer::RenderTargetChangedInternal(GuiRemoteGraphicsRenderTarget* oldRenderTarget, GuiRemoteGraphicsRenderTarget* newRenderTarget)
-	{
-	}
-
 	GuiPolygonElementRenderer::GuiPolygonElementRenderer()
-	{
-	}
-
-	GuiPolygonElementRenderer::~GuiPolygonElementRenderer()
-	{
-	}
-
-	void GuiPolygonElementRenderer::Render(Rect bounds)
 	{
 	}
 
@@ -322,7 +201,6 @@ GuiColorizedTextElementRenderer
 
 	void GuiColorizedTextElementRenderer::ColorChanged()
 	{
-		CHECK_FAIL(L"Not Implemented!");
 	}
 
 	void GuiColorizedTextElementRenderer::FontChanged()
@@ -331,19 +209,17 @@ GuiColorizedTextElementRenderer
 
 	void GuiColorizedTextElementRenderer::InitializeInternal()
 	{
+		GuiRemoteProtocolElementRenderer<GuiColorizedTextElement, GuiColorizedTextElementRenderer>::InitializeInternal();
 		element->SetCallback(this);
 	}
 
 	void GuiColorizedTextElementRenderer::FinalizeInternal()
 	{
 		element->SetCallback(nullptr);
+		GuiRemoteProtocolElementRenderer<GuiColorizedTextElement, GuiColorizedTextElementRenderer>::FinalizeInternal();
 	}
 
-	void GuiColorizedTextElementRenderer::RenderTargetChangedInternal(GuiRemoteGraphicsRenderTarget* oldRenderTarget, GuiRemoteGraphicsRenderTarget* newRenderTarget)
-	{
-	}
-
-	void GuiColorizedTextElementRenderer::Render(Rect bounds)
+	GuiColorizedTextElementRenderer::GuiColorizedTextElementRenderer()
 	{
 	}
 
