@@ -23,7 +23,7 @@ namespace vl
 Renderers
 ***********************************************************************/
 
-			class GuiFocusRectangleElementRenderer : GuiElementRendererBase<GuiFocusRectangleElement, GuiFocusRectangleElementRenderer, IWindowsGDIRenderTarget>
+			class GuiFocusRectangleElementRenderer : public GuiElementRendererBase<GuiFocusRectangleElement, GuiFocusRectangleElementRenderer, IWindowsGDIRenderTarget>
 			{
 				friend class GuiElementRendererBase<GuiFocusRectangleElement, GuiFocusRectangleElementRenderer, IWindowsGDIRenderTarget>;
 			protected:
@@ -38,7 +38,7 @@ Renderers
 				void					OnElementStateChanged()override;
 			};
 
-			class GuiSolidBorderElementRenderer : GuiElementRendererBase<GuiSolidBorderElement, GuiSolidBorderElementRenderer, IWindowsGDIRenderTarget>
+			class GuiSolidBorderElementRenderer : public GuiElementRendererBase<GuiSolidBorderElement, GuiSolidBorderElementRenderer, IWindowsGDIRenderTarget>
 			{
 				friend class GuiElementRendererBase<GuiSolidBorderElement, GuiSolidBorderElementRenderer, IWindowsGDIRenderTarget>;
 			protected:
@@ -54,7 +54,7 @@ Renderers
 				void					OnElementStateChanged()override;
 			};
 
-			class Gui3DBorderElementRenderer : GuiElementRendererBase<Gui3DBorderElement, Gui3DBorderElementRenderer, IWindowsGDIRenderTarget>
+			class Gui3DBorderElementRenderer : public GuiElementRendererBase<Gui3DBorderElement, Gui3DBorderElementRenderer, IWindowsGDIRenderTarget>
 			{
 				friend class GuiElementRendererBase<Gui3DBorderElement, Gui3DBorderElementRenderer, IWindowsGDIRenderTarget>;
 			protected:
@@ -71,7 +71,7 @@ Renderers
 				void					OnElementStateChanged()override;
 			};
 
-			class Gui3DSplitterElementRenderer : GuiElementRendererBase<Gui3DSplitterElement, Gui3DSplitterElementRenderer, IWindowsGDIRenderTarget>
+			class Gui3DSplitterElementRenderer : public GuiElementRendererBase<Gui3DSplitterElement, Gui3DSplitterElementRenderer, IWindowsGDIRenderTarget>
 			{
 				friend class GuiElementRendererBase<Gui3DSplitterElement, Gui3DSplitterElementRenderer, IWindowsGDIRenderTarget>;
 			protected:
@@ -88,7 +88,7 @@ Renderers
 				void					OnElementStateChanged()override;
 			};
 
-			class GuiSolidBackgroundElementRenderer : GuiElementRendererBase<GuiSolidBackgroundElement, GuiSolidBackgroundElementRenderer, IWindowsGDIRenderTarget>
+			class GuiSolidBackgroundElementRenderer : public GuiElementRendererBase<GuiSolidBackgroundElement, GuiSolidBackgroundElementRenderer, IWindowsGDIRenderTarget>
 			{
 				friend class GuiElementRendererBase<GuiSolidBackgroundElement, GuiSolidBackgroundElementRenderer, IWindowsGDIRenderTarget>;
 			protected:
@@ -104,7 +104,7 @@ Renderers
 				void					OnElementStateChanged()override;
 			};
 
-			class GuiGradientBackgroundElementRenderer : GuiElementRendererBase<GuiGradientBackgroundElement, GuiGradientBackgroundElementRenderer, IWindowsGDIRenderTarget>
+			class GuiGradientBackgroundElementRenderer : public GuiElementRendererBase<GuiGradientBackgroundElement, GuiGradientBackgroundElementRenderer, IWindowsGDIRenderTarget>
 			{
 				friend class GuiElementRendererBase<GuiGradientBackgroundElement, GuiGradientBackgroundElementRenderer, IWindowsGDIRenderTarget>;
 			protected:
@@ -116,7 +116,7 @@ Renderers
 				void					OnElementStateChanged()override;
 			};
 
-			class GuiInnerShadowElementRenderer : GuiElementRendererBase<GuiInnerShadowElement, GuiInnerShadowElementRenderer, IWindowsGDIRenderTarget>
+			class GuiInnerShadowElementRenderer : public GuiElementRendererBase<GuiInnerShadowElement, GuiInnerShadowElementRenderer, IWindowsGDIRenderTarget>
 			{
 				friend class GuiElementRendererBase<GuiInnerShadowElement, GuiInnerShadowElementRenderer, IWindowsGDIRenderTarget>;
 			protected:
@@ -130,7 +130,7 @@ Renderers
 				void					OnElementStateChanged()override;
 			};
 
-			class GuiSolidLabelElementRenderer : GuiElementRendererBase<GuiSolidLabelElement, GuiSolidLabelElementRenderer, IWindowsGDIRenderTarget>
+			class GuiSolidLabelElementRenderer : public GuiElementRendererBase<GuiSolidLabelElement, GuiSolidLabelElementRenderer, IWindowsGDIRenderTarget>
 			{
 				friend class GuiElementRendererBase<GuiSolidLabelElement, GuiSolidLabelElementRenderer, IWindowsGDIRenderTarget>;
 			protected:
@@ -150,7 +150,7 @@ Renderers
 				void					OnElementStateChanged()override;
 			};
 
-			class GuiImageFrameElementRenderer : GuiElementRendererBase<GuiImageFrameElement, GuiImageFrameElementRenderer, IWindowsGDIRenderTarget>
+			class GuiImageFrameElementRenderer : public GuiElementRendererBase<GuiImageFrameElement, GuiImageFrameElementRenderer, IWindowsGDIRenderTarget>
 			{
 				friend class GuiElementRendererBase<GuiImageFrameElement, GuiImageFrameElementRenderer, IWindowsGDIRenderTarget>;
 			protected:
@@ -168,7 +168,7 @@ Renderers
 				void					OnElementStateChanged()override;
 			};
 
-			class GuiPolygonElementRenderer : GuiElementRendererBase<GuiPolygonElement, GuiPolygonElementRenderer, IWindowsGDIRenderTarget>
+			class GuiPolygonElementRenderer : public GuiElementRendererBase<GuiPolygonElement, GuiPolygonElementRenderer, IWindowsGDIRenderTarget>
 			{
 				friend class GuiElementRendererBase<GuiPolygonElement, GuiPolygonElementRenderer, IWindowsGDIRenderTarget>;
 			protected:
@@ -190,7 +190,7 @@ Renderers
 				void							OnElementStateChanged()override;
 			};
 
-			class GuiColorizedTextElementRenderer : GuiElementRendererBase<GuiColorizedTextElement, GuiColorizedTextElementRenderer, IWindowsGDIRenderTarget>, protected GuiColorizedTextElement::ICallback
+			class GuiColorizedTextElementRenderer : public GuiElementRendererBase<GuiColorizedTextElement, GuiColorizedTextElementRenderer, IWindowsGDIRenderTarget>, protected GuiColorizedTextElement::ICallback
 			{
 				friend class GuiElementRendererBase<GuiColorizedTextElement, GuiColorizedTextElementRenderer, IWindowsGDIRenderTarget>;
 
@@ -232,7 +232,7 @@ Renderers
 				void					OnElementStateChanged()override;
 			};
 
-			class GuiGDIElementRenderer : GuiElementRendererBase<GuiGDIElement, GuiGDIElementRenderer, IWindowsGDIRenderTarget>
+			class GuiGDIElementRenderer : public GuiElementRendererBase<GuiGDIElement, GuiGDIElementRenderer, IWindowsGDIRenderTarget>
 			{
 				friend class GuiElementRendererBase<GuiGDIElement, GuiGDIElementRenderer, IWindowsGDIRenderTarget>;
 
