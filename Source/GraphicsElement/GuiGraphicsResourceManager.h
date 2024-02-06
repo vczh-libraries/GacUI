@@ -142,6 +142,18 @@ Helpers
 					InvokeOnCompositionStateChanged();
 				}
 			public:
+				static vint GetElementType()
+				{
+					static vint elementType = -1; 
+					if (elementType == -1)
+					{
+						auto manager = GetGuiGraphicsResourceManager(); 
+						CHECK_ERROR(manager != nullptr, L"SetGuiGraphicsResourceManager must be called before registering element types."); 
+						elementType = manager->RegisterElementType(WString::Unmanaged(TElement::ElementTypeName)); 
+					}
+					return elementType; 
+				}
+
 				static TElement* Create()
 				{
 					auto rendererFactory = GetGuiGraphicsResourceManager()->GetRendererFactory(TElement::GetElementType());
@@ -171,21 +183,6 @@ Helpers
 					return ownerComposition;
 				}
 			};
-
-#define DEFINE_GUI_GRAPHICS_ELEMENT(TELEMENT, ELEMENT_TYPE_NAME)\
-				friend class GuiElementBase<TELEMENT>;\
-			public:\
-				static vint GetElementType()\
-				{\
-					static vint elementType = -1;\
-					if (elementType == -1)\
-					{\
-						auto manager = GetGuiGraphicsResourceManager();\
-						CHECK_ERROR(manager != nullptr, L"SetGuiGraphicsResourceManager must be called before registering element types.");\
-						elementType = manager->RegisterElementType(WString::Unmanaged(ELEMENT_TYPE_NAME));\
-					}\
-					return elementType;\
-				}\
 
 #define DEFINE_GUI_GRAPHICS_RENDERER(TELEMENT, TRENDERER, TTARGET)\
 			public:\

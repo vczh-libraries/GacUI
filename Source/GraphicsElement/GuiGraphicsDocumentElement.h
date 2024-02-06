@@ -30,7 +30,8 @@ Rich Content Document (element)
 			/// <summary>Defines a rich text document element for rendering complex styled document.</summary>
 			class GuiDocumentElement : public GuiElementBase<GuiDocumentElement>
 			{
-				DEFINE_GUI_GRAPHICS_ELEMENT(GuiDocumentElement, L"RichDocument");
+				friend class GuiElementBase<GuiDocumentElement>;
+				static constexpr const wchar_t* ElementTypeName = L"RichDocument";
 			public:
 				/// <summary>Callback interface for this element.</summary>
 				class ICallback : public virtual IDescriptable, public Description<ICallback>

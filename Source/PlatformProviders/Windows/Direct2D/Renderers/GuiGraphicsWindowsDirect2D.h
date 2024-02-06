@@ -62,7 +62,8 @@ Raw API Rendering Element
 			/// </summary>
 			class GuiDirect2DElement : public GuiElementBase<GuiDirect2DElement>
 			{
-				DEFINE_GUI_GRAPHICS_ELEMENT(GuiDirect2DElement, L"Direct2DElement")
+				friend class GuiElementBase<GuiDirect2DElement>;
+				static constexpr const wchar_t* ElementTypeName = L"Direct2DElement";
 			protected:
 				GuiDirect2DElement();
 			public:

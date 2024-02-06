@@ -467,10 +467,11 @@ Colorized Plain Text (element)
 			/// </summary>
 			class GuiColorizedTextElement : public GuiElementBase<GuiColorizedTextElement>
 			{
-				DEFINE_GUI_GRAPHICS_ELEMENT(GuiColorizedTextElement, L"ColorizedText");
-
+				friend class GuiElementBase<GuiColorizedTextElement>;
 				friend class text::TextLines;
+
 				typedef collections::Array<text::ColorEntry>			ColorArray;
+				static constexpr const wchar_t*							ElementTypeName = L"ColorizedText";
 			public:
 				/// <summary>
 				/// An callback interface. Member functions will be called when colors or fonts of a <see cref="GuiColorizedTextElement"/> changed.

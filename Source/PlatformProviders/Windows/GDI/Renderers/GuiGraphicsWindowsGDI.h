@@ -55,7 +55,8 @@ Raw API Rendering Element
 			/// </summary>
 			class GuiGDIElement : public GuiElementBase<GuiGDIElement>
 			{
-				DEFINE_GUI_GRAPHICS_ELEMENT(GuiGDIElement, L"GDIElement")
+				friend class GuiElementBase<GuiGDIElement>;
+				static constexpr const wchar_t* ElementTypeName = L"GDIElement";
 			protected:
 				GuiGDIElement();
 			public:
