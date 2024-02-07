@@ -388,6 +388,7 @@ Helpers
 
 			GuiApplication* application = nullptr;
 			bool GACUI_UNITTEST_ONLY_SKIP_THREAD_LOCAL_STORAGE_DISPOSE_STORAGES = false;
+			bool GACUI_UNITTEST_ONLY_SKIP_TYPE_AND_PLUGIN_LOAD_UNLOAD = false;
 
 			GuiApplication* GetApplication()
 			{
@@ -438,14 +439,16 @@ GuiApplicationMain
 
 			void GuiApplicationInitialize()
 			{
-				GetCurrentController()->InputService()->StartTimer();
-				theme::InitializeTheme();
-
+				if (!GACUI_UNITTEST_ONLY_SKIP_TYPE_AND_PLUGIN_LOAD_UNLOAD)
+				{
 #ifndef VCZH_DEBUG_NO_REFLECTION
-				GetGlobalTypeManager()->Load();
+					GetGlobalTypeManager()->Load();
 #endif
-				GetPluginManager()->Load();
+					GetPluginManager()->Load();
+				}
 
+				theme::InitializeTheme();
+				GetCurrentController()->InputService()->StartTimer();
 				{
 					GuiApplication app;
 					application = &app;
@@ -456,19 +459,23 @@ GuiApplicationMain
 					GuiFinalizeUtilities();
 					IAsyncScheduler::UnregisterDefaultScheduler();
 					IAsyncScheduler::UnregisterSchedulerForCurrentThread();
+					application = nullptr;
 				}
-				application = nullptr;
-
-				DestroyPluginManager();
+				GetCurrentController()->InputService()->StopTimer();
 				theme::FinalizeTheme();
+				FinalizeGlobalStorage();
+
+				if (!GACUI_UNITTEST_ONLY_SKIP_TYPE_AND_PLUGIN_LOAD_UNLOAD)
+				{
+					DestroyPluginManager();
+#ifndef VCZH_DEBUG_NO_REFLECTION
+					ResetGlobalTypeManager();
+#endif
+				}
 				if (!GACUI_UNITTEST_ONLY_SKIP_THREAD_LOCAL_STORAGE_DISPOSE_STORAGES)
 				{
 					ThreadLocalStorage::DisposeStorages();
 				}
-				FinalizeGlobalStorage();
-#ifndef VCZH_DEBUG_NO_REFLECTION
-				ResetGlobalTypeManager();
-#endif
 			}
 		}
 	}
