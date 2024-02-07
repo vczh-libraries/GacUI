@@ -28,6 +28,10 @@ namespace vl
 					}
 					templates.Add(name, theme);
 
+					if (!first)
+					{
+						first = theme.Obj();
+					}
 					if (last)
 					{
 						last->next = theme.Obj();
