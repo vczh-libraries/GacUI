@@ -30,8 +30,9 @@ namespace remote_graphics_host_tests
 			return config;
 		}
 
-		GraphicsHostProtocolBase()
-			: TProtocol(MakeSingleScreenConfig())
+		template<typename ...TArgs>
+		GraphicsHostProtocolBase(TArgs&& ...args)
+			: TProtocol(MakeSingleScreenConfig(), std::forward<TArgs&&>(args)...)
 		{
 		}
 	};
@@ -43,10 +44,8 @@ namespace remote_graphics_host_tests
 	class GraphicsHostRenderingProtocol : public GraphicsHostProtocolBase<SingleScreenRenderingProtocol>
 	{
 	public:
-		List<WString>&				eventLogs;
-
 		GraphicsHostRenderingProtocol(List<WString>& _eventLogs)
-			:eventLogs(_eventLogs)
+			:GraphicsHostProtocolBase<SingleScreenRenderingProtocol>(_eventLogs)
 		{
 		}
 	};
