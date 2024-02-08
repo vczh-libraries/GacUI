@@ -16,6 +16,7 @@ TEST_FILE
 
 			auto element = Ptr(GuiSolidLabelElement::Create());
 			element->SetText(L"Hello");
+			element->SetFont(GetCurrentController()->ResourceService()->GetDefaultFont());
 			bounds->SetOwnedElement(element);
 
 			controlHost->GetContainerComposition()->AddChild(bounds);
@@ -32,11 +33,22 @@ TEST_FILE
 				L"Created(<1:SolidLabel>)",
 				L"Updated(1, #000000, Left, Top, <flags:>, <font:One:12>, <text:Hello>, <request:TotalSize>)",
 				L"Begin()",
-				L"Render(1, {0,0:640,480}, {0,0:640,480})",
+				L"Render(1, {0,0:0,0}, {0,0:640,480})",
 				L"End()"
 				);
 			TEST_ASSERT(!protocol.measuringForNextRendering.fontHeights);
 			TEST_ASSERT(!protocol.measuringForNextRendering.minSizes);
+		});
+
+		protocol.OnNextFrame([&]()
+		{
+			// Render for the second time and the size of Hello is updated to the composition
+			AssertEventLogs(
+				eventLogs,
+				L"Begin()",
+				L"Render(1, {10,10:0,0}, {0,0:640,480})",
+				L"End()"
+				);
 		});
 
 		AssertRenderingEventLogs(
