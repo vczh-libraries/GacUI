@@ -33,6 +33,8 @@ GuiRemoteGraphicsRenderTarget
 		class GuiRemoteGraphicsRenderTarget : public GuiGraphicsRenderTarget
 		{
 			using RendererMap = collections::Dictionary<vint, elements_remoteprotocol::IGuiRemoteProtocolElementRender*>;
+			using RendererSet = collections::SortedList<elements_remoteprotocol::IGuiRemoteProtocolElementRender*>;
+			using FontHeightMap = collections::Dictionary<Tuple<WString, vint>, vint>;
 		protected:
 			GuiRemoteController*				remote;
 			NativeSize							canvasSize;
@@ -40,6 +42,7 @@ GuiRemoteGraphicsRenderTarget
 			RendererMap							renderers;
 			collections::SortedList<vint>		createdRenderers;
 			collections::SortedList<vint>		destroyedRenderers;
+			RendererSet							renderersAskingForCache;
 			Nullable<Rect>						clipperValidArea;
 
 			void								StartRenderingOnNativeWindow() override;
@@ -50,7 +53,10 @@ GuiRemoteGraphicsRenderTarget
 			void								AfterPushedClipperAndBecameInvalid(Rect clipper) override;
 			void								AfterPoppedClipperAndBecameValid(Rect validArea, bool clipperExists) override;
 			void								AfterPoppedClipper(Rect validArea, bool clipperExists) override;
+
 		public:
+			FontHeightMap						fontHeights;
+
 			GuiRemoteGraphicsRenderTarget(GuiRemoteController* _remote);
 			~GuiRemoteGraphicsRenderTarget();
 

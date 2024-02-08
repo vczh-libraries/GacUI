@@ -45,12 +45,6 @@ GuiSolidBorderElementRenderer
 	}
 
 	RENDERER_TEMPLATE_HEADER
-	IGuiGraphicsRenderer* RENDERER_CLASS_TYPE::GetRenderer()
-	{
-		return this;
-	}
-
-	RENDERER_TEMPLATE_HEADER
 	vint RENDERER_CLASS_TYPE::GetID()
 	{
 		return id;
@@ -66,12 +60,6 @@ GuiSolidBorderElementRenderer
 	bool RENDERER_CLASS_TYPE::IsUpdated()
 	{
 		return updated;
-	}
-
-	RENDERER_TEMPLATE_HEADER
-	void RENDERER_CLASS_TYPE::SetUpdated()
-	{
-		updated = true;
 	}
 
 	RENDERER_TEMPLATE_HEADER
@@ -93,8 +81,32 @@ GuiSolidBorderElementRenderer
 	RENDERER_TEMPLATE_HEADER
 	void RENDERER_CLASS_TYPE::OnElementStateChanged()
 	{
-		SetUpdated();
+		updated = true;
 	}
+
+	RENDERER_TEMPLATE_HEADER
+	bool RENDERER_CLASS_TYPE::NeedUpdateMinSizeFromCache()
+	{
+		return false;
+	}
+
+	RENDERER_TEMPLATE_HEADER
+	void RENDERER_CLASS_TYPE::TryFetchMinSizeFromCache()
+	{
+		CHECK_FAIL(L"vl::presentation::elements_remoteprotocol::GuiRemoteProtocolElementRenderer<TElement, TRenderer, RendererType>::TryUpdateFromCache()#This function should not be called.");
+	}
+
+	RENDERER_TEMPLATE_HEADER
+	void RENDERER_CLASS_TYPE::UpdateMinSize(Size size)
+	{
+		CHECK_FAIL(L"vl::presentation::elements_remoteprotocol::GuiRemoteProtocolElementRenderer<TElement, TRenderer, RendererType>::UpdateMinSize(Size)#This function should not be called.");
+	}
+
+	RENDERER_TEMPLATE_HEADER
+	void RENDERER_CLASS_TYPE::NotifyMinSizeCacheInvalidated()
+	{
+	}
+
 
 #undef RENDERER_CLASS_TYPE
 #undef RENDERER_TEMPLATE_HEADER
@@ -111,11 +123,6 @@ GuiSolidBorderElementRenderer
 	{
 		// there is no properties for this element
 		return false;
-	}
-
-	void GuiFocusRectangleElementRenderer::SetUpdated()
-	{
-		// nothing to update
 	}
 
 	void GuiFocusRectangleElementRenderer::ResetUpdated()

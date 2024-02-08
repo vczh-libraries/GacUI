@@ -11,7 +11,8 @@ namespace remote_protocol_tests
 	class SingleScreenRenderingProtocol : public SingleScreenProtocol
 	{
 	public:
-		collections::List<WString>& eventLogs;
+		collections::List<WString>&			eventLogs;
+		ElementMeasurings					measuringForNextRendering;
 
 		SingleScreenRenderingProtocol(SingleScreenConfig _globalConfig, collections::List<WString>& _eventLogs)
 			: SingleScreenProtocol(_globalConfig)
@@ -82,18 +83,16 @@ namespace remote_protocol_tests
 			}));
 		}
 
-		void RequestRendererBeginRendering(vint id) override
+		void RequestRendererBeginRendering() override
 		{
 			eventLogs.Add(WString::Unmanaged(L"Begin()"));
-			ElementMeasurings arguments;
-			events->RespondRendererBeginRendering(id, arguments);
 		}
 
 		void RequestRendererEndRendering(vint id) override
 		{
 			eventLogs.Add(WString::Unmanaged(L"End()"));
-			ElementMeasurings arguments;
-			events->RespondRendererEndRendering(id, arguments);
+			events->RespondRendererEndRendering(id, measuringForNextRendering);
+			measuringForNextRendering = {};
 		}
 
 		WString ToString(Size size)

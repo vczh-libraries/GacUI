@@ -37,16 +37,19 @@ GuiRemoteGraphicsRenderTarget
 		{
 			if (renderer->IsUpdated())
 			{
+				if (renderer->NeedUpdateMinSizeFromCache())
+				{
+					if (!renderersAskingForCache.Contains(renderer))
+					{
+						renderersAskingForCache.Add(renderer);
+					}
+				}
 				renderer->SendUpdateElementMessages();
 				renderer->ResetUpdated();
 			}
 		}
 
-		vint idRendering = remote->remoteMessages.RequestRendererBeginRendering();
-		remote->remoteMessages.Submit();
-		auto measuring = remote->remoteMessages.RetrieveRendererBeginRendering(idRendering);
-		CHECK_ERROR(!measuring.solidLabelMinSizes, L"Not Implemented!");
-		remote->remoteMessages.ClearResponses();
+		remote->remoteMessages.RequestRendererBeginRendering();
 	}
 
 	RenderTargetFailure GuiRemoteGraphicsRenderTarget::StopRenderingOnNativeWindow()
@@ -54,8 +57,33 @@ GuiRemoteGraphicsRenderTarget
 		vint idRendering = remote->remoteMessages.RequestRendererEndRendering();
 		remote->remoteMessages.Submit();
 		auto measuring = remote->remoteMessages.RetrieveRendererEndRendering(idRendering);
-		CHECK_ERROR(!measuring.solidLabelMinSizes, L"Not Implemented!");
 		remote->remoteMessages.ClearResponses();
+
+		if (measuring.fontHeights)
+		{
+			// TODO: (enumerable) foreach:indexed(alterable(reversed))
+			for (vint i = renderersAskingForCache.Count() - 1; i >= 0; i--)
+			{
+				auto renderer = renderersAskingForCache[i];
+				renderer->TryFetchMinSizeFromCache();
+				if (!renderer->NeedUpdateMinSizeFromCache())
+				{
+					renderersAskingForCache.RemoveAt(i);
+				}
+			}
+		}
+
+		if (measuring.minSizes)
+		{
+			for (auto&& minSize : *measuring.minSizes.Obj())
+			{
+				vint index = renderers.Keys().IndexOf(minSize.id);
+				if (index != -1)
+				{
+					renderers.Values()[index]->UpdateMinSize(minSize.minSize);
+				}
+			}
+		}
 
 		if (canvasSize == remote->remoteWindow.GetClientSize())
 		{
@@ -125,17 +153,20 @@ GuiRemoteGraphicsRenderTarget
 	{
 		vint id = renderer->GetID();
 		renderers.Remove(id);
-		vint index = createdRenderers.IndexOf(id);
-		if (index == -1)
+		renderersAskingForCache.Remove(renderer);
 		{
-			if (!destroyedRenderers.Contains(id))
+			vint index = createdRenderers.IndexOf(id);
+			if (index == -1)
 			{
-				destroyedRenderers.Add(id);
+				if (!destroyedRenderers.Contains(id))
+				{
+					destroyedRenderers.Add(id);
+				}
 			}
-		}
-		else
-		{
-			createdRenderers.RemoveAt(id);
+			else
+			{
+				createdRenderers.RemoveAt(id);
+			}
 		}
 	}
 

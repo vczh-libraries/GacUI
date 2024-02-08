@@ -1810,7 +1810,33 @@
     }, {
         "$ast": "StructDecl",
         "attributes": [],
-        "name": "ElementSolidLabelMinSize",
+        "name": "ElementMeasuring_FontHeight",
+        "members": [{
+            "$ast": "StructMember",
+            "name": "fontFamily",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "String"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "fontSize",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Integer"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "height",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Integer"
+            }
+        }]
+    }, {
+        "$ast": "StructDecl",
+        "attributes": [],
+        "name": "ElementMeasuring_ElementMinSize",
         "members": [{
             "$ast": "StructMember",
             "name": "id",
@@ -1820,7 +1846,7 @@
             }
         }, {
             "$ast": "StructMember",
-            "name": "size",
+            "name": "minSize",
             "type": {
                 "$ast": "ReferenceType",
                 "name": "Size"
@@ -1832,12 +1858,22 @@
         "name": "ElementMeasurings",
         "members": [{
             "$ast": "StructMember",
-            "name": "solidLabelMinSizes",
+            "name": "fontHeights",
             "type": {
                 "$ast": "ArrayType",
                 "element": {
                     "$ast": "ReferenceType",
-                    "name": "ElementSolidLabelMinSize"
+                    "name": "ElementMeasuring_FontHeight"
+                }
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "minSizes",
+            "type": {
+                "$ast": "ArrayType",
+                "element": {
+                    "$ast": "ReferenceType",
+                    "name": "ElementMeasuring_ElementMinSize"
                 }
             }
         }]
@@ -1872,13 +1908,7 @@
         "attributes": [],
         "name": "RendererBeginRendering",
         "request": null,
-        "response": {
-            "$ast": "MessageResponse",
-            "type": {
-                "$ast": "ReferenceType",
-                "name": "ElementMeasurings"
-            }
-        }
+        "response": null
     }, {
         "$ast": "MessageDecl",
         "attributes": [],

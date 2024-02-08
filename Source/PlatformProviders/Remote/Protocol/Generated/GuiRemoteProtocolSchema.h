@@ -171,15 +171,23 @@ namespace vl::presentation::remoteprotocol
 		::vl::presentation::remoteprotocol::RendererType type;
 	};
 
-	struct ElementSolidLabelMinSize
+	struct ElementMeasuring_FontHeight
+	{
+		::vl::WString fontFamily;
+		::vl::vint fontSize;
+		::vl::vint height;
+	};
+
+	struct ElementMeasuring_ElementMinSize
 	{
 		::vl::vint id;
-		::vl::presentation::Size size;
+		::vl::presentation::Size minSize;
 	};
 
 	struct ElementMeasurings
 	{
-		::vl::Ptr<::vl::collections::List<::vl::presentation::remoteprotocol::ElementSolidLabelMinSize>> solidLabelMinSizes;
+		::vl::Ptr<::vl::collections::List<::vl::presentation::remoteprotocol::ElementMeasuring_FontHeight>> fontHeights;
+		::vl::Ptr<::vl::collections::List<::vl::presentation::remoteprotocol::ElementMeasuring_ElementMinSize>> minSizes;
 	};
 
 	struct ElementRendering
@@ -226,7 +234,8 @@ namespace vl::presentation::remoteprotocol
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::ElementDesc_Polygon>(const ::vl::presentation::remoteprotocol::ElementDesc_Polygon & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::ElementDesc_SolidLabel>(const ::vl::presentation::remoteprotocol::ElementDesc_SolidLabel & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::RendererCreation>(const ::vl::presentation::remoteprotocol::RendererCreation & value);
-	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::ElementSolidLabelMinSize>(const ::vl::presentation::remoteprotocol::ElementSolidLabelMinSize & value);
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::ElementMeasuring_FontHeight>(const ::vl::presentation::remoteprotocol::ElementMeasuring_FontHeight & value);
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::ElementMeasuring_ElementMinSize>(const ::vl::presentation::remoteprotocol::ElementMeasuring_ElementMinSize & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::ElementMeasurings>(const ::vl::presentation::remoteprotocol::ElementMeasurings & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::ElementRendering>(const ::vl::presentation::remoteprotocol::ElementRendering & value);
 
@@ -267,7 +276,8 @@ namespace vl::presentation::remoteprotocol
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ElementDesc_Polygon>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::ElementDesc_Polygon& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ElementDesc_SolidLabel>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::ElementDesc_SolidLabel& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::RendererCreation>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::RendererCreation& value);
-	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ElementSolidLabelMinSize>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::ElementSolidLabelMinSize& value);
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ElementMeasuring_FontHeight>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::ElementMeasuring_FontHeight& value);
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ElementMeasuring_ElementMinSize>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::ElementMeasuring_ElementMinSize& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ElementMeasurings>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::ElementMeasurings& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ElementRendering>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::ElementRendering& value);
 
@@ -307,7 +317,7 @@ namespace vl::presentation::remoteprotocol
 	HANDLER(RendererUpdateElement_InnerShadow, ::vl::presentation::remoteprotocol::ElementDesc_InnerShadow, void, REQ, NORES, NODROP)\
 	HANDLER(RendererUpdateElement_Polygon, ::vl::presentation::remoteprotocol::ElementDesc_Polygon, void, REQ, NORES, NODROP)\
 	HANDLER(RendererUpdateElement_SolidLabel, ::vl::presentation::remoteprotocol::ElementDesc_SolidLabel, void, REQ, NORES, NODROP)\
-	HANDLER(RendererBeginRendering, void, ::vl::presentation::remoteprotocol::ElementMeasurings, NOREQ, RES, NODROP)\
+	HANDLER(RendererBeginRendering, void, void, NOREQ, NORES, NODROP)\
 	HANDLER(RendererRenderElement, ::vl::presentation::remoteprotocol::ElementRendering, void, REQ, NORES, NODROP)\
 	HANDLER(RendererEndRendering, void, ::vl::presentation::remoteprotocol::ElementMeasurings, NOREQ, RES, NODROP)\
 

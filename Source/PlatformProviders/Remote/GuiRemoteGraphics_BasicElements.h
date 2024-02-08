@@ -20,13 +20,16 @@ namespace vl::presentation::elements_remoteprotocol
 	class IGuiRemoteProtocolElementRender : public virtual Interface
 	{
 	public:
-		virtual IGuiGraphicsRenderer*			GetRenderer() = 0;
 		virtual vint							GetID() = 0;
 		virtual remoteprotocol::RendererType	GetRendererType() = 0;
 		virtual bool							IsUpdated() = 0;
-		virtual void							SetUpdated() = 0;
 		virtual void							ResetUpdated() = 0;
 		virtual void							SendUpdateElementMessages() = 0;
+
+		virtual bool							NeedUpdateMinSizeFromCache() = 0;
+		virtual void							TryFetchMinSizeFromCache() = 0;
+		virtual void							UpdateMinSize(Size size) = 0;
+		virtual void							NotifyMinSizeCacheInvalidated() = 0;
 	};
 
 	template<typename TElement, typename TRenderer, remoteprotocol::RendererType _RendererType>
@@ -42,14 +45,17 @@ namespace vl::presentation::elements_remoteprotocol
 		void							FinalizeInternal();
 		void							RenderTargetChangedInternal(GuiRemoteGraphicsRenderTarget* oldRenderTarget, GuiRemoteGraphicsRenderTarget* newRenderTarget);
 	public:
-
-		IGuiGraphicsRenderer*			GetRenderer() override;
+		// IGuiRemoteProtocolElementRender
 		vint							GetID() override;
 		remoteprotocol::RendererType	GetRendererType() override;
 		bool							IsUpdated() override;
-		void							SetUpdated() override;
 		void							ResetUpdated() override;
+		bool							NeedUpdateMinSizeFromCache() override;
+		void							TryFetchMinSizeFromCache() override;
+		void							UpdateMinSize(Size size) override;
+		void							NotifyMinSizeCacheInvalidated() override;
 
+		// IGuiGraphicsRenderer
 		void							Render(Rect bounds) override;
 		void							OnElementStateChanged() override;
 	};
@@ -61,7 +67,6 @@ namespace vl::presentation::elements_remoteprotocol
 		GuiFocusRectangleElementRenderer();
 
 		bool							IsUpdated() override;
-		void							SetUpdated() override;
 		void							ResetUpdated() override;
 		void							SendUpdateElementMessages() override;
 		void							OnElementStateChanged() override;

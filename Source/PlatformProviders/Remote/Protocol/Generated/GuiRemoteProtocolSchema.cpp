@@ -428,18 +428,28 @@ namespace vl::presentation::remoteprotocol
 		return node;
 	}
 
-	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::ElementSolidLabelMinSize>(const ::vl::presentation::remoteprotocol::ElementSolidLabelMinSize & value)
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::ElementMeasuring_FontHeight>(const ::vl::presentation::remoteprotocol::ElementMeasuring_FontHeight & value)
+	{
+		auto node = Ptr(new glr::json::JsonObject);
+		ConvertCustomTypeToJsonField(node, L"fontFamily", value.fontFamily);
+		ConvertCustomTypeToJsonField(node, L"fontSize", value.fontSize);
+		ConvertCustomTypeToJsonField(node, L"height", value.height);
+		return node;
+	}
+
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::ElementMeasuring_ElementMinSize>(const ::vl::presentation::remoteprotocol::ElementMeasuring_ElementMinSize & value)
 	{
 		auto node = Ptr(new glr::json::JsonObject);
 		ConvertCustomTypeToJsonField(node, L"id", value.id);
-		ConvertCustomTypeToJsonField(node, L"size", value.size);
+		ConvertCustomTypeToJsonField(node, L"minSize", value.minSize);
 		return node;
 	}
 
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::ElementMeasurings>(const ::vl::presentation::remoteprotocol::ElementMeasurings & value)
 	{
 		auto node = Ptr(new glr::json::JsonObject);
-		ConvertCustomTypeToJsonField(node, L"solidLabelMinSizes", value.solidLabelMinSizes);
+		ConvertCustomTypeToJsonField(node, L"fontHeights", value.fontHeights);
+		ConvertCustomTypeToJsonField(node, L"minSizes", value.minSizes);
 		return node;
 	}
 
@@ -1014,15 +1024,30 @@ namespace vl::presentation::remoteprotocol
 #undef ERROR_MESSAGE_PREFIX
 	}
 
-	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ElementSolidLabelMinSize>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::ElementSolidLabelMinSize& value)
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ElementMeasuring_FontHeight>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::ElementMeasuring_FontHeight& value)
 	{
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ElementSolidLabelMinSize>(Ptr<JsonNode>, ::vl::presentation::remoteprotocol::ElementSolidLabelMinSize&)#"
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ElementMeasuring_FontHeight>(Ptr<JsonNode>, ::vl::presentation::remoteprotocol::ElementMeasuring_FontHeight&)#"
+		auto jsonNode = node.Cast<glr::json::JsonObject>();
+		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
+		for (auto field : jsonNode->fields)
+		{
+			if (field->name.value == L"fontFamily") ConvertJsonToCustomType(field->value, value.fontFamily); else
+			if (field->name.value == L"fontSize") ConvertJsonToCustomType(field->value, value.fontSize); else
+			if (field->name.value == L"height") ConvertJsonToCustomType(field->value, value.height); else
+			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
+		}
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ElementMeasuring_ElementMinSize>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::ElementMeasuring_ElementMinSize& value)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ElementMeasuring_ElementMinSize>(Ptr<JsonNode>, ::vl::presentation::remoteprotocol::ElementMeasuring_ElementMinSize&)#"
 		auto jsonNode = node.Cast<glr::json::JsonObject>();
 		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
 		for (auto field : jsonNode->fields)
 		{
 			if (field->name.value == L"id") ConvertJsonToCustomType(field->value, value.id); else
-			if (field->name.value == L"size") ConvertJsonToCustomType(field->value, value.size); else
+			if (field->name.value == L"minSize") ConvertJsonToCustomType(field->value, value.minSize); else
 			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
 		}
 #undef ERROR_MESSAGE_PREFIX
@@ -1035,7 +1060,8 @@ namespace vl::presentation::remoteprotocol
 		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
 		for (auto field : jsonNode->fields)
 		{
-			if (field->name.value == L"solidLabelMinSizes") ConvertJsonToCustomType(field->value, value.solidLabelMinSizes); else
+			if (field->name.value == L"fontHeights") ConvertJsonToCustomType(field->value, value.fontHeights); else
+			if (field->name.value == L"minSizes") ConvertJsonToCustomType(field->value, value.minSizes); else
 			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
 		}
 #undef ERROR_MESSAGE_PREFIX
