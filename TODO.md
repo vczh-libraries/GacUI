@@ -37,14 +37,10 @@
     - Update implementation from if-chain to switch-case.
   - Verify dropped messages/events not be called in unit test.
 - (SyncDom) Implement all renderers except `ImageFrameElement`, `ColorizedTextElement` and `DocumentElement`.
-  - Element changes are pushed in `StartRenderingOnNativeWindow`.
-    - Sizes of all `GuiSolidLabelElementRenderer` are sent back at this moment. Ignore elements of which sizes are not changed.
-      - Each character takes exactly `FontSize x FontSize`
-      - Deal with `\r` and `\n` when multiline is enabled
-      - When only the height of a single line is needed, the result from a `{Font,Size}` will be cached. This will be useful when a list box contains huge amount of texts.
-    - Sizes of other elements could be calculated locally.
-  - Rendered elements and their locations are pushed in `StopRenderingOnNativeWindow`.
-    - Sizes of all `GuiSolidLabelElementRenderer` are sent back at this moment. Ignore elements of which sizes are not changed.
+  - `SolidLabelElement.
+    - Each character takes exactly `FontSize x FontSize`
+    - Deal with `\r` and `\n` when multiline is enabled
+    - When only the height of a single line is needed, the result from a `{Font,Size}` will be cached. This will be useful when a list box contains huge amount of texts.
   - On new connection established, data of all elements are sync.
     - Sizes of all `GuiSolidLabelElementRenderer` are sent back at this moment.
 - UnitTest.vcxproj
