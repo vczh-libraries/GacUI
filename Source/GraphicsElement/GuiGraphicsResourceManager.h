@@ -212,7 +212,7 @@ Helpers
 				{
 					auto manager = GetGuiGraphicsResourceManager();
 					CHECK_ERROR(manager != nullptr, L"SetGuiGraphicsResourceManager must be called before registering element renderers.");
-					manager->RegisterRendererFactory(TElement::GetElementType(), Ptr(new TRenderer::Factory));
+					manager->RegisterRendererFactory(TElement::GetElementType(), Ptr(new typename TRenderer::Factory));
 				}
 
 				IGuiGraphicsRendererFactory* GetFactory()override
