@@ -58,7 +58,7 @@ TEST_FILE
 			{
 				controlHost->Hide();
 			},
-			// Size of Hello becomes (60,12)
+			// Size of the composition becomes (60,12)
 			L"Render(1, {10,10:60,12}, {0,0:640,480})"
 			);
 
