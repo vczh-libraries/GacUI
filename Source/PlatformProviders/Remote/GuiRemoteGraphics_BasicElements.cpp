@@ -3,6 +3,8 @@
 
 namespace vl::presentation::elements_remoteprotocol
 {
+	using namespace remoteprotocol;
+
 /***********************************************************************
 GuiSolidBorderElementRenderer
 ***********************************************************************/
@@ -140,8 +142,11 @@ GuiSolidBorderElementRenderer
 
 	void GuiSolidBorderElementRenderer::SendUpdateElementMessages()
 	{
-		// Color
-		// Shape
+		ElementDesc_SolidBorder arguments;
+		arguments.id = id;
+		arguments.borderColor = element->GetColor();
+		arguments.shape = element->GetShape();
+		renderTarget->GetRemoteMessages().RequestRendererUpdateElement_SolidBorder(arguments);
 	}
 
 /***********************************************************************

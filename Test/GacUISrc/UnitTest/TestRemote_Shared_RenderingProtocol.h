@@ -3,6 +3,8 @@
 
 #include "TestRemote_Shared_NoRenderingProtocol.h"
 
+using namespace vl::presentation::elements;
+
 namespace remote_protocol_tests
 {
 	class SingleScreenRenderingProtocol : public SingleScreenProtocol
@@ -98,6 +100,19 @@ namespace remote_protocol_tests
 			return L"{" + itow(rect.x1) + L"," + itow(rect.y1) + L":" + itow(rect.Width()) + L"," + itow(rect.Height()) + L"}";
 		}
 
+		WString ElementShapeToString(ElementShape shape)
+		{
+			switch (shape.shapeType)
+			{
+			case ElementShapeType::Rectangle:
+				return L"Rectangle";
+			case ElementShapeType::Ellipse:
+				return L"Ellipse";
+			default:
+				return L"{RoundRect," + itow(shape.radiusX) + L"," + itow(shape.radiusY) + L"}";
+			}
+		}
+
 		void RequestRendererRenderElement(const ElementRendering& arguments) override
 		{
 			eventLogs.Add(
@@ -105,6 +120,17 @@ namespace remote_protocol_tests
 				+ itow(arguments.id)
 				+ L", " + RectToString(arguments.bounds)
 				+ L", " + RectToString(arguments.clipper)
+				+ L")"
+				);
+		}
+
+		void RequestRendererUpdateElement_SolidBorder(const ElementDesc_SolidBorder& arguments) override
+		{
+			eventLogs.Add(
+				L"Updated("
+				+ itow(arguments.id)
+				+ L", " + arguments.borderColor.ToString()
+				+ L", " + ElementShapeToString(arguments.shape)
 				+ L")"
 				);
 		}
