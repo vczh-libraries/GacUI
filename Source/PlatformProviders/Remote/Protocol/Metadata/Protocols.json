@@ -1214,6 +1214,15 @@
         }, {
             "$ast": "EnumMember",
             "name": "Polygon"
+        }, {
+            "$ast": "EnumMember",
+            "name": "UnsupportedImageFrame"
+        }, {
+            "$ast": "EnumMember",
+            "name": "UnsupportedColorizedText"
+        }, {
+            "$ast": "EnumMember",
+            "name": "UnsupportedDocument"
         }]
     }, {
         "$ast": "EnumDecl",

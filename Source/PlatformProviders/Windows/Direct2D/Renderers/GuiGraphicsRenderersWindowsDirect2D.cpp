@@ -22,14 +22,14 @@ GuiDirect2DElementRendererBase
 			template<typename TElement, typename TRenderer>
 			void GuiDirect2DElementRendererBase<TElement, TRenderer>::FinalizeInternal()
 			{
-				dynamic_cast<TRenderer*>(this)->DestroyBrush(this->renderTarget);
+				static_cast<TRenderer*>(this)->DestroyBrush(this->renderTarget);
 			}
 
 			template<typename TElement, typename TRenderer>
 			void GuiDirect2DElementRendererBase<TElement, TRenderer>::RenderTargetChangedInternal(IWindowsDirect2DRenderTarget* oldRenderTarget, IWindowsDirect2DRenderTarget* newRenderTarget)
 			{
-				dynamic_cast<TRenderer*>(this)->DestroyBrush(oldRenderTarget);
-				dynamic_cast<TRenderer*>(this)->CreateBrush(newRenderTarget);
+				static_cast<TRenderer*>(this)->DestroyBrush(oldRenderTarget);
+				static_cast<TRenderer*>(this)->CreateBrush(newRenderTarget);
 			}
 
 /***********************************************************************

@@ -6,65 +6,85 @@ namespace vl::presentation::elements_remoteprotocol
 GuiSolidBorderElementRenderer
 ***********************************************************************/
 
-	template<typename TElement, typename TRenderer>
-	void GuiRemoteProtocolElementRenderer<TElement, TRenderer>::InitializeInternal()
+#define RENDERER_TEMPLATE_HEADER	template<typename TElement, typename TRenderer, remoteprotocol::RendererType _RendererType>
+#define RENDERER_CLASS_TYPE			GuiRemoteProtocolElementRenderer<TElement, TRenderer, _RendererType>
+
+	RENDERER_TEMPLATE_HEADER
+	void RENDERER_CLASS_TYPE::InitializeInternal()
 	{
-		CHECK_FAIL(L"Not Implemented!");
 	}
 
-	template<typename TElement, typename TRenderer>
-	void GuiRemoteProtocolElementRenderer<TElement, TRenderer>::FinalizeInternal()
+	RENDERER_TEMPLATE_HEADER
+	void RENDERER_CLASS_TYPE::FinalizeInternal()
 	{
-		CHECK_FAIL(L"Not Implemented!");
 	}
 
-	template<typename TElement, typename TRenderer>
-	void GuiRemoteProtocolElementRenderer<TElement, TRenderer>::RenderTargetChangedInternal(GuiRemoteGraphicsRenderTarget* oldRenderTarget, GuiRemoteGraphicsRenderTarget* newRenderTarget)
+	RENDERER_TEMPLATE_HEADER
+	void RENDERER_CLASS_TYPE::RenderTargetChangedInternal(GuiRemoteGraphicsRenderTarget* oldRenderTarget, GuiRemoteGraphicsRenderTarget* newRenderTarget)
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		if (oldRenderTarget == newRenderTarget) return;
+		if (oldRenderTarget && id != -1)
+		{
+			oldRenderTarget->UnregisterRenderer(this);
+			id = -1;
+		}
+		if (newRenderTarget)
+		{
+			id = newRenderTarget->AllocateNewElementId();
+			newRenderTarget->RegisterRenderer(this);
+		}
 	}
 
-	template<typename TElement, typename TRenderer>
-	IGuiGraphicsRenderer* GuiRemoteProtocolElementRenderer<TElement, TRenderer>::GetRenderer()
+	RENDERER_TEMPLATE_HEADER
+	IGuiGraphicsRenderer* RENDERER_CLASS_TYPE::GetRenderer()
 	{
 		return this;
 	}
 
-	template<typename TElement, typename TRenderer>
-	vint GuiRemoteProtocolElementRenderer<TElement, TRenderer>::GetID()
+	RENDERER_TEMPLATE_HEADER
+	vint RENDERER_CLASS_TYPE::GetID()
 	{
 		return id;
 	}
 
-	template<typename TElement, typename TRenderer>
-	bool GuiRemoteProtocolElementRenderer<TElement, TRenderer>::IsUpdated()
+	RENDERER_TEMPLATE_HEADER
+	remoteprotocol::RendererType RENDERER_CLASS_TYPE::GetRendererType()
+	{
+		return _RendererType;
+	}
+
+	RENDERER_TEMPLATE_HEADER
+	bool RENDERER_CLASS_TYPE::IsUpdated()
 	{
 		return updated;
 	}
 
-	template<typename TElement, typename TRenderer>
-	void GuiRemoteProtocolElementRenderer<TElement, TRenderer>::SetUpdated()
+	RENDERER_TEMPLATE_HEADER
+	void RENDERER_CLASS_TYPE::SetUpdated()
 	{
 		updated = true;
 	}
 
-	template<typename TElement, typename TRenderer>
-	void GuiRemoteProtocolElementRenderer<TElement, TRenderer>::ResetUpdated()
+	RENDERER_TEMPLATE_HEADER
+	void RENDERER_CLASS_TYPE::ResetUpdated()
 	{
 		updated = false;
 	}
 
-	template<typename TElement, typename TRenderer>
-	void GuiRemoteProtocolElementRenderer<TElement, TRenderer>::Render(Rect bounds)
+	RENDERER_TEMPLATE_HEADER
+	void RENDERER_CLASS_TYPE::Render(Rect bounds)
 	{
 		CHECK_FAIL(L"Not Implemented!");
 	}
 
-	template<typename TElement, typename TRenderer>
-	void GuiRemoteProtocolElementRenderer<TElement, TRenderer>::OnElementStateChanged()
+	RENDERER_TEMPLATE_HEADER
+	void RENDERER_CLASS_TYPE::OnElementStateChanged()
 	{
 		SetUpdated();
 	}
+
+#undef RENDERER_CLASS_TYPE
+#undef RENDERER_TEMPLATE_HEADER
 
 /***********************************************************************
 GuiSolidBorderElementRenderer
@@ -284,14 +304,14 @@ GuiColorizedTextElementRenderer
 
 	void GuiColorizedTextElementRenderer::InitializeInternal()
 	{
-		GuiRemoteProtocolElementRenderer<GuiColorizedTextElement, GuiColorizedTextElementRenderer>::InitializeInternal();
+		TBase::InitializeInternal();
 		element->SetCallback(this);
 	}
 
 	void GuiColorizedTextElementRenderer::FinalizeInternal()
 	{
 		element->SetCallback(nullptr);
-		GuiRemoteProtocolElementRenderer<GuiColorizedTextElement, GuiColorizedTextElementRenderer>::FinalizeInternal();
+		TBase::FinalizeInternal();
 	}
 
 	GuiColorizedTextElementRenderer::GuiColorizedTextElementRenderer()

@@ -12,10 +12,16 @@ Interfaces:
 #define VCZH_PRESENTATION_GUIREMOTEGRAPHICS
 
 #include "../../GraphicsElement/GuiGraphicsResourceManager.h"
+#include "Protocol/Generated/GuiRemoteProtocolSchema.h"
 
 namespace vl::presentation
 {
 	class GuiRemoteController;
+
+	namespace elements_remoteprotocol
+	{
+		class IGuiRemoteProtocolElementRender;
+	}
 
 	namespace elements
 	{
@@ -25,9 +31,14 @@ GuiRemoteGraphicsRenderTarget
 
 		class GuiRemoteGraphicsRenderTarget : public GuiGraphicsRenderTarget
 		{
+			using RendererMap = collections::Dictionary<vint, elements_remoteprotocol::IGuiRemoteProtocolElementRender*>;
 		protected:
 			GuiRemoteController*				remote;
 			NativeSize							canvasSize;
+			vint								usedElementIds = 0;
+			RendererMap							renderers;
+			Nullable<Rect>						clipper;
+			bool								clipperNoValidArea = false;
 
 			void								StartRenderingOnNativeWindow() override;
 			RenderTargetFailure					StopRenderingOnNativeWindow() override;
@@ -40,6 +51,10 @@ GuiRemoteGraphicsRenderTarget
 		public:
 			GuiRemoteGraphicsRenderTarget(GuiRemoteController* _remote);
 			~GuiRemoteGraphicsRenderTarget();
+
+			vint								AllocateNewElementId();
+			void								RegisterRenderer(elements_remoteprotocol::IGuiRemoteProtocolElementRender* renderer);
+			void								UnregisterRenderer(elements_remoteprotocol::IGuiRemoteProtocolElementRender* renderer);
 		};
 
 /***********************************************************************

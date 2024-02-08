@@ -17,21 +17,22 @@ namespace vl::presentation::elements_remoteprotocol
 {
 	using namespace elements;
 
-	class IGuiRemoteProtocolElementRenderBase : public virtual Interface
+	class IGuiRemoteProtocolElementRender : public virtual Interface
 	{
 	public:
-		virtual IGuiGraphicsRenderer*	GetRenderer() = 0;
-		virtual vint					GetID() = 0;
-		virtual bool					IsUpdated() = 0;
-		virtual void					SetUpdated() = 0;
-		virtual void					ResetUpdated() = 0;
-		virtual void					SendUpdateElementMessages() = 0;
+		virtual IGuiGraphicsRenderer*			GetRenderer() = 0;
+		virtual vint							GetID() = 0;
+		virtual remoteprotocol::RendererType	GetRendererType() = 0;
+		virtual bool							IsUpdated() = 0;
+		virtual void							SetUpdated() = 0;
+		virtual void							ResetUpdated() = 0;
+		virtual void							SendUpdateElementMessages() = 0;
 	};
 
-	template<typename TElement, typename TRenderer>
+	template<typename TElement, typename TRenderer, remoteprotocol::RendererType _RendererType>
 	class GuiRemoteProtocolElementRenderer
 		: public GuiElementRendererBase<TElement, TRenderer, GuiRemoteGraphicsRenderTarget>
-		, public virtual IGuiRemoteProtocolElementRenderBase
+		, public virtual IGuiRemoteProtocolElementRender
 	{
 	protected:
 		vint							id = -1;
@@ -44,6 +45,7 @@ namespace vl::presentation::elements_remoteprotocol
 
 		IGuiGraphicsRenderer*			GetRenderer() override;
 		vint							GetID() override;
+		remoteprotocol::RendererType	GetRendererType() override;
 		bool							IsUpdated() override;
 		void							SetUpdated() override;
 		void							ResetUpdated() override;
@@ -52,7 +54,7 @@ namespace vl::presentation::elements_remoteprotocol
 		void							OnElementStateChanged() override;
 	};
 
-	class GuiFocusRectangleElementRenderer : public GuiRemoteProtocolElementRenderer<GuiFocusRectangleElement, GuiFocusRectangleElementRenderer>
+	class GuiFocusRectangleElementRenderer : public GuiRemoteProtocolElementRenderer<GuiFocusRectangleElement, GuiFocusRectangleElementRenderer, remoteprotocol::RendererType::FocusRectangle>
 	{
 		friend class GuiElementRendererBase<GuiFocusRectangleElement, GuiFocusRectangleElementRenderer, GuiRemoteGraphicsRenderTarget>;
 	public:
@@ -65,7 +67,7 @@ namespace vl::presentation::elements_remoteprotocol
 		void							OnElementStateChanged() override;
 	};
 
-	class GuiSolidBorderElementRenderer : public GuiRemoteProtocolElementRenderer<GuiSolidBorderElement, GuiSolidBorderElementRenderer>
+	class GuiSolidBorderElementRenderer : public GuiRemoteProtocolElementRenderer<GuiSolidBorderElement, GuiSolidBorderElementRenderer, remoteprotocol::RendererType::SolidBorder>
 	{
 		friend class GuiElementRendererBase<GuiSolidBorderElement, GuiSolidBorderElementRenderer, GuiRemoteGraphicsRenderTarget>;
 	public:
@@ -74,7 +76,7 @@ namespace vl::presentation::elements_remoteprotocol
 		void							SendUpdateElementMessages() override;
 	};
 
-	class Gui3DBorderElementRenderer : public GuiRemoteProtocolElementRenderer<Gui3DBorderElement, Gui3DBorderElementRenderer>
+	class Gui3DBorderElementRenderer : public GuiRemoteProtocolElementRenderer<Gui3DBorderElement, Gui3DBorderElementRenderer, remoteprotocol::RendererType::SinkBorder>
 	{
 		friend class GuiElementRendererBase<Gui3DBorderElement, Gui3DBorderElementRenderer, GuiRemoteGraphicsRenderTarget>;
 	public:
@@ -83,7 +85,7 @@ namespace vl::presentation::elements_remoteprotocol
 		void							SendUpdateElementMessages() override;
 	};
 
-	class Gui3DSplitterElementRenderer : public GuiRemoteProtocolElementRenderer<Gui3DSplitterElement, Gui3DSplitterElementRenderer>
+	class Gui3DSplitterElementRenderer : public GuiRemoteProtocolElementRenderer<Gui3DSplitterElement, Gui3DSplitterElementRenderer, remoteprotocol::RendererType::SinkSplitter>
 	{
 		friend class GuiElementRendererBase<Gui3DSplitterElement, Gui3DSplitterElementRenderer, GuiRemoteGraphicsRenderTarget>;
 	public:
@@ -92,7 +94,7 @@ namespace vl::presentation::elements_remoteprotocol
 		void							SendUpdateElementMessages() override;
 	};
 
-	class GuiSolidBackgroundElementRenderer : public GuiRemoteProtocolElementRenderer<GuiSolidBackgroundElement, GuiSolidBackgroundElementRenderer>
+	class GuiSolidBackgroundElementRenderer : public GuiRemoteProtocolElementRenderer<GuiSolidBackgroundElement, GuiSolidBackgroundElementRenderer, remoteprotocol::RendererType::SolidBackground>
 	{
 		friend class GuiElementRendererBase<GuiSolidBackgroundElement, GuiSolidBackgroundElementRenderer, GuiRemoteGraphicsRenderTarget>;
 	public:
@@ -101,7 +103,7 @@ namespace vl::presentation::elements_remoteprotocol
 		void							SendUpdateElementMessages() override;
 	};
 
-	class GuiGradientBackgroundElementRenderer : public GuiRemoteProtocolElementRenderer<GuiGradientBackgroundElement, GuiGradientBackgroundElementRenderer>
+	class GuiGradientBackgroundElementRenderer : public GuiRemoteProtocolElementRenderer<GuiGradientBackgroundElement, GuiGradientBackgroundElementRenderer, remoteprotocol::RendererType::GradientBackground>
 	{
 		friend class GuiElementRendererBase<GuiGradientBackgroundElement, GuiGradientBackgroundElementRenderer, GuiRemoteGraphicsRenderTarget>;
 	public:
@@ -110,7 +112,7 @@ namespace vl::presentation::elements_remoteprotocol
 		void							SendUpdateElementMessages() override;
 	};
 
-	class GuiInnerShadowElementRenderer : public GuiRemoteProtocolElementRenderer<GuiInnerShadowElement, GuiInnerShadowElementRenderer>
+	class GuiInnerShadowElementRenderer : public GuiRemoteProtocolElementRenderer<GuiInnerShadowElement, GuiInnerShadowElementRenderer, remoteprotocol::RendererType::InnerShadow>
 	{
 		friend class GuiElementRendererBase<GuiInnerShadowElement, GuiInnerShadowElementRenderer, GuiRemoteGraphicsRenderTarget>;
 	public:
@@ -119,10 +121,10 @@ namespace vl::presentation::elements_remoteprotocol
 		void							SendUpdateElementMessages() override;
 	};
 
-	class GuiSolidLabelElementRenderer : public GuiRemoteProtocolElementRenderer<GuiSolidLabelElement, GuiSolidLabelElementRenderer>
+	class GuiSolidLabelElementRenderer : public GuiRemoteProtocolElementRenderer<GuiSolidLabelElement, GuiSolidLabelElementRenderer, remoteprotocol::RendererType::SolidLabel>
 	{
 		friend class GuiElementRendererBase<GuiSolidLabelElement, GuiSolidLabelElementRenderer, GuiRemoteGraphicsRenderTarget>;
-		using TBase = GuiRemoteProtocolElementRenderer<GuiSolidLabelElement, GuiSolidLabelElementRenderer>;
+		using TBase = GuiRemoteProtocolElementRenderer<GuiSolidLabelElement, GuiSolidLabelElementRenderer, remoteprotocol::RendererType::SolidLabel>;
 	public:
 		GuiSolidLabelElementRenderer();
 
@@ -131,7 +133,7 @@ namespace vl::presentation::elements_remoteprotocol
 		void							SendUpdateElementMessages() override;
 	};
 
-	class GuiImageFrameElementRenderer : public GuiRemoteProtocolElementRenderer<GuiImageFrameElement, GuiImageFrameElementRenderer>
+	class GuiImageFrameElementRenderer : public GuiRemoteProtocolElementRenderer<GuiImageFrameElement, GuiImageFrameElementRenderer, remoteprotocol::RendererType::UnsupportedImageFrame>
 	{
 		friend class GuiElementRendererBase<GuiImageFrameElement, GuiImageFrameElementRenderer, GuiRemoteGraphicsRenderTarget>;
 	public:
@@ -140,7 +142,7 @@ namespace vl::presentation::elements_remoteprotocol
 		void							SendUpdateElementMessages() override;
 	};
 
-	class GuiPolygonElementRenderer : public GuiRemoteProtocolElementRenderer<GuiPolygonElement, GuiPolygonElementRenderer>
+	class GuiPolygonElementRenderer : public GuiRemoteProtocolElementRenderer<GuiPolygonElement, GuiPolygonElementRenderer, remoteprotocol::RendererType::Polygon>
 	{
 		friend class GuiElementRendererBase<GuiPolygonElement, GuiPolygonElementRenderer, GuiRemoteGraphicsRenderTarget>;
 	public:
@@ -149,10 +151,10 @@ namespace vl::presentation::elements_remoteprotocol
 		void							SendUpdateElementMessages() override;
 	};
 
-	class GuiColorizedTextElementRenderer : public GuiRemoteProtocolElementRenderer<GuiColorizedTextElement, GuiColorizedTextElementRenderer>, protected GuiColorizedTextElement::ICallback
+	class GuiColorizedTextElementRenderer : public GuiRemoteProtocolElementRenderer<GuiColorizedTextElement, GuiColorizedTextElementRenderer, remoteprotocol::RendererType::UnsupportedColorizedText>, protected GuiColorizedTextElement::ICallback
 	{
 		friend class GuiElementRendererBase<GuiColorizedTextElement, GuiColorizedTextElementRenderer, GuiRemoteGraphicsRenderTarget>;
-		using TBase = GuiRemoteProtocolElementRenderer<GuiColorizedTextElement, GuiColorizedTextElementRenderer>;
+		using TBase = GuiRemoteProtocolElementRenderer<GuiColorizedTextElement, GuiColorizedTextElementRenderer, remoteprotocol::RendererType::UnsupportedColorizedText>;
 	protected:
 		void							ColorChanged() override;
 		void							FontChanged() override;

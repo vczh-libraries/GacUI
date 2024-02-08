@@ -67,6 +67,21 @@ GuiRemoteGraphicsRenderTarget
 	{
 	}
 
+	vint GuiRemoteGraphicsRenderTarget::AllocateNewElementId()
+	{
+		return ++usedElementIds;
+	}
+
+	void GuiRemoteGraphicsRenderTarget::RegisterRenderer(elements_remoteprotocol::IGuiRemoteProtocolElementRender* renderer)
+	{
+		renderers.Add(renderer->GetID(), renderer);
+	}
+
+	void GuiRemoteGraphicsRenderTarget::UnregisterRenderer(elements_remoteprotocol::IGuiRemoteProtocolElementRender* renderer)
+	{
+		renderers.Remove(renderer->GetID());
+	}
+
 /***********************************************************************
 GuiRemoteGraphicsResourceManager
 ***********************************************************************/

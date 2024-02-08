@@ -28,6 +28,9 @@ namespace vl::presentation::remoteprotocol
 		InnerShadow,
 		SolidLabel,
 		Polygon,
+		UnsupportedImageFrame,
+		UnsupportedColorizedText,
+		UnsupportedDocument,
 	};
 
 	enum class ElementHorizontalAlignment

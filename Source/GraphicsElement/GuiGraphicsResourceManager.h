@@ -223,19 +223,19 @@ Helpers
 				void Initialize(IGuiGraphicsElement* _element)override
 				{
 					element=dynamic_cast<TElement*>(_element);
-					dynamic_cast<TRenderer*>(this)->InitializeInternal();
+					static_cast<TRenderer*>(this)->InitializeInternal();
 				}
 
 				void Finalize()override
 				{
-					dynamic_cast<TRenderer*>(this)->FinalizeInternal();
+					static_cast<TRenderer*>(this)->FinalizeInternal();
 				}
 
 				void SetRenderTarget(IGuiGraphicsRenderTarget* _renderTarget)override
 				{
 					TRenderTarget* oldRenderTarget=renderTarget;
-					renderTarget=dynamic_cast<TRenderTarget*>(_renderTarget);
-					dynamic_cast<TRenderer*>(this)->RenderTargetChangedInternal(oldRenderTarget, renderTarget);
+					renderTarget= static_cast<TRenderTarget*>(_renderTarget);
+					static_cast<TRenderer*>(this)->RenderTargetChangedInternal(oldRenderTarget, renderTarget);
 				}
 
 				Size GetMinSize()override
@@ -294,7 +294,7 @@ Helpers
 					}
 					if (!resource)
 					{
-						resource = dynamic_cast<TAllocator*>(this)->CreateInternal(key);
+						resource = static_cast<TAllocator*>(this)->CreateInternal(key);
 					}
 					Package package;
 					package.resource = resource;

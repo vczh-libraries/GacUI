@@ -9,6 +9,9 @@ enum RendererType
     InnerShadow,
     SolidLabel,
     Polygon,
+    UnsupportedImageFrame,
+    UnsupportedColorizedText,
+    UnsupportedDocument,
 }
 
 [@Cpp(::vl::presentation::elements::ElementShapeType)]

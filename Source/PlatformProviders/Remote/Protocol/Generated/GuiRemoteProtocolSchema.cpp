@@ -52,6 +52,9 @@ namespace vl::presentation::remoteprotocol
 		case ::vl::presentation::remoteprotocol::RendererType::InnerShadow: node->content.value = L"InnerShadow"; break;
 		case ::vl::presentation::remoteprotocol::RendererType::SolidLabel: node->content.value = L"SolidLabel"; break;
 		case ::vl::presentation::remoteprotocol::RendererType::Polygon: node->content.value = L"Polygon"; break;
+		case ::vl::presentation::remoteprotocol::RendererType::UnsupportedImageFrame: node->content.value = L"UnsupportedImageFrame"; break;
+		case ::vl::presentation::remoteprotocol::RendererType::UnsupportedColorizedText: node->content.value = L"UnsupportedColorizedText"; break;
+		case ::vl::presentation::remoteprotocol::RendererType::UnsupportedDocument: node->content.value = L"UnsupportedDocument"; break;
 		default: CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported enum value.");
 		}
 		return node;
@@ -487,6 +490,9 @@ namespace vl::presentation::remoteprotocol
 		if (jsonNode->content.value == L"InnerShadow") value = ::vl::presentation::remoteprotocol::RendererType::InnerShadow; else
 		if (jsonNode->content.value == L"SolidLabel") value = ::vl::presentation::remoteprotocol::RendererType::SolidLabel; else
 		if (jsonNode->content.value == L"Polygon") value = ::vl::presentation::remoteprotocol::RendererType::Polygon; else
+		if (jsonNode->content.value == L"UnsupportedImageFrame") value = ::vl::presentation::remoteprotocol::RendererType::UnsupportedImageFrame; else
+		if (jsonNode->content.value == L"UnsupportedColorizedText") value = ::vl::presentation::remoteprotocol::RendererType::UnsupportedColorizedText; else
+		if (jsonNode->content.value == L"UnsupportedDocument") value = ::vl::presentation::remoteprotocol::RendererType::UnsupportedDocument; else
 		CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported enum value.");
 #undef ERROR_MESSAGE_PREFIX
 	}
