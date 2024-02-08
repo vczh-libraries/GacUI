@@ -175,7 +175,14 @@ int main(int argc, char* argv[])
 {
 	GACUI_UNITTEST_ONLY_SKIP_THREAD_LOCAL_STORAGE_DISPOSE_STORAGES = true;
 	GACUI_UNITTEST_ONLY_SKIP_TYPE_AND_PLUGIN_LOAD_UNLOAD = true;
+
+	GetGlobalTypeManager()->Load();
+	GetPluginManager()->Load();
+
 	int result = unittest::UnitTest::RunAndDisposeTests(argc, argv);
+
+	ResetGlobalTypeManager();
+	DestroyPluginManager();
 	ThreadLocalStorage::DisposeStorages();
 	return result;
 }
