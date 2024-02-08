@@ -296,6 +296,7 @@ TEST_FILE
 		protocol.OnNextFrame([&]()
 		{
 			// Layout is ready, the size of the polygon cell is updated to (200,100)
+			// One more rendering required by the window after the layout is stable
 			AssertEventLogs(
 				eventLogs,
 				L"Begin()",
@@ -307,6 +308,28 @@ TEST_FILE
 				L"Render(6, {210,290:420,180}, {10,10:620,460})",
 				L"End()"
 				);
+		});
+
+		protocol.OnNextFrame([&]()
+		{
+			// One more rendering required by GuiHostedController
+			AssertEventLogs(
+				eventLogs,
+				L"Begin()",
+				L"Render(1, {10,10:200,180}, {10,10:620,460})",
+				L"Render(2, {10,190:200,100}, {10,10:620,460})",
+				L"Render(3, {10,290:200,180}, {10,10:620,460})",
+				L"Render(4, {210,10:420,180}, {10,10:620,460})",
+				L"Render(5, {210,190:420,100}, {10,10:620,460})",
+				L"Render(6, {210,290:420,180}, {10,10:620,460})",
+				L"End()"
+				);
+		});
+
+		protocol.OnNextFrame([&]()
+		{
+			// Rendering is not triggered
+			AssertEventLogs(eventLogs);
 			controlHost->Hide();
 		});
 
