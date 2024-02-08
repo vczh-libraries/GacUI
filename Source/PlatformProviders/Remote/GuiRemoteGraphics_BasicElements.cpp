@@ -3,6 +3,7 @@
 
 namespace vl::presentation::elements_remoteprotocol
 {
+	using namespace collections;
 	using namespace remoteprotocol;
 
 /***********************************************************************
@@ -159,9 +160,11 @@ Gui3DBorderElementRenderer
 
 	void Gui3DBorderElementRenderer::SendUpdateElementMessages()
 	{
-		// Color1
-		// Color2
-		CHECK_FAIL(L"Not Implemented!");
+		ElementDesc_SinkBorder arguments;
+		arguments.id = id;
+		arguments.leftTopColor = element->GetColor1();
+		arguments.rightBottomColor = element->GetColor2();
+		renderTarget->GetRemoteMessages().RequestRendererUpdateElement_SinkBorder(arguments);
 	}
 
 /***********************************************************************
@@ -174,10 +177,12 @@ Gui3DSplitterElementRenderer
 
 	void Gui3DSplitterElementRenderer::SendUpdateElementMessages()
 	{
-		// Color1
-		// Color2
-		// Direction
-		CHECK_FAIL(L"Not Implemented!");
+		ElementDesc_SinkSplitter arguments;
+		arguments.id = id;
+		arguments.leftTopColor = element->GetColor1();
+		arguments.rightBottomColor = element->GetColor2();
+		arguments.direction = element->GetDirection();
+		renderTarget->GetRemoteMessages().RequestRendererUpdateElement_SinkSplitter(arguments);
 	}
 
 /***********************************************************************
@@ -190,9 +195,11 @@ GuiSolidBackgroundElementRenderer
 
 	void GuiSolidBackgroundElementRenderer::SendUpdateElementMessages()
 	{
-		// Color
-		// Shape
-		CHECK_FAIL(L"Not Implemented!");
+		ElementDesc_SolidBackground arguments;
+		arguments.id = id;
+		arguments.backgroundColor = element->GetColor();
+		arguments.shape = element->GetShape();
+		renderTarget->GetRemoteMessages().RequestRendererUpdateElement_SolidBackground(arguments);
 	}
 
 /***********************************************************************
@@ -205,11 +212,13 @@ GuiGradientBackgroundElementRenderer
 
 	void GuiGradientBackgroundElementRenderer::SendUpdateElementMessages()
 	{
-		// Color1
-		// Color2
-		// Direction
-		// Shape
-		CHECK_FAIL(L"Not Implemented!");
+		ElementDesc_GradientBackground arguments;
+		arguments.id = id;
+		arguments.leftTopColor = element->GetColor1();
+		arguments.rightBottomColor = element->GetColor2();
+		arguments.direction = element->GetDirection();
+		arguments.shape = element->GetShape();
+		renderTarget->GetRemoteMessages().RequestRendererUpdateElement_GradientBackground(arguments);
 	}
 
 /***********************************************************************
@@ -222,9 +231,11 @@ GuiInnerShadowElementRenderer
 
 	void GuiInnerShadowElementRenderer::SendUpdateElementMessages()
 	{
-		// Color
-		// Thickness
-		CHECK_FAIL(L"Not Implemented!");
+		ElementDesc_InnerShadow arguments;
+		arguments.id = id;
+		arguments.shadowColor = element->GetColor();
+		arguments.thickness = element->GetThickness();
+		renderTarget->GetRemoteMessages().RequestRendererUpdateElement_InnerShadow(arguments);
 	}
 
 /***********************************************************************
@@ -297,12 +308,16 @@ GuiPolygonElementRenderer
 
 	void GuiPolygonElementRenderer::SendUpdateElementMessages()
 	{
-		// Size
-		// Points
-		// BorderColor
-		// BackgroundColor
-		// UpdateMinSize(element->GetSize())
-		CHECK_FAIL(L"Not Implemented!");
+		minSize = element->GetSize();
+
+		ElementDesc_Polygon arguments;
+		arguments.id = id;
+		arguments.size = element->GetSize();
+		arguments.borderColor = element->GetBorderColor();
+		arguments.backgroundColor = element->GetBackgroundColor();
+		arguments.points = Ptr(new List<Point>);
+		CopyFrom(*arguments.points.Obj(), element->GetPointsArray());
+		renderTarget->GetRemoteMessages().RequestRendererUpdateElement_Polygon(arguments);
 	}
 
 /***********************************************************************
