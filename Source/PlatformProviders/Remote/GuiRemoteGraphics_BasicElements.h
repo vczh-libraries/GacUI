@@ -24,6 +24,7 @@ namespace vl::presentation::elements_remoteprotocol
 		virtual vint					GetID() = 0;
 		virtual bool					IsUpdated() = 0;
 		virtual void					SetUpdated() = 0;
+		virtual void					ResetUpdated() = 0;
 		virtual void					SendUpdateElementMessages() = 0;
 	};
 
@@ -45,6 +46,7 @@ namespace vl::presentation::elements_remoteprotocol
 		vint							GetID() override;
 		bool							IsUpdated() override;
 		void							SetUpdated() override;
+		void							ResetUpdated() override;
 
 		void							Render(Rect bounds) override;
 		void							OnElementStateChanged() override;
@@ -58,6 +60,7 @@ namespace vl::presentation::elements_remoteprotocol
 
 		bool							IsUpdated() override;
 		void							SetUpdated() override;
+		void							ResetUpdated() override;
 		void							SendUpdateElementMessages() override;
 		void							OnElementStateChanged() override;
 	};

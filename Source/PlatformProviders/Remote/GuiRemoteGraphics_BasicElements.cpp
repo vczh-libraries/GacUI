@@ -49,6 +49,12 @@ GuiSolidBorderElementRenderer
 	}
 
 	template<typename TElement, typename TRenderer>
+	void GuiRemoteProtocolElementRenderer<TElement, TRenderer>::ResetUpdated()
+	{
+		updated = false;
+	}
+
+	template<typename TElement, typename TRenderer>
 	void GuiRemoteProtocolElementRenderer<TElement, TRenderer>::Render(Rect bounds)
 	{
 		CHECK_FAIL(L"Not Implemented!");
@@ -75,6 +81,11 @@ GuiSolidBorderElementRenderer
 	}
 
 	void GuiFocusRectangleElementRenderer::SetUpdated()
+	{
+		// nothing to update
+	}
+
+	void GuiFocusRectangleElementRenderer::ResetUpdated()
 	{
 		// nothing to update
 	}
@@ -115,6 +126,7 @@ Gui3DBorderElementRenderer
 	{
 		// Color1
 		// Color2
+		CHECK_FAIL(L"Not Implemented!");
 	}
 
 /***********************************************************************
@@ -130,6 +142,7 @@ Gui3DSplitterElementRenderer
 		// Color1
 		// Color2
 		// Direction
+		CHECK_FAIL(L"Not Implemented!");
 	}
 
 /***********************************************************************
@@ -144,6 +157,7 @@ GuiSolidBackgroundElementRenderer
 	{
 		// Color
 		// Shape
+		CHECK_FAIL(L"Not Implemented!");
 	}
 
 /***********************************************************************
@@ -160,6 +174,7 @@ GuiGradientBackgroundElementRenderer
 		// Color2
 		// Direction
 		// Shape
+		CHECK_FAIL(L"Not Implemented!");
 	}
 
 /***********************************************************************
@@ -174,6 +189,7 @@ GuiInnerShadowElementRenderer
 	{
 		// Color
 		// Thickness
+		CHECK_FAIL(L"Not Implemented!");
 	}
 
 /***********************************************************************
@@ -213,6 +229,7 @@ GuiSolidLabelElementRenderer
 		// Ellipse
 		// Multiline
 		// WrapLineHeightCalculation
+		CHECK_FAIL(L"Not Implemented!");
 	}
 
 /***********************************************************************
@@ -232,6 +249,7 @@ GuiImageFrameElementRenderer
 		// Stretch
 		// Enabled
 		// UpdateMinSize(Stretch ? {0,0} : frame->GetSize())
+		CHECK_FAIL(L"Not Implemented!");
 	}
 
 /***********************************************************************
@@ -249,6 +267,7 @@ GuiPolygonElementRenderer
 		// BorderColor
 		// BackgroundColor
 		// UpdateMinSize(element->GetSize())
+		CHECK_FAIL(L"Not Implemented!");
 	}
 
 /***********************************************************************
@@ -267,7 +286,6 @@ GuiColorizedTextElementRenderer
 	{
 		GuiRemoteProtocolElementRenderer<GuiColorizedTextElement, GuiColorizedTextElementRenderer>::InitializeInternal();
 		element->SetCallback(this);
-		CHECK_FAIL(L"Not Implemented!");
 	}
 
 	void GuiColorizedTextElementRenderer::FinalizeInternal()
@@ -298,5 +316,6 @@ GuiColorizedTextElementRenderer
 		// CaretEnd
 		// CaretVisible
 		// CaretColor
+		CHECK_FAIL(L"Not Implemented!");
 	}
 }
