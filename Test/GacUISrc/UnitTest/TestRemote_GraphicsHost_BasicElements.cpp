@@ -23,6 +23,7 @@ TEST_FILE
 
 		protocol.OnNextFrame([&]()
 		{
+			// ForceCalculateSizeImmediately causes the layout to ready
 			AssertEventLogs(
 				eventLogs,
 				L"Created(<1:FocusRectangle>)",
@@ -60,6 +61,7 @@ TEST_FILE
 
 		protocol.OnNextFrame([&]()
 		{
+			// Layout is ready after rendering
 			AssertEventLogs(
 				eventLogs,
 				L"Created(<1:SolidBorder>)",
@@ -72,6 +74,7 @@ TEST_FILE
 
 		protocol.OnNextFrame([&]()
 		{
+			// Layout is ready
 			AssertEventLogs(
 				eventLogs,
 				L"Begin()",
@@ -86,6 +89,7 @@ TEST_FILE
 
 		protocol.OnNextFrame([&]()
 		{
+			// Element updated, layout is ready after rendering
 			AssertEventLogs(
 				eventLogs,
 				L"Updated(1, #0000FF, Ellipse)",
@@ -97,6 +101,7 @@ TEST_FILE
 
 		protocol.OnNextFrame([&]()
 		{
+			// Layout is ready
 			AssertEventLogs(
 				eventLogs,
 				L"Begin()",
@@ -204,6 +209,7 @@ TEST_FILE
 
 		protocol.OnNextFrame([&]()
 		{
+			// Layout is ready after rendering, the size of the polygon is (200,100), but the cell is still (0,0)
 			AssertEventLogs(
 				eventLogs,
 
@@ -215,6 +221,22 @@ TEST_FILE
 				L"Updated(5, #FF0000, #00FF00, Vertical, Ellipse)",
 				L"Updated(6, #FF0000, 5)",
 
+				L"Begin()",
+				L"Render(1, {10,10:0,230}, {10,10:620,460})",
+				L"Render(2, {10,240:0,0}, {10,10:620,460})",
+				L"Render(3, {10,240:0,230}, {10,10:620,460})",
+				L"Render(4, {10,10:620,230}, {10,10:620,460})",
+				L"Render(5, {10,240:620,0}, {10,10:620,460})",
+				L"Render(6, {10,240:620,230}, {10,10:620,460})",
+				L"End()"
+				);
+		});
+
+		protocol.OnNextFrame([&]()
+		{
+			// Layout is ready, the size of the polygon cell is updated to (200,100)
+			AssertEventLogs(
+				eventLogs,
 				L"Begin()",
 				L"Render(1, {10,10:200,180}, {10,10:620,460})",
 				L"Render(2, {10,190:200,100}, {10,10:620,460})",
