@@ -18,6 +18,11 @@ GuiSolidBorderElementRenderer
 	RENDERER_TEMPLATE_HEADER
 	void RENDERER_CLASS_TYPE::FinalizeInternal()
 	{
+		if (this->renderTarget && id != -1)
+		{
+			this->renderTarget->UnregisterRenderer(this);
+			id = -1;
+		}
 	}
 
 	RENDERER_TEMPLATE_HEADER
