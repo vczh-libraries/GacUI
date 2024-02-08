@@ -25,9 +25,39 @@ GuiSolidBorderElementRenderer
 	}
 
 	template<typename TElement, typename TRenderer>
+	IGuiGraphicsRenderer* GuiRemoteProtocolElementRenderer<TElement, TRenderer>::GetRenderer()
+	{
+		return this;
+	}
+
+	template<typename TElement, typename TRenderer>
+	vint GuiRemoteProtocolElementRenderer<TElement, TRenderer>::GetID()
+	{
+		return id;
+	}
+
+	template<typename TElement, typename TRenderer>
+	bool GuiRemoteProtocolElementRenderer<TElement, TRenderer>::IsUpdated()
+	{
+		return updated;
+	}
+
+	template<typename TElement, typename TRenderer>
+	void GuiRemoteProtocolElementRenderer<TElement, TRenderer>::SetUpdated()
+	{
+		updated = true;
+	}
+
+	template<typename TElement, typename TRenderer>
 	void GuiRemoteProtocolElementRenderer<TElement, TRenderer>::Render(Rect bounds)
 	{
 		CHECK_FAIL(L"Not Implemented!");
+	}
+
+	template<typename TElement, typename TRenderer>
+	void GuiRemoteProtocolElementRenderer<TElement, TRenderer>::OnElementStateChanged()
+	{
+		SetUpdated();
 	}
 
 /***********************************************************************
@@ -37,9 +67,26 @@ GuiSolidBorderElementRenderer
 	GuiFocusRectangleElementRenderer::GuiFocusRectangleElementRenderer()
 	{
 	}
+	
+	bool GuiFocusRectangleElementRenderer::IsUpdated()
+	{
+		// there is no properties for this element
+		return false;
+	}
+
+	void GuiFocusRectangleElementRenderer::SetUpdated()
+	{
+		// nothing to update
+	}
 
 	void GuiFocusRectangleElementRenderer::OnElementStateChanged()
 	{
+		// nothing to update
+	}
+
+	void GuiFocusRectangleElementRenderer::SendUpdateElementMessages()
+	{
+		// nothing to update
 	}
 
 /***********************************************************************
@@ -50,7 +97,7 @@ GuiSolidBorderElementRenderer
 	{
 	}
 
-	void GuiSolidBorderElementRenderer::OnElementStateChanged()
+	void GuiSolidBorderElementRenderer::SendUpdateElementMessages()
 	{
 		// Color
 		// Shape
@@ -64,7 +111,7 @@ Gui3DBorderElementRenderer
 	{
 	}
 
-	void Gui3DBorderElementRenderer::OnElementStateChanged()
+	void Gui3DBorderElementRenderer::SendUpdateElementMessages()
 	{
 		// Color1
 		// Color2
@@ -78,7 +125,7 @@ Gui3DSplitterElementRenderer
 	{
 	}
 
-	void Gui3DSplitterElementRenderer::OnElementStateChanged()
+	void Gui3DSplitterElementRenderer::SendUpdateElementMessages()
 	{
 		// Color1
 		// Color2
@@ -93,7 +140,7 @@ GuiSolidBackgroundElementRenderer
 	{
 	}
 
-	void GuiSolidBackgroundElementRenderer::OnElementStateChanged()
+	void GuiSolidBackgroundElementRenderer::SendUpdateElementMessages()
 	{
 		// Color
 		// Shape
@@ -107,8 +154,12 @@ GuiGradientBackgroundElementRenderer
 	{
 	}
 
-	void GuiGradientBackgroundElementRenderer::OnElementStateChanged()
+	void GuiGradientBackgroundElementRenderer::SendUpdateElementMessages()
 	{
+		// Color1
+		// Color2
+		// Direction
+		// Shape
 	}
 
 /***********************************************************************
@@ -119,7 +170,7 @@ GuiInnerShadowElementRenderer
 	{
 	}
 
-	void GuiInnerShadowElementRenderer::OnElementStateChanged()
+	void GuiInnerShadowElementRenderer::SendUpdateElementMessages()
 	{
 		// Color
 		// Thickness
@@ -135,7 +186,7 @@ GuiSolidLabelElementRenderer
 
 	void GuiSolidLabelElementRenderer::Render(Rect bounds)
 	{
-		GuiRemoteProtocolElementRenderer<GuiSolidLabelElement, GuiSolidLabelElementRenderer>::Render(bounds);
+		TBase::Render(bounds);
 		// UpdateMinSize()
 		// When text is empty, total size is the size of one space character
 		//   WrapLine == true:
@@ -147,6 +198,11 @@ GuiSolidLabelElementRenderer
 	}
 
 	void GuiSolidLabelElementRenderer::OnElementStateChanged()
+	{
+		TBase::OnElementStateChanged();
+	}
+
+	void GuiSolidLabelElementRenderer::SendUpdateElementMessages()
 	{
 		// Color
 		// Font
@@ -167,7 +223,7 @@ GuiImageFrameElementRenderer
 	{
 	}
 
-	void GuiImageFrameElementRenderer::OnElementStateChanged()
+	void GuiImageFrameElementRenderer::SendUpdateElementMessages()
 	{
 		// Image
 		// FrameIndex
@@ -186,7 +242,7 @@ GuiPolygonElementRenderer
 	{
 	}
 
-	void GuiPolygonElementRenderer::OnElementStateChanged()
+	void GuiPolygonElementRenderer::SendUpdateElementMessages()
 	{
 		// Size
 		// Points
@@ -211,6 +267,7 @@ GuiColorizedTextElementRenderer
 	{
 		GuiRemoteProtocolElementRenderer<GuiColorizedTextElement, GuiColorizedTextElementRenderer>::InitializeInternal();
 		element->SetCallback(this);
+		CHECK_FAIL(L"Not Implemented!");
 	}
 
 	void GuiColorizedTextElementRenderer::FinalizeInternal()
@@ -224,6 +281,11 @@ GuiColorizedTextElementRenderer
 	}
 
 	void GuiColorizedTextElementRenderer::OnElementStateChanged()
+	{
+		TBase::OnElementStateChanged();
+	}
+
+	void GuiColorizedTextElementRenderer::SendUpdateElementMessages()
 	{
 		// Lines
 		// Colors
