@@ -2,6 +2,7 @@
 #define GACUISRC_REMOTE_RENDERINGPROTOCOL
 
 #include "TestRemote_Shared_NoRenderingProtocol.h"
+#include "TestRemote_Shared_LoggingWindowListener.h"
 
 using namespace vl::presentation::elements;
 
@@ -246,6 +247,41 @@ namespace remote_protocol_tests
 			);
 		}
 	};
+
+	template<typename TProtocol, typename TActionAfterRenderingStops, typename ...TRenderingEvents>
+	void AssertRenderingEventLogs(TProtocol& protocol, List<WString>& eventLogs, TActionAfterRenderingStops&& actionAfterRenderingStops, TRenderingEvents&& ...renderingEvents)
+	{
+		protocol.OnNextFrame([=, &eventLogs]()
+		{
+			// GuiGraphicsHost::Render set updated = true
+			// GuiHostedController::GlobalTimer set windowsUpdatedInLastFrame = true
+			AssertEventLogs(
+				eventLogs,
+				L"Begin()",
+				renderingEvents...,
+				L"End()"
+				);
+		});
+
+		protocol.OnNextFrame([=, &eventLogs]()
+		{
+			// GuiGraphicsHost::Render set updated = false
+			// GuiHostedController::GlobalTimer set windowsUpdatedInLastFrame = false
+			AssertEventLogs(
+				eventLogs,
+				L"Begin()",
+				renderingEvents...,
+				L"End()"
+				);
+		});
+
+		protocol.OnNextFrame([=, &eventLogs]()
+		{
+			// Rendering is not triggered because GuiHostedController::windowsUpdatedInLastFrame = false
+			AssertEventLogs(eventLogs);
+			actionAfterRenderingStops();
+		});
+	}
 }
 
 #endif

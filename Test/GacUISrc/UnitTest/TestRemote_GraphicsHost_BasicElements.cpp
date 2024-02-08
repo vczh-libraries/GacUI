@@ -33,36 +33,15 @@ TEST_FILE
 				);
 		});
 
-		protocol.OnNextFrame([&]()
-		{
-			// GuiGraphicsHost::Render set updated = true
-			// GuiHostedController::GlobalTimer set windowsUpdatedInLastFrame = true
-			AssertEventLogs(
-				eventLogs,
-				L"Begin()",
-				L"Render(1, {10,10:620,460}, {0,0:640,480})",
-				L"End()"
-				);
-		});
-
-		protocol.OnNextFrame([&]()
-		{
-			// GuiGraphicsHost::Render set updated = false
-			// GuiHostedController::GlobalTimer set windowsUpdatedInLastFrame = false
-			AssertEventLogs(
-				eventLogs,
-				L"Begin()",
-				L"Render(1, {10,10:620,460}, {0,0:640,480})",
-				L"End()"
-				);
-		});
-
-		protocol.OnNextFrame([&]()
-		{
-			// Rendering is not triggered because GuiHostedController::windowsUpdatedInLastFrame = false
-			AssertEventLogs(eventLogs);
-			controlHost->Hide();
-		});
+		AssertRenderingEventLogs(
+			protocol,
+			eventLogs,
+			[&]()
+			{
+				controlHost->Hide();
+			},
+			L"Render(1, {10,10:620,460}, {0,0:640,480})"
+			);
 
 		SetGuiMainProxy(MakeGuiMain(protocol, eventLogs, controlHost));
 		StartRemoteControllerTest(protocol);
