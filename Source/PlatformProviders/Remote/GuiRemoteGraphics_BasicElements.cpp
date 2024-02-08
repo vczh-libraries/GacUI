@@ -249,40 +249,134 @@ GuiInnerShadowElementRenderer
 GuiSolidLabelElementRenderer
 ***********************************************************************/
 
+	GuiSolidLabelElementRenderer::MeasuringRequest GuiSolidLabelElementRenderer::GetMeasuringRequest()
+	{
+		if (element->GetWrapLine())
+		{
+			if (element->GetWrapLineHeightCalculation())
+			{
+				return ElementSolidLabelMeasuringRequest::TotalSize;
+			}
+			else
+			{
+				return {};
+			}
+		}
+		else
+		{
+			if (element->GetEllipse())
+			{
+				return ElementSolidLabelMeasuringRequest::FontHeight;
+			}
+			else
+			{
+				return ElementSolidLabelMeasuringRequest::TotalSize;
+			}
+		}
+	}
+
+	bool GuiSolidLabelElementRenderer::IsNeedFontHeight(MeasuringRequest request)
+	{
+		return request && request.Value() == ElementSolidLabelMeasuringRequest::FontHeight;
+	}
+
 	GuiSolidLabelElementRenderer::GuiSolidLabelElementRenderer()
 	{
 	}
 
-	void GuiSolidLabelElementRenderer::Render(Rect bounds)
+	bool GuiSolidLabelElementRenderer::NeedUpdateMinSizeFromCache()
 	{
-		TBase::Render(bounds);
-		// UpdateMinSize()
-		// When text is empty, total size is the size of one space character
-		//   WrapLine == true:
-		//     WrapLineHeightCalculation == true -> calculate total size remotely
-		//     WrapLineHeightCalculation == false -> {0,0}
-		//   WrapLine == false:
-		//     Ellipse == true -> {0,calculate line height remotely}
-		//     Ellipse == false -> calculate total size remotely
+		return needFontHeight;
 	}
 
-	void GuiSolidLabelElementRenderer::OnElementStateChanged()
+	void GuiSolidLabelElementRenderer::TryFetchMinSizeFromCache()
 	{
-		TBase::OnElementStateChanged();
+		if (needFontHeight)
+		{
+			vint index = renderTarget->fontHeights.Keys().IndexOf({ lastFont.fontFamily,lastFont.size });
+			if (index != -1)
+			{
+				needFontHeight = false;
+				minSize = { 0,renderTarget->fontHeights.Values()[index] };
+			}
+		}
+	}
+
+	void GuiSolidLabelElementRenderer::UpdateMinSize(Size size)
+	{
+		minSize = size;
+	}
+
+	void GuiSolidLabelElementRenderer::NotifyMinSizeCacheInvalidated()
+	{
+		OnElementStateChanged();
+		auto request = GetMeasuringRequest();
+		needFontHeight = IsNeedFontHeight(request);
 	}
 
 	void GuiSolidLabelElementRenderer::SendUpdateElementMessages()
 	{
-		// Color
-		// Font
-		// Text
-		// HorizontalAlignment
-		// VerticalAlignment
-		// WrapLine
-		// Ellipse
-		// Multiline
-		// WrapLineHeightCalculation
-		CHECK_FAIL(L"Not Implemented!");
+		ElementDesc_SolidLabel arguments;
+		arguments.textColor = element->GetColor();
+		arguments.wrapLine = element->GetWrapLine();
+		arguments.wrapLineHeightCalculation = element->GetWrapLineHeightCalculation();
+		arguments.ellipse = element->GetEllipse();
+		arguments.multiline = element->GetMultiline();
+
+		switch (element->GetHorizontalAlignment())
+		{
+		case Alignment::Left:
+			arguments.horizontalAlignment = ElementHorizontalAlignment::Left;
+			break;
+		case Alignment::Right:
+			arguments.horizontalAlignment = ElementHorizontalAlignment::Right;
+			break;
+		default:
+			arguments.horizontalAlignment = ElementHorizontalAlignment::Center;
+		}
+
+		switch (element->GetVerticalAlignment())
+		{
+		case Alignment::Top:
+			arguments.verticalAlignment = ElementVerticalAlignment::Top;
+			break;
+		case Alignment::Bottom:
+			arguments.verticalAlignment = ElementVerticalAlignment::Bottom;
+			break;
+		default:
+			arguments.verticalAlignment = ElementVerticalAlignment::Center;
+		}
+
+		auto elementFont = element->GetFont();
+		auto elementText = element->GetText();
+		if (elementFont.fontFamily == WString::Empty)
+		{
+			elementFont = GetCurrentController()->ResourceService()->GetDefaultFont();
+		}
+
+		if (lastFont != elementFont)
+		{
+			arguments.font = elementFont;
+		}
+
+		if (lastText != elementText)
+		{
+			arguments.text = elementText;
+		}
+
+		lastFont = elementFont;
+		lastText = elementText;
+		arguments.measuringRequest = GetMeasuringRequest();
+		if ((needFontHeight = IsNeedFontHeight(arguments.measuringRequest)))
+		{
+			TryFetchMinSizeFromCache();
+			if (!needFontHeight)
+			{
+				arguments.measuringRequest = {};
+			}
+		}
+
+		renderTarget->GetRemoteMessages().RequestRendererUpdateElement_SolidLabel(arguments);
 	}
 
 /***********************************************************************

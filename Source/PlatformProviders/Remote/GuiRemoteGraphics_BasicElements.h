@@ -129,12 +129,22 @@ namespace vl::presentation::elements_remoteprotocol
 	class GuiSolidLabelElementRenderer : public GuiRemoteProtocolElementRenderer<GuiSolidLabelElement, GuiSolidLabelElementRenderer, remoteprotocol::RendererType::SolidLabel>
 	{
 		friend class GuiElementRendererBase<GuiSolidLabelElement, GuiSolidLabelElementRenderer, GuiRemoteGraphicsRenderTarget>;
-		using TBase = GuiRemoteProtocolElementRenderer<GuiSolidLabelElement, GuiSolidLabelElementRenderer, remoteprotocol::RendererType::SolidLabel>;
+		using MeasuringRequest = Nullable<remoteprotocol::ElementSolidLabelMeasuringRequest>;
+	protected:
+		FontProperties					lastFont;
+		WString							lastText;
+		bool							needFontHeight = false;
+
+		MeasuringRequest				GetMeasuringRequest();
+		bool							IsNeedFontHeight(MeasuringRequest request);
 	public:
 		GuiSolidLabelElementRenderer();
 
-		void							Render(Rect bounds) override;
-		void							OnElementStateChanged() override;
+		bool							NeedUpdateMinSizeFromCache() override;
+		void							TryFetchMinSizeFromCache() override;
+		void							UpdateMinSize(Size size) override;
+		void							NotifyMinSizeCacheInvalidated() override;
+
 		void							SendUpdateElementMessages() override;
 	};
 
