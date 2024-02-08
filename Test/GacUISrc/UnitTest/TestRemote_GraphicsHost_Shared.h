@@ -114,6 +114,7 @@ namespace remote_graphics_host_tests
 				controlHost = nullptr;
 
 				theme::UnregisterTheme(theme->Name);
+				TEST_ASSERT(protocol.nextEventIndex == protocol.processRemoteEvents.Count());
 				AssertEventLogs(eventLogs);
 			});
 		};
