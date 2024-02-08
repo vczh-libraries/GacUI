@@ -78,7 +78,7 @@ GuiSolidBorderElementRenderer
 		remoteprotocol::ElementRendering arguments;
 		arguments.id = id;
 		arguments.bounds = bounds;
-		arguments.clipper = this->renderTarget->GetClipper();
+		arguments.clipper = this->renderTarget->GetClipperValidArea();
 		this->renderTarget->GetRemoteMessages().RequestRendererRenderElement(arguments);
 	}
 

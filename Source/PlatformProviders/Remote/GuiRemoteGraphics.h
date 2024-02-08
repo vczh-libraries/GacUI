@@ -40,8 +40,7 @@ GuiRemoteGraphicsRenderTarget
 			RendererMap							renderers;
 			collections::SortedList<vint>		createdRenderers;
 			collections::SortedList<vint>		destroyedRenderers;
-			Nullable<Rect>						clipper;
-			bool								clipperNoValidArea = false;
+			Nullable<Rect>						clipperValidArea;
 
 			void								StartRenderingOnNativeWindow() override;
 			RenderTargetFailure					StopRenderingOnNativeWindow() override;
@@ -59,6 +58,7 @@ GuiRemoteGraphicsRenderTarget
 			vint								AllocateNewElementId();
 			void								RegisterRenderer(elements_remoteprotocol::IGuiRemoteProtocolElementRender* renderer);
 			void								UnregisterRenderer(elements_remoteprotocol::IGuiRemoteProtocolElementRender* renderer);
+			Rect								GetClipperValidArea();
 		};
 
 /***********************************************************************

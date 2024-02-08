@@ -12,6 +12,7 @@ GuiRemoteGraphicsRenderTarget
 	void GuiRemoteGraphicsRenderTarget::StartRenderingOnNativeWindow()
 	{
 		canvasSize = remote->remoteWindow.GetClientSize();
+		clipperValidArea = GetClipper();
 
 		if (destroyedRenderers.Count() > 0)
 		{
@@ -73,18 +74,22 @@ GuiRemoteGraphicsRenderTarget
 
 	void GuiRemoteGraphicsRenderTarget::AfterPushedClipper(Rect clipper, Rect validArea)
 	{
+		clipperValidArea = validArea;
 	}
 
 	void GuiRemoteGraphicsRenderTarget::AfterPushedClipperAndBecameInvalid(Rect clipper)
 	{
+		clipperValidArea.Reset();
 	}
 
 	void GuiRemoteGraphicsRenderTarget::AfterPoppedClipperAndBecameValid(Rect validArea, bool clipperExists)
 	{
+		clipperValidArea = validArea;
 	}
 
 	void GuiRemoteGraphicsRenderTarget::AfterPoppedClipper(Rect validArea, bool clipperExists)
 	{
+		clipperValidArea = validArea;
 	}
 
 	GuiRemoteGraphicsRenderTarget::GuiRemoteGraphicsRenderTarget(GuiRemoteController* _remote)
@@ -132,6 +137,11 @@ GuiRemoteGraphicsRenderTarget
 		{
 			createdRenderers.RemoveAt(id);
 		}
+	}
+
+	Rect GuiRemoteGraphicsRenderTarget::GetClipperValidArea()
+	{
+		return clipperValidArea.Value();
 	}
 
 /***********************************************************************

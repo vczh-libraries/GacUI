@@ -23,7 +23,13 @@ TEST_FILE
 
 		protocol.OnNextFrame([&]()
 		{
-			AssertEventLogs(eventLogs);
+			AssertEventLogs(
+				eventLogs,
+				L"Created(<1:FocusRectangle>)",
+				L"Begin()",
+				L"Render(1, {10,10:620,460}, {0,0:640,480})",
+				L"End()"
+				);
 			controlHost->Hide();
 		});
 
