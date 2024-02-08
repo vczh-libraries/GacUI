@@ -317,6 +317,7 @@ GuiSolidLabelElementRenderer
 	void GuiSolidLabelElementRenderer::SendUpdateElementMessages()
 	{
 		ElementDesc_SolidLabel arguments;
+		arguments.id = id;
 		arguments.textColor = element->GetColor();
 		arguments.wrapLine = element->GetWrapLine();
 		arguments.wrapLineHeightCalculation = element->GetWrapLineHeightCalculation();

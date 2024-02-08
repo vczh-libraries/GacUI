@@ -17,6 +17,7 @@ namespace remote_graphics_host_tests
 			config.customFramePadding = { 8,8,8,8 };
 
 			config.fontConfig.defaultFont.fontFamily = L"One";
+			config.fontConfig.defaultFont.size = 12;
 			config.fontConfig.supportedFonts = Ptr(new List<WString>());
 			config.fontConfig.supportedFonts->Add(L"One");
 			config.fontConfig.supportedFonts->Add(L"Two");

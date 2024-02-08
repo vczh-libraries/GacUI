@@ -201,6 +201,7 @@
     <ClCompile Include="TestRemote_GraphicsHost_KeyTab.cpp" />
     <ClCompile Include="TestRemote_GraphicsHost_Mouse.cpp" />
     <ClCompile Include="TestRemote_GraphicsHost_Shared.cpp" />
+    <ClCompile Include="TestRemote_GraphicsHost_SolidLabel.cpp" />
     <ClCompile Include="TestRemote_GraphicsHost_Startup.cpp" />
     <ClCompile Include="TestRemote_EmptyWindow.cpp" />
     <ClCompile Include="TestRemote_Startup.cpp" />

@@ -286,7 +286,7 @@ namespace remote_protocol_tests
 				+ L", " + arguments.textColor.ToString()
 				+ L", " + ToString(arguments.horizontalAlignment)
 				+ L", " + ToString(arguments.verticalAlignment)
-				+ L", <tag:"
+				+ L", <flags:"
 					+ (arguments.wrapLine ? L"[wl]" : L"")
 					+ (arguments.wrapLineHeightCalculation ? L"[wlhc]" : L"")
 					+ (arguments.ellipse ? L"[e]" : L"")
