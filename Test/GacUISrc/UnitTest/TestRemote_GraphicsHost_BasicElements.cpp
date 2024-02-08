@@ -31,6 +31,34 @@ TEST_FILE
 				L"Render(1, {10,10:620,460}, {0,0:640,480})",
 				L"End()"
 				);
+		});
+
+		protocol.OnNextFrame([&]()
+		{
+			// One more rendering required by the window after the layout is stable
+			AssertEventLogs(
+				eventLogs,
+				L"Begin()",
+				L"Render(1, {10,10:620,460}, {0,0:640,480})",
+				L"End()"
+				);
+		});
+
+		protocol.OnNextFrame([&]()
+		{
+			// One more rendering required by GuiHostedController
+			AssertEventLogs(
+				eventLogs,
+				L"Begin()",
+				L"Render(1, {10,10:620,460}, {0,0:640,480})",
+				L"End()"
+				);
+		});
+
+		protocol.OnNextFrame([&]()
+		{
+			// Rendering is not triggered
+			AssertEventLogs(eventLogs);
 			controlHost->Hide();
 		});
 
@@ -74,14 +102,30 @@ TEST_FILE
 
 		protocol.OnNextFrame([&]()
 		{
-			// Layout is ready
+			// One more rendering required by the window after the layout is stable
 			AssertEventLogs(
 				eventLogs,
 				L"Begin()",
 				L"Render(1, {10,10:620,460}, {0,0:640,480})",
 				L"End()"
 				);
+		});
 
+		protocol.OnNextFrame([&]()
+		{
+			// One more rendering required by GuiHostedController
+			AssertEventLogs(
+				eventLogs,
+				L"Begin()",
+				L"Render(1, {10,10:620,460}, {0,0:640,480})",
+				L"End()"
+				);
+		});
+
+		protocol.OnNextFrame([&]()
+		{
+			// Rendering is not triggered
+			AssertEventLogs(eventLogs);
 			element->SetColor(Color(0, 0, 255));
 			element->SetShape({ ElementShapeType::Ellipse });
 			bounds->SetAlignmentToParent(Margin(20, 20, 20, 20));
@@ -101,13 +145,30 @@ TEST_FILE
 
 		protocol.OnNextFrame([&]()
 		{
-			// Layout is ready
+			// One more rendering required by the window after the layout is stable
 			AssertEventLogs(
 				eventLogs,
 				L"Begin()",
 				L"Render(1, {20,20:600,440}, {0,0:640,480})",
 				L"End()"
 				);
+		});
+
+		protocol.OnNextFrame([&]()
+		{
+			// One more rendering required by GuiHostedController
+			AssertEventLogs(
+				eventLogs,
+				L"Begin()",
+				L"Render(1, {20,20:600,440}, {0,0:640,480})",
+				L"End()"
+				);
+		});
+
+		protocol.OnNextFrame([&]()
+		{
+			// Rendering is not triggered
+			AssertEventLogs(eventLogs);
 			controlHost->Hide();
 		});
 
