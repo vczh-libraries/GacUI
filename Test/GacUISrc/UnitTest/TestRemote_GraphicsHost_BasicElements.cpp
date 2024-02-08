@@ -207,19 +207,13 @@ TEST_FILE
 			AssertEventLogs(
 				eventLogs,
 
-				L"Created(<1:SinkBorder>)",
-				L"Created(<2:Polygon>)",
-				L"Created(<3:SinkSplitter>)",
-				L"Created(<4:SolidBackground>)",
-				L"Created(<5:GradientBackground>)",
-				L"Created(<6:InnerShadow>)",
-
-				L"Updated(1, #FF0000, #00FF00)"
-				L"Updated(2, {200,100}, {0,1:2,3:4,5:6,7}, #FF0000, #00FF00)"
-				L"Updated(3, #FF0000, #00FF00, Horizontal)"
-				L"Updated(4, #FF0000, Rectangle)"
-				L"Updated(5, #FF0000, #00FF00, Vertical, Ellipse)"
-				L"Updated(6, #FF0000, 5)"
+				L"Created(<1:SinkBorder>, <2:Polygon>, <3:SinkSplitter>, <4:SolidBackground>, <5:GradientBackground>, <6:InnerShadow>)",
+				L"Updated(1, #FF0000, #00FF00)",
+				L"Updated(2, {200,100}, {0,1:2,3:4,5:6,7}, #FF0000, #00FF00)",
+				L"Updated(3, #FF0000, #00FF00, Horizontal)",
+				L"Updated(4, #FF0000, Rectangle)",
+				L"Updated(5, #FF0000, #00FF00, Vertical, Ellipse)",
+				L"Updated(6, #FF0000, 5)",
 
 				L"Begin()",
 				L"Render(1, {10,10:200,180}, {10,10:620,460})",
