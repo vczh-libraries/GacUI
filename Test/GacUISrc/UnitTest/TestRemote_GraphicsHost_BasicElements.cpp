@@ -81,39 +81,17 @@ TEST_FILE
 				);
 		});
 
-		protocol.OnNextFrame([&]()
-		{
-			// Layout is updated
-			// GuiGraphicsHost::Render set updated = true
-			// GuiHostedController::GlobalTimer set windowsUpdatedInLastFrame = true
-			AssertEventLogs(
-				eventLogs,
-				L"Begin()",
-				L"Render(1, {10,10:620,460}, {0,0:640,480})",
-				L"End()"
-				);
-		});
-
-		protocol.OnNextFrame([&]()
-		{
-			// GuiGraphicsHost::Render set updated = false
-			// GuiHostedController::GlobalTimer set windowsUpdatedInLastFrame = false
-			AssertEventLogs(
-				eventLogs,
-				L"Begin()",
-				L"Render(1, {10,10:620,460}, {0,0:640,480})",
-				L"End()"
-				);
-		});
-
-		protocol.OnNextFrame([&]()
-		{
-			// Rendering is not triggered because GuiHostedController::windowsUpdatedInLastFrame = false
-			AssertEventLogs(eventLogs);
-			element->SetColor(Color(0, 0, 255));
-			element->SetShape({ ElementShapeType::Ellipse });
-			bounds->SetAlignmentToParent(Margin(20, 20, 20, 20));
-		});
+		AssertRenderingEventLogs(
+			protocol,
+			eventLogs,
+			[&]()
+			{
+				element->SetColor(Color(0, 0, 255));
+				element->SetShape({ ElementShapeType::Ellipse });
+				bounds->SetAlignmentToParent(Margin(20, 20, 20, 20));
+			},
+			L"Render(1, {10,10:620,460}, {0,0:640,480})"
+			);
 
 		protocol.OnNextFrame([&]()
 		{
@@ -127,36 +105,15 @@ TEST_FILE
 				);
 		});
 
-		protocol.OnNextFrame([&]()
-		{
-			// GuiGraphicsHost::Render set updated = true
-			// GuiHostedController::GlobalTimer set windowsUpdatedInLastFrame = true
-			AssertEventLogs(
-				eventLogs,
-				L"Begin()",
-				L"Render(1, {20,20:600,440}, {0,0:640,480})",
-				L"End()"
-				);
-		});
-
-		protocol.OnNextFrame([&]()
-		{
-			// GuiGraphicsHost::Render set updated = false
-			// GuiHostedController::GlobalTimer set windowsUpdatedInLastFrame = false
-			AssertEventLogs(
-				eventLogs,
-				L"Begin()",
-				L"Render(1, {20,20:600,440}, {0,0:640,480})",
-				L"End()"
-				);
-		});
-
-		protocol.OnNextFrame([&]()
-		{
-			// Rendering is not triggered because GuiHostedController::windowsUpdatedInLastFrame = false
-			AssertEventLogs(eventLogs);
-			controlHost->Hide();
-		});
+		AssertRenderingEventLogs(
+			protocol,
+			eventLogs,
+			[&]()
+			{
+				controlHost->Hide();
+			},
+			L"Render(1, {20,20:600,440}, {0,0:640,480})"
+			);
 
 		SetGuiMainProxy(MakeGuiMain(protocol, eventLogs, controlHost));
 		StartRemoteControllerTest(protocol);
@@ -279,47 +236,21 @@ TEST_FILE
 				);
 		});
 
-		protocol.OnNextFrame([&]()
-		{
+		AssertRenderingEventLogs(
+			protocol,
+			eventLogs,
+			[&]()
+			{
+				controlHost->Hide();
+			},
 			// Layout is ready, the size of the polygon cell is updated to (200,100)
-			// GuiGraphicsHost::Render set updated = true
-			// GuiHostedController::GlobalTimer set windowsUpdatedInLastFrame = true
-			AssertEventLogs(
-				eventLogs,
-				L"Begin()",
-				L"Render(1, {10,10:200,180}, {10,10:620,460})",
-				L"Render(2, {10,190:200,100}, {10,10:620,460})",
-				L"Render(3, {10,290:200,180}, {10,10:620,460})",
-				L"Render(4, {210,10:420,180}, {10,10:620,460})",
-				L"Render(5, {210,190:420,100}, {10,10:620,460})",
-				L"Render(6, {210,290:420,180}, {10,10:620,460})",
-				L"End()"
-				);
-		});
-
-		protocol.OnNextFrame([&]()
-		{
-			// GuiGraphicsHost::Render set updated = false
-			// GuiHostedController::GlobalTimer set windowsUpdatedInLastFrame = false
-			AssertEventLogs(
-				eventLogs,
-				L"Begin()",
-				L"Render(1, {10,10:200,180}, {10,10:620,460})",
-				L"Render(2, {10,190:200,100}, {10,10:620,460})",
-				L"Render(3, {10,290:200,180}, {10,10:620,460})",
-				L"Render(4, {210,10:420,180}, {10,10:620,460})",
-				L"Render(5, {210,190:420,100}, {10,10:620,460})",
-				L"Render(6, {210,290:420,180}, {10,10:620,460})",
-				L"End()"
-				);
-		});
-
-		protocol.OnNextFrame([&]()
-		{
-			// Rendering is not triggered because GuiHostedController::windowsUpdatedInLastFrame = false
-			AssertEventLogs(eventLogs);
-			controlHost->Hide();
-		});
+			L"Render(1, {10,10:200,180}, {10,10:620,460})",
+			L"Render(2, {10,190:200,100}, {10,10:620,460})",
+			L"Render(3, {10,290:200,180}, {10,10:620,460})",
+			L"Render(4, {210,10:420,180}, {10,10:620,460})",
+			L"Render(5, {210,190:420,100}, {10,10:620,460})",
+			L"Render(6, {210,290:420,180}, {10,10:620,460})"
+			);
 
 		SetGuiMainProxy(MakeGuiMain(protocol, eventLogs, controlHost));
 		StartRemoteControllerTest(protocol);
