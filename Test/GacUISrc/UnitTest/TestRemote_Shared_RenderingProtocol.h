@@ -95,21 +95,61 @@ namespace remote_protocol_tests
 			events->RespondRendererEndRendering(id, arguments);
 		}
 
-		WString RectToString(Rect rect)
+		WString ToString(Size size)
+		{
+			return L"{" + itow(size.x) + L"," + itow(size.y) + L"}";
+		}
+
+		WString ToString(Ptr<List<Point>> points)
+		{
+			return stream::GenerateToStream([&](stream::TextWriter& writer)
+			{
+				writer.WriteString(L"{");
+				for (auto [p, index] : indexed(*points.Obj()))
+				{
+					if (index > 0) writer.WriteString(L":");
+					writer.WriteString(itow(p.x));
+					writer.WriteString(L",");
+					writer.WriteString(itow(p.y));
+				}
+				writer.WriteString(L"}");
+			});
+		}
+
+		WString ToString(Rect rect)
 		{
 			return L"{" + itow(rect.x1) + L"," + itow(rect.y1) + L":" + itow(rect.Width()) + L"," + itow(rect.Height()) + L"}";
 		}
 
-		WString ElementShapeToString(ElementShape shape)
+		WString ToString(ElementShape shape)
 		{
 			switch (shape.shapeType)
 			{
-			case ElementShapeType::Rectangle:
-				return L"Rectangle";
-			case ElementShapeType::Ellipse:
-				return L"Ellipse";
-			default:
-				return L"{RoundRect," + itow(shape.radiusX) + L"," + itow(shape.radiusY) + L"}";
+			case ElementShapeType::Rectangle:	return L"Rectangle";
+			case ElementShapeType::Ellipse:		return L"Ellipse";
+			default:							return L"{RoundRect," + itow(shape.radiusX) + L"," + itow(shape.radiusY) + L"}";
+			}
+		}
+
+		WString ToString(Gui3DSplitterElement::Direction direction)
+		{
+			switch (direction)
+			{
+			case Gui3DSplitterElement::Horizontal:	return L"Horizontal";
+			case Gui3DSplitterElement::Vertical:	return L"Vertical";
+			default:								CHECK_FAIL(L"Unrecognized Gui3DSplitterElement::Direction");
+			}
+		}
+
+		WString ToString(GuiGradientBackgroundElement::Direction direction)
+		{
+			switch (direction)
+			{
+			case GuiGradientBackgroundElement::Horizontal:	return L"Horizontal";
+			case GuiGradientBackgroundElement::Vertical:	return L"Vertical";
+			case GuiGradientBackgroundElement::Slash:		return L"Slash";
+			case GuiGradientBackgroundElement::Backslash:	return L"Backslash";
+			default:								CHECK_FAIL(L"Unrecognized GuiGradientBackgroundElement::Direction");
 			}
 		}
 
@@ -118,8 +158,8 @@ namespace remote_protocol_tests
 			eventLogs.Add(
 				L"Render("
 				+ itow(arguments.id)
-				+ L", " + RectToString(arguments.bounds)
-				+ L", " + RectToString(arguments.clipper)
+				+ L", " + ToString(arguments.bounds)
+				+ L", " + ToString(arguments.clipper)
 				+ L")"
 				);
 		}
@@ -130,9 +170,80 @@ namespace remote_protocol_tests
 				L"Updated("
 				+ itow(arguments.id)
 				+ L", " + arguments.borderColor.ToString()
-				+ L", " + ElementShapeToString(arguments.shape)
+				+ L", " + ToString(arguments.shape)
 				+ L")"
 				);
+		}
+
+		void RequestRendererUpdateElement_SinkBorder(const ElementDesc_SinkBorder& arguments) override
+		{
+			eventLogs.Add(
+				L"Updated("
+				+ itow(arguments.id)
+				+ L", " + arguments.leftTopColor.ToString()
+				+ L", " + arguments.rightBottomColor.ToString()
+				+ L")"
+				);
+		}
+
+		void RequestRendererUpdateElement_SinkSplitter(const ElementDesc_SinkSplitter& arguments) override
+		{
+			eventLogs.Add(
+				L"Updated("
+				+ itow(arguments.id)
+				+ L", " + arguments.leftTopColor.ToString()
+				+ L", " + arguments.rightBottomColor.ToString()
+				+ L", " + ToString(arguments.direction)
+				+ L")"
+				);
+		}
+
+		void RequestRendererUpdateElement_SolidBackground(const ElementDesc_SolidBackground& arguments) override
+		{
+			eventLogs.Add(
+				L"Updated("
+				+ itow(arguments.id)
+				+ L", " + arguments.backgroundColor.ToString()
+				+ L", " + ToString(arguments.shape)
+				+ L")"
+				);
+		}
+
+		void RequestRendererUpdateElement_GradientBackground(const ElementDesc_GradientBackground& arguments) override
+		{
+			eventLogs.Add(
+				L"Updated("
+				+ itow(arguments.id)
+				+ L", " + arguments.leftTopColor.ToString()
+				+ L", " + arguments.rightBottomColor.ToString()
+				+ L", " + ToString(arguments.direction)
+				+ L", " + ToString(arguments.shape)
+				+ L")"
+				);
+		}
+
+		void RequestRendererUpdateElement_InnerShadow(const ElementDesc_InnerShadow& arguments) override
+		{
+			eventLogs.Add(
+				L"Updated("
+				+ itow(arguments.id)
+				+ L", " + arguments.shadowColor.ToString()
+				+ L", " + itow(arguments.thickness)
+				+ L")"
+				);
+		}
+
+		void RequestRendererUpdateElement_Polygon(const ElementDesc_Polygon& arguments) override
+		{
+			eventLogs.Add(
+				L"Updated("
+				+ itow(arguments.id)
+				+ L", " + ToString(arguments.size)
+				+ L", " + ToString(arguments.points)
+				+ L", " + arguments.borderColor.ToString()
+				+ L", " + arguments.backgroundColor.ToString()
+				+ L")"
+			);
 		}
 	};
 }
