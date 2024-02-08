@@ -23,6 +23,7 @@ TEST_FILE
 
 		protocol.OnNextFrame([&]()
 		{
+			AssertEventLogs(eventLogs);
 			controlHost->Hide();
 		});
 

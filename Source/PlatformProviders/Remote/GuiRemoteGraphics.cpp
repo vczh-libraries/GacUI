@@ -3,6 +3,7 @@
 
 namespace vl::presentation::elements
 {
+	using namespace collections;
 
 /***********************************************************************
 GuiRemoteGraphicsRenderTarget
@@ -11,6 +12,34 @@ GuiRemoteGraphicsRenderTarget
 	void GuiRemoteGraphicsRenderTarget::StartRenderingOnNativeWindow()
 	{
 		canvasSize = remote->remoteWindow.GetClientSize();
+
+		if (destroyedRenderers.Count() > 0)
+		{
+			auto ids = Ptr(new List<vint>);
+			CopyFrom(*ids.Obj(), destroyedRenderers);
+			destroyedRenderers.Clear();
+			remote->remoteMessages.RequestRendererDestroyed(ids);
+		}
+
+		if (createdRenderers.Count() > 0)
+		{
+			auto ids = Ptr(new List<remoteprotocol::RendererCreation>);
+			for (auto id : createdRenderers)
+			{
+				ids->Add({ id,renderers[id]->GetRendererType() });
+			}
+			createdRenderers.Clear();
+			remote->remoteMessages.RequestRendererCreated(ids);
+		}
+
+		for (auto [id, renderer] : renderers)
+		{
+			if (renderer->IsUpdated())
+			{
+				renderer->SendUpdateElementMessages();
+				renderer->ResetUpdated();
+			}
+		}
 
 		vint idRendering = remote->remoteMessages.RequestRendererBeginRendering();
 		remote->remoteMessages.Submit();
@@ -67,6 +96,11 @@ GuiRemoteGraphicsRenderTarget
 	{
 	}
 
+	GuiRemoteMessages& GuiRemoteGraphicsRenderTarget::GetRemoteMessages()
+	{
+		return remote->remoteMessages;
+	}
+
 	vint GuiRemoteGraphicsRenderTarget::AllocateNewElementId()
 	{
 		return ++usedElementIds;
@@ -74,12 +108,30 @@ GuiRemoteGraphicsRenderTarget
 
 	void GuiRemoteGraphicsRenderTarget::RegisterRenderer(elements_remoteprotocol::IGuiRemoteProtocolElementRender* renderer)
 	{
-		renderers.Add(renderer->GetID(), renderer);
+		vint id = renderer->GetID();
+		if (!createdRenderers.Contains(id))
+		{
+			renderers.Add(id, renderer);
+			createdRenderers.Add(id);
+		}
 	}
 
 	void GuiRemoteGraphicsRenderTarget::UnregisterRenderer(elements_remoteprotocol::IGuiRemoteProtocolElementRender* renderer)
 	{
-		renderers.Remove(renderer->GetID());
+		vint id = renderer->GetID();
+		renderers.Remove(id);
+		vint index = createdRenderers.IndexOf(id);
+		if (index == -1)
+		{
+			if (!destroyedRenderers.Contains(id))
+			{
+				destroyedRenderers.Add(id);
+			}
+		}
+		else
+		{
+			createdRenderers.RemoveAt(id);
+		}
 	}
 
 /***********************************************************************

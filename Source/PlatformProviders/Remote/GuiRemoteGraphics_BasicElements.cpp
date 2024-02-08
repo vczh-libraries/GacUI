@@ -1,4 +1,5 @@
 #include "GuiRemoteGraphics_BasicElements.h"
+#include "GuiRemoteController.h"
 
 namespace vl::presentation::elements_remoteprotocol
 {
@@ -74,7 +75,11 @@ GuiSolidBorderElementRenderer
 	RENDERER_TEMPLATE_HEADER
 	void RENDERER_CLASS_TYPE::Render(Rect bounds)
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		remoteprotocol::ElementRendering arguments;
+		arguments.id = id;
+		arguments.bounds = bounds;
+		arguments.clipper = this->renderTarget->GetClipper();
+		this->renderTarget->GetRemoteMessages().RequestRendererRenderElement(arguments);
 	}
 
 	RENDERER_TEMPLATE_HEADER

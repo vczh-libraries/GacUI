@@ -17,6 +17,7 @@ Interfaces:
 namespace vl::presentation
 {
 	class GuiRemoteController;
+	class GuiRemoteMessages;
 
 	namespace elements_remoteprotocol
 	{
@@ -37,6 +38,8 @@ GuiRemoteGraphicsRenderTarget
 			NativeSize							canvasSize;
 			vint								usedElementIds = 0;
 			RendererMap							renderers;
+			collections::SortedList<vint>		createdRenderers;
+			collections::SortedList<vint>		destroyedRenderers;
 			Nullable<Rect>						clipper;
 			bool								clipperNoValidArea = false;
 
@@ -52,6 +55,7 @@ GuiRemoteGraphicsRenderTarget
 			GuiRemoteGraphicsRenderTarget(GuiRemoteController* _remote);
 			~GuiRemoteGraphicsRenderTarget();
 
+			GuiRemoteMessages&					GetRemoteMessages();
 			vint								AllocateNewElementId();
 			void								RegisterRenderer(elements_remoteprotocol::IGuiRemoteProtocolElementRender* renderer);
 			void								UnregisterRenderer(elements_remoteprotocol::IGuiRemoteProtocolElementRender* renderer);
