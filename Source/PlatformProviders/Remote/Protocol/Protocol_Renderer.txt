@@ -116,15 +116,15 @@ struct ElementDesc_Polygon
     var points : Point[];
 }
 
-enum ElementSolidLabelMeasuring
+enum ElementSolidLabelMeasuringRequest
 {
-    None,
-    SingleLineHeight,
+    FontHeight,
     TotalSize,
 }
 
 struct ElementDesc_SolidLabel
 {
+    var id : int;
     var textColor : color;
     var horizontalAlignment : ElementHorizontalAlignment;
     var verticalAlignment : ElementVerticalAlignment;
@@ -135,7 +135,7 @@ struct ElementDesc_SolidLabel
 
     var font : FontProperties?;
     var text : string?;
-    var measuring : ElementSolidLabelMeasuring?;
+    var measuringRequest : ElementSolidLabelMeasuringRequest?;
 }
 
 struct RendererCreation
@@ -144,8 +144,8 @@ struct RendererCreation
     var type : RendererType;
 }
 
-message RendererCreated             { request: RendererCreation[]; }
-message RendererDestroyed           { request: int[]; }
+message RendererCreated                             { request: RendererCreation[]; }
+message RendererDestroyed                           { request: int[]; }
 
 message RendererUpdateElement_SolidBorder           { request: ElementDesc_SolidBorder; }
 message RendererUpdateElement_SinkBorder            { request: ElementDesc_SinkBorder; }

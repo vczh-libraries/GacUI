@@ -149,7 +149,39 @@ namespace remote_protocol_tests
 			case GuiGradientBackgroundElement::Vertical:	return L"Vertical";
 			case GuiGradientBackgroundElement::Slash:		return L"Slash";
 			case GuiGradientBackgroundElement::Backslash:	return L"Backslash";
-			default:								CHECK_FAIL(L"Unrecognized GuiGradientBackgroundElement::Direction");
+			default:										CHECK_FAIL(L"Unrecognized GuiGradientBackgroundElement::Direction");
+			}
+		}
+
+		WString ToString(ElementHorizontalAlignment alignment)
+		{
+			switch (alignment)
+			{
+			case ElementHorizontalAlignment::Center:	return L"Center";
+			case ElementHorizontalAlignment::Left:		return L"Left";
+			case ElementHorizontalAlignment::Right:		return L"Right";
+			default:									CHECK_FAIL(L"Unrecognized ElementHorizontalAlignment");
+			}
+		}
+
+		WString ToString(ElementVerticalAlignment alignment)
+		{
+			switch (alignment)
+			{
+			case ElementVerticalAlignment::Center:		return L"Center";
+			case ElementVerticalAlignment::Top:			return L"Top";
+			case ElementVerticalAlignment::Bottom:		return L"Bottom";
+			default:									CHECK_FAIL(L"Unrecognized ElementVerticalAlignment");
+			}
+		}
+
+		WString ToString(ElementSolidLabelMeasuringRequest request)
+		{
+			switch (request)
+			{
+			case ElementSolidLabelMeasuringRequest::FontHeight:		return L"FontHeight";
+			case ElementSolidLabelMeasuringRequest::TotalSize:		return L"TotalSize";
+			default:												CHECK_FAIL(L"Unrecognized ElementSolidLabelMeasuringRequest");
 			}
 		}
 
@@ -243,7 +275,28 @@ namespace remote_protocol_tests
 				+ L", " + arguments.borderColor.ToString()
 				+ L", " + arguments.backgroundColor.ToString()
 				+ L")"
-			);
+				);
+		}
+
+		void RequestRendererUpdateElement_SolidLabel(const ElementDesc_SolidLabel& arguments) override
+		{
+			eventLogs.Add(
+				L"Updated("
+				+ itow(arguments.id)
+				+ L", " + arguments.textColor.ToString()
+				+ L", " + ToString(arguments.horizontalAlignment)
+				+ L", " + ToString(arguments.verticalAlignment)
+				+ L", <tag:"
+					+ (arguments.wrapLine ? L"[wl]" : L"")
+					+ (arguments.wrapLineHeightCalculation ? L"[wlhc]" : L"")
+					+ (arguments.ellipse ? L"[e]" : L"")
+					+ (arguments.multiline ? L"[ml]" : L"")
+					+ L">"
+				+ L", " + (arguments.font ? L"<font:" + arguments.font.Value().fontFamily + L":" + itow(arguments.font.Value().size) + L">" : L"<nofont>")
+				+ L", " + (arguments.text ? L"<text:" + arguments.text.Value() + L">" : L"<notext>")
+				+ L", " + (arguments.measuringRequest ? L"<request:" + ToString(arguments.measuringRequest.Value()) + L">" : L"<norequest>")
+				+ L")"
+				);
 		}
 	};
 

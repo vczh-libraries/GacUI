@@ -1567,13 +1567,10 @@
     }, {
         "$ast": "EnumDecl",
         "attributes": [],
-        "name": "ElementSolidLabelMeasuring",
+        "name": "ElementSolidLabelMeasuringRequest",
         "members": [{
             "$ast": "EnumMember",
-            "name": "None"
-        }, {
-            "$ast": "EnumMember",
-            "name": "SingleLineHeight"
+            "name": "FontHeight"
         }, {
             "$ast": "EnumMember",
             "name": "TotalSize"
@@ -1583,6 +1580,13 @@
         "attributes": [],
         "name": "ElementDesc_SolidLabel",
         "members": [{
+            "$ast": "StructMember",
+            "name": "id",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Integer"
+            }
+        }, {
             "$ast": "StructMember",
             "name": "textColor",
             "type": {
@@ -1653,12 +1657,12 @@
             }
         }, {
             "$ast": "StructMember",
-            "name": "measuring",
+            "name": "measuringRequest",
             "type": {
                 "$ast": "OptionalType",
                 "element": {
                     "$ast": "ReferenceType",
-                    "name": "ElementSolidLabelMeasuring"
+                    "name": "ElementSolidLabelMeasuringRequest"
                 }
             }
         }]

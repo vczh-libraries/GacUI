@@ -47,10 +47,9 @@ namespace vl::presentation::remoteprotocol
 		Center,
 	};
 
-	enum class ElementSolidLabelMeasuring
+	enum class ElementSolidLabelMeasuringRequest
 	{
-		None,
-		SingleLineHeight,
+		FontHeight,
 		TotalSize,
 	};
 
@@ -153,6 +152,7 @@ namespace vl::presentation::remoteprotocol
 
 	struct ElementDesc_SolidLabel
 	{
+		::vl::vint id;
 		::vl::presentation::Color textColor;
 		::vl::presentation::remoteprotocol::ElementHorizontalAlignment horizontalAlignment;
 		::vl::presentation::remoteprotocol::ElementVerticalAlignment verticalAlignment;
@@ -162,7 +162,7 @@ namespace vl::presentation::remoteprotocol
 		bool multiline;
 		::vl::Nullable<::vl::presentation::FontProperties> font;
 		::vl::Nullable<::vl::WString> text;
-		::vl::Nullable<::vl::presentation::remoteprotocol::ElementSolidLabelMeasuring> measuring;
+		::vl::Nullable<::vl::presentation::remoteprotocol::ElementSolidLabelMeasuringRequest> measuringRequest;
 	};
 
 	struct RendererCreation
@@ -205,7 +205,7 @@ namespace vl::presentation::remoteprotocol
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::elements::Gui3DSplitterElement::Direction>(const ::vl::presentation::elements::Gui3DSplitterElement::Direction & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::ElementHorizontalAlignment>(const ::vl::presentation::remoteprotocol::ElementHorizontalAlignment & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::ElementVerticalAlignment>(const ::vl::presentation::remoteprotocol::ElementVerticalAlignment & value);
-	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::ElementSolidLabelMeasuring>(const ::vl::presentation::remoteprotocol::ElementSolidLabelMeasuring & value);
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::ElementSolidLabelMeasuringRequest>(const ::vl::presentation::remoteprotocol::ElementSolidLabelMeasuringRequest & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::NativeCoordinate>(const ::vl::presentation::NativeCoordinate & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::NativePoint>(const ::vl::presentation::NativePoint & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::NativeSize>(const ::vl::presentation::NativeSize & value);
@@ -247,7 +247,7 @@ namespace vl::presentation::remoteprotocol
 	template<> void ConvertJsonToCustomType<::vl::presentation::elements::Gui3DSplitterElement::Direction>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::elements::Gui3DSplitterElement::Direction& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ElementHorizontalAlignment>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::ElementHorizontalAlignment& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ElementVerticalAlignment>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::ElementVerticalAlignment& value);
-	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ElementSolidLabelMeasuring>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::ElementSolidLabelMeasuring& value);
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ElementSolidLabelMeasuringRequest>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::ElementSolidLabelMeasuringRequest& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::NativeCoordinate>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::NativeCoordinate& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::NativePoint>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::NativePoint& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::NativeSize>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::NativeSize& value);

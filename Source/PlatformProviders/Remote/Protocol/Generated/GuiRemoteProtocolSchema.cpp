@@ -136,15 +136,14 @@ namespace vl::presentation::remoteprotocol
 #undef ERROR_MESSAGE_PREFIX
 	}
 
-	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::ElementSolidLabelMeasuring>(const ::vl::presentation::remoteprotocol::ElementSolidLabelMeasuring & value)
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::ElementSolidLabelMeasuringRequest>(const ::vl::presentation::remoteprotocol::ElementSolidLabelMeasuringRequest & value)
 	{
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::ElementSolidLabelMeasuring>(const ::vl::presentation::remoteprotocol::ElementSolidLabelMeasuring&)#"
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::ElementSolidLabelMeasuringRequest>(const ::vl::presentation::remoteprotocol::ElementSolidLabelMeasuringRequest&)#"
 		auto node = Ptr(new glr::json::JsonString);
 		switch (value)
 		{
-		case ::vl::presentation::remoteprotocol::ElementSolidLabelMeasuring::None: node->content.value = L"None"; break;
-		case ::vl::presentation::remoteprotocol::ElementSolidLabelMeasuring::SingleLineHeight: node->content.value = L"SingleLineHeight"; break;
-		case ::vl::presentation::remoteprotocol::ElementSolidLabelMeasuring::TotalSize: node->content.value = L"TotalSize"; break;
+		case ::vl::presentation::remoteprotocol::ElementSolidLabelMeasuringRequest::FontHeight: node->content.value = L"FontHeight"; break;
+		case ::vl::presentation::remoteprotocol::ElementSolidLabelMeasuringRequest::TotalSize: node->content.value = L"TotalSize"; break;
 		default: CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported enum value.");
 		}
 		return node;
@@ -407,6 +406,7 @@ namespace vl::presentation::remoteprotocol
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::ElementDesc_SolidLabel>(const ::vl::presentation::remoteprotocol::ElementDesc_SolidLabel & value)
 	{
 		auto node = Ptr(new glr::json::JsonObject);
+		ConvertCustomTypeToJsonField(node, L"id", value.id);
 		ConvertCustomTypeToJsonField(node, L"textColor", value.textColor);
 		ConvertCustomTypeToJsonField(node, L"horizontalAlignment", value.horizontalAlignment);
 		ConvertCustomTypeToJsonField(node, L"verticalAlignment", value.verticalAlignment);
@@ -416,7 +416,7 @@ namespace vl::presentation::remoteprotocol
 		ConvertCustomTypeToJsonField(node, L"multiline", value.multiline);
 		ConvertCustomTypeToJsonField(node, L"font", value.font);
 		ConvertCustomTypeToJsonField(node, L"text", value.text);
-		ConvertCustomTypeToJsonField(node, L"measuring", value.measuring);
+		ConvertCustomTypeToJsonField(node, L"measuringRequest", value.measuringRequest);
 		return node;
 	}
 
@@ -567,14 +567,13 @@ namespace vl::presentation::remoteprotocol
 #undef ERROR_MESSAGE_PREFIX
 	}
 
-	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ElementSolidLabelMeasuring>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::ElementSolidLabelMeasuring& value)
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ElementSolidLabelMeasuringRequest>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::ElementSolidLabelMeasuringRequest& value)
 	{
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ElementSolidLabelMeasuring>(Ptr<JsonNode>, ::vl::presentation::remoteprotocol::ElementSolidLabelMeasuring&)#"
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ElementSolidLabelMeasuringRequest>(Ptr<JsonNode>, ::vl::presentation::remoteprotocol::ElementSolidLabelMeasuringRequest&)#"
 		auto jsonNode = node.Cast<glr::json::JsonString>();
 		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
-		if (jsonNode->content.value == L"None") value = ::vl::presentation::remoteprotocol::ElementSolidLabelMeasuring::None; else
-		if (jsonNode->content.value == L"SingleLineHeight") value = ::vl::presentation::remoteprotocol::ElementSolidLabelMeasuring::SingleLineHeight; else
-		if (jsonNode->content.value == L"TotalSize") value = ::vl::presentation::remoteprotocol::ElementSolidLabelMeasuring::TotalSize; else
+		if (jsonNode->content.value == L"FontHeight") value = ::vl::presentation::remoteprotocol::ElementSolidLabelMeasuringRequest::FontHeight; else
+		if (jsonNode->content.value == L"TotalSize") value = ::vl::presentation::remoteprotocol::ElementSolidLabelMeasuringRequest::TotalSize; else
 		CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported enum value.");
 #undef ERROR_MESSAGE_PREFIX
 	}
@@ -995,6 +994,7 @@ namespace vl::presentation::remoteprotocol
 		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
 		for (auto field : jsonNode->fields)
 		{
+			if (field->name.value == L"id") ConvertJsonToCustomType(field->value, value.id); else
 			if (field->name.value == L"textColor") ConvertJsonToCustomType(field->value, value.textColor); else
 			if (field->name.value == L"horizontalAlignment") ConvertJsonToCustomType(field->value, value.horizontalAlignment); else
 			if (field->name.value == L"verticalAlignment") ConvertJsonToCustomType(field->value, value.verticalAlignment); else
@@ -1004,7 +1004,7 @@ namespace vl::presentation::remoteprotocol
 			if (field->name.value == L"multiline") ConvertJsonToCustomType(field->value, value.multiline); else
 			if (field->name.value == L"font") ConvertJsonToCustomType(field->value, value.font); else
 			if (field->name.value == L"text") ConvertJsonToCustomType(field->value, value.text); else
-			if (field->name.value == L"measuring") ConvertJsonToCustomType(field->value, value.measuring); else
+			if (field->name.value == L"measuringRequest") ConvertJsonToCustomType(field->value, value.measuringRequest); else
 			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
 		}
 #undef ERROR_MESSAGE_PREFIX
