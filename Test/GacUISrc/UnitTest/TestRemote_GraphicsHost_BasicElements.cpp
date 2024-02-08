@@ -35,7 +35,8 @@ TEST_FILE
 
 		protocol.OnNextFrame([&]()
 		{
-			// One more rendering required by the window after the layout is stable
+			// GuiGraphicsHost::Render set updated = true
+			// GuiHostedController::GlobalTimer set windowsUpdatedInLastFrame = true
 			AssertEventLogs(
 				eventLogs,
 				L"Begin()",
@@ -46,7 +47,8 @@ TEST_FILE
 
 		protocol.OnNextFrame([&]()
 		{
-			// One more rendering required by GuiHostedController
+			// GuiGraphicsHost::Render set updated = false
+			// GuiHostedController::GlobalTimer set windowsUpdatedInLastFrame = false
 			AssertEventLogs(
 				eventLogs,
 				L"Begin()",
@@ -57,7 +59,7 @@ TEST_FILE
 
 		protocol.OnNextFrame([&]()
 		{
-			// Rendering is not triggered
+			// Rendering is not triggered because GuiHostedController::windowsUpdatedInLastFrame = false
 			AssertEventLogs(eventLogs);
 			controlHost->Hide();
 		});
@@ -102,7 +104,9 @@ TEST_FILE
 
 		protocol.OnNextFrame([&]()
 		{
-			// One more rendering required by the window after the layout is stable
+			// Layout is updated
+			// GuiGraphicsHost::Render set updated = true
+			// GuiHostedController::GlobalTimer set windowsUpdatedInLastFrame = true
 			AssertEventLogs(
 				eventLogs,
 				L"Begin()",
@@ -113,7 +117,8 @@ TEST_FILE
 
 		protocol.OnNextFrame([&]()
 		{
-			// One more rendering required by GuiHostedController
+			// GuiGraphicsHost::Render set updated = false
+			// GuiHostedController::GlobalTimer set windowsUpdatedInLastFrame = false
 			AssertEventLogs(
 				eventLogs,
 				L"Begin()",
@@ -124,7 +129,7 @@ TEST_FILE
 
 		protocol.OnNextFrame([&]()
 		{
-			// Rendering is not triggered
+			// Rendering is not triggered because GuiHostedController::windowsUpdatedInLastFrame = false
 			AssertEventLogs(eventLogs);
 			element->SetColor(Color(0, 0, 255));
 			element->SetShape({ ElementShapeType::Ellipse });
@@ -145,7 +150,8 @@ TEST_FILE
 
 		protocol.OnNextFrame([&]()
 		{
-			// One more rendering required by the window after the layout is stable
+			// GuiGraphicsHost::Render set updated = true
+			// GuiHostedController::GlobalTimer set windowsUpdatedInLastFrame = true
 			AssertEventLogs(
 				eventLogs,
 				L"Begin()",
@@ -156,7 +162,8 @@ TEST_FILE
 
 		protocol.OnNextFrame([&]()
 		{
-			// One more rendering required by GuiHostedController
+			// GuiGraphicsHost::Render set updated = false
+			// GuiHostedController::GlobalTimer set windowsUpdatedInLastFrame = false
 			AssertEventLogs(
 				eventLogs,
 				L"Begin()",
@@ -167,7 +174,7 @@ TEST_FILE
 
 		protocol.OnNextFrame([&]()
 		{
-			// Rendering is not triggered
+			// Rendering is not triggered because GuiHostedController::windowsUpdatedInLastFrame = false
 			AssertEventLogs(eventLogs);
 			controlHost->Hide();
 		});
@@ -296,7 +303,8 @@ TEST_FILE
 		protocol.OnNextFrame([&]()
 		{
 			// Layout is ready, the size of the polygon cell is updated to (200,100)
-			// One more rendering required by the window after the layout is stable
+			// GuiGraphicsHost::Render set updated = true
+			// GuiHostedController::GlobalTimer set windowsUpdatedInLastFrame = true
 			AssertEventLogs(
 				eventLogs,
 				L"Begin()",
@@ -312,7 +320,8 @@ TEST_FILE
 
 		protocol.OnNextFrame([&]()
 		{
-			// One more rendering required by GuiHostedController
+			// GuiGraphicsHost::Render set updated = false
+			// GuiHostedController::GlobalTimer set windowsUpdatedInLastFrame = false
 			AssertEventLogs(
 				eventLogs,
 				L"Begin()",
@@ -328,7 +337,7 @@ TEST_FILE
 
 		protocol.OnNextFrame([&]()
 		{
-			// Rendering is not triggered
+			// Rendering is not triggered because GuiHostedController::windowsUpdatedInLastFrame = false
 			AssertEventLogs(eventLogs);
 			controlHost->Hide();
 		});
