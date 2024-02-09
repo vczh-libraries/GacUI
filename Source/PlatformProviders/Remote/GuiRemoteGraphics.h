@@ -84,6 +84,9 @@ GuiRemoteGraphicsResourceManager
 			void								Initialize();
 			void								Finalize();
 
+			void								OnControllerConnect();
+			void								OnControllerDisconnect();
+
 			// =============================================================
 			// IGuiGraphicsResourceManager
 			// =============================================================

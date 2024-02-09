@@ -41,31 +41,32 @@ GuiRemoteController
 		using HotKeySet = collections::SortedList<HotKeyEntry>;
 		using HotKeyIds = collections::Dictionary<vint, HotKeyEntry>;
 	protected:
-		IGuiRemoteProtocol*				remoteProtocol;
-		GuiRemoteMessages				remoteMessages;
-		GuiRemoteEvents					remoteEvents;
-		GuiRemoteWindow					remoteWindow;
-		SharedCallbackService			callbackService;
-		SharedAsyncService				asyncService;
-		bool							applicationRunning = false;
-		bool							connectionForcedToStop = false;
-		bool							connectionStopped = false;
+		IGuiRemoteProtocol*								remoteProtocol = nullptr;
+		GuiRemoteMessages								remoteMessages;
+		GuiRemoteEvents									remoteEvents;
+		GuiRemoteWindow									remoteWindow;
+		elements::GuiRemoteGraphicsResourceManager*		resourceManager = nullptr;
+		SharedCallbackService							callbackService;
+		SharedAsyncService								asyncService;
+		bool											applicationRunning = false;
+		bool											connectionForcedToStop = false;
+		bool											connectionStopped = false;
 
-		remoteprotocol::FontConfig		remoteFontConfig;
-		remoteprotocol::ScreenConfig	remoteScreenConfig;
+		remoteprotocol::FontConfig						remoteFontConfig;
+		remoteprotocol::ScreenConfig					remoteScreenConfig;
 
-		vint							usedHotKeys = (vint)NativeGlobalShortcutKeyResult::ValidIdBegins;
-		HotKeySet						hotKeySet;
-		HotKeyIds						hotKeyIds;
+		vint											usedHotKeys = (vint)NativeGlobalShortcutKeyResult::ValidIdBegins;
+		HotKeySet										hotKeySet;
+		HotKeyIds										hotKeyIds;
 
-		CursorMap						cursors;
-		bool							timerEnabled = false;
-		bool							windowCreated = false;
-		bool							windowDestroyed = false;
+		CursorMap										cursors;
+		bool											timerEnabled = false;
+		bool											windowCreated = false;
+		bool											windowDestroyed = false;
 
-		collections::Dictionary<VKEY, WString>		keyNames;
-		collections::Dictionary<WString, VKEY>		keyCodes;
-		bool										keyInitialized = false;
+		collections::Dictionary<VKEY, WString>			keyNames;
+		collections::Dictionary<WString, VKEY>			keyCodes;
+		bool											keyInitialized = false;
 
 		// =============================================================
 		// INativeResourceService

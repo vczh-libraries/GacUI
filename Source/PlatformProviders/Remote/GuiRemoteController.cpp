@@ -308,11 +308,13 @@ GuiRemoteController (events)
 		remoteScreenConfig = remoteMessages.RetrieveControllerGetScreenConfig(idGetScreenConfig);
 		remoteMessages.ClearResponses();
 		remoteWindow.OnControllerConnect();
+		resourceManager->OnControllerConnect();
 	}
 
 	void GuiRemoteController::OnControllerDisconnect()
 	{
 		remoteWindow.OnControllerDisconnect();
+		resourceManager->OnControllerDisconnect();
 	}
 
 	void GuiRemoteController::OnControllerRequestExit()

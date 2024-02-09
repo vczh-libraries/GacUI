@@ -192,6 +192,7 @@ GuiRemoteGraphicsResourceManager
 		: remote(_remote)
 		, renderTarget(_remote)
 	{
+		remote->resourceManager = this;
 	}
 
 	GuiRemoteGraphicsResourceManager::~GuiRemoteGraphicsResourceManager()
@@ -215,6 +216,14 @@ GuiRemoteGraphicsResourceManager
 	}
 
 	void GuiRemoteGraphicsResourceManager::Finalize()
+	{
+	}
+
+	void GuiRemoteGraphicsResourceManager::OnControllerConnect()
+	{
+	}
+
+	void GuiRemoteGraphicsResourceManager::OnControllerDisconnect()
 	{
 	}
 
