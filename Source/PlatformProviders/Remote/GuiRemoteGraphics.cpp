@@ -1,5 +1,6 @@
 #include "GuiRemoteController.h"
 #include "GuiRemoteGraphics_BasicElements.h"
+#include "../Hosted/GuiHostedController.h"
 
 namespace vl::presentation::elements
 {
@@ -163,6 +164,7 @@ GuiRemoteGraphicsRenderTarget
 				{
 					renderersAskingForCache.Add(renderer);
 				}
+				renderer->ResetUpdated();
 			}
 		}
 	}
@@ -221,9 +223,10 @@ GuiRemoteGraphicsRenderTarget
 GuiRemoteGraphicsResourceManager
 ***********************************************************************/
 
-	GuiRemoteGraphicsResourceManager::GuiRemoteGraphicsResourceManager(GuiRemoteController* _remote)
+	GuiRemoteGraphicsResourceManager::GuiRemoteGraphicsResourceManager(GuiRemoteController* _remote, GuiHostedController* _hostedController)
 		: remote(_remote)
 		, renderTarget(_remote)
+		, hostedController(_hostedController)
 	{
 		remote->resourceManager = this;
 	}
@@ -255,6 +258,7 @@ GuiRemoteGraphicsResourceManager
 	void GuiRemoteGraphicsResourceManager::OnControllerConnect()
 	{
 		renderTarget.OnControllerConnect();
+		hostedController->RequestRefresh();
 	}
 
 	void GuiRemoteGraphicsResourceManager::OnControllerDisconnect()

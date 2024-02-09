@@ -16,6 +16,7 @@ Interfaces:
 
 namespace vl::presentation
 {
+	class GuiHostedController;
 	class GuiRemoteController;
 	class GuiRemoteMessages;
 
@@ -79,9 +80,10 @@ GuiRemoteGraphicsResourceManager
 		protected:
 			GuiRemoteController*				remote;
 			GuiRemoteGraphicsRenderTarget		renderTarget;
+			GuiHostedController*				hostedController;
 
 		public:
-			GuiRemoteGraphicsResourceManager(GuiRemoteController* _remote);
+			GuiRemoteGraphicsResourceManager(GuiRemoteController* _remote, GuiHostedController* _hostedController);
 			~GuiRemoteGraphicsResourceManager();
 
 			void								Initialize();

@@ -210,6 +210,7 @@ GuiHostedController
 
 			void							Initialize();
 			void							Finalize();
+			void							RequestRefresh();
 
 			// =============================================================
 			// INativeController

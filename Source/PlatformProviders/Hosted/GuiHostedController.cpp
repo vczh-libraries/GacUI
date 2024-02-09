@@ -1061,6 +1061,11 @@ GuiHostedController
 #undef ERROR_MESSAGE_PREFIX
 		}
 
+		void GuiHostedController::RequestRefresh()
+		{
+			wmManager->needRefresh = true;
+		}
+
 /***********************************************************************
 GuiHostedController::INativeController
 ***********************************************************************/
