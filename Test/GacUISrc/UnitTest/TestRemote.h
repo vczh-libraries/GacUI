@@ -16,6 +16,7 @@ void StartRemoteControllerTest(TProtocol& protocol)
 {
 	JsonProtocol jsonProtocol(&protocol);
 	GuiRemoteProtocolFilter filteredProtocol(&jsonProtocol);
-	SetupRemoteNativeController(&filteredProtocol);
+	GuiRemoteProtocolFilterVerifier verifierProtocol(&filteredProtocol);
+	SetupRemoteNativeController(&verifierProtocol);
 	SetGuiMainProxy({});
 }

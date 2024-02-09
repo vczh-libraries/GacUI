@@ -665,9 +665,9 @@ GuiRemoteProtocolFilterVerifier
 	
 		void Initialize(IGuiRemoteProtocolEvents* _events) override
 		{
+			targetProtocol->Initialize(&eventFilter);
 			eventFilter.targetEvents = targetProtocol->eventFilter.targetEvents;
 			targetProtocol->eventFilter.targetEvents = _events;
-			targetProtocol->Initialize(&eventFilter);
 		}
 	
 		void Submit() override
