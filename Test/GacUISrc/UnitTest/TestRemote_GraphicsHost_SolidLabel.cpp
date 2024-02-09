@@ -242,7 +242,7 @@ TEST_FILE
 		StartRemoteControllerTest(protocol);
 	});
 
-	TEST_CATEGORY(L"Reconnect and recache font heights")
+	TEST_CATEGORY(L"Disconnect after caching font heights to trigger recache")
 	{
 	});
 }
