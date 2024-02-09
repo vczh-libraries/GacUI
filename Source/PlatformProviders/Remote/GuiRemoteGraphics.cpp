@@ -60,6 +60,8 @@ GuiRemoteGraphicsRenderTarget
 		auto measuring = remote->remoteMessages.RetrieveRendererEndRendering(idRendering);
 		remote->remoteMessages.ClearResponses();
 
+		bool minSizeChanged = false;
+
 		if (measuring.fontHeights)
 		{
 			for (auto&& fontHeight : *measuring.fontHeights.Obj())
@@ -75,7 +77,12 @@ GuiRemoteGraphicsRenderTarget
 			for (vint i = renderersAskingForCache.Count() - 1; i >= 0; i--)
 			{
 				auto renderer = renderersAskingForCache[i];
+				auto oldMinSize = renderer->GetRenderer()->GetMinSize();
 				renderer->TryFetchMinSizeFromCache();
+				if (oldMinSize != renderer->GetRenderer()->GetMinSize())
+				{
+					minSizeChanged = true;
+				}
 				if (!renderer->NeedUpdateMinSizeFromCache())
 				{
 					renderersAskingForCache.RemoveAt(i);
@@ -90,9 +97,20 @@ GuiRemoteGraphicsRenderTarget
 				vint index = renderers.Keys().IndexOf(minSize.id);
 				if (index != -1)
 				{
-					renderers.Values()[index]->UpdateMinSize(minSize.minSize);
+					auto renderer = renderers.Values()[index];
+					auto oldMinSize = renderer->GetRenderer()->GetMinSize();
+					renderer->UpdateMinSize(minSize.minSize);
+					if (oldMinSize != renderer->GetRenderer()->GetMinSize())
+					{
+						minSizeChanged = true;
+					}
 				}
 			}
+		}
+
+		if (minSizeChanged)
+		{
+			hostedController->RequestRefresh();
 		}
 
 		if (canvasSize == remote->remoteWindow.GetClientSize())
@@ -130,8 +148,9 @@ GuiRemoteGraphicsRenderTarget
 		clipperValidArea = validArea;
 	}
 
-	GuiRemoteGraphicsRenderTarget::GuiRemoteGraphicsRenderTarget(GuiRemoteController* _remote)
+	GuiRemoteGraphicsRenderTarget::GuiRemoteGraphicsRenderTarget(GuiRemoteController* _remote, GuiHostedController* _hostedController)
 		: remote(_remote)
+		, hostedController(_hostedController)
 	{
 	}
 
@@ -225,7 +244,7 @@ GuiRemoteGraphicsResourceManager
 
 	GuiRemoteGraphicsResourceManager::GuiRemoteGraphicsResourceManager(GuiRemoteController* _remote, GuiHostedController* _hostedController)
 		: remote(_remote)
-		, renderTarget(_remote)
+		, renderTarget(_remote, _hostedController)
 		, hostedController(_hostedController)
 	{
 		remote->resourceManager = this;

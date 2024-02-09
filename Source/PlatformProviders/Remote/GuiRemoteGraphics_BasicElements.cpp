@@ -45,6 +45,12 @@ GuiSolidBorderElementRenderer
 	}
 
 	RENDERER_TEMPLATE_HEADER
+	IGuiGraphicsRenderer* RENDERER_CLASS_TYPE::GetRenderer()
+	{
+		return this;
+	}
+
+	RENDERER_TEMPLATE_HEADER
 	vint RENDERER_CLASS_TYPE::GetID()
 	{
 		return id;

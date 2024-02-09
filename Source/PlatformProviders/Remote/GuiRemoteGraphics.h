@@ -38,6 +38,7 @@ GuiRemoteGraphicsRenderTarget
 			using FontHeightMap = collections::Dictionary<Tuple<WString, vint>, vint>;
 		protected:
 			GuiRemoteController*				remote;
+			GuiHostedController*				hostedController;
 			NativeSize							canvasSize;
 			vint								usedElementIds = 0;
 			RendererMap							renderers;
@@ -58,7 +59,7 @@ GuiRemoteGraphicsRenderTarget
 		public:
 			FontHeightMap						fontHeights;
 
-			GuiRemoteGraphicsRenderTarget(GuiRemoteController* _remote);
+			GuiRemoteGraphicsRenderTarget(GuiRemoteController* _remote, GuiHostedController* _hostedController);
 			~GuiRemoteGraphicsRenderTarget();
 
 			void								OnControllerConnect();

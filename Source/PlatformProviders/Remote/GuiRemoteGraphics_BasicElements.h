@@ -20,6 +20,7 @@ namespace vl::presentation::elements_remoteprotocol
 	class IGuiRemoteProtocolElementRender : public virtual Interface
 	{
 	public:
+		virtual IGuiGraphicsRenderer*			GetRenderer() = 0;
 		virtual vint							GetID() = 0;
 		virtual remoteprotocol::RendererType	GetRendererType() = 0;
 		virtual bool							IsUpdated() = 0;
@@ -46,6 +47,7 @@ namespace vl::presentation::elements_remoteprotocol
 		void							RenderTargetChangedInternal(GuiRemoteGraphicsRenderTarget* oldRenderTarget, GuiRemoteGraphicsRenderTarget* newRenderTarget);
 	public:
 		// IGuiRemoteProtocolElementRender
+		IGuiGraphicsRenderer*			GetRenderer() override;
 		vint							GetID() override;
 		remoteprotocol::RendererType	GetRendererType() override;
 		bool							IsUpdated() override;
