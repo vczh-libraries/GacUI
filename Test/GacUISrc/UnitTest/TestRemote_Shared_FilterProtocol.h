@@ -259,11 +259,14 @@ GuiRemoteEventFilter
 /***********************************************************************
 GuiRemoteProtocolFilter
 ***********************************************************************/
+
+	class GuiRemoteProtocolFilterVerifier;
 	
 	class GuiRemoteProtocolFilter
 		: public Object
 		, public virtual IGuiRemoteProtocol
 	{
+		friend class GuiRemoteProtocolFilterVerifier;
 	protected:
 		IGuiRemoteProtocol*										targetProtocol = nullptr;
 		GuiRemoteEventFilter									eventFilter;
@@ -519,11 +522,11 @@ GuiRemoteEventFilterVerifier
 #define EVENT_NODROP(NAME)
 	
 #define EVENT_DROPREP(NAME)\
-			CHECK_ERROR(!lastDropRepeatEvent ## NAME, L"vl::presentation::remoteprotocol::GuiRemoteEventFilterVerifier::" L ## #NAME L"()#[@DropRepeat] event repeated.");\
+			CHECK_ERROR(!lastDropRepeatEvent ## NAME, L"vl::presentation::remoteprotocol::GuiRemoteEventFilterVerifier::On" L ## #NAME L"(...)#[@DropRepeat] event repeated.");\
 			lastDropRepeatEvent ## NAME = true;\
 	
 #define EVENT_DROPCON(NAME)\
-			CHECK_ERROR(!lastDropConsecutiveEvent ## NAME, L"vl::presentation::remoteprotocol::GuiRemoteEventFilterVerifier::" L ## #NAME L"()#[@DropConsecutive] event repeated.");\
+			CHECK_ERROR(!lastDropConsecutiveEvent ## NAME, L"vl::presentation::remoteprotocol::GuiRemoteEventFilterVerifier::On" L ## #NAME L"(...)#[@DropConsecutive] event repeated.");\
 			ClearDropConsecutiveMasks();\
 			lastDropConsecutiveEvent ## NAME = true;\
 	
@@ -568,6 +571,120 @@ GuiRemoteEventFilterVerifier
 /***********************************************************************
 GuiRemoteProtocolFilterVerifier
 ***********************************************************************/
+	
+	class GuiRemoteProtocolFilterVerifier
+		: public Object
+		, public virtual IGuiRemoteProtocol
+	{
+	protected:
+		GuiRemoteProtocolFilter*								targetProtocol = nullptr;
+		GuiRemoteEventFilterVerifier							eventFilter;
+		vint													lastRequestId = -1;
+		collections::List<FilteredRequest>						filteredRequests;
+	
+#define MESSAGE_NODROP(NAME)
+#define MESSAGE_DROPREP(NAME)												bool lastDropRepeatRequest ## NAME = false;
+#define MESSAGE_HANDLER(NAME, REQUEST, RESPONSE, REQTAG, RESTAG, DROPTAG)	MESSAGE_ ## DROPTAG(NAME)
+		GACUI_REMOTEPROTOCOL_MESSAGES(MESSAGE_HANDLER)
+#undef MESSAGE_HANDLER
+#undef MESSAGE_DROPREP
+#undef MESSAGE_NODROP
+	
+		void ClearDropRepeatMasks()
+		{
+#define MESSAGE_NODROP(NAME)
+#define MESSAGE_DROPREP(NAME)												lastDropRepeatRequest ## NAME = false;
+#define MESSAGE_HANDLER(NAME, REQUEST, RESPONSE, REQTAG, RESTAG, DROPTAG)	MESSAGE_ ## DROPTAG(NAME)
+			GACUI_REMOTEPROTOCOL_MESSAGES(MESSAGE_HANDLER)
+#undef MESSAGE_HANDLER
+#undef MESSAGE_DROPREP
+#undef MESSAGE_NODROP
+		}
+	public:
+		GuiRemoteProtocolFilterVerifier(GuiRemoteProtocolFilter* _protocol)
+			: targetProtocol(_protocol)
+		{
+		}
+	
+	protected:
+	
+	public:
+	
+		// messages
+	
+#define MESSAGE_NODROP(NAME)
+	
+#define MESSAGE_DROPREP(NAME)\
+			CHECK_ERROR(!lastDropRepeatRequest ## NAME, L"vl::presentation::remoteprotocol::GuiRemoteProtocolFilterVerifier::Request" L ## #NAME L"(...)#[@DropRepeat] message repeated.");\
+			lastDropRepeatRequest ## NAME = true;\
+	
+#define MESSAGE_NOREQ_NORES(NAME, REQUEST, RESPONSE, DROPTAG)\
+		void Request ## NAME() override\
+		{\
+			MESSAGE_ ## DROPTAG(NAME);\
+			targetProtocol->Request ## NAME();\
+		}\
+	
+#define MESSAGE_NOREQ_RES(NAME, REQUEST, RESPONSE, DROPTAG)\
+		void Request ## NAME(vint id) override\
+		{\
+			MESSAGE_ ## DROPTAG(NAME);\
+			targetProtocol->Request ## NAME(id);\
+		}\
+	
+#define MESSAGE_REQ_NORES(NAME, REQUEST, RESPONSE, DROPTAG)\
+		void Request ## NAME(const REQUEST& arguments) override\
+		{\
+			MESSAGE_ ## DROPTAG(NAME);\
+			targetProtocol->Request ## NAME(arguments);\
+		}\
+	
+#define MESSAGE_REQ_RES(NAME, REQUEST, RESPONSE, DROPTAG)\
+		void Request ## NAME(vint id, const REQUEST& arguments) override\
+		{\
+			MESSAGE_ ## DROPTAG(NAME);\
+			targetProtocol->Request ## NAME(id, arguments);\
+		}\
+	
+#define MESSAGE_HANDLER(NAME, REQUEST, RESPONSE, REQTAG, RESTAG, DROPTAG, ...)	MESSAGE_ ## REQTAG ## _ ## RESTAG(NAME, REQUEST, RESPONSE, DROPTAG)
+		GACUI_REMOTEPROTOCOL_MESSAGES(MESSAGE_HANDLER)
+#undef MESSAGE_HANDLER
+#undef MESSAGE_REQ_RES
+#undef MESSAGE_REQ_NORES
+#undef MESSAGE_NOREQ_RES
+#undef MESSAGE_NOREQ_NORES
+#undef MESSAGE_DROPREP
+#undef MESSAGE_NODROP
+	
+		// protocol
+	
+		WString GetExecutablePath() override
+		{
+			return targetProtocol->GetExecutablePath();
+		}
+	
+		void Initialize(IGuiRemoteProtocolEvents* _events) override
+		{
+			eventFilter.targetEvents = targetProtocol->eventFilter.targetEvents;
+			targetProtocol->eventFilter.targetEvents = _events;
+			targetProtocol->Initialize(&eventFilter);
+		}
+	
+		void Submit() override
+		{
+			eventFilter.submitting = true;
+			targetProtocol->Submit();
+			ClearDropRepeatMasks();
+			eventFilter.ClearDropRepeatMasks();
+			eventFilter.ClearDropConsecutiveMasks();
+			eventFilter.submitting = false;
+		}
+	
+		void ProcessRemoteEvents() override
+		{
+			targetProtocol->ProcessRemoteEvents();
+		}
+	};
 }
 
 #endif
