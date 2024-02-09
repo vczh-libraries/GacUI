@@ -66,7 +66,7 @@ TEST_FILE
 		StartRemoteControllerTest(protocol);
 	});
 
-	TEST_CATEGORY(L"Update SolidLabel and get measuring requests")
+	TEST_CATEGORY(L"Update SolidLabel and cache font heights")
 	{
 		List<WString> eventLogs;
 		GraphicsHostRenderingProtocol protocol(eventLogs);
@@ -199,18 +199,50 @@ TEST_FILE
 			eventLogs,
 			[&]()
 			{
-				controlHost->Hide();
+				auto f1 = e1->GetFont();
+				auto f2 = e2->GetFont();
+				e1->SetFont(f2);
+				e2->SetFont(f1);
 			},
 			// Layout stablized
 			L"Render(1, {0,0:100,14}, {0,0:640,480})",
 			L"Render(2, {0,14:100,16}, {0,0:640,480})"
 			);
 
+		protocol.OnNextFrame([&]()
+		{
+			// Heights updated to texts
+			// No need to send new font heights since they are already cached
+			// So heights already updated to cells
+			// It skips one frame comparing to before
+			AssertEventLogs(
+				eventLogs,
+				L"Updated(1, #000000, Left, Top, <flags:[e]>, <font:Three:16>, <notext>, <request:FontHeight>)",
+				L"Updated(2, #000000, Left, Top, <flags:[e]>, <font:Two:14>, <notext>, <request:FontHeight>)",
+				L"Begin()",
+				L"Render(1, {0,0:100,14}, {0,0:640,480})",
+				L"Render(2, {0,14:100,16}, {0,0:640,480})",
+				L"End()"
+				);
+		});
+
+		AssertRenderingEventLogs(
+			protocol,
+			eventLogs,
+			[&]()
+			{
+				controlHost->Hide();
+			},
+			// Layout stablized
+			L"Render(1, {0,0:100,16}, {0,0:640,480})",
+			L"Render(2, {0,16:100,14}, {0,0:640,480})"
+			);
+
 		SetGuiMainProxy(MakeGuiMain(protocol, eventLogs, controlHost));
 		StartRemoteControllerTest(protocol);
 	});
 
-	TEST_CATEGORY(L"Multiple SolidLabel sharing different font heights")
+	TEST_CATEGORY(L"Reconnect and recache font heights")
 	{
 	});
 }
