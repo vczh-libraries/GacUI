@@ -34,8 +34,8 @@
 - A general remoting `INativeController` implementation.
   - Add hittest (only for main window)/cursor messages, or implement it with SyncDom.
   - Move `GuiRemoteProtocolFilter` and `GuiRemoteEventFilter` from unit test to `GuiRemoteController`.
-    - Update implementation from if-chain to switch-case.
-  - Verify dropped messages/events not be called in unit test.
+    - `GuiRemoteProtocolFilterVerifier` and `GuiRemoteEventFilterVerifier`.
+    - Verify dropped messages/events not be called in debug mode.
 - UnitTest.vcxproj
   - Test `GuiVirtualRepeatCompositionBase::GetAdoptedSize`.
   - Test `GuiVirtualRepeatCompositionBase::GetTotalSize` with `UseMinimumTotalSize`.

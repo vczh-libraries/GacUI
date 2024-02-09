@@ -103,17 +103,20 @@ namespace vl::presentation::remoteprotocol
 			{
 #define MESSAGE_NORES(NAME, RESPONSE)
 #define MESSAGE_RES(NAME, RESPONSE)\
-				if (response.name == FilteredResponseNames::NAME)\
-				{\
+				case FilteredResponseNames::NAME:\
 					targetEvents->Respond ## NAME(response.id, response.arguments.Get<RESPONSE>());\
-				} else\
+					break;\
 	
 #define MESSAGE_HANDLER(NAME, REQUEST, RESPONSE, REQTAG, RESTAG, ...)	MESSAGE_ ## RESTAG(NAME, RESPONSE)
+				switch (response.name)
+				{
 				GACUI_REMOTEPROTOCOL_MESSAGES(MESSAGE_HANDLER)
+				default:
+					CHECK_FAIL(L"vl::presentation::remoteprotocol::GuiRemoteEventFilter::ProcessResponses()#Unrecognized response.");
+				}
 #undef MESSAGE_HANDLER
 #undef MESSAGE_RES
 #undef MESSAGE_NORES
-				CHECK_FAIL(L"vl::presentation::remoteprotocol::GuiRemoteEventFilter::ProcessResponses()#Unrecognized response.");
 			}
 	
 			filteredResponses.Clear();
@@ -141,23 +144,25 @@ namespace vl::presentation::remoteprotocol
 				}
 	
 #define EVENT_NOREQ(NAME, REQUEST)\
-				if (event.name == FilteredEventNames::NAME)\
-				{\
+				case FilteredEventNames::NAME:\
 					targetEvents->On ## NAME();\
-				} else\
+					break;\
 	
 #define EVENT_REQ(NAME, REQUEST)\
-				if (event.name == FilteredEventNames::NAME)\
-				{\
+				case FilteredEventNames::NAME:\
 					targetEvents->On ## NAME(event.arguments.Get<REQUEST>());\
-				} else\
+					break;\
 	
 #define EVENT_HANDLER(NAME, REQUEST, REQTAG, ...)	EVENT_ ## REQTAG(NAME, REQUEST)
+				switch (event.name)
+				{
 				GACUI_REMOTEPROTOCOL_EVENTS(EVENT_HANDLER)
+				default:
+					CHECK_FAIL(L"vl::presentation::remoteprotocol::GuiRemoteEventFilter::ProcessEvents()#Unrecognized event.");
+				}
 #undef EVENT_HANDLER
 #undef EVENT_REQ
 #undef EVENT_NOREQ
-				CHECK_FAIL(L"vl::presentation::remoteprotocol::GuiRemoteEventFilter::ProcessEvents()#Unrecognized event.");
 			}
 		}
 
@@ -287,37 +292,37 @@ namespace vl::presentation::remoteprotocol
 				}
 	
 #define MESSAGE_NOREQ_NORES(NAME, REQUEST, RESPONSE)\
-				if (request.name == FilteredRequestNames::NAME)\
-				{\
+				case FilteredRequestNames::NAME:\
 					targetProtocol->Request ## NAME();\
-				} else\
+					break;\
 	
 #define MESSAGE_NOREQ_RES(NAME, REQUEST, RESPONSE)\
-				if (request.name == FilteredRequestNames::NAME)\
-				{\
+				case FilteredRequestNames::NAME:\
 					targetProtocol->Request ## NAME(request.id);\
-				} else\
+					break;\
 	
 #define MESSAGE_REQ_NORES(NAME, REQUEST, RESPONSE)\
-				if (request.name == FilteredRequestNames::NAME)\
-				{\
+				case FilteredRequestNames::NAME:\
 					targetProtocol->Request ## NAME(request.arguments.Get<REQUEST>());\
-				} else\
+					break;\
 	
 #define MESSAGE_REQ_RES(NAME, REQUEST, RESPONSE)\
-				if (request.name == FilteredRequestNames::NAME)\
-				{\
+				case FilteredRequestNames::NAME:\
 					targetProtocol->Request ## NAME(request.id, request.arguments.Get<REQUEST>());\
-				} else\
+					break;\
 	
 #define MESSAGE_HANDLER(NAME, REQUEST, RESPONSE, REQTAG, RESTAG, ...)	MESSAGE_ ## REQTAG ## _ ## RESTAG(NAME, REQUEST, RESPONSE)
+				switch (request.name)
+				{
 				GACUI_REMOTEPROTOCOL_MESSAGES(MESSAGE_HANDLER)
+				default:
+					CHECK_FAIL(L"vl::presentation::remoteprotocol::GuiRemoteProtocolFilter::ProcessRequests()#Unrecognized request.");
+				}
 #undef MESSAGE_HANDLER
 #undef MESSAGE_REQ_RES
 #undef MESSAGE_REQ_NORES
 #undef MESSAGE_NOREQ_RES
 #undef MESSAGE_NOREQ_NORES
-				CHECK_FAIL(L"vl::presentation::remoteprotocol::GuiRemoteProtocolFilter::ProcessRequests()#Unrecognized request.");
 			}
 	
 			CHECK_ERROR(eventFilter.responseIds.Count() == 0, L"Messages sending to IGuiRemoteProtocol should be all responded.");
