@@ -36,9 +36,6 @@
   - Move `GuiRemoteProtocolFilter` and `GuiRemoteEventFilter` from unit test to `GuiRemoteController`.
     - Update implementation from if-chain to switch-case.
   - Verify dropped messages/events not be called in unit test.
-- (SyncDom) Implement all renderers except `ImageFrameElement`, `ColorizedTextElement` and `DocumentElement`.
-  - On new connection established, data of all elements are sync.
-    - Sizes of all `GuiSolidLabelElementRenderer` are sent back at this moment.
 - UnitTest.vcxproj
   - Test `GuiVirtualRepeatCompositionBase::GetAdoptedSize`.
   - Test `GuiVirtualRepeatCompositionBase::GetTotalSize` with `UseMinimumTotalSize`.
