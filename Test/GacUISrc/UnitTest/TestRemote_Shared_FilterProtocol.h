@@ -74,6 +74,10 @@ namespace vl::presentation::remoteprotocol
 		FilteredEventTypes		arguments;
 	};
 
+/***********************************************************************
+GuiRemoteEventFilter
+***********************************************************************/
+
 	class GuiRemoteEventFilter
 		: public Object
 		, public virtual IGuiRemoteProtocolEvents
@@ -251,6 +255,10 @@ namespace vl::presentation::remoteprotocol
 #undef EVENT_DROPREP
 #undef EVENT_NOREP
 	};
+
+/***********************************************************************
+GuiRemoteProtocolFilter
+***********************************************************************/
 	
 	class GuiRemoteProtocolFilter
 		: public Object
@@ -441,6 +449,125 @@ namespace vl::presentation::remoteprotocol
 			targetProtocol->ProcessRemoteEvents();
 		}
 	};
+
+/***********************************************************************
+GuiRemoteEventFilterVerifier
+***********************************************************************/
+
+	class GuiRemoteEventFilterVerifier
+		: public Object
+		, public virtual IGuiRemoteProtocolEvents
+	{
+	protected:
+#define EVENT_NODROP(NAME)
+#define EVENT_DROPREP(NAME)										bool lastDropRepeatEvent ## NAME = false;
+#define EVENT_DROPCON(NAME)										bool lastDropConsecutiveEvent ## NAME = false;
+#define EVENT_HANDLER(NAME, REQUEST, REQTAG, DROPTAG, ...)		EVENT_ ## DROPTAG(NAME)
+			GACUI_REMOTEPROTOCOL_EVENTS(EVENT_HANDLER)
+#undef EVENT_HANDLER
+#undef EVENT_DROPCON
+#undef EVENT_DROPREP
+#undef EVENT_NODROP
+
+	public:
+		IGuiRemoteProtocolEvents*								targetEvents = nullptr;
+		bool													submitting = false;
+
+		void ClearDropRepeatMasks()
+		{
+#define EVENT_NODROP(NAME)
+#define EVENT_DROPREP(NAME)									lastDropRepeatEvent ## NAME = false;
+#define EVENT_DROPCON(NAME)
+#define EVENT_HANDLER(NAME, REQUEST, REQTAG, DROPTAG, ...)	EVENT_ ## DROPTAG(NAME)
+			GACUI_REMOTEPROTOCOL_EVENTS(EVENT_HANDLER)
+#undef EVENT_HANDLER
+#undef EVENT_DROPCON
+#undef EVENT_DROPREP
+#undef EVENT_NODROP
+		}
+
+		void ClearDropConsecutiveMasks()
+		{
+#define EVENT_NODROP(NAME)
+#define EVENT_DROPREP(NAME)
+#define EVENT_DROPCON(NAME)									lastDropConsecutiveEvent ## NAME = false;
+#define EVENT_HANDLER(NAME, REQUEST, REQTAG, DROPTAG, ...)	EVENT_ ## DROPTAG(NAME)
+			GACUI_REMOTEPROTOCOL_EVENTS(EVENT_HANDLER)
+#undef EVENT_HANDLER
+#undef EVENT_DROPCON
+#undef EVENT_DROPREP
+#undef EVENT_NODROP
+		}
+
+		// responses
+
+#define MESSAGE_NORES(NAME, RESPONSE)
+#define MESSAGE_RES(NAME, RESPONSE)\
+		void Respond ## NAME(vint id, const RESPONSE& arguments) override\
+		{\
+			targetEvents->Respond ## NAME(id, arguments);\
+		}\
+	
+#define MESSAGE_HANDLER(NAME, REQUEST, RESPONSE, REQTAG, RESTAG, ...)	MESSAGE_ ## RESTAG(NAME, RESPONSE)
+			GACUI_REMOTEPROTOCOL_MESSAGES(MESSAGE_HANDLER)
+#undef MESSAGE_HANDLER
+#undef MESSAGE_RES
+#undef MESSAGE_NORES
+
+		// events
+	
+#define EVENT_NODROP(NAME)
+	
+#define EVENT_DROPREP(NAME)\
+			CHECK_ERROR(!lastDropRepeatEvent ## NAME, L"vl::presentation::remoteprotocol::GuiRemoteEventFilterVerifier::" L ## #NAME L"()#[@DropRepeat] event repeated.");\
+			lastDropRepeatEvent ## NAME = true;\
+	
+#define EVENT_DROPCON(NAME)\
+			CHECK_ERROR(!lastDropConsecutiveEvent ## NAME, L"vl::presentation::remoteprotocol::GuiRemoteEventFilterVerifier::" L ## #NAME L"()#[@DropConsecutive] event repeated.");\
+			ClearDropConsecutiveMasks();\
+			lastDropConsecutiveEvent ## NAME = true;\
+	
+#define EVENT_NOREQ(NAME, REQUEST, DROPTAG)\
+		void On ## NAME() override\
+		{\
+			if (submitting)\
+			{\
+				EVENT_ ## DROPTAG(NAME);\
+				targetEvents->On ## NAME();\
+			}\
+			else\
+			{\
+				targetEvents->On ## NAME();\
+			}\
+		}\
+	
+#define EVENT_REQ(NAME, REQUEST, DROPTAG)\
+		void On ## NAME(const REQUEST& arguments) override\
+		{\
+			if (submitting)\
+			{\
+				EVENT_ ## DROPTAG(NAME);\
+				targetEvents->On ## NAME(arguments);\
+			}\
+			else\
+			{\
+				targetEvents->On ## NAME(arguments);\
+			}\
+		}\
+	
+#define EVENT_HANDLER(NAME, REQUEST, REQTAG, DROPTAG, ...)	EVENT_ ## REQTAG(NAME, REQUEST, DROPTAG)
+		GACUI_REMOTEPROTOCOL_EVENTS(EVENT_HANDLER)
+#undef EVENT_HANDLER
+#undef EVENT_REQ
+#undef EVENT_NOREQ
+#undef EVENT_DROPCON
+#undef EVENT_DROPREP
+#undef EVENT_NOREP
+	};
+
+/***********************************************************************
+GuiRemoteProtocolFilterVerifier
+***********************************************************************/
 }
 
 #endif
