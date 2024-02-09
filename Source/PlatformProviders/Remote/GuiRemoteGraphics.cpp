@@ -37,6 +37,7 @@ GuiRemoteGraphicsRenderTarget
 		{
 			if (renderer->IsUpdated())
 			{
+				renderer->SendUpdateElementMessages();
 				if (renderer->NeedUpdateMinSizeFromCache())
 				{
 					if (!renderersAskingForCache.Contains(renderer))
@@ -44,7 +45,6 @@ GuiRemoteGraphicsRenderTarget
 						renderersAskingForCache.Add(renderer);
 					}
 				}
-				renderer->SendUpdateElementMessages();
 				renderer->ResetUpdated();
 			}
 		}
@@ -61,6 +61,15 @@ GuiRemoteGraphicsRenderTarget
 
 		if (measuring.fontHeights)
 		{
+			for (auto&& fontHeight : *measuring.fontHeights.Obj())
+			{
+				auto key = Tuple(fontHeight.fontFamily, fontHeight.fontSize);
+				if (!fontHeights.Keys().Contains(key))
+				{
+					fontHeights.Add(key, fontHeight.height);
+				}
+			}
+
 			// TODO: (enumerable) foreach:indexed(alterable(reversed))
 			for (vint i = renderersAskingForCache.Count() - 1; i >= 0; i--)
 			{
