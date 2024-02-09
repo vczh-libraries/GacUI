@@ -36,6 +36,7 @@
   - Move `GuiRemoteProtocolFilter` and `GuiRemoteEventFilter` from unit test to `GuiRemoteController`.
     - Update implementation from if-chain to switch-case.
   - Verify dropped messages/events not be called in unit test.
+  - Only request refresh when any minimum size of visible renderers are changed.
 - UnitTest.vcxproj
   - Test `GuiVirtualRepeatCompositionBase::GetAdoptedSize`.
   - Test `GuiVirtualRepeatCompositionBase::GetTotalSize` with `UseMinimumTotalSize`.
