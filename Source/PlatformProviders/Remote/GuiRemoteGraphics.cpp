@@ -14,6 +14,7 @@ GuiRemoteGraphicsRenderTarget
 	{
 		canvasSize = remote->remoteWindow.GetClientSize();
 		clipperValidArea = GetClipper();
+		renderingBatchId++;
 
 		if (destroyedRenderers.Count() > 0)
 		{
@@ -79,7 +80,7 @@ GuiRemoteGraphicsRenderTarget
 				auto renderer = renderersAskingForCache[i];
 				auto oldMinSize = renderer->GetRenderer()->GetMinSize();
 				renderer->TryFetchMinSizeFromCache();
-				if (oldMinSize != renderer->GetRenderer()->GetMinSize())
+				if (renderer->IsRenderedInLastBatch() && oldMinSize != renderer->GetRenderer()->GetMinSize())
 				{
 					minSizeChanged = true;
 				}
@@ -100,7 +101,7 @@ GuiRemoteGraphicsRenderTarget
 					auto renderer = renderers.Values()[index];
 					auto oldMinSize = renderer->GetRenderer()->GetMinSize();
 					renderer->UpdateMinSize(minSize.minSize);
-					if (oldMinSize != renderer->GetRenderer()->GetMinSize())
+					if (renderer->IsRenderedInLastBatch() && oldMinSize != renderer->GetRenderer()->GetMinSize())
 					{
 						minSizeChanged = true;
 					}

@@ -26,6 +26,7 @@ namespace vl::presentation::elements_remoteprotocol
 		virtual bool							IsUpdated() = 0;
 		virtual void							ResetUpdated() = 0;
 		virtual void							SendUpdateElementMessages(bool fullContent) = 0;
+		virtual bool							IsRenderedInLastBatch() = 0;
 
 		virtual bool							NeedUpdateMinSizeFromCache() = 0;
 		virtual void							TryFetchMinSizeFromCache() = 0;
@@ -40,6 +41,7 @@ namespace vl::presentation::elements_remoteprotocol
 	{
 	protected:
 		vint							id = -1;
+		vuint64_t						renderingBatchId = 0;
 		bool							updated = true;
 
 		void							InitializeInternal();
@@ -52,6 +54,8 @@ namespace vl::presentation::elements_remoteprotocol
 		remoteprotocol::RendererType	GetRendererType() override;
 		bool							IsUpdated() override;
 		void							ResetUpdated() override;
+		bool							IsRenderedInLastBatch() override;
+
 		bool							NeedUpdateMinSizeFromCache() override;
 		void							TryFetchMinSizeFromCache() override;
 		void							UpdateMinSize(Size size) override;

@@ -58,6 +58,7 @@ GuiRemoteGraphicsRenderTarget
 
 		public:
 			FontHeightMap						fontHeights;
+			vuint64_t							renderingBatchId = 0;
 
 			GuiRemoteGraphicsRenderTarget(GuiRemoteController* _remote, GuiHostedController* _hostedController);
 			~GuiRemoteGraphicsRenderTarget();

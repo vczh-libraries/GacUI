@@ -75,19 +75,9 @@ GuiSolidBorderElementRenderer
 	}
 
 	RENDERER_TEMPLATE_HEADER
-	void RENDERER_CLASS_TYPE::Render(Rect bounds)
+	bool RENDERER_CLASS_TYPE::IsRenderedInLastBatch()
 	{
-		remoteprotocol::ElementRendering arguments;
-		arguments.id = id;
-		arguments.bounds = bounds;
-		arguments.clipper = this->renderTarget->GetClipperValidArea();
-		this->renderTarget->GetRemoteMessages().RequestRendererRenderElement(arguments);
-	}
-
-	RENDERER_TEMPLATE_HEADER
-	void RENDERER_CLASS_TYPE::OnElementStateChanged()
-	{
-		updated = true;
+		return this->renderTarget && this->renderTarget->renderingBatchId == renderingBatchId;
 	}
 
 	RENDERER_TEMPLATE_HEADER
@@ -111,6 +101,23 @@ GuiSolidBorderElementRenderer
 	RENDERER_TEMPLATE_HEADER
 	void RENDERER_CLASS_TYPE::NotifyMinSizeCacheInvalidated()
 	{
+	}
+
+	RENDERER_TEMPLATE_HEADER
+	void RENDERER_CLASS_TYPE::Render(Rect bounds)
+	{
+		remoteprotocol::ElementRendering arguments;
+		arguments.id = id;
+		arguments.bounds = bounds;
+		arguments.clipper = this->renderTarget->GetClipperValidArea();
+		this->renderTarget->GetRemoteMessages().RequestRendererRenderElement(arguments);
+		renderingBatchId = this->renderTarget->renderingBatchId;
+	}
+
+	RENDERER_TEMPLATE_HEADER
+	void RENDERER_CLASS_TYPE::OnElementStateChanged()
+	{
+		updated = true;
 	}
 
 
