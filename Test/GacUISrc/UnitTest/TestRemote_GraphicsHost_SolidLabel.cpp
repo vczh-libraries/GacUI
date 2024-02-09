@@ -361,8 +361,62 @@ TEST_FILE
 		{
 			// No rendered element because sizes are not changed
 			AssertEventLogs(eventLogs);
-			controlHost->Hide();
+
+			// Reconnect again but text heights will be doubled
+			protocol.events->OnControllerDisconnect();
+			protocol.events->OnControllerConnect();
+
+			protocol.measuringForNextRendering.minSizes = Ptr(new List<ElementMeasuring_ElementMinSize>);
+			protocol.measuringForNextRendering.minSizes->Add({ 1,{60,24} });
+
+			protocol.measuringForNextRendering.fontHeights = Ptr(new List<ElementMeasuring_FontHeight>);
+			protocol.measuringForNextRendering.fontHeights->Add({ L"One",12,24 });
 		});
+
+		protocol.OnNextFrame([&]()
+		{
+			// Reconnect and send back size/height of texts
+			// Force rendering
+			AssertEventLogs(
+				eventLogs,
+				L"Created(<1:SolidLabel>, <2:SolidLabel>)",
+				L"Updated(1, #000000, Left, Top, <flags:>, <font:One:12>, <text:Hello>, <request:TotalSize>)",
+				L"Updated(2, #000000, Left, Top, <flags:[e]>, <font:One:12>, <text:World>, <request:FontHeight>)",
+				L"Begin()",
+				L"Render(1, {0,0:100,12}, {0,0:640,480})",
+				L"Render(2, {0,12:100,12}, {0,0:640,480})",
+				L"End()"
+				);
+			TEST_ASSERT(!protocol.measuringForNextRendering.fontHeights);
+			TEST_ASSERT(!protocol.measuringForNextRendering.minSizes);
+		});
+
+		protocol.OnNextFrame([&]()
+		{
+			// Render again since sizes were updated in the last frame
+			// Now size/height of texts is updated to the cells
+			AssertEventLogs(
+				eventLogs,
+				L"Begin()",
+				L"Render(1, {0,0:100,24}, {0,0:640,480})",
+				L"Render(2, {0,24:100,24}, {0,0:640,480})",
+				L"End()"
+				);
+			TEST_ASSERT(!protocol.measuringForNextRendering.fontHeights);
+			TEST_ASSERT(!protocol.measuringForNextRendering.minSizes);
+		});
+
+		AssertRenderingEventLogs(
+			protocol,
+			eventLogs,
+			[&]()
+			{
+				controlHost->Hide();
+			},
+			// Layout stablized
+			L"Render(1, {0,0:100,24}, {0,0:640,480})",
+			L"Render(2, {0,24:100,24}, {0,0:640,480})"
+			);
 
 		SetGuiMainProxy(MakeGuiMain(protocol, eventLogs, controlHost));
 		StartRemoteControllerTest(protocol);
