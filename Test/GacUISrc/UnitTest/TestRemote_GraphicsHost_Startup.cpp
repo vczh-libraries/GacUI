@@ -13,23 +13,21 @@ TEST_FILE
 			TEST_ASSERT(controlHost->GetClientSize() == Size(100, 200));
 			controlHost->Hide();
 		});
+
 		SetGuiMainProxy([&]()
 		{
 			protocol.events->OnControllerConnect();
-			TEST_CASE(L"Create and destroy a control host")
-			{
-				auto theme = Ptr(new EmptyControlTheme);
-				theme::RegisterTheme(theme);
+			auto theme = Ptr(new EmptyControlTheme);
+			theme::RegisterTheme(theme);
 
-				GuiWindow window(theme::ThemeName::Window);
-				window.SetClientSize({ 100,200 });
-				window.SetText(L"EmptyControlHost");
-				controlHost = &window;
-				GetApplication()->Run(&window);
-				controlHost = nullptr;
+			GuiWindow window(theme::ThemeName::Window);
+			window.SetClientSize({ 100,200 });
+			window.SetText(L"EmptyControlHost");
+			controlHost = &window;
+			GetApplication()->Run(&window);
+			controlHost = nullptr;
 
-				theme::UnregisterTheme(theme->Name);
-			});
+			theme::UnregisterTheme(theme->Name);
 		});
 		StartRemoteControllerTest(protocol);
 	});

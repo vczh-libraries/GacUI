@@ -103,18 +103,19 @@ namespace remote_graphics_host_tests
 		return [&]()
 		{
 			protocol.events->OnControllerConnect();
-			TEST_CASE(L"Create and destroy a control host")
+			auto theme = Ptr(new EmptyControlTheme);
+			theme::RegisterTheme(theme);
+
+			GuiWindow window(theme::ThemeName::Window);
+			window.SetClientSize({ 640,480 });
+			controlHost = &window;
+			GetApplication()->Run(&window);
+			controlHost = nullptr;
+
+			theme::UnregisterTheme(theme->Name);
+
+			TEST_CASE(L"Test if all expected frames are executed")
 			{
-				auto theme = Ptr(new EmptyControlTheme);
-				theme::RegisterTheme(theme);
-
-				GuiWindow window(theme::ThemeName::Window);
-				window.SetClientSize({ 640,480 });
-				controlHost = &window;
-				GetApplication()->Run(&window);
-				controlHost = nullptr;
-
-				theme::UnregisterTheme(theme->Name);
 				TEST_ASSERT(protocol.nextEventIndex == protocol.processRemoteEvents.Count());
 				AssertEventLogs(eventLogs);
 			});

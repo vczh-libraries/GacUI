@@ -103,7 +103,10 @@ namespace remote_protocol_tests
 	
 		void ProcessRemoteEvents() override
 		{
-			processRemoteEvents[nextEventIndex]();
+			TEST_CASE(L"Execute frame[" + itow(nextEventIndex) + L"]")
+			{
+				processRemoteEvents[nextEventIndex]();
+			});
 			nextEventIndex++;
 		}
 	

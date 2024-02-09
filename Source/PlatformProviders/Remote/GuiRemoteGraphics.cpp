@@ -229,7 +229,7 @@ GuiRemoteGraphicsRenderTarget
 			}
 			else
 			{
-				createdRenderers.RemoveAt(id);
+				createdRenderers.RemoveAt(index);
 			}
 		}
 	}

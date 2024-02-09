@@ -85,14 +85,11 @@ TEST_FILE
 				TEST_ASSERT(protocol.connectionEstablished);
 			});
 
-			TEST_CASE(L"Create and destroy a window")
-			{
-				auto ws = GetCurrentController()->WindowService();
-				auto window = ws->CreateNativeWindow(INativeWindow::Normal);
-				window->SetTitle(L"EmptyWindow");
-				window->SetClientSize({ 100,200 });
-				ws->Run(window);
-			});
+			auto ws = GetCurrentController()->WindowService();
+			auto window = ws->CreateNativeWindow(INativeWindow::Normal);
+			window->SetTitle(L"EmptyWindow");
+			window->SetClientSize({ 100,200 });
+			ws->Run(window);
 		});
 		StartRemoteControllerTest(protocol);
 
@@ -128,13 +125,13 @@ TEST_FILE
 		SetGuiMainProxy([&]()
 		{
 			protocol.events->OnControllerConnect();
-			TEST_CASE(L"Create and close a window")
+			auto ws = GetCurrentController()->WindowService();
+			auto window = ws->CreateNativeWindow(INativeWindow::Normal);
+			window->InstallListener(&listener);
+			window->SetTitle(L"EmptyWindow");
+			ws->Run(window);
+			TEST_CASE(L"Test if no more events are generated after existing")
 			{
-				auto ws = GetCurrentController()->WindowService();
-				auto window = ws->CreateNativeWindow(INativeWindow::Normal);
-				window->InstallListener(&listener);
-				window->SetTitle(L"EmptyWindow");
-				ws->Run(window);
 				listener.AssertCallbacks();
 			});
 		});
@@ -175,12 +172,12 @@ TEST_FILE
 		SetGuiMainProxy([&]()
 		{
 			protocol.events->OnControllerConnect();
-			TEST_CASE(L"Create and close a window")
+			auto ws = GetCurrentController()->WindowService();
+			auto window = ws->CreateNativeWindow(INativeWindow::Normal);
+			window->InstallListener(&listener);
+			ws->Run(window);
+			TEST_CASE(L"Test if no more events are generated after existing")
 			{
-				auto ws = GetCurrentController()->WindowService();
-				auto window = ws->CreateNativeWindow(INativeWindow::Normal);
-				window->InstallListener(&listener);
-				ws->Run(window);
 				listener.AssertCallbacks();
 			});
 		});
@@ -268,12 +265,12 @@ TEST_FILE
 		SetGuiMainProxy([&]()
 		{
 			protocol.events->OnControllerConnect();
-			TEST_CASE(L"Create and close a window")
+			auto ws = GetCurrentController()->WindowService();
+			auto window = ws->CreateNativeWindow(INativeWindow::Normal);
+			window->InstallListener(&listener);
+			ws->Run(window);
+			TEST_CASE(L"Test if no more events are generated after existing")
 			{
-				auto ws = GetCurrentController()->WindowService();
-				auto window = ws->CreateNativeWindow(INativeWindow::Normal);
-				window->InstallListener(&listener);
-				ws->Run(window);
 				listener.AssertCallbacks();
 			});
 		});
@@ -344,12 +341,12 @@ TEST_FILE
 		SetGuiMainProxy([&]()
 		{
 			protocol.events->OnControllerConnect();
-			TEST_CASE(L"Create and close a window")
+			auto ws = GetCurrentController()->WindowService();
+			auto window = ws->CreateNativeWindow(INativeWindow::Normal);
+			window->InstallListener(&listener);
+			ws->Run(window);
+			TEST_CASE(L"Test if no more events are generated after existing")
 			{
-				auto ws = GetCurrentController()->WindowService();
-				auto window = ws->CreateNativeWindow(INativeWindow::Normal);
-				window->InstallListener(&listener);
-				ws->Run(window);
 				listener.AssertCallbacks();
 			});
 		});
@@ -415,12 +412,12 @@ TEST_FILE
 		SetGuiMainProxy([&]()
 		{
 			protocol.events->OnControllerConnect();
-			TEST_CASE(L"Create and close a window")
+			auto ws = GetCurrentController()->WindowService();
+			auto window = ws->CreateNativeWindow(INativeWindow::Normal);
+			window->InstallListener(&listener);
+			ws->Run(window);
+			TEST_CASE(L"Test if no more events are generated after existing")
 			{
-				auto ws = GetCurrentController()->WindowService();
-				auto window = ws->CreateNativeWindow(INativeWindow::Normal);
-				window->InstallListener(&listener);
-				ws->Run(window);
 				listener.AssertCallbacks();
 			});
 		});
@@ -477,12 +474,12 @@ TEST_FILE
 		SetGuiMainProxy([&]()
 		{
 			protocol.events->OnControllerConnect();
-			TEST_CASE(L"Create and close a window")
+			auto ws = GetCurrentController()->WindowService();
+			auto window = ws->CreateNativeWindow(INativeWindow::Normal);
+			window->InstallListener(&listener);
+			ws->Run(window);
+			TEST_CASE(L"Test if no more events are generated after existing")
 			{
-				auto ws = GetCurrentController()->WindowService();
-				auto window = ws->CreateNativeWindow(INativeWindow::Normal);
-				window->InstallListener(&listener);
-				ws->Run(window);
 				listener.AssertCallbacks();
 			});
 		});
@@ -531,27 +528,24 @@ TEST_FILE
 		SetGuiMainProxy([&]()
 		{
 			protocol.events->OnControllerConnect();
-			TEST_CASE(L"Create and destroy a window")
-			{
-				auto ws = GetCurrentController()->WindowService();
-				auto window = ws->CreateNativeWindow(INativeWindow::Normal);
-				window->SetTitle(L"EmptyWindow");
-				window->SetClientSize({ 100,200 });
-				window->Disable();
-				window->SetTopMost(false);
-				window->HideInTaskBar();
-				window->EnableCustomFrameMode();
-				window->SetMaximizedBox(false);
-				window->SetMinimizedBox(false);
-				window->SetBorder(false);
-				window->SetSizeBox(false);
-				window->SetIconVisible(false);
-				window->SetTitleBar(false);
-				TEST_ASSERT(protocol.styleConfig == WindowStyleConfig());
-				TEST_ASSERT(protocol.sizingConfig.bounds == NativeRect());
-				TEST_ASSERT(protocol.sizingConfig.clientBounds == NativeRect());
-				ws->Run(window);
-			});
+			auto ws = GetCurrentController()->WindowService();
+			auto window = ws->CreateNativeWindow(INativeWindow::Normal);
+			window->SetTitle(L"EmptyWindow");
+			window->SetClientSize({ 100,200 });
+			window->Disable();
+			window->SetTopMost(false);
+			window->HideInTaskBar();
+			window->EnableCustomFrameMode();
+			window->SetMaximizedBox(false);
+			window->SetMinimizedBox(false);
+			window->SetBorder(false);
+			window->SetSizeBox(false);
+			window->SetIconVisible(false);
+			window->SetTitleBar(false);
+			TEST_CASE_ASSERT(protocol.styleConfig == WindowStyleConfig());
+			TEST_CASE_ASSERT(protocol.sizingConfig.bounds == NativeRect());
+			TEST_CASE_ASSERT(protocol.sizingConfig.clientBounds == NativeRect());
+			ws->Run(window);
 		});
 		StartRemoteControllerTest(protocol);
 	});
@@ -704,12 +698,12 @@ TEST_FILE
 		SetGuiMainProxy([&]()
 		{
 			protocol.events->OnControllerConnect();
-			TEST_CASE(L"Create and destroy a window")
+			ws = GetCurrentController()->WindowService();
+			window = ws->CreateNativeWindow(INativeWindow::Normal);
+			window->InstallListener(&listener);
+			ws->Run(window);
+			TEST_CASE(L"Test if no more events are generated after existing")
 			{
-				ws = GetCurrentController()->WindowService();
-				window = ws->CreateNativeWindow(INativeWindow::Normal);
-				window->InstallListener(&listener);
-				ws->Run(window);
 				listener.AssertCallbacks();
 			});
 		});
@@ -783,13 +777,13 @@ TEST_FILE
 		SetGuiMainProxy([&]()
 		{
 			protocol.events->OnControllerConnect();
-			TEST_CASE(L"Create and destroy a window")
+			auto ws = GetCurrentController()->WindowService();
+			window = ws->CreateNativeWindow(INativeWindow::Normal);
+			window->InstallListener(&listener);
+			window->SetClientSize({ 100,200 });
+			ws->Run(window);
+			TEST_CASE(L"Test if no more events are generated after existing")
 			{
-				auto ws = GetCurrentController()->WindowService();
-				window = ws->CreateNativeWindow(INativeWindow::Normal);
-				window->InstallListener(&listener);
-				window->SetClientSize({ 100,200 });
-				ws->Run(window);
 				listener.AssertCallbacks();
 			});
 		});
@@ -864,13 +858,13 @@ TEST_FILE
 		SetGuiMainProxy([&]()
 		{
 			protocol.events->OnControllerConnect();
-			TEST_CASE(L"Create and destroy a window")
+			auto ws = GetCurrentController()->WindowService();
+			window = ws->CreateNativeWindow(INativeWindow::Normal);
+			window->InstallListener(&listener);
+			window->SetClientSize({ 100,200 });
+			ws->Run(window);
+			TEST_CASE(L"Test if no more events are generated after existing")
 			{
-				auto ws = GetCurrentController()->WindowService();
-				window = ws->CreateNativeWindow(INativeWindow::Normal);
-				window->InstallListener(&listener);
-				window->SetClientSize({ 100,200 });
-				ws->Run(window);
 				listener.AssertCallbacks();
 			});
 		});
