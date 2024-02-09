@@ -4198,86 +4198,102 @@ namespace vl
 			using namespace collections;
 
 /***********************************************************************
-IMPLEMENT_BRUSH_ELEMENT_RENDERER
+GuiDirect2DElementRendererBase
 ***********************************************************************/
 
-#define IMPLEMENT_BRUSH_ELEMENT_RENDERER(TRENDERER)\
-			void TRENDERER::InitializeInternal()\
-			{\
-			}\
-			void TRENDERER::FinalizeInternal()\
-			{\
-				DestroyBrush(renderTarget);\
-			}\
-			void TRENDERER::RenderTargetChangedInternal(IWindowsDirect2DRenderTarget* oldRenderTarget, IWindowsDirect2DRenderTarget* newRenderTarget)\
-			{\
-				DestroyBrush(oldRenderTarget);\
-				CreateBrush(newRenderTarget);\
-			}\
-			TRENDERER::TRENDERER()\
-			{\
-			}\
-			void TRENDERER::Render(Rect bounds)\
+			template<typename TElement, typename TRenderer>
+			void GuiDirect2DElementRendererBase<TElement, TRenderer>::InitializeInternal()
+			{
+			}
 
-#define IMPLEMENT_BRUSH_ELEMENT_RENDERER_SOLID_COLOR_BRUSH(TRENDERER)\
-			void TRENDERER::CreateBrush(IWindowsDirect2DRenderTarget* _renderTarget)\
-			{\
-				if(_renderTarget)\
-				{\
-					oldColor=element->GetColor();\
-					brush=_renderTarget->CreateDirect2DBrush(oldColor);\
-				}\
-			}\
-			void TRENDERER::DestroyBrush(IWindowsDirect2DRenderTarget* _renderTarget)\
-			{\
-				if(_renderTarget && brush)\
-				{\
-					_renderTarget->DestroyDirect2DBrush(oldColor);\
-					brush=0;\
-				}\
-			}\
-			void TRENDERER::OnElementStateChanged()\
-			{\
-				if(renderTarget)\
-				{\
-					Color color=element->GetColor();\
-					if(oldColor!=color)\
-					{\
-						DestroyBrush(renderTarget);\
-						CreateBrush(renderTarget);\
-					}\
-				}\
-			}\
+			template<typename TElement, typename TRenderer>
+			void GuiDirect2DElementRendererBase<TElement, TRenderer>::FinalizeInternal()
+			{
+				static_cast<TRenderer*>(this)->DestroyBrush(this->renderTarget);
+			}
 
-#define IMPLEMENT_BRUSH_ELEMENT_RENDERER_LINEAR_GRADIENT_BRUSH(TRENDERER)\
-			void TRENDERER::CreateBrush(IWindowsDirect2DRenderTarget* _renderTarget)\
-			{\
-				if(_renderTarget)\
-				{\
-					oldColor=Pair<Color, Color>(element->GetColor1(), element->GetColor2());\
-					brush=_renderTarget->CreateDirect2DLinearBrush(oldColor.key, oldColor.value);\
-				}\
-			}\
-			void TRENDERER::DestroyBrush(IWindowsDirect2DRenderTarget* _renderTarget)\
-			{\
-				if(_renderTarget && brush)\
-				{\
-					_renderTarget->DestroyDirect2DLinearBrush(oldColor.key, oldColor.value);\
-					brush=0;\
-				}\
-			}\
-			void TRENDERER::OnElementStateChanged()\
-			{\
-				if(renderTarget)\
-				{\
-					Pair<Color, Color> color=Pair<Color, Color>(element->GetColor1(), element->GetColor2());\
-					if(oldColor!=color)\
-					{\
-						DestroyBrush(renderTarget);\
-						CreateBrush(renderTarget);\
-					}\
-				}\
-			}\
+			template<typename TElement, typename TRenderer>
+			void GuiDirect2DElementRendererBase<TElement, TRenderer>::RenderTargetChangedInternal(IWindowsDirect2DRenderTarget* oldRenderTarget, IWindowsDirect2DRenderTarget* newRenderTarget)
+			{
+				static_cast<TRenderer*>(this)->DestroyBrush(oldRenderTarget);
+				static_cast<TRenderer*>(this)->CreateBrush(newRenderTarget);
+			}
+
+/***********************************************************************
+GuiSolidBrushElementRendererBase
+***********************************************************************/
+
+			template<typename TElement, typename TRenderer, typename TBrush>
+			void GuiSolidBrushElementRendererBase<TElement, TRenderer, TBrush>::CreateBrush(IWindowsDirect2DRenderTarget* _renderTarget)
+			{
+				if (_renderTarget)
+				{
+					oldColor = this->element->GetColor(); 
+					brush = _renderTarget->CreateDirect2DBrush(oldColor); 
+				}
+			}
+
+			template<typename TElement, typename TRenderer, typename TBrush>
+			void GuiSolidBrushElementRendererBase<TElement, TRenderer, TBrush>::DestroyBrush(IWindowsDirect2DRenderTarget* _renderTarget)
+			{
+				if (_renderTarget && brush)
+				{
+					_renderTarget->DestroyDirect2DBrush(oldColor);
+					brush = 0;
+				}
+			}
+
+			template<typename TElement, typename TRenderer, typename TBrush>
+			void GuiSolidBrushElementRendererBase<TElement, TRenderer, TBrush>::OnElementStateChanged()
+			{
+				if (this->renderTarget)
+				{
+					Color color = this->element->GetColor();
+					if (oldColor != color)
+					{
+						DestroyBrush(this->renderTarget);
+						CreateBrush(this->renderTarget);
+					}
+				}
+			}
+
+/***********************************************************************
+GuiGradientBrushElementRendererBase
+***********************************************************************/
+
+			template<typename TElement, typename TRenderer, typename TBrush>
+			void GuiGradientBrushElementRendererBase<TElement, TRenderer, TBrush>::CreateBrush(IWindowsDirect2DRenderTarget* _renderTarget)
+			{
+				if (_renderTarget)
+				{
+					oldColor = Pair<Color, Color>(this->element->GetColor1(), this->element->GetColor2());
+					brush = _renderTarget->CreateDirect2DLinearBrush(oldColor.key, oldColor.value);
+				}
+			}
+
+			template<typename TElement, typename TRenderer, typename TBrush>
+			void GuiGradientBrushElementRendererBase<TElement, TRenderer, TBrush>::DestroyBrush(IWindowsDirect2DRenderTarget* _renderTarget)
+			{
+				if (_renderTarget && brush)
+				{
+					_renderTarget->DestroyDirect2DLinearBrush(oldColor.key, oldColor.value);
+					brush = 0;
+				}
+			}
+
+			template<typename TElement, typename TRenderer, typename TBrush>
+			void GuiGradientBrushElementRendererBase<TElement, TRenderer, TBrush>::OnElementStateChanged()
+			{
+				if (this->renderTarget)
+				{
+					auto color = Pair(this->element->GetColor1(), this->element->GetColor2());
+					if (oldColor != color)
+					{
+						DestroyBrush(this->renderTarget);
+						CreateBrush(this->renderTarget);
+					}
+				}
+			}
 
 /***********************************************************************
 GuiSolidBorderElementRenderer
@@ -4339,8 +4355,11 @@ GuiSolidBorderElementRenderer
 GuiSolidBorderElementRenderer
 ***********************************************************************/
 
-			IMPLEMENT_BRUSH_ELEMENT_RENDERER_SOLID_COLOR_BRUSH(GuiSolidBorderElementRenderer)
-			IMPLEMENT_BRUSH_ELEMENT_RENDERER(GuiSolidBorderElementRenderer)
+			GuiSolidBorderElementRenderer::GuiSolidBorderElementRenderer()
+			{
+			}
+
+			void GuiSolidBorderElementRenderer::Render(Rect bounds)
 			{
 				ID2D1RenderTarget* d2dRenderTarget = renderTarget->GetDirect2DRenderTarget();
 				auto shape = element->GetShape();
@@ -4546,9 +4565,12 @@ Gui3DSplitterElementRenderer
 /***********************************************************************
 GuiSolidBackgroundElementRenderer
 ***********************************************************************/
-			
-			IMPLEMENT_BRUSH_ELEMENT_RENDERER_SOLID_COLOR_BRUSH(GuiSolidBackgroundElementRenderer)
-			IMPLEMENT_BRUSH_ELEMENT_RENDERER(GuiSolidBackgroundElementRenderer)
+
+			GuiSolidBackgroundElementRenderer::GuiSolidBackgroundElementRenderer()
+			{
+			}
+
+			void GuiSolidBackgroundElementRenderer::Render(Rect bounds)
 			{
 				ID2D1RenderTarget* d2dRenderTarget=renderTarget->GetDirect2DRenderTarget();
 				auto shape = element->GetShape();
@@ -4584,8 +4606,11 @@ GuiSolidBackgroundElementRenderer
 GuiGradientBackgroundElementRenderer
 ***********************************************************************/
 
-			IMPLEMENT_BRUSH_ELEMENT_RENDERER_LINEAR_GRADIENT_BRUSH(GuiGradientBackgroundElementRenderer)
-			IMPLEMENT_BRUSH_ELEMENT_RENDERER(GuiGradientBackgroundElementRenderer)
+			GuiGradientBackgroundElementRenderer::GuiGradientBackgroundElementRenderer()
+			{
+			}
+
+			void GuiGradientBackgroundElementRenderer::Render(Rect bounds)
 			{
 				D2D1_POINT_2F points[2];
 				switch(element->GetDirection())
@@ -5497,6 +5522,7 @@ GuiColorizedTextElementRenderer
 
 			void GuiColorizedTextElementRenderer::FinalizeInternal()
 			{
+				element->SetCallback(nullptr);
 				DestroyTextBrush(renderTarget);
 				DestroyCaretBrush(renderTarget);
 
@@ -5731,10 +5757,10 @@ GuiDirect2DElement
 CachedResourceAllocator
 ***********************************************************************/
 
-			class CachedSolidBrushAllocator
-			{
-				DEFINE_CACHED_RESOURCE_ALLOCATOR(Color, ComPtr<ID2D1SolidColorBrush>)
+			typedef Pair<Color, Color> ColorPair;
 
+			class CachedSolidBrushAllocator : public GuiCachedResourceAllocatorBase<CachedSolidBrushAllocator, Color, ComPtr<ID2D1SolidColorBrush>>
+			{
 				IWindowsDirect2DRenderTarget* guiRenderTarget = nullptr;
 			public:
 				CachedSolidBrushAllocator()
@@ -5756,11 +5782,8 @@ CachedResourceAllocator
 				}
 			};
 
-			class CachedLinearBrushAllocator
+			class CachedLinearBrushAllocator : public GuiCachedResourceAllocatorBase<CachedLinearBrushAllocator, ColorPair, ComPtr<ID2D1LinearGradientBrush>>
 			{
-				typedef Pair<Color, Color> ColorPair;
-				DEFINE_CACHED_RESOURCE_ALLOCATOR(ColorPair, ComPtr<ID2D1LinearGradientBrush>)
-
 				IWindowsDirect2DRenderTarget*	guiRenderTarget = nullptr;
 			public:
 				CachedLinearBrushAllocator()
@@ -5806,11 +5829,8 @@ CachedResourceAllocator
 				}
 			};
 
-			class CachedRadialBrushAllocator
+			class CachedRadialBrushAllocator : public GuiCachedResourceAllocatorBase<CachedRadialBrushAllocator, ColorPair, ComPtr<ID2D1RadialGradientBrush>>
 			{
-				typedef Pair<Color, Color> ColorPair;
-				DEFINE_CACHED_RESOURCE_ALLOCATOR(ColorPair, ComPtr<ID2D1RadialGradientBrush>)
-
 				IWindowsDirect2DRenderTarget*	guiRenderTarget = nullptr;
 			public:
 				CachedRadialBrushAllocator()
@@ -5856,10 +5876,8 @@ CachedResourceAllocator
 				}
 			};
 
-			class CachedTextFormatAllocator
+			class CachedTextFormatAllocator : public GuiCachedResourceAllocatorBase<CachedTextFormatAllocator, FontProperties, Ptr<Direct2DTextFormatPackage>>
 			{
-			private:
-				DEFINE_CACHED_RESOURCE_ALLOCATOR(FontProperties, Ptr<Direct2DTextFormatPackage>)
 			public:
 
 				static ComPtr<IDWriteTextFormat> CreateDirect2DFont(const FontProperties& fontProperties)
@@ -5895,10 +5913,8 @@ CachedResourceAllocator
 				}
 			};
 
-			class CachedCharMeasurerAllocator
+			class CachedCharMeasurerAllocator : public GuiCachedResourceAllocatorBase<CachedCharMeasurerAllocator, FontProperties, Ptr<text::CharMeasurer>>
 			{
-				DEFINE_CACHED_RESOURCE_ALLOCATOR(FontProperties, Ptr<text::CharMeasurer>)
-
 			protected:
 				class Direct2DCharMeasurer : public text::CharMeasurer
 				{
@@ -9885,13 +9901,14 @@ GuiColorizedTextElementRenderer
 			void GuiColorizedTextElementRenderer::InitializeInternal()
 			{
 				auto resourceManager=GetWindowsGDIResourceManager();
-				element->SetCallback(this);
 				oldCaretColor=element->GetCaretColor();
 				caretPen=resourceManager->CreateGdiPen(oldCaretColor);
+				element->SetCallback(this);
 			}
 
 			void GuiColorizedTextElementRenderer::FinalizeInternal()
 			{
+				element->SetCallback(nullptr);
 				auto resourceManager=GetWindowsGDIResourceManager();
 				if(font)
 				{
@@ -12657,9 +12674,8 @@ WindowsGDIRenderTarget
 CachedResourceAllocator
 ***********************************************************************/
 
-			class CachedPenAllocator
+			class CachedPenAllocator : public GuiCachedResourceAllocatorBase<CachedPenAllocator, Color, Ptr<WinPen>>
 			{
-				DEFINE_CACHED_RESOURCE_ALLOCATOR(Color, Ptr<WinPen>)
 			public:
 				Ptr<WinPen> CreateInternal(Color color)
 				{
@@ -12667,9 +12683,8 @@ CachedResourceAllocator
 				}
 			};
 
-			class CachedBrushAllocator
+			class CachedBrushAllocator : public GuiCachedResourceAllocatorBase<CachedBrushAllocator, Color, Ptr<WinBrush>>
 			{
-				DEFINE_CACHED_RESOURCE_ALLOCATOR(Color, Ptr<WinBrush>)
 			public:
 				Ptr<WinBrush> CreateInternal(Color color)
 				{
@@ -12677,9 +12692,8 @@ CachedResourceAllocator
 				}
 			};
 
-			class CachedFontAllocator
+			class CachedFontAllocator : public GuiCachedResourceAllocatorBase<CachedFontAllocator, FontProperties, Ptr<WinFont>>
 			{
-				DEFINE_CACHED_RESOURCE_ALLOCATOR(FontProperties, Ptr<WinFont>)
 			public:
 				static Ptr<WinFont> CreateGdiFont(const FontProperties& value)
 				{
@@ -12693,10 +12707,8 @@ CachedResourceAllocator
 				}
 			};
 
-			class CachedCharMeasurerAllocator
+			class CachedCharMeasurerAllocator : public GuiCachedResourceAllocatorBase<CachedCharMeasurerAllocator, FontProperties, Ptr<text::CharMeasurer>>
 			{
-				DEFINE_CACHED_RESOURCE_ALLOCATOR(FontProperties, Ptr<text::CharMeasurer>)
-
 			protected:
 				class GdiCharMeasurer : public text::CharMeasurer
 				{

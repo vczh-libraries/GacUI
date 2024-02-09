@@ -144,7 +144,8 @@ Raw API Rendering Element
 			/// </summary>
 			class GuiDirect2DElement : public GuiElementBase<GuiDirect2DElement>
 			{
-				DEFINE_GUI_GRAPHICS_ELEMENT(GuiDirect2DElement, L"Direct2DElement")
+				friend class GuiElementBase<GuiDirect2DElement>;
+				static constexpr const wchar_t* ElementTypeName = L"Direct2DElement";
 			protected:
 				GuiDirect2DElement();
 			public:
@@ -255,28 +256,53 @@ namespace vl
 		{
 			using namespace elements;
 
-#define DEFINE_BRUSH_ELEMENT_RENDERER(TELEMENT, TRENDERER, TBRUSH, TBRUSHPROPERTY)\
-				DEFINE_GUI_GRAPHICS_RENDERER(TELEMENT, TRENDERER, IWindowsDirect2DRenderTarget)\
-			protected:\
-				TBRUSHPROPERTY			oldColor;\
-				TBRUSH*					brush = nullptr;\
-				void					CreateBrush(IWindowsDirect2DRenderTarget* _renderTarget);\
-				void					DestroyBrush(IWindowsDirect2DRenderTarget* _renderTarget);\
-				void					InitializeInternal();\
-				void					FinalizeInternal();\
-				void					RenderTargetChangedInternal(IWindowsDirect2DRenderTarget* oldRenderTarget, IWindowsDirect2DRenderTarget* newRenderTarget);\
-			public:\
-				TRENDERER();\
-				void					Render(Rect bounds)override;\
-				void					OnElementStateChanged()override;\
+			typedef collections::Pair<Color, Color> ColorPair;
+
+			template<typename TElement, typename TRenderer>
+			class GuiDirect2DElementRendererBase : public GuiElementRendererBase<TElement, TRenderer, IWindowsDirect2DRenderTarget>
+			{
+			protected:
+				void					InitializeInternal();
+				void					FinalizeInternal();
+				void					RenderTargetChangedInternal(IWindowsDirect2DRenderTarget* oldRenderTarget, IWindowsDirect2DRenderTarget* newRenderTarget);
+			public:
+			};
+
+			template<typename TElement, typename TRenderer, typename TBrush>
+			class GuiSolidBrushElementRendererBase : public GuiDirect2DElementRendererBase<TElement, TRenderer>
+			{
+			protected:
+				Color					oldColor;
+				TBrush*					brush = nullptr;
+
+				void					CreateBrush(IWindowsDirect2DRenderTarget* _renderTarget);
+				void					DestroyBrush(IWindowsDirect2DRenderTarget* _renderTarget);
+			public:
+
+				void					OnElementStateChanged()override;
+			};
+
+			template<typename TElement, typename TRenderer, typename TBrush>
+			class GuiGradientBrushElementRendererBase : public GuiDirect2DElementRendererBase<TElement, TRenderer>
+			{
+			protected:
+				ColorPair				oldColor;
+				TBrush*					brush = nullptr;
+
+				void					CreateBrush(IWindowsDirect2DRenderTarget* _renderTarget);
+				void					DestroyBrush(IWindowsDirect2DRenderTarget* _renderTarget);
+			public:
+
+				void					OnElementStateChanged()override;
+			};
 
 /***********************************************************************
 Renderers
 ***********************************************************************/
 
-			class GuiFocusRectangleElementRenderer : public Object, public IGuiGraphicsRenderer
+			class GuiFocusRectangleElementRenderer : public GuiElementRendererBase<GuiFocusRectangleElement, GuiFocusRectangleElementRenderer, IWindowsDirect2DRenderTarget>
 			{
-				DEFINE_GUI_GRAPHICS_RENDERER(GuiFocusRectangleElement, GuiFocusRectangleElementRenderer, IWindowsDirect2DRenderTarget)
+				friend class GuiElementRendererBase<GuiFocusRectangleElement, GuiFocusRectangleElementRenderer, IWindowsDirect2DRenderTarget>;
 			protected:
 				ID2D1Effect*			focusRectangleEffect = nullptr;
 
@@ -289,14 +315,19 @@ Renderers
 				void					OnElementStateChanged()override;
 			};
 
-			class GuiSolidBorderElementRenderer : public Object, public IGuiGraphicsRenderer
+			class GuiSolidBorderElementRenderer : public GuiSolidBrushElementRendererBase<GuiSolidBorderElement, GuiSolidBorderElementRenderer, ID2D1SolidColorBrush>
 			{
-				DEFINE_BRUSH_ELEMENT_RENDERER(GuiSolidBorderElement, GuiSolidBorderElementRenderer, ID2D1SolidColorBrush, Color)
+				friend class GuiElementRendererBase<GuiSolidBorderElement, GuiSolidBorderElementRenderer, IWindowsDirect2DRenderTarget>;
+				friend class GuiDirect2DElementRendererBase<GuiSolidBorderElement, GuiSolidBorderElementRenderer>;
+			public:
+				GuiSolidBorderElementRenderer();
+
+				void					Render(Rect bounds)override;
 			};
 
-			class Gui3DBorderElementRenderer : public Object, public IGuiGraphicsRenderer
+			class Gui3DBorderElementRenderer : public GuiElementRendererBase<Gui3DBorderElement, Gui3DBorderElementRenderer, IWindowsDirect2DRenderTarget>
 			{
-				DEFINE_GUI_GRAPHICS_RENDERER(Gui3DBorderElement, Gui3DBorderElementRenderer, IWindowsDirect2DRenderTarget)
+				friend class GuiElementRendererBase<Gui3DBorderElement, Gui3DBorderElementRenderer, IWindowsDirect2DRenderTarget>;
 			protected:
 				Color					oldColor1;
 				Color					oldColor2;
@@ -315,9 +346,9 @@ Renderers
 				void					OnElementStateChanged()override;
 			};
 
-			class Gui3DSplitterElementRenderer : public Object, public IGuiGraphicsRenderer
+			class Gui3DSplitterElementRenderer : public GuiElementRendererBase<Gui3DSplitterElement, Gui3DSplitterElementRenderer, IWindowsDirect2DRenderTarget>
 			{
-				DEFINE_GUI_GRAPHICS_RENDERER(Gui3DSplitterElement, Gui3DSplitterElementRenderer, IWindowsDirect2DRenderTarget)
+				friend class GuiElementRendererBase<Gui3DSplitterElement, Gui3DSplitterElementRenderer, IWindowsDirect2DRenderTarget>;
 			protected:
 				Color					oldColor1;
 				Color					oldColor2;
@@ -336,21 +367,29 @@ Renderers
 				void					OnElementStateChanged()override;
 			};
 
-			class GuiSolidBackgroundElementRenderer : public Object, public IGuiGraphicsRenderer
+			class GuiSolidBackgroundElementRenderer : public GuiSolidBrushElementRendererBase<GuiSolidBackgroundElement, GuiSolidBackgroundElementRenderer, ID2D1SolidColorBrush>
 			{
-				DEFINE_BRUSH_ELEMENT_RENDERER(GuiSolidBackgroundElement, GuiSolidBackgroundElementRenderer, ID2D1SolidColorBrush, Color)
+				friend class GuiElementRendererBase<GuiSolidBackgroundElement, GuiSolidBackgroundElementRenderer, IWindowsDirect2DRenderTarget>;
+				friend class GuiDirect2DElementRendererBase<GuiSolidBackgroundElement, GuiSolidBackgroundElementRenderer>;
+			public:
+				GuiSolidBackgroundElementRenderer();
+
+				void					Render(Rect bounds)override;
 			};
 
-			class GuiGradientBackgroundElementRenderer : public Object, public IGuiGraphicsRenderer
+			class GuiGradientBackgroundElementRenderer : public GuiGradientBrushElementRendererBase<GuiGradientBackgroundElement, GuiGradientBackgroundElementRenderer, ID2D1LinearGradientBrush>
 			{
-				typedef collections::Pair<Color, Color> ColorPair;
-				DEFINE_BRUSH_ELEMENT_RENDERER(GuiGradientBackgroundElement, GuiGradientBackgroundElementRenderer, ID2D1LinearGradientBrush, ColorPair)
+				friend class GuiElementRendererBase<GuiGradientBackgroundElement, GuiGradientBackgroundElementRenderer, IWindowsDirect2DRenderTarget>;
+				friend class GuiDirect2DElementRendererBase<GuiGradientBackgroundElement, GuiGradientBackgroundElementRenderer>;
+			public:
+				GuiGradientBackgroundElementRenderer();
+
+				void					Render(Rect bounds)override;
 			};
 
-			class GuiInnerShadowElementRenderer : public Object, public IGuiGraphicsRenderer
+			class GuiInnerShadowElementRenderer : public GuiElementRendererBase<GuiInnerShadowElement, GuiInnerShadowElementRenderer, IWindowsDirect2DRenderTarget>
 			{
-				typedef collections::Pair<Color, Color> ColorPair;
-				DEFINE_GUI_GRAPHICS_RENDERER(GuiInnerShadowElement, GuiInnerShadowElementRenderer, IWindowsDirect2DRenderTarget)
+				friend class GuiElementRendererBase<GuiInnerShadowElement, GuiInnerShadowElementRenderer, IWindowsDirect2DRenderTarget>;
 			protected:
 				Color							oldColor;
 				Color							transparentColor;
@@ -369,9 +408,9 @@ Renderers
 				void					OnElementStateChanged()override;
 			};
 
-			class GuiSolidLabelElementRenderer : public Object, public IGuiGraphicsRenderer
+			class GuiSolidLabelElementRenderer : public GuiElementRendererBase<GuiSolidLabelElement, GuiSolidLabelElementRenderer, IWindowsDirect2DRenderTarget>
 			{
-				DEFINE_GUI_GRAPHICS_RENDERER(GuiSolidLabelElement, GuiSolidLabelElementRenderer, IWindowsDirect2DRenderTarget)
+				friend class GuiElementRendererBase<GuiSolidLabelElement, GuiSolidLabelElementRenderer, IWindowsDirect2DRenderTarget>;
 			protected:
 				Color							oldColor;
 				FontProperties					oldFont;
@@ -399,9 +438,9 @@ Renderers
 				void					OnElementStateChanged()override;
 			};
 
-			class GuiImageFrameElementRenderer : public Object, public IGuiGraphicsRenderer
+			class GuiImageFrameElementRenderer : public GuiElementRendererBase<GuiImageFrameElement, GuiImageFrameElementRenderer, IWindowsDirect2DRenderTarget>
 			{
-				DEFINE_GUI_GRAPHICS_RENDERER(GuiImageFrameElement, GuiImageFrameElementRenderer, IWindowsDirect2DRenderTarget)
+				friend class GuiElementRendererBase<GuiImageFrameElement, GuiImageFrameElementRenderer, IWindowsDirect2DRenderTarget>;
 			protected:
 				ComPtr<ID2D1Bitmap>		bitmap;
 
@@ -417,9 +456,9 @@ Renderers
 				void					OnElementStateChanged()override;
 			};
 
-			class GuiPolygonElementRenderer : public Object, public IGuiGraphicsRenderer
+			class GuiPolygonElementRenderer : public GuiElementRendererBase<GuiPolygonElement, GuiPolygonElementRenderer, IWindowsDirect2DRenderTarget>
 			{
-				DEFINE_GUI_GRAPHICS_RENDERER(GuiPolygonElement, GuiPolygonElementRenderer, IWindowsDirect2DRenderTarget)
+				friend class GuiElementRendererBase<GuiPolygonElement, GuiPolygonElementRenderer, IWindowsDirect2DRenderTarget>;
 			protected:
 				Color							oldBorderColor;
 				Color							oldBackgroundColor;
@@ -442,9 +481,9 @@ Renderers
 				void							OnElementStateChanged()override;
 			};
 
-			class GuiColorizedTextElementRenderer : public Object, public IGuiGraphicsRenderer, protected GuiColorizedTextElement::ICallback
+			class GuiColorizedTextElementRenderer : public GuiElementRendererBase<GuiColorizedTextElement, GuiColorizedTextElementRenderer, IWindowsDirect2DRenderTarget>, protected GuiColorizedTextElement::ICallback
 			{
-				DEFINE_GUI_GRAPHICS_RENDERER(GuiColorizedTextElement, GuiColorizedTextElementRenderer, IWindowsDirect2DRenderTarget)
+				friend class GuiElementRendererBase<GuiColorizedTextElement, GuiColorizedTextElementRenderer, IWindowsDirect2DRenderTarget>;
 
 			public:
 				struct ColorItemResource
@@ -490,9 +529,9 @@ Renderers
 				void					OnElementStateChanged()override;
 			};
 
-			class GuiDirect2DElementRenderer : public Object, public IGuiGraphicsRenderer
+			class GuiDirect2DElementRenderer : public GuiElementRendererBase<GuiDirect2DElement, GuiDirect2DElementRenderer, IWindowsDirect2DRenderTarget>
 			{
-				DEFINE_GUI_GRAPHICS_RENDERER(GuiDirect2DElement, GuiDirect2DElementRenderer, IWindowsDirect2DRenderTarget)
+				friend class GuiElementRendererBase<GuiDirect2DElement, GuiDirect2DElementRenderer, IWindowsDirect2DRenderTarget>;
 
 			protected:
 
@@ -1410,7 +1449,8 @@ Raw API Rendering Element
 			/// </summary>
 			class GuiGDIElement : public GuiElementBase<GuiGDIElement>
 			{
-				DEFINE_GUI_GRAPHICS_ELEMENT(GuiGDIElement, L"GDIElement")
+				friend class GuiElementBase<GuiGDIElement>;
+				static constexpr const wchar_t* ElementTypeName = L"GDIElement";
 			protected:
 				GuiGDIElement();
 			public:
@@ -1503,9 +1543,9 @@ namespace vl
 Renderers
 ***********************************************************************/
 
-			class GuiFocusRectangleElementRenderer : public Object, public IGuiGraphicsRenderer
+			class GuiFocusRectangleElementRenderer : public GuiElementRendererBase<GuiFocusRectangleElement, GuiFocusRectangleElementRenderer, IWindowsGDIRenderTarget>
 			{
-				DEFINE_GUI_GRAPHICS_RENDERER(GuiFocusRectangleElement, GuiFocusRectangleElementRenderer, IWindowsGDIRenderTarget)
+				friend class GuiElementRendererBase<GuiFocusRectangleElement, GuiFocusRectangleElementRenderer, IWindowsGDIRenderTarget>;
 			protected:
 				Ptr<windows::WinPen>	pen;
 				Ptr<windows::WinBrush>	brush;
@@ -1518,9 +1558,9 @@ Renderers
 				void					OnElementStateChanged()override;
 			};
 
-			class GuiSolidBorderElementRenderer : public Object, public IGuiGraphicsRenderer
+			class GuiSolidBorderElementRenderer : public GuiElementRendererBase<GuiSolidBorderElement, GuiSolidBorderElementRenderer, IWindowsGDIRenderTarget>
 			{
-				DEFINE_GUI_GRAPHICS_RENDERER(GuiSolidBorderElement, GuiSolidBorderElementRenderer, IWindowsGDIRenderTarget)
+				friend class GuiElementRendererBase<GuiSolidBorderElement, GuiSolidBorderElementRenderer, IWindowsGDIRenderTarget>;
 			protected:
 				Color					oldColor;
 				Ptr<windows::WinPen>	pen;
@@ -1534,9 +1574,9 @@ Renderers
 				void					OnElementStateChanged()override;
 			};
 
-			class Gui3DBorderElementRenderer : public Object, public IGuiGraphicsRenderer
+			class Gui3DBorderElementRenderer : public GuiElementRendererBase<Gui3DBorderElement, Gui3DBorderElementRenderer, IWindowsGDIRenderTarget>
 			{
-				DEFINE_GUI_GRAPHICS_RENDERER(Gui3DBorderElement, Gui3DBorderElementRenderer, IWindowsGDIRenderTarget)
+				friend class GuiElementRendererBase<Gui3DBorderElement, Gui3DBorderElementRenderer, IWindowsGDIRenderTarget>;
 			protected:
 				Color					oldColor1;
 				Color					oldColor2;
@@ -1551,9 +1591,9 @@ Renderers
 				void					OnElementStateChanged()override;
 			};
 
-			class Gui3DSplitterElementRenderer : public Object, public IGuiGraphicsRenderer
+			class Gui3DSplitterElementRenderer : public GuiElementRendererBase<Gui3DSplitterElement, Gui3DSplitterElementRenderer, IWindowsGDIRenderTarget>
 			{
-				DEFINE_GUI_GRAPHICS_RENDERER(Gui3DSplitterElement, Gui3DSplitterElementRenderer, IWindowsGDIRenderTarget)
+				friend class GuiElementRendererBase<Gui3DSplitterElement, Gui3DSplitterElementRenderer, IWindowsGDIRenderTarget>;
 			protected:
 				Color					oldColor1;
 				Color					oldColor2;
@@ -1568,9 +1608,9 @@ Renderers
 				void					OnElementStateChanged()override;
 			};
 
-			class GuiSolidBackgroundElementRenderer : public Object, public IGuiGraphicsRenderer
+			class GuiSolidBackgroundElementRenderer : public GuiElementRendererBase<GuiSolidBackgroundElement, GuiSolidBackgroundElementRenderer, IWindowsGDIRenderTarget>
 			{
-				DEFINE_GUI_GRAPHICS_RENDERER(GuiSolidBackgroundElement, GuiSolidBackgroundElementRenderer, IWindowsGDIRenderTarget)
+				friend class GuiElementRendererBase<GuiSolidBackgroundElement, GuiSolidBackgroundElementRenderer, IWindowsGDIRenderTarget>;
 			protected:
 				Color					oldColor;
 				Ptr<windows::WinPen>	pen;
@@ -1584,9 +1624,9 @@ Renderers
 				void					OnElementStateChanged()override;
 			};
 
-			class GuiGradientBackgroundElementRenderer : public Object, public IGuiGraphicsRenderer
+			class GuiGradientBackgroundElementRenderer : public GuiElementRendererBase<GuiGradientBackgroundElement, GuiGradientBackgroundElementRenderer, IWindowsGDIRenderTarget>
 			{
-				DEFINE_GUI_GRAPHICS_RENDERER(GuiGradientBackgroundElement, GuiGradientBackgroundElementRenderer, IWindowsGDIRenderTarget)
+				friend class GuiElementRendererBase<GuiGradientBackgroundElement, GuiGradientBackgroundElementRenderer, IWindowsGDIRenderTarget>;
 			protected:
 				void					InitializeInternal();
 				void					FinalizeInternal();
@@ -1596,9 +1636,9 @@ Renderers
 				void					OnElementStateChanged()override;
 			};
 
-			class GuiInnerShadowElementRenderer : public Object, public IGuiGraphicsRenderer
+			class GuiInnerShadowElementRenderer : public GuiElementRendererBase<GuiInnerShadowElement, GuiInnerShadowElementRenderer, IWindowsGDIRenderTarget>
 			{
-				DEFINE_GUI_GRAPHICS_RENDERER(GuiInnerShadowElement, GuiInnerShadowElementRenderer, IWindowsGDIRenderTarget)
+				friend class GuiElementRendererBase<GuiInnerShadowElement, GuiInnerShadowElementRenderer, IWindowsGDIRenderTarget>;
 			protected:
 				void					InitializeInternal();
 				void					FinalizeInternal();
@@ -1610,9 +1650,9 @@ Renderers
 				void					OnElementStateChanged()override;
 			};
 
-			class GuiSolidLabelElementRenderer : public Object, public IGuiGraphicsRenderer
+			class GuiSolidLabelElementRenderer : public GuiElementRendererBase<GuiSolidLabelElement, GuiSolidLabelElementRenderer, IWindowsGDIRenderTarget>
 			{
-				DEFINE_GUI_GRAPHICS_RENDERER(GuiSolidLabelElement, GuiSolidLabelElementRenderer, IWindowsGDIRenderTarget)
+				friend class GuiElementRendererBase<GuiSolidLabelElement, GuiSolidLabelElementRenderer, IWindowsGDIRenderTarget>;
 			protected:
 				FontProperties			oldFont;
 				Ptr<windows::WinFont>	font;
@@ -1630,9 +1670,9 @@ Renderers
 				void					OnElementStateChanged()override;
 			};
 
-			class GuiImageFrameElementRenderer : public Object, public IGuiGraphicsRenderer
+			class GuiImageFrameElementRenderer : public GuiElementRendererBase<GuiImageFrameElement, GuiImageFrameElementRenderer, IWindowsGDIRenderTarget>
 			{
-				DEFINE_GUI_GRAPHICS_RENDERER(GuiImageFrameElement, GuiImageFrameElementRenderer, IWindowsGDIRenderTarget)
+				friend class GuiElementRendererBase<GuiImageFrameElement, GuiImageFrameElementRenderer, IWindowsGDIRenderTarget>;
 			protected:
 				Ptr<windows::WinBitmap>		bitmap;
 
@@ -1648,9 +1688,9 @@ Renderers
 				void					OnElementStateChanged()override;
 			};
 
-			class GuiPolygonElementRenderer : public Object, public IGuiGraphicsRenderer
+			class GuiPolygonElementRenderer : public GuiElementRendererBase<GuiPolygonElement, GuiPolygonElementRenderer, IWindowsGDIRenderTarget>
 			{
-				DEFINE_GUI_GRAPHICS_RENDERER(GuiPolygonElement, GuiPolygonElementRenderer, IWindowsGDIRenderTarget)
+				friend class GuiElementRendererBase<GuiPolygonElement, GuiPolygonElementRenderer, IWindowsGDIRenderTarget>;
 			protected:
 				POINT*							points;
 				vint								pointCount;
@@ -1670,9 +1710,9 @@ Renderers
 				void							OnElementStateChanged()override;
 			};
 
-			class GuiColorizedTextElementRenderer : public Object, public IGuiGraphicsRenderer, protected GuiColorizedTextElement::ICallback
+			class GuiColorizedTextElementRenderer : public GuiElementRendererBase<GuiColorizedTextElement, GuiColorizedTextElementRenderer, IWindowsGDIRenderTarget>, protected GuiColorizedTextElement::ICallback
 			{
-				DEFINE_GUI_GRAPHICS_RENDERER(GuiColorizedTextElement, GuiColorizedTextElementRenderer, IWindowsGDIRenderTarget)
+				friend class GuiElementRendererBase<GuiColorizedTextElement, GuiColorizedTextElementRenderer, IWindowsGDIRenderTarget>;
 
 			public:
 				struct ColorItemResource
@@ -1712,9 +1752,9 @@ Renderers
 				void					OnElementStateChanged()override;
 			};
 
-			class GuiGDIElementRenderer : public Object, public IGuiGraphicsRenderer
+			class GuiGDIElementRenderer : public GuiElementRendererBase<GuiGDIElement, GuiGDIElementRenderer, IWindowsGDIRenderTarget>
 			{
-				DEFINE_GUI_GRAPHICS_RENDERER(GuiGDIElement, GuiGDIElementRenderer, IWindowsGDIRenderTarget)
+				friend class GuiElementRendererBase<GuiGDIElement, GuiGDIElementRenderer, IWindowsGDIRenderTarget>;
 
 			protected:
 
