@@ -147,11 +147,63 @@ TEST_FILE
 			eventLogs,
 			[&]()
 			{
-				controlHost->Hide();
+				FontProperties f1;
+				f1.fontFamily = L"Two";
+				f1.size = 14;
+				e1->SetFont(f1);
+
+				FontProperties f2;
+				f2.fontFamily = L"Three";
+				f2.size = 16;
+				e2->SetFont(f2);
+
+				protocol.measuringForNextRendering.fontHeights = Ptr(new List<ElementMeasuring_FontHeight>);
+				protocol.measuringForNextRendering.fontHeights->Add({ L"Two",14,14 });
+				protocol.measuringForNextRendering.fontHeights->Add({ L"Three",16,16 });
 			},
-			// Size of the composition becomes (60,12)
+			// Layout stablized
 			L"Render(1, {0,0:100,12}, {0,0:640,480})",
 			L"Render(2, {0,12:100,12}, {0,0:640,480})"
+			);
+
+		protocol.OnNextFrame([&]()
+		{
+			// Heights updated to texts
+			AssertEventLogs(
+				eventLogs,
+				L"Updated(1, #000000, Left, Top, <flags:[e]>, <font:Two:14>, <notext>, <request:FontHeight>)",
+				L"Updated(2, #000000, Left, Top, <flags:[e]>, <font:Three:16>, <notext>, <request:FontHeight>)",
+				L"Begin()",
+				L"Render(1, {0,0:100,12}, {0,0:640,480})",
+				L"Render(2, {0,12:100,12}, {0,0:640,480})",
+				L"End()"
+				);
+			TEST_ASSERT(!protocol.measuringForNextRendering.fontHeights);
+			TEST_ASSERT(!protocol.measuringForNextRendering.minSizes);
+		});
+
+		protocol.OnNextFrame([&]()
+		{
+			// Height updated to cells
+			AssertEventLogs(
+				eventLogs,
+				L"Begin()",
+				L"Render(1, {0,0:100,12}, {0,0:640,480})",
+				L"Render(2, {0,12:100,12}, {0,0:640,480})",
+				L"End()"
+				);
+		});
+
+		AssertRenderingEventLogs(
+			protocol,
+			eventLogs,
+			[&]()
+			{
+				controlHost->Hide();
+			},
+			// Layout stablized
+			L"Render(1, {0,0:100,14}, {0,0:640,480})",
+			L"Render(2, {0,14:100,16}, {0,0:640,480})"
 			);
 
 		SetGuiMainProxy(MakeGuiMain(protocol, eventLogs, controlHost));
