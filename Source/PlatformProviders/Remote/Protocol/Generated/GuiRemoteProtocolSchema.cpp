@@ -13,9 +13,9 @@ namespace vl::presentation::remoteprotocol
 		auto node = Ptr(new glr::json::JsonString);
 		switch (value)
 		{
-		case ::vl::presentation::remoteprotocol::IOMouseButton::Left: node->content.value = L"Left"; break;
-		case ::vl::presentation::remoteprotocol::IOMouseButton::Middle: node->content.value = L"Middle"; break;
-		case ::vl::presentation::remoteprotocol::IOMouseButton::Right: node->content.value = L"Right"; break;
+		case ::vl::presentation::remoteprotocol::IOMouseButton::Left: node->content.value = WString::Unmanaged(L"Left"); break;
+		case ::vl::presentation::remoteprotocol::IOMouseButton::Middle: node->content.value = WString::Unmanaged(L"Middle"); break;
+		case ::vl::presentation::remoteprotocol::IOMouseButton::Right: node->content.value = WString::Unmanaged(L"Right"); break;
 		default: CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported enum value.");
 		}
 		return node;
@@ -28,22 +28,22 @@ namespace vl::presentation::remoteprotocol
 		auto node = Ptr(new glr::json::JsonString);
 		switch (value)
 		{
-		case ::vl::presentation::INativeWindowListener::BorderNoSizing: node->content.value = L"BorderNoSizing"; break;
-		case ::vl::presentation::INativeWindowListener::BorderLeft: node->content.value = L"BorderLeft"; break;
-		case ::vl::presentation::INativeWindowListener::BorderRight: node->content.value = L"BorderRight"; break;
-		case ::vl::presentation::INativeWindowListener::BorderTop: node->content.value = L"BorderTop"; break;
-		case ::vl::presentation::INativeWindowListener::BorderBottom: node->content.value = L"BorderBottom"; break;
-		case ::vl::presentation::INativeWindowListener::BorderLeftTop: node->content.value = L"BorderLeftTop"; break;
-		case ::vl::presentation::INativeWindowListener::BorderRightTop: node->content.value = L"BorderRightTop"; break;
-		case ::vl::presentation::INativeWindowListener::BorderLeftBottom: node->content.value = L"BorderLeftBottom"; break;
-		case ::vl::presentation::INativeWindowListener::BorderRightBottom: node->content.value = L"BorderRightBottom"; break;
-		case ::vl::presentation::INativeWindowListener::Title: node->content.value = L"Title"; break;
-		case ::vl::presentation::INativeWindowListener::ButtonMinimum: node->content.value = L"ButtonMinimum"; break;
-		case ::vl::presentation::INativeWindowListener::ButtonMaximum: node->content.value = L"ButtonMaximum"; break;
-		case ::vl::presentation::INativeWindowListener::ButtonClose: node->content.value = L"ButtonClose"; break;
-		case ::vl::presentation::INativeWindowListener::Client: node->content.value = L"Client"; break;
-		case ::vl::presentation::INativeWindowListener::Icon: node->content.value = L"Icon"; break;
-		case ::vl::presentation::INativeWindowListener::NoDecision: node->content.value = L"NoDecision"; break;
+		case ::vl::presentation::INativeWindowListener::BorderNoSizing: node->content.value = WString::Unmanaged(L"BorderNoSizing"); break;
+		case ::vl::presentation::INativeWindowListener::BorderLeft: node->content.value = WString::Unmanaged(L"BorderLeft"); break;
+		case ::vl::presentation::INativeWindowListener::BorderRight: node->content.value = WString::Unmanaged(L"BorderRight"); break;
+		case ::vl::presentation::INativeWindowListener::BorderTop: node->content.value = WString::Unmanaged(L"BorderTop"); break;
+		case ::vl::presentation::INativeWindowListener::BorderBottom: node->content.value = WString::Unmanaged(L"BorderBottom"); break;
+		case ::vl::presentation::INativeWindowListener::BorderLeftTop: node->content.value = WString::Unmanaged(L"BorderLeftTop"); break;
+		case ::vl::presentation::INativeWindowListener::BorderRightTop: node->content.value = WString::Unmanaged(L"BorderRightTop"); break;
+		case ::vl::presentation::INativeWindowListener::BorderLeftBottom: node->content.value = WString::Unmanaged(L"BorderLeftBottom"); break;
+		case ::vl::presentation::INativeWindowListener::BorderRightBottom: node->content.value = WString::Unmanaged(L"BorderRightBottom"); break;
+		case ::vl::presentation::INativeWindowListener::Title: node->content.value = WString::Unmanaged(L"Title"); break;
+		case ::vl::presentation::INativeWindowListener::ButtonMinimum: node->content.value = WString::Unmanaged(L"ButtonMinimum"); break;
+		case ::vl::presentation::INativeWindowListener::ButtonMaximum: node->content.value = WString::Unmanaged(L"ButtonMaximum"); break;
+		case ::vl::presentation::INativeWindowListener::ButtonClose: node->content.value = WString::Unmanaged(L"ButtonClose"); break;
+		case ::vl::presentation::INativeWindowListener::Client: node->content.value = WString::Unmanaged(L"Client"); break;
+		case ::vl::presentation::INativeWindowListener::Icon: node->content.value = WString::Unmanaged(L"Icon"); break;
+		case ::vl::presentation::INativeWindowListener::NoDecision: node->content.value = WString::Unmanaged(L"NoDecision"); break;
 		default: CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported enum value.");
 		}
 		return node;
@@ -56,18 +56,18 @@ namespace vl::presentation::remoteprotocol
 		auto node = Ptr(new glr::json::JsonString);
 		switch (value)
 		{
-		case ::vl::presentation::INativeCursor::SmallWaiting: node->content.value = L"SmallWaiting"; break;
-		case ::vl::presentation::INativeCursor::LargeWaiting: node->content.value = L"LargeWaiting"; break;
-		case ::vl::presentation::INativeCursor::Arrow: node->content.value = L"Arrow"; break;
-		case ::vl::presentation::INativeCursor::Cross: node->content.value = L"Cross"; break;
-		case ::vl::presentation::INativeCursor::Hand: node->content.value = L"Hand"; break;
-		case ::vl::presentation::INativeCursor::Help: node->content.value = L"Help"; break;
-		case ::vl::presentation::INativeCursor::IBeam: node->content.value = L"IBeam"; break;
-		case ::vl::presentation::INativeCursor::SizeAll: node->content.value = L"SizeAll"; break;
-		case ::vl::presentation::INativeCursor::SizeNESW: node->content.value = L"SizeNESW"; break;
-		case ::vl::presentation::INativeCursor::SizeNS: node->content.value = L"SizeNS"; break;
-		case ::vl::presentation::INativeCursor::SizeNWSE: node->content.value = L"SizeNWSE"; break;
-		case ::vl::presentation::INativeCursor::SizeWE: node->content.value = L"SizeWE"; break;
+		case ::vl::presentation::INativeCursor::SmallWaiting: node->content.value = WString::Unmanaged(L"SmallWaiting"); break;
+		case ::vl::presentation::INativeCursor::LargeWaiting: node->content.value = WString::Unmanaged(L"LargeWaiting"); break;
+		case ::vl::presentation::INativeCursor::Arrow: node->content.value = WString::Unmanaged(L"Arrow"); break;
+		case ::vl::presentation::INativeCursor::Cross: node->content.value = WString::Unmanaged(L"Cross"); break;
+		case ::vl::presentation::INativeCursor::Hand: node->content.value = WString::Unmanaged(L"Hand"); break;
+		case ::vl::presentation::INativeCursor::Help: node->content.value = WString::Unmanaged(L"Help"); break;
+		case ::vl::presentation::INativeCursor::IBeam: node->content.value = WString::Unmanaged(L"IBeam"); break;
+		case ::vl::presentation::INativeCursor::SizeAll: node->content.value = WString::Unmanaged(L"SizeAll"); break;
+		case ::vl::presentation::INativeCursor::SizeNESW: node->content.value = WString::Unmanaged(L"SizeNESW"); break;
+		case ::vl::presentation::INativeCursor::SizeNS: node->content.value = WString::Unmanaged(L"SizeNS"); break;
+		case ::vl::presentation::INativeCursor::SizeNWSE: node->content.value = WString::Unmanaged(L"SizeNWSE"); break;
+		case ::vl::presentation::INativeCursor::SizeWE: node->content.value = WString::Unmanaged(L"SizeWE"); break;
 		default: CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported enum value.");
 		}
 		return node;
@@ -80,9 +80,9 @@ namespace vl::presentation::remoteprotocol
 		auto node = Ptr(new glr::json::JsonString);
 		switch (value)
 		{
-		case ::vl::presentation::INativeWindow::WindowSizeState::Minimized: node->content.value = L"Minimized"; break;
-		case ::vl::presentation::INativeWindow::WindowSizeState::Restored: node->content.value = L"Restored"; break;
-		case ::vl::presentation::INativeWindow::WindowSizeState::Maximized: node->content.value = L"Maximized"; break;
+		case ::vl::presentation::INativeWindow::WindowSizeState::Minimized: node->content.value = WString::Unmanaged(L"Minimized"); break;
+		case ::vl::presentation::INativeWindow::WindowSizeState::Restored: node->content.value = WString::Unmanaged(L"Restored"); break;
+		case ::vl::presentation::INativeWindow::WindowSizeState::Maximized: node->content.value = WString::Unmanaged(L"Maximized"); break;
 		default: CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported enum value.");
 		}
 		return node;
@@ -95,18 +95,18 @@ namespace vl::presentation::remoteprotocol
 		auto node = Ptr(new glr::json::JsonString);
 		switch (value)
 		{
-		case ::vl::presentation::remoteprotocol::RendererType::FocusRectangle: node->content.value = L"FocusRectangle"; break;
-		case ::vl::presentation::remoteprotocol::RendererType::SolidBorder: node->content.value = L"SolidBorder"; break;
-		case ::vl::presentation::remoteprotocol::RendererType::SinkBorder: node->content.value = L"SinkBorder"; break;
-		case ::vl::presentation::remoteprotocol::RendererType::SinkSplitter: node->content.value = L"SinkSplitter"; break;
-		case ::vl::presentation::remoteprotocol::RendererType::SolidBackground: node->content.value = L"SolidBackground"; break;
-		case ::vl::presentation::remoteprotocol::RendererType::GradientBackground: node->content.value = L"GradientBackground"; break;
-		case ::vl::presentation::remoteprotocol::RendererType::InnerShadow: node->content.value = L"InnerShadow"; break;
-		case ::vl::presentation::remoteprotocol::RendererType::SolidLabel: node->content.value = L"SolidLabel"; break;
-		case ::vl::presentation::remoteprotocol::RendererType::Polygon: node->content.value = L"Polygon"; break;
-		case ::vl::presentation::remoteprotocol::RendererType::UnsupportedImageFrame: node->content.value = L"UnsupportedImageFrame"; break;
-		case ::vl::presentation::remoteprotocol::RendererType::UnsupportedColorizedText: node->content.value = L"UnsupportedColorizedText"; break;
-		case ::vl::presentation::remoteprotocol::RendererType::UnsupportedDocument: node->content.value = L"UnsupportedDocument"; break;
+		case ::vl::presentation::remoteprotocol::RendererType::FocusRectangle: node->content.value = WString::Unmanaged(L"FocusRectangle"); break;
+		case ::vl::presentation::remoteprotocol::RendererType::SolidBorder: node->content.value = WString::Unmanaged(L"SolidBorder"); break;
+		case ::vl::presentation::remoteprotocol::RendererType::SinkBorder: node->content.value = WString::Unmanaged(L"SinkBorder"); break;
+		case ::vl::presentation::remoteprotocol::RendererType::SinkSplitter: node->content.value = WString::Unmanaged(L"SinkSplitter"); break;
+		case ::vl::presentation::remoteprotocol::RendererType::SolidBackground: node->content.value = WString::Unmanaged(L"SolidBackground"); break;
+		case ::vl::presentation::remoteprotocol::RendererType::GradientBackground: node->content.value = WString::Unmanaged(L"GradientBackground"); break;
+		case ::vl::presentation::remoteprotocol::RendererType::InnerShadow: node->content.value = WString::Unmanaged(L"InnerShadow"); break;
+		case ::vl::presentation::remoteprotocol::RendererType::SolidLabel: node->content.value = WString::Unmanaged(L"SolidLabel"); break;
+		case ::vl::presentation::remoteprotocol::RendererType::Polygon: node->content.value = WString::Unmanaged(L"Polygon"); break;
+		case ::vl::presentation::remoteprotocol::RendererType::UnsupportedImageFrame: node->content.value = WString::Unmanaged(L"UnsupportedImageFrame"); break;
+		case ::vl::presentation::remoteprotocol::RendererType::UnsupportedColorizedText: node->content.value = WString::Unmanaged(L"UnsupportedColorizedText"); break;
+		case ::vl::presentation::remoteprotocol::RendererType::UnsupportedDocument: node->content.value = WString::Unmanaged(L"UnsupportedDocument"); break;
 		default: CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported enum value.");
 		}
 		return node;
@@ -119,9 +119,9 @@ namespace vl::presentation::remoteprotocol
 		auto node = Ptr(new glr::json::JsonString);
 		switch (value)
 		{
-		case ::vl::presentation::elements::ElementShapeType::Rectangle: node->content.value = L"Rectangle"; break;
-		case ::vl::presentation::elements::ElementShapeType::Ellipse: node->content.value = L"Ellipse"; break;
-		case ::vl::presentation::elements::ElementShapeType::RoundRect: node->content.value = L"RoundRect"; break;
+		case ::vl::presentation::elements::ElementShapeType::Rectangle: node->content.value = WString::Unmanaged(L"Rectangle"); break;
+		case ::vl::presentation::elements::ElementShapeType::Ellipse: node->content.value = WString::Unmanaged(L"Ellipse"); break;
+		case ::vl::presentation::elements::ElementShapeType::RoundRect: node->content.value = WString::Unmanaged(L"RoundRect"); break;
 		default: CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported enum value.");
 		}
 		return node;
@@ -134,10 +134,10 @@ namespace vl::presentation::remoteprotocol
 		auto node = Ptr(new glr::json::JsonString);
 		switch (value)
 		{
-		case ::vl::presentation::elements::GuiGradientBackgroundElement::Horizontal: node->content.value = L"Horizontal"; break;
-		case ::vl::presentation::elements::GuiGradientBackgroundElement::Vertical: node->content.value = L"Vertical"; break;
-		case ::vl::presentation::elements::GuiGradientBackgroundElement::Slash: node->content.value = L"Slash"; break;
-		case ::vl::presentation::elements::GuiGradientBackgroundElement::Backslash: node->content.value = L"Backslash"; break;
+		case ::vl::presentation::elements::GuiGradientBackgroundElement::Horizontal: node->content.value = WString::Unmanaged(L"Horizontal"); break;
+		case ::vl::presentation::elements::GuiGradientBackgroundElement::Vertical: node->content.value = WString::Unmanaged(L"Vertical"); break;
+		case ::vl::presentation::elements::GuiGradientBackgroundElement::Slash: node->content.value = WString::Unmanaged(L"Slash"); break;
+		case ::vl::presentation::elements::GuiGradientBackgroundElement::Backslash: node->content.value = WString::Unmanaged(L"Backslash"); break;
 		default: CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported enum value.");
 		}
 		return node;
@@ -150,8 +150,8 @@ namespace vl::presentation::remoteprotocol
 		auto node = Ptr(new glr::json::JsonString);
 		switch (value)
 		{
-		case ::vl::presentation::elements::Gui3DSplitterElement::Horizontal: node->content.value = L"Horizontal"; break;
-		case ::vl::presentation::elements::Gui3DSplitterElement::Vertical: node->content.value = L"Vertical"; break;
+		case ::vl::presentation::elements::Gui3DSplitterElement::Horizontal: node->content.value = WString::Unmanaged(L"Horizontal"); break;
+		case ::vl::presentation::elements::Gui3DSplitterElement::Vertical: node->content.value = WString::Unmanaged(L"Vertical"); break;
 		default: CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported enum value.");
 		}
 		return node;
@@ -164,9 +164,9 @@ namespace vl::presentation::remoteprotocol
 		auto node = Ptr(new glr::json::JsonString);
 		switch (value)
 		{
-		case ::vl::presentation::remoteprotocol::ElementHorizontalAlignment::Left: node->content.value = L"Left"; break;
-		case ::vl::presentation::remoteprotocol::ElementHorizontalAlignment::Right: node->content.value = L"Right"; break;
-		case ::vl::presentation::remoteprotocol::ElementHorizontalAlignment::Center: node->content.value = L"Center"; break;
+		case ::vl::presentation::remoteprotocol::ElementHorizontalAlignment::Left: node->content.value = WString::Unmanaged(L"Left"); break;
+		case ::vl::presentation::remoteprotocol::ElementHorizontalAlignment::Right: node->content.value = WString::Unmanaged(L"Right"); break;
+		case ::vl::presentation::remoteprotocol::ElementHorizontalAlignment::Center: node->content.value = WString::Unmanaged(L"Center"); break;
 		default: CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported enum value.");
 		}
 		return node;
@@ -179,9 +179,9 @@ namespace vl::presentation::remoteprotocol
 		auto node = Ptr(new glr::json::JsonString);
 		switch (value)
 		{
-		case ::vl::presentation::remoteprotocol::ElementVerticalAlignment::Top: node->content.value = L"Top"; break;
-		case ::vl::presentation::remoteprotocol::ElementVerticalAlignment::Bottom: node->content.value = L"Bottom"; break;
-		case ::vl::presentation::remoteprotocol::ElementVerticalAlignment::Center: node->content.value = L"Center"; break;
+		case ::vl::presentation::remoteprotocol::ElementVerticalAlignment::Top: node->content.value = WString::Unmanaged(L"Top"); break;
+		case ::vl::presentation::remoteprotocol::ElementVerticalAlignment::Bottom: node->content.value = WString::Unmanaged(L"Bottom"); break;
+		case ::vl::presentation::remoteprotocol::ElementVerticalAlignment::Center: node->content.value = WString::Unmanaged(L"Center"); break;
 		default: CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported enum value.");
 		}
 		return node;
@@ -194,8 +194,8 @@ namespace vl::presentation::remoteprotocol
 		auto node = Ptr(new glr::json::JsonString);
 		switch (value)
 		{
-		case ::vl::presentation::remoteprotocol::ElementSolidLabelMeasuringRequest::FontHeight: node->content.value = L"FontHeight"; break;
-		case ::vl::presentation::remoteprotocol::ElementSolidLabelMeasuringRequest::TotalSize: node->content.value = L"TotalSize"; break;
+		case ::vl::presentation::remoteprotocol::ElementSolidLabelMeasuringRequest::FontHeight: node->content.value = WString::Unmanaged(L"FontHeight"); break;
+		case ::vl::presentation::remoteprotocol::ElementSolidLabelMeasuringRequest::TotalSize: node->content.value = WString::Unmanaged(L"TotalSize"); break;
 		default: CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported enum value.");
 		}
 		return node;

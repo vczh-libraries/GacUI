@@ -580,7 +580,7 @@ GenerateRemoteProtocolCppFile
 		writer.WriteLine(L"\t\t{");
 		for (auto member : enumDecl->members)
 		{
-			writer.WriteLine(L"\t\tcase " + cppNss + L"::" + member->name.value + L": node->content.value = L\"" + member->name.value + L"\"; break;");
+			writer.WriteLine(L"\t\tcase " + cppNss + L"::" + member->name.value + L": node->content.value = WString::Unmanaged(L\"" + member->name.value + L"\"); break;");
 		}
 		writer.WriteLine(L"\t\tdefault: CHECK_FAIL(ERROR_MESSAGE_PREFIX L\"Unsupported enum value.\");");
 		writer.WriteLine(L"\t\t}");
