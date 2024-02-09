@@ -37,7 +37,7 @@ GuiRemoteGraphicsRenderTarget
 		{
 			if (renderer->IsUpdated())
 			{
-				renderer->SendUpdateElementMessages();
+				renderer->SendUpdateElementMessages(false);
 				if (renderer->NeedUpdateMinSizeFromCache())
 				{
 					if (!renderersAskingForCache.Contains(renderer))
@@ -138,6 +138,39 @@ GuiRemoteGraphicsRenderTarget
 	{
 	}
 
+	void GuiRemoteGraphicsRenderTarget::OnControllerConnect()
+	{
+		fontHeights.Clear();
+		renderersAskingForCache.Clear();
+
+		if (renderers.Count() > 0)
+		{
+			{
+				auto ids = Ptr(new List<remoteprotocol::RendererCreation>);
+				for (auto renderer : renderers.Values())
+				{
+					ids->Add({ renderer->GetID(),renderer->GetRendererType() });
+					renderer->NotifyMinSizeCacheInvalidated();
+				}
+				createdRenderers.Clear();
+				remote->remoteMessages.RequestRendererCreated(ids);
+			}
+
+			for (auto renderer : renderers.Values())
+			{
+				renderer->SendUpdateElementMessages(true);
+				if (renderer->NeedUpdateMinSizeFromCache())
+				{
+					renderersAskingForCache.Add(renderer);
+				}
+			}
+		}
+	}
+
+	void GuiRemoteGraphicsRenderTarget::OnControllerDisconnect()
+	{
+	}
+
 	GuiRemoteMessages& GuiRemoteGraphicsRenderTarget::GetRemoteMessages()
 	{
 		return remote->remoteMessages;
@@ -221,10 +254,12 @@ GuiRemoteGraphicsResourceManager
 
 	void GuiRemoteGraphicsResourceManager::OnControllerConnect()
 	{
+		renderTarget.OnControllerConnect();
 	}
 
 	void GuiRemoteGraphicsResourceManager::OnControllerDisconnect()
 	{
+		renderTarget.OnControllerDisconnect();
 	}
 
 	IGuiGraphicsRenderTarget* GuiRemoteGraphicsResourceManager::GetRenderTarget(INativeWindow* window)

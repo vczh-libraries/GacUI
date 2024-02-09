@@ -60,6 +60,9 @@ GuiRemoteGraphicsRenderTarget
 			GuiRemoteGraphicsRenderTarget(GuiRemoteController* _remote);
 			~GuiRemoteGraphicsRenderTarget();
 
+			void								OnControllerConnect();
+			void								OnControllerDisconnect();
+
 			GuiRemoteMessages&					GetRemoteMessages();
 			vint								AllocateNewElementId();
 			void								RegisterRenderer(elements_remoteprotocol::IGuiRemoteProtocolElementRender* renderer);

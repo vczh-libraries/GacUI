@@ -342,16 +342,25 @@ TEST_FILE
 		protocol.OnNextFrame([&]()
 		{
 			// Reconnect and send back size/height of texts
-			// No rendered element because sizes are not changed
+			// Force rendering
 			AssertEventLogs(
 				eventLogs,
 				L"Created(<1:SolidLabel>, <2:SolidLabel>)",
 				L"Updated(1, #000000, Left, Top, <flags:>, <font:One:12>, <text:Hello>, <request:TotalSize>)",
-				L"Updated(2, #000000, Left, Top, <flags:[e]>, <font:One:12>, <text:World>, <request:FontHeight>)"
+				L"Updated(2, #000000, Left, Top, <flags:[e]>, <font:One:12>, <text:World>, <request:FontHeight>)",
+				L"Begin()",
+				L"Render(1, {0,0:100,12}, {0,0:640,480})",
+				L"Render(2, {0,12:100,12}, {0,0:640,480})",
+				L"End()"
 				);
 			TEST_ASSERT(!protocol.measuringForNextRendering.fontHeights);
 			TEST_ASSERT(!protocol.measuringForNextRendering.minSizes);
+		});
 
+		protocol.OnNextFrame([&]()
+		{
+			// No rendered element because sizes are not changed
+			AssertEventLogs(eventLogs);
 			controlHost->Hide();
 		});
 

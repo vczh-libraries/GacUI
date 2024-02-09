@@ -135,7 +135,7 @@ GuiSolidBorderElementRenderer
 		// nothing to update
 	}
 
-	void GuiFocusRectangleElementRenderer::SendUpdateElementMessages()
+	void GuiFocusRectangleElementRenderer::SendUpdateElementMessages(bool fullContent)
 	{
 		// nothing to update
 	}
@@ -148,7 +148,7 @@ GuiSolidBorderElementRenderer
 	{
 	}
 
-	void GuiSolidBorderElementRenderer::SendUpdateElementMessages()
+	void GuiSolidBorderElementRenderer::SendUpdateElementMessages(bool fullContent)
 	{
 		ElementDesc_SolidBorder arguments;
 		arguments.id = id;
@@ -165,7 +165,7 @@ Gui3DBorderElementRenderer
 	{
 	}
 
-	void Gui3DBorderElementRenderer::SendUpdateElementMessages()
+	void Gui3DBorderElementRenderer::SendUpdateElementMessages(bool fullContent)
 	{
 		ElementDesc_SinkBorder arguments;
 		arguments.id = id;
@@ -182,7 +182,7 @@ Gui3DSplitterElementRenderer
 	{
 	}
 
-	void Gui3DSplitterElementRenderer::SendUpdateElementMessages()
+	void Gui3DSplitterElementRenderer::SendUpdateElementMessages(bool fullContent)
 	{
 		ElementDesc_SinkSplitter arguments;
 		arguments.id = id;
@@ -200,7 +200,7 @@ GuiSolidBackgroundElementRenderer
 	{
 	}
 
-	void GuiSolidBackgroundElementRenderer::SendUpdateElementMessages()
+	void GuiSolidBackgroundElementRenderer::SendUpdateElementMessages(bool fullContent)
 	{
 		ElementDesc_SolidBackground arguments;
 		arguments.id = id;
@@ -217,7 +217,7 @@ GuiGradientBackgroundElementRenderer
 	{
 	}
 
-	void GuiGradientBackgroundElementRenderer::SendUpdateElementMessages()
+	void GuiGradientBackgroundElementRenderer::SendUpdateElementMessages(bool fullContent)
 	{
 		ElementDesc_GradientBackground arguments;
 		arguments.id = id;
@@ -236,7 +236,7 @@ GuiInnerShadowElementRenderer
 	{
 	}
 
-	void GuiInnerShadowElementRenderer::SendUpdateElementMessages()
+	void GuiInnerShadowElementRenderer::SendUpdateElementMessages(bool fullContent)
 	{
 		ElementDesc_InnerShadow arguments;
 		arguments.id = id;
@@ -314,7 +314,7 @@ GuiSolidLabelElementRenderer
 		needFontHeight = IsNeedFontHeight(request);
 	}
 
-	void GuiSolidLabelElementRenderer::SendUpdateElementMessages()
+	void GuiSolidLabelElementRenderer::SendUpdateElementMessages(bool fullContent)
 	{
 		ElementDesc_SolidLabel arguments;
 		arguments.id = id;
@@ -355,12 +355,12 @@ GuiSolidLabelElementRenderer
 			elementFont = GetCurrentController()->ResourceService()->GetDefaultFont();
 		}
 
-		if (lastFont != elementFont)
+		if (fullContent || lastFont != elementFont)
 		{
 			arguments.font = elementFont;
 		}
 
-		if (lastText != elementText)
+		if (fullContent || lastText != elementText)
 		{
 			arguments.text = elementText;
 		}
@@ -388,7 +388,7 @@ GuiImageFrameElementRenderer
 	{
 	}
 
-	void GuiImageFrameElementRenderer::SendUpdateElementMessages()
+	void GuiImageFrameElementRenderer::SendUpdateElementMessages(bool fullContent)
 	{
 		// Image
 		// FrameIndex
@@ -408,7 +408,7 @@ GuiPolygonElementRenderer
 	{
 	}
 
-	void GuiPolygonElementRenderer::SendUpdateElementMessages()
+	void GuiPolygonElementRenderer::SendUpdateElementMessages(bool fullContent)
 	{
 		minSize = element->GetSize();
 
@@ -455,7 +455,7 @@ GuiColorizedTextElementRenderer
 		TBase::OnElementStateChanged();
 	}
 
-	void GuiColorizedTextElementRenderer::SendUpdateElementMessages()
+	void GuiColorizedTextElementRenderer::SendUpdateElementMessages(bool fullContent)
 	{
 		// Lines
 		// Colors
