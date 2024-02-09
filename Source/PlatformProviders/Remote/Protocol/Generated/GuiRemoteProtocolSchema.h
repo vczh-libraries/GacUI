@@ -198,6 +198,8 @@ namespace vl::presentation::remoteprotocol
 	};
 
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::IOMouseButton>(const ::vl::presentation::remoteprotocol::IOMouseButton & value);
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::INativeWindowListener::HitTestResult>(const ::vl::presentation::INativeWindowListener::HitTestResult & value);
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::INativeCursor::SystemCursorType>(const ::vl::presentation::INativeCursor::SystemCursorType & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::INativeWindow::WindowSizeState>(const ::vl::presentation::INativeWindow::WindowSizeState & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::RendererType>(const ::vl::presentation::remoteprotocol::RendererType & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::elements::ElementShapeType>(const ::vl::presentation::elements::ElementShapeType & value);
@@ -240,6 +242,8 @@ namespace vl::presentation::remoteprotocol
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::ElementRendering>(const ::vl::presentation::remoteprotocol::ElementRendering & value);
 
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::IOMouseButton>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::IOMouseButton& value);
+	template<> void ConvertJsonToCustomType<::vl::presentation::INativeWindowListener::HitTestResult>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::INativeWindowListener::HitTestResult& value);
+	template<> void ConvertJsonToCustomType<::vl::presentation::INativeCursor::SystemCursorType>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::INativeCursor::SystemCursorType& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::INativeWindow::WindowSizeState>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::INativeWindow::WindowSizeState& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::RendererType>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::RendererType& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::elements::ElementShapeType>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::elements::ElementShapeType& value);

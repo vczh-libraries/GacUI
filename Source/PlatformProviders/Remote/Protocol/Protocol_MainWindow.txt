@@ -1,3 +1,43 @@
+[@Cpp(::vl::presentation::INativeWindowListener::HitTestResult)]
+[@CppNamespace(::vl::presentation::INativeWindowListener)]
+enum WindowHitTestResult
+{
+    BorderNoSizing,
+    BorderLeft,
+    BorderRight,
+    BorderTop,
+    BorderBottom,
+    BorderLeftTop,
+    BorderRightTop,
+    BorderLeftBottom,
+    BorderRightBottom,
+    Title,
+    ButtonMinimum,
+    ButtonMaximum,
+    ButtonClose,
+    Client,
+    Icon,
+    NoDecision,
+}
+
+[@Cpp(::vl::presentation::INativeCursor::SystemCursorType)]
+[@CppNamespace(::vl::presentation::INativeCursor)]
+enum WindowSystemCursorType
+{
+    SmallWaiting,
+    LargeWaiting,
+    Arrow,
+    Cross,
+    Hand,
+    Help,
+    IBeam,
+    SizeAll,
+    SizeNESW,
+    SizeNS,
+    SizeNWSE,
+    SizeWE,
+}
+
 [@Cpp(::vl::presentation::INativeWindow::WindowSizeState)]
 enum WindowSizeState
 {

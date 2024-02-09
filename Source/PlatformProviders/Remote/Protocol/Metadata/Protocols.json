@@ -841,6 +841,116 @@
         "$ast": "EnumDecl",
         "attributes": [{
             "$ast": "Attribute",
+            "cppType": "::vl::presentation::INativeWindowListener::HitTestResult",
+            "name": "@Cpp"
+        }, {
+            "$ast": "Attribute",
+            "cppType": "::vl::presentation::INativeWindowListener",
+            "name": "@CppNamespace"
+        }],
+        "name": "WindowHitTestResult",
+        "members": [{
+            "$ast": "EnumMember",
+            "name": "BorderNoSizing"
+        }, {
+            "$ast": "EnumMember",
+            "name": "BorderLeft"
+        }, {
+            "$ast": "EnumMember",
+            "name": "BorderRight"
+        }, {
+            "$ast": "EnumMember",
+            "name": "BorderTop"
+        }, {
+            "$ast": "EnumMember",
+            "name": "BorderBottom"
+        }, {
+            "$ast": "EnumMember",
+            "name": "BorderLeftTop"
+        }, {
+            "$ast": "EnumMember",
+            "name": "BorderRightTop"
+        }, {
+            "$ast": "EnumMember",
+            "name": "BorderLeftBottom"
+        }, {
+            "$ast": "EnumMember",
+            "name": "BorderRightBottom"
+        }, {
+            "$ast": "EnumMember",
+            "name": "Title"
+        }, {
+            "$ast": "EnumMember",
+            "name": "ButtonMinimum"
+        }, {
+            "$ast": "EnumMember",
+            "name": "ButtonMaximum"
+        }, {
+            "$ast": "EnumMember",
+            "name": "ButtonClose"
+        }, {
+            "$ast": "EnumMember",
+            "name": "Client"
+        }, {
+            "$ast": "EnumMember",
+            "name": "Icon"
+        }, {
+            "$ast": "EnumMember",
+            "name": "NoDecision"
+        }]
+    }, {
+        "$ast": "EnumDecl",
+        "attributes": [{
+            "$ast": "Attribute",
+            "cppType": "::vl::presentation::INativeCursor::SystemCursorType",
+            "name": "@Cpp"
+        }, {
+            "$ast": "Attribute",
+            "cppType": "::vl::presentation::INativeCursor",
+            "name": "@CppNamespace"
+        }],
+        "name": "WindowSystemCursorType",
+        "members": [{
+            "$ast": "EnumMember",
+            "name": "SmallWaiting"
+        }, {
+            "$ast": "EnumMember",
+            "name": "LargeWaiting"
+        }, {
+            "$ast": "EnumMember",
+            "name": "Arrow"
+        }, {
+            "$ast": "EnumMember",
+            "name": "Cross"
+        }, {
+            "$ast": "EnumMember",
+            "name": "Hand"
+        }, {
+            "$ast": "EnumMember",
+            "name": "Help"
+        }, {
+            "$ast": "EnumMember",
+            "name": "IBeam"
+        }, {
+            "$ast": "EnumMember",
+            "name": "SizeAll"
+        }, {
+            "$ast": "EnumMember",
+            "name": "SizeNESW"
+        }, {
+            "$ast": "EnumMember",
+            "name": "SizeNS"
+        }, {
+            "$ast": "EnumMember",
+            "name": "SizeNWSE"
+        }, {
+            "$ast": "EnumMember",
+            "name": "SizeWE"
+        }]
+    }, {
+        "$ast": "EnumDecl",
+        "attributes": [{
+            "$ast": "Attribute",
             "cppType": "::vl::presentation::INativeWindow::WindowSizeState",
             "name": "@Cpp"
         }],

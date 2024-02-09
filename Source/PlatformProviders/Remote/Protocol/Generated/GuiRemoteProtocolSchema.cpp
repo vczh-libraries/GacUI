@@ -22,6 +22,58 @@ namespace vl::presentation::remoteprotocol
 #undef ERROR_MESSAGE_PREFIX
 	}
 
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::INativeWindowListener::HitTestResult>(const ::vl::presentation::INativeWindowListener::HitTestResult & value)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertCustomTypeToJson<::vl::presentation::INativeWindowListener::HitTestResult>(const ::vl::presentation::INativeWindowListener::HitTestResult&)#"
+		auto node = Ptr(new glr::json::JsonString);
+		switch (value)
+		{
+		case ::vl::presentation::INativeWindowListener::BorderNoSizing: node->content.value = L"BorderNoSizing"; break;
+		case ::vl::presentation::INativeWindowListener::BorderLeft: node->content.value = L"BorderLeft"; break;
+		case ::vl::presentation::INativeWindowListener::BorderRight: node->content.value = L"BorderRight"; break;
+		case ::vl::presentation::INativeWindowListener::BorderTop: node->content.value = L"BorderTop"; break;
+		case ::vl::presentation::INativeWindowListener::BorderBottom: node->content.value = L"BorderBottom"; break;
+		case ::vl::presentation::INativeWindowListener::BorderLeftTop: node->content.value = L"BorderLeftTop"; break;
+		case ::vl::presentation::INativeWindowListener::BorderRightTop: node->content.value = L"BorderRightTop"; break;
+		case ::vl::presentation::INativeWindowListener::BorderLeftBottom: node->content.value = L"BorderLeftBottom"; break;
+		case ::vl::presentation::INativeWindowListener::BorderRightBottom: node->content.value = L"BorderRightBottom"; break;
+		case ::vl::presentation::INativeWindowListener::Title: node->content.value = L"Title"; break;
+		case ::vl::presentation::INativeWindowListener::ButtonMinimum: node->content.value = L"ButtonMinimum"; break;
+		case ::vl::presentation::INativeWindowListener::ButtonMaximum: node->content.value = L"ButtonMaximum"; break;
+		case ::vl::presentation::INativeWindowListener::ButtonClose: node->content.value = L"ButtonClose"; break;
+		case ::vl::presentation::INativeWindowListener::Client: node->content.value = L"Client"; break;
+		case ::vl::presentation::INativeWindowListener::Icon: node->content.value = L"Icon"; break;
+		case ::vl::presentation::INativeWindowListener::NoDecision: node->content.value = L"NoDecision"; break;
+		default: CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported enum value.");
+		}
+		return node;
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::INativeCursor::SystemCursorType>(const ::vl::presentation::INativeCursor::SystemCursorType & value)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertCustomTypeToJson<::vl::presentation::INativeCursor::SystemCursorType>(const ::vl::presentation::INativeCursor::SystemCursorType&)#"
+		auto node = Ptr(new glr::json::JsonString);
+		switch (value)
+		{
+		case ::vl::presentation::INativeCursor::SmallWaiting: node->content.value = L"SmallWaiting"; break;
+		case ::vl::presentation::INativeCursor::LargeWaiting: node->content.value = L"LargeWaiting"; break;
+		case ::vl::presentation::INativeCursor::Arrow: node->content.value = L"Arrow"; break;
+		case ::vl::presentation::INativeCursor::Cross: node->content.value = L"Cross"; break;
+		case ::vl::presentation::INativeCursor::Hand: node->content.value = L"Hand"; break;
+		case ::vl::presentation::INativeCursor::Help: node->content.value = L"Help"; break;
+		case ::vl::presentation::INativeCursor::IBeam: node->content.value = L"IBeam"; break;
+		case ::vl::presentation::INativeCursor::SizeAll: node->content.value = L"SizeAll"; break;
+		case ::vl::presentation::INativeCursor::SizeNESW: node->content.value = L"SizeNESW"; break;
+		case ::vl::presentation::INativeCursor::SizeNS: node->content.value = L"SizeNS"; break;
+		case ::vl::presentation::INativeCursor::SizeNWSE: node->content.value = L"SizeNWSE"; break;
+		case ::vl::presentation::INativeCursor::SizeWE: node->content.value = L"SizeWE"; break;
+		default: CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported enum value.");
+		}
+		return node;
+#undef ERROR_MESSAGE_PREFIX
+	}
+
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::INativeWindow::WindowSizeState>(const ::vl::presentation::INativeWindow::WindowSizeState & value)
 	{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertCustomTypeToJson<::vl::presentation::INativeWindow::WindowSizeState>(const ::vl::presentation::INativeWindow::WindowSizeState&)#"
@@ -470,6 +522,52 @@ namespace vl::presentation::remoteprotocol
 		if (jsonNode->content.value == L"Left") value = ::vl::presentation::remoteprotocol::IOMouseButton::Left; else
 		if (jsonNode->content.value == L"Middle") value = ::vl::presentation::remoteprotocol::IOMouseButton::Middle; else
 		if (jsonNode->content.value == L"Right") value = ::vl::presentation::remoteprotocol::IOMouseButton::Right; else
+		CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported enum value.");
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	template<> void ConvertJsonToCustomType<::vl::presentation::INativeWindowListener::HitTestResult>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::INativeWindowListener::HitTestResult& value)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<::vl::presentation::INativeWindowListener::HitTestResult>(Ptr<JsonNode>, ::vl::presentation::INativeWindowListener::HitTestResult&)#"
+		auto jsonNode = node.Cast<glr::json::JsonString>();
+		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
+		if (jsonNode->content.value == L"BorderNoSizing") value = ::vl::presentation::INativeWindowListener::BorderNoSizing; else
+		if (jsonNode->content.value == L"BorderLeft") value = ::vl::presentation::INativeWindowListener::BorderLeft; else
+		if (jsonNode->content.value == L"BorderRight") value = ::vl::presentation::INativeWindowListener::BorderRight; else
+		if (jsonNode->content.value == L"BorderTop") value = ::vl::presentation::INativeWindowListener::BorderTop; else
+		if (jsonNode->content.value == L"BorderBottom") value = ::vl::presentation::INativeWindowListener::BorderBottom; else
+		if (jsonNode->content.value == L"BorderLeftTop") value = ::vl::presentation::INativeWindowListener::BorderLeftTop; else
+		if (jsonNode->content.value == L"BorderRightTop") value = ::vl::presentation::INativeWindowListener::BorderRightTop; else
+		if (jsonNode->content.value == L"BorderLeftBottom") value = ::vl::presentation::INativeWindowListener::BorderLeftBottom; else
+		if (jsonNode->content.value == L"BorderRightBottom") value = ::vl::presentation::INativeWindowListener::BorderRightBottom; else
+		if (jsonNode->content.value == L"Title") value = ::vl::presentation::INativeWindowListener::Title; else
+		if (jsonNode->content.value == L"ButtonMinimum") value = ::vl::presentation::INativeWindowListener::ButtonMinimum; else
+		if (jsonNode->content.value == L"ButtonMaximum") value = ::vl::presentation::INativeWindowListener::ButtonMaximum; else
+		if (jsonNode->content.value == L"ButtonClose") value = ::vl::presentation::INativeWindowListener::ButtonClose; else
+		if (jsonNode->content.value == L"Client") value = ::vl::presentation::INativeWindowListener::Client; else
+		if (jsonNode->content.value == L"Icon") value = ::vl::presentation::INativeWindowListener::Icon; else
+		if (jsonNode->content.value == L"NoDecision") value = ::vl::presentation::INativeWindowListener::NoDecision; else
+		CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported enum value.");
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	template<> void ConvertJsonToCustomType<::vl::presentation::INativeCursor::SystemCursorType>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::INativeCursor::SystemCursorType& value)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<::vl::presentation::INativeCursor::SystemCursorType>(Ptr<JsonNode>, ::vl::presentation::INativeCursor::SystemCursorType&)#"
+		auto jsonNode = node.Cast<glr::json::JsonString>();
+		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
+		if (jsonNode->content.value == L"SmallWaiting") value = ::vl::presentation::INativeCursor::SmallWaiting; else
+		if (jsonNode->content.value == L"LargeWaiting") value = ::vl::presentation::INativeCursor::LargeWaiting; else
+		if (jsonNode->content.value == L"Arrow") value = ::vl::presentation::INativeCursor::Arrow; else
+		if (jsonNode->content.value == L"Cross") value = ::vl::presentation::INativeCursor::Cross; else
+		if (jsonNode->content.value == L"Hand") value = ::vl::presentation::INativeCursor::Hand; else
+		if (jsonNode->content.value == L"Help") value = ::vl::presentation::INativeCursor::Help; else
+		if (jsonNode->content.value == L"IBeam") value = ::vl::presentation::INativeCursor::IBeam; else
+		if (jsonNode->content.value == L"SizeAll") value = ::vl::presentation::INativeCursor::SizeAll; else
+		if (jsonNode->content.value == L"SizeNESW") value = ::vl::presentation::INativeCursor::SizeNESW; else
+		if (jsonNode->content.value == L"SizeNS") value = ::vl::presentation::INativeCursor::SizeNS; else
+		if (jsonNode->content.value == L"SizeNWSE") value = ::vl::presentation::INativeCursor::SizeNWSE; else
+		if (jsonNode->content.value == L"SizeWE") value = ::vl::presentation::INativeCursor::SizeWE; else
 		CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported enum value.");
 #undef ERROR_MESSAGE_PREFIX
 	}
