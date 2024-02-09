@@ -1,4 +1,3 @@
-#include "TestRemote_Shared_FilterProtocol.h"
 #include "TestRemote_Shared_JsonProtocol.h"
 #include "TestRemote_Shared_NoRenderingProtocol.h"
 #include "TestRemote_Shared_RenderingProtocol.h"
@@ -15,8 +14,8 @@ template<typename TProtocol>
 void StartRemoteControllerTest(TProtocol& protocol)
 {
 	JsonProtocol jsonProtocol(&protocol);
-	GuiRemoteProtocolFilter filteredProtocol(&jsonProtocol);
-	GuiRemoteProtocolFilterVerifier verifierProtocol(&filteredProtocol);
+	repeatfiltering::GuiRemoteProtocolFilter filteredProtocol(&jsonProtocol);
+	repeatfiltering::GuiRemoteProtocolFilterVerifier verifierProtocol(&filteredProtocol);
 	SetupRemoteNativeController(&verifierProtocol);
 	SetGuiMainProxy({});
 }
