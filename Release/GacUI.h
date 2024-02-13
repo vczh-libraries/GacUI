@@ -4249,7 +4249,7 @@ Basic Construction
 				/// <returns>The deepest composition that under a specified location.</returns>
 				/// <param name="location">The specified location.</param>
 				/// <param name="forMouseEvent">Find a composition for mouse event, it will ignore all compositions that are transparent to mouse events.</param>
-				GuiGraphicsComposition*						FindComposition(Point location, bool forMouseEvent);
+				GuiGraphicsComposition*						FindVisibleComposition(Point location, bool forMouseEvent);
 				/// <summary>Get is this composition transparent to mouse events.</summary>
 				/// <returns>Returns true if this composition is transparent to mouse events, which means it just passes all mouse events to the composition under it.</returns>
 				bool										GetTransparentToMouse();
@@ -4288,6 +4288,9 @@ Basic Construction
 				/// <summary>Get the related cursor. A related cursor is from the deepest composition that contains this composition and associated with a cursor.</summary>
 				/// <returns>The related cursor.</returns>
 				INativeCursor*								GetRelatedCursor();
+				/// <summary>Get the related hit test result. A related hit test result is from the deepest composition that contains this composition and associated with a hit test result.</summary>
+				/// <returns>The related hit test result.</returns>
+				INativeWindowListener::HitTestResult		GetRelatedHitTestResult();
 				
 				/// <summary>Get the internal margin.</summary>
 				/// <returns>The internal margin.</returns>
