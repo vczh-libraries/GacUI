@@ -37,7 +37,6 @@
 - UnitTest.vcxproj
   - Test `GuiVirtualRepeatCompositionBase::GetAdoptedSize`.
   - Test `GuiVirtualRepeatCompositionBase::GetTotalSize` with `UseMinimumTotalSize`.
-  - Test `GuiGraphicsComposition::FindVisibleComposition` with `SetTransparetToMouse.
 - Document
   - Removal of `DEFINE_GUI_GRAPHICS_RENDERER`
   - OS provider interface changes

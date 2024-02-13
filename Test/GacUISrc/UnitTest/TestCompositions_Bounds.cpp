@@ -90,6 +90,59 @@ TEST_FILE
 			TEST_ASSERT(d->GetEventuallyVisible() == true);
 		});
 
+		TEST_CASE(L"Test FindVisibleComposition")
+		{
+			Point pa = { 0,0 };
+			Point pb = { 15,15 };
+			Point pc = { 30,30 };
+			Point pd = { 50,50 };
+
+			TEST_ASSERT(a->FindVisibleComposition(pa, false) == a);
+			TEST_ASSERT(a->FindVisibleComposition(pb, false) == b);
+			TEST_ASSERT(a->FindVisibleComposition(pc, false) == c);
+			TEST_ASSERT(a->FindVisibleComposition(pd, false) == d);
+			TEST_ASSERT(a->FindVisibleComposition(pa, true) == a);
+			TEST_ASSERT(a->FindVisibleComposition(pb, true) == b);
+			TEST_ASSERT(a->FindVisibleComposition(pc, true) == c);
+			TEST_ASSERT(a->FindVisibleComposition(pd, true) == d);
+
+			b->SetVisible(false);
+			TEST_ASSERT(a->FindVisibleComposition(pa, false) == a);
+			TEST_ASSERT(a->FindVisibleComposition(pb, false) == a);
+			TEST_ASSERT(a->FindVisibleComposition(pc, false) == a);
+			TEST_ASSERT(a->FindVisibleComposition(pd, false) == d);
+			TEST_ASSERT(a->FindVisibleComposition(pa, true) == a);
+			TEST_ASSERT(a->FindVisibleComposition(pb, true) == a);
+			TEST_ASSERT(a->FindVisibleComposition(pc, true) == a);
+			TEST_ASSERT(a->FindVisibleComposition(pd, true) == d);
+
+			b->SetVisible(true);
+			b->SetTransparentToMouse(true);
+			TEST_ASSERT(a->FindVisibleComposition(pa, false) == a);
+			TEST_ASSERT(a->FindVisibleComposition(pb, false) == b);
+			TEST_ASSERT(a->FindVisibleComposition(pc, false) == c);
+			TEST_ASSERT(a->FindVisibleComposition(pd, false) == d);
+			TEST_ASSERT(a->FindVisibleComposition(pa, true) == a);
+			TEST_ASSERT(a->FindVisibleComposition(pb, true) == a);
+			TEST_ASSERT(a->FindVisibleComposition(pc, true) == c);
+			TEST_ASSERT(a->FindVisibleComposition(pd, true) == d);
+
+			b->SetTransparentToMouse(false);
+			c->SetTransparentToMouse(true);
+			d->SetVisible(false);
+			TEST_ASSERT(a->FindVisibleComposition(pa, false) == a);
+			TEST_ASSERT(a->FindVisibleComposition(pb, false) == b);
+			TEST_ASSERT(a->FindVisibleComposition(pc, false) == c);
+			TEST_ASSERT(a->FindVisibleComposition(pd, false) == c);
+			TEST_ASSERT(a->FindVisibleComposition(pa, true) == a);
+			TEST_ASSERT(a->FindVisibleComposition(pb, true) == b);
+			TEST_ASSERT(a->FindVisibleComposition(pc, true) == b);
+			TEST_ASSERT(a->FindVisibleComposition(pd, true) == b);
+
+			c->SetTransparentToMouse(false);
+			d->SetVisible(true);
+		});
+
 		TEST_CASE(L"Test nested <Bounds> hit test")
 		{
 			Point pa = { 0,0 };
