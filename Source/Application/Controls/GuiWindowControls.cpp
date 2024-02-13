@@ -42,7 +42,7 @@ GuiControlHost
 
 			GuiControl* GuiControlHost::GetTooltipOwner(Point location)
 			{
-				GuiGraphicsComposition* composition=this->GetBoundsComposition()->FindComposition(location, true);
+				GuiGraphicsComposition* composition=this->GetBoundsComposition()->FindVisibleComposition(location, true);
 				if(composition)
 				{
 					GuiControl* control=composition->GetRelatedControl();

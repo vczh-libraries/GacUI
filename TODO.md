@@ -12,6 +12,7 @@
 - Removed `DEFINE_GUI_GRAPHICS_RENDERER(TELEMENT, TRENDERER, TTARGET)`
   - New base class: `GuiElementRendererBase<TELEMENT, TRENDERER, TTARGET>`
   - private: `friend class GuiElementRendererBase<TELEMENT, TRENDERER, TTARGET>;`
+- Renamed: `GuiGraphicsComposition::FindComposition` -> `FindVisibleComposition`
 
 ## Known Issues
 

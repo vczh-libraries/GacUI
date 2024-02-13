@@ -83,7 +83,7 @@ GuiGraphicsHost
 					{
 						hostRecord.nativeWindow->RequireCapture();
 						auto point = hostRecord.nativeWindow->Convert(NativePoint(info.x, info.y));
-						mouseCaptureComposition = windowComposition->FindComposition(point, true);
+						mouseCaptureComposition = windowComposition->FindVisibleComposition(point, true);
 					}
 				}
 			}
@@ -227,7 +227,7 @@ GuiGraphicsHost
 				else
 				{
 					auto point = hostRecord.nativeWindow->Convert(NativePoint(info.x, info.y));
-					composition = windowComposition->FindComposition(point, true);
+					composition = windowComposition->FindVisibleComposition(point, true);
 				}
 				if (release) MouseUncapture(info);
 
@@ -266,18 +266,9 @@ GuiGraphicsHost
 				NativeRect clientBounds = hostRecord.nativeWindow->GetClientBoundsInScreen();
 				NativePoint clientLocation(location.x + bounds.x1 - clientBounds.x1, location.y + bounds.y1 - clientBounds.y1);
 				auto point = hostRecord.nativeWindow->Convert(clientLocation);
-				GuiGraphicsComposition* hitComposition = windowComposition->FindComposition(point, true);
-				while (hitComposition)
+				if (auto hitComposition = windowComposition->FindVisibleComposition(point, true))
 				{
-					INativeWindowListener::HitTestResult result = hitComposition->GetAssociatedHitTestResult();
-					if (result == INativeWindowListener::NoDecision)
-					{
-						hitComposition = hitComposition->GetParent();
-					}
-					else
-					{
-						return result;
-					}
+					return hitComposition->GetRelatedHitTestResult();
 				}
 				return INativeWindowListener::NoDecision;
 			}
@@ -428,7 +419,7 @@ GuiGraphicsHost
 				CompositionList newCompositions;
 				{
 					auto point = hostRecord.nativeWindow->Convert(NativePoint(info.x, info.y));
-					GuiGraphicsComposition* composition = windowComposition->FindComposition(point, true);
+					GuiGraphicsComposition* composition = windowComposition->FindVisibleComposition(point, true);
 					while (composition)
 					{
 						newCompositions.Insert(0, composition);

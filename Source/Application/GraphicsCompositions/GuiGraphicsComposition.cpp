@@ -356,7 +356,7 @@ GuiGraphicsComposition
 				return eventReceiver;
 			}
 
-			GuiGraphicsComposition* GuiGraphicsComposition::FindComposition(Point location, bool forMouseEvent)
+			GuiGraphicsComposition* GuiGraphicsComposition::FindVisibleComposition(Point location, bool forMouseEvent)
 			{
 				if (!visible) return 0;
 				Rect bounds = GetCachedBounds();
@@ -369,7 +369,7 @@ GuiGraphicsComposition
 						GuiGraphicsComposition* child = children[i];
 						Rect childBounds = child->GetCachedBounds();
 						Point newLocation = location - Size(childBounds.x1, childBounds.y1);
-						GuiGraphicsComposition* childResult = child->FindComposition(newLocation, forMouseEvent);
+						GuiGraphicsComposition* childResult = child->FindVisibleComposition(newLocation, forMouseEvent);
 						if (childResult)
 						{
 							return childResult;
@@ -477,6 +477,24 @@ GuiGraphicsComposition
 					}
 				}
 				return nullptr;
+			}
+
+			INativeWindowListener::HitTestResult GuiGraphicsComposition::GetRelatedHitTestResult()
+			{
+				GuiGraphicsComposition* composition = this;
+				while (composition)
+				{
+					INativeWindowListener::HitTestResult result = composition->GetAssociatedHitTestResult();
+					if (result == INativeWindowListener::NoDecision)
+					{
+						composition = composition->GetParent();
+					}
+					else
+					{
+						return result;
+					}
+				}
+				return INativeWindowListener::NoDecision;
 			}
 
 			Margin GuiGraphicsComposition::GetInternalMargin()
