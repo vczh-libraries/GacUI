@@ -114,11 +114,11 @@ ListViewColumnItemArranger::ColumnItemArrangerRepeatComposition
 					arranger->FixColumnsAfterLayout();
 				}
 
-				Size ListViewColumnItemArranger::ColumnItemArrangerRepeatComposition::Layout_CalculateTotalSize()
+				void ListViewColumnItemArranger::ColumnItemArrangerRepeatComposition::Layout_CalculateTotalSize(Size& full, Size& minimum)
 				{
-					auto size = TBase::ArrangerRepeatComposition::Layout_CalculateTotalSize();
-					size.x += arranger->SplitterWidth;
-					return size;
+					TBase::ArrangerRepeatComposition::Layout_CalculateTotalSize(full, minimum);
+					full.x += arranger->SplitterWidth;
+					minimum.x += arranger->SplitterWidth;
 				}
 
 				ListViewColumnItemArranger::ColumnItemArrangerRepeatComposition::ColumnItemArrangerRepeatComposition(ListViewColumnItemArranger* _arranger)

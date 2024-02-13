@@ -182,7 +182,7 @@ ListViewColumnItemArranger
 						ListViewColumnItemArranger*				arranger = nullptr;
 
 						void									Layout_EndLayout(bool totalSizeUpdated) override;
-						Size									Layout_CalculateTotalSize() override;
+						void									Layout_CalculateTotalSize(Size& full, Size& minimum) override;
 					public:
 						ColumnItemArrangerRepeatComposition(ListViewColumnItemArranger* _arranger);
 					};

@@ -161,6 +161,7 @@ GuiVirtualRepeatCompositionBase
 				bool												itemSourceUpdated = false;
 				bool												useMinimumFullSize = false;
 				Size												realFullSize;
+				Size												realMinimumFullSize;
 				Rect												viewBounds;
 				vint												startIndex = 0;
 				StyleList											visibleStyles;
@@ -170,7 +171,7 @@ GuiVirtualRepeatCompositionBase
 				virtual VirtualRepeatEndPlaceItemResult				Layout_EndPlaceItem(bool firstPhase, Rect newBounds, vint newStartIndex) = 0;
 				virtual void										Layout_EndLayout(bool totalSizeUpdated) = 0;
 				virtual void										Layout_InvalidateItemSizeCache() = 0;
-				virtual Size										Layout_CalculateTotalSize() = 0;
+				virtual void										Layout_CalculateTotalSize(Size& full, Size& minimum) = 0;
 
 				virtual void										Layout_UpdateIndex(ItemStyleRecord style, vint index);
 				void												Layout_UpdateViewBounds(Rect value, bool forceUpdateTotalSize);
@@ -194,6 +195,7 @@ GuiVirtualRepeatCompositionBase
 				vint												CalculateAdoptedSize(vint expectedSize, vint count, vint itemSize);
 				ItemStyleRecord										CreateStyle(vint index);
 				void												DeleteStyle(ItemStyleRecord style);
+				void												UpdateFullSize();
 				void												OnViewChangedInternal(Rect oldBounds, Rect newBounds, bool forceUpdateTotalSize);
 
 			public:
@@ -251,7 +253,7 @@ GuiVirtualRepeatCompositionBase
 				VirtualRepeatEndPlaceItemResult						Layout_EndPlaceItem(bool firstPhase, Rect newBounds, vint newStartIndex) override;
 				void												Layout_EndLayout(bool totalSizeUpdated) override;
 				void												Layout_InvalidateItemSizeCache() override;
-				Size												Layout_CalculateTotalSize() override;
+				void												Layout_CalculateTotalSize(Size& full, Size& minimum) override;
 
 				void												OnItemChanged(vint start, vint oldCount, vint newCount) override;
 				void												OnInstallItems() override;
@@ -283,7 +285,7 @@ GuiVirtualRepeatCompositionBase
 				VirtualRepeatEndPlaceItemResult						Layout_EndPlaceItem(bool firstPhase, Rect newBounds, vint newStartIndex)override;
 				void												Layout_EndLayout(bool totalSizeUpdated) override;
 				void												Layout_InvalidateItemSizeCache()override;
-				Size												Layout_CalculateTotalSize()override;
+				void												Layout_CalculateTotalSize(Size& full, Size& minimum)override;
 			public:
 				/// <summary>Create the arranger.</summary>
 				GuiRepeatFixedHeightItemComposition() = default;
@@ -313,7 +315,7 @@ GuiVirtualRepeatCompositionBase
 				VirtualRepeatEndPlaceItemResult						Layout_EndPlaceItem(bool firstPhase, Rect newBounds, vint newStartIndex)override;
 				void												Layout_EndLayout(bool totalSizeUpdated) override;
 				void												Layout_InvalidateItemSizeCache()override;
-				Size												Layout_CalculateTotalSize()override;
+				void												Layout_CalculateTotalSize(Size& full, Size& minimum)override;
 			public:
 				/// <summary>Create the arranger.</summary>
 				GuiRepeatFixedSizeMultiColumnItemComposition() = default;
@@ -347,7 +349,7 @@ GuiVirtualRepeatCompositionBase
 				VirtualRepeatEndPlaceItemResult						Layout_EndPlaceItem(bool firstPhase, Rect newBounds, vint newStartIndex)override;
 				void												Layout_EndLayout(bool totalSizeUpdated) override;
 				void												Layout_InvalidateItemSizeCache()override;
-				Size												Layout_CalculateTotalSize()override;
+				void												Layout_CalculateTotalSize(Size& full, Size& minimum)override;
 			public:
 				/// <summary>Create the arranger.</summary>
 				GuiRepeatFixedHeightMultiColumnItemComposition() = default;

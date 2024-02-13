@@ -79,9 +79,10 @@ GalleryItemArrangerRepeatComposition
 					itemWidth = 1;
 				}
 
-				Size GalleryItemArrangerRepeatComposition::Layout_CalculateTotalSize()
+				void GalleryItemArrangerRepeatComposition::Layout_CalculateTotalSize(Size& full, Size& minimum)
 				{
-					return Size(1, 1);
+					full = Size(1, 1);
+					minimum = Size(1, 1);
 				}
 
 				GalleryItemArrangerRepeatComposition::GalleryItemArrangerRepeatComposition(GuiBindableRibbonGalleryList* _owner)

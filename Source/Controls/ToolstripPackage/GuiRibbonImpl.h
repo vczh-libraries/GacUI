@@ -42,7 +42,7 @@ GalleryItemArranger
 					compositions::VirtualRepeatEndPlaceItemResult			Layout_EndPlaceItem(bool firstPhase, Rect newBounds, vint newStartIndex)override;
 					void													Layout_EndLayout(bool totalSizeUpdated) override;
 					void													Layout_InvalidateItemSizeCache()override;
-					Size													Layout_CalculateTotalSize()override;
+					void													Layout_CalculateTotalSize(Size& full, Size& minimum)override;
 				public:
 					GalleryItemArrangerRepeatComposition(GuiBindableRibbonGalleryList* _owner);
 					~GalleryItemArrangerRepeatComposition();
