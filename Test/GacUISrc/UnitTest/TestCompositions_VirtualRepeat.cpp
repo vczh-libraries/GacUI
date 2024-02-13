@@ -760,9 +760,90 @@ Common
 				return style;
 			});
 
-			auto testHorizontal = [&](vint y0, vint y1, vint y2, vint vy0, vint vy1, vint vy2, vint h, vint cw = 0, vint ch = 0)
+			TEST_CASE(L"FindItemByVirtualKeyDirection")
 			{
-				vint tw = cw == 0 ? 100 : cw;
+				// trigger layout so its page size becomes 6
+				root->ForceCalculateSizeImmediately();
+				root->ForceCalculateSizeImmediately();
+
+				FIND_ITEM(Up, 0, 0);
+				FIND_ITEM(Down, 0, 1);
+				FIND_ITEM(Left, 0, -1);
+				FIND_ITEM(Right, 0, -1);
+				FIND_ITEM(Home, 0, 0);
+				FIND_ITEM(End, 0, 19);
+				FIND_ITEM(PageUp, 0, 0);
+				FIND_ITEM(PageDown, 0, 6);
+				FIND_ITEM(PageLeft, 0, -1);
+				FIND_ITEM(PageRight, 0, -1);
+
+				FIND_ITEM(Up, 1, 0);
+				FIND_ITEM(Down, 1, 2);
+				FIND_ITEM(Left, 1, -1);
+				FIND_ITEM(Right, 1, -1);
+				FIND_ITEM(Home, 1, 0);
+				FIND_ITEM(End, 1, 19);
+				FIND_ITEM(PageUp, 1, 0);
+				FIND_ITEM(PageDown, 1, 7);
+				FIND_ITEM(PageLeft, 1, -1);
+				FIND_ITEM(PageRight, 1, -1);
+
+				FIND_ITEM(Up, 18, 17);
+				FIND_ITEM(Down, 18, 19);
+				FIND_ITEM(Left, 18, -1);
+				FIND_ITEM(Right, 18, -1);
+				FIND_ITEM(Home, 18, 0);
+				FIND_ITEM(End, 18, 19);
+				FIND_ITEM(PageUp, 18, 12);
+				FIND_ITEM(PageDown, 18, 19);
+				FIND_ITEM(PageLeft, 18, -1);
+				FIND_ITEM(PageRight, 18, -1);
+
+				FIND_ITEM(Up, 19, 18);
+				FIND_ITEM(Down, 19, 19);
+				FIND_ITEM(Left, 19, -1);
+				FIND_ITEM(Right, 19, -1);
+				FIND_ITEM(Home, 19, 0);
+				FIND_ITEM(End, 19, 19);
+				FIND_ITEM(PageUp, 19, 13);
+				FIND_ITEM(PageDown, 19, 19);
+				FIND_ITEM(PageLeft, 19, -1);
+				FIND_ITEM(PageRight, 19, -1);
+			});
+
+			TEST_CASE(L"GetTotalSize")
+			{
+				// 15*20
+				TEST_ASSERT(root->GetTotalSize() == Size(100, 300));
+
+				// 15*20
+				root->SetPreferredMinSize({ 150,200 });
+				root->ForceCalculateSizeImmediately();
+				root->ForceCalculateSizeImmediately();
+				TEST_ASSERT(root->GetTotalSize() == Size(150, 300));
+
+				// 15*35
+				for (vint i = 1; i <= 15; i++) xs.Add(i);
+				root->ForceCalculateSizeImmediately();
+				root->ForceCalculateSizeImmediately();
+				TEST_ASSERT(root->GetTotalSize() == Size(150, 525));
+
+				// 15*35
+				root->SetPreferredMinSize({ 100,100 });
+				root->ForceCalculateSizeImmediately();
+				root->ForceCalculateSizeImmediately();
+				TEST_ASSERT(root->GetTotalSize() == Size(100, 525));
+
+				// 15*20
+				xs.RemoveRange(20, 15);
+				root->ForceCalculateSizeImmediately();
+				root->ForceCalculateSizeImmediately();
+				TEST_ASSERT(root->GetTotalSize() == Size(100, 300));
+			});
+
+			auto testHorizontal = [&](bool useMinimumTotalSize, vint y0, vint y1, vint y2, vint vy0, vint vy1, vint vy2, vint h, vint cw = 0, vint ch = 0)
+			{
+				vint tw = cw == 0 ? (useMinimumTotalSize ? 0 : 100) : cw;
 				vint th = ch == 0 ? 300 : ch;
 				vint fxo = cw == 0 ? 0 : 1;
 
@@ -796,21 +877,24 @@ Common
 				TEST_ASSERT(root->GetTotalSize() == Size(tw, th));
 			};
 
-			auto testVertical = [&](vint x0, vint x1, vint x2, vint vx0, vint vx1, vint vx2, vint w)
+			auto testVertical = [&](bool useMinimumTotalSize, vint x0, vint x1, vint x2, vint vx0, vint vx1, vint vx2, vint w)
 			{
+				vint tw = 300;
+				vint th = useMinimumTotalSize ? 0 : 100;
+
 				checkItems(0, 7, x0, 0, w, 0);
 				TEST_ASSERT(root->GetViewLocation() == Point(vx0, 0));
-				TEST_ASSERT(root->GetTotalSize() == Size(300, 100));
+				TEST_ASSERT(root->GetTotalSize() == Size(tw, th));
 
 				root->SetViewLocation({ vx1,10 });
 				checkItems(6, 8, x1, 0, w, 0);
 				TEST_ASSERT(root->GetViewLocation() == Point(vx1, 10));
-				TEST_ASSERT(root->GetTotalSize() == Size(300, 100));
+				TEST_ASSERT(root->GetTotalSize() == Size(tw, th));
 
 				root->SetViewLocation({ vx2,20 });
 				checkItems(13, 7, x2, 0, w, 0);
 				TEST_ASSERT(root->GetViewLocation() == Point(vx2, 20));
-				TEST_ASSERT(root->GetTotalSize() == Size(300, 100));
+				TEST_ASSERT(root->GetTotalSize() == Size(tw, th));
 
 				TEST_ASSERT(root->EnsureItemVisible(-1) == VirtualRepeatEnsureItemVisibleResult::ItemNotExists);
 				TEST_ASSERT(root->EnsureItemVisible(20) == VirtualRepeatEnsureItemVisibleResult::ItemNotExists);
@@ -819,204 +903,147 @@ Common
 				TEST_ASSERT(root->EnsureItemVisible(0) == VirtualRepeatEnsureItemVisibleResult::NotMoved);
 				TEST_ASSERT(root->GetViewLocation() == Point(vx0, 20));
 				checkItems(0, 7, x0, 0, w, 0);
-				TEST_ASSERT(root->GetTotalSize() == Size(300, 100));
+				TEST_ASSERT(root->GetTotalSize() == Size(tw, th));
 
 				TEST_ASSERT(root->EnsureItemVisible(19) == VirtualRepeatEnsureItemVisibleResult::Moved);
 				TEST_ASSERT(root->EnsureItemVisible(19) == VirtualRepeatEnsureItemVisibleResult::NotMoved);
 				TEST_ASSERT(root->GetViewLocation() == Point(vx2, 20));
 				checkItems(13, 7, x2, 0, w, 0);
-				TEST_ASSERT(root->GetTotalSize() == Size(300, 100));
+				TEST_ASSERT(root->GetTotalSize() == Size(tw, th));
 			};
 
-			auto testDown = [&]()
+			auto testDown = [&](bool useMinimumTotalSize)
 			{
 				testHorizontal(
+					useMinimumTotalSize,
 					0, -100, -200,
 					0, 100, 200,
 					15);
 			};
 
-			TEST_CASE(L"FindItemByVirtualKeyDirection")
-			{
-				// trigger layout so its page size becomes 6
-				root->ForceCalculateSizeImmediately();
-				root->ForceCalculateSizeImmediately();
-
-				FIND_ITEM(Up		,	0	,	0	);
-				FIND_ITEM(Down		,	0	,	1	);
-				FIND_ITEM(Left		,	0	,	-1	);
-				FIND_ITEM(Right		,	0	,	-1	);
-				FIND_ITEM(Home		,	0	,	0	);
-				FIND_ITEM(End		,	0	,	19	);
-				FIND_ITEM(PageUp	,	0	,	0	);
-				FIND_ITEM(PageDown	,	0	,	6	);
-				FIND_ITEM(PageLeft	,	0	,	-1	);
-				FIND_ITEM(PageRight	,	0	,	-1	);
-
-				FIND_ITEM(Up		,	1	,	0	);
-				FIND_ITEM(Down		,	1	,	2	);
-				FIND_ITEM(Left		,	1	,	-1	);
-				FIND_ITEM(Right		,	1	,	-1	);
-				FIND_ITEM(Home		,	1	,	0	);
-				FIND_ITEM(End		,	1	,	19	);
-				FIND_ITEM(PageUp	,	1	,	0	);
-				FIND_ITEM(PageDown	,	1	,	7	);
-				FIND_ITEM(PageLeft	,	1	,	-1	);
-				FIND_ITEM(PageRight	,	1	,	-1	);
-
-				FIND_ITEM(Up		,	18	,	17	);
-				FIND_ITEM(Down		,	18	,	19	);
-				FIND_ITEM(Left		,	18	,	-1	);
-				FIND_ITEM(Right		,	18	,	-1	);
-				FIND_ITEM(Home		,	18	,	0	);
-				FIND_ITEM(End		,	18	,	19	);
-				FIND_ITEM(PageUp	,	18	,	12	);
-				FIND_ITEM(PageDown	,	18	,	19	);
-				FIND_ITEM(PageLeft	,	18	,	-1	);
-				FIND_ITEM(PageRight	,	18	,	-1	);
-
-				FIND_ITEM(Up		,	19	,	18	);
-				FIND_ITEM(Down		,	19	,	19	);
-				FIND_ITEM(Left		,	19	,	-1	);
-				FIND_ITEM(Right		,	19	,	-1	);
-				FIND_ITEM(Home		,	19	,	0	);
-				FIND_ITEM(End		,	19	,	19	);
-				FIND_ITEM(PageUp	,	19	,	13	);
-				FIND_ITEM(PageDown	,	19	,	19	);
-				FIND_ITEM(PageLeft	,	19	,	-1	);
-				FIND_ITEM(PageRight	,	19	,	-1	);
-			});
-
-			TEST_CASE(L"GetTotalSize")
-			{
-				// 15*20
-				TEST_ASSERT(root->GetTotalSize() == Size(100, 300));
-
-				// 15*20
-				root->SetPreferredMinSize({ 150,200 });
-				root->ForceCalculateSizeImmediately();
-				root->ForceCalculateSizeImmediately();
-				TEST_ASSERT(root->GetTotalSize() == Size(150, 300));
-
-				// 15*35
-				for (vint i = 1; i <= 15; i++) xs.Add(i);
-				root->ForceCalculateSizeImmediately();
-				root->ForceCalculateSizeImmediately();
-				TEST_ASSERT(root->GetTotalSize() == Size(150, 525));
-
-				// 15*35
-				root->SetPreferredMinSize({ 100,100 });
-				root->ForceCalculateSizeImmediately();
-				root->ForceCalculateSizeImmediately();
-				TEST_ASSERT(root->GetTotalSize() == Size(100, 525));
-
-				// 15*20
-				xs.RemoveRange(20, 15);
-				root->ForceCalculateSizeImmediately();
-				root->ForceCalculateSizeImmediately();
-				TEST_ASSERT(root->GetTotalSize() == Size(100, 300));
-			});
-
-			TEST_CASE(L"ItemWidth")
-			{
-				root->SetItemWidth(80);
-				root->ResetLayout(false);
-				testHorizontal(
-					0, -100, -200,
-					0, 100, 200,
-					15, 80, 0);
-			
-				root->SetItemWidth(-1);
-				root->ResetLayout(false);
-				testDown();
-			});
-
-			TEST_CASE(L"ItemYOffset")
-			{
-				root->SetItemYOffset(30);
-				root->ResetLayout(false);
-				root->SetPreferredMinSize({ 100,130 });
-				testHorizontal(
-					30, -70, -170,
-					0, 100, 200,
-					15, 0, 330);
-
-				root->SetItemYOffset(0);
-				root->ResetLayout(false);
-				root->SetPreferredMinSize({ 100,100 });
-				testDown();
-			});
-
-			TEST_CASE(L"RightDown")
-			{
-				root->SetAxis(Ptr(new GuiAxis(AxisDirection::RightDown)));
-				testDown();
-			});
-
-			TEST_CASE(L"LeftDown")
-			{
-				root->SetAxis(Ptr(new GuiAxis(AxisDirection::LeftDown)));
-				testDown();
-			});
-
-			auto testUp = [&]()
+			auto testUp = [&](bool useMinimumTotalSize)
 			{
 				testHorizontal(
+					useMinimumTotalSize,
 					100, 200, 300,
 					200, 100, 0,
 					-15);
 			};
 
-			TEST_CASE(L"RightUp")
-			{
-				root->SetAxis(Ptr(new GuiAxis(AxisDirection::RightUp)));
-				testUp();
-			});
-
-			TEST_CASE(L"LeftUp")
-			{
-				root->SetAxis(Ptr(new GuiAxis(AxisDirection::LeftUp)));
-				testUp();
-			});
-
-			auto testRight = [&]()
+			auto testRight = [&](bool useMinimumTotalSize)
 			{
 				testVertical(
+					useMinimumTotalSize,
 					0, -100, -200,
 					0, 100, 200,
 					15);
 			};
 
-			TEST_CASE(L"DownRight")
-			{
-				root->SetAxis(Ptr(new GuiAxis(AxisDirection::DownRight)));
-				testRight();
-			});
-
-			TEST_CASE(L"UpRight")
-			{
-				root->SetAxis(Ptr(new GuiAxis(AxisDirection::UpRight)));
-				testRight();
-			});
-
-			auto testLeft = [&]()
+			auto testLeft = [&](bool useMinimumTotalSize)
 			{
 				testVertical(
+					useMinimumTotalSize,
 					100, 200, 300,
 					200, 100, 0,
 					-15);
 			};
 
-			TEST_CASE(L"DownLeft")
+			auto testAllDirections = [&](bool useMinimumTotalSize)
 			{
-				root->SetAxis(Ptr(new GuiAxis(AxisDirection::DownLeft)));
-				testLeft();
+				root->SetAxis(nullptr);
+
+				TEST_CASE(L"ItemWidth")
+				{
+					root->SetItemWidth(80);
+					root->ResetLayout(false);
+					testHorizontal(
+						useMinimumTotalSize,
+						0, -100, -200,
+						0, 100, 200,
+						15, 80, 0);
+				
+					root->SetItemWidth(-1);
+					root->ResetLayout(false);
+					testDown(useMinimumTotalSize);
+				});
+
+				TEST_CASE(L"ItemYOffset")
+				{
+					root->SetItemYOffset(30);
+					root->ResetLayout(false);
+					root->SetPreferredMinSize({ 100,130 });
+					testHorizontal(
+						useMinimumTotalSize,
+						30, -70, -170,
+						0, 100, 200,
+						15, 0, 330);
+
+					root->SetItemYOffset(0);
+					root->ResetLayout(false);
+					root->SetPreferredMinSize({ 100,100 });
+					testDown(useMinimumTotalSize);
+				});
+
+				TEST_CASE(L"RightDown")
+				{
+					root->SetAxis(Ptr(new GuiAxis(AxisDirection::RightDown)));
+					testDown(useMinimumTotalSize);
+				});
+
+				TEST_CASE(L"LeftDown")
+				{
+					root->SetAxis(Ptr(new GuiAxis(AxisDirection::LeftDown)));
+					testDown(useMinimumTotalSize);
+				});
+
+				TEST_CASE(L"RightUp")
+				{
+					root->SetAxis(Ptr(new GuiAxis(AxisDirection::RightUp)));
+					testUp(useMinimumTotalSize);
+				});
+
+				TEST_CASE(L"LeftUp")
+				{
+					root->SetAxis(Ptr(new GuiAxis(AxisDirection::LeftUp)));
+					testUp(useMinimumTotalSize);
+				});
+
+				TEST_CASE(L"DownRight")
+				{
+					root->SetAxis(Ptr(new GuiAxis(AxisDirection::DownRight)));
+					testRight(useMinimumTotalSize);
+				});
+
+				TEST_CASE(L"UpRight")
+				{
+					root->SetAxis(Ptr(new GuiAxis(AxisDirection::UpRight)));
+					testRight(useMinimumTotalSize);
+				});
+
+				TEST_CASE(L"DownLeft")
+				{
+					root->SetAxis(Ptr(new GuiAxis(AxisDirection::DownLeft)));
+					testLeft(useMinimumTotalSize);
+				});
+
+				TEST_CASE(L"UpLeft")
+				{
+					root->SetAxis(Ptr(new GuiAxis(AxisDirection::UpLeft)));
+					testLeft(useMinimumTotalSize);
+				});
+			};
+
+			TEST_CATEGORY(L"UseMinimumTotalSize == false")
+			{
+				TEST_CASE_ASSERT(root->GetUseMinimumTotalSize() == false);
+				testAllDirections(false);
 			});
 
-			TEST_CASE(L"UpLeft")
+			TEST_CATEGORY(L"UseMinimumTotalSize == true")
 			{
-				root->SetAxis(Ptr(new GuiAxis(AxisDirection::UpLeft)));
-				testLeft();
+				root->SetUseMinimumTotalSize(true);
+				TEST_CASE_ASSERT(root->GetUseMinimumTotalSize() == true);
+				testAllDirections(true);
 			});
 
 			SafeDeleteComposition(root);
