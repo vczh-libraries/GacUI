@@ -96,14 +96,87 @@ TEST_FILE
 			Point pb = { 15,15 };
 			Point pc = { 30,30 };
 			Point pd = { 50,50 };
+
+			TEST_ASSERT(a->FindVisibleComposition(pa, true)->GetRelatedHitTestResult() == INativeWindowListener::NoDecision);
+			TEST_ASSERT(a->FindVisibleComposition(pb, true)->GetRelatedHitTestResult() == INativeWindowListener::NoDecision);
+			TEST_ASSERT(a->FindVisibleComposition(pc, true)->GetRelatedHitTestResult() == INativeWindowListener::NoDecision);
+			TEST_ASSERT(a->FindVisibleComposition(pd, true)->GetRelatedHitTestResult() == INativeWindowListener::NoDecision);
+
+			b->SetAssociatedHitTestResult(INativeWindowListener::Title);
+			TEST_ASSERT(a->FindVisibleComposition(pa, true)->GetRelatedHitTestResult() == INativeWindowListener::NoDecision);
+			TEST_ASSERT(a->FindVisibleComposition(pb, true)->GetRelatedHitTestResult() == INativeWindowListener::Title);
+			TEST_ASSERT(a->FindVisibleComposition(pc, true)->GetRelatedHitTestResult() == INativeWindowListener::Title);
+			TEST_ASSERT(a->FindVisibleComposition(pd, true)->GetRelatedHitTestResult() == INativeWindowListener::NoDecision);
+
+			c->SetAssociatedHitTestResult(INativeWindowListener::Icon);
+			TEST_ASSERT(a->FindVisibleComposition(pa, true)->GetRelatedHitTestResult() == INativeWindowListener::NoDecision);
+			TEST_ASSERT(a->FindVisibleComposition(pb, true)->GetRelatedHitTestResult() == INativeWindowListener::Title);
+			TEST_ASSERT(a->FindVisibleComposition(pc, true)->GetRelatedHitTestResult() == INativeWindowListener::Icon);
+			TEST_ASSERT(a->FindVisibleComposition(pd, true)->GetRelatedHitTestResult() == INativeWindowListener::NoDecision);
+
+			b->SetVisible(false);
+			TEST_ASSERT(a->FindVisibleComposition(pa, true)->GetRelatedHitTestResult() == INativeWindowListener::NoDecision);
+			TEST_ASSERT(a->FindVisibleComposition(pb, true)->GetRelatedHitTestResult() == INativeWindowListener::NoDecision);
+			TEST_ASSERT(a->FindVisibleComposition(pc, true)->GetRelatedHitTestResult() == INativeWindowListener::NoDecision);
+			TEST_ASSERT(a->FindVisibleComposition(pd, true)->GetRelatedHitTestResult() == INativeWindowListener::NoDecision);
+
+			b->SetVisible(true);
+			d->SetVisible(false);
+			TEST_ASSERT(a->FindVisibleComposition(pa, true)->GetRelatedHitTestResult() == INativeWindowListener::NoDecision);
+			TEST_ASSERT(a->FindVisibleComposition(pb, true)->GetRelatedHitTestResult() == INativeWindowListener::Title);
+			TEST_ASSERT(a->FindVisibleComposition(pc, true)->GetRelatedHitTestResult() == INativeWindowListener::Icon);
+			TEST_ASSERT(a->FindVisibleComposition(pd, true)->GetRelatedHitTestResult() == INativeWindowListener::Icon);
+
+			d->SetVisible(true);
 		});
 
 		TEST_CASE(L"Test nested <Bounds> cursor")
 		{
+			Point pa = { 0,0 };
+			Point pb = { 15,15 };
+			Point pc = { 30,30 };
+			Point pd = { 50,50 };
+
+			INativeCursor* c1 = reinterpret_cast<INativeCursor*>(1);
+			INativeCursor* c2 = reinterpret_cast<INativeCursor*>(2);
+
+			TEST_ASSERT(a->FindVisibleComposition(pa, true)->GetRelatedCursor() == nullptr);
+			TEST_ASSERT(a->FindVisibleComposition(pb, true)->GetRelatedCursor() == nullptr);
+			TEST_ASSERT(a->FindVisibleComposition(pc, true)->GetRelatedCursor() == nullptr);
+			TEST_ASSERT(a->FindVisibleComposition(pd, true)->GetRelatedCursor() == nullptr);
+
+			b->SetAssociatedCursor(c1);
+			TEST_ASSERT(a->FindVisibleComposition(pa, true)->GetRelatedCursor() == nullptr);
+			TEST_ASSERT(a->FindVisibleComposition(pb, true)->GetRelatedCursor() == c1);
+			TEST_ASSERT(a->FindVisibleComposition(pc, true)->GetRelatedCursor() == c1);
+			TEST_ASSERT(a->FindVisibleComposition(pd, true)->GetRelatedCursor() == nullptr);
+
+			c->SetAssociatedCursor(c2);
+			TEST_ASSERT(a->FindVisibleComposition(pa, true)->GetRelatedCursor() == nullptr);
+			TEST_ASSERT(a->FindVisibleComposition(pb, true)->GetRelatedCursor() == c1);
+			TEST_ASSERT(a->FindVisibleComposition(pc, true)->GetRelatedCursor() == c2);
+			TEST_ASSERT(a->FindVisibleComposition(pd, true)->GetRelatedCursor() == nullptr);
+
+			b->SetVisible(false);
+			TEST_ASSERT(a->FindVisibleComposition(pa, true)->GetRelatedCursor() == nullptr);
+			TEST_ASSERT(a->FindVisibleComposition(pb, true)->GetRelatedCursor() == nullptr);
+			TEST_ASSERT(a->FindVisibleComposition(pc, true)->GetRelatedCursor() == nullptr);
+			TEST_ASSERT(a->FindVisibleComposition(pd, true)->GetRelatedCursor() == nullptr);
+
+			b->SetVisible(true);
+			d->SetVisible(false);
+			TEST_ASSERT(a->FindVisibleComposition(pa, true)->GetRelatedCursor() == nullptr);
+			TEST_ASSERT(a->FindVisibleComposition(pb, true)->GetRelatedCursor() == c1);
+			TEST_ASSERT(a->FindVisibleComposition(pc, true)->GetRelatedCursor() == c2);
+			TEST_ASSERT(a->FindVisibleComposition(pd, true)->GetRelatedCursor() == c2);
+
+			d->SetVisible(true);
 		});
 
 		TEST_CASE(L"Test nested <Bounds> associated resources")
 		{
 		});
+
+		SafeDeleteComposition(a);
 	});
 }

@@ -1401,11 +1401,12 @@ class presentation::compositions::GuiGraphicsComposition : system::ReferenceType
     property RelatedControl : presentation::controls::GuiControl* { get:GetRelatedControl }
     property RelatedControlHost : presentation::controls::GuiControlHost* { get:GetRelatedControlHost }
     property RelatedCursor : presentation::INativeCursor* { get:GetRelatedCursor }
+    property RelatedHitTestResult : presentation::INativeWindowListener::HitTestResult { get:GetRelatedHitTestResult }
     property TransparentToMouse : system::Boolean { get:GetTransparentToMouse set:SetTransparentToMouse }
     property Visible : system::Boolean { get:GetVisible set:SetVisible }
 
     function AddChild(child : presentation::compositions::GuiGraphicsComposition*) : system::Boolean;
-    function FindComposition(location : presentation::Point, forMouseEvent : system::Boolean) : presentation::compositions::GuiGraphicsComposition*;
+    function FindVisibleComposition(location : presentation::Point, forMouseEvent : system::Boolean) : presentation::compositions::GuiGraphicsComposition*;
     function GetAssociatedControl() : presentation::controls::GuiControl*;
     function GetAssociatedCursor() : presentation::INativeCursor*;
     function GetAssociatedHitTestResult() : presentation::INativeWindowListener::HitTestResult;
@@ -1426,6 +1427,7 @@ class presentation::compositions::GuiGraphicsComposition : system::ReferenceType
     function GetRelatedControl() : presentation::controls::GuiControl*;
     function GetRelatedControlHost() : presentation::controls::GuiControlHost*;
     function GetRelatedCursor() : presentation::INativeCursor*;
+    function GetRelatedHitTestResult() : presentation::INativeWindowListener::HitTestResult;
     function GetTransparentToMouse() : system::Boolean;
     function GetVisible() : system::Boolean;
     function InsertChild(index : system::Int64, child : presentation::compositions::GuiGraphicsComposition*) : system::Boolean;
@@ -4165,8 +4167,8 @@ class presentation::controls::tree::TreeViewItemRootProvider : presentation::con
 
 @ValueType
 struct presentation::elements::ElementShape {
-    property radiusX : system::Int32;
-    property radiusY : system::Int32;
+    property radiusX : system::Int64;
+    property radiusY : system::Int64;
     property shapeType : presentation::elements::ElementShapeType;
 }
 

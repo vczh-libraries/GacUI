@@ -116,26 +116,26 @@ class darkskin::CustomFrameWindowTemplateConstructor : system::ReferenceType {
     property __vwsn_precompile_10 : presentation::compositions::GuiCellComposition*;
     property __vwsn_precompile_11 : presentation::compositions::GuiCellComposition*;
     property __vwsn_precompile_12 : presentation::controls::GuiButton*;
-    property __vwsn_precompile_13 : presentation::compositions::GuiGraphicsComposition*;
-    property __vwsn_precompile_14 : presentation::compositions::GuiBoundsComposition*;
-    property __vwsn_precompile_15 : presentation::elements::GuiPolygonElement^;
-    property __vwsn_precompile_16 : presentation::compositions::GuiBoundsComposition*;
+    property __vwsn_precompile_13 : presentation::compositions::GuiBoundsComposition*;
+    property __vwsn_precompile_14 : presentation::compositions::GuiGraphicsComposition*;
+    property __vwsn_precompile_15 : presentation::compositions::GuiBoundsComposition*;
+    property __vwsn_precompile_16 : presentation::elements::GuiPolygonElement^;
     property __vwsn_precompile_17 : presentation::compositions::GuiCellComposition*;
     property __vwsn_precompile_18 : presentation::controls::GuiButton*;
-    property __vwsn_precompile_19 : presentation::compositions::GuiGraphicsComposition*;
+    property __vwsn_precompile_19 : presentation::compositions::GuiBoundsComposition*;
     property __vwsn_precompile_2 : presentation::elements::GuiSolidBorderElement^;
-    property __vwsn_precompile_20 : presentation::compositions::GuiBoundsComposition*;
-    property __vwsn_precompile_21 : presentation::elements::GuiPolygonElement^;
-    property __vwsn_precompile_22 : presentation::compositions::GuiBoundsComposition*;
-    property __vwsn_precompile_23 : presentation::elements::GuiPolygonElement^;
-    property __vwsn_precompile_24 : presentation::compositions::GuiBoundsComposition*;
+    property __vwsn_precompile_20 : presentation::compositions::GuiGraphicsComposition*;
+    property __vwsn_precompile_21 : presentation::compositions::GuiBoundsComposition*;
+    property __vwsn_precompile_22 : presentation::elements::GuiPolygonElement^;
+    property __vwsn_precompile_23 : presentation::compositions::GuiBoundsComposition*;
+    property __vwsn_precompile_24 : presentation::elements::GuiPolygonElement^;
     property __vwsn_precompile_25 : presentation::compositions::GuiCellComposition*;
     property __vwsn_precompile_26 : presentation::controls::GuiButton*;
-    property __vwsn_precompile_27 : presentation::compositions::GuiGraphicsComposition*;
-    property __vwsn_precompile_28 : presentation::compositions::GuiBoundsComposition*;
-    property __vwsn_precompile_29 : presentation::elements::GuiPolygonElement^;
+    property __vwsn_precompile_27 : presentation::compositions::GuiBoundsComposition*;
+    property __vwsn_precompile_28 : presentation::compositions::GuiGraphicsComposition*;
+    property __vwsn_precompile_29 : presentation::compositions::GuiBoundsComposition*;
     property __vwsn_precompile_3 : presentation::compositions::GuiCellComposition*;
-    property __vwsn_precompile_30 : presentation::compositions::GuiBoundsComposition*;
+    property __vwsn_precompile_30 : presentation::elements::GuiPolygonElement^;
     property __vwsn_precompile_31 : presentation::compositions::GuiCellComposition*;
     property __vwsn_precompile_32 : presentation::compositions::GuiTableComposition*;
     property __vwsn_precompile_33 : presentation::compositions::GuiCellComposition*;
@@ -3487,11 +3487,12 @@ class presentation::compositions::GuiGraphicsComposition : system::ReferenceType
     property RelatedControl : presentation::controls::GuiControl* { get:GetRelatedControl }
     property RelatedControlHost : presentation::controls::GuiControlHost* { get:GetRelatedControlHost }
     property RelatedCursor : presentation::INativeCursor* { get:GetRelatedCursor }
+    property RelatedHitTestResult : presentation::INativeWindowListener::HitTestResult { get:GetRelatedHitTestResult }
     property TransparentToMouse : system::Boolean { get:GetTransparentToMouse set:SetTransparentToMouse }
     property Visible : system::Boolean { get:GetVisible set:SetVisible }
 
     function AddChild(child : presentation::compositions::GuiGraphicsComposition*) : system::Boolean;
-    function FindComposition(location : presentation::Point, forMouseEvent : system::Boolean) : presentation::compositions::GuiGraphicsComposition*;
+    function FindVisibleComposition(location : presentation::Point, forMouseEvent : system::Boolean) : presentation::compositions::GuiGraphicsComposition*;
     function GetAssociatedControl() : presentation::controls::GuiControl*;
     function GetAssociatedCursor() : presentation::INativeCursor*;
     function GetAssociatedHitTestResult() : presentation::INativeWindowListener::HitTestResult;
@@ -3512,6 +3513,7 @@ class presentation::compositions::GuiGraphicsComposition : system::ReferenceType
     function GetRelatedControl() : presentation::controls::GuiControl*;
     function GetRelatedControlHost() : presentation::controls::GuiControlHost*;
     function GetRelatedCursor() : presentation::INativeCursor*;
+    function GetRelatedHitTestResult() : presentation::INativeWindowListener::HitTestResult;
     function GetTransparentToMouse() : system::Boolean;
     function GetVisible() : system::Boolean;
     function InsertChild(index : system::Int32, child : presentation::compositions::GuiGraphicsComposition*) : system::Boolean;
