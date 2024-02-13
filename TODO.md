@@ -36,7 +36,6 @@
   - Add hittest (only for main window)/cursor messages, or implement it with SyncDom.
 - UnitTest.vcxproj
   - Test `GuiVirtualRepeatCompositionBase::GetAdoptedSize`.
-  - Test `GuiVirtualRepeatCompositionBase::GetTotalSize` with `UseMinimumTotalSize`.
 - Document
   - Removal of `DEFINE_GUI_GRAPHICS_RENDERER`
   - OS provider interface changes
