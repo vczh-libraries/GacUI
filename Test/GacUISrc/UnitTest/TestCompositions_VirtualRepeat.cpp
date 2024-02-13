@@ -1598,6 +1598,166 @@ Common
 			root->SetPreferredMinSize({ 100,100 });
 			root->SetItemSource(UnboxValue<Ptr<IValueObservableList>>(BoxParameter(xs)));
 
+			root->SetItemTemplate([](const Value& value)
+			{
+				vint x = UnboxValue<vint>(value);
+				auto style = new GuiTemplate;
+				style->SetText(itow(UnboxValue<vint>(value)));
+				style->SetPreferredMinSize({ 40,10 });
+				return style;
+			});
+
+			TEST_CASE(L"FindItemByVirtualKeyDirection")
+			{
+				// trigger layout so its page size becomes 2x10
+				root->ForceCalculateSizeImmediately();
+				root->ForceCalculateSizeImmediately();
+
+				FIND_ITEM(Up		,	0	,	0	);
+				FIND_ITEM(Down		,	0	,	1	);
+				FIND_ITEM(Left		,	0	,	0	);
+				FIND_ITEM(Right		,	0	,	10	);
+				FIND_ITEM(Home		,	0	,	0	);
+				FIND_ITEM(End		,	0	,	49	);
+				FIND_ITEM(PageUp	,	0	,	0	);
+				FIND_ITEM(PageDown	,	0	,	9	);
+				FIND_ITEM(PageLeft	,	0	,	-1	);
+				FIND_ITEM(PageRight	,	0	,	-1	);
+
+				FIND_ITEM(Up		,	1	,	0	);
+				FIND_ITEM(Down		,	1	,	2	);
+				FIND_ITEM(Left		,	1	,	0	);
+				FIND_ITEM(Right		,	1	,	11	);
+				FIND_ITEM(Home		,	1	,	0	);
+				FIND_ITEM(End		,	1	,	49	);
+				FIND_ITEM(PageUp	,	1	,	0	);
+				FIND_ITEM(PageDown	,	1	,	9	);
+				FIND_ITEM(PageLeft	,	1	,	-1	);
+				FIND_ITEM(PageRight	,	1	,	-1	);
+
+				FIND_ITEM(Up		,	9	,	8	);
+				FIND_ITEM(Down		,	9	,	10	);
+				FIND_ITEM(Left		,	9	,	0	);
+				FIND_ITEM(Right		,	9	,	19	);
+				FIND_ITEM(Home		,	9	,	0	);
+				FIND_ITEM(End		,	9	,	49	);
+				FIND_ITEM(PageUp	,	9	,	0	);
+				FIND_ITEM(PageDown	,	9	,	9	);
+				FIND_ITEM(PageLeft	,	9	,	-1	);
+				FIND_ITEM(PageRight	,	9	,	-1	);
+
+				FIND_ITEM(Up		,	10	,	9	);
+				FIND_ITEM(Down		,	10	,	11	);
+				FIND_ITEM(Left		,	10	,	0	);
+				FIND_ITEM(Right		,	10	,	20	);
+				FIND_ITEM(Home		,	10	,	0	);
+				FIND_ITEM(End		,	10	,	49	);
+				FIND_ITEM(PageUp	,	10	,	10	);
+				FIND_ITEM(PageDown	,	10	,	19	);
+				FIND_ITEM(PageLeft	,	10	,	-1	);
+				FIND_ITEM(PageRight	,	10	,	-1	);
+
+				FIND_ITEM(Up		,	11	,	10	);
+				FIND_ITEM(Down		,	11	,	12	);
+				FIND_ITEM(Left		,	11	,	1	);
+				FIND_ITEM(Right		,	11	,	21	);
+				FIND_ITEM(Home		,	11	,	0	);
+				FIND_ITEM(End		,	11	,	49	);
+				FIND_ITEM(PageUp	,	11	,	10	);
+				FIND_ITEM(PageDown	,	11	,	19	);
+				FIND_ITEM(PageLeft	,	11	,	-1	);
+				FIND_ITEM(PageRight	,	11	,	-1	);
+
+				FIND_ITEM(Up		,	19	,	18	);
+				FIND_ITEM(Down		,	19	,	20	);
+				FIND_ITEM(Left		,	19	,	9	);
+				FIND_ITEM(Right		,	19	,	29	);
+				FIND_ITEM(Home		,	19	,	0	);
+				FIND_ITEM(End		,	19	,	49	);
+				FIND_ITEM(PageUp	,	19	,	10	);
+				FIND_ITEM(PageDown	,	19	,	19	);
+				FIND_ITEM(PageLeft	,	19	,	-1	);
+				FIND_ITEM(PageRight	,	19	,	-1	);
+
+				FIND_ITEM(Up		,	40	,	39	);
+				FIND_ITEM(Down		,	40	,	41	);
+				FIND_ITEM(Left		,	40	,	30	);
+				FIND_ITEM(Right		,	40	,	49	);
+				FIND_ITEM(Home		,	40	,	0	);
+				FIND_ITEM(End		,	40	,	49	);
+				FIND_ITEM(PageUp	,	40	,	40	);
+				FIND_ITEM(PageDown	,	40	,	49	);
+				FIND_ITEM(PageLeft	,	40	,	-1	);
+				FIND_ITEM(PageRight	,	40	,	-1	);
+
+				FIND_ITEM(Up		,	41	,	40	);
+				FIND_ITEM(Down		,	41	,	42	);
+				FIND_ITEM(Left		,	41	,	31	);
+				FIND_ITEM(Right		,	41	,	49	);
+				FIND_ITEM(Home		,	41	,	0	);
+				FIND_ITEM(End		,	41	,	49	);
+				FIND_ITEM(PageUp	,	41	,	40	);
+				FIND_ITEM(PageDown	,	41	,	49	);
+				FIND_ITEM(PageLeft	,	41	,	-1	);
+				FIND_ITEM(PageRight	,	41	,	-1	);
+
+				FIND_ITEM(Up		,	49	,	48	);
+				FIND_ITEM(Down		,	49	,	49	);
+				FIND_ITEM(Left		,	49	,	39	);
+				FIND_ITEM(Right		,	49	,	49	);
+				FIND_ITEM(Home		,	49	,	0	);
+				FIND_ITEM(End		,	49	,	49	);
+				FIND_ITEM(PageUp	,	49	,	40	);
+				FIND_ITEM(PageDown	,	49	,	49	);
+				FIND_ITEM(PageLeft	,	49	,	-1	);
+				FIND_ITEM(PageRight	,	49	,	-1	);
+			});
+
+			auto testTotalSize = [&](bool useMinimumTotalSize)
+			{
+				// 5x10
+				TEST_ASSERT(root->GetTotalSize() == Size(600, (useMinimumTotalSize ? 0 : 100)));
+
+				// 3x20
+				root->SetPreferredMinSize({ 150,200 });
+				root->ForceCalculateSizeImmediately();
+				root->ForceCalculateSizeImmediately();
+				TEST_ASSERT(root->GetTotalSize() == Size(600, (useMinimumTotalSize ? 0 : 200)));
+
+				// 4x20
+				for (vint i = 1; i <= 15; i++) xs.Add(i);
+				root->ForceCalculateSizeImmediately();
+				root->ForceCalculateSizeImmediately();
+				TEST_ASSERT(root->GetTotalSize() == Size(750, (useMinimumTotalSize ? 0 : 200)));
+
+				// 7x10
+				root->SetPreferredMinSize({ 100,100 });
+				root->ForceCalculateSizeImmediately();
+				root->ForceCalculateSizeImmediately();
+				TEST_ASSERT(root->GetTotalSize() == Size(800, (useMinimumTotalSize ? 0 : 100)));
+
+				// 5x10
+				xs.RemoveRange(50, 15);
+				root->ForceCalculateSizeImmediately();
+				root->ForceCalculateSizeImmediately();
+				TEST_ASSERT(root->GetTotalSize() == Size(600, (useMinimumTotalSize ? 0 : 100)));
+			};
+
+			TEST_CASE(L"UseMinimumTotalSize == false")
+			{
+				TEST_ASSERT(root->GetUseMinimumTotalSize() == false);
+				testTotalSize(false);
+			});
+
+			TEST_CASE(L"UseMinimumTotalSize == true")
+			{
+				root->SetUseMinimumTotalSize(true);
+				TEST_ASSERT(root->GetUseMinimumTotalSize() == true);
+				testTotalSize(true);
+			});
+
+			root->SetUseMinimumTotalSize(false);
+
 			auto checkItems = [&](vint firstColumn, vint visibleColumns, vint x0, vint y0, vint w, vint h, bool horizontal)
 			{
 				vint cw = w > 0 ? w : -w;
@@ -1734,151 +1894,6 @@ Common
 				TEST_ASSERT(root->GetViewLocation() == Point(20, vy0));
 				checkItems(0, 3, x0 - 20, y0, w, h, false);
 			};
-
-			root->SetItemTemplate([](const Value& value)
-			{
-				vint x = UnboxValue<vint>(value);
-				auto style = new GuiTemplate;
-				style->SetText(itow(UnboxValue<vint>(value)));
-				style->SetPreferredMinSize({ 40,10 });
-				return style;
-			});
-
-			TEST_CASE(L"FindItemByVirtualKeyDirection")
-			{
-				// trigger layout so its page size becomes 2x10
-				root->ForceCalculateSizeImmediately();
-				root->ForceCalculateSizeImmediately();
-
-				FIND_ITEM(Up		,	0	,	0	);
-				FIND_ITEM(Down		,	0	,	1	);
-				FIND_ITEM(Left		,	0	,	0	);
-				FIND_ITEM(Right		,	0	,	10	);
-				FIND_ITEM(Home		,	0	,	0	);
-				FIND_ITEM(End		,	0	,	49	);
-				FIND_ITEM(PageUp	,	0	,	0	);
-				FIND_ITEM(PageDown	,	0	,	9	);
-				FIND_ITEM(PageLeft	,	0	,	-1	);
-				FIND_ITEM(PageRight	,	0	,	-1	);
-
-				FIND_ITEM(Up		,	1	,	0	);
-				FIND_ITEM(Down		,	1	,	2	);
-				FIND_ITEM(Left		,	1	,	0	);
-				FIND_ITEM(Right		,	1	,	11	);
-				FIND_ITEM(Home		,	1	,	0	);
-				FIND_ITEM(End		,	1	,	49	);
-				FIND_ITEM(PageUp	,	1	,	0	);
-				FIND_ITEM(PageDown	,	1	,	9	);
-				FIND_ITEM(PageLeft	,	1	,	-1	);
-				FIND_ITEM(PageRight	,	1	,	-1	);
-
-				FIND_ITEM(Up		,	9	,	8	);
-				FIND_ITEM(Down		,	9	,	10	);
-				FIND_ITEM(Left		,	9	,	0	);
-				FIND_ITEM(Right		,	9	,	19	);
-				FIND_ITEM(Home		,	9	,	0	);
-				FIND_ITEM(End		,	9	,	49	);
-				FIND_ITEM(PageUp	,	9	,	0	);
-				FIND_ITEM(PageDown	,	9	,	9	);
-				FIND_ITEM(PageLeft	,	9	,	-1	);
-				FIND_ITEM(PageRight	,	9	,	-1	);
-
-				FIND_ITEM(Up		,	10	,	9	);
-				FIND_ITEM(Down		,	10	,	11	);
-				FIND_ITEM(Left		,	10	,	0	);
-				FIND_ITEM(Right		,	10	,	20	);
-				FIND_ITEM(Home		,	10	,	0	);
-				FIND_ITEM(End		,	10	,	49	);
-				FIND_ITEM(PageUp	,	10	,	10	);
-				FIND_ITEM(PageDown	,	10	,	19	);
-				FIND_ITEM(PageLeft	,	10	,	-1	);
-				FIND_ITEM(PageRight	,	10	,	-1	);
-
-				FIND_ITEM(Up		,	11	,	10	);
-				FIND_ITEM(Down		,	11	,	12	);
-				FIND_ITEM(Left		,	11	,	1	);
-				FIND_ITEM(Right		,	11	,	21	);
-				FIND_ITEM(Home		,	11	,	0	);
-				FIND_ITEM(End		,	11	,	49	);
-				FIND_ITEM(PageUp	,	11	,	10	);
-				FIND_ITEM(PageDown	,	11	,	19	);
-				FIND_ITEM(PageLeft	,	11	,	-1	);
-				FIND_ITEM(PageRight	,	11	,	-1	);
-
-				FIND_ITEM(Up		,	19	,	18	);
-				FIND_ITEM(Down		,	19	,	20	);
-				FIND_ITEM(Left		,	19	,	9	);
-				FIND_ITEM(Right		,	19	,	29	);
-				FIND_ITEM(Home		,	19	,	0	);
-				FIND_ITEM(End		,	19	,	49	);
-				FIND_ITEM(PageUp	,	19	,	10	);
-				FIND_ITEM(PageDown	,	19	,	19	);
-				FIND_ITEM(PageLeft	,	19	,	-1	);
-				FIND_ITEM(PageRight	,	19	,	-1	);
-
-				FIND_ITEM(Up		,	40	,	39	);
-				FIND_ITEM(Down		,	40	,	41	);
-				FIND_ITEM(Left		,	40	,	30	);
-				FIND_ITEM(Right		,	40	,	49	);
-				FIND_ITEM(Home		,	40	,	0	);
-				FIND_ITEM(End		,	40	,	49	);
-				FIND_ITEM(PageUp	,	40	,	40	);
-				FIND_ITEM(PageDown	,	40	,	49	);
-				FIND_ITEM(PageLeft	,	40	,	-1	);
-				FIND_ITEM(PageRight	,	40	,	-1	);
-
-				FIND_ITEM(Up		,	41	,	40	);
-				FIND_ITEM(Down		,	41	,	42	);
-				FIND_ITEM(Left		,	41	,	31	);
-				FIND_ITEM(Right		,	41	,	49	);
-				FIND_ITEM(Home		,	41	,	0	);
-				FIND_ITEM(End		,	41	,	49	);
-				FIND_ITEM(PageUp	,	41	,	40	);
-				FIND_ITEM(PageDown	,	41	,	49	);
-				FIND_ITEM(PageLeft	,	41	,	-1	);
-				FIND_ITEM(PageRight	,	41	,	-1	);
-
-				FIND_ITEM(Up		,	49	,	48	);
-				FIND_ITEM(Down		,	49	,	49	);
-				FIND_ITEM(Left		,	49	,	39	);
-				FIND_ITEM(Right		,	49	,	49	);
-				FIND_ITEM(Home		,	49	,	0	);
-				FIND_ITEM(End		,	49	,	49	);
-				FIND_ITEM(PageUp	,	49	,	40	);
-				FIND_ITEM(PageDown	,	49	,	49	);
-				FIND_ITEM(PageLeft	,	49	,	-1	);
-				FIND_ITEM(PageRight	,	49	,	-1	);
-			});
-
-			TEST_CASE(L"GetTotalSize")
-			{
-				// 5x10
-				TEST_ASSERT(root->GetTotalSize() == Size(600, 100));
-
-				// 3x20
-				root->SetPreferredMinSize({ 150,200 });
-				root->ForceCalculateSizeImmediately();
-				root->ForceCalculateSizeImmediately();
-				TEST_ASSERT(root->GetTotalSize() == Size(600, 200));
-
-				// 4x20
-				for (vint i = 1; i <= 15; i++) xs.Add(i);
-				root->ForceCalculateSizeImmediately();
-				root->ForceCalculateSizeImmediately();
-				TEST_ASSERT(root->GetTotalSize() == Size(750, 200));
-
-				// 7x10
-				root->SetPreferredMinSize({ 100,100 });
-				root->ForceCalculateSizeImmediately();
-				root->ForceCalculateSizeImmediately();
-				TEST_ASSERT(root->GetTotalSize() == Size(800, 100));
-
-				// 5x10
-				xs.RemoveRange(50, 15);
-				root->ForceCalculateSizeImmediately();
-				root->ForceCalculateSizeImmediately();
-				TEST_ASSERT(root->GetTotalSize() == Size(600, 100));
-			});
 
 			TEST_CASE(L"RightDown")
 			{
