@@ -173,9 +173,7 @@ TEST_FILE
 			d->SetVisible(true);
 		});
 
-		TEST_CASE(L"Test nested <Bounds> associated resources")
-		{
-		});
+		// associated/related control/controlhost/graphicshost are tested in TestRemote_GraphicsHost_Startup.cpp
 
 		SafeDeleteComposition(a);
 	});

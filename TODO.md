@@ -37,7 +37,6 @@
 - UnitTest.vcxproj
   - Test `GuiVirtualRepeatCompositionBase::GetAdoptedSize`.
   - Test `GuiVirtualRepeatCompositionBase::GetTotalSize` with `UseMinimumTotalSize`.
-  - Complete `TestCompositions_Bounds.cpp`.
 - Document
   - Removal of `DEFINE_GUI_GRAPHICS_RENDERER`
   - OS provider interface changes
