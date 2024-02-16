@@ -159,8 +159,10 @@ Host
 				/// <summary>Get the main <see cref="GuiWindowComposition"/>. If a window is associated, everything that put into the main composition will be shown in the window.</summary>
 				/// <returns>The main compositoin.</returns>
 				GuiGraphicsComposition*					GetMainComposition();
-				/// <summary>Request a rendering</summary>
+				/// <summary>Request rendering.</summary>
 				void									RequestRender();
+				/// <summary>Request updating sizes of compositions.</summary>
+				void									RequestUpdateSizeFromNativeWindow();
 				/// <summary>Invoke a specified function after rendering.</summary>
 				/// <param name="proc">The specified function.</param>
 				/// <param name="key">A key to cancel a previous binded key if not null.</param>

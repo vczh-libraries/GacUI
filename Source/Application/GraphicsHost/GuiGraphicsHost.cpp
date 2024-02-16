@@ -318,15 +318,7 @@ GuiGraphicsHost
 
 			void GuiGraphicsHost::Moved()
 			{
-				NativeSize size = hostRecord.nativeWindow->GetClientSize();
-				if (previousClientSize != size)
-				{
-					previousClientSize = size;
-					windowComposition->Layout_UpdateMinSize();
-					windowComposition->Layout_UpdateBounds(hostRecord.nativeWindow->Convert(size));
-					minSize = windowComposition->GetCachedMinSize();
-					needRender = true;
-				}
+				RequestUpdateSizeFromNativeWindow();
 			}
 
 			void GuiGraphicsHost::DpiChanged(bool preparing)
@@ -753,6 +745,19 @@ GuiGraphicsHost
 			void GuiGraphicsHost::RequestRender()
 			{
 				needRender = true;
+			}
+
+			void GuiGraphicsHost::RequestUpdateSizeFromNativeWindow()
+			{
+				NativeSize size = hostRecord.nativeWindow->GetClientSize();
+				if (previousClientSize != size)
+				{
+					previousClientSize = size;
+					windowComposition->Layout_UpdateMinSize();
+					windowComposition->Layout_UpdateBounds(hostRecord.nativeWindow->Convert(size));
+					minSize = windowComposition->GetCachedMinSize();
+					needRender = true;
+				}
 			}
 
 			void GuiGraphicsHost::InvokeAfterRendering(const Func<void()>& proc, ProcKey key)

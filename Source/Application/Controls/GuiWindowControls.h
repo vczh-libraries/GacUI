@@ -72,6 +72,7 @@ Control Host
 				void											Closed()override;
 				void											Destroying()override;
 
+				void											UpdateClientSize(Size value, bool updateNativeWindowOnly);
 				virtual void									UpdateClientSizeAfterRendering(Size preferredSize, Size clientSize);
 			public:
 				/// <summary>Create a control with a specified default theme.</summary>

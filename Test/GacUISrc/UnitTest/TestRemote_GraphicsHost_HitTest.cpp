@@ -236,24 +236,10 @@ TEST_FILE
 				childHost->GetContainerComposition()->AddChild(bounds);
 				childHost->MoveToScreenCenter();
 				childHost->ShowWithOwner(controlHost);
-				TEST_ASSERT(childHost->GetLocation() == NativePoint(20, 20));
-			}
-		});
 
-		protocol.OnNextFrame([&]()
-		{
-			AssertEventLogs(
-				eventLogs,
-				L"Created(<1:FocusRectangle>)",
-				L"Begin()",
-				L"BeginBoundary(Title, {10,10:620,460}, {10,10:620,460})",
-				L"EndBoundary()",
-				L"End()"
-				);
-			// size of compositions will be updated after the first rendering
-			auto bounds = childHost->GetContainerComposition()->Children()[0];
-			TEST_ASSERT(childHost->GetBoundsComposition()->GetCachedBounds() == Rect({ 0,0 }, { 620,460 }));
-			TEST_ASSERT(bounds->GetCachedBounds() == Rect({ 0,0 }, { 620,460 }));
+				childHost->GetGraphicsHost()->GetMainComposition()->ForceCalculateSizeImmediately();
+				TEST_ASSERT(bounds->GetCachedBounds() == Rect({ 0,0 }, { 600,440 }));
+			}
 		});
 
 		protocol.OnNextFrame([&]()

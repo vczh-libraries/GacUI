@@ -207,12 +207,24 @@ GuiControlHost
 				SetNativeWindow(nullptr);
 			}
 
+			void GuiControlHost::UpdateClientSize(Size value, bool updateNativeWindowOnly)
+			{
+				if (auto window = host->GetNativeWindow())
+				{
+					host->GetNativeWindow()->SetClientSize(window->Convert(value));
+					if (!updateNativeWindowOnly)
+					{
+						host->RequestUpdateSizeFromNativeWindow();
+					}
+				}
+			}
+
 			void GuiControlHost::UpdateClientSizeAfterRendering(Size preferredSize, Size clientSize)
 			{
 				auto size = GetClientSize();
 				if (size != clientSize)
 				{
-					SetClientSize(clientSize);
+					UpdateClientSize(clientSize, true);
 				}
 			}
 
@@ -470,10 +482,7 @@ GuiControlHost
 
 			void GuiControlHost::SetClientSize(Size value)
 			{
-				if (auto window = host->GetNativeWindow())
-				{
-					host->GetNativeWindow()->SetClientSize(window->Convert(value));
-				}
+				UpdateClientSize(value, false);
 			}
 
 			NativePoint GuiControlHost::GetLocation()
