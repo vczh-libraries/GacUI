@@ -52,7 +52,7 @@ GuiGraphicsRenderTarget
 				return RenderTargetFailure::None;
 			}
 
-			void GuiGraphicsRenderTarget::PushClipper(Rect clipper)
+			void GuiGraphicsRenderTarget::PushClipper(Rect clipper, reflection::DescriptableObject* generator)
 			{
 				if (clipperCoverWholeTargetCounter > 0)
 				{
@@ -81,7 +81,7 @@ GuiGraphicsRenderTarget
 				}
 			}
 
-			void GuiGraphicsRenderTarget::PopClipper()
+			void GuiGraphicsRenderTarget::PopClipper(reflection::DescriptableObject* generator)
 			{
 				if (clipperCoverWholeTargetCounter > 0)
 				{

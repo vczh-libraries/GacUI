@@ -1065,14 +1065,14 @@ GuiGDIElementRenderer
 			{
 				if(renderTarget)
 				{
-					renderTarget->PushClipper(bounds);
+					renderTarget->PushClipper(bounds, element);
 					if(!renderTarget->IsClipperCoverWholeTarget())
 					{
 						WinDC* dc=renderTarget->GetDC();
 						GuiGDIElementEventArgs arguments(element, dc, bounds);
 						element->Rendering.Execute(arguments);
 					}
-					renderTarget->PopClipper();
+					renderTarget->PopClipper(element);
 				}
 			}
 

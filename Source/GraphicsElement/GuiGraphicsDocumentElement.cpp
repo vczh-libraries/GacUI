@@ -348,7 +348,7 @@ GuiDocumentElement::GuiDocumentElementRenderer
 				{
 					element->callback->OnStartRender();
 				}
-				renderTarget->PushClipper(bounds);
+				renderTarget->PushClipper(bounds, this);
 				if(!renderTarget->IsClipperCoverWholeTarget())
 				{
 					vint maxWidth=bounds.Width();
@@ -413,7 +413,7 @@ GuiDocumentElement::GuiDocumentElementRenderer
 						y+=paragraphHeight+paragraphDistance;
 					}
 				}
-				renderTarget->PopClipper();
+				renderTarget->PopClipper(this);
 				if (element->callback)
 				{
 					element->callback->OnFinishRender();

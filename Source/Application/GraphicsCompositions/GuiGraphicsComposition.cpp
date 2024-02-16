@@ -327,7 +327,7 @@ GuiGraphicsComposition
 
 						if (children.Count() > 0)
 						{
-							renderTarget->PushClipper(bounds);
+							renderTarget->PushClipper(bounds, this);
 							if (!renderTarget->IsClipperCoverWholeTarget())
 							{
 								for (auto child : children)
@@ -335,7 +335,7 @@ GuiGraphicsComposition
 									child->Render(Size(bounds.x1, bounds.y1));
 								}
 							}
-							renderTarget->PopClipper();
+							renderTarget->PopClipper(this);
 						}
 						isRendering = false;
 					}

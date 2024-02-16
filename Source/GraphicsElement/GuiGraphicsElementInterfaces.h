@@ -154,11 +154,13 @@ Basic Construction
 				/// The result clipper is combined by all clippers in the clipper stack maintained by the render target.
 				/// </summary>
 				/// <param name="clipper">The clipper to push.</param>
-				virtual void							PushClipper(Rect clipper) = 0;
+				/// <param name="generator">The object that generates this clipper. It could be null.</param>
+				virtual void							PushClipper(Rect clipper, reflection::DescriptableObject* generator) = 0;
 				/// <summary>
 				/// Remove the last pushed clipper from the clipper stack.
 				/// </summary>
-				virtual void							PopClipper() = 0;
+				/// <param name="generator">The object that generates this clipper. It could be null.</param>
+				virtual void							PopClipper(reflection::DescriptableObject* generator) = 0;
 				/// <summary>
 				/// Get the combined clipper
 				/// </summary>
@@ -198,8 +200,8 @@ Basic Construction
 				void									StartRendering() override;
 				RenderTargetFailure						StopRendering() override;
 
-				void									PushClipper(Rect clipper) override;
-				void									PopClipper() override;
+				void									PushClipper(Rect clipper, reflection::DescriptableObject* generator) override;
+				void									PopClipper(reflection::DescriptableObject* generator) override;
 				Rect									GetClipper() override;
 				bool									IsClipperCoverWholeTarget() override;
 			};
