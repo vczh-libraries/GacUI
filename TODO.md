@@ -72,13 +72,14 @@
 ## Release Milestone (1.3.0.0)
 
 - A remote protocol implementation on existing `INativeController` implementation.
-  - Network protocols are not included as default implementation
-- New tutorials
-  - A GacUI SyncDom process connecting to a server process for streaming graphics
-    - GDI+ implements in C#
-    - GDI/D2D implements in C++
+  - Network protocols are not included as default implementation.
+  - Take care of `wchar_t` when server and client have different understanding to its size.
+- New tutorials.
+  - A GacUI SyncDom process connecting to a server process for streaming graphics.
+    - GDI+ implements in C#.
+    - GDI/D2D implements in C++.
 - Rewrite `GacBuild.ps1` and `GacClear.ps1` in C++, but still keep them just doing redirection for backward compatibility.
-- Get rid of `Deploy.bat` in `GacGen.ps1` and `GacGen.exe`
+- Get rid of `Deploy.bat` in `GacGen.ps1` and `GacGen.exe`.
 
 ## Release Milestone (future releases)
 
