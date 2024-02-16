@@ -37,6 +37,9 @@
 - Document
   - Removal of `DEFINE_GUI_GRAPHICS_RENDERER`
   - OS provider interface changes
+  - Fix `/doc/current/home.html`
+    - The last link is wrong
+    - Add new `layouts` and `controls`
 
 ## Release Milestone (1.2.10.0)
 
@@ -67,9 +70,11 @@
     - Render unit test results, especially each frame of intermediate rendering result.
       - Can navigate to workflow script.
 - Move unit test utilities to `GacUI.UnitTest.cpp`, `GacUI.UnitTest.h`, `GacUI.UnitTest.Reflection ...`
-- Document for unit test framework.
-- Document for SyncDom.
-- Document for remote protocol.
+- Document
+  - Unit test framework.
+  - Unit test framework in Vlpp.
+  - SyncDom.
+  - Remote protocol.
 
 ## Release Milestone (1.2.12.0)
 
@@ -80,7 +85,12 @@
 - New tutorials
   - A GacUI D2D process connecting to a server process for streaming ViewModel
     - ViewModel implements in C++ and C#
-- Document for SyncObj.
+- Document
+  - SyncObj.
+  - Fix `/doc/current/home.html`
+    - Introduction to hosted / remote
+  - Fix `/doc/current/gacui/home.html`
+    - Introduction to hosted / remote
 
 ## Release Milestone (1.3.0.0)
 
