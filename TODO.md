@@ -1,19 +1,6 @@
 # TODO
 
-## Completed but not released (1.2.9.0)
-
-- `vl::Variant`
-- `vl::Overloading`
-- Removed `DEFINE_GUI_GRAPHICS_ELEMENT(TYPE, NAME)`
-  - private: `friend class GuiElementBase<TYPE>;`
-  - private: `static constexpr const wchar_t* ElementTypeName = NAME;`
-- Removed `DEFINE_CACHED_RESOURCE_ALLOCATOR(TKEY, TVALUE)`
-  - New base class: `GuiCachedResourceAllocatorBase<Self, TKEY, TVALUE>`
-- Removed `DEFINE_GUI_GRAPHICS_RENDERER(TELEMENT, TRENDERER, TTARGET)`
-  - New base class: `GuiElementRendererBase<TELEMENT, TRENDERER, TTARGET>`
-  - private: `friend class GuiElementRendererBase<TELEMENT, TRENDERER, TTARGET>;`
-- Renamed: `GuiGraphicsComposition::FindComposition` -> `FindVisibleComposition`
-- `IGuiGraphicsRenderTarget` and `GuiGraphicsRenderTarget` associates a generator to a clipper.
+## Completed but not released (1.2.10.0)
 
 ## Known Issues
 
@@ -97,6 +84,7 @@
 
 - `Variant` and `Union` with full support.
   - Document.
+  - Document `vl::Overloading`.
 - Strict check in different for-each loops.
 - More optimistic SyncDom strategy to reduce messages.
 - Windows
