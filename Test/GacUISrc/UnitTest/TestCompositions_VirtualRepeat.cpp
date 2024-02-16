@@ -386,13 +386,13 @@ Common
 		//   4,   5,   6,   7,   8,   9,  10,  11,  12,  13,  14,  15,  16,  17,  18,  19,  20,  21,  22,  23
 		//   4,   9,  15,  22,  30,  39,  49,  60,  72,  85,  99, 114, 130, 147, 165, 184, 204, 225, 247, 270
 
+		// move to the top so its page size becomes 12
+		root->SetViewLocation({ 0,0 });
+		root->ForceCalculateSizeImmediately();
+		root->ForceCalculateSizeImmediately();
+
 		TEST_CASE(L"FindItemByVirtualKeyDirection")
 		{
-			// move to the top so its page size becomes 12
-			root->SetViewLocation({ 0,0 });
-			root->ForceCalculateSizeImmediately();
-			root->ForceCalculateSizeImmediately();
-
 			FIND_ITEM(Up		,	0	,	0	);
 			FIND_ITEM(Down		,	0	,	1	);
 			FIND_ITEM(Left		,	0	,	-1	);
@@ -436,6 +436,18 @@ Common
 			FIND_ITEM(PageDown	,	19	,	19	);
 			FIND_ITEM(PageLeft	,	19	,	-1	);
 			FIND_ITEM(PageRight	,	19	,	-1	);
+		});
+
+		TEST_CASE(L"GetAdoptedSize")
+		{
+			{
+				auto size = root->GetAdoptedSize({ 100,100 });
+				TEST_ASSERT(size == Size(100, 200));
+			}
+			{
+				auto size = root->GetAdoptedSize({ 100,300 });
+				TEST_ASSERT(size == Size(100, 300));
+			}
 		});
 
 		auto testDown = [&](bool useMinimumTotalSize)
@@ -760,12 +772,12 @@ Common
 				return style;
 			});
 
+			// trigger layout so its page size becomes 6
+			root->ForceCalculateSizeImmediately();
+			root->ForceCalculateSizeImmediately();
+
 			TEST_CASE(L"FindItemByVirtualKeyDirection")
 			{
-				// trigger layout so its page size becomes 6
-				root->ForceCalculateSizeImmediately();
-				root->ForceCalculateSizeImmediately();
-
 				FIND_ITEM(Up, 0, 0);
 				FIND_ITEM(Down, 0, 1);
 				FIND_ITEM(Left, 0, -1);
@@ -810,6 +822,46 @@ Common
 				FIND_ITEM(PageLeft, 19, -1);
 				FIND_ITEM(PageRight, 19, -1);
 			});
+
+			TEST_CASE(L"GetAdoptedSize")
+			{
+				{
+					auto size = root->GetAdoptedSize({ 100,100 });
+					TEST_ASSERT(size == Size(100, 105));
+				}
+				{
+					auto size = root->GetAdoptedSize({ 100,300 });
+					TEST_ASSERT(size == Size(100, 300));
+				}
+				{
+					auto size = root->GetAdoptedSize({ 100,500 });
+					TEST_ASSERT(size == Size(100, 300));
+				}
+			});
+
+			root->SetItemYOffset(30);
+			root->ForceCalculateSizeImmediately();
+			root->ForceCalculateSizeImmediately();
+
+			TEST_CASE(L"GetAdoptedSize with YOffset")
+			{
+				{
+					auto size = root->GetAdoptedSize({ 100,100 });
+					TEST_ASSERT(size == Size(100, 105));
+				}
+				{
+					auto size = root->GetAdoptedSize({ 100,300 });
+					TEST_ASSERT(size == Size(100, 300));
+				}
+				{
+					auto size = root->GetAdoptedSize({ 100,500 });
+					TEST_ASSERT(size == Size(100, 330));
+				}
+			});
+
+			root->SetItemYOffset(0);
+			root->ForceCalculateSizeImmediately();
+			root->ForceCalculateSizeImmediately();
 
 			TEST_CASE(L"GetTotalSize")
 			{
@@ -1170,12 +1222,12 @@ Common
 				return style;
 			});
 
+			// trigger layout so its page size becomes 3x3
+			root->ForceCalculateSizeImmediately();
+			root->ForceCalculateSizeImmediately();
+
 			TEST_CASE(L"FindItemByVirtualKeyDirection")
 			{
-				// trigger layout so its page size becomes 3x3
-				root->ForceCalculateSizeImmediately();
-				root->ForceCalculateSizeImmediately();
-
 				FIND_ITEM(Up		,	0	,	0	);
 				FIND_ITEM(Down		,	0	,	3	);
 				FIND_ITEM(Left		,	0	,	0	);
@@ -1274,6 +1326,22 @@ Common
 				FIND_ITEM(PageDown	,	29	,	29	);
 				FIND_ITEM(PageLeft	,	29	,	27	);
 				FIND_ITEM(PageRight	,	29	,	29	);
+			});
+
+			TEST_CASE(L"GetAdoptedSize")
+			{
+				{
+					auto size = root->GetAdoptedSize({ 100,100 });
+					TEST_ASSERT(size == Size(90, 90));
+				}
+				{
+					auto size = root->GetAdoptedSize({ 100,300 });
+					TEST_ASSERT(size == Size(90, 300));
+				}
+				{
+					auto size = root->GetAdoptedSize({ 100,500 });
+					TEST_ASSERT(size == Size(90, 300));
+				}
 			});
 
 			TEST_CASE(L"GetTotalSize")
@@ -1607,12 +1675,12 @@ Common
 				return style;
 			});
 
+			// trigger layout so its page size becomes 2x10
+			root->ForceCalculateSizeImmediately();
+			root->ForceCalculateSizeImmediately();
+
 			TEST_CASE(L"FindItemByVirtualKeyDirection")
 			{
-				// trigger layout so its page size becomes 2x10
-				root->ForceCalculateSizeImmediately();
-				root->ForceCalculateSizeImmediately();
-
 				FIND_ITEM(Up		,	0	,	0	);
 				FIND_ITEM(Down		,	0	,	1	);
 				FIND_ITEM(Left		,	0	,	0	);
@@ -1711,6 +1779,22 @@ Common
 				FIND_ITEM(PageDown	,	49	,	49	);
 				FIND_ITEM(PageLeft	,	49	,	-1	);
 				FIND_ITEM(PageRight	,	49	,	-1	);
+			});
+
+			TEST_CASE(L"GetAdoptedSize")
+			{
+				{
+					auto size = root->GetAdoptedSize({ 100,100 });
+					TEST_ASSERT(size == Size(100, 100));
+				}
+				{
+					auto size = root->GetAdoptedSize({ 100,300 });
+					TEST_ASSERT(size == Size(100, 100));
+				}
+				{
+					auto size = root->GetAdoptedSize({ 100,500 });
+					TEST_ASSERT(size == Size(100, 100));
+				}
 			});
 
 			auto testTotalSize = [&](bool useMinimumTotalSize)

@@ -34,8 +34,6 @@
 
 - A general remoting `INativeController` implementation.
   - Add hittest (only for main window)/cursor messages, or implement it with SyncDom.
-- UnitTest.vcxproj
-  - Test `GuiVirtualRepeatCompositionBase::GetAdoptedSize`.
 - Document
   - Removal of `DEFINE_GUI_GRAPHICS_RENDERER`
   - OS provider interface changes

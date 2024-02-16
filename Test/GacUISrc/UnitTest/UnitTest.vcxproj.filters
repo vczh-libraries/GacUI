@@ -114,6 +114,9 @@
     <ClCompile Include="TestRemote_GraphicsHost_SolidLabel.cpp">
       <Filter>Source Files\Remote\Rendering</Filter>
     </ClCompile>
+    <ClCompile Include="TestRemote_GraphicsHost_HitTest.cpp">
+      <Filter>Source Files\Remote\Rendering</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\..\Resources\Resource.FailedInstance.Ctor3.xml.txt">

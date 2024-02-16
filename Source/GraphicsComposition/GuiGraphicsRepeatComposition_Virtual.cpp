@@ -187,7 +187,7 @@ GuiVirtualRepeatCompositionBase
 				}
 				else if (count > visibleCount)
 				{
-					vint deltaA = expectedSize - count * itemSize;
+					vint deltaA = expectedSize - visibleCount * itemSize;
 					vint deltaB = itemSize - deltaA;
 					if (deltaB < deltaA)
 					{
@@ -1064,7 +1064,11 @@ GuiRepeatFixedSizeMultiColumnItemComposition
 				if (!itemSource) return expectedSize;
 				vint count = itemSource->GetCount();
 				vint columnCount = viewBounds.Width() / itemSize.x;
-				vint rowCount = viewBounds.Height() / itemSize.y;
+				vint rowCount = count / columnCount;
+				if (count % columnCount != 0) rowCount++;
+
+				if (columnCount == 0) columnCount = 1;
+				if (rowCount == 0) rowCount = 1;
 				return Size(
 					CalculateAdoptedSize(expectedSize.x, columnCount, itemSize.x),
 					CalculateAdoptedSize(expectedSize.y, rowCount, itemSize.y)
@@ -1333,7 +1337,10 @@ GuiRepeatFixedHeightMultiColumnItemComposition
 			{
 				if (!itemSource) return expectedSize;
 				vint count = itemSource->GetCount();
-				return Size(expectedSize.x, CalculateAdoptedSize(expectedSize.y, count, itemHeight));
+				vint rowCount = viewBounds.Height() / itemHeight;
+				if (rowCount > count) rowCount = count;
+				if (rowCount == 0) rowCount = 1;
+				return Size(expectedSize.x, CalculateAdoptedSize(expectedSize.y, rowCount, itemHeight));
 			}
 		}
 	}
