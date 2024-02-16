@@ -1,6 +1,6 @@
 # TODO
 
-## Completed but not released
+## Completed but not released (1.2.9.0)
 
 - `vl::Variant`
 - `vl::Overloading`
@@ -29,13 +29,7 @@
   - When a property referenced by `<att.XXXProperty>` is updated, the list item is not refreshed.
     - Need to find a way to listen to the event.
 - For all list controls, adding item could cause flashing during rendering for about 1 flame.
-  - If this issue is solved, remove document in `Breaking changes from 1.0` and `List Controls`
-
-## Release Milestone (current: 1.2.9.0)
-
-- A general remoting `INativeController` implementation.
-  - Add hittest (only for main window)/cursor messages, or implement it with SyncDom.
-    - Document.
+  - If this issue is solved, remove document in `Breaking changes from 1.0` and `List Controls`.
 
 ## Release Milestone (1.2.10.0)
 
