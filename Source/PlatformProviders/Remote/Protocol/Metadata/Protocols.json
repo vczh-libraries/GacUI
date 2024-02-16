@@ -1924,6 +1924,58 @@
     }, {
         "$ast": "StructDecl",
         "attributes": [],
+        "name": "ElementRendering",
+        "members": [{
+            "$ast": "StructMember",
+            "name": "id",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Integer"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "bounds",
+            "type": {
+                "$ast": "ReferenceType",
+                "name": "Rect"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "clipper",
+            "type": {
+                "$ast": "ReferenceType",
+                "name": "Rect"
+            }
+        }]
+    }, {
+        "$ast": "StructDecl",
+        "attributes": [],
+        "name": "ElementBoundary",
+        "members": [{
+            "$ast": "StructMember",
+            "name": "hitTestResult",
+            "type": {
+                "$ast": "ReferenceType",
+                "name": "WindowHitTestResult"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "bounds",
+            "type": {
+                "$ast": "ReferenceType",
+                "name": "Rect"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "clipper",
+            "type": {
+                "$ast": "ReferenceType",
+                "name": "Rect"
+            }
+        }]
+    }, {
+        "$ast": "StructDecl",
+        "attributes": [],
         "name": "ElementMeasuring_FontHeight",
         "members": [{
             "$ast": "StructMember",
@@ -1992,36 +2044,22 @@
             }
         }]
     }, {
-        "$ast": "StructDecl",
-        "attributes": [],
-        "name": "ElementRendering",
-        "members": [{
-            "$ast": "StructMember",
-            "name": "id",
-            "type": {
-                "$ast": "PrimitiveType",
-                "type": "Integer"
-            }
-        }, {
-            "$ast": "StructMember",
-            "name": "bounds",
-            "type": {
-                "$ast": "ReferenceType",
-                "name": "Rect"
-            }
-        }, {
-            "$ast": "StructMember",
-            "name": "clipper",
-            "type": {
-                "$ast": "ReferenceType",
-                "name": "Rect"
-            }
-        }]
-    }, {
         "$ast": "MessageDecl",
         "attributes": [],
         "name": "RendererBeginRendering",
         "request": null,
+        "response": null
+    }, {
+        "$ast": "MessageDecl",
+        "attributes": [],
+        "name": "RendererBeginBoundary",
+        "request": {
+            "$ast": "MessageRequest",
+            "type": {
+                "$ast": "ReferenceType",
+                "name": "ElementBoundary"
+            }
+        },
         "response": null
     }, {
         "$ast": "MessageDecl",
@@ -2034,6 +2072,12 @@
                 "name": "ElementRendering"
             }
         },
+        "response": null
+    }, {
+        "$ast": "MessageDecl",
+        "attributes": [],
+        "name": "RendererEndBoundary",
+        "request": null,
         "response": null
     }, {
         "$ast": "MessageDecl",

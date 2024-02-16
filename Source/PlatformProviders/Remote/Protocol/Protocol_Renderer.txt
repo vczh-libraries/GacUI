@@ -156,6 +156,20 @@ message RendererUpdateElement_InnerShadow           { request: ElementDesc_Inner
 message RendererUpdateElement_Polygon               { request: ElementDesc_Polygon; }
 message RendererUpdateElement_SolidLabel            { request: ElementDesc_SolidLabel; }
 
+struct ElementRendering
+{
+    var id : int;
+    var bounds : Rect;
+    var clipper : Rect;
+}
+
+struct ElementBoundary
+{
+    var hitTestResult : WindowHitTestResult;
+    var bounds : Rect;
+    var clipper : Rect;
+}
+
 struct ElementMeasuring_FontHeight
 {
     var fontFamily : string;
@@ -175,13 +189,8 @@ struct ElementMeasurings
     var minSizes : ElementMeasuring_ElementMinSize[];
 }
 
-struct ElementRendering
-{
-    var id : int;
-    var bounds : Rect;
-    var clipper : Rect;
-}
-
 message RendererBeginRendering                      {}
+message RendererBeginBoundary                       { request: ElementBoundary; }
 message RendererRenderElement                       { request: ElementRendering; }
+message RendererEndBoundary                         {}
 message RendererEndRendering                        { response: ElementMeasurings; }
