@@ -5704,14 +5704,14 @@ GuiDirect2DElementRenderer
 				{
 					IDWriteFactory* fdw=GetWindowsDirect2DObjectProvider()->GetDirectWriteFactory();
 					ID2D1Factory* fd2d=GetWindowsDirect2DObjectProvider()->GetDirect2DFactory();
-					renderTarget->PushClipper(bounds);
+					renderTarget->PushClipper(bounds, element);
 					if(!renderTarget->IsClipperCoverWholeTarget())
 					{
 						ID2D1RenderTarget* rt=renderTarget->GetDirect2DRenderTarget();
 						GuiDirect2DElementEventArgs arguments(element, rt, fdw, fd2d, bounds);
 						element->Rendering.Execute(arguments);
 					}
-					renderTarget->PopClipper();
+					renderTarget->PopClipper(element);
 				}
 			}
 
@@ -6132,7 +6132,7 @@ WindowsDirect2DRenderTarget
 					return window->Convert(window->GetClientSize());
 				}
 
-				void AfterPushedClipper(Rect clipper, Rect validArea) override
+				void AfterPushedClipper(Rect clipper, Rect validArea, reflection::DescriptableObject* generator) override
 				{
 					d2dRenderTarget->PushAxisAlignedClip(
 						D2D1::RectF((FLOAT)validArea.x1, (FLOAT)validArea.y1, (FLOAT)validArea.x2, (FLOAT)validArea.y2),
@@ -6140,15 +6140,15 @@ WindowsDirect2DRenderTarget
 						);
 				}
 
-				void AfterPushedClipperAndBecameInvalid(Rect clipper) override
+				void AfterPushedClipperAndBecameInvalid(Rect clipper, reflection::DescriptableObject* generator) override
 				{
 				}
 
-				void AfterPoppedClipperAndBecameValid(Rect validArea, bool clipperExists) override
+				void AfterPoppedClipperAndBecameValid(Rect validArea, bool clipperExists, reflection::DescriptableObject* generator) override
 				{
 				}
 
-				void AfterPoppedClipper(Rect validArea, bool clipperExists) override
+				void AfterPoppedClipper(Rect validArea, bool clipperExists, reflection::DescriptableObject* generator) override
 				{
 					d2dRenderTarget->PopAxisAlignedClip();
 				}
@@ -10065,14 +10065,14 @@ GuiGDIElementRenderer
 			{
 				if(renderTarget)
 				{
-					renderTarget->PushClipper(bounds);
+					renderTarget->PushClipper(bounds, element);
 					if(!renderTarget->IsClipperCoverWholeTarget())
 					{
 						WinDC* dc=renderTarget->GetDC();
 						GuiGDIElementEventArgs arguments(element, dc, bounds);
 						element->Rendering.Execute(arguments);
 					}
-					renderTarget->PopClipper();
+					renderTarget->PopClipper(element);
 				}
 			}
 
@@ -12640,21 +12640,21 @@ WindowsGDIRenderTarget
 					return window->Convert(window->GetClientSize());
 				}
 
-				void AfterPushedClipper(Rect clipper, Rect validArea) override
+				void AfterPushedClipper(Rect clipper, Rect validArea, reflection::DescriptableObject* generator) override
 				{
 					ApplyClipper(validArea, true);
 				}
 
-				void AfterPushedClipperAndBecameInvalid(Rect clipper) override
+				void AfterPushedClipperAndBecameInvalid(Rect clipper, reflection::DescriptableObject* generator) override
 				{
 				}
 
-				void AfterPoppedClipperAndBecameValid(Rect validArea, bool clipperExists) override
+				void AfterPoppedClipperAndBecameValid(Rect validArea, bool clipperExists, reflection::DescriptableObject* generator) override
 				{
 					ApplyClipper(validArea, clipperExists);
 				}
 
-				void AfterPoppedClipper(Rect validArea, bool clipperExists) override
+				void AfterPoppedClipper(Rect validArea, bool clipperExists, reflection::DescriptableObject* generator) override
 				{
 					ApplyClipper(validArea, clipperExists);
 				}

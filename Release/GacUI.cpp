@@ -2091,12 +2091,24 @@ GuiControlHost
 				SetNativeWindow(nullptr);
 			}
 
+			void GuiControlHost::UpdateClientSize(Size value, bool updateNativeWindowOnly)
+			{
+				if (auto window = host->GetNativeWindow())
+				{
+					host->GetNativeWindow()->SetClientSize(window->Convert(value));
+					if (!updateNativeWindowOnly)
+					{
+						host->RequestUpdateSizeFromNativeWindow();
+					}
+				}
+			}
+
 			void GuiControlHost::UpdateClientSizeAfterRendering(Size preferredSize, Size clientSize)
 			{
 				auto size = GetClientSize();
 				if (size != clientSize)
 				{
-					SetClientSize(clientSize);
+					UpdateClientSize(clientSize, true);
 				}
 			}
 
@@ -2354,10 +2366,7 @@ GuiControlHost
 
 			void GuiControlHost::SetClientSize(Size value)
 			{
-				if (auto window = host->GetNativeWindow())
-				{
-					host->GetNativeWindow()->SetClientSize(window->Convert(value));
-				}
+				UpdateClientSize(value, false);
 			}
 
 			NativePoint GuiControlHost::GetLocation()
@@ -3741,9 +3750,9 @@ GuiGraphicsComposition
 							}
 						}
 
-						if (children.Count() > 0)
+						if (children.Count() > 0 || associatedHitTestResult != INativeWindowListener::NoDecision)
 						{
-							renderTarget->PushClipper(bounds);
+							renderTarget->PushClipper(bounds, this);
 							if (!renderTarget->IsClipperCoverWholeTarget())
 							{
 								for (auto child : children)
@@ -3751,7 +3760,7 @@ GuiGraphicsComposition
 									child->Render(Size(bounds.x1, bounds.y1));
 								}
 							}
-							renderTarget->PopClipper();
+							renderTarget->PopClipper(this);
 						}
 						isRendering = false;
 					}
@@ -4648,15 +4657,7 @@ GuiGraphicsHost
 
 			void GuiGraphicsHost::Moved()
 			{
-				NativeSize size = hostRecord.nativeWindow->GetClientSize();
-				if (previousClientSize != size)
-				{
-					previousClientSize = size;
-					windowComposition->Layout_UpdateMinSize();
-					windowComposition->Layout_UpdateBounds(hostRecord.nativeWindow->Convert(size));
-					minSize = windowComposition->GetCachedMinSize();
-					needRender = true;
-				}
+				RequestUpdateSizeFromNativeWindow();
 			}
 
 			void GuiGraphicsHost::DpiChanged(bool preparing)
@@ -5083,6 +5084,19 @@ GuiGraphicsHost
 			void GuiGraphicsHost::RequestRender()
 			{
 				needRender = true;
+			}
+
+			void GuiGraphicsHost::RequestUpdateSizeFromNativeWindow()
+			{
+				NativeSize size = hostRecord.nativeWindow->GetClientSize();
+				if (previousClientSize != size)
+				{
+					previousClientSize = size;
+					windowComposition->Layout_UpdateMinSize();
+					windowComposition->Layout_UpdateBounds(hostRecord.nativeWindow->Convert(size));
+					minSize = windowComposition->GetCachedMinSize();
+					needRender = true;
+				}
 			}
 
 			void GuiGraphicsHost::InvokeAfterRendering(const Func<void()>& proc, ProcKey key)
@@ -13087,11 +13101,11 @@ ListViewColumnItemArranger::ColumnItemArrangerRepeatComposition
 					arranger->FixColumnsAfterLayout();
 				}
 
-				Size ListViewColumnItemArranger::ColumnItemArrangerRepeatComposition::Layout_CalculateTotalSize()
+				void ListViewColumnItemArranger::ColumnItemArrangerRepeatComposition::Layout_CalculateTotalSize(Size& full, Size& minimum)
 				{
-					auto size = TBase::ArrangerRepeatComposition::Layout_CalculateTotalSize();
-					size.x += arranger->SplitterWidth;
-					return size;
+					TBase::ArrangerRepeatComposition::Layout_CalculateTotalSize(full, minimum);
+					full.x += arranger->SplitterWidth;
+					minimum.x += arranger->SplitterWidth;
 				}
 
 				ListViewColumnItemArranger::ColumnItemArrangerRepeatComposition::ColumnItemArrangerRepeatComposition(ListViewColumnItemArranger* _arranger)
@@ -25546,9 +25560,10 @@ GalleryItemArrangerRepeatComposition
 					itemWidth = 1;
 				}
 
-				Size GalleryItemArrangerRepeatComposition::Layout_CalculateTotalSize()
+				void GalleryItemArrangerRepeatComposition::Layout_CalculateTotalSize(Size& full, Size& minimum)
 				{
-					return Size(1, 1);
+					full = Size(1, 1);
+					minimum = Size(1, 1);
 				}
 
 				GalleryItemArrangerRepeatComposition::GalleryItemArrangerRepeatComposition(GuiBindableRibbonGalleryList* _owner)
@@ -28012,7 +28027,7 @@ GuiVirtualRepeatCompositionBase
 				}
 				else if (count > visibleCount)
 				{
-					vint deltaA = expectedSize - count * itemSize;
+					vint deltaA = expectedSize - visibleCount * itemSize;
 					vint deltaB = itemSize - deltaA;
 					if (deltaB < deltaA)
 					{
@@ -28033,6 +28048,14 @@ GuiVirtualRepeatCompositionBase
 			void GuiVirtualRepeatCompositionBase::DeleteStyle(ItemStyleRecord style)
 			{
 				DeleteStyleInternal(style);
+			}
+
+			void GuiVirtualRepeatCompositionBase::UpdateFullSize()
+			{
+				Size fullSize, minimumSize;
+				Layout_CalculateTotalSize(fullSize, minimumSize);
+				realFullSize = axis->VirtualSizeToRealSize(fullSize);
+				realMinimumFullSize = axis->VirtualSizeToRealSize(minimumSize);
 			}
 
 			void GuiVirtualRepeatCompositionBase::OnViewChangedInternal(Rect oldBounds, Rect newBounds, bool forceUpdateTotalSize)
@@ -28111,7 +28134,7 @@ GuiVirtualRepeatCompositionBase
 
 				if (needToUpdateTotalSize)
 				{
-					realFullSize = axis->VirtualSizeToRealSize(Layout_CalculateTotalSize());
+					UpdateFullSize();
 					TotalSizeChanged.Execute(GuiEventArgs(this));
 					AdoptedSizeInvalidated.Execute(GuiEventArgs(this));
 				}
@@ -28152,7 +28175,7 @@ GuiVirtualRepeatCompositionBase
 
 			Size GuiVirtualRepeatCompositionBase::GetTotalSize()
 			{
-				return realFullSize;
+				return useMinimumFullSize ? realMinimumFullSize : realFullSize;
 			}
 
 			bool GuiVirtualRepeatCompositionBase::GetUseMinimumTotalSize()
@@ -28165,7 +28188,7 @@ GuiVirtualRepeatCompositionBase
 				if (useMinimumFullSize != value)
 				{
 					useMinimumFullSize = value;
-					realFullSize = axis->VirtualSizeToRealSize(Layout_CalculateTotalSize());
+					UpdateFullSize();
 					TotalSizeChanged.Execute(GuiEventArgs(this));
 				}
 			}
@@ -28329,13 +28352,19 @@ GuiRepeatFreeHeightItemComposition
 				}
 			}
 
-			Size GuiRepeatFreeHeightItemComposition::Layout_CalculateTotalSize()
+			void GuiRepeatFreeHeightItemComposition::Layout_CalculateTotalSize(Size& full, Size& minimum)
 			{
-				if (heights.Count() == 0) return Size(0, 0);
+				if (heights.Count() == 0)
+				{
+					full = minimum = Size(0, 0);
+					return;
+				}
+
 				EnsureOffsetForItem(heights.Count());
-				vint w = useMinimumFullSize ? 0 : viewBounds.Width();
+				vint w = viewBounds.Width();
 				vint h = offsets[heights.Count() - 1] + heights[heights.Count() - 1];
-				return Size(w, h);
+				full = Size(w, h);
+				minimum = Size(0, h);
 			}
 
 			void GuiRepeatFreeHeightItemComposition::OnItemChanged(vint start, vint oldCount, vint newCount)
@@ -28536,13 +28565,20 @@ GuiRepeatFixedHeightItemComposition
 				rowHeight = 1;
 			}
 
-			Size GuiRepeatFixedHeightItemComposition::Layout_CalculateTotalSize()
+			void GuiRepeatFixedHeightItemComposition::Layout_CalculateTotalSize(Size& full, Size& minimum)
 			{
-				if (!itemSource || itemSource->GetCount() == 0) return Size(0, 0);
+				if (!itemSource || itemSource->GetCount() == 0)
+				{
+					full = minimum = Size(0, 0);
+					return;
+				}
 
-				vint width = itemWidth;
-				if (width == -1) width = useMinimumFullSize ? 0 : viewBounds.Width();
-				return Size(width, rowHeight * itemSource->GetCount() + itemYOffset);
+				vint w = itemWidth;
+				vint w1 = w == -1 ? viewBounds.Width() : w;
+				vint w2 = w == -1 ? 0 : w;
+				vint h = rowHeight * itemSource->GetCount() + itemYOffset;
+				full = Size(w1, h);
+				minimum = Size(w2, h);
 			}
 
 			vint GuiRepeatFixedHeightItemComposition::FindItemByVirtualKeyDirection(vint itemIndex, compositions::KeyDirection key)
@@ -28747,16 +28783,22 @@ GuiRepeatFixedSizeMultiColumnItemComposition
 				itemSize = Size(1, 1);
 			}
 
-			Size GuiRepeatFixedSizeMultiColumnItemComposition::Layout_CalculateTotalSize()
+			void GuiRepeatFixedSizeMultiColumnItemComposition::Layout_CalculateTotalSize(Size& full, Size& minimum)
 			{
-				if (!itemSource || itemSource->GetCount() == 0) return Size(0, 0);
+				if (!itemSource || itemSource->GetCount() == 0)
+				{
+					full = minimum = Size(0, 0);
+					return;
+				}
 
 				vint rowItems = viewBounds.Width() / itemSize.x;
 				if (rowItems < 1) rowItems = 1;
 				vint rows = itemSource->GetCount() / rowItems;
 				if (itemSource->GetCount() % rowItems) rows++;
 
-				return Size(itemSize.x * (useMinimumFullSize ? 1 : rowItems), itemSize.y * rows);
+				vint h = itemSize.y * rows;
+				full = Size(itemSize.x * rowItems, h);
+				minimum = Size(itemSize.x, h);
 			}
 
 			vint GuiRepeatFixedSizeMultiColumnItemComposition::FindItemByVirtualKeyDirection(vint itemIndex, compositions::KeyDirection key)
@@ -28862,7 +28904,11 @@ GuiRepeatFixedSizeMultiColumnItemComposition
 				if (!itemSource) return expectedSize;
 				vint count = itemSource->GetCount();
 				vint columnCount = viewBounds.Width() / itemSize.x;
-				vint rowCount = viewBounds.Height() / itemSize.y;
+				vint rowCount = count / columnCount;
+				if (count % columnCount != 0) rowCount++;
+
+				if (columnCount == 0) columnCount = 1;
+				if (rowCount == 0) rowCount = 1;
 				return Size(
 					CalculateAdoptedSize(expectedSize.x, columnCount, itemSize.x),
 					CalculateAdoptedSize(expectedSize.y, rowCount, itemSize.y)
@@ -29031,15 +29077,22 @@ GuiRepeatFixedHeightMultiColumnItemComposition
 				itemHeight = 1;
 			}
 
-			Size GuiRepeatFixedHeightMultiColumnItemComposition::Layout_CalculateTotalSize()
+			void GuiRepeatFixedHeightMultiColumnItemComposition::Layout_CalculateTotalSize(Size& full, Size& minimum)
 			{
-				if (!itemSource || itemSource->GetCount() == 0) return Size(0, 0);
+				if (!itemSource || itemSource->GetCount() == 0)
+				{
+					full = minimum = Size(0, 0);
+					return;
+				}
 
 				vint rows = viewBounds.Height() / itemHeight;
 				if (rows < 1) rows = 1;
 				vint columns = (itemSource->GetCount() + rows - 1) / rows;
 
-				return Size(viewBounds.Width() * (columns + 1), (useMinimumFullSize ? 0 : rows * itemHeight));
+				vint w = viewBounds.Width() * (columns + 1);
+				vint h = rows * itemHeight;
+				full = Size(w, h);
+				minimum = Size(w, 0);
 			}
 
 			vint GuiRepeatFixedHeightMultiColumnItemComposition::FindItemByVirtualKeyDirection(vint itemIndex, compositions::KeyDirection key)
@@ -29124,7 +29177,10 @@ GuiRepeatFixedHeightMultiColumnItemComposition
 			{
 				if (!itemSource) return expectedSize;
 				vint count = itemSource->GetCount();
-				return Size(expectedSize.x, CalculateAdoptedSize(expectedSize.y, count, itemHeight));
+				vint rowCount = viewBounds.Height() / itemHeight;
+				if (rowCount > count) rowCount = count;
+				if (rowCount == 0) rowCount = 1;
+				return Size(expectedSize.x, CalculateAdoptedSize(expectedSize.y, rowCount, itemHeight));
 			}
 		}
 	}
@@ -32100,7 +32156,7 @@ GuiDocumentElement::GuiDocumentElementRenderer
 				{
 					element->callback->OnStartRender();
 				}
-				renderTarget->PushClipper(bounds);
+				renderTarget->PushClipper(bounds, element);
 				if(!renderTarget->IsClipperCoverWholeTarget())
 				{
 					vint maxWidth=bounds.Width();
@@ -32165,7 +32221,7 @@ GuiDocumentElement::GuiDocumentElementRenderer
 						y+=paragraphHeight+paragraphDistance;
 					}
 				}
-				renderTarget->PopClipper();
+				renderTarget->PopClipper(element);
 				if (element->callback)
 				{
 					element->callback->OnFinishRender();
@@ -33611,7 +33667,7 @@ GuiGraphicsRenderTarget
 				return RenderTargetFailure::None;
 			}
 
-			void GuiGraphicsRenderTarget::PushClipper(Rect clipper)
+			void GuiGraphicsRenderTarget::PushClipper(Rect clipper, reflection::DescriptableObject* generator)
 			{
 				if (clipperCoverWholeTargetCounter > 0)
 				{
@@ -33630,30 +33686,30 @@ GuiGraphicsRenderTarget
 					if (currentClipper.x1 < currentClipper.x2 && currentClipper.y1 < currentClipper.y2)
 					{
 						clippers.Add(currentClipper);
-						AfterPushedClipper(clipper, currentClipper);
+						AfterPushedClipper(clipper, currentClipper, generator);
 					}
 					else
 					{
 						clipperCoverWholeTargetCounter++;
-						AfterPushedClipperAndBecameInvalid(clipper);
+						AfterPushedClipperAndBecameInvalid(clipper, generator);
 					}
 				}
 			}
 
-			void GuiGraphicsRenderTarget::PopClipper()
+			void GuiGraphicsRenderTarget::PopClipper(reflection::DescriptableObject* generator)
 			{
 				if (clipperCoverWholeTargetCounter > 0)
 				{
 					clipperCoverWholeTargetCounter--;
 					if (clipperCoverWholeTargetCounter == 0)
 					{
-						AfterPoppedClipperAndBecameValid(GetClipper(), clippers.Count() > 0);
+						AfterPoppedClipperAndBecameValid(GetClipper(), clippers.Count() > 0, generator);
 					}
 				}
 				else if (clippers.Count() > 0)
 				{
 					clippers.RemoveAt(clippers.Count() - 1);
-					AfterPoppedClipper(GetClipper(), clippers.Count() > 0);
+					AfterPoppedClipper(GetClipper(), clippers.Count() > 0, generator);
 				}
 			}
 
@@ -38263,13 +38319,37 @@ GuiRemoteEvents (events)
 namespace vl::presentation::elements
 {
 	using namespace collections;
+	using namespace compositions;
 
 /***********************************************************************
 GuiRemoteGraphicsRenderTarget
 ***********************************************************************/
 
+	GuiRemoteGraphicsRenderTarget::HitTestResult GuiRemoteGraphicsRenderTarget::GetHitTestResultFromGenerator(reflection::DescriptableObject* generator)
+	{
+		if (auto composition = dynamic_cast<GuiGraphicsComposition*>(generator))
+		{
+			auto hitTestResult = composition->GetAssociatedHitTestResult();
+			if (hitTestResult != INativeWindowListener::NoDecision)
+			{
+				if (auto graphicsHost = composition->GetRelatedGraphicsHost())
+				{
+					if (auto nativeWindow = graphicsHost->GetNativeWindow())
+					{
+						if (nativeWindow == GetCurrentController()->WindowService()->GetMainWindow())
+						{
+							return hitTestResult;
+						}
+					}
+				}
+			}
+		}
+		return INativeWindowListener::NoDecision;
+	}
+
 	void GuiRemoteGraphicsRenderTarget::StartRenderingOnNativeWindow()
 	{
+		CHECK_ERROR(hitTestResults.Count() == 0, L"vl::presentation::elements::GuiRemoteGraphicsRenderTarget::StartRenderingOnNativeWindow()#Internal error: hit test result stack is not cleared.");
 		canvasSize = remote->remoteWindow.GetClientSize();
 		clipperValidArea = GetClipper();
 		renderingBatchId++;
@@ -38314,6 +38394,7 @@ GuiRemoteGraphicsRenderTarget
 
 	RenderTargetFailure GuiRemoteGraphicsRenderTarget::StopRenderingOnNativeWindow()
 	{
+		CHECK_ERROR(hitTestResults.Count() == 0, L"vl::presentation::elements::GuiRemoteGraphicsRenderTarget::StartRenderingOnNativeWindow()#Internal error: hit test result stack is not cleared.");
 		vint idRendering = remote->remoteMessages.RequestRendererEndRendering();
 		remote->remoteMessages.Submit();
 		auto measuring = remote->remoteMessages.RetrieveRendererEndRendering(idRendering);
@@ -38387,24 +38468,46 @@ GuiRemoteGraphicsRenderTarget
 		return remote->remoteWindow.Convert(canvasSize);
 	}
 
-	void GuiRemoteGraphicsRenderTarget::AfterPushedClipper(Rect clipper, Rect validArea)
+	void GuiRemoteGraphicsRenderTarget::AfterPushedClipper(Rect clipper, Rect validArea, reflection::DescriptableObject* generator)
 	{
 		clipperValidArea = validArea;
+		auto hitTestResult = GetHitTestResultFromGenerator(generator);
+		if (hitTestResult != INativeWindowListener::NoDecision)
+		{
+			if (hitTestResults.Count() == 0 || hitTestResults[hitTestResults.Count() - 1] != hitTestResult)
+			{
+				remoteprotocol::ElementBoundary arguments;
+				arguments.hitTestResult = hitTestResult;
+				arguments.bounds = clipper;
+				arguments.clipper = validArea;
+				remote->remoteMessages.RequestRendererBeginBoundary(arguments);
+			}
+			hitTestResults.Add(hitTestResult);
+		}
 	}
 
-	void GuiRemoteGraphicsRenderTarget::AfterPushedClipperAndBecameInvalid(Rect clipper)
+	void GuiRemoteGraphicsRenderTarget::AfterPushedClipperAndBecameInvalid(Rect clipper, reflection::DescriptableObject* generator)
 	{
 		clipperValidArea.Reset();
 	}
 
-	void GuiRemoteGraphicsRenderTarget::AfterPoppedClipperAndBecameValid(Rect validArea, bool clipperExists)
+	void GuiRemoteGraphicsRenderTarget::AfterPoppedClipperAndBecameValid(Rect validArea, bool clipperExists, reflection::DescriptableObject* generator)
 	{
 		clipperValidArea = validArea;
 	}
 
-	void GuiRemoteGraphicsRenderTarget::AfterPoppedClipper(Rect validArea, bool clipperExists)
+	void GuiRemoteGraphicsRenderTarget::AfterPoppedClipper(Rect validArea, bool clipperExists, reflection::DescriptableObject* generator)
 	{
 		clipperValidArea = validArea;
+		auto hitTestResult = GetHitTestResultFromGenerator(generator);
+		if (hitTestResult != INativeWindowListener::NoDecision)
+		{
+			hitTestResults.RemoveAt(hitTestResults.Count() - 1);
+			if (hitTestResults.Count() == 0 || hitTestResults[hitTestResults.Count() - 1] != hitTestResult)
+			{
+				remote->remoteMessages.RequestRendererEndBoundary();
+			}
+		}
 	}
 
 	GuiRemoteGraphicsRenderTarget::GuiRemoteGraphicsRenderTarget(GuiRemoteController* _remote, GuiHostedController* _hostedController)
@@ -40273,6 +40376,24 @@ namespace vl::presentation::remoteprotocol
 		return node;
 	}
 
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::ElementRendering>(const ::vl::presentation::remoteprotocol::ElementRendering & value)
+	{
+		auto node = Ptr(new glr::json::JsonObject);
+		ConvertCustomTypeToJsonField(node, L"id", value.id);
+		ConvertCustomTypeToJsonField(node, L"bounds", value.bounds);
+		ConvertCustomTypeToJsonField(node, L"clipper", value.clipper);
+		return node;
+	}
+
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::ElementBoundary>(const ::vl::presentation::remoteprotocol::ElementBoundary & value)
+	{
+		auto node = Ptr(new glr::json::JsonObject);
+		ConvertCustomTypeToJsonField(node, L"hitTestResult", value.hitTestResult);
+		ConvertCustomTypeToJsonField(node, L"bounds", value.bounds);
+		ConvertCustomTypeToJsonField(node, L"clipper", value.clipper);
+		return node;
+	}
+
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::ElementMeasuring_FontHeight>(const ::vl::presentation::remoteprotocol::ElementMeasuring_FontHeight & value)
 	{
 		auto node = Ptr(new glr::json::JsonObject);
@@ -40295,15 +40416,6 @@ namespace vl::presentation::remoteprotocol
 		auto node = Ptr(new glr::json::JsonObject);
 		ConvertCustomTypeToJsonField(node, L"fontHeights", value.fontHeights);
 		ConvertCustomTypeToJsonField(node, L"minSizes", value.minSizes);
-		return node;
-	}
-
-	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::ElementRendering>(const ::vl::presentation::remoteprotocol::ElementRendering & value)
-	{
-		auto node = Ptr(new glr::json::JsonObject);
-		ConvertCustomTypeToJsonField(node, L"id", value.id);
-		ConvertCustomTypeToJsonField(node, L"bounds", value.bounds);
-		ConvertCustomTypeToJsonField(node, L"clipper", value.clipper);
 		return node;
 	}
 
@@ -40915,6 +41027,36 @@ namespace vl::presentation::remoteprotocol
 #undef ERROR_MESSAGE_PREFIX
 	}
 
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ElementRendering>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::ElementRendering& value)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ElementRendering>(Ptr<JsonNode>, ::vl::presentation::remoteprotocol::ElementRendering&)#"
+		auto jsonNode = node.Cast<glr::json::JsonObject>();
+		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
+		for (auto field : jsonNode->fields)
+		{
+			if (field->name.value == L"id") ConvertJsonToCustomType(field->value, value.id); else
+			if (field->name.value == L"bounds") ConvertJsonToCustomType(field->value, value.bounds); else
+			if (field->name.value == L"clipper") ConvertJsonToCustomType(field->value, value.clipper); else
+			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
+		}
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ElementBoundary>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::ElementBoundary& value)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ElementBoundary>(Ptr<JsonNode>, ::vl::presentation::remoteprotocol::ElementBoundary&)#"
+		auto jsonNode = node.Cast<glr::json::JsonObject>();
+		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
+		for (auto field : jsonNode->fields)
+		{
+			if (field->name.value == L"hitTestResult") ConvertJsonToCustomType(field->value, value.hitTestResult); else
+			if (field->name.value == L"bounds") ConvertJsonToCustomType(field->value, value.bounds); else
+			if (field->name.value == L"clipper") ConvertJsonToCustomType(field->value, value.clipper); else
+			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
+		}
+#undef ERROR_MESSAGE_PREFIX
+	}
+
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ElementMeasuring_FontHeight>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::ElementMeasuring_FontHeight& value)
 	{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ElementMeasuring_FontHeight>(Ptr<JsonNode>, ::vl::presentation::remoteprotocol::ElementMeasuring_FontHeight&)#"
@@ -40953,21 +41095,6 @@ namespace vl::presentation::remoteprotocol
 		{
 			if (field->name.value == L"fontHeights") ConvertJsonToCustomType(field->value, value.fontHeights); else
 			if (field->name.value == L"minSizes") ConvertJsonToCustomType(field->value, value.minSizes); else
-			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
-		}
-#undef ERROR_MESSAGE_PREFIX
-	}
-
-	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ElementRendering>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::ElementRendering& value)
-	{
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ElementRendering>(Ptr<JsonNode>, ::vl::presentation::remoteprotocol::ElementRendering&)#"
-		auto jsonNode = node.Cast<glr::json::JsonObject>();
-		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
-		for (auto field : jsonNode->fields)
-		{
-			if (field->name.value == L"id") ConvertJsonToCustomType(field->value, value.id); else
-			if (field->name.value == L"bounds") ConvertJsonToCustomType(field->value, value.bounds); else
-			if (field->name.value == L"clipper") ConvertJsonToCustomType(field->value, value.clipper); else
 			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
 		}
 #undef ERROR_MESSAGE_PREFIX
