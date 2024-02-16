@@ -83,18 +83,6 @@ namespace remote_protocol_tests
 			}));
 		}
 
-		void RequestRendererBeginRendering() override
-		{
-			eventLogs.Add(WString::Unmanaged(L"Begin()"));
-		}
-
-		void RequestRendererEndRendering(vint id) override
-		{
-			eventLogs.Add(WString::Unmanaged(L"End()"));
-			events->RespondRendererEndRendering(id, measuringForNextRendering);
-			measuringForNextRendering = {};
-		}
-
 		WString ToString(Size size)
 		{
 			return L"{" + itow(size.x) + L"," + itow(size.y) + L"}";
@@ -119,6 +107,29 @@ namespace remote_protocol_tests
 		WString ToString(Rect rect)
 		{
 			return L"{" + itow(rect.x1) + L"," + itow(rect.y1) + L":" + itow(rect.Width()) + L"," + itow(rect.Height()) + L"}";
+		}
+
+		WString ToString(INativeWindowListener::HitTestResult hitTestResult)
+		{
+			switch (hitTestResult)
+			{
+			case INativeWindowListener::BorderNoSizing:		return L"BorderNoSizing";
+			case INativeWindowListener::BorderLeft:			return L"BorderLeft";
+			case INativeWindowListener::BorderRight:		return L"BorderRight";
+			case INativeWindowListener::BorderTop:			return L"BorderTop";
+			case INativeWindowListener::BorderBottom:		return L"BorderBottom";
+			case INativeWindowListener::BorderLeftTop:		return L"BorderLeftTop";
+			case INativeWindowListener::BorderRightTop:		return L"BorderRightTop";
+			case INativeWindowListener::BorderLeftBottom:	return L"BorderLeftBottom";
+			case INativeWindowListener::BorderRightBottom:	return L"BorderRightBottom";
+			case INativeWindowListener::Title:				return L"Title";
+			case INativeWindowListener::ButtonMinimum:		return L"ButtonMinimum";
+			case INativeWindowListener::ButtonMaximum:		return L"ButtonMaximum";
+			case INativeWindowListener::ButtonClose:		return L"ButtonClose";
+			case INativeWindowListener::Client:				return L"Client";
+			case INativeWindowListener::Icon:				return L"Icon";
+			default:										return L"NoDecision";
+			}
 		}
 
 		WString ToString(ElementShape shape)
@@ -183,6 +194,34 @@ namespace remote_protocol_tests
 			case ElementSolidLabelMeasuringRequest::TotalSize:		return L"TotalSize";
 			default:												CHECK_FAIL(L"Unrecognized ElementSolidLabelMeasuringRequest");
 			}
+		}
+
+		void RequestRendererBeginRendering() override
+		{
+			eventLogs.Add(WString::Unmanaged(L"Begin()"));
+		}
+
+		void RequestRendererEndRendering(vint id) override
+		{
+			eventLogs.Add(WString::Unmanaged(L"End()"));
+			events->RespondRendererEndRendering(id, measuringForNextRendering);
+			measuringForNextRendering = {};
+		}
+
+		void RequestRendererBeginBoundary(const ElementBoundary& arguments) override
+		{
+			eventLogs.Add(
+				L"Render("
+				+ ToString(arguments.hitTestResult)
+				+ L", " + ToString(arguments.bounds)
+				+ L", " + ToString(arguments.clipper)
+				+ L")"
+				);
+		}
+
+		void RequestRendererEndBoundary() override
+		{
+			eventLogs.Add(WString::Unmanaged(L"EndBoundary()"));
 		}
 
 		void RequestRendererRenderElement(const ElementRendering& arguments) override
