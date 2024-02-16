@@ -211,7 +211,7 @@ namespace remote_protocol_tests
 		void RequestRendererBeginBoundary(const ElementBoundary& arguments) override
 		{
 			eventLogs.Add(
-				L"Render("
+				L"BeginBoundary("
 				+ ToString(arguments.hitTestResult)
 				+ L", " + ToString(arguments.bounds)
 				+ L", " + ToString(arguments.clipper)
