@@ -49,6 +49,8 @@ GuiRemoteGraphicsRenderTarget
 			Nullable<Rect>						clipperValidArea;
 			collections::List<HitTestResult>	hitTestResults;
 
+			HitTestResult						GetHitTestResultFromGenerator(reflection::DescriptableObject* generator);
+
 			void								StartRenderingOnNativeWindow() override;
 			RenderTargetFailure					StopRenderingOnNativeWindow() override;
 

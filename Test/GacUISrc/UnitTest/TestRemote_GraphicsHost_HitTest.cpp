@@ -250,7 +250,7 @@ TEST_FILE
 				L"Begin()",
 				L"BeginBoundary(Title, {10,10:620,460}, {10,10:620,460})",
 				L"EndBoundary()",
-				L"Render(1, {20,20:600,440}, {10,10:620,460})",
+				L"Render(1, {20,20:600,440}, {20,20:600,440})",
 				L"End()"
 				);
 			delete childHost;

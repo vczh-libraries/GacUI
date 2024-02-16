@@ -1,7 +1,7 @@
 #include "GuiRemoteController.h"
 #include "GuiRemoteGraphics_BasicElements.h"
 #include "../Hosted/GuiHostedController.h"
-#include "../../Application/GraphicsCompositions/GuiGraphicsComposition.h"
+#include "../../Application/GraphicsHost/GuiGraphicsHost.h"
 
 namespace vl::presentation::elements
 {
@@ -11,6 +11,28 @@ namespace vl::presentation::elements
 /***********************************************************************
 GuiRemoteGraphicsRenderTarget
 ***********************************************************************/
+
+	GuiRemoteGraphicsRenderTarget::HitTestResult GuiRemoteGraphicsRenderTarget::GetHitTestResultFromGenerator(reflection::DescriptableObject* generator)
+	{
+		if (auto composition = dynamic_cast<GuiGraphicsComposition*>(generator))
+		{
+			auto hitTestResult = composition->GetAssociatedHitTestResult();
+			if (hitTestResult != INativeWindowListener::NoDecision)
+			{
+				if (auto graphicsHost = composition->GetRelatedGraphicsHost())
+				{
+					if (auto nativeWindow = graphicsHost->GetNativeWindow())
+					{
+						if (nativeWindow == GetCurrentController()->WindowService()->GetMainWindow())
+						{
+							return hitTestResult;
+						}
+					}
+				}
+			}
+		}
+		return INativeWindowListener::NoDecision;
+	}
 
 	void GuiRemoteGraphicsRenderTarget::StartRenderingOnNativeWindow()
 	{
@@ -136,21 +158,18 @@ GuiRemoteGraphicsRenderTarget
 	void GuiRemoteGraphicsRenderTarget::AfterPushedClipper(Rect clipper, Rect validArea, reflection::DescriptableObject* generator)
 	{
 		clipperValidArea = validArea;
-		if (auto composition = dynamic_cast<GuiGraphicsComposition*>(generator))
+		auto hitTestResult = GetHitTestResultFromGenerator(generator);
+		if (hitTestResult != INativeWindowListener::NoDecision)
 		{
-			auto hitTestResult = composition->GetAssociatedHitTestResult();
-			if (hitTestResult != INativeWindowListener::NoDecision)
+			if (hitTestResults.Count() == 0 || hitTestResults[hitTestResults.Count() - 1] != hitTestResult)
 			{
-				if (hitTestResults.Count() == 0 || hitTestResults[hitTestResults.Count() - 1] != hitTestResult)
-				{
-					remoteprotocol::ElementBoundary arguments;
-					arguments.hitTestResult = hitTestResult;
-					arguments.bounds = clipper;
-					arguments.clipper = validArea;
-					remote->remoteMessages.RequestRendererBeginBoundary(arguments);
-				}
-				hitTestResults.Add(hitTestResult);
+				remoteprotocol::ElementBoundary arguments;
+				arguments.hitTestResult = hitTestResult;
+				arguments.bounds = clipper;
+				arguments.clipper = validArea;
+				remote->remoteMessages.RequestRendererBeginBoundary(arguments);
 			}
+			hitTestResults.Add(hitTestResult);
 		}
 	}
 
@@ -167,16 +186,13 @@ GuiRemoteGraphicsRenderTarget
 	void GuiRemoteGraphicsRenderTarget::AfterPoppedClipper(Rect validArea, bool clipperExists, reflection::DescriptableObject* generator)
 	{
 		clipperValidArea = validArea;
-		if (auto composition = dynamic_cast<GuiGraphicsComposition*>(generator))
+		auto hitTestResult = GetHitTestResultFromGenerator(generator);
+		if (hitTestResult != INativeWindowListener::NoDecision)
 		{
-			auto hitTestResult = composition->GetAssociatedHitTestResult();
-			if (hitTestResult != INativeWindowListener::NoDecision)
+			hitTestResults.RemoveAt(hitTestResults.Count() - 1);
+			if (hitTestResults.Count() == 0 || hitTestResults[hitTestResults.Count() - 1] != hitTestResult)
 			{
-				hitTestResults.RemoveAt(hitTestResults.Count() - 1);
-				if (hitTestResults.Count() == 0 || hitTestResults[hitTestResults.Count() - 1] != hitTestResult)
-				{
-					remote->remoteMessages.RequestRendererEndBoundary();
-				}
+				remote->remoteMessages.RequestRendererEndBoundary();
 			}
 		}
 	}
