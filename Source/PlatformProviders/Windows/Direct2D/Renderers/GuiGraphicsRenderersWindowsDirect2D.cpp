@@ -1,4 +1,5 @@
 #include <math.h>
+#include "../../../../Application/GraphicsCompositions/GuiGraphicsComposition.h"
 #include "GuiGraphicsRenderersWindowsDirect2D.h"
 #include "..\WinDirect2DApplication.h"
 
@@ -1517,14 +1518,14 @@ GuiDirect2DElementRenderer
 				{
 					IDWriteFactory* fdw=GetWindowsDirect2DObjectProvider()->GetDirectWriteFactory();
 					ID2D1Factory* fd2d=GetWindowsDirect2DObjectProvider()->GetDirect2DFactory();
-					renderTarget->PushClipper(bounds, element);
+					renderTarget->PushClipper(bounds, element->GetOwnerComposition());
 					if(!renderTarget->IsClipperCoverWholeTarget())
 					{
 						ID2D1RenderTarget* rt=renderTarget->GetDirect2DRenderTarget();
 						GuiDirect2DElementEventArgs arguments(element, rt, fdw, fd2d, bounds);
 						element->Rendering.Execute(arguments);
 					}
-					renderTarget->PopClipper(element);
+					renderTarget->PopClipper(element->GetOwnerComposition());
 				}
 			}
 

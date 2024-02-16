@@ -68,21 +68,21 @@ WindowsGDIRenderTarget
 					return window->Convert(window->GetClientSize());
 				}
 
-				void AfterPushedClipper(Rect clipper, Rect validArea) override
+				void AfterPushedClipper(Rect clipper, Rect validArea, reflection::DescriptableObject* generator) override
 				{
 					ApplyClipper(validArea, true);
 				}
 
-				void AfterPushedClipperAndBecameInvalid(Rect clipper) override
+				void AfterPushedClipperAndBecameInvalid(Rect clipper, reflection::DescriptableObject* generator) override
 				{
 				}
 
-				void AfterPoppedClipperAndBecameValid(Rect validArea, bool clipperExists) override
+				void AfterPoppedClipperAndBecameValid(Rect validArea, bool clipperExists, reflection::DescriptableObject* generator) override
 				{
 					ApplyClipper(validArea, clipperExists);
 				}
 
-				void AfterPoppedClipper(Rect validArea, bool clipperExists) override
+				void AfterPoppedClipper(Rect validArea, bool clipperExists, reflection::DescriptableObject* generator) override
 				{
 					ApplyClipper(validArea, clipperExists);
 				}

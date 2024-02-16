@@ -412,7 +412,7 @@ WindowsDirect2DRenderTarget
 					return window->Convert(window->GetClientSize());
 				}
 
-				void AfterPushedClipper(Rect clipper, Rect validArea) override
+				void AfterPushedClipper(Rect clipper, Rect validArea, reflection::DescriptableObject* generator) override
 				{
 					d2dRenderTarget->PushAxisAlignedClip(
 						D2D1::RectF((FLOAT)validArea.x1, (FLOAT)validArea.y1, (FLOAT)validArea.x2, (FLOAT)validArea.y2),
@@ -420,15 +420,15 @@ WindowsDirect2DRenderTarget
 						);
 				}
 
-				void AfterPushedClipperAndBecameInvalid(Rect clipper) override
+				void AfterPushedClipperAndBecameInvalid(Rect clipper, reflection::DescriptableObject* generator) override
 				{
 				}
 
-				void AfterPoppedClipperAndBecameValid(Rect validArea, bool clipperExists) override
+				void AfterPoppedClipperAndBecameValid(Rect validArea, bool clipperExists, reflection::DescriptableObject* generator) override
 				{
 				}
 
-				void AfterPoppedClipper(Rect validArea, bool clipperExists) override
+				void AfterPoppedClipper(Rect validArea, bool clipperExists, reflection::DescriptableObject* generator) override
 				{
 					d2dRenderTarget->PopAxisAlignedClip();
 				}

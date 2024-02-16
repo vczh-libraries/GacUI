@@ -188,10 +188,10 @@ Basic Construction
 				virtual RenderTargetFailure				StopRenderingOnNativeWindow() = 0;
 
 				virtual Size							GetCanvasSize() = 0;
-				virtual void							AfterPushedClipper(Rect clipper, Rect validArea) = 0;
-				virtual void							AfterPushedClipperAndBecameInvalid(Rect clipper) = 0;
-				virtual void							AfterPoppedClipperAndBecameValid(Rect validArea, bool clipperExists) = 0;
-				virtual void							AfterPoppedClipper(Rect validArea, bool clipperExists) = 0;
+				virtual void							AfterPushedClipper(Rect clipper, Rect validArea, reflection::DescriptableObject* generator) = 0;
+				virtual void							AfterPushedClipperAndBecameInvalid(Rect clipper, reflection::DescriptableObject* generator) = 0;
+				virtual void							AfterPoppedClipperAndBecameValid(Rect validArea, bool clipperExists, reflection::DescriptableObject* generator) = 0;
+				virtual void							AfterPoppedClipper(Rect validArea, bool clipperExists, reflection::DescriptableObject* generator) = 0;
 			public:
 
 				bool									IsInHostedRendering() override;

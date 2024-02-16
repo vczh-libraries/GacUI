@@ -51,10 +51,10 @@ GuiRemoteGraphicsRenderTarget
 			RenderTargetFailure					StopRenderingOnNativeWindow() override;
 
 			Size								GetCanvasSize() override;
-			void								AfterPushedClipper(Rect clipper, Rect validArea) override;
-			void								AfterPushedClipperAndBecameInvalid(Rect clipper) override;
-			void								AfterPoppedClipperAndBecameValid(Rect validArea, bool clipperExists) override;
-			void								AfterPoppedClipper(Rect validArea, bool clipperExists) override;
+			void								AfterPushedClipper(Rect clipper, Rect validArea, reflection::DescriptableObject* generator) override;
+			void								AfterPushedClipperAndBecameInvalid(Rect clipper, reflection::DescriptableObject* generator) override;
+			void								AfterPoppedClipperAndBecameValid(Rect validArea, bool clipperExists, reflection::DescriptableObject* generator) override;
+			void								AfterPoppedClipper(Rect validArea, bool clipperExists, reflection::DescriptableObject* generator) override;
 
 		public:
 			FontHeightMap						fontHeights;

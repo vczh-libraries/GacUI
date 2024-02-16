@@ -13,6 +13,7 @@
   - New base class: `GuiElementRendererBase<TELEMENT, TRENDERER, TTARGET>`
   - private: `friend class GuiElementRendererBase<TELEMENT, TRENDERER, TTARGET>;`
 - Renamed: `GuiGraphicsComposition::FindComposition` -> `FindVisibleComposition`
+- `IGuiGraphicsRenderTarget` and `GuiGraphicsRenderTarget` associates a generator to a clipper.
 
 ## Known Issues
 

@@ -71,12 +71,12 @@ GuiGraphicsRenderTarget
 					if (currentClipper.x1 < currentClipper.x2 && currentClipper.y1 < currentClipper.y2)
 					{
 						clippers.Add(currentClipper);
-						AfterPushedClipper(clipper, currentClipper);
+						AfterPushedClipper(clipper, currentClipper, generator);
 					}
 					else
 					{
 						clipperCoverWholeTargetCounter++;
-						AfterPushedClipperAndBecameInvalid(clipper);
+						AfterPushedClipperAndBecameInvalid(clipper, generator);
 					}
 				}
 			}
@@ -88,13 +88,13 @@ GuiGraphicsRenderTarget
 					clipperCoverWholeTargetCounter--;
 					if (clipperCoverWholeTargetCounter == 0)
 					{
-						AfterPoppedClipperAndBecameValid(GetClipper(), clippers.Count() > 0);
+						AfterPoppedClipperAndBecameValid(GetClipper(), clippers.Count() > 0, generator);
 					}
 				}
 				else if (clippers.Count() > 0)
 				{
 					clippers.RemoveAt(clippers.Count() - 1);
-					AfterPoppedClipper(GetClipper(), clippers.Count() > 0);
+					AfterPoppedClipper(GetClipper(), clippers.Count() > 0, generator);
 				}
 			}
 
