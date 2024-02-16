@@ -34,6 +34,7 @@
 
 - A general remoting `INativeController` implementation.
   - Add hittest (only for main window)/cursor messages, or implement it with SyncDom.
+    - Document.
 
 ## Release Milestone (1.2.10.0)
 
