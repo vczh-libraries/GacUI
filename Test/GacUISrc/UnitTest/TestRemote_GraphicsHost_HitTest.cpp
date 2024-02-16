@@ -235,7 +235,7 @@ TEST_FILE
 
 				childHost->GetContainerComposition()->AddChild(bounds);
 				childHost->MoveToScreenCenter();
-				childHost->Show();
+				childHost->ShowWithOwner(controlHost);
 				TEST_ASSERT(childHost->GetLocation() == NativePoint(20, 20));
 			}
 		});
