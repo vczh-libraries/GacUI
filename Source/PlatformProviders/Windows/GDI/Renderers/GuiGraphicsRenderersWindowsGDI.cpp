@@ -1,4 +1,3 @@
-#include "../../../../Application/GraphicsCompositions/GuiGraphicsComposition.h"
 #include "GuiGraphicsRenderersWindowsGDI.h"
 
 namespace vl
@@ -1066,14 +1065,14 @@ GuiGDIElementRenderer
 			{
 				if(renderTarget)
 				{
-					renderTarget->PushClipper(bounds, element->GetOwnerComposition());
+					renderTarget->PushClipper(bounds, element);
 					if(!renderTarget->IsClipperCoverWholeTarget())
 					{
 						WinDC* dc=renderTarget->GetDC();
 						GuiGDIElementEventArgs arguments(element, dc, bounds);
 						element->Rendering.Execute(arguments);
 					}
-					renderTarget->PopClipper(element->GetOwnerComposition());
+					renderTarget->PopClipper(element);
 				}
 			}
 
