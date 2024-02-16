@@ -34,12 +34,6 @@
 
 - A general remoting `INativeController` implementation.
   - Add hittest (only for main window)/cursor messages, or implement it with SyncDom.
-- Document
-  - Removal of `DEFINE_GUI_GRAPHICS_RENDERER`
-  - OS provider interface changes
-  - Fix `/doc/current/home.html`
-    - The last link is wrong
-    - Add new `layouts` and `controls`
 
 ## Release Milestone (1.2.10.0)
 
