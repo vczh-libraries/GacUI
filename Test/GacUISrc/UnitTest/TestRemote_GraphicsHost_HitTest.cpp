@@ -205,5 +205,74 @@ TEST_FILE
 
 	TEST_CATEGORY(L"HitTest in non-main window")
 	{
+		List<WString> eventLogs;
+		GraphicsHostRenderingProtocol protocol(eventLogs);
+		GuiWindow* controlHost = nullptr;
+		GuiWindow* childHost = nullptr;
+
+		protocol.OnNextFrame([&]()
+		{
+			{
+				auto bounds = new GuiBoundsComposition;
+				bounds->SetAlignmentToParent(Margin(10, 10, 10, 10));
+				bounds->SetAssociatedHitTestResult(INativeWindowListener::Title);
+
+				controlHost->GetContainerComposition()->AddChild(bounds);
+				controlHost->ForceCalculateSizeImmediately();
+				TEST_ASSERT(bounds->GetCachedBounds() == Rect({ 10,10 }, { 620,460 }));
+			}
+
+			{
+				childHost = new GuiWindow(theme::ThemeName::CustomFrameWindow);
+				childHost->SetClientSize(Size(600, 440));
+
+				auto bounds = new GuiBoundsComposition;
+				bounds->SetAlignmentToParent(Margin(0, 0, 0, 0));
+				bounds->SetAssociatedHitTestResult(INativeWindowListener::Title);
+
+				auto element = Ptr(GuiFocusRectangleElement::Create());
+				bounds->SetOwnedElement(element);
+
+				childHost->GetContainerComposition()->AddChild(bounds);
+				childHost->MoveToScreenCenter();
+				childHost->Show();
+				TEST_ASSERT(childHost->GetLocation() == NativePoint(20, 20));
+			}
+		});
+
+		protocol.OnNextFrame([&]()
+		{
+			AssertEventLogs(
+				eventLogs,
+				L"Created(<1:FocusRectangle>)",
+				L"Begin()",
+				L"BeginBoundary(Title, {10,10:620,460}, {10,10:620,460})",
+				L"EndBoundary()",
+				L"End()"
+				);
+			// size of compositions will be updated after the first rendering
+			auto bounds = childHost->GetContainerComposition()->Children()[0];
+			TEST_ASSERT(childHost->GetBoundsComposition()->GetCachedBounds() == Rect({ 0,0 }, { 620,460 }));
+			TEST_ASSERT(bounds->GetCachedBounds() == Rect({ 0,0 }, { 620,460 }));
+		});
+
+		protocol.OnNextFrame([&]()
+		{
+			AssertEventLogs(
+				eventLogs,
+				L"Created(<1:FocusRectangle>)",
+				L"Begin()",
+				L"BeginBoundary(Title, {10,10:620,460}, {10,10:620,460})",
+				L"EndBoundary()",
+				L"Render(1, {20,20:600,440}, {10,10:620,460})",
+				L"End()"
+				);
+			delete childHost;
+			childHost = nullptr;
+			controlHost->Hide();
+		});
+
+		SetGuiMainProxy(MakeGuiMain(protocol, eventLogs, controlHost));
+		StartRemoteControllerTest(protocol);
 	});
 }
