@@ -21,18 +21,22 @@
 ## Release Milestone (1.2.10.0)
 
 - Implement basic control (`Source_GacUI_CoreApplication` controls only) unit test based on streaming
-  - `SolidLabelElement.
+  - Implement `SolidLabelElement.
     - Each character takes exactly `FontSize x FontSize`
     - Deal with `\r` and `\n` when multiline is enabled
   - Implement `ImageFrameElement`.
-  - Metadata from requests are needed from the beginning for codegen, metadata will be updated and included in release.
-  - `INativeImageService`:
-    - Save image metadata (width, height, type, etc) to binary resource
-    - For `INativeImageService::CreateImage*` functions it sends binary data to the receiver and wait for respond of metadata.
-    - Unit test only `<PsuedoImage/>` to specify only the size in resource.
+  - Implement `INativeImageService`.
+- Metadata of remote protovol will be updated and included in releases.
+- Unit test framework
+  - `UnitTest` folder in at least one loaded resource is required by the unit test framework.
+    - XML `ImageData` is required so the unit test framework knows metadata of images without having to load it.
+  - `::UnitTestStartup::LoadMainWindow` static method will be called to create the main window.
+  - A viewer to view unit test results logged from SyncDom and other stuff after each time when layout stops.
+  - Move unit test utilities to `GacUI.UnitTest.cpp`, `GacUI.UnitTest.h`, `GacUI.UnitTest.Reflection ...`
 - GacUI Binary Resource (can't move to next release)
-  - Upgrade GacUI XML Resource to 1.3, force on all instead of only depended or depending resource.
+  - Upgrade GacUI XML Resource to 1.3, force on all resources instead of only depended or depending resource.
   - Require binary pattern "[GMR-1.3]" at the beginning of the binary resource.
+  - Resource compiler and loader will check the version and only accept 1.3.
 
 ## Release Milestone (1.2.11.0)
 
@@ -40,13 +44,8 @@
   - Add window resizing constraint messages.
   - Implement `ColorizedTextElement` and `DocumentElement`.
     - Think about how to calculate size for document.
-  - A viewer to view unit test results logged from SyncDom and other stuff after each time when layout stops.
-  - In release repo add more tools that just call `GacUI.UnitTest.cpp`:
-    - Load x86 bin + workflow script and execute.
-    - Load x64 bin + workflow script and execute.
-    - Render unit test results, especially each frame of intermediate rendering result.
-      - Can navigate to workflow script.
-- Move unit test utilities to `GacUI.UnitTest.cpp`, `GacUI.UnitTest.h`, `GacUI.UnitTest.Reflection ...`
+- Sample unit test project included in release.
+  - unit test metadata and LoadMainWindow script in a separate resource, depending on the application under testing.
 - Document
   - Unit test framework.
   - Unit test framework in Vlpp.
