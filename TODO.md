@@ -26,10 +26,13 @@
     - Deal with `\r` and `\n` when multiline is enabled
   - Implement `ImageFrameElement`.
   - Implement `INativeImageService`.
+  - Skipped time related features, like tooltip.
 - Metadata of remote protovol will be updated and included in releases.
 - Unit test framework
-  - `UnitTest` folder in at least one loaded resource is required by the unit test framework.
-    - XML `ImageData` is required so the unit test framework knows metadata of images without having to load it.
+  - `ImageData.xml` is required before loading any resources for the unit test framework to know metadata of images before loading it.
+    - A parser is provided, a data structure is required in runtime.
+    - It is used to simulate the remote protocol consumer sending back metadata after receiving binary data of an image.
+    - Resource URL is required in the remote protocol, an update to resource loader interface could be necessary.
   - `::UnitTestStartup::LoadMainWindow` static method will be called to create the main window.
   - A viewer to view unit test results logged from SyncDom and other stuff after each time when layout stops.
   - Move unit test utilities to `GacUI.UnitTest.cpp`, `GacUI.UnitTest.h`, `GacUI.UnitTest.Reflection ...`
@@ -41,11 +44,18 @@
 ## Release Milestone (1.2.11.0)
 
 - All control unit test (using DarkSkin)
+  - Tooltip.
+  - A mechanism to replace `DateTime` and `vl::filesystem` implementation.
   - Add window resizing constraint messages.
   - Implement `ColorizedTextElement` and `DocumentElement`.
     - Think about how to calculate size for document.
 - Sample unit test project included in release.
-  - unit test metadata and LoadMainWindow script in a separate resource, depending on the application under testing.
+  - Reflection enabled
+    - Application and `LoadMainWindow` script in separated XML resource files.
+    - Application and `LoadMainWindow` script in separated compiled resource files.
+  - Reflection disabled
+    - Application in compiled C++ files.
+    - There is no `LoadMainWindow` in this case.
 - Document
   - Unit test framework.
   - Unit test framework in Vlpp.
