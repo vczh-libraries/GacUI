@@ -439,6 +439,7 @@ GuiApplicationMain
 
 			void GuiApplicationInitialize()
 			{
+				theme::InitializeTheme();
 				if (!GACUI_UNITTEST_ONLY_SKIP_TYPE_AND_PLUGIN_LOAD_UNLOAD)
 				{
 #ifndef VCZH_DEBUG_NO_REFLECTION
@@ -447,7 +448,6 @@ GuiApplicationMain
 					GetPluginManager()->Load();
 				}
 
-				theme::InitializeTheme();
 				GetCurrentController()->InputService()->StartTimer();
 				{
 					GuiApplication app;
