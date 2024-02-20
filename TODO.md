@@ -25,6 +25,7 @@
     - Each character takes exactly `FontSize x FontSize`
     - Deal with `\r` and `\n` when multiline is enabled
   - Implement `ImageFrameElement`.
+    - Base64 encoding/decoding on `Ptr<MemoryStream>` for JSON. Implement helpers in VlppOS project.
   - Implement `INativeImageService`.
   - Skipped time related features, like tooltip.
 - Metadata of remote protovol will be updated and included in releases.
