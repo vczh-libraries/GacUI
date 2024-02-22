@@ -514,7 +514,6 @@ Date and Time
 		vint				milliseconds = 0;
 
 		/// <summary>
-		/// The calculated total milliseconds. It is OS dependent because the start time is different.
 		/// It is from 0 to 6, representing Sunday to Saturday.
 		/// </summary>
 		vint				dayOfWeek = 0;
@@ -524,14 +523,14 @@ Date and Time
 		/// You should not rely on the fact about how this value is created.
 		/// The only invariant thing is that, when an date time is earlier than another, the totalMilliseconds is lesser.
 		/// </summary>
-		vuint64_t			totalMilliseconds = 0;
+		vuint64_t			osMilliseconds = 0;
 
 		/// <summary>
-		/// The calculated file time for the date and time. It is OS dependent.
+		/// The OS dependent internal representation for the date and time.
 		/// You should not rely on the fact about how this value is created.
-		/// The only invariant thing is that, when an date time is earlier than another, the filetime is lesser.
+		/// It only ensure that, lesser osInternal means eariler date and time.
 		/// </summary>
-		vuint64_t			filetime = 0;
+		vuint64_t			osInternal = 0;
 
 		/// <summary>Get the current local time.</summary>
 		/// <returns>The current local time.</returns>
@@ -555,10 +554,7 @@ Date and Time
 		/// <summary>Create a date time value from a file time.</summary>
 		/// <returns>The created date time value.</returns>
 		/// <param name="filetime">The file time.</param>
-		static DateTime		FromFileTime(vuint64_t filetime);
-
-		/// <summary>Create an empty date time value that is not meaningful.</summary>
-		DateTime() = default;
+		static DateTime		FromOSInternal(vuint64_t _osInternal);
 
 		/// <summary>Convert the UTC time to the local time.</summary>
 		/// <returns>The UTC time.</returns>
@@ -577,14 +573,29 @@ Date and Time
 
 		std::strong_ordering operator<=>(const DateTime& value) const
 		{
-			return filetime <=> value.filetime;
+			return osInternal <=> value.osInternal;
 		}
 
 		bool operator==(const DateTime& value) const
 		{
-			return filetime == value.filetime;
+			return osInternal == value.osInternal;
 		}
 	};
+
+	class IDateTimeImpl : public virtual Interface
+	{
+	public:
+		virtual DateTime			FromDateTime(vint _year, vint _month, vint _day, vint _hour, vint _minute, vint _second, vint _milliseconds) = 0;
+		virtual DateTime			FromOSInternal(vuint64_t osInternal) = 0;
+		virtual vuint64_t			LocalTime() = 0;
+		virtual vuint64_t			UtcTime() = 0;
+		virtual vuint64_t			LocalToUtcTime(vuint64_t osInternal) = 0;
+		virtual vuint64_t			UtcToLocalTime(vuint64_t osInternal) = 0;
+		virtual vuint64_t			Forward(vuint64_t osInternal, vuint64_t milliseconds) = 0;
+		virtual vuint64_t			Backward(vuint64_t osInternal, vuint64_t milliseconds) = 0;
+	};
+
+	extern void						InjectDateTimeImpl(IDateTimeImpl* impl);
 }
 
 #endif
@@ -6066,6 +6077,18 @@ namespace vl
 	struct Overloading : TCallbacks ...
 	{
 		using TCallbacks::operator()...;
+#ifdef VCZH_GCC
+		Overloading(const Overloading<TCallbacks...>&) = default;
+		Overloading(Overloading<TCallbacks...>&&) = default;
+		Overloading<TCallbacks...>& operator=(const Overloading<TCallbacks...>&) = default;
+		Overloading<TCallbacks...>& operator=(Overloading<TCallbacks...>&&) = default;
+
+		template<typename ...TArguments>
+		Overloading(TArguments&& ...arguments)
+			: TCallbacks(std::forward<TArguments&&>(arguments))...
+		{
+		}
+#endif
 	};
 
 	template<typename ...TCallbacks>
@@ -6301,7 +6324,7 @@ namespace vl
 		static constexpr vint IndexOf = decltype(ElementPack::template IndexOf<T>())::value;
 
 		template<typename T>
-		static constexpr vint IndexOfCast = decltype(ElementPack::template IndexOfCast(std::declval<T>()))::value;
+		static constexpr vint IndexOfCast = decltype(ElementPack::IndexOfCast(std::declval<T>()))::value;
 
 		static constexpr std::size_t	MaxSize = variant_internal::MaxOf(sizeof(TElements)...);
 		vint							index = -1;
@@ -6533,7 +6556,7 @@ namespace vl
 			bool result = true;
 			Apply(Overloading(
 				std::forward<TCallback&&>(callback),
-				[&result](...) { result = false; }
+				[&result](auto&&) { result = false; }
 				));
 			return result;
 		}
@@ -6544,7 +6567,7 @@ namespace vl
 			bool result = true;
 			Apply(Overloading(
 				std::forward<TCallback&&>(callback),
-				[&result](...) { result = false; }
+				[&result](auto&&) { result = false; }
 				));
 			return result;
 		}
@@ -6616,12 +6639,12 @@ namespace vl
 
 		std::strong_ordering operator<=>(const T* str)const
 		{
-			return operator<=>(ObjectString<T>::Unmanaged(str));
+			return operator<=>(Unmanaged(str));
 		}
 
 		friend std::strong_ordering operator<=>(const T* left, const ObjectString<T>& right)
 		{
-			return ObjectString<T>::Unmanaged(left) <=> right;
+			return Unmanaged(left) <=> right;
 		}
 
 		bool operator==(const ObjectString<T>& str)const
@@ -6629,9 +6652,9 @@ namespace vl
 			return operator<=>(str) == 0;
 		}
 
-		bool operator==(T* str)const
+		bool operator==(const T* str)const
 		{
-			return operator<=>(str) == 0;
+			return operator<=>(Unmanaged(str)) == 0;
 		}
 
 		friend bool operator==(const T* left, const ObjectString<T>& right)
@@ -6690,6 +6713,13 @@ namespace vl
 			memcpy(str.buffer + index + source.length, (buffer + start + index + count), sizeof(T) * (length - index - count));
 			str.buffer[str.length] = 0;
 			return std::move(str);
+		}
+
+		ObjectString<T> ReplaceUnsafe(const T* source, vint index, vint count)const
+		{
+			if ((!source || !*source) && count == 0) return *this;
+			if (index == 0 && count == length) return { source };
+			return ReplaceUnsafe(Unmanaged(source), index, count);
 		}
 	public:
 		static const ObjectString<T>		Empty;
@@ -6900,7 +6930,15 @@ namespace vl
 		/// <param name="string">The string to append.</param>
 		ObjectString<T>& operator+=(const ObjectString<T>& string)
 		{
-			return *this=*this+string;
+			return *this = *this + string;
+		}
+
+		/// <summary>Replace the string by appending another string.</summary>
+		/// <returns>The string itself.</returns>
+		/// <param name="string">The string to append.</param>
+		ObjectString<T>& operator+=(const T* str)
+		{
+			return *this = *this + str;
 		}
 
 		/// <summary>Create a new string by concatenating two strings.</summary>
@@ -6911,9 +6949,24 @@ namespace vl
 			return ReplaceUnsafe(string, length, 0);
 		}
 
+		/// <summary>Create a new string by concatenating two strings.</summary>
+		/// <returns>The new string.</returns>
+		/// <param name="string">The string to append.</param>
+		ObjectString<T> operator+(const T* str)const
+		{
+			return ReplaceUnsafe(str, length, 0);
+		}
+
 		friend ObjectString<T> operator+(const T* left, const ObjectString<T>& right)
 		{
-			return ObjectString<T>::Unmanaged(left) + right;
+			if (right.Length() == 0)
+			{
+				return { left };
+			}
+			else
+			{
+				return Unmanaged(left) + right;
+			}
 		}
 
 		/// <summary>Get a code point in the specified position.</summary>

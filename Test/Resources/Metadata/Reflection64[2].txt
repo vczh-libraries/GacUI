@@ -7999,13 +7999,13 @@ enum system::CoroutineStatus {
 struct system::DateTime {
     property day : system::Int64;
     property dayOfWeek : system::Int64;
-    property filetime : system::UInt64;
     property hour : system::Int64;
     property milliseconds : system::Int64;
     property minute : system::Int64;
     property month : system::Int64;
+    property osInternal : system::UInt64;
+    property osMilliseconds : system::UInt64;
     property second : system::Int64;
-    property totalMilliseconds : system::UInt64;
     property year : system::Int64;
 }
 
@@ -8445,7 +8445,6 @@ class system::Sys : system::ReferenceType {
     static function Compare(a : system::DateTime, b : system::DateTime) : system::Int64;
     static function CreateDateTime(year : system::Int64, month : system::Int64, day : system::Int64) : system::DateTime;
     static function CreateDateTime(year : system::Int64, month : system::Int64, day : system::Int64, hour : system::Int64, minute : system::Int64, second : system::Int64, milliseconds : system::Int64) : system::DateTime;
-    static function CreateDateTime(filetime : system::UInt64) : system::DateTime;
     static function Find(value : system::String, substr : system::String) : system::Int64;
     static function Forward(dt : system::DateTime, milliseconds : system::UInt64) : system::DateTime;
     static function GetLocalTime() : system::DateTime;

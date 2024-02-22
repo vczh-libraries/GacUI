@@ -625,7 +625,19 @@ namespace vl
 {
 	using namespace collections;
 
-	extern SYSTEMTIME DateTimeToSystemTime(const DateTime& dateTime);
+	SYSTEMTIME DateTimeToSystemTime(const DateTime& dateTime)
+	{
+		SYSTEMTIME systemTime;
+		systemTime.wYear = (WORD)dateTime.year;
+		systemTime.wMonth = (WORD)dateTime.month;
+		systemTime.wDayOfWeek = (WORD)dateTime.dayOfWeek;
+		systemTime.wDay = (WORD)dateTime.day;
+		systemTime.wHour = (WORD)dateTime.hour;
+		systemTime.wMinute = (WORD)dateTime.minute;
+		systemTime.wSecond = (WORD)dateTime.second;
+		systemTime.wMilliseconds = (WORD)dateTime.milliseconds;
+		return systemTime;
+	}
 
 	BOOL CALLBACK Locale_EnumLocalesProcEx(
 		_In_  LPWSTR lpLocaleString,

@@ -112,111 +112,133 @@ namespace vl
 DateTime
 ***********************************************************************/
 
-	DateTime SystemTimeToDateTime(const SYSTEMTIME& systemTime)
+	class WindowsDateTimeImpl : public Object, public virtual IDateTimeImpl
 	{
-		DateTime dateTime;
-		dateTime.year = systemTime.wYear;
-		dateTime.month = systemTime.wMonth;
-		dateTime.dayOfWeek = systemTime.wDayOfWeek;
-		dateTime.day = systemTime.wDay;
-		dateTime.hour = systemTime.wHour;
-		dateTime.minute = systemTime.wMinute;
-		dateTime.second = systemTime.wSecond;
-		dateTime.milliseconds = systemTime.wMilliseconds;
+	public:
 
-		FILETIME fileTime;
-		SystemTimeToFileTime(&systemTime, &fileTime);
-		ULARGE_INTEGER largeInteger;
-		largeInteger.HighPart = fileTime.dwHighDateTime;
-		largeInteger.LowPart = fileTime.dwLowDateTime;
-		dateTime.filetime = largeInteger.QuadPart;
-		dateTime.totalMilliseconds = dateTime.filetime / 10000;
+		static vuint64_t FileTimeToOSInternal(FILETIME fileTime)
+		{
+			ULARGE_INTEGER largeInteger;
+			largeInteger.HighPart = fileTime.dwHighDateTime;
+			largeInteger.LowPart = fileTime.dwLowDateTime;
+			return largeInteger.QuadPart;
+		}
 
-		return dateTime;
-	}
+		static FILETIME OSInternalToFileTime(vuint64_t osInternal)
+		{
+			ULARGE_INTEGER largeInteger;
+			largeInteger.QuadPart = osInternal;
 
-	SYSTEMTIME DateTimeToSystemTime(const DateTime& dateTime)
+			FILETIME fileTime;
+			fileTime.dwHighDateTime = largeInteger.HighPart;
+			fileTime.dwLowDateTime = largeInteger.LowPart;
+			return fileTime;
+		}
+
+		static DateTime SystemTimeToDateTime(const SYSTEMTIME& systemTime)
+		{
+			DateTime dateTime;
+			dateTime.year = systemTime.wYear;
+			dateTime.month = systemTime.wMonth;
+			dateTime.dayOfWeek = systemTime.wDayOfWeek;
+			dateTime.day = systemTime.wDay;
+			dateTime.hour = systemTime.wHour;
+			dateTime.minute = systemTime.wMinute;
+			dateTime.second = systemTime.wSecond;
+			dateTime.milliseconds = systemTime.wMilliseconds;
+
+			FILETIME fileTime;
+			SystemTimeToFileTime(&systemTime, &fileTime);
+			dateTime.osInternal = FileTimeToOSInternal(fileTime);
+			dateTime.osMilliseconds = dateTime.osInternal / 10000;
+
+			return dateTime;
+		}
+
+		DateTime FromDateTime(vint _year, vint _month, vint _day, vint _hour, vint _minute, vint _second, vint _milliseconds) override
+		{
+			SYSTEMTIME systemTime;
+			memset(&systemTime, 0, sizeof(systemTime));
+			systemTime.wYear = (WORD)_year;
+			systemTime.wMonth = (WORD)_month;
+			systemTime.wDay = (WORD)_day;
+			systemTime.wHour = (WORD)_hour;
+			systemTime.wMinute = (WORD)_minute;
+			systemTime.wSecond = (WORD)_second;
+			systemTime.wMilliseconds = (WORD)_milliseconds;
+
+			FILETIME fileTime;
+			SystemTimeToFileTime(&systemTime, &fileTime);
+			FileTimeToSystemTime(&fileTime, &systemTime);
+			return SystemTimeToDateTime(systemTime);
+		}
+
+		DateTime FromOSInternal(vuint64_t osInternal) override
+		{
+			ULARGE_INTEGER largeInteger;
+			largeInteger.QuadPart = osInternal;
+			FILETIME fileTime;
+			fileTime.dwHighDateTime = largeInteger.HighPart;
+			fileTime.dwLowDateTime = largeInteger.LowPart;
+
+			SYSTEMTIME systemTime;
+			FileTimeToSystemTime(&fileTime, &systemTime);
+			return SystemTimeToDateTime(systemTime);
+		}
+
+		vuint64_t LocalTime() override
+		{
+			SYSTEMTIME systemTime;
+			GetLocalTime(&systemTime);
+
+			FILETIME fileTime;
+			SystemTimeToFileTime(&systemTime, &fileTime);
+			return FileTimeToOSInternal(fileTime);
+		}
+
+		vuint64_t UtcTime() override
+		{
+			FILETIME fileTime;
+			GetSystemTimeAsFileTime(&fileTime);
+			return FileTimeToOSInternal(fileTime);
+		}
+
+		vuint64_t LocalToUtcTime(vuint64_t osInternal) override
+		{
+			FILETIME fileTime = OSInternalToFileTime(osInternal);
+			SYSTEMTIME utcTime, localTime;
+			FileTimeToSystemTime(&fileTime, &localTime);
+			TzSpecificLocalTimeToSystemTime(NULL, &localTime, &utcTime);
+			SystemTimeToFileTime(&utcTime, &fileTime);
+			return FileTimeToOSInternal(fileTime);
+		}
+
+		vuint64_t UtcToLocalTime(vuint64_t osInternal) override
+		{
+			FILETIME fileTime = OSInternalToFileTime(osInternal);
+			SYSTEMTIME utcTime, localTime;
+			FileTimeToSystemTime(&fileTime, &utcTime);
+			SystemTimeToTzSpecificLocalTime(NULL, &utcTime, &localTime);
+			SystemTimeToFileTime(&localTime, &fileTime);
+			return FileTimeToOSInternal(fileTime);
+		}
+
+		vuint64_t Forward(vuint64_t osInternal, vuint64_t milliseconds) override
+		{
+			return osInternal + milliseconds * 10000;
+		}
+
+		vuint64_t Backward(vuint64_t osInternal, vuint64_t milliseconds) override
+		{
+			return osInternal - milliseconds * 10000;
+		}
+	};
+
+	WindowsDateTimeImpl osDateTimeImpl;
+
+	IDateTimeImpl* GetOSDateTimeImpl()
 	{
-		ULARGE_INTEGER largeInteger;
-		largeInteger.QuadPart = dateTime.filetime;
-		FILETIME fileTime;
-		fileTime.dwHighDateTime = largeInteger.HighPart;
-		fileTime.dwLowDateTime = largeInteger.LowPart;
-
-		SYSTEMTIME systemTime;
-		FileTimeToSystemTime(&fileTime, &systemTime);
-		return systemTime;
-	}
-
-	DateTime DateTime::LocalTime()
-	{
-		SYSTEMTIME systemTime;
-		GetLocalTime(&systemTime);
-		return SystemTimeToDateTime(systemTime);
-	}
-
-	DateTime DateTime::UtcTime()
-	{
-		SYSTEMTIME utcTime;
-		GetSystemTime(&utcTime);
-		return SystemTimeToDateTime(utcTime);
-	}
-
-	DateTime DateTime::FromDateTime(vint _year, vint _month, vint _day, vint _hour, vint _minute, vint _second, vint _milliseconds)
-	{
-		SYSTEMTIME systemTime;
-		memset(&systemTime, 0, sizeof(systemTime));
-		systemTime.wYear = (WORD)_year;
-		systemTime.wMonth = (WORD)_month;
-		systemTime.wDay = (WORD)_day;
-		systemTime.wHour = (WORD)_hour;
-		systemTime.wMinute = (WORD)_minute;
-		systemTime.wSecond = (WORD)_second;
-		systemTime.wMilliseconds = (WORD)_milliseconds;
-
-		FILETIME fileTime;
-		SystemTimeToFileTime(&systemTime, &fileTime);
-		FileTimeToSystemTime(&fileTime, &systemTime);
-		return SystemTimeToDateTime(systemTime);
-	}
-
-	DateTime DateTime::FromFileTime(vuint64_t filetime)
-	{
-		ULARGE_INTEGER largeInteger;
-		largeInteger.QuadPart = filetime;
-		FILETIME fileTime;
-		fileTime.dwHighDateTime = largeInteger.HighPart;
-		fileTime.dwLowDateTime = largeInteger.LowPart;
-
-		SYSTEMTIME systemTime;
-		FileTimeToSystemTime(&fileTime, &systemTime);
-		return SystemTimeToDateTime(systemTime);
-	}
-
-	DateTime DateTime::ToLocalTime()
-	{
-		SYSTEMTIME utcTime = DateTimeToSystemTime(*this);
-		SYSTEMTIME localTime;
-		SystemTimeToTzSpecificLocalTime(NULL, &utcTime, &localTime);
-		return SystemTimeToDateTime(localTime);
-	}
-
-	DateTime DateTime::ToUtcTime()
-	{
-		SYSTEMTIME localTime = DateTimeToSystemTime(*this);
-		SYSTEMTIME utcTime;
-		TzSpecificLocalTimeToSystemTime(NULL, &localTime, &utcTime);
-		return SystemTimeToDateTime(utcTime);
-	}
-
-	DateTime DateTime::Forward(vuint64_t milliseconds)
-	{
-		return FromFileTime(filetime + milliseconds * 10000);
-	}
-
-	DateTime DateTime::Backward(vuint64_t milliseconds)
-	{
-		return FromFileTime(filetime - milliseconds * 10000);
+		return &osDateTimeImpl;
 	}
 }
 

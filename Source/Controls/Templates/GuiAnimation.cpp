@@ -16,7 +16,7 @@ GuiTimedAnimation
 			class GuiTimedAnimation : public Object, public virtual IGuiAnimation
 			{
 			protected:
-				DateTime						startTime;
+				DateTime						startUtcTime;
 				vuint64_t						time;
 				bool							running = false;
 
@@ -31,7 +31,7 @@ GuiTimedAnimation
 
 				void Start()override
 				{
-					startTime = DateTime::LocalTime();
+					startUtcTime = DateTime::UtcTime();
 					time = 0;
 					running = true;
 				}
@@ -44,7 +44,7 @@ GuiTimedAnimation
 
 				void Resume()override
 				{
-					startTime = DateTime::LocalTime();
+					startUtcTime = DateTime::UtcTime();
 					running = true;
 				}
 
@@ -52,7 +52,7 @@ GuiTimedAnimation
 				{
 					if (running)
 					{
-						return time + (DateTime::LocalTime().totalMilliseconds - startTime.totalMilliseconds);
+						return time + (DateTime::UtcTime().osMilliseconds - startUtcTime.osMilliseconds);
 					}
 					else
 					{

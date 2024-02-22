@@ -33,7 +33,7 @@ SharedAsyncService::DelayItem
 			:service(_service)
 			,proc(_proc)
 			,status(INativeDelay::Pending)
-			,executeTime(DateTime::LocalTime().Forward(milliseconds))
+			, executeUtcTime(DateTime::UtcTime().Forward(milliseconds))
 			,executeInMainThread(_executeInMainThread)
 		{
 		}
@@ -53,7 +53,7 @@ SharedAsyncService::DelayItem
 			{
 				if(status==INativeDelay::Pending)
 				{
-					executeTime=DateTime::LocalTime().Forward(milliseconds);
+					executeUtcTime =DateTime::UtcTime().Forward(milliseconds);
 					return true;
 				}
 			}
@@ -91,7 +91,7 @@ SharedAsyncService
 
 		void SharedAsyncService::ExecuteAsyncTasks()
 		{
-			DateTime now=DateTime::LocalTime();
+			auto now=DateTime::UtcTime();
 			Array<TaskItem> items;
 			List<Ptr<DelayItem>> executableDelayItems;
 
@@ -103,7 +103,7 @@ SharedAsyncService
 				for(vint i=delayItems.Count()-1;i>=0;i--)
 				{
 					Ptr<DelayItem> item=delayItems[i];
-					if(now.filetime>=item->executeTime.filetime)
+					if(now >= item->executeUtcTime)
 					{
 						item->status=INativeDelay::Executing;
 						executableDelayItems.Add(item);

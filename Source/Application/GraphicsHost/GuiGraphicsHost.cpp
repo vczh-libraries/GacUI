@@ -566,9 +566,9 @@ GuiGraphicsHost
 				timerManager.Play();
 
 				DateTime now = DateTime::UtcTime();
-				if (now.totalMilliseconds - lastCaretTime >= CaretInterval)
+				if (now.osMilliseconds - lastCaretTime >= CaretInterval)
 				{
-					lastCaretTime = now.totalMilliseconds;
+					lastCaretTime = now.osMilliseconds;
 					if (focusedComposition && focusedComposition->HasEventReceiver())
 					{
 						focusedComposition->GetEventReceiver()->caretNotify.Execute(GuiEventArgs(focusedComposition));

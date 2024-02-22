@@ -719,7 +719,6 @@ Libraries
 				static DateTime		Backward(DateTime dt, vuint64_t milliseconds);
 				static DateTime		CreateDateTime(vint year, vint month, vint day);
 				static DateTime		CreateDateTime(vint year, vint month, vint day, vint hour, vint minute, vint second, vint milliseconds);
-				static DateTime		CreateDateTime(vuint64_t filetime);
 
 				static Ptr<IValueEnumerable>		ReverseEnumerable(Ptr<IValueEnumerable> value);
 			};

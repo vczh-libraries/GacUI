@@ -40,7 +40,7 @@ namespace vl
 				SharedAsyncService*					service;
 				Func<void()>						proc;
 				ExecuteStatus						status;
-				DateTime							executeTime;
+				DateTime							executeUtcTime;
 				bool								executeInMainThread;
 
 				ExecuteStatus						GetStatus()override;

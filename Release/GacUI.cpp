@@ -4905,9 +4905,9 @@ GuiGraphicsHost
 				timerManager.Play();
 
 				DateTime now = DateTime::UtcTime();
-				if (now.totalMilliseconds - lastCaretTime >= CaretInterval)
+				if (now.osMilliseconds - lastCaretTime >= CaretInterval)
 				{
-					lastCaretTime = now.totalMilliseconds;
+					lastCaretTime = now.osMilliseconds;
 					if (focusedComposition && focusedComposition->HasEventReceiver())
 					{
 						focusedComposition->GetEventReceiver()->caretNotify.Execute(GuiEventArgs(focusedComposition));
@@ -16337,7 +16337,7 @@ GuiTimedAnimation
 			class GuiTimedAnimation : public Object, public virtual IGuiAnimation
 			{
 			protected:
-				DateTime						startTime;
+				DateTime						startUtcTime;
 				vuint64_t						time;
 				bool							running = false;
 
@@ -16352,7 +16352,7 @@ GuiTimedAnimation
 
 				void Start()override
 				{
-					startTime = DateTime::LocalTime();
+					startUtcTime = DateTime::UtcTime();
 					time = 0;
 					running = true;
 				}
@@ -16365,7 +16365,7 @@ GuiTimedAnimation
 
 				void Resume()override
 				{
-					startTime = DateTime::LocalTime();
+					startUtcTime = DateTime::UtcTime();
 					running = true;
 				}
 
@@ -16373,7 +16373,7 @@ GuiTimedAnimation
 				{
 					if (running)
 					{
-						return time + (DateTime::LocalTime().totalMilliseconds - startTime.totalMilliseconds);
+						return time + (DateTime::UtcTime().osMilliseconds - startUtcTime.osMilliseconds);
 					}
 					else
 					{
@@ -59037,7 +59037,7 @@ SharedAsyncService::DelayItem
 			:service(_service)
 			,proc(_proc)
 			,status(INativeDelay::Pending)
-			,executeTime(DateTime::LocalTime().Forward(milliseconds))
+			, executeUtcTime(DateTime::UtcTime().Forward(milliseconds))
 			,executeInMainThread(_executeInMainThread)
 		{
 		}
@@ -59057,7 +59057,7 @@ SharedAsyncService::DelayItem
 			{
 				if(status==INativeDelay::Pending)
 				{
-					executeTime=DateTime::LocalTime().Forward(milliseconds);
+					executeUtcTime =DateTime::UtcTime().Forward(milliseconds);
 					return true;
 				}
 			}
@@ -59095,7 +59095,7 @@ SharedAsyncService
 
 		void SharedAsyncService::ExecuteAsyncTasks()
 		{
-			DateTime now=DateTime::LocalTime();
+			auto now=DateTime::UtcTime();
 			Array<TaskItem> items;
 			List<Ptr<DelayItem>> executableDelayItems;
 
@@ -59107,7 +59107,7 @@ SharedAsyncService
 				for(vint i=delayItems.Count()-1;i>=0;i--)
 				{
 					Ptr<DelayItem> item=delayItems[i];
-					if(now.filetime>=item->executeTime.filetime)
+					if(now >= item->executeUtcTime)
 					{
 						item->status=INativeDelay::Executing;
 						executableDelayItems.Add(item);

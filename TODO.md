@@ -50,7 +50,6 @@
 - All control unit test (using DarkSkin)
   - Tooltip.
   - A mechanism to replace `DateTime` and `vl::filesystem` implementation.
-    - Make sure `DateTime::LocalTime()` is not called internally, UTC is preferred.
   - Add window resizing constraint messages.
   - Implement `ColorizedTextElement` and `DocumentElement`.
     - Think about how to calculate size for document.
