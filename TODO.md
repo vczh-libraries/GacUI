@@ -2,6 +2,8 @@
 
 ## Completed but not released (1.2.10.0)
 
+- `vl::InjectDateTimeImpl`
+
 ## Known Issues
 
 - Replace `LoadLibrary` with `GetModuleHandle` in `EnableCrossKernelCrashing`.
