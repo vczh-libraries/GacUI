@@ -4,6 +4,7 @@
 
 ## Known Issues
 
+- Replace `LoadLibrary` with `GetModuleHandle` in `EnableCrossKernelCrashing`.
 - `GuiVirtualRepeatCompositionBase`.
   - Eliminate double `ForceCalculateSizeImmediately()` calls in `TestCompositions_VirtualRepeat.cpp` (TODO) and related files.
 - FakeDialogService
