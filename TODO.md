@@ -2,9 +2,8 @@
 
 ## Completed but not released (1.2.10.0)
 
-- Document
-  - `vl::char16be_t`
-  - `vl::InjectDateTimeImpl`
+- `vl::char16be_t`
+- `vl::InjectDateTimeImpl`
 
 ## Known Issues
 
@@ -46,13 +45,19 @@
   - Upgrade GacUI XML Resource to 1.3, force on all resources instead of only depended or depending resource.
   - Require binary pattern "[GMR-1.3]" at the beginning of the binary resource.
   - Resource compiler and loader will check the version and only accept 1.3.
-- Add string conversion mechanism and functions to Vlpp document.
+- Document
+  - string conversion mechanism and functions to Vlpp document.
+  - Vlpp
+    - `vl::char16be_t`
+    - `vl::InjectDateTimeImpl`
+  - VlppOS
+    - Base64
 
 ## Release Milestone (1.2.11.0)
 
 - All control unit test (using DarkSkin)
   - Tooltip.
-  - A mechanism to replace `DateTime` and `vl::filesystem` implementation.
+  - A mechanism to replace `vl::filesystem` implementation.
   - Add window resizing constraint messages.
   - Implement `ColorizedTextElement` and `DocumentElement`.
     - Think about how to calculate size for document.
