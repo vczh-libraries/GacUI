@@ -2,7 +2,9 @@
 
 ## Completed but not released (1.2.10.0)
 
-- `vl::InjectDateTimeImpl`
+- Document
+  - `vl::char16be_t`
+  - `vl::InjectDateTimeImpl`
 
 ## Known Issues
 
@@ -44,6 +46,7 @@
   - Upgrade GacUI XML Resource to 1.3, force on all resources instead of only depended or depending resource.
   - Require binary pattern "[GMR-1.3]" at the beginning of the binary resource.
   - Resource compiler and loader will check the version and only accept 1.3.
+- Add string conversion mechanism and functions to Vlpp document.
 
 ## Release Milestone (1.2.11.0)
 
