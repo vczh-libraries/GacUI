@@ -53,13 +53,6 @@
     - `vl::InjectDateTimeImpl`
   - VlppOS
     - Base64
-- VlppReflection
-  - `Metadata_Generate` will update baseline instead of comparing in `Release`.
-- `Build.ps1 -Project Update`
-  - Use `CodePack.backup.exe` instead of `CodePack.exe`.
-    - Copy `CodePack.exe` to `CodePack.backup.exe` if not copied yet.
-      - Compile `CodePack.exe` if not compiled yet.
-  - Copy `CodePack.exe` to `CodePack.backup.exe` if everything is fine.
 
 ## Release Milestone (1.2.11.0)
 
