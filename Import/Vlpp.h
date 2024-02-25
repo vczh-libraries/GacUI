@@ -8687,7 +8687,7 @@ UtfConversion<T>
 		};
 
 /***********************************************************************
-UtfReaderConsumer<T>
+UtfReaderConsumer<TReader>
 ***********************************************************************/
 
 		template<typename TReader>
@@ -8714,7 +8714,7 @@ UtfReaderConsumer<T>
 		};
 
 /***********************************************************************
-UtfFrom32ReaderBase<T>
+UtfFrom32ReaderBase<T, TConsumer>
 ***********************************************************************/
 
 		template<typename T, typename TConsumer>
@@ -8780,7 +8780,7 @@ UtfFrom32ReaderBase<T>
 		};
 
 /***********************************************************************
-UtfTo32ReaderBase<T>
+UtfTo32ReaderBase<T, TConsumer>
 ***********************************************************************/
 
 		template<typename T, typename TConsumer>
@@ -8860,49 +8860,108 @@ UtfTo32ReaderBase<T>
 		};
 
 /***********************************************************************
-UtfToUtfReaderBase<TFrom, TTo, TConsumer>
+Utf32DirectReaderBase<TConsumer>
 ***********************************************************************/
 
-		template<typename TFrom, typename TTo, typename TConsumer>
-		class UtfToUtfReaderBase : public UtfFrom32ReaderBase<TTo, UtfReaderConsumer<UtfTo32ReaderBase<TFrom, TConsumer>>>
+		template<typename TConsumer>
+		class Utf32DirectReaderBase : public TConsumer
 		{
-			using TBase = UtfFrom32ReaderBase<TTo, UtfReaderConsumer<UtfTo32ReaderBase<TFrom, TConsumer>>>;
+			UtfCharCluster			sourceCluster = { -1,1 };
+			bool					ended = false;
+
 		public:
 			template<typename ...TArguments>
-			UtfToUtfReaderBase(TArguments&& ...arguments)
-				: TBase(std::forward<TArguments&&>(arguments)...)
+			Utf32DirectReaderBase(TArguments&& ...arguments)
+				: TConsumer(std::forward<TArguments&&>(arguments)...)
 			{
+			}
+
+			char32_t Read()
+			{
+				auto dest = this->Consume();
+				static_assert(sizeof(dest) == sizeof(char32_t));
+				if (dest || !ended)
+				{
+					sourceCluster.index += 1;
+					if (!dest)
+					{
+						ended = true;
+						sourceCluster.size = 0;
+					}
+				}
+				return static_cast<char32_t>(dest);
+			}
+
+			vint ReadingIndex() const
+			{
+				return sourceCluster.index;
 			}
 
 			UtfCharCluster SourceCluster() const
 			{
-				return this->internalReader.SourceCluster();
+				return sourceCluster;
 			}
 		};
 
-		template<typename TTo, typename TConsumer>
-		class UtfToUtfReaderBase<char32_t, TTo, TConsumer> : public UtfFrom32ReaderBase<TTo, TConsumer>
+/***********************************************************************
+UtfToUtfReaderBase<TFrom, TTo, TConsumer>
+***********************************************************************/
+
+		template<typename TFrom, typename TTo>
+		struct UtfToUtfReaderSelector
 		{
-			using TBase = UtfFrom32ReaderBase<TTo, TConsumer>;
-		public:
-			template<typename ...TArguments>
-			UtfToUtfReaderBase(TArguments&& ...arguments)
-				: TBase(std::forward<TArguments&&>(arguments)...)
+			template<typename TConsumer>
+			class Reader : public UtfFrom32ReaderBase<TTo, UtfReaderConsumer<UtfTo32ReaderBase<TFrom, TConsumer>>>
 			{
-			}
+				using TBase = UtfFrom32ReaderBase<TTo, UtfReaderConsumer<UtfTo32ReaderBase<TFrom, TConsumer>>>;
+			public:
+				template<typename ...TArguments>
+				Reader(TArguments&& ...arguments)
+					: TBase(std::forward<TArguments&&>(arguments)...)
+				{
+				}
+
+				UtfCharCluster SourceCluster() const
+				{
+					return this->internalReader.SourceCluster();
+				}
+			};
 		};
 
-		template<typename TFrom, typename TConsumer>
-		class UtfToUtfReaderBase<TFrom, char32_t, TConsumer> : public UtfTo32ReaderBase<TFrom, TConsumer>
+		template<typename TTo>
+		struct UtfToUtfReaderSelector<char32_t, TTo>
 		{
-			using TBase = UtfTo32ReaderBase<TFrom, TConsumer>;
-		public:
-			template<typename ...TArguments>
-			UtfToUtfReaderBase(TArguments&& ...arguments)
-				: TBase(std::forward<TArguments&&>(arguments)...)
-			{
-			}
+			template<typename TConsumer>
+			using Reader = UtfFrom32ReaderBase<TTo, TConsumer>;
 		};
+
+		template<typename TFrom>
+		struct UtfToUtfReaderSelector<TFrom, char32_t>
+		{
+			template<typename TConsumer>
+			using Reader = UtfTo32ReaderBase<TFrom, TConsumer>;
+		};
+
+#define DEFINE_UTF32_DIRECT_READER(TFROM, TTO)\
+		template<>\
+		struct UtfToUtfReaderSelector<TFROM, TTO>\
+		{\
+			template<typename TConsumer>\
+			using Reader = Utf32DirectReaderBase<TConsumer>;\
+		}\
+
+		// in order to keep SourceCluster correct, only char32_t<->char32_t gets the special implementation
+		DEFINE_UTF32_DIRECT_READER(char32_t, char32_t);
+
+#ifdef VCZH_WCHAR_UTF32
+		DEFINE_UTF32_DIRECT_READER(wchar_t, char32_t);
+		DEFINE_UTF32_DIRECT_READER(char32_t, wchar_t);
+#endif
+
+#undef DEFINE_UTF32_DIRECT_READER
+
+		template<typename TFrom, typename TTo, typename TConsumer>
+		using UtfToUtfReaderBase = typename UtfToUtfReaderSelector<TFrom, TTo>::template Reader<TConsumer>;
 
 /***********************************************************************
 UtfStringConsumer<T>
