@@ -1440,7 +1440,7 @@ Licensed under https://github.com/vczh-libraries/License
 
 namespace vl
 {
-	namespace stream
+	namespace encoding
 	{
 
 /***********************************************************************
@@ -1448,186 +1448,75 @@ Helper Functions
 ***********************************************************************/
 
 		template<typename T>
-		__forceinline void SwapByteForUtf16BE(T& c)
-		{
-			vuint8_t* bytes = (vuint8_t*)&c;
-			vuint8_t t = bytes[0];
-			bytes[0] = bytes[1];
-			bytes[1] = t;
-		}
-
-		template<typename T>
 		void SwapBytesForUtf16BE(T* _buffer, vint chars)
 		{
 			static_assert(sizeof(T) == sizeof(char16_t));
 			for (vint i = 0; i < chars; i++)
 			{
-				vuint8_t* bytes = (vuint8_t*)(_buffer + i);
-				vuint8_t t = bytes[0];
-				bytes[0] = bytes[1];
-				bytes[1] = t;
+				SwapByteForUtf16BE(_buffer[i]);
 			}
 		}
+	}
+
+	namespace stream
+	{
 
 /***********************************************************************
-WCharToUtfReader
+UtfStreamConsumer<T>
 ***********************************************************************/
 
-		class WCharTo32Reader : public encoding::UtfTo32ReaderBase<wchar_t, WCharTo32Reader>
+		template<typename T>
+		class UtfStreamConsumer : public Object
 		{
-			template<typename T, typename TBase>
-			friend class encoding::UtfTo32ReaderBase;
 		protected:
-			const wchar_t* starting = nullptr;
-			const wchar_t* ending = nullptr;
-			const wchar_t* consuming = nullptr;
+			IStream*				stream = nullptr;
 
-			wchar_t Consume()
+			T Consume()
 			{
-				if (consuming == ending) return 0;
-				return *consuming++;
-			}
-
-		public:
-			WCharTo32Reader(const wchar_t* _starting, vint count)
-			{
-				starting = _starting;
-				ending = _starting + count;
-				consuming = _starting;
-			}
-		};
-
-		template<typename TTo>
-		class WCharToUtfReader : public encoding::UtfFrom32ReaderBase<TTo, WCharToUtfReader<TTo>>
-		{
-			template<typename T, typename TBase>
-			friend class encoding::UtfFrom32ReaderBase;
-		protected:
-			WCharTo32Reader internalReader;
-
-			char32_t Consume()
-			{
-				return internalReader.Read();
-			}
-		public:
-			WCharToUtfReader(const wchar_t* _starting, vint count)
-				: internalReader(_starting, count)
-			{
-			}
-
-			bool HasIllegalChar() const
-			{
-				return encoding::UtfFrom32ReaderBase<TTo, WCharToUtfReader<TTo>>::HasIllegalChar() || internalReader.HasIllegalChar();
-			}
-		};
-
-/***********************************************************************
-StreamToWCharReader
-***********************************************************************/
-
-		template<typename TFrom>
-		class StreamToWCharReader : public encoding::UtfFrom32ReaderBase<wchar_t, StreamToWCharReader<TFrom>>
-		{
-			template<typename T, typename TBase>
-			friend class encoding::UtfFrom32ReaderBase;
-
-			class InternalReader : public encoding::UtfTo32ReaderBase<TFrom, InternalReader>
-			{
-			public:
-				IStream* stream = nullptr;
-
-				TFrom Consume()
-				{
-					TFrom c;
-					vint size = stream->Read(&c, sizeof(c));
-					if (size != sizeof(c)) return 0;
-					return c;
-				}
-			};
-		protected:
-			InternalReader internalReader;
-
-			char32_t Consume()
-			{
-				return internalReader.Read();
-			}
-		public:
-
-			void Setup(IStream* _stream)
-			{
-				internalReader.stream = _stream;
-			}
-
-			bool HasIllegalChar() const
-			{
-				return encoding::UtfFrom32ReaderBase<wchar_t, StreamToWCharReader<TFrom>>::HasIllegalChar() || internalReader.HasIllegalChar();
-			}
-		};
-
-		template<>
-		class StreamToWCharReader<char32_t> : public encoding::UtfFrom32ReaderBase<wchar_t, StreamToWCharReader<char32_t>>
-		{
-			template<typename T, typename TBase>
-			friend class encoding::UtfFrom32ReaderBase;
-		protected:
-			IStream* stream = nullptr;
-
-			char32_t Consume()
-			{
-				char32_t c;
+				T c;
 				vint size = stream->Read(&c, sizeof(c));
 				if (size != sizeof(c)) return 0;
 				return c;
 			}
 		public:
-
 			void Setup(IStream* _stream)
 			{
 				stream = _stream;
 			}
-		};
-
-/***********************************************************************
-Utf16BEStreamToWCharReader
-***********************************************************************/
-
-		class Utf16BEStreamToWCharReader : public encoding::UtfFrom32ReaderBase<wchar_t, Utf16BEStreamToWCharReader>
-		{
-			template<typename T, typename TBase>
-			friend class encoding::UtfFrom32ReaderBase;
-
-			class InternalReader : public encoding::UtfTo32ReaderBase<char16_t, InternalReader>
-			{
-			public:
-				IStream* stream = nullptr;
-
-				char16_t Consume()
-				{
-					char16_t c;
-					vint size = stream->Read(&c, sizeof(c));
-					if (size != sizeof(c)) return 0;
-					SwapByteForUtf16BE(c);
-					return c;
-				}
-			};
-		protected:
-			InternalReader internalReader;
-
-			char32_t Consume()
-			{
-				return internalReader.Read();
-			}
-		public:
-
-			void Setup(IStream* _stream)
-			{
-				internalReader.stream = _stream;
-			}
 
 			bool HasIllegalChar() const
 			{
-				return encoding::UtfFrom32ReaderBase<wchar_t, Utf16BEStreamToWCharReader>::HasIllegalChar() || internalReader.HasIllegalChar();
+				return false;
 			}
+		};
+
+/***********************************************************************
+UtfStreamToStreamReader<TFrom, TTo>
+***********************************************************************/
+
+		template<typename TFrom, typename TTo>
+		class UtfStreamToStreamReader : public encoding::UtfFrom32ReaderBase<TTo, encoding::UtfReaderConsumer<encoding::UtfTo32ReaderBase<TFrom, UtfStreamConsumer<TFrom>>>>
+		{
+		public:
+			void Setup(IStream* _stream)
+			{
+				this->internalReader.Setup(_stream);
+			}
+
+			encoding::UtfCharCluster SourceCluster() const
+			{
+				return this->internalReader.SourceCluster();
+			}
+		};
+
+		template<typename TTo>
+		class UtfStreamToStreamReader<char32_t, TTo> : public encoding::UtfFrom32ReaderBase<TTo, UtfStreamConsumer<char32_t>>
+		{
+		};
+
+		template<typename TFrom>
+		class UtfStreamToStreamReader<TFrom, char32_t> : public encoding::UtfTo32ReaderBase<TFrom, UtfStreamConsumer<TFrom>>
+		{
 		};
 
 /***********************************************************************
@@ -1674,41 +1563,93 @@ Mbcs
 		class MbcsEncoder : public CharEncoder
 		{
 		protected:
-			vint							WriteString(wchar_t* _buffer, vint chars, bool freeToUpdate);
+			vint							WriteString(wchar_t* _buffer, vint chars, bool freeToUpdate) override;
 		};
 		
 		/// <summary>Decoder to read text in the local code page.</summary>
 		class MbcsDecoder : public CharDecoder
 		{
 		protected:
-			vint							ReadString(wchar_t* _buffer, vint chars);
+			vint							ReadString(wchar_t* _buffer, vint chars) override;
 		};
 
 /***********************************************************************
-Utf-16
+Unicode General
 ***********************************************************************/
+
+		template<typename T>
+		class UtfGeneralEncoder : public CharEncoder
+		{
+		protected:
+			vint							WriteString(wchar_t* _buffer, vint chars, bool freeToUpdate) override;
+		};
+
+		extern template class UtfGeneralEncoder<char8_t>;
+		extern template class UtfGeneralEncoder<char16_t>;
+		extern template class UtfGeneralEncoder<char16be_t>;
+		extern template class UtfGeneralEncoder<char32_t>;
+
+		template<typename T>
+		class UtfGeneralDecoder : public CharDecoder
+		{
+		protected:
+			UtfStreamToStreamReader<T, wchar_t>		reader;
+
+			vint							ReadString(wchar_t* _buffer, vint chars) override;
+		};
+
+		extern template class UtfGeneralDecoder<char8_t>;
+		extern template class UtfGeneralDecoder<char16_t>;
+		extern template class UtfGeneralDecoder<char16be_t>;
+		extern template class UtfGeneralDecoder<char32_t>;
+
+/***********************************************************************
+Unicode General (wchar_t)
+***********************************************************************/
+
+		template<>
+		class UtfGeneralEncoder<wchar_t> : public CharEncoder
+		{
+		protected:
+			vint							WriteString(wchar_t* _buffer, vint chars, bool freeToUpdate) override;
+		};
+
+		template<>
+		class UtfGeneralDecoder<wchar_t> : public CharDecoder
+		{
+		protected:
+			vint							ReadString(wchar_t* _buffer, vint chars) override;
+		};
+
+/***********************************************************************
+Utf-8
+***********************************************************************/
+		
+#if defined VCZH_MSVC
+		/// <summary>Encoder to write UTF-8 text.</summary>
+		class Utf8Encoder : public CharEncoder
+		{
+		protected:
+			vint							WriteString(wchar_t* _buffer, vint chars, bool freeToUpdate) override;
+		};
+#elif defined VCZH_GCC
+		/// <summary>Encoder to write UTF-8 text.</summary>
+		class Utf8Encoder : public UtfGeneralEncoder<char8_t> {};
+#endif
+		
+		/// <summary>Decoder to read UTF-8 text.</summary>
+		class Utf8Decoder : public UtfGeneralDecoder<char8_t> {};
+
+/***********************************************************************
+Utf-16 / Utf-16BE / Utf-32
+***********************************************************************/
+
+#if defined VCZH_WCHAR_UTF16
 		
 		/// <summary>Encoder to write UTF-16 text.</summary>
-		class Utf16Encoder : public CharEncoder
-		{
-		protected:
-			vint							WriteString(wchar_t* _buffer, vint chars, bool freeToUpdate);
-		};
-		
+		class Utf16Encoder : public UtfGeneralEncoder<wchar_t> {};
 		/// <summary>Decoder to read UTF-16 text.</summary>
-		class Utf16Decoder : public CharDecoder
-		{
-		protected:
-#if defined VCZH_WCHAR_UTF32
-			StreamToWCharReader<char16_t>	reader;
-#endif
-
-			vint							ReadString(wchar_t* _buffer, vint chars);
-		};
-
-/***********************************************************************
-Utf-16-be
-***********************************************************************/
+		class Utf16Decoder : public UtfGeneralDecoder<wchar_t> {};
 		
 		/// <summary>Encoder to write big endian UTF-16 to.</summary>
 		class Utf16BEEncoder : public CharEncoder
@@ -1721,54 +1662,32 @@ Utf-16-be
 		class Utf16BEDecoder : public CharDecoder
 		{
 		protected:
-			Utf16BEStreamToWCharReader		reader;
-
 			vint							ReadString(wchar_t* _buffer, vint chars);
 		};
-
-/***********************************************************************
-Utf-8
-***********************************************************************/
 		
 		/// <summary>Encoder to write UTF-8 text.</summary>
-		class Utf8Encoder : public CharEncoder
-		{
-		protected:
-			vint							WriteString(wchar_t* _buffer, vint chars, bool freeToUpdate);
-		};
-		
+		class Utf32Encoder : public UtfGeneralEncoder<char32_t> {};
 		/// <summary>Decoder to read UTF-8 text.</summary>
-		class Utf8Decoder : public CharDecoder
-		{
-		protected:
-			StreamToWCharReader<char8_t>	reader;
+		class Utf32Decoder : public UtfGeneralDecoder<char32_t> {};
 
-			vint							ReadString(wchar_t* _buffer, vint chars);
-		public:
-		};
-
-/***********************************************************************
-Utf-32
-***********************************************************************/
+#elif defined VCZH_WCHAR_UTF32
 		
+		/// <summary>Encoder to write UTF-16 text.</summary>
+		class Utf16Encoder : public UtfGeneralEncoder<char16_t> {};
+		/// <summary>Decoder to read UTF-16 text.</summary>
+		class Utf16Decoder : public UtfGeneralDecoder<char16_t> {};
+
+		/// <summary>Encoder to write big endian UTF-16 to.</summary>
+		class Utf16BEEncoder : public UtfGeneralEncoder<char16be_t> {};
+		/// <summary>Decoder to read big endian UTF-16 text.</summary>
+		class Utf16BEDecoder : public UtfGeneralDecoder<char16be_t> {};
+
 		/// <summary>Encoder to write UTF-8 text.</summary>
-		class Utf32Encoder : public CharEncoder
-		{
-		protected:
-			vint							WriteString(wchar_t* _buffer, vint chars, bool freeToUpdate);
-		};
-		
+		class Utf32Encoder : public UtfGeneralEncoder<wchar_t> {};
 		/// <summary>Decoder to read UTF-8 text.</summary>
-		class Utf32Decoder : public CharDecoder
-		{
-		protected:
-#if defined VCZH_WCHAR_UTF16
-			StreamToWCharReader<char32_t>	reader;
+		class Utf32Decoder : public UtfGeneralDecoder<wchar_t> {};
+
 #endif
-
-			vint							ReadString(wchar_t* _buffer, vint chars);
-		public:
-		};
 
 /***********************************************************************
 Bom
@@ -3030,6 +2949,14 @@ Serialization (floats)
 			};
 
 /***********************************************************************
+Serialization (enum)
+***********************************************************************/
+
+			template<typename T>
+				requires(std::is_enum_v<T>)
+			struct Serialization<T> : Serialization_Conversion<T, vint64_t> {};
+
+/***********************************************************************
 Serialization (strings)
 ***********************************************************************/
 
@@ -3381,25 +3308,6 @@ Serialization (macros)
 
 #define END_SERIALIZATION\
 					;\
-				}\
-			};\
-
-#define SERIALIZE_ENUM(TYPE)\
-			template<>\
-			struct Serialization<TYPE>\
-			{\
-				template<typename TContext>\
-				static void IO(Reader<TContext>& reader, TYPE& value)\
-				{\
-					vint32_t v = 0;\
-					Serialization<vint32_t>::IO(reader, v);\
-					value = (TYPE)v;\
-				}\
-				template<typename TContext>\
-				static void IO(Writer<TContext>& writer, TYPE& value)\
-				{\
-					vint32_t v = (vint32_t)value;\
-					Serialization<vint32_t>::IO(writer, v);\
 				}\
 			};\
 

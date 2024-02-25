@@ -621,6 +621,31 @@ UtfConversion<char16_t>
 				return 1;
 			}
 		}
+
+/***********************************************************************
+UtfConversion<char16be_t>
+***********************************************************************/
+
+		vint UtfConversion<char16be_t>::From32(char32_t source, char16be_t(&dest)[BufferLength])
+		{
+			char16_t destle[BufferLength];
+			vint result = UtfConversion<char16_t>::From32(source, destle);
+			SwapByteForUtf16BE(destle[0]);
+			SwapByteForUtf16BE(destle[1]);
+			dest[0].value = destle[0];
+			dest[1].value = destle[1];
+			return result;
+		}
+
+		vint UtfConversion<char16be_t>::To32(const char16be_t* source, vint sourceLength, char32_t& dest)
+		{
+			char16_t destle[BufferLength];
+			if (sourceLength >= 1) destle[0] = source[0].value;
+			if (sourceLength >= 2) destle[1] = source[1].value;
+			SwapByteForUtf16BE(destle[0]);
+			SwapByteForUtf16BE(destle[1]);
+			return UtfConversion<char16_t>::To32(destle, sourceLength, dest);
+		}
 	}
 
 /***********************************************************************
@@ -652,24 +677,25 @@ String Conversions (buffer walkthrough)
 		}
 	}
 
-	template<typename T>
-	vint _utftou32(const T* s, char32_t* d, vint chars)
+	template<typename TFrom, typename TTo>
+	vint _utftoutf(const TFrom* s, TTo* d, vint chars)
 	{
-		return _utftoutf_reader<T, char32_t, encoding::UtfStringTo32Reader<T>>(s, d, chars);
+		return _utftoutf_reader<TFrom, TTo, encoding::UtfStringToStringReader<TFrom, TTo>>(s, d, chars);
 	}
 
-	template<typename T>
-	vint _u32toutf(const char32_t* s, T* d, vint chars)
-	{
-		return _utftoutf_reader<char32_t, T, encoding::UtfStringFrom32Reader<T>>(s, d, chars);
-	}
+	template vint			_utftoutf<wchar_t, char8_t>(const wchar_t* s, char8_t* d, vint chars);
+	template vint			_utftoutf<wchar_t, char16_t>(const wchar_t* s, char16_t* d, vint chars);
+	template vint			_utftoutf<char8_t, wchar_t>(const char8_t* s, wchar_t* d, vint chars);
+	template vint			_utftoutf<char8_t, char16_t>(const char8_t* s, char16_t* d, vint chars);
+	template vint			_utftoutf<char16_t, wchar_t>(const char16_t* s, wchar_t* d, vint chars);
+	template vint			_utftoutf<char16_t, char8_t>(const char16_t* s, char8_t* d, vint chars);
 
-	template vint			_utftou32<wchar_t>(const wchar_t* s, char32_t* d, vint chars);
-	template vint			_utftou32<char8_t>(const char8_t* s, char32_t* d, vint chars);
-	template vint			_utftou32<char16_t>(const char16_t* s, char32_t* d, vint chars);
-	template vint			_u32toutf<wchar_t>(const char32_t* s, wchar_t* d, vint chars);
-	template vint			_u32toutf<char8_t>(const char32_t* s, char8_t* d, vint chars);
-	template vint			_u32toutf<char16_t>(const char32_t* s, char16_t* d, vint chars);
+	template vint			_utftoutf<char32_t, char8_t>(const char32_t* s, char8_t* d, vint chars);
+	template vint			_utftoutf<char32_t, char16_t>(const char32_t* s, char16_t* d, vint chars);
+	template vint			_utftoutf<char32_t, wchar_t>(const char32_t* s, wchar_t* d, vint chars);
+	template vint			_utftoutf<char8_t, char32_t>(const char8_t* s, char32_t* d, vint chars);
+	template vint			_utftoutf<char16_t, char32_t>(const char16_t* s, char32_t* d, vint chars);
+	template vint			_utftoutf<wchar_t, char32_t>(const wchar_t* s, char32_t* d, vint chars);
 
 /***********************************************************************
 String Conversions (direct)
@@ -685,41 +711,24 @@ String Conversions (direct)
 		Convert(source.Buffer(), buffer, len);
 		return ObjectString<TTo>::TakeOver(buffer, len - 1);
 	}
-
-	AString					wtoa	(const WString& source)		{ return ConvertStringDirect<wchar_t, char, _wtoa>(source); }
-	WString					atow	(const AString& source)		{ return ConvertStringDirect<char, wchar_t, _atow>(source); }
 #if defined VCZH_WCHAR_UTF16
-	U32String				wtou32	(const WString& source)		{ return ConvertStringDirect<wchar_t, char32_t, _utftou32<wchar_t>>(source); }
-	WString					u32tow	(const U32String& source)	{ return ConvertStringDirect<char32_t, wchar_t, _u32toutf<wchar_t>>(source); }
+	U32String				wtou32	(const WString& source)		{ return ConvertStringDirect<wchar_t, char32_t, _utftoutf<wchar_t, char32_t>>(source); }
+	WString					u32tow	(const U32String& source)	{ return ConvertStringDirect<char32_t, wchar_t, _utftoutf<char32_t, wchar_t>>(source); }
 #elif defined VCZH_WCHAR_UTF32
 	U32String				wtou32	(const WString& source)		{ return U32String::UnsafeCastFrom(source); }
 	WString					u32tow	(const U32String& source)	{ return WString::UnsafeCastFrom(source); }
 #endif
-	U32String				u8tou32	(const U8String& source)	{ return ConvertStringDirect<char8_t, char32_t, _utftou32<char8_t>>(source); }
-	U8String				u32tou8	(const U32String& source)	{ return ConvertStringDirect<char32_t, char8_t, _u32toutf<char8_t>>(source); }
-	U32String				u16tou32(const U16String& source)	{ return ConvertStringDirect<char16_t, char32_t, _utftou32<char16_t>>(source); }
-	U16String				u32tou16(const U32String& source)	{ return ConvertStringDirect<char32_t, char16_t, _u32toutf<char16_t>>(source); }
-
-/***********************************************************************
-String Conversions (buffer walkthrough indirect)
-***********************************************************************/
-
-	template<typename TFrom, typename TTo>
-	vint _utftoutf(const TFrom* s, TTo* d, vint chars)
-	{
-		return _utftoutf_reader<TFrom, TTo, encoding::UtfStringToStringReader<TFrom, TTo>>(s, d, chars);
-	}
-
-	template vint			_utftoutf<wchar_t, char8_t>(const wchar_t* s, char8_t* d, vint chars);
-	template vint			_utftoutf<wchar_t, char16_t>(const wchar_t* s, char16_t* d, vint chars);
-	template vint			_utftoutf<char8_t, wchar_t>(const char8_t* s, wchar_t* d, vint chars);
-	template vint			_utftoutf<char8_t, char16_t>(const char8_t* s, char16_t* d, vint chars);
-	template vint			_utftoutf<char16_t, wchar_t>(const char16_t* s, wchar_t* d, vint chars);
-	template vint			_utftoutf<char16_t, char8_t>(const char16_t* s, char8_t* d, vint chars);
+	U32String				u8tou32	(const U8String& source)	{ return ConvertStringDirect<char8_t, char32_t, _utftoutf<char8_t, char32_t>>(source); }
+	U8String				u32tou8	(const U32String& source)	{ return ConvertStringDirect<char32_t, char8_t, _utftoutf<char32_t, char8_t>>(source); }
+	U32String				u16tou32(const U16String& source)	{ return ConvertStringDirect<char16_t, char32_t, _utftoutf<char16_t, char32_t>>(source); }
+	U16String				u32tou16(const U32String& source)	{ return ConvertStringDirect<char32_t, char16_t, _utftoutf<char32_t, char16_t>>(source); }
 
 /***********************************************************************
 String Conversions (unicode indirect)
 ***********************************************************************/
+
+	AString					wtoa	(const WString& source)		{ return ConvertStringDirect<wchar_t, char, _wtoa>(source); }
+	WString					atow	(const AString& source)		{ return ConvertStringDirect<char, wchar_t, _atow>(source); }
 
 	U8String				wtou8	(const WString& source)		{ return ConvertStringDirect<wchar_t, char8_t, _utftoutf<wchar_t, char8_t>>(source); }
 	WString					u8tow	(const U8String& source)	{ return ConvertStringDirect<char8_t, wchar_t, _utftoutf<char8_t, wchar_t>>(source); }

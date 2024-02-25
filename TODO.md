@@ -4,6 +4,7 @@
 
 - `vl::char16be_t`
 - `vl::InjectDateTimeImpl`
+- Removed `SERIALIZE_ENUM`, enum will be automatically registered, but its binary form is changed from 32bit to 64bit.
 
 ## Known Issues
 

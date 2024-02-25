@@ -1288,8 +1288,8 @@ namespace vl
 		struct CharReader
 		{
 		private:
-			encoding::UtfStringTo32Reader<T>	reader;
-			const T*							input;
+			encoding::UtfStringToStringReader<T, char32_t>	reader;
+			const T*										input;
 
 		public:
 			CharReader(const T* _input)

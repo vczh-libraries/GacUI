@@ -929,10 +929,6 @@ Serizliation (Data Structures)
 				SERIALIZE(lastInstruction)
 			END_SERIALIZATION
 
-			SERIALIZE_ENUM(WfInsCode)
-			SERIALIZE_ENUM(WfInsType)
-			SERIALIZE_ENUM(Value::ValueType)
-
 /***********************************************************************
 Serizliation (ITypeDescriptor)
 ***********************************************************************/

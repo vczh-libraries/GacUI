@@ -8044,8 +8044,6 @@ ParsingTable (Serialization)
 				SERIALIZE(creatorRule)
 			END_SERIALIZATION
 
-			SERIALIZE_ENUM(ParsingTable::Instruction::InstructionType)
-
 			BEGIN_SERIALIZATION(ParsingTable::LookAheadInfo)
 				SERIALIZE(tokens)
 				SERIALIZE(state)
