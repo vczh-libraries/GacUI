@@ -53,7 +53,7 @@
     - `vl::InjectDateTimeImpl`
   - VlppOS
     - Base64
-    - Breaking changes: `Utf\d+(En|De)coder`, `(Text|Stream)(Reader|Writer)` changed from class to typedef
+    - Breaking changes: `Utf\d+(En|De)coder`, `(Text|Stream)(Reader|Writer)` and `StringReader` changed from class to typedef
 
 ## Release Milestone (1.2.11.0)
 
