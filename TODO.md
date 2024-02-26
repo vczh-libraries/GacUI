@@ -53,6 +53,7 @@
     - `vl::InjectDateTimeImpl`
   - VlppOS
     - Base64
+    - Breaking changes: `Utf\d+(En|De)coder` changed from class to typedef
 
 ## Release Milestone (1.2.11.0)
 
