@@ -6681,7 +6681,7 @@ Logger (ParsingTable)
 					writer.WriteLine(L"");
 				}
 
-				writer.WriteMonospacedEnglishTable(stringTable, rows, columns);
+				WriteMonospacedEnglishTable(writer, stringTable, rows, columns);
 				writer.WriteLine(L"");
 
 				writer.WriteLine(L"Metadata(Tokens):");

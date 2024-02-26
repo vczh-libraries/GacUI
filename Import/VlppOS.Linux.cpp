@@ -1541,7 +1541,7 @@ ThreadLocalStorage
 
 
 /***********************************************************************
-.\STREAM\CHARFORMAT.LINUX.CPP
+.\ENCODING\CHARFORMAT\CHARFORMAT.LINUX.CPP
 ***********************************************************************/
 /***********************************************************************
 Author: Zihan Chen (vczh)
@@ -1573,10 +1573,10 @@ namespace vl
 		}
 
 /***********************************************************************
-Mbcs
+MbcsEncoder
 ***********************************************************************/
 
-		vint MbcsEncoder::WriteString(wchar_t* _buffer, vint chars, bool freeToUpdate)
+		vint MbcsEncoder::WriteString(wchar_t* _buffer, vint chars)
 		{
 			WString w = WString::CopyFrom(_buffer, chars);
 			AString a = wtoa(w);
@@ -1590,27 +1590,7 @@ Mbcs
 			}
 			return chars;
 		}
-	}
-}
 
-
-/***********************************************************************
-.\STREAM\CHARFORMAT_TESTENCODING.LINUX.CPP
-***********************************************************************/
-/***********************************************************************
-Author: Zihan Chen (vczh)
-Licensed under https://github.com/vczh-libraries/License
-***********************************************************************/
-
-
-#ifndef VCZH_GCC
-static_assert(false, "Do not build this file for Windows applications.");
-#endif
-
-namespace vl
-{
-	namespace stream
-	{
 /***********************************************************************
 Helper Functions
 ***********************************************************************/

@@ -1241,7 +1241,27 @@ namespace vl
 			/// <param name="_size">The size of the content that is expected to read.</param>
 			virtual vint					Peek(void* _buffer, vint _size)=0;
 		};
+	}
+}
 
+#endif
+
+/***********************************************************************
+.\ENCODING\ENCODING.H
+***********************************************************************/
+/***********************************************************************
+Author: Zihan Chen (vczh)
+Licensed under https://github.com/vczh-libraries/License
+***********************************************************************/
+
+#ifndef VCZH_STREAM_ENCODING
+#define VCZH_STREAM_ENCODING
+
+
+namespace vl
+{
+	namespace stream
+	{
 		/// <summary>Encoder interface. This interface defines a writable transformation from one stream to another stream. You can create a [T:vl.stream.EncoderStream] after you have an encoder.</summary>
 		class IEncoder : public Interface
 		{
@@ -1289,406 +1309,21 @@ namespace vl
 #endif
 
 /***********************************************************************
-.\STREAM\BROADCASTSTREAM.H
+.\ENCODING\CHARFORMAT\BOMENCODING.H
 ***********************************************************************/
 /***********************************************************************
 Author: Zihan Chen (vczh)
 Licensed under https://github.com/vczh-libraries/License
 ***********************************************************************/
 
-#ifndef VCZH_STREAM_BROADCASTSTREAM
-#define VCZH_STREAM_BROADCASTSTREAM
+#ifndef VCZH_STREAM_ENCODING_CHARFORMAT_BOMENCODING
+#define VCZH_STREAM_ENCODING_CHARFORMAT_BOMENCODING
 
 
 namespace vl
 {
 	namespace stream
 	{
-		/// <summary>A <b>writable</b> stream that copy the written content to multiple output streams.</summary>
-		/// <remarks>
-		/// When writing happens, the boreadcast stream will only performance one write attempt to each output stream.
-		/// </remarks>
-		class BroadcastStream : public Object, public virtual IStream
-		{
-			typedef collections::List<IStream*>		StreamList;
-		protected:
-			bool					closed;
-			pos_t					position;
-			StreamList				streams;
-		public:
-			/// <summary>Create a boradcast stream.</summary>
-			BroadcastStream();
-			~BroadcastStream();
-
-			/// <summary>
-			/// Get the list of output streams.
-			/// You can change this list to subscribe or unsubscribe.
-			/// </summary>
-			/// <returns>The list of output streams.</returns>
-			StreamList&				Targets();
-			bool					CanRead()const;
-			bool					CanWrite()const;
-			bool					CanSeek()const;
-			bool					CanPeek()const;
-			bool					IsLimited()const;
-			bool					IsAvailable()const;
-			void					Close();
-			pos_t					Position()const;
-			pos_t					Size()const;
-			void					Seek(pos_t _size);
-			void					SeekFromBegin(pos_t _size);
-			void					SeekFromEnd(pos_t _size);
-			vint					Read(void* _buffer, vint _size);
-			vint					Write(void* _buffer, vint _size);
-			vint					Peek(void* _buffer, vint _size);
-		};
-	}
-}
-
-#endif
-
-/***********************************************************************
-.\STREAM\CACHESTREAM.H
-***********************************************************************/
-/***********************************************************************
-Author: Zihan Chen (vczh)
-Licensed under https://github.com/vczh-libraries/License
-***********************************************************************/
-
-#ifndef VCZH_STREAM_CACHESTREAM
-#define VCZH_STREAM_CACHESTREAM
-
-
-namespace vl
-{
-	namespace stream
-	{
-		/// <summary>
-		/// <p>
-		/// A potentially <b>readable</b>, <b>peekable</b>, <b>writable</b>, <b>seekable</b> and <b>finite</b> stream that creates on another stream.
-		/// Each feature is available if the target stream has the same feature.
-		/// </p>
-		/// <p>
-		/// When you read from the cache strema,
-		/// it will read a specified size of content from the target stream at once and cache,
-		/// reducing the number of operations on the target stream.
-		/// </p>
-		/// <p>
-		/// When you write to the cache stream,
-		/// it will cache all the data to write,
-		/// and write to the target stream after the cache is full,
-		/// reducing the number of operations on the target stream.
-		/// </p>
-		/// </summary>
-		class CacheStream : public Object, public virtual IStream
-		{
-		protected:
-			IStream*				target;
-			vint					block;
-			pos_t					start;
-			pos_t					position;
-
-			char*					buffer;
-			vint					dirtyStart;
-			vint					dirtyLength;
-			vint					availableLength;
-			pos_t					operatedSize;
-
-			void					Flush();
-			void					Load(pos_t _position);
-			vint					InternalRead(void* _buffer, vint _size);
-			vint					InternalWrite(void* _buffer, vint _size);
-		public:
-			/// <summary>Create a cache stream from a target stream.</summary>
-			/// <param name="_target">The target stream.</param>
-			/// <param name="_block">Size of the cache.</param>
-			CacheStream(IStream& _target, vint _block=65536);
-			~CacheStream();
-
-			bool					CanRead()const;
-			bool					CanWrite()const;
-			bool					CanSeek()const;
-			bool					CanPeek()const;
-			bool					IsLimited()const;
-			bool					IsAvailable()const;
-			void					Close();
-			pos_t					Position()const;
-			pos_t					Size()const;
-			void					Seek(pos_t _size);
-			void					SeekFromBegin(pos_t _size);
-			void					SeekFromEnd(pos_t _size);
-			vint					Read(void* _buffer, vint _size);
-			vint					Write(void* _buffer, vint _size);
-			vint					Peek(void* _buffer, vint _size);
-		};
-	}
-}
-
-#endif
-
-/***********************************************************************
-.\STREAM\CHARFORMAT.H
-***********************************************************************/
-/***********************************************************************
-Author: Zihan Chen (vczh)
-Licensed under https://github.com/vczh-libraries/License
-***********************************************************************/
-
-#ifndef VCZH_STREAM_CHARFORMAT
-#define VCZH_STREAM_CHARFORMAT
-
-
-namespace vl
-{
-	namespace encoding
-	{
-
-/***********************************************************************
-Helper Functions
-***********************************************************************/
-
-		template<typename T>
-		void SwapBytesForUtf16BE(T* _buffer, vint chars)
-		{
-			static_assert(sizeof(T) == sizeof(char16_t));
-			for (vint i = 0; i < chars; i++)
-			{
-				SwapByteForUtf16BE(_buffer[i]);
-			}
-		}
-	}
-
-	namespace stream
-	{
-
-/***********************************************************************
-UtfStreamConsumer<T>
-***********************************************************************/
-
-		template<typename T>
-		class UtfStreamConsumer : public Object
-		{
-		protected:
-			IStream*				stream = nullptr;
-
-			T Consume()
-			{
-				T c;
-				vint size = stream->Read(&c, sizeof(c));
-				if (size != sizeof(c)) return 0;
-				return c;
-			}
-		public:
-			void Setup(IStream* _stream)
-			{
-				stream = _stream;
-			}
-
-			bool HasIllegalChar() const
-			{
-				return false;
-			}
-		};
-
-/***********************************************************************
-UtfStreamToStreamReader<TFrom, TTo>
-***********************************************************************/
-
-		template<typename TFrom, typename TTo>
-		class UtfStreamToStreamReader : public encoding::UtfFrom32ReaderBase<TTo, encoding::UtfReaderConsumer<encoding::UtfTo32ReaderBase<TFrom, UtfStreamConsumer<TFrom>>>>
-		{
-		public:
-			void Setup(IStream* _stream)
-			{
-				this->internalReader.Setup(_stream);
-			}
-
-			encoding::UtfCharCluster SourceCluster() const
-			{
-				return this->internalReader.SourceCluster();
-			}
-		};
-
-		template<typename TTo>
-		class UtfStreamToStreamReader<char32_t, TTo> : public encoding::UtfFrom32ReaderBase<TTo, UtfStreamConsumer<char32_t>>
-		{
-		};
-
-		template<typename TFrom>
-		class UtfStreamToStreamReader<TFrom, char32_t> : public encoding::UtfTo32ReaderBase<TFrom, UtfStreamConsumer<TFrom>>
-		{
-		};
-
-/***********************************************************************
-Char Encoder and Decoder
-***********************************************************************/
-
-		/// <summary>Base type of all character encoder.</summary>
-		class CharEncoder : public Object, public IEncoder
-		{
-		protected:
-			IStream*						stream = nullptr;
-			vuint8_t						cacheBuffer[sizeof(char32_t)];
-			vint							cacheSize = 0;
-
-			virtual vint					WriteString(wchar_t* _buffer, vint chars, bool freeToUpdate) = 0;
-		public:
-
-			void							Setup(IStream* _stream);
-			void							Close();
-			vint							Write(void* _buffer, vint _size);
-		};
-		
-		/// <summary>Base type of all character decoder.</summary>
-		class CharDecoder : public Object, public IDecoder
-		{
-		protected:
-			IStream*						stream = nullptr;
-			vuint8_t						cacheBuffer[sizeof(wchar_t)];
-			vint							cacheSize = 0;
-
-			virtual vint					ReadString(wchar_t* _buffer, vint chars) = 0;
-		public:
-
-			void							Setup(IStream* _stream);
-			void							Close();
-			vint							Read(void* _buffer, vint _size);
-		};
-
-/***********************************************************************
-Mbcs
-***********************************************************************/
-		
-		/// <summary>Encoder to write text in the local code page.</summary>
-		class MbcsEncoder : public CharEncoder
-		{
-		protected:
-			vint							WriteString(wchar_t* _buffer, vint chars, bool freeToUpdate) override;
-		};
-		
-		/// <summary>Decoder to read text in the local code page.</summary>
-		class MbcsDecoder : public CharDecoder
-		{
-		protected:
-			vint							ReadString(wchar_t* _buffer, vint chars) override;
-		};
-
-/***********************************************************************
-Unicode General
-***********************************************************************/
-
-		template<typename T>
-		class UtfGeneralEncoder : public CharEncoder
-		{
-		protected:
-			vint							WriteString(wchar_t* _buffer, vint chars, bool freeToUpdate) override;
-		};
-
-		extern template class UtfGeneralEncoder<char8_t>;
-		extern template class UtfGeneralEncoder<char16_t>;
-		extern template class UtfGeneralEncoder<char16be_t>;
-		extern template class UtfGeneralEncoder<char32_t>;
-
-		template<typename T>
-		class UtfGeneralDecoder : public CharDecoder
-		{
-		protected:
-			UtfStreamToStreamReader<T, wchar_t>		reader;
-
-			vint							ReadString(wchar_t* _buffer, vint chars) override;
-		};
-
-		extern template class UtfGeneralDecoder<char8_t>;
-		extern template class UtfGeneralDecoder<char16_t>;
-		extern template class UtfGeneralDecoder<char16be_t>;
-		extern template class UtfGeneralDecoder<char32_t>;
-
-/***********************************************************************
-Unicode General (wchar_t)
-***********************************************************************/
-
-		template<>
-		class UtfGeneralEncoder<wchar_t> : public CharEncoder
-		{
-		protected:
-			vint							WriteString(wchar_t* _buffer, vint chars, bool freeToUpdate) override;
-		};
-
-		template<>
-		class UtfGeneralDecoder<wchar_t> : public CharDecoder
-		{
-		protected:
-			vint							ReadString(wchar_t* _buffer, vint chars) override;
-		};
-
-/***********************************************************************
-Utf-8
-***********************************************************************/
-		
-#if defined VCZH_MSVC
-		/// <summary>Encoder to write UTF-8 text.</summary>
-		class Utf8Encoder : public CharEncoder
-		{
-		protected:
-			vint							WriteString(wchar_t* _buffer, vint chars, bool freeToUpdate) override;
-		};
-#elif defined VCZH_GCC
-		/// <summary>Encoder to write UTF-8 text.</summary>
-		class Utf8Encoder : public UtfGeneralEncoder<char8_t> {};
-#endif
-		
-		/// <summary>Decoder to read UTF-8 text.</summary>
-		class Utf8Decoder : public UtfGeneralDecoder<char8_t> {};
-
-/***********************************************************************
-Utf-16 / Utf-16BE / Utf-32
-***********************************************************************/
-
-#if defined VCZH_WCHAR_UTF16
-		
-		/// <summary>Encoder to write UTF-16 text.</summary>
-		class Utf16Encoder : public UtfGeneralEncoder<wchar_t> {};
-		/// <summary>Decoder to read UTF-16 text.</summary>
-		class Utf16Decoder : public UtfGeneralDecoder<wchar_t> {};
-		
-		/// <summary>Encoder to write big endian UTF-16 to.</summary>
-		class Utf16BEEncoder : public CharEncoder
-		{
-		protected:
-			vint							WriteString(wchar_t* _buffer, vint chars, bool freeToUpdate);
-		};
-		
-		/// <summary>Decoder to read big endian UTF-16 text.</summary>
-		class Utf16BEDecoder : public CharDecoder
-		{
-		protected:
-			vint							ReadString(wchar_t* _buffer, vint chars);
-		};
-		
-		/// <summary>Encoder to write UTF-8 text.</summary>
-		class Utf32Encoder : public UtfGeneralEncoder<char32_t> {};
-		/// <summary>Decoder to read UTF-8 text.</summary>
-		class Utf32Decoder : public UtfGeneralDecoder<char32_t> {};
-
-#elif defined VCZH_WCHAR_UTF32
-		
-		/// <summary>Encoder to write UTF-16 text.</summary>
-		class Utf16Encoder : public UtfGeneralEncoder<char16_t> {};
-		/// <summary>Decoder to read UTF-16 text.</summary>
-		class Utf16Decoder : public UtfGeneralDecoder<char16_t> {};
-
-		/// <summary>Encoder to write big endian UTF-16 to.</summary>
-		class Utf16BEEncoder : public UtfGeneralEncoder<char16be_t> {};
-		/// <summary>Decoder to read big endian UTF-16 text.</summary>
-		class Utf16BEDecoder : public UtfGeneralDecoder<char16be_t> {};
-
-		/// <summary>Encoder to write UTF-8 text.</summary>
-		class Utf32Encoder : public UtfGeneralEncoder<wchar_t> {};
-		/// <summary>Decoder to read UTF-8 text.</summary>
-		class Utf32Decoder : public UtfGeneralDecoder<wchar_t> {};
-
-#endif
-
 /***********************************************************************
 Bom
 ***********************************************************************/
@@ -1766,6 +1401,387 @@ Bom
 			void							Close();
 			vint							Read(void* _buffer, vint _size);
 		};
+	}
+}
+
+#endif
+
+
+/***********************************************************************
+.\ENCODING\CHARFORMAT\CHARENCODINGBASE.H
+***********************************************************************/
+/***********************************************************************
+Author: Zihan Chen (vczh)
+Licensed under https://github.com/vczh-libraries/License
+***********************************************************************/
+
+#ifndef VCZH_STREAM_ENCODING_CHARFORMAT_CHARENCODINGBASE
+#define VCZH_STREAM_ENCODING_CHARFORMAT_CHARENCODINGBASE
+
+
+namespace vl
+{
+	namespace stream
+	{
+/***********************************************************************
+CharEncoderBase and CharDecoderBase
+***********************************************************************/
+
+		/// <summary>Base type of all character encoder.</summary>
+		class CharEncoderBase : public Object, public IEncoder
+		{
+		protected:
+			IStream*						stream = nullptr;
+
+		public:
+
+			void							Setup(IStream* _stream) override;
+			void							Close() override;
+		};
+		
+		/// <summary>Base type of all character decoder.</summary>
+		class CharDecoderBase : public Object, public IDecoder
+		{
+		protected:
+			IStream*						stream = nullptr;
+
+		public:
+
+			void							Setup(IStream* _stream) override;
+			void							Close() override;
+		};
+	}
+}
+
+#endif
+
+
+/***********************************************************************
+.\ENCODING\CHARFORMAT\MBCSENCODING.H
+***********************************************************************/
+/***********************************************************************
+Author: Zihan Chen (vczh)
+Licensed under https://github.com/vczh-libraries/License
+***********************************************************************/
+
+#ifndef VCZH_STREAM_ENCODING_CHARFORMAT_MBCSENCODING
+#define VCZH_STREAM_ENCODING_CHARFORMAT_MBCSENCODING
+
+
+namespace vl
+{
+	namespace stream
+	{
+/***********************************************************************
+MbcsEncoder
+***********************************************************************/
+
+		/// <summary>Encoder to write text in the local code page.</summary>
+		class MbcsEncoder : public CharEncoderBase
+		{
+		protected:
+			vuint8_t						cacheBuffer[sizeof(char32_t)];
+			vint							cacheSize = 0;
+
+			vint							WriteString(wchar_t* _buffer, vint chars);
+		public:
+
+			vint							Write(void* _buffer, vint _size) override;
+		};
+
+/***********************************************************************
+MbcsDecoder
+***********************************************************************/
+
+		/// <summary>Decoder to read text in the local code page.</summary>
+		class MbcsDecoder : public CharDecoderBase
+		{
+		protected:
+			vuint8_t						cacheBuffer[sizeof(wchar_t)];
+			vint							cacheSize = 0;
+
+			vint							ReadString(wchar_t* _buffer, vint chars);
+		public:
+
+			vint							Read(void* _buffer, vint _size) override;
+		};
+	}
+}
+
+#endif
+
+
+/***********************************************************************
+.\ENCODING\CHARFORMAT\UTFENCODING.H
+***********************************************************************/
+/***********************************************************************
+Author: Zihan Chen (vczh)
+Licensed under https://github.com/vczh-libraries/License
+***********************************************************************/
+
+#ifndef VCZH_STREAM_ENCODING_CHARFORMAT_UTFENCODING
+#define VCZH_STREAM_ENCODING_CHARFORMAT_UTFENCODING
+
+
+namespace vl
+{
+	namespace stream
+	{
+
+/***********************************************************************
+UtfStreamConsumer<T>
+***********************************************************************/
+
+		template<typename T>
+		class UtfStreamConsumer : public Object
+		{
+		protected:
+			IStream*				stream = nullptr;
+
+			T Consume()
+			{
+				T c;
+				vint size = stream->Read(&c, sizeof(c));
+				if (size != sizeof(c)) return 0;
+				return c;
+			}
+		public:
+			void Setup(IStream* _stream)
+			{
+				stream = _stream;
+			}
+
+			bool HasIllegalChar() const
+			{
+				return false;
+			}
+		};
+
+/***********************************************************************
+UtfStreamToStreamReader<TFrom, TTo>
+***********************************************************************/
+
+		template<typename TFrom, typename TTo>
+		class UtfStreamToStreamReader : public encoding::UtfToUtfReaderBase<TFrom, TTo, UtfStreamConsumer<TFrom>>
+		{
+		public:
+			void Setup(IStream* _stream)
+			{
+				this->internalReader.Setup(_stream);
+			}
+
+			encoding::UtfCharCluster SourceCluster() const
+			{
+				return this->internalReader.SourceCluster();
+			}
+		};
+
+		template<typename TFrom, typename TTo>
+			requires(std::is_same_v<TFrom, char32_t> || std::is_same_v<TTo, char32_t>)
+		class UtfStreamToStreamReader<TFrom, TTo> : public encoding::UtfToUtfReaderBase<TFrom, TTo, UtfStreamConsumer<TFrom>>
+		{
+		};
+
+/***********************************************************************
+Unicode General
+***********************************************************************/
+
+		template<typename T>
+		struct MaxPossibleCodePoints
+		{
+			static const vint		Value = encoding::UtfConversion<T>::BufferLength;
+		};
+
+		template<>
+		struct MaxPossibleCodePoints<char32_t>
+		{
+			static const vint		Value = 1;
+		};
+
+		template<typename TNative, typename TExpect>
+		class UtfGeneralEncoder : public CharEncoderBase
+		{
+			using TStringRangeReader = encoding::UtfStringRangeToStringRangeReader<TExpect, TNative>;
+		protected:
+			vuint8_t						cacheBuffer[sizeof(TExpect) * MaxPossibleCodePoints<TExpect>::Value];
+			vint							cacheSize = 0;
+
+		public:
+
+			vint							Write(void* _buffer, vint _size) override;
+		};
+
+		template<typename TNative, typename TExpect>
+		class UtfGeneralDecoder : public CharDecoderBase
+		{
+			using TStreamReader = UtfStreamToStreamReader<TNative, TExpect>;
+		protected:
+			vuint8_t						cacheBuffer[sizeof(TExpect)];
+			vint							cacheSize = 0;
+			TStreamReader					reader;
+
+		public:
+
+			void							Setup(IStream* _stream) override;
+			vint							Read(void* _buffer, vint _size) override;
+		};
+
+/***********************************************************************
+Unicode General (without conversion)
+***********************************************************************/
+
+		template<typename T>
+		class UtfGeneralEncoder<T, T> : public CharEncoderBase
+		{
+		public:
+			vint							Write(void* _buffer, vint _size) override;
+		};
+
+		template<typename T>
+		class UtfGeneralDecoder<T, T> : public CharDecoderBase
+		{
+		public:
+			vint							Read(void* _buffer, vint _size) override;
+		};
+
+#if defined VCZH_WCHAR_UTF16
+
+		template<>
+		class UtfGeneralEncoder<char16_t, wchar_t> : public UtfGeneralEncoder<wchar_t, wchar_t> {};
+
+		template<>
+		class UtfGeneralEncoder<wchar_t, char16_t> : public UtfGeneralEncoder<wchar_t, wchar_t> {};
+
+#elif defined VCZH_WCHAR_UTF32
+
+		template<>
+		class UtfGeneralEncoder<char32_t, wchar_t> : public UtfGeneralEncoder<wchar_t, wchar_t> {};
+
+		template<>
+		class UtfGeneralEncoder<wchar_t, char32_t> : public UtfGeneralEncoder<wchar_t, wchar_t> {};
+
+#endif
+
+/***********************************************************************
+Unicode General (extern templates)
+***********************************************************************/
+
+		extern template class UtfGeneralEncoder<wchar_t, wchar_t>;
+		extern template class UtfGeneralEncoder<wchar_t, char8_t>;
+		extern template class UtfGeneralEncoder<wchar_t, char16_t>;
+		extern template class UtfGeneralEncoder<wchar_t, char16be_t>;
+		extern template class UtfGeneralEncoder<wchar_t, char32_t>;
+
+		extern template class UtfGeneralEncoder<char8_t, wchar_t>;
+		extern template class UtfGeneralEncoder<char8_t, char8_t>;
+		extern template class UtfGeneralEncoder<char8_t, char16_t>;
+		extern template class UtfGeneralEncoder<char8_t, char16be_t>;
+		extern template class UtfGeneralEncoder<char8_t, char32_t>;
+
+		extern template class UtfGeneralEncoder<char16_t, wchar_t>;
+		extern template class UtfGeneralEncoder<char16_t, char8_t>;
+		extern template class UtfGeneralEncoder<char16_t, char16_t>;
+		extern template class UtfGeneralEncoder<char16_t, char16be_t>;
+		extern template class UtfGeneralEncoder<char16_t, char32_t>;
+
+		extern template class UtfGeneralEncoder<char16be_t, wchar_t>;
+		extern template class UtfGeneralEncoder<char16be_t, char8_t>;
+		extern template class UtfGeneralEncoder<char16be_t, char16_t>;
+		extern template class UtfGeneralEncoder<char16be_t, char16be_t>;
+		extern template class UtfGeneralEncoder<char16be_t, char32_t>;
+
+		extern template class UtfGeneralEncoder<char32_t, wchar_t>;
+		extern template class UtfGeneralEncoder<char32_t, char8_t>;
+		extern template class UtfGeneralEncoder<char32_t, char16_t>;
+		extern template class UtfGeneralEncoder<char32_t, char16be_t>;
+		extern template class UtfGeneralEncoder<char32_t, char32_t>;
+
+		extern template class UtfGeneralDecoder<wchar_t, wchar_t>;
+		extern template class UtfGeneralDecoder<wchar_t, char8_t>;
+		extern template class UtfGeneralDecoder<wchar_t, char16_t>;
+		extern template class UtfGeneralDecoder<wchar_t, char16be_t>;
+		extern template class UtfGeneralDecoder<wchar_t, char32_t>;
+
+		extern template class UtfGeneralDecoder<char8_t, wchar_t>;
+		extern template class UtfGeneralDecoder<char8_t, char8_t>;
+		extern template class UtfGeneralDecoder<char8_t, char16_t>;
+		extern template class UtfGeneralDecoder<char8_t, char16be_t>;
+		extern template class UtfGeneralDecoder<char8_t, char32_t>;
+
+		extern template class UtfGeneralDecoder<char16_t, wchar_t>;
+		extern template class UtfGeneralDecoder<char16_t, char8_t>;
+		extern template class UtfGeneralDecoder<char16_t, char16_t>;
+		extern template class UtfGeneralDecoder<char16_t, char16be_t>;
+		extern template class UtfGeneralDecoder<char16_t, char32_t>;
+
+		extern template class UtfGeneralDecoder<char16be_t, wchar_t>;
+		extern template class UtfGeneralDecoder<char16be_t, char8_t>;
+		extern template class UtfGeneralDecoder<char16be_t, char16_t>;
+		extern template class UtfGeneralDecoder<char16be_t, char16be_t>;
+		extern template class UtfGeneralDecoder<char16be_t, char32_t>;
+
+		extern template class UtfGeneralDecoder<char32_t, wchar_t>;
+		extern template class UtfGeneralDecoder<char32_t, char8_t>;
+		extern template class UtfGeneralDecoder<char32_t, char16_t>;
+		extern template class UtfGeneralDecoder<char32_t, char16be_t>;
+		extern template class UtfGeneralDecoder<char32_t, char32_t>;
+	}
+}
+
+#endif
+
+
+/***********************************************************************
+.\ENCODING\CHARFORMAT\CHARFORMAT.H
+***********************************************************************/
+/***********************************************************************
+Author: Zihan Chen (vczh)
+Licensed under https://github.com/vczh-libraries/License
+***********************************************************************/
+
+#ifndef VCZH_STREAM_ENCODING_CHARFORMAT
+#define VCZH_STREAM_ENCODING_CHARFORMAT
+
+
+namespace vl
+{
+	namespace stream
+	{
+/***********************************************************************
+Utf-8
+***********************************************************************/
+		
+		/// <summary>Encoder to write UTF-8 text.</summary>
+		class Utf8Encoder : public UtfGeneralEncoder<char8_t, wchar_t> {};
+		/// <summary>Decoder to read UTF-8 text.</summary>
+		class Utf8Decoder : public UtfGeneralDecoder<char8_t, wchar_t> {};
+
+/***********************************************************************
+Utf-16
+***********************************************************************/
+		
+		/// <summary>Encoder to write UTF-16 text.</summary>
+		class Utf16Encoder : public UtfGeneralEncoder<char16_t, wchar_t> {};
+		/// <summary>Decoder to read UTF-16 text.</summary>
+		class Utf16Decoder : public UtfGeneralDecoder<char16_t, wchar_t> {};
+
+/***********************************************************************
+Utf-16BE
+***********************************************************************/
+
+		/// <summary>Encoder to write big endian UTF-16 to.</summary>
+		class Utf16BEEncoder : public UtfGeneralEncoder<char16be_t, wchar_t> {};
+		/// <summary>Decoder to read big endian UTF-16 text.</summary>
+		class Utf16BEDecoder : public UtfGeneralDecoder<char16be_t, wchar_t> {};
+
+/***********************************************************************
+Utf-32
+***********************************************************************/
+
+		/// <summary>Encoder to write UTF-8 text.</summary>
+		class Utf32Encoder : public UtfGeneralEncoder<char32_t, wchar_t> {};
+		/// <summary>Decoder to read UTF-8 text.</summary>
+		class Utf32Decoder : public UtfGeneralDecoder<char32_t, wchar_t> {};
 
 /***********************************************************************
 Encoding Test
@@ -1782,6 +1798,226 @@ Encoding Test
 
 #endif
 
+
+/***********************************************************************
+.\ENCODING\LZWENCODING.H
+***********************************************************************/
+/***********************************************************************
+Author: Zihan Chen (vczh)
+Licensed under https://github.com/vczh-libraries/License
+***********************************************************************/
+
+#ifndef VCZH_STREAM_COMPRESSIONSTREAM
+#define VCZH_STREAM_COMPRESSIONSTREAM
+
+
+namespace vl
+{
+	namespace stream
+	{
+
+/***********************************************************************
+Compression
+***********************************************************************/
+
+		namespace lzw
+		{
+			static const vint						BufferSize = 1024;
+			static const vint						MaxDictionarySize = 1 << 24;
+
+			struct Code
+			{
+				typedef collections::PushOnlyAllocator<Code>			CodeAllocator;
+				typedef collections::ByteObjectMap<Code>::Allocator		MapAllocator;
+
+				vuint8_t							byte = 0;
+				vint								code = -1;
+				Code*								parent = 0;
+				vint								size = 0;
+				collections::ByteObjectMap<Code>	children;
+			};
+		}
+
+		class LzwBase : public Object
+		{
+		protected:
+			lzw::Code::CodeAllocator				codeAllocator;
+			lzw::Code::MapAllocator					mapAllocator;
+			lzw::Code*								root;
+			vint									eofIndex = -1;
+			vint									nextIndex = 0;
+			vint									indexBits = 1;
+
+			void									UpdateIndexBits();
+			lzw::Code*								CreateCode(lzw::Code* parent, vuint8_t byte);
+
+			LzwBase();
+			LzwBase(bool (&existingBytes)[256]);
+			~LzwBase();
+		};
+
+		/// <summary>An encoder to compress data using the Lzw algorithm.</summary>
+		/// <remarks>
+		/// You are not recommended to compress data more than 1 mega bytes at once using the encoder directly.
+		/// <see cref="CompressStream"/> and <see cref="DecompressStream"/> is recommended.
+		/// </remarks>
+		class LzwEncoder : public LzwBase, public IEncoder
+		{
+		protected:
+			IStream*								stream = 0;
+
+			vuint8_t								buffer[lzw::BufferSize];
+			vint									bufferUsedBits = 0;
+			lzw::Code*								prefix;
+
+			void									Flush();
+			void									WriteNumber(vint number, vint bitSize);
+		public:
+			/// <summary>Create an encoder.</summary>
+			LzwEncoder();
+			/// <summary>Create an encoder, specifying what bytes will never appear in the data to compress.</summary>
+			/// <param name="existingBytes">
+			/// A filter array
+			/// If existingBytes[x] == true, it means x will possibly appear.
+			/// If existingBytes[x] == false, it means x will never appear.
+			/// </param>
+			/// <remarks>
+			/// The behavior is undefined, if existingBytes[x] == false, but byte x is actually in the data to compress.
+			/// </remarks>
+			LzwEncoder(bool (&existingBytes)[256]);
+			~LzwEncoder();
+
+			void									Setup(IStream* _stream)override;
+			void									Close()override;
+			vint									Write(void* _buffer, vint _size)override;
+		};
+		
+		/// <summary>An decoder to decompress data using the Lzw algorithm.</summary>
+		/// <remarks>
+		/// You are not recommended to compress data more than 1 mega bytes at once using the encoder directly.
+		/// <see cref="CompressStream"/> and <see cref="DecompressStream"/> is recommended.
+		/// </remarks>
+		class LzwDecoder :public LzwBase, public IDecoder
+		{
+		protected:
+			IStream*								stream = 0;
+			collections::List<lzw::Code*>			dictionary;
+			lzw::Code*								lastCode = 0;
+
+			vuint8_t								inputBuffer[lzw::BufferSize];
+			vint									inputBufferSize = 0;
+			vint									inputBufferUsedBits = 0;
+
+			collections::Array<vuint8_t>			outputBuffer;
+			vint									outputBufferSize = 0;
+			vint									outputBufferUsedBytes = 0;
+
+			bool									ReadNumber(vint& number, vint bitSize);
+			void									PrepareOutputBuffer(vint size);
+			void									ExpandCodeToOutputBuffer(lzw::Code* code);
+		public:
+			/// <summary>Create a decoder.</summary>
+			LzwDecoder();
+			/// <summary>Create an encoder, specifying what bytes will never appear in the decompressed data.</summary>
+			/// <param name="existingBytes">
+			/// A filter array
+			/// If existingBytes[x] == true, it means x will possibly appear.
+			/// If existingBytes[x] == false, it means x will never appear.
+			/// </param>
+			/// <remarks>
+			/// The array "existingBytes" should exactly match the one given to <see cref="LzwEncoder"/>.
+			/// </remarks>
+			LzwDecoder(bool (&existingBytes)[256]);
+			~LzwDecoder();
+
+			void									Setup(IStream* _stream)override;
+			void									Close()override;
+			vint									Read(void* _buffer, vint _size)override;
+		};
+
+/***********************************************************************
+Helper Functions
+***********************************************************************/
+
+		/// <summary>Copy data from a <b>readable</b> input stream to a <b>writable</b> output stream.</summary>
+		/// <returns>Data copied in bytes.</returns>
+		/// <param name="inputStream">The <b>readable</b> input stream.</param>
+		/// <param name="outputStream">The <b>writable</b> output stream.</param>
+		extern vint						CopyStream(stream::IStream& inputStream, stream::IStream& outputStream);
+
+		/// <summary>Compress data from a <b>readable</b> input stream to a <b>writable</b> output stream.</summary>
+		/// <returns>Data copied in bytes.</returns>
+		/// <param name="inputStream">The <b>readable</b> input stream.</param>
+		/// <param name="outputStream">The <b>writable</b> output stream.</param>
+		/// <remarks>
+		/// Data is compressed in multiple batches,
+		/// the is expected output stream to have data in multiple parts.
+		/// In each part, the first 4 bytes is the data before compression in bytes.
+		/// the rest is the compressed data.
+		/// </remarks>
+		/// <example><![CDATA[
+		/// int main()
+		/// {
+		///     MemoryStream textStream, compressedStream, decompressedStream;
+		///     {
+		///         Utf8Encoder encoder;
+		///         EncoderStream encoderStream(textStream, encoder);
+		///         StreamWriter writer(encoderStream);
+		///         writer.WriteString(L"Some text to compress.");
+		///     }
+		///     textStream.SeekFromBegin(0);
+		///
+		///     CompressStream(textStream, compressedStream);
+		///     compressedStream.SeekFromBegin(0);
+		///     DecompressStream(compressedStream, decompressedStream);
+		///     decompressedStream.SeekFromBegin(0);
+		///
+		///     Utf8Decoder decoder;
+		///     DecoderStream decoderStream(decompressedStream, decoder);
+		///     StreamReader reader(decoderStream);
+		///     Console::WriteLine(reader.ReadToEnd());
+		/// }
+		/// ]]></example>
+		extern void						CompressStream(stream::IStream& inputStream, stream::IStream& outputStream);
+
+		/// <summary>Decompress data from a <b>readable</b> input stream (with compressed data) to a <b>writable</b> output stream (with uncompressed data).</summary>
+		/// <returns>Data copied in bytes.</returns>
+		/// <param name="inputStream">The <b>readable</b> input stream.</param>
+		/// <param name="outputStream">The <b>writable</b> output stream.</param>
+		/// <remarks>
+		/// Data is compressed in multiple batches,
+		/// the is expected input stream to have data in multiple parts.
+		/// In each part, the first 4 bytes is the data before compression in bytes.
+		/// the rest is the compressed data.
+		/// </remarks>
+		/// <example><![CDATA[
+		/// int main()
+		/// {
+		///     MemoryStream textStream, compressedStream, decompressedStream;
+		///     {
+		///         Utf8Encoder encoder;
+		///         EncoderStream encoderStream(textStream, encoder);
+		///         StreamWriter writer(encoderStream);
+		///         writer.WriteString(L"Some text to compress.");
+		///     }
+		///     textStream.SeekFromBegin(0);
+		///
+		///     CompressStream(textStream, compressedStream);
+		///     compressedStream.SeekFromBegin(0);
+		///     DecompressStream(compressedStream, decompressedStream);
+		///     decompressedStream.SeekFromBegin(0);
+		///
+		///     Utf8Decoder decoder;
+		///     DecoderStream decoderStream(decompressedStream, decoder);
+		///     StreamReader reader(decoderStream);
+		///     Console::WriteLine(reader.ReadToEnd());
+		/// }
+		/// ]]></example>
+		extern void						DecompressStream(stream::IStream& inputStream, stream::IStream& outputStream);
+	}
+}
+
+#endif
 
 /***********************************************************************
 .\FILESYSTEM.H
@@ -2000,220 +2236,138 @@ namespace vl
 
 
 /***********************************************************************
-.\STREAM\COMPRESSIONSTREAM.H
+.\STREAM\BROADCASTSTREAM.H
 ***********************************************************************/
 /***********************************************************************
 Author: Zihan Chen (vczh)
 Licensed under https://github.com/vczh-libraries/License
 ***********************************************************************/
 
-#ifndef VCZH_STREAM_COMPRESSIONSTREAM
-#define VCZH_STREAM_COMPRESSIONSTREAM
+#ifndef VCZH_STREAM_BROADCASTSTREAM
+#define VCZH_STREAM_BROADCASTSTREAM
 
 
 namespace vl
 {
 	namespace stream
 	{
+		/// <summary>A <b>writable</b> stream that copy the written content to multiple output streams.</summary>
+		/// <remarks>
+		/// When writing happens, the boreadcast stream will only performance one write attempt to each output stream.
+		/// </remarks>
+		class BroadcastStream : public Object, public virtual IStream
+		{
+			typedef collections::List<IStream*>		StreamList;
+		protected:
+			bool					closed;
+			pos_t					position;
+			StreamList				streams;
+		public:
+			/// <summary>Create a boradcast stream.</summary>
+			BroadcastStream();
+			~BroadcastStream();
+
+			/// <summary>
+			/// Get the list of output streams.
+			/// You can change this list to subscribe or unsubscribe.
+			/// </summary>
+			/// <returns>The list of output streams.</returns>
+			StreamList&				Targets();
+			bool					CanRead()const;
+			bool					CanWrite()const;
+			bool					CanSeek()const;
+			bool					CanPeek()const;
+			bool					IsLimited()const;
+			bool					IsAvailable()const;
+			void					Close();
+			pos_t					Position()const;
+			pos_t					Size()const;
+			void					Seek(pos_t _size);
+			void					SeekFromBegin(pos_t _size);
+			void					SeekFromEnd(pos_t _size);
+			vint					Read(void* _buffer, vint _size);
+			vint					Write(void* _buffer, vint _size);
+			vint					Peek(void* _buffer, vint _size);
+		};
+	}
+}
+
+#endif
 
 /***********************************************************************
-Compression
+.\STREAM\CACHESTREAM.H
 ***********************************************************************/
-
-		namespace lzw
-		{
-			static const vint						BufferSize = 1024;
-			static const vint						MaxDictionarySize = 1 << 24;
-
-			struct Code
-			{
-				typedef collections::PushOnlyAllocator<Code>			CodeAllocator;
-				typedef collections::ByteObjectMap<Code>::Allocator		MapAllocator;
-
-				vuint8_t							byte = 0;
-				vint								code = -1;
-				Code*								parent = 0;
-				vint								size = 0;
-				collections::ByteObjectMap<Code>	children;
-			};
-		}
-
-		class LzwBase : public Object
-		{
-		protected:
-			lzw::Code::CodeAllocator				codeAllocator;
-			lzw::Code::MapAllocator					mapAllocator;
-			lzw::Code*								root;
-			vint									eofIndex = -1;
-			vint									nextIndex = 0;
-			vint									indexBits = 1;
-
-			void									UpdateIndexBits();
-			lzw::Code*								CreateCode(lzw::Code* parent, vuint8_t byte);
-
-			LzwBase();
-			LzwBase(bool (&existingBytes)[256]);
-			~LzwBase();
-		};
-
-		/// <summary>An encoder to compress data using the Lzw algorithm.</summary>
-		/// <remarks>
-		/// You are not recommended to compress data more than 1 mega bytes at once using the encoder directly.
-		/// <see cref="CompressStream"/> and <see cref="DecompressStream"/> is recommended.
-		/// </remarks>
-		class LzwEncoder : public LzwBase, public IEncoder
-		{
-		protected:
-			IStream*								stream = 0;
-
-			vuint8_t								buffer[lzw::BufferSize];
-			vint									bufferUsedBits = 0;
-			lzw::Code*								prefix;
-
-			void									Flush();
-			void									WriteNumber(vint number, vint bitSize);
-		public:
-			/// <summary>Create an encoder.</summary>
-			LzwEncoder();
-			/// <summary>Create an encoder, specifying what bytes will never appear in the data to compress.</summary>
-			/// <param name="existingBytes">
-			/// A filter array
-			/// If existingBytes[x] == true, it means x will possibly appear.
-			/// If existingBytes[x] == false, it means x will never appear.
-			/// </param>
-			/// <remarks>
-			/// The behavior is undefined, if existingBytes[x] == false, but byte x is actually in the data to compress.
-			/// </remarks>
-			LzwEncoder(bool (&existingBytes)[256]);
-			~LzwEncoder();
-
-			void									Setup(IStream* _stream)override;
-			void									Close()override;
-			vint									Write(void* _buffer, vint _size)override;
-		};
-		
-		/// <summary>An decoder to decompress data using the Lzw algorithm.</summary>
-		/// <remarks>
-		/// You are not recommended to compress data more than 1 mega bytes at once using the encoder directly.
-		/// <see cref="CompressStream"/> and <see cref="DecompressStream"/> is recommended.
-		/// </remarks>
-		class LzwDecoder :public LzwBase, public IDecoder
-		{
-		protected:
-			IStream*								stream = 0;
-			collections::List<lzw::Code*>			dictionary;
-			lzw::Code*								lastCode = 0;
-
-			vuint8_t								inputBuffer[lzw::BufferSize];
-			vint									inputBufferSize = 0;
-			vint									inputBufferUsedBits = 0;
-
-			collections::Array<vuint8_t>			outputBuffer;
-			vint									outputBufferSize = 0;
-			vint									outputBufferUsedBytes = 0;
-
-			bool									ReadNumber(vint& number, vint bitSize);
-			void									PrepareOutputBuffer(vint size);
-			void									ExpandCodeToOutputBuffer(lzw::Code* code);
-		public:
-			/// <summary>Create a decoder.</summary>
-			LzwDecoder();
-			/// <summary>Create an encoder, specifying what bytes will never appear in the decompressed data.</summary>
-			/// <param name="existingBytes">
-			/// A filter array
-			/// If existingBytes[x] == true, it means x will possibly appear.
-			/// If existingBytes[x] == false, it means x will never appear.
-			/// </param>
-			/// <remarks>
-			/// The array "existingBytes" should exactly match the one given to <see cref="LzwEncoder"/>.
-			/// </remarks>
-			LzwDecoder(bool (&existingBytes)[256]);
-			~LzwDecoder();
-
-			void									Setup(IStream* _stream)override;
-			void									Close()override;
-			vint									Read(void* _buffer, vint _size)override;
-		};
-
 /***********************************************************************
-Helper Functions
+Author: Zihan Chen (vczh)
+Licensed under https://github.com/vczh-libraries/License
 ***********************************************************************/
 
-		/// <summary>Copy data from a <b>readable</b> input stream to a <b>writable</b> output stream.</summary>
-		/// <returns>Data copied in bytes.</returns>
-		/// <param name="inputStream">The <b>readable</b> input stream.</param>
-		/// <param name="outputStream">The <b>writable</b> output stream.</param>
-		extern vint						CopyStream(stream::IStream& inputStream, stream::IStream& outputStream);
+#ifndef VCZH_STREAM_CACHESTREAM
+#define VCZH_STREAM_CACHESTREAM
 
-		/// <summary>Compress data from a <b>readable</b> input stream to a <b>writable</b> output stream.</summary>
-		/// <returns>Data copied in bytes.</returns>
-		/// <param name="inputStream">The <b>readable</b> input stream.</param>
-		/// <param name="outputStream">The <b>writable</b> output stream.</param>
-		/// <remarks>
-		/// Data is compressed in multiple batches,
-		/// the is expected output stream to have data in multiple parts.
-		/// In each part, the first 4 bytes is the data before compression in bytes.
-		/// the rest is the compressed data.
-		/// </remarks>
-		/// <example><![CDATA[
-		/// int main()
-		/// {
-		///     MemoryStream textStream, compressedStream, decompressedStream;
-		///     {
-		///         Utf8Encoder encoder;
-		///         EncoderStream encoderStream(textStream, encoder);
-		///         StreamWriter writer(encoderStream);
-		///         writer.WriteString(L"Some text to compress.");
-		///     }
-		///     textStream.SeekFromBegin(0);
-		///
-		///     CompressStream(textStream, compressedStream);
-		///     compressedStream.SeekFromBegin(0);
-		///     DecompressStream(compressedStream, decompressedStream);
-		///     decompressedStream.SeekFromBegin(0);
-		///
-		///     Utf8Decoder decoder;
-		///     DecoderStream decoderStream(decompressedStream, decoder);
-		///     StreamReader reader(decoderStream);
-		///     Console::WriteLine(reader.ReadToEnd());
-		/// }
-		/// ]]></example>
-		extern void						CompressStream(stream::IStream& inputStream, stream::IStream& outputStream);
 
-		/// <summary>Decompress data from a <b>readable</b> input stream (with compressed data) to a <b>writable</b> output stream (with uncompressed data).</summary>
-		/// <returns>Data copied in bytes.</returns>
-		/// <param name="inputStream">The <b>readable</b> input stream.</param>
-		/// <param name="outputStream">The <b>writable</b> output stream.</param>
-		/// <remarks>
-		/// Data is compressed in multiple batches,
-		/// the is expected input stream to have data in multiple parts.
-		/// In each part, the first 4 bytes is the data before compression in bytes.
-		/// the rest is the compressed data.
-		/// </remarks>
-		/// <example><![CDATA[
-		/// int main()
-		/// {
-		///     MemoryStream textStream, compressedStream, decompressedStream;
-		///     {
-		///         Utf8Encoder encoder;
-		///         EncoderStream encoderStream(textStream, encoder);
-		///         StreamWriter writer(encoderStream);
-		///         writer.WriteString(L"Some text to compress.");
-		///     }
-		///     textStream.SeekFromBegin(0);
-		///
-		///     CompressStream(textStream, compressedStream);
-		///     compressedStream.SeekFromBegin(0);
-		///     DecompressStream(compressedStream, decompressedStream);
-		///     decompressedStream.SeekFromBegin(0);
-		///
-		///     Utf8Decoder decoder;
-		///     DecoderStream decoderStream(decompressedStream, decoder);
-		///     StreamReader reader(decoderStream);
-		///     Console::WriteLine(reader.ReadToEnd());
-		/// }
-		/// ]]></example>
-		extern void						DecompressStream(stream::IStream& inputStream, stream::IStream& outputStream);
+namespace vl
+{
+	namespace stream
+	{
+		/// <summary>
+		/// <p>
+		/// A potentially <b>readable</b>, <b>peekable</b>, <b>writable</b>, <b>seekable</b> and <b>finite</b> stream that creates on another stream.
+		/// Each feature is available if the target stream has the same feature.
+		/// </p>
+		/// <p>
+		/// When you read from the cache strema,
+		/// it will read a specified size of content from the target stream at once and cache,
+		/// reducing the number of operations on the target stream.
+		/// </p>
+		/// <p>
+		/// When you write to the cache stream,
+		/// it will cache all the data to write,
+		/// and write to the target stream after the cache is full,
+		/// reducing the number of operations on the target stream.
+		/// </p>
+		/// </summary>
+		class CacheStream : public Object, public virtual IStream
+		{
+		protected:
+			IStream*				target;
+			vint					block;
+			pos_t					start;
+			pos_t					position;
+
+			char*					buffer;
+			vint					dirtyStart;
+			vint					dirtyLength;
+			vint					availableLength;
+			pos_t					operatedSize;
+
+			void					Flush();
+			void					Load(pos_t _position);
+			vint					InternalRead(void* _buffer, vint _size);
+			vint					InternalWrite(void* _buffer, vint _size);
+		public:
+			/// <summary>Create a cache stream from a target stream.</summary>
+			/// <param name="_target">The target stream.</param>
+			/// <param name="_block">Size of the cache.</param>
+			CacheStream(IStream& _target, vint _block=65536);
+			~CacheStream();
+
+			bool					CanRead()const;
+			bool					CanWrite()const;
+			bool					CanSeek()const;
+			bool					CanPeek()const;
+			bool					IsLimited()const;
+			bool					IsAvailable()const;
+			void					Close();
+			pos_t					Position()const;
+			pos_t					Size()const;
+			void					Seek(pos_t _size);
+			void					SeekFromBegin(pos_t _size);
+			void					SeekFromEnd(pos_t _size);
+			vint					Read(void* _buffer, vint _size);
+			vint					Write(void* _buffer, vint _size);
+			vint					Peek(void* _buffer, vint _size);
+		};
 	}
 }
 
@@ -2450,69 +2604,73 @@ Text Related
 ***********************************************************************/
 
 		/// <summary>Text reader. All line breaks are normalized to CRLF regardless whatever in the input stream.</summary>
-		class TextReader : public Object
+		/// <typeparam name="T">The character type.</typeparam>
+		template<typename T>
+		class TextReader_ : public Object
 		{
 		public:
-			NOT_COPYABLE(TextReader);
-			TextReader() = default;
+			NOT_COPYABLE(TextReader_);
+			TextReader_() = default;
 
 			/// <summary>Test does the reader reach the end or not.</summary>
 			/// <returns>Returns true if the reader reaches the end.</returns>
 			virtual bool				IsEnd()=0;
 			/// <summary>Read a single character.</summary>
 			/// <returns>The character.</returns>
-			virtual wchar_t				ReadChar()=0;
+			virtual T					ReadChar()=0;
 			/// <summary>Read a string of a specified size in characters.</summary>
 			/// <returns>The read string. It could be shorter than the expected length if the reader reaches the end.</returns>
 			/// <param name="length">Expected length of the string to read.</param>
-			virtual WString				ReadString(vint length);
+			virtual ObjectString<T>		ReadString(vint length);
 			/// <summary>Read a string until a line breaks is reached.</summary>
 			/// <returns>The string without the line break. If the reader reaches the end, it returns an empty string.</returns>
-			virtual WString				ReadLine();
+			virtual ObjectString<T>		ReadLine();
 			/// <summary>Read everying remain.</summary>
 			/// <returns>The read string.</returns>
-			virtual WString				ReadToEnd();
+			virtual ObjectString<T>		ReadToEnd();
 		};
 		
 		/// <summary>Text writer.</summary>
-		class TextWriter : public Object
+		/// <typeparam name="T">The character type.</typeparam>
+		template<typename T>
+		class TextWriter_ : public Object
 		{
 		public:
-			NOT_COPYABLE(TextWriter);
-			TextWriter() = default;
+			NOT_COPYABLE(TextWriter_);
+			TextWriter_() = default;
 
 			/// <summary>Write a single character.</summary>
 			/// <param name="c">The character to write.</param>
-			virtual void				WriteChar(wchar_t c)=0;
+			virtual void				WriteChar(T c)=0;
 			/// <summary>Write a string.</summary>
 			/// <param name="string">Buffer of the string to write.</param>
 			/// <param name="charCount">Size of the string in characters, not including the zero terminator.</param>
-			virtual void				WriteString(const wchar_t* string, vint charCount);
+			virtual void				WriteString(const T* string, vint charCount);
 			/// <summary>Write a string.</summary>
 			/// <param name="string">Buffer of the zero terminated string to write.</param>
-			virtual void				WriteString(const wchar_t* string);
+			virtual void				WriteString(const T* string);
 			/// <summary>Write a string.</summary>
 			/// <param name="string">The string to write.</param>
-			virtual void				WriteString(const WString& string);
+			virtual void				WriteString(const ObjectString<T>& string);
 			/// <summary>Write a string with a CRLF.</summary>
 			/// <param name="string">Buffer to the string to write.</param>
 			/// <param name="charCount">Size of the string in characters, not including the zero terminator.</param>
-			virtual void				WriteLine(const wchar_t* string, vint charCount);
+			virtual void				WriteLine(const T* string, vint charCount);
 			/// <summary>Write a string with a CRLF.</summary>
 			/// <param name="string">Buffer to the zero terminated string to write.</param>
-			virtual void				WriteLine(const wchar_t* string);
+			virtual void				WriteLine(const T* string);
 			/// <summary>Write a string with a CRLF.</summary>
 			/// <param name="string">The string to write.</param>
-			virtual void				WriteLine(const WString& string);
-
-			virtual void				WriteMonospacedEnglishTable(collections::Array<WString>& tableByRow, vint rows, vint columns);
+			virtual void				WriteLine(const ObjectString<T>& string);
 		};
 
 		/// <summary>Text reader from a string.</summary>
-		class StringReader : public TextReader
+		/// <typeparam name="T">The character type.</typeparam>
+		template<typename T>
+		class StringReader_ : public TextReader_<T>
 		{
 		protected:
-			WString						string;
+			ObjectString<T>				string;
 			vint						current;
 			bool						lastCallIsReadLine;
 
@@ -2520,18 +2678,19 @@ Text Related
 		public:
 			/// <summary>Create a text reader.</summary>
 			/// <param name="_string">The string to read.</param>
-			StringReader(const WString& _string);
+			StringReader_(const ObjectString<T>& _string);
 
 			bool						IsEnd();
-			wchar_t						ReadChar();
-			WString						ReadString(vint length);
-			WString						ReadLine();
-			WString						ReadToEnd();
+			T							ReadChar();
+			ObjectString<T>				ReadString(vint length);
+			ObjectString<T>				ReadLine();
+			ObjectString<T>				ReadToEnd();
 		};
-		
+
 		/// <summary>
-		/// Text reader from a stream storing characters in wchar_t.
+		/// Text reader from a stream storing characters in code point.
 		/// </summary>
+		/// <typeparam name="T">The character type.</typeparam>
 		/// <remarks>
 		/// To specify the encoding in the input stream,
 		/// you are recommended to create a <see cref="DecoderStream"/> with a <see cref="CharDecoder"/>,
@@ -2547,22 +2706,24 @@ Text Related
 		///     Console::WriteLine(reader.ReadToEnd());
 		/// }
 		/// ]]></example>
-		class StreamReader : public TextReader
+		template<typename T>
+		class StreamReader_ : public TextReader_<T>
 		{
 		protected:
 			IStream*					stream;
 		public:
 			/// <summary>Create a text reader.</summary>
 			/// <param name="_stream">The stream to read.</param>
-			StreamReader(IStream& _stream);
+			StreamReader_(IStream& _stream);
 
 			bool						IsEnd();
-			wchar_t						ReadChar();
+			T							ReadChar();
 		};
 
 		/// <summary>
-		/// Text reader from a stream storing characters in wchar_t.
+		/// Text reader from a stream storing characters in code point.
 		/// </summary>
+		/// <typeparam name="T">The character type.</typeparam>
 		/// <remarks>
 		/// To specify the encoding in the input stream,
 		/// you are recommended to create a <see cref="EncoderStream"/> with a <see cref="CharEncoder"/>,
@@ -2578,23 +2739,61 @@ Text Related
 		///     writer.Write(L"Hello, world!");
 		/// }
 		/// ]]></example>
-		class StreamWriter : public TextWriter
+		template<typename T>
+		class StreamWriter_ : public TextWriter_<T>
 		{
 		protected:
-			IStream*					stream;
+			IStream* stream;
 		public:
 			/// <summary>Create a text writer.</summary>
 			/// <param name="_stream">The stream to write.</param>
-			StreamWriter(IStream& _stream);
-			using TextWriter::WriteString;
+			StreamWriter_(IStream& _stream);
+			using TextWriter_<T>::WriteString;
 
-			void						WriteChar(wchar_t c);
-			void						WriteString(const wchar_t* string, vint charCount);
+			void						WriteChar(T c);
+			void						WriteString(const T* string, vint charCount);
 		};
+
+/***********************************************************************
+Extern Templates
+***********************************************************************/
+
+		extern template class TextReader_<wchar_t>;
+		extern template class TextReader_<char8_t>;
+		extern template class TextReader_<char16_t>;
+		extern template class TextReader_<char32_t>;
+
+		extern template class TextWriter_<wchar_t>;
+		extern template class TextWriter_<char8_t>;
+		extern template class TextWriter_<char16_t>;
+		extern template class TextWriter_<char32_t>;
+
+		extern template class StringReader_<wchar_t>;
+		extern template class StringReader_<char8_t>;
+		extern template class StringReader_<char16_t>;
+		extern template class StringReader_<char32_t>;
+
+		extern template class StreamReader_<wchar_t>;
+		extern template class StreamReader_<char8_t>;
+		extern template class StreamReader_<char16_t>;
+		extern template class StreamReader_<char32_t>;
+
+		extern template class StreamWriter_<wchar_t>;
+		extern template class StreamWriter_<char8_t>;
+		extern template class StreamWriter_<char16_t>;
+		extern template class StreamWriter_<char32_t>;
 
 /***********************************************************************
 Helper Functions
 ***********************************************************************/
+
+		using TextReader = TextReader_<wchar_t>;
+		using TextWriter = TextWriter_<wchar_t>;
+		using StringReader = StringReader_<wchar_t>;
+		using StreamReader = StreamReader_<wchar_t>;
+		using StreamWriter = StreamWriter_<wchar_t>;
+
+		void WriteMonospacedEnglishTable(TextWriter& writer, collections::Array<WString>& tableByRow, vint rows, vint columns);
 
 		/// <summary>
 		/// Build a big string using <see cref="StreamWriter"/>.
