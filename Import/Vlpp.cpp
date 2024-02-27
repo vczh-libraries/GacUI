@@ -660,7 +660,7 @@ String Conversions (buffer walkthrough)
 		if (d == nullptr)
 		{
 			while (reader.Read()) size++;
-			return reader.HasIllegalChar() ? -1 : size + 1;
+			return size + 1;
 		}
 		else
 		{
@@ -673,7 +673,7 @@ String Conversions (buffer walkthrough)
 				chars--;
 				if (!c) break;
 			}
-			return reader.HasIllegalChar() ? -1 : size;
+			return size;
 		}
 	}
 
@@ -926,6 +926,12 @@ Licensed under https://github.com/vczh-libraries/License
 
 namespace vl
 {
+	template class ObjectString<char>;
+	template class ObjectString<wchar_t>;
+	template class ObjectString<char8_t>;
+	template class ObjectString<char16_t>;
+	template class ObjectString<char32_t>;
+
 #if defined VCZH_GCC
 	void _itoa_s(vint32_t value, char* buffer, size_t size, vint radix)
 	{
