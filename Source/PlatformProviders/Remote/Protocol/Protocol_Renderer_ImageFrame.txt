@@ -16,6 +16,7 @@ struct ImageCreation
 {
     var id : int;
     var imageData : binary;
+    var imageDataOmitted : bool;
 }
 
 struct ImageFrameMetadata

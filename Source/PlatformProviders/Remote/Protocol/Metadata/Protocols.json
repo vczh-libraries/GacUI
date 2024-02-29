@@ -1886,6 +1886,13 @@
                 "$ast": "PrimitiveType",
                 "type": "Binary"
             }
+        }, {
+            "$ast": "StructMember",
+            "name": "imageDataOmitted",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Boolean"
+            }
         }]
     }, {
         "$ast": "StructDecl",

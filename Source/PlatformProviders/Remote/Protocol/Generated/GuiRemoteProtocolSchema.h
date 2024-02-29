@@ -169,6 +169,7 @@ namespace vl::presentation::remoteprotocol
 	{
 		::vl::vint id;
 		::vl::Ptr<::vl::stream::MemoryStream> imageData;
+		bool imageDataOmitted;
 	};
 
 	struct ImageFrameMetadata
