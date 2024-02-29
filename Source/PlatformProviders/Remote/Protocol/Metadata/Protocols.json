@@ -412,433 +412,6 @@
         }
     }, {
         "$ast": "EnumDecl",
-        "attributes": [],
-        "name": "IOMouseButton",
-        "members": [{
-            "$ast": "EnumMember",
-            "name": "Left"
-        }, {
-            "$ast": "EnumMember",
-            "name": "Middle"
-        }, {
-            "$ast": "EnumMember",
-            "name": "Right"
-        }]
-    }, {
-        "$ast": "StructDecl",
-        "attributes": [{
-            "$ast": "Attribute",
-            "cppType": "::vl::presentation::NativeWindowMouseInfo",
-            "name": "@Cpp"
-        }],
-        "name": "IOMouseInfo",
-        "members": [{
-            "$ast": "StructMember",
-            "name": "ctrl",
-            "type": {
-                "$ast": "PrimitiveType",
-                "type": "Boolean"
-            }
-        }, {
-            "$ast": "StructMember",
-            "name": "shift",
-            "type": {
-                "$ast": "PrimitiveType",
-                "type": "Boolean"
-            }
-        }, {
-            "$ast": "StructMember",
-            "name": "left",
-            "type": {
-                "$ast": "PrimitiveType",
-                "type": "Boolean"
-            }
-        }, {
-            "$ast": "StructMember",
-            "name": "middle",
-            "type": {
-                "$ast": "PrimitiveType",
-                "type": "Boolean"
-            }
-        }, {
-            "$ast": "StructMember",
-            "name": "right",
-            "type": {
-                "$ast": "PrimitiveType",
-                "type": "Boolean"
-            }
-        }, {
-            "$ast": "StructMember",
-            "name": "x",
-            "type": {
-                "$ast": "ReferenceType",
-                "name": "NativeCoordinate"
-            }
-        }, {
-            "$ast": "StructMember",
-            "name": "y",
-            "type": {
-                "$ast": "ReferenceType",
-                "name": "NativeCoordinate"
-            }
-        }, {
-            "$ast": "StructMember",
-            "name": "wheel",
-            "type": {
-                "$ast": "PrimitiveType",
-                "type": "Integer"
-            }
-        }, {
-            "$ast": "StructMember",
-            "name": "nonClient",
-            "type": {
-                "$ast": "PrimitiveType",
-                "type": "Boolean"
-            }
-        }]
-    }, {
-        "$ast": "StructDecl",
-        "attributes": [],
-        "name": "IOMouseInfoWithButton",
-        "members": [{
-            "$ast": "StructMember",
-            "name": "button",
-            "type": {
-                "$ast": "ReferenceType",
-                "name": "IOMouseButton"
-            }
-        }, {
-            "$ast": "StructMember",
-            "name": "info",
-            "type": {
-                "$ast": "ReferenceType",
-                "name": "IOMouseInfo"
-            }
-        }]
-    }, {
-        "$ast": "StructDecl",
-        "attributes": [{
-            "$ast": "Attribute",
-            "cppType": "::vl::presentation::NativeWindowKeyInfo",
-            "name": "@Cpp"
-        }],
-        "name": "IOKeyInfo",
-        "members": [{
-            "$ast": "StructMember",
-            "name": "code",
-            "type": {
-                "$ast": "PrimitiveType",
-                "type": "Key"
-            }
-        }, {
-            "$ast": "StructMember",
-            "name": "ctrl",
-            "type": {
-                "$ast": "PrimitiveType",
-                "type": "Boolean"
-            }
-        }, {
-            "$ast": "StructMember",
-            "name": "shift",
-            "type": {
-                "$ast": "PrimitiveType",
-                "type": "Boolean"
-            }
-        }, {
-            "$ast": "StructMember",
-            "name": "alt",
-            "type": {
-                "$ast": "PrimitiveType",
-                "type": "Boolean"
-            }
-        }, {
-            "$ast": "StructMember",
-            "name": "capslock",
-            "type": {
-                "$ast": "PrimitiveType",
-                "type": "Boolean"
-            }
-        }, {
-            "$ast": "StructMember",
-            "name": "autoRepeatKeyDown",
-            "type": {
-                "$ast": "PrimitiveType",
-                "type": "Boolean"
-            }
-        }]
-    }, {
-        "$ast": "StructDecl",
-        "attributes": [{
-            "$ast": "Attribute",
-            "cppType": "::vl::presentation::NativeWindowCharInfo",
-            "name": "@Cpp"
-        }],
-        "name": "IOCharInfo",
-        "members": [{
-            "$ast": "StructMember",
-            "name": "code",
-            "type": {
-                "$ast": "PrimitiveType",
-                "type": "Char"
-            }
-        }, {
-            "$ast": "StructMember",
-            "name": "ctrl",
-            "type": {
-                "$ast": "PrimitiveType",
-                "type": "Boolean"
-            }
-        }, {
-            "$ast": "StructMember",
-            "name": "shift",
-            "type": {
-                "$ast": "PrimitiveType",
-                "type": "Boolean"
-            }
-        }, {
-            "$ast": "StructMember",
-            "name": "alt",
-            "type": {
-                "$ast": "PrimitiveType",
-                "type": "Boolean"
-            }
-        }, {
-            "$ast": "StructMember",
-            "name": "capslock",
-            "type": {
-                "$ast": "PrimitiveType",
-                "type": "Boolean"
-            }
-        }]
-    }, {
-        "$ast": "StructDecl",
-        "attributes": [],
-        "name": "GlobalShortcutKey",
-        "members": [{
-            "$ast": "StructMember",
-            "name": "id",
-            "type": {
-                "$ast": "PrimitiveType",
-                "type": "Integer"
-            }
-        }, {
-            "$ast": "StructMember",
-            "name": "ctrl",
-            "type": {
-                "$ast": "PrimitiveType",
-                "type": "Boolean"
-            }
-        }, {
-            "$ast": "StructMember",
-            "name": "shift",
-            "type": {
-                "$ast": "PrimitiveType",
-                "type": "Boolean"
-            }
-        }, {
-            "$ast": "StructMember",
-            "name": "alt",
-            "type": {
-                "$ast": "PrimitiveType",
-                "type": "Boolean"
-            }
-        }, {
-            "$ast": "StructMember",
-            "name": "code",
-            "type": {
-                "$ast": "PrimitiveType",
-                "type": "Key"
-            }
-        }]
-    }, {
-        "$ast": "MessageDecl",
-        "attributes": [],
-        "name": "IOUpdateGlobalShortcutKey",
-        "request": {
-            "$ast": "MessageRequest",
-            "type": {
-                "$ast": "ArrayType",
-                "element": {
-                    "$ast": "ReferenceType",
-                    "name": "GlobalShortcutKey"
-                }
-            }
-        },
-        "response": null
-    }, {
-        "$ast": "EventDecl",
-        "attributes": [],
-        "name": "IOGlobalShortcutKey",
-        "request": {
-            "$ast": "EventRequest",
-            "type": {
-                "$ast": "PrimitiveType",
-                "type": "Integer"
-            }
-        }
-    }, {
-        "$ast": "MessageDecl",
-        "attributes": [],
-        "name": "IORequireCapture",
-        "request": null,
-        "response": null
-    }, {
-        "$ast": "MessageDecl",
-        "attributes": [],
-        "name": "IOReleaseCapture",
-        "request": null,
-        "response": null
-    }, {
-        "$ast": "MessageDecl",
-        "attributes": [],
-        "name": "IOIsKeyPressing",
-        "request": {
-            "$ast": "MessageRequest",
-            "type": {
-                "$ast": "PrimitiveType",
-                "type": "Key"
-            }
-        },
-        "response": {
-            "$ast": "MessageResponse",
-            "type": {
-                "$ast": "PrimitiveType",
-                "type": "Boolean"
-            }
-        }
-    }, {
-        "$ast": "MessageDecl",
-        "attributes": [],
-        "name": "IOIsKeyToggled",
-        "request": {
-            "$ast": "MessageRequest",
-            "type": {
-                "$ast": "PrimitiveType",
-                "type": "Key"
-            }
-        },
-        "response": {
-            "$ast": "MessageResponse",
-            "type": {
-                "$ast": "PrimitiveType",
-                "type": "Boolean"
-            }
-        }
-    }, {
-        "$ast": "EventDecl",
-        "attributes": [],
-        "name": "IOButtonDown",
-        "request": {
-            "$ast": "EventRequest",
-            "type": {
-                "$ast": "ReferenceType",
-                "name": "IOMouseInfoWithButton"
-            }
-        }
-    }, {
-        "$ast": "EventDecl",
-        "attributes": [],
-        "name": "IOButtonDoubleClick",
-        "request": {
-            "$ast": "EventRequest",
-            "type": {
-                "$ast": "ReferenceType",
-                "name": "IOMouseInfoWithButton"
-            }
-        }
-    }, {
-        "$ast": "EventDecl",
-        "attributes": [],
-        "name": "IOButtonUp",
-        "request": {
-            "$ast": "EventRequest",
-            "type": {
-                "$ast": "ReferenceType",
-                "name": "IOMouseInfoWithButton"
-            }
-        }
-    }, {
-        "$ast": "EventDecl",
-        "attributes": [],
-        "name": "IOHWheel",
-        "request": {
-            "$ast": "EventRequest",
-            "type": {
-                "$ast": "ReferenceType",
-                "name": "IOMouseInfo"
-            }
-        }
-    }, {
-        "$ast": "EventDecl",
-        "attributes": [],
-        "name": "IOVWheel",
-        "request": {
-            "$ast": "EventRequest",
-            "type": {
-                "$ast": "ReferenceType",
-                "name": "IOMouseInfo"
-            }
-        }
-    }, {
-        "$ast": "EventDecl",
-        "attributes": [{
-            "$ast": "Attribute",
-            "cppType": "",
-            "name": "@DropConsecutive"
-        }],
-        "name": "IOMouseMoving",
-        "request": {
-            "$ast": "EventRequest",
-            "type": {
-                "$ast": "ReferenceType",
-                "name": "IOMouseInfo"
-            }
-        }
-    }, {
-        "$ast": "EventDecl",
-        "attributes": [],
-        "name": "IOMouseEntered",
-        "request": null
-    }, {
-        "$ast": "EventDecl",
-        "attributes": [],
-        "name": "IOMouseLeaved",
-        "request": null
-    }, {
-        "$ast": "EventDecl",
-        "attributes": [],
-        "name": "IOKeyDown",
-        "request": {
-            "$ast": "EventRequest",
-            "type": {
-                "$ast": "ReferenceType",
-                "name": "IOKeyInfo"
-            }
-        }
-    }, {
-        "$ast": "EventDecl",
-        "attributes": [],
-        "name": "IOKeyUp",
-        "request": {
-            "$ast": "EventRequest",
-            "type": {
-                "$ast": "ReferenceType",
-                "name": "IOKeyInfo"
-            }
-        }
-    }, {
-        "$ast": "EventDecl",
-        "attributes": [],
-        "name": "IOChar",
-        "request": {
-            "$ast": "EventRequest",
-            "type": {
-                "$ast": "ReferenceType",
-                "name": "IOCharInfo"
-            }
-        }
-    }, {
-        "$ast": "EnumDecl",
         "attributes": [{
             "$ast": "Attribute",
             "cppType": "::vl::presentation::INativeWindowListener::HitTestResult",
@@ -1296,44 +869,430 @@
     }, {
         "$ast": "EnumDecl",
         "attributes": [],
-        "name": "RendererType",
+        "name": "IOMouseButton",
         "members": [{
             "$ast": "EnumMember",
-            "name": "FocusRectangle"
+            "name": "Left"
         }, {
             "$ast": "EnumMember",
-            "name": "SolidBorder"
+            "name": "Middle"
         }, {
             "$ast": "EnumMember",
-            "name": "SinkBorder"
-        }, {
-            "$ast": "EnumMember",
-            "name": "SinkSplitter"
-        }, {
-            "$ast": "EnumMember",
-            "name": "SolidBackground"
-        }, {
-            "$ast": "EnumMember",
-            "name": "GradientBackground"
-        }, {
-            "$ast": "EnumMember",
-            "name": "InnerShadow"
-        }, {
-            "$ast": "EnumMember",
-            "name": "SolidLabel"
-        }, {
-            "$ast": "EnumMember",
-            "name": "Polygon"
-        }, {
-            "$ast": "EnumMember",
-            "name": "UnsupportedImageFrame"
-        }, {
-            "$ast": "EnumMember",
-            "name": "UnsupportedColorizedText"
-        }, {
-            "$ast": "EnumMember",
-            "name": "UnsupportedDocument"
+            "name": "Right"
         }]
+    }, {
+        "$ast": "StructDecl",
+        "attributes": [{
+            "$ast": "Attribute",
+            "cppType": "::vl::presentation::NativeWindowMouseInfo",
+            "name": "@Cpp"
+        }],
+        "name": "IOMouseInfo",
+        "members": [{
+            "$ast": "StructMember",
+            "name": "ctrl",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Boolean"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "shift",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Boolean"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "left",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Boolean"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "middle",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Boolean"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "right",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Boolean"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "x",
+            "type": {
+                "$ast": "ReferenceType",
+                "name": "NativeCoordinate"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "y",
+            "type": {
+                "$ast": "ReferenceType",
+                "name": "NativeCoordinate"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "wheel",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Integer"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "nonClient",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Boolean"
+            }
+        }]
+    }, {
+        "$ast": "StructDecl",
+        "attributes": [],
+        "name": "IOMouseInfoWithButton",
+        "members": [{
+            "$ast": "StructMember",
+            "name": "button",
+            "type": {
+                "$ast": "ReferenceType",
+                "name": "IOMouseButton"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "info",
+            "type": {
+                "$ast": "ReferenceType",
+                "name": "IOMouseInfo"
+            }
+        }]
+    }, {
+        "$ast": "StructDecl",
+        "attributes": [{
+            "$ast": "Attribute",
+            "cppType": "::vl::presentation::NativeWindowKeyInfo",
+            "name": "@Cpp"
+        }],
+        "name": "IOKeyInfo",
+        "members": [{
+            "$ast": "StructMember",
+            "name": "code",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Key"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "ctrl",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Boolean"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "shift",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Boolean"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "alt",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Boolean"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "capslock",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Boolean"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "autoRepeatKeyDown",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Boolean"
+            }
+        }]
+    }, {
+        "$ast": "StructDecl",
+        "attributes": [{
+            "$ast": "Attribute",
+            "cppType": "::vl::presentation::NativeWindowCharInfo",
+            "name": "@Cpp"
+        }],
+        "name": "IOCharInfo",
+        "members": [{
+            "$ast": "StructMember",
+            "name": "code",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Char"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "ctrl",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Boolean"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "shift",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Boolean"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "alt",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Boolean"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "capslock",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Boolean"
+            }
+        }]
+    }, {
+        "$ast": "StructDecl",
+        "attributes": [],
+        "name": "GlobalShortcutKey",
+        "members": [{
+            "$ast": "StructMember",
+            "name": "id",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Integer"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "ctrl",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Boolean"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "shift",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Boolean"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "alt",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Boolean"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "code",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Key"
+            }
+        }]
+    }, {
+        "$ast": "MessageDecl",
+        "attributes": [],
+        "name": "IOUpdateGlobalShortcutKey",
+        "request": {
+            "$ast": "MessageRequest",
+            "type": {
+                "$ast": "ArrayType",
+                "element": {
+                    "$ast": "ReferenceType",
+                    "name": "GlobalShortcutKey"
+                }
+            }
+        },
+        "response": null
+    }, {
+        "$ast": "EventDecl",
+        "attributes": [],
+        "name": "IOGlobalShortcutKey",
+        "request": {
+            "$ast": "EventRequest",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Integer"
+            }
+        }
+    }, {
+        "$ast": "MessageDecl",
+        "attributes": [],
+        "name": "IORequireCapture",
+        "request": null,
+        "response": null
+    }, {
+        "$ast": "MessageDecl",
+        "attributes": [],
+        "name": "IOReleaseCapture",
+        "request": null,
+        "response": null
+    }, {
+        "$ast": "MessageDecl",
+        "attributes": [],
+        "name": "IOIsKeyPressing",
+        "request": {
+            "$ast": "MessageRequest",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Key"
+            }
+        },
+        "response": {
+            "$ast": "MessageResponse",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Boolean"
+            }
+        }
+    }, {
+        "$ast": "MessageDecl",
+        "attributes": [],
+        "name": "IOIsKeyToggled",
+        "request": {
+            "$ast": "MessageRequest",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Key"
+            }
+        },
+        "response": {
+            "$ast": "MessageResponse",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Boolean"
+            }
+        }
+    }, {
+        "$ast": "EventDecl",
+        "attributes": [],
+        "name": "IOButtonDown",
+        "request": {
+            "$ast": "EventRequest",
+            "type": {
+                "$ast": "ReferenceType",
+                "name": "IOMouseInfoWithButton"
+            }
+        }
+    }, {
+        "$ast": "EventDecl",
+        "attributes": [],
+        "name": "IOButtonDoubleClick",
+        "request": {
+            "$ast": "EventRequest",
+            "type": {
+                "$ast": "ReferenceType",
+                "name": "IOMouseInfoWithButton"
+            }
+        }
+    }, {
+        "$ast": "EventDecl",
+        "attributes": [],
+        "name": "IOButtonUp",
+        "request": {
+            "$ast": "EventRequest",
+            "type": {
+                "$ast": "ReferenceType",
+                "name": "IOMouseInfoWithButton"
+            }
+        }
+    }, {
+        "$ast": "EventDecl",
+        "attributes": [],
+        "name": "IOHWheel",
+        "request": {
+            "$ast": "EventRequest",
+            "type": {
+                "$ast": "ReferenceType",
+                "name": "IOMouseInfo"
+            }
+        }
+    }, {
+        "$ast": "EventDecl",
+        "attributes": [],
+        "name": "IOVWheel",
+        "request": {
+            "$ast": "EventRequest",
+            "type": {
+                "$ast": "ReferenceType",
+                "name": "IOMouseInfo"
+            }
+        }
+    }, {
+        "$ast": "EventDecl",
+        "attributes": [{
+            "$ast": "Attribute",
+            "cppType": "",
+            "name": "@DropConsecutive"
+        }],
+        "name": "IOMouseMoving",
+        "request": {
+            "$ast": "EventRequest",
+            "type": {
+                "$ast": "ReferenceType",
+                "name": "IOMouseInfo"
+            }
+        }
+    }, {
+        "$ast": "EventDecl",
+        "attributes": [],
+        "name": "IOMouseEntered",
+        "request": null
+    }, {
+        "$ast": "EventDecl",
+        "attributes": [],
+        "name": "IOMouseLeaved",
+        "request": null
+    }, {
+        "$ast": "EventDecl",
+        "attributes": [],
+        "name": "IOKeyDown",
+        "request": {
+            "$ast": "EventRequest",
+            "type": {
+                "$ast": "ReferenceType",
+                "name": "IOKeyInfo"
+            }
+        }
+    }, {
+        "$ast": "EventDecl",
+        "attributes": [],
+        "name": "IOKeyUp",
+        "request": {
+            "$ast": "EventRequest",
+            "type": {
+                "$ast": "ReferenceType",
+                "name": "IOKeyInfo"
+            }
+        }
+    }, {
+        "$ast": "EventDecl",
+        "attributes": [],
+        "name": "IOChar",
+        "request": {
+            "$ast": "EventRequest",
+            "type": {
+                "$ast": "ReferenceType",
+                "name": "IOCharInfo"
+            }
+        }
     }, {
         "$ast": "EnumDecl",
         "attributes": [{
@@ -1777,55 +1736,6 @@
             }
         }]
     }, {
-        "$ast": "StructDecl",
-        "attributes": [],
-        "name": "RendererCreation",
-        "members": [{
-            "$ast": "StructMember",
-            "name": "id",
-            "type": {
-                "$ast": "PrimitiveType",
-                "type": "Integer"
-            }
-        }, {
-            "$ast": "StructMember",
-            "name": "type",
-            "type": {
-                "$ast": "ReferenceType",
-                "name": "RendererType"
-            }
-        }]
-    }, {
-        "$ast": "MessageDecl",
-        "attributes": [],
-        "name": "RendererCreated",
-        "request": {
-            "$ast": "MessageRequest",
-            "type": {
-                "$ast": "ArrayType",
-                "element": {
-                    "$ast": "ReferenceType",
-                    "name": "RendererCreation"
-                }
-            }
-        },
-        "response": null
-    }, {
-        "$ast": "MessageDecl",
-        "attributes": [],
-        "name": "RendererDestroyed",
-        "request": {
-            "$ast": "MessageRequest",
-            "type": {
-                "$ast": "ArrayType",
-                "element": {
-                    "$ast": "PrimitiveType",
-                    "type": "Integer"
-                }
-            }
-        },
-        "response": null
-    }, {
         "$ast": "MessageDecl",
         "attributes": [],
         "name": "RendererUpdateElement_SolidBorder",
@@ -1918,6 +1828,292 @@
             "type": {
                 "$ast": "ReferenceType",
                 "name": "ElementDesc_SolidLabel"
+            }
+        },
+        "response": null
+    }, {
+        "$ast": "EnumDecl",
+        "attributes": [{
+            "$ast": "Attribute",
+            "cppType": "::vl::presentation::INativeImage::FormatType",
+            "name": "@Cpp"
+        }, {
+            "$ast": "Attribute",
+            "cppType": "::vl::presentation::INativeImage",
+            "name": "@CppNamespace"
+        }],
+        "name": "ImageFormatType",
+        "members": [{
+            "$ast": "EnumMember",
+            "name": "Bmp"
+        }, {
+            "$ast": "EnumMember",
+            "name": "Gif"
+        }, {
+            "$ast": "EnumMember",
+            "name": "Icon"
+        }, {
+            "$ast": "EnumMember",
+            "name": "Jpeg"
+        }, {
+            "$ast": "EnumMember",
+            "name": "Png"
+        }, {
+            "$ast": "EnumMember",
+            "name": "Tiff"
+        }, {
+            "$ast": "EnumMember",
+            "name": "Wmp"
+        }, {
+            "$ast": "EnumMember",
+            "name": "Unknown"
+        }]
+    }, {
+        "$ast": "StructDecl",
+        "attributes": [],
+        "name": "ImageCreation",
+        "members": [{
+            "$ast": "StructMember",
+            "name": "id",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Integer"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "imageData",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Binary"
+            }
+        }]
+    }, {
+        "$ast": "StructDecl",
+        "attributes": [],
+        "name": "ImageFrameMetadata",
+        "members": [{
+            "$ast": "StructMember",
+            "name": "size",
+            "type": {
+                "$ast": "ReferenceType",
+                "name": "Size"
+            }
+        }]
+    }, {
+        "$ast": "StructDecl",
+        "attributes": [],
+        "name": "ImageMetadata",
+        "members": [{
+            "$ast": "StructMember",
+            "name": "format",
+            "type": {
+                "$ast": "ReferenceType",
+                "name": "ImageFormatType"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "frames",
+            "type": {
+                "$ast": "ArrayType",
+                "element": {
+                    "$ast": "ReferenceType",
+                    "name": "ImageFrameMetadata"
+                }
+            }
+        }]
+    }, {
+        "$ast": "MessageDecl",
+        "attributes": [],
+        "name": "ImageCreated",
+        "request": {
+            "$ast": "MessageRequest",
+            "type": {
+                "$ast": "ReferenceType",
+                "name": "ImageCreation"
+            }
+        },
+        "response": {
+            "$ast": "MessageResponse",
+            "type": {
+                "$ast": "ReferenceType",
+                "name": "ImageMetadata"
+            }
+        }
+    }, {
+        "$ast": "MessageDecl",
+        "attributes": [],
+        "name": "ImageDestroyed",
+        "request": {
+            "$ast": "MessageRequest",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Integer"
+            }
+        },
+        "response": null
+    }, {
+        "$ast": "StructDecl",
+        "attributes": [],
+        "name": "ElementDesc_ImageFrame",
+        "members": [{
+            "$ast": "StructMember",
+            "name": "id",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Integer"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "imageId",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Integer"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "imageFrame",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Integer"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "horizontalAlignment",
+            "type": {
+                "$ast": "ReferenceType",
+                "name": "ElementHorizontalAlignment"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "verticalAlignment",
+            "type": {
+                "$ast": "ReferenceType",
+                "name": "ElementVerticalAlignment"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "stretch",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Boolean"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "enabled",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Boolean"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "imageCreated",
+            "type": {
+                "$ast": "OptionalType",
+                "element": {
+                    "$ast": "ReferenceType",
+                    "name": "ImageMetadata"
+                }
+            }
+        }]
+    }, {
+        "$ast": "MessageDecl",
+        "attributes": [],
+        "name": "RendererUpdateElement_ImageFrame",
+        "request": {
+            "$ast": "MessageRequest",
+            "type": {
+                "$ast": "ReferenceType",
+                "name": "ElementDesc_ImageFrame"
+            }
+        },
+        "response": null
+    }, {
+        "$ast": "EnumDecl",
+        "attributes": [],
+        "name": "RendererType",
+        "members": [{
+            "$ast": "EnumMember",
+            "name": "FocusRectangle"
+        }, {
+            "$ast": "EnumMember",
+            "name": "SolidBorder"
+        }, {
+            "$ast": "EnumMember",
+            "name": "SinkBorder"
+        }, {
+            "$ast": "EnumMember",
+            "name": "SinkSplitter"
+        }, {
+            "$ast": "EnumMember",
+            "name": "SolidBackground"
+        }, {
+            "$ast": "EnumMember",
+            "name": "GradientBackground"
+        }, {
+            "$ast": "EnumMember",
+            "name": "InnerShadow"
+        }, {
+            "$ast": "EnumMember",
+            "name": "SolidLabel"
+        }, {
+            "$ast": "EnumMember",
+            "name": "Polygon"
+        }, {
+            "$ast": "EnumMember",
+            "name": "ImageFrame"
+        }, {
+            "$ast": "EnumMember",
+            "name": "UnsupportedColorizedText"
+        }, {
+            "$ast": "EnumMember",
+            "name": "UnsupportedDocument"
+        }]
+    }, {
+        "$ast": "StructDecl",
+        "attributes": [],
+        "name": "RendererCreation",
+        "members": [{
+            "$ast": "StructMember",
+            "name": "id",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Integer"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "type",
+            "type": {
+                "$ast": "ReferenceType",
+                "name": "RendererType"
+            }
+        }]
+    }, {
+        "$ast": "MessageDecl",
+        "attributes": [],
+        "name": "RendererCreated",
+        "request": {
+            "$ast": "MessageRequest",
+            "type": {
+                "$ast": "ArrayType",
+                "element": {
+                    "$ast": "ReferenceType",
+                    "name": "RendererCreation"
+                }
+            }
+        },
+        "response": null
+    }, {
+        "$ast": "MessageDecl",
+        "attributes": [],
+        "name": "RendererDestroyed",
+        "request": {
+            "$ast": "MessageRequest",
+            "type": {
+                "$ast": "ArrayType",
+                "element": {
+                    "$ast": "PrimitiveType",
+                    "type": "Integer"
+                }
             }
         },
         "response": null
@@ -2040,6 +2236,16 @@
                 "element": {
                     "$ast": "ReferenceType",
                     "name": "ElementMeasuring_ElementMinSize"
+                }
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "createdImages",
+            "type": {
+                "$ast": "ArrayType",
+                "element": {
+                    "$ast": "ReferenceType",
+                    "name": "ImageMetadata"
                 }
             }
         }]

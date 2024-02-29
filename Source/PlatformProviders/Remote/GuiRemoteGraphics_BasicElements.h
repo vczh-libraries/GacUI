@@ -154,7 +154,7 @@ namespace vl::presentation::elements_remoteprotocol
 		void							SendUpdateElementMessages(bool fullContent) override;
 	};
 
-	class GuiImageFrameElementRenderer : public GuiRemoteProtocolElementRenderer<GuiImageFrameElement, GuiImageFrameElementRenderer, remoteprotocol::RendererType::UnsupportedImageFrame>
+	class GuiImageFrameElementRenderer : public GuiRemoteProtocolElementRenderer<GuiImageFrameElement, GuiImageFrameElementRenderer, remoteprotocol::RendererType::ImageFrame>
 	{
 		friend class GuiElementRendererBase<GuiImageFrameElement, GuiImageFrameElementRenderer, GuiRemoteGraphicsRenderTarget>;
 	public:

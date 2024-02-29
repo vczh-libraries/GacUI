@@ -78,9 +78,9 @@ int main(int argc, char* argv[])
 	}
 
 	auto mergedSchema = Ptr(new GuiRpSchema);
-	for (auto schema : schemas.Values())
+	for (auto schemaName : schemaNames)
 	{
-		CopyFrom(mergedSchema->declarations, schema->declarations, true);
+		CopyFrom(mergedSchema->declarations, schemas[schemaName]->declarations, true);
 	}
 
 	List<GuiRpError> errors;
