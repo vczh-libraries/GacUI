@@ -9,7 +9,7 @@ enum RendererType
     InnerShadow,
     SolidLabel,
     Polygon,
-    UnsupportedImageFrame,
+    ImageFrame,
     UnsupportedColorizedText,
     UnsupportedDocument,
 }
@@ -187,6 +187,7 @@ struct ElementMeasurings
 {
     var fontHeights : ElementMeasuring_FontHeight[];
     var minSizes : ElementMeasuring_ElementMinSize[];
+    var createdImages : ImageMetadata[];
 }
 
 message RendererBeginRendering                      {}

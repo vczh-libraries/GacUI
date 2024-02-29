@@ -1,0 +1,47 @@
+[@Cpp(::vl::presentation::INativeImage::FormatType)]
+[@CppNamespace(::vl::presentation::INativeImage)]
+enum ImageFormatType
+{
+    Bmp,
+    Gif,
+    Icon,
+    Jpeg,
+    Png,
+    Tiff,
+    Wmp,
+    Unknown,
+}
+
+struct ImageCreation
+{
+    var id : int;
+    var imageData : binary;
+}
+
+struct ImageFrameMetadata
+{
+    var size : Size;
+}
+
+struct ImageMetadata
+{
+    var format : ImageFormatType;
+    var frames : ImageFrameMetadata[];
+}
+
+message ImageCreated                                { request: ImageCreation; response: ImageMetadata; }
+message RendererDestroyed                           { request: int; }
+
+struct ElementDesc_ImageFrame
+{
+    var id : int;
+    var imageId : int;
+    var imageFrame : int;
+    var horizontalAlignment : ElementHorizontalAlignment;
+    var verticalAlignment : ElementVerticalAlignment;
+    var stretch : bool;
+    var enabled : bool;
+    var imageCreated : ImageMetadata?;
+}
+
+message RendererUpdateElement_ImageFrame            { request: ElementDesc_ImageFrame; }
