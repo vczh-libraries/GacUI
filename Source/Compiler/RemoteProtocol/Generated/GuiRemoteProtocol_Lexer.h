@@ -28,23 +28,24 @@ namespace vl::presentation::remoteprotocol
 		CHAR = 12,
 		KEY = 13,
 		COLOR = 14,
-		CPP_NAME = 15,
-		ATT_NAME = 16,
-		NAME = 17,
-		OPEN_BRACE = 18,
-		CLOSE_BRACE = 19,
-		OPEN_ARRAY = 20,
-		CLOSE_ARRAY = 21,
-		OPEN = 22,
-		CLOSE = 23,
-		COLON = 24,
-		SEMICOLON = 25,
-		COMMA = 26,
-		QUESTION = 27,
-		SPACE = 28,
+		BINARY = 15,
+		CPP_NAME = 16,
+		ATT_NAME = 17,
+		NAME = 18,
+		OPEN_BRACE = 19,
+		CLOSE_BRACE = 20,
+		OPEN_ARRAY = 21,
+		CLOSE_ARRAY = 22,
+		OPEN = 23,
+		CLOSE = 24,
+		COLON = 25,
+		SEMICOLON = 26,
+		COMMA = 27,
+		QUESTION = 28,
+		SPACE = 29,
 	};
 
-	constexpr vl::vint GuiRemoteProtocolTokenCount = 29;
+	constexpr vl::vint GuiRemoteProtocolTokenCount = 30;
 	extern bool GuiRemoteProtocolTokenDeleter(vl::vint token);
 	extern const wchar_t* GuiRemoteProtocolTokenId(GuiRemoteProtocolTokens token);
 	extern const wchar_t* GuiRemoteProtocolTokenDisplayText(GuiRemoteProtocolTokens token);

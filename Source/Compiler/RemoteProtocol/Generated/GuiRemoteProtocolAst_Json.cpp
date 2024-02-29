@@ -102,6 +102,9 @@ namespace vl::presentation::remoteprotocol::json_visitor
 		BeginField(L"type");
 		switch (node->type)
 		{
+		case vl::presentation::remoteprotocol::GuiRpPrimitiveTypes::Binary:
+			WriteString(L"Binary");
+			break;
 		case vl::presentation::remoteprotocol::GuiRpPrimitiveTypes::Boolean:
 			WriteString(L"Boolean");
 			break;

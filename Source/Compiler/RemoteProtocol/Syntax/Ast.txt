@@ -12,6 +12,7 @@ enum PrimitiveTypes
 	Char,
 	Key,
 	Color,
+	Binary,
 }
 
 class PrimitiveType : Type

@@ -94,6 +94,7 @@ namespace vl::reflection::description
 		ENUM_NAMESPACE_ITEM(Char)
 		ENUM_NAMESPACE_ITEM(Key)
 		ENUM_NAMESPACE_ITEM(Color)
+		ENUM_NAMESPACE_ITEM(Binary)
 	END_ENUM_ITEM(vl::presentation::remoteprotocol::GuiRpPrimitiveTypes)
 
 	BEGIN_CLASS_MEMBER(vl::presentation::remoteprotocol::GuiRpPrimitiveType)

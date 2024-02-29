@@ -311,6 +311,9 @@ GenerateRemoteProtocolHeaderFile
 			case GuiRpPrimitiveTypes::Color:
 				writer.WriteString(L"::vl::presentation::Color");
 				break;
+			case GuiRpPrimitiveTypes::Binary:
+				writer.WriteString(L"::vl::Ptr<::vl::stream::MemoryStream>");
+				break;
 			default:
 				CHECK_FAIL(L"Unrecognized type");
 			}

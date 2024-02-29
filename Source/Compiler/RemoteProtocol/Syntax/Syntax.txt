@@ -7,6 +7,7 @@ RType
 	::= "char" as PrimitiveType {type = Char}
 	::= "key" as PrimitiveType {type = Key}
 	::= "color" as PrimitiveType {type = Color}
+	::= "binary" as PrimitiveType {type = Binary}
 	::= NAME:name as ReferenceType
 	::= RType:element "?" as OptionalType
 	::= RType:element "[" "]" as ArrayType

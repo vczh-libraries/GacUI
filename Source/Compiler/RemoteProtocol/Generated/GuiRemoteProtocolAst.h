@@ -40,6 +40,7 @@ namespace vl::presentation::remoteprotocol
 		Char = 5,
 		Key = 6,
 		Color = 7,
+		Binary = 8,
 	};
 
 	class GuiRpType abstract : public vl::glr::ParsingAstBase, vl::reflection::Description<GuiRpType>
