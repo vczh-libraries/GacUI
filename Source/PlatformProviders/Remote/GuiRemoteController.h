@@ -30,6 +30,7 @@ GuiRemoteController
 		, protected INativeScreenService
 		, protected INativeScreen
 		, protected INativeWindowService
+		, protected INativeImageService
 	{
 		friend class GuiRemoteMessages;
 		friend class GuiRemoteEvents;
@@ -125,6 +126,14 @@ GuiRemoteController
 		INativeWindow*					GetWindow(NativePoint location) override;
 		void							Run(INativeWindow* window) override;
 		bool							RunOneCycle() override;
+
+		// =============================================================
+		// INativeImageService
+		// =============================================================
+
+		Ptr<INativeImage>				CreateImageFromFile(const WString& path) override;
+		Ptr<INativeImage>				CreateImageFromMemory(void* buffer, vint length) override;
+		Ptr<INativeImage>				CreateImageFromStream(stream::IStream& imageStream) override;
 
 		// =============================================================
 		// Events
