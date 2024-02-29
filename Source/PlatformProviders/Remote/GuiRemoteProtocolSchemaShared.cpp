@@ -52,6 +52,31 @@ namespace vl::presentation::remoteprotocol
 		return ConvertCustomTypeToJson(value.ToString());
 	}
 
+	template<> Ptr<glr::json::JsonNode> ConvertCustomTypeToJson<Ptr<stream::MemoryStream>>(const Ptr<stream::MemoryStream>& value)
+	{
+		if (!value)
+		{
+			auto node = Ptr(new glr::json::JsonLiteral);
+			node->value = glr::json::JsonLiteralValue::Null;
+			return node;
+		}
+
+		stream::MemoryStream base64WStringStream;
+		{
+			stream::UtfGeneralEncoder<wchar_t, char8_t> utf8ToWCharEncoder;
+			stream::EncoderStream utf8ToWCharStream(base64WStringStream, utf8ToWCharEncoder);
+			stream::Utf8Base64Encoder binaryToBase64Utf8Encoder;
+			stream::EncoderStream binaryToBase64Utf8Stream(utf8ToWCharStream, binaryToBase64Utf8Encoder);
+			value->SeekFromBegin(0);
+			stream::CopyStream(*value.Obj(), binaryToBase64Utf8Stream);
+		}
+		{
+			base64WStringStream.SeekFromBegin(0);
+			stream::StreamReader reader(base64WStringStream);
+			return ConvertCustomTypeToJson(reader.ReadToEnd());
+		}
+	}
+
 	template<> void ConvertJsonToCustomType<bool>(Ptr<glr::json::JsonNode> node, bool& value)
 	{
 #define ERROR_MESSAGE_PREFIX L"presentation::remoteprotocol::ConvertJsonToCustomType<bool>(Ptr<JsonNode>, bool&)#"
@@ -124,5 +149,32 @@ namespace vl::presentation::remoteprotocol
 		WString strValue;
 		ConvertJsonToCustomType(node, strValue);
 		value = Color::Parse(strValue);
+	}
+
+	template<> void ConvertJsonToCustomType<Ptr<stream::MemoryStream>>(Ptr<glr::json::JsonNode> node, Ptr<stream::MemoryStream>& value)
+	{
+		if (auto jsonLiteral = node.Cast<glr::json::JsonLiteral>())
+		{
+			if (jsonLiteral->value == glr::json::JsonLiteralValue::Null)
+			{
+				value = {};
+				return;
+			}
+		}
+		else
+		{
+			WString base64;
+			ConvertJsonToCustomType(node, base64);
+
+			value = Ptr(new stream::MemoryStream);
+
+			stream::MemoryWrapperStream base64WStringStream((void*)base64.Buffer(), base64.Length() * sizeof(wchar_t));
+			stream::UtfGeneralDecoder<wchar_t, char8_t> wcharToUtf8Decoder;
+			stream::DecoderStream wcharToUtf8Stream(base64WStringStream, wcharToUtf8Decoder);
+			stream::Utf8Base64Decoder base64Utf8ToBinaryDecoder;
+			stream::DecoderStream base64Utf8ToBinaryStream(wcharToUtf8Stream, base64Utf8ToBinaryDecoder);
+
+			stream::CopyStream(base64Utf8ToBinaryStream, *value.Obj());
+		}
 	}
 }

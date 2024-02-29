@@ -196,6 +196,7 @@
     <ClCompile Include="TestReflectionTypeList.cpp" />
     <ClCompile Include="TestRemote_GraphicsHost_BasicElements.cpp" />
     <ClCompile Include="TestRemote_GraphicsHost_HitTest.cpp" />
+    <ClCompile Include="TestRemote_GraphicsHost_ImageFrame.cpp" />
     <ClCompile Include="TestRemote_GraphicsHost_Key.cpp" />
     <ClCompile Include="TestRemote_GraphicsHost_KeyAlt.cpp" />
     <ClCompile Include="TestRemote_GraphicsHost_KeyShortcut.cpp" />
