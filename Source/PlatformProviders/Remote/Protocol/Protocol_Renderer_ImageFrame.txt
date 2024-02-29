@@ -30,7 +30,7 @@ struct ImageMetadata
 }
 
 message ImageCreated                                { request: ImageCreation; response: ImageMetadata; }
-message RendererDestroyed                           { request: int; }
+message ImageDestroyed                              { request: int; }
 
 struct ElementDesc_ImageFrame
 {

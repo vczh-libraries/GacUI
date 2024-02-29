@@ -1,0 +1,132 @@
+[@Cpp(::vl::presentation::elements::ElementShapeType)]
+enum ElementShapeType
+{
+    Rectangle,
+    Ellipse,
+    RoundRect,
+}
+
+[@Cpp(::vl::presentation::elements::GuiGradientBackgroundElement::Direction)]
+[@CppNamespace(::vl::presentation::elements::GuiGradientBackgroundElement)]
+enum ElementGradientrDirection
+{
+    Horizontal,
+    Vertical,
+    Slash,
+    Backslash,
+}
+
+[@Cpp(::vl::presentation::elements::Gui3DSplitterElement::Direction)]
+[@CppNamespace(::vl::presentation::elements::Gui3DSplitterElement)]
+enum ElementSplitterDirection
+{
+    Horizontal,
+    Vertical,
+}
+
+enum ElementHorizontalAlignment
+{
+    Left,
+    Right,
+    Center,
+}
+
+enum ElementVerticalAlignment
+{
+    Top,
+    Bottom,
+    Center,
+}
+
+[@Cpp(::vl::presentation::elements::ElementShape)]
+struct ElementShape
+{
+    var shapeType : ElementShapeType;
+    var radiusX : int;
+    var radiusY : int;
+}
+
+struct ElementDesc_SolidBorder
+{
+    var id : int;
+    var borderColor : color;
+    var shape : ElementShape;
+}
+
+struct ElementDesc_SinkBorder
+{
+    var id : int;
+    var leftTopColor : color;
+    var rightBottomColor : color;
+}
+
+struct ElementDesc_SinkSplitter
+{
+    var id : int;
+    var leftTopColor : color;
+    var rightBottomColor : color;
+    var direction : ElementSplitterDirection;
+}
+
+struct ElementDesc_SolidBackground
+{
+    var id : int;
+    var backgroundColor : color;
+    var shape : ElementShape;
+}
+
+struct ElementDesc_GradientBackground
+{
+    var id : int;
+    var leftTopColor : color;
+    var rightBottomColor : color;
+    var direction : ElementGradientrDirection;
+    var shape : ElementShape;
+}
+
+struct ElementDesc_InnerShadow
+{
+    var id : int;
+    var shadowColor : color;
+    var thickness : int;
+}
+
+struct ElementDesc_Polygon
+{
+    var id : int;
+    var size : Size;
+    var borderColor : color;
+    var backgroundColor : color;
+    var points : Point[];
+}
+
+enum ElementSolidLabelMeasuringRequest
+{
+    FontHeight,
+    TotalSize,
+}
+
+struct ElementDesc_SolidLabel
+{
+    var id : int;
+    var textColor : color;
+    var horizontalAlignment : ElementHorizontalAlignment;
+    var verticalAlignment : ElementVerticalAlignment;
+    var wrapLine : bool;
+    var wrapLineHeightCalculation : bool;
+    var ellipse : bool;
+    var multiline : bool;
+
+    var font : FontProperties?;
+    var text : string?;
+    var measuringRequest : ElementSolidLabelMeasuringRequest?;
+}
+
+message RendererUpdateElement_SolidBorder           { request: ElementDesc_SolidBorder; }
+message RendererUpdateElement_SinkBorder            { request: ElementDesc_SinkBorder; }
+message RendererUpdateElement_SinkSplitter          { request: ElementDesc_SinkSplitter; }
+message RendererUpdateElement_SolidBackground       { request: ElementDesc_SolidBackground; }
+message RendererUpdateElement_GradientBackground    { request: ElementDesc_GradientBackground; }
+message RendererUpdateElement_InnerShadow           { request: ElementDesc_InnerShadow; }
+message RendererUpdateElement_Polygon               { request: ElementDesc_Polygon; }
+message RendererUpdateElement_SolidLabel            { request: ElementDesc_SolidLabel; }
