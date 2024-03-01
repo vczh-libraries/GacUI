@@ -32,6 +32,30 @@ GuiRemoteGraphicsImage
 	void GuiRemoteGraphicsImage::EnsureMetadata()
 	{
 		if (status == MetadataStatus::Retrived) return;
+		auto arguments = GenerateImageCreation();
+
+		vint idImageCreated = remote->remoteMessages.RequestImageCreated(arguments);
+		remote->remoteMessages.Submit();
+		auto imageMetadata = remote->remoteMessages.RetrieveImageCreated(idImageCreated);
+		remote->remoteMessages.ClearResponses();
+		UpdateFromImageMetadata(imageMetadata);
+	}
+
+	GuiRemoteGraphicsImage::GuiRemoteGraphicsImage(GuiRemoteController * _remote, vint _id, Ptr<stream::MemoryStream> _binary)
+		: remote(_remote)
+		, id(_id)
+		, binary(_binary)
+	{
+	}
+
+	GuiRemoteGraphicsImage::~GuiRemoteGraphicsImage()
+	{
+	}
+
+	remoteprotocol::ImageCreation GuiRemoteGraphicsImage::GenerateImageCreation()
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::GuiRemoteGraphicsImage::GenerateImageCreation()#"
+		CHECK_ERROR(status == MetadataStatus::Retrived, L"Cannot call this function when status is Retrived.");
 
 		remoteprotocol::ImageCreation arguments;
 		arguments.id = id;
@@ -46,34 +70,44 @@ GuiRemoteGraphicsImage
 			arguments.imageDataOmitted = true;
 		}
 
-		vint idImageCreated = remote->remoteMessages.RequestImageCreated(arguments);
-		remote->remoteMessages.Submit();
-		auto imageMetadata = remote->remoteMessages.RetrieveImageCreated(idImageCreated);
-		remote->remoteMessages.ClearResponses();
+		return arguments;
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	void GuiRemoteGraphicsImage::UpdateFromImageMetadata(const remoteprotocol::ImageMetadata& imageMetadata)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::GuiRemoteGraphicsImage::UpdateFromImageMetadata(const remoteprotocol::ImageMetadata&)#"
+
+		CHECK_ERROR(id == imageMetadata.id, L"Wrong image metadata id specified.");
 
 		format = imageMetadata.format;
 		if (imageMetadata.frames)
 		{
-			for (auto imageFrameMetadata : *imageMetadata.frames.Obj())
+			if (frames.Count() > 0)
 			{
-				auto frame = Ptr(new GuiRemoteGraphicsImageFrame(this));
-				frame->size = imageFrameMetadata.size;
-				frames.Add(frame);
+				CHECK_ERROR(frames.Count() == imageMetadata.frames, L"New metadata should be identical to the last one.");
+				for (auto [imageFrameMetadata, index] : indexed(*imageMetadata.frames.Obj()))
+				{
+					CHECK_ERROR(frames[index]->size == imageFrameMetadata.size, L"New metadata should be identical to the last one.");
+				}
 			}
+			else
+			{
+				for (auto imageFrameMetadata : *imageMetadata.frames.Obj())
+				{
+					auto frame = Ptr(new GuiRemoteGraphicsImageFrame(this));
+					frame->size = imageFrameMetadata.size;
+					frames.Add(frame);
+				}
+			}
+		}
+		else
+		{
+			CHECK_ERROR(frames.Count() == 0, L"New metadata should be identical to the last one.");
 		}
 
 		status = MetadataStatus::Retrived;
-	}
-
-	GuiRemoteGraphicsImage::GuiRemoteGraphicsImage(GuiRemoteController * _remote, vint _id, Ptr<stream::MemoryStream> _binary)
-		: remote(_remote)
-		, id(_id)
-		, binary(_binary)
-	{
-	}
-
-	GuiRemoteGraphicsImage::~GuiRemoteGraphicsImage()
-	{
+#undef ERROR_MESSAGE_PREFIX
 	}
 
 	INativeImageService* GuiRemoteGraphicsImage::GetImageService()
@@ -136,6 +170,11 @@ GuiRemoteGraphicsImageService
 
 	void GuiRemoteGraphicsImageService::OnControllerDisconnect()
 	{
+	}
+
+	Ptr<GuiRemoteGraphicsImage> GuiRemoteGraphicsImageService::GetImage(vint id)
+	{
+		return images[id];
 	}
 
 	Ptr<INativeImage> GuiRemoteGraphicsImageService::CreateImageFromFile(const WString& path)

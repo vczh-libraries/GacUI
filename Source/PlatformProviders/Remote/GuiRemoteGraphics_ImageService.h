@@ -75,6 +75,9 @@ GuiRemoteGraphicsImage
 		GuiRemoteGraphicsImage(GuiRemoteController* _remote, vint _id, Ptr<stream::MemoryStream> _binary);
 		~GuiRemoteGraphicsImage();
 
+		remoteprotocol::ImageCreation		GenerateImageCreation();
+		void								UpdateFromImageMetadata(const remoteprotocol::ImageMetadata& imageMetadata);
+
 		INativeImageService*				GetImageService() override;
 		FormatType							GetFormat() override;
 		vint								GetFrameCount() override;
@@ -101,6 +104,7 @@ GuiRemoteGraphicsImageService
 
 		void								OnControllerConnect();
 		void								OnControllerDisconnect();
+		Ptr<GuiRemoteGraphicsImage>			GetImage(vint id);
 
 		Ptr<INativeImage>					CreateImageFromFile(const WString& path) override;
 		Ptr<INativeImage>					CreateImageFromMemory(void* buffer, vint length) override;

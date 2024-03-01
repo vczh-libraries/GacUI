@@ -469,6 +469,44 @@ GuiImageFrameElementRenderer
 		// VerticalAlignment
 		// Stretch
 		// Enabled
+
+		remoteprotocol::ElementDesc_ImageFrame arguments;
+		arguments.id = id;
+		if (image) arguments.imageId = image->id;
+		arguments.imageFrame = element->GetFrameIndex();
+		arguments.stretch = element->GetStretch();
+		arguments.enabled = element->GetEnabled();
+
+		switch (element->GetHorizontalAlignment())
+		{
+		case Alignment::Left:
+			arguments.horizontalAlignment = ElementHorizontalAlignment::Left;
+			break;
+		case Alignment::Right:
+			arguments.horizontalAlignment = ElementHorizontalAlignment::Right;
+			break;
+		default:
+			arguments.horizontalAlignment = ElementHorizontalAlignment::Center;
+		}
+
+		switch (element->GetVerticalAlignment())
+		{
+		case Alignment::Top:
+			arguments.verticalAlignment = ElementVerticalAlignment::Top;
+			break;
+		case Alignment::Bottom:
+			arguments.verticalAlignment = ElementVerticalAlignment::Bottom;
+			break;
+		default:
+			arguments.verticalAlignment = ElementVerticalAlignment::Center;
+		}
+
+		if (needUpdateSize && image)
+		{
+			arguments.imageCreation = image->GenerateImageCreation();
+		}
+
+		renderTarget->GetRemoteMessages().RequestRendererUpdateElement_ImageFrame(arguments);
 	}
 
 /***********************************************************************

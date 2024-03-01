@@ -117,6 +117,15 @@ GuiRemoteGraphicsRenderTarget
 			}
 		}
 
+		if (measuring.createdImages)
+		{
+			for (auto&& imageMetadata : *measuring.createdImages.Obj())
+			{
+				auto image = remote->imageService.GetImage(imageMetadata.id);
+				image->UpdateFromImageMetadata(imageMetadata);
+			}
+		}
+
 		if (measuring.minSizes)
 		{
 			for (auto&& minSize : *measuring.minSizes.Obj())

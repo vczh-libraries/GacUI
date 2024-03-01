@@ -179,6 +179,7 @@ namespace vl::presentation::remoteprotocol
 
 	struct ImageMetadata
 	{
+		::vl::vint id;
 		::vl::presentation::INativeImage::FormatType format;
 		::vl::Ptr<::vl::collections::List<::vl::presentation::remoteprotocol::ImageFrameMetadata>> frames;
 	};

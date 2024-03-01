@@ -26,6 +26,7 @@ struct ImageFrameMetadata
 
 struct ImageMetadata
 {
+    var id : int;
     var format : ImageFormatType;
     var frames : ImageFrameMetadata[];
 }
