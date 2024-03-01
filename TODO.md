@@ -53,8 +53,32 @@
   - VlppOS
     - Base64
     - Breaking changes: `Utf\d+(En|De)coder`, `(Text|Stream)(Reader|Writer)` and `StringReader` changed from class to typedef
+  - Check GacUI \ GacUI Components \ (compositions | Controls) and fill missing items
 
 ## Release Milestone (1.2.11.0)
+
+- Remote protocol redirection back to native rendering:
+  - In the test project, C++ side will expose the remote protocol via dll.
+  - Implement the remote protocol on a native `INativeController` instance.
+    - It could not be `GuiHostedController` or `GuiRemoteController`.
+- .net rendering
+  - Using C#.
+  - A codegen from remote protocol and print C# code.
+- JavaScript rendering:
+  - Delete all `GacJS` code. This repo will be used to implement the HTML logic.
+  - A codegen for remote protocol and print TypeScript code.
+  - In the test project, C++ side will start a HTTP service on Windows.
+  - JavaScript side will separate the rendering and the protocol.
+  - Try DOM.
+  - Try Canvas.
+    - https://github.com/WICG/canvas-formatted-text/blob/main/README.md
+      - layout provider could not be done until this is implemented.
+- The experiment will only run a very simple UI that covers all implemented remote protocol so far.
+  - Basic elements
+  - Image
+  - No text box or document
+
+## Release Milestone (1.2.12.0)
 
 - All control unit test (using DarkSkin)
   - Tooltip.
@@ -75,7 +99,7 @@
   - SyncDom.
   - Remote protocol.
 
-## Release Milestone (1.2.12.0)
+## Release Milestone (1.2.13.0)
 
 - SyncObj architecture that streams ViewModel object changes.
   - See README.md in Workflow repo (**ViewModel Remoting C++ Codegen**).
