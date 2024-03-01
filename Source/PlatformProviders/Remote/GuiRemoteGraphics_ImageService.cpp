@@ -22,27 +22,17 @@ GuiRemoteGraphicsImageFrame
 
 	Size GuiRemoteGraphicsImageFrame::GetSize()
 	{
-		CHECK_FAIL(L"Not Implemented!");
-	}
-
-	bool GuiRemoteGraphicsImageFrame::SetCache(void* key, Ptr<INativeImageFrameCache> cache)
-	{
-		CHECK_FAIL(L"vl::presentation::GuiRemoteGraphicsImageFrame::SetCache(void*, Ptr<INativeImageFrameCache>)#This function should not be called.");
-	}
-
-	Ptr<INativeImageFrameCache> GuiRemoteGraphicsImageFrame::GetCache(void* key)
-	{
-		CHECK_FAIL(L"vl::presentation::GuiRemoteGraphicsImageFrame::GetCache(void*)#This function should not be called.");
-	}
-
-	Ptr<INativeImageFrameCache> GuiRemoteGraphicsImageFrame::RemoveCache(void* key)
-	{
-		CHECK_FAIL(L"vl::presentation:GuiRemoteGraphicsImageFrame::RemoveCache(void*)#This function should not be called.");
+		image->EnsureMetadata();
+		return size;
 	}
 
 /***********************************************************************
 GuiRemoteGraphicsImage
 ***********************************************************************/
+
+	void GuiRemoteGraphicsImage::EnsureMetadata()
+	{
+	}
 
 	GuiRemoteGraphicsImage::GuiRemoteGraphicsImage(GuiRemoteController * _remote, vint _id, Ptr<stream::MemoryStream> _binary)
 		: remote(_remote)
@@ -62,22 +52,27 @@ GuiRemoteGraphicsImage
 
 	INativeImage::FormatType GuiRemoteGraphicsImage::GetFormat()
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		EnsureMetadata();
+		return format;
 	}
 
 	vint GuiRemoteGraphicsImage::GetFrameCount()
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		EnsureMetadata();
+		return frames.Count();
 	}
 
 	INativeImageFrame* GuiRemoteGraphicsImage::GetFrame(vint index)
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		EnsureMetadata();
+		return frames[index].Obj();
 	}
 
 	void GuiRemoteGraphicsImage::SaveToStream(stream::IStream& imageStream, FormatType formatType)
 	{
-		CHECK_FAIL(L"Not Implemented!");
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::GuiRemoteGraphicsImage::SaveToStream(IStream&, INativeImage::FormatType)#"
+		CHECK_FAIL(ERROR_MESSAGE_PREFIX L"This function should not be called.");
+#undef ERROR_MESSAGE_PREFIX
 	}
 
 /***********************************************************************

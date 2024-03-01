@@ -1815,6 +1815,29 @@ Native Window Controller
 
 		extern INativeServiceSubstitution*	GetNativeServiceSubstitution();
 
+/***********************************************************************
+NativeImageFrameBase
+***********************************************************************/
+
+		/// <summary>
+		/// A partial implementation for <see cref="INativeImageFrame"/>.
+		/// </summary>
+		class NativeImageFrameBase : public Object, public virtual INativeImageFrame
+		{
+			collections::Dictionary<void*, Ptr<INativeImageFrameCache>>		caches;
+		public:
+			NativeImageFrameBase();
+			~NativeImageFrameBase();
+
+			bool							SetCache(void* key, Ptr<INativeImageFrameCache> cache) override;
+			Ptr<INativeImageFrameCache>		GetCache(void* key) override;
+			Ptr<INativeImageFrameCache>		RemoveCache(void* key) override;
+		};
+
+/***********************************************************************
+Helper Functions
+***********************************************************************/
+
 		/// <summary>
 		/// Get a cursor according to the hit test result.
 		/// </summary>

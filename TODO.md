@@ -6,6 +6,7 @@
 - `vl::InjectDateTimeImpl`
 - Removed `SERIALIZE_ENUM`, enum will be automatically registered.
 - `UtfBase64(En|De)coder`.
+- `NativeImageFrameBase`.
 
 ## Known Issues
 

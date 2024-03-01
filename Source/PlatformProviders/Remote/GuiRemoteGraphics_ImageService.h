@@ -24,7 +24,7 @@ GuiRemoteGraphicsImage
 	class GuiRemoteGraphicsImage;
 	class GuiRemoteGraphicsImageService;
 
-	class GuiRemoteGraphicsImageFrame : public Object, public virtual INativeImageFrame
+	class GuiRemoteGraphicsImageFrame : public NativeImageFrameBase
 	{
 		friend class GuiRemoteGraphicsImage;
 	protected:
@@ -37,9 +37,6 @@ GuiRemoteGraphicsImage
 
 		INativeImage*						GetImage() override;
 		Size								GetSize() override;
-		bool								SetCache(void* key, Ptr<INativeImageFrameCache> cache) override;
-		Ptr<INativeImageFrameCache>			GetCache(void* key) override;
-		Ptr<INativeImageFrameCache>			RemoveCache(void* key) override;
 	};
 
 	class GuiRemoteGraphicsImage : public Object, public virtual INativeImage
@@ -62,6 +59,7 @@ GuiRemoteGraphicsImage
 		ImageFrameList						frames;
 		MetadataStatus						status = MetadataStatus::Uninitialized;
 
+		void								EnsureMetadata();
 	public:
 		GuiRemoteGraphicsImage(GuiRemoteController* _remote, vint _id, Ptr<stream::MemoryStream> _binary);
 		~GuiRemoteGraphicsImage();
