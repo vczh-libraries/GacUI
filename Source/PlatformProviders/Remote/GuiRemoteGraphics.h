@@ -12,63 +12,17 @@ Interfaces:
 #define VCZH_PRESENTATION_GUIREMOTEGRAPHICS
 
 #include "../../GraphicsElement/GuiGraphicsResourceManager.h"
-#include "Protocol/Generated/GuiRemoteProtocolSchema.h"
+#include "GuiRemoteGraphics_ImageService.h"
 
 namespace vl::presentation
 {
 	class GuiHostedController;
-	class GuiRemoteController;
 	class GuiRemoteMessages;
 
 	namespace elements_remoteprotocol
 	{
 		class IGuiRemoteProtocolElementRender;
 	}
-/***********************************************************************
-GuiRemoteGraphicsImage
-***********************************************************************/
-
-	class GuiRemoteGraphicsImage;
-
-	class GuiRemoteGraphicsImageFrame : public Object, public virtual INativeImageFrame
-	{
-		friend class GuiRemoteGraphicsImage;
-	protected:
-		GuiRemoteGraphicsImage*				image;
-		Size								size;
-
-	public:
-		GuiRemoteGraphicsImageFrame(GuiRemoteGraphicsImage* _image);
-		~GuiRemoteGraphicsImageFrame();
-
-		INativeImage*						GetImage() override;
-		Size								GetSize() override;
-		bool								SetCache(void* key, Ptr<INativeImageFrameCache> cache) override;
-		Ptr<INativeImageFrameCache>			GetCache(void* key) override;
-		Ptr<INativeImageFrameCache>			RemoveCache(void* key) override;
-	};
-
-	class GuiRemoteGraphicsImage : public Object, public virtual INativeImage
-	{
-		friend class GuiRemoteGraphicsImageFrame;
-		using ImageFrameList = collections::List<Ptr<GuiRemoteGraphicsImageFrame>>;
-	protected:
-		GuiRemoteController*				remote;
-		Ptr<stream::MemoryStream>			binary;
-		INativeImage::FormatType			format = INativeImage::Unknown;
-		ImageFrameList						frames;
-		bool								metadataRetrieved = false;
-
-	public:
-		GuiRemoteGraphicsImage(GuiRemoteController* _remote);
-		~GuiRemoteGraphicsImage();
-
-		INativeImageService*				GetImageService() override;
-		FormatType							GetFormat() override;
-		vint								GetFrameCount() override;
-		INativeImageFrame*					GetFrame(vint index) override;
-		void								SaveToStream(stream::IStream& imageStream, FormatType formatType) override;
-	};
 
 	namespace elements
 	{

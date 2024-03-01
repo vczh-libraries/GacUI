@@ -295,25 +295,6 @@ GuiRemoteController::INativeWindowService
 	}
 
 /***********************************************************************
-GuiRemoteController::INativeImageService
-***********************************************************************/
-
-	Ptr<INativeImage> GuiRemoteController::CreateImageFromFile(const WString& path)
-	{
-		CHECK_FAIL(L"Not Implemented!");
-	}
-
-	Ptr<INativeImage> GuiRemoteController::CreateImageFromMemory(void* buffer, vint length)
-	{
-		CHECK_FAIL(L"Not Implemented!");
-	}
-
-	Ptr<INativeImage> GuiRemoteController::CreateImageFromStream(stream::IStream& imageStream)
-	{
-		CHECK_FAIL(L"Not Implemented!");
-	}
-
-/***********************************************************************
 GuiRemoteController (events)
 ***********************************************************************/
 
@@ -361,6 +342,7 @@ GuiRemoteController
 		, remoteMessages(this)
 		, remoteEvents(this)
 		, remoteWindow(this)
+		, imageService(this)
 	{
 	}
 
@@ -405,7 +387,7 @@ GuiRemoteController (INativeController)
 
 	INativeImageService* GuiRemoteController::ImageService()
 	{
-		return this;
+		return &imageService;
 	}
 
 	INativeInputService* GuiRemoteController::InputService()

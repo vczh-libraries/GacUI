@@ -30,11 +30,11 @@ GuiRemoteController
 		, protected INativeScreenService
 		, protected INativeScreen
 		, protected INativeWindowService
-		, protected INativeImageService
 	{
 		friend class GuiRemoteMessages;
 		friend class GuiRemoteEvents;
 		friend class GuiRemoteWindow;
+		friend class GuiRemoteGraphicsImage;
 		friend class elements::GuiRemoteGraphicsRenderTarget;
 		friend class elements::GuiRemoteGraphicsResourceManager;
 		using CursorMap = collections::Dictionary<INativeCursor::SystemCursorType, Ptr<INativeCursor>>;
@@ -49,6 +49,7 @@ GuiRemoteController
 		elements::GuiRemoteGraphicsResourceManager*		resourceManager = nullptr;
 		SharedCallbackService							callbackService;
 		SharedAsyncService								asyncService;
+		GuiRemoteGraphicsImageService					imageService;
 		bool											applicationRunning = false;
 		bool											connectionForcedToStop = false;
 		bool											connectionStopped = false;
@@ -126,14 +127,6 @@ GuiRemoteController
 		INativeWindow*					GetWindow(NativePoint location) override;
 		void							Run(INativeWindow* window) override;
 		bool							RunOneCycle() override;
-
-		// =============================================================
-		// INativeImageService
-		// =============================================================
-
-		Ptr<INativeImage>				CreateImageFromFile(const WString& path) override;
-		Ptr<INativeImage>				CreateImageFromMemory(void* buffer, vint length) override;
-		Ptr<INativeImage>				CreateImageFromStream(stream::IStream& imageStream) override;
 
 		// =============================================================
 		// Events
