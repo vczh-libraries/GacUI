@@ -44,8 +44,10 @@ GuiRemoteGraphicsImageFrame
 GuiRemoteGraphicsImage
 ***********************************************************************/
 
-	GuiRemoteGraphicsImage::GuiRemoteGraphicsImage(GuiRemoteController * _remote)
+	GuiRemoteGraphicsImage::GuiRemoteGraphicsImage(GuiRemoteController * _remote, vint _id, Ptr<stream::MemoryStream> _binary)
 		: remote(_remote)
+		, id(_id)
+		, binary(_binary)
 	{
 	}
 
@@ -82,6 +84,13 @@ GuiRemoteGraphicsImage
 GuiRemoteGraphicsImageService
 ***********************************************************************/
 
+	Ptr<GuiRemoteGraphicsImage> GuiRemoteGraphicsImageService::CreateImage(Ptr<stream::MemoryStream> binary)
+	{
+		auto image = Ptr(new GuiRemoteGraphicsImage(remote, usedImageIds++, binary));
+		images.Add(image->id, image);
+		return image;
+	}
+
 	GuiRemoteGraphicsImageService::GuiRemoteGraphicsImageService(GuiRemoteController* _remote)
 		: remote(_remote)
 	{
@@ -93,16 +102,27 @@ GuiRemoteGraphicsImageService
 
 	Ptr<INativeImage> GuiRemoteGraphicsImageService::CreateImageFromFile(const WString& path)
 	{
-		CHECK_FAIL(L"Not Implemented!");
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::GuiRemoteGraphicsImageService::CreateImageFromFile(const WString&)#"
+		stream::FileStream fileStream(path, stream::FileStream::ReadOnly);
+		CHECK_ERROR(fileStream.IsAvailable(), ERROR_MESSAGE_PREFIX L"Unable to open file.");
+
+		auto memoryStream = Ptr(new stream::MemoryStream((vint)fileStream.Size()));
+		CopyStream(fileStream, *memoryStream.Obj());
+		return CreateImage(memoryStream);
+#undef ERROR_MESSAGE_PREFIX
 	}
 
 	Ptr<INativeImage> GuiRemoteGraphicsImageService::CreateImageFromMemory(void* buffer, vint length)
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		auto memoryStream = Ptr(new stream::MemoryStream(length));
+		memoryStream->Write(buffer, length);
+		return CreateImage(memoryStream);
 	}
 
 	Ptr<INativeImage> GuiRemoteGraphicsImageService::CreateImageFromStream(stream::IStream& imageStream)
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		auto memoryStream = Ptr(new stream::MemoryStream(imageStream.IsLimited() ? (vint)imageStream.Size() : 65536));
+		CopyStream(imageStream, *memoryStream.Obj());
+		return CreateImage(memoryStream);
 	}
 }
