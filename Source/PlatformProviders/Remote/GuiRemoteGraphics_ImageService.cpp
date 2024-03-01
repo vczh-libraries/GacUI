@@ -22,7 +22,6 @@ GuiRemoteGraphicsImageFrame
 
 	Size GuiRemoteGraphicsImageFrame::GetSize()
 	{
-		image->EnsureMetadata();
 		return size;
 	}
 
@@ -32,6 +31,38 @@ GuiRemoteGraphicsImage
 
 	void GuiRemoteGraphicsImage::EnsureMetadata()
 	{
+		if (status == MetadataStatus::Retrived) return;
+
+		remoteprotocol::ImageCreation arguments;
+		arguments.id = id;
+		if (status == MetadataStatus::Uninitialized)
+		{
+			arguments.imageData = binary;
+			arguments.imageDataOmitted = false;
+			status = MetadataStatus::Requested;
+		}
+		else
+		{
+			arguments.imageDataOmitted = true;
+		}
+
+		vint idImageCreated = remote->remoteMessages.RequestImageCreated(arguments);
+		remote->remoteMessages.Submit();
+		auto imageMetadata = remote->remoteMessages.RetrieveImageCreated(idImageCreated);
+		remote->remoteMessages.ClearResponses();
+
+		format = imageMetadata.format;
+		if (imageMetadata.frames)
+		{
+			for (auto imageFrameMetadata : *imageMetadata.frames.Obj())
+			{
+				auto frame = Ptr(new GuiRemoteGraphicsImageFrame(this));
+				frame->size = imageFrameMetadata.size;
+				frames.Add(frame);
+			}
+		}
+
+		status = MetadataStatus::Retrived;
 	}
 
 	GuiRemoteGraphicsImage::GuiRemoteGraphicsImage(GuiRemoteController * _remote, vint _id, Ptr<stream::MemoryStream> _binary)

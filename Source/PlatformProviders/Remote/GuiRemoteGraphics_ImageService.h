@@ -24,6 +24,12 @@ GuiRemoteGraphicsImage
 	class GuiRemoteGraphicsImage;
 	class GuiRemoteGraphicsImageService;
 
+	namespace elements
+	{
+		class GuiRemoteGraphicsRenderTarget;
+		class GuiImageFrameElementRenderer;
+	}
+
 	class GuiRemoteGraphicsImageFrame : public NativeImageFrameBase
 	{
 		friend class GuiRemoteGraphicsImage;
@@ -41,8 +47,9 @@ GuiRemoteGraphicsImage
 
 	class GuiRemoteGraphicsImage : public Object, public virtual INativeImage
 	{
-		friend class GuiRemoteGraphicsImageFrame;
 		friend class GuiRemoteGraphicsImageService;
+		friend class elements::GuiRemoteGraphicsRenderTarget;
+		friend class elements::GuiImageFrameElementRenderer;
 		using ImageFrameList = collections::List<Ptr<GuiRemoteGraphicsImageFrame>>;
 	protected:
 		enum class MetadataStatus

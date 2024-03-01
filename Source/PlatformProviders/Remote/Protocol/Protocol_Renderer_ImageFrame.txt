@@ -42,7 +42,7 @@ struct ElementDesc_ImageFrame
     var verticalAlignment : ElementVerticalAlignment;
     var stretch : bool;
     var enabled : bool;
-    var imageCreated : ImageMetadata?;
+    var imageCreation : ImageCreation?;
 }
 
 message RendererUpdateElement_ImageFrame            { request: ElementDesc_ImageFrame; }
