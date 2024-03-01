@@ -157,9 +157,16 @@ namespace vl::presentation::elements_remoteprotocol
 	class GuiImageFrameElementRenderer : public GuiRemoteProtocolElementRenderer<GuiImageFrameElement, GuiImageFrameElementRenderer, remoteprotocol::RendererType::ImageFrame>
 	{
 		friend class GuiElementRendererBase<GuiImageFrameElement, GuiImageFrameElementRenderer, GuiRemoteGraphicsRenderTarget>;
+	protected:
+		bool							needUpdateSize = false;
+
+		GuiRemoteGraphicsImage*			GetRemoteImage();
+		void							UpdateMinSizeFromImage(GuiRemoteGraphicsImage* image);
 	public:
 		GuiImageFrameElementRenderer();
 
+		bool							NeedUpdateMinSizeFromCache() override;
+		void							TryFetchMinSizeFromCache() override;
 		void							SendUpdateElementMessages(bool fullContent) override;
 	};
 

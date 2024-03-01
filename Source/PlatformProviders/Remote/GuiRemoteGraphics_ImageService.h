@@ -17,18 +17,22 @@ namespace vl::presentation
 {
 	class GuiRemoteController;
 
+	namespace elements
+	{
+		class GuiRemoteGraphicsRenderTarget;
+	}
+
+	namespace elements_remoteprotocol
+	{
+		class GuiImageFrameElementRenderer;
+	}
+
 /***********************************************************************
 GuiRemoteGraphicsImage
 ***********************************************************************/
 
 	class GuiRemoteGraphicsImage;
 	class GuiRemoteGraphicsImageService;
-
-	namespace elements
-	{
-		class GuiRemoteGraphicsRenderTarget;
-		class GuiImageFrameElementRenderer;
-	}
 
 	class GuiRemoteGraphicsImageFrame : public NativeImageFrameBase
 	{
@@ -49,7 +53,7 @@ GuiRemoteGraphicsImage
 	{
 		friend class GuiRemoteGraphicsImageService;
 		friend class elements::GuiRemoteGraphicsRenderTarget;
-		friend class elements::GuiImageFrameElementRenderer;
+		friend class elements_remoteprotocol::GuiImageFrameElementRenderer;
 		using ImageFrameList = collections::List<Ptr<GuiRemoteGraphicsImageFrame>>;
 	protected:
 		enum class MetadataStatus
@@ -94,6 +98,9 @@ GuiRemoteGraphicsImageService
 	public:
 		GuiRemoteGraphicsImageService(GuiRemoteController* _remote);
 		~GuiRemoteGraphicsImageService();
+
+		void								OnControllerConnect();
+		void								OnControllerDisconnect();
 
 		Ptr<INativeImage>					CreateImageFromFile(const WString& path) override;
 		Ptr<INativeImage>					CreateImageFromMemory(void* buffer, vint length) override;

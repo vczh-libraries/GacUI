@@ -1973,8 +1973,11 @@
             "$ast": "StructMember",
             "name": "imageId",
             "type": {
-                "$ast": "PrimitiveType",
-                "type": "Integer"
+                "$ast": "OptionalType",
+                "element": {
+                    "$ast": "PrimitiveType",
+                    "type": "Integer"
+                }
             }
         }, {
             "$ast": "StructMember",
@@ -2013,12 +2016,12 @@
             }
         }, {
             "$ast": "StructMember",
-            "name": "imageCreated",
+            "name": "imageCreation",
             "type": {
                 "$ast": "OptionalType",
                 "element": {
                     "$ast": "ReferenceType",
-                    "name": "ImageMetadata"
+                    "name": "ImageCreation"
                 }
             }
         }]

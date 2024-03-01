@@ -186,13 +186,13 @@ namespace vl::presentation::remoteprotocol
 	struct ElementDesc_ImageFrame
 	{
 		::vl::vint id;
-		::vl::vint imageId;
+		::vl::Nullable<::vl::vint> imageId;
 		::vl::vint imageFrame;
 		::vl::presentation::remoteprotocol::ElementHorizontalAlignment horizontalAlignment;
 		::vl::presentation::remoteprotocol::ElementVerticalAlignment verticalAlignment;
 		bool stretch;
 		bool enabled;
-		::vl::Nullable<::vl::presentation::remoteprotocol::ImageMetadata> imageCreated;
+		::vl::Nullable<::vl::presentation::remoteprotocol::ImageCreation> imageCreation;
 	};
 
 	struct RendererCreation

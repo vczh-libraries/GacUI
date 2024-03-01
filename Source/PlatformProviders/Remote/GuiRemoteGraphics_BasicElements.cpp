@@ -397,20 +397,78 @@ GuiSolidLabelElementRenderer
 GuiImageFrameElementRenderer
 ***********************************************************************/
 
+	GuiRemoteGraphicsImage* GuiImageFrameElementRenderer::GetRemoteImage()
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::elements_remoteprotocol::GuiImageFrameElementRenderer::GetRemoteImage()#"
+		if (element && element->GetImage())
+		{
+			auto image = dynamic_cast<GuiRemoteGraphicsImage*>(element->GetImage().Obj());
+			CHECK_ERROR(image, ERROR_MESSAGE_PREFIX L"Only INativeImage that created from GetCurrentController()->ImageService() is supported.");
+			return image;
+		}
+		return nullptr;
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	void GuiImageFrameElementRenderer::UpdateMinSizeFromImage(GuiRemoteGraphicsImage* image)
+	{
+		if (!image)
+		{
+			minSize = { 0,0 };
+			needUpdateSize = false;
+		}
+		else if (image->status == GuiRemoteGraphicsImage::MetadataStatus::Retrived)
+		{
+			if (0 <= element->GetFrameIndex() && element->GetFrameIndex() < image->GetFrameCount())
+			{
+				minSize = image->GetFrame(element->GetFrameIndex())->GetSize();
+			}
+			else
+			{
+				minSize = { 0,0 };
+			}
+			needUpdateSize = false;
+		}
+	}
+
 	GuiImageFrameElementRenderer::GuiImageFrameElementRenderer()
+	{
+	}
+
+	bool GuiImageFrameElementRenderer::NeedUpdateMinSizeFromCache()
+	{
+		return needUpdateSize;
+	}
+
+	void GuiImageFrameElementRenderer::TryFetchMinSizeFromCache()
 	{
 	}
 
 	void GuiImageFrameElementRenderer::SendUpdateElementMessages(bool fullContent)
 	{
+		auto* image = GetRemoteImage();
+		if (image)
+		{
+			if (fullContent && image->status == GuiRemoteGraphicsImage::MetadataStatus::Retrived)
+			{
+				image->status = GuiRemoteGraphicsImage::MetadataStatus::Uninitialized;
+			}
+			if (image->status == GuiRemoteGraphicsImage::MetadataStatus::Retrived)
+			{
+				UpdateMinSizeFromImage(image);
+			}
+			else
+			{
+				needUpdateSize = true;
+			}
+		}
+
 		// Image
 		// FrameIndex
 		// HorizontalAlignment
 		// VerticalAlignment
 		// Stretch
 		// Enabled
-		// UpdateMinSize(Stretch ? {0,0} : frame->GetSize())
-		CHECK_FAIL(L"Not Implemented!");
 	}
 
 /***********************************************************************

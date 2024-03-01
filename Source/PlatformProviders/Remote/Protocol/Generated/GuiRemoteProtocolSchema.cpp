@@ -526,7 +526,7 @@ namespace vl::presentation::remoteprotocol
 		ConvertCustomTypeToJsonField(node, L"verticalAlignment", value.verticalAlignment);
 		ConvertCustomTypeToJsonField(node, L"stretch", value.stretch);
 		ConvertCustomTypeToJsonField(node, L"enabled", value.enabled);
-		ConvertCustomTypeToJsonField(node, L"imageCreated", value.imageCreated);
+		ConvertCustomTypeToJsonField(node, L"imageCreation", value.imageCreation);
 		return node;
 	}
 
@@ -1249,7 +1249,7 @@ namespace vl::presentation::remoteprotocol
 			if (field->name.value == L"verticalAlignment") ConvertJsonToCustomType(field->value, value.verticalAlignment); else
 			if (field->name.value == L"stretch") ConvertJsonToCustomType(field->value, value.stretch); else
 			if (field->name.value == L"enabled") ConvertJsonToCustomType(field->value, value.enabled); else
-			if (field->name.value == L"imageCreated") ConvertJsonToCustomType(field->value, value.imageCreated); else
+			if (field->name.value == L"imageCreation") ConvertJsonToCustomType(field->value, value.imageCreation); else
 			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
 		}
 #undef ERROR_MESSAGE_PREFIX

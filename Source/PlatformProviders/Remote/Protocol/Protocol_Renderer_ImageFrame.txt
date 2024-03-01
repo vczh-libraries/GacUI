@@ -36,7 +36,7 @@ message ImageDestroyed                              { request: int; }
 struct ElementDesc_ImageFrame
 {
     var id : int;
-    var imageId : int;
+    var imageId : int?;
     var imageFrame : int;
     var horizontalAlignment : ElementHorizontalAlignment;
     var verticalAlignment : ElementVerticalAlignment;

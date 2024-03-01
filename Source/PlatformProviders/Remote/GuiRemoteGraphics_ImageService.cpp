@@ -126,6 +126,18 @@ GuiRemoteGraphicsImageService
 	{
 	}
 
+	void GuiRemoteGraphicsImageService::OnControllerConnect()
+	{
+		for (auto image : images.Values())
+		{
+			image->status = GuiRemoteGraphicsImage::MetadataStatus::Uninitialized;
+		}
+	}
+
+	void GuiRemoteGraphicsImageService::OnControllerDisconnect()
+	{
+	}
+
 	Ptr<INativeImage> GuiRemoteGraphicsImageService::CreateImageFromFile(const WString& path)
 	{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::GuiRemoteGraphicsImageService::CreateImageFromFile(const WString&)#"
