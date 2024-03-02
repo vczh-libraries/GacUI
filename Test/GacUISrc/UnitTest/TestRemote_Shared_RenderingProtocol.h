@@ -11,10 +11,12 @@ namespace remote_protocol_tests
 {
 	class SingleScreenRenderingProtocol : public SingleScreenProtocol
 	{
+		using ImageMetadataMap = collections::Dictionary<vint, ImageMetadata>;
 	public:
 		collections::List<WString>&			eventLogs;
 		ElementMeasurings					measuringForNextRendering;
 		Regex								regexImage{ L"(<width>/d+)x(<height>/d+)" };
+		ImageMetadataMap					imageMetadatas;
 
 		SingleScreenRenderingProtocol(SingleScreenConfig _globalConfig, collections::List<WString>& _eventLogs)
 			: SingleScreenProtocol(_globalConfig)
@@ -61,6 +63,9 @@ namespace remote_protocol_tests
 						break;
 					case RendererType::Polygon:
 						writer.WriteString(L"Polygon");
+						break;
+					case RendererType::ImageFrame:
+						writer.WriteString(L"ImageFrame");
 						break;
 					default:
 						CHECK_FAIL(L"Unrecognized RenderType");
@@ -200,19 +205,37 @@ namespace remote_protocol_tests
 
 		WString ToString(const ImageCreation& imageCreation)
 		{
-			if (imageCreation.imageDataOmitted)
+			if (!imageCreation.imageDataOmitted)
 			{
-				CHECK_ERROR(imageCreation.imageData, L"ImageCreation::imageData should not be null when imageDataOmitted == true.");
+				CHECK_ERROR(imageCreation.imageData, L"ImageCreation::imageData should not be null when imageDataOmitted == false.");
+				CHECK_ERROR(!imageMetadatas.Keys().Contains(imageCreation.id), L"ImageCreate::imageDataOmitted should be true form the second appearance.");
 				U8String data;
 				{
 					stream::StreamReader_<char8_t> reader(*imageCreation.imageData.Obj());
 					data = reader.ReadToEnd();
 				}
+				{
+					auto match = regexImage.MatchHead(data);
+					CHECK_ERROR(match, L"Unrecognized ImageCreation::imageData content in unit test.");
+
+					ImageFrameMetadata imageFrameMetadata;
+					imageFrameMetadata.size.x = wtoi(u8tow(match->Groups()[regexImage.CaptureNames().IndexOf(L"width")][0].Value()));
+					imageFrameMetadata.size.y = wtoi(u8tow(match->Groups()[regexImage.CaptureNames().IndexOf(L"height")][0].Value()));
+
+					ImageMetadata imageMetadata;
+					imageMetadata.id = imageCreation.id;
+					imageMetadata.format = INativeImage::Png;
+					imageMetadata.frames = Ptr(new List<ImageFrameMetadata>);
+					imageMetadata.frames->Add(imageFrameMetadata);
+
+					imageMetadatas.Add(imageCreation.id, imageMetadata);
+				}
 				return L"{id:" + itow(imageCreation.id) + L", data:" + u8tow(data) + L"}";
 			}
 			else
 			{
-				CHECK_ERROR(!imageCreation.imageData, L"ImageCreation::imageData should be null when imageDataOmitted == false.");
+				CHECK_ERROR(!imageCreation.imageData, L"ImageCreation::imageData should be null when imageDataOmitted == true.");
+				CHECK_ERROR(imageMetadatas.Keys().Contains(imageCreation.id), L"ImageCreate::imageDataOmitted should be false for the first appearance.");
 				return L"{id:" + itow(imageCreation.id) + L", data:omitted}";
 			}
 		}
@@ -366,6 +389,10 @@ namespace remote_protocol_tests
 				+ ToString(arguments)
 				+ L")"
 				);
+			if (!arguments.imageDataOmitted)
+			{
+				events->RespondImageCreated(id, imageMetadatas[arguments.id]);
+			}
 		}
 
 		void RequestImageDestroyed(const vint& arguments) override
@@ -389,9 +416,17 @@ namespace remote_protocol_tests
 				+ (arguments.stretch ? L"[s]" : L"")
 				+ (arguments.enabled ? L"[e]" : L"")
 				+ L">"
-				+ (arguments.imageCreation ? L", " + ToString(arguments.imageCreation.Value()) : L"")
+				+ (arguments.imageCreation ? L", <imageCreation:" + ToString(arguments.imageCreation.Value()) + L">" : L"")
 				+ L")"
-			);
+				);
+			if (arguments.imageCreation && !arguments.imageCreation.Value().imageDataOmitted)
+			{
+				if (!measuringForNextRendering.createdImages)
+				{
+					measuringForNextRendering.createdImages = Ptr(new List<ImageMetadata>);
+				}
+				measuringForNextRendering.createdImages->Add(imageMetadatas[arguments.imageCreation.Value().id]);
+			}
 		}
 	};
 
