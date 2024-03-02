@@ -60,4 +60,16 @@ TEST_FILE
 		SetGuiMainProxy(MakeGuiMain(protocol, eventLogs, controlHost));
 		StartRemoteControllerTest(protocol);
 	});
+
+	TEST_CATEGORY(L"Stretch and Disabled")
+	{
+	});
+
+	TEST_CATEGORY(L"Change image")
+	{
+	});
+
+	TEST_CATEGORY(L"Disconnect after caching image metadata to trigger recache")
+	{
+	});
 }
