@@ -36,7 +36,8 @@ TEST_FILE
 			AssertEventLogs(
 				eventLogs,
 				L"Created(<1:ImageElement>)",
-				L"Updated(1, (0:0), Left, Top, <flags:>, <imageCreation:{id:0, data:30x40}>)",
+				L"ImageCreated({id:0, data:30x40})",
+				L"Updated(1, (0:0), Left, Top, <flags:>, <imageCreation:{id:0, data:omitted}>)",
 				L"Begin()",
 				L"Render(1, {0,0:0,0}, {0,0:640,480})",
 				L"End()"

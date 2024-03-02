@@ -161,7 +161,8 @@ public:
 		void SaveToStream(stream::IStream& imageStream, FormatType formatType) override
 		{
 			CHECK_ERROR(formatType == FormatType::Unknown, L"Not Implemented!");
-			CopyStream(imageStream, memoryStream);
+			memoryStream.SeekFromBegin(0);
+			CopyStream(memoryStream, imageStream);
 		}
 	};
 

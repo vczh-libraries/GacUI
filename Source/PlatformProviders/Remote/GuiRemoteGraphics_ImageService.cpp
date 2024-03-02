@@ -55,7 +55,7 @@ GuiRemoteGraphicsImage
 	remoteprotocol::ImageCreation GuiRemoteGraphicsImage::GenerateImageCreation()
 	{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::GuiRemoteGraphicsImage::GenerateImageCreation()#"
-		CHECK_ERROR(status == MetadataStatus::Retrived, L"Cannot call this function when status is Retrived.");
+		CHECK_ERROR(status != MetadataStatus::Retrived, L"Cannot call this function when status is Retrived.");
 
 		remoteprotocol::ImageCreation arguments;
 		arguments.id = id;
@@ -199,6 +199,7 @@ GuiRemoteGraphicsImageService
 	Ptr<INativeImage> GuiRemoteGraphicsImageService::CreateImageFromStream(stream::IStream& imageStream)
 	{
 		auto memoryStream = Ptr(new stream::MemoryStream(imageStream.IsLimited() ? (vint)imageStream.Size() : 65536));
+		imageStream.SeekFromBegin(0);
 		CopyStream(imageStream, *memoryStream.Obj());
 		return CreateImage(memoryStream);
 	}
