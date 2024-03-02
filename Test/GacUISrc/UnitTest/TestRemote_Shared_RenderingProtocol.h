@@ -4,6 +4,7 @@
 #include "TestRemote_Shared_NoRenderingProtocol.h"
 #include "TestRemote_Shared_LoggingWindowListener.h"
 
+using namespace vl::regex;
 using namespace vl::presentation::elements;
 
 namespace remote_protocol_tests
@@ -13,6 +14,7 @@ namespace remote_protocol_tests
 	public:
 		collections::List<WString>&			eventLogs;
 		ElementMeasurings					measuringForNextRendering;
+		Regex								regexImage{ L"(<width>/d+)x(<height>/d+)" };
 
 		SingleScreenRenderingProtocol(SingleScreenConfig _globalConfig, collections::List<WString>& _eventLogs)
 			: SingleScreenProtocol(_globalConfig)
@@ -196,6 +198,25 @@ namespace remote_protocol_tests
 			}
 		}
 
+		WString ToString(const ImageCreation& imageCreation)
+		{
+			if (imageCreation.imageDataOmitted)
+			{
+				CHECK_ERROR(imageCreation.imageData, L"ImageCreation::imageData should not be null when imageDataOmitted == true.");
+				U8String data;
+				{
+					stream::StreamReader_<char8_t> reader(*imageCreation.imageData.Obj());
+					data = reader.ReadToEnd();
+				}
+				return L"{id:" + itow(imageCreation.id) + L", data:" + u8tow(data) + L"}";
+			}
+			else
+			{
+				CHECK_ERROR(!imageCreation.imageData, L"ImageCreation::imageData should be null when imageDataOmitted == false.");
+				return L"{id:" + itow(imageCreation.id) + L", data:omitted}";
+			}
+		}
+
 		void RequestRendererBeginRendering() override
 		{
 			eventLogs.Add(WString::Unmanaged(L"Begin()"));
@@ -336,6 +357,41 @@ namespace remote_protocol_tests
 				+ L", " + (arguments.measuringRequest ? L"<request:" + ToString(arguments.measuringRequest.Value()) + L">" : L"<norequest>")
 				+ L")"
 				);
+		}
+
+		void RequestImageCreated(vint id, const ImageCreation& arguments) override
+		{
+			eventLogs.Add(
+				L"ImageCreated("
+				+ ToString(arguments)
+				+ L")"
+				);
+		}
+
+		void RequestImageDestroyed(const vint& arguments) override
+		{
+			eventLogs.Add(
+				L"ImageDestroyed("
+				+ itow(arguments)
+				+ L")"
+				);
+		}
+
+		void RequestRendererUpdateElement_ImageFrame(const ElementDesc_ImageFrame& arguments) override
+		{
+			eventLogs.Add(
+				L"Updated("
+				+ itow(arguments.id)
+				+ L", (" + (arguments.imageId ? itow(arguments.imageId.Value()) : L"null") + L":" + itow(arguments.imageFrame) + L")"
+				+ L", " + ToString(arguments.horizontalAlignment)
+				+ L", " + ToString(arguments.verticalAlignment)
+				+ L", <flags:"
+				+ (arguments.stretch ? L"[s]" : L"")
+				+ (arguments.enabled ? L"[e]" : L"")
+				+ L">"
+				+ (arguments.imageCreation ? L", " + ToString(arguments.imageCreation.Value()) : L"")
+				+ L")"
+			);
 		}
 	};
 
