@@ -65,7 +65,7 @@ TEST_FILE
 	{
 	});
 
-	TEST_CATEGORY(L"Change image")
+	TEST_CATEGORY(L"Change image and delete old one")
 	{
 	});
 
