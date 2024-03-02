@@ -2010,7 +2010,8 @@ UtfGeneralDecoder
 				{
 					TExpect c = reader.Read();
 					if (!c) break;
-					((TExpect*)_buffer)[i] = c;
+					*((TExpect*)writing) = c;
+					writing += sizeof(TExpect);
 					readBytes += sizeof(TExpect);
 				}
 				if (readBytes == 0) break;

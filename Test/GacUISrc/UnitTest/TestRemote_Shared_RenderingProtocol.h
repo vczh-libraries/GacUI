@@ -211,6 +211,7 @@ namespace remote_protocol_tests
 				CHECK_ERROR(!imageMetadatas.Keys().Contains(imageCreation.id), L"ImageCreate::imageDataOmitted should be true form the second appearance.");
 				U8String data;
 				{
+					imageCreation.imageData->SeekFromBegin(0);
 					stream::StreamReader_<char8_t> reader(*imageCreation.imageData.Obj());
 					data = reader.ReadToEnd();
 				}

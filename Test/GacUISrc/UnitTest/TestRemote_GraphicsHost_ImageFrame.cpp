@@ -32,28 +32,18 @@ TEST_FILE
 
 		protocol.OnNextFrame([&]()
 		{
-			// Render for the first time and send back size of the image
+			// Image is created when calling GuiImageFrameElement::SetImage, size already sent back
+			// Render for the first time, the size of image is updated to the composition
 			AssertEventLogs(
 				eventLogs,
-				L"Created(<1:ImageElement>)",
 				L"ImageCreated({id:0, data:30x40})",
-				L"Updated(1, (0:0), Left, Top, <flags:>, <imageCreation:{id:0, data:omitted}>)",
+				L"Created(<1:ImageFrame>)",
+				L"Updated(1, (0:0), Left, Top, <flags:[e]>)",
 				L"Begin()",
 				L"Render(1, {0,0:0,0}, {0,0:640,480})",
 				L"End()"
 				);
 			TEST_ASSERT(!protocol.measuringForNextRendering.createdImages);
-		});
-
-		protocol.OnNextFrame([&]()
-		{
-			// Render for the second time and the size of image is updated to the composition
-			AssertEventLogs(
-				eventLogs,
-				L"Begin()",
-				L"Render(1, {10,10:0,0}, {0,0:640,480})",
-				L"End()"
-				);
 		});
 
 		AssertRenderingEventLogs(
