@@ -355,10 +355,12 @@ GuiRemoteController
 	void GuiRemoteController::Initialize()
 	{
 		remoteProtocol->Initialize(&remoteEvents);
+		imageService.Initialize();
 	}
 
 	void GuiRemoteController::Finalize()
 	{
+		imageService.Finalize();
 		remoteMessages.RequestControllerConnectionStopped();
 		remoteMessages.Submit();
 	}

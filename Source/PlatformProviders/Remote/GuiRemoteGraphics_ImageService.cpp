@@ -41,15 +41,21 @@ GuiRemoteGraphicsImage
 		UpdateFromImageMetadata(imageMetadata);
 	}
 
-	GuiRemoteGraphicsImage::GuiRemoteGraphicsImage(GuiRemoteController * _remote, vint _id, Ptr<stream::MemoryStream> _binary)
+	GuiRemoteGraphicsImage::GuiRemoteGraphicsImage(GuiRemoteController* _remote, vint _id, Ptr<stream::MemoryStream> _binary)
 		: remote(_remote)
 		, id(_id)
 		, binary(_binary)
 	{
+		remote->imageService.images.Add(id, this);
 	}
 
 	GuiRemoteGraphicsImage::~GuiRemoteGraphicsImage()
 	{
+		if (remote)
+		{
+			remote->remoteMessages.RequestImageDestroyed(id);
+			remote->imageService.images.Remove(id);
+		}
 	}
 
 	remoteprotocol::ImageCreation GuiRemoteGraphicsImage::GenerateImageCreation()
@@ -146,9 +152,7 @@ GuiRemoteGraphicsImageService
 
 	Ptr<GuiRemoteGraphicsImage> GuiRemoteGraphicsImageService::CreateImage(Ptr<stream::MemoryStream> binary)
 	{
-		auto image = Ptr(new GuiRemoteGraphicsImage(remote, usedImageIds++, binary));
-		images.Add(image->id, image);
-		return image;
+		return Ptr(new GuiRemoteGraphicsImage(remote, usedImageIds++, binary));
 	}
 
 	GuiRemoteGraphicsImageService::GuiRemoteGraphicsImageService(GuiRemoteController* _remote)
@@ -172,7 +176,21 @@ GuiRemoteGraphicsImageService
 	{
 	}
 
-	Ptr<GuiRemoteGraphicsImage> GuiRemoteGraphicsImageService::GetImage(vint id)
+	void GuiRemoteGraphicsImageService::Initialize()
+	{
+	}
+
+	void GuiRemoteGraphicsImageService::Finalize()
+	{
+		// TODO: (enumerable) foreach:reversed
+		for (vint i = images.Count() - 1; i >= 0; i--)
+		{
+			images.Values()[i]->remote = nullptr;
+		}
+		images.Clear();
+	}
+
+	GuiRemoteGraphicsImage* GuiRemoteGraphicsImageService::GetImage(vint id)
 	{
 		return images[id];
 	}
@@ -180,6 +198,7 @@ GuiRemoteGraphicsImageService
 	Ptr<INativeImage> GuiRemoteGraphicsImageService::CreateImageFromFile(const WString& path)
 	{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::GuiRemoteGraphicsImageService::CreateImageFromFile(const WString&)#"
+		CHECK_ERROR(remote, ERROR_MESSAGE_PREFIX L"This function cannot be called when GuiRemoteController is shut down.");
 		stream::FileStream fileStream(path, stream::FileStream::ReadOnly);
 		CHECK_ERROR(fileStream.IsAvailable(), ERROR_MESSAGE_PREFIX L"Unable to open file.");
 
@@ -191,16 +210,22 @@ GuiRemoteGraphicsImageService
 
 	Ptr<INativeImage> GuiRemoteGraphicsImageService::CreateImageFromMemory(void* buffer, vint length)
 	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::GuiRemoteGraphicsImageService::CreateImageFromMemory(void*, vint)#"
+		CHECK_ERROR(remote, ERROR_MESSAGE_PREFIX L"This function cannot be called when GuiRemoteController is shut down.");
 		auto memoryStream = Ptr(new stream::MemoryStream(length));
 		memoryStream->Write(buffer, length);
 		return CreateImage(memoryStream);
+#undef ERROR_MESSAGE_PREFIX
 	}
 
 	Ptr<INativeImage> GuiRemoteGraphicsImageService::CreateImageFromStream(stream::IStream& imageStream)
 	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::GuiRemoteGraphicsImageService::CreateImageFromStream(IStream&)#"
+		CHECK_ERROR(remote, ERROR_MESSAGE_PREFIX L"This function cannot be called when GuiRemoteController is shut down.");
 		auto memoryStream = Ptr(new stream::MemoryStream(imageStream.IsLimited() ? (vint)imageStream.Size() : 65536));
 		imageStream.SeekFromBegin(0);
 		CopyStream(imageStream, *memoryStream.Obj());
 		return CreateImage(memoryStream);
+#undef ERROR_MESSAGE_PREFIX
 	}
 }

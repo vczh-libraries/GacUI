@@ -91,7 +91,8 @@ GuiRemoteGraphicsImageService
 
 	class GuiRemoteGraphicsImageService : public Object, public virtual INativeImageService
 	{
-		using ImageMap = collections::Dictionary<vint, Ptr<GuiRemoteGraphicsImage>>;
+		friend class GuiRemoteGraphicsImage;
+		using ImageMap = collections::Dictionary<vint, GuiRemoteGraphicsImage*>;
 	protected:
 		GuiRemoteController*				remote;
 		vint								usedImageIds = 0;
@@ -104,7 +105,9 @@ GuiRemoteGraphicsImageService
 
 		void								OnControllerConnect();
 		void								OnControllerDisconnect();
-		Ptr<GuiRemoteGraphicsImage>			GetImage(vint id);
+		void								Initialize();
+		void								Finalize();
+		GuiRemoteGraphicsImage*				GetImage(vint id);
 
 		Ptr<INativeImage>					CreateImageFromFile(const WString& path) override;
 		Ptr<INativeImage>					CreateImageFromMemory(void* buffer, vint length) override;
