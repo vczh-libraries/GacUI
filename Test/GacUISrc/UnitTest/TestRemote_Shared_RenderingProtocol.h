@@ -432,20 +432,8 @@ namespace remote_protocol_tests
 	};
 
 	template<typename TProtocol, typename TActionAfterRenderingStops, typename ...TRenderingEvents>
-	void AssertRenderingEventLogs(TProtocol& protocol, List<WString>& eventLogs, TActionAfterRenderingStops&& actionAfterRenderingStops, TRenderingEvents&& ...renderingEvents)
+	void AssertRenderingEventLogsNoLayout(TProtocol& protocol, List<WString>& eventLogs, TActionAfterRenderingStops&& actionAfterRenderingStops, TRenderingEvents&& ...renderingEvents)
 	{
-		protocol.OnNextFrame([=, &eventLogs]()
-		{
-			// GuiGraphicsHost::Render set updated = true
-			// GuiHostedController::GlobalTimer set windowsUpdatedInLastFrame = true
-			AssertEventLogs(
-				eventLogs,
-				L"Begin()",
-				renderingEvents...,
-				L"End()"
-				);
-		});
-
 		protocol.OnNextFrame([=, &eventLogs]()
 		{
 			// GuiGraphicsHost::Render set updated = false
@@ -464,6 +452,29 @@ namespace remote_protocol_tests
 			AssertEventLogs(eventLogs);
 			actionAfterRenderingStops();
 		});
+	}
+
+	template<typename TProtocol, typename TActionAfterRenderingStops, typename ...TRenderingEvents>
+	void AssertRenderingEventLogs(TProtocol& protocol, List<WString>& eventLogs, TActionAfterRenderingStops&& actionAfterRenderingStops, TRenderingEvents&& ...renderingEvents)
+	{
+		protocol.OnNextFrame([=, &eventLogs]()
+		{
+			// GuiGraphicsHost::Render set updated = true
+			// GuiHostedController::GlobalTimer set windowsUpdatedInLastFrame = true
+			AssertEventLogs(
+				eventLogs,
+				L"Begin()",
+				renderingEvents...,
+				L"End()"
+				);
+		});
+
+		AssertRenderingEventLogsNoLayout(
+			protocol,
+			eventLogs,
+			std::forward<TActionAfterRenderingStops&&>(actionAfterRenderingStops),
+			std::forward<TRenderingEvents&&>(renderingEvents)...
+			);
 	}
 }
 
