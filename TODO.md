@@ -27,13 +27,10 @@
 
 ## Release Milestone (1.2.10.0)
 
-- Implement basic control (`Source_GacUI_CoreApplication` controls only) unit test based on streaming
-  - Implement `SolidLabelElement.
+- Unit test framework
+  - Implement `SolidLabelElement`.
     - Each character takes exactly `FontSize x FontSize`
     - Deal with `\r` and `\n` when multiline is enabled
-  - Skipped time related features, like tooltip.
-- Metadata of remote protovol will be updated and included in releases.
-- Unit test framework
   - `ImageData.xml` is required before loading any resources for the unit test framework to know metadata of images before loading it.
     - A parser is provided, a data structure is required in runtime.
     - It is used to simulate the remote protocol consumer sending back metadata after receiving binary data of an image.
@@ -41,6 +38,9 @@
   - `::UnitTestStartup::LoadMainWindow` static method will be called to create the main window.
   - A viewer to view unit test results logged from SyncDom and other stuff after each time when layout stops.
   - Move unit test utilities to `GacUI.UnitTest.cpp`, `GacUI.UnitTest.h`, `GacUI.UnitTest.Reflection ...`
+- Implement basic control (`Source_GacUI_CoreApplication` controls only) unit test based on streaming
+  - Skipped time related features, like tooltip.
+- Metadata of remote protovol will be updated and included in releases.
 - GacUI Binary Resource (can't move to next release)
   - Upgrade GacUI XML Resource to 1.3, force on all resources instead of only depended or depending resource.
   - Require binary pattern "[GMR-1.3]" at the beginning of the binary resource.
