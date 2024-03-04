@@ -57,6 +57,7 @@
 
 ## Release Milestone (1.2.11.0)
 
+- Stretched `GuiImageElement` in remote renderer should update its min size to 0x0.
 - Remote protocol redirection back to native rendering:
   - In the test project, C++ side will expose the remote protocol via dll.
   - Implement the remote protocol on a native `INativeController` instance.
