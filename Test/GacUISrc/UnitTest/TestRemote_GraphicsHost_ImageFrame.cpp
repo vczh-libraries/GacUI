@@ -261,13 +261,41 @@ TEST_FILE
 			eventLogs,
 			[&]()
 			{
-				controlHost->Hide();
+				// Reconnect again
+				protocol.events->OnControllerDisconnect();
+				protocol.events->OnControllerConnect();
 			},
 			// Size of the composition becomes (30,40) and (50,60)
 			L"Render(1, {10,10:30,40}, {0,0:640,480})",
 			L"Render(2, {20,20:30,40}, {0,0:640,480})",
 			L"Render(3, {30,30:50,60}, {0,0:640,480})"
 			);
+
+		protocol.OnNextFrame([&]()
+		{
+			// There will be no ImageCreated
+			// Instead metadata will be asked via Updated
+			AssertEventLogs(
+				eventLogs,
+				L"Created(<1:ImageFrame>, <2:ImageFrame>, <3:ImageFrame>)",
+				L"Updated(1, (1:0), Left, Top, <flags:[e]>, <imageCreation:{id:1, data:30x40}>)",
+				L"Updated(2, (1:0), Left, Top, <flags:[e]>, <imageCreation:{id:1, data:omitted}>)",
+				L"Updated(3, (2:0), Left, Top, <flags:[e]>, <imageCreation:{id:2, data:50x60}>)",
+				L"Begin()",
+				L"Render(1, {10,10:30,40}, {0,0:640,480})",
+				L"Render(2, {20,20:30,40}, {0,0:640,480})",
+				L"Render(3, {30,30:50,60}, {0,0:640,480})",
+				L"End()"
+				);
+			TEST_ASSERT(!protocol.measuringForNextRendering.createdImages);
+		});
+
+		protocol.OnNextFrame([&]()
+		{
+			// Nothing really get updated
+			AssertEventLogs(eventLogs);
+			controlHost->Hide();
+		});
 
 		SetGuiMainProxy(MakeGuiMain(protocol, eventLogs, controlHost));
 		StartRemoteControllerTest(protocol);

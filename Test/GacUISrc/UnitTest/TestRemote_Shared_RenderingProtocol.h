@@ -24,6 +24,12 @@ namespace remote_protocol_tests
 		{
 		}
 
+		void RequestControllerConnectionEstablished() override
+		{
+			SingleScreenProtocol::RequestControllerConnectionEstablished();
+			imageMetadatas.Clear();
+		}
+
 		void RequestRendererCreated(const Ptr<List<RendererCreation>>& arguments) override
 		{
 			eventLogs.Add(stream::GenerateToStream([&](stream::TextWriter& writer)
