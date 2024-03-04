@@ -166,10 +166,33 @@ TEST_FILE
 			eventLogs,
 			[&]()
 			{
+				element->SetStretch(false);
+			},
+			// Size is not changed because it is still stretched
+			L"Render(1, {10,10:0,0}, {0,0:640,480})"
+			);
+
+		protocol.OnNextFrame([&]()
+		{
+			// Size (50,60) is updated to the composition because the image is not stretched
+			AssertEventLogs(
+				eventLogs,
+				L"Updated(1, (2:0), Left, Top, <flags:>)",
+				L"Begin()",
+				L"Render(1, {10,10:0,0}, {0,0:640,480})",
+				L"End()"
+				);
+		});
+
+		AssertRenderingEventLogs(
+			protocol,
+			eventLogs,
+			[&]()
+			{
 				controlHost->Hide();
 			},
-			// Size of the composition becomes (0,0) because it is stretched
-			L"Render(1, {10,10:0,0}, {0,0:640,480})"
+			// Size of the composition becomes (50,60)
+			L"Render(1, {10,10:50,60}, {0,0:640,480})"
 			);
 
 		SetGuiMainProxy(MakeGuiMain(protocol, eventLogs, controlHost));
