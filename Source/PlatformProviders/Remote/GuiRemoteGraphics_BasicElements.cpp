@@ -412,7 +412,7 @@ GuiImageFrameElementRenderer
 
 	void GuiImageFrameElementRenderer::UpdateMinSizeFromImage(GuiRemoteGraphicsImage* image)
 	{
-		if (!image)
+		if (!image || element->GetStretch())
 		{
 			minSize = { 0,0 };
 			needUpdateSize = false;
@@ -442,11 +442,20 @@ GuiImageFrameElementRenderer
 
 	void GuiImageFrameElementRenderer::TryFetchMinSizeFromCache()
 	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::elements_remoteprotocol::GuiImageFrameElementRenderer::TryFetchMinSizeFromCache()#"
+		auto image = GetRemoteImage();
+		if (image)
+		{
+			CHECK_ERROR(image->status == GuiRemoteGraphicsImage::MetadataStatus::Retrived, ERROR_MESSAGE_PREFIX L"The expected metadata of an image does not exist.");
+		}
+		UpdateMinSizeFromImage(image);
+		needUpdateSize = false;
+#undef ERROR_MESSAGE_PREFIX
 	}
 
 	void GuiImageFrameElementRenderer::SendUpdateElementMessages(bool fullContent)
 	{
-		auto* image = GetRemoteImage();
+		auto image = GetRemoteImage();
 		if (image)
 		{
 			if (fullContent && image->status == GuiRemoteGraphicsImage::MetadataStatus::Retrived)

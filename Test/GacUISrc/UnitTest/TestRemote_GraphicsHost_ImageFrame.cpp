@@ -118,7 +118,7 @@ TEST_FILE
 
 		protocol.OnNextFrame([&]()
 		{
-			// Size is not changed
+			// Size (0,0) is updated to the composition because the image is stretched
 			AssertEventLogs(
 				eventLogs,
 				L"Updated(1, (1:0), Left, Top, <flags:[s]>)",
@@ -128,7 +128,7 @@ TEST_FILE
 				);
 		});
 
-		AssertRenderingEventLogsNoLayout(
+		AssertRenderingEventLogs(
 			protocol,
 			eventLogs,
 			[&]()
@@ -141,7 +141,8 @@ TEST_FILE
 				auto image = GetCurrentController()->ImageService()->CreateImageFromStream(imageData);
 				element->SetImage(image);
 			},
-			L"Render(1, {10,10:30,40}, {0,0:640,480})"
+			// Size of the composition becomes (0,0)
+			L"Render(1, {10,10:0,0}, {0,0:640,480})"
 			);
 
 		protocol.OnNextFrame([&]()
@@ -154,21 +155,21 @@ TEST_FILE
 				L"ImageDestroyed(1)",
 				L"Updated(1, (2:0), Left, Top, <flags:[s]>)",
 				L"Begin()",
-				L"Render(1, {10,10:30,40}, {0,0:640,480})",
+				L"Render(1, {10,10:0,0}, {0,0:640,480})",
 				L"End()"
 				);
 			TEST_ASSERT(!protocol.measuringForNextRendering.createdImages);
 		});
 
-		AssertRenderingEventLogs(
+		AssertRenderingEventLogsNoLayout(
 			protocol,
 			eventLogs,
 			[&]()
 			{
 				controlHost->Hide();
 			},
-			// Size of the composition becomes (50,60)
-			L"Render(1, {10,10:50,60}, {0,0:640,480})"
+			// Size of the composition becomes (0,0) because it is stretched
+			L"Render(1, {10,10:0,0}, {0,0:640,480})"
 			);
 
 		SetGuiMainProxy(MakeGuiMain(protocol, eventLogs, controlHost));
