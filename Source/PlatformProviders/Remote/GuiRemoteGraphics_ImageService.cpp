@@ -152,7 +152,7 @@ GuiRemoteGraphicsImageService
 
 	Ptr<GuiRemoteGraphicsImage> GuiRemoteGraphicsImageService::CreateImage(Ptr<stream::MemoryStream> binary)
 	{
-		return Ptr(new GuiRemoteGraphicsImage(remote, usedImageIds++, binary));
+		return Ptr(new GuiRemoteGraphicsImage(remote, ++usedImageIds, binary));
 	}
 
 	GuiRemoteGraphicsImageService::GuiRemoteGraphicsImageService(GuiRemoteController* _remote)
