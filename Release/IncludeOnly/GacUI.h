@@ -89,6 +89,7 @@ DEVELOPER: Zihan Chen(vczh)
 #include "..\..\Source\Controls\IncludeAll.h"
 #include "..\..\Source\PlatformProviders\Remote\GuiRemoteProtocolSchemaShared.h"
 #include "..\..\Source\PlatformProviders\Remote\Protocol\Generated\GuiRemoteProtocolSchema.h"
+#include "..\..\Source\PlatformProviders\Remote\GuiRemoteGraphics_ImageService.h"
 #include "..\..\Source\PlatformProviders\Remote\GuiRemoteGraphics.h"
 #include "..\..\Source\PlatformProviders\Remote\GuiRemoteGraphics_BasicElements.h"
 #include "..\..\Source\PlatformProviders\Remote\GuiRemoteProtocol.h"

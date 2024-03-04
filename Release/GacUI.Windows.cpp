@@ -13691,11 +13691,6 @@ WindowsImageFrame
 
 			WindowsImageFrame::~WindowsImageFrame()
 			{
-				// TODO: (enumerable) foreach
-				for(vint i=0;i<caches.Count();i++)
-				{
-					caches.Values().Get(i)->OnDetach(this);
-				}
 			}
 
 			INativeImage* WindowsImageFrame::GetImage()
@@ -13709,37 +13704,6 @@ WindowsImageFrame
 				UINT height=0;
 				frameBitmap->GetSize(&width, &height);
 				return Size(width, height);
-			}
-
-			bool WindowsImageFrame::SetCache(void* key, Ptr<INativeImageFrameCache> cache)
-			{
-				vint index=caches.Keys().IndexOf(key);
-				if(index!=-1)
-				{
-					return false;
-				}
-				caches.Add(key, cache);
-				cache->OnAttach(this);
-				return true;
-			}
-
-			Ptr<INativeImageFrameCache> WindowsImageFrame::GetCache(void* key)
-			{
-				vint index=caches.Keys().IndexOf(key);
-				return index==-1?nullptr:caches.Values().Get(index);
-			}
-
-			Ptr<INativeImageFrameCache> WindowsImageFrame::RemoveCache(void* key)
-			{
-				vint index=caches.Keys().IndexOf(key);
-				if(index==-1)
-				{
-					return 0;
-				}
-				Ptr<INativeImageFrameCache> cache=caches.Values().Get(index);
-				cache->OnDetach(this);
-				caches.Remove(key);
-				return cache;
 			}
 
 			IWICBitmap* WindowsImageFrame::GetFrameBitmap()

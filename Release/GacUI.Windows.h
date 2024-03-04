@@ -1926,12 +1926,11 @@ namespace vl
 	{
 		namespace windows
 		{
-			class WindowsImageFrame : public Object, public INativeImageFrame
+			class WindowsImageFrame : public NativeImageFrameBase
 			{
 			protected:
 				INativeImage*													image;
 				ComPtr<IWICBitmap>												frameBitmap;
-				collections::Dictionary<void*, Ptr<INativeImageFrameCache>>		caches;
 
 				void										Initialize(IWICBitmapSource* bitmapSource);
 			public:
@@ -1941,9 +1940,6 @@ namespace vl
 
 				INativeImage*								GetImage()override;
 				Size										GetSize()override;
-				bool										SetCache(void* key, Ptr<INativeImageFrameCache> cache)override;
-				Ptr<INativeImageFrameCache>					GetCache(void* key)override;
-				Ptr<INativeImageFrameCache>					RemoveCache(void* key)override;
 				IWICBitmap*									GetFrameBitmap();
 				void										SaveBitmapToStream(stream::IStream& imageStream);
 			};
