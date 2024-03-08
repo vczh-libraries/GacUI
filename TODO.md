@@ -27,6 +27,7 @@
 
 ## Release Milestone (1.2.10.0)
 
+- Check all `GUI_REGISTER_PLUGIN` and ensure `Unload` undoes everything, not just finalizing. A plugin could be load and unload many times.
 - Unit test framework
   - Implement `SolidLabelElement`.
     - Each character takes exactly `FontSize x FontSize`
