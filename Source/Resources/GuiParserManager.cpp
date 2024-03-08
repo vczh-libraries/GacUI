@@ -62,16 +62,22 @@ IGuiParserManager
 			{
 			}
 
-			void Load()override
+			void Load(bool controllerRelatedOnly)override
 			{
-				parserManager = this;
-				SetParser(L"XML", Ptr(new GuiParser_Xml()));
-				SetParser(L"JSON", Ptr(new GuiParser_Json()));
+				if (!controllerRelatedOnly)
+				{
+					parserManager = this;
+					SetParser(L"XML", Ptr(new GuiParser_Xml()));
+					SetParser(L"JSON", Ptr(new GuiParser_Json()));
+				}
 			}
 
-			void Unload()override
+			void Unload(bool controllerRelatedOnly)override
 			{
-				parserManager=0;
+				if (!controllerRelatedOnly)
+				{
+					parserManager = nullptr;
+				}
 			}
 
 			Ptr<IGuiGeneralParser> GetParser(const WString& name)override

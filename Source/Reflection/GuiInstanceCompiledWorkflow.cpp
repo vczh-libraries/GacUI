@@ -210,13 +210,16 @@ Plugin
 				GUI_PLUGIN_DEPEND(GacUI_Res_ResourceResolver);
 			}
 
-			void Load()override
+			void Load(bool controllerRelatedOnly)override
 			{
-				IGuiResourceResolverManager* manager = GetResourceResolverManager();
-				manager->SetTypeResolver(Ptr(new GuiResourceCompiledWorkflowTypeResolver));
+				if (!controllerRelatedOnly)
+				{
+					IGuiResourceResolverManager* manager = GetResourceResolverManager();
+					manager->SetTypeResolver(Ptr(new GuiResourceCompiledWorkflowTypeResolver));
+				}
 			}
 
-			void Unload()override
+			void Unload(bool controllerRelatedOnly)override
 			{
 			}
 		};

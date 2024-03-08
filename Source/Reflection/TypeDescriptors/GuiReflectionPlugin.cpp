@@ -40,22 +40,25 @@ namespace vl
 				{
 				}
 
-				void Load()override
+				void Load(bool controllerRelatedOnly)override
 				{
-					LoadPredefinedTypes();
-					LoadParsing2Types();
-					XmlAstLoadTypes();
-					JsonAstLoadTypes();
-					WfLoadLibraryTypes();
-					LoadGuiBasicTypes();
-					LoadGuiElementTypes();
-					LoadGuiCompositionTypes();
-					LoadGuiEventTypes();
-					LoadGuiTemplateTypes();
-					LoadGuiControlTypes();
+					if (!controllerRelatedOnly)
+					{
+						LoadPredefinedTypes();
+						LoadParsing2Types();
+						XmlAstLoadTypes();
+						JsonAstLoadTypes();
+						WfLoadLibraryTypes();
+						LoadGuiBasicTypes();
+						LoadGuiElementTypes();
+						LoadGuiCompositionTypes();
+						LoadGuiEventTypes();
+						LoadGuiTemplateTypes();
+						LoadGuiControlTypes();
+					}
 				}
 
-				void Unload()override
+				void Unload(bool controllerRelatedOnly)override
 				{
 				}
 			};

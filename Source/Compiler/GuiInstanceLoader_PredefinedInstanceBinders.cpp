@@ -532,36 +532,39 @@ GuiPredefinedInstanceBindersPlugin
 				GUI_PLUGIN_DEPEND(GacUI_Instance_Reflection);
 			}
 
-			void Load()override
+			void Load(bool controllerRelatedOnly)override
 			{
-				WorkflowAstLoadTypes();
-				GuiInstanceQueryAstLoadTypes();
+				if (!controllerRelatedOnly)
 				{
-					auto workflowParser = Ptr(new workflow::Parser);
+					WorkflowAstLoadTypes();
+					GuiInstanceQueryAstLoadTypes();
+					{
+						auto workflowParser = Ptr(new workflow::Parser);
 
-					IGuiParserManager* manager = GetParserManager();
-					manager->SetParser(L"WORKFLOW-TYPE", Ptr(new GuiParser_WorkflowType(workflowParser)));
-					manager->SetParser(L"WORKFLOW-EXPRESSION", Ptr(new GuiParser_WorkflowExpression(workflowParser)));
-					manager->SetParser(L"WORKFLOW-STATEMENT", Ptr(new GuiParser_WorkflowStatement(workflowParser)));
-					manager->SetParser(L"WORKFLOW-COPROVIDER-STATEMENT", Ptr(new GuiParser_WorkflowCoProviderStatement(workflowParser)));
-					manager->SetParser(L"WORKFLOW-DECLARATION", Ptr(new GuiParser_WorkflowDeclaration(workflowParser)));
-					manager->SetParser(L"WORKFLOW-MODULE", Ptr(new GuiParser_WorkflowModule(workflowParser)));
-					manager->SetParser(L"INSTANCE-QUERY", Ptr(new GuiParser_InstanceQuery));
-				}
-				{
-					IGuiInstanceLoaderManager* manager=GetInstanceLoaderManager();
+						IGuiParserManager* manager = GetParserManager();
+						manager->SetParser(L"WORKFLOW-TYPE", Ptr(new GuiParser_WorkflowType(workflowParser)));
+						manager->SetParser(L"WORKFLOW-EXPRESSION", Ptr(new GuiParser_WorkflowExpression(workflowParser)));
+						manager->SetParser(L"WORKFLOW-STATEMENT", Ptr(new GuiParser_WorkflowStatement(workflowParser)));
+						manager->SetParser(L"WORKFLOW-COPROVIDER-STATEMENT", Ptr(new GuiParser_WorkflowCoProviderStatement(workflowParser)));
+						manager->SetParser(L"WORKFLOW-DECLARATION", Ptr(new GuiParser_WorkflowDeclaration(workflowParser)));
+						manager->SetParser(L"WORKFLOW-MODULE", Ptr(new GuiParser_WorkflowModule(workflowParser)));
+						manager->SetParser(L"INSTANCE-QUERY", Ptr(new GuiParser_InstanceQuery));
+					}
+					{
+						IGuiInstanceLoaderManager* manager = GetInstanceLoaderManager();
 
-					manager->AddInstanceBinder(Ptr(new GuiResourceInstanceBinder));
-					manager->AddInstanceBinder(Ptr(new GuiReferenceInstanceBinder));
-					manager->AddInstanceBinder(Ptr(new GuiEvalInstanceBinder));
-					manager->AddInstanceBinder(Ptr(new GuiBindInstanceBinder));
-					manager->AddInstanceBinder(Ptr(new GuiFormatInstanceBinder));
-					manager->AddInstanceBinder(Ptr(new GuiLocalizedStringInstanceBinder));
-					manager->AddInstanceEventBinder(Ptr(new GuiEvalInstanceEventBinder));
+						manager->AddInstanceBinder(Ptr(new GuiResourceInstanceBinder));
+						manager->AddInstanceBinder(Ptr(new GuiReferenceInstanceBinder));
+						manager->AddInstanceBinder(Ptr(new GuiEvalInstanceBinder));
+						manager->AddInstanceBinder(Ptr(new GuiBindInstanceBinder));
+						manager->AddInstanceBinder(Ptr(new GuiFormatInstanceBinder));
+						manager->AddInstanceBinder(Ptr(new GuiLocalizedStringInstanceBinder));
+						manager->AddInstanceEventBinder(Ptr(new GuiEvalInstanceEventBinder));
+					}
 				}
 			}
 
-			void Unload()override
+			void Unload(bool controllerRelatedOnly)override
 			{
 			}
 		};

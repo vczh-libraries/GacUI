@@ -44,8 +44,9 @@ namespace vl
 #endif
 				}
 
-				void Load()override
+				void Load(bool controllerRelatedOnly)override
 				{
+					// The resource manager will be reloaded so it always need to load the resource
 					List<GuiResourceError> errors;
 					MemoryStream resourceStream;
 					DarkSkinResourceReader::ReadToStream(resourceStream);
@@ -53,8 +54,9 @@ namespace vl
 					GetResourceManager()->LoadResourceOrPending(resourceStream, GuiResourceUsage::InstanceClass);
 				}
 
-				void Unload()override
+				void Unload(bool controllerRelatedOnly)override
 				{
+					// The resource manager will be unloaded so nothing needs to be done here
 				}
 			};
 			GUI_REGISTER_PLUGIN(DarkSkinResourceLoaderPlugin)

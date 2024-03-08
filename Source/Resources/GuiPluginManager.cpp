@@ -14,36 +14,48 @@ GuiPluginManager
 		{
 		protected:
 			List<Ptr<IGuiPlugin>>				plugins;
-			bool								loaded;
+			bool								controllerRelatedLoaded = false;
+			bool								controllerUnrelatedLoaded = false;
 		public:
 			GuiPluginManager()
-				:loaded(false)
 			{
 			}
 
 			~GuiPluginManager()
 			{
-				Unload();
 			}
 
 			void AddPlugin(Ptr<IGuiPlugin> plugin)override
 			{
-				CHECK_ERROR(!loaded, L"GuiPluginManager::AddPlugin(Ptr<IGuiPlugin>)#Load function has already been executed.");
+#define ERROR_MESSAGE_PREFIX L"GuiPluginManager::AddPlugin(Ptr<IGuiPlugin>)#"
+				CHECK_ERROR(!controllerUnrelatedLoaded, ERROR_MESSAGE_PREFIX L"Load function has already been executed.");
 				auto name = plugin->GetName();
 				if (name != L"")
 				{
 					for (auto plugin : plugins)
 					{
-						CHECK_ERROR(plugin->GetName() != name, L"GuiPluginManager::AddPlugin(Ptr<IGuiPlugin>)#Duplicated plugin name.");
+						CHECK_ERROR(plugin->GetName() != name, ERROR_MESSAGE_PREFIX L"Duplicated plugin name.");
 					}
 				}
 				plugins.Add(plugin);
+#undef ERROR_MESSAGE_PREFIX
 			}
 
-			void Load()override
+			void Load(bool controllerRelatedOnly)override
 			{
-				CHECK_ERROR(!loaded, L"GuiPluginManager::AddPlugin(Ptr<IGuiPlugin>)#Load function has already been executed.");
-				loaded=true;
+#define ERROR_MESSAGE_PREFIX L"GuiPluginManager::Load(bool)#"
+				if (!controllerRelatedLoaded)
+				{
+					CHECK_ERROR(!controllerUnrelatedLoaded && !controllerRelatedLoaded, ERROR_MESSAGE_PREFIX L"Load(false) could only be called after Unload(false).");
+					controllerUnrelatedLoaded = true;
+					controllerRelatedLoaded = true;
+				}
+				else
+				{
+					CHECK_ERROR(controllerUnrelatedLoaded, ERROR_MESSAGE_PREFIX L"Load(true) could only be called between Load(false) and Unload(false).");
+					if (controllerRelatedLoaded) return;
+					controllerRelatedLoaded = true;
+				}
 
 				SortedList<WString> loaded;
 				Group<WString, WString> loading;
@@ -78,7 +90,7 @@ GuiPluginManager
 
 								auto plugin = pluginsToLoad.Values()[index];
 								pluginsToLoad.Remove(name);
-								plugin->Load();
+								plugin->Load(controllerRelatedOnly);
 								break;
 							}
 						}
@@ -104,21 +116,40 @@ GuiPluginManager
 						throw Exception(message);
 					}
 				}
+#undef ERROR_MESSAGE_PREFIX
 			}
 
-			void Unload()override
+			void Unload(bool controllerRelatedOnly)override
 			{
-				CHECK_ERROR(loaded, L"GuiPluginManager::AddPlugin(Ptr<IGuiPlugin>)#Load function has not been executed.");
-				loaded=false;
+#define ERROR_MESSAGE_PREFIX L"GuiPluginManager::Unload(bool)#"
+				if (!controllerRelatedLoaded)
+				{
+					CHECK_ERROR(controllerUnrelatedLoaded, ERROR_MESSAGE_PREFIX L"Unload(false) could only be called after Load(false).");
+					controllerUnrelatedLoaded = false;
+					controllerRelatedLoaded = false;
+				}
+				else
+				{
+					CHECK_ERROR(controllerUnrelatedLoaded, ERROR_MESSAGE_PREFIX L"Unload(true) could only be called after Load(false).");
+					if (!controllerRelatedLoaded) return;
+					controllerRelatedLoaded = false;
+				}
+
 				for (auto plugin : plugins)
 				{
-					plugin->Unload();
+					plugin->Unload(controllerRelatedOnly);
 				}
+#undef ERROR_MESSAGE_PREFIX
 			}
 
-			bool IsLoaded()override
+			bool IsControllerRelatedPluginsLoaded()override
 			{
-				return loaded;
+				return controllerRelatedLoaded;
+			}
+
+			bool IsControllerUnrelatedPluginsLoaded()override
+			{
+				return controllerUnrelatedLoaded;
 			}
 		};
 
@@ -157,6 +188,7 @@ Helpers
 		{
 			if (pluginManager)
 			{
+				pluginManager->Unload(false);
 				delete pluginManager;
 				pluginManager = nullptr;
 			}

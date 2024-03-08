@@ -4,9 +4,10 @@
 
 - `vl::char16be_t`
 - `vl::InjectDateTimeImpl`
-- Removed `SERIALIZE_ENUM`, enum will be automatically registered.
-- `UtfBase64(En|De)coder`.
-- `NativeImageFrameBase`.
+- Removed `SERIALIZE_ENUM`, enum will be automatically registered
+- `UtfBase64(En|De)coder`
+- `NativeImageFrameBase`
+- `bool controllerRelatedOnly` added to `IGuiPlugin`
 
 ## Known Issues
 
@@ -54,7 +55,9 @@
   - VlppOS
     - Base64
     - Breaking changes: `Utf\d+(En|De)coder`, `(Text|Stream)(Reader|Writer)` and `StringReader` changed from class to typedef
-  - Check GacUI \ GacUI Components \ (compositions | Controls) and fill missing items
+  - GacUI
+    - `bool controllerRelatedOnly` added to `IGuiPlugin`
+    - Check GacUI \ GacUI Components \ (compositions | Controls) and fill missing items
 
 ## Release Milestone (1.2.11.0)
 

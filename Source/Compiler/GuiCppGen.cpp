@@ -279,8 +279,9 @@ namespace vl
 					writer.WriteLine(L"#endif");
 					writer.WriteLine(L"\t\t\t\t}");
 					writer.WriteLine(L"");
-					writer.WriteLine(L"\t\t\t\tvoid Load()override");
+					writer.WriteLine(L"\t\t\t\tvoid Load(bool controllerRelatedOnly)override");
 					writer.WriteLine(L"\t\t\t\t{");
+					writer.WriteLine(L"\t\t\t\t\t// The resource manager will be reloaded so it always need to load the resource");
 					writer.WriteLine(L"\t\t\t\t\tList<GuiResourceError> errors;");
 					writer.WriteLine(L"\t\t\t\t\tMemoryStream resourceStream;");
 					writer.WriteLine(L"\t\t\t\t\t" + cppInput->assemblyName + L"ResourceReader::ReadToStream(resourceStream);");
@@ -288,8 +289,9 @@ namespace vl
 					writer.WriteLine(L"\t\t\t\t\tGetResourceManager()->LoadResourceOrPending(resourceStream, GuiResourceUsage::InstanceClass);");
 					writer.WriteLine(L"\t\t\t\t}");
 					writer.WriteLine(L"");
-					writer.WriteLine(L"\t\t\t\tvoid Unload()override");
+					writer.WriteLine(L"\t\t\t\tvoid Unload(bool controllerRelatedOnly)override");
 					writer.WriteLine(L"\t\t\t\t{");
+					writer.WriteLine(L"\t\t\t\t\t// The resource manager will be unloaded so nothing needs to be done here");
 					writer.WriteLine(L"\t\t\t\t}");
 					writer.WriteLine(L"\t\t\t};");
 					writer.WriteLine(L"\t\t\tGUI_REGISTER_PLUGIN(" + cppInput->assemblyName + L"ResourceLoaderPlugin)");

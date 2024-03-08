@@ -108,22 +108,25 @@ public:
 	{
 	}
 
-	void Load()override
+	void Load(bool controllerRelatedOnly)override
 	{
 #define INSTALL_SERIALIZABLE_TYPE(TYPE) serializableTypes.Add(TypeInfo<TYPE>::content.typeName, Ptr(new SerializableType<TYPE>));
-		collections::Dictionary<WString, Ptr<ISerializableType>> serializableTypes;
-		REFLECTION_PREDEFINED_SERIALIZABLE_TYPES(INSTALL_SERIALIZABLE_TYPE)
-		INSTALL_SERIALIZABLE_TYPE(Color)
-		INSTALL_SERIALIZABLE_TYPE(GlobalStringKey)
-		INSTALL_SERIALIZABLE_TYPE(DocumentFontSize)
-		FileStream fileStream((GetResourcePath() / REFLECTION_BIN()).GetFullPath(), FileStream::ReadOnly);
-		auto typeLoader = LoadMetaonlyTypes(fileStream, serializableTypes);
-		auto tm = GetGlobalTypeManager();
-		tm->AddTypeLoader(typeLoader);
+		if (!controllerRelatedOnly)
+		{
+			collections::Dictionary<WString, Ptr<ISerializableType>> serializableTypes;
+			REFLECTION_PREDEFINED_SERIALIZABLE_TYPES(INSTALL_SERIALIZABLE_TYPE)
+			INSTALL_SERIALIZABLE_TYPE(Color)
+			INSTALL_SERIALIZABLE_TYPE(GlobalStringKey)
+			INSTALL_SERIALIZABLE_TYPE(DocumentFontSize)
+			FileStream fileStream((GetResourcePath() / REFLECTION_BIN()).GetFullPath(), FileStream::ReadOnly);
+			auto typeLoader = LoadMetaonlyTypes(fileStream, serializableTypes);
+			auto tm = GetGlobalTypeManager();
+			tm->AddTypeLoader(typeLoader);
+		}
 #undef INSTALL_SERIALIZABLE_TYPE
 	}
 
-	void Unload()override
+	void Unload(bool controllerRelatedOnly)override
 	{
 	}
 };

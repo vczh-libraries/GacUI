@@ -1693,21 +1693,27 @@ IGuiResourceResolverManager
 			{
 			}
 
-			void Load()override
+			void Load(bool controllerRelatedOnly)override
 			{
-				globalStringKeyManager = new GlobalStringKeyManager();
-				globalStringKeyManager->InitializeConstants();
+				if (!controllerRelatedOnly)
+				{
+					globalStringKeyManager = new GlobalStringKeyManager();
+					globalStringKeyManager->InitializeConstants();
 
-				resourceResolverManager = this;
-				SetPathResolverFactory(Ptr(new GuiResourcePathResResolver::Factory));
-				SetPathResolverFactory(Ptr(new GuiImportResourcePathResResolver::Factory));
+					resourceResolverManager = this;
+					SetPathResolverFactory(Ptr(new GuiResourcePathResResolver::Factory));
+					SetPathResolverFactory(Ptr(new GuiImportResourcePathResResolver::Factory));
+				}
 			}
 
-			void Unload()override
+			void Unload(bool controllerRelatedOnly)override
 			{
-				delete globalStringKeyManager;
-				globalStringKeyManager = 0;
-				resourceResolverManager = 0;
+				if (!controllerRelatedOnly)
+				{
+					delete globalStringKeyManager;
+					globalStringKeyManager = nullptr;
+					resourceResolverManager = nullptr;
+				}
 			}
 
 			IGuiResourcePathResolverFactory* GetPathResolverFactory(const WString& protocol)override

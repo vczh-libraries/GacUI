@@ -1094,14 +1094,20 @@ GuiWorkflowSharedManagerPlugin
 			{
 			}
 
-			void Load()override
+			void Load(bool controllerRelatedOnly)override
 			{
-				sharedManagerPlugin = this;
+				if (!controllerRelatedOnly)
+				{
+					sharedManagerPlugin = this;
+				}
 			}
 
-			void Unload()override
+			void Unload(bool controllerRelatedOnly)override
 			{
-				sharedManagerPlugin = 0;
+				if (!controllerRelatedOnly)
+				{
+					sharedManagerPlugin = 0;
+				}
 			}
 
 			WfLexicalScopeManager* GetWorkflowManager(GuiResourceCpuArchitecture targetCpuArchitecture)

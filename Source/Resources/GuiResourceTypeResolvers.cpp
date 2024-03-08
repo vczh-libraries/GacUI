@@ -361,16 +361,19 @@ Type Resolver Plugin
 				GUI_PLUGIN_DEPEND(GacUI_Res_ResourceResolver);
 			}
 
-			void Load()override
+			void Load(bool controllerRelatedOnly)override
 			{
-				IGuiResourceResolverManager* manager=GetResourceResolverManager();
-				manager->SetTypeResolver(Ptr(new GuiResourceImageTypeResolver));
-				manager->SetTypeResolver(Ptr(new GuiResourceTextTypeResolver));
-				manager->SetTypeResolver(Ptr(new GuiResourceXmlTypeResolver));
-				manager->SetTypeResolver(Ptr(new GuiResourceDocTypeResolver));
+				if (!controllerRelatedOnly)
+				{
+					IGuiResourceResolverManager* manager = GetResourceResolverManager();
+					manager->SetTypeResolver(Ptr(new GuiResourceImageTypeResolver));
+					manager->SetTypeResolver(Ptr(new GuiResourceTextTypeResolver));
+					manager->SetTypeResolver(Ptr(new GuiResourceXmlTypeResolver));
+					manager->SetTypeResolver(Ptr(new GuiResourceDocTypeResolver));
+				}
 			}
 
-			void Unload()override
+			void Unload(bool controllerRelatedOnly)override
 			{
 			}
 		};

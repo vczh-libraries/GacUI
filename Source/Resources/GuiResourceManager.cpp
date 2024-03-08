@@ -106,14 +106,14 @@ IGuiInstanceResourceManager
 				GUI_PLUGIN_DEPEND(GacUI_Res_ResourceResolver);
 			}
 
-			void Load()override
+			void Load(bool controllerRelatedOnly)override
 			{
 				resourceManager = this;
 				IGuiResourceResolverManager* manager = GetResourceResolverManager();
 				manager->SetTypeResolver(Ptr(new GuiResourceClassNameRecordTypeResolver));
 			}
 
-			void Unload()override
+			void Unload(bool controllerRelatedOnly)override
 			{
 				anonymousResources.Clear();
 				resources.Clear();

@@ -852,16 +852,22 @@ GuiInstanceLoaderManager
 				GUI_PLUGIN_DEPEND(GacUI_Parser);
 			}
 
-			void Load()override
+			void Load(bool controllerRelatedOnly)override
 			{
-				instanceLoaderManager = this;
-				IGuiParserManager* manager = GetParserManager();
-				manager->SetParser(L"INSTANCE-ELEMENT-NAME", Ptr(new GuiInstanceContextElementNameParser));
+				if (!controllerRelatedOnly)
+				{
+					instanceLoaderManager = this;
+					IGuiParserManager* manager = GetParserManager();
+					manager->SetParser(L"INSTANCE-ELEMENT-NAME", Ptr(new GuiInstanceContextElementNameParser));
+				}
 			}
 
-			void Unload()override
+			void Unload(bool controllerRelatedOnly)override
 			{
-				instanceLoaderManager = nullptr;
+				if (!controllerRelatedOnly)
+				{
+					instanceLoaderManager = nullptr;
+				}
 			}
 
 			bool AddInstanceBinder(Ptr<IGuiInstanceBinder> binder)override
