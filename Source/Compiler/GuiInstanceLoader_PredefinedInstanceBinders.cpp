@@ -532,9 +532,9 @@ GuiPredefinedInstanceBindersPlugin
 				GUI_PLUGIN_DEPEND(GacUI_Instance_Reflection);
 			}
 
-			void Load(bool controllerRelatedOnly)override
+			void Load(bool controllerUnrelatedPlugins, bool controllerRelatedPlugins)override
 			{
-				if (!controllerRelatedOnly)
+				if (controllerUnrelatedPlugins)
 				{
 					WorkflowAstLoadTypes();
 					GuiInstanceQueryAstLoadTypes();
@@ -564,7 +564,7 @@ GuiPredefinedInstanceBindersPlugin
 				}
 			}
 
-			void Unload(bool controllerRelatedOnly)override
+			void Unload(bool controllerUnrelatedPlugins, bool controllerRelatedPlugins)override
 			{
 			}
 		};

@@ -62,9 +62,9 @@ IGuiParserManager
 			{
 			}
 
-			void Load(bool controllerRelatedOnly)override
+			void Load(bool controllerUnrelatedPlugins, bool controllerRelatedPlugins)override
 			{
-				if (!controllerRelatedOnly)
+				if (controllerUnrelatedPlugins)
 				{
 					parserManager = this;
 					SetParser(L"XML", Ptr(new GuiParser_Xml()));
@@ -72,9 +72,9 @@ IGuiParserManager
 				}
 			}
 
-			void Unload(bool controllerRelatedOnly)override
+			void Unload(bool controllerUnrelatedPlugins, bool controllerRelatedPlugins)override
 			{
-				if (!controllerRelatedOnly)
+				if (controllerUnrelatedPlugins)
 				{
 					parserManager = nullptr;
 				}

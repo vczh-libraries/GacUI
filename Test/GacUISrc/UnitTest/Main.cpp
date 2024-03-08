@@ -136,11 +136,12 @@ int wmain(int argc, wchar_t* argv[])
 	GACUI_UNITTEST_ONLY_SKIP_TYPE_AND_PLUGIN_LOAD_UNLOAD = true;
 
 	GetGlobalTypeManager()->Load();
-	GetPluginManager()->Load(false);
+	GetPluginManager()->Load(true, false);
 
 	int result = unittest::UnitTest::RunAndDisposeTests(argc, argv);
 
 	ResetGlobalTypeManager();
+	GetPluginManager()->Unload(true, false);
 	DestroyPluginManager();
 	ThreadLocalStorage::DisposeStorages();
 

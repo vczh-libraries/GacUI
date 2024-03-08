@@ -1094,17 +1094,17 @@ GuiWorkflowSharedManagerPlugin
 			{
 			}
 
-			void Load(bool controllerRelatedOnly)override
+			void Load(bool controllerUnrelatedPlugins, bool controllerRelatedPlugins)override
 			{
-				if (!controllerRelatedOnly)
+				if (controllerUnrelatedPlugins)
 				{
 					sharedManagerPlugin = this;
 				}
 			}
 
-			void Unload(bool controllerRelatedOnly)override
+			void Unload(bool controllerUnrelatedPlugins, bool controllerRelatedPlugins)override
 			{
-				if (!controllerRelatedOnly)
+				if (controllerUnrelatedPlugins)
 				{
 					sharedManagerPlugin = 0;
 				}

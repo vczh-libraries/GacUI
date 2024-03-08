@@ -7,7 +7,7 @@
 - Removed `SERIALIZE_ENUM`, enum will be automatically registered
 - `UtfBase64(En|De)coder`
 - `NativeImageFrameBase`
-- `bool controllerRelatedOnly` added to `IGuiPlugin`
+- `bool controllerUnrelatedPlugins` and `bool controllerRelatedPlugins` added to `IGuiPlugin`
 
 ## Known Issues
 
@@ -28,7 +28,6 @@
 
 ## Release Milestone (1.2.10.0)
 
-- Check all `GUI_REGISTER_PLUGIN` and ensure `Unload` undoes everything, not just finalizing. A plugin could be load and unload many times.
 - Unit test framework
   - Implement `SolidLabelElement`.
     - Each character takes exactly `FontSize x FontSize`
@@ -55,8 +54,8 @@
   - VlppOS
     - Base64
     - Breaking changes: `Utf\d+(En|De)coder`, `(Text|Stream)(Reader|Writer)` and `StringReader` changed from class to typedef
-  - GacUI
-    - `bool controllerRelatedOnly` added to `IGuiPlugin`
+  - GacUI  
+    - `bool controllerUnrelatedPlugins` and `bool controllerRelatedPlugins` added to `IGuiPlugin`
     - Check GacUI \ GacUI Components \ (compositions | Controls) and fill missing items
 
 ## Release Milestone (1.2.11.0)

@@ -74,19 +74,20 @@ namespace vl
 #endif
 				}
 
-				void Load(bool controllerRelatedOnly)override
+				void Load(bool controllerUnrelatedPlugins, bool controllerRelatedPlugins)override
 				{
-					// The resource manager will be reloaded so it always need to load the resource
-					List<GuiResourceError> errors;
-					MemoryStream resourceStream;
-					GuiFakeDialogServiceUIResourceReader::ReadToStream(resourceStream);
-					resourceStream.SeekFromBegin(0);
-					GetResourceManager()->LoadResourceOrPending(resourceStream, GuiResourceUsage::InstanceClass);
+					if (controllerRelatedPlugins)
+					{
+						List<GuiResourceError> errors;
+						MemoryStream resourceStream;
+						GuiFakeDialogServiceUIResourceReader::ReadToStream(resourceStream);
+						resourceStream.SeekFromBegin(0);
+						GetResourceManager()->LoadResourceOrPending(resourceStream, GuiResourceUsage::InstanceClass);
+					}
 				}
 
-				void Unload(bool controllerRelatedOnly)override
+				void Unload(bool controllerUnrelatedPlugins, bool controllerRelatedPlugins)override
 				{
-					// The resource manager will be unloaded so nothing needs to be done here
 				}
 			};
 			GUI_REGISTER_PLUGIN(GuiFakeDialogServiceUIResourceLoaderPlugin)

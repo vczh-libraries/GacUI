@@ -329,16 +329,16 @@ GuiToolstripCommandPlugin
 					GUI_PLUGIN_DEPEND(GacUI_Parser);
 				}
 				
-				void Load(bool controllerRelatedOnly)override
+				void Load(bool controllerUnrelatedPlugins, bool controllerRelatedPlugins)override
 				{
-					if (!controllerRelatedOnly)
+					if (controllerUnrelatedPlugins)
 					{
 						IGuiParserManager* manager = GetParserManager();
 						manager->SetParser(L"SHORTCUT", Ptr(new GuiToolstripCommandShortcutParser));
 					}
 				}
 
-				void Unload(bool controllerRelatedOnly)override
+				void Unload(bool controllerUnrelatedPlugins, bool controllerRelatedPlugins)override
 				{
 				}
 			};

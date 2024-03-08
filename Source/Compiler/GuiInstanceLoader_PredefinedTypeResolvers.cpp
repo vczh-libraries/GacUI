@@ -917,9 +917,9 @@ Plugin
 				GUI_PLUGIN_DEPEND(GacUI_Res_ResourceResolver);
 			}
 
-			void Load(bool controllerRelatedOnly)override
+			void Load(bool controllerUnrelatedPlugins, bool controllerRelatedPlugins)override
 			{
-				if (!controllerRelatedOnly)
+				if (controllerUnrelatedPlugins)
 				{
 					IGuiResourceResolverManager* manager = GetResourceResolverManager();
 					manager->SetTypeResolver(Ptr(new GuiResourceSharedScriptTypeResolver));
@@ -930,7 +930,7 @@ Plugin
 				}
 			}
 
-			void Unload(bool controllerRelatedOnly)override
+			void Unload(bool controllerUnrelatedPlugins, bool controllerRelatedPlugins)override
 			{
 			}
 		};

@@ -108,10 +108,10 @@ public:
 	{
 	}
 
-	void Load(bool controllerRelatedOnly)override
+	void Load(bool controllerUnrelatedPlugins, bool controllerRelatedPlugins)override
 	{
 #define INSTALL_SERIALIZABLE_TYPE(TYPE) serializableTypes.Add(TypeInfo<TYPE>::content.typeName, Ptr(new SerializableType<TYPE>));
-		if (!controllerRelatedOnly)
+		if (controllerUnrelatedPlugins)
 		{
 			collections::Dictionary<WString, Ptr<ISerializableType>> serializableTypes;
 			REFLECTION_PREDEFINED_SERIALIZABLE_TYPES(INSTALL_SERIALIZABLE_TYPE)
@@ -126,7 +126,7 @@ public:
 #undef INSTALL_SERIALIZABLE_TYPE
 	}
 
-	void Unload(bool controllerRelatedOnly)override
+	void Unload(bool controllerUnrelatedPlugins, bool controllerRelatedPlugins)override
 	{
 	}
 };

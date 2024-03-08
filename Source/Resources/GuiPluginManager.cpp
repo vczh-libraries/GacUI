@@ -41,19 +41,19 @@ GuiPluginManager
 #undef ERROR_MESSAGE_PREFIX
 			}
 
-			void Load(bool controllerRelatedOnly)override
+			void Load(bool controllerUnrelatedPlugins, bool controllerRelatedPlugins)override
 			{
-#define ERROR_MESSAGE_PREFIX L"GuiPluginManager::Load(bool)#"
-				if (!controllerRelatedLoaded)
+#define ERROR_MESSAGE_PREFIX L"GuiPluginManager::Load(bool, bool)#"
+				CHECK_ERROR(controllerUnrelatedPlugins || controllerRelatedPlugins, L"At least one of the parameters should be true.");
+				if (controllerUnrelatedPlugins)
 				{
-					CHECK_ERROR(!controllerUnrelatedLoaded && !controllerRelatedLoaded, ERROR_MESSAGE_PREFIX L"Load(false) could only be called after Unload(false).");
+					CHECK_ERROR(!controllerUnrelatedLoaded, ERROR_MESSAGE_PREFIX L"A second Load(true, *) could only be called after Unload(true, *).");
 					controllerUnrelatedLoaded = true;
-					controllerRelatedLoaded = true;
 				}
-				else
+				if (controllerRelatedPlugins)
 				{
-					CHECK_ERROR(controllerUnrelatedLoaded, ERROR_MESSAGE_PREFIX L"Load(true) could only be called between Load(false) and Unload(false).");
-					if (controllerRelatedLoaded) return;
+					CHECK_ERROR(controllerUnrelatedLoaded, ERROR_MESSAGE_PREFIX L"Load(*, true) could only be called between Load(true, *) and Unload(true, *).");
+					CHECK_ERROR(!controllerRelatedLoaded, ERROR_MESSAGE_PREFIX L"A second Load(*, true) could only be called after Unload(*, true).");
 					controllerRelatedLoaded = true;
 				}
 
@@ -90,7 +90,7 @@ GuiPluginManager
 
 								auto plugin = pluginsToLoad.Values()[index];
 								pluginsToLoad.Remove(name);
-								plugin->Load(controllerRelatedOnly);
+								plugin->Load(controllerUnrelatedPlugins, controllerRelatedPlugins);
 								break;
 							}
 						}
@@ -119,25 +119,26 @@ GuiPluginManager
 #undef ERROR_MESSAGE_PREFIX
 			}
 
-			void Unload(bool controllerRelatedOnly)override
+			void Unload(bool controllerUnrelatedPlugins, bool controllerRelatedPlugins)override
 			{
-#define ERROR_MESSAGE_PREFIX L"GuiPluginManager::Unload(bool)#"
-				if (!controllerRelatedLoaded)
+#define ERROR_MESSAGE_PREFIX L"GuiPluginManager::Unload(bool, bool)#"
+				CHECK_ERROR(controllerUnrelatedPlugins || controllerRelatedPlugins, L"At least one of the parameters should be true.");
+				if (controllerRelatedPlugins)
 				{
-					CHECK_ERROR(controllerUnrelatedLoaded, ERROR_MESSAGE_PREFIX L"Unload(false) could only be called after Load(false).");
-					controllerUnrelatedLoaded = false;
+					CHECK_ERROR(controllerUnrelatedLoaded, ERROR_MESSAGE_PREFIX L"Unload(*, true) could only be called between Load(true, *) and Unload(true, *).");
+					CHECK_ERROR(controllerRelatedLoaded, ERROR_MESSAGE_PREFIX L"Unload(*, true) could only be called after Load(*, true).");
 					controllerRelatedLoaded = false;
 				}
-				else
+				if (controllerUnrelatedPlugins)
 				{
-					CHECK_ERROR(controllerUnrelatedLoaded, ERROR_MESSAGE_PREFIX L"Unload(true) could only be called after Load(false).");
-					if (!controllerRelatedLoaded) return;
-					controllerRelatedLoaded = false;
+					CHECK_ERROR(controllerUnrelatedLoaded, ERROR_MESSAGE_PREFIX L"Unload(true, *) could only be called after Load(true, *).");
+					CHECK_ERROR(!controllerRelatedLoaded, ERROR_MESSAGE_PREFIX L"Unload(true, *) could only be called after Load(*, true).");
+					controllerUnrelatedLoaded = false;
 				}
 
 				for (auto plugin : plugins)
 				{
-					plugin->Unload(controllerRelatedOnly);
+					plugin->Unload(controllerUnrelatedPlugins, controllerRelatedPlugins);
 				}
 #undef ERROR_MESSAGE_PREFIX
 			}
@@ -188,7 +189,9 @@ Helpers
 		{
 			if (pluginManager)
 			{
-				pluginManager->Unload(false);
+				CHECK_ERROR(
+					pluginManager->IsControllerRelatedPluginsLoaded() || pluginManager->IsControllerUnrelatedPluginsLoaded(),
+					L"vl::presentation::DestroyPluginManager()#Plugins have not been unloaded.");
 				delete pluginManager;
 				pluginManager = nullptr;
 			}

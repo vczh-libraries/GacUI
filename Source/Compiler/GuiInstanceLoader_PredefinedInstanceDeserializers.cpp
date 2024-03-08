@@ -822,9 +822,9 @@ GuiPredefinedInstanceDeserializersPlugin
 				GUI_PLUGIN_DEPEND(GacUI_Instance);
 			}
 
-			void Load(bool controllerRelatedOnly)override
+			void Load(bool controllerUnrelatedPlugins, bool controllerRelatedPlugins)override
 			{
-				if (!controllerRelatedOnly)
+				if (controllerUnrelatedPlugins)
 				{
 					IGuiInstanceLoaderManager* manager = GetInstanceLoaderManager();
 					manager->AddInstanceDeserializer(Ptr(new GuiTemplatePropertyDeserializer));
@@ -833,7 +833,7 @@ GuiPredefinedInstanceDeserializersPlugin
 				}
 			}
 
-			void Unload(bool controllerRelatedOnly)override
+			void Unload(bool controllerUnrelatedPlugins, bool controllerRelatedPlugins)override
 			{
 			}
 		};

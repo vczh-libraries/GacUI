@@ -31,11 +31,13 @@ Plugin
 			/// <param name="dependencies">To receive all dependencies.</param>
 			virtual void									GetDependencies(collections::List<WString>& dependencies) = 0;
 			/// <summary>Called when the plugin manager want to load this plugin.</summary>
-			/// <param name="controllerRelatedOnly">It is true when this function is called after changing the underlying <see cref="INativeController"/> implementation. If the plugin is not affected by the global controller, it could do nothing.</param>
-			virtual void									Load(bool controllerRelatedOnly)=0;
+			/// <param name="controllerUnrelatedPlugins">A plugin only loads when it does not use anything from a <see cref="INativeController"/>.</param>
+			/// <param name="controllerRelatedPlugins">A plugin only loads when it use anything from a <see cref="INativeController"/>.</param>
+			virtual void									Load(bool controllerUnrelatedPlugins, bool controllerRelatedPlugins)=0;
 			/// <summary>Called when the plugin manager want to unload this plugin.</summary>
-			/// <param name="controllerRelatedOnly">It is true when this function is called before changing the underlying <see cref="INativeController"/> implementation. If the plugin is not affected by the global controller, it could do nothing.</param>
-			virtual void									Unload(bool controllerRelatedOnly)=0;
+			/// <param name="controllerUnrelatedPlugins">A plugin only unloads when it does not use anything from a <see cref="INativeController"/>.</param>
+			/// <param name="controllerRelatedPlugins">A plugin only unloads when it use anything from a <see cref="INativeController"/>.</param>
+			virtual void									Unload(bool controllerUnrelatedPlugins, bool controllerRelatedPlugins)=0;
 		};
 
 		/// <summary>Represents a plugin manager.</summary>
@@ -46,11 +48,13 @@ Plugin
 			/// <param name="plugin">The plugin.</param>
 			virtual void									AddPlugin(Ptr<IGuiPlugin> plugin)=0;
 			/// <summary>Load all plugins, and check if dependencies of all plugins are ready.</summary>
-			/// <param name="controllerRelatedOnly">It is true when this function is called after changing the underlying <see cref="INativeController"/> implementation. If the plugin is not affected by the global controller, it could do nothing.</param>
-			virtual void									Load(bool controllerRelatedOnly)=0;
+			/// <param name="controllerUnrelatedPlugins">Load plugins that does not use anything from a <see cref="INativeController"/>.</param>
+			/// <param name="controllerRelatedPlugins">Load plugins that it use anything from a <see cref="INativeController"/>.</param>
+			virtual void									Load(bool controllerUnrelatedPlugins, bool controllerRelatedPlugins)=0;
 			/// <summary>Unload all plugins.</summary>
-			/// <param name="controllerRelatedOnly">It is true when this function is called before changing the underlying <see cref="INativeController"/> implementation. If the plugin is not affected by the global controller, it could do nothing.</param>
-			virtual void									Unload(bool controllerRelatedOnly)=0;
+			/// <param name="controllerUnrelatedPlugins">Unload plugins that does not use anything from a <see cref="INativeController"/>.</param>
+			/// <param name="controllerRelatedPlugins">Unload plugins that it use anything from a <see cref="INativeController"/>.</param>
+			virtual void									Unload(bool controllerUnrelatedPlugins, bool controllerRelatedPlugins)=0;
 			/// <returns>Returns true if all controller related plugins are loaded.</returns>
 			virtual bool									IsControllerRelatedPluginsLoaded()=0;
 			/// <returns>Returns true if all controller unrelated plugins are loaded.</returns>

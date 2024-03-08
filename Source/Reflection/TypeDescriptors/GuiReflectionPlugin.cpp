@@ -40,9 +40,9 @@ namespace vl
 				{
 				}
 
-				void Load(bool controllerRelatedOnly)override
+				void Load(bool controllerUnrelatedPlugins, bool controllerRelatedPlugins)override
 				{
-					if (!controllerRelatedOnly)
+					if (controllerUnrelatedPlugins)
 					{
 						LoadPredefinedTypes();
 						LoadParsing2Types();
@@ -58,7 +58,7 @@ namespace vl
 					}
 				}
 
-				void Unload(bool controllerRelatedOnly)override
+				void Unload(bool controllerUnrelatedPlugins, bool controllerRelatedPlugins)override
 				{
 				}
 			};

@@ -852,9 +852,9 @@ GuiInstanceLoaderManager
 				GUI_PLUGIN_DEPEND(GacUI_Parser);
 			}
 
-			void Load(bool controllerRelatedOnly)override
+			void Load(bool controllerUnrelatedPlugins, bool controllerRelatedPlugins)override
 			{
-				if (!controllerRelatedOnly)
+				if (controllerUnrelatedPlugins)
 				{
 					instanceLoaderManager = this;
 					IGuiParserManager* manager = GetParserManager();
@@ -862,9 +862,9 @@ GuiInstanceLoaderManager
 				}
 			}
 
-			void Unload(bool controllerRelatedOnly)override
+			void Unload(bool controllerUnrelatedPlugins, bool controllerRelatedPlugins)override
 			{
-				if (!controllerRelatedOnly)
+				if (controllerUnrelatedPlugins)
 				{
 					instanceLoaderManager = nullptr;
 				}

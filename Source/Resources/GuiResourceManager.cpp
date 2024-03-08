@@ -106,19 +106,25 @@ IGuiInstanceResourceManager
 				GUI_PLUGIN_DEPEND(GacUI_Res_ResourceResolver);
 			}
 
-			void Load(bool controllerRelatedOnly)override
+			void Load(bool controllerUnrelatedPlugins, bool controllerRelatedPlugins)override
 			{
-				resourceManager = this;
-				IGuiResourceResolverManager* manager = GetResourceResolverManager();
-				manager->SetTypeResolver(Ptr(new GuiResourceClassNameRecordTypeResolver));
+				if (controllerRelatedPlugins)
+				{
+					resourceManager = this;
+					IGuiResourceResolverManager* manager = GetResourceResolverManager();
+					manager->SetTypeResolver(Ptr(new GuiResourceClassNameRecordTypeResolver));
+				}
 			}
 
-			void Unload(bool controllerRelatedOnly)override
+			void Unload(bool controllerUnrelatedPlugins, bool controllerRelatedPlugins)override
 			{
-				anonymousResources.Clear();
-				resources.Clear();
-				instanceResources.Clear();
-				resourceManager = nullptr;
+				if (controllerRelatedPlugins)
+				{
+					anonymousResources.Clear();
+					resources.Clear();
+					instanceResources.Clear();
+					resourceManager = nullptr;
+				}
 			}
 
 			void SetResource(Ptr<GuiResource> resource, GuiResourceError::List& errors, GuiResourceUsage usage)override

@@ -236,10 +236,10 @@ GuiPredefinedInstanceLoadersPlugin
 					GUI_PLUGIN_DEPEND(GacUI_Instance_Reflection);
 				}
 
-				void Load(bool controllerRelatedOnly)override
+				void Load(bool controllerUnrelatedPlugins, bool controllerRelatedPlugins)override
 				{
 #ifndef VCZH_DEBUG_NO_REFLECTION
-					if (!controllerRelatedOnly)
+					if (controllerUnrelatedPlugins)
 					{
 						IGuiInstanceLoaderManager* manager=GetInstanceLoaderManager();
 
@@ -334,7 +334,7 @@ GuiPredefinedInstanceLoadersPlugin
 #endif
 				}
 
-				void Unload(bool controllerRelatedOnly)override
+				void Unload(bool controllerUnrelatedPlugins, bool controllerRelatedPlugins)override
 				{
 				}
 			};

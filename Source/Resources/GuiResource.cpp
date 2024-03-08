@@ -1693,9 +1693,9 @@ IGuiResourceResolverManager
 			{
 			}
 
-			void Load(bool controllerRelatedOnly)override
+			void Load(bool controllerUnrelatedPlugins, bool controllerRelatedPlugins)override
 			{
-				if (!controllerRelatedOnly)
+				if (controllerUnrelatedPlugins)
 				{
 					globalStringKeyManager = new GlobalStringKeyManager();
 					globalStringKeyManager->InitializeConstants();
@@ -1706,9 +1706,9 @@ IGuiResourceResolverManager
 				}
 			}
 
-			void Unload(bool controllerRelatedOnly)override
+			void Unload(bool controllerUnrelatedPlugins, bool controllerRelatedPlugins)override
 			{
-				if (!controllerRelatedOnly)
+				if (controllerUnrelatedPlugins)
 				{
 					delete globalStringKeyManager;
 					globalStringKeyManager = nullptr;

@@ -444,12 +444,12 @@ GuiApplicationMain
 				{
 #ifndef VCZH_DEBUG_NO_REFLECTION
 					GetGlobalTypeManager()->Load();
-					GetPluginManager()->Load(false);
+					GetPluginManager()->Load(true, true);
 #endif
 				}
 				else
 				{
-					GetPluginManager()->Load(true);
+					GetPluginManager()->Load(false, true);
 				}
 
 				GetCurrentController()->InputService()->StartTimer();
@@ -471,6 +471,7 @@ GuiApplicationMain
 
 				if (!GACUI_UNITTEST_ONLY_SKIP_TYPE_AND_PLUGIN_LOAD_UNLOAD)
 				{
+					GetPluginManager()->Unload(true, true);
 					DestroyPluginManager();
 #ifndef VCZH_DEBUG_NO_REFLECTION
 					ResetGlobalTypeManager();
@@ -478,7 +479,7 @@ GuiApplicationMain
 				}
 				else
 				{
-					GetPluginManager()->Unload(true);
+					GetPluginManager()->Unload(false, true);
 				}
 
 				if (!GACUI_UNITTEST_ONLY_SKIP_THREAD_LOCAL_STORAGE_DISPOSE_STORAGES)
