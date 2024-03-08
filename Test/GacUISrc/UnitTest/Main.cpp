@@ -1,9 +1,12 @@
 #include "../../../Source/GacUI.h"
+#include "../../../Source/UnitTestUtilities/GuiUnitTestUtilities.h"
 #if defined VCZH_MSVC
 #include <Windows.h>
 #endif
 
 using namespace vl;
+using namespace vl::unittest;
+using namespace vl::presentation::unittest;
 
 #if defined VCZH_MSVC
 using namespace vl::filesystem;
@@ -132,19 +135,9 @@ using namespace vl::reflection::description;
 #if defined VCZH_MSVC
 int wmain(int argc, wchar_t* argv[])
 {
-	GACUI_UNITTEST_ONLY_SKIP_THREAD_LOCAL_STORAGE_DISPOSE_STORAGES = true;
-	GACUI_UNITTEST_ONLY_SKIP_TYPE_AND_PLUGIN_LOAD_UNLOAD = true;
-
-	GetGlobalTypeManager()->Load();
-	GetPluginManager()->Load(true, false);
-
-	int result = unittest::UnitTest::RunAndDisposeTests(argc, argv);
-
-	ResetGlobalTypeManager();
-	GetPluginManager()->Unload(true, false);
-	DestroyPluginManager();
-	ThreadLocalStorage::DisposeStorages();
-
+	InitializeGacUIUnitTest();
+	int result = UnitTest::RunAndDisposeTests(argc, argv);
+	FinalizeGacUIUnitTest();
 #if defined VCZH_CHECK_MEMORY_LEAKS
 	_CrtDumpMemoryLeaks();
 #endif
@@ -153,16 +146,9 @@ int wmain(int argc, wchar_t* argv[])
 #elif defined VCZH_GCC
 int main(int argc, char* argv[])
 {
-	GACUI_UNITTEST_ONLY_SKIP_THREAD_LOCAL_STORAGE_DISPOSE_STORAGES = true;
-	GACUI_UNITTEST_ONLY_SKIP_TYPE_AND_PLUGIN_LOAD_UNLOAD = true;
-
-	GetGlobalTypeManager()->Load();
-
-	int result = unittest::UnitTest::RunAndDisposeTests(argc, argv);
-
-	ResetGlobalTypeManager();
-	DestroyPluginManager();
-	ThreadLocalStorage::DisposeStorages();
+	InitializeGacUIUnitTest();
+	int result = UnitTest::RunAndDisposeTests(argc, argv);
+	FinalizeGacUIUnitTest();
 	return result;
 }
 #endif
