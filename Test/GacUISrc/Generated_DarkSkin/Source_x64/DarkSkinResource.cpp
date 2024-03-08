@@ -58,7 +58,6 @@ namespace vl
 
 				void Unload(bool controllerUnrelatedPlugins, bool controllerRelatedPlugins)override
 				{
-					// The resource manager will be unloaded so nothing needs to be done here
 				}
 			};
 			GUI_REGISTER_PLUGIN(DarkSkinResourceLoaderPlugin)

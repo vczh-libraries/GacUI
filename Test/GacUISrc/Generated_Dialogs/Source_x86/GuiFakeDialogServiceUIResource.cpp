@@ -74,16 +74,19 @@ namespace vl
 #endif
 				}
 
-				void Load()override
+				void Load(bool controllerUnrelatedPlugins, bool controllerRelatedPlugins)override
 				{
-					List<GuiResourceError> errors;
-					MemoryStream resourceStream;
-					GuiFakeDialogServiceUIResourceReader::ReadToStream(resourceStream);
-					resourceStream.SeekFromBegin(0);
-					GetResourceManager()->LoadResourceOrPending(resourceStream, GuiResourceUsage::InstanceClass);
+					if (controllerRelatedPlugins)
+					{
+						List<GuiResourceError> errors;
+						MemoryStream resourceStream;
+						GuiFakeDialogServiceUIResourceReader::ReadToStream(resourceStream);
+						resourceStream.SeekFromBegin(0);
+						GetResourceManager()->LoadResourceOrPending(resourceStream, GuiResourceUsage::InstanceClass);
+					}
 				}
 
-				void Unload()override
+				void Unload(bool controllerUnrelatedPlugins, bool controllerRelatedPlugins)override
 				{
 				}
 			};

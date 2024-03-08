@@ -25,6 +25,10 @@
     - Need to find a way to listen to the event.
 - For all list controls, adding item could cause flashing during rendering for about 1 flame.
   - If this issue is solved, remove document in `Breaking changes from 1.0` and `List Controls`.
+- `controller(Unr|R)elatedPlugins` in `IGuiPlugin(Manager)?` lower dependency safety.
+  - Change `GUI_PLUGIN_NAME` to `GUI_PLUGIN_CONTROLLER_(UN)RELATED`.
+  - Remove the two parameters from `IGuiPlugin`, the macro above already specified it clear enough.
+  - Unrelated plugins are not allowed to depend on related plugins.
 
 ## Release Milestone (1.2.10.0)
 
