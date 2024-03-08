@@ -115,6 +115,9 @@ IGuiInstanceResourceManager
 
 			void Unload()override
 			{
+				anonymousResources.Clear();
+				resources.Clear();
+				instanceResources.Clear();
 				resourceManager = nullptr;
 			}
 

@@ -32,13 +32,14 @@ TEST_FILE
 
 		protocol.OnNextFrame([&]()
 		{
+			// The first created image is assigned 8 as its id because DarkSkin has loaded 7 images
 			// Image is created when calling GuiImageFrameElement::SetImage, size already sent back
 			// Render for the first time, the size of image is updated to the composition
 			AssertEventLogs(
 				eventLogs,
-				L"ImageCreated({id:1, data:30x40})",
+				L"ImageCreated({id:8, data:30x40})",
 				L"Created(<1:ImageFrame>)",
-				L"Updated(1, (1:0), Left, Top, <flags:[e]>)",
+				L"Updated(1, (8:0), Left, Top, <flags:[e]>)",
 				L"Begin()",
 				L"Render(1, {0,0:0,0}, {0,0:640,480})",
 				L"End()"
@@ -90,13 +91,14 @@ TEST_FILE
 
 		protocol.OnNextFrame([&]()
 		{
+			// The first created image is assigned 8 as its id because DarkSkin has loaded 7 images
 			// Image is created when calling GuiImageFrameElement::SetImage, size already sent back
 			// Render for the first time, the size of image is updated to the composition
 			AssertEventLogs(
 				eventLogs,
-				L"ImageCreated({id:1, data:30x40})",
+				L"ImageCreated({id:8, data:30x40})",
 				L"Created(<1:ImageFrame>)",
-				L"Updated(1, (1:0), Left, Top, <flags:[e]>)",
+				L"Updated(1, (8:0), Left, Top, <flags:[e]>)",
 				L"Begin()",
 				L"Render(1, {0,0:0,0}, {0,0:640,480})",
 				L"End()"
@@ -121,7 +123,7 @@ TEST_FILE
 			// Size (0,0) is updated to the composition because the image is stretched
 			AssertEventLogs(
 				eventLogs,
-				L"Updated(1, (1:0), Left, Top, <flags:[s]>)",
+				L"Updated(1, (8:0), Left, Top, <flags:[s]>)",
 				L"Begin()",
 				L"Render(1, {10,10:30,40}, {0,0:640,480})",
 				L"End()"
@@ -151,9 +153,9 @@ TEST_FILE
 			// Render for the first time, the size of image is updated to the composition
 			AssertEventLogs(
 				eventLogs,
-				L"ImageCreated({id:2, data:50x60})",
-				L"ImageDestroyed(1)",
-				L"Updated(1, (2:0), Left, Top, <flags:[s]>)",
+				L"ImageCreated({id:9, data:50x60})",
+				L"ImageDestroyed(8)",
+				L"Updated(1, (9:0), Left, Top, <flags:[s]>)",
 				L"Begin()",
 				L"Render(1, {10,10:0,0}, {0,0:640,480})",
 				L"End()"
@@ -177,7 +179,7 @@ TEST_FILE
 			// Size (50,60) is updated to the composition because the image is not stretched
 			AssertEventLogs(
 				eventLogs,
-				L"Updated(1, (2:0), Left, Top, <flags:>)",
+				L"Updated(1, (9:0), Left, Top, <flags:>)",
 				L"Begin()",
 				L"Render(1, {10,10:0,0}, {0,0:640,480})",
 				L"End()"
@@ -261,16 +263,17 @@ TEST_FILE
 
 		protocol.OnNextFrame([&]()
 		{
+			// The first created image is assigned 8 as its id because DarkSkin has loaded 7 images
 			// Image is created when calling GuiImageFrameElement::SetImage, size already sent back
 			// Render for the first time, the size of image is updated to the composition
 			AssertEventLogs(
 				eventLogs,
-				L"ImageCreated({id:1, data:30x40})",
-				L"ImageCreated({id:2, data:50x60})",
+				L"ImageCreated({id:8, data:30x40})",
+				L"ImageCreated({id:9, data:50x60})",
 				L"Created(<1:ImageFrame>, <2:ImageFrame>, <3:ImageFrame>)",
-				L"Updated(1, (1:0), Left, Top, <flags:[e]>)",
-				L"Updated(2, (1:0), Left, Top, <flags:[e]>)",
-				L"Updated(3, (2:0), Left, Top, <flags:[e]>)",
+				L"Updated(1, (8:0), Left, Top, <flags:[e]>)",
+				L"Updated(2, (8:0), Left, Top, <flags:[e]>)",
+				L"Updated(3, (9:0), Left, Top, <flags:[e]>)",
 				L"Begin()",
 				L"Render(1, {0,0:0,0}, {0,0:640,480})",
 				L"Render(2, {0,0:0,0}, {0,0:640,480})",
@@ -302,9 +305,9 @@ TEST_FILE
 			AssertEventLogs(
 				eventLogs,
 				L"Created(<1:ImageFrame>, <2:ImageFrame>, <3:ImageFrame>)",
-				L"Updated(1, (1:0), Left, Top, <flags:[e]>, <imageCreation:{id:1, data:30x40}>)",
-				L"Updated(2, (1:0), Left, Top, <flags:[e]>, <imageCreation:{id:1, data:omitted}>)",
-				L"Updated(3, (2:0), Left, Top, <flags:[e]>, <imageCreation:{id:2, data:50x60}>)",
+				L"Updated(1, (8:0), Left, Top, <flags:[e]>, <imageCreation:{id:8, data:30x40}>)",
+				L"Updated(2, (8:0), Left, Top, <flags:[e]>, <imageCreation:{id:8, data:omitted}>)",
+				L"Updated(3, (9:0), Left, Top, <flags:[e]>, <imageCreation:{id:9, data:50x60}>)",
 				L"Begin()",
 				L"Render(1, {10,10:30,40}, {0,0:640,480})",
 				L"Render(2, {20,20:30,40}, {0,0:640,480})",

@@ -53,7 +53,10 @@ GuiRemoteGraphicsImage
 	{
 		if (remote)
 		{
-			remote->remoteMessages.RequestImageDestroyed(id);
+			if (status == MetadataStatus::Retrived)
+			{
+				remote->remoteMessages.RequestImageDestroyed(id);
+			}
 			remote->imageService.images.Remove(id);
 		}
 	}
