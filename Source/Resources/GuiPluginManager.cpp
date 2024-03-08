@@ -190,7 +190,7 @@ Helpers
 			if (pluginManager)
 			{
 				CHECK_ERROR(
-					pluginManager->IsControllerRelatedPluginsLoaded() || pluginManager->IsControllerUnrelatedPluginsLoaded(),
+					!pluginManager->IsControllerRelatedPluginsLoaded() && !pluginManager->IsControllerUnrelatedPluginsLoaded(),
 					L"vl::presentation::DestroyPluginManager()#Plugins have not been unloaded.");
 				delete pluginManager;
 				pluginManager = nullptr;
