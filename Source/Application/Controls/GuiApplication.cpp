@@ -444,8 +444,8 @@ GuiApplicationMain
 				{
 #ifndef VCZH_DEBUG_NO_REFLECTION
 					GetGlobalTypeManager()->Load();
-					GetPluginManager()->Load(true, true);
 #endif
+					GetPluginManager()->Load(true, true);
 				}
 				else
 				{
