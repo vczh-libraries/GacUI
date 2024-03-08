@@ -215,52 +215,6 @@
     <ClCompile Include="TestResource.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="..\..\Resources\Resource.FailedInstance.Control.xml.txt" />
-    <Text Include="..\..\Resources\Resource.FailedInstance.Ctor1.xml.txt" />
-    <Text Include="..\..\Resources\Resource.FailedInstance.Ctor2.xml.txt" />
-    <Text Include="..\..\Resources\Resource.FailedInstance.Ctor2_r.xml.txt" />
-    <Text Include="..\..\Resources\Resource.FailedInstance.Ctor3.xml.txt" />
-    <Text Include="..\..\Resources\Resource.FailedInstance.Ctor4.xml.txt" />
-    <Text Include="..\..\Resources\Resource.FailedInstance.Ctor5.xml.txt" />
-    <Text Include="..\..\Resources\Resource.FailedInstance.Inheriting1.xml.txt" />
-    <Text Include="..\..\Resources\Resource.FailedInstance.Inheriting2.xml.txt" />
-    <Text Include="..\..\Resources\Resource.FailedScript.Animations.xml.txt" />
-    <Text Include="..\..\Resources\Resource.FailedScript.Animations2.xml.txt" />
-    <Text Include="..\..\Resources\Resource.FailedScript.Properties.xml.txt" />
-    <Text Include="..\..\Resources\Resource.FailedScript.Strings.xml.txt" />
-    <Text Include="..\..\Resources\Resource.FailedScript.Strings2.xml.txt" />
-    <Text Include="..\..\Resources\Resource.FailedScript.Workflow.xml.txt" />
-    <Text Include="..\..\Resources\Resource.NotExists.xml.txt" />
-    <Text Include="..\..\Resources\Resource.WrongDoc.xml.txt" />
-    <Text Include="..\..\Resources\Resource.WrongInstance.xml.txt" />
-    <Text Include="..\..\Resources\Resource.WrongInstanceStyle.xml.txt" />
-    <Text Include="..\..\Resources\Resource.WrongSyntax.xml.txt" />
-    <Text Include="..\..\Resources\Resource.WrongSyntax2.xml.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <Xml Include="..\..\Resources\Resource.FailedInstance.Control.xml" />
-    <Xml Include="..\..\Resources\Resource.FailedInstance.Ctor1.xml" />
-    <Xml Include="..\..\Resources\Resource.FailedInstance.Ctor2.xml" />
-    <Xml Include="..\..\Resources\Resource.FailedInstance.Ctor2_r.xml" />
-    <Xml Include="..\..\Resources\Resource.FailedInstance.Ctor2_s.xml" />
-    <Xml Include="..\..\Resources\Resource.FailedInstance.Ctor3.xml" />
-    <Xml Include="..\..\Resources\Resource.FailedInstance.Ctor4.xml" />
-    <Xml Include="..\..\Resources\Resource.FailedInstance.Ctor5.xml" />
-    <Xml Include="..\..\Resources\Resource.FailedInstance.Inheriting1.xml" />
-    <Xml Include="..\..\Resources\Resource.FailedInstance.Inheriting2.xml" />
-    <Xml Include="..\..\Resources\Resource.FailedScript.Animations.xml" />
-    <Xml Include="..\..\Resources\Resource.FailedScript.Animations2.xml" />
-    <Xml Include="..\..\Resources\Resource.FailedScript.Properties.xml" />
-    <Xml Include="..\..\Resources\Resource.FailedScript.Strings.xml" />
-    <Xml Include="..\..\Resources\Resource.FailedScript.Strings2.xml" />
-    <Xml Include="..\..\Resources\Resource.FailedScript.Workflow.xml" />
-    <Xml Include="..\..\Resources\Resource.WrongDoc.xml" />
-    <Xml Include="..\..\Resources\Resource.WrongInstance.xml" />
-    <Xml Include="..\..\Resources\Resource.WrongInstanceStyle.xml" />
-    <Xml Include="..\..\Resources\Resource.WrongSyntax.xml" />
-    <Xml Include="..\..\Resources\Resource.WrongSyntax2.xml" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\Lib_GacUI_Reflection\Lib_GacUI_Reflection.vcxproj">
       <Project>{543b32d9-e229-472a-9d11-9bf12c7982bd}</Project>
     </ProjectReference>
