@@ -5,15 +5,6 @@
 
 using namespace vl;
 
-namespace vl
-{
-	namespace presentation
-	{
-		void GuiInitializeUtilities() {}
-		void GuiFinalizeUtilities() {}
-	}
-}
-
 #if defined VCZH_MSVC
 using namespace vl::filesystem;
 #endif
@@ -128,18 +119,6 @@ TEST_FILE
 }
 #endif
 
-Func<void()> guiMainProxy;
-
-void SetGuiMainProxy(const Func<void()>& proxy)
-{
-	guiMainProxy = proxy;
-}
-
-void GuiMain()
-{
-	guiMainProxy();
-}
-
 namespace vl::presentation::controls
 {
 	extern bool GACUI_UNITTEST_ONLY_SKIP_THREAD_LOCAL_STORAGE_DISPOSE_STORAGES;
@@ -157,7 +136,6 @@ int wmain(int argc, wchar_t* argv[])
 	GACUI_UNITTEST_ONLY_SKIP_TYPE_AND_PLUGIN_LOAD_UNLOAD = true;
 
 	GetGlobalTypeManager()->Load();
-	GetPluginManager()->Load();
 
 	int result = unittest::UnitTest::RunAndDisposeTests(argc, argv);
 
@@ -177,7 +155,6 @@ int main(int argc, char* argv[])
 	GACUI_UNITTEST_ONLY_SKIP_TYPE_AND_PLUGIN_LOAD_UNLOAD = true;
 
 	GetGlobalTypeManager()->Load();
-	GetPluginManager()->Load();
 
 	int result = unittest::UnitTest::RunAndDisposeTests(argc, argv);
 

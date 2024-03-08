@@ -445,8 +445,8 @@ GuiApplicationMain
 #ifndef VCZH_DEBUG_NO_REFLECTION
 					GetGlobalTypeManager()->Load();
 #endif
-					GetPluginManager()->Load();
 				}
+				GetPluginManager()->Load();
 
 				GetCurrentController()->InputService()->StartTimer();
 				{
@@ -465,6 +465,7 @@ GuiApplicationMain
 				theme::FinalizeTheme();
 				FinalizeGlobalStorage();
 
+				GetPluginManager()->Unload();
 				if (!GACUI_UNITTEST_ONLY_SKIP_TYPE_AND_PLUGIN_LOAD_UNLOAD)
 				{
 					DestroyPluginManager();
