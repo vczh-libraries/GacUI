@@ -27,6 +27,8 @@ namespace vl::presentation::unittest
 {
 }
 
+extern void InitializeGacUIUnitTest();
+extern void FinalizeGacUIUnitTest();
 extern void SetGuiMainProxy(const vl::Func<void()>& proxy);
 
 #endif

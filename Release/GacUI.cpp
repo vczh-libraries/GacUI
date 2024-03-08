@@ -39158,6 +39158,7 @@ GuiImageFrameElementRenderer
 
 	void GuiImageFrameElementRenderer::UpdateMinSizeFromImage(GuiRemoteGraphicsImage* image)
 	{
+		needUpdateSize = true;
 		if (!image || element->GetStretch())
 		{
 			minSize = { 0,0 };
@@ -39204,6 +39205,7 @@ GuiImageFrameElementRenderer
 		auto image = GetRemoteImage();
 		if (image)
 		{
+			needUpdateSize = true;
 			if (fullContent && image->status == GuiRemoteGraphicsImage::MetadataStatus::Retrived)
 			{
 				image->status = GuiRemoteGraphicsImage::MetadataStatus::Uninitialized;
@@ -39212,18 +39214,7 @@ GuiImageFrameElementRenderer
 			{
 				UpdateMinSizeFromImage(image);
 			}
-			else
-			{
-				needUpdateSize = true;
-			}
 		}
-
-		// Image
-		// FrameIndex
-		// HorizontalAlignment
-		// VerticalAlignment
-		// Stretch
-		// Enabled
 
 		remoteprotocol::ElementDesc_ImageFrame arguments;
 		arguments.id = id;
