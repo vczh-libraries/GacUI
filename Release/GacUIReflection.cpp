@@ -217,13 +217,16 @@ Plugin
 				GUI_PLUGIN_DEPEND(GacUI_Res_ResourceResolver);
 			}
 
-			void Load()override
+			void Load(bool controllerUnrelatedPlugins, bool controllerRelatedPlugins)override
 			{
-				IGuiResourceResolverManager* manager = GetResourceResolverManager();
-				manager->SetTypeResolver(Ptr(new GuiResourceCompiledWorkflowTypeResolver));
+				if (controllerUnrelatedPlugins)
+				{
+					IGuiResourceResolverManager* manager = GetResourceResolverManager();
+					manager->SetTypeResolver(Ptr(new GuiResourceCompiledWorkflowTypeResolver));
+				}
 			}
 
-			void Unload()override
+			void Unload(bool controllerUnrelatedPlugins, bool controllerRelatedPlugins)override
 			{
 			}
 		};
@@ -3658,22 +3661,25 @@ namespace vl
 				{
 				}
 
-				void Load()override
+				void Load(bool controllerUnrelatedPlugins, bool controllerRelatedPlugins)override
 				{
-					LoadPredefinedTypes();
-					LoadParsing2Types();
-					XmlAstLoadTypes();
-					JsonAstLoadTypes();
-					WfLoadLibraryTypes();
-					LoadGuiBasicTypes();
-					LoadGuiElementTypes();
-					LoadGuiCompositionTypes();
-					LoadGuiEventTypes();
-					LoadGuiTemplateTypes();
-					LoadGuiControlTypes();
+					if (controllerUnrelatedPlugins)
+					{
+						LoadPredefinedTypes();
+						LoadParsing2Types();
+						XmlAstLoadTypes();
+						JsonAstLoadTypes();
+						WfLoadLibraryTypes();
+						LoadGuiBasicTypes();
+						LoadGuiElementTypes();
+						LoadGuiCompositionTypes();
+						LoadGuiEventTypes();
+						LoadGuiTemplateTypes();
+						LoadGuiControlTypes();
+					}
 				}
 
-				void Unload()override
+				void Unload(bool controllerUnrelatedPlugins, bool controllerRelatedPlugins)override
 				{
 				}
 			};

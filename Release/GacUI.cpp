@@ -615,7 +615,11 @@ GuiApplicationMain
 #ifndef VCZH_DEBUG_NO_REFLECTION
 					GetGlobalTypeManager()->Load();
 #endif
-					GetPluginManager()->Load();
+					GetPluginManager()->Load(true, true);
+				}
+				else
+				{
+					GetPluginManager()->Load(false, true);
 				}
 
 				GetCurrentController()->InputService()->StartTimer();
@@ -637,11 +641,17 @@ GuiApplicationMain
 
 				if (!GACUI_UNITTEST_ONLY_SKIP_TYPE_AND_PLUGIN_LOAD_UNLOAD)
 				{
+					GetPluginManager()->Unload(true, true);
 					DestroyPluginManager();
 #ifndef VCZH_DEBUG_NO_REFLECTION
 					ResetGlobalTypeManager();
 #endif
 				}
+				else
+				{
+					GetPluginManager()->Unload(false, true);
+				}
+
 				if (!GACUI_UNITTEST_ONLY_SKIP_THREAD_LOCAL_STORAGE_DISPOSE_STORAGES)
 				{
 					ThreadLocalStorage::DisposeStorages();
@@ -26186,13 +26196,16 @@ GuiToolstripCommandPlugin
 					GUI_PLUGIN_DEPEND(GacUI_Parser);
 				}
 				
-				void Load()override
+				void Load(bool controllerUnrelatedPlugins, bool controllerRelatedPlugins)override
 				{
-					IGuiParserManager* manager=GetParserManager();
-					manager->SetParser(L"SHORTCUT", Ptr(new GuiToolstripCommandShortcutParser));
+					if (controllerUnrelatedPlugins)
+					{
+						IGuiParserManager* manager = GetParserManager();
+						manager->SetParser(L"SHORTCUT", Ptr(new GuiToolstripCommandShortcutParser));
+					}
 				}
 
-				void Unload()override
+				void Unload(bool controllerUnrelatedPlugins, bool controllerRelatedPlugins)override
 				{
 				}
 			};
@@ -39380,7 +39393,10 @@ GuiRemoteGraphicsImage
 	{
 		if (remote)
 		{
-			remote->remoteMessages.RequestImageDestroyed(id);
+			if (status == MetadataStatus::Retrived)
+			{
+				remote->remoteMessages.RequestImageDestroyed(id);
+			}
 			remote->imageService.images.Remove(id);
 		}
 	}
@@ -46643,16 +46659,22 @@ IGuiParserManager
 			{
 			}
 
-			void Load()override
+			void Load(bool controllerUnrelatedPlugins, bool controllerRelatedPlugins)override
 			{
-				parserManager = this;
-				SetParser(L"XML", Ptr(new GuiParser_Xml()));
-				SetParser(L"JSON", Ptr(new GuiParser_Json()));
+				if (controllerUnrelatedPlugins)
+				{
+					parserManager = this;
+					SetParser(L"XML", Ptr(new GuiParser_Xml()));
+					SetParser(L"JSON", Ptr(new GuiParser_Json()));
+				}
 			}
 
-			void Unload()override
+			void Unload(bool controllerUnrelatedPlugins, bool controllerRelatedPlugins)override
 			{
-				parserManager=0;
+				if (controllerUnrelatedPlugins)
+				{
+					parserManager = nullptr;
+				}
 			}
 
 			Ptr<IGuiGeneralParser> GetParser(const WString& name)override
@@ -46690,36 +46712,48 @@ GuiPluginManager
 		{
 		protected:
 			List<Ptr<IGuiPlugin>>				plugins;
-			bool								loaded;
+			bool								controllerRelatedLoaded = false;
+			bool								controllerUnrelatedLoaded = false;
 		public:
 			GuiPluginManager()
-				:loaded(false)
 			{
 			}
 
 			~GuiPluginManager()
 			{
-				Unload();
 			}
 
 			void AddPlugin(Ptr<IGuiPlugin> plugin)override
 			{
-				CHECK_ERROR(!loaded, L"GuiPluginManager::AddPlugin(Ptr<IGuiPlugin>)#Load function has already been executed.");
+#define ERROR_MESSAGE_PREFIX L"GuiPluginManager::AddPlugin(Ptr<IGuiPlugin>)#"
+				CHECK_ERROR(!controllerUnrelatedLoaded, ERROR_MESSAGE_PREFIX L"Load function has already been executed.");
 				auto name = plugin->GetName();
 				if (name != L"")
 				{
 					for (auto plugin : plugins)
 					{
-						CHECK_ERROR(plugin->GetName() != name, L"GuiPluginManager::AddPlugin(Ptr<IGuiPlugin>)#Duplicated plugin name.");
+						CHECK_ERROR(plugin->GetName() != name, ERROR_MESSAGE_PREFIX L"Duplicated plugin name.");
 					}
 				}
 				plugins.Add(plugin);
+#undef ERROR_MESSAGE_PREFIX
 			}
 
-			void Load()override
+			void Load(bool controllerUnrelatedPlugins, bool controllerRelatedPlugins)override
 			{
-				CHECK_ERROR(!loaded, L"GuiPluginManager::AddPlugin(Ptr<IGuiPlugin>)#Load function has already been executed.");
-				loaded=true;
+#define ERROR_MESSAGE_PREFIX L"GuiPluginManager::Load(bool, bool)#"
+				CHECK_ERROR(controllerUnrelatedPlugins || controllerRelatedPlugins, L"At least one of the parameters should be true.");
+				if (controllerUnrelatedPlugins)
+				{
+					CHECK_ERROR(!controllerUnrelatedLoaded, ERROR_MESSAGE_PREFIX L"A second Load(true, *) could only be called after Unload(true, *).");
+					controllerUnrelatedLoaded = true;
+				}
+				if (controllerRelatedPlugins)
+				{
+					CHECK_ERROR(controllerUnrelatedLoaded, ERROR_MESSAGE_PREFIX L"Load(*, true) could only be called between Load(true, *) and Unload(true, *).");
+					CHECK_ERROR(!controllerRelatedLoaded, ERROR_MESSAGE_PREFIX L"A second Load(*, true) could only be called after Unload(*, true).");
+					controllerRelatedLoaded = true;
+				}
 
 				SortedList<WString> loaded;
 				Group<WString, WString> loading;
@@ -46754,7 +46788,7 @@ GuiPluginManager
 
 								auto plugin = pluginsToLoad.Values()[index];
 								pluginsToLoad.Remove(name);
-								plugin->Load();
+								plugin->Load(controllerUnrelatedPlugins, controllerRelatedPlugins);
 								break;
 							}
 						}
@@ -46780,21 +46814,41 @@ GuiPluginManager
 						throw Exception(message);
 					}
 				}
+#undef ERROR_MESSAGE_PREFIX
 			}
 
-			void Unload()override
+			void Unload(bool controllerUnrelatedPlugins, bool controllerRelatedPlugins)override
 			{
-				CHECK_ERROR(loaded, L"GuiPluginManager::AddPlugin(Ptr<IGuiPlugin>)#Load function has not been executed.");
-				loaded=false;
+#define ERROR_MESSAGE_PREFIX L"GuiPluginManager::Unload(bool, bool)#"
+				CHECK_ERROR(controllerUnrelatedPlugins || controllerRelatedPlugins, L"At least one of the parameters should be true.");
+				if (controllerRelatedPlugins)
+				{
+					CHECK_ERROR(controllerUnrelatedLoaded, ERROR_MESSAGE_PREFIX L"Unload(*, true) could only be called between Load(true, *) and Unload(true, *).");
+					CHECK_ERROR(controllerRelatedLoaded, ERROR_MESSAGE_PREFIX L"Unload(*, true) could only be called after Load(*, true).");
+					controllerRelatedLoaded = false;
+				}
+				if (controllerUnrelatedPlugins)
+				{
+					CHECK_ERROR(controllerUnrelatedLoaded, ERROR_MESSAGE_PREFIX L"Unload(true, *) could only be called after Load(true, *).");
+					CHECK_ERROR(!controllerRelatedLoaded, ERROR_MESSAGE_PREFIX L"Unload(true, *) could only be called after Load(*, true).");
+					controllerUnrelatedLoaded = false;
+				}
+
 				for (auto plugin : plugins)
 				{
-					plugin->Unload();
+					plugin->Unload(controllerUnrelatedPlugins, controllerRelatedPlugins);
 				}
+#undef ERROR_MESSAGE_PREFIX
 			}
 
-			bool IsLoaded()override
+			bool IsControllerRelatedPluginsLoaded()override
 			{
-				return loaded;
+				return controllerRelatedLoaded;
+			}
+
+			bool IsControllerUnrelatedPluginsLoaded()override
+			{
+				return controllerUnrelatedLoaded;
 			}
 		};
 
@@ -46833,6 +46887,9 @@ Helpers
 		{
 			if (pluginManager)
 			{
+				CHECK_ERROR(
+					!pluginManager->IsControllerRelatedPluginsLoaded() && !pluginManager->IsControllerUnrelatedPluginsLoaded(),
+					L"vl::presentation::DestroyPluginManager()#Plugins have not been unloaded.");
 				delete pluginManager;
 				pluginManager = nullptr;
 			}
@@ -48535,21 +48592,27 @@ IGuiResourceResolverManager
 			{
 			}
 
-			void Load()override
+			void Load(bool controllerUnrelatedPlugins, bool controllerRelatedPlugins)override
 			{
-				globalStringKeyManager = new GlobalStringKeyManager();
-				globalStringKeyManager->InitializeConstants();
+				if (controllerUnrelatedPlugins)
+				{
+					globalStringKeyManager = new GlobalStringKeyManager();
+					globalStringKeyManager->InitializeConstants();
 
-				resourceResolverManager = this;
-				SetPathResolverFactory(Ptr(new GuiResourcePathResResolver::Factory));
-				SetPathResolverFactory(Ptr(new GuiImportResourcePathResResolver::Factory));
+					resourceResolverManager = this;
+					SetPathResolverFactory(Ptr(new GuiResourcePathResResolver::Factory));
+					SetPathResolverFactory(Ptr(new GuiImportResourcePathResResolver::Factory));
+				}
 			}
 
-			void Unload()override
+			void Unload(bool controllerUnrelatedPlugins, bool controllerRelatedPlugins)override
 			{
-				delete globalStringKeyManager;
-				globalStringKeyManager = 0;
-				resourceResolverManager = 0;
+				if (controllerUnrelatedPlugins)
+				{
+					delete globalStringKeyManager;
+					globalStringKeyManager = nullptr;
+					resourceResolverManager = nullptr;
+				}
 			}
 
 			IGuiResourcePathResolverFactory* GetPathResolverFactory(const WString& protocol)override
@@ -48753,16 +48816,25 @@ IGuiInstanceResourceManager
 				GUI_PLUGIN_DEPEND(GacUI_Res_ResourceResolver);
 			}
 
-			void Load()override
+			void Load(bool controllerUnrelatedPlugins, bool controllerRelatedPlugins)override
 			{
-				resourceManager = this;
-				IGuiResourceResolverManager* manager = GetResourceResolverManager();
-				manager->SetTypeResolver(Ptr(new GuiResourceClassNameRecordTypeResolver));
+				if (controllerRelatedPlugins)
+				{
+					resourceManager = this;
+					IGuiResourceResolverManager* manager = GetResourceResolverManager();
+					manager->SetTypeResolver(Ptr(new GuiResourceClassNameRecordTypeResolver));
+				}
 			}
 
-			void Unload()override
+			void Unload(bool controllerUnrelatedPlugins, bool controllerRelatedPlugins)override
 			{
-				resourceManager = nullptr;
+				if (controllerRelatedPlugins)
+				{
+					anonymousResources.Clear();
+					resources.Clear();
+					instanceResources.Clear();
+					resourceManager = nullptr;
+				}
 			}
 
 			void SetResource(Ptr<GuiResource> resource, GuiResourceError::List& errors, GuiResourceUsage usage)override
@@ -49272,16 +49344,19 @@ Type Resolver Plugin
 				GUI_PLUGIN_DEPEND(GacUI_Res_ResourceResolver);
 			}
 
-			void Load()override
+			void Load(bool controllerUnrelatedPlugins, bool controllerRelatedPlugins)override
 			{
-				IGuiResourceResolverManager* manager=GetResourceResolverManager();
-				manager->SetTypeResolver(Ptr(new GuiResourceImageTypeResolver));
-				manager->SetTypeResolver(Ptr(new GuiResourceTextTypeResolver));
-				manager->SetTypeResolver(Ptr(new GuiResourceXmlTypeResolver));
-				manager->SetTypeResolver(Ptr(new GuiResourceDocTypeResolver));
+				if (controllerUnrelatedPlugins)
+				{
+					IGuiResourceResolverManager* manager = GetResourceResolverManager();
+					manager->SetTypeResolver(Ptr(new GuiResourceImageTypeResolver));
+					manager->SetTypeResolver(Ptr(new GuiResourceTextTypeResolver));
+					manager->SetTypeResolver(Ptr(new GuiResourceXmlTypeResolver));
+					manager->SetTypeResolver(Ptr(new GuiResourceDocTypeResolver));
+				}
 			}
 
-			void Unload()override
+			void Unload(bool controllerUnrelatedPlugins, bool controllerRelatedPlugins)override
 			{
 			}
 		};
@@ -59576,16 +59651,19 @@ namespace vl
 #endif
 				}
 
-				void Load()override
+				void Load(bool controllerUnrelatedPlugins, bool controllerRelatedPlugins)override
 				{
-					List<GuiResourceError> errors;
-					MemoryStream resourceStream;
-					GuiFakeDialogServiceUIResourceReader::ReadToStream(resourceStream);
-					resourceStream.SeekFromBegin(0);
-					GetResourceManager()->LoadResourceOrPending(resourceStream, GuiResourceUsage::InstanceClass);
+					if (controllerRelatedPlugins)
+					{
+						List<GuiResourceError> errors;
+						MemoryStream resourceStream;
+						GuiFakeDialogServiceUIResourceReader::ReadToStream(resourceStream);
+						resourceStream.SeekFromBegin(0);
+						GetResourceManager()->LoadResourceOrPending(resourceStream, GuiResourceUsage::InstanceClass);
+					}
 				}
 
-				void Unload()override
+				void Unload(bool controllerUnrelatedPlugins, bool controllerRelatedPlugins)override
 				{
 				}
 			};

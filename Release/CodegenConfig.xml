@@ -18,12 +18,14 @@
     <category name="wfcompiler" pattern="\Import\VlppWorkflowCompiler."/>
     <category name="gacui" pattern="\Source\">
       <except pattern="\PlatformProviders\Windows\" />
+      <except pattern="\UnitTestUtilities\" />
       <except pattern="\Reflection\" />
       <except pattern="\Compiler\" />
       <except pattern="\Skins\" />
       <except pattern="GuiFakeDialogServiceUIReflection" />
     </category>
     <category name="windows" pattern="\Source\PlatformProviders\Windows\" />
+    <category name="unittest" pattern="\Source\UnitTestUtilities\" />
     <category name="reflection" pattern="\Source\Reflection\" />
     <category name="reflection" pattern="GuiFakeDialogServiceUIReflection" />
     <category name="compiler" pattern="\Source\Compiler\" />
@@ -45,6 +47,7 @@
     <codepair category="wfcompiler" filename="VlppWorkflowCompiler" generate="false"/>
     <codepair category="gacui" filename="GacUI" generate="true"/>
     <codepair category="windows" filename="GacUI.Windows" generate="true"/>
+    <codepair category="unittest" filename="GacUI.UnitTest" generate="true"/>
     <codepair category="reflection" filename="GacUIReflection" generate="true"/>
     <codepair category="compiler" filename="GacUICompiler" generate="true"/>
     <codepair category="darkskin" filename="DarkSkin" generate="true"/>
