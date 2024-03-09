@@ -132,12 +132,27 @@ using namespace vl::presentation;
 using namespace vl::presentation::controls;
 using namespace vl::reflection::description;
 
+void SetGuiMainProxy(const Func<void()>& proxy)
+{
+	if (proxy)
+	{
+		GacUIUnitTest_SetGuiMainProxy([proxy](auto&&)
+		{
+			proxy();
+		});
+	}
+	else
+	{
+		GacUIUnitTest_SetGuiMainProxy({});
+	}
+}
+
 #if defined VCZH_MSVC
 int wmain(int argc, wchar_t* argv[])
 {
-	InitializeGacUIUnitTest();
+	GacUIUnitTest_Initialize();
 	int result = UnitTest::RunAndDisposeTests(argc, argv);
-	FinalizeGacUIUnitTest();
+	GacUIUnitTest_Finalize();
 #if defined VCZH_CHECK_MEMORY_LEAKS
 	_CrtDumpMemoryLeaks();
 #endif
@@ -146,9 +161,9 @@ int wmain(int argc, wchar_t* argv[])
 #elif defined VCZH_GCC
 int main(int argc, char* argv[])
 {
-	InitializeGacUIUnitTest();
+	GacUIUnitTest_Initialize();
 	int result = UnitTest::RunAndDisposeTests(argc, argv);
-	FinalizeGacUIUnitTest();
+	GacUIUnitTest_Finalize();
 	return result;
 }
 #endif
