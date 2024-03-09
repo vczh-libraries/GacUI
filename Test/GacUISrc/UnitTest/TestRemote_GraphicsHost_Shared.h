@@ -13,20 +13,11 @@ namespace remote_graphics_host_tests
 		static SingleScreenConfig MakeSingleScreenConfig()
 		{
 			SingleScreenConfig config;
+			config.FastInitialize(640, 480, 40);
 
-			config.customFramePadding = { 8,8,8,8 };
-
-			config.fontConfig.defaultFont.fontFamily = L"One";
-			config.fontConfig.defaultFont.size = 12;
-			config.fontConfig.supportedFonts = Ptr(new List<WString>());
-			config.fontConfig.supportedFonts->Add(L"One");
-			config.fontConfig.supportedFonts->Add(L"Two");
-			config.fontConfig.supportedFonts->Add(L"Three");
-
-			config.screenConfig.bounds = { 0,0,640,480 };
-			config.screenConfig.clientBounds = { 0,0,640,440 };
-			config.screenConfig.scalingX = 1;
-			config.screenConfig.scalingY = 1;
+			config.fontConfig.defaultFont.fontFamily = WString::Unmanaged(L"One");
+			config.fontConfig.supportedFonts->Clear();
+			config.fontConfig.supportedFonts->Add(config.fontConfig.defaultFont.fontFamily);
 
 			return config;
 		}

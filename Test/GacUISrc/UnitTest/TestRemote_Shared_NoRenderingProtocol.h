@@ -1,7 +1,7 @@
 #ifndef GACUISRC_REMOTE_NORENDERINGPROTOCOL
 #define GACUISRC_REMOTE_NORENDERINGPROTOCOL
 
-#include "../../../Source/PlatformProviders/Remote/GuiRemoteProtocol.h"
+#include "../../../Source/UnitTestUtilities/GuiUnitTestUtilities.h"
 
 using namespace vl;
 using namespace vl::collections;
@@ -42,31 +42,8 @@ namespace remote_protocol_tests
 		}
 	};
 
-	struct WindowStyleConfig
-	{
-		WString						title;
-		bool						enabled = true;
-		bool						topMost = false;
-		bool						showInTaskBar = true;
-	
-		bool						customFrameMode = false;
-		bool						maximizedBox = true;
-		bool						minimizedBox = true;
-		bool						border = true;
-		bool						sizeBox = true;
-		bool						iconVisible = true;
-		bool						titleBar = true;
-		bool						activated = false;
-	
-		auto operator<=>(const WindowStyleConfig&) const = default;
-	};
-
-	struct SingleScreenConfig
-	{
-		NativeMargin				customFramePadding;
-		FontConfig					fontConfig;
-		ScreenConfig				screenConfig;
-	};
+	using WindowStyleConfig = vl::presentation::unittest::WindowStyleConfig;
+	using SingleScreenConfig = vl::presentation::unittest::UnitTestScreenConfig;
 	
 	class SingleScreenProtocol : public NotImplementedProtocolBase
 	{

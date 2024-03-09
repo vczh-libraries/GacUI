@@ -12,6 +12,25 @@ Unit Test Snapsnot and other Utilities
 
 namespace vl::presentation::unittest
 {
+	struct WindowStyleConfig
+	{
+		WString						title;
+		bool						enabled = true;
+		bool						topMost = false;
+		bool						showInTaskBar = true;
+	
+		bool						customFrameMode = false;
+		bool						maximizedBox = true;
+		bool						minimizedBox = true;
+		bool						border = true;
+		bool						sizeBox = true;
+		bool						iconVisible = true;
+		bool						titleBar = true;
+		bool						activated = false;
+	
+		auto operator<=>(const WindowStyleConfig&) const = default;
+	};
+
 	struct UnitTestScreenConfig
 	{
 		using FontConfig = vl::presentation::remoteprotocol::FontConfig;
