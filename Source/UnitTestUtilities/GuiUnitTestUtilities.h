@@ -11,13 +11,13 @@ Unit Test Snapsnot and other Utilities
 
 namespace vl::presentation::unittest
 {
-	class UnitTestContext : public Object
+	class IUnitTestContext : public virtual Interface
 	{
 	public:
 		virtual IGuiRemoteProtocolEvents* GetEvents() = 0;
 	};
 
-	using UnitTestMainFunc = vl::Func<void(UnitTestContext*)>;
+	using UnitTestMainFunc = vl::Func<void(IUnitTestContext*)>;
 }
 
 extern void GacUIUnitTest_Initialize();

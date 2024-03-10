@@ -15,12 +15,12 @@ using namespace vl::presentation::remoteprotocol;
 using namespace vl::presentation::controls;
 using namespace vl::presentation::unittest;
 
-class UnitTestContextEx : public UnitTestContext
+class UnitTestContextImpl : public Object, public virtual IUnitTestContext
 {
 	UnitTestRemoteProtocol*		protocol = nullptr;
 
 public:
-	UnitTestContextEx(UnitTestRemoteProtocol* _protocol)
+	UnitTestContextImpl(UnitTestRemoteProtocol* _protocol)
 		: protocol(_protocol)
 	{
 	}
@@ -32,7 +32,7 @@ public:
 };
 
 UnitTestMainFunc guiMainProxy;
-UnitTestContextEx* guiMainUnitTestContext = nullptr;
+UnitTestContextImpl* guiMainUnitTestContext = nullptr;
 
 void GacUIUnitTest_Initialize()
 {
@@ -74,6 +74,9 @@ void GacUIUnitTest_Start(vl::Nullable<UnitTestScreenConfig> config)
 	UnitTestRemoteProtocol unitTestProtocol(globalConfig);
 	repeatfiltering::GuiRemoteProtocolFilterVerifier verifierProtocol(&unitTestProtocol);
 	repeatfiltering::GuiRemoteProtocolFilter filteredProtocol(&verifierProtocol);
+
+	UnitTestContextImpl unitTestContext(&unitTestProtocol);
+	guiMainUnitTestContext = &unitTestContext;
 	SetupRemoteNativeController(&filteredProtocol);
 	GacUIUnitTest_SetGuiMainProxy({});
 }
