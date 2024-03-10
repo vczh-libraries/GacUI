@@ -443,9 +443,9 @@ GuiRemoteProtocolFilter
 		void Submit() override
 		{
 			eventCombinator.submitting = true;
-			targetProtocol->Submit();
 			ProcessRequests();
 			eventCombinator.ProcessResponses();
+			GuiRemoteProtocolCombinator<GuiRemoteEventFilter>::Submit();
 			eventCombinator.submitting = false;
 			eventCombinator.ProcessEvents();
 		}

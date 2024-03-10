@@ -7,6 +7,7 @@ namespace remote_empty_window_tests
 	public:
 		bool						connectionEstablished = false;
 		bool						connectionStopped = false;
+		bool						connectionStoppedSubmitted = false;
 
 		static UnitTestScreenConfig MakeUnitTestScreenConfig()
 		{
@@ -31,7 +32,11 @@ namespace remote_empty_window_tests
 
 		void Submit() override
 		{
-			CHECK_ERROR(!connectionStopped, L"IGuiRemoteProtocol::Submit is not allowed to call after connection stopped.");
+			CHECK_ERROR(!connectionStoppedSubmitted, L"IGuiRemoteProtocol::Submit is not allowed to call after connection stopped.");
+			if (connectionStopped)
+			{
+				connectionStoppedSubmitted = true;
+			}
 		}
 
 		void RequestControllerConnectionEstablished() override

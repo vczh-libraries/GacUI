@@ -218,7 +218,7 @@ GuiRemoteProtocolFilterVerifier
 		void Submit() override
 		{
 			eventCombinator.submitting = true;
-			targetProtocol->Submit();
+			GuiRemoteProtocolCombinator<GuiRemoteEventFilterVerifier>::Submit();
 			ClearDropRepeatMasks();
 			eventCombinator.ClearDropRepeatMasks();
 			eventCombinator.ClearDropConsecutiveMasks();

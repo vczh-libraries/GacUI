@@ -65,10 +65,6 @@ namespace remote_protocol_tests
 			processRemoteEvents.Add(std::move(callback));
 		}
 	
-		void Submit() override
-		{
-		}
-	
 		void ProcessRemoteEvents() override
 		{
 			TEST_CASE(L"Execute frame[" + itow(nextEventIndex) + L"]")
