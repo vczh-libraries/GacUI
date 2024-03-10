@@ -1,4 +1,5 @@
 #include "GuiUnitTestUtilities.h"
+#include "../PlatformProviders/Remote/GuiRemoteProtocol.h"
 
 namespace vl::presentation::controls
 {

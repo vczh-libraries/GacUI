@@ -43,6 +43,9 @@
     <Filter Include="PlatformProviders\Remote\Protocol\Metadata">
       <UniqueIdentifier>{4dac0ff7-cdf1-490c-9a48-243cb8ae6025}</UniqueIdentifier>
     </Filter>
+    <Filter Include="PlatformProviders\Remote\ProtocolCombinators">
+      <UniqueIdentifier>{e14f29ac-0fb5-49d4-bb16-e9fd57104835}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiDocument.cpp">
@@ -261,9 +264,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Remote\GuiRemoteEvents.h">
       <Filter>PlatformProviders\Remote</Filter>
     </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Remote\GuiRemoteProtocol.h">
-      <Filter>PlatformProviders\Remote</Filter>
-    </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Remote\Protocol\Generated\GuiRemoteProtocolSchema.h">
       <Filter>PlatformProviders\Remote\Protocol\Generated</Filter>
     </ClInclude>
@@ -278,6 +278,18 @@
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Remote\GuiRemoteGraphics_ImageService.h">
       <Filter>PlatformProviders\Remote</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Remote\GuiRemoteProtocol.h">
+      <Filter>PlatformProviders\Remote\ProtocolCombinators</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Remote\GuiRemoteProtocol_Filter.h">
+      <Filter>PlatformProviders\Remote\ProtocolCombinators</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Remote\GuiRemoteProtocol_FilterVerifier.h">
+      <Filter>PlatformProviders\Remote\ProtocolCombinators</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Remote\GuiRemoteProtocol_Shared.h">
+      <Filter>PlatformProviders\Remote\ProtocolCombinators</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
