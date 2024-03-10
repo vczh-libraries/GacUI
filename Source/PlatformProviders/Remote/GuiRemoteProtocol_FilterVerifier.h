@@ -133,16 +133,18 @@ GuiRemoteEventFilterVerifier
 /***********************************************************************
 GuiRemoteProtocolFilterVerifier
 ***********************************************************************/
+
+	class GuiRemoteProtocolFilter;
 	
 	class GuiRemoteProtocolFilterVerifier
 		: public Object
 		, public virtual IGuiRemoteProtocol
 	{
+		friend class GuiRemoteProtocolFilter;
 	protected:
-		GuiRemoteProtocolFilter*								targetProtocol = nullptr;
+		IGuiRemoteProtocol*										targetProtocol = nullptr;
 		GuiRemoteEventFilterVerifier							eventFilterVerifier;
 		vint													lastRequestId = -1;
-		collections::List<FilteredRequest>						filteredRequests;
 	
 #define MESSAGE_NODROP(NAME)
 #define MESSAGE_DROPREP(NAME)												bool lastDropRepeatRequest ## NAME = false;
@@ -163,7 +165,7 @@ GuiRemoteProtocolFilterVerifier
 #undef MESSAGE_NODROP
 		}
 	public:
-		GuiRemoteProtocolFilterVerifier(GuiRemoteProtocolFilter* _protocol)
+		GuiRemoteProtocolFilterVerifier(IGuiRemoteProtocol* _protocol)
 			: targetProtocol(_protocol)
 		{
 		}

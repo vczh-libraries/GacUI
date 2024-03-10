@@ -11,7 +11,7 @@ Interfaces:
 #ifndef VCZH_PRESENTATION_GUIREMOTECONTROLLER_GUIREMOTEPROTOCOL_FILTER
 #define VCZH_PRESENTATION_GUIREMOTECONTROLLER_GUIREMOTEPROTOCOL_FILTER
 
-#include "GuiRemoteProtocol_Shared.h"
+#include "GuiRemoteProtocol_FilterVerifier.h"
 
 namespace vl::presentation::remoteprotocol::repeatfiltering
 {
@@ -269,14 +269,11 @@ GuiRemoteEventFilter
 /***********************************************************************
 GuiRemoteProtocolFilter
 ***********************************************************************/
-
-	class GuiRemoteProtocolFilterVerifier;
 	
 	class GuiRemoteProtocolFilter
 		: public Object
 		, public virtual IGuiRemoteProtocol
 	{
-		friend class GuiRemoteProtocolFilterVerifier;
 	protected:
 		IGuiRemoteProtocol*										targetProtocol = nullptr;
 		GuiRemoteEventFilter									eventFilter;
@@ -443,8 +440,17 @@ GuiRemoteProtocolFilter
 	
 		void Initialize(IGuiRemoteProtocolEvents* _events) override
 		{
-			eventFilter.targetEvents = _events;
-			targetProtocol->Initialize(&eventFilter);
+			if (auto verifierProtocol = dynamic_cast<GuiRemoteProtocolFilterVerifier*>(targetProtocol))
+			{
+				verifierProtocol->targetProtocol->Initialize(&eventFilter);
+				eventFilter.targetEvents = &verifierProtocol->eventFilterVerifier;
+				verifierProtocol->eventFilterVerifier.targetEvents = _events;
+			}
+			else
+			{
+				eventFilter.targetEvents = _events;
+				targetProtocol->Initialize(&eventFilter);
+			}
 		}
 	
 		void Submit() override

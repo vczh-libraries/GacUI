@@ -72,9 +72,9 @@ void GacUIUnitTest_Start(vl::Nullable<UnitTestScreenConfig> config)
 	}
 
 	UnitTestRemoteProtocol unitTestProtocol(globalConfig);
-	repeatfiltering::GuiRemoteProtocolFilter filteredProtocol(&unitTestProtocol);
-	repeatfiltering::GuiRemoteProtocolFilterVerifier verifierProtocol(&filteredProtocol);
-	SetupRemoteNativeController(&verifierProtocol);
+	repeatfiltering::GuiRemoteProtocolFilterVerifier verifierProtocol(&unitTestProtocol);
+	repeatfiltering::GuiRemoteProtocolFilter filteredProtocol(&verifierProtocol);
+	SetupRemoteNativeController(&filteredProtocol);
 	GacUIUnitTest_SetGuiMainProxy({});
 }
 

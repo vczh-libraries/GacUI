@@ -11,8 +11,8 @@ template<typename TProtocol>
 void StartRemoteControllerTest(TProtocol& protocol)
 {
 	JsonProtocol jsonProtocol(&protocol);
-	repeatfiltering::GuiRemoteProtocolFilter filteredProtocol(&jsonProtocol);
-	repeatfiltering::GuiRemoteProtocolFilterVerifier verifierProtocol(&filteredProtocol);
-	SetupRemoteNativeController(&verifierProtocol);
+	repeatfiltering::GuiRemoteProtocolFilterVerifier verifierProtocol(&jsonProtocol);
+	repeatfiltering::GuiRemoteProtocolFilter filteredProtocol(&verifierProtocol);
+	SetupRemoteNativeController(&filteredProtocol);
 	SetGuiMainProxy({});
 }

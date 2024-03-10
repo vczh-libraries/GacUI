@@ -12,7 +12,7 @@ Interfaces:
 #define VCZH_PRESENTATION_GUIREMOTECONTROLLER_GUIREMOTEPROTOCOL
 
 #include "GuiRemoteProtocol_Shared.h"
-#include "GuiRemoteProtocol_Filter.h"
 #include "GuiRemoteProtocol_FilterVerifier.h"
+#include "GuiRemoteProtocol_Filter.h"
 
 #endif
