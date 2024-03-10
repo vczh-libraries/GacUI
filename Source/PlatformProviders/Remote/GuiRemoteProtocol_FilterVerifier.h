@@ -19,9 +19,7 @@ namespace vl::presentation::remoteprotocol::repeatfiltering
 GuiRemoteEventFilterVerifier
 ***********************************************************************/
 
-	class GuiRemoteEventFilterVerifier
-		: public Object
-		, public virtual IGuiRemoteProtocolEvents
+	class GuiRemoteEventFilterVerifier : public GuiRemoteEventCombinator
 	{
 	protected:
 #define EVENT_NODROP(NAME)
@@ -35,7 +33,6 @@ GuiRemoteEventFilterVerifier
 #undef EVENT_NODROP
 
 	public:
-		IGuiRemoteProtocolEvents*								targetEvents = nullptr;
 		bool													submitting = false;
 
 		void ClearDropRepeatMasks()
@@ -136,14 +133,10 @@ GuiRemoteProtocolFilterVerifier
 
 	class GuiRemoteProtocolFilter;
 	
-	class GuiRemoteProtocolFilterVerifier
-		: public Object
-		, public virtual IGuiRemoteProtocol
+	class GuiRemoteProtocolFilterVerifier : public GuiRemoteProtocolCombinator<GuiRemoteEventFilterVerifier>
 	{
 		friend class GuiRemoteProtocolFilter;
 	protected:
-		IGuiRemoteProtocol*										targetProtocol = nullptr;
-		GuiRemoteEventFilterVerifier							eventFilterVerifier;
 		vint													lastRequestId = -1;
 	
 #define MESSAGE_NODROP(NAME)
@@ -166,7 +159,7 @@ GuiRemoteProtocolFilterVerifier
 		}
 	public:
 		GuiRemoteProtocolFilterVerifier(IGuiRemoteProtocol* _protocol)
-			: targetProtocol(_protocol)
+			: GuiRemoteProtocolCombinator<GuiRemoteEventFilterVerifier>(_protocol)
 		{
 		}
 	
@@ -222,30 +215,14 @@ GuiRemoteProtocolFilterVerifier
 	
 		// protocol
 	
-		WString GetExecutablePath() override
-		{
-			return targetProtocol->GetExecutablePath();
-		}
-	
-		void Initialize(IGuiRemoteProtocolEvents* _events) override
-		{
-			eventFilterVerifier.targetEvents = _events;
-			targetProtocol->Initialize(&eventFilterVerifier);
-		}
-	
 		void Submit() override
 		{
-			eventFilterVerifier.submitting = true;
+			eventCombinator.submitting = true;
 			targetProtocol->Submit();
 			ClearDropRepeatMasks();
-			eventFilterVerifier.ClearDropRepeatMasks();
-			eventFilterVerifier.ClearDropConsecutiveMasks();
-			eventFilterVerifier.submitting = false;
-		}
-	
-		void ProcessRemoteEvents() override
-		{
-			targetProtocol->ProcessRemoteEvents();
+			eventCombinator.ClearDropRepeatMasks();
+			eventCombinator.ClearDropConsecutiveMasks();
+			eventCombinator.submitting = false;
 		}
 	};
 }

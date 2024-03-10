@@ -88,9 +88,7 @@ namespace vl::presentation::remoteprotocol::repeatfiltering
 GuiRemoteEventFilter
 ***********************************************************************/
 
-	class GuiRemoteEventFilter
-		: public Object
-		, public virtual IGuiRemoteProtocolEvents
+	class GuiRemoteEventFilter : public GuiRemoteEventCombinator
 	{
 	protected:
 		collections::List<FilteredResponse>						filteredResponses;
@@ -107,7 +105,6 @@ GuiRemoteEventFilter
 #undef EVENT_NODROP
 
 	public:
-		IGuiRemoteProtocolEvents*								targetEvents = nullptr;
 		bool													submitting = false;
 		collections::Dictionary<vint, FilteredResponseNames>	responseIds;
 	
@@ -270,13 +267,9 @@ GuiRemoteEventFilter
 GuiRemoteProtocolFilter
 ***********************************************************************/
 	
-	class GuiRemoteProtocolFilter
-		: public Object
-		, public virtual IGuiRemoteProtocol
+	class GuiRemoteProtocolFilter : public GuiRemoteProtocolCombinator<GuiRemoteEventFilter>
 	{
 	protected:
-		IGuiRemoteProtocol*										targetProtocol = nullptr;
-		GuiRemoteEventFilter									eventFilter;
 		vint													lastRequestId = -1;
 		collections::List<FilteredRequest>						filteredRequests;
 	
@@ -343,12 +336,12 @@ GuiRemoteProtocolFilter
 #undef MESSAGE_NOREQ_NORES
 			}
 	
-			CHECK_ERROR(eventFilter.responseIds.Count() == 0, L"Messages sending to IGuiRemoteProtocol should be all responded.");
+			CHECK_ERROR(eventCombinator.responseIds.Count() == 0, L"Messages sending to IGuiRemoteProtocol should be all responded.");
 			filteredRequests.Clear();
 		}
 	public:
 		GuiRemoteProtocolFilter(IGuiRemoteProtocol* _protocol)
-			: targetProtocol(_protocol)
+			: GuiRemoteProtocolCombinator<GuiRemoteEventFilter>(_protocol)
 		{
 		}
 	
@@ -390,7 +383,7 @@ GuiRemoteProtocolFilter
 			request.id = id;\
 			request.name = FilteredRequestNames::NAME;\
 			filteredRequests.Add(request);\
-			eventFilter.responseIds.Add(id, FilteredResponseNames::NAME);\
+			eventCombinator.responseIds.Add(id, FilteredResponseNames::NAME);\
 		}\
 	
 #define MESSAGE_REQ_NORES(NAME, REQUEST, RESPONSE, DROPTAG)\
@@ -418,7 +411,7 @@ GuiRemoteProtocolFilter
 			request.name = FilteredRequestNames::NAME;\
 			request.arguments = arguments;\
 			filteredRequests.Add(request);\
-			eventFilter.responseIds.Add(id, FilteredResponseNames::NAME);\
+			eventCombinator.responseIds.Add(id, FilteredResponseNames::NAME);\
 		}\
 	
 #define MESSAGE_HANDLER(NAME, REQUEST, RESPONSE, REQTAG, RESTAG, DROPTAG, ...)	MESSAGE_ ## REQTAG ## _ ## RESTAG(NAME, REQUEST, RESPONSE, DROPTAG)
@@ -433,39 +426,28 @@ GuiRemoteProtocolFilter
 	
 		// protocol
 	
-		WString GetExecutablePath() override
-		{
-			return targetProtocol->GetExecutablePath();
-		}
-	
 		void Initialize(IGuiRemoteProtocolEvents* _events) override
 		{
 			if (auto verifierProtocol = dynamic_cast<GuiRemoteProtocolFilterVerifier*>(targetProtocol))
 			{
-				verifierProtocol->targetProtocol->Initialize(&eventFilter);
-				eventFilter.targetEvents = &verifierProtocol->eventFilterVerifier;
-				verifierProtocol->eventFilterVerifier.targetEvents = _events;
+				verifierProtocol->targetProtocol->Initialize(&eventCombinator);
+				eventCombinator.targetEvents = &verifierProtocol->eventCombinator;
+				verifierProtocol->eventCombinator.targetEvents = _events;
 			}
 			else
 			{
-				eventFilter.targetEvents = _events;
-				targetProtocol->Initialize(&eventFilter);
+				GuiRemoteProtocolCombinator<GuiRemoteEventFilter>::Initialize(_events);
 			}
 		}
 	
 		void Submit() override
 		{
-			eventFilter.submitting = true;
+			eventCombinator.submitting = true;
 			targetProtocol->Submit();
 			ProcessRequests();
-			eventFilter.ProcessResponses();
-			eventFilter.submitting = false;
-			eventFilter.ProcessEvents();
-		}
-	
-		void ProcessRemoteEvents() override
-		{
-			targetProtocol->ProcessRemoteEvents();
+			eventCombinator.ProcessResponses();
+			eventCombinator.submitting = false;
+			eventCombinator.ProcessEvents();
 		}
 	};
 }

@@ -82,6 +82,50 @@ IGuiRemoteProtocol
 		virtual void			Submit() = 0;
 		virtual void			ProcessRemoteEvents() = 0;
 	};
+
+	class GuiRemoteEventCombinator : public Object, public virtual IGuiRemoteProtocolEvents
+	{
+	public:
+		IGuiRemoteProtocolEvents*		targetEvents = nullptr;
+	};
+
+	template<typename TEvents>
+		requires(std::is_base_of_v<GuiRemoteEventCombinator, TEvents>)
+	class GuiRemoteProtocolCombinator : public Object, public virtual IGuiRemoteProtocol
+	{
+	protected:
+		IGuiRemoteProtocol*				targetProtocol = nullptr;
+		TEvents							eventCombinator;
+
+	public:
+		GuiRemoteProtocolCombinator(IGuiRemoteProtocol* _protocol)
+			: targetProtocol(_protocol)
+		{
+		}
+
+		// protocol
+
+		WString GetExecutablePath() override
+		{
+			return targetProtocol->GetExecutablePath();
+		}
+
+		void Initialize(IGuiRemoteProtocolEvents* _events) override
+		{
+			eventCombinator.targetEvents = _events;
+			targetProtocol->Initialize(&eventCombinator);
+		}
+
+		void Submit() override
+		{
+			targetProtocol->Submit();
+		}
+
+		void ProcessRemoteEvents() override
+		{
+			targetProtocol->ProcessRemoteEvents();
+		}
+	};
 }
 
 #endif

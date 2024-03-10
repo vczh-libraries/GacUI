@@ -9,17 +9,12 @@ using namespace vl::presentation;
 using namespace vl::presentation::remoteprotocol;
 
 namespace remote_protocol_tests
-{	
-	class JsonProtocol
-		: public Object
-		, public virtual IGuiRemoteProtocol
-		, protected virtual IGuiRemoteProtocolEvents
+{
+	class JsonProtocolShared
 	{
 	protected:
-		glr::json::Parser						jsonParser;
-		IGuiRemoteProtocol*						targetProtocol = nullptr;
-		IGuiRemoteProtocolEvents*				targetEvents = nullptr;
-	
+		glr::json::Parser		jsonParser;
+
 		template<typename T>
 		WString ToJson(const T& value)
 		{
@@ -37,15 +32,11 @@ namespace remote_protocol_tests
 			auto node = JsonParse(json, jsonParser).Cast<glr::json::JsonArray>();
 			ConvertJsonToCustomType<T>(node->items[0], value);
 		}
+	};
 
+	class JsonEvent : public JsonProtocolShared, public GuiRemoteEventCombinator
+	{
 	public:
-		JsonProtocol(IGuiRemoteProtocol* _protocol)
-			: targetProtocol(_protocol)
-		{
-		}
-	
-	protected:
-	
 		// events
 	
 #define EVENT_NOREQ(NAME, REQUEST)\
@@ -84,8 +75,15 @@ namespace remote_protocol_tests
 #undef MESSAGE_HANDLER
 #undef MESSAGE_RES
 #undef MESSAGE_NORES
-	
+	};
+
+	class JsonProtocol : public JsonProtocolShared, public GuiRemoteProtocolCombinator<JsonEvent>
+	{
 	public:
+		JsonProtocol(IGuiRemoteProtocol* _protocol)
+			: GuiRemoteProtocolCombinator<JsonEvent>(_protocol)
+		{
+		}
 	
 		// messages
 	
@@ -126,29 +124,6 @@ namespace remote_protocol_tests
 #undef MESSAGE_REQ_NORES
 #undef MESSAGE_NOREQ_RES
 #undef MESSAGE_NOREQ_NORES
-	
-		// protocol
-	
-		WString GetExecutablePath() override
-		{
-			return targetProtocol->GetExecutablePath();
-		}
-	
-		void Initialize(IGuiRemoteProtocolEvents* _events) override
-		{
-			targetEvents = _events;
-			targetProtocol->Initialize(this);
-		}
-	
-		void Submit() override
-		{
-			targetProtocol->Submit();
-		}
-	
-		void ProcessRemoteEvents() override
-		{
-			targetProtocol->ProcessRemoteEvents();
-		}
 	};
 }
 
