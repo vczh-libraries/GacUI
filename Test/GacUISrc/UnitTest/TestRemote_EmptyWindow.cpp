@@ -8,9 +8,9 @@ namespace remote_empty_window_tests
 		bool						connectionEstablished = false;
 		bool						connectionStopped = false;
 
-		static SingleScreenConfig MakeSingleScreenConfig()
+		static UnitTestScreenConfig MakeUnitTestScreenConfig()
 		{
-			SingleScreenConfig config;
+			UnitTestScreenConfig config;
 
 			config.customFramePadding = { 8,8,8,8 };
 
@@ -25,7 +25,7 @@ namespace remote_empty_window_tests
 		}
 
 		EmptyWindowProtocol()
-			: SingleScreenProtocol(MakeSingleScreenConfig())
+			: SingleScreenProtocol(MakeUnitTestScreenConfig())
 		{
 		}
 
@@ -81,7 +81,7 @@ TEST_FILE
 			TEST_CASE(L"Establish connection")
 			{
 				TEST_ASSERT(!protocol.connectionEstablished);
-				protocol.events->OnControllerConnect();
+				protocol.GetEvents()->OnControllerConnect();
 				TEST_ASSERT(protocol.connectionEstablished);
 			});
 
@@ -124,7 +124,7 @@ TEST_FILE
 		});
 		SetGuiMainProxy([&]()
 		{
-			protocol.events->OnControllerConnect();
+			protocol.GetEvents()->OnControllerConnect();
 			auto ws = GetCurrentController()->WindowService();
 			auto window = ws->CreateNativeWindow(INativeWindow::Normal);
 			window->InstallListener(&listener);
@@ -171,7 +171,7 @@ TEST_FILE
 		});
 		SetGuiMainProxy([&]()
 		{
-			protocol.events->OnControllerConnect();
+			protocol.GetEvents()->OnControllerConnect();
 			auto ws = GetCurrentController()->WindowService();
 			auto window = ws->CreateNativeWindow(INativeWindow::Normal);
 			window->InstallListener(&listener);
@@ -264,7 +264,7 @@ TEST_FILE
 		});
 		SetGuiMainProxy([&]()
 		{
-			protocol.events->OnControllerConnect();
+			protocol.GetEvents()->OnControllerConnect();
 			auto ws = GetCurrentController()->WindowService();
 			auto window = ws->CreateNativeWindow(INativeWindow::Normal);
 			window->InstallListener(&listener);
@@ -340,7 +340,7 @@ TEST_FILE
 		});
 		SetGuiMainProxy([&]()
 		{
-			protocol.events->OnControllerConnect();
+			protocol.GetEvents()->OnControllerConnect();
 			auto ws = GetCurrentController()->WindowService();
 			auto window = ws->CreateNativeWindow(INativeWindow::Normal);
 			window->InstallListener(&listener);
@@ -385,14 +385,14 @@ TEST_FILE
 			);
 
 			listener.blockClosing = true;
-			protocol.events->OnControllerRequestExit();
+			protocol.GetEvents()->OnControllerRequestExit();
 			listener.AssertCallbacks(
 				L"BeforeClosing()"
 			);
 			subListener.AssertCallbacks();
 
 			listener.blockClosing = false;
-			protocol.events->OnControllerRequestExit();
+			protocol.GetEvents()->OnControllerRequestExit();
 			listener.AssertCallbacks(
 				L"BeforeClosing()",
 				L"AfterClosing()",
@@ -411,7 +411,7 @@ TEST_FILE
 		});
 		SetGuiMainProxy([&]()
 		{
-			protocol.events->OnControllerConnect();
+			protocol.GetEvents()->OnControllerConnect();
 			auto ws = GetCurrentController()->WindowService();
 			auto window = ws->CreateNativeWindow(INativeWindow::Normal);
 			window->InstallListener(&listener);
@@ -456,7 +456,7 @@ TEST_FILE
 			);
 
 			listener.blockClosing = true;
-			protocol.events->OnControllerForceExit();
+			protocol.GetEvents()->OnControllerForceExit();
 			listener.AssertCallbacks(
 				L"RenderingAsDeactivated()",
 				L"Closed()",
@@ -473,7 +473,7 @@ TEST_FILE
 		});
 		SetGuiMainProxy([&]()
 		{
-			protocol.events->OnControllerConnect();
+			protocol.GetEvents()->OnControllerConnect();
 			auto ws = GetCurrentController()->WindowService();
 			auto window = ws->CreateNativeWindow(INativeWindow::Normal);
 			window->InstallListener(&listener);
@@ -514,20 +514,20 @@ TEST_FILE
 			};
 
 			assertConfigs({ 270, 120, 370, 320 });
-			protocol.events->OnControllerDisconnect();
+			protocol.GetEvents()->OnControllerDisconnect();
 			assertConfigs({ 270, 120, 370, 320 });
 			protocol.connectionEstablished = false;
 			protocol.styleConfig = {};
 			protocol.sizingConfig.bounds = { 270, 130, 370, 330 };
 			protocol.sizingConfig.clientBounds = { 270, 130, 370, 330 };
-			protocol.events->OnControllerConnect();
+			protocol.GetEvents()->OnControllerConnect();
 			assertConfigs({ 270, 130, 370, 330 });
 
 			window->Hide(true);
 		});
 		SetGuiMainProxy([&]()
 		{
-			protocol.events->OnControllerConnect();
+			protocol.GetEvents()->OnControllerConnect();
 			auto ws = GetCurrentController()->WindowService();
 			auto window = ws->CreateNativeWindow(INativeWindow::Normal);
 			window->SetTitle(L"EmptyWindow");
@@ -589,7 +589,7 @@ TEST_FILE
 		{
 			TEST_ASSERT(protocol.styleConfig.activated == true);
 			protocol.styleConfig.activated = false;
-			protocol.events->OnWindowActivatedUpdated(false);
+			protocol.GetEvents()->OnWindowActivatedUpdated(false);
 			listener.AssertCallbacks(
 				L"GotFocus()",
 				L"LostFocus()",
@@ -616,7 +616,7 @@ TEST_FILE
 		{
 			TEST_ASSERT(protocol.styleConfig.activated == true);
 			protocol.styleConfig.activated = false;
-			protocol.events->OnWindowActivatedUpdated(false);
+			protocol.GetEvents()->OnWindowActivatedUpdated(false);
 			listener.AssertCallbacks(
 				L"GotFocus()",
 				L"LostFocus()",
@@ -657,7 +657,7 @@ TEST_FILE
 		{
 			TEST_ASSERT(protocol.styleConfig.activated == true);
 			protocol.styleConfig.activated = false;
-			protocol.events->OnWindowActivatedUpdated(false);
+			protocol.GetEvents()->OnWindowActivatedUpdated(false);
 			listener.AssertCallbacks(
 				L"LostFocus()",
 				L"RenderingAsDeactivated()"
@@ -697,7 +697,7 @@ TEST_FILE
 
 		SetGuiMainProxy([&]()
 		{
-			protocol.events->OnControllerConnect();
+			protocol.GetEvents()->OnControllerConnect();
 			ws = GetCurrentController()->WindowService();
 			window = ws->CreateNativeWindow(INativeWindow::Normal);
 			window->InstallListener(&listener);
@@ -776,7 +776,7 @@ TEST_FILE
 
 		SetGuiMainProxy([&]()
 		{
-			protocol.events->OnControllerConnect();
+			protocol.GetEvents()->OnControllerConnect();
 			auto ws = GetCurrentController()->WindowService();
 			window = ws->CreateNativeWindow(INativeWindow::Normal);
 			window->InstallListener(&listener);
@@ -829,7 +829,7 @@ TEST_FILE
 			TEST_ASSERT(window->GetBounds() == NativeRect(0, 0, 1, 1));
 			TEST_ASSERT(protocol.sizingConfig.bounds == NativeRect(640, 480, 641, 481));
 			protocol.RequestWindowNotifyShow({ false,INativeWindow::Restored });
-			protocol.events->OnWindowActivatedUpdated(false);
+			protocol.GetEvents()->OnWindowActivatedUpdated(false);
 		});
 
 		protocol.OnNextFrame([&]()
@@ -845,7 +845,7 @@ TEST_FILE
 
 		protocol.OnNextFrame([&]()
 		{
-			protocol.events->OnControllerRequestExit();
+			protocol.GetEvents()->OnControllerRequestExit();
 			listener.AssertCallbacks(
 				L"BeforeClosing()",
 				L"AfterClosing()",
@@ -857,7 +857,7 @@ TEST_FILE
 
 		SetGuiMainProxy([&]()
 		{
-			protocol.events->OnControllerConnect();
+			protocol.GetEvents()->OnControllerConnect();
 			auto ws = GetCurrentController()->WindowService();
 			window = ws->CreateNativeWindow(INativeWindow::Normal);
 			window->InstallListener(&listener);

@@ -11,9 +11,9 @@ TEST_FILE
 
 		auto pressKeys = [&]()
 		{
-			protocol.events->OnIOKeyDown(MakeKeyInfo(true, false, false, VKEY::KEY_A));
-			protocol.events->OnIOChar(MakeCharInfo(false, true, false, L'B'));
-			protocol.events->OnIOKeyUp(MakeKeyInfo(false, false, true, VKEY::KEY_C));
+			protocol.GetEvents()->OnIOKeyDown(MakeKeyInfo(true, false, false, VKEY::KEY_A));
+			protocol.GetEvents()->OnIOChar(MakeCharInfo(false, true, false, L'B'));
+			protocol.GetEvents()->OnIOKeyUp(MakeKeyInfo(false, false, true, VKEY::KEY_C));
 		};
 
 		auto assertKeysOnX = [&]()

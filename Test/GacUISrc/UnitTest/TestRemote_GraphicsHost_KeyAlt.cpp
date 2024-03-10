@@ -103,8 +103,8 @@ TEST_FILE
 
 		auto pressKey = [&](VKEY key)
 		{
-			protocol.events->OnIOKeyDown(MakeKeyInfo(false, false, false, key));
-			protocol.events->OnIOKeyUp(MakeKeyInfo(false, false, false, key));
+			protocol.GetEvents()->OnIOKeyDown(MakeKeyInfo(false, false, false, key));
+			protocol.GetEvents()->OnIOKeyUp(MakeKeyInfo(false, false, false, key));
 		};
 
 		protocol.OnNextFrame([&]()
@@ -164,8 +164,8 @@ TEST_FILE
 
 		auto pressKey = [&](VKEY key)
 		{
-			protocol.events->OnIOKeyDown(MakeKeyInfo(false, false, false, key));
-			protocol.events->OnIOKeyUp(MakeKeyInfo(false, false, false, key));
+			protocol.GetEvents()->OnIOKeyDown(MakeKeyInfo(false, false, false, key));
+			protocol.GetEvents()->OnIOKeyUp(MakeKeyInfo(false, false, false, key));
 		};
 
 		protocol.OnNextFrame([&]()
@@ -241,8 +241,8 @@ TEST_FILE
 
 		auto pressKey = [&](VKEY key)
 		{
-			protocol.events->OnIOKeyDown(MakeKeyInfo(false, false, false, key));
-			protocol.events->OnIOKeyUp(MakeKeyInfo(false, false, false, key));
+			protocol.GetEvents()->OnIOKeyDown(MakeKeyInfo(false, false, false, key));
+			protocol.GetEvents()->OnIOKeyUp(MakeKeyInfo(false, false, false, key));
 		};
 
 		protocol.OnNextFrame([&]()
@@ -290,8 +290,8 @@ TEST_FILE
 
 		auto pressKey = [&](VKEY key)
 		{
-			protocol.events->OnIOKeyDown(MakeKeyInfo(false, false, false, key));
-			protocol.events->OnIOKeyUp(MakeKeyInfo(false, false, false, key));
+			protocol.GetEvents()->OnIOKeyDown(MakeKeyInfo(false, false, false, key));
+			protocol.GetEvents()->OnIOKeyUp(MakeKeyInfo(false, false, false, key));
 		};
 
 		protocol.OnNextFrame([&]()
@@ -373,8 +373,8 @@ TEST_FILE
 
 		auto pressKey = [&](VKEY key)
 		{
-			protocol.events->OnIOKeyDown(MakeKeyInfo(false, false, false, key));
-			protocol.events->OnIOKeyUp(MakeKeyInfo(false, false, false, key));
+			protocol.GetEvents()->OnIOKeyDown(MakeKeyInfo(false, false, false, key));
+			protocol.GetEvents()->OnIOKeyUp(MakeKeyInfo(false, false, false, key));
 		};
 
 		protocol.OnNextFrame([&]()
@@ -431,8 +431,8 @@ TEST_FILE
 
 		auto pressKey = [&](VKEY key)
 		{
-			protocol.events->OnIOKeyDown(MakeKeyInfo(false, false, false, key));
-			protocol.events->OnIOKeyUp(MakeKeyInfo(false, false, false, key));
+			protocol.GetEvents()->OnIOKeyDown(MakeKeyInfo(false, false, false, key));
+			protocol.GetEvents()->OnIOKeyUp(MakeKeyInfo(false, false, false, key));
 		};
 
 		protocol.OnNextFrame([&]()
@@ -519,8 +519,8 @@ TEST_FILE
 
 		auto pressKey = [&](VKEY key)
 		{
-			protocol.events->OnIOKeyDown(MakeKeyInfo(false, false, false, key));
-			protocol.events->OnIOKeyUp(MakeKeyInfo(false, false, false, key));
+			protocol.GetEvents()->OnIOKeyDown(MakeKeyInfo(false, false, false, key));
+			protocol.GetEvents()->OnIOKeyUp(MakeKeyInfo(false, false, false, key));
 		};
 
 		protocol.OnNextFrame([&]()

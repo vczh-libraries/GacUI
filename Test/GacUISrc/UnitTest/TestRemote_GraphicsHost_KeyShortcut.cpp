@@ -24,32 +24,32 @@ TEST_FILE
 
 		protocol.OnNextFrame([&]()
 		{
-			protocol.events->OnIOKeyDown(MakeKeyInfo(true, false, false, VKEY::KEY_CONTROL));
-			protocol.events->OnIOKeyDown(MakeKeyInfo(true, false, false, VKEY::KEY_X));
-			protocol.events->OnIOKeyUp(MakeKeyInfo(true, false, false, VKEY::KEY_X));
-			protocol.events->OnIOKeyUp(MakeKeyInfo(false, false, false, VKEY::KEY_CONTROL));
+			protocol.GetEvents()->OnIOKeyDown(MakeKeyInfo(true, false, false, VKEY::KEY_CONTROL));
+			protocol.GetEvents()->OnIOKeyDown(MakeKeyInfo(true, false, false, VKEY::KEY_X));
+			protocol.GetEvents()->OnIOKeyUp(MakeKeyInfo(true, false, false, VKEY::KEY_X));
+			protocol.GetEvents()->OnIOKeyUp(MakeKeyInfo(false, false, false, VKEY::KEY_CONTROL));
 			AssertEventLogs(eventLogs, L"Ctrl+X");
 
-			protocol.events->OnIOKeyDown(MakeKeyInfo(true, false, false, VKEY::KEY_CONTROL));
-			protocol.events->OnIOKeyDown(MakeKeyInfo(true, false, false, VKEY::KEY_Y));
-			protocol.events->OnIOKeyUp(MakeKeyInfo(true, false, false, VKEY::KEY_Y));
-			protocol.events->OnIOKeyUp(MakeKeyInfo(false, false, false, VKEY::KEY_CONTROL));
+			protocol.GetEvents()->OnIOKeyDown(MakeKeyInfo(true, false, false, VKEY::KEY_CONTROL));
+			protocol.GetEvents()->OnIOKeyDown(MakeKeyInfo(true, false, false, VKEY::KEY_Y));
+			protocol.GetEvents()->OnIOKeyUp(MakeKeyInfo(true, false, false, VKEY::KEY_Y));
+			protocol.GetEvents()->OnIOKeyUp(MakeKeyInfo(false, false, false, VKEY::KEY_CONTROL));
 			AssertEventLogs(eventLogs);
 
-			protocol.events->OnIOKeyDown(MakeKeyInfo(true, false, false, VKEY::KEY_LCONTROL));
-			protocol.events->OnIOKeyDown(MakeKeyInfo(true, true, false, VKEY::KEY_RSHIFT));
-			protocol.events->OnIOKeyDown(MakeKeyInfo(true, true, false, VKEY::KEY_Y));
-			protocol.events->OnIOKeyUp(MakeKeyInfo(false, true, false, VKEY::KEY_LCONTROL));
-			protocol.events->OnIOKeyUp(MakeKeyInfo(false, false, false, VKEY::KEY_RSHIFT));
-			protocol.events->OnIOKeyUp(MakeKeyInfo(false, false, false, VKEY::KEY_Y));
+			protocol.GetEvents()->OnIOKeyDown(MakeKeyInfo(true, false, false, VKEY::KEY_LCONTROL));
+			protocol.GetEvents()->OnIOKeyDown(MakeKeyInfo(true, true, false, VKEY::KEY_RSHIFT));
+			protocol.GetEvents()->OnIOKeyDown(MakeKeyInfo(true, true, false, VKEY::KEY_Y));
+			protocol.GetEvents()->OnIOKeyUp(MakeKeyInfo(false, true, false, VKEY::KEY_LCONTROL));
+			protocol.GetEvents()->OnIOKeyUp(MakeKeyInfo(false, false, false, VKEY::KEY_RSHIFT));
+			protocol.GetEvents()->OnIOKeyUp(MakeKeyInfo(false, false, false, VKEY::KEY_Y));
 			AssertEventLogs(eventLogs, L"Ctrl+Shift+Y");
 
-			protocol.events->OnIOKeyDown(MakeKeyInfo(true, false, false, VKEY::KEY_LCONTROL));
-			protocol.events->OnIOKeyDown(MakeKeyInfo(true, true, false, VKEY::KEY_RSHIFT));
-			protocol.events->OnIOKeyDown(MakeKeyInfo(true, true, false, VKEY::KEY_X));
-			protocol.events->OnIOKeyUp(MakeKeyInfo(false, true, false, VKEY::KEY_LCONTROL));
-			protocol.events->OnIOKeyUp(MakeKeyInfo(false, false, false, VKEY::KEY_RSHIFT));
-			protocol.events->OnIOKeyUp(MakeKeyInfo(false, false, false, VKEY::KEY_X));
+			protocol.GetEvents()->OnIOKeyDown(MakeKeyInfo(true, false, false, VKEY::KEY_LCONTROL));
+			protocol.GetEvents()->OnIOKeyDown(MakeKeyInfo(true, true, false, VKEY::KEY_RSHIFT));
+			protocol.GetEvents()->OnIOKeyDown(MakeKeyInfo(true, true, false, VKEY::KEY_X));
+			protocol.GetEvents()->OnIOKeyUp(MakeKeyInfo(false, true, false, VKEY::KEY_LCONTROL));
+			protocol.GetEvents()->OnIOKeyUp(MakeKeyInfo(false, false, false, VKEY::KEY_RSHIFT));
+			protocol.GetEvents()->OnIOKeyUp(MakeKeyInfo(false, false, false, VKEY::KEY_X));
 			AssertEventLogs(eventLogs);
 		});
 
@@ -58,32 +58,32 @@ TEST_FILE
 			c1->SetEnabled(false);
 			c2->SetEnabled(false);
 
-			protocol.events->OnIOKeyDown(MakeKeyInfo(true, false, false, VKEY::KEY_CONTROL));
-			protocol.events->OnIOKeyDown(MakeKeyInfo(true, false, false, VKEY::KEY_X));
-			protocol.events->OnIOKeyUp(MakeKeyInfo(true, false, false, VKEY::KEY_X));
-			protocol.events->OnIOKeyUp(MakeKeyInfo(false, false, false, VKEY::KEY_CONTROL));
+			protocol.GetEvents()->OnIOKeyDown(MakeKeyInfo(true, false, false, VKEY::KEY_CONTROL));
+			protocol.GetEvents()->OnIOKeyDown(MakeKeyInfo(true, false, false, VKEY::KEY_X));
+			protocol.GetEvents()->OnIOKeyUp(MakeKeyInfo(true, false, false, VKEY::KEY_X));
+			protocol.GetEvents()->OnIOKeyUp(MakeKeyInfo(false, false, false, VKEY::KEY_CONTROL));
 			AssertEventLogs(eventLogs);
 
-			protocol.events->OnIOKeyDown(MakeKeyInfo(true, false, false, VKEY::KEY_CONTROL));
-			protocol.events->OnIOKeyDown(MakeKeyInfo(true, false, false, VKEY::KEY_Y));
-			protocol.events->OnIOKeyUp(MakeKeyInfo(true, false, false, VKEY::KEY_Y));
-			protocol.events->OnIOKeyUp(MakeKeyInfo(false, false, false, VKEY::KEY_CONTROL));
+			protocol.GetEvents()->OnIOKeyDown(MakeKeyInfo(true, false, false, VKEY::KEY_CONTROL));
+			protocol.GetEvents()->OnIOKeyDown(MakeKeyInfo(true, false, false, VKEY::KEY_Y));
+			protocol.GetEvents()->OnIOKeyUp(MakeKeyInfo(true, false, false, VKEY::KEY_Y));
+			protocol.GetEvents()->OnIOKeyUp(MakeKeyInfo(false, false, false, VKEY::KEY_CONTROL));
 			AssertEventLogs(eventLogs);
 
-			protocol.events->OnIOKeyDown(MakeKeyInfo(true, false, false, VKEY::KEY_LCONTROL));
-			protocol.events->OnIOKeyDown(MakeKeyInfo(true, true, false, VKEY::KEY_RSHIFT));
-			protocol.events->OnIOKeyDown(MakeKeyInfo(true, true, false, VKEY::KEY_Y));
-			protocol.events->OnIOKeyUp(MakeKeyInfo(false, true, false, VKEY::KEY_LCONTROL));
-			protocol.events->OnIOKeyUp(MakeKeyInfo(false, false, false, VKEY::KEY_RSHIFT));
-			protocol.events->OnIOKeyUp(MakeKeyInfo(false, false, false, VKEY::KEY_Y));
+			protocol.GetEvents()->OnIOKeyDown(MakeKeyInfo(true, false, false, VKEY::KEY_LCONTROL));
+			protocol.GetEvents()->OnIOKeyDown(MakeKeyInfo(true, true, false, VKEY::KEY_RSHIFT));
+			protocol.GetEvents()->OnIOKeyDown(MakeKeyInfo(true, true, false, VKEY::KEY_Y));
+			protocol.GetEvents()->OnIOKeyUp(MakeKeyInfo(false, true, false, VKEY::KEY_LCONTROL));
+			protocol.GetEvents()->OnIOKeyUp(MakeKeyInfo(false, false, false, VKEY::KEY_RSHIFT));
+			protocol.GetEvents()->OnIOKeyUp(MakeKeyInfo(false, false, false, VKEY::KEY_Y));
 			AssertEventLogs(eventLogs);
 
-			protocol.events->OnIOKeyDown(MakeKeyInfo(true, false, false, VKEY::KEY_LCONTROL));
-			protocol.events->OnIOKeyDown(MakeKeyInfo(true, true, false, VKEY::KEY_RSHIFT));
-			protocol.events->OnIOKeyDown(MakeKeyInfo(true, true, false, VKEY::KEY_X));
-			protocol.events->OnIOKeyUp(MakeKeyInfo(false, true, false, VKEY::KEY_LCONTROL));
-			protocol.events->OnIOKeyUp(MakeKeyInfo(false, false, false, VKEY::KEY_RSHIFT));
-			protocol.events->OnIOKeyUp(MakeKeyInfo(false, false, false, VKEY::KEY_X));
+			protocol.GetEvents()->OnIOKeyDown(MakeKeyInfo(true, false, false, VKEY::KEY_LCONTROL));
+			protocol.GetEvents()->OnIOKeyDown(MakeKeyInfo(true, true, false, VKEY::KEY_RSHIFT));
+			protocol.GetEvents()->OnIOKeyDown(MakeKeyInfo(true, true, false, VKEY::KEY_X));
+			protocol.GetEvents()->OnIOKeyUp(MakeKeyInfo(false, true, false, VKEY::KEY_LCONTROL));
+			protocol.GetEvents()->OnIOKeyUp(MakeKeyInfo(false, false, false, VKEY::KEY_RSHIFT));
+			protocol.GetEvents()->OnIOKeyUp(MakeKeyInfo(false, false, false, VKEY::KEY_X));
 			AssertEventLogs(eventLogs);
 		});
 
@@ -136,8 +136,8 @@ TEST_FILE
 			TEST_ASSERT(protocol.globalShortcutKeys[1].code == VKEY::KEY_Y);
 
 			protocol.globalShortcutKeys.Clear();
-			protocol.events->OnControllerDisconnect();
-			protocol.events->OnControllerConnect();
+			protocol.GetEvents()->OnControllerDisconnect();
+			protocol.GetEvents()->OnControllerConnect();
 
 			TEST_ASSERT(protocol.globalShortcutKeys.Count() == 2);
 			TEST_ASSERT(protocol.globalShortcutKeys[0].id == 1);
@@ -154,44 +154,44 @@ TEST_FILE
 
 		protocol.OnNextFrame([&]()
 		{
-			protocol.events->OnIOKeyDown(MakeKeyInfo(true, false, false, VKEY::KEY_CONTROL));
-			protocol.events->OnIOKeyDown(MakeKeyInfo(true, false, false, VKEY::KEY_X));
-			protocol.events->OnIOKeyUp(MakeKeyInfo(true, false, false, VKEY::KEY_X));
-			protocol.events->OnIOKeyUp(MakeKeyInfo(false, false, false, VKEY::KEY_CONTROL));
+			protocol.GetEvents()->OnIOKeyDown(MakeKeyInfo(true, false, false, VKEY::KEY_CONTROL));
+			protocol.GetEvents()->OnIOKeyDown(MakeKeyInfo(true, false, false, VKEY::KEY_X));
+			protocol.GetEvents()->OnIOKeyUp(MakeKeyInfo(true, false, false, VKEY::KEY_X));
+			protocol.GetEvents()->OnIOKeyUp(MakeKeyInfo(false, false, false, VKEY::KEY_CONTROL));
 			AssertEventLogs(eventLogs);
 
-			protocol.events->OnIOKeyDown(MakeKeyInfo(true, false, false, VKEY::KEY_CONTROL));
-			protocol.events->OnIOKeyDown(MakeKeyInfo(true, false, false, VKEY::KEY_Y));
-			protocol.events->OnIOKeyUp(MakeKeyInfo(true, false, false, VKEY::KEY_Y));
-			protocol.events->OnIOKeyUp(MakeKeyInfo(false, false, false, VKEY::KEY_CONTROL));
+			protocol.GetEvents()->OnIOKeyDown(MakeKeyInfo(true, false, false, VKEY::KEY_CONTROL));
+			protocol.GetEvents()->OnIOKeyDown(MakeKeyInfo(true, false, false, VKEY::KEY_Y));
+			protocol.GetEvents()->OnIOKeyUp(MakeKeyInfo(true, false, false, VKEY::KEY_Y));
+			protocol.GetEvents()->OnIOKeyUp(MakeKeyInfo(false, false, false, VKEY::KEY_CONTROL));
 			AssertEventLogs(eventLogs);
 
-			protocol.events->OnIOKeyDown(MakeKeyInfo(true, false, false, VKEY::KEY_LCONTROL));
-			protocol.events->OnIOKeyDown(MakeKeyInfo(true, true, false, VKEY::KEY_RSHIFT));
-			protocol.events->OnIOKeyDown(MakeKeyInfo(true, true, false, VKEY::KEY_Y));
-			protocol.events->OnIOKeyUp(MakeKeyInfo(false, true, false, VKEY::KEY_LCONTROL));
-			protocol.events->OnIOKeyUp(MakeKeyInfo(false, false, false, VKEY::KEY_RSHIFT));
-			protocol.events->OnIOKeyUp(MakeKeyInfo(false, false, false, VKEY::KEY_Y));
+			protocol.GetEvents()->OnIOKeyDown(MakeKeyInfo(true, false, false, VKEY::KEY_LCONTROL));
+			protocol.GetEvents()->OnIOKeyDown(MakeKeyInfo(true, true, false, VKEY::KEY_RSHIFT));
+			protocol.GetEvents()->OnIOKeyDown(MakeKeyInfo(true, true, false, VKEY::KEY_Y));
+			protocol.GetEvents()->OnIOKeyUp(MakeKeyInfo(false, true, false, VKEY::KEY_LCONTROL));
+			protocol.GetEvents()->OnIOKeyUp(MakeKeyInfo(false, false, false, VKEY::KEY_RSHIFT));
+			protocol.GetEvents()->OnIOKeyUp(MakeKeyInfo(false, false, false, VKEY::KEY_Y));
 			AssertEventLogs(eventLogs);
 
-			protocol.events->OnIOKeyDown(MakeKeyInfo(true, false, false, VKEY::KEY_LCONTROL));
-			protocol.events->OnIOKeyDown(MakeKeyInfo(true, true, false, VKEY::KEY_RSHIFT));
-			protocol.events->OnIOKeyDown(MakeKeyInfo(true, true, false, VKEY::KEY_X));
-			protocol.events->OnIOKeyUp(MakeKeyInfo(false, true, false, VKEY::KEY_LCONTROL));
-			protocol.events->OnIOKeyUp(MakeKeyInfo(false, false, false, VKEY::KEY_RSHIFT));
-			protocol.events->OnIOKeyUp(MakeKeyInfo(false, false, false, VKEY::KEY_X));
+			protocol.GetEvents()->OnIOKeyDown(MakeKeyInfo(true, false, false, VKEY::KEY_LCONTROL));
+			protocol.GetEvents()->OnIOKeyDown(MakeKeyInfo(true, true, false, VKEY::KEY_RSHIFT));
+			protocol.GetEvents()->OnIOKeyDown(MakeKeyInfo(true, true, false, VKEY::KEY_X));
+			protocol.GetEvents()->OnIOKeyUp(MakeKeyInfo(false, true, false, VKEY::KEY_LCONTROL));
+			protocol.GetEvents()->OnIOKeyUp(MakeKeyInfo(false, false, false, VKEY::KEY_RSHIFT));
+			protocol.GetEvents()->OnIOKeyUp(MakeKeyInfo(false, false, false, VKEY::KEY_X));
 			AssertEventLogs(eventLogs);
 		});
 
 		protocol.OnNextFrame([&]()
 		{
-			protocol.events->OnIOGlobalShortcutKey(0);
+			protocol.GetEvents()->OnIOGlobalShortcutKey(0);
 			AssertEventLogs(eventLogs);
-			protocol.events->OnIOGlobalShortcutKey(1);
+			protocol.GetEvents()->OnIOGlobalShortcutKey(1);
 			AssertEventLogs(eventLogs, L"Ctrl+X");
-			protocol.events->OnIOGlobalShortcutKey(2);
+			protocol.GetEvents()->OnIOGlobalShortcutKey(2);
 			AssertEventLogs(eventLogs, L"Ctrl+Shift+Y");
-			protocol.events->OnIOGlobalShortcutKey(3);
+			protocol.GetEvents()->OnIOGlobalShortcutKey(3);
 			AssertEventLogs(eventLogs);
 		});
 
@@ -200,44 +200,44 @@ TEST_FILE
 			c1->SetEnabled(false);
 			c2->SetEnabled(false);
 
-			protocol.events->OnIOKeyDown(MakeKeyInfo(true, false, false, VKEY::KEY_CONTROL));
-			protocol.events->OnIOKeyDown(MakeKeyInfo(true, false, false, VKEY::KEY_X));
-			protocol.events->OnIOKeyUp(MakeKeyInfo(true, false, false, VKEY::KEY_X));
-			protocol.events->OnIOKeyUp(MakeKeyInfo(false, false, false, VKEY::KEY_CONTROL));
+			protocol.GetEvents()->OnIOKeyDown(MakeKeyInfo(true, false, false, VKEY::KEY_CONTROL));
+			protocol.GetEvents()->OnIOKeyDown(MakeKeyInfo(true, false, false, VKEY::KEY_X));
+			protocol.GetEvents()->OnIOKeyUp(MakeKeyInfo(true, false, false, VKEY::KEY_X));
+			protocol.GetEvents()->OnIOKeyUp(MakeKeyInfo(false, false, false, VKEY::KEY_CONTROL));
 			AssertEventLogs(eventLogs);
 
-			protocol.events->OnIOKeyDown(MakeKeyInfo(true, false, false, VKEY::KEY_CONTROL));
-			protocol.events->OnIOKeyDown(MakeKeyInfo(true, false, false, VKEY::KEY_Y));
-			protocol.events->OnIOKeyUp(MakeKeyInfo(true, false, false, VKEY::KEY_Y));
-			protocol.events->OnIOKeyUp(MakeKeyInfo(false, false, false, VKEY::KEY_CONTROL));
+			protocol.GetEvents()->OnIOKeyDown(MakeKeyInfo(true, false, false, VKEY::KEY_CONTROL));
+			protocol.GetEvents()->OnIOKeyDown(MakeKeyInfo(true, false, false, VKEY::KEY_Y));
+			protocol.GetEvents()->OnIOKeyUp(MakeKeyInfo(true, false, false, VKEY::KEY_Y));
+			protocol.GetEvents()->OnIOKeyUp(MakeKeyInfo(false, false, false, VKEY::KEY_CONTROL));
 			AssertEventLogs(eventLogs);
 
-			protocol.events->OnIOKeyDown(MakeKeyInfo(true, false, false, VKEY::KEY_LCONTROL));
-			protocol.events->OnIOKeyDown(MakeKeyInfo(true, true, false, VKEY::KEY_RSHIFT));
-			protocol.events->OnIOKeyDown(MakeKeyInfo(true, true, false, VKEY::KEY_Y));
-			protocol.events->OnIOKeyUp(MakeKeyInfo(false, true, false, VKEY::KEY_LCONTROL));
-			protocol.events->OnIOKeyUp(MakeKeyInfo(false, false, false, VKEY::KEY_RSHIFT));
-			protocol.events->OnIOKeyUp(MakeKeyInfo(false, false, false, VKEY::KEY_Y));
+			protocol.GetEvents()->OnIOKeyDown(MakeKeyInfo(true, false, false, VKEY::KEY_LCONTROL));
+			protocol.GetEvents()->OnIOKeyDown(MakeKeyInfo(true, true, false, VKEY::KEY_RSHIFT));
+			protocol.GetEvents()->OnIOKeyDown(MakeKeyInfo(true, true, false, VKEY::KEY_Y));
+			protocol.GetEvents()->OnIOKeyUp(MakeKeyInfo(false, true, false, VKEY::KEY_LCONTROL));
+			protocol.GetEvents()->OnIOKeyUp(MakeKeyInfo(false, false, false, VKEY::KEY_RSHIFT));
+			protocol.GetEvents()->OnIOKeyUp(MakeKeyInfo(false, false, false, VKEY::KEY_Y));
 			AssertEventLogs(eventLogs);
 
-			protocol.events->OnIOKeyDown(MakeKeyInfo(true, false, false, VKEY::KEY_LCONTROL));
-			protocol.events->OnIOKeyDown(MakeKeyInfo(true, true, false, VKEY::KEY_RSHIFT));
-			protocol.events->OnIOKeyDown(MakeKeyInfo(true, true, false, VKEY::KEY_X));
-			protocol.events->OnIOKeyUp(MakeKeyInfo(false, true, false, VKEY::KEY_LCONTROL));
-			protocol.events->OnIOKeyUp(MakeKeyInfo(false, false, false, VKEY::KEY_RSHIFT));
-			protocol.events->OnIOKeyUp(MakeKeyInfo(false, false, false, VKEY::KEY_X));
+			protocol.GetEvents()->OnIOKeyDown(MakeKeyInfo(true, false, false, VKEY::KEY_LCONTROL));
+			protocol.GetEvents()->OnIOKeyDown(MakeKeyInfo(true, true, false, VKEY::KEY_RSHIFT));
+			protocol.GetEvents()->OnIOKeyDown(MakeKeyInfo(true, true, false, VKEY::KEY_X));
+			protocol.GetEvents()->OnIOKeyUp(MakeKeyInfo(false, true, false, VKEY::KEY_LCONTROL));
+			protocol.GetEvents()->OnIOKeyUp(MakeKeyInfo(false, false, false, VKEY::KEY_RSHIFT));
+			protocol.GetEvents()->OnIOKeyUp(MakeKeyInfo(false, false, false, VKEY::KEY_X));
 			AssertEventLogs(eventLogs);
 		});
 
 		protocol.OnNextFrame([&]()
 		{
-			protocol.events->OnIOGlobalShortcutKey(0);
+			protocol.GetEvents()->OnIOGlobalShortcutKey(0);
 			AssertEventLogs(eventLogs);
-			protocol.events->OnIOGlobalShortcutKey(1);
+			protocol.GetEvents()->OnIOGlobalShortcutKey(1);
 			AssertEventLogs(eventLogs);
-			protocol.events->OnIOGlobalShortcutKey(2);
+			protocol.GetEvents()->OnIOGlobalShortcutKey(2);
 			AssertEventLogs(eventLogs);
-			protocol.events->OnIOGlobalShortcutKey(3);
+			protocol.GetEvents()->OnIOGlobalShortcutKey(3);
 			AssertEventLogs(eventLogs);
 		});
 

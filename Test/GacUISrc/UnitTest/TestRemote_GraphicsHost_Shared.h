@@ -10,9 +10,9 @@ namespace remote_graphics_host_tests
 	class GraphicsHostProtocolBase : public TProtocol
 	{
 	public:
-		static SingleScreenConfig MakeSingleScreenConfig()
+		static UnitTestScreenConfig MakeUnitTestScreenConfig()
 		{
-			SingleScreenConfig config;
+			UnitTestScreenConfig config;
 			config.FastInitialize(640, 480, 40);
 
 			config.fontConfig.defaultFont.fontFamily = WString::Unmanaged(L"One");
@@ -24,7 +24,7 @@ namespace remote_graphics_host_tests
 
 		template<typename ...TArgs>
 		GraphicsHostProtocolBase(TArgs&& ...args)
-			: TProtocol(MakeSingleScreenConfig(), std::forward<TArgs&&>(args)...)
+			: TProtocol(MakeUnitTestScreenConfig(), std::forward<TArgs&&>(args)...)
 		{
 		}
 	};
@@ -93,7 +93,7 @@ namespace remote_graphics_host_tests
 	{
 		return [&]()
 		{
-			protocol.events->OnControllerConnect();
+			protocol.GetEvents()->OnControllerConnect();
 			auto theme = Ptr(new EmptyControlTheme);
 			theme::RegisterTheme(theme);
 

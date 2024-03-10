@@ -10,7 +10,9 @@ using namespace vl::presentation::remoteprotocol;
 
 namespace remote_protocol_tests
 {
-	class NotImplementedProtocolBase : public Object, public virtual IGuiRemoteProtocol
+	using namespace vl::presentation::unittest;
+
+	class NotImplementedProtocolBase : public UnitTestRemoteProtocolBase
 	{
 	public:
 #define MESSAGE_NOREQ_NORES(NAME, REQUEST, RESPONSE)					void Request ## NAME()									override { CHECK_FAIL(L"Not Implemented in NotImplementedProtocolBase!"); }
@@ -25,11 +27,9 @@ namespace remote_protocol_tests
 #undef MESSAGE_NOREQ_RES
 #undef MESSAGE_NOREQ_NORES
 	
-		IGuiRemoteProtocolEvents* events = nullptr;
-		
-		void Initialize(IGuiRemoteProtocolEvents* _events) override
+		NotImplementedProtocolBase(UnitTestScreenConfig _globalConfig)
+			: UnitTestRemoteProtocolBase(_globalConfig)
 		{
-			events = _events;
 		}
 		
 		void Submit() override
@@ -42,30 +42,21 @@ namespace remote_protocol_tests
 		}
 	};
 
-	using WindowStyleConfig = vl::presentation::unittest::WindowStyleConfig;
-	using SingleScreenConfig = vl::presentation::unittest::UnitTestScreenConfig;
+	using SingleScreenProtocolFeatures = Mixin<
+		NotImplementedProtocolBase,
+		UnitTestRemoteProtocol_IO,
+		UnitTestRemoteProtocol_MainWindow
+	>::Type;
 	
-	class SingleScreenProtocol : public NotImplementedProtocolBase
+	class SingleScreenProtocol : public SingleScreenProtocolFeatures
 	{
 	public:
-		SingleScreenConfig			globalConfig;
 		List<Func<void()>>			processRemoteEvents;
 		vint						nextEventIndex = 0;
 
-		WindowSizingConfig			sizingConfig;
-		WindowStyleConfig			styleConfig;
-		NativeRect					lastRestoredSize;
-		bool						capturing = false;
-
-		List<GlobalShortcutKey>		globalShortcutKeys;
-	
-		SingleScreenProtocol(SingleScreenConfig _globalConfig)
-			: globalConfig(_globalConfig)
+		SingleScreenProtocol(UnitTestScreenConfig _globalConfig)
+			: SingleScreenProtocolFeatures(_globalConfig)
 		{
-			sizingConfig.bounds = { 0,0,0,0 };
-			sizingConfig.clientBounds = { 0,0,0,0 };
-			sizingConfig.customFramePadding = globalConfig.customFramePadding;
-			sizingConfig.sizeState = INativeWindow::Restored;
 		}
 	
 		template<typename TCallback>
@@ -86,140 +77,13 @@ namespace remote_protocol_tests
 			});
 			nextEventIndex++;
 		}
-	
-		WString GetExecutablePath() override
-		{
-			return L"/Remote/Protocol.exe";
-		}
-	
-		void RequestControllerGetFontConfig(vint id) override
-		{
-			events->RespondControllerGetFontConfig(id, globalConfig.fontConfig);
-		}
-	
-		void RequestControllerGetScreenConfig(vint id) override
-		{
-			events->RespondControllerGetScreenConfig(id, globalConfig.screenConfig);
-		}
-	
+
 		void RequestControllerConnectionEstablished() override
 		{
 		}
 	
 		void RequestControllerConnectionStopped() override
 		{
-		}
-	
-		void RequestWindowGetBounds(vint id) override
-		{
-			events->RespondWindowGetBounds(id, sizingConfig);
-		}
-	
-		void RequestWindowNotifySetTitle(const ::vl::WString& arguments) override
-		{
-			styleConfig.title = arguments;
-		}
-	
-		void RequestWindowNotifySetEnabled(const bool& arguments) override
-		{
-			styleConfig.enabled = arguments;
-		}
-	
-		void RequestWindowNotifySetTopMost(const bool& arguments) override
-		{
-			styleConfig.topMost = arguments;
-		}
-	
-		void RequestWindowNotifySetShowInTaskBar(const bool& arguments) override
-		{
-			styleConfig.showInTaskBar = arguments;
-		}
-	
-		void OnBoundsUpdated()
-		{
-			sizingConfig.clientBounds = sizingConfig.bounds;
-			if (sizingConfig.sizeState == INativeWindow::Restored)
-			{
-				lastRestoredSize = sizingConfig.bounds;
-			}
-			events->OnWindowBoundsUpdated(sizingConfig);
-		}
-	
-		void RequestWindowNotifySetBounds(const NativeRect& arguments) override
-		{
-			sizingConfig.bounds = arguments;
-			OnBoundsUpdated();
-		}
-	
-		void RequestWindowNotifySetClientSize(const NativeSize& arguments) override
-		{
-			sizingConfig.bounds = { sizingConfig.bounds.LeftTop(), arguments };
-			OnBoundsUpdated();
-		}
-	
-		void RequestWindowNotifySetCustomFrameMode(const bool& arguments) override	{ styleConfig.customFrameMode = arguments;	events->OnWindowBoundsUpdated(sizingConfig); }
-		void RequestWindowNotifySetMaximizedBox(const bool& arguments) override		{ styleConfig.maximizedBox = arguments;		events->OnWindowBoundsUpdated(sizingConfig); }
-		void RequestWindowNotifySetMinimizedBox(const bool& arguments) override		{ styleConfig.minimizedBox = arguments;		events->OnWindowBoundsUpdated(sizingConfig); }
-		void RequestWindowNotifySetBorder(const bool& arguments) override			{ styleConfig.border = arguments;			events->OnWindowBoundsUpdated(sizingConfig); }
-		void RequestWindowNotifySetSizeBox(const bool& arguments) override			{ styleConfig.sizeBox = arguments;			events->OnWindowBoundsUpdated(sizingConfig); }
-		void RequestWindowNotifySetIconVisible(const bool& arguments) override		{ styleConfig.iconVisible = arguments;		events->OnWindowBoundsUpdated(sizingConfig); }
-		void RequestWindowNotifySetTitleBar(const bool& arguments) override			{ styleConfig.titleBar = arguments;			events->OnWindowBoundsUpdated(sizingConfig); }
-		void RequestWindowNotifyActivate() override									{ styleConfig.activated = true; }
-	
-		void RequestWindowNotifyShow(const WindowShowing& arguments) override
-		{
-			styleConfig.activated = arguments.activate;
-			if (sizingConfig.sizeState != arguments.sizeState)
-			{
-				sizingConfig.sizeState = arguments.sizeState;
-				switch (arguments.sizeState)
-				{
-				case INativeWindow::Maximized:
-					sizingConfig.bounds = globalConfig.screenConfig.clientBounds;
-					OnBoundsUpdated();
-					break;
-				case INativeWindow::Minimized:
-					sizingConfig.bounds = NativeRect(
-						{ globalConfig.screenConfig.bounds.x2,globalConfig.screenConfig.bounds.y2 },
-						{ 1,1 }
-					);
-					OnBoundsUpdated();
-					break;
-				case INativeWindow::Restored:
-					if (sizingConfig.bounds != lastRestoredSize)
-					{
-						sizingConfig.bounds = lastRestoredSize;
-						OnBoundsUpdated();
-					}
-					else
-					{
-						events->OnWindowBoundsUpdated(sizingConfig);
-					}
-					break;
-				}
-			}
-		}
-
-		void RequestIOUpdateGlobalShortcutKey(const Ptr<List<GlobalShortcutKey>>& arguments) override
-		{
-			if (arguments)
-			{
-				CopyFrom(globalShortcutKeys, *arguments.Obj());
-			}
-			else
-			{
-				globalShortcutKeys.Clear();
-			}
-		}
-
-		void RequestIORequireCapture() override
-		{
-			capturing = true;
-		}
-
-		void RequestIOReleaseCapture() override
-		{
-			capturing = false;
 		}
 
 		void RequestRendererBeginRendering() override
@@ -229,7 +93,7 @@ namespace remote_protocol_tests
 		void RequestRendererEndRendering(vint id) override
 		{
 			ElementMeasurings arguments;
-			events->RespondRendererEndRendering(id, arguments);
+			GetEvents()->RespondRendererEndRendering(id, arguments);
 		}
 	};
 }

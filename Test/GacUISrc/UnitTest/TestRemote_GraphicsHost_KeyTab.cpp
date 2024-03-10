@@ -70,8 +70,8 @@ TEST_FILE
 
 		auto pressTab = [&]()
 		{
-			protocol.events->OnIOKeyDown(MakeKeyInfo(false, false, false, VKEY::KEY_TAB));
-			protocol.events->OnIOKeyUp(MakeKeyInfo(false, false, false, VKEY::KEY_TAB));
+			protocol.GetEvents()->OnIOKeyDown(MakeKeyInfo(false, false, false, VKEY::KEY_TAB));
+			protocol.GetEvents()->OnIOKeyUp(MakeKeyInfo(false, false, false, VKEY::KEY_TAB));
 		};
 
 		protocol.OnNextFrame([&]()
@@ -144,8 +144,8 @@ TEST_FILE
 
 		auto pressTab = [&]()
 		{
-			protocol.events->OnIOKeyDown(MakeKeyInfo(false, true, false, VKEY::KEY_TAB));
-			protocol.events->OnIOKeyUp(MakeKeyInfo(false, true, false, VKEY::KEY_TAB));
+			protocol.GetEvents()->OnIOKeyDown(MakeKeyInfo(false, true, false, VKEY::KEY_TAB));
+			protocol.GetEvents()->OnIOKeyUp(MakeKeyInfo(false, true, false, VKEY::KEY_TAB));
 		};
 
 		protocol.OnNextFrame([&]()
@@ -218,8 +218,8 @@ TEST_FILE
 
 		auto pressTab = [&]()
 		{
-			protocol.events->OnIOKeyDown(MakeKeyInfo(false, false, false, VKEY::KEY_TAB));
-			protocol.events->OnIOKeyUp(MakeKeyInfo(false, false, false, VKEY::KEY_TAB));
+			protocol.GetEvents()->OnIOKeyDown(MakeKeyInfo(false, false, false, VKEY::KEY_TAB));
+			protocol.GetEvents()->OnIOKeyUp(MakeKeyInfo(false, false, false, VKEY::KEY_TAB));
 		};
 
 		protocol.OnNextFrame([&]()
@@ -291,8 +291,8 @@ TEST_FILE
 
 		auto pressTab = [&]()
 		{
-			protocol.events->OnIOKeyDown(MakeKeyInfo(false, false, false, VKEY::KEY_TAB));
-			protocol.events->OnIOKeyUp(MakeKeyInfo(false, false, false, VKEY::KEY_TAB));
+			protocol.GetEvents()->OnIOKeyDown(MakeKeyInfo(false, false, false, VKEY::KEY_TAB));
+			protocol.GetEvents()->OnIOKeyUp(MakeKeyInfo(false, false, false, VKEY::KEY_TAB));
 		};
 
 		protocol.OnNextFrame([&]()
@@ -356,8 +356,8 @@ TEST_FILE
 
 		auto pressTab = [&]()
 		{
-			protocol.events->OnIOKeyDown(MakeKeyInfo(false, false, false, VKEY::KEY_TAB));
-			protocol.events->OnIOKeyUp(MakeKeyInfo(false, false, false, VKEY::KEY_TAB));
+			protocol.GetEvents()->OnIOKeyDown(MakeKeyInfo(false, false, false, VKEY::KEY_TAB));
+			protocol.GetEvents()->OnIOKeyUp(MakeKeyInfo(false, false, false, VKEY::KEY_TAB));
 		};
 
 		protocol.OnNextFrame([&]()
@@ -428,8 +428,8 @@ TEST_FILE
 
 		auto pressTab = [&]()
 		{
-			protocol.events->OnIOKeyDown(MakeKeyInfo(false, true, false, VKEY::KEY_TAB));
-			protocol.events->OnIOKeyUp(MakeKeyInfo(false, true, false, VKEY::KEY_TAB));
+			protocol.GetEvents()->OnIOKeyDown(MakeKeyInfo(false, true, false, VKEY::KEY_TAB));
+			protocol.GetEvents()->OnIOKeyUp(MakeKeyInfo(false, true, false, VKEY::KEY_TAB));
 		};
 
 		protocol.OnNextFrame([&]()

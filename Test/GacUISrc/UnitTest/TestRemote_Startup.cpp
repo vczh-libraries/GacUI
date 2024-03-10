@@ -5,6 +5,11 @@ namespace remote_startup_tests
 	class StartUpProtocol : public NotImplementedProtocolBase
 	{
 	public:
+		StartUpProtocol()
+			: NotImplementedProtocolBase({})
+		{
+		}
+
 		WString GetExecutablePath() override
 		{
 			return L"/StartUp/Protocol.exe";
@@ -64,7 +69,7 @@ TEST_FILE
 		StartUpProtocol protocol;
 		SetGuiMainProxy([&]()
 		{
-			protocol.events->OnControllerConnect();
+			protocol.GetEvents()->OnControllerConnect();
 
 			auto rs = GetCurrentController()->ResourceService();
 			auto ss = GetCurrentController()->ScreenService();
@@ -103,7 +108,7 @@ TEST_FILE
 					response.clientBounds = { 2,2,18,28 };
 					response.scalingX = 1.2;
 					response.scalingY = 1.5;
-					protocol.events->OnControllerScreenUpdated(response);
+					protocol.GetEvents()->OnControllerScreenUpdated(response);
 				}
 				TEST_ASSERT(ss->GetScreenCount() == 1);
 				auto screen = ss->GetScreen((vint)0);
@@ -114,7 +119,7 @@ TEST_FILE
 				TEST_ASSERT(screen->GetScalingY() == 1.5);
 			});
 
-			protocol.events->OnControllerForceExit();
+			protocol.GetEvents()->OnControllerForceExit();
 		});
 		SetupRemoteNativeController(&protocol);
 		SetGuiMainProxy({});
@@ -128,7 +133,7 @@ TEST_FILE
 			// by not calling INativeWindowService::Run
 			// non of them will be connected to the native window
 			// so no interaction with the native window will happen
-			protocol.events->OnControllerConnect();
+			protocol.GetEvents()->OnControllerConnect();
 
 			TEST_CASE(L"Create and destroy a window")
 			{
@@ -144,7 +149,7 @@ TEST_FILE
 				GetCurrentController()->WindowService()->DestroyNativeWindow(window2);
 			});
 
-			protocol.events->OnControllerForceExit();
+			protocol.GetEvents()->OnControllerForceExit();
 		});
 		SetupRemoteNativeController(&protocol);
 		SetGuiMainProxy({});

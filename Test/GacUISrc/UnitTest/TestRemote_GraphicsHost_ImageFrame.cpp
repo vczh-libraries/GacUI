@@ -289,8 +289,8 @@ TEST_FILE
 			[&]()
 			{
 				// Reconnect again
-				protocol.events->OnControllerDisconnect();
-				protocol.events->OnControllerConnect();
+				protocol.GetEvents()->OnControllerDisconnect();
+				protocol.GetEvents()->OnControllerConnect();
 			},
 			// Size of the composition becomes (30,40) and (50,60)
 			L"Render(1, {10,10:30,40}, {0,0:640,480})",

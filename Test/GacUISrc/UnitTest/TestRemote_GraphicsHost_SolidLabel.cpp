@@ -325,8 +325,8 @@ TEST_FILE
 			eventLogs,
 			[&]()
 			{
-				protocol.events->OnControllerDisconnect();
-				protocol.events->OnControllerConnect();
+				protocol.GetEvents()->OnControllerDisconnect();
+				protocol.GetEvents()->OnControllerConnect();
 
 				protocol.measuringForNextRendering.minSizes = Ptr(new List<ElementMeasuring_ElementMinSize>);
 				protocol.measuringForNextRendering.minSizes->Add({ 1,{60,12} });
@@ -363,8 +363,8 @@ TEST_FILE
 			AssertEventLogs(eventLogs);
 
 			// Reconnect again but text heights will be doubled
-			protocol.events->OnControllerDisconnect();
-			protocol.events->OnControllerConnect();
+			protocol.GetEvents()->OnControllerDisconnect();
+			protocol.GetEvents()->OnControllerConnect();
 
 			protocol.measuringForNextRendering.minSizes = Ptr(new List<ElementMeasuring_ElementMinSize>);
 			protocol.measuringForNextRendering.minSizes->Add({ 1,{60,24} });
