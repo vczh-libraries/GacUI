@@ -7,47 +7,14 @@ Unit Test Snapsnot and other Utilities
 #ifndef VCZH_PRESENTATION_GUIUNITTESTUTILITIES
 #define VCZH_PRESENTATION_GUIUNITTESTUTILITIES
 
-#include "../GacUI.h"
-#include "../PlatformProviders/Remote/GuiRemoteController.h"
+#include "GuiUnitTestProtocol.h"
 
 namespace vl::presentation::unittest
 {
-	struct WindowStyleConfig
-	{
-		WString						title;
-		bool						enabled = true;
-		bool						topMost = false;
-		bool						showInTaskBar = true;
-	
-		bool						customFrameMode = false;
-		bool						maximizedBox = true;
-		bool						minimizedBox = true;
-		bool						border = true;
-		bool						sizeBox = true;
-		bool						iconVisible = true;
-		bool						titleBar = true;
-		bool						activated = false;
-	
-		auto operator<=>(const WindowStyleConfig&) const = default;
-	};
-
-	struct UnitTestScreenConfig
-	{
-		using FontConfig = vl::presentation::remoteprotocol::FontConfig;
-		using ScreenConfig = vl::presentation::remoteprotocol::ScreenConfig;
-
-		WString						executablePath;
-		NativeMargin				customFramePadding;
-		FontConfig					fontConfig;
-		ScreenConfig				screenConfig;
-
-		void						FastInitialize(vint width, vint height, vint taskBarHeight = 0);
-	};
-
 	class UnitTestContext : public Object
 	{
 	public:
-		virtual IGuiRemoteProtocolEvents*		GetEvents() = 0;
+		virtual IGuiRemoteProtocolEvents* GetEvents() = 0;
 	};
 
 	using UnitTestMainFunc = vl::Func<void(UnitTestContext*)>;

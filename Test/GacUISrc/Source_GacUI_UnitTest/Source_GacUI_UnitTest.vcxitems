@@ -14,9 +14,15 @@
     <ProjectCapability Include="SourceItemsFromImports" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\UnitTestUtilities\GuiUnitTestProtocol_Shared.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\UnitTestUtilities\GuiUnitTestUtilities.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\UnitTestUtilities\GuiUnitTestProtocol.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\UnitTestUtilities\GuiUnitTestProtocol_IO.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\UnitTestUtilities\GuiUnitTestProtocol_MainWindow.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\UnitTestUtilities\GuiUnitTestProtocol_Rendering.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\UnitTestUtilities\GuiUnitTestProtocol_Shared.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\UnitTestUtilities\GuiUnitTestUtilities.h" />
   </ItemGroup>
 </Project>
