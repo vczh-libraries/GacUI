@@ -63,6 +63,10 @@
 
 ## Release Milestone (1.2.11.0)
 
+- GacUI
+  - Support `<RawRendering/>` element. It will be mapped to `GDIElement` or `Direct2DElement` in different renderers.
+  - In remote protocol, it is an element with no extra properties.
+    - In HTML, it would open a `<div/>` and you can do whatever you want using JavaScript.
 - Remote protocol redirection back to native rendering:
   - In the test project, C++ side will expose the remote protocol via dll.
   - Implement the remote protocol on a native `INativeController` instance.
