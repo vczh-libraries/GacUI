@@ -33,9 +33,6 @@
 ## Release Milestone (1.2.10.0)
 
 - Unit test framework
-  - Implement `SolidLabelElement`.
-    - Each character takes exactly `FontSize x FontSize`
-    - Deal with `\r` and `\n` when multiline is enabled
   - `ImageData.xml` is required before loading any resources for the unit test framework to know metadata of images before loading it.
     - A parser is provided, a data structure is required in runtime.
     - It is used to simulate the remote protocol consumer sending back metadata after receiving binary data of an image.

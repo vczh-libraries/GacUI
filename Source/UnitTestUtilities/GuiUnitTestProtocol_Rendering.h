@@ -38,6 +38,7 @@ UnitTestRemoteProtocol
 		ElementDescMap							createdElements;
 		ImageMetadataMap						createdImages;
 		remoteprotocol::ElementMeasurings		measuringForNextRendering;
+		regex::Regex							regexCrLf{ L"/n|/r(/n)?" };
 
 		template<typename ...TArgs>
 		UnitTestRemoteProtocol_Rendering(TArgs&& ...args)
@@ -198,9 +199,6 @@ IGuiRemoteProtocolMessages (Elements - SolidLabel)
 		{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::RequestRendererUpdateElement_SolidLabel<TProtocol>::CalculateSolidLabelSizeIfNecessary(vint, vint, const ElementDesc_SolidLabel&)#"
 
-			// TODO: verify measuringRequest
-			CHECK_FAIL(L"Not Implemented!");
-
 			if (arguments.measuringRequest)
 			{
 				switch (arguments.measuringRequest.Value())
@@ -224,27 +222,62 @@ IGuiRemoteProtocolMessages (Elements - SolidLabel)
 						// font and text has already been verified exist in RequestRendererUpdateElement_SolidLabel
 						vint size = arguments.font.Value().size;
 						auto text = arguments.text.Value();
+						vint textWidth = 0;
+						vint textHeight = 0;
 
-						collections::List<WString> lines;
-						if (arguments.multiline)
+						collections::List<vint> lines;
 						{
-							// calculate text as multiple lines
+							collections::List<Ptr<regex::RegexMatch>> matches;
+							regexCrLf.Split(text, true, matches);
+							if (arguments.multiline)
+							{
+								// calculate text as multiple lines
+								CopyFrom(
+									lines,
+									From(matches)
+										.Select([](auto&& match) { return match->Result().Length(); })
+									);
+							}
+							else
+							{
+								// calculate text as single line, insert a space between each line
+								lines.Add(
+									From(matches)
+										.Select([](auto&& match) { return match->Result().Length(); })
+										.Aggregate(0, [](auto a, auto b) { return a + b; })
+									);
+							}
 						}
-						else
+
+						// when there is no text, measure a space
+						if (lines.Count() == 0)
 						{
-							// calculate text as single line, insert a space between each line
+							lines.Add(1);
+						}
+						else if (lines.Count() == 1 && lines[0] == 0)
+						{
+							lines[0] = 1;
 						}
 
 						if (arguments.wrapLine)
 						{
+							// width of the text is 0
 							// insert a line break when there is no space horizontally
+							textHeight = size * From(lines)
+								.Select([width = width ? width : 0](vint length) { return (length + width - 1) / width; })
+								.Aggregate(0, [](auto a, auto b) { return a + b; });
 						}
 						else
 						{
 							// width of the text is width of the longest line
+							textWidth = size * From(lines).Max();
+							textHeight = size * lines.Count();
 						}
-						// when there is no text, measure a space
-						CHECK_FAIL(L"Not Implemented!");
+
+						if (!measuringForNextRendering.minSizes)
+						{
+							measuringForNextRendering.minSizes = Ptr(new collections::List<remoteprotocol::ElementMeasuring_ElementMinSize>);
+						}
 					}
 					break;
 				default:

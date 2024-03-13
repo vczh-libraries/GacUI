@@ -264,27 +264,17 @@ GuiSolidLabelElementRenderer
 
 	GuiSolidLabelElementRenderer::MeasuringRequest GuiSolidLabelElementRenderer::GetMeasuringRequest()
 	{
-		if (element->GetWrapLine())
+		if (element->GetEllipse())
 		{
-			if (element->GetWrapLineHeightCalculation())
-			{
-				return ElementSolidLabelMeasuringRequest::TotalSize;
-			}
-			else
-			{
-				return {};
-			}
+			return ElementSolidLabelMeasuringRequest::FontHeight;
+		}
+		else if (element->GetWrapLine() && !element->GetWrapLineHeightCalculation())
+		{
+			return {};
 		}
 		else
 		{
-			if (element->GetEllipse())
-			{
-				return ElementSolidLabelMeasuringRequest::FontHeight;
-			}
-			else
-			{
-				return ElementSolidLabelMeasuringRequest::TotalSize;
-			}
+			return ElementSolidLabelMeasuringRequest::TotalSize;
 		}
 	}
 
