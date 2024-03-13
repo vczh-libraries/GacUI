@@ -70,7 +70,15 @@ IGuiRemoteProtocolMessages (Rendering)
 		void RequestRendererRenderElement(const remoteprotocol::ElementRendering& arguments) override
 		{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering<TProtocol>::RequestRendererRenderElement(const ElementRendering&)#"
-			CHECK_ERROR(createdElements.Keys().Contains(arguments.id), ERROR_MESSAGE_PREFIX L"Renderer with the specified id has not been created.");
+			vint index = createdElements.Keys().IndexOf(arguments.id);
+			CHECK_ERROR(index != -1, ERROR_MESSAGE_PREFIX L"Renderer with the specified id has not been created.");
+			auto&& element = createdElements.Values()[index];
+			CHECK_ERROR(element.TryGet<remoteprotocol::RendererType>(), ERROR_MESSAGE_PREFIX L"Renderer with the specified id has not been updated after created.");
+
+			if (auto solidLabel = element.TryGet<remoteprotocol::ElementDesc_SolidLabel>())
+			{
+				CalculateSolidLabelSizeIfNecessary(arguments.bounds.Width(), arguments.bounds.Height(), *solidLabel);
+			}
 #undef ERROR_MESSAGE_PREFIX
 		}
 
@@ -186,14 +194,96 @@ IGuiRemoteProtocolMessages (Elements)
 IGuiRemoteProtocolMessages (Elements - SolidLabel)
 ***********************************************************************/
 
+		void CalculateSolidLabelSizeIfNecessary(vint width, vint height, const remoteprotocol::ElementDesc_SolidLabel& arguments)
+		{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::RequestRendererUpdateElement_SolidLabel<TProtocol>::CalculateSolidLabelSizeIfNecessary(vint, vint, const ElementDesc_SolidLabel&)#"
+
+			// TODO: verify measuringRequest
+			CHECK_FAIL(L"Not Implemented!");
+
+			if (arguments.measuringRequest)
+			{
+				switch (arguments.measuringRequest.Value())
+				{
+				case remoteprotocol::ElementSolidLabelMeasuringRequest::FontHeight:
+					CHECK_ERROR(arguments.font, ERROR_MESSAGE_PREFIX L"Font is missing for calculating font height.");
+					if (!measuringForNextRendering.fontHeights)
+					{
+						measuringForNextRendering.fontHeights = Ptr(new collections::List<remoteprotocol::ElementMeasuring_FontHeight>);
+					}
+					{
+						remoteprotocol::ElementMeasuring_FontHeight measuring;
+						measuring.fontFamily = arguments.font.Value().fontFamily;
+						measuring.fontSize = arguments.font.Value().size;
+						measuring.height = measuring.fontSize;
+						measuringForNextRendering.fontHeights->Add(measuring);
+					}
+					break;
+				case remoteprotocol::ElementSolidLabelMeasuringRequest::TotalSize:
+					{
+						// font and text has already been verified exist in RequestRendererUpdateElement_SolidLabel
+						vint size = arguments.font.Value().size;
+						auto text = arguments.text.Value();
+
+						collections::List<WString> lines;
+						if (arguments.multiline)
+						{
+							// calculate text as multiple lines
+						}
+						else
+						{
+							// calculate text as single line, insert a space between each line
+						}
+
+						if (arguments.wrapLine)
+						{
+							// insert a line break when there is no space horizontally
+						}
+						else
+						{
+							// width of the text is width of the longest line
+						}
+						// when there is no text, measure a space
+						CHECK_FAIL(L"Not Implemented!");
+					}
+					break;
+				default:
+					CHECK_FAIL(L"Unknown value of ElementSolidLabelMeasuringRequest.");
+				}
+			}
+#undef ERROR_MESSAGE_PREFIX
+		}
+
 		void RequestRendererUpdateElement_SolidLabel(const remoteprotocol::ElementDesc_SolidLabel& arguments) override
 		{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::RequestRendererUpdateElement_SolidLabel<TProtocol>::RequestRendererCreated(const ElementDesc_SolidLabel&)#"
-			if (arguments.measuringRequest)
+			auto element = arguments;
+			if (!element.font || !element.text)
 			{
-				CHECK_FAIL(L"Not Implemented!");
+				vint index = createdElements.Keys().IndexOf(element.id);
+				CHECK_ERROR(index != -1, ERROR_MESSAGE_PREFIX L"Renderer with the specified id has not been created.");
+
+				auto&& origin = createdElements.Values()[index];
+				{
+					auto rendererType = origin.TryGet<remoteprotocol::RendererType>();
+					if (rendererType)
+					{
+						CHECK_ERROR(*rendererType == remoteprotocol::RendererType::SolidLabel, ERROR_MESSAGE_PREFIX L"Renderer with the specified id is not of the expected type.");
+						CHECK_FAIL(ERROR_MESSAGE_PREFIX L"The first update to SolidLabel should have font and text ready.");
+					}
+				}
+				{
+					auto solidLabel = origin.TryGet<remoteprotocol::ElementDesc_SolidLabel>();
+					CHECK_ERROR(solidLabel, ERROR_MESSAGE_PREFIX L"Renderer with the specified id is not of the expected type.");
+					if (!element.font) element.font = solidLabel->font;
+					if (!element.text) element.text = solidLabel->text;
+				}
 			}
-			REQUEST_RENDERER_UPDATE_ELEMENT(remoteprotocol::RendererType::SolidLabel);
+			RequestRendererUpdateElement<remoteprotocol::RendererType::SolidLabel>(
+				element,
+				ERROR_MESSAGE_PREFIX L"Renderer with the specified id has not been created.",
+				ERROR_MESSAGE_PREFIX L"Renderer with the specified id is not of the expected type."
+				);
 #undef ERROR_MESSAGE_PREFIX
 		}
 
