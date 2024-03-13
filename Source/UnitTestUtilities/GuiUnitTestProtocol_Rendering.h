@@ -244,7 +244,7 @@ IGuiRemoteProtocolMessages (Elements - SolidLabel)
 								lines.Add(
 									From(matches)
 										.Select([](auto&& match) { return match->Result().Length(); })
-										.Aggregate(0, [](auto a, auto b) { return a + b; })
+										.Aggregate(-1, [](auto a, auto b) { return a + b + 1; })
 									);
 							}
 						}
@@ -254,7 +254,7 @@ IGuiRemoteProtocolMessages (Elements - SolidLabel)
 						{
 							lines.Add(1);
 						}
-						else if (lines.Count() == 1 && lines[0] == 0)
+						else if (lines.Count() == 1 && lines[0] < 1)
 						{
 							lines[0] = 1;
 						}
