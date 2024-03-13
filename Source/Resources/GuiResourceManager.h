@@ -29,11 +29,14 @@ IGuiResourceManager
 
 		class IGuiResourceManager : public IDescriptable, public Description<IGuiResourceManager>
 		{
+			using ResourceLazyList = collections::LazyList<Ptr<GuiResource>>;
 		public:
 			virtual void								SetResource(Ptr<GuiResource> resource, GuiResourceError::List& errors, GuiResourceUsage usage = GuiResourceUsage::DataOnly) = 0;
 			virtual Ptr<GuiResource>					GetResource(const WString& name) = 0;
 			virtual Ptr<GuiResource>					GetResourceFromClassName(const WString& classFullName) = 0;
-			virtual void								UnloadResource(const WString& name) = 0;
+			virtual ResourceLazyList					GetLoadedResources() = 0;
+			virtual bool								UnloadResource(const WString& name) = 0;
+			virtual bool								UnloadResource(Ptr<GuiResource> resource) = 0;
 			virtual void								LoadResourceOrPending(stream::IStream& resourceStream, GuiResourceError::List& errors, GuiResourceUsage usage = GuiResourceUsage::DataOnly) = 0;
 			virtual void								LoadResourceOrPending(stream::IStream& resourceStream, GuiResourceUsage usage = GuiResourceUsage::DataOnly) = 0;
 			virtual void								GetPendingResourceNames(collections::List<WString>& names) = 0;

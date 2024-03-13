@@ -15,11 +15,29 @@ namespace vl::presentation::unittest
 /***********************************************************************
 UnitTestRemoteProtocol
 ***********************************************************************/
+
+	using ElementDescVariant = Variant<
+		remoteprotocol::RendererType,
+		remoteprotocol::ElementDesc_SolidBorder,
+		remoteprotocol::ElementDesc_SinkBorder,
+		remoteprotocol::ElementDesc_SinkSplitter,
+		remoteprotocol::ElementDesc_SolidBackground,
+		remoteprotocol::ElementDesc_GradientBackground,
+		remoteprotocol::ElementDesc_InnerShadow,
+		remoteprotocol::ElementDesc_Polygon,
+		remoteprotocol::ElementDesc_SolidLabel,
+		remoteprotocol::ElementDesc_ImageFrame
+		>;
 	
 	template<typename TProtocol>
 	class UnitTestRemoteProtocol_Rendering : public TProtocol
 	{
+		using ElementDescMap = collections::Dictionary<vint, ElementDescVariant>;
+		using ImageMetadataMap = collections::Dictionary<vint, remoteprotocol::ImageMetadata>;
 	public:
+		ElementDescMap				createdElements;
+		ImageMetadataMap			createdImages;
+
 		template<typename ...TArgs>
 		UnitTestRemoteProtocol_Rendering(TArgs&& ...args)
 			: TProtocol(std::forward<TArgs&&>(args)...)

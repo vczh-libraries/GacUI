@@ -185,7 +185,8 @@ IGuiInstanceResourceManager
 			Ptr<GuiResource> GetResource(const WString& name)override
 			{
 				vint index = resources.Keys().IndexOf(name);
-				return index == -1 ? nullptr : resources.Values()[index];
+				if (index == -1) return nullptr;
+				return resources.Values()[index];
 			}
 
 			Ptr<GuiResource> GetResourceFromClassName(const WString& classFullName)override
@@ -195,22 +196,48 @@ IGuiInstanceResourceManager
 				return instanceResources.Values()[index];
 			}
 
-			void UnloadResource(const WString& name)override
+			LazyList<Ptr<GuiResource>> GetLoadedResources()override
 			{
-				vint index = resources.Keys().IndexOf(name);
-				if (index != -1)
+				return From(anonymousResources).Concat(resources.Values());
+			}
+
+			bool UnloadResource(const WString& name)override
+			{
+				return UnloadResource(GetResource(name));
+			}
+
+			bool UnloadResource(Ptr<GuiResource> resource)
+			{
+				if (!resource) return false;
+
+				WString name;
+				if (auto metadata = resource->GetMetadata())
 				{
+					name = metadata->name;
+				}
+
+				if (name == WString::Empty)
+				{
+					vint index = anonymousResources.IndexOf(resource.Obj());
+					if (index == -1) return false;
+					anonymousResources.RemoveAt(index);
+				}
+				else
+				{
+					vint index = resources.Keys().IndexOf(name);
+					if (index == -1) return false;
 					auto resource = resources.Values()[index];
 					resources.Remove(name);
+				}
 
-					if (auto record = resource->GetValueByPath(L"Precompiled/ClassNameRecord").Cast<GuiResourceClassNameRecord>())
+				if (auto record = resource->GetValueByPath(L"Precompiled/ClassNameRecord").Cast<GuiResourceClassNameRecord>())
+				{
+					for (auto className : record->classNames)
 					{
-						for (auto className : record->classNames)
-						{
-							instanceResources.Remove(className);
-						}
+						instanceResources.Remove(className);
 					}
 				}
+				return true;
 			}
 
 			void LoadResourceOrPending(stream::IStream& resourceStream, GuiResourceError::List& errors, GuiResourceUsage usage)override

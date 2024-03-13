@@ -1293,7 +1293,7 @@ GuiResource
 		GuiResource::GuiResource()
 		{
 			metadata = Ptr(new GuiResourceMetadata);
-			metadata->version = CurrentVersionString;
+			metadata->version = WString::Unmanaged(CurrentVersionString);
 		}
 
 		GuiResource::~GuiResource()
@@ -1372,7 +1372,7 @@ GuiResource
 
 				if (resource->metadata->version != CurrentVersionString)
 				{
-					errors.Add(GuiResourceError({ resource }, L"Only resource binary of version \"" + WString(CurrentVersionString) + L"\" is accepted. Please recompile the resource before loading it."));
+					errors.Add(GuiResourceError({ resource }, L"Only resource binary of version \"" + WString::Unmanaged(CurrentVersionString) + L"\" is accepted. Please recompile the resource before loading it."));
 					return nullptr;
 				}
 			}
