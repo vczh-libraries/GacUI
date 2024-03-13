@@ -229,34 +229,36 @@ IGuiRemoteProtocolMessages (Elements - SolidLabel)
 						{
 							collections::List<Ptr<regex::RegexMatch>> matches;
 							regexCrLf.Split(text, true, matches);
-							if (arguments.multiline)
+
+							if (matches.Count() == 0)
 							{
-								// calculate text as multiple lines
-								CopyFrom(
-									lines,
-									From(matches)
-										.Select([](auto&& match) { return match->Result().Length(); })
-									);
+								// when there is no text, measure a space
+								lines.Add(1);
 							}
 							else
 							{
-								// calculate text as single line, insert a space between each line
-								lines.Add(
+								auto normalizedLines = 
 									From(matches)
 										.Select([](auto&& match) { return match->Result().Length(); })
-										.Aggregate(-1, [](auto a, auto b) { return a + b + 1; })
-									);
+										.Select([](vint length) { return length ? length : 1; })
+									;
+								if (arguments.multiline)
+								{
+									// calculate text as multiple lines
+									CopyFrom(
+										lines,
+										normalizedLines
+										);
+								}
+								else
+								{
+									// calculate text as single line, insert a space between each line
+									lines.Add(
+										normalizedLines
+											.Aggregate(-1, [](auto a, auto b) { return a + b + 1; })
+										);
+								}
 							}
-						}
-
-						// when there is no text, measure a space
-						if (lines.Count() == 0)
-						{
-							lines.Add(1);
-						}
-						else if (lines.Count() == 1 && lines[0] < 1)
-						{
-							lines[0] = 1;
 						}
 
 						if (arguments.wrapLine)
@@ -264,7 +266,17 @@ IGuiRemoteProtocolMessages (Elements - SolidLabel)
 							// width of the text is 0
 							// insert a line break when there is no space horizontally
 							textHeight = size * From(lines)
-								.Select([width = width ? width : 0](vint length) { return (length + width - 1) / width; })
+								.Select([columns = width / size](vint length)
+								{
+									if (columns == 0)
+									{
+										return length;
+									}
+									else
+									{
+										return (length + columns - 1) / columns;
+									}
+								})
 								.Aggregate(0, [](auto a, auto b) { return a + b; });
 						}
 						else
@@ -277,6 +289,12 @@ IGuiRemoteProtocolMessages (Elements - SolidLabel)
 						if (!measuringForNextRendering.minSizes)
 						{
 							measuringForNextRendering.minSizes = Ptr(new collections::List<remoteprotocol::ElementMeasuring_ElementMinSize>);
+						}
+						{
+							remoteprotocol::ElementMeasuring_ElementMinSize measuring;
+							measuring.id = arguments.id;
+							measuring.minSize = { textWidth,textHeight };
+							measuringForNextRendering.minSizes->Add(measuring);
 						}
 					}
 					break;
