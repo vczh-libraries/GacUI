@@ -137,13 +137,21 @@ IGuiRemoteProtocolMessages (Elements)
 
 			auto& element = const_cast<collections::List<ElementDescVariant>&>(createdElements.Values())[index];
 			{
-				auto rendererType = element.TryGet<remoteprotocol::RendererType>();
-				if (rendererType) element = arguments;
-				return;
+				if (auto rendererType = element.TryGet<remoteprotocol::RendererType>())
+				{
+					if (*rendererType == RendererType)
+					{
+						element = arguments;
+						return;
+					}
+				}
 			}
 			{
-				auto desc = element.TryGet<TElementDesc>();
-				if (desc) *desc = arguments;
+				if (auto desc = element.TryGet<TElementDesc>())
+				{
+					*desc = arguments;
+					return;
+				}
 			}
 
 			CHECK_FAIL(emWrongType);
