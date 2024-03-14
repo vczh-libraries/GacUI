@@ -68,18 +68,32 @@ IGuiRemoteProtocolMessages (Rendering)
 		{
 		}
 
+		template<typename T>
+		void RequestRendererRenderElement(const remoteprotocol::ElementRendering& rendering, const T& element)
+		{
+			CHECK_FAIL(L"Not Implemented!");
+		}
+
 		void RequestRendererRenderElement(const remoteprotocol::ElementRendering& arguments) override
 		{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering<TProtocol>::RequestRendererRenderElement(const ElementRendering&)#"
 			vint index = createdElements.Keys().IndexOf(arguments.id);
 			CHECK_ERROR(index != -1, ERROR_MESSAGE_PREFIX L"Renderer with the specified id has not been created.");
 			auto&& element = createdElements.Values()[index];
-			CHECK_ERROR(element.TryGet<remoteprotocol::RendererType>(), ERROR_MESSAGE_PREFIX L"Renderer with the specified id has not been updated after created.");
-
-			if (auto solidLabel = element.TryGet<remoteprotocol::ElementDesc_SolidLabel>())
-			{
-				CalculateSolidLabelSizeIfNecessary(arguments.bounds.Width(), arguments.bounds.Height(), *solidLabel);
-			}
+			element.Apply(Overloading(
+				[](remoteprotocol::RendererType)
+				{
+					CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Renderer with the specified id has not been updated after created.");
+				},
+				[&](const remoteprotocol::ElementDesc_SolidLabel& solidLabel)
+				{
+					CalculateSolidLabelSizeIfNecessary(arguments.bounds.Width(), arguments.bounds.Height(), solidLabel);
+					RequestRendererRenderElement(arguments, solidLabel);
+				},
+				[&](const auto& element)
+				{
+					RequestRendererRenderElement(arguments, element);
+				}));
 #undef ERROR_MESSAGE_PREFIX
 		}
 
@@ -135,12 +149,14 @@ IGuiRemoteProtocolMessages (Elements)
 			CHECK_FAIL(emWrongType);
 		}
 
-#define REQUEST_RENDERER_UPDATE_ELEMENT(RENDERER_TYPE)\
+#define REQUEST_RENDERER_UPDATE_ELEMENT2(ARGUMENTS, RENDERER_TYPE)\
 			RequestRendererUpdateElement<RENDERER_TYPE>(\
-				arguments,\
+				ARGUMENTS,\
 				ERROR_MESSAGE_PREFIX L"Renderer with the specified id has not been created.",\
 				ERROR_MESSAGE_PREFIX L"Renderer with the specified id is not of the expected type."\
 				)
+
+#define REQUEST_RENDERER_UPDATE_ELEMENT(RENDERER_TYPE) REQUEST_RENDERER_UPDATE_ELEMENT2(arguments, RENDERER_TYPE)
 
 		void RequestRendererUpdateElement_SolidBorder(const remoteprotocol::ElementDesc_SolidBorder& arguments) override
 		{
@@ -330,11 +346,7 @@ IGuiRemoteProtocolMessages (Elements - SolidLabel)
 					if (!element.text) element.text = solidLabel->text;
 				}
 			}
-			RequestRendererUpdateElement<remoteprotocol::RendererType::SolidLabel>(
-				element,
-				ERROR_MESSAGE_PREFIX L"Renderer with the specified id has not been created.",
-				ERROR_MESSAGE_PREFIX L"Renderer with the specified id is not of the expected type."
-				);
+			REQUEST_RENDERER_UPDATE_ELEMENT2(element, remoteprotocol::RendererType::SolidLabel);
 #undef ERROR_MESSAGE_PREFIX
 		}
 
@@ -368,31 +380,36 @@ IGuiRemoteProtocolMessages (Elements - Image)
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::RequestRendererUpdateElement_ImageFrame<TProtocol>::RequestRendererCreated(const ElementDesc_ImageFrame&)#"
 			if (arguments.imageCreation)
 			{
-				if (!arguments.imageCreation.Value().imageDataOmitted)
+				auto&& imageCreation = arguments.imageCreation.Value();
+				if (!imageCreation.imageDataOmitted)
 				{
-					CHECK_ERROR(arguments.id != !arguments.imageCreation.Value().id, ERROR_MESSAGE_PREFIX L"It should satisfy that (arguments.id == arguments.imageCreation.Value().id).");
+					CHECK_ERROR(arguments.id != !imageCreation.id, ERROR_MESSAGE_PREFIX L"It should satisfy that (arguments.id == imageCreation.id).");
 					CHECK_ERROR(!createdElements.Keys().Contains(arguments.id), ERROR_MESSAGE_PREFIX L"Image with the specified id has been created.");
-					CHECK_ERROR(arguments.imageCreation.Value().imageData, ERROR_MESSAGE_PREFIX L"When imageDataOmitted == false, imageData should not be null.");
+					CHECK_ERROR(imageCreation.imageData, ERROR_MESSAGE_PREFIX L"When imageDataOmitted == false, imageData should not be null.");
 					if (!measuringForNextRendering.createdImages)
 					{
 						measuringForNextRendering.createdImages = Ptr(new collections::List<remoteprotocol::ImageMetadata>);
 					}
-					measuringForNextRendering.createdImages->Add(MakeImageMetadata(arguments.imageCreation.Value()));
+					measuringForNextRendering.createdImages->Add(MakeImageMetadata(imageCreation));
 				}
 				else
 				{
-					CHECK_ERROR(!arguments.imageCreation.Value().imageData, ERROR_MESSAGE_PREFIX L"When imageDataOmitted == true, imageData should be null.");
+					CHECK_ERROR(!imageCreation.imageData, ERROR_MESSAGE_PREFIX L"When imageDataOmitted == true, imageData should be null.");
 				}
 			}
 			else
 			{
 				CHECK_ERROR(createdElements.Keys().Contains(arguments.id), ERROR_MESSAGE_PREFIX L"Image with the specified id has not been created.");
 			}
-			REQUEST_RENDERER_UPDATE_ELEMENT(remoteprotocol::RendererType::ImageFrame);
+
+			auto element = arguments;
+			element.imageCreation.Reset();
+			REQUEST_RENDERER_UPDATE_ELEMENT2(element, remoteprotocol::RendererType::ImageFrame);
 #undef ERROR_MESSAGE_PREFIX
 		}
 
 #undef REQUEST_RENDERER_UPDATE_ELEMENT
+#undef REQUEST_RENDERER_UPDATE_ELEMENT2
 	};
 }
 
