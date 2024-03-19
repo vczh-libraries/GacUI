@@ -338,14 +338,13 @@ IGuiRemoteProtocolMessages (Elements - SolidLabel)
 				CHECK_ERROR(index != -1, ERROR_MESSAGE_PREFIX L"Renderer with the specified id has not been created.");
 
 				auto&& origin = createdElements.Values()[index];
+				if (auto rendererType = origin.TryGet<remoteprotocol::RendererType>())
 				{
-					auto rendererType = origin.TryGet<remoteprotocol::RendererType>();
-					if (rendererType)
-					{
-						CHECK_ERROR(*rendererType == remoteprotocol::RendererType::SolidLabel, ERROR_MESSAGE_PREFIX L"Renderer with the specified id is not of the expected type.");
-						CHECK_FAIL(ERROR_MESSAGE_PREFIX L"The first update to SolidLabel should have font and text ready.");
-					}
+					CHECK_ERROR(*rendererType == remoteprotocol::RendererType::SolidLabel, ERROR_MESSAGE_PREFIX L"Renderer with the specified id is not of the expected type.");
+					if (!element.font) element.font = FontProperties();
+					if (!element.text) element.text = WString::Empty;
 				}
+				else
 				{
 					auto solidLabel = origin.TryGet<remoteprotocol::ElementDesc_SolidLabel>();
 					CHECK_ERROR(solidLabel, ERROR_MESSAGE_PREFIX L"Renderer with the specified id is not of the expected type.");
@@ -369,7 +368,7 @@ IGuiRemoteProtocolMessages (Elements - Image)
 		void RequestImageCreated(vint id, const remoteprotocol::ImageCreation& arguments) override
 		{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering<TProtocol>::RequestImageCreated(vint, const vint&)#"
-			CHECK_ERROR(!createdElements.Keys().Contains(arguments.id), ERROR_MESSAGE_PREFIX L"Image with the specified id has been created.");
+			CHECK_ERROR(!createdImages.Keys().Contains(arguments.id), ERROR_MESSAGE_PREFIX L"Image with the specified id has been created.");
 			this->GetEvents()->RespondImageCreated(id, MakeImageMetadata(arguments));
 #undef ERROR_MESSAGE_PREFIX
 		}
@@ -377,8 +376,8 @@ IGuiRemoteProtocolMessages (Elements - Image)
 		void RequestImageDestroyed(const vint& arguments) override
 		{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering<TProtocol>::RequestImageDestroyed(const vint&)#"
-			CHECK_ERROR(createdElements.Keys().Contains(arguments), ERROR_MESSAGE_PREFIX L"Image with the specified id has not been created.");
-			createdElements.Remove(arguments);
+			CHECK_ERROR(createdImages.Keys().Contains(arguments), ERROR_MESSAGE_PREFIX L"Image with the specified id has not been created.");
+			createdImages.Remove(arguments);
 #undef ERROR_MESSAGE_PREFIX
 		}
 
@@ -390,8 +389,8 @@ IGuiRemoteProtocolMessages (Elements - Image)
 				auto&& imageCreation = arguments.imageCreation.Value();
 				if (!imageCreation.imageDataOmitted)
 				{
-					CHECK_ERROR(arguments.id != !imageCreation.id, ERROR_MESSAGE_PREFIX L"It should satisfy that (arguments.id == imageCreation.id).");
-					CHECK_ERROR(!createdElements.Keys().Contains(arguments.id), ERROR_MESSAGE_PREFIX L"Image with the specified id has been created.");
+					CHECK_ERROR(arguments.imageId && arguments.imageId.Value() != !imageCreation.id, ERROR_MESSAGE_PREFIX L"It should satisfy that (arguments.imageId.Value()id == imageCreation.id).");
+					CHECK_ERROR(!createdImages.Keys().Contains(imageCreation.id), ERROR_MESSAGE_PREFIX L"Image with the specified id has been created.");
 					CHECK_ERROR(imageCreation.imageData, ERROR_MESSAGE_PREFIX L"When imageDataOmitted == false, imageData should not be null.");
 					if (!measuringForNextRendering.createdImages)
 					{
@@ -404,9 +403,9 @@ IGuiRemoteProtocolMessages (Elements - Image)
 					CHECK_ERROR(!imageCreation.imageData, ERROR_MESSAGE_PREFIX L"When imageDataOmitted == true, imageData should be null.");
 				}
 			}
-			else
+			else if (arguments.imageId)
 			{
-				CHECK_ERROR(createdElements.Keys().Contains(arguments.id), ERROR_MESSAGE_PREFIX L"Image with the specified id has not been created.");
+				CHECK_ERROR(createdImages.Keys().Contains(arguments.imageId.Value()), ERROR_MESSAGE_PREFIX L"Image with the specified id has not been created.");
 			}
 
 			auto element = arguments;

@@ -16,10 +16,14 @@ TEST_FILE
 	{
 		GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
 		{
+			protocol->GetEvents()->OnControllerConnect();
 			auto darkskinTheme = Ptr(new darkskin::Theme);
 			theme::RegisterTheme(darkskinTheme);
+
 			GuiWindow window(theme::ThemeName::Window);
+			window.SetText(L"Hello, world!");
 			window.SetClientSize({ 640,480 });
+			window.MoveToScreenCenter();
 
 			protocol->OnNextIdleFrame([&]()
 			{

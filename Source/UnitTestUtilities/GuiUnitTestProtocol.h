@@ -37,11 +37,27 @@ namespace vl::presentation::unittest
 
 	class UnitTestRemoteProtocol : public UnitTestRemoteProtocolFeatures
 	{
-	public:
+	protected:
 		collections::List<Func<void()>>		processRemoteEvents;
 		vint								nextEventIndex = 0;
-		bool								rendered = false;
+		bool								everRendered = false;
+		bool								renderedInCurrentFrame = false;
 		bool								stopped = false;
+		bool								lastRenderingResultAvailable = true;
+
+		void SetLastRenderingResult()
+		{
+			lastRenderingResultAvailable = true;
+			vl::unittest::UnitTest::PrintMessage(L"> SetLastRenderingResult()", vl::unittest::UnitTest::MessageKind::Info);
+		}
+
+		void LogLastRenderingResult()
+		{
+			lastRenderingResultAvailable = false;
+			vl::unittest::UnitTest::PrintMessage(L"> LogLastRenderingResult()", vl::unittest::UnitTest::MessageKind::Info);
+		}
+
+	public:
 
 		UnitTestRemoteProtocol(UnitTestScreenConfig _globalConfig)
 			: UnitTestRemoteProtocolFeatures(_globalConfig)
@@ -75,13 +91,14 @@ IGuiRemoteProtocolMessages (Rendering)
 
 		void RequestRendererBeginRendering() override
 		{
-			rendered = true;
 			UnitTestRemoteProtocolFeatures::RequestRendererBeginRendering();
 		}
 
 		void RequestRendererEndRendering(vint id) override
 		{
 			UnitTestRemoteProtocolFeatures::RequestRendererEndRendering(id);
+			renderedInCurrentFrame = true;
+			everRendered = true;
 		}
 
 /***********************************************************************
@@ -90,13 +107,21 @@ IGuiRemoteProtocol
 
 		void Submit() override
 		{
-			rendered = false;
+			if (renderedInCurrentFrame)
+			{
+				renderedInCurrentFrame = false;
+				SetLastRenderingResult();
+			}
 		}
 
 		void ProcessRemoteEvents() override
 		{
-			if (!rendered && !stopped)
+			if (everRendered && !renderedInCurrentFrame && !stopped)
 			{
+				if (lastRenderingResultAvailable)
+				{
+					LogLastRenderingResult();
+				}
 				TEST_CASE(L"Execute idle frame[" + itow(nextEventIndex) + L"]")
 				{
 					processRemoteEvents[nextEventIndex]();
