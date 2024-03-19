@@ -107,26 +107,29 @@ IGuiRemoteProtocol
 
 		void Submit() override
 		{
-			if (renderedInCurrentFrame)
-			{
-				renderedInCurrentFrame = false;
-				SetLastRenderingResult();
-			}
 		}
 
 		void ProcessRemoteEvents() override
 		{
-			if (everRendered && !renderedInCurrentFrame && !stopped)
+			if (!stopped)
 			{
-				if (lastRenderingResultAvailable)
+				if (renderedInCurrentFrame)
 				{
-					LogLastRenderingResult();
+					renderedInCurrentFrame = false;
+					SetLastRenderingResult();
 				}
-				TEST_CASE(L"Execute idle frame[" + itow(nextEventIndex) + L"]")
+				else if (everRendered)
 				{
-					processRemoteEvents[nextEventIndex]();
-				});
-				nextEventIndex++;
+					if (lastRenderingResultAvailable)
+					{
+						LogLastRenderingResult();
+					}
+					TEST_CASE(L"Execute idle frame[" + itow(nextEventIndex) + L"]")
+					{
+						processRemoteEvents[nextEventIndex]();
+					});
+					nextEventIndex++;
+				}
 			}
 		}
 	};

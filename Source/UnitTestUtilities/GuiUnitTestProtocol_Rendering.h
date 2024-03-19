@@ -34,11 +34,13 @@ UnitTestRemoteProtocol
 	{
 		using ElementDescMap = collections::Dictionary<vint, ElementDescVariant>;
 		using ImageMetadataMap = collections::Dictionary<vint, remoteprotocol::ImageMetadata>;
-	public:
+	protected:
 		ElementDescMap							createdElements;
 		ImageMetadataMap						createdImages;
 		remoteprotocol::ElementMeasurings		measuringForNextRendering;
 		regex::Regex							regexCrLf{ L"/n|/r(/n)?" };
+
+	public:
 
 		template<typename ...TArgs>
 		UnitTestRemoteProtocol_Rendering(TArgs&& ...args)
