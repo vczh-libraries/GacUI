@@ -47,13 +47,11 @@ namespace vl::presentation::unittest
 
 		void SetLastRenderingResult()
 		{
-			lastRenderingResultAvailable = true;
 			vl::unittest::UnitTest::PrintMessage(L"> SetLastRenderingResult()", vl::unittest::UnitTest::MessageKind::Info);
 		}
 
 		void LogLastRenderingResult()
 		{
-			lastRenderingResultAvailable = false;
 			vl::unittest::UnitTest::PrintMessage(L"> LogLastRenderingResult()", vl::unittest::UnitTest::MessageKind::Info);
 		}
 
@@ -116,12 +114,14 @@ IGuiRemoteProtocol
 				if (renderedInCurrentFrame)
 				{
 					renderedInCurrentFrame = false;
+					lastRenderingResultAvailable = true;
 					SetLastRenderingResult();
 				}
 				else if (everRendered)
 				{
 					if (lastRenderingResultAvailable)
 					{
+						lastRenderingResultAvailable = false;
 						LogLastRenderingResult();
 					}
 					TEST_CASE(L"Execute idle frame[" + itow(nextEventIndex) + L"]")
