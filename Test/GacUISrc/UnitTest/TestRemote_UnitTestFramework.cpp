@@ -14,16 +14,16 @@ TEST_FILE
 {
 	TEST_CATEGORY(L"Hello, world!")
 	{
-		GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol& protocol, IUnitTestContext*)
+		GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
 		{
 			auto darkskinTheme = Ptr(new darkskin::Theme);
 			theme::RegisterTheme(darkskinTheme);
 			GuiWindow window(theme::ThemeName::Window);
 			window.SetClientSize({ 640,480 });
 
-			protocol.OnNextIdleFrame([&]()
+			protocol->OnNextIdleFrame([&]()
 			{
-				window.Close();
+				window.Hide();
 			});
 
 			GetApplication()->Run(&window);

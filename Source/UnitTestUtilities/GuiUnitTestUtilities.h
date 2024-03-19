@@ -16,7 +16,7 @@ namespace vl::presentation::unittest
 	public:
 	};
 
-	using UnitTestMainFunc = vl::Func<void(UnitTestRemoteProtocol&, IUnitTestContext*)>;
+	using UnitTestMainFunc = vl::Func<void(UnitTestRemoteProtocol*, IUnitTestContext*)>;
 }
 
 extern void GacUIUnitTest_Initialize();
