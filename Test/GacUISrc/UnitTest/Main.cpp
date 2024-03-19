@@ -136,7 +136,7 @@ void SetGuiMainProxy(const Func<void()>& proxy)
 {
 	if (proxy)
 	{
-		GacUIUnitTest_SetGuiMainProxy([proxy](auto&&)
+		GacUIUnitTest_SetGuiMainProxy([proxy](auto&&...)
 		{
 			proxy();
 		});

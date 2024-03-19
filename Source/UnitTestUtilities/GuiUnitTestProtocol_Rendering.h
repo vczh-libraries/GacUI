@@ -71,7 +71,6 @@ IGuiRemoteProtocolMessages (Rendering)
 		template<typename T>
 		void RequestRendererRenderElement(const remoteprotocol::ElementRendering& rendering, const T& element)
 		{
-			CHECK_FAIL(L"Not Implemented!");
 		}
 
 		void RequestRendererRenderElement(const remoteprotocol::ElementRendering& arguments) override

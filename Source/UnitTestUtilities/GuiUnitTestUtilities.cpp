@@ -25,9 +25,9 @@ public:
 	{
 	}
 
-	IGuiRemoteProtocolEvents* GetEvents() override
+	UnitTestRemoteProtocol& GetProtocol()
 	{
-		return protocol ? protocol->GetEvents() : nullptr;
+		return *protocol;
 	}
 };
 
@@ -83,6 +83,6 @@ void GacUIUnitTest_Start(vl::Nullable<UnitTestScreenConfig> config)
 
 void GuiMain()
 {
-	guiMainProxy(guiMainUnitTestContext);
+	guiMainProxy(guiMainUnitTestContext->GetProtocol(), guiMainUnitTestContext);
 	guiMainUnitTestContext = nullptr;
 }

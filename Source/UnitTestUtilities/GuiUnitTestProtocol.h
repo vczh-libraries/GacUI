@@ -38,24 +38,20 @@ namespace vl::presentation::unittest
 	class UnitTestRemoteProtocol : public UnitTestRemoteProtocolFeatures
 	{
 	public:
+		collections::List<Func<void()>>		processRemoteEvents;
+		vint								nextEventIndex = 0;
+		bool								rendered = false;
+		bool								stopped = false;
 
 		UnitTestRemoteProtocol(UnitTestScreenConfig _globalConfig)
 			: UnitTestRemoteProtocolFeatures(_globalConfig)
 		{
 		}
 
-/***********************************************************************
-IGuiRemoteProtocol
-***********************************************************************/
-
-		void Submit() override
+		template<typename TCallback>
+		void OnNextIdleFrame(TCallback&& callback)
 		{
-			CHECK_FAIL(L"Not Implemented!");
-		}
-
-		void ProcessRemoteEvents() override
-		{
-			CHECK_FAIL(L"Not Implemented!");
+			processRemoteEvents.Add(std::move(callback));
 		}
 
 /***********************************************************************
@@ -70,6 +66,43 @@ IGuiRemoteProtocolMessages (Initialization)
 
 		void RequestControllerConnectionStopped() override
 		{
+			stopped = true;
+		}
+
+/***********************************************************************
+IGuiRemoteProtocolMessages (Rendering)
+***********************************************************************/
+
+		void RequestRendererBeginRendering() override
+		{
+			rendered = true;
+			UnitTestRemoteProtocolFeatures::RequestRendererBeginRendering();
+		}
+
+		void RequestRendererEndRendering(vint id) override
+		{
+			UnitTestRemoteProtocolFeatures::RequestRendererEndRendering(id);
+		}
+
+/***********************************************************************
+IGuiRemoteProtocol
+***********************************************************************/
+
+		void Submit() override
+		{
+			rendered = false;
+		}
+
+		void ProcessRemoteEvents() override
+		{
+			if (!rendered && !stopped)
+			{
+				TEST_CASE(L"Execute idle frame[" + itow(nextEventIndex) + L"]")
+				{
+					processRemoteEvents[nextEventIndex]();
+				});
+				nextEventIndex++;
+			}
 		}
 	};
 }

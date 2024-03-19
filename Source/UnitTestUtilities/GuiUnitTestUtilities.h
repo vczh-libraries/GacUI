@@ -14,15 +14,14 @@ namespace vl::presentation::unittest
 	class IUnitTestContext : public virtual Interface
 	{
 	public:
-		virtual IGuiRemoteProtocolEvents* GetEvents() = 0;
 	};
 
-	using UnitTestMainFunc = vl::Func<void(IUnitTestContext*)>;
+	using UnitTestMainFunc = vl::Func<void(UnitTestRemoteProtocol&, IUnitTestContext*)>;
 }
 
 extern void GacUIUnitTest_Initialize();
 extern void GacUIUnitTest_Finalize();
 extern void GacUIUnitTest_SetGuiMainProxy(const vl::presentation::unittest::UnitTestMainFunc& proxy);
-extern void GacUIUnitTest_Start(vl::Nullable<vl::presentation::unittest::UnitTestScreenConfig> config);
+extern void GacUIUnitTest_Start(vl::Nullable<vl::presentation::unittest::UnitTestScreenConfig> config = {});
 
 #endif
