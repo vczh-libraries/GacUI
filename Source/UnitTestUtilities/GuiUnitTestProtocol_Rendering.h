@@ -52,6 +52,8 @@ UnitTestRemoteProtocol
 
 		UnitTestRenderingElement(const UnitTestRenderingElement&) = default;
 		UnitTestRenderingElement(UnitTestRenderingElement&&) = default;
+		UnitTestRenderingElement& operator=(const UnitTestRenderingElement&) = default;
+		UnitTestRenderingElement& operator=(UnitTestRenderingElement&&) = default;
 
 		UnitTestRenderingElement(remoteprotocol::ElementRendering _rendering, ElementDescVariantStrict _desc)
 			: rendering(std::move(_rendering))
@@ -97,6 +99,7 @@ IGuiRemoteProtocolMessages (Rendering)
 
 		void RequestRendererBeginRendering() override
 		{
+			lastRenderingCommands = Ptr(new CommandList);
 		}
 
 		void RequestRendererEndRendering(vint id) override
@@ -107,15 +110,18 @@ IGuiRemoteProtocolMessages (Rendering)
 
 		void RequestRendererBeginBoundary(const remoteprotocol::ElementBoundary& arguments) override
 		{
+			lastRenderingCommands->Add(UnitTestRenderingBeginBoundary{ arguments });
 		}
 
 		void RequestRendererEndBoundary() override
 		{
+			lastRenderingCommands->Add(UnitTestRenderingEndBoundary{});
 		}
 
 		template<typename T>
 		void RequestRendererRenderElement(const remoteprotocol::ElementRendering& rendering, const T& element)
 		{
+			lastRenderingCommands->Add(UnitTestRenderingElement{ rendering,element });
 		}
 
 		void RequestRendererRenderElement(const remoteprotocol::ElementRendering& arguments) override

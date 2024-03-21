@@ -27,6 +27,7 @@ TEST_FILE
 
 			protocol->OnNextIdleFrame([&]()
 			{
+				TEST_ASSERT(protocol->GetLoggedRenderingResults().Count() == 1);
 				window.Hide();
 			});
 

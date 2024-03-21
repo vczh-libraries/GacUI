@@ -44,32 +44,14 @@ namespace vl::presentation::unittest
 		collections::List<Func<void()>>		processRemoteEvents;
 		vint								nextEventIndex = 0;
 		bool								everRendered = false;
-		bool								renderedInCurrentFrame = false;
 		bool								stopped = false;
 
 		RenderingResultRef					lastRenderingResult;
 		RenderingResultRefList				loggedRenderingResults;
 
-		void TransformLastRenderingResult()
+		RenderingResultRef TransformLastRenderingResult(CommandListRef commandListRef)
 		{
-			vl::unittest::UnitTest::PrintMessage(L"> TransformLastRenderingResult()", vl::unittest::UnitTest::MessageKind::Info);
-			TEST_CASE_ASSERT(lastRenderingCommands);
-			if (lastRenderingCommands)
-			{
-				lastRenderingResult = lastRenderingCommands;
-				lastRenderingCommands = {};
-			}
-		}
-
-		void LogLastRenderingResult()
-		{
-			vl::unittest::UnitTest::PrintMessage(L"> LogLastRenderingResult()", vl::unittest::UnitTest::MessageKind::Info);
-			TEST_CASE_ASSERT(lastRenderingResult);
-			if (lastRenderingResult)
-			{
-				loggedRenderingResults.Add(lastRenderingResult);
-				lastRenderingResult = {};
-			}
+			return commandListRef;
 		}
 
 	public:
@@ -77,6 +59,11 @@ namespace vl::presentation::unittest
 		UnitTestRemoteProtocol(UnitTestScreenConfig _globalConfig)
 			: UnitTestRemoteProtocolFeatures(_globalConfig)
 		{
+		}
+
+		RenderingResultRefList& GetLoggedRenderingResults()
+		{
+			return loggedRenderingResults;
 		}
 
 		template<typename TCallback>
@@ -112,7 +99,6 @@ IGuiRemoteProtocolMessages (Rendering)
 		void RequestRendererEndRendering(vint id) override
 		{
 			UnitTestRemoteProtocolFeatures::RequestRendererEndRendering(id);
-			renderedInCurrentFrame = true;
 			everRendered = true;
 		}
 
@@ -128,16 +114,17 @@ IGuiRemoteProtocol
 		{
 			if (!stopped)
 			{
-				if (renderedInCurrentFrame)
+				if (lastRenderingCommands)
 				{
-					renderedInCurrentFrame = false;
-					TransformLastRenderingResult();
+					lastRenderingResult = TransformLastRenderingResult(lastRenderingCommands);
+					lastRenderingCommands = {};
 				}
 				else if (everRendered)
 				{
 					if (lastRenderingResult)
 					{
-						LogLastRenderingResult();
+						loggedRenderingResults.Add(lastRenderingResult);
+						lastRenderingResult = {};
 					}
 					TEST_CASE(L"Execute idle frame[" + itow(nextEventIndex) + L"]")
 					{
