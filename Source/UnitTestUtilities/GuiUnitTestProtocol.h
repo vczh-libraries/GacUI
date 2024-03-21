@@ -38,21 +38,38 @@ namespace vl::presentation::unittest
 	class UnitTestRemoteProtocol : public UnitTestRemoteProtocolFeatures
 	{
 	protected:
+		using RenderingResultRef = CommandListRef;
+		using RenderingResultRefList = collections::List<RenderingResultRef>;
+
 		collections::List<Func<void()>>		processRemoteEvents;
 		vint								nextEventIndex = 0;
 		bool								everRendered = false;
 		bool								renderedInCurrentFrame = false;
 		bool								stopped = false;
-		bool								lastRenderingResultAvailable = true;
 
-		void SetLastRenderingResult()
+		RenderingResultRef					lastRenderingResult;
+		RenderingResultRefList				loggedRenderingResults;
+
+		void TransformLastRenderingResult()
 		{
-			vl::unittest::UnitTest::PrintMessage(L"> SetLastRenderingResult()", vl::unittest::UnitTest::MessageKind::Info);
+			vl::unittest::UnitTest::PrintMessage(L"> TransformLastRenderingResult()", vl::unittest::UnitTest::MessageKind::Info);
+			TEST_CASE_ASSERT(lastRenderingCommands);
+			if (lastRenderingCommands)
+			{
+				lastRenderingResult = lastRenderingCommands;
+				lastRenderingCommands = {};
+			}
 		}
 
 		void LogLastRenderingResult()
 		{
 			vl::unittest::UnitTest::PrintMessage(L"> LogLastRenderingResult()", vl::unittest::UnitTest::MessageKind::Info);
+			TEST_CASE_ASSERT(lastRenderingResult);
+			if (lastRenderingResult)
+			{
+				loggedRenderingResults.Add(lastRenderingResult);
+				lastRenderingResult = {};
+			}
 		}
 
 	public:
@@ -114,14 +131,12 @@ IGuiRemoteProtocol
 				if (renderedInCurrentFrame)
 				{
 					renderedInCurrentFrame = false;
-					lastRenderingResultAvailable = true;
-					SetLastRenderingResult();
+					TransformLastRenderingResult();
 				}
 				else if (everRendered)
 				{
-					if (lastRenderingResultAvailable)
+					if (lastRenderingResult)
 					{
-						lastRenderingResultAvailable = false;
 						LogLastRenderingResult();
 					}
 					TEST_CASE(L"Execute idle frame[" + itow(nextEventIndex) + L"]")

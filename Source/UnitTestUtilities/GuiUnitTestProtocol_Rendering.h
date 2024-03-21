@@ -16,18 +16,57 @@ namespace vl::presentation::unittest
 UnitTestRemoteProtocol
 ***********************************************************************/
 
+#define GACUI_REMOTEPROTOCOL_ELEMENTDESC_TYPES\
+		remoteprotocol::ElementDesc_SolidBorder,\
+		remoteprotocol::ElementDesc_SinkBorder,\
+		remoteprotocol::ElementDesc_SinkSplitter,\
+		remoteprotocol::ElementDesc_SolidBackground,\
+		remoteprotocol::ElementDesc_GradientBackground,\
+		remoteprotocol::ElementDesc_InnerShadow,\
+		remoteprotocol::ElementDesc_Polygon,\
+		remoteprotocol::ElementDesc_SolidLabel,\
+		remoteprotocol::ElementDesc_ImageFrame\
+
 	using ElementDescVariant = Variant<
-		remoteprotocol::RendererType,
-		remoteprotocol::ElementDesc_SolidBorder,
-		remoteprotocol::ElementDesc_SinkBorder,
-		remoteprotocol::ElementDesc_SinkSplitter,
-		remoteprotocol::ElementDesc_SolidBackground,
-		remoteprotocol::ElementDesc_GradientBackground,
-		remoteprotocol::ElementDesc_InnerShadow,
-		remoteprotocol::ElementDesc_Polygon,
-		remoteprotocol::ElementDesc_SolidLabel,
-		remoteprotocol::ElementDesc_ImageFrame
+		GACUI_REMOTEPROTOCOL_ELEMENTDESC_TYPES,
+		remoteprotocol::RendererType
 		>;
+
+	using ElementDescVariantStrict = Variant<
+		GACUI_REMOTEPROTOCOL_ELEMENTDESC_TYPES
+		>;
+
+	struct UnitTestRenderingBeginBoundary
+	{
+		remoteprotocol::ElementBoundary			boundary;
+	};
+
+	struct UnitTestRenderingEndBoundary
+	{
+	};
+
+	struct UnitTestRenderingElement
+	{
+		remoteprotocol::ElementRendering		rendering;
+		ElementDescVariantStrict				desc;
+
+		UnitTestRenderingElement(const UnitTestRenderingElement&) = default;
+		UnitTestRenderingElement(UnitTestRenderingElement&&) = default;
+
+		UnitTestRenderingElement(remoteprotocol::ElementRendering _rendering, ElementDescVariantStrict _desc)
+			: rendering(std::move(_rendering))
+			, desc(std::move(_desc))
+		{
+		}
+	};
+
+	using UnitTestRenderingCommand = Variant<
+		UnitTestRenderingBeginBoundary,
+		UnitTestRenderingEndBoundary,
+		UnitTestRenderingElement
+		>;
+
+#undef GACUI_REMOTEPROTOCOL_ELEMENTDESC_TYPES
 	
 	template<typename TProtocol>
 	class UnitTestRemoteProtocol_Rendering : public TProtocol
@@ -35,10 +74,14 @@ UnitTestRemoteProtocol
 		using ElementDescMap = collections::Dictionary<vint, ElementDescVariant>;
 		using ImageMetadataMap = collections::Dictionary<vint, remoteprotocol::ImageMetadata>;
 	protected:
+		using CommandList = collections::List<UnitTestRenderingCommand>;
+		using CommandListRef = Ptr<CommandList>;
+
 		ElementDescMap							createdElements;
 		ImageMetadataMap						createdImages;
 		remoteprotocol::ElementMeasurings		measuringForNextRendering;
 		regex::Regex							regexCrLf{ L"/n|/r(/n)?" };
+		CommandListRef							lastRenderingCommands;
 
 	public:
 
