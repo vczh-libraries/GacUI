@@ -10,6 +10,7 @@ Unit Test Snapsnot and other Utilities
 #include "GuiUnitTestProtocol_IO.h"
 #include "GuiUnitTestProtocol_MainWindow.h"
 #include "GuiUnitTestProtocol_Rendering.h"
+#include "GuiUnitTestProtocol_Logging.h"
 
 namespace vl::presentation::unittest
 {
@@ -25,45 +26,31 @@ namespace vl::presentation::unittest
 	template<typename TBase, template<typename> class TMixin, template<typename> class ...TOtherMixins>
 	struct Mixin<TBase, TMixin, TOtherMixins...>
 	{
-		using Type = TMixin<typename Mixin<TBase, TOtherMixins...>::Type>;
+		using Type = typename Mixin<TMixin<TBase>, TOtherMixins...>::Type;
 	};
 
 	using UnitTestRemoteProtocolFeatures = Mixin<
 		UnitTestRemoteProtocolBase,
-		UnitTestRemoteProtocol_Rendering,
+		UnitTestRemoteProtocol_MainWindow,
 		UnitTestRemoteProtocol_IO,
-		UnitTestRemoteProtocol_MainWindow
+		UnitTestRemoteProtocol_Rendering,
+		UnitTestRemoteProtocol_Logging
 	>::Type;
 
 	class UnitTestRemoteProtocol : public UnitTestRemoteProtocolFeatures
 	{
 	protected:
-		using RenderingResultRef = CommandListRef;
-		using RenderingResultRefList = collections::List<RenderingResultRef>;
 
 		collections::List<Func<void()>>		processRemoteEvents;
 		vint								nextEventIndex = 0;
-		bool								everRendered = false;
 		bool								stopped = false;
 
-		RenderingResultRef					lastRenderingResult;
-		RenderingResultRefList				loggedRenderingResults;
-
-		RenderingResultRef TransformLastRenderingResult(CommandListRef commandListRef)
-		{
-			return commandListRef;
-		}
 
 	public:
 
 		UnitTestRemoteProtocol(UnitTestScreenConfig _globalConfig)
 			: UnitTestRemoteProtocolFeatures(_globalConfig)
 		{
-		}
-
-		RenderingResultRefList& GetLoggedRenderingResults()
-		{
-			return loggedRenderingResults;
 		}
 
 		template<typename TCallback>
@@ -88,21 +75,6 @@ IGuiRemoteProtocolMessages (Initialization)
 		}
 
 /***********************************************************************
-IGuiRemoteProtocolMessages (Rendering)
-***********************************************************************/
-
-		void RequestRendererBeginRendering() override
-		{
-			UnitTestRemoteProtocolFeatures::RequestRendererBeginRendering();
-		}
-
-		void RequestRendererEndRendering(vint id) override
-		{
-			UnitTestRemoteProtocolFeatures::RequestRendererEndRendering(id);
-			everRendered = true;
-		}
-
-/***********************************************************************
 IGuiRemoteProtocol
 ***********************************************************************/
 
@@ -114,18 +86,8 @@ IGuiRemoteProtocol
 		{
 			if (!stopped)
 			{
-				if (lastRenderingCommands)
+				if (LogRenderingResult())
 				{
-					lastRenderingResult = TransformLastRenderingResult(lastRenderingCommands);
-					lastRenderingCommands = {};
-				}
-				else if (everRendered)
-				{
-					if (lastRenderingResult)
-					{
-						loggedRenderingResults.Add(lastRenderingResult);
-						lastRenderingResult = {};
-					}
 					TEST_CASE(L"Execute idle frame[" + itow(nextEventIndex) + L"]")
 					{
 						processRemoteEvents[nextEventIndex]();

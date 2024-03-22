@@ -68,6 +68,9 @@ UnitTestRemoteProtocol
 		UnitTestRenderingElement
 		>;
 
+	using UnitTestRenderingCommandList = collections::List<UnitTestRenderingCommand>;
+	using UnitTestRenderingCommandListRef = Ptr<UnitTestRenderingCommandList>;
+
 #undef GACUI_REMOTEPROTOCOL_ELEMENTDESC_TYPES
 	
 	template<typename TProtocol>
@@ -75,9 +78,9 @@ UnitTestRemoteProtocol
 	{
 		using ElementDescMap = collections::Dictionary<vint, ElementDescVariant>;
 		using ImageMetadataMap = collections::Dictionary<vint, remoteprotocol::ImageMetadata>;
+		using CommandList = UnitTestRenderingCommandList;
+		using CommandListRef = UnitTestRenderingCommandListRef;
 	protected:
-		using CommandList = collections::List<UnitTestRenderingCommand>;
-		using CommandListRef = Ptr<CommandList>;
 
 		ElementDescMap							createdElements;
 		ImageMetadataMap						createdImages;

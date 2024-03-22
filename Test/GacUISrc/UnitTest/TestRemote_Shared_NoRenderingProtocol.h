@@ -44,8 +44,8 @@ namespace remote_protocol_tests
 
 	using SingleScreenProtocolFeatures = Mixin<
 		NotImplementedProtocolBase,
-		UnitTestRemoteProtocol_IO,
-		UnitTestRemoteProtocol_MainWindow
+		UnitTestRemoteProtocol_MainWindow,
+		UnitTestRemoteProtocol_IO
 	>::Type;
 	
 	class SingleScreenProtocol : public SingleScreenProtocolFeatures
