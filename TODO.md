@@ -32,6 +32,7 @@
 
 ## Release Milestone (1.2.10.0)
 
+- `Restore` button not renderered correctly. In both hosted and normal mode.
 - Unit test framework
   - `ImageData.xml` is required before loading any resources for the unit test framework to know metadata of images before loading it.
     - A parser is provided, a data structure is required in runtime.
