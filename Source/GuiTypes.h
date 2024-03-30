@@ -362,6 +362,11 @@ Rectangle
 			{
 				return x1 <= p.x && p.x < x2 && y1 <= p.y && p.y < y2;
 			}
+
+			bool Contains(Rect_<T> r)
+			{
+				return x1 <= r.x1 && r.x2 < x2 && y1 <= r.y1 && r.y2 < y2;
+			}
 		};
 
 		using Rect = Rect_<GuiCoordinate>;

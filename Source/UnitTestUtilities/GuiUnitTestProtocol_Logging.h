@@ -82,12 +82,36 @@ UnitTestRemoteProtocol
 			auto popBoundary = [&]()
 			{
 				CHECK_ERROR(domBoundaries.Count() > 0, ERROR_MESSAGE_PREFIX L"[popBoundary] Cannot pop a boundary when none is in the stack.");
-				popTo(domBoundaries[domBoundaries.Count() - 1] - 1);
+				auto boundaryIndex = domBoundaries.Count() - 1;
+				auto boundary = domBoundaries[boundaryIndex];
+				domBoundaries.RemoveAt(boundaryIndex);
+				popTo(boundary - 1);
 			};
 
 			auto popByClipperInBoundary = [&](Rect clipper)
 			{
-				CHECK_FAIL(L"Not Implemented!");
+				vint max = domStack.Count() - 1;
+				vint min = 0;
+				if (domBoundaries.Count() > 0) min = domBoundaries[domBoundaries.Count() - 1];
+
+				vint index = max;
+				while (index > min)
+				{
+					auto parent = domStack[index];
+					if (parent->clipper.Contains(clipper)) break;
+					index--;
+				}
+
+				if (index == min && index != 0)
+				{
+					auto parent = domStack[index];
+					CHECK_ERROR(parent->clipper.Contains(clipper), ERROR_MESSAGE_PREFIX L"[popByClipperInBoundary] Clipper is not contained by the current boundary.");
+				}
+
+				if (index < max)
+				{
+					popTo(index);
+				}
 			};
 
 			for (auto&& command : *commandListRef.Obj())
