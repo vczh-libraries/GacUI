@@ -8,6 +8,7 @@
 - `UtfBase64(En|De)coder`
 - `NativeImageFrameBase`
 - `bool controllerUnrelatedPlugins` and `bool controllerRelatedPlugins` added to `IGuiPlugin`
+- vlpp.natvis updated
 
 ## Known Issues
 
