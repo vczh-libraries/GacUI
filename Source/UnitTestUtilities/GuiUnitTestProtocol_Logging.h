@@ -15,13 +15,23 @@ namespace vl::presentation::unittest
 /***********************************************************************
 UnitTestRemoteProtocol
 ***********************************************************************/
+
+	class UnitTestRenderingDom : public Object
+	{
+		using DomList = collections::List<Ptr<UnitTestRenderingDom>>;
+	public:
+		Nullable<INativeWindowListener::HitTestResult>		hitTestResult;
+		ElementDescVariantStrictNullable					element;
+		Rect												bounds;
+		DomList												children;
+	};
 	
 	template<typename TProtocol>
 	class UnitTestRemoteProtocol_Logging : public TProtocol
 	{
 		using CommandList = UnitTestRenderingCommandList;
 		using CommandListRef = UnitTestRenderingCommandListRef;
-		using RenderingResultRef = CommandListRef;
+		using RenderingResultRef = Ptr<UnitTestRenderingDom>;
 		using RenderingResultRefList = collections::List<RenderingResultRef>;
 	protected:
 
