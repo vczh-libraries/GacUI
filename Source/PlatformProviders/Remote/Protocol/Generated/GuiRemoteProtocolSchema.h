@@ -206,14 +206,14 @@ namespace vl::presentation::remoteprotocol
 	{
 		::vl::vint id;
 		::vl::presentation::Rect bounds;
-		::vl::presentation::Rect clipper;
+		::vl::presentation::Rect areaClippedByParent;
 	};
 
 	struct ElementBoundary
 	{
 		::vl::presentation::INativeWindowListener::HitTestResult hitTestResult;
 		::vl::presentation::Rect bounds;
-		::vl::presentation::Rect clipper;
+		::vl::presentation::Rect areaClippedBySelf;
 	};
 
 	struct ElementMeasuring_FontHeight

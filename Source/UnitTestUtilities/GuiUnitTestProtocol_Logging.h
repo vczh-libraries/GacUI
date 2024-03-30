@@ -20,12 +20,12 @@ UnitTestRemoteProtocol
 	{
 		using DomList = collections::List<Ptr<UnitTestRenderingDom>>;
 	public:
-		// when hitTestResult and element are both nullptr_t
-		// it is the root node
+		// both hitTestResult and element could be nullptr
+		// for the root node or virtual nodes to fit clippers
 		Nullable<INativeWindowListener::HitTestResult>		hitTestResult;
 		Nullable<ElementDescVariantStrict>					element;
 		Rect												bounds;
-		Rect												clipper;
+		Rect												validArea;
 		DomList												children;
 	};
 	
@@ -124,7 +124,7 @@ UnitTestRemoteProtocol
 						auto dom = Ptr(new UnitTestRenderingDom);
 						dom->hitTestResult = boundary.hitTestResult;
 						dom->bounds = boundary.bounds;
-						dom->clipper = boundary.clipper;
+						dom->validArea = boundary.areaClippedBySelf;
 						domBoundaries.Add(push(dom));
 					},
 					[&](const UnitTestRenderingEndBoundary& command)

@@ -265,7 +265,7 @@ namespace remote_protocol_tests
 				L"BeginBoundary("
 				+ ToString(arguments.hitTestResult)
 				+ L", " + ToString(arguments.bounds)
-				+ L", " + ToString(arguments.clipper)
+				+ L", " + ToString(arguments.areaClippedBySelf)
 				+ L")"
 				);
 		}
@@ -281,7 +281,7 @@ namespace remote_protocol_tests
 				L"Render("
 				+ itow(arguments.id)
 				+ L", " + ToString(arguments.bounds)
-				+ L", " + ToString(arguments.clipper)
+				+ L", " + ToString(arguments.areaClippedByParent)
 				+ L")"
 				);
 		}

@@ -281,47 +281,47 @@ Rectangle
 
 			GUI_DEFINE_COMPARE_OPERATORS(Rect_<T>)
 
-			Point_<T> LeftTop()const
+			Point_<T> LeftTop() const
 			{
 				return Point_<T>(x1, y1);
 			}
 
-			Point_<T> RightBottom()const
+			Point_<T> RightBottom() const
 			{
 				return Point_<T>(x2, y2);
 			}
 
-			Size_<T> GetSize()const
+			Size_<T> GetSize() const
 			{
 				return Size_<T>(x2 - x1, y2 - y1);
 			}
 
-			T Left()const
+			T Left() const
 			{
 				return x1;
 			}
 
-			T Right()const
+			T Right() const
 			{
 				return x2;
 			}
 
-			T Width()const
+			T Width() const
 			{
 				return x2 - x1;
 			}
 
-			T Top()const
+			T Top() const
 			{
 				return y1;
 			}
 
-			T Bottom()const
+			T Bottom() const
 			{
 				return y2;
 			}
 
-			T Height()const
+			T Height() const
 			{
 				return y2 - y1;
 			}
@@ -358,14 +358,24 @@ Rectangle
 				y2 += s.y;
 			}
 
-			bool Contains(Point_<T> p)
+			bool Contains(Point_<T> p) const
 			{
 				return x1 <= p.x && p.x < x2 && y1 <= p.y && p.y < y2;
 			}
 
-			bool Contains(Rect_<T> r)
+			bool Contains(Rect_<T> r) const
 			{
 				return x1 <= r.x1 && r.x2 < x2 && y1 <= r.y1 && r.y2 < y2;
+			}
+
+			Rect_<T> Intersect(Rect_<T> r)  const
+			{
+				Rect_<T> result = r;
+				if (r.x1 < x1) r.x1 = x1;
+				if (r.x2 > x2) r.x2 = x2;
+				if (r.y1 < y1) r.y1 = y1;
+				if (r.y2 > y2) r.y2 = y2;
+				return r;
 			}
 		};
 

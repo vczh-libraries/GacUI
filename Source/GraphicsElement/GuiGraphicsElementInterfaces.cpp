@@ -60,14 +60,7 @@ GuiGraphicsRenderTarget
 				}
 				else
 				{
-					Rect previousClipper = GetClipper();
-					Rect currentClipper;
-
-					currentClipper.x1 = (previousClipper.x1 > clipper.x1 ? previousClipper.x1 : clipper.x1);
-					currentClipper.y1 = (previousClipper.y1 > clipper.y1 ? previousClipper.y1 : clipper.y1);
-					currentClipper.x2 = (previousClipper.x2 < clipper.x2 ? previousClipper.x2 : clipper.x2);
-					currentClipper.y2 = (previousClipper.y2 < clipper.y2 ? previousClipper.y2 : clipper.y2);
-
+					Rect currentClipper = GetClipper().Intersect(clipper);
 					if (currentClipper.x1 < currentClipper.x2 && currentClipper.y1 < currentClipper.y2)
 					{
 						clippers.Add(currentClipper);

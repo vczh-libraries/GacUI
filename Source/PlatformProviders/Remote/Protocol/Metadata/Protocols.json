@@ -2154,7 +2154,7 @@
             }
         }, {
             "$ast": "StructMember",
-            "name": "clipper",
+            "name": "areaClippedByParent",
             "type": {
                 "$ast": "ReferenceType",
                 "name": "Rect"
@@ -2180,7 +2180,7 @@
             }
         }, {
             "$ast": "StructMember",
-            "name": "clipper",
+            "name": "areaClippedBySelf",
             "type": {
                 "$ast": "ReferenceType",
                 "name": "Rect"

@@ -109,7 +109,7 @@ GuiSolidBorderElementRenderer
 		remoteprotocol::ElementRendering arguments;
 		arguments.id = id;
 		arguments.bounds = bounds;
-		arguments.clipper = this->renderTarget->GetClipperValidArea();
+		arguments.areaClippedByParent = this->renderTarget->GetClipperValidArea();
 		this->renderTarget->GetRemoteMessages().RequestRendererRenderElement(arguments);
 		renderingBatchId = this->renderTarget->renderingBatchId;
 	}

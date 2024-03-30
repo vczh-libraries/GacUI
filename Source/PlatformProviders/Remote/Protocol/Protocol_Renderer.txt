@@ -27,14 +27,14 @@ struct ElementRendering
 {
     var id : int;
     var bounds : Rect;
-    var clipper : Rect;
+    var areaClippedByParent : Rect;
 }
 
 struct ElementBoundary
 {
     var hitTestResult : WindowHitTestResult;
     var bounds : Rect;
-    var clipper : Rect;
+    var areaClippedBySelf : Rect;
 }
 
 struct ElementMeasuring_FontHeight

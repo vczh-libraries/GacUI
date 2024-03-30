@@ -544,7 +544,7 @@ namespace vl::presentation::remoteprotocol
 		auto node = Ptr(new glr::json::JsonObject);
 		ConvertCustomTypeToJsonField(node, L"id", value.id);
 		ConvertCustomTypeToJsonField(node, L"bounds", value.bounds);
-		ConvertCustomTypeToJsonField(node, L"clipper", value.clipper);
+		ConvertCustomTypeToJsonField(node, L"areaClippedByParent", value.areaClippedByParent);
 		return node;
 	}
 
@@ -553,7 +553,7 @@ namespace vl::presentation::remoteprotocol
 		auto node = Ptr(new glr::json::JsonObject);
 		ConvertCustomTypeToJsonField(node, L"hitTestResult", value.hitTestResult);
 		ConvertCustomTypeToJsonField(node, L"bounds", value.bounds);
-		ConvertCustomTypeToJsonField(node, L"clipper", value.clipper);
+		ConvertCustomTypeToJsonField(node, L"areaClippedBySelf", value.areaClippedBySelf);
 		return node;
 	}
 
@@ -1280,7 +1280,7 @@ namespace vl::presentation::remoteprotocol
 		{
 			if (field->name.value == L"id") ConvertJsonToCustomType(field->value, value.id); else
 			if (field->name.value == L"bounds") ConvertJsonToCustomType(field->value, value.bounds); else
-			if (field->name.value == L"clipper") ConvertJsonToCustomType(field->value, value.clipper); else
+			if (field->name.value == L"areaClippedByParent") ConvertJsonToCustomType(field->value, value.areaClippedByParent); else
 			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
 		}
 #undef ERROR_MESSAGE_PREFIX
@@ -1295,7 +1295,7 @@ namespace vl::presentation::remoteprotocol
 		{
 			if (field->name.value == L"hitTestResult") ConvertJsonToCustomType(field->value, value.hitTestResult); else
 			if (field->name.value == L"bounds") ConvertJsonToCustomType(field->value, value.bounds); else
-			if (field->name.value == L"clipper") ConvertJsonToCustomType(field->value, value.clipper); else
+			if (field->name.value == L"areaClippedBySelf") ConvertJsonToCustomType(field->value, value.areaClippedBySelf); else
 			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
 		}
 #undef ERROR_MESSAGE_PREFIX

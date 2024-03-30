@@ -12,6 +12,11 @@ using namespace vl::presentation::unittest;
 
 TEST_FILE
 {
+	TEST_CATEGORY(L"DOM Recovery")
+	{
+		// TODO: test dom recovery from logging
+	});
+
 	TEST_CATEGORY(L"Hello, world!")
 	{
 		GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)

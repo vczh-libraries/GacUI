@@ -175,7 +175,7 @@ GuiRemoteGraphicsRenderTarget
 				remoteprotocol::ElementBoundary arguments;
 				arguments.hitTestResult = hitTestResult;
 				arguments.bounds = clipper;
-				arguments.clipper = validArea;
+				arguments.areaClippedBySelf = validArea;
 				remote->remoteMessages.RequestRendererBeginBoundary(arguments);
 			}
 			hitTestResults.Add(hitTestResult);
