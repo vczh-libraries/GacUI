@@ -21,7 +21,6 @@ UnitTestRemoteProtocol
 		using DomList = collections::List<Ptr<UnitTestRenderingDom>>;
 	public:
 		// both hitTestResult and element could be nullptr
-		// for the root node or virtual nodes to fit clippers
 		Nullable<INativeWindowListener::HitTestResult>		hitTestResult;
 		Nullable<ElementDescVariantStrict>					element;
 		Rect												bounds;
@@ -53,6 +52,18 @@ UnitTestRemoteProtocol
 			auto domCurrent = domRoot;
 			domStack.Add(domRoot);
 
+			auto getCurrentBoundary = [&]()
+			{
+				if (domBoundaries.Count() > 0)
+				{
+					return domBoundaries[domBoundaries.Count() - 1];
+				}
+				else
+				{
+					return 0;
+				}
+			};
+
 			auto push = [&](RenderingResultRef ref)
 			{
 				CHECK_ERROR(ref, ERROR_MESSAGE_PREFIX L"[push] Cannot push a null dom object.");
@@ -64,9 +75,9 @@ UnitTestRemoteProtocol
 
 			auto popTo = [&](vint index)
 			{
+				if (index == domStack.Count() - 1) return;
 				CHECK_ERROR(0 <= index && index < domStack.Count(), ERROR_MESSAGE_PREFIX L"[popTo] Cannot pop to an invalid position.");
-				CHECK_ERROR(index == domStack.Count() - 1, ERROR_MESSAGE_PREFIX L"[popTo] Cannot pop nothing.");
-				CHECK_ERROR(domBoundaries.Count() == 0 || index >= domBoundaries[domBoundaries.Count() - 1], ERROR_MESSAGE_PREFIX L"[popTo] Cannot pop across a boundary.");
+				CHECK_ERROR(index >= getCurrentBoundary(), ERROR_MESSAGE_PREFIX L"[popTo] Cannot pop across a boundary.");
 				while (domStack.Count() - 1 > index)
 				{
 					domStack.RemoveAt(domStack.Count() - 1);
@@ -88,44 +99,40 @@ UnitTestRemoteProtocol
 				popTo(boundary - 1);
 			};
 
-			auto popByClipperInBoundary = [&](Rect clipper)
-			{
-				vint max = domStack.Count() - 1;
-				vint min = 0;
-				if (domBoundaries.Count() > 0) min = domBoundaries[domBoundaries.Count() - 1];
-
-				vint index = max;
-				while (index > min)
-				{
-					auto parent = domStack[index];
-					if (parent->clipper.Contains(clipper)) break;
-					index--;
-				}
-
-				if (index == min && index != 0)
-				{
-					auto parent = domStack[index];
-					CHECK_ERROR(parent->clipper.Contains(clipper), ERROR_MESSAGE_PREFIX L"[popByClipperInBoundary] Clipper is not contained by the current boundary.");
-				}
-
-				if (index < max)
-				{
-					popTo(index);
-				}
-			};
-
 			for (auto&& command : *commandListRef.Obj())
 			{
 				command.Apply(Overloading(
 					[&](const UnitTestRenderingBeginBoundary& command)
 					{
 						auto& boundary = command.boundary;
-						popByClipperInBoundary(boundary.clipper);
-						auto dom = Ptr(new UnitTestRenderingDom);
-						dom->hitTestResult = boundary.hitTestResult;
-						dom->bounds = boundary.bounds;
-						dom->validArea = boundary.areaClippedBySelf;
-						domBoundaries.Add(push(dom));
+						Ptr<UnitTestRenderingDom> dom;
+						{
+							vint min = getCurrentBoundary();
+							for (vint i = domStack.Count() - 1; i > min; i--)
+							{
+								auto parent = domStack[i];
+								if (parent->bounds == boundary.bounds)
+								{
+									dom = parent;
+									popTo(i);
+									break;
+								}
+							}
+						}
+
+						if (dom)
+						{
+							CHECK_ERROR(dom->validArea == boundary.areaClippedBySelf, ERROR_MESSAGE_PREFIX L"Incorrect valid area of dom.");
+							dom->hitTestResult = boundary.hitTestResult;
+						}
+						else
+						{
+							auto dom = Ptr(new UnitTestRenderingDom);
+							dom->hitTestResult = boundary.hitTestResult;
+							dom->bounds = boundary.bounds;
+							dom->validArea = boundary.areaClippedBySelf;
+							domBoundaries.Add(push(dom));
+						}
 					},
 					[&](const UnitTestRenderingEndBoundary& command)
 					{
@@ -133,11 +140,29 @@ UnitTestRemoteProtocol
 					},
 					[&](const UnitTestRenderingElement& command)
 					{
-						popByClipperInBoundary(command.rendering.clipper);
+						{
+							vint min = getCurrentBoundary();
+							vint index = min;
+							for (vint i = domStack.Count() - 1; i > min; i--)
+							{
+								auto parent = domStack[i];
+								if (parent->validArea.Contains(command.rendering.areaClippedByParent))
+								{
+									index = i;
+									break;
+								}
+							}
+
+							if (index == min)
+							{
+								CHECK_ERROR(domStack[index]->validArea.Contains(command.rendering.areaClippedByParent), L"Incorrect valid area of element in current boundary.");
+							}
+							popTo(index);
+						}
 						auto dom = Ptr(new UnitTestRenderingDom);
 						dom->element = command.desc;
 						dom->bounds = command.rendering.bounds;
-						dom->clipper = command.rendering.clipper;
+						dom->validArea = command.rendering.bounds.Intersect(command.rendering.areaClippedByParent);
 						push(dom);
 					}));
 			}
