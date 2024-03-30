@@ -28,8 +28,8 @@ UnitTestRemoteProtocol
 		remoteprotocol::ElementDesc_ImageFrame\
 
 	using ElementDescVariant = Variant<
-		GACUI_REMOTEPROTOCOL_ELEMENTDESC_TYPES,
-		remoteprotocol::RendererType
+		remoteprotocol::RendererType,
+		GACUI_REMOTEPROTOCOL_ELEMENTDESC_TYPES
 		>;
 
 	using ElementDescVariantStrict = Variant<
@@ -37,8 +37,8 @@ UnitTestRemoteProtocol
 		>;
 
 	using ElementDescVariantStrictNullable = Variant<
-		GACUI_REMOTEPROTOCOL_ELEMENTDESC_TYPES,
-		std::nullptr_t
+		std::nullptr_t,
+		GACUI_REMOTEPROTOCOL_ELEMENTDESC_TYPES
 		>;
 
 	struct UnitTestRenderingBeginBoundary
