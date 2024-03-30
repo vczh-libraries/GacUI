@@ -365,7 +365,7 @@ Rectangle
 
 			bool Contains(Rect_<T> r) const
 			{
-				return x1 <= r.x1 && r.x2 < x2 && y1 <= r.y1 && r.y2 < y2;
+				return x1 <= r.x1 && r.x2 <= x2 && y1 <= r.y1 && r.y2 <= y2;
 			}
 
 			Rect_<T> Intersect(Rect_<T> r)  const

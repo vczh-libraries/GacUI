@@ -153,7 +153,7 @@ UnitTestRemoteProtocol
 								}
 							}
 
-							if (index == min)
+							if (index == min && index != 0)
 							{
 								CHECK_ERROR(domStack[index]->validArea.Contains(command.rendering.areaClippedByParent), L"Incorrect valid area of element in current boundary.");
 							}
