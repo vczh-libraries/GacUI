@@ -36,11 +36,6 @@ UnitTestRemoteProtocol
 		GACUI_REMOTEPROTOCOL_ELEMENTDESC_TYPES
 		>;
 
-	using ElementDescVariantStrictNullable = Variant<
-		std::nullptr_t,
-		GACUI_REMOTEPROTOCOL_ELEMENTDESC_TYPES
-		>;
-
 	struct UnitTestRenderingBeginBoundary
 	{
 		remoteprotocol::ElementBoundary			boundary;

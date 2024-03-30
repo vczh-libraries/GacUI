@@ -20,9 +20,12 @@ UnitTestRemoteProtocol
 	{
 		using DomList = collections::List<Ptr<UnitTestRenderingDom>>;
 	public:
+		// when hitTestResult and element are both nullptr_t
+		// it is the root node
 		Nullable<INativeWindowListener::HitTestResult>		hitTestResult;
-		ElementDescVariantStrictNullable					element;
+		Nullable<ElementDescVariantStrict>					element;
 		Rect												bounds;
+		Rect												clipper;
 		DomList												children;
 	};
 	
@@ -42,40 +45,33 @@ UnitTestRemoteProtocol
 		RenderingResultRef TransformLastRenderingResult(CommandListRef commandListRef)
 		{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Logging<TProtocol>::TransformLastRenderingResult(CommandListRef)#"
-			RenderingResultRef domRoot, domCurrent;
+
 			RenderingResultRefList domStack;
 			collections::List<vint> domBoundaries;
+
+			auto domRoot = Ptr(new UnitTestRenderingDom);
+			auto domCurrent = domRoot;
+			domStack.Add(domRoot);
 
 			auto push = [&](RenderingResultRef ref)
 			{
 				CHECK_ERROR(ref, ERROR_MESSAGE_PREFIX L"[push] Cannot push a null dom object.");
-				CHECK_ERROR(!domRoot || domStack.Count() > 0, ERROR_MESSAGE_PREFIX L"[push] Cannot recreate a dom root.");
-				if (!domRoot) domRoot = ref;
 				vint index = domStack.Add(ref);
-				if (domCurrent) domCurrent->children.Add(ref);
+				domCurrent->children.Add(ref);
 				domCurrent = ref;
 				return index;
 			};
 
 			auto popTo = [&](vint index)
 			{
-				if (index == -1)
+				CHECK_ERROR(0 <= index && index < domStack.Count(), ERROR_MESSAGE_PREFIX L"[popTo] Cannot pop to an invalid position.");
+				CHECK_ERROR(index == domStack.Count() - 1, ERROR_MESSAGE_PREFIX L"[popTo] Cannot pop nothing.");
+				CHECK_ERROR(domBoundaries.Count() == 0 || index >= domBoundaries[domBoundaries.Count() - 1], ERROR_MESSAGE_PREFIX L"[popTo] Cannot pop across a boundary.");
+				while (domStack.Count() - 1 > index)
 				{
-					CHECK_ERROR(domRoot, ERROR_MESSAGE_PREFIX L"[popTo] Cannot pop the dom root when it is not created yet.");
-					domCurrent = nullptr;
-					domStack.Clear();
+					domStack.RemoveAt(domStack.Count() - 1);
 				}
-				else
-				{
-					CHECK_ERROR(0 <= index && index < domStack.Count(), ERROR_MESSAGE_PREFIX L"[popTo] Cannot pop to an invalid position.");
-					CHECK_ERROR(index == domStack.Count() - 1, ERROR_MESSAGE_PREFIX L"[popTo] Cannot pop nothing.");
-					CHECK_ERROR(domBoundaries.Count() == 0 || index >= domBoundaries[domBoundaries.Count() - 1], ERROR_MESSAGE_PREFIX L"[popTo] Cannot pop across a boundary.");
-					while (domStack.Count() - 1> index)
-					{
-						domStack.RemoveAt(domStack.Count() - 1);
-					}
-					domCurrent = domStack[index];
-				}
+				domCurrent = domStack[index];
 			};
 
 			auto pop = [&]()
@@ -89,7 +85,7 @@ UnitTestRemoteProtocol
 				popTo(domBoundaries[domBoundaries.Count() - 1] - 1);
 			};
 
-			auto popByClipper = [&](Rect clipper)
+			auto popByClipperInBoundary = [&](Rect clipper)
 			{
 				CHECK_FAIL(L"Not Implemented!");
 			};
@@ -100,10 +96,11 @@ UnitTestRemoteProtocol
 					[&](const UnitTestRenderingBeginBoundary& command)
 					{
 						auto& boundary = command.boundary;
-						popByClipper(boundary.clipper);
+						popByClipperInBoundary(boundary.clipper);
 						auto dom = Ptr(new UnitTestRenderingDom);
 						dom->hitTestResult = boundary.hitTestResult;
 						dom->bounds = boundary.bounds;
+						dom->clipper = boundary.clipper;
 						domBoundaries.Add(push(dom));
 					},
 					[&](const UnitTestRenderingEndBoundary& command)
@@ -112,11 +109,15 @@ UnitTestRemoteProtocol
 					},
 					[&](const UnitTestRenderingElement& command)
 					{
-						CHECK_FAIL(L"Not Implemented!");
+						popByClipperInBoundary(command.rendering.clipper);
+						auto dom = Ptr(new UnitTestRenderingDom);
+						dom->element = command.desc;
+						dom->bounds = command.rendering.bounds;
+						dom->clipper = command.rendering.clipper;
+						push(dom);
 					}));
 			}
 
-			CHECK_ERROR(domRoot, ERROR_MESSAGE_PREFIX L"Dom root is not created yet.");
 			return domRoot;
 #undef ERROR_MESSAGE_PREFIX
 		}
