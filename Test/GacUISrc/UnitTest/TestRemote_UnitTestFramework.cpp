@@ -6,6 +6,8 @@
 #endif
 
 using namespace vl;
+using namespace vl::stream;
+using namespace vl::glr::json;
 using namespace vl::presentation;
 using namespace vl::presentation::controls;
 using namespace vl::presentation::unittest;
@@ -38,6 +40,8 @@ TEST_FILE
 
 			GetApplication()->Run(&window);
 			theme::UnregisterTheme(darkskinTheme->Name);
+
+			auto textLog = JsonToString(protocol->GetLogAsJson());
 		});
 		GacUIUnitTest_Start();
 	});

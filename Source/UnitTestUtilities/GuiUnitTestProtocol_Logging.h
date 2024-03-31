@@ -26,6 +26,54 @@ UnitTestRemoteProtocol
 		Rect												bounds;
 		Rect												validArea;
 		DomList												children;
+
+		Ptr<glr::json::JsonObject> AsJson()
+		{
+			auto jsonDom = Ptr(new glr::json::JsonObject);
+			if (hitTestResult)
+			{
+				auto fieldHtr = Ptr(new glr::json::JsonObjectField);
+				fieldHtr->name.value = WString::Unmanaged(L"HitTestResult");
+				fieldHtr->value = remoteprotocol::ConvertCustomTypeToJson(hitTestResult.Value());
+				jsonDom->fields.Add(fieldHtr);
+			}
+			if (element)
+			{
+				auto fieldElement = Ptr(new glr::json::JsonObjectField);
+				fieldElement->name.value = WString::Unmanaged(L"Element");
+				element.Value().Apply([&](auto&& desc)
+				{
+					fieldElement->value = remoteprotocol::ConvertCustomTypeToJson(desc);
+				});
+				jsonDom->fields.Add(fieldElement);
+			}
+			{
+				auto fieldBounds = Ptr(new glr::json::JsonObjectField);
+				fieldBounds->name.value = WString::Unmanaged(L"Bounds");
+				fieldBounds->value = remoteprotocol::ConvertCustomTypeToJson(bounds);
+				jsonDom->fields.Add(fieldBounds);
+			}
+			{
+				auto fieldValidArea = Ptr(new glr::json::JsonObjectField);
+				fieldValidArea->name.value = WString::Unmanaged(L"ValidArea");
+				fieldValidArea->value = remoteprotocol::ConvertCustomTypeToJson(validArea);
+				jsonDom->fields.Add(fieldValidArea);
+			}
+			if (children.Count() > 0)
+			{
+				auto arrayChildren = Ptr(new glr::json::JsonArray);
+				for (auto&& child : children)
+				{
+					arrayChildren->items.Add(child->AsJson());
+				}
+
+				auto fieldChildren = Ptr(new glr::json::JsonObjectField);
+				fieldChildren->name.value = WString::Unmanaged(L"Children");
+				fieldChildren->value = arrayChildren;
+				jsonDom->fields.Add(fieldChildren);
+			}
+			return jsonDom;
+		}
 	};
 	
 	template<typename TProtocol>
@@ -200,9 +248,46 @@ UnitTestRemoteProtocol
 		{
 		}
 
-		RenderingResultRefList& GetLoggedRenderingResults()
+		const auto& GetLoggedCreatedImages()
+		{
+			return this->createdImages;
+		}
+
+		const auto& GetLoggedRenderingResults()
 		{
 			return loggedRenderingResults;
+		}
+
+		Ptr<glr::json::JsonObject> GetLogAsJson()
+		{
+			auto log = Ptr(new glr::json::JsonObject);
+			{
+				auto arrayImages = Ptr(new glr::json::JsonArray);
+				for (auto&& image : GetLoggedCreatedImages().Values())
+				{
+					auto nodeImage = remoteprotocol::ConvertCustomTypeToJson(image);
+					arrayImages->items.Add(nodeImage);
+				}
+
+				auto fieldImages = Ptr(new glr::json::JsonObjectField);
+				fieldImages->name.value = WString::Unmanaged(L"Images");
+				fieldImages->value = arrayImages;
+				log->fields.Add(fieldImages);
+			}
+			{
+				auto arrayFrames = Ptr(new glr::json::JsonArray);
+				for (auto&& frame : GetLoggedRenderingResults())
+				{
+					auto nodeFrame = frame->AsJson();
+					arrayFrames->items.Add(nodeFrame);
+				}
+
+				auto fieldFrames = Ptr(new glr::json::JsonObjectField);
+				fieldFrames->name.value = WString::Unmanaged(L"Frames");
+				fieldFrames->value = arrayFrames;
+				log->fields.Add(fieldFrames);
+			}
+			return log;
 		}
 	};
 }
