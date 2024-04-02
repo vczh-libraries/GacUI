@@ -1,6 +1,7 @@
 #include "GuiWindowControls.h"
 #include "GuiApplication.h"
 #include "../GraphicsHost/GuiGraphicsHost.h"
+#include "../../PlatformProviders/Hosted/GuiHostedApplication.h"
 
 namespace vl
 {
@@ -672,6 +673,19 @@ GuiWindow
 				}
 			}
 
+			bool GuiWindow::IsRenderedAsMaximized()
+			{
+				auto nativeWindow = GetNativeWindow();
+				if (nativeWindow && GetApplication()->GetMainWindow() == this)
+				{
+					if (auto hostedApp = GetHostedApplication())
+					{
+						nativeWindow = hostedApp->GetNativeWindowHost();
+					}
+				}
+				return nativeWindow ? nativeWindow->GetSizeState() == INativeWindow::Maximized : false;
+			}
+
 			void GuiWindow::SetControlTemplateProperties()
 			{
 				if (auto ct = TypedControlTemplateObject(false))
@@ -682,7 +696,7 @@ GuiWindow
 					ct->SetSizeBox(hasSizeBox);
 					ct->SetIconVisible(isIconVisible);
 					ct->SetTitleBar(hasTitleBar);
-					ct->SetMaximized(GetNativeWindow()->GetSizeState() != INativeWindow::Maximized);
+					ct->SetMaximized(IsRenderedAsMaximized());
 					ct->SetActivated(GetRenderingAsActivated());
 				}
 			}
@@ -773,7 +787,7 @@ GuiWindow
 			void GuiWindow::Moved()
 			{
 				GuiControlHost::Moved();
-				TypedControlTemplateObject(true)->SetMaximized(GetNativeWindow()->GetSizeState() != INativeWindow::Maximized);
+				TypedControlTemplateObject(true)->SetMaximized(IsRenderedAsMaximized());
 			}
 
 			void GuiWindow::Opened()

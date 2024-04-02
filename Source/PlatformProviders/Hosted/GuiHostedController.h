@@ -11,6 +11,7 @@ Interfaces:
 #ifndef VCZH_PRESENTATION_GUIHOSTEDCONTROLLER
 #define VCZH_PRESENTATION_GUIHOSTEDCONTROLLER
 
+#include "GuiHostedApplication.h"
 #include "GuiHostedWindow.h"
 #include "GuiHostedGraphics.h"
 #include "../../Utilities/SharedServices/GuiSharedCallbackService.h"
@@ -34,6 +35,7 @@ GuiHostedController
 			, protected INativeScreenService
 			, protected INativeScreen
 			, protected INativeWindowService
+			, protected IGuiHostedApplication
 		{
 			friend class GuiHostedWindow;
 			friend class elements::GuiHostedGraphicsResourceManager;
@@ -204,10 +206,17 @@ GuiHostedController
 			void							DestroyHostedWindowsAfterRunning();
 			void							Run(INativeWindow* window) override;
 			bool							RunOneCycle() override;
+
+			// =============================================================
+			// IGuiHostedApplication
+			// =============================================================
+
+			INativeWindow*					GetNativeWindowHost() override;
 		public:
 			GuiHostedController(INativeController* _nativeController);
 			~GuiHostedController();
 
+			IGuiHostedApplication*			GetHostedApplication();
 			void							Initialize();
 			void							Finalize();
 			void							RequestRefresh();

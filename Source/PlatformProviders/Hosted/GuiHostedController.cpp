@@ -1020,6 +1020,15 @@ GuiHostedController::INativeWindowService
 		}
 
 /***********************************************************************
+GuiHostedController::IGuiHostedApplication
+***********************************************************************/
+
+		INativeWindow* GuiHostedController::GetNativeWindowHost()
+		{
+			return nativeWindow;
+		}
+
+/***********************************************************************
 GuiHostedController
 ***********************************************************************/
 
@@ -1032,6 +1041,11 @@ GuiHostedController
 
 		GuiHostedController::~GuiHostedController()
 		{
+		}
+
+		IGuiHostedApplication* GuiHostedController::GetHostedApplication()
+		{
+			return this;
 		}
 
 		void GuiHostedController::Initialize()

@@ -255,6 +255,7 @@ Window
 				
 				void									UpdateIcon(INativeWindow* window, templates::GuiWindowTemplate* ct);
 				void									UpdateCustomFramePadding(INativeWindow* window, templates::GuiWindowTemplate* ct);
+				bool									IsRenderedAsMaximized();
 				void									SetControlTemplateProperties();
 				void									SetNativeWindowFrameProperties();
 				bool									ApplyFrameConfigOnVariable(BoolOption frameConfig, BoolOption templateConfig, bool& variable);

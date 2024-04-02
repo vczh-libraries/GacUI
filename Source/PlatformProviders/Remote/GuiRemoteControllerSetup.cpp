@@ -21,6 +21,7 @@ int SetupRemoteNativeController(vl::presentation::IGuiRemoteProtocol* protocol)
 
 	SetNativeController(&hostedController);
 	SetGuiGraphicsResourceManager(&hostedResourceManager);
+	SetHostedApplication(hostedController.GetHostedApplication());
 
 	remoteController.Initialize();
 	remoteResourceManager.Initialize();
@@ -30,6 +31,7 @@ int SetupRemoteNativeController(vl::presentation::IGuiRemoteProtocol* protocol)
 	remoteResourceManager.Finalize();
 	remoteController.Finalize();
 
+	SetHostedApplication(nullptr);
 	SetGuiGraphicsResourceManager(nullptr);
 	SetNativeController(nullptr);
 	return 0;

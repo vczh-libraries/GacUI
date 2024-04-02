@@ -1303,6 +1303,7 @@ INativeWindowService
 			/// </summary>
 			/// <returns>The frame configuration for non-main windows.</returns>
 			virtual const NativeWindowFrameConfig&	GetNonMainWindowFrameConfig()=0;
+
 			/// <summary>
 			/// Create a window.
 			/// </summary>

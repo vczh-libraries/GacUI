@@ -22,6 +22,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsElement\GuiGraphicsTextElement.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\GuiTypes.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\NativeWindow\GuiNativeWindow.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Hosted\GuiHostedApplication.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Hosted\GuiHostedController.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Hosted\GuiHostedGraphics.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Hosted\GuiHostedWindow.h" />
@@ -56,6 +57,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsElement\GuiGraphicsTextElement.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\NativeWindow\GuiNativeWindow.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\GacGen\GacGenController.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Hosted\GuiHostedApplication.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Hosted\GuiHostedController.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Hosted\GuiHostedGraphics.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Hosted\GuiHostedWindow.cpp" />
