@@ -41,7 +41,12 @@ TEST_FILE
 			GetApplication()->Run(&window);
 			theme::UnregisterTheme(darkskinTheme->Name);
 
-			auto textLog = JsonToString(protocol->GetLogAsJson());
+			JsonFormatting formatting;
+			formatting.spaceAfterColon = true;
+			formatting.spaceAfterComma = true;
+			formatting.crlf = true;
+			formatting.compact = true;
+			auto textLog = JsonToString(protocol->GetLogAsJson(), formatting);
 		});
 		GacUIUnitTest_Start();
 	});

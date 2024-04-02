@@ -1328,17 +1328,112 @@ JsonUnescapeVisitor
 			};
 
 /***********************************************************************
+JsonFormatting
+***********************************************************************/
+
+			JsonFormatting::JsonFormatting()
+				: indentation(L"  ")
+			{
+			}
+
+/***********************************************************************
+JsonIsCompactVisitor
+***********************************************************************/
+
+			class JsonIsCompactVisitorBase : public Object, public JsonNode::IVisitor
+			{
+			public:
+				bool						result = true;
+
+				void Visit(JsonLiteral* node) override
+				{
+				}
+
+				void Visit(JsonString* node) override
+				{
+				}
+
+				void Visit(JsonNumber* node) override
+				{
+				}
+			};
+
+			class JsonIsCompactFieldVisitor : public JsonIsCompactVisitorBase
+			{
+			public:
+				void Visit(JsonArray* node) override
+				{
+					result = node->items.Count() == 0;
+				}
+
+				void Visit(JsonObject* node) override
+				{
+					result = node->fields.Count() == 0;
+				}
+			};
+
+			class JsonIsCompactVisitor : public JsonIsCompactVisitorBase
+			{
+			public:
+				void Visit(JsonArray* node) override
+				{
+					for (auto item : node->items)
+					{
+						JsonIsCompactFieldVisitor visitor;
+						item->Accept(&visitor);
+						if (!visitor.result)
+						{
+							result = false;
+							break;
+						}
+					}
+				}
+
+				void Visit(JsonObject* node) override
+				{
+					for (auto field : node->fields)
+					{
+						JsonIsCompactFieldVisitor visitor;
+						field->value->Accept(&visitor);
+						if (!visitor.result)
+						{
+							result = false;
+							break;
+						}
+					}
+				}
+			};
+
+/***********************************************************************
 JsonPrintVisitor
 ***********************************************************************/
 
 			class JsonPrintVisitor : public Object, public JsonNode::IVisitor
 			{
 			public:
+				JsonFormatting				formatting;
 				TextWriter&					writer;
+				vint						indent = 0;
 
-				JsonPrintVisitor(TextWriter& _writer)
-					:writer(_writer)
+				JsonPrintVisitor(JsonFormatting _formatting, TextWriter& _writer)
+					: formatting(_formatting)
+					, writer(_writer)
 				{
+				}
+
+				void WriteIndentation()
+				{
+					for (vint i = 0; i < indent; i++)
+					{
+						writer.WriteString(formatting.indentation);
+					}
+				}
+
+				bool IsCompact(JsonNode* node)
+				{
+					JsonIsCompactVisitor visitor;
+					node->Accept(&visitor);
+					return visitor.result;
 				}
 
 				void Visit(JsonLiteral* node) override
@@ -1370,13 +1465,59 @@ JsonPrintVisitor
 					writer.WriteString(node->content.value);
 				}
 
+				void AfterOpeningObject(bool insertCrlf)
+				{
+					if (insertCrlf)
+					{
+						writer.WriteString(L"\r\n");
+						indent++;
+					}
+				}
+
+				void BeforeClosingObject(bool insertCrlf)
+				{
+					if (insertCrlf)
+					{
+						indent--;
+						WriteIndentation();
+					}
+				}
+
+				void BeforeChildNode(bool insertCrlf)
+				{
+					if (insertCrlf) WriteIndentation();
+				}
+
+				void AfterChildNode(bool insertCrlf, bool lastNode)
+				{
+					if (!lastNode)
+					{
+						if ((!insertCrlf || !formatting.crlf) && formatting.spaceAfterComma)
+						{
+							writer.WriteString(L", ");
+						}
+						else
+						{
+							writer.WriteChar(L',');
+						}
+					}
+					if (insertCrlf) writer.WriteString(L"\r\n");
+				}
+
 				void Visit(JsonArray* node) override
 				{
 					writer.WriteChar(L'[');
-					for (auto [item, i] : indexed(node->items))
+					if (node->items.Count() > 0)
 					{
-						if(i>0) writer.WriteChar(L',');
-						item->Accept(this);
+						bool insertCrlf = formatting.crlf && !(formatting.compact && IsCompact(node));
+						AfterOpeningObject(insertCrlf);
+						for (auto [item, i] : indexed(node->items))
+						{
+							BeforeChildNode(insertCrlf);
+							item->Accept(this);
+							AfterChildNode(insertCrlf, i == node->items.Count() - 1);
+						}
+						BeforeClosingObject(insertCrlf);
 					}
 					writer.WriteChar(L']');
 				}
@@ -1384,13 +1525,27 @@ JsonPrintVisitor
 				void Visit(JsonObject* node) override
 				{
 					writer.WriteChar(L'{');
-					for (auto [field, i] : indexed(node->fields))
+					if (node->fields.Count() > 0)
 					{
-						if(i>0) writer.WriteChar(L',');
-						writer.WriteChar(L'\"');
-						JsonEscapeString(field->name.value, writer);
-						writer.WriteString(L"\":");
-						field->value->Accept(this);
+						bool insertCrlf = formatting.crlf && !(formatting.compact && IsCompact(node));
+						AfterOpeningObject(insertCrlf);
+						for (auto [field, i] : indexed(node->fields))
+						{
+							BeforeChildNode(insertCrlf);
+							writer.WriteChar(L'\"');
+							JsonEscapeString(field->name.value, writer);
+							if (formatting.spaceAfterColon)
+							{
+								writer.WriteString(L"\": ");
+							}
+							else
+							{
+								writer.WriteString(L"\":");
+							}
+							field->value->Accept(this);
+							AfterChildNode(insertCrlf, i == node->fields.Count() - 1);
+						}
+						BeforeClosingObject(insertCrlf);
 					}
 					writer.WriteChar(L'}');
 				}
@@ -1407,17 +1562,17 @@ API
 				return ast;
 			}
 
-			void JsonPrint(Ptr<JsonNode> node, stream::TextWriter& writer)
+			void JsonPrint(Ptr<JsonNode> node, stream::TextWriter& writer, JsonFormatting formatting)
 			{
-				JsonPrintVisitor visitor(writer);
+				JsonPrintVisitor visitor(formatting, writer);
 				node->Accept(&visitor);
 			}
 
-			WString JsonToString(Ptr<JsonNode> node)
+			WString JsonToString(Ptr<JsonNode> node, JsonFormatting formatting)
 			{
 				return GenerateToStream([&](StreamWriter& writer)
 				{
-					JsonPrint(node, writer);
+					JsonPrint(node, writer, formatting);
 				});
 			}
 		}
@@ -1876,7 +2031,7 @@ namespace vl::glr::json::json_visitor
 {
 	void AstVisitor::PrintFields(JsonArray* node)
 	{
-		BeginField(L"items");
+		BeginField(vl::WString::Unmanaged(L"items"));
 		BeginArray();
 		for (auto&& listItem : node->items)
 		{
@@ -1889,17 +2044,17 @@ namespace vl::glr::json::json_visitor
 	}
 	void AstVisitor::PrintFields(JsonLiteral* node)
 	{
-		BeginField(L"value");
+		BeginField(vl::WString::Unmanaged(L"value"));
 		switch (node->value)
 		{
 		case vl::glr::json::JsonLiteralValue::False:
-			WriteString(L"False");
+			WriteString(vl::WString::Unmanaged(L"False"));
 			break;
 		case vl::glr::json::JsonLiteralValue::Null:
-			WriteString(L"Null");
+			WriteString(vl::WString::Unmanaged(L"Null"));
 			break;
 		case vl::glr::json::JsonLiteralValue::True:
-			WriteString(L"True");
+			WriteString(vl::WString::Unmanaged(L"True"));
 			break;
 		default:
 			WriteNull();
@@ -1911,13 +2066,13 @@ namespace vl::glr::json::json_visitor
 	}
 	void AstVisitor::PrintFields(JsonNumber* node)
 	{
-		BeginField(L"content");
+		BeginField(vl::WString::Unmanaged(L"content"));
 		WriteToken(node->content);
 		EndField();
 	}
 	void AstVisitor::PrintFields(JsonObject* node)
 	{
-		BeginField(L"fields");
+		BeginField(vl::WString::Unmanaged(L"fields"));
 		BeginArray();
 		for (auto&& listItem : node->fields)
 		{
@@ -1930,16 +2085,16 @@ namespace vl::glr::json::json_visitor
 	}
 	void AstVisitor::PrintFields(JsonObjectField* node)
 	{
-		BeginField(L"name");
+		BeginField(vl::WString::Unmanaged(L"name"));
 		WriteToken(node->name);
 		EndField();
-		BeginField(L"value");
+		BeginField(vl::WString::Unmanaged(L"value"));
 		Print(node->value.Obj());
 		EndField();
 	}
 	void AstVisitor::PrintFields(JsonString* node)
 	{
-		BeginField(L"content");
+		BeginField(vl::WString::Unmanaged(L"content"));
 		WriteToken(node->content);
 		EndField();
 	}
@@ -1952,7 +2107,7 @@ namespace vl::glr::json::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"Literal", node);
+		WriteType(vl::WString::Unmanaged(L"Literal"), node);
 		PrintFields(static_cast<JsonNode*>(node));
 		PrintFields(static_cast<JsonLiteral*>(node));
 		EndObject();
@@ -1966,7 +2121,7 @@ namespace vl::glr::json::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"String", node);
+		WriteType(vl::WString::Unmanaged(L"String"), node);
 		PrintFields(static_cast<JsonNode*>(node));
 		PrintFields(static_cast<JsonString*>(node));
 		EndObject();
@@ -1980,7 +2135,7 @@ namespace vl::glr::json::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"Number", node);
+		WriteType(vl::WString::Unmanaged(L"Number"), node);
 		PrintFields(static_cast<JsonNode*>(node));
 		PrintFields(static_cast<JsonNumber*>(node));
 		EndObject();
@@ -1994,7 +2149,7 @@ namespace vl::glr::json::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"Array", node);
+		WriteType(vl::WString::Unmanaged(L"Array"), node);
 		PrintFields(static_cast<JsonNode*>(node));
 		PrintFields(static_cast<JsonArray*>(node));
 		EndObject();
@@ -2008,7 +2163,7 @@ namespace vl::glr::json::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"Object", node);
+		WriteType(vl::WString::Unmanaged(L"Object"), node);
 		PrintFields(static_cast<JsonNode*>(node));
 		PrintFields(static_cast<JsonObject*>(node));
 		EndObject();
@@ -2037,7 +2192,7 @@ namespace vl::glr::json::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"ObjectField", node);
+		WriteType(vl::WString::Unmanaged(L"ObjectField"), node);
 		PrintFields(static_cast<JsonObjectField*>(node));
 		EndObject();
 	}
@@ -8114,28 +8269,28 @@ namespace vl::glr::xml::json_visitor
 {
 	void AstVisitor::PrintFields(XmlAttribute* node)
 	{
-		BeginField(L"name");
+		BeginField(vl::WString::Unmanaged(L"name"));
 		WriteToken(node->name);
 		EndField();
-		BeginField(L"value");
+		BeginField(vl::WString::Unmanaged(L"value"));
 		WriteToken(node->value);
 		EndField();
 	}
 	void AstVisitor::PrintFields(XmlCData* node)
 	{
-		BeginField(L"content");
+		BeginField(vl::WString::Unmanaged(L"content"));
 		WriteToken(node->content);
 		EndField();
 	}
 	void AstVisitor::PrintFields(XmlComment* node)
 	{
-		BeginField(L"content");
+		BeginField(vl::WString::Unmanaged(L"content"));
 		WriteToken(node->content);
 		EndField();
 	}
 	void AstVisitor::PrintFields(XmlDocument* node)
 	{
-		BeginField(L"prologs");
+		BeginField(vl::WString::Unmanaged(L"prologs"));
 		BeginArray();
 		for (auto&& listItem : node->prologs)
 		{
@@ -8145,13 +8300,13 @@ namespace vl::glr::xml::json_visitor
 		}
 		EndArray();
 		EndField();
-		BeginField(L"rootElement");
+		BeginField(vl::WString::Unmanaged(L"rootElement"));
 		Print(node->rootElement.Obj());
 		EndField();
 	}
 	void AstVisitor::PrintFields(XmlElement* node)
 	{
-		BeginField(L"attributes");
+		BeginField(vl::WString::Unmanaged(L"attributes"));
 		BeginArray();
 		for (auto&& listItem : node->attributes)
 		{
@@ -8161,13 +8316,13 @@ namespace vl::glr::xml::json_visitor
 		}
 		EndArray();
 		EndField();
-		BeginField(L"closingName");
+		BeginField(vl::WString::Unmanaged(L"closingName"));
 		WriteToken(node->closingName);
 		EndField();
-		BeginField(L"name");
+		BeginField(vl::WString::Unmanaged(L"name"));
 		WriteToken(node->name);
 		EndField();
-		BeginField(L"subNodes");
+		BeginField(vl::WString::Unmanaged(L"subNodes"));
 		BeginArray();
 		for (auto&& listItem : node->subNodes)
 		{
@@ -8180,7 +8335,7 @@ namespace vl::glr::xml::json_visitor
 	}
 	void AstVisitor::PrintFields(XmlInstruction* node)
 	{
-		BeginField(L"attributes");
+		BeginField(vl::WString::Unmanaged(L"attributes"));
 		BeginArray();
 		for (auto&& listItem : node->attributes)
 		{
@@ -8190,7 +8345,7 @@ namespace vl::glr::xml::json_visitor
 		}
 		EndArray();
 		EndField();
-		BeginField(L"name");
+		BeginField(vl::WString::Unmanaged(L"name"));
 		WriteToken(node->name);
 		EndField();
 	}
@@ -8199,7 +8354,7 @@ namespace vl::glr::xml::json_visitor
 	}
 	void AstVisitor::PrintFields(XmlText* node)
 	{
-		BeginField(L"content");
+		BeginField(vl::WString::Unmanaged(L"content"));
 		WriteToken(node->content);
 		EndField();
 	}
@@ -8212,7 +8367,7 @@ namespace vl::glr::xml::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"Text", node);
+		WriteType(vl::WString::Unmanaged(L"Text"), node);
 		PrintFields(static_cast<XmlNode*>(node));
 		PrintFields(static_cast<XmlText*>(node));
 		EndObject();
@@ -8226,7 +8381,7 @@ namespace vl::glr::xml::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"CData", node);
+		WriteType(vl::WString::Unmanaged(L"CData"), node);
 		PrintFields(static_cast<XmlNode*>(node));
 		PrintFields(static_cast<XmlCData*>(node));
 		EndObject();
@@ -8240,7 +8395,7 @@ namespace vl::glr::xml::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"Comment", node);
+		WriteType(vl::WString::Unmanaged(L"Comment"), node);
 		PrintFields(static_cast<XmlNode*>(node));
 		PrintFields(static_cast<XmlComment*>(node));
 		EndObject();
@@ -8254,7 +8409,7 @@ namespace vl::glr::xml::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"Element", node);
+		WriteType(vl::WString::Unmanaged(L"Element"), node);
 		PrintFields(static_cast<XmlNode*>(node));
 		PrintFields(static_cast<XmlElement*>(node));
 		EndObject();
@@ -8268,7 +8423,7 @@ namespace vl::glr::xml::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"Instruction", node);
+		WriteType(vl::WString::Unmanaged(L"Instruction"), node);
 		PrintFields(static_cast<XmlNode*>(node));
 		PrintFields(static_cast<XmlInstruction*>(node));
 		EndObject();
@@ -8282,7 +8437,7 @@ namespace vl::glr::xml::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"Document", node);
+		WriteType(vl::WString::Unmanaged(L"Document"), node);
 		PrintFields(static_cast<XmlNode*>(node));
 		PrintFields(static_cast<XmlDocument*>(node));
 		EndObject();
@@ -8311,7 +8466,7 @@ namespace vl::glr::xml::json_visitor
 			return;
 		}
 		BeginObject();
-		WriteType(L"Attribute", node);
+		WriteType(vl::WString::Unmanaged(L"Attribute"), node);
 		PrintFields(static_cast<XmlAttribute*>(node));
 		EndObject();
 	}
