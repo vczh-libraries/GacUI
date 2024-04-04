@@ -22,7 +22,7 @@ UnitTestRemoteProtocol
 	public:
 		// both hitTestResult and element could be nullptr
 		Nullable<INativeWindowListener::HitTestResult>		hitTestResult;
-		Nullable<ElementDescVariantStrict>					element;
+		Nullable<ElementDescVariant>						element;
 		Rect												bounds;
 		Rect												validArea;
 		DomList												children;
@@ -253,6 +253,11 @@ UnitTestRemoteProtocol
 			return this->createdImages;
 		}
 
+		const auto& GetLoggedCreatedElements()
+		{
+			return this->createdElements;
+		}
+
 		const auto& GetLoggedRenderingResults()
 		{
 			return loggedRenderingResults;
@@ -273,6 +278,31 @@ UnitTestRemoteProtocol
 				fieldImages->name.value = WString::Unmanaged(L"Images");
 				fieldImages->value = arrayImages;
 				log->fields.Add(fieldImages);
+			}
+			{
+				auto arrayElements = Ptr(new glr::json::JsonArray);
+				for (auto [id, typeDescPair] : GetLoggedCreatedElements())
+				{
+					auto nodeElement = Ptr(new glr::json::JsonObject);
+					{
+						auto fieldId = Ptr(new glr::json::JsonObjectField);
+						fieldId->name.value = WString::Unmanaged(L"Id");
+						fieldId->value = remoteprotocol::ConvertJsonToCustomType(id);
+						nodeElement->fields.Add(fieldId);
+					}
+					{
+						auto fieldType = Ptr(new glr::json::JsonObjectField);
+						fieldType->name.value = WString::Unmanaged(L"Type");
+						fieldType->value = remoteprotocol::ConvertJsonToCustomType(typeDescPair.key);
+						nodeElement->fields.Add(fieldType);
+					}
+					arrayElements->items.Add(nodeElement);
+				}
+
+				auto fieldElements = Ptr(new glr::json::JsonObjectField);
+				fieldElements->name.value = WString::Unmanaged(L"Elements");
+				fieldElements->value = arrayElements;
+				log->fields.Add(fieldElements);
 			}
 			{
 				auto arrayFrames = Ptr(new glr::json::JsonArray);

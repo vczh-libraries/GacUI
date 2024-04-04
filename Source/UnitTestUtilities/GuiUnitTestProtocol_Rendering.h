@@ -28,11 +28,6 @@ UnitTestRemoteProtocol
 		remoteprotocol::ElementDesc_ImageFrame\
 
 	using ElementDescVariant = Variant<
-		remoteprotocol::RendererType,
-		GACUI_REMOTEPROTOCOL_ELEMENTDESC_TYPES
-		>;
-
-	using ElementDescVariantStrict = Variant<
 		GACUI_REMOTEPROTOCOL_ELEMENTDESC_TYPES
 		>;
 
@@ -48,14 +43,14 @@ UnitTestRemoteProtocol
 	struct UnitTestRenderingElement
 	{
 		remoteprotocol::ElementRendering		rendering;
-		ElementDescVariantStrict				desc;
+		ElementDescVariant						desc;
 
 		UnitTestRenderingElement(const UnitTestRenderingElement&) = default;
 		UnitTestRenderingElement(UnitTestRenderingElement&&) = default;
 		UnitTestRenderingElement& operator=(const UnitTestRenderingElement&) = default;
 		UnitTestRenderingElement& operator=(UnitTestRenderingElement&&) = default;
 
-		UnitTestRenderingElement(remoteprotocol::ElementRendering _rendering, ElementDescVariantStrict _desc)
+		UnitTestRenderingElement(remoteprotocol::ElementRendering _rendering, ElementDescVariant _desc)
 			: rendering(std::move(_rendering))
 			, desc(std::move(_desc))
 		{
@@ -76,7 +71,8 @@ UnitTestRemoteProtocol
 	template<typename TProtocol>
 	class UnitTestRemoteProtocol_Rendering : public TProtocol
 	{
-		using ElementDescMap = collections::Dictionary<vint, ElementDescVariant>;
+		using ElementTypeDescPair = collections::Pair<remoteprotocol::RendererType, Nullable<ElementDescVariant>>;
+		using ElementDescMap = collections::Dictionary<vint, ElementTypeDescPair>;
 		using ImageMetadataMap = collections::Dictionary<vint, remoteprotocol::ImageMetadata>;
 		using CommandList = UnitTestRenderingCommandList;
 		using CommandListRef = UnitTestRenderingCommandListRef;
@@ -132,8 +128,9 @@ IGuiRemoteProtocolMessages (Rendering)
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering<TProtocol>::RequestRendererRenderElement(const ElementRendering&)#"
 			vint index = createdElements.Keys().IndexOf(arguments.id);
 			CHECK_ERROR(index != -1, ERROR_MESSAGE_PREFIX L"Renderer with the specified id has not been created.");
-			auto&& element = createdElements.Values()[index];
-			element.Apply(Overloading(
+			auto&& nullableDesc = createdElements.Values()[index].value;
+			CHECK_ERROR(nullableDesc, ERROR_MESSAGE_PREFIX L"Renderer with the specified id has not been updated after created.");
+			nullableDesc.Value().Apply(Overloading(
 				[](remoteprotocol::RendererType)
 				{
 					CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Renderer with the specified id has not been updated after created.");
@@ -162,7 +159,7 @@ IGuiRemoteProtocolMessages (Elements)
 				for (auto creation : *arguments.Obj())
 				{
 					CHECK_ERROR(!createdElements.Keys().Contains(creation.id), ERROR_MESSAGE_PREFIX L"Renderer with the specified id has been created.");
-					createdElements.Add(creation.id, creation.type);
+					createdElements.Add(creation.id, { creation.type,Nullable<ElementDescVariant>() });
 				}
 			}
 #undef ERROR_MESSAGE_PREFIX
@@ -188,26 +185,9 @@ IGuiRemoteProtocolMessages (Elements)
 			vint index = createdElements.Keys().IndexOf(arguments.id);
 			CHECK_ERROR(index != -1, emWrongId);
 
-			auto& element = const_cast<collections::List<ElementDescVariant>&>(createdElements.Values())[index];
-			{
-				if (auto rendererType = element.TryGet<remoteprotocol::RendererType>())
-				{
-					if (*rendererType == RendererType)
-					{
-						element = arguments;
-						return;
-					}
-				}
-			}
-			{
-				if (auto desc = element.TryGet<TElementDesc>())
-				{
-					*desc = arguments;
-					return;
-				}
-			}
-
-			CHECK_FAIL(emWrongType);
+			auto& typeDescPair = const_cast<collections::List<ElementTypeDescPair>&>(createdElements.Values())[index];
+			CHECK_ERROR(typeDescPair.key == RendererType, emWrongType);
+			typeDescPair.value = arguments;
 		}
 
 #define REQUEST_RENDERER_UPDATE_ELEMENT2(ARGUMENTS, RENDERER_TYPE)\
@@ -391,19 +371,19 @@ IGuiRemoteProtocolMessages (Elements - SolidLabel)
 				vint index = createdElements.Keys().IndexOf(element.id);
 				CHECK_ERROR(index != -1, ERROR_MESSAGE_PREFIX L"Renderer with the specified id has not been created.");
 
-				auto&& origin = createdElements.Values()[index];
-				if (auto rendererType = origin.TryGet<remoteprotocol::RendererType>())
+				auto [rendererType, nullableDesc] = createdElements.Values()[index];
+				CHECK_ERROR(rendererType == remoteprotocol::RendererType::SolidLabel, ERROR_MESSAGE_PREFIX L"Renderer with the specified id is not of the expected type.");
+				if (nullableDesc)
 				{
-					CHECK_ERROR(*rendererType == remoteprotocol::RendererType::SolidLabel, ERROR_MESSAGE_PREFIX L"Renderer with the specified id is not of the expected type.");
-					if (!element.font) element.font = FontProperties();
-					if (!element.text) element.text = WString::Empty;
-				}
-				else
-				{
-					auto solidLabel = origin.TryGet<remoteprotocol::ElementDesc_SolidLabel>();
+					auto solidLabel = nullableDesc.Value().TryGet<remoteprotocol::ElementDesc_SolidLabel>();
 					CHECK_ERROR(solidLabel, ERROR_MESSAGE_PREFIX L"Renderer with the specified id is not of the expected type.");
 					if (!element.font) element.font = solidLabel->font;
 					if (!element.text) element.text = solidLabel->text;
+				}
+				else
+				{
+					if (!element.font) element.font = FontProperties();
+					if (!element.text) element.text = WString::Empty;
 				}
 			}
 			REQUEST_RENDERER_UPDATE_ELEMENT2(element, remoteprotocol::RendererType::SolidLabel);
