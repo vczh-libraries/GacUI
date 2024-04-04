@@ -74,6 +74,11 @@ UnitTestRemoteProtocol
 			}
 			return jsonDom;
 		}
+
+		void LoadFromJson(const collections::Dictionary<vint, remoteprotocol::RendererType>& elementTypes, Ptr<glr::json::JsonObject> jsonDom)
+		{
+			CHECK_FAIL(L"Not Implemented!");
+		}
 	};
 	
 	template<typename TProtocol>
@@ -253,11 +258,6 @@ UnitTestRemoteProtocol
 			return this->createdImages;
 		}
 
-		const auto& GetLoggedCreatedElements()
-		{
-			return this->createdElements;
-		}
-
 		const auto& GetLoggedRenderingResults()
 		{
 			return loggedRenderingResults;
@@ -281,19 +281,19 @@ UnitTestRemoteProtocol
 			}
 			{
 				auto arrayElements = Ptr(new glr::json::JsonArray);
-				for (auto [id, typeDescPair] : GetLoggedCreatedElements())
+				for (auto [id, typeDescPair] : this->createdElements)
 				{
 					auto nodeElement = Ptr(new glr::json::JsonObject);
 					{
 						auto fieldId = Ptr(new glr::json::JsonObjectField);
-						fieldId->name.value = WString::Unmanaged(L"Id");
-						fieldId->value = remoteprotocol::ConvertJsonToCustomType(id);
+						fieldId->name.value = WString::Unmanaged(L"id");
+						fieldId->value = remoteprotocol::ConvertCustomTypeToJson(id);
 						nodeElement->fields.Add(fieldId);
 					}
 					{
 						auto fieldType = Ptr(new glr::json::JsonObjectField);
-						fieldType->name.value = WString::Unmanaged(L"Type");
-						fieldType->value = remoteprotocol::ConvertJsonToCustomType(typeDescPair.key);
+						fieldType->name.value = WString::Unmanaged(L"type");
+						fieldType->value = remoteprotocol::ConvertCustomTypeToJson(typeDescPair.key);
 						nodeElement->fields.Add(fieldType);
 					}
 					arrayElements->items.Add(nodeElement);
