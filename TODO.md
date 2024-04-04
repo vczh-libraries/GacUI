@@ -61,7 +61,7 @@
   - GacUI  
     - `bool controllerUnrelatedPlugins` and `bool controllerRelatedPlugins` added to `IGuiPlugin`
     - Check GacUI \ GacUI Components \ (compositions | Controls) and fill missing items
-  - Remove `MakePtr` from documents.
+  - Fix `MakePtr` from sample code in documents.
 
 ## Release Milestone (1.2.11.0)
 
