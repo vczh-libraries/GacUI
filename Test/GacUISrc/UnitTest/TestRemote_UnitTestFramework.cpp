@@ -7,7 +7,6 @@
 
 using namespace vl;
 using namespace vl::stream;
-using namespace vl::glr::json;
 using namespace vl::presentation;
 using namespace vl::presentation::controls;
 using namespace vl::presentation::unittest;
@@ -40,14 +39,7 @@ TEST_FILE
 
 			GetApplication()->Run(&window);
 			theme::UnregisterTheme(darkskinTheme->Name);
-
-			JsonFormatting formatting;
-			formatting.spaceAfterColon = true;
-			formatting.spaceAfterComma = true;
-			formatting.crlf = true;
-			formatting.compact = true;
-			auto textLog = JsonToString(protocol->GetLogAsJson(), formatting);
 		});
-		GacUIUnitTest_Start();
+		GacUIUnitTest_Start(WString::Unmanaged(L"UnitTestFramework_HelloWorld"));
 	});
 }

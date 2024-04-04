@@ -87,17 +87,20 @@ namespace hosted_window_manager_tests
 		return L"../../Resources/HostedWindowManagerTests";
 	#endif
 	}
-	
-	WString GetTestOutputPath()
+}
+
+namespace unittest_framework_tests
+{
+	WString GetTestSnapshotPath()
 	{
 	#if defined VCZH_MSVC
 	#ifdef _WIN64
-		return GetExePath() + L"..\\..\\..\\Output\\HostedWindowManagerTests";
+		return GetExePath() + L"..\\..\\..\\Resources\\UnitTestSnapshots";
 	#else
-		return GetExePath() + L"..\\..\\Output\\HostedWindowManagerTests";
+		return GetExePath() + L"..\\..\\Resources\\UnitTestSnapshots";
 	#endif
 	#elif defined VCZH_GCC
-		return L"../../Output/HostedWindowManagerTests";
+		return L"../../Resources/UnitTestSnapshots";
 	#endif
 	}
 }
@@ -107,13 +110,6 @@ TEST_FILE
 {
 	{
 		Folder folder(compiler_error_tests::GetTestOutputPath());
-		if (!folder.Exists())
-		{
-			TEST_CASE_ASSERT(folder.Create(true) == true);
-		}
-	}
-	{
-		Folder folder(hosted_window_manager_tests::GetTestOutputPath());
 		if (!folder.Exists())
 		{
 			TEST_CASE_ASSERT(folder.Create(true) == true);
@@ -147,12 +143,22 @@ void SetGuiMainProxy(const Func<void()>& proxy)
 	}
 }
 
+template<typename T>
+int UnitTestMain(int argc, T* argv[])
+{
+	UnitTestFrameworkConfig config;
+	config.snapshotFolder = unittest_framework_tests::GetTestSnapshotPath();
+
+	GacUIUnitTest_Initialize(&config);
+	int result = UnitTest::RunAndDisposeTests(argc, argv);
+	GacUIUnitTest_Finalize();
+	return result;
+}
+
 #if defined VCZH_MSVC
 int wmain(int argc, wchar_t* argv[])
 {
-	GacUIUnitTest_Initialize();
-	int result = UnitTest::RunAndDisposeTests(argc, argv);
-	GacUIUnitTest_Finalize();
+	int result = UnitTestMain(argc, argv);
 #if defined VCZH_CHECK_MEMORY_LEAKS
 	_CrtDumpMemoryLeaks();
 #endif
@@ -161,9 +167,6 @@ int wmain(int argc, wchar_t* argv[])
 #elif defined VCZH_GCC
 int main(int argc, char* argv[])
 {
-	GacUIUnitTest_Initialize();
-	int result = UnitTest::RunAndDisposeTests(argc, argv);
-	GacUIUnitTest_Finalize();
-	return result;
+	return UnitTestMain(argc, argv);
 }
 #endif

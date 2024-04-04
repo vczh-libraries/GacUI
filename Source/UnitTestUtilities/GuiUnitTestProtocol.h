@@ -14,6 +14,22 @@ Unit Test Snapsnot and other Utilities
 
 namespace vl::presentation::unittest
 {
+
+/***********************************************************************
+UnitTestFrameworkConfig
+***********************************************************************/
+
+	struct UnitTestFrameworkConfig
+	{
+		filesystem::FilePath					snapshotFolder;
+	};
+
+	extern const UnitTestFrameworkConfig&		GetUnitTestFrameworkConfig();
+
+/***********************************************************************
+UnitTestRemoteProtocol
+***********************************************************************/
+
 	template<typename TBase, template<typename> class ...TMixins>
 	struct Mixin;
 
@@ -40,7 +56,8 @@ namespace vl::presentation::unittest
 	class UnitTestRemoteProtocol : public UnitTestRemoteProtocolFeatures
 	{
 	protected:
-
+		const UnitTestFrameworkConfig&		frameworkConfig;
+		WString								appName;
 		collections::List<Func<void()>>		processRemoteEvents;
 		vint								nextEventIndex = 0;
 		bool								stopped = false;
@@ -48,8 +65,10 @@ namespace vl::presentation::unittest
 
 	public:
 
-		UnitTestRemoteProtocol(UnitTestScreenConfig _globalConfig)
+		UnitTestRemoteProtocol(const WString& _appName, UnitTestScreenConfig _globalConfig)
 			: UnitTestRemoteProtocolFeatures(_globalConfig)
+			, frameworkConfig(GetUnitTestFrameworkConfig())
+			, appName(_appName)
 		{
 		}
 
