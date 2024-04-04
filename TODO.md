@@ -62,6 +62,8 @@
     - `bool controllerUnrelatedPlugins` and `bool controllerRelatedPlugins` added to `IGuiPlugin`
     - Check GacUI \ GacUI Components \ (compositions | Controls) and fill missing items
   - Fix `MakePtr` from sample code in documents.
+  - Fix DSL page.
+  - Check if there is any link to /home or other deprecated pages.
 
 ## Release Milestone (1.2.11.0)
 
