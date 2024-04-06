@@ -1,4 +1,4 @@
-﻿================================(1/2)================================
+﻿================================(1/3)================================
 module <instance>gaclib_controls::UnitTestSnapshotViewerWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -44,14 +44,14 @@ namespace gaclib_controls
 
         prop Strings : ::gaclib_controls::IUnitTestSnapshotViewerStringsStrings^{GetStrings, SetStrings : StringsChanged}
 
-        func GetViewModel() : (presentation::IColorDialogViewModel^)
+        func GetViewModel() : (gaclib_controls::IUnitTestSnapshotViewerViewModel^)
         {
             raise "Not Implemented";
         }
 
-        prop ViewModel : presentation::IColorDialogViewModel^{GetViewModel}
+        prop ViewModel : gaclib_controls::IUnitTestSnapshotViewerViewModel^{GetViewModel}
 
-        new* (<ctor-parameter>ViewModel : presentation::IColorDialogViewModel^)
+        new* (<ctor-parameter>ViewModel : gaclib_controls::IUnitTestSnapshotViewerViewModel^)
             :::presentation::controls::GuiWindow((cast (::presentation::theme::ThemeName) (cast (::system::UInt64) 0)))
         {
             raise "Not Implemented";
@@ -64,7 +64,7 @@ namespace gaclib_controls
     }
 }
 
-================================(2/2)================================
+================================(2/3)================================
 module <localized-strings>gaclib_controls::UnitTestSnapshotViewerStrings;
 
 namespace gaclib_controls
@@ -124,6 +124,18 @@ namespace gaclib_controls
     static
     {
         ::gaclib_controls::UnitTestSnapshotViewerStrings::Install((cast (::system::Locale) "en-US"), UnitTestSnapshotViewerStrings::<ls_en-US>BuildStrings((cast (::system::Locale) "en-US")));
+    }
+}
+
+================================(3/3)================================
+module viewmodel;
+using system::*;
+using presentation::*;
+
+namespace gaclib_controls
+{
+    interface IUnitTestSnapshotViewerViewModel
+    {
     }
 }
 

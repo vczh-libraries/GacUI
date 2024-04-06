@@ -1,4 +1,4 @@
-﻿================================(1/3)================================
+﻿================================(1/4)================================
 module <constructor>gaclib_controls::UnitTestSnapshotViewerWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -24,10 +24,10 @@ namespace gaclib_controls
     class UnitTestSnapshotViewerWindowConstructor
     {
         @cpp:Protected
-        var self : ::gaclib_controls::UnitTestSnapshotViewerWindow* = null of (::gaclib_controls::UnitTestSnapshotViewerWindow*);
+        var ViewModel : ::gaclib_controls::IUnitTestSnapshotViewerViewModel^ = null of (::gaclib_controls::IUnitTestSnapshotViewerViewModel^);
 
         @cpp:Protected
-        var ViewModel : ::presentation::IColorDialogViewModel^ = null of (::presentation::IColorDialogViewModel^);
+        var self : ::gaclib_controls::UnitTestSnapshotViewerWindow* = null of (::gaclib_controls::UnitTestSnapshotViewerWindow*);
 
         @cpp:Protected
         func <gaclib_controls-UnitTestSnapshotViewerWindow>Initialize(<this> : ::gaclib_controls::UnitTestSnapshotViewerWindow*) : (::system::Void)
@@ -191,7 +191,7 @@ namespace gaclib_controls
     }
 }
 
-================================(2/3)================================
+================================(2/4)================================
 module <instance>gaclib_controls::UnitTestSnapshotViewerWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -238,16 +238,16 @@ namespace gaclib_controls
 
         prop Strings : ::gaclib_controls::IUnitTestSnapshotViewerStringsStrings^{GetStrings, SetStrings : StringsChanged}
 
-        var <parameter>ViewModel : presentation::IColorDialogViewModel^ = null of (::presentation::IColorDialogViewModel^);
+        var <parameter>ViewModel : gaclib_controls::IUnitTestSnapshotViewerViewModel^ = null of (::gaclib_controls::IUnitTestSnapshotViewerViewModel^);
 
-        func GetViewModel() : (presentation::IColorDialogViewModel^)
+        func GetViewModel() : (gaclib_controls::IUnitTestSnapshotViewerViewModel^)
         {
             return <parameter>ViewModel;
         }
 
-        prop ViewModel : presentation::IColorDialogViewModel^{GetViewModel}
+        prop ViewModel : gaclib_controls::IUnitTestSnapshotViewerViewModel^{GetViewModel}
 
-        new* (<ctor-parameter>ViewModel : presentation::IColorDialogViewModel^)
+        new* (<ctor-parameter>ViewModel : gaclib_controls::IUnitTestSnapshotViewerViewModel^)
             :::presentation::controls::GuiWindow(::presentation::theme::ThemeName::Window)
         {
             (<parameter>ViewModel = <ctor-parameter>ViewModel);
@@ -264,7 +264,7 @@ namespace gaclib_controls
     }
 }
 
-================================(3/3)================================
+================================(3/4)================================
 module <localized-strings>gaclib_controls::UnitTestSnapshotViewerStrings;
 
 namespace gaclib_controls
@@ -324,6 +324,18 @@ namespace gaclib_controls
     static
     {
         ::gaclib_controls::UnitTestSnapshotViewerStrings::Install((cast (::system::Locale) "en-US"), UnitTestSnapshotViewerStrings::<ls_en-US>BuildStrings((cast (::system::Locale) "en-US")));
+    }
+}
+
+================================(4/4)================================
+module viewmodel;
+using system::*;
+using presentation::*;
+
+namespace gaclib_controls
+{
+    interface IUnitTestSnapshotViewerViewModel
+    {
     }
 }
 

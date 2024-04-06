@@ -34,6 +34,7 @@ namespace vl_workflow_global
 namespace gaclib_controls
 {
 	class IUnitTestSnapshotViewerStringsStrings;
+	class IUnitTestSnapshotViewerViewModel;
 	class UnitTestSnapshotViewerStrings;
 	class UnitTestSnapshotViewerWindowConstructor;
 	class UnitTestSnapshotViewerWindow;
@@ -45,6 +46,13 @@ namespace gaclib_controls
 #endif
 	public:
 		virtual ::vl::WString WindowTitle() = 0;
+	};
+
+	class IUnitTestSnapshotViewerViewModel : public virtual ::vl::reflection::IDescriptable, public ::vl::reflection::Description<IUnitTestSnapshotViewerViewModel>
+	{
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<IUnitTestSnapshotViewerViewModel>;
+#endif
 	};
 
 	class UnitTestSnapshotViewerStrings : public ::vl::Object, public ::vl::reflection::Description<UnitTestSnapshotViewerStrings>
@@ -70,8 +78,8 @@ namespace gaclib_controls
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<UnitTestSnapshotViewerWindowConstructor>;
 #endif
 	protected:
+		::vl::Ptr<::gaclib_controls::IUnitTestSnapshotViewerViewModel> ViewModel;
 		::gaclib_controls::UnitTestSnapshotViewerWindow* self;
-		::vl::Ptr<::vl::presentation::IColorDialogViewModel> ViewModel;
 		void __vwsn_gaclib_controls_UnitTestSnapshotViewerWindow_Initialize(::gaclib_controls::UnitTestSnapshotViewerWindow* __vwsn_this_);
 	public:
 		UnitTestSnapshotViewerWindowConstructor();
@@ -92,9 +100,9 @@ namespace gaclib_controls
 		::vl::Ptr<::gaclib_controls::IUnitTestSnapshotViewerStringsStrings> GetStrings();
 		void SetStrings(::vl::Ptr<::gaclib_controls::IUnitTestSnapshotViewerStringsStrings> __vwsn_value_);
 		::vl::Event<void()> StringsChanged;
-		::vl::Ptr<::vl::presentation::IColorDialogViewModel> __vwsn_parameter_ViewModel;
-		::vl::Ptr<::vl::presentation::IColorDialogViewModel> GetViewModel();
-		UnitTestSnapshotViewerWindow(::vl::Ptr<::vl::presentation::IColorDialogViewModel> __vwsn_ctor_parameter_ViewModel);
+		::vl::Ptr<::gaclib_controls::IUnitTestSnapshotViewerViewModel> __vwsn_parameter_ViewModel;
+		::vl::Ptr<::gaclib_controls::IUnitTestSnapshotViewerViewModel> GetViewModel();
+		UnitTestSnapshotViewerWindow(::vl::Ptr<::gaclib_controls::IUnitTestSnapshotViewerViewModel> __vwsn_ctor_parameter_ViewModel);
 		~UnitTestSnapshotViewerWindow();
 	};
 

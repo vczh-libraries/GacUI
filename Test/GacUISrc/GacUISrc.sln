@@ -76,6 +76,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Source_GacUI_UnitTest_Contr
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Source_GacUI_UnitTest_Reflection", "Source_GacUI_UnitTest_Reflection\Source_GacUI_UnitTest_Reflection.vcxitems", "{A360296D-671B-4A05-8F67-4EBC441CECA8}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "UnitTestViewer", "UnitTestViewer\UnitTestViewer.vcxproj", "{07CE9594-F378-4175-B287-6DEB74F16C1C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -188,6 +190,14 @@ Global
 		{75EAD373-2BAE-4F55-9CD7-CF7AE0F8F140}.Release|Win32.Build.0 = Release|Win32
 		{75EAD373-2BAE-4F55-9CD7-CF7AE0F8F140}.Release|x64.ActiveCfg = Release|x64
 		{75EAD373-2BAE-4F55-9CD7-CF7AE0F8F140}.Release|x64.Build.0 = Release|x64
+		{07CE9594-F378-4175-B287-6DEB74F16C1C}.Debug|Win32.ActiveCfg = Debug|Win32
+		{07CE9594-F378-4175-B287-6DEB74F16C1C}.Debug|Win32.Build.0 = Debug|Win32
+		{07CE9594-F378-4175-B287-6DEB74F16C1C}.Debug|x64.ActiveCfg = Debug|x64
+		{07CE9594-F378-4175-B287-6DEB74F16C1C}.Debug|x64.Build.0 = Debug|x64
+		{07CE9594-F378-4175-B287-6DEB74F16C1C}.Release|Win32.ActiveCfg = Release|Win32
+		{07CE9594-F378-4175-B287-6DEB74F16C1C}.Release|Win32.Build.0 = Release|Win32
+		{07CE9594-F378-4175-B287-6DEB74F16C1C}.Release|x64.ActiveCfg = Release|x64
+		{07CE9594-F378-4175-B287-6DEB74F16C1C}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -226,6 +236,9 @@ Global
 		SolutionGuid = {23701A6D-5A6A-4396-9B46-EC3D6DD7B20F}
 	EndGlobalSection
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		Generated_DarkSkin\Generated_DarkSkin.vcxitems*{07ce9594-f378-4175-b287-6deb74f16c1c}*SharedItemsImports = 4
+		Source_GacUI_UnitTest_Controls\Source_GacUI_UnitTest_Controls.vcxitems*{07ce9594-f378-4175-b287-6deb74f16c1c}*SharedItemsImports = 4
+		Source_GacUI_Utilities_Controls\Source_GacUI_Utilities_Controls.vcxitems*{07ce9594-f378-4175-b287-6deb74f16c1c}*SharedItemsImports = 4
 		Source_GacUI_Compiler\Source_GacUI_Compiler.vcxitems*{16240420-5988-4669-afee-ffa3665de80f}*SharedItemsImports = 9
 		Generated_DarkSkin\Generated_DarkSkin.vcxitems*{1f147133-fc29-4ac4-818f-a5c48a7c4173}*SharedItemsImports = 4
 		Generated_FullControlTest\Generated_FullControlTest.vcxitems*{1f147133-fc29-4ac4-818f-a5c48a7c4173}*SharedItemsImports = 4

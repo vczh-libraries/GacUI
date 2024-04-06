@@ -17,10 +17,26 @@
     </LocalizedStrings>
   </LocalizedStrings>
 
+  <Script name="UnitTestSnapshotViewerViewModel">
+    <Workflow><![CDATA[
+    module viewmodel;
+
+    using system::*;
+    using presentation::*;
+
+    namespace gaclib_controls
+    {
+      interface IUnitTestSnapshotViewerViewModel
+      {
+      }
+    }
+    ]]></Workflow>
+  </Script>
+
   <Instance name="UnitTestSnapshotViewerWindowResource">
     <Instance ref.CodeBehind="false" ref.Class="gaclib_controls::UnitTestSnapshotViewerWindow" xmlns:g="gaclib_controls::*">
       <ref.LocalizedStrings Name="Strings" Class="gaclib_controls::UnitTestSnapshotViewerStrings" Default="true"/>
-      <ref.Parameter Name="ViewModel" Class="presentation::IColorDialogViewModel"/>
+      <ref.Parameter Name="ViewModel" Class="gaclib_controls::IUnitTestSnapshotViewerViewModel"/>
       <Window
           ref.Name = "self"
           Text-str="WindowTitle()"

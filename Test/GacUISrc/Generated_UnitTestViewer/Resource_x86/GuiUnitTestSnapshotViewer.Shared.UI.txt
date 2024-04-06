@@ -1,4 +1,4 @@
-﻿================================(1/1)================================
+﻿================================(1/2)================================
 module <localized-strings>gaclib_controls::UnitTestSnapshotViewerStrings;
 
 namespace gaclib_controls
@@ -58,6 +58,18 @@ namespace gaclib_controls
     static
     {
         ::gaclib_controls::UnitTestSnapshotViewerStrings::Install((cast (::system::Locale) "en-US"), UnitTestSnapshotViewerStrings::<ls_en-US>BuildStrings((cast (::system::Locale) "en-US")));
+    }
+}
+
+================================(2/2)================================
+module viewmodel;
+using system::*;
+using presentation::*;
+
+namespace gaclib_controls
+{
+    interface IUnitTestSnapshotViewerViewModel
+    {
     }
 }
 

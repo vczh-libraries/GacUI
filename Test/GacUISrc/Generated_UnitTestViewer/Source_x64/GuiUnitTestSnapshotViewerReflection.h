@@ -37,6 +37,7 @@ namespace vl
 		{
 #ifndef VCZH_DEBUG_NO_REFLECTION
 			DECL_TYPE_INFO(::gaclib_controls::IUnitTestSnapshotViewerStringsStrings)
+			DECL_TYPE_INFO(::gaclib_controls::IUnitTestSnapshotViewerViewModel)
 			DECL_TYPE_INFO(::gaclib_controls::UnitTestSnapshotViewerStrings)
 			DECL_TYPE_INFO(::gaclib_controls::UnitTestSnapshotViewerWindow)
 			DECL_TYPE_INFO(::gaclib_controls::UnitTestSnapshotViewerWindowConstructor)
@@ -49,6 +50,9 @@ namespace vl
 					INVOKEGET_INTERFACE_PROXY_NOPARAMS(WindowTitle);
 				}
 			END_INTERFACE_PROXY(::gaclib_controls::IUnitTestSnapshotViewerStringsStrings)
+
+			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(::gaclib_controls::IUnitTestSnapshotViewerViewModel)
+			END_INTERFACE_PROXY(::gaclib_controls::IUnitTestSnapshotViewerViewModel)
 #endif
 #endif
 

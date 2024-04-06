@@ -31,6 +31,7 @@ namespace vl
 		{
 #ifndef VCZH_DEBUG_NO_REFLECTION
 			IMPL_CPP_TYPE_INFO(gaclib_controls::IUnitTestSnapshotViewerStringsStrings)
+			IMPL_CPP_TYPE_INFO(gaclib_controls::IUnitTestSnapshotViewerViewModel)
 			IMPL_CPP_TYPE_INFO(gaclib_controls::UnitTestSnapshotViewerStrings)
 			IMPL_CPP_TYPE_INFO(gaclib_controls::UnitTestSnapshotViewerWindow)
 			IMPL_CPP_TYPE_INFO(gaclib_controls::UnitTestSnapshotViewerWindowConstructor)
@@ -41,6 +42,10 @@ namespace vl
 				CLASS_MEMBER_BASE(::vl::reflection::IDescriptable)
 				CLASS_MEMBER_METHOD(WindowTitle, NO_PARAMETER)
 			END_INTERFACE_MEMBER(::gaclib_controls::IUnitTestSnapshotViewerStringsStrings)
+
+			BEGIN_INTERFACE_MEMBER(::gaclib_controls::IUnitTestSnapshotViewerViewModel)
+				CLASS_MEMBER_BASE(::vl::reflection::IDescriptable)
+			END_INTERFACE_MEMBER(::gaclib_controls::IUnitTestSnapshotViewerViewModel)
 
 			BEGIN_CLASS_MEMBER(::gaclib_controls::UnitTestSnapshotViewerStrings)
 				CLASS_MEMBER_BASE(::vl::reflection::DescriptableObject)
@@ -53,7 +58,7 @@ namespace vl
 			BEGIN_CLASS_MEMBER(::gaclib_controls::UnitTestSnapshotViewerWindow)
 				CLASS_MEMBER_BASE(::vl::presentation::controls::GuiWindow)
 				CLASS_MEMBER_BASE(::gaclib_controls::UnitTestSnapshotViewerWindowConstructor)
-				CLASS_MEMBER_CONSTRUCTOR(::gaclib_controls::UnitTestSnapshotViewerWindow*(::vl::Ptr<::vl::presentation::IColorDialogViewModel>), { L"__vwsn_ctor_parameter_ViewModel" })
+				CLASS_MEMBER_CONSTRUCTOR(::gaclib_controls::UnitTestSnapshotViewerWindow*(::vl::Ptr<::gaclib_controls::IUnitTestSnapshotViewerViewModel>), { L"__vwsn_ctor_parameter_ViewModel" })
 				CLASS_MEMBER_METHOD(GetStrings, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(GetViewModel, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(SetStrings, { L"__vwsn_value_" })
@@ -79,6 +84,7 @@ namespace vl
 				void Load(ITypeManager* manager)
 				{
 					ADD_TYPE_INFO(::gaclib_controls::IUnitTestSnapshotViewerStringsStrings)
+					ADD_TYPE_INFO(::gaclib_controls::IUnitTestSnapshotViewerViewModel)
 					ADD_TYPE_INFO(::gaclib_controls::UnitTestSnapshotViewerStrings)
 					ADD_TYPE_INFO(::gaclib_controls::UnitTestSnapshotViewerWindow)
 					ADD_TYPE_INFO(::gaclib_controls::UnitTestSnapshotViewerWindowConstructor)
