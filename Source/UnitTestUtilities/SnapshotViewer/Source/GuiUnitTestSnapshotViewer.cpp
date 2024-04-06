@@ -301,8 +301,8 @@ Class (::gaclib_controls::UnitTestSnapshotViewerWindowConstructor)
 	}
 
 	UnitTestSnapshotViewerWindowConstructor::UnitTestSnapshotViewerWindowConstructor()
-		: ViewModel(::vl::Ptr<::gaclib_controls::IUnitTestSnapshotViewerViewModel>())
-		, self(static_cast<::gaclib_controls::UnitTestSnapshotViewerWindow*>(nullptr))
+		: self(static_cast<::gaclib_controls::UnitTestSnapshotViewerWindow*>(nullptr))
+		, ViewModel(::vl::Ptr<::gaclib_controls::IUnitTestSnapshotViewerViewModel>())
 	{
 	}
 

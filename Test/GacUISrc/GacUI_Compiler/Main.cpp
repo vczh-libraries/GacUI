@@ -156,7 +156,7 @@ GUI_REGISTER_PLUGIN(GuiReflectionPlugin)
 Compiler
 ***********************************************************************/
 
-// #define BUILD_FAKEDIALOG
+#define BUILD_FAKEDIALOG
 #define BUILD_UNITTESTVIEWER
 // #define BUILD_DARKSKIN
 // #define BUILD_FULLCONTROLTEST
@@ -191,7 +191,7 @@ void GuiMain()
 		(GetResourcePath() / L"../../Source/UnitTestUtilities/SnapshotViewer/Resource.xml"),
 		(GetResourcePath() / UNITTESTVIEWER_BINARY_FOLDER()),
 		(GetResourcePath() / UNITTESTVIEWER_SOURCE_FOLDER()),
-		false
+		true
 	));
 #endif
 
