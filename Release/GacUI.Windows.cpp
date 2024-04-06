@@ -2880,8 +2880,16 @@ int SetupWindowsDirect2DRendererInternal(bool hosted)
 	GuiHostedController* hostedController = nullptr;
 	StartWindowsNativeController(hInstance);
 	auto nativeController = GetWindowsNativeController();
-	if (hosted) hostedController = new GuiHostedController(nativeController);
-	SetNativeController(hostedController ? hostedController : nativeController);
+	if (hosted)
+	{
+		hostedController = new GuiHostedController(nativeController);
+		SetNativeController(hostedController);
+		SetHostedApplication(hostedController->GetHostedApplication());
+	}
+	else
+	{
+		SetNativeController(nativeController);
+	}
 
 	{
 		// install listener
@@ -2897,7 +2905,11 @@ int SetupWindowsDirect2DRendererInternal(bool hosted)
 
 	// destroy controller
 	SetNativeController(nullptr);
-	if (hostedController) delete hostedController;
+	if (hostedController)
+	{
+		SetHostedApplication(nullptr);
+		delete hostedController;
+	}
 	StopWindowsNativeController();
 	return 0;
 }
@@ -8628,8 +8640,16 @@ int SetupWindowsGDIRendererInternal(bool hosted)
 	GuiHostedController* hostedController = nullptr;
 	StartWindowsNativeController(hInstance);
 	auto nativeController = GetWindowsNativeController();
-	if (hosted) hostedController = new GuiHostedController(nativeController);
-	SetNativeController(hostedController ? hostedController : nativeController);
+	if (hosted)
+	{
+		hostedController = new GuiHostedController(nativeController);
+		SetNativeController(hostedController);
+		SetHostedApplication(hostedController->GetHostedApplication());
+	}
+	else
+	{
+		SetNativeController(nativeController);
+	}
 
 	{
 		// install listener
@@ -8645,7 +8665,11 @@ int SetupWindowsGDIRendererInternal(bool hosted)
 
 	// destroy controller
 	SetNativeController(nullptr);
-	if (hostedController) delete hostedController;
+	if (hostedController)
+	{
+		SetHostedApplication(nullptr);
+		delete hostedController;
+	}
 	StopWindowsNativeController();
 	return 0;
 }

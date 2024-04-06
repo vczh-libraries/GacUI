@@ -11,6 +11,1221 @@ DEVELOPER: Zihan Chen(vczh)
 #include "VlppRegex.h"
 
 /***********************************************************************
+.\GUIUNITTESTPROTOCOL_SHARED.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+Unit Test Snapsnot and other Utilities
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_GUIUNITTESTPROTOCOL_SHARED
+#define VCZH_PRESENTATION_GUIUNITTESTPROTOCOL_SHARED
+
+
+namespace vl::presentation::unittest
+{
+	struct WindowStyleConfig
+	{
+		WString						title;
+		bool						enabled = true;
+		bool						topMost = false;
+		bool						showInTaskBar = true;
+
+		bool						customFrameMode = false;
+		bool						maximizedBox = true;
+		bool						minimizedBox = true;
+		bool						border = true;
+		bool						sizeBox = true;
+		bool						iconVisible = true;
+		bool						titleBar = true;
+		bool						activated = false;
+
+		auto operator<=>(const WindowStyleConfig&) const = default;
+	};
+
+	struct UnitTestScreenConfig
+	{
+		using FontConfig = vl::presentation::remoteprotocol::FontConfig;
+		using ScreenConfig = vl::presentation::remoteprotocol::ScreenConfig;
+
+		WString						executablePath;
+		NativeMargin				customFramePadding;
+		FontConfig					fontConfig;
+		ScreenConfig				screenConfig;
+
+		void						FastInitialize(vint width, vint height, vint taskBarHeight = 0);
+	};
+
+	class UnitTestRemoteProtocolBase : public Object, public virtual IGuiRemoteProtocol
+	{
+	protected:
+		IGuiRemoteProtocolEvents*	events = nullptr;
+		UnitTestScreenConfig		globalConfig;
+
+	public:
+		UnitTestRemoteProtocolBase(UnitTestScreenConfig _globalConfig)
+			: globalConfig(_globalConfig)
+		{
+		}
+
+		IGuiRemoteProtocolEvents* GetEvents() const
+		{
+			return events;
+		}
+
+		const UnitTestScreenConfig& GetGlobalConfig() const
+		{
+			return globalConfig;
+		}
+
+/***********************************************************************
+IGuiRemoteProtocol
+***********************************************************************/
+
+		void Initialize(IGuiRemoteProtocolEvents* _events) override
+		{
+			events = _events;
+		}
+
+		WString GetExecutablePath() override
+		{
+			return globalConfig.executablePath;
+		}
+	};
+}
+
+#endif
+
+/***********************************************************************
+.\GUIUNITTESTPROTOCOL_IO.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+Unit Test Snapsnot and other Utilities
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_GUIUNITTESTPROTOCOL_IO
+#define VCZH_PRESENTATION_GUIUNITTESTPROTOCOL_IO
+
+
+namespace vl::presentation::unittest
+{
+	template<typename TProtocol>
+	class UnitTestRemoteProtocol_IO : public TProtocol
+	{
+		using GlobalShortcutKey = remoteprotocol::GlobalShortcutKey;
+		using GlobalShortcutKeyList = collections::List<GlobalShortcutKey>;
+	public:
+		bool						capturing = false;
+		GlobalShortcutKeyList		globalShortcutKeys;
+
+		template<typename ...TArgs>
+		UnitTestRemoteProtocol_IO(TArgs&& ...args)
+			: TProtocol(std::forward<TArgs&&>(args)...)
+		{
+		}
+
+/***********************************************************************
+IGuiRemoteProtocolMessages (IO)
+***********************************************************************/
+
+		void RequestIOUpdateGlobalShortcutKey(const Ptr<GlobalShortcutKeyList>& arguments) override
+		{
+			if (arguments)
+			{
+				CopyFrom(globalShortcutKeys, *arguments.Obj());
+			}
+			else
+			{
+				globalShortcutKeys.Clear();
+			}
+		}
+
+		void RequestIORequireCapture() override
+		{
+			capturing = true;
+		}
+
+		void RequestIOReleaseCapture() override
+		{
+			capturing = false;
+		}
+
+		void RequestIOIsKeyPressing(vint id, const VKEY& arguments) override
+		{
+			CHECK_FAIL(L"Not Implemented!");
+		}
+
+		void RequestIOIsKeyToggled(vint id, const VKEY& arguments) override
+		{
+			CHECK_FAIL(L"Not Implemented!");
+		}
+	};
+}
+
+#endif
+
+/***********************************************************************
+.\GUIUNITTESTPROTOCOL_MAINWINDOW.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+Unit Test Snapsnot and other Utilities
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_GUIUNITTESTPROTOCOL_MAINWINDOW
+#define VCZH_PRESENTATION_GUIUNITTESTPROTOCOL_MAINWINDOW
+
+
+namespace vl::presentation::unittest
+{
+	template<typename TProtocol>
+	class UnitTestRemoteProtocol_MainWindow : public TProtocol
+	{
+		using WindowSizingConfig = remoteprotocol::WindowSizingConfig;
+		using WindowShowing = remoteprotocol::WindowShowing;
+	public:
+		WindowSizingConfig			sizingConfig;
+		WindowStyleConfig			styleConfig;
+		NativeRect					lastRestoredSize;
+	
+		template<typename ...TArgs>
+		UnitTestRemoteProtocol_MainWindow(TArgs&& ...args)
+			: TProtocol(std::forward<TArgs&&>(args)...)
+		{
+			sizingConfig.bounds = { 0,0,0,0 };
+			sizingConfig.clientBounds = { 0,0,0,0 };
+			sizingConfig.customFramePadding = this->GetGlobalConfig().customFramePadding;
+			sizingConfig.sizeState = INativeWindow::Restored;
+		}
+
+/***********************************************************************
+IGuiRemoteProtocolMessages (Controller)
+***********************************************************************/
+	
+		void RequestControllerGetFontConfig(vint id) override
+		{
+			this->GetEvents()->RespondControllerGetFontConfig(id, this->GetGlobalConfig().fontConfig);
+		}
+	
+		void RequestControllerGetScreenConfig(vint id) override
+		{
+			this->GetEvents()->RespondControllerGetScreenConfig(id, this->GetGlobalConfig().screenConfig);
+		}
+
+/***********************************************************************
+IGuiRemoteProtocolMessages (Window)
+***********************************************************************/
+	
+		void RequestWindowGetBounds(vint id) override
+		{
+			this->GetEvents()->RespondWindowGetBounds(id, sizingConfig);
+		}
+	
+		void RequestWindowNotifySetTitle(const ::vl::WString& arguments) override
+		{
+			styleConfig.title = arguments;
+		}
+	
+		void RequestWindowNotifySetEnabled(const bool& arguments) override
+		{
+			styleConfig.enabled = arguments;
+		}
+	
+		void RequestWindowNotifySetTopMost(const bool& arguments) override
+		{
+			styleConfig.topMost = arguments;
+		}
+	
+		void RequestWindowNotifySetShowInTaskBar(const bool& arguments) override
+		{
+			styleConfig.showInTaskBar = arguments;
+		}
+	
+		void OnBoundsUpdated()
+		{
+			sizingConfig.clientBounds = sizingConfig.bounds;
+			if (sizingConfig.sizeState == INativeWindow::Restored)
+			{
+				lastRestoredSize = sizingConfig.bounds;
+			}
+			this->GetEvents()->OnWindowBoundsUpdated(sizingConfig);
+		}
+	
+		void RequestWindowNotifySetBounds(const NativeRect& arguments) override
+		{
+			sizingConfig.bounds = arguments;
+			OnBoundsUpdated();
+		}
+	
+		void RequestWindowNotifySetClientSize(const NativeSize& arguments) override
+		{
+			sizingConfig.bounds = { sizingConfig.bounds.LeftTop(), arguments };
+			OnBoundsUpdated();
+		}
+	
+		void RequestWindowNotifySetCustomFrameMode(const bool& arguments) override	{ styleConfig.customFrameMode = arguments;	this->GetEvents()->OnWindowBoundsUpdated(sizingConfig); }
+		void RequestWindowNotifySetMaximizedBox(const bool& arguments) override		{ styleConfig.maximizedBox = arguments;		this->GetEvents()->OnWindowBoundsUpdated(sizingConfig); }
+		void RequestWindowNotifySetMinimizedBox(const bool& arguments) override		{ styleConfig.minimizedBox = arguments;		this->GetEvents()->OnWindowBoundsUpdated(sizingConfig); }
+		void RequestWindowNotifySetBorder(const bool& arguments) override			{ styleConfig.border = arguments;			this->GetEvents()->OnWindowBoundsUpdated(sizingConfig); }
+		void RequestWindowNotifySetSizeBox(const bool& arguments) override			{ styleConfig.sizeBox = arguments;			this->GetEvents()->OnWindowBoundsUpdated(sizingConfig); }
+		void RequestWindowNotifySetIconVisible(const bool& arguments) override		{ styleConfig.iconVisible = arguments;		this->GetEvents()->OnWindowBoundsUpdated(sizingConfig); }
+		void RequestWindowNotifySetTitleBar(const bool& arguments) override			{ styleConfig.titleBar = arguments;			this->GetEvents()->OnWindowBoundsUpdated(sizingConfig); }
+		void RequestWindowNotifyActivate() override									{ styleConfig.activated = true; }
+	
+		void RequestWindowNotifyShow(const WindowShowing& arguments) override
+		{
+			styleConfig.activated = arguments.activate;
+			if (sizingConfig.sizeState != arguments.sizeState)
+			{
+				sizingConfig.sizeState = arguments.sizeState;
+				switch (arguments.sizeState)
+				{
+				case INativeWindow::Maximized:
+					sizingConfig.bounds = this->GetGlobalConfig().screenConfig.clientBounds;
+					OnBoundsUpdated();
+					break;
+				case INativeWindow::Minimized:
+					sizingConfig.bounds = NativeRect(
+						{
+							this->GetGlobalConfig().screenConfig.bounds.x2,
+							this->GetGlobalConfig().screenConfig.bounds.y2
+						},
+						{ 1,1 }
+					);
+					OnBoundsUpdated();
+					break;
+				case INativeWindow::Restored:
+					if (sizingConfig.bounds != lastRestoredSize)
+					{
+						sizingConfig.bounds = lastRestoredSize;
+						OnBoundsUpdated();
+					}
+					else
+					{
+						this->GetEvents()->OnWindowBoundsUpdated(sizingConfig);
+					}
+					break;
+				}
+			}
+		}
+	};
+}
+
+#endif
+
+/***********************************************************************
+.\GUIUNITTESTPROTOCOL_RENDERING.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+Unit Test Snapsnot and other Utilities
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_GUIUNITTESTPROTOCOL_RENDERING
+#define VCZH_PRESENTATION_GUIUNITTESTPROTOCOL_RENDERING
+
+
+namespace vl::presentation::unittest
+{
+
+/***********************************************************************
+UnitTestRemoteProtocol
+***********************************************************************/
+
+#define GACUI_REMOTEPROTOCOL_ELEMENTDESC_TYPES\
+		remoteprotocol::ElementDesc_SolidBorder,\
+		remoteprotocol::ElementDesc_SinkBorder,\
+		remoteprotocol::ElementDesc_SinkSplitter,\
+		remoteprotocol::ElementDesc_SolidBackground,\
+		remoteprotocol::ElementDesc_GradientBackground,\
+		remoteprotocol::ElementDesc_InnerShadow,\
+		remoteprotocol::ElementDesc_Polygon,\
+		remoteprotocol::ElementDesc_SolidLabel,\
+		remoteprotocol::ElementDesc_ImageFrame\
+
+	using ElementDescVariant = Variant<
+		GACUI_REMOTEPROTOCOL_ELEMENTDESC_TYPES
+		>;
+
+	struct UnitTestRenderingBeginBoundary
+	{
+		remoteprotocol::ElementBoundary			boundary;
+	};
+
+	struct UnitTestRenderingEndBoundary
+	{
+	};
+
+	struct UnitTestRenderingElement
+	{
+		remoteprotocol::ElementRendering		rendering;
+		ElementDescVariant						desc;
+
+		UnitTestRenderingElement(const UnitTestRenderingElement&) = default;
+		UnitTestRenderingElement(UnitTestRenderingElement&&) = default;
+		UnitTestRenderingElement& operator=(const UnitTestRenderingElement&) = default;
+		UnitTestRenderingElement& operator=(UnitTestRenderingElement&&) = default;
+
+		UnitTestRenderingElement(remoteprotocol::ElementRendering _rendering, ElementDescVariant _desc)
+			: rendering(std::move(_rendering))
+			, desc(std::move(_desc))
+		{
+		}
+	};
+
+	using UnitTestRenderingCommand = Variant<
+		UnitTestRenderingBeginBoundary,
+		UnitTestRenderingEndBoundary,
+		UnitTestRenderingElement
+		>;
+
+	using UnitTestRenderingCommandList = collections::List<UnitTestRenderingCommand>;
+	using UnitTestRenderingCommandListRef = Ptr<UnitTestRenderingCommandList>;
+
+#undef GACUI_REMOTEPROTOCOL_ELEMENTDESC_TYPES
+	
+	template<typename TProtocol>
+	class UnitTestRemoteProtocol_Rendering : public TProtocol
+	{
+		using ElementTypeDescPair = collections::Pair<remoteprotocol::RendererType, Nullable<ElementDescVariant>>;
+		using ElementDescMap = collections::Dictionary<vint, ElementTypeDescPair>;
+		using ImageMetadataMap = collections::Dictionary<vint, remoteprotocol::ImageMetadata>;
+		using CommandList = UnitTestRenderingCommandList;
+		using CommandListRef = UnitTestRenderingCommandListRef;
+	protected:
+
+		ElementDescMap							createdElements;
+		ImageMetadataMap						createdImages;
+		remoteprotocol::ElementMeasurings		measuringForNextRendering;
+		regex::Regex							regexCrLf{ L"/n|/r(/n)?" };
+		CommandListRef							lastRenderingCommands;
+
+	public:
+
+		template<typename ...TArgs>
+		UnitTestRemoteProtocol_Rendering(TArgs&& ...args)
+			: TProtocol(std::forward<TArgs&&>(args)...)
+		{
+		}
+
+/***********************************************************************
+IGuiRemoteProtocolMessages (Rendering)
+***********************************************************************/
+
+		void RequestRendererBeginRendering() override
+		{
+			lastRenderingCommands = Ptr(new CommandList);
+		}
+
+		void RequestRendererEndRendering(vint id) override
+		{
+			this->GetEvents()->RespondRendererEndRendering(id, measuringForNextRendering);
+			measuringForNextRendering = {};
+		}
+
+		void RequestRendererBeginBoundary(const remoteprotocol::ElementBoundary& arguments) override
+		{
+			lastRenderingCommands->Add(UnitTestRenderingBeginBoundary{ arguments });
+		}
+
+		void RequestRendererEndBoundary() override
+		{
+			lastRenderingCommands->Add(UnitTestRenderingEndBoundary{});
+		}
+
+		template<typename T>
+		void RequestRendererRenderElement(const remoteprotocol::ElementRendering& rendering, const T& element)
+		{
+			lastRenderingCommands->Add(UnitTestRenderingElement{ rendering,element });
+		}
+
+		void RequestRendererRenderElement(const remoteprotocol::ElementRendering& arguments) override
+		{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering<TProtocol>::RequestRendererRenderElement(const ElementRendering&)#"
+			vint index = createdElements.Keys().IndexOf(arguments.id);
+			CHECK_ERROR(index != -1, ERROR_MESSAGE_PREFIX L"Renderer with the specified id has not been created.");
+			auto&& nullableDesc = createdElements.Values()[index].value;
+			CHECK_ERROR(nullableDesc, ERROR_MESSAGE_PREFIX L"Renderer with the specified id has not been updated after created.");
+			nullableDesc.Value().Apply(Overloading(
+				[](remoteprotocol::RendererType)
+				{
+					CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Renderer with the specified id has not been updated after created.");
+				},
+				[&](const remoteprotocol::ElementDesc_SolidLabel& solidLabel)
+				{
+					CalculateSolidLabelSizeIfNecessary(arguments.bounds.Width(), arguments.bounds.Height(), solidLabel);
+					RequestRendererRenderElement(arguments, solidLabel);
+				},
+				[&](const auto& element)
+				{
+					RequestRendererRenderElement(arguments, element);
+				}));
+#undef ERROR_MESSAGE_PREFIX
+		}
+
+/***********************************************************************
+IGuiRemoteProtocolMessages (Elements)
+***********************************************************************/
+
+		void RequestRendererCreated(const Ptr<collections::List<remoteprotocol::RendererCreation>>& arguments) override
+		{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering<TProtocol>::RequestRendererCreated(const Ptr<List<RendererCreation>>&)#"
+			if (arguments)
+			{
+				for (auto creation : *arguments.Obj())
+				{
+					CHECK_ERROR(!createdElements.Keys().Contains(creation.id), ERROR_MESSAGE_PREFIX L"Renderer with the specified id has been created.");
+					createdElements.Add(creation.id, { creation.type,Nullable<ElementDescVariant>() });
+				}
+			}
+#undef ERROR_MESSAGE_PREFIX
+		}
+
+		void RequestRendererDestroyed(const Ptr<collections::List<vint>>& arguments) override
+		{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering<TProtocol>::RequestRendererDestroyed(const Ptr<List<vint>>&)#"
+			if (arguments)
+			{
+				for (auto id : *arguments.Obj())
+				{
+					CHECK_ERROR(createdElements.Keys().Contains(id), ERROR_MESSAGE_PREFIX L"Renderer with the specified id has not been created.");
+					createdElements.Remove(id);
+				}
+			}
+#undef ERROR_MESSAGE_PREFIX
+		}
+
+		template<remoteprotocol::RendererType RendererType, typename TElementDesc>
+		void RequestRendererUpdateElement(const TElementDesc& arguments, const wchar_t* emWrongId, const wchar_t* emWrongType)
+		{
+			vint index = createdElements.Keys().IndexOf(arguments.id);
+			CHECK_ERROR(index != -1, emWrongId);
+
+			auto& typeDescPair = const_cast<collections::List<ElementTypeDescPair>&>(createdElements.Values())[index];
+			CHECK_ERROR(typeDescPair.key == RendererType, emWrongType);
+			typeDescPair.value = arguments;
+		}
+
+#define REQUEST_RENDERER_UPDATE_ELEMENT2(ARGUMENTS, RENDERER_TYPE)\
+			RequestRendererUpdateElement<RENDERER_TYPE>(\
+				ARGUMENTS,\
+				ERROR_MESSAGE_PREFIX L"Renderer with the specified id has not been created.",\
+				ERROR_MESSAGE_PREFIX L"Renderer with the specified id is not of the expected type."\
+				)
+
+#define REQUEST_RENDERER_UPDATE_ELEMENT(RENDERER_TYPE) REQUEST_RENDERER_UPDATE_ELEMENT2(arguments, RENDERER_TYPE)
+
+		void RequestRendererUpdateElement_SolidBorder(const remoteprotocol::ElementDesc_SolidBorder& arguments) override
+		{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::RequestRendererUpdateElement_SolidBorder<TProtocol>::RequestRendererCreated(const ElementDesc_SolidBorder&)#"
+			REQUEST_RENDERER_UPDATE_ELEMENT(remoteprotocol::RendererType::SolidBorder);
+#undef ERROR_MESSAGE_PREFIX
+		}
+
+		void RequestRendererUpdateElement_SinkBorder(const remoteprotocol::ElementDesc_SinkBorder& arguments) override
+		{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::RequestRendererUpdateElement_SinkBorder<TProtocol>::RequestRendererCreated(const ElementDesc_SinkBorder&)#"
+			REQUEST_RENDERER_UPDATE_ELEMENT(remoteprotocol::RendererType::SinkBorder);
+#undef ERROR_MESSAGE_PREFIX
+		}
+
+		void RequestRendererUpdateElement_SinkSplitter(const remoteprotocol::ElementDesc_SinkSplitter& arguments) override
+		{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::RequestRendererUpdateElement_SinkSplitter<TProtocol>::RequestRendererCreated(const ElementDesc_SinkSplitter&)#"
+			REQUEST_RENDERER_UPDATE_ELEMENT(remoteprotocol::RendererType::SinkSplitter);
+#undef ERROR_MESSAGE_PREFIX
+		}
+
+		void RequestRendererUpdateElement_SolidBackground(const remoteprotocol::ElementDesc_SolidBackground& arguments) override
+		{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::RequestRendererUpdateElement_SolidBackground<TProtocol>::RequestRendererCreated(const ElementDesc_SolidBackground&)#"
+			REQUEST_RENDERER_UPDATE_ELEMENT(remoteprotocol::RendererType::SolidBackground);
+#undef ERROR_MESSAGE_PREFIX
+		}
+
+		void RequestRendererUpdateElement_GradientBackground(const remoteprotocol::ElementDesc_GradientBackground& arguments) override
+		{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::RequestRendererUpdateElement_GradientBackground<TProtocol>::RequestRendererCreated(const ElementDesc_GradientBackground&)#"
+			REQUEST_RENDERER_UPDATE_ELEMENT(remoteprotocol::RendererType::GradientBackground);
+#undef ERROR_MESSAGE_PREFIX
+		}
+
+		void RequestRendererUpdateElement_InnerShadow(const remoteprotocol::ElementDesc_InnerShadow& arguments) override
+		{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::RequestRendererUpdateElement_InnerShadow<TProtocol>::RequestRendererCreated(const ElementDesc_InnerShadow&)#"
+			REQUEST_RENDERER_UPDATE_ELEMENT(remoteprotocol::RendererType::InnerShadow);
+#undef ERROR_MESSAGE_PREFIX
+		}
+
+		void RequestRendererUpdateElement_Polygon(const remoteprotocol::ElementDesc_Polygon& arguments) override
+		{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::RequestRendererUpdateElement_Polygon<TProtocol>::RequestRendererCreated(const ElementDesc_Polygon&)#"
+			REQUEST_RENDERER_UPDATE_ELEMENT(remoteprotocol::RendererType::Polygon);
+#undef ERROR_MESSAGE_PREFIX
+		}
+
+/***********************************************************************
+IGuiRemoteProtocolMessages (Elements - SolidLabel)
+***********************************************************************/
+
+		void CalculateSolidLabelSizeIfNecessary(vint width, vint height, const remoteprotocol::ElementDesc_SolidLabel& arguments)
+		{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::RequestRendererUpdateElement_SolidLabel<TProtocol>::CalculateSolidLabelSizeIfNecessary(vint, vint, const ElementDesc_SolidLabel&)#"
+
+			if (arguments.measuringRequest)
+			{
+				switch (arguments.measuringRequest.Value())
+				{
+				case remoteprotocol::ElementSolidLabelMeasuringRequest::FontHeight:
+					CHECK_ERROR(arguments.font, ERROR_MESSAGE_PREFIX L"Font is missing for calculating font height.");
+					if (!measuringForNextRendering.fontHeights)
+					{
+						measuringForNextRendering.fontHeights = Ptr(new collections::List<remoteprotocol::ElementMeasuring_FontHeight>);
+					}
+					{
+						remoteprotocol::ElementMeasuring_FontHeight measuring;
+						measuring.fontFamily = arguments.font.Value().fontFamily;
+						measuring.fontSize = arguments.font.Value().size;
+						measuring.height = measuring.fontSize;
+						measuringForNextRendering.fontHeights->Add(measuring);
+					}
+					break;
+				case remoteprotocol::ElementSolidLabelMeasuringRequest::TotalSize:
+					{
+						// font and text has already been verified exist in RequestRendererUpdateElement_SolidLabel
+						vint size = arguments.font.Value().size;
+						auto text = arguments.text.Value();
+						vint textWidth = 0;
+						vint textHeight = 0;
+
+						collections::List<vint> lines;
+						{
+							collections::List<Ptr<regex::RegexMatch>> matches;
+							regexCrLf.Split(text, true, matches);
+
+							if (matches.Count() == 0)
+							{
+								// when there is no text, measure a space
+								lines.Add(1);
+							}
+							else
+							{
+								auto normalizedLines = 
+									From(matches)
+										.Select([](auto&& match) { return match->Result().Length(); })
+										.Select([](vint length) { return length ? length : 1; })
+									;
+								if (arguments.multiline)
+								{
+									// calculate text as multiple lines
+									CopyFrom(
+										lines,
+										normalizedLines
+										);
+								}
+								else
+								{
+									// calculate text as single line, insert a space between each line
+									lines.Add(
+										normalizedLines
+											.Aggregate(-1, [](auto a, auto b) { return a + b + 1; })
+										);
+								}
+							}
+						}
+
+						if (arguments.wrapLine)
+						{
+							// width of the text is 0
+							// insert a line break when there is no space horizontally
+							textHeight = size * From(lines)
+								.Select([columns = width / size](vint length)
+								{
+									if (columns == 0)
+									{
+										return length;
+									}
+									else
+									{
+										return (length + columns - 1) / columns;
+									}
+								})
+								.Aggregate(0, [](auto a, auto b) { return a + b; });
+						}
+						else
+						{
+							// width of the text is width of the longest line
+							textWidth = size * From(lines).Max();
+							textHeight = size * lines.Count();
+						}
+
+						if (!measuringForNextRendering.minSizes)
+						{
+							measuringForNextRendering.minSizes = Ptr(new collections::List<remoteprotocol::ElementMeasuring_ElementMinSize>);
+						}
+						{
+							remoteprotocol::ElementMeasuring_ElementMinSize measuring;
+							measuring.id = arguments.id;
+							measuring.minSize = { textWidth,textHeight };
+							measuringForNextRendering.minSizes->Add(measuring);
+						}
+					}
+					break;
+				default:
+					CHECK_FAIL(L"Unknown value of ElementSolidLabelMeasuringRequest.");
+				}
+			}
+#undef ERROR_MESSAGE_PREFIX
+		}
+
+		void RequestRendererUpdateElement_SolidLabel(const remoteprotocol::ElementDesc_SolidLabel& arguments) override
+		{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::RequestRendererUpdateElement_SolidLabel<TProtocol>::RequestRendererCreated(const ElementDesc_SolidLabel&)#"
+			auto element = arguments;
+			if (!element.font || !element.text)
+			{
+				vint index = createdElements.Keys().IndexOf(element.id);
+				CHECK_ERROR(index != -1, ERROR_MESSAGE_PREFIX L"Renderer with the specified id has not been created.");
+
+				auto [rendererType, nullableDesc] = createdElements.Values()[index];
+				CHECK_ERROR(rendererType == remoteprotocol::RendererType::SolidLabel, ERROR_MESSAGE_PREFIX L"Renderer with the specified id is not of the expected type.");
+				if (nullableDesc)
+				{
+					auto solidLabel = nullableDesc.Value().TryGet<remoteprotocol::ElementDesc_SolidLabel>();
+					CHECK_ERROR(solidLabel, ERROR_MESSAGE_PREFIX L"Renderer with the specified id is not of the expected type.");
+					if (!element.font) element.font = solidLabel->font;
+					if (!element.text) element.text = solidLabel->text;
+				}
+				else
+				{
+					if (!element.font) element.font = FontProperties();
+					if (!element.text) element.text = WString::Empty;
+				}
+			}
+			REQUEST_RENDERER_UPDATE_ELEMENT2(element, remoteprotocol::RendererType::SolidLabel);
+#undef ERROR_MESSAGE_PREFIX
+		}
+
+/***********************************************************************
+IGuiRemoteProtocolMessages (Elements - Image)
+***********************************************************************/
+
+		remoteprotocol::ImageMetadata MakeImageMetadata(const remoteprotocol::ImageCreation& arguments)
+		{
+			CHECK_FAIL(L"Not Implemented!");
+		}
+
+		void RequestImageCreated(vint id, const remoteprotocol::ImageCreation& arguments) override
+		{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering<TProtocol>::RequestImageCreated(vint, const vint&)#"
+			CHECK_ERROR(!createdImages.Keys().Contains(arguments.id), ERROR_MESSAGE_PREFIX L"Image with the specified id has been created.");
+			this->GetEvents()->RespondImageCreated(id, MakeImageMetadata(arguments));
+#undef ERROR_MESSAGE_PREFIX
+		}
+
+		void RequestImageDestroyed(const vint& arguments) override
+		{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering<TProtocol>::RequestImageDestroyed(const vint&)#"
+			CHECK_ERROR(createdImages.Keys().Contains(arguments), ERROR_MESSAGE_PREFIX L"Image with the specified id has not been created.");
+			createdImages.Remove(arguments);
+#undef ERROR_MESSAGE_PREFIX
+		}
+
+		void RequestRendererUpdateElement_ImageFrame(const remoteprotocol::ElementDesc_ImageFrame& arguments) override
+		{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::RequestRendererUpdateElement_ImageFrame<TProtocol>::RequestRendererCreated(const ElementDesc_ImageFrame&)#"
+			if (arguments.imageCreation)
+			{
+				auto&& imageCreation = arguments.imageCreation.Value();
+				if (!imageCreation.imageDataOmitted)
+				{
+					CHECK_ERROR(arguments.imageId && arguments.imageId.Value() != !imageCreation.id, ERROR_MESSAGE_PREFIX L"It should satisfy that (arguments.imageId.Value()id == imageCreation.id).");
+					CHECK_ERROR(!createdImages.Keys().Contains(imageCreation.id), ERROR_MESSAGE_PREFIX L"Image with the specified id has been created.");
+					CHECK_ERROR(imageCreation.imageData, ERROR_MESSAGE_PREFIX L"When imageDataOmitted == false, imageData should not be null.");
+					if (!measuringForNextRendering.createdImages)
+					{
+						measuringForNextRendering.createdImages = Ptr(new collections::List<remoteprotocol::ImageMetadata>);
+					}
+					measuringForNextRendering.createdImages->Add(MakeImageMetadata(imageCreation));
+				}
+				else
+				{
+					CHECK_ERROR(!imageCreation.imageData, ERROR_MESSAGE_PREFIX L"When imageDataOmitted == true, imageData should be null.");
+				}
+			}
+			else if (arguments.imageId)
+			{
+				CHECK_ERROR(createdImages.Keys().Contains(arguments.imageId.Value()), ERROR_MESSAGE_PREFIX L"Image with the specified id has not been created.");
+			}
+
+			auto element = arguments;
+			element.imageCreation.Reset();
+			REQUEST_RENDERER_UPDATE_ELEMENT2(element, remoteprotocol::RendererType::ImageFrame);
+#undef ERROR_MESSAGE_PREFIX
+		}
+
+#undef REQUEST_RENDERER_UPDATE_ELEMENT
+#undef REQUEST_RENDERER_UPDATE_ELEMENT2
+	};
+}
+
+#endif
+
+/***********************************************************************
+.\GUIUNITTESTPROTOCOL_LOGGING.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+Unit Test Snapsnot and other Utilities
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_GUIUNITTESTPROTOCOL_LOGGING
+#define VCZH_PRESENTATION_GUIUNITTESTPROTOCOL_LOGGING
+
+
+namespace vl::presentation::unittest
+{
+
+/***********************************************************************
+UnitTestRemoteProtocol
+***********************************************************************/
+
+	class UnitTestRenderingDom : public Object
+	{
+		using DomList = collections::List<Ptr<UnitTestRenderingDom>>;
+	public:
+		// both hitTestResult and element could be nullptr
+		Nullable<INativeWindowListener::HitTestResult>		hitTestResult;
+		Nullable<ElementDescVariant>						element;
+		Rect												bounds;
+		Rect												validArea;
+		DomList												children;
+
+		Ptr<glr::json::JsonObject> AsJson()
+		{
+			auto jsonDom = Ptr(new glr::json::JsonObject);
+			if (hitTestResult)
+			{
+				auto fieldHtr = Ptr(new glr::json::JsonObjectField);
+				fieldHtr->name.value = WString::Unmanaged(L"HitTestResult");
+				fieldHtr->value = remoteprotocol::ConvertCustomTypeToJson(hitTestResult.Value());
+				jsonDom->fields.Add(fieldHtr);
+			}
+			if (element)
+			{
+				auto fieldElement = Ptr(new glr::json::JsonObjectField);
+				fieldElement->name.value = WString::Unmanaged(L"Element");
+				element.Value().Apply([&](auto&& desc)
+				{
+					fieldElement->value = remoteprotocol::ConvertCustomTypeToJson(desc);
+				});
+				jsonDom->fields.Add(fieldElement);
+			}
+			{
+				auto fieldBounds = Ptr(new glr::json::JsonObjectField);
+				fieldBounds->name.value = WString::Unmanaged(L"Bounds");
+				fieldBounds->value = remoteprotocol::ConvertCustomTypeToJson(bounds);
+				jsonDom->fields.Add(fieldBounds);
+			}
+			{
+				auto fieldValidArea = Ptr(new glr::json::JsonObjectField);
+				fieldValidArea->name.value = WString::Unmanaged(L"ValidArea");
+				fieldValidArea->value = remoteprotocol::ConvertCustomTypeToJson(validArea);
+				jsonDom->fields.Add(fieldValidArea);
+			}
+			if (children.Count() > 0)
+			{
+				auto arrayChildren = Ptr(new glr::json::JsonArray);
+				for (auto&& child : children)
+				{
+					arrayChildren->items.Add(child->AsJson());
+				}
+
+				auto fieldChildren = Ptr(new glr::json::JsonObjectField);
+				fieldChildren->name.value = WString::Unmanaged(L"Children");
+				fieldChildren->value = arrayChildren;
+				jsonDom->fields.Add(fieldChildren);
+			}
+			return jsonDom;
+		}
+
+		void LoadFromJson(const collections::Dictionary<vint, remoteprotocol::RendererType>& elementTypes, Ptr<glr::json::JsonObject> jsonDom)
+		{
+			CHECK_FAIL(L"Not Implemented!");
+		}
+	};
+	
+	template<typename TProtocol>
+	class UnitTestRemoteProtocol_Logging : public TProtocol
+	{
+		using CommandList = UnitTestRenderingCommandList;
+		using CommandListRef = UnitTestRenderingCommandListRef;
+		using RenderingResultRef = Ptr<UnitTestRenderingDom>;
+		using RenderingResultRefList = collections::List<RenderingResultRef>;
+	protected:
+
+		bool								everRendered = false;
+		CommandListRef						candidateRenderingResult;
+		RenderingResultRefList				loggedRenderingResults;
+
+		RenderingResultRef TransformLastRenderingResult(CommandListRef commandListRef)
+		{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Logging<TProtocol>::TransformLastRenderingResult(CommandListRef)#"
+
+			RenderingResultRefList domStack;
+			collections::List<vint> domBoundaries;
+
+			auto domRoot = Ptr(new UnitTestRenderingDom);
+			auto domCurrent = domRoot;
+			domStack.Add(domRoot);
+
+			auto getCurrentBoundary = [&]()
+			{
+				if (domBoundaries.Count() > 0)
+				{
+					return domBoundaries[domBoundaries.Count() - 1];
+				}
+				else
+				{
+					return 0;
+				}
+			};
+
+			auto push = [&](RenderingResultRef ref)
+			{
+				CHECK_ERROR(ref, ERROR_MESSAGE_PREFIX L"[push] Cannot push a null dom object.");
+				vint index = domStack.Add(ref);
+				domCurrent->children.Add(ref);
+				domCurrent = ref;
+				return index;
+			};
+
+			auto popTo = [&](vint index)
+			{
+				if (index == domStack.Count() - 1) return;
+				CHECK_ERROR(0 <= index && index < domStack.Count(), ERROR_MESSAGE_PREFIX L"[popTo] Cannot pop to an invalid position.");
+				CHECK_ERROR(index >= getCurrentBoundary(), ERROR_MESSAGE_PREFIX L"[popTo] Cannot pop across a boundary.");
+				while (domStack.Count() - 1 > index)
+				{
+					domStack.RemoveAt(domStack.Count() - 1);
+				}
+				domCurrent = domStack[index];
+			};
+
+			auto pop = [&]()
+			{
+				popTo(domStack.Count() - 2);
+			};
+
+			auto popBoundary = [&]()
+			{
+				CHECK_ERROR(domBoundaries.Count() > 0, ERROR_MESSAGE_PREFIX L"[popBoundary] Cannot pop a boundary when none is in the stack.");
+				auto boundaryIndex = domBoundaries.Count() - 1;
+				auto boundary = domBoundaries[boundaryIndex];
+				domBoundaries.RemoveAt(boundaryIndex);
+				popTo(boundary - 1);
+			};
+
+			for (auto&& command : *commandListRef.Obj())
+			{
+				command.Apply(Overloading(
+					[&](const UnitTestRenderingBeginBoundary& command)
+					{
+						auto& boundary = command.boundary;
+						Ptr<UnitTestRenderingDom> dom;
+						{
+							vint min = getCurrentBoundary();
+							for (vint i = domStack.Count() - 1; i > min; i--)
+							{
+								auto parent = domStack[i];
+								if (parent->bounds == boundary.bounds)
+								{
+									dom = parent;
+									popTo(i);
+									break;
+								}
+							}
+						}
+
+						if (dom)
+						{
+							CHECK_ERROR(dom->validArea == boundary.areaClippedBySelf, ERROR_MESSAGE_PREFIX L"Incorrect valid area of dom.");
+							dom->hitTestResult = boundary.hitTestResult;
+						}
+						else
+						{
+							auto dom = Ptr(new UnitTestRenderingDom);
+							dom->hitTestResult = boundary.hitTestResult;
+							dom->bounds = boundary.bounds;
+							dom->validArea = boundary.areaClippedBySelf;
+							domBoundaries.Add(push(dom));
+						}
+					},
+					[&](const UnitTestRenderingEndBoundary& command)
+					{
+						popBoundary();
+					},
+					[&](const UnitTestRenderingElement& command)
+					{
+						{
+							vint min = getCurrentBoundary();
+							vint index = min;
+							for (vint i = domStack.Count() - 1; i > min; i--)
+							{
+								auto parent = domStack[i];
+								if (parent->validArea.Contains(command.rendering.areaClippedByParent))
+								{
+									index = i;
+									break;
+								}
+							}
+
+							if (index == min && index != 0)
+							{
+								CHECK_ERROR(domStack[index]->validArea.Contains(command.rendering.areaClippedByParent), L"Incorrect valid area of element in current boundary.");
+							}
+							popTo(index);
+						}
+						auto dom = Ptr(new UnitTestRenderingDom);
+						dom->element = command.desc;
+						dom->bounds = command.rendering.bounds;
+						dom->validArea = command.rendering.bounds.Intersect(command.rendering.areaClippedByParent);
+						push(dom);
+					}));
+			}
+
+			return domRoot;
+#undef ERROR_MESSAGE_PREFIX
+		}
+
+		bool LogRenderingResult()
+		{
+			if (this->lastRenderingCommands)
+			{
+				candidateRenderingResult = this->lastRenderingCommands;
+				this->lastRenderingCommands = {};
+				everRendered = true;
+			}
+			else if (everRendered)
+			{
+				if (candidateRenderingResult)
+				{
+					auto transformed = TransformLastRenderingResult(candidateRenderingResult);
+					loggedRenderingResults.Add(transformed);
+					candidateRenderingResult = {};
+				}
+				return true;
+			}
+			return false;
+		}
+
+	public:
+
+		template<typename ...TArgs>
+		UnitTestRemoteProtocol_Logging(TArgs&& ...args)
+			: TProtocol(std::forward<TArgs&&>(args)...)
+		{
+		}
+
+		const auto& GetLoggedCreatedImages()
+		{
+			return this->createdImages;
+		}
+
+		const auto& GetLoggedRenderingResults()
+		{
+			return loggedRenderingResults;
+		}
+
+		Ptr<glr::json::JsonObject> GetLogAsJson()
+		{
+			auto log = Ptr(new glr::json::JsonObject);
+			{
+				auto arrayImages = Ptr(new glr::json::JsonArray);
+				for (auto&& image : GetLoggedCreatedImages().Values())
+				{
+					auto nodeImage = remoteprotocol::ConvertCustomTypeToJson(image);
+					arrayImages->items.Add(nodeImage);
+				}
+
+				auto fieldImages = Ptr(new glr::json::JsonObjectField);
+				fieldImages->name.value = WString::Unmanaged(L"Images");
+				fieldImages->value = arrayImages;
+				log->fields.Add(fieldImages);
+			}
+			{
+				auto arrayElements = Ptr(new glr::json::JsonArray);
+				for (auto [id, typeDescPair] : this->createdElements)
+				{
+					auto nodeElement = Ptr(new glr::json::JsonObject);
+					{
+						auto fieldId = Ptr(new glr::json::JsonObjectField);
+						fieldId->name.value = WString::Unmanaged(L"id");
+						fieldId->value = remoteprotocol::ConvertCustomTypeToJson(id);
+						nodeElement->fields.Add(fieldId);
+					}
+					{
+						auto fieldType = Ptr(new glr::json::JsonObjectField);
+						fieldType->name.value = WString::Unmanaged(L"type");
+						fieldType->value = remoteprotocol::ConvertCustomTypeToJson(typeDescPair.key);
+						nodeElement->fields.Add(fieldType);
+					}
+					arrayElements->items.Add(nodeElement);
+				}
+
+				auto fieldElements = Ptr(new glr::json::JsonObjectField);
+				fieldElements->name.value = WString::Unmanaged(L"Elements");
+				fieldElements->value = arrayElements;
+				log->fields.Add(fieldElements);
+			}
+			{
+				auto arrayFrames = Ptr(new glr::json::JsonArray);
+				for (auto&& frame : GetLoggedRenderingResults())
+				{
+					auto nodeFrame = frame->AsJson();
+					arrayFrames->items.Add(nodeFrame);
+				}
+
+				auto fieldFrames = Ptr(new glr::json::JsonObjectField);
+				fieldFrames->name.value = WString::Unmanaged(L"Frames");
+				fieldFrames->value = arrayFrames;
+				log->fields.Add(fieldFrames);
+			}
+			return log;
+		}
+	};
+}
+
+#endif
+
+/***********************************************************************
+.\GUIUNITTESTPROTOCOL.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+Unit Test Snapsnot and other Utilities
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_GUIUNITTESTPROTOCOL
+#define VCZH_PRESENTATION_GUIUNITTESTPROTOCOL
+
+
+namespace vl::presentation::unittest
+{
+
+/***********************************************************************
+UnitTestFrameworkConfig
+***********************************************************************/
+
+	struct UnitTestFrameworkConfig
+	{
+		filesystem::FilePath					snapshotFolder;
+	};
+
+	extern const UnitTestFrameworkConfig&		GetUnitTestFrameworkConfig();
+
+/***********************************************************************
+UnitTestRemoteProtocol
+***********************************************************************/
+
+	template<typename TBase, template<typename> class ...TMixins>
+	struct Mixin;
+
+	template<typename TBase>
+	struct Mixin<TBase>
+	{
+		using Type = TBase;
+	};
+
+	template<typename TBase, template<typename> class TMixin, template<typename> class ...TOtherMixins>
+	struct Mixin<TBase, TMixin, TOtherMixins...>
+	{
+		using Type = typename Mixin<TMixin<TBase>, TOtherMixins...>::Type;
+	};
+
+	using UnitTestRemoteProtocolFeatures = Mixin<
+		UnitTestRemoteProtocolBase,
+		UnitTestRemoteProtocol_MainWindow,
+		UnitTestRemoteProtocol_IO,
+		UnitTestRemoteProtocol_Rendering,
+		UnitTestRemoteProtocol_Logging
+	>::Type;
+
+	class UnitTestRemoteProtocol : public UnitTestRemoteProtocolFeatures
+	{
+	protected:
+		const UnitTestFrameworkConfig&		frameworkConfig;
+		WString								appName;
+		collections::List<Func<void()>>		processRemoteEvents;
+		vint								nextEventIndex = 0;
+		bool								stopped = false;
+
+
+	public:
+
+		UnitTestRemoteProtocol(const WString& _appName, UnitTestScreenConfig _globalConfig)
+			: UnitTestRemoteProtocolFeatures(_globalConfig)
+			, frameworkConfig(GetUnitTestFrameworkConfig())
+			, appName(_appName)
+		{
+		}
+
+		template<typename TCallback>
+		void OnNextIdleFrame(TCallback&& callback)
+		{
+			processRemoteEvents.Add(std::move(callback));
+		}
+
+/***********************************************************************
+IGuiRemoteProtocolMessages (Initialization)
+***********************************************************************/
+
+		void RequestControllerConnectionEstablished() override
+		{
+			this->createdElements.Clear();
+			this->createdImages.Clear();
+		}
+
+		void RequestControllerConnectionStopped() override
+		{
+			stopped = true;
+		}
+
+/***********************************************************************
+IGuiRemoteProtocol
+***********************************************************************/
+
+		void Submit() override
+		{
+		}
+
+		void ProcessRemoteEvents() override
+		{
+			if (!stopped)
+			{
+				if (LogRenderingResult())
+				{
+					TEST_CASE(L"Execute idle frame[" + itow(nextEventIndex) + L"]")
+					{
+						processRemoteEvents[nextEventIndex]();
+					});
+					nextEventIndex++;
+				}
+			}
+		}
+	};
+}
+
+#endif
+
+/***********************************************************************
 .\GUIUNITTESTUTILITIES.H
 ***********************************************************************/
 /***********************************************************************
@@ -25,10 +1240,17 @@ Unit Test Snapsnot and other Utilities
 
 namespace vl::presentation::unittest
 {
+	class IUnitTestContext : public virtual Interface
+	{
+	public:
+	};
+
+	using UnitTestMainFunc = vl::Func<void(UnitTestRemoteProtocol*, IUnitTestContext*)>;
 }
 
-extern void InitializeGacUIUnitTest();
-extern void FinalizeGacUIUnitTest();
-extern void SetGuiMainProxy(const vl::Func<void()>& proxy);
+extern void GacUIUnitTest_Initialize(const vl::presentation::unittest::UnitTestFrameworkConfig* config);
+extern void GacUIUnitTest_Finalize();
+extern void GacUIUnitTest_SetGuiMainProxy(const vl::presentation::unittest::UnitTestMainFunc& proxy);
+extern void GacUIUnitTest_Start(const vl::WString& appName, vl::Nullable<vl::presentation::unittest::UnitTestScreenConfig> config = {});
 
 #endif

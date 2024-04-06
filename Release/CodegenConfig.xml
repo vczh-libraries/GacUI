@@ -24,11 +24,17 @@
       <except pattern="\Skins\" />
       <except pattern="GuiFakeDialogServiceUIReflection" />
     </category>
-    <category name="windows" pattern="\Source\PlatformProviders\Windows\" />
-    <category name="unittest" pattern="\Source\UnitTestUtilities\" />
-    <category name="reflection" pattern="\Source\Reflection\" />
-    <category name="reflection" pattern="GuiFakeDialogServiceUIReflection" />
-    <category name="compiler" pattern="\Source\Compiler\" />
+    <category name="windows" pattern="\Source\PlatformProviders\Windows\"/>
+    <category name="unittest" pattern="\Source\UnitTestUtilities\">
+      <except pattern="SnapshotViewer"/>
+    </category>
+    <category name="unittest_ui" pattern="\Source\UnitTestUtilities\SnapshotViewer\Source">
+      <except pattern="Reflection"/>
+    </category>
+    <category name="unittest_r" pattern="\Source\UnitTestUtilities\SnapshotViewer\Source\GuiUnitTestSnapshotViewerReflection"/>
+    <category name="reflection" pattern="\Source\Reflection\"/>
+    <category name="reflection" pattern="GuiFakeDialogServiceUIReflection"/>
+    <category name="compiler" pattern="\Source\Compiler\"/>
     <category name="darkskin" pattern="\Skins\DarkSkin\Source\">
       <except pattern="Reflection"/>
     </category>
@@ -48,6 +54,8 @@
     <codepair category="gacui" filename="GacUI" generate="true"/>
     <codepair category="windows" filename="GacUI.Windows" generate="true"/>
     <codepair category="unittest" filename="GacUI.UnitTest" generate="true"/>
+    <codepair category="unittest_ui" filename="GacUI.UnitTest.UI" generate="true"/>
+    <codepair category="unittest_r" filename="GacUI.UnitTest.UIReflection" generate="true"/>
     <codepair category="reflection" filename="GacUIReflection" generate="true"/>
     <codepair category="compiler" filename="GacUICompiler" generate="true"/>
     <codepair category="darkskin" filename="DarkSkin" generate="true"/>

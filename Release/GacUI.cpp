@@ -2566,6 +2566,19 @@ GuiWindow
 				}
 			}
 
+			bool GuiWindow::IsRenderedAsMaximized()
+			{
+				auto nativeWindow = GetNativeWindow();
+				if (nativeWindow && GetApplication()->GetMainWindow() == this)
+				{
+					if (auto hostedApp = GetHostedApplication())
+					{
+						nativeWindow = hostedApp->GetNativeWindowHost();
+					}
+				}
+				return nativeWindow ? nativeWindow->GetSizeState() == INativeWindow::Maximized : false;
+			}
+
 			void GuiWindow::SetControlTemplateProperties()
 			{
 				if (auto ct = TypedControlTemplateObject(false))
@@ -2576,7 +2589,7 @@ GuiWindow
 					ct->SetSizeBox(hasSizeBox);
 					ct->SetIconVisible(isIconVisible);
 					ct->SetTitleBar(hasTitleBar);
-					ct->SetMaximized(GetNativeWindow()->GetSizeState() != INativeWindow::Maximized);
+					ct->SetMaximized(IsRenderedAsMaximized());
 					ct->SetActivated(GetRenderingAsActivated());
 				}
 			}
@@ -2667,7 +2680,7 @@ GuiWindow
 			void GuiWindow::Moved()
 			{
 				GuiControlHost::Moved();
-				TypedControlTemplateObject(true)->SetMaximized(GetNativeWindow()->GetSizeState() != INativeWindow::Maximized);
+				TypedControlTemplateObject(true)->SetMaximized(IsRenderedAsMaximized());
 			}
 
 			void GuiWindow::Opened()
@@ -33688,14 +33701,7 @@ GuiGraphicsRenderTarget
 				}
 				else
 				{
-					Rect previousClipper = GetClipper();
-					Rect currentClipper;
-
-					currentClipper.x1 = (previousClipper.x1 > clipper.x1 ? previousClipper.x1 : clipper.x1);
-					currentClipper.y1 = (previousClipper.y1 > clipper.y1 ? previousClipper.y1 : clipper.y1);
-					currentClipper.x2 = (previousClipper.x2 < clipper.x2 ? previousClipper.x2 : clipper.x2);
-					currentClipper.y2 = (previousClipper.y2 < clipper.y2 ? previousClipper.y2 : clipper.y2);
-
+					Rect currentClipper = GetClipper().Intersect(clipper);
 					if (currentClipper.x1 < currentClipper.x2 && currentClipper.y1 < currentClipper.y2)
 					{
 						clippers.Add(currentClipper);
@@ -35360,6 +35366,35 @@ int SetupGacGenNativeController()
 }
 
 /***********************************************************************
+.\PLATFORMPROVIDERS\HOSTED\GUIHOSTEDAPPLICATION.CPP
+***********************************************************************/
+
+namespace vl::presentation
+{
+	IGuiHostedApplication* hostedApplication = nullptr;
+
+	IGuiHostedApplication* GetHostedApplication()
+	{
+		return hostedApplication;
+	}
+
+	void SetHostedApplication(IGuiHostedApplication* _hostedApp)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::SetHostedApplication(IGuiHostedApplication*)#"
+		if (_hostedApp)
+		{
+			CHECK_ERROR(!hostedApplication, ERROR_MESSAGE_PREFIX L"IGuiHostedApplication instance already exists during initializing.");
+		}
+		else
+		{
+			CHECK_ERROR(hostedApplication, ERROR_MESSAGE_PREFIX L"IGuiHostedApplication instance does not exist during finalizing.");
+		}
+		hostedApplication = _hostedApp;
+#undef ERROR_MESSAGE_PREFIX
+	}
+}
+
+/***********************************************************************
 .\PLATFORMPROVIDERS\HOSTED\GUIHOSTEDCONTROLLER.CPP
 ***********************************************************************/
 
@@ -36383,6 +36418,15 @@ GuiHostedController::INativeWindowService
 		}
 
 /***********************************************************************
+GuiHostedController::IGuiHostedApplication
+***********************************************************************/
+
+		INativeWindow* GuiHostedController::GetNativeWindowHost()
+		{
+			return nativeWindow;
+		}
+
+/***********************************************************************
 GuiHostedController
 ***********************************************************************/
 
@@ -36395,6 +36439,11 @@ GuiHostedController
 
 		GuiHostedController::~GuiHostedController()
 		{
+		}
+
+		IGuiHostedApplication* GuiHostedController::GetHostedApplication()
+		{
+			return this;
 		}
 
 		void GuiHostedController::Initialize()
@@ -38101,6 +38150,7 @@ int SetupRemoteNativeController(vl::presentation::IGuiRemoteProtocol* protocol)
 
 	SetNativeController(&hostedController);
 	SetGuiGraphicsResourceManager(&hostedResourceManager);
+	SetHostedApplication(hostedController.GetHostedApplication());
 
 	remoteController.Initialize();
 	remoteResourceManager.Initialize();
@@ -38110,6 +38160,7 @@ int SetupRemoteNativeController(vl::presentation::IGuiRemoteProtocol* protocol)
 	remoteResourceManager.Finalize();
 	remoteController.Finalize();
 
+	SetHostedApplication(nullptr);
 	SetGuiGraphicsResourceManager(nullptr);
 	SetNativeController(nullptr);
 	return 0;
@@ -38555,7 +38606,7 @@ GuiRemoteGraphicsRenderTarget
 				remoteprotocol::ElementBoundary arguments;
 				arguments.hitTestResult = hitTestResult;
 				arguments.bounds = clipper;
-				arguments.clipper = validArea;
+				arguments.areaClippedBySelf = validArea;
 				remote->remoteMessages.RequestRendererBeginBoundary(arguments);
 			}
 			hitTestResults.Add(hitTestResult);
@@ -38855,7 +38906,7 @@ GuiSolidBorderElementRenderer
 		remoteprotocol::ElementRendering arguments;
 		arguments.id = id;
 		arguments.bounds = bounds;
-		arguments.clipper = this->renderTarget->GetClipperValidArea();
+		arguments.areaClippedByParent = this->renderTarget->GetClipperValidArea();
 		this->renderTarget->GetRemoteMessages().RequestRendererRenderElement(arguments);
 		renderingBatchId = this->renderTarget->renderingBatchId;
 	}
@@ -39010,27 +39061,17 @@ GuiSolidLabelElementRenderer
 
 	GuiSolidLabelElementRenderer::MeasuringRequest GuiSolidLabelElementRenderer::GetMeasuringRequest()
 	{
-		if (element->GetWrapLine())
+		if (element->GetEllipse())
 		{
-			if (element->GetWrapLineHeightCalculation())
-			{
-				return ElementSolidLabelMeasuringRequest::TotalSize;
-			}
-			else
-			{
-				return {};
-			}
+			return ElementSolidLabelMeasuringRequest::FontHeight;
+		}
+		else if (element->GetWrapLine() && !element->GetWrapLineHeightCalculation())
+		{
+			return {};
 		}
 		else
 		{
-			if (element->GetEllipse())
-			{
-				return ElementSolidLabelMeasuringRequest::FontHeight;
-			}
-			else
-			{
-				return ElementSolidLabelMeasuringRequest::TotalSize;
-			}
+			return ElementSolidLabelMeasuringRequest::TotalSize;
 		}
 	}
 
@@ -40901,7 +40942,7 @@ namespace vl::presentation::remoteprotocol
 		auto node = Ptr(new glr::json::JsonObject);
 		ConvertCustomTypeToJsonField(node, L"id", value.id);
 		ConvertCustomTypeToJsonField(node, L"bounds", value.bounds);
-		ConvertCustomTypeToJsonField(node, L"clipper", value.clipper);
+		ConvertCustomTypeToJsonField(node, L"areaClippedByParent", value.areaClippedByParent);
 		return node;
 	}
 
@@ -40910,7 +40951,7 @@ namespace vl::presentation::remoteprotocol
 		auto node = Ptr(new glr::json::JsonObject);
 		ConvertCustomTypeToJsonField(node, L"hitTestResult", value.hitTestResult);
 		ConvertCustomTypeToJsonField(node, L"bounds", value.bounds);
-		ConvertCustomTypeToJsonField(node, L"clipper", value.clipper);
+		ConvertCustomTypeToJsonField(node, L"areaClippedBySelf", value.areaClippedBySelf);
 		return node;
 	}
 
@@ -41637,7 +41678,7 @@ namespace vl::presentation::remoteprotocol
 		{
 			if (field->name.value == L"id") ConvertJsonToCustomType(field->value, value.id); else
 			if (field->name.value == L"bounds") ConvertJsonToCustomType(field->value, value.bounds); else
-			if (field->name.value == L"clipper") ConvertJsonToCustomType(field->value, value.clipper); else
+			if (field->name.value == L"areaClippedByParent") ConvertJsonToCustomType(field->value, value.areaClippedByParent); else
 			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
 		}
 #undef ERROR_MESSAGE_PREFIX
@@ -41652,7 +41693,7 @@ namespace vl::presentation::remoteprotocol
 		{
 			if (field->name.value == L"hitTestResult") ConvertJsonToCustomType(field->value, value.hitTestResult); else
 			if (field->name.value == L"bounds") ConvertJsonToCustomType(field->value, value.bounds); else
-			if (field->name.value == L"clipper") ConvertJsonToCustomType(field->value, value.clipper); else
+			if (field->name.value == L"areaClippedBySelf") ConvertJsonToCustomType(field->value, value.areaClippedBySelf); else
 			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
 		}
 #undef ERROR_MESSAGE_PREFIX
@@ -48183,7 +48224,7 @@ GuiResource
 		GuiResource::GuiResource()
 		{
 			metadata = Ptr(new GuiResourceMetadata);
-			metadata->version = CurrentVersionString;
+			metadata->version = WString::Unmanaged(CurrentVersionString);
 		}
 
 		GuiResource::~GuiResource()
@@ -48262,7 +48303,7 @@ GuiResource
 
 				if (resource->metadata->version != CurrentVersionString)
 				{
-					errors.Add(GuiResourceError({ resource }, L"Only resource binary of version \"" + WString(CurrentVersionString) + L"\" is accepted. Please recompile the resource before loading it."));
+					errors.Add(GuiResourceError({ resource }, L"Only resource binary of version \"" + WString::Unmanaged(CurrentVersionString) + L"\" is accepted. Please recompile the resource before loading it."));
 					return nullptr;
 				}
 			}
@@ -48886,7 +48927,8 @@ IGuiInstanceResourceManager
 			Ptr<GuiResource> GetResource(const WString& name)override
 			{
 				vint index = resources.Keys().IndexOf(name);
-				return index == -1 ? nullptr : resources.Values()[index];
+				if (index == -1) return nullptr;
+				return resources.Values()[index];
 			}
 
 			Ptr<GuiResource> GetResourceFromClassName(const WString& classFullName)override
@@ -48896,22 +48938,48 @@ IGuiInstanceResourceManager
 				return instanceResources.Values()[index];
 			}
 
-			void UnloadResource(const WString& name)override
+			LazyList<Ptr<GuiResource>> GetLoadedResources()override
 			{
-				vint index = resources.Keys().IndexOf(name);
-				if (index != -1)
+				return From(anonymousResources).Concat(resources.Values());
+			}
+
+			bool UnloadResource(const WString& name)override
+			{
+				return UnloadResource(GetResource(name));
+			}
+
+			bool UnloadResource(Ptr<GuiResource> resource)
+			{
+				if (!resource) return false;
+
+				WString name;
+				if (auto metadata = resource->GetMetadata())
 				{
+					name = metadata->name;
+				}
+
+				if (name == WString::Empty)
+				{
+					vint index = anonymousResources.IndexOf(resource.Obj());
+					if (index == -1) return false;
+					anonymousResources.RemoveAt(index);
+				}
+				else
+				{
+					vint index = resources.Keys().IndexOf(name);
+					if (index == -1) return false;
 					auto resource = resources.Values()[index];
 					resources.Remove(name);
+				}
 
-					if (auto record = resource->GetValueByPath(L"Precompiled/ClassNameRecord").Cast<GuiResourceClassNameRecord>())
+				if (auto record = resource->GetValueByPath(L"Precompiled/ClassNameRecord").Cast<GuiResourceClassNameRecord>())
+				{
+					for (auto className : record->classNames)
 					{
-						for (auto className : record->classNames)
-						{
-							instanceResources.Remove(className);
-						}
+						instanceResources.Remove(className);
 					}
 				}
+				return true;
 			}
 
 			void LoadResourceOrPending(stream::IStream& resourceStream, GuiResourceError::List& errors, GuiResourceUsage usage)override
@@ -50840,7 +50908,7 @@ FakeDialogService
 /***********************************************************************
 !!!!!! DO NOT MODIFY !!!!!!
 
-GacGen.exe Resource.xml
+Source: GacUI FakeDialogServiceUI
 
 This file is generated by Workflow compiler
 https://github.com/vczh-libraries

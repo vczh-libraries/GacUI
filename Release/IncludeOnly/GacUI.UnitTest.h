@@ -10,4 +10,10 @@ DEVELOPER: Zihan Chen(vczh)
 #include "Vlpp.h"
 #include "VlppRegex.h"
 
+#include "..\..\Source\UnitTestUtilities\GuiUnitTestProtocol_Shared.h"
+#include "..\..\Source\UnitTestUtilities\GuiUnitTestProtocol_IO.h"
+#include "..\..\Source\UnitTestUtilities\GuiUnitTestProtocol_MainWindow.h"
+#include "..\..\Source\UnitTestUtilities\GuiUnitTestProtocol_Rendering.h"
+#include "..\..\Source\UnitTestUtilities\GuiUnitTestProtocol_Logging.h"
+#include "..\..\Source\UnitTestUtilities\GuiUnitTestProtocol.h"
 #include "..\..\Source\UnitTestUtilities\GuiUnitTestUtilities.h"

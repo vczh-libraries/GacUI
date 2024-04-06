@@ -10,6 +10,7 @@
   - **GacUI_Host**: Load the compiled binary file and run.
   - **Playground**: Compile and load XML with generated DarkSkin.
 - **UnitTest**: Test cases for GacUI.
+- **UnitTestViewer**: Render snapshots generated in **UnitTest**.
 
 - **Lib_**: Lib files under different configurations
   - **Use Library Dependencies Input** must be turned on for all exe projects
@@ -22,8 +23,11 @@
 - **GacUI** -> **CoreApplication**: All controls.
 - **Utilities** -> **CoreApplication**: Utilities.
 - **Utilities_Controls** -> **Utilities** + **GacUI**: Utilities that brings UI.
+- **UnitTest** -> **Core**: Unit test framework
+- **UnitTest_Controls** -> **GacUI**: Unit test snapshot viewer.
 - **Reflection** -> **Utilities_Controls**: All reflection definition.
 - **Utilities_Reflection** -> **Utilities_Controls** + **Reflection**: Utilities UI reflection definition.
+- **UnitTest_Reflection** -> **UnitTest_Controls** + **Reflection**: Unit test snapshot viewer reflection definition.
 - **Compiler** -> **Reflection**: GacUI XML Compiler.
 - **Windows** -> **Utilities**: Windows platform provider.
 

@@ -294,47 +294,47 @@ Rectangle
 
 			GUI_DEFINE_COMPARE_OPERATORS(Rect_<T>)
 
-			Point_<T> LeftTop()const
+			Point_<T> LeftTop() const
 			{
 				return Point_<T>(x1, y1);
 			}
 
-			Point_<T> RightBottom()const
+			Point_<T> RightBottom() const
 			{
 				return Point_<T>(x2, y2);
 			}
 
-			Size_<T> GetSize()const
+			Size_<T> GetSize() const
 			{
 				return Size_<T>(x2 - x1, y2 - y1);
 			}
 
-			T Left()const
+			T Left() const
 			{
 				return x1;
 			}
 
-			T Right()const
+			T Right() const
 			{
 				return x2;
 			}
 
-			T Width()const
+			T Width() const
 			{
 				return x2 - x1;
 			}
 
-			T Top()const
+			T Top() const
 			{
 				return y1;
 			}
 
-			T Bottom()const
+			T Bottom() const
 			{
 				return y2;
 			}
 
-			T Height()const
+			T Height() const
 			{
 				return y2 - y1;
 			}
@@ -371,9 +371,24 @@ Rectangle
 				y2 += s.y;
 			}
 
-			bool Contains(Point_<T> p)
+			bool Contains(Point_<T> p) const
 			{
 				return x1 <= p.x && p.x < x2 && y1 <= p.y && p.y < y2;
+			}
+
+			bool Contains(Rect_<T> r) const
+			{
+				return x1 <= r.x1 && r.x2 <= x2 && y1 <= r.y1 && r.y2 <= y2;
+			}
+
+			Rect_<T> Intersect(Rect_<T> r)  const
+			{
+				Rect_<T> result = r;
+				if (r.x1 < x1) r.x1 = x1;
+				if (r.x2 > x2) r.x2 = x2;
+				if (r.y1 < y1) r.y1 = y1;
+				if (r.y2 > y2) r.y2 = y2;
+				return r;
 			}
 		};
 
@@ -2930,6 +2945,7 @@ INativeWindowService
 			/// </summary>
 			/// <returns>The frame configuration for non-main windows.</returns>
 			virtual const NativeWindowFrameConfig&	GetNonMainWindowFrameConfig()=0;
+
 			/// <summary>
 			/// Create a window.
 			/// </summary>
@@ -7134,6 +7150,45 @@ Helpers
 #endif
 
 /***********************************************************************
+.\PLATFORMPROVIDERS\HOSTED\GUIHOSTEDAPPLICATION.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI::Hosted Application
+
+Interfaces:
+  GuiHostedController
+
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_GUIHOSTEDCONTROLLER_GUIHOSTEDAPPLICATION
+#define VCZH_PRESENTATION_GUIHOSTEDCONTROLLER_GUIHOSTEDAPPLICATION
+
+
+namespace vl::presentation
+{
+/***********************************************************************
+IGuiHostedApplication
+***********************************************************************/
+
+	/// <summary>
+	/// 
+	/// </summary>
+	class IGuiHostedApplication : public virtual Interface
+	{
+	public:
+
+		virtual INativeWindow*				GetNativeWindowHost() = 0;
+	};
+
+	extern IGuiHostedApplication*			GetHostedApplication();
+	extern void								SetHostedApplication(IGuiHostedApplication* _hostedApp);
+}
+
+#endif
+
+/***********************************************************************
 .\PLATFORMPROVIDERS\HOSTED\GUIHOSTEDGRAPHICS.H
 ***********************************************************************/
 /***********************************************************************
@@ -10129,6 +10184,7 @@ Window
 				
 				void									UpdateIcon(INativeWindow* window, templates::GuiWindowTemplate* ct);
 				void									UpdateCustomFramePadding(INativeWindow* window, templates::GuiWindowTemplate* ct);
+				bool									IsRenderedAsMaximized();
 				void									SetControlTemplateProperties();
 				void									SetNativeWindowFrameProperties();
 				bool									ApplyFrameConfigOnVariable(BoolOption frameConfig, BoolOption templateConfig, bool& variable);
@@ -21833,14 +21889,14 @@ namespace vl::presentation::remoteprotocol
 	{
 		::vl::vint id;
 		::vl::presentation::Rect bounds;
-		::vl::presentation::Rect clipper;
+		::vl::presentation::Rect areaClippedByParent;
 	};
 
 	struct ElementBoundary
 	{
 		::vl::presentation::INativeWindowListener::HitTestResult hitTestResult;
 		::vl::presentation::Rect bounds;
-		::vl::presentation::Rect clipper;
+		::vl::presentation::Rect areaClippedBySelf;
 	};
 
 	struct ElementMeasuring_FontHeight
@@ -22513,7 +22569,7 @@ namespace vl::presentation::elements_remoteprotocol
 #endif
 
 /***********************************************************************
-.\PLATFORMPROVIDERS\REMOTE\GUIREMOTEPROTOCOL.H
+.\PLATFORMPROVIDERS\REMOTE\GUIREMOTEPROTOCOL_SHARED.H
 ***********************************************************************/
 /***********************************************************************
 Vczh Library++ 3.0
@@ -22525,8 +22581,8 @@ Interfaces:
 
 ***********************************************************************/
 
-#ifndef VCZH_PRESENTATION_GUIREMOTECONTROLLER_GUIREMOTEPROTOCOL
-#define VCZH_PRESENTATION_GUIREMOTECONTROLLER_GUIREMOTEPROTOCOL
+#ifndef VCZH_PRESENTATION_GUIREMOTECONTROLLER_GUIREMOTEPROTOCOL_SHARED
+#define VCZH_PRESENTATION_GUIREMOTECONTROLLER_GUIREMOTEPROTOCOL_SHARED
 
 
 namespace vl::presentation
@@ -22598,7 +22654,303 @@ IGuiRemoteProtocol
 		virtual void			Submit() = 0;
 		virtual void			ProcessRemoteEvents() = 0;
 	};
+
+	class GuiRemoteEventCombinator : public Object, public virtual IGuiRemoteProtocolEvents
+	{
+	public:
+		IGuiRemoteProtocolEvents*		targetEvents = nullptr;
+	};
+
+	template<typename TEvents>
+		requires(std::is_base_of_v<GuiRemoteEventCombinator, TEvents>)
+	class GuiRemoteProtocolCombinator : public Object, public virtual IGuiRemoteProtocol
+	{
+	protected:
+		IGuiRemoteProtocol*				targetProtocol = nullptr;
+		TEvents							eventCombinator;
+
+	public:
+		GuiRemoteProtocolCombinator(IGuiRemoteProtocol* _protocol)
+			: targetProtocol(_protocol)
+		{
+		}
+
+		// protocol
+
+		WString GetExecutablePath() override
+		{
+			return targetProtocol->GetExecutablePath();
+		}
+
+		void Initialize(IGuiRemoteProtocolEvents* _events) override
+		{
+			eventCombinator.targetEvents = _events;
+			targetProtocol->Initialize(&eventCombinator);
+		}
+
+		void Submit() override
+		{
+			targetProtocol->Submit();
+		}
+
+		void ProcessRemoteEvents() override
+		{
+			targetProtocol->ProcessRemoteEvents();
+		}
+	};
 }
+
+#endif
+
+/***********************************************************************
+.\PLATFORMPROVIDERS\REMOTE\GUIREMOTEPROTOCOL_FILTERVERIFIER.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI::Remote Window
+
+Interfaces:
+  IGuiRemoteProtocol
+
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_GUIREMOTECONTROLLER_GUIREMOTEPROTOCOL_FILTERVERIFIER
+#define VCZH_PRESENTATION_GUIREMOTECONTROLLER_GUIREMOTEPROTOCOL_FILTERVERIFIER
+
+
+namespace vl::presentation::remoteprotocol::repeatfiltering
+{
+/***********************************************************************
+GuiRemoteEventFilterVerifier
+***********************************************************************/
+
+	class GuiRemoteEventFilterVerifier : public GuiRemoteEventCombinator
+	{
+	protected:
+#define EVENT_NODROP(NAME)
+#define EVENT_DROPREP(NAME)										bool lastDropRepeatEvent ## NAME = false;
+#define EVENT_DROPCON(NAME)										bool lastDropConsecutiveEvent ## NAME = false;
+#define EVENT_HANDLER(NAME, REQUEST, REQTAG, DROPTAG, ...)		EVENT_ ## DROPTAG(NAME)
+			GACUI_REMOTEPROTOCOL_EVENTS(EVENT_HANDLER)
+#undef EVENT_HANDLER
+#undef EVENT_DROPCON
+#undef EVENT_DROPREP
+#undef EVENT_NODROP
+
+	public:
+		bool													submitting = false;
+
+		void ClearDropRepeatMasks()
+		{
+#define EVENT_NODROP(NAME)
+#define EVENT_DROPREP(NAME)									lastDropRepeatEvent ## NAME = false;
+#define EVENT_DROPCON(NAME)
+#define EVENT_HANDLER(NAME, REQUEST, REQTAG, DROPTAG, ...)	EVENT_ ## DROPTAG(NAME)
+			GACUI_REMOTEPROTOCOL_EVENTS(EVENT_HANDLER)
+#undef EVENT_HANDLER
+#undef EVENT_DROPCON
+#undef EVENT_DROPREP
+#undef EVENT_NODROP
+		}
+
+		void ClearDropConsecutiveMasks()
+		{
+#define EVENT_NODROP(NAME)
+#define EVENT_DROPREP(NAME)
+#define EVENT_DROPCON(NAME)									lastDropConsecutiveEvent ## NAME = false;
+#define EVENT_HANDLER(NAME, REQUEST, REQTAG, DROPTAG, ...)	EVENT_ ## DROPTAG(NAME)
+			GACUI_REMOTEPROTOCOL_EVENTS(EVENT_HANDLER)
+#undef EVENT_HANDLER
+#undef EVENT_DROPCON
+#undef EVENT_DROPREP
+#undef EVENT_NODROP
+		}
+
+		// responses
+
+#define MESSAGE_NORES(NAME, RESPONSE)
+#define MESSAGE_RES(NAME, RESPONSE)\
+		void Respond ## NAME(vint id, const RESPONSE& arguments) override\
+		{\
+			targetEvents->Respond ## NAME(id, arguments);\
+		}\
+	
+#define MESSAGE_HANDLER(NAME, REQUEST, RESPONSE, REQTAG, RESTAG, ...)	MESSAGE_ ## RESTAG(NAME, RESPONSE)
+			GACUI_REMOTEPROTOCOL_MESSAGES(MESSAGE_HANDLER)
+#undef MESSAGE_HANDLER
+#undef MESSAGE_RES
+#undef MESSAGE_NORES
+
+		// events
+	
+#define EVENT_NODROP(NAME)
+	
+#define EVENT_DROPREP(NAME)\
+			CHECK_ERROR(!lastDropRepeatEvent ## NAME, L"vl::presentation::remoteprotocol::GuiRemoteEventFilterVerifier::On" L ## #NAME L"(...)#[@DropRepeat] event repeated.");\
+			lastDropRepeatEvent ## NAME = true;\
+	
+#define EVENT_DROPCON(NAME)\
+			CHECK_ERROR(!lastDropConsecutiveEvent ## NAME, L"vl::presentation::remoteprotocol::GuiRemoteEventFilterVerifier::On" L ## #NAME L"(...)#[@DropConsecutive] event repeated.");\
+			ClearDropConsecutiveMasks();\
+			lastDropConsecutiveEvent ## NAME = true;\
+	
+#define EVENT_NOREQ(NAME, REQUEST, DROPTAG)\
+		void On ## NAME() override\
+		{\
+			if (submitting)\
+			{\
+				EVENT_ ## DROPTAG(NAME);\
+				targetEvents->On ## NAME();\
+			}\
+			else\
+			{\
+				targetEvents->On ## NAME();\
+			}\
+		}\
+	
+#define EVENT_REQ(NAME, REQUEST, DROPTAG)\
+		void On ## NAME(const REQUEST& arguments) override\
+		{\
+			if (submitting)\
+			{\
+				EVENT_ ## DROPTAG(NAME);\
+				targetEvents->On ## NAME(arguments);\
+			}\
+			else\
+			{\
+				targetEvents->On ## NAME(arguments);\
+			}\
+		}\
+	
+#define EVENT_HANDLER(NAME, REQUEST, REQTAG, DROPTAG, ...)	EVENT_ ## REQTAG(NAME, REQUEST, DROPTAG)
+		GACUI_REMOTEPROTOCOL_EVENTS(EVENT_HANDLER)
+#undef EVENT_HANDLER
+#undef EVENT_REQ
+#undef EVENT_NOREQ
+#undef EVENT_DROPCON
+#undef EVENT_DROPREP
+#undef EVENT_NOREP
+	};
+
+/***********************************************************************
+GuiRemoteProtocolFilterVerifier
+***********************************************************************/
+
+	class GuiRemoteProtocolFilter;
+	
+	class GuiRemoteProtocolFilterVerifier : public GuiRemoteProtocolCombinator<GuiRemoteEventFilterVerifier>
+	{
+		friend class GuiRemoteProtocolFilter;
+	protected:
+		vint													lastRequestId = -1;
+	
+#define MESSAGE_NODROP(NAME)
+#define MESSAGE_DROPREP(NAME)												bool lastDropRepeatRequest ## NAME = false;
+#define MESSAGE_HANDLER(NAME, REQUEST, RESPONSE, REQTAG, RESTAG, DROPTAG)	MESSAGE_ ## DROPTAG(NAME)
+		GACUI_REMOTEPROTOCOL_MESSAGES(MESSAGE_HANDLER)
+#undef MESSAGE_HANDLER
+#undef MESSAGE_DROPREP
+#undef MESSAGE_NODROP
+	
+		void ClearDropRepeatMasks()
+		{
+#define MESSAGE_NODROP(NAME)
+#define MESSAGE_DROPREP(NAME)												lastDropRepeatRequest ## NAME = false;
+#define MESSAGE_HANDLER(NAME, REQUEST, RESPONSE, REQTAG, RESTAG, DROPTAG)	MESSAGE_ ## DROPTAG(NAME)
+			GACUI_REMOTEPROTOCOL_MESSAGES(MESSAGE_HANDLER)
+#undef MESSAGE_HANDLER
+#undef MESSAGE_DROPREP
+#undef MESSAGE_NODROP
+		}
+	public:
+		GuiRemoteProtocolFilterVerifier(IGuiRemoteProtocol* _protocol)
+			: GuiRemoteProtocolCombinator<GuiRemoteEventFilterVerifier>(_protocol)
+		{
+		}
+	
+	protected:
+	
+	public:
+	
+		// messages
+	
+#define MESSAGE_NODROP(NAME)
+	
+#define MESSAGE_DROPREP(NAME)\
+			CHECK_ERROR(!lastDropRepeatRequest ## NAME, L"vl::presentation::remoteprotocol::GuiRemoteProtocolFilterVerifier::Request" L ## #NAME L"(...)#[@DropRepeat] message repeated.");\
+			lastDropRepeatRequest ## NAME = true;\
+	
+#define MESSAGE_NOREQ_NORES(NAME, REQUEST, RESPONSE, DROPTAG)\
+		void Request ## NAME() override\
+		{\
+			MESSAGE_ ## DROPTAG(NAME);\
+			targetProtocol->Request ## NAME();\
+		}\
+	
+#define MESSAGE_NOREQ_RES(NAME, REQUEST, RESPONSE, DROPTAG)\
+		void Request ## NAME(vint id) override\
+		{\
+			MESSAGE_ ## DROPTAG(NAME);\
+			targetProtocol->Request ## NAME(id);\
+		}\
+	
+#define MESSAGE_REQ_NORES(NAME, REQUEST, RESPONSE, DROPTAG)\
+		void Request ## NAME(const REQUEST& arguments) override\
+		{\
+			MESSAGE_ ## DROPTAG(NAME);\
+			targetProtocol->Request ## NAME(arguments);\
+		}\
+	
+#define MESSAGE_REQ_RES(NAME, REQUEST, RESPONSE, DROPTAG)\
+		void Request ## NAME(vint id, const REQUEST& arguments) override\
+		{\
+			MESSAGE_ ## DROPTAG(NAME);\
+			targetProtocol->Request ## NAME(id, arguments);\
+		}\
+	
+#define MESSAGE_HANDLER(NAME, REQUEST, RESPONSE, REQTAG, RESTAG, DROPTAG, ...)	MESSAGE_ ## REQTAG ## _ ## RESTAG(NAME, REQUEST, RESPONSE, DROPTAG)
+		GACUI_REMOTEPROTOCOL_MESSAGES(MESSAGE_HANDLER)
+#undef MESSAGE_HANDLER
+#undef MESSAGE_REQ_RES
+#undef MESSAGE_REQ_NORES
+#undef MESSAGE_NOREQ_RES
+#undef MESSAGE_NOREQ_NORES
+#undef MESSAGE_DROPREP
+#undef MESSAGE_NODROP
+	
+		// protocol
+	
+		void Submit() override
+		{
+			eventCombinator.submitting = true;
+			GuiRemoteProtocolCombinator<GuiRemoteEventFilterVerifier>::Submit();
+			ClearDropRepeatMasks();
+			eventCombinator.ClearDropRepeatMasks();
+			eventCombinator.ClearDropConsecutiveMasks();
+			eventCombinator.submitting = false;
+		}
+	};
+}
+
+#endif
+
+/***********************************************************************
+.\PLATFORMPROVIDERS\REMOTE\GUIREMOTEPROTOCOL_FILTER.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI::Remote Window
+
+Interfaces:
+  IGuiRemoteProtocol
+
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_GUIREMOTECONTROLLER_GUIREMOTEPROTOCOL_FILTER
+#define VCZH_PRESENTATION_GUIREMOTECONTROLLER_GUIREMOTEPROTOCOL_FILTER
+
 
 namespace vl::presentation::remoteprotocol::repeatfiltering
 {
@@ -22675,9 +23027,7 @@ namespace vl::presentation::remoteprotocol::repeatfiltering
 GuiRemoteEventFilter
 ***********************************************************************/
 
-	class GuiRemoteEventFilter
-		: public Object
-		, public virtual IGuiRemoteProtocolEvents
+	class GuiRemoteEventFilter : public GuiRemoteEventCombinator
 	{
 	protected:
 		collections::List<FilteredResponse>						filteredResponses;
@@ -22694,7 +23044,6 @@ GuiRemoteEventFilter
 #undef EVENT_NODROP
 
 	public:
-		IGuiRemoteProtocolEvents*								targetEvents = nullptr;
 		bool													submitting = false;
 		collections::Dictionary<vint, FilteredResponseNames>	responseIds;
 	
@@ -22856,17 +23205,10 @@ GuiRemoteEventFilter
 /***********************************************************************
 GuiRemoteProtocolFilter
 ***********************************************************************/
-
-	class GuiRemoteProtocolFilterVerifier;
 	
-	class GuiRemoteProtocolFilter
-		: public Object
-		, public virtual IGuiRemoteProtocol
+	class GuiRemoteProtocolFilter : public GuiRemoteProtocolCombinator<GuiRemoteEventFilter>
 	{
-		friend class GuiRemoteProtocolFilterVerifier;
 	protected:
-		IGuiRemoteProtocol*										targetProtocol = nullptr;
-		GuiRemoteEventFilter									eventFilter;
 		vint													lastRequestId = -1;
 		collections::List<FilteredRequest>						filteredRequests;
 	
@@ -22933,12 +23275,12 @@ GuiRemoteProtocolFilter
 #undef MESSAGE_NOREQ_NORES
 			}
 	
-			CHECK_ERROR(eventFilter.responseIds.Count() == 0, L"Messages sending to IGuiRemoteProtocol should be all responded.");
+			CHECK_ERROR(eventCombinator.responseIds.Count() == 0, L"Messages sending to IGuiRemoteProtocol should be all responded.");
 			filteredRequests.Clear();
 		}
 	public:
 		GuiRemoteProtocolFilter(IGuiRemoteProtocol* _protocol)
-			: targetProtocol(_protocol)
+			: GuiRemoteProtocolCombinator<GuiRemoteEventFilter>(_protocol)
 		{
 		}
 	
@@ -22980,7 +23322,7 @@ GuiRemoteProtocolFilter
 			request.id = id;\
 			request.name = FilteredRequestNames::NAME;\
 			filteredRequests.Add(request);\
-			eventFilter.responseIds.Add(id, FilteredResponseNames::NAME);\
+			eventCombinator.responseIds.Add(id, FilteredResponseNames::NAME);\
 		}\
 	
 #define MESSAGE_REQ_NORES(NAME, REQUEST, RESPONSE, DROPTAG)\
@@ -23008,7 +23350,7 @@ GuiRemoteProtocolFilter
 			request.name = FilteredRequestNames::NAME;\
 			request.arguments = arguments;\
 			filteredRequests.Add(request);\
-			eventFilter.responseIds.Add(id, FilteredResponseNames::NAME);\
+			eventCombinator.responseIds.Add(id, FilteredResponseNames::NAME);\
 		}\
 	
 #define MESSAGE_HANDLER(NAME, REQUEST, RESPONSE, REQTAG, RESTAG, DROPTAG, ...)	MESSAGE_ ## REQTAG ## _ ## RESTAG(NAME, REQUEST, RESPONSE, DROPTAG)
@@ -23023,266 +23365,50 @@ GuiRemoteProtocolFilter
 	
 		// protocol
 	
-		WString GetExecutablePath() override
-		{
-			return targetProtocol->GetExecutablePath();
-		}
-	
 		void Initialize(IGuiRemoteProtocolEvents* _events) override
 		{
-			eventFilter.targetEvents = _events;
-			targetProtocol->Initialize(&eventFilter);
+			if (auto verifierProtocol = dynamic_cast<GuiRemoteProtocolFilterVerifier*>(targetProtocol))
+			{
+				verifierProtocol->targetProtocol->Initialize(&eventCombinator);
+				eventCombinator.targetEvents = &verifierProtocol->eventCombinator;
+				verifierProtocol->eventCombinator.targetEvents = _events;
+			}
+			else
+			{
+				GuiRemoteProtocolCombinator<GuiRemoteEventFilter>::Initialize(_events);
+			}
 		}
 	
 		void Submit() override
 		{
-			eventFilter.submitting = true;
-			targetProtocol->Submit();
+			eventCombinator.submitting = true;
 			ProcessRequests();
-			eventFilter.ProcessResponses();
-			eventFilter.submitting = false;
-			eventFilter.ProcessEvents();
-		}
-	
-		void ProcessRemoteEvents() override
-		{
-			targetProtocol->ProcessRemoteEvents();
-		}
-	};
-
-/***********************************************************************
-GuiRemoteEventFilterVerifier
-***********************************************************************/
-
-	class GuiRemoteEventFilterVerifier
-		: public Object
-		, public virtual IGuiRemoteProtocolEvents
-	{
-	protected:
-#define EVENT_NODROP(NAME)
-#define EVENT_DROPREP(NAME)										bool lastDropRepeatEvent ## NAME = false;
-#define EVENT_DROPCON(NAME)										bool lastDropConsecutiveEvent ## NAME = false;
-#define EVENT_HANDLER(NAME, REQUEST, REQTAG, DROPTAG, ...)		EVENT_ ## DROPTAG(NAME)
-			GACUI_REMOTEPROTOCOL_EVENTS(EVENT_HANDLER)
-#undef EVENT_HANDLER
-#undef EVENT_DROPCON
-#undef EVENT_DROPREP
-#undef EVENT_NODROP
-
-	public:
-		IGuiRemoteProtocolEvents*								targetEvents = nullptr;
-		bool													submitting = false;
-
-		void ClearDropRepeatMasks()
-		{
-#define EVENT_NODROP(NAME)
-#define EVENT_DROPREP(NAME)									lastDropRepeatEvent ## NAME = false;
-#define EVENT_DROPCON(NAME)
-#define EVENT_HANDLER(NAME, REQUEST, REQTAG, DROPTAG, ...)	EVENT_ ## DROPTAG(NAME)
-			GACUI_REMOTEPROTOCOL_EVENTS(EVENT_HANDLER)
-#undef EVENT_HANDLER
-#undef EVENT_DROPCON
-#undef EVENT_DROPREP
-#undef EVENT_NODROP
-		}
-
-		void ClearDropConsecutiveMasks()
-		{
-#define EVENT_NODROP(NAME)
-#define EVENT_DROPREP(NAME)
-#define EVENT_DROPCON(NAME)									lastDropConsecutiveEvent ## NAME = false;
-#define EVENT_HANDLER(NAME, REQUEST, REQTAG, DROPTAG, ...)	EVENT_ ## DROPTAG(NAME)
-			GACUI_REMOTEPROTOCOL_EVENTS(EVENT_HANDLER)
-#undef EVENT_HANDLER
-#undef EVENT_DROPCON
-#undef EVENT_DROPREP
-#undef EVENT_NODROP
-		}
-
-		// responses
-
-#define MESSAGE_NORES(NAME, RESPONSE)
-#define MESSAGE_RES(NAME, RESPONSE)\
-		void Respond ## NAME(vint id, const RESPONSE& arguments) override\
-		{\
-			targetEvents->Respond ## NAME(id, arguments);\
-		}\
-	
-#define MESSAGE_HANDLER(NAME, REQUEST, RESPONSE, REQTAG, RESTAG, ...)	MESSAGE_ ## RESTAG(NAME, RESPONSE)
-			GACUI_REMOTEPROTOCOL_MESSAGES(MESSAGE_HANDLER)
-#undef MESSAGE_HANDLER
-#undef MESSAGE_RES
-#undef MESSAGE_NORES
-
-		// events
-	
-#define EVENT_NODROP(NAME)
-	
-#define EVENT_DROPREP(NAME)\
-			CHECK_ERROR(!lastDropRepeatEvent ## NAME, L"vl::presentation::remoteprotocol::GuiRemoteEventFilterVerifier::On" L ## #NAME L"(...)#[@DropRepeat] event repeated.");\
-			lastDropRepeatEvent ## NAME = true;\
-	
-#define EVENT_DROPCON(NAME)\
-			CHECK_ERROR(!lastDropConsecutiveEvent ## NAME, L"vl::presentation::remoteprotocol::GuiRemoteEventFilterVerifier::On" L ## #NAME L"(...)#[@DropConsecutive] event repeated.");\
-			ClearDropConsecutiveMasks();\
-			lastDropConsecutiveEvent ## NAME = true;\
-	
-#define EVENT_NOREQ(NAME, REQUEST, DROPTAG)\
-		void On ## NAME() override\
-		{\
-			if (submitting)\
-			{\
-				EVENT_ ## DROPTAG(NAME);\
-				targetEvents->On ## NAME();\
-			}\
-			else\
-			{\
-				targetEvents->On ## NAME();\
-			}\
-		}\
-	
-#define EVENT_REQ(NAME, REQUEST, DROPTAG)\
-		void On ## NAME(const REQUEST& arguments) override\
-		{\
-			if (submitting)\
-			{\
-				EVENT_ ## DROPTAG(NAME);\
-				targetEvents->On ## NAME(arguments);\
-			}\
-			else\
-			{\
-				targetEvents->On ## NAME(arguments);\
-			}\
-		}\
-	
-#define EVENT_HANDLER(NAME, REQUEST, REQTAG, DROPTAG, ...)	EVENT_ ## REQTAG(NAME, REQUEST, DROPTAG)
-		GACUI_REMOTEPROTOCOL_EVENTS(EVENT_HANDLER)
-#undef EVENT_HANDLER
-#undef EVENT_REQ
-#undef EVENT_NOREQ
-#undef EVENT_DROPCON
-#undef EVENT_DROPREP
-#undef EVENT_NOREP
-	};
-
-/***********************************************************************
-GuiRemoteProtocolFilterVerifier
-***********************************************************************/
-	
-	class GuiRemoteProtocolFilterVerifier
-		: public Object
-		, public virtual IGuiRemoteProtocol
-	{
-	protected:
-		GuiRemoteProtocolFilter*								targetProtocol = nullptr;
-		GuiRemoteEventFilterVerifier							eventFilter;
-		vint													lastRequestId = -1;
-		collections::List<FilteredRequest>						filteredRequests;
-	
-#define MESSAGE_NODROP(NAME)
-#define MESSAGE_DROPREP(NAME)												bool lastDropRepeatRequest ## NAME = false;
-#define MESSAGE_HANDLER(NAME, REQUEST, RESPONSE, REQTAG, RESTAG, DROPTAG)	MESSAGE_ ## DROPTAG(NAME)
-		GACUI_REMOTEPROTOCOL_MESSAGES(MESSAGE_HANDLER)
-#undef MESSAGE_HANDLER
-#undef MESSAGE_DROPREP
-#undef MESSAGE_NODROP
-	
-		void ClearDropRepeatMasks()
-		{
-#define MESSAGE_NODROP(NAME)
-#define MESSAGE_DROPREP(NAME)												lastDropRepeatRequest ## NAME = false;
-#define MESSAGE_HANDLER(NAME, REQUEST, RESPONSE, REQTAG, RESTAG, DROPTAG)	MESSAGE_ ## DROPTAG(NAME)
-			GACUI_REMOTEPROTOCOL_MESSAGES(MESSAGE_HANDLER)
-#undef MESSAGE_HANDLER
-#undef MESSAGE_DROPREP
-#undef MESSAGE_NODROP
-		}
-	public:
-		GuiRemoteProtocolFilterVerifier(GuiRemoteProtocolFilter* _protocol)
-			: targetProtocol(_protocol)
-		{
-		}
-	
-	protected:
-	
-	public:
-	
-		// messages
-	
-#define MESSAGE_NODROP(NAME)
-	
-#define MESSAGE_DROPREP(NAME)\
-			CHECK_ERROR(!lastDropRepeatRequest ## NAME, L"vl::presentation::remoteprotocol::GuiRemoteProtocolFilterVerifier::Request" L ## #NAME L"(...)#[@DropRepeat] message repeated.");\
-			lastDropRepeatRequest ## NAME = true;\
-	
-#define MESSAGE_NOREQ_NORES(NAME, REQUEST, RESPONSE, DROPTAG)\
-		void Request ## NAME() override\
-		{\
-			MESSAGE_ ## DROPTAG(NAME);\
-			targetProtocol->Request ## NAME();\
-		}\
-	
-#define MESSAGE_NOREQ_RES(NAME, REQUEST, RESPONSE, DROPTAG)\
-		void Request ## NAME(vint id) override\
-		{\
-			MESSAGE_ ## DROPTAG(NAME);\
-			targetProtocol->Request ## NAME(id);\
-		}\
-	
-#define MESSAGE_REQ_NORES(NAME, REQUEST, RESPONSE, DROPTAG)\
-		void Request ## NAME(const REQUEST& arguments) override\
-		{\
-			MESSAGE_ ## DROPTAG(NAME);\
-			targetProtocol->Request ## NAME(arguments);\
-		}\
-	
-#define MESSAGE_REQ_RES(NAME, REQUEST, RESPONSE, DROPTAG)\
-		void Request ## NAME(vint id, const REQUEST& arguments) override\
-		{\
-			MESSAGE_ ## DROPTAG(NAME);\
-			targetProtocol->Request ## NAME(id, arguments);\
-		}\
-	
-#define MESSAGE_HANDLER(NAME, REQUEST, RESPONSE, REQTAG, RESTAG, DROPTAG, ...)	MESSAGE_ ## REQTAG ## _ ## RESTAG(NAME, REQUEST, RESPONSE, DROPTAG)
-		GACUI_REMOTEPROTOCOL_MESSAGES(MESSAGE_HANDLER)
-#undef MESSAGE_HANDLER
-#undef MESSAGE_REQ_RES
-#undef MESSAGE_REQ_NORES
-#undef MESSAGE_NOREQ_RES
-#undef MESSAGE_NOREQ_NORES
-#undef MESSAGE_DROPREP
-#undef MESSAGE_NODROP
-	
-		// protocol
-	
-		WString GetExecutablePath() override
-		{
-			return targetProtocol->GetExecutablePath();
-		}
-	
-		void Initialize(IGuiRemoteProtocolEvents* _events) override
-		{
-			targetProtocol->Initialize(&eventFilter);
-			eventFilter.targetEvents = targetProtocol->eventFilter.targetEvents;
-			targetProtocol->eventFilter.targetEvents = _events;
-		}
-	
-		void Submit() override
-		{
-			eventFilter.submitting = true;
-			targetProtocol->Submit();
-			ClearDropRepeatMasks();
-			eventFilter.ClearDropRepeatMasks();
-			eventFilter.ClearDropConsecutiveMasks();
-			eventFilter.submitting = false;
-		}
-	
-		void ProcessRemoteEvents() override
-		{
-			targetProtocol->ProcessRemoteEvents();
+			eventCombinator.ProcessResponses();
+			GuiRemoteProtocolCombinator<GuiRemoteEventFilter>::Submit();
+			eventCombinator.submitting = false;
+			eventCombinator.ProcessEvents();
 		}
 	};
 }
+
+#endif
+
+/***********************************************************************
+.\PLATFORMPROVIDERS\REMOTE\GUIREMOTEPROTOCOL.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI::Remote Window
+
+Interfaces:
+  IGuiRemoteProtocol
+
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_GUIREMOTECONTROLLER_GUIREMOTEPROTOCOL
+#define VCZH_PRESENTATION_GUIREMOTECONTROLLER_GUIREMOTEPROTOCOL
+
 
 #endif
 
@@ -23505,11 +23631,14 @@ IGuiResourceManager
 
 		class IGuiResourceManager : public IDescriptable, public Description<IGuiResourceManager>
 		{
+			using ResourceLazyList = collections::LazyList<Ptr<GuiResource>>;
 		public:
 			virtual void								SetResource(Ptr<GuiResource> resource, GuiResourceError::List& errors, GuiResourceUsage usage = GuiResourceUsage::DataOnly) = 0;
 			virtual Ptr<GuiResource>					GetResource(const WString& name) = 0;
 			virtual Ptr<GuiResource>					GetResourceFromClassName(const WString& classFullName) = 0;
-			virtual void								UnloadResource(const WString& name) = 0;
+			virtual ResourceLazyList					GetLoadedResources() = 0;
+			virtual bool								UnloadResource(const WString& name) = 0;
+			virtual bool								UnloadResource(Ptr<GuiResource> resource) = 0;
 			virtual void								LoadResourceOrPending(stream::IStream& resourceStream, GuiResourceError::List& errors, GuiResourceUsage usage = GuiResourceUsage::DataOnly) = 0;
 			virtual void								LoadResourceOrPending(stream::IStream& resourceStream, GuiResourceUsage usage = GuiResourceUsage::DataOnly) = 0;
 			virtual void								GetPendingResourceNames(collections::List<WString>& names) = 0;
@@ -24374,7 +24503,7 @@ namespace vl
 /***********************************************************************
 !!!!!! DO NOT MODIFY !!!!!!
 
-GacGen.exe Resource.xml
+Source: GacUI FakeDialogServiceUI
 
 This file is generated by Workflow compiler
 https://github.com/vczh-libraries
@@ -27457,7 +27586,7 @@ Closures
 /***********************************************************************
 !!!!!! DO NOT MODIFY !!!!!!
 
-GacGen.exe Resource.xml
+Source: GacUI FakeDialogServiceUI
 
 This file is generated by Workflow compiler
 https://github.com/vczh-libraries
@@ -27628,6 +27757,7 @@ GuiHostedController
 			, protected INativeScreenService
 			, protected INativeScreen
 			, protected INativeWindowService
+			, protected IGuiHostedApplication
 		{
 			friend class GuiHostedWindow;
 			friend class elements::GuiHostedGraphicsResourceManager;
@@ -27798,10 +27928,17 @@ GuiHostedController
 			void							DestroyHostedWindowsAfterRunning();
 			void							Run(INativeWindow* window) override;
 			bool							RunOneCycle() override;
+
+			// =============================================================
+			// IGuiHostedApplication
+			// =============================================================
+
+			INativeWindow*					GetNativeWindowHost() override;
 		public:
 			GuiHostedController(INativeController* _nativeController);
 			~GuiHostedController();
 
+			IGuiHostedApplication*			GetHostedApplication();
 			void							Initialize();
 			void							Finalize();
 			void							RequestRefresh();

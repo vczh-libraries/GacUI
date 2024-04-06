@@ -76,6 +76,7 @@ DEVELOPER: Zihan Chen(vczh)
 #include "..\..\Source\GraphicsElement\GuiGraphicsTextElement.cpp"
 #include "..\..\Source\NativeWindow\GuiNativeWindow.cpp"
 #include "..\..\Source\PlatformProviders\GacGen\GacGenController.cpp"
+#include "..\..\Source\PlatformProviders\Hosted\GuiHostedApplication.cpp"
 #include "..\..\Source\PlatformProviders\Hosted\GuiHostedController.cpp"
 #include "..\..\Source\PlatformProviders\Hosted\GuiHostedGraphics.cpp"
 #include "..\..\Source\PlatformProviders\Hosted\GuiHostedWindow.cpp"
