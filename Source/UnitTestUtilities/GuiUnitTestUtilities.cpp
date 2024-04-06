@@ -102,6 +102,21 @@ void GacUIUnitTest_Start(const WString& appName, Nullable<UnitTestScreenConfig> 
 		Folder snapshotFolder = GetUnitTestFrameworkConfig().snapshotFolder;
 		CHECK_ERROR(snapshotFolder.Exists(), ERROR_MESSAGE_PREFIX L"UnitTestFrameworkConfig::snapshotFolder does not point to an existing folder.");
 
+		File snapshotFile = snapshotFolder.GetFilePath() / (appName + L".json");
+		{
+			auto pathPrefix = snapshotFolder.GetFilePath().GetFullPath() + WString::FromChar(FilePath::Delimiter);
+			auto snapshotPath = snapshotFile.GetFilePath().GetFullPath();
+			CHECK_ERROR(
+				snapshotPath.Length() > pathPrefix.Length() && snapshotPath.Left(pathPrefix.Length()) == pathPrefix,
+				ERROR_MESSAGE_PREFIX L"Argument appName should specify a file that is inside UnitTestFrameworkConfig::snapshotFolder"
+				);
+			Folder snapshotFileFolder = snapshotFile.GetFilePath().GetFolder();
+			if (!snapshotFileFolder.Exists())
+			{
+				CHECK_ERROR(snapshotFileFolder.Create(true), ERROR_MESSAGE_PREFIX L"Failed to create the folder to contain the snapshot file specified by argument appName.");
+			}
+		}
+
 		JsonFormatting formatting;
 		formatting.spaceAfterColon = true;
 		formatting.spaceAfterComma = true;
@@ -109,7 +124,6 @@ void GacUIUnitTest_Start(const WString& appName, Nullable<UnitTestScreenConfig> 
 		formatting.compact = true;
 		auto textLog = JsonToString(unitTestProtocol.GetLogAsJson(), formatting);
 
-		File snapshotFile = snapshotFolder.GetFilePath() / (appName + L".json");
 		bool succeeded = snapshotFile.WriteAllText(textLog, false, stream::BomEncoder::Utf8);
 		CHECK_ERROR(succeeded, ERROR_MESSAGE_PREFIX L"Failed to write the snapshot file.");
 	}
