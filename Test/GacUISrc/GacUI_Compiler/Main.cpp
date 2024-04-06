@@ -96,6 +96,26 @@ const wchar_t* DIALOGS_SOURCE_FOLDER()
 	}
 }
 
+const wchar_t* UNITTESTVIEWER_BINARY_FOLDER()
+{
+	switch (targetCpuArchitecture)
+	{
+	case GuiResourceCpuArchitecture::x86: return L"../GacUISrc/Generated_UnitTestViewer/Resource_x86/";
+	case GuiResourceCpuArchitecture::x64: return L"../GacUISrc/Generated_UnitTestViewer/Resource_x64/";
+	default: CHECK_FAIL(L"The target CPU architecture is unspecified.");
+	}
+}
+
+const wchar_t* UNITTESTVIEWER_SOURCE_FOLDER()
+{
+	switch (targetCpuArchitecture)
+	{
+	case GuiResourceCpuArchitecture::x86: return L"../GacUISrc/Generated_UnitTestViewer/Source_x86/";
+	case GuiResourceCpuArchitecture::x64: return L"../GacUISrc/Generated_UnitTestViewer/Source_x64/";
+	default: CHECK_FAIL(L"The target CPU architecture is unspecified.");
+	}
+}
+
 /***********************************************************************
 Metadata
 ***********************************************************************/
@@ -136,13 +156,20 @@ GUI_REGISTER_PLUGIN(GuiReflectionPlugin)
 Compiler
 ***********************************************************************/
 
+// #define BUILD_FAKEDIALOG
+#define BUILD_UNITTESTVIEWER
+// #define BUILD_DARKSKIN
+// #define BUILD_FULLCONTROLTEST
+
 void GuiMain()
 {
 	List<WString> dependencies;
+
+#ifdef BUILD_FAKEDIALOG
 	LoadResource(CompileResources(
 		targetCpuArchitecture,
 		L"GuiFakeDialogServiceUI",
-		L"GacGen.exe Resource.xml",
+		L"Source: GacUI FakeDialogServiceUI",
 		L"../../../../GacUI.h",
 		L"../../../../Reflection/TypeDescriptors/GuiReflectionPlugin.h",
 		dependencies,
@@ -151,6 +178,24 @@ void GuiMain()
 		(GetResourcePath() / DIALOGS_SOURCE_FOLDER()),
 		false
 	));
+#endif
+
+#ifdef BUILD_UNITTESTVIEWER
+	LoadResource(CompileResources(
+		targetCpuArchitecture,
+		L"GuiUnitTestSnapshotViewer",
+		L"Source: GacUI UnitTestSnapshotViewer",
+		L"../../../GacUI.h",
+		L"../../../Reflection/TypeDescriptors/GuiReflectionPlugin.h",
+		dependencies,
+		(GetResourcePath() / L"../../Source/UnitTestUtilities/SnapshotViewer/Resource.xml"),
+		(GetResourcePath() / UNITTESTVIEWER_BINARY_FOLDER()),
+		(GetResourcePath() / UNITTESTVIEWER_SOURCE_FOLDER()),
+		false
+	));
+#endif
+
+#ifdef BUILD_DARKSKIN
 	LoadResource(CompileResources(
 		targetCpuArchitecture,
 		L"DarkSkin",
@@ -163,6 +208,9 @@ void GuiMain()
 		(GetResourcePath() / DARKSKIN_SOURCE_FOLDER()),
 		true
 	));
+#endif
+
+#ifdef BUILD_FULLCONTROLTEST
 	LoadResource(CompileResources(
 		targetCpuArchitecture,
 		L"Demo",
@@ -175,6 +223,7 @@ void GuiMain()
 		(GetResourcePath() / FULLCONTROLTEST_SOURCE_FOLDER()),
 		false
 	));
+#endif
 }
 
 /***********************************************************************
@@ -190,14 +239,27 @@ void CompilerMain()
 	SetupGacGenNativeController();
 
 	targetCpuArchitecture = GuiResourceCpuArchitecture::x86;
-	auto input32Path = GetResourcePath() / DIALOGS_SOURCE_FOLDER();
+	auto input32Path_FakeDialog = GetResourcePath() / DIALOGS_SOURCE_FOLDER();
+	auto input32Path_UnitTestViewer = GetResourcePath() / UNITTESTVIEWER_SOURCE_FOLDER();
 	targetCpuArchitecture = GuiResourceCpuArchitecture::x64;
-	auto input64Path = GetResourcePath() / DIALOGS_SOURCE_FOLDER();
+	auto input64Path_FakeDialog = GetResourcePath() / DIALOGS_SOURCE_FOLDER();
+	auto input64Path_UnitTestViewer = GetResourcePath() / UNITTESTVIEWER_SOURCE_FOLDER();
+
+#ifdef BUILD_FAKEDIALOG
 	MergeCppFiles(
-		input32Path,
-		input64Path,
+		input32Path_FakeDialog,
+		input64Path_FakeDialog,
 		(GetResourcePath() / L"../../Source/Utilities/FakeServices/Dialogs/Source")
 		);
+#endif
+
+#ifdef BUILD_UNITTESTVIEWER
+	MergeCppFiles(
+		input32Path_UnitTestViewer,
+		input64Path_UnitTestViewer,
+		(GetResourcePath() / L"../../Source/UnitTestUtilities/SnapshotViewer/Source")
+		);
+#endif
 }
 
 #if defined VCZH_MSVC

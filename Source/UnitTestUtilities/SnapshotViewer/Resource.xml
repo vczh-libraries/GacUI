@@ -1,0 +1,32 @@
+<Resource>
+  <Folder name="GacGenConfig">
+    <Folder name="Cpp">
+      <Text name="SourceFolder">Source</Text>
+      <Text name="NormalInclude">../../../GacUI.h</Text>
+      <Text name="ReflectionInclude">../../../Reflection/TypeDescriptors/GuiReflectionPlugin.h</Text>
+      <Text name="Name">GuiUnitTestSnapshotViewer</Text>
+      <Text name="CppCompressed">GuiUnitTestSnapshotViewer.cpp</Text>
+    </Folder>
+  </Folder>
+
+  <LocalizedStrings name="UnitTestSnapshotViewerStrings">
+    <LocalizedStrings ref.Class="gaclib_controls::UnitTestSnapshotViewerStrings" DefaultLocale="en-US">
+      <Strings Locales="en-US">
+        <String Name="WindowTitle" Text="Unit Test Snapshot Viewer"/>
+      </Strings>
+    </LocalizedStrings>
+  </LocalizedStrings>
+
+  <Instance name="UnitTestSnapshotViewerWindowResource">
+    <Instance ref.CodeBehind="false" ref.Class="gaclib_controls::UnitTestSnapshotViewerWindow" xmlns:g="gaclib_controls::*">
+      <ref.LocalizedStrings Name="Strings" Class="gaclib_controls::UnitTestSnapshotViewerStrings" Default="true"/>
+      <ref.Parameter Name="ViewModel" Class="presentation::IColorDialogViewModel"/>
+      <Window
+          ref.Name = "self"
+          Text-str="WindowTitle()"
+          ClientSize="x:1920 y:1080"
+          >
+      </Window>
+    </Instance>
+  </Instance>
+</Resource>

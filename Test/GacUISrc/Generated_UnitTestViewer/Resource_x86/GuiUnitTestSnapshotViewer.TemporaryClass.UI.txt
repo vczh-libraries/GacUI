@@ -1,0 +1,129 @@
+﻿================================(1/2)================================
+module <instance>gaclib_controls::UnitTestSnapshotViewerWindow;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace gaclib_controls
+{
+    class UnitTestSnapshotViewerWindow : ::presentation::controls::GuiWindow
+    {
+        @cpp:Private
+        var <prop>Strings : ::gaclib_controls::IUnitTestSnapshotViewerStringsStrings^ = ::gaclib_controls::UnitTestSnapshotViewerStrings::Get((cast (::system::Locale) "en-US"));
+
+        func GetStrings() : (::gaclib_controls::IUnitTestSnapshotViewerStringsStrings^)
+        {
+            return <prop>Strings;
+        }
+
+        func SetStrings(<value> : ::gaclib_controls::IUnitTestSnapshotViewerStringsStrings^) : (void)
+        {
+            if ((<prop>Strings != <value>))
+            {
+                (<prop>Strings = <value>);
+                StringsChanged();
+            }
+        }
+
+        event StringsChanged();
+
+        prop Strings : ::gaclib_controls::IUnitTestSnapshotViewerStringsStrings^{GetStrings, SetStrings : StringsChanged}
+
+        func GetViewModel() : (presentation::IColorDialogViewModel^)
+        {
+            raise "Not Implemented";
+        }
+
+        prop ViewModel : presentation::IColorDialogViewModel^{GetViewModel}
+
+        new* (<ctor-parameter>ViewModel : presentation::IColorDialogViewModel^)
+            :::presentation::controls::GuiWindow((cast (::presentation::theme::ThemeName) (cast (::system::UInt64) 0)))
+        {
+            raise "Not Implemented";
+        }
+
+        delete
+        {
+            FinalizeInstanceRecursively(this of (::presentation::controls::GuiControlHost*));
+        }
+    }
+}
+
+================================(2/2)================================
+module <localized-strings>gaclib_controls::UnitTestSnapshotViewerStrings;
+
+namespace gaclib_controls
+{
+    interface IUnitTestSnapshotViewerStringsStrings
+    {
+        func WindowTitle() : (::system::String);
+    }
+}
+
+namespace gaclib_controls
+{
+    var <ls>UnitTestSnapshotViewerStrings : IUnitTestSnapshotViewerStringsStrings^[::system::Locale] = {};
+}
+
+namespace gaclib_controls
+{
+    class UnitTestSnapshotViewerStrings
+    {
+        static func <ls_en-US>BuildStrings(<ls>locale : ::system::Locale) : (::gaclib_controls::IUnitTestSnapshotViewerStringsStrings^)
+        {
+            return new (::gaclib_controls::IUnitTestSnapshotViewerStringsStrings^)
+            {
+                override func WindowTitle() : (::system::String)
+                {
+                    return "Unit Test Snapshot Viewer";
+                }
+            };
+        }
+
+        static func Install(<ls>locale : ::system::Locale, <ls>impl : IUnitTestSnapshotViewerStringsStrings^) : (void)
+        {
+            if (<ls>UnitTestSnapshotViewerStrings.Keys.Contains(<ls>locale))
+            {
+                raise (("Localized strings \"gaclib_controls::UnitTestSnapshotViewerStrings\" has already registered for locale \"" & <ls>locale) & "\".");
+            }
+            <ls>UnitTestSnapshotViewerStrings.Set(<ls>locale, <ls>impl);
+        }
+
+        static func Get(<ls>locale : ::system::Locale) : (IUnitTestSnapshotViewerStringsStrings^)
+        {
+            if (<ls>UnitTestSnapshotViewerStrings.Keys.Contains(<ls>locale))
+            {
+                return <ls>UnitTestSnapshotViewerStrings[<ls>locale];
+            }
+            return <ls>UnitTestSnapshotViewerStrings[(cast (::system::Locale) "en-US")];
+        }
+
+        new ()
+        {
+        }
+    }
+}
+
+namespace gaclib_controls
+{
+    static
+    {
+        ::gaclib_controls::UnitTestSnapshotViewerStrings::Install((cast (::system::Locale) "en-US"), UnitTestSnapshotViewerStrings::<ls_en-US>BuildStrings((cast (::system::Locale) "en-US")));
+    }
+}
+
