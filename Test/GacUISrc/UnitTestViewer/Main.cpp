@@ -18,9 +18,9 @@ void GuiMain()
 
 #if defined VCZH_MSVC
 #ifdef _WIN64
-		FilePath snapshotFolderPath = GetApplication()->GetExecutablePath() + L"..\\..\\..\\Resources\\UnitTestSnapshots";
+		FilePath snapshotFolderPath = GetApplication()->GetExecutablePath() + L"..\\..\\..\\..\\..\\Resources\\UnitTestSnapshots";
 #else
-		FilePath snapshotFolderPath = GetApplication()->GetExecutablePath() + L"..\\..\\Resources\\UnitTestSnapshots";
+		FilePath snapshotFolderPath = GetApplication()->GetExecutablePath() + L"..\\..\\..\\..\\Resources\\UnitTestSnapshots";
 #endif
 #elif defined VCZH_GCC
 		FilePath snapshotFolderPath = GetApplication()->GetExecutablePath() + L"../../Resources/UnitTestSnapshots";
