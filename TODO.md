@@ -32,7 +32,6 @@
   - Change `GUI_PLUGIN_NAME` to `GUI_PLUGIN_CONTROLLER_(UN)RELATED`.
   - Remove the two parameters from `IGuiPlugin`, the macro above already specified it clear enough.
   - Unrelated plugins are not allowed to depend on related plugins.
-- Calling `GuiWindow::ShowMaximized` in `WindowOpened` with `SetupHostedWindowsDirect2DRenderer` doesn't properly maximize the window.
 
 ## Release Milestone (1.2.10.0)
 
@@ -46,11 +45,12 @@
   - A switch to compare snapshot with logged snapshot.
 - Implement basic control (`Source_GacUI_CoreApplication` controls only) unit test based on streaming
   - Skipped time related features, like tooltip.
-- Metadata of remote protovol will be updated and included in releases.
+- Metadata of remote protocol will be updated and included in releases.
 - GacUI Binary Resource (can't move to next release)
   - Upgrade GacUI XML Resource to 1.3, force on all resources instead of only depended or depending resource.
   - Require binary pattern "[GMR-1.3]" at the beginning of the binary resource.
   - Resource compiler and loader will check the version and only accept 1.3.
+- Calling `GuiWindow::ShowMaximized` in `WindowOpened` with `SetupHostedWindowsDirect2DRenderer` doesn't properly maximize the window.
 - Document
   - string conversion mechanism and functions to Vlpp document.
   - Vlpp
@@ -63,7 +63,9 @@
     - `bool controllerUnrelatedPlugins` and `bool controllerRelatedPlugins` added to `IGuiPlugin`
     - Check GacUI \ GacUI Components \ (compositions | Controls) and fill missing items
   - Fix `MakePtr` from sample code in documents.
-  - Fix DSL page.
+  - Fix DSL index page, leaving all class names withou link, with some simple description.
+    - Add VlppParser2.
+    - Begin to add DSL syntax to document instead of just in comments.
   - Check if there is any link to /home or other deprecated pages.
 
 ## Release Milestone (1.2.11.0)
