@@ -6,5 +6,13 @@ namespace vl::presentation::unittest
 		: public Object
 		, public virtual gaclib_controls::IUnitTestSnapshotViewerViewModel
 	{
+	protected:
+		Ptr<gaclib_controls::IUnitTestSnapshotFileNode>		rootNode;
+
+	public:
+		UnitTestSnapshotViewerViewModel(filesystem::FilePath snapshotFolderPath);
+		~UnitTestSnapshotViewerViewModel();
+
+		Ptr<gaclib_controls::IUnitTestSnapshotFileNode>		GetRootNode() override;
 	};
 }

@@ -5,6 +5,7 @@
 #include "../../../Source/PlatformProviders/Windows/WinNativeWindow.h"
 
 using namespace vl;
+using namespace vl::filesystem;
 using namespace vl::presentation;
 using namespace vl::presentation::controls;
 using namespace vl::presentation::unittest;
@@ -14,7 +15,17 @@ void GuiMain()
 {
 	theme::RegisterTheme(Ptr(new darkskin::Theme));
 	{
-		UnitTestSnapshotViewerWindow window(Ptr(new UnitTestSnapshotViewerViewModel));
+
+#if defined VCZH_MSVC
+#ifdef _WIN64
+		FilePath snapshotFolderPath = GetApplication()->GetExecutablePath() + L"..\\..\\..\\Resources\\UnitTestSnapshots";
+#else
+		FilePath snapshotFolderPath = GetApplication()->GetExecutablePath() + L"..\\..\\Resources\\UnitTestSnapshots";
+#endif
+#elif defined VCZH_GCC
+		FilePath snapshotFolderPath = GetApplication()->GetExecutablePath() + L"../../Resources/UnitTestSnapshots";
+#endif
+		UnitTestSnapshotViewerWindow window(Ptr(new UnitTestSnapshotViewerViewModel(snapshotFolderPath)));
 		window.ForceCalculateSizeImmediately();
 		window.MoveToScreenCenter();
 		window.WindowOpened.AttachLambda([&](auto&&...)
