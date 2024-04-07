@@ -16,9 +16,11 @@
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\UnitTestUtilities\SnapshotViewer\Source\GuiUnitTestSnapshotViewer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\UnitTestUtilities\SnapshotViewer\Source\GuiUnitTestSnapshotViewerIncludes.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\UnitTestUtilities\SnapshotViewer\ViewModel\GuiUnitTestSnapshotViewerViewModel.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\UnitTestUtilities\SnapshotViewer\Source\GuiUnitTestSnapshotViewer.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\UnitTestUtilities\SnapshotViewer\Source\GuiUnitTestSnapshotViewerResource.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\UnitTestUtilities\SnapshotViewer\ViewModel\GuiUnitTestSnapshotViewerViewModel.cpp" />
   </ItemGroup>
 </Project>

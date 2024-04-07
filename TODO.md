@@ -32,6 +32,7 @@
   - Change `GUI_PLUGIN_NAME` to `GUI_PLUGIN_CONTROLLER_(UN)RELATED`.
   - Remove the two parameters from `IGuiPlugin`, the macro above already specified it clear enough.
   - Unrelated plugins are not allowed to depend on related plugins.
+- Calling `GuiWindow::ShowMaximized` in `WindowOpened` with `SetupHostedWindowsDirect2DRenderer` doesn't properly maximize the window.
 
 ## Release Milestone (1.2.10.0)
 
