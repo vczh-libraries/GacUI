@@ -24,10 +24,25 @@ namespace gaclib_controls
     class UnitTestSnapshotViewerWindowConstructor
     {
         @cpp:Protected
+        var ViewModel : ::gaclib_controls::IUnitTestSnapshotViewerViewModel^ = null of (::gaclib_controls::IUnitTestSnapshotViewerViewModel^);
+
+        @cpp:Protected
         var self : ::gaclib_controls::UnitTestSnapshotViewerWindow* = null of (::gaclib_controls::UnitTestSnapshotViewerWindow*);
 
         @cpp:Protected
-        var ViewModel : ::gaclib_controls::IUnitTestSnapshotViewerViewModel^ = null of (::gaclib_controls::IUnitTestSnapshotViewerViewModel^);
+        var treeViewFileNodes : ::presentation::controls::GuiBindableTreeView* = null of (::presentation::controls::GuiBindableTreeView*);
+
+        @cpp:Protected
+        var <precompile>0 : ::presentation::compositions::GuiTableComposition* = null of (::presentation::compositions::GuiTableComposition*);
+
+        @cpp:Protected
+        var <precompile>1 : ::presentation::compositions::GuiColumnSplitterComposition* = null of (::presentation::compositions::GuiColumnSplitterComposition*);
+
+        @cpp:Protected
+        var <precompile>2 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
+
+        @cpp:Protected
+        var <precompile>3 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
         func <gaclib_controls-UnitTestSnapshotViewerWindow>Initialize(<this> : ::gaclib_controls::UnitTestSnapshotViewerWindow*) : (::system::Void)
@@ -36,6 +51,69 @@ namespace gaclib_controls
             (ViewModel = <this>.ViewModel);
             {
                 (self.ClientSize = {x : 1920; y : 1080;} of (::presentation::Size));
+            }
+            (<precompile>0 = new (::presentation::compositions::GuiTableComposition*)());
+            {
+                (<precompile>0.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+            }
+            {
+                (<precompile>0.CellPadding = 5 of (::system::Int64));
+            }
+            {
+                (<precompile>0.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                <precompile>0.SetRowsAndColumns(1, 2);
+                <precompile>0.SetRowOption(0, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
+                <precompile>0.SetColumnOption(0, {composeType : Absolute; absolute : 300;} of (::presentation::compositions::GuiCellOption));
+                <precompile>0.SetColumnOption(1, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
+            }
+            (<precompile>1 = new (::presentation::compositions::GuiColumnSplitterComposition*)());
+            {
+                (<precompile>1.ColumnsToTheLeft = 1 of (::system::Int64));
+            }
+            {
+                <precompile>0.AddChild(<precompile>1);
+            }
+            (<precompile>2 = new (::presentation::compositions::GuiCellComposition*)());
+            {
+                <precompile>2.SetSite(0, 0, 1, 1);
+            }
+            {
+                (treeViewFileNodes = new (::presentation::controls::GuiBindableTreeView*)(::presentation::theme::ThemeName::TreeView));
+            }
+            {
+                (treeViewFileNodes.ChildrenProperty = func (<item> : ::system::Object) : (::system::Enumerable^)
+                {
+                    var item = (cast (IUnitTestSnapshotFileNode^) <item>);
+                    return item.Children;
+                });
+            }
+            {
+                (treeViewFileNodes.TextProperty = func (<item> : ::system::Object) : (::system::String)
+                {
+                    var item = (cast (IUnitTestSnapshotFileNode^) <item>);
+                    return item.Name;
+                });
+            }
+            (<precompile>3 = treeViewFileNodes.BoundsComposition);
+            {
+                (<precompile>3.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (treeViewFileNodes.HorizontalAlwaysVisible = false);
+            }
+            {
+                (treeViewFileNodes.VerticalAlwaysVisible = false);
+            }
+            {
+                <precompile>2.AddChild(treeViewFileNodes.BoundsComposition);
+            }
+            {
+                <precompile>0.AddChild(<precompile>2);
+            }
+            {
+                self.ContainerComposition.AddChild(<precompile>0);
             }
             {
                 var <created-subscription> = new (::system::Subscription^)
@@ -334,8 +412,34 @@ using presentation::*;
 
 namespace gaclib_controls
 {
+    enum UnitTestSnapshotFileNodeType
+    {
+        Folder = 0,
+        File = 1,
+    }
+
+    interface IUnitTestSnapshotFileNode
+    {
+        func GetNodeType() : (UnitTestSnapshotFileNodeType);
+
+        prop NodeType : UnitTestSnapshotFileNodeType{GetNodeType}
+
+        func GetName() : (string);
+
+        prop Name : string{GetName}
+
+        func GetChildren() : (IUnitTestSnapshotFileNode^{});
+
+        prop Children : IUnitTestSnapshotFileNode^{}{GetChildren}
+
+        func LoadContent() : (string);
+    }
+
     interface IUnitTestSnapshotViewerViewModel
     {
+        func GetRootNode() : (IUnitTestSnapshotFileNode^);
+
+        prop RootNode : IUnitTestSnapshotFileNode^{GetRootNode}
     }
 }
 

@@ -26,18 +26,46 @@ namespace vl_workflow_global
 {
 	struct __vwsnf1_GuiUnitTestSnapshotViewer_gaclib_controls_UnitTestSnapshotViewerWindowConstructor___vwsn_gaclib_controls_UnitTestSnapshotViewerWindow_Initialize_;
 	struct __vwsnf2_GuiUnitTestSnapshotViewer_gaclib_controls_UnitTestSnapshotViewerWindowConstructor___vwsn_gaclib_controls_UnitTestSnapshotViewerWindow_Initialize_;
+	struct __vwsnf3_GuiUnitTestSnapshotViewer_gaclib_controls_UnitTestSnapshotViewerWindowConstructor___vwsn_gaclib_controls_UnitTestSnapshotViewerWindow_Initialize_;
+	struct __vwsnf4_GuiUnitTestSnapshotViewer_gaclib_controls_UnitTestSnapshotViewerWindowConstructor___vwsn_gaclib_controls_UnitTestSnapshotViewerWindow_Initialize_;
 	class __vwsnc1_GuiUnitTestSnapshotViewer_gaclib_controls_UnitTestSnapshotViewerWindowConstructor___vwsn_gaclib_controls_UnitTestSnapshotViewerWindow_Initialize__vl_reflection_description_IValueSubscription;
 	class __vwsnc2_GuiUnitTestSnapshotViewer_gaclib_controls_UnitTestSnapshotViewerWindowConstructor___vwsn_gaclib_controls_UnitTestSnapshotViewerWindow_Initialize__vl_reflection_description_IValueSubscription;
 	class __vwsnc3_GuiUnitTestSnapshotViewer_gaclib_controls_UnitTestSnapshotViewerStrings___vwsn_ls_en_US_BuildStrings__gaclib_controls_IUnitTestSnapshotViewerStringsStrings;
 }
 
+namespace __vwsn_enums
+{
+	enum class _gaclib_controls_UnitTestSnapshotFileNodeType : vl::vuint64_t
+	{
+		Folder = 0UL,
+		File = 1UL,
+	};
+	inline _gaclib_controls_UnitTestSnapshotFileNodeType operator& (_gaclib_controls_UnitTestSnapshotFileNodeType a, _gaclib_controls_UnitTestSnapshotFileNodeType b) { return static_cast<_gaclib_controls_UnitTestSnapshotFileNodeType>(static_cast<::vl::vuint64_t>(a) & static_cast<::vl::vuint64_t>(b)); }
+	inline _gaclib_controls_UnitTestSnapshotFileNodeType operator| (_gaclib_controls_UnitTestSnapshotFileNodeType a, _gaclib_controls_UnitTestSnapshotFileNodeType b) { return static_cast<_gaclib_controls_UnitTestSnapshotFileNodeType>(static_cast<::vl::vuint64_t>(a) | static_cast<::vl::vuint64_t>(b)); }
+
+}
 namespace gaclib_controls
 {
+	using UnitTestSnapshotFileNodeType = ::__vwsn_enums::_gaclib_controls_UnitTestSnapshotFileNodeType;
+
+	class IUnitTestSnapshotFileNode;
 	class IUnitTestSnapshotViewerStringsStrings;
 	class IUnitTestSnapshotViewerViewModel;
 	class UnitTestSnapshotViewerStrings;
 	class UnitTestSnapshotViewerWindowConstructor;
 	class UnitTestSnapshotViewerWindow;
+
+	class IUnitTestSnapshotFileNode : public virtual ::vl::reflection::IDescriptable, public ::vl::reflection::Description<IUnitTestSnapshotFileNode>
+	{
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<IUnitTestSnapshotFileNode>;
+#endif
+	public:
+		virtual ::gaclib_controls::UnitTestSnapshotFileNodeType GetNodeType() = 0;
+		virtual ::vl::WString GetName() = 0;
+		virtual ::vl::collections::LazyList<::vl::Ptr<::gaclib_controls::IUnitTestSnapshotFileNode>> GetChildren() = 0;
+		virtual ::vl::WString LoadContent() = 0;
+	};
 
 	class IUnitTestSnapshotViewerStringsStrings : public virtual ::vl::reflection::IDescriptable, public ::vl::reflection::Description<IUnitTestSnapshotViewerStringsStrings>
 	{
@@ -53,6 +81,8 @@ namespace gaclib_controls
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<IUnitTestSnapshotViewerViewModel>;
 #endif
+	public:
+		virtual ::vl::Ptr<::gaclib_controls::IUnitTestSnapshotFileNode> GetRootNode() = 0;
 	};
 
 	class UnitTestSnapshotViewerStrings : public ::vl::Object, public ::vl::reflection::Description<UnitTestSnapshotViewerStrings>
@@ -74,12 +104,19 @@ namespace gaclib_controls
 		friend class ::vl_workflow_global::__vwsnc2_GuiUnitTestSnapshotViewer_gaclib_controls_UnitTestSnapshotViewerWindowConstructor___vwsn_gaclib_controls_UnitTestSnapshotViewerWindow_Initialize__vl_reflection_description_IValueSubscription;
 		friend struct ::vl_workflow_global::__vwsnf1_GuiUnitTestSnapshotViewer_gaclib_controls_UnitTestSnapshotViewerWindowConstructor___vwsn_gaclib_controls_UnitTestSnapshotViewerWindow_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf2_GuiUnitTestSnapshotViewer_gaclib_controls_UnitTestSnapshotViewerWindowConstructor___vwsn_gaclib_controls_UnitTestSnapshotViewerWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf3_GuiUnitTestSnapshotViewer_gaclib_controls_UnitTestSnapshotViewerWindowConstructor___vwsn_gaclib_controls_UnitTestSnapshotViewerWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf4_GuiUnitTestSnapshotViewer_gaclib_controls_UnitTestSnapshotViewerWindowConstructor___vwsn_gaclib_controls_UnitTestSnapshotViewerWindow_Initialize_;
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<UnitTestSnapshotViewerWindowConstructor>;
 #endif
 	protected:
-		::gaclib_controls::UnitTestSnapshotViewerWindow* self;
 		::vl::Ptr<::gaclib_controls::IUnitTestSnapshotViewerViewModel> ViewModel;
+		::gaclib_controls::UnitTestSnapshotViewerWindow* self;
+		::vl::presentation::controls::GuiBindableTreeView* treeViewFileNodes;
+		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0;
+		::vl::presentation::compositions::GuiColumnSplitterComposition* __vwsn_precompile_1;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_2;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_3;
 		void __vwsn_gaclib_controls_UnitTestSnapshotViewerWindow_Initialize(::gaclib_controls::UnitTestSnapshotViewerWindow* __vwsn_this_);
 	public:
 		UnitTestSnapshotViewerWindowConstructor();
@@ -92,6 +129,8 @@ namespace gaclib_controls
 		friend class ::vl_workflow_global::__vwsnc2_GuiUnitTestSnapshotViewer_gaclib_controls_UnitTestSnapshotViewerWindowConstructor___vwsn_gaclib_controls_UnitTestSnapshotViewerWindow_Initialize__vl_reflection_description_IValueSubscription;
 		friend struct ::vl_workflow_global::__vwsnf1_GuiUnitTestSnapshotViewer_gaclib_controls_UnitTestSnapshotViewerWindowConstructor___vwsn_gaclib_controls_UnitTestSnapshotViewerWindow_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf2_GuiUnitTestSnapshotViewer_gaclib_controls_UnitTestSnapshotViewerWindowConstructor___vwsn_gaclib_controls_UnitTestSnapshotViewerWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf3_GuiUnitTestSnapshotViewer_gaclib_controls_UnitTestSnapshotViewerWindowConstructor___vwsn_gaclib_controls_UnitTestSnapshotViewerWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf4_GuiUnitTestSnapshotViewer_gaclib_controls_UnitTestSnapshotViewerWindowConstructor___vwsn_gaclib_controls_UnitTestSnapshotViewerWindow_Initialize_;
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<UnitTestSnapshotViewerWindow>;
 #endif
@@ -132,7 +171,7 @@ Closures
 
 		__vwsnf1_GuiUnitTestSnapshotViewer_gaclib_controls_UnitTestSnapshotViewerWindowConstructor___vwsn_gaclib_controls_UnitTestSnapshotViewerWindow_Initialize_(::gaclib_controls::UnitTestSnapshotViewerWindowConstructor* __vwsnctorthis_0);
 
-		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
+		::vl::Ptr<::vl::reflection::description::IValueEnumerable> operator()(const ::vl::reflection::description::Value& __vwsn_item_) const;
 	};
 
 	struct __vwsnf2_GuiUnitTestSnapshotViewer_gaclib_controls_UnitTestSnapshotViewerWindowConstructor___vwsn_gaclib_controls_UnitTestSnapshotViewerWindow_Initialize_
@@ -140,6 +179,24 @@ Closures
 		::gaclib_controls::UnitTestSnapshotViewerWindowConstructor* __vwsnthis_0;
 
 		__vwsnf2_GuiUnitTestSnapshotViewer_gaclib_controls_UnitTestSnapshotViewerWindowConstructor___vwsn_gaclib_controls_UnitTestSnapshotViewerWindow_Initialize_(::gaclib_controls::UnitTestSnapshotViewerWindowConstructor* __vwsnctorthis_0);
+
+		::vl::WString operator()(const ::vl::reflection::description::Value& __vwsn_item_) const;
+	};
+
+	struct __vwsnf3_GuiUnitTestSnapshotViewer_gaclib_controls_UnitTestSnapshotViewerWindowConstructor___vwsn_gaclib_controls_UnitTestSnapshotViewerWindow_Initialize_
+	{
+		::gaclib_controls::UnitTestSnapshotViewerWindowConstructor* __vwsnthis_0;
+
+		__vwsnf3_GuiUnitTestSnapshotViewer_gaclib_controls_UnitTestSnapshotViewerWindowConstructor___vwsn_gaclib_controls_UnitTestSnapshotViewerWindow_Initialize_(::gaclib_controls::UnitTestSnapshotViewerWindowConstructor* __vwsnctorthis_0);
+
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
+	};
+
+	struct __vwsnf4_GuiUnitTestSnapshotViewer_gaclib_controls_UnitTestSnapshotViewerWindowConstructor___vwsn_gaclib_controls_UnitTestSnapshotViewerWindow_Initialize_
+	{
+		::gaclib_controls::UnitTestSnapshotViewerWindowConstructor* __vwsnthis_0;
+
+		__vwsnf4_GuiUnitTestSnapshotViewer_gaclib_controls_UnitTestSnapshotViewerWindowConstructor___vwsn_gaclib_controls_UnitTestSnapshotViewerWindow_Initialize_(::gaclib_controls::UnitTestSnapshotViewerWindowConstructor* __vwsnctorthis_0);
 
 		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
 	};

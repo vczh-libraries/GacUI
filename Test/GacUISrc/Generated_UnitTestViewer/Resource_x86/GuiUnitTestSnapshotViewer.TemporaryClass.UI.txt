@@ -134,8 +134,34 @@ using presentation::*;
 
 namespace gaclib_controls
 {
+    enum UnitTestSnapshotFileNodeType
+    {
+        Folder = 0,
+        File = 1,
+    }
+
+    interface IUnitTestSnapshotFileNode
+    {
+        func GetNodeType() : (UnitTestSnapshotFileNodeType);
+
+        prop NodeType : UnitTestSnapshotFileNodeType{GetNodeType}
+
+        func GetName() : (string);
+
+        prop Name : string{GetName}
+
+        func GetChildren() : (IUnitTestSnapshotFileNode^{});
+
+        prop Children : IUnitTestSnapshotFileNode^{}{GetChildren}
+
+        func LoadContent() : (string);
+    }
+
     interface IUnitTestSnapshotViewerViewModel
     {
+        func GetRootNode() : (IUnitTestSnapshotFileNode^);
+
+        prop RootNode : IUnitTestSnapshotFileNode^{GetRootNode}
     }
 }
 

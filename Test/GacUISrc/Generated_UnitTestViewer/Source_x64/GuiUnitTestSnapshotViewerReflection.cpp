@@ -30,14 +30,27 @@ namespace vl
 		namespace description
 		{
 #ifndef VCZH_DEBUG_NO_REFLECTION
+			IMPL_CPP_TYPE_INFO(gaclib_controls::IUnitTestSnapshotFileNode)
 			IMPL_CPP_TYPE_INFO(gaclib_controls::IUnitTestSnapshotViewerStringsStrings)
 			IMPL_CPP_TYPE_INFO(gaclib_controls::IUnitTestSnapshotViewerViewModel)
+			IMPL_CPP_TYPE_INFO(gaclib_controls::UnitTestSnapshotFileNodeType)
 			IMPL_CPP_TYPE_INFO(gaclib_controls::UnitTestSnapshotViewerStrings)
 			IMPL_CPP_TYPE_INFO(gaclib_controls::UnitTestSnapshotViewerWindow)
 			IMPL_CPP_TYPE_INFO(gaclib_controls::UnitTestSnapshotViewerWindowConstructor)
 
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 #define _ ,
+			BEGIN_INTERFACE_MEMBER(::gaclib_controls::IUnitTestSnapshotFileNode)
+				CLASS_MEMBER_BASE(::vl::reflection::IDescriptable)
+				CLASS_MEMBER_METHOD(GetChildren, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(GetName, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(GetNodeType, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(LoadContent, NO_PARAMETER)
+				CLASS_MEMBER_PROPERTY_READONLY(Children, GetChildren)
+				CLASS_MEMBER_PROPERTY_READONLY(Name, GetName)
+				CLASS_MEMBER_PROPERTY_READONLY(NodeType, GetNodeType)
+			END_INTERFACE_MEMBER(::gaclib_controls::IUnitTestSnapshotFileNode)
+
 			BEGIN_INTERFACE_MEMBER(::gaclib_controls::IUnitTestSnapshotViewerStringsStrings)
 				CLASS_MEMBER_BASE(::vl::reflection::IDescriptable)
 				CLASS_MEMBER_METHOD(WindowTitle, NO_PARAMETER)
@@ -45,7 +58,14 @@ namespace vl
 
 			BEGIN_INTERFACE_MEMBER(::gaclib_controls::IUnitTestSnapshotViewerViewModel)
 				CLASS_MEMBER_BASE(::vl::reflection::IDescriptable)
+				CLASS_MEMBER_METHOD(GetRootNode, NO_PARAMETER)
+				CLASS_MEMBER_PROPERTY_READONLY(RootNode, GetRootNode)
 			END_INTERFACE_MEMBER(::gaclib_controls::IUnitTestSnapshotViewerViewModel)
+
+			BEGIN_ENUM_ITEM(::gaclib_controls::UnitTestSnapshotFileNodeType)
+				ENUM_CLASS_ITEM(File)
+				ENUM_CLASS_ITEM(Folder)
+			END_ENUM_ITEM(::gaclib_controls::UnitTestSnapshotFileNodeType)
 
 			BEGIN_CLASS_MEMBER(::gaclib_controls::UnitTestSnapshotViewerStrings)
 				CLASS_MEMBER_BASE(::vl::reflection::DescriptableObject)
@@ -73,8 +93,13 @@ namespace vl
 				CLASS_MEMBER_BASE(::vl::reflection::DescriptableObject)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::gaclib_controls::UnitTestSnapshotViewerWindowConstructor>(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(__vwsn_gaclib_controls_UnitTestSnapshotViewerWindow_Initialize, { L"__vwsn_this_" })
+				CLASS_MEMBER_FIELD(__vwsn_precompile_0)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_1)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_2)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_3)
 				CLASS_MEMBER_FIELD(ViewModel)
 				CLASS_MEMBER_FIELD(self)
+				CLASS_MEMBER_FIELD(treeViewFileNodes)
 			END_CLASS_MEMBER(::gaclib_controls::UnitTestSnapshotViewerWindowConstructor)
 
 #undef _
@@ -83,8 +108,10 @@ namespace vl
 			public:
 				void Load(ITypeManager* manager)
 				{
+					ADD_TYPE_INFO(::gaclib_controls::IUnitTestSnapshotFileNode)
 					ADD_TYPE_INFO(::gaclib_controls::IUnitTestSnapshotViewerStringsStrings)
 					ADD_TYPE_INFO(::gaclib_controls::IUnitTestSnapshotViewerViewModel)
+					ADD_TYPE_INFO(::gaclib_controls::UnitTestSnapshotFileNodeType)
 					ADD_TYPE_INFO(::gaclib_controls::UnitTestSnapshotViewerStrings)
 					ADD_TYPE_INFO(::gaclib_controls::UnitTestSnapshotViewerWindow)
 					ADD_TYPE_INFO(::gaclib_controls::UnitTestSnapshotViewerWindowConstructor)

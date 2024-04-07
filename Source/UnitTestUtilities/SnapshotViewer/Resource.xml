@@ -26,8 +26,23 @@
 
     namespace gaclib_controls
     {
+      enum UnitTestSnapshotFileNodeType
+      {
+        Folder = 0,
+        File = 1,
+      }
+
+      interface IUnitTestSnapshotFileNode
+      {
+        prop NodeType: UnitTestSnapshotFileNodeType {const, not observe}
+        prop Name: string {const, not observe}
+        prop Children: IUnitTestSnapshotFileNode^{} {const, not observe}
+        func LoadContent():string;
+      }
+
       interface IUnitTestSnapshotViewerViewModel
       {
+        prop RootNode: IUnitTestSnapshotFileNode^ {const, not observe}
       }
     }
     ]]></Workflow>
@@ -42,6 +57,25 @@
           Text-str="WindowTitle()"
           ClientSize="x:1920 y:1080"
           >
+          <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="5" MinSizeLimitation="LimitToElementAndChildren">
+            <att.Rows>
+              <_>composeType:Percentage percentage:1.0</_>
+            </att.Rows>
+            <att.Columns>
+              <_>composeType:Absolute absolute:300</_>
+              <_>composeType:Percentage percentage:1.0</_>
+            </att.Columns>
+            
+            <ColumnSplitter ColumnsToTheLeft="1"/>
+
+            <Cell Site="row:0 column:0">
+              <BindableTreeView ref.Name="treeViewFileNodes" env.ItemType="IUnitTestSnapshotFileNode^" VerticalAlwaysVisible="false" HorizontalAlwaysVisible="false">
+                <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+                <att.TextProperty>Name</att.TextProperty>
+                <att.ChildrenProperty>Children</att.ChildrenProperty>
+              </BindableTreeView>
+            </Cell>
+          </Table>
       </Window>
     </Instance>
   </Instance>
