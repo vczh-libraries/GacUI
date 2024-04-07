@@ -79,6 +79,7 @@ namespace vl
 				CLASS_MEMBER_BASE(::vl::presentation::controls::GuiWindow)
 				CLASS_MEMBER_BASE(::gaclib_controls::UnitTestSnapshotViewerWindowConstructor)
 				CLASS_MEMBER_CONSTRUCTOR(::gaclib_controls::UnitTestSnapshotViewerWindow*(::vl::Ptr<::gaclib_controls::IUnitTestSnapshotViewerViewModel>), { L"__vwsn_ctor_parameter_ViewModel" })
+				CLASS_MEMBER_METHOD(GetImageFromType, { L"nodeType" })
 				CLASS_MEMBER_METHOD(GetStrings, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(GetViewModel, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(SetStrings, { L"__vwsn_value_" })
@@ -87,6 +88,8 @@ namespace vl
 				CLASS_MEMBER_FIELD(__vwsn_prop_Strings)
 				CLASS_MEMBER_PROPERTY_EVENT(Strings, GetStrings, SetStrings, StringsChanged)
 				CLASS_MEMBER_PROPERTY_READONLY(ViewModel, GetViewModel)
+				CLASS_MEMBER_FIELD(imageFile)
+				CLASS_MEMBER_FIELD(imageFolder)
 			END_CLASS_MEMBER(::gaclib_controls::UnitTestSnapshotViewerWindow)
 
 			BEGIN_CLASS_MEMBER(::gaclib_controls::UnitTestSnapshotViewerWindowConstructor)

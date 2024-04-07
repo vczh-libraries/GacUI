@@ -24,6 +24,18 @@ namespace gaclib_controls
     class UnitTestSnapshotViewerWindow : ::presentation::controls::GuiWindow
     {
         @cpp:Private
+        var imageFolder : ImageData^ = null;
+
+        @cpp:Private
+        var imageFile : ImageData^ = null;
+
+        @cpp:Private
+        func GetImageFromType(nodeType : UnitTestSnapshotFileNodeType) : (ImageData^)
+        {
+            raise "Not Implemented";
+        }
+
+        @cpp:Private
         var <prop>Strings : ::gaclib_controls::IUnitTestSnapshotViewerStringsStrings^ = ::gaclib_controls::UnitTestSnapshotViewerStrings::Get((cast (::system::Locale) "en-US"));
 
         func GetStrings() : (::gaclib_controls::IUnitTestSnapshotViewerStringsStrings^)

@@ -63,21 +63,22 @@ namespace gaclib_controls
                 (<precompile>0.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
-                <precompile>0.SetRowsAndColumns(1, 2);
+                <precompile>0.SetRowsAndColumns(1, 3);
                 <precompile>0.SetRowOption(0, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
-                <precompile>0.SetColumnOption(0, {composeType : Absolute; absolute : 300;} of (::presentation::compositions::GuiCellOption));
-                <precompile>0.SetColumnOption(1, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
+                <precompile>0.SetColumnOption(0, {composeType : Absolute; absolute : 195;} of (::presentation::compositions::GuiCellOption));
+                <precompile>0.SetColumnOption(1, {composeType : Absolute; absolute : 100;} of (::presentation::compositions::GuiCellOption));
+                <precompile>0.SetColumnOption(2, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
             }
             (<precompile>1 = new (::presentation::compositions::GuiColumnSplitterComposition*)());
             {
-                (<precompile>1.ColumnsToTheLeft = 1 of (::system::Int32));
+                (<precompile>1.ColumnsToTheLeft = 2 of (::system::Int32));
             }
             {
                 <precompile>0.AddChild(<precompile>1);
             }
             (<precompile>2 = new (::presentation::compositions::GuiCellComposition*)());
             {
-                <precompile>2.SetSite(0, 0, 1, 1);
+                <precompile>2.SetSite(0, 0, 1, 2);
             }
             {
                 (treeViewFileNodes = new (::presentation::controls::GuiBindableTreeView*)(::presentation::theme::ThemeName::TreeView));
@@ -114,6 +115,12 @@ namespace gaclib_controls
             }
             {
                 self.ContainerComposition.AddChild(<precompile>0);
+            }
+            {
+                (treeViewFileNodes.ItemSource = ViewModel.RootNode);
+            }
+            {
+                (treeViewFileNodes.ImageProperty = [self.GetImageFromType((cast (IUnitTestSnapshotFileNode^) $1).NodeType)]);
             }
             {
                 var <created-subscription> = new (::system::Subscription^)
@@ -295,6 +302,40 @@ namespace gaclib_controls
     @cpp:Friend(typeof(UnitTestSnapshotViewerWindowConstructor))
     class UnitTestSnapshotViewerWindow : ::presentation::controls::GuiWindow, UnitTestSnapshotViewerWindowConstructor
     {
+        @cpp:Private
+        var imageFolder : ImageData^ = null;
+
+        @cpp:Private
+        var imageFile : ImageData^ = null;
+
+        @cpp:Private
+        func GetImageFromType(nodeType : UnitTestSnapshotFileNodeType) : (ImageData^)
+        {
+            if (imageFolder is null)
+            {
+                (imageFolder = (cast (ImageData^) ResolveResource("import-res", "GuiFakeDialogServiceUI/Images/Folder", true)));
+            }
+            if (imageFile is null)
+            {
+                (imageFile = (cast (ImageData^) ResolveResource("import-res", "GuiFakeDialogServiceUI/Images/File", true)));
+            }
+            {
+                var <switch>0 : ::gaclib_controls::UnitTestSnapshotFileNodeType = nodeType;
+                if ((<switch>0 == File of (::gaclib_controls::UnitTestSnapshotFileNodeType)))
+                {
+                    return imageFile;
+                }
+                else if ((<switch>0 == Folder of (::gaclib_controls::UnitTestSnapshotFileNodeType)))
+                {
+                    return imageFolder;
+                }
+                else
+                {
+                    raise "Unknown value of UnitTestSnapshotFileNodeType";
+                }
+            }
+        }
+
         @cpp:Private
         var <prop>Strings : ::gaclib_controls::IUnitTestSnapshotViewerStringsStrings^ = ::gaclib_controls::UnitTestSnapshotViewerStrings::Get((cast (::system::Locale) "en-US"));
 

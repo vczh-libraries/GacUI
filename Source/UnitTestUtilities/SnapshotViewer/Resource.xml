@@ -52,6 +52,28 @@
     <Instance ref.CodeBehind="false" ref.Class="gaclib_controls::UnitTestSnapshotViewerWindow" xmlns:g="gaclib_controls::*">
       <ref.LocalizedStrings Name="Strings" Class="gaclib_controls::UnitTestSnapshotViewerStrings" Default="true"/>
       <ref.Parameter Name="ViewModel" Class="gaclib_controls::IUnitTestSnapshotViewerViewModel"/>
+      <ref.Members><![CDATA[
+        @cpp:Private var imageFolder: ImageData^ = null;
+        @cpp:Private var imageFile: ImageData^ = null;
+
+        @cpp:Private func GetImageFromType(nodeType: UnitTestSnapshotFileNodeType): ImageData^
+        {
+          if (imageFolder is null)
+          {
+            imageFolder = cast (ImageData^) ResolveResource("import-res", "GuiFakeDialogServiceUI/Images/Folder", true);
+          }
+          if (imageFile is null)
+          {
+            imageFile = cast (ImageData^) ResolveResource("import-res", "GuiFakeDialogServiceUI/Images/File", true);
+          }
+          switch (nodeType)
+          {
+          case File: { return imageFile; }
+          case Folder: { return imageFolder; }
+          default: { raise "Unknown value of UnitTestSnapshotFileNodeType"; }
+          }
+        }
+      ]]></ref.Members>
       <Window
           ref.Name = "self"
           Text-str="WindowTitle()"
@@ -62,17 +84,20 @@
               <_>composeType:Percentage percentage:1.0</_>
             </att.Rows>
             <att.Columns>
-              <_>composeType:Absolute absolute:300</_>
+              <_>composeType:Absolute absolute:195</_>
+              <_>composeType:Absolute absolute:100</_>
               <_>composeType:Percentage percentage:1.0</_>
             </att.Columns>
             
-            <ColumnSplitter ColumnsToTheLeft="1"/>
+            <ColumnSplitter ColumnsToTheLeft="2"/>
 
-            <Cell Site="row:0 column:0">
+            <Cell Site="row:0 column:0 columnSpan:2">
               <BindableTreeView ref.Name="treeViewFileNodes" env.ItemType="IUnitTestSnapshotFileNode^" VerticalAlwaysVisible="false" HorizontalAlwaysVisible="false">
                 <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
                 <att.TextProperty>Name</att.TextProperty>
                 <att.ChildrenProperty>Children</att.ChildrenProperty>
+                <att.ItemSource-eval>ViewModel.RootNode</att.ItemSource-eval>
+                <att.ImageProperty-eval>[self.GetImageFromType((cast (IUnitTestSnapshotFileNode^) $1).NodeType)]</att.ImageProperty-eval>
               </BindableTreeView>
             </Cell>
           </Table>
