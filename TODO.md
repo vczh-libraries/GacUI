@@ -51,6 +51,7 @@
   - Require binary pattern "[GMR-1.3]" at the beginning of the binary resource.
   - Resource compiler and loader will check the version and only accept 1.3.
 - Calling `GuiWindow::ShowMaximized` in `WindowOpened` with `SetupHostedWindowsDirect2DRenderer` doesn't properly maximize the window.
+- Add `@cpp:Private` for GacGen generated `<parameter>ViewModel` variable.
 - Document
   - string conversion mechanism and functions to Vlpp document.
   - Vlpp
