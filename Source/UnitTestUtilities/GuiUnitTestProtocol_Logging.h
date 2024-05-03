@@ -157,35 +157,44 @@ UnitTestRemoteProtocol
 				command.Apply(Overloading(
 					[&](const UnitTestRenderingBeginBoundary& command)
 					{
+						// a new boundary should be a new node
 						auto& boundary = command.boundary;
-						Ptr<UnitTestRenderingDom> dom;
+						vint min = getCurrentBoundary();
+						bool found = false;
+						for (vint i = domStack.Count() - 1; i > min; i--)
 						{
-							vint min = getCurrentBoundary();
-							for (vint i = domStack.Count() - 1; i > min; i--)
+							auto validArea = domStack[i]->validArea.Intersect(boundary.bounds);
+							if (validArea == boundary.areaClippedBySelf)
 							{
-								auto parent = domStack[i];
-								if (parent->bounds == boundary.bounds)
-								{
-									dom = parent;
-									popTo(i);
-									break;
-								}
+								// if there is a node who clips boundary's bound to its valid area
+								// that is the parent node of the boundary
+								popTo(i);
+								found = true;
+								break;
+							}
+							else if (validArea.Contains(boundary.areaClippedBySelf) || i == 0)
+							{
+								// otherwise find a deepest node who could visually contain the boundary
+								// create a virtual node to satisfy the clipper
+								popTo(i);
+								auto parent = Ptr(new UnitTestRenderingDom);
+								parent->bounds = boundary.areaClippedBySelf;
+								parent->validArea = boundary.areaClippedBySelf;
+								push(parent);
+								found = true;
+								break;
 							}
 						}
 
-						if (dom)
-						{
-							CHECK_ERROR(dom->validArea == boundary.areaClippedBySelf, ERROR_MESSAGE_PREFIX L"Incorrect valid area of dom.");
-							dom->hitTestResult = boundary.hitTestResult;
-						}
-						else
-						{
-							auto dom = Ptr(new UnitTestRenderingDom);
-							dom->hitTestResult = boundary.hitTestResult;
-							dom->bounds = boundary.bounds;
-							dom->validArea = boundary.areaClippedBySelf;
-							domBoundaries.Add(push(dom));
-						}
+						// if the new boundary could not fit in the current boundary
+						// there must be something wrong
+						CHECK_ERROR(found, ERROR_MESSAGE_PREFIX L"Incorrect valid area of dom.");
+
+						auto dom = Ptr(new UnitTestRenderingDom);
+						dom->hitTestResult = boundary.hitTestResult;
+						dom->bounds = boundary.bounds;
+						dom->validArea = boundary.areaClippedBySelf;
+						domBoundaries.Add(push(dom));
 					},
 					[&](const UnitTestRenderingEndBoundary& command)
 					{
