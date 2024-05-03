@@ -161,7 +161,7 @@ UnitTestRemoteProtocol
 						auto& boundary = command.boundary;
 						vint min = getCurrentBoundary();
 						bool found = false;
-						for (vint i = domStack.Count() - 1; i > min; i--)
+						for (vint i = domStack.Count() - 1; i >= min; i--)
 						{
 							auto validArea = domStack[i]->validArea.Intersect(boundary.bounds);
 							if (validArea == boundary.areaClippedBySelf)
@@ -206,7 +206,7 @@ UnitTestRemoteProtocol
 						auto& rendering = command.rendering;
 						vint min = getCurrentBoundary();
 						bool found = false;
-						for (vint i = domStack.Count() - 1; i > min; i--)
+						for (vint i = domStack.Count() - 1; i >= min; i--)
 						{
 							auto validArea = domStack[i]->validArea;
 							if (validArea == rendering.areaClippedByParent)
