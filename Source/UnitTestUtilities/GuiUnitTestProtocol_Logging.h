@@ -157,7 +157,7 @@ UnitTestRemoteProtocol
 				command.Apply(Overloading(
 					[&](const UnitTestRenderingBeginBoundary& command)
 					{
-						// a new boundary should be a new node
+						// a new boundary should be a new node covering existing nodes
 						auto& boundary = command.boundary;
 						vint min = getCurrentBoundary();
 						bool found = false;
@@ -202,25 +202,39 @@ UnitTestRemoteProtocol
 					},
 					[&](const UnitTestRenderingElement& command)
 					{
+						// a new element should be a new node covering existing nodes
+						auto& rendering = command.rendering;
+						vint min = getCurrentBoundary();
+						bool found = false;
+						for (vint i = domStack.Count() - 1; i > min; i--)
 						{
-							vint min = getCurrentBoundary();
-							vint index = min;
-							for (vint i = domStack.Count() - 1; i > min; i--)
+							auto validArea = domStack[i]->validArea;
+							if (validArea == rendering.areaClippedByParent)
 							{
-								auto parent = domStack[i];
-								if (parent->validArea.Contains(command.rendering.areaClippedByParent))
-								{
-									index = i;
-									break;
-								}
+								// if there is a node who has an exact valid area
+								// that is the parent node of the element
+								popTo(i);
+								found = true;
+								break;
 							}
-
-							if (index == min && index != 0)
+							else if (validArea.Contains(rendering.areaClippedByParent) || i == 0)
 							{
-								CHECK_ERROR(domStack[index]->validArea.Contains(command.rendering.areaClippedByParent), L"Incorrect valid area of element in current boundary.");
+								// otherwise find a deepest node who could visually contain the element
+								// create a virtual node to satisfy the clipper
+								popTo(i);
+								auto parent = Ptr(new UnitTestRenderingDom);
+								parent->bounds = rendering.areaClippedByParent;
+								parent->validArea = rendering.areaClippedByParent;
+								push(parent);
+								found = true;
+								break;
 							}
-							popTo(index);
 						}
+
+						// if the new element could not fit in the current boundary
+						// there must be something wrong
+						CHECK_ERROR(found, ERROR_MESSAGE_PREFIX L"Incorrect valid area of dom.");
+
 						auto dom = Ptr(new UnitTestRenderingDom);
 						dom->element = command.desc;
 						dom->bounds = command.rendering.bounds;
