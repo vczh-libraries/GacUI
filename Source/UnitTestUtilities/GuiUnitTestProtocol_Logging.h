@@ -152,66 +152,80 @@ UnitTestRemoteProtocol
 				popTo(boundary - 1);
 			};
 
+			auto prepareParentFromCommand = [&](
+				Rect commandBounds,
+				Rect commandValidArea,
+				auto&& calculateValidAreaFromDom
+				)
+			{
+				vint min = getCurrentBoundary();
+				bool found = false;
+				if (commandValidArea.Contains(commandBounds))
+				{
+					// if the command is not clipped
+					for (vint i = domStack.Count() - 1; i >= min; i--)
+					{
+						if (domStack[i]->validArea.Contains(commandBounds) || i == 0)
+						{
+							// find the deepest node that could contain the command
+							popTo(i);
+							found = true;
+							break;
+						}
+					}
+				}
+				else
+				{
+					// otherwise, a parent node causing such clipping should be found or created
+					for (vint i = domStack.Count() - 1; i >= min; i--)
+					{
+						auto domValidArea = calculateValidAreaFromDom(domStack[i]);
+						if (domValidArea == commandValidArea)
+						{
+							// if there is a node who clips command's bound to its valid area
+							// that is the parent node of the command
+							popTo(i);
+							found = true;
+							break;
+						}
+						else if (domValidArea.Contains(commandValidArea) || i == 0)
+						{
+							// otherwise find a deepest node who could visually contain the command
+							// create a virtual node to satisfy the clipper
+							popTo(i);
+							auto parent = Ptr(new UnitTestRenderingDom);
+							parent->bounds = commandValidArea;
+							parent->validArea = commandValidArea;
+							push(parent);
+							found = true;
+							break;
+						}
+					}
+				}
+
+				// if the new boundary could not fit in the current boundary
+				// there must be something wrong
+				CHECK_ERROR(found, ERROR_MESSAGE_PREFIX L"Incorrect valid area of dom.");
+			};
+
 			for (auto&& command : *commandListRef.Obj())
 			{
 				command.Apply(Overloading(
 					[&](const UnitTestRenderingBeginBoundary& command)
 					{
 						// a new boundary should be a new node covering existing nodes
-						auto& boundary = command.boundary;
-						vint min = getCurrentBoundary();
-						bool found = false;
-						if (boundary.areaClippedBySelf.Contains(boundary.bounds))
-						{
-							// if the boundary is not clipped
-							for (vint i = domStack.Count() - 1; i >= min; i--)
-							{
-								if (domStack[i]->validArea.Contains(boundary.bounds) || i == 0)
-								{
-									// find the deepest node that could contain the boundary
-									popTo(i);
-									found = true;
-									break;
-								}
-							}
-						}
-						else
-						{
-							// otherwise, a parent node causing such clipping should be found or created
-							for (vint i = domStack.Count() - 1; i >= min; i--)
-							{
-								auto validArea = domStack[i]->validArea.Intersect(boundary.bounds);
-								if (validArea == boundary.areaClippedBySelf)
-								{
-									// if there is a node who clips boundary's bound to its valid area
-									// that is the parent node of the boundary
-									popTo(i);
-									found = true;
-									break;
-								}
-								else if (validArea.Contains(boundary.areaClippedBySelf) || i == 0)
-								{
-									// otherwise find a deepest node who could visually contain the boundary
-									// create a virtual node to satisfy the clipper
-									popTo(i);
-									auto parent = Ptr(new UnitTestRenderingDom);
-									parent->bounds = boundary.areaClippedBySelf;
-									parent->validArea = boundary.areaClippedBySelf;
-									push(parent);
-									found = true;
-									break;
-								}
-							}
-						}
-
-						// if the new boundary could not fit in the current boundary
-						// there must be something wrong
-						CHECK_ERROR(found, ERROR_MESSAGE_PREFIX L"Incorrect valid area of dom.");
+						// the valid area of boundary is clipped by its bounds
+						// so the valid area to compare from its potential parent dom needs to clipped by its bounds
+						prepareParentFromCommand(
+							command.boundary.bounds,
+							command.boundary.areaClippedBySelf,
+							[&](auto&& dom) { return dom->validArea.Intersect(command.boundary.bounds); }
+							);
 
 						auto dom = Ptr(new UnitTestRenderingDom);
-						dom->hitTestResult = boundary.hitTestResult;
-						dom->bounds = boundary.bounds;
-						dom->validArea = boundary.areaClippedBySelf;
+						dom->hitTestResult = command.boundary.hitTestResult;
+						dom->bounds = command.boundary.bounds;
+						dom->validArea = command.boundary.areaClippedBySelf;
 						domBoundaries.Add(push(dom));
 					},
 					[&](const UnitTestRenderingEndBoundary& command)
@@ -221,54 +235,13 @@ UnitTestRemoteProtocol
 					[&](const UnitTestRenderingElement& command)
 					{
 						// a new element should be a new node covering existing nodes
-						auto& rendering = command.rendering;
-						vint min = getCurrentBoundary();
-						bool found = false;
-						if (rendering.areaClippedByParent.Contains(rendering.bounds))
-						{
-							// if the element is not clipped
-							for (vint i = domStack.Count() - 1; i >= min; i--)
-							{
-								if (domStack[i]->validArea.Contains(rendering.bounds) || i == 0)
-								{
-									// find the deepest node that could contain the boundary
-									popTo(i);
-									found = true;
-									break;
-								}
-							}
-						}
-						else
-						{
-							for (vint i = domStack.Count() - 1; i >= min; i--)
-							{
-								auto validArea = domStack[i]->validArea;
-								if (validArea == rendering.areaClippedByParent)
-								{
-									// if there is a node who has an exact valid area
-									// that is the parent node of the element
-									popTo(i);
-									found = true;
-									break;
-								}
-								else if (validArea.Contains(rendering.areaClippedByParent) || i == 0)
-								{
-									// otherwise find a deepest node who could visually contain the element
-									// create a virtual node to satisfy the clipper
-									popTo(i);
-									auto parent = Ptr(new UnitTestRenderingDom);
-									parent->bounds = rendering.areaClippedByParent;
-									parent->validArea = rendering.areaClippedByParent;
-									push(parent);
-									found = true;
-									break;
-								}
-							}
-						}
-
-						// if the new element could not fit in the current boundary
-						// there must be something wrong
-						CHECK_ERROR(found, ERROR_MESSAGE_PREFIX L"Incorrect valid area of dom.");
+						// the valid area of boundary is clipped by its parent
+						// so the valid area to compare from its potential parent dom is its valid area
+						prepareParentFromCommand(
+							command.rendering.bounds,
+							command.rendering.areaClippedByParent,
+							[&](auto&& dom) { return dom->validArea; }
+							);
 
 						auto dom = Ptr(new UnitTestRenderingDom);
 						dom->element = command.desc;
