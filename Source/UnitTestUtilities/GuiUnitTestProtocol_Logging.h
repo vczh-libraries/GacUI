@@ -161,28 +161,46 @@ UnitTestRemoteProtocol
 						auto& boundary = command.boundary;
 						vint min = getCurrentBoundary();
 						bool found = false;
-						for (vint i = domStack.Count() - 1; i >= min; i--)
+						if (boundary.areaClippedBySelf.Contains(boundary.bounds))
 						{
-							auto validArea = domStack[i]->validArea.Intersect(boundary.bounds);
-							if (validArea == boundary.areaClippedBySelf)
+							// if the boundary is not clipped
+							for (vint i = domStack.Count() - 1; i >= min; i--)
 							{
-								// if there is a node who clips boundary's bound to its valid area
-								// that is the parent node of the boundary
-								popTo(i);
-								found = true;
-								break;
+								if (domStack[i]->validArea.Contains(boundary.bounds) || i == 0)
+								{
+									// find the deepest node that could contain the boundary
+									popTo(i);
+									found = true;
+									break;
+								}
 							}
-							else if (validArea.Contains(boundary.areaClippedBySelf) || i == 0)
+						}
+						else
+						{
+							// otherwise, a parent node causing such clipping should be found or created
+							for (vint i = domStack.Count() - 1; i >= min; i--)
 							{
-								// otherwise find a deepest node who could visually contain the boundary
-								// create a virtual node to satisfy the clipper
-								popTo(i);
-								auto parent = Ptr(new UnitTestRenderingDom);
-								parent->bounds = boundary.areaClippedBySelf;
-								parent->validArea = boundary.areaClippedBySelf;
-								push(parent);
-								found = true;
-								break;
+								auto validArea = domStack[i]->validArea.Intersect(boundary.bounds);
+								if (validArea == boundary.areaClippedBySelf)
+								{
+									// if there is a node who clips boundary's bound to its valid area
+									// that is the parent node of the boundary
+									popTo(i);
+									found = true;
+									break;
+								}
+								else if (validArea.Contains(boundary.areaClippedBySelf) || i == 0)
+								{
+									// otherwise find a deepest node who could visually contain the boundary
+									// create a virtual node to satisfy the clipper
+									popTo(i);
+									auto parent = Ptr(new UnitTestRenderingDom);
+									parent->bounds = boundary.areaClippedBySelf;
+									parent->validArea = boundary.areaClippedBySelf;
+									push(parent);
+									found = true;
+									break;
+								}
 							}
 						}
 
@@ -206,28 +224,45 @@ UnitTestRemoteProtocol
 						auto& rendering = command.rendering;
 						vint min = getCurrentBoundary();
 						bool found = false;
-						for (vint i = domStack.Count() - 1; i >= min; i--)
+						if (rendering.areaClippedByParent.Contains(rendering.bounds))
 						{
-							auto validArea = domStack[i]->validArea;
-							if (validArea == rendering.areaClippedByParent)
+							// if the element is not clipped
+							for (vint i = domStack.Count() - 1; i >= min; i--)
 							{
-								// if there is a node who has an exact valid area
-								// that is the parent node of the element
-								popTo(i);
-								found = true;
-								break;
+								if (domStack[i]->validArea.Contains(rendering.bounds) || i == 0)
+								{
+									// find the deepest node that could contain the boundary
+									popTo(i);
+									found = true;
+									break;
+								}
 							}
-							else if (validArea.Contains(rendering.areaClippedByParent) || i == 0)
+						}
+						else
+						{
+							for (vint i = domStack.Count() - 1; i >= min; i--)
 							{
-								// otherwise find a deepest node who could visually contain the element
-								// create a virtual node to satisfy the clipper
-								popTo(i);
-								auto parent = Ptr(new UnitTestRenderingDom);
-								parent->bounds = rendering.areaClippedByParent;
-								parent->validArea = rendering.areaClippedByParent;
-								push(parent);
-								found = true;
-								break;
+								auto validArea = domStack[i]->validArea;
+								if (validArea == rendering.areaClippedByParent)
+								{
+									// if there is a node who has an exact valid area
+									// that is the parent node of the element
+									popTo(i);
+									found = true;
+									break;
+								}
+								else if (validArea.Contains(rendering.areaClippedByParent) || i == 0)
+								{
+									// otherwise find a deepest node who could visually contain the element
+									// create a virtual node to satisfy the clipper
+									popTo(i);
+									auto parent = Ptr(new UnitTestRenderingDom);
+									parent->bounds = rendering.areaClippedByParent;
+									parent->validArea = rendering.areaClippedByParent;
+									push(parent);
+									found = true;
+									break;
+								}
 							}
 						}
 
