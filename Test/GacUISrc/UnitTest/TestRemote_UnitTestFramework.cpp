@@ -58,7 +58,7 @@ TEST_FILE
 
 				protocol->OnNextIdleFrame([&]()
 				{
-					TEST_ASSERT(protocol->GetLoggedRenderingResults().Count() == 1);
+					TEST_ASSERT(protocol->GetLoggedFrames().Count() == 1);
 					window.Hide();
 				});
 
@@ -124,7 +124,7 @@ TEST_FILE
 
 				protocol->OnNextIdleFrame([&]()
 				{
-					TEST_ASSERT(protocol->GetLoggedRenderingResults().Count() == 1);
+					TEST_ASSERT(protocol->GetLoggedFrames().Count() == 1);
 					window.Hide();
 				});
 
@@ -150,7 +150,7 @@ TEST_FILE
 
 			protocol->OnNextIdleFrame([&]()
 			{
-				TEST_ASSERT(protocol->GetLoggedRenderingResults().Count() == 1);
+				TEST_ASSERT(protocol->GetLoggedFrames().Count() == 1);
 				window.Hide();
 			});
 

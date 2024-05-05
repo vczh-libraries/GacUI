@@ -5,19 +5,22 @@
   ],
   "Frames": [
     {
-      "Bounds": {"x1": 0, "y1": 0, "x2": 0, "y2": 0},
-      "ValidArea": {"x1": 0, "y1": 0, "x2": 0, "y2": 0},
-      "Children": [
-        {
-          "Element": {
-            "id": 1,
-            "backgroundColor": "#FFFFFF",
-            "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
-          },
-          "Bounds": {"x1": 0, "y1": 0, "x2": 640, "y2": 480},
-          "ValidArea": {"x1": 0, "y1": 0, "x2": 640, "y2": 480}
-        }
-      ]
+      "Commands": [],
+      "Node": {
+        "Bounds": {"x1": 0, "y1": 0, "x2": 0, "y2": 0},
+        "ValidArea": {"x1": 0, "y1": 0, "x2": 0, "y2": 0},
+        "Children": [
+          {
+            "Element": {
+              "id": 1,
+              "backgroundColor": "#FFFFFF",
+              "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
+            },
+            "Bounds": {"x1": 0, "y1": 0, "x2": 640, "y2": 480},
+            "ValidArea": {"x1": 0, "y1": 0, "x2": 640, "y2": 480}
+          }
+        ]
+      }
     }
   ]
 }

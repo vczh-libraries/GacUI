@@ -88,11 +88,13 @@ UnitTestRemoteProtocol
 		using CommandListRef = UnitTestRenderingCommandListRef;
 		using RenderingResultRef = Ptr<UnitTestRenderingDom>;
 		using RenderingResultRefList = collections::List<RenderingResultRef>;
+		using LoggedFrame = collections::Pair<CommandListRef, RenderingResultRef>;
+		using LoggedFrameList = collections::List<LoggedFrame>;
 	protected:
 
 		bool								everRendered = false;
 		CommandListRef						candidateRenderingResult;
-		RenderingResultRefList				loggedRenderingResults;
+		LoggedFrameList						loggedFrames;
 
 		RenderingResultRef TransformLastRenderingResult(CommandListRef commandListRef)
 		{
@@ -268,7 +270,7 @@ UnitTestRemoteProtocol
 				if (candidateRenderingResult)
 				{
 					auto transformed = TransformLastRenderingResult(candidateRenderingResult);
-					loggedRenderingResults.Add(transformed);
+					loggedFrames.Add({ candidateRenderingResult,transformed });
 					candidateRenderingResult = {};
 				}
 				return true;
@@ -289,9 +291,9 @@ UnitTestRemoteProtocol
 			return this->createdImages;
 		}
 
-		const auto& GetLoggedRenderingResults()
+		const auto& GetLoggedFrames()
 		{
-			return loggedRenderingResults;
+			return loggedFrames;
 		}
 
 		Ptr<glr::json::JsonObject> GetLogAsJson()
@@ -337,10 +339,29 @@ UnitTestRemoteProtocol
 			}
 			{
 				auto arrayFrames = Ptr(new glr::json::JsonArray);
-				for (auto&& frame : GetLoggedRenderingResults())
+				for (auto&& [commands, node] : GetLoggedFrames())
 				{
-					auto nodeFrame = frame->AsJson();
-					arrayFrames->items.Add(nodeFrame);
+					auto nodeFramePair = Ptr(new glr::json::JsonObject);
+					{
+						auto arrayCommands = Ptr(new glr::json::JsonArray);
+						{
+							for (auto&& command : *commands.Obj())
+							{
+							}
+						}
+						auto fieldCommands = Ptr(new glr::json::JsonObjectField);
+						fieldCommands->name.value = WString::Unmanaged(L"Commands");
+						fieldCommands->value = arrayCommands;
+						nodeFramePair->fields.Add(fieldCommands);
+					}
+					{
+						auto nodeFrame = node->AsJson();
+						auto fieldNode = Ptr(new glr::json::JsonObjectField);
+						fieldNode->name.value = WString::Unmanaged(L"Node");
+						fieldNode->value = nodeFrame;
+						nodeFramePair->fields.Add(fieldNode);
+					}
+					arrayFrames->items.Add(nodeFramePair);
 				}
 
 				auto fieldFrames = Ptr(new glr::json::JsonObjectField);
