@@ -347,6 +347,19 @@ UnitTestRemoteProtocol
 						{
 							for (auto&& command : *commands.Obj())
 							{
+								command.Apply(Overloading(
+									[&](const UnitTestRenderingBeginBoundary& command)
+									{
+										arrayCommands->items.Add(remoteprotocol::ConvertCustomTypeToJson(command.boundary));
+									},
+									[&](const UnitTestRenderingEndBoundary& command)
+									{
+										arrayCommands->items.Add(Ptr(new glr::json::JsonObject));
+									},
+									[&](const UnitTestRenderingElement& command)
+									{
+										arrayCommands->items.Add(remoteprotocol::ConvertCustomTypeToJson(command.rendering));
+									}));
 							}
 						}
 						auto fieldCommands = Ptr(new glr::json::JsonObjectField);

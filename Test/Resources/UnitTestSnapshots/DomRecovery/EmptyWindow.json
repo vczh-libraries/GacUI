@@ -5,7 +5,13 @@
   ],
   "Frames": [
     {
-      "Commands": [],
+      "Commands": [
+        {
+          "id": 1,
+          "bounds": {"x1": 0, "y1": 0, "x2": 640, "y2": 480},
+          "areaClippedByParent": {"x1": 0, "y1": 0, "x2": 640, "y2": 480}
+        }
+      ],
       "Node": {
         "Bounds": {"x1": 0, "y1": 0, "x2": 0, "y2": 0},
         "ValidArea": {"x1": 0, "y1": 0, "x2": 0, "y2": 0},
