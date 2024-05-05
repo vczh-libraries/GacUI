@@ -27,7 +27,6 @@ GuiRemoteWindow
 		vint idGetBounds = remoteMessages.RequestWindowGetBounds();
 		remoteMessages.Submit();
 		OnWindowBoundsUpdated(remoteMessages.RetrieveWindowGetBounds(idGetBounds));
-		remoteMessages.ClearResponses();
 	}
 
 	void GuiRemoteWindow::Opened()

@@ -85,7 +85,6 @@ GuiRemoteGraphicsRenderTarget
 		vint idRendering = remote->remoteMessages.RequestRendererEndRendering();
 		remote->remoteMessages.Submit();
 		auto measuring = remote->remoteMessages.RetrieveRendererEndRendering(idRendering);
-		remote->remoteMessages.ClearResponses();
 
 		bool minSizeChanged = false;
 

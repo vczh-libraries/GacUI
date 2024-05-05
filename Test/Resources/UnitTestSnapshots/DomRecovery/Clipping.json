@@ -1,0 +1,71 @@
+{
+  "Images": [],
+  "Elements": [
+    {"id": 1, "type": "SolidBackground"},
+    {"id": 2, "type": "SolidBorder"},
+    {"id": 3, "type": "SolidBorder"},
+    {"id": 4, "type": "SolidBorder"},
+    {"id": 5, "type": "SolidBorder"}
+  ],
+  "Frames": [
+    {
+      "Bounds": {"x1": 0, "y1": 0, "x2": 0, "y2": 0},
+      "ValidArea": {"x1": 0, "y1": 0, "x2": 0, "y2": 0},
+      "Children": [
+        {
+          "Element": {
+            "id": 1,
+            "backgroundColor": "#FFFFFF",
+            "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
+          },
+          "Bounds": {"x1": 0, "y1": 0, "x2": 640, "y2": 500},
+          "ValidArea": {"x1": 0, "y1": 0, "x2": 640, "y2": 500},
+          "Children": [
+            {
+              "Element": {
+                "id": 2,
+                "borderColor": "#FF0000",
+                "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
+              },
+              "Bounds": {"x1": 20, "y1": -20, "x2": 120, "y2": 500},
+              "ValidArea": {"x1": 20, "y1": 0, "x2": 120, "y2": 500}
+            },
+            {
+              "Element": {
+                "id": 3,
+                "borderColor": "#00FF00",
+                "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
+              },
+              "Bounds": {"x1": 520, "y1": -20, "x2": 620, "y2": 500},
+              "ValidArea": {"x1": 520, "y1": 0, "x2": 620, "y2": 500}
+            },
+            {
+              "Bounds": {"x1": 10, "y1": 10, "x2": 630, "y2": 470},
+              "ValidArea": {"x1": 10, "y1": 10, "x2": 630, "y2": 470},
+              "Children": [
+                {
+                  "Element": {
+                    "id": 4,
+                    "borderColor": "#FF00FF",
+                    "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
+                  },
+                  "Bounds": {"x1": -20, "y1": 20, "x2": 660, "y2": 120},
+                  "ValidArea": {"x1": 10, "y1": 20, "x2": 630, "y2": 120}
+                },
+                {
+                  "Element": {
+                    "id": 5,
+                    "borderColor": "#00FF00",
+                    "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
+                  },
+                  "Bounds": {"x1": -20, "y1": 360, "x2": 660, "y2": 460},
+                  "ValidArea": {"x1": 10, "y1": 360, "x2": 630, "y2": 460}
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

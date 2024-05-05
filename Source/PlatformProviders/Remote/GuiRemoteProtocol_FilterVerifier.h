@@ -217,12 +217,15 @@ GuiRemoteProtocolFilterVerifier
 	
 		void Submit() override
 		{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::repeatfiltering::GuiRemoteProtocolFilterVerifier::Submit()#"
+			CHECK_ERROR(!eventCombinator.submitting, ERROR_MESSAGE_PREFIX L"This function is not allowed to be called recursively.");
 			eventCombinator.submitting = true;
 			GuiRemoteProtocolCombinator<GuiRemoteEventFilterVerifier>::Submit();
 			ClearDropRepeatMasks();
 			eventCombinator.ClearDropRepeatMasks();
 			eventCombinator.ClearDropConsecutiveMasks();
 			eventCombinator.submitting = false;
+#undef ERROR_MESSAGE_PREFIX
 		}
 	};
 }

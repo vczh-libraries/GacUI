@@ -86,7 +86,6 @@ GuiRemoteController::INativeInputService
 		vint idIsKeyPressing = remoteMessages.RequestIOIsKeyPressing(code);
 		remoteMessages.Submit();
 		bool result = remoteMessages.RetrieveIOIsKeyPressing(idIsKeyPressing);
-		remoteMessages.ClearResponses();
 		return result;
 	}
 
@@ -95,7 +94,6 @@ GuiRemoteController::INativeInputService
 		vint idIsKeyToggled = remoteMessages.RequestIOIsKeyToggled(code);
 		remoteMessages.Submit();
 		bool result = remoteMessages.RetrieveIOIsKeyToggled(idIsKeyToggled);
-		remoteMessages.ClearResponses();
 		return result;
 	}
 
@@ -306,7 +304,6 @@ GuiRemoteController (events)
 		remoteMessages.Submit();
 		remoteFontConfig = remoteMessages.RetrieveControllerGetFontConfig(idGetFontConfig);
 		remoteScreenConfig = remoteMessages.RetrieveControllerGetScreenConfig(idGetScreenConfig);
-		remoteMessages.ClearResponses();
 		remoteWindow.OnControllerConnect();
 		imageService.OnControllerConnect();
 		resourceManager->OnControllerConnect();

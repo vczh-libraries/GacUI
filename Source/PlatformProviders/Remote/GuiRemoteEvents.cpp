@@ -21,17 +21,6 @@ GuiRemoteMessages
 		remote->remoteProtocol->Submit();
 	}
 
-	void GuiRemoteMessages::ClearResponses()
-	{
-#define MESSAGE_NORES(NAME, RESPONSE)
-#define MESSAGE_RES(NAME, RESPONSE)			response ## NAME.Clear();
-#define MESSAGE_HANDLER(NAME, REQUEST, RESPONSE, REQTAG, RESTAG, ...)	MESSAGE_ ## RESTAG(NAME, RESPONSE)
-		GACUI_REMOTEPROTOCOL_MESSAGES(MESSAGE_HANDLER)
-#undef MESSAGE_HANDLER
-#undef MESSAGE_RES
-#undef MESSAGE_NORES
-	}
-
 /***********************************************************************
 GuiRemoteMessages (messages)
 ***********************************************************************/
@@ -78,9 +67,11 @@ GuiRemoteMessages (messages)
 	{\
 		response ## NAME.Add(id, arguments);\
 	}\
-	const RESPONSE& GuiRemoteMessages::Retrieve ## NAME(vint id)\
+	RESPONSE GuiRemoteMessages::Retrieve ## NAME(vint id)\
 	{\
-		return response ## NAME[id];\
+		RESPONSE response = response ## NAME[id];\
+		response ## NAME.Remove(id);\
+		return response;\
 	}\
 
 #define MESSAGE_HANDLER(NAME, REQUEST, RESPONSE, REQTAG, RESTAG, ...)	MESSAGE_ ## RESTAG(NAME, RESPONSE)

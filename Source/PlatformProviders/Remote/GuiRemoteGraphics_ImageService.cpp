@@ -37,7 +37,6 @@ GuiRemoteGraphicsImage
 		vint idImageCreated = remote->remoteMessages.RequestImageCreated(arguments);
 		remote->remoteMessages.Submit();
 		auto imageMetadata = remote->remoteMessages.RetrieveImageCreated(idImageCreated);
-		remote->remoteMessages.ClearResponses();
 		UpdateFromImageMetadata(imageMetadata);
 	}
 

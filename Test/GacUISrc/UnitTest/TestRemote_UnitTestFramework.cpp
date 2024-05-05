@@ -82,16 +82,18 @@ TEST_FILE
 					bounds->SetExpectedBounds({ {20,-20},{100,520} });
 					window.GetContainerComposition()->AddChild(bounds);
 
-					auto element = GuiSolidBorderElement::Create();
+					auto element = Ptr(GuiSolidBorderElement::Create());
 					element->SetColor(Color(255, 0, 0));
+					bounds->SetOwnedElement(element);
 				}
 				{
 					auto bounds = new GuiBoundsComposition;
 					bounds->SetExpectedBounds({ {520,-20},{100,520} });
 					window.GetContainerComposition()->AddChild(bounds);
 
-					auto element = GuiSolidBorderElement::Create();
+					auto element = Ptr(GuiSolidBorderElement::Create());
 					element->SetColor(Color(0, 255, 0));
+					bounds->SetOwnedElement(element);
 				}
 				{
 					auto bounds = new GuiBoundsComposition;
@@ -103,16 +105,18 @@ TEST_FILE
 					bounds->SetExpectedBounds({ {-30,10},{680,100} });
 					window.GetContainerComposition()->Children()[2]->AddChild(bounds);
 
-					auto element = GuiSolidBorderElement::Create();
+					auto element = Ptr(GuiSolidBorderElement::Create());
 					element->SetColor(Color(255, 0, 255));
+					bounds->SetOwnedElement(element);
 				}
 				{
 					auto bounds = new GuiBoundsComposition;
 					bounds->SetExpectedBounds({ {-30,350},{680,100} });
 					window.GetContainerComposition()->Children()[2]->AddChild(bounds);
 
-					auto element = GuiSolidBorderElement::Create();
+					auto element = Ptr(GuiSolidBorderElement::Create());
 					element->SetColor(Color(0, 255, 0));
+					bounds->SetOwnedElement(element);
 				}
 
 				window.SetClientSize({ 640,480 });

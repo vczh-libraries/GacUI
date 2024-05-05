@@ -42,7 +42,6 @@ GuiRemoteMessages
 		~GuiRemoteMessages();
 
 		void	Submit();
-		void	ClearResponses();
 
 		// messages
 
@@ -61,7 +60,7 @@ GuiRemoteMessages
 #define MESSAGE_NORES(NAME, RESPONSE)
 #define MESSAGE_RES(NAME, RESPONSE)\
 		void Respond ## NAME(vint id, const RESPONSE& arguments);\
-		const RESPONSE& Retrieve ## NAME(vint id);\
+		RESPONSE Retrieve ## NAME(vint id);\
 
 #define MESSAGE_HANDLER(NAME, REQUEST, RESPONSE, REQTAG, RESTAG, ...)	MESSAGE_ ## RESTAG(NAME, RESPONSE)
 			GACUI_REMOTEPROTOCOL_MESSAGES(MESSAGE_HANDLER)
