@@ -68,7 +68,67 @@ TEST_FILE
 			GacUIUnitTest_Start(WString::Unmanaged(L"DomRecovery/EmptyWindow"));
 		});
 
-		// TODO: test dom recovery from logging
+		TEST_CATEGORY(L"Clipping")
+		{
+			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->GetEvents()->OnControllerConnect();
+				auto emptyWindowTheme = Ptr(new EmptyWindowTheme);
+				theme::RegisterTheme(emptyWindowTheme);
+
+				GuiWindow window(theme::ThemeName::Window);
+				{
+					auto bounds = new GuiBoundsComposition;
+					bounds->SetExpectedBounds({ {20,-20},{100,520} });
+					window.GetContainerComposition()->AddChild(bounds);
+
+					auto element = GuiSolidBorderElement::Create();
+					element->SetColor(Color(255, 0, 0));
+				}
+				{
+					auto bounds = new GuiBoundsComposition;
+					bounds->SetExpectedBounds({ {520,-20},{100,520} });
+					window.GetContainerComposition()->AddChild(bounds);
+
+					auto element = GuiSolidBorderElement::Create();
+					element->SetColor(Color(0, 255, 0));
+				}
+				{
+					auto bounds = new GuiBoundsComposition;
+					bounds->SetExpectedBounds({ {10,10},{620,460} });
+					window.GetContainerComposition()->AddChild(bounds);
+				}
+				{
+					auto bounds = new GuiBoundsComposition;
+					bounds->SetExpectedBounds({ {-30,10},{680,100} });
+					window.GetContainerComposition()->Children()[2]->AddChild(bounds);
+
+					auto element = GuiSolidBorderElement::Create();
+					element->SetColor(Color(255, 0, 255));
+				}
+				{
+					auto bounds = new GuiBoundsComposition;
+					bounds->SetExpectedBounds({ {-30,350},{680,100} });
+					window.GetContainerComposition()->Children()[2]->AddChild(bounds);
+
+					auto element = GuiSolidBorderElement::Create();
+					element->SetColor(Color(0, 255, 0));
+				}
+
+				window.SetClientSize({ 640,480 });
+				window.MoveToScreenCenter();
+
+				protocol->OnNextIdleFrame([&]()
+				{
+					TEST_ASSERT(protocol->GetLoggedRenderingResults().Count() == 1);
+					window.Hide();
+				});
+
+				GetApplication()->Run(&window);
+				theme::UnregisterTheme(emptyWindowTheme->Name);
+			});
+			GacUIUnitTest_Start(WString::Unmanaged(L"DomRecovery/Clipping"));
+		});
 	});
 
 	TEST_CATEGORY(L"Hello, world!")
