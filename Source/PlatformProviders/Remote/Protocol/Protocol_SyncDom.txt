@@ -1,0 +1,55 @@
+union ElementDescVariant
+{
+    ElementDesc_SolidBorder,
+    ElementDesc_SinkBorder,
+    ElementDesc_SinkSplitter,
+    ElementDesc_SolidBackground,
+    ElementDesc_GradientBackground,
+    ElementDesc_InnerShadow,
+    ElementDesc_Polygon,
+    ElementDesc_SolidLabel,
+    ElementDesc_ImageFrame,
+}
+
+class RenderingDom
+{
+    var hitTestResult: WindowHitTestResult?;
+    var element: ElementDescVariant?;
+    var bounds: Rect;
+    var validArea: Rect;
+    var children: RenderingDom[];
+}
+
+struct RenderingCommand_BeginBoundary
+{
+    var boundary: ElementBoundary;
+}
+
+struct RenderingCommand_EndBoundary
+{
+}
+
+struct RenderingCommand_Element
+{
+    var rendering: ElementRendering;
+    var desc: ElementDescVariant;
+}
+
+union RenderingCommand
+{
+    RenderingCommand_BeginBoundary,
+    RenderingCommand_EndBoundary,
+    RenderingCommand_Element,
+}
+
+class RenderingFrame
+{
+    var commands: RenderingCommand[];
+    var root: RenderingDom;
+}
+
+struct RenderingTrace
+{
+    var createdImages: ImageMetadata[id];
+    var frames: RenderingFrame[];
+}
