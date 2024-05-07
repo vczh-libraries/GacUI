@@ -108,9 +108,9 @@ namespace vl::presentation::remoteprotocol
 	};
 
 	template<typename T>
-	struct JsonHelper<Ptr<collections::List<T>>>
+	struct JsonHelper<Ptr<T>>
 	{
-		static Ptr<glr::json::JsonNode> ToJson(const Ptr<collections::List<T>>& value)
+		static Ptr<glr::json::JsonNode> ToJson(const Ptr<T>& value)
 		{
 			if (!value)
 			{
@@ -120,38 +120,93 @@ namespace vl::presentation::remoteprotocol
 			}
 			else
 			{
-				auto node = Ptr(new glr::json::JsonArray);
-				for (auto&& item : *value.Obj())
-				{
-					node->items.Add(ConvertCustomTypeToJson(item));
-				}
-				return node;
+				return ConvertCustomTypeToJson(*value.Obj());
 			}
 		}
 
-		static void FromJson(Ptr<glr::json::JsonNode> node, Ptr<collections::List<T>>& value)
+		static void FromJson(Ptr<glr::json::JsonNode> node, Ptr<T>& value)
 		{
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<T>(Ptr<JsonNode>, Ptr<List<T>>&)#"
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<T>(Ptr<JsonNode>, Ptr<T>&)#"
 			if (auto jsonLiteral = node.Cast<glr::json::JsonLiteral>())
 			{
 				if (jsonLiteral->value == glr::json::JsonLiteralValue::Null)
 				{
-					value = {};
+					value = nullptr;
 					return;
 				}
+				else
+				{
+					CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
+				}
 			}
-			else if (auto jsonArray = node.Cast<glr::json::JsonArray>())
+			else
 			{
-				value = Ptr(new collections::List<T>);
+				value = Ptr(new T);
+				ConvertJsonToCustomType(node, *value.Obj());
+			}
+#undef ERROR_MESSAGE_PREFIX
+		}
+	};
+
+	template<typename T>
+	struct JsonHelper<collections::List<T>>
+	{
+		static Ptr<glr::json::JsonNode> ToJson(const collections::List<T>& value)
+		{
+			auto node = Ptr(new glr::json::JsonArray);
+			for (auto&& item : value)
+			{
+				node->items.Add(ConvertCustomTypeToJson(item));
+			}
+			return node;
+		}
+
+		static void FromJson(Ptr<glr::json::JsonNode> node, collections::List<T>& value)
+		{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<T>(Ptr<JsonNode>, List<T>&)#"
+			if (auto jsonArray = node.Cast<glr::json::JsonArray>())
+			{
 				for (auto jsonItem : jsonArray->items)
 				{
 					T item;
 					ConvertJsonToCustomType(jsonItem, item);
-					value->Add(std::move(item));
+					value.Add(std::move(item));
 				}
 				return;
 			}
 			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
+#undef ERROR_MESSAGE_PREFIX
+		}
+	};
+
+	template<typename TKey, typename TValue>
+	struct JsonHelper<collections::Dictionary<TKey, TValue>>
+	{
+		static Ptr<glr::json::JsonNode> ToJson(const collections::Dictionary<TKey, TValue>& value)
+		{
+			CHECK_FAIL(L"Not Implemented!");
+		}
+
+		static void FromJson(Ptr<glr::json::JsonNode> node, collections::Dictionary<TKey, TValue>& value)
+		{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<T>(Ptr<JsonNode>, Dictionary<TKey, TValue>&)#"
+			CHECK_FAIL(L"Not Implemented!");
+#undef ERROR_MESSAGE_PREFIX
+		}
+	};
+
+	template<typename ...Ts>
+	struct JsonHelper<Variant<Ts...>>
+	{
+		static Ptr<glr::json::JsonNode> ToJson(const Variant<Ts...>& value)
+		{
+			CHECK_FAIL(L"Not Implemented!");
+		}
+
+		static void FromJson(Ptr<glr::json::JsonNode> node, Variant<Ts...>& value)
+		{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<T>(Ptr<JsonNode>, Variant<Ts...>&)#"
+			CHECK_FAIL(L"Not Implemented!");
 #undef ERROR_MESSAGE_PREFIX
 		}
 	};
