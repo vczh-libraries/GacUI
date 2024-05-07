@@ -43,6 +43,8 @@
   - `::UnitTestStartup::LoadMainWindow` static method will be called to create the main window.
   - A viewer to view unit test results logged from SyncDom and other stuff after each time when layout stops.
   - A switch to compare snapshot with logged snapshot.
+  - `UnitTestRemoteProtocol_Logging<TProtocol>::GetLogAsJson` rewrite in auto generated code from protocol.
+    - Redefine SyncDom data structures in protocol.
 - Implement basic control (`Source_GacUI_CoreApplication` controls only) unit test based on streaming
   - Skipped time related features, like tooltip.
 - Metadata of remote protocol will be updated and included in releases.
@@ -75,6 +77,7 @@
   - Support `<RawRendering/>` element. It will be mapped to `GDIElement` or `Direct2DElement` in different renderers.
   - In remote protocol, it is an element with no extra properties.
     - In HTML, it would open a `<div/>` and you can do whatever you want using JavaScript.
+  - Thinking about promote SyncDom data structures for unit test, and complete a diff algorithm.
 - Remote protocol redirection back to native rendering:
   - In the test project, C++ side will expose the remote protocol via dll.
   - Implement the remote protocol on a native `INativeController` instance.
