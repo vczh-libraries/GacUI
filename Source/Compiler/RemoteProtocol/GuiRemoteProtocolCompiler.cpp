@@ -501,6 +501,29 @@ GenerateRemoteProtocolHeaderFile
 		writer.WriteLine(L"");
 		writer.WriteLine(L"#include \"" + config.headerInclude + L"\"");
 		writer.WriteLine(L"");
+
+		auto structDecls = From(schema->declarations).FindType<GuiRpStructDecl>();
+
+		writer.WriteLine(L"namespace " + config.cppNamespace);
+		writer.WriteLine(L"{");
+		for (auto structDecl : structDecls)
+		{
+			if (!symbols->cppMapping.Keys().Contains(structDecl->name.value))
+			{
+				writer.WriteLine(L"\tstruct " + structDecl->name.value + L";");
+			}
+		}
+		writer.WriteLine(L"}");
+		
+		writer.WriteLine(L"namespace vl::presentation::remoteprotocol");
+		writer.WriteLine(L"{");
+		for (auto structDecl : structDecls)
+		{
+			WString cppName = GuiRpPrintTypeVisitor::GetCppType(structDecl->name.value, symbols, config);
+			writer.WriteLine(L"\ttemplate<> struct JsonNameHelper<" + cppName + L"> { static constexpr const wchar_t* Name = L\"" + structDecl->name.value + L"\"; };");
+		}
+		writer.WriteLine(L"}");
+
 		writer.WriteLine(L"namespace " + config.cppNamespace);
 		writer.WriteLine(L"{");
 
@@ -520,15 +543,6 @@ GenerateRemoteProtocolHeaderFile
 				writer.WriteLine(L"");
 			}
 		}
-
-		for (auto structDecl : From(schema->declarations).FindType<GuiRpStructDecl>())
-		{
-			if (!symbols->cppMapping.Keys().Contains(structDecl->name.value))
-			{
-				writer.WriteLine(L"\tstruct " + structDecl->name.value + L";");
-			}
-		}
-		writer.WriteLine(L"");
 
 		for (auto unionDecl : From(schema->declarations).FindType<GuiRpUnionDecl>())
 		{

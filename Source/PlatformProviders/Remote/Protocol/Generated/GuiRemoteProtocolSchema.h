@@ -10,6 +10,85 @@ Licensed under https ://github.com/vczh-libraries/License
 
 namespace vl::presentation::remoteprotocol
 {
+	struct FontConfig;
+	struct ScreenConfig;
+	struct WindowSizingConfig;
+	struct WindowShowing;
+	struct IOMouseInfoWithButton;
+	struct GlobalShortcutKey;
+	struct ElementDesc_SolidBorder;
+	struct ElementDesc_SinkBorder;
+	struct ElementDesc_SinkSplitter;
+	struct ElementDesc_SolidBackground;
+	struct ElementDesc_GradientBackground;
+	struct ElementDesc_InnerShadow;
+	struct ElementDesc_Polygon;
+	struct ElementDesc_SolidLabel;
+	struct ImageCreation;
+	struct ImageFrameMetadata;
+	struct ImageMetadata;
+	struct ElementDesc_ImageFrame;
+	struct RendererCreation;
+	struct ElementRendering;
+	struct ElementBoundary;
+	struct ElementMeasuring_FontHeight;
+	struct ElementMeasuring_ElementMinSize;
+	struct ElementMeasurings;
+	struct RenderingDom;
+	struct RenderingCommand_BeginBoundary;
+	struct RenderingCommand_EndBoundary;
+	struct RenderingCommand_Element;
+	struct RenderingFrame;
+	struct RenderingTrace;
+}
+namespace vl::presentation::remoteprotocol
+{
+	template<> struct JsonNameHelper<::vl::presentation::NativeCoordinate> { static constexpr const wchar_t* Name = L"NativeCoordinate"; };
+	template<> struct JsonNameHelper<::vl::presentation::NativePoint> { static constexpr const wchar_t* Name = L"NativePoint"; };
+	template<> struct JsonNameHelper<::vl::presentation::NativeSize> { static constexpr const wchar_t* Name = L"NativeSize"; };
+	template<> struct JsonNameHelper<::vl::presentation::NativeRect> { static constexpr const wchar_t* Name = L"NativeRect"; };
+	template<> struct JsonNameHelper<::vl::presentation::NativeMargin> { static constexpr const wchar_t* Name = L"NativeMargin"; };
+	template<> struct JsonNameHelper<::vl::presentation::Point> { static constexpr const wchar_t* Name = L"Point"; };
+	template<> struct JsonNameHelper<::vl::presentation::Size> { static constexpr const wchar_t* Name = L"Size"; };
+	template<> struct JsonNameHelper<::vl::presentation::Rect> { static constexpr const wchar_t* Name = L"Rect"; };
+	template<> struct JsonNameHelper<::vl::presentation::FontProperties> { static constexpr const wchar_t* Name = L"FontProperties"; };
+	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::FontConfig> { static constexpr const wchar_t* Name = L"FontConfig"; };
+	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::ScreenConfig> { static constexpr const wchar_t* Name = L"ScreenConfig"; };
+	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::WindowSizingConfig> { static constexpr const wchar_t* Name = L"WindowSizingConfig"; };
+	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::WindowShowing> { static constexpr const wchar_t* Name = L"WindowShowing"; };
+	template<> struct JsonNameHelper<::vl::presentation::NativeWindowMouseInfo> { static constexpr const wchar_t* Name = L"IOMouseInfo"; };
+	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::IOMouseInfoWithButton> { static constexpr const wchar_t* Name = L"IOMouseInfoWithButton"; };
+	template<> struct JsonNameHelper<::vl::presentation::NativeWindowKeyInfo> { static constexpr const wchar_t* Name = L"IOKeyInfo"; };
+	template<> struct JsonNameHelper<::vl::presentation::NativeWindowCharInfo> { static constexpr const wchar_t* Name = L"IOCharInfo"; };
+	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::GlobalShortcutKey> { static constexpr const wchar_t* Name = L"GlobalShortcutKey"; };
+	template<> struct JsonNameHelper<::vl::presentation::elements::ElementShape> { static constexpr const wchar_t* Name = L"ElementShape"; };
+	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::ElementDesc_SolidBorder> { static constexpr const wchar_t* Name = L"ElementDesc_SolidBorder"; };
+	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::ElementDesc_SinkBorder> { static constexpr const wchar_t* Name = L"ElementDesc_SinkBorder"; };
+	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::ElementDesc_SinkSplitter> { static constexpr const wchar_t* Name = L"ElementDesc_SinkSplitter"; };
+	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::ElementDesc_SolidBackground> { static constexpr const wchar_t* Name = L"ElementDesc_SolidBackground"; };
+	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::ElementDesc_GradientBackground> { static constexpr const wchar_t* Name = L"ElementDesc_GradientBackground"; };
+	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::ElementDesc_InnerShadow> { static constexpr const wchar_t* Name = L"ElementDesc_InnerShadow"; };
+	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::ElementDesc_Polygon> { static constexpr const wchar_t* Name = L"ElementDesc_Polygon"; };
+	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::ElementDesc_SolidLabel> { static constexpr const wchar_t* Name = L"ElementDesc_SolidLabel"; };
+	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::ImageCreation> { static constexpr const wchar_t* Name = L"ImageCreation"; };
+	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::ImageFrameMetadata> { static constexpr const wchar_t* Name = L"ImageFrameMetadata"; };
+	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::ImageMetadata> { static constexpr const wchar_t* Name = L"ImageMetadata"; };
+	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::ElementDesc_ImageFrame> { static constexpr const wchar_t* Name = L"ElementDesc_ImageFrame"; };
+	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::RendererCreation> { static constexpr const wchar_t* Name = L"RendererCreation"; };
+	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::ElementRendering> { static constexpr const wchar_t* Name = L"ElementRendering"; };
+	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::ElementBoundary> { static constexpr const wchar_t* Name = L"ElementBoundary"; };
+	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::ElementMeasuring_FontHeight> { static constexpr const wchar_t* Name = L"ElementMeasuring_FontHeight"; };
+	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::ElementMeasuring_ElementMinSize> { static constexpr const wchar_t* Name = L"ElementMeasuring_ElementMinSize"; };
+	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::ElementMeasurings> { static constexpr const wchar_t* Name = L"ElementMeasurings"; };
+	template<> struct JsonNameHelper<::vl::Ptr<::vl::presentation::remoteprotocol::RenderingDom>> { static constexpr const wchar_t* Name = L"RenderingDom"; };
+	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::RenderingCommand_BeginBoundary> { static constexpr const wchar_t* Name = L"RenderingCommand_BeginBoundary"; };
+	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::RenderingCommand_EndBoundary> { static constexpr const wchar_t* Name = L"RenderingCommand_EndBoundary"; };
+	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::RenderingCommand_Element> { static constexpr const wchar_t* Name = L"RenderingCommand_Element"; };
+	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::RenderingFrame> { static constexpr const wchar_t* Name = L"RenderingFrame"; };
+	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::RenderingTrace> { static constexpr const wchar_t* Name = L"RenderingTrace"; };
+}
+namespace vl::presentation::remoteprotocol
+{
 	enum class IOMouseButton
 	{
 		Left,
@@ -52,37 +131,6 @@ namespace vl::presentation::remoteprotocol
 		UnsupportedColorizedText,
 		UnsupportedDocument,
 	};
-
-	struct FontConfig;
-	struct ScreenConfig;
-	struct WindowSizingConfig;
-	struct WindowShowing;
-	struct IOMouseInfoWithButton;
-	struct GlobalShortcutKey;
-	struct ElementDesc_SolidBorder;
-	struct ElementDesc_SinkBorder;
-	struct ElementDesc_SinkSplitter;
-	struct ElementDesc_SolidBackground;
-	struct ElementDesc_GradientBackground;
-	struct ElementDesc_InnerShadow;
-	struct ElementDesc_Polygon;
-	struct ElementDesc_SolidLabel;
-	struct ImageCreation;
-	struct ImageFrameMetadata;
-	struct ImageMetadata;
-	struct ElementDesc_ImageFrame;
-	struct RendererCreation;
-	struct ElementRendering;
-	struct ElementBoundary;
-	struct ElementMeasuring_FontHeight;
-	struct ElementMeasuring_ElementMinSize;
-	struct ElementMeasurings;
-	struct RenderingDom;
-	struct RenderingCommand_BeginBoundary;
-	struct RenderingCommand_EndBoundary;
-	struct RenderingCommand_Element;
-	struct RenderingFrame;
-	struct RenderingTrace;
 
 	using ElementDescVariant = ::vl::Variant<
 		::vl::presentation::remoteprotocol::ElementDesc_SolidBorder,

@@ -18,6 +18,9 @@ Interfaces:
 namespace vl::presentation::remoteprotocol
 {
 	template<typename T>
+	struct JsonNameHelper;
+
+	template<typename T>
 	struct JsonHelper
 	{
 		static Ptr<glr::json::JsonNode> ToJson(const T& value);
@@ -200,7 +203,13 @@ namespace vl::presentation::remoteprotocol
 	{
 		static Ptr<glr::json::JsonNode> ToJson(const Variant<Ts...>& value)
 		{
-			CHECK_FAIL(L"Not Implemented!");
+			Ptr<glr::json::JsonNode> result;
+			value.Apply([&result]<typename T>(const T& element)
+			{
+				JsonNameHelper<T>::Name;
+				CHECK_FAIL(L"Not Implemented!");
+			});
+			return result;
 		}
 
 		static void FromJson(Ptr<glr::json::JsonNode> node, Variant<Ts...>& value)
