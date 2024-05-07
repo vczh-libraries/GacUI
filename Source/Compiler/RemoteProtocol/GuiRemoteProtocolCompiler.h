@@ -27,6 +27,7 @@ namespace vl::presentation
 		collections::SortedList<WString>										dropRepeatDeclNames;
 		collections::SortedList<WString>										dropConsecutiveDeclNames;
 		collections::Dictionary<WString, remoteprotocol::GuiRpEnumDecl*>		enumDecls;
+		collections::Dictionary<WString, remoteprotocol::GuiRpUnionDecl*>		unionDecls;
 		collections::Dictionary<WString, remoteprotocol::GuiRpStructDecl*>		structDecls;
 		collections::Dictionary<WString, remoteprotocol::GuiRpMessageDecl*>		messageDecls;
 		collections::Dictionary<WString, remoteprotocol::GuiRpEventDecl*>		eventDecls;

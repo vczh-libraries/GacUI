@@ -33,10 +33,10 @@ CheckRemoteProtocolSchema
 
 		void Visit(GuiRpReferenceType* node) override
 		{
-			if (!symbols->enumDecls.Keys().Contains(node->name.value) && !symbols->structDecls.Keys().Contains(node->name.value))
-			{
-				errors.Add({ node->name.codeRange,L"Custom type \"" + node->name.value + L"\" not found." });
-			}
+			if (symbols->enumDecls.Keys().Contains(node->name.value)) return;
+			if (symbols->unionDecls.Keys().Contains(node->name.value)) return;
+			if (symbols->structDecls.Keys().Contains(node->name.value)) return;
+			errors.Add({ node->name.codeRange,L"Custom type \"" + node->name.value + L"\" not found." });
 		}
 
 		void Visit(GuiRpOptionalType* node) override
@@ -49,6 +49,26 @@ CheckRemoteProtocolSchema
 			node->element->Accept(this);
 		}
 
+		void Visit(GuiRpArrayMapType* node) override
+		{
+			vint index = symbols->structDecls.Keys().IndexOf(node->element.value);
+			if (index == -1)
+			{
+				errors.Add({ node->element.codeRange,L"Struct \"" + node->element.value + L"\" not found in a map." });
+				return;
+			}
+
+			auto structDecl = symbols->structDecls.Values()[index];
+			auto fieldDecl = From(structDecl->members)
+				.Where([&](auto&& member) { return member->name.value == node->keyField.value; })
+				.First({});
+			if (!fieldDecl)
+			{
+				errors.Add({ node->keyField.codeRange,L"Struct \"" + node->element.value + L"\" does not contain field " + node->keyField.value + L"\" required in a map." });
+				return;
+			}
+		}
+
 		// GuiRpDeclaration::IVisitor
 
 		bool EnsureTypeUndefined(const glr::ParsingToken& name)
@@ -56,6 +76,11 @@ CheckRemoteProtocolSchema
 			if (symbols->enumDecls.Keys().Contains(name.value))
 			{
 				errors.Add({ name.codeRange,L"Enum \"" + name.value + L"\" already defined." });
+				return false;
+			}
+			if (symbols->unionDecls.Keys().Contains(name.value))
+			{
+				errors.Add({ name.codeRange,L"Union \"" + name.value + L"\" already defined." });
 				return false;
 			}
 			if (symbols->structDecls.Keys().Contains(name.value))
@@ -123,9 +148,39 @@ CheckRemoteProtocolSchema
 			symbols->enumDecls.Add(node->name.value, node);
 		}
 
+		void Visit(GuiRpUnionDecl* node) override
+		{
+			if (!EnsureTypeUndefined(node->name)) return;
+
+			SortedList<WString> memberNames;
+			for (auto member : node->members)
+			{
+				if (memberNames.Contains(member->name.value))
+				{
+					errors.Add({ member->name.codeRange,L"Union member \"" + node->name.value + L"::" + member->name.value + L"\" already exists." });
+				}
+				else
+				{
+					memberNames.Add(member->name.value);
+
+					vint index = symbols->structDecls.Keys().IndexOf(member->name.value);
+					if (index == -1)
+					{
+						errors.Add({ member->name.codeRange,L"Struct \"" + member->name.value + L"\" not found in union " + node->name.value + L"\"." });
+						return;
+					}
+				}
+			}
+			symbols->unionDecls.Add(node->name.value, node);
+		}
+
 		void Visit(GuiRpStructDecl* node) override
 		{
 			if (!EnsureTypeUndefined(node->name)) return;
+			if (node->type == GuiRpStructType::Class)
+			{
+				symbols->structDecls.Add(node->name.value, node);
+			}
 
 			SortedList<WString> memberNames;
 			for (auto member : node->members)
@@ -163,7 +218,11 @@ CheckRemoteProtocolSchema
 					errors.Add({ att->name.codeRange,L"Unsupported attribute: \"" + att->name.value + L"\" on struct \"" + node->name.value + L"\"." });
 				}
 			}
-			symbols->structDecls.Add(node->name.value, node);
+
+			if (node->type == GuiRpStructType::Struct)
+			{
+				symbols->structDecls.Add(node->name.value, node);
+			}
 		}
 
 		void VisitDropAttribute(Ptr<remoteprotocol::GuiRpAttribute> att, const WString& name, SortedList<WString>& names)
@@ -361,6 +420,19 @@ GenerateRemoteProtocolHeaderFile
 		{
 			writer.WriteString(L"::vl::Ptr<::vl::collections::List<");
 			node->element->Accept(this);
+			writer.WriteString(L">>");
+		}
+
+		void Visit(GuiRpArrayMapType* node) override
+		{
+			auto structDecl = symbols->structDecls[node->element.value];
+			auto fieldDecl = From(structDecl->members)
+				.Where([&](auto&& member) { return member->name.value == node->keyField.value; })
+				.First();
+			writer.WriteString(L"::vl::Ptr<::vl::collections::Dictionary<");
+			fieldDecl->type->Accept(this);
+			writer.WriteString(L", ");
+			writer.WriteString(GetCppType(node->element.value, symbols, config));
 			writer.WriteString(L">>");
 		}
 	};

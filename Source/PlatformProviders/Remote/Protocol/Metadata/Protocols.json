@@ -15,7 +15,8 @@
                 "$ast": "PrimitiveType",
                 "type": "Integer"
             }
-        }]
+        }],
+        "type": "Struct"
     }, {
         "$ast": "StructDecl",
         "attributes": [{
@@ -38,7 +39,8 @@
                 "$ast": "ReferenceType",
                 "name": "NativeCoordinate"
             }
-        }]
+        }],
+        "type": "Struct"
     }, {
         "$ast": "StructDecl",
         "attributes": [{
@@ -61,7 +63,8 @@
                 "$ast": "ReferenceType",
                 "name": "NativeCoordinate"
             }
-        }]
+        }],
+        "type": "Struct"
     }, {
         "$ast": "StructDecl",
         "attributes": [{
@@ -98,7 +101,8 @@
                 "$ast": "ReferenceType",
                 "name": "NativeCoordinate"
             }
-        }]
+        }],
+        "type": "Struct"
     }, {
         "$ast": "StructDecl",
         "attributes": [{
@@ -135,7 +139,8 @@
                 "$ast": "ReferenceType",
                 "name": "NativeCoordinate"
             }
-        }]
+        }],
+        "type": "Struct"
     }, {
         "$ast": "StructDecl",
         "attributes": [{
@@ -158,7 +163,8 @@
                 "$ast": "PrimitiveType",
                 "type": "Integer"
             }
-        }]
+        }],
+        "type": "Struct"
     }, {
         "$ast": "StructDecl",
         "attributes": [{
@@ -181,7 +187,8 @@
                 "$ast": "PrimitiveType",
                 "type": "Integer"
             }
-        }]
+        }],
+        "type": "Struct"
     }, {
         "$ast": "StructDecl",
         "attributes": [{
@@ -218,7 +225,8 @@
                 "$ast": "PrimitiveType",
                 "type": "Integer"
             }
-        }]
+        }],
+        "type": "Struct"
     }, {
         "$ast": "StructDecl",
         "attributes": [{
@@ -283,7 +291,8 @@
                 "$ast": "PrimitiveType",
                 "type": "Boolean"
             }
-        }]
+        }],
+        "type": "Struct"
     }, {
         "$ast": "StructDecl",
         "attributes": [],
@@ -305,7 +314,8 @@
                     "type": "String"
                 }
             }
-        }]
+        }],
+        "type": "Struct"
     }, {
         "$ast": "MessageDecl",
         "attributes": [],
@@ -350,7 +360,8 @@
                 "$ast": "PrimitiveType",
                 "type": "Double"
             }
-        }]
+        }],
+        "type": "Struct"
     }, {
         "$ast": "MessageDecl",
         "attributes": [],
@@ -570,7 +581,8 @@
                 "$ast": "ReferenceType",
                 "name": "NativeMargin"
             }
-        }]
+        }],
+        "type": "Struct"
     }, {
         "$ast": "MessageDecl",
         "attributes": [],
@@ -809,7 +821,8 @@
                 "$ast": "ReferenceType",
                 "name": "WindowSizeState"
             }
-        }]
+        }],
+        "type": "Struct"
     }, {
         "$ast": "MessageDecl",
         "attributes": [{
@@ -951,7 +964,8 @@
                 "$ast": "PrimitiveType",
                 "type": "Boolean"
             }
-        }]
+        }],
+        "type": "Struct"
     }, {
         "$ast": "StructDecl",
         "attributes": [],
@@ -970,7 +984,8 @@
                 "$ast": "ReferenceType",
                 "name": "IOMouseInfo"
             }
-        }]
+        }],
+        "type": "Struct"
     }, {
         "$ast": "StructDecl",
         "attributes": [{
@@ -1021,7 +1036,8 @@
                 "$ast": "PrimitiveType",
                 "type": "Boolean"
             }
-        }]
+        }],
+        "type": "Struct"
     }, {
         "$ast": "StructDecl",
         "attributes": [{
@@ -1065,7 +1081,8 @@
                 "$ast": "PrimitiveType",
                 "type": "Boolean"
             }
-        }]
+        }],
+        "type": "Struct"
     }, {
         "$ast": "StructDecl",
         "attributes": [],
@@ -1105,7 +1122,8 @@
                 "$ast": "PrimitiveType",
                 "type": "Key"
             }
-        }]
+        }],
+        "type": "Struct"
     }, {
         "$ast": "MessageDecl",
         "attributes": [],
@@ -1412,7 +1430,8 @@
                 "$ast": "PrimitiveType",
                 "type": "Integer"
             }
-        }]
+        }],
+        "type": "Struct"
     }, {
         "$ast": "StructDecl",
         "attributes": [],
@@ -1438,7 +1457,8 @@
                 "$ast": "ReferenceType",
                 "name": "ElementShape"
             }
-        }]
+        }],
+        "type": "Struct"
     }, {
         "$ast": "StructDecl",
         "attributes": [],
@@ -1464,7 +1484,8 @@
                 "$ast": "PrimitiveType",
                 "type": "Color"
             }
-        }]
+        }],
+        "type": "Struct"
     }, {
         "$ast": "StructDecl",
         "attributes": [],
@@ -1497,7 +1518,8 @@
                 "$ast": "ReferenceType",
                 "name": "ElementSplitterDirection"
             }
-        }]
+        }],
+        "type": "Struct"
     }, {
         "$ast": "StructDecl",
         "attributes": [],
@@ -1523,7 +1545,8 @@
                 "$ast": "ReferenceType",
                 "name": "ElementShape"
             }
-        }]
+        }],
+        "type": "Struct"
     }, {
         "$ast": "StructDecl",
         "attributes": [],
@@ -1563,7 +1586,8 @@
                 "$ast": "ReferenceType",
                 "name": "ElementShape"
             }
-        }]
+        }],
+        "type": "Struct"
     }, {
         "$ast": "StructDecl",
         "attributes": [],
@@ -1589,7 +1613,8 @@
                 "$ast": "PrimitiveType",
                 "type": "Integer"
             }
-        }]
+        }],
+        "type": "Struct"
     }, {
         "$ast": "StructDecl",
         "attributes": [],
@@ -1632,7 +1657,8 @@
                     "name": "Point"
                 }
             }
-        }]
+        }],
+        "type": "Struct"
     }, {
         "$ast": "EnumDecl",
         "attributes": [],
@@ -1734,7 +1760,8 @@
                     "name": "ElementSolidLabelMeasuringRequest"
                 }
             }
-        }]
+        }],
+        "type": "Struct"
     }, {
         "$ast": "MessageDecl",
         "attributes": [],
@@ -1893,7 +1920,8 @@
                 "$ast": "PrimitiveType",
                 "type": "Boolean"
             }
-        }]
+        }],
+        "type": "Struct"
     }, {
         "$ast": "StructDecl",
         "attributes": [],
@@ -1905,7 +1933,8 @@
                 "$ast": "ReferenceType",
                 "name": "Size"
             }
-        }]
+        }],
+        "type": "Struct"
     }, {
         "$ast": "StructDecl",
         "attributes": [],
@@ -1934,7 +1963,8 @@
                     "name": "ImageFrameMetadata"
                 }
             }
-        }]
+        }],
+        "type": "Struct"
     }, {
         "$ast": "MessageDecl",
         "attributes": [],
@@ -2031,7 +2061,8 @@
                     "name": "ImageCreation"
                 }
             }
-        }]
+        }],
+        "type": "Struct"
     }, {
         "$ast": "MessageDecl",
         "attributes": [],
@@ -2103,7 +2134,8 @@
                 "$ast": "ReferenceType",
                 "name": "RendererType"
             }
-        }]
+        }],
+        "type": "Struct"
     }, {
         "$ast": "MessageDecl",
         "attributes": [],
@@ -2159,7 +2191,8 @@
                 "$ast": "ReferenceType",
                 "name": "Rect"
             }
-        }]
+        }],
+        "type": "Struct"
     }, {
         "$ast": "StructDecl",
         "attributes": [],
@@ -2185,7 +2218,8 @@
                 "$ast": "ReferenceType",
                 "name": "Rect"
             }
-        }]
+        }],
+        "type": "Struct"
     }, {
         "$ast": "StructDecl",
         "attributes": [],
@@ -2211,7 +2245,8 @@
                 "$ast": "PrimitiveType",
                 "type": "Integer"
             }
-        }]
+        }],
+        "type": "Struct"
     }, {
         "$ast": "StructDecl",
         "attributes": [],
@@ -2230,7 +2265,8 @@
                 "$ast": "ReferenceType",
                 "name": "Size"
             }
-        }]
+        }],
+        "type": "Struct"
     }, {
         "$ast": "StructDecl",
         "attributes": [],
@@ -2265,7 +2301,8 @@
                     "name": "ImageMetadata"
                 }
             }
-        }]
+        }],
+        "type": "Struct"
     }, {
         "$ast": "MessageDecl",
         "attributes": [],
@@ -2314,5 +2351,187 @@
                 "name": "ElementMeasurings"
             }
         }
+    }, {
+        "$ast": "UnionDecl",
+        "attributes": [],
+        "name": "ElementDescVariant",
+        "members": [{
+            "$ast": "UnionMember",
+            "name": "ElementDesc_SolidBorder"
+        }, {
+            "$ast": "UnionMember",
+            "name": "ElementDesc_SinkBorder"
+        }, {
+            "$ast": "UnionMember",
+            "name": "ElementDesc_SinkSplitter"
+        }, {
+            "$ast": "UnionMember",
+            "name": "ElementDesc_SolidBackground"
+        }, {
+            "$ast": "UnionMember",
+            "name": "ElementDesc_GradientBackground"
+        }, {
+            "$ast": "UnionMember",
+            "name": "ElementDesc_InnerShadow"
+        }, {
+            "$ast": "UnionMember",
+            "name": "ElementDesc_Polygon"
+        }, {
+            "$ast": "UnionMember",
+            "name": "ElementDesc_SolidLabel"
+        }, {
+            "$ast": "UnionMember",
+            "name": "ElementDesc_ImageFrame"
+        }]
+    }, {
+        "$ast": "StructDecl",
+        "attributes": [],
+        "name": "RenderingDom",
+        "members": [{
+            "$ast": "StructMember",
+            "name": "hitTestResult",
+            "type": {
+                "$ast": "OptionalType",
+                "element": {
+                    "$ast": "ReferenceType",
+                    "name": "WindowHitTestResult"
+                }
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "element",
+            "type": {
+                "$ast": "OptionalType",
+                "element": {
+                    "$ast": "ReferenceType",
+                    "name": "ElementDescVariant"
+                }
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "bounds",
+            "type": {
+                "$ast": "ReferenceType",
+                "name": "Rect"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "validArea",
+            "type": {
+                "$ast": "ReferenceType",
+                "name": "Rect"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "children",
+            "type": {
+                "$ast": "ArrayType",
+                "element": {
+                    "$ast": "ReferenceType",
+                    "name": "RenderingDom"
+                }
+            }
+        }],
+        "type": "Class"
+    }, {
+        "$ast": "StructDecl",
+        "attributes": [],
+        "name": "RenderingCommand_BeginBoundary",
+        "members": [{
+            "$ast": "StructMember",
+            "name": "boundary",
+            "type": {
+                "$ast": "ReferenceType",
+                "name": "ElementBoundary"
+            }
+        }],
+        "type": "Struct"
+    }, {
+        "$ast": "StructDecl",
+        "attributes": [],
+        "name": "RenderingCommand_EndBoundary",
+        "members": [],
+        "type": "Struct"
+    }, {
+        "$ast": "StructDecl",
+        "attributes": [],
+        "name": "RenderingCommand_Element",
+        "members": [{
+            "$ast": "StructMember",
+            "name": "rendering",
+            "type": {
+                "$ast": "ReferenceType",
+                "name": "ElementRendering"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "desc",
+            "type": {
+                "$ast": "ReferenceType",
+                "name": "ElementDescVariant"
+            }
+        }],
+        "type": "Struct"
+    }, {
+        "$ast": "UnionDecl",
+        "attributes": [],
+        "name": "RenderingCommand",
+        "members": [{
+            "$ast": "UnionMember",
+            "name": "RenderingCommand_BeginBoundary"
+        }, {
+            "$ast": "UnionMember",
+            "name": "RenderingCommand_EndBoundary"
+        }, {
+            "$ast": "UnionMember",
+            "name": "RenderingCommand_Element"
+        }]
+    }, {
+        "$ast": "StructDecl",
+        "attributes": [],
+        "name": "RenderingFrame",
+        "members": [{
+            "$ast": "StructMember",
+            "name": "commands",
+            "type": {
+                "$ast": "ArrayType",
+                "element": {
+                    "$ast": "ReferenceType",
+                    "name": "RenderingCommand"
+                }
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "root",
+            "type": {
+                "$ast": "ReferenceType",
+                "name": "RenderingDom"
+            }
+        }],
+        "type": "Class"
+    }, {
+        "$ast": "StructDecl",
+        "attributes": [],
+        "name": "RenderingTrace",
+        "members": [{
+            "$ast": "StructMember",
+            "name": "createdImages",
+            "type": {
+                "$ast": "ArrayMapType",
+                "element": "ImageMetadata",
+                "keyField": "id"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "frames",
+            "type": {
+                "$ast": "ArrayType",
+                "element": {
+                    "$ast": "ReferenceType",
+                    "name": "RenderingFrame"
+                }
+            }
+        }],
+        "type": "Struct"
     }]
 }
