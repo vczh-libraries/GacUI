@@ -43,11 +43,12 @@ namespace vl::presentation::remoteprotocol
 		COLON = 27,
 		SEMICOLON = 28,
 		COMMA = 29,
-		QUESTION = 30,
-		SPACE = 31,
+		DOT = 30,
+		QUESTION = 31,
+		SPACE = 32,
 	};
 
-	constexpr vl::vint GuiRemoteProtocolTokenCount = 32;
+	constexpr vl::vint GuiRemoteProtocolTokenCount = 33;
 	extern bool GuiRemoteProtocolTokenDeleter(vl::vint token);
 	extern const wchar_t* GuiRemoteProtocolTokenId(GuiRemoteProtocolTokens token);
 	extern const wchar_t* GuiRemoteProtocolTokenDisplayText(GuiRemoteProtocolTokens token);

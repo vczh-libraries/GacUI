@@ -32,6 +32,7 @@ CLOSE:/)
 COLON::
 SEMICOLON:;
 COMMA:,
+DOT:.
 QUESTION:/?
 
 discard SPACE:/s+

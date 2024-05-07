@@ -9,7 +9,7 @@ RType
 	::= "color" as PrimitiveType {type = Color}
 	::= "binary" as PrimitiveType {type = Binary}
 	::= NAME:name as ReferenceType
-	::= NAME:element "[" NAME:keyField "]" as ArrayMapType
+	::= NAME:element "[" "." NAME:keyField "]" as ArrayMapType
 	::= RType:element "?" as OptionalType
 	::= RType:element "[" "]" as ArrayType
 	;

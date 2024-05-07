@@ -45,7 +45,7 @@
   - A switch to compare snapshot with logged snapshot.
   - `UnitTestRemoteProtocol_Logging<TProtocol>::GetLogAsJson` rewrite in auto generated code from protocol.
     - Redefine SyncDom data structures in protocol.
-    - Support dictionary like array, requires a key in the value's field: `var createdImages : ImageMetadata[id];`.
+    - Support dictionary like array, requires a key in the value's field: `var createdImages : ImageMetadata[.id];`.
     - Support class, all class is serialized `Ptr<T>`, allowing recursion, disallowing inheritance, nullable in serialization.
     - Support union as `Variant<Ts...>`.
 - Implement basic control (`Source_GacUI_CoreApplication` controls only) unit test based on streaming
