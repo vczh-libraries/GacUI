@@ -465,14 +465,19 @@ GenerateRemoteProtocolHeaderFile
 
 		void Visit(GuiRpArrayMapType* node) override
 		{
+			auto cppName = GetCppType(node->element.value, symbols, config);
 			auto structDecl = symbols->structDecls[node->element.value];
 			auto fieldDecl = From(structDecl->members)
 				.Where([&](auto&& member) { return member->name.value == node->keyField.value; })
 				.First();
-			writer.WriteString(L"::vl::Ptr<::vl::collections::Dictionary<");
+			writer.WriteString(L"::vl::Ptr<::vl::presentation::remoteprotocol::ArrayMap<");
 			fieldDecl->type->Accept(this);
 			writer.WriteString(L", ");
-			writer.WriteString(GetCppType(node->element.value, symbols, config));
+			writer.WriteString(cppName);
+			writer.WriteString(L", &");
+			writer.WriteString(cppName);
+			writer.WriteString(L"::");
+			writer.WriteString(node->keyField.value);
 			writer.WriteString(L">>");
 		}
 	};

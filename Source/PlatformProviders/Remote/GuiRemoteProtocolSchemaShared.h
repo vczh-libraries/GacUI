@@ -20,6 +20,23 @@ namespace vl::presentation::remoteprotocol
 	template<typename T>
 	struct JsonNameHelper;
 
+	template<typename TKey, typename TValue, TKey TValue::* Field>
+	struct ArrayMap
+	{
+		using KK = typename KeyType<TKey>::Type;
+		collections::Dictionary<TKey, TValue>			map;
+
+		auto&& Keys() const								{ return map.Keys(); }
+		auto&& Values() const							{ return map.Values(); }
+		vint Count() const								{ return map.Count(); }
+		const TValue& Get(const KK& key) const			{ return map.Get(key); }
+		const TValue& operator[](const KK& key) const	{ return map[key]; }
+
+		bool Add(const TValue& value)					{ return map.Add(value.*Field, value); }
+		bool Remove(const KK& key)						{ return map.Remove(key); }
+		bool Clear()									{ return map.Clear(); }
+	};
+
 	template<typename T>
 	struct JsonHelper
 	{
@@ -182,17 +199,17 @@ namespace vl::presentation::remoteprotocol
 		}
 	};
 
-	template<typename TKey, typename TValue>
-	struct JsonHelper<collections::Dictionary<TKey, TValue>>
+	template<typename TKey, typename TValue, TKey TValue::* Field>
+	struct JsonHelper<ArrayMap<TKey, TValue, Field>>
 	{
-		static Ptr<glr::json::JsonNode> ToJson(const collections::Dictionary<TKey, TValue>& value)
+		static Ptr<glr::json::JsonNode> ToJson(const ArrayMap<TKey, TValue, Field>& value)
 		{
 			CHECK_FAIL(L"Not Implemented!");
 		}
 
-		static void FromJson(Ptr<glr::json::JsonNode> node, collections::Dictionary<TKey, TValue>& value)
+		static void FromJson(Ptr<glr::json::JsonNode> node, ArrayMap<TKey, TValue, Field>& value)
 		{
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<T>(Ptr<JsonNode>, Dictionary<TKey, TValue>&)#"
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<T>(Ptr<JsonNode>, ArrayMap<TKey, TValue, Field>&)#"
 			CHECK_FAIL(L"Not Implemented!");
 #undef ERROR_MESSAGE_PREFIX
 		}
