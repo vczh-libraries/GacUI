@@ -2508,7 +2508,7 @@
                 "name": "RenderingDom"
             }
         }],
-        "type": "Class"
+        "type": "Struct"
     }, {
         "$ast": "StructDecl",
         "attributes": [],

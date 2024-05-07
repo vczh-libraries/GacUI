@@ -169,7 +169,19 @@ CheckRemoteProtocolSchema
 						errors.Add({ member->name.codeRange,L"Struct \"" + member->name.value + L"\" not found in union " + node->name.value + L"\"." });
 						return;
 					}
+
+					auto structDecl = symbols->structDecls.Values()[index];
+					if (structDecl->type != GuiRpStructType::Struct)
+					{
+						errors.Add({ member->name.codeRange,L"Struct \"" + member->name.value + L"\" in union " + node->name.value + L"\" should not be a class." });
+						return;
+					}
 				}
+			}
+
+			for (auto att : node->attributes)
+			{
+				errors.Add({ att->name.codeRange,L"Unsupported attribute: \"" + att->name.value + L"\" on union \"" + node->name.value + L"\"." });
 			}
 			symbols->unionDecls.Add(node->name.value, node);
 		}
@@ -378,17 +390,45 @@ GenerateRemoteProtocolHeaderFile
 			}
 		}
 
-		static WString GetCppType(const WString& type, Ptr<GuiRpSymbols> symbols, GuiRpCppConfig& config)
+		static WString GetCppType(const WString& type, Ptr<GuiRpSymbols> symbols, GuiRpCppConfig& config, bool forJson = false)
 		{
-			vint index = symbols->cppMapping.Keys().IndexOf(type);
-			if (index == -1)
+			bool ptr = false;
+			if (!forJson)
 			{
-				return L"::" + config.cppNamespace + L"::" + type;
+				vint index = symbols->structDecls.Keys().IndexOf(type);
+				if (index != -1)
+				{
+					auto structDecl = symbols->structDecls.Values()[index];
+					ptr = structDecl->type == GuiRpStructType::Class;
+				}
+			}
+
+			WString result;
+			{
+				vint index = symbols->cppMapping.Keys().IndexOf(type);
+				if (index == -1)
+				{
+					result = L"::" + config.cppNamespace + L"::" + type;
+				}
+				else
+				{
+					result = symbols->cppMapping.Values()[index];
+				}
+			}
+
+			if (ptr)
+			{
+				return L"::vl::Ptr<" + result + L">";
 			}
 			else
 			{
-				return symbols->cppMapping.Values()[index];
+				return result;
 			}
+		}
+
+		static WString GetCppTypeForJson(const WString& type, Ptr<GuiRpSymbols> symbols, GuiRpCppConfig& config)
+		{
+			return GetCppType(type, symbols, config, true);
 		}
 
 		static WString GetCppNamespace(const WString& type, Ptr<GuiRpSymbols> symbols, GuiRpCppConfig& config)
@@ -485,6 +525,37 @@ GenerateRemoteProtocolHeaderFile
 		{
 			if (!symbols->cppMapping.Keys().Contains(structDecl->name.value))
 			{
+				writer.WriteLine(L"\tstruct " + structDecl->name.value + L";");
+			}
+		}
+		writer.WriteLine(L"");
+
+		for (auto unionDecl : From(schema->declarations).FindType<GuiRpUnionDecl>())
+		{
+			if (!symbols->cppMapping.Keys().Contains(unionDecl->name.value))
+			{
+				writer.WriteLine(L"\tusing " + unionDecl->name.value + L" = ::vl::Variant<");
+				for (auto [member, index] : indexed(unionDecl->members))
+				{
+					writer.WriteString(L"\t\t" + GuiRpPrintTypeVisitor::GetCppType(member->name.value, symbols, config));
+					if (index < unionDecl->members.Count() - 1)
+					{
+						writer.WriteLine(L",");
+					}
+					else
+					{
+						writer.WriteLine(L"");
+					}
+				}
+				writer.WriteLine(L"\t>;");
+				writer.WriteLine(L"");
+			}
+		}
+
+		for (auto structDecl : From(schema->declarations).FindType<GuiRpStructDecl>())
+		{
+			if (!symbols->cppMapping.Keys().Contains(structDecl->name.value))
+			{
 				writer.WriteLine(L"\tstruct " + structDecl->name.value);
 				writer.WriteLine(L"\t{");
 				for (auto member : structDecl->members)
@@ -496,6 +567,7 @@ GenerateRemoteProtocolHeaderFile
 				writer.WriteLine(L"\t};");
 				writer.WriteLine(L"");
 			}
+			writer.WriteLine(L"");
 		}
 
 		for (auto enumDecl : From(schema->declarations).FindType<GuiRpEnumDecl>())
@@ -504,7 +576,7 @@ GenerateRemoteProtocolHeaderFile
 		}
 		for (auto structDecl : From(schema->declarations).FindType<GuiRpStructDecl>())
 		{
-			GenerateSerializerFunctionHeader(GuiRpPrintTypeVisitor::GetCppType(structDecl->name.value, symbols, config), true, writer);
+			GenerateSerializerFunctionHeader(GuiRpPrintTypeVisitor::GetCppTypeForJson(structDecl->name.value, symbols, config), true, writer);
 		}
 		writer.WriteLine(L"");
 
@@ -514,7 +586,7 @@ GenerateRemoteProtocolHeaderFile
 		}
 		for (auto structDecl : From(schema->declarations).FindType<GuiRpStructDecl>())
 		{
-			GenerateDeserializerFunctionHeader(GuiRpPrintTypeVisitor::GetCppType(structDecl->name.value, symbols, config), true, writer);
+			GenerateDeserializerFunctionHeader(GuiRpPrintTypeVisitor::GetCppTypeForJson(structDecl->name.value, symbols, config), true, writer);
 		}
 		writer.WriteLine(L"");
 
@@ -667,7 +739,7 @@ GenerateRemoteProtocolCppFile
 
 	void GenerateStructSerializerFunctionImpl(Ptr<GuiRpStructDecl> structDecl, Ptr<GuiRpSymbols> symbols, GuiRpCppConfig& config, stream::TextWriter& writer)
 	{
-		WString cppName = GuiRpPrintTypeVisitor::GetCppType(structDecl->name.value, symbols, config);
+		WString cppName = GuiRpPrintTypeVisitor::GetCppTypeForJson(structDecl->name.value, symbols, config);
 		GenerateSerializerFunctionHeader(cppName, false, writer);
 		writer.WriteLine(L"\t{");
 		writer.WriteLine(L"\t\tauto node = Ptr(new glr::json::JsonObject);");
@@ -701,7 +773,7 @@ GenerateRemoteProtocolCppFile
 
 	void GenerateStructDeserializerFunctionImpl(Ptr<GuiRpStructDecl> structDecl, Ptr<GuiRpSymbols> symbols, GuiRpCppConfig& config, stream::TextWriter& writer)
 	{
-		WString cppName = GuiRpPrintTypeVisitor::GetCppType(structDecl->name.value, symbols, config);
+		WString cppName = GuiRpPrintTypeVisitor::GetCppTypeForJson(structDecl->name.value, symbols, config);
 		GenerateDeserializerFunctionHeader(cppName, false, writer);
 		writer.WriteLine(L"\t{");
 		writer.WriteLine(L"#define ERROR_MESSAGE_PREFIX L\"vl::presentation::remoteprotocol::ConvertJsonToCustomType<" + cppName + L">(Ptr<JsonNode>, " + cppName + L"&)#\"");

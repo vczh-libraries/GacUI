@@ -42,7 +42,7 @@ union RenderingCommand
     RenderingCommand_Element,
 }
 
-class RenderingFrame
+struct RenderingFrame
 {
     var commands: RenderingCommand[];
     var root: RenderingDom;
