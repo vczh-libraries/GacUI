@@ -9,6 +9,7 @@ RType
 	::= "color" as PrimitiveType {type = Color}
 	::= "binary" as PrimitiveType {type = Binary}
 	::= NAME:name as ReferenceType
+	::= NAME:element "[" NAME:keyField "]" as ArrayMapType
 	::= RType:element "?" as OptionalType
 	::= RType:element "[" "]" as ArrayType
 	;
@@ -29,12 +30,25 @@ REnum
 	::= "enum" NAME:name "{" {REnumMember : members} "}" as EnumDecl
 	;
 
+RUnionMember
+	::= NAME:name "," as UnionMember
+	;
+
+RUnion
+	::= "union" NAME:name "{" {RUnionMember : members} "}" as UnionDecl
+	;
+
 RStructMember
 	::= "var" NAME:name ":" RType:type ";" as StructMember
 	;
 
+RStructBody
+	::= NAME:name "{" {RStructMember : members} "}" as StructDecl
+	;
+
 RStruct
-	::= "struct" NAME:name "{" {RStructMember : members} "}" as StructDecl
+	::= "struct" !RStructBody {type = Struct}
+	::= "class" !RStructBody {type = Class}
 	;
 
 RMessageRequest
@@ -59,6 +73,7 @@ REvent
 
 RDeclDetail
 	::= !REnum
+	::= !RUnion
 	::= !RStruct
 	::= !RMessage
 	::= !REvent

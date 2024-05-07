@@ -11,6 +11,7 @@ Licensed under https://github.com/vczh-libraries/License
 
 namespace vl::presentation::remoteprotocol
 {
+	class GuiRpArrayMapType;
 	class GuiRpArrayType;
 	class GuiRpAttribute;
 	class GuiRpDeclaration;
@@ -28,6 +29,8 @@ namespace vl::presentation::remoteprotocol
 	class GuiRpStructDecl;
 	class GuiRpStructMember;
 	class GuiRpType;
+	class GuiRpUnionDecl;
+	class GuiRpUnionMember;
 
 	enum class GuiRpPrimitiveTypes
 	{
@@ -43,6 +46,13 @@ namespace vl::presentation::remoteprotocol
 		Binary = 8,
 	};
 
+	enum class GuiRpStructType
+	{
+		UNDEFINED_ENUM_ITEM_VALUE = -1,
+		Struct = 0,
+		Class = 1,
+	};
+
 	class GuiRpType abstract : public vl::glr::ParsingAstBase, vl::reflection::Description<GuiRpType>
 	{
 	public:
@@ -53,6 +63,7 @@ namespace vl::presentation::remoteprotocol
 			virtual void Visit(GuiRpReferenceType* node) = 0;
 			virtual void Visit(GuiRpOptionalType* node) = 0;
 			virtual void Visit(GuiRpArrayType* node) = 0;
+			virtual void Visit(GuiRpArrayMapType* node) = 0;
 		};
 
 		virtual void Accept(GuiRpType::IVisitor* visitor) = 0;
@@ -91,6 +102,15 @@ namespace vl::presentation::remoteprotocol
 		void Accept(GuiRpType::IVisitor* visitor) override;
 	};
 
+	class GuiRpArrayMapType : public GuiRpType, vl::reflection::Description<GuiRpArrayMapType>
+	{
+	public:
+		vl::glr::ParsingToken element;
+		vl::glr::ParsingToken keyField;
+
+		void Accept(GuiRpType::IVisitor* visitor) override;
+	};
+
 	class GuiRpAttribute : public vl::glr::ParsingAstBase, vl::reflection::Description<GuiRpAttribute>
 	{
 	public:
@@ -105,6 +125,7 @@ namespace vl::presentation::remoteprotocol
 		{
 		public:
 			virtual void Visit(GuiRpEnumDecl* node) = 0;
+			virtual void Visit(GuiRpUnionDecl* node) = 0;
 			virtual void Visit(GuiRpStructDecl* node) = 0;
 			virtual void Visit(GuiRpMessageDecl* node) = 0;
 			virtual void Visit(GuiRpEventDecl* node) = 0;
@@ -130,6 +151,20 @@ namespace vl::presentation::remoteprotocol
 		void Accept(GuiRpDeclaration::IVisitor* visitor) override;
 	};
 
+	class GuiRpUnionMember : public vl::glr::ParsingAstBase, vl::reflection::Description<GuiRpUnionMember>
+	{
+	public:
+		vl::glr::ParsingToken name;
+	};
+
+	class GuiRpUnionDecl : public GuiRpDeclaration, vl::reflection::Description<GuiRpUnionDecl>
+	{
+	public:
+		vl::collections::List<vl::Ptr<GuiRpUnionMember>> members;
+
+		void Accept(GuiRpDeclaration::IVisitor* visitor) override;
+	};
+
 	class GuiRpStructMember : public vl::glr::ParsingAstBase, vl::reflection::Description<GuiRpStructMember>
 	{
 	public:
@@ -140,6 +175,7 @@ namespace vl::presentation::remoteprotocol
 	class GuiRpStructDecl : public GuiRpDeclaration, vl::reflection::Description<GuiRpStructDecl>
 	{
 	public:
+		GuiRpStructType type = GuiRpStructType::UNDEFINED_ENUM_ITEM_VALUE;
 		vl::collections::List<vl::Ptr<GuiRpStructMember>> members;
 
 		void Accept(GuiRpDeclaration::IVisitor* visitor) override;
@@ -196,12 +232,16 @@ namespace vl::reflection::description
 	DECL_TYPE_INFO(vl::presentation::remoteprotocol::GuiRpReferenceType)
 	DECL_TYPE_INFO(vl::presentation::remoteprotocol::GuiRpOptionalType)
 	DECL_TYPE_INFO(vl::presentation::remoteprotocol::GuiRpArrayType)
+	DECL_TYPE_INFO(vl::presentation::remoteprotocol::GuiRpArrayMapType)
 	DECL_TYPE_INFO(vl::presentation::remoteprotocol::GuiRpAttribute)
 	DECL_TYPE_INFO(vl::presentation::remoteprotocol::GuiRpDeclaration)
 	DECL_TYPE_INFO(vl::presentation::remoteprotocol::GuiRpDeclaration::IVisitor)
 	DECL_TYPE_INFO(vl::presentation::remoteprotocol::GuiRpEnumMember)
 	DECL_TYPE_INFO(vl::presentation::remoteprotocol::GuiRpEnumDecl)
+	DECL_TYPE_INFO(vl::presentation::remoteprotocol::GuiRpUnionMember)
+	DECL_TYPE_INFO(vl::presentation::remoteprotocol::GuiRpUnionDecl)
 	DECL_TYPE_INFO(vl::presentation::remoteprotocol::GuiRpStructMember)
+	DECL_TYPE_INFO(vl::presentation::remoteprotocol::GuiRpStructType)
 	DECL_TYPE_INFO(vl::presentation::remoteprotocol::GuiRpStructDecl)
 	DECL_TYPE_INFO(vl::presentation::remoteprotocol::GuiRpMessageRequest)
 	DECL_TYPE_INFO(vl::presentation::remoteprotocol::GuiRpMessageResponse)
@@ -233,10 +273,20 @@ namespace vl::reflection::description
 			INVOKE_INTERFACE_PROXY(Visit, node);
 		}
 
+		void Visit(vl::presentation::remoteprotocol::GuiRpArrayMapType* node) override
+		{
+			INVOKE_INTERFACE_PROXY(Visit, node);
+		}
+
 	END_INTERFACE_PROXY(vl::presentation::remoteprotocol::GuiRpType::IVisitor)
 
 	BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(vl::presentation::remoteprotocol::GuiRpDeclaration::IVisitor)
 		void Visit(vl::presentation::remoteprotocol::GuiRpEnumDecl* node) override
+		{
+			INVOKE_INTERFACE_PROXY(Visit, node);
+		}
+
+		void Visit(vl::presentation::remoteprotocol::GuiRpUnionDecl* node) override
 		{
 			INVOKE_INTERFACE_PROXY(Visit, node);
 		}

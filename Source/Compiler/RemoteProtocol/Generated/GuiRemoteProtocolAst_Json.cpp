@@ -8,6 +8,15 @@ Licensed under https://github.com/vczh-libraries/License
 
 namespace vl::presentation::remoteprotocol::json_visitor
 {
+	void AstVisitor::PrintFields(GuiRpArrayMapType* node)
+	{
+		BeginField(L"element");
+		WriteToken(node->element);
+		EndField();
+		BeginField(L"keyField");
+		WriteToken(node->keyField);
+		EndField();
+	}
 	void AstVisitor::PrintFields(GuiRpArrayType* node)
 	{
 		BeginField(L"element");
@@ -165,6 +174,19 @@ namespace vl::presentation::remoteprotocol::json_visitor
 		}
 		EndArray();
 		EndField();
+		BeginField(L"type");
+		switch (node->type)
+		{
+		case vl::presentation::remoteprotocol::GuiRpStructType::Class:
+			WriteString(L"Class");
+			break;
+		case vl::presentation::remoteprotocol::GuiRpStructType::Struct:
+			WriteString(L"Struct");
+			break;
+		default:
+			WriteNull();
+		}
+		EndField();
 	}
 	void AstVisitor::PrintFields(GuiRpStructMember* node)
 	{
@@ -177,6 +199,25 @@ namespace vl::presentation::remoteprotocol::json_visitor
 	}
 	void AstVisitor::PrintFields(GuiRpType* node)
 	{
+	}
+	void AstVisitor::PrintFields(GuiRpUnionDecl* node)
+	{
+		BeginField(L"members");
+		BeginArray();
+		for (auto&& listItem : node->members)
+		{
+			BeginArrayItem();
+			Print(listItem.Obj());
+			EndArrayItem();
+		}
+		EndArray();
+		EndField();
+	}
+	void AstVisitor::PrintFields(GuiRpUnionMember* node)
+	{
+		BeginField(L"name");
+		WriteToken(node->name);
+		EndField();
 	}
 
 	void AstVisitor::Visit(GuiRpPrimitiveType* node)
@@ -235,6 +276,20 @@ namespace vl::presentation::remoteprotocol::json_visitor
 		EndObject();
 	}
 
+	void AstVisitor::Visit(GuiRpArrayMapType* node)
+	{
+		if (!node)
+		{
+			WriteNull();
+			return;
+		}
+		BeginObject();
+		WriteType(L"ArrayMapType", node);
+		PrintFields(static_cast<GuiRpType*>(node));
+		PrintFields(static_cast<GuiRpArrayMapType*>(node));
+		EndObject();
+	}
+
 	void AstVisitor::Visit(GuiRpEnumDecl* node)
 	{
 		if (!node)
@@ -246,6 +301,20 @@ namespace vl::presentation::remoteprotocol::json_visitor
 		WriteType(L"EnumDecl", node);
 		PrintFields(static_cast<GuiRpDeclaration*>(node));
 		PrintFields(static_cast<GuiRpEnumDecl*>(node));
+		EndObject();
+	}
+
+	void AstVisitor::Visit(GuiRpUnionDecl* node)
+	{
+		if (!node)
+		{
+			WriteNull();
+			return;
+		}
+		BeginObject();
+		WriteType(L"UnionDecl", node);
+		PrintFields(static_cast<GuiRpDeclaration*>(node));
+		PrintFields(static_cast<GuiRpUnionDecl*>(node));
 		EndObject();
 	}
 
@@ -339,6 +408,19 @@ namespace vl::presentation::remoteprotocol::json_visitor
 		BeginObject();
 		WriteType(L"EnumMember", node);
 		PrintFields(static_cast<GuiRpEnumMember*>(node));
+		EndObject();
+	}
+
+	void AstVisitor::Print(GuiRpUnionMember* node)
+	{
+		if (!node)
+		{
+			WriteNull();
+			return;
+		}
+		BeginObject();
+		WriteType(L"UnionMember", node);
+		PrintFields(static_cast<GuiRpUnionMember*>(node));
 		EndObject();
 	}
 

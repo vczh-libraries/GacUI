@@ -18,6 +18,7 @@ namespace vl::presentation::remoteprotocol::json_visitor
 		, protected virtual GuiRpDeclaration::IVisitor
 	{
 	protected:
+		virtual void PrintFields(GuiRpArrayMapType* node);
 		virtual void PrintFields(GuiRpArrayType* node);
 		virtual void PrintFields(GuiRpAttribute* node);
 		virtual void PrintFields(GuiRpDeclaration* node);
@@ -35,14 +36,18 @@ namespace vl::presentation::remoteprotocol::json_visitor
 		virtual void PrintFields(GuiRpStructDecl* node);
 		virtual void PrintFields(GuiRpStructMember* node);
 		virtual void PrintFields(GuiRpType* node);
+		virtual void PrintFields(GuiRpUnionDecl* node);
+		virtual void PrintFields(GuiRpUnionMember* node);
 
 	protected:
 		void Visit(GuiRpPrimitiveType* node) override;
 		void Visit(GuiRpReferenceType* node) override;
 		void Visit(GuiRpOptionalType* node) override;
 		void Visit(GuiRpArrayType* node) override;
+		void Visit(GuiRpArrayMapType* node) override;
 
 		void Visit(GuiRpEnumDecl* node) override;
+		void Visit(GuiRpUnionDecl* node) override;
 		void Visit(GuiRpStructDecl* node) override;
 		void Visit(GuiRpMessageDecl* node) override;
 		void Visit(GuiRpEventDecl* node) override;
@@ -54,6 +59,7 @@ namespace vl::presentation::remoteprotocol::json_visitor
 		void Print(GuiRpDeclaration* node);
 		void Print(GuiRpAttribute* node);
 		void Print(GuiRpEnumMember* node);
+		void Print(GuiRpUnionMember* node);
 		void Print(GuiRpStructMember* node);
 		void Print(GuiRpMessageRequest* node);
 		void Print(GuiRpMessageResponse* node);

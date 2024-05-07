@@ -35,6 +35,12 @@ class ArrayType : Type
 	var element : Type;
 }
 
+class ArrayMapType : Type
+{
+	var element : token;
+	var keyField : token;
+}
+
 class Attribute
 {
 	var name : token;
@@ -57,14 +63,31 @@ class EnumDecl : Declaration
 	var members : EnumMember[];
 }
 
+class UnionMember
+{
+	var name : token;
+}
+
+class UnionDecl : Declaration
+{
+	var members : UnionMember[];
+}
+
 class StructMember
 {
 	var name : token;
 	var type : Type;
 }
 
+enum StructType
+{
+	Struct,
+	Class,
+}
+
 class StructDecl : Declaration
 {
+	var type : StructType;
 	var members : StructMember[];
 }
 
