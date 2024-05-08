@@ -50,6 +50,7 @@ struct RenderingFrame
 
 struct RenderingTrace
 {
+    var createdElements: RendererType[int];
     var createdImages: ImageMetadata[.id];
     var frames: RenderingFrame[];
 }

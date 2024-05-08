@@ -19,6 +19,7 @@ namespace vl::presentation::remoteprotocol
 	class GuiRpEnumMember;
 	class GuiRpEventDecl;
 	class GuiRpEventRequest;
+	class GuiRpMapType;
 	class GuiRpMessageDecl;
 	class GuiRpMessageRequest;
 	class GuiRpMessageResponse;
@@ -64,6 +65,7 @@ namespace vl::presentation::remoteprotocol
 			virtual void Visit(GuiRpOptionalType* node) = 0;
 			virtual void Visit(GuiRpArrayType* node) = 0;
 			virtual void Visit(GuiRpArrayMapType* node) = 0;
+			virtual void Visit(GuiRpMapType* node) = 0;
 		};
 
 		virtual void Accept(GuiRpType::IVisitor* visitor) = 0;
@@ -107,6 +109,15 @@ namespace vl::presentation::remoteprotocol
 	public:
 		vl::glr::ParsingToken element;
 		vl::glr::ParsingToken keyField;
+
+		void Accept(GuiRpType::IVisitor* visitor) override;
+	};
+
+	class GuiRpMapType : public GuiRpType, vl::reflection::Description<GuiRpMapType>
+	{
+	public:
+		vl::Ptr<GuiRpType> element;
+		vl::Ptr<GuiRpType> keyType;
 
 		void Accept(GuiRpType::IVisitor* visitor) override;
 	};
@@ -233,6 +244,7 @@ namespace vl::reflection::description
 	DECL_TYPE_INFO(vl::presentation::remoteprotocol::GuiRpOptionalType)
 	DECL_TYPE_INFO(vl::presentation::remoteprotocol::GuiRpArrayType)
 	DECL_TYPE_INFO(vl::presentation::remoteprotocol::GuiRpArrayMapType)
+	DECL_TYPE_INFO(vl::presentation::remoteprotocol::GuiRpMapType)
 	DECL_TYPE_INFO(vl::presentation::remoteprotocol::GuiRpAttribute)
 	DECL_TYPE_INFO(vl::presentation::remoteprotocol::GuiRpDeclaration)
 	DECL_TYPE_INFO(vl::presentation::remoteprotocol::GuiRpDeclaration::IVisitor)
@@ -274,6 +286,11 @@ namespace vl::reflection::description
 		}
 
 		void Visit(vl::presentation::remoteprotocol::GuiRpArrayMapType* node) override
+		{
+			INVOKE_INTERFACE_PROXY(Visit, node);
+		}
+
+		void Visit(vl::presentation::remoteprotocol::GuiRpMapType* node) override
 		{
 			INVOKE_INTERFACE_PROXY(Visit, node);
 		}

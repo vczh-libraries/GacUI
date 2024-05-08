@@ -79,6 +79,15 @@ namespace vl::presentation::remoteprotocol::json_visitor
 		Print(node->type.Obj());
 		EndField();
 	}
+	void AstVisitor::PrintFields(GuiRpMapType* node)
+	{
+		BeginField(L"element");
+		Print(node->element.Obj());
+		EndField();
+		BeginField(L"keyType");
+		Print(node->keyType.Obj());
+		EndField();
+	}
 	void AstVisitor::PrintFields(GuiRpMessageDecl* node)
 	{
 		BeginField(L"request");
@@ -287,6 +296,20 @@ namespace vl::presentation::remoteprotocol::json_visitor
 		WriteType(L"ArrayMapType", node);
 		PrintFields(static_cast<GuiRpType*>(node));
 		PrintFields(static_cast<GuiRpArrayMapType*>(node));
+		EndObject();
+	}
+
+	void AstVisitor::Visit(GuiRpMapType* node)
+	{
+		if (!node)
+		{
+			WriteNull();
+			return;
+		}
+		BeginObject();
+		WriteType(L"MapType", node);
+		PrintFields(static_cast<GuiRpType*>(node));
+		PrintFields(static_cast<GuiRpMapType*>(node));
 		EndObject();
 	}
 

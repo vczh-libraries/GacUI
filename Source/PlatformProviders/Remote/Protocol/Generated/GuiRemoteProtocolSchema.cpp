@@ -626,6 +626,7 @@ namespace vl::presentation::remoteprotocol
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::RenderingTrace>(const ::vl::presentation::remoteprotocol::RenderingTrace & value)
 	{
 		auto node = Ptr(new glr::json::JsonObject);
+		ConvertCustomTypeToJsonField(node, L"createdElements", value.createdElements);
 		ConvertCustomTypeToJsonField(node, L"createdImages", value.createdImages);
 		ConvertCustomTypeToJsonField(node, L"frames", value.frames);
 		return node;
@@ -1470,6 +1471,7 @@ namespace vl::presentation::remoteprotocol
 		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
 		for (auto field : jsonNode->fields)
 		{
+			if (field->name.value == L"createdElements") ConvertJsonToCustomType(field->value, value.createdElements); else
 			if (field->name.value == L"createdImages") ConvertJsonToCustomType(field->value, value.createdImages); else
 			if (field->name.value == L"frames") ConvertJsonToCustomType(field->value, value.frames); else
 			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");

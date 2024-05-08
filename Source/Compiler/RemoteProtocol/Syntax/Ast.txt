@@ -41,6 +41,12 @@ class ArrayMapType : Type
 	var keyField : token;
 }
 
+class MapType : Type
+{
+	var element : Type;
+	var keyType : Type;
+}
+
 class Attribute
 {
 	var name : token;

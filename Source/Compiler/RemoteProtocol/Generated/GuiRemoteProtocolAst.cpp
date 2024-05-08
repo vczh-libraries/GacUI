@@ -37,6 +37,11 @@ Visitor Pattern Implementation
 		visitor->Visit(this);
 	}
 
+	void GuiRpMapType::Accept(GuiRpType::IVisitor* visitor)
+	{
+		visitor->Visit(this);
+	}
+
 	void GuiRpEnumDecl::Accept(GuiRpDeclaration::IVisitor* visitor)
 	{
 		visitor->Visit(this);
@@ -74,6 +79,7 @@ namespace vl::reflection::description
 	IMPL_TYPE_INFO_RENAME(vl::presentation::remoteprotocol::GuiRpOptionalType, presentation::remoteprotocol::GuiRpOptionalType)
 	IMPL_TYPE_INFO_RENAME(vl::presentation::remoteprotocol::GuiRpArrayType, presentation::remoteprotocol::GuiRpArrayType)
 	IMPL_TYPE_INFO_RENAME(vl::presentation::remoteprotocol::GuiRpArrayMapType, presentation::remoteprotocol::GuiRpArrayMapType)
+	IMPL_TYPE_INFO_RENAME(vl::presentation::remoteprotocol::GuiRpMapType, presentation::remoteprotocol::GuiRpMapType)
 	IMPL_TYPE_INFO_RENAME(vl::presentation::remoteprotocol::GuiRpAttribute, presentation::remoteprotocol::GuiRpAttribute)
 	IMPL_TYPE_INFO_RENAME(vl::presentation::remoteprotocol::GuiRpDeclaration, presentation::remoteprotocol::GuiRpDeclaration)
 	IMPL_TYPE_INFO_RENAME(vl::presentation::remoteprotocol::GuiRpDeclaration::IVisitor, presentation::remoteprotocol::GuiRpDeclaration::IVisitor)
@@ -151,6 +157,15 @@ namespace vl::reflection::description
 		CLASS_MEMBER_FIELD(element)
 		CLASS_MEMBER_FIELD(keyField)
 	END_CLASS_MEMBER(vl::presentation::remoteprotocol::GuiRpArrayMapType)
+
+	BEGIN_CLASS_MEMBER(vl::presentation::remoteprotocol::GuiRpMapType)
+		CLASS_MEMBER_BASE(vl::presentation::remoteprotocol::GuiRpType)
+
+		CLASS_MEMBER_CONSTRUCTOR(vl::Ptr<vl::presentation::remoteprotocol::GuiRpMapType>(), NO_PARAMETER)
+
+		CLASS_MEMBER_FIELD(element)
+		CLASS_MEMBER_FIELD(keyType)
+	END_CLASS_MEMBER(vl::presentation::remoteprotocol::GuiRpMapType)
 
 	BEGIN_CLASS_MEMBER(vl::presentation::remoteprotocol::GuiRpAttribute)
 		CLASS_MEMBER_BASE(vl::glr::ParsingAstBase)
@@ -279,6 +294,7 @@ namespace vl::reflection::description
 		CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(vl::presentation::remoteprotocol::GuiRpType::IVisitor::*)(vl::presentation::remoteprotocol::GuiRpOptionalType* node))
 		CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(vl::presentation::remoteprotocol::GuiRpType::IVisitor::*)(vl::presentation::remoteprotocol::GuiRpArrayType* node))
 		CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(vl::presentation::remoteprotocol::GuiRpType::IVisitor::*)(vl::presentation::remoteprotocol::GuiRpArrayMapType* node))
+		CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(vl::presentation::remoteprotocol::GuiRpType::IVisitor::*)(vl::presentation::remoteprotocol::GuiRpMapType* node))
 	END_INTERFACE_MEMBER(vl::presentation::remoteprotocol::GuiRpType)
 
 	BEGIN_INTERFACE_MEMBER(vl::presentation::remoteprotocol::GuiRpDeclaration::IVisitor)
@@ -305,6 +321,7 @@ namespace vl::reflection::description
 			ADD_TYPE_INFO(vl::presentation::remoteprotocol::GuiRpOptionalType)
 			ADD_TYPE_INFO(vl::presentation::remoteprotocol::GuiRpArrayType)
 			ADD_TYPE_INFO(vl::presentation::remoteprotocol::GuiRpArrayMapType)
+			ADD_TYPE_INFO(vl::presentation::remoteprotocol::GuiRpMapType)
 			ADD_TYPE_INFO(vl::presentation::remoteprotocol::GuiRpAttribute)
 			ADD_TYPE_INFO(vl::presentation::remoteprotocol::GuiRpDeclaration)
 			ADD_TYPE_INFO(vl::presentation::remoteprotocol::GuiRpDeclaration::IVisitor)

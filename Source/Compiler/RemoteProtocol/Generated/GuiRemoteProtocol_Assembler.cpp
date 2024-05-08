@@ -32,6 +32,8 @@ GuiRemoteProtocolAstInsReceiver : public vl::glr::AstInsReceiverBase
 			return vl::Ptr(new vl::presentation::remoteprotocol::GuiRpEventDecl);
 		case GuiRemoteProtocolClasses::EventRequest:
 			return vl::Ptr(new vl::presentation::remoteprotocol::GuiRpEventRequest);
+		case GuiRemoteProtocolClasses::MapType:
+			return vl::Ptr(new vl::presentation::remoteprotocol::GuiRpMapType);
 		case GuiRemoteProtocolClasses::MessageDecl:
 			return vl::Ptr(new vl::presentation::remoteprotocol::GuiRpMessageDecl);
 		case GuiRemoteProtocolClasses::MessageRequest:
@@ -74,6 +76,10 @@ GuiRemoteProtocolAstInsReceiver : public vl::glr::AstInsReceiverBase
 			return vl::glr::AssemblerSetObjectField(&vl::presentation::remoteprotocol::GuiRpEventDecl::request, object, field, value, cppFieldName);
 		case GuiRemoteProtocolFields::EventRequest_type:
 			return vl::glr::AssemblerSetObjectField(&vl::presentation::remoteprotocol::GuiRpEventRequest::type, object, field, value, cppFieldName);
+		case GuiRemoteProtocolFields::MapType_element:
+			return vl::glr::AssemblerSetObjectField(&vl::presentation::remoteprotocol::GuiRpMapType::element, object, field, value, cppFieldName);
+		case GuiRemoteProtocolFields::MapType_keyType:
+			return vl::glr::AssemblerSetObjectField(&vl::presentation::remoteprotocol::GuiRpMapType::keyType, object, field, value, cppFieldName);
 		case GuiRemoteProtocolFields::MessageDecl_request:
 			return vl::glr::AssemblerSetObjectField(&vl::presentation::remoteprotocol::GuiRpMessageDecl::request, object, field, value, cppFieldName);
 		case GuiRemoteProtocolFields::MessageDecl_response:
@@ -150,6 +156,7 @@ GuiRemoteProtocolAstInsReceiver : public vl::glr::AstInsReceiverBase
 			L"EnumMember",
 			L"EventDecl",
 			L"EventRequest",
+			L"MapType",
 			L"MessageDecl",
 			L"MessageRequest",
 			L"MessageResponse",
@@ -164,7 +171,7 @@ GuiRemoteProtocolAstInsReceiver : public vl::glr::AstInsReceiverBase
 			L"UnionMember",
 		};
 		vl::vint index = (vl::vint)type;
-		return 0 <= index && index < 20 ? results[index] : nullptr;
+		return 0 <= index && index < 21 ? results[index] : nullptr;
 	}
 
 	const wchar_t* GuiRemoteProtocolCppTypeName(GuiRemoteProtocolClasses type)
@@ -178,6 +185,7 @@ GuiRemoteProtocolAstInsReceiver : public vl::glr::AstInsReceiverBase
 			L"vl::presentation::remoteprotocol::GuiRpEnumMember",
 			L"vl::presentation::remoteprotocol::GuiRpEventDecl",
 			L"vl::presentation::remoteprotocol::GuiRpEventRequest",
+			L"vl::presentation::remoteprotocol::GuiRpMapType",
 			L"vl::presentation::remoteprotocol::GuiRpMessageDecl",
 			L"vl::presentation::remoteprotocol::GuiRpMessageRequest",
 			L"vl::presentation::remoteprotocol::GuiRpMessageResponse",
@@ -192,7 +200,7 @@ GuiRemoteProtocolAstInsReceiver : public vl::glr::AstInsReceiverBase
 			L"vl::presentation::remoteprotocol::GuiRpUnionMember",
 		};
 		vl::vint index = (vl::vint)type;
-		return 0 <= index && index < 20 ? results[index] : nullptr;
+		return 0 <= index && index < 21 ? results[index] : nullptr;
 	}
 
 	const wchar_t* GuiRemoteProtocolFieldName(GuiRemoteProtocolFields field)
@@ -209,6 +217,8 @@ GuiRemoteProtocolAstInsReceiver : public vl::glr::AstInsReceiverBase
 			L"EnumMember::name",
 			L"EventDecl::request",
 			L"EventRequest::type",
+			L"MapType::element",
+			L"MapType::keyType",
 			L"MessageDecl::request",
 			L"MessageDecl::response",
 			L"MessageRequest::type",
@@ -225,7 +235,7 @@ GuiRemoteProtocolAstInsReceiver : public vl::glr::AstInsReceiverBase
 			L"UnionMember::name",
 		};
 		vl::vint index = (vl::vint)field;
-		return 0 <= index && index < 25 ? results[index] : nullptr;
+		return 0 <= index && index < 27 ? results[index] : nullptr;
 	}
 
 	const wchar_t* GuiRemoteProtocolCppFieldName(GuiRemoteProtocolFields field)
@@ -242,6 +252,8 @@ GuiRemoteProtocolAstInsReceiver : public vl::glr::AstInsReceiverBase
 			L"vl::presentation::remoteprotocol::GuiRpEnumMember::name",
 			L"vl::presentation::remoteprotocol::GuiRpEventDecl::request",
 			L"vl::presentation::remoteprotocol::GuiRpEventRequest::type",
+			L"vl::presentation::remoteprotocol::GuiRpMapType::element",
+			L"vl::presentation::remoteprotocol::GuiRpMapType::keyType",
 			L"vl::presentation::remoteprotocol::GuiRpMessageDecl::request",
 			L"vl::presentation::remoteprotocol::GuiRpMessageDecl::response",
 			L"vl::presentation::remoteprotocol::GuiRpMessageRequest::type",
@@ -258,7 +270,7 @@ GuiRemoteProtocolAstInsReceiver : public vl::glr::AstInsReceiverBase
 			L"vl::presentation::remoteprotocol::GuiRpUnionMember::name",
 		};
 		vl::vint index = (vl::vint)field;
-		return 0 <= index && index < 25 ? results[index] : nullptr;
+		return 0 <= index && index < 27 ? results[index] : nullptr;
 	}
 
 	vl::Ptr<vl::glr::ParsingAstBase> GuiRemoteProtocolAstInsReceiver::ResolveAmbiguity(vl::vint32_t type, vl::collections::Array<vl::Ptr<vl::glr::ParsingAstBase>>& candidates)

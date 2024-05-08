@@ -69,6 +69,12 @@ CheckRemoteProtocolSchema
 			}
 		}
 
+		void Visit(GuiRpMapType* node) override
+		{
+			node->element->Accept(this);
+			node->keyType->Accept(this);
+		}
+
 		// GuiRpDeclaration::IVisitor
 
 		bool EnsureTypeUndefined(const glr::ParsingToken& name)
@@ -478,6 +484,15 @@ GenerateRemoteProtocolHeaderFile
 			writer.WriteString(cppName);
 			writer.WriteString(L"::");
 			writer.WriteString(node->keyField.value);
+			writer.WriteString(L">>");
+		}
+
+		void Visit(GuiRpMapType* node) override
+		{
+			writer.WriteString(L"::vl::Ptr<::vl::collections::Dictionary<");
+			node->keyType->Accept(this);
+			writer.WriteString(L", ");
+			node->element->Accept(this);
 			writer.WriteString(L">>");
 		}
 	};

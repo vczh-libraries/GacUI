@@ -2515,6 +2515,20 @@
         "name": "RenderingTrace",
         "members": [{
             "$ast": "StructMember",
+            "name": "createdElements",
+            "type": {
+                "$ast": "MapType",
+                "element": {
+                    "$ast": "ReferenceType",
+                    "name": "RendererType"
+                },
+                "keyType": {
+                    "$ast": "PrimitiveType",
+                    "type": "Integer"
+                }
+            }
+        }, {
+            "$ast": "StructMember",
             "name": "createdImages",
             "type": {
                 "$ast": "ArrayMapType",

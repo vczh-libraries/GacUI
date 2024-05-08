@@ -215,6 +215,22 @@ namespace vl::presentation::remoteprotocol
 		}
 	};
 
+	template<typename TKey, typename TValue>
+	struct JsonHelper<collections::Dictionary<TKey, TValue>>
+	{
+		static Ptr<glr::json::JsonNode> ToJson(const collections::Dictionary<TKey, TValue>& value)
+		{
+			CHECK_FAIL(L"Not Implemented!");
+		}
+
+		static void FromJson(Ptr<glr::json::JsonNode> node, collections::Dictionary<TKey, TValue>& value)
+		{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<T>(Ptr<JsonNode>, Dictionary<TKey, TValue>&)#"
+			CHECK_FAIL(L"Not Implemented!");
+#undef ERROR_MESSAGE_PREFIX
+		}
+	};
+
 	template<typename ...Ts>
 	struct JsonHelper<Variant<Ts...>>
 	{
