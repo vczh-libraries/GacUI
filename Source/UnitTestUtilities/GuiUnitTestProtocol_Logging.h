@@ -23,8 +23,7 @@ UnitTestRemoteProtocol
 		using CommandListRef = UnitTestRenderingCommandListRef;
 		using RenderingResultRef = Ptr<UnitTestRenderingDom>;
 		using RenderingResultRefList = collections::List<RenderingResultRef>;
-		using LoggedFrame = collections::Pair<CommandListRef, RenderingResultRef>;
-		using LoggedFrameList = collections::List<LoggedFrame>;
+		using LoggedFrameList = collections::List<remoteprotocol::RenderingFrame>;
 	protected:
 
 		bool								everRendered = false;
@@ -274,27 +273,7 @@ UnitTestRemoteProtocol
 				log->fields.Add(fieldElements);
 			}
 			{
-				auto arrayFrames = Ptr(new glr::json::JsonArray);
-				for (auto&& [commands, node] : GetLoggedFrames())
-				{
-					auto nodeFramePair = Ptr(new glr::json::JsonObject);
-					{
-						auto arrayCommands = remoteprotocol::ConvertCustomTypeToJson(commands);
-						auto fieldCommands = Ptr(new glr::json::JsonObjectField);
-						fieldCommands->name.value = WString::Unmanaged(L"Commands");
-						fieldCommands->value = arrayCommands;
-						nodeFramePair->fields.Add(fieldCommands);
-					}
-					{
-						auto nodeFrame = remoteprotocol::ConvertCustomTypeToJson(node);
-						auto fieldNode = Ptr(new glr::json::JsonObjectField);
-						fieldNode->name.value = WString::Unmanaged(L"Node");
-						fieldNode->value = nodeFrame;
-						nodeFramePair->fields.Add(fieldNode);
-					}
-					arrayFrames->items.Add(nodeFramePair);
-				}
-
+				auto arrayFrames = remoteprotocol::ConvertCustomTypeToJson(GetLoggedFrames());
 				auto fieldFrames = Ptr(new glr::json::JsonObjectField);
 				fieldFrames->name.value = WString::Unmanaged(L"Frames");
 				fieldFrames->value = arrayFrames;
