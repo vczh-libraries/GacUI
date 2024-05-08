@@ -204,7 +204,7 @@ UnitTestRemoteProtocol
 				if (candidateRenderingResult)
 				{
 					auto transformed = TransformLastRenderingResult(candidateRenderingResult);
-					loggedFrames.Add({ candidateRenderingResult,transformed });
+					this->loggedTrace.frames->Add({ candidateRenderingResult,transformed });
 					candidateRenderingResult = {};
 				}
 				return true;

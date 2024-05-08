@@ -43,6 +43,9 @@ UnitTestRemoteProtocol
 		UnitTestRemoteProtocol_Rendering(TArgs&& ...args)
 			: TProtocol(std::forward<TArgs&&>(args)...)
 		{
+			loggedTrace.createdElements = Ptr(new collections::Dictionary<vint, remoteprotocol::RendererType>);
+			loggedTrace.createdImages = Ptr(new remoteprotocol::ArrayMap<vint, remoteprotocol::ImageMetadata, &remoteprotocol::ImageMetadata::id>);
+			loggedTrace.frames = Ptr(new collections::List<remoteprotocol::RenderingFrame>);
 		}
 
 /***********************************************************************
