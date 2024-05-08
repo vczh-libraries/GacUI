@@ -20,6 +20,7 @@ UnitTestRemoteProtocol
 	using UnitTestRenderingCommand = remoteprotocol::RenderingCommand;
 	using UnitTestRenderingCommandList = collections::List<UnitTestRenderingCommand>;
 	using UnitTestRenderingCommandListRef = Ptr<UnitTestRenderingCommandList>;
+	using UnitTestRenderingDom = remoteprotocol::RenderingDom;
 	
 	template<typename TProtocol>
 	class UnitTestRemoteProtocol_Rendering : public TProtocol

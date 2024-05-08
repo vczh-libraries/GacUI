@@ -26,17 +26,24 @@
         ]
       ],
       "Node": {
-        "Bounds": {"x1": 0, "y1": 0, "x2": 0, "y2": 0},
-        "ValidArea": {"x1": 0, "y1": 0, "x2": 0, "y2": 0},
-        "Children": [
+        "hitTestResult": null,
+        "element": null,
+        "bounds": {"x1": 0, "y1": 0, "x2": 0, "y2": 0},
+        "validArea": {"x1": 0, "y1": 0, "x2": 0, "y2": 0},
+        "children": [
           {
-            "Element": {
-              "id": 1,
-              "backgroundColor": "#FFFFFF",
-              "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
-            },
-            "Bounds": {"x1": 0, "y1": 0, "x2": 640, "y2": 480},
-            "ValidArea": {"x1": 0, "y1": 0, "x2": 640, "y2": 480}
+            "hitTestResult": null,
+            "element": [
+              "ElementDesc_SolidBackground",
+              {
+                "id": 1,
+                "backgroundColor": "#FFFFFF",
+                "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
+              }
+            ],
+            "bounds": {"x1": 0, "y1": 0, "x2": 640, "y2": 480},
+            "validArea": {"x1": 0, "y1": 0, "x2": 640, "y2": 480},
+            "children": null
           }
         ]
       }

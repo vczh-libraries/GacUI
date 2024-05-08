@@ -102,57 +102,85 @@
         ]
       ],
       "Node": {
-        "Bounds": {"x1": 0, "y1": 0, "x2": 0, "y2": 0},
-        "ValidArea": {"x1": 0, "y1": 0, "x2": 0, "y2": 0},
-        "Children": [
+        "hitTestResult": null,
+        "element": null,
+        "bounds": {"x1": 0, "y1": 0, "x2": 0, "y2": 0},
+        "validArea": {"x1": 0, "y1": 0, "x2": 0, "y2": 0},
+        "children": [
           {
-            "Element": {
-              "id": 1,
-              "backgroundColor": "#FFFFFF",
-              "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
-            },
-            "Bounds": {"x1": 0, "y1": 0, "x2": 640, "y2": 500},
-            "ValidArea": {"x1": 0, "y1": 0, "x2": 640, "y2": 500},
-            "Children": [
+            "hitTestResult": null,
+            "element": [
+              "ElementDesc_SolidBackground",
               {
-                "Element": {
-                  "id": 2,
-                  "borderColor": "#FF0000",
-                  "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
-                },
-                "Bounds": {"x1": 20, "y1": -20, "x2": 120, "y2": 500},
-                "ValidArea": {"x1": 20, "y1": 0, "x2": 120, "y2": 500}
-              },
+                "id": 1,
+                "backgroundColor": "#FFFFFF",
+                "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
+              }
+            ],
+            "bounds": {"x1": 0, "y1": 0, "x2": 640, "y2": 500},
+            "validArea": {"x1": 0, "y1": 0, "x2": 640, "y2": 500},
+            "children": [
               {
-                "Element": {
-                  "id": 3,
-                  "borderColor": "#00FF00",
-                  "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
-                },
-                "Bounds": {"x1": 520, "y1": -20, "x2": 620, "y2": 500},
-                "ValidArea": {"x1": 520, "y1": 0, "x2": 620, "y2": 500}
-              },
-              {
-                "Bounds": {"x1": 10, "y1": 10, "x2": 630, "y2": 470},
-                "ValidArea": {"x1": 10, "y1": 10, "x2": 630, "y2": 470},
-                "Children": [
+                "hitTestResult": null,
+                "element": [
+                  "ElementDesc_SolidBorder",
                   {
-                    "Element": {
-                      "id": 4,
-                      "borderColor": "#FF00FF",
-                      "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
-                    },
-                    "Bounds": {"x1": -20, "y1": 20, "x2": 660, "y2": 120},
-                    "ValidArea": {"x1": 10, "y1": 20, "x2": 630, "y2": 120}
+                    "id": 2,
+                    "borderColor": "#FF0000",
+                    "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
+                  }
+                ],
+                "bounds": {"x1": 20, "y1": -20, "x2": 120, "y2": 500},
+                "validArea": {"x1": 20, "y1": 0, "x2": 120, "y2": 500},
+                "children": null
+              },
+              {
+                "hitTestResult": null,
+                "element": [
+                  "ElementDesc_SolidBorder",
+                  {
+                    "id": 3,
+                    "borderColor": "#00FF00",
+                    "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
+                  }
+                ],
+                "bounds": {"x1": 520, "y1": -20, "x2": 620, "y2": 500},
+                "validArea": {"x1": 520, "y1": 0, "x2": 620, "y2": 500},
+                "children": null
+              },
+              {
+                "hitTestResult": null,
+                "element": null,
+                "bounds": {"x1": 10, "y1": 10, "x2": 630, "y2": 470},
+                "validArea": {"x1": 10, "y1": 10, "x2": 630, "y2": 470},
+                "children": [
+                  {
+                    "hitTestResult": null,
+                    "element": [
+                      "ElementDesc_SolidBorder",
+                      {
+                        "id": 4,
+                        "borderColor": "#FF00FF",
+                        "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
+                      }
+                    ],
+                    "bounds": {"x1": -20, "y1": 20, "x2": 660, "y2": 120},
+                    "validArea": {"x1": 10, "y1": 20, "x2": 630, "y2": 120},
+                    "children": null
                   },
                   {
-                    "Element": {
-                      "id": 5,
-                      "borderColor": "#00FF00",
-                      "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
-                    },
-                    "Bounds": {"x1": -20, "y1": 360, "x2": 660, "y2": 460},
-                    "ValidArea": {"x1": 10, "y1": 360, "x2": 630, "y2": 460}
+                    "hitTestResult": null,
+                    "element": [
+                      "ElementDesc_SolidBorder",
+                      {
+                        "id": 5,
+                        "borderColor": "#00FF00",
+                        "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
+                      }
+                    ],
+                    "bounds": {"x1": -20, "y1": 360, "x2": 660, "y2": 460},
+                    "validArea": {"x1": 10, "y1": 360, "x2": 630, "y2": 460},
+                    "children": null
                   }
                 ]
               }

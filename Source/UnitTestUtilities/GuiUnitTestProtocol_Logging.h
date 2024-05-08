@@ -15,71 +15,6 @@ namespace vl::presentation::unittest
 /***********************************************************************
 UnitTestRemoteProtocol
 ***********************************************************************/
-
-	class UnitTestRenderingDom : public Object
-	{
-		using DomList = collections::List<Ptr<UnitTestRenderingDom>>;
-	public:
-		// both hitTestResult and element could be nullptr
-		Nullable<INativeWindowListener::HitTestResult>		hitTestResult;
-		Nullable<ElementDescVariant>						element;
-		Rect												bounds;
-		Rect												validArea;
-		DomList												children;
-
-		Ptr<glr::json::JsonObject> AsJson()
-		{
-			auto jsonDom = Ptr(new glr::json::JsonObject);
-			if (hitTestResult)
-			{
-				auto fieldHtr = Ptr(new glr::json::JsonObjectField);
-				fieldHtr->name.value = WString::Unmanaged(L"HitTestResult");
-				fieldHtr->value = remoteprotocol::ConvertCustomTypeToJson(hitTestResult.Value());
-				jsonDom->fields.Add(fieldHtr);
-			}
-			if (element)
-			{
-				auto fieldElement = Ptr(new glr::json::JsonObjectField);
-				fieldElement->name.value = WString::Unmanaged(L"Element");
-				element.Value().Apply([&](auto&& desc)
-				{
-					fieldElement->value = remoteprotocol::ConvertCustomTypeToJson(desc);
-				});
-				jsonDom->fields.Add(fieldElement);
-			}
-			{
-				auto fieldBounds = Ptr(new glr::json::JsonObjectField);
-				fieldBounds->name.value = WString::Unmanaged(L"Bounds");
-				fieldBounds->value = remoteprotocol::ConvertCustomTypeToJson(bounds);
-				jsonDom->fields.Add(fieldBounds);
-			}
-			{
-				auto fieldValidArea = Ptr(new glr::json::JsonObjectField);
-				fieldValidArea->name.value = WString::Unmanaged(L"ValidArea");
-				fieldValidArea->value = remoteprotocol::ConvertCustomTypeToJson(validArea);
-				jsonDom->fields.Add(fieldValidArea);
-			}
-			if (children.Count() > 0)
-			{
-				auto arrayChildren = Ptr(new glr::json::JsonArray);
-				for (auto&& child : children)
-				{
-					arrayChildren->items.Add(child->AsJson());
-				}
-
-				auto fieldChildren = Ptr(new glr::json::JsonObjectField);
-				fieldChildren->name.value = WString::Unmanaged(L"Children");
-				fieldChildren->value = arrayChildren;
-				jsonDom->fields.Add(fieldChildren);
-			}
-			return jsonDom;
-		}
-
-		void LoadFromJson(const collections::Dictionary<vint, remoteprotocol::RendererType>& elementTypes, Ptr<glr::json::JsonObject> jsonDom)
-		{
-			CHECK_FAIL(L"Not Implemented!");
-		}
-	};
 	
 	template<typename TProtocol>
 	class UnitTestRemoteProtocol_Logging : public TProtocol
@@ -123,7 +58,8 @@ UnitTestRemoteProtocol
 			{
 				CHECK_ERROR(ref, ERROR_MESSAGE_PREFIX L"[push] Cannot push a null dom object.");
 				vint index = domStack.Add(ref);
-				domCurrent->children.Add(ref);
+				if (!domCurrent->children) domCurrent->children = Ptr(new RenderingResultRefList);
+				domCurrent->children->Add(ref);
 				domCurrent = ref;
 				return index;
 			};
@@ -344,14 +280,13 @@ UnitTestRemoteProtocol
 					auto nodeFramePair = Ptr(new glr::json::JsonObject);
 					{
 						auto arrayCommands = remoteprotocol::ConvertCustomTypeToJson(commands);
-
 						auto fieldCommands = Ptr(new glr::json::JsonObjectField);
 						fieldCommands->name.value = WString::Unmanaged(L"Commands");
 						fieldCommands->value = arrayCommands;
 						nodeFramePair->fields.Add(fieldCommands);
 					}
 					{
-						auto nodeFrame = node->AsJson();
+						auto nodeFrame = remoteprotocol::ConvertCustomTypeToJson(node);
 						auto fieldNode = Ptr(new glr::json::JsonObjectField);
 						fieldNode->name.value = WString::Unmanaged(L"Node");
 						fieldNode->value = nodeFrame;
