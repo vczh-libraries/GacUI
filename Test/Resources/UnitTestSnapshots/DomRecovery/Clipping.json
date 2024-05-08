@@ -1,13 +1,13 @@
 {
-  "Images": [],
-  "Elements": [
-    {"id": 1, "type": "SolidBackground"},
-    {"id": 2, "type": "SolidBorder"},
-    {"id": 3, "type": "SolidBorder"},
-    {"id": 4, "type": "SolidBorder"},
-    {"id": 5, "type": "SolidBorder"}
+  "createdElements": [
+    [1, "SolidBackground"],
+    [2, "SolidBorder"],
+    [3, "SolidBorder"],
+    [4, "SolidBorder"],
+    [5, "SolidBorder"]
   ],
-  "Frames": [
+  "createdImages": [],
+  "frames": [
     {
       "commands": [
         [

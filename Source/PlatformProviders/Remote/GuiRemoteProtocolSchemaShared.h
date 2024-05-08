@@ -204,7 +204,8 @@ namespace vl::presentation::remoteprotocol
 	{
 		static Ptr<glr::json::JsonNode> ToJson(const ArrayMap<TKey, TValue, Field>& value)
 		{
-			CHECK_FAIL(L"Not Implemented!");
+			auto&& values = const_cast<collections::List<TValue>&>(value.map.Values());
+			return ConvertCustomTypeToJson(values);
 		}
 
 		static void FromJson(Ptr<glr::json::JsonNode> node, ArrayMap<TKey, TValue, Field>& value)
@@ -220,7 +221,15 @@ namespace vl::presentation::remoteprotocol
 	{
 		static Ptr<glr::json::JsonNode> ToJson(const collections::Dictionary<TKey, TValue>& value)
 		{
-			CHECK_FAIL(L"Not Implemented!");
+			auto node = Ptr(new glr::json::JsonArray);
+			for (auto [key, value] : value)
+			{
+				auto pairNode = Ptr(new glr::json::JsonArray);
+				pairNode->items.Add(ConvertCustomTypeToJson(key));
+				pairNode->items.Add(ConvertCustomTypeToJson(value));
+				node->items.Add(pairNode);
+			}
+			return node;
 		}
 
 		static void FromJson(Ptr<glr::json::JsonNode> node, collections::Dictionary<TKey, TValue>& value)
@@ -236,15 +245,13 @@ namespace vl::presentation::remoteprotocol
 	{
 		static Ptr<glr::json::JsonNode> ToJson(const Variant<Ts...>& value)
 		{
-			Ptr<glr::json::JsonNode> result;
-			value.Apply([&result]<typename T>(const T& element)
+			auto node = Ptr(new glr::json::JsonArray);
+			value.Apply([&node]<typename T>(const T& element)
 			{
-				auto node = Ptr(new glr::json::JsonArray);
 				node->items.Add(ConvertCustomTypeToJson(WString::Unmanaged(JsonNameHelper<T>::Name)));
 				node->items.Add(ConvertCustomTypeToJson(element));
-				result = node;
 			});
-			return result;
+			return node;
 		}
 
 		static void FromJson(Ptr<glr::json::JsonNode> node, Variant<Ts...>& value)

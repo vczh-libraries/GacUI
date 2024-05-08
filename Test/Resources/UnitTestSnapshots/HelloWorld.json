@@ -1,28 +1,28 @@
 {
-  "Images": [],
-  "Elements": [
-    {"id": 1, "type": "SolidBackground"},
-    {"id": 2, "type": "SolidBorder"},
-    {"id": 3, "type": "SolidBackground"},
-    {"id": 4, "type": "SolidBorder"},
-    {"id": 5, "type": "FocusRectangle"},
-    {"id": 6, "type": "SolidLabel"},
-    {"id": 7, "type": "Polygon"},
-    {"id": 8, "type": "SolidBackground"},
-    {"id": 9, "type": "SolidBorder"},
-    {"id": 10, "type": "FocusRectangle"},
-    {"id": 11, "type": "SolidLabel"},
-    {"id": 12, "type": "Polygon"},
-    {"id": 13, "type": "Polygon"},
-    {"id": 14, "type": "SolidBackground"},
-    {"id": 15, "type": "SolidBorder"},
-    {"id": 16, "type": "FocusRectangle"},
-    {"id": 17, "type": "SolidLabel"},
-    {"id": 18, "type": "Polygon"},
-    {"id": 19, "type": "ImageFrame"},
-    {"id": 20, "type": "SolidLabel"}
+  "createdElements": [
+    [1, "SolidBackground"],
+    [2, "SolidBorder"],
+    [3, "SolidBackground"],
+    [4, "SolidBorder"],
+    [5, "FocusRectangle"],
+    [6, "SolidLabel"],
+    [7, "Polygon"],
+    [8, "SolidBackground"],
+    [9, "SolidBorder"],
+    [10, "FocusRectangle"],
+    [11, "SolidLabel"],
+    [12, "Polygon"],
+    [13, "Polygon"],
+    [14, "SolidBackground"],
+    [15, "SolidBorder"],
+    [16, "FocusRectangle"],
+    [17, "SolidLabel"],
+    [18, "Polygon"],
+    [19, "ImageFrame"],
+    [20, "SolidLabel"]
   ],
-  "Frames": [
+  "createdImages": [],
+  "frames": [
     {
       "commands": [
         [

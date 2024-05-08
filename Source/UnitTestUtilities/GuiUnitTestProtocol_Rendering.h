@@ -90,7 +90,7 @@ IGuiRemoteProtocolMessages (Rendering)
 			vint index = loggedTrace.createdElements->Keys().IndexOf(arguments.id);
 			CHECK_ERROR(index != -1, ERROR_MESSAGE_PREFIX L"Renderer with the specified id has not been created.");
 			index = lastElementDescs.Keys().IndexOf(arguments.id);
-			CHECK_ERROR(index == -1, ERROR_MESSAGE_PREFIX L"Renderer with the specified id has not been updated after created.");
+			CHECK_ERROR(index != -1, ERROR_MESSAGE_PREFIX L"Renderer with the specified id has not been updated after created.");
 			lastElementDescs.Values()[index].Apply(Overloading(
 				[](remoteprotocol::RendererType)
 				{

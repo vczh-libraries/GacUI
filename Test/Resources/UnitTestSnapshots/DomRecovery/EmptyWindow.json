@@ -1,9 +1,9 @@
 {
-  "Images": [],
-  "Elements": [
-    {"id": 1, "type": "SolidBackground"}
+  "createdElements": [
+    [1, "SolidBackground"]
   ],
-  "Frames": [
+  "createdImages": [],
+  "frames": [
     {
       "commands": [
         [
