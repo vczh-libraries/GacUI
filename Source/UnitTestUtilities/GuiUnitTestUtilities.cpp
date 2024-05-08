@@ -122,8 +122,16 @@ void GacUIUnitTest_Start(const WString& appName, Nullable<UnitTestScreenConfig> 
 		formatting.spaceAfterComma = true;
 		formatting.crlf = true;
 		formatting.compact = true;
-		auto textLog = JsonToString(remoteprotocol::ConvertCustomTypeToJson(unitTestProtocol.GetLoggedTrace()), formatting);
 
+		auto jsonLog = remoteprotocol::ConvertCustomTypeToJson(unitTestProtocol.GetLoggedTrace());
+		auto textLog = JsonToString(jsonLog, formatting);
+		{
+			remoteprotocol::RenderingTrace deserialized;
+			remoteprotocol::ConvertJsonToCustomType(jsonLog, deserialized);
+			auto jsonLog2 = remoteprotocol::ConvertCustomTypeToJson(deserialized);
+			auto textLog2 = JsonToString(jsonLog2);
+			CHECK_ERROR(textLog == textLog2, ERROR_MESSAGE_PREFIX L"Serialization and deserialization doesn't match.");
+		}
 		bool succeeded = snapshotFile.WriteAllText(textLog, false, stream::BomEncoder::Utf8);
 		CHECK_ERROR(succeeded, ERROR_MESSAGE_PREFIX L"Failed to write the snapshot file.");
 	}
