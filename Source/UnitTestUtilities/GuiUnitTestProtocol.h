@@ -84,8 +84,7 @@ IGuiRemoteProtocolMessages (Initialization)
 
 		void RequestControllerConnectionEstablished() override
 		{
-			this->createdElements.Clear();
-			this->createdImages.Clear();
+			ResetCreatedObjects();
 		}
 
 		void RequestControllerConnectionStopped() override

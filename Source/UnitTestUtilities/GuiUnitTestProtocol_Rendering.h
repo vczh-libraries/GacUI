@@ -37,14 +37,19 @@ UnitTestRemoteProtocol
 		regex::Regex							regexCrLf{ L"/n|/r(/n)?" };
 		CommandListRef							lastRenderingCommands;
 
+		void ResetCreatedObjects()
+		{
+			loggedTrace.createdElements = Ptr(new collections::Dictionary<vint, remoteprotocol::RendererType>);
+			loggedTrace.createdImages = Ptr(new remoteprotocol::ArrayMap<vint, remoteprotocol::ImageMetadata, &remoteprotocol::ImageMetadata::id>);
+			lastElementDescs.Clear();
+		}
 	public:
 
 		template<typename ...TArgs>
 		UnitTestRemoteProtocol_Rendering(TArgs&& ...args)
 			: TProtocol(std::forward<TArgs&&>(args)...)
 		{
-			loggedTrace.createdElements = Ptr(new collections::Dictionary<vint, remoteprotocol::RendererType>);
-			loggedTrace.createdImages = Ptr(new remoteprotocol::ArrayMap<vint, remoteprotocol::ImageMetadata, &remoteprotocol::ImageMetadata::id>);
+			ResetCreatedObjects();
 			loggedTrace.frames = Ptr(new collections::List<remoteprotocol::RenderingFrame>);
 		}
 
@@ -82,11 +87,11 @@ IGuiRemoteProtocolMessages (Rendering)
 		void RequestRendererRenderElement(const remoteprotocol::ElementRendering& arguments) override
 		{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering<TProtocol>::RequestRendererRenderElement(const ElementRendering&)#"
-			vint index = createdElements.Keys().IndexOf(arguments.id);
+			vint index = loggedTrace.createdElements->Keys().IndexOf(arguments.id);
 			CHECK_ERROR(index != -1, ERROR_MESSAGE_PREFIX L"Renderer with the specified id has not been created.");
-			auto&& nullableDesc = createdElements.Values()[index].value;
-			CHECK_ERROR(nullableDesc, ERROR_MESSAGE_PREFIX L"Renderer with the specified id has not been updated after created.");
-			nullableDesc.Value().Apply(Overloading(
+			index = lastElementDescs.Keys().IndexOf(arguments.id);
+			CHECK_ERROR(index == -1, ERROR_MESSAGE_PREFIX L"Renderer with the specified id has not been updated after created.");
+			lastElementDescs.Values()[index].Apply(Overloading(
 				[](remoteprotocol::RendererType)
 				{
 					CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Renderer with the specified id has not been updated after created.");
@@ -114,8 +119,8 @@ IGuiRemoteProtocolMessages (Elements)
 			{
 				for (auto creation : *arguments.Obj())
 				{
-					CHECK_ERROR(!createdElements.Keys().Contains(creation.id), ERROR_MESSAGE_PREFIX L"Renderer with the specified id has been created.");
-					createdElements.Add(creation.id, { creation.type,Nullable<ElementDescVariant>() });
+					CHECK_ERROR(!loggedTrace.createdElements->Keys().Contains(creation.id), ERROR_MESSAGE_PREFIX L"Renderer with the specified id has been created.");
+					loggedTrace.createdElements->Add(creation.id, creation.type);
 				}
 			}
 #undef ERROR_MESSAGE_PREFIX
@@ -128,8 +133,9 @@ IGuiRemoteProtocolMessages (Elements)
 			{
 				for (auto id : *arguments.Obj())
 				{
-					CHECK_ERROR(createdElements.Keys().Contains(id), ERROR_MESSAGE_PREFIX L"Renderer with the specified id has not been created.");
-					createdElements.Remove(id);
+					CHECK_ERROR(loggedTrace.createdElements->Keys().Contains(id), ERROR_MESSAGE_PREFIX L"Renderer with the specified id has not been created.");
+					loggedTrace.createdElements->Remove(id);
+					lastElementDescs.Remove(id);
 				}
 			}
 #undef ERROR_MESSAGE_PREFIX
@@ -138,12 +144,10 @@ IGuiRemoteProtocolMessages (Elements)
 		template<remoteprotocol::RendererType RendererType, typename TElementDesc>
 		void RequestRendererUpdateElement(const TElementDesc& arguments, const wchar_t* emWrongId, const wchar_t* emWrongType)
 		{
-			vint index = createdElements.Keys().IndexOf(arguments.id);
+			vint index = loggedTrace.createdElements->Keys().IndexOf(arguments.id);
 			CHECK_ERROR(index != -1, emWrongId);
-
-			auto& typeDescPair = const_cast<collections::List<ElementTypeDescPair>&>(createdElements.Values())[index];
-			CHECK_ERROR(typeDescPair.key == RendererType, emWrongType);
-			typeDescPair.value = arguments;
+			CHECK_ERROR(loggedTrace.createdElements->Values()[index] == RendererType, emWrongType);
+			lastElementDescs.Set(arguments.id, arguments);
 		}
 
 #define REQUEST_RENDERER_UPDATE_ELEMENT2(ARGUMENTS, RENDERER_TYPE)\
@@ -324,14 +328,16 @@ IGuiRemoteProtocolMessages (Elements - SolidLabel)
 			auto element = arguments;
 			if (!element.font || !element.text)
 			{
-				vint index = createdElements.Keys().IndexOf(element.id);
+				vint index = loggedTrace.createdElements->Keys().IndexOf(element.id);
 				CHECK_ERROR(index != -1, ERROR_MESSAGE_PREFIX L"Renderer with the specified id has not been created.");
 
-				auto [rendererType, nullableDesc] = createdElements.Values()[index];
+				auto rendererType = loggedTrace.createdElements->Values()[index];
 				CHECK_ERROR(rendererType == remoteprotocol::RendererType::SolidLabel, ERROR_MESSAGE_PREFIX L"Renderer with the specified id is not of the expected type.");
-				if (nullableDesc)
+
+				index = lastElementDescs.Keys().IndexOf(arguments.id);
+				if (index != -1)
 				{
-					auto solidLabel = nullableDesc.Value().TryGet<remoteprotocol::ElementDesc_SolidLabel>();
+					auto solidLabel = lastElementDescs.Values()[index].TryGet<remoteprotocol::ElementDesc_SolidLabel>();
 					CHECK_ERROR(solidLabel, ERROR_MESSAGE_PREFIX L"Renderer with the specified id is not of the expected type.");
 					if (!element.font) element.font = solidLabel->font;
 					if (!element.text) element.text = solidLabel->text;
@@ -358,7 +364,7 @@ IGuiRemoteProtocolMessages (Elements - Image)
 		void RequestImageCreated(vint id, const remoteprotocol::ImageCreation& arguments) override
 		{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering<TProtocol>::RequestImageCreated(vint, const vint&)#"
-			CHECK_ERROR(!createdImages.Keys().Contains(arguments.id), ERROR_MESSAGE_PREFIX L"Image with the specified id has been created.");
+			CHECK_ERROR(!loggedTrace.createdImages->Keys().Contains(arguments.id), ERROR_MESSAGE_PREFIX L"Image with the specified id has been created.");
 			this->GetEvents()->RespondImageCreated(id, MakeImageMetadata(arguments));
 #undef ERROR_MESSAGE_PREFIX
 		}
@@ -366,8 +372,8 @@ IGuiRemoteProtocolMessages (Elements - Image)
 		void RequestImageDestroyed(const vint& arguments) override
 		{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering<TProtocol>::RequestImageDestroyed(const vint&)#"
-			CHECK_ERROR(createdImages.Keys().Contains(arguments), ERROR_MESSAGE_PREFIX L"Image with the specified id has not been created.");
-			createdImages.Remove(arguments);
+			CHECK_ERROR(loggedTrace.createdImages->Keys().Contains(arguments), ERROR_MESSAGE_PREFIX L"Image with the specified id has not been created.");
+			loggedTrace.createdImages->Remove(arguments);
 #undef ERROR_MESSAGE_PREFIX
 		}
 
@@ -380,7 +386,7 @@ IGuiRemoteProtocolMessages (Elements - Image)
 				if (!imageCreation.imageDataOmitted)
 				{
 					CHECK_ERROR(arguments.imageId && arguments.imageId.Value() != !imageCreation.id, ERROR_MESSAGE_PREFIX L"It should satisfy that (arguments.imageId.Value()id == imageCreation.id).");
-					CHECK_ERROR(!createdImages.Keys().Contains(imageCreation.id), ERROR_MESSAGE_PREFIX L"Image with the specified id has been created.");
+					CHECK_ERROR(!loggedTrace.createdImages->Keys().Contains(imageCreation.id), ERROR_MESSAGE_PREFIX L"Image with the specified id has been created.");
 					CHECK_ERROR(imageCreation.imageData, ERROR_MESSAGE_PREFIX L"When imageDataOmitted == false, imageData should not be null.");
 					if (!measuringForNextRendering.createdImages)
 					{
@@ -395,7 +401,7 @@ IGuiRemoteProtocolMessages (Elements - Image)
 			}
 			else if (arguments.imageId)
 			{
-				CHECK_ERROR(createdImages.Keys().Contains(arguments.imageId.Value()), ERROR_MESSAGE_PREFIX L"Image with the specified id has not been created.");
+				CHECK_ERROR(loggedTrace.createdImages->Keys().Contains(arguments.imageId.Value()), ERROR_MESSAGE_PREFIX L"Image with the specified id has not been created.");
 			}
 
 			auto element = arguments;

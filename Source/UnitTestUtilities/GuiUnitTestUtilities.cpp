@@ -122,7 +122,7 @@ void GacUIUnitTest_Start(const WString& appName, Nullable<UnitTestScreenConfig> 
 		formatting.spaceAfterComma = true;
 		formatting.crlf = true;
 		formatting.compact = true;
-		auto textLog = JsonToString(unitTestProtocol.GetLogAsJson(), formatting);
+		auto textLog = JsonToString(remoteprotocol::ConvertCustomTypeToJson(unitTestProtocol.GetLoggedTrace()), formatting);
 
 		bool succeeded = snapshotFile.WriteAllText(textLog, false, stream::BomEncoder::Utf8);
 		CHECK_ERROR(succeeded, ERROR_MESSAGE_PREFIX L"Failed to write the snapshot file.");
