@@ -16,57 +16,10 @@ namespace vl::presentation::unittest
 UnitTestRemoteProtocol
 ***********************************************************************/
 
-#define GACUI_REMOTEPROTOCOL_ELEMENTDESC_TYPES\
-		remoteprotocol::ElementDesc_SolidBorder,\
-		remoteprotocol::ElementDesc_SinkBorder,\
-		remoteprotocol::ElementDesc_SinkSplitter,\
-		remoteprotocol::ElementDesc_SolidBackground,\
-		remoteprotocol::ElementDesc_GradientBackground,\
-		remoteprotocol::ElementDesc_InnerShadow,\
-		remoteprotocol::ElementDesc_Polygon,\
-		remoteprotocol::ElementDesc_SolidLabel,\
-		remoteprotocol::ElementDesc_ImageFrame\
-
-	using ElementDescVariant = Variant<
-		GACUI_REMOTEPROTOCOL_ELEMENTDESC_TYPES
-		>;
-
-	struct UnitTestRenderingBeginBoundary
-	{
-		remoteprotocol::ElementBoundary			boundary;
-	};
-
-	struct UnitTestRenderingEndBoundary
-	{
-	};
-
-	struct UnitTestRenderingElement
-	{
-		remoteprotocol::ElementRendering		rendering;
-		ElementDescVariant						desc;
-
-		UnitTestRenderingElement(const UnitTestRenderingElement&) = default;
-		UnitTestRenderingElement(UnitTestRenderingElement&&) = default;
-		UnitTestRenderingElement& operator=(const UnitTestRenderingElement&) = default;
-		UnitTestRenderingElement& operator=(UnitTestRenderingElement&&) = default;
-
-		UnitTestRenderingElement(remoteprotocol::ElementRendering _rendering, ElementDescVariant _desc)
-			: rendering(std::move(_rendering))
-			, desc(std::move(_desc))
-		{
-		}
-	};
-
-	using UnitTestRenderingCommand = Variant<
-		UnitTestRenderingBeginBoundary,
-		UnitTestRenderingEndBoundary,
-		UnitTestRenderingElement
-		>;
-
+	using ElementDescVariant = remoteprotocol::ElementDescVariant;
+	using UnitTestRenderingCommand = remoteprotocol::RenderingCommand;
 	using UnitTestRenderingCommandList = collections::List<UnitTestRenderingCommand>;
 	using UnitTestRenderingCommandListRef = Ptr<UnitTestRenderingCommandList>;
-
-#undef GACUI_REMOTEPROTOCOL_ELEMENTDESC_TYPES
 	
 	template<typename TProtocol>
 	class UnitTestRemoteProtocol_Rendering : public TProtocol
@@ -109,18 +62,18 @@ IGuiRemoteProtocolMessages (Rendering)
 
 		void RequestRendererBeginBoundary(const remoteprotocol::ElementBoundary& arguments) override
 		{
-			lastRenderingCommands->Add(UnitTestRenderingBeginBoundary{ arguments });
+			lastRenderingCommands->Add(remoteprotocol::RenderingCommand_BeginBoundary{ arguments });
 		}
 
 		void RequestRendererEndBoundary() override
 		{
-			lastRenderingCommands->Add(UnitTestRenderingEndBoundary{});
+			lastRenderingCommands->Add(remoteprotocol::RenderingCommand_EndBoundary{});
 		}
 
 		template<typename T>
 		void RequestRendererRenderElement(const remoteprotocol::ElementRendering& rendering, const T& element)
 		{
-			lastRenderingCommands->Add(UnitTestRenderingElement{ rendering,element });
+			lastRenderingCommands->Add(remoteprotocol::RenderingCommand_Element{ rendering,element });
 		}
 
 		void RequestRendererRenderElement(const remoteprotocol::ElementRendering& arguments) override

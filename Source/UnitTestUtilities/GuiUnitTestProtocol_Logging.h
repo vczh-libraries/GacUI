@@ -213,7 +213,7 @@ UnitTestRemoteProtocol
 			for (auto&& command : *commandListRef.Obj())
 			{
 				command.Apply(Overloading(
-					[&](const UnitTestRenderingBeginBoundary& command)
+					[&](const remoteprotocol::RenderingCommand_BeginBoundary& command)
 					{
 						// a new boundary should be a new node covering existing nodes
 						// the valid area of boundary is clipped by its bounds
@@ -230,11 +230,11 @@ UnitTestRemoteProtocol
 						dom->validArea = command.boundary.areaClippedBySelf;
 						domBoundaries.Add(push(dom));
 					},
-					[&](const UnitTestRenderingEndBoundary& command)
+					[&](const remoteprotocol::RenderingCommand_EndBoundary& command)
 					{
 						popBoundary();
 					},
-					[&](const UnitTestRenderingElement& command)
+					[&](const remoteprotocol::RenderingCommand_Element& command)
 					{
 						// a new element should be a new node covering existing nodes
 						// the valid area of boundary is clipped by its parent
@@ -343,25 +343,8 @@ UnitTestRemoteProtocol
 				{
 					auto nodeFramePair = Ptr(new glr::json::JsonObject);
 					{
-						auto arrayCommands = Ptr(new glr::json::JsonArray);
-						{
-							for (auto&& command : *commands.Obj())
-							{
-								command.Apply(Overloading(
-									[&](const UnitTestRenderingBeginBoundary& command)
-									{
-										arrayCommands->items.Add(remoteprotocol::ConvertCustomTypeToJson(command.boundary));
-									},
-									[&](const UnitTestRenderingEndBoundary& command)
-									{
-										arrayCommands->items.Add(Ptr(new glr::json::JsonObject));
-									},
-									[&](const UnitTestRenderingElement& command)
-									{
-										arrayCommands->items.Add(remoteprotocol::ConvertCustomTypeToJson(command.rendering));
-									}));
-							}
-						}
+						auto arrayCommands = remoteprotocol::ConvertCustomTypeToJson(commands);
+
 						auto fieldCommands = Ptr(new glr::json::JsonObjectField);
 						fieldCommands->name.value = WString::Unmanaged(L"Commands");
 						fieldCommands->value = arrayCommands;
