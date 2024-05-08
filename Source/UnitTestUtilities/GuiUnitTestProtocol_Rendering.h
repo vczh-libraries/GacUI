@@ -25,15 +25,14 @@ UnitTestRemoteProtocol
 	template<typename TProtocol>
 	class UnitTestRemoteProtocol_Rendering : public TProtocol
 	{
-		using ElementTypeDescPair = collections::Pair<remoteprotocol::RendererType, Nullable<ElementDescVariant>>;
-		using ElementDescMap = collections::Dictionary<vint, ElementTypeDescPair>;
+		using ElementDescMap = collections::Dictionary<vint, ElementDescVariant>;
 		using ImageMetadataMap = collections::Dictionary<vint, remoteprotocol::ImageMetadata>;
 		using CommandList = UnitTestRenderingCommandList;
 		using CommandListRef = UnitTestRenderingCommandListRef;
 	protected:
 
-		ElementDescMap							createdElements;
-		ImageMetadataMap						createdImages;
+		remoteprotocol::RenderingTrace			loggedTrace;
+		ElementDescMap							lastElementDescs;
 		remoteprotocol::ElementMeasurings		measuringForNextRendering;
 		regex::Regex							regexCrLf{ L"/n|/r(/n)?" };
 		CommandListRef							lastRenderingCommands;

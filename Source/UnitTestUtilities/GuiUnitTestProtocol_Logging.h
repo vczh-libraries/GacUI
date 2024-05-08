@@ -28,7 +28,6 @@ UnitTestRemoteProtocol
 
 		bool								everRendered = false;
 		CommandListRef						candidateRenderingResult;
-		LoggedFrameList						loggedFrames;
 
 		RenderingResultRef TransformLastRenderingResult(CommandListRef commandListRef)
 		{
@@ -221,65 +220,9 @@ UnitTestRemoteProtocol
 		{
 		}
 
-		const auto& GetLoggedCreatedImages()
+		const auto& GetLoggedTrace()
 		{
-			return this->createdImages;
-		}
-
-		const auto& GetLoggedFrames()
-		{
-			return loggedFrames;
-		}
-
-		Ptr<glr::json::JsonObject> GetLogAsJson()
-		{
-			auto log = Ptr(new glr::json::JsonObject);
-			{
-				auto arrayImages = Ptr(new glr::json::JsonArray);
-				for (auto&& image : GetLoggedCreatedImages().Values())
-				{
-					auto nodeImage = remoteprotocol::ConvertCustomTypeToJson(image);
-					arrayImages->items.Add(nodeImage);
-				}
-
-				auto fieldImages = Ptr(new glr::json::JsonObjectField);
-				fieldImages->name.value = WString::Unmanaged(L"Images");
-				fieldImages->value = arrayImages;
-				log->fields.Add(fieldImages);
-			}
-			{
-				auto arrayElements = Ptr(new glr::json::JsonArray);
-				for (auto [id, typeDescPair] : this->createdElements)
-				{
-					auto nodeElement = Ptr(new glr::json::JsonObject);
-					{
-						auto fieldId = Ptr(new glr::json::JsonObjectField);
-						fieldId->name.value = WString::Unmanaged(L"id");
-						fieldId->value = remoteprotocol::ConvertCustomTypeToJson(id);
-						nodeElement->fields.Add(fieldId);
-					}
-					{
-						auto fieldType = Ptr(new glr::json::JsonObjectField);
-						fieldType->name.value = WString::Unmanaged(L"type");
-						fieldType->value = remoteprotocol::ConvertCustomTypeToJson(typeDescPair.key);
-						nodeElement->fields.Add(fieldType);
-					}
-					arrayElements->items.Add(nodeElement);
-				}
-
-				auto fieldElements = Ptr(new glr::json::JsonObjectField);
-				fieldElements->name.value = WString::Unmanaged(L"Elements");
-				fieldElements->value = arrayElements;
-				log->fields.Add(fieldElements);
-			}
-			{
-				auto arrayFrames = remoteprotocol::ConvertCustomTypeToJson(GetLoggedFrames());
-				auto fieldFrames = Ptr(new glr::json::JsonObjectField);
-				fieldFrames->name.value = WString::Unmanaged(L"Frames");
-				fieldFrames->value = arrayFrames;
-				log->fields.Add(fieldFrames);
-			}
-			return log;
+			return this->loggedTrace;
 		}
 	};
 }
