@@ -601,7 +601,6 @@ GenerateRemoteProtocolHeaderFile
 				writer.WriteLine(L"\t};");
 				writer.WriteLine(L"");
 			}
-			writer.WriteLine(L"");
 		}
 
 		for (auto enumDecl : From(schema->declarations).FindType<GuiRpEnumDecl>())

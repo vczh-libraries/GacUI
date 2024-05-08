@@ -150,21 +150,11 @@ namespace vl::presentation::remoteprotocol
 		::vl::presentation::remoteprotocol::RenderingCommand_Element
 	>;
 
-
-
-
-
-
-
-
-
-
 	struct FontConfig
 	{
 		::vl::presentation::FontProperties defaultFont;
 		::vl::Ptr<::vl::collections::List<::vl::WString>> supportedFonts;
 	};
-
 
 	struct ScreenConfig
 	{
@@ -174,7 +164,6 @@ namespace vl::presentation::remoteprotocol
 		double scalingY;
 	};
 
-
 	struct WindowSizingConfig
 	{
 		::vl::presentation::NativeRect bounds;
@@ -183,23 +172,17 @@ namespace vl::presentation::remoteprotocol
 		::vl::presentation::NativeMargin customFramePadding;
 	};
 
-
 	struct WindowShowing
 	{
 		bool activate;
 		::vl::presentation::INativeWindow::WindowSizeState sizeState;
 	};
 
-
-
 	struct IOMouseInfoWithButton
 	{
 		::vl::presentation::remoteprotocol::IOMouseButton button;
 		::vl::presentation::NativeWindowMouseInfo info;
 	};
-
-
-
 
 	struct GlobalShortcutKey
 	{
@@ -210,8 +193,6 @@ namespace vl::presentation::remoteprotocol
 		::vl::presentation::VKEY code;
 	};
 
-
-
 	struct ElementDesc_SolidBorder
 	{
 		::vl::vint id;
@@ -219,14 +200,12 @@ namespace vl::presentation::remoteprotocol
 		::vl::presentation::elements::ElementShape shape;
 	};
 
-
 	struct ElementDesc_SinkBorder
 	{
 		::vl::vint id;
 		::vl::presentation::Color leftTopColor;
 		::vl::presentation::Color rightBottomColor;
 	};
-
 
 	struct ElementDesc_SinkSplitter
 	{
@@ -236,14 +215,12 @@ namespace vl::presentation::remoteprotocol
 		::vl::presentation::elements::Gui3DSplitterElement::Direction direction;
 	};
 
-
 	struct ElementDesc_SolidBackground
 	{
 		::vl::vint id;
 		::vl::presentation::Color backgroundColor;
 		::vl::presentation::elements::ElementShape shape;
 	};
-
 
 	struct ElementDesc_GradientBackground
 	{
@@ -254,14 +231,12 @@ namespace vl::presentation::remoteprotocol
 		::vl::presentation::elements::ElementShape shape;
 	};
 
-
 	struct ElementDesc_InnerShadow
 	{
 		::vl::vint id;
 		::vl::presentation::Color shadowColor;
 		::vl::vint thickness;
 	};
-
 
 	struct ElementDesc_Polygon
 	{
@@ -271,7 +246,6 @@ namespace vl::presentation::remoteprotocol
 		::vl::presentation::Color backgroundColor;
 		::vl::Ptr<::vl::collections::List<::vl::presentation::Point>> points;
 	};
-
 
 	struct ElementDesc_SolidLabel
 	{
@@ -288,7 +262,6 @@ namespace vl::presentation::remoteprotocol
 		::vl::Nullable<::vl::presentation::remoteprotocol::ElementSolidLabelMeasuringRequest> measuringRequest;
 	};
 
-
 	struct ImageCreation
 	{
 		::vl::vint id;
@@ -296,12 +269,10 @@ namespace vl::presentation::remoteprotocol
 		bool imageDataOmitted;
 	};
 
-
 	struct ImageFrameMetadata
 	{
 		::vl::presentation::Size size;
 	};
-
 
 	struct ImageMetadata
 	{
@@ -309,7 +280,6 @@ namespace vl::presentation::remoteprotocol
 		::vl::presentation::INativeImage::FormatType format;
 		::vl::Ptr<::vl::collections::List<::vl::presentation::remoteprotocol::ImageFrameMetadata>> frames;
 	};
-
 
 	struct ElementDesc_ImageFrame
 	{
@@ -323,13 +293,11 @@ namespace vl::presentation::remoteprotocol
 		::vl::Nullable<::vl::presentation::remoteprotocol::ImageCreation> imageCreation;
 	};
 
-
 	struct RendererCreation
 	{
 		::vl::vint id;
 		::vl::presentation::remoteprotocol::RendererType type;
 	};
-
 
 	struct ElementRendering
 	{
@@ -338,14 +306,12 @@ namespace vl::presentation::remoteprotocol
 		::vl::presentation::Rect areaClippedByParent;
 	};
 
-
 	struct ElementBoundary
 	{
 		::vl::presentation::INativeWindowListener::HitTestResult hitTestResult;
 		::vl::presentation::Rect bounds;
 		::vl::presentation::Rect areaClippedBySelf;
 	};
-
 
 	struct ElementMeasuring_FontHeight
 	{
@@ -354,13 +320,11 @@ namespace vl::presentation::remoteprotocol
 		::vl::vint height;
 	};
 
-
 	struct ElementMeasuring_ElementMinSize
 	{
 		::vl::vint id;
 		::vl::presentation::Size minSize;
 	};
-
 
 	struct ElementMeasurings
 	{
@@ -368,7 +332,6 @@ namespace vl::presentation::remoteprotocol
 		::vl::Ptr<::vl::collections::List<::vl::presentation::remoteprotocol::ElementMeasuring_ElementMinSize>> minSizes;
 		::vl::Ptr<::vl::collections::List<::vl::presentation::remoteprotocol::ImageMetadata>> createdImages;
 	};
-
 
 	struct RenderingDom
 	{
@@ -379,17 +342,14 @@ namespace vl::presentation::remoteprotocol
 		::vl::Ptr<::vl::collections::List<::vl::Ptr<::vl::presentation::remoteprotocol::RenderingDom>>> children;
 	};
 
-
 	struct RenderingCommand_BeginBoundary
 	{
 		::vl::presentation::remoteprotocol::ElementBoundary boundary;
 	};
 
-
 	struct RenderingCommand_EndBoundary
 	{
 	};
-
 
 	struct RenderingCommand_Element
 	{
@@ -397,13 +357,11 @@ namespace vl::presentation::remoteprotocol
 		::vl::presentation::remoteprotocol::ElementDescVariant desc;
 	};
 
-
 	struct RenderingFrame
 	{
 		::vl::Ptr<::vl::collections::List<::vl::presentation::remoteprotocol::RenderingCommand>> commands;
 		::vl::Ptr<::vl::presentation::remoteprotocol::RenderingDom> root;
 	};
-
 
 	struct RenderingTrace
 	{
@@ -411,7 +369,6 @@ namespace vl::presentation::remoteprotocol
 		::vl::Ptr<::vl::presentation::remoteprotocol::ArrayMap<::vl::vint, ::vl::presentation::remoteprotocol::ImageMetadata, &::vl::presentation::remoteprotocol::ImageMetadata::id>> createdImages;
 		::vl::Ptr<::vl::collections::List<::vl::presentation::remoteprotocol::RenderingFrame>> frames;
 	};
-
 
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::INativeWindowListener::HitTestResult>(const ::vl::presentation::INativeWindowListener::HitTestResult & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::INativeCursor::SystemCursorType>(const ::vl::presentation::INativeCursor::SystemCursorType & value);
