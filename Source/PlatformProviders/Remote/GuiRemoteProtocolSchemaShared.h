@@ -239,8 +239,10 @@ namespace vl::presentation::remoteprotocol
 			Ptr<glr::json::JsonNode> result;
 			value.Apply([&result]<typename T>(const T& element)
 			{
-				JsonNameHelper<T>::Name;
-				CHECK_FAIL(L"Not Implemented!");
+				auto node = Ptr(new glr::json::JsonArray);
+				node->items.Add(ConvertCustomTypeToJson(WString::Unmanaged(JsonNameHelper<T>::Name)));
+				node->items.Add(ConvertCustomTypeToJson(element));
+				result = node;
 			});
 			return result;
 		}
