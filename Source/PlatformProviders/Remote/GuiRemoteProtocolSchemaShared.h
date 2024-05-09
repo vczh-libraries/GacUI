@@ -287,10 +287,32 @@ namespace vl::presentation::remoteprotocol
 			return node;
 		}
 
+		template<typename T>
+		static bool TryFromJson(Ptr<glr::json::JsonNode> node, const WString& itemKey, Variant<Ts...>& value)
+		{
+			if (JsonNameHelper<T>::Name != itemKey) return false;
+			T itemValue;
+			ConvertJsonToCustomType(node, itemValue);
+			value = std::move(itemValue);
+			return true;
+		}
+
 		static void FromJson(Ptr<glr::json::JsonNode> node, Variant<Ts...>& value)
 		{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<T>(Ptr<JsonNode>, Variant<Ts...>&)#"
-			CHECK_FAIL(L"Not Implemented!");
+			auto jsonPairArray = node.Cast<glr::json::JsonArray>();
+			if (!jsonPairArray) goto FAILED;
+			if (jsonPairArray->items.Count() != 2) goto FAILED;
+			{
+				WString itemKey;
+				ConvertJsonToCustomType(jsonPairArray->items[0], itemKey);
+				if ((TryFromJson<Ts>(node, itemKey, value) || ...))
+				{
+					return;
+				}
+			}
+		FAILED:
+			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
 #undef ERROR_MESSAGE_PREFIX
 		}
 	};
