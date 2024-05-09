@@ -85,43 +85,65 @@ namespace vl::presentation::remoteprotocol
 		node->fields.Add(field);
 	}
 
+	template<typename T, typename F>
+	Ptr<glr::json::JsonNode> NullableToJson(const T& value, F&& get)
+	{
+		if (!value)
+		{
+			auto node = Ptr(new glr::json::JsonLiteral);
+			node->value = glr::json::JsonLiteralValue::Null;
+			return node;
+		}
+		else
+		{
+			return ConvertCustomTypeToJson(get(value));
+		}
+	}
+
+	template<typename T, typename F>
+	bool JsonToNullable(Ptr<glr::json::JsonNode> node, T& value, F&& set)
+	{
+		if (auto jsonLiteral = node.Cast<glr::json::JsonLiteral>())
+		{
+			if (jsonLiteral->value == glr::json::JsonLiteralValue::Null)
+			{
+				value = T{};
+				return true;
+			}
+		}
+		else
+		{
+			set([&](auto&& item) { ConvertJsonToCustomType(node, item); });
+			return true;
+		}
+		return false;
+	}
+
 	template<typename T>
 	struct JsonHelper<Nullable<T>>
 	{
 		static Ptr<glr::json::JsonNode> ToJson(const Nullable<T>& value)
 		{
-			if (!value)
-			{
-				auto node = Ptr(new glr::json::JsonLiteral);
-				node->value = glr::json::JsonLiteralValue::Null;
-				return node;
-			}
-			else
-			{
-				return ConvertCustomTypeToJson(value.Value());
-			}
+			return NullableToJson(
+				value,
+				[](auto&& v)->decltype(auto) { return v.Value(); }
+				);
 		}
 
 		static void FromJson(Ptr<glr::json::JsonNode> node, Nullable<T>& value)
 		{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<T>(Ptr<JsonNode>, Ptr<List<T>>&)#"
-			if (auto jsonLiteral = node.Cast<glr::json::JsonLiteral>())
-			{
-				if (jsonLiteral->value == glr::json::JsonLiteralValue::Null)
+			if (!JsonToNullable(
+				node,
+				value,
+				[&](auto&& f)
 				{
-					value.Reset();
-					return;
-				}
-				else
-				{
-					CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
-				}
-			}
-			else
+					T item;
+					f(item);
+					value = std::move(item);
+				}))
 			{
-				T item;
-				ConvertJsonToCustomType(node, item);
-				value = item;
+				CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
 			}
 #undef ERROR_MESSAGE_PREFIX
 		}
@@ -132,37 +154,25 @@ namespace vl::presentation::remoteprotocol
 	{
 		static Ptr<glr::json::JsonNode> ToJson(const Ptr<T>& value)
 		{
-			if (!value)
-			{
-				auto node = Ptr(new glr::json::JsonLiteral);
-				node->value = glr::json::JsonLiteralValue::Null;
-				return node;
-			}
-			else
-			{
-				return ConvertCustomTypeToJson(*value.Obj());
-			}
+			return NullableToJson(
+				value,
+				[](auto&& v)->decltype(auto) { return *v.Obj(); }
+				);
 		}
 
 		static void FromJson(Ptr<glr::json::JsonNode> node, Ptr<T>& value)
 		{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<T>(Ptr<JsonNode>, Ptr<T>&)#"
-			if (auto jsonLiteral = node.Cast<glr::json::JsonLiteral>())
-			{
-				if (jsonLiteral->value == glr::json::JsonLiteralValue::Null)
+			if (!JsonToNullable(
+				node,
+				value,
+				[&](auto&& f)
 				{
-					value = nullptr;
-					return;
-				}
-				else
-				{
-					CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
-				}
-			}
-			else
+					value = Ptr(new T);
+					f(*value.Obj());
+				}))
 			{
-				value = Ptr(new T);
-				ConvertJsonToCustomType(node, *value.Obj());
+				CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
 			}
 #undef ERROR_MESSAGE_PREFIX
 		}
