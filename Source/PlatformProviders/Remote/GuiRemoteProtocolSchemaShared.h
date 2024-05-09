@@ -194,6 +194,7 @@ namespace vl::presentation::remoteprotocol
 		static void FromJson(Ptr<glr::json::JsonNode> node, collections::List<T>& value)
 		{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<T>(Ptr<JsonNode>, List<T>&)#"
+			value.Clear();
 			if (auto jsonArray = node.Cast<glr::json::JsonArray>())
 			{
 				for (auto jsonItem : jsonArray->items)
@@ -221,7 +222,13 @@ namespace vl::presentation::remoteprotocol
 		static void FromJson(Ptr<glr::json::JsonNode> node, ArrayMap<TKey, TValue, Field>& value)
 		{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<T>(Ptr<JsonNode>, ArrayMap<TKey, TValue, Field>&)#"
-			CHECK_FAIL(L"Not Implemented!");
+			value.Clear();
+			collections::List<TValue> values;
+			ConvertJsonToCustomType(node, values);
+			for (auto&& item : values)
+			{
+				value.Add(item);
+			}
 #undef ERROR_MESSAGE_PREFIX
 		}
 	};
@@ -245,7 +252,23 @@ namespace vl::presentation::remoteprotocol
 		static void FromJson(Ptr<glr::json::JsonNode> node, collections::Dictionary<TKey, TValue>& value)
 		{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<T>(Ptr<JsonNode>, Dictionary<TKey, TValue>&)#"
-			CHECK_FAIL(L"Not Implemented!");
+			value.Clear();
+			auto jsonArray = node.Cast<glr::json::JsonArray>();
+			if (!jsonArray) goto FAILED;
+			for (auto jsonPair : jsonArray->items)
+			{
+				auto jsonPairArray = jsonPair.Cast<glr::json::JsonArray>();
+				if (!jsonPairArray) goto FAILED;
+				if (jsonPairArray->items.Count() != 2) goto FAILED;
+				TKey itemKey;
+				ConvertJsonToCustomType(jsonPairArray->items[0], itemKey);
+				TValue itemValue;
+				ConvertJsonToCustomType(jsonPairArray->items[1], itemValue);
+				value.Add(itemKey, itemValue);
+			}
+			return;
+		FAILED:
+			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
 #undef ERROR_MESSAGE_PREFIX
 		}
 	};
