@@ -129,7 +129,7 @@ void GacUIUnitTest_Start(const WString& appName, Nullable<UnitTestScreenConfig> 
 			remoteprotocol::RenderingTrace deserialized;
 			remoteprotocol::ConvertJsonToCustomType(jsonLog, deserialized);
 			auto jsonLog2 = remoteprotocol::ConvertCustomTypeToJson(deserialized);
-			auto textLog2 = JsonToString(jsonLog2);
+			auto textLog2 = JsonToString(jsonLog2, formatting);
 			CHECK_ERROR(textLog == textLog2, ERROR_MESSAGE_PREFIX L"Serialization and deserialization doesn't match.");
 		}
 		bool succeeded = snapshotFile.WriteAllText(textLog, false, stream::BomEncoder::Utf8);

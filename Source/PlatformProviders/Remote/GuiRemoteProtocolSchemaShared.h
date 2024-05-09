@@ -306,7 +306,7 @@ namespace vl::presentation::remoteprotocol
 			{
 				WString itemKey;
 				ConvertJsonToCustomType(jsonPairArray->items[0], itemKey);
-				if ((TryFromJson<Ts>(node, itemKey, value) || ...))
+				if ((TryFromJson<Ts>(jsonPairArray->items[1], itemKey, value) || ...))
 				{
 					return;
 				}
