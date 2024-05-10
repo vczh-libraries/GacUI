@@ -74,6 +74,21 @@ namespace gaclib_controls
         File = 1,
     }
 
+    interface IUnitTestSnapshotFrame
+    {
+        func GetIndex() : (int);
+
+        prop Index : int{GetIndex}
+
+        func GetCommandsAsJsonText() : (string);
+
+        prop CommandsAsJsonText : string{GetCommandsAsJsonText}
+
+        func GetDomAsJsonText() : (string);
+
+        prop DomAsJsonText : string{GetDomAsJsonText}
+    }
+
     interface IUnitTestSnapshotFileNode
     {
         func GetNodeType() : (UnitTestSnapshotFileNodeType);
@@ -88,7 +103,11 @@ namespace gaclib_controls
 
         prop Children : IUnitTestSnapshotFileNode^{}{GetChildren}
 
-        func LoadContent() : (string);
+        func GetFrames() : (IUnitTestSnapshotFrame^{});
+
+        prop Frames : IUnitTestSnapshotFrame^{}{GetFrames}
+
+        func Refresh() : (void);
     }
 
     interface IUnitTestSnapshotViewerViewModel

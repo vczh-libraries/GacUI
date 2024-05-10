@@ -1,10 +1,44 @@
 #include "GuiUnitTestSnapshotViewerViewModel.h"
+#include "../../../PlatformProviders/Remote/GuiRemoteProtocol.h"
 
 namespace vl::presentation::unittest
 {
 	using namespace collections;
 	using namespace filesystem;
 	using namespace gaclib_controls;
+	using namespace glr::json;
+	using namespace vl::presentation::remoteprotocol;
+
+/***********************************************************************
+UnitTestSnapshotFrame
+***********************************************************************/
+
+	class UnitTestSnapshotFrame : public Object, public virtual IUnitTestSnapshotFrame
+	{
+	protected:
+		RenderingFrame&						frame;
+
+	public:
+		UnitTestSnapshotFrame(RenderingFrame& _frame)
+			: frame(_frame)
+		{
+		}
+
+		vint GetIndex() override
+		{
+			CHECK_FAIL(L"Not Implemented!");
+		}
+
+		WString GetCommandsAsJsonText() override
+		{
+			CHECK_FAIL(L"Not Implemented!");
+		}
+
+		WString GetDomAsJsonText() override
+		{
+			CHECK_FAIL(L"Not Implemented!");
+		}
+	};
 
 /***********************************************************************
 UnitTestSnapshotFileNode
@@ -13,8 +47,24 @@ UnitTestSnapshotFileNode
 	class UnitTestSnapshotFileNode : public Object, public virtual IUnitTestSnapshotFileNode
 	{
 	protected:
-		File				file;
+		File								file;
+		Ptr<RenderingTrace>					renderingTrace;
+		List<Ptr<UnitTestSnapshotFrame>>	frames;
 
+		void EnsureLoaded()
+		{
+			if (!renderingTrace)
+			{
+				WString jsonText = file.ReadAllTextByBom();
+				Ptr<JsonNode> jsonNode;
+				{
+					glr::json::Parser parser;
+					jsonNode = parser.ParseJRoot(jsonText);
+				}
+				renderingTrace = Ptr(new RenderingTrace);
+				ConvertJsonToCustomType(jsonNode, *renderingTrace.Obj());
+			}
+		}
 	public:
 		UnitTestSnapshotFileNode(FilePath _filePath)
 			: file(_filePath)
@@ -39,7 +89,13 @@ UnitTestSnapshotFileNode
 			return {};
 		}
 
-		WString LoadContent() override
+		LazyList<Ptr<IUnitTestSnapshotFrame>> GetFrames() override
+		{
+			EnsureLoaded();
+			return From(frames).Cast<IUnitTestSnapshotFrame>();
+		}
+
+		void Refresh() override
 		{
 			CHECK_FAIL(L"Not Implemented!");
 		}
@@ -106,7 +162,12 @@ UnitTestSnapshotFolderNode
 			return children;
 		}
 
-		WString LoadContent() override
+		LazyList<Ptr<IUnitTestSnapshotFrame>> GetFrames() override
+		{
+			return {};
+		}
+
+		void Refresh() override
 		{
 			CHECK_FAIL(L"Not Implemented!");
 		}

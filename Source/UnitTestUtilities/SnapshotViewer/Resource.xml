@@ -32,12 +32,21 @@
         File = 1,
       }
 
+      interface IUnitTestSnapshotFrame
+      {
+        prop Index: int {const, not observe}
+        prop CommandsAsJsonText: string {const, not observe}
+        prop DomAsJsonText: string {const, not observe}
+      }
+
       interface IUnitTestSnapshotFileNode
       {
         prop NodeType: UnitTestSnapshotFileNodeType {const, not observe}
         prop Name: string {const, not observe}
         prop Children: IUnitTestSnapshotFileNode^{} {const, not observe}
-        func LoadContent():string;
+        prop Frames: IUnitTestSnapshotFrame^{} {const, not observe}
+
+        func Refresh(): void;
       }
 
       interface IUnitTestSnapshotViewerViewModel
@@ -86,6 +95,7 @@
             <att.Columns>
               <_>composeType:Absolute absolute:195</_>
               <_>composeType:Absolute absolute:100</_>
+              <_>composeType:Absolute absolute:100</_>
               <_>composeType:Percentage percentage:1.0</_>
             </att.Columns>
             
@@ -99,6 +109,36 @@
                 <att.ItemSource-eval>ViewModel.RootNode</att.ItemSource-eval>
                 <att.ImageProperty-eval>[self.GetImageFromType((cast (IUnitTestSnapshotFileNode^) $1).NodeType)]</att.ImageProperty-eval>
               </BindableTreeView>
+            </Cell>
+
+            <Cell Site="row:0 column:2">
+              <BindableTextList ref.Name="textListFrames" env.ItemType="IUnitTestSnapshotFrame^" VerticalAlwaysVisible="false" HorizontalAlwaysVisible="false">
+                <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+                <att.TextProperty-eval>[cast string $1]</att.TextProperty-eval>
+                <att.ItemSource-bind>(cast (IUnitTestSnapshotFileNode^) treeViewFileNodes.SelectedItem).Frames ?? null</att.ItemSource-bind>
+              </Tab>
+            </Cell>
+
+            <Cell Site="row:0 column:3">
+              <Tab>
+                <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+                <att.Pages>
+                  <TabPage Text="Rendering">
+                  </TabPage>
+                  <TabPage Text="DOM">
+                    <MultilineTextBox VerticalAlwaysVisible="false" HorizontalAlwaysVisible="false">
+                      <att.BoundsComposition-set AlignmentToParent="left:5 top:5 right:5 bottom:5"/>
+                      <att.Text-bind>(cast (IUnitTestSnapshotFrame^) textListFrames.SelectedItem).DomAsJsonText ?? ''</att.Text-bind>
+                    </MultilineTextBox>
+                  </TabPage>
+                  <TabPage Text="Commands">
+                    <MultilineTextBox VerticalAlwaysVisible="false" HorizontalAlwaysVisible="false">
+                      <att.BoundsComposition-set AlignmentToParent="left:5 top:5 right:5 bottom:5"/>
+                      <att.Text-bind>(cast (IUnitTestSnapshotFrame^) textListFrames.SelectedItem).CommandsAsJsonText ?? ''</att.Text-bind>
+                    </MultilineTextBox>
+                  </TabPage>
+                </att.Pages>
+              </Tab>
             </Cell>
           </Table>
       </Window>

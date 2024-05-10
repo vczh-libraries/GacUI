@@ -92,12 +92,66 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf4_GuiUnitTestSnapshotViewer_gaclib_controls_UnitTestSnapshotViewerWindowConstructor___vwsn_gaclib_controls_UnitTestSnapshotViewerWindow_Initialize_::__vwsnf4_GuiUnitTestSnapshotViewer_gaclib_controls_UnitTestSnapshotViewerWindowConstructor___vwsn_gaclib_controls_UnitTestSnapshotViewerWindow_Initialize_(::gaclib_controls::UnitTestSnapshotViewerWindowConstructor* __vwsnctorthis_0)
+	__vwsnf5_GuiUnitTestSnapshotViewer_gaclib_controls_UnitTestSnapshotViewerWindowConstructor___vwsn_gaclib_controls_UnitTestSnapshotViewerWindow_Initialize_::__vwsnf5_GuiUnitTestSnapshotViewer_gaclib_controls_UnitTestSnapshotViewerWindowConstructor___vwsn_gaclib_controls_UnitTestSnapshotViewerWindow_Initialize_(::gaclib_controls::UnitTestSnapshotViewerWindowConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf4_GuiUnitTestSnapshotViewer_gaclib_controls_UnitTestSnapshotViewerWindowConstructor___vwsn_gaclib_controls_UnitTestSnapshotViewerWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf5_GuiUnitTestSnapshotViewer_gaclib_controls_UnitTestSnapshotViewerWindowConstructor___vwsn_gaclib_controls_UnitTestSnapshotViewerWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->textListFrames)->GetItemSource();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::reflection::description::IValueEnumerable>>(__vwsn_value_);
+		if ((__vwsn_old_.Obj() == __vwsn_new_.Obj()))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->textListFrames)->SetItemSource(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf6_GuiUnitTestSnapshotViewer_gaclib_controls_UnitTestSnapshotViewerWindowConstructor___vwsn_gaclib_controls_UnitTestSnapshotViewerWindow_Initialize_::__vwsnf6_GuiUnitTestSnapshotViewer_gaclib_controls_UnitTestSnapshotViewerWindowConstructor___vwsn_gaclib_controls_UnitTestSnapshotViewerWindow_Initialize_(::gaclib_controls::UnitTestSnapshotViewerWindowConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf6_GuiUnitTestSnapshotViewer_gaclib_controls_UnitTestSnapshotViewerWindowConstructor___vwsn_gaclib_controls_UnitTestSnapshotViewerWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_11)->GetText();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_11)->SetText(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf7_GuiUnitTestSnapshotViewer_gaclib_controls_UnitTestSnapshotViewerWindowConstructor___vwsn_gaclib_controls_UnitTestSnapshotViewerWindow_Initialize_::__vwsnf7_GuiUnitTestSnapshotViewer_gaclib_controls_UnitTestSnapshotViewerWindowConstructor___vwsn_gaclib_controls_UnitTestSnapshotViewerWindow_Initialize_(::gaclib_controls::UnitTestSnapshotViewerWindowConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf7_GuiUnitTestSnapshotViewer_gaclib_controls_UnitTestSnapshotViewerWindowConstructor___vwsn_gaclib_controls_UnitTestSnapshotViewerWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_14)->GetText();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_14)->SetText(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf8_GuiUnitTestSnapshotViewer_gaclib_controls_UnitTestSnapshotViewerWindowConstructor___vwsn_gaclib_controls_UnitTestSnapshotViewerWindow_Initialize_::__vwsnf8_GuiUnitTestSnapshotViewer_gaclib_controls_UnitTestSnapshotViewerWindowConstructor___vwsn_gaclib_controls_UnitTestSnapshotViewerWindow_Initialize_(::gaclib_controls::UnitTestSnapshotViewerWindowConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf8_GuiUnitTestSnapshotViewer_gaclib_controls_UnitTestSnapshotViewerWindowConstructor___vwsn_gaclib_controls_UnitTestSnapshotViewerWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetText();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
@@ -110,12 +164,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf5_GuiUnitTestSnapshotViewer_gaclib_controls_UnitTestSnapshotViewerWindowConstructor___vwsn_gaclib_controls_UnitTestSnapshotViewerWindow_Initialize_::__vwsnf5_GuiUnitTestSnapshotViewer_gaclib_controls_UnitTestSnapshotViewerWindowConstructor___vwsn_gaclib_controls_UnitTestSnapshotViewerWindow_Initialize_(::gaclib_controls::UnitTestSnapshotViewerWindowConstructor* __vwsnctorthis_0)
+	__vwsnf9_GuiUnitTestSnapshotViewer_gaclib_controls_UnitTestSnapshotViewerWindowConstructor___vwsn_gaclib_controls_UnitTestSnapshotViewerWindow_Initialize_::__vwsnf9_GuiUnitTestSnapshotViewer_gaclib_controls_UnitTestSnapshotViewerWindowConstructor___vwsn_gaclib_controls_UnitTestSnapshotViewerWindow_Initialize_(::gaclib_controls::UnitTestSnapshotViewerWindowConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf5_GuiUnitTestSnapshotViewer_gaclib_controls_UnitTestSnapshotViewerWindowConstructor___vwsn_gaclib_controls_UnitTestSnapshotViewerWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf9_GuiUnitTestSnapshotViewer_gaclib_controls_UnitTestSnapshotViewerWindowConstructor___vwsn_gaclib_controls_UnitTestSnapshotViewerWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetStrings();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::Ptr<::gaclib_controls::IUnitTestSnapshotViewerStringsStrings>>(__vwsn_value_);
@@ -140,11 +194,22 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnc1_GuiUnitTestSnapshotViewer_gaclib_controls_UnitTestSnapshotViewerWindowConstructor___vwsn_gaclib_controls_UnitTestSnapshotViewerWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsnc1_GuiUnitTestSnapshotViewer_gaclib_controls_UnitTestSnapshotViewerWindowConstructor___vwsn_gaclib_controls_UnitTestSnapshotViewerWindow_Initialize__vl_reflection_description_IValueSubscription(::gaclib_controls::UnitTestSnapshotViewerWindow* __vwsnctor___vwsn_this_, ::gaclib_controls::UnitTestSnapshotViewerWindowConstructor* __vwsnctorthis_0)
-		:__vwsn_this_(__vwsnctor___vwsn_this_)
-		, __vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	__vwsno4_GuiUnitTestSnapshotViewer_gaclib_controls_UnitTestSnapshotViewerWindowConstructor___vwsn_gaclib_controls_UnitTestSnapshotViewerWindow_Initialize_::__vwsno4_GuiUnitTestSnapshotViewer_gaclib_controls_UnitTestSnapshotViewerWindowConstructor___vwsn_gaclib_controls_UnitTestSnapshotViewerWindow_Initialize_(::gaclib_controls::UnitTestSnapshotViewerWindowConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
-		this->__vwsn_bind_cache_0 = static_cast<::gaclib_controls::UnitTestSnapshotViewerWindow*>(nullptr);
+	}
+
+	::vl::WString __vwsno4_GuiUnitTestSnapshotViewer_gaclib_controls_UnitTestSnapshotViewerWindowConstructor___vwsn_gaclib_controls_UnitTestSnapshotViewerWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsno_1) const
+	{
+		return ::vl::__vwsn::Unbox<::vl::WString>(__vwsno_1);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc1_GuiUnitTestSnapshotViewer_gaclib_controls_UnitTestSnapshotViewerWindowConstructor___vwsn_gaclib_controls_UnitTestSnapshotViewerWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsnc1_GuiUnitTestSnapshotViewer_gaclib_controls_UnitTestSnapshotViewerWindowConstructor___vwsn_gaclib_controls_UnitTestSnapshotViewerWindow_Initialize__vl_reflection_description_IValueSubscription(::gaclib_controls::UnitTestSnapshotViewerWindowConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+		this->__vwsn_bind_cache_0 = static_cast<::vl::presentation::controls::GuiBindableTreeView*>(nullptr);
 		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
 		this->__vwsn_bind_opened_ = false;
 		this->__vwsn_bind_closed_ = false;
@@ -152,11 +217,11 @@ Closures
 
 	void __vwsnc1_GuiUnitTestSnapshotViewer_gaclib_controls_UnitTestSnapshotViewerWindowConstructor___vwsn_gaclib_controls_UnitTestSnapshotViewerWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetStrings().Obj())->WindowTitle();
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueEnumerable>([&](){ try{ return ::vl::__vwsn::This(::vl::__vwsn::Unbox<::vl::Ptr<::gaclib_controls::IUnitTestSnapshotFileNode>>(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetSelectedItem()).Obj())->GetFrames(); } catch(...){ return ::vl::collections::LazyList<::vl::Ptr<::gaclib_controls::IUnitTestSnapshotFrame>>(); } }());
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
-	void __vwsnc1_GuiUnitTestSnapshotViewer_gaclib_controls_UnitTestSnapshotViewerWindowConstructor___vwsn_gaclib_controls_UnitTestSnapshotViewerWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
+	void __vwsnc1_GuiUnitTestSnapshotViewer_gaclib_controls_UnitTestSnapshotViewerWindowConstructor___vwsn_gaclib_controls_UnitTestSnapshotViewerWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
 	{
 		this->__vwsn_bind_activator_();
 	}
@@ -166,8 +231,8 @@ Closures
 		if ((! __vwsn_bind_opened_))
 		{
 			(__vwsn_bind_opened_ = true);
-			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsn_this_; } catch(...){ return static_cast<::gaclib_controls::UnitTestSnapshotViewerWindow*>(nullptr); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, ::vl::Func<void()>(this, &__vwsnc1_GuiUnitTestSnapshotViewer_gaclib_controls_UnitTestSnapshotViewerWindowConstructor___vwsn_gaclib_controls_UnitTestSnapshotViewerWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->treeViewFileNodes; } catch(...){ return static_cast<::vl::presentation::controls::GuiBindableTreeView*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->SelectionChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc1_GuiUnitTestSnapshotViewer_gaclib_controls_UnitTestSnapshotViewerWindowConstructor___vwsn_gaclib_controls_UnitTestSnapshotViewerWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
@@ -190,10 +255,10 @@ Closures
 			(__vwsn_bind_closed_ = true);
 			if (static_cast<bool>(__vwsn_bind_handler_0_0))
 			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, __vwsn_bind_handler_0_0);
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->SelectionChanged, __vwsn_bind_handler_0_0);
 				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			}
-			(__vwsn_bind_cache_0 = static_cast<::gaclib_controls::UnitTestSnapshotViewerWindow*>(nullptr));
+			(__vwsn_bind_cache_0 = static_cast<::vl::presentation::controls::GuiBindableTreeView*>(nullptr));
 			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			return true;
 		}
@@ -205,7 +270,7 @@ Closures
 	__vwsnc2_GuiUnitTestSnapshotViewer_gaclib_controls_UnitTestSnapshotViewerWindowConstructor___vwsn_gaclib_controls_UnitTestSnapshotViewerWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsnc2_GuiUnitTestSnapshotViewer_gaclib_controls_UnitTestSnapshotViewerWindowConstructor___vwsn_gaclib_controls_UnitTestSnapshotViewerWindow_Initialize__vl_reflection_description_IValueSubscription(::gaclib_controls::UnitTestSnapshotViewerWindowConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
-		this->__vwsn_bind_cache_0 = static_cast<::vl::presentation::controls::GuiApplication*>(nullptr);
+		this->__vwsn_bind_cache_0 = static_cast<::vl::presentation::controls::GuiBindableTextList*>(nullptr);
 		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
 		this->__vwsn_bind_opened_ = false;
 		this->__vwsn_bind_closed_ = false;
@@ -213,11 +278,11 @@ Closures
 
 	void __vwsnc2_GuiUnitTestSnapshotViewer_gaclib_controls_UnitTestSnapshotViewerWindowConstructor___vwsn_gaclib_controls_UnitTestSnapshotViewerWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::gaclib_controls::UnitTestSnapshotViewerStrings::Get(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetLocale());
+		auto __vwsn_bind_activator_result_ = [&](){ try{ return ::vl::__vwsn::This(::vl::__vwsn::Unbox<::vl::Ptr<::gaclib_controls::IUnitTestSnapshotFrame>>(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetSelectedItem()).Obj())->GetDomAsJsonText(); } catch(...){ return ::vl::WString::Unmanaged(L""); } }();
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
-	void __vwsnc2_GuiUnitTestSnapshotViewer_gaclib_controls_UnitTestSnapshotViewerWindowConstructor___vwsn_gaclib_controls_UnitTestSnapshotViewerWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
+	void __vwsnc2_GuiUnitTestSnapshotViewer_gaclib_controls_UnitTestSnapshotViewerWindowConstructor___vwsn_gaclib_controls_UnitTestSnapshotViewerWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
 	{
 		this->__vwsn_bind_activator_();
 	}
@@ -227,8 +292,8 @@ Closures
 		if ((! __vwsn_bind_opened_))
 		{
 			(__vwsn_bind_opened_ = true);
-			(__vwsn_bind_cache_0 = [&](){ try{ return ::vl::presentation::controls::GetApplication(); } catch(...){ return static_cast<::vl::presentation::controls::GuiApplication*>(nullptr); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->LocaleChanged, ::vl::Func<void()>(this, &__vwsnc2_GuiUnitTestSnapshotViewer_gaclib_controls_UnitTestSnapshotViewerWindowConstructor___vwsn_gaclib_controls_UnitTestSnapshotViewerWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->textListFrames; } catch(...){ return static_cast<::vl::presentation::controls::GuiBindableTextList*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->SelectionChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc2_GuiUnitTestSnapshotViewer_gaclib_controls_UnitTestSnapshotViewerWindowConstructor___vwsn_gaclib_controls_UnitTestSnapshotViewerWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
@@ -251,6 +316,190 @@ Closures
 			(__vwsn_bind_closed_ = true);
 			if (static_cast<bool>(__vwsn_bind_handler_0_0))
 			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->SelectionChanged, __vwsn_bind_handler_0_0);
+				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			(__vwsn_bind_cache_0 = static_cast<::vl::presentation::controls::GuiBindableTextList*>(nullptr));
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc3_GuiUnitTestSnapshotViewer_gaclib_controls_UnitTestSnapshotViewerWindowConstructor___vwsn_gaclib_controls_UnitTestSnapshotViewerWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsnc3_GuiUnitTestSnapshotViewer_gaclib_controls_UnitTestSnapshotViewerWindowConstructor___vwsn_gaclib_controls_UnitTestSnapshotViewerWindow_Initialize__vl_reflection_description_IValueSubscription(::gaclib_controls::UnitTestSnapshotViewerWindowConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+		this->__vwsn_bind_cache_0 = static_cast<::vl::presentation::controls::GuiBindableTextList*>(nullptr);
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+	}
+
+	void __vwsnc3_GuiUnitTestSnapshotViewer_gaclib_controls_UnitTestSnapshotViewerWindowConstructor___vwsn_gaclib_controls_UnitTestSnapshotViewerWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = [&](){ try{ return ::vl::__vwsn::This(::vl::__vwsn::Unbox<::vl::Ptr<::gaclib_controls::IUnitTestSnapshotFrame>>(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetSelectedItem()).Obj())->GetCommandsAsJsonText(); } catch(...){ return ::vl::WString::Unmanaged(L""); } }();
+		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+	}
+
+	void __vwsnc3_GuiUnitTestSnapshotViewer_gaclib_controls_UnitTestSnapshotViewerWindowConstructor___vwsn_gaclib_controls_UnitTestSnapshotViewerWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	bool __vwsnc3_GuiUnitTestSnapshotViewer_gaclib_controls_UnitTestSnapshotViewerWindowConstructor___vwsn_gaclib_controls_UnitTestSnapshotViewerWindow_Initialize__vl_reflection_description_IValueSubscription::Open()
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->textListFrames; } catch(...){ return static_cast<::vl::presentation::controls::GuiBindableTextList*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->SelectionChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc3_GuiUnitTestSnapshotViewer_gaclib_controls_UnitTestSnapshotViewerWindowConstructor___vwsn_gaclib_controls_UnitTestSnapshotViewerWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc3_GuiUnitTestSnapshotViewer_gaclib_controls_UnitTestSnapshotViewerWindowConstructor___vwsn_gaclib_controls_UnitTestSnapshotViewerWindow_Initialize__vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
+		{
+			this->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc3_GuiUnitTestSnapshotViewer_gaclib_controls_UnitTestSnapshotViewerWindowConstructor___vwsn_gaclib_controls_UnitTestSnapshotViewerWindow_Initialize__vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			if (static_cast<bool>(__vwsn_bind_handler_0_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->SelectionChanged, __vwsn_bind_handler_0_0);
+				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			(__vwsn_bind_cache_0 = static_cast<::vl::presentation::controls::GuiBindableTextList*>(nullptr));
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc4_GuiUnitTestSnapshotViewer_gaclib_controls_UnitTestSnapshotViewerWindowConstructor___vwsn_gaclib_controls_UnitTestSnapshotViewerWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsnc4_GuiUnitTestSnapshotViewer_gaclib_controls_UnitTestSnapshotViewerWindowConstructor___vwsn_gaclib_controls_UnitTestSnapshotViewerWindow_Initialize__vl_reflection_description_IValueSubscription(::gaclib_controls::UnitTestSnapshotViewerWindow* __vwsnctor___vwsn_this_, ::gaclib_controls::UnitTestSnapshotViewerWindowConstructor* __vwsnctorthis_0)
+		:__vwsn_this_(__vwsnctor___vwsn_this_)
+		, __vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+		this->__vwsn_bind_cache_0 = static_cast<::gaclib_controls::UnitTestSnapshotViewerWindow*>(nullptr);
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+	}
+
+	void __vwsnc4_GuiUnitTestSnapshotViewer_gaclib_controls_UnitTestSnapshotViewerWindowConstructor___vwsn_gaclib_controls_UnitTestSnapshotViewerWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetStrings().Obj())->WindowTitle();
+		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+	}
+
+	void __vwsnc4_GuiUnitTestSnapshotViewer_gaclib_controls_UnitTestSnapshotViewerWindowConstructor___vwsn_gaclib_controls_UnitTestSnapshotViewerWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	bool __vwsnc4_GuiUnitTestSnapshotViewer_gaclib_controls_UnitTestSnapshotViewerWindowConstructor___vwsn_gaclib_controls_UnitTestSnapshotViewerWindow_Initialize__vl_reflection_description_IValueSubscription::Open()
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsn_this_; } catch(...){ return static_cast<::gaclib_controls::UnitTestSnapshotViewerWindow*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, ::vl::Func<void()>(this, &__vwsnc4_GuiUnitTestSnapshotViewer_gaclib_controls_UnitTestSnapshotViewerWindowConstructor___vwsn_gaclib_controls_UnitTestSnapshotViewerWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc4_GuiUnitTestSnapshotViewer_gaclib_controls_UnitTestSnapshotViewerWindowConstructor___vwsn_gaclib_controls_UnitTestSnapshotViewerWindow_Initialize__vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
+		{
+			this->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc4_GuiUnitTestSnapshotViewer_gaclib_controls_UnitTestSnapshotViewerWindowConstructor___vwsn_gaclib_controls_UnitTestSnapshotViewerWindow_Initialize__vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			if (static_cast<bool>(__vwsn_bind_handler_0_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, __vwsn_bind_handler_0_0);
+				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			(__vwsn_bind_cache_0 = static_cast<::gaclib_controls::UnitTestSnapshotViewerWindow*>(nullptr));
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc5_GuiUnitTestSnapshotViewer_gaclib_controls_UnitTestSnapshotViewerWindowConstructor___vwsn_gaclib_controls_UnitTestSnapshotViewerWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsnc5_GuiUnitTestSnapshotViewer_gaclib_controls_UnitTestSnapshotViewerWindowConstructor___vwsn_gaclib_controls_UnitTestSnapshotViewerWindow_Initialize__vl_reflection_description_IValueSubscription(::gaclib_controls::UnitTestSnapshotViewerWindowConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+		this->__vwsn_bind_cache_0 = static_cast<::vl::presentation::controls::GuiApplication*>(nullptr);
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+	}
+
+	void __vwsnc5_GuiUnitTestSnapshotViewer_gaclib_controls_UnitTestSnapshotViewerWindowConstructor___vwsn_gaclib_controls_UnitTestSnapshotViewerWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = ::gaclib_controls::UnitTestSnapshotViewerStrings::Get(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetLocale());
+		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+	}
+
+	void __vwsnc5_GuiUnitTestSnapshotViewer_gaclib_controls_UnitTestSnapshotViewerWindowConstructor___vwsn_gaclib_controls_UnitTestSnapshotViewerWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	bool __vwsnc5_GuiUnitTestSnapshotViewer_gaclib_controls_UnitTestSnapshotViewerWindowConstructor___vwsn_gaclib_controls_UnitTestSnapshotViewerWindow_Initialize__vl_reflection_description_IValueSubscription::Open()
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			(__vwsn_bind_cache_0 = [&](){ try{ return ::vl::presentation::controls::GetApplication(); } catch(...){ return static_cast<::vl::presentation::controls::GuiApplication*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->LocaleChanged, ::vl::Func<void()>(this, &__vwsnc5_GuiUnitTestSnapshotViewer_gaclib_controls_UnitTestSnapshotViewerWindowConstructor___vwsn_gaclib_controls_UnitTestSnapshotViewerWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc5_GuiUnitTestSnapshotViewer_gaclib_controls_UnitTestSnapshotViewerWindowConstructor___vwsn_gaclib_controls_UnitTestSnapshotViewerWindow_Initialize__vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
+		{
+			this->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc5_GuiUnitTestSnapshotViewer_gaclib_controls_UnitTestSnapshotViewerWindowConstructor___vwsn_gaclib_controls_UnitTestSnapshotViewerWindow_Initialize__vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			if (static_cast<bool>(__vwsn_bind_handler_0_0))
+			{
 				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->LocaleChanged, __vwsn_bind_handler_0_0);
 				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			}
@@ -263,11 +512,11 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnc3_GuiUnitTestSnapshotViewer_gaclib_controls_UnitTestSnapshotViewerStrings___vwsn_ls_en_US_BuildStrings__gaclib_controls_IUnitTestSnapshotViewerStringsStrings::__vwsnc3_GuiUnitTestSnapshotViewer_gaclib_controls_UnitTestSnapshotViewerStrings___vwsn_ls_en_US_BuildStrings__gaclib_controls_IUnitTestSnapshotViewerStringsStrings()
+	__vwsnc6_GuiUnitTestSnapshotViewer_gaclib_controls_UnitTestSnapshotViewerStrings___vwsn_ls_en_US_BuildStrings__gaclib_controls_IUnitTestSnapshotViewerStringsStrings::__vwsnc6_GuiUnitTestSnapshotViewer_gaclib_controls_UnitTestSnapshotViewerStrings___vwsn_ls_en_US_BuildStrings__gaclib_controls_IUnitTestSnapshotViewerStringsStrings()
 	{
 	}
 
-	::vl::WString __vwsnc3_GuiUnitTestSnapshotViewer_gaclib_controls_UnitTestSnapshotViewerStrings___vwsn_ls_en_US_BuildStrings__gaclib_controls_IUnitTestSnapshotViewerStringsStrings::WindowTitle()
+	::vl::WString __vwsnc6_GuiUnitTestSnapshotViewer_gaclib_controls_UnitTestSnapshotViewerStrings___vwsn_ls_en_US_BuildStrings__gaclib_controls_IUnitTestSnapshotViewerStringsStrings::WindowTitle()
 	{
 		return ::vl::WString::Unmanaged(L"Unit Test Snapshot Viewer");
 	}
@@ -280,6 +529,10 @@ Class (::gaclib_controls::IUnitTestSnapshotFileNode)
 
 namespace gaclib_controls
 {
+/***********************************************************************
+Class (::gaclib_controls::IUnitTestSnapshotFrame)
+***********************************************************************/
+
 /***********************************************************************
 Class (::gaclib_controls::IUnitTestSnapshotViewerStringsStrings)
 ***********************************************************************/
@@ -294,7 +547,7 @@ Class (::gaclib_controls::UnitTestSnapshotViewerStrings)
 
 	::vl::Ptr<::gaclib_controls::IUnitTestSnapshotViewerStringsStrings> UnitTestSnapshotViewerStrings::__vwsn_ls_en_US_BuildStrings(::vl::Locale __vwsn_ls_locale)
 	{
-		return ::vl::Ptr<::gaclib_controls::IUnitTestSnapshotViewerStringsStrings>(new ::vl_workflow_global::__vwsnc3_GuiUnitTestSnapshotViewer_gaclib_controls_UnitTestSnapshotViewerStrings___vwsn_ls_en_US_BuildStrings__gaclib_controls_IUnitTestSnapshotViewerStringsStrings());
+		return ::vl::Ptr<::gaclib_controls::IUnitTestSnapshotViewerStringsStrings>(new ::vl_workflow_global::__vwsnc6_GuiUnitTestSnapshotViewer_gaclib_controls_UnitTestSnapshotViewerStrings___vwsn_ls_en_US_BuildStrings__gaclib_controls_IUnitTestSnapshotViewerStringsStrings());
 	}
 
 	void UnitTestSnapshotViewerStrings::Install(::vl::Locale __vwsn_ls_locale, ::vl::Ptr<::gaclib_controls::IUnitTestSnapshotViewerStringsStrings> __vwsn_ls_impl)
@@ -341,11 +594,12 @@ Class (::gaclib_controls::UnitTestSnapshotViewerWindowConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(0); __vwsn_temp__.top = static_cast<::vl::vint>(0); __vwsn_temp__.right = static_cast<::vl::vint>(0); __vwsn_temp__.bottom = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetRowsAndColumns(static_cast<::vl::vint>(1), static_cast<::vl::vint>(3));
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetRowsAndColumns(static_cast<::vl::vint>(1), static_cast<::vl::vint>(4));
 			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetRowOption(static_cast<::vl::vint>(0), [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::Percentage; __vwsn_temp__.percentage = static_cast<double>(1.0); return __vwsn_temp__; }());
 			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetColumnOption(static_cast<::vl::vint>(0), [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::Absolute; __vwsn_temp__.absolute = static_cast<::vl::vint>(195); return __vwsn_temp__; }());
 			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetColumnOption(static_cast<::vl::vint>(1), [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::Absolute; __vwsn_temp__.absolute = static_cast<::vl::vint>(100); return __vwsn_temp__; }());
-			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetColumnOption(static_cast<::vl::vint>(2), [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::Percentage; __vwsn_temp__.percentage = static_cast<double>(1.0); return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetColumnOption(static_cast<::vl::vint>(2), [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::Absolute; __vwsn_temp__.absolute = static_cast<::vl::vint>(100); return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetColumnOption(static_cast<::vl::vint>(3), [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::Percentage; __vwsn_temp__.percentage = static_cast<double>(1.0); return __vwsn_temp__; }());
 		}
 		(this->__vwsn_precompile_1 = new ::vl::presentation::compositions::GuiColumnSplitterComposition());
 		{
@@ -383,6 +637,108 @@ Class (::gaclib_controls::UnitTestSnapshotViewerWindowConstructor)
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_0)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_2));
 		}
+		(this->__vwsn_precompile_4 = new ::vl::presentation::compositions::GuiCellComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_4)->SetSite(static_cast<::vl::vint>(0), static_cast<::vl::vint>(2), static_cast<::vl::vint>(1), static_cast<::vl::vint>(1));
+		}
+		{
+			(this->textListFrames = new ::vl::presentation::controls::GuiBindableTextList(::vl::presentation::theme::ThemeName::TextList));
+		}
+		(this->__vwsn_precompile_5 = ::vl::__vwsn::This(this->textListFrames)->GetBoundsComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_5)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(0); __vwsn_temp__.top = static_cast<::vl::vint>(0); __vwsn_temp__.right = static_cast<::vl::vint>(0); __vwsn_temp__.bottom = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(this->textListFrames)->SetHorizontalAlwaysVisible(false);
+		}
+		{
+			::vl::__vwsn::This(this->textListFrames)->SetVerticalAlwaysVisible(false);
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_4)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->textListFrames)->GetBoundsComposition()));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_4));
+		}
+		(this->__vwsn_precompile_6 = new ::vl::presentation::compositions::GuiCellComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_6)->SetSite(static_cast<::vl::vint>(0), static_cast<::vl::vint>(3), static_cast<::vl::vint>(1), static_cast<::vl::vint>(1));
+		}
+		{
+			(this->__vwsn_precompile_7 = new ::vl::presentation::controls::GuiTab(::vl::presentation::theme::ThemeName::Tab));
+		}
+		{
+			(this->__vwsn_precompile_9 = new ::vl::presentation::controls::GuiTabPage(::vl::presentation::theme::ThemeName::CustomControl));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_9)->SetText(::vl::WString::Unmanaged(L"Rendering"));
+		}
+		{
+			auto __vwsn_collection_ = ::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueObservableList>(::vl::__vwsn::This(this->__vwsn_precompile_7)->GetPages());
+			::vl::__vwsn::This(__vwsn_collection_.Obj())->Add(::vl::__vwsn::Box(this->__vwsn_precompile_9));
+		}
+		{
+			(this->__vwsn_precompile_10 = new ::vl::presentation::controls::GuiTabPage(::vl::presentation::theme::ThemeName::CustomControl));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_10)->SetText(::vl::WString::Unmanaged(L"DOM"));
+		}
+		{
+			(this->__vwsn_precompile_11 = new ::vl::presentation::controls::GuiMultilineTextBox(::vl::presentation::theme::ThemeName::MultilineTextBox));
+		}
+		(this->__vwsn_precompile_12 = ::vl::__vwsn::This(this->__vwsn_precompile_11)->GetBoundsComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_12)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(5); __vwsn_temp__.top = static_cast<::vl::vint>(5); __vwsn_temp__.right = static_cast<::vl::vint>(5); __vwsn_temp__.bottom = static_cast<::vl::vint>(5); return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_11)->SetHorizontalAlwaysVisible(false);
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_11)->SetVerticalAlwaysVisible(false);
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_10)->AddChild(static_cast<::vl::presentation::controls::GuiControl*>(this->__vwsn_precompile_11));
+		}
+		{
+			auto __vwsn_collection_ = ::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueObservableList>(::vl::__vwsn::This(this->__vwsn_precompile_7)->GetPages());
+			::vl::__vwsn::This(__vwsn_collection_.Obj())->Add(::vl::__vwsn::Box(this->__vwsn_precompile_10));
+		}
+		{
+			(this->__vwsn_precompile_13 = new ::vl::presentation::controls::GuiTabPage(::vl::presentation::theme::ThemeName::CustomControl));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_13)->SetText(::vl::WString::Unmanaged(L"Commands"));
+		}
+		{
+			(this->__vwsn_precompile_14 = new ::vl::presentation::controls::GuiMultilineTextBox(::vl::presentation::theme::ThemeName::MultilineTextBox));
+		}
+		(this->__vwsn_precompile_15 = ::vl::__vwsn::This(this->__vwsn_precompile_14)->GetBoundsComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_15)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(5); __vwsn_temp__.top = static_cast<::vl::vint>(5); __vwsn_temp__.right = static_cast<::vl::vint>(5); __vwsn_temp__.bottom = static_cast<::vl::vint>(5); return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_14)->SetHorizontalAlwaysVisible(false);
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_14)->SetVerticalAlwaysVisible(false);
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_13)->AddChild(static_cast<::vl::presentation::controls::GuiControl*>(this->__vwsn_precompile_14));
+		}
+		{
+			auto __vwsn_collection_ = ::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueObservableList>(::vl::__vwsn::This(this->__vwsn_precompile_7)->GetPages());
+			::vl::__vwsn::This(__vwsn_collection_.Obj())->Add(::vl::__vwsn::Box(this->__vwsn_precompile_13));
+		}
+		(this->__vwsn_precompile_8 = ::vl::__vwsn::This(this->__vwsn_precompile_7)->GetBoundsComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_8)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(0); __vwsn_temp__.top = static_cast<::vl::vint>(0); __vwsn_temp__.right = static_cast<::vl::vint>(0); __vwsn_temp__.bottom = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_6)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->__vwsn_precompile_7)->GetBoundsComposition()));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_6));
+		}
 		{
 			::vl::__vwsn::This(::vl::__vwsn::This(this->self)->GetContainerComposition())->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_0));
 		}
@@ -393,13 +749,31 @@ Class (::gaclib_controls::UnitTestSnapshotViewerWindowConstructor)
 			::vl::__vwsn::This(this->treeViewFileNodes)->SetImageProperty(vl::Func(::vl_workflow_global::__vwsno3_GuiUnitTestSnapshotViewer_gaclib_controls_UnitTestSnapshotViewerWindowConstructor___vwsn_gaclib_controls_UnitTestSnapshotViewerWindow_Initialize_(this)));
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc1_GuiUnitTestSnapshotViewer_gaclib_controls_UnitTestSnapshotViewerWindowConstructor___vwsn_gaclib_controls_UnitTestSnapshotViewerWindow_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf4_GuiUnitTestSnapshotViewer_gaclib_controls_UnitTestSnapshotViewerWindowConstructor___vwsn_gaclib_controls_UnitTestSnapshotViewerWindow_Initialize_(this)));
+			::vl::__vwsn::This(this->textListFrames)->SetTextProperty(vl::Func(::vl_workflow_global::__vwsno4_GuiUnitTestSnapshotViewer_gaclib_controls_UnitTestSnapshotViewerWindowConstructor___vwsn_gaclib_controls_UnitTestSnapshotViewerWindow_Initialize_(this)));
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc1_GuiUnitTestSnapshotViewer_gaclib_controls_UnitTestSnapshotViewerWindowConstructor___vwsn_gaclib_controls_UnitTestSnapshotViewerWindow_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf5_GuiUnitTestSnapshotViewer_gaclib_controls_UnitTestSnapshotViewerWindowConstructor___vwsn_gaclib_controls_UnitTestSnapshotViewerWindow_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc2_GuiUnitTestSnapshotViewer_gaclib_controls_UnitTestSnapshotViewerWindowConstructor___vwsn_gaclib_controls_UnitTestSnapshotViewerWindow_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf5_GuiUnitTestSnapshotViewer_gaclib_controls_UnitTestSnapshotViewerWindowConstructor___vwsn_gaclib_controls_UnitTestSnapshotViewerWindow_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf6_GuiUnitTestSnapshotViewer_gaclib_controls_UnitTestSnapshotViewerWindowConstructor___vwsn_gaclib_controls_UnitTestSnapshotViewerWindow_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc3_GuiUnitTestSnapshotViewer_gaclib_controls_UnitTestSnapshotViewerWindowConstructor___vwsn_gaclib_controls_UnitTestSnapshotViewerWindow_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf7_GuiUnitTestSnapshotViewer_gaclib_controls_UnitTestSnapshotViewerWindowConstructor___vwsn_gaclib_controls_UnitTestSnapshotViewerWindow_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc4_GuiUnitTestSnapshotViewer_gaclib_controls_UnitTestSnapshotViewerWindowConstructor___vwsn_gaclib_controls_UnitTestSnapshotViewerWindow_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf8_GuiUnitTestSnapshotViewer_gaclib_controls_UnitTestSnapshotViewerWindowConstructor___vwsn_gaclib_controls_UnitTestSnapshotViewerWindow_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc5_GuiUnitTestSnapshotViewer_gaclib_controls_UnitTestSnapshotViewerWindowConstructor___vwsn_gaclib_controls_UnitTestSnapshotViewerWindow_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf9_GuiUnitTestSnapshotViewer_gaclib_controls_UnitTestSnapshotViewerWindowConstructor___vwsn_gaclib_controls_UnitTestSnapshotViewerWindow_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 	}
@@ -408,10 +782,23 @@ Class (::gaclib_controls::UnitTestSnapshotViewerWindowConstructor)
 		: ViewModel(::vl::Ptr<::gaclib_controls::IUnitTestSnapshotViewerViewModel>())
 		, self(static_cast<::gaclib_controls::UnitTestSnapshotViewerWindow*>(nullptr))
 		, treeViewFileNodes(static_cast<::vl::presentation::controls::GuiBindableTreeView*>(nullptr))
+		, textListFrames(static_cast<::vl::presentation::controls::GuiBindableTextList*>(nullptr))
 		, __vwsn_precompile_0(static_cast<::vl::presentation::compositions::GuiTableComposition*>(nullptr))
 		, __vwsn_precompile_1(static_cast<::vl::presentation::compositions::GuiColumnSplitterComposition*>(nullptr))
 		, __vwsn_precompile_2(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
 		, __vwsn_precompile_3(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, __vwsn_precompile_4(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
+		, __vwsn_precompile_5(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, __vwsn_precompile_6(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
+		, __vwsn_precompile_7(static_cast<::vl::presentation::controls::GuiTab*>(nullptr))
+		, __vwsn_precompile_8(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, __vwsn_precompile_9(static_cast<::vl::presentation::controls::GuiTabPage*>(nullptr))
+		, __vwsn_precompile_10(static_cast<::vl::presentation::controls::GuiTabPage*>(nullptr))
+		, __vwsn_precompile_11(static_cast<::vl::presentation::controls::GuiMultilineTextBox*>(nullptr))
+		, __vwsn_precompile_12(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, __vwsn_precompile_13(static_cast<::vl::presentation::controls::GuiTabPage*>(nullptr))
+		, __vwsn_precompile_14(static_cast<::vl::presentation::controls::GuiMultilineTextBox*>(nullptr))
+		, __vwsn_precompile_15(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
 	{
 	}
 

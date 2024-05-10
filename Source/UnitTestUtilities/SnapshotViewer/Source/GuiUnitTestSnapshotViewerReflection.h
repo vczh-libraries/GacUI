@@ -37,6 +37,7 @@ namespace vl
 		{
 #ifndef VCZH_DEBUG_NO_REFLECTION
 			DECL_TYPE_INFO(::gaclib_controls::IUnitTestSnapshotFileNode)
+			DECL_TYPE_INFO(::gaclib_controls::IUnitTestSnapshotFrame)
 			DECL_TYPE_INFO(::gaclib_controls::IUnitTestSnapshotViewerStringsStrings)
 			DECL_TYPE_INFO(::gaclib_controls::IUnitTestSnapshotViewerViewModel)
 			DECL_TYPE_INFO(::gaclib_controls::UnitTestSnapshotFileNodeType)
@@ -51,6 +52,10 @@ namespace vl
 				{
 					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetChildren);
 				}
+				::vl::collections::LazyList<::vl::Ptr<::gaclib_controls::IUnitTestSnapshotFrame>> GetFrames() override
+				{
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetFrames);
+				}
 				::vl::WString GetName() override
 				{
 					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetName);
@@ -59,11 +64,26 @@ namespace vl
 				{
 					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetNodeType);
 				}
-				::vl::WString LoadContent() override
+				void Refresh() override
 				{
-					INVOKEGET_INTERFACE_PROXY_NOPARAMS(LoadContent);
+					INVOKE_INTERFACE_PROXY_NOPARAMS(Refresh);
 				}
 			END_INTERFACE_PROXY(::gaclib_controls::IUnitTestSnapshotFileNode)
+
+			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(::gaclib_controls::IUnitTestSnapshotFrame)
+				::vl::WString GetCommandsAsJsonText() override
+				{
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetCommandsAsJsonText);
+				}
+				::vl::WString GetDomAsJsonText() override
+				{
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetDomAsJsonText);
+				}
+				::vl::vint GetIndex() override
+				{
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetIndex);
+				}
+			END_INTERFACE_PROXY(::gaclib_controls::IUnitTestSnapshotFrame)
 
 			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(::gaclib_controls::IUnitTestSnapshotViewerStringsStrings)
 				::vl::WString WindowTitle() override
