@@ -16,27 +16,44 @@ UnitTestSnapshotFrame
 	class UnitTestSnapshotFrame : public Object, public virtual IUnitTestSnapshotFrame
 	{
 	protected:
-		RenderingFrame&						frame;
+		vint				index;
+		RenderingFrame		frame;
+		WString				commands;
+		WString				dom;
+		JsonFormatting		formatting;
 
 	public:
-		UnitTestSnapshotFrame(RenderingFrame& _frame)
-			: frame(_frame)
+		UnitTestSnapshotFrame(vint _index, RenderingFrame _frame)
+			: index(_index)
+			, frame(_frame)
 		{
+			formatting.spaceAfterColon = true;
+			formatting.spaceAfterComma = true;
+			formatting.crlf = true;
+			formatting.compact = true;
 		}
 
 		vint GetIndex() override
 		{
-			CHECK_FAIL(L"Not Implemented!");
+			return index;
 		}
 
 		WString GetCommandsAsJsonText() override
 		{
-			CHECK_FAIL(L"Not Implemented!");
+			if (commands == L"")
+			{
+				commands = JsonToString(ConvertCustomTypeToJson(frame.commands), formatting);
+			}
+			return commands;
 		}
 
 		WString GetDomAsJsonText() override
 		{
-			CHECK_FAIL(L"Not Implemented!");
+			if (dom == L"")
+			{
+				dom = JsonToString(ConvertCustomTypeToJson(frame.root), formatting);
+			}
+			return dom;
 		}
 	};
 
@@ -59,10 +76,19 @@ UnitTestSnapshotFileNode
 				Ptr<JsonNode> jsonNode;
 				{
 					glr::json::Parser parser;
-					jsonNode = parser.ParseJRoot(jsonText);
+					jsonNode = JsonParse(jsonText, parser);
 				}
 				renderingTrace = Ptr(new RenderingTrace);
 				ConvertJsonToCustomType(jsonNode, *renderingTrace.Obj());
+
+				frames.Clear();
+				if (renderingTrace->frames)
+				{
+					for (auto [frame, index] : indexed(*renderingTrace->frames.Obj()))
+					{
+						frames.Add(Ptr(new UnitTestSnapshotFrame(index, frame)));
+					}
+				}
 			}
 		}
 	public:

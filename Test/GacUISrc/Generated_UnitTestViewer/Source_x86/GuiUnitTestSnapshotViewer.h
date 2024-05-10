@@ -148,17 +148,20 @@ namespace gaclib_controls
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_2;
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_3;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_4;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_5;
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_6;
-		::vl::presentation::controls::GuiTab* __vwsn_precompile_7;
+		::vl::presentation::controls::GuiTab* __vwsn_precompile_5;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_6;
+		::vl::presentation::controls::GuiTabPage* __vwsn_precompile_7;
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_8;
-		::vl::presentation::controls::GuiTabPage* __vwsn_precompile_9;
-		::vl::presentation::controls::GuiTabPage* __vwsn_precompile_10;
-		::vl::presentation::controls::GuiMultilineTextBox* __vwsn_precompile_11;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_12;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_9;
+		::vl::presentation::controls::GuiTab* __vwsn_precompile_10;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_11;
+		::vl::presentation::controls::GuiTabPage* __vwsn_precompile_12;
 		::vl::presentation::controls::GuiTabPage* __vwsn_precompile_13;
 		::vl::presentation::controls::GuiMultilineTextBox* __vwsn_precompile_14;
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_15;
+		::vl::presentation::controls::GuiTabPage* __vwsn_precompile_16;
+		::vl::presentation::controls::GuiMultilineTextBox* __vwsn_precompile_17;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_18;
 		void __vwsn_gaclib_controls_UnitTestSnapshotViewerWindow_Initialize(::gaclib_controls::UnitTestSnapshotViewerWindow* __vwsn_this_);
 	public:
 		UnitTestSnapshotViewerWindowConstructor();

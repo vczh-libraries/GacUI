@@ -112,10 +112,17 @@
             </Cell>
 
             <Cell Site="row:0 column:2">
-              <BindableTextList ref.Name="textListFrames" env.ItemType="IUnitTestSnapshotFrame^" VerticalAlwaysVisible="false" HorizontalAlwaysVisible="false">
+              <Tab>
                 <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-                <att.TextProperty-eval>[cast string $1]</att.TextProperty-eval>
-                <att.ItemSource-bind>(cast (IUnitTestSnapshotFileNode^) treeViewFileNodes.SelectedItem).Frames ?? null</att.ItemSource-bind>
+                <att.Pages>
+                  <TabPage Text="Frames">
+                    <BindableTextList ref.Name="textListFrames" env.ItemType="IUnitTestSnapshotFrame^" VerticalAlwaysVisible="false" HorizontalAlwaysVisible="false">
+                      <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+                      <att.TextProperty-eval>[cast string (cast (IUnitTestSnapshotFrame^) $1).Index]</att.TextProperty-eval>
+                      <att.ItemSource-bind>(cast (IUnitTestSnapshotFileNode^) treeViewFileNodes.SelectedItem).Frames ?? null</att.ItemSource-bind>
+                    </BindableTextList>
+                  </TabPage>
+                </att.Pages>
               </Tab>
             </Cell>
 
