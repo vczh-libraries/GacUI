@@ -42,12 +42,6 @@
     - Resource URL is required in the remote protocol, an update to resource loader interface could be necessary.
   - `::UnitTestStartup::LoadMainWindow` static method will be called to create the main window.
   - A viewer to view unit test results logged from SyncDom and other stuff after each time when layout stops.
-  - A switch to compare snapshot with logged snapshot.
-  - `UnitTestRemoteProtocol_Logging<TProtocol>::GetLogAsJson` rewrite in auto generated code from protocol.
-    - Redefine SyncDom data structures in protocol.
-    - Support dictionary like array, requires a key in the value's field: `var createdImages : ImageMetadata[.id];`.
-    - Support class, all class is serialized `Ptr<T>`, allowing recursion, disallowing inheritance, nullable in serialization.
-    - Support union as `Variant<Ts...>`.
 - Implement basic control (`Source_GacUI_CoreApplication` controls only) unit test based on streaming
   - Skipped time related features, like tooltip.
 - Metadata of remote protocol will be updated and included in releases.
@@ -57,6 +51,8 @@
   - Resource compiler and loader will check the version and only accept 1.3.
 - Calling `GuiWindow::ShowMaximized` in `WindowOpened` with `SetupHostedWindowsDirect2DRenderer` doesn't properly maximize the window.
 - Add `@cpp:Private` for GacGen generated `<parameter>ViewModel` variable.
+- GacUI
+  - When bindable list's data source is changed, make a decision to clear selection or trigger selection changed event.
 - Document
   - string conversion mechanism and functions to Vlpp document.
   - Vlpp
