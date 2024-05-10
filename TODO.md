@@ -77,6 +77,8 @@
   - In remote protocol, it is an element with no extra properties.
     - In HTML, it would open a `<div/>` and you can do whatever you want using JavaScript.
   - Thinking about promote SyncDom data structures for unit test, and complete a diff algorithm.
+    - There are only 3 kinds of nodes: element(id), root(-1) and clipper node created for an element(-id-2).
+    - The number will become a good enough identifier to tell relationship between nodes from two consecutive frames.
 - Remote protocol redirection back to native rendering:
   - In the test project, C++ side will expose the remote protocol via dll.
   - Implement the remote protocol on a native `INativeController` instance.
