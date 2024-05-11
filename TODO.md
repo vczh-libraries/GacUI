@@ -42,6 +42,9 @@
     - Resource URL is required in the remote protocol, an update to resource loader interface could be necessary.
   - `::UnitTestStartup::LoadMainWindow` static method will be called to create the main window.
   - A viewer to view unit test results logged from SyncDom and other stuff after each time when layout stops.
+    - There are only 3 kinds of nodes: element(id), root(-1) and clipper node created for an element(-id-2).
+    - The number will become a good enough identifier to tell relationship between nodes from two consecutive frames.
+    - Move element descriptions into a dictionary, commands and dom only store element ids.
 - Implement basic control (`Source_GacUI_CoreApplication` controls only) unit test based on streaming
   - Skipped time related features, like tooltip.
 - Metadata of remote protocol will be updated and included in releases.
@@ -77,8 +80,6 @@
   - In remote protocol, it is an element with no extra properties.
     - In HTML, it would open a `<div/>` and you can do whatever you want using JavaScript.
   - Thinking about promote SyncDom data structures for unit test, and complete a diff algorithm.
-    - There are only 3 kinds of nodes: element(id), root(-1) and clipper node created for an element(-id-2).
-    - The number will become a good enough identifier to tell relationship between nodes from two consecutive frames.
 - Remote protocol redirection back to native rendering:
   - In the test project, C++ side will expose the remote protocol via dll.
   - Implement the remote protocol on a native `INativeController` instance.
