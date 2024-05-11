@@ -158,6 +158,10 @@ namespace gaclib_controls
 
         prop Index : int{GetIndex}
 
+        func GetElementsAsJsonText() : (string);
+
+        prop ElementsAsJsonText : string{GetElementsAsJsonText}
+
         func GetCommandsAsJsonText() : (string);
 
         prop CommandsAsJsonText : string{GetCommandsAsJsonText}

@@ -79,6 +79,10 @@ namespace vl
 				{
 					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetDomAsJsonText);
 				}
+				::vl::WString GetElementsAsJsonText() override
+				{
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetElementsAsJsonText);
+				}
 				::vl::vint32_t GetIndex() override
 				{
 					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetIndex);

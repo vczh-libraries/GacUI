@@ -18,6 +18,7 @@ UnitTestSnapshotFrame
 	protected:
 		vint				index;
 		RenderingFrame		frame;
+		WString				elements;
 		WString				commands;
 		WString				dom;
 		JsonFormatting		formatting;
@@ -36,6 +37,15 @@ UnitTestSnapshotFrame
 		vint GetIndex() override
 		{
 			return index;
+		}
+
+		WString GetElementsAsJsonText() override
+		{
+			if (elements == L"")
+			{
+				elements = JsonToString(ConvertCustomTypeToJson(frame.elements), formatting);
+			}
+			return elements;
 		}
 
 		WString GetCommandsAsJsonText() override

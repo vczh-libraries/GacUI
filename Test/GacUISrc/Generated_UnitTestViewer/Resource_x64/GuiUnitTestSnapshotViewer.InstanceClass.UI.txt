@@ -93,6 +93,15 @@ namespace gaclib_controls
         var <precompile>18 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
+        var <precompile>19 : ::presentation::controls::GuiTabPage* = null of (::presentation::controls::GuiTabPage*);
+
+        @cpp:Protected
+        var <precompile>20 : ::presentation::controls::GuiMultilineTextBox* = null of (::presentation::controls::GuiMultilineTextBox*);
+
+        @cpp:Protected
+        var <precompile>21 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
         func <gaclib_controls-UnitTestSnapshotViewerWindow>Initialize(<this> : ::gaclib_controls::UnitTestSnapshotViewerWindow*) : (::system::Void)
         {
             (self = <this>);
@@ -273,6 +282,32 @@ namespace gaclib_controls
             {
                 var <collection> = <precompile>10.Pages;
                 <collection>.Add(<precompile>16);
+            }
+            {
+                (<precompile>19 = new (::presentation::controls::GuiTabPage*)(::presentation::theme::ThemeName::CustomControl));
+            }
+            {
+                (<precompile>19.Text = "Elements");
+            }
+            {
+                (<precompile>20 = new (::presentation::controls::GuiMultilineTextBox*)(::presentation::theme::ThemeName::MultilineTextBox));
+            }
+            (<precompile>21 = <precompile>20.BoundsComposition);
+            {
+                (<precompile>21.AlignmentToParent = {left : 5; top : 5; right : 5; bottom : 5;} of (::presentation::Margin));
+            }
+            {
+                (<precompile>20.HorizontalAlwaysVisible = false);
+            }
+            {
+                (<precompile>20.VerticalAlwaysVisible = false);
+            }
+            {
+                <precompile>19.AddChild(<precompile>20);
+            }
+            {
+                var <collection> = <precompile>10.Pages;
+                <collection>.Add(<precompile>19);
             }
             (<precompile>11 = <precompile>10.BoundsComposition);
             {
@@ -512,6 +547,79 @@ namespace gaclib_controls
                         return;
                     }
                     (<precompile>17.Text = <new>);
+                });
+                <this>.AddSubscription(<created-subscription>);
+            }
+            {
+                var <created-subscription> = new (::system::Subscription^)
+                {
+                    var <bind-cache>0 : ::presentation::controls::GuiBindableTextList* = null of (::presentation::controls::GuiBindableTextList*);
+
+                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-opened> : ::system::Boolean = false;
+
+                    var <bind-closed> : ::system::Boolean = false;
+
+                    func <bind-activator>() : (::system::Void)
+                    {
+                        var <bind-activator-result> = ((cast (IUnitTestSnapshotFrame^) <bind-cache>0.SelectedItem).ElementsAsJsonText ?? "") of (::system::String);
+                        ValueChanged(<bind-activator-result>);
+                    }
+
+                    func <bind-callback>0_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    override func Open() : (::system::Boolean)
+                    {
+                        if ((!<bind-opened>))
+                        {
+                            (<bind-opened> = true);
+                            (<bind-cache>0 = (textListFrames ?? null of (::presentation::controls::GuiBindableTextList*)));
+                            (<bind-handler>0_0 = (attach(<bind-cache>0.SelectionChanged, <bind-callback>0_0) ?? null));
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Update() : (::system::Boolean)
+                    {
+                        if ((<bind-opened> and (!<bind-closed>)))
+                        {
+                            <bind-activator>();
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Close() : (::system::Boolean)
+                    {
+                        if ((!<bind-closed>))
+                        {
+                            (<bind-closed> = true);
+                            if (<bind-handler>0_0 is not null)
+                            {
+                                detach(<bind-cache>0.SelectionChanged, <bind-handler>0_0);
+                                (<bind-handler>0_0 = null);
+                            }
+                            (<bind-cache>0 = null of (::presentation::controls::GuiBindableTextList*));
+                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
+                            return true;
+                        }
+                        return false;
+                    }
+                };
+                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
+                {
+                    var <old> = <precompile>20.Text;
+                    var <new> = (cast (::system::String) <value>);
+                    if ((<old> == <new>))
+                    {
+                        return;
+                    }
+                    (<precompile>20.Text = <new>);
                 });
                 <this>.AddSubscription(<created-subscription>);
             }
@@ -857,6 +965,10 @@ namespace gaclib_controls
         func GetIndex() : (int);
 
         prop Index : int{GetIndex}
+
+        func GetElementsAsJsonText() : (string);
+
+        prop ElementsAsJsonText : string{GetElementsAsJsonText}
 
         func GetCommandsAsJsonText() : (string);
 
