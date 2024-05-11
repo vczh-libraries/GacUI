@@ -14,7 +14,7 @@ union ElementDescVariant
 class RenderingDom
 {
     var hitTestResult: WindowHitTestResult?;
-    var element: ElementDescVariant?;
+    var element: int?;
     var bounds: Rect;
     var validArea: Rect;
     var children: RenderingDom[];
@@ -32,7 +32,7 @@ struct RenderingCommand_EndBoundary
 struct RenderingCommand_Element
 {
     var rendering: ElementRendering;
-    var desc: ElementDescVariant;
+    var element: int?;
 }
 
 union RenderingCommand
@@ -44,6 +44,7 @@ union RenderingCommand
 
 struct RenderingFrame
 {
+    var elements: ElementDescVariant[int];
     var commands: RenderingCommand[];
     var root: RenderingDom;
 }

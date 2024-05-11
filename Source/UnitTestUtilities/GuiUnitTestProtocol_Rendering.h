@@ -81,7 +81,7 @@ IGuiRemoteProtocolMessages (Rendering)
 		template<typename T>
 		void RequestRendererRenderElement(const remoteprotocol::ElementRendering& rendering, const T& element)
 		{
-			lastRenderingCommands->Add(remoteprotocol::RenderingCommand_Element{ rendering,element });
+			lastRenderingCommands->Add(remoteprotocol::RenderingCommand_Element{ rendering,element.id });
 		}
 
 		void RequestRendererRenderElement(const remoteprotocol::ElementRendering& arguments) override

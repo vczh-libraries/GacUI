@@ -2403,8 +2403,8 @@
             "type": {
                 "$ast": "OptionalType",
                 "element": {
-                    "$ast": "ReferenceType",
-                    "name": "ElementDescVariant"
+                    "$ast": "PrimitiveType",
+                    "type": "Integer"
                 }
             }
         }, {
@@ -2465,10 +2465,13 @@
             }
         }, {
             "$ast": "StructMember",
-            "name": "desc",
+            "name": "element",
             "type": {
-                "$ast": "ReferenceType",
-                "name": "ElementDescVariant"
+                "$ast": "OptionalType",
+                "element": {
+                    "$ast": "PrimitiveType",
+                    "type": "Integer"
+                }
             }
         }],
         "type": "Struct"
@@ -2491,6 +2494,20 @@
         "attributes": [],
         "name": "RenderingFrame",
         "members": [{
+            "$ast": "StructMember",
+            "name": "elements",
+            "type": {
+                "$ast": "MapType",
+                "element": {
+                    "$ast": "ReferenceType",
+                    "name": "ElementDescVariant"
+                },
+                "keyType": {
+                    "$ast": "PrimitiveType",
+                    "type": "Integer"
+                }
+            }
+        }, {
             "$ast": "StructMember",
             "name": "commands",
             "type": {

@@ -336,7 +336,7 @@ namespace vl::presentation::remoteprotocol
 	struct RenderingDom
 	{
 		::vl::Nullable<::vl::presentation::INativeWindowListener::HitTestResult> hitTestResult;
-		::vl::Nullable<::vl::presentation::remoteprotocol::ElementDescVariant> element;
+		::vl::Nullable<::vl::vint> element;
 		::vl::presentation::Rect bounds;
 		::vl::presentation::Rect validArea;
 		::vl::Ptr<::vl::collections::List<::vl::Ptr<::vl::presentation::remoteprotocol::RenderingDom>>> children;
@@ -354,11 +354,12 @@ namespace vl::presentation::remoteprotocol
 	struct RenderingCommand_Element
 	{
 		::vl::presentation::remoteprotocol::ElementRendering rendering;
-		::vl::presentation::remoteprotocol::ElementDescVariant desc;
+		::vl::Nullable<::vl::vint> element;
 	};
 
 	struct RenderingFrame
 	{
+		::vl::Ptr<::vl::collections::Dictionary<::vl::vint, ::vl::presentation::remoteprotocol::ElementDescVariant>> elements;
 		::vl::Ptr<::vl::collections::List<::vl::presentation::remoteprotocol::RenderingCommand>> commands;
 		::vl::Ptr<::vl::presentation::remoteprotocol::RenderingDom> root;
 	};

@@ -180,7 +180,7 @@ UnitTestRemoteProtocol
 							);
 
 						auto dom = Ptr(new UnitTestRenderingDom);
-						dom->element = command.desc;
+						dom->element = command.element;
 						dom->bounds = command.rendering.bounds;
 						dom->validArea = command.rendering.bounds.Intersect(command.rendering.areaClippedByParent);
 						push(dom);
@@ -203,8 +203,10 @@ UnitTestRemoteProtocol
 			{
 				if (candidateRenderingResult)
 				{
+					auto descs = Ptr(new collections::Dictionary<vint, remoteprotocol::ElementDescVariant>);
+					CopyFrom(*descs.Obj(), this->lastElementDescs);
 					auto transformed = TransformLastRenderingResult(candidateRenderingResult);
-					this->loggedTrace.frames->Add({ candidateRenderingResult,transformed });
+					this->loggedTrace.frames->Add({ descs,candidateRenderingResult,transformed });
 					candidateRenderingResult = {};
 				}
 				return true;
