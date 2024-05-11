@@ -42,9 +42,7 @@
     - Resource URL is required in the remote protocol, an update to resource loader interface could be necessary.
   - `::UnitTestStartup::LoadMainWindow` static method will be called to create the main window.
   - A viewer to view unit test results logged from SyncDom and other stuff after each time when layout stops.
-    - There are only 3 kinds of nodes: element(id), root(-1) and clipper node created for an element(-id-2).
-    - The number will become a good enough identifier to tell relationship between nodes from two consecutive frames.
-    - Move element descriptions into a dictionary, commands and dom only store element ids.
+    - Generate `domId` for each dom node: element(id), virtual(-element.id-2), root(-1), hittest(find a way).
 - Implement basic control (`Source_GacUI_CoreApplication` controls only) unit test based on streaming
   - Skipped time related features, like tooltip.
 - Metadata of remote protocol will be updated and included in releases.
