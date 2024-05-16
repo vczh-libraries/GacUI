@@ -78,6 +78,15 @@ void GacUIUnitTest_SetGuiMainProxy(const UnitTestMainFunc& proxy)
 	guiMainProxy = proxy;
 }
 
+void GacUIUnitTest_LinkGuiMainProxy(const UnitTestLinkFunc& proxy)
+{
+	auto previousMainProxy = guiMainProxy;
+	GacUIUnitTest_SetGuiMainProxy([=](UnitTestRemoteProtocol* protocol, IUnitTestContext* context)
+	{
+		proxy(protocol, context, previousMainProxy);
+	});
+}
+
 File GacUIUnitTest_PrepareSnapshotFile(const WString& appName, const WString& extension)
 {
 #define ERROR_MESSAGE_PREFIX L"GacUIUnitTest_PrepareSnapshotFile(const WString&, const WString&)#"
@@ -153,7 +162,7 @@ void GacUIUnitTest_Start_WithResourceAsText(const WString& appName, Nullable<Uni
 {
 #define ERROR_MESSAGE_PREFIX L"GacUIUnitTest_Start_WithResourceAsText(const WString&, Nullable<UnitTestScreenConfig>, const WString&)#"
 	auto previousMainProxy = guiMainProxy;
-	guiMainProxy = [&](UnitTestRemoteProtocol* protocol, IUnitTestContext* context)
+	GacUIUnitTest_LinkGuiMainProxy([=](UnitTestRemoteProtocol* protocol, IUnitTestContext* context, const UnitTestMainFunc& previousMainProxy)
 	{
 		auto resource = GacUIUnitTest_CompileAndLoad(resourceText);
 		{
@@ -163,7 +172,7 @@ void GacUIUnitTest_Start_WithResourceAsText(const WString& appName, Nullable<Uni
 			CHECK_ERROR(succeeded, ERROR_MESSAGE_PREFIX L"Failed to write the snapshot file.");
 		}
 		previousMainProxy(protocol, context);
-	};
+	});
 	GacUIUnitTest_Start(appName, config);
 #undef ERROR_MESSAGE_PREFIX
 }

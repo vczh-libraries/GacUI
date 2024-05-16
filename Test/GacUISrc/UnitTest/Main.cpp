@@ -131,12 +131,6 @@ TEST_FILE
 }
 #endif
 
-namespace vl::presentation::controls
-{
-	extern bool GACUI_UNITTEST_ONLY_SKIP_THREAD_LOCAL_STORAGE_DISPOSE_STORAGES;
-	extern bool GACUI_UNITTEST_ONLY_SKIP_TYPE_AND_PLUGIN_LOAD_UNLOAD;
-}
-
 using namespace vl::presentation;
 using namespace vl::presentation::controls;
 using namespace vl::reflection::description;
