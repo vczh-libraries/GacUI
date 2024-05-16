@@ -143,19 +143,17 @@ void GacUIUnitTest_Start(const WString& appName, Nullable<UnitTestScreenConfig> 
 Ptr<GuiResource> GacUIUnitTest_CompileAndLoad(const WString& xmlResource)
 {
 #define ERROR_MESSAGE_PREFIX L"GacUIUnitTest_CompileAndLoad(const WString&)#"
-	auto resource = Ptr(new GuiResource);
+	Ptr<GuiResource> resource;
 	GuiResourceError::List errors;
 	{
+		auto resourcePath = (GetUnitTestFrameworkConfig().resourceFolder / L"Resource.xml").GetFullPath();
+		auto resourceFolder = GetUnitTestFrameworkConfig().resourceFolder.GetFullPath();
 		auto parser = GetParserManager()->GetParser<glr::xml::XmlDocument>(L"XML");
-		auto xml = parser->Parse(
-			{
-				WString::Empty,
-				(GetUnitTestFrameworkConfig().resourceFolder / L"Resource.xml").GetFullPath()
-			},
-			xmlResource,
-			errors
-			);
+		auto xml = parser->Parse({ WString::Empty,resourcePath }, xmlResource, errors);
 		CHECK_ERROR(xml && errors.Count() == 0, ERROR_MESSAGE_PREFIX L"Failed to parse XML resource.");
+
+		resource = GuiResource::LoadFromXml(xml, resourcePath, resourceFolder, errors);
+		CHECK_ERROR(resource && errors.Count() == 0, ERROR_MESSAGE_PREFIX L"Failed to load XML resource.");
 	}
 
 	auto precompiledFolder = resource->Precompile(
@@ -187,6 +185,9 @@ Ptr<GuiResource> GacUIUnitTest_CompileAndLoad(const WString& xmlResource)
 			Ptr(new GuiTextData(text))
 			);
 	}
+
+	GetResourceManager()->SetResource(resource, errors, GuiResourceUsage::InstanceClass);
+	CHECK_ERROR(errors.Count() == 0, ERROR_MESSAGE_PREFIX L"Failed to load compiled XML resource.");
 
 	return resource;
 #undef ERROR_MESSAGE_PREFIX

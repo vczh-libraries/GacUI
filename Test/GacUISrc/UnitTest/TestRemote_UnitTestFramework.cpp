@@ -173,7 +173,7 @@ const wchar_t* resourceXml = LR"GacUISrc(
     <Instance ref.Class="gacuisrc_unittest::MainWindow">
       <Window Text="Hello, world!" ClientSize="x:640 y:480">
         <Button Text="OK">
-          <att.BoundsComposition-set AlignmentToParent="left:5 topL5 right:-1 bottom:-1"/>
+          <att.BoundsComposition-set AlignmentToParent="left:5 top:5 right:-1 bottom:-1"/>
         </Button>
       </Window>
     </Instance>
@@ -184,11 +184,15 @@ const wchar_t* resourceXml = LR"GacUISrc(
 				auto workflow = resource->GetStringByPath(L"UnitTest/Workflow");
 
 				protocol->GetEvents()->OnControllerConnect();
-				auto emptyWindowTheme = Ptr(new EmptyWindowTheme);
-				theme::RegisterTheme(emptyWindowTheme);
+				auto darkskinTheme = Ptr(new darkskin::Theme);
+				theme::RegisterTheme(darkskinTheme);
 				{
-					auto window = Ptr(dynamic_cast<GuiWindow*>(Value::Create(L"gacuisrc_unittest::MainWindow").GetRawPtr()));
-					TEST_ASSERT(window);
+					auto windowValue = Value::Create(L"gacuisrc_unittest::MainWindow");
+					TEST_CASE_ASSERT(windowValue.GetRawPtr());
+
+					auto window = Ptr(windowValue.GetRawPtr()->SafeAggregationCast<GuiWindow>());
+					TEST_CASE_ASSERT(window);
+
 					window->MoveToScreenCenter();
 
 					protocol->OnNextIdleFrame([&]()
@@ -199,7 +203,7 @@ const wchar_t* resourceXml = LR"GacUISrc(
 
 					GetApplication()->Run(window.Obj());
 				}
-				theme::UnregisterTheme(emptyWindowTheme->Name);
+				theme::UnregisterTheme(darkskinTheme->Name);
 			});
 			GacUIUnitTest_Start(WString::Unmanaged(L"UnitTestFramework/WindowWithOKButton"));
 		});
