@@ -1,5 +1,7 @@
 #include "GuiUnitTestUtilities.h"
 #include "../PlatformProviders/Remote/GuiRemoteProtocol.h"
+#include "../Resources/GuiParserManager.h"
+#include "../Reflection/GuiInstanceCompiledWorkflow.h"
 
 namespace vl::presentation::controls
 {
@@ -138,9 +140,56 @@ void GacUIUnitTest_Start(const WString& appName, Nullable<UnitTestScreenConfig> 
 #undef ERROR_MESSAGE_PREFIX
 }
 
-vl::Ptr<vl::presentation::GuiResource> GacUIUnitTest_CompileAndLoad(const vl::WString& xmlResource)
+Ptr<GuiResource> GacUIUnitTest_CompileAndLoad(const WString& xmlResource)
 {
-	CHECK_FAIL(L"Not Implemented!");
+#define ERROR_MESSAGE_PREFIX L"GacUIUnitTest_CompileAndLoad(const WString&)#"
+	auto resource = Ptr(new GuiResource);
+	GuiResourceError::List errors;
+	{
+		auto parser = GetParserManager()->GetParser<glr::xml::XmlDocument>(L"XML");
+		auto xml = parser->Parse(
+			{
+				WString::Empty,
+				(GetUnitTestFrameworkConfig().resourceFolder / L"Resource.xml").GetFullPath()
+			},
+			xmlResource,
+			errors
+			);
+		CHECK_ERROR(xml && errors.Count() == 0, ERROR_MESSAGE_PREFIX L"Failed to parse XML resource.");
+	}
+
+	auto precompiledFolder = resource->Precompile(
+#ifdef VCZH_64
+		GuiResourceCpuArchitecture::X64,
+#else
+		GuiResourceCpuArchitecture::x86,
+#endif
+		nullptr,
+		errors
+		);
+	CHECK_ERROR(precompiledFolder && errors.Count() == 0, ERROR_MESSAGE_PREFIX L"Failed to precompile XML resource.");
+
+	auto compiledWorkflow = precompiledFolder->GetValueByPath(WString::Unmanaged(L"Workflow/InstanceClass")).Cast<GuiInstanceCompiledWorkflow>();
+	CHECK_ERROR(compiledWorkflow, ERROR_MESSAGE_PREFIX L"Failed to compile generated Workflow script.");
+	CHECK_ERROR(compiledWorkflow->assembly, ERROR_MESSAGE_PREFIX L"Failed to load Workflow assembly.");
+
+	{
+		WString text;
+		auto& codes = compiledWorkflow->assembly->insAfterCodegen->moduleCodes;
+		for (auto [code, codeIndex] : indexed(codes))
+		{
+			text += L"================================(" + itow(codeIndex + 1) + L"/" + itow(codes.Count()) + L")================================\r\n";
+			text += code + L"\r\n";
+		}
+		resource->CreateValueByPath(
+			WString::Unmanaged(L"UnitTest/Workflow"),
+			WString::Unmanaged(L"Text"),
+			Ptr(new GuiTextData(text))
+			);
+	}
+
+	return resource;
+#undef ERROR_MESSAGE_PREFIX
 }
 
 void GuiMain()

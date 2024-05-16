@@ -173,7 +173,7 @@ const wchar_t* resourceXml = LR"GacUISrc(
     <Instance ref.Class="gacuisrc_unittest::MainWindow">
       <Window Text="Hello, world!" ClientSize="x:640 y:480">
         <Button Text="OK">
-          <att.BoundsComposition-set AlignmentToParent="left:5 topL5 right:-1 bottom:-1/>
+          <att.BoundsComposition-set AlignmentToParent="left:5 topL5 right:-1 bottom:-1"/>
         </Button>
       </Window>
     </Instance>
@@ -181,6 +181,7 @@ const wchar_t* resourceXml = LR"GacUISrc(
 </Resource>
 )GacUISrc";
 				auto resource = GacUIUnitTest_CompileAndLoad(resourceXml);
+				auto workflow = resource->GetStringByPath(L"UnitTest/Workflow");
 
 				protocol->GetEvents()->OnControllerConnect();
 				auto emptyWindowTheme = Ptr(new EmptyWindowTheme);
