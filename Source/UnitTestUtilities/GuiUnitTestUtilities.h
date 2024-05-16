@@ -19,9 +19,10 @@ namespace vl::presentation::unittest
 	using UnitTestMainFunc = vl::Func<void(UnitTestRemoteProtocol*, IUnitTestContext*)>;
 }
 
-extern void GacUIUnitTest_Initialize(const vl::presentation::unittest::UnitTestFrameworkConfig* config);
-extern void GacUIUnitTest_Finalize();
-extern void GacUIUnitTest_SetGuiMainProxy(const vl::presentation::unittest::UnitTestMainFunc& proxy);
-extern void GacUIUnitTest_Start(const vl::WString& appName, vl::Nullable<vl::presentation::unittest::UnitTestScreenConfig> config = {});
+extern void										GacUIUnitTest_Initialize(const vl::presentation::unittest::UnitTestFrameworkConfig* config);
+extern void										GacUIUnitTest_Finalize();
+extern void										GacUIUnitTest_SetGuiMainProxy(const vl::presentation::unittest::UnitTestMainFunc& proxy);
+extern void										GacUIUnitTest_Start(const vl::WString& appName, vl::Nullable<vl::presentation::unittest::UnitTestScreenConfig> config = {});
+extern vl::Ptr<vl::presentation::GuiResource>	GacUIUnitTest_CompileAndLoad(const vl::WString& xmlResource);
 
 #endif

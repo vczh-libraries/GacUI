@@ -7,6 +7,7 @@
 
 using namespace vl;
 using namespace vl::stream;
+using namespace vl::reflection::description;
 using namespace vl::presentation;
 using namespace vl::presentation::elements;
 using namespace vl::presentation::compositions;
@@ -42,6 +43,31 @@ using namespace unittest_framework_tests;
 
 TEST_FILE
 {
+	TEST_CATEGORY(L"Hello, world!")
+	{
+		GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+		{
+			protocol->GetEvents()->OnControllerConnect();
+			auto darkskinTheme = Ptr(new darkskin::Theme);
+			theme::RegisterTheme(darkskinTheme);
+
+			GuiWindow window(theme::ThemeName::Window);
+			window.SetText(L"Hello, world!");
+			window.SetClientSize({ 640,480 });
+			window.MoveToScreenCenter();
+
+			protocol->OnNextIdleFrame([&]()
+			{
+				TEST_ASSERT(protocol->GetLoggedTrace().frames->Count() == 1);
+				window.Hide();
+			});
+
+			GetApplication()->Run(&window);
+			theme::UnregisterTheme(darkskinTheme->Name);
+		});
+		GacUIUnitTest_Start(WString::Unmanaged(L"HelloWorld"));
+	});
+
 	TEST_CATEGORY(L"DOM Recovery")
 	{
 		TEST_CATEGORY(L"Empty Window")
@@ -135,28 +161,50 @@ TEST_FILE
 		});
 	});
 
-	TEST_CATEGORY(L"Hello, world!")
+	TEST_CATEGORY(L"Resources and Operations")
 	{
-		GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+		TEST_CATEGORY(L"Window with OK Button")
 		{
-			protocol->GetEvents()->OnControllerConnect();
-			auto darkskinTheme = Ptr(new darkskin::Theme);
-			theme::RegisterTheme(darkskinTheme);
-
-			GuiWindow window(theme::ThemeName::Window);
-			window.SetText(L"Hello, world!");
-			window.SetClientSize({ 640,480 });
-			window.MoveToScreenCenter();
-
-			protocol->OnNextIdleFrame([&]()
+			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
 			{
-				TEST_ASSERT(protocol->GetLoggedTrace().frames->Count() == 1);
-				window.Hide();
-			});
+const wchar_t* resourceXml = LR"GacUISrc(
+<Resource>
+  <Instance name="MainWindowResource">
+    <Instance ref.Class="gacuisrc_unittest::MainWindow">
+      <Window Text="Hello, world!" ClientSize="x:640 y:480">
+        <Button Text="OK">
+          <att.BoundsComposition-set AlignmentToParent="left:5 topL5 right:-1 bottom:-1/>
+        </Button>
+      </Window>
+    </Instance>
+  </Instance>
+</Resource>
+)GacUISrc";
+				auto resource = GacUIUnitTest_CompileAndLoad(resourceXml);
 
-			GetApplication()->Run(&window);
-			theme::UnregisterTheme(darkskinTheme->Name);
+				protocol->GetEvents()->OnControllerConnect();
+				auto emptyWindowTheme = Ptr(new EmptyWindowTheme);
+				theme::RegisterTheme(emptyWindowTheme);
+				{
+					auto window = Ptr(dynamic_cast<GuiWindow*>(Value::Create(L"gacuisrc_unittest::MainWindow").GetRawPtr()));
+					TEST_ASSERT(window);
+					window->MoveToScreenCenter();
+
+					protocol->OnNextIdleFrame([&]()
+					{
+						TEST_ASSERT(protocol->GetLoggedTrace().frames->Count() == 1);
+						window->Hide();
+					});
+
+					GetApplication()->Run(window.Obj());
+				}
+				theme::UnregisterTheme(emptyWindowTheme->Name);
+			});
+			GacUIUnitTest_Start(WString::Unmanaged(L"UnitTestFramework/WindowWithOKButton"));
 		});
-		GacUIUnitTest_Start(WString::Unmanaged(L"HelloWorld"));
+
+		TEST_CATEGORY(L"Click Button and Close")
+		{
+		});
 	});
 }

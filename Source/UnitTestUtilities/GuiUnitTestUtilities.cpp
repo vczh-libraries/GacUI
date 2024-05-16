@@ -138,6 +138,11 @@ void GacUIUnitTest_Start(const WString& appName, Nullable<UnitTestScreenConfig> 
 #undef ERROR_MESSAGE_PREFIX
 }
 
+vl::Ptr<vl::presentation::GuiResource> GacUIUnitTest_CompileAndLoad(const vl::WString& xmlResource)
+{
+	CHECK_FAIL(L"Not Implemented!");
+}
+
 void GuiMain()
 {
 	if (guiMainUnitTestContext)

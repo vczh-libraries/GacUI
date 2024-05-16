@@ -22,6 +22,7 @@ UnitTestFrameworkConfig
 	struct UnitTestFrameworkConfig
 	{
 		filesystem::FilePath					snapshotFolder;
+		filesystem::FilePath					resourceFolder;
 	};
 
 	extern const UnitTestFrameworkConfig&		GetUnitTestFrameworkConfig();

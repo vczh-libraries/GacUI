@@ -103,6 +103,19 @@ namespace unittest_framework_tests
 		return L"../../Resources/UnitTestSnapshots";
 	#endif
 	}
+
+	WString GetTestDataPath()
+	{
+	#if defined VCZH_MSVC
+	#ifdef _WIN64
+		return GetExePath() + L"..\\..\\..\\Resources\\UnitTestResources";
+	#else
+		return GetExePath() + L"..\\..\\Resources\\UnitTestResources";
+	#endif
+	#elif defined VCZH_GCC
+		return L"../../Resources/UnitTestResources";
+	#endif
+	}
 }
 
 #if defined VCZH_MSVC
@@ -148,6 +161,7 @@ int UnitTestMain(int argc, T* argv[])
 {
 	UnitTestFrameworkConfig config;
 	config.snapshotFolder = unittest_framework_tests::GetTestSnapshotPath();
+	config.resourceFolder = unittest_framework_tests::GetTestDataPath();
 
 	GacUIUnitTest_Initialize(&config);
 	int result = UnitTest::RunAndDisposeTests(argc, argv);
