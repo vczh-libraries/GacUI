@@ -78,6 +78,31 @@ void GacUIUnitTest_SetGuiMainProxy(const UnitTestMainFunc& proxy)
 	guiMainProxy = proxy;
 }
 
+File GacUIUnitTest_PrepareSnapshotFile(const WString& appName, const WString& extension)
+{
+#define ERROR_MESSAGE_PREFIX L"GacUIUnitTest_PrepareSnapshotFile(const WString&, const WString&)#"
+	Folder snapshotFolder = GetUnitTestFrameworkConfig().snapshotFolder;
+	CHECK_ERROR(snapshotFolder.Exists(), ERROR_MESSAGE_PREFIX L"UnitTestFrameworkConfig::snapshotFolder does not point to an existing folder.");
+
+	File snapshotFile = snapshotFolder.GetFilePath() / (appName + extension);
+	{
+		auto pathPrefix = snapshotFolder.GetFilePath().GetFullPath() + WString::FromChar(FilePath::Delimiter);
+		auto snapshotPath = snapshotFile.GetFilePath().GetFullPath();
+		CHECK_ERROR(
+			snapshotPath.Length() > pathPrefix.Length() && snapshotPath.Left(pathPrefix.Length()) == pathPrefix,
+			ERROR_MESSAGE_PREFIX L"Argument appName should specify a file that is inside UnitTestFrameworkConfig::snapshotFolder"
+			);
+		Folder snapshotFileFolder = snapshotFile.GetFilePath().GetFolder();
+		if (!snapshotFileFolder.Exists())
+		{
+			CHECK_ERROR(snapshotFileFolder.Create(true), ERROR_MESSAGE_PREFIX L"Failed to create the folder to contain the snapshot file specified by argument appName.");
+		}
+	}
+
+	return snapshotFile;
+#undef ERROR_MESSAGE_PREFIX
+}
+
 void GacUIUnitTest_Start(const WString& appName, Nullable<UnitTestScreenConfig> config)
 {
 #define ERROR_MESSAGE_PREFIX L"GacUIUnitTest_Start(const WString&, Nullable<UnitTestScreenConfig>)#"
@@ -101,23 +126,7 @@ void GacUIUnitTest_Start(const WString& appName, Nullable<UnitTestScreenConfig> 
 	GacUIUnitTest_SetGuiMainProxy({});
 
 	{
-		Folder snapshotFolder = GetUnitTestFrameworkConfig().snapshotFolder;
-		CHECK_ERROR(snapshotFolder.Exists(), ERROR_MESSAGE_PREFIX L"UnitTestFrameworkConfig::snapshotFolder does not point to an existing folder.");
-
-		File snapshotFile = snapshotFolder.GetFilePath() / (appName + L".json");
-		{
-			auto pathPrefix = snapshotFolder.GetFilePath().GetFullPath() + WString::FromChar(FilePath::Delimiter);
-			auto snapshotPath = snapshotFile.GetFilePath().GetFullPath();
-			CHECK_ERROR(
-				snapshotPath.Length() > pathPrefix.Length() && snapshotPath.Left(pathPrefix.Length()) == pathPrefix,
-				ERROR_MESSAGE_PREFIX L"Argument appName should specify a file that is inside UnitTestFrameworkConfig::snapshotFolder"
-				);
-			Folder snapshotFileFolder = snapshotFile.GetFilePath().GetFolder();
-			if (!snapshotFileFolder.Exists())
-			{
-				CHECK_ERROR(snapshotFileFolder.Create(true), ERROR_MESSAGE_PREFIX L"Failed to create the folder to contain the snapshot file specified by argument appName.");
-			}
-		}
+		File snapshotFile = GacUIUnitTest_PrepareSnapshotFile(appName, WString::Unmanaged(L".json"));
 
 		JsonFormatting formatting;
 		formatting.spaceAfterColon = true;
@@ -137,6 +146,25 @@ void GacUIUnitTest_Start(const WString& appName, Nullable<UnitTestScreenConfig> 
 		bool succeeded = snapshotFile.WriteAllText(textLog, false, stream::BomEncoder::Utf8);
 		CHECK_ERROR(succeeded, ERROR_MESSAGE_PREFIX L"Failed to write the snapshot file.");
 	}
+#undef ERROR_MESSAGE_PREFIX
+}
+
+void GacUIUnitTest_Start_WithResourceAsText(const WString& appName, Nullable<UnitTestScreenConfig> config, const WString& resourceText)
+{
+#define ERROR_MESSAGE_PREFIX L"GacUIUnitTest_Start_WithResourceAsText(const WString&, Nullable<UnitTestScreenConfig>, const WString&)#"
+	auto previousMainProxy = guiMainProxy;
+	guiMainProxy = [&](UnitTestRemoteProtocol* protocol, IUnitTestContext* context)
+	{
+		auto resource = GacUIUnitTest_CompileAndLoad(resourceText);
+		{
+			auto workflow = resource->GetStringByPath(L"UnitTest/Workflow");
+			File snapshotFile = GacUIUnitTest_PrepareSnapshotFile(appName, WString::Unmanaged(L".txt"));
+			bool succeeded = snapshotFile.WriteAllText(workflow, false, stream::BomEncoder::Utf8);
+			CHECK_ERROR(succeeded, ERROR_MESSAGE_PREFIX L"Failed to write the snapshot file.");
+		}
+		previousMainProxy(protocol, context);
+	};
+	GacUIUnitTest_Start(appName, config);
 #undef ERROR_MESSAGE_PREFIX
 }
 
