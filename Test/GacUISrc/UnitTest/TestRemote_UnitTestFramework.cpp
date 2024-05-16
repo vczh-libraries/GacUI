@@ -56,7 +56,7 @@ TEST_FILE
 			window.SetClientSize({ 640,480 });
 			window.MoveToScreenCenter();
 
-			protocol->OnNextIdleFrame([&]()
+			protocol->OnNextIdleFrame([=, &window]()
 			{
 				TEST_ASSERT(protocol->GetLoggedTrace().frames->Count() == 1);
 				window.Hide();
@@ -82,7 +82,7 @@ TEST_FILE
 				window.SetClientSize({ 640,480 });
 				window.MoveToScreenCenter();
 
-				protocol->OnNextIdleFrame([&]()
+				protocol->OnNextIdleFrame([=, &window]()
 				{
 					TEST_ASSERT(protocol->GetLoggedTrace().frames->Count() == 1);
 					window.Hide();
@@ -148,7 +148,7 @@ TEST_FILE
 				window.SetClientSize({ 640,480 });
 				window.MoveToScreenCenter();
 
-				protocol->OnNextIdleFrame([&]()
+				protocol->OnNextIdleFrame([=, &window]()
 				{
 					TEST_ASSERT(protocol->GetLoggedTrace().frames->Count() == 1);
 					window.Hide();
@@ -165,9 +165,7 @@ TEST_FILE
 	{
 		TEST_CATEGORY(L"Window with OK Button")
 		{
-			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
-			{
-const wchar_t* resourceXml = LR"GacUISrc(
+			const auto resource = LR"GacUISrc(
 <Resource>
   <Instance name="MainWindowResource">
     <Instance ref.Class="gacuisrc_unittest::MainWindow">
@@ -180,32 +178,21 @@ const wchar_t* resourceXml = LR"GacUISrc(
   </Instance>
 </Resource>
 )GacUISrc";
-				auto resource = GacUIUnitTest_CompileAndLoad(resourceXml);
-				auto workflow = resource->GetStringByPath(L"UnitTest/Workflow");
-
-				protocol->GetEvents()->OnControllerConnect();
-				auto darkskinTheme = Ptr(new darkskin::Theme);
-				theme::RegisterTheme(darkskinTheme);
+			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame([=]()
 				{
-					auto windowValue = Value::Create(L"gacuisrc_unittest::MainWindow");
-					TEST_CASE_ASSERT(windowValue.GetRawPtr());
-
-					auto window = Ptr(windowValue.GetRawPtr()->SafeAggregationCast<GuiWindow>());
-					TEST_CASE_ASSERT(window);
-
-					window->MoveToScreenCenter();
-
-					protocol->OnNextIdleFrame([&]()
-					{
-						TEST_ASSERT(protocol->GetLoggedTrace().frames->Count() == 1);
-						window->Hide();
-					});
-
-					GetApplication()->Run(window.Obj());
-				}
-				theme::UnregisterTheme(darkskinTheme->Name);
+					auto window = GetApplication()->GetMainWindow();
+					TEST_ASSERT(protocol->GetLoggedTrace().frames->Count() == 1);
+					window->Hide();
+				});
 			});
-			GacUIUnitTest_Start(WString::Unmanaged(L"UnitTestFramework/WindowWithOKButton"));
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"UnitTestFramework/WindowWithOKButton"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				{},
+				resource
+				);
 		});
 
 		TEST_CATEGORY(L"Click Button and Close")

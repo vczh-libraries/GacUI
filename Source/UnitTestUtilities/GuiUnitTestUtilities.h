@@ -49,9 +49,11 @@ void GacUIUnitTest_StartFast_WithResourceAsText(const vl::WString& appName, cons
 
 			window->MoveToScreenCenter();
 			previousMainProxy(protocol, context);
+			vl::presentation::controls::GetApplication()->Run(window.Obj());
 		}
 		vl::presentation::theme::UnregisterTheme(theme->Name);
 	});
+	GacUIUnitTest_Start_WithResourceAsText(appName, config, resourceText);
 }
 
 #endif
