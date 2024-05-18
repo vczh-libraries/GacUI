@@ -191,6 +191,53 @@ TEST_FILE
 						auto buttonOK = buttonOKValue->SafeAggregationCast<GuiButton>();
 						TEST_ASSERT(buttonOK);
 						TEST_ASSERT(buttonOK->GetText() == L"OK");
+
+						TEST_ASSERT(buttonOK == TryFindObjectByName<GuiButton>(window, L"buttonOK"));
+						TEST_ASSERT(buttonOK == FindObjectByName<GuiButton>(window, L"buttonOK"));
+						TEST_ASSERT(buttonOK == TryFindControlByText<GuiButton>(window, L"OK"));
+						TEST_ASSERT(buttonOK == FindControlByText<GuiButton>(window, L"OK"));
+					}
+					{
+						TEST_EXCEPTION(TryFindObjectByName<GuiWindow>(window, L"buttonOK"), Error, [](const Error& error)
+						{
+							auto expected = WString::Unmanaged(L"#The object assigned by the name is not in the specified type.");
+							auto actual = WString::Unmanaged(error.Description());
+							TEST_ASSERT(actual.Right(expected.Length()) == expected);
+						});
+						TEST_EXCEPTION(FindObjectByName<GuiWindow>(window, L"buttonOK"), Error, [](const Error& error)
+						{
+							auto expected = WString::Unmanaged(L"#The object assigned by the name is not in the specified type.");
+							auto actual = WString::Unmanaged(error.Description());
+							TEST_ASSERT(actual.Right(expected.Length()) == expected);
+						});
+						TEST_EXCEPTION(TryFindControlByText<GuiWindow>(window, L"OK"), Error, [](const Error& error)
+						{
+							auto expected = WString::Unmanaged(L"#The object with the specified text is not in the specified type.");
+							auto actual = WString::Unmanaged(error.Description());
+							TEST_ASSERT(actual.Right(expected.Length()) == expected);
+						});
+						TEST_EXCEPTION(FindControlByText<GuiWindow>(window, L"OK"), Error, [](const Error& error)
+						{
+							auto expected = WString::Unmanaged(L"#The object with the specified text is not in the specified type.");
+							auto actual = WString::Unmanaged(error.Description());
+							TEST_ASSERT(actual.Right(expected.Length()) == expected);
+						});
+					}
+					{
+						TEST_ASSERT(nullptr == TryFindObjectByName<GuiButton>(window, L"Whatever"));
+						TEST_ASSERT(nullptr == TryFindControlByText<GuiButton>(window, L"Whatever"));
+						TEST_EXCEPTION(FindObjectByName<GuiButton>(window, L"Whatever"), Error, [](const Error& error)
+						{
+							auto expected = WString::Unmanaged(L"#The name has not been used.");
+							auto actual = WString::Unmanaged(error.Description());
+							TEST_ASSERT(actual.Right(expected.Length()) == expected);
+						});
+						TEST_EXCEPTION(FindControlByText<GuiButton>(window, L"Whatever"), Error, [](const Error& error)
+						{
+							auto expected = WString::Unmanaged(L"#The control with the specified text does not exist.");
+							auto actual = WString::Unmanaged(error.Description());
+							TEST_ASSERT(actual.Right(expected.Length()) == expected);
+						});
 					}
 					TEST_ASSERT(protocol->GetLoggedTrace().frames->Count() == 1);
 					window->Hide();

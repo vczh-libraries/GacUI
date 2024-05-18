@@ -433,6 +433,76 @@ Basic Construction
 
 #define GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(TEMPLATE, BASE_TYPE) GUI_SPECIFY_CONTROL_TEMPLATE_TYPE_2(TEMPLATE, BASE_TYPE, GUI_GENERATE_CONTROL_TEMPLATE_OBJECT_NAME)
 
+/***********************************************************************
+Helper Functions
+***********************************************************************/
+
+			template<typename T>
+			T* TryFindObjectByName(GuiInstanceRootObject* rootObject, const WString& name)
+			{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::controls::TryFindObjectByName<T>(GuiInstanceRootObject*, const WString&)#"
+				CHECK_ERROR(rootObject, ERROR_MESSAGE_PREFIX L"rootObject should not be null.");
+				if (auto rawPtr = rootObject->GetNamedObject(name).GetRawPtr())
+				{
+					auto typedObject = rawPtr->SafeAggregationCast<T>();
+					CHECK_ERROR(typedObject, ERROR_MESSAGE_PREFIX L"The object assigned by the name is not in the specified type.");
+					return typedObject;
+				}
+				return nullptr;
+#undef ERROR_MESSAGE_PREFIX
+			}
+
+			template<typename T>
+			T* FindObjectByName(GuiInstanceRootObject* rootObject, const WString& name)
+			{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::controls::FindObjectByName<T>(GuiInstanceRootObject*, const WString&)#"
+				CHECK_ERROR(rootObject, ERROR_MESSAGE_PREFIX L"rootObject should not be null.");
+				auto value = rootObject->GetNamedObject(name);
+				CHECK_ERROR(!value.IsNull(), ERROR_MESSAGE_PREFIX L"The name has not been used.");
+				CHECK_ERROR(value.GetRawPtr(), ERROR_MESSAGE_PREFIX L"The object assigned by the name is not a class.");
+				auto rawPtr = value.GetRawPtr()->SafeAggregationCast<T>();
+				CHECK_ERROR(rawPtr, ERROR_MESSAGE_PREFIX L"The object assigned by the name is not in the specified type.");
+				return rawPtr;
+#undef ERROR_MESSAGE_PREFIX
+			}
+
+			template<typename T>
+				requires(std::is_base_of_v<controls::GuiControl, T>)
+			T* TryFindControlByText(GuiControl* rootObject, const WString& text)
+			{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::controls::TryFindControlByText<T>(GuiControl*, const WString&)#"
+				CHECK_ERROR(rootObject, ERROR_MESSAGE_PREFIX L"rootObject should not be null.");
+				if (rootObject->GetText() == text)
+				{
+					auto typedObject = dynamic_cast<T*>(rootObject);
+					CHECK_ERROR(typedObject, ERROR_MESSAGE_PREFIX L"The object with the specified text is not in the specified type.");
+					return typedObject;
+				}
+
+				vint count = rootObject->GetChildrenCount();
+				for (vint i = 0; i < count; i++)
+				{
+					if (auto result = TryFindControlByText<T>(rootObject->GetChild(i), text))
+					{
+						return result;
+					}
+				}
+				return nullptr;
+#undef ERROR_MESSAGE_PREFIX
+			}
+
+			template<typename T>
+				requires(std::is_base_of_v<controls::GuiControl, T>)
+			T* FindControlByText(GuiControl* rootObject, const WString& text)
+			{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::controls::FindControlByText<T>(GuiControl*, const WString&)#"
+				if (auto result = TryFindControlByText<T>(rootObject, text))
+				{
+					return result;
+				}
+				CHECK_FAIL(ERROR_MESSAGE_PREFIX L"The control with the specified text does not exist.");
+#undef ERROR_MESSAGE_PREFIX
+			}
 		}
 	}
 }

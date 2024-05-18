@@ -64,6 +64,8 @@
     - Breaking changes: `Utf\d+(En|De)coder`, `(Text|Stream)(Reader|Writer)` and `StringReader` changed from class to typedef
   - GacUI  
     - `bool controllerUnrelatedPlugins` and `bool controllerRelatedPlugins` added to `IGuiPlugin`
+    - `(Try)?FindObjectByName`
+    - `(Try)?FindControlByText`
     - Check GacUI \ GacUI Components \ (compositions | Controls) and fill missing items
   - Fix `MakePtr` from sample code in documents.
   - Fix DSL index page, leaving all class names withou link, with some simple description.
