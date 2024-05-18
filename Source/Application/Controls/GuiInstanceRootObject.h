@@ -91,7 +91,7 @@ Root Object
 			{
 				friend class RootObjectTimerCallback;
 				using SubscriptionList = collections::List<Ptr<description::IValueSubscription>>;
-				using ObjectMap = collections::Dictionary<WString, DescriptableObject*>;
+				using ObjectMap = collections::Dictionary<WString, reflection::description::Value>;
 			protected:
 				Ptr<GuiResourcePathResolver>					resourceResolver;
 				ObjectMap										namedObjects;
@@ -165,14 +165,14 @@ Root Object
 				/// </summary>
 				/// <param name="name">The name of the object.</param>
 				/// <returns>The object. Returns null if the name is not taken.</returns>
-				DescriptableObject*								GetNamedObject(const WString& name);
+				reflection::description::Value					GetNamedObject(const WString& name);
 
 				/// <summary>
 				/// Set an object with a name. Exception throws if the name is taken.
 				/// </summary>
 				/// <param name="name">The name of the object.</param>
 				/// <param name="namedObject">The object.</param>
-				void											SetNamedObject(const WString& name, DescriptableObject* namedObject);
+				void											SetNamedObject(const WString& name, const reflection::description::Value& namedObject);
 			};
 		}
 	}

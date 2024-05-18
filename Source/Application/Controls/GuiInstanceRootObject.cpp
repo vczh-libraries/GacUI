@@ -293,13 +293,20 @@ GuiInstanceRootObject
 				return false;
 			}
 
-			DescriptableObject* GuiInstanceRootObject::GetNamedObject(const WString& name)
+			reflection::description::Value GuiInstanceRootObject::GetNamedObject(const WString& name)
 			{
 				vint index = namedObjects.Keys().IndexOf(name);
-				return index == -1 ? nullptr : namedObjects.Values()[index];
+				if (index == -1)
+				{
+					return {};
+				}
+				else
+				{
+					return namedObjects.Values()[index];
+				}
 			}
 
-			void GuiInstanceRootObject::SetNamedObject(const WString& name, DescriptableObject* namedObject)
+			void GuiInstanceRootObject::SetNamedObject(const WString& name, const reflection::description::Value& namedObject)
 			{
 				namedObjects.Add(name, namedObject);
 			}

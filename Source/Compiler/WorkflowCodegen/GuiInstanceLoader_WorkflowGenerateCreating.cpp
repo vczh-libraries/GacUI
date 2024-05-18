@@ -449,6 +449,35 @@ WorkflowGenerateCreatingVisitor
 							L"\"."));
 					}
 				}
+				{
+					auto instanceName = repr->instanceName.ToString();
+					auto generatedNamePrefix = WString::Unmanaged(L"<precompile>");
+					if (instanceName.Length() < generatedNamePrefix.Length() || instanceName.Left(generatedNamePrefix.Length()) != generatedNamePrefix)
+					{
+						auto refName = Ptr(new WfStringExpression);
+						refName->value.value = instanceName;
+
+						auto refInstance = Ptr(new WfReferenceExpression);
+						refInstance->name.value = instanceName;
+
+						auto refThis = Ptr(new WfReferenceExpression);
+						refThis->name.value = L"<this>";
+
+						auto refSetNamedObject = Ptr(new WfMemberExpression);
+						refSetNamedObject->parent = refThis;
+						refSetNamedObject->name.value = L"SetNamedObject";
+
+						auto refCall = Ptr(new WfCallExpression);
+						refCall->function = refSetNamedObject;
+						refCall->arguments.Add(refName);
+						refCall->arguments.Add(refInstance);
+
+						auto stat = Ptr(new WfExpressionStatement);
+						stat->expression = refCall;
+
+						statements->statements.Add(stat);
+					}
+				}
 				Visit((GuiAttSetterRepr*)repr);
 			}
 		};
