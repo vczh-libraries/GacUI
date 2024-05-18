@@ -24,36 +24,43 @@ namespace gacuisrc_unittest
     class MainWindowConstructor
     {
         @cpp:Protected
-        var <precompile>0 : ::gacuisrc_unittest::MainWindow* = null of (::gacuisrc_unittest::MainWindow*);
+        var self : ::gacuisrc_unittest::MainWindow* = null of (::gacuisrc_unittest::MainWindow*);
 
         @cpp:Protected
-        var <precompile>1 : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
+        var buttonOK : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
 
         @cpp:Protected
-        var <precompile>2 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+        var <precompile>0 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
         func <gacuisrc_unittest-MainWindow>Initialize(<this> : ::gacuisrc_unittest::MainWindow*) : (::system::Void)
         {
-            (<precompile>0 = <this>);
+            (self = <this>);
             {
-                (<precompile>0.ClientSize = {x : 640; y : 480;} of (::presentation::Size));
+                (self.ClientSize = {x : 640; y : 480;} of (::presentation::Size));
             }
             {
-                (<precompile>0.Text = "Hello, world!");
+                (self.Text = "Hello, world!");
             }
             {
-                (<precompile>1 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
+                (buttonOK = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
             }
-            (<precompile>2 = <precompile>1.BoundsComposition);
+            (<precompile>0 = buttonOK.BoundsComposition);
             {
-                (<precompile>2.AlignmentToParent = {left : 5; top : 5; right : (-1); bottom : (-1);} of (::presentation::Margin));
-            }
-            {
-                (<precompile>1.Text = "OK");
+                (<precompile>0.AlignmentToParent = {left : 5; top : 5; right : (-1); bottom : (-1);} of (::presentation::Margin));
             }
             {
-                <precompile>0.AddChild(<precompile>1);
+                (buttonOK.Text = "OK");
+            }
+            {
+                self.AddChild(buttonOK);
+            }
+            {
+                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                {
+                    self.Close();
+                };
+                attach(buttonOK.Clicked, <event-handler>);
             }
         }
 

@@ -163,21 +163,23 @@ TEST_FILE
 
 	TEST_CATEGORY(L"Resources and Operations")
 	{
-		TEST_CATEGORY(L"Window with OK Button")
-		{
-			const auto resource = LR"GacUISrc(
+		const auto resource = LR"GacUISrc(
 <Resource>
   <Instance name="MainWindowResource">
     <Instance ref.Class="gacuisrc_unittest::MainWindow">
-      <Window Text="Hello, world!" ClientSize="x:640 y:480">
-        <Button Text="OK">
+      <Window ref.Name="self" Text="Hello, world!" ClientSize="x:640 y:480">
+        <Button ref.Name="buttonOK" Text="OK">
           <att.BoundsComposition-set AlignmentToParent="left:5 top:5 right:-1 bottom:-1"/>
+          <ev.Clicked-eval><![CDATA[ {self.Close();} ]]></ev.Clicked-eval>
         </Button>
       </Window>
     </Instance>
   </Instance>
 </Resource>
 )GacUISrc";
+
+		TEST_CATEGORY(L"Window with OK Button")
+		{
 			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
 			{
 				protocol->OnNextIdleFrame([=]()
