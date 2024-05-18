@@ -308,7 +308,7 @@ GuiInstanceRootObject
 
 			void GuiInstanceRootObject::SetNamedObject(const WString& name, const reflection::description::Value& namedObject)
 			{
-				namedObjects.Add(name, namedObject);
+				namedObjects.Set(name, namedObject);
 			}
 		}
 	}

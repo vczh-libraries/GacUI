@@ -168,7 +168,7 @@ Root Object
 				reflection::description::Value					GetNamedObject(const WString& name);
 
 				/// <summary>
-				/// Set an object with a name. Exception throws if the name is taken.
+				/// Set an object with a name. If the name has been taken, the previous object will be replaced.
 				/// </summary>
 				/// <param name="name">The name of the object.</param>
 				/// <param name="namedObject">The object.</param>
