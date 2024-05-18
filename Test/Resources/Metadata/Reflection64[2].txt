@@ -4725,8 +4725,10 @@ class presentation::controls::GuiInstanceRootObject : system::ReferenceType {
     function FinalizeInstanceRecursively(thisObject : presentation::templates::GuiTemplate*) : system::Void;
     function FinalizeInstanceRecursively(thisObject : presentation::controls::GuiCustomControl*) : system::Void;
     function FinalizeInstanceRecursively(thisObject : presentation::controls::GuiControlHost*) : system::Void;
+    function GetNamedObject(name : system::String) : system::Object;
     function KillAnimation(animation : presentation::controls::IGuiAnimation^) : system::Boolean;
     function ResolveResource(protocol : system::String, path : system::String, ensureExist : system::Boolean) : system::ReferenceType^;
+    function SetNamedObject(name : system::String, namedObject : system::Object) : system::Void;
     function SetResourceResolver(resolver : presentation::GuiResourcePathResolver^) : system::Void;
     function UpdateSubscriptions() : system::Void;
 
