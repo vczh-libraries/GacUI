@@ -251,7 +251,11 @@ TEST_FILE
 				);
 		});
 
-		TEST_CATEGORY(L"Click Button and Close")
+		TEST_CATEGORY(L"Click Button and Close in Separated IO Commands")
+		{
+		});
+
+		TEST_CATEGORY(L"Click Button and Close in Combined IO Commands")
 		{
 		});
 	});
