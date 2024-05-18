@@ -292,6 +292,17 @@ GuiInstanceRootObject
 				}
 				return false;
 			}
+
+			DescriptableObject* GuiInstanceRootObject::GetNamedObject(const WString& name)
+			{
+				vint index = namedObjects.Keys().IndexOf(name);
+				return index == -1 ? nullptr : namedObjects.Values()[index];
+			}
+
+			void GuiInstanceRootObject::SetNamedObject(const WString& name, DescriptableObject* namedObject)
+			{
+				namedObjects.Add(name, namedObject);
+			}
 		}
 	}
 }

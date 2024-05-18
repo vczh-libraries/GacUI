@@ -90,9 +90,11 @@ Root Object
 			class GuiInstanceRootObject abstract : public Description<GuiInstanceRootObject>
 			{
 				friend class RootObjectTimerCallback;
-				typedef collections::List<Ptr<description::IValueSubscription>>		SubscriptionList;
+				using SubscriptionList = collections::List<Ptr<description::IValueSubscription>>;
+				using ObjectMap = collections::Dictionary<WString, DescriptableObject*>;
 			protected:
 				Ptr<GuiResourcePathResolver>					resourceResolver;
+				ObjectMap										namedObjects;
 				SubscriptionList								subscriptions;
 				collections::SortedList<GuiComponent*>			components;
 				Ptr<RootObjectTimerCallback>					timerCallback;
@@ -157,6 +159,20 @@ Root Object
 				/// <returns>Returns true if this operation succeeded.</returns>
 				/// <param name="animation">The animation.</param>
 				bool											KillAnimation(Ptr<IGuiAnimation> animation);
+
+				/// <summary>
+				/// Get the object by name, which is set by <see cref="SetNamedObject"/>.
+				/// </summary>
+				/// <param name="name">The name of the object.</param>
+				/// <returns>The object. Returns null if the name is not taken.</returns>
+				DescriptableObject*								GetNamedObject(const WString& name);
+
+				/// <summary>
+				/// Set an object with a name. Exception throws if the name is taken.
+				/// </summary>
+				/// <param name="name">The name of the object.</param>
+				/// <param name="namedObject">The object.</param>
+				void											SetNamedObject(const WString& name, DescriptableObject* namedObject);
 			};
 		}
 	}

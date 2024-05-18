@@ -126,6 +126,8 @@ Type Declaration (Extra)
 				CLASS_MEMBER_METHOD(AddControlHostComponent, {L"controlHost"})
 				CLASS_MEMBER_METHOD(AddAnimation, { L"animation" })
 				CLASS_MEMBER_METHOD(KillAnimation, { L"animation" })
+				CLASS_MEMBER_METHOD(GetNamedObject, { L"name" })
+				CLASS_MEMBER_METHOD(SetNamedObject, { L"name" _ L"namedObject" })
 			END_CLASS_MEMBER(GuiInstanceRootObject)
 
 			BEGIN_CLASS_MEMBER(GuiCommonScrollBehavior)
