@@ -272,7 +272,7 @@ IGuiRemoteProtocolMessages (Elements - SolidLabel)
 									// calculate text as single line, insert a space between each line
 									lines.Add(
 										normalizedLines
-											.Aggregate(-1, [](auto a, auto b) { return a + b + 1; })
+											.Aggregate<vint>(-1, [](auto a, auto b) { return a + b + 1; })
 										);
 								}
 							}
@@ -294,7 +294,7 @@ IGuiRemoteProtocolMessages (Elements - SolidLabel)
 										return (length + columns - 1) / columns;
 									}
 								})
-								.Aggregate(0, [](auto a, auto b) { return a + b; });
+								.Aggregate<vint>(0, [](auto a, auto b) { return a + b; });
 						}
 						else
 						{

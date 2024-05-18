@@ -195,7 +195,7 @@ Ptr<GuiResource> GacUIUnitTest_CompileAndLoad(const WString& xmlResource)
 
 	auto precompiledFolder = resource->Precompile(
 #ifdef VCZH_64
-		GuiResourceCpuArchitecture::X64,
+		GuiResourceCpuArchitecture::x64,
 #else
 		GuiResourceCpuArchitecture::x86,
 #endif

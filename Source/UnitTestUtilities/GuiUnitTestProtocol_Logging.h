@@ -40,7 +40,7 @@ UnitTestRemoteProtocol
 			auto domCurrent = domRoot;
 			domStack.Add(domRoot);
 
-			auto getCurrentBoundary = [&]()
+			auto getCurrentBoundary = [&]() -> vint
 			{
 				if (domBoundaries.Count() > 0)
 				{

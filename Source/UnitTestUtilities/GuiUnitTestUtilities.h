@@ -28,6 +28,8 @@ extern void										GacUIUnitTest_Start(const vl::WString& appName, vl::Nullabl
 extern void										GacUIUnitTest_Start_WithResourceAsText(const vl::WString& appName, vl::Nullable<vl::presentation::unittest::UnitTestScreenConfig> config, const vl::WString& resourceText);
 extern vl::Ptr<vl::presentation::GuiResource>	GacUIUnitTest_CompileAndLoad(const vl::WString& xmlResource);
 
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
+
 template<typename TTheme>
 void GacUIUnitTest_StartFast_WithResourceAsText(const vl::WString& appName, const vl::WString& windowTypeFullName, vl::Nullable<vl::presentation::unittest::UnitTestScreenConfig> config, const vl::WString& resourceText)
 {
@@ -55,5 +57,7 @@ void GacUIUnitTest_StartFast_WithResourceAsText(const vl::WString& appName, cons
 	});
 	GacUIUnitTest_Start_WithResourceAsText(appName, config, resourceText);
 }
+
+#endif
 
 #endif
