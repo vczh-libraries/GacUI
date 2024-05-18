@@ -36,7 +36,6 @@ namespace gacuisrc_unittest
         func <gacuisrc_unittest-MainWindow>Initialize(<this> : ::gacuisrc_unittest::MainWindow*) : (::system::Void)
         {
             (self = <this>);
-            <this>.SetNamedObject("self", self);
             {
                 (self.ClientSize = {x : 640; y : 480;} of (::presentation::Size));
             }
@@ -45,8 +44,8 @@ namespace gacuisrc_unittest
             }
             {
                 (buttonOK = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
+                <this>.SetNamedObject("buttonOK", buttonOK);
             }
-            <this>.SetNamedObject("buttonOK", buttonOK);
             (<precompile>0 = buttonOK.BoundsComposition);
             {
                 (<precompile>0.AlignmentToParent = {left : 5; top : 5; right : (-1); bottom : (-1);} of (::presentation::Margin));
