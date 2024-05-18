@@ -199,6 +199,7 @@ namespace demo
             }
             {
                 (comboView = new (::presentation::controls::GuiComboBoxListControl*)(::presentation::theme::ThemeName::ComboBox, <precompile>2));
+                <this>.SetNamedObject("comboView", comboView);
             }
             {
                 (comboView.SelectedIndex = 6 of (::system::Int64));
@@ -242,6 +243,7 @@ namespace demo
             }
             {
                 (dataGrid = new (::presentation::controls::GuiBindableDataGrid*)(::presentation::theme::ThemeName::ListView));
+                <this>.SetNamedObject("dataGrid", dataGrid);
             }
             {
                 (dataGrid.LargeImageProperty = func (<item> : ::system::Object) : (::presentation::GuiImageData^)
@@ -477,6 +479,7 @@ namespace demo
                 (<precompile>19 = new (::presentation::controls::GuiToolstripMenu*)(::presentation::theme::ThemeName::Menu, null));
             }
             (dateFilter = new (::demo::DateFilter*)());
+            <this>.SetNamedObject("dateFilter", dateFilter);
             (<precompile>20 = dateFilter.BoundsComposition);
             {
                 (<precompile>20.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
@@ -1714,6 +1717,7 @@ namespace demo
             }
             {
                 (comboView = new (::presentation::controls::GuiComboBoxListControl*)(::presentation::theme::ThemeName::ComboBox, <precompile>2));
+                <this>.SetNamedObject("comboView", comboView);
             }
             {
                 (comboView.SelectedIndex = 5 of (::system::Int64));
@@ -1757,6 +1761,7 @@ namespace demo
             }
             {
                 (listView = new (::presentation::controls::GuiListView*)(::presentation::theme::ThemeName::ListView));
+                <this>.SetNamedObject("listView", listView);
             }
             {
                 var <collection> = listView.DataColumns;
@@ -1827,6 +1832,7 @@ namespace demo
             }
             {
                 (bindableListView = new (::presentation::controls::GuiBindableListView*)(::presentation::theme::ThemeName::ListView));
+                <this>.SetNamedObject("bindableListView", bindableListView);
             }
             {
                 (bindableListView.LargeImageProperty = func (<item> : ::system::Object) : (::presentation::GuiImageData^)
@@ -2478,6 +2484,7 @@ namespace demo
                 (<precompile>27.Alt = "D");
             }
             (editorRibbon = new (::demo::DocumentEditorRibbon*)());
+            <this>.SetNamedObject("editorRibbon", editorRibbon);
             (<precompile>28 = editorRibbon.BoundsComposition);
             {
                 (<precompile>28.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
@@ -2496,6 +2503,7 @@ namespace demo
                 (<precompile>29.Alt = "D");
             }
             (editorToolstrip = new (::demo::DocumentEditorToolstrip*)());
+            <this>.SetNamedObject("editorToolstrip", editorToolstrip);
             (<precompile>30 = editorToolstrip.BoundsComposition);
             {
                 (<precompile>30.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
@@ -2614,6 +2622,7 @@ namespace demo
             (<precompile>42 = new (::presentation::compositions::GuiStackItemComposition*)());
             {
                 (checkFrame = new (::presentation::controls::GuiSelectableButton*)(::presentation::theme::ThemeName::CheckBox));
+                <this>.SetNamedObject("checkFrame", checkFrame);
             }
             {
                 (checkFrame.Text = "Customized Frame");
@@ -2627,6 +2636,7 @@ namespace demo
             (<precompile>43 = new (::presentation::compositions::GuiStackItemComposition*)());
             {
                 (checkMax = new (::presentation::controls::GuiSelectableButton*)(::presentation::theme::ThemeName::CheckBox));
+                <this>.SetNamedObject("checkMax", checkMax);
             }
             {
                 (checkMax.Text = "MaximizedBox");
@@ -2640,6 +2650,7 @@ namespace demo
             (<precompile>44 = new (::presentation::compositions::GuiStackItemComposition*)());
             {
                 (checkMin = new (::presentation::controls::GuiSelectableButton*)(::presentation::theme::ThemeName::CheckBox));
+                <this>.SetNamedObject("checkMin", checkMin);
             }
             {
                 (checkMin.Text = "MinimizedBox");
@@ -2653,6 +2664,7 @@ namespace demo
             (<precompile>45 = new (::presentation::compositions::GuiStackItemComposition*)());
             {
                 (checkBorder = new (::presentation::controls::GuiSelectableButton*)(::presentation::theme::ThemeName::CheckBox));
+                <this>.SetNamedObject("checkBorder", checkBorder);
             }
             {
                 (checkBorder.Text = "Border");
@@ -2666,6 +2678,7 @@ namespace demo
             (<precompile>46 = new (::presentation::compositions::GuiStackItemComposition*)());
             {
                 (checkSizeBox = new (::presentation::controls::GuiSelectableButton*)(::presentation::theme::ThemeName::CheckBox));
+                <this>.SetNamedObject("checkSizeBox", checkSizeBox);
             }
             {
                 (checkSizeBox.Text = "SizeBox");
@@ -2679,6 +2692,7 @@ namespace demo
             (<precompile>47 = new (::presentation::compositions::GuiStackItemComposition*)());
             {
                 (checkIcon = new (::presentation::controls::GuiSelectableButton*)(::presentation::theme::ThemeName::CheckBox));
+                <this>.SetNamedObject("checkIcon", checkIcon);
             }
             {
                 (checkIcon.Text = "IconVisible");
@@ -2692,6 +2706,7 @@ namespace demo
             (<precompile>48 = new (::presentation::compositions::GuiStackItemComposition*)());
             {
                 (checkTitle = new (::presentation::controls::GuiSelectableButton*)(::presentation::theme::ThemeName::CheckBox));
+                <this>.SetNamedObject("checkTitle", checkTitle);
             }
             {
                 (checkTitle.Text = "TitleBar");
@@ -4105,6 +4120,7 @@ namespace demo
                 (<precompile>2 = new (::presentation::controls::GuiTab*)(::presentation::theme::ThemeName::Tab));
             }
             (repeatStackTabPage = new (::demo::EnglishNumbersControllerTabPage*)());
+            <this>.SetNamedObject("repeatStackTabPage", repeatStackTabPage);
             (<precompile>4 = repeatStackTabPage.ContentComposition);
             {
                 (<precompile>5 = new (::presentation::controls::GuiScrollContainer*)(::presentation::theme::ThemeName::ScrollView));
@@ -4164,6 +4180,7 @@ namespace demo
                 <collection>.Add(repeatStackTabPage);
             }
             (repeatFlowTabPage = new (::demo::EnglishNumbersControllerTabPage*)());
+            <this>.SetNamedObject("repeatFlowTabPage", repeatFlowTabPage);
             (<precompile>8 = repeatFlowTabPage.ContentComposition);
             {
                 (<precompile>9 = new (::presentation::controls::GuiScrollContainer*)(::presentation::theme::ThemeName::ScrollView));
@@ -4223,6 +4240,7 @@ namespace demo
                 <collection>.Add(repeatFlowTabPage);
             }
             (sharedSizeFlowTabPage = new (::demo::EnglishNumbersControllerTabPage*)());
+            <this>.SetNamedObject("sharedSizeFlowTabPage", sharedSizeFlowTabPage);
             (<precompile>12 = sharedSizeFlowTabPage.ContentComposition);
             {
                 (<precompile>13 = new (::presentation::controls::GuiScrollContainer*)(::presentation::theme::ThemeName::ScrollView));
@@ -4292,6 +4310,7 @@ namespace demo
                 <collection>.Add(sharedSizeFlowTabPage);
             }
             (sharedSizeListTabPage = new (::demo::EnglishNumbersControllerTabPage*)());
+            <this>.SetNamedObject("sharedSizeListTabPage", sharedSizeListTabPage);
             (<precompile>17 = sharedSizeListTabPage.ContentComposition);
             (<precompile>18 = new (::presentation::compositions::GuiSharedSizeRootComposition*)());
             {
@@ -4391,6 +4410,7 @@ namespace demo
             {
                 (hTracker = new (::presentation::controls::GuiScroll*)(::presentation::theme::ThemeName::HTracker));
                 hTracker.SetPageSize(0);
+                <this>.SetNamedObject("hTracker", hTracker);
             }
             {
                 (hTracker.TotalSize = 10 of (::system::Int64));
@@ -4722,6 +4742,7 @@ namespace demo
             (<precompile>1 = new (::presentation::compositions::GuiStackItemComposition*)());
             {
                 (checkFrame = new (::presentation::controls::GuiSelectableButton*)(::presentation::theme::ThemeName::CheckBox));
+                <this>.SetNamedObject("checkFrame", checkFrame);
             }
             {
                 (checkFrame.Text = "Customized Frame");
@@ -4735,6 +4756,7 @@ namespace demo
             (<precompile>2 = new (::presentation::compositions::GuiStackItemComposition*)());
             {
                 (checkMax = new (::presentation::controls::GuiSelectableButton*)(::presentation::theme::ThemeName::CheckBox));
+                <this>.SetNamedObject("checkMax", checkMax);
             }
             {
                 (checkMax.Text = "MaximizedBox");
@@ -4748,6 +4770,7 @@ namespace demo
             (<precompile>3 = new (::presentation::compositions::GuiStackItemComposition*)());
             {
                 (checkMin = new (::presentation::controls::GuiSelectableButton*)(::presentation::theme::ThemeName::CheckBox));
+                <this>.SetNamedObject("checkMin", checkMin);
             }
             {
                 (checkMin.Text = "MinimizedBox");
@@ -4761,6 +4784,7 @@ namespace demo
             (<precompile>4 = new (::presentation::compositions::GuiStackItemComposition*)());
             {
                 (checkBorder = new (::presentation::controls::GuiSelectableButton*)(::presentation::theme::ThemeName::CheckBox));
+                <this>.SetNamedObject("checkBorder", checkBorder);
             }
             {
                 (checkBorder.Text = "Border");
@@ -4774,6 +4798,7 @@ namespace demo
             (<precompile>5 = new (::presentation::compositions::GuiStackItemComposition*)());
             {
                 (checkSizeBox = new (::presentation::controls::GuiSelectableButton*)(::presentation::theme::ThemeName::CheckBox));
+                <this>.SetNamedObject("checkSizeBox", checkSizeBox);
             }
             {
                 (checkSizeBox.Text = "SizeBox");
@@ -4787,6 +4812,7 @@ namespace demo
             (<precompile>6 = new (::presentation::compositions::GuiStackItemComposition*)());
             {
                 (checkIcon = new (::presentation::controls::GuiSelectableButton*)(::presentation::theme::ThemeName::CheckBox));
+                <this>.SetNamedObject("checkIcon", checkIcon);
             }
             {
                 (checkIcon.Text = "IconVisible");
@@ -4800,6 +4826,7 @@ namespace demo
             (<precompile>7 = new (::presentation::compositions::GuiStackItemComposition*)());
             {
                 (checkTitle = new (::presentation::controls::GuiSelectableButton*)(::presentation::theme::ThemeName::CheckBox));
+                <this>.SetNamedObject("checkTitle", checkTitle);
             }
             {
                 (checkTitle.Text = "TitleBar");
@@ -6049,6 +6076,7 @@ namespace demo
                 (self.Text = "TextList");
             }
             (mutexGroupController = new (::presentation::controls::GuiSelectableButton::MutexGroupController*)());
+            <this>.SetNamedObject("mutexGroupController", mutexGroupController);
             {
                 self.AddComponent(mutexGroupController);
             }
@@ -6109,6 +6137,7 @@ namespace demo
             }
             {
                 (comboView = new (::presentation::controls::GuiComboBoxListControl*)(::presentation::theme::ThemeName::ComboBox, <precompile>2));
+                <this>.SetNamedObject("comboView", comboView);
             }
             {
                 (comboView.SelectedIndex = 0 of (::system::Int64));
@@ -6132,6 +6161,7 @@ namespace demo
             }
             {
                 (textList = new (::presentation::controls::GuiTextList*)(::presentation::theme::ThemeName::TextList));
+                <this>.SetNamedObject("textList", textList);
             }
             {
                 (textList.HorizontalAlwaysVisible = false);
@@ -6362,6 +6392,7 @@ namespace demo
             }
             {
                 (bindableTextList = new (::presentation::controls::GuiBindableTextList*)(::presentation::theme::ThemeName::TextList));
+                <this>.SetNamedObject("bindableTextList", bindableTextList);
             }
             {
                 (bindableTextList.CheckedProperty = func (<item> : ::system::Object, <value> : ::system::Boolean, <update> : ::system::Boolean) : (::system::Boolean)
@@ -6929,6 +6960,7 @@ namespace demo
             }
             {
                 (treeView = new (::presentation::controls::GuiTreeView*)(::presentation::theme::ThemeName::TreeView));
+                <this>.SetNamedObject("treeView", treeView);
             }
             {
                 (treeView.HorizontalAlwaysVisible = false);
@@ -7043,6 +7075,7 @@ namespace demo
             }
             {
                 (bindableTreeView = new (::presentation::controls::GuiBindableTreeView*)(::presentation::theme::ThemeName::TreeView));
+                <this>.SetNamedObject("bindableTreeView", bindableTreeView);
             }
             {
                 (bindableTreeView.ImageProperty = func (<item> : ::system::Object) : (::presentation::GuiImageData^)
@@ -7392,6 +7425,7 @@ namespace demo
                 (<precompile>18.Text = "Complex Animation");
             }
             (animationBackground = new (::presentation::compositions::GuiBoundsComposition*)());
+            <this>.SetNamedObject("animationBackground", animationBackground);
             {
                 (animationBackground.PreferredMinSize = {x : 200; y : 200;} of (::presentation::Size));
             }
@@ -8528,6 +8562,7 @@ namespace demo
             (self = <this>);
             {
                 (comboBox = new (::presentation::controls::GuiDateComboBox*)(::presentation::theme::ThemeName::DateComboBox));
+                <this>.SetNamedObject("comboBox", comboBox);
             }
             (<precompile>0 = comboBox.BoundsComposition);
             {
@@ -8822,6 +8857,7 @@ namespace demo
             }
             {
                 (checkFrom = new (::presentation::controls::GuiSelectableButton*)(::presentation::theme::ThemeName::CheckBox));
+                <this>.SetNamedObject("checkFrom", checkFrom);
             }
             {
                 (checkFrom.Text = "From:");
@@ -8838,6 +8874,7 @@ namespace demo
             }
             {
                 (dateFrom = new (::presentation::controls::GuiDateComboBox*)(::presentation::theme::ThemeName::DateComboBox));
+                <this>.SetNamedObject("dateFrom", dateFrom);
             }
             {
                 (dateFrom.SelectedDate = (cast (::system::DateTime) "1988-01-01 00:00:00.000"));
@@ -8858,6 +8895,7 @@ namespace demo
             }
             {
                 (checkTo = new (::presentation::controls::GuiSelectableButton*)(::presentation::theme::ThemeName::CheckBox));
+                <this>.SetNamedObject("checkTo", checkTo);
             }
             {
                 (checkTo.Text = "To:");
@@ -8874,6 +8912,7 @@ namespace demo
             }
             {
                 (dateTo = new (::presentation::controls::GuiDateComboBox*)(::presentation::theme::ThemeName::DateComboBox));
+                <this>.SetNamedObject("dateTo", dateTo);
             }
             {
                 (dateTo.SelectedDate = (cast (::system::DateTime) "2000-01-01 00:00:00.000"));
@@ -9215,6 +9254,7 @@ namespace demo
             (self = <this>);
             {
                 (textBox = new (::presentation::controls::GuiSinglelineTextBox*)(::presentation::theme::ThemeName::SinglelineTextBox));
+                <this>.SetNamedObject("textBox", textBox);
             }
             (<precompile>0 = textBox.BoundsComposition);
             {
@@ -9896,6 +9936,7 @@ namespace demo
             }
             {
                 (comboBox = new (::presentation::controls::GuiComboBoxListControl*)(::presentation::theme::ThemeName::ComboBox, <precompile>0));
+                <this>.SetNamedObject("comboBox", comboBox);
             }
             {
                 (comboBox.ItemTemplate = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiTemplate*)
@@ -10814,6 +10855,7 @@ namespace demo
             }
             {
                 (comboBox = new (::presentation::controls::GuiComboBoxListControl*)(::presentation::theme::ThemeName::ComboBox, <precompile>0));
+                <this>.SetNamedObject("comboBox", comboBox);
             }
             {
                 (comboBox.ItemTemplate = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiTemplate*)
@@ -11450,6 +11492,7 @@ namespace demo
             }
             {
                 (dp1 = new (::presentation::controls::GuiDatePicker*)(::presentation::theme::ThemeName::DatePicker));
+                <this>.SetNamedObject("dp1", dp1);
             }
             (<precompile>2 = dp1.BoundsComposition);
             {
@@ -11470,6 +11513,7 @@ namespace demo
             }
             {
                 (dp2 = new (::presentation::controls::GuiDatePicker*)(::presentation::theme::ThemeName::DatePicker));
+                <this>.SetNamedObject("dp2", dp2);
             }
             (<precompile>4 = dp2.BoundsComposition);
             {
@@ -11490,6 +11534,7 @@ namespace demo
             }
             {
                 (dc1 = new (::presentation::controls::GuiDateComboBox*)(::presentation::theme::ThemeName::DateComboBox));
+                <this>.SetNamedObject("dc1", dc1);
             }
             (<precompile>6 = dc1.BoundsComposition);
             {
@@ -11510,6 +11555,7 @@ namespace demo
             }
             {
                 (dc2 = new (::presentation::controls::GuiDateComboBox*)(::presentation::theme::ThemeName::DateComboBox));
+                <this>.SetNamedObject("dc2", dc2);
             }
             (<precompile>8 = dc2.BoundsComposition);
             {
@@ -12396,6 +12442,7 @@ namespace demo
             }
             {
                 (textUrl = new (::presentation::controls::GuiSinglelineTextBox*)(::presentation::theme::ThemeName::SinglelineTextBox));
+                <this>.SetNamedObject("textUrl", textUrl);
             }
             (<precompile>6 = textUrl.BoundsComposition);
             {
@@ -12702,6 +12749,7 @@ namespace demo
                 (self.Text = "Document Editor");
             }
             (dialogMessage = new (::presentation::controls::GuiMessageDialog*)());
+            <this>.SetNamedObject("dialogMessage", dialogMessage);
             {
                 (dialogMessage.Title = "You Clicked a Hyperlink!");
             }
@@ -12709,10 +12757,12 @@ namespace demo
                 self.AddComponent(dialogMessage);
             }
             (dialogNotImpl = new (::presentation::controls::GuiMessageDialog*)());
+            <this>.SetNamedObject("dialogNotImpl", dialogNotImpl);
             {
                 self.AddComponent(dialogNotImpl);
             }
             (dialogOpen = new (::presentation::controls::GuiOpenFileDialog*)());
+            <this>.SetNamedObject("dialogOpen", dialogOpen);
             {
                 (dialogOpen.Options = (FileDialogFileMustExist | FileDialogDereferenceLinks) of (::presentation::INativeDialogService::FileDialogOptions));
             }
@@ -12729,6 +12779,7 @@ namespace demo
                 self.AddComponent(dialogOpen);
             }
             (dialogOpenDoc = new (::presentation::controls::GuiOpenFileDialog*)());
+            <this>.SetNamedObject("dialogOpenDoc", dialogOpenDoc);
             {
                 (dialogOpenDoc.Options = (FileDialogFileMustExist | FileDialogDereferenceLinks) of (::presentation::INativeDialogService::FileDialogOptions));
             }
@@ -12742,6 +12793,7 @@ namespace demo
                 self.AddComponent(dialogOpenDoc);
             }
             (dialogSaveDoc = new (::presentation::controls::GuiSaveFileDialog*)());
+            <this>.SetNamedObject("dialogSaveDoc", dialogSaveDoc);
             {
                 (dialogSaveDoc.Options = FileDialogPromptOverwriteFile of (::presentation::INativeDialogService::FileDialogOptions));
             }
@@ -12755,6 +12807,7 @@ namespace demo
                 self.AddComponent(dialogSaveDoc);
             }
             (dialogSaveDocPrivate = new (::presentation::controls::GuiSaveFileDialog*)());
+            <this>.SetNamedObject("dialogSaveDocPrivate", dialogSaveDocPrivate);
             {
                 (dialogSaveDocPrivate.Options = FileDialogPromptOverwriteFile of (::presentation::INativeDialogService::FileDialogOptions));
             }
@@ -12768,6 +12821,7 @@ namespace demo
                 self.AddComponent(dialogSaveDocPrivate);
             }
             (dialogQueryClose = new (::presentation::controls::GuiMessageDialog*)());
+            <this>.SetNamedObject("dialogQueryClose", dialogQueryClose);
             {
                 (dialogQueryClose.Icon = IconQuestion of (::presentation::INativeDialogService::MessageBoxIcons));
             }
@@ -12795,6 +12849,7 @@ namespace demo
                 <precompile>0.SetColumnOption(0, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
             }
             (menuContainer = new (::presentation::compositions::GuiCellComposition*)());
+            <this>.SetNamedObject("menuContainer", menuContainer);
             {
                 menuContainer.SetSite(0, 0, 1, 1);
             }
@@ -12802,6 +12857,7 @@ namespace demo
                 <precompile>0.AddChild(menuContainer);
             }
             (toolstripContainer = new (::presentation::compositions::GuiCellComposition*)());
+            <this>.SetNamedObject("toolstripContainer", toolstripContainer);
             {
                 toolstripContainer.SetSite(1, 0, 1, 1);
             }
@@ -12814,6 +12870,7 @@ namespace demo
             }
             {
                 (document = new (::presentation::controls::GuiDocumentViewer*)(::presentation::theme::ThemeName::DocumentViewer));
+                <this>.SetNamedObject("document", document);
             }
             {
                 (document.EditMode = Editable of (::presentation::controls::GuiDocumentCommonInterface::EditMode));
@@ -12835,6 +12892,7 @@ namespace demo
                 self.ContainerComposition.AddChild(<precompile>0);
             }
             (commandLoadPrivate = new (::presentation::controls::GuiToolstripCommand*)());
+            <this>.SetNamedObject("commandLoadPrivate", commandLoadPrivate);
             {
                 (commandLoadPrivate.Text = "Load as Private Format");
             }
@@ -12842,6 +12900,7 @@ namespace demo
                 self.AddComponent(commandLoadPrivate);
             }
             (commandSavePrivate = new (::presentation::controls::GuiToolstripCommand*)());
+            <this>.SetNamedObject("commandSavePrivate", commandSavePrivate);
             {
                 (commandSavePrivate.Text = "Save as Private Format");
             }
@@ -12849,6 +12908,7 @@ namespace demo
                 self.AddComponent(commandSavePrivate);
             }
             (commandSaveRtf = new (::presentation::controls::GuiToolstripCommand*)());
+            <this>.SetNamedObject("commandSaveRtf", commandSaveRtf);
             {
                 (commandSaveRtf.Text = "Save as RTF");
             }
@@ -12856,6 +12916,7 @@ namespace demo
                 self.AddComponent(commandSaveRtf);
             }
             (commandSaveHtml = new (::presentation::controls::GuiToolstripCommand*)());
+            <this>.SetNamedObject("commandSaveHtml", commandSaveHtml);
             {
                 (commandSaveHtml.Text = "Save as HTML");
             }
@@ -12863,6 +12924,7 @@ namespace demo
                 self.AddComponent(commandSaveHtml);
             }
             (commandUndo = new (::presentation::controls::GuiToolstripCommand*)());
+            <this>.SetNamedObject("commandUndo", commandUndo);
             {
                 (commandUndo.ShortcutBuilder = "Ctrl+Z");
             }
@@ -12873,6 +12935,7 @@ namespace demo
                 self.AddComponent(commandUndo);
             }
             (commandRedo = new (::presentation::controls::GuiToolstripCommand*)());
+            <this>.SetNamedObject("commandRedo", commandRedo);
             {
                 (commandRedo.ShortcutBuilder = "Ctrl+Y");
             }
@@ -12883,6 +12946,7 @@ namespace demo
                 self.AddComponent(commandRedo);
             }
             (commandCopy = new (::presentation::controls::GuiToolstripCommand*)());
+            <this>.SetNamedObject("commandCopy", commandCopy);
             {
                 (commandCopy.ShortcutBuilder = "Ctrl+C");
             }
@@ -12893,6 +12957,7 @@ namespace demo
                 self.AddComponent(commandCopy);
             }
             (commandCut = new (::presentation::controls::GuiToolstripCommand*)());
+            <this>.SetNamedObject("commandCut", commandCut);
             {
                 (commandCut.ShortcutBuilder = "Ctrl+X");
             }
@@ -12903,6 +12968,7 @@ namespace demo
                 self.AddComponent(commandCut);
             }
             (commandPaste = new (::presentation::controls::GuiToolstripCommand*)());
+            <this>.SetNamedObject("commandPaste", commandPaste);
             {
                 (commandPaste.ShortcutBuilder = "Ctrl+V");
             }
@@ -12913,6 +12979,7 @@ namespace demo
                 self.AddComponent(commandPaste);
             }
             (commandDelete = new (::presentation::controls::GuiToolstripCommand*)());
+            <this>.SetNamedObject("commandDelete", commandDelete);
             {
                 (commandDelete.Text = "Delete");
             }
@@ -12920,6 +12987,7 @@ namespace demo
                 self.AddComponent(commandDelete);
             }
             (commandSelect = new (::presentation::controls::GuiToolstripCommand*)());
+            <this>.SetNamedObject("commandSelect", commandSelect);
             {
                 (commandSelect.ShortcutBuilder = "Ctrl+A");
             }
@@ -12930,6 +12998,7 @@ namespace demo
                 self.AddComponent(commandSelect);
             }
             (commandInsertImage = new (::presentation::controls::GuiToolstripCommand*)());
+            <this>.SetNamedObject("commandInsertImage", commandInsertImage);
             {
                 (commandInsertImage.Text = "Insert Image ...");
             }
@@ -12937,6 +13006,7 @@ namespace demo
                 self.AddComponent(commandInsertImage);
             }
             (commandEditHyperlink = new (::presentation::controls::GuiToolstripCommand*)());
+            <this>.SetNamedObject("commandEditHyperlink", commandEditHyperlink);
             {
                 (commandEditHyperlink.Text = "Edit Hyperlink ...");
             }
@@ -12944,6 +13014,7 @@ namespace demo
                 self.AddComponent(commandEditHyperlink);
             }
             (commandRemoveHyperlink = new (::presentation::controls::GuiToolstripCommand*)());
+            <this>.SetNamedObject("commandRemoveHyperlink", commandRemoveHyperlink);
             {
                 (commandRemoveHyperlink.Text = "Remove Hyperlink");
             }
@@ -12951,6 +13022,7 @@ namespace demo
                 self.AddComponent(commandRemoveHyperlink);
             }
             (commandBold = new (::presentation::controls::GuiToolstripCommand*)());
+            <this>.SetNamedObject("commandBold", commandBold);
             {
                 (commandBold.Text = "Bold");
             }
@@ -12958,6 +13030,7 @@ namespace demo
                 self.AddComponent(commandBold);
             }
             (commandItalic = new (::presentation::controls::GuiToolstripCommand*)());
+            <this>.SetNamedObject("commandItalic", commandItalic);
             {
                 (commandItalic.Text = "Italic");
             }
@@ -12965,6 +13038,7 @@ namespace demo
                 self.AddComponent(commandItalic);
             }
             (commandUnderline = new (::presentation::controls::GuiToolstripCommand*)());
+            <this>.SetNamedObject("commandUnderline", commandUnderline);
             {
                 (commandUnderline.Text = "Underline");
             }
@@ -12972,6 +13046,7 @@ namespace demo
                 self.AddComponent(commandUnderline);
             }
             (commandStrike = new (::presentation::controls::GuiToolstripCommand*)());
+            <this>.SetNamedObject("commandStrike", commandStrike);
             {
                 (commandStrike.Text = "Strike");
             }
@@ -12979,6 +13054,7 @@ namespace demo
                 self.AddComponent(commandStrike);
             }
             (dialogColor = new (::presentation::controls::GuiColorDialog*)());
+            <this>.SetNamedObject("dialogColor", dialogColor);
             {
                 (dialogColor.EnabledCustomColor = false);
             }
@@ -12986,6 +13062,7 @@ namespace demo
                 self.AddComponent(dialogColor);
             }
             (dialogFont = new (::presentation::controls::GuiFontDialog*)());
+            <this>.SetNamedObject("dialogFont", dialogFont);
             {
                 (dialogFont.ForceFontExist = true);
             }
@@ -12999,6 +13076,7 @@ namespace demo
                 self.AddComponent(dialogFont);
             }
             (commandFont = new (::presentation::controls::GuiToolstripCommand*)());
+            <this>.SetNamedObject("commandFont", commandFont);
             {
                 (commandFont.Text = "Set Font ...");
             }
@@ -13006,6 +13084,7 @@ namespace demo
                 self.AddComponent(commandFont);
             }
             (commandColor = new (::presentation::controls::GuiToolstripCommand*)());
+            <this>.SetNamedObject("commandColor", commandColor);
             {
                 (commandColor.Text = "Text Color ...");
             }
@@ -13013,6 +13092,7 @@ namespace demo
                 self.AddComponent(commandColor);
             }
             (commandBackColor = new (::presentation::controls::GuiToolstripCommand*)());
+            <this>.SetNamedObject("commandBackColor", commandBackColor);
             {
                 (commandBackColor.Text = "Background Color ...");
             }
@@ -13020,6 +13100,7 @@ namespace demo
                 self.AddComponent(commandBackColor);
             }
             (commandViewOnly = new (::presentation::controls::GuiToolstripCommand*)());
+            <this>.SetNamedObject("commandViewOnly", commandViewOnly);
             {
                 (commandViewOnly.ShortcutBuilder = "Ctrl+Shift+P");
             }
@@ -13030,6 +13111,7 @@ namespace demo
                 self.AddComponent(commandViewOnly);
             }
             (commandSelectable = new (::presentation::controls::GuiToolstripCommand*)());
+            <this>.SetNamedObject("commandSelectable", commandSelectable);
             {
                 (commandSelectable.ShortcutBuilder = "Ctrl+Shift+S");
             }
@@ -13040,6 +13122,7 @@ namespace demo
                 self.AddComponent(commandSelectable);
             }
             (commandEditable = new (::presentation::controls::GuiToolstripCommand*)());
+            <this>.SetNamedObject("commandEditable", commandEditable);
             {
                 (commandEditable.ShortcutBuilder = "Ctrl+Shift+E");
             }
@@ -13050,6 +13133,7 @@ namespace demo
                 self.AddComponent(commandEditable);
             }
             (commandAlignDefault = new (::presentation::controls::GuiToolstripCommand*)());
+            <this>.SetNamedObject("commandAlignDefault", commandAlignDefault);
             {
                 (commandAlignDefault.Text = "Set Alignment to Default (Left)");
             }
@@ -13057,6 +13141,7 @@ namespace demo
                 self.AddComponent(commandAlignDefault);
             }
             (commandAlignLeft = new (::presentation::controls::GuiToolstripCommand*)());
+            <this>.SetNamedObject("commandAlignLeft", commandAlignLeft);
             {
                 (commandAlignLeft.Text = "Left");
             }
@@ -13064,6 +13149,7 @@ namespace demo
                 self.AddComponent(commandAlignLeft);
             }
             (commandAlignCenter = new (::presentation::controls::GuiToolstripCommand*)());
+            <this>.SetNamedObject("commandAlignCenter", commandAlignCenter);
             {
                 (commandAlignCenter.Text = "Center");
             }
@@ -13071,6 +13157,7 @@ namespace demo
                 self.AddComponent(commandAlignCenter);
             }
             (commandAlignRight = new (::presentation::controls::GuiToolstripCommand*)());
+            <this>.SetNamedObject("commandAlignRight", commandAlignRight);
             {
                 (commandAlignRight.Text = "Right");
             }
@@ -16351,6 +16438,7 @@ namespace demo
             (<precompile>87 = <precompile>8.BeforeHeaders);
             {
                 (buttonHome = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
+                <this>.SetNamedObject("buttonHome", buttonHome);
             }
             (<precompile>88 = buttonHome.BoundsComposition);
             {
@@ -16891,6 +16979,7 @@ namespace demo
             }
             {
                 (styleGallery = new (::presentation::controls::GuiBindableRibbonGalleryList*)(::presentation::theme::ThemeName::RibbonGalleryList));
+                <this>.SetNamedObject("styleGallery", styleGallery);
             }
             {
                 (styleGallery.GroupChildrenProperty = func (<item> : ::system::Object) : (::system::Enumerable^)
@@ -17102,6 +17191,7 @@ namespace demo
                 (self.Text = "Document Editor (Ribbon)");
             }
             (dialogMessage = new (::presentation::controls::GuiMessageDialog*)());
+            <this>.SetNamedObject("dialogMessage", dialogMessage);
             {
                 (dialogMessage.Title = "You Expanded a Group!");
             }
@@ -17113,6 +17203,7 @@ namespace demo
             }
             {
                 (toolstripHome = new (::presentation::controls::GuiToolstripMenu*)(::presentation::theme::ThemeName::Menu, null));
+                <this>.SetNamedObject("toolstripHome", toolstripHome);
             }
             {
                 (<precompile>0 = new (::presentation::controls::GuiToolstripGroupContainer*)(::presentation::theme::ThemeName::CustomControl));
@@ -18289,6 +18380,7 @@ namespace demo
             }
             {
                 (containerControl = new (::presentation::controls::GuiCustomControl*)(::presentation::theme::ThemeName::CustomControl));
+                <this>.SetNamedObject("containerControl", containerControl);
             }
             {
                 (<precompile>5 = new (::presentation::controls::GuiCustomControl*)(::presentation::theme::ThemeName::CustomControl));
@@ -18338,6 +18430,7 @@ namespace demo
                 <precompile>1.SetSite(0, 0, 1, 1);
             }
             (styleLabel = new (::presentation::elements::GuiSolidLabelElement^)());
+            <this>.SetNamedObject("styleLabel", styleLabel);
             {
                 (styleLabel.VerticalAlignment = Center of (::presentation::Alignment));
             }
@@ -18996,6 +19089,7 @@ namespace demo
             }
             {
                 (buttonAlignment = new (::presentation::controls::GuiToolstripButton*)(::presentation::theme::ThemeName::ToolstripDropdownButton));
+                <this>.SetNamedObject("buttonAlignment", buttonAlignment);
             }
             {
                 (buttonAlignment.Alt = "P");
@@ -19933,6 +20027,7 @@ namespace demo
             (self = <this>);
             {
                 (listLocales = new (::presentation::controls::GuiTextList*)(::presentation::theme::ThemeName::TextList));
+                <this>.SetNamedObject("listLocales", listLocales);
             }
             (<precompile>0 = new (::presentation::controls::list::TextItem^)());
             {
@@ -19958,6 +20053,7 @@ namespace demo
             }
             {
                 (comboLocales = new (::presentation::controls::GuiComboBoxListControl*)(::presentation::theme::ThemeName::ComboBox, listLocales));
+                <this>.SetNamedObject("comboLocales", comboLocales);
             }
             (<precompile>2 = comboLocales.BoundsComposition);
             {
@@ -20178,6 +20274,7 @@ namespace demo
                 (self.Text = "ColorDialog");
             }
             (dialog = new (::presentation::controls::GuiColorDialog*)());
+            <this>.SetNamedObject("dialog", dialog);
             {
                 (dialog.EnabledCustomColor = true);
             }
@@ -20209,6 +20306,7 @@ namespace demo
                 <precompile>1.SetSite(0, 0, 1, 1);
             }
             (background = new (::presentation::elements::GuiSolidBackgroundElement^)());
+            <this>.SetNamedObject("background", background);
             {
                 (background.Color = (cast (::presentation::Color) "#FFFFFF"));
             }
@@ -20834,10 +20932,12 @@ namespace demo
                 (self.Text = "Open/Save FileDialog");
             }
             (dialogOpen = new (::presentation::controls::GuiOpenFileDialog*)());
+            <this>.SetNamedObject("dialogOpen", dialogOpen);
             {
                 self.AddComponent(dialogOpen);
             }
             (dialogSave = new (::presentation::controls::GuiSaveFileDialog*)());
+            <this>.SetNamedObject("dialogSave", dialogSave);
             {
                 self.AddComponent(dialogSave);
             }
@@ -20984,6 +21084,7 @@ namespace demo
             }
             {
                 (txtTitle = new (::presentation::controls::GuiSinglelineTextBox*)(::presentation::theme::ThemeName::SinglelineTextBox));
+                <this>.SetNamedObject("txtTitle", txtTitle);
             }
             (<precompile>16 = txtTitle.BoundsComposition);
             {
@@ -21004,6 +21105,7 @@ namespace demo
             }
             {
                 (txtDirectory = new (::presentation::controls::GuiSinglelineTextBox*)(::presentation::theme::ThemeName::SinglelineTextBox));
+                <this>.SetNamedObject("txtDirectory", txtDirectory);
             }
             (<precompile>18 = txtDirectory.BoundsComposition);
             {
@@ -21024,6 +21126,7 @@ namespace demo
             }
             {
                 (txtFileName = new (::presentation::controls::GuiSinglelineTextBox*)(::presentation::theme::ThemeName::SinglelineTextBox));
+                <this>.SetNamedObject("txtFileName", txtFileName);
             }
             (<precompile>20 = txtFileName.BoundsComposition);
             {
@@ -21044,6 +21147,7 @@ namespace demo
             }
             {
                 (txtFilter = new (::presentation::controls::GuiSinglelineTextBox*)(::presentation::theme::ThemeName::SinglelineTextBox));
+                <this>.SetNamedObject("txtFilter", txtFilter);
             }
             (<precompile>22 = txtFilter.BoundsComposition);
             {
@@ -21064,6 +21168,7 @@ namespace demo
             }
             {
                 (txtFilterIndex = new (::presentation::controls::GuiSinglelineTextBox*)(::presentation::theme::ThemeName::SinglelineTextBox));
+                <this>.SetNamedObject("txtFilterIndex", txtFilterIndex);
             }
             (<precompile>24 = txtFilterIndex.BoundsComposition);
             {
@@ -21084,6 +21189,7 @@ namespace demo
             }
             {
                 (txtDefaultExtension = new (::presentation::controls::GuiSinglelineTextBox*)(::presentation::theme::ThemeName::SinglelineTextBox));
+                <this>.SetNamedObject("txtDefaultExtension", txtDefaultExtension);
             }
             (<precompile>26 = txtDefaultExtension.BoundsComposition);
             {
@@ -21115,6 +21221,7 @@ namespace demo
             (<precompile>29 = new (::presentation::compositions::GuiStackItemComposition*)());
             {
                 (chkFileDialogAllowMultipleSelection = new (::presentation::controls::GuiSelectableButton*)(::presentation::theme::ThemeName::CheckBox));
+                <this>.SetNamedObject("chkFileDialogAllowMultipleSelection", chkFileDialogAllowMultipleSelection);
             }
             {
                 (chkFileDialogAllowMultipleSelection.Text = "FileDialogAllowMultipleSelection");
@@ -21128,6 +21235,7 @@ namespace demo
             (<precompile>30 = new (::presentation::compositions::GuiStackItemComposition*)());
             {
                 (chkFileDialogFileMustExist = new (::presentation::controls::GuiSelectableButton*)(::presentation::theme::ThemeName::CheckBox));
+                <this>.SetNamedObject("chkFileDialogFileMustExist", chkFileDialogFileMustExist);
             }
             {
                 (chkFileDialogFileMustExist.Text = "FileDialogFileMustExist");
@@ -21141,6 +21249,7 @@ namespace demo
             (<precompile>31 = new (::presentation::compositions::GuiStackItemComposition*)());
             {
                 (chkFileDialogShowReadOnlyCheckBox = new (::presentation::controls::GuiSelectableButton*)(::presentation::theme::ThemeName::CheckBox));
+                <this>.SetNamedObject("chkFileDialogShowReadOnlyCheckBox", chkFileDialogShowReadOnlyCheckBox);
             }
             {
                 (chkFileDialogShowReadOnlyCheckBox.Text = "FileDialogShowReadOnlyCheckBox");
@@ -21154,6 +21263,7 @@ namespace demo
             (<precompile>32 = new (::presentation::compositions::GuiStackItemComposition*)());
             {
                 (chkFileDialogDereferenceLinks = new (::presentation::controls::GuiSelectableButton*)(::presentation::theme::ThemeName::CheckBox));
+                <this>.SetNamedObject("chkFileDialogDereferenceLinks", chkFileDialogDereferenceLinks);
             }
             {
                 (chkFileDialogDereferenceLinks.Text = "FileDialogDereferenceLinks");
@@ -21167,6 +21277,7 @@ namespace demo
             (<precompile>33 = new (::presentation::compositions::GuiStackItemComposition*)());
             {
                 (chkFileDialogShowNetworkButton = new (::presentation::controls::GuiSelectableButton*)(::presentation::theme::ThemeName::CheckBox));
+                <this>.SetNamedObject("chkFileDialogShowNetworkButton", chkFileDialogShowNetworkButton);
             }
             {
                 (chkFileDialogShowNetworkButton.Text = "FileDialogShowNetworkButton");
@@ -21180,6 +21291,7 @@ namespace demo
             (<precompile>34 = new (::presentation::compositions::GuiStackItemComposition*)());
             {
                 (chkFileDialogPromptCreateFile = new (::presentation::controls::GuiSelectableButton*)(::presentation::theme::ThemeName::CheckBox));
+                <this>.SetNamedObject("chkFileDialogPromptCreateFile", chkFileDialogPromptCreateFile);
             }
             {
                 (chkFileDialogPromptCreateFile.Text = "FileDialogPromptCreateFile");
@@ -21193,6 +21305,7 @@ namespace demo
             (<precompile>35 = new (::presentation::compositions::GuiStackItemComposition*)());
             {
                 (chkFileDialogPromptOverwriteFile = new (::presentation::controls::GuiSelectableButton*)(::presentation::theme::ThemeName::CheckBox));
+                <this>.SetNamedObject("chkFileDialogPromptOverwriteFile", chkFileDialogPromptOverwriteFile);
             }
             {
                 (chkFileDialogPromptOverwriteFile.Text = "FileDialogPromptOverwriteFile");
@@ -21206,6 +21319,7 @@ namespace demo
             (<precompile>36 = new (::presentation::compositions::GuiStackItemComposition*)());
             {
                 (chkFileDialogDirectoryMustExist = new (::presentation::controls::GuiSelectableButton*)(::presentation::theme::ThemeName::CheckBox));
+                <this>.SetNamedObject("chkFileDialogDirectoryMustExist", chkFileDialogDirectoryMustExist);
             }
             {
                 (chkFileDialogDirectoryMustExist.Text = "FileDialogDirectoryMustExist");
@@ -21219,6 +21333,7 @@ namespace demo
             (<precompile>37 = new (::presentation::compositions::GuiStackItemComposition*)());
             {
                 (chkFileDialogAddToRecent = new (::presentation::controls::GuiSelectableButton*)(::presentation::theme::ThemeName::CheckBox));
+                <this>.SetNamedObject("chkFileDialogAddToRecent", chkFileDialogAddToRecent);
             }
             {
                 (chkFileDialogAddToRecent.Text = "FileDialogAddToRecent");
@@ -21257,6 +21372,7 @@ namespace demo
             (<precompile>40 = new (::presentation::compositions::GuiStackItemComposition*)());
             {
                 (lstFiles = new (::presentation::controls::GuiBindableTextList*)(::presentation::theme::ThemeName::TextList));
+                <this>.SetNamedObject("lstFiles", lstFiles);
             }
             {
                 (lstFiles.HorizontalAlwaysVisible = false);
@@ -21509,6 +21625,7 @@ namespace demo
                 (self.Text = "FontDialog");
             }
             (dialog = new (::presentation::controls::GuiFontDialog*)());
+            <this>.SetNamedObject("dialog", dialog);
             {
                 (dialog.ForceFontExist = true);
             }
@@ -21541,6 +21658,7 @@ namespace demo
                 <precompile>1.SetSite(0, 0, 1, 1);
             }
             (label = new (::presentation::elements::GuiSolidLabelElement^)());
+            <this>.SetNamedObject("label", label);
             {
                 (label.Color = (cast (::presentation::Color) "#FFFFFF"));
             }
@@ -21559,6 +21677,7 @@ namespace demo
             }
             {
                 (checkEffect = new (::presentation::controls::GuiSelectableButton*)(::presentation::theme::ThemeName::CheckBox));
+                <this>.SetNamedObject("checkEffect", checkEffect);
             }
             {
                 (checkEffect.Selected = false);
@@ -21802,6 +21921,7 @@ namespace demo
                 (self.Text = "MessageDialog");
             }
             (dialog = new (::presentation::controls::GuiMessageDialog*)());
+            <this>.SetNamedObject("dialog", dialog);
             {
                 self.AddComponent(dialog);
             }
@@ -21933,6 +22053,7 @@ namespace demo
             }
             {
                 (txtTitle = new (::presentation::controls::GuiSinglelineTextBox*)(::presentation::theme::ThemeName::SinglelineTextBox));
+                <this>.SetNamedObject("txtTitle", txtTitle);
             }
             (<precompile>14 = txtTitle.BoundsComposition);
             {
@@ -21953,6 +22074,7 @@ namespace demo
             }
             {
                 (txtText = new (::presentation::controls::GuiSinglelineTextBox*)(::presentation::theme::ThemeName::SinglelineTextBox));
+                <this>.SetNamedObject("txtText", txtText);
             }
             (<precompile>16 = txtText.BoundsComposition);
             {
@@ -21982,6 +22104,7 @@ namespace demo
             }
             {
                 (comboInput = new (::presentation::controls::GuiComboBoxListControl*)(::presentation::theme::ThemeName::ComboBox, <precompile>18));
+                <this>.SetNamedObject("comboInput", comboInput);
             }
             (<precompile>19 = comboInput.BoundsComposition);
             {
@@ -22008,6 +22131,7 @@ namespace demo
             }
             {
                 (comboDefaultButton = new (::presentation::controls::GuiComboBoxListControl*)(::presentation::theme::ThemeName::ComboBox, <precompile>21));
+                <this>.SetNamedObject("comboDefaultButton", comboDefaultButton);
             }
             (<precompile>22 = comboDefaultButton.BoundsComposition);
             {
@@ -22034,6 +22158,7 @@ namespace demo
             }
             {
                 (comboIcon = new (::presentation::controls::GuiComboBoxListControl*)(::presentation::theme::ThemeName::ComboBox, <precompile>24));
+                <this>.SetNamedObject("comboIcon", comboIcon);
             }
             (<precompile>25 = comboIcon.BoundsComposition);
             {
@@ -22051,6 +22176,7 @@ namespace demo
             }
             {
                 (lblOutput = new (::presentation::controls::GuiLabel*)(::presentation::theme::ThemeName::Label));
+                <this>.SetNamedObject("lblOutput", lblOutput);
             }
             {
                 <precompile>26.AddChild(lblOutput.BoundsComposition);
@@ -24036,6 +24162,7 @@ namespace demo
             }
             {
                 (comboView = new (::presentation::controls::GuiComboBoxListControl*)(::presentation::theme::ThemeName::ComboBox, <precompile>2));
+                <this>.SetNamedObject("comboView", comboView);
             }
             {
                 (comboView.SelectedIndex = 6 of (::system::Int64));
@@ -24139,6 +24266,7 @@ namespace demo
             }
             {
                 (dataGrid = new (::presentation::controls::GuiBindableDataGrid*)(::presentation::theme::ThemeName::ListView));
+                <this>.SetNamedObject("dataGrid", dataGrid);
             }
             {
                 (dataGrid.LargeImageProperty = func (<item> : ::system::Object) : (::presentation::GuiImageData^)
@@ -24746,6 +24874,7 @@ namespace demo
             }
             {
                 (comboView = new (::presentation::controls::GuiComboBoxListControl*)(::presentation::theme::ThemeName::ComboBox, <precompile>2));
+                <this>.SetNamedObject("comboView", comboView);
             }
             {
                 (comboView.SelectedIndex = 5 of (::system::Int64));
@@ -24849,6 +24978,7 @@ namespace demo
             }
             {
                 (listView = new (::presentation::controls::GuiBindableListView*)(::presentation::theme::ThemeName::ListView));
+                <this>.SetNamedObject("listView", listView);
             }
             {
                 (listView.LargeImageProperty = func (<item> : ::system::Object) : (::presentation::GuiImageData^)
@@ -25317,6 +25447,7 @@ namespace demo
             }
             {
                 (buttonRead = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
+                <this>.SetNamedObject("buttonRead", buttonRead);
             }
             {
                 (buttonRead.Text = "Read (false)");
@@ -25333,6 +25464,7 @@ namespace demo
             }
             {
                 (textList = new (::presentation::controls::GuiBindableTextList*)(::presentation::theme::ThemeName::TextList));
+                <this>.SetNamedObject("textList", textList);
             }
             {
                 (textList.CheckedProperty = func (<item> : ::system::Object, <value> : ::system::Boolean, <update> : ::system::Boolean) : (::system::Boolean)
@@ -25656,6 +25788,7 @@ namespace demo
                         return item.DoNotUse;
                     }
                 }));
+                <this>.SetNamedObject("treeView", treeView);
             }
             {
                 (treeView.ImageProperty = func (<item> : ::system::Object) : (::presentation::GuiImageData^)
@@ -26013,6 +26146,7 @@ namespace demo
             }
             {
                 (comboView = new (::presentation::controls::GuiComboBoxListControl*)(::presentation::theme::ThemeName::ComboBox, <precompile>2));
+                <this>.SetNamedObject("comboView", comboView);
             }
             {
                 (comboView.SelectedIndex = 5 of (::system::Int64));
@@ -26100,6 +26234,7 @@ namespace demo
             }
             {
                 (listView = new (::presentation::controls::GuiListView*)(::presentation::theme::ThemeName::ListView));
+                <this>.SetNamedObject("listView", listView);
             }
             {
                 var <collection> = listView.DataColumns;
@@ -26567,6 +26702,7 @@ namespace demo
             }
             {
                 (buttonRead = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
+                <this>.SetNamedObject("buttonRead", buttonRead);
             }
             {
                 (buttonRead.Text = "Read (false)");
@@ -26583,6 +26719,7 @@ namespace demo
             }
             {
                 (textList = new (::presentation::controls::GuiTextList*)(::presentation::theme::ThemeName::TextList));
+                <this>.SetNamedObject("textList", textList);
             }
             (<precompile>8 = new (::presentation::controls::list::TextItem^)());
             {
@@ -26877,6 +27014,7 @@ namespace demo
             }
             {
                 (treeView = new (::presentation::controls::GuiTreeView*)(::presentation::theme::ThemeName::TreeView));
+                <this>.SetNamedObject("treeView", treeView);
             }
             (<precompile>16 = treeView.BoundsComposition);
             {
@@ -27638,6 +27776,7 @@ namespace demo
                 <precompile>1.SetColumnOption(1, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
             }
             (content = new (::presentation::compositions::GuiCellComposition*)());
+            <this>.SetNamedObject("content", content);
             {
                 content.SetSite(0, 0, 1, 1);
             }
@@ -27649,6 +27788,7 @@ namespace demo
                 <precompile>2.SetSite(0, 1, 1, 1);
             }
             (controller = new (::demo::EnglishNumbersController*)());
+            <this>.SetNamedObject("controller", controller);
             (<precompile>3 = controller.BoundsComposition);
             {
                 (<precompile>3.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
@@ -28627,6 +28767,7 @@ namespace demo
                 (<precompile>2.OwnedElement = <precompile>3);
             }
             (responsive = new (::presentation::compositions::GuiResponsiveGroupComposition*)());
+            <this>.SetNamedObject("responsive", responsive);
             {
                 (responsive.AlignmentToParent = {left : 1; top : 1; right : 1; bottom : 1;} of (::presentation::Margin));
             }
@@ -29295,6 +29436,7 @@ namespace demo
                 (<precompile>2.OwnedElement = <precompile>3);
             }
             (responsive = new (::presentation::compositions::GuiResponsiveStackComposition*)());
+            <this>.SetNamedObject("responsive", responsive);
             {
                 (responsive.AlignmentToParent = {left : 1; top : 1; right : 1; bottom : 1;} of (::presentation::Margin));
             }
@@ -30186,6 +30328,7 @@ namespace demo
                 (<precompile>2.OwnedElement = <precompile>3);
             }
             (responsive = new (::presentation::compositions::GuiResponsiveViewComposition*)());
+            <this>.SetNamedObject("responsive", responsive);
             (<precompile>4 = new (::presentation::compositions::GuiResponsiveFixedComposition*)());
             (<precompile>5 = new (::presentation::compositions::GuiStackComposition*)());
             {
@@ -30356,6 +30499,7 @@ namespace demo
             }
             {
                 (documentBox = new (::presentation::controls::GuiDocumentLabel*)(::presentation::theme::ThemeName::DocumentTextBox));
+                <this>.SetNamedObject("documentBox", documentBox);
             }
             {
                 (documentBox.EditMode = Editable of (::presentation::controls::GuiDocumentCommonInterface::EditMode));
@@ -31843,6 +31987,7 @@ namespace demo
                 (<precompile>2 = new (::presentation::controls::GuiTab*)(::presentation::theme::ThemeName::Tab));
             }
             (t1 = new (::demo::TextBoxSubTabPage*)());
+            <this>.SetNamedObject("t1", t1);
             {
                 (t1.Alt = "T");
             }
@@ -31854,6 +31999,7 @@ namespace demo
                 <collection>.Add(t1);
             }
             (t2 = new (::demo::TextBoxSubTabPage*)());
+            <this>.SetNamedObject("t2", t2);
             {
                 (t2.TextBoxAcceptTabInput = false);
             }
@@ -31868,6 +32014,7 @@ namespace demo
                 <collection>.Add(t2);
             }
             (d1 = new (::demo::DocumentBoxSubTabPage*)());
+            <this>.SetNamedObject("d1", d1);
             {
                 (d1.Alt = "D");
             }
@@ -31879,6 +32026,7 @@ namespace demo
                 <collection>.Add(d1);
             }
             (d2 = new (::demo::DocumentBoxSubTabPage*)());
+            <this>.SetNamedObject("d2", d2);
             {
                 (d2.TextBoxAcceptTabInput = false);
             }

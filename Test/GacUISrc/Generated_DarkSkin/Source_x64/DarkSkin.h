@@ -7161,7 +7161,7 @@ Closures
 
 		__vwsnf43_DarkSkin_darkskin_ThemeConstructor___vwsn_darkskin_Theme_Initialize_(::darkskin::ThemeConstructor* __vwsnctorthis_0);
 
-		::vl::presentation::templates::GuiMultilineTextBoxTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
+		::vl::presentation::templates::GuiScrollViewTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
 	};
 
 	struct __vwsnf44_DarkSkin_darkskin_ThemeConstructor___vwsn_darkskin_Theme_Initialize_
@@ -7170,7 +7170,7 @@ Closures
 
 		__vwsnf44_DarkSkin_darkskin_ThemeConstructor___vwsn_darkskin_Theme_Initialize_(::darkskin::ThemeConstructor* __vwsnctorthis_0);
 
-		::vl::presentation::templates::GuiTabTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
+		::vl::presentation::templates::GuiLabelTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
 	};
 
 	struct __vwsnf45_DarkSkin_darkskin_ThemeConstructor___vwsn_darkskin_Theme_Initialize_
@@ -7179,7 +7179,7 @@ Closures
 
 		__vwsnf45_DarkSkin_darkskin_ThemeConstructor___vwsn_darkskin_Theme_Initialize_(::darkskin::ThemeConstructor* __vwsnctorthis_0);
 
-		::vl::presentation::templates::GuiScrollViewTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
+		::vl::presentation::templates::GuiWindowTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
 	};
 
 	struct __vwsnf46_DarkSkin_darkskin_ThemeConstructor___vwsn_darkskin_Theme_Initialize_
@@ -7188,7 +7188,7 @@ Closures
 
 		__vwsnf46_DarkSkin_darkskin_ThemeConstructor___vwsn_darkskin_Theme_Initialize_(::darkskin::ThemeConstructor* __vwsnctorthis_0);
 
-		::vl::presentation::templates::GuiLabelTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
+		::vl::presentation::templates::GuiWindowTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
 	};
 
 	struct __vwsnf47_DarkSkin_darkskin_ThemeConstructor___vwsn_darkskin_Theme_Initialize_
@@ -7206,7 +7206,7 @@ Closures
 
 		__vwsnf48_DarkSkin_darkskin_ThemeConstructor___vwsn_darkskin_Theme_Initialize_(::darkskin::ThemeConstructor* __vwsnctorthis_0);
 
-		::vl::presentation::templates::GuiWindowTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
+		::vl::presentation::templates::GuiMultilineTextBoxTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
 	};
 
 	struct __vwsnf49_DarkSkin_darkskin_ThemeConstructor___vwsn_darkskin_Theme_Initialize_
@@ -7215,7 +7215,7 @@ Closures
 
 		__vwsnf49_DarkSkin_darkskin_ThemeConstructor___vwsn_darkskin_Theme_Initialize_(::darkskin::ThemeConstructor* __vwsnctorthis_0);
 
-		::vl::presentation::templates::GuiWindowTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
+		::vl::presentation::templates::GuiTabTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
 	};
 
 	struct __vwsnf4_DarkSkin_darkskin_ThemeConstructor___vwsn_darkskin_Theme_Initialize_

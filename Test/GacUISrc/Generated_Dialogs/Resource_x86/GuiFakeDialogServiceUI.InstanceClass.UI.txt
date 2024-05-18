@@ -76,6 +76,7 @@ namespace gaclib_controls
             }
             {
                 (textBox = new (::presentation::controls::GuiSinglelineTextBox*)(::presentation::theme::ThemeName::SinglelineTextBox));
+                <this>.SetNamedObject("textBox", textBox);
             }
             (<precompile>2 = textBox.BoundsComposition);
             {
@@ -94,6 +95,7 @@ namespace gaclib_controls
             {
                 (tracker = new (::presentation::controls::GuiScroll*)(::presentation::theme::ThemeName::HTracker));
                 tracker.SetPageSize(0);
+                <this>.SetNamedObject("tracker", tracker);
             }
             {
                 (tracker.BigMove = 16 of (::system::Int32));
@@ -629,6 +631,7 @@ namespace gaclib_controls
                 <precompile>9.SetSite(0, 1, 1, 1);
             }
             (colorRed = new (::gaclib_controls::ColorComponentControl*)());
+            <this>.SetNamedObject("colorRed", colorRed);
             {
                 (colorRed.TextBoxAlt = "R");
             }
@@ -647,6 +650,7 @@ namespace gaclib_controls
                 <precompile>11.SetSite(1, 1, 1, 1);
             }
             (colorGreen = new (::gaclib_controls::ColorComponentControl*)());
+            <this>.SetNamedObject("colorGreen", colorGreen);
             {
                 (colorGreen.TextBoxAlt = "G");
             }
@@ -665,6 +669,7 @@ namespace gaclib_controls
                 <precompile>13.SetSite(2, 1, 1, 1);
             }
             (colorBlue = new (::gaclib_controls::ColorComponentControl*)());
+            <this>.SetNamedObject("colorBlue", colorBlue);
             {
                 (colorBlue.TextBoxAlt = "B");
             }
@@ -1457,6 +1462,7 @@ namespace gaclib_controls
                 <precompile>1.SetSite(0, 0, 1, 3);
             }
             (colorControl = new (::gaclib_controls::ColorDialogControl*)(ViewModel));
+            <this>.SetNamedObject("colorControl", colorControl);
             (<precompile>2 = colorControl.BoundsComposition);
             {
                 (<precompile>2.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
@@ -2012,6 +2018,7 @@ namespace gaclib_controls
                 <precompile>1.SetSite(0, 0, 1, 3);
             }
             (filePickerControl = new (::gaclib_controls::FilePickerControl*)(ViewModel));
+            <this>.SetNamedObject("filePickerControl", filePickerControl);
             (<precompile>2 = filePickerControl.BoundsComposition);
             {
                 (<precompile>2.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
@@ -2028,6 +2035,7 @@ namespace gaclib_controls
             }
             {
                 (buttonOK = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
+                <this>.SetNamedObject("buttonOK", buttonOK);
             }
             (<precompile>4 = buttonOK.BoundsComposition);
             {
@@ -2617,6 +2625,7 @@ namespace gaclib_controls
             }
             {
                 (treeView = new (::presentation::controls::GuiBindableTreeView*)(::presentation::theme::ThemeName::TreeView));
+                <this>.SetNamedObject("treeView", treeView);
             }
             {
                 (treeView.ChildrenProperty = func (<item> : ::system::Object) : (::system::Enumerable^)
@@ -2657,6 +2666,7 @@ namespace gaclib_controls
             }
             {
                 (dataGrid = new (::presentation::controls::GuiBindableDataGrid*)(::presentation::theme::ThemeName::ListView));
+                <this>.SetNamedObject("dataGrid", dataGrid);
             }
             (<precompile>12 = dataGrid.FocusableComposition);
             {
@@ -2749,6 +2759,7 @@ namespace gaclib_controls
             }
             {
                 (textBox = new (::presentation::controls::GuiSinglelineTextBox*)(::presentation::theme::ThemeName::SinglelineTextBox));
+                <this>.SetNamedObject("textBox", textBox);
             }
             (<precompile>20 = textBox.FocusableComposition);
             (<precompile>19 = textBox.BoundsComposition);
@@ -2786,6 +2797,7 @@ namespace gaclib_controls
             }
             {
                 (comboBox = new (::presentation::controls::GuiComboBoxListControl*)(::presentation::theme::ThemeName::ComboBox, <precompile>22));
+                <this>.SetNamedObject("comboBox", comboBox);
             }
             (<precompile>23 = comboBox.BoundsComposition);
             {
@@ -3720,6 +3732,7 @@ namespace gaclib_controls
             }
             {
                 (textBox = new (::presentation::controls::GuiSinglelineTextBox*)(::presentation::theme::ThemeName::SinglelineTextBox));
+                <this>.SetNamedObject("textBox", textBox);
             }
             (<precompile>3 = textBox.BoundsComposition);
             {
@@ -3740,6 +3753,7 @@ namespace gaclib_controls
             }
             {
                 (textList = new (::presentation::controls::GuiBindableTextList*)(::presentation::theme::ThemeName::TextList));
+                <this>.SetNamedObject("textList", textList);
             }
             {
                 (textList.HorizontalAlwaysVisible = false);
@@ -4315,6 +4329,7 @@ namespace gaclib_controls
             }
             {
                 (textBox = new (::presentation::controls::GuiSinglelineTextBox*)(::presentation::theme::ThemeName::SinglelineTextBox));
+                <this>.SetNamedObject("textBox", textBox);
             }
             (<precompile>3 = textBox.BoundsComposition);
             {
@@ -4335,6 +4350,7 @@ namespace gaclib_controls
             }
             {
                 (textList = new (::presentation::controls::GuiBindableTextList*)(::presentation::theme::ThemeName::TextList));
+                <this>.SetNamedObject("textList", textList);
             }
             {
                 (textList.HorizontalAlwaysVisible = false);
@@ -5060,6 +5076,7 @@ namespace gaclib_controls
                 <precompile>3.SetSite(0, 0, 3, 1);
             }
             (nameControl = new (::gaclib_controls::FontNameControl*)(ViewModel));
+            <this>.SetNamedObject("nameControl", nameControl);
             (<precompile>4 = nameControl.BoundsComposition);
             {
                 (<precompile>4.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
@@ -5075,6 +5092,7 @@ namespace gaclib_controls
                 <precompile>5.SetSite(0, 1, 1, 1);
             }
             (sizeControl = new (::gaclib_controls::FontSizeControl*)());
+            <this>.SetNamedObject("sizeControl", sizeControl);
             (<precompile>6 = sizeControl.BoundsComposition);
             {
                 (<precompile>6.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
@@ -5109,6 +5127,7 @@ namespace gaclib_controls
             (<precompile>10 = new (::presentation::compositions::GuiStackItemComposition*)());
             {
                 (checkBold = new (::presentation::controls::GuiSelectableButton*)(::presentation::theme::ThemeName::CheckBox));
+                <this>.SetNamedObject("checkBold", checkBold);
             }
             {
                 (checkBold.Alt = "B");
@@ -5122,6 +5141,7 @@ namespace gaclib_controls
             (<precompile>11 = new (::presentation::compositions::GuiStackItemComposition*)());
             {
                 (checkItalic = new (::presentation::controls::GuiSelectableButton*)(::presentation::theme::ThemeName::CheckBox));
+                <this>.SetNamedObject("checkItalic", checkItalic);
             }
             {
                 (checkItalic.Alt = "I");
@@ -5135,6 +5155,7 @@ namespace gaclib_controls
             (<precompile>12 = new (::presentation::compositions::GuiStackItemComposition*)());
             {
                 (checkUnderline = new (::presentation::controls::GuiSelectableButton*)(::presentation::theme::ThemeName::CheckBox));
+                <this>.SetNamedObject("checkUnderline", checkUnderline);
             }
             {
                 (checkUnderline.Alt = "U");
@@ -5148,6 +5169,7 @@ namespace gaclib_controls
             (<precompile>13 = new (::presentation::compositions::GuiStackItemComposition*)());
             {
                 (checkStrikeline = new (::presentation::controls::GuiSelectableButton*)(::presentation::theme::ThemeName::CheckBox));
+                <this>.SetNamedObject("checkStrikeline", checkStrikeline);
             }
             {
                 (checkStrikeline.Alt = "U");
@@ -5161,6 +5183,7 @@ namespace gaclib_controls
             (<precompile>14 = new (::presentation::compositions::GuiStackItemComposition*)());
             {
                 (checkHAA = new (::presentation::controls::GuiSelectableButton*)(::presentation::theme::ThemeName::CheckBox));
+                <this>.SetNamedObject("checkHAA", checkHAA);
             }
             {
                 (checkHAA.Alt = "H");
@@ -5174,6 +5197,7 @@ namespace gaclib_controls
             (<precompile>15 = new (::presentation::compositions::GuiStackItemComposition*)());
             {
                 (checkVAA = new (::presentation::controls::GuiSelectableButton*)(::presentation::theme::ThemeName::CheckBox));
+                <this>.SetNamedObject("checkVAA", checkVAA);
             }
             {
                 (checkVAA.Alt = "V");
@@ -5205,6 +5229,7 @@ namespace gaclib_controls
                 (<precompile>21.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             (colorBounds = new (::presentation::compositions::GuiBoundsComposition*)());
+            <this>.SetNamedObject("colorBounds", colorBounds);
             {
                 (colorBounds.PreferredMinSize = {y : 20;} of (::presentation::Size));
             }
@@ -5226,6 +5251,7 @@ namespace gaclib_controls
                 (<precompile>20.AlignmentToParent = {left : 1; top : 1; right : 1; bottom : 1;} of (::presentation::Margin));
             }
             (colorBackground = new (::presentation::elements::GuiSolidBackgroundElement^)());
+            <this>.SetNamedObject("colorBackground", colorBackground);
             {
                 (<precompile>20.OwnedElement = colorBackground);
             }
@@ -6926,6 +6952,7 @@ namespace gaclib_controls
                 <precompile>3.SetSite(0, 0, 1, 1);
             }
             (nameControl = new (::gaclib_controls::FontNameControl*)(ViewModel));
+            <this>.SetNamedObject("nameControl", nameControl);
             (<precompile>4 = nameControl.BoundsComposition);
             {
                 (<precompile>4.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
@@ -6941,6 +6968,7 @@ namespace gaclib_controls
                 <precompile>5.SetSite(0, 1, 1, 1);
             }
             (sizeControl = new (::gaclib_controls::FontSizeControl*)());
+            <this>.SetNamedObject("sizeControl", sizeControl);
             (<precompile>6 = sizeControl.BoundsComposition);
             {
                 (<precompile>6.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
@@ -7803,6 +7831,7 @@ namespace gaclib_controls
             }
             {
                 (buttonControl = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
+                <this>.SetNamedObject("buttonControl", buttonControl);
             }
             (<precompile>0 = buttonControl.BoundsComposition);
             {
@@ -8427,6 +8456,7 @@ namespace gaclib_controls
                 <precompile>14.SetSite(0, 1, 1, 1);
             }
             (buttonStack = new (::presentation::compositions::GuiRepeatStackComposition*)());
+            <this>.SetNamedObject("buttonStack", buttonStack);
             {
                 (buttonStack.ItemTemplate = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiTemplate*)
                 {

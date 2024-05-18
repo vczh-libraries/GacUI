@@ -16182,6 +16182,7 @@ namespace demo
 			::vl::__vwsn::This(this->__vwsn_precompile_18)->SetText(::vl::WString::Unmanaged(L"Complex Animation"));
 		}
 		(this->animationBackground = new ::vl::presentation::compositions::GuiBoundsComposition());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"animationBackground"), ::vl::__vwsn::Box(this->animationBackground));
 		{
 			::vl::__vwsn::This(this->animationBackground)->SetPreferredMinSize([&](){ ::vl::presentation::Size __vwsn_temp__; __vwsn_temp__.x = static_cast<::vl::vint64_t>(200L); __vwsn_temp__.y = static_cast<::vl::vint64_t>(200L); return __vwsn_temp__; }());
 		}
@@ -16475,6 +16476,7 @@ Class (::demo::CategoryEditorConstructor)
 		}
 		{
 			(this->comboBox = new ::vl::presentation::controls::GuiComboBoxListControl(::vl::presentation::theme::ThemeName::ComboBox, static_cast<::vl::presentation::controls::GuiSelectableListControl*>(this->__vwsn_precompile_0)));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"comboBox"), ::vl::__vwsn::Box(this->comboBox));
 		}
 		{
 			::vl::__vwsn::This(this->comboBox)->SetItemTemplate(vl::Func(::vl_workflow_global::__vwsnf120_Demo_demo_CategoryEditorConstructor___vwsn_demo_CategoryEditor_Initialize_(this)));
@@ -17010,6 +17012,7 @@ Class (::demo::DataGridTabPageConstructor)
 		}
 		{
 			(this->comboView = new ::vl::presentation::controls::GuiComboBoxListControl(::vl::presentation::theme::ThemeName::ComboBox, static_cast<::vl::presentation::controls::GuiSelectableListControl*>(this->__vwsn_precompile_2)));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"comboView"), ::vl::__vwsn::Box(this->comboView));
 		}
 		{
 			::vl::__vwsn::This(this->comboView)->SetSelectedIndex(static_cast<::vl::vint64_t>(6L));
@@ -17053,6 +17056,7 @@ Class (::demo::DataGridTabPageConstructor)
 		}
 		{
 			(this->dataGrid = new ::vl::presentation::controls::GuiBindableDataGrid(::vl::presentation::theme::ThemeName::ListView));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"dataGrid"), ::vl::__vwsn::Box(this->dataGrid));
 		}
 		{
 			::vl::__vwsn::This(this->dataGrid)->SetLargeImageProperty(vl::Func(::vl_workflow_global::__vwsnf1_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_(this)));
@@ -17157,6 +17161,7 @@ Class (::demo::DataGridTabPageConstructor)
 			(this->__vwsn_precompile_19 = new ::vl::presentation::controls::GuiToolstripMenu(::vl::presentation::theme::ThemeName::Menu, static_cast<::vl::presentation::controls::GuiControl*>(nullptr)));
 		}
 		(this->dateFilter = new ::demo::DateFilter());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"dateFilter"), ::vl::__vwsn::Box(this->dateFilter));
 		(this->__vwsn_precompile_20 = ::vl::__vwsn::This(this->dateFilter)->GetBoundsComposition());
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_20)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint64_t>(0L); __vwsn_temp__.top = static_cast<::vl::vint64_t>(0L); __vwsn_temp__.right = static_cast<::vl::vint64_t>(0L); __vwsn_temp__.bottom = static_cast<::vl::vint64_t>(0L); return __vwsn_temp__; }());
@@ -17317,6 +17322,7 @@ Class (::demo::DateEditorConstructor)
 		(this->self = __vwsn_this_);
 		{
 			(this->comboBox = new ::vl::presentation::controls::GuiDateComboBox(::vl::presentation::theme::ThemeName::DateComboBox));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"comboBox"), ::vl::__vwsn::Box(this->comboBox));
 		}
 		(this->__vwsn_precompile_0 = ::vl::__vwsn::This(this->comboBox)->GetBoundsComposition());
 		{
@@ -17394,6 +17400,7 @@ Class (::demo::DateFilterConstructor)
 		}
 		{
 			(this->checkFrom = new ::vl::presentation::controls::GuiSelectableButton(::vl::presentation::theme::ThemeName::CheckBox));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"checkFrom"), ::vl::__vwsn::Box(this->checkFrom));
 		}
 		{
 			::vl::__vwsn::This(this->checkFrom)->SetText(::vl::WString::Unmanaged(L"From:"));
@@ -17410,6 +17417,7 @@ Class (::demo::DateFilterConstructor)
 		}
 		{
 			(this->dateFrom = new ::vl::presentation::controls::GuiDateComboBox(::vl::presentation::theme::ThemeName::DateComboBox));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"dateFrom"), ::vl::__vwsn::Box(this->dateFrom));
 		}
 		{
 			::vl::__vwsn::This(this->dateFrom)->SetSelectedDate(::vl::__vwsn::Parse<::vl::DateTime>(::vl::WString::Unmanaged(L"1988-01-01 00:00:00.000")));
@@ -17430,6 +17438,7 @@ Class (::demo::DateFilterConstructor)
 		}
 		{
 			(this->checkTo = new ::vl::presentation::controls::GuiSelectableButton(::vl::presentation::theme::ThemeName::CheckBox));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"checkTo"), ::vl::__vwsn::Box(this->checkTo));
 		}
 		{
 			::vl::__vwsn::This(this->checkTo)->SetText(::vl::WString::Unmanaged(L"To:"));
@@ -17446,6 +17455,7 @@ Class (::demo::DateFilterConstructor)
 		}
 		{
 			(this->dateTo = new ::vl::presentation::controls::GuiDateComboBox(::vl::presentation::theme::ThemeName::DateComboBox));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"dateTo"), ::vl::__vwsn::Box(this->dateTo));
 		}
 		{
 			::vl::__vwsn::This(this->dateTo)->SetSelectedDate(::vl::__vwsn::Parse<::vl::DateTime>(::vl::WString::Unmanaged(L"2000-01-01 00:00:00.000")));
@@ -17586,6 +17596,7 @@ Class (::demo::DatePickerTabPageConstructor)
 		}
 		{
 			(this->dp1 = new ::vl::presentation::controls::GuiDatePicker(::vl::presentation::theme::ThemeName::DatePicker));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"dp1"), ::vl::__vwsn::Box(this->dp1));
 		}
 		(this->__vwsn_precompile_2 = ::vl::__vwsn::This(this->dp1)->GetBoundsComposition());
 		{
@@ -17606,6 +17617,7 @@ Class (::demo::DatePickerTabPageConstructor)
 		}
 		{
 			(this->dp2 = new ::vl::presentation::controls::GuiDatePicker(::vl::presentation::theme::ThemeName::DatePicker));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"dp2"), ::vl::__vwsn::Box(this->dp2));
 		}
 		(this->__vwsn_precompile_4 = ::vl::__vwsn::This(this->dp2)->GetBoundsComposition());
 		{
@@ -17626,6 +17638,7 @@ Class (::demo::DatePickerTabPageConstructor)
 		}
 		{
 			(this->dc1 = new ::vl::presentation::controls::GuiDateComboBox(::vl::presentation::theme::ThemeName::DateComboBox));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"dc1"), ::vl::__vwsn::Box(this->dc1));
 		}
 		(this->__vwsn_precompile_6 = ::vl::__vwsn::This(this->dc1)->GetBoundsComposition());
 		{
@@ -17646,6 +17659,7 @@ Class (::demo::DatePickerTabPageConstructor)
 		}
 		{
 			(this->dc2 = new ::vl::presentation::controls::GuiDateComboBox(::vl::presentation::theme::ThemeName::DateComboBox));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"dc2"), ::vl::__vwsn::Box(this->dc2));
 		}
 		(this->__vwsn_precompile_8 = ::vl::__vwsn::This(this->dc2)->GetBoundsComposition());
 		{
@@ -18011,6 +18025,7 @@ Class (::demo::DocumentEditorBaseConstructor)
 			::vl::__vwsn::This(this->self)->SetText(::vl::WString::Unmanaged(L"Document Editor"));
 		}
 		(this->dialogMessage = new ::vl::presentation::controls::GuiMessageDialog());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"dialogMessage"), ::vl::__vwsn::Box(this->dialogMessage));
 		{
 			::vl::__vwsn::This(this->dialogMessage)->SetTitle(::vl::WString::Unmanaged(L"You Clicked a Hyperlink!"));
 		}
@@ -18018,10 +18033,12 @@ Class (::demo::DocumentEditorBaseConstructor)
 			::vl::__vwsn::This(this->self)->AddComponent(static_cast<::vl::presentation::controls::GuiComponent*>(this->dialogMessage));
 		}
 		(this->dialogNotImpl = new ::vl::presentation::controls::GuiMessageDialog());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"dialogNotImpl"), ::vl::__vwsn::Box(this->dialogNotImpl));
 		{
 			::vl::__vwsn::This(this->self)->AddComponent(static_cast<::vl::presentation::controls::GuiComponent*>(this->dialogNotImpl));
 		}
 		(this->dialogOpen = new ::vl::presentation::controls::GuiOpenFileDialog());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"dialogOpen"), ::vl::__vwsn::Box(this->dialogOpen));
 		{
 			::vl::__vwsn::This(this->dialogOpen)->SetOptions((::vl::presentation::INativeDialogService::FileDialogOptions::FileDialogFileMustExist | ::vl::presentation::INativeDialogService::FileDialogOptions::FileDialogDereferenceLinks));
 		}
@@ -18038,6 +18055,7 @@ Class (::demo::DocumentEditorBaseConstructor)
 			::vl::__vwsn::This(this->self)->AddComponent(static_cast<::vl::presentation::controls::GuiComponent*>(this->dialogOpen));
 		}
 		(this->dialogOpenDoc = new ::vl::presentation::controls::GuiOpenFileDialog());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"dialogOpenDoc"), ::vl::__vwsn::Box(this->dialogOpenDoc));
 		{
 			::vl::__vwsn::This(this->dialogOpenDoc)->SetOptions((::vl::presentation::INativeDialogService::FileDialogOptions::FileDialogFileMustExist | ::vl::presentation::INativeDialogService::FileDialogOptions::FileDialogDereferenceLinks));
 		}
@@ -18051,6 +18069,7 @@ Class (::demo::DocumentEditorBaseConstructor)
 			::vl::__vwsn::This(this->self)->AddComponent(static_cast<::vl::presentation::controls::GuiComponent*>(this->dialogOpenDoc));
 		}
 		(this->dialogSaveDoc = new ::vl::presentation::controls::GuiSaveFileDialog());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"dialogSaveDoc"), ::vl::__vwsn::Box(this->dialogSaveDoc));
 		{
 			::vl::__vwsn::This(this->dialogSaveDoc)->SetOptions(::vl::presentation::INativeDialogService::FileDialogOptions::FileDialogPromptOverwriteFile);
 		}
@@ -18064,6 +18083,7 @@ Class (::demo::DocumentEditorBaseConstructor)
 			::vl::__vwsn::This(this->self)->AddComponent(static_cast<::vl::presentation::controls::GuiComponent*>(this->dialogSaveDoc));
 		}
 		(this->dialogSaveDocPrivate = new ::vl::presentation::controls::GuiSaveFileDialog());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"dialogSaveDocPrivate"), ::vl::__vwsn::Box(this->dialogSaveDocPrivate));
 		{
 			::vl::__vwsn::This(this->dialogSaveDocPrivate)->SetOptions(::vl::presentation::INativeDialogService::FileDialogOptions::FileDialogPromptOverwriteFile);
 		}
@@ -18077,6 +18097,7 @@ Class (::demo::DocumentEditorBaseConstructor)
 			::vl::__vwsn::This(this->self)->AddComponent(static_cast<::vl::presentation::controls::GuiComponent*>(this->dialogSaveDocPrivate));
 		}
 		(this->dialogQueryClose = new ::vl::presentation::controls::GuiMessageDialog());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"dialogQueryClose"), ::vl::__vwsn::Box(this->dialogQueryClose));
 		{
 			::vl::__vwsn::This(this->dialogQueryClose)->SetIcon(::vl::presentation::INativeDialogService::MessageBoxIcons::IconQuestion);
 		}
@@ -18104,6 +18125,7 @@ Class (::demo::DocumentEditorBaseConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetColumnOption(static_cast<::vl::vint64_t>(0L), [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::Percentage; __vwsn_temp__.percentage = static_cast<double>(1.0); return __vwsn_temp__; }());
 		}
 		(this->menuContainer = new ::vl::presentation::compositions::GuiCellComposition());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"menuContainer"), ::vl::__vwsn::Box(this->menuContainer));
 		{
 			::vl::__vwsn::This(this->menuContainer)->SetSite(static_cast<::vl::vint64_t>(0L), static_cast<::vl::vint64_t>(0L), static_cast<::vl::vint64_t>(1L), static_cast<::vl::vint64_t>(1L));
 		}
@@ -18111,6 +18133,7 @@ Class (::demo::DocumentEditorBaseConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_0)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->menuContainer));
 		}
 		(this->toolstripContainer = new ::vl::presentation::compositions::GuiCellComposition());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"toolstripContainer"), ::vl::__vwsn::Box(this->toolstripContainer));
 		{
 			::vl::__vwsn::This(this->toolstripContainer)->SetSite(static_cast<::vl::vint64_t>(1L), static_cast<::vl::vint64_t>(0L), static_cast<::vl::vint64_t>(1L), static_cast<::vl::vint64_t>(1L));
 		}
@@ -18123,6 +18146,7 @@ Class (::demo::DocumentEditorBaseConstructor)
 		}
 		{
 			(this->document = new ::vl::presentation::controls::GuiDocumentViewer(::vl::presentation::theme::ThemeName::DocumentViewer));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"document"), ::vl::__vwsn::Box(this->document));
 		}
 		{
 			::vl::__vwsn::This(this->document)->SetEditMode(::vl::presentation::controls::GuiDocumentCommonInterface::EditMode::Editable);
@@ -18144,6 +18168,7 @@ Class (::demo::DocumentEditorBaseConstructor)
 			::vl::__vwsn::This(::vl::__vwsn::This(this->self)->GetContainerComposition())->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_0));
 		}
 		(this->commandLoadPrivate = new ::vl::presentation::controls::GuiToolstripCommand());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"commandLoadPrivate"), ::vl::__vwsn::Box(this->commandLoadPrivate));
 		{
 			::vl::__vwsn::This(this->commandLoadPrivate)->SetText(::vl::WString::Unmanaged(L"Load as Private Format"));
 		}
@@ -18151,6 +18176,7 @@ Class (::demo::DocumentEditorBaseConstructor)
 			::vl::__vwsn::This(this->self)->AddComponent(static_cast<::vl::presentation::controls::GuiComponent*>(this->commandLoadPrivate));
 		}
 		(this->commandSavePrivate = new ::vl::presentation::controls::GuiToolstripCommand());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"commandSavePrivate"), ::vl::__vwsn::Box(this->commandSavePrivate));
 		{
 			::vl::__vwsn::This(this->commandSavePrivate)->SetText(::vl::WString::Unmanaged(L"Save as Private Format"));
 		}
@@ -18158,6 +18184,7 @@ Class (::demo::DocumentEditorBaseConstructor)
 			::vl::__vwsn::This(this->self)->AddComponent(static_cast<::vl::presentation::controls::GuiComponent*>(this->commandSavePrivate));
 		}
 		(this->commandSaveRtf = new ::vl::presentation::controls::GuiToolstripCommand());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"commandSaveRtf"), ::vl::__vwsn::Box(this->commandSaveRtf));
 		{
 			::vl::__vwsn::This(this->commandSaveRtf)->SetText(::vl::WString::Unmanaged(L"Save as RTF"));
 		}
@@ -18165,6 +18192,7 @@ Class (::demo::DocumentEditorBaseConstructor)
 			::vl::__vwsn::This(this->self)->AddComponent(static_cast<::vl::presentation::controls::GuiComponent*>(this->commandSaveRtf));
 		}
 		(this->commandSaveHtml = new ::vl::presentation::controls::GuiToolstripCommand());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"commandSaveHtml"), ::vl::__vwsn::Box(this->commandSaveHtml));
 		{
 			::vl::__vwsn::This(this->commandSaveHtml)->SetText(::vl::WString::Unmanaged(L"Save as HTML"));
 		}
@@ -18172,6 +18200,7 @@ Class (::demo::DocumentEditorBaseConstructor)
 			::vl::__vwsn::This(this->self)->AddComponent(static_cast<::vl::presentation::controls::GuiComponent*>(this->commandSaveHtml));
 		}
 		(this->commandUndo = new ::vl::presentation::controls::GuiToolstripCommand());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"commandUndo"), ::vl::__vwsn::Box(this->commandUndo));
 		{
 			::vl::__vwsn::This(this->commandUndo)->SetShortcutBuilder(::vl::WString::Unmanaged(L"Ctrl+Z"));
 		}
@@ -18182,6 +18211,7 @@ Class (::demo::DocumentEditorBaseConstructor)
 			::vl::__vwsn::This(this->self)->AddComponent(static_cast<::vl::presentation::controls::GuiComponent*>(this->commandUndo));
 		}
 		(this->commandRedo = new ::vl::presentation::controls::GuiToolstripCommand());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"commandRedo"), ::vl::__vwsn::Box(this->commandRedo));
 		{
 			::vl::__vwsn::This(this->commandRedo)->SetShortcutBuilder(::vl::WString::Unmanaged(L"Ctrl+Y"));
 		}
@@ -18192,6 +18222,7 @@ Class (::demo::DocumentEditorBaseConstructor)
 			::vl::__vwsn::This(this->self)->AddComponent(static_cast<::vl::presentation::controls::GuiComponent*>(this->commandRedo));
 		}
 		(this->commandCopy = new ::vl::presentation::controls::GuiToolstripCommand());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"commandCopy"), ::vl::__vwsn::Box(this->commandCopy));
 		{
 			::vl::__vwsn::This(this->commandCopy)->SetShortcutBuilder(::vl::WString::Unmanaged(L"Ctrl+C"));
 		}
@@ -18202,6 +18233,7 @@ Class (::demo::DocumentEditorBaseConstructor)
 			::vl::__vwsn::This(this->self)->AddComponent(static_cast<::vl::presentation::controls::GuiComponent*>(this->commandCopy));
 		}
 		(this->commandCut = new ::vl::presentation::controls::GuiToolstripCommand());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"commandCut"), ::vl::__vwsn::Box(this->commandCut));
 		{
 			::vl::__vwsn::This(this->commandCut)->SetShortcutBuilder(::vl::WString::Unmanaged(L"Ctrl+X"));
 		}
@@ -18212,6 +18244,7 @@ Class (::demo::DocumentEditorBaseConstructor)
 			::vl::__vwsn::This(this->self)->AddComponent(static_cast<::vl::presentation::controls::GuiComponent*>(this->commandCut));
 		}
 		(this->commandPaste = new ::vl::presentation::controls::GuiToolstripCommand());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"commandPaste"), ::vl::__vwsn::Box(this->commandPaste));
 		{
 			::vl::__vwsn::This(this->commandPaste)->SetShortcutBuilder(::vl::WString::Unmanaged(L"Ctrl+V"));
 		}
@@ -18222,6 +18255,7 @@ Class (::demo::DocumentEditorBaseConstructor)
 			::vl::__vwsn::This(this->self)->AddComponent(static_cast<::vl::presentation::controls::GuiComponent*>(this->commandPaste));
 		}
 		(this->commandDelete = new ::vl::presentation::controls::GuiToolstripCommand());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"commandDelete"), ::vl::__vwsn::Box(this->commandDelete));
 		{
 			::vl::__vwsn::This(this->commandDelete)->SetText(::vl::WString::Unmanaged(L"Delete"));
 		}
@@ -18229,6 +18263,7 @@ Class (::demo::DocumentEditorBaseConstructor)
 			::vl::__vwsn::This(this->self)->AddComponent(static_cast<::vl::presentation::controls::GuiComponent*>(this->commandDelete));
 		}
 		(this->commandSelect = new ::vl::presentation::controls::GuiToolstripCommand());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"commandSelect"), ::vl::__vwsn::Box(this->commandSelect));
 		{
 			::vl::__vwsn::This(this->commandSelect)->SetShortcutBuilder(::vl::WString::Unmanaged(L"Ctrl+A"));
 		}
@@ -18239,6 +18274,7 @@ Class (::demo::DocumentEditorBaseConstructor)
 			::vl::__vwsn::This(this->self)->AddComponent(static_cast<::vl::presentation::controls::GuiComponent*>(this->commandSelect));
 		}
 		(this->commandInsertImage = new ::vl::presentation::controls::GuiToolstripCommand());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"commandInsertImage"), ::vl::__vwsn::Box(this->commandInsertImage));
 		{
 			::vl::__vwsn::This(this->commandInsertImage)->SetText(::vl::WString::Unmanaged(L"Insert Image ..."));
 		}
@@ -18246,6 +18282,7 @@ Class (::demo::DocumentEditorBaseConstructor)
 			::vl::__vwsn::This(this->self)->AddComponent(static_cast<::vl::presentation::controls::GuiComponent*>(this->commandInsertImage));
 		}
 		(this->commandEditHyperlink = new ::vl::presentation::controls::GuiToolstripCommand());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"commandEditHyperlink"), ::vl::__vwsn::Box(this->commandEditHyperlink));
 		{
 			::vl::__vwsn::This(this->commandEditHyperlink)->SetText(::vl::WString::Unmanaged(L"Edit Hyperlink ..."));
 		}
@@ -18253,6 +18290,7 @@ Class (::demo::DocumentEditorBaseConstructor)
 			::vl::__vwsn::This(this->self)->AddComponent(static_cast<::vl::presentation::controls::GuiComponent*>(this->commandEditHyperlink));
 		}
 		(this->commandRemoveHyperlink = new ::vl::presentation::controls::GuiToolstripCommand());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"commandRemoveHyperlink"), ::vl::__vwsn::Box(this->commandRemoveHyperlink));
 		{
 			::vl::__vwsn::This(this->commandRemoveHyperlink)->SetText(::vl::WString::Unmanaged(L"Remove Hyperlink"));
 		}
@@ -18260,6 +18298,7 @@ Class (::demo::DocumentEditorBaseConstructor)
 			::vl::__vwsn::This(this->self)->AddComponent(static_cast<::vl::presentation::controls::GuiComponent*>(this->commandRemoveHyperlink));
 		}
 		(this->commandBold = new ::vl::presentation::controls::GuiToolstripCommand());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"commandBold"), ::vl::__vwsn::Box(this->commandBold));
 		{
 			::vl::__vwsn::This(this->commandBold)->SetText(::vl::WString::Unmanaged(L"Bold"));
 		}
@@ -18267,6 +18306,7 @@ Class (::demo::DocumentEditorBaseConstructor)
 			::vl::__vwsn::This(this->self)->AddComponent(static_cast<::vl::presentation::controls::GuiComponent*>(this->commandBold));
 		}
 		(this->commandItalic = new ::vl::presentation::controls::GuiToolstripCommand());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"commandItalic"), ::vl::__vwsn::Box(this->commandItalic));
 		{
 			::vl::__vwsn::This(this->commandItalic)->SetText(::vl::WString::Unmanaged(L"Italic"));
 		}
@@ -18274,6 +18314,7 @@ Class (::demo::DocumentEditorBaseConstructor)
 			::vl::__vwsn::This(this->self)->AddComponent(static_cast<::vl::presentation::controls::GuiComponent*>(this->commandItalic));
 		}
 		(this->commandUnderline = new ::vl::presentation::controls::GuiToolstripCommand());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"commandUnderline"), ::vl::__vwsn::Box(this->commandUnderline));
 		{
 			::vl::__vwsn::This(this->commandUnderline)->SetText(::vl::WString::Unmanaged(L"Underline"));
 		}
@@ -18281,6 +18322,7 @@ Class (::demo::DocumentEditorBaseConstructor)
 			::vl::__vwsn::This(this->self)->AddComponent(static_cast<::vl::presentation::controls::GuiComponent*>(this->commandUnderline));
 		}
 		(this->commandStrike = new ::vl::presentation::controls::GuiToolstripCommand());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"commandStrike"), ::vl::__vwsn::Box(this->commandStrike));
 		{
 			::vl::__vwsn::This(this->commandStrike)->SetText(::vl::WString::Unmanaged(L"Strike"));
 		}
@@ -18288,6 +18330,7 @@ Class (::demo::DocumentEditorBaseConstructor)
 			::vl::__vwsn::This(this->self)->AddComponent(static_cast<::vl::presentation::controls::GuiComponent*>(this->commandStrike));
 		}
 		(this->dialogColor = new ::vl::presentation::controls::GuiColorDialog());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"dialogColor"), ::vl::__vwsn::Box(this->dialogColor));
 		{
 			::vl::__vwsn::This(this->dialogColor)->SetEnabledCustomColor(false);
 		}
@@ -18295,6 +18338,7 @@ Class (::demo::DocumentEditorBaseConstructor)
 			::vl::__vwsn::This(this->self)->AddComponent(static_cast<::vl::presentation::controls::GuiComponent*>(this->dialogColor));
 		}
 		(this->dialogFont = new ::vl::presentation::controls::GuiFontDialog());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"dialogFont"), ::vl::__vwsn::Box(this->dialogFont));
 		{
 			::vl::__vwsn::This(this->dialogFont)->SetForceFontExist(true);
 		}
@@ -18308,6 +18352,7 @@ Class (::demo::DocumentEditorBaseConstructor)
 			::vl::__vwsn::This(this->self)->AddComponent(static_cast<::vl::presentation::controls::GuiComponent*>(this->dialogFont));
 		}
 		(this->commandFont = new ::vl::presentation::controls::GuiToolstripCommand());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"commandFont"), ::vl::__vwsn::Box(this->commandFont));
 		{
 			::vl::__vwsn::This(this->commandFont)->SetText(::vl::WString::Unmanaged(L"Set Font ..."));
 		}
@@ -18315,6 +18360,7 @@ Class (::demo::DocumentEditorBaseConstructor)
 			::vl::__vwsn::This(this->self)->AddComponent(static_cast<::vl::presentation::controls::GuiComponent*>(this->commandFont));
 		}
 		(this->commandColor = new ::vl::presentation::controls::GuiToolstripCommand());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"commandColor"), ::vl::__vwsn::Box(this->commandColor));
 		{
 			::vl::__vwsn::This(this->commandColor)->SetText(::vl::WString::Unmanaged(L"Text Color ..."));
 		}
@@ -18322,6 +18368,7 @@ Class (::demo::DocumentEditorBaseConstructor)
 			::vl::__vwsn::This(this->self)->AddComponent(static_cast<::vl::presentation::controls::GuiComponent*>(this->commandColor));
 		}
 		(this->commandBackColor = new ::vl::presentation::controls::GuiToolstripCommand());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"commandBackColor"), ::vl::__vwsn::Box(this->commandBackColor));
 		{
 			::vl::__vwsn::This(this->commandBackColor)->SetText(::vl::WString::Unmanaged(L"Background Color ..."));
 		}
@@ -18329,6 +18376,7 @@ Class (::demo::DocumentEditorBaseConstructor)
 			::vl::__vwsn::This(this->self)->AddComponent(static_cast<::vl::presentation::controls::GuiComponent*>(this->commandBackColor));
 		}
 		(this->commandViewOnly = new ::vl::presentation::controls::GuiToolstripCommand());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"commandViewOnly"), ::vl::__vwsn::Box(this->commandViewOnly));
 		{
 			::vl::__vwsn::This(this->commandViewOnly)->SetShortcutBuilder(::vl::WString::Unmanaged(L"Ctrl+Shift+P"));
 		}
@@ -18339,6 +18387,7 @@ Class (::demo::DocumentEditorBaseConstructor)
 			::vl::__vwsn::This(this->self)->AddComponent(static_cast<::vl::presentation::controls::GuiComponent*>(this->commandViewOnly));
 		}
 		(this->commandSelectable = new ::vl::presentation::controls::GuiToolstripCommand());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"commandSelectable"), ::vl::__vwsn::Box(this->commandSelectable));
 		{
 			::vl::__vwsn::This(this->commandSelectable)->SetShortcutBuilder(::vl::WString::Unmanaged(L"Ctrl+Shift+S"));
 		}
@@ -18349,6 +18398,7 @@ Class (::demo::DocumentEditorBaseConstructor)
 			::vl::__vwsn::This(this->self)->AddComponent(static_cast<::vl::presentation::controls::GuiComponent*>(this->commandSelectable));
 		}
 		(this->commandEditable = new ::vl::presentation::controls::GuiToolstripCommand());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"commandEditable"), ::vl::__vwsn::Box(this->commandEditable));
 		{
 			::vl::__vwsn::This(this->commandEditable)->SetShortcutBuilder(::vl::WString::Unmanaged(L"Ctrl+Shift+E"));
 		}
@@ -18359,6 +18409,7 @@ Class (::demo::DocumentEditorBaseConstructor)
 			::vl::__vwsn::This(this->self)->AddComponent(static_cast<::vl::presentation::controls::GuiComponent*>(this->commandEditable));
 		}
 		(this->commandAlignDefault = new ::vl::presentation::controls::GuiToolstripCommand());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"commandAlignDefault"), ::vl::__vwsn::Box(this->commandAlignDefault));
 		{
 			::vl::__vwsn::This(this->commandAlignDefault)->SetText(::vl::WString::Unmanaged(L"Set Alignment to Default (Left)"));
 		}
@@ -18366,6 +18417,7 @@ Class (::demo::DocumentEditorBaseConstructor)
 			::vl::__vwsn::This(this->self)->AddComponent(static_cast<::vl::presentation::controls::GuiComponent*>(this->commandAlignDefault));
 		}
 		(this->commandAlignLeft = new ::vl::presentation::controls::GuiToolstripCommand());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"commandAlignLeft"), ::vl::__vwsn::Box(this->commandAlignLeft));
 		{
 			::vl::__vwsn::This(this->commandAlignLeft)->SetText(::vl::WString::Unmanaged(L"Left"));
 		}
@@ -18373,6 +18425,7 @@ Class (::demo::DocumentEditorBaseConstructor)
 			::vl::__vwsn::This(this->self)->AddComponent(static_cast<::vl::presentation::controls::GuiComponent*>(this->commandAlignLeft));
 		}
 		(this->commandAlignCenter = new ::vl::presentation::controls::GuiToolstripCommand());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"commandAlignCenter"), ::vl::__vwsn::Box(this->commandAlignCenter));
 		{
 			::vl::__vwsn::This(this->commandAlignCenter)->SetText(::vl::WString::Unmanaged(L"Center"));
 		}
@@ -18380,6 +18433,7 @@ Class (::demo::DocumentEditorBaseConstructor)
 			::vl::__vwsn::This(this->self)->AddComponent(static_cast<::vl::presentation::controls::GuiComponent*>(this->commandAlignCenter));
 		}
 		(this->commandAlignRight = new ::vl::presentation::controls::GuiToolstripCommand());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"commandAlignRight"), ::vl::__vwsn::Box(this->commandAlignRight));
 		{
 			::vl::__vwsn::This(this->commandAlignRight)->SetText(::vl::WString::Unmanaged(L"Right"));
 		}
@@ -18906,6 +18960,7 @@ Class (::demo::DocumentEditorRibbonConstructor)
 		(this->__vwsn_precompile_87 = ::vl::__vwsn::This(this->__vwsn_precompile_8)->GetBeforeHeaders());
 		{
 			(this->buttonHome = new ::vl::presentation::controls::GuiButton(::vl::presentation::theme::ThemeName::Button));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"buttonHome"), ::vl::__vwsn::Box(this->buttonHome));
 		}
 		(this->__vwsn_precompile_88 = ::vl::__vwsn::This(this->buttonHome)->GetBoundsComposition());
 		{
@@ -19446,6 +19501,7 @@ Class (::demo::DocumentEditorRibbonConstructor)
 		}
 		{
 			(this->styleGallery = new ::vl::presentation::controls::GuiBindableRibbonGalleryList(::vl::presentation::theme::ThemeName::RibbonGalleryList));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"styleGallery"), ::vl::__vwsn::Box(this->styleGallery));
 		}
 		{
 			::vl::__vwsn::This(this->styleGallery)->SetGroupChildrenProperty(vl::Func(::vl_workflow_global::__vwsnf201_Demo_demo_DocumentEditorRibbonConstructor___vwsn_demo_DocumentEditorRibbon_Initialize_(this)));
@@ -19640,6 +19696,7 @@ Class (::demo::DocumentEditorRibbonConstructor)
 			::vl::__vwsn::This(this->self)->SetText(::vl::WString::Unmanaged(L"Document Editor (Ribbon)"));
 		}
 		(this->dialogMessage = new ::vl::presentation::controls::GuiMessageDialog());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"dialogMessage"), ::vl::__vwsn::Box(this->dialogMessage));
 		{
 			::vl::__vwsn::This(this->dialogMessage)->SetTitle(::vl::WString::Unmanaged(L"You Expanded a Group!"));
 		}
@@ -19651,6 +19708,7 @@ Class (::demo::DocumentEditorRibbonConstructor)
 		}
 		{
 			(this->toolstripHome = new ::vl::presentation::controls::GuiToolstripMenu(::vl::presentation::theme::ThemeName::Menu, static_cast<::vl::presentation::controls::GuiControl*>(nullptr)));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"toolstripHome"), ::vl::__vwsn::Box(this->toolstripHome));
 		}
 		{
 			(this->__vwsn_precompile_0 = new ::vl::presentation::controls::GuiToolstripGroupContainer(::vl::presentation::theme::ThemeName::CustomControl));
@@ -20200,6 +20258,7 @@ Class (::demo::DocumentEditorToolstripConstructor)
 		}
 		{
 			(this->buttonAlignment = new ::vl::presentation::controls::GuiToolstripButton(::vl::presentation::theme::ThemeName::ToolstripDropdownButton));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"buttonAlignment"), ::vl::__vwsn::Box(this->buttonAlignment));
 		}
 		{
 			::vl::__vwsn::This(this->buttonAlignment)->SetAlt(::vl::WString::Unmanaged(L"P"));
@@ -21976,6 +22035,7 @@ Class (::demo::EnglishNumbersControllerTabPageConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_1)->SetColumnOption(static_cast<::vl::vint64_t>(1L), [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::MinSize; return __vwsn_temp__; }());
 		}
 		(this->content = new ::vl::presentation::compositions::GuiCellComposition());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"content"), ::vl::__vwsn::Box(this->content));
 		{
 			::vl::__vwsn::This(this->content)->SetSite(static_cast<::vl::vint64_t>(0L), static_cast<::vl::vint64_t>(0L), static_cast<::vl::vint64_t>(1L), static_cast<::vl::vint64_t>(1L));
 		}
@@ -21987,6 +22047,7 @@ Class (::demo::EnglishNumbersControllerTabPageConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_2)->SetSite(static_cast<::vl::vint64_t>(0L), static_cast<::vl::vint64_t>(1L), static_cast<::vl::vint64_t>(1L), static_cast<::vl::vint64_t>(1L));
 		}
 		(this->controller = new ::demo::EnglishNumbersController());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"controller"), ::vl::__vwsn::Box(this->controller));
 		(this->__vwsn_precompile_3 = ::vl::__vwsn::This(this->controller)->GetBoundsComposition());
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_3)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint64_t>(0L); __vwsn_temp__.top = static_cast<::vl::vint64_t>(0L); __vwsn_temp__.right = static_cast<::vl::vint64_t>(0L); __vwsn_temp__.bottom = static_cast<::vl::vint64_t>(0L); return __vwsn_temp__; }());
@@ -22154,6 +22215,7 @@ Class (::demo::GenderEditorConstructor)
 		}
 		{
 			(this->comboBox = new ::vl::presentation::controls::GuiComboBoxListControl(::vl::presentation::theme::ThemeName::ComboBox, static_cast<::vl::presentation::controls::GuiSelectableListControl*>(this->__vwsn_precompile_0)));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"comboBox"), ::vl::__vwsn::Box(this->comboBox));
 		}
 		{
 			::vl::__vwsn::This(this->comboBox)->SetItemTemplate(vl::Func(::vl_workflow_global::__vwsnf128_Demo_demo_GenderEditorConstructor___vwsn_demo_GenderEditor_Initialize_(this)));
@@ -22409,6 +22471,7 @@ Class (::demo::HyperlinkWindowConstructor)
 		}
 		{
 			(this->textUrl = new ::vl::presentation::controls::GuiSinglelineTextBox(::vl::presentation::theme::ThemeName::SinglelineTextBox));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"textUrl"), ::vl::__vwsn::Box(this->textUrl));
 		}
 		(this->__vwsn_precompile_6 = ::vl::__vwsn::This(this->textUrl)->GetBoundsComposition());
 		{
@@ -22620,6 +22683,7 @@ Class (::demo::ListViewTabPageConstructor)
 		}
 		{
 			(this->comboView = new ::vl::presentation::controls::GuiComboBoxListControl(::vl::presentation::theme::ThemeName::ComboBox, static_cast<::vl::presentation::controls::GuiSelectableListControl*>(this->__vwsn_precompile_2)));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"comboView"), ::vl::__vwsn::Box(this->comboView));
 		}
 		{
 			::vl::__vwsn::This(this->comboView)->SetSelectedIndex(static_cast<::vl::vint64_t>(5L));
@@ -22663,6 +22727,7 @@ Class (::demo::ListViewTabPageConstructor)
 		}
 		{
 			(this->listView = new ::vl::presentation::controls::GuiListView(::vl::presentation::theme::ThemeName::ListView));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"listView"), ::vl::__vwsn::Box(this->listView));
 		}
 		{
 			auto __vwsn_collection_ = ::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(this->listView)->GetDataColumns());
@@ -22733,6 +22798,7 @@ Class (::demo::ListViewTabPageConstructor)
 		}
 		{
 			(this->bindableListView = new ::vl::presentation::controls::GuiBindableListView(::vl::presentation::theme::ThemeName::ListView));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"bindableListView"), ::vl::__vwsn::Box(this->bindableListView));
 		}
 		{
 			::vl::__vwsn::This(this->bindableListView)->SetLargeImageProperty(vl::Func(::vl_workflow_global::__vwsnf34_Demo_demo_ListViewTabPageConstructor___vwsn_demo_ListViewTabPage_Initialize_(this)));
@@ -22897,6 +22963,7 @@ Class (::demo::LocaleSelectorConstructor)
 		(this->self = __vwsn_this_);
 		{
 			(this->listLocales = new ::vl::presentation::controls::GuiTextList(::vl::presentation::theme::ThemeName::TextList));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"listLocales"), ::vl::__vwsn::Box(this->listLocales));
 		}
 		(this->__vwsn_precompile_0 = ::vl::Ptr<::vl::presentation::controls::list::TextItem>(new ::vl::presentation::controls::list::TextItem()));
 		{
@@ -22922,6 +22989,7 @@ Class (::demo::LocaleSelectorConstructor)
 		}
 		{
 			(this->comboLocales = new ::vl::presentation::controls::GuiComboBoxListControl(::vl::presentation::theme::ThemeName::ComboBox, static_cast<::vl::presentation::controls::GuiSelectableListControl*>(this->listLocales)));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"comboLocales"), ::vl::__vwsn::Box(this->comboLocales));
 		}
 		(this->__vwsn_precompile_2 = ::vl::__vwsn::This(this->comboLocales)->GetBoundsComposition());
 		{
@@ -23003,6 +23071,7 @@ Class (::demo::LocalizedColorDialogTabPageConstructor)
 			::vl::__vwsn::This(this->self)->SetText(::vl::WString::Unmanaged(L"ColorDialog"));
 		}
 		(this->dialog = new ::vl::presentation::controls::GuiColorDialog());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"dialog"), ::vl::__vwsn::Box(this->dialog));
 		{
 			::vl::__vwsn::This(this->dialog)->SetEnabledCustomColor(true);
 		}
@@ -23034,6 +23103,7 @@ Class (::demo::LocalizedColorDialogTabPageConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_1)->SetSite(static_cast<::vl::vint64_t>(0L), static_cast<::vl::vint64_t>(0L), static_cast<::vl::vint64_t>(1L), static_cast<::vl::vint64_t>(1L));
 		}
 		(this->background = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiSolidBackgroundElement>()));
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"background"), ::vl::__vwsn::Box(this->background));
 		{
 			::vl::__vwsn::This(this->background.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#FFFFFF")));
 		}
@@ -23266,10 +23336,12 @@ Class (::demo::LocalizedFileDialogTabPageConstructor)
 			::vl::__vwsn::This(this->self)->SetText(::vl::WString::Unmanaged(L"Open/Save FileDialog"));
 		}
 		(this->dialogOpen = new ::vl::presentation::controls::GuiOpenFileDialog());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"dialogOpen"), ::vl::__vwsn::Box(this->dialogOpen));
 		{
 			::vl::__vwsn::This(this->self)->AddComponent(static_cast<::vl::presentation::controls::GuiComponent*>(this->dialogOpen));
 		}
 		(this->dialogSave = new ::vl::presentation::controls::GuiSaveFileDialog());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"dialogSave"), ::vl::__vwsn::Box(this->dialogSave));
 		{
 			::vl::__vwsn::This(this->self)->AddComponent(static_cast<::vl::presentation::controls::GuiComponent*>(this->dialogSave));
 		}
@@ -23416,6 +23488,7 @@ Class (::demo::LocalizedFileDialogTabPageConstructor)
 		}
 		{
 			(this->txtTitle = new ::vl::presentation::controls::GuiSinglelineTextBox(::vl::presentation::theme::ThemeName::SinglelineTextBox));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"txtTitle"), ::vl::__vwsn::Box(this->txtTitle));
 		}
 		(this->__vwsn_precompile_16 = ::vl::__vwsn::This(this->txtTitle)->GetBoundsComposition());
 		{
@@ -23436,6 +23509,7 @@ Class (::demo::LocalizedFileDialogTabPageConstructor)
 		}
 		{
 			(this->txtDirectory = new ::vl::presentation::controls::GuiSinglelineTextBox(::vl::presentation::theme::ThemeName::SinglelineTextBox));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"txtDirectory"), ::vl::__vwsn::Box(this->txtDirectory));
 		}
 		(this->__vwsn_precompile_18 = ::vl::__vwsn::This(this->txtDirectory)->GetBoundsComposition());
 		{
@@ -23456,6 +23530,7 @@ Class (::demo::LocalizedFileDialogTabPageConstructor)
 		}
 		{
 			(this->txtFileName = new ::vl::presentation::controls::GuiSinglelineTextBox(::vl::presentation::theme::ThemeName::SinglelineTextBox));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"txtFileName"), ::vl::__vwsn::Box(this->txtFileName));
 		}
 		(this->__vwsn_precompile_20 = ::vl::__vwsn::This(this->txtFileName)->GetBoundsComposition());
 		{
@@ -23476,6 +23551,7 @@ Class (::demo::LocalizedFileDialogTabPageConstructor)
 		}
 		{
 			(this->txtFilter = new ::vl::presentation::controls::GuiSinglelineTextBox(::vl::presentation::theme::ThemeName::SinglelineTextBox));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"txtFilter"), ::vl::__vwsn::Box(this->txtFilter));
 		}
 		(this->__vwsn_precompile_22 = ::vl::__vwsn::This(this->txtFilter)->GetBoundsComposition());
 		{
@@ -23496,6 +23572,7 @@ Class (::demo::LocalizedFileDialogTabPageConstructor)
 		}
 		{
 			(this->txtFilterIndex = new ::vl::presentation::controls::GuiSinglelineTextBox(::vl::presentation::theme::ThemeName::SinglelineTextBox));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"txtFilterIndex"), ::vl::__vwsn::Box(this->txtFilterIndex));
 		}
 		(this->__vwsn_precompile_24 = ::vl::__vwsn::This(this->txtFilterIndex)->GetBoundsComposition());
 		{
@@ -23516,6 +23593,7 @@ Class (::demo::LocalizedFileDialogTabPageConstructor)
 		}
 		{
 			(this->txtDefaultExtension = new ::vl::presentation::controls::GuiSinglelineTextBox(::vl::presentation::theme::ThemeName::SinglelineTextBox));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"txtDefaultExtension"), ::vl::__vwsn::Box(this->txtDefaultExtension));
 		}
 		(this->__vwsn_precompile_26 = ::vl::__vwsn::This(this->txtDefaultExtension)->GetBoundsComposition());
 		{
@@ -23547,6 +23625,7 @@ Class (::demo::LocalizedFileDialogTabPageConstructor)
 		(this->__vwsn_precompile_29 = new ::vl::presentation::compositions::GuiStackItemComposition());
 		{
 			(this->chkFileDialogAllowMultipleSelection = new ::vl::presentation::controls::GuiSelectableButton(::vl::presentation::theme::ThemeName::CheckBox));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"chkFileDialogAllowMultipleSelection"), ::vl::__vwsn::Box(this->chkFileDialogAllowMultipleSelection));
 		}
 		{
 			::vl::__vwsn::This(this->chkFileDialogAllowMultipleSelection)->SetText(::vl::WString::Unmanaged(L"FileDialogAllowMultipleSelection"));
@@ -23560,6 +23639,7 @@ Class (::demo::LocalizedFileDialogTabPageConstructor)
 		(this->__vwsn_precompile_30 = new ::vl::presentation::compositions::GuiStackItemComposition());
 		{
 			(this->chkFileDialogFileMustExist = new ::vl::presentation::controls::GuiSelectableButton(::vl::presentation::theme::ThemeName::CheckBox));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"chkFileDialogFileMustExist"), ::vl::__vwsn::Box(this->chkFileDialogFileMustExist));
 		}
 		{
 			::vl::__vwsn::This(this->chkFileDialogFileMustExist)->SetText(::vl::WString::Unmanaged(L"FileDialogFileMustExist"));
@@ -23573,6 +23653,7 @@ Class (::demo::LocalizedFileDialogTabPageConstructor)
 		(this->__vwsn_precompile_31 = new ::vl::presentation::compositions::GuiStackItemComposition());
 		{
 			(this->chkFileDialogShowReadOnlyCheckBox = new ::vl::presentation::controls::GuiSelectableButton(::vl::presentation::theme::ThemeName::CheckBox));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"chkFileDialogShowReadOnlyCheckBox"), ::vl::__vwsn::Box(this->chkFileDialogShowReadOnlyCheckBox));
 		}
 		{
 			::vl::__vwsn::This(this->chkFileDialogShowReadOnlyCheckBox)->SetText(::vl::WString::Unmanaged(L"FileDialogShowReadOnlyCheckBox"));
@@ -23586,6 +23667,7 @@ Class (::demo::LocalizedFileDialogTabPageConstructor)
 		(this->__vwsn_precompile_32 = new ::vl::presentation::compositions::GuiStackItemComposition());
 		{
 			(this->chkFileDialogDereferenceLinks = new ::vl::presentation::controls::GuiSelectableButton(::vl::presentation::theme::ThemeName::CheckBox));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"chkFileDialogDereferenceLinks"), ::vl::__vwsn::Box(this->chkFileDialogDereferenceLinks));
 		}
 		{
 			::vl::__vwsn::This(this->chkFileDialogDereferenceLinks)->SetText(::vl::WString::Unmanaged(L"FileDialogDereferenceLinks"));
@@ -23599,6 +23681,7 @@ Class (::demo::LocalizedFileDialogTabPageConstructor)
 		(this->__vwsn_precompile_33 = new ::vl::presentation::compositions::GuiStackItemComposition());
 		{
 			(this->chkFileDialogShowNetworkButton = new ::vl::presentation::controls::GuiSelectableButton(::vl::presentation::theme::ThemeName::CheckBox));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"chkFileDialogShowNetworkButton"), ::vl::__vwsn::Box(this->chkFileDialogShowNetworkButton));
 		}
 		{
 			::vl::__vwsn::This(this->chkFileDialogShowNetworkButton)->SetText(::vl::WString::Unmanaged(L"FileDialogShowNetworkButton"));
@@ -23612,6 +23695,7 @@ Class (::demo::LocalizedFileDialogTabPageConstructor)
 		(this->__vwsn_precompile_34 = new ::vl::presentation::compositions::GuiStackItemComposition());
 		{
 			(this->chkFileDialogPromptCreateFile = new ::vl::presentation::controls::GuiSelectableButton(::vl::presentation::theme::ThemeName::CheckBox));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"chkFileDialogPromptCreateFile"), ::vl::__vwsn::Box(this->chkFileDialogPromptCreateFile));
 		}
 		{
 			::vl::__vwsn::This(this->chkFileDialogPromptCreateFile)->SetText(::vl::WString::Unmanaged(L"FileDialogPromptCreateFile"));
@@ -23625,6 +23709,7 @@ Class (::demo::LocalizedFileDialogTabPageConstructor)
 		(this->__vwsn_precompile_35 = new ::vl::presentation::compositions::GuiStackItemComposition());
 		{
 			(this->chkFileDialogPromptOverwriteFile = new ::vl::presentation::controls::GuiSelectableButton(::vl::presentation::theme::ThemeName::CheckBox));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"chkFileDialogPromptOverwriteFile"), ::vl::__vwsn::Box(this->chkFileDialogPromptOverwriteFile));
 		}
 		{
 			::vl::__vwsn::This(this->chkFileDialogPromptOverwriteFile)->SetText(::vl::WString::Unmanaged(L"FileDialogPromptOverwriteFile"));
@@ -23638,6 +23723,7 @@ Class (::demo::LocalizedFileDialogTabPageConstructor)
 		(this->__vwsn_precompile_36 = new ::vl::presentation::compositions::GuiStackItemComposition());
 		{
 			(this->chkFileDialogDirectoryMustExist = new ::vl::presentation::controls::GuiSelectableButton(::vl::presentation::theme::ThemeName::CheckBox));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"chkFileDialogDirectoryMustExist"), ::vl::__vwsn::Box(this->chkFileDialogDirectoryMustExist));
 		}
 		{
 			::vl::__vwsn::This(this->chkFileDialogDirectoryMustExist)->SetText(::vl::WString::Unmanaged(L"FileDialogDirectoryMustExist"));
@@ -23651,6 +23737,7 @@ Class (::demo::LocalizedFileDialogTabPageConstructor)
 		(this->__vwsn_precompile_37 = new ::vl::presentation::compositions::GuiStackItemComposition());
 		{
 			(this->chkFileDialogAddToRecent = new ::vl::presentation::controls::GuiSelectableButton(::vl::presentation::theme::ThemeName::CheckBox));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"chkFileDialogAddToRecent"), ::vl::__vwsn::Box(this->chkFileDialogAddToRecent));
 		}
 		{
 			::vl::__vwsn::This(this->chkFileDialogAddToRecent)->SetText(::vl::WString::Unmanaged(L"FileDialogAddToRecent"));
@@ -23689,6 +23776,7 @@ Class (::demo::LocalizedFileDialogTabPageConstructor)
 		(this->__vwsn_precompile_40 = new ::vl::presentation::compositions::GuiStackItemComposition());
 		{
 			(this->lstFiles = new ::vl::presentation::controls::GuiBindableTextList(::vl::presentation::theme::ThemeName::TextList));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"lstFiles"), ::vl::__vwsn::Box(this->lstFiles));
 		}
 		{
 			::vl::__vwsn::This(this->lstFiles)->SetHorizontalAlwaysVisible(false);
@@ -23919,6 +24007,7 @@ Class (::demo::LocalizedFontDialogTabPageConstructor)
 			::vl::__vwsn::This(this->self)->SetText(::vl::WString::Unmanaged(L"FontDialog"));
 		}
 		(this->dialog = new ::vl::presentation::controls::GuiFontDialog());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"dialog"), ::vl::__vwsn::Box(this->dialog));
 		{
 			::vl::__vwsn::This(this->dialog)->SetForceFontExist(true);
 		}
@@ -23951,6 +24040,7 @@ Class (::demo::LocalizedFontDialogTabPageConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_1)->SetSite(static_cast<::vl::vint64_t>(0L), static_cast<::vl::vint64_t>(0L), static_cast<::vl::vint64_t>(1L), static_cast<::vl::vint64_t>(1L));
 		}
 		(this->label = ::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiSolidLabelElement>()));
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"label"), ::vl::__vwsn::Box(this->label));
 		{
 			::vl::__vwsn::This(this->label.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#FFFFFF")));
 		}
@@ -23969,6 +24059,7 @@ Class (::demo::LocalizedFontDialogTabPageConstructor)
 		}
 		{
 			(this->checkEffect = new ::vl::presentation::controls::GuiSelectableButton(::vl::presentation::theme::ThemeName::CheckBox));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"checkEffect"), ::vl::__vwsn::Box(this->checkEffect));
 		}
 		{
 			::vl::__vwsn::This(this->checkEffect)->SetSelected(false);
@@ -24052,6 +24143,7 @@ Class (::demo::LocalizedMessageDialogTabPageConstructor)
 			::vl::__vwsn::This(this->self)->SetText(::vl::WString::Unmanaged(L"MessageDialog"));
 		}
 		(this->dialog = new ::vl::presentation::controls::GuiMessageDialog());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"dialog"), ::vl::__vwsn::Box(this->dialog));
 		{
 			::vl::__vwsn::This(this->self)->AddComponent(static_cast<::vl::presentation::controls::GuiComponent*>(this->dialog));
 		}
@@ -24183,6 +24275,7 @@ Class (::demo::LocalizedMessageDialogTabPageConstructor)
 		}
 		{
 			(this->txtTitle = new ::vl::presentation::controls::GuiSinglelineTextBox(::vl::presentation::theme::ThemeName::SinglelineTextBox));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"txtTitle"), ::vl::__vwsn::Box(this->txtTitle));
 		}
 		(this->__vwsn_precompile_14 = ::vl::__vwsn::This(this->txtTitle)->GetBoundsComposition());
 		{
@@ -24203,6 +24296,7 @@ Class (::demo::LocalizedMessageDialogTabPageConstructor)
 		}
 		{
 			(this->txtText = new ::vl::presentation::controls::GuiSinglelineTextBox(::vl::presentation::theme::ThemeName::SinglelineTextBox));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"txtText"), ::vl::__vwsn::Box(this->txtText));
 		}
 		(this->__vwsn_precompile_16 = ::vl::__vwsn::This(this->txtText)->GetBoundsComposition());
 		{
@@ -24232,6 +24326,7 @@ Class (::demo::LocalizedMessageDialogTabPageConstructor)
 		}
 		{
 			(this->comboInput = new ::vl::presentation::controls::GuiComboBoxListControl(::vl::presentation::theme::ThemeName::ComboBox, static_cast<::vl::presentation::controls::GuiSelectableListControl*>(this->__vwsn_precompile_18)));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"comboInput"), ::vl::__vwsn::Box(this->comboInput));
 		}
 		(this->__vwsn_precompile_19 = ::vl::__vwsn::This(this->comboInput)->GetBoundsComposition());
 		{
@@ -24258,6 +24353,7 @@ Class (::demo::LocalizedMessageDialogTabPageConstructor)
 		}
 		{
 			(this->comboDefaultButton = new ::vl::presentation::controls::GuiComboBoxListControl(::vl::presentation::theme::ThemeName::ComboBox, static_cast<::vl::presentation::controls::GuiSelectableListControl*>(this->__vwsn_precompile_21)));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"comboDefaultButton"), ::vl::__vwsn::Box(this->comboDefaultButton));
 		}
 		(this->__vwsn_precompile_22 = ::vl::__vwsn::This(this->comboDefaultButton)->GetBoundsComposition());
 		{
@@ -24284,6 +24380,7 @@ Class (::demo::LocalizedMessageDialogTabPageConstructor)
 		}
 		{
 			(this->comboIcon = new ::vl::presentation::controls::GuiComboBoxListControl(::vl::presentation::theme::ThemeName::ComboBox, static_cast<::vl::presentation::controls::GuiSelectableListControl*>(this->__vwsn_precompile_24)));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"comboIcon"), ::vl::__vwsn::Box(this->comboIcon));
 		}
 		(this->__vwsn_precompile_25 = ::vl::__vwsn::This(this->comboIcon)->GetBoundsComposition());
 		{
@@ -24301,6 +24398,7 @@ Class (::demo::LocalizedMessageDialogTabPageConstructor)
 		}
 		{
 			(this->lblOutput = new ::vl::presentation::controls::GuiLabel(::vl::presentation::theme::ThemeName::Label));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"lblOutput"), ::vl::__vwsn::Box(this->lblOutput));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_26)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->lblOutput)->GetBoundsComposition()));
@@ -24927,6 +25025,7 @@ Class (::demo::MainWindowConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_27)->SetAlt(::vl::WString::Unmanaged(L"D"));
 		}
 		(this->editorRibbon = new ::demo::DocumentEditorRibbon());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"editorRibbon"), ::vl::__vwsn::Box(this->editorRibbon));
 		(this->__vwsn_precompile_28 = ::vl::__vwsn::This(this->editorRibbon)->GetBoundsComposition());
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_28)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint64_t>(0L); __vwsn_temp__.top = static_cast<::vl::vint64_t>(0L); __vwsn_temp__.right = static_cast<::vl::vint64_t>(0L); __vwsn_temp__.bottom = static_cast<::vl::vint64_t>(0L); return __vwsn_temp__; }());
@@ -24945,6 +25044,7 @@ Class (::demo::MainWindowConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_29)->SetAlt(::vl::WString::Unmanaged(L"D"));
 		}
 		(this->editorToolstrip = new ::demo::DocumentEditorToolstrip());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"editorToolstrip"), ::vl::__vwsn::Box(this->editorToolstrip));
 		(this->__vwsn_precompile_30 = ::vl::__vwsn::This(this->editorToolstrip)->GetBoundsComposition());
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_30)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint64_t>(0L); __vwsn_temp__.top = static_cast<::vl::vint64_t>(0L); __vwsn_temp__.right = static_cast<::vl::vint64_t>(0L); __vwsn_temp__.bottom = static_cast<::vl::vint64_t>(0L); return __vwsn_temp__; }());
@@ -25063,6 +25163,7 @@ Class (::demo::MainWindowConstructor)
 		(this->__vwsn_precompile_42 = new ::vl::presentation::compositions::GuiStackItemComposition());
 		{
 			(this->checkFrame = new ::vl::presentation::controls::GuiSelectableButton(::vl::presentation::theme::ThemeName::CheckBox));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"checkFrame"), ::vl::__vwsn::Box(this->checkFrame));
 		}
 		{
 			::vl::__vwsn::This(this->checkFrame)->SetText(::vl::WString::Unmanaged(L"Customized Frame"));
@@ -25076,6 +25177,7 @@ Class (::demo::MainWindowConstructor)
 		(this->__vwsn_precompile_43 = new ::vl::presentation::compositions::GuiStackItemComposition());
 		{
 			(this->checkMax = new ::vl::presentation::controls::GuiSelectableButton(::vl::presentation::theme::ThemeName::CheckBox));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"checkMax"), ::vl::__vwsn::Box(this->checkMax));
 		}
 		{
 			::vl::__vwsn::This(this->checkMax)->SetText(::vl::WString::Unmanaged(L"MaximizedBox"));
@@ -25089,6 +25191,7 @@ Class (::demo::MainWindowConstructor)
 		(this->__vwsn_precompile_44 = new ::vl::presentation::compositions::GuiStackItemComposition());
 		{
 			(this->checkMin = new ::vl::presentation::controls::GuiSelectableButton(::vl::presentation::theme::ThemeName::CheckBox));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"checkMin"), ::vl::__vwsn::Box(this->checkMin));
 		}
 		{
 			::vl::__vwsn::This(this->checkMin)->SetText(::vl::WString::Unmanaged(L"MinimizedBox"));
@@ -25102,6 +25205,7 @@ Class (::demo::MainWindowConstructor)
 		(this->__vwsn_precompile_45 = new ::vl::presentation::compositions::GuiStackItemComposition());
 		{
 			(this->checkBorder = new ::vl::presentation::controls::GuiSelectableButton(::vl::presentation::theme::ThemeName::CheckBox));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"checkBorder"), ::vl::__vwsn::Box(this->checkBorder));
 		}
 		{
 			::vl::__vwsn::This(this->checkBorder)->SetText(::vl::WString::Unmanaged(L"Border"));
@@ -25115,6 +25219,7 @@ Class (::demo::MainWindowConstructor)
 		(this->__vwsn_precompile_46 = new ::vl::presentation::compositions::GuiStackItemComposition());
 		{
 			(this->checkSizeBox = new ::vl::presentation::controls::GuiSelectableButton(::vl::presentation::theme::ThemeName::CheckBox));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"checkSizeBox"), ::vl::__vwsn::Box(this->checkSizeBox));
 		}
 		{
 			::vl::__vwsn::This(this->checkSizeBox)->SetText(::vl::WString::Unmanaged(L"SizeBox"));
@@ -25128,6 +25233,7 @@ Class (::demo::MainWindowConstructor)
 		(this->__vwsn_precompile_47 = new ::vl::presentation::compositions::GuiStackItemComposition());
 		{
 			(this->checkIcon = new ::vl::presentation::controls::GuiSelectableButton(::vl::presentation::theme::ThemeName::CheckBox));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"checkIcon"), ::vl::__vwsn::Box(this->checkIcon));
 		}
 		{
 			::vl::__vwsn::This(this->checkIcon)->SetText(::vl::WString::Unmanaged(L"IconVisible"));
@@ -25141,6 +25247,7 @@ Class (::demo::MainWindowConstructor)
 		(this->__vwsn_precompile_48 = new ::vl::presentation::compositions::GuiStackItemComposition());
 		{
 			(this->checkTitle = new ::vl::presentation::controls::GuiSelectableButton(::vl::presentation::theme::ThemeName::CheckBox));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"checkTitle"), ::vl::__vwsn::Box(this->checkTitle));
 		}
 		{
 			::vl::__vwsn::This(this->checkTitle)->SetText(::vl::WString::Unmanaged(L"TitleBar"));
@@ -25587,6 +25694,7 @@ Class (::demo::RefreshBindableDataGridTabPageConstructor)
 		}
 		{
 			(this->comboView = new ::vl::presentation::controls::GuiComboBoxListControl(::vl::presentation::theme::ThemeName::ComboBox, static_cast<::vl::presentation::controls::GuiSelectableListControl*>(this->__vwsn_precompile_2)));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"comboView"), ::vl::__vwsn::Box(this->comboView));
 		}
 		{
 			::vl::__vwsn::This(this->comboView)->SetSelectedIndex(static_cast<::vl::vint64_t>(6L));
@@ -25690,6 +25798,7 @@ Class (::demo::RefreshBindableDataGridTabPageConstructor)
 		}
 		{
 			(this->dataGrid = new ::vl::presentation::controls::GuiBindableDataGrid(::vl::presentation::theme::ThemeName::ListView));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"dataGrid"), ::vl::__vwsn::Box(this->dataGrid));
 		}
 		{
 			::vl::__vwsn::This(this->dataGrid)->SetLargeImageProperty(vl::Func(::vl_workflow_global::__vwsnf250_Demo_demo_RefreshBindableDataGridTabPageConstructor___vwsn_demo_RefreshBindableDataGridTabPage_Initialize_(this)));
@@ -25977,6 +26086,7 @@ Class (::demo::RefreshBindableListViewTabPageConstructor)
 		}
 		{
 			(this->comboView = new ::vl::presentation::controls::GuiComboBoxListControl(::vl::presentation::theme::ThemeName::ComboBox, static_cast<::vl::presentation::controls::GuiSelectableListControl*>(this->__vwsn_precompile_2)));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"comboView"), ::vl::__vwsn::Box(this->comboView));
 		}
 		{
 			::vl::__vwsn::This(this->comboView)->SetSelectedIndex(static_cast<::vl::vint64_t>(5L));
@@ -26080,6 +26190,7 @@ Class (::demo::RefreshBindableListViewTabPageConstructor)
 		}
 		{
 			(this->listView = new ::vl::presentation::controls::GuiBindableListView(::vl::presentation::theme::ThemeName::ListView));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"listView"), ::vl::__vwsn::Box(this->listView));
 		}
 		{
 			::vl::__vwsn::This(this->listView)->SetLargeImageProperty(vl::Func(::vl_workflow_global::__vwsnf274_Demo_demo_RefreshBindableListViewTabPageConstructor___vwsn_demo_RefreshBindableListViewTabPage_Initialize_(this)));
@@ -26354,6 +26465,7 @@ Class (::demo::RefreshBindableTextListTabPageConstructor)
 		}
 		{
 			(this->buttonRead = new ::vl::presentation::controls::GuiButton(::vl::presentation::theme::ThemeName::Button));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"buttonRead"), ::vl::__vwsn::Box(this->buttonRead));
 		}
 		{
 			::vl::__vwsn::This(this->buttonRead)->SetText(::vl::WString::Unmanaged(L"Read (false)"));
@@ -26370,6 +26482,7 @@ Class (::demo::RefreshBindableTextListTabPageConstructor)
 		}
 		{
 			(this->textList = new ::vl::presentation::controls::GuiBindableTextList(::vl::presentation::theme::ThemeName::TextList));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"textList"), ::vl::__vwsn::Box(this->textList));
 		}
 		{
 			::vl::__vwsn::This(this->textList)->SetCheckedProperty(vl::Func(::vl_workflow_global::__vwsnf289_Demo_demo_RefreshBindableTextListTabPageConstructor___vwsn_demo_RefreshBindableTextListTabPage_Initialize_(this)));
@@ -26562,6 +26675,7 @@ Class (::demo::RefreshBindableTreeViewTabPageConstructor)
 		}
 		{
 			(this->treeView = new ::vl::presentation::controls::GuiBindableTreeView(::vl::presentation::theme::ThemeName::TreeView, vl::Func(::vl_workflow_global::__vwsnf298_Demo_demo_RefreshBindableTreeViewTabPageConstructor___vwsn_demo_RefreshBindableTreeViewTabPage_Initialize_(this))));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"treeView"), ::vl::__vwsn::Box(this->treeView));
 		}
 		{
 			::vl::__vwsn::This(this->treeView)->SetImageProperty(vl::Func(::vl_workflow_global::__vwsnf299_Demo_demo_RefreshBindableTreeViewTabPageConstructor___vwsn_demo_RefreshBindableTreeViewTabPage_Initialize_(this)));
@@ -26901,6 +27015,7 @@ Class (::demo::RefreshListViewTabPageConstructor)
 		}
 		{
 			(this->comboView = new ::vl::presentation::controls::GuiComboBoxListControl(::vl::presentation::theme::ThemeName::ComboBox, static_cast<::vl::presentation::controls::GuiSelectableListControl*>(this->__vwsn_precompile_2)));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"comboView"), ::vl::__vwsn::Box(this->comboView));
 		}
 		{
 			::vl::__vwsn::This(this->comboView)->SetSelectedIndex(static_cast<::vl::vint64_t>(5L));
@@ -26988,6 +27103,7 @@ Class (::demo::RefreshListViewTabPageConstructor)
 		}
 		{
 			(this->listView = new ::vl::presentation::controls::GuiListView(::vl::presentation::theme::ThemeName::ListView));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"listView"), ::vl::__vwsn::Box(this->listView));
 		}
 		{
 			auto __vwsn_collection_ = ::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(this->listView)->GetDataColumns());
@@ -27295,6 +27411,7 @@ Class (::demo::RefreshTextListTabPageConstructor)
 		}
 		{
 			(this->buttonRead = new ::vl::presentation::controls::GuiButton(::vl::presentation::theme::ThemeName::Button));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"buttonRead"), ::vl::__vwsn::Box(this->buttonRead));
 		}
 		{
 			::vl::__vwsn::This(this->buttonRead)->SetText(::vl::WString::Unmanaged(L"Read (false)"));
@@ -27311,6 +27428,7 @@ Class (::demo::RefreshTextListTabPageConstructor)
 		}
 		{
 			(this->textList = new ::vl::presentation::controls::GuiTextList(::vl::presentation::theme::ThemeName::TextList));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"textList"), ::vl::__vwsn::Box(this->textList));
 		}
 		(this->__vwsn_precompile_8 = ::vl::Ptr<::vl::presentation::controls::list::TextItem>(new ::vl::presentation::controls::list::TextItem()));
 		{
@@ -27501,6 +27619,7 @@ Class (::demo::RefreshTreeViewTabPageConstructor)
 		}
 		{
 			(this->treeView = new ::vl::presentation::controls::GuiTreeView(::vl::presentation::theme::ThemeName::TreeView));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"treeView"), ::vl::__vwsn::Box(this->treeView));
 		}
 		(this->__vwsn_precompile_16 = ::vl::__vwsn::This(this->treeView)->GetBoundsComposition());
 		{
@@ -27704,6 +27823,7 @@ Class (::demo::RepeatTabPageConstructor)
 			(this->__vwsn_precompile_2 = new ::vl::presentation::controls::GuiTab(::vl::presentation::theme::ThemeName::Tab));
 		}
 		(this->repeatStackTabPage = new ::demo::EnglishNumbersControllerTabPage());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"repeatStackTabPage"), ::vl::__vwsn::Box(this->repeatStackTabPage));
 		(this->__vwsn_precompile_4 = ::vl::__vwsn::This(this->repeatStackTabPage)->GetContentComposition());
 		{
 			(this->__vwsn_precompile_5 = new ::vl::presentation::controls::GuiScrollContainer(::vl::presentation::theme::ThemeName::ScrollView));
@@ -27754,6 +27874,7 @@ Class (::demo::RepeatTabPageConstructor)
 			::vl::__vwsn::This(__vwsn_collection_.Obj())->Add(::vl::__vwsn::Box(this->repeatStackTabPage));
 		}
 		(this->repeatFlowTabPage = new ::demo::EnglishNumbersControllerTabPage());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"repeatFlowTabPage"), ::vl::__vwsn::Box(this->repeatFlowTabPage));
 		(this->__vwsn_precompile_8 = ::vl::__vwsn::This(this->repeatFlowTabPage)->GetContentComposition());
 		{
 			(this->__vwsn_precompile_9 = new ::vl::presentation::controls::GuiScrollContainer(::vl::presentation::theme::ThemeName::ScrollView));
@@ -27804,6 +27925,7 @@ Class (::demo::RepeatTabPageConstructor)
 			::vl::__vwsn::This(__vwsn_collection_.Obj())->Add(::vl::__vwsn::Box(this->repeatFlowTabPage));
 		}
 		(this->sharedSizeFlowTabPage = new ::demo::EnglishNumbersControllerTabPage());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"sharedSizeFlowTabPage"), ::vl::__vwsn::Box(this->sharedSizeFlowTabPage));
 		(this->__vwsn_precompile_12 = ::vl::__vwsn::This(this->sharedSizeFlowTabPage)->GetContentComposition());
 		{
 			(this->__vwsn_precompile_13 = new ::vl::presentation::controls::GuiScrollContainer(::vl::presentation::theme::ThemeName::ScrollView));
@@ -27864,6 +27986,7 @@ Class (::demo::RepeatTabPageConstructor)
 			::vl::__vwsn::This(__vwsn_collection_.Obj())->Add(::vl::__vwsn::Box(this->sharedSizeFlowTabPage));
 		}
 		(this->sharedSizeListTabPage = new ::demo::EnglishNumbersControllerTabPage());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"sharedSizeListTabPage"), ::vl::__vwsn::Box(this->sharedSizeListTabPage));
 		(this->__vwsn_precompile_17 = ::vl::__vwsn::This(this->sharedSizeListTabPage)->GetContentComposition());
 		(this->__vwsn_precompile_18 = new ::vl::presentation::compositions::GuiSharedSizeRootComposition());
 		{
@@ -27950,6 +28073,7 @@ Class (::demo::RepeatTabPageConstructor)
 		{
 			(this->hTracker = new ::vl::presentation::controls::GuiScroll(::vl::presentation::theme::ThemeName::HTracker));
 			::vl::__vwsn::This(this->hTracker)->SetPageSize(static_cast<::vl::vint64_t>(0L));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"hTracker"), ::vl::__vwsn::Box(this->hTracker));
 		}
 		{
 			::vl::__vwsn::This(this->hTracker)->SetTotalSize(static_cast<::vl::vint64_t>(10L));
@@ -28169,6 +28293,7 @@ Class (::demo::ResponsiveGroupControlConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_2)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_3));
 		}
 		(this->responsive = new ::vl::presentation::compositions::GuiResponsiveGroupComposition());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"responsive"), ::vl::__vwsn::Box(this->responsive));
 		{
 			::vl::__vwsn::This(this->responsive)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint64_t>(1L); __vwsn_temp__.top = static_cast<::vl::vint64_t>(1L); __vwsn_temp__.right = static_cast<::vl::vint64_t>(1L); __vwsn_temp__.bottom = static_cast<::vl::vint64_t>(1L); return __vwsn_temp__; }());
 		}
@@ -28561,6 +28686,7 @@ Class (::demo::ResponsiveStackControlConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_2)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_3));
 		}
 		(this->responsive = new ::vl::presentation::compositions::GuiResponsiveStackComposition());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"responsive"), ::vl::__vwsn::Box(this->responsive));
 		{
 			::vl::__vwsn::This(this->responsive)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint64_t>(1L); __vwsn_temp__.top = static_cast<::vl::vint64_t>(1L); __vwsn_temp__.right = static_cast<::vl::vint64_t>(1L); __vwsn_temp__.bottom = static_cast<::vl::vint64_t>(1L); return __vwsn_temp__; }());
 		}
@@ -29106,6 +29232,7 @@ Class (::demo::ResponsiveViewControlConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_2)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_3));
 		}
 		(this->responsive = new ::vl::presentation::compositions::GuiResponsiveViewComposition());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"responsive"), ::vl::__vwsn::Box(this->responsive));
 		(this->__vwsn_precompile_4 = new ::vl::presentation::compositions::GuiResponsiveFixedComposition());
 		(this->__vwsn_precompile_5 = new ::vl::presentation::compositions::GuiStackComposition());
 		{
@@ -29276,6 +29403,7 @@ Class (::demo::ResponsiveViewControlConstructor)
 		}
 		{
 			(this->documentBox = new ::vl::presentation::controls::GuiDocumentLabel(::vl::presentation::theme::ThemeName::DocumentTextBox));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"documentBox"), ::vl::__vwsn::Box(this->documentBox));
 		}
 		{
 			::vl::__vwsn::This(this->documentBox)->SetEditMode(::vl::presentation::controls::GuiDocumentCommonInterface::EditMode::Editable);
@@ -29706,6 +29834,7 @@ Class (::demo::StyleItemTemplateConstructor)
 		}
 		{
 			(this->containerControl = new ::vl::presentation::controls::GuiCustomControl(::vl::presentation::theme::ThemeName::CustomControl));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"containerControl"), ::vl::__vwsn::Box(this->containerControl));
 		}
 		{
 			(this->__vwsn_precompile_5 = new ::vl::presentation::controls::GuiCustomControl(::vl::presentation::theme::ThemeName::CustomControl));
@@ -29755,6 +29884,7 @@ Class (::demo::StyleItemTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_1)->SetSite(static_cast<::vl::vint64_t>(0L), static_cast<::vl::vint64_t>(0L), static_cast<::vl::vint64_t>(1L), static_cast<::vl::vint64_t>(1L));
 		}
 		(this->styleLabel = ::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiSolidLabelElement>()));
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"styleLabel"), ::vl::__vwsn::Box(this->styleLabel));
 		{
 			::vl::__vwsn::This(this->styleLabel.Obj())->SetVerticalAlignment(::vl::presentation::Alignment::Center);
 		}
@@ -29941,6 +30071,7 @@ Class (::demo::SubWindowConstructor)
 		(this->__vwsn_precompile_1 = new ::vl::presentation::compositions::GuiStackItemComposition());
 		{
 			(this->checkFrame = new ::vl::presentation::controls::GuiSelectableButton(::vl::presentation::theme::ThemeName::CheckBox));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"checkFrame"), ::vl::__vwsn::Box(this->checkFrame));
 		}
 		{
 			::vl::__vwsn::This(this->checkFrame)->SetText(::vl::WString::Unmanaged(L"Customized Frame"));
@@ -29954,6 +30085,7 @@ Class (::demo::SubWindowConstructor)
 		(this->__vwsn_precompile_2 = new ::vl::presentation::compositions::GuiStackItemComposition());
 		{
 			(this->checkMax = new ::vl::presentation::controls::GuiSelectableButton(::vl::presentation::theme::ThemeName::CheckBox));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"checkMax"), ::vl::__vwsn::Box(this->checkMax));
 		}
 		{
 			::vl::__vwsn::This(this->checkMax)->SetText(::vl::WString::Unmanaged(L"MaximizedBox"));
@@ -29967,6 +30099,7 @@ Class (::demo::SubWindowConstructor)
 		(this->__vwsn_precompile_3 = new ::vl::presentation::compositions::GuiStackItemComposition());
 		{
 			(this->checkMin = new ::vl::presentation::controls::GuiSelectableButton(::vl::presentation::theme::ThemeName::CheckBox));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"checkMin"), ::vl::__vwsn::Box(this->checkMin));
 		}
 		{
 			::vl::__vwsn::This(this->checkMin)->SetText(::vl::WString::Unmanaged(L"MinimizedBox"));
@@ -29980,6 +30113,7 @@ Class (::demo::SubWindowConstructor)
 		(this->__vwsn_precompile_4 = new ::vl::presentation::compositions::GuiStackItemComposition());
 		{
 			(this->checkBorder = new ::vl::presentation::controls::GuiSelectableButton(::vl::presentation::theme::ThemeName::CheckBox));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"checkBorder"), ::vl::__vwsn::Box(this->checkBorder));
 		}
 		{
 			::vl::__vwsn::This(this->checkBorder)->SetText(::vl::WString::Unmanaged(L"Border"));
@@ -29993,6 +30127,7 @@ Class (::demo::SubWindowConstructor)
 		(this->__vwsn_precompile_5 = new ::vl::presentation::compositions::GuiStackItemComposition());
 		{
 			(this->checkSizeBox = new ::vl::presentation::controls::GuiSelectableButton(::vl::presentation::theme::ThemeName::CheckBox));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"checkSizeBox"), ::vl::__vwsn::Box(this->checkSizeBox));
 		}
 		{
 			::vl::__vwsn::This(this->checkSizeBox)->SetText(::vl::WString::Unmanaged(L"SizeBox"));
@@ -30006,6 +30141,7 @@ Class (::demo::SubWindowConstructor)
 		(this->__vwsn_precompile_6 = new ::vl::presentation::compositions::GuiStackItemComposition());
 		{
 			(this->checkIcon = new ::vl::presentation::controls::GuiSelectableButton(::vl::presentation::theme::ThemeName::CheckBox));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"checkIcon"), ::vl::__vwsn::Box(this->checkIcon));
 		}
 		{
 			::vl::__vwsn::This(this->checkIcon)->SetText(::vl::WString::Unmanaged(L"IconVisible"));
@@ -30019,6 +30155,7 @@ Class (::demo::SubWindowConstructor)
 		(this->__vwsn_precompile_7 = new ::vl::presentation::compositions::GuiStackItemComposition());
 		{
 			(this->checkTitle = new ::vl::presentation::controls::GuiSelectableButton(::vl::presentation::theme::ThemeName::CheckBox));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"checkTitle"), ::vl::__vwsn::Box(this->checkTitle));
 		}
 		{
 			::vl::__vwsn::This(this->checkTitle)->SetText(::vl::WString::Unmanaged(L"TitleBar"));
@@ -30448,6 +30585,7 @@ Class (::demo::TextBoxTabPageConstructor)
 			(this->__vwsn_precompile_2 = new ::vl::presentation::controls::GuiTab(::vl::presentation::theme::ThemeName::Tab));
 		}
 		(this->t1 = new ::demo::TextBoxSubTabPage());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"t1"), ::vl::__vwsn::Box(this->t1));
 		{
 			::vl::__vwsn::This(this->t1)->SetAlt(::vl::WString::Unmanaged(L"T"));
 		}
@@ -30459,6 +30597,7 @@ Class (::demo::TextBoxTabPageConstructor)
 			::vl::__vwsn::This(__vwsn_collection_.Obj())->Add(::vl::__vwsn::Box(this->t1));
 		}
 		(this->t2 = new ::demo::TextBoxSubTabPage());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"t2"), ::vl::__vwsn::Box(this->t2));
 		{
 			::vl::__vwsn::This(this->t2)->SetTextBoxAcceptTabInput(false);
 		}
@@ -30473,6 +30612,7 @@ Class (::demo::TextBoxTabPageConstructor)
 			::vl::__vwsn::This(__vwsn_collection_.Obj())->Add(::vl::__vwsn::Box(this->t2));
 		}
 		(this->d1 = new ::demo::DocumentBoxSubTabPage());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"d1"), ::vl::__vwsn::Box(this->d1));
 		{
 			::vl::__vwsn::This(this->d1)->SetAlt(::vl::WString::Unmanaged(L"D"));
 		}
@@ -30484,6 +30624,7 @@ Class (::demo::TextBoxTabPageConstructor)
 			::vl::__vwsn::This(__vwsn_collection_.Obj())->Add(::vl::__vwsn::Box(this->d1));
 		}
 		(this->d2 = new ::demo::DocumentBoxSubTabPage());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"d2"), ::vl::__vwsn::Box(this->d2));
 		{
 			::vl::__vwsn::This(this->d2)->SetTextBoxAcceptTabInput(false);
 		}
@@ -30624,6 +30765,7 @@ Class (::demo::TextEditorConstructor)
 		(this->self = __vwsn_this_);
 		{
 			(this->textBox = new ::vl::presentation::controls::GuiSinglelineTextBox(::vl::presentation::theme::ThemeName::SinglelineTextBox));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"textBox"), ::vl::__vwsn::Box(this->textBox));
 		}
 		(this->__vwsn_precompile_0 = ::vl::__vwsn::This(this->textBox)->GetBoundsComposition());
 		{
@@ -30682,6 +30824,7 @@ Class (::demo::TextListTabPageConstructor)
 			::vl::__vwsn::This(this->self)->SetText(::vl::WString::Unmanaged(L"TextList"));
 		}
 		(this->mutexGroupController = new ::vl::presentation::controls::GuiSelectableButton::MutexGroupController());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"mutexGroupController"), ::vl::__vwsn::Box(this->mutexGroupController));
 		{
 			::vl::__vwsn::This(this->self)->AddComponent(static_cast<::vl::presentation::controls::GuiComponent*>(this->mutexGroupController));
 		}
@@ -30742,6 +30885,7 @@ Class (::demo::TextListTabPageConstructor)
 		}
 		{
 			(this->comboView = new ::vl::presentation::controls::GuiComboBoxListControl(::vl::presentation::theme::ThemeName::ComboBox, static_cast<::vl::presentation::controls::GuiSelectableListControl*>(this->__vwsn_precompile_2)));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"comboView"), ::vl::__vwsn::Box(this->comboView));
 		}
 		{
 			::vl::__vwsn::This(this->comboView)->SetSelectedIndex(static_cast<::vl::vint64_t>(0L));
@@ -30765,6 +30909,7 @@ Class (::demo::TextListTabPageConstructor)
 		}
 		{
 			(this->textList = new ::vl::presentation::controls::GuiTextList(::vl::presentation::theme::ThemeName::TextList));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"textList"), ::vl::__vwsn::Box(this->textList));
 		}
 		{
 			::vl::__vwsn::This(this->textList)->SetHorizontalAlwaysVisible(false);
@@ -30995,6 +31140,7 @@ Class (::demo::TextListTabPageConstructor)
 		}
 		{
 			(this->bindableTextList = new ::vl::presentation::controls::GuiBindableTextList(::vl::presentation::theme::ThemeName::TextList));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"bindableTextList"), ::vl::__vwsn::Box(this->bindableTextList));
 		}
 		{
 			::vl::__vwsn::This(this->bindableTextList)->SetCheckedProperty(vl::Func(::vl_workflow_global::__vwsnf82_Demo_demo_TextListTabPageConstructor___vwsn_demo_TextListTabPage_Initialize_(this)));
@@ -31275,6 +31421,7 @@ Class (::demo::TreeViewTabPageConstructor)
 		}
 		{
 			(this->treeView = new ::vl::presentation::controls::GuiTreeView(::vl::presentation::theme::ThemeName::TreeView));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"treeView"), ::vl::__vwsn::Box(this->treeView));
 		}
 		{
 			::vl::__vwsn::This(this->treeView)->SetHorizontalAlwaysVisible(false);
@@ -31389,6 +31536,7 @@ Class (::demo::TreeViewTabPageConstructor)
 		}
 		{
 			(this->bindableTreeView = new ::vl::presentation::controls::GuiBindableTreeView(::vl::presentation::theme::ThemeName::TreeView));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"bindableTreeView"), ::vl::__vwsn::Box(this->bindableTreeView));
 		}
 		{
 			::vl::__vwsn::This(this->bindableTreeView)->SetImageProperty(vl::Func(::vl_workflow_global::__vwsnf90_Demo_demo_TreeViewTabPageConstructor___vwsn_demo_TreeViewTabPage_Initialize_(this)));

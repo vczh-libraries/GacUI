@@ -5550,6 +5550,7 @@ namespace gaclib_controls
 		}
 		{
 			(this->textBox = new ::vl::presentation::controls::GuiSinglelineTextBox(::vl::presentation::theme::ThemeName::SinglelineTextBox));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"textBox"), ::vl::__vwsn::Box(this->textBox));
 		}
 		(this->__vwsn_precompile_2 = ::vl::__vwsn::This(this->textBox)->GetBoundsComposition());
 		{
@@ -5568,6 +5569,7 @@ namespace gaclib_controls
 		{
 			(this->tracker = new ::vl::presentation::controls::GuiScroll(::vl::presentation::theme::ThemeName::HTracker));
 			::vl::__vwsn::This(this->tracker)->SetPageSize(static_cast<::vl::vint64_t>(0L));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"tracker"), ::vl::__vwsn::Box(this->tracker));
 		}
 		{
 			::vl::__vwsn::This(this->tracker)->SetBigMove(static_cast<::vl::vint64_t>(16L));
@@ -5760,6 +5762,7 @@ Class (::gaclib_controls::ColorDialogControlConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_9)->SetSite(static_cast<::vl::vint64_t>(0L), static_cast<::vl::vint64_t>(1L), static_cast<::vl::vint64_t>(1L), static_cast<::vl::vint64_t>(1L));
 		}
 		(this->colorRed = new ::gaclib_controls::ColorComponentControl());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"colorRed"), ::vl::__vwsn::Box(this->colorRed));
 		{
 			::vl::__vwsn::This(this->colorRed)->SetTextBoxAlt(::vl::WString::Unmanaged(L"R"));
 		}
@@ -5778,6 +5781,7 @@ Class (::gaclib_controls::ColorDialogControlConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_11)->SetSite(static_cast<::vl::vint64_t>(1L), static_cast<::vl::vint64_t>(1L), static_cast<::vl::vint64_t>(1L), static_cast<::vl::vint64_t>(1L));
 		}
 		(this->colorGreen = new ::gaclib_controls::ColorComponentControl());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"colorGreen"), ::vl::__vwsn::Box(this->colorGreen));
 		{
 			::vl::__vwsn::This(this->colorGreen)->SetTextBoxAlt(::vl::WString::Unmanaged(L"G"));
 		}
@@ -5796,6 +5800,7 @@ Class (::gaclib_controls::ColorDialogControlConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_13)->SetSite(static_cast<::vl::vint64_t>(2L), static_cast<::vl::vint64_t>(1L), static_cast<::vl::vint64_t>(1L), static_cast<::vl::vint64_t>(1L));
 		}
 		(this->colorBlue = new ::gaclib_controls::ColorComponentControl());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"colorBlue"), ::vl::__vwsn::Box(this->colorBlue));
 		{
 			::vl::__vwsn::This(this->colorBlue)->SetTextBoxAlt(::vl::WString::Unmanaged(L"B"));
 		}
@@ -6005,6 +6010,7 @@ Class (::gaclib_controls::ColorDialogWindowConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_1)->SetSite(static_cast<::vl::vint64_t>(0L), static_cast<::vl::vint64_t>(0L), static_cast<::vl::vint64_t>(1L), static_cast<::vl::vint64_t>(3L));
 		}
 		(this->colorControl = new ::gaclib_controls::ColorDialogControl(this->ViewModel));
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"colorControl"), ::vl::__vwsn::Box(this->colorControl));
 		(this->__vwsn_precompile_2 = ::vl::__vwsn::This(this->colorControl)->GetBoundsComposition());
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_2)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint64_t>(0L); __vwsn_temp__.top = static_cast<::vl::vint64_t>(0L); __vwsn_temp__.right = static_cast<::vl::vint64_t>(0L); __vwsn_temp__.bottom = static_cast<::vl::vint64_t>(0L); return __vwsn_temp__; }());
@@ -6229,6 +6235,7 @@ Class (::gaclib_controls::FileDialogWindowConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_1)->SetSite(static_cast<::vl::vint64_t>(0L), static_cast<::vl::vint64_t>(0L), static_cast<::vl::vint64_t>(1L), static_cast<::vl::vint64_t>(3L));
 		}
 		(this->filePickerControl = new ::gaclib_controls::FilePickerControl(this->ViewModel));
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"filePickerControl"), ::vl::__vwsn::Box(this->filePickerControl));
 		(this->__vwsn_precompile_2 = ::vl::__vwsn::This(this->filePickerControl)->GetBoundsComposition());
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_2)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint64_t>(0L); __vwsn_temp__.top = static_cast<::vl::vint64_t>(0L); __vwsn_temp__.right = static_cast<::vl::vint64_t>(0L); __vwsn_temp__.bottom = static_cast<::vl::vint64_t>(0L); return __vwsn_temp__; }());
@@ -6245,6 +6252,7 @@ Class (::gaclib_controls::FileDialogWindowConstructor)
 		}
 		{
 			(this->buttonOK = new ::vl::presentation::controls::GuiButton(::vl::presentation::theme::ThemeName::Button));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"buttonOK"), ::vl::__vwsn::Box(this->buttonOK));
 		}
 		(this->__vwsn_precompile_4 = ::vl::__vwsn::This(this->buttonOK)->GetBoundsComposition());
 		{
@@ -6473,6 +6481,7 @@ Class (::gaclib_controls::FilePickerControlConstructor)
 		}
 		{
 			(this->treeView = new ::vl::presentation::controls::GuiBindableTreeView(::vl::presentation::theme::ThemeName::TreeView));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"treeView"), ::vl::__vwsn::Box(this->treeView));
 		}
 		{
 			::vl::__vwsn::This(this->treeView)->SetChildrenProperty(vl::Func(::vl_workflow_global::__vwsnf26_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize_(this)));
@@ -6505,6 +6514,7 @@ Class (::gaclib_controls::FilePickerControlConstructor)
 		}
 		{
 			(this->dataGrid = new ::vl::presentation::controls::GuiBindableDataGrid(::vl::presentation::theme::ThemeName::ListView));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"dataGrid"), ::vl::__vwsn::Box(this->dataGrid));
 		}
 		(this->__vwsn_precompile_12 = ::vl::__vwsn::This(this->dataGrid)->GetFocusableComposition());
 		{
@@ -6593,6 +6603,7 @@ Class (::gaclib_controls::FilePickerControlConstructor)
 		}
 		{
 			(this->textBox = new ::vl::presentation::controls::GuiSinglelineTextBox(::vl::presentation::theme::ThemeName::SinglelineTextBox));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"textBox"), ::vl::__vwsn::Box(this->textBox));
 		}
 		(this->__vwsn_precompile_20 = ::vl::__vwsn::This(this->textBox)->GetFocusableComposition());
 		(this->__vwsn_precompile_19 = ::vl::__vwsn::This(this->textBox)->GetBoundsComposition());
@@ -6626,6 +6637,7 @@ Class (::gaclib_controls::FilePickerControlConstructor)
 		}
 		{
 			(this->comboBox = new ::vl::presentation::controls::GuiComboBoxListControl(::vl::presentation::theme::ThemeName::ComboBox, static_cast<::vl::presentation::controls::GuiSelectableListControl*>(this->__vwsn_precompile_22)));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"comboBox"), ::vl::__vwsn::Box(this->comboBox));
 		}
 		(this->__vwsn_precompile_23 = ::vl::__vwsn::This(this->comboBox)->GetBoundsComposition());
 		{
@@ -6898,6 +6910,7 @@ Class (::gaclib_controls::FontNameControlConstructor)
 		}
 		{
 			(this->textBox = new ::vl::presentation::controls::GuiSinglelineTextBox(::vl::presentation::theme::ThemeName::SinglelineTextBox));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"textBox"), ::vl::__vwsn::Box(this->textBox));
 		}
 		(this->__vwsn_precompile_3 = ::vl::__vwsn::This(this->textBox)->GetBoundsComposition());
 		{
@@ -6918,6 +6931,7 @@ Class (::gaclib_controls::FontNameControlConstructor)
 		}
 		{
 			(this->textList = new ::vl::presentation::controls::GuiBindableTextList(::vl::presentation::theme::ThemeName::TextList));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"textList"), ::vl::__vwsn::Box(this->textList));
 		}
 		{
 			::vl::__vwsn::This(this->textList)->SetHorizontalAlwaysVisible(false);
@@ -7121,6 +7135,7 @@ Class (::gaclib_controls::FontSizeControlConstructor)
 		}
 		{
 			(this->textBox = new ::vl::presentation::controls::GuiSinglelineTextBox(::vl::presentation::theme::ThemeName::SinglelineTextBox));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"textBox"), ::vl::__vwsn::Box(this->textBox));
 		}
 		(this->__vwsn_precompile_3 = ::vl::__vwsn::This(this->textBox)->GetBoundsComposition());
 		{
@@ -7141,6 +7156,7 @@ Class (::gaclib_controls::FontSizeControlConstructor)
 		}
 		{
 			(this->textList = new ::vl::presentation::controls::GuiBindableTextList(::vl::presentation::theme::ThemeName::TextList));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"textList"), ::vl::__vwsn::Box(this->textList));
 		}
 		{
 			::vl::__vwsn::This(this->textList)->SetHorizontalAlwaysVisible(false);
@@ -7379,6 +7395,7 @@ Class (::gaclib_controls::FullFontDialogWindowConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_3)->SetSite(static_cast<::vl::vint64_t>(0L), static_cast<::vl::vint64_t>(0L), static_cast<::vl::vint64_t>(3L), static_cast<::vl::vint64_t>(1L));
 		}
 		(this->nameControl = new ::gaclib_controls::FontNameControl(::vl::Ptr<::vl::presentation::ICommonFontDialogViewModel>(this->ViewModel)));
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"nameControl"), ::vl::__vwsn::Box(this->nameControl));
 		(this->__vwsn_precompile_4 = ::vl::__vwsn::This(this->nameControl)->GetBoundsComposition());
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_4)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint64_t>(0L); __vwsn_temp__.top = static_cast<::vl::vint64_t>(0L); __vwsn_temp__.right = static_cast<::vl::vint64_t>(0L); __vwsn_temp__.bottom = static_cast<::vl::vint64_t>(0L); return __vwsn_temp__; }());
@@ -7394,6 +7411,7 @@ Class (::gaclib_controls::FullFontDialogWindowConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_5)->SetSite(static_cast<::vl::vint64_t>(0L), static_cast<::vl::vint64_t>(1L), static_cast<::vl::vint64_t>(1L), static_cast<::vl::vint64_t>(1L));
 		}
 		(this->sizeControl = new ::gaclib_controls::FontSizeControl());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"sizeControl"), ::vl::__vwsn::Box(this->sizeControl));
 		(this->__vwsn_precompile_6 = ::vl::__vwsn::This(this->sizeControl)->GetBoundsComposition());
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_6)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint64_t>(0L); __vwsn_temp__.top = static_cast<::vl::vint64_t>(0L); __vwsn_temp__.right = static_cast<::vl::vint64_t>(0L); __vwsn_temp__.bottom = static_cast<::vl::vint64_t>(0L); return __vwsn_temp__; }());
@@ -7428,6 +7446,7 @@ Class (::gaclib_controls::FullFontDialogWindowConstructor)
 		(this->__vwsn_precompile_10 = new ::vl::presentation::compositions::GuiStackItemComposition());
 		{
 			(this->checkBold = new ::vl::presentation::controls::GuiSelectableButton(::vl::presentation::theme::ThemeName::CheckBox));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"checkBold"), ::vl::__vwsn::Box(this->checkBold));
 		}
 		{
 			::vl::__vwsn::This(this->checkBold)->SetAlt(::vl::WString::Unmanaged(L"B"));
@@ -7441,6 +7460,7 @@ Class (::gaclib_controls::FullFontDialogWindowConstructor)
 		(this->__vwsn_precompile_11 = new ::vl::presentation::compositions::GuiStackItemComposition());
 		{
 			(this->checkItalic = new ::vl::presentation::controls::GuiSelectableButton(::vl::presentation::theme::ThemeName::CheckBox));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"checkItalic"), ::vl::__vwsn::Box(this->checkItalic));
 		}
 		{
 			::vl::__vwsn::This(this->checkItalic)->SetAlt(::vl::WString::Unmanaged(L"I"));
@@ -7454,6 +7474,7 @@ Class (::gaclib_controls::FullFontDialogWindowConstructor)
 		(this->__vwsn_precompile_12 = new ::vl::presentation::compositions::GuiStackItemComposition());
 		{
 			(this->checkUnderline = new ::vl::presentation::controls::GuiSelectableButton(::vl::presentation::theme::ThemeName::CheckBox));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"checkUnderline"), ::vl::__vwsn::Box(this->checkUnderline));
 		}
 		{
 			::vl::__vwsn::This(this->checkUnderline)->SetAlt(::vl::WString::Unmanaged(L"U"));
@@ -7467,6 +7488,7 @@ Class (::gaclib_controls::FullFontDialogWindowConstructor)
 		(this->__vwsn_precompile_13 = new ::vl::presentation::compositions::GuiStackItemComposition());
 		{
 			(this->checkStrikeline = new ::vl::presentation::controls::GuiSelectableButton(::vl::presentation::theme::ThemeName::CheckBox));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"checkStrikeline"), ::vl::__vwsn::Box(this->checkStrikeline));
 		}
 		{
 			::vl::__vwsn::This(this->checkStrikeline)->SetAlt(::vl::WString::Unmanaged(L"U"));
@@ -7480,6 +7502,7 @@ Class (::gaclib_controls::FullFontDialogWindowConstructor)
 		(this->__vwsn_precompile_14 = new ::vl::presentation::compositions::GuiStackItemComposition());
 		{
 			(this->checkHAA = new ::vl::presentation::controls::GuiSelectableButton(::vl::presentation::theme::ThemeName::CheckBox));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"checkHAA"), ::vl::__vwsn::Box(this->checkHAA));
 		}
 		{
 			::vl::__vwsn::This(this->checkHAA)->SetAlt(::vl::WString::Unmanaged(L"H"));
@@ -7493,6 +7516,7 @@ Class (::gaclib_controls::FullFontDialogWindowConstructor)
 		(this->__vwsn_precompile_15 = new ::vl::presentation::compositions::GuiStackItemComposition());
 		{
 			(this->checkVAA = new ::vl::presentation::controls::GuiSelectableButton(::vl::presentation::theme::ThemeName::CheckBox));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"checkVAA"), ::vl::__vwsn::Box(this->checkVAA));
 		}
 		{
 			::vl::__vwsn::This(this->checkVAA)->SetAlt(::vl::WString::Unmanaged(L"V"));
@@ -7524,6 +7548,7 @@ Class (::gaclib_controls::FullFontDialogWindowConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_21)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint64_t>(0L); __vwsn_temp__.top = static_cast<::vl::vint64_t>(0L); __vwsn_temp__.right = static_cast<::vl::vint64_t>(0L); __vwsn_temp__.bottom = static_cast<::vl::vint64_t>(0L); return __vwsn_temp__; }());
 		}
 		(this->colorBounds = new ::vl::presentation::compositions::GuiBoundsComposition());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"colorBounds"), ::vl::__vwsn::Box(this->colorBounds));
 		{
 			::vl::__vwsn::This(this->colorBounds)->SetPreferredMinSize([&](){ ::vl::presentation::Size __vwsn_temp__; __vwsn_temp__.y = static_cast<::vl::vint64_t>(20L); return __vwsn_temp__; }());
 		}
@@ -7545,6 +7570,7 @@ Class (::gaclib_controls::FullFontDialogWindowConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_20)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint64_t>(1L); __vwsn_temp__.top = static_cast<::vl::vint64_t>(1L); __vwsn_temp__.right = static_cast<::vl::vint64_t>(1L); __vwsn_temp__.bottom = static_cast<::vl::vint64_t>(1L); return __vwsn_temp__; }());
 		}
 		(this->colorBackground = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiSolidBackgroundElement>()));
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"colorBackground"), ::vl::__vwsn::Box(this->colorBackground));
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_20)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->colorBackground));
 		}
@@ -7892,6 +7918,7 @@ Class (::gaclib_controls::MessageBoxButtonTemplateConstructor)
 		}
 		{
 			(this->buttonControl = new ::vl::presentation::controls::GuiButton(::vl::presentation::theme::ThemeName::Button));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"buttonControl"), ::vl::__vwsn::Box(this->buttonControl));
 		}
 		(this->__vwsn_precompile_0 = ::vl::__vwsn::This(this->buttonControl)->GetBoundsComposition());
 		{
@@ -8260,6 +8287,7 @@ Class (::gaclib_controls::MessageBoxWindowConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_14)->SetSite(static_cast<::vl::vint64_t>(0L), static_cast<::vl::vint64_t>(1L), static_cast<::vl::vint64_t>(1L), static_cast<::vl::vint64_t>(1L));
 		}
 		(this->buttonStack = new ::vl::presentation::compositions::GuiRepeatStackComposition());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"buttonStack"), ::vl::__vwsn::Box(this->buttonStack));
 		{
 			::vl::__vwsn::This(this->buttonStack)->SetItemTemplate(vl::Func(::vl_workflow_global::__vwsnf89_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxWindowConstructor___vwsn_gaclib_controls_MessageBoxWindow_Initialize_(this)));
 		}
@@ -8457,6 +8485,7 @@ Class (::gaclib_controls::SimpleFontDialogWindowConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_3)->SetSite(static_cast<::vl::vint64_t>(0L), static_cast<::vl::vint64_t>(0L), static_cast<::vl::vint64_t>(1L), static_cast<::vl::vint64_t>(1L));
 		}
 		(this->nameControl = new ::gaclib_controls::FontNameControl(::vl::Ptr<::vl::presentation::ICommonFontDialogViewModel>(this->ViewModel)));
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"nameControl"), ::vl::__vwsn::Box(this->nameControl));
 		(this->__vwsn_precompile_4 = ::vl::__vwsn::This(this->nameControl)->GetBoundsComposition());
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_4)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint64_t>(0L); __vwsn_temp__.top = static_cast<::vl::vint64_t>(0L); __vwsn_temp__.right = static_cast<::vl::vint64_t>(0L); __vwsn_temp__.bottom = static_cast<::vl::vint64_t>(0L); return __vwsn_temp__; }());
@@ -8472,6 +8501,7 @@ Class (::gaclib_controls::SimpleFontDialogWindowConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_5)->SetSite(static_cast<::vl::vint64_t>(0L), static_cast<::vl::vint64_t>(1L), static_cast<::vl::vint64_t>(1L), static_cast<::vl::vint64_t>(1L));
 		}
 		(this->sizeControl = new ::gaclib_controls::FontSizeControl());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"sizeControl"), ::vl::__vwsn::Box(this->sizeControl));
 		(this->__vwsn_precompile_6 = ::vl::__vwsn::This(this->sizeControl)->GetBoundsComposition());
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_6)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint64_t>(0L); __vwsn_temp__.top = static_cast<::vl::vint64_t>(0L); __vwsn_temp__.right = static_cast<::vl::vint64_t>(0L); __vwsn_temp__.bottom = static_cast<::vl::vint64_t>(0L); return __vwsn_temp__; }());

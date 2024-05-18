@@ -367,22 +367,6 @@ namespace darkskin
                 });
             }
             {
-                (<precompile>0.MultilineTextBox = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiMultilineTextBoxTemplate*)
-                {
-                    {
-                        return new (::darkskin::MultilineTextBoxTemplate*)();
-                    }
-                });
-            }
-            {
-                (<precompile>0.Tab = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiTabTemplate*)
-                {
-                    {
-                        return new (::darkskin::TabTemplate*)();
-                    }
-                });
-            }
-            {
                 (<precompile>0.ScrollView = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiScrollViewTemplate*)
                 {
                     {
@@ -424,6 +408,22 @@ namespace darkskin
             }
             {
                 (<precompile>0.PreferCustomFrameWindow = true);
+            }
+            {
+                (<precompile>0.MultilineTextBox = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiMultilineTextBoxTemplate*)
+                {
+                    {
+                        return new (::darkskin::MultilineTextBoxTemplate*)();
+                    }
+                });
+            }
+            {
+                (<precompile>0.Tab = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiTabTemplate*)
+                {
+                    {
+                        return new (::darkskin::TabTemplate*)();
+                    }
+                });
             }
             {
                 (<precompile>0.ComboBox = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiComboBoxTemplate*)
@@ -650,6 +650,7 @@ namespace darkskin
                 (<precompile>5.OwnedElement = <precompile>6);
             }
             (container = new (::presentation::compositions::GuiBoundsComposition*)());
+            <this>.SetNamedObject("container", container);
             {
                 (container.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
@@ -1399,6 +1400,7 @@ namespace darkskin
                 (<precompile>12.OwnedElement = <precompile>13);
             }
             (container = new (::presentation::compositions::GuiBoundsComposition*)());
+            <this>.SetNamedObject("container", container);
             {
                 (container.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
@@ -2361,6 +2363,7 @@ namespace darkskin
                 (<precompile>12.OwnedElement = <precompile>13);
             }
             (container = new (::presentation::compositions::GuiBoundsComposition*)());
+            <this>.SetNamedObject("container", container);
             {
                 (container.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
@@ -3234,6 +3237,7 @@ namespace darkskin
                 (<precompile>0.OwnedElement = <precompile>1);
             }
             (container = new (::presentation::compositions::GuiBoundsComposition*)());
+            <this>.SetNamedObject("container", container);
             {
                 (container.AlignmentToParent = {left : 1; top : 1; right : 1; bottom : 1;} of (::presentation::Margin));
             }
@@ -3461,6 +3465,7 @@ namespace darkskin
                 (<precompile>0.OwnedElement = <precompile>1);
             }
             (look = new (::presentation::templates::GuiCommonScrollViewLook*)(20 of (::system::Int64)));
+            <this>.SetNamedObject("look", look);
             {
                 (look.VScrollTemplate = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiScrollTemplate*)
                 {
@@ -3742,6 +3747,7 @@ namespace darkskin
                 (<precompile>1.OwnedElement = <precompile>2);
             }
             (container = new (::presentation::compositions::GuiBoundsComposition*)());
+            <this>.SetNamedObject("container", container);
             {
                 (container.AlignmentToParent = {left : 1; top : 1; right : 11; bottom : 1;} of (::presentation::Margin));
             }
@@ -5445,6 +5451,7 @@ namespace darkskin
                 (self.OwnedElement = <precompile>0);
             }
             (container = new (::presentation::compositions::GuiBoundsComposition*)());
+            <this>.SetNamedObject("container", container);
             {
                 (container.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
@@ -5754,6 +5761,7 @@ namespace darkskin
                 self.AddChild(<precompile>3);
             }
             (container = new (::presentation::compositions::GuiBoundsComposition*)());
+            <this>.SetNamedObject("container", container);
             {
                 (container.AlignmentToParent = {left : 1; top : 1; right : 11; bottom : 1;} of (::presentation::Margin));
             }
@@ -5854,6 +5862,7 @@ namespace darkskin
             }
             {
                 (buttonArrow = new (::presentation::controls::GuiSelectableButton*)(::presentation::theme::ThemeName::CheckBox));
+                <this>.SetNamedObject("buttonArrow", buttonArrow);
             }
             {
                 (buttonArrow.AutoFocus = false);
@@ -7089,6 +7098,7 @@ namespace darkskin
                 (<precompile>0.OwnedElement = <precompile>1);
             }
             (look = new (::presentation::templates::GuiCommonScrollViewLook*)(20 of (::system::Int64)));
+            <this>.SetNamedObject("look", look);
             {
                 (look.VScrollTemplate = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiScrollTemplate*)
                 {
@@ -7356,6 +7366,7 @@ namespace darkskin
                 (<precompile>0.OwnedElement = <precompile>1);
             }
             (look = new (::presentation::templates::GuiCommonScrollViewLook*)(20 of (::system::Int64)));
+            <this>.SetNamedObject("look", look);
             {
                 (look.VScrollTemplate = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiScrollTemplate*)
                 {
@@ -7615,6 +7626,7 @@ namespace darkskin
                 (<precompile>0.OwnedElement = <precompile>1);
             }
             (look = new (::presentation::templates::GuiCommonScrollViewLook*)(20 of (::system::Int64)));
+            <this>.SetNamedObject("look", look);
             {
                 (look.VScrollTemplate = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiScrollTemplate*)
                 {
@@ -7862,6 +7874,7 @@ namespace darkskin
                 self.AddChild(<precompile>1);
             }
             (container = new (::presentation::compositions::GuiBoundsComposition*)());
+            <this>.SetNamedObject("container", container);
             {
                 (container.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
@@ -8144,6 +8157,7 @@ namespace darkskin
                 (self.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
             }
             (look = new (::presentation::templates::GuiCommonDatePickerLook*)((cast (::presentation::Color) "#2D2D30"), (cast (::presentation::Color) "#FFFFFF"), (cast (::presentation::Color) "#999999")));
+            <this>.SetNamedObject("look", look);
             {
                 (look.DateTextListTemplate = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiTextListTemplate*)
                 {
@@ -8666,6 +8680,7 @@ namespace darkskin
                 (<precompile>1.OwnedElement = <precompile>2);
             }
             (container = new (::presentation::compositions::GuiBoundsComposition*)());
+            <this>.SetNamedObject("container", container);
             {
                 (container.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
             }
@@ -8676,6 +8691,7 @@ namespace darkskin
                 self.AddChild(<precompile>1);
             }
             (titleBounds = new (::presentation::compositions::GuiBoundsComposition*)());
+            <this>.SetNamedObject("titleBounds", titleBounds);
             {
                 (titleBounds.AlignmentToParent = {left : 5; top : 0; right : (-1); bottom : (-1);} of (::presentation::Margin));
             }
@@ -11225,6 +11241,7 @@ namespace darkskin
                 (<precompile>2.OwnedElement = <precompile>3);
             }
             (container = new (::presentation::compositions::GuiBoundsComposition*)());
+            <this>.SetNamedObject("container", container);
             {
                 (container.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
@@ -12027,6 +12044,7 @@ namespace darkskin
                 <precompile>3.SetColumnOption(1, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
             }
             (container = new (::presentation::compositions::GuiCellComposition*)());
+            <this>.SetNamedObject("container", container);
             {
                 container.SetSite(0, 0, 1, 2);
             }
@@ -12273,6 +12291,7 @@ namespace darkskin
                 (self.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
             }
             (table = new (::presentation::compositions::GuiTableComposition*)());
+            <this>.SetNamedObject("table", table);
             {
                 (table.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
@@ -12297,6 +12316,7 @@ namespace darkskin
                 <precompile>1.SetSite(0, 0, 1, 1);
             }
             (container = new (::presentation::compositions::GuiBoundsComposition*)());
+            <this>.SetNamedObject("container", container);
             {
                 (container.AlignmentToParent = {left : 1; top : 1; right : 1; bottom : 1;} of (::presentation::Margin));
             }
@@ -12759,6 +12779,7 @@ namespace darkskin
                 <precompile>0.AddChild(<precompile>1);
             }
             (container = new (::presentation::compositions::GuiCellComposition*)());
+            <this>.SetNamedObject("container", container);
             {
                 container.SetSite(0, 1, 1, 1);
             }
@@ -13149,6 +13170,7 @@ namespace darkskin
                 <precompile>4.SetSite(0, 0, 1, 1);
             }
             (container = new (::presentation::compositions::GuiBoundsComposition*)());
+            <this>.SetNamedObject("container", container);
             {
                 (container.AlignmentToParent = {left : 3; top : 3; right : 3; bottom : 3;} of (::presentation::Margin));
             }
@@ -14028,6 +14050,7 @@ namespace darkskin
                 <precompile>4.SetSite(0, 0, 1, 1);
             }
             (container = new (::presentation::compositions::GuiBoundsComposition*)());
+            <this>.SetNamedObject("container", container);
             {
                 (container.AlignmentToParent = {left : 3; top : 3; right : 3; bottom : 3;} of (::presentation::Margin));
             }
@@ -15163,6 +15186,7 @@ namespace darkskin
                 (<precompile>3.OwnedElement = <precompile>4);
             }
             (container = new (::presentation::compositions::GuiBoundsComposition*)());
+            <this>.SetNamedObject("container", container);
             {
                 (container.AlignmentToParent = {left : 3; top : 3; right : 3; bottom : 3;} of (::presentation::Margin));
             }
@@ -15202,6 +15226,7 @@ namespace darkskin
             }
             {
                 (buttonArrow = new (::presentation::controls::GuiSelectableButton*)(::presentation::theme::ThemeName::CheckBox));
+                <this>.SetNamedObject("buttonArrow", buttonArrow);
             }
             {
                 (buttonArrow.AutoFocus = false);
@@ -16034,6 +16059,7 @@ namespace darkskin
                 (<precompile>2.OwnedElement = <precompile>3);
             }
             (container = new (::presentation::compositions::GuiTableComposition*)());
+            <this>.SetNamedObject("container", container);
             {
                 (container.CellPadding = 3 of (::system::Int64));
             }
@@ -16899,6 +16925,7 @@ namespace darkskin
                 (<precompile>2.OwnedElement = <precompile>3);
             }
             (container = new (::presentation::compositions::GuiTableComposition*)());
+            <this>.SetNamedObject("container", container);
             {
                 (container.CellPadding = 3 of (::system::Int64));
             }
@@ -18154,6 +18181,7 @@ namespace darkskin
                 <precompile>0.AddChild(<precompile>4);
             }
             (container = new (::presentation::compositions::GuiCellComposition*)());
+            <this>.SetNamedObject("container", container);
             {
                 container.SetSite(0, 2, 1, 1);
             }
@@ -18764,6 +18792,7 @@ namespace darkskin
                 (<precompile>2.OwnedElement = <precompile>3);
             }
             (container = new (::presentation::compositions::GuiTableComposition*)());
+            <this>.SetNamedObject("container", container);
             {
                 (container.CellPadding = 3 of (::system::Int64));
             }
@@ -18836,6 +18865,7 @@ namespace darkskin
             }
             {
                 (buttonArrow = new (::presentation::controls::GuiSelectableButton*)(::presentation::theme::ThemeName::CheckBox));
+                <this>.SetNamedObject("buttonArrow", buttonArrow);
             }
             {
                 (buttonArrow.AutoFocus = false);
@@ -20110,6 +20140,7 @@ namespace darkskin
                 <precompile>4.SetColumnOption(1, {composeType : Absolute; absolute : 4;} of (::presentation::compositions::GuiCellOption));
             }
             (content = new (::presentation::compositions::GuiCellComposition*)());
+            <this>.SetNamedObject("content", content);
             {
                 content.SetSite(0, 0, 1, 2);
             }
@@ -20145,6 +20176,7 @@ namespace darkskin
                 <precompile>8.SetSite(2, 0, 1, 2);
             }
             (container = new (::presentation::compositions::GuiBoundsComposition*)());
+            <this>.SetNamedObject("container", container);
             {
                 (container.AlignmentToParent = {left : 3; top : 3; right : 3; bottom : 3;} of (::presentation::Margin));
             }
@@ -20920,6 +20952,7 @@ namespace darkskin
                 (self.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
             }
             (behavior = new (::presentation::templates::GuiCommonScrollBehavior*)());
+            <this>.SetNamedObject("behavior", behavior);
             {
                 self.AddComponent(behavior);
             }
@@ -20956,6 +20989,7 @@ namespace darkskin
             }
             {
                 (buttonDecrease = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
+                <this>.SetNamedObject("buttonDecrease", buttonDecrease);
             }
             {
                 (buttonDecrease.AutoFocus = false);
@@ -20990,6 +21024,7 @@ namespace darkskin
             }
             {
                 (buttonIncrease = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
+                <this>.SetNamedObject("buttonIncrease", buttonIncrease);
             }
             {
                 (buttonIncrease.AutoFocus = false);
@@ -21013,6 +21048,7 @@ namespace darkskin
                 self.AddChild(<precompile>5);
             }
             (handleContainer = new (::presentation::compositions::GuiBoundsComposition*)());
+            <this>.SetNamedObject("handleContainer", handleContainer);
             {
                 (handleContainer.AlignmentToParent = {left : 20; top : 0; right : 20; bottom : 0;} of (::presentation::Margin));
             }
@@ -21020,6 +21056,7 @@ namespace darkskin
                 (handleContainer.MinSizeLimitation = NoLimit of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
             }
             (handle = new (::presentation::compositions::GuiPartialViewComposition*)());
+            <this>.SetNamedObject("handle", handle);
             {
                 (handle.PreferredMinSize = {x : 10;} of (::presentation::Size));
             }
@@ -21447,6 +21484,7 @@ namespace darkskin
                 (self.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
             }
             (behavior = new (::presentation::templates::GuiCommonScrollBehavior*)());
+            <this>.SetNamedObject("behavior", behavior);
             {
                 self.AddComponent(behavior);
             }
@@ -21500,6 +21538,7 @@ namespace darkskin
                 <precompile>1.AddChild(<precompile>3);
             }
             (handle = new (::presentation::compositions::GuiPartialViewComposition*)());
+            <this>.SetNamedObject("handle", handle);
             {
                 (handle.WidthPageSize = 0 of (::system::Double));
             }
@@ -22160,6 +22199,7 @@ namespace darkskin
                 (<precompile>1.OwnedElement = <precompile>2);
             }
             (container = new (::presentation::compositions::GuiBoundsComposition*)());
+            <this>.SetNamedObject("container", container);
             {
                 (container.AlignmentToParent = {left : 1; top : 1; right : 1; bottom : 1;} of (::presentation::Margin));
             }
@@ -22724,6 +22764,7 @@ namespace darkskin
                 (<precompile>1.OwnedElement = <precompile>2);
             }
             (look = new (::presentation::templates::GuiCommonScrollViewLook*)(20 of (::system::Int64)));
+            <this>.SetNamedObject("look", look);
             {
                 (look.VScrollTemplate = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiScrollTemplate*)
                 {
@@ -23391,6 +23432,7 @@ namespace darkskin
                 (self.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
             }
             (behavior = new (::presentation::templates::GuiCommonScrollBehavior*)());
+            <this>.SetNamedObject("behavior", behavior);
             {
                 self.AddComponent(behavior);
             }
@@ -23427,6 +23469,7 @@ namespace darkskin
             }
             {
                 (buttonDecrease = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
+                <this>.SetNamedObject("buttonDecrease", buttonDecrease);
             }
             {
                 (buttonDecrease.AutoFocus = false);
@@ -23461,6 +23504,7 @@ namespace darkskin
             }
             {
                 (buttonIncrease = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
+                <this>.SetNamedObject("buttonIncrease", buttonIncrease);
             }
             {
                 (buttonIncrease.AutoFocus = false);
@@ -23484,6 +23528,7 @@ namespace darkskin
                 self.AddChild(<precompile>5);
             }
             (handleContainer = new (::presentation::compositions::GuiBoundsComposition*)());
+            <this>.SetNamedObject("handleContainer", handleContainer);
             {
                 (handleContainer.AlignmentToParent = {left : 0; top : 20; right : 0; bottom : 20;} of (::presentation::Margin));
             }
@@ -23491,6 +23536,7 @@ namespace darkskin
                 (handleContainer.MinSizeLimitation = NoLimit of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
             }
             (handle = new (::presentation::compositions::GuiPartialViewComposition*)());
+            <this>.SetNamedObject("handle", handle);
             {
                 (handle.PreferredMinSize = {y : 10;} of (::presentation::Size));
             }
@@ -23918,6 +23964,7 @@ namespace darkskin
                 (self.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
             }
             (behavior = new (::presentation::templates::GuiCommonScrollBehavior*)());
+            <this>.SetNamedObject("behavior", behavior);
             {
                 self.AddComponent(behavior);
             }
@@ -23971,6 +24018,7 @@ namespace darkskin
                 <precompile>1.AddChild(<precompile>3);
             }
             (handle = new (::presentation::compositions::GuiPartialViewComposition*)());
+            <this>.SetNamedObject("handle", handle);
             {
                 (handle.HeightPageSize = 0 of (::system::Double));
             }
@@ -25548,6 +25596,7 @@ namespace darkskin
                 (<precompile>0.OwnedElement = <precompile>1);
             }
             (beforeHeadersContainer = new (::presentation::compositions::GuiCellComposition*)());
+            <this>.SetNamedObject("beforeHeadersContainer", beforeHeadersContainer);
             {
                 beforeHeadersContainer.SetSite(0, 0, 1, 1);
             }
@@ -25555,6 +25604,7 @@ namespace darkskin
                 <precompile>0.AddChild(beforeHeadersContainer);
             }
             (afterHeadersContainer = new (::presentation::compositions::GuiCellComposition*)());
+            <this>.SetNamedObject("afterHeadersContainer", afterHeadersContainer);
             {
                 afterHeadersContainer.SetSite(0, 2, 1, 1);
             }
@@ -25566,6 +25616,7 @@ namespace darkskin
                 <precompile>2.SetSite(0, 1, 1, 1);
             }
             (header = new (::presentation::compositions::GuiRepeatFlowComposition*)());
+            <this>.SetNamedObject("header", header);
             {
                 (header.ExtraMargin = {left : 2; top : 2; right : 2; bottom : 0;} of (::presentation::Margin));
             }
@@ -25616,6 +25667,7 @@ namespace darkskin
                 (<precompile>5.OwnedElement = <precompile>6);
             }
             (container = new (::presentation::compositions::GuiBoundsComposition*)());
+            <this>.SetNamedObject("container", container);
             {
                 (container.AlignmentToParent = {left : 1; top : 1; right : 1; bottom : 1;} of (::presentation::Margin));
             }
@@ -26067,6 +26119,7 @@ namespace darkskin
                 (<precompile>0.OwnedElement = <precompile>1);
             }
             (look = new (::presentation::templates::GuiCommonScrollViewLook*)(20 of (::system::Int64)));
+            <this>.SetNamedObject("look", look);
             {
                 (look.VScrollTemplate = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiScrollTemplate*)
                 {
@@ -26313,6 +26366,7 @@ namespace darkskin
                 (<precompile>0.OwnedElement = <precompile>1);
             }
             (container = new (::presentation::compositions::GuiBoundsComposition*)());
+            <this>.SetNamedObject("container", container);
             {
                 (container.AlignmentToParent = {left : 1; top : 1; right : 1; bottom : 1;} of (::presentation::Margin));
             }
@@ -28906,6 +28960,7 @@ namespace darkskin
                 (<precompile>2.OwnedElement = <precompile>3);
             }
             (container = new (::presentation::compositions::GuiBoundsComposition*)());
+            <this>.SetNamedObject("container", container);
             {
                 (container.AlignmentToParent = {left : 3; top : 3; right : 3; bottom : 3;} of (::presentation::Margin));
             }
@@ -29492,6 +29547,7 @@ namespace darkskin
                 (<precompile>2.OwnedElement = <precompile>3);
             }
             (container = new (::presentation::compositions::GuiBoundsComposition*)());
+            <this>.SetNamedObject("container", container);
             {
                 (container.AlignmentToParent = {left : 3; top : 3; right : 3; bottom : 3;} of (::presentation::Margin));
             }
@@ -30418,6 +30474,7 @@ namespace darkskin
                 (<precompile>2.OwnedElement = <precompile>3);
             }
             (container = new (::presentation::compositions::GuiBoundsComposition*)());
+            <this>.SetNamedObject("container", container);
             {
                 (container.AlignmentToParent = {left : 3; top : 3; right : 3; bottom : 3;} of (::presentation::Margin));
             }
@@ -30584,6 +30641,7 @@ namespace darkskin
                 (<precompile>2.OwnedElement = <precompile>3);
             }
             (container = new (::presentation::compositions::GuiBoundsComposition*)());
+            <this>.SetNamedObject("container", container);
             {
                 (container.AlignmentToParent = {left : 3; top : 3; right : 3; bottom : 3;} of (::presentation::Margin));
             }
@@ -30623,6 +30681,7 @@ namespace darkskin
             }
             {
                 (buttonArrow = new (::presentation::controls::GuiSelectableButton*)(::presentation::theme::ThemeName::CheckBox));
+                <this>.SetNamedObject("buttonArrow", buttonArrow);
             }
             {
                 (buttonArrow.AutoFocus = false);
@@ -31455,6 +31514,7 @@ namespace darkskin
                 (<precompile>0.OwnedElement = <precompile>1);
             }
             (container = new (::presentation::compositions::GuiBoundsComposition*)());
+            <this>.SetNamedObject("container", container);
             {
                 (container.AlignmentToParent = {left : 2; top : 2; right : 2; bottom : 2;} of (::presentation::Margin));
             }
@@ -31791,6 +31851,7 @@ namespace darkskin
                 (<precompile>1.OwnedElement = <precompile>2);
             }
             (frameTable = new (::presentation::compositions::GuiTableComposition*)());
+            <this>.SetNamedObject("frameTable", frameTable);
             {
                 (frameTable.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
@@ -31890,6 +31951,7 @@ namespace darkskin
                 <precompile>1.AddChild(frameTable);
             }
             (contentTable = new (::presentation::compositions::GuiTableComposition*)());
+            <this>.SetNamedObject("contentTable", contentTable);
             {
                 (contentTable.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
             }
@@ -32164,6 +32226,7 @@ namespace darkskin
                 <precompile>38.SetSite(1, 0, 1, 5);
             }
             (container = new (::presentation::compositions::GuiBoundsComposition*)());
+            <this>.SetNamedObject("container", container);
             {
                 (container.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
@@ -34152,6 +34215,7 @@ namespace darkskin
                 (<precompile>0.OwnedElement = <precompile>1);
             }
             (container = new (::presentation::compositions::GuiBoundsComposition*)());
+            <this>.SetNamedObject("container", container);
             {
                 (container.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
@@ -34282,6 +34346,7 @@ namespace darkskin
                 (<precompile>2.OwnedElement = <precompile>3);
             }
             (container = new (::presentation::compositions::GuiBoundsComposition*)());
+            <this>.SetNamedObject("container", container);
             {
                 (container.AlignmentToParent = {left : 1; top : 1; right : 1; bottom : 1;} of (::presentation::Margin));
             }
