@@ -185,6 +185,13 @@ TEST_FILE
 				protocol->OnNextIdleFrame([=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
+					{
+						auto buttonOKValue = window->GetNamedObject(L"buttonOK").GetRawPtr();
+						TEST_ASSERT(buttonOKValue);
+						auto buttonOK = buttonOKValue->SafeAggregationCast<GuiButton>();
+						TEST_ASSERT(buttonOK);
+						TEST_ASSERT(buttonOK->GetText() == L"OK");
+					}
 					TEST_ASSERT(protocol->GetLoggedTrace().frames->Count() == 1);
 					window->Hide();
 				});
