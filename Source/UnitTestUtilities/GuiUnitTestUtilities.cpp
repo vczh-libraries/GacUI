@@ -126,7 +126,7 @@ void GacUIUnitTest_Start(const WString& appName, Nullable<UnitTestScreenConfig> 
 	}
 
 	UnitTestRemoteProtocol unitTestProtocol(appName, globalConfig);
-	repeatfiltering::GuiRemoteProtocolFilterVerifier verifierProtocol(&unitTestProtocol);
+	repeatfiltering::GuiRemoteProtocolFilterVerifier verifierProtocol(unitTestProtocol.GetProtocol());
 	repeatfiltering::GuiRemoteProtocolFilter filteredProtocol(&verifierProtocol);
 
 	UnitTestContextImpl unitTestContext(&unitTestProtocol);

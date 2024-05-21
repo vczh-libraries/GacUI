@@ -79,6 +79,8 @@ UnitTestRemoteProtocol
 			processRemoteEvents.Add(std::move(callback));
 		}
 
+	protected:
+
 /***********************************************************************
 IGuiRemoteProtocolMessages (Initialization)
 ***********************************************************************/

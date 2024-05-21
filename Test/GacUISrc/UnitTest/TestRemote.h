@@ -16,3 +16,10 @@ void StartRemoteControllerTest(TProtocol& protocol)
 	SetupRemoteNativeController(&filteredProtocol);
 	SetGuiMainProxy({});
 }
+
+template<typename TProtocol>
+	requires(std::is_base_of_v<UnitTestRemoteProtocolBase, TProtocol>)
+void StartRemoteControllerTest(TProtocol& protocol)
+{
+	StartRemoteControllerTest(*protocol.GetProtocol());
+}

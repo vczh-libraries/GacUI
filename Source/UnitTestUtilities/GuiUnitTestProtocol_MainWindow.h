@@ -31,6 +31,8 @@ namespace vl::presentation::unittest
 			sizingConfig.sizeState = INativeWindow::Restored;
 		}
 
+	protected:
+
 /***********************************************************************
 IGuiRemoteProtocolMessages (Controller)
 ***********************************************************************/

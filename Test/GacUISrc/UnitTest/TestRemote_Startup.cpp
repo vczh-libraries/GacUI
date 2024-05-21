@@ -121,7 +121,7 @@ TEST_FILE
 
 			protocol.GetEvents()->OnControllerForceExit();
 		});
-		SetupRemoteNativeController(&protocol);
+		SetupRemoteNativeController(protocol.GetProtocol());
 		SetGuiMainProxy({});
 	});
 
@@ -151,7 +151,7 @@ TEST_FILE
 
 			protocol.GetEvents()->OnControllerForceExit();
 		});
-		SetupRemoteNativeController(&protocol);
+		SetupRemoteNativeController(protocol.GetProtocol());
 		SetGuiMainProxy({});
 	});
 }

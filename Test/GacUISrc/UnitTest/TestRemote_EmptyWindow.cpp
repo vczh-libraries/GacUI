@@ -813,7 +813,7 @@ TEST_FILE
 			);
 			TEST_ASSERT(window->GetBounds() == NativeRect(0, 0, 100, 200));
 			TEST_ASSERT(protocol.sizingConfig.bounds == NativeRect(270, 120, 370, 320));
-			protocol.RequestWindowNotifyShow({ true,INativeWindow::Maximized });
+			protocol.GetProtocol()->RequestWindowNotifyShow({ true,INativeWindow::Maximized });
 		});
 
 		protocol.OnNextFrame([&]()
@@ -823,7 +823,7 @@ TEST_FILE
 			);
 			TEST_ASSERT(window->GetBounds() == NativeRect(0, 0, 640, 440));
 			TEST_ASSERT(protocol.sizingConfig.bounds == NativeRect(0, 0, 640, 440));
-			protocol.RequestWindowNotifyShow({ true,INativeWindow::Minimized });
+			protocol.GetProtocol()->RequestWindowNotifyShow({ true,INativeWindow::Minimized });
 		});
 
 		protocol.OnNextFrame([&]()
@@ -833,7 +833,7 @@ TEST_FILE
 			);
 			TEST_ASSERT(window->GetBounds() == NativeRect(0, 0, 1, 1));
 			TEST_ASSERT(protocol.sizingConfig.bounds == NativeRect(640, 480, 641, 481));
-			protocol.RequestWindowNotifyShow({ false,INativeWindow::Restored });
+			protocol.GetProtocol()->RequestWindowNotifyShow({ false,INativeWindow::Restored });
 			protocol.GetEvents()->OnWindowActivatedUpdated(false);
 		});
 

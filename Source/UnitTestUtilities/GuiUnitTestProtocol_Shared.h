@@ -44,7 +44,7 @@ namespace vl::presentation::unittest
 		void						FastInitialize(vint width, vint height, vint taskBarHeight = 0);
 	};
 
-	class UnitTestRemoteProtocolBase : public Object, public virtual IGuiRemoteProtocol
+	class UnitTestRemoteProtocolBase : public Object, protected virtual IGuiRemoteProtocol
 	{
 	protected:
 		IGuiRemoteProtocolEvents*	events = nullptr;
@@ -56,6 +56,11 @@ namespace vl::presentation::unittest
 		{
 		}
 
+		IGuiRemoteProtocol* GetProtocol()
+		{
+			return this;
+		}
+
 		IGuiRemoteProtocolEvents* GetEvents() const
 		{
 			return events;
@@ -65,6 +70,8 @@ namespace vl::presentation::unittest
 		{
 			return globalConfig;
 		}
+
+	protected:
 
 /***********************************************************************
 IGuiRemoteProtocol

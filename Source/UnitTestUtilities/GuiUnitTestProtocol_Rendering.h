@@ -53,6 +53,8 @@ UnitTestRemoteProtocol
 			loggedTrace.frames = Ptr(new collections::List<remoteprotocol::RenderingFrame>);
 		}
 
+	protected:
+
 /***********************************************************************
 IGuiRemoteProtocolMessages (Rendering)
 ***********************************************************************/
