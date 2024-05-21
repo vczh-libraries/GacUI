@@ -43,7 +43,7 @@ using namespace unittest_framework_tests;
 
 TEST_FILE
 {
-	TEST_CATEGORY(L"Hello, world!")
+	TEST_CASE(L"Hello, world!")
 	{
 		GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
 		{
@@ -70,7 +70,7 @@ TEST_FILE
 
 	TEST_CATEGORY(L"DOM Recovery")
 	{
-		TEST_CATEGORY(L"Empty Window")
+		TEST_CASE(L"Empty Window")
 		{
 			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
 			{
@@ -94,7 +94,7 @@ TEST_FILE
 			GacUIUnitTest_Start(WString::Unmanaged(L"DomRecovery/EmptyWindow"));
 		});
 
-		TEST_CATEGORY(L"Clipping")
+		TEST_CASE(L"Clipping")
 		{
 			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
 			{
@@ -161,7 +161,7 @@ TEST_FILE
 		});
 	});
 
-	TEST_CATEGORY(L"Resources and Operations")
+	TEST_CATEGORY(L"Window with OK Button")
 	{
 		const auto resource = LR"GacUISrc(
 <Resource>
@@ -178,7 +178,7 @@ TEST_FILE
 </Resource>
 )GacUISrc";
 
-		TEST_CATEGORY(L"Window with OK Button")
+		TEST_CASE(L"Open and Close")
 		{
 			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
 			{
@@ -251,11 +251,11 @@ TEST_FILE
 				);
 		});
 
-		TEST_CATEGORY(L"Click Button and Close in Separated IO Commands")
+		TEST_CASE(L"Click Button and Close in Separated IO Commands")
 		{
 		});
 
-		TEST_CATEGORY(L"Click Button and Close in Combined IO Commands")
+		TEST_CASE(L"Click Button and Close in Combined IO Commands")
 		{
 		});
 	});

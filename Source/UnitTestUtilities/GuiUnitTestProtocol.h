@@ -107,10 +107,8 @@ IGuiRemoteProtocol
 			{
 				if (LogRenderingResult())
 				{
-					TEST_CASE(L"Execute idle frame[" + itow(nextEventIndex) + L"]")
-					{
-						processRemoteEvents[nextEventIndex]();
-					});
+					vl::unittest::UnitTest::PrintMessage(L"Execute idle frame[" + itow(nextEventIndex) + L"]", vl::unittest::UnitTest::MessageKind::Info);
+					processRemoteEvents[nextEventIndex]();
 					nextEventIndex++;
 				}
 			}

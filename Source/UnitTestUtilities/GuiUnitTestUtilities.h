@@ -44,10 +44,10 @@ void GacUIUnitTest_StartFast_WithResourceAsText(const vl::WString& appName, cons
 		vl::presentation::theme::RegisterTheme(theme);
 		{
 			auto windowValue = vl::reflection::description::Value::Create(windowTypeFullName);
-			TEST_CASE_ASSERT(windowValue.GetRawPtr());
+			TEST_ASSERT(windowValue.GetRawPtr());
 
 			auto window = vl::Ptr(windowValue.GetRawPtr()->SafeAggregationCast<vl::presentation::controls::GuiWindow>());
-			TEST_CASE_ASSERT(window);
+			TEST_ASSERT(window);
 
 			window->MoveToScreenCenter();
 			previousMainProxy(protocol, context);
