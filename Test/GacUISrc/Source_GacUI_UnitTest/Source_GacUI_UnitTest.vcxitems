@@ -20,6 +20,7 @@
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\UnitTestUtilities\GuiUnitTestProtocol.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\UnitTestUtilities\GuiUnitTestProtocol_IO.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\UnitTestUtilities\GuiUnitTestProtocol_IOCommands.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\UnitTestUtilities\GuiUnitTestProtocol_Logging.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\UnitTestUtilities\GuiUnitTestProtocol_MainWindow.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\UnitTestUtilities\GuiUnitTestProtocol_Rendering.h" />

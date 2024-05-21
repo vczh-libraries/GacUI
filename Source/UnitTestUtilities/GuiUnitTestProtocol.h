@@ -11,6 +11,7 @@ Unit Test Snapsnot and other Utilities
 #include "GuiUnitTestProtocol_MainWindow.h"
 #include "GuiUnitTestProtocol_Rendering.h"
 #include "GuiUnitTestProtocol_Logging.h"
+#include "GuiUnitTestProtocol_IOCommands.h"
 
 namespace vl::presentation::unittest
 {
@@ -51,7 +52,8 @@ UnitTestRemoteProtocol
 		UnitTestRemoteProtocol_MainWindow,
 		UnitTestRemoteProtocol_IO,
 		UnitTestRemoteProtocol_Rendering,
-		UnitTestRemoteProtocol_Logging
+		UnitTestRemoteProtocol_Logging,
+		UnitTestRemoteProtocol_IOCommands
 	>::Type;
 
 	class UnitTestRemoteProtocol : public UnitTestRemoteProtocolFeatures
