@@ -43,6 +43,7 @@
   - A viewer to view unit test results logged from SyncDom and other stuff after each time when layout stops.
     - Generate `domId` for each dom node: element(id), virtual(-element.id-2), root(-1), hittest(find a way).
     - Add screen information to json.
+    - Optional frame name.
 - Implement basic control (`Source_GacUI_CoreApplication` controls only) unit test based on streaming
   - Skipped time related features, like tooltip.
 - Metadata of remote protocol will be updated and included in releases.
