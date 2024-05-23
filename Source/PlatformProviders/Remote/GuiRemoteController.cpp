@@ -288,6 +288,7 @@ GuiRemoteController::INativeWindowService
 			{
 				callbackService.InvokeGlobalTimer();
 			}
+			asyncService.ExecuteAsyncTasks();
 		}
 		return !connectionStopped;
 	}
