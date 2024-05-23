@@ -36,7 +36,7 @@ UnitTestRemoteProtocol
 			return pressingKeys.Contains(key);
 		}
 
-		NativeWindowMouseInfo MakeMouseInfo(NativePoint position)
+		NativeWindowMouseInfo MakeMouseInfo()
 		{
 			NativeWindowMouseInfo info;
 			info.ctrl = IsPressing(VKEY::KEY_CONTROL) || IsPressing(VKEY::KEY_LCONTROL) || IsPressing(VKEY::KEY_RCONTROL);
@@ -44,8 +44,8 @@ UnitTestRemoteProtocol
 			info.left = leftPressing;
 			info.middle = middlePressing;
 			info.right = rightPressing;
-			info.x = position.x.value;
-			info.y = position.y.value;
+			info.x = mousePosition.Value().x.value;
+			info.y = mousePosition.Value().y.value;
 			info.wheel = 0;
 			info.nonClient = false;
 		}
@@ -78,6 +78,8 @@ Helper Functions
 			return LocationOf(control->GetBoundsComposition(), ratioX, ratioY, offsetX, offsetY);
 		}
 
+#define CLASS_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_IOCommands<TProtocol>::"
+
 /***********************************************************************
 Keys
 ***********************************************************************/
@@ -98,8 +100,58 @@ Mouse
 		DO_MOUSE_MOVE:
 
 			mousePosition = position;
-			UseEvents().OnIOMouseMoving(MakeMouseInfo(position));
+			UseEvents().OnIOMouseMoving(MakeMouseInfo());
 		}
+
+/***********************************************************************
+Mouse (Left)
+***********************************************************************/
+
+		void _LDown(Nullable<NativePoint> position)
+		{
+#define ERROR_MESSAGE_PREFIX CLASS_PREFIX L"_LDown(...)#"
+			if (position) MouseMove(position.Value());
+			CHECK_ERROR(!leftPressing, ERROR_MESSAGE_PREFIX L"The button should not be being pressed.");
+			leftPressing = true;
+			UseEvents().OnIOButtonDown({ remoteprotocol::IOMouseButton::Left,MakeMouseInfo() });
+#undef ERROR_MESSAGE_PREFIX
+		}
+
+		void _LUp(Nullable<NativePoint> position)
+		{
+#define ERROR_MESSAGE_PREFIX CLASS_PREFIX L"_LUp(...)#"
+			if (position) MouseMove(position.Value());
+			CHECK_ERROR(leftPressing, ERROR_MESSAGE_PREFIX L"The button should be being pressed.");
+			leftPressing = false;
+			UseEvents().OnIOButtonUp({ remoteprotocol::IOMouseButton::Left,MakeMouseInfo() });
+#undef ERROR_MESSAGE_PREFIX
+		}
+
+		void _LDBClick(Nullable<NativePoint> position)
+		{
+#define ERROR_MESSAGE_PREFIX CLASS_PREFIX L"_LDBClick(...)#"
+			if (position) MouseMove(position.Value());
+			CHECK_ERROR(!leftPressing, ERROR_MESSAGE_PREFIX L"The button should not be being pressed.");
+			leftPressing = true;
+			UseEvents().OnIOButtonDoubleClick({ remoteprotocol::IOMouseButton::Left,MakeMouseInfo() });
+#undef ERROR_MESSAGE_PREFIX
+		}
+
+		void LClick(Nullable<NativePoint> position)
+		{
+			_LDown(position);
+			_LUp(position);
+		}
+
+		void LDBClick(Nullable<NativePoint> position)
+		{
+			_LDown(position);
+			_LUp(position);
+			_LDBClick(position);
+			_LUp(position);
+		}
+
+#undef CLASS_PREFIX
 	};
 }
 
