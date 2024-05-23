@@ -48,6 +48,7 @@ UnitTestRemoteProtocol
 			info.y = mousePosition.Value().y.value;
 			info.wheel = 0;
 			info.nonClient = false;
+			return info;
 		}
 
 	public:
@@ -66,9 +67,9 @@ Helper Functions
 		{
 			INativeWindow* nativeWindow = composition->GetRelatedControlHost()->GetNativeWindow();
 			Rect bounds = composition->GetGlobalBounds();
-			NativeRect nativeBounds = nativeWindow->Convert(bounds);
-			vint x = nativeBounds.x1 + (vint)(nativeBounds.Width().value * ratioX) + offsetX;
-			vint y = nativeBounds.y1 + (vint)(nativeBounds.Height().value * ratioY) + offsetY;
+			NativeRect nativeBounds = { nativeWindow->Convert(bounds.LeftTop()),nativeWindow->Convert(bounds.GetSize()) };
+			vint x = nativeBounds.x1.value + (vint)(nativeBounds.Width().value * ratioX) + offsetX;
+			vint y = nativeBounds.y1.value + (vint)(nativeBounds.Height().value * ratioY) + offsetY;
 			NativePoint windowLocation = nativeWindow->GetBounds().LeftTop();
 			return { windowLocation.x.value + x,windowLocation.y.value + y };
 		}
@@ -107,7 +108,7 @@ Mouse
 Mouse (Left)
 ***********************************************************************/
 
-		void _LDown(Nullable<NativePoint> position)
+		void _LDown(Nullable<NativePoint> position = {})
 		{
 #define ERROR_MESSAGE_PREFIX CLASS_PREFIX L"_LDown(...)#"
 			if (position) MouseMove(position.Value());
@@ -117,7 +118,7 @@ Mouse (Left)
 #undef ERROR_MESSAGE_PREFIX
 		}
 
-		void _LUp(Nullable<NativePoint> position)
+		void _LUp(Nullable<NativePoint> position = {})
 		{
 #define ERROR_MESSAGE_PREFIX CLASS_PREFIX L"_LUp(...)#"
 			if (position) MouseMove(position.Value());
@@ -127,7 +128,7 @@ Mouse (Left)
 #undef ERROR_MESSAGE_PREFIX
 		}
 
-		void _LDBClick(Nullable<NativePoint> position)
+		void _LDBClick(Nullable<NativePoint> position = {})
 		{
 #define ERROR_MESSAGE_PREFIX CLASS_PREFIX L"_LDBClick(...)#"
 			if (position) MouseMove(position.Value());
@@ -137,13 +138,13 @@ Mouse (Left)
 #undef ERROR_MESSAGE_PREFIX
 		}
 
-		void LClick(Nullable<NativePoint> position)
+		void LClick(Nullable<NativePoint> position = {})
 		{
 			_LDown(position);
 			_LUp(position);
 		}
 
-		void LDBClick(Nullable<NativePoint> position)
+		void LDBClick(Nullable<NativePoint> position = {})
 		{
 			_LDown(position);
 			_LUp(position);

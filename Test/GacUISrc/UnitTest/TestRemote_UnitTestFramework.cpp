@@ -253,10 +253,48 @@ TEST_FILE
 
 		TEST_CASE(L"Click Button and Close in Separated IO Commands")
 		{
+			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame([=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto buttonOK = TryFindObjectByName<GuiButton>(window, L"buttonOK");
+					protocol->MouseMove(protocol->LocationOf(buttonOK));
+				});
+				protocol->OnNextIdleFrame([=]()
+				{
+					protocol->_LDown();
+				});
+				protocol->OnNextIdleFrame([=]()
+				{
+					protocol->_LUp();
+				});
+			});
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"UnitTestFramework/WindowWithOKButton_ClickInSteps"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				{},
+				resource
+				);
 		});
 
 		TEST_CASE(L"Click Button and Close in Combined IO Commands")
 		{
+			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame([=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto buttonOK = TryFindObjectByName<GuiButton>(window, L"buttonOK");
+					protocol->LClick(protocol->LocationOf(buttonOK));
+				});
+			});
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"UnitTestFramework/WindowWithOKButton_Click"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				{},
+				resource
+				);
 		});
 	});
 }
