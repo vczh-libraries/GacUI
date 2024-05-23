@@ -170,7 +170,9 @@ TEST_FILE
       <Window ref.Name="self" Text="Hello, world!" ClientSize="x:640 y:480">
         <Button ref.Name="buttonOK" Text="OK">
           <att.BoundsComposition-set AlignmentToParent="left:5 top:5 right:-1 bottom:-1"/>
-          <ev.Clicked-eval><![CDATA[ {self.Close();} ]]></ev.Clicked-eval>
+          <ev.Clicked-eval><![CDATA[ {
+            Application::GetApplication().InvokeInMainThread(self, func():void{self.Hide();});
+          } ]]></ev.Clicked-eval>
         </Button>
       </Window>
     </Instance>
