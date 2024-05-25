@@ -2169,6 +2169,19 @@
     }, {
         "$ast": "StructDecl",
         "attributes": [],
+        "name": "ElementBeginRendering",
+        "members": [{
+            "$ast": "StructMember",
+            "name": "frameId",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Integer"
+            }
+        }],
+        "type": "Struct"
+    }, {
+        "$ast": "StructDecl",
+        "attributes": [],
         "name": "ElementRendering",
         "members": [{
             "$ast": "StructMember",
@@ -2307,7 +2320,13 @@
         "$ast": "MessageDecl",
         "attributes": [],
         "name": "RendererBeginRendering",
-        "request": null,
+        "request": {
+            "$ast": "MessageRequest",
+            "type": {
+                "$ast": "ReferenceType",
+                "name": "ElementBeginRendering"
+            }
+        },
         "response": null
     }, {
         "$ast": "MessageDecl",
@@ -2494,6 +2513,20 @@
         "attributes": [],
         "name": "RenderingFrame",
         "members": [{
+            "$ast": "StructMember",
+            "name": "frameId",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Integer"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "windowSize",
+            "type": {
+                "$ast": "ReferenceType",
+                "name": "WindowSizingConfig"
+            }
+        }, {
             "$ast": "StructMember",
             "name": "elements",
             "type": {
