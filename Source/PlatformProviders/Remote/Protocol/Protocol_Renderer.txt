@@ -23,6 +23,11 @@ struct RendererCreation
 message RendererCreated                             { request: RendererCreation[]; }
 message RendererDestroyed                           { request: int[]; }
 
+struct ElementBeginRendering
+{
+    var frameId : int;
+}
+
 struct ElementRendering
 {
     var id : int;
@@ -57,7 +62,7 @@ struct ElementMeasurings
     var createdImages : ImageMetadata[];
 }
 
-message RendererBeginRendering                      {}
+message RendererBeginRendering                      { request: ElementBeginRendering; }
 message RendererBeginBoundary                       { request: ElementBoundary; }
 message RendererRenderElement                       { request: ElementRendering; }
 message RendererEndBoundary                         {}

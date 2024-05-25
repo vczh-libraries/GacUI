@@ -44,6 +44,8 @@ union RenderingCommand
 
 struct RenderingFrame
 {
+    var frameId : int;
+    var windowSize: WindowSizingConfig;
     var elements: ElementDescVariant[int];
     var commands: RenderingCommand[];
     var root: RenderingDom;
