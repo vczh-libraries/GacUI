@@ -41,6 +41,7 @@ GuiRemoteGraphicsRenderTarget
 			GuiRemoteController*				remote;
 			GuiHostedController*				hostedController;
 			NativeSize							canvasSize;
+			vint								usedFrameIds = 0;
 			vint								usedElementIds = 0;
 			RendererMap							renderers;
 			collections::SortedList<vint>		createdRenderers;

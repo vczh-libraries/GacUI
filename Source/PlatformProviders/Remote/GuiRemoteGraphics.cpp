@@ -76,7 +76,11 @@ GuiRemoteGraphicsRenderTarget
 			}
 		}
 
-		remote->remoteMessages.RequestRendererBeginRendering();
+		{
+			remoteprotocol::ElementBeginRendering arguments;
+			arguments.frameId = ++usedFrameIds;
+			remote->remoteMessages.RequestRendererBeginRendering(arguments);
+		}
 	}
 
 	RenderTargetFailure GuiRemoteGraphicsRenderTarget::StopRenderingOnNativeWindow()

@@ -82,7 +82,7 @@ namespace remote_protocol_tests
 		{
 		}
 
-		void RequestRendererBeginRendering() override
+		void RequestRendererBeginRendering(const remoteprotocol::ElementBeginRendering& arguments) override
 		{
 		}
 

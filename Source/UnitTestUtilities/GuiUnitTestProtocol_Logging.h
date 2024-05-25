@@ -27,6 +27,7 @@ UnitTestRemoteProtocol
 	protected:
 
 		bool								everRendered = false;
+		vint								candidateFrameId = 0;
 		CommandListRef						candidateRenderingResult;
 
 		RenderingResultRef TransformLastRenderingResult(CommandListRef commandListRef)
@@ -195,6 +196,7 @@ UnitTestRemoteProtocol
 		{
 			if (this->lastRenderingCommands)
 			{
+				candidateFrameId = this->lastFrameId;
 				candidateRenderingResult = this->lastRenderingCommands;
 				this->lastRenderingCommands = {};
 				everRendered = true;
@@ -206,7 +208,13 @@ UnitTestRemoteProtocol
 					auto descs = Ptr(new collections::Dictionary<vint, remoteprotocol::ElementDescVariant>);
 					CopyFrom(*descs.Obj(), this->lastElementDescs);
 					auto transformed = TransformLastRenderingResult(candidateRenderingResult);
-					this->loggedTrace.frames->Add({ descs,candidateRenderingResult,transformed });
+					this->loggedTrace.frames->Add({
+						candidateFrameId,
+						this->sizingConfig,
+						descs,
+						candidateRenderingResult,
+						transformed
+						});
 					candidateRenderingResult = {};
 				}
 				return true;

@@ -35,6 +35,7 @@ UnitTestRemoteProtocol
 		ElementDescMap							lastElementDescs;
 		remoteprotocol::ElementMeasurings		measuringForNextRendering;
 		regex::Regex							regexCrLf{ L"/n|/r(/n)?" };
+		vint									lastFrameId = 0;
 		CommandListRef							lastRenderingCommands;
 
 		void ResetCreatedObjects()
@@ -59,8 +60,9 @@ UnitTestRemoteProtocol
 IGuiRemoteProtocolMessages (Rendering)
 ***********************************************************************/
 
-		void RequestRendererBeginRendering() override
+		void RequestRendererBeginRendering(const remoteprotocol::ElementBeginRendering& arguments) override
 		{
+			lastFrameId = arguments.frameId;
 			lastRenderingCommands = Ptr(new CommandList);
 		}
 
