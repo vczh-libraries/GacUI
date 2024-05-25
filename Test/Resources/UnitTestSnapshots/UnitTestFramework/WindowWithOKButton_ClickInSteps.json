@@ -28,6 +28,28 @@
   "createdImages": [],
   "frames": [
     {
+      "frameId": 5,
+      "windowSize": {
+        "bounds": {
+          "x1": {"value": 192},
+          "y1": {"value": 144},
+          "x2": {"value": 832},
+          "y2": {"value": 624}
+        },
+        "clientBounds": {
+          "x1": {"value": 192},
+          "y1": {"value": 144},
+          "x2": {"value": 832},
+          "y2": {"value": 624}
+        },
+        "sizeState": "Restored",
+        "customFramePadding": {
+          "left": {"value": 8},
+          "top": {"value": 8},
+          "right": {"value": 8},
+          "bottom": {"value": 8}
+        }
+      },
       "elements": [
         [
           1,
@@ -936,6 +958,28 @@
       }
     },
     {
+      "frameId": 7,
+      "windowSize": {
+        "bounds": {
+          "x1": {"value": 192},
+          "y1": {"value": 144},
+          "x2": {"value": 832},
+          "y2": {"value": 624}
+        },
+        "clientBounds": {
+          "x1": {"value": 192},
+          "y1": {"value": 144},
+          "x2": {"value": 832},
+          "y2": {"value": 624}
+        },
+        "sizeState": "Restored",
+        "customFramePadding": {
+          "left": {"value": 8},
+          "top": {"value": 8},
+          "right": {"value": 8},
+          "bottom": {"value": 8}
+        }
+      },
       "elements": [
         [
           1,
@@ -1844,6 +1888,28 @@
       }
     },
     {
+      "frameId": 9,
+      "windowSize": {
+        "bounds": {
+          "x1": {"value": 192},
+          "y1": {"value": 144},
+          "x2": {"value": 832},
+          "y2": {"value": 624}
+        },
+        "clientBounds": {
+          "x1": {"value": 192},
+          "y1": {"value": 144},
+          "x2": {"value": 832},
+          "y2": {"value": 624}
+        },
+        "sizeState": "Restored",
+        "customFramePadding": {
+          "left": {"value": 8},
+          "top": {"value": 8},
+          "right": {"value": 8},
+          "bottom": {"value": 8}
+        }
+      },
       "elements": [
         [
           1,
