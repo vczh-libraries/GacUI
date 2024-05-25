@@ -167,7 +167,7 @@ TEST_FILE
 <Resource>
   <Instance name="MainWindowResource">
     <Instance ref.Class="gacuisrc_unittest::MainWindow">
-      <Window ref.Name="self" Text="Hello, world!" ClientSize="x:640 y:480">
+      <Window ref.Name="self" Text="Hello, world!" ClientSize="x:320 y:240">
         <Button ref.Name="buttonOK" Text="OK">
           <att.BoundsComposition-set AlignmentToParent="left:5 top:5 right:-1 bottom:-1"/>
           <ev.Clicked-eval><![CDATA[ {
