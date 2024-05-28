@@ -1,5 +1,10 @@
 #include "../Source/GuiUnitTestSnapshotViewer.h"
 
+namespace vl::presentation::remoteprotocol
+{
+	struct RenderingFrame;
+}
+
 namespace vl::presentation::unittest
 {
 	class UnitTestSnapshotViewerViewModel
@@ -15,4 +20,6 @@ namespace vl::presentation::unittest
 
 		Ptr<gaclib_controls::IUnitTestSnapshotFileNode>		GetRootNode() override;
 	};
+
+	extern const remoteprotocol::RenderingFrame&	GetRenderingFrame(Ptr<gaclib_controls::IUnitTestSnapshotFrame> frame);
 }

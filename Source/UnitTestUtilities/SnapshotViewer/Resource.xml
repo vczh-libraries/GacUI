@@ -132,6 +132,9 @@
                 <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
                 <att.Pages>
                   <TabPage Text="Rendering">
+                    <ScrollContainer ref.Name="scRendering" VerticalAlwaysVisible="false" HorizontalAlwaysVisible="false">
+                      <att.BoundsComposition-set AlignmentToParent="left:5 top:5 right:5 bottom:5"/>
+                    </ScrollContainer>
                   </TabPage>
                   <TabPage Text="DOM">
                     <MultilineTextBox VerticalAlwaysVisible="false" HorizontalAlwaysVisible="false">

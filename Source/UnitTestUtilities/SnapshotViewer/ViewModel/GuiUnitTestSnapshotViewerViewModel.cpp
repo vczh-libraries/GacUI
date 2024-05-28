@@ -23,6 +23,11 @@ UnitTestSnapshotFrame
 		WString				dom;
 		JsonFormatting		formatting;
 
+		friend const remoteprotocol::RenderingFrame& GetRenderingFrame(Ptr<IUnitTestSnapshotFrame> frame)
+		{
+			return frame.Cast<UnitTestSnapshotFrame>()->frame;
+		}
+
 	public:
 		UnitTestSnapshotFrame(vint _index, RenderingFrame _frame)
 			: index(_index)

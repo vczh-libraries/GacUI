@@ -3,13 +3,50 @@
 #include "DarkSkin.h"
 #include "../../../Source/UnitTestUtilities/SnapshotViewer/ViewModel/GuiUnitTestSnapshotViewerViewModel.h"
 #include "../../../Source/PlatformProviders/Windows/WinNativeWindow.h"
+#include "../../../Source/PlatformProviders/Remote/GuiRemoteProtocol.h"
 
 using namespace vl;
 using namespace vl::filesystem;
 using namespace vl::presentation;
+using namespace vl::presentation::compositions;
 using namespace vl::presentation::controls;
 using namespace vl::presentation::unittest;
 using namespace gaclib_controls;
+
+class MainWindow : public UnitTestSnapshotViewerWindow
+{
+protected:
+	GuiBoundsComposition*				rootComposition = nullptr;
+
+	GuiBoundsComposition* BuildRootComposition(const remoteprotocol::RenderingFrame& frame)
+	{
+		CHECK_FAIL(L"Not Implemented!");
+	}
+
+	void textListFrames_SelectionChanged(GuiGraphicsComposition* sender, GuiEventArgs& arguments)
+	{
+		if (rootComposition)
+		{
+			SafeDeleteComposition(rootComposition);
+			rootComposition = nullptr;
+		}
+
+		auto frameObj = textListFrames->GetSelectedItem();
+		if (!frameObj.GetSharedPtr()) return;
+		auto frame = frameObj.GetSharedPtr().Cast<IUnitTestSnapshotFrame>();
+		if (!frame) return;
+
+		rootComposition = BuildRootComposition(GetRenderingFrame(frame));
+		scRendering->GetContainerComposition()->AddChild(rootComposition);
+	}
+
+public:
+	MainWindow(Ptr<UnitTestSnapshotViewerViewModel> viewModel)
+		: UnitTestSnapshotViewerWindow(viewModel)
+	{
+		textListFrames->SelectionChanged.AttachMethod(this, &MainWindow::textListFrames_SelectionChanged);
+	}
+};
 
 void GuiMain()
 {
@@ -25,7 +62,7 @@ void GuiMain()
 #elif defined VCZH_GCC
 		FilePath snapshotFolderPath = GetApplication()->GetExecutablePath() + L"../../Resources/UnitTestSnapshots";
 #endif
-		UnitTestSnapshotViewerWindow window(Ptr(new UnitTestSnapshotViewerViewModel(snapshotFolderPath)));
+		MainWindow window(Ptr(new UnitTestSnapshotViewerViewModel(snapshotFolderPath)));
 		window.ForceCalculateSizeImmediately();
 		window.MoveToScreenCenter();
 		window.WindowOpened.AttachLambda([&](auto&&...)

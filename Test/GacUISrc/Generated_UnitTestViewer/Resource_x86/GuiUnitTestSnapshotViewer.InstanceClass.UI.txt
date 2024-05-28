@@ -24,10 +24,19 @@ namespace gaclib_controls
     class UnitTestSnapshotViewerWindowConstructor
     {
         @cpp:Protected
+        var ViewModel : ::gaclib_controls::IUnitTestSnapshotViewerViewModel^ = null of (::gaclib_controls::IUnitTestSnapshotViewerViewModel^);
+
+        @cpp:Protected
         var self : ::gaclib_controls::UnitTestSnapshotViewerWindow* = null of (::gaclib_controls::UnitTestSnapshotViewerWindow*);
 
         @cpp:Protected
-        var ViewModel : ::gaclib_controls::IUnitTestSnapshotViewerViewModel^ = null of (::gaclib_controls::IUnitTestSnapshotViewerViewModel^);
+        var treeViewFileNodes : ::presentation::controls::GuiBindableTreeView* = null of (::presentation::controls::GuiBindableTreeView*);
+
+        @cpp:Protected
+        var textListFrames : ::presentation::controls::GuiBindableTextList* = null of (::presentation::controls::GuiBindableTextList*);
+
+        @cpp:Protected
+        var scRendering : ::presentation::controls::GuiScrollContainer* = null of (::presentation::controls::GuiScrollContainer*);
 
         @cpp:Protected
         var <precompile>0 : ::presentation::compositions::GuiTableComposition* = null of (::presentation::compositions::GuiTableComposition*);
@@ -69,37 +78,34 @@ namespace gaclib_controls
         var <precompile>12 : ::presentation::controls::GuiTabPage* = null of (::presentation::controls::GuiTabPage*);
 
         @cpp:Protected
-        var <precompile>13 : ::presentation::controls::GuiTabPage* = null of (::presentation::controls::GuiTabPage*);
+        var <precompile>13 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
-        var <precompile>14 : ::presentation::controls::GuiMultilineTextBox* = null of (::presentation::controls::GuiMultilineTextBox*);
+        var <precompile>14 : ::presentation::controls::GuiTabPage* = null of (::presentation::controls::GuiTabPage*);
 
         @cpp:Protected
-        var <precompile>15 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+        var <precompile>15 : ::presentation::controls::GuiMultilineTextBox* = null of (::presentation::controls::GuiMultilineTextBox*);
 
         @cpp:Protected
-        var <precompile>16 : ::presentation::controls::GuiTabPage* = null of (::presentation::controls::GuiTabPage*);
+        var <precompile>16 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
-        var <precompile>17 : ::presentation::controls::GuiMultilineTextBox* = null of (::presentation::controls::GuiMultilineTextBox*);
+        var <precompile>17 : ::presentation::controls::GuiTabPage* = null of (::presentation::controls::GuiTabPage*);
 
         @cpp:Protected
-        var <precompile>18 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+        var <precompile>18 : ::presentation::controls::GuiMultilineTextBox* = null of (::presentation::controls::GuiMultilineTextBox*);
 
         @cpp:Protected
-        var <precompile>19 : ::presentation::controls::GuiTabPage* = null of (::presentation::controls::GuiTabPage*);
+        var <precompile>19 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
-        var <precompile>20 : ::presentation::controls::GuiMultilineTextBox* = null of (::presentation::controls::GuiMultilineTextBox*);
+        var <precompile>20 : ::presentation::controls::GuiTabPage* = null of (::presentation::controls::GuiTabPage*);
 
         @cpp:Protected
-        var <precompile>21 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+        var <precompile>21 : ::presentation::controls::GuiMultilineTextBox* = null of (::presentation::controls::GuiMultilineTextBox*);
 
         @cpp:Protected
-        var treeViewFileNodes : ::presentation::controls::GuiBindableTreeView* = null of (::presentation::controls::GuiBindableTreeView*);
-
-        @cpp:Protected
-        var textListFrames : ::presentation::controls::GuiBindableTextList* = null of (::presentation::controls::GuiBindableTextList*);
+        var <precompile>22 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
         func <gaclib_controls-UnitTestSnapshotViewerWindow>Initialize(<this> : ::gaclib_controls::UnitTestSnapshotViewerWindow*) : (::system::Void)
@@ -111,13 +117,13 @@ namespace gaclib_controls
             }
             (<precompile>0 = new (::presentation::compositions::GuiTableComposition*)());
             {
+                (<precompile>0.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+            }
+            {
                 (<precompile>0.CellPadding = 5 of (::system::Int32));
             }
             {
                 (<precompile>0.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
-            }
-            {
-                (<precompile>0.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
             }
             {
                 <precompile>0.SetRowsAndColumns(1, 4);
@@ -150,12 +156,6 @@ namespace gaclib_controls
                 });
             }
             {
-                (treeViewFileNodes.HorizontalAlwaysVisible = false);
-            }
-            {
-                (treeViewFileNodes.VerticalAlwaysVisible = false);
-            }
-            {
                 (treeViewFileNodes.TextProperty = func (<item> : ::system::Object) : (::system::String)
                 {
                     var item = (cast (IUnitTestSnapshotFileNode^) <item>);
@@ -165,6 +165,12 @@ namespace gaclib_controls
             (<precompile>3 = treeViewFileNodes.BoundsComposition);
             {
                 (<precompile>3.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (treeViewFileNodes.HorizontalAlwaysVisible = false);
+            }
+            {
+                (treeViewFileNodes.VerticalAlwaysVisible = false);
             }
             {
                 <precompile>2.AddChild(treeViewFileNodes.BoundsComposition);
@@ -189,15 +195,15 @@ namespace gaclib_controls
                 (textListFrames = new (::presentation::controls::GuiBindableTextList*)(::presentation::theme::ThemeName::TextList));
                 <this>.SetNamedObject("textListFrames", textListFrames);
             }
+            (<precompile>8 = textListFrames.BoundsComposition);
+            {
+                (<precompile>8.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
             {
                 (textListFrames.HorizontalAlwaysVisible = false);
             }
             {
                 (textListFrames.VerticalAlwaysVisible = false);
-            }
-            (<precompile>8 = textListFrames.BoundsComposition);
-            {
-                (<precompile>8.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
                 <precompile>7.AddChild(textListFrames);
@@ -230,86 +236,103 @@ namespace gaclib_controls
                 (<precompile>12.Text = "Rendering");
             }
             {
+                (scRendering = new (::presentation::controls::GuiScrollContainer*)(::presentation::theme::ThemeName::ScrollView));
+                <this>.SetNamedObject("scRendering", scRendering);
+            }
+            (<precompile>13 = scRendering.BoundsComposition);
+            {
+                (<precompile>13.AlignmentToParent = {left : 5; top : 5; right : 5; bottom : 5;} of (::presentation::Margin));
+            }
+            {
+                (scRendering.HorizontalAlwaysVisible = false);
+            }
+            {
+                (scRendering.VerticalAlwaysVisible = false);
+            }
+            {
+                <precompile>12.AddChild(scRendering);
+            }
+            {
                 var <collection> = <precompile>10.Pages;
                 <collection>.Add(<precompile>12);
             }
             {
-                (<precompile>13 = new (::presentation::controls::GuiTabPage*)(::presentation::theme::ThemeName::CustomControl));
+                (<precompile>14 = new (::presentation::controls::GuiTabPage*)(::presentation::theme::ThemeName::CustomControl));
             }
             {
-                (<precompile>13.Text = "DOM");
+                (<precompile>14.Text = "DOM");
             }
             {
-                (<precompile>14 = new (::presentation::controls::GuiMultilineTextBox*)(::presentation::theme::ThemeName::MultilineTextBox));
+                (<precompile>15 = new (::presentation::controls::GuiMultilineTextBox*)(::presentation::theme::ThemeName::MultilineTextBox));
+            }
+            (<precompile>16 = <precompile>15.BoundsComposition);
+            {
+                (<precompile>16.AlignmentToParent = {left : 5; top : 5; right : 5; bottom : 5;} of (::presentation::Margin));
             }
             {
-                (<precompile>14.HorizontalAlwaysVisible = false);
+                (<precompile>15.HorizontalAlwaysVisible = false);
             }
             {
-                (<precompile>14.VerticalAlwaysVisible = false);
-            }
-            (<precompile>15 = <precompile>14.BoundsComposition);
-            {
-                (<precompile>15.AlignmentToParent = {left : 5; top : 5; right : 5; bottom : 5;} of (::presentation::Margin));
+                (<precompile>15.VerticalAlwaysVisible = false);
             }
             {
-                <precompile>13.AddChild(<precompile>14);
-            }
-            {
-                var <collection> = <precompile>10.Pages;
-                <collection>.Add(<precompile>13);
-            }
-            {
-                (<precompile>16 = new (::presentation::controls::GuiTabPage*)(::presentation::theme::ThemeName::CustomControl));
-            }
-            {
-                (<precompile>16.Text = "Commands");
-            }
-            {
-                (<precompile>17 = new (::presentation::controls::GuiMultilineTextBox*)(::presentation::theme::ThemeName::MultilineTextBox));
-            }
-            {
-                (<precompile>17.HorizontalAlwaysVisible = false);
-            }
-            {
-                (<precompile>17.VerticalAlwaysVisible = false);
-            }
-            (<precompile>18 = <precompile>17.BoundsComposition);
-            {
-                (<precompile>18.AlignmentToParent = {left : 5; top : 5; right : 5; bottom : 5;} of (::presentation::Margin));
-            }
-            {
-                <precompile>16.AddChild(<precompile>17);
+                <precompile>14.AddChild(<precompile>15);
             }
             {
                 var <collection> = <precompile>10.Pages;
-                <collection>.Add(<precompile>16);
+                <collection>.Add(<precompile>14);
             }
             {
-                (<precompile>19 = new (::presentation::controls::GuiTabPage*)(::presentation::theme::ThemeName::CustomControl));
+                (<precompile>17 = new (::presentation::controls::GuiTabPage*)(::presentation::theme::ThemeName::CustomControl));
             }
             {
-                (<precompile>19.Text = "Elements");
+                (<precompile>17.Text = "Commands");
             }
             {
-                (<precompile>20 = new (::presentation::controls::GuiMultilineTextBox*)(::presentation::theme::ThemeName::MultilineTextBox));
+                (<precompile>18 = new (::presentation::controls::GuiMultilineTextBox*)(::presentation::theme::ThemeName::MultilineTextBox));
+            }
+            (<precompile>19 = <precompile>18.BoundsComposition);
+            {
+                (<precompile>19.AlignmentToParent = {left : 5; top : 5; right : 5; bottom : 5;} of (::presentation::Margin));
             }
             {
-                (<precompile>20.HorizontalAlwaysVisible = false);
+                (<precompile>18.HorizontalAlwaysVisible = false);
             }
             {
-                (<precompile>20.VerticalAlwaysVisible = false);
-            }
-            (<precompile>21 = <precompile>20.BoundsComposition);
-            {
-                (<precompile>21.AlignmentToParent = {left : 5; top : 5; right : 5; bottom : 5;} of (::presentation::Margin));
+                (<precompile>18.VerticalAlwaysVisible = false);
             }
             {
-                <precompile>19.AddChild(<precompile>20);
+                <precompile>17.AddChild(<precompile>18);
             }
             {
                 var <collection> = <precompile>10.Pages;
-                <collection>.Add(<precompile>19);
+                <collection>.Add(<precompile>17);
+            }
+            {
+                (<precompile>20 = new (::presentation::controls::GuiTabPage*)(::presentation::theme::ThemeName::CustomControl));
+            }
+            {
+                (<precompile>20.Text = "Elements");
+            }
+            {
+                (<precompile>21 = new (::presentation::controls::GuiMultilineTextBox*)(::presentation::theme::ThemeName::MultilineTextBox));
+            }
+            (<precompile>22 = <precompile>21.BoundsComposition);
+            {
+                (<precompile>22.AlignmentToParent = {left : 5; top : 5; right : 5; bottom : 5;} of (::presentation::Margin));
+            }
+            {
+                (<precompile>21.HorizontalAlwaysVisible = false);
+            }
+            {
+                (<precompile>21.VerticalAlwaysVisible = false);
+            }
+            {
+                <precompile>20.AddChild(<precompile>21);
+            }
+            {
+                var <collection> = <precompile>10.Pages;
+                <collection>.Add(<precompile>20);
             }
             (<precompile>11 = <precompile>10.BoundsComposition);
             {
@@ -329,6 +352,9 @@ namespace gaclib_controls
             }
             {
                 (treeViewFileNodes.ImageProperty = [self.GetImageFromType((cast (IUnitTestSnapshotFileNode^) $1).NodeType)]);
+            }
+            {
+                (textListFrames.TextProperty = [(cast (string) (cast (IUnitTestSnapshotFrame^) $1).Index)]);
             }
             {
                 var <created-subscription> = new (::system::Subscription^)
@@ -404,9 +430,6 @@ namespace gaclib_controls
                 <this>.AddSubscription(<created-subscription>);
             }
             {
-                (textListFrames.TextProperty = [(cast (string) (cast (IUnitTestSnapshotFrame^) $1).Index)]);
-            }
-            {
                 var <created-subscription> = new (::system::Subscription^)
                 {
                     var <bind-cache>0 : ::presentation::controls::GuiBindableTextList* = null of (::presentation::controls::GuiBindableTextList*);
@@ -469,13 +492,13 @@ namespace gaclib_controls
                 };
                 attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
                 {
-                    var <old> = <precompile>14.Text;
+                    var <old> = <precompile>15.Text;
                     var <new> = (cast (::system::String) <value>);
                     if ((<old> == <new>))
                     {
                         return;
                     }
-                    (<precompile>14.Text = <new>);
+                    (<precompile>15.Text = <new>);
                 });
                 <this>.AddSubscription(<created-subscription>);
             }
@@ -542,13 +565,13 @@ namespace gaclib_controls
                 };
                 attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
                 {
-                    var <old> = <precompile>17.Text;
+                    var <old> = <precompile>18.Text;
                     var <new> = (cast (::system::String) <value>);
                     if ((<old> == <new>))
                     {
                         return;
                     }
-                    (<precompile>17.Text = <new>);
+                    (<precompile>18.Text = <new>);
                 });
                 <this>.AddSubscription(<created-subscription>);
             }
@@ -615,13 +638,13 @@ namespace gaclib_controls
                 };
                 attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
                 {
-                    var <old> = <precompile>20.Text;
+                    var <old> = <precompile>21.Text;
                     var <new> = (cast (::system::String) <value>);
                     if ((<old> == <new>))
                     {
                         return;
                     }
-                    (<precompile>20.Text = <new>);
+                    (<precompile>21.Text = <new>);
                 });
                 <this>.AddSubscription(<created-subscription>);
             }
