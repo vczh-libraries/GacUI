@@ -83,6 +83,11 @@ UnitTestSnapshotFileNode
 		Ptr<RenderingTrace>					renderingTrace;
 		List<Ptr<UnitTestSnapshotFrame>>	frames;
 
+		friend const remoteprotocol::RenderingTrace& GetRenderingTrace(Ptr<gaclib_controls::IUnitTestSnapshotFileNode> node)
+		{
+			return *node.Cast<UnitTestSnapshotFileNode>()->renderingTrace.Obj();
+		}
+
 		void EnsureLoaded()
 		{
 			if (!renderingTrace)

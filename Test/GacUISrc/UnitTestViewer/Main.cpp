@@ -18,7 +18,7 @@ class MainWindow : public UnitTestSnapshotViewerWindow
 protected:
 	GuiBoundsComposition*				rootComposition = nullptr;
 
-	GuiBoundsComposition* BuildRootComposition(const remoteprotocol::RenderingFrame& frame)
+	GuiBoundsComposition* BuildRootComposition(const remoteprotocol::RenderingTrace& trace, const remoteprotocol::RenderingFrame& frame)
 	{
 		CHECK_FAIL(L"Not Implemented!");
 	}
@@ -31,13 +31,19 @@ protected:
 			rootComposition = nullptr;
 		}
 
+		auto nodeObj = treeViewFileNodes->GetSelectedItem();
+		if (!nodeObj.GetSharedPtr()) return;
+		auto node = nodeObj.GetSharedPtr().Cast<IUnitTestSnapshotFileNode>();
+
 		auto frameObj = textListFrames->GetSelectedItem();
 		if (!frameObj.GetSharedPtr()) return;
 		auto frame = frameObj.GetSharedPtr().Cast<IUnitTestSnapshotFrame>();
-		if (!frame) return;
 
-		rootComposition = BuildRootComposition(GetRenderingFrame(frame));
-		scRendering->GetContainerComposition()->AddChild(rootComposition);
+		if (node && node->GetNodeType() == UnitTestSnapshotFileNodeType::File && frame)
+		{
+			rootComposition = BuildRootComposition(GetRenderingTrace(node), GetRenderingFrame(frame));
+			scRendering->GetContainerComposition()->AddChild(rootComposition);
+		}
 	}
 
 public:

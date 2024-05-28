@@ -3,6 +3,7 @@
 namespace vl::presentation::remoteprotocol
 {
 	struct RenderingFrame;
+	struct RenderingTrace;
 }
 
 namespace vl::presentation::unittest
@@ -21,5 +22,6 @@ namespace vl::presentation::unittest
 		Ptr<gaclib_controls::IUnitTestSnapshotFileNode>		GetRootNode() override;
 	};
 
+	extern const remoteprotocol::RenderingTrace&	GetRenderingTrace(Ptr<gaclib_controls::IUnitTestSnapshotFileNode> node);
 	extern const remoteprotocol::RenderingFrame&	GetRenderingFrame(Ptr<gaclib_controls::IUnitTestSnapshotFrame> frame);
 }
