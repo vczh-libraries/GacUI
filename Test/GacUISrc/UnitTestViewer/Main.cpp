@@ -19,6 +19,112 @@ class MainWindow : public UnitTestSnapshotViewerWindow
 protected:
 	GuiBoundsComposition*				rootComposition = nullptr;
 
+	void InstallDom(
+		const remoteprotocol::RenderingTrace& trace,
+		const remoteprotocol::RenderingFrame& frame,
+		GuiGraphicsComposition* container,
+		vint x,
+		vint y,
+		Ptr<remoteprotocol::RenderingDom> dom)
+	{
+		auto bounds = new GuiBoundsComposition;
+		container->AddChild(bounds);
+
+		bounds->SetExpectedBounds(Rect({ dom->bounds.x1 - x,dom->bounds.y1 - y }, { dom->bounds.Width(),dom->bounds.Height() }));
+
+		if (dom->hitTestResult)
+		{
+			bounds->SetAssociatedHitTestResult(dom->hitTestResult.Value());
+		}
+
+		if (dom->element)
+		{
+			switch (trace.createdElements->Get(dom->element.Value()))
+			{
+			case remoteprotocol::RendererType::FocusRectangle:
+				{
+					auto element = Ptr(GuiFocusRectangleElement::Create());
+					bounds->SetOwnedElement(element);
+				}
+				break;
+			case remoteprotocol::RendererType::SolidBorder:
+				{
+					auto element = Ptr(GuiSolidBorderElement::Create());
+					bounds->SetOwnedElement(element);
+					auto& desc = frame.elements->Get(dom->element.Value()).Get<remoteprotocol::ElementDesc_SolidBorder>();
+				}
+				break;
+			case remoteprotocol::RendererType::SinkBorder:
+				{
+					auto element = Ptr(Gui3DBorderElement::Create());
+					bounds->SetOwnedElement(element);
+					auto& desc = frame.elements->Get(dom->element.Value()).Get<remoteprotocol::ElementDesc_SinkBorder>();
+				}
+				break;
+			case remoteprotocol::RendererType::SinkSplitter:
+				{
+					auto element = Ptr(Gui3DSplitterElement::Create());
+					bounds->SetOwnedElement(element);
+					auto& desc = frame.elements->Get(dom->element.Value()).Get<remoteprotocol::ElementDesc_SinkSplitter>();
+				}
+				break;
+			case remoteprotocol::RendererType::SolidBackground:
+				{
+					auto element = Ptr(GuiSolidBackgroundElement::Create());
+					bounds->SetOwnedElement(element);
+					auto& desc = frame.elements->Get(dom->element.Value()).Get<remoteprotocol::ElementDesc_SolidBackground>();
+				}
+				break;
+			case remoteprotocol::RendererType::GradientBackground:
+				{
+					auto element = Ptr(GuiGradientBackgroundElement::Create());
+					bounds->SetOwnedElement(element);
+					auto& desc = frame.elements->Get(dom->element.Value()).Get<remoteprotocol::ElementDesc_GradientBackground>();
+				}
+				break;
+			case remoteprotocol::RendererType::InnerShadow:
+				{
+					auto element = Ptr(GuiInnerShadowElement::Create());
+					bounds->SetOwnedElement(element);
+					auto& desc = frame.elements->Get(dom->element.Value()).Get<remoteprotocol::ElementDesc_InnerShadow>();
+				}
+				break;
+			case remoteprotocol::RendererType::SolidLabel:
+				{
+					auto element = Ptr(GuiSolidLabelElement::Create());
+					bounds->SetOwnedElement(element);
+					auto& desc = frame.elements->Get(dom->element.Value()).Get<remoteprotocol::ElementDesc_SolidLabel>();
+				}
+				break;
+			case remoteprotocol::RendererType::Polygon:
+				{
+					auto element = Ptr(GuiPolygonElement::Create());
+					bounds->SetOwnedElement(element);
+					auto& desc = frame.elements->Get(dom->element.Value()).Get<remoteprotocol::ElementDesc_Polygon>();
+				}
+				break;
+			case remoteprotocol::RendererType::ImageFrame:
+				{
+					auto element = Ptr(GuiImageFrameElement::Create());
+					bounds->SetOwnedElement(element);
+					auto& desc = frame.elements->Get(dom->element.Value()).Get<remoteprotocol::ElementDesc_ImageFrame>();
+				}
+				break;
+			default:
+				CHECK_FAIL(L"This element is not supported yet.");
+				break;
+			}
+		}
+
+		if(dom->children)
+		{
+			for (auto child : *dom->children.Obj())
+			{
+				InstallDom(trace, frame, bounds, dom->bounds.x1, dom->bounds.y1, child);
+			}
+		}
+	}
+
 	GuiBoundsComposition* BuildRootComposition(const remoteprotocol::RenderingTrace& trace, const remoteprotocol::RenderingFrame& frame)
 	{
 		vint w = frame.windowSize.clientBounds.Width().value;
@@ -35,6 +141,14 @@ protected:
 			focusComposition->AddChild(canvasComposition);
 			canvasComposition->SetAlignmentToParent(Margin(1, 1, -1, -1));
 			canvasComposition->SetExpectedBounds(Rect({ 0,0 }, { 0,0 }));
+		}
+
+		if (frame.root && frame.root->children)
+		{
+			for (auto child : *frame.root->children.Obj())
+			{
+				InstallDom(trace, frame, canvasComposition, 0, 0, child);
+			}
 		}
 		return focusComposition;
 	}
