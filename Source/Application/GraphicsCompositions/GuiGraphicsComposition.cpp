@@ -325,7 +325,7 @@ GuiGraphicsComposition
 							}
 						}
 
-						if (children.Count() > 0 || associatedHitTestResult != INativeWindowListener::NoDecision)
+						if (children.Count() > 0 || associatedHitTestResult != INativeWindowListener::NoDecision || associatedCursor)
 						{
 							renderTarget->PushClipper(bounds, this);
 							if (!renderTarget->IsClipperCoverWholeTarget())
