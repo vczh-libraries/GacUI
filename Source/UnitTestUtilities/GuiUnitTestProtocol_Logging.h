@@ -161,6 +161,7 @@ UnitTestRemoteProtocol
 
 						auto dom = Ptr(new UnitTestRenderingDom);
 						dom->hitTestResult = command.boundary.hitTestResult;
+						dom->cursor = command.boundary.cursor;
 						dom->bounds = command.boundary.bounds;
 						dom->validArea = command.boundary.areaClippedBySelf;
 						domBoundaries.Add(push(dom));

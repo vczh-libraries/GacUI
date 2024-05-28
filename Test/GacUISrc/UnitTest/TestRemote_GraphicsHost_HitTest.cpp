@@ -24,7 +24,7 @@ TEST_FILE
 			AssertEventLogs(
 				eventLogs,
 				L"Begin()",
-				L"BeginBoundary(Title, {10,10:620,460}, {10,10:620,460})",
+				L"BeginBoundary(Title, null, {10,10:620,460}, {10,10:620,460})",
 				L"EndBoundary()",
 				L"End()"
 				);
@@ -35,7 +35,7 @@ TEST_FILE
 		StartRemoteControllerTest(protocol);
 	});
 
-	TEST_CATEGORY(L"HitTest in composition with element")
+	TEST_CATEGORY(L"Cursor in composition with element")
 	{
 		List<WString> eventLogs;
 		GraphicsHostRenderingProtocol protocol(eventLogs);
@@ -45,7 +45,7 @@ TEST_FILE
 		{
 			auto bounds = new GuiBoundsComposition;
 			bounds->SetAlignmentToParent(Margin(10, 10, 10, 10));
-			bounds->SetAssociatedHitTestResult(INativeWindowListener::Title);
+			bounds->SetAssociatedCursor(GetCurrentController()->ResourceService()->GetSystemCursor(INativeCursor::Hand));
 
 			auto element = Ptr(GuiFocusRectangleElement::Create());
 			bounds->SetOwnedElement(element);
@@ -62,7 +62,7 @@ TEST_FILE
 				L"Created(<1:FocusRectangle>)",
 				L"Begin()",
 				L"Render(1, {10,10:620,460}, {0,0:640,480})",
-				L"BeginBoundary(Title, {10,10:620,460}, {10,10:620,460})",
+				L"BeginBoundary(null, Hand, {10,10:620,460}, {10,10:620,460})",
 				L"EndBoundary()",
 				L"End()"
 				);
@@ -73,7 +73,7 @@ TEST_FILE
 		StartRemoteControllerTest(protocol);
 	});
 
-	TEST_CATEGORY(L"HitTest in composition with children")
+	TEST_CATEGORY(L"HitTest/Cursor in composition with children")
 	{
 		List<WString> eventLogs;
 		GraphicsHostRenderingProtocol protocol(eventLogs);
@@ -84,6 +84,7 @@ TEST_FILE
 			auto bounds = new GuiBoundsComposition;
 			bounds->SetAlignmentToParent(Margin(10, 10, 10, 10));
 			bounds->SetAssociatedHitTestResult(INativeWindowListener::Title);
+			bounds->SetAssociatedCursor(GetCurrentController()->ResourceService()->GetSystemCursor(INativeCursor::Hand));
 
 			auto childBounds = new GuiBoundsComposition;
 			childBounds->SetAlignmentToParent(Margin(10, 10, 10, 10));
@@ -103,7 +104,7 @@ TEST_FILE
 				eventLogs,
 				L"Created(<1:FocusRectangle>)",
 				L"Begin()",
-				L"BeginBoundary(Title, {10,10:620,460}, {10,10:620,460})",
+				L"BeginBoundary(Title, Hand, {10,10:620,460}, {10,10:620,460})",
 				L"Render(1, {20,20:600,440}, {10,10:620,460})",
 				L"EndBoundary()",
 				L"End()"
@@ -146,7 +147,7 @@ TEST_FILE
 				eventLogs,
 				L"Created(<1:FocusRectangle>)",
 				L"Begin()",
-				L"BeginBoundary(Title, {10,10:620,460}, {10,10:620,460})",
+				L"BeginBoundary(Title, null, {10,10:620,460}, {10,10:620,460})",
 				L"Render(1, {20,20:600,440}, {10,10:620,460})",
 				L"EndBoundary()",
 				L"End()"
@@ -189,9 +190,9 @@ TEST_FILE
 				eventLogs,
 				L"Created(<1:FocusRectangle>)",
 				L"Begin()",
-				L"BeginBoundary(Title, {10,10:620,460}, {10,10:620,460})",
+				L"BeginBoundary(Title, null, {10,10:620,460}, {10,10:620,460})",
 				L"Render(1, {20,20:600,440}, {10,10:620,460})",
-				L"BeginBoundary(Icon, {20,20:600,440}, {20,20:600,440})",
+				L"BeginBoundary(Icon, null, {20,20:600,440}, {20,20:600,440})",
 				L"EndBoundary()",
 				L"EndBoundary()",
 				L"End()"
@@ -248,7 +249,7 @@ TEST_FILE
 				eventLogs,
 				L"Created(<1:FocusRectangle>)",
 				L"Begin()",
-				L"BeginBoundary(Title, {10,10:620,460}, {10,10:620,460})",
+				L"BeginBoundary(Title, null, {10,10:620,460}, {10,10:620,460})",
 				L"EndBoundary()",
 				L"Render(1, {20,20:600,440}, {20,20:600,440})",
 				L"End()"

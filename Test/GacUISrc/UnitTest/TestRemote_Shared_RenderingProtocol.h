@@ -145,6 +145,25 @@ namespace remote_protocol_tests
 			}
 		}
 
+		WString ToString(INativeCursor::SystemCursorType cursor)
+		{
+			switch (cursor)
+			{
+			case INativeCursor::SmallWaiting:		return L"SmallWaiting";
+			case INativeCursor::LargeWaiting:		return L"LargeWaiting";
+			case INativeCursor::Cross:				return L"Cross";
+			case INativeCursor::Hand:				return L"Hand";
+			case INativeCursor::Help:				return L"Help";
+			case INativeCursor::IBeam:				return L"IBeam";
+			case INativeCursor::SizeAll:			return L"SizeAll";
+			case INativeCursor::SizeNESW:			return L"SizeNESW";
+			case INativeCursor::SizeNS:				return L"SizeNS";
+			case INativeCursor::SizeNWSE:			return L"SizeNWSE";
+			case INativeCursor::SizeWE:				return L"SizeWE";
+			default:								return L"Arrow";
+			}
+		}
+
 		WString ToString(ElementShape shape)
 		{
 			switch (shape.shapeType)
@@ -247,6 +266,19 @@ namespace remote_protocol_tests
 			}
 		}
 
+		template<typename T>
+		WString ToString(const Nullable<T>& nullable)
+		{
+			if (nullable)
+			{
+				return ToString(nullable.Value());
+			}
+			else
+			{
+				return WString::Unmanaged(L"null");
+			}
+		}
+
 		void RequestRendererBeginRendering(const remoteprotocol::ElementBeginRendering& arguments) override
 		{
 			eventLogs.Add(WString::Unmanaged(L"Begin()"));
@@ -264,6 +296,7 @@ namespace remote_protocol_tests
 			eventLogs.Add(
 				L"BeginBoundary("
 				+ ToString(arguments.hitTestResult)
+				+ L", " + ToString(arguments.cursor)
 				+ L", " + ToString(arguments.bounds)
 				+ L", " + ToString(arguments.areaClippedBySelf)
 				+ L")"

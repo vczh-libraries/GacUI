@@ -34,6 +34,27 @@ GuiRemoteGraphicsRenderTarget
 		return INativeWindowListener::NoDecision;
 	}
 
+	Nullable<GuiRemoteGraphicsRenderTarget::SystemCursorType> GuiRemoteGraphicsRenderTarget::GetCursorFromGenerator(reflection::DescriptableObject* generator)
+	{
+		if (auto composition = dynamic_cast<GuiGraphicsComposition*>(generator))
+		{
+			if (auto cursor = composition->GetAssociatedCursor())
+			{
+				if (auto graphicsHost = composition->GetRelatedGraphicsHost())
+				{
+					if (auto nativeWindow = graphicsHost->GetNativeWindow())
+					{
+						if (nativeWindow == GetCurrentController()->WindowService()->GetMainWindow())
+						{
+							return cursor->GetSystemCursorType();
+						}
+					}
+				}
+			}
+		}
+		return {};
+	}
+
 	void GuiRemoteGraphicsRenderTarget::StartRenderingOnNativeWindow()
 	{
 		CHECK_ERROR(hitTestResults.Count() == 0, L"vl::presentation::elements::GuiRemoteGraphicsRenderTarget::StartRenderingOnNativeWindow()#Internal error: hit test result stack is not cleared.");
@@ -171,17 +192,31 @@ GuiRemoteGraphicsRenderTarget
 	{
 		clipperValidArea = validArea;
 		auto hitTestResult = GetHitTestResultFromGenerator(generator);
+		auto cursor = GetCursorFromGenerator(generator);
+
+		remoteprotocol::ElementBoundary arguments;
 		if (hitTestResult != INativeWindowListener::NoDecision)
 		{
 			if (hitTestResults.Count() == 0 || hitTestResults[hitTestResults.Count() - 1] != hitTestResult)
 			{
-				remoteprotocol::ElementBoundary arguments;
 				arguments.hitTestResult = hitTestResult;
-				arguments.bounds = clipper;
-				arguments.areaClippedBySelf = validArea;
-				remote->remoteMessages.RequestRendererBeginBoundary(arguments);
 			}
 			hitTestResults.Add(hitTestResult);
+		}
+		if (cursor)
+		{
+			if (cursors.Count() == 0 || cursors[cursors.Count() - 1] != cursor.Value())
+			{
+				arguments.cursor = cursor.Value();
+			}
+			cursors.Add(cursor.Value());
+		}
+
+		if (arguments.hitTestResult || arguments.cursor)
+		{
+			arguments.bounds = clipper;
+			arguments.areaClippedBySelf = validArea;
+			remote->remoteMessages.RequestRendererBeginBoundary(arguments);
 		}
 	}
 
@@ -199,13 +234,29 @@ GuiRemoteGraphicsRenderTarget
 	{
 		clipperValidArea = validArea;
 		auto hitTestResult = GetHitTestResultFromGenerator(generator);
+		auto cursor = GetCursorFromGenerator(generator);
+		bool needEndBoundary = false;
+
 		if (hitTestResult != INativeWindowListener::NoDecision)
 		{
 			hitTestResults.RemoveAt(hitTestResults.Count() - 1);
 			if (hitTestResults.Count() == 0 || hitTestResults[hitTestResults.Count() - 1] != hitTestResult)
 			{
-				remote->remoteMessages.RequestRendererEndBoundary();
+				needEndBoundary = true;
 			}
+		}
+		if (cursor)
+		{
+			cursors.RemoveAt(cursors.Count() - 1);
+			if (cursors.Count() == 0 || cursors[cursors.Count() - 1] != cursor.Value())
+			{
+				needEndBoundary = true;
+			}
+		}
+
+		if (needEndBoundary)
+		{
+			remote->remoteMessages.RequestRendererEndBoundary();
 		}
 	}
 

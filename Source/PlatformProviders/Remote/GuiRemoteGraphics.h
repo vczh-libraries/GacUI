@@ -37,6 +37,7 @@ GuiRemoteGraphicsRenderTarget
 			using RendererSet = collections::SortedList<elements_remoteprotocol::IGuiRemoteProtocolElementRender*>;
 			using FontHeightMap = collections::Dictionary<Tuple<WString, vint>, vint>;
 			using HitTestResult = INativeWindowListener::HitTestResult;
+			using SystemCursorType = INativeCursor::SystemCursorType;
 		protected:
 			GuiRemoteController*				remote;
 			GuiHostedController*				hostedController;
@@ -49,8 +50,10 @@ GuiRemoteGraphicsRenderTarget
 			RendererSet							renderersAskingForCache;
 			Nullable<Rect>						clipperValidArea;
 			collections::List<HitTestResult>	hitTestResults;
+			collections::List<SystemCursorType>	cursors;
 
 			HitTestResult						GetHitTestResultFromGenerator(reflection::DescriptableObject* generator);
+			Nullable<SystemCursorType>			GetCursorFromGenerator(reflection::DescriptableObject* generator);
 
 			void								StartRenderingOnNativeWindow() override;
 			RenderTargetFailure					StopRenderingOnNativeWindow() override;

@@ -2214,8 +2214,21 @@
             "$ast": "StructMember",
             "name": "hitTestResult",
             "type": {
-                "$ast": "ReferenceType",
-                "name": "WindowHitTestResult"
+                "$ast": "OptionalType",
+                "element": {
+                    "$ast": "ReferenceType",
+                    "name": "WindowHitTestResult"
+                }
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "cursor",
+            "type": {
+                "$ast": "OptionalType",
+                "element": {
+                    "$ast": "ReferenceType",
+                    "name": "WindowSystemCursorType"
+                }
             }
         }, {
             "$ast": "StructMember",
@@ -2414,6 +2427,16 @@
                 "element": {
                     "$ast": "ReferenceType",
                     "name": "WindowHitTestResult"
+                }
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "cursor",
+            "type": {
+                "$ast": "OptionalType",
+                "element": {
+                    "$ast": "ReferenceType",
+                    "name": "WindowSystemCursorType"
                 }
             }
         }, {

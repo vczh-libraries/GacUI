@@ -315,7 +315,8 @@ namespace vl::presentation::remoteprotocol
 
 	struct ElementBoundary
 	{
-		::vl::presentation::INativeWindowListener::HitTestResult hitTestResult;
+		::vl::Nullable<::vl::presentation::INativeWindowListener::HitTestResult> hitTestResult;
+		::vl::Nullable<::vl::presentation::INativeCursor::SystemCursorType> cursor;
 		::vl::presentation::Rect bounds;
 		::vl::presentation::Rect areaClippedBySelf;
 	};
@@ -343,6 +344,7 @@ namespace vl::presentation::remoteprotocol
 	struct RenderingDom
 	{
 		::vl::Nullable<::vl::presentation::INativeWindowListener::HitTestResult> hitTestResult;
+		::vl::Nullable<::vl::presentation::INativeCursor::SystemCursorType> cursor;
 		::vl::Nullable<::vl::vint> element;
 		::vl::presentation::Rect bounds;
 		::vl::presentation::Rect validArea;

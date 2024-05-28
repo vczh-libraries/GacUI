@@ -6,6 +6,7 @@
 #include "../../../Source/PlatformProviders/Remote/GuiRemoteProtocol.h"
 
 using namespace vl;
+using namespace vl::collections;
 using namespace vl::filesystem;
 using namespace vl::presentation;
 using namespace vl::presentation::elements;
@@ -32,9 +33,9 @@ protected:
 
 		bounds->SetExpectedBounds(Rect({ dom->bounds.x1 - x,dom->bounds.y1 - y }, { dom->bounds.Width(),dom->bounds.Height() }));
 
-		if (dom->hitTestResult)
+		if (dom->cursor)
 		{
-			bounds->SetAssociatedHitTestResult(dom->hitTestResult.Value());
+			bounds->SetAssociatedCursor(GetCurrentController()->ResourceService()->GetSystemCursor(dom->cursor.Value()));
 		}
 
 		if (dom->element)
@@ -52,6 +53,9 @@ protected:
 					auto element = Ptr(GuiSolidBorderElement::Create());
 					bounds->SetOwnedElement(element);
 					auto& desc = frame.elements->Get(dom->element.Value()).Get<remoteprotocol::ElementDesc_SolidBorder>();
+
+					element->SetColor(desc.borderColor);
+					element->SetShape(desc.shape);
 				}
 				break;
 			case remoteprotocol::RendererType::SinkBorder:
@@ -59,6 +63,8 @@ protected:
 					auto element = Ptr(Gui3DBorderElement::Create());
 					bounds->SetOwnedElement(element);
 					auto& desc = frame.elements->Get(dom->element.Value()).Get<remoteprotocol::ElementDesc_SinkBorder>();
+
+					element->SetColors(desc.leftTopColor, desc.rightBottomColor);
 				}
 				break;
 			case remoteprotocol::RendererType::SinkSplitter:
@@ -66,6 +72,9 @@ protected:
 					auto element = Ptr(Gui3DSplitterElement::Create());
 					bounds->SetOwnedElement(element);
 					auto& desc = frame.elements->Get(dom->element.Value()).Get<remoteprotocol::ElementDesc_SinkSplitter>();
+
+					element->SetColors(desc.leftTopColor, desc.rightBottomColor);
+					element->SetDirection(desc.direction);
 				}
 				break;
 			case remoteprotocol::RendererType::SolidBackground:
@@ -73,6 +82,9 @@ protected:
 					auto element = Ptr(GuiSolidBackgroundElement::Create());
 					bounds->SetOwnedElement(element);
 					auto& desc = frame.elements->Get(dom->element.Value()).Get<remoteprotocol::ElementDesc_SolidBackground>();
+
+					element->SetColor(desc.backgroundColor);
+					element->SetShape(desc.shape);
 				}
 				break;
 			case remoteprotocol::RendererType::GradientBackground:
@@ -80,6 +92,10 @@ protected:
 					auto element = Ptr(GuiGradientBackgroundElement::Create());
 					bounds->SetOwnedElement(element);
 					auto& desc = frame.elements->Get(dom->element.Value()).Get<remoteprotocol::ElementDesc_GradientBackground>();
+
+					element->SetColors(desc.leftTopColor, desc.rightBottomColor);
+					element->SetDirection(desc.direction);
+					element->SetShape(desc.shape);
 				}
 				break;
 			case remoteprotocol::RendererType::InnerShadow:
@@ -87,6 +103,9 @@ protected:
 					auto element = Ptr(GuiInnerShadowElement::Create());
 					bounds->SetOwnedElement(element);
 					auto& desc = frame.elements->Get(dom->element.Value()).Get<remoteprotocol::ElementDesc_InnerShadow>();
+
+					element->SetColor(desc.shadowColor);
+					element->SetThickness(desc.thickness);
 				}
 				break;
 			case remoteprotocol::RendererType::SolidLabel:
@@ -101,6 +120,15 @@ protected:
 					auto element = Ptr(GuiPolygonElement::Create());
 					bounds->SetOwnedElement(element);
 					auto& desc = frame.elements->Get(dom->element.Value()).Get<remoteprotocol::ElementDesc_Polygon>();
+
+					element->SetSize(desc.size);
+					element->SetBorderColor(desc.borderColor);
+					element->SetBackgroundColor(desc.backgroundColor);
+
+					if (desc.points && desc.points->Count() > 0)
+					{
+						element->SetPoints(&desc.points->Get(0), desc.points->Count());
+					}
 				}
 				break;
 			case remoteprotocol::RendererType::ImageFrame:
@@ -131,16 +159,14 @@ protected:
 		vint h = frame.windowSize.clientBounds.Height().value;
 		auto focusComposition = new GuiBoundsComposition;
 		{
-			focusComposition->SetAlignmentToParent(Margin(5, 5, -1, -1));
-			focusComposition->SetExpectedBounds(Rect({ 0,0 }, { w + 2,h + 2 }));
+			focusComposition->SetExpectedBounds(Rect({ 5,5 }, { w + 2,h + 2 }));
 			auto element = Ptr(GuiFocusRectangleElement::Create());
 			focusComposition->SetOwnedElement(element);
 		}
 		auto canvasComposition = new GuiBoundsComposition;
 		{
 			focusComposition->AddChild(canvasComposition);
-			canvasComposition->SetAlignmentToParent(Margin(1, 1, -1, -1));
-			canvasComposition->SetExpectedBounds(Rect({ 0,0 }, { 0,0 }));
+			canvasComposition->SetExpectedBounds(Rect({ 1,1 }, { w,h }));
 		}
 
 		if (frame.root && frame.root->children)

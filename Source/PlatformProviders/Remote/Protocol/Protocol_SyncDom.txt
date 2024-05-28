@@ -14,6 +14,7 @@ union ElementDescVariant
 class RenderingDom
 {
     var hitTestResult: WindowHitTestResult?;
+    var cursor: WindowSystemCursorType?;
     var element: int?;
     var bounds: Rect;
     var validArea: Rect;
