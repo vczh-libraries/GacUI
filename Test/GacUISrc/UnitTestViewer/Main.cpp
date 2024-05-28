@@ -20,7 +20,27 @@ class MainWindow : public UnitTestSnapshotViewerWindow
 protected:
 	GuiBoundsComposition*				rootComposition = nullptr;
 
-	void InstallDom(
+	static Alignment GetAlignment(remoteprotocol::ElementHorizontalAlignment alignment)
+	{
+		switch (alignment)
+		{
+		case remoteprotocol::ElementHorizontalAlignment::Left: return Alignment::Left;
+		case remoteprotocol::ElementHorizontalAlignment::Right: return Alignment::Right;
+		default: return Alignment::Center;
+		}
+	}
+
+	static Alignment GetAlignment(remoteprotocol::ElementVerticalAlignment alignment)
+	{
+		switch (alignment)
+		{
+		case remoteprotocol::ElementVerticalAlignment::Top: return Alignment::Top;
+		case remoteprotocol::ElementVerticalAlignment::Bottom: return Alignment::Bottom;
+		default: return Alignment::Center;
+		}
+	}
+
+	static void InstallDom(
 		const remoteprotocol::RenderingTrace& trace,
 		const remoteprotocol::RenderingFrame& frame,
 		GuiGraphicsComposition* container,
@@ -113,6 +133,15 @@ protected:
 					auto element = Ptr(GuiSolidLabelElement::Create());
 					bounds->SetOwnedElement(element);
 					auto& desc = frame.elements->Get(dom->element.Value()).Get<remoteprotocol::ElementDesc_SolidLabel>();
+
+					element->SetColor(desc.textColor);
+					element->SetAlignments(GetAlignment(desc.horizontalAlignment), GetAlignment(desc.verticalAlignment));
+					element->SetWrapLine(desc.wrapLine);
+					element->SetWrapLineHeightCalculation(desc.wrapLineHeightCalculation);
+					element->SetEllipse(desc.ellipse);
+					element->SetMultiline(desc.multiline);
+					element->SetFont(desc.font.Value());
+					element->SetText(desc.text.Value());
 				}
 				break;
 			case remoteprotocol::RendererType::Polygon:
@@ -153,7 +182,7 @@ protected:
 		}
 	}
 
-	GuiBoundsComposition* BuildRootComposition(const remoteprotocol::RenderingTrace& trace, const remoteprotocol::RenderingFrame& frame)
+	static GuiBoundsComposition* BuildRootComposition(const remoteprotocol::RenderingTrace& trace, const remoteprotocol::RenderingFrame& frame)
 	{
 		vint w = frame.windowSize.clientBounds.Width().value;
 		vint h = frame.windowSize.clientBounds.Height().value;
