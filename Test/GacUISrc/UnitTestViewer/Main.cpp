@@ -8,6 +8,7 @@
 using namespace vl;
 using namespace vl::filesystem;
 using namespace vl::presentation;
+using namespace vl::presentation::elements;
 using namespace vl::presentation::compositions;
 using namespace vl::presentation::controls;
 using namespace vl::presentation::unittest;
@@ -20,7 +21,22 @@ protected:
 
 	GuiBoundsComposition* BuildRootComposition(const remoteprotocol::RenderingTrace& trace, const remoteprotocol::RenderingFrame& frame)
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		vint w = frame.windowSize.clientBounds.Width().value;
+		vint h = frame.windowSize.clientBounds.Height().value;
+		auto focusComposition = new GuiBoundsComposition;
+		{
+			focusComposition->SetAlignmentToParent(Margin(5, 5, -1, -1));
+			focusComposition->SetExpectedBounds(Rect({ 0,0 }, { w + 2,h + 2 }));
+			auto element = Ptr(GuiFocusRectangleElement::Create());
+			focusComposition->SetOwnedElement(element);
+		}
+		auto canvasComposition = new GuiBoundsComposition;
+		{
+			focusComposition->AddChild(canvasComposition);
+			canvasComposition->SetAlignmentToParent(Margin(1, 1, -1, -1));
+			canvasComposition->SetExpectedBounds(Rect({ 0,0 }, { 0,0 }));
+		}
+		return focusComposition;
 	}
 
 	void textListFrames_SelectionChanged(GuiGraphicsComposition* sender, GuiEventArgs& arguments)
