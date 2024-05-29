@@ -58,13 +58,13 @@ UnitTestRemoteProtocol
 
 	class UnitTestRemoteProtocol : public UnitTestRemoteProtocolFeatures
 	{
+		using EventPair = collections::Pair<Nullable<WString>, Func<void()>>;
 	protected:
 		const UnitTestFrameworkConfig&		frameworkConfig;
 		WString								appName;
-		collections::List<Func<void()>>		processRemoteEvents;
+		collections::List<EventPair>		processRemoteEvents;
 		vint								nextEventIndex = 0;
 		bool								stopped = false;
-
 
 	public:
 
@@ -78,7 +78,13 @@ UnitTestRemoteProtocol
 		template<typename TCallback>
 		void OnNextIdleFrame(TCallback&& callback)
 		{
-			processRemoteEvents.Add(std::move(callback));
+			processRemoteEvents.Add({ Nullable<WString>{},std::forward<TCallback&&>(callback) });
+		}
+
+		template<typename TCallback>
+		void OnNextIdleFrame(const WString& name, TCallback&& callback)
+		{
+			processRemoteEvents.Add({ name,std::forward<TCallback&&>(callback) });
 		}
 
 	protected:
@@ -112,7 +118,9 @@ IGuiRemoteProtocol
 				if (LogRenderingResult())
 				{
 					vl::unittest::UnitTest::PrintMessage(L"Execute idle frame[" + itow(nextEventIndex) + L"]", vl::unittest::UnitTest::MessageKind::Info);
-					processRemoteEvents[nextEventIndex]();
+					auto [name, func] = processRemoteEvents[nextEventIndex];
+					(*loggedTrace.frames.Obj())[loggedTrace.frames->Count() - 1].frameName = name;
+					func();
 					nextEventIndex++;
 				}
 			}

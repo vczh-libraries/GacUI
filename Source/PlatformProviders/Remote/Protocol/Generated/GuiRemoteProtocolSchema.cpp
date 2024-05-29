@@ -628,6 +628,7 @@ namespace vl::presentation::remoteprotocol
 	{
 		auto node = Ptr(new glr::json::JsonObject);
 		ConvertCustomTypeToJsonField(node, L"frameId", value.frameId);
+		ConvertCustomTypeToJsonField(node, L"frameName", value.frameName);
 		ConvertCustomTypeToJsonField(node, L"windowSize", value.windowSize);
 		ConvertCustomTypeToJsonField(node, L"elements", value.elements);
 		ConvertCustomTypeToJsonField(node, L"commands", value.commands);
@@ -1485,6 +1486,7 @@ namespace vl::presentation::remoteprotocol
 		for (auto field : jsonNode->fields)
 		{
 			if (field->name.value == L"frameId") ConvertJsonToCustomType(field->value, value.frameId); else
+			if (field->name.value == L"frameName") ConvertJsonToCustomType(field->value, value.frameName); else
 			if (field->name.value == L"windowSize") ConvertJsonToCustomType(field->value, value.windowSize); else
 			if (field->name.value == L"elements") ConvertJsonToCustomType(field->value, value.elements); else
 			if (field->name.value == L"commands") ConvertJsonToCustomType(field->value, value.commands); else

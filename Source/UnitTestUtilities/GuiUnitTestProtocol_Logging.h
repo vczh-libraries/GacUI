@@ -211,6 +211,7 @@ UnitTestRemoteProtocol
 					auto transformed = TransformLastRenderingResult(candidateRenderingResult);
 					this->loggedTrace.frames->Add({
 						candidateFrameId,
+						{},
 						this->sizingConfig,
 						descs,
 						candidateRenderingResult,

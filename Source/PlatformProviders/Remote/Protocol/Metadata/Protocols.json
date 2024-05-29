@@ -2544,6 +2544,16 @@
             }
         }, {
             "$ast": "StructMember",
+            "name": "frameName",
+            "type": {
+                "$ast": "OptionalType",
+                "element": {
+                    "$ast": "PrimitiveType",
+                    "type": "String"
+                }
+            }
+        }, {
+            "$ast": "StructMember",
             "name": "windowSize",
             "type": {
                 "$ast": "ReferenceType",

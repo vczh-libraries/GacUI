@@ -29,6 +29,7 @@
   "frames": [
     {
       "frameId": 5,
+      "frameName": null,
       "windowSize": {
         "bounds": {
           "x1": {"value": 352},

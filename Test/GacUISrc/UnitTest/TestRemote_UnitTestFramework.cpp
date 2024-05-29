@@ -256,17 +256,17 @@ TEST_FILE
 		{
 			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
 			{
-				protocol->OnNextIdleFrame([=]()
+				protocol->OnNextIdleFrame(L"Ready", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto buttonOK = TryFindObjectByName<GuiButton>(window, L"buttonOK");
 					protocol->MouseMove(protocol->LocationOf(buttonOK));
 				});
-				protocol->OnNextIdleFrame([=]()
+				protocol->OnNextIdleFrame(L"Hover", [=]()
 				{
 					protocol->_LDown();
 				});
-				protocol->OnNextIdleFrame([=]()
+				protocol->OnNextIdleFrame(L"Press", [=]()
 				{
 					protocol->_LUp();
 				});

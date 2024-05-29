@@ -6,6 +6,7 @@
   "frames": [
     {
       "frameId": 2,
+      "frameName": null,
       "windowSize": {
         "bounds": {
           "x1": {"value": 192},

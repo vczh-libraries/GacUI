@@ -369,6 +369,7 @@ namespace vl::presentation::remoteprotocol
 	struct RenderingFrame
 	{
 		::vl::vint frameId;
+		::vl::Nullable<::vl::WString> frameName;
 		::vl::presentation::remoteprotocol::WindowSizingConfig windowSize;
 		::vl::Ptr<::vl::collections::Dictionary<::vl::vint, ::vl::presentation::remoteprotocol::ElementDescVariant>> elements;
 		::vl::Ptr<::vl::collections::List<::vl::presentation::remoteprotocol::RenderingCommand>> commands;
