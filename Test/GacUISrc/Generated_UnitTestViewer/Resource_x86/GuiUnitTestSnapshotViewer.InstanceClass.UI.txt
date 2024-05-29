@@ -195,6 +195,13 @@ namespace gaclib_controls
                 (textListFrames = new (::presentation::controls::GuiBindableTextList*)(::presentation::theme::ThemeName::TextList));
                 <this>.SetNamedObject("textListFrames", textListFrames);
             }
+            {
+                (textListFrames.TextProperty = func (<item> : ::system::Object) : (::system::String)
+                {
+                    var item = (cast (IUnitTestSnapshotFrame^) <item>);
+                    return item.Name;
+                });
+            }
             (<precompile>8 = textListFrames.BoundsComposition);
             {
                 (<precompile>8.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
@@ -352,9 +359,6 @@ namespace gaclib_controls
             }
             {
                 (treeViewFileNodes.ImageProperty = [self.GetImageFromType((cast (IUnitTestSnapshotFileNode^) $1).NodeType)]);
-            }
-            {
-                (textListFrames.TextProperty = [(cast (string) (cast (IUnitTestSnapshotFrame^) $1).Index)]);
             }
             {
                 var <created-subscription> = new (::system::Subscription^)
@@ -987,9 +991,9 @@ namespace gaclib_controls
 
     interface IUnitTestSnapshotFrame
     {
-        func GetIndex() : (int);
+        func GetName() : (string);
 
-        prop Index : int{GetIndex}
+        prop Name : string{GetName}
 
         func GetElementsAsJsonText() : (string);
 

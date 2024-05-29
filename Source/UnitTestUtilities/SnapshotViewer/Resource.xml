@@ -34,7 +34,7 @@
 
       interface IUnitTestSnapshotFrame
       {
-        prop Index: int {const, not observe}
+        prop Name: string {const, not observe}
         prop ElementsAsJsonText: string {const, not observe}
         prop CommandsAsJsonText: string {const, not observe}
         prop DomAsJsonText: string {const, not observe}
@@ -119,7 +119,7 @@
                   <TabPage Text="Frames">
                     <BindableTextList ref.Name="textListFrames" env.ItemType="IUnitTestSnapshotFrame^" VerticalAlwaysVisible="false" HorizontalAlwaysVisible="false">
                       <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-                      <att.TextProperty-eval>[cast string (cast (IUnitTestSnapshotFrame^) $1).Index]</att.TextProperty-eval>
+                      <att.TextProperty>Name</att.TextProperty>
                       <att.ItemSource-bind>(cast (IUnitTestSnapshotFileNode^) treeViewFileNodes.SelectedItem).Frames ?? null</att.ItemSource-bind>
                     </BindableTextList>
                   </TabPage>

@@ -83,9 +83,9 @@ namespace vl
 				{
 					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetElementsAsJsonText);
 				}
-				::vl::vint64_t GetIndex() override
+				::vl::WString GetName() override
 				{
-					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetIndex);
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetName);
 				}
 			END_INTERFACE_PROXY(::gaclib_controls::IUnitTestSnapshotFrame)
 

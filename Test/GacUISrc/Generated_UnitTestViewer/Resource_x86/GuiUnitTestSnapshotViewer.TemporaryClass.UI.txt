@@ -154,9 +154,9 @@ namespace gaclib_controls
 
     interface IUnitTestSnapshotFrame
     {
-        func GetIndex() : (int);
+        func GetName() : (string);
 
-        prop Index : int{GetIndex}
+        prop Name : string{GetName}
 
         func GetElementsAsJsonText() : (string);
 

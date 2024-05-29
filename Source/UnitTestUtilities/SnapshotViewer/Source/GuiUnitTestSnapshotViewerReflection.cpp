@@ -59,11 +59,11 @@ namespace vl
 				CLASS_MEMBER_METHOD(GetCommandsAsJsonText, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(GetDomAsJsonText, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(GetElementsAsJsonText, NO_PARAMETER)
-				CLASS_MEMBER_METHOD(GetIndex, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(GetName, NO_PARAMETER)
 				CLASS_MEMBER_PROPERTY_READONLY(CommandsAsJsonText, GetCommandsAsJsonText)
 				CLASS_MEMBER_PROPERTY_READONLY(DomAsJsonText, GetDomAsJsonText)
 				CLASS_MEMBER_PROPERTY_READONLY(ElementsAsJsonText, GetElementsAsJsonText)
-				CLASS_MEMBER_PROPERTY_READONLY(Index, GetIndex)
+				CLASS_MEMBER_PROPERTY_READONLY(Name, GetName)
 			END_INTERFACE_MEMBER(::gaclib_controls::IUnitTestSnapshotFrame)
 
 			BEGIN_INTERFACE_MEMBER(::gaclib_controls::IUnitTestSnapshotViewerStringsStrings)

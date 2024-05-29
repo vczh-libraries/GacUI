@@ -39,9 +39,16 @@ UnitTestSnapshotFrame
 			formatting.compact = true;
 		}
 
-		vint GetIndex() override
+		WString GetName() override
 		{
-			return index;
+			if (frame.frameName)
+			{
+				return frame.frameName.Value();
+			}
+			else
+			{
+				return itow(index);
+			}
 		}
 
 		WString GetElementsAsJsonText() override
