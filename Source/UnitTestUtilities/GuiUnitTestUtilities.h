@@ -31,7 +31,7 @@ extern vl::Ptr<vl::presentation::GuiResource>	GacUIUnitTest_CompileAndLoad(const
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 
 template<typename TTheme>
-void GacUIUnitTest_StartFast_WithResourceAsText(const vl::WString& appName, const vl::WString& windowTypeFullName, vl::Nullable<vl::presentation::unittest::UnitTestScreenConfig> config, const vl::WString& resourceText)
+void GacUIUnitTest_StartFast_WithResourceAsText(const vl::WString& appName, const vl::WString& windowTypeFullName, const vl::WString& resourceText, vl::Nullable<vl::presentation::unittest::UnitTestScreenConfig> config = {})
 {
 	GacUIUnitTest_LinkGuiMainProxy([=](
 		vl::presentation::unittest::UnitTestRemoteProtocol* protocol,

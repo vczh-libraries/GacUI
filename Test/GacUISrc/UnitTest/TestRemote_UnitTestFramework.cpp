@@ -248,7 +248,6 @@ TEST_FILE
 			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
 				WString::Unmanaged(L"UnitTestFramework/WindowWithOKButton"),
 				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
-				{},
 				resource
 				);
 		});
@@ -275,7 +274,6 @@ TEST_FILE
 			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
 				WString::Unmanaged(L"UnitTestFramework/WindowWithOKButton_ClickInSteps"),
 				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
-				{},
 				resource
 				);
 		});
@@ -294,7 +292,6 @@ TEST_FILE
 			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
 				WString::Unmanaged(L"UnitTestFramework/WindowWithOKButton_Click"),
 				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
-				{},
 				resource
 				);
 		});
