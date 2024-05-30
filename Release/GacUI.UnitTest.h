@@ -9,6 +9,9 @@ DEVELOPER: Zihan Chen(vczh)
 #include "VlppOS.h"
 #include "Vlpp.h"
 #include "VlppRegex.h"
+#include "GacUIReflection.h"
+#include "VlppWorkflowCompiler.h"
+#include "VlppWorkflowRuntime.h"
 
 /***********************************************************************
 .\GUIUNITTESTPROTOCOL_SHARED.H
@@ -57,7 +60,7 @@ namespace vl::presentation::unittest
 		void						FastInitialize(vint width, vint height, vint taskBarHeight = 0);
 	};
 
-	class UnitTestRemoteProtocolBase : public Object, public virtual IGuiRemoteProtocol
+	class UnitTestRemoteProtocolBase : public Object, protected virtual IGuiRemoteProtocol
 	{
 	protected:
 		IGuiRemoteProtocolEvents*	events = nullptr;
@@ -69,6 +72,11 @@ namespace vl::presentation::unittest
 		{
 		}
 
+		IGuiRemoteProtocol* GetProtocol()
+		{
+			return this;
+		}
+
 		IGuiRemoteProtocolEvents* GetEvents() const
 		{
 			return events;
@@ -78,6 +86,8 @@ namespace vl::presentation::unittest
 		{
 			return globalConfig;
 		}
+
+	protected:
 
 /***********************************************************************
 IGuiRemoteProtocol
@@ -127,6 +137,8 @@ namespace vl::presentation::unittest
 		{
 		}
 
+	protected:
+
 /***********************************************************************
 IGuiRemoteProtocolMessages (IO)
 ***********************************************************************/
@@ -168,6 +180,168 @@ IGuiRemoteProtocolMessages (IO)
 #endif
 
 /***********************************************************************
+.\GUIUNITTESTPROTOCOL_IOCOMMANDS.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+Unit Test Snapsnot and other Utilities
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_GUIUNITTESTPROTOCOL_IOCOMMANDS
+#define VCZH_PRESENTATION_GUIUNITTESTPROTOCOL_IOCOMMANDS
+
+
+namespace vl::presentation::unittest
+{
+
+/***********************************************************************
+UnitTestRemoteProtocol
+***********************************************************************/
+	
+	template<typename TProtocol>
+	class UnitTestRemoteProtocol_IOCommands : public TProtocol
+	{
+	protected:
+		Nullable<NativePoint>				mousePosition;
+		collections::SortedList<VKEY>		pressingKeys;
+		bool								leftPressing = false;
+		bool								middlePressing = false;
+		bool								rightPressing = false;
+
+		IGuiRemoteProtocolEvents& UseEvents()
+		{
+			return *this->GetEvents();
+		}
+
+		bool IsPressing(VKEY key)
+		{
+			return pressingKeys.Contains(key);
+		}
+
+		NativeWindowMouseInfo MakeMouseInfo()
+		{
+			NativeWindowMouseInfo info;
+			info.ctrl = IsPressing(VKEY::KEY_CONTROL) || IsPressing(VKEY::KEY_LCONTROL) || IsPressing(VKEY::KEY_RCONTROL);
+			info.shift = IsPressing(VKEY::KEY_SHIFT) || IsPressing(VKEY::KEY_LSHIFT) || IsPressing(VKEY::KEY_RSHIFT);
+			info.left = leftPressing;
+			info.middle = middlePressing;
+			info.right = rightPressing;
+			info.x = mousePosition.Value().x.value;
+			info.y = mousePosition.Value().y.value;
+			info.wheel = 0;
+			info.nonClient = false;
+			return info;
+		}
+
+	public:
+
+		template<typename ...TArgs>
+		UnitTestRemoteProtocol_IOCommands(TArgs&& ...args)
+			: TProtocol(std::forward<TArgs&&>(args)...)
+		{
+		}
+
+/***********************************************************************
+Helper Functions
+***********************************************************************/
+
+		NativePoint LocationOf(compositions::GuiGraphicsComposition* composition, double ratioX = 0.5, double ratioY = 0.5, vint offsetX = 0, vint offsetY = 0)
+		{
+			INativeWindow* nativeWindow = composition->GetRelatedControlHost()->GetNativeWindow();
+			Rect bounds = composition->GetGlobalBounds();
+			NativeRect nativeBounds = { nativeWindow->Convert(bounds.LeftTop()),nativeWindow->Convert(bounds.GetSize()) };
+			vint x = nativeBounds.x1.value + (vint)(nativeBounds.Width().value * ratioX) + offsetX;
+			vint y = nativeBounds.y1.value + (vint)(nativeBounds.Height().value * ratioY) + offsetY;
+			NativePoint windowLocation = nativeWindow->GetBounds().LeftTop();
+			return { windowLocation.x.value + x,windowLocation.y.value + y };
+		}
+
+		NativePoint LocationOf(controls::GuiControl* control, double ratioX = 0.5, double ratioY = 0.5, vint offsetX = 0, vint offsetY = 0)
+		{
+			return LocationOf(control->GetBoundsComposition(), ratioX, ratioY, offsetX, offsetY);
+		}
+
+#define CLASS_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_IOCommands<TProtocol>::"
+
+/***********************************************************************
+Keys
+***********************************************************************/
+
+/***********************************************************************
+Mouse
+***********************************************************************/
+
+		void MouseMove(NativePoint position)
+		{
+			if (!mousePosition)
+			{
+				UseEvents().OnIOMouseEntered();
+				goto DO_MOUSE_MOVE;
+			}
+
+			if (mousePosition.Value() == position) return;
+		DO_MOUSE_MOVE:
+
+			mousePosition = position;
+			UseEvents().OnIOMouseMoving(MakeMouseInfo());
+		}
+
+/***********************************************************************
+Mouse (Left)
+***********************************************************************/
+
+		void _LDown(Nullable<NativePoint> position = {})
+		{
+#define ERROR_MESSAGE_PREFIX CLASS_PREFIX L"_LDown(...)#"
+			if (position) MouseMove(position.Value());
+			CHECK_ERROR(!leftPressing, ERROR_MESSAGE_PREFIX L"The button should not be being pressed.");
+			leftPressing = true;
+			UseEvents().OnIOButtonDown({ remoteprotocol::IOMouseButton::Left,MakeMouseInfo() });
+#undef ERROR_MESSAGE_PREFIX
+		}
+
+		void _LUp(Nullable<NativePoint> position = {})
+		{
+#define ERROR_MESSAGE_PREFIX CLASS_PREFIX L"_LUp(...)#"
+			if (position) MouseMove(position.Value());
+			CHECK_ERROR(leftPressing, ERROR_MESSAGE_PREFIX L"The button should be being pressed.");
+			leftPressing = false;
+			UseEvents().OnIOButtonUp({ remoteprotocol::IOMouseButton::Left,MakeMouseInfo() });
+#undef ERROR_MESSAGE_PREFIX
+		}
+
+		void _LDBClick(Nullable<NativePoint> position = {})
+		{
+#define ERROR_MESSAGE_PREFIX CLASS_PREFIX L"_LDBClick(...)#"
+			if (position) MouseMove(position.Value());
+			CHECK_ERROR(!leftPressing, ERROR_MESSAGE_PREFIX L"The button should not be being pressed.");
+			leftPressing = true;
+			UseEvents().OnIOButtonDoubleClick({ remoteprotocol::IOMouseButton::Left,MakeMouseInfo() });
+#undef ERROR_MESSAGE_PREFIX
+		}
+
+		void LClick(Nullable<NativePoint> position = {})
+		{
+			_LDown(position);
+			_LUp(position);
+		}
+
+		void LDBClick(Nullable<NativePoint> position = {})
+		{
+			_LDown(position);
+			_LUp(position);
+			_LDBClick(position);
+			_LUp(position);
+		}
+
+#undef CLASS_PREFIX
+	};
+}
+
+#endif
+
+/***********************************************************************
 .\GUIUNITTESTPROTOCOL_MAINWINDOW.H
 ***********************************************************************/
 /***********************************************************************
@@ -201,6 +375,8 @@ namespace vl::presentation::unittest
 			sizingConfig.customFramePadding = this->GetGlobalConfig().customFramePadding;
 			sizingConfig.sizeState = INativeWindow::Restored;
 		}
+
+	protected:
 
 /***********************************************************************
 IGuiRemoteProtocolMessages (Controller)
@@ -337,88 +513,53 @@ namespace vl::presentation::unittest
 UnitTestRemoteProtocol
 ***********************************************************************/
 
-#define GACUI_REMOTEPROTOCOL_ELEMENTDESC_TYPES\
-		remoteprotocol::ElementDesc_SolidBorder,\
-		remoteprotocol::ElementDesc_SinkBorder,\
-		remoteprotocol::ElementDesc_SinkSplitter,\
-		remoteprotocol::ElementDesc_SolidBackground,\
-		remoteprotocol::ElementDesc_GradientBackground,\
-		remoteprotocol::ElementDesc_InnerShadow,\
-		remoteprotocol::ElementDesc_Polygon,\
-		remoteprotocol::ElementDesc_SolidLabel,\
-		remoteprotocol::ElementDesc_ImageFrame\
-
-	using ElementDescVariant = Variant<
-		GACUI_REMOTEPROTOCOL_ELEMENTDESC_TYPES
-		>;
-
-	struct UnitTestRenderingBeginBoundary
-	{
-		remoteprotocol::ElementBoundary			boundary;
-	};
-
-	struct UnitTestRenderingEndBoundary
-	{
-	};
-
-	struct UnitTestRenderingElement
-	{
-		remoteprotocol::ElementRendering		rendering;
-		ElementDescVariant						desc;
-
-		UnitTestRenderingElement(const UnitTestRenderingElement&) = default;
-		UnitTestRenderingElement(UnitTestRenderingElement&&) = default;
-		UnitTestRenderingElement& operator=(const UnitTestRenderingElement&) = default;
-		UnitTestRenderingElement& operator=(UnitTestRenderingElement&&) = default;
-
-		UnitTestRenderingElement(remoteprotocol::ElementRendering _rendering, ElementDescVariant _desc)
-			: rendering(std::move(_rendering))
-			, desc(std::move(_desc))
-		{
-		}
-	};
-
-	using UnitTestRenderingCommand = Variant<
-		UnitTestRenderingBeginBoundary,
-		UnitTestRenderingEndBoundary,
-		UnitTestRenderingElement
-		>;
-
+	using ElementDescVariant = remoteprotocol::ElementDescVariant;
+	using UnitTestRenderingCommand = remoteprotocol::RenderingCommand;
 	using UnitTestRenderingCommandList = collections::List<UnitTestRenderingCommand>;
 	using UnitTestRenderingCommandListRef = Ptr<UnitTestRenderingCommandList>;
-
-#undef GACUI_REMOTEPROTOCOL_ELEMENTDESC_TYPES
+	using UnitTestRenderingDom = remoteprotocol::RenderingDom;
 	
 	template<typename TProtocol>
 	class UnitTestRemoteProtocol_Rendering : public TProtocol
 	{
-		using ElementTypeDescPair = collections::Pair<remoteprotocol::RendererType, Nullable<ElementDescVariant>>;
-		using ElementDescMap = collections::Dictionary<vint, ElementTypeDescPair>;
+		using ElementDescMap = collections::Dictionary<vint, ElementDescVariant>;
 		using ImageMetadataMap = collections::Dictionary<vint, remoteprotocol::ImageMetadata>;
 		using CommandList = UnitTestRenderingCommandList;
 		using CommandListRef = UnitTestRenderingCommandListRef;
 	protected:
 
-		ElementDescMap							createdElements;
-		ImageMetadataMap						createdImages;
+		remoteprotocol::RenderingTrace			loggedTrace;
+		ElementDescMap							lastElementDescs;
 		remoteprotocol::ElementMeasurings		measuringForNextRendering;
 		regex::Regex							regexCrLf{ L"/n|/r(/n)?" };
+		vint									lastFrameId = 0;
 		CommandListRef							lastRenderingCommands;
 
+		void ResetCreatedObjects()
+		{
+			loggedTrace.createdElements = Ptr(new collections::Dictionary<vint, remoteprotocol::RendererType>);
+			loggedTrace.createdImages = Ptr(new remoteprotocol::ArrayMap<vint, remoteprotocol::ImageMetadata, &remoteprotocol::ImageMetadata::id>);
+			lastElementDescs.Clear();
+		}
 	public:
 
 		template<typename ...TArgs>
 		UnitTestRemoteProtocol_Rendering(TArgs&& ...args)
 			: TProtocol(std::forward<TArgs&&>(args)...)
 		{
+			ResetCreatedObjects();
+			loggedTrace.frames = Ptr(new collections::List<remoteprotocol::RenderingFrame>);
 		}
+
+	protected:
 
 /***********************************************************************
 IGuiRemoteProtocolMessages (Rendering)
 ***********************************************************************/
 
-		void RequestRendererBeginRendering() override
+		void RequestRendererBeginRendering(const remoteprotocol::ElementBeginRendering& arguments) override
 		{
+			lastFrameId = arguments.frameId;
 			lastRenderingCommands = Ptr(new CommandList);
 		}
 
@@ -430,28 +571,37 @@ IGuiRemoteProtocolMessages (Rendering)
 
 		void RequestRendererBeginBoundary(const remoteprotocol::ElementBoundary& arguments) override
 		{
-			lastRenderingCommands->Add(UnitTestRenderingBeginBoundary{ arguments });
+			lastRenderingCommands->Add(remoteprotocol::RenderingCommand_BeginBoundary{ arguments });
 		}
 
 		void RequestRendererEndBoundary() override
 		{
-			lastRenderingCommands->Add(UnitTestRenderingEndBoundary{});
+			lastRenderingCommands->Add(remoteprotocol::RenderingCommand_EndBoundary{});
 		}
 
 		template<typename T>
 		void RequestRendererRenderElement(const remoteprotocol::ElementRendering& rendering, const T& element)
 		{
-			lastRenderingCommands->Add(UnitTestRenderingElement{ rendering,element });
+			lastRenderingCommands->Add(remoteprotocol::RenderingCommand_Element{ rendering,element.id });
 		}
 
 		void RequestRendererRenderElement(const remoteprotocol::ElementRendering& arguments) override
 		{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering<TProtocol>::RequestRendererRenderElement(const ElementRendering&)#"
-			vint index = createdElements.Keys().IndexOf(arguments.id);
+			vint index = loggedTrace.createdElements->Keys().IndexOf(arguments.id);
 			CHECK_ERROR(index != -1, ERROR_MESSAGE_PREFIX L"Renderer with the specified id has not been created.");
-			auto&& nullableDesc = createdElements.Values()[index].value;
-			CHECK_ERROR(nullableDesc, ERROR_MESSAGE_PREFIX L"Renderer with the specified id has not been updated after created.");
-			nullableDesc.Value().Apply(Overloading(
+
+			auto rendererType = loggedTrace.createdElements->Values()[index];
+			if (rendererType == remoteprotocol::RendererType::FocusRectangle)
+			{
+				// FocusRectangle does not has a ElementDesc
+				lastRenderingCommands->Add(remoteprotocol::RenderingCommand_Element{ arguments,arguments.id });
+				return;
+			}
+
+			index = lastElementDescs.Keys().IndexOf(arguments.id);
+			CHECK_ERROR(index != -1, ERROR_MESSAGE_PREFIX L"Renderer with the specified id has not been updated after created.");
+			lastElementDescs.Values()[index].Apply(Overloading(
 				[](remoteprotocol::RendererType)
 				{
 					CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Renderer with the specified id has not been updated after created.");
@@ -479,8 +629,8 @@ IGuiRemoteProtocolMessages (Elements)
 			{
 				for (auto creation : *arguments.Obj())
 				{
-					CHECK_ERROR(!createdElements.Keys().Contains(creation.id), ERROR_MESSAGE_PREFIX L"Renderer with the specified id has been created.");
-					createdElements.Add(creation.id, { creation.type,Nullable<ElementDescVariant>() });
+					CHECK_ERROR(!loggedTrace.createdElements->Keys().Contains(creation.id), ERROR_MESSAGE_PREFIX L"Renderer with the specified id has been created.");
+					loggedTrace.createdElements->Add(creation.id, creation.type);
 				}
 			}
 #undef ERROR_MESSAGE_PREFIX
@@ -493,8 +643,9 @@ IGuiRemoteProtocolMessages (Elements)
 			{
 				for (auto id : *arguments.Obj())
 				{
-					CHECK_ERROR(createdElements.Keys().Contains(id), ERROR_MESSAGE_PREFIX L"Renderer with the specified id has not been created.");
-					createdElements.Remove(id);
+					CHECK_ERROR(loggedTrace.createdElements->Keys().Contains(id), ERROR_MESSAGE_PREFIX L"Renderer with the specified id has not been created.");
+					loggedTrace.createdElements->Remove(id);
+					lastElementDescs.Remove(id);
 				}
 			}
 #undef ERROR_MESSAGE_PREFIX
@@ -503,12 +654,10 @@ IGuiRemoteProtocolMessages (Elements)
 		template<remoteprotocol::RendererType RendererType, typename TElementDesc>
 		void RequestRendererUpdateElement(const TElementDesc& arguments, const wchar_t* emWrongId, const wchar_t* emWrongType)
 		{
-			vint index = createdElements.Keys().IndexOf(arguments.id);
+			vint index = loggedTrace.createdElements->Keys().IndexOf(arguments.id);
 			CHECK_ERROR(index != -1, emWrongId);
-
-			auto& typeDescPair = const_cast<collections::List<ElementTypeDescPair>&>(createdElements.Values())[index];
-			CHECK_ERROR(typeDescPair.key == RendererType, emWrongType);
-			typeDescPair.value = arguments;
+			CHECK_ERROR(loggedTrace.createdElements->Values()[index] == RendererType, emWrongType);
+			lastElementDescs.Set(arguments.id, arguments);
 		}
 
 #define REQUEST_RENDERER_UPDATE_ELEMENT2(ARGUMENTS, RENDERER_TYPE)\
@@ -633,7 +782,7 @@ IGuiRemoteProtocolMessages (Elements - SolidLabel)
 									// calculate text as single line, insert a space between each line
 									lines.Add(
 										normalizedLines
-											.Aggregate(-1, [](auto a, auto b) { return a + b + 1; })
+											.Aggregate<vint>(-1, [](auto a, auto b) { return a + b + 1; })
 										);
 								}
 							}
@@ -655,7 +804,7 @@ IGuiRemoteProtocolMessages (Elements - SolidLabel)
 										return (length + columns - 1) / columns;
 									}
 								})
-								.Aggregate(0, [](auto a, auto b) { return a + b; });
+								.Aggregate<vint>(0, [](auto a, auto b) { return a + b; });
 						}
 						else
 						{
@@ -689,14 +838,16 @@ IGuiRemoteProtocolMessages (Elements - SolidLabel)
 			auto element = arguments;
 			if (!element.font || !element.text)
 			{
-				vint index = createdElements.Keys().IndexOf(element.id);
+				vint index = loggedTrace.createdElements->Keys().IndexOf(element.id);
 				CHECK_ERROR(index != -1, ERROR_MESSAGE_PREFIX L"Renderer with the specified id has not been created.");
 
-				auto [rendererType, nullableDesc] = createdElements.Values()[index];
+				auto rendererType = loggedTrace.createdElements->Values()[index];
 				CHECK_ERROR(rendererType == remoteprotocol::RendererType::SolidLabel, ERROR_MESSAGE_PREFIX L"Renderer with the specified id is not of the expected type.");
-				if (nullableDesc)
+
+				index = lastElementDescs.Keys().IndexOf(arguments.id);
+				if (index != -1)
 				{
-					auto solidLabel = nullableDesc.Value().TryGet<remoteprotocol::ElementDesc_SolidLabel>();
+					auto solidLabel = lastElementDescs.Values()[index].TryGet<remoteprotocol::ElementDesc_SolidLabel>();
 					CHECK_ERROR(solidLabel, ERROR_MESSAGE_PREFIX L"Renderer with the specified id is not of the expected type.");
 					if (!element.font) element.font = solidLabel->font;
 					if (!element.text) element.text = solidLabel->text;
@@ -723,7 +874,7 @@ IGuiRemoteProtocolMessages (Elements - Image)
 		void RequestImageCreated(vint id, const remoteprotocol::ImageCreation& arguments) override
 		{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering<TProtocol>::RequestImageCreated(vint, const vint&)#"
-			CHECK_ERROR(!createdImages.Keys().Contains(arguments.id), ERROR_MESSAGE_PREFIX L"Image with the specified id has been created.");
+			CHECK_ERROR(!loggedTrace.createdImages->Keys().Contains(arguments.id), ERROR_MESSAGE_PREFIX L"Image with the specified id has been created.");
 			this->GetEvents()->RespondImageCreated(id, MakeImageMetadata(arguments));
 #undef ERROR_MESSAGE_PREFIX
 		}
@@ -731,8 +882,8 @@ IGuiRemoteProtocolMessages (Elements - Image)
 		void RequestImageDestroyed(const vint& arguments) override
 		{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering<TProtocol>::RequestImageDestroyed(const vint&)#"
-			CHECK_ERROR(createdImages.Keys().Contains(arguments), ERROR_MESSAGE_PREFIX L"Image with the specified id has not been created.");
-			createdImages.Remove(arguments);
+			CHECK_ERROR(loggedTrace.createdImages->Keys().Contains(arguments), ERROR_MESSAGE_PREFIX L"Image with the specified id has not been created.");
+			loggedTrace.createdImages->Remove(arguments);
 #undef ERROR_MESSAGE_PREFIX
 		}
 
@@ -745,7 +896,7 @@ IGuiRemoteProtocolMessages (Elements - Image)
 				if (!imageCreation.imageDataOmitted)
 				{
 					CHECK_ERROR(arguments.imageId && arguments.imageId.Value() != !imageCreation.id, ERROR_MESSAGE_PREFIX L"It should satisfy that (arguments.imageId.Value()id == imageCreation.id).");
-					CHECK_ERROR(!createdImages.Keys().Contains(imageCreation.id), ERROR_MESSAGE_PREFIX L"Image with the specified id has been created.");
+					CHECK_ERROR(!loggedTrace.createdImages->Keys().Contains(imageCreation.id), ERROR_MESSAGE_PREFIX L"Image with the specified id has been created.");
 					CHECK_ERROR(imageCreation.imageData, ERROR_MESSAGE_PREFIX L"When imageDataOmitted == false, imageData should not be null.");
 					if (!measuringForNextRendering.createdImages)
 					{
@@ -760,7 +911,7 @@ IGuiRemoteProtocolMessages (Elements - Image)
 			}
 			else if (arguments.imageId)
 			{
-				CHECK_ERROR(createdImages.Keys().Contains(arguments.imageId.Value()), ERROR_MESSAGE_PREFIX L"Image with the specified id has not been created.");
+				CHECK_ERROR(loggedTrace.createdImages->Keys().Contains(arguments.imageId.Value()), ERROR_MESSAGE_PREFIX L"Image with the specified id has not been created.");
 			}
 
 			auto element = arguments;
@@ -795,71 +946,6 @@ namespace vl::presentation::unittest
 /***********************************************************************
 UnitTestRemoteProtocol
 ***********************************************************************/
-
-	class UnitTestRenderingDom : public Object
-	{
-		using DomList = collections::List<Ptr<UnitTestRenderingDom>>;
-	public:
-		// both hitTestResult and element could be nullptr
-		Nullable<INativeWindowListener::HitTestResult>		hitTestResult;
-		Nullable<ElementDescVariant>						element;
-		Rect												bounds;
-		Rect												validArea;
-		DomList												children;
-
-		Ptr<glr::json::JsonObject> AsJson()
-		{
-			auto jsonDom = Ptr(new glr::json::JsonObject);
-			if (hitTestResult)
-			{
-				auto fieldHtr = Ptr(new glr::json::JsonObjectField);
-				fieldHtr->name.value = WString::Unmanaged(L"HitTestResult");
-				fieldHtr->value = remoteprotocol::ConvertCustomTypeToJson(hitTestResult.Value());
-				jsonDom->fields.Add(fieldHtr);
-			}
-			if (element)
-			{
-				auto fieldElement = Ptr(new glr::json::JsonObjectField);
-				fieldElement->name.value = WString::Unmanaged(L"Element");
-				element.Value().Apply([&](auto&& desc)
-				{
-					fieldElement->value = remoteprotocol::ConvertCustomTypeToJson(desc);
-				});
-				jsonDom->fields.Add(fieldElement);
-			}
-			{
-				auto fieldBounds = Ptr(new glr::json::JsonObjectField);
-				fieldBounds->name.value = WString::Unmanaged(L"Bounds");
-				fieldBounds->value = remoteprotocol::ConvertCustomTypeToJson(bounds);
-				jsonDom->fields.Add(fieldBounds);
-			}
-			{
-				auto fieldValidArea = Ptr(new glr::json::JsonObjectField);
-				fieldValidArea->name.value = WString::Unmanaged(L"ValidArea");
-				fieldValidArea->value = remoteprotocol::ConvertCustomTypeToJson(validArea);
-				jsonDom->fields.Add(fieldValidArea);
-			}
-			if (children.Count() > 0)
-			{
-				auto arrayChildren = Ptr(new glr::json::JsonArray);
-				for (auto&& child : children)
-				{
-					arrayChildren->items.Add(child->AsJson());
-				}
-
-				auto fieldChildren = Ptr(new glr::json::JsonObjectField);
-				fieldChildren->name.value = WString::Unmanaged(L"Children");
-				fieldChildren->value = arrayChildren;
-				jsonDom->fields.Add(fieldChildren);
-			}
-			return jsonDom;
-		}
-
-		void LoadFromJson(const collections::Dictionary<vint, remoteprotocol::RendererType>& elementTypes, Ptr<glr::json::JsonObject> jsonDom)
-		{
-			CHECK_FAIL(L"Not Implemented!");
-		}
-	};
 	
 	template<typename TProtocol>
 	class UnitTestRemoteProtocol_Logging : public TProtocol
@@ -868,11 +954,12 @@ UnitTestRemoteProtocol
 		using CommandListRef = UnitTestRenderingCommandListRef;
 		using RenderingResultRef = Ptr<UnitTestRenderingDom>;
 		using RenderingResultRefList = collections::List<RenderingResultRef>;
+		using LoggedFrameList = collections::List<remoteprotocol::RenderingFrame>;
 	protected:
 
 		bool								everRendered = false;
+		vint								candidateFrameId = 0;
 		CommandListRef						candidateRenderingResult;
-		RenderingResultRefList				loggedRenderingResults;
 
 		RenderingResultRef TransformLastRenderingResult(CommandListRef commandListRef)
 		{
@@ -885,7 +972,7 @@ UnitTestRemoteProtocol
 			auto domCurrent = domRoot;
 			domStack.Add(domRoot);
 
-			auto getCurrentBoundary = [&]()
+			auto getCurrentBoundary = [&]() -> vint
 			{
 				if (domBoundaries.Count() > 0)
 				{
@@ -901,7 +988,8 @@ UnitTestRemoteProtocol
 			{
 				CHECK_ERROR(ref, ERROR_MESSAGE_PREFIX L"[push] Cannot push a null dom object.");
 				vint index = domStack.Add(ref);
-				domCurrent->children.Add(ref);
+				if (!domCurrent->children) domCurrent->children = Ptr(new RenderingResultRefList);
+				domCurrent->children->Add(ref);
 				domCurrent = ref;
 				return index;
 			};
@@ -932,68 +1020,100 @@ UnitTestRemoteProtocol
 				popTo(boundary - 1);
 			};
 
+			auto prepareParentFromCommand = [&](
+				Rect commandBounds,
+				Rect commandValidArea,
+				auto&& calculateValidAreaFromDom
+				)
+			{
+				vint min = getCurrentBoundary();
+				bool found = false;
+				if (commandValidArea.Contains(commandBounds))
+				{
+					// if the command is not clipped
+					for (vint i = domStack.Count() - 1; i >= min; i--)
+					{
+						if (domStack[i]->validArea.Contains(commandBounds) || i == 0)
+						{
+							// find the deepest node that could contain the command
+							popTo(i);
+							found = true;
+							break;
+						}
+					}
+				}
+				else
+				{
+					// otherwise, a parent node causing such clipping should be found or created
+					for (vint i = domStack.Count() - 1; i >= min; i--)
+					{
+						auto domValidArea = calculateValidAreaFromDom(domStack[i]);
+						if (domValidArea == commandValidArea)
+						{
+							// if there is a node who clips command's bound to its valid area
+							// that is the parent node of the command
+							popTo(i);
+							found = true;
+							break;
+						}
+						else if (domValidArea.Contains(commandValidArea) || i == 0)
+						{
+							// otherwise find a deepest node who could visually contain the command
+							// create a virtual node to satisfy the clipper
+							popTo(i);
+							auto parent = Ptr(new UnitTestRenderingDom);
+							parent->bounds = commandValidArea;
+							parent->validArea = commandValidArea;
+							push(parent);
+							found = true;
+							break;
+						}
+					}
+				}
+
+				// if the new boundary could not fit in the current boundary
+				// there must be something wrong
+				CHECK_ERROR(found, ERROR_MESSAGE_PREFIX L"Incorrect valid area of dom.");
+			};
+
 			for (auto&& command : *commandListRef.Obj())
 			{
 				command.Apply(Overloading(
-					[&](const UnitTestRenderingBeginBoundary& command)
+					[&](const remoteprotocol::RenderingCommand_BeginBoundary& command)
 					{
-						auto& boundary = command.boundary;
-						Ptr<UnitTestRenderingDom> dom;
-						{
-							vint min = getCurrentBoundary();
-							for (vint i = domStack.Count() - 1; i > min; i--)
-							{
-								auto parent = domStack[i];
-								if (parent->bounds == boundary.bounds)
-								{
-									dom = parent;
-									popTo(i);
-									break;
-								}
-							}
-						}
+						// a new boundary should be a new node covering existing nodes
+						// the valid area of boundary is clipped by its bounds
+						// so the valid area to compare from its potential parent dom needs to clipped by its bounds
+						prepareParentFromCommand(
+							command.boundary.bounds,
+							command.boundary.areaClippedBySelf,
+							[&](auto&& dom) { return dom->validArea.Intersect(command.boundary.bounds); }
+							);
 
-						if (dom)
-						{
-							CHECK_ERROR(dom->validArea == boundary.areaClippedBySelf, ERROR_MESSAGE_PREFIX L"Incorrect valid area of dom.");
-							dom->hitTestResult = boundary.hitTestResult;
-						}
-						else
-						{
-							auto dom = Ptr(new UnitTestRenderingDom);
-							dom->hitTestResult = boundary.hitTestResult;
-							dom->bounds = boundary.bounds;
-							dom->validArea = boundary.areaClippedBySelf;
-							domBoundaries.Add(push(dom));
-						}
+						auto dom = Ptr(new UnitTestRenderingDom);
+						dom->hitTestResult = command.boundary.hitTestResult;
+						dom->cursor = command.boundary.cursor;
+						dom->bounds = command.boundary.bounds;
+						dom->validArea = command.boundary.areaClippedBySelf;
+						domBoundaries.Add(push(dom));
 					},
-					[&](const UnitTestRenderingEndBoundary& command)
+					[&](const remoteprotocol::RenderingCommand_EndBoundary& command)
 					{
 						popBoundary();
 					},
-					[&](const UnitTestRenderingElement& command)
+					[&](const remoteprotocol::RenderingCommand_Element& command)
 					{
-						{
-							vint min = getCurrentBoundary();
-							vint index = min;
-							for (vint i = domStack.Count() - 1; i > min; i--)
-							{
-								auto parent = domStack[i];
-								if (parent->validArea.Contains(command.rendering.areaClippedByParent))
-								{
-									index = i;
-									break;
-								}
-							}
+						// a new element should be a new node covering existing nodes
+						// the valid area of boundary is clipped by its parent
+						// so the valid area to compare from its potential parent dom is its valid area
+						prepareParentFromCommand(
+							command.rendering.bounds,
+							command.rendering.areaClippedByParent,
+							[&](auto&& dom) { return dom->validArea; }
+							);
 
-							if (index == min && index != 0)
-							{
-								CHECK_ERROR(domStack[index]->validArea.Contains(command.rendering.areaClippedByParent), L"Incorrect valid area of element in current boundary.");
-							}
-							popTo(index);
-						}
 						auto dom = Ptr(new UnitTestRenderingDom);
-						dom->element = command.desc;
+						dom->element = command.element;
 						dom->bounds = command.rendering.bounds;
 						dom->validArea = command.rendering.bounds.Intersect(command.rendering.areaClippedByParent);
 						push(dom);
@@ -1008,6 +1128,7 @@ UnitTestRemoteProtocol
 		{
 			if (this->lastRenderingCommands)
 			{
+				candidateFrameId = this->lastFrameId;
 				candidateRenderingResult = this->lastRenderingCommands;
 				this->lastRenderingCommands = {};
 				everRendered = true;
@@ -1016,8 +1137,17 @@ UnitTestRemoteProtocol
 			{
 				if (candidateRenderingResult)
 				{
+					auto descs = Ptr(new collections::Dictionary<vint, remoteprotocol::ElementDescVariant>);
+					CopyFrom(*descs.Obj(), this->lastElementDescs);
 					auto transformed = TransformLastRenderingResult(candidateRenderingResult);
-					loggedRenderingResults.Add(transformed);
+					this->loggedTrace.frames->Add({
+						candidateFrameId,
+						{},
+						this->sizingConfig,
+						descs,
+						candidateRenderingResult,
+						transformed
+						});
 					candidateRenderingResult = {};
 				}
 				return true;
@@ -1033,71 +1163,9 @@ UnitTestRemoteProtocol
 		{
 		}
 
-		const auto& GetLoggedCreatedImages()
+		const auto& GetLoggedTrace()
 		{
-			return this->createdImages;
-		}
-
-		const auto& GetLoggedRenderingResults()
-		{
-			return loggedRenderingResults;
-		}
-
-		Ptr<glr::json::JsonObject> GetLogAsJson()
-		{
-			auto log = Ptr(new glr::json::JsonObject);
-			{
-				auto arrayImages = Ptr(new glr::json::JsonArray);
-				for (auto&& image : GetLoggedCreatedImages().Values())
-				{
-					auto nodeImage = remoteprotocol::ConvertCustomTypeToJson(image);
-					arrayImages->items.Add(nodeImage);
-				}
-
-				auto fieldImages = Ptr(new glr::json::JsonObjectField);
-				fieldImages->name.value = WString::Unmanaged(L"Images");
-				fieldImages->value = arrayImages;
-				log->fields.Add(fieldImages);
-			}
-			{
-				auto arrayElements = Ptr(new glr::json::JsonArray);
-				for (auto [id, typeDescPair] : this->createdElements)
-				{
-					auto nodeElement = Ptr(new glr::json::JsonObject);
-					{
-						auto fieldId = Ptr(new glr::json::JsonObjectField);
-						fieldId->name.value = WString::Unmanaged(L"id");
-						fieldId->value = remoteprotocol::ConvertCustomTypeToJson(id);
-						nodeElement->fields.Add(fieldId);
-					}
-					{
-						auto fieldType = Ptr(new glr::json::JsonObjectField);
-						fieldType->name.value = WString::Unmanaged(L"type");
-						fieldType->value = remoteprotocol::ConvertCustomTypeToJson(typeDescPair.key);
-						nodeElement->fields.Add(fieldType);
-					}
-					arrayElements->items.Add(nodeElement);
-				}
-
-				auto fieldElements = Ptr(new glr::json::JsonObjectField);
-				fieldElements->name.value = WString::Unmanaged(L"Elements");
-				fieldElements->value = arrayElements;
-				log->fields.Add(fieldElements);
-			}
-			{
-				auto arrayFrames = Ptr(new glr::json::JsonArray);
-				for (auto&& frame : GetLoggedRenderingResults())
-				{
-					auto nodeFrame = frame->AsJson();
-					arrayFrames->items.Add(nodeFrame);
-				}
-
-				auto fieldFrames = Ptr(new glr::json::JsonObjectField);
-				fieldFrames->name.value = WString::Unmanaged(L"Frames");
-				fieldFrames->value = arrayFrames;
-				log->fields.Add(fieldFrames);
-			}
-			return log;
+			return this->loggedTrace;
 		}
 	};
 }
@@ -1127,6 +1195,7 @@ UnitTestFrameworkConfig
 	struct UnitTestFrameworkConfig
 	{
 		filesystem::FilePath					snapshotFolder;
+		filesystem::FilePath					resourceFolder;
 	};
 
 	extern const UnitTestFrameworkConfig&		GetUnitTestFrameworkConfig();
@@ -1155,18 +1224,19 @@ UnitTestRemoteProtocol
 		UnitTestRemoteProtocol_MainWindow,
 		UnitTestRemoteProtocol_IO,
 		UnitTestRemoteProtocol_Rendering,
-		UnitTestRemoteProtocol_Logging
+		UnitTestRemoteProtocol_Logging,
+		UnitTestRemoteProtocol_IOCommands
 	>::Type;
 
 	class UnitTestRemoteProtocol : public UnitTestRemoteProtocolFeatures
 	{
+		using EventPair = collections::Pair<Nullable<WString>, Func<void()>>;
 	protected:
 		const UnitTestFrameworkConfig&		frameworkConfig;
 		WString								appName;
-		collections::List<Func<void()>>		processRemoteEvents;
+		collections::List<EventPair>		processRemoteEvents;
 		vint								nextEventIndex = 0;
 		bool								stopped = false;
-
 
 	public:
 
@@ -1180,8 +1250,16 @@ UnitTestRemoteProtocol
 		template<typename TCallback>
 		void OnNextIdleFrame(TCallback&& callback)
 		{
-			processRemoteEvents.Add(std::move(callback));
+			processRemoteEvents.Add({ Nullable<WString>{},std::forward<TCallback&&>(callback) });
 		}
+
+		template<typename TCallback>
+		void OnNextIdleFrame(const WString& name, TCallback&& callback)
+		{
+			processRemoteEvents.Add({ name,std::forward<TCallback&&>(callback) });
+		}
+
+	protected:
 
 /***********************************************************************
 IGuiRemoteProtocolMessages (Initialization)
@@ -1189,8 +1267,7 @@ IGuiRemoteProtocolMessages (Initialization)
 
 		void RequestControllerConnectionEstablished() override
 		{
-			this->createdElements.Clear();
-			this->createdImages.Clear();
+			ResetCreatedObjects();
 		}
 
 		void RequestControllerConnectionStopped() override
@@ -1212,10 +1289,10 @@ IGuiRemoteProtocol
 			{
 				if (LogRenderingResult())
 				{
-					TEST_CASE(L"Execute idle frame[" + itow(nextEventIndex) + L"]")
-					{
-						processRemoteEvents[nextEventIndex]();
-					});
+					vl::unittest::UnitTest::PrintMessage(L"Execute idle frame[" + itow(nextEventIndex) + L"]", vl::unittest::UnitTest::MessageKind::Info);
+					auto [name, func] = processRemoteEvents[nextEventIndex];
+					(*loggedTrace.frames.Obj())[loggedTrace.frames->Count() - 1].frameName = name;
+					func();
 					nextEventIndex++;
 				}
 			}
@@ -1246,11 +1323,47 @@ namespace vl::presentation::unittest
 	};
 
 	using UnitTestMainFunc = vl::Func<void(UnitTestRemoteProtocol*, IUnitTestContext*)>;
+	using UnitTestLinkFunc = vl::Func<void(UnitTestRemoteProtocol*, IUnitTestContext*, const UnitTestMainFunc&)>;
 }
 
-extern void GacUIUnitTest_Initialize(const vl::presentation::unittest::UnitTestFrameworkConfig* config);
-extern void GacUIUnitTest_Finalize();
-extern void GacUIUnitTest_SetGuiMainProxy(const vl::presentation::unittest::UnitTestMainFunc& proxy);
-extern void GacUIUnitTest_Start(const vl::WString& appName, vl::Nullable<vl::presentation::unittest::UnitTestScreenConfig> config = {});
+extern void										GacUIUnitTest_Initialize(const vl::presentation::unittest::UnitTestFrameworkConfig* config);
+extern void										GacUIUnitTest_Finalize();
+extern void										GacUIUnitTest_SetGuiMainProxy(const vl::presentation::unittest::UnitTestMainFunc& proxy);
+extern void										GacUIUnitTest_LinkGuiMainProxy(const vl::presentation::unittest::UnitTestLinkFunc& proxy);
+extern void										GacUIUnitTest_Start(const vl::WString& appName, vl::Nullable<vl::presentation::unittest::UnitTestScreenConfig> config = {});
+extern void										GacUIUnitTest_Start_WithResourceAsText(const vl::WString& appName, vl::Nullable<vl::presentation::unittest::UnitTestScreenConfig> config, const vl::WString& resourceText);
+extern vl::Ptr<vl::presentation::GuiResource>	GacUIUnitTest_CompileAndLoad(const vl::WString& xmlResource);
+
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
+
+template<typename TTheme>
+void GacUIUnitTest_StartFast_WithResourceAsText(const vl::WString& appName, const vl::WString& windowTypeFullName, const vl::WString& resourceText, vl::Nullable<vl::presentation::unittest::UnitTestScreenConfig> config = {})
+{
+	GacUIUnitTest_LinkGuiMainProxy([=](
+		vl::presentation::unittest::UnitTestRemoteProtocol* protocol,
+		vl::presentation::unittest::IUnitTestContext* context,
+		const vl::presentation::unittest::UnitTestMainFunc& previousMainProxy
+		)
+	{
+		protocol->GetEvents()->OnControllerConnect();
+		auto theme = vl::Ptr(new TTheme);
+		vl::presentation::theme::RegisterTheme(theme);
+		{
+			auto windowValue = vl::reflection::description::Value::Create(windowTypeFullName);
+			TEST_ASSERT(windowValue.GetRawPtr());
+
+			auto window = vl::Ptr(windowValue.GetRawPtr()->SafeAggregationCast<vl::presentation::controls::GuiWindow>());
+			TEST_ASSERT(window);
+
+			window->MoveToScreenCenter();
+			previousMainProxy(protocol, context);
+			vl::presentation::controls::GetApplication()->Run(window.Obj());
+		}
+		vl::presentation::theme::UnregisterTheme(theme->Name);
+	});
+	GacUIUnitTest_Start_WithResourceAsText(appName, config, resourceText);
+}
+
+#endif
 
 #endif

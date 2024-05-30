@@ -9,9 +9,13 @@ DEVELOPER: Zihan Chen(vczh)
 #include "VlppOS.h"
 #include "Vlpp.h"
 #include "VlppRegex.h"
+#include "GacUIReflection.h"
+#include "VlppWorkflowCompiler.h"
+#include "VlppWorkflowRuntime.h"
 
 #include "..\..\Source\UnitTestUtilities\GuiUnitTestProtocol_Shared.h"
 #include "..\..\Source\UnitTestUtilities\GuiUnitTestProtocol_IO.h"
+#include "..\..\Source\UnitTestUtilities\GuiUnitTestProtocol_IOCommands.h"
 #include "..\..\Source\UnitTestUtilities\GuiUnitTestProtocol_MainWindow.h"
 #include "..\..\Source\UnitTestUtilities\GuiUnitTestProtocol_Rendering.h"
 #include "..\..\Source\UnitTestUtilities\GuiUnitTestProtocol_Logging.h"

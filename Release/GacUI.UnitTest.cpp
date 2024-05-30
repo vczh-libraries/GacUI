@@ -112,6 +112,40 @@ void GacUIUnitTest_SetGuiMainProxy(const UnitTestMainFunc& proxy)
 	guiMainProxy = proxy;
 }
 
+void GacUIUnitTest_LinkGuiMainProxy(const UnitTestLinkFunc& proxy)
+{
+	auto previousMainProxy = guiMainProxy;
+	GacUIUnitTest_SetGuiMainProxy([=](UnitTestRemoteProtocol* protocol, IUnitTestContext* context)
+	{
+		proxy(protocol, context, previousMainProxy);
+	});
+}
+
+File GacUIUnitTest_PrepareSnapshotFile(const WString& appName, const WString& extension)
+{
+#define ERROR_MESSAGE_PREFIX L"GacUIUnitTest_PrepareSnapshotFile(const WString&, const WString&)#"
+	Folder snapshotFolder = GetUnitTestFrameworkConfig().snapshotFolder;
+	CHECK_ERROR(snapshotFolder.Exists(), ERROR_MESSAGE_PREFIX L"UnitTestFrameworkConfig::snapshotFolder does not point to an existing folder.");
+
+	File snapshotFile = snapshotFolder.GetFilePath() / (appName + extension);
+	{
+		auto pathPrefix = snapshotFolder.GetFilePath().GetFullPath() + WString::FromChar(FilePath::Delimiter);
+		auto snapshotPath = snapshotFile.GetFilePath().GetFullPath();
+		CHECK_ERROR(
+			snapshotPath.Length() > pathPrefix.Length() && snapshotPath.Left(pathPrefix.Length()) == pathPrefix,
+			ERROR_MESSAGE_PREFIX L"Argument appName should specify a file that is inside UnitTestFrameworkConfig::snapshotFolder"
+			);
+		Folder snapshotFileFolder = snapshotFile.GetFilePath().GetFolder();
+		if (!snapshotFileFolder.Exists())
+		{
+			CHECK_ERROR(snapshotFileFolder.Create(true), ERROR_MESSAGE_PREFIX L"Failed to create the folder to contain the snapshot file specified by argument appName.");
+		}
+	}
+
+	return snapshotFile;
+#undef ERROR_MESSAGE_PREFIX
+}
+
 void GacUIUnitTest_Start(const WString& appName, Nullable<UnitTestScreenConfig> config)
 {
 #define ERROR_MESSAGE_PREFIX L"GacUIUnitTest_Start(const WString&, Nullable<UnitTestScreenConfig>)#"
@@ -126,7 +160,7 @@ void GacUIUnitTest_Start(const WString& appName, Nullable<UnitTestScreenConfig> 
 	}
 
 	UnitTestRemoteProtocol unitTestProtocol(appName, globalConfig);
-	repeatfiltering::GuiRemoteProtocolFilterVerifier verifierProtocol(&unitTestProtocol);
+	repeatfiltering::GuiRemoteProtocolFilterVerifier verifierProtocol(unitTestProtocol.GetProtocol());
 	repeatfiltering::GuiRemoteProtocolFilter filteredProtocol(&verifierProtocol);
 
 	UnitTestContextImpl unitTestContext(&unitTestProtocol);
@@ -135,34 +169,98 @@ void GacUIUnitTest_Start(const WString& appName, Nullable<UnitTestScreenConfig> 
 	GacUIUnitTest_SetGuiMainProxy({});
 
 	{
-		Folder snapshotFolder = GetUnitTestFrameworkConfig().snapshotFolder;
-		CHECK_ERROR(snapshotFolder.Exists(), ERROR_MESSAGE_PREFIX L"UnitTestFrameworkConfig::snapshotFolder does not point to an existing folder.");
-
-		File snapshotFile = snapshotFolder.GetFilePath() / (appName + L".json");
-		{
-			auto pathPrefix = snapshotFolder.GetFilePath().GetFullPath() + WString::FromChar(FilePath::Delimiter);
-			auto snapshotPath = snapshotFile.GetFilePath().GetFullPath();
-			CHECK_ERROR(
-				snapshotPath.Length() > pathPrefix.Length() && snapshotPath.Left(pathPrefix.Length()) == pathPrefix,
-				ERROR_MESSAGE_PREFIX L"Argument appName should specify a file that is inside UnitTestFrameworkConfig::snapshotFolder"
-				);
-			Folder snapshotFileFolder = snapshotFile.GetFilePath().GetFolder();
-			if (!snapshotFileFolder.Exists())
-			{
-				CHECK_ERROR(snapshotFileFolder.Create(true), ERROR_MESSAGE_PREFIX L"Failed to create the folder to contain the snapshot file specified by argument appName.");
-			}
-		}
+		File snapshotFile = GacUIUnitTest_PrepareSnapshotFile(appName, WString::Unmanaged(L".json"));
 
 		JsonFormatting formatting;
 		formatting.spaceAfterColon = true;
 		formatting.spaceAfterComma = true;
 		formatting.crlf = true;
 		formatting.compact = true;
-		auto textLog = JsonToString(unitTestProtocol.GetLogAsJson(), formatting);
 
+		auto jsonLog = remoteprotocol::ConvertCustomTypeToJson(unitTestProtocol.GetLoggedTrace());
+		auto textLog = JsonToString(jsonLog, formatting);
+		{
+			remoteprotocol::RenderingTrace deserialized;
+			remoteprotocol::ConvertJsonToCustomType(jsonLog, deserialized);
+			auto jsonLog2 = remoteprotocol::ConvertCustomTypeToJson(deserialized);
+			auto textLog2 = JsonToString(jsonLog2, formatting);
+			CHECK_ERROR(textLog == textLog2, ERROR_MESSAGE_PREFIX L"Serialization and deserialization doesn't match.");
+		}
 		bool succeeded = snapshotFile.WriteAllText(textLog, false, stream::BomEncoder::Utf8);
 		CHECK_ERROR(succeeded, ERROR_MESSAGE_PREFIX L"Failed to write the snapshot file.");
 	}
+#undef ERROR_MESSAGE_PREFIX
+}
+
+void GacUIUnitTest_Start_WithResourceAsText(const WString& appName, Nullable<UnitTestScreenConfig> config, const WString& resourceText)
+{
+#define ERROR_MESSAGE_PREFIX L"GacUIUnitTest_Start_WithResourceAsText(const WString&, Nullable<UnitTestScreenConfig>, const WString&)#"
+	auto previousMainProxy = guiMainProxy;
+	GacUIUnitTest_LinkGuiMainProxy([=](UnitTestRemoteProtocol* protocol, IUnitTestContext* context, const UnitTestMainFunc& previousMainProxy)
+	{
+		auto resource = GacUIUnitTest_CompileAndLoad(resourceText);
+		{
+			auto workflow = resource->GetStringByPath(L"UnitTest/Workflow");
+			File snapshotFile = GacUIUnitTest_PrepareSnapshotFile(appName, WString::Unmanaged(L".txt"));
+			bool succeeded = snapshotFile.WriteAllText(workflow, false, stream::BomEncoder::Utf8);
+			CHECK_ERROR(succeeded, ERROR_MESSAGE_PREFIX L"Failed to write the snapshot file.");
+		}
+		previousMainProxy(protocol, context);
+	});
+	GacUIUnitTest_Start(appName, config);
+#undef ERROR_MESSAGE_PREFIX
+}
+
+Ptr<GuiResource> GacUIUnitTest_CompileAndLoad(const WString& xmlResource)
+{
+#define ERROR_MESSAGE_PREFIX L"GacUIUnitTest_CompileAndLoad(const WString&)#"
+	Ptr<GuiResource> resource;
+	GuiResourceError::List errors;
+	{
+		auto resourcePath = (GetUnitTestFrameworkConfig().resourceFolder / L"Resource.xml").GetFullPath();
+		auto resourceFolder = GetUnitTestFrameworkConfig().resourceFolder.GetFullPath();
+		auto parser = GetParserManager()->GetParser<glr::xml::XmlDocument>(L"XML");
+		auto xml = parser->Parse({ WString::Empty,resourcePath }, xmlResource, errors);
+		CHECK_ERROR(xml && errors.Count() == 0, ERROR_MESSAGE_PREFIX L"Failed to parse XML resource.");
+
+		resource = GuiResource::LoadFromXml(xml, resourcePath, resourceFolder, errors);
+		CHECK_ERROR(resource && errors.Count() == 0, ERROR_MESSAGE_PREFIX L"Failed to load XML resource.");
+	}
+
+	auto precompiledFolder = resource->Precompile(
+#ifdef VCZH_64
+		GuiResourceCpuArchitecture::x64,
+#else
+		GuiResourceCpuArchitecture::x86,
+#endif
+		nullptr,
+		errors
+		);
+	CHECK_ERROR(precompiledFolder && errors.Count() == 0, ERROR_MESSAGE_PREFIX L"Failed to precompile XML resource.");
+
+	auto compiledWorkflow = precompiledFolder->GetValueByPath(WString::Unmanaged(L"Workflow/InstanceClass")).Cast<GuiInstanceCompiledWorkflow>();
+	CHECK_ERROR(compiledWorkflow, ERROR_MESSAGE_PREFIX L"Failed to compile generated Workflow script.");
+	CHECK_ERROR(compiledWorkflow->assembly, ERROR_MESSAGE_PREFIX L"Failed to load Workflow assembly.");
+
+	{
+		WString text;
+		auto& codes = compiledWorkflow->assembly->insAfterCodegen->moduleCodes;
+		for (auto [code, codeIndex] : indexed(codes))
+		{
+			text += L"================================(" + itow(codeIndex + 1) + L"/" + itow(codes.Count()) + L")================================\r\n";
+			text += code + L"\r\n";
+		}
+		resource->CreateValueByPath(
+			WString::Unmanaged(L"UnitTest/Workflow"),
+			WString::Unmanaged(L"Text"),
+			Ptr(new GuiTextData(text))
+			);
+	}
+
+	GetResourceManager()->SetResource(resource, errors, GuiResourceUsage::InstanceClass);
+	CHECK_ERROR(errors.Count() == 0, ERROR_MESSAGE_PREFIX L"Failed to load compiled XML resource.");
+
+	return resource;
 #undef ERROR_MESSAGE_PREFIX
 }
 

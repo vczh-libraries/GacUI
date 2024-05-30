@@ -7,5 +7,7 @@ DEVELOPER: Zihan Chen(vczh)
 #include "GacUI.UnitTest.UIReflection.h"
 #endif
 
+#include "..\..\Source\UnitTestUtilities\SnapshotViewer\Application\GuiUnitTestSnapshotViewerApp.cpp"
 #include "..\..\Source\UnitTestUtilities\SnapshotViewer\Source\GuiUnitTestSnapshotViewer.cpp"
 #include "..\..\Source\UnitTestUtilities\SnapshotViewer\Source\GuiUnitTestSnapshotViewerResource.cpp"
+#include "..\..\Source\UnitTestUtilities\SnapshotViewer\ViewModel\GuiUnitTestSnapshotViewerViewModel.cpp"

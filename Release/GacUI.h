@@ -9114,9 +9114,11 @@ Root Object
 			class GuiInstanceRootObject abstract : public Description<GuiInstanceRootObject>
 			{
 				friend class RootObjectTimerCallback;
-				typedef collections::List<Ptr<description::IValueSubscription>>		SubscriptionList;
+				using SubscriptionList = collections::List<Ptr<description::IValueSubscription>>;
+				using ObjectMap = collections::Dictionary<WString, reflection::description::Value>;
 			protected:
 				Ptr<GuiResourcePathResolver>					resourceResolver;
+				ObjectMap										namedObjects;
 				SubscriptionList								subscriptions;
 				collections::SortedList<GuiComponent*>			components;
 				Ptr<RootObjectTimerCallback>					timerCallback;
@@ -9181,6 +9183,20 @@ Root Object
 				/// <returns>Returns true if this operation succeeded.</returns>
 				/// <param name="animation">The animation.</param>
 				bool											KillAnimation(Ptr<IGuiAnimation> animation);
+
+				/// <summary>
+				/// Get the object by name, which is set by <see cref="SetNamedObject"/>.
+				/// </summary>
+				/// <param name="name">The name of the object.</param>
+				/// <returns>The object. Returns null if the name is not taken.</returns>
+				reflection::description::Value					GetNamedObject(const WString& name);
+
+				/// <summary>
+				/// Set an object with a name. If the name has been taken, the previous object will be replaced.
+				/// </summary>
+				/// <param name="name">The name of the object.</param>
+				/// <param name="namedObject">The object.</param>
+				void											SetNamedObject(const WString& name, const reflection::description::Value& namedObject);
 			};
 		}
 	}
@@ -9864,6 +9880,76 @@ Basic Construction
 
 #define GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(TEMPLATE, BASE_TYPE) GUI_SPECIFY_CONTROL_TEMPLATE_TYPE_2(TEMPLATE, BASE_TYPE, GUI_GENERATE_CONTROL_TEMPLATE_OBJECT_NAME)
 
+/***********************************************************************
+Helper Functions
+***********************************************************************/
+
+			template<typename T>
+			T* TryFindObjectByName(GuiInstanceRootObject* rootObject, const WString& name)
+			{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::controls::TryFindObjectByName<T>(GuiInstanceRootObject*, const WString&)#"
+				CHECK_ERROR(rootObject, ERROR_MESSAGE_PREFIX L"rootObject should not be null.");
+				if (auto rawPtr = rootObject->GetNamedObject(name).GetRawPtr())
+				{
+					auto typedObject = rawPtr->SafeAggregationCast<T>();
+					CHECK_ERROR(typedObject, ERROR_MESSAGE_PREFIX L"The object assigned by the name is not in the specified type.");
+					return typedObject;
+				}
+				return nullptr;
+#undef ERROR_MESSAGE_PREFIX
+			}
+
+			template<typename T>
+			T* FindObjectByName(GuiInstanceRootObject* rootObject, const WString& name)
+			{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::controls::FindObjectByName<T>(GuiInstanceRootObject*, const WString&)#"
+				CHECK_ERROR(rootObject, ERROR_MESSAGE_PREFIX L"rootObject should not be null.");
+				auto value = rootObject->GetNamedObject(name);
+				CHECK_ERROR(!value.IsNull(), ERROR_MESSAGE_PREFIX L"The name has not been used.");
+				CHECK_ERROR(value.GetRawPtr(), ERROR_MESSAGE_PREFIX L"The object assigned by the name is not a class.");
+				auto rawPtr = value.GetRawPtr()->SafeAggregationCast<T>();
+				CHECK_ERROR(rawPtr, ERROR_MESSAGE_PREFIX L"The object assigned by the name is not in the specified type.");
+				return rawPtr;
+#undef ERROR_MESSAGE_PREFIX
+			}
+
+			template<typename T>
+				requires(std::is_base_of_v<controls::GuiControl, T>)
+			T* TryFindControlByText(GuiControl* rootObject, const WString& text)
+			{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::controls::TryFindControlByText<T>(GuiControl*, const WString&)#"
+				CHECK_ERROR(rootObject, ERROR_MESSAGE_PREFIX L"rootObject should not be null.");
+				if (rootObject->GetText() == text)
+				{
+					auto typedObject = dynamic_cast<T*>(rootObject);
+					CHECK_ERROR(typedObject, ERROR_MESSAGE_PREFIX L"The object with the specified text is not in the specified type.");
+					return typedObject;
+				}
+
+				vint count = rootObject->GetChildrenCount();
+				for (vint i = 0; i < count; i++)
+				{
+					if (auto result = TryFindControlByText<T>(rootObject->GetChild(i), text))
+					{
+						return result;
+					}
+				}
+				return nullptr;
+#undef ERROR_MESSAGE_PREFIX
+			}
+
+			template<typename T>
+				requires(std::is_base_of_v<controls::GuiControl, T>)
+			T* FindControlByText(GuiControl* rootObject, const WString& text)
+			{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::controls::FindControlByText<T>(GuiControl*, const WString&)#"
+				if (auto result = TryFindControlByText<T>(rootObject, text))
+				{
+					return result;
+				}
+				CHECK_FAIL(ERROR_MESSAGE_PREFIX L"The control with the specified text does not exist.");
+#undef ERROR_MESSAGE_PREFIX
+			}
 		}
 	}
 }
@@ -21537,6 +21623,26 @@ Interfaces:
 namespace vl::presentation::remoteprotocol
 {
 	template<typename T>
+	struct JsonNameHelper;
+
+	template<typename TKey, typename TValue, TKey TValue::* Field>
+	struct ArrayMap
+	{
+		using KK = typename KeyType<TKey>::Type;
+		collections::Dictionary<TKey, TValue>			map;
+
+		auto&& Keys() const								{ return map.Keys(); }
+		auto&& Values() const							{ return map.Values(); }
+		vint Count() const								{ return map.Count(); }
+		const TValue& Get(const KK& key) const			{ return map.Get(key); }
+		const TValue& operator[](const KK& key) const	{ return map[key]; }
+
+		bool Add(const TValue& value)					{ return map.Add(value.*Field, value); }
+		bool Remove(const KK& key)						{ return map.Remove(key); }
+		bool Clear()									{ return map.Clear(); }
+	};
+
+	template<typename T>
 	struct JsonHelper
 	{
 		static Ptr<glr::json::JsonNode> ToJson(const T& value);
@@ -21584,92 +21690,233 @@ namespace vl::presentation::remoteprotocol
 		node->fields.Add(field);
 	}
 
+	template<typename T, typename F>
+	Ptr<glr::json::JsonNode> NullableToJson(const T& value, F&& get)
+	{
+		if (!value)
+		{
+			auto node = Ptr(new glr::json::JsonLiteral);
+			node->value = glr::json::JsonLiteralValue::Null;
+			return node;
+		}
+		else
+		{
+			return ConvertCustomTypeToJson(get(value));
+		}
+	}
+
+	template<typename T, typename F>
+	bool JsonToNullable(Ptr<glr::json::JsonNode> node, T& value, F&& set)
+	{
+		if (auto jsonLiteral = node.Cast<glr::json::JsonLiteral>())
+		{
+			if (jsonLiteral->value == glr::json::JsonLiteralValue::Null)
+			{
+				value = T{};
+				return true;
+			}
+		}
+		else
+		{
+			set([&](auto&& item) { ConvertJsonToCustomType(node, item); });
+			return true;
+		}
+		return false;
+	}
+
 	template<typename T>
 	struct JsonHelper<Nullable<T>>
 	{
 		static Ptr<glr::json::JsonNode> ToJson(const Nullable<T>& value)
 		{
-			if (!value)
-			{
-				auto node = Ptr(new glr::json::JsonLiteral);
-				node->value = glr::json::JsonLiteralValue::Null;
-				return node;
-			}
-			else
-			{
-				return ConvertCustomTypeToJson(value.Value());
-			}
+			return NullableToJson(
+				value,
+				[](auto&& v)->decltype(auto) { return v.Value(); }
+				);
 		}
 
 		static void FromJson(Ptr<glr::json::JsonNode> node, Nullable<T>& value)
 		{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<T>(Ptr<JsonNode>, Ptr<List<T>>&)#"
-			if (auto jsonLiteral = node.Cast<glr::json::JsonLiteral>())
-			{
-				if (jsonLiteral->value == glr::json::JsonLiteralValue::Null)
+			if (!JsonToNullable(
+				node,
+				value,
+				[&](auto&& f)
 				{
-					value.Reset();
-					return;
-				}
-				else
-				{
-					CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
-				}
-			}
-			else
+					T item;
+					f(item);
+					value = std::move(item);
+				}))
 			{
-				T item;
-				ConvertJsonToCustomType(node, item);
-				value = item;
+				CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
 			}
 #undef ERROR_MESSAGE_PREFIX
 		}
 	};
 
 	template<typename T>
-	struct JsonHelper<Ptr<collections::List<T>>>
+	struct JsonHelper<Ptr<T>>
 	{
-		static Ptr<glr::json::JsonNode> ToJson(const Ptr<collections::List<T>>& value)
+		static Ptr<glr::json::JsonNode> ToJson(const Ptr<T>& value)
 		{
-			if (!value)
-			{
-				auto node = Ptr(new glr::json::JsonLiteral);
-				node->value = glr::json::JsonLiteralValue::Null;
-				return node;
-			}
-			else
-			{
-				auto node = Ptr(new glr::json::JsonArray);
-				for (auto&& item : *value.Obj())
-				{
-					node->items.Add(ConvertCustomTypeToJson(item));
-				}
-				return node;
-			}
+			return NullableToJson(
+				value,
+				[](auto&& v)->decltype(auto) { return *v.Obj(); }
+				);
 		}
 
-		static void FromJson(Ptr<glr::json::JsonNode> node, Ptr<collections::List<T>>& value)
+		static void FromJson(Ptr<glr::json::JsonNode> node, Ptr<T>& value)
 		{
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<T>(Ptr<JsonNode>, Ptr<List<T>>&)#"
-			if (auto jsonLiteral = node.Cast<glr::json::JsonLiteral>())
-			{
-				if (jsonLiteral->value == glr::json::JsonLiteralValue::Null)
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<T>(Ptr<JsonNode>, Ptr<T>&)#"
+			if (!JsonToNullable(
+				node,
+				value,
+				[&](auto&& f)
 				{
-					value = {};
-					return;
-				}
-			}
-			else if (auto jsonArray = node.Cast<glr::json::JsonArray>())
+					value = Ptr(new T);
+					f(*value.Obj());
+				}))
 			{
-				value = Ptr(new collections::List<T>);
+				CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
+			}
+#undef ERROR_MESSAGE_PREFIX
+		}
+	};
+
+	template<typename T>
+	struct JsonHelper<collections::List<T>>
+	{
+		static Ptr<glr::json::JsonNode> ToJson(const collections::List<T>& value)
+		{
+			auto node = Ptr(new glr::json::JsonArray);
+			for (auto&& item : value)
+			{
+				node->items.Add(ConvertCustomTypeToJson(item));
+			}
+			return node;
+		}
+
+		static void FromJson(Ptr<glr::json::JsonNode> node, collections::List<T>& value)
+		{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<T>(Ptr<JsonNode>, List<T>&)#"
+			value.Clear();
+			if (auto jsonArray = node.Cast<glr::json::JsonArray>())
+			{
 				for (auto jsonItem : jsonArray->items)
 				{
 					T item;
 					ConvertJsonToCustomType(jsonItem, item);
-					value->Add(std::move(item));
+					value.Add(std::move(item));
 				}
 				return;
 			}
+			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
+#undef ERROR_MESSAGE_PREFIX
+		}
+	};
+
+	template<typename TKey, typename TValue, TKey TValue::* Field>
+	struct JsonHelper<ArrayMap<TKey, TValue, Field>>
+	{
+		static Ptr<glr::json::JsonNode> ToJson(const ArrayMap<TKey, TValue, Field>& value)
+		{
+			auto&& values = const_cast<collections::List<TValue>&>(value.map.Values());
+			return ConvertCustomTypeToJson(values);
+		}
+
+		static void FromJson(Ptr<glr::json::JsonNode> node, ArrayMap<TKey, TValue, Field>& value)
+		{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<T>(Ptr<JsonNode>, ArrayMap<TKey, TValue, Field>&)#"
+			value.Clear();
+			collections::List<TValue> values;
+			ConvertJsonToCustomType(node, values);
+			for (auto&& item : values)
+			{
+				value.Add(item);
+			}
+#undef ERROR_MESSAGE_PREFIX
+		}
+	};
+
+	template<typename TKey, typename TValue>
+	struct JsonHelper<collections::Dictionary<TKey, TValue>>
+	{
+		static Ptr<glr::json::JsonNode> ToJson(const collections::Dictionary<TKey, TValue>& value)
+		{
+			auto node = Ptr(new glr::json::JsonArray);
+			for (auto [key, value] : value)
+			{
+				auto pairNode = Ptr(new glr::json::JsonArray);
+				pairNode->items.Add(ConvertCustomTypeToJson(key));
+				pairNode->items.Add(ConvertCustomTypeToJson(value));
+				node->items.Add(pairNode);
+			}
+			return node;
+		}
+
+		static void FromJson(Ptr<glr::json::JsonNode> node, collections::Dictionary<TKey, TValue>& value)
+		{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<T>(Ptr<JsonNode>, Dictionary<TKey, TValue>&)#"
+			value.Clear();
+			auto jsonArray = node.Cast<glr::json::JsonArray>();
+			if (!jsonArray) goto FAILED;
+			for (auto jsonPair : jsonArray->items)
+			{
+				auto jsonPairArray = jsonPair.Cast<glr::json::JsonArray>();
+				if (!jsonPairArray) goto FAILED;
+				if (jsonPairArray->items.Count() != 2) goto FAILED;
+				TKey itemKey;
+				ConvertJsonToCustomType(jsonPairArray->items[0], itemKey);
+				TValue itemValue;
+				ConvertJsonToCustomType(jsonPairArray->items[1], itemValue);
+				value.Add(itemKey, itemValue);
+			}
+			return;
+		FAILED:
+			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
+#undef ERROR_MESSAGE_PREFIX
+		}
+	};
+
+	template<typename ...Ts>
+	struct JsonHelper<Variant<Ts...>>
+	{
+		static Ptr<glr::json::JsonNode> ToJson(const Variant<Ts...>& value)
+		{
+			auto node = Ptr(new glr::json::JsonArray);
+			value.Apply([&node]<typename T>(const T& element)
+			{
+				node->items.Add(ConvertCustomTypeToJson(WString::Unmanaged(JsonNameHelper<T>::Name)));
+				node->items.Add(ConvertCustomTypeToJson(element));
+			});
+			return node;
+		}
+
+		template<typename T>
+		static bool TryFromJson(Ptr<glr::json::JsonNode> node, const WString& itemKey, Variant<Ts...>& value)
+		{
+			if (JsonNameHelper<T>::Name != itemKey) return false;
+			T itemValue;
+			ConvertJsonToCustomType(node, itemValue);
+			value = std::move(itemValue);
+			return true;
+		}
+
+		static void FromJson(Ptr<glr::json::JsonNode> node, Variant<Ts...>& value)
+		{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<T>(Ptr<JsonNode>, Variant<Ts...>&)#"
+			auto jsonPairArray = node.Cast<glr::json::JsonArray>();
+			if (!jsonPairArray) goto FAILED;
+			if (jsonPairArray->items.Count() != 2) goto FAILED;
+			{
+				WString itemKey;
+				ConvertJsonToCustomType(jsonPairArray->items[0], itemKey);
+				if ((TryFromJson<Ts>(jsonPairArray->items[1], itemKey, value) || ...))
+				{
+					return;
+				}
+			}
+		FAILED:
 			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
 #undef ERROR_MESSAGE_PREFIX
 		}
@@ -21691,6 +21938,87 @@ Licensed under https ://github.com/vczh-libraries/License
 #define VCZH_PRESENTATION_GUIREMOTECONTROLLER_REMOTEPROTOCOLSCHEMA
 
 
+namespace vl::presentation::remoteprotocol
+{
+	struct FontConfig;
+	struct ScreenConfig;
+	struct WindowSizingConfig;
+	struct WindowShowing;
+	struct IOMouseInfoWithButton;
+	struct GlobalShortcutKey;
+	struct ElementDesc_SolidBorder;
+	struct ElementDesc_SinkBorder;
+	struct ElementDesc_SinkSplitter;
+	struct ElementDesc_SolidBackground;
+	struct ElementDesc_GradientBackground;
+	struct ElementDesc_InnerShadow;
+	struct ElementDesc_Polygon;
+	struct ElementDesc_SolidLabel;
+	struct ImageCreation;
+	struct ImageFrameMetadata;
+	struct ImageMetadata;
+	struct ElementDesc_ImageFrame;
+	struct RendererCreation;
+	struct ElementBeginRendering;
+	struct ElementRendering;
+	struct ElementBoundary;
+	struct ElementMeasuring_FontHeight;
+	struct ElementMeasuring_ElementMinSize;
+	struct ElementMeasurings;
+	struct RenderingDom;
+	struct RenderingCommand_BeginBoundary;
+	struct RenderingCommand_EndBoundary;
+	struct RenderingCommand_Element;
+	struct RenderingFrame;
+	struct RenderingTrace;
+}
+namespace vl::presentation::remoteprotocol
+{
+	template<> struct JsonNameHelper<::vl::presentation::NativeCoordinate> { static constexpr const wchar_t* Name = L"NativeCoordinate"; };
+	template<> struct JsonNameHelper<::vl::presentation::NativePoint> { static constexpr const wchar_t* Name = L"NativePoint"; };
+	template<> struct JsonNameHelper<::vl::presentation::NativeSize> { static constexpr const wchar_t* Name = L"NativeSize"; };
+	template<> struct JsonNameHelper<::vl::presentation::NativeRect> { static constexpr const wchar_t* Name = L"NativeRect"; };
+	template<> struct JsonNameHelper<::vl::presentation::NativeMargin> { static constexpr const wchar_t* Name = L"NativeMargin"; };
+	template<> struct JsonNameHelper<::vl::presentation::Point> { static constexpr const wchar_t* Name = L"Point"; };
+	template<> struct JsonNameHelper<::vl::presentation::Size> { static constexpr const wchar_t* Name = L"Size"; };
+	template<> struct JsonNameHelper<::vl::presentation::Rect> { static constexpr const wchar_t* Name = L"Rect"; };
+	template<> struct JsonNameHelper<::vl::presentation::FontProperties> { static constexpr const wchar_t* Name = L"FontProperties"; };
+	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::FontConfig> { static constexpr const wchar_t* Name = L"FontConfig"; };
+	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::ScreenConfig> { static constexpr const wchar_t* Name = L"ScreenConfig"; };
+	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::WindowSizingConfig> { static constexpr const wchar_t* Name = L"WindowSizingConfig"; };
+	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::WindowShowing> { static constexpr const wchar_t* Name = L"WindowShowing"; };
+	template<> struct JsonNameHelper<::vl::presentation::NativeWindowMouseInfo> { static constexpr const wchar_t* Name = L"IOMouseInfo"; };
+	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::IOMouseInfoWithButton> { static constexpr const wchar_t* Name = L"IOMouseInfoWithButton"; };
+	template<> struct JsonNameHelper<::vl::presentation::NativeWindowKeyInfo> { static constexpr const wchar_t* Name = L"IOKeyInfo"; };
+	template<> struct JsonNameHelper<::vl::presentation::NativeWindowCharInfo> { static constexpr const wchar_t* Name = L"IOCharInfo"; };
+	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::GlobalShortcutKey> { static constexpr const wchar_t* Name = L"GlobalShortcutKey"; };
+	template<> struct JsonNameHelper<::vl::presentation::elements::ElementShape> { static constexpr const wchar_t* Name = L"ElementShape"; };
+	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::ElementDesc_SolidBorder> { static constexpr const wchar_t* Name = L"ElementDesc_SolidBorder"; };
+	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::ElementDesc_SinkBorder> { static constexpr const wchar_t* Name = L"ElementDesc_SinkBorder"; };
+	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::ElementDesc_SinkSplitter> { static constexpr const wchar_t* Name = L"ElementDesc_SinkSplitter"; };
+	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::ElementDesc_SolidBackground> { static constexpr const wchar_t* Name = L"ElementDesc_SolidBackground"; };
+	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::ElementDesc_GradientBackground> { static constexpr const wchar_t* Name = L"ElementDesc_GradientBackground"; };
+	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::ElementDesc_InnerShadow> { static constexpr const wchar_t* Name = L"ElementDesc_InnerShadow"; };
+	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::ElementDesc_Polygon> { static constexpr const wchar_t* Name = L"ElementDesc_Polygon"; };
+	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::ElementDesc_SolidLabel> { static constexpr const wchar_t* Name = L"ElementDesc_SolidLabel"; };
+	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::ImageCreation> { static constexpr const wchar_t* Name = L"ImageCreation"; };
+	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::ImageFrameMetadata> { static constexpr const wchar_t* Name = L"ImageFrameMetadata"; };
+	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::ImageMetadata> { static constexpr const wchar_t* Name = L"ImageMetadata"; };
+	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::ElementDesc_ImageFrame> { static constexpr const wchar_t* Name = L"ElementDesc_ImageFrame"; };
+	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::RendererCreation> { static constexpr const wchar_t* Name = L"RendererCreation"; };
+	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::ElementBeginRendering> { static constexpr const wchar_t* Name = L"ElementBeginRendering"; };
+	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::ElementRendering> { static constexpr const wchar_t* Name = L"ElementRendering"; };
+	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::ElementBoundary> { static constexpr const wchar_t* Name = L"ElementBoundary"; };
+	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::ElementMeasuring_FontHeight> { static constexpr const wchar_t* Name = L"ElementMeasuring_FontHeight"; };
+	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::ElementMeasuring_ElementMinSize> { static constexpr const wchar_t* Name = L"ElementMeasuring_ElementMinSize"; };
+	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::ElementMeasurings> { static constexpr const wchar_t* Name = L"ElementMeasurings"; };
+	template<> struct JsonNameHelper<::vl::Ptr<::vl::presentation::remoteprotocol::RenderingDom>> { static constexpr const wchar_t* Name = L"RenderingDom"; };
+	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::RenderingCommand_BeginBoundary> { static constexpr const wchar_t* Name = L"RenderingCommand_BeginBoundary"; };
+	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::RenderingCommand_EndBoundary> { static constexpr const wchar_t* Name = L"RenderingCommand_EndBoundary"; };
+	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::RenderingCommand_Element> { static constexpr const wchar_t* Name = L"RenderingCommand_Element"; };
+	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::RenderingFrame> { static constexpr const wchar_t* Name = L"RenderingFrame"; };
+	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::RenderingTrace> { static constexpr const wchar_t* Name = L"RenderingTrace"; };
+}
 namespace vl::presentation::remoteprotocol
 {
 	enum class IOMouseButton
@@ -21735,6 +22063,24 @@ namespace vl::presentation::remoteprotocol
 		UnsupportedColorizedText,
 		UnsupportedDocument,
 	};
+
+	using ElementDescVariant = ::vl::Variant<
+		::vl::presentation::remoteprotocol::ElementDesc_SolidBorder,
+		::vl::presentation::remoteprotocol::ElementDesc_SinkBorder,
+		::vl::presentation::remoteprotocol::ElementDesc_SinkSplitter,
+		::vl::presentation::remoteprotocol::ElementDesc_SolidBackground,
+		::vl::presentation::remoteprotocol::ElementDesc_GradientBackground,
+		::vl::presentation::remoteprotocol::ElementDesc_InnerShadow,
+		::vl::presentation::remoteprotocol::ElementDesc_Polygon,
+		::vl::presentation::remoteprotocol::ElementDesc_SolidLabel,
+		::vl::presentation::remoteprotocol::ElementDesc_ImageFrame
+	>;
+
+	using RenderingCommand = ::vl::Variant<
+		::vl::presentation::remoteprotocol::RenderingCommand_BeginBoundary,
+		::vl::presentation::remoteprotocol::RenderingCommand_EndBoundary,
+		::vl::presentation::remoteprotocol::RenderingCommand_Element
+	>;
 
 	struct FontConfig
 	{
@@ -21885,6 +22231,11 @@ namespace vl::presentation::remoteprotocol
 		::vl::presentation::remoteprotocol::RendererType type;
 	};
 
+	struct ElementBeginRendering
+	{
+		::vl::vint frameId;
+	};
+
 	struct ElementRendering
 	{
 		::vl::vint id;
@@ -21894,7 +22245,8 @@ namespace vl::presentation::remoteprotocol
 
 	struct ElementBoundary
 	{
-		::vl::presentation::INativeWindowListener::HitTestResult hitTestResult;
+		::vl::Nullable<::vl::presentation::INativeWindowListener::HitTestResult> hitTestResult;
+		::vl::Nullable<::vl::presentation::INativeCursor::SystemCursorType> cursor;
 		::vl::presentation::Rect bounds;
 		::vl::presentation::Rect areaClippedBySelf;
 	};
@@ -21917,6 +22269,48 @@ namespace vl::presentation::remoteprotocol
 		::vl::Ptr<::vl::collections::List<::vl::presentation::remoteprotocol::ElementMeasuring_FontHeight>> fontHeights;
 		::vl::Ptr<::vl::collections::List<::vl::presentation::remoteprotocol::ElementMeasuring_ElementMinSize>> minSizes;
 		::vl::Ptr<::vl::collections::List<::vl::presentation::remoteprotocol::ImageMetadata>> createdImages;
+	};
+
+	struct RenderingDom
+	{
+		::vl::Nullable<::vl::presentation::INativeWindowListener::HitTestResult> hitTestResult;
+		::vl::Nullable<::vl::presentation::INativeCursor::SystemCursorType> cursor;
+		::vl::Nullable<::vl::vint> element;
+		::vl::presentation::Rect bounds;
+		::vl::presentation::Rect validArea;
+		::vl::Ptr<::vl::collections::List<::vl::Ptr<::vl::presentation::remoteprotocol::RenderingDom>>> children;
+	};
+
+	struct RenderingCommand_BeginBoundary
+	{
+		::vl::presentation::remoteprotocol::ElementBoundary boundary;
+	};
+
+	struct RenderingCommand_EndBoundary
+	{
+	};
+
+	struct RenderingCommand_Element
+	{
+		::vl::presentation::remoteprotocol::ElementRendering rendering;
+		::vl::Nullable<::vl::vint> element;
+	};
+
+	struct RenderingFrame
+	{
+		::vl::vint frameId;
+		::vl::Nullable<::vl::WString> frameName;
+		::vl::presentation::remoteprotocol::WindowSizingConfig windowSize;
+		::vl::Ptr<::vl::collections::Dictionary<::vl::vint, ::vl::presentation::remoteprotocol::ElementDescVariant>> elements;
+		::vl::Ptr<::vl::collections::List<::vl::presentation::remoteprotocol::RenderingCommand>> commands;
+		::vl::Ptr<::vl::presentation::remoteprotocol::RenderingDom> root;
+	};
+
+	struct RenderingTrace
+	{
+		::vl::Ptr<::vl::collections::Dictionary<::vl::vint, ::vl::presentation::remoteprotocol::RendererType>> createdElements;
+		::vl::Ptr<::vl::presentation::remoteprotocol::ArrayMap<::vl::vint, ::vl::presentation::remoteprotocol::ImageMetadata, &::vl::presentation::remoteprotocol::ImageMetadata::id>> createdImages;
+		::vl::Ptr<::vl::collections::List<::vl::presentation::remoteprotocol::RenderingFrame>> frames;
 	};
 
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::INativeWindowListener::HitTestResult>(const ::vl::presentation::INativeWindowListener::HitTestResult & value);
@@ -21963,11 +22357,18 @@ namespace vl::presentation::remoteprotocol
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::ImageMetadata>(const ::vl::presentation::remoteprotocol::ImageMetadata & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::ElementDesc_ImageFrame>(const ::vl::presentation::remoteprotocol::ElementDesc_ImageFrame & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::RendererCreation>(const ::vl::presentation::remoteprotocol::RendererCreation & value);
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::ElementBeginRendering>(const ::vl::presentation::remoteprotocol::ElementBeginRendering & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::ElementRendering>(const ::vl::presentation::remoteprotocol::ElementRendering & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::ElementBoundary>(const ::vl::presentation::remoteprotocol::ElementBoundary & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::ElementMeasuring_FontHeight>(const ::vl::presentation::remoteprotocol::ElementMeasuring_FontHeight & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::ElementMeasuring_ElementMinSize>(const ::vl::presentation::remoteprotocol::ElementMeasuring_ElementMinSize & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::ElementMeasurings>(const ::vl::presentation::remoteprotocol::ElementMeasurings & value);
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::RenderingDom>(const ::vl::presentation::remoteprotocol::RenderingDom & value);
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::RenderingCommand_BeginBoundary>(const ::vl::presentation::remoteprotocol::RenderingCommand_BeginBoundary & value);
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::RenderingCommand_EndBoundary>(const ::vl::presentation::remoteprotocol::RenderingCommand_EndBoundary & value);
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::RenderingCommand_Element>(const ::vl::presentation::remoteprotocol::RenderingCommand_Element & value);
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::RenderingFrame>(const ::vl::presentation::remoteprotocol::RenderingFrame & value);
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::RenderingTrace>(const ::vl::presentation::remoteprotocol::RenderingTrace & value);
 
 	template<> void ConvertJsonToCustomType<::vl::presentation::INativeWindowListener::HitTestResult>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::INativeWindowListener::HitTestResult& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::INativeCursor::SystemCursorType>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::INativeCursor::SystemCursorType& value);
@@ -22013,11 +22414,18 @@ namespace vl::presentation::remoteprotocol
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ImageMetadata>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::ImageMetadata& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ElementDesc_ImageFrame>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::ElementDesc_ImageFrame& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::RendererCreation>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::RendererCreation& value);
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ElementBeginRendering>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::ElementBeginRendering& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ElementRendering>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::ElementRendering& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ElementBoundary>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::ElementBoundary& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ElementMeasuring_FontHeight>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::ElementMeasuring_FontHeight& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ElementMeasuring_ElementMinSize>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::ElementMeasuring_ElementMinSize& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ElementMeasurings>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::ElementMeasurings& value);
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::RenderingDom>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::RenderingDom& value);
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::RenderingCommand_BeginBoundary>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::RenderingCommand_BeginBoundary& value);
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::RenderingCommand_EndBoundary>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::RenderingCommand_EndBoundary& value);
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::RenderingCommand_Element>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::RenderingCommand_Element& value);
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::RenderingFrame>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::RenderingFrame& value);
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::RenderingTrace>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::RenderingTrace& value);
 
 #define GACUI_REMOTEPROTOCOL_MESSAGES(HANDLER)\
 	HANDLER(ControllerGetFontConfig, void, ::vl::presentation::remoteprotocol::FontConfig, NOREQ, RES, NODROP)\
@@ -22058,7 +22466,7 @@ namespace vl::presentation::remoteprotocol
 	HANDLER(RendererUpdateElement_ImageFrame, ::vl::presentation::remoteprotocol::ElementDesc_ImageFrame, void, REQ, NORES, NODROP)\
 	HANDLER(RendererCreated, ::vl::Ptr<::vl::collections::List<::vl::presentation::remoteprotocol::RendererCreation>>, void, REQ, NORES, NODROP)\
 	HANDLER(RendererDestroyed, ::vl::Ptr<::vl::collections::List<::vl::vint>>, void, REQ, NORES, NODROP)\
-	HANDLER(RendererBeginRendering, void, void, NOREQ, NORES, NODROP)\
+	HANDLER(RendererBeginRendering, ::vl::presentation::remoteprotocol::ElementBeginRendering, void, REQ, NORES, NODROP)\
 	HANDLER(RendererBeginBoundary, ::vl::presentation::remoteprotocol::ElementBoundary, void, REQ, NORES, NODROP)\
 	HANDLER(RendererRenderElement, ::vl::presentation::remoteprotocol::ElementRendering, void, REQ, NORES, NODROP)\
 	HANDLER(RendererEndBoundary, void, void, NOREQ, NORES, NODROP)\
@@ -22093,6 +22501,7 @@ namespace vl::presentation::remoteprotocol
 	HANDLER(::vl::presentation::NativeRect)\
 	HANDLER(::vl::presentation::NativeSize)\
 	HANDLER(::vl::presentation::VKEY)\
+	HANDLER(::vl::presentation::remoteprotocol::ElementBeginRendering)\
 	HANDLER(::vl::presentation::remoteprotocol::ElementBoundary)\
 	HANDLER(::vl::presentation::remoteprotocol::ElementDesc_GradientBackground)\
 	HANDLER(::vl::presentation::remoteprotocol::ElementDesc_ImageFrame)\
@@ -22293,10 +22702,12 @@ GuiRemoteGraphicsRenderTarget
 			using RendererSet = collections::SortedList<elements_remoteprotocol::IGuiRemoteProtocolElementRender*>;
 			using FontHeightMap = collections::Dictionary<Tuple<WString, vint>, vint>;
 			using HitTestResult = INativeWindowListener::HitTestResult;
+			using SystemCursorType = INativeCursor::SystemCursorType;
 		protected:
 			GuiRemoteController*				remote;
 			GuiHostedController*				hostedController;
 			NativeSize							canvasSize;
+			vint								usedFrameIds = 0;
 			vint								usedElementIds = 0;
 			RendererMap							renderers;
 			collections::SortedList<vint>		createdRenderers;
@@ -22304,8 +22715,10 @@ GuiRemoteGraphicsRenderTarget
 			RendererSet							renderersAskingForCache;
 			Nullable<Rect>						clipperValidArea;
 			collections::List<HitTestResult>	hitTestResults;
+			collections::List<SystemCursorType>	cursors;
 
 			HitTestResult						GetHitTestResultFromGenerator(reflection::DescriptableObject* generator);
+			Nullable<SystemCursorType>			GetCursorFromGenerator(reflection::DescriptableObject* generator);
 
 			void								StartRenderingOnNativeWindow() override;
 			RenderTargetFailure					StopRenderingOnNativeWindow() override;
@@ -22923,12 +23336,15 @@ GuiRemoteProtocolFilterVerifier
 	
 		void Submit() override
 		{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::repeatfiltering::GuiRemoteProtocolFilterVerifier::Submit()#"
+			CHECK_ERROR(!eventCombinator.submitting, ERROR_MESSAGE_PREFIX L"This function is not allowed to be called recursively.");
 			eventCombinator.submitting = true;
 			GuiRemoteProtocolCombinator<GuiRemoteEventFilterVerifier>::Submit();
 			ClearDropRepeatMasks();
 			eventCombinator.ClearDropRepeatMasks();
 			eventCombinator.ClearDropConsecutiveMasks();
 			eventCombinator.submitting = false;
+#undef ERROR_MESSAGE_PREFIX
 		}
 	};
 }
@@ -23381,12 +23797,15 @@ GuiRemoteProtocolFilter
 	
 		void Submit() override
 		{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::repeatfiltering::GuiRemoteProtocolFilter::Submit()#"
+			CHECK_ERROR(!eventCombinator.submitting, ERROR_MESSAGE_PREFIX L"This function is not allowed to be called recursively.");
 			eventCombinator.submitting = true;
 			ProcessRequests();
 			eventCombinator.ProcessResponses();
 			GuiRemoteProtocolCombinator<GuiRemoteEventFilter>::Submit();
 			eventCombinator.submitting = false;
 			eventCombinator.ProcessEvents();
+#undef ERROR_MESSAGE_PREFIX
 		}
 	};
 }
@@ -28008,7 +28427,6 @@ GuiRemoteMessages
 		~GuiRemoteMessages();
 
 		void	Submit();
-		void	ClearResponses();
 
 		// messages
 
@@ -28027,7 +28445,7 @@ GuiRemoteMessages
 #define MESSAGE_NORES(NAME, RESPONSE)
 #define MESSAGE_RES(NAME, RESPONSE)\
 		void Respond ## NAME(vint id, const RESPONSE& arguments);\
-		const RESPONSE& Retrieve ## NAME(vint id);\
+		RESPONSE Retrieve ## NAME(vint id);\
 
 #define MESSAGE_HANDLER(NAME, REQUEST, RESPONSE, REQTAG, RESTAG, ...)	MESSAGE_ ## RESTAG(NAME, RESPONSE)
 			GACUI_REMOTEPROTOCOL_MESSAGES(MESSAGE_HANDLER)

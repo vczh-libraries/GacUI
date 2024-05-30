@@ -12,3 +12,5 @@ DEVELOPER: Zihan Chen(vczh)
 
 #include "..\..\Source\UnitTestUtilities\SnapshotViewer\Source\GuiUnitTestSnapshotViewer.h"
 #include "..\..\Source\UnitTestUtilities\SnapshotViewer\Source\GuiUnitTestSnapshotViewerIncludes.h"
+#include "..\..\Source\UnitTestUtilities\SnapshotViewer\ViewModel\GuiUnitTestSnapshotViewerViewModel.h"
+#include "..\..\Source\UnitTestUtilities\SnapshotViewer\Application\GuiUnitTestSnapshotViewerApp.h"
