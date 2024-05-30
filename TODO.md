@@ -42,8 +42,19 @@
     - Resource URL is required in the remote protocol, an update to resource loader interface could be necessary.
   - A viewer to view unit test results logged from SyncDom and other stuff after each time when layout stops.
     - Generate `domId` for each dom node: element(id), virtual(-element.id-2), root(-1), hittest(find a way).
-- Implement basic control (`Source_GacUI_CoreApplication` controls only) unit test based on streaming
+- Implement basic control (`Source_GacUI_CoreApplication` controls only) unit test based on streaming (using DarkSkin)
   - Skipped time related features, like tooltip.
+  - `GuiControl`, with custom control template to verify binding:
+    - Visible
+    - Enabled, VisuallyEnabled
+    - Focus
+    - Font, DisplayFont
+    - Alt
+    - Text, Context
+  - `GuiLabel`
+  - `GuiWindow`
+    - Feature enabling/disabling
+    - Interaction with screen
 - Metadata of remote protocol will be updated and included in releases.
 - GacUI Binary Resource (can't move to next release)
   - Upgrade GacUI XML Resource to 1.3, force on all resources instead of only depended or depending resource.
@@ -53,6 +64,7 @@
 - Add `@cpp:Private` for GacGen generated `<parameter>ViewModel` variable.
 - GacUI
   - When bindable list's data source is changed, make a decision to clear selection or trigger selection changed event.
+  - `GUI_VALUE` needs to be updated to avoid `LAMBDA`.
 - Document
   - string conversion mechanism and functions to Vlpp document.
   - Vlpp
@@ -79,13 +91,11 @@
   - In remote protocol, it is an element with no extra properties.
     - In HTML, it would open a `<div/>` and you can do whatever you want using JavaScript.
   - Thinking about promote SyncDom data structures for unit test, and complete a diff algorithm.
+- Non-editing control unit test (using DarkSkin)
 - Remote protocol redirection back to native rendering:
   - In the test project, C++ side will expose the remote protocol via dll.
   - Implement the remote protocol on a native `INativeController` instance.
-    - It could not be `GuiHostedController` or `GuiRemoteController`.
-- .net rendering
-  - Using C#.
-  - A codegen from remote protocol and print C# code.
+    - It could not be used on `GuiHostedController` or `GuiRemoteController`, which is not a native implementation.
 - JavaScript rendering:
   - Delete all `GacJS` code. This repo will be used to implement the HTML logic.
   - A codegen for remote protocol and print TypeScript code.
