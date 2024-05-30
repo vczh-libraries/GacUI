@@ -206,7 +206,7 @@ IGuiInstanceResourceManager
 				return UnloadResource(GetResource(name));
 			}
 
-			bool UnloadResource(Ptr<GuiResource> resource)
+			bool UnloadResource(Ptr<GuiResource> resource)override
 			{
 				if (!resource) return false;
 
