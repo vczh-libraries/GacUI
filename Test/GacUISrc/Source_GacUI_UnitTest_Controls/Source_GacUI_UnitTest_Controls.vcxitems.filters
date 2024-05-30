@@ -10,6 +10,9 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\UnitTestUtilities\SnapshotViewer\ViewModel\GuiUnitTestSnapshotViewerViewModel.cpp">
       <Filter>ViewModel</Filter>
     </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\UnitTestUtilities\SnapshotViewer\Application\GuiUnitTestSnapshotViewerApp.cpp">
+      <Filter>Application</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\UnitTestUtilities\SnapshotViewer\Source\GuiUnitTestSnapshotViewer.h">
@@ -21,6 +24,9 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\UnitTestUtilities\SnapshotViewer\ViewModel\GuiUnitTestSnapshotViewerViewModel.h">
       <Filter>ViewModel</Filter>
     </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\UnitTestUtilities\SnapshotViewer\Application\GuiUnitTestSnapshotViewerApp.h">
+      <Filter>Application</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ViewModel">
@@ -28,6 +34,9 @@
     </Filter>
     <Filter Include="Source">
       <UniqueIdentifier>{3aa66127-7a9a-4875-996e-18f0cc2990b1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Application">
+      <UniqueIdentifier>{b5622c4a-12d9-41f1-933b-4dd0321a5fa2}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

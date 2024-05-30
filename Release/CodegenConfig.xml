@@ -28,7 +28,7 @@
     <category name="unittest" pattern="\Source\UnitTestUtilities\">
       <except pattern="SnapshotViewer"/>
     </category>
-    <category name="unittest_ui" pattern="\Source\UnitTestUtilities\SnapshotViewer\Source">
+    <category name="unittest_ui" pattern="\Source\UnitTestUtilities\SnapshotViewer">
       <except pattern="Reflection"/>
     </category>
     <category name="unittest_r" pattern="\Source\UnitTestUtilities\SnapshotViewer\Source\GuiUnitTestSnapshotViewerReflection"/>
