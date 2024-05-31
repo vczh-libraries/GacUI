@@ -62,7 +62,9 @@
 - Add `@cpp:Private` for GacGen generated `<parameter>ViewModel` variable.
 - GacUI
   - When bindable list's data source is changed, make a decision to clear selection or trigger selection changed event.
+    - The bug happens when selected text and/or item count isn't changed after replacing (guessing)
   - `GUI_VALUE` needs to be updated to avoid `LAMBDA`.
+  - `Clipping.json` is incorrect in viewer.
 - Document
   - string conversion mechanism and functions to Vlpp document.
   - Vlpp
