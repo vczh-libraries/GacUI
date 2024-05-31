@@ -34,6 +34,7 @@ TEST_FILE
 			protocol->OnNextIdleFrame(L"Ready", [=]()
 			{
 				auto window = GetApplication()->GetMainWindow();
+				TEST_ASSERT(window->GetText() == L"GuiWindow");
 				TEST_ASSERT(window->GetMaximizedBox() == true);
 				TEST_ASSERT(window->GetMinimizedBox() == true);
 				TEST_ASSERT(window->GetBorder() == true);

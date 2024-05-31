@@ -126,6 +126,9 @@
     <ClCompile Include="TestControls_CoreApplication_GuiWindow.cpp">
       <Filter>Source Files\Controls\CoreApplication</Filter>
     </ClCompile>
+    <ClCompile Include="TestControls_CoreApplication_GuiLabel.cpp">
+      <Filter>Source Files\Controls\CoreApplication</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="TestCompositions.h">
