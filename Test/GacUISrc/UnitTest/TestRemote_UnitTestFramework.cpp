@@ -103,6 +103,7 @@ TEST_FILE
 				theme::RegisterTheme(emptyWindowTheme);
 
 				GuiWindow window(theme::ThemeName::Window);
+				window.GetContainerComposition()->SetMinSizeLimitation(GuiGraphicsComposition::NoLimit);
 				{
 					auto bounds = new GuiBoundsComposition;
 					bounds->SetExpectedBounds({ {20,-20},{100,520} });
@@ -141,7 +142,7 @@ TEST_FILE
 					window.GetContainerComposition()->Children()[2]->AddChild(bounds);
 
 					auto element = Ptr(GuiSolidBorderElement::Create());
-					element->SetColor(Color(0, 255, 0));
+					element->SetColor(Color(0, 0, 255));
 					bounds->SetOwnedElement(element);
 				}
 

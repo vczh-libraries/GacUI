@@ -9,20 +9,20 @@
   "createdImages": [],
   "frames": [
     {
-      "frameId": 3,
+      "frameId": 2,
       "frameName": null,
       "windowSize": {
         "bounds": {
           "x1": {"value": 192},
           "y1": {"value": 144},
           "x2": {"value": 832},
-          "y2": {"value": 644}
+          "y2": {"value": 624}
         },
         "clientBounds": {
           "x1": {"value": 192},
           "y1": {"value": 144},
           "x2": {"value": 832},
-          "y2": {"value": 644}
+          "y2": {"value": 624}
         },
         "sizeState": "Restored",
         "customFramePadding": {
@@ -83,7 +83,7 @@
             "ElementDesc_SolidBorder",
             {
               "id": 5,
-              "borderColor": "#00FF00",
+              "borderColor": "#0000FF",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
@@ -95,8 +95,8 @@
           {
             "rendering": {
               "id": 1,
-              "bounds": {"x1": 0, "y1": 0, "x2": 640, "y2": 500},
-              "areaClippedByParent": {"x1": 0, "y1": 0, "x2": 640, "y2": 500}
+              "bounds": {"x1": 0, "y1": 0, "x2": 640, "y2": 480},
+              "areaClippedByParent": {"x1": 0, "y1": 0, "x2": 640, "y2": 480}
             },
             "element": 1
           }
@@ -107,7 +107,7 @@
             "rendering": {
               "id": 2,
               "bounds": {"x1": 20, "y1": -20, "x2": 120, "y2": 500},
-              "areaClippedByParent": {"x1": 0, "y1": 0, "x2": 640, "y2": 500}
+              "areaClippedByParent": {"x1": 0, "y1": 0, "x2": 640, "y2": 480}
             },
             "element": 2
           }
@@ -118,7 +118,7 @@
             "rendering": {
               "id": 3,
               "bounds": {"x1": 520, "y1": -20, "x2": 620, "y2": 500},
-              "areaClippedByParent": {"x1": 0, "y1": 0, "x2": 640, "y2": 500}
+              "areaClippedByParent": {"x1": 0, "y1": 0, "x2": 640, "y2": 480}
             },
             "element": 3
           }
@@ -157,15 +157,15 @@
             "hitTestResult": null,
             "cursor": null,
             "element": 1,
-            "bounds": {"x1": 0, "y1": 0, "x2": 640, "y2": 500},
-            "validArea": {"x1": 0, "y1": 0, "x2": 640, "y2": 500},
+            "bounds": {"x1": 0, "y1": 0, "x2": 640, "y2": 480},
+            "validArea": {"x1": 0, "y1": 0, "x2": 640, "y2": 480},
             "children": [
               {
                 "hitTestResult": null,
                 "cursor": null,
                 "element": 2,
                 "bounds": {"x1": 20, "y1": -20, "x2": 120, "y2": 500},
-                "validArea": {"x1": 20, "y1": 0, "x2": 120, "y2": 500},
+                "validArea": {"x1": 20, "y1": 0, "x2": 120, "y2": 480},
                 "children": null
               },
               {
@@ -173,7 +173,7 @@
                 "cursor": null,
                 "element": 3,
                 "bounds": {"x1": 520, "y1": -20, "x2": 620, "y2": 500},
-                "validArea": {"x1": 520, "y1": 0, "x2": 620, "y2": 500},
+                "validArea": {"x1": 520, "y1": 0, "x2": 620, "y2": 480},
                 "children": null
               },
               {
