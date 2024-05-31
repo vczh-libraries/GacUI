@@ -37,11 +37,14 @@ TEST_FILE
 				auto window = GetApplication()->GetMainWindow();
 				auto label = FindObjectByName<GuiLabel>(window, L"label");
 				TEST_ASSERT(label->GetText() == L"This is a label");
-				auto font = label->GetDisplayFont();
-				TEST_ASSERT(font.fontFamily == L"GacUI Default Font");
-				TEST_ASSERT(font.size == 12);
-				auto size = label->GetBoundsComposition()->GetCachedMinSize();
-				TEST_ASSERT(size == Size(180, 12)); // 12*(15x1)
+				{
+					// such font and measuring only applied in unit test environment
+					auto font = label->GetDisplayFont();
+					TEST_ASSERT(font.fontFamily == L"GacUI Default Font");
+					TEST_ASSERT(font.size == 12);
+					auto size = label->GetBoundsComposition()->GetCachedMinSize();
+					TEST_ASSERT(size == Size(180, 12)); // 12*(15x1)
+				}
 				auto labelCT = dynamic_cast<templates::GuiLabelTemplate*>(label->GetControlTemplateObject());
 				TEST_ASSERT(labelCT);
 				TEST_ASSERT(label->GetTextColor() == labelCT->GetDefaultTextColor());
