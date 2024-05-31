@@ -34,6 +34,109 @@ TEST_FILE
 			protocol->OnNextIdleFrame(L"Ready", [=]()
 			{
 				auto window = GetApplication()->GetMainWindow();
+				TEST_ASSERT(window->GetMaximizedBox() == true);
+				TEST_ASSERT(window->GetMinimizedBox() == true);
+				TEST_ASSERT(window->GetBorder() == true);
+				TEST_ASSERT(window->GetSizeBox() == true);
+				TEST_ASSERT(window->GetIconVisible() == true);
+				TEST_ASSERT(window->GetTitleBar() == true);
+
+				window->SetMaximizedBox(false);
+				window->SetText(L"No Maximized Box");
+			});
+			protocol->OnNextIdleFrame(L"No Maximized Box", [=]()
+			{
+				auto window = GetApplication()->GetMainWindow();
+				TEST_ASSERT(window->GetMaximizedBox() == false);
+				TEST_ASSERT(window->GetMinimizedBox() == true);
+				TEST_ASSERT(window->GetBorder() == true);
+				TEST_ASSERT(window->GetSizeBox() == true);
+				TEST_ASSERT(window->GetIconVisible() == true);
+				TEST_ASSERT(window->GetTitleBar() == true);
+
+				window->SetMaximizedBox(true);
+				window->SetMinimizedBox(false);
+				window->SetText(L"No Minimized Box");
+			});
+			protocol->OnNextIdleFrame(L"No Minimized Box", [=]()
+			{
+				auto window = GetApplication()->GetMainWindow();
+				TEST_ASSERT(window->GetMaximizedBox() == true);
+				TEST_ASSERT(window->GetMinimizedBox() == false);
+				TEST_ASSERT(window->GetBorder() == true);
+				TEST_ASSERT(window->GetSizeBox() == true);
+				TEST_ASSERT(window->GetIconVisible() == true);
+				TEST_ASSERT(window->GetTitleBar() == true);
+
+				window->SetMinimizedBox(true);
+				window->SetBorder(false);
+				window->SetText(L"No Border");
+			});
+			protocol->OnNextIdleFrame(L"No Border", [=]()
+			{
+				auto window = GetApplication()->GetMainWindow();
+				TEST_ASSERT(window->GetMaximizedBox() == true);
+				TEST_ASSERT(window->GetMinimizedBox() == true);
+				TEST_ASSERT(window->GetBorder() == false);
+				TEST_ASSERT(window->GetSizeBox() == true);
+				TEST_ASSERT(window->GetIconVisible() == true);
+				TEST_ASSERT(window->GetTitleBar() == true);
+
+				window->SetBorder(true);
+				window->SetSizeBox(false);
+				window->SetText(L"No Size Box");
+			});
+			protocol->OnNextIdleFrame(L"No Size Box", [=]()
+			{
+				auto window = GetApplication()->GetMainWindow();
+				TEST_ASSERT(window->GetMaximizedBox() == true);
+				TEST_ASSERT(window->GetMinimizedBox() == true);
+				TEST_ASSERT(window->GetBorder() == true);
+				TEST_ASSERT(window->GetSizeBox() == false);
+				TEST_ASSERT(window->GetIconVisible() == true);
+				TEST_ASSERT(window->GetTitleBar() == true);
+
+				window->SetSizeBox(true);
+				window->SetIconVisible(false);
+				window->SetText(L"No Icon");
+			});
+			protocol->OnNextIdleFrame(L"No Icon", [=]()
+			{
+				auto window = GetApplication()->GetMainWindow();
+				TEST_ASSERT(window->GetMaximizedBox() == true);
+				TEST_ASSERT(window->GetMinimizedBox() == true);
+				TEST_ASSERT(window->GetBorder() == true);
+				TEST_ASSERT(window->GetSizeBox() == true);
+				TEST_ASSERT(window->GetIconVisible() == false);
+				TEST_ASSERT(window->GetTitleBar() == true);
+
+				window->SetIconVisible(true);
+				window->SetTitleBar(false);
+				window->SetText(L"No Title Bar");
+			});
+			protocol->OnNextIdleFrame(L"No Title Bar", [=]()
+			{
+				auto window = GetApplication()->GetMainWindow();
+				TEST_ASSERT(window->GetMaximizedBox() == true);
+				TEST_ASSERT(window->GetMinimizedBox() == true);
+				TEST_ASSERT(window->GetBorder() == true);
+				TEST_ASSERT(window->GetSizeBox() == true);
+				TEST_ASSERT(window->GetIconVisible() == true);
+				TEST_ASSERT(window->GetTitleBar() == false);
+
+				window->SetTitleBar(true);
+				window->SetText(L"Restored");
+			});
+			protocol->OnNextIdleFrame(L"Restored", [=]()
+			{
+				auto window = GetApplication()->GetMainWindow();
+				TEST_ASSERT(window->GetMaximizedBox() == true);
+				TEST_ASSERT(window->GetMinimizedBox() == true);
+				TEST_ASSERT(window->GetBorder() == true);
+				TEST_ASSERT(window->GetSizeBox() == true);
+				TEST_ASSERT(window->GetIconVisible() == true);
+				TEST_ASSERT(window->GetTitleBar() == true);
+
 				window->Hide();
 			});
 		});
