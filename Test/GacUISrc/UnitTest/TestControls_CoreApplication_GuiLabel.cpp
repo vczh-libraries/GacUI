@@ -45,11 +45,24 @@ TEST_FILE
 					auto size = label->GetBoundsComposition()->GetCachedMinSize();
 					TEST_ASSERT(size == Size(180, 12)); // 12*(15x1)
 				}
-				auto labelCT = dynamic_cast<templates::GuiLabelTemplate*>(label->GetControlTemplateObject());
-				TEST_ASSERT(labelCT);
-				TEST_ASSERT(label->GetTextColor() == labelCT->GetDefaultTextColor());
+				{
+					auto labelCT = dynamic_cast<templates::GuiLabelTemplate*>(label->GetControlTemplateObject());
+					TEST_ASSERT(labelCT);
+					TEST_ASSERT(label->GetTextColor() == labelCT->GetDefaultTextColor());
+				}
+				TEST_ASSERT(label->GetFocused() == false);
+				label->SetFocused();
+				TEST_ASSERT(label->GetFocused() == false);
 
-				label->TextChanged.AttachLambda([=](...) {window->SetText(L"TextChanged"); });
+				label->TextChanged.AttachLambda([=](...)
+				{
+					window->SetText(L"TextChanged");
+				});
+				label->EnabledChanged.AttachLambda([=](...)
+				{
+					window->SetText(label->GetEnabled() ? L"Enabled" : L"Disabled");
+				});
+
 				label->SetText(L"The text is changed");
 			});
 			protocol->OnNextIdleFrame(L"The text is changed", [=]()
@@ -57,10 +70,26 @@ TEST_FILE
 				auto window = GetApplication()->GetMainWindow();
 				auto label = FindObjectByName<GuiLabel>(window, L"label");
 
+				label->SetEnabled(false);
+			});
+			protocol->OnNextIdleFrame(L"Disabled", [=]()
+			{
+				auto window = GetApplication()->GetMainWindow();
+				auto label = FindObjectByName<GuiLabel>(window, L"label");
+
+				label->SetEnabled(true);
 				label->SetText(L"The color is changed");
 				label->SetTextColor(Color(0, 255, 0));
 			});
-			protocol->OnNextIdleFrame(L"The color is changed", [=]()
+			protocol->OnNextIdleFrame(L"The text is changed", [=]()
+			{
+				auto window = GetApplication()->GetMainWindow();
+				auto label = FindObjectByName<GuiLabel>(window, L"label");
+				TEST_ASSERT(label->GetTextColor() == Color(0, 255, 0));
+
+				label->SetEnabled(false);
+			});
+			protocol->OnNextIdleFrame(L"Disabled again", [=]()
 			{
 				auto window = GetApplication()->GetMainWindow();
 				auto label = FindObjectByName<GuiLabel>(window, L"label");
