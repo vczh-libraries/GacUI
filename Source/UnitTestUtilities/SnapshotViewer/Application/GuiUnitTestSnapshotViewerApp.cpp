@@ -43,16 +43,55 @@ Helper Functions
 		GuiGraphicsComposition* container,
 		vint x,
 		vint y,
-		Ptr<remoteprotocol::RenderingDom> dom)
+		Ptr<remoteprotocol::RenderingDom> dom,
+		vint& cursorCounter)
 	{
 		auto bounds = new GuiBoundsComposition;
 		container->AddChild(bounds);
 
 		bounds->SetExpectedBounds(Rect({ dom->bounds.x1 - x,dom->bounds.y1 - y }, { dom->bounds.Width(),dom->bounds.Height() }));
 
+		auto cursor = dom->cursor;
 		if (dom->cursor)
 		{
-			bounds->SetAssociatedCursor(GetCurrentController()->ResourceService()->GetSystemCursor(dom->cursor.Value()));
+			cursorCounter++;
+		}
+
+		if (dom->hitTestResult && cursorCounter == 0)
+		{
+			switch (dom->hitTestResult.Value())
+			{
+			case INativeWindowListener::BorderLeft:
+			case INativeWindowListener::BorderRight:
+				cursor = INativeCursor::SizeWE;
+				break;
+			case INativeWindowListener::BorderTop:
+			case INativeWindowListener::BorderBottom:
+				cursor = INativeCursor::SizeNS;
+				break;
+			case INativeWindowListener::BorderLeftTop:
+			case INativeWindowListener::BorderRightBottom:
+				cursor = INativeCursor::SizeNWSE;
+				break;
+			case INativeWindowListener::BorderRightTop:
+			case INativeWindowListener::BorderLeftBottom:
+				cursor = INativeCursor::SizeNESW;
+				break;
+			case INativeWindowListener::Icon:
+			case INativeWindowListener::ButtonMinimum:
+			case INativeWindowListener::ButtonMaximum:
+			case INativeWindowListener::ButtonClose:
+				cursor = INativeCursor::Hand;
+				break;
+			case INativeWindowListener::Title:
+				cursor = INativeCursor::SizeAll;
+				break;
+			}
+		}
+
+		if (cursor)
+		{
+			bounds->SetAssociatedCursor(GetCurrentController()->ResourceService()->GetSystemCursor(cursor.Value()));
 		}
 
 		if (dom->element)
@@ -174,8 +213,13 @@ Helper Functions
 		{
 			for (auto child : *dom->children.Obj())
 			{
-				InstallDom(trace, frame, bounds, dom->bounds.x1, dom->bounds.y1, child);
+				InstallDom(trace, frame, bounds, dom->bounds.x1, dom->bounds.y1, child, cursorCounter);
 			}
+		}
+
+		if (dom->cursor)
+		{
+			cursorCounter--;
 		}
 	}
 	
@@ -197,9 +241,10 @@ Helper Functions
 
 		if (frame.root && frame.root->children)
 		{
+			vint cursorCounter = 0;
 			for (auto child : *frame.root->children.Obj())
 			{
-				InstallDom(trace, frame, canvasComposition, 0, 0, child);
+				InstallDom(trace, frame, canvasComposition, 0, 0, child, cursorCounter);
 			}
 		}
 		return focusComposition;
