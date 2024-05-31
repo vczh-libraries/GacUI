@@ -31,6 +31,9 @@
     <Filter Include="Source Files\Remote\Rendering">
       <UniqueIdentifier>{cdc94559-2132-4009-b95d-6df8409d17d3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Controls\CoreApplication">
+      <UniqueIdentifier>{f0494749-4078-454d-a60d-e1950c92705f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -119,6 +122,9 @@
     </ClCompile>
     <ClCompile Include="TestRemote_GraphicsHost_ImageFrame.cpp">
       <Filter>Source Files\Remote\Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="TestControls_CoreApplication_GuiWindow.cpp">
+      <Filter>Source Files\Controls\CoreApplication</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
