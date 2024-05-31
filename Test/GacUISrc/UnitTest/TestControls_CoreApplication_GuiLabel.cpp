@@ -21,7 +21,9 @@ TEST_FILE
   <Instance name="MainWindowResource">
     <Instance ref.Class="gacuisrc_unittest::MainWindow">
       <Window ref.Name="self" Text="GuiLabel" ClientSize="x:320 y:240">
-        <Label ref.Name="label" Text="This is a label"/>
+        <Label ref.Name="label" Text="This is a label">
+          <att.BoundsComposition-set PreferredMinSize="x:1 y:1"/>
+        </Label>
       </Window>
     </Instance>
   </Instance>

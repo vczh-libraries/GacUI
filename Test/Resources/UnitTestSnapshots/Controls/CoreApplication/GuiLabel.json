@@ -25,7 +25,7 @@
   "createdImages": [],
   "frames": [
     {
-      "frameId": 4,
+      "frameId": 5,
       "frameName": "Ready",
       "windowSize": {
         "bounds": {
@@ -667,6 +667,17 @@
             }
           }
         ],
+        [
+          "RenderingCommand_Element",
+          {
+            "rendering": {
+              "id": 21,
+              "bounds": {"x1": 8, "y1": 32, "x2": 188, "y2": 44},
+              "areaClippedByParent": {"x1": 8, "y1": 32, "x2": 188, "y2": 44}
+            },
+            "element": 21
+          }
+        ],
         ["RenderingCommand_EndBoundary", {}]
       ],
       "root": {
@@ -909,7 +920,16 @@
                     "element": null,
                     "bounds": {"x1": 8, "y1": 32, "x2": 312, "y2": 232},
                     "validArea": {"x1": 8, "y1": 32, "x2": 312, "y2": 232},
-                    "children": null
+                    "children": [
+                      {
+                        "hitTestResult": null,
+                        "cursor": null,
+                        "element": 21,
+                        "bounds": {"x1": 8, "y1": 32, "x2": 188, "y2": 44},
+                        "validArea": {"x1": 8, "y1": 32, "x2": 188, "y2": 44},
+                        "children": null
+                      }
+                    ]
                   }
                 ]
               }
@@ -919,7 +939,7 @@
       }
     },
     {
-      "frameId": 6,
+      "frameId": 9,
       "frameName": "The text is changed",
       "windowSize": {
         "bounds": {
@@ -1561,6 +1581,17 @@
             }
           }
         ],
+        [
+          "RenderingCommand_Element",
+          {
+            "rendering": {
+              "id": 21,
+              "bounds": {"x1": 8, "y1": 32, "x2": 236, "y2": 44},
+              "areaClippedByParent": {"x1": 8, "y1": 32, "x2": 236, "y2": 44}
+            },
+            "element": 21
+          }
+        ],
         ["RenderingCommand_EndBoundary", {}]
       ],
       "root": {
@@ -1803,7 +1834,16 @@
                     "element": null,
                     "bounds": {"x1": 8, "y1": 32, "x2": 312, "y2": 232},
                     "validArea": {"x1": 8, "y1": 32, "x2": 312, "y2": 232},
-                    "children": null
+                    "children": [
+                      {
+                        "hitTestResult": null,
+                        "cursor": null,
+                        "element": 21,
+                        "bounds": {"x1": 8, "y1": 32, "x2": 236, "y2": 44},
+                        "validArea": {"x1": 8, "y1": 32, "x2": 236, "y2": 44},
+                        "children": null
+                      }
+                    ]
                   }
                 ]
               }
@@ -1813,7 +1853,7 @@
       }
     },
     {
-      "frameId": 8,
+      "frameId": 13,
       "frameName": "The color is changed",
       "windowSize": {
         "bounds": {
@@ -2455,6 +2495,17 @@
             }
           }
         ],
+        [
+          "RenderingCommand_Element",
+          {
+            "rendering": {
+              "id": 21,
+              "bounds": {"x1": 8, "y1": 32, "x2": 248, "y2": 44},
+              "areaClippedByParent": {"x1": 8, "y1": 32, "x2": 248, "y2": 44}
+            },
+            "element": 21
+          }
+        ],
         ["RenderingCommand_EndBoundary", {}]
       ],
       "root": {
@@ -2697,7 +2748,16 @@
                     "element": null,
                     "bounds": {"x1": 8, "y1": 32, "x2": 312, "y2": 232},
                     "validArea": {"x1": 8, "y1": 32, "x2": 312, "y2": 232},
-                    "children": null
+                    "children": [
+                      {
+                        "hitTestResult": null,
+                        "cursor": null,
+                        "element": 21,
+                        "bounds": {"x1": 8, "y1": 32, "x2": 248, "y2": 44},
+                        "validArea": {"x1": 8, "y1": 32, "x2": 248, "y2": 44},
+                        "children": null
+                      }
+                    ]
                   }
                 ]
               }
