@@ -46,7 +46,7 @@ TEST_FILE
 			AssertEventLogs(
 				eventLogs,
 				L"Begin()",
-				L"Render(1, {10,10:0,0}, {0,0:640,480})",
+				L"Render(1, {10,10:1,1}, {0,0:640,480})",
 				L"End()"
 				);
 		});
@@ -136,8 +136,8 @@ TEST_FILE
 			AssertEventLogs(
 				eventLogs,
 				L"Begin()",
-				L"Render(1, {0,0:100,0}, {0,0:640,480})",
-				L"Render(2, {0,0:100,0}, {0,0:640,480})",
+				L"Render(1, {0,0:100,1}, {0,0:640,480})",
+				L"Render(2, {0,1:100,1}, {0,0:640,480})",
 				L"End()"
 				);
 		});
@@ -314,8 +314,8 @@ TEST_FILE
 			AssertEventLogs(
 				eventLogs,
 				L"Begin()",
-				L"Render(1, {0,0:100,0}, {0,0:640,480})",
-				L"Render(2, {0,0:100,0}, {0,0:640,480})",
+				L"Render(1, {0,0:100,1}, {0,0:640,480})",
+				L"Render(2, {0,1:100,1}, {0,0:640,480})",
 				L"End()"
 				);
 		});

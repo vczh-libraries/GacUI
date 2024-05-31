@@ -285,6 +285,7 @@ GuiSolidLabelElementRenderer
 
 	GuiSolidLabelElementRenderer::GuiSolidLabelElementRenderer()
 	{
+		minSize = { 1,1 };
 	}
 
 	bool GuiSolidLabelElementRenderer::NeedUpdateMinSizeFromCache()
@@ -300,7 +301,8 @@ GuiSolidLabelElementRenderer
 			if (index != -1)
 			{
 				needFontHeight = false;
-				minSize = { 0,renderTarget->fontHeights.Values()[index] };
+				vint size = renderTarget->fontHeights.Values()[index];
+				UpdateMinSize({ size,size });
 			}
 		}
 	}
@@ -308,6 +310,8 @@ GuiSolidLabelElementRenderer
 	void GuiSolidLabelElementRenderer::UpdateMinSize(Size size)
 	{
 		minSize = size;
+		if (minSize.x < 1)minSize.x = 1;
+		if (minSize.y < 1)minSize.y = 1;
 	}
 
 	void GuiSolidLabelElementRenderer::NotifyMinSizeCacheInvalidated()

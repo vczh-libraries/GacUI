@@ -204,7 +204,7 @@ Helpers
 
 				IGuiGraphicsRendererFactory*	factory;
 				TElement*						element;
-				TRenderTarget*						renderTarget;
+				TRenderTarget*					renderTarget;
 				Size							minSize;
 
 			public:
