@@ -51,7 +51,6 @@
     - Font, DisplayFont
     - Alt
     - Text, Context
-  - `GuiLabel`
   - `GuiWindow`
     - Interaction with screen
 - Metadata of remote protocol will be updated and included in releases.
