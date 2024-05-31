@@ -30,9 +30,6 @@ namespace gacuisrc_unittest
         var label : ::presentation::controls::GuiLabel* = null of (::presentation::controls::GuiLabel*);
 
         @cpp:Protected
-        var <precompile>0 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
-
-        @cpp:Protected
         func <gacuisrc_unittest-MainWindow>Initialize(<this> : ::gacuisrc_unittest::MainWindow*) : (::system::Void)
         {
             (self = <this>);
@@ -45,10 +42,6 @@ namespace gacuisrc_unittest
             {
                 (label = new (::presentation::controls::GuiLabel*)(::presentation::theme::ThemeName::Label));
                 <this>.SetNamedObject("label", label);
-            }
-            (<precompile>0 = label.BoundsComposition);
-            {
-                (<precompile>0.PreferredMinSize = {x : 1; y : 1;} of (::presentation::Size));
             }
             {
                 (label.Text = "This is a label");

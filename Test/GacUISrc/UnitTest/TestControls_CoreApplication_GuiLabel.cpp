@@ -21,9 +21,7 @@ TEST_FILE
   <Instance name="MainWindowResource">
     <Instance ref.Class="gacuisrc_unittest::MainWindow">
       <Window ref.Name="self" Text="GuiLabel" ClientSize="x:320 y:240">
-        <Label ref.Name="label" Text="This is a label">
-          <att.BoundsComposition-set PreferredMinSize="x:1 y:1"/>
-        </Label>
+        <Label ref.Name="label" Text="This is a label"/>
       </Window>
     </Instance>
   </Instance>
@@ -39,6 +37,8 @@ TEST_FILE
 				auto window = GetApplication()->GetMainWindow();
 				auto label = FindObjectByName<GuiLabel>(window, L"label");
 				TEST_ASSERT(label->GetText() == L"This is a label");
+				auto size = label->GetBoundsComposition()->GetCachedMinSize();
+				TEST_ASSERT(size == Size(180, 12));
 				auto labelCT = dynamic_cast<templates::GuiLabelTemplate*>(label->GetControlTemplateObject());
 				TEST_ASSERT(labelCT);
 				TEST_ASSERT(label->GetTextColor() == labelCT->GetDefaultTextColor());
