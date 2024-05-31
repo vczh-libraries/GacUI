@@ -53,7 +53,6 @@
     - Text, Context
   - `GuiLabel`
   - `GuiWindow`
-    - Feature enabling/disabling
     - Interaction with screen
 - Metadata of remote protocol will be updated and included in releases.
 - GacUI Binary Resource (can't move to next release)

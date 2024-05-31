@@ -127,6 +127,7 @@ namespace vl
 				CLASS_MEMBER_FIELD(__vwsn_precompile_20)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_21)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_22)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_23)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_3)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_4)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_5)
