@@ -167,7 +167,14 @@ void GacUIUnitTest_Start_WithResourceAsText(const WString& appName, Nullable<Uni
 		auto resource = GacUIUnitTest_CompileAndLoad(resourceText);
 		{
 			auto workflow = resource->GetStringByPath(L"UnitTest/Workflow");
-			File snapshotFile = GacUIUnitTest_PrepareSnapshotFile(appName, WString::Unmanaged(L".txt"));
+			File snapshotFile = GacUIUnitTest_PrepareSnapshotFile(
+				appName,
+#ifdef VCZH_64
+				WString::Unmanaged(L"[x64].txt")
+#else
+				WString::Unmanaged(L"[x86].txt")
+#endif
+				);
 			bool succeeded = snapshotFile.WriteAllText(workflow, false, stream::BomEncoder::Utf8);
 			CHECK_ERROR(succeeded, ERROR_MESSAGE_PREFIX L"Failed to write the snapshot file.");
 		}
