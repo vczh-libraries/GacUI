@@ -226,6 +226,86 @@ TEST_FILE
 
 	TEST_CASE(L"Enabled and VisuallyEnabled")
 	{
+		GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+		{
+			protocol->OnNextIdleFrame(L"Ready", [=]()
+			{
+				auto window = GetApplication()->GetMainWindow();
+				auto a = FindObjectByName<GuiControl>(window, L"a");
+				auto b = FindObjectByName<GuiControl>(window, L"b");
+				auto c = FindObjectByName<GuiControl>(window, L"c");
+				auto d = FindObjectByName<GuiControl>(window, L"d");
+				auto e = FindObjectByName<GuiControl>(window, L"e");
+
+				a->SetEnabled(false);
+				TEST_ASSERT(a->GetEnabled() == false);
+				TEST_ASSERT(b->GetEnabled() == true);
+				TEST_ASSERT(c->GetEnabled() == true);
+				TEST_ASSERT(d->GetEnabled() == true);
+				TEST_ASSERT(e->GetEnabled() == true);
+				TEST_ASSERT(a->GetVisuallyEnabled() == false);
+				TEST_ASSERT(b->GetVisuallyEnabled() == false);
+				TEST_ASSERT(c->GetVisuallyEnabled() == false);
+				TEST_ASSERT(d->GetVisuallyEnabled() == false);
+				TEST_ASSERT(e->GetVisuallyEnabled() == false);
+			});
+			protocol->OnNextIdleFrame(L"Disable A", [=]()
+			{
+				auto window = GetApplication()->GetMainWindow();
+				auto a = FindObjectByName<GuiControl>(window, L"a");
+				auto b = FindObjectByName<GuiControl>(window, L"b");
+				auto c = FindObjectByName<GuiControl>(window, L"c");
+				auto d = FindObjectByName<GuiControl>(window, L"d");
+				auto e = FindObjectByName<GuiControl>(window, L"e");
+
+				a->SetEnabled(true);
+				b->SetEnabled(false);
+				e->SetEnabled(false);
+				TEST_ASSERT(a->GetEnabled() == true);
+				TEST_ASSERT(b->GetEnabled() == false);
+				TEST_ASSERT(c->GetEnabled() == true);
+				TEST_ASSERT(d->GetEnabled() == true);
+				TEST_ASSERT(e->GetEnabled() == false);
+				TEST_ASSERT(a->GetVisuallyEnabled() == true);
+				TEST_ASSERT(b->GetVisuallyEnabled() == false);
+				TEST_ASSERT(c->GetVisuallyEnabled() == false);
+				TEST_ASSERT(d->GetVisuallyEnabled() == true);
+				TEST_ASSERT(e->GetVisuallyEnabled() == false);
+			});
+			protocol->OnNextIdleFrame(L"Disable B/E", [=]()
+			{
+				auto window = GetApplication()->GetMainWindow();
+				auto a = FindObjectByName<GuiControl>(window, L"a");
+				auto b = FindObjectByName<GuiControl>(window, L"b");
+				auto c = FindObjectByName<GuiControl>(window, L"c");
+				auto d = FindObjectByName<GuiControl>(window, L"d");
+				auto e = FindObjectByName<GuiControl>(window, L"e");
+
+				b->SetEnabled(true);
+				d->SetEnabled(false);
+				TEST_ASSERT(a->GetEnabled() == true);
+				TEST_ASSERT(b->GetEnabled() == true);
+				TEST_ASSERT(c->GetEnabled() == true);
+				TEST_ASSERT(d->GetEnabled() == false);
+				TEST_ASSERT(e->GetEnabled() == false);
+				TEST_ASSERT(a->GetVisuallyEnabled() == true);
+				TEST_ASSERT(b->GetVisuallyEnabled() == true);
+				TEST_ASSERT(c->GetVisuallyEnabled() == true);
+				TEST_ASSERT(d->GetVisuallyEnabled() == false);
+				TEST_ASSERT(e->GetVisuallyEnabled() == false);
+			});
+			protocol->OnNextIdleFrame(L"Disable D/E", [=]()
+			{
+				auto window = GetApplication()->GetMainWindow();
+
+				window->Hide();
+			});
+		});
+		GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+			WString::Unmanaged(L"Controls/CoreApplication/GuiControl/Enable"),
+			WString::Unmanaged(L"gacuisrc_unittest::MainWindow2"),
+			resource
+			);
 	});
 
 	TEST_CASE(L"Focus and Alt")
