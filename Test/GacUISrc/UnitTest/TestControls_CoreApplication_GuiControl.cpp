@@ -51,7 +51,7 @@ TEST_FILE
 
   <Instance name="MyControlResource">
     <Instance ref.Class="gacuisrc_unittest::MyControl" xmlns:ut="gacuisrc_unittest::*">
-      <CustomControl Text="This is a control with a template">
+      <CustomControl ref.Name="self" FocusableComposition-eval="self.BoundsComposition" Text="This is a control with a template">
         <att.ControlTemplate>ut:MyControlTemplate</att.ControlTemplate>
       </CustomControl>
     </Instance>
@@ -60,7 +60,7 @@ TEST_FILE
   <Instance name="MainWindowResource">
     <Instance ref.Class="gacuisrc_unittest::MainWindow" xmlns:ut="gacuisrc_unittest::*">
       <Window ref.Name="self" Text="MyControlTemplate" ClientSize="x:320 y:240">
-        <ut:MyControl Text="This is a control with a template"/>
+        <ut:MyControl ref.Name="my" Text="This is a control with a template"/>
       </Window>
     </Instance>
   </Instance>
@@ -73,7 +73,49 @@ TEST_FILE
 		{
 			protocol->OnNextIdleFrame(L"Ready", [=]()
 			{
-				auto window = GetApplication()->GetMainWindow(); 
+				auto window = GetApplication()->GetMainWindow();
+				auto my = FindObjectByName<GuiControl>(window, L"my");
+
+				auto font = my->GetDisplayFont();
+				font.fontFamily = L"Another Font";
+				TEST_ASSERT(my->GetDisplayFont() == window->GetDisplayFont());
+				my->SetFont(font);
+				TEST_ASSERT(my->GetDisplayFont() == font);
+			});
+			protocol->OnNextIdleFrame(L"Changed font", [=]()
+			{
+				auto window = GetApplication()->GetMainWindow();
+				auto my = FindObjectByName<GuiControl>(window, L"my");
+
+				TEST_ASSERT(my->GetEnabled() == true);
+				TEST_ASSERT(my->GetVisuallyEnabled() == true);
+				my->SetEnabled(false);
+				TEST_ASSERT(my->GetEnabled() == false);
+				TEST_ASSERT(my->GetVisuallyEnabled() == false);
+			});
+			protocol->OnNextIdleFrame(L"Disabled", [=]()
+			{
+				auto window = GetApplication()->GetMainWindow();
+				auto my = FindObjectByName<GuiControl>(window, L"my");
+
+				my->SetEnabled(true);
+				window->SetEnabled(false);
+				TEST_ASSERT(my->GetEnabled() == true);
+				TEST_ASSERT(my->GetVisuallyEnabled() == false);
+			});
+			protocol->OnNextIdleFrame(L"Disabled window", [=]()
+			{
+				auto window = GetApplication()->GetMainWindow();
+				auto my = FindObjectByName<GuiControl>(window, L"my");
+
+				window->SetEnabled(true);
+				TEST_ASSERT(my->GetFocused() == false);
+				my->SetFocused();
+				TEST_ASSERT(my->GetFocused() == true);
+			});
+			protocol->OnNextIdleFrame(L"Focused", [=]()
+			{
+				auto window = GetApplication()->GetMainWindow();
 
 				window->Hide();
 			});

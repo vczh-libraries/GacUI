@@ -27,7 +27,7 @@ namespace gacuisrc_unittest
         var self : ::gacuisrc_unittest::MainWindow* = null of (::gacuisrc_unittest::MainWindow*);
 
         @cpp:Protected
-        var <precompile>0 : ::gacuisrc_unittest::MyControl* = null of (::gacuisrc_unittest::MyControl*);
+        var my : ::gacuisrc_unittest::MyControl* = null of (::gacuisrc_unittest::MyControl*);
 
         @cpp:Protected
         func <gacuisrc_unittest-MainWindow>Initialize(<this> : ::gacuisrc_unittest::MainWindow*) : (::system::Void)
@@ -39,12 +39,13 @@ namespace gacuisrc_unittest
             {
                 (self.Text = "MyControlTemplate");
             }
-            (<precompile>0 = new (::gacuisrc_unittest::MyControl*)());
+            (my = new (::gacuisrc_unittest::MyControl*)());
+            <this>.SetNamedObject("my", my);
             {
-                (<precompile>0.Text = "This is a control with a template");
+                (my.Text = "This is a control with a template");
             }
             {
-                self.AddChild(<precompile>0);
+                self.AddChild(my);
             }
         }
 
@@ -965,6 +966,9 @@ namespace gacuisrc_unittest
             }
             {
                 (self.ContainerComposition = container);
+            }
+            {
+                (self.FocusableComposition = container);
             }
         }
 
