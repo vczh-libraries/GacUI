@@ -65,6 +65,32 @@ TEST_FILE
       </Window>
     </Instance>
   </Instance>
+
+  <Instance name="MainWindow2Resource">
+    <Instance ref.Class="gacuisrc_unittest::MainWindow2" xmlns:ut="gacuisrc_unittest::*">
+      <Window ref.Name="self" Text="MyControlTemplate" ClientSize="x:320 y:240">
+        <att.ContainerComposition-set InternalMargin="left:0 top:5 right:0 bottom:0"/>
+        <ut:MyControl ref.Name="a" Text="A">
+          <Stack Direction="Vertical" ExtraMargin="left:5 top:5 right:5 bottom:5" Padding="5" MinSizeLimitation="LimitToElementAndChildren" AlignmentToParent="left:0 top:0 right:0 bottom:0">
+            <StackItem>
+              <ut:MyControl ref.Name="b" Text="B">
+                <ut:MyControl ref.Name="c" Text="C">
+                  <att.BoundsComposition-set AlignmentToParent="left:5 top:5 right:5 bottom:5"/>
+                </ut:MyControl>
+              </ut:MyControl>
+            </StackItem>
+            <StackItem>
+              <ut:MyControl ref.Name="d" Text="D">
+                <ut:MyControl ref.Name="e" Text="E">
+                  <att.BoundsComposition-set AlignmentToParent="left:5 top:5 right:5 bottom:5"/>
+                </ut:MyControl>
+              </ut:MyControl>
+            </StackItem>
+          </Stack>
+        </ut:MyControl>
+      </Window>
+    </Instance>
+  </Instance>
 </Resource>
 )GacUISrc";
 
@@ -130,6 +156,72 @@ TEST_FILE
 
 	TEST_CASE(L"Visible")
 	{
+		GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+		{
+			protocol->OnNextIdleFrame(L"Ready", [=]()
+			{
+				auto window = GetApplication()->GetMainWindow();
+				auto a = FindObjectByName<GuiControl>(window, L"a");
+
+				a->SetVisible(false);
+				TEST_ASSERT(a->GetVisible() == false);
+			});
+			protocol->OnNextIdleFrame(L"Hide A", [=]()
+			{
+				auto window = GetApplication()->GetMainWindow();
+				auto a = FindObjectByName<GuiControl>(window, L"a");
+				auto b = FindObjectByName<GuiControl>(window, L"b");
+
+				a->SetVisible(true);
+				b->SetVisible(false);
+				TEST_ASSERT(a->GetVisible() == true);
+				TEST_ASSERT(b->GetVisible() == false);
+			});
+			protocol->OnNextIdleFrame(L"Hide B", [=]()
+			{
+				auto window = GetApplication()->GetMainWindow();
+				auto b = FindObjectByName<GuiControl>(window, L"b");
+				auto c = FindObjectByName<GuiControl>(window, L"c");
+
+				b->SetVisible(true);
+				c->SetVisible(false);
+				TEST_ASSERT(b->GetVisible() == true);
+				TEST_ASSERT(c->GetVisible() == false);
+			});
+			protocol->OnNextIdleFrame(L"Hide C", [=]()
+			{
+				auto window = GetApplication()->GetMainWindow();
+				auto c = FindObjectByName<GuiControl>(window, L"c");
+				auto d = FindObjectByName<GuiControl>(window, L"d");
+
+				c->SetVisible(true);
+				d->SetVisible(false);
+				TEST_ASSERT(c->GetVisible() == true);
+				TEST_ASSERT(d->GetVisible() == false);
+			});
+			protocol->OnNextIdleFrame(L"Hide D", [=]()
+			{
+				auto window = GetApplication()->GetMainWindow();
+				auto d = FindObjectByName<GuiControl>(window, L"d");
+				auto e = FindObjectByName<GuiControl>(window, L"e");
+
+				d->SetVisible(true);
+				e->SetVisible(false);
+				TEST_ASSERT(d->GetVisible() == true);
+				TEST_ASSERT(e->GetVisible() == false);
+			});
+			protocol->OnNextIdleFrame(L"Hide E", [=]()
+			{
+				auto window = GetApplication()->GetMainWindow();
+
+				window->Hide();
+			});
+		});
+		GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+			WString::Unmanaged(L"Controls/CoreApplication/GuiControl/Visible"),
+			WString::Unmanaged(L"gacuisrc_unittest::MainWindow2"),
+			resource
+			);
 	});
 
 	TEST_CASE(L"Enabled and VisuallyEnabled")
