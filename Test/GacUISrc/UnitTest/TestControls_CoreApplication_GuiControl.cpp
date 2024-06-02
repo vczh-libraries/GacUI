@@ -308,11 +308,62 @@ TEST_FILE
 			);
 	});
 
-	TEST_CASE(L"Focus and Alt")
+	TEST_CASE(L"Font and DisplayFont")
+	{
+		GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+		{
+			protocol->OnNextIdleFrame(L"Ready", [=]()
+			{
+				auto window = GetApplication()->GetMainWindow();
+				auto a = FindObjectByName<GuiControl>(window, L"a");
+				auto b = FindObjectByName<GuiControl>(window, L"b");
+				auto c = FindObjectByName<GuiControl>(window, L"c");
+				auto d = FindObjectByName<GuiControl>(window, L"d");
+				auto e = FindObjectByName<GuiControl>(window, L"e");
+
+				auto font = window->GetDisplayFont();
+				font.fontFamily = L"Font A";
+				a->SetFont(font);
+				font.fontFamily = L"Font B";
+				b->SetFont(font);
+				font.fontFamily = L"Font E";
+				e->SetFont(font);
+
+				TEST_ASSERT(a->GetFont() == true);
+				TEST_ASSERT(b->GetFont() == true);
+				TEST_ASSERT(c->GetFont() == false);
+				TEST_ASSERT(d->GetFont() == false);
+				TEST_ASSERT(e->GetFont() == true);
+
+				TEST_ASSERT(a->GetFont().Value().fontFamily == L"Font A");
+				TEST_ASSERT(b->GetFont().Value().fontFamily == L"Font B");
+				TEST_ASSERT(e->GetFont().Value().fontFamily == L"Font E");
+
+				TEST_ASSERT(a->GetDisplayFont().fontFamily == L"Font A");
+				TEST_ASSERT(b->GetDisplayFont().fontFamily == L"Font B");
+				TEST_ASSERT(c->GetDisplayFont().fontFamily == L"Font B");
+				TEST_ASSERT(d->GetDisplayFont().fontFamily == L"Font A");
+				TEST_ASSERT(e->GetDisplayFont().fontFamily == L"Font E");
+			});
+			protocol->OnNextIdleFrame(L"Change fonts", [=]()
+			{
+				auto window = GetApplication()->GetMainWindow();
+
+				window->Hide();
+			});
+		});
+		GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+			WString::Unmanaged(L"Controls/CoreApplication/GuiControl/Font"),
+			WString::Unmanaged(L"gacuisrc_unittest::MainWindow2"),
+			resource
+			);
+	});
+
+	TEST_CASE(L"Focus")
 	{
 	});
 
-	TEST_CASE(L"Font and DisplayFont")
+	TEST_CASE(L"Alt")
 	{
 	});
 }
