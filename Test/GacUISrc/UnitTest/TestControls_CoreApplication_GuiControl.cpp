@@ -361,6 +361,100 @@ TEST_FILE
 
 	TEST_CASE(L"Focus")
 	{
+		GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+		{
+			protocol->OnNextIdleFrame(L"Ready", [=]()
+			{
+				auto window = GetApplication()->GetMainWindow();
+				auto a = FindObjectByName<GuiControl>(window, L"a");
+				auto b = FindObjectByName<GuiControl>(window, L"b");
+				auto c = FindObjectByName<GuiControl>(window, L"c");
+				auto d = FindObjectByName<GuiControl>(window, L"d");
+				auto e = FindObjectByName<GuiControl>(window, L"e");
+
+				a->SetFocused();
+				TEST_ASSERT(a->GetFocused() == true);
+				TEST_ASSERT(b->GetFocused() == false);
+				TEST_ASSERT(c->GetFocused() == false);
+				TEST_ASSERT(d->GetFocused() == false);
+				TEST_ASSERT(e->GetFocused() == false);
+			});
+			protocol->OnNextIdleFrame(L"Focus A", [=]()
+			{
+				auto window = GetApplication()->GetMainWindow();
+				auto a = FindObjectByName<GuiControl>(window, L"a");
+				auto b = FindObjectByName<GuiControl>(window, L"b");
+				auto c = FindObjectByName<GuiControl>(window, L"c");
+				auto d = FindObjectByName<GuiControl>(window, L"d");
+				auto e = FindObjectByName<GuiControl>(window, L"e");
+
+				b->SetFocused();
+				TEST_ASSERT(a->GetFocused() == false);
+				TEST_ASSERT(b->GetFocused() == true);
+				TEST_ASSERT(c->GetFocused() == false);
+				TEST_ASSERT(d->GetFocused() == false);
+				TEST_ASSERT(e->GetFocused() == false);
+			});
+			protocol->OnNextIdleFrame(L"Focus B", [=]()
+			{
+				auto window = GetApplication()->GetMainWindow();
+				auto a = FindObjectByName<GuiControl>(window, L"a");
+				auto b = FindObjectByName<GuiControl>(window, L"b");
+				auto c = FindObjectByName<GuiControl>(window, L"c");
+				auto d = FindObjectByName<GuiControl>(window, L"d");
+				auto e = FindObjectByName<GuiControl>(window, L"e");
+
+				c->SetFocused();
+				TEST_ASSERT(a->GetFocused() == false);
+				TEST_ASSERT(b->GetFocused() == false);
+				TEST_ASSERT(c->GetFocused() == true);
+				TEST_ASSERT(d->GetFocused() == false);
+				TEST_ASSERT(e->GetFocused() == false);
+			});
+			protocol->OnNextIdleFrame(L"Focus C", [=]()
+			{
+				auto window = GetApplication()->GetMainWindow();
+				auto a = FindObjectByName<GuiControl>(window, L"a");
+				auto b = FindObjectByName<GuiControl>(window, L"b");
+				auto c = FindObjectByName<GuiControl>(window, L"c");
+				auto d = FindObjectByName<GuiControl>(window, L"d");
+				auto e = FindObjectByName<GuiControl>(window, L"e");
+
+				d->SetFocused();
+				TEST_ASSERT(a->GetFocused() == false);
+				TEST_ASSERT(b->GetFocused() == false);
+				TEST_ASSERT(c->GetFocused() == false);
+				TEST_ASSERT(d->GetFocused() == true);
+				TEST_ASSERT(e->GetFocused() == false);
+			});
+			protocol->OnNextIdleFrame(L"Focus D", [=]()
+			{
+				auto window = GetApplication()->GetMainWindow();
+				auto a = FindObjectByName<GuiControl>(window, L"a");
+				auto b = FindObjectByName<GuiControl>(window, L"b");
+				auto c = FindObjectByName<GuiControl>(window, L"c");
+				auto d = FindObjectByName<GuiControl>(window, L"d");
+				auto e = FindObjectByName<GuiControl>(window, L"e");
+
+				e->SetFocused();
+				TEST_ASSERT(a->GetFocused() == false);
+				TEST_ASSERT(b->GetFocused() == false);
+				TEST_ASSERT(c->GetFocused() == false);
+				TEST_ASSERT(d->GetFocused() == false);
+				TEST_ASSERT(e->GetFocused() == true);
+			});
+			protocol->OnNextIdleFrame(L"Focus E", [=]()
+			{
+				auto window = GetApplication()->GetMainWindow();
+
+				window->Hide();
+			});
+		});
+		GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+			WString::Unmanaged(L"Controls/CoreApplication/GuiControl/Focus"),
+			WString::Unmanaged(L"gacuisrc_unittest::MainWindow2"),
+			resource
+			);
 	});
 
 	TEST_CASE(L"Alt")
