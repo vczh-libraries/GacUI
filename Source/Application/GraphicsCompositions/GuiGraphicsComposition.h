@@ -119,7 +119,7 @@ Basic Construction
 				
 				void										UpdateRelatedHostRecord(GraphicsHostRecord* record);
 				void										SetAssociatedControl(controls::GuiControl* control);
-				void										InvokeOnCompositionStateChanged();
+				void										InvokeOnCompositionStateChanged(bool forceRequestRender = false);
 
 			private:
 				static bool									SharedPtrDestructorProc(DescriptableObject* obj, bool forceDisposing);

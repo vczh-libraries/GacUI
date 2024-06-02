@@ -121,10 +121,10 @@ GuiGraphicsComposition
 				}
 			}
 
-			void GuiGraphicsComposition::InvokeOnCompositionStateChanged()
+			void GuiGraphicsComposition::InvokeOnCompositionStateChanged(bool forceRequestRender)
 			{
 				OnCompositionStateChanged();
-				if (relatedHostRecord && GetEventuallyVisible())
+				if (relatedHostRecord && (forceRequestRender || GetEventuallyVisible()))
 				{
 					relatedHostRecord->host->RequestRender();
 				}
@@ -268,7 +268,7 @@ GuiGraphicsComposition
 				if (visible != value)
 				{
 					visible = value;
-					InvokeOnCompositionStateChanged();
+					InvokeOnCompositionStateChanged(true);
 				}
 			}
 
