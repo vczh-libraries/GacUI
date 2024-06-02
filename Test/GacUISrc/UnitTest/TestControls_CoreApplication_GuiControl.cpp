@@ -18,7 +18,7 @@ TEST_FILE
 {
 	const auto resource = LR"GacUISrc(
 <Resource>
-  <Instance name="MyControlTemplate">
+  <Instance name="MyControlTemplateResource">
     <Instance ref.Class="gacuisrc_unittest::MyControlTemplate">
       <ControlTemplate ref.Name="self" ContainerComposition-ref="container" MinSizeLimitation="LimitToElementAndChildren">
         <SolidBorder Color="#FFFFFF"/>
@@ -49,12 +49,18 @@ TEST_FILE
     </Instance>
   </Instance>
 
+  <Instance name="MyControlResource">
+    <Instance ref.Class="gacuisrc_unittest::MyControl" xmlns:ut="gacuisrc_unittest::*">
+      <CustomControl Text="This is a control with a template">
+        <att.ControlTemplate>ut:MyControlTemplate</att.ControlTemplate>
+      </CustomControl>
+    </Instance>
+  </Instance>
+
   <Instance name="MainWindowResource">
     <Instance ref.Class="gacuisrc_unittest::MainWindow" xmlns:ut="gacuisrc_unittest::*">
       <Window ref.Name="self" Text="MyControlTemplate" ClientSize="x:320 y:240">
-        <CustomControl Text="This is a control with a template">
-          <att.ControlTemplate>ut:MyControlTemplate</att.ControlTemplate>
-        </CustomControl>
+        <ut:MyControl Text="This is a control with a template"/>
       </Window>
     </Instance>
   </Instance>

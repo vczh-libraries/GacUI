@@ -1,4 +1,4 @@
-================================(1/4)================================
+================================(1/6)================================
 module <constructor>gacuisrc_unittest::MainWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -27,7 +27,7 @@ namespace gacuisrc_unittest
         var self : ::gacuisrc_unittest::MainWindow* = null of (::gacuisrc_unittest::MainWindow*);
 
         @cpp:Protected
-        var <precompile>0 : ::presentation::controls::GuiCustomControl* = null of (::presentation::controls::GuiCustomControl*);
+        var <precompile>0 : ::gacuisrc_unittest::MyControl* = null of (::gacuisrc_unittest::MyControl*);
 
         @cpp:Protected
         func <gacuisrc_unittest-MainWindow>Initialize(<this> : ::gacuisrc_unittest::MainWindow*) : (::system::Void)
@@ -39,19 +39,9 @@ namespace gacuisrc_unittest
             {
                 (self.Text = "MyControlTemplate");
             }
-            {
-                (<precompile>0 = new (::presentation::controls::GuiCustomControl*)(::presentation::theme::ThemeName::CustomControl));
-            }
+            (<precompile>0 = new (::gacuisrc_unittest::MyControl*)());
             {
                 (<precompile>0.Text = "This is a control with a template");
-            }
-            {
-                (<precompile>0.ControlTemplate = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiControlTemplate*)
-                {
-                    {
-                        return new (::gacuisrc_unittest::MyControlTemplate*)();
-                    }
-                });
             }
             {
                 self.AddChild(<precompile>0);
@@ -64,7 +54,7 @@ namespace gacuisrc_unittest
     }
 }
 
-================================(2/4)================================
+================================(2/6)================================
 module <instance>gacuisrc_unittest::MainWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -107,7 +97,101 @@ namespace gacuisrc_unittest
     }
 }
 
-================================(3/4)================================
+================================(3/6)================================
+module <constructor>gacuisrc_unittest::MyControl;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace gacuisrc_unittest
+{
+    class MyControlConstructor
+    {
+        @cpp:Protected
+        var <precompile>0 : ::gacuisrc_unittest::MyControl* = null of (::gacuisrc_unittest::MyControl*);
+
+        @cpp:Protected
+        func <gacuisrc_unittest-MyControl>Initialize(<this> : ::gacuisrc_unittest::MyControl*) : (::system::Void)
+        {
+            (<precompile>0 = <this>);
+            {
+                (<precompile>0.Text = "This is a control with a template");
+            }
+            {
+                (<precompile>0.ControlTemplate = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiControlTemplate*)
+                {
+                    {
+                        return new (::gacuisrc_unittest::MyControlTemplate*)();
+                    }
+                });
+            }
+        }
+
+        new ()
+        {
+        }
+    }
+}
+
+================================(4/6)================================
+module <instance>gacuisrc_unittest::MyControl;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace gacuisrc_unittest
+{
+    @cpp:File("MyControl")
+    @cpp:Friend(typeof(MyControlConstructor))
+    class MyControl : ::presentation::controls::GuiCustomControl, MyControlConstructor
+    {
+        new* ()
+            :::presentation::controls::GuiCustomControl(::presentation::theme::ThemeName::CustomControl)
+        {
+            var <resource> = ::presentation::IGuiResourceManager::GetResourceManager().GetResourceFromClassName("gacuisrc_unittest::MyControl");
+            var <resolver> = new (::presentation::GuiResourcePathResolver^)(<resource>, <resource>.WorkingDirectory);
+            this.SetResourceResolver(<resolver>);
+            this.<gacuisrc_unittest-MyControl>Initialize(this);
+        }
+
+        delete
+        {
+            FinalizeInstanceRecursively(this of (::presentation::controls::GuiCustomControl*));
+        }
+    }
+}
+
+================================(5/6)================================
 module <constructor>gacuisrc_unittest::MyControlTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -890,7 +974,7 @@ namespace gacuisrc_unittest
     }
 }
 
-================================(4/4)================================
+================================(6/6)================================
 module <instance>gacuisrc_unittest::MyControlTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
