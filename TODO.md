@@ -8,6 +8,9 @@
 - `UtfBase64(En|De)coder`
 - `NativeImageFrameBase`
 - `bool controllerUnrelatedPlugins` and `bool controllerRelatedPlugins` added to `IGuiPlugin`
+- `(Try)?FindObjectByName`
+- `(Try)?FindControlByText`
+- `GuiCustomControl::SetFocusableComposition`
 - `Restore` button not renderered correctly. In both hosted and normal mode.
 - `GetHostedApplication`
 - vlpp.natvis updated
@@ -40,17 +43,12 @@
     - A parser is provided, a data structure is required in runtime.
     - It is used to simulate the remote protocol consumer sending back metadata after receiving binary data of an image.
     - Resource URL is required in the remote protocol, an update to resource loader interface could be necessary.
-  - A viewer to view unit test results logged from SyncDom and other stuff after each time when layout stops.
-    - Generate `domId` for each dom node: element(id), virtual(-element.id-2), root(-1), hittest(find a way).
+  - Generate `domId` for each dom node: element(id), virtual(-element.id-2), root(-1), hittest(find a way).
 - Implement basic control (`Source_GacUI_CoreApplication` controls only) unit test based on streaming (using DarkSkin)
   - Skipped time related features, like tooltip.
   - `GuiControl`, with custom control template to verify binding:
-    - Visible
-    - Enabled, VisuallyEnabled
-    - Focus
-    - Font, DisplayFont
     - Alt
-    - Text, Context
+    - Context
   - `GuiWindow`
     - Interaction with screen
 - Metadata of remote protocol will be updated and included in releases.
