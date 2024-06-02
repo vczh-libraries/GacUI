@@ -123,7 +123,7 @@ IGuiRemoteProtocol
 					if (name)
 					{
 						auto&& lastFrame = (*loggedTrace.frames.Obj())[loggedTrace.frames->Count() - 1];
-						//CHECK_ERROR(!lastFrame.frameName, ERROR_MESSAGE_PREFIX L"The last frame has already been assigned a name.");
+						CHECK_ERROR(!lastFrame.frameName, ERROR_MESSAGE_PREFIX L"The last frame has already been assigned a name.");
 						lastFrame.frameName = name;
 					}
 					func();
