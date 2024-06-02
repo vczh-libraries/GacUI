@@ -124,17 +124,14 @@ namespace gacuisrc_unittest
     class MyControlConstructor
     {
         @cpp:Protected
-        var <precompile>0 : ::gacuisrc_unittest::MyControl* = null of (::gacuisrc_unittest::MyControl*);
+        var self : ::gacuisrc_unittest::MyControl* = null of (::gacuisrc_unittest::MyControl*);
 
         @cpp:Protected
         func <gacuisrc_unittest-MyControl>Initialize(<this> : ::gacuisrc_unittest::MyControl*) : (::system::Void)
         {
-            (<precompile>0 = <this>);
+            (self = <this>);
             {
-                (<precompile>0.Text = "This is a control with a template");
-            }
-            {
-                (<precompile>0.ControlTemplate = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiControlTemplate*)
+                (self.ControlTemplate = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiControlTemplate*)
                 {
                     {
                         return new (::gacuisrc_unittest::MyControlTemplate*)();
@@ -966,9 +963,6 @@ namespace gacuisrc_unittest
             }
             {
                 (self.ContainerComposition = container);
-            }
-            {
-                (self.FocusableComposition = container);
             }
         }
 

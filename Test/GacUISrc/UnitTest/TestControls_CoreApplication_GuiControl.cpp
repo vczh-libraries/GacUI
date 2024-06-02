@@ -51,7 +51,7 @@ TEST_FILE
 
   <Instance name="MyControlResource">
     <Instance ref.Class="gacuisrc_unittest::MyControl" xmlns:ut="gacuisrc_unittest::*">
-      <CustomControl ref.Name="self" FocusableComposition-eval="self.BoundsComposition" Text="This is a control with a template">
+      <CustomControl ref.Name="self">
         <att.ControlTemplate>ut:MyControlTemplate</att.ControlTemplate>
       </CustomControl>
     </Instance>
