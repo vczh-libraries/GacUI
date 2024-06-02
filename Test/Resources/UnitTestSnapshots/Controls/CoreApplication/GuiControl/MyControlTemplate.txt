@@ -30,11 +30,18 @@ namespace gacuisrc_unittest
         var my : ::gacuisrc_unittest::MyControl* = null of (::gacuisrc_unittest::MyControl*);
 
         @cpp:Protected
+        var <precompile>0 : ::presentation::compositions::GuiGraphicsComposition* = null of (::presentation::compositions::GuiGraphicsComposition*);
+
+        @cpp:Protected
         func <gacuisrc_unittest-MainWindow>Initialize(<this> : ::gacuisrc_unittest::MainWindow*) : (::system::Void)
         {
             (self = <this>);
             {
                 (self.ClientSize = {x : 320; y : 240;} of (::presentation::Size));
+            }
+            (<precompile>0 = self.ContainerComposition);
+            {
+                (<precompile>0.InternalMargin = {left : 0; top : 5; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
                 (self.Text = "MyControlTemplate");
@@ -137,6 +144,9 @@ namespace gacuisrc_unittest
                         return new (::gacuisrc_unittest::MyControlTemplate*)();
                     }
                 });
+            }
+            {
+                (self.FocusableComposition = self.BoundsComposition);
             }
         }
 
@@ -278,7 +288,7 @@ namespace gacuisrc_unittest
                 (<precompile>1.BorderVisible = true);
             }
             {
-                (<precompile>1.CellPadding = 5 of (::system::Int32));
+                (<precompile>1.CellPadding = 5 of (::system::Int64));
             }
             {
                 (<precompile>1.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));

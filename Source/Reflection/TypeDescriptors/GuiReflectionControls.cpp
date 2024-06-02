@@ -769,6 +769,9 @@ Type Declaration (Class)
 				CLASS_MEMBER_BASE(GuiControl)
 				CLASS_MEMBER_BASE(GuiInstanceRootObject)
 				CONTROL_CONSTRUCTOR_CONTROLT_TEMPLATE_INHERITANCE(GuiCustomControl)
+
+				CLASS_MEMBER_METHOD(SetFocusableComposition, { L"value" })
+				CLASS_MEMBER_PROPERTY(FocusableComposition, GetFocusableComposition, SetFocusableComposition)
 			END_CLASS_MEMBER(GuiCustomControl)
 
 			BEGIN_CLASS_MEMBER(GuiLabel)

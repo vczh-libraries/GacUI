@@ -373,6 +373,8 @@ Basic Construction
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				GuiCustomControl(theme::ThemeName themeName);
 				~GuiCustomControl();
+
+				using GuiControl::SetFocusableComposition;
 			};
 
 			template<typename T>

@@ -2410,6 +2410,10 @@ class presentation::controls::GuiControlHost : presentation::controls::GuiContro
 }
 
 class presentation::controls::GuiCustomControl : presentation::controls::GuiControl, presentation::controls::GuiInstanceRootObject {
+    property FocusableComposition : presentation::compositions::GuiGraphicsComposition* { get:GetFocusableComposition set:SetFocusableComposition }
+
+    function SetFocusableComposition(value : presentation::compositions::GuiGraphicsComposition*) : system::Void;
+
     constructor (themeName : presentation::theme::ThemeName) : presentation::controls::GuiCustomControl*;
 }
 
