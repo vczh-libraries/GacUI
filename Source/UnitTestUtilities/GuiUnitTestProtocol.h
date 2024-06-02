@@ -113,17 +113,24 @@ IGuiRemoteProtocol
 
 		void ProcessRemoteEvents() override
 		{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol::ProcessRemoteEvents()#"
 			if (!stopped)
 			{
 				if (LogRenderingResult())
 				{
 					vl::unittest::UnitTest::PrintMessage(L"Execute idle frame[" + itow(nextEventIndex) + L"]", vl::unittest::UnitTest::MessageKind::Info);
 					auto [name, func] = processRemoteEvents[nextEventIndex];
-					(*loggedTrace.frames.Obj())[loggedTrace.frames->Count() - 1].frameName = name;
+					if (name)
+					{
+						auto&& lastFrame = (*loggedTrace.frames.Obj())[loggedTrace.frames->Count() - 1];
+						//CHECK_ERROR(!lastFrame.frameName, ERROR_MESSAGE_PREFIX L"The last frame has already been assigned a name.");
+						lastFrame.frameName = name;
+					}
 					func();
 					nextEventIndex++;
 				}
 			}
+#undef ERROR_MESSAGE_PREFIX
 		}
 	};
 }
