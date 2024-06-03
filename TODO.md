@@ -14,6 +14,9 @@
 - `Restore` button not renderered correctly. In both hosted and normal mode.
 - `GetHostedApplication`
 - vlpp.natvis updated
+- Fixed
+  - Making a composition invisible doesn't refresh the application
+  - Selection of a list control is not cleared when objects of selected items are replaced
 
 ## Known Issues
 
@@ -59,8 +62,6 @@
 - Calling `GuiWindow::ShowMaximized` in `WindowOpened` with `SetupHostedWindowsDirect2DRenderer` doesn't properly maximize the window.
 - Add `@cpp:Private` for GacGen generated `<parameter>ViewModel` variable.
 - GacUI
-  - When bindable list's data source is changed, make a decision to clear selection or trigger selection changed event.
-    - The bug happens when selected text and/or item count isn't changed after replacing (guessing)
   - `GUI_VALUE` needs to be updated to avoid `LAMBDA`.
 - Document
   - string conversion mechanism and functions to Vlpp document.

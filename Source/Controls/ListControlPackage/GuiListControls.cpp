@@ -613,6 +613,17 @@ GuiSelectableListControl
 				{
 					ClearSelection();
 				}
+				else if (itemReferenceUpdated && selectedItems.Count() > 0)
+				{
+					vint cmin = start;
+					vint cmax = start + count - 1;
+					vint smin = selectedItems[0];
+					vint smax = selectedItems[selectedItems.Count() - 1];
+					if (cmin <= smax && smin <= cmax)
+					{
+						ClearSelection();
+					}
+				}
 			}
 
 			void GuiSelectableListControl::OnStyleInstalled(vint itemIndex, ItemStyle* style, bool refreshPropertiesOnly)
