@@ -76,6 +76,9 @@ namespace gacuisrc_unittest
             (a = new (::gacuisrc_unittest::MyControl*)());
             <this>.SetNamedObject("a", a);
             {
+                (a.Alt = "A");
+            }
+            {
                 (a.Text = "A");
             }
             (<precompile>0 = new (::presentation::compositions::GuiStackComposition*)());
