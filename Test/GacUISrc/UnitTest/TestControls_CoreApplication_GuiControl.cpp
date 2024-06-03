@@ -525,4 +525,44 @@ TEST_FILE
 			resource
 			);
 	});
+
+	const auto resourceContext = LR"GacUISrc(
+<Resource>
+  <Instance name="MyControlResource">
+    <Instance ref.Class="gacuisrc_unittest::MyControl">
+      <CustomControl ref.Name="self">
+        <Label Text-bind="(cast string self.Context) ?? '&lt;null&gt;'"/>
+      </CustomControl>
+    </Instance>
+  </Instance>
+
+  <Instance name="MainWindowResource">
+    <Instance ref.Class="gacuisrc_unittest::MainWindow" xmlns:ut="gacuisrc_unittest::*">
+      <Window ref.Name="self" Text="MyControlTemplate" ClientSize="x:320 y:240">
+        <ut:MyControl ref.Name="my">
+          <att.BoundsComposition-set AlignmentToParent="left:0 top:5 right:0 bottom:0"/>
+        </ut:MyControl>
+      </Window>
+    </Instance>
+  </Instance>
+</Resource>
+)GacUISrc";
+
+	TEST_CASE(L"Context")
+	{
+		GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+		{
+			protocol->OnNextIdleFrame(L"Ready", [=]()
+			{
+				auto window = GetApplication()->GetMainWindow();
+
+				window->Hide();
+			});
+		});
+		GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+			WString::Unmanaged(L"Controls/CoreApplication/GuiControl/Context"),
+			WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+			resourceContext
+			);
+	});
 }

@@ -48,12 +48,8 @@
     - It is used to simulate the remote protocol consumer sending back metadata after receiving binary data of an image.
     - Resource URL is required in the remote protocol, an update to resource loader interface could be necessary.
   - Generate `domId` for each dom node: element(id), virtual(-element.id-2), root(-1), hittest(find a way).
-- Implement basic control (`Source_GacUI_CoreApplication` controls only) unit test based on streaming (using DarkSkin)
-  - Skipped time related features, like tooltip.
-  - `GuiControl`, with custom control template to verify binding:
-    - Context
-  - `GuiWindow`
-    - Interaction with screen
+- `GuiWindow` unit test
+  - Interaction with screen
 - Metadata of remote protocol will be updated and included in releases.
 - GacUI Binary Resource (can't move to next release)
   - Upgrade GacUI XML Resource to 1.3, force on all resources instead of only depended or depending resource.
