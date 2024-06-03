@@ -25,6 +25,7 @@ UnitTestRemoteProtocol
 		bool								leftPressing = false;
 		bool								middlePressing = false;
 		bool								rightPressing = false;
+		bool								capslockToggled = false;
 
 		IGuiRemoteProtocolEvents& UseEvents()
 		{
@@ -48,6 +49,18 @@ UnitTestRemoteProtocol
 			info.y = mousePosition.Value().y.value;
 			info.wheel = 0;
 			info.nonClient = false;
+			return info;
+		}
+
+		NativeWindowKeyInfo MakeKeyInfo(VKEY key, bool autoRepeatKeyDown = false)
+		{
+			NativeWindowKeyInfo info;
+			info.code = key;
+			info.ctrl = IsPressing(VKEY::KEY_CONTROL) || IsPressing(VKEY::KEY_LCONTROL) || IsPressing(VKEY::KEY_RCONTROL);
+			info.shift = IsPressing(VKEY::KEY_SHIFT) || IsPressing(VKEY::KEY_LSHIFT) || IsPressing(VKEY::KEY_RSHIFT);
+			info.alt = IsPressing(VKEY::KEY_MENU) || IsPressing(VKEY::KEY_LMENU) || IsPressing(VKEY::KEY_RMENU);
+			info.capslock = capslockToggled;
+			info.autoRepeatKeyDown = autoRepeatKeyDown;
 			return info;
 		}
 
@@ -84,6 +97,53 @@ Helper Functions
 /***********************************************************************
 Keys
 ***********************************************************************/
+
+		void _KeyDown(VKEY key)
+		{
+#define ERROR_MESSAGE_PREFIX CLASS_PREFIX L"_KeyDown(...)#"
+			CHECK_ERROR(!pressingKeys.Contains(key), ERROR_MESSAGE_PREFIX L"The key is already being pressed.");
+			pressingKeys.Add(key);
+			if (key == VKEY::KEY_CAPITAL)
+			{
+				capslockToggled = !capslockToggled;
+			}
+			UseEvents().OnIOKeyDown(MakeKeyInfo(key, false));
+#undef ERROR_MESSAGE_PREFIX
+		}
+
+		void _KeyDownRepeat(VKEY key)
+		{
+#define ERROR_MESSAGE_PREFIX CLASS_PREFIX L"_KeyDownRepeat(...)#"
+			CHECK_ERROR(pressingKeys.Contains(key), ERROR_MESSAGE_PREFIX L"The key is not being pressed.");
+			UseEvents().OnIOKeyDown(MakeKeyInfo(key, true));
+#undef ERROR_MESSAGE_PREFIX
+		}
+
+		void _KeyUp(VKEY key)
+		{
+#define ERROR_MESSAGE_PREFIX CLASS_PREFIX L"_KeyUp(...)#"
+			CHECK_ERROR(pressingKeys.Contains(key), ERROR_MESSAGE_PREFIX L"The key is not being pressed.");
+			pressingKeys.Remove(key);
+			UseEvents().OnIOKeyUp(MakeKeyInfo(key, false));
+#undef ERROR_MESSAGE_PREFIX
+		}
+
+		void KeyPress(VKEY key)
+		{
+			_KeyDown(key);
+			_KeyUp(key);
+		}
+
+		void KeyPress(VKEY key, bool ctrl, bool shift, bool alt)
+		{
+			if (ctrl) _KeyDown(VKEY::KEY_CONTROL);
+			if (shift) _KeyDown(VKEY::KEY_SHIFT);
+			if (alt) _KeyDown(VKEY::KEY_MENU);
+			KeyPress(key);
+			if (alt) _KeyUp(VKEY::KEY_MENU);
+			if (shift) _KeyUp(VKEY::KEY_SHIFT);
+			if (ctrl) _KeyUp(VKEY::KEY_CONTROL);
+		}
 
 /***********************************************************************
 Mouse

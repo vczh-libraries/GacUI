@@ -70,18 +70,18 @@ TEST_FILE
     <Instance ref.Class="gacuisrc_unittest::MainWindow2" xmlns:ut="gacuisrc_unittest::*">
       <Window ref.Name="self" Text="MyControlTemplate" ClientSize="x:320 y:240">
         <att.ContainerComposition-set InternalMargin="left:0 top:5 right:0 bottom:0"/>
-        <ut:MyControl ref.Name="a" Text="A">
+        <ut:MyControl ref.Name="a" Text="A" Alt="A">
           <Stack Direction="Vertical" ExtraMargin="left:5 top:5 right:5 bottom:5" Padding="5" MinSizeLimitation="LimitToElementAndChildren" AlignmentToParent="left:0 top:0 right:0 bottom:0">
             <StackItem>
-              <ut:MyControl ref.Name="b" Text="B">
-                <ut:MyControl ref.Name="c" Text="C">
+              <ut:MyControl ref.Name="b" Text="B" Alt="B">
+                <ut:MyControl ref.Name="c" Text="C" Alt="C">
                   <att.BoundsComposition-set AlignmentToParent="left:5 top:5 right:5 bottom:5"/>
                 </ut:MyControl>
               </ut:MyControl>
             </StackItem>
             <StackItem>
-              <ut:MyControl ref.Name="d" Text="D">
-                <ut:MyControl ref.Name="e" Text="E">
+              <ut:MyControl ref.Name="d" Text="D" Alt="D">
+                <ut:MyControl ref.Name="e" Text="E" Alt="E">
                   <att.BoundsComposition-set AlignmentToParent="left:5 top:5 right:5 bottom:5"/>
                 </ut:MyControl>
               </ut:MyControl>
@@ -457,7 +457,140 @@ TEST_FILE
 			);
 	});
 
+	TEST_CASE(L"Alt with Labels in single level")
+	{
+		GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+		{
+			protocol->OnNextIdleFrame(L"Ready", [=]()
+			{
+				protocol->KeyPress(VKEY::KEY_MENU);
+			});
+			protocol->OnNextIdleFrame(L"[ALT]", [=]()
+			{
+				protocol->KeyPress(VKEY::KEY_ESCAPE);
+			});
+			protocol->OnNextIdleFrame(L"[ESC]", [=]()
+			{
+				protocol->KeyPress(VKEY::KEY_MENU);
+			});
+			protocol->OnNextIdleFrame(L"[ALT]", [=]()
+			{
+				protocol->KeyPress(VKEY::KEY_A);
+			});
+			protocol->OnNextIdleFrame(L"[A]", [=]()
+			{
+				auto window = GetApplication()->GetMainWindow();
+
+				window->Hide();
+			});
+		});
+		GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+			WString::Unmanaged(L"Controls/CoreApplication/GuiControl/AltLabel"),
+			WString::Unmanaged(L"gacuisrc_unittest::MainWindow2"),
+			resource
+			);
+	});
+
 	TEST_CASE(L"Alt")
 	{
+		GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+		{
+			protocol->OnNextIdleFrame(L"Ready", [=]()
+			{
+				auto window = GetApplication()->GetMainWindow();
+				auto a = FindObjectByName<GuiControl>(window, L"a");
+				auto b = FindObjectByName<GuiControl>(window, L"b");
+				auto c = FindObjectByName<GuiControl>(window, L"c");
+				auto d = FindObjectByName<GuiControl>(window, L"d");
+				auto e = FindObjectByName<GuiControl>(window, L"e");
+
+				protocol->KeyPress(VKEY::KEY_MENU);
+				protocol->KeyPress(VKEY::KEY_A);
+				TEST_ASSERT(a->GetFocused() == true);
+				TEST_ASSERT(b->GetFocused() == false);
+				TEST_ASSERT(c->GetFocused() == false);
+				TEST_ASSERT(d->GetFocused() == false);
+				TEST_ASSERT(e->GetFocused() == false);
+			});
+			protocol->OnNextIdleFrame(L"Focus A", [=]()
+			{
+				auto window = GetApplication()->GetMainWindow();
+				auto a = FindObjectByName<GuiControl>(window, L"a");
+				auto b = FindObjectByName<GuiControl>(window, L"b");
+				auto c = FindObjectByName<GuiControl>(window, L"c");
+				auto d = FindObjectByName<GuiControl>(window, L"d");
+				auto e = FindObjectByName<GuiControl>(window, L"e");
+
+				protocol->KeyPress(VKEY::KEY_MENU);
+				protocol->KeyPress(VKEY::KEY_B);
+				TEST_ASSERT(a->GetFocused() == false);
+				TEST_ASSERT(b->GetFocused() == true);
+				TEST_ASSERT(c->GetFocused() == false);
+				TEST_ASSERT(d->GetFocused() == false);
+				TEST_ASSERT(e->GetFocused() == false);
+			});
+			protocol->OnNextIdleFrame(L"Focus B", [=]()
+			{
+				auto window = GetApplication()->GetMainWindow();
+				auto a = FindObjectByName<GuiControl>(window, L"a");
+				auto b = FindObjectByName<GuiControl>(window, L"b");
+				auto c = FindObjectByName<GuiControl>(window, L"c");
+				auto d = FindObjectByName<GuiControl>(window, L"d");
+				auto e = FindObjectByName<GuiControl>(window, L"e");
+
+				protocol->KeyPress(VKEY::KEY_MENU);
+				protocol->KeyPress(VKEY::KEY_C);
+				TEST_ASSERT(a->GetFocused() == false);
+				TEST_ASSERT(b->GetFocused() == false);
+				TEST_ASSERT(c->GetFocused() == true);
+				TEST_ASSERT(d->GetFocused() == false);
+				TEST_ASSERT(e->GetFocused() == false);
+			});
+			protocol->OnNextIdleFrame(L"Focus C", [=]()
+			{
+				auto window = GetApplication()->GetMainWindow();
+				auto a = FindObjectByName<GuiControl>(window, L"a");
+				auto b = FindObjectByName<GuiControl>(window, L"b");
+				auto c = FindObjectByName<GuiControl>(window, L"c");
+				auto d = FindObjectByName<GuiControl>(window, L"d");
+				auto e = FindObjectByName<GuiControl>(window, L"e");
+
+				protocol->KeyPress(VKEY::KEY_MENU);
+				protocol->KeyPress(VKEY::KEY_D);
+				TEST_ASSERT(a->GetFocused() == false);
+				TEST_ASSERT(b->GetFocused() == false);
+				TEST_ASSERT(c->GetFocused() == false);
+				TEST_ASSERT(d->GetFocused() == true);
+				TEST_ASSERT(e->GetFocused() == false);
+			});
+			protocol->OnNextIdleFrame(L"Focus D", [=]()
+			{
+				auto window = GetApplication()->GetMainWindow();
+				auto a = FindObjectByName<GuiControl>(window, L"a");
+				auto b = FindObjectByName<GuiControl>(window, L"b");
+				auto c = FindObjectByName<GuiControl>(window, L"c");
+				auto d = FindObjectByName<GuiControl>(window, L"d");
+				auto e = FindObjectByName<GuiControl>(window, L"e");
+
+				protocol->KeyPress(VKEY::KEY_MENU);
+				protocol->KeyPress(VKEY::KEY_E);
+				TEST_ASSERT(a->GetFocused() == false);
+				TEST_ASSERT(b->GetFocused() == false);
+				TEST_ASSERT(c->GetFocused() == false);
+				TEST_ASSERT(d->GetFocused() == false);
+				TEST_ASSERT(e->GetFocused() == true);
+			});
+			protocol->OnNextIdleFrame(L"Focus E", [=]()
+			{
+				auto window = GetApplication()->GetMainWindow();
+
+				window->Hide();
+			});
+		});
+		GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+			WString::Unmanaged(L"Controls/CoreApplication/GuiControl/AltFocus"),
+			WString::Unmanaged(L"gacuisrc_unittest::MainWindow2"),
+			resource
+			);
 	});
 }

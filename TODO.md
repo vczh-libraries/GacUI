@@ -51,7 +51,6 @@
 - Implement basic control (`Source_GacUI_CoreApplication` controls only) unit test based on streaming (using DarkSkin)
   - Skipped time related features, like tooltip.
   - `GuiControl`, with custom control template to verify binding:
-    - Alt
     - Context
   - `GuiWindow`
     - Interaction with screen
