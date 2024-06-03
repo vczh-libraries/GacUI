@@ -555,6 +555,27 @@ TEST_FILE
 			protocol->OnNextIdleFrame(L"Ready", [=]()
 			{
 				auto window = GetApplication()->GetMainWindow();
+				auto my = FindObjectByName<GuiControl>(window, L"my");
+
+				my->SetContext(BoxValue<WString>(L"Hello"));
+			});
+			protocol->OnNextIdleFrame(L"Hello", [=]()
+			{
+				auto window = GetApplication()->GetMainWindow();
+				auto my = FindObjectByName<GuiControl>(window, L"my");
+
+				my->SetContext(BoxValue<WString>(L"World"));
+			});
+			protocol->OnNextIdleFrame(L"World", [=]()
+			{
+				auto window = GetApplication()->GetMainWindow();
+				auto my = FindObjectByName<GuiControl>(window, L"my");
+
+				my->SetContext({});
+			});
+			protocol->OnNextIdleFrame(L"Restored", [=]()
+			{
+				auto window = GetApplication()->GetMainWindow();
 
 				window->Hide();
 			});
