@@ -179,7 +179,7 @@ Helper Functions
 
 extern void GuiApplicationMain();
 
-#define GUI_VALUE(x) vl::presentation::controls::GetApplication()->RunGuiValue(LAMBDA([&](){return (x);}))
-#define GUI_RUN(x) vl::presentation::controls::GetApplication()->RunGuiTask([=](){x})
+#define GUI_VALUE(HOST, VALUE) vl::presentation::controls::GetApplication()->RunGuiValue((HOST), vl::Func([&](){return (VALUE);}))
+#define GUI_RUN(HOST, VALUE) vl::presentation::controls::GetApplication()->RunGuiTask((HOST), [&](){(VALUE);})
 
 #endif

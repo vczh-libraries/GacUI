@@ -17,6 +17,7 @@
 - Fixed
   - Making a composition invisible doesn't refresh the application
   - Selection of a list control is not cleared when objects of selected items are replaced
+  - Missing arguments in `GUI_VALUE` and `GUI_RUN` macros.
 
 ## Known Issues
 
@@ -61,8 +62,6 @@
   - Resource compiler and loader will check the version and only accept 1.3.
 - Calling `GuiWindow::ShowMaximized` in `WindowOpened` with `SetupHostedWindowsDirect2DRenderer` doesn't properly maximize the window.
 - Add `@cpp:Private` for GacGen generated `<parameter>ViewModel` variable.
-- GacUI
-  - `GUI_VALUE` needs to be updated to avoid `LAMBDA`.
 - Document
   - string conversion mechanism and functions to Vlpp document.
   - Vlpp
