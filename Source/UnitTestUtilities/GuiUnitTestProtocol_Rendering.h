@@ -25,6 +25,7 @@ UnitTestRemoteProtocol
 	template<typename TProtocol>
 	class UnitTestRemoteProtocol_Rendering : public TProtocol
 	{
+		using IdSet = collections::SortedList<vint>;
 		using ElementDescMap = collections::Dictionary<vint, ElementDescVariant>;
 		using ImageMetadataMap = collections::Dictionary<vint, remoteprotocol::ImageMetadata>;
 		using CommandList = UnitTestRenderingCommandList;
@@ -33,6 +34,9 @@ UnitTestRemoteProtocol
 
 		remoteprotocol::RenderingTrace			loggedTrace;
 		ElementDescMap							lastElementDescs;
+		IdSet									removedElementIds;
+		IdSet									removedImageIds;
+
 		remoteprotocol::ElementMeasurings		measuringForNextRendering;
 		regex::Regex							regexCrLf{ L"/n|/r(/n)?" };
 		vint									lastFrameId = 0;
@@ -132,8 +136,9 @@ IGuiRemoteProtocolMessages (Elements)
 			{
 				for (auto creation : *arguments.Obj())
 				{
-					CHECK_ERROR(!loggedTrace.createdElements->Keys().Contains(creation.id), ERROR_MESSAGE_PREFIX L"Renderer with the specified id has been created.");
+					CHECK_ERROR(!loggedTrace.createdElements->Keys().Contains(creation.id), ERROR_MESSAGE_PREFIX L"Renderer with the specified id has been created or used.");
 					loggedTrace.createdElements->Add(creation.id, creation.type);
+					removedElementIds.Remove(creation.id);
 				}
 			}
 #undef ERROR_MESSAGE_PREFIX
@@ -147,7 +152,8 @@ IGuiRemoteProtocolMessages (Elements)
 				for (auto id : *arguments.Obj())
 				{
 					CHECK_ERROR(loggedTrace.createdElements->Keys().Contains(id), ERROR_MESSAGE_PREFIX L"Renderer with the specified id has not been created.");
-					loggedTrace.createdElements->Remove(id);
+					CHECK_ERROR(!removedElementIds.Contains(id), ERROR_MESSAGE_PREFIX L"Renderer with the specified id has been destroyed.");
+					removedElementIds.Add(id);
 					lastElementDescs.Remove(id);
 				}
 			}
@@ -377,7 +383,8 @@ IGuiRemoteProtocolMessages (Elements - Image)
 		void RequestImageCreated(vint id, const remoteprotocol::ImageCreation& arguments) override
 		{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering<TProtocol>::RequestImageCreated(vint, const vint&)#"
-			CHECK_ERROR(!loggedTrace.createdImages->Keys().Contains(arguments.id), ERROR_MESSAGE_PREFIX L"Image with the specified id has been created.");
+			CHECK_ERROR(!loggedTrace.createdImages->Keys().Contains(arguments.id), ERROR_MESSAGE_PREFIX L"Image with the specified id has been created or used.");
+			removedImageIds.Remove(arguments.id);
 			this->GetEvents()->RespondImageCreated(id, MakeImageMetadata(arguments));
 #undef ERROR_MESSAGE_PREFIX
 		}
@@ -386,7 +393,8 @@ IGuiRemoteProtocolMessages (Elements - Image)
 		{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering<TProtocol>::RequestImageDestroyed(const vint&)#"
 			CHECK_ERROR(loggedTrace.createdImages->Keys().Contains(arguments), ERROR_MESSAGE_PREFIX L"Image with the specified id has not been created.");
-			loggedTrace.createdImages->Remove(arguments);
+			CHECK_ERROR(!removedImageIds.Contains(arguments), ERROR_MESSAGE_PREFIX L"Image with the specified id has been destroyed.");
+			removedImageIds.Add(arguments);
 #undef ERROR_MESSAGE_PREFIX
 		}
 
