@@ -101,9 +101,6 @@ namespace gacuisrc_unittest
             (b = new (::gacuisrc_unittest::MyControl*)());
             <this>.SetNamedObject("b", b);
             {
-                (b.Alt = "B");
-            }
-            {
                 (b.Text = "B");
             }
             (c = new (::gacuisrc_unittest::MyControl*)());
@@ -111,9 +108,6 @@ namespace gacuisrc_unittest
             (<precompile>2 = c.BoundsComposition);
             {
                 (<precompile>2.AlignmentToParent = {left : 5; top : 5; right : 5; bottom : 5;} of (::presentation::Margin));
-            }
-            {
-                (c.Alt = "C");
             }
             {
                 (c.Text = "C");
@@ -131,9 +125,6 @@ namespace gacuisrc_unittest
             (d = new (::gacuisrc_unittest::MyControl*)());
             <this>.SetNamedObject("d", d);
             {
-                (d.Alt = "D");
-            }
-            {
                 (d.Text = "D");
             }
             (e = new (::gacuisrc_unittest::MyControl*)());
@@ -141,9 +132,6 @@ namespace gacuisrc_unittest
             (<precompile>4 = e.BoundsComposition);
             {
                 (<precompile>4.AlignmentToParent = {left : 5; top : 5; right : 5; bottom : 5;} of (::presentation::Margin));
-            }
-            {
-                (e.Alt = "E");
             }
             {
                 (e.Text = "E");

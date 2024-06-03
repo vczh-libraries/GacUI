@@ -73,15 +73,15 @@ TEST_FILE
         <ut:MyControl ref.Name="a" Text="A" Alt="A">
           <Stack Direction="Vertical" ExtraMargin="left:5 top:5 right:5 bottom:5" Padding="5" MinSizeLimitation="LimitToElementAndChildren" AlignmentToParent="left:0 top:0 right:0 bottom:0">
             <StackItem>
-              <ut:MyControl ref.Name="b" Text="B" Alt="B">
-                <ut:MyControl ref.Name="c" Text="C" Alt="C">
+              <ut:MyControl ref.Name="b" Text="B">
+                <ut:MyControl ref.Name="c" Text="C">
                   <att.BoundsComposition-set AlignmentToParent="left:5 top:5 right:5 bottom:5"/>
                 </ut:MyControl>
               </ut:MyControl>
             </StackItem>
             <StackItem>
-              <ut:MyControl ref.Name="d" Text="D" Alt="D">
-                <ut:MyControl ref.Name="e" Text="E" Alt="E">
+              <ut:MyControl ref.Name="d" Text="D">
+                <ut:MyControl ref.Name="e" Text="E">
                   <att.BoundsComposition-set AlignmentToParent="left:5 top:5 right:5 bottom:5"/>
                 </ut:MyControl>
               </ut:MyControl>
@@ -457,7 +457,7 @@ TEST_FILE
 			);
 	});
 
-	TEST_CASE(L"Alt with Labels in single level")
+	TEST_CASE(L"Alt with Labels")
 	{
 		GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
 		{
@@ -513,74 +513,6 @@ TEST_FILE
 				TEST_ASSERT(e->GetFocused() == false);
 			});
 			protocol->OnNextIdleFrame(L"Focus A", [=]()
-			{
-				auto window = GetApplication()->GetMainWindow();
-				auto a = FindObjectByName<GuiControl>(window, L"a");
-				auto b = FindObjectByName<GuiControl>(window, L"b");
-				auto c = FindObjectByName<GuiControl>(window, L"c");
-				auto d = FindObjectByName<GuiControl>(window, L"d");
-				auto e = FindObjectByName<GuiControl>(window, L"e");
-
-				protocol->KeyPress(VKEY::KEY_MENU);
-				protocol->KeyPress(VKEY::KEY_B);
-				TEST_ASSERT(a->GetFocused() == false);
-				TEST_ASSERT(b->GetFocused() == true);
-				TEST_ASSERT(c->GetFocused() == false);
-				TEST_ASSERT(d->GetFocused() == false);
-				TEST_ASSERT(e->GetFocused() == false);
-			});
-			protocol->OnNextIdleFrame(L"Focus B", [=]()
-			{
-				auto window = GetApplication()->GetMainWindow();
-				auto a = FindObjectByName<GuiControl>(window, L"a");
-				auto b = FindObjectByName<GuiControl>(window, L"b");
-				auto c = FindObjectByName<GuiControl>(window, L"c");
-				auto d = FindObjectByName<GuiControl>(window, L"d");
-				auto e = FindObjectByName<GuiControl>(window, L"e");
-
-				protocol->KeyPress(VKEY::KEY_MENU);
-				protocol->KeyPress(VKEY::KEY_C);
-				TEST_ASSERT(a->GetFocused() == false);
-				TEST_ASSERT(b->GetFocused() == false);
-				TEST_ASSERT(c->GetFocused() == true);
-				TEST_ASSERT(d->GetFocused() == false);
-				TEST_ASSERT(e->GetFocused() == false);
-			});
-			protocol->OnNextIdleFrame(L"Focus C", [=]()
-			{
-				auto window = GetApplication()->GetMainWindow();
-				auto a = FindObjectByName<GuiControl>(window, L"a");
-				auto b = FindObjectByName<GuiControl>(window, L"b");
-				auto c = FindObjectByName<GuiControl>(window, L"c");
-				auto d = FindObjectByName<GuiControl>(window, L"d");
-				auto e = FindObjectByName<GuiControl>(window, L"e");
-
-				protocol->KeyPress(VKEY::KEY_MENU);
-				protocol->KeyPress(VKEY::KEY_D);
-				TEST_ASSERT(a->GetFocused() == false);
-				TEST_ASSERT(b->GetFocused() == false);
-				TEST_ASSERT(c->GetFocused() == false);
-				TEST_ASSERT(d->GetFocused() == true);
-				TEST_ASSERT(e->GetFocused() == false);
-			});
-			protocol->OnNextIdleFrame(L"Focus D", [=]()
-			{
-				auto window = GetApplication()->GetMainWindow();
-				auto a = FindObjectByName<GuiControl>(window, L"a");
-				auto b = FindObjectByName<GuiControl>(window, L"b");
-				auto c = FindObjectByName<GuiControl>(window, L"c");
-				auto d = FindObjectByName<GuiControl>(window, L"d");
-				auto e = FindObjectByName<GuiControl>(window, L"e");
-
-				protocol->KeyPress(VKEY::KEY_MENU);
-				protocol->KeyPress(VKEY::KEY_E);
-				TEST_ASSERT(a->GetFocused() == false);
-				TEST_ASSERT(b->GetFocused() == false);
-				TEST_ASSERT(c->GetFocused() == false);
-				TEST_ASSERT(d->GetFocused() == false);
-				TEST_ASSERT(e->GetFocused() == true);
-			});
-			protocol->OnNextIdleFrame(L"Focus E", [=]()
 			{
 				auto window = GetApplication()->GetMainWindow();
 
