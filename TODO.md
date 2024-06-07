@@ -51,10 +51,6 @@
 - `GuiWindow` unit test
   - Interaction with screen
 - Metadata of remote protocol will be updated and included in releases.
-- GacUI Binary Resource (can't move to next release)
-  - Upgrade GacUI XML Resource to 1.3, force on all resources instead of only depended or depending resource.
-  - Require binary pattern "[GMR-1.3]" at the beginning of the binary resource.
-  - Resource compiler and loader will check the version and only accept 1.3.
 - Calling `GuiWindow::ShowMaximized` in `WindowOpened` with `SetupHostedWindowsDirect2DRenderer` doesn't properly maximize the window.
 - Add `@cpp:Private` for GacGen generated `<parameter>ViewModel` variable.
 - Document
@@ -76,6 +72,13 @@
     - Add VlppParser2.
     - Begin to add DSL syntax to document instead of just in comments.
   - Check if there is any link to /home or other deprecated pages.
+
+## Release (optional)
+
+- GacUI Binary Resource (when new features are added)
+  - Upgrade GacUI XML Resource to 1.3, force on all resources instead of only depended or depending resource.
+  - Require binary pattern "[GMR-1.3]" at the beginning of the binary resource.
+  - Resource compiler and loader will check the version and only accept 1.3.
 
 ## Release Milestone (1.2.11.0)
 
