@@ -208,6 +208,7 @@ UnitTestRemoteProtocol
 		bool								leftPressing = false;
 		bool								middlePressing = false;
 		bool								rightPressing = false;
+		bool								capslockToggled = false;
 
 		IGuiRemoteProtocolEvents& UseEvents()
 		{
@@ -231,6 +232,18 @@ UnitTestRemoteProtocol
 			info.y = mousePosition.Value().y.value;
 			info.wheel = 0;
 			info.nonClient = false;
+			return info;
+		}
+
+		NativeWindowKeyInfo MakeKeyInfo(VKEY key, bool autoRepeatKeyDown = false)
+		{
+			NativeWindowKeyInfo info;
+			info.code = key;
+			info.ctrl = IsPressing(VKEY::KEY_CONTROL) || IsPressing(VKEY::KEY_LCONTROL) || IsPressing(VKEY::KEY_RCONTROL);
+			info.shift = IsPressing(VKEY::KEY_SHIFT) || IsPressing(VKEY::KEY_LSHIFT) || IsPressing(VKEY::KEY_RSHIFT);
+			info.alt = IsPressing(VKEY::KEY_MENU) || IsPressing(VKEY::KEY_LMENU) || IsPressing(VKEY::KEY_RMENU);
+			info.capslock = capslockToggled;
+			info.autoRepeatKeyDown = autoRepeatKeyDown;
 			return info;
 		}
 
@@ -267,6 +280,53 @@ Helper Functions
 /***********************************************************************
 Keys
 ***********************************************************************/
+
+		void _KeyDown(VKEY key)
+		{
+#define ERROR_MESSAGE_PREFIX CLASS_PREFIX L"_KeyDown(...)#"
+			CHECK_ERROR(!pressingKeys.Contains(key), ERROR_MESSAGE_PREFIX L"The key is already being pressed.");
+			pressingKeys.Add(key);
+			if (key == VKEY::KEY_CAPITAL)
+			{
+				capslockToggled = !capslockToggled;
+			}
+			UseEvents().OnIOKeyDown(MakeKeyInfo(key, false));
+#undef ERROR_MESSAGE_PREFIX
+		}
+
+		void _KeyDownRepeat(VKEY key)
+		{
+#define ERROR_MESSAGE_PREFIX CLASS_PREFIX L"_KeyDownRepeat(...)#"
+			CHECK_ERROR(pressingKeys.Contains(key), ERROR_MESSAGE_PREFIX L"The key is not being pressed.");
+			UseEvents().OnIOKeyDown(MakeKeyInfo(key, true));
+#undef ERROR_MESSAGE_PREFIX
+		}
+
+		void _KeyUp(VKEY key)
+		{
+#define ERROR_MESSAGE_PREFIX CLASS_PREFIX L"_KeyUp(...)#"
+			CHECK_ERROR(pressingKeys.Contains(key), ERROR_MESSAGE_PREFIX L"The key is not being pressed.");
+			pressingKeys.Remove(key);
+			UseEvents().OnIOKeyUp(MakeKeyInfo(key, false));
+#undef ERROR_MESSAGE_PREFIX
+		}
+
+		void KeyPress(VKEY key)
+		{
+			_KeyDown(key);
+			_KeyUp(key);
+		}
+
+		void KeyPress(VKEY key, bool ctrl, bool shift, bool alt)
+		{
+			if (ctrl) _KeyDown(VKEY::KEY_CONTROL);
+			if (shift) _KeyDown(VKEY::KEY_SHIFT);
+			if (alt) _KeyDown(VKEY::KEY_MENU);
+			KeyPress(key);
+			if (alt) _KeyUp(VKEY::KEY_MENU);
+			if (shift) _KeyUp(VKEY::KEY_SHIFT);
+			if (ctrl) _KeyUp(VKEY::KEY_CONTROL);
+		}
 
 /***********************************************************************
 Mouse
@@ -522,6 +582,7 @@ UnitTestRemoteProtocol
 	template<typename TProtocol>
 	class UnitTestRemoteProtocol_Rendering : public TProtocol
 	{
+		using IdSet = collections::SortedList<vint>;
 		using ElementDescMap = collections::Dictionary<vint, ElementDescVariant>;
 		using ImageMetadataMap = collections::Dictionary<vint, remoteprotocol::ImageMetadata>;
 		using CommandList = UnitTestRenderingCommandList;
@@ -530,6 +591,9 @@ UnitTestRemoteProtocol
 
 		remoteprotocol::RenderingTrace			loggedTrace;
 		ElementDescMap							lastElementDescs;
+		IdSet									removedElementIds;
+		IdSet									removedImageIds;
+
 		remoteprotocol::ElementMeasurings		measuringForNextRendering;
 		regex::Regex							regexCrLf{ L"/n|/r(/n)?" };
 		vint									lastFrameId = 0;
@@ -629,8 +693,9 @@ IGuiRemoteProtocolMessages (Elements)
 			{
 				for (auto creation : *arguments.Obj())
 				{
-					CHECK_ERROR(!loggedTrace.createdElements->Keys().Contains(creation.id), ERROR_MESSAGE_PREFIX L"Renderer with the specified id has been created.");
+					CHECK_ERROR(!loggedTrace.createdElements->Keys().Contains(creation.id), ERROR_MESSAGE_PREFIX L"Renderer with the specified id has been created or used.");
 					loggedTrace.createdElements->Add(creation.id, creation.type);
+					removedElementIds.Remove(creation.id);
 				}
 			}
 #undef ERROR_MESSAGE_PREFIX
@@ -644,7 +709,8 @@ IGuiRemoteProtocolMessages (Elements)
 				for (auto id : *arguments.Obj())
 				{
 					CHECK_ERROR(loggedTrace.createdElements->Keys().Contains(id), ERROR_MESSAGE_PREFIX L"Renderer with the specified id has not been created.");
-					loggedTrace.createdElements->Remove(id);
+					CHECK_ERROR(!removedElementIds.Contains(id), ERROR_MESSAGE_PREFIX L"Renderer with the specified id has been destroyed.");
+					removedElementIds.Add(id);
 					lastElementDescs.Remove(id);
 				}
 			}
@@ -782,7 +848,7 @@ IGuiRemoteProtocolMessages (Elements - SolidLabel)
 									// calculate text as single line, insert a space between each line
 									lines.Add(
 										normalizedLines
-											.Aggregate<vint>(-1, [](auto a, auto b) { return a + b + 1; })
+											.template Aggregate<vint>(-1, [](auto a, auto b) { return a + b + 1; })
 										);
 								}
 							}
@@ -804,7 +870,7 @@ IGuiRemoteProtocolMessages (Elements - SolidLabel)
 										return (length + columns - 1) / columns;
 									}
 								})
-								.Aggregate<vint>(0, [](auto a, auto b) { return a + b; });
+								.template Aggregate<vint>(0, [](auto a, auto b) { return a + b; });
 						}
 						else
 						{
@@ -874,7 +940,8 @@ IGuiRemoteProtocolMessages (Elements - Image)
 		void RequestImageCreated(vint id, const remoteprotocol::ImageCreation& arguments) override
 		{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering<TProtocol>::RequestImageCreated(vint, const vint&)#"
-			CHECK_ERROR(!loggedTrace.createdImages->Keys().Contains(arguments.id), ERROR_MESSAGE_PREFIX L"Image with the specified id has been created.");
+			CHECK_ERROR(!loggedTrace.createdImages->Keys().Contains(arguments.id), ERROR_MESSAGE_PREFIX L"Image with the specified id has been created or used.");
+			removedImageIds.Remove(arguments.id);
 			this->GetEvents()->RespondImageCreated(id, MakeImageMetadata(arguments));
 #undef ERROR_MESSAGE_PREFIX
 		}
@@ -883,7 +950,8 @@ IGuiRemoteProtocolMessages (Elements - Image)
 		{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering<TProtocol>::RequestImageDestroyed(const vint&)#"
 			CHECK_ERROR(loggedTrace.createdImages->Keys().Contains(arguments), ERROR_MESSAGE_PREFIX L"Image with the specified id has not been created.");
-			loggedTrace.createdImages->Remove(arguments);
+			CHECK_ERROR(!removedImageIds.Contains(arguments), ERROR_MESSAGE_PREFIX L"Image with the specified id has been destroyed.");
+			removedImageIds.Add(arguments);
 #undef ERROR_MESSAGE_PREFIX
 		}
 
@@ -1285,17 +1353,24 @@ IGuiRemoteProtocol
 
 		void ProcessRemoteEvents() override
 		{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol::ProcessRemoteEvents()#"
 			if (!stopped)
 			{
 				if (LogRenderingResult())
 				{
 					vl::unittest::UnitTest::PrintMessage(L"Execute idle frame[" + itow(nextEventIndex) + L"]", vl::unittest::UnitTest::MessageKind::Info);
 					auto [name, func] = processRemoteEvents[nextEventIndex];
-					(*loggedTrace.frames.Obj())[loggedTrace.frames->Count() - 1].frameName = name;
+					if (name)
+					{
+						auto&& lastFrame = (*loggedTrace.frames.Obj())[loggedTrace.frames->Count() - 1];
+						CHECK_ERROR(!lastFrame.frameName, ERROR_MESSAGE_PREFIX L"The last frame has already been assigned a name.");
+						lastFrame.frameName = name;
+					}
 					func();
 					nextEventIndex++;
 				}
 			}
+#undef ERROR_MESSAGE_PREFIX
 		}
 	};
 }

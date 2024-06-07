@@ -686,9 +686,8 @@ public:
 	{
 	}
 
-	void Load()override
+	void Load(bool controllerUnrelatedPlugins, bool controllerRelatedPlugins)override
 	{
-
 		FilePath exeFolder = FilePath(executablePath).GetFolder();
 		FilePath metadataFolder = exeFolder;
 		auto binaryName32 = WString::Unmanaged(L"Reflection32.bin");
@@ -744,7 +743,7 @@ public:
 #undef INSTALL_SERIALIZABLE_TYPE
 	}
 
-	void Unload()override
+	void Unload(bool controllerUnrelatedPlugins, bool controllerRelatedPlugins)override
 	{
 	}
 };

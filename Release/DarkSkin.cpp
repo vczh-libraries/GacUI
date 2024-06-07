@@ -24950,6 +24950,7 @@ Class (::darkskin::ButtonTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_5)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_6));
 		}
 		(this->container = new ::vl::presentation::compositions::GuiBoundsComposition());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"container"), ::vl::__vwsn::Box(this->container));
 		{
 			::vl::__vwsn::This(this->container)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(0); __vwsn_temp__.top = static_cast<::vl::vint>(0); __vwsn_temp__.right = static_cast<::vl::vint>(0); __vwsn_temp__.bottom = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
 		}
@@ -25150,6 +25151,7 @@ Class (::darkskin::CheckBoxTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_12)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_13));
 		}
 		(this->container = new ::vl::presentation::compositions::GuiBoundsComposition());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"container"), ::vl::__vwsn::Box(this->container));
 		{
 			::vl::__vwsn::This(this->container)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(0); __vwsn_temp__.top = static_cast<::vl::vint>(0); __vwsn_temp__.right = static_cast<::vl::vint>(0); __vwsn_temp__.bottom = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
 		}
@@ -25290,6 +25292,7 @@ Class (::darkskin::ComboBoxTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_1)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_2));
 		}
 		(this->container = new ::vl::presentation::compositions::GuiBoundsComposition());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"container"), ::vl::__vwsn::Box(this->container));
 		{
 			::vl::__vwsn::This(this->container)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(1); __vwsn_temp__.top = static_cast<::vl::vint>(1); __vwsn_temp__.right = static_cast<::vl::vint>(11); __vwsn_temp__.bottom = static_cast<::vl::vint>(1); return __vwsn_temp__; }());
 		}
@@ -25519,6 +25522,7 @@ Class (::darkskin::CustomFrameWindowTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_1)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_2));
 		}
 		(this->frameTable = new ::vl::presentation::compositions::GuiTableComposition());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"frameTable"), ::vl::__vwsn::Box(this->frameTable));
 		{
 			::vl::__vwsn::This(this->frameTable)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(0); __vwsn_temp__.top = static_cast<::vl::vint>(0); __vwsn_temp__.right = static_cast<::vl::vint>(0); __vwsn_temp__.bottom = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
 		}
@@ -25618,6 +25622,7 @@ Class (::darkskin::CustomFrameWindowTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_1)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->frameTable));
 		}
 		(this->contentTable = new ::vl::presentation::compositions::GuiTableComposition());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"contentTable"), ::vl::__vwsn::Box(this->contentTable));
 		{
 			::vl::__vwsn::This(this->contentTable)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
 		}
@@ -25877,6 +25882,7 @@ Class (::darkskin::CustomFrameWindowTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_38)->SetSite(static_cast<::vl::vint>(1), static_cast<::vl::vint>(0), static_cast<::vl::vint>(1), static_cast<::vl::vint>(5));
 		}
 		(this->container = new ::vl::presentation::compositions::GuiBoundsComposition());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"container"), ::vl::__vwsn::Box(this->container));
 		{
 			::vl::__vwsn::This(this->container)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(0); __vwsn_temp__.top = static_cast<::vl::vint>(0); __vwsn_temp__.right = static_cast<::vl::vint>(0); __vwsn_temp__.bottom = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
 		}
@@ -26116,6 +26122,7 @@ Class (::darkskin::DateButtonTemplateConstructor)
 			::vl::__vwsn::This(this->self)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_1));
 		}
 		(this->container = new ::vl::presentation::compositions::GuiBoundsComposition());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"container"), ::vl::__vwsn::Box(this->container));
 		{
 			::vl::__vwsn::This(this->container)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(0); __vwsn_temp__.top = static_cast<::vl::vint>(0); __vwsn_temp__.right = static_cast<::vl::vint>(0); __vwsn_temp__.bottom = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
 		}
@@ -26177,6 +26184,7 @@ Class (::darkskin::DatePickerTemplateConstructor)
 			::vl::__vwsn::This(this->self)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
 		}
 		(this->look = new ::vl::presentation::templates::GuiCommonDatePickerLook(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#2D2D30")), ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#FFFFFF")), ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#999999"))));
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"look"), ::vl::__vwsn::Box(this->look));
 		{
 			::vl::__vwsn::This(this->look)->SetDateTextListTemplate(vl::Func(::vl_workflow_global::__vwsnf135_DarkSkin_darkskin_DatePickerTemplateConstructor___vwsn_darkskin_DatePickerTemplate_Initialize_(this)));
 		}
@@ -26315,6 +26323,7 @@ Class (::darkskin::DocumentTextBoxTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_1));
 		}
 		(this->container = new ::vl::presentation::compositions::GuiBoundsComposition());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"container"), ::vl::__vwsn::Box(this->container));
 		{
 			::vl::__vwsn::This(this->container)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(1); __vwsn_temp__.top = static_cast<::vl::vint>(1); __vwsn_temp__.right = static_cast<::vl::vint>(1); __vwsn_temp__.bottom = static_cast<::vl::vint>(1); return __vwsn_temp__; }());
 		}
@@ -26398,6 +26407,7 @@ Class (::darkskin::DocumentViewerTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_1));
 		}
 		(this->look = new ::vl::presentation::templates::GuiCommonScrollViewLook(static_cast<::vl::vint>(20)));
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"look"), ::vl::__vwsn::Box(this->look));
 		{
 			::vl::__vwsn::This(this->look)->SetVScrollTemplate(vl::Func(::vl_workflow_global::__vwsnf82_DarkSkin_darkskin_DocumentViewerTemplateConstructor___vwsn_darkskin_DocumentViewerTemplate_Initialize_(this)));
 		}
@@ -26624,6 +26634,7 @@ Class (::darkskin::GroupBoxTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_1)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_2));
 		}
 		(this->container = new ::vl::presentation::compositions::GuiBoundsComposition());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"container"), ::vl::__vwsn::Box(this->container));
 		{
 			::vl::__vwsn::This(this->container)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
 		}
@@ -26634,6 +26645,7 @@ Class (::darkskin::GroupBoxTemplateConstructor)
 			::vl::__vwsn::This(this->self)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_1));
 		}
 		(this->titleBounds = new ::vl::presentation::compositions::GuiBoundsComposition());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"titleBounds"), ::vl::__vwsn::Box(this->titleBounds));
 		{
 			::vl::__vwsn::This(this->titleBounds)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(5); __vwsn_temp__.top = static_cast<::vl::vint>(0); __vwsn_temp__.right = (- static_cast<::vl::vint>(1)); __vwsn_temp__.bottom = (- static_cast<::vl::vint>(1)); return __vwsn_temp__; }());
 		}
@@ -26791,6 +26803,7 @@ Class (::darkskin::HScrollTemplateConstructor)
 			::vl::__vwsn::This(this->self)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
 		}
 		(this->behavior = new ::vl::presentation::templates::GuiCommonScrollBehavior());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"behavior"), ::vl::__vwsn::Box(this->behavior));
 		{
 			::vl::__vwsn::This(this->self)->AddComponent(static_cast<::vl::presentation::controls::GuiComponent*>(this->behavior));
 		}
@@ -26827,6 +26840,7 @@ Class (::darkskin::HScrollTemplateConstructor)
 		}
 		{
 			(this->buttonDecrease = new ::vl::presentation::controls::GuiButton(::vl::presentation::theme::ThemeName::Button));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"buttonDecrease"), ::vl::__vwsn::Box(this->buttonDecrease));
 		}
 		(this->__vwsn_precompile_4 = ::vl::__vwsn::This(this->buttonDecrease)->GetBoundsComposition());
 		{
@@ -26856,6 +26870,7 @@ Class (::darkskin::HScrollTemplateConstructor)
 		}
 		{
 			(this->buttonIncrease = new ::vl::presentation::controls::GuiButton(::vl::presentation::theme::ThemeName::Button));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"buttonIncrease"), ::vl::__vwsn::Box(this->buttonIncrease));
 		}
 		(this->__vwsn_precompile_6 = ::vl::__vwsn::This(this->buttonIncrease)->GetBoundsComposition());
 		{
@@ -26874,6 +26889,7 @@ Class (::darkskin::HScrollTemplateConstructor)
 			::vl::__vwsn::This(this->self)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_5));
 		}
 		(this->handleContainer = new ::vl::presentation::compositions::GuiBoundsComposition());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"handleContainer"), ::vl::__vwsn::Box(this->handleContainer));
 		{
 			::vl::__vwsn::This(this->handleContainer)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(20); __vwsn_temp__.top = static_cast<::vl::vint>(0); __vwsn_temp__.right = static_cast<::vl::vint>(20); __vwsn_temp__.bottom = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
 		}
@@ -26881,6 +26897,7 @@ Class (::darkskin::HScrollTemplateConstructor)
 			::vl::__vwsn::This(this->handleContainer)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::NoLimit);
 		}
 		(this->handle = new ::vl::presentation::compositions::GuiPartialViewComposition());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"handle"), ::vl::__vwsn::Box(this->handle));
 		{
 			::vl::__vwsn::This(this->handle)->SetPreferredMinSize([&](){ ::vl::presentation::Size __vwsn_temp__; __vwsn_temp__.x = static_cast<::vl::vint>(10); return __vwsn_temp__; }());
 		}
@@ -26979,6 +26996,7 @@ Class (::darkskin::HTrackerTemplateConstructor)
 			::vl::__vwsn::This(this->self)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
 		}
 		(this->behavior = new ::vl::presentation::templates::GuiCommonScrollBehavior());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"behavior"), ::vl::__vwsn::Box(this->behavior));
 		{
 			::vl::__vwsn::This(this->self)->AddComponent(static_cast<::vl::presentation::controls::GuiComponent*>(this->behavior));
 		}
@@ -27032,6 +27050,7 @@ Class (::darkskin::HTrackerTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_1)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_3));
 		}
 		(this->handle = new ::vl::presentation::compositions::GuiPartialViewComposition());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"handle"), ::vl::__vwsn::Box(this->handle));
 		{
 			::vl::__vwsn::This(this->handle)->SetWidthPageSize(static_cast<double>(0));
 		}
@@ -27129,6 +27148,7 @@ Class (::darkskin::ItemBackgroundTemplateConstructor)
 			::vl::__vwsn::This(this->self)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_0));
 		}
 		(this->container = new ::vl::presentation::compositions::GuiBoundsComposition());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"container"), ::vl::__vwsn::Box(this->container));
 		{
 			::vl::__vwsn::This(this->container)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(0); __vwsn_temp__.top = static_cast<::vl::vint>(0); __vwsn_temp__.right = static_cast<::vl::vint>(0); __vwsn_temp__.bottom = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
 		}
@@ -27370,6 +27390,7 @@ Class (::darkskin::ListViewColumnHeaderTemplateConstructor)
 			::vl::__vwsn::This(this->self)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_3));
 		}
 		(this->container = new ::vl::presentation::compositions::GuiBoundsComposition());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"container"), ::vl::__vwsn::Box(this->container));
 		{
 			::vl::__vwsn::This(this->container)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(1); __vwsn_temp__.top = static_cast<::vl::vint>(1); __vwsn_temp__.right = static_cast<::vl::vint>(11); __vwsn_temp__.bottom = static_cast<::vl::vint>(1); return __vwsn_temp__; }());
 		}
@@ -27470,6 +27491,7 @@ Class (::darkskin::ListViewColumnHeaderTemplateConstructor)
 		}
 		{
 			(this->buttonArrow = new ::vl::presentation::controls::GuiSelectableButton(::vl::presentation::theme::ThemeName::CheckBox));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"buttonArrow"), ::vl::__vwsn::Box(this->buttonArrow));
 		}
 		(this->__vwsn_precompile_14 = ::vl::__vwsn::This(this->buttonArrow)->GetBoundsComposition());
 		{
@@ -27631,6 +27653,7 @@ Class (::darkskin::ListViewTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_1));
 		}
 		(this->look = new ::vl::presentation::templates::GuiCommonScrollViewLook(static_cast<::vl::vint>(20)));
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"look"), ::vl::__vwsn::Box(this->look));
 		{
 			::vl::__vwsn::This(this->look)->SetVScrollTemplate(vl::Func(::vl_workflow_global::__vwsnf119_DarkSkin_darkskin_ListViewTemplateConstructor___vwsn_darkskin_ListViewTemplate_Initialize_(this)));
 		}
@@ -28105,6 +28128,7 @@ Class (::darkskin::MultilineTextBoxTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_1));
 		}
 		(this->look = new ::vl::presentation::templates::GuiCommonScrollViewLook(static_cast<::vl::vint>(20)));
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"look"), ::vl::__vwsn::Box(this->look));
 		{
 			::vl::__vwsn::This(this->look)->SetVScrollTemplate(vl::Func(::vl_workflow_global::__vwsnf313_DarkSkin_darkskin_MultilineTextBoxTemplateConstructor___vwsn_darkskin_MultilineTextBoxTemplate_Initialize_(this)));
 		}
@@ -28201,6 +28225,7 @@ Class (::darkskin::ProgressBarTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_1)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_2));
 		}
 		(this->container = new ::vl::presentation::compositions::GuiBoundsComposition());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"container"), ::vl::__vwsn::Box(this->container));
 		{
 			::vl::__vwsn::This(this->container)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(1); __vwsn_temp__.top = static_cast<::vl::vint>(1); __vwsn_temp__.right = static_cast<::vl::vint>(1); __vwsn_temp__.bottom = static_cast<::vl::vint>(1); return __vwsn_temp__; }());
 		}
@@ -28388,6 +28413,7 @@ Class (::darkskin::RadioButtonTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_12)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_13));
 		}
 		(this->container = new ::vl::presentation::compositions::GuiBoundsComposition());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"container"), ::vl::__vwsn::Box(this->container));
 		{
 			::vl::__vwsn::This(this->container)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(0); __vwsn_temp__.top = static_cast<::vl::vint>(0); __vwsn_temp__.right = static_cast<::vl::vint>(0); __vwsn_temp__.bottom = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
 		}
@@ -28718,6 +28744,7 @@ Class (::darkskin::RibbonGalleryTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_2)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_3));
 		}
 		(this->container = new ::vl::presentation::compositions::GuiBoundsComposition());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"container"), ::vl::__vwsn::Box(this->container));
 		{
 			::vl::__vwsn::This(this->container)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(0); __vwsn_temp__.top = static_cast<::vl::vint>(0); __vwsn_temp__.right = static_cast<::vl::vint>(0); __vwsn_temp__.bottom = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
 		}
@@ -28988,6 +29015,7 @@ Class (::darkskin::RibbonGroupMenuTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_3)->SetColumnOption(static_cast<::vl::vint>(1), [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::MinSize; return __vwsn_temp__; }());
 		}
 		(this->container = new ::vl::presentation::compositions::GuiCellComposition());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"container"), ::vl::__vwsn::Box(this->container));
 		{
 			::vl::__vwsn::This(this->container)->SetSite(static_cast<::vl::vint>(0), static_cast<::vl::vint>(0), static_cast<::vl::vint>(1), static_cast<::vl::vint>(2));
 		}
@@ -29081,6 +29109,7 @@ Class (::darkskin::RibbonGroupTemplateConstructor)
 			::vl::__vwsn::This(this->self)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
 		}
 		(this->table = new ::vl::presentation::compositions::GuiTableComposition());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"table"), ::vl::__vwsn::Box(this->table));
 		{
 			::vl::__vwsn::This(this->table)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(0); __vwsn_temp__.top = static_cast<::vl::vint>(0); __vwsn_temp__.right = static_cast<::vl::vint>(0); __vwsn_temp__.bottom = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
 		}
@@ -29105,6 +29134,7 @@ Class (::darkskin::RibbonGroupTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_1)->SetSite(static_cast<::vl::vint>(0), static_cast<::vl::vint>(0), static_cast<::vl::vint>(1), static_cast<::vl::vint>(1));
 		}
 		(this->container = new ::vl::presentation::compositions::GuiBoundsComposition());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"container"), ::vl::__vwsn::Box(this->container));
 		{
 			::vl::__vwsn::This(this->container)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(1); __vwsn_temp__.top = static_cast<::vl::vint>(1); __vwsn_temp__.right = static_cast<::vl::vint>(1); __vwsn_temp__.bottom = static_cast<::vl::vint>(1); return __vwsn_temp__; }());
 		}
@@ -29290,6 +29320,7 @@ Class (::darkskin::RibbonIconLabelTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_0)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_1));
 		}
 		(this->container = new ::vl::presentation::compositions::GuiCellComposition());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"container"), ::vl::__vwsn::Box(this->container));
 		{
 			::vl::__vwsn::This(this->container)->SetSite(static_cast<::vl::vint>(0), static_cast<::vl::vint>(1), static_cast<::vl::vint>(1), static_cast<::vl::vint>(1));
 		}
@@ -29396,6 +29427,7 @@ Class (::darkskin::RibbonLargeButtonTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_4)->SetSite(static_cast<::vl::vint>(0), static_cast<::vl::vint>(0), static_cast<::vl::vint>(1), static_cast<::vl::vint>(1));
 		}
 		(this->container = new ::vl::presentation::compositions::GuiBoundsComposition());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"container"), ::vl::__vwsn::Box(this->container));
 		{
 			::vl::__vwsn::This(this->container)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(3); __vwsn_temp__.top = static_cast<::vl::vint>(3); __vwsn_temp__.right = static_cast<::vl::vint>(3); __vwsn_temp__.bottom = static_cast<::vl::vint>(3); return __vwsn_temp__; }());
 		}
@@ -29572,6 +29604,7 @@ Class (::darkskin::RibbonLargeDropdownButtonTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_4)->SetSite(static_cast<::vl::vint>(0), static_cast<::vl::vint>(0), static_cast<::vl::vint>(1), static_cast<::vl::vint>(1));
 		}
 		(this->container = new ::vl::presentation::compositions::GuiBoundsComposition());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"container"), ::vl::__vwsn::Box(this->container));
 		{
 			::vl::__vwsn::This(this->container)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(3); __vwsn_temp__.top = static_cast<::vl::vint>(3); __vwsn_temp__.right = static_cast<::vl::vint>(3); __vwsn_temp__.bottom = static_cast<::vl::vint>(3); return __vwsn_temp__; }());
 		}
@@ -29806,6 +29839,7 @@ Class (::darkskin::RibbonLargeSplitButtonTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_3)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_4));
 		}
 		(this->container = new ::vl::presentation::compositions::GuiBoundsComposition());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"container"), ::vl::__vwsn::Box(this->container));
 		{
 			::vl::__vwsn::This(this->container)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(3); __vwsn_temp__.top = static_cast<::vl::vint>(3); __vwsn_temp__.right = static_cast<::vl::vint>(3); __vwsn_temp__.bottom = static_cast<::vl::vint>(3); return __vwsn_temp__; }());
 		}
@@ -29845,6 +29879,7 @@ Class (::darkskin::RibbonLargeSplitButtonTemplateConstructor)
 		}
 		{
 			(this->buttonArrow = new ::vl::presentation::controls::GuiSelectableButton(::vl::presentation::theme::ThemeName::CheckBox));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"buttonArrow"), ::vl::__vwsn::Box(this->buttonArrow));
 		}
 		(this->__vwsn_precompile_9 = ::vl::__vwsn::This(this->buttonArrow)->GetBoundsComposition());
 		{
@@ -29986,6 +30021,7 @@ Class (::darkskin::RibbonSmallButtonTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_2)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_3));
 		}
 		(this->container = new ::vl::presentation::compositions::GuiTableComposition());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"container"), ::vl::__vwsn::Box(this->container));
 		{
 			::vl::__vwsn::This(this->container)->SetCellPadding(static_cast<::vl::vint>(3));
 		}
@@ -30150,6 +30186,7 @@ Class (::darkskin::RibbonSmallDropdownButtonTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_2)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_3));
 		}
 		(this->container = new ::vl::presentation::compositions::GuiTableComposition());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"container"), ::vl::__vwsn::Box(this->container));
 		{
 			::vl::__vwsn::This(this->container)->SetCellPadding(static_cast<::vl::vint>(3));
 		}
@@ -30416,6 +30453,7 @@ Class (::darkskin::RibbonSmallIconLabelTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_0)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_4));
 		}
 		(this->container = new ::vl::presentation::compositions::GuiCellComposition());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"container"), ::vl::__vwsn::Box(this->container));
 		{
 			::vl::__vwsn::This(this->container)->SetSite(static_cast<::vl::vint>(0), static_cast<::vl::vint>(2), static_cast<::vl::vint>(1), static_cast<::vl::vint>(1));
 		}
@@ -30529,6 +30567,7 @@ Class (::darkskin::RibbonSmallSplitButtonTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_2)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_3));
 		}
 		(this->container = new ::vl::presentation::compositions::GuiTableComposition());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"container"), ::vl::__vwsn::Box(this->container));
 		{
 			::vl::__vwsn::This(this->container)->SetCellPadding(static_cast<::vl::vint>(3));
 		}
@@ -30601,6 +30640,7 @@ Class (::darkskin::RibbonSmallSplitButtonTemplateConstructor)
 		}
 		{
 			(this->buttonArrow = new ::vl::presentation::controls::GuiSelectableButton(::vl::presentation::theme::ThemeName::CheckBox));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"buttonArrow"), ::vl::__vwsn::Box(this->buttonArrow));
 		}
 		(this->__vwsn_precompile_11 = ::vl::__vwsn::This(this->buttonArrow)->GetBoundsComposition());
 		{
@@ -30971,6 +31011,7 @@ Class (::darkskin::RibbonToolstripMenuTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_4)->SetColumnOption(static_cast<::vl::vint>(1), [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::Absolute; __vwsn_temp__.absolute = static_cast<::vl::vint>(4); return __vwsn_temp__; }());
 		}
 		(this->content = new ::vl::presentation::compositions::GuiCellComposition());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"content"), ::vl::__vwsn::Box(this->content));
 		{
 			::vl::__vwsn::This(this->content)->SetSite(static_cast<::vl::vint>(0), static_cast<::vl::vint>(0), static_cast<::vl::vint>(1), static_cast<::vl::vint>(2));
 		}
@@ -31006,6 +31047,7 @@ Class (::darkskin::RibbonToolstripMenuTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_8)->SetSite(static_cast<::vl::vint>(2), static_cast<::vl::vint>(0), static_cast<::vl::vint>(1), static_cast<::vl::vint>(2));
 		}
 		(this->container = new ::vl::presentation::compositions::GuiBoundsComposition());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"container"), ::vl::__vwsn::Box(this->container));
 		{
 			::vl::__vwsn::This(this->container)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(3); __vwsn_temp__.top = static_cast<::vl::vint>(3); __vwsn_temp__.right = static_cast<::vl::vint>(3); __vwsn_temp__.bottom = static_cast<::vl::vint>(3); return __vwsn_temp__; }());
 		}
@@ -31251,6 +31293,7 @@ Class (::darkskin::ScrollViewTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_1)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_2));
 		}
 		(this->look = new ::vl::presentation::templates::GuiCommonScrollViewLook(static_cast<::vl::vint>(20)));
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"look"), ::vl::__vwsn::Box(this->look));
 		{
 			::vl::__vwsn::This(this->look)->SetVScrollTemplate(vl::Func(::vl_workflow_global::__vwsnf280_DarkSkin_darkskin_ScrollViewTemplateConstructor___vwsn_darkskin_ScrollViewTemplate_Initialize_(this)));
 		}
@@ -31426,6 +31469,7 @@ Class (::darkskin::SinglelineTextBoxTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_1));
 		}
 		(this->container = new ::vl::presentation::compositions::GuiBoundsComposition());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"container"), ::vl::__vwsn::Box(this->container));
 		{
 			::vl::__vwsn::This(this->container)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(1); __vwsn_temp__.top = static_cast<::vl::vint>(1); __vwsn_temp__.right = static_cast<::vl::vint>(1); __vwsn_temp__.bottom = static_cast<::vl::vint>(1); return __vwsn_temp__; }());
 		}
@@ -31502,6 +31546,7 @@ Class (::darkskin::SystemFrameWindowTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_1));
 		}
 		(this->container = new ::vl::presentation::compositions::GuiBoundsComposition());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"container"), ::vl::__vwsn::Box(this->container));
 		{
 			::vl::__vwsn::This(this->container)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(0); __vwsn_temp__.top = static_cast<::vl::vint>(0); __vwsn_temp__.right = static_cast<::vl::vint>(0); __vwsn_temp__.bottom = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
 		}
@@ -31817,6 +31862,7 @@ Class (::darkskin::TabTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_1));
 		}
 		(this->beforeHeadersContainer = new ::vl::presentation::compositions::GuiCellComposition());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"beforeHeadersContainer"), ::vl::__vwsn::Box(this->beforeHeadersContainer));
 		{
 			::vl::__vwsn::This(this->beforeHeadersContainer)->SetSite(static_cast<::vl::vint>(0), static_cast<::vl::vint>(0), static_cast<::vl::vint>(1), static_cast<::vl::vint>(1));
 		}
@@ -31824,6 +31870,7 @@ Class (::darkskin::TabTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_0)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->beforeHeadersContainer));
 		}
 		(this->afterHeadersContainer = new ::vl::presentation::compositions::GuiCellComposition());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"afterHeadersContainer"), ::vl::__vwsn::Box(this->afterHeadersContainer));
 		{
 			::vl::__vwsn::This(this->afterHeadersContainer)->SetSite(static_cast<::vl::vint>(0), static_cast<::vl::vint>(2), static_cast<::vl::vint>(1), static_cast<::vl::vint>(1));
 		}
@@ -31835,6 +31882,7 @@ Class (::darkskin::TabTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_2)->SetSite(static_cast<::vl::vint>(0), static_cast<::vl::vint>(1), static_cast<::vl::vint>(1), static_cast<::vl::vint>(1));
 		}
 		(this->header = new ::vl::presentation::compositions::GuiRepeatFlowComposition());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"header"), ::vl::__vwsn::Box(this->header));
 		{
 			::vl::__vwsn::This(this->header)->SetItemTemplate(vl::Func(::vl_workflow_global::__vwsnf306_DarkSkin_darkskin_TabTemplateConstructor___vwsn_darkskin_TabTemplate_Initialize_(this)));
 		}
@@ -31876,6 +31924,7 @@ Class (::darkskin::TabTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_5)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_6));
 		}
 		(this->container = new ::vl::presentation::compositions::GuiBoundsComposition());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"container"), ::vl::__vwsn::Box(this->container));
 		{
 			::vl::__vwsn::This(this->container)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(1); __vwsn_temp__.top = static_cast<::vl::vint>(1); __vwsn_temp__.right = static_cast<::vl::vint>(1); __vwsn_temp__.bottom = static_cast<::vl::vint>(1); return __vwsn_temp__; }());
 		}
@@ -32034,6 +32083,7 @@ Class (::darkskin::TextListTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_1));
 		}
 		(this->look = new ::vl::presentation::templates::GuiCommonScrollViewLook(static_cast<::vl::vint>(20)));
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"look"), ::vl::__vwsn::Box(this->look));
 		{
 			::vl::__vwsn::This(this->look)->SetVScrollTemplate(vl::Func(::vl_workflow_global::__vwsnf125_DarkSkin_darkskin_TextListTemplateConstructor___vwsn_darkskin_TextListTemplate_Initialize_(this)));
 		}
@@ -32345,6 +32395,7 @@ Class (::darkskin::ToolstripButtonTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_2)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_3));
 		}
 		(this->container = new ::vl::presentation::compositions::GuiBoundsComposition());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"container"), ::vl::__vwsn::Box(this->container));
 		{
 			::vl::__vwsn::This(this->container)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(3); __vwsn_temp__.top = static_cast<::vl::vint>(3); __vwsn_temp__.right = static_cast<::vl::vint>(3); __vwsn_temp__.bottom = static_cast<::vl::vint>(3); return __vwsn_temp__; }());
 		}
@@ -32458,6 +32509,7 @@ Class (::darkskin::ToolstripDropdownButtonTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_2)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_3));
 		}
 		(this->container = new ::vl::presentation::compositions::GuiBoundsComposition());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"container"), ::vl::__vwsn::Box(this->container));
 		{
 			::vl::__vwsn::This(this->container)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(3); __vwsn_temp__.top = static_cast<::vl::vint>(3); __vwsn_temp__.right = static_cast<::vl::vint>(3); __vwsn_temp__.bottom = static_cast<::vl::vint>(3); return __vwsn_temp__; }());
 		}
@@ -32626,6 +32678,7 @@ Class (::darkskin::ToolstripMenuTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_2)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_3));
 		}
 		(this->container = new ::vl::presentation::compositions::GuiBoundsComposition());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"container"), ::vl::__vwsn::Box(this->container));
 		{
 			::vl::__vwsn::This(this->container)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(3); __vwsn_temp__.top = static_cast<::vl::vint>(3); __vwsn_temp__.right = static_cast<::vl::vint>(3); __vwsn_temp__.bottom = static_cast<::vl::vint>(3); return __vwsn_temp__; }());
 		}
@@ -32804,6 +32857,7 @@ Class (::darkskin::ToolstripSplitButtonTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_2)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_3));
 		}
 		(this->container = new ::vl::presentation::compositions::GuiBoundsComposition());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"container"), ::vl::__vwsn::Box(this->container));
 		{
 			::vl::__vwsn::This(this->container)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(3); __vwsn_temp__.top = static_cast<::vl::vint>(3); __vwsn_temp__.right = static_cast<::vl::vint>(3); __vwsn_temp__.bottom = static_cast<::vl::vint>(3); return __vwsn_temp__; }());
 		}
@@ -32843,6 +32897,7 @@ Class (::darkskin::ToolstripSplitButtonTemplateConstructor)
 		}
 		{
 			(this->buttonArrow = new ::vl::presentation::controls::GuiSelectableButton(::vl::presentation::theme::ThemeName::CheckBox));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"buttonArrow"), ::vl::__vwsn::Box(this->buttonArrow));
 		}
 		(this->__vwsn_precompile_8 = ::vl::__vwsn::This(this->buttonArrow)->GetBoundsComposition());
 		{
@@ -33021,6 +33076,7 @@ Class (::darkskin::ToolstripTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_1));
 		}
 		(this->container = new ::vl::presentation::compositions::GuiBoundsComposition());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"container"), ::vl::__vwsn::Box(this->container));
 		{
 			::vl::__vwsn::This(this->container)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(2); __vwsn_temp__.top = static_cast<::vl::vint>(2); __vwsn_temp__.right = static_cast<::vl::vint>(2); __vwsn_temp__.bottom = static_cast<::vl::vint>(2); return __vwsn_temp__; }());
 		}
@@ -33091,6 +33147,7 @@ Class (::darkskin::TooltipTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_2)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_3));
 		}
 		(this->container = new ::vl::presentation::compositions::GuiBoundsComposition());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"container"), ::vl::__vwsn::Box(this->container));
 		{
 			::vl::__vwsn::This(this->container)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(1); __vwsn_temp__.top = static_cast<::vl::vint>(1); __vwsn_temp__.right = static_cast<::vl::vint>(1); __vwsn_temp__.bottom = static_cast<::vl::vint>(1); return __vwsn_temp__; }());
 		}
@@ -33248,6 +33305,7 @@ Class (::darkskin::TreeViewTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_1));
 		}
 		(this->look = new ::vl::presentation::templates::GuiCommonScrollViewLook(static_cast<::vl::vint>(20)));
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"look"), ::vl::__vwsn::Box(this->look));
 		{
 			::vl::__vwsn::This(this->look)->SetVScrollTemplate(vl::Func(::vl_workflow_global::__vwsnf130_DarkSkin_darkskin_TreeViewTemplateConstructor___vwsn_darkskin_TreeViewTemplate_Initialize_(this)));
 		}
@@ -33378,6 +33436,7 @@ Class (::darkskin::VScrollTemplateConstructor)
 			::vl::__vwsn::This(this->self)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
 		}
 		(this->behavior = new ::vl::presentation::templates::GuiCommonScrollBehavior());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"behavior"), ::vl::__vwsn::Box(this->behavior));
 		{
 			::vl::__vwsn::This(this->self)->AddComponent(static_cast<::vl::presentation::controls::GuiComponent*>(this->behavior));
 		}
@@ -33414,6 +33473,7 @@ Class (::darkskin::VScrollTemplateConstructor)
 		}
 		{
 			(this->buttonDecrease = new ::vl::presentation::controls::GuiButton(::vl::presentation::theme::ThemeName::Button));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"buttonDecrease"), ::vl::__vwsn::Box(this->buttonDecrease));
 		}
 		(this->__vwsn_precompile_4 = ::vl::__vwsn::This(this->buttonDecrease)->GetBoundsComposition());
 		{
@@ -33443,6 +33503,7 @@ Class (::darkskin::VScrollTemplateConstructor)
 		}
 		{
 			(this->buttonIncrease = new ::vl::presentation::controls::GuiButton(::vl::presentation::theme::ThemeName::Button));
+			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"buttonIncrease"), ::vl::__vwsn::Box(this->buttonIncrease));
 		}
 		(this->__vwsn_precompile_6 = ::vl::__vwsn::This(this->buttonIncrease)->GetBoundsComposition());
 		{
@@ -33461,6 +33522,7 @@ Class (::darkskin::VScrollTemplateConstructor)
 			::vl::__vwsn::This(this->self)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_5));
 		}
 		(this->handleContainer = new ::vl::presentation::compositions::GuiBoundsComposition());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"handleContainer"), ::vl::__vwsn::Box(this->handleContainer));
 		{
 			::vl::__vwsn::This(this->handleContainer)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(0); __vwsn_temp__.top = static_cast<::vl::vint>(20); __vwsn_temp__.right = static_cast<::vl::vint>(0); __vwsn_temp__.bottom = static_cast<::vl::vint>(20); return __vwsn_temp__; }());
 		}
@@ -33468,6 +33530,7 @@ Class (::darkskin::VScrollTemplateConstructor)
 			::vl::__vwsn::This(this->handleContainer)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::NoLimit);
 		}
 		(this->handle = new ::vl::presentation::compositions::GuiPartialViewComposition());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"handle"), ::vl::__vwsn::Box(this->handle));
 		{
 			::vl::__vwsn::This(this->handle)->SetPreferredMinSize([&](){ ::vl::presentation::Size __vwsn_temp__; __vwsn_temp__.y = static_cast<::vl::vint>(10); return __vwsn_temp__; }());
 		}
@@ -33566,6 +33629,7 @@ Class (::darkskin::VTrackerTemplateConstructor)
 			::vl::__vwsn::This(this->self)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
 		}
 		(this->behavior = new ::vl::presentation::templates::GuiCommonScrollBehavior());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"behavior"), ::vl::__vwsn::Box(this->behavior));
 		{
 			::vl::__vwsn::This(this->self)->AddComponent(static_cast<::vl::presentation::controls::GuiComponent*>(this->behavior));
 		}
@@ -33619,6 +33683,7 @@ Class (::darkskin::VTrackerTemplateConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_1)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_3));
 		}
 		(this->handle = new ::vl::presentation::compositions::GuiPartialViewComposition());
+		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"handle"), ::vl::__vwsn::Box(this->handle));
 		{
 			::vl::__vwsn::This(this->handle)->SetHeightPageSize(static_cast<double>(0));
 		}
@@ -33763,16 +33828,19 @@ namespace vl
 #endif
 				}
 
-				void Load()override
+				void Load(bool controllerUnrelatedPlugins, bool controllerRelatedPlugins)override
 				{
-					List<GuiResourceError> errors;
-					MemoryStream resourceStream;
-					DarkSkinResourceReader::ReadToStream(resourceStream);
-					resourceStream.SeekFromBegin(0);
-					GetResourceManager()->LoadResourceOrPending(resourceStream, GuiResourceUsage::InstanceClass);
+					if (controllerRelatedPlugins)
+					{
+						List<GuiResourceError> errors;
+						MemoryStream resourceStream;
+						DarkSkinResourceReader::ReadToStream(resourceStream);
+						resourceStream.SeekFromBegin(0);
+						GetResourceManager()->LoadResourceOrPending(resourceStream, GuiResourceUsage::InstanceClass);
+					}
 				}
 
-				void Unload()override
+				void Unload(bool controllerUnrelatedPlugins, bool controllerRelatedPlugins)override
 				{
 				}
 			};

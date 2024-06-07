@@ -3587,10 +3587,10 @@ GuiGraphicsComposition
 				}
 			}
 
-			void GuiGraphicsComposition::InvokeOnCompositionStateChanged()
+			void GuiGraphicsComposition::InvokeOnCompositionStateChanged(bool forceRequestRender)
 			{
 				OnCompositionStateChanged();
-				if (relatedHostRecord && GetEventuallyVisible())
+				if (relatedHostRecord && (forceRequestRender || GetEventuallyVisible()))
 				{
 					relatedHostRecord->host->RequestRender();
 				}
@@ -3734,7 +3734,7 @@ GuiGraphicsComposition
 				if (visible != value)
 				{
 					visible = value;
-					InvokeOnCompositionStateChanged();
+					InvokeOnCompositionStateChanged(true);
 				}
 			}
 
@@ -12639,6 +12639,17 @@ GuiSelectableListControl
 				if (count != newCount)
 				{
 					ClearSelection();
+				}
+				else if (itemReferenceUpdated && selectedItems.Count() > 0)
+				{
+					vint cmin = start;
+					vint cmax = start + count - 1;
+					vint smin = selectedItems[0];
+					vint smax = selectedItems[selectedItems.Count() - 1];
+					if (cmin <= smax && smin <= cmax)
+					{
+						ClearSelection();
+					}
 				}
 			}
 
@@ -39143,6 +39154,7 @@ GuiSolidLabelElementRenderer
 
 	GuiSolidLabelElementRenderer::GuiSolidLabelElementRenderer()
 	{
+		minSize = { 1,1 };
 	}
 
 	bool GuiSolidLabelElementRenderer::NeedUpdateMinSizeFromCache()
@@ -39158,7 +39170,8 @@ GuiSolidLabelElementRenderer
 			if (index != -1)
 			{
 				needFontHeight = false;
-				minSize = { 0,renderTarget->fontHeights.Values()[index] };
+				vint size = renderTarget->fontHeights.Values()[index];
+				UpdateMinSize({ size,size });
 			}
 		}
 	}
@@ -39166,6 +39179,8 @@ GuiSolidLabelElementRenderer
 	void GuiSolidLabelElementRenderer::UpdateMinSize(Size size)
 	{
 		minSize = size;
+		if (minSize.x < 1)minSize.x = 1;
+		if (minSize.y < 1)minSize.y = 1;
 	}
 
 	void GuiSolidLabelElementRenderer::NotifyMinSizeCacheInvalidated()
@@ -49173,7 +49188,7 @@ IGuiInstanceResourceManager
 				return UnloadResource(GetResource(name));
 			}
 
-			bool UnloadResource(Ptr<GuiResource> resource)
+			bool UnloadResource(Ptr<GuiResource> resource)override
 			{
 				if (!resource) return false;
 

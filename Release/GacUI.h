@@ -4216,7 +4216,7 @@ Basic Construction
 				
 				void										UpdateRelatedHostRecord(GraphicsHostRecord* record);
 				void										SetAssociatedControl(controls::GuiControl* control);
-				void										InvokeOnCompositionStateChanged();
+				void										InvokeOnCompositionStateChanged(bool forceRequestRender = false);
 
 			private:
 				static bool									SharedPtrDestructorProc(DescriptableObject* obj, bool forceDisposing);
@@ -7018,7 +7018,7 @@ Helpers
 
 				IGuiGraphicsRendererFactory*	factory;
 				TElement*						element;
-				TRenderTarget*						renderTarget;
+				TRenderTarget*					renderTarget;
 				Size							minSize;
 
 			public:
@@ -9820,6 +9820,8 @@ Basic Construction
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				GuiCustomControl(theme::ThemeName themeName);
 				~GuiCustomControl();
+
+				using GuiControl::SetFocusableComposition;
 			};
 
 			template<typename T>
@@ -10703,8 +10705,8 @@ Helper Functions
 
 extern void GuiApplicationMain();
 
-#define GUI_VALUE(x) vl::presentation::controls::GetApplication()->RunGuiValue(LAMBDA([&](){return (x);}))
-#define GUI_RUN(x) vl::presentation::controls::GetApplication()->RunGuiTask([=](){x})
+#define GUI_VALUE(HOST, VALUE) vl::presentation::controls::GetApplication()->RunGuiValue((HOST), vl::Func([&](){return (VALUE);}))
+#define GUI_RUN(HOST, VALUE) vl::presentation::controls::GetApplication()->RunGuiTask((HOST), [&](){(VALUE);})
 
 #endif
 
