@@ -54,10 +54,7 @@
 - Calling `GuiWindow::ShowMaximized` in `WindowOpened` with `SetupHostedWindowsDirect2DRenderer` doesn't properly maximize the window.
 - Add `@cpp:Private` for GacGen generated `<parameter>ViewModel` variable.
 - Document
-  - GacUI  
-    - `bool controllerUnrelatedPlugins` and `bool controllerRelatedPlugins` added to `IGuiPlugin`
-    - `(Try)?FindObjectByName`
-    - `(Try)?FindControlByText`
+  - GacUI
     - `GuiCustomControl::SetFocusableComposition`
     - Check GacUI \ GacUI Components \ (compositions | Controls) and fill missing items
   - Fix `MakePtr` from sample code in documents.
