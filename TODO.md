@@ -54,9 +54,6 @@
 - Calling `GuiWindow::ShowMaximized` in `WindowOpened` with `SetupHostedWindowsDirect2DRenderer` doesn't properly maximize the window.
 - Add `@cpp:Private` for GacGen generated `<parameter>ViewModel` variable.
 - Document
-  - VlppOS
-    - Base64
-    - Breaking changes: `Utf\d+(En|De)coder`, `(Text|Stream)(Reader|Writer)` and `StringReader` changed from class to typedef
   - GacUI  
     - `bool controllerUnrelatedPlugins` and `bool controllerRelatedPlugins` added to `IGuiPlugin`
     - `(Try)?FindObjectByName`
