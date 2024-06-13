@@ -55,7 +55,6 @@
 - Add `@cpp:Private` for GacGen generated `<parameter>ViewModel` variable.
 - Document
   - GacUI
-    - `GuiCustomControl::SetFocusableComposition`
     - Check GacUI \ GacUI Components \ (compositions | Controls) and fill missing items
   - Fix `MakePtr` from sample code in documents.
   - Fix DSL index page, leaving all class names withou link, with some simple description.
