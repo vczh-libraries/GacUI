@@ -54,13 +54,7 @@
 - Calling `GuiWindow::ShowMaximized` in `WindowOpened` with `SetupHostedWindowsDirect2DRenderer` doesn't properly maximize the window.
 - Add `@cpp:Private` for GacGen generated `<parameter>ViewModel` variable.
 - Document
-  - GacUI
-    - Check GacUI \ GacUI Components \ (compositions | Controls) and fill missing items
-  - Fix `MakePtr` from sample code in documents.
-  - Fix DSL index page, leaving all class names withou link, with some simple description.
-    - Add VlppParser2.
-    - Begin to add DSL syntax to document instead of just in comments.
-  - Check if there is any link to /home or other deprecated pages.
+  - Add DSL syntax to document instead of just in comments.
 
 ## Release (optional)
 
