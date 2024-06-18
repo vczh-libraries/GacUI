@@ -54,7 +54,7 @@
     - Connect any image full path to a metadata containing image type, frame count and frame size of each frame.
       - Provider shortcut for single frame image or multiple frames image with identidal sizes.
     - When an image is sent via remote protocol
-      - If this is the first time, all loaded resource will be scanned, create a mapping from hex binary data to metadata.
+      - If this is the first time, all loaded resource will be scanned, create a mapping from base64 binary data to metadata.
       - Use the binary data to search for the metadata, fail if not found.
   - Generate `domId` for each dom node: element(id), virtual(-element.id-2), root(-1), hittest(find a way).
 - `GuiWindow` unit test
