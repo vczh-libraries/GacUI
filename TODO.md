@@ -40,13 +40,22 @@
   - Remove the two parameters from `IGuiPlugin`, the macro above already specified it clear enough.
   - Unrelated plugins are not allowed to depend on related plugins.
 
+## Release (optional)
+
+- GacUI Binary Resource (when new features are added)
+  - Upgrade GacUI XML Resource to 1.3, force on all resources instead of only depended or depending resource.
+  - Require binary pattern "[GMR-1.3]" at the beginning of the binary resource.
+  - Resource compiler and loader will check the version and only accept 1.3.
+
 ## Release Milestone (1.2.10.0)
 
 - Unit test framework
-  - `ImageData.xml` is required before loading any resources for the unit test framework to know metadata of images before loading it.
-    - A parser is provided, a data structure is required in runtime.
-    - It is used to simulate the remote protocol consumer sending back metadata after receiving binary data of an image.
-    - Resource URL is required in the remote protocol, an update to resource loader interface could be necessary.
+  - `res://UnitTestConfig/ImageData` (XML):
+    - Connect any image full path to a metadata containing image type, frame count and frame size of each frame.
+      - Provider shortcut for single frame image or multiple frames image with identidal sizes.
+    - When an image is sent via remote protocol
+      - If this is the first time, all loaded resource will be scanned, create a mapping from hex binary data to metadata.
+      - Use the binary data to search for the metadata, fail if not found.
   - Generate `domId` for each dom node: element(id), virtual(-element.id-2), root(-1), hittest(find a way).
 - `GuiWindow` unit test
   - Interaction with screen
@@ -55,13 +64,6 @@
 - Add `@cpp:Private` for GacGen generated `<parameter>ViewModel` variable.
 - Document
   - Add DSL syntax to document instead of just in comments.
-
-## Release (optional)
-
-- GacUI Binary Resource (when new features are added)
-  - Upgrade GacUI XML Resource to 1.3, force on all resources instead of only depended or depending resource.
-  - Require binary pattern "[GMR-1.3]" at the beginning of the binary resource.
-  - Resource compiler and loader will check the version and only accept 1.3.
 
 ## Release Milestone (1.2.11.0)
 
