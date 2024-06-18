@@ -25,7 +25,8 @@
     [23, "FocusRectangle"],
     [24, "SolidLabel"]
   ],
-  "createdImages": [],
+  "imageCreations": [],
+  "imageMetadatas": [],
   "frames": [
     {
       "frameId": 5,

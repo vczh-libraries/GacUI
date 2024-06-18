@@ -379,7 +379,8 @@ namespace vl::presentation::remoteprotocol
 	struct RenderingTrace
 	{
 		::vl::Ptr<::vl::collections::Dictionary<::vl::vint, ::vl::presentation::remoteprotocol::RendererType>> createdElements;
-		::vl::Ptr<::vl::presentation::remoteprotocol::ArrayMap<::vl::vint, ::vl::presentation::remoteprotocol::ImageMetadata, &::vl::presentation::remoteprotocol::ImageMetadata::id>> createdImages;
+		::vl::Ptr<::vl::presentation::remoteprotocol::ArrayMap<::vl::vint, ::vl::presentation::remoteprotocol::ImageCreation, &::vl::presentation::remoteprotocol::ImageCreation::id>> imageCreations;
+		::vl::Ptr<::vl::presentation::remoteprotocol::ArrayMap<::vl::vint, ::vl::presentation::remoteprotocol::ImageMetadata, &::vl::presentation::remoteprotocol::ImageMetadata::id>> imageMetadatas;
 		::vl::Ptr<::vl::collections::List<::vl::presentation::remoteprotocol::RenderingFrame>> frames;
 	};
 

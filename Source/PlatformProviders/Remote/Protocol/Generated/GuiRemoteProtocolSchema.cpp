@@ -640,7 +640,8 @@ namespace vl::presentation::remoteprotocol
 	{
 		auto node = Ptr(new glr::json::JsonObject);
 		ConvertCustomTypeToJsonField(node, L"createdElements", value.createdElements);
-		ConvertCustomTypeToJsonField(node, L"createdImages", value.createdImages);
+		ConvertCustomTypeToJsonField(node, L"imageCreations", value.imageCreations);
+		ConvertCustomTypeToJsonField(node, L"imageMetadatas", value.imageMetadatas);
 		ConvertCustomTypeToJsonField(node, L"frames", value.frames);
 		return node;
 	}
@@ -1504,7 +1505,8 @@ namespace vl::presentation::remoteprotocol
 		for (auto field : jsonNode->fields)
 		{
 			if (field->name.value == L"createdElements") ConvertJsonToCustomType(field->value, value.createdElements); else
-			if (field->name.value == L"createdImages") ConvertJsonToCustomType(field->value, value.createdImages); else
+			if (field->name.value == L"imageCreations") ConvertJsonToCustomType(field->value, value.imageCreations); else
+			if (field->name.value == L"imageMetadatas") ConvertJsonToCustomType(field->value, value.imageMetadatas); else
 			if (field->name.value == L"frames") ConvertJsonToCustomType(field->value, value.frames); else
 			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
 		}

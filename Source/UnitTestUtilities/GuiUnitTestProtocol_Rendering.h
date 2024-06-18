@@ -45,7 +45,8 @@ UnitTestRemoteProtocol
 		void ResetCreatedObjects()
 		{
 			loggedTrace.createdElements = Ptr(new collections::Dictionary<vint, remoteprotocol::RendererType>);
-			loggedTrace.createdImages = Ptr(new remoteprotocol::ArrayMap<vint, remoteprotocol::ImageMetadata, &remoteprotocol::ImageMetadata::id>);
+			loggedTrace.imageCreations = Ptr(new remoteprotocol::ArrayMap<vint, remoteprotocol::ImageCreation, &remoteprotocol::ImageCreation::id>);
+			loggedTrace.imageMetadatas = Ptr(new remoteprotocol::ArrayMap<vint, remoteprotocol::ImageMetadata, &remoteprotocol::ImageMetadata::id>);
 			lastElementDescs.Clear();
 		}
 	public:
@@ -138,7 +139,6 @@ IGuiRemoteProtocolMessages (Elements)
 				{
 					CHECK_ERROR(!loggedTrace.createdElements->Keys().Contains(creation.id), ERROR_MESSAGE_PREFIX L"Renderer with the specified id has been created or used.");
 					loggedTrace.createdElements->Add(creation.id, creation.type);
-					removedElementIds.Remove(creation.id);
 				}
 			}
 #undef ERROR_MESSAGE_PREFIX
@@ -377,14 +377,18 @@ IGuiRemoteProtocolMessages (Elements - Image)
 
 		remoteprotocol::ImageMetadata MakeImageMetadata(const remoteprotocol::ImageCreation& arguments)
 		{
+			remoteprotocol::ImageMetadata metadata;
+			metadata.id = arguments.id;
+
+			loggedTrace.imageCreations->Add(arguments);
+			loggedTrace.imageMetadatas->Add(metadata);
 			CHECK_FAIL(L"Not Implemented!");
 		}
 
 		void RequestImageCreated(vint id, const remoteprotocol::ImageCreation& arguments) override
 		{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering<TProtocol>::RequestImageCreated(vint, const vint&)#"
-			CHECK_ERROR(!loggedTrace.createdImages->Keys().Contains(arguments.id), ERROR_MESSAGE_PREFIX L"Image with the specified id has been created or used.");
-			removedImageIds.Remove(arguments.id);
+			CHECK_ERROR(!loggedTrace.imageMetadatas->Keys().Contains(arguments.id), ERROR_MESSAGE_PREFIX L"Image with the specified id has been created or used.");
 			this->GetEvents()->RespondImageCreated(id, MakeImageMetadata(arguments));
 #undef ERROR_MESSAGE_PREFIX
 		}
@@ -392,7 +396,7 @@ IGuiRemoteProtocolMessages (Elements - Image)
 		void RequestImageDestroyed(const vint& arguments) override
 		{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering<TProtocol>::RequestImageDestroyed(const vint&)#"
-			CHECK_ERROR(loggedTrace.createdImages->Keys().Contains(arguments), ERROR_MESSAGE_PREFIX L"Image with the specified id has not been created.");
+			CHECK_ERROR(loggedTrace.imageMetadatas->Keys().Contains(arguments), ERROR_MESSAGE_PREFIX L"Image with the specified id has not been created.");
 			CHECK_ERROR(!removedImageIds.Contains(arguments), ERROR_MESSAGE_PREFIX L"Image with the specified id has been destroyed.");
 			removedImageIds.Add(arguments);
 #undef ERROR_MESSAGE_PREFIX
@@ -407,7 +411,7 @@ IGuiRemoteProtocolMessages (Elements - Image)
 				if (!imageCreation.imageDataOmitted)
 				{
 					CHECK_ERROR(arguments.imageId && arguments.imageId.Value() != !imageCreation.id, ERROR_MESSAGE_PREFIX L"It should satisfy that (arguments.imageId.Value()id == imageCreation.id).");
-					CHECK_ERROR(!loggedTrace.createdImages->Keys().Contains(imageCreation.id), ERROR_MESSAGE_PREFIX L"Image with the specified id has been created.");
+					CHECK_ERROR(!loggedTrace.imageMetadatas->Keys().Contains(imageCreation.id), ERROR_MESSAGE_PREFIX L"Image with the specified id has been created.");
 					CHECK_ERROR(imageCreation.imageData, ERROR_MESSAGE_PREFIX L"When imageDataOmitted == false, imageData should not be null.");
 					if (!measuringForNextRendering.createdImages)
 					{
@@ -422,7 +426,7 @@ IGuiRemoteProtocolMessages (Elements - Image)
 			}
 			else if (arguments.imageId)
 			{
-				CHECK_ERROR(loggedTrace.createdImages->Keys().Contains(arguments.imageId.Value()), ERROR_MESSAGE_PREFIX L"Image with the specified id has not been created.");
+				CHECK_ERROR(loggedTrace.imageMetadatas->Keys().Contains(arguments.imageId.Value()), ERROR_MESSAGE_PREFIX L"Image with the specified id has not been created.");
 			}
 
 			auto element = arguments;

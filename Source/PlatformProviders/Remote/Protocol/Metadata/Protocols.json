@@ -2612,7 +2612,15 @@
             }
         }, {
             "$ast": "StructMember",
-            "name": "createdImages",
+            "name": "imageCreations",
+            "type": {
+                "$ast": "ArrayMapType",
+                "element": "ImageCreation",
+                "keyField": "id"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "imageMetadatas",
             "type": {
                 "$ast": "ArrayMapType",
                 "element": "ImageMetadata",

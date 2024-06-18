@@ -6,7 +6,8 @@
     [4, "SolidBorder"],
     [5, "SolidBorder"]
   ],
-  "createdImages": [],
+  "imageCreations": [],
+  "imageMetadatas": [],
   "frames": [
     {
       "frameId": 2,

@@ -21,7 +21,8 @@
     [19, "ImageFrame"],
     [20, "SolidLabel"]
   ],
-  "createdImages": [],
+  "imageCreations": [],
+  "imageMetadatas": [],
   "frames": [
     {
       "frameId": 4,

@@ -22,7 +22,8 @@
     [20, "SolidLabel"],
     [21, "SolidLabel"]
   ],
-  "createdImages": [],
+  "imageCreations": [],
+  "imageMetadatas": [],
   "frames": [
     {
       "frameId": 5,

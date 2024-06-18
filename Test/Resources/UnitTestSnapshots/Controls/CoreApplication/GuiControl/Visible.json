@@ -51,7 +51,8 @@
     [49, "SolidLabel"],
     [50, "SolidBorder"]
   ],
-  "createdImages": [],
+  "imageCreations": [],
+  "imageMetadatas": [],
   "frames": [
     {
       "frameId": 5,
