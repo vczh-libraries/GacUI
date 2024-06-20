@@ -297,4 +297,35 @@ TEST_FILE
 				);
 		});
 	});
+
+	TEST_CASE(L"Display an Image")
+	{
+		const auto resource = LR"GacUISrc(
+<Resource>
+  <Instance name="MainWindowResource">
+    <Instance ref.Class="gacuisrc_unittest::MainWindow">
+      <Window ref.Name="self" Text="Image" ClientSize="x:320 y:240">
+        <Bounds AlignmentToParent="left:5 top:5 right:-1 bottom:-1">
+          <ImageFrame/>
+        </Bounds>
+      </Window>
+    </Instance>
+  </Instance>
+</Resource>
+)GacUISrc";
+
+		GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+		{
+			protocol->OnNextIdleFrame([=]()
+			{
+				auto window = GetApplication()->GetMainWindow();
+				window->Hide();
+			});
+		});
+		GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+			WString::Unmanaged(L"UnitTestFramework/SingleImage"),
+			WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+			resource
+			);
+	});
 }
