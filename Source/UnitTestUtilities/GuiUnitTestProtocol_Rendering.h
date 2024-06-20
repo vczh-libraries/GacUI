@@ -26,6 +26,7 @@ UnitTestRemoteProtocol
 	class UnitTestRemoteProtocol_Rendering : public TProtocol
 	{
 		using IdSet = collections::SortedList<vint>;
+		using Base64ToImageMetadataMap = collections::Dictionary<WString, remoteprotocol::ImageMetadata>;
 		using ElementDescMap = collections::Dictionary<vint, ElementDescVariant>;
 		using ImageMetadataMap = collections::Dictionary<vint, remoteprotocol::ImageMetadata>;
 		using CommandList = UnitTestRenderingCommandList;
@@ -36,6 +37,7 @@ UnitTestRemoteProtocol
 		ElementDescMap							lastElementDescs;
 		IdSet									removedElementIds;
 		IdSet									removedImageIds;
+		Ptr<Base64ToImageMetadataMap>			cachedImageMetadatas;
 
 		remoteprotocol::ElementMeasurings		measuringForNextRendering;
 		regex::Regex							regexCrLf{ L"/n|/r(/n)?" };
@@ -377,6 +379,20 @@ IGuiRemoteProtocolMessages (Elements - Image)
 
 		remoteprotocol::ImageMetadata MakeImageMetadata(const remoteprotocol::ImageCreation& arguments)
 		{
+			if (!cachedImageMetadatas)
+			{
+				cachedImageMetadatas = Ptr(new Base64ToImageMetadataMap);
+				for (auto resource : GetResourceManager()->GetLoadedResources())
+				{
+					if (auto xmlImageData = resource->GetValueByPath(L"UnitTestConfig/ImageData").Cast<glr::xml::XmlDocument>())
+					{
+						for (auto elementImage : glr::xml::XmlGetElements(xmlImageData->rootElement, L"Image"))
+						{
+						}
+					}
+				}
+			}
+
 			remoteprotocol::ImageMetadata metadata;
 			metadata.id = arguments.id;
 

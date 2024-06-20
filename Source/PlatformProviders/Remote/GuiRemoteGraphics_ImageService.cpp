@@ -60,6 +60,11 @@ GuiRemoteGraphicsImage
 		}
 	}
 
+	stream::IStream& GuiRemoteGraphicsImage::GetBinaryData()
+	{
+		return *binary.Obj();
+	}
+
 	remoteprotocol::ImageCreation GuiRemoteGraphicsImage::GenerateImageCreation()
 	{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::GuiRemoteGraphicsImage::GenerateImageCreation()#"

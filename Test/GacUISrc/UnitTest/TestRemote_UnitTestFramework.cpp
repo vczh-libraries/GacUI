@@ -305,7 +305,7 @@ TEST_FILE
   <Folder name="UnitTestConfig">
     <Xml name="ImageData">
       <ImageData>
-        <Image Format="Jpeg" Width="291" Height="212"/>
+        <Image Path="Cake" Format="Jpeg" Width="291" Height="212"/>
       </ImageData>
     </Xml>
   </Folder>

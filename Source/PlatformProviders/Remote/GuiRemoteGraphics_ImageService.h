@@ -75,6 +75,7 @@ GuiRemoteGraphicsImage
 		GuiRemoteGraphicsImage(GuiRemoteController* _remote, vint _id, Ptr<stream::MemoryStream> _binary);
 		~GuiRemoteGraphicsImage();
 
+		stream::IStream&					GetBinaryData();
 		remoteprotocol::ImageCreation		GenerateImageCreation();
 		void								UpdateFromImageMetadata(const remoteprotocol::ImageMetadata& imageMetadata);
 
