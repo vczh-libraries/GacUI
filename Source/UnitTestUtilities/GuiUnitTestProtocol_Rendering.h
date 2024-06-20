@@ -377,17 +377,88 @@ IGuiRemoteProtocolMessages (Elements - SolidLabel)
 IGuiRemoteProtocolMessages (Elements - Image)
 ***********************************************************************/
 
+		WString GetBinaryKeyFromImage(Ptr<INativeImage> image)
+		{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering<TProtocol>::GetBinaryKeyFromImage(Ptr<INativeImage>)#"
+			auto remoteImage = image.Cast<GuiRemoteGraphicsImage>();
+			CHECK_ERROR(remoteImage, ERROR_MESSAGE_PREFIX L"The image object must be GuiRemoteGraphicsImage.");
+
+			stream::MemoryStream base64WStringStream;
+			{
+				stream::UtfGeneralEncoder<wchar_t, char8_t> utf8ToWCharEncoder;
+				stream::EncoderStream utf8ToWCharStream(base64WStringStream, utf8ToWCharEncoder);
+				stream::Utf8Base64Encoder binaryToBase64Utf8Encoder;
+				stream::EncoderStream binaryToBase64Utf8Stream(utf8ToWCharStream, binaryToBase64Utf8Encoder);
+				remoteImage->GetBinaryData().SeekFromBegin(0);
+				stream::CopyStream(remoteImage->GetBinaryData(), binaryToBase64Utf8Stream);
+			}
+			{
+				base64WStringStream.SeekFromBegin(0);
+				stream::StreamReader reader(base64WStringStream);
+				return reader.ReadToEnd();
+			}
+#undef ERROR_MESSAGE_PREFIX
+		}
+
 		remoteprotocol::ImageMetadata MakeImageMetadata(const remoteprotocol::ImageCreation& arguments)
 		{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering<TProtocol>::MakeImageMetadata(const remoteprotocol::ImageCreation)#"
 			if (!cachedImageMetadatas)
 			{
 				cachedImageMetadatas = Ptr(new Base64ToImageMetadataMap);
 				for (auto resource : GetResourceManager()->GetLoadedResources())
 				{
-					if (auto xmlImageData = resource->GetValueByPath(L"UnitTestConfig/ImageData").Cast<glr::xml::XmlDocument>())
+					if (auto xmlImageData = resource->GetValueByPath(WString::Unmanaged(L"UnitTestConfig/ImageData")).Cast<glr::xml::XmlDocument>())
 					{
-						for (auto elementImage : glr::xml::XmlGetElements(xmlImageData->rootElement, L"Image"))
+						for (auto elementImage : glr::xml::XmlGetElements(xmlImageData->rootElement, WString::Unmanaged(L"Image")))
 						{
+							WString path, format, frames = WString::Unmanaged(L"1"), width, height;
+
+							auto attPath = glr::xml::XmlGetAttribute(elementImage.Obj(), WString::Unmanaged(L"Path"));
+							auto attFormat = glr::xml::XmlGetAttribute(elementImage.Obj(), WString::Unmanaged(L"Format"));
+							auto attFrames = glr::xml::XmlGetAttribute(elementImage.Obj(), WString::Unmanaged(L"Frames"));
+							auto attWidth = glr::xml::XmlGetAttribute(elementImage.Obj(), WString::Unmanaged(L"Width"));
+							auto attHeight = glr::xml::XmlGetAttribute(elementImage.Obj(), WString::Unmanaged(L"Height"));
+
+							CHECK_ERROR(attPath, ERROR_MESSAGE_PREFIX L"Missing Path attribute in Image element in an UnitTestConfig/ImageData.");
+							CHECK_ERROR(attFormat, ERROR_MESSAGE_PREFIX L"Missing Format attribute in Image element in an UnitTestConfig/ImageData.");
+							CHECK_ERROR(attWidth, ERROR_MESSAGE_PREFIX L"Missing Width attribute in Image element in an UnitTestConfig/ImageData.");
+							CHECK_ERROR(attHeight, ERROR_MESSAGE_PREFIX L"Missing Height attribute in Image element in an UnitTestConfig/ImageData.");
+
+							path = attPath->value.value;
+							format = attFormat->value.value;
+							width = attWidth->value.value;
+							height = attHeight->value.value;
+							if (attFrames) frames = attFrames->value.value;
+
+							vint valueFrames = wtoi(frames);
+							vint valueWidth = wtoi(width);
+							vint valueHeight = wtoi(height);
+
+							CHECK_ERROR(itow(valueFrames) == frames, ERROR_MESSAGE_PREFIX L"Frames attribute must be an integer in Image element in an UnitTestConfig/ImageData.");
+							CHECK_ERROR(itow(valueWidth) == width, ERROR_MESSAGE_PREFIX L"Width attribute must be an integer in Image element in an UnitTestConfig/ImageData.");
+							CHECK_ERROR(itow(valueHeight) == height, ERROR_MESSAGE_PREFIX L"Height attribute must be an integer in Image element in an UnitTestConfig/ImageData.");
+
+							auto imageData = resource->GetImageByPath(path);
+							WString base64 = GetBinaryKeyFromImage(imageData->GetImage());
+
+							if (!cachedImageMetadatas->Keys().Contains(base64))
+							{
+								remoteprotocol::ImageMetadata imageMetadata;
+								imageMetadata.id = -1;
+								imageMetadata.frames = Ptr(new collections::List<remoteprotocol::ImageFrameMetadata>);
+								{
+									auto node = Ptr(new glr::json::JsonString);
+									node->content.value = format;
+									remoteprotocol::ConvertJsonToCustomType(node, imageMetadata.format);
+								}
+								for (vint frame = 0; frame < valueFrames; frame++)
+								{
+									imageMetadata.frames->Add({ {valueWidth,valueHeight} });
+								}
+
+								cachedImageMetadatas->Add(base64, imageMetadata);
+							}
 						}
 					}
 				}
@@ -399,6 +470,7 @@ IGuiRemoteProtocolMessages (Elements - Image)
 			loggedTrace.imageCreations->Add(arguments);
 			loggedTrace.imageMetadatas->Add(metadata);
 			CHECK_FAIL(L"Not Implemented!");
+#undef ERROR_MESSAGE_PREFIX
 		}
 
 		void RequestImageCreated(vint id, const remoteprotocol::ImageCreation& arguments) override
