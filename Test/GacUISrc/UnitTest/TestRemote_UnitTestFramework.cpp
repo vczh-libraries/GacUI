@@ -314,7 +314,7 @@ TEST_FILE
   <Instance name="MainWindowResource">
     <Instance ref.Class="gacuisrc_unittest::MainWindow">
       <Window ref.Name="self" Text="Image" ClientSize="x:320 y:240">
-        <Bounds AlignmentToParent="left:5 top:5 right:-1 bottom:-1" MinSizeLimitation="LimitToElement">
+        <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElement">
           <ImageFrame Image-uri="res://Cake"/>
         </Bounds>
       </Window>

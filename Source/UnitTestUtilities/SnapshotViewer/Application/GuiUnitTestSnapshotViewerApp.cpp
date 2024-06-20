@@ -201,7 +201,21 @@ Helper Functions
 					auto element = Ptr(GuiImageFrameElement::Create());
 					bounds->SetOwnedElement(element);
 					auto& desc = frame.elements->Get(dom->element.Value()).Get<remoteprotocol::ElementDesc_ImageFrame>();
-					CHECK_ERROR(!desc.imageId, L"Not Implemented!");
+
+					element->SetAlignments(GetAlignment(desc.horizontalAlignment), GetAlignment(desc.verticalAlignment));
+					element->SetStretch(desc.stretch);
+					element->SetEnabled(desc.enabled);
+
+					if (desc.imageId)
+					{
+						vint index = trace.imageCreations->Keys().IndexOf(desc.imageId.Value());
+						if (index!= 1)
+						{
+							auto binary = trace.imageCreations->Values()[index].imageData;
+							binary->SeekFromBegin(0);
+							element->SetImage(GetCurrentController()->ImageService()->CreateImageFromStream(*binary.Obj()), desc.imageFrame);
+						}
+					}
 				}
 				break;
 			default:
