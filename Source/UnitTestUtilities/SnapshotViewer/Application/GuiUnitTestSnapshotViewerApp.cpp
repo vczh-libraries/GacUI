@@ -201,6 +201,7 @@ Helper Functions
 					auto element = Ptr(GuiImageFrameElement::Create());
 					bounds->SetOwnedElement(element);
 					auto& desc = frame.elements->Get(dom->element.Value()).Get<remoteprotocol::ElementDesc_ImageFrame>();
+					CHECK_ERROR(!desc.imageId, L"Not Implemented!");
 				}
 				break;
 			default:
