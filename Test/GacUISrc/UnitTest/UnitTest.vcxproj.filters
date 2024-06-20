@@ -34,6 +34,9 @@
     <Filter Include="Source Files\Controls\CoreApplication">
       <UniqueIdentifier>{f0494749-4078-454d-a60d-e1950c92705f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files\UnitTestResources">
+      <UniqueIdentifier>{88d787fb-7eb3-4d7b-bd55-d3c97207625f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -155,5 +158,10 @@
     <ClInclude Include="TestRemote_Shared_RenderingProtocol.h">
       <Filter>Source Files\Remote\Shared</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\..\Resources\UnitTestResources\cake.jpeg">
+      <Filter>Resource Files\UnitTestResources</Filter>
+    </Image>
   </ItemGroup>
 </Project>

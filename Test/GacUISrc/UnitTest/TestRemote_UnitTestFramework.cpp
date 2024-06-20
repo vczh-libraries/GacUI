@@ -302,11 +302,20 @@ TEST_FILE
 	{
 		const auto resource = LR"GacUISrc(
 <Resource>
+  <Folder name="UnitTestConfig">
+    <Xml name="ImageData">
+      <ImageData>
+        <Image Format="Jpeg" Width="291" Height="212"/>
+      </ImageData>
+    </Xml>
+  </Folder>
+  <Image name="Cake" content="File">cake.jpeg</Image>
+
   <Instance name="MainWindowResource">
     <Instance ref.Class="gacuisrc_unittest::MainWindow">
       <Window ref.Name="self" Text="Image" ClientSize="x:320 y:240">
         <Bounds AlignmentToParent="left:5 top:5 right:-1 bottom:-1">
-          <ImageFrame/>
+          <ImageFrame Image-uri="res://Cake"/>
         </Bounds>
       </Window>
     </Instance>
