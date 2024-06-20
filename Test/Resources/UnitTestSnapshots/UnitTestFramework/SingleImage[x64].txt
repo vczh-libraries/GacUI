@@ -46,6 +46,9 @@ namespace gacuisrc_unittest
             {
                 (<precompile>0.AlignmentToParent = {left : 5; top : 5; right : (-1); bottom : (-1);} of (::presentation::Margin));
             }
+            {
+                (<precompile>0.MinSizeLimitation = LimitToElement of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+            }
             (<precompile>1 = new (::presentation::elements::GuiImageFrameElement^)());
             {
                 (<precompile>0.OwnedElement = <precompile>1);

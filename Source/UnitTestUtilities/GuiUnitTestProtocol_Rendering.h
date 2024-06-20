@@ -377,26 +377,30 @@ IGuiRemoteProtocolMessages (Elements - SolidLabel)
 IGuiRemoteProtocolMessages (Elements - Image)
 ***********************************************************************/
 
-		WString GetBinaryKeyFromImage(Ptr<INativeImage> image)
+		WString GetBinaryKeyFromBinary(stream::IStream& binary)
 		{
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering<TProtocol>::GetBinaryKeyFromImage(Ptr<INativeImage>)#"
-			auto remoteImage = image.Cast<GuiRemoteGraphicsImage>();
-			CHECK_ERROR(remoteImage, ERROR_MESSAGE_PREFIX L"The image object must be GuiRemoteGraphicsImage.");
-
 			stream::MemoryStream base64WStringStream;
 			{
 				stream::UtfGeneralEncoder<wchar_t, char8_t> utf8ToWCharEncoder;
 				stream::EncoderStream utf8ToWCharStream(base64WStringStream, utf8ToWCharEncoder);
 				stream::Utf8Base64Encoder binaryToBase64Utf8Encoder;
 				stream::EncoderStream binaryToBase64Utf8Stream(utf8ToWCharStream, binaryToBase64Utf8Encoder);
-				remoteImage->GetBinaryData().SeekFromBegin(0);
-				stream::CopyStream(remoteImage->GetBinaryData(), binaryToBase64Utf8Stream);
+				binary.SeekFromBegin(0);
+				stream::CopyStream(binary, binaryToBase64Utf8Stream);
 			}
 			{
 				base64WStringStream.SeekFromBegin(0);
 				stream::StreamReader reader(base64WStringStream);
 				return reader.ReadToEnd();
 			}
+		}
+
+		WString GetBinaryKeyFromImage(Ptr<INativeImage> image)
+		{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering<TProtocol>::GetBinaryKeyFromImage(Ptr<INativeImage>)#"
+			auto remoteImage = image.Cast<GuiRemoteGraphicsImage>();
+			CHECK_ERROR(remoteImage, ERROR_MESSAGE_PREFIX L"The image object must be GuiRemoteGraphicsImage.");
+			return GetBinaryKeyFromBinary(remoteImage->GetBinaryData());
 #undef ERROR_MESSAGE_PREFIX
 		}
 
@@ -440,9 +444,9 @@ IGuiRemoteProtocolMessages (Elements - Image)
 							CHECK_ERROR(itow(valueHeight) == height, ERROR_MESSAGE_PREFIX L"Height attribute must be an integer in Image element in an UnitTestConfig/ImageData.");
 
 							auto imageData = resource->GetImageByPath(path);
-							WString base64 = GetBinaryKeyFromImage(imageData->GetImage());
+							WString binaryKey = GetBinaryKeyFromImage(imageData->GetImage());
 
-							if (!cachedImageMetadatas->Keys().Contains(base64))
+							if (!cachedImageMetadatas->Keys().Contains(binaryKey))
 							{
 								remoteprotocol::ImageMetadata imageMetadata;
 								imageMetadata.id = -1;
@@ -457,19 +461,22 @@ IGuiRemoteProtocolMessages (Elements - Image)
 									imageMetadata.frames->Add({ {valueWidth,valueHeight} });
 								}
 
-								cachedImageMetadatas->Add(base64, imageMetadata);
+								cachedImageMetadatas->Add(binaryKey, imageMetadata);
 							}
 						}
 					}
 				}
 			}
 
-			remoteprotocol::ImageMetadata metadata;
+			auto binaryKey = GetBinaryKeyFromBinary(*arguments.imageData.Obj());
+			vint binaryIndex = cachedImageMetadatas->Keys().IndexOf(binaryKey);
+			CHECK_ERROR(binaryIndex != -1, ERROR_MESSAGE_PREFIX L"The image is not registered in any UnitTestConfig/ImageData.");
+			auto metadata = cachedImageMetadatas->Values()[binaryIndex];
 			metadata.id = arguments.id;
 
 			loggedTrace.imageCreations->Add(arguments);
 			loggedTrace.imageMetadatas->Add(metadata);
-			CHECK_FAIL(L"Not Implemented!");
+			return metadata;
 #undef ERROR_MESSAGE_PREFIX
 		}
 
