@@ -56,6 +56,7 @@
 - Metadata of remote protocol will be updated and included in releases.
 - Calling `GuiWindow::ShowMaximized` in `WindowOpened` with `SetupHostedWindowsDirect2DRenderer` doesn't properly maximize the window.
 - Add `@cpp:Private` for GacGen generated `<parameter>ViewModel` variable.
+- Delete unnecessary `CMakeLists.txt` in each dev repos.
 - Document
   - Add DSL syntax to document instead of just in comments.
 
