@@ -25,7 +25,6 @@ set(SRCS
     ../../Release/GacUIReflection.cpp
     GacGen/GacGen.cpp
     GacGen/Main.cpp
-    GacGen/NativeController.cpp
 )
 
 if (WIN32)
