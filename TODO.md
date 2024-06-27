@@ -18,6 +18,7 @@
   - Making a composition invisible doesn't refresh the application
   - Selection of a list control is not cleared when objects of selected items are replaced
   - Missing arguments in `GUI_VALUE` and `GUI_RUN` macros.
+- Add `@cpp:Private` for GacGen generated `<parameter>ViewModel` variable.
 
 ## Known Issues
 
@@ -55,7 +56,6 @@
   - Interaction with screen
 - Metadata of remote protocol will be updated and included in releases.
 - Calling `GuiWindow::ShowMaximized` in `WindowOpened` with `SetupHostedWindowsDirect2DRenderer` doesn't properly maximize the window.
-- Add `@cpp:Private` for GacGen generated `<parameter>ViewModel` variable.
 - Delete unnecessary `CMakeLists.txt` in each dev repos.
 - Document
   - Add DSL syntax to document instead of just in comments.

@@ -25476,6 +25476,7 @@ namespace darkskin
 
         prop Commands : ITabCommandExecutor*{GetCommands, SetCommands : CommandsChanged}
 
+        @cpp:Private
         var <parameter>CurrentTabPage : presentation::controls::GuiTabPage* = null of (::presentation::controls::GuiTabPage*);
 
         func GetCurrentTabPage() : (presentation::controls::GuiTabPage*)

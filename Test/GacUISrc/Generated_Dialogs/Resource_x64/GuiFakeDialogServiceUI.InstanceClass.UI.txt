@@ -1329,6 +1329,7 @@ namespace gaclib_controls
 
         prop Strings : ::gaclib_controls::IDialogStringsStrings^{GetStrings, SetStrings : StringsChanged}
 
+        @cpp:Private
         var <parameter>ViewModel : presentation::IColorDialogViewModel^ = null of (::presentation::IColorDialogViewModel^);
 
         func GetViewModel() : (presentation::IColorDialogViewModel^)
@@ -1885,6 +1886,7 @@ namespace gaclib_controls
 
         prop Strings : ::gaclib_controls::IDialogStringsStrings^{GetStrings, SetStrings : StringsChanged}
 
+        @cpp:Private
         var <parameter>ViewModel : presentation::IColorDialogViewModel^ = null of (::presentation::IColorDialogViewModel^);
 
         func GetViewModel() : (presentation::IColorDialogViewModel^)
@@ -2393,6 +2395,7 @@ namespace gaclib_controls
 
         prop Strings : ::gaclib_controls::IDialogStringsStrings^{GetStrings, SetStrings : StringsChanged}
 
+        @cpp:Private
         var <parameter>ViewModel : presentation::IFileDialogViewModel^ = null of (::presentation::IFileDialogViewModel^);
 
         func GetViewModel() : (presentation::IFileDialogViewModel^)
@@ -3599,6 +3602,7 @@ namespace gaclib_controls
 
         prop Strings : ::gaclib_controls::IDialogStringsStrings^{GetStrings, SetStrings : StringsChanged}
 
+        @cpp:Private
         var <parameter>ViewModel : presentation::IFileDialogViewModel^ = null of (::presentation::IFileDialogViewModel^);
 
         func GetViewModel() : (presentation::IFileDialogViewModel^)
@@ -4212,6 +4216,7 @@ namespace gaclib_controls
 
         prop Strings : ::gaclib_controls::IDialogStringsStrings^{GetStrings, SetStrings : StringsChanged}
 
+        @cpp:Private
         var <parameter>ViewModel : presentation::ICommonFontDialogViewModel^ = null of (::presentation::ICommonFontDialogViewModel^);
 
         func GetViewModel() : (presentation::ICommonFontDialogViewModel^)
@@ -6746,6 +6751,7 @@ namespace gaclib_controls
 
         prop Strings : ::gaclib_controls::IDialogStringsStrings^{GetStrings, SetStrings : StringsChanged}
 
+        @cpp:Private
         var <parameter>ViewModel : presentation::IFullFontDialogViewModel^ = null of (::presentation::IFullFontDialogViewModel^);
 
         func GetViewModel() : (presentation::IFullFontDialogViewModel^)
@@ -7751,6 +7757,7 @@ namespace gaclib_controls
 
         prop Strings : ::gaclib_controls::IDialogStringsStrings^{GetStrings, SetStrings : StringsChanged}
 
+        @cpp:Private
         var <parameter>ViewModel : presentation::ISimpleFontDialogViewModel^ = null of (::presentation::ISimpleFontDialogViewModel^);
 
         func GetViewModel() : (presentation::ISimpleFontDialogViewModel^)
@@ -8171,6 +8178,7 @@ namespace gaclib_controls
 
         prop Strings : ::gaclib_controls::IDialogStringsStrings^{GetStrings, SetStrings : StringsChanged}
 
+        @cpp:Private
         var <parameter>Action : presentation::IMessageBoxDialogAction^ = null of (::presentation::IMessageBoxDialogAction^);
 
         func GetAction() : (presentation::IMessageBoxDialogAction^)
@@ -8567,6 +8575,7 @@ namespace gaclib_controls
             return (cast (GuiImageData^) self.ResolveResource("res", iconUri, true)).Image;
         }
 
+        @cpp:Private
         var <parameter>ViewModel : presentation::IMessageBoxDialogViewModel^ = null of (::presentation::IMessageBoxDialogViewModel^);
 
         func GetViewModel() : (presentation::IMessageBoxDialogViewModel^)

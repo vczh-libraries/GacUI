@@ -10323,6 +10323,7 @@ namespace demo
     @cpp:Friend(typeof(CategoryItemTemplateConstructor))
     class CategoryItemTemplate : ::presentation::templates::GuiTextListItemTemplate, CategoryItemTemplateConstructor
     {
+        @cpp:Private
         var <parameter>SelectedCategory : demo::MyCategory = (cast (::demo::MyCategory) (cast (::system::UInt64) 0));
 
         func GetSelectedCategory() : (demo::MyCategory)
@@ -11169,6 +11170,7 @@ namespace demo
     @cpp:Friend(typeof(GenderItemTemplateConstructor))
     class GenderItemTemplate : ::presentation::templates::GuiTextListItemTemplate, GenderItemTemplateConstructor
     {
+        @cpp:Private
         var <parameter>SelectedGender : demo::MyGender = (cast (::demo::MyGender) (cast (::system::UInt64) 0));
 
         func GetSelectedGender() : (demo::MyGender)
@@ -18698,6 +18700,7 @@ namespace demo
     @cpp:Friend(typeof(StyleItemTemplateConstructor))
     class StyleItemTemplate : ::presentation::templates::GuiTextListItemTemplate, StyleItemTemplateConstructor
     {
+        @cpp:Private
         var <parameter>ViewModel : demo::StyleItem^ = null of (::demo::StyleItem^);
 
         func GetViewModel() : (demo::StyleItem^)
@@ -28038,6 +28041,7 @@ namespace demo
     @cpp:Friend(typeof(RepeatItemTemplateConstructor))
     class RepeatItemTemplate : ::presentation::templates::GuiControlTemplate, RepeatItemTemplateConstructor
     {
+        @cpp:Private
         var <parameter>ViewModel : demo::MyTextItem^ = null of (::demo::MyTextItem^);
 
         func GetViewModel() : (demo::MyTextItem^)
@@ -28223,6 +28227,7 @@ namespace demo
     @cpp:Friend(typeof(SharedSizeItemTemplateConstructor))
     class SharedSizeItemTemplate : ::presentation::templates::GuiControlTemplate, SharedSizeItemTemplateConstructor
     {
+        @cpp:Private
         var <parameter>ViewModel : demo::MyTextItem^ = null of (::demo::MyTextItem^);
 
         func GetViewModel() : (demo::MyTextItem^)
@@ -28545,6 +28550,7 @@ namespace demo
     @cpp:Friend(typeof(SharedSizeTextItemTemplateConstructor))
     class SharedSizeTextItemTemplate : ::presentation::templates::GuiTextListItemTemplate, SharedSizeTextItemTemplateConstructor
     {
+        @cpp:Private
         var <parameter>ViewModel : demo::MyTextItem^ = null of (::demo::MyTextItem^);
 
         func GetViewModel() : (demo::MyTextItem^)
