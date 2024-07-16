@@ -50,14 +50,14 @@
 
 ## Release Milestone (1.2.10.0)
 
-- Unit test framework
-  - Generate `domId` for each dom node: element(id), virtual(-element.id-2), root(-1), hittest(find a way).
 - `GuiWindow` unit test
   - Interaction with screen
-- Metadata of remote protocol will be updated and included in releases.
 - Calling `GuiWindow::ShowMaximized` in `WindowOpened` with `SetupHostedWindowsDirect2DRenderer` doesn't properly maximize the window.
 - Document
   - Add DSL syntax to document instead of just in comments.
+- Metadata of remote protocol will be updated and included in releases.
+- Unit test framework
+  - Generate `domId` for each dom node: element(id), virtual(-element.id-2), root(-1), hittest(find a way).
 
 ## Release Milestone (1.2.11.0)
 
@@ -134,17 +134,23 @@
 - Rewrite `GacBuild.ps1` and `GacClear.ps1` in C++, but still keep them just doing redirection for backward compatibility.
 - Get rid of `Deploy.bat` in `GacGen.ps1` and `GacGen.exe`.
 
-## Release Milestone (future releases)
-
+## Release Milestone (1.3.1.0)
 - `Variant` and `Union` with full support.
   - Document.
   - Document `vl::Overloading`.
-- Strict check in different for-each loops.
+- Extensible CLI argument parser acception different OS convention, serialization and module dependencies.
+  - Structured error report.
+  - Extensible error message localization relying on GacUI XML Resource localization feature.
+  - Pre-made main function per OS, defining arguments for different renderers for the current OS, including remoting server with predefine protocols.
 - More optimistic SyncDom strategy to reduce messages.
 - Windows
   - Ensure `INativeWindow::(Before|After)Closing()` is not called on non-main-window between the main window is closed and the application exits.
 - Enlarging window slower than shrinking.
 - https://github.com/vczh-libraries/Vlpp/issues/9
+
+## Release Milestone (future releases)
+
+- Strict check in different for-each loops.
 
 ## OS Provider Features
 
