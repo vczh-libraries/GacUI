@@ -50,8 +50,6 @@
 
 ## Release Milestone (1.2.10.0)
 
-- `GuiWindow` unit test
-  - Interaction with screen
 - Calling `GuiWindow::ShowMaximized` in `WindowOpened` with `SetupHostedWindowsDirect2DRenderer` doesn't properly maximize the window.
 - Document
   - Add DSL syntax to document instead of just in comments.
