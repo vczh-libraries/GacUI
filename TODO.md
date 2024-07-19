@@ -53,7 +53,6 @@
 
 - Document
   - Add DSL syntax to document instead of just in comments.
-- Metadata of remote protocol will be updated and included in releases.
 - Unit test framework
   - Generate `domId` for each dom node: element(id), virtual(-element.id-2), root(-1), hittest(find a way).
 
