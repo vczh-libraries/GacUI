@@ -18,6 +18,7 @@
   - Making a composition invisible doesn't refresh the application
   - Selection of a list control is not cleared when objects of selected items are replaced
   - Missing arguments in `GUI_VALUE` and `GUI_RUN` macros.
+  - `ShowMaximized` inside `WindowOpened` doesn't work with hosted mode.
 - Add `@cpp:Private` for GacGen generated `<parameter>ViewModel` variable.
 
 ## Known Issues
@@ -50,8 +51,6 @@
 
 ## Release Milestone (1.2.10.0)
 
-- Calling `GuiWindow::ShowMaximized` in `WindowOpened` with `SetupHostedWindowsDirect2DRenderer` doesn't properly maximize the window.
-  - Doesn't repro with `SetupRemoteNativeController`.
 - Document
   - Add DSL syntax to document instead of just in comments.
 - Metadata of remote protocol will be updated and included in releases.

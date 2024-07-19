@@ -62,9 +62,12 @@ GuiHostedController::WindowManager<GuiHostedWindow*>
 
 		void GuiHostedController::OnOpened(hosted_window_manager::Window<GuiHostedWindow*>* window)
 		{
-			for (auto listener : window->id->listeners)
+			if (!mainWindow || window != &mainWindow->wmWindow)
 			{
-				listener->Opened();
+				for (auto listener : window->id->listeners)
+				{
+					listener->Opened();
+				}
 			}
 		}
 
@@ -213,6 +216,17 @@ GuiHostedController::INativeWindowListener
 			else if (mainWindow)
 			{
 				mainWindow->wmWindow.Activate();
+			}
+		}
+
+		void GuiHostedController::Opened()
+		{
+			if (mainWindow)
+			{
+				for (auto listener : mainWindow->wmWindow.id->listeners)
+				{
+					listener->Opened();
+				}
 			}
 		}
 

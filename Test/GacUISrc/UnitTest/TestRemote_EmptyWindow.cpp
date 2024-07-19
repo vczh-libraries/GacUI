@@ -725,9 +725,9 @@ TEST_FILE
 		protocol.OnNextFrame([&]()
 		{
 			listener.AssertCallbacks(
+				L"Moved()",
+				L"Moved()",
 				L"Opened()",
-				L"Moved()",
-				L"Moved()",
 				L"GotFocus()",
 				L"RenderingAsActivated()"
 			);
@@ -805,9 +805,9 @@ TEST_FILE
 		protocol.OnNextFrame([&]()
 		{
 			listener.AssertCallbacks(
+				L"Moved()",
+				L"Moved()",
 				L"Opened()",
-				L"Moved()",
-				L"Moved()",
 				L"GotFocus()",
 				L"RenderingAsActivated()"
 			);

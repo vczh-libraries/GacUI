@@ -103,6 +103,7 @@ GuiHostedController
 			void							DpiChanged(bool preparing) override;
 			void							GotFocus() override;
 			void							LostFocus() override;
+			void							Opened() override;
 			void							BeforeClosing(bool& cancel) override;
 			void							AfterClosing() override;
 			void							Paint() override;
