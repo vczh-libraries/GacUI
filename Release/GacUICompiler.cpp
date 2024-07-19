@@ -13668,6 +13668,11 @@ Workflow_GenerateInstanceClass
 						decl->type = CopyType(type);
 						decl->expression = CreateDefaultValue(parameterTypeInfoTuple.get<0>().Obj());
 
+						auto att = Ptr(new WfAttribute);
+						att->category.value = L"cpp";
+						att->name.value = L"Private";
+						decl->attributes.Add(att);
+
 						Workflow_RecordScriptPosition(precompileContext, parameter->tagPosition, (Ptr<WfDeclaration>)decl);
 					}
 					{

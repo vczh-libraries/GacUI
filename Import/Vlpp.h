@@ -7360,7 +7360,7 @@ Functions:
 	[T]			.OrderBySelf() => [T]
 
 	[T]			.Aggregate(T->T->T) => T
-	[T]			.Aggregate(T->T->T, T) => T
+	[T]			.Aggregate(T, T->T->T) => T
 	[T]			.All(T->bool) => bool
 	[T]			.Any(T->bool) => bool
 	[T]			.Max() => T

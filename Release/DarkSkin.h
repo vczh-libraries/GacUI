@@ -3426,7 +3426,9 @@ namespace darkskin
 		::vl::presentation::controls::ITabCommandExecutor* GetCommands();
 		void SetCommands(::vl::presentation::controls::ITabCommandExecutor* __vwsn_value_);
 		::vl::Event<void()> CommandsChanged;
+	private:
 		::vl::presentation::controls::GuiTabPage* __vwsn_parameter_CurrentTabPage;
+	public:
 		::vl::presentation::controls::GuiTabPage* GetCurrentTabPage();
 		TabHeaderTemplate(::vl::presentation::controls::GuiTabPage* __vwsn_ctor_parameter_CurrentTabPage);
 		~TabHeaderTemplate();

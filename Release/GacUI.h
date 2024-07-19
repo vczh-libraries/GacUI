@@ -22311,7 +22311,8 @@ namespace vl::presentation::remoteprotocol
 	struct RenderingTrace
 	{
 		::vl::Ptr<::vl::collections::Dictionary<::vl::vint, ::vl::presentation::remoteprotocol::RendererType>> createdElements;
-		::vl::Ptr<::vl::presentation::remoteprotocol::ArrayMap<::vl::vint, ::vl::presentation::remoteprotocol::ImageMetadata, &::vl::presentation::remoteprotocol::ImageMetadata::id>> createdImages;
+		::vl::Ptr<::vl::presentation::remoteprotocol::ArrayMap<::vl::vint, ::vl::presentation::remoteprotocol::ImageCreation, &::vl::presentation::remoteprotocol::ImageCreation::id>> imageCreations;
+		::vl::Ptr<::vl::presentation::remoteprotocol::ArrayMap<::vl::vint, ::vl::presentation::remoteprotocol::ImageMetadata, &::vl::presentation::remoteprotocol::ImageMetadata::id>> imageMetadatas;
 		::vl::Ptr<::vl::collections::List<::vl::presentation::remoteprotocol::RenderingFrame>> frames;
 	};
 
@@ -22622,6 +22623,7 @@ GuiRemoteGraphicsImage
 		GuiRemoteGraphicsImage(GuiRemoteController* _remote, vint _id, Ptr<stream::MemoryStream> _binary);
 		~GuiRemoteGraphicsImage();
 
+		stream::IStream&					GetBinaryData();
 		remoteprotocol::ImageCreation		GenerateImageCreation();
 		void								UpdateFromImageMetadata(const remoteprotocol::ImageMetadata& imageMetadata);
 
@@ -25251,7 +25253,9 @@ namespace gaclib_controls
 		::vl::Ptr<::gaclib_controls::IDialogStringsStrings> GetStrings();
 		void SetStrings(::vl::Ptr<::gaclib_controls::IDialogStringsStrings> __vwsn_value_);
 		::vl::Event<void()> StringsChanged;
+	private:
 		::vl::Ptr<::vl::presentation::IColorDialogViewModel> __vwsn_parameter_ViewModel;
+	public:
 		::vl::Ptr<::vl::presentation::IColorDialogViewModel> GetViewModel();
 		ColorDialogControl(::vl::Ptr<::vl::presentation::IColorDialogViewModel> __vwsn_ctor_parameter_ViewModel);
 		~ColorDialogControl();
@@ -25311,7 +25315,9 @@ namespace gaclib_controls
 		::vl::Ptr<::gaclib_controls::IDialogStringsStrings> GetStrings();
 		void SetStrings(::vl::Ptr<::gaclib_controls::IDialogStringsStrings> __vwsn_value_);
 		::vl::Event<void()> StringsChanged;
+	private:
 		::vl::Ptr<::vl::presentation::IColorDialogViewModel> __vwsn_parameter_ViewModel;
+	public:
 		::vl::Ptr<::vl::presentation::IColorDialogViewModel> GetViewModel();
 		ColorDialogWindow(::vl::Ptr<::vl::presentation::IColorDialogViewModel> __vwsn_ctor_parameter_ViewModel);
 		~ColorDialogWindow();
@@ -25387,7 +25393,9 @@ namespace gaclib_controls
 		::vl::Ptr<::gaclib_controls::IDialogStringsStrings> GetStrings();
 		void SetStrings(::vl::Ptr<::gaclib_controls::IDialogStringsStrings> __vwsn_value_);
 		::vl::Event<void()> StringsChanged;
+	private:
 		::vl::Ptr<::vl::presentation::IFileDialogViewModel> __vwsn_parameter_ViewModel;
+	public:
 		::vl::Ptr<::vl::presentation::IFileDialogViewModel> GetViewModel();
 		FileDialogWindow(::vl::Ptr<::vl::presentation::IFileDialogViewModel> __vwsn_ctor_parameter_ViewModel);
 		void __vwsn_instance_ctor_();
@@ -25505,7 +25513,9 @@ namespace gaclib_controls
 		::vl::Ptr<::gaclib_controls::IDialogStringsStrings> GetStrings();
 		void SetStrings(::vl::Ptr<::gaclib_controls::IDialogStringsStrings> __vwsn_value_);
 		::vl::Event<void()> StringsChanged;
+	private:
 		::vl::Ptr<::vl::presentation::IFileDialogViewModel> __vwsn_parameter_ViewModel;
+	public:
 		::vl::Ptr<::vl::presentation::IFileDialogViewModel> GetViewModel();
 		FilePickerControl(::vl::Ptr<::vl::presentation::IFileDialogViewModel> __vwsn_ctor_parameter_ViewModel);
 		void __vwsn_instance_ctor_();
@@ -25577,7 +25587,9 @@ namespace gaclib_controls
 		::vl::Ptr<::gaclib_controls::IDialogStringsStrings> GetStrings();
 		void SetStrings(::vl::Ptr<::gaclib_controls::IDialogStringsStrings> __vwsn_value_);
 		::vl::Event<void()> StringsChanged;
+	private:
 		::vl::Ptr<::vl::presentation::ICommonFontDialogViewModel> __vwsn_parameter_ViewModel;
+	public:
 		::vl::Ptr<::vl::presentation::ICommonFontDialogViewModel> GetViewModel();
 		FontNameControl(::vl::Ptr<::vl::presentation::ICommonFontDialogViewModel> __vwsn_ctor_parameter_ViewModel);
 		~FontNameControl();
@@ -25789,7 +25801,9 @@ namespace gaclib_controls
 		::vl::Ptr<::gaclib_controls::IDialogStringsStrings> GetStrings();
 		void SetStrings(::vl::Ptr<::gaclib_controls::IDialogStringsStrings> __vwsn_value_);
 		::vl::Event<void()> StringsChanged;
+	private:
 		::vl::Ptr<::vl::presentation::IFullFontDialogViewModel> __vwsn_parameter_ViewModel;
+	public:
 		::vl::Ptr<::vl::presentation::IFullFontDialogViewModel> GetViewModel();
 		FullFontDialogWindow(::vl::Ptr<::vl::presentation::IFullFontDialogViewModel> __vwsn_ctor_parameter_ViewModel);
 		void __vwsn_instance_ctor_();
@@ -25885,7 +25899,9 @@ namespace gaclib_controls
 		::vl::Ptr<::gaclib_controls::IDialogStringsStrings> GetStrings();
 		void SetStrings(::vl::Ptr<::gaclib_controls::IDialogStringsStrings> __vwsn_value_);
 		::vl::Event<void()> StringsChanged;
+	private:
 		::vl::Ptr<::vl::presentation::IMessageBoxDialogAction> __vwsn_parameter_Action;
+	public:
 		::vl::Ptr<::vl::presentation::IMessageBoxDialogAction> GetAction();
 		MessageBoxButtonTemplate(::vl::Ptr<::vl::presentation::IMessageBoxDialogAction> __vwsn_ctor_parameter_Action);
 		void __vwsn_instance_ctor_();
@@ -25931,7 +25947,9 @@ namespace gaclib_controls
 #endif
 	public:
 		::vl::Ptr<::vl::presentation::INativeImage> GetIcon(::vl::presentation::INativeDialogService::MessageBoxIcons icon);
+	private:
 		::vl::Ptr<::vl::presentation::IMessageBoxDialogViewModel> __vwsn_parameter_ViewModel;
+	public:
 		::vl::Ptr<::vl::presentation::IMessageBoxDialogViewModel> GetViewModel();
 		MessageBoxWindow(::vl::Ptr<::vl::presentation::IMessageBoxDialogViewModel> __vwsn_ctor_parameter_ViewModel);
 		void __vwsn_instance_ctor_();
@@ -26016,7 +26034,9 @@ namespace gaclib_controls
 		::vl::Ptr<::gaclib_controls::IDialogStringsStrings> GetStrings();
 		void SetStrings(::vl::Ptr<::gaclib_controls::IDialogStringsStrings> __vwsn_value_);
 		::vl::Event<void()> StringsChanged;
+	private:
 		::vl::Ptr<::vl::presentation::ISimpleFontDialogViewModel> __vwsn_parameter_ViewModel;
+	public:
 		::vl::Ptr<::vl::presentation::ISimpleFontDialogViewModel> GetViewModel();
 		SimpleFontDialogWindow(::vl::Ptr<::vl::presentation::ISimpleFontDialogViewModel> __vwsn_ctor_parameter_ViewModel);
 		void __vwsn_instance_ctor_();
@@ -28246,6 +28266,7 @@ GuiHostedController
 			void							DpiChanged(bool preparing) override;
 			void							GotFocus() override;
 			void							LostFocus() override;
+			void							Opened() override;
 			void							BeforeClosing(bool& cancel) override;
 			void							AfterClosing() override;
 			void							Paint() override;

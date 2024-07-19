@@ -35489,9 +35489,12 @@ GuiHostedController::WindowManager<GuiHostedWindow*>
 
 		void GuiHostedController::OnOpened(hosted_window_manager::Window<GuiHostedWindow*>* window)
 		{
-			for (auto listener : window->id->listeners)
+			if (!mainWindow || window != &mainWindow->wmWindow)
 			{
-				listener->Opened();
+				for (auto listener : window->id->listeners)
+				{
+					listener->Opened();
+				}
 			}
 		}
 
@@ -35640,6 +35643,17 @@ GuiHostedController::INativeWindowListener
 			else if (mainWindow)
 			{
 				mainWindow->wmWindow.Activate();
+			}
+		}
+
+		void GuiHostedController::Opened()
+		{
+			if (mainWindow)
+			{
+				for (auto listener : mainWindow->wmWindow.id->listeners)
+				{
+					listener->Opened();
+				}
 			}
 		}
 
@@ -39508,6 +39522,11 @@ GuiRemoteGraphicsImage
 		}
 	}
 
+	stream::IStream& GuiRemoteGraphicsImage::GetBinaryData()
+	{
+		return *binary.Obj();
+	}
+
 	remoteprotocol::ImageCreation GuiRemoteGraphicsImage::GenerateImageCreation()
 	{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::GuiRemoteGraphicsImage::GenerateImageCreation()#"
@@ -41112,7 +41131,8 @@ namespace vl::presentation::remoteprotocol
 	{
 		auto node = Ptr(new glr::json::JsonObject);
 		ConvertCustomTypeToJsonField(node, L"createdElements", value.createdElements);
-		ConvertCustomTypeToJsonField(node, L"createdImages", value.createdImages);
+		ConvertCustomTypeToJsonField(node, L"imageCreations", value.imageCreations);
+		ConvertCustomTypeToJsonField(node, L"imageMetadatas", value.imageMetadatas);
 		ConvertCustomTypeToJsonField(node, L"frames", value.frames);
 		return node;
 	}
@@ -41976,7 +41996,8 @@ namespace vl::presentation::remoteprotocol
 		for (auto field : jsonNode->fields)
 		{
 			if (field->name.value == L"createdElements") ConvertJsonToCustomType(field->value, value.createdElements); else
-			if (field->name.value == L"createdImages") ConvertJsonToCustomType(field->value, value.createdImages); else
+			if (field->name.value == L"imageCreations") ConvertJsonToCustomType(field->value, value.imageCreations); else
+			if (field->name.value == L"imageMetadatas") ConvertJsonToCustomType(field->value, value.imageMetadatas); else
 			if (field->name.value == L"frames") ConvertJsonToCustomType(field->value, value.frames); else
 			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
 		}

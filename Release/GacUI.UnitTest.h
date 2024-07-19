@@ -583,6 +583,7 @@ UnitTestRemoteProtocol
 	class UnitTestRemoteProtocol_Rendering : public TProtocol
 	{
 		using IdSet = collections::SortedList<vint>;
+		using Base64ToImageMetadataMap = collections::Dictionary<WString, remoteprotocol::ImageMetadata>;
 		using ElementDescMap = collections::Dictionary<vint, ElementDescVariant>;
 		using ImageMetadataMap = collections::Dictionary<vint, remoteprotocol::ImageMetadata>;
 		using CommandList = UnitTestRenderingCommandList;
@@ -593,6 +594,7 @@ UnitTestRemoteProtocol
 		ElementDescMap							lastElementDescs;
 		IdSet									removedElementIds;
 		IdSet									removedImageIds;
+		Ptr<Base64ToImageMetadataMap>			cachedImageMetadatas;
 
 		remoteprotocol::ElementMeasurings		measuringForNextRendering;
 		regex::Regex							regexCrLf{ L"/n|/r(/n)?" };
@@ -602,7 +604,8 @@ UnitTestRemoteProtocol
 		void ResetCreatedObjects()
 		{
 			loggedTrace.createdElements = Ptr(new collections::Dictionary<vint, remoteprotocol::RendererType>);
-			loggedTrace.createdImages = Ptr(new remoteprotocol::ArrayMap<vint, remoteprotocol::ImageMetadata, &remoteprotocol::ImageMetadata::id>);
+			loggedTrace.imageCreations = Ptr(new remoteprotocol::ArrayMap<vint, remoteprotocol::ImageCreation, &remoteprotocol::ImageCreation::id>);
+			loggedTrace.imageMetadatas = Ptr(new remoteprotocol::ArrayMap<vint, remoteprotocol::ImageMetadata, &remoteprotocol::ImageMetadata::id>);
 			lastElementDescs.Clear();
 		}
 	public:
@@ -695,7 +698,6 @@ IGuiRemoteProtocolMessages (Elements)
 				{
 					CHECK_ERROR(!loggedTrace.createdElements->Keys().Contains(creation.id), ERROR_MESSAGE_PREFIX L"Renderer with the specified id has been created or used.");
 					loggedTrace.createdElements->Add(creation.id, creation.type);
-					removedElementIds.Remove(creation.id);
 				}
 			}
 #undef ERROR_MESSAGE_PREFIX
@@ -932,16 +934,113 @@ IGuiRemoteProtocolMessages (Elements - SolidLabel)
 IGuiRemoteProtocolMessages (Elements - Image)
 ***********************************************************************/
 
+		WString GetBinaryKeyFromBinary(stream::IStream& binary)
+		{
+			stream::MemoryStream base64WStringStream;
+			{
+				stream::UtfGeneralEncoder<wchar_t, char8_t> utf8ToWCharEncoder;
+				stream::EncoderStream utf8ToWCharStream(base64WStringStream, utf8ToWCharEncoder);
+				stream::Utf8Base64Encoder binaryToBase64Utf8Encoder;
+				stream::EncoderStream binaryToBase64Utf8Stream(utf8ToWCharStream, binaryToBase64Utf8Encoder);
+				binary.SeekFromBegin(0);
+				stream::CopyStream(binary, binaryToBase64Utf8Stream);
+			}
+			{
+				base64WStringStream.SeekFromBegin(0);
+				stream::StreamReader reader(base64WStringStream);
+				return reader.ReadToEnd();
+			}
+		}
+
+		WString GetBinaryKeyFromImage(Ptr<INativeImage> image)
+		{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering<TProtocol>::GetBinaryKeyFromImage(Ptr<INativeImage>)#"
+			auto remoteImage = image.Cast<GuiRemoteGraphicsImage>();
+			CHECK_ERROR(remoteImage, ERROR_MESSAGE_PREFIX L"The image object must be GuiRemoteGraphicsImage.");
+			return GetBinaryKeyFromBinary(remoteImage->GetBinaryData());
+#undef ERROR_MESSAGE_PREFIX
+		}
+
 		remoteprotocol::ImageMetadata MakeImageMetadata(const remoteprotocol::ImageCreation& arguments)
 		{
-			CHECK_FAIL(L"Not Implemented!");
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering<TProtocol>::MakeImageMetadata(const remoteprotocol::ImageCreation)#"
+			if (!cachedImageMetadatas)
+			{
+				cachedImageMetadatas = Ptr(new Base64ToImageMetadataMap);
+				for (auto resource : GetResourceManager()->GetLoadedResources())
+				{
+					if (auto xmlImageData = resource->GetValueByPath(WString::Unmanaged(L"UnitTestConfig/ImageData")).Cast<glr::xml::XmlDocument>())
+					{
+						for (auto elementImage : glr::xml::XmlGetElements(xmlImageData->rootElement, WString::Unmanaged(L"Image")))
+						{
+							WString path, format, frames = WString::Unmanaged(L"1"), width, height;
+
+							auto attPath = glr::xml::XmlGetAttribute(elementImage.Obj(), WString::Unmanaged(L"Path"));
+							auto attFormat = glr::xml::XmlGetAttribute(elementImage.Obj(), WString::Unmanaged(L"Format"));
+							auto attFrames = glr::xml::XmlGetAttribute(elementImage.Obj(), WString::Unmanaged(L"Frames"));
+							auto attWidth = glr::xml::XmlGetAttribute(elementImage.Obj(), WString::Unmanaged(L"Width"));
+							auto attHeight = glr::xml::XmlGetAttribute(elementImage.Obj(), WString::Unmanaged(L"Height"));
+
+							CHECK_ERROR(attPath, ERROR_MESSAGE_PREFIX L"Missing Path attribute in Image element in an UnitTestConfig/ImageData.");
+							CHECK_ERROR(attFormat, ERROR_MESSAGE_PREFIX L"Missing Format attribute in Image element in an UnitTestConfig/ImageData.");
+							CHECK_ERROR(attWidth, ERROR_MESSAGE_PREFIX L"Missing Width attribute in Image element in an UnitTestConfig/ImageData.");
+							CHECK_ERROR(attHeight, ERROR_MESSAGE_PREFIX L"Missing Height attribute in Image element in an UnitTestConfig/ImageData.");
+
+							path = attPath->value.value;
+							format = attFormat->value.value;
+							width = attWidth->value.value;
+							height = attHeight->value.value;
+							if (attFrames) frames = attFrames->value.value;
+
+							vint valueFrames = wtoi(frames);
+							vint valueWidth = wtoi(width);
+							vint valueHeight = wtoi(height);
+
+							CHECK_ERROR(itow(valueFrames) == frames, ERROR_MESSAGE_PREFIX L"Frames attribute must be an integer in Image element in an UnitTestConfig/ImageData.");
+							CHECK_ERROR(itow(valueWidth) == width, ERROR_MESSAGE_PREFIX L"Width attribute must be an integer in Image element in an UnitTestConfig/ImageData.");
+							CHECK_ERROR(itow(valueHeight) == height, ERROR_MESSAGE_PREFIX L"Height attribute must be an integer in Image element in an UnitTestConfig/ImageData.");
+
+							auto imageData = resource->GetImageByPath(path);
+							WString binaryKey = GetBinaryKeyFromImage(imageData->GetImage());
+
+							if (!cachedImageMetadatas->Keys().Contains(binaryKey))
+							{
+								remoteprotocol::ImageMetadata imageMetadata;
+								imageMetadata.id = -1;
+								imageMetadata.frames = Ptr(new collections::List<remoteprotocol::ImageFrameMetadata>);
+								{
+									auto node = Ptr(new glr::json::JsonString);
+									node->content.value = format;
+									remoteprotocol::ConvertJsonToCustomType(node, imageMetadata.format);
+								}
+								for (vint frame = 0; frame < valueFrames; frame++)
+								{
+									imageMetadata.frames->Add({ {valueWidth,valueHeight} });
+								}
+
+								cachedImageMetadatas->Add(binaryKey, imageMetadata);
+							}
+						}
+					}
+				}
+			}
+
+			auto binaryKey = GetBinaryKeyFromBinary(*arguments.imageData.Obj());
+			vint binaryIndex = cachedImageMetadatas->Keys().IndexOf(binaryKey);
+			CHECK_ERROR(binaryIndex != -1, ERROR_MESSAGE_PREFIX L"The image is not registered in any UnitTestConfig/ImageData.");
+			auto metadata = cachedImageMetadatas->Values()[binaryIndex];
+			metadata.id = arguments.id;
+
+			loggedTrace.imageCreations->Add(arguments);
+			loggedTrace.imageMetadatas->Add(metadata);
+			return metadata;
+#undef ERROR_MESSAGE_PREFIX
 		}
 
 		void RequestImageCreated(vint id, const remoteprotocol::ImageCreation& arguments) override
 		{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering<TProtocol>::RequestImageCreated(vint, const vint&)#"
-			CHECK_ERROR(!loggedTrace.createdImages->Keys().Contains(arguments.id), ERROR_MESSAGE_PREFIX L"Image with the specified id has been created or used.");
-			removedImageIds.Remove(arguments.id);
+			CHECK_ERROR(!loggedTrace.imageMetadatas->Keys().Contains(arguments.id), ERROR_MESSAGE_PREFIX L"Image with the specified id has been created or used.");
 			this->GetEvents()->RespondImageCreated(id, MakeImageMetadata(arguments));
 #undef ERROR_MESSAGE_PREFIX
 		}
@@ -949,7 +1048,7 @@ IGuiRemoteProtocolMessages (Elements - Image)
 		void RequestImageDestroyed(const vint& arguments) override
 		{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering<TProtocol>::RequestImageDestroyed(const vint&)#"
-			CHECK_ERROR(loggedTrace.createdImages->Keys().Contains(arguments), ERROR_MESSAGE_PREFIX L"Image with the specified id has not been created.");
+			CHECK_ERROR(loggedTrace.imageMetadatas->Keys().Contains(arguments), ERROR_MESSAGE_PREFIX L"Image with the specified id has not been created.");
 			CHECK_ERROR(!removedImageIds.Contains(arguments), ERROR_MESSAGE_PREFIX L"Image with the specified id has been destroyed.");
 			removedImageIds.Add(arguments);
 #undef ERROR_MESSAGE_PREFIX
@@ -964,7 +1063,7 @@ IGuiRemoteProtocolMessages (Elements - Image)
 				if (!imageCreation.imageDataOmitted)
 				{
 					CHECK_ERROR(arguments.imageId && arguments.imageId.Value() != !imageCreation.id, ERROR_MESSAGE_PREFIX L"It should satisfy that (arguments.imageId.Value()id == imageCreation.id).");
-					CHECK_ERROR(!loggedTrace.createdImages->Keys().Contains(imageCreation.id), ERROR_MESSAGE_PREFIX L"Image with the specified id has been created.");
+					CHECK_ERROR(!loggedTrace.imageMetadatas->Keys().Contains(imageCreation.id), ERROR_MESSAGE_PREFIX L"Image with the specified id has been created.");
 					CHECK_ERROR(imageCreation.imageData, ERROR_MESSAGE_PREFIX L"When imageDataOmitted == false, imageData should not be null.");
 					if (!measuringForNextRendering.createdImages)
 					{
@@ -979,7 +1078,7 @@ IGuiRemoteProtocolMessages (Elements - Image)
 			}
 			else if (arguments.imageId)
 			{
-				CHECK_ERROR(loggedTrace.createdImages->Keys().Contains(arguments.imageId.Value()), ERROR_MESSAGE_PREFIX L"Image with the specified id has not been created.");
+				CHECK_ERROR(loggedTrace.imageMetadatas->Keys().Contains(arguments.imageId.Value()), ERROR_MESSAGE_PREFIX L"Image with the specified id has not been created.");
 			}
 
 			auto element = arguments;
@@ -1412,7 +1511,12 @@ extern vl::Ptr<vl::presentation::GuiResource>	GacUIUnitTest_CompileAndLoad(const
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 
 template<typename TTheme>
-void GacUIUnitTest_StartFast_WithResourceAsText(const vl::WString& appName, const vl::WString& windowTypeFullName, const vl::WString& resourceText, vl::Nullable<vl::presentation::unittest::UnitTestScreenConfig> config = {})
+void GacUIUnitTest_StartFast_WithResourceAsText(
+	const vl::WString& appName,
+	const vl::WString& windowTypeFullName,
+	const vl::WString& resourceText, vl::Func<void(vl::presentation::controls::GuiWindow*)> installWindow,
+	vl::Nullable<vl::presentation::unittest::UnitTestScreenConfig> config
+)
 {
 	GacUIUnitTest_LinkGuiMainProxy([=](
 		vl::presentation::unittest::UnitTestRemoteProtocol* protocol,
@@ -1430,6 +1534,10 @@ void GacUIUnitTest_StartFast_WithResourceAsText(const vl::WString& appName, cons
 			auto window = vl::Ptr(windowValue.GetRawPtr()->SafeAggregationCast<vl::presentation::controls::GuiWindow>());
 			TEST_ASSERT(window);
 
+			if (installWindow)
+			{
+				installWindow(window.Obj());
+			}
 			window->MoveToScreenCenter();
 			previousMainProxy(protocol, context);
 			vl::presentation::controls::GetApplication()->Run(window.Obj());
@@ -1437,6 +1545,38 @@ void GacUIUnitTest_StartFast_WithResourceAsText(const vl::WString& appName, cons
 		vl::presentation::theme::UnregisterTheme(theme->Name);
 	});
 	GacUIUnitTest_Start_WithResourceAsText(appName, config, resourceText);
+}
+
+template<typename TTheme>
+void GacUIUnitTest_StartFast_WithResourceAsText(
+	const vl::WString& appName,
+	const vl::WString& windowTypeFullName,
+	const vl::WString& resourceText,
+	vl::Nullable<vl::presentation::unittest::UnitTestScreenConfig> config
+)
+{
+	GacUIUnitTest_StartFast_WithResourceAsText<TTheme>(appName, windowTypeFullName, resourceText, {}, config);
+}
+
+template<typename TTheme>
+void GacUIUnitTest_StartFast_WithResourceAsText(
+	const vl::WString& appName,
+	const vl::WString& windowTypeFullName,
+	const vl::WString& resourceText,
+	vl::Func<void(vl::presentation::controls::GuiWindow*)> installWindow
+)
+{
+	GacUIUnitTest_StartFast_WithResourceAsText<TTheme>(appName, windowTypeFullName, resourceText, installWindow, {});
+}
+
+template<typename TTheme>
+void GacUIUnitTest_StartFast_WithResourceAsText(
+	const vl::WString& appName,
+	const vl::WString& windowTypeFullName,
+	const vl::WString& resourceText
+)
+{
+	GacUIUnitTest_StartFast_WithResourceAsText<TTheme>(appName, windowTypeFullName, resourceText, {}, {});
 }
 
 #endif
