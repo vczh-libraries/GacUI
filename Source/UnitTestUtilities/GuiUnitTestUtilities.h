@@ -31,7 +31,12 @@ extern vl::Ptr<vl::presentation::GuiResource>	GacUIUnitTest_CompileAndLoad(const
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 
 template<typename TTheme>
-void GacUIUnitTest_StartFast_WithResourceAsText(const vl::WString& appName, const vl::WString& windowTypeFullName, const vl::WString& resourceText, vl::Nullable<vl::presentation::unittest::UnitTestScreenConfig> config = {})
+void GacUIUnitTest_StartFast_WithResourceAsText(
+	const vl::WString& appName,
+	const vl::WString& windowTypeFullName,
+	const vl::WString& resourceText, vl::Func<void(vl::presentation::controls::GuiWindow*)> installWindow,
+	vl::Nullable<vl::presentation::unittest::UnitTestScreenConfig> config
+)
 {
 	GacUIUnitTest_LinkGuiMainProxy([=](
 		vl::presentation::unittest::UnitTestRemoteProtocol* protocol,
@@ -49,6 +54,10 @@ void GacUIUnitTest_StartFast_WithResourceAsText(const vl::WString& appName, cons
 			auto window = vl::Ptr(windowValue.GetRawPtr()->SafeAggregationCast<vl::presentation::controls::GuiWindow>());
 			TEST_ASSERT(window);
 
+			if (installWindow)
+			{
+				installWindow(window.Obj());
+			}
 			window->MoveToScreenCenter();
 			previousMainProxy(protocol, context);
 			vl::presentation::controls::GetApplication()->Run(window.Obj());
@@ -56,6 +65,38 @@ void GacUIUnitTest_StartFast_WithResourceAsText(const vl::WString& appName, cons
 		vl::presentation::theme::UnregisterTheme(theme->Name);
 	});
 	GacUIUnitTest_Start_WithResourceAsText(appName, config, resourceText);
+}
+
+template<typename TTheme>
+void GacUIUnitTest_StartFast_WithResourceAsText(
+	const vl::WString& appName,
+	const vl::WString& windowTypeFullName,
+	const vl::WString& resourceText,
+	vl::Nullable<vl::presentation::unittest::UnitTestScreenConfig> config
+)
+{
+	GacUIUnitTest_StartFast_WithResourceAsText<TTheme>(appName, windowTypeFullName, resourceText, {}, config);
+}
+
+template<typename TTheme>
+void GacUIUnitTest_StartFast_WithResourceAsText(
+	const vl::WString& appName,
+	const vl::WString& windowTypeFullName,
+	const vl::WString& resourceText,
+	vl::Func<void(vl::presentation::controls::GuiWindow*)> installWindow
+)
+{
+	GacUIUnitTest_StartFast_WithResourceAsText<TTheme>(appName, windowTypeFullName, resourceText, installWindow, {});
+}
+
+template<typename TTheme>
+void GacUIUnitTest_StartFast_WithResourceAsText(
+	const vl::WString& appName,
+	const vl::WString& windowTypeFullName,
+	const vl::WString& resourceText
+)
+{
+	GacUIUnitTest_StartFast_WithResourceAsText<TTheme>(appName, windowTypeFullName, resourceText, {}, {});
 }
 
 #endif

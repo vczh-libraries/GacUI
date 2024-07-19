@@ -199,4 +199,27 @@ TEST_FILE
 			resource
 			);
 	});
+
+	TEST_CASE(L"Window Maximized at Startup")
+	{
+		GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+		{
+			protocol->OnNextIdleFrame(L"Ready", [=]()
+			{
+				auto window = GetApplication()->GetMainWindow();
+				window->Hide();
+			});
+		});
+		GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+			WString::Unmanaged(L"Controls/CoreApplication/WindowMaximized"),
+			WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+			resource,
+			[](GuiWindow* window)
+			{
+				window->WindowOpened.AttachLambda([=](auto&&...)
+				{
+					window->ShowMaximized();
+				});
+			});
+	});
 }
