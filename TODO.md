@@ -51,6 +51,7 @@
 ## Release Milestone (1.2.10.0)
 
 - Calling `GuiWindow::ShowMaximized` in `WindowOpened` with `SetupHostedWindowsDirect2DRenderer` doesn't properly maximize the window.
+  - Doesn't repro with `SetupRemoteNativeController`.
 - Document
   - Add DSL syntax to document instead of just in comments.
 - Metadata of remote protocol will be updated and included in releases.
