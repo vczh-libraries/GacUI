@@ -155,6 +155,41 @@ TEST_FILE
 			protocol->OnNextIdleFrame(L"Ready", [=]()
 			{
 				auto window = GetApplication()->GetMainWindow();
+				window->ShowMaximized();
+			});
+			protocol->OnNextIdleFrame(L"Maximized", [=]()
+			{
+				auto window = GetApplication()->GetMainWindow();
+				window->ShowMinimized();
+			});
+			protocol->OnNextIdleFrame(L"Minimized", [=]()
+			{
+				auto window = GetApplication()->GetMainWindow();
+				window->ShowRestored();
+			});
+			protocol->OnNextIdleFrame(L"Restored", [=]()
+			{
+				auto window = GetApplication()->GetMainWindow();
+				window->SetClientSize({ 640,480 });
+			});
+			protocol->OnNextIdleFrame(L"Resized", [=]()
+			{
+				auto window = GetApplication()->GetMainWindow();
+				window->ShowMaximized();
+			});
+			protocol->OnNextIdleFrame(L"Maximized", [=]()
+			{
+				auto window = GetApplication()->GetMainWindow();
+				window->ShowMinimized();
+			});
+			protocol->OnNextIdleFrame(L"Minimized", [=]()
+			{
+				auto window = GetApplication()->GetMainWindow();
+				window->ShowRestored();
+			});
+			protocol->OnNextIdleFrame(L"Restored", [=]()
+			{
+				auto window = GetApplication()->GetMainWindow();
 				window->Hide();
 			});
 		});
