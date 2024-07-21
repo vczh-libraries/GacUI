@@ -51,8 +51,6 @@
 
 ## Release Milestone (1.2.10.0)
 
-- Document
-  - Add DSL syntax to document instead of just in comments.
 - Unit test framework
   - Generate `domId` for each dom node: element(id), virtual(-element.id-2), root(-1), hittest(find a way).
 
