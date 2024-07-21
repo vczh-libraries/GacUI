@@ -49,11 +49,6 @@
   - Require binary pattern "[GMR-1.3]" at the beginning of the binary resource.
   - Resource compiler and loader will check the version and only accept 1.3.
 
-## Release Milestone (1.2.10.0)
-
-- Unit test framework
-  - Generate `domId` for each dom node: element(id), virtual(-element.id-2), root(-1), hittest(find a way).
-
 ## Release Milestone (1.2.11.0)
 
 - GacUI
@@ -61,6 +56,9 @@
   - In remote protocol, it is an element with no extra properties.
     - In HTML, it would open a `<div/>` and you can do whatever you want using JavaScript.
   - Thinking about promote SyncDom data structures for unit test, and complete a diff algorithm.
+    - Unit test framework
+      - Generate `domId` for each dom node: element(id), virtual(-element.id-2), root(-1), hittest(find a way).
+      - Diff algorithm based on `domId`
 - Non-editing control unit test (using DarkSkin)
 - Remote protocol redirection back to native rendering:
   - In the test project, C++ side will expose the remote protocol via dll.
