@@ -54,11 +54,11 @@ TEST_FILE
 				label->SetFocused();
 				TEST_ASSERT(label->GetFocused() == false);
 
-				label->TextChanged.AttachLambda([=](...)
+				label->TextChanged.AttachLambda([=](auto&&...)
 				{
 					window->SetText(L"TextChanged");
 				});
-				label->EnabledChanged.AttachLambda([=](...)
+				label->EnabledChanged.AttachLambda([=](auto&&...)
 				{
 					window->SetText(label->GetEnabled() ? L"Enabled" : L"Disabled");
 				});
