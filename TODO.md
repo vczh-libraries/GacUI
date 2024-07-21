@@ -1,25 +1,6 @@
 # TODO
 
-## Completed but not released (1.2.10.0)
-
-- `vl::char16be_t`
-- `vl::InjectDateTimeImpl`
-- Removed `SERIALIZE_ENUM`, enum will be automatically registered
-- `UtfBase64(En|De)coder`
-- `NativeImageFrameBase`
-- `bool controllerUnrelatedPlugins` and `bool controllerRelatedPlugins` added to `IGuiPlugin`
-- `(Try)?FindObjectByName`
-- `(Try)?FindControlByText`
-- `GuiCustomControl::SetFocusableComposition`
-- `Restore` button not renderered correctly. In both hosted and normal mode.
-- `GetHostedApplication`
-- vlpp.natvis updated
-- Fixed
-  - Making a composition invisible doesn't refresh the application
-  - Selection of a list control is not cleared when objects of selected items are replaced
-  - Missing arguments in `GUI_VALUE` and `GUI_RUN` macros.
-  - `ShowMaximized` inside `WindowOpened` doesn't work with hosted mode.
-- Add `@cpp:Private` for GacGen generated `<parameter>ViewModel` variable.
+## Completed but not released (1.2.11.0)
 
 ## Known Issues
 
