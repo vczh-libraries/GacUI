@@ -33,6 +33,7 @@
 ## Release Milestone (1.2.11.0)
 
 - GacUI
+  - Fix `Global Objects` in `GacUI.h`.
   - Support `<RawRendering/>` element. It will be mapped to `GDIElement` or `Direct2DElement` in different renderers.
   - In remote protocol, it is an element with no extra properties.
     - In HTML, it would open a `<div/>` and you can do whatever you want using JavaScript.
@@ -40,6 +41,8 @@
     - Unit test framework
       - Generate `domId` for each dom node: element(id), virtual(-element.id-2), root(-1), hittest(find a way).
       - Diff algorithm based on `domId`
+      - Middle and right button trigger functions.
+      - Mouse wheel trigger functions.
 - Non-editing control unit test (using DarkSkin)
 - Remote protocol redirection back to native rendering:
   - In the test project, C++ side will expose the remote protocol via dll.
@@ -67,6 +70,7 @@
   - Add window resizing constraint messages.
   - Implement `ColorizedTextElement` and `DocumentElement`.
     - Think about how to calculate size for document.
+  - Typing trigger functions in unit test framework.
 - Sample unit test project included in release.
   - Reflection enabled
     - Application and `LoadMainWindow` script in separated XML resource files.
