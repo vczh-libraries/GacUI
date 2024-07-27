@@ -2,6 +2,9 @@
 
 ## Completed but not released (1.2.11.0)
 
+- Fixed
+  - Fix button behavior when not IgnoreChildControlMouseEvents.
+
 ## Known Issues
 
 - Replace `LoadLibrary` with `GetModuleHandle` in `EnableCrossKernelCrashing`.

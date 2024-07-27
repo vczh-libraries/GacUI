@@ -27,10 +27,11 @@ GuiButton
 			void GuiButton::OnParentLineChanged()
 			{
 				GuiControl::OnParentLineChanged();
-				if(GetRelatedControlHost()==0)
+				if (GetRelatedControlHost() == 0)
 				{
-					mousePressing=false;
-					mouseHoving=false;
+					mousePressingDirect = false;
+					mousePressingIndirect = false;
+					mouseHoving = false;
 					UpdateControlState();
 				}
 			}
@@ -56,7 +57,7 @@ GuiButton
 				{
 					newControlState = ButtonState::Pressed;
 				}
-				else if (mousePressing)
+				else if (mousePressingDirect || mousePressingIndirect)
 				{
 					if (mouseHoving)
 					{
@@ -87,23 +88,34 @@ GuiButton
 
 			void GuiButton::CheckAndClick(bool skipChecking, compositions::GuiEventArgs& arguments)
 			{
-				auto eventSource = arguments.eventSource->GetAssociatedControl();
-				while (eventSource && eventSource != this)
+				if (!skipChecking)
 				{
-					if (eventSource->GetFocusableComposition())
+					auto eventSource = arguments.eventSource->GetAssociatedControl();
+					while (eventSource && eventSource != this)
 					{
-						return;
+						if (eventSource->GetFocusableComposition())
+						{
+							return;
+						}
+						eventSource = eventSource->GetParent();
 					}
-					eventSource = eventSource->GetParent();
 				}
 				Clicked.Execute(GetNotifyEventArguments());
 			}
 
 			void GuiButton::OnLeftButtonDown(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments)
 			{
-				if (arguments.eventSource == boundsComposition || !ignoreChildControlMouseEvents)
+				if (arguments.eventSource == boundsComposition)
 				{
-					mousePressing = true;
+					mousePressingDirect = true;
+				}
+				else if (!ignoreChildControlMouseEvents)
+				{
+					mousePressingIndirect = true;
+				}
+
+				if (mousePressingDirect || mousePressingIndirect)
+				{
 					if (GetVisuallyEnabled() && autoFocus)
 					{
 						SetFocused();
@@ -111,20 +123,22 @@ GuiButton
 					UpdateControlState();
 					if (GetVisuallyEnabled() && !clickOnMouseUp)
 					{
-						CheckAndClick(arguments);
+						CheckAndClick(mousePressingIndirect, arguments);
 					}
 				}
 			}
 
 			void GuiButton::OnLeftButtonUp(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments)
 			{
-				if (arguments.eventSource == boundsComposition || !ignoreChildControlMouseEvents)
+				if (mousePressingDirect || mousePressingIndirect)
 				{
-					mousePressing = false;
+					bool skipChecking = mousePressingIndirect;
+					mousePressingDirect = false;
+					mousePressingIndirect = false;
 					UpdateControlState();
 					if (GetVisuallyEnabled() && mouseHoving && clickOnMouseUp)
 					{
-						CheckAndClick(arguments);
+						CheckAndClick(skipChecking, arguments);
 					}
 				}
 			}
@@ -154,7 +168,7 @@ GuiButton
 					switch (arguments.code)
 					{
 					case VKEY::KEY_RETURN:
-						CheckAndClick(arguments);
+						CheckAndClick(false, arguments);
 						arguments.handled = true;
 						break;
 					case VKEY::KEY_SPACE:
@@ -181,7 +195,7 @@ GuiButton
 						{
 							keyPressing = false;
 							UpdateControlState();
-							CheckAndClick(arguments);
+							CheckAndClick(false, arguments);
 						}
 						arguments.handled = true;
 						break;
