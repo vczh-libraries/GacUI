@@ -53,6 +53,26 @@ GuiGraphicsHost
 				windowComposition->UpdateRelatedHostRecord(&hostRecord);
 			}
 
+			void GuiGraphicsHost::SetFocusInternal(GuiGraphicsComposition* composition)
+			{
+				if (focusedComposition && focusedComposition->HasEventReceiver())
+				{
+					GuiEventArgs arguments;
+					arguments.compositionSource = focusedComposition;
+					arguments.eventSource = focusedComposition;
+					focusedComposition->GetEventReceiver()->lostFocus.Execute(arguments);
+				}
+				focusedComposition = composition;
+				SetCaretPoint(Point(0, 0));
+				if (focusedComposition && focusedComposition->HasEventReceiver())
+				{
+					GuiEventArgs arguments;
+					arguments.compositionSource = focusedComposition;
+					arguments.eventSource = focusedComposition;
+					focusedComposition->GetEventReceiver()->gotFocus.Execute(arguments);
+				}
+			}
+
 			void GuiGraphicsHost::DisconnectCompositionInternal(GuiGraphicsComposition* composition)
 			{
 				// TODO: (enumerable) foreach
@@ -797,22 +817,14 @@ GuiGraphicsHost
 				{
 					return true;
 				}
-				if(focusedComposition && focusedComposition->HasEventReceiver())
-				{
-					GuiEventArgs arguments;
-					arguments.compositionSource=focusedComposition;
-					arguments.eventSource=focusedComposition;
-					focusedComposition->GetEventReceiver()->lostFocus.Execute(arguments);
-				}
-				focusedComposition=composition;
-				SetCaretPoint(Point(0, 0));
-				if(focusedComposition && focusedComposition->HasEventReceiver())
-				{
-					GuiEventArgs arguments;
-					arguments.compositionSource=focusedComposition;
-					arguments.eventSource=focusedComposition;
-					focusedComposition->GetEventReceiver()->gotFocus.Execute(arguments);
-				}
+				SetFocusInternal(composition);
+				return true;
+			}
+
+			bool GuiGraphicsHost::ClearFocus()
+			{
+				if (!focusedComposition) return false;
+				SetFocusInternal(nullptr);
 				return true;
 			}
 

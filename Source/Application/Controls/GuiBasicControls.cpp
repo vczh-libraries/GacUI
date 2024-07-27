@@ -191,6 +191,31 @@ GuiControl
 				if (isVisuallyEnabled != newValue)
 				{
 					isVisuallyEnabled = newValue;
+
+					if (!isVisuallyEnabled && isFocused)
+					{
+						GuiControl* selectedControl = nullptr;
+						auto current = GetParent();
+						while (current)
+						{
+							if (current->GetFocusableComposition() && current->GetVisuallyEnabled())
+							{
+								selectedControl = current;
+								break;
+							}
+							current = current->GetParent();
+						}
+
+						if (selectedControl)
+						{
+							selectedControl->SetFocused();
+						}
+						else if(auto host = focusableComposition->GetRelatedGraphicsHost())
+						{
+							host->ClearFocus();
+						}
+					}
+
 					if (controlTemplateObject)
 					{
 						controlTemplateObject->SetVisuallyEnabled(isVisuallyEnabled);

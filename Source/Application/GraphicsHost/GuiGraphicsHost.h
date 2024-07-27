@@ -103,6 +103,7 @@ Host
 				CompositionList							mouseEnterCompositions;
 				void									RefreshRelatedHostRecord(INativeWindow* nativeWindow);
 
+				void									SetFocusInternal(GuiGraphicsComposition* composition);
 				void									DisconnectCompositionInternal(GuiGraphicsComposition* composition);
 				void									MouseCapture(const NativeWindowMouseInfo& info);
 				void									MouseUncapture(const NativeWindowMouseInfo& info);
@@ -181,6 +182,9 @@ Host
 				/// <returns>Returns true if this operation succeeded.</returns>
 				/// <param name="composition">The composition to set focus. This composition should be or in the main composition.</param>
 				bool									SetFocus(GuiGraphicsComposition* composition);
+				/// <summary>Unset the focus composition. There will be no focus composition.</summary>
+				/// <returns>Returns true if this operation succeeded.</returns>
+				bool									ClearFocus();
 				/// <summary>Get the focus composition. A focused composition will receive keyboard messages.</summary>
 				/// <returns>The focus composition.</returns>
 				GuiGraphicsComposition*					GetFocusedComposition();

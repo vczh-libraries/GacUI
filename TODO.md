@@ -4,6 +4,7 @@
 
 - Fixed
   - Fix button behavior when not IgnoreChildControlMouseEvents.
+  - Fix control not losing focus when disabled.
 
 ## Known Issues
 
