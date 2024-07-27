@@ -59,6 +59,28 @@ TEST_FILE
 </Resource>
 )GacUISrc";
 
+	const auto resourceNestedButtons = LR"GacUISrc(
+<Resource>
+  <Instance name="MainWindowResource">
+    <Instance ref.Class="gacuisrc_unittest::MainWindow">
+      <Window ref.Name="self" Text="GuiButton" ClientSize="x:320 y:240">
+        <Button ref.Name="button1">
+          <ev.Clicked-eval><![CDATA[{
+            self.Text = "Clicked!";
+          }]]></ev.Clicked-eval>
+          <Button ref.Name="button2" Text="This is a Button">
+            <att.BoundsComposition-set AlignmentToParent="left:10 top:10 right:10 bottom:10"/>
+            <ev.Clicked-eval><![CDATA[{
+              button2.Text = "Clicked!";
+            }]]></ev.Clicked-eval>
+          </Button>
+        </Button>
+      </Window>
+    </Instance>
+  </Instance>
+</Resource>
+)GacUISrc";
+
 	TEST_CATEGORY(L"GuiButton")
 	{
 		TEST_CASE(L"ClickOnMouseUp")
@@ -284,6 +306,68 @@ TEST_FILE
 				WString::Unmanaged(L"Controls/Basic/GuiButton/AutoFocus"),
 				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
 				resourceTwoButtons
+				);
+		});
+
+		TEST_CASE(L"IgnoreChildControlMouseEvents")
+		{
+			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto button1 = FindObjectByName<GuiButton>(window, L"button1");
+					auto button2 = FindObjectByName<GuiButton>(window, L"button2");
+					TEST_ASSERT(button1->GetIgnoreChildControlMouseEvents() == true);
+					auto location = protocol->LocationOf(button2);
+					protocol->LClick(location);
+				});
+				protocol->OnNextIdleFrame(L"Clicked", [=]()
+				{
+					protocol->MouseMove({ 0,0 });
+				});
+				protocol->OnNextIdleFrame(L"Close", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					window->Hide();
+				});
+			});
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Controls/Basic/GuiButton/IgnoreChildControlMouseEvents"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resourceNestedButtons
+				);
+		});
+
+		TEST_CASE(L"AcknowledgeChildControlMouseEvents")
+		{
+			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto button1 = FindObjectByName<GuiButton>(window, L"button1");
+					auto button2 = FindObjectByName<GuiButton>(window, L"button2");
+					TEST_ASSERT(button1->GetIgnoreChildControlMouseEvents() == true);
+					button1->SetIgnoreChildControlMouseEvents(false);
+					TEST_ASSERT(button1->GetIgnoreChildControlMouseEvents() == false);
+					auto location = protocol->LocationOf(button2);
+					protocol->LClick(location);
+				});
+				protocol->OnNextIdleFrame(L"Clicked", [=]()
+				{
+					protocol->MouseMove({ 0,0 });
+				});
+				protocol->OnNextIdleFrame(L"Close", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					window->Hide();
+				});
+			});
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Controls/Basic/GuiButton/AcknowledgeChildControlMouseEvents"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resourceNestedButtons
 				);
 		});
 	});
