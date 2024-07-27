@@ -48,6 +48,25 @@
       - Middle and right button trigger functions.
       - Mouse wheel trigger functions.
 - Non-editing control unit test (using DarkSkin)
+  - Basic
+    - GuiControl (Group)
+    - GuiSelectableButton (Check, Combo)
+    - GuiTab
+    - GuiScroll (H/VScroll, H/VTracker, ProgressBar)
+    - GuiScrollContainer
+    - GuiDatePicker
+    - GuiDateComboBox
+  - Menu, Toolstrip and Navigation ...
+  - Ribbon ...
+  - List
+    - TextList
+    - ListView
+    - TreeView
+    - ComboBox
+    - BindableTextList
+    - BindableListView
+    - BindableTreeView
+    - BindableDataGrid
 - Remote protocol redirection back to native rendering:
   - In the test project, C++ side will expose the remote protocol via dll.
   - Implement the remote protocol on a native `INativeController` instance.
@@ -70,6 +89,7 @@
 
 - All control unit test (using DarkSkin)
   - Tooltip.
+  - Dialogs.
   - A mechanism to replace `vl::filesystem` implementation.
   - Add window resizing constraint messages.
   - Implement `ColorizedTextElement` and `DocumentElement`.
