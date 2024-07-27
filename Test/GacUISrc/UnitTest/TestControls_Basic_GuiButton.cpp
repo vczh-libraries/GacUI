@@ -153,6 +153,76 @@ TEST_FILE
 				);
 		});
 
+		TEST_CASE(L"Press Enter")
+		{
+			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto button = FindObjectByName<GuiButton>(window, L"button");
+					button->SetFocused();
+				});
+				protocol->OnNextIdleFrame(L"Focused", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					window->SetText(L"Pressed");
+					protocol->_KeyDown(VKEY::KEY_RETURN);
+				});
+				protocol->OnNextIdleFrame(L"Pressed", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					window->SetText(L"Released");
+					protocol->_KeyUp(VKEY::KEY_RETURN);
+				});
+				protocol->OnNextIdleFrame(L"Released", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					window->Hide();
+				});
+			});
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Controls/Basic/GuiButton/PressEnter"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resourceSingleButton
+				);
+		});
+
+		TEST_CASE(L"Press Space")
+		{
+			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto button = FindObjectByName<GuiButton>(window, L"button");
+					button->SetFocused();
+				});
+				protocol->OnNextIdleFrame(L"Focused", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					window->SetText(L"Pressed");
+					protocol->_KeyDown(VKEY::KEY_SPACE);
+				});
+				protocol->OnNextIdleFrame(L"Pressed", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					window->SetText(L"Released");
+					protocol->_KeyUp(VKEY::KEY_SPACE);
+				});
+				protocol->OnNextIdleFrame(L"Released", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					window->Hide();
+				});
+			});
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Controls/Basic/GuiButton/PressSpace"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resourceSingleButton
+				);
+		});
+
 		TEST_CASE(L"AutoFocus")
 		{
 			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
