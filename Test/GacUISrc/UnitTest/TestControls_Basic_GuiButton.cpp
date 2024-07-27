@@ -370,5 +370,71 @@ TEST_FILE
 				resourceNestedButtons
 				);
 		});
+
+		TEST_CASE(L"Disabled")
+		{
+			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					window->SetText(L"Hover");
+					auto button = FindObjectByName<GuiButton>(window, L"button");
+					TEST_ASSERT(button->GetEnabled() == true);
+					button->SetEnabled(false);
+					TEST_ASSERT(button->GetEnabled() == false);
+					auto location = protocol->LocationOf(button);
+					protocol->MouseMove(location);
+				});
+				protocol->OnNextIdleFrame(L"Hover", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					window->SetText(L"MouseDown");
+					auto button = FindObjectByName<GuiButton>(window, L"button");
+					auto location = protocol->LocationOf(button);
+					protocol->_LDown(location);
+				});
+				protocol->OnNextIdleFrame(L"MouseDown", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					window->SetText(L"MouseUp");
+					auto button = FindObjectByName<GuiButton>(window, L"button");
+					auto location = protocol->LocationOf(button);
+					protocol->_LUp(location);
+				});
+				protocol->OnNextIdleFrame(L"MouseUp", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					window->SetText(L"Focused");
+					auto button = FindObjectByName<GuiButton>(window, L"button");
+					button->SetEnabled(true);
+					button->SetFocused();
+					protocol->MouseMove({ 0,0 });
+				});
+				protocol->OnNextIdleFrame(L"Re-enabled and Focused", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					window->SetText(L"Disabled");
+					auto button = FindObjectByName<GuiButton>(window, L"button");
+					button->SetEnabled(false);
+				});
+				protocol->OnNextIdleFrame(L"Disabled", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					window->SetText(L"Pressed");
+					protocol->KeyPress(VKEY::KEY_RETURN);
+				});
+				protocol->OnNextIdleFrame(L"Pressed", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					window->Hide();
+				});
+			});
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Controls/Basic/GuiButton/Disabled"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resourceSingleButton
+				);
+		});
 	});
 }
