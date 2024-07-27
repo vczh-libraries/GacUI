@@ -63,12 +63,12 @@ namespace gacuisrc_unittest
         func <gacuisrc_unittest-MainWindow2>Initialize(<this> : ::gacuisrc_unittest::MainWindow2*) : (::system::Void)
         {
             (self = <this>);
-            {
-                (self.ClientSize = {x : 320; y : 240;} of (::presentation::Size));
-            }
             (<precompile>5 = self.ContainerComposition);
             {
                 (<precompile>5.InternalMargin = {left : 0; top : 5; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (self.ClientSize = {x : 320; y : 240;} of (::presentation::Size));
             }
             {
                 (self.Text = "MyControlTemplate");
@@ -240,12 +240,12 @@ namespace gacuisrc_unittest
         func <gacuisrc_unittest-MainWindow>Initialize(<this> : ::gacuisrc_unittest::MainWindow*) : (::system::Void)
         {
             (self = <this>);
-            {
-                (self.ClientSize = {x : 320; y : 240;} of (::presentation::Size));
-            }
             (<precompile>0 = self.ContainerComposition);
             {
                 (<precompile>0.InternalMargin = {left : 0; top : 5; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (self.ClientSize = {x : 320; y : 240;} of (::presentation::Size));
             }
             {
                 (self.Text = "MyControlTemplate");

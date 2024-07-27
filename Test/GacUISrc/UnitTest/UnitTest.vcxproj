@@ -194,6 +194,7 @@
     <ClCompile Include="TestCompositions_Stack.cpp" />
     <ClCompile Include="TestCompositions_Table.cpp" />
     <ClCompile Include="TestCompositions_VirtualRepeat.cpp" />
+    <ClCompile Include="TestControls_Basic_GuiButton.cpp" />
     <ClCompile Include="TestControls_CoreApplication_GuiControl.cpp" />
     <ClCompile Include="TestControls_CoreApplication_GuiLabel.cpp" />
     <ClCompile Include="TestControls_CoreApplication_GuiWindow.cpp" />
