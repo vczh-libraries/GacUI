@@ -153,7 +153,7 @@ TEST_FILE
 				);
 		});
 
-		TEST_CASE(L"ClickOnMouseUp")
+		TEST_CASE(L"AutoFocus")
 		{
 			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
 			{

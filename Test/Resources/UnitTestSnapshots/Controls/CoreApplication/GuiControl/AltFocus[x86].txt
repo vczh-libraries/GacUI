@@ -27,6 +27,15 @@ namespace gacuisrc_unittest
         var self : ::gacuisrc_unittest::MainWindow2* = null of (::gacuisrc_unittest::MainWindow2*);
 
         @cpp:Protected
+        var <precompile>0 : ::presentation::compositions::GuiStackComposition* = null of (::presentation::compositions::GuiStackComposition*);
+
+        @cpp:Protected
+        var <precompile>1 : ::presentation::compositions::GuiStackItemComposition* = null of (::presentation::compositions::GuiStackItemComposition*);
+
+        @cpp:Protected
+        var <precompile>2 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
         var a : ::gacuisrc_unittest::MyControl* = null of (::gacuisrc_unittest::MyControl*);
 
         @cpp:Protected
@@ -40,15 +49,6 @@ namespace gacuisrc_unittest
 
         @cpp:Protected
         var e : ::gacuisrc_unittest::MyControl* = null of (::gacuisrc_unittest::MyControl*);
-
-        @cpp:Protected
-        var <precompile>0 : ::presentation::compositions::GuiStackComposition* = null of (::presentation::compositions::GuiStackComposition*);
-
-        @cpp:Protected
-        var <precompile>1 : ::presentation::compositions::GuiStackItemComposition* = null of (::presentation::compositions::GuiStackItemComposition*);
-
-        @cpp:Protected
-        var <precompile>2 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
         var <precompile>3 : ::presentation::compositions::GuiStackItemComposition* = null of (::presentation::compositions::GuiStackItemComposition*);
@@ -83,19 +83,19 @@ namespace gacuisrc_unittest
             }
             (<precompile>0 = new (::presentation::compositions::GuiStackComposition*)());
             {
-                (<precompile>0.Padding = 5 of (::system::Int32));
-            }
-            {
                 (<precompile>0.ExtraMargin = {left : 5; top : 5; right : 5; bottom : 5;} of (::presentation::Margin));
-            }
-            {
-                (<precompile>0.Direction = Vertical of (::presentation::compositions::GuiStackComposition::Direction));
             }
             {
                 (<precompile>0.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
                 (<precompile>0.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+            }
+            {
+                (<precompile>0.Padding = 5 of (::system::Int32));
+            }
+            {
+                (<precompile>0.Direction = Vertical of (::presentation::compositions::GuiStackComposition::Direction));
             }
             (<precompile>1 = new (::presentation::compositions::GuiStackItemComposition*)());
             (b = new (::gacuisrc_unittest::MyControl*)());
@@ -231,10 +231,10 @@ namespace gacuisrc_unittest
         var self : ::gacuisrc_unittest::MainWindow* = null of (::gacuisrc_unittest::MainWindow*);
 
         @cpp:Protected
-        var my : ::gacuisrc_unittest::MyControl* = null of (::gacuisrc_unittest::MyControl*);
+        var <precompile>0 : ::presentation::compositions::GuiGraphicsComposition* = null of (::presentation::compositions::GuiGraphicsComposition*);
 
         @cpp:Protected
-        var <precompile>0 : ::presentation::compositions::GuiGraphicsComposition* = null of (::presentation::compositions::GuiGraphicsComposition*);
+        var my : ::gacuisrc_unittest::MyControl* = null of (::gacuisrc_unittest::MyControl*);
 
         @cpp:Protected
         func <gacuisrc_unittest-MainWindow>Initialize(<this> : ::gacuisrc_unittest::MainWindow*) : (::system::Void)
@@ -432,9 +432,6 @@ namespace gacuisrc_unittest
         var self : ::gacuisrc_unittest::MyControlTemplate* = null of (::gacuisrc_unittest::MyControlTemplate*);
 
         @cpp:Protected
-        var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
-
-        @cpp:Protected
         var <precompile>0 : ::presentation::elements::GuiSolidBorderElement^ = null of (::presentation::elements::GuiSolidBorderElement^);
 
         @cpp:Protected
@@ -442,6 +439,9 @@ namespace gacuisrc_unittest
 
         @cpp:Protected
         var <precompile>2 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
+
+        @cpp:Protected
+        var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
         var <precompile>3 : ::presentation::elements::GuiSolidLabelElement^ = null of (::presentation::elements::GuiSolidLabelElement^);
@@ -486,13 +486,13 @@ namespace gacuisrc_unittest
             }
             (<precompile>1 = new (::presentation::compositions::GuiTableComposition*)());
             {
-                (<precompile>1.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
-            }
-            {
                 (<precompile>1.BorderVisible = true);
             }
             {
                 (<precompile>1.CellPadding = 5 of (::system::Int32));
+            }
+            {
+                (<precompile>1.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
                 (<precompile>1.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
