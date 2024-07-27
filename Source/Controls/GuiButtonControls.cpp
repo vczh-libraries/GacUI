@@ -85,7 +85,7 @@ GuiButton
 				}
 			}
 
-			void GuiButton::CheckAndClick(compositions::GuiEventArgs& arguments)
+			void GuiButton::CheckAndClick(bool skipChecking, compositions::GuiEventArgs& arguments)
 			{
 				auto eventSource = arguments.eventSource->GetAssociatedControl();
 				while (eventSource && eventSource != this)
@@ -104,12 +104,12 @@ GuiButton
 				if (arguments.eventSource == boundsComposition || !ignoreChildControlMouseEvents)
 				{
 					mousePressing = true;
-					if (autoFocus)
+					if (GetVisuallyEnabled() && autoFocus)
 					{
 						SetFocused();
 					}
 					UpdateControlState();
-					if (!clickOnMouseUp)
+					if (GetVisuallyEnabled() && !clickOnMouseUp)
 					{
 						CheckAndClick(arguments);
 					}
@@ -122,10 +122,7 @@ GuiButton
 				{
 					mousePressing = false;
 					UpdateControlState();
-				}
-				if (GetVisuallyEnabled())
-				{
-					if (mouseHoving && clickOnMouseUp)
+					if (GetVisuallyEnabled() && mouseHoving && clickOnMouseUp)
 					{
 						CheckAndClick(arguments);
 					}

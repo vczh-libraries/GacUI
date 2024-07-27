@@ -32,7 +32,8 @@ Buttons
 				bool									ignoreChildControlMouseEvents = true;
 				bool									autoFocus = true;
 				bool									keyPressing = false;
-				bool									mousePressing = false;
+				bool									mousePressingDirect = false;
+				bool									mousePressingIndirect = false;
 				bool									mouseHoving = false;
 				ButtonState								controlState = ButtonState::Normal;
 
@@ -40,7 +41,7 @@ Buttons
 				void									OnActiveAlt()override;
 				bool									IsTabAvailable()override;
 				void									UpdateControlState();
-				void									CheckAndClick(compositions::GuiEventArgs& arguments);
+				void									CheckAndClick(bool skipChecking, compositions::GuiEventArgs& arguments);
 				void									OnLeftButtonDown(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments);
 				void									OnLeftButtonUp(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments);
 				void									OnMouseEnter(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
