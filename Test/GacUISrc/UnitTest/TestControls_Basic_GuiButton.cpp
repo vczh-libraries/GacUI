@@ -437,4 +437,54 @@ TEST_FILE
 				);
 		});
 	});
+
+	const auto resourceTwoCheckBoxes = LR"GacUISrc(
+<Resource>
+  <Instance name="MainWindowResource">
+    <Instance ref.Class="gacuisrc_unittest::MainWindow">
+      <Window ref.Name="self" Text="GuiSelectableButton" ClientSize="x:320 y:240">
+        <GroupBox Text="Options">
+          <att.BoundsComposition-set AlignmentToParent="left:0 top:5 right:-1 bottom:-1"/>
+          <Stack Direction="Vertical" Padding="5" MinSizeLimitation="LimitToElementAndChildren" AlignmentToParent="left:5 top:5 right:5 bottom:5">
+            <StackItem>
+              <CheckBox ref.Name="button1" Text="Option 1"/>
+            </StackItem>
+            <StackItem>
+              <CheckBox ref.Name="button2" Text="Option 2"/>
+            </StackItem>
+          </Stack>
+        </GroupBox>
+      </Window>
+    </Instance>
+  </Instance>
+</Resource>
+)GacUISrc";
+
+	TEST_CATEGORY(L"GuiSelectableButton")
+	{
+		TEST_CASE(L"AutoSelection")
+		{
+			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto button1 = FindObjectByName<GuiSelectableButton>(window, L"button1");
+					auto button2 = FindObjectByName<GuiSelectableButton>(window, L"button2");
+					TEST_ASSERT(button1->GetAutoSelection() == true);
+					TEST_ASSERT(button2->GetAutoSelection() == true);
+					TEST_ASSERT(button1->GetSelected() == false);
+					TEST_ASSERT(button2->GetSelected() == false);
+					button2->SetAutoSelection(false);
+					TEST_ASSERT(button2->GetAutoSelection() == false);
+					window->Hide();
+				});
+			});
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Controls/Basic/GuiSelectableButton/AutoSelection"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resourceTwoCheckBoxes
+				);
+		});
+	});
 }
