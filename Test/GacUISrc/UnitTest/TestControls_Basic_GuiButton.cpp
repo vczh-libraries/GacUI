@@ -483,6 +483,47 @@ TEST_FILE
 </Resource>
 )GacUISrc";
 
+	const auto resourceFourRadioButtons = LR"GacUISrc(
+<Resource>
+  <Instance name="MainWindowResource">
+    <Instance ref.Class="gacuisrc_unittest::MainWindow" xmlns:x="presentation::controls::GuiSelectableButton::*">
+      <Window ref.Name="self" Text="GuiSelectableButton" ClientSize="x:320 y:240">
+        <x:MutexGroupController ref.Name="mutex1"/>
+        <x:MutexGroupController ref.Name="mutex2"/>
+        <Stack Direction="Horizontal" Padding="5" MinSizeLimitation="LimitToElementAndChildren" AlignmentToParent="left:0 top:5 right:-1 bottom:-1">
+          <StackItem>
+            <GroupBox Text="Opt1">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+              <Stack Direction="Vertical" Padding="5" MinSizeLimitation="LimitToElementAndChildren" AlignmentToParent="left:5 top:5 right:5 bottom:5">
+                <StackItem>
+                  <RadioButton ref.Name="button1" Text="Option 1" GroupController-ref="mutex1"/>
+                </StackItem>
+                <StackItem>
+                  <RadioButton ref.Name="button2" Text="Option 2" GroupController-ref="mutex1"/>
+                </StackItem>
+              </Stack>
+            </GroupBox>
+          </StackItem>
+          <StackItem>
+            <GroupBox Text="Opt2">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+              <Stack Direction="Vertical" Padding="5" MinSizeLimitation="LimitToElementAndChildren" AlignmentToParent="left:5 top:5 right:5 bottom:5">
+                <StackItem>
+                  <RadioButton ref.Name="button3" Text="Option 1" GroupController-ref="mutex2"/>
+                </StackItem>
+                <StackItem>
+                  <RadioButton ref.Name="button4" Text="Option 2" GroupController-ref="mutex2"/>
+                </StackItem>
+              </Stack>
+            </GroupBox>
+          </StackItem>
+        </Stack>
+      </Window>
+    </Instance>
+  </Instance>
+</Resource>
+)GacUISrc";
+
 	TEST_CATEGORY(L"GuiSelectableButton")
 	{
 		TEST_CASE(L"AutoSelection")
@@ -583,6 +624,23 @@ TEST_FILE
 				WString::Unmanaged(L"Controls/Basic/GuiSelectableButton/MutexSelection"),
 				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
 				resourceTwoRadioButtons
+				);
+		});
+
+		TEST_CASE(L"MutexGroup")
+		{
+			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					window->Hide();
+				});
+			});
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Controls/Basic/GuiSelectableButton/MutexGroup"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resourceFourRadioButtons
 				);
 		});
 	});
