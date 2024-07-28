@@ -1,0 +1,181 @@
+================================(1/2)================================
+module <constructor>gacuisrc_unittest::MainWindow;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace gacuisrc_unittest
+{
+    class MainWindowConstructor
+    {
+        @cpp:Protected
+        var self : ::gacuisrc_unittest::MainWindow* = null of (::gacuisrc_unittest::MainWindow*);
+
+        @cpp:Protected
+        var button1 : ::presentation::controls::GuiSelectableButton* = null of (::presentation::controls::GuiSelectableButton*);
+
+        @cpp:Protected
+        var button2 : ::presentation::controls::GuiSelectableButton* = null of (::presentation::controls::GuiSelectableButton*);
+
+        @cpp:Protected
+        var <precompile>0 : ::presentation::controls::GuiControl* = null of (::presentation::controls::GuiControl*);
+
+        @cpp:Protected
+        var <precompile>1 : ::presentation::compositions::GuiStackComposition* = null of (::presentation::compositions::GuiStackComposition*);
+
+        @cpp:Protected
+        var <precompile>2 : ::presentation::compositions::GuiStackItemComposition* = null of (::presentation::compositions::GuiStackItemComposition*);
+
+        @cpp:Protected
+        var <precompile>3 : ::presentation::compositions::GuiStackItemComposition* = null of (::presentation::compositions::GuiStackItemComposition*);
+
+        @cpp:Protected
+        var <precompile>4 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var mutex : ::presentation::controls::GuiSelectableButton::MutexGroupController* = null of (::presentation::controls::GuiSelectableButton::MutexGroupController*);
+
+        @cpp:Protected
+        func <gacuisrc_unittest-MainWindow>Initialize(<this> : ::gacuisrc_unittest::MainWindow*) : (::system::Void)
+        {
+            (self = <this>);
+            {
+                (self.ClientSize = {x : 320; y : 240;} of (::presentation::Size));
+            }
+            {
+                (self.Text = "GuiSelectableButton");
+            }
+            (mutex = new (::presentation::controls::GuiSelectableButton::MutexGroupController*)());
+            <this>.SetNamedObject("mutex", mutex);
+            {
+                self.AddComponent(mutex);
+            }
+            {
+                (<precompile>0 = new (::presentation::controls::GuiControl*)(::presentation::theme::ThemeName::GroupBox));
+            }
+            (<precompile>4 = <precompile>0.BoundsComposition);
+            {
+                (<precompile>4.AlignmentToParent = {left : 0; top : 5; right : (-1); bottom : (-1);} of (::presentation::Margin));
+            }
+            {
+                (<precompile>0.Text = "Options");
+            }
+            (<precompile>1 = new (::presentation::compositions::GuiStackComposition*)());
+            {
+                (<precompile>1.AlignmentToParent = {left : 5; top : 5; right : 5; bottom : 5;} of (::presentation::Margin));
+            }
+            {
+                (<precompile>1.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+            }
+            {
+                (<precompile>1.Padding = 5 of (::system::Int64));
+            }
+            {
+                (<precompile>1.Direction = Vertical of (::presentation::compositions::GuiStackComposition::Direction));
+            }
+            (<precompile>2 = new (::presentation::compositions::GuiStackItemComposition*)());
+            {
+                (button1 = new (::presentation::controls::GuiSelectableButton*)(::presentation::theme::ThemeName::RadioButton));
+                <this>.SetNamedObject("button1", button1);
+            }
+            {
+                (button1.Text = "Option 1");
+            }
+            {
+                <precompile>2.AddChild(button1.BoundsComposition);
+            }
+            {
+                <precompile>1.AddChild(<precompile>2);
+            }
+            (<precompile>3 = new (::presentation::compositions::GuiStackItemComposition*)());
+            {
+                (button2 = new (::presentation::controls::GuiSelectableButton*)(::presentation::theme::ThemeName::RadioButton));
+                <this>.SetNamedObject("button2", button2);
+            }
+            {
+                (button2.Text = "Option 2");
+            }
+            {
+                <precompile>3.AddChild(button2.BoundsComposition);
+            }
+            {
+                <precompile>1.AddChild(<precompile>3);
+            }
+            {
+                <precompile>0.ContainerComposition.AddChild(<precompile>1);
+            }
+            {
+                self.AddChild(<precompile>0);
+            }
+            {
+                (button1.GroupController = mutex);
+            }
+            {
+                (button2.GroupController = mutex);
+            }
+        }
+
+        new ()
+        {
+        }
+    }
+}
+
+================================(2/2)================================
+module <instance>gacuisrc_unittest::MainWindow;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace gacuisrc_unittest
+{
+    @cpp:File("MainWindow")
+    @cpp:Friend(typeof(MainWindowConstructor))
+    class MainWindow : ::presentation::controls::GuiWindow, MainWindowConstructor
+    {
+        new* ()
+            :::presentation::controls::GuiWindow(::presentation::theme::ThemeName::Window)
+        {
+            var <resource> = ::presentation::IGuiResourceManager::GetResourceManager().GetResourceFromClassName("gacuisrc_unittest::MainWindow");
+            var <resolver> = new (::presentation::GuiResourcePathResolver^)(<resource>, <resource>.WorkingDirectory);
+            this.SetResourceResolver(<resolver>);
+            this.<gacuisrc_unittest-MainWindow>Initialize(this);
+        }
+
+        delete
+        {
+            FinalizeInstanceRecursively(this of (::presentation::controls::GuiControlHost*));
+        }
+    }
+}
+

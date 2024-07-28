@@ -460,6 +460,29 @@ TEST_FILE
 </Resource>
 )GacUISrc";
 
+	const auto resourceTwoRadioButtons = LR"GacUISrc(
+<Resource>
+  <Instance name="MainWindowResource">
+    <Instance ref.Class="gacuisrc_unittest::MainWindow" xmlns:x="presentation::controls::GuiSelectableButton::*">
+      <Window ref.Name="self" Text="GuiSelectableButton" ClientSize="x:320 y:240">
+        <x:MutexGroupController ref.Name="mutex"/>
+        <GroupBox Text="Options">
+          <att.BoundsComposition-set AlignmentToParent="left:0 top:5 right:-1 bottom:-1"/>
+          <Stack Direction="Vertical" Padding="5" MinSizeLimitation="LimitToElementAndChildren" AlignmentToParent="left:5 top:5 right:5 bottom:5">
+            <StackItem>
+              <RadioButton ref.Name="button1" Text="Option 1" GroupController-ref="mutex"/>
+            </StackItem>
+            <StackItem>
+              <RadioButton ref.Name="button2" Text="Option 2" GroupController-ref="mutex"/>
+            </StackItem>
+          </Stack>
+        </GroupBox>
+      </Window>
+    </Instance>
+  </Instance>
+</Resource>
+)GacUISrc";
+
 	TEST_CATEGORY(L"GuiSelectableButton")
 	{
 		TEST_CASE(L"AutoSelection")
@@ -517,6 +540,49 @@ TEST_FILE
 				WString::Unmanaged(L"Controls/Basic/GuiSelectableButton/AutoSelection"),
 				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
 				resourceTwoCheckBoxes
+				);
+		});
+
+		TEST_CASE(L"MutexSelection")
+		{
+			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto button = FindObjectByName<GuiSelectableButton>(window, L"button1");
+					button->SetSelected(true);
+				});
+				protocol->OnNextIdleFrame(L"Select Option 1", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto button = FindObjectByName<GuiSelectableButton>(window, L"button2");
+					button->SetSelected(true);
+				});
+				protocol->OnNextIdleFrame(L"Select Option 2", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto button = FindObjectByName<GuiSelectableButton>(window, L"button1");
+					auto location = protocol->LocationOf(button);
+					protocol->LClick(location);
+				});
+				protocol->OnNextIdleFrame(L"Click Option 1", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto button = FindObjectByName<GuiSelectableButton>(window, L"button2");
+					auto location = protocol->LocationOf(button);
+					protocol->LClick(location);
+				});
+				protocol->OnNextIdleFrame(L"Click Option 2", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					window->Hide();
+				});
+			});
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Controls/Basic/GuiSelectableButton/MutexSelection"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resourceTwoRadioButtons
 				);
 		});
 	});
