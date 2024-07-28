@@ -36,6 +36,15 @@ namespace gacuisrc_unittest
         var <precompile>2 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
+        var <precompile>3 : ::presentation::compositions::GuiStackItemComposition* = null of (::presentation::compositions::GuiStackItemComposition*);
+
+        @cpp:Protected
+        var <precompile>4 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var <precompile>5 : ::presentation::compositions::GuiGraphicsComposition* = null of (::presentation::compositions::GuiGraphicsComposition*);
+
+        @cpp:Protected
         var a : ::gacuisrc_unittest::MyControl* = null of (::gacuisrc_unittest::MyControl*);
 
         @cpp:Protected
@@ -49,15 +58,6 @@ namespace gacuisrc_unittest
 
         @cpp:Protected
         var e : ::gacuisrc_unittest::MyControl* = null of (::gacuisrc_unittest::MyControl*);
-
-        @cpp:Protected
-        var <precompile>3 : ::presentation::compositions::GuiStackItemComposition* = null of (::presentation::compositions::GuiStackItemComposition*);
-
-        @cpp:Protected
-        var <precompile>4 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
-
-        @cpp:Protected
-        var <precompile>5 : ::presentation::compositions::GuiGraphicsComposition* = null of (::presentation::compositions::GuiGraphicsComposition*);
 
         @cpp:Protected
         func <gacuisrc_unittest-MainWindow2>Initialize(<this> : ::gacuisrc_unittest::MainWindow2*) : (::system::Void)
@@ -441,9 +441,6 @@ namespace gacuisrc_unittest
         var <precompile>2 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
 
         @cpp:Protected
-        var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
-
-        @cpp:Protected
         var <precompile>3 : ::presentation::elements::GuiSolidLabelElement^ = null of (::presentation::elements::GuiSolidLabelElement^);
 
         @cpp:Protected
@@ -469,6 +466,9 @@ namespace gacuisrc_unittest
 
         @cpp:Protected
         var <precompile>11 : ::presentation::elements::GuiSolidBorderElement^ = null of (::presentation::elements::GuiSolidBorderElement^);
+
+        @cpp:Protected
+        var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
         func <gacuisrc_unittest-MyControlTemplate>Initialize(<this> : ::gacuisrc_unittest::MyControlTemplate*) : (::system::Void)
