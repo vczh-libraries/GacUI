@@ -49,9 +49,7 @@
       - Mouse wheel trigger functions.
 - Non-editing control unit test (using DarkSkin)
   - Basic
-    - GuiControl (Group)
-    - GuiSelectableButton (Check, Combo)
-    - GuiTab
+    - GuiTab and Navigation (nested)
     - GuiScroll (H/VScroll, H/VTracker, ProgressBar)
     - GuiScrollContainer
     - GuiDatePicker
