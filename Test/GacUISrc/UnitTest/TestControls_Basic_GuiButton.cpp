@@ -477,6 +477,39 @@ TEST_FILE
 					TEST_ASSERT(button2->GetSelected() == false);
 					button2->SetAutoSelection(false);
 					TEST_ASSERT(button2->GetAutoSelection() == false);
+
+					button1->SetSelected(true);
+					button2->SetSelected(true);
+					TEST_ASSERT(button1->GetSelected() == true);
+					TEST_ASSERT(button2->GetSelected() == true);
+				});
+				protocol->OnNextIdleFrame(L"Both Selected", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto button1 = FindObjectByName<GuiSelectableButton>(window, L"button1");
+					auto button2 = FindObjectByName<GuiSelectableButton>(window, L"button2");
+					button1->SetSelected(false);
+					button2->SetSelected(false);
+					TEST_ASSERT(button1->GetSelected() == false);
+					TEST_ASSERT(button2->GetSelected() == false);
+				});
+				protocol->OnNextIdleFrame(L"Both Unselected", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto button = FindObjectByName<GuiSelectableButton>(window, L"button1");
+					auto location = protocol->LocationOf(button);
+					protocol->LClick(location);
+				});
+				protocol->OnNextIdleFrame(L"Click Option 1", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto button = FindObjectByName<GuiSelectableButton>(window, L"button2");
+					auto location = protocol->LocationOf(button);
+					protocol->LClick(location);
+				});
+				protocol->OnNextIdleFrame(L"Click Option 2", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
 					window->Hide();
 				});
 			});
