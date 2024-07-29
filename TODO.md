@@ -79,6 +79,7 @@
   - Try Canvas.
     - https://github.com/WICG/canvas-formatted-text/blob/main/README.md
       - layout provider could not be done until this is implemented.
+  - Try EsBuild to replace WebPack.
 - The experiment will only run a very simple UI that covers all implemented remote protocol so far.
   - Basic elements
   - Image
