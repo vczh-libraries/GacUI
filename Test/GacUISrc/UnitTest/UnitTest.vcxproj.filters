@@ -144,6 +144,9 @@
     <ClCompile Include="TestControls_Basic_GuiTab.cpp">
       <Filter>Source Files\Controls\Basic</Filter>
     </ClCompile>
+    <ClCompile Include="TestControls_Basic_GuiScroll.cpp">
+      <Filter>Source Files\Controls\Basic</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="TestCompositions.h">
