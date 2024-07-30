@@ -56,6 +56,45 @@ TEST_FILE
 				protocol->OnNextIdleFrame(L"Ready", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
+					auto tab = FindObjectByName<GuiTab>(window, L"tab");
+					auto tabPageOptions = FindObjectByName<GuiTabPage>(window, L"tabPageOptions");
+					auto tabPageLabel = FindObjectByName<GuiTabPage>(window, L"tabPageLabel");
+					TEST_ASSERT(tab->GetPages().Count() == 2);
+					TEST_ASSERT(tab->GetPages()[0] == tabPageOptions);
+					TEST_ASSERT(tab->GetPages()[1] == tabPageLabel);
+					TEST_ASSERT(tab->GetSelectedPage() == tabPageOptions);
+					tab->SetSelectedPage(tabPageLabel);
+					TEST_ASSERT(tab->GetSelectedPage() == tabPageLabel);
+				});
+				protocol->OnNextIdleFrame(L"Show Label", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto tab = FindObjectByName<GuiTab>(window, L"tab");
+					auto tabPageOptions = FindObjectByName<GuiTabPage>(window, L"tabPageOptions");
+					auto tabPageLabel = FindObjectByName<GuiTabPage>(window, L"tabPageLabel");
+					TEST_ASSERT(tab->GetSelectedPage() == tabPageLabel);
+					tab->SetSelectedPage(tabPageOptions);
+					TEST_ASSERT(tab->GetSelectedPage() == tabPageOptions);
+				});
+				protocol->OnNextIdleFrame(L"Show Options", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					protocol->LClick({ { {140}, {50} } });
+					auto tab = FindObjectByName<GuiTab>(window, L"tab");
+					auto tabPage = FindObjectByName<GuiTabPage>(window, L"tabPageLabel");
+					TEST_ASSERT(tab->GetSelectedPage() == tabPage);
+				});
+				protocol->OnNextIdleFrame(L"Click Label", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					protocol->LClick({ { {50}, {50} } });
+					auto tab = FindObjectByName<GuiTab>(window, L"tab");
+					auto tabPage = FindObjectByName<GuiTabPage>(window, L"tabPageOptions");
+					TEST_ASSERT(tab->GetSelectedPage() == tabPage);
+				});
+				protocol->OnNextIdleFrame(L"Click Options", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
 					window->Hide();
 				});
 			});
