@@ -95,6 +95,68 @@ TEST_FILE
 				protocol->OnNextIdleFrame(L"Click Options", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
+					protocol->KeyPress(VKEY::KEY_MENU);
+				});
+				protocol->OnNextIdleFrame(L"[ALT]", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					protocol->KeyPress(VKEY::KEY_L);
+					auto tab = FindObjectByName<GuiTab>(window, L"tab");
+					auto tabPage = FindObjectByName<GuiTabPage>(window, L"tabPageLabel");
+					TEST_ASSERT(tab->GetSelectedPage() == tabPage);
+				});
+				protocol->OnNextIdleFrame(L"[L]", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					protocol->KeyPress(VKEY::KEY_MENU);
+				});
+				protocol->OnNextIdleFrame(L"[ALT]", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					protocol->KeyPress(VKEY::KEY_O);
+					auto tab = FindObjectByName<GuiTab>(window, L"tab");
+					auto tabPage = FindObjectByName<GuiTabPage>(window, L"tabPageOptions");
+					TEST_ASSERT(tab->GetSelectedPage() == tabPage);
+				});
+				protocol->OnNextIdleFrame(L"[O]", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto button = FindControlByText<GuiSelectableButton>(window, L"Option 1");
+					TEST_ASSERT(button->GetSelected() == false);
+					protocol->KeyPress(VKEY::KEY_MENU);
+					protocol->KeyPress(VKEY::KEY_A);
+					TEST_ASSERT(button->GetSelected() == true);
+				});
+				protocol->OnNextIdleFrame(L"[ALT][A]", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto button = FindControlByText<GuiSelectableButton>(window, L"Option 2");
+					TEST_ASSERT(button->GetSelected() == false);
+					protocol->KeyPress(VKEY::KEY_MENU);
+					protocol->KeyPress(VKEY::KEY_B);
+					TEST_ASSERT(button->GetSelected() == true);
+				});
+				protocol->OnNextIdleFrame(L"[ALT][B]", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					protocol->KeyPress(VKEY::KEY_MENU);
+					protocol->KeyPress(VKEY::KEY_L);
+					auto tab = FindObjectByName<GuiTab>(window, L"tab");
+					auto tabPage = FindObjectByName<GuiTabPage>(window, L"tabPageLabel");
+					TEST_ASSERT(tab->GetSelectedPage() == tabPage);
+				});
+				protocol->OnNextIdleFrame(L"[ALT][L]", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					protocol->KeyPress(VKEY::KEY_MENU);
+					protocol->KeyPress(VKEY::KEY_O);
+					auto tab = FindObjectByName<GuiTab>(window, L"tab");
+					auto tabPage = FindObjectByName<GuiTabPage>(window, L"tabPageOptions");
+					TEST_ASSERT(tab->GetSelectedPage() == tabPage);
+				});
+				protocol->OnNextIdleFrame(L"[ALT][O]", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
 					window->Hide();
 				});
 			});
