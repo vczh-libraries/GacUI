@@ -49,8 +49,6 @@
       - Mouse wheel trigger functions.
 - Non-editing control unit test (using DarkSkin)
   - Basic
-    - GuiTab and Navigation (nested)
-      - Switching tab pages by `SetSelectedPage`, `Alt` and hard-coded cursor position
     - GuiScroll (H/VScroll, H/VTracker, ProgressBar)
     - GuiScrollContainer
     - GuiDatePicker
