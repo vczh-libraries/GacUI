@@ -62,6 +62,8 @@ TEST_FILE
 					TEST_ASSERT(tab->GetPages().Count() == 2);
 					TEST_ASSERT(tab->GetPages()[0] == tabPageOptions);
 					TEST_ASSERT(tab->GetPages()[1] == tabPageLabel);
+					TEST_ASSERT(tabPageOptions->GetOwnerTab() == tab);
+					TEST_ASSERT(tabPageLabel->GetOwnerTab() == tab);
 					TEST_ASSERT(tab->GetSelectedPage() == tabPageOptions);
 					tab->SetSelectedPage(tabPageLabel);
 					TEST_ASSERT(tab->GetSelectedPage() == tabPageLabel);
