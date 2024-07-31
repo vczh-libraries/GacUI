@@ -415,8 +415,58 @@ TEST_FILE
 		{
 			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
 			{
-				// TODO:
+				NativePoint sd(22, 48);
+				NativePoint bd(22, 57);
+				NativePoint si(22, 174);
+				NativePoint bi(22, 165);
+
 				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto scroll = FindObjectByName<GuiScroll>(window, L"scroll");
+					protocol->LClick(bi);
+					TEST_ASSERT(scroll->GetPosition() == 3);
+				});
+				protocol->OnNextIdleFrame(L"Big Increase", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto scroll = FindObjectByName<GuiScroll>(window, L"scroll");
+					protocol->LClick(si);
+					TEST_ASSERT(scroll->GetPosition() == 4);
+				});
+				protocol->OnNextIdleFrame(L"Small Increase", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto scroll = FindObjectByName<GuiScroll>(window, L"scroll");
+					protocol->LClick(bi);
+					protocol->LClick(bi);
+					protocol->LClick(bi);
+					TEST_ASSERT(scroll->GetPosition() == 10);
+				});
+				protocol->OnNextIdleFrame(L"Big Increase*3", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto scroll = FindObjectByName<GuiScroll>(window, L"scroll");
+					protocol->LClick(bd);
+					TEST_ASSERT(scroll->GetPosition() == 7);
+				});
+				protocol->OnNextIdleFrame(L"Big Decrease", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto scroll = FindObjectByName<GuiScroll>(window, L"scroll");
+					protocol->LClick(sd);
+					TEST_ASSERT(scroll->GetPosition() == 6);
+				});
+				protocol->OnNextIdleFrame(L"Small Decrease", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto scroll = FindObjectByName<GuiScroll>(window, L"scroll");
+					protocol->LClick(bd);
+					protocol->LClick(bd);
+					protocol->LClick(bd);
+					TEST_ASSERT(scroll->GetPosition() == 0);
+				});
+				protocol->OnNextIdleFrame(L"Big Decrease*3", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					window->Hide();
