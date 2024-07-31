@@ -166,13 +166,29 @@ TEST_FILE
 			{
 				protocol->OnNextIdleFrame(L"Ready", [=]()
 				{
-					protocol->MouseMove({{20},{45}});
+					protocol->MouseMove({ {20},{45} });
 				});
 				protocol->OnNextIdleFrame(L"Hover", [=]()
 				{
 					protocol->_LDown();
 				});
-				protocol->OnNextIdleFrame(L"Begin Drag", [=]()
+				protocol->OnNextIdleFrame(L"Drag", [=]()
+				{
+					protocol->MouseMove({ {200},{100} });
+				});
+				protocol->OnNextIdleFrame(L"Drag to End", [=]()
+				{
+					protocol->MouseMove({ {0},{0} });
+				});
+				protocol->OnNextIdleFrame(L"Drag to Front", [=]()
+				{
+					protocol->MouseMove({ {75},{45} });
+				});
+				protocol->OnNextIdleFrame(L"Drag to Center", [=]()
+				{
+					protocol->_LUp();
+				});
+				protocol->OnNextIdleFrame(L"Release", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					window->Hide();
