@@ -159,6 +159,23 @@ TEST_FILE
 				resourceHTracker
 				);
 		});
+
+		TEST_CASE(L"Mouse")
+		{
+			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					window->Hide();
+				});
+			});
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Controls/Basic/GuiScroll/HTracker/Mouse"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resourceHTracker
+				);
+		});
 	});
 
 	TEST_CATEGORY(L"VTracker")
@@ -272,6 +289,23 @@ TEST_FILE
 			});
 			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
 				WString::Unmanaged(L"Controls/Basic/GuiScroll/VTracker/Key"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resourceVTracker
+				);
+		});
+
+		TEST_CASE(L"Mouse")
+		{
+			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					window->Hide();
+				});
+			});
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Controls/Basic/GuiScroll/VTracker/Mouse"),
 				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
 				resourceVTracker
 				);
