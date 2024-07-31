@@ -5,6 +5,7 @@
 - Fixed
   - Fix button behavior when not IgnoreChildControlMouseEvents.
   - Fix control not losing focus when disabled.
+  - Fix progress bar is focusable.
 
 ## Known Issues
 

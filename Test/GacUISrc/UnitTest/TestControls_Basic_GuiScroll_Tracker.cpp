@@ -99,6 +99,66 @@ TEST_FILE
 				resourceHTracker
 				);
 		});
+
+		TEST_CASE(L"Key")
+		{
+			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto tracker = FindObjectByName<GuiScroll>(window, L"tracker");
+					tracker->SetFocused();
+					TEST_ASSERT(tracker->GetFocused());
+				});
+				protocol->OnNextIdleFrame(L"Focused", [=]()
+				{
+					protocol->KeyPress(VKEY::KEY_END);
+				});
+				protocol->OnNextIdleFrame(L"[END]", [=]()
+				{
+					protocol->KeyPress(VKEY::KEY_HOME);
+				});
+				protocol->OnNextIdleFrame(L"[HOME]", [=]()
+				{
+					protocol->KeyPress(VKEY::KEY_NEXT);
+				});
+				protocol->OnNextIdleFrame(L"[PAGE DOWN]", [=]()
+				{
+					protocol->KeyPress(VKEY::KEY_RIGHT);
+				});
+				protocol->OnNextIdleFrame(L"[RIGHT]", [=]()
+				{
+					protocol->KeyPress(VKEY::KEY_NEXT);
+					protocol->KeyPress(VKEY::KEY_NEXT);
+					protocol->KeyPress(VKEY::KEY_NEXT);
+				});
+				protocol->OnNextIdleFrame(L"[PAGE DOWN]*3", [=]()
+				{
+					protocol->KeyPress(VKEY::KEY_PRIOR);
+				});
+				protocol->OnNextIdleFrame(L"[PAGE UP]", [=]()
+				{
+					protocol->KeyPress(VKEY::KEY_LEFT);
+				});
+				protocol->OnNextIdleFrame(L"[LEFT]", [=]()
+				{
+					protocol->KeyPress(VKEY::KEY_PRIOR);
+					protocol->KeyPress(VKEY::KEY_PRIOR);
+					protocol->KeyPress(VKEY::KEY_PRIOR);
+				});
+				protocol->OnNextIdleFrame(L"[PAGE UP]*3", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					window->Hide();
+				});
+			});
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Controls/Basic/GuiScroll/HTracker/Key"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resourceHTracker
+				);
+		});
 	});
 
 	TEST_CATEGORY(L"VTracker")
@@ -152,6 +212,66 @@ TEST_FILE
 			});
 			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
 				WString::Unmanaged(L"Controls/Basic/GuiScroll/VTracker/Properties"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resourceVTracker
+				);
+		});
+
+		TEST_CASE(L"Key")
+		{
+			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto tracker = FindObjectByName<GuiScroll>(window, L"tracker");
+					tracker->SetFocused();
+					TEST_ASSERT(tracker->GetFocused());
+				});
+				protocol->OnNextIdleFrame(L"Focused", [=]()
+				{
+					protocol->KeyPress(VKEY::KEY_END);
+				});
+				protocol->OnNextIdleFrame(L"[END]", [=]()
+				{
+					protocol->KeyPress(VKEY::KEY_HOME);
+				});
+				protocol->OnNextIdleFrame(L"[HOME]", [=]()
+				{
+					protocol->KeyPress(VKEY::KEY_NEXT);
+				});
+				protocol->OnNextIdleFrame(L"[PAGE DOWN]", [=]()
+				{
+					protocol->KeyPress(VKEY::KEY_DOWN);
+				});
+				protocol->OnNextIdleFrame(L"[DOWN]", [=]()
+				{
+					protocol->KeyPress(VKEY::KEY_NEXT);
+					protocol->KeyPress(VKEY::KEY_NEXT);
+					protocol->KeyPress(VKEY::KEY_NEXT);
+				});
+				protocol->OnNextIdleFrame(L"[PAGE DOWN]*3", [=]()
+				{
+					protocol->KeyPress(VKEY::KEY_PRIOR);
+				});
+				protocol->OnNextIdleFrame(L"[PAGE UP]", [=]()
+				{
+					protocol->KeyPress(VKEY::KEY_UP);
+				});
+				protocol->OnNextIdleFrame(L"[UP]", [=]()
+				{
+					protocol->KeyPress(VKEY::KEY_PRIOR);
+					protocol->KeyPress(VKEY::KEY_PRIOR);
+					protocol->KeyPress(VKEY::KEY_PRIOR);
+				});
+				protocol->OnNextIdleFrame(L"[PAGE UP]*3", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					window->Hide();
+				});
+			});
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Controls/Basic/GuiScroll/VTracker/Key"),
 				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
 				resourceVTracker
 				);

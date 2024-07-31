@@ -45,7 +45,9 @@ TEST_FILE
 				TEST_ASSERT(progress->GetPosition() == 0);
 				TEST_ASSERT(progress->GetMinPosition() == 0);
 				TEST_ASSERT(progress->GetMaxPosition() == 5);
-				TEST_ASSERT(progress->GetAutoFocus() == true);
+				TEST_ASSERT(progress->GetAutoFocus() == false);
+				progress->SetFocused();
+				TEST_ASSERT(!progress->GetFocused());
 				progress->SetPosition(1);
 				TEST_ASSERT(progress->GetPosition() == 1);
 			});

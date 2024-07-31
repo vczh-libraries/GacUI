@@ -141,7 +141,14 @@ GuiScroll
 			GuiScroll::GuiScroll(theme::ThemeName themeName)
 				:GuiControl(themeName)
 			{
-				SetFocusableComposition(boundsComposition);
+				if (themeName == theme::ThemeName::ProgressBar)
+				{
+					autoFocus = false;
+				}
+				else
+				{
+					SetFocusableComposition(boundsComposition);
+				}
 
 				TotalSizeChanged.SetAssociatedComposition(boundsComposition);
 				PageSizeChanged.SetAssociatedComposition(boundsComposition);
