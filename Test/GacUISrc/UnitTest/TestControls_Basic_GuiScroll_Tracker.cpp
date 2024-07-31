@@ -113,39 +113,63 @@ TEST_FILE
 				});
 				protocol->OnNextIdleFrame(L"Focused", [=]()
 				{
+					auto window = GetApplication()->GetMainWindow();
+					auto tracker = FindObjectByName<GuiScroll>(window, L"tracker");
 					protocol->KeyPress(VKEY::KEY_END);
+					TEST_ASSERT(tracker->GetPosition() == 10);
 				});
 				protocol->OnNextIdleFrame(L"[END]", [=]()
 				{
+					auto window = GetApplication()->GetMainWindow();
+					auto tracker = FindObjectByName<GuiScroll>(window, L"tracker");
 					protocol->KeyPress(VKEY::KEY_HOME);
+					TEST_ASSERT(tracker->GetPosition() == 0);
 				});
 				protocol->OnNextIdleFrame(L"[HOME]", [=]()
 				{
+					auto window = GetApplication()->GetMainWindow();
+					auto tracker = FindObjectByName<GuiScroll>(window, L"tracker");
 					protocol->KeyPress(VKEY::KEY_NEXT);
+					TEST_ASSERT(tracker->GetPosition() == 3);
 				});
 				protocol->OnNextIdleFrame(L"[PAGE DOWN]", [=]()
 				{
+					auto window = GetApplication()->GetMainWindow();
+					auto tracker = FindObjectByName<GuiScroll>(window, L"tracker");
 					protocol->KeyPress(VKEY::KEY_RIGHT);
+					TEST_ASSERT(tracker->GetPosition() == 4);
 				});
 				protocol->OnNextIdleFrame(L"[RIGHT]", [=]()
 				{
+					auto window = GetApplication()->GetMainWindow();
+					auto tracker = FindObjectByName<GuiScroll>(window, L"tracker");
 					protocol->KeyPress(VKEY::KEY_NEXT);
 					protocol->KeyPress(VKEY::KEY_NEXT);
 					protocol->KeyPress(VKEY::KEY_NEXT);
+					TEST_ASSERT(tracker->GetPosition() == 10);
 				});
 				protocol->OnNextIdleFrame(L"[PAGE DOWN]*3", [=]()
 				{
+					auto window = GetApplication()->GetMainWindow();
+					auto tracker = FindObjectByName<GuiScroll>(window, L"tracker");
 					protocol->KeyPress(VKEY::KEY_PRIOR);
+					TEST_ASSERT(tracker->GetPosition() == 7);
 				});
 				protocol->OnNextIdleFrame(L"[PAGE UP]", [=]()
 				{
+					auto window = GetApplication()->GetMainWindow();
+					auto tracker = FindObjectByName<GuiScroll>(window, L"tracker");
 					protocol->KeyPress(VKEY::KEY_LEFT);
+					TEST_ASSERT(tracker->GetPosition() == 6);
 				});
 				protocol->OnNextIdleFrame(L"[LEFT]", [=]()
 				{
+					auto window = GetApplication()->GetMainWindow();
+					auto tracker = FindObjectByName<GuiScroll>(window, L"tracker");
 					protocol->KeyPress(VKEY::KEY_PRIOR);
 					protocol->KeyPress(VKEY::KEY_PRIOR);
 					protocol->KeyPress(VKEY::KEY_PRIOR);
+					TEST_ASSERT(tracker->GetPosition() == 0);
 				});
 				protocol->OnNextIdleFrame(L"[PAGE UP]*3", [=]()
 				{
@@ -293,39 +317,63 @@ TEST_FILE
 				});
 				protocol->OnNextIdleFrame(L"Focused", [=]()
 				{
+					auto window = GetApplication()->GetMainWindow();
+					auto tracker = FindObjectByName<GuiScroll>(window, L"tracker");
 					protocol->KeyPress(VKEY::KEY_END);
+					TEST_ASSERT(tracker->GetPosition() == 10);
 				});
 				protocol->OnNextIdleFrame(L"[END]", [=]()
 				{
+					auto window = GetApplication()->GetMainWindow();
+					auto tracker = FindObjectByName<GuiScroll>(window, L"tracker");
 					protocol->KeyPress(VKEY::KEY_HOME);
+					TEST_ASSERT(tracker->GetPosition() == 0);
 				});
 				protocol->OnNextIdleFrame(L"[HOME]", [=]()
 				{
+					auto window = GetApplication()->GetMainWindow();
+					auto tracker = FindObjectByName<GuiScroll>(window, L"tracker");
 					protocol->KeyPress(VKEY::KEY_NEXT);
+					TEST_ASSERT(tracker->GetPosition() == 3);
 				});
 				protocol->OnNextIdleFrame(L"[PAGE DOWN]", [=]()
 				{
+					auto window = GetApplication()->GetMainWindow();
+					auto tracker = FindObjectByName<GuiScroll>(window, L"tracker");
 					protocol->KeyPress(VKEY::KEY_DOWN);
+					TEST_ASSERT(tracker->GetPosition() == 4);
 				});
 				protocol->OnNextIdleFrame(L"[DOWN]", [=]()
 				{
+					auto window = GetApplication()->GetMainWindow();
+					auto tracker = FindObjectByName<GuiScroll>(window, L"tracker");
 					protocol->KeyPress(VKEY::KEY_NEXT);
 					protocol->KeyPress(VKEY::KEY_NEXT);
 					protocol->KeyPress(VKEY::KEY_NEXT);
+					TEST_ASSERT(tracker->GetPosition() == 10);
 				});
 				protocol->OnNextIdleFrame(L"[PAGE DOWN]*3", [=]()
 				{
+					auto window = GetApplication()->GetMainWindow();
+					auto tracker = FindObjectByName<GuiScroll>(window, L"tracker");
 					protocol->KeyPress(VKEY::KEY_PRIOR);
+					TEST_ASSERT(tracker->GetPosition() == 7);
 				});
 				protocol->OnNextIdleFrame(L"[PAGE UP]", [=]()
 				{
+					auto window = GetApplication()->GetMainWindow();
+					auto tracker = FindObjectByName<GuiScroll>(window, L"tracker");
 					protocol->KeyPress(VKEY::KEY_UP);
+					TEST_ASSERT(tracker->GetPosition() == 6);
 				});
 				protocol->OnNextIdleFrame(L"[UP]", [=]()
 				{
+					auto window = GetApplication()->GetMainWindow();
+					auto tracker = FindObjectByName<GuiScroll>(window, L"tracker");
 					protocol->KeyPress(VKEY::KEY_PRIOR);
 					protocol->KeyPress(VKEY::KEY_PRIOR);
 					protocol->KeyPress(VKEY::KEY_PRIOR);
+					TEST_ASSERT(tracker->GetPosition() == 0);
 				});
 				protocol->OnNextIdleFrame(L"[PAGE UP]*3", [=]()
 				{
