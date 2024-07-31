@@ -347,6 +347,52 @@ TEST_FILE
 				protocol->OnNextIdleFrame(L"Ready", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
+					auto tracker = FindObjectByName<GuiScroll>(window, L"tracker");
+					protocol->MouseMove({ {25},{45} });
+					TEST_ASSERT(tracker->GetPosition() == 0);
+				});
+				protocol->OnNextIdleFrame(L"Hover", [=]()
+				{
+					protocol->_LDown();
+				});
+				protocol->OnNextIdleFrame(L"Drag", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto tracker = FindObjectByName<GuiScroll>(window, L"tracker");
+					protocol->MouseMove({ {100},{200} });
+					TEST_ASSERT(tracker->GetPosition() == 10);
+				});
+				protocol->OnNextIdleFrame(L"Drag to End", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto tracker = FindObjectByName<GuiScroll>(window, L"tracker");
+					protocol->MouseMove({ {0},{0} });
+					TEST_ASSERT(tracker->GetPosition() == 0);
+				});
+				protocol->OnNextIdleFrame(L"Drag to Front", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto tracker = FindObjectByName<GuiScroll>(window, L"tracker");
+					protocol->MouseMove({ {25},{100} });
+					TEST_ASSERT(tracker->GetPosition() == 4);
+				});
+				protocol->OnNextIdleFrame(L"Drag to Center", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto tracker = FindObjectByName<GuiScroll>(window, L"tracker");
+					protocol->_LUp();
+					TEST_ASSERT(tracker->GetPosition() == 4);
+				});
+				protocol->OnNextIdleFrame(L"Release", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto tracker = FindObjectByName<GuiScroll>(window, L"tracker");
+					protocol->MouseMove({ {25},{101} });
+					TEST_ASSERT(tracker->GetPosition() == 4);
+				});
+				protocol->OnNextIdleFrame(L"Release", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
 					window->Hide();
 				});
 			});

@@ -160,10 +160,29 @@ TEST_FILE
 				);
 		});
 
+		TEST_CASE(L"Click")
+		{
+			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				// TODO:
+				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					window->Hide();
+				});
+			});
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Controls/Basic/GuiScroll/HScroll/Click"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resourceHScroll
+				);
+		});
+
 		TEST_CASE(L"Mouse")
 		{
 			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
 			{
+				// TODO:
 				protocol->OnNextIdleFrame(L"Ready", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
@@ -294,10 +313,29 @@ TEST_FILE
 				);
 		});
 
+		TEST_CASE(L"Click")
+		{
+			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				// TODO:
+				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					window->Hide();
+				});
+			});
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Controls/Basic/GuiScroll/VScroll/Click"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resourceVScroll
+				);
+		});
+
 		TEST_CASE(L"Mouse")
 		{
 			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
 			{
+				// TODO:
 				protocol->OnNextIdleFrame(L"Ready", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
