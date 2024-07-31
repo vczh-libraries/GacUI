@@ -28,7 +28,7 @@
   - Remove the two parameters from `IGuiPlugin`, the macro above already specified it clear enough.
   - Unrelated plugins are not allowed to depend on related plugins.
 - Controls
-  - Unit Test `Tracker/Mouse` test case, when `Drag to Center` the handler should be highlighted, because the mouse is right above the handler.
+  - Unit Test `(H|V)(Tracker|Scroll)/Mouse`, when `Drag to Center` the handler should be highlighted, because the mouse is right above the handler.
 
 ## Release (optional)
 
