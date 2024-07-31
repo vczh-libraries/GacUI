@@ -20,7 +20,7 @@ TEST_FILE
 <Resource>
   <Instance name="MainWindowResource">
     <Instance ref.Class="gacuisrc_unittest::MainWindow">
-      <Window ref.Name="self" Text="GuiTab" ClientSize="x:320 y:240">
+      <Window ref.Name="self" Text="GuiScroll" ClientSize="x:320 y:240">
         <HScroll ref.Name="scroll" TotalSize="15" PageSize="5" SmallMove="1" BigMove="3">
           <att.BoundsComposition-set PreferredMinSize="x:150 y:20" AlignmentToParent="left:5 top:5 right:-1 bottom:-1"/>
         </HScroll>
@@ -34,7 +34,7 @@ TEST_FILE
 <Resource>
   <Instance name="MainWindowResource">
     <Instance ref.Class="gacuisrc_unittest::MainWindow">
-      <Window ref.Name="self" Text="GuiTab" ClientSize="x:320 y:240">
+      <Window ref.Name="self" Text="GuiScroll" ClientSize="x:320 y:240">
         <VScroll ref.Name="scroll" TotalSize="15" PageSize="5" SmallMove="1" BigMove="3">
           <att.BoundsComposition-set PreferredMinSize="x:20 y:150" AlignmentToParent="left:5 top:5 right:-1 bottom:-1"/>
         </VScroll>

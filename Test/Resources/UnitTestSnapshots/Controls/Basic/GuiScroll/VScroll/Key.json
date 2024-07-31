@@ -326,7 +326,7 @@
               "ellipse": true,
               "multiline": false,
               "font": {"fontFamily": "Segoe WP SemiLight", "size": 14, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "GuiTab",
+              "text": "GuiScroll",
               "measuringRequest": "FontHeight"
             }
           ]
@@ -1366,7 +1366,7 @@
               "ellipse": true,
               "multiline": false,
               "font": {"fontFamily": "Segoe WP SemiLight", "size": 14, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "GuiTab",
+              "text": "GuiScroll",
               "measuringRequest": "FontHeight"
             }
           ]
@@ -2406,7 +2406,7 @@
               "ellipse": true,
               "multiline": false,
               "font": {"fontFamily": "Segoe WP SemiLight", "size": 14, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "GuiTab",
+              "text": "GuiScroll",
               "measuringRequest": "FontHeight"
             }
           ]
@@ -3446,7 +3446,7 @@
               "ellipse": true,
               "multiline": false,
               "font": {"fontFamily": "Segoe WP SemiLight", "size": 14, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "GuiTab",
+              "text": "GuiScroll",
               "measuringRequest": "FontHeight"
             }
           ]
@@ -4486,7 +4486,7 @@
               "ellipse": true,
               "multiline": false,
               "font": {"fontFamily": "Segoe WP SemiLight", "size": 14, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "GuiTab",
+              "text": "GuiScroll",
               "measuringRequest": "FontHeight"
             }
           ]
@@ -5526,7 +5526,7 @@
               "ellipse": true,
               "multiline": false,
               "font": {"fontFamily": "Segoe WP SemiLight", "size": 14, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "GuiTab",
+              "text": "GuiScroll",
               "measuringRequest": "FontHeight"
             }
           ]
@@ -6566,7 +6566,7 @@
               "ellipse": true,
               "multiline": false,
               "font": {"fontFamily": "Segoe WP SemiLight", "size": 14, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "GuiTab",
+              "text": "GuiScroll",
               "measuringRequest": "FontHeight"
             }
           ]
@@ -7606,7 +7606,7 @@
               "ellipse": true,
               "multiline": false,
               "font": {"fontFamily": "Segoe WP SemiLight", "size": 14, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "GuiTab",
+              "text": "GuiScroll",
               "measuringRequest": "FontHeight"
             }
           ]
@@ -8646,7 +8646,7 @@
               "ellipse": true,
               "multiline": false,
               "font": {"fontFamily": "Segoe WP SemiLight", "size": 14, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "GuiTab",
+              "text": "GuiScroll",
               "measuringRequest": "FontHeight"
             }
           ]
@@ -9686,7 +9686,7 @@
               "ellipse": true,
               "multiline": false,
               "font": {"fontFamily": "Segoe WP SemiLight", "size": 14, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "GuiTab",
+              "text": "GuiScroll",
               "measuringRequest": "FontHeight"
             }
           ]

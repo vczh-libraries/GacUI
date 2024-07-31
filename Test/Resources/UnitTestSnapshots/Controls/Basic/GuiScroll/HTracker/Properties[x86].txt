@@ -40,7 +40,7 @@ namespace gacuisrc_unittest
                 (self.ClientSize = {x : 320; y : 240;} of (::presentation::Size));
             }
             {
-                (self.Text = "GuiTab");
+                (self.Text = "GuiScroll");
             }
             {
                 (tracker = new (::presentation::controls::GuiScroll*)(::presentation::theme::ThemeName::HTracker));
