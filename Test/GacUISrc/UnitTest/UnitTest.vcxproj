@@ -196,6 +196,7 @@
     <ClCompile Include="TestCompositions_VirtualRepeat.cpp" />
     <ClCompile Include="TestControls_Basic_GuiButton.cpp" />
     <ClCompile Include="TestControls_Basic_GuiScroll_ProgressBar.cpp" />
+    <ClCompile Include="TestControls_Basic_GuiScroll_Scroll.cpp" />
     <ClCompile Include="TestControls_Basic_GuiScroll_Tracker.cpp" />
     <ClCompile Include="TestControls_Basic_GuiTab.cpp" />
     <ClCompile Include="TestControls_CoreApplication_GuiControl.cpp" />
