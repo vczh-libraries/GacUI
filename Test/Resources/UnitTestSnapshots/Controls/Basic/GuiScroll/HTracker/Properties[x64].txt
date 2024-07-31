@@ -40,22 +40,28 @@ namespace gacuisrc_unittest
                 (self.ClientSize = {x : 320; y : 240;} of (::presentation::Size));
             }
             {
-                (self.Text = "GuiScroll");
+                (self.Text = "GuiTab");
             }
             {
-                (progress = new (::presentation::controls::GuiScroll*)(::presentation::theme::ThemeName::ProgressBar));
+                (progress = new (::presentation::controls::GuiScroll*)(::presentation::theme::ThemeName::HTracker));
                 progress.SetPageSize(0);
                 <this>.SetNamedObject("progress", progress);
             }
             {
-                (progress.TotalSize = 5 of (::system::Int64));
+                (progress.BigMove = 3 of (::system::Int64));
+            }
+            {
+                (progress.SmallMove = 1 of (::system::Int64));
+            }
+            {
+                (progress.TotalSize = 10 of (::system::Int64));
             }
             (<precompile>0 = progress.BoundsComposition);
             {
-                (<precompile>0.PreferredMinSize = {y : 20;} of (::presentation::Size));
+                (<precompile>0.PreferredMinSize = {x : 150; y : 20;} of (::presentation::Size));
             }
             {
-                (<precompile>0.AlignmentToParent = {left : 5; top : 5; right : 5; bottom : (-1);} of (::presentation::Margin));
+                (<precompile>0.AlignmentToParent = {left : 5; top : 5; right : (-1); bottom : (-1);} of (::presentation::Margin));
             }
             {
                 self.AddChild(progress);

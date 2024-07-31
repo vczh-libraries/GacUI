@@ -147,6 +147,9 @@
     <ClCompile Include="TestControls_Basic_GuiScroll_ProgressBar.cpp">
       <Filter>Source Files\Controls\Basic</Filter>
     </ClCompile>
+    <ClCompile Include="TestControls_Basic_GuiScroll_Tracker.cpp">
+      <Filter>Source Files\Controls\Basic</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="TestCompositions.h">

@@ -20,7 +20,7 @@ TEST_FILE
 <Resource>
   <Instance name="MainWindowResource">
     <Instance ref.Class="gacuisrc_unittest::MainWindow">
-      <Window ref.Name="self" Text="GuiTab" ClientSize="x:320 y:240">
+      <Window ref.Name="self" Text="GuiScroll" ClientSize="x:320 y:240">
         <ProgressBar ref.Name="progress" TotalSize="5">
           <att.BoundsComposition-set PreferredMinSize="y:20" AlignmentToParent="left:5 top:5 right:5 bottom:-1"/>
         </ProgressBar>
