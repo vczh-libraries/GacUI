@@ -30,7 +30,7 @@ namespace gacuisrc_unittest
         var <precompile>0 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
-        var progress : ::presentation::controls::GuiScroll* = null of (::presentation::controls::GuiScroll*);
+        var tracker : ::presentation::controls::GuiScroll* = null of (::presentation::controls::GuiScroll*);
 
         @cpp:Protected
         func <gacuisrc_unittest-MainWindow>Initialize(<this> : ::gacuisrc_unittest::MainWindow*) : (::system::Void)
@@ -43,20 +43,20 @@ namespace gacuisrc_unittest
                 (self.Text = "GuiTab");
             }
             {
-                (progress = new (::presentation::controls::GuiScroll*)(::presentation::theme::ThemeName::HTracker));
-                progress.SetPageSize(0);
-                <this>.SetNamedObject("progress", progress);
+                (tracker = new (::presentation::controls::GuiScroll*)(::presentation::theme::ThemeName::HTracker));
+                tracker.SetPageSize(0);
+                <this>.SetNamedObject("tracker", tracker);
             }
             {
-                (progress.BigMove = 3 of (::system::Int64));
+                (tracker.BigMove = 3 of (::system::Int64));
             }
             {
-                (progress.SmallMove = 1 of (::system::Int64));
+                (tracker.SmallMove = 1 of (::system::Int64));
             }
             {
-                (progress.TotalSize = 10 of (::system::Int64));
+                (tracker.TotalSize = 10 of (::system::Int64));
             }
-            (<precompile>0 = progress.BoundsComposition);
+            (<precompile>0 = tracker.BoundsComposition);
             {
                 (<precompile>0.PreferredMinSize = {x : 150; y : 20;} of (::presentation::Size));
             }
@@ -64,7 +64,7 @@ namespace gacuisrc_unittest
                 (<precompile>0.AlignmentToParent = {left : 5; top : 5; right : (-1); bottom : (-1);} of (::presentation::Margin));
             }
             {
-                self.AddChild(progress);
+                self.AddChild(tracker);
             }
         }
 
