@@ -528,8 +528,53 @@ TEST_FILE
 		{
 			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
 			{
-				// TODO:
 				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto scroll = FindObjectByName<GuiScroll>(window, L"scroll");
+					protocol->MouseMove({ {22},{75} });
+					TEST_ASSERT(scroll->GetPosition() == 0);
+				});
+				protocol->OnNextIdleFrame(L"Hover", [=]()
+				{
+					protocol->_LDown();
+				});
+				protocol->OnNextIdleFrame(L"Drag", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto scroll = FindObjectByName<GuiScroll>(window, L"scroll");
+					protocol->MouseMove({ {100},{200} });
+					TEST_ASSERT(scroll->GetPosition() == 10);
+				});
+				protocol->OnNextIdleFrame(L"Drag to End", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto scroll = FindObjectByName<GuiScroll>(window, L"scroll");
+					protocol->MouseMove({ {0},{0} });
+					TEST_ASSERT(scroll->GetPosition() == 0);
+				});
+				protocol->OnNextIdleFrame(L"Drag to Front", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto scroll = FindObjectByName<GuiScroll>(window, L"scroll");
+					protocol->MouseMove({ {22},{105} });
+					TEST_ASSERT(scroll->GetPosition() == 4);
+				});
+				protocol->OnNextIdleFrame(L"Drag to Center", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto scroll = FindObjectByName<GuiScroll>(window, L"scroll");
+					protocol->_LUp();
+					TEST_ASSERT(scroll->GetPosition() == 4);
+				});
+				protocol->OnNextIdleFrame(L"Release", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto scroll = FindObjectByName<GuiScroll>(window, L"scroll");
+					protocol->MouseMove({ {22},{106} });
+					TEST_ASSERT(scroll->GetPosition() == 4);
+				});
+				protocol->OnNextIdleFrame(L"Hover", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					window->Hide();

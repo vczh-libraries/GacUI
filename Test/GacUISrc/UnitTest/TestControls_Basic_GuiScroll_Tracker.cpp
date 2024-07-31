@@ -438,7 +438,7 @@ TEST_FILE
 					protocol->MouseMove({ {25},{101} });
 					TEST_ASSERT(tracker->GetPosition() == 4);
 				});
-				protocol->OnNextIdleFrame(L"Release", [=]()
+				protocol->OnNextIdleFrame(L"Hover", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					window->Hide();
