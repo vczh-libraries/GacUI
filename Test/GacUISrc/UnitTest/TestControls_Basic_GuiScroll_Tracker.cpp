@@ -166,6 +166,14 @@ TEST_FILE
 			{
 				protocol->OnNextIdleFrame(L"Ready", [=]()
 				{
+					protocol->MouseMove({{20},{45}});
+				});
+				protocol->OnNextIdleFrame(L"Hover", [=]()
+				{
+					protocol->_LDown();
+				});
+				protocol->OnNextIdleFrame(L"Begin Drag", [=]()
+				{
 					auto window = GetApplication()->GetMainWindow();
 					window->Hide();
 				});
