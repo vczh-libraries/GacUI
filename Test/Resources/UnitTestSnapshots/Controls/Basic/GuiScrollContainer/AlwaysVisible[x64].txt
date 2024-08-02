@@ -27,16 +27,16 @@ namespace gacuisrc_unittest
         var self : ::gacuisrc_unittest::MainWindow* = null of (::gacuisrc_unittest::MainWindow*);
 
         @cpp:Protected
-        var <precompile>0 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+        var <precompile>0 : ::presentation::elements::GuiSolidBorderElement^ = null of (::presentation::elements::GuiSolidBorderElement^);
 
         @cpp:Protected
-        var <precompile>1 : ::presentation::elements::GuiSolidBorderElement^ = null of (::presentation::elements::GuiSolidBorderElement^);
-
-        @cpp:Protected
-        var <precompile>2 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+        var <precompile>1 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
         var container : ::presentation::controls::GuiScrollContainer* = null of (::presentation::controls::GuiScrollContainer*);
+
+        @cpp:Protected
+        var box : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
         func <gacuisrc_unittest-MainWindow>Initialize(<this> : ::gacuisrc_unittest::MainWindow*) : (::system::Void)
@@ -52,26 +52,27 @@ namespace gacuisrc_unittest
                 (container = new (::presentation::controls::GuiScrollContainer*)(::presentation::theme::ThemeName::ScrollView));
                 <this>.SetNamedObject("container", container);
             }
-            (<precompile>2 = container.BoundsComposition);
+            (<precompile>1 = container.BoundsComposition);
             {
-                (<precompile>2.PreferredMinSize = {x : 400; y : 300;} of (::presentation::Size));
+                (<precompile>1.PreferredMinSize = {x : 400; y : 300;} of (::presentation::Size));
             }
             {
-                (<precompile>2.AlignmentToParent = {left : 0; top : 5; right : 0; bottom : 0;} of (::presentation::Margin));
+                (<precompile>1.AlignmentToParent = {left : 0; top : 5; right : 0; bottom : 0;} of (::presentation::Margin));
             }
-            (<precompile>0 = new (::presentation::compositions::GuiBoundsComposition*)());
+            (box = new (::presentation::compositions::GuiBoundsComposition*)());
+            <this>.SetNamedObject("box", box);
             {
-                (<precompile>0.PreferredMinSize = {x : 100; y : 100;} of (::presentation::Size));
+                (box.PreferredMinSize = {x : 100; y : 100;} of (::presentation::Size));
             }
-            (<precompile>1 = new (::presentation::elements::GuiSolidBorderElement^)());
+            (<precompile>0 = new (::presentation::elements::GuiSolidBorderElement^)());
             {
-                (<precompile>1.Color = (cast (::presentation::Color) "#FF0000"));
-            }
-            {
-                (<precompile>0.OwnedElement = <precompile>1);
+                (<precompile>0.Color = (cast (::presentation::Color) "#FF0000"));
             }
             {
-                container.ContainerComposition.AddChild(<precompile>0);
+                (box.OwnedElement = <precompile>0);
+            }
+            {
+                container.ContainerComposition.AddChild(box);
             }
             {
                 self.AddChild(container);

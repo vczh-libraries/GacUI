@@ -23,7 +23,7 @@ TEST_FILE
       <Window ref.Name="self" Text="GuiScrollContainer" ClientSize="x:320 y:240">
         <ScrollContainer ref.Name="container">
           <att.BoundsComposition-set PreferredMinSize="x:400 y:300" AlignmentToParent="left:0 top:5 right:0 bottom:0"/>
-          <Bounds PreferredMinSize="x:100 y:100">
+          <Bounds ref.Name="box" PreferredMinSize="x:100 y:100">
             <SolidBorder Color="#FF0000"/>
           </Bounds>
         </ScrollContainer>
@@ -40,6 +40,12 @@ TEST_FILE
 			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
 			{
 				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto box = FindObjectByName<GuiBoundsComposition>(window, L"box");
+					box->SetPreferredMinSize({ 378,278 });
+				});
+				protocol->OnNextIdleFrame(L"Maximized", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					window->Hide();
