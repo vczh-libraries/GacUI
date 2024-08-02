@@ -40,19 +40,22 @@
   - Require binary pattern "[GMR-1.3]" at the beginning of the binary resource.
   - Resource compiler and loader will check the version and only accept 1.3.
 
-## Release Milestone (1.2.11.0)
+## Release Milestone (1.2.10.1)
 
 - GacUI
   - Fix `Global Objects` in `GacUI.h`.
-  - Support `<RawRendering/>` element. It will be mapped to `GDIElement` or `Direct2DElement` in different renderers.
-  - In remote protocol, it is an element with no extra properties.
-    - In HTML, it would open a `<div/>` and you can do whatever you want using JavaScript.
+  - `<RawRendering/>` element.
+    - It will be mapped to `GDIElement` or `Direct2DElement` in different renderers.
+    - In remote protocol, it is an element with no extra properties.
   - Thinking about promote SyncDom data structures for unit test, and complete a diff algorithm.
     - Unit test framework
       - Generate `domId` for each dom node: element(id), virtual(-element.id-2), root(-1), hittest(find a way).
       - Diff algorithm based on `domId`
       - Middle and right button trigger functions.
       - Mouse wheel trigger functions.
+    - Unit Test Snapshot Viewer
+      - Show dom nodes in a tree view in the right side of the rendering tab optionally.
+      - Select dom node and jump to other tabs with highlight.
 - Non-editing control unit test (using DarkSkin)
   - List
     - TextList
@@ -67,6 +70,13 @@
     - GuiDatePicker
     - GuiDateComboBox
   - Ribbon ...
+  - Check all control key operation, ensure accessibility.
+
+## Release Milestone (1.2.11.0)
+
+- GacUI
+  - `<RawRendering/>` element.
+    - In HTML, it would open a `<div/>` and you can do whatever you want using JavaScript.
 - Remote protocol redirection back to native rendering:
   - In the test project, C++ side will expose the remote protocol via dll.
   - Implement the remote protocol on a native `INativeController` instance.
@@ -96,6 +106,7 @@
   - Implement `ColorizedTextElement` and `DocumentElement`.
     - Think about how to calculate size for document.
   - Typing trigger functions in unit test framework.
+  - Check all control key operation, ensure accessibility.
 - Sample unit test project included in release.
   - Reflection enabled
     - Application and `LoadMainWindow` script in separated XML resource files.
@@ -106,8 +117,7 @@
 - Document
   - Unit test framework.
   - Unit test framework in Vlpp.
-  - SyncDom.
-  - Remote protocol.
+  - Remote Protocol.
 
 ## Release Milestone (1.2.13.0)
 
@@ -169,7 +179,6 @@
 
 ## Control Features
 
-- Check all control key operation, ensure accessibility.
 - `IColumnItemView`.
   - Change column size from `int` to `{minSize:int, columnOption:Absolute|Percentage, absolute:int, percentage:float}`
   - Column drag and drop.
@@ -203,27 +212,29 @@
 ## Porting to New Platforms
 
 - Port GacUI to other platforms:
-  - Unit Test (Hosted, SyncDom)
+  - Unit Test (**Remote**)
   - Windows
-    - GDI (**Normal**, **Hosted**, SyncDom)
-    - Direct2d (**Normal**, **Hosted**, SyncDom)
-    - UWP (Hosted + SyncDom)
+    - GDI (**Normal**, **Hosted**, Remote)
+    - Direct2d (**Normal**, **Hosted**, Remotec)
+    - UWP (Remote)
   - Linux
     - gGac repo: improve development process for release
   - macOS
     - iGac repo: improve development process for release
-  - Web Assembly (Hosted + SyncDom)
-    - Canvas?
-    - DOM?
+  - Browser (Remote)
+    - HTTP for test purpose
+    - WebAssembly
   - CLI (optional, needs dedicated skin)
-    - Command-line/Powershell in Windows (Hosted, SyncDom)
-    - Ncurses on Ubuntu (Hosted, SyncDom)
+    - Command-line/Powershell in Windows (Remote)
+    - Ncurses on Ubuntu (Remote)
 - Port GacUI to other languages:
   - Applications written in other language can:
     - Implement view model (SyncObj).
-    - Render the UI (SyncDom).
+    - Render the UI (Remote).
   - Languages:
-    - JavaScript / TypeScript through Web assembly
+    - JavaScript / TypeScript
+      - HTTP for test purpose
+      - WebAssembly
     - .NET
     - Python
 
