@@ -1335,7 +1335,7 @@
     },
     {
       "frameId": 8,
-      "frameName": "Invisible",
+      "frameName": "Maximized",
       "windowSize": {
         "bounds": {
           "x1": {"value": 352},
@@ -2151,8 +2151,8 @@
           {
             "rendering": {
               "id": 33,
-              "bounds": {"x1": 9, "y1": 38, "x2": 110, "y2": 139},
-              "areaClippedByParent": {"x1": 9, "y1": 38, "x2": 110, "y2": 139}
+              "bounds": {"x1": 9, "y1": 38, "x2": 387, "y2": 316},
+              "areaClippedByParent": {"x1": 9, "y1": 38, "x2": 387, "y2": 316}
             },
             "element": 33
           }
@@ -2418,8 +2418,8 @@
                                 "hitTestResult": null,
                                 "cursor": null,
                                 "element": 33,
-                                "bounds": {"x1": 9, "y1": 38, "x2": 110, "y2": 139},
-                                "validArea": {"x1": 9, "y1": 38, "x2": 110, "y2": 139},
+                                "bounds": {"x1": 9, "y1": 38, "x2": 387, "y2": 316},
+                                "validArea": {"x1": 9, "y1": 38, "x2": 387, "y2": 316},
                                 "children": null
                               }
                             ]

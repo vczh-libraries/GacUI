@@ -164,7 +164,10 @@ TEST_FILE
 		{
 			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
 			{
-				Size evs(400, 300);
+				Size evs1(378, 278);
+				Size evsw(400, 278);
+				Size evsh(378, 300);
+				Size evs2(400, 300);
 
 				protocol->OnNextIdleFrame(L"Ready", [=]()
 				{
@@ -172,10 +175,13 @@ TEST_FILE
 					auto container = FindObjectByName<GuiScrollContainer>(window, L"container");
 					container->SetHorizontalAlwaysVisible(false);
 					container->SetVerticalAlwaysVisible(false);
+					auto vp = container->GetViewPosition();
+					auto vs = container->GetViewSize();
+					TEST_ASSERT(vp == Point(0, 0) && vs == evs1);
 					auto box = FindObjectByName<GuiBoundsComposition>(window, L"box");
-					box->SetPreferredMinSize({ 101,101 });
+					box->SetPreferredMinSize(evs1);
 				});
-				protocol->OnNextIdleFrame(L"Invisible", [=]()
+				protocol->OnNextIdleFrame(L"Maximized", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					window->Hide();
