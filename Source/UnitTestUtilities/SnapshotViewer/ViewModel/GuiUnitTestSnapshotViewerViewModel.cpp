@@ -134,7 +134,8 @@ UnitTestSnapshotFileNode
 
 		WString GetName() override
 		{
-			return file.GetFilePath().GetName();
+			auto name = file.GetFilePath().GetName();
+			return name.Left(name.Length() - 5);
 		}
 
 		LazyList<Ptr<IUnitTestSnapshotFileNode>> GetChildren() override
