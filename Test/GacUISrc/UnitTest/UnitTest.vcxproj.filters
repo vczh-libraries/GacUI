@@ -153,6 +153,9 @@
     <ClCompile Include="TestControls_Basic_GuiScroll_Scroll.cpp">
       <Filter>Source Files\Controls\Basic</Filter>
     </ClCompile>
+    <ClCompile Include="TestControls_Basic_GuiScrollContainer.cpp">
+      <Filter>Source Files\Controls\Basic</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="TestCompositions.h">
