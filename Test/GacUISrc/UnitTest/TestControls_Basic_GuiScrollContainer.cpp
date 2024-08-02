@@ -65,7 +65,6 @@ TEST_FILE
 					auto box = FindObjectByName<GuiBoundsComposition>(window, L"box");
 					box->SetPreferredMinSize(ew);
 				});
-
 				protocol->OnNextIdleFrame(L"Extra Width", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
@@ -133,7 +132,7 @@ TEST_FILE
 					TEST_ASSERT(vp == Point(0, 0) && vs == evs);
 					container->SetViewPosition({ 1,1 });
 				});
-				protocol->OnNextIdleFrame(L"Scroll Vertically", [=]()
+				protocol->OnNextIdleFrame(L"Scroll Both", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto container = FindObjectByName<GuiScrollContainer>(window, L"container");
@@ -165,9 +164,13 @@ TEST_FILE
 			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
 			{
 				Size evs1(378, 278);
-				Size evsw(400, 278);
-				Size evsh(378, 300);
-				Size evs2(400, 300);
+				Size evsw(398, 278);
+				Size evsh(378, 298);
+				Size evs2(398, 298);
+
+				Size ew(evs2.x + 1, evs1.y);
+				Size eh(evs1.x, evs2.y + 1);
+				Size es(evs2.x + 1, evs2.y + 1);
 
 				protocol->OnNextIdleFrame(L"Ready", [=]()
 				{
@@ -184,6 +187,106 @@ TEST_FILE
 				protocol->OnNextIdleFrame(L"Maximized", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
+					auto container = FindObjectByName<GuiScrollContainer>(window, L"container");
+					auto vp = container->GetViewPosition();
+					auto vs = container->GetViewSize();
+					TEST_ASSERT(vp == Point(0, 0) && vs == evs2);
+					auto box = FindObjectByName<GuiBoundsComposition>(window, L"box");
+					box->SetPreferredMinSize(ew);
+				});
+				protocol->OnNextIdleFrame(L"Extra Width", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto container = FindObjectByName<GuiScrollContainer>(window, L"container");
+					auto vp = container->GetViewPosition();
+					auto vs = container->GetViewSize();
+					TEST_ASSERT(vp == Point(0, 0) && vs == evsw);
+					container->SetViewPosition({ 1,0 });
+				});
+				protocol->OnNextIdleFrame(L"Scroll Horizontally", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto container = FindObjectByName<GuiScrollContainer>(window, L"container");
+					auto vp = container->GetViewPosition();
+					auto vs = container->GetViewSize();
+					TEST_ASSERT(vp == Point(1, 0) && vs == evsw);
+					auto box = FindObjectByName<GuiBoundsComposition>(window, L"box");
+					box->SetPreferredMinSize(evs1);
+				});
+				protocol->OnNextIdleFrame(L"Reset", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto container = FindObjectByName<GuiScrollContainer>(window, L"container");
+					auto vp = container->GetViewPosition();
+					auto vs = container->GetViewSize();
+					TEST_ASSERT(vp == Point(0, 0) && vs == evs2);
+					auto box = FindObjectByName<GuiBoundsComposition>(window, L"box");
+					box->SetPreferredMinSize(eh);
+				});
+				protocol->OnNextIdleFrame(L"Extra Height", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto container = FindObjectByName<GuiScrollContainer>(window, L"container");
+					auto vp = container->GetViewPosition();
+					auto vs = container->GetViewSize();
+					TEST_ASSERT(vp == Point(0, 0) && vs == evsh);
+					container->SetViewPosition({ 0,1 });
+				});
+				protocol->OnNextIdleFrame(L"Scroll Vertically", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto container = FindObjectByName<GuiScrollContainer>(window, L"container");
+					auto vp = container->GetViewPosition();
+					auto vs = container->GetViewSize();
+					TEST_ASSERT(vp == Point(0, 1) && vs == evsh);
+					auto box = FindObjectByName<GuiBoundsComposition>(window, L"box");
+					box->SetPreferredMinSize(evs1);
+				});
+				protocol->OnNextIdleFrame(L"Reset", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto container = FindObjectByName<GuiScrollContainer>(window, L"container");
+					auto vp = container->GetViewPosition();
+					auto vs = container->GetViewSize();
+					TEST_ASSERT(vp == Point(0, 0) && vs == evs2);
+					auto box = FindObjectByName<GuiBoundsComposition>(window, L"box");
+					box->SetPreferredMinSize(es);
+				});
+				protocol->OnNextIdleFrame(L"Extra Size", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto container = FindObjectByName<GuiScrollContainer>(window, L"container");
+					auto vp = container->GetViewPosition();
+					auto vs = container->GetViewSize();
+					TEST_ASSERT(vp == Point(0, 0) && vs == evs1);
+					container->SetViewPosition({ 21,21 });
+				});
+				protocol->OnNextIdleFrame(L"Scroll Both", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto container = FindObjectByName<GuiScrollContainer>(window, L"container");
+					auto vp = container->GetViewPosition();
+					auto vs = container->GetViewSize();
+					TEST_ASSERT(vp == Point(1, 1) && vs == evs1);
+					container->SetViewPosition({ 21,21 });
+				});
+				protocol->OnNextIdleFrame(L"Scroll Both Again", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto container = FindObjectByName<GuiScrollContainer>(window, L"container");
+					auto vp = container->GetViewPosition();
+					auto vs = container->GetViewSize();
+					TEST_ASSERT(vp == Point(21, 21) && vs == evs1);
+					auto box = FindObjectByName<GuiBoundsComposition>(window, L"box");
+					box->SetPreferredMinSize(evs1);
+				});
+				protocol->OnNextIdleFrame(L"Reset", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto container = FindObjectByName<GuiScrollContainer>(window, L"container");
+					auto vp = container->GetViewPosition();
+					auto vs = container->GetViewSize();
+					TEST_ASSERT(vp == Point(0, 0) && vs == evs2);
 					window->Hide();
 				});
 			});

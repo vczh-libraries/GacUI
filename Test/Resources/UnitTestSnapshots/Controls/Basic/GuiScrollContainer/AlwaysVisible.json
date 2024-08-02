@@ -11748,7 +11748,7 @@
     },
     {
       "frameId": 35,
-      "frameName": "Scroll Vertically",
+      "frameName": "Scroll Both",
       "windowSize": {
         "bounds": {
           "x1": {"value": 352},
