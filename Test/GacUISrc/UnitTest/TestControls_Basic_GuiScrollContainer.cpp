@@ -41,6 +41,9 @@ TEST_FILE
 			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
 			{
 				Size evs(378, 278);
+				Size ew(evs.x + 1, evs.y);
+				Size eh(evs.x, evs.y + 1);
+				Size es(evs.x + 1, evs.y + 1);
 
 				protocol->OnNextIdleFrame(L"Ready", [=]()
 				{
@@ -50,7 +53,7 @@ TEST_FILE
 					auto vs = container->GetViewSize();
 					TEST_ASSERT(vp == Point(0, 0) && vs == evs);
 					auto box = FindObjectByName<GuiBoundsComposition>(window, L"box");
-					box->SetPreferredMinSize({ 378,278 });
+					box->SetPreferredMinSize(evs);
 				});
 				protocol->OnNextIdleFrame(L"Maximized", [=]()
 				{
@@ -60,7 +63,7 @@ TEST_FILE
 					auto vs = container->GetViewSize();
 					TEST_ASSERT(vp == Point(0, 0) && vs == evs);
 					auto box = FindObjectByName<GuiBoundsComposition>(window, L"box");
-					box->SetPreferredMinSize({ 379,278 });
+					box->SetPreferredMinSize(ew);
 				});
 
 				protocol->OnNextIdleFrame(L"Extra Width", [=]()
@@ -80,7 +83,7 @@ TEST_FILE
 					auto vs = container->GetViewSize();
 					TEST_ASSERT(vp == Point(1, 0) && vs == evs);
 					auto box = FindObjectByName<GuiBoundsComposition>(window, L"box");
-					box->SetPreferredMinSize({ 378,278 });
+					box->SetPreferredMinSize(evs);
 				});
 				protocol->OnNextIdleFrame(L"Reset", [=]()
 				{
@@ -90,7 +93,7 @@ TEST_FILE
 					auto vs = container->GetViewSize();
 					TEST_ASSERT(vp == Point(0, 0) && vs == evs);
 					auto box = FindObjectByName<GuiBoundsComposition>(window, L"box");
-					box->SetPreferredMinSize({ 378,279 });
+					box->SetPreferredMinSize(eh);
 				});
 				protocol->OnNextIdleFrame(L"Extra Height", [=]()
 				{
@@ -109,7 +112,7 @@ TEST_FILE
 					auto vs = container->GetViewSize();
 					TEST_ASSERT(vp == Point(0, 1) && vs == evs);
 					auto box = FindObjectByName<GuiBoundsComposition>(window, L"box");
-					box->SetPreferredMinSize({ 378,278 });
+					box->SetPreferredMinSize(evs);
 				});
 				protocol->OnNextIdleFrame(L"Reset", [=]()
 				{
@@ -119,7 +122,7 @@ TEST_FILE
 					auto vs = container->GetViewSize();
 					TEST_ASSERT(vp == Point(0, 0) && vs == evs);
 					auto box = FindObjectByName<GuiBoundsComposition>(window, L"box");
-					box->SetPreferredMinSize({ 379,279 });
+					box->SetPreferredMinSize(es);
 				});
 				protocol->OnNextIdleFrame(L"Extra Size", [=]()
 				{
@@ -138,7 +141,7 @@ TEST_FILE
 					auto vs = container->GetViewSize();
 					TEST_ASSERT(vp == Point(1, 1) && vs == evs);
 					auto box = FindObjectByName<GuiBoundsComposition>(window, L"box");
-					box->SetPreferredMinSize({ 378,278 });
+					box->SetPreferredMinSize(evs);
 				});
 				protocol->OnNextIdleFrame(L"Reset", [=]()
 				{
@@ -152,6 +155,34 @@ TEST_FILE
 			});
 			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
 				WString::Unmanaged(L"Controls/Basic/GuiScrollContainer/AlwaysVisible"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resourceScrollContainer
+				);
+		});
+		
+		TEST_CASE(L"AlwaysInvisible")
+		{
+			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				Size evs(400, 300);
+
+				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto container = FindObjectByName<GuiScrollContainer>(window, L"container");
+					container->SetHorizontalAlwaysVisible(false);
+					container->SetVerticalAlwaysVisible(false);
+					auto box = FindObjectByName<GuiBoundsComposition>(window, L"box");
+					box->SetPreferredMinSize({ 101,101 });
+				});
+				protocol->OnNextIdleFrame(L"Invisible", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					window->Hide();
+				});
+			});
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Controls/Basic/GuiScrollContainer/AlwaysInvisible"),
 				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
 				resourceScrollContainer
 				);
