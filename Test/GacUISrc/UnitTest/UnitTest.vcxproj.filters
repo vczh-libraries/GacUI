@@ -40,6 +40,9 @@
     <Filter Include="Source Files\Controls\Basic">
       <UniqueIdentifier>{78a5b35a-0502-467a-8ffc-d2ac00693cb8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Controls\List">
+      <UniqueIdentifier>{708470dd-8bff-4ed0-b29a-b8e9f141beaa}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -155,6 +158,12 @@
     </ClCompile>
     <ClCompile Include="TestControls_Basic_GuiScrollContainer.cpp">
       <Filter>Source Files\Controls\Basic</Filter>
+    </ClCompile>
+    <ClCompile Include="TestControls_List_GuiListControl.cpp">
+      <Filter>Source Files\Controls\List</Filter>
+    </ClCompile>
+    <ClCompile Include="TestControls_List_GuiSelectableListControl.cpp">
+      <Filter>Source Files\Controls\List</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
