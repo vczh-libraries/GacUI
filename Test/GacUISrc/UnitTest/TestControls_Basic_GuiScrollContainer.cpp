@@ -24,7 +24,7 @@ TEST_FILE
         <att.Text-format>GuiScrollContainer $(container.HorizontalScroll.Position)/$(container.HorizontalScroll.MaxPosition) : $(container.VerticalScroll.Position)/$(container.VerticalScroll.MaxPosition)</att.Text-format>
         <ScrollContainer ref.Name="container">
           <att.BoundsComposition-set PreferredMinSize="x:400 y:300" AlignmentToParent="left:0 top:5 right:0 bottom:0"/>
-          <Bounds ref.Name="box" PreferredMinSize="x:100 y:100">
+          <Bounds ref.Name="box" PreferredMinSize="x:100 y:100" AlignmentToParent="left:0 top:0 right:0 bottom:0">
             <SolidBorder Color="#FF0000"/>
           </Bounds>
         </ScrollContainer>

@@ -61,6 +61,9 @@ namespace gacuisrc_unittest
             {
                 (box.PreferredMinSize = {x : 100; y : 100;} of (::presentation::Size));
             }
+            {
+                (box.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
             (<precompile>0 = new (::presentation::elements::GuiSolidBorderElement^)());
             {
                 (<precompile>0.Color = (cast (::presentation::Color) "#FF0000"));
