@@ -54,21 +54,19 @@
       - Middle and right button trigger functions.
       - Mouse wheel trigger functions.
 - Non-editing control unit test (using DarkSkin)
-  - Basic
-    - GuiScrollContainer
-    - GuiDatePicker
-    - GuiDateComboBox
-  - Menu, Toolstrip and Navigation ...
-  - Ribbon ...
   - List
     - TextList
     - ListView
     - TreeView
-    - ComboBox
     - BindableTextList
     - BindableListView
     - BindableTreeView
     - BindableDataGrid
+  - Menu, Toolstrip and Navigation ...
+    - ComboBox
+    - GuiDatePicker
+    - GuiDateComboBox
+  - Ribbon ...
 - Remote protocol redirection back to native rendering:
   - In the test project, C++ side will expose the remote protocol via dll.
   - Implement the remote protocol on a native `INativeController` instance.
