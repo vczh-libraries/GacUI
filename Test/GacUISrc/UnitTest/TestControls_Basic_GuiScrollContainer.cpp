@@ -20,7 +20,8 @@ TEST_FILE
 <Resource>
   <Instance name="MainWindowResource">
     <Instance ref.Class="gacuisrc_unittest::MainWindow">
-      <Window ref.Name="self" Text="GuiScrollContainer" ClientSize="x:320 y:240">
+      <Window ref.Name="self" ClientSize="x:320 y:240">
+        <att.Text-format>GuiScrollContainer $(container.HorizontalScroll.Position)/$(container.HorizontalScroll.MaxPosition) : $(container.VerticalScroll.Position)/$(container.VerticalScroll.MaxPosition)</att.Text-format>
         <ScrollContainer ref.Name="container">
           <att.BoundsComposition-set PreferredMinSize="x:400 y:300" AlignmentToParent="left:0 top:5 right:0 bottom:0"/>
           <Bounds ref.Name="box" PreferredMinSize="x:100 y:100">
