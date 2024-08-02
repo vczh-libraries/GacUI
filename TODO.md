@@ -30,7 +30,7 @@
 - Controls
   - Unit Test `(H|V)(Tracker|Scroll)/Mouse`, when `Drag to Center` the handler should be highlighted, because the mouse is right above the handler.
   - Unit Test for `GuiScrollContainer`
-    - Only calling `Set(Horizontal|Vertical)AlwaysVisible(false)` doesn't make scrolls disappear.
+    - Only calling `Set(Horizontal|Vertical)AlwaysVisible(false)` doesn't make scrolls disappear. `SetVisible(false)` on scrolls are verified called.
     - When the content is changed, configuration needs 2 idle frames to be correctly configured.
 
 ## Release (optional)

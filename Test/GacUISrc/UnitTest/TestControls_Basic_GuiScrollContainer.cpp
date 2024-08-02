@@ -296,5 +296,46 @@ TEST_FILE
 				resourceScrollContainer
 				);
 		});
+
+		TEST_CASE(L"ExtendToFullSize")
+		{
+			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto container = FindObjectByName<GuiScrollContainer>(window, L"container");
+					container->SetExtendToFullWidth(true);
+				});
+				protocol->OnNextIdleFrame(L"Extend Horizontally", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto container = FindObjectByName<GuiScrollContainer>(window, L"container");
+					container->SetExtendToFullHeight(true);
+				});
+				protocol->OnNextIdleFrame(L"Extra Vertically", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto container = FindObjectByName<GuiScrollContainer>(window, L"container");
+					container->SetExtendToFullWidth(false);
+				});
+				protocol->OnNextIdleFrame(L"Shrink Horizontally", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto container = FindObjectByName<GuiScrollContainer>(window, L"container");
+					container->SetExtendToFullHeight(false);
+				});
+				protocol->OnNextIdleFrame(L"Shrink Vertically", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					window->Hide();
+				});
+			});
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Controls/Basic/GuiScrollContainer/ExtendToFullSize"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resourceScrollContainer
+				);
+		});
 	});
 }
