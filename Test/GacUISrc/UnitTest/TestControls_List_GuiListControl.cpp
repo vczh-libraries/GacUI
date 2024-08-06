@@ -12,6 +12,7 @@ using namespace vl::presentation;
 using namespace vl::presentation::elements;
 using namespace vl::presentation::compositions;
 using namespace vl::presentation::controls;
+using namespace vl::presentation::controls::list;
 using namespace vl::presentation::unittest;
 
 TEST_FILE
@@ -61,6 +62,16 @@ TEST_FILE
 			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
 			{
 				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+					for (vint i = 1; i <= 10; i++)
+					{
+						auto item = Ptr(new TextItem(L"Item " + itow(i)));
+						listControl->GetItems().Add(item);
+					}
+				});
+				protocol->OnNextIdleFrame(L"10 Items", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					window->Hide();

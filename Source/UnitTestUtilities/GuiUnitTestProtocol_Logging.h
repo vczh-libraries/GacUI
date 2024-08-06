@@ -218,8 +218,8 @@ UnitTestRemoteProtocol
 						transformed
 						});
 					candidateRenderingResult = {};
+					return true;
 				}
-				return true;
 			}
 			return false;
 		}
