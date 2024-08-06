@@ -7425,11 +7425,11 @@ InterfaceProxy::Invoke
 
 #define INVOKEGET_INTERFACE_PROXY(METHODNAME, ...)\
 			PREPARE_INVOKE_INTERFACE_PROXY(METHODNAME, __VA_ARGS__)\
-			return UnboxValue<decltype(METHODNAME(__VA_ARGS__))>(proxy->Invoke(_interface_proxy_methodInfo, IValueList::Create(collections::From((collections::Array<Value>&)(Value_xs(), __VA_ARGS__)))))
+			return UnboxParameter<decltype(METHODNAME(__VA_ARGS__))>(proxy->Invoke(_interface_proxy_methodInfo, IValueList::Create(collections::From((collections::Array<Value>&)(Value_xs(), __VA_ARGS__))))).Ref()
 
 #define INVOKEGET_INTERFACE_PROXY_NOPARAMS(METHODNAME)\
 			PREPARE_INVOKE_INTERFACE_PROXY(METHODNAME)\
-			return UnboxValue<decltype(METHODNAME())>(proxy->Invoke(_interface_proxy_methodInfo, IValueList::Create()))
+			return UnboxParameter<decltype(METHODNAME())>(proxy->Invoke(_interface_proxy_methodInfo, IValueList::Create())).Ref()
 
 /***********************************************************************
 Enum

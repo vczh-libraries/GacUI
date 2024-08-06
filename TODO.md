@@ -3,6 +3,7 @@
 ## Completed but not released (1.2.11.0)
 
 - Fixed
+  - Fix `INVOKEGET_INTERFACE_PROXY` and `INVOKEGET_INTERFACE_PROXY_NOPARAMS` break build when returning `LazyList<T>`.
   - Fix button behavior when not IgnoreChildControlMouseEvents.
   - Fix control not losing focus when disabled.
   - Fix progress bar is focusable.

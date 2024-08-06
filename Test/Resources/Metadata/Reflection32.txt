@@ -1955,6 +1955,61 @@ interface gaclib_controls::IDialogStringsStrings : system::Interface {
     constructor (proxy : system::InterfaceProxy^) : gaclib_controls::IDialogStringsStrings^;
 }
 
+@FullName:gaclib_controls::IUnitTestSnapshotFileNode
+interface gaclib_controls::IUnitTestSnapshotFileNode : system::Interface {
+    property Children : system::Enumerable<gaclib_controls::IUnitTestSnapshotFileNode^>^ { get:GetChildren }
+    property Frames : system::Enumerable<gaclib_controls::IUnitTestSnapshotFrame^>^ { get:GetFrames }
+    property Name : system::String { get:GetName }
+    property NodeType : gaclib_controls::UnitTestSnapshotFileNodeType { get:GetNodeType }
+
+    function GetChildren() : system::Enumerable<gaclib_controls::IUnitTestSnapshotFileNode^>^;
+    function GetFrames() : system::Enumerable<gaclib_controls::IUnitTestSnapshotFrame^>^;
+    function GetName() : system::String;
+    function GetNodeType() : gaclib_controls::UnitTestSnapshotFileNodeType;
+    function Refresh() : system::Void;
+
+    @InvokeTemplate:::vl::reflection::description::ValueInterfaceProxy<::gaclib_controls::IUnitTestSnapshotFileNode>::Create($Arguments)
+    @ClosureTemplate:::vl::Func<$Func>(&::vl::reflection::description::ValueInterfaceProxy<::gaclib_controls::IUnitTestSnapshotFileNode>::Create)
+    constructor (proxy : system::InterfaceProxy^) : gaclib_controls::IUnitTestSnapshotFileNode^;
+}
+
+@FullName:gaclib_controls::IUnitTestSnapshotFrame
+interface gaclib_controls::IUnitTestSnapshotFrame : system::Interface {
+    property CommandsAsJsonText : system::String { get:GetCommandsAsJsonText }
+    property DomAsJsonText : system::String { get:GetDomAsJsonText }
+    property ElementsAsJsonText : system::String { get:GetElementsAsJsonText }
+    property Name : system::String { get:GetName }
+
+    function GetCommandsAsJsonText() : system::String;
+    function GetDomAsJsonText() : system::String;
+    function GetElementsAsJsonText() : system::String;
+    function GetName() : system::String;
+
+    @InvokeTemplate:::vl::reflection::description::ValueInterfaceProxy<::gaclib_controls::IUnitTestSnapshotFrame>::Create($Arguments)
+    @ClosureTemplate:::vl::Func<$Func>(&::vl::reflection::description::ValueInterfaceProxy<::gaclib_controls::IUnitTestSnapshotFrame>::Create)
+    constructor (proxy : system::InterfaceProxy^) : gaclib_controls::IUnitTestSnapshotFrame^;
+}
+
+@FullName:gaclib_controls::IUnitTestSnapshotViewerStringsStrings
+interface gaclib_controls::IUnitTestSnapshotViewerStringsStrings : system::Interface {
+    function WindowTitle() : system::String;
+
+    @InvokeTemplate:::vl::reflection::description::ValueInterfaceProxy<::gaclib_controls::IUnitTestSnapshotViewerStringsStrings>::Create($Arguments)
+    @ClosureTemplate:::vl::Func<$Func>(&::vl::reflection::description::ValueInterfaceProxy<::gaclib_controls::IUnitTestSnapshotViewerStringsStrings>::Create)
+    constructor (proxy : system::InterfaceProxy^) : gaclib_controls::IUnitTestSnapshotViewerStringsStrings^;
+}
+
+@FullName:gaclib_controls::IUnitTestSnapshotViewerViewModel
+interface gaclib_controls::IUnitTestSnapshotViewerViewModel : system::Interface {
+    property RootNode : gaclib_controls::IUnitTestSnapshotFileNode^ { get:GetRootNode }
+
+    function GetRootNode() : gaclib_controls::IUnitTestSnapshotFileNode^;
+
+    @InvokeTemplate:::vl::reflection::description::ValueInterfaceProxy<::gaclib_controls::IUnitTestSnapshotViewerViewModel>::Create($Arguments)
+    @ClosureTemplate:::vl::Func<$Func>(&::vl::reflection::description::ValueInterfaceProxy<::gaclib_controls::IUnitTestSnapshotViewerViewModel>::Create)
+    constructor (proxy : system::InterfaceProxy^) : gaclib_controls::IUnitTestSnapshotViewerViewModel^;
+}
+
 @FullName:gaclib_controls::MessageBoxButtonTemplate
 class gaclib_controls::MessageBoxButtonTemplate : presentation::templates::GuiControlTemplate, gaclib_controls::MessageBoxButtonTemplateConstructor {
     event ButtonControlChanged : system::Function<system::Void>^ observing {
@@ -2082,6 +2137,80 @@ class gaclib_controls::SimpleFontDialogWindowConstructor : system::ReferenceType
     function __vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize(__vwsn_this_ : gaclib_controls::SimpleFontDialogWindow*) : system::Void;
 
     constructor () : gaclib_controls::SimpleFontDialogWindowConstructor^;
+}
+
+@FullName:gaclib_controls::UnitTestSnapshotFileNodeType
+@ValueType
+enum gaclib_controls::UnitTestSnapshotFileNodeType {
+    File = 1,
+    Folder = 0,
+}
+
+@FullName:gaclib_controls::UnitTestSnapshotViewerStrings
+class gaclib_controls::UnitTestSnapshotViewerStrings : system::ReferenceType {
+    static function Get(__vwsn_ls_locale : system::Locale) : gaclib_controls::IUnitTestSnapshotViewerStringsStrings^;
+    static function Install(__vwsn_ls_locale : system::Locale, __vwsn_ls_impl : gaclib_controls::IUnitTestSnapshotViewerStringsStrings^) : system::Void;
+    static function __vwsn_ls_en_US_BuildStrings(__vwsn_ls_locale : system::Locale) : gaclib_controls::IUnitTestSnapshotViewerStringsStrings^;
+
+    constructor () : gaclib_controls::UnitTestSnapshotViewerStrings^;
+}
+
+@FullName:gaclib_controls::UnitTestSnapshotViewerWindow
+class gaclib_controls::UnitTestSnapshotViewerWindow : presentation::controls::GuiWindow, gaclib_controls::UnitTestSnapshotViewerWindowConstructor {
+    event StringsChanged : system::Function<system::Void>^ observing {
+        Strings,
+    }
+
+    property Strings : gaclib_controls::IUnitTestSnapshotViewerStringsStrings^ { get:GetStrings set:SetStrings event:StringsChanged }
+    property ViewModel : gaclib_controls::IUnitTestSnapshotViewerViewModel^ { get:GetViewModel }
+    property __vwsn_parameter_ViewModel : gaclib_controls::IUnitTestSnapshotViewerViewModel^;
+    property __vwsn_prop_Strings : gaclib_controls::IUnitTestSnapshotViewerStringsStrings^;
+    property imageFile : presentation::GuiImageData^;
+    property imageFolder : presentation::GuiImageData^;
+
+    function GetImageFromType(nodeType : gaclib_controls::UnitTestSnapshotFileNodeType) : presentation::GuiImageData^;
+    function GetStrings() : gaclib_controls::IUnitTestSnapshotViewerStringsStrings^;
+    function GetViewModel() : gaclib_controls::IUnitTestSnapshotViewerViewModel^;
+    function SetStrings(__vwsn_value_ : gaclib_controls::IUnitTestSnapshotViewerStringsStrings^) : system::Void;
+
+    constructor (__vwsn_ctor_parameter_ViewModel : gaclib_controls::IUnitTestSnapshotViewerViewModel^) : gaclib_controls::UnitTestSnapshotViewerWindow*;
+}
+
+@FullName:gaclib_controls::UnitTestSnapshotViewerWindowConstructor
+class gaclib_controls::UnitTestSnapshotViewerWindowConstructor : system::ReferenceType {
+    property ViewModel : gaclib_controls::IUnitTestSnapshotViewerViewModel^;
+    property __vwsn_precompile_0 : presentation::compositions::GuiTableComposition*;
+    property __vwsn_precompile_1 : presentation::compositions::GuiColumnSplitterComposition*;
+    property __vwsn_precompile_10 : presentation::compositions::GuiCellComposition*;
+    property __vwsn_precompile_11 : presentation::controls::GuiTab*;
+    property __vwsn_precompile_12 : presentation::compositions::GuiBoundsComposition*;
+    property __vwsn_precompile_13 : presentation::controls::GuiTabPage*;
+    property __vwsn_precompile_14 : presentation::compositions::GuiBoundsComposition*;
+    property __vwsn_precompile_15 : presentation::controls::GuiTabPage*;
+    property __vwsn_precompile_16 : presentation::controls::GuiMultilineTextBox*;
+    property __vwsn_precompile_17 : presentation::compositions::GuiBoundsComposition*;
+    property __vwsn_precompile_18 : presentation::controls::GuiTabPage*;
+    property __vwsn_precompile_19 : presentation::controls::GuiMultilineTextBox*;
+    property __vwsn_precompile_2 : presentation::compositions::GuiColumnSplitterComposition*;
+    property __vwsn_precompile_20 : presentation::compositions::GuiBoundsComposition*;
+    property __vwsn_precompile_21 : presentation::controls::GuiTabPage*;
+    property __vwsn_precompile_22 : presentation::controls::GuiMultilineTextBox*;
+    property __vwsn_precompile_23 : presentation::compositions::GuiBoundsComposition*;
+    property __vwsn_precompile_3 : presentation::compositions::GuiCellComposition*;
+    property __vwsn_precompile_4 : presentation::compositions::GuiBoundsComposition*;
+    property __vwsn_precompile_5 : presentation::compositions::GuiCellComposition*;
+    property __vwsn_precompile_6 : presentation::controls::GuiTab*;
+    property __vwsn_precompile_7 : presentation::compositions::GuiBoundsComposition*;
+    property __vwsn_precompile_8 : presentation::controls::GuiTabPage*;
+    property __vwsn_precompile_9 : presentation::compositions::GuiBoundsComposition*;
+    property scRendering : presentation::controls::GuiScrollContainer*;
+    property self : gaclib_controls::UnitTestSnapshotViewerWindow*;
+    property textListFrames : presentation::controls::GuiBindableTextList*;
+    property treeViewFileNodes : presentation::controls::GuiBindableTreeView*;
+
+    function __vwsn_gaclib_controls_UnitTestSnapshotViewerWindow_Initialize(__vwsn_this_ : gaclib_controls::UnitTestSnapshotViewerWindow*) : system::Void;
+
+    constructor () : gaclib_controls::UnitTestSnapshotViewerWindowConstructor^;
 }
 
 @ValueType

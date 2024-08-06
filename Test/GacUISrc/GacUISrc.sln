@@ -264,6 +264,8 @@ Global
 		Source_GacUI_Utilities_Controls\Source_GacUI_Utilities_Controls.vcxitems*{39f6dd5b-df85-49dc-82dc-d173acd0f7bf}*SharedItemsImports = 9
 		Source_GacUI_Utilities\Source_GacUI_Utilities.vcxitems*{3e7e3e0e-e051-486b-a093-4d0443eaebcd}*SharedItemsImports = 9
 		Generated_DarkSkin\Generated_DarkSkin.vcxitems*{400867b1-1935-41d1-b06f-f832eadf1330}*SharedItemsImports = 4
+		Source_GacUI_UnitTest_Controls\Source_GacUI_UnitTest_Controls.vcxitems*{400867b1-1935-41d1-b06f-f832eadf1330}*SharedItemsImports = 4
+		Source_GacUI_UnitTest_Reflection\Source_GacUI_UnitTest_Reflection.vcxitems*{400867b1-1935-41d1-b06f-f832eadf1330}*SharedItemsImports = 4
 		Source_GacUI_Utilities_Controls\Source_GacUI_Utilities_Controls.vcxitems*{400867b1-1935-41d1-b06f-f832eadf1330}*SharedItemsImports = 4
 		Source_GacUI_Utilities_Reflection\Source_GacUI_Utilities_Reflection.vcxitems*{400867b1-1935-41d1-b06f-f832eadf1330}*SharedItemsImports = 4
 		Generated_DarkSkin\Generated_DarkSkin.vcxitems*{41f61ea9-e8b4-47c4-9946-36dca7e8272a}*SharedItemsImports = 4

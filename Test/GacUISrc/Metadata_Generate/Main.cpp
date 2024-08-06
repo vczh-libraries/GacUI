@@ -1,5 +1,6 @@
 #include "../../../Source/Reflection/TypeDescriptors/GuiReflectionPlugin.h"
 #include "../../../Source/Utilities/FakeServices/Dialogs/Source/GuiFakeDialogServiceUIReflection.h"
+#include "../../../Source/UnitTestUtilities/SnapshotViewer/Source/GuiUnitTestSnapshotViewerReflection.h"
 #ifdef VCZH_64
 #include "../Generated_DarkSkin/Source_x64/DarkSkinReflection.h"
 #else
@@ -117,6 +118,7 @@ int main(int argc, char* argv[])
 
 	LoadGuiFakeDialogServiceUITypes();
 	LoadDarkSkinTypes();
+	LoadGuiUnitTestSnapshotViewerTypes();
 
 	{
 		FileStream fileStream(GetTestOutputPath() + REFLECTION_BIN, FileStream::WriteOnly);
