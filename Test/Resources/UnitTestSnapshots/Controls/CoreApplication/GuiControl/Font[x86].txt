@@ -1,4 +1,4 @@
-================================(1/8)================================
+﻿================================(1/8)================================
 module <constructor>gacuisrc_unittest::MainWindow2;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;

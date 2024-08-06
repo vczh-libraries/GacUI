@@ -152,7 +152,8 @@ void GacUIUnitTest_Start(const WString& appName, Nullable<UnitTestScreenConfig> 
 			auto textLog2 = JsonToString(jsonLog2, formatting);
 			CHECK_ERROR(textLog == textLog2, ERROR_MESSAGE_PREFIX L"Serialization and deserialization doesn't match.");
 		}
-		bool succeeded = snapshotFile.WriteAllText(textLog, false, stream::BomEncoder::Utf8);
+
+		bool succeeded = snapshotFile.WriteAllText(textLog, true, stream::BomEncoder::Utf8);
 		CHECK_ERROR(succeeded, ERROR_MESSAGE_PREFIX L"Failed to write the snapshot file.");
 	}
 #undef ERROR_MESSAGE_PREFIX
@@ -175,7 +176,7 @@ void GacUIUnitTest_Start_WithResourceAsText(const WString& appName, Nullable<Uni
 				WString::Unmanaged(L"[x86].txt")
 #endif
 				);
-			bool succeeded = snapshotFile.WriteAllText(workflow, false, stream::BomEncoder::Utf8);
+			bool succeeded = snapshotFile.WriteAllText(workflow, true, stream::BomEncoder::Utf8);
 			CHECK_ERROR(succeeded, ERROR_MESSAGE_PREFIX L"Failed to write the snapshot file.");
 		}
 		previousMainProxy(protocol, context);
