@@ -74,6 +74,18 @@ TEST_FILE
 				protocol->OnNextIdleFrame(L"10 Items", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+					listControl->SelectItemsByClick(0, false, false, false);
+				});
+				protocol->OnNextIdleFrame(L"Highlight First", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+					listControl->SelectItemsByClick(1, false, false, false);
+				});
+				protocol->OnNextIdleFrame(L"Highlight Second", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
 					window->Hide();
 				});
 			});
