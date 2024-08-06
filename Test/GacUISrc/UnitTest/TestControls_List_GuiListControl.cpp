@@ -86,11 +86,116 @@ TEST_FILE
 				protocol->OnNextIdleFrame(L"Highlight Second", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+					for (vint i = 11; i <= 20; i++)
+					{
+						auto item = Ptr(new TextItem(L"Item " + itow(i)));
+						listControl->GetItems().Add(item);
+					}
+				});
+				protocol->OnNextIdleFrame(L"20 Items", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+					listControl->EnsureItemVisible(19);
+					listControl->SelectItemsByClick(19, false, false, false);
+				});
+				protocol->OnNextIdleFrame(L"Ensure Last Item Visible", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+					listControl->GetVerticalScroll()->SetPosition(0);
+					listControl->SelectItemsByClick(0, false, false, false);
+				});
+				protocol->OnNextIdleFrame(L"Ensure First Item Visible", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
 					window->Hide();
 				});
 			});
 			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
 				WString::Unmanaged(L"Controls/List/GuiListControl/Scrolling"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resourceListControl
+				);
+		});
+
+		TEST_CASE(L"LeftMouseEvents")
+		{
+			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+					for (vint i = 1; i <= 20; i++)
+					{
+						auto item = Ptr(new TextItem(L"Item " + itow(i)));
+						listControl->GetItems().Add(item);
+					}
+				});
+				protocol->OnNextIdleFrame(L"20 Items", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					window->Hide();
+				});
+			});
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Controls/List/GuiListControl/LeftMouseEvents"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resourceListControl
+				);
+		});
+
+		TEST_CASE(L"MiddleMouseEvents")
+		{
+			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+					for (vint i = 1; i <= 20; i++)
+					{
+						auto item = Ptr(new TextItem(L"Item " + itow(i)));
+						listControl->GetItems().Add(item);
+					}
+				});
+				protocol->OnNextIdleFrame(L"20 Items", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					window->Hide();
+				});
+			});
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Controls/List/GuiListControl/MiddleMouseEvents"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resourceListControl
+				);
+		});
+
+		TEST_CASE(L"RightMouseEvents")
+		{
+			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+					for (vint i = 1; i <= 20; i++)
+					{
+						auto item = Ptr(new TextItem(L"Item " + itow(i)));
+						listControl->GetItems().Add(item);
+					}
+				});
+				protocol->OnNextIdleFrame(L"20 Items", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					window->Hide();
+				});
+			});
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Controls/List/GuiListControl/RightMouseEvents"),
 				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
 				resourceListControl
 				);
