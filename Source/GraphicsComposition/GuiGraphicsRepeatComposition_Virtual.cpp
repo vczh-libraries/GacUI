@@ -79,6 +79,7 @@ GuiVirtualRepeatCompositionBase
 			void GuiVirtualRepeatCompositionBase::OnItemChanged(vint start, vint oldCount, vint newCount)
 			{
 				itemSourceUpdated = true;
+				InvokeOnCompositionStateChanged();
 
 				vint visibleCount = visibleStyles.Count();
 				vint itemCount = itemSource->GetCount();

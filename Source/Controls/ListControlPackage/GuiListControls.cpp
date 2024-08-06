@@ -200,7 +200,6 @@ GuiListControl
 						}
 					}
 				}
-				InvokeOnCompositionStateChanged(boundsComposition);
 			}
 
 			void GuiListControl::OnStyleInstalled(vint itemIndex, ItemStyle* style, bool refreshPropertiesOnly)
