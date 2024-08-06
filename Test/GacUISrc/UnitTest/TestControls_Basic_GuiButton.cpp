@@ -128,7 +128,7 @@ TEST_FILE
 				);
 		});
 
-		TEST_CASE(L"ClickOnMouseUp")
+		TEST_CASE(L"ClickOnMouseDown")
 		{
 			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
 			{
