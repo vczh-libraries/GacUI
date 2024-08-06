@@ -59,6 +59,7 @@
 - Non-editing control unit test (using DarkSkin)
   - List
     - TextList
+      - In `GuiVirtualRepeatCompositionBase::Layout_CalculateBounds`, when min size of text within items updated, `InvalidateLayout` is not called.
     - ListView
     - TreeView
     - BindableTextList
