@@ -712,12 +712,12 @@ Common
 			TEST_ASSERT(root->GetTotalSize() == Size(0, 0));
 
 			for (vint i = 1; i <= 20; i++) xs.Add(i);
-			checkItems(0, 7, 0, 0, 0, 17);
+			checkItems(0, 6, 0, 0, 0, 17);
 			TEST_ASSERT(root->GetViewLocation() == Point(0, 0));
 			TEST_ASSERT(root->GetTotalSize() == Size(100, 340));
 
 			root->EnsureItemVisible(4);
-			checkItems(0, 7, 0, 0, 0, 17);
+			checkItems(0, 6, 0, 0, 0, 17);
 			TEST_ASSERT(root->GetViewLocation() == Point(0, 0));
 			TEST_ASSERT(root->GetTotalSize() == Size(100, 340));
 
