@@ -460,10 +460,10 @@ TEST_FILE
 		{
 			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
 			{
-				NativePoint sd(22, 48);
-				NativePoint bd(22, 57);
-				NativePoint si(22, 174);
-				NativePoint bi(22, 165);
+				NativePoint sd(22, 46);
+				NativePoint bd(22, 55);
+				NativePoint si(22, 172);
+				NativePoint bi(22, 163);
 
 				protocol->OnNextIdleFrame(L"Ready", [=]()
 				{
@@ -532,7 +532,7 @@ TEST_FILE
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto scroll = FindObjectByName<GuiScroll>(window, L"scroll");
-					protocol->MouseMove({ {22},{75} });
+					protocol->MouseMove({ {22},{73} });
 					TEST_ASSERT(scroll->GetPosition() == 0);
 				});
 				protocol->OnNextIdleFrame(L"Hover", [=]()
@@ -557,7 +557,7 @@ TEST_FILE
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto scroll = FindObjectByName<GuiScroll>(window, L"scroll");
-					protocol->MouseMove({ {22},{105} });
+					protocol->MouseMove({ {22},{103} });
 					TEST_ASSERT(scroll->GetPosition() == 4);
 				});
 				protocol->OnNextIdleFrame(L"Drag to Center", [=]()
@@ -571,7 +571,7 @@ TEST_FILE
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto scroll = FindObjectByName<GuiScroll>(window, L"scroll");
-					protocol->MouseMove({ {22},{106} });
+					protocol->MouseMove({ {22},{104} });
 					TEST_ASSERT(scroll->GetPosition() == 4);
 				});
 				protocol->OnNextIdleFrame(L"Hover", [=]()

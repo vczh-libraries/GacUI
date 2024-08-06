@@ -43,7 +43,7 @@ TEST_FILE
 					TEST_ASSERT(font.fontFamily == L"GacUI Default Font");
 					TEST_ASSERT(font.size == 12);
 					auto size = label->GetBoundsComposition()->GetCachedMinSize();
-					TEST_ASSERT(size == Size(180, 12)); // 12*(15x1)
+					TEST_ASSERT(size == Size(180, 16)); // 4+12*(15x1)
 				}
 				{
 					auto labelCT = dynamic_cast<templates::GuiLabelTemplate*>(label->GetControlTemplateObject());

@@ -250,7 +250,7 @@ IGuiRemoteProtocolMessages (Elements - SolidLabel)
 					{
 						remoteprotocol::ElementMeasuring_FontHeight measuring;
 						measuring.fontFamily = arguments.font.Value().fontFamily;
-						measuring.fontSize = arguments.font.Value().size;
+						measuring.fontSize = arguments.font.Value().size + 4;
 						measuring.height = measuring.fontSize;
 						measuringForNextRendering.fontHeights->Add(measuring);
 					}
@@ -303,7 +303,7 @@ IGuiRemoteProtocolMessages (Elements - SolidLabel)
 						{
 							// width of the text is 0
 							// insert a line break when there is no space horizontally
-							textHeight = size * From(lines)
+							textHeight = 4 + size * From(lines)
 								.Select([columns = width / size](vint length)
 								{
 									if (columns == 0)
@@ -321,7 +321,7 @@ IGuiRemoteProtocolMessages (Elements - SolidLabel)
 						{
 							// width of the text is width of the longest line
 							textWidth = size * From(lines).Max();
-							textHeight = size * lines.Count();
+							textHeight = 4 + size * lines.Count();
 						}
 
 						if (!measuringForNextRendering.minSizes)

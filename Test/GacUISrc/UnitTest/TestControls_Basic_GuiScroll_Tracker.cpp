@@ -396,7 +396,7 @@ TEST_FILE
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto tracker = FindObjectByName<GuiScroll>(window, L"tracker");
-					protocol->MouseMove({ {25},{45} });
+					protocol->MouseMove({ {25},{43} });
 					TEST_ASSERT(tracker->GetPosition() == 0);
 				});
 				protocol->OnNextIdleFrame(L"Hover", [=]()
@@ -421,7 +421,7 @@ TEST_FILE
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto tracker = FindObjectByName<GuiScroll>(window, L"tracker");
-					protocol->MouseMove({ {25},{100} });
+					protocol->MouseMove({ {25},{98} });
 					TEST_ASSERT(tracker->GetPosition() == 4);
 				});
 				protocol->OnNextIdleFrame(L"Drag to Center", [=]()
@@ -435,7 +435,7 @@ TEST_FILE
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto tracker = FindObjectByName<GuiScroll>(window, L"tracker");
-					protocol->MouseMove({ {25},{101} });
+					protocol->MouseMove({ {25},{99} });
 					TEST_ASSERT(tracker->GetPosition() == 4);
 				});
 				protocol->OnNextIdleFrame(L"Hover", [=]()
