@@ -156,6 +156,7 @@ GuiVirtualRepeatCompositionBase
 			protected:
 				using ItemStyleRecord = templates::GuiTemplate*;
 				using StyleList = collections::List<ItemStyleRecord>;
+				using StyleEventHandlerMap = collections::Dictionary<GuiGraphicsComposition*, Ptr<IGuiGraphicsEventHandler>>;
 
 				Ptr<IGuiAxis>										axis = Ptr(new GuiDefaultAxis);
 				bool												itemSourceUpdated = false;
@@ -165,6 +166,7 @@ GuiVirtualRepeatCompositionBase
 				Rect												viewBounds;
 				vint												startIndex = 0;
 				StyleList											visibleStyles;
+				StyleEventHandlerMap								eventHandlers;
 
 				virtual void										Layout_BeginPlaceItem(bool firstPhase, Rect newBounds, vint& newStartIndex) = 0;
 				virtual VirtualRepeatPlaceItemResult				Layout_PlaceItem(bool firstPhase, bool newCreatedStyle, vint index, ItemStyleRecord style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent) = 0;
@@ -183,6 +185,11 @@ GuiVirtualRepeatCompositionBase
 				Size												Layout_GetStylePreferredSize(ItemStyleRecord style);
 				Rect												Layout_GetStyleBounds(ItemStyleRecord style);
 				void												Layout_SetStyleBounds(ItemStyleRecord style, Rect value);
+
+				void												OnStyleCachedMinSizeChanged(GuiGraphicsComposition* sender, GuiEventArgs& arguments);
+				void												AttachEventHandler(GuiGraphicsComposition* itemStyle);
+				void												DetachEventHandler(GuiGraphicsComposition* itemStyle);
+				void												OnChildRemoved(GuiGraphicsComposition* child)override;
 
 				void												OnItemChanged(vint start, vint oldCount, vint newCount) override;
 				void												OnClearItems() override;

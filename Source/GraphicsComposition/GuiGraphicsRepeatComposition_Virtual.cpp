@@ -76,6 +76,33 @@ GuiVirtualRepeatCompositionBase
 				return style->SetExpectedBounds(axis->VirtualRectToRealRect(axis->VirtualSizeToRealSize(viewBounds.GetSize()), value));
 			}
 
+			void GuiVirtualRepeatCompositionBase::OnStyleCachedMinSizeChanged(GuiGraphicsComposition* sender, GuiEventArgs& arguments)
+			{
+				InvalidateLayout();
+			}
+
+			void GuiVirtualRepeatCompositionBase::AttachEventHandler(GuiGraphicsComposition* itemStyle)
+			{
+				eventHandlers.Add(itemStyle, itemStyle->CachedMinSizeChanged.AttachMethod(this, &GuiVirtualRepeatCompositionBase::OnStyleCachedMinSizeChanged));
+			}
+
+			void GuiVirtualRepeatCompositionBase::DetachEventHandler(GuiGraphicsComposition* itemStyle)
+			{
+				vint index = eventHandlers.Keys().IndexOf(itemStyle);
+				if (index != -1)
+				{
+					auto eventHandler = eventHandlers.Values()[index];
+					itemStyle->CachedBoundsChanged.Detach(eventHandler);
+					eventHandlers.Remove(itemStyle);
+				}
+			}
+
+			void GuiVirtualRepeatCompositionBase::OnChildRemoved(GuiGraphicsComposition* child)
+			{
+				DetachEventHandler(child);
+				GuiBoundsComposition::OnChildRemoved(child);
+			}
+
 			void GuiVirtualRepeatCompositionBase::OnItemChanged(vint start, vint oldCount, vint newCount)
 			{
 				itemSourceUpdated = true;
@@ -203,11 +230,13 @@ GuiVirtualRepeatCompositionBase
 				auto itemStyle = CreateStyleInternal(index);
 				AddChild(itemStyle);
 				itemStyle->ForceCalculateSizeImmediately();
+				AttachEventHandler(itemStyle);
 				return itemStyle;
 			}
 
 			void GuiVirtualRepeatCompositionBase::DeleteStyle(ItemStyleRecord style)
 			{
+				DetachEventHandler(style);
 				DeleteStyleInternal(style);
 			}
 
@@ -312,6 +341,11 @@ GuiVirtualRepeatCompositionBase
 
 			GuiVirtualRepeatCompositionBase::~GuiVirtualRepeatCompositionBase()
 			{
+				for (auto [style, eventHandler] : eventHandlers)
+				{
+					style->CachedMinSizeChanged.Detach(eventHandler);
+				}
+				eventHandlers.Clear();
 			}
 
 			Ptr<IGuiAxis> GuiVirtualRepeatCompositionBase::GetAxis()

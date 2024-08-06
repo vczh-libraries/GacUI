@@ -58,8 +58,10 @@
       - Select dom node and jump to other tabs with highlight.
 - Non-editing control unit test (using DarkSkin)
   - List
+    - GuiListControl
+    - GuiSelectableListControl
     - TextList
-      - In `GuiVirtualRepeatCompositionBase::Layout_CalculateBounds`, when min size of text within items updated, `InvalidateLayout` is not called.
+      - ItemTemplate
     - ListView
     - TreeView
     - BindableTextList
