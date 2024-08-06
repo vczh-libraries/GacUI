@@ -36,4 +36,4 @@
 - Run **Metadata_Generate** in both Win32 and X64 to generate binary files.
 - Run **Metadata_Test** to update types.
 - Run **Metadata_UpdateProtocol** if protocol schema is changed.
-- Run **GacUI_Compiler** if Utilities_Controls, DarkSkin or FullControlTest is changed.
+- Run **GacUI_Compiler** if Utilities_Controls, UnitTest_Controls, DarkSkin or FullControlTest is changed.
