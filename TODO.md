@@ -41,7 +41,7 @@
   - Require binary pattern "[GMR-1.3]" at the beginning of the binary resource.
   - Resource compiler and loader will check the version and only accept 1.3.
 
-## Release Milestone (1.2.10.1)
+## Release Milestone (1.2.10.2)
 
 - GacUI
   - Fix `Global Objects` in `GacUI.h`.
