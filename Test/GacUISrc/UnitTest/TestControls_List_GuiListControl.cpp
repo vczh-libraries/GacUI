@@ -28,7 +28,7 @@ TEST_FILE
           </att.Rows>
           <att.Columns>
             <_>composeType:Percentage percentage:1.0</_>
-            <_>composeType:Absolute absolute:160</_>
+            <_>composeType:Absolute absolute:220</_>
           </att.Columns>
 
           <Cell Site="row:0 column:0">
