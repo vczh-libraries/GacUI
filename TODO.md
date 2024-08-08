@@ -58,7 +58,7 @@
       - Select dom node and jump to other tabs with highlight.
 - Non-editing control unit test (using DarkSkin)
   - List
-    - GuiListControl
+    - GuiListControl (`MouseWheel` remaining)
     - GuiSelectableListControl
     - TextList
       - ItemTemplate

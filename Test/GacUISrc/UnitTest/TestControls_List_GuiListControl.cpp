@@ -374,6 +374,11 @@ TEST_FILE
 				);
 		});
 
+		TEST_CASE(L"MouseWheel")
+		{
+			// TODO
+		});
+
 #undef ATTACH_ITEM_EVENT
 	});
 }
