@@ -146,7 +146,7 @@ Keys
 		}
 
 /***********************************************************************
-Mouse
+Mouse Move Events
 ***********************************************************************/
 
 		void MouseMove(NativePoint position)
@@ -165,52 +165,53 @@ Mouse
 		}
 
 /***********************************************************************
-Mouse (Left)
+Mouse Wheel Events
 ***********************************************************************/
 
-		void _LDown(Nullable<NativePoint> position = {})
-		{
-#define ERROR_MESSAGE_PREFIX CLASS_PREFIX L"_LDown(...)#"
-			if (position) MouseMove(position.Value());
-			CHECK_ERROR(!leftPressing, ERROR_MESSAGE_PREFIX L"The button should not be being pressed.");
-			leftPressing = true;
-			UseEvents().OnIOButtonDown({ remoteprotocol::IOMouseButton::Left,MakeMouseInfo() });
-#undef ERROR_MESSAGE_PREFIX
-		}
+/***********************************************************************
+Mouse Click Events
+***********************************************************************/
 
-		void _LUp(Nullable<NativePoint> position = {})
-		{
-#define ERROR_MESSAGE_PREFIX CLASS_PREFIX L"_LUp(...)#"
-			if (position) MouseMove(position.Value());
-			CHECK_ERROR(leftPressing, ERROR_MESSAGE_PREFIX L"The button should be being pressed.");
-			leftPressing = false;
-			UseEvents().OnIOButtonUp({ remoteprotocol::IOMouseButton::Left,MakeMouseInfo() });
-#undef ERROR_MESSAGE_PREFIX
-		}
+#define DEFINE_MOUSE_ACTIONS(PREFIX, LOWER, UPPER)\
+		void _ ## PREFIX ## Down(Nullable<NativePoint> position = {})\
+		{\
+			if (position) MouseMove(position.Value());\
+			CHECK_ERROR(!LOWER ## Pressing, CLASS_PREFIX L"_" L ## #PREFIX L"Down(...)#" L"The button should not be being pressed.");\
+			LOWER ## Pressing = true;\
+			UseEvents().OnIOButtonDown({ remoteprotocol::IOMouseButton::UPPER,MakeMouseInfo() });\
+		}\
+		void _ ## PREFIX ## Up(Nullable<NativePoint> position = {})\
+		{\
+			if (position) MouseMove(position.Value());\
+			CHECK_ERROR(LOWER ## Pressing, CLASS_PREFIX L"_" L ## #PREFIX L"Up(...)#" L"The button should be being pressed.");\
+			LOWER ## Pressing = false;\
+			UseEvents().OnIOButtonUp({ remoteprotocol::IOMouseButton::UPPER,MakeMouseInfo() });\
+		}\
+		void _ ## PREFIX ## DBClick(Nullable<NativePoint> position = {})\
+		{\
+			if (position) MouseMove(position.Value());\
+			CHECK_ERROR(!LOWER ## Pressing, CLASS_PREFIX L"_" L ## #PREFIX L"DBClick(...)#" L"The button should not be being pressed.");\
+			LOWER ## Pressing = true;\
+			UseEvents().OnIOButtonDoubleClick({ remoteprotocol::IOMouseButton::UPPER,MakeMouseInfo() });\
+		}\
+		void PREFIX ## Click(Nullable<NativePoint> position = {})\
+		{\
+			_ ## PREFIX ## Down(position);\
+			_ ## PREFIX ## Up(position);\
+		}\
+		void PREFIX ##DBClick(Nullable<NativePoint> position = {})\
+		{\
+			_ ## PREFIX ## Down(position);\
+			_ ## PREFIX ## Up(position);\
+			_ ## PREFIX ## DBClick(position);\
+			_ ## PREFIX ## Up(position);\
+		}\
 
-		void _LDBClick(Nullable<NativePoint> position = {})
-		{
-#define ERROR_MESSAGE_PREFIX CLASS_PREFIX L"_LDBClick(...)#"
-			if (position) MouseMove(position.Value());
-			CHECK_ERROR(!leftPressing, ERROR_MESSAGE_PREFIX L"The button should not be being pressed.");
-			leftPressing = true;
-			UseEvents().OnIOButtonDoubleClick({ remoteprotocol::IOMouseButton::Left,MakeMouseInfo() });
-#undef ERROR_MESSAGE_PREFIX
-		}
+		DEFINE_MOUSE_ACTIONS(L, left, Left);
+		DEFINE_MOUSE_ACTIONS(M, middle, Middle);
+		DEFINE_MOUSE_ACTIONS(R, right, Right);
 
-		void LClick(Nullable<NativePoint> position = {})
-		{
-			_LDown(position);
-			_LUp(position);
-		}
-
-		void LDBClick(Nullable<NativePoint> position = {})
-		{
-			_LDown(position);
-			_LUp(position);
-			_LDBClick(position);
-			_LUp(position);
-		}
+#undef DEFINE_MOUSE_ACTIONS
 
 #undef CLASS_PREFIX
 	};

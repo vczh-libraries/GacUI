@@ -52,7 +52,6 @@
     - Unit test framework
       - Generate `domId` for each dom node: element(id), virtual(-element.id-2), root(-1), hittest(find a way).
       - Diff algorithm based on `domId`
-      - Middle and right button trigger functions.
       - Mouse wheel trigger functions.
     - Unit Test Snapshot Viewer
       - Show dom nodes in a tree view in the right side of the rendering tab optionally.
