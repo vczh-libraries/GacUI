@@ -120,6 +120,29 @@ TEST_FILE
 				);
 		});
 
+#define ATTACH_ITEM_EVENT(EVENT)\
+		listControl->EVENT.AttachLambda([=](auto*, auto& arguments)\
+		{\
+			auto item = Ptr(new TextItem(L ## #EVENT L" " + itow(arguments.itemIndex)));\
+			vint index = logs->GetItems().Add(item);\
+			logs->EnsureItemVisible(index);\
+			logs->SelectItemsByClick(index, false, false, false);\
+		})\
+
+#define ATTACH_ITEM_EVENTS\
+		ATTACH_ITEM_EVENT(ItemLeftButtonDown);\
+		ATTACH_ITEM_EVENT(ItemLeftButtonUp);\
+		ATTACH_ITEM_EVENT(ItemLeftButtonDoubleClick);\
+		ATTACH_ITEM_EVENT(ItemMiddleButtonDown);\
+		ATTACH_ITEM_EVENT(ItemMiddleButtonUp);\
+		ATTACH_ITEM_EVENT(ItemMiddleButtonDoubleClick);\
+		ATTACH_ITEM_EVENT(ItemRightButtonDown);\
+		ATTACH_ITEM_EVENT(ItemRightButtonUp);\
+		ATTACH_ITEM_EVENT(ItemRightButtonDoubleClick);\
+		ATTACH_ITEM_EVENT(ItemMouseMove);\
+		ATTACH_ITEM_EVENT(ItemMouseEnter);\
+		ATTACH_ITEM_EVENT(ItemMouseLeave)\
+
 		TEST_CASE(L"LeftMouseEvents")
 		{
 			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
@@ -128,6 +151,9 @@ TEST_FILE
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+					auto logs = FindObjectByName<GuiTextList>(window, L"logs");
+					ATTACH_ITEM_EVENTS;
+
 					for (vint i = 1; i <= 20; i++)
 					{
 						auto item = Ptr(new TextItem(L"Item " + itow(i)));
@@ -200,5 +226,7 @@ TEST_FILE
 				resourceListControl
 				);
 		});
+
+#undef ATTACH_ITEM_EVENT
 	});
 }
