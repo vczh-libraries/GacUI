@@ -191,6 +191,11 @@ TEST_FILE
 					auto window = GetApplication()->GetMainWindow();
 					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
 					listControl->EnsureItemVisible(19);
+				});
+				protocol->OnNextIdleFrame(L"Scroll", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
 
 					auto itemStyle = listControl->GetArranger()->GetVisibleStyle(19);
 					TEST_ASSERT(itemStyle != nullptr);
