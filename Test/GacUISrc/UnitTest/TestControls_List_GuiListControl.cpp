@@ -163,6 +163,48 @@ TEST_FILE
 				protocol->OnNextIdleFrame(L"20 Items", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+
+					auto itemStyle = listControl->GetArranger()->GetVisibleStyle(0);
+					TEST_ASSERT(itemStyle != nullptr);
+					TEST_ASSERT(listControl->GetArranger()->GetVisibleIndex(itemStyle) == 0);
+					auto location = protocol->LocationOf(itemStyle);
+					protocol->MouseMove(location);
+				});
+				protocol->OnNextIdleFrame(L"Hover 1st", [=]()
+				{
+					protocol->LClick();
+				});
+				protocol->OnNextIdleFrame(L"Click 1st", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+
+					auto itemStyle = listControl->GetArranger()->GetVisibleStyle(1);
+					TEST_ASSERT(itemStyle != nullptr);
+					TEST_ASSERT(listControl->GetArranger()->GetVisibleIndex(itemStyle) == 1);
+					auto location = protocol->LocationOf(itemStyle);
+					protocol->MouseMove(location);
+				});
+				protocol->OnNextIdleFrame(L"Hover 2nd", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+					listControl->EnsureItemVisible(19);
+
+					auto itemStyle = listControl->GetArranger()->GetVisibleStyle(19);
+					TEST_ASSERT(itemStyle != nullptr);
+					TEST_ASSERT(listControl->GetArranger()->GetVisibleIndex(itemStyle) == 19);
+					auto location = protocol->LocationOf(itemStyle);
+					protocol->MouseMove(location);
+				});
+				protocol->OnNextIdleFrame(L"Hover 20th", [=]()
+				{
+					protocol->LDBClick();
+				});
+				protocol->OnNextIdleFrame(L"DbClick 20st", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
 					window->Hide();
 				});
 			});
