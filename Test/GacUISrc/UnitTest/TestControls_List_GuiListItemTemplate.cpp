@@ -205,5 +205,62 @@ TEST_FILE
 				resourceListItemTemplate
 				);
 		});
+
+		TEST_CASE(L"DisplayItemBackground")
+		{
+			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+
+					{
+						auto itemStyle = listControl->GetArranger()->GetVisibleStyle(0);
+						auto location = protocol->LocationOf(itemStyle);
+						protocol->MouseMove(location);
+					}
+					protocol->LClick();
+					{
+						auto itemStyle = listControl->GetArranger()->GetVisibleStyle(1);
+						auto location = protocol->LocationOf(itemStyle);
+						protocol->MouseMove(location);
+					}
+				});
+				protocol->OnNextIdleFrame(L"Select 1st and Hover 2nd", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+					listControl->SetDisplayItemBackground(false);
+				});
+				protocol->OnNextIdleFrame(L"DisplayItemBackground = false", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+
+					{
+						auto itemStyle = listControl->GetArranger()->GetVisibleStyle(0);
+						auto location = protocol->LocationOf(itemStyle);
+						protocol->MouseMove(location);
+					}
+				});
+				protocol->OnNextIdleFrame(L"Hover 3rd", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+					listControl->SetDisplayItemBackground(true);
+				});
+				protocol->OnNextIdleFrame(L"DisplayItemBackground = true", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					window->Hide();
+				});
+			});
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Controls/List/GuiListItemTemplate/DisplayItemBackground"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resourceListItemTemplate
+				);
+		});
 	});
 }
