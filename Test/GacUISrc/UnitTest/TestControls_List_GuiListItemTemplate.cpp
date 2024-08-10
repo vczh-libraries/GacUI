@@ -259,6 +259,17 @@ TEST_FILE
 				protocol->OnNextIdleFrame(L"DisplayItemBackground = true", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+
+					{
+						auto itemStyle = listControl->GetArranger()->GetVisibleStyle(1);
+						auto location = protocol->LocationOf(itemStyle);
+						protocol->MouseMove({ location.x + 1,location.y });
+					}
+				});
+				protocol->OnNextIdleFrame(L"Move", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
 					window->Hide();
 				});
 			});
