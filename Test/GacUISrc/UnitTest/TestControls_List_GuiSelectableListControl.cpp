@@ -117,7 +117,40 @@ TEST_FILE
 					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
 					TEST_ASSERT(listControl->GetMultiSelect() == false);
 					listControl->SetMultiSelect(true);
-					TEST_ASSERT(listControl->GetMultiSelect() == true);
+
+					listControl->SetSelected(0, true);
+				});
+				protocol->OnNextIdleFrame(L"Select 1st", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+
+					listControl->SetSelected(1, true);
+				});
+				protocol->OnNextIdleFrame(L"Select 2nd", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+
+					listControl->SetSelected(1, false);
+				});
+				protocol->OnNextIdleFrame(L"Unselect 2nd", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+
+					listControl->SetSelected(2, true);
+				});
+				protocol->OnNextIdleFrame(L"Select 3rd", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+
+					listControl->ClearSelection();
+				});
+				protocol->OnNextIdleFrame(L"Clear", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
 					window->Hide();
 				});
 			});
