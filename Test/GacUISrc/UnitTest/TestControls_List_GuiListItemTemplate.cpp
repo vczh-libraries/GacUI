@@ -155,5 +155,55 @@ TEST_FILE
 				resourceListItemTemplate
 				);
 		});
+
+		TEST_CASE(L"Font")
+		{
+			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+
+					FontProperties font;
+					font.fontFamily = L"This Font";
+					font.size = 18;
+					listControl->SetFont(font);
+				});
+				protocol->OnNextIdleFrame(L"18", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+
+					FontProperties font;
+					font.fontFamily = L"That Font";
+					font.size = 24;
+					listControl->SetFont(font);
+				});
+				protocol->OnNextIdleFrame(L"24", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+					listControl->SetFont({});
+				});
+				protocol->OnNextIdleFrame(L"Reset", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+					listControl->EnsureItemVisible(19);
+					listControl->SetSelected(19, true);
+				});
+				protocol->OnNextIdleFrame(L"Scroll to End", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					window->Hide();
+				});
+			});
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Controls/List/GuiListItemTemplate/Font"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resourceListItemTemplate
+				);
+		});
 	});
 }
