@@ -859,6 +859,31 @@ GuiControl
 				if (isVisuallyEnabled != newValue)
 				{
 					isVisuallyEnabled = newValue;
+
+					if (!isVisuallyEnabled && isFocused)
+					{
+						GuiControl* selectedControl = nullptr;
+						auto current = GetParent();
+						while (current)
+						{
+							if (current->GetFocusableComposition() && current->GetVisuallyEnabled())
+							{
+								selectedControl = current;
+								break;
+							}
+							current = current->GetParent();
+						}
+
+						if (selectedControl)
+						{
+							selectedControl->SetFocused();
+						}
+						else if(auto host = focusableComposition->GetRelatedGraphicsHost())
+						{
+							host->ClearFocus();
+						}
+					}
+
 					if (controlTemplateObject)
 					{
 						controlTemplateObject->SetVisuallyEnabled(isVisuallyEnabled);
@@ -4433,6 +4458,26 @@ GuiGraphicsHost
 				windowComposition->UpdateRelatedHostRecord(&hostRecord);
 			}
 
+			void GuiGraphicsHost::SetFocusInternal(GuiGraphicsComposition* composition)
+			{
+				if (focusedComposition && focusedComposition->HasEventReceiver())
+				{
+					GuiEventArgs arguments;
+					arguments.compositionSource = focusedComposition;
+					arguments.eventSource = focusedComposition;
+					focusedComposition->GetEventReceiver()->lostFocus.Execute(arguments);
+				}
+				focusedComposition = composition;
+				SetCaretPoint(Point(0, 0));
+				if (focusedComposition && focusedComposition->HasEventReceiver())
+				{
+					GuiEventArgs arguments;
+					arguments.compositionSource = focusedComposition;
+					arguments.eventSource = focusedComposition;
+					focusedComposition->GetEventReceiver()->gotFocus.Execute(arguments);
+				}
+			}
+
 			void GuiGraphicsHost::DisconnectCompositionInternal(GuiGraphicsComposition* composition)
 			{
 				// TODO: (enumerable) foreach
@@ -5177,22 +5222,14 @@ GuiGraphicsHost
 				{
 					return true;
 				}
-				if(focusedComposition && focusedComposition->HasEventReceiver())
-				{
-					GuiEventArgs arguments;
-					arguments.compositionSource=focusedComposition;
-					arguments.eventSource=focusedComposition;
-					focusedComposition->GetEventReceiver()->lostFocus.Execute(arguments);
-				}
-				focusedComposition=composition;
-				SetCaretPoint(Point(0, 0));
-				if(focusedComposition && focusedComposition->HasEventReceiver())
-				{
-					GuiEventArgs arguments;
-					arguments.compositionSource=focusedComposition;
-					arguments.eventSource=focusedComposition;
-					focusedComposition->GetEventReceiver()->gotFocus.Execute(arguments);
-				}
+				SetFocusInternal(composition);
+				return true;
+			}
+
+			bool GuiGraphicsHost::ClearFocus()
+			{
+				if (!focusedComposition) return false;
+				SetFocusInternal(nullptr);
 				return true;
 			}
 
@@ -6024,10 +6061,11 @@ GuiButton
 			void GuiButton::OnParentLineChanged()
 			{
 				GuiControl::OnParentLineChanged();
-				if(GetRelatedControlHost()==0)
+				if (GetRelatedControlHost() == 0)
 				{
-					mousePressing=false;
-					mouseHoving=false;
+					mousePressingDirect = false;
+					mousePressingIndirect = false;
+					mouseHoving = false;
 					UpdateControlState();
 				}
 			}
@@ -6053,7 +6091,7 @@ GuiButton
 				{
 					newControlState = ButtonState::Pressed;
 				}
-				else if (mousePressing)
+				else if (mousePressingDirect || mousePressingIndirect)
 				{
 					if (mouseHoving)
 					{
@@ -6082,49 +6120,59 @@ GuiButton
 				}
 			}
 
-			void GuiButton::CheckAndClick(compositions::GuiEventArgs& arguments)
+			void GuiButton::CheckAndClick(bool skipChecking, compositions::GuiEventArgs& arguments)
 			{
-				auto eventSource = arguments.eventSource->GetAssociatedControl();
-				while (eventSource && eventSource != this)
+				if (!skipChecking)
 				{
-					if (eventSource->GetFocusableComposition())
+					auto eventSource = arguments.eventSource->GetAssociatedControl();
+					while (eventSource && eventSource != this)
 					{
-						return;
+						if (eventSource->GetFocusableComposition())
+						{
+							return;
+						}
+						eventSource = eventSource->GetParent();
 					}
-					eventSource = eventSource->GetParent();
 				}
 				Clicked.Execute(GetNotifyEventArguments());
 			}
 
 			void GuiButton::OnLeftButtonDown(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments)
 			{
-				if (arguments.eventSource == boundsComposition || !ignoreChildControlMouseEvents)
+				if (arguments.eventSource == boundsComposition)
 				{
-					mousePressing = true;
-					if (autoFocus)
+					mousePressingDirect = true;
+				}
+				else if (!ignoreChildControlMouseEvents)
+				{
+					mousePressingIndirect = true;
+				}
+
+				if (mousePressingDirect || mousePressingIndirect)
+				{
+					if (GetVisuallyEnabled() && autoFocus)
 					{
 						SetFocused();
 					}
 					UpdateControlState();
-					if (!clickOnMouseUp)
+					if (GetVisuallyEnabled() && !clickOnMouseUp)
 					{
-						CheckAndClick(arguments);
+						CheckAndClick(mousePressingIndirect, arguments);
 					}
 				}
 			}
 
 			void GuiButton::OnLeftButtonUp(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments)
 			{
-				if (arguments.eventSource == boundsComposition || !ignoreChildControlMouseEvents)
+				if (mousePressingDirect || mousePressingIndirect)
 				{
-					mousePressing = false;
+					bool skipChecking = mousePressingIndirect;
+					mousePressingDirect = false;
+					mousePressingIndirect = false;
 					UpdateControlState();
-				}
-				if (GetVisuallyEnabled())
-				{
-					if (mouseHoving && clickOnMouseUp)
+					if (GetVisuallyEnabled() && mouseHoving && clickOnMouseUp)
 					{
-						CheckAndClick(arguments);
+						CheckAndClick(skipChecking, arguments);
 					}
 				}
 			}
@@ -6154,7 +6202,7 @@ GuiButton
 					switch (arguments.code)
 					{
 					case VKEY::KEY_RETURN:
-						CheckAndClick(arguments);
+						CheckAndClick(false, arguments);
 						arguments.handled = true;
 						break;
 					case VKEY::KEY_SPACE:
@@ -6181,7 +6229,7 @@ GuiButton
 						{
 							keyPressing = false;
 							UpdateControlState();
-							CheckAndClick(arguments);
+							CheckAndClick(false, arguments);
 						}
 						arguments.handled = true;
 						break;
@@ -7917,7 +7965,14 @@ GuiScroll
 			GuiScroll::GuiScroll(theme::ThemeName themeName)
 				:GuiControl(themeName)
 			{
-				SetFocusableComposition(boundsComposition);
+				if (themeName == theme::ThemeName::ProgressBar)
+				{
+					autoFocus = false;
+				}
+				else
+				{
+					SetFocusableComposition(boundsComposition);
+				}
 
 				TotalSizeChanged.SetAssociatedComposition(boundsComposition);
 				PageSizeChanged.SetAssociatedComposition(boundsComposition);
@@ -27971,9 +28026,37 @@ GuiVirtualRepeatCompositionBase
 				return style->SetExpectedBounds(axis->VirtualRectToRealRect(axis->VirtualSizeToRealSize(viewBounds.GetSize()), value));
 			}
 
+			void GuiVirtualRepeatCompositionBase::OnStyleCachedMinSizeChanged(GuiGraphicsComposition* sender, GuiEventArgs& arguments)
+			{
+				InvalidateLayout();
+			}
+
+			void GuiVirtualRepeatCompositionBase::AttachEventHandler(GuiGraphicsComposition* itemStyle)
+			{
+				eventHandlers.Add(itemStyle, itemStyle->CachedMinSizeChanged.AttachMethod(this, &GuiVirtualRepeatCompositionBase::OnStyleCachedMinSizeChanged));
+			}
+
+			void GuiVirtualRepeatCompositionBase::DetachEventHandler(GuiGraphicsComposition* itemStyle)
+			{
+				vint index = eventHandlers.Keys().IndexOf(itemStyle);
+				if (index != -1)
+				{
+					auto eventHandler = eventHandlers.Values()[index];
+					itemStyle->CachedBoundsChanged.Detach(eventHandler);
+					eventHandlers.Remove(itemStyle);
+				}
+			}
+
+			void GuiVirtualRepeatCompositionBase::OnChildRemoved(GuiGraphicsComposition* child)
+			{
+				DetachEventHandler(child);
+				GuiBoundsComposition::OnChildRemoved(child);
+			}
+
 			void GuiVirtualRepeatCompositionBase::OnItemChanged(vint start, vint oldCount, vint newCount)
 			{
 				itemSourceUpdated = true;
+				InvokeOnCompositionStateChanged();
 
 				vint visibleCount = visibleStyles.Count();
 				vint itemCount = itemSource->GetCount();
@@ -28097,11 +28180,13 @@ GuiVirtualRepeatCompositionBase
 				auto itemStyle = CreateStyleInternal(index);
 				AddChild(itemStyle);
 				itemStyle->ForceCalculateSizeImmediately();
+				AttachEventHandler(itemStyle);
 				return itemStyle;
 			}
 
 			void GuiVirtualRepeatCompositionBase::DeleteStyle(ItemStyleRecord style)
 			{
+				DetachEventHandler(style);
 				DeleteStyleInternal(style);
 			}
 
@@ -28206,6 +28291,11 @@ GuiVirtualRepeatCompositionBase
 
 			GuiVirtualRepeatCompositionBase::~GuiVirtualRepeatCompositionBase()
 			{
+				for (auto [style, eventHandler] : eventHandlers)
+				{
+					style->CachedMinSizeChanged.Detach(eventHandler);
+				}
+				eventHandlers.Clear();
 			}
 
 			Ptr<IGuiAxis> GuiVirtualRepeatCompositionBase::GetAxis()

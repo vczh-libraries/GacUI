@@ -329,7 +329,7 @@ Keys
 		}
 
 /***********************************************************************
-Mouse
+Mouse Move Events
 ***********************************************************************/
 
 		void MouseMove(NativePoint position)
@@ -348,52 +348,73 @@ Mouse
 		}
 
 /***********************************************************************
-Mouse (Left)
+Mouse Wheel Events
 ***********************************************************************/
 
-		void _LDown(Nullable<NativePoint> position = {})
-		{
-#define ERROR_MESSAGE_PREFIX CLASS_PREFIX L"_LDown(...)#"
-			if (position) MouseMove(position.Value());
-			CHECK_ERROR(!leftPressing, ERROR_MESSAGE_PREFIX L"The button should not be being pressed.");
-			leftPressing = true;
-			UseEvents().OnIOButtonDown({ remoteprotocol::IOMouseButton::Left,MakeMouseInfo() });
-#undef ERROR_MESSAGE_PREFIX
-		}
+/***********************************************************************
+Mouse Click Events
+***********************************************************************/
 
-		void _LUp(Nullable<NativePoint> position = {})
-		{
-#define ERROR_MESSAGE_PREFIX CLASS_PREFIX L"_LUp(...)#"
-			if (position) MouseMove(position.Value());
-			CHECK_ERROR(leftPressing, ERROR_MESSAGE_PREFIX L"The button should be being pressed.");
-			leftPressing = false;
-			UseEvents().OnIOButtonUp({ remoteprotocol::IOMouseButton::Left,MakeMouseInfo() });
-#undef ERROR_MESSAGE_PREFIX
-		}
+#define DEFINE_MOUSE_ACTIONS(PREFIX, LOWER, UPPER)\
+		void _ ## PREFIX ## Down(Nullable<NativePoint> position = {})\
+		{\
+			if (position) MouseMove(position.Value());\
+			CHECK_ERROR(!LOWER ## Pressing, CLASS_PREFIX L"_" L ## #PREFIX L"Down(...)#" L"The button should not be being pressed.");\
+			LOWER ## Pressing = true;\
+			UseEvents().OnIOButtonDown({ remoteprotocol::IOMouseButton::UPPER,MakeMouseInfo() });\
+		}\
+		void _ ## PREFIX ## Up(Nullable<NativePoint> position = {})\
+		{\
+			if (position) MouseMove(position.Value());\
+			CHECK_ERROR(LOWER ## Pressing, CLASS_PREFIX L"_" L ## #PREFIX L"Up(...)#" L"The button should be being pressed.");\
+			LOWER ## Pressing = false;\
+			UseEvents().OnIOButtonUp({ remoteprotocol::IOMouseButton::UPPER,MakeMouseInfo() });\
+		}\
+		void _ ## PREFIX ## DBClick(Nullable<NativePoint> position = {})\
+		{\
+			if (position) MouseMove(position.Value());\
+			CHECK_ERROR(!LOWER ## Pressing, CLASS_PREFIX L"_" L ## #PREFIX L"DBClick(...)#" L"The button should not be being pressed.");\
+			LOWER ## Pressing = true;\
+			UseEvents().OnIOButtonDoubleClick({ remoteprotocol::IOMouseButton::UPPER,MakeMouseInfo() });\
+		}\
+		void PREFIX ## Click(Nullable<NativePoint> position = {})\
+		{\
+			_ ## PREFIX ## Down(position);\
+			_ ## PREFIX ## Up(position);\
+		}\
+		void PREFIX ## Click(Nullable<NativePoint> position, bool ctrl, bool shift, bool alt)\
+		{\
+			if (ctrl) _KeyDown(VKEY::KEY_CONTROL);\
+			if (shift) _KeyDown(VKEY::KEY_SHIFT);\
+			if (alt) _KeyDown(VKEY::KEY_MENU);\
+			PREFIX ## Click(position);\
+			if (alt) _KeyUp(VKEY::KEY_MENU);\
+			if (shift) _KeyUp(VKEY::KEY_SHIFT);\
+			if (ctrl) _KeyUp(VKEY::KEY_CONTROL);\
+		}\
+		void PREFIX ## DBClick(Nullable<NativePoint> position = {})\
+		{\
+			_ ## PREFIX ## Down(position);\
+			_ ## PREFIX ## Up(position);\
+			_ ## PREFIX ## DBClick(position);\
+			_ ## PREFIX ## Up(position);\
+		}\
+		void PREFIX ## DBClick(Nullable<NativePoint> position, bool ctrl, bool shift, bool alt)\
+		{\
+			if (ctrl) _KeyDown(VKEY::KEY_CONTROL);\
+			if (shift) _KeyDown(VKEY::KEY_SHIFT);\
+			if (alt) _KeyDown(VKEY::KEY_MENU);\
+			PREFIX ## DBClick(position);\
+			if (alt) _KeyUp(VKEY::KEY_MENU);\
+			if (shift) _KeyUp(VKEY::KEY_SHIFT);\
+			if (ctrl) _KeyUp(VKEY::KEY_CONTROL);\
+		}\
 
-		void _LDBClick(Nullable<NativePoint> position = {})
-		{
-#define ERROR_MESSAGE_PREFIX CLASS_PREFIX L"_LDBClick(...)#"
-			if (position) MouseMove(position.Value());
-			CHECK_ERROR(!leftPressing, ERROR_MESSAGE_PREFIX L"The button should not be being pressed.");
-			leftPressing = true;
-			UseEvents().OnIOButtonDoubleClick({ remoteprotocol::IOMouseButton::Left,MakeMouseInfo() });
-#undef ERROR_MESSAGE_PREFIX
-		}
+		DEFINE_MOUSE_ACTIONS(L, left, Left);
+		DEFINE_MOUSE_ACTIONS(M, middle, Middle);
+		DEFINE_MOUSE_ACTIONS(R, right, Right);
 
-		void LClick(Nullable<NativePoint> position = {})
-		{
-			_LDown(position);
-			_LUp(position);
-		}
-
-		void LDBClick(Nullable<NativePoint> position = {})
-		{
-			_LDown(position);
-			_LUp(position);
-			_LDBClick(position);
-			_LUp(position);
-		}
+#undef DEFINE_MOUSE_ACTIONS
 
 #undef CLASS_PREFIX
 	};
@@ -807,7 +828,7 @@ IGuiRemoteProtocolMessages (Elements - SolidLabel)
 					{
 						remoteprotocol::ElementMeasuring_FontHeight measuring;
 						measuring.fontFamily = arguments.font.Value().fontFamily;
-						measuring.fontSize = arguments.font.Value().size;
+						measuring.fontSize = arguments.font.Value().size + 4;
 						measuring.height = measuring.fontSize;
 						measuringForNextRendering.fontHeights->Add(measuring);
 					}
@@ -860,7 +881,7 @@ IGuiRemoteProtocolMessages (Elements - SolidLabel)
 						{
 							// width of the text is 0
 							// insert a line break when there is no space horizontally
-							textHeight = size * From(lines)
+							textHeight = 4 + size * From(lines)
 								.Select([columns = width / size](vint length)
 								{
 									if (columns == 0)
@@ -878,7 +899,7 @@ IGuiRemoteProtocolMessages (Elements - SolidLabel)
 						{
 							// width of the text is width of the longest line
 							textWidth = size * From(lines).Max();
-							textHeight = size * lines.Count();
+							textHeight = 4 + size * lines.Count();
 						}
 
 						if (!measuringForNextRendering.minSizes)
@@ -1316,8 +1337,8 @@ UnitTestRemoteProtocol
 						transformed
 						});
 					candidateRenderingResult = {};
+					return true;
 				}
-				return true;
 			}
 			return false;
 		}
@@ -1402,6 +1423,7 @@ UnitTestRemoteProtocol
 		const UnitTestFrameworkConfig&		frameworkConfig;
 		WString								appName;
 		collections::List<EventPair>		processRemoteEvents;
+		vint								lastFrameIndex = -1;
 		vint								nextEventIndex = 0;
 		bool								stopped = false;
 
@@ -1457,12 +1479,14 @@ IGuiRemoteProtocol
 			{
 				if (LogRenderingResult())
 				{
-					vl::unittest::UnitTest::PrintMessage(L"Execute idle frame[" + itow(nextEventIndex) + L"]", vl::unittest::UnitTest::MessageKind::Info);
 					auto [name, func] = processRemoteEvents[nextEventIndex];
+					vl::unittest::UnitTest::PrintMessage(L"Execute idle frame[" + (name ? name.Value() : itow(nextEventIndex)) + L"]", vl::unittest::UnitTest::MessageKind::Info);
+					CHECK_ERROR(lastFrameIndex != loggedTrace.frames->Count() - 1, ERROR_MESSAGE_PREFIX L"No rendering occured after the last idle frame.");
+					lastFrameIndex = loggedTrace.frames->Count() - 1;
+
 					if (name)
 					{
 						auto&& lastFrame = (*loggedTrace.frames.Obj())[loggedTrace.frames->Count() - 1];
-						CHECK_ERROR(!lastFrame.frameName, ERROR_MESSAGE_PREFIX L"The last frame has already been assigned a name.");
 						lastFrame.frameName = name;
 					}
 					func();

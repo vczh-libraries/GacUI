@@ -5079,6 +5079,7 @@ Host
 				CompositionList							mouseEnterCompositions;
 				void									RefreshRelatedHostRecord(INativeWindow* nativeWindow);
 
+				void									SetFocusInternal(GuiGraphicsComposition* composition);
 				void									DisconnectCompositionInternal(GuiGraphicsComposition* composition);
 				void									MouseCapture(const NativeWindowMouseInfo& info);
 				void									MouseUncapture(const NativeWindowMouseInfo& info);
@@ -5157,6 +5158,9 @@ Host
 				/// <returns>Returns true if this operation succeeded.</returns>
 				/// <param name="composition">The composition to set focus. This composition should be or in the main composition.</param>
 				bool									SetFocus(GuiGraphicsComposition* composition);
+				/// <summary>Unset the focus composition. There will be no focus composition.</summary>
+				/// <returns>Returns true if this operation succeeded.</returns>
+				bool									ClearFocus();
 				/// <summary>Get the focus composition. A focused composition will receive keyboard messages.</summary>
 				/// <returns>The focus composition.</returns>
 				GuiGraphicsComposition*					GetFocusedComposition();
@@ -6229,6 +6233,7 @@ GuiVirtualRepeatCompositionBase
 			protected:
 				using ItemStyleRecord = templates::GuiTemplate*;
 				using StyleList = collections::List<ItemStyleRecord>;
+				using StyleEventHandlerMap = collections::Dictionary<GuiGraphicsComposition*, Ptr<IGuiGraphicsEventHandler>>;
 
 				Ptr<IGuiAxis>										axis = Ptr(new GuiDefaultAxis);
 				bool												itemSourceUpdated = false;
@@ -6238,6 +6243,7 @@ GuiVirtualRepeatCompositionBase
 				Rect												viewBounds;
 				vint												startIndex = 0;
 				StyleList											visibleStyles;
+				StyleEventHandlerMap								eventHandlers;
 
 				virtual void										Layout_BeginPlaceItem(bool firstPhase, Rect newBounds, vint& newStartIndex) = 0;
 				virtual VirtualRepeatPlaceItemResult				Layout_PlaceItem(bool firstPhase, bool newCreatedStyle, vint index, ItemStyleRecord style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent) = 0;
@@ -6256,6 +6262,11 @@ GuiVirtualRepeatCompositionBase
 				Size												Layout_GetStylePreferredSize(ItemStyleRecord style);
 				Rect												Layout_GetStyleBounds(ItemStyleRecord style);
 				void												Layout_SetStyleBounds(ItemStyleRecord style, Rect value);
+
+				void												OnStyleCachedMinSizeChanged(GuiGraphicsComposition* sender, GuiEventArgs& arguments);
+				void												AttachEventHandler(GuiGraphicsComposition* itemStyle);
+				void												DetachEventHandler(GuiGraphicsComposition* itemStyle);
+				void												OnChildRemoved(GuiGraphicsComposition* child)override;
 
 				void												OnItemChanged(vint start, vint oldCount, vint newCount) override;
 				void												OnClearItems() override;
@@ -13612,7 +13623,8 @@ Buttons
 				bool									ignoreChildControlMouseEvents = true;
 				bool									autoFocus = true;
 				bool									keyPressing = false;
-				bool									mousePressing = false;
+				bool									mousePressingDirect = false;
+				bool									mousePressingIndirect = false;
 				bool									mouseHoving = false;
 				ButtonState								controlState = ButtonState::Normal;
 
@@ -13620,7 +13632,7 @@ Buttons
 				void									OnActiveAlt()override;
 				bool									IsTabAvailable()override;
 				void									UpdateControlState();
-				void									CheckAndClick(compositions::GuiEventArgs& arguments);
+				void									CheckAndClick(bool skipChecking, compositions::GuiEventArgs& arguments);
 				void									OnLeftButtonDown(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments);
 				void									OnLeftButtonUp(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments);
 				void									OnMouseEnter(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
