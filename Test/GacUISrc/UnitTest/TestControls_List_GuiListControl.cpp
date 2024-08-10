@@ -75,13 +75,13 @@ TEST_FILE
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
-					listControl->SelectItemsByClick(0, false, false, false);
+					listControl->SelectItemsByClick(0, false, false, true);
 				});
 				protocol->OnNextIdleFrame(L"Highlight First", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
-					listControl->SelectItemsByClick(1, false, false, false);
+					listControl->SelectItemsByClick(1, false, false, true);
 				});
 				protocol->OnNextIdleFrame(L"Highlight Second", [=]()
 				{
@@ -98,14 +98,14 @@ TEST_FILE
 					auto window = GetApplication()->GetMainWindow();
 					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
 					listControl->EnsureItemVisible(19);
-					listControl->SelectItemsByClick(19, false, false, false);
+					listControl->SelectItemsByClick(19, false, false, true);
 				});
 				protocol->OnNextIdleFrame(L"Ensure Last Item Visible", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
 					listControl->GetVerticalScroll()->SetPosition(0);
-					listControl->SelectItemsByClick(0, false, false, false);
+					listControl->SelectItemsByClick(0, false, false, true);
 				});
 				protocol->OnNextIdleFrame(L"Ensure First Item Visible", [=]()
 				{
@@ -126,7 +126,7 @@ TEST_FILE
 			auto item = Ptr(new TextItem(L ## #EVENT L" " + itow(arguments.itemIndex)));\
 			vint index = logs->GetItems().Add(item);\
 			logs->EnsureItemVisible(index);\
-			logs->SelectItemsByClick(index, false, false, false);\
+			logs->SelectItemsByClick(index, false, false, true);\
 		})\
 
 #define ATTACH_ITEM_EVENTS\
