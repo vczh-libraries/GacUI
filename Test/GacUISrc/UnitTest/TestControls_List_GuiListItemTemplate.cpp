@@ -120,5 +120,40 @@ TEST_FILE
 				resourceListItemTemplate
 				);
 		});
+
+		TEST_CASE(L"Context")
+		{
+			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+					listControl->SetContext(BoxValue(WString(L"This")));
+				});
+				protocol->OnNextIdleFrame(L"This", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+					listControl->SetContext(BoxValue(WString(L"That")));
+				});
+				protocol->OnNextIdleFrame(L"That", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+					listControl->SetContext({});
+				});
+				protocol->OnNextIdleFrame(L"Reset", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					window->Hide();
+				});
+			});
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Controls/List/GuiListItemTemplate/Context"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resourceListItemTemplate
+				);
+		});
 	});
 }
