@@ -192,7 +192,6 @@ TEST_FILE
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
-					listControl->SetFocused();
 
 					listControl->SelectItemsByKey(VKEY::KEY_DOWN, false, false);
 				});
@@ -592,7 +591,6 @@ TEST_FILE
 					auto window = GetApplication()->GetMainWindow();
 					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
 					listControl->SetMultiSelect(true);
-					listControl->SetFocused();
 
 					listControl->SelectItemsByKey(VKEY::KEY_DOWN, false, false);
 				});
