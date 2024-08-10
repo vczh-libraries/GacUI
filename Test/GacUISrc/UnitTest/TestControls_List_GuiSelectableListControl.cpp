@@ -183,6 +183,101 @@ TEST_FILE
 				resourceListControl
 				);
 		});
+
+		TEST_CASE(L"SelectItemsByKey")
+		{
+			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+					listControl->SetFocused();
+
+					listControl->SelectItemsByKey(VKEY::KEY_DOWN, false, false);
+				});
+				protocol->OnNextIdleFrame(L"[DOWN]", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+
+					listControl->SelectItemsByKey(VKEY::KEY_DOWN, false, false);
+				});
+				protocol->OnNextIdleFrame(L"[DOWN]", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+
+					listControl->SelectItemsByKey(VKEY::KEY_DOWN, true, false);
+				});
+				protocol->OnNextIdleFrame(L"[CTRL]+[DOWN]", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+
+					listControl->SelectItemsByKey(VKEY::KEY_DOWN, false, true);
+				});
+				protocol->OnNextIdleFrame(L"[SHIFT]+[DOWN]", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+
+					listControl->SelectItemsByKey(VKEY::KEY_DOWN, true, true);
+				});
+				protocol->OnNextIdleFrame(L"[CTRL]+[SHIFT]+[DOWN]", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+
+					listControl->SelectItemsByKey(VKEY::KEY_UP, false, false);
+				});
+				protocol->OnNextIdleFrame(L"[UP]", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+
+					listControl->SelectItemsByKey(VKEY::KEY_HOME, true, false);
+				});
+				protocol->OnNextIdleFrame(L"[CTRL]+[HOME]", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+
+					listControl->SelectItemsByKey(VKEY::KEY_NEXT, false, false);
+				});
+				protocol->OnNextIdleFrame(L"[PAGE DOWN]", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+
+					listControl->SelectItemsByKey(VKEY::KEY_END, false, true);
+				});
+				protocol->OnNextIdleFrame(L"[SHIFT]+[END]", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+
+					listControl->SelectItemsByKey(VKEY::KEY_PRIOR, false, false);
+				});
+				protocol->OnNextIdleFrame(L"[PAGE UP]", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+
+					listControl->ClearSelection();
+				});
+				protocol->OnNextIdleFrame(L"Clear", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					window->Hide();
+				});
+			});
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Controls/List/GuiSelectableListControl/SingleSelect/SelectItemsByKey"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resourceListControl
+				);
+		});
 	});
 
 	TEST_CATEGORY(L"GuiSelectableListControl (MultiSelect)")
@@ -318,6 +413,102 @@ TEST_FILE
 			});
 			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
 				WString::Unmanaged(L"Controls/List/GuiSelectableListControl/MultiSelect/SelectItemsByClick"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resourceListControl
+				);
+		});
+
+		TEST_CASE(L"SelectItemsByKey")
+		{
+			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+					listControl->SetMultiSelect(true);
+					listControl->SetFocused();
+
+					listControl->SelectItemsByKey(VKEY::KEY_DOWN, false, false);
+				});
+				protocol->OnNextIdleFrame(L"[DOWN]", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+
+					listControl->SelectItemsByKey(VKEY::KEY_DOWN, false, false);
+				});
+				protocol->OnNextIdleFrame(L"[DOWN]", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+
+					listControl->SelectItemsByKey(VKEY::KEY_DOWN, true, false);
+				});
+				protocol->OnNextIdleFrame(L"[CTRL]+[DOWN]", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+
+					listControl->SelectItemsByKey(VKEY::KEY_DOWN, false, true);
+				});
+				protocol->OnNextIdleFrame(L"[SHIFT]+[DOWN]", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+
+					listControl->SelectItemsByKey(VKEY::KEY_DOWN, true, true);
+				});
+				protocol->OnNextIdleFrame(L"[CTRL]+[SHIFT]+[DOWN]", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+
+					listControl->SelectItemsByKey(VKEY::KEY_UP, false, false);
+				});
+				protocol->OnNextIdleFrame(L"[UP]", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+
+					listControl->SelectItemsByKey(VKEY::KEY_HOME, true, false);
+				});
+				protocol->OnNextIdleFrame(L"[CTRL]+[HOME]", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+
+					listControl->SelectItemsByKey(VKEY::KEY_NEXT, false, false);
+				});
+				protocol->OnNextIdleFrame(L"[PAGE DOWN]", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+
+					listControl->SelectItemsByKey(VKEY::KEY_END, false, true);
+				});
+				protocol->OnNextIdleFrame(L"[SHIFT]+[END]", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+
+					listControl->SelectItemsByKey(VKEY::KEY_PRIOR, false, false);
+				});
+				protocol->OnNextIdleFrame(L"[PAGE UP]", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+
+					listControl->ClearSelection();
+				});
+				protocol->OnNextIdleFrame(L"Clear", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					window->Hide();
+				});
+			});
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Controls/List/GuiSelectableListControl/MultiSelect/SelectItemsByKey"),
 				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
 				resourceListControl
 				);
