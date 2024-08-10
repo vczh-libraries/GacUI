@@ -12,6 +12,7 @@ using namespace vl::presentation;
 using namespace vl::presentation::elements;
 using namespace vl::presentation::compositions;
 using namespace vl::presentation::controls;
+using namespace vl::presentation::controls::list;
 using namespace vl::presentation::unittest;
 
 TEST_FILE
@@ -20,9 +21,27 @@ TEST_FILE
 <Resource>
   <Instance name="MainWindowResource">
     <Instance ref.Class="gacuisrc_unittest::MainWindow">
+      <ref.Members><![CDATA[
+        var counter : int = 0;
+      ]]></ref.Members>
+      <ref.Ctor><![CDATA[{
+        for (item in range[1, 20])
+        {
+          list.Items.Add(new TextItem^($"Item $(item)"));
+        }
+      }]]></ref.Ctor>
       <Window ref.Name="self" Text="GuiSelectableListControl" ClientSize="x:320 y:240">
         <TextList ref.Name="list" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
           <att.BoundsComposition-set PreferredMinSize="x:400 y:300" AlignmentToParent="left:0 top:5 right:0 bottom:0"/>
+          <ev.SelectionChanged-eval><![CDATA[{
+            self.counter = self.counter + 1;
+            var title = $"[$(self.counter)]";
+            for (item in list.SelectedItems)
+            {
+              title = title & $" $(item)";
+            }
+            self.Text = title;
+          }]]></ev.SelectionChanged-eval>
         </TextList>
       </Window>
     </Instance>
@@ -39,6 +58,8 @@ TEST_FILE
 				protocol->OnNextIdleFrame(L"Ready", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+					TEST_ASSERT(listControl->GetMultiSelect() == false);
 					window->Hide();
 				});
 			});
@@ -59,6 +80,10 @@ TEST_FILE
 				protocol->OnNextIdleFrame(L"Ready", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+					TEST_ASSERT(listControl->GetMultiSelect() == false);
+					listControl->SetMultiSelect(true);
+					TEST_ASSERT(listControl->GetMultiSelect() == true);
 					window->Hide();
 				});
 			});

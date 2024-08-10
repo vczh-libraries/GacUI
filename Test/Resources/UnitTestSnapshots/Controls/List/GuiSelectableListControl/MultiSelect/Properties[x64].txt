@@ -62,6 +62,26 @@ namespace gacuisrc_unittest
             {
                 self.AddChild(list);
             }
+            {
+                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                {
+                    (self.counter = (self.counter + 1));
+                    var title = (("[" & self.counter) & "]");
+                    {
+                        var <for-enumerable>item = list.SelectedItems of (::system::Enumerable^);
+                        var <for-enumerator>item = <for-enumerable>item.CreateEnumerator();
+                        while (<for-enumerator>item.Next())
+                        {
+                            var item = (cast (::system::Int64) <for-enumerator>item.GetCurrent());
+                            {
+                                (title = (title & (" " & item)));
+                            }
+                        }
+                    }
+                    (self.Text = title);
+                };
+                attach(list.SelectionChanged, <event-handler>);
+            }
         }
 
         new ()
@@ -97,6 +117,8 @@ namespace gacuisrc_unittest
     @cpp:Friend(typeof(MainWindowConstructor))
     class MainWindow : ::presentation::controls::GuiWindow, MainWindowConstructor
     {
+        var counter : int = 0;
+
         new* ()
             :::presentation::controls::GuiWindow(::presentation::theme::ThemeName::Window)
         {
@@ -104,6 +126,23 @@ namespace gacuisrc_unittest
             var <resolver> = new (::presentation::GuiResourcePathResolver^)(<resource>, <resource>.WorkingDirectory);
             this.SetResourceResolver(<resolver>);
             this.<gacuisrc_unittest-MainWindow>Initialize(this);
+            <instance-ctor>();
+        }
+
+        func <instance-ctor>() : (::system::Void)
+        {
+            {
+                var <for-begin>item : ::system::Int64 = 1;
+                var <for-end>item : ::system::Int64 = 20;
+                var item = <for-begin>item;
+                while ((item <= <for-end>item))
+                {
+                    {
+                        list.Items.Add(new (TextItem^)(("Item " & item)));
+                    }
+                    (item = (item + 1));
+                }
+            }
         }
 
         delete
