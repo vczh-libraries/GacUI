@@ -199,12 +199,32 @@ Mouse Click Events
 			_ ## PREFIX ## Down(position);\
 			_ ## PREFIX ## Up(position);\
 		}\
-		void PREFIX ##DBClick(Nullable<NativePoint> position = {})\
+		void PREFIX ## Click(Nullable<NativePoint> position, bool ctrl, bool shift, bool alt)\
+		{\
+			if (ctrl) _KeyDown(VKEY::KEY_CONTROL);\
+			if (shift) _KeyDown(VKEY::KEY_SHIFT);\
+			if (alt) _KeyDown(VKEY::KEY_MENU);\
+			PREFIX ## Click(position);\
+			if (alt) _KeyUp(VKEY::KEY_MENU);\
+			if (shift) _KeyUp(VKEY::KEY_SHIFT);\
+			if (ctrl) _KeyUp(VKEY::KEY_CONTROL);\
+		}\
+		void PREFIX ## DBClick(Nullable<NativePoint> position = {})\
 		{\
 			_ ## PREFIX ## Down(position);\
 			_ ## PREFIX ## Up(position);\
 			_ ## PREFIX ## DBClick(position);\
 			_ ## PREFIX ## Up(position);\
+		}\
+		void PREFIX ## DBClick(Nullable<NativePoint> position, bool ctrl, bool shift, bool alt)\
+		{\
+			if (ctrl) _KeyDown(VKEY::KEY_CONTROL);\
+			if (shift) _KeyDown(VKEY::KEY_SHIFT);\
+			if (alt) _KeyDown(VKEY::KEY_MENU);\
+			PREFIX ## DBClick(position);\
+			if (alt) _KeyUp(VKEY::KEY_MENU);\
+			if (shift) _KeyUp(VKEY::KEY_SHIFT);\
+			if (ctrl) _KeyUp(VKEY::KEY_CONTROL);\
 		}\
 
 		DEFINE_MOUSE_ACTIONS(L, left, Left);

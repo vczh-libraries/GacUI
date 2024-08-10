@@ -291,18 +291,14 @@ TEST_FILE
 					TEST_ASSERT(listControl->GetArranger()->GetVisibleIndex(itemStyle) == itemIndex);
 					auto location = protocol->LocationOf(itemStyle);
 
-					if (ctrl) protocol->_KeyDown(VKEY::KEY_CONTROL);
-					if (shift) protocol->_KeyDown(VKEY::KEY_SHIFT);
 					if (leftButton)
 					{
-						protocol->LClick(location);
+						protocol->LClick(location, ctrl, shift, false);
 					}
 					else
 					{
-						protocol->RClick(location);
+						protocol->RClick(location, ctrl, shift, false);
 					}
-					if (shift) protocol->_KeyUp(VKEY::KEY_SHIFT);
-					if (ctrl) protocol->_KeyUp(VKEY::KEY_CONTROL);
 				};
 
 				protocol->OnNextIdleFrame(L"Ready", [=]()
@@ -690,18 +686,14 @@ TEST_FILE
 					TEST_ASSERT(listControl->GetArranger()->GetVisibleIndex(itemStyle) == itemIndex);
 					auto location = protocol->LocationOf(itemStyle);
 
-					if (ctrl) protocol->_KeyDown(VKEY::KEY_CONTROL);
-					if (shift) protocol->_KeyDown(VKEY::KEY_SHIFT);
 					if (leftButton)
 					{
-						protocol->LClick(location);
+						protocol->LClick(location, ctrl, shift, false);
 					}
 					else
 					{
-						protocol->RClick(location);
+						protocol->RClick(location, ctrl, shift, false);
 					}
-					if (shift) protocol->_KeyUp(VKEY::KEY_SHIFT);
-					if (ctrl) protocol->_KeyUp(VKEY::KEY_CONTROL);
 				};
 
 				protocol->OnNextIdleFrame(L"Ready", [=]()
