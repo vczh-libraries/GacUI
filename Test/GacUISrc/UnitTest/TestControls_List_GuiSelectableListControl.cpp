@@ -30,7 +30,7 @@ TEST_FILE
 </Resource>
 )GacUISrc";
 
-	TEST_CATEGORY(L"GuiSelectableListControl")
+	TEST_CATEGORY(L"GuiSelectableListControl (SingleSelect)")
 	{
 		TEST_CASE(L"Properties")
 		{
@@ -43,7 +43,27 @@ TEST_FILE
 				});
 			});
 			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
-				WString::Unmanaged(L"Controls/List/GuiSelectableListControl/Properties"),
+				WString::Unmanaged(L"Controls/List/GuiSelectableListControl/SingleSelect/Properties"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resourceListControl
+				);
+		});
+	});
+
+	TEST_CATEGORY(L"GuiSelectableListControl (MultiSelect)")
+	{
+		TEST_CASE(L"Properties")
+		{
+			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					window->Hide();
+				});
+			});
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Controls/List/GuiSelectableListControl/MultiSelect/Properties"),
 				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
 				resourceListControl
 				);
