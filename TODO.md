@@ -59,7 +59,7 @@
 - Non-editing control unit test (using DarkSkin)
   - List
     - GuiListControl (`MouseWheel` remaining)
-      - ItemTemplate, `Context`, `Enabled`, `Font`, `Arranger`, `Axis`, `DisplayItemBackground`
+      - ItemTemplate, `Arranger`, `Axis`
     - TextList
       - ItemTemplate with `Checked`
       - Item manipulation
