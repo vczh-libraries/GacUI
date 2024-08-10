@@ -283,61 +283,60 @@ TEST_FILE
 		{
 			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
 			{
-				protocol->OnNextIdleFrame(L"Ready", [=]()
+				auto SelectItemsByClick = [=](vint itemIndex, bool ctrl, bool shift, bool leftButton)
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+					auto itemStyle = listControl->GetArranger()->GetVisibleStyle(itemIndex);
+					TEST_ASSERT(itemStyle != nullptr);
+					TEST_ASSERT(listControl->GetArranger()->GetVisibleIndex(itemStyle) == itemIndex);
+					auto location = protocol->LocationOf(itemStyle);
 
-					listControl->SelectItemsByClick(0, false, false, true);
+					if (ctrl) protocol->_KeyDown(VKEY::KEY_CONTROL);
+					if (shift) protocol->_KeyDown(VKEY::KEY_SHIFT);
+					if (leftButton)
+					{
+						protocol->LClick(location);
+					}
+					else
+					{
+						protocol->RClick(location);
+					}
+					if (shift) protocol->_KeyUp(VKEY::KEY_SHIFT);
+					if (ctrl) protocol->_KeyUp(VKEY::KEY_CONTROL);
+				};
+
+				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					SelectItemsByClick(0, false, false, true);
 				});
 				protocol->OnNextIdleFrame(L"Click 1st", [=]()
 				{
-					auto window = GetApplication()->GetMainWindow();
-					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
-
-					listControl->SelectItemsByClick(2, true, false, true);
+					SelectItemsByClick(2, true, false, true);
 				});
 				protocol->OnNextIdleFrame(L"Ctrl+Click 3rd", [=]()
 				{
-					auto window = GetApplication()->GetMainWindow();
-					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
-
-					listControl->SelectItemsByClick(4, true, false, true);
+					SelectItemsByClick(4, true, false, true);
 				});
 				protocol->OnNextIdleFrame(L"Ctrl+Click 5th", [=]()
 				{
-					auto window = GetApplication()->GetMainWindow();
-					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
-
-					listControl->SelectItemsByClick(6, true, true, true);
+					SelectItemsByClick(6, true, true, true);
 				});
 				protocol->OnNextIdleFrame(L"Ctrl+Shift+Click 7th", [=]()
 				{
-					auto window = GetApplication()->GetMainWindow();
-					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
-
-					listControl->SelectItemsByClick(5, true, false, true);
+					SelectItemsByClick(5, true, false, true);
 				});
 				protocol->OnNextIdleFrame(L"Ctrl+Click 6th", [=]()
 				{
-					auto window = GetApplication()->GetMainWindow();
-					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
-
-					listControl->SelectItemsByClick(1, true, true, true);
+					SelectItemsByClick(1, true, true, true);
 				});
 				protocol->OnNextIdleFrame(L"Ctrl+Shift+Click 2nd", [=]()
 				{
-					auto window = GetApplication()->GetMainWindow();
-					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
-
-					listControl->SelectItemsByClick(5, false, false, true);
+					SelectItemsByClick(5, false, false, true);
 				});
 				protocol->OnNextIdleFrame(L"Click 6th", [=]()
 				{
-					auto window = GetApplication()->GetMainWindow();
-					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
-
-					listControl->SelectItemsByClick(1, true, true, true);
+					SelectItemsByClick(1, true, true, true);
 				});
 				protocol->OnNextIdleFrame(L"Ctrl+Shift+Click 2nd", [=]()
 				{
@@ -684,62 +683,64 @@ TEST_FILE
 		{
 			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
 			{
+				auto SelectItemsByClick = [=](vint itemIndex, bool ctrl, bool shift, bool leftButton)
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+					auto itemStyle = listControl->GetArranger()->GetVisibleStyle(itemIndex);
+					TEST_ASSERT(itemStyle != nullptr);
+					TEST_ASSERT(listControl->GetArranger()->GetVisibleIndex(itemStyle) == itemIndex);
+					auto location = protocol->LocationOf(itemStyle);
+
+					if (ctrl) protocol->_KeyDown(VKEY::KEY_CONTROL);
+					if (shift) protocol->_KeyDown(VKEY::KEY_SHIFT);
+					if (leftButton)
+					{
+						protocol->LClick(location);
+					}
+					else
+					{
+						protocol->RClick(location);
+					}
+					if (shift) protocol->_KeyUp(VKEY::KEY_SHIFT);
+					if (ctrl) protocol->_KeyUp(VKEY::KEY_CONTROL);
+				};
+
 				protocol->OnNextIdleFrame(L"Ready", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
 					listControl->SetMultiSelect(true);
 
-					listControl->SelectItemsByClick(0, false, false, true);
+					SelectItemsByClick(0, false, false, true);
 				});
 				protocol->OnNextIdleFrame(L"Click 1st", [=]()
 				{
-					auto window = GetApplication()->GetMainWindow();
-					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
-
-					listControl->SelectItemsByClick(2, true, false, true);
+					SelectItemsByClick(2, true, false, true);
 				});
 				protocol->OnNextIdleFrame(L"Ctrl+Click 3rd", [=]()
 				{
-					auto window = GetApplication()->GetMainWindow();
-					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
-
-					listControl->SelectItemsByClick(4, true, false, true);
+					SelectItemsByClick(4, true, false, true);
 				});
 				protocol->OnNextIdleFrame(L"Ctrl+Click 5th", [=]()
 				{
-					auto window = GetApplication()->GetMainWindow();
-					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
-
-					listControl->SelectItemsByClick(6, true, true, true);
+					SelectItemsByClick(6, true, true, true);
 				});
 				protocol->OnNextIdleFrame(L"Ctrl+Shift+Click 7th", [=]()
 				{
-					auto window = GetApplication()->GetMainWindow();
-					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
-
-					listControl->SelectItemsByClick(5, true, false, true);
+					SelectItemsByClick(5, true, false, true);
 				});
 				protocol->OnNextIdleFrame(L"Ctrl+Click 6th", [=]()
 				{
-					auto window = GetApplication()->GetMainWindow();
-					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
-
-					listControl->SelectItemsByClick(1, true, true, true);
+					SelectItemsByClick(1, true, true, true);
 				});
 				protocol->OnNextIdleFrame(L"Ctrl+Shift+Click 2nd", [=]()
 				{
-					auto window = GetApplication()->GetMainWindow();
-					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
-
-					listControl->SelectItemsByClick(5, false, false, true);
+					SelectItemsByClick(5, false, false, true);
 				});
 				protocol->OnNextIdleFrame(L"Click 6th", [=]()
 				{
-					auto window = GetApplication()->GetMainWindow();
-					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
-
-					listControl->SelectItemsByClick(1, true, true, true);
+					SelectItemsByClick(1, true, true, true);
 				});
 				protocol->OnNextIdleFrame(L"Ctrl+Shift+Click 2nd", [=]()
 				{

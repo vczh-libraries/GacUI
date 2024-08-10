@@ -2608,7 +2608,7 @@
             "ElementDesc_SolidBorder",
             {
               "id": 22,
-              "borderColor": "#54545C",
+              "borderColor": "#1C97EA",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
@@ -4821,7 +4821,7 @@
             "ElementDesc_SolidBorder",
             {
               "id": 22,
-              "borderColor": "#54545C",
+              "borderColor": "#1C97EA",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
@@ -7034,7 +7034,7 @@
             "ElementDesc_SolidBorder",
             {
               "id": 22,
-              "borderColor": "#54545C",
+              "borderColor": "#1C97EA",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
@@ -9247,7 +9247,7 @@
             "ElementDesc_SolidBorder",
             {
               "id": 22,
-              "borderColor": "#54545C",
+              "borderColor": "#1C97EA",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
@@ -11460,7 +11460,7 @@
             "ElementDesc_SolidBorder",
             {
               "id": 22,
-              "borderColor": "#54545C",
+              "borderColor": "#1C97EA",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
@@ -11755,7 +11755,7 @@
             "ElementDesc_SolidBackground",
             {
               "id": 43,
-              "backgroundColor": "#00000000",
+              "backgroundColor": "#3F3F46",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
@@ -13673,7 +13673,7 @@
             "ElementDesc_SolidBorder",
             {
               "id": 22,
-              "borderColor": "#54545C",
+              "borderColor": "#1C97EA",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
@@ -15886,7 +15886,7 @@
             "ElementDesc_SolidBorder",
             {
               "id": 22,
-              "borderColor": "#54545C",
+              "borderColor": "#1C97EA",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
@@ -18099,7 +18099,7 @@
             "ElementDesc_SolidBorder",
             {
               "id": 22,
-              "borderColor": "#54545C",
+              "borderColor": "#1C97EA",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
@@ -20312,7 +20312,7 @@
             "ElementDesc_SolidBorder",
             {
               "id": 22,
-              "borderColor": "#54545C",
+              "borderColor": "#1C97EA",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
@@ -20487,7 +20487,7 @@
             "ElementDesc_SolidBackground",
             {
               "id": 35,
-              "backgroundColor": "#00000000",
+              "backgroundColor": "#3F3F46",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
