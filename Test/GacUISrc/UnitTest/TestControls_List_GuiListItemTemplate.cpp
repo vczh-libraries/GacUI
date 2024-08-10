@@ -35,12 +35,12 @@ TEST_FILE
           <Bounds AlignmentToParent="left:5 top:1 right:5 bottom:1" MinSizeLimitation="LimitToElement">
             <SolidLabel Font-bind="self.Font" Ellipse="true">
               <att.Text-format><![CDATA[
-                $(self.Text)$(' ' & cast string (self.Context) ?? '')
+                [$(self.Index)] = $(self.Text)$(' ' & cast string (self.Context) ?? '')
               ]]></att.Text-format>
               <att.Color-bind><![CDATA[
                 cast Color (
                   not self.VisuallyEnabled ? "#888888" :
-                  not self.Selected ? "#FFFFFF" :
+                  not self.Selected ? self.TextColor :
                   "#88FF88"
                 )
               ]]></att.Color-bind>
