@@ -103,6 +103,86 @@ TEST_FILE
 				resourceListControl
 				);
 		});
+
+		TEST_CASE(L"SelectItemsByClick")
+		{
+			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+
+					listControl->SelectItemsByClick(0, false, false, false);
+				});
+				protocol->OnNextIdleFrame(L"Click 1st", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+
+					listControl->SelectItemsByClick(2, true, false, false);
+				});
+				protocol->OnNextIdleFrame(L"Ctrl+Click 3rd", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+
+					listControl->SelectItemsByClick(4, true, false, false);
+				});
+				protocol->OnNextIdleFrame(L"Ctrl+Click 5th", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+
+					listControl->SelectItemsByClick(6, true, true, false);
+				});
+				protocol->OnNextIdleFrame(L"Ctrl+Shift+Click 7th", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+
+					listControl->SelectItemsByClick(5, true, false, false);
+				});
+				protocol->OnNextIdleFrame(L"Ctrl+Click 6th", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+
+					listControl->SelectItemsByClick(1, true, true, false);
+				});
+				protocol->OnNextIdleFrame(L"Ctrl+Shift+Click 2nd", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+
+					listControl->SelectItemsByClick(5, false, false, false);
+				});
+				protocol->OnNextIdleFrame(L"Click 6th", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+
+					listControl->SelectItemsByClick(1, true, true, false);
+				});
+				protocol->OnNextIdleFrame(L"Ctrl+Shift+Click 2nd", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+
+					listControl->ClearSelection();
+				});
+				protocol->OnNextIdleFrame(L"Clear", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					window->Hide();
+				});
+			});
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Controls/List/GuiSelectableListControl/SingleSelect/SelectItemsByClick"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resourceListControl
+				);
+		});
 	});
 
 	TEST_CATEGORY(L"GuiSelectableListControl (MultiSelect)")
@@ -117,6 +197,7 @@ TEST_FILE
 					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
 					TEST_ASSERT(listControl->GetMultiSelect() == false);
 					listControl->SetMultiSelect(true);
+					TEST_ASSERT(listControl->GetMultiSelect() == true);
 
 					listControl->SetSelected(0, true);
 				});
@@ -156,6 +237,87 @@ TEST_FILE
 			});
 			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
 				WString::Unmanaged(L"Controls/List/GuiSelectableListControl/MultiSelect/Properties"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resourceListControl
+				);
+		});
+
+		TEST_CASE(L"SelectItemsByClick")
+		{
+			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+					listControl->SetMultiSelect(true);
+
+					listControl->SelectItemsByClick(0, false, false, false);
+				});
+				protocol->OnNextIdleFrame(L"Click 1st", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+
+					listControl->SelectItemsByClick(2, true, false, false);
+				});
+				protocol->OnNextIdleFrame(L"Ctrl+Click 3rd", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+
+					listControl->SelectItemsByClick(4, true, false, false);
+				});
+				protocol->OnNextIdleFrame(L"Ctrl+Click 5th", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+
+					listControl->SelectItemsByClick(6, true, true, false);
+				});
+				protocol->OnNextIdleFrame(L"Ctrl+Shift+Click 7th", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+
+					listControl->SelectItemsByClick(5, true, false, false);
+				});
+				protocol->OnNextIdleFrame(L"Ctrl+Click 6th", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+
+					listControl->SelectItemsByClick(1, true, true, false);
+				});
+				protocol->OnNextIdleFrame(L"Ctrl+Shift+Click 2nd", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+
+					listControl->SelectItemsByClick(5, false, false, false);
+				});
+				protocol->OnNextIdleFrame(L"Click 6th", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+
+					listControl->SelectItemsByClick(1, true, true, false);
+				});
+				protocol->OnNextIdleFrame(L"Ctrl+Shift+Click 2nd", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+
+					listControl->ClearSelection();
+				});
+				protocol->OnNextIdleFrame(L"Clear", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					window->Hide();
+				});
+			});
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Controls/List/GuiSelectableListControl/MultiSelect/SelectItemsByClick"),
 				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
 				resourceListControl
 				);
