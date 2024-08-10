@@ -59,9 +59,10 @@
 - Non-editing control unit test (using DarkSkin)
   - List
     - GuiListControl (`MouseWheel` remaining)
-    - GuiSelectableListControl
+      - ItemTemplate, `Context`, `Enabled`, `Font`, `Arranger`, `Axis`, `DisplayItemBackground`
     - TextList
-      - ItemTemplate
+      - ItemTemplate with `Checked`
+      - Item manipulation
     - ListView
     - TreeView
     - BindableTextList
@@ -74,6 +75,12 @@
     - GuiDateComboBox
   - Ribbon ...
   - Check all control key operation, ensure accessibility.
+- More unit test
+  - `GuiControl` and servives
+  - `[TAB]`
+  - `ControlThemeName` property
+  - Multiple active `GuiWindow`, modal, order, `Enabled`
+  - `GuiTab` item manipulation and `[TAB]`
 
 ## Release Milestone (1.2.11.0)
 
