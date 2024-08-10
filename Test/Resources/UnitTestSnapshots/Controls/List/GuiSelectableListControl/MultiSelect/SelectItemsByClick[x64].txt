@@ -78,7 +78,7 @@ namespace gacuisrc_unittest
                             }
                         }
                     }
-                    (self.Text = title);
+                    (self.Text = (title & ((((" [" & list.SelectedItemIndex) & " -> ") & list.SelectedItemText) & "]")));
                 };
                 attach(list.SelectionChanged, <event-handler>);
             }

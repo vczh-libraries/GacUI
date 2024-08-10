@@ -2596,7 +2596,7 @@
               "ellipse": true,
               "multiline": false,
               "font": {"fontFamily": "Segoe WP SemiLight", "size": 14, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "[1] 1",
+              "text": "[1] 1 [1 -> Item 2]",
               "measuringRequest": "FontHeight"
             }
           ]
@@ -4809,7 +4809,7 @@
               "ellipse": true,
               "multiline": false,
               "font": {"fontFamily": "Segoe WP SemiLight", "size": 14, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "[2] 2",
+              "text": "[2] 2 [2 -> Item 3]",
               "measuringRequest": "FontHeight"
             }
           ]
@@ -7022,7 +7022,7 @@
               "ellipse": true,
               "multiline": false,
               "font": {"fontFamily": "Segoe WP SemiLight", "size": 14, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "[3] 3",
+              "text": "[3] 3 [3 -> Item 4]",
               "measuringRequest": "FontHeight"
             }
           ]
@@ -9235,7 +9235,7 @@
               "ellipse": true,
               "multiline": false,
               "font": {"fontFamily": "Segoe WP SemiLight", "size": 14, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "[4] 4",
+              "text": "[4] 4 [4 -> Item 5]",
               "measuringRequest": "FontHeight"
             }
           ]
@@ -11448,7 +11448,7 @@
               "ellipse": true,
               "multiline": false,
               "font": {"fontFamily": "Segoe WP SemiLight", "size": 14, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "[5] 5",
+              "text": "[5] 5 [5 -> Item 6]",
               "measuringRequest": "FontHeight"
             }
           ]
@@ -13661,7 +13661,7 @@
               "ellipse": true,
               "multiline": false,
               "font": {"fontFamily": "Segoe WP SemiLight", "size": 14, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "[6] 4",
+              "text": "[6] 4 [4 -> Item 5]",
               "measuringRequest": "FontHeight"
             }
           ]
@@ -15874,7 +15874,7 @@
               "ellipse": true,
               "multiline": false,
               "font": {"fontFamily": "Segoe WP SemiLight", "size": 14, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "[7] 0",
+              "text": "[7] 0 [0 -> Item 1]",
               "measuringRequest": "FontHeight"
             }
           ]
@@ -18087,7 +18087,7 @@
               "ellipse": true,
               "multiline": false,
               "font": {"fontFamily": "Segoe WP SemiLight", "size": 14, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "[8] 14",
+              "text": "[8] 14 [14 -> Item 15]",
               "measuringRequest": "FontHeight"
             }
           ]
@@ -20300,7 +20300,7 @@
               "ellipse": true,
               "multiline": false,
               "font": {"fontFamily": "Segoe WP SemiLight", "size": 14, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "[9] 19",
+              "text": "[9] 19 [19 -> Item 20]",
               "measuringRequest": "FontHeight"
             }
           ]
@@ -22513,7 +22513,7 @@
               "ellipse": true,
               "multiline": false,
               "font": {"fontFamily": "Segoe WP SemiLight", "size": 14, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "[10] 5",
+              "text": "[10] 5 [5 -> Item 6]",
               "measuringRequest": "FontHeight"
             }
           ]
@@ -24726,7 +24726,7 @@
               "ellipse": true,
               "multiline": false,
               "font": {"fontFamily": "Segoe WP SemiLight", "size": 14, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "[11]",
+              "text": "[11] [-1 -> ]",
               "measuringRequest": "FontHeight"
             }
           ]

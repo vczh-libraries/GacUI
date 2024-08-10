@@ -40,7 +40,7 @@ TEST_FILE
             {
               title = title & $" $(item)";
             }
-            self.Text = title;
+            self.Text = title & $" [$(list.SelectedItemIndex) -> $(list.SelectedItemText)]";
           }]]></ev.SelectionChanged-eval>
         </TextList>
       </Window>
