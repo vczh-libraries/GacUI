@@ -772,70 +772,61 @@ TEST_FILE
 					listControl->SetMultiSelect(true);
 					listControl->SetFocused();
 
-					listControl->SelectItemsByKey(VKEY::KEY_DOWN, false, false);
+					protocol->KeyPress(VKEY::KEY_DOWN, false, false, false);
 				});
 				protocol->OnNextIdleFrame(L"[DOWN]", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
-					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
 
-					listControl->SelectItemsByKey(VKEY::KEY_DOWN, false, false);
+					protocol->KeyPress(VKEY::KEY_DOWN, false, false, false);
 				});
 				protocol->OnNextIdleFrame(L"[DOWN]", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
-					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
 
-					listControl->SelectItemsByKey(VKEY::KEY_DOWN, true, false);
+					protocol->KeyPress(VKEY::KEY_DOWN, true, false, false);
 				});
 				protocol->OnNextIdleFrame(L"[CTRL]+[DOWN]", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
-					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
 
-					listControl->SelectItemsByKey(VKEY::KEY_DOWN, false, true);
+					protocol->KeyPress(VKEY::KEY_DOWN, false, true, false);
 				});
 				protocol->OnNextIdleFrame(L"[SHIFT]+[DOWN]", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
-					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
 
-					listControl->SelectItemsByKey(VKEY::KEY_DOWN, true, true);
+					protocol->KeyPress(VKEY::KEY_DOWN, true, true, false);
 				});
 				protocol->OnNextIdleFrame(L"[CTRL]+[SHIFT]+[DOWN]", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
-					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
 
-					listControl->SelectItemsByKey(VKEY::KEY_UP, false, false);
+					protocol->KeyPress(VKEY::KEY_UP, false, false, false);
 				});
 				protocol->OnNextIdleFrame(L"[UP]", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
-					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
 
-					listControl->SelectItemsByKey(VKEY::KEY_HOME, true, false);
+					protocol->KeyPress(VKEY::KEY_HOME, true, false, false);
 				});
 				protocol->OnNextIdleFrame(L"[CTRL]+[HOME]", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
-					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
 
-					listControl->SelectItemsByKey(VKEY::KEY_NEXT, false, false);
+					protocol->KeyPress(VKEY::KEY_NEXT, false, false, false);
 				});
 				protocol->OnNextIdleFrame(L"[PAGE DOWN]", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
-					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
 
-					listControl->SelectItemsByKey(VKEY::KEY_END, false, true);
+					protocol->KeyPress(VKEY::KEY_END, false, true, false);
 				});
 				protocol->OnNextIdleFrame(L"[SHIFT]+[END]", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
-					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
 
-					listControl->SelectItemsByKey(VKEY::KEY_PRIOR, false, false);
+					protocol->KeyPress(VKEY::KEY_PRIOR, false, false, false);
 				});
 				protocol->OnNextIdleFrame(L"[PAGE UP]", [=]()
 				{
