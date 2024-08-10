@@ -331,7 +331,7 @@ namespace gacuisrc_unittest
 
                     func <bind-activator>() : (::system::Void)
                     {
-                        var <bind-activator-result> = (((((("\n                [" & <bind-cache>0.Index) & "] = ") & <bind-cache>1.Text) & "") & ((" " & (cast (string) <bind-cache>2.Context)) ?? "")) & "\n              ");
+                        var <bind-activator-result> = ((((("[" & <bind-cache>0.Index) & "] = ") & <bind-cache>1.Text) & "") & ((" " & (cast (string) <bind-cache>2.Context)) ?? ""));
                         ValueChanged(<bind-activator-result>);
                     }
 

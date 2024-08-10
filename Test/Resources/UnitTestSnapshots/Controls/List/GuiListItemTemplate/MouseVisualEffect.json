@@ -590,7 +590,7 @@
               "ellipse": true,
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "\n                [0] = Item 1\n              ",
+              "text": "[0] = Item 1",
               "measuringRequest": "FontHeight"
             }
           ]
@@ -631,7 +631,7 @@
               "ellipse": true,
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "\n                [1] = Item 2\n              ",
+              "text": "[1] = Item 2",
               "measuringRequest": "FontHeight"
             }
           ]
@@ -672,7 +672,7 @@
               "ellipse": true,
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "\n                [2] = Item 3\n              ",
+              "text": "[2] = Item 3",
               "measuringRequest": "FontHeight"
             }
           ]
@@ -713,7 +713,7 @@
               "ellipse": true,
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "\n                [3] = Item 4\n              ",
+              "text": "[3] = Item 4",
               "measuringRequest": "FontHeight"
             }
           ]
@@ -754,7 +754,7 @@
               "ellipse": true,
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "\n                [4] = Item 5\n              ",
+              "text": "[4] = Item 5",
               "measuringRequest": "FontHeight"
             }
           ]
@@ -795,7 +795,7 @@
               "ellipse": true,
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "\n                [5] = Item 6\n              ",
+              "text": "[5] = Item 6",
               "measuringRequest": "FontHeight"
             }
           ]
@@ -836,7 +836,7 @@
               "ellipse": true,
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "\n                [6] = Item 7\n              ",
+              "text": "[6] = Item 7",
               "measuringRequest": "FontHeight"
             }
           ]
@@ -877,7 +877,7 @@
               "ellipse": true,
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "\n                [7] = Item 8\n              ",
+              "text": "[7] = Item 8",
               "measuringRequest": "FontHeight"
             }
           ]
@@ -918,7 +918,7 @@
               "ellipse": true,
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "\n                [8] = Item 9\n              ",
+              "text": "[8] = Item 9",
               "measuringRequest": "FontHeight"
             }
           ]
@@ -959,7 +959,7 @@
               "ellipse": true,
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "\n                [9] = Item 10\n              ",
+              "text": "[9] = Item 10",
               "measuringRequest": "FontHeight"
             }
           ]
@@ -1000,7 +1000,7 @@
               "ellipse": true,
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "\n                [10] = Item 11\n              ",
+              "text": "[10] = Item 11",
               "measuringRequest": "FontHeight"
             }
           ]
@@ -1041,7 +1041,7 @@
               "ellipse": true,
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "\n                [11] = Item 12\n              ",
+              "text": "[11] = Item 12",
               "measuringRequest": "FontHeight"
             }
           ]
@@ -1082,7 +1082,7 @@
               "ellipse": true,
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "\n                [12] = Item 13\n              ",
+              "text": "[12] = Item 13",
               "measuringRequest": "FontHeight"
             }
           ]
@@ -1123,7 +1123,7 @@
               "ellipse": true,
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "\n                [13] = Item 14\n              ",
+              "text": "[13] = Item 14",
               "measuringRequest": "FontHeight"
             }
           ]
@@ -1164,7 +1164,7 @@
               "ellipse": true,
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "\n                [14] = Item 15\n              ",
+              "text": "[14] = Item 15",
               "measuringRequest": "FontHeight"
             }
           ]
@@ -1205,7 +1205,7 @@
               "ellipse": true,
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "\n                [15] = Item 16\n              ",
+              "text": "[15] = Item 16",
               "measuringRequest": "FontHeight"
             }
           ]
@@ -1246,7 +1246,7 @@
               "ellipse": true,
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "\n                [16] = Item 17\n              ",
+              "text": "[16] = Item 17",
               "measuringRequest": "FontHeight"
             }
           ]
@@ -3468,7 +3468,7 @@
               "ellipse": true,
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "\n                [0] = Item 1\n              ",
+              "text": "[0] = Item 1",
               "measuringRequest": "FontHeight"
             }
           ]
@@ -3509,7 +3509,7 @@
               "ellipse": true,
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "\n                [1] = Item 2\n              ",
+              "text": "[1] = Item 2",
               "measuringRequest": "FontHeight"
             }
           ]
@@ -3550,7 +3550,7 @@
               "ellipse": true,
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "\n                [2] = Item 3\n              ",
+              "text": "[2] = Item 3",
               "measuringRequest": "FontHeight"
             }
           ]
@@ -3591,7 +3591,7 @@
               "ellipse": true,
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "\n                [3] = Item 4\n              ",
+              "text": "[3] = Item 4",
               "measuringRequest": "FontHeight"
             }
           ]
@@ -3632,7 +3632,7 @@
               "ellipse": true,
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "\n                [4] = Item 5\n              ",
+              "text": "[4] = Item 5",
               "measuringRequest": "FontHeight"
             }
           ]
@@ -3673,7 +3673,7 @@
               "ellipse": true,
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "\n                [5] = Item 6\n              ",
+              "text": "[5] = Item 6",
               "measuringRequest": "FontHeight"
             }
           ]
@@ -3714,7 +3714,7 @@
               "ellipse": true,
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "\n                [6] = Item 7\n              ",
+              "text": "[6] = Item 7",
               "measuringRequest": "FontHeight"
             }
           ]
@@ -3755,7 +3755,7 @@
               "ellipse": true,
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "\n                [7] = Item 8\n              ",
+              "text": "[7] = Item 8",
               "measuringRequest": "FontHeight"
             }
           ]
@@ -3796,7 +3796,7 @@
               "ellipse": true,
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "\n                [8] = Item 9\n              ",
+              "text": "[8] = Item 9",
               "measuringRequest": "FontHeight"
             }
           ]
@@ -3837,7 +3837,7 @@
               "ellipse": true,
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "\n                [9] = Item 10\n              ",
+              "text": "[9] = Item 10",
               "measuringRequest": "FontHeight"
             }
           ]
@@ -3878,7 +3878,7 @@
               "ellipse": true,
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "\n                [10] = Item 11\n              ",
+              "text": "[10] = Item 11",
               "measuringRequest": "FontHeight"
             }
           ]
@@ -3919,7 +3919,7 @@
               "ellipse": true,
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "\n                [11] = Item 12\n              ",
+              "text": "[11] = Item 12",
               "measuringRequest": "FontHeight"
             }
           ]
@@ -3960,7 +3960,7 @@
               "ellipse": true,
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "\n                [12] = Item 13\n              ",
+              "text": "[12] = Item 13",
               "measuringRequest": "FontHeight"
             }
           ]
@@ -4001,7 +4001,7 @@
               "ellipse": true,
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "\n                [13] = Item 14\n              ",
+              "text": "[13] = Item 14",
               "measuringRequest": "FontHeight"
             }
           ]
@@ -4042,7 +4042,7 @@
               "ellipse": true,
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "\n                [14] = Item 15\n              ",
+              "text": "[14] = Item 15",
               "measuringRequest": "FontHeight"
             }
           ]
@@ -4083,7 +4083,7 @@
               "ellipse": true,
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "\n                [15] = Item 16\n              ",
+              "text": "[15] = Item 16",
               "measuringRequest": "FontHeight"
             }
           ]
@@ -4124,7 +4124,7 @@
               "ellipse": true,
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "\n                [16] = Item 17\n              ",
+              "text": "[16] = Item 17",
               "measuringRequest": "FontHeight"
             }
           ]
