@@ -460,10 +460,10 @@ TEST_FILE
 		{
 			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
 			{
-				NativePoint sd(22, 46);
-				NativePoint bd(22, 55);
-				NativePoint si(22, 172);
-				NativePoint bi(22, 163);
+				NativePoint sd(22, 52);
+				NativePoint bd(22, 61);
+				NativePoint si(22, 178);
+				NativePoint bi(22, 169);
 
 				protocol->OnNextIdleFrame(L"Ready", [=]()
 				{
