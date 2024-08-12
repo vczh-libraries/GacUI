@@ -78,7 +78,7 @@ TEST_FILE
             <att.Color-bind><![CDATA[
               cast Color (
                 not self.VisuallyEnabled ? "#00000000" :
-                not self.Selected ? "#00000000" :
+                not self.Selected ? "#000088" :
                 "#88FF88"
               )
             ]]></att.Color-bind>

@@ -233,7 +233,7 @@ namespace gacuisrc_unittest
 
                     func <bind-activator>() : (::system::Void)
                     {
-                        var <bind-activator-result> = (cast (Color) (!<bind-cache>0.VisuallyEnabled) ? "#00000000" : (!<bind-cache>1.Selected) ? "#00000000" : "#88FF88") of (::presentation::Color);
+                        var <bind-activator-result> = (cast (Color) (!<bind-cache>0.VisuallyEnabled) ? "#00000000" : (!<bind-cache>1.Selected) ? "#000088" : "#88FF88") of (::presentation::Color);
                         ValueChanged(<bind-activator-result>);
                     }
 
