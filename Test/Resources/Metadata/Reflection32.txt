@@ -7667,7 +7667,7 @@ class presentation::templates::GuiToolstripButtonTemplate : presentation::templa
     constructor () : presentation::templates::GuiToolstripButtonTemplate*;
 }
 
-class presentation::templates::GuiTreeItemTemplate : presentation::templates::GuiTextListItemTemplate {
+class presentation::templates::GuiTreeItemTemplate : presentation::templates::GuiListItemTemplate {
     event ExpandableChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
         Expandable,
     }
@@ -7680,20 +7680,26 @@ class presentation::templates::GuiTreeItemTemplate : presentation::templates::Gu
     event LevelChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
         Level,
     }
+    event TextColorChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        TextColor,
+    }
 
     property Expandable : system::Boolean { get:GetExpandable set:SetExpandable event:ExpandableChanged }
     property Expanding : system::Boolean { get:GetExpanding set:SetExpanding event:ExpandingChanged }
     property Image : presentation::GuiImageData^ { get:GetImage set:SetImage event:ImageChanged }
     property Level : system::Int32 { get:GetLevel set:SetLevel event:LevelChanged }
+    property TextColor : presentation::Color { get:GetTextColor set:SetTextColor event:TextColorChanged }
 
     function GetExpandable() : system::Boolean;
     function GetExpanding() : system::Boolean;
     function GetImage() : presentation::GuiImageData^;
     function GetLevel() : system::Int32;
+    function GetTextColor() : presentation::Color;
     function SetExpandable(value : system::Boolean) : system::Void;
     function SetExpanding(value : system::Boolean) : system::Void;
     function SetImage(value : presentation::GuiImageData^) : system::Void;
     function SetLevel(value : system::Int32) : system::Void;
+    function SetTextColor(value : presentation::Color) : system::Void;
 
     constructor () : presentation::templates::GuiTreeItemTemplate*;
 }

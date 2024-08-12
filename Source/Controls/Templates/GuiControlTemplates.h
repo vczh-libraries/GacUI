@@ -186,7 +186,7 @@ Templates
 #define GUI_ITEM_TEMPLATE_DECL(F)\
 			F(GuiListItemTemplate,				GuiTemplate)				\
 			F(GuiTextListItemTemplate,			GuiListItemTemplate)		\
-			F(GuiTreeItemTemplate,				GuiTextListItemTemplate)	\
+			F(GuiTreeItemTemplate,				GuiListItemTemplate)		\
 			F(GuiGridCellTemplate,				GuiControlTemplate)			\
 			F(GuiGridVisualizerTemplate,		GuiGridCellTemplate)		\
 			F(GuiGridEditorTemplate,			GuiGridCellTemplate)		\
@@ -340,6 +340,7 @@ Item Template
 				F(GuiTextListItemTemplate, bool, Checked, false)\
 				
 #define GuiTreeItemTemplate_PROPERTIES(F)\
+				F(GuiTreeItemTemplate, Color, TextColor, {})\
 				F(GuiTreeItemTemplate, bool, Expanding, false)\
 				F(GuiTreeItemTemplate, bool, Expandable, false)\
 				F(GuiTreeItemTemplate, vint, Level, 0)\

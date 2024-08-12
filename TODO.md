@@ -7,6 +7,7 @@
   - Fix button behavior when not IgnoreChildControlMouseEvents.
   - Fix control not losing focus when disabled.
   - Fix progress bar is focusable.
+  - `GuiTreeItemTemplate` change base class to `GuiListItemTemplate`
 
 ## Known Issues
 
@@ -63,16 +64,21 @@
     - TextList
       - ItemTemplate with `Checked`
       - Item manipulation
+      - Bindable
     - ListView
+      - Item manipulation
+      - Bindable
     - TreeView
-    - BindableTextList
-    - BindableListView
-    - BindableTreeView
-    - BindableDataGrid
+      - ItemTemplate with `Expanding`, `Expandable`, `Level`, `Image`
+      - Item manipulation
+      - Bindable
   - Menu, Toolstrip and Navigation ...
     - ComboBox
     - GuiDatePicker
     - GuiDateComboBox
+  - BindableDataGrid
+    - ItemTemplate with properties
+    - Item manipulation
   - Ribbon ...
   - Check all control key operation, ensure accessibility.
 - More unit test
@@ -81,6 +87,8 @@
   - `ControlThemeName` property
   - Multiple active `GuiWindow`, modal, order, `Enabled`
   - `GuiTab` item manipulation and `[TAB]`
+- Document
+  - `GuiTreeItemTemplate` change base class to `GuiListItemTemplate`
 
 ## Release Milestone (1.2.11.0)
 
