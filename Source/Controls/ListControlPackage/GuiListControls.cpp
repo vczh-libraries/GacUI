@@ -145,9 +145,7 @@ GuiListControl::ItemCallback
 
 			void GuiListControl::ItemCallback::SetViewLocation(Point value)
 			{
-				Rect virtualRect(value, listControl->GetViewSize());
-				Rect realRect = listControl->axis->VirtualRectToRealRect(listControl->fullSize, virtualRect);
-				listControl->SetViewPosition(realRect.LeftTop());
+				listControl->SetViewPosition(value);
 			}
 
 			compositions::GuiGraphicsComposition* GuiListControl::ItemCallback::GetContainerComposition()
@@ -246,11 +244,7 @@ GuiListControl
 			{
 				if (itemArranger)
 				{
-					auto realFullSize = fullSize;
-					if (realFullSize.x < viewBounds.Width()) realFullSize.x = viewBounds.Width();
-					if (realFullSize.y < viewBounds.Height()) realFullSize.y = viewBounds.Height();
-					Rect newBounds = axis->RealRectToVirtualRect(realFullSize, viewBounds);
-					itemArranger->OnViewChanged(newBounds);
+					itemArranger->OnViewChanged(viewBounds);
 				}
 			}
 
