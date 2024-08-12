@@ -321,6 +321,10 @@ GuiVirtualRepeatCompositionBase
 						needToUpdateTotalSize = (Layout_EndPlaceItem(false, viewBounds, startIndex) == VirtualRepeatEndPlaceItemResult::TotalSizeUpdated) || needToUpdateTotalSize;
 					}
 				}
+				else if (realFullSize != Size(0, 0))
+				{
+					needToUpdateTotalSize = true;
+				}
 
 				if (needToUpdateTotalSize)
 				{

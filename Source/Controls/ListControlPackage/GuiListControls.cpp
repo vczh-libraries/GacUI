@@ -272,6 +272,13 @@ GuiListControl
 				itemStyleProperty = styleProperty;
 				itemArranger = arranger;
 
+				if (itemArranger)
+				{
+					itemArranger->AttachListControl(this);
+					itemArranger->SetCallback(callback.Obj());
+					itemProvider->AttachCallback(itemArranger.Obj());
+				}
+
 				if (auto scroll = GetVerticalScroll())
 				{
 					scroll->SetPosition(0);
@@ -279,13 +286,6 @@ GuiListControl
 				if (auto scroll = GetHorizontalScroll())
 				{
 					scroll->SetPosition(0);
-				}
-
-				if (itemArranger)
-				{
-					itemArranger->AttachListControl(this);
-					itemArranger->SetCallback(callback.Obj());
-					itemProvider->AttachCallback(itemArranger.Obj());
 				}
 				CalculateView();
 			}

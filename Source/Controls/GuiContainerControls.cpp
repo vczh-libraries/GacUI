@@ -499,7 +499,10 @@ GuiScrollView
 				auto ct = TypedControlTemplateObject(true);
 				auto hScroll = ct->GetHorizontalScroll();
 				auto vScroll = ct->GetVerticalScroll();
-				return Point(hScroll ? hScroll->GetPosition() : 0, vScroll ? vScroll->GetPosition() : 0);
+				return Point(
+					(hScroll && hScroll->GetEnabled()) ? hScroll->GetPosition() : 0,
+					(vScroll && vScroll->GetEnabled()) ? vScroll->GetPosition() : 0
+					);
 			}
 
 			void GuiScrollView::SetViewPosition(Point value)

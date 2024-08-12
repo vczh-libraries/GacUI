@@ -132,8 +132,8 @@
     [130, "SolidLabel"],
     [131, "SolidBackground"],
     [132, "SolidLabel"],
-    [133, "SolidBackground"],
-    [134, "SolidLabel"]
+    [137, "SolidBackground"],
+    [138, "SolidLabel"]
   ],
   "imageCreations": [],
   "imageMetadatas": [],
@@ -20333,22 +20333,22 @@
           ]
         ],
         [
-          133,
+          137,
           [
             "ElementDesc_SolidBackground",
             {
-              "id": 133,
+              "id": 137,
               "backgroundColor": "#3399FF",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
         ],
         [
-          134,
+          138,
           [
             "ElementDesc_SolidLabel",
             {
-              "id": 134,
+              "id": 138,
               "textColor": "#F1F1F1",
               "horizontalAlignment": "Left",
               "verticalAlignment": "Center",
@@ -21458,22 +21458,22 @@
           "RenderingCommand_Element",
           {
             "rendering": {
-              "id": 133,
+              "id": 137,
               "bounds": {"x1": 259, "y1": 285, "x2": 445, "y2": 305},
               "areaClippedByParent": {"x1": 259, "y1": 285, "x2": 445, "y2": 305}
             },
-            "element": 133
+            "element": 137
           }
         ],
         [
           "RenderingCommand_Element",
           {
             "rendering": {
-              "id": 134,
+              "id": 138,
               "bounds": {"x1": 264, "y1": 287, "x2": 445, "y2": 303},
               "areaClippedByParent": {"x1": 259, "y1": 285, "x2": 445, "y2": 305}
             },
-            "element": 134
+            "element": 138
           }
         ],
         [
@@ -22352,14 +22352,14 @@
                                       {
                                         "hitTestResult": null,
                                         "cursor": null,
-                                        "element": 133,
+                                        "element": 137,
                                         "bounds": {"x1": 259, "y1": 285, "x2": 445, "y2": 305},
                                         "validArea": {"x1": 259, "y1": 285, "x2": 445, "y2": 305},
                                         "children": [
                                           {
                                             "hitTestResult": null,
                                             "cursor": null,
-                                            "element": 134,
+                                            "element": 138,
                                             "bounds": {"x1": 264, "y1": 287, "x2": 445, "y2": 303},
                                             "validArea": {"x1": 264, "y1": 287, "x2": 445, "y2": 303},
                                             "children": null
