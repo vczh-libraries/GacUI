@@ -391,5 +391,119 @@ TEST_FILE
 				resourceGridItemTemplate
 				);
 		});
+
+		TEST_CASE(L"ArrangerAndAxisWithScrolls")
+		{
+			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					Value::From(window).Invoke(L"AddItems", (Value_xs(), BoxValue<vint>(100)));
+				});
+				protocol->OnNextIdleFrame(L"20 Items", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+					listControl->SetArranger(Ptr(new FixedSizeMultiColumnItemArranger));
+				});
+				protocol->OnNextIdleFrame(L"Grid", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+					listControl->SetAxis(Ptr(new GuiAxis(AxisDirection::DownLeft)));
+				});
+				protocol->OnNextIdleFrame(L"Rotate (DownLeft)", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+					listControl->EnsureItemVisible(0);
+					listControl->SetSelected(0, true);
+				});
+				protocol->OnNextIdleFrame(L"Select First", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+					listControl->EnsureItemVisible(99);
+					listControl->SetSelected(99, true);
+				});
+				protocol->OnNextIdleFrame(L"Select Last", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+					listControl->SetAxis(Ptr(new GuiAxis(AxisDirection::LeftUp)));
+				});
+				protocol->OnNextIdleFrame(L"Rotate (LeftUp)", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+					listControl->EnsureItemVisible(0);
+					listControl->SetSelected(0, true);
+				});
+				protocol->OnNextIdleFrame(L"Select First", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+					listControl->EnsureItemVisible(99);
+					listControl->SetSelected(99, true);
+				});
+				protocol->OnNextIdleFrame(L"Select Last", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+					listControl->SetAxis(Ptr(new GuiAxis(AxisDirection::UpRight)));
+				});
+				protocol->OnNextIdleFrame(L"Rotate (UpRight)", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+					listControl->EnsureItemVisible(0);
+					listControl->SetSelected(0, true);
+				});
+				protocol->OnNextIdleFrame(L"Select First", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+					listControl->EnsureItemVisible(99);
+					listControl->SetSelected(99, true);
+				});
+				protocol->OnNextIdleFrame(L"Select Last", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+					listControl->SetAxis(Ptr(new GuiAxis(AxisDirection::RightDown)));
+				});
+				protocol->OnNextIdleFrame(L"Rotate (RightDown)", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+					listControl->EnsureItemVisible(0);
+					listControl->SetSelected(0, true);
+				});
+				protocol->OnNextIdleFrame(L"Select First", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+					listControl->EnsureItemVisible(99);
+					listControl->SetSelected(99, true);
+				});
+				protocol->OnNextIdleFrame(L"Select Last", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+					listControl->SetArranger(Ptr(new FixedHeightItemArranger));
+				});
+				protocol->OnNextIdleFrame(L"Reset", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					window->Hide();
+				});
+			});
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Controls/List/GuiListItemTemplate/ArrangerAndAxisWithScrolls"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resourceGridItemTemplate
+				);
+		});
 	});
 }
