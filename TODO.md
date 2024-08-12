@@ -33,6 +33,7 @@
   - Unit Test for `GuiScrollContainer`
     - Only calling `Set(Horizontal|Vertical)AlwaysVisible(false)` doesn't make scrolls disappear. `SetVisible(false)` on scrolls are verified called.
     - When the content is changed, configuration needs 2 idle frames to be correctly configured.
+  - Unit Test for `GuiListItemTemplate/ArrangerAndAxis`, vertical scroll incorrectly rendered when axis is vertical.
 
 ## Release (optional)
 
