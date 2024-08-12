@@ -16,7 +16,7 @@ using namespace vl::presentation::unittest;
 
 TEST_FILE
 {
-	const auto resourceHTracker= LR"GacUISrc(
+	const auto resourceHTracker = LR"GacUISrc(
 <Resource>
   <Instance name="MainWindowResource">
     <Instance ref.Class="gacuisrc_unittest::MainWindow">
@@ -30,7 +30,7 @@ TEST_FILE
 </Resource>
 )GacUISrc";
 
-	const auto resourceVTracker= LR"GacUISrc(
+	const auto resourceVTracker = LR"GacUISrc(
 <Resource>
   <Instance name="MainWindowResource">
     <Instance ref.Class="gacuisrc_unittest::MainWindow">

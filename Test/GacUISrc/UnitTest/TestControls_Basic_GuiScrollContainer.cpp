@@ -16,7 +16,7 @@ using namespace vl::presentation::unittest;
 
 TEST_FILE
 {
-	const auto resourceScrollContainer= LR"GacUISrc(
+	const auto resourceScrollContainer = LR"GacUISrc(
 <Resource>
   <Instance name="MainWindowResource">
     <Instance ref.Class="gacuisrc_unittest::MainWindow">

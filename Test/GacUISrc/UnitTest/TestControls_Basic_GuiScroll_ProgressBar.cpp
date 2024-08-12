@@ -16,7 +16,7 @@ using namespace vl::presentation::unittest;
 
 TEST_FILE
 {
-	const auto resourceProgressBar= LR"GacUISrc(
+	const auto resourceProgressBar = LR"GacUISrc(
 <Resource>
   <Instance name="MainWindowResource">
     <Instance ref.Class="gacuisrc_unittest::MainWindow">

@@ -16,7 +16,7 @@ using namespace vl::presentation::unittest;
 
 TEST_FILE
 {
-	const auto resourceHScroll= LR"GacUISrc(
+	const auto resourceHScroll = LR"GacUISrc(
 <Resource>
   <Instance name="MainWindowResource">
     <Instance ref.Class="gacuisrc_unittest::MainWindow">
@@ -30,7 +30,7 @@ TEST_FILE
 </Resource>
 )GacUISrc";
 
-	const auto resourceVScroll= LR"GacUISrc(
+	const auto resourceVScroll = LR"GacUISrc(
 <Resource>
   <Instance name="MainWindowResource">
     <Instance ref.Class="gacuisrc_unittest::MainWindow">

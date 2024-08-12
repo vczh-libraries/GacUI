@@ -17,7 +17,7 @@ using namespace vl::presentation::unittest;
 
 TEST_FILE
 {
-	const auto resourceListControl= LR"GacUISrc(
+	const auto resourceListControl = LR"GacUISrc(
 <Resource>
   <Instance name="MainWindowResource">
     <Instance ref.Class="gacuisrc_unittest::MainWindow">
