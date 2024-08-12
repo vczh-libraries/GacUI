@@ -183,9 +183,6 @@ namespace gacuisrc_unittest
         {
             (self = <this>);
             {
-                (self.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
-            }
-            {
                 (self.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
             }
             (<precompile>0 = new (::presentation::compositions::GuiBoundsComposition*)());

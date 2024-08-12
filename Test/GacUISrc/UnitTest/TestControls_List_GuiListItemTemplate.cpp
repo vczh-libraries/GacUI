@@ -21,7 +21,7 @@ TEST_FILE
 <Resource>
   <Instance name="MyListItemTemplateResource">
     <Instance ref.Class="gacuisrc_unittest::MyListItemTemplate">
-      <TextListItemTemplate ref.Name="self" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
+      <TextListItemTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
         <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
           <SolidBorder>
             <att.Color-bind><![CDATA[
@@ -72,7 +72,7 @@ TEST_FILE
 <Resource>
   <Instance name="MyListItemTemplateResource">
     <Instance ref.Class="gacuisrc_unittest::MyListItemTemplate">
-      <TextListItemTemplate ref.Name="self" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
+      <TextListItemTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
         <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
           <SolidBorder>
             <att.Color-bind><![CDATA[
