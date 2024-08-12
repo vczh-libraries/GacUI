@@ -263,9 +263,9 @@ GuiListControl
 			{
 				if (itemArranger)
 				{
-					itemArranger->DetachListControl();
 					itemProvider->DetachCallback(itemArranger.Obj());
 					itemArranger->SetCallback(nullptr);
+					itemArranger->DetachListControl();
 				}
 				callback->ClearCache();
 
@@ -283,9 +283,9 @@ GuiListControl
 
 				if (itemArranger)
 				{
+					itemArranger->AttachListControl(this);
 					itemArranger->SetCallback(callback.Obj());
 					itemProvider->AttachCallback(itemArranger.Obj());
-					itemArranger->AttachListControl(this);
 				}
 				CalculateView();
 			}
