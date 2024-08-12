@@ -102,12 +102,15 @@ TEST_FILE
 
   <Instance name="MainWindowResource">
     <Instance ref.Class="gacuisrc_unittest::MainWindow">
-      <ref.Ctor><![CDATA[{
-        for (item in range[1, 20])
+      <ref.Members><![CDATA[
+        func AddItems(count:int) : void
         {
-          list.Items.Add(new TextItem^($"Item $(item)"));
+          for (item in range[1, count])
+          {
+            list.Items.Add(new TextItem^($"Item $(item)"));
+          }
         }
-      }]]></ref.Ctor>
+      ]]></ref.Members>
       <Window ref.Name="self" Text="GuiListItemTemplate" ClientSize="x:320 y:240">
         <TextList ref.Name="list" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
           <att.BoundsComposition-set PreferredMinSize="x:400 y:300" AlignmentToParent="left:0 top:5 right:0 bottom:0"/>
@@ -336,6 +339,11 @@ TEST_FILE
 			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
 			{
 				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					Value::From(window).Invoke(L"AddItems", (Value_xs(), BoxValue<vint>(20)));
+				});
+				protocol->OnNextIdleFrame(L"20 Items", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto listControl = FindObjectByName<GuiTextList>(window, L"list");

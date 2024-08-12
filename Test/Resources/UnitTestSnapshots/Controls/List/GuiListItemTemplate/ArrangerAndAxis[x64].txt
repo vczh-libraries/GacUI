@@ -105,21 +105,11 @@ namespace gacuisrc_unittest
     @cpp:Friend(typeof(MainWindowConstructor))
     class MainWindow : ::presentation::controls::GuiWindow, MainWindowConstructor
     {
-        new* ()
-            :::presentation::controls::GuiWindow(::presentation::theme::ThemeName::Window)
-        {
-            var <resource> = ::presentation::IGuiResourceManager::GetResourceManager().GetResourceFromClassName("gacuisrc_unittest::MainWindow");
-            var <resolver> = new (::presentation::GuiResourcePathResolver^)(<resource>, <resource>.WorkingDirectory);
-            this.SetResourceResolver(<resolver>);
-            this.<gacuisrc_unittest-MainWindow>Initialize(this);
-            <instance-ctor>();
-        }
-
-        func <instance-ctor>() : (::system::Void)
+        func AddItems(count : int) : (void)
         {
             {
                 var <for-begin>item : ::system::Int64 = 1;
-                var <for-end>item : ::system::Int64 = 20;
+                var <for-end>item : ::system::Int64 = count;
                 var item = <for-begin>item;
                 while ((item <= <for-end>item))
                 {
@@ -129,6 +119,15 @@ namespace gacuisrc_unittest
                     (item = (item + 1));
                 }
             }
+        }
+
+        new* ()
+            :::presentation::controls::GuiWindow(::presentation::theme::ThemeName::Window)
+        {
+            var <resource> = ::presentation::IGuiResourceManager::GetResourceManager().GetResourceFromClassName("gacuisrc_unittest::MainWindow");
+            var <resolver> = new (::presentation::GuiResourcePathResolver^)(<resource>, <resource>.WorkingDirectory);
+            this.SetResourceResolver(<resolver>);
+            this.<gacuisrc_unittest-MainWindow>Initialize(this);
         }
 
         delete
