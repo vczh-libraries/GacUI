@@ -246,7 +246,10 @@ GuiListControl
 			{
 				if (itemArranger)
 				{
-					Rect newBounds = axis->RealRectToVirtualRect(fullSize, viewBounds);
+					auto realFullSize = fullSize;
+					if (realFullSize.x < viewBounds.Width()) realFullSize.x = viewBounds.Width();
+					if (realFullSize.y < viewBounds.Height()) realFullSize.y = viewBounds.Height();
+					Rect newBounds = axis->RealRectToVirtualRect(realFullSize, viewBounds);
 					itemArranger->OnViewChanged(newBounds);
 				}
 			}

@@ -347,25 +347,25 @@ TEST_FILE
 					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
 					listControl->SetAxis(Ptr(new GuiAxis(AxisDirection::DownLeft)));
 				});
-				protocol->OnNextIdleFrame(L"Rotate", [=]()
+				protocol->OnNextIdleFrame(L"Rotate (DownLeft)", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
 					listControl->SetAxis(Ptr(new GuiAxis(AxisDirection::LeftUp)));
 				});
-				protocol->OnNextIdleFrame(L"Rotate", [=]()
+				protocol->OnNextIdleFrame(L"Rotate (LeftUp)", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
 					listControl->SetAxis(Ptr(new GuiAxis(AxisDirection::UpRight)));
 				});
-				protocol->OnNextIdleFrame(L"Rotate", [=]()
+				protocol->OnNextIdleFrame(L"Rotate (UpRight)", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
 					listControl->SetAxis(Ptr(new GuiAxis(AxisDirection::RightDown)));
 				});
-				protocol->OnNextIdleFrame(L"Rotate", [=]()
+				protocol->OnNextIdleFrame(L"Rotate (RightDown)", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
