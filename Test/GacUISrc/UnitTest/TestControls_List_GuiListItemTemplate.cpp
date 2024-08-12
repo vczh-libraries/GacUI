@@ -111,7 +111,7 @@ TEST_FILE
           }
         }
       ]]></ref.Members>
-      <Window ref.Name="self" Text="GuiListItemTemplate" ClientSize="x:320 y:240">
+      <Window ref.Name="self" Text-format="GuiListItemTemplate $(list.SelectedItemIndex)" ClientSize="x:320 y:240">
         <TextList ref.Name="list" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
           <att.BoundsComposition-set PreferredMinSize="x:400 y:300" AlignmentToParent="left:0 top:5 right:0 bottom:0"/>
           <att.ItemTemplate>gacuisrc_unittest::MyListItemTemplate</att.ItemTemplate>
