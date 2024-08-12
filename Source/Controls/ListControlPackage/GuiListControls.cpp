@@ -261,8 +261,8 @@ GuiListControl
 				if (itemArranger)
 				{
 					itemProvider->DetachCallback(itemArranger.Obj());
-					itemArranger->SetCallback(nullptr);
 					itemArranger->DetachListControl();
+					itemArranger->SetCallback(nullptr);
 				}
 				callback->ClearCache();
 
@@ -271,8 +271,8 @@ GuiListControl
 
 				if (itemArranger)
 				{
-					itemArranger->AttachListControl(this);
 					itemArranger->SetCallback(callback.Obj());
+					itemArranger->AttachListControl(this);
 					itemProvider->AttachCallback(itemArranger.Obj());
 				}
 
