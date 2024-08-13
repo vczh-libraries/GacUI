@@ -235,8 +235,7 @@ GuiListControl
 
 			Size GuiListControl::QueryFullSize()
 			{
-				Size virtualSize = itemArranger ? itemArranger->GetTotalSize() : Size(0, 0);
-				fullSize = axis->VirtualSizeToRealSize(virtualSize);
+				fullSize = itemArranger ? itemArranger->GetTotalSize() : Size(0, 0);
 				return fullSize;
 			}
 
