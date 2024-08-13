@@ -43,13 +43,13 @@ GalleryItemArranger
 					void													Layout_EndLayout(bool totalSizeUpdated) override;
 					void													Layout_InvalidateItemSizeCache()override;
 					void													Layout_CalculateTotalSize(Size& full, Size& minimum)override;
+					Size													Layout_GetAdoptedSize(Size expectedSize)override;
 				public:
 					GalleryItemArrangerRepeatComposition(GuiBindableRibbonGalleryList* _owner);
 					~GalleryItemArrangerRepeatComposition();
 
 					vint													FindItemByVirtualKeyDirection(vint itemIndex, compositions::KeyDirection key)override;
 					compositions::VirtualRepeatEnsureItemVisibleResult		EnsureItemVisible(vint itemIndex)override;
-					Size													GetAdoptedSize(Size expectedSize)override;
 
 					void													ScrollUp();
 					void													ScrollDown();

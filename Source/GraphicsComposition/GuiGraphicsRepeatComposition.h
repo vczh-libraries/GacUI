@@ -174,6 +174,7 @@ GuiVirtualRepeatCompositionBase
 				virtual void										Layout_EndLayout(bool totalSizeUpdated) = 0;
 				virtual void										Layout_InvalidateItemSizeCache() = 0;
 				virtual void										Layout_CalculateTotalSize(Size& full, Size& minimum) = 0;
+				virtual Size										Layout_GetAdoptedSize(Size expected) = 0;
 
 				virtual void										Layout_UpdateIndex(ItemStyleRecord style, vint index);
 				void												Layout_UpdateViewBounds(Rect value, bool forceUpdateTotalSize);
@@ -236,10 +237,10 @@ GuiVirtualRepeatCompositionBase
 				void												ResetLayout(bool recreateVisibleStyles);
 				void												InvalidateLayout();
 
+				Size												GetAdoptedSize(Size expectedSize);
 				vint												FindItemByRealKeyDirection(vint itemIndex, compositions::KeyDirection key);
 				virtual vint										FindItemByVirtualKeyDirection(vint itemIndex, compositions::KeyDirection key) = 0;
 				virtual VirtualRepeatEnsureItemVisibleResult		EnsureItemVisible(vint itemIndex) = 0;
-				virtual Size										GetAdoptedSize(Size expectedSize) = 0;
 			};
 
 			/// <summary>Free height repeat composition. This arranger will cache heights of all items.</summary>
@@ -261,6 +262,7 @@ GuiVirtualRepeatCompositionBase
 				void												Layout_EndLayout(bool totalSizeUpdated) override;
 				void												Layout_InvalidateItemSizeCache() override;
 				void												Layout_CalculateTotalSize(Size& full, Size& minimum) override;
+				Size												Layout_GetAdoptedSize(Size expectedSize) override;
 
 				void												OnItemChanged(vint start, vint oldCount, vint newCount) override;
 				void												OnInstallItems() override;
@@ -271,7 +273,6 @@ GuiVirtualRepeatCompositionBase
 
 				vint												FindItemByVirtualKeyDirection(vint itemIndex, compositions::KeyDirection key) override;
 				VirtualRepeatEnsureItemVisibleResult				EnsureItemVisible(vint itemIndex) override;
-				Size												GetAdoptedSize(Size expectedSize) override;
 			};
 				
 			/// <summary>Fixed height item arranger. This arranger lists all item with the same height value. This value is the maximum height of all minimum heights of displayed items.</summary>
@@ -293,6 +294,7 @@ GuiVirtualRepeatCompositionBase
 				void												Layout_EndLayout(bool totalSizeUpdated) override;
 				void												Layout_InvalidateItemSizeCache()override;
 				void												Layout_CalculateTotalSize(Size& full, Size& minimum)override;
+				Size												Layout_GetAdoptedSize(Size expectedSize) override;
 			public:
 				/// <summary>Create the arranger.</summary>
 				GuiRepeatFixedHeightItemComposition() = default;
@@ -300,7 +302,6 @@ GuiVirtualRepeatCompositionBase
 
 				vint												FindItemByVirtualKeyDirection(vint itemIndex, compositions::KeyDirection key)override;
 				VirtualRepeatEnsureItemVisibleResult				EnsureItemVisible(vint itemIndex)override;
-				Size												GetAdoptedSize(Size expectedSize)override;
 
 				vint												GetItemWidth();
 				void												SetItemWidth(vint value);
@@ -323,6 +324,7 @@ GuiVirtualRepeatCompositionBase
 				void												Layout_EndLayout(bool totalSizeUpdated) override;
 				void												Layout_InvalidateItemSizeCache()override;
 				void												Layout_CalculateTotalSize(Size& full, Size& minimum)override;
+				Size												Layout_GetAdoptedSize(Size expectedSize) override;
 			public:
 				/// <summary>Create the arranger.</summary>
 				GuiRepeatFixedSizeMultiColumnItemComposition() = default;
@@ -330,7 +332,6 @@ GuiVirtualRepeatCompositionBase
 
 				vint												FindItemByVirtualKeyDirection(vint itemIndex, compositions::KeyDirection key)override;
 				VirtualRepeatEnsureItemVisibleResult				EnsureItemVisible(vint itemIndex)override;
-				Size												GetAdoptedSize(Size expectedSize)override;
 			};
 			
 			/// <summary>Fixed size multiple columns item arranger. This arranger adjust all items in multiple columns with the same height. The height is the maximum width of all minimum height of displayed items. Each item will displayed using its minimum width.</summary>
@@ -357,6 +358,7 @@ GuiVirtualRepeatCompositionBase
 				void												Layout_EndLayout(bool totalSizeUpdated) override;
 				void												Layout_InvalidateItemSizeCache()override;
 				void												Layout_CalculateTotalSize(Size& full, Size& minimum)override;
+				Size												Layout_GetAdoptedSize(Size expectedSize) override;
 			public:
 				/// <summary>Create the arranger.</summary>
 				GuiRepeatFixedHeightMultiColumnItemComposition() = default;
@@ -364,7 +366,6 @@ GuiVirtualRepeatCompositionBase
 
 				vint												FindItemByVirtualKeyDirection(vint itemIndex, compositions::KeyDirection key)override;
 				VirtualRepeatEnsureItemVisibleResult				EnsureItemVisible(vint itemIndex)override;
-				Size												GetAdoptedSize(Size expectedSize)override;
 			};
 		}
 	}

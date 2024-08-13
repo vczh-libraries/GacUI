@@ -565,16 +565,9 @@ GuiListControl
 					vint y = adoptedSizeDiffWithoutScroll.y != -1 ? adoptedSizeDiffWithoutScroll.y : adoptedSizeDiffWithScroll.y;
 
 					Size expectedViewSize(expectedSize.x - x, expectedSize.y - y);
-					if (axis)
-					{
-						expectedViewSize = axis->RealSizeToVirtualSize(expectedViewSize);
-					}
 					Size adoptedViewSize = itemArranger->GetAdoptedSize(expectedViewSize);
-					if (axis)
-					{
-						adoptedViewSize = axis->VirtualSizeToRealSize(adoptedViewSize);
-					}
-					return Size(adoptedViewSize.x + x, adoptedViewSize.y + y);
+					Size adoptedSize = Size(adoptedViewSize.x + x, adoptedViewSize.y + y);
+					return adoptedSize;
 				}
 				return expectedSize;
 			}

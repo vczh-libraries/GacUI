@@ -85,6 +85,11 @@ GalleryItemArrangerRepeatComposition
 					minimum = Size(1, 1);
 				}
 
+				Size GalleryItemArrangerRepeatComposition::Layout_GetAdoptedSize(Size expectedSize)
+				{
+					return Size(1, 1);
+				}
+
 				GalleryItemArrangerRepeatComposition::GalleryItemArrangerRepeatComposition(GuiBindableRibbonGalleryList* _owner)
 					:owner(_owner)
 				{
@@ -152,11 +157,6 @@ GalleryItemArrangerRepeatComposition
 						InvalidateLayout();
 					}
 					return VirtualRepeatEnsureItemVisibleResult::NotMoved;
-				}
-
-				Size GalleryItemArrangerRepeatComposition::GetAdoptedSize(Size expectedSize)
-				{
-					return Size(1, 1);
 				}
 
 				void GalleryItemArrangerRepeatComposition::ScrollUp()

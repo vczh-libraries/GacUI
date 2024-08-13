@@ -446,6 +446,14 @@ GuiVirtualRepeatCompositionBase
 				itemSourceUpdated = true;
 			}
 
+			Size GuiVirtualRepeatCompositionBase::GetAdoptedSize(Size expectedSize)
+			{
+				Size expectedViewSize = axis->RealSizeToVirtualSize(expectedSize);
+				Size adoptedViewSize = Layout_GetAdoptedSize(expectedViewSize);
+				Size adoptedSize = axis->VirtualSizeToRealSize(adoptedViewSize);
+				return adoptedSize;
+			}
+
 			vint GuiVirtualRepeatCompositionBase::FindItemByRealKeyDirection(vint itemIndex, compositions::KeyDirection key)
 			{
 				return FindItemByVirtualKeyDirection(itemIndex, axis->RealKeyDirectionToVirtualKeyDirection(key));
@@ -564,6 +572,13 @@ GuiRepeatFreeHeightItemComposition
 				vint h = offsets[heights.Count() - 1] + heights[heights.Count() - 1];
 				full = Size(w, h);
 				minimum = Size(0, h);
+			}
+
+			Size GuiRepeatFreeHeightItemComposition::Layout_GetAdoptedSize(Size expectedSize)
+			{
+				vint h = expectedSize.x * 2;
+				if (expectedSize.y < h) expectedSize.y = h;
+				return expectedSize;
 			}
 
 			void GuiRepeatFreeHeightItemComposition::OnItemChanged(vint start, vint oldCount, vint newCount)
@@ -687,13 +702,6 @@ GuiRepeatFreeHeightItemComposition
 				return moved ? VirtualRepeatEnsureItemVisibleResult::Moved : VirtualRepeatEnsureItemVisibleResult::NotMoved;
 			}
 
-			Size GuiRepeatFreeHeightItemComposition::GetAdoptedSize(Size expectedSize)
-			{
-				vint h = expectedSize.x * 2;
-				if (expectedSize.y < h) expectedSize.y = h;
-				return expectedSize;
-			}
-
 /***********************************************************************
 GuiRepeatFixedHeightItemComposition
 ***********************************************************************/
@@ -778,6 +786,14 @@ GuiRepeatFixedHeightItemComposition
 				vint h = rowHeight * itemSource->GetCount() + itemYOffset;
 				full = Size(w1, h);
 				minimum = Size(w2, h);
+			}
+
+			Size GuiRepeatFixedHeightItemComposition::Layout_GetAdoptedSize(Size expectedSize)
+			{
+				if (!itemSource) return expectedSize;
+				vint y = expectedSize.y - itemYOffset;
+				vint itemCount = itemSource->GetCount();
+				return Size(expectedSize.x, itemYOffset + CalculateAdoptedSize(y, itemCount, rowHeight));
 			}
 
 			vint GuiRepeatFixedHeightItemComposition::FindItemByVirtualKeyDirection(vint itemIndex, compositions::KeyDirection key)
@@ -877,14 +893,6 @@ GuiRepeatFixedHeightItemComposition
 				}
 
 				return VirtualRepeatEnsureItemVisibleResult::Moved;
-			}
-
-			Size GuiRepeatFixedHeightItemComposition::GetAdoptedSize(Size expectedSize)
-			{
-				if (!itemSource) return expectedSize;
-				vint y = expectedSize.y - itemYOffset;
-				vint itemCount = itemSource->GetCount();
-				return Size(expectedSize.x, itemYOffset + CalculateAdoptedSize(y, itemCount, rowHeight));
 			}
 
 			vint GuiRepeatFixedHeightItemComposition::GetItemWidth()
@@ -1000,6 +1008,22 @@ GuiRepeatFixedSizeMultiColumnItemComposition
 				minimum = Size(itemSize.x, h);
 			}
 
+			Size GuiRepeatFixedSizeMultiColumnItemComposition::Layout_GetAdoptedSize(Size expectedSize)
+			{
+				if (!itemSource) return expectedSize;
+				vint count = itemSource->GetCount();
+				vint columnCount = viewBounds.Width() / itemSize.x;
+				vint rowCount = count / columnCount;
+				if (count % columnCount != 0) rowCount++;
+
+				if (columnCount == 0) columnCount = 1;
+				if (rowCount == 0) rowCount = 1;
+				return Size(
+					CalculateAdoptedSize(expectedSize.x, columnCount, itemSize.x),
+					CalculateAdoptedSize(expectedSize.y, rowCount, itemSize.y)
+				);
+			}
+
 			vint GuiRepeatFixedSizeMultiColumnItemComposition::FindItemByVirtualKeyDirection(vint itemIndex, compositions::KeyDirection key)
 			{
 				vint count = itemSource->GetCount();
@@ -1096,22 +1120,6 @@ GuiRepeatFixedSizeMultiColumnItemComposition
 					if (viewBounds.LeftTop() != location) break;
 				}
 				return moved ? VirtualRepeatEnsureItemVisibleResult::Moved : VirtualRepeatEnsureItemVisibleResult::NotMoved;
-			}
-
-			Size GuiRepeatFixedSizeMultiColumnItemComposition::GetAdoptedSize(Size expectedSize)
-			{
-				if (!itemSource) return expectedSize;
-				vint count = itemSource->GetCount();
-				vint columnCount = viewBounds.Width() / itemSize.x;
-				vint rowCount = count / columnCount;
-				if (count % columnCount != 0) rowCount++;
-
-				if (columnCount == 0) columnCount = 1;
-				if (rowCount == 0) rowCount = 1;
-				return Size(
-					CalculateAdoptedSize(expectedSize.x, columnCount, itemSize.x),
-					CalculateAdoptedSize(expectedSize.y, rowCount, itemSize.y)
-				);
 			}
 
 /***********************************************************************
@@ -1294,6 +1302,16 @@ GuiRepeatFixedHeightMultiColumnItemComposition
 				minimum = Size(w, 0);
 			}
 
+			Size GuiRepeatFixedHeightMultiColumnItemComposition::Layout_GetAdoptedSize(Size expectedSize)
+			{
+				if (!itemSource) return expectedSize;
+				vint count = itemSource->GetCount();
+				vint rowCount = viewBounds.Height() / itemHeight;
+				if (rowCount > count) rowCount = count;
+				if (rowCount == 0) rowCount = 1;
+				return Size(expectedSize.x, CalculateAdoptedSize(expectedSize.y, rowCount, itemHeight));
+			}
+
 			vint GuiRepeatFixedHeightMultiColumnItemComposition::FindItemByVirtualKeyDirection(vint itemIndex, compositions::KeyDirection key)
 			{
 				vint count = itemSource->GetCount();
@@ -1370,16 +1388,6 @@ GuiRepeatFixedHeightMultiColumnItemComposition
 					if (viewBounds.LeftTop() != location) break;
 				}
 				return moved ? VirtualRepeatEnsureItemVisibleResult::Moved : VirtualRepeatEnsureItemVisibleResult::NotMoved;
-			}
-
-			Size GuiRepeatFixedHeightMultiColumnItemComposition::GetAdoptedSize(Size expectedSize)
-			{
-				if (!itemSource) return expectedSize;
-				vint count = itemSource->GetCount();
-				vint rowCount = viewBounds.Height() / itemHeight;
-				if (rowCount > count) rowCount = count;
-				if (rowCount == 0) rowCount = 1;
-				return Size(expectedSize.x, CalculateAdoptedSize(expectedSize.y, rowCount, itemHeight));
 			}
 		}
 	}
