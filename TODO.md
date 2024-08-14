@@ -65,7 +65,6 @@
     - GuiListControl (`MouseWheel` remaining)
     - TextList
       - ItemTemplate with `Checked`
-      - Extra key operations
     - ListView
       - Item manipulation
       - Bindable
@@ -128,6 +127,7 @@
     - Think about how to calculate size for document.
   - Typing trigger functions in unit test framework.
   - Check all control key operation, ensure accessibility.
+    - `Gui(Bindable)TextList` cannot check or uncheck items by key (enter and space).
 - Sample unit test project included in release.
   - Reflection enabled
     - Application and `LoadMainWindow` script in separated XML resource files.
