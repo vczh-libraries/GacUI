@@ -206,6 +206,7 @@
     <ClCompile Include="TestControls_List_GuiListControl.cpp" />
     <ClCompile Include="TestControls_List_GuiListItemTemplate.cpp" />
     <ClCompile Include="TestControls_List_GuiSelectableListControl.cpp" />
+    <ClCompile Include="TestControls_List_GuiTextList.cpp" />
     <ClCompile Include="TestHostedWindowManager.cpp" />
     <ClCompile Include="TestPtrDescriptableObject.cpp" />
     <ClCompile Include="TestQueryParser.cpp" />
