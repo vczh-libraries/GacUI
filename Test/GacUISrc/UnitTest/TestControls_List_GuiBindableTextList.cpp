@@ -146,16 +146,16 @@ TEST_FILE
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto listControl = FindObjectByName<GuiBindableTextList>(window, L"list");
+					listControl->EnsureItemVisible(21);
+				});
+				protocol->OnNextIdleFrame(L"Scroll to Bottom", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiBindableTextList>(window, L"list");
 					items->RemoveAt(0);
 					items->RemoveAt(items->Count() - 1);
 				});
 				protocol->OnNextIdleFrame(L"Remove Added Items", [=]()
-				{
-					auto window = GetApplication()->GetMainWindow();
-					auto listControl = FindObjectByName<GuiBindableTextList>(window, L"list");
-					listControl->EnsureItemVisible(19);
-				});
-				protocol->OnNextIdleFrame(L"Scroll to Bottom", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto listControl = FindObjectByName<GuiBindableTextList>(window, L"list");
