@@ -185,7 +185,7 @@ namespace gacuisrc_unittest
     @cpp:Friend(typeof(MainWindowConstructor))
     class MainWindow : ::presentation::controls::GuiWindow, MainWindowConstructor
     {
-        func AddItems(count : int) : (void)
+        func InitializeItems(count : int) : (void)
         {
             {
                 var <for-begin>item : ::system::Int64 = 1;

@@ -22,7 +22,7 @@ TEST_FILE
   <Instance name="MainWindowResource">
     <Instance ref.Class="gacuisrc_unittest::MainWindow">
       <ref.Members><![CDATA[
-        func AddItems(count:int) : void
+        func InitializeItems(count:int) : void
         {
           for (item in range[1, count])
           {
@@ -49,7 +49,7 @@ TEST_FILE
 				protocol->OnNextIdleFrame(L"Ready", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
-					Value::From(window).Invoke(L"AddItems", (Value_xs(), BoxValue<vint>(5)));
+					Value::From(window).Invoke(L"InitializeItems", (Value_xs(), BoxValue<vint>(5)));
 				});
 				protocol->OnNextIdleFrame(L"5 Items", [=]()
 				{
@@ -108,7 +108,7 @@ TEST_FILE
 				protocol->OnNextIdleFrame(L"Ready", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
-					Value::From(window).Invoke(L"AddItems", (Value_xs(), BoxValue<vint>(20)));
+					Value::From(window).Invoke(L"InitializeItems", (Value_xs(), BoxValue<vint>(20)));
 				});
 				protocol->OnNextIdleFrame(L"20 Items", [=]()
 				{
@@ -195,7 +195,7 @@ TEST_FILE
 					auto window = GetApplication()->GetMainWindow();
 					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
 					listControl->SetView(TextListView::Check);
-					Value::From(window).Invoke(L"AddItems", (Value_xs(), BoxValue<vint>(5)));
+					Value::From(window).Invoke(L"InitializeItems", (Value_xs(), BoxValue<vint>(5)));
 				});
 				protocol->OnNextIdleFrame(L"5 Items", [=]()
 				{
@@ -244,7 +244,7 @@ TEST_FILE
 					auto window = GetApplication()->GetMainWindow();
 					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
 					listControl->SetView(TextListView::Radio);
-					Value::From(window).Invoke(L"AddItems", (Value_xs(), BoxValue<vint>(20)));
+					Value::From(window).Invoke(L"InitializeItems", (Value_xs(), BoxValue<vint>(20)));
 				});
 				protocol->OnNextIdleFrame(L"20 Items", [=]()
 				{

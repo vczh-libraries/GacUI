@@ -23,7 +23,7 @@ TEST_FILE
   <Instance name="MainWindowResource">
     <Instance ref.Class="gacuisrc_unittest::MainWindow">
       <ref.Members><![CDATA[
-        func AddItems(items:observe TextItem^[], count:int) : void
+        func InitializeItems(items:observe TextItem^[], count:int) : void
         {
           list.ItemSource = items;
           for (item in range[1, count])
@@ -33,7 +33,7 @@ TEST_FILE
         }
       ]]></ref.Members>
       <Window ref.Name="self" Text-format="GuiBindableTextList [$(list.SelectedItemIndex)] -&gt; [$(list.SelectedItemText)]" ClientSize="x:320 y:240">
-        <GuiBindableTextList> ref.Name="list" env.ItemType="TextItem^" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
+        <GuiBindableTextList ref.Name="list" env.ItemType="TextItem^" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
           <att.BoundsComposition-set PreferredMinSize="x:400 y:300" AlignmentToParent="left:0 top:5 right:0 bottom:0"/>
           <att.TextProperty>Text</att.TextProperty>
           <att.CheckedProperty>Checked</att.CheckedProperty>
@@ -54,7 +54,7 @@ TEST_FILE
 				protocol->OnNextIdleFrame(L"Ready", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
-					Value::From(window).Invoke(L"AddItems", (Value_xs(), BoxParameter(*items.Obj()), BoxValue<vint>(5)));
+					Value::From(window).Invoke(L"InitializeItems", (Value_xs(), BoxParameter(*items.Obj()), BoxValue<vint>(5)));
 				});
 				protocol->OnNextIdleFrame(L"5 Items", [=]()
 				{
@@ -114,7 +114,7 @@ TEST_FILE
 				protocol->OnNextIdleFrame(L"Ready", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
-					Value::From(window).Invoke(L"AddItems", (Value_xs(), BoxParameter(*items.Obj()), BoxValue<vint>(20)));
+					Value::From(window).Invoke(L"InitializeItems", (Value_xs(), BoxParameter(*items.Obj()), BoxValue<vint>(20)));
 				});
 				protocol->OnNextIdleFrame(L"20 Items", [=]()
 				{
@@ -202,7 +202,7 @@ TEST_FILE
 					auto window = GetApplication()->GetMainWindow();
 					auto listControl = FindObjectByName<GuiBindableTextList>(window, L"list");
 					listControl->SetView(TextListView::Check);
-					Value::From(window).Invoke(L"AddItems", (Value_xs(), BoxParameter(*items.Obj()), BoxValue<vint>(5)));
+					Value::From(window).Invoke(L"InitializeItems", (Value_xs(), BoxParameter(*items.Obj()), BoxValue<vint>(5)));
 				});
 				protocol->OnNextIdleFrame(L"5 Items", [=]()
 				{
@@ -255,7 +255,7 @@ TEST_FILE
 					auto window = GetApplication()->GetMainWindow();
 					auto listControl = FindObjectByName<GuiBindableTextList>(window, L"list");
 					listControl->SetView(TextListView::Radio);
-					Value::From(window).Invoke(L"AddItems", (Value_xs(), BoxParameter(*items.Obj()), BoxValue<vint>(20)));
+					Value::From(window).Invoke(L"InitializeItems", (Value_xs(), BoxParameter(*items.Obj()), BoxValue<vint>(20)));
 				});
 				protocol->OnNextIdleFrame(L"20 Items", [=]()
 				{
