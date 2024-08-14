@@ -65,14 +65,17 @@
     - GuiListControl (`MouseWheel` remaining)
     - TextList
       - ItemTemplate with `Checked`
+      - Extra mouse operations
     - ListView
       - Item manipulation
       - Bindable
+      - Extra mouse operations
       - Extra key operations
     - TreeView
       - ItemTemplate with `Expanding`, `Expandable`, `Level`, `Image`
       - Item manipulation
       - Bindable
+      - Extra mouse operations
       - Extra key operations
   - Menu, Toolstrip and Navigation ...
     - ComboBox
@@ -81,6 +84,8 @@
   - BindableDataGrid
     - ItemTemplate with properties
     - Item manipulation
+    - Extra mouse operations
+    - Extra key operations
   - Ribbon ...
   - Check all control key operation, ensure accessibility.
 - More unit test
