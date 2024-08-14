@@ -103,6 +103,81 @@ TEST_FILE
 
 		TEST_CASE(L"MakeInvisibleItems")
 		{
+			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					Value::From(window).Invoke(L"AddItems", (Value_xs(), BoxValue<vint>(20)));
+				});
+				protocol->OnNextIdleFrame(L"20 Items", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+					listControl->EnsureItemVisible(19);
+				});
+				protocol->OnNextIdleFrame(L"Scroll to Bottom", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+					listControl->GetItems().Insert(0, Ptr(new TextItem(L"First Item")));
+					listControl->SetSelected(0, true);
+				});
+				protocol->OnNextIdleFrame(L"Add to Top and Select", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+					listControl->EnsureItemVisible(0);
+				});
+				protocol->OnNextIdleFrame(L"Scroll to Top", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+					listControl->GetItems().Add(Ptr(new TextItem(L"Last Item")));
+					listControl->SetSelected(21, true);
+				});
+				protocol->OnNextIdleFrame(L"Add to Last and Select", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+					listControl->GetItems().RemoveAt(0);
+					listControl->GetItems().RemoveAt(listControl->GetItems().Count() - 1);
+				});
+				protocol->OnNextIdleFrame(L"Remove Added Items", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+					listControl->EnsureItemVisible(19);
+				});
+				protocol->OnNextIdleFrame(L"Scroll to Bottom", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+					listControl->SetSelected(2, true);
+				});
+				protocol->OnNextIdleFrame(L"Select 3rd", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+					listControl->GetItems().Set(2, Ptr(new TextItem(L"Updated Item")));
+				});
+				protocol->OnNextIdleFrame(L"Update 3rd", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+					listControl->SetSelected(2, true);
+				});
+				protocol->OnNextIdleFrame(L"Select 3rd", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					window->Hide();
+				});
+			});
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Controls/List/GuiTextList/MakeInvisibleItems"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resourceTextList
+				);
 		});
 
 		TEST_CASE(L"UpdateInvisibleItems")
