@@ -194,6 +194,31 @@ TEST_FILE
 				protocol->OnNextIdleFrame(L"5 Items", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+					listControl->SetSelected(0, true);
+				});
+				protocol->OnNextIdleFrame(L"Select 1st", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+					listControl->GetItems()[1]->SetText(L"Updated Text");
+				});
+				protocol->OnNextIdleFrame(L"Change 2nd Text", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+					listControl->GetItems()[2]->SetChecked(true);
+				});
+				protocol->OnNextIdleFrame(L"Check 3rd", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+					listControl->GetItems()[0]->SetText(L"New Text");
+					listControl->GetItems()[0]->SetChecked(true);
+				});
+				protocol->OnNextIdleFrame(L"Change 1st Text and Check", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
 					window->Hide();
 				});
 			});
