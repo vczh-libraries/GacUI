@@ -9507,7 +9507,7 @@
               "ellipse": true,
               "multiline": false,
               "font": {"fontFamily": "Segoe WP SemiLight", "size": 14, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "GuiTextList [0] -> [Item 1]",
+              "text": "GuiTextList [0] -> [New Text]",
               "measuringRequest": "FontHeight"
             }
           ]

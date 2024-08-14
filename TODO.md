@@ -7,7 +7,9 @@
   - Fix button behavior when not IgnoreChildControlMouseEvents.
   - Fix control not losing focus when disabled.
   - Fix progress bar is focusable.
-  - `GuiTreeItemTemplate` change base class to `GuiListItemTemplate`
+  - Fix `GuiListControl` incompatible with non-default axis.
+  - Fix `GuiTextList::SelectionChanged` not raised when changing properties of the only selected `list::TextItem`.
+- `GuiTreeItemTemplate` change base class to `GuiListItemTemplate`
 
 ## Known Issues
 

@@ -602,15 +602,25 @@ GuiSelectableListControl
 				{
 					ClearSelection();
 				}
-				else if (itemReferenceUpdated && selectedItems.Count() > 0)
+				else if (itemReferenceUpdated)
 				{
-					vint cmin = start;
-					vint cmax = start + count - 1;
-					vint smin = selectedItems[0];
-					vint smax = selectedItems[selectedItems.Count() - 1];
-					if (cmin <= smax && smin <= cmax)
+					if (selectedItems.Count() > 0)
 					{
-						ClearSelection();
+						vint cmin = start;
+						vint cmax = start + count - 1;
+						vint smin = selectedItems[0];
+						vint smax = selectedItems[selectedItems.Count() - 1];
+						if (cmin <= smax && smin <= cmax)
+						{
+							ClearSelection();
+						}
+					}
+				}
+				else
+				{
+					if (GetSelectedItemIndex() == start)
+					{
+						NotifySelectionChanged();
 					}
 				}
 			}
