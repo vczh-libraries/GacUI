@@ -417,7 +417,7 @@
               "ellipse": true,
               "multiline": false,
               "font": {"fontFamily": "Segoe WP SemiLight", "size": 14, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "GuiTextList [-1] -> []",
+              "text": "GuiBindableTextList [-1] -> []",
               "measuringRequest": "FontHeight"
             }
           ]
@@ -1488,7 +1488,7 @@
               "ellipse": true,
               "multiline": false,
               "font": {"fontFamily": "Segoe WP SemiLight", "size": 14, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "GuiTextList [-1] -> []",
+              "text": "GuiBindableTextList [-1] -> []",
               "measuringRequest": "FontHeight"
             }
           ]
@@ -3701,7 +3701,7 @@
               "ellipse": true,
               "multiline": false,
               "font": {"fontFamily": "Segoe WP SemiLight", "size": 14, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "GuiTextList [-1] -> []",
+              "text": "GuiBindableTextList [-1] -> []",
               "measuringRequest": "FontHeight"
             }
           ]
@@ -5914,7 +5914,7 @@
               "ellipse": true,
               "multiline": false,
               "font": {"fontFamily": "Segoe WP SemiLight", "size": 14, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "GuiTextList [0] -> [First Item]",
+              "text": "GuiBindableTextList [0] -> [First Item]",
               "measuringRequest": "FontHeight"
             }
           ]
@@ -8127,7 +8127,7 @@
               "ellipse": true,
               "multiline": false,
               "font": {"fontFamily": "Segoe WP SemiLight", "size": 14, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "GuiTextList [0] -> [First Item]",
+              "text": "GuiBindableTextList [0] -> [First Item]",
               "measuringRequest": "FontHeight"
             }
           ]
@@ -10340,7 +10340,7 @@
               "ellipse": true,
               "multiline": false,
               "font": {"fontFamily": "Segoe WP SemiLight", "size": 14, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "GuiTextList [21] -> [Last Item]",
+              "text": "GuiBindableTextList [21] -> [Last Item]",
               "measuringRequest": "FontHeight"
             }
           ]
@@ -12553,7 +12553,7 @@
               "ellipse": true,
               "multiline": false,
               "font": {"fontFamily": "Segoe WP SemiLight", "size": 14, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "GuiTextList [-1] -> []",
+              "text": "GuiBindableTextList [-1] -> []",
               "measuringRequest": "FontHeight"
             }
           ]
@@ -14766,7 +14766,7 @@
               "ellipse": true,
               "multiline": false,
               "font": {"fontFamily": "Segoe WP SemiLight", "size": 14, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "GuiTextList [-1] -> []",
+              "text": "GuiBindableTextList [-1] -> []",
               "measuringRequest": "FontHeight"
             }
           ]
@@ -16979,7 +16979,7 @@
               "ellipse": true,
               "multiline": false,
               "font": {"fontFamily": "Segoe WP SemiLight", "size": 14, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "GuiTextList [2] -> [Item 3]",
+              "text": "GuiBindableTextList [2] -> [Item 3]",
               "measuringRequest": "FontHeight"
             }
           ]
@@ -19192,7 +19192,7 @@
               "ellipse": true,
               "multiline": false,
               "font": {"fontFamily": "Segoe WP SemiLight", "size": 14, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "GuiTextList [-1] -> []",
+              "text": "GuiBindableTextList [-1] -> []",
               "measuringRequest": "FontHeight"
             }
           ]
@@ -21405,7 +21405,7 @@
               "ellipse": true,
               "multiline": false,
               "font": {"fontFamily": "Segoe WP SemiLight", "size": 14, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "GuiTextList [2] -> [Updated Item]",
+              "text": "GuiBindableTextList [2] -> [Updated Item]",
               "measuringRequest": "FontHeight"
             }
           ]
@@ -23618,7 +23618,7 @@
               "ellipse": true,
               "multiline": false,
               "font": {"fontFamily": "Segoe WP SemiLight", "size": 14, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "GuiTextList [2] -> [Updated Item]",
+              "text": "GuiBindableTextList [2] -> [Updated Item]",
               "measuringRequest": "FontHeight"
             }
           ]
