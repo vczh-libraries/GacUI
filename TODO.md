@@ -49,9 +49,6 @@
 
 - GacUI
   - Fix `Global Objects` in `GacUI.h`.
-  - `<RawRendering/>` element.
-    - It will be mapped to `GDIElement` or `Direct2DElement` in different renderers.
-    - In remote protocol, it is an element with no extra properties.
   - Thinking about promote SyncDom data structures for unit test, and complete a diff algorithm.
     - Unit test framework
       - Generate `domId` for each dom node: element(id), virtual(-element.id-2), root(-1), hittest(find a way).
@@ -101,6 +98,8 @@
 
 - GacUI
   - `<RawRendering/>` element.
+    - It will be mapped to `GDIElement` or `Direct2DElement` in different renderers.
+    - In remote protocol, it is an element with no extra properties.
     - In HTML, it would open a `<div/>` and you can do whatever you want using JavaScript.
 - Remote protocol redirection back to native rendering:
   - In the test project, C++ side will expose the remote protocol via dll.
@@ -132,6 +131,7 @@
     - Think about how to calculate size for document.
   - Typing trigger functions in unit test framework.
   - Check all control key operation, ensure accessibility.
+    - Cannot scroll `GuiScrollView`, key operations needed and also need to be disabled for `GuiListControl` because it has already defined item selection keys.
     - `Gui(Bindable)TextList` cannot check or uncheck items by key (enter and space).
 - Sample unit test project included in release.
   - Reflection enabled
