@@ -54,6 +54,43 @@ TEST_FILE
 				protocol->OnNextIdleFrame(L"5 Items", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+					listControl->GetItems().Insert(0, Ptr(new TextItem(L"First Item")));
+				});
+				protocol->OnNextIdleFrame(L"Add to Top", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+					listControl->GetItems().Add(Ptr(new TextItem(L"Last Item")));
+				});
+				protocol->OnNextIdleFrame(L"Add to Last", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+					listControl->GetItems().RemoveAt(0);
+					listControl->GetItems().RemoveAt(listControl->GetItems().Count() - 1);
+				});
+				protocol->OnNextIdleFrame(L"Remove Added Items", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+					listControl->SetSelected(2, true);
+				});
+				protocol->OnNextIdleFrame(L"Select 3rd", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+					listControl->GetItems().Set(2, Ptr(new TextItem(L"Updated Item")));
+				});
+				protocol->OnNextIdleFrame(L"Update 3rd", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+					listControl->SetSelected(2, true);
+				});
+				protocol->OnNextIdleFrame(L"Select 3rd", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
 					window->Hide();
 				});
 			});
