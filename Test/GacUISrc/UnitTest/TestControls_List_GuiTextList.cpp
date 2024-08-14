@@ -180,12 +180,52 @@ TEST_FILE
 				);
 		});
 
-		TEST_CASE(L"UpdateInvisibleItems")
+		TEST_CASE(L"UpdateVisibleItems (View = Check)")
 		{
+			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+					listControl->SetView(TextListView::Check);
+					Value::From(window).Invoke(L"AddItems", (Value_xs(), BoxValue<vint>(5)));
+				});
+				protocol->OnNextIdleFrame(L"5 Items", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					window->Hide();
+				});
+			});
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Controls/List/GuiTextList/UpdateVisibleItems"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resourceTextList
+				);
 		});
 
-		TEST_CASE(L"UpdateInvisibleItems")
+		TEST_CASE(L"UpdateInvisibleItems (View = Radio)")
 		{
+			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+					listControl->SetView(TextListView::Radio);
+					Value::From(window).Invoke(L"AddItems", (Value_xs(), BoxValue<vint>(20)));
+				});
+				protocol->OnNextIdleFrame(L"20 Items", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					window->Hide();
+				});
+			});
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Controls/List/GuiTextList/UpdateInvisibleItems"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resourceTextList
+				);
 		});
 	});
 }
