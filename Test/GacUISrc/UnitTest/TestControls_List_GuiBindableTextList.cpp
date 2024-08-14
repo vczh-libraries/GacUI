@@ -22,18 +22,21 @@ TEST_FILE
   <Instance name="MainWindowResource">
     <Instance ref.Class="gacuisrc_unittest::MainWindow">
       <ref.Members><![CDATA[
-        func AddItems(count:int) : void
+        func AddItems(items:observe TextItem^[], count:int) : void
         {
+          list.ItemSource = items;
           for (item in range[1, count])
           {
-            list.Items.Add(new TextItem^($"Item $(item)"));
+            items.Add(new TextItem^($"Item $(item)"));
           }
         }
       ]]></ref.Members>
       <Window ref.Name="self" Text-format="GuiBindableTextList [$(list.SelectedItemIndex)] -&gt; [$(list.SelectedItemText)]" ClientSize="x:320 y:240">
-        <TextList ref.Name="list" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
+        <GuiBindableTextList> ref.Name="list" env.ItemType="TextItem^" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
           <att.BoundsComposition-set PreferredMinSize="x:400 y:300" AlignmentToParent="left:0 top:5 right:0 bottom:0"/>
-        </TextList>
+          <att.TextProperty>Text</att.TextProperty>
+          <att.CheckedProperty>Checked</att.CheckedProperty>
+        </BindableTextList>
       </Window>
     </Instance>
   </Instance>
@@ -46,46 +49,47 @@ TEST_FILE
 		{
 			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
 			{
+				auto items = Ptr(new collections::ObservableList<Ptr<TextItem>>);
 				protocol->OnNextIdleFrame(L"Ready", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
-					Value::From(window).Invoke(L"AddItems", (Value_xs(), BoxValue<vint>(5)));
+					Value::From(window).Invoke(L"AddItems", (Value_xs(), BoxParameter(*items.Obj()), BoxValue<vint>(5)));
 				});
 				protocol->OnNextIdleFrame(L"5 Items", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
-					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
-					listControl->GetItems().Insert(0, Ptr(new TextItem(L"First Item")));
+					auto listControl = FindObjectByName<GuiBindableTextList>(window, L"list");
+					items->Insert(0, Ptr(new TextItem(L"First Item")));
 				});
 				protocol->OnNextIdleFrame(L"Add to Top", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
-					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
-					listControl->GetItems().Add(Ptr(new TextItem(L"Last Item")));
+					auto listControl = FindObjectByName<GuiBindableTextList>(window, L"list");
+					items->Add(Ptr(new TextItem(L"Last Item")));
 				});
 				protocol->OnNextIdleFrame(L"Add to Last", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
-					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
-					listControl->GetItems().RemoveAt(0);
-					listControl->GetItems().RemoveAt(listControl->GetItems().Count() - 1);
+					auto listControl = FindObjectByName<GuiBindableTextList>(window, L"list");
+					items->RemoveAt(0);
+					items->RemoveAt(items->Count() - 1);
 				});
 				protocol->OnNextIdleFrame(L"Remove Added Items", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
-					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+					auto listControl = FindObjectByName<GuiBindableTextList>(window, L"list");
 					listControl->SetSelected(2, true);
 				});
 				protocol->OnNextIdleFrame(L"Select 3rd", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
-					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
-					listControl->GetItems().Set(2, Ptr(new TextItem(L"Updated Item")));
+					auto listControl = FindObjectByName<GuiBindableTextList>(window, L"list");
+					items->Set(2, Ptr(new TextItem(L"Updated Item")));
 				});
 				protocol->OnNextIdleFrame(L"Update 3rd", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
-					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+					auto listControl = FindObjectByName<GuiBindableTextList>(window, L"list");
 					listControl->SetSelected(2, true);
 				});
 				protocol->OnNextIdleFrame(L"Select 3rd", [=]()
@@ -105,72 +109,73 @@ TEST_FILE
 		{
 			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
 			{
+				auto items = Ptr(new collections::ObservableList<Ptr<TextItem>>);
 				protocol->OnNextIdleFrame(L"Ready", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
-					Value::From(window).Invoke(L"AddItems", (Value_xs(), BoxValue<vint>(20)));
+					Value::From(window).Invoke(L"AddItems", (Value_xs(), BoxParameter(*items.Obj()), BoxValue<vint>(20)));
 				});
 				protocol->OnNextIdleFrame(L"20 Items", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
-					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+					auto listControl = FindObjectByName<GuiBindableTextList>(window, L"list");
 					listControl->EnsureItemVisible(19);
 				});
 				protocol->OnNextIdleFrame(L"Scroll to Bottom", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
-					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
-					listControl->GetItems().Insert(0, Ptr(new TextItem(L"First Item")));
+					auto listControl = FindObjectByName<GuiBindableTextList>(window, L"list");
+					items->Insert(0, Ptr(new TextItem(L"First Item")));
 					listControl->SetSelected(0, true);
 				});
 				protocol->OnNextIdleFrame(L"Add to Top and Select", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
-					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+					auto listControl = FindObjectByName<GuiBindableTextList>(window, L"list");
 					listControl->EnsureItemVisible(0);
 				});
 				protocol->OnNextIdleFrame(L"Scroll to Top", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
-					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
-					listControl->GetItems().Add(Ptr(new TextItem(L"Last Item")));
+					auto listControl = FindObjectByName<GuiBindableTextList>(window, L"list");
+					items->Add(Ptr(new TextItem(L"Last Item")));
 					listControl->SetSelected(21, true);
 				});
 				protocol->OnNextIdleFrame(L"Add to Last and Select", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
-					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
-					listControl->GetItems().RemoveAt(0);
-					listControl->GetItems().RemoveAt(listControl->GetItems().Count() - 1);
+					auto listControl = FindObjectByName<GuiBindableTextList>(window, L"list");
+					items->RemoveAt(0);
+					items->RemoveAt(items->Count() - 1);
 				});
 				protocol->OnNextIdleFrame(L"Remove Added Items", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
-					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+					auto listControl = FindObjectByName<GuiBindableTextList>(window, L"list");
 					listControl->EnsureItemVisible(19);
 				});
 				protocol->OnNextIdleFrame(L"Scroll to Bottom", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
-					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+					auto listControl = FindObjectByName<GuiBindableTextList>(window, L"list");
 					listControl->SetSelected(2, true);
 				});
 				protocol->OnNextIdleFrame(L"Select 3rd", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
-					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
-					listControl->GetItems().Set(2, Ptr(new TextItem(L"Updated Item")));
+					auto listControl = FindObjectByName<GuiBindableTextList>(window, L"list");
+					items->Set(2, Ptr(new TextItem(L"Updated Item")));
 				});
 				protocol->OnNextIdleFrame(L"Update 3rd", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
-					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+					auto listControl = FindObjectByName<GuiBindableTextList>(window, L"list");
 					listControl->SetSelected(2, true);
 				});
 				protocol->OnNextIdleFrame(L"Select 3rd", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
-					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+					auto listControl = FindObjectByName<GuiBindableTextList>(window, L"list");
 					listControl->EnsureItemVisible(0);
 				});
 				protocol->OnNextIdleFrame(L"Scroll to Top", [=]()
@@ -190,37 +195,41 @@ TEST_FILE
 		{
 			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
 			{
+				auto items = Ptr(new collections::ObservableList<Ptr<TextItem>>);
 				protocol->OnNextIdleFrame(L"Ready", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
-					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+					auto listControl = FindObjectByName<GuiBindableTextList>(window, L"list");
 					listControl->SetView(TextListView::Check);
-					Value::From(window).Invoke(L"AddItems", (Value_xs(), BoxValue<vint>(5)));
+					Value::From(window).Invoke(L"AddItems", (Value_xs(), BoxParameter(*items.Obj()), BoxValue<vint>(5)));
 				});
 				protocol->OnNextIdleFrame(L"5 Items", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
-					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+					auto listControl = FindObjectByName<GuiBindableTextList>(window, L"list");
 					listControl->SetSelected(0, true);
 				});
 				protocol->OnNextIdleFrame(L"Select 1st", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
-					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
-					listControl->GetItems()[1]->SetText(L"Updated Text");
+					auto listControl = FindObjectByName<GuiBindableTextList>(window, L"list");
+					items->Get(1)->SetText(L"Updated Text");
+					listControl->NotifyItemDataModified(1, 1);
 				});
 				protocol->OnNextIdleFrame(L"Change 2nd Text", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
-					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
-					listControl->GetItems()[2]->SetChecked(true);
+					auto listControl = FindObjectByName<GuiBindableTextList>(window, L"list");
+					items->Get(2)->SetChecked(true);
+					listControl->NotifyItemDataModified(2, 1);
 				});
 				protocol->OnNextIdleFrame(L"Check 3rd", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
-					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
-					listControl->GetItems()[0]->SetText(L"New Text");
-					listControl->GetItems()[0]->SetChecked(true);
+					auto listControl = FindObjectByName<GuiBindableTextList>(window, L"list");
+					items->Get(0)->SetText(L"New Text");
+					items->Get(0)->SetChecked(true);
+					listControl->NotifyItemDataModified(0, 1);
 				});
 				protocol->OnNextIdleFrame(L"Change 1st Text and Check", [=]()
 				{
@@ -239,33 +248,35 @@ TEST_FILE
 		{
 			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
 			{
+				auto items = Ptr(new collections::ObservableList<Ptr<TextItem>>);
 				protocol->OnNextIdleFrame(L"Ready", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
-					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+					auto listControl = FindObjectByName<GuiBindableTextList>(window, L"list");
 					listControl->SetView(TextListView::Radio);
-					Value::From(window).Invoke(L"AddItems", (Value_xs(), BoxValue<vint>(20)));
+					Value::From(window).Invoke(L"AddItems", (Value_xs(), BoxParameter(*items.Obj()), BoxValue<vint>(20)));
 				});
 				protocol->OnNextIdleFrame(L"20 Items", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
-					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+					auto listControl = FindObjectByName<GuiBindableTextList>(window, L"list");
 					listControl->SetSelected(0, true);
 					listControl->EnsureItemVisible(19);
 				});
 				protocol->OnNextIdleFrame(L"Select 1st and Scroll to Bottom", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
-					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
-					listControl->GetItems()[0]->SetText(L"New Text");
-					listControl->GetItems()[0]->SetChecked(true);
-					listControl->GetItems()[1]->SetText(L"Updated Text");
-					listControl->GetItems()[2]->SetChecked(true);
+					auto listControl = FindObjectByName<GuiBindableTextList>(window, L"list");
+					items->Get(0)->SetText(L"New Text");
+					items->Get(0)->SetChecked(true);
+					items->Get(1)->SetText(L"Updated Text");
+					items->Get(2)->SetChecked(true);
+					listControl->NotifyItemDataModified(0, 3);
 				});
 				protocol->OnNextIdleFrame(L"Change 1st, 2nd, 3rd", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
-					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+					auto listControl = FindObjectByName<GuiBindableTextList>(window, L"list");
 					listControl->EnsureItemVisible(0);
 				});
 				protocol->OnNextIdleFrame(L"Scroll to Top", [=]()
