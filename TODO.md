@@ -65,7 +65,6 @@
     - GuiListControl (`MouseWheel` remaining)
     - TextList
       - ItemTemplate with `Checked`
-      - Bindable
       - Extra key operations
     - ListView
       - Item manipulation
