@@ -170,6 +170,12 @@ TEST_FILE
 				protocol->OnNextIdleFrame(L"Select 3rd", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+					listControl->EnsureItemVisible(0);
+				});
+				protocol->OnNextIdleFrame(L"Scroll to Top", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
 					window->Hide();
 				});
 			});
@@ -241,6 +247,28 @@ TEST_FILE
 					Value::From(window).Invoke(L"AddItems", (Value_xs(), BoxValue<vint>(20)));
 				});
 				protocol->OnNextIdleFrame(L"20 Items", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+					listControl->SetSelected(0, true);
+					listControl->EnsureItemVisible(19);
+				});
+				protocol->OnNextIdleFrame(L"Select 1st and Scroll to Bottom", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+					listControl->GetItems()[0]->SetText(L"New Text");
+					listControl->GetItems()[0]->SetChecked(true);
+					listControl->GetItems()[1]->SetText(L"Updated Text");
+					listControl->GetItems()[2]->SetChecked(true);
+				});
+				protocol->OnNextIdleFrame(L"Change 1st, 2nd, 3rd", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+					listControl->EnsureItemVisible(0);
+				});
+				protocol->OnNextIdleFrame(L"Scroll to Top", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					window->Hide();

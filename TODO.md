@@ -65,15 +65,17 @@
     - GuiListControl (`MouseWheel` remaining)
     - TextList
       - ItemTemplate with `Checked`
-      - Item manipulation
       - Bindable
+      - Extra key operations
     - ListView
       - Item manipulation
       - Bindable
+      - Extra key operations
     - TreeView
       - ItemTemplate with `Expanding`, `Expandable`, `Level`, `Image`
       - Item manipulation
       - Bindable
+      - Extra key operations
   - Menu, Toolstrip and Navigation ...
     - ComboBox
     - GuiDatePicker
