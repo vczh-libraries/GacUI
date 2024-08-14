@@ -1,4 +1,4 @@
-#include "../../../Source//UnitTestUtilities/GuiUnitTestUtilities.h"
+#include "../../../Source/UnitTestUtilities/GuiUnitTestUtilities.h"
 #ifdef VCZH_64
 #include "../Generated_DarkSkin/Source_x64/DarkSkin.h"
 #else
