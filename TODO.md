@@ -70,8 +70,9 @@
       - ItemTemplate with `Expanding`, `Expandable`, `Level`, `Image`
       - Item manipulation
       - Bindable
+      - Node events
       - Extra mouse operations
-      - Extra key operations
+      - Extra key operations (Left/Right -> Collapse/Expand)
   - Menu, Toolstrip and Navigation ...
     - ComboBox
     - GuiDatePicker
