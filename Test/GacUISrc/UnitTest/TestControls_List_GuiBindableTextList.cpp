@@ -44,6 +44,32 @@ TEST_FILE
 </Resource>
 )GacUISrc";
 
+	const auto resourceTextListItemTemplate = LR"GacUISrc(
+<Resource>
+  <Instance name="MainWindowResource">
+    <Instance ref.Class="gacuisrc_unittest::MainWindow">
+      <ref.Members><![CDATA[
+        func InitializeItems(items:observe TextItem^[], count:int) : void
+        {
+          list.ItemSource = items;
+          for (item in range[1, count])
+          {
+            items.Add(new TextItem^($"Item $(item)"));
+          }
+        }
+      ]]></ref.Members>
+      <Window ref.Name="self" Text-format="GuiBindableTextList [$(list.SelectedItemIndex)] -&gt; [$(list.SelectedItemText)]" ClientSize="x:320 y:240">
+        <GuiBindableTextList ref.Name="list" env.ItemType="TextItem^" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
+          <att.BoundsComposition-set PreferredMinSize="x:400 y:300" AlignmentToParent="left:0 top:5 right:0 bottom:0"/>
+          <att.TextProperty>Text</att.TextProperty>
+          <att.CheckedProperty>Checked</att.CheckedProperty>
+        </BindableTextList>
+      </Window>
+    </Instance>
+  </Instance>
+</Resource>
+)GacUISrc";
+
 	TEST_CATEGORY(L"GuiBindableTextList")
 	{
 		TEST_CASE(L"MakeVisibleItems")
@@ -409,7 +435,7 @@ TEST_FILE
 			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
 				WString::Unmanaged(L"Controls/List/GuiBindableTextList/GuiTextListItemTemplate/UpdateVisibleItems"),
 				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
-				resourceTextList
+				resourceTextListItemTemplate
 				);
 		});
 
@@ -457,7 +483,7 @@ TEST_FILE
 			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
 				WString::Unmanaged(L"Controls/List/GuiBindableTextList/GuiTextListItemTemplate/UpdateInvisibleItems"),
 				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
-				resourceTextList
+				resourceTextListItemTemplate
 				);
 		});
 		
@@ -518,7 +544,7 @@ TEST_FILE
 			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
 				WString::Unmanaged(L"Controls/List/GuiBindableTextList/GuiTextListItemTemplate/ClickVisibleItems"),
 				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
-				resourceTextList
+				resourceTextListItemTemplate
 				);
 		});
 	});
