@@ -4279,6 +4279,9 @@ class presentation::controls::GuiBindableListView : presentation::controls::GuiV
     constructor (themeName : presentation::theme::ThemeName) : presentation::controls::GuiBindableListView*;
 }
 
+class presentation::controls::GuiBindableListView::ItemSource : presentation::controls::list::ItemProviderBase, presentation::controls::list::IListViewItemView, presentation::controls::list::ListViewColumnItemArranger::IColumnItemView {
+}
+
 class presentation::controls::GuiBindableRibbonGalleryList : presentation::controls::GuiRibbonGallery, presentation::controls::list::GroupedDataSource {
     event ItemApplied : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiItemEventArgs*>^;
     event ItemTemplateChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
@@ -4344,6 +4347,9 @@ class presentation::controls::GuiBindableTextList : presentation::controls::GuiV
     constructor (themeName : presentation::theme::ThemeName) : presentation::controls::GuiBindableTextList*;
 }
 
+class presentation::controls::GuiBindableTextList::ItemSource : presentation::controls::list::ItemProviderBase, presentation::controls::list::ITextItemView {
+}
+
 class presentation::controls::GuiBindableTreeView : presentation::controls::GuiVirtualTreeView {
     event ChildrenPropertyChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
         ChildrenProperty,
@@ -4376,6 +4382,12 @@ class presentation::controls::GuiBindableTreeView : presentation::controls::GuiV
 
     constructor (themeName : presentation::theme::ThemeName) : presentation::controls::GuiBindableTreeView*;
     constructor (themeName : presentation::theme::ThemeName, reverseMappingProperty : system::Function<system::Object, system::Object, system::Object, system::Boolean>^) : presentation::controls::GuiBindableTreeView*;
+}
+
+class presentation::controls::GuiBindableTreeView::ItemSource : presentation::controls::tree::NodeRootProviderBase, presentation::controls::tree::ITreeViewItemView {
+}
+
+class presentation::controls::GuiBindableTreeView::ItemSourceNode : presentation::controls::tree::INodeProvider {
 }
 
 class presentation::controls::GuiButton : presentation::controls::GuiControl {

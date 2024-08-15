@@ -61,9 +61,6 @@
 - Non-editing control unit test (using DarkSkin)
   - List
     - GuiListControl (`MouseWheel` remaining)
-    - TextList
-      - ItemTemplate with `Checked`
-      - Extra mouse operations
     - ListView
       - Item manipulation
       - Bindable
