@@ -44,7 +44,14 @@ TEST_FILE
 <Resource>
   <Instance name="CheckedIconTemplateResource">
     <Instance ref.Class="gacuisrc_unittest::CheckedIconTemplate">
-      <SelectableButtonTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
+      <SelectableButtonTemplate ref.Name="self" PreferredMinSize="x:32 y:16" MinSizeLimitation="LimitToElementAndChildren">
+        <SolidBorder Color="#00FF00">
+        <Bounds Visible-bind="self.Selected" PreferredMinSize="x:12 y:12" AlignmentToParent="left:2 top:2 right:-1 bottom:2">
+          <SolidBackground Color="#00FF00"/>
+        </Bounds>
+        <Bounds Visible-bind="not self.Selected" PreferredMinSize="x:12 y:12" AlignmentToParent="left:-1 top:2 right:2 bottom:2">
+          <SolidBackground Color="#888888"/>
+        </Bounds>
       </SelectableButtonTemplate>
     </Instance>
   </Instance>
@@ -64,7 +71,7 @@ TEST_FILE
           </att.Columns>
 
           <Cell Site="row:1 column:0">
-            <SelectableButton ref.Name="icon" Selected-bind="self.Checked">
+            <SelectableButton ref.Name="icon" Selected-bind="self.Checked" AutoFocus="false" AutoSelect="true">
               <att.ControlTemplate>gacuisrc_unittest::ItemTemplate</att.ControlTemplate>
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
             </SelectableButton>
