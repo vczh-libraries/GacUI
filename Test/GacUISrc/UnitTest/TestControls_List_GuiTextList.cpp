@@ -347,5 +347,99 @@ TEST_FILE
 
 	TEST_CATEGORY(L"GuiTextListItemTemplate")
 	{
+		TEST_CASE(L"UpdateVisibleItems")
+		{
+			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+					listControl->SetView(TextListView::Check);
+					Value::From(window).Invoke(L"InitializeItems", (Value_xs(), BoxValue<vint>(5)));
+				});
+				protocol->OnNextIdleFrame(L"5 Items", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+					listControl->SetSelected(0, true);
+				});
+				protocol->OnNextIdleFrame(L"Select 1st", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+					listControl->GetItems()[1]->SetText(L"Updated Text");
+				});
+				protocol->OnNextIdleFrame(L"Change 2nd Text", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+					listControl->GetItems()[2]->SetChecked(true);
+				});
+				protocol->OnNextIdleFrame(L"Check 3rd", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+					listControl->GetItems()[0]->SetText(L"New Text");
+					listControl->GetItems()[0]->SetChecked(true);
+				});
+				protocol->OnNextIdleFrame(L"Change 1st Text and Check", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					window->Hide();
+				});
+			});
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Controls/List/GuiTextList/GuiTextListItemTemplate/UpdateVisibleItems"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resourceTextList
+				);
+		});
+
+		TEST_CASE(L"UpdateInvisibleItems")
+		{
+			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+					listControl->SetView(TextListView::Radio);
+					Value::From(window).Invoke(L"InitializeItems", (Value_xs(), BoxValue<vint>(20)));
+				});
+				protocol->OnNextIdleFrame(L"20 Items", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+					listControl->SetSelected(0, true);
+					listControl->EnsureItemVisible(19);
+				});
+				protocol->OnNextIdleFrame(L"Select 1st and Scroll to Bottom", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+					listControl->GetItems()[0]->SetText(L"New Text");
+					listControl->GetItems()[0]->SetChecked(true);
+					listControl->GetItems()[1]->SetText(L"Updated Text");
+					listControl->GetItems()[2]->SetChecked(true);
+				});
+				protocol->OnNextIdleFrame(L"Change 1st, 2nd, 3rd", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+					listControl->EnsureItemVisible(0);
+				});
+				protocol->OnNextIdleFrame(L"Scroll to Top", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					window->Hide();
+				});
+			});
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Controls/List/GuiTextList/GuiTextListItemTemplate/UpdateInvisibleItems"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resourceTextList
+				);
+		});
 	});
 }
