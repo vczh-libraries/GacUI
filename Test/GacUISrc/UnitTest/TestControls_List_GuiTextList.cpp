@@ -441,5 +441,65 @@ TEST_FILE
 				resourceTextList
 				);
 		});
+
+		TEST_CASE(L"ClickVisibleItems")
+		{
+			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+					listControl->SetView(TextListView::Check);
+					Value::From(window).Invoke(L"InitializeItems", (Value_xs(), BoxValue<vint>(5)));
+				});
+				protocol->OnNextIdleFrame(L"5 Items", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+					listControl->SetSelected(0, true);
+				});
+				protocol->OnNextIdleFrame(L"Select 1st", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+
+					TEST_ASSERT(listControl->GetItems()[2]->GetChecked() == false);
+					{
+						auto itemStyle = listControl->GetArranger()->GetVisibleStyle(2);
+						TEST_ASSERT(itemStyle != nullptr);
+						TEST_ASSERT(listControl->GetArranger()->GetVisibleIndex(itemStyle) == 2);
+						auto location = protocol->LocationOf(itemStyle, 0.0, 0.5, 8, 0);
+						protocol->LClick(location);
+					}
+					TEST_ASSERT(listControl->GetItems()[2]->GetChecked() == true);
+				});
+				protocol->OnNextIdleFrame(L"Check 3rd", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+
+					TEST_ASSERT(listControl->GetItems()[0]->GetChecked() == false);
+					{
+						auto itemStyle = listControl->GetArranger()->GetVisibleStyle(0);
+						TEST_ASSERT(itemStyle != nullptr);
+						TEST_ASSERT(listControl->GetArranger()->GetVisibleIndex(itemStyle) == 0);
+						auto location = protocol->LocationOf(itemStyle, 0.0, 0.5, 8, 0);
+						protocol->LClick(location);
+					}
+					TEST_ASSERT(listControl->GetItems()[0]->GetChecked() == true);
+				});
+				protocol->OnNextIdleFrame(L"Check 1st", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					window->Hide();
+				});
+			});
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Controls/List/GuiTextList/GuiTextListItemTemplate/ClickVisibleItems"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resourceTextList
+				);
+		});
 	});
 }
