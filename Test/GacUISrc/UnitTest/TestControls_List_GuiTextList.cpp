@@ -42,8 +42,8 @@ TEST_FILE
 
 	const auto resourceTextListItemTemplate = LR"GacUISrc(
 <Resource>
-  <Instance name="CheckedIconTemplateResource">
-    <Instance ref.Class="gacuisrc_unittest::CheckedIconTemplate">
+  <Instance name="CheckedBulletTemplateResource">
+    <Instance ref.Class="gacuisrc_unittest::CheckedBulletTemplate">
       <SelectableButtonTemplate ref.Name="self" PreferredMinSize="x:32 y:16" MinSizeLimitation="LimitToElementAndChildren">
         <SolidBorder Color="#00FF00"/>
         <Bounds Visible-bind="self.Selected" PreferredMinSize="x:12 y:12" AlignmentToParent="left:2 top:2 right:-1 bottom:2">
@@ -58,7 +58,7 @@ TEST_FILE
 
   <Instance name="ItemTemplateResource">
     <Instance ref.Class="gacuisrc_unittest::ItemTemplate">
-      <TextListItemTemplate ref.Name="self" Checked-bind="icon.Selected" MinSizeLimitation="LimitToElementAndChildren">
+      <TextListItemTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
         <Table BorderVisible="true" CellPadding="2" MinSizeLimitation="LimitToElementAndChildren" AlignmentToParent="left:0 top:0 right:0 bottom:0">
           <att.Rows>
             <_>composeType:Percentage percentage:0.5</_>
@@ -71,9 +71,13 @@ TEST_FILE
           </att.Columns>
 
           <Cell Site="row:1 column:0">
-            <CheckBox ref.Name="icon" Selected-bind="self.Checked" AutoFocus="false" AutoSelection="true">
-              <att.ControlTemplate>gacuisrc_unittest::CheckedIconTemplate</att.ControlTemplate>
+            <CheckBox ref.Name="bullet" Selected-bind="self.Checked" AutoFocus="false" AutoSelection="false">
+              <att.ControlTemplate>gacuisrc_unittest::CheckedBulletTemplate</att.ControlTemplate>
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+              <ev.Clicked-eval><![CDATA[{
+                var textItemView = self.AssociatedListControl.ItemProvider.RequestView(ITextItemView::GetIdentifier()) as ITextItemView*;
+                textItemView.SetChecked(self.Index, not bullet.Selected);
+              }]]></ev.Clicked-eval>
             </CheckBox>
           </Cell>
           <Cell Site="row:1 column:1">
