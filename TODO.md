@@ -10,6 +10,7 @@
   - Fix `GuiListControl` incompatible with non-default axis.
   - Fix `GuiTextList::SelectionChanged` not raised when changing properties of the only selected `list::TextItem`.
 - `GuiTreeItemTemplate` change base class to `GuiListItemTemplate`
+- Make `ItemSource` class of bindable list controls reflectable.
 
 ## Known Issues
 

@@ -365,6 +365,10 @@ Type List (Controls)
 			F(presentation::controls::list::DataReverseSorter)\
 			F(presentation::controls::list::DataColumn)\
 			F(presentation::controls::list::DataProvider)\
+			F(presentation::controls::GuiBindableTextList::ItemSource)\
+			F(presentation::controls::GuiBindableListView::ItemSource)\
+			F(presentation::controls::GuiBindableTreeView::ItemSourceNode)\
+			F(presentation::controls::GuiBindableTreeView::ItemSource)\
 
 #define GUIREFLECTIONCONTROLS_CLASS_TYPELIST(F)\
 			F(presentation::controls::GuiControl)\

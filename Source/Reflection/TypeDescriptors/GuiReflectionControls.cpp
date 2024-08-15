@@ -714,6 +714,26 @@ Type Declaration (Extra)
 				CLASS_MEMBER_BASE(IDataProcessorCallback)
 			END_CLASS_MEMBER(DataProvider)
 
+			BEGIN_CLASS_MEMBER(GuiBindableTextList::ItemSource)
+				CLASS_MEMBER_BASE(ItemProviderBase)
+				CLASS_MEMBER_BASE(ITextItemView)
+			END_CLASS_MEMBER(GuiBindableTextList::ItemSource)
+
+			BEGIN_CLASS_MEMBER(GuiBindableListView::ItemSource)
+				CLASS_MEMBER_BASE(ItemProviderBase)
+				CLASS_MEMBER_BASE(IListViewItemView)
+				CLASS_MEMBER_BASE(ListViewColumnItemArranger::IColumnItemView)
+			END_CLASS_MEMBER(GuiBindableListView::ItemSource)
+
+			BEGIN_CLASS_MEMBER(GuiBindableTreeView::ItemSourceNode)
+				CLASS_MEMBER_BASE(INodeProvider)
+			END_CLASS_MEMBER(GuiBindableTreeView::ItemSourceNode)
+
+			BEGIN_CLASS_MEMBER(GuiBindableTreeView::ItemSource)
+				CLASS_MEMBER_BASE(NodeRootProviderBase)
+				CLASS_MEMBER_BASE(ITreeViewItemView)
+			END_CLASS_MEMBER(GuiBindableTreeView::ItemSource)
+
 /***********************************************************************
 Type Declaration (Class)
 ***********************************************************************/

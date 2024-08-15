@@ -89,10 +89,11 @@ GuiBindableTextList
 			/// <summary>A bindable Text list control.</summary>
 			class GuiBindableTextList : public GuiVirtualTextList, public Description<GuiBindableTextList>
 			{
-			protected:
+			public:
 				class ItemSource
 					: public list::ItemProviderBase
 					, protected list::ITextItemView
+					, public Description<ItemSource>
 				{
 				protected:
 					Ptr<EventHandler>								itemChangedEventHandler;
@@ -179,12 +180,13 @@ GuiBindableListView
 			/// <summary>A bindable List view control.</summary>
 			class GuiBindableListView : public GuiVirtualListView, public Description<GuiBindableListView>
 			{
-			protected:
+			public:
 				class ItemSource
 					: public list::ItemProviderBase
 					, protected virtual list::IListViewItemProvider
 					, public virtual list::IListViewItemView
 					, public virtual list::ListViewColumnItemArranger::IColumnItemView
+					, public Description<ItemSource>
 				{
 					typedef collections::List<list::ListViewColumnItemArranger::IColumnItemViewCallback*>		ColumnItemViewCallbackList;
 				protected:
@@ -307,7 +309,7 @@ GuiBindableTreeView
 			class GuiBindableTreeView : public GuiVirtualTreeView, public Description<GuiBindableTreeView>
 			{
 				using IValueEnumerable = reflection::description::IValueEnumerable;
-			protected:
+			public:
 				class ItemSource;
 
 				class ItemSourceNode
@@ -355,6 +357,7 @@ GuiBindableTreeView
 				class ItemSource
 					: public tree::NodeRootProviderBase
 					, public virtual tree::ITreeViewItemView
+					, public Description<ItemSource>
 				{
 					friend class ItemSourceNode;
 				public:
