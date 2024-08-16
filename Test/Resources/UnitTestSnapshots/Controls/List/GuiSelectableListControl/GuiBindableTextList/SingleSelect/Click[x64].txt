@@ -30,7 +30,7 @@ namespace gacuisrc_unittest
         var <precompile>0 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
-        var list : ::presentation::controls::GuiTextList* = null of (::presentation::controls::GuiTextList*);
+        var list : ::presentation::controls::GuiBindableTextList* = null of (::presentation::controls::GuiBindableTextList*);
 
         @cpp:Protected
         func <gacuisrc_unittest-MainWindow>Initialize(<this> : ::gacuisrc_unittest::MainWindow*) : (::system::Void)
@@ -43,8 +43,15 @@ namespace gacuisrc_unittest
                 (self.Text = "GuiSelectableListControl");
             }
             {
-                (list = new (::presentation::controls::GuiTextList*)(::presentation::theme::ThemeName::TextList));
+                (list = new (::presentation::controls::GuiBindableTextList*)(::presentation::theme::ThemeName::TextList));
                 <this>.SetNamedObject("list", list);
+            }
+            {
+                (list.TextProperty = func (<item> : ::system::Object) : (::system::String)
+                {
+                    var item = (cast (TextItem^) <item>);
+                    return item.Text;
+                });
             }
             {
                 (list.VerticalAlwaysVisible = false);
@@ -61,6 +68,9 @@ namespace gacuisrc_unittest
             }
             {
                 self.AddChild(list);
+            }
+            {
+                (list.ItemSource = self.items);
             }
             {
                 var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
@@ -117,6 +127,8 @@ namespace gacuisrc_unittest
     @cpp:Friend(typeof(MainWindowConstructor))
     class MainWindow : ::presentation::controls::GuiWindow, MainWindowConstructor
     {
+        var items : observe TextItem^[] = {};
+
         var counter : int = 0;
 
         new* ()
@@ -138,7 +150,7 @@ namespace gacuisrc_unittest
                 while ((item <= <for-end>item))
                 {
                     {
-                        list.Items.Add(new (TextItem^)(("Item " & item)));
+                        items.Add(new (TextItem^)(("Item " & item)));
                     }
                     (item = (item + 1));
                 }
