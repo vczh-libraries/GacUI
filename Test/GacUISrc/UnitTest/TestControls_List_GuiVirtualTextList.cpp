@@ -116,7 +116,7 @@ TEST_FILE
 
 		TEST_CATEGORY(L"GuiTextList")
 		{
-			GuiTextList_TestCases(
+			GuiVirtualTextList_TestCases(
 				resourceTextList,
 				WString::Unmanaged(L"GuiTextList"),
 				true,
@@ -207,7 +207,7 @@ TEST_FILE
 
 		TEST_CATEGORY(L"GuiBindableTextList")
 		{
-			GuiTextList_TestCases(
+			GuiVirtualTextList_TestCases(
 				resourceTextList,
 				WString::Unmanaged(L"GuiBindableTextList"),
 				true,

@@ -171,7 +171,7 @@
     <ClCompile Include="TestControls_List_GuiVirtualTextList.cpp">
       <Filter>Source Files\Controls\List</Filter>
     </ClCompile>
-    <ClCompile Include="TestControls_List_GuiTextList_Template.cpp">
+    <ClCompile Include="TestControls_List_GuiVirtualTextList_Template.cpp">
       <Filter>Source Files\Controls\List</Filter>
     </ClCompile>
   </ItemGroup>

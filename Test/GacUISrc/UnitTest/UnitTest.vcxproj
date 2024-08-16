@@ -207,7 +207,7 @@
     <ClCompile Include="TestControls_List_GuiListItemTemplate.cpp" />
     <ClCompile Include="TestControls_List_GuiSelectableListControl.cpp" />
     <ClCompile Include="TestControls_List_GuiVirtualTextList.cpp" />
-    <ClCompile Include="TestControls_List_GuiTextList_Template.cpp" />
+    <ClCompile Include="TestControls_List_GuiVirtualTextList_Template.cpp" />
     <ClCompile Include="TestHostedWindowManager.cpp" />
     <ClCompile Include="TestPtrDescriptableObject.cpp" />
     <ClCompile Include="TestQueryParser.cpp" />

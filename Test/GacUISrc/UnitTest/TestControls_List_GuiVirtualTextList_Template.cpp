@@ -2,7 +2,7 @@
 
 namespace gacui_unittest_template
 {
-	void GuiTextList_TestCases(
+	void GuiVirtualTextList_TestCases(
 		WString resourceXml,
 		WString pathFragment,
 		bool setTextListView,
