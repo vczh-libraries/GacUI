@@ -83,7 +83,7 @@ TEST_FILE
 				});
 			});
 			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
-				WString::Unmanaged(L"Controls/List/GuiSelectableListControl/SingleSelect/Properties"),
+				WString::Unmanaged(L"Controls/List/GuiSelectableListControl/GuiTextList/SingleSelect/Properties"),
 				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
 				resourceListControl
 				);
@@ -163,7 +163,7 @@ TEST_FILE
 				});
 			});
 			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
-				WString::Unmanaged(L"Controls/List/GuiSelectableListControl/SingleSelect/SelectItemsByClick"),
+				WString::Unmanaged(L"Controls/List/GuiSelectableListControl/GuiTextList/SingleSelect/SelectItemsByClick"),
 				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
 				resourceListControl
 				);
@@ -257,7 +257,7 @@ TEST_FILE
 				});
 			});
 			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
-				WString::Unmanaged(L"Controls/List/GuiSelectableListControl/SingleSelect/SelectItemsByKey"),
+				WString::Unmanaged(L"Controls/List/GuiSelectableListControl/GuiTextList/SingleSelect/SelectItemsByKey"),
 				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
 				resourceListControl
 				);
@@ -332,7 +332,7 @@ TEST_FILE
 				});
 			});
 			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
-				WString::Unmanaged(L"Controls/List/GuiSelectableListControl/SingleSelect/Click"),
+				WString::Unmanaged(L"Controls/List/GuiSelectableListControl/GuiTextList/SingleSelect/Click"),
 				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
 				resourceListControl
 				);
@@ -418,7 +418,7 @@ TEST_FILE
 				});
 			});
 			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
-				WString::Unmanaged(L"Controls/List/GuiSelectableListControl/SingleSelect/Key"),
+				WString::Unmanaged(L"Controls/List/GuiSelectableListControl/GuiTextList/SingleSelect/Key"),
 				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
 				resourceListControl
 				);
@@ -476,7 +476,7 @@ TEST_FILE
 				});
 			});
 			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
-				WString::Unmanaged(L"Controls/List/GuiSelectableListControl/MultiSelect/Properties"),
+				WString::Unmanaged(L"Controls/List/GuiSelectableListControl/GuiTextList/MultiSelect/Properties"),
 				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
 				resourceListControl
 				);
@@ -557,7 +557,7 @@ TEST_FILE
 				});
 			});
 			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
-				WString::Unmanaged(L"Controls/List/GuiSelectableListControl/MultiSelect/SelectItemsByClick"),
+				WString::Unmanaged(L"Controls/List/GuiSelectableListControl/GuiTextList/MultiSelect/SelectItemsByClick"),
 				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
 				resourceListControl
 				);
@@ -652,7 +652,7 @@ TEST_FILE
 				});
 			});
 			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
-				WString::Unmanaged(L"Controls/List/GuiSelectableListControl/MultiSelect/SelectItemsByKey"),
+				WString::Unmanaged(L"Controls/List/GuiSelectableListControl/GuiTextList/MultiSelect/SelectItemsByKey"),
 				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
 				resourceListControl
 				);
@@ -731,7 +731,7 @@ TEST_FILE
 				});
 			});
 			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
-				WString::Unmanaged(L"Controls/List/GuiSelectableListControl/MultiSelect/Click"),
+				WString::Unmanaged(L"Controls/List/GuiSelectableListControl/GuiTextList/MultiSelect/Click"),
 				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
 				resourceListControl
 				);
@@ -818,7 +818,7 @@ TEST_FILE
 				});
 			});
 			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
-				WString::Unmanaged(L"Controls/List/GuiSelectableListControl/MultiSelect/Key"),
+				WString::Unmanaged(L"Controls/List/GuiSelectableListControl/GuiTextList/MultiSelect/Key"),
 				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
 				resourceListControl
 				);

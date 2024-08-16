@@ -99,7 +99,7 @@ TEST_FILE
 				});
 			});
 			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
-				WString::Unmanaged(L"Controls/List/GuiListControl/Scrolling"),
+				WString::Unmanaged(L"Controls/List/GuiListControl/GuiTextList/Scrolling"),
 				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
 				resourceListControl
 				);
@@ -199,7 +199,7 @@ TEST_FILE
 				});
 			});
 			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
-				WString::Unmanaged(L"Controls/List/GuiListControl/LeftMouseEvents"),
+				WString::Unmanaged(L"Controls/List/GuiListControl/GuiTextList/LeftMouseEvents"),
 				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
 				resourceListControl
 				);
@@ -276,7 +276,7 @@ TEST_FILE
 				});
 			});
 			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
-				WString::Unmanaged(L"Controls/List/GuiListControl/MiddleMouseEvents"),
+				WString::Unmanaged(L"Controls/List/GuiListControl/GuiTextList/MiddleMouseEvents"),
 				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
 				resourceListControl
 				);
@@ -353,7 +353,7 @@ TEST_FILE
 				});
 			});
 			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
-				WString::Unmanaged(L"Controls/List/GuiListControl/RightMouseEvents"),
+				WString::Unmanaged(L"Controls/List/GuiListControl/GuiTextList/RightMouseEvents"),
 				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
 				resourceListControl
 				);
