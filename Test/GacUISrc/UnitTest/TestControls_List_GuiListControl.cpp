@@ -56,7 +56,7 @@ TEST_FILE
 
 		TEST_CATEGORY(L"GuiTextList")
 		{
-			GuiListControl_SingleSelect_TestCases(
+			GuiListControl_TestCases(
 				resourceListControl,
 				WString::Unmanaged(L"GuiListControl/GuiTextList"));
 		});
@@ -118,7 +118,7 @@ TEST_FILE
 
 		TEST_CATEGORY(L"GuiBindableTextList")
 		{
-			GuiListControl_SingleSelect_TestCases(
+			GuiListControl_TestCases(
 				resourceListControl,
 				WString::Unmanaged(L"GuiListControl/GuiBindableTextList"));
 		});

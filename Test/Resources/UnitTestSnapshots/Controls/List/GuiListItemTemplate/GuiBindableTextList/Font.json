@@ -601,7 +601,7 @@
             "ElementDesc_SolidBorder",
             {
               "id": 34,
-              "borderColor": "#00000000",
+              "borderColor": "#000088",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
@@ -617,11 +617,11 @@
               "verticalAlignment": "Top",
               "wrapLine": false,
               "wrapLineHeightCalculation": false,
-              "ellipse": true,
+              "ellipse": false,
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "[0] = Item 1",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": "TotalSize"
             }
           ]
         ],
@@ -642,7 +642,7 @@
             "ElementDesc_SolidBorder",
             {
               "id": 37,
-              "borderColor": "#00000000",
+              "borderColor": "#000088",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
@@ -658,11 +658,11 @@
               "verticalAlignment": "Top",
               "wrapLine": false,
               "wrapLineHeightCalculation": false,
-              "ellipse": true,
+              "ellipse": false,
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "[1] = Item 2",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": "TotalSize"
             }
           ]
         ],
@@ -683,7 +683,7 @@
             "ElementDesc_SolidBorder",
             {
               "id": 40,
-              "borderColor": "#00000000",
+              "borderColor": "#000088",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
@@ -699,11 +699,11 @@
               "verticalAlignment": "Top",
               "wrapLine": false,
               "wrapLineHeightCalculation": false,
-              "ellipse": true,
+              "ellipse": false,
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "[2] = Item 3",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": "TotalSize"
             }
           ]
         ],
@@ -724,7 +724,7 @@
             "ElementDesc_SolidBorder",
             {
               "id": 43,
-              "borderColor": "#00000000",
+              "borderColor": "#000088",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
@@ -740,11 +740,11 @@
               "verticalAlignment": "Top",
               "wrapLine": false,
               "wrapLineHeightCalculation": false,
-              "ellipse": true,
+              "ellipse": false,
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "[3] = Item 4",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": "TotalSize"
             }
           ]
         ],
@@ -765,7 +765,7 @@
             "ElementDesc_SolidBorder",
             {
               "id": 46,
-              "borderColor": "#00000000",
+              "borderColor": "#000088",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
@@ -781,11 +781,11 @@
               "verticalAlignment": "Top",
               "wrapLine": false,
               "wrapLineHeightCalculation": false,
-              "ellipse": true,
+              "ellipse": false,
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "[4] = Item 5",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": "TotalSize"
             }
           ]
         ],
@@ -806,7 +806,7 @@
             "ElementDesc_SolidBorder",
             {
               "id": 49,
-              "borderColor": "#00000000",
+              "borderColor": "#000088",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
@@ -822,11 +822,11 @@
               "verticalAlignment": "Top",
               "wrapLine": false,
               "wrapLineHeightCalculation": false,
-              "ellipse": true,
+              "ellipse": false,
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "[5] = Item 6",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": "TotalSize"
             }
           ]
         ],
@@ -847,7 +847,7 @@
             "ElementDesc_SolidBorder",
             {
               "id": 52,
-              "borderColor": "#00000000",
+              "borderColor": "#000088",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
@@ -863,11 +863,11 @@
               "verticalAlignment": "Top",
               "wrapLine": false,
               "wrapLineHeightCalculation": false,
-              "ellipse": true,
+              "ellipse": false,
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "[6] = Item 7",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": "TotalSize"
             }
           ]
         ],
@@ -888,7 +888,7 @@
             "ElementDesc_SolidBorder",
             {
               "id": 55,
-              "borderColor": "#00000000",
+              "borderColor": "#000088",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
@@ -904,11 +904,11 @@
               "verticalAlignment": "Top",
               "wrapLine": false,
               "wrapLineHeightCalculation": false,
-              "ellipse": true,
+              "ellipse": false,
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "[7] = Item 8",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": "TotalSize"
             }
           ]
         ],
@@ -929,7 +929,7 @@
             "ElementDesc_SolidBorder",
             {
               "id": 58,
-              "borderColor": "#00000000",
+              "borderColor": "#000088",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
@@ -945,11 +945,11 @@
               "verticalAlignment": "Top",
               "wrapLine": false,
               "wrapLineHeightCalculation": false,
-              "ellipse": true,
+              "ellipse": false,
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "[8] = Item 9",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": "TotalSize"
             }
           ]
         ],
@@ -970,7 +970,7 @@
             "ElementDesc_SolidBorder",
             {
               "id": 61,
-              "borderColor": "#00000000",
+              "borderColor": "#000088",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
@@ -986,11 +986,11 @@
               "verticalAlignment": "Top",
               "wrapLine": false,
               "wrapLineHeightCalculation": false,
-              "ellipse": true,
+              "ellipse": false,
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "[9] = Item 10",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": "TotalSize"
             }
           ]
         ],
@@ -1011,7 +1011,7 @@
             "ElementDesc_SolidBorder",
             {
               "id": 64,
-              "borderColor": "#00000000",
+              "borderColor": "#000088",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
@@ -1027,11 +1027,11 @@
               "verticalAlignment": "Top",
               "wrapLine": false,
               "wrapLineHeightCalculation": false,
-              "ellipse": true,
+              "ellipse": false,
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "[10] = Item 11",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": "TotalSize"
             }
           ]
         ],
@@ -1052,7 +1052,7 @@
             "ElementDesc_SolidBorder",
             {
               "id": 67,
-              "borderColor": "#00000000",
+              "borderColor": "#000088",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
@@ -1068,11 +1068,11 @@
               "verticalAlignment": "Top",
               "wrapLine": false,
               "wrapLineHeightCalculation": false,
-              "ellipse": true,
+              "ellipse": false,
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "[11] = Item 12",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": "TotalSize"
             }
           ]
         ],
@@ -1093,7 +1093,7 @@
             "ElementDesc_SolidBorder",
             {
               "id": 70,
-              "borderColor": "#00000000",
+              "borderColor": "#000088",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
@@ -1109,11 +1109,11 @@
               "verticalAlignment": "Top",
               "wrapLine": false,
               "wrapLineHeightCalculation": false,
-              "ellipse": true,
+              "ellipse": false,
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "[12] = Item 13",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": "TotalSize"
             }
           ]
         ],
@@ -1134,7 +1134,7 @@
             "ElementDesc_SolidBorder",
             {
               "id": 73,
-              "borderColor": "#00000000",
+              "borderColor": "#000088",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
@@ -1150,11 +1150,11 @@
               "verticalAlignment": "Top",
               "wrapLine": false,
               "wrapLineHeightCalculation": false,
-              "ellipse": true,
+              "ellipse": false,
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "[13] = Item 14",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": "TotalSize"
             }
           ]
         ],
@@ -1175,7 +1175,7 @@
             "ElementDesc_SolidBorder",
             {
               "id": 76,
-              "borderColor": "#00000000",
+              "borderColor": "#000088",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
@@ -1191,11 +1191,11 @@
               "verticalAlignment": "Top",
               "wrapLine": false,
               "wrapLineHeightCalculation": false,
-              "ellipse": true,
+              "ellipse": false,
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "[14] = Item 15",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": "TotalSize"
             }
           ]
         ],
@@ -1216,7 +1216,7 @@
             "ElementDesc_SolidBorder",
             {
               "id": 79,
-              "borderColor": "#00000000",
+              "borderColor": "#000088",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
@@ -1232,11 +1232,11 @@
               "verticalAlignment": "Top",
               "wrapLine": false,
               "wrapLineHeightCalculation": false,
-              "ellipse": true,
+              "ellipse": false,
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "[15] = Item 16",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": "TotalSize"
             }
           ]
         ],
@@ -1257,7 +1257,7 @@
             "ElementDesc_SolidBorder",
             {
               "id": 82,
-              "borderColor": "#00000000",
+              "borderColor": "#000088",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
@@ -1273,11 +1273,11 @@
               "verticalAlignment": "Top",
               "wrapLine": false,
               "wrapLineHeightCalculation": false,
-              "ellipse": true,
+              "ellipse": false,
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "[16] = Item 17",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": "TotalSize"
             }
           ]
         ]
@@ -3479,7 +3479,7 @@
             "ElementDesc_SolidBorder",
             {
               "id": 34,
-              "borderColor": "#00000000",
+              "borderColor": "#000088",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
@@ -3495,11 +3495,11 @@
               "verticalAlignment": "Top",
               "wrapLine": false,
               "wrapLineHeightCalculation": false,
-              "ellipse": true,
+              "ellipse": false,
               "multiline": false,
               "font": {"fontFamily": "This Font", "size": 18, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "[0] = Item 1",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": "TotalSize"
             }
           ]
         ],
@@ -3520,7 +3520,7 @@
             "ElementDesc_SolidBorder",
             {
               "id": 37,
-              "borderColor": "#00000000",
+              "borderColor": "#000088",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
@@ -3536,11 +3536,11 @@
               "verticalAlignment": "Top",
               "wrapLine": false,
               "wrapLineHeightCalculation": false,
-              "ellipse": true,
+              "ellipse": false,
               "multiline": false,
               "font": {"fontFamily": "This Font", "size": 18, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "[1] = Item 2",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": "TotalSize"
             }
           ]
         ],
@@ -3561,7 +3561,7 @@
             "ElementDesc_SolidBorder",
             {
               "id": 40,
-              "borderColor": "#00000000",
+              "borderColor": "#000088",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
@@ -3577,11 +3577,11 @@
               "verticalAlignment": "Top",
               "wrapLine": false,
               "wrapLineHeightCalculation": false,
-              "ellipse": true,
+              "ellipse": false,
               "multiline": false,
               "font": {"fontFamily": "This Font", "size": 18, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "[2] = Item 3",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": "TotalSize"
             }
           ]
         ],
@@ -3602,7 +3602,7 @@
             "ElementDesc_SolidBorder",
             {
               "id": 43,
-              "borderColor": "#00000000",
+              "borderColor": "#000088",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
@@ -3618,11 +3618,11 @@
               "verticalAlignment": "Top",
               "wrapLine": false,
               "wrapLineHeightCalculation": false,
-              "ellipse": true,
+              "ellipse": false,
               "multiline": false,
               "font": {"fontFamily": "This Font", "size": 18, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "[3] = Item 4",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": "TotalSize"
             }
           ]
         ],
@@ -3643,7 +3643,7 @@
             "ElementDesc_SolidBorder",
             {
               "id": 46,
-              "borderColor": "#00000000",
+              "borderColor": "#000088",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
@@ -3659,11 +3659,11 @@
               "verticalAlignment": "Top",
               "wrapLine": false,
               "wrapLineHeightCalculation": false,
-              "ellipse": true,
+              "ellipse": false,
               "multiline": false,
               "font": {"fontFamily": "This Font", "size": 18, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "[4] = Item 5",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": "TotalSize"
             }
           ]
         ],
@@ -3684,7 +3684,7 @@
             "ElementDesc_SolidBorder",
             {
               "id": 49,
-              "borderColor": "#00000000",
+              "borderColor": "#000088",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
@@ -3700,11 +3700,11 @@
               "verticalAlignment": "Top",
               "wrapLine": false,
               "wrapLineHeightCalculation": false,
-              "ellipse": true,
+              "ellipse": false,
               "multiline": false,
               "font": {"fontFamily": "This Font", "size": 18, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "[5] = Item 6",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": "TotalSize"
             }
           ]
         ],
@@ -3725,7 +3725,7 @@
             "ElementDesc_SolidBorder",
             {
               "id": 52,
-              "borderColor": "#00000000",
+              "borderColor": "#000088",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
@@ -3741,11 +3741,11 @@
               "verticalAlignment": "Top",
               "wrapLine": false,
               "wrapLineHeightCalculation": false,
-              "ellipse": true,
+              "ellipse": false,
               "multiline": false,
               "font": {"fontFamily": "This Font", "size": 18, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "[6] = Item 7",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": "TotalSize"
             }
           ]
         ],
@@ -3766,7 +3766,7 @@
             "ElementDesc_SolidBorder",
             {
               "id": 55,
-              "borderColor": "#00000000",
+              "borderColor": "#000088",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
@@ -3782,11 +3782,11 @@
               "verticalAlignment": "Top",
               "wrapLine": false,
               "wrapLineHeightCalculation": false,
-              "ellipse": true,
+              "ellipse": false,
               "multiline": false,
               "font": {"fontFamily": "This Font", "size": 18, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "[7] = Item 8",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": "TotalSize"
             }
           ]
         ],
@@ -3807,7 +3807,7 @@
             "ElementDesc_SolidBorder",
             {
               "id": 58,
-              "borderColor": "#00000000",
+              "borderColor": "#000088",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
@@ -3823,11 +3823,11 @@
               "verticalAlignment": "Top",
               "wrapLine": false,
               "wrapLineHeightCalculation": false,
-              "ellipse": true,
+              "ellipse": false,
               "multiline": false,
               "font": {"fontFamily": "This Font", "size": 18, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "[8] = Item 9",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": "TotalSize"
             }
           ]
         ],
@@ -3848,7 +3848,7 @@
             "ElementDesc_SolidBorder",
             {
               "id": 61,
-              "borderColor": "#00000000",
+              "borderColor": "#000088",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
@@ -3864,11 +3864,11 @@
               "verticalAlignment": "Top",
               "wrapLine": false,
               "wrapLineHeightCalculation": false,
-              "ellipse": true,
+              "ellipse": false,
               "multiline": false,
               "font": {"fontFamily": "This Font", "size": 18, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "[9] = Item 10",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": "TotalSize"
             }
           ]
         ],
@@ -3889,7 +3889,7 @@
             "ElementDesc_SolidBorder",
             {
               "id": 64,
-              "borderColor": "#00000000",
+              "borderColor": "#000088",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
@@ -3905,11 +3905,11 @@
               "verticalAlignment": "Top",
               "wrapLine": false,
               "wrapLineHeightCalculation": false,
-              "ellipse": true,
+              "ellipse": false,
               "multiline": false,
               "font": {"fontFamily": "This Font", "size": 18, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "[10] = Item 11",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": "TotalSize"
             }
           ]
         ],
@@ -3930,7 +3930,7 @@
             "ElementDesc_SolidBorder",
             {
               "id": 67,
-              "borderColor": "#00000000",
+              "borderColor": "#000088",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
@@ -3946,11 +3946,11 @@
               "verticalAlignment": "Top",
               "wrapLine": false,
               "wrapLineHeightCalculation": false,
-              "ellipse": true,
+              "ellipse": false,
               "multiline": false,
               "font": {"fontFamily": "This Font", "size": 18, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "[11] = Item 12",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": "TotalSize"
             }
           ]
         ],
@@ -3971,7 +3971,7 @@
             "ElementDesc_SolidBorder",
             {
               "id": 70,
-              "borderColor": "#00000000",
+              "borderColor": "#000088",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
@@ -3987,11 +3987,11 @@
               "verticalAlignment": "Top",
               "wrapLine": false,
               "wrapLineHeightCalculation": false,
-              "ellipse": true,
+              "ellipse": false,
               "multiline": false,
               "font": {"fontFamily": "This Font", "size": 18, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "[12] = Item 13",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": "TotalSize"
             }
           ]
         ]
@@ -5957,7 +5957,7 @@
             "ElementDesc_SolidBorder",
             {
               "id": 34,
-              "borderColor": "#00000000",
+              "borderColor": "#000088",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
@@ -5973,11 +5973,11 @@
               "verticalAlignment": "Top",
               "wrapLine": false,
               "wrapLineHeightCalculation": false,
-              "ellipse": true,
+              "ellipse": false,
               "multiline": false,
               "font": {"fontFamily": "That Font", "size": 24, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "[0] = Item 1",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": "TotalSize"
             }
           ]
         ],
@@ -5998,7 +5998,7 @@
             "ElementDesc_SolidBorder",
             {
               "id": 37,
-              "borderColor": "#00000000",
+              "borderColor": "#000088",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
@@ -6014,11 +6014,11 @@
               "verticalAlignment": "Top",
               "wrapLine": false,
               "wrapLineHeightCalculation": false,
-              "ellipse": true,
+              "ellipse": false,
               "multiline": false,
               "font": {"fontFamily": "That Font", "size": 24, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "[1] = Item 2",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": "TotalSize"
             }
           ]
         ],
@@ -6039,7 +6039,7 @@
             "ElementDesc_SolidBorder",
             {
               "id": 40,
-              "borderColor": "#00000000",
+              "borderColor": "#000088",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
@@ -6055,11 +6055,11 @@
               "verticalAlignment": "Top",
               "wrapLine": false,
               "wrapLineHeightCalculation": false,
-              "ellipse": true,
+              "ellipse": false,
               "multiline": false,
               "font": {"fontFamily": "That Font", "size": 24, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "[2] = Item 3",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": "TotalSize"
             }
           ]
         ],
@@ -6080,7 +6080,7 @@
             "ElementDesc_SolidBorder",
             {
               "id": 43,
-              "borderColor": "#00000000",
+              "borderColor": "#000088",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
@@ -6096,11 +6096,11 @@
               "verticalAlignment": "Top",
               "wrapLine": false,
               "wrapLineHeightCalculation": false,
-              "ellipse": true,
+              "ellipse": false,
               "multiline": false,
               "font": {"fontFamily": "That Font", "size": 24, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "[3] = Item 4",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": "TotalSize"
             }
           ]
         ],
@@ -6121,7 +6121,7 @@
             "ElementDesc_SolidBorder",
             {
               "id": 46,
-              "borderColor": "#00000000",
+              "borderColor": "#000088",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
@@ -6137,11 +6137,11 @@
               "verticalAlignment": "Top",
               "wrapLine": false,
               "wrapLineHeightCalculation": false,
-              "ellipse": true,
+              "ellipse": false,
               "multiline": false,
               "font": {"fontFamily": "That Font", "size": 24, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "[4] = Item 5",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": "TotalSize"
             }
           ]
         ],
@@ -6162,7 +6162,7 @@
             "ElementDesc_SolidBorder",
             {
               "id": 49,
-              "borderColor": "#00000000",
+              "borderColor": "#000088",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
@@ -6178,11 +6178,11 @@
               "verticalAlignment": "Top",
               "wrapLine": false,
               "wrapLineHeightCalculation": false,
-              "ellipse": true,
+              "ellipse": false,
               "multiline": false,
               "font": {"fontFamily": "That Font", "size": 24, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "[5] = Item 6",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": "TotalSize"
             }
           ]
         ],
@@ -6203,7 +6203,7 @@
             "ElementDesc_SolidBorder",
             {
               "id": 52,
-              "borderColor": "#00000000",
+              "borderColor": "#000088",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
@@ -6219,11 +6219,11 @@
               "verticalAlignment": "Top",
               "wrapLine": false,
               "wrapLineHeightCalculation": false,
-              "ellipse": true,
+              "ellipse": false,
               "multiline": false,
               "font": {"fontFamily": "That Font", "size": 24, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "[6] = Item 7",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": "TotalSize"
             }
           ]
         ],
@@ -6244,7 +6244,7 @@
             "ElementDesc_SolidBorder",
             {
               "id": 55,
-              "borderColor": "#00000000",
+              "borderColor": "#000088",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
@@ -6260,11 +6260,11 @@
               "verticalAlignment": "Top",
               "wrapLine": false,
               "wrapLineHeightCalculation": false,
-              "ellipse": true,
+              "ellipse": false,
               "multiline": false,
               "font": {"fontFamily": "That Font", "size": 24, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "[7] = Item 8",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": "TotalSize"
             }
           ]
         ],
@@ -6285,7 +6285,7 @@
             "ElementDesc_SolidBorder",
             {
               "id": 58,
-              "borderColor": "#00000000",
+              "borderColor": "#000088",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
@@ -6301,11 +6301,11 @@
               "verticalAlignment": "Top",
               "wrapLine": false,
               "wrapLineHeightCalculation": false,
-              "ellipse": true,
+              "ellipse": false,
               "multiline": false,
               "font": {"fontFamily": "That Font", "size": 24, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "[8] = Item 9",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": "TotalSize"
             }
           ]
         ],
@@ -6326,7 +6326,7 @@
             "ElementDesc_SolidBorder",
             {
               "id": 61,
-              "borderColor": "#00000000",
+              "borderColor": "#000088",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
@@ -6342,11 +6342,11 @@
               "verticalAlignment": "Top",
               "wrapLine": false,
               "wrapLineHeightCalculation": false,
-              "ellipse": true,
+              "ellipse": false,
               "multiline": false,
               "font": {"fontFamily": "That Font", "size": 24, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "[9] = Item 10",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": "TotalSize"
             }
           ]
         ]
@@ -7661,7 +7661,7 @@
       }
     },
     {
-      "frameId": 23,
+      "frameId": 24,
       "frameName": "Reset",
       "windowSize": {
         "bounds": {
@@ -8135,7 +8135,7 @@
             "ElementDesc_SolidBorder",
             {
               "id": 34,
-              "borderColor": "#00000000",
+              "borderColor": "#000088",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
@@ -8151,11 +8151,11 @@
               "verticalAlignment": "Top",
               "wrapLine": false,
               "wrapLineHeightCalculation": false,
-              "ellipse": true,
+              "ellipse": false,
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "[0] = Item 1",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": "TotalSize"
             }
           ]
         ],
@@ -8176,7 +8176,7 @@
             "ElementDesc_SolidBorder",
             {
               "id": 37,
-              "borderColor": "#00000000",
+              "borderColor": "#000088",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
@@ -8192,11 +8192,11 @@
               "verticalAlignment": "Top",
               "wrapLine": false,
               "wrapLineHeightCalculation": false,
-              "ellipse": true,
+              "ellipse": false,
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "[1] = Item 2",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": "TotalSize"
             }
           ]
         ],
@@ -8217,7 +8217,7 @@
             "ElementDesc_SolidBorder",
             {
               "id": 40,
-              "borderColor": "#00000000",
+              "borderColor": "#000088",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
@@ -8233,11 +8233,11 @@
               "verticalAlignment": "Top",
               "wrapLine": false,
               "wrapLineHeightCalculation": false,
-              "ellipse": true,
+              "ellipse": false,
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "[2] = Item 3",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": "TotalSize"
             }
           ]
         ],
@@ -8258,7 +8258,7 @@
             "ElementDesc_SolidBorder",
             {
               "id": 43,
-              "borderColor": "#00000000",
+              "borderColor": "#000088",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
@@ -8274,11 +8274,11 @@
               "verticalAlignment": "Top",
               "wrapLine": false,
               "wrapLineHeightCalculation": false,
-              "ellipse": true,
+              "ellipse": false,
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "[3] = Item 4",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": "TotalSize"
             }
           ]
         ],
@@ -8299,7 +8299,7 @@
             "ElementDesc_SolidBorder",
             {
               "id": 46,
-              "borderColor": "#00000000",
+              "borderColor": "#000088",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
@@ -8315,11 +8315,11 @@
               "verticalAlignment": "Top",
               "wrapLine": false,
               "wrapLineHeightCalculation": false,
-              "ellipse": true,
+              "ellipse": false,
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "[4] = Item 5",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": "TotalSize"
             }
           ]
         ],
@@ -8340,7 +8340,7 @@
             "ElementDesc_SolidBorder",
             {
               "id": 49,
-              "borderColor": "#00000000",
+              "borderColor": "#000088",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
@@ -8356,11 +8356,11 @@
               "verticalAlignment": "Top",
               "wrapLine": false,
               "wrapLineHeightCalculation": false,
-              "ellipse": true,
+              "ellipse": false,
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "[5] = Item 6",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": "TotalSize"
             }
           ]
         ],
@@ -8381,7 +8381,7 @@
             "ElementDesc_SolidBorder",
             {
               "id": 52,
-              "borderColor": "#00000000",
+              "borderColor": "#000088",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
@@ -8397,11 +8397,11 @@
               "verticalAlignment": "Top",
               "wrapLine": false,
               "wrapLineHeightCalculation": false,
-              "ellipse": true,
+              "ellipse": false,
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "[6] = Item 7",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": "TotalSize"
             }
           ]
         ],
@@ -8422,7 +8422,7 @@
             "ElementDesc_SolidBorder",
             {
               "id": 55,
-              "borderColor": "#00000000",
+              "borderColor": "#000088",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
@@ -8438,11 +8438,11 @@
               "verticalAlignment": "Top",
               "wrapLine": false,
               "wrapLineHeightCalculation": false,
-              "ellipse": true,
+              "ellipse": false,
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "[7] = Item 8",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": "TotalSize"
             }
           ]
         ],
@@ -8463,7 +8463,7 @@
             "ElementDesc_SolidBorder",
             {
               "id": 58,
-              "borderColor": "#00000000",
+              "borderColor": "#000088",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
@@ -8479,11 +8479,11 @@
               "verticalAlignment": "Top",
               "wrapLine": false,
               "wrapLineHeightCalculation": false,
-              "ellipse": true,
+              "ellipse": false,
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "[8] = Item 9",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": "TotalSize"
             }
           ]
         ],
@@ -8504,7 +8504,7 @@
             "ElementDesc_SolidBorder",
             {
               "id": 61,
-              "borderColor": "#00000000",
+              "borderColor": "#000088",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
@@ -8520,11 +8520,11 @@
               "verticalAlignment": "Top",
               "wrapLine": false,
               "wrapLineHeightCalculation": false,
-              "ellipse": true,
+              "ellipse": false,
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "[9] = Item 10",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": "TotalSize"
             }
           ]
         ]
@@ -9839,7 +9839,7 @@
       }
     },
     {
-      "frameId": 26,
+      "frameId": 28,
       "frameName": "Scroll to End",
       "windowSize": {
         "bounds": {
@@ -10313,7 +10313,7 @@
             "ElementDesc_SolidBorder",
             {
               "id": 94,
-              "borderColor": "#00000000",
+              "borderColor": "#000088",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
@@ -10329,11 +10329,11 @@
               "verticalAlignment": "Top",
               "wrapLine": false,
               "wrapLineHeightCalculation": false,
-              "ellipse": true,
+              "ellipse": false,
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "[10] = Item 11",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": "TotalSize"
             }
           ]
         ],
@@ -10354,7 +10354,7 @@
             "ElementDesc_SolidBorder",
             {
               "id": 97,
-              "borderColor": "#00000000",
+              "borderColor": "#000088",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
@@ -10370,11 +10370,11 @@
               "verticalAlignment": "Top",
               "wrapLine": false,
               "wrapLineHeightCalculation": false,
-              "ellipse": true,
+              "ellipse": false,
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "[11] = Item 12",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": "TotalSize"
             }
           ]
         ],
@@ -10395,7 +10395,7 @@
             "ElementDesc_SolidBorder",
             {
               "id": 100,
-              "borderColor": "#00000000",
+              "borderColor": "#000088",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
@@ -10411,11 +10411,11 @@
               "verticalAlignment": "Top",
               "wrapLine": false,
               "wrapLineHeightCalculation": false,
-              "ellipse": true,
+              "ellipse": false,
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "[12] = Item 13",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": "TotalSize"
             }
           ]
         ],
@@ -10436,7 +10436,7 @@
             "ElementDesc_SolidBorder",
             {
               "id": 103,
-              "borderColor": "#00000000",
+              "borderColor": "#000088",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
@@ -10452,11 +10452,11 @@
               "verticalAlignment": "Top",
               "wrapLine": false,
               "wrapLineHeightCalculation": false,
-              "ellipse": true,
+              "ellipse": false,
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "[13] = Item 14",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": "TotalSize"
             }
           ]
         ],
@@ -10477,7 +10477,7 @@
             "ElementDesc_SolidBorder",
             {
               "id": 106,
-              "borderColor": "#00000000",
+              "borderColor": "#000088",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
@@ -10493,11 +10493,11 @@
               "verticalAlignment": "Top",
               "wrapLine": false,
               "wrapLineHeightCalculation": false,
-              "ellipse": true,
+              "ellipse": false,
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "[14] = Item 15",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": "TotalSize"
             }
           ]
         ],
@@ -10518,7 +10518,7 @@
             "ElementDesc_SolidBorder",
             {
               "id": 109,
-              "borderColor": "#00000000",
+              "borderColor": "#000088",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
@@ -10534,11 +10534,11 @@
               "verticalAlignment": "Top",
               "wrapLine": false,
               "wrapLineHeightCalculation": false,
-              "ellipse": true,
+              "ellipse": false,
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "[15] = Item 16",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": "TotalSize"
             }
           ]
         ],
@@ -10559,7 +10559,7 @@
             "ElementDesc_SolidBorder",
             {
               "id": 112,
-              "borderColor": "#00000000",
+              "borderColor": "#000088",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
@@ -10575,11 +10575,11 @@
               "verticalAlignment": "Top",
               "wrapLine": false,
               "wrapLineHeightCalculation": false,
-              "ellipse": true,
+              "ellipse": false,
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "[16] = Item 17",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": "TotalSize"
             }
           ]
         ],
@@ -10600,7 +10600,7 @@
             "ElementDesc_SolidBorder",
             {
               "id": 115,
-              "borderColor": "#00000000",
+              "borderColor": "#000088",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
@@ -10616,11 +10616,11 @@
               "verticalAlignment": "Top",
               "wrapLine": false,
               "wrapLineHeightCalculation": false,
-              "ellipse": true,
+              "ellipse": false,
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "[17] = Item 18",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": "TotalSize"
             }
           ]
         ],
@@ -10641,7 +10641,7 @@
             "ElementDesc_SolidBorder",
             {
               "id": 118,
-              "borderColor": "#00000000",
+              "borderColor": "#000088",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
@@ -10657,11 +10657,11 @@
               "verticalAlignment": "Top",
               "wrapLine": false,
               "wrapLineHeightCalculation": false,
-              "ellipse": true,
+              "ellipse": false,
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "[18] = Item 19",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": "TotalSize"
             }
           ]
         ],
@@ -10698,11 +10698,11 @@
               "verticalAlignment": "Top",
               "wrapLine": false,
               "wrapLineHeightCalculation": false,
-              "ellipse": true,
+              "ellipse": false,
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "[19] = Item 20",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": "TotalSize"
             }
           ]
         ]

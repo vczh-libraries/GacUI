@@ -2,7 +2,7 @@
 
 namespace gacui_unittest_template
 {
-	extern void GuiListControl_SingleSelect_TestCases(
+	extern void GuiListControl_TestCases(
 		WString resourceXml,
 		WString pathFragment
 	);

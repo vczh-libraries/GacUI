@@ -16,38 +16,6 @@ TEST_FILE
             <att.Color-bind><![CDATA[
               cast Color (
                 not self.VisuallyEnabled ? "#00000000" :
-                not self.Selected ? "#00000000" :
-                "#88FF88"
-              )
-            ]]></att.Color-bind>
-          </SolidBorder>
-          <Bounds AlignmentToParent="left:5 top:1 right:5 bottom:1" MinSizeLimitation="LimitToElement">
-            <SolidLabel Font-bind="self.Font" Ellipse="true">
-              <att.Text-format><![CDATA[[$(self.Index)] = $(self.Text)$(' ' & cast string (self.Context) ?? '')]]></att.Text-format>
-              <att.Color-bind><![CDATA[
-                cast Color (
-                  not self.VisuallyEnabled ? "#888888" :
-                  not self.Selected ? self.TextColor :
-                  "#88FF88"
-                )
-              ]]></att.Color-bind>
-            </SolidLabel>
-          </Bounds>
-        </Bounds>
-      </TextListItemTemplate>
-    </Instance>
-  </Instance>
-)GacUISrc";
-
-	const WString fragmentGridItemTemplate = LR"GacUISrc(
-  <Instance name="MyListItemTemplateResource">
-    <Instance ref.Class="gacuisrc_unittest::MyListItemTemplate">
-      <TextListItemTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
-        <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
-          <SolidBorder>
-            <att.Color-bind><![CDATA[
-              cast Color (
-                not self.VisuallyEnabled ? "#00000000" :
                 not self.Selected ? "#000088" :
                 "#88FF88"
               )
@@ -97,7 +65,7 @@ TEST_FILE
 )GacUISrc";
 
 		const WString resourceGridItemTemplate = LR"GacUISrc(
-<Resource>)GacUISrc" + fragmentGridItemTemplate + LR"GacUISrc(
+<Resource>)GacUISrc" + fragmentListItemTemplate + LR"GacUISrc(
   <Instance name="MainWindowResource">
     <Instance ref.Class="gacuisrc_unittest::MainWindow">
       <ref.Members><![CDATA[
@@ -163,7 +131,7 @@ TEST_FILE
 )GacUISrc";
 
 		const WString resourceGridItemTemplate = LR"GacUISrc(
-<Resource>)GacUISrc" + fragmentGridItemTemplate + LR"GacUISrc(
+<Resource>)GacUISrc" + fragmentListItemTemplate + LR"GacUISrc(
   <Instance name="MainWindowResource">
     <Instance ref.Class="gacuisrc_unittest::MainWindow">
       <ref.Members><![CDATA[
