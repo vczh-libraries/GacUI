@@ -813,14 +813,6 @@ namespace gacuisrc_unittest
                 <this>.SetNamedObject("list", list);
             }
             {
-                (list.ItemTemplate = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiListItemTemplate*)
-                {
-                    {
-                        return new (::gacuisrc_unittest::ItemTemplate*)();
-                    }
-                });
-            }
-            {
                 (list.CheckedProperty = func (<item> : ::system::Object, <value> : ::system::Boolean, <update> : ::system::Boolean) : (::system::Boolean)
                 {
                     var item = (cast (TextItem^) <item>);
@@ -832,6 +824,14 @@ namespace gacuisrc_unittest
                     else
                     {
                         return item.Checked;
+                    }
+                });
+            }
+            {
+                (list.ItemTemplate = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiListItemTemplate*)
+                {
+                    {
+                        return new (::gacuisrc_unittest::ItemTemplate*)();
                     }
                 });
             }
@@ -857,6 +857,9 @@ namespace gacuisrc_unittest
             }
             {
                 self.AddChild(list);
+            }
+            {
+                (list.ItemSource = self.items);
             }
             {
                 var <created-subscription> = new (::system::Subscription^)
@@ -984,9 +987,10 @@ namespace gacuisrc_unittest
     @cpp:Friend(typeof(MainWindowConstructor))
     class MainWindow : ::presentation::controls::GuiWindow, MainWindowConstructor
     {
-        func InitializeItems(items : observe TextItem^[], count : int) : (void)
+        var items : observe TextItem^[] = {};
+
+        func InitializeItems(count : int) : (void)
         {
-            (list.ItemSource = items);
             {
                 var <for-begin>item : ::system::Int32 = 1;
                 var <for-end>item : ::system::Int32 = count;
