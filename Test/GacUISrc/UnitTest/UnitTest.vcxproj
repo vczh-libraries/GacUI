@@ -203,11 +203,10 @@
     <ClCompile Include="TestControls_CoreApplication_GuiControl.cpp" />
     <ClCompile Include="TestControls_CoreApplication_GuiLabel.cpp" />
     <ClCompile Include="TestControls_CoreApplication_GuiWindow.cpp" />
-    <ClCompile Include="TestControls_List_GuiBindableTextList.cpp" />
     <ClCompile Include="TestControls_List_GuiListControl.cpp" />
     <ClCompile Include="TestControls_List_GuiListItemTemplate.cpp" />
     <ClCompile Include="TestControls_List_GuiSelectableListControl.cpp" />
-    <ClCompile Include="TestControls_List_GuiTextList.cpp" />
+    <ClCompile Include="TestControls_List_GuiVirtualTextList.cpp" />
     <ClCompile Include="TestControls_List_GuiTextList_Template.cpp" />
     <ClCompile Include="TestHostedWindowManager.cpp" />
     <ClCompile Include="TestPtrDescriptableObject.cpp" />

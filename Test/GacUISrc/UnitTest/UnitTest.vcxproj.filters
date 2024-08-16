@@ -168,10 +168,7 @@
     <ClCompile Include="TestControls_List_GuiListItemTemplate.cpp">
       <Filter>Source Files\Controls\List</Filter>
     </ClCompile>
-    <ClCompile Include="TestControls_List_GuiTextList.cpp">
-      <Filter>Source Files\Controls\List</Filter>
-    </ClCompile>
-    <ClCompile Include="TestControls_List_GuiBindableTextList.cpp">
+    <ClCompile Include="TestControls_List_GuiVirtualTextList.cpp">
       <Filter>Source Files\Controls\List</Filter>
     </ClCompile>
     <ClCompile Include="TestControls_List_GuiTextList_Template.cpp">

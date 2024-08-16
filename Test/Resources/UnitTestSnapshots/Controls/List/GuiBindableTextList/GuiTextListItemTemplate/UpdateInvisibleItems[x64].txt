@@ -813,14 +813,6 @@ namespace gacuisrc_unittest
                 <this>.SetNamedObject("list", list);
             }
             {
-                (list.ItemTemplate = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiListItemTemplate*)
-                {
-                    {
-                        return new (::gacuisrc_unittest::ItemTemplate*)();
-                    }
-                });
-            }
-            {
                 (list.CheckedProperty = func (<item> : ::system::Object, <value> : ::system::Boolean, <update> : ::system::Boolean) : (::system::Boolean)
                 {
                     var item = (cast (TextItem^) <item>);
@@ -840,6 +832,14 @@ namespace gacuisrc_unittest
                 {
                     var item = (cast (TextItem^) <item>);
                     return item.Text;
+                });
+            }
+            {
+                (list.ItemTemplate = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiListItemTemplate*)
+                {
+                    {
+                        return new (::gacuisrc_unittest::ItemTemplate*)();
+                    }
                 });
             }
             {
