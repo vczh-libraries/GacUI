@@ -156,6 +156,23 @@ namespace gacui_unittest_template
 				);
 		});
 
+		GuiTextListItemTemplate_TestCases(
+			resourceXml,
+			pathFragment,
+			setTextListView,
+			getItems,
+			notifyItemDataModified
+		);
+	}
+
+	extern void GuiTextListItemTemplate_TestCases(
+		const wchar_t* resourceXml,
+		WString pathFragment,
+		bool setTextListView,
+		Func<Ptr<IValueList>(GuiWindow*)> getItems,
+		Func<void(GuiWindow*, vint, vint)> notifyItemDataModified
+	)
+	{
 		TEST_CASE(L"UpdateVisibleItems " + WString(setTextListView ? L"(View = Check)" : L""))
 		{
 			GacUIUnitTest_SetGuiMainProxy([=](UnitTestRemoteProtocol* protocol, IUnitTestContext*)

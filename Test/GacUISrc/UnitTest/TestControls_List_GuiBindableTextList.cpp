@@ -104,185 +104,34 @@ TEST_FILE
 </Resource>
 )GacUISrc";
 
+	auto getItems = [](GuiWindow* window)
+	{
+		return UnboxValue<Ptr<IValueList>>(Value::From(window).GetProperty(L"items"));
+	};
+
+	auto notifyItemDataModified = [](GuiWindow* window, vint start, vint count)
+	{
+		auto listControl = FindObjectByName<GuiBindableTextList>(window, L"list");
+		listControl->NotifyItemDataModified(start, count);
+	};
+
 	TEST_CATEGORY(L"GuiBindableTextList")
 	{
 		GuiTextList_TestCases(
 			resourceTextList,
 			WString::Unmanaged(L"GuiBindableTextList"),
 			true,
-			[](GuiWindow* window)
-			{
-				return UnboxValue<Ptr<IValueList>>(Value::From(window).GetProperty(L"items"));
-			},
-			[](GuiWindow* window, vint start, vint count)
-			{
-				auto listControl = FindObjectByName<GuiBindableTextList>(window, L"list");
-				listControl->NotifyItemDataModified(start, count);
-			});
+			getItems,
+			notifyItemDataModified);
 	});
 
 	TEST_CATEGORY(L"GuiTextListItemTemplate")
 	{
-		TEST_CASE(L"UpdateVisibleItems")
-		{
-			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
-			{
-				protocol->OnNextIdleFrame(L"Ready", [=]()
-				{
-					auto window = GetApplication()->GetMainWindow();
-					auto listControl = FindObjectByName<GuiBindableTextList>(window, L"list");
-					Value::From(window).Invoke(L"InitializeItems", (Value_xs(), BoxValue<vint>(5)));
-				});
-				protocol->OnNextIdleFrame(L"5 Items", [=]()
-				{
-					auto window = GetApplication()->GetMainWindow();
-					auto listControl = FindObjectByName<GuiBindableTextList>(window, L"list");
-					listControl->SetSelected(0, true);
-				});
-				protocol->OnNextIdleFrame(L"Select 1st", [=]()
-				{
-					auto window = GetApplication()->GetMainWindow();
-					auto listControl = FindObjectByName<GuiBindableTextList>(window, L"list");
-					auto items = UnboxValue<Ptr<IValueObservableList>>(Value::From(window).GetProperty(L"items"));
-					UnboxValue<Ptr<TextItem>>(items->Get(1))->SetText(L"Updated Text");
-					listControl->NotifyItemDataModified(1, 1);
-				});
-				protocol->OnNextIdleFrame(L"Change 2nd Text", [=]()
-				{
-					auto window = GetApplication()->GetMainWindow();
-					auto listControl = FindObjectByName<GuiBindableTextList>(window, L"list");
-					auto items = UnboxValue<Ptr<IValueObservableList>>(Value::From(window).GetProperty(L"items"));
-					UnboxValue<Ptr<TextItem>>(items->Get(2))->SetChecked(true);
-					listControl->NotifyItemDataModified(2, 1);
-				});
-				protocol->OnNextIdleFrame(L"Check 3rd", [=]()
-				{
-					auto window = GetApplication()->GetMainWindow();
-					auto listControl = FindObjectByName<GuiBindableTextList>(window, L"list");
-					auto items = UnboxValue<Ptr<IValueObservableList>>(Value::From(window).GetProperty(L"items"));
-					UnboxValue<Ptr<TextItem>>(items->Get(0))->SetText(L"New Text");
-					UnboxValue<Ptr<TextItem>>(items->Get(0))->SetChecked(true);
-					listControl->NotifyItemDataModified(0, 1);
-				});
-				protocol->OnNextIdleFrame(L"Change 1st Text and Check", [=]()
-				{
-					auto window = GetApplication()->GetMainWindow();
-					window->Hide();
-				});
-			});
-			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
-				WString::Unmanaged(L"Controls/List/GuiBindableTextList/GuiTextListItemTemplate/UpdateVisibleItems"),
-				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
-				resourceTextListItemTemplate
-				);
-		});
-
-		TEST_CASE(L"UpdateInvisibleItems")
-		{
-			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
-			{
-				protocol->OnNextIdleFrame(L"Ready", [=]()
-				{
-					auto window = GetApplication()->GetMainWindow();
-					auto listControl = FindObjectByName<GuiBindableTextList>(window, L"list");
-					Value::From(window).Invoke(L"InitializeItems", (Value_xs(), BoxValue<vint>(20)));
-				});
-				protocol->OnNextIdleFrame(L"20 Items", [=]()
-				{
-					auto window = GetApplication()->GetMainWindow();
-					auto listControl = FindObjectByName<GuiBindableTextList>(window, L"list");
-					listControl->SetSelected(0, true);
-					listControl->EnsureItemVisible(19);
-				});
-				protocol->OnNextIdleFrame(L"Select 1st and Scroll to Bottom", [=]()
-				{
-					auto window = GetApplication()->GetMainWindow();
-					auto listControl = FindObjectByName<GuiBindableTextList>(window, L"list");
-					auto items = UnboxValue<Ptr<IValueObservableList>>(Value::From(window).GetProperty(L"items"));
-					UnboxValue<Ptr<TextItem>>(items->Get(0))->SetText(L"New Text");
-					UnboxValue<Ptr<TextItem>>(items->Get(0))->SetChecked(true);
-					UnboxValue<Ptr<TextItem>>(items->Get(1))->SetText(L"Updated Text");
-					UnboxValue<Ptr<TextItem>>(items->Get(2))->SetChecked(true);
-					listControl->NotifyItemDataModified(0, 3);
-				});
-				protocol->OnNextIdleFrame(L"Change 1st, 2nd, 3rd", [=]()
-				{
-					auto window = GetApplication()->GetMainWindow();
-					auto listControl = FindObjectByName<GuiBindableTextList>(window, L"list");
-					listControl->EnsureItemVisible(0);
-				});
-				protocol->OnNextIdleFrame(L"Scroll to Top", [=]()
-				{
-					auto window = GetApplication()->GetMainWindow();
-					window->Hide();
-				});
-			});
-			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
-				WString::Unmanaged(L"Controls/List/GuiBindableTextList/GuiTextListItemTemplate/UpdateInvisibleItems"),
-				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
-				resourceTextListItemTemplate
-				);
-		});
-		
-		TEST_CASE(L"ClickVisibleItems")
-		{
-			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
-			{
-				protocol->OnNextIdleFrame(L"Ready", [=]()
-				{
-					auto window = GetApplication()->GetMainWindow();
-					auto listControl = FindObjectByName<GuiBindableTextList>(window, L"list");
-					Value::From(window).Invoke(L"InitializeItems", (Value_xs(), BoxValue<vint>(5)));
-				});
-				protocol->OnNextIdleFrame(L"5 Items", [=]()
-				{
-					auto window = GetApplication()->GetMainWindow();
-					auto listControl = FindObjectByName<GuiBindableTextList>(window, L"list");
-					listControl->SetSelected(0, true);
-				});
-				protocol->OnNextIdleFrame(L"Select 1st", [=]()
-				{
-					auto window = GetApplication()->GetMainWindow();
-					auto listControl = FindObjectByName<GuiBindableTextList>(window, L"list");
-					auto items = UnboxValue<Ptr<IValueObservableList>>(Value::From(window).GetProperty(L"items"));
-
-					TEST_ASSERT(UnboxValue<Ptr<TextItem>>(items->Get(2))->GetChecked() == false);
-					{
-						auto itemStyle = listControl->GetArranger()->GetVisibleStyle(2);
-						TEST_ASSERT(itemStyle != nullptr);
-						TEST_ASSERT(listControl->GetArranger()->GetVisibleIndex(itemStyle) == 2);
-						auto location = protocol->LocationOf(itemStyle, 0.0, 0.5, 8, 0);
-						protocol->LClick(location);
-					}
-					TEST_ASSERT(UnboxValue<Ptr<TextItem>>(items->Get(2))->GetChecked() == true);
-				});
-				protocol->OnNextIdleFrame(L"Check 3rd", [=]()
-				{
-					auto window = GetApplication()->GetMainWindow();
-					auto listControl = FindObjectByName<GuiBindableTextList>(window, L"list");
-					auto items = UnboxValue<Ptr<IValueObservableList>>(Value::From(window).GetProperty(L"items"));
-
-					TEST_ASSERT(UnboxValue<Ptr<TextItem>>(items->Get(0))->GetChecked() == false);
-					{
-						auto itemStyle = listControl->GetArranger()->GetVisibleStyle(0);
-						TEST_ASSERT(itemStyle != nullptr);
-						TEST_ASSERT(listControl->GetArranger()->GetVisibleIndex(itemStyle) == 0);
-						auto location = protocol->LocationOf(itemStyle, 0.0, 0.5, 8, 0);
-						protocol->LClick(location);
-					}
-					TEST_ASSERT(UnboxValue<Ptr<TextItem>>(items->Get(0))->GetChecked() == true);
-				});
-				protocol->OnNextIdleFrame(L"Check 1st", [=]()
-				{
-					auto window = GetApplication()->GetMainWindow();
-					window->Hide();
-				});
-			});
-			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
-				WString::Unmanaged(L"Controls/List/GuiBindableTextList/GuiTextListItemTemplate/ClickVisibleItems"),
-				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
-				resourceTextListItemTemplate
-				);
-		});
+		GuiTextListItemTemplate_TestCases(
+			resourceTextListItemTemplate,
+			WString::Unmanaged(L"GuiBindableTextList/GuiTextListItemTemplate"),
+			false,
+			getItems,
+			notifyItemDataModified);
 	});
 }
