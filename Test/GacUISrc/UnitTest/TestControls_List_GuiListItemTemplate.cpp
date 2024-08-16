@@ -3,9 +3,11 @@ using namespace gacui_unittest_template;
 
 TEST_FILE
 {
-	{
-		const WString resourceListItemTemplate = LR"GacUISrc(
-<Resource>
+	/***********************************************************************
+	Shared
+	***********************************************************************/
+	
+	const WString fragmentListItemTemplate = LR"GacUISrc(
   <Instance name="MyListItemTemplateResource">
     <Instance ref.Class="gacuisrc_unittest::MyListItemTemplate">
       <TextListItemTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
@@ -35,28 +37,9 @@ TEST_FILE
       </TextListItemTemplate>
     </Instance>
   </Instance>
-
-  <Instance name="MainWindowResource">
-    <Instance ref.Class="gacuisrc_unittest::MainWindow">
-      <ref.Ctor><![CDATA[{
-        for (item in range[1, 20])
-        {
-          list.Items.Add(new TextItem^($"Item $(item)"));
-        }
-      }]]></ref.Ctor>
-      <Window ref.Name="self" Text="GuiListItemTemplate" ClientSize="x:320 y:240">
-        <TextList ref.Name="list" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
-          <att.BoundsComposition-set PreferredMinSize="x:400 y:300" AlignmentToParent="left:0 top:5 right:0 bottom:0"/>
-          <att.ItemTemplate>gacuisrc_unittest::MyListItemTemplate</att.ItemTemplate>
-        </TextList>
-      </Window>
-    </Instance>
-  </Instance>
-</Resource>
 )GacUISrc";
 
-		const WString resourceGridItemTemplate = LR"GacUISrc(
-<Resource>
+	const WString fragmentGridItemTemplate = LR"GacUISrc(
   <Instance name="MyListItemTemplateResource">
     <Instance ref.Class="gacuisrc_unittest::MyListItemTemplate">
       <TextListItemTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
@@ -86,7 +69,35 @@ TEST_FILE
       </TextListItemTemplate>
     </Instance>
   </Instance>
+)GacUISrc";
 
+	/***********************************************************************
+	GuiTextList
+	***********************************************************************/
+	{
+		const WString resourceListItemTemplate = LR"GacUISrc(
+<Resource>)GacUISrc" + fragmentListItemTemplate + LR"GacUISrc(
+  <Instance name="MainWindowResource">
+    <Instance ref.Class="gacuisrc_unittest::MainWindow">
+      <ref.Ctor><![CDATA[{
+        for (item in range[1, 20])
+        {
+          list.Items.Add(new TextItem^($"Item $(item)"));
+        }
+      }]]></ref.Ctor>
+      <Window ref.Name="self" Text="GuiListItemTemplate" ClientSize="x:320 y:240">
+        <TextList ref.Name="list" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
+          <att.BoundsComposition-set PreferredMinSize="x:400 y:300" AlignmentToParent="left:0 top:5 right:0 bottom:0"/>
+          <att.ItemTemplate>gacuisrc_unittest::MyListItemTemplate</att.ItemTemplate>
+        </TextList>
+      </Window>
+    </Instance>
+  </Instance>
+</Resource>
+)GacUISrc";
+
+		const WString resourceGridItemTemplate = LR"GacUISrc(
+<Resource>)GacUISrc" + fragmentGridItemTemplate + LR"GacUISrc(
   <Instance name="MainWindowResource">
     <Instance ref.Class="gacuisrc_unittest::MainWindow">
       <ref.Members><![CDATA[
@@ -113,11 +124,11 @@ TEST_FILE
 		{
 			GuiListItemTemplate_TestCases(
 				resourceListItemTemplate,
-				WString::Unmanaged(L"GuiListItemTemplate"));
+				WString::Unmanaged(L"GuiListItemTemplate/GuiTextList"));
 
 			GuiListItemTemplate_WithAxis_TestCases(
 				resourceGridItemTemplate,
-				WString::Unmanaged(L"GuiListItemTemplate"));
+				WString::Unmanaged(L"GuiListItemTemplate/GuiTextList"));
 		});
 	}
 }
