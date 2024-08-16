@@ -6,6 +6,15 @@ TEST_FILE
 <Resource>
   <Instance name="MainWindowResource">
     <Instance ref.Class="gacuisrc_unittest::MainWindow">
+      <ref.Members><![CDATA[
+        func InitializeItems(start:int, count:int) : void
+        {
+          for (item in range[1, count])
+          {
+            list.Items.Add(new TextItem^($"Item $(start + item)"));
+          }
+        }
+      ]]></ref.Members>
       <Window ref.Name="self" Text="GuiListControl" ClientSize="x:480 y:320">
         <Table BorderVisible="false" CellPadding="5" AlignmentToParent="left:0 top:5 right:0 bottom:0">
           <att.Rows>
@@ -49,46 +58,36 @@ TEST_FILE
 				protocol->OnNextIdleFrame(L"Ready", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
-					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
-					for (vint i = 1; i <= 10; i++)
-					{
-						auto item = Ptr(new TextItem(L"Item " + itow(i)));
-						listControl->GetItems().Add(item);
-					}
+					Value::From(window).Invoke(L"InitializeItems", (Value_xs(), BoxValue<vint>(0), BoxValue<vint>(10)));
 				});
 				protocol->OnNextIdleFrame(L"10 Items", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
-					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+					auto listControl = FindObjectByName<GuiSelectableListControl>(window, L"list");
 					listControl->SelectItemsByClick(0, false, false, true);
 				});
 				protocol->OnNextIdleFrame(L"Highlight First", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
-					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+					auto listControl = FindObjectByName<GuiSelectableListControl>(window, L"list");
 					listControl->SelectItemsByClick(1, false, false, true);
 				});
 				protocol->OnNextIdleFrame(L"Highlight Second", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
-					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
-					for (vint i = 11; i <= 20; i++)
-					{
-						auto item = Ptr(new TextItem(L"Item " + itow(i)));
-						listControl->GetItems().Add(item);
-					}
+					Value::From(window).Invoke(L"InitializeItems", (Value_xs(), BoxValue<vint>(10), BoxValue<vint>(10)));
 				});
 				protocol->OnNextIdleFrame(L"20 Items", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
-					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+					auto listControl = FindObjectByName<GuiSelectableListControl>(window, L"list");
 					listControl->EnsureItemVisible(19);
 					listControl->SelectItemsByClick(19, false, false, true);
 				});
 				protocol->OnNextIdleFrame(L"Ensure Last Item Visible", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
-					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+					auto listControl = FindObjectByName<GuiSelectableListControl>(window, L"list");
 					listControl->GetVerticalScroll()->SetPosition(0);
 					listControl->SelectItemsByClick(0, false, false, true);
 				});
@@ -108,6 +107,7 @@ TEST_FILE
 #define ATTACH_ITEM_EVENT(EVENT)\
 		listControl->EVENT.AttachLambda([=](auto*, auto& arguments)\
 		{\
+			auto logs = FindObjectByName<GuiTextList>(window, L"logs");\
 			auto item = Ptr(new TextItem(L ## #EVENT L" " + itow(arguments.itemIndex)));\
 			vint index = logs->GetItems().Add(item);\
 			logs->EnsureItemVisible(index);\
@@ -135,20 +135,15 @@ TEST_FILE
 				protocol->OnNextIdleFrame(L"Ready", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
-					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
-					auto logs = FindObjectByName<GuiTextList>(window, L"logs");
+					auto listControl = FindObjectByName<GuiListControl>(window, L"list");
 					ATTACH_ITEM_EVENTS;
 
-					for (vint i = 1; i <= 20; i++)
-					{
-						auto item = Ptr(new TextItem(L"Item " + itow(i)));
-						listControl->GetItems().Add(item);
-					}
+					Value::From(window).Invoke(L"InitializeItems", (Value_xs(), BoxValue<vint>(0), BoxValue<vint>(20)));
 				});
 				protocol->OnNextIdleFrame(L"20 Items", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
-					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+					auto listControl = FindObjectByName<GuiListControl>(window, L"list");
 
 					auto itemStyle = listControl->GetArranger()->GetVisibleStyle(0);
 					TEST_ASSERT(itemStyle != nullptr);
@@ -163,7 +158,7 @@ TEST_FILE
 				protocol->OnNextIdleFrame(L"Click 1st", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
-					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+					auto listControl = FindObjectByName<GuiListControl>(window, L"list");
 
 					auto itemStyle = listControl->GetArranger()->GetVisibleStyle(1);
 					TEST_ASSERT(itemStyle != nullptr);
@@ -174,13 +169,13 @@ TEST_FILE
 				protocol->OnNextIdleFrame(L"Hover 2nd", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
-					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+					auto listControl = FindObjectByName<GuiListControl>(window, L"list");
 					listControl->EnsureItemVisible(19);
 				});
 				protocol->OnNextIdleFrame(L"Scroll", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
-					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+					auto listControl = FindObjectByName<GuiListControl>(window, L"list");
 
 					auto itemStyle = listControl->GetArranger()->GetVisibleStyle(19);
 					TEST_ASSERT(itemStyle != nullptr);
@@ -212,20 +207,15 @@ TEST_FILE
 				protocol->OnNextIdleFrame(L"Ready", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
-					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
-					auto logs = FindObjectByName<GuiTextList>(window, L"logs");
+					auto listControl = FindObjectByName<GuiListControl>(window, L"list");
 					ATTACH_ITEM_EVENTS;
 
-					for (vint i = 1; i <= 20; i++)
-					{
-						auto item = Ptr(new TextItem(L"Item " + itow(i)));
-						listControl->GetItems().Add(item);
-					}
+					Value::From(window).Invoke(L"InitializeItems", (Value_xs(), BoxValue<vint>(0), BoxValue<vint>(20)));
 				});
 				protocol->OnNextIdleFrame(L"20 Items", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
-					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+					auto listControl = FindObjectByName<GuiListControl>(window, L"list");
 
 					auto itemStyle = listControl->GetArranger()->GetVisibleStyle(0);
 					TEST_ASSERT(itemStyle != nullptr);
@@ -240,7 +230,7 @@ TEST_FILE
 				protocol->OnNextIdleFrame(L"Click 1st", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
-					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+					auto listControl = FindObjectByName<GuiListControl>(window, L"list");
 
 					auto itemStyle = listControl->GetArranger()->GetVisibleStyle(1);
 					TEST_ASSERT(itemStyle != nullptr);
@@ -251,13 +241,13 @@ TEST_FILE
 				protocol->OnNextIdleFrame(L"Hover 2nd", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
-					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+					auto listControl = FindObjectByName<GuiListControl>(window, L"list");
 					listControl->EnsureItemVisible(19);
 				});
 				protocol->OnNextIdleFrame(L"Scroll", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
-					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+					auto listControl = FindObjectByName<GuiListControl>(window, L"list");
 
 					auto itemStyle = listControl->GetArranger()->GetVisibleStyle(19);
 					TEST_ASSERT(itemStyle != nullptr);
@@ -289,20 +279,15 @@ TEST_FILE
 				protocol->OnNextIdleFrame(L"Ready", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
-					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
-					auto logs = FindObjectByName<GuiTextList>(window, L"logs");
+					auto listControl = FindObjectByName<GuiListControl>(window, L"list");
 					ATTACH_ITEM_EVENTS;
 
-					for (vint i = 1; i <= 20; i++)
-					{
-						auto item = Ptr(new TextItem(L"Item " + itow(i)));
-						listControl->GetItems().Add(item);
-					}
+					Value::From(window).Invoke(L"InitializeItems", (Value_xs(), BoxValue<vint>(0), BoxValue<vint>(20)));
 				});
 				protocol->OnNextIdleFrame(L"20 Items", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
-					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+					auto listControl = FindObjectByName<GuiListControl>(window, L"list");
 
 					auto itemStyle = listControl->GetArranger()->GetVisibleStyle(0);
 					TEST_ASSERT(itemStyle != nullptr);
@@ -317,7 +302,7 @@ TEST_FILE
 				protocol->OnNextIdleFrame(L"Click 1st", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
-					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+					auto listControl = FindObjectByName<GuiListControl>(window, L"list");
 
 					auto itemStyle = listControl->GetArranger()->GetVisibleStyle(1);
 					TEST_ASSERT(itemStyle != nullptr);
@@ -328,13 +313,13 @@ TEST_FILE
 				protocol->OnNextIdleFrame(L"Hover 2nd", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
-					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+					auto listControl = FindObjectByName<GuiListControl>(window, L"list");
 					listControl->EnsureItemVisible(19);
 				});
 				protocol->OnNextIdleFrame(L"Scroll", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
-					auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+					auto listControl = FindObjectByName<GuiListControl>(window, L"list");
 
 					auto itemStyle = listControl->GetArranger()->GetVisibleStyle(19);
 					TEST_ASSERT(itemStyle != nullptr);

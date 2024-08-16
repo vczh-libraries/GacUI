@@ -197,6 +197,22 @@ namespace gacuisrc_unittest
     @cpp:Friend(typeof(MainWindowConstructor))
     class MainWindow : ::presentation::controls::GuiWindow, MainWindowConstructor
     {
+        func InitializeItems(start : int, count : int) : (void)
+        {
+            {
+                var <for-begin>item : ::system::Int64 = 1;
+                var <for-end>item : ::system::Int64 = count;
+                var item = <for-begin>item;
+                while ((item <= <for-end>item))
+                {
+                    {
+                        list.Items.Add(new (TextItem^)(("Item " & (start + item))));
+                    }
+                    (item = (item + 1));
+                }
+            }
+        }
+
         new* ()
             :::presentation::controls::GuiWindow(::presentation::theme::ThemeName::Window)
         {
