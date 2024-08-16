@@ -101,6 +101,7 @@ TEST_FILE
 		GuiTextList_TestCases(
 			resourceTextList,
 			WString::Unmanaged(L"GuiTextList"),
+			true,
 			[](GuiWindow* window)
 			{
 				auto listControl = FindObjectByName<GuiTextList>(window, L"list");

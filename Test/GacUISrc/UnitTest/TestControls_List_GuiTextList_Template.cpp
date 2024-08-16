@@ -5,6 +5,7 @@ namespace gacui_unittest_template
 	void GuiTextList_TestCases(
 		const wchar_t* resourceXml,
 		WString pathFragment,
+		bool setTextListView,
 		Func<Ptr<IValueList>(GuiWindow*)> getItems,
 		Func<void(GuiWindow*, vint, vint)> notifyItemDataModified
 	)
@@ -155,15 +156,18 @@ namespace gacui_unittest_template
 				);
 		});
 
-		TEST_CASE(L"UpdateVisibleItems (View = Check)")
+		TEST_CASE(L"UpdateVisibleItems " + WString(setTextListView ? L"(View = Check)" : L""))
 		{
 			GacUIUnitTest_SetGuiMainProxy([=](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
 			{
 				protocol->OnNextIdleFrame(L"Ready", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
-					auto listControl = FindObjectByName<GuiVirtualTextList>(window, L"list");
-					listControl->SetView(TextListView::Check);
+					if(setTextListView)
+					{
+						auto listControl = FindObjectByName<GuiVirtualTextList>(window, L"list");
+						listControl->SetView(TextListView::Check);
+					}
 					Value::From(window).Invoke(L"InitializeItems", (Value_xs(), BoxValue<vint>(5)));
 				});
 				protocol->OnNextIdleFrame(L"5 Items", [=]()
@@ -207,15 +211,18 @@ namespace gacui_unittest_template
 				);
 		});
 
-		TEST_CASE(L"UpdateInvisibleItems (View = Radio)")
+		TEST_CASE(L"UpdateInvisibleItems " + WString(setTextListView ? L"(View = Radio)" : L""))
 		{
 			GacUIUnitTest_SetGuiMainProxy([=](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
 			{
 				protocol->OnNextIdleFrame(L"Ready", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
-					auto listControl = FindObjectByName<GuiVirtualTextList>(window, L"list");
-					listControl->SetView(TextListView::Radio);
+					if(setTextListView)
+					{
+						auto listControl = FindObjectByName<GuiVirtualTextList>(window, L"list");
+						listControl->SetView(TextListView::Radio);
+					}
 					Value::From(window).Invoke(L"InitializeItems", (Value_xs(), BoxValue<vint>(20)));
 				});
 				protocol->OnNextIdleFrame(L"20 Items", [=]()
@@ -249,6 +256,71 @@ namespace gacui_unittest_template
 			});
 			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
 				WString::Unmanaged(L"Controls/List/") + pathFragment + WString::Unmanaged(L"/UpdateInvisibleItems"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resourceXml
+				);
+		});
+
+		TEST_CASE(L"ClickVisibleItems " + WString(setTextListView ? L"(View = Check)" : L""))
+		{
+			GacUIUnitTest_SetGuiMainProxy([=](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					if(setTextListView)
+					{
+						auto listControl = FindObjectByName<GuiVirtualTextList>(window, L"list");
+						listControl->SetView(TextListView::Check);
+					}
+					Value::From(window).Invoke(L"InitializeItems", (Value_xs(), BoxValue<vint>(5)));
+				});
+				protocol->OnNextIdleFrame(L"5 Items", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiSelectableListControl>(window, L"list");
+					listControl->SetSelected(0, true);
+				});
+				protocol->OnNextIdleFrame(L"Select 1st", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiListControl>(window, L"list");
+					auto items = getItems(window);
+
+					TEST_ASSERT(UnboxValue<Ptr<TextItem>>(items->Get(2))->GetChecked() == false);
+					{
+						auto itemStyle = listControl->GetArranger()->GetVisibleStyle(2);
+						TEST_ASSERT(itemStyle != nullptr);
+						TEST_ASSERT(listControl->GetArranger()->GetVisibleIndex(itemStyle) == 2);
+						auto location = protocol->LocationOf(itemStyle, 0.0, 0.5, 8, 0);
+						protocol->LClick(location);
+					}
+					TEST_ASSERT(UnboxValue<Ptr<TextItem>>(items->Get(2))->GetChecked() == true);
+				});
+				protocol->OnNextIdleFrame(L"Check 3rd", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiListControl>(window, L"list");
+					auto items = getItems(window);
+
+					TEST_ASSERT(UnboxValue<Ptr<TextItem>>(items->Get(0))->GetChecked() == false);
+					{
+						auto itemStyle = listControl->GetArranger()->GetVisibleStyle(0);
+						TEST_ASSERT(itemStyle != nullptr);
+						TEST_ASSERT(listControl->GetArranger()->GetVisibleIndex(itemStyle) == 0);
+						auto location = protocol->LocationOf(itemStyle, 0.0, 0.5, 8, 0);
+						protocol->LClick(location);
+					}
+					TEST_ASSERT(UnboxValue<Ptr<TextItem>>(items->Get(0))->GetChecked() == true);
+				});
+				protocol->OnNextIdleFrame(L"Check 1st", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					window->Hide();
+				});
+			});
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Controls/List/") + pathFragment + WString::Unmanaged(L"/ClickVisibleItems"),
 				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
 				resourceXml
 				);

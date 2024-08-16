@@ -109,6 +109,7 @@ TEST_FILE
 		GuiTextList_TestCases(
 			resourceTextList,
 			WString::Unmanaged(L"GuiBindableTextList"),
+			true,
 			[](GuiWindow* window)
 			{
 				return UnboxValue<Ptr<IValueList>>(Value::From(window).GetProperty(L"items"));
