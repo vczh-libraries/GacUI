@@ -2,6 +2,16 @@
 
 namespace gacui_unittest_template
 {
+	extern void GuiSelectableListControl_SingleSelect_TestCases(
+		WString resourceXml,
+		WString pathFragment
+	);
+
+	extern void GuiSelectableListControl_MultiSelect_TestCases(
+		WString resourceXml,
+		WString pathFragment
+	);
+
 	extern void GuiListItemTemplate_TestCases(
 		WString resourceXml,
 		WString pathFragment
