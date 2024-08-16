@@ -96,7 +96,7 @@ TEST_FILE
   <Instance name="MainWindowResource">
     <Instance ref.Class="gacuisrc_unittest::MainWindow">
       <ref.Members><![CDATA[
-        var items : items:observe TextItem^[] = {};
+        var items:observe TextItem^[] = {};
         func InitializeItems(count:int) : void
         {
           for (item in range[1, count])
@@ -134,21 +134,21 @@ TEST_FILE
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto listControl = FindObjectByName<GuiBindableTextList>(window, L"list");
-					auto items = UnboxValue<Ptr<IValueObservableList>>(Value::From(listControl).GetProperty(L"items"));
+					auto items = UnboxValue<Ptr<IValueObservableList>>(Value::From(window).GetProperty(L"items"));
 					items->Insert(0, Value::From(Ptr(new TextItem(L"First Item"))));
 				});
 				protocol->OnNextIdleFrame(L"Add to Top", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto listControl = FindObjectByName<GuiBindableTextList>(window, L"list");
-					auto items = UnboxValue<Ptr<IValueObservableList>>(Value::From(listControl).GetProperty(L"items"));
+					auto items = UnboxValue<Ptr<IValueObservableList>>(Value::From(window).GetProperty(L"items"));
 					items->Add(Value::From(Ptr(new TextItem(L"Last Item"))));
 				});
 				protocol->OnNextIdleFrame(L"Add to Last", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto listControl = FindObjectByName<GuiBindableTextList>(window, L"list");
-					auto items = UnboxValue<Ptr<IValueObservableList>>(Value::From(listControl).GetProperty(L"items"));
+					auto items = UnboxValue<Ptr<IValueObservableList>>(Value::From(window).GetProperty(L"items"));
 					items->RemoveAt(0);
 					items->RemoveAt(items->GetCount() - 1);
 				});
@@ -162,7 +162,7 @@ TEST_FILE
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto listControl = FindObjectByName<GuiBindableTextList>(window, L"list");
-					auto items = UnboxValue<Ptr<IValueObservableList>>(Value::From(listControl).GetProperty(L"items"));
+					auto items = UnboxValue<Ptr<IValueObservableList>>(Value::From(window).GetProperty(L"items"));
 					items->Set(2, Value::From(Ptr(new TextItem(L"Updated Item"))));
 				});
 				protocol->OnNextIdleFrame(L"Update 3rd", [=]()
@@ -203,7 +203,7 @@ TEST_FILE
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto listControl = FindObjectByName<GuiBindableTextList>(window, L"list");
-					auto items = UnboxValue<Ptr<IValueObservableList>>(Value::From(listControl).GetProperty(L"items"));
+					auto items = UnboxValue<Ptr<IValueObservableList>>(Value::From(window).GetProperty(L"items"));
 					items->Insert(0, Value::From(Ptr(new TextItem(L"First Item"))));
 					listControl->SetSelected(0, true);
 				});
@@ -217,7 +217,7 @@ TEST_FILE
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto listControl = FindObjectByName<GuiBindableTextList>(window, L"list");
-					auto items = UnboxValue<Ptr<IValueObservableList>>(Value::From(listControl).GetProperty(L"items"));
+					auto items = UnboxValue<Ptr<IValueObservableList>>(Value::From(window).GetProperty(L"items"));
 					items->Add(Value::From(Ptr(new TextItem(L"Last Item"))));
 					listControl->SetSelected(21, true);
 				});
@@ -231,7 +231,7 @@ TEST_FILE
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto listControl = FindObjectByName<GuiBindableTextList>(window, L"list");
-					auto items = UnboxValue<Ptr<IValueObservableList>>(Value::From(listControl).GetProperty(L"items"));
+					auto items = UnboxValue<Ptr<IValueObservableList>>(Value::From(window).GetProperty(L"items"));
 					items->RemoveAt(0);
 					items->RemoveAt(items->GetCount() - 1);
 				});
@@ -245,7 +245,7 @@ TEST_FILE
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto listControl = FindObjectByName<GuiBindableTextList>(window, L"list");
-					auto items = UnboxValue<Ptr<IValueObservableList>>(Value::From(listControl).GetProperty(L"items"));
+					auto items = UnboxValue<Ptr<IValueObservableList>>(Value::From(window).GetProperty(L"items"));
 					items->Set(2, Value::From(Ptr(new TextItem(L"Updated Item"))));
 				});
 				protocol->OnNextIdleFrame(L"Update 3rd", [=]()
@@ -294,7 +294,7 @@ TEST_FILE
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto listControl = FindObjectByName<GuiBindableTextList>(window, L"list");
-					auto items = UnboxValue<Ptr<IValueObservableList>>(Value::From(listControl).GetProperty(L"items"));
+					auto items = UnboxValue<Ptr<IValueObservableList>>(Value::From(window).GetProperty(L"items"));
 					UnboxValue<Ptr<TextItem>>(items->Get(1))->SetText(L"Updated Text");
 					listControl->NotifyItemDataModified(1, 1);
 				});
@@ -302,7 +302,7 @@ TEST_FILE
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto listControl = FindObjectByName<GuiBindableTextList>(window, L"list");
-					auto items = UnboxValue<Ptr<IValueObservableList>>(Value::From(listControl).GetProperty(L"items"));
+					auto items = UnboxValue<Ptr<IValueObservableList>>(Value::From(window).GetProperty(L"items"));
 					UnboxValue<Ptr<TextItem>>(items->Get(2))->SetChecked(true);
 					listControl->NotifyItemDataModified(2, 1);
 				});
@@ -310,7 +310,7 @@ TEST_FILE
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto listControl = FindObjectByName<GuiBindableTextList>(window, L"list");
-					auto items = UnboxValue<Ptr<IValueObservableList>>(Value::From(listControl).GetProperty(L"items"));
+					auto items = UnboxValue<Ptr<IValueObservableList>>(Value::From(window).GetProperty(L"items"));
 					UnboxValue<Ptr<TextItem>>(items->Get(0))->SetText(L"New Text");
 					UnboxValue<Ptr<TextItem>>(items->Get(0))->SetChecked(true);
 					listControl->NotifyItemDataModified(0, 1);
@@ -350,7 +350,7 @@ TEST_FILE
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto listControl = FindObjectByName<GuiBindableTextList>(window, L"list");
-					auto items = UnboxValue<Ptr<IValueObservableList>>(Value::From(listControl).GetProperty(L"items"));
+					auto items = UnboxValue<Ptr<IValueObservableList>>(Value::From(window).GetProperty(L"items"));
 					UnboxValue<Ptr<TextItem>>(items->Get(0))->SetText(L"New Text");
 					UnboxValue<Ptr<TextItem>>(items->Get(0))->SetChecked(true);
 					UnboxValue<Ptr<TextItem>>(items->Get(1))->SetText(L"Updated Text");
@@ -400,7 +400,7 @@ TEST_FILE
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto listControl = FindObjectByName<GuiBindableTextList>(window, L"list");
-					auto items = UnboxValue<Ptr<IValueObservableList>>(Value::From(listControl).GetProperty(L"items"));
+					auto items = UnboxValue<Ptr<IValueObservableList>>(Value::From(window).GetProperty(L"items"));
 
 					TEST_ASSERT(UnboxValue<Ptr<TextItem>>(items->Get(2))->GetChecked() == false);
 					{
@@ -416,7 +416,7 @@ TEST_FILE
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto listControl = FindObjectByName<GuiBindableTextList>(window, L"list");
-					auto items = UnboxValue<Ptr<IValueObservableList>>(Value::From(listControl).GetProperty(L"items"));
+					auto items = UnboxValue<Ptr<IValueObservableList>>(Value::From(window).GetProperty(L"items"));
 
 					TEST_ASSERT(UnboxValue<Ptr<TextItem>>(items->Get(0))->GetChecked() == false);
 					{
@@ -464,7 +464,7 @@ TEST_FILE
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto listControl = FindObjectByName<GuiBindableTextList>(window, L"list");
-					auto items = UnboxValue<Ptr<IValueObservableList>>(Value::From(listControl).GetProperty(L"items"));
+					auto items = UnboxValue<Ptr<IValueObservableList>>(Value::From(window).GetProperty(L"items"));
 					UnboxValue<Ptr<TextItem>>(items->Get(1))->SetText(L"Updated Text");
 					listControl->NotifyItemDataModified(1, 1);
 				});
@@ -472,7 +472,7 @@ TEST_FILE
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto listControl = FindObjectByName<GuiBindableTextList>(window, L"list");
-					auto items = UnboxValue<Ptr<IValueObservableList>>(Value::From(listControl).GetProperty(L"items"));
+					auto items = UnboxValue<Ptr<IValueObservableList>>(Value::From(window).GetProperty(L"items"));
 					UnboxValue<Ptr<TextItem>>(items->Get(2))->SetChecked(true);
 					listControl->NotifyItemDataModified(2, 1);
 				});
@@ -480,7 +480,7 @@ TEST_FILE
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto listControl = FindObjectByName<GuiBindableTextList>(window, L"list");
-					auto items = UnboxValue<Ptr<IValueObservableList>>(Value::From(listControl).GetProperty(L"items"));
+					auto items = UnboxValue<Ptr<IValueObservableList>>(Value::From(window).GetProperty(L"items"));
 					UnboxValue<Ptr<TextItem>>(items->Get(0))->SetText(L"New Text");
 					UnboxValue<Ptr<TextItem>>(items->Get(0))->SetChecked(true);
 					listControl->NotifyItemDataModified(0, 1);
@@ -519,7 +519,7 @@ TEST_FILE
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto listControl = FindObjectByName<GuiBindableTextList>(window, L"list");
-					auto items = UnboxValue<Ptr<IValueObservableList>>(Value::From(listControl).GetProperty(L"items"));
+					auto items = UnboxValue<Ptr<IValueObservableList>>(Value::From(window).GetProperty(L"items"));
 					UnboxValue<Ptr<TextItem>>(items->Get(0))->SetText(L"New Text");
 					UnboxValue<Ptr<TextItem>>(items->Get(0))->SetChecked(true);
 					UnboxValue<Ptr<TextItem>>(items->Get(1))->SetText(L"Updated Text");
@@ -565,7 +565,7 @@ TEST_FILE
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto listControl = FindObjectByName<GuiBindableTextList>(window, L"list");
-					auto items = UnboxValue<Ptr<IValueObservableList>>(Value::From(listControl).GetProperty(L"items"));
+					auto items = UnboxValue<Ptr<IValueObservableList>>(Value::From(window).GetProperty(L"items"));
 
 					TEST_ASSERT(UnboxValue<Ptr<TextItem>>(items->Get(2))->GetChecked() == false);
 					{
@@ -581,7 +581,7 @@ TEST_FILE
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto listControl = FindObjectByName<GuiBindableTextList>(window, L"list");
-					auto items = UnboxValue<Ptr<IValueObservableList>>(Value::From(listControl).GetProperty(L"items"));
+					auto items = UnboxValue<Ptr<IValueObservableList>>(Value::From(window).GetProperty(L"items"));
 
 					TEST_ASSERT(UnboxValue<Ptr<TextItem>>(items->Get(0))->GetChecked() == false);
 					{

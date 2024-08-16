@@ -82,6 +82,9 @@ namespace gacuisrc_unittest
                 self.AddChild(list);
             }
             {
+                (list.ItemSource = self.items);
+            }
+            {
                 var <created-subscription> = new (::system::Subscription^)
                 {
                     var <bind-cache>0 : ::presentation::controls::GuiBindableTextList* = null of (::presentation::controls::GuiBindableTextList*);
@@ -207,9 +210,10 @@ namespace gacuisrc_unittest
     @cpp:Friend(typeof(MainWindowConstructor))
     class MainWindow : ::presentation::controls::GuiWindow, MainWindowConstructor
     {
-        func InitializeItems(items : observe TextItem^[], count : int) : (void)
+        var items : observe TextItem^[] = {};
+
+        func InitializeItems(count : int) : (void)
         {
-            (list.ItemSource = items);
             {
                 var <for-begin>item : ::system::Int64 = 1;
                 var <for-end>item : ::system::Int64 = count;
