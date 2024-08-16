@@ -23,9 +23,9 @@ TEST_FILE
   <Instance name="MainWindowResource">
     <Instance ref.Class="gacuisrc_unittest::MainWindow">
       <ref.Members><![CDATA[
-        func InitializeItems(items:observe TextItem^[], count:int) : void
+        var items:observe TextItem^[] = {};
+        func InitializeItems(count:int) : void
         {
-          list.ItemSource = items;
           for (item in range[1, count])
           {
             items.Add(new TextItem^($"Item $(item)"));
@@ -35,6 +35,7 @@ TEST_FILE
       <Window ref.Name="self" Text-format="GuiBindableTextList [$(list.SelectedItemIndex)] -&gt; [$(list.SelectedItemText)]" ClientSize="x:320 y:240">
         <GuiBindableTextList ref.Name="list" env.ItemType="TextItem^" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
           <att.BoundsComposition-set PreferredMinSize="x:400 y:300" AlignmentToParent="left:0 top:5 right:0 bottom:0"/>
+          <att.ItemSource-eval>self.items</ItemSource-eval>
           <att.TextProperty>Text</att.TextProperty>
           <att.CheckedProperty>Checked</att.CheckedProperty>
         </BindableTextList>
@@ -95,9 +96,9 @@ TEST_FILE
   <Instance name="MainWindowResource">
     <Instance ref.Class="gacuisrc_unittest::MainWindow">
       <ref.Members><![CDATA[
-        func InitializeItems(items:observe TextItem^[], count:int) : void
+        var items : items:observe TextItem^[] = {};
+        func InitializeItems(count:int) : void
         {
-          list.ItemSource = items;
           for (item in range[1, count])
           {
             items.Add(new TextItem^($"Item $(item)"));
@@ -108,6 +109,7 @@ TEST_FILE
         <GuiBindableTextList ref.Name="list" env.ItemType="TextItem^" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
           <att.ItemTemplate>gacuisrc_unittest::ItemTemplate</att.ItemTemplate>
           <att.BoundsComposition-set PreferredMinSize="x:400 y:300" AlignmentToParent="left:0 top:5 right:0 bottom:0"/>
+          <att.ItemSource-eval>self.items</ItemSource-eval>
           <att.TextProperty>Text</att.TextProperty>
           <att.CheckedProperty>Checked</att.CheckedProperty>
         </BindableTextList>
@@ -123,30 +125,32 @@ TEST_FILE
 		{
 			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
 			{
-				auto items = Ptr(new collections::ObservableList<Ptr<TextItem>>);
 				protocol->OnNextIdleFrame(L"Ready", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
-					Value::From(window).Invoke(L"InitializeItems", (Value_xs(), BoxParameter(*items.Obj()), BoxValue<vint>(5)));
+					Value::From(window).Invoke(L"InitializeItems", (Value_xs(), BoxValue<vint>(5)));
 				});
 				protocol->OnNextIdleFrame(L"5 Items", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto listControl = FindObjectByName<GuiBindableTextList>(window, L"list");
-					items->Insert(0, Ptr(new TextItem(L"First Item")));
+					auto items = UnboxValue<Ptr<IValueObservableList>>(Value::From(listControl).GetProperty(L"items"));
+					items->Insert(0, Value::From(Ptr(new TextItem(L"First Item"))));
 				});
 				protocol->OnNextIdleFrame(L"Add to Top", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto listControl = FindObjectByName<GuiBindableTextList>(window, L"list");
-					items->Add(Ptr(new TextItem(L"Last Item")));
+					auto items = UnboxValue<Ptr<IValueObservableList>>(Value::From(listControl).GetProperty(L"items"));
+					items->Add(Value::From(Ptr(new TextItem(L"Last Item"))));
 				});
 				protocol->OnNextIdleFrame(L"Add to Last", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto listControl = FindObjectByName<GuiBindableTextList>(window, L"list");
+					auto items = UnboxValue<Ptr<IValueObservableList>>(Value::From(listControl).GetProperty(L"items"));
 					items->RemoveAt(0);
-					items->RemoveAt(items->Count() - 1);
+					items->RemoveAt(items->GetCount() - 1);
 				});
 				protocol->OnNextIdleFrame(L"Remove Added Items", [=]()
 				{
@@ -158,7 +162,8 @@ TEST_FILE
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto listControl = FindObjectByName<GuiBindableTextList>(window, L"list");
-					items->Set(2, Ptr(new TextItem(L"Updated Item")));
+					auto items = UnboxValue<Ptr<IValueObservableList>>(Value::From(listControl).GetProperty(L"items"));
+					items->Set(2, Value::From(Ptr(new TextItem(L"Updated Item"))));
 				});
 				protocol->OnNextIdleFrame(L"Update 3rd", [=]()
 				{
@@ -183,11 +188,10 @@ TEST_FILE
 		{
 			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
 			{
-				auto items = Ptr(new collections::ObservableList<Ptr<TextItem>>);
 				protocol->OnNextIdleFrame(L"Ready", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
-					Value::From(window).Invoke(L"InitializeItems", (Value_xs(), BoxParameter(*items.Obj()), BoxValue<vint>(20)));
+					Value::From(window).Invoke(L"InitializeItems", (Value_xs(), BoxValue<vint>(20)));
 				});
 				protocol->OnNextIdleFrame(L"20 Items", [=]()
 				{
@@ -199,7 +203,8 @@ TEST_FILE
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto listControl = FindObjectByName<GuiBindableTextList>(window, L"list");
-					items->Insert(0, Ptr(new TextItem(L"First Item")));
+					auto items = UnboxValue<Ptr<IValueObservableList>>(Value::From(listControl).GetProperty(L"items"));
+					items->Insert(0, Value::From(Ptr(new TextItem(L"First Item"))));
 					listControl->SetSelected(0, true);
 				});
 				protocol->OnNextIdleFrame(L"Add to Top and Select", [=]()
@@ -212,7 +217,8 @@ TEST_FILE
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto listControl = FindObjectByName<GuiBindableTextList>(window, L"list");
-					items->Add(Ptr(new TextItem(L"Last Item")));
+					auto items = UnboxValue<Ptr<IValueObservableList>>(Value::From(listControl).GetProperty(L"items"));
+					items->Add(Value::From(Ptr(new TextItem(L"Last Item"))));
 					listControl->SetSelected(21, true);
 				});
 				protocol->OnNextIdleFrame(L"Add to Last and Select", [=]()
@@ -225,8 +231,9 @@ TEST_FILE
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto listControl = FindObjectByName<GuiBindableTextList>(window, L"list");
+					auto items = UnboxValue<Ptr<IValueObservableList>>(Value::From(listControl).GetProperty(L"items"));
 					items->RemoveAt(0);
-					items->RemoveAt(items->Count() - 1);
+					items->RemoveAt(items->GetCount() - 1);
 				});
 				protocol->OnNextIdleFrame(L"Remove Added Items", [=]()
 				{
@@ -238,7 +245,8 @@ TEST_FILE
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto listControl = FindObjectByName<GuiBindableTextList>(window, L"list");
-					items->Set(2, Ptr(new TextItem(L"Updated Item")));
+					auto items = UnboxValue<Ptr<IValueObservableList>>(Value::From(listControl).GetProperty(L"items"));
+					items->Set(2, Value::From(Ptr(new TextItem(L"Updated Item"))));
 				});
 				protocol->OnNextIdleFrame(L"Update 3rd", [=]()
 				{
@@ -269,13 +277,12 @@ TEST_FILE
 		{
 			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
 			{
-				auto items = Ptr(new collections::ObservableList<Ptr<TextItem>>);
 				protocol->OnNextIdleFrame(L"Ready", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto listControl = FindObjectByName<GuiBindableTextList>(window, L"list");
 					listControl->SetView(TextListView::Check);
-					Value::From(window).Invoke(L"InitializeItems", (Value_xs(), BoxParameter(*items.Obj()), BoxValue<vint>(5)));
+					Value::From(window).Invoke(L"InitializeItems", (Value_xs(), BoxValue<vint>(5)));
 				});
 				protocol->OnNextIdleFrame(L"5 Items", [=]()
 				{
@@ -287,22 +294,25 @@ TEST_FILE
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto listControl = FindObjectByName<GuiBindableTextList>(window, L"list");
-					items->Get(1)->SetText(L"Updated Text");
+					auto items = UnboxValue<Ptr<IValueObservableList>>(Value::From(listControl).GetProperty(L"items"));
+					UnboxValue<Ptr<TextItem>>(items->Get(1))->SetText(L"Updated Text");
 					listControl->NotifyItemDataModified(1, 1);
 				});
 				protocol->OnNextIdleFrame(L"Change 2nd Text", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto listControl = FindObjectByName<GuiBindableTextList>(window, L"list");
-					items->Get(2)->SetChecked(true);
+					auto items = UnboxValue<Ptr<IValueObservableList>>(Value::From(listControl).GetProperty(L"items"));
+					UnboxValue<Ptr<TextItem>>(items->Get(2))->SetChecked(true);
 					listControl->NotifyItemDataModified(2, 1);
 				});
 				protocol->OnNextIdleFrame(L"Check 3rd", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto listControl = FindObjectByName<GuiBindableTextList>(window, L"list");
-					items->Get(0)->SetText(L"New Text");
-					items->Get(0)->SetChecked(true);
+					auto items = UnboxValue<Ptr<IValueObservableList>>(Value::From(listControl).GetProperty(L"items"));
+					UnboxValue<Ptr<TextItem>>(items->Get(0))->SetText(L"New Text");
+					UnboxValue<Ptr<TextItem>>(items->Get(0))->SetChecked(true);
 					listControl->NotifyItemDataModified(0, 1);
 				});
 				protocol->OnNextIdleFrame(L"Change 1st Text and Check", [=]()
@@ -322,13 +332,12 @@ TEST_FILE
 		{
 			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
 			{
-				auto items = Ptr(new collections::ObservableList<Ptr<TextItem>>);
 				protocol->OnNextIdleFrame(L"Ready", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto listControl = FindObjectByName<GuiBindableTextList>(window, L"list");
 					listControl->SetView(TextListView::Radio);
-					Value::From(window).Invoke(L"InitializeItems", (Value_xs(), BoxParameter(*items.Obj()), BoxValue<vint>(20)));
+					Value::From(window).Invoke(L"InitializeItems", (Value_xs(), BoxValue<vint>(20)));
 				});
 				protocol->OnNextIdleFrame(L"20 Items", [=]()
 				{
@@ -341,10 +350,11 @@ TEST_FILE
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto listControl = FindObjectByName<GuiBindableTextList>(window, L"list");
-					items->Get(0)->SetText(L"New Text");
-					items->Get(0)->SetChecked(true);
-					items->Get(1)->SetText(L"Updated Text");
-					items->Get(2)->SetChecked(true);
+					auto items = UnboxValue<Ptr<IValueObservableList>>(Value::From(listControl).GetProperty(L"items"));
+					UnboxValue<Ptr<TextItem>>(items->Get(0))->SetText(L"New Text");
+					UnboxValue<Ptr<TextItem>>(items->Get(0))->SetChecked(true);
+					UnboxValue<Ptr<TextItem>>(items->Get(1))->SetText(L"Updated Text");
+					UnboxValue<Ptr<TextItem>>(items->Get(2))->SetChecked(true);
 					listControl->NotifyItemDataModified(0, 3);
 				});
 				protocol->OnNextIdleFrame(L"Change 1st, 2nd, 3rd", [=]()
@@ -373,13 +383,12 @@ TEST_FILE
 		{
 			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
 			{
-				auto items = Ptr(new collections::ObservableList<Ptr<TextItem>>);
 				protocol->OnNextIdleFrame(L"Ready", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto listControl = FindObjectByName<GuiBindableTextList>(window, L"list");
 					listControl->SetView(TextListView::Check);
-					Value::From(window).Invoke(L"InitializeItems", (Value_xs(), BoxParameter(*items.Obj()), BoxValue<vint>(5)));
+					Value::From(window).Invoke(L"InitializeItems", (Value_xs(), BoxValue<vint>(5)));
 				});
 				protocol->OnNextIdleFrame(L"5 Items", [=]()
 				{
@@ -391,8 +400,9 @@ TEST_FILE
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto listControl = FindObjectByName<GuiBindableTextList>(window, L"list");
+					auto items = UnboxValue<Ptr<IValueObservableList>>(Value::From(listControl).GetProperty(L"items"));
 
-					TEST_ASSERT(items->Get(2)->GetChecked() == false);
+					TEST_ASSERT(UnboxValue<Ptr<TextItem>>(items->Get(2))->GetChecked() == false);
 					{
 						auto itemStyle = listControl->GetArranger()->GetVisibleStyle(2);
 						TEST_ASSERT(itemStyle != nullptr);
@@ -400,14 +410,15 @@ TEST_FILE
 						auto location = protocol->LocationOf(itemStyle, 0.0, 0.5, 8, 0);
 						protocol->LClick(location);
 					}
-					TEST_ASSERT(items->Get(2)->GetChecked() == true);
+					TEST_ASSERT(UnboxValue<Ptr<TextItem>>(items->Get(2))->GetChecked() == true);
 				});
 				protocol->OnNextIdleFrame(L"Check 3rd", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto listControl = FindObjectByName<GuiBindableTextList>(window, L"list");
+					auto items = UnboxValue<Ptr<IValueObservableList>>(Value::From(listControl).GetProperty(L"items"));
 
-					TEST_ASSERT(items->Get(0)->GetChecked() == false);
+					TEST_ASSERT(UnboxValue<Ptr<TextItem>>(items->Get(0))->GetChecked() == false);
 					{
 						auto itemStyle = listControl->GetArranger()->GetVisibleStyle(0);
 						TEST_ASSERT(itemStyle != nullptr);
@@ -415,7 +426,7 @@ TEST_FILE
 						auto location = protocol->LocationOf(itemStyle, 0.0, 0.5, 8, 0);
 						protocol->LClick(location);
 					}
-					TEST_ASSERT(items->Get(0)->GetChecked() == true);
+					TEST_ASSERT(UnboxValue<Ptr<TextItem>>(items->Get(0))->GetChecked() == true);
 				});
 				protocol->OnNextIdleFrame(L"Check 1st", [=]()
 				{
@@ -437,12 +448,11 @@ TEST_FILE
 		{
 			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
 			{
-				auto items = Ptr(new collections::ObservableList<Ptr<TextItem>>);
 				protocol->OnNextIdleFrame(L"Ready", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto listControl = FindObjectByName<GuiBindableTextList>(window, L"list");
-					Value::From(window).Invoke(L"InitializeItems", (Value_xs(), BoxParameter(*items.Obj()), BoxValue<vint>(5)));
+					Value::From(window).Invoke(L"InitializeItems", (Value_xs(), BoxValue<vint>(5)));
 				});
 				protocol->OnNextIdleFrame(L"5 Items", [=]()
 				{
@@ -454,22 +464,25 @@ TEST_FILE
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto listControl = FindObjectByName<GuiBindableTextList>(window, L"list");
-					items->Get(1)->SetText(L"Updated Text");
+					auto items = UnboxValue<Ptr<IValueObservableList>>(Value::From(listControl).GetProperty(L"items"));
+					UnboxValue<Ptr<TextItem>>(items->Get(1))->SetText(L"Updated Text");
 					listControl->NotifyItemDataModified(1, 1);
 				});
 				protocol->OnNextIdleFrame(L"Change 2nd Text", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto listControl = FindObjectByName<GuiBindableTextList>(window, L"list");
-					items->Get(2)->SetChecked(true);
+					auto items = UnboxValue<Ptr<IValueObservableList>>(Value::From(listControl).GetProperty(L"items"));
+					UnboxValue<Ptr<TextItem>>(items->Get(2))->SetChecked(true);
 					listControl->NotifyItemDataModified(2, 1);
 				});
 				protocol->OnNextIdleFrame(L"Check 3rd", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto listControl = FindObjectByName<GuiBindableTextList>(window, L"list");
-					items->Get(0)->SetText(L"New Text");
-					items->Get(0)->SetChecked(true);
+					auto items = UnboxValue<Ptr<IValueObservableList>>(Value::From(listControl).GetProperty(L"items"));
+					UnboxValue<Ptr<TextItem>>(items->Get(0))->SetText(L"New Text");
+					UnboxValue<Ptr<TextItem>>(items->Get(0))->SetChecked(true);
 					listControl->NotifyItemDataModified(0, 1);
 				});
 				protocol->OnNextIdleFrame(L"Change 1st Text and Check", [=]()
@@ -489,12 +502,11 @@ TEST_FILE
 		{
 			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
 			{
-				auto items = Ptr(new collections::ObservableList<Ptr<TextItem>>);
 				protocol->OnNextIdleFrame(L"Ready", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto listControl = FindObjectByName<GuiBindableTextList>(window, L"list");
-					Value::From(window).Invoke(L"InitializeItems", (Value_xs(), BoxParameter(*items.Obj()), BoxValue<vint>(20)));
+					Value::From(window).Invoke(L"InitializeItems", (Value_xs(), BoxValue<vint>(20)));
 				});
 				protocol->OnNextIdleFrame(L"20 Items", [=]()
 				{
@@ -507,10 +519,11 @@ TEST_FILE
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto listControl = FindObjectByName<GuiBindableTextList>(window, L"list");
-					items->Get(0)->SetText(L"New Text");
-					items->Get(0)->SetChecked(true);
-					items->Get(1)->SetText(L"Updated Text");
-					items->Get(2)->SetChecked(true);
+					auto items = UnboxValue<Ptr<IValueObservableList>>(Value::From(listControl).GetProperty(L"items"));
+					UnboxValue<Ptr<TextItem>>(items->Get(0))->SetText(L"New Text");
+					UnboxValue<Ptr<TextItem>>(items->Get(0))->SetChecked(true);
+					UnboxValue<Ptr<TextItem>>(items->Get(1))->SetText(L"Updated Text");
+					UnboxValue<Ptr<TextItem>>(items->Get(2))->SetChecked(true);
 					listControl->NotifyItemDataModified(0, 3);
 				});
 				protocol->OnNextIdleFrame(L"Change 1st, 2nd, 3rd", [=]()
@@ -536,12 +549,11 @@ TEST_FILE
 		{
 			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
 			{
-				auto items = Ptr(new collections::ObservableList<Ptr<TextItem>>);
 				protocol->OnNextIdleFrame(L"Ready", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto listControl = FindObjectByName<GuiBindableTextList>(window, L"list");
-					Value::From(window).Invoke(L"InitializeItems", (Value_xs(), BoxParameter(*items.Obj()), BoxValue<vint>(5)));
+					Value::From(window).Invoke(L"InitializeItems", (Value_xs(), BoxValue<vint>(5)));
 				});
 				protocol->OnNextIdleFrame(L"5 Items", [=]()
 				{
@@ -553,8 +565,9 @@ TEST_FILE
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto listControl = FindObjectByName<GuiBindableTextList>(window, L"list");
+					auto items = UnboxValue<Ptr<IValueObservableList>>(Value::From(listControl).GetProperty(L"items"));
 
-					TEST_ASSERT(items->Get(2)->GetChecked() == false);
+					TEST_ASSERT(UnboxValue<Ptr<TextItem>>(items->Get(2))->GetChecked() == false);
 					{
 						auto itemStyle = listControl->GetArranger()->GetVisibleStyle(2);
 						TEST_ASSERT(itemStyle != nullptr);
@@ -562,14 +575,15 @@ TEST_FILE
 						auto location = protocol->LocationOf(itemStyle, 0.0, 0.5, 8, 0);
 						protocol->LClick(location);
 					}
-					TEST_ASSERT(items->Get(2)->GetChecked() == true);
+					TEST_ASSERT(UnboxValue<Ptr<TextItem>>(items->Get(2))->GetChecked() == true);
 				});
 				protocol->OnNextIdleFrame(L"Check 3rd", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto listControl = FindObjectByName<GuiBindableTextList>(window, L"list");
+					auto items = UnboxValue<Ptr<IValueObservableList>>(Value::From(listControl).GetProperty(L"items"));
 
-					TEST_ASSERT(items->Get(0)->GetChecked() == false);
+					TEST_ASSERT(UnboxValue<Ptr<TextItem>>(items->Get(0))->GetChecked() == false);
 					{
 						auto itemStyle = listControl->GetArranger()->GetVisibleStyle(0);
 						TEST_ASSERT(itemStyle != nullptr);
@@ -577,7 +591,7 @@ TEST_FILE
 						auto location = protocol->LocationOf(itemStyle, 0.0, 0.5, 8, 0);
 						protocol->LClick(location);
 					}
-					TEST_ASSERT(items->Get(0)->GetChecked() == true);
+					TEST_ASSERT(UnboxValue<Ptr<TextItem>>(items->Get(0))->GetChecked() == true);
 				});
 				protocol->OnNextIdleFrame(L"Check 1st", [=]()
 				{
