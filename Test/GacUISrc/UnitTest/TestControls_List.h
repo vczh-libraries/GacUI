@@ -3,7 +3,7 @@
 namespace gacui_unittest_template
 {
 	extern void GuiTextList_TestCases(
-		const wchar_t* resourceXml,
+		WString resourceXml,
 		WString pathFragment,
 		bool setTextListView,
 		Func<Ptr<IValueList>(GuiWindow*)> getItems,
@@ -11,7 +11,7 @@ namespace gacui_unittest_template
 	);
 
 	extern void GuiTextListItemTemplate_TestCases(
-		const wchar_t* resourceXml,
+		WString resourceXml,
 		WString pathFragment,
 		bool setTextListView,
 		Func<Ptr<IValueList>(GuiWindow*)> getItems,
