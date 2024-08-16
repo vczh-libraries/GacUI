@@ -64,12 +64,19 @@
     - ListView
       - Item manipulation
       - Bindable
+        - `TestControls_List_GuiListControl.cpp`
+        - `TestControls_List_GuiSelectableListControl.cpp`
+        - `TestControls_List_GuiListItemTemplate.cpp`
+        - BindableDataGrid in the same view
       - Extra mouse operations
       - Extra key operations
     - TreeView
       - ItemTemplate with `Expanding`, `Expandable`, `Level`, `Image`
       - Item manipulation
       - Bindable
+        - `TestControls_List_GuiListControl.cpp`
+        - `TestControls_List_GuiSelectableListControl.cpp`
+        - `TestControls_List_GuiListItemTemplate.cpp`
       - Node events
       - Extra mouse operations
       - Extra key operations (Left/Right -> Collapse/Expand)
@@ -82,6 +89,9 @@
     - Item manipulation
     - Extra mouse operations
     - Extra key operations
+    - `TestControls_List_GuiListControl.cpp`
+    - `TestControls_List_GuiSelectableListControl.cpp`
+    - `TestControls_List_GuiListItemTemplate.cpp`
   - Ribbon ...
   - Check all control key operation, ensure accessibility.
 - More unit test
