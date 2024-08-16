@@ -124,7 +124,7 @@ TEST_FILE
 				notifyItemDataModified);
 		});
 
-		TEST_CATEGORY(L"GuiTextListItemTemplate")
+		TEST_CATEGORY(L"GuiTextList/GuiTextListItemTemplate")
 		{
 			GuiTextListItemTemplate_TestCases(
 				resourceTextListItemTemplate,
@@ -215,7 +215,7 @@ TEST_FILE
 				notifyItemDataModified);
 		});
 
-		TEST_CATEGORY(L"GuiTextListItemTemplate")
+		TEST_CATEGORY(L"GuiBindableTextList/GuiTextListItemTemplate")
 		{
 			GuiTextListItemTemplate_TestCases(
 				resourceTextListItemTemplate,

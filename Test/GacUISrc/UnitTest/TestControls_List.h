@@ -2,6 +2,16 @@
 
 namespace gacui_unittest_template
 {
+	extern void GuiListItemTemplate_TestCases(
+		WString resourceXml,
+		WString pathFragment
+	);
+
+	extern void GuiListItemTemplate_WithAxis_TestCases(
+		WString resourceXml,
+		WString pathFragment
+	);
+
 	extern void GuiVirtualTextList_TestCases(
 		WString resourceXml,
 		WString pathFragment,
