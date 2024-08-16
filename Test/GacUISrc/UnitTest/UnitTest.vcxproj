@@ -208,6 +208,7 @@
     <ClCompile Include="TestControls_List_GuiListItemTemplate.cpp" />
     <ClCompile Include="TestControls_List_GuiSelectableListControl.cpp" />
     <ClCompile Include="TestControls_List_GuiTextList.cpp" />
+    <ClCompile Include="TestControls_List_GuiTextList_Template.cpp" />
     <ClCompile Include="TestHostedWindowManager.cpp" />
     <ClCompile Include="TestPtrDescriptableObject.cpp" />
     <ClCompile Include="TestQueryParser.cpp" />
@@ -235,6 +236,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="TestCompositions.h" />
+    <ClInclude Include="TestControls.h" />
+    <ClInclude Include="TestControls_List.h" />
     <ClInclude Include="TestRemote.h" />
     <ClInclude Include="TestRemote_GraphicsHost_Shared.h" />
     <ClInclude Include="TestRemote_Shared_JsonProtocol.h" />

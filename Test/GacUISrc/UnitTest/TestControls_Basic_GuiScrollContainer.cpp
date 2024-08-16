@@ -1,18 +1,4 @@
-#include "../../../Source/UnitTestUtilities/GuiUnitTestUtilities.h"
-#ifdef VCZH_64
-#include "../Generated_DarkSkin/Source_x64/DarkSkin.h"
-#else
-#include "../Generated_DarkSkin/Source_x86/DarkSkin.h"
-#endif
-
-using namespace vl;
-using namespace vl::stream;
-using namespace vl::reflection::description;
-using namespace vl::presentation;
-using namespace vl::presentation::elements;
-using namespace vl::presentation::compositions;
-using namespace vl::presentation::controls;
-using namespace vl::presentation::unittest;
+#include "TestControls.h"
 
 TEST_FILE
 {
