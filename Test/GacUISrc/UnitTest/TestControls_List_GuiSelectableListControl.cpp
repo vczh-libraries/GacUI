@@ -39,14 +39,14 @@ TEST_FILE
 </Resource>
 )GacUISrc";
 
-		TEST_CATEGORY(L"GuiSelectableListControl/GuiTextList/SingleSelect")
+		TEST_CATEGORY(L"GuiTextList/SingleSelect")
 		{
 			GuiSelectableListControl_SingleSelect_TestCases(
 				resourceListControl,
 				WString::Unmanaged(L"GuiSelectableListControl/GuiTextList"));
 		});
 
-		TEST_CATEGORY(L"GuiSelectableListControl/GuiTextList/MultiSelect")
+		TEST_CATEGORY(L"GuiTextList/MultiSelect")
 		{
 			GuiSelectableListControl_MultiSelect_TestCases(
 				resourceListControl,
@@ -93,14 +93,14 @@ TEST_FILE
 </Resource>
 )GacUISrc";
 
-		TEST_CATEGORY(L"GuiSelectableListControl/GuiBindableTextList/SingleSelect")
+		TEST_CATEGORY(L"GuiBindableTextList/SingleSelect")
 		{
 			GuiSelectableListControl_SingleSelect_TestCases(
 				resourceListControl,
 				WString::Unmanaged(L"GuiSelectableListControl/GuiBindableTextList"));
 		});
 
-		TEST_CATEGORY(L"GuiSelectableListControl/GuiBindableTextList/MultiSelect")
+		TEST_CATEGORY(L"GuiBindableTextList/MultiSelect")
 		{
 			GuiSelectableListControl_MultiSelect_TestCases(
 				resourceListControl,

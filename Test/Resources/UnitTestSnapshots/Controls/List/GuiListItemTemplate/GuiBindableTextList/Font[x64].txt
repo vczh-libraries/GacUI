@@ -47,18 +47,18 @@ namespace gacuisrc_unittest
                 <this>.SetNamedObject("list", list);
             }
             {
-                (list.TextProperty = func (<item> : ::system::Object) : (::system::String)
-                {
-                    var item = (cast (TextItem^) <item>);
-                    return item.Text;
-                });
-            }
-            {
                 (list.ItemTemplate = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiListItemTemplate*)
                 {
                     {
                         return new (::gacuisrc_unittest::MyListItemTemplate*)();
                     }
+                });
+            }
+            {
+                (list.TextProperty = func (<item> : ::system::Object) : (::system::String)
+                {
+                    var item = (cast (TextItem^) <item>);
+                    return item.Text;
                 });
             }
             {

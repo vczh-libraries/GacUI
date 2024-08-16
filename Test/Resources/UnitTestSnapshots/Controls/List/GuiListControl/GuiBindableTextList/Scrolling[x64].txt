@@ -54,7 +54,7 @@ namespace gacuisrc_unittest
         var <precompile>8 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
-        var list : ::presentation::controls::GuiTextList* = null of (::presentation::controls::GuiTextList*);
+        var list : ::presentation::controls::GuiBindableTextList* = null of (::presentation::controls::GuiBindableTextList*);
 
         @cpp:Protected
         var logs : ::presentation::controls::GuiTextList* = null of (::presentation::controls::GuiTextList*);
@@ -100,8 +100,15 @@ namespace gacuisrc_unittest
                 (<precompile>2.Text = "Items");
             }
             {
-                (list = new (::presentation::controls::GuiTextList*)(::presentation::theme::ThemeName::TextList));
+                (list = new (::presentation::controls::GuiBindableTextList*)(::presentation::theme::ThemeName::TextList));
                 <this>.SetNamedObject("list", list);
+            }
+            {
+                (list.TextProperty = func (<item> : ::system::Object) : (::system::String)
+                {
+                    var item = (cast (TextItem^) <item>);
+                    return item.Text;
+                });
             }
             {
                 (list.VerticalAlwaysVisible = false);
@@ -162,6 +169,9 @@ namespace gacuisrc_unittest
             {
                 self.ContainerComposition.AddChild(<precompile>0);
             }
+            {
+                (list.ItemSource = self.items);
+            }
         }
 
         new ()
@@ -197,6 +207,24 @@ namespace gacuisrc_unittest
     @cpp:Friend(typeof(MainWindowConstructor))
     class MainWindow : ::presentation::controls::GuiWindow, MainWindowConstructor
     {
+        var items : observe TextItem^[] = {};
+
+        func InitializeItems(start : int, count : int) : (void)
+        {
+            {
+                var <for-begin>item : ::system::Int64 = 1;
+                var <for-end>item : ::system::Int64 = count;
+                var item = <for-begin>item;
+                while ((item <= <for-end>item))
+                {
+                    {
+                        items.Add(new (TextItem^)(("Item " & (start + item))));
+                    }
+                    (item = (item + 1));
+                }
+            }
+        }
+
         new* ()
             :::presentation::controls::GuiWindow(::presentation::theme::ThemeName::Window)
         {
