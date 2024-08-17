@@ -170,6 +170,93 @@ TEST_FILE
 	}
 
 	/***********************************************************************
+	GuiBindableTreeView
+	***********************************************************************/
+	{
+		const WString fragmentTreeViewData = LR"GacUISrc(
+  <Script name="TreeViewDataResource"><Workflow><![CDATA[
+    module treeviewdata;
+    using system::*;
+
+    class TreeViewData
+    {
+      prop Text:string = "" {not observe}
+      prop Children:observe TreeViewData^[] = {} {const, not observe}
+
+      new(){}
+      new(text:string){Text=text;}
+    }
+  ]]></Workflow></Script>
+)GacUISrc";
+
+		const WString resourceListItemTemplate = LR"GacUISrc(
+<Resource>)GacUISrc" + fragmentTreeViewData + fragmentListItemTemplate + LR"GacUISrc(
+  <Instance name="MainWindowResource">
+    <Instance ref.Class="gacuisrc_unittest::MainWindow">
+      <ref.Members><![CDATA[
+        var items:TreeViewData^ = new TreeViewData^();
+      ]]></ref.Members>
+      <ref.Ctor><![CDATA[{
+        for (item in range[1, 20])
+        {
+          items.Children.Add(new TreeViewData^($"Item $(item)"));
+        }
+      }]]></ref.Ctor>
+      <Window ref.Name="self" Text="GuiListItemTemplate" ClientSize="x:320 y:240">
+        <BindableTreeView ref.Name="list" env.ItemType="TreeViewData^" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
+          <att.BoundsComposition-set PreferredMinSize="x:400 y:300" AlignmentToParent="left:0 top:5 right:0 bottom:0"/>
+          <att.ItemTemplate>gacuisrc_unittest::MyListItemTemplate</att.ItemTemplate>
+          <att.ItemSource-eval>self.items</ItemSource-eval>
+          <att.TextProperty>Text</att.TextProperty>
+          <att.ChildrenProperty>Children</att.ChildrenProperty>
+        </BindableTreeView>
+      </Window>
+    </Instance>
+  </Instance>
+</Resource>
+)GacUISrc";
+
+		const WString resourceGridItemTemplate = LR"GacUISrc(
+<Resource>)GacUISrc" + fragmentTreeViewData + fragmentListItemTemplate + LR"GacUISrc(
+  <Instance name="MainWindowResource">
+    <Instance ref.Class="gacuisrc_unittest::MainWindow">
+      <ref.Members><![CDATA[
+        var items:TreeViewData^ = new TreeViewData^();
+        func InitializeItems(count:int) : void
+        {
+          for (item in range[1, count])
+          {
+          items.Children.Add(new TreeViewData^($"Item $(item)"));  
+          }
+        }
+      ]]></ref.Members>
+      <Window ref.Name="self" Text-format="GuiListItemTemplate $(list.SelectedItemIndex)" ClientSize="x:320 y:240">
+        <BindableTreeView ref.Name="list" env.ItemType="TreeViewData^" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
+          <att.BoundsComposition-set PreferredMinSize="x:400 y:300" AlignmentToParent="left:0 top:5 right:0 bottom:0"/>
+          <att.ItemTemplate>gacuisrc_unittest::MyListItemTemplate</att.ItemTemplate>
+          <att.ItemSource-eval>self.items</ItemSource-eval>
+          <att.TextProperty>Text</att.TextProperty>
+          <att.ChildrenProperty>Children</att.ChildrenProperty>
+        </BindableTreeView>
+      </Window>
+    </Instance>
+  </Instance>
+</Resource>
+)GacUISrc";
+
+		TEST_CATEGORY(L"GuiBindableTreeView")
+		{
+			GuiListItemTemplate_TestCases(
+				resourceListItemTemplate,
+				WString::Unmanaged(L"GuiListItemTemplate/GuiBindableTreeView"));
+
+			GuiListItemTemplate_WithAxis_TestCases(
+				resourceGridItemTemplate,
+				WString::Unmanaged(L"GuiListItemTemplate/GuiBindableTreeView"));
+		});
+	}
+
+	/***********************************************************************
 	GuiBindableListView
 	***********************************************************************/
 	{
