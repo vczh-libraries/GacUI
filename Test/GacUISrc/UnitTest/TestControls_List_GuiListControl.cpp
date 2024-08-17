@@ -221,7 +221,7 @@ TEST_FILE
           }
         }
       ]]></ref.Members>
-      <Window ref.Name="self" Text="GuiListControl" ClientSize="x:640 y:320">
+      <Window ref.Name="self" Text="GuiListControl" ClientSize="x:480 y:320">
         <Table BorderVisible="false" CellPadding="5" AlignmentToParent="left:0 top:5 right:0 bottom:0">
           <att.Rows>
             <_>composeType:Percentage percentage:1.0</_>
@@ -234,7 +234,7 @@ TEST_FILE
           <Cell Site="row:0 column:0">
             <GroupBox Text="Items">
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-              <BindableListView ref.Name="list" env.ItemType="TextItem^" View="Information" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
+              <BindableListView ref.Name="list" env.ItemType="TextItem^" View="SmallIcon" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
                 <att.BoundsComposition-set AlignmentToParent="left:5 top:5 right:5 bottom:5"/>
                 <att.ItemSource-eval>self.items</ItemSource-eval>
                 <att.Columns>

@@ -198,7 +198,7 @@ TEST_FILE
         }
       }]]></ref.Ctor>
       <Window ref.Name="self" Text="GuiSelectableListControl" ClientSize="x:320 y:240">
-        <BindableListView ref.Name="list" env.ItemType="TextItem^" View="Information" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
+        <BindableListView ref.Name="list" env.ItemType="TextItem^" View="SmallIcon" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
           <att.BoundsComposition-set PreferredMinSize="x:400 y:300" AlignmentToParent="left:0 top:5 right:0 bottom:0"/>
           <att.ItemSource-eval>self.items</ItemSource-eval>
           <att.Columns>

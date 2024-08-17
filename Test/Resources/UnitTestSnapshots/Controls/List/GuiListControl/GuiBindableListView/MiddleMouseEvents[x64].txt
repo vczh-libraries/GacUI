@@ -67,7 +67,7 @@ namespace gacuisrc_unittest
         {
             (self = <this>);
             {
-                (self.ClientSize = {x : 640; y : 320;} of (::presentation::Size));
+                (self.ClientSize = {x : 480; y : 320;} of (::presentation::Size));
             }
             {
                 (self.Text = "GuiListControl");
@@ -107,7 +107,7 @@ namespace gacuisrc_unittest
                 <this>.SetNamedObject("list", list);
             }
             {
-                (list.View = Information of (::presentation::controls::ListViewView));
+                (list.View = SmallIcon of (::presentation::controls::ListViewView));
             }
             {
                 (list.VerticalAlwaysVisible = false);
