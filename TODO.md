@@ -90,6 +90,7 @@
     - Extra mouse operations
     - Extra key operations 
     - Row and Cell extensions
+    - In `CppTest` edit data grid cell crash
   - Ribbon ...
   - Check all control key operation, ensure accessibility.
 - More unit test
