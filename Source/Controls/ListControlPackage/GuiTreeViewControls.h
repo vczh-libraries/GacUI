@@ -19,7 +19,7 @@ namespace vl
 		{
 
 /***********************************************************************
-NodeItemProvider
+INodeRootProvider
 ***********************************************************************/
 
 			namespace tree
@@ -129,6 +129,10 @@ NodeItemProvider
 				};
 			}
 
+/***********************************************************************
+NodeItemProvider (INodeRootProvider -> GuiListControl::IItemProvider)
+***********************************************************************/
+
 			namespace tree
 			{
 				//-----------------------------------------------------------
@@ -163,7 +167,6 @@ NodeItemProvider
 				protected:
 					Ptr<INodeRootProvider>			root;
 					NodeIntMap						offsetBeforeChildModifieds;
-					
 
 					Ptr<INodeProvider>				GetNodeByOffset(Ptr<INodeProvider> provider, vint offset);
 					void							OnAttached(INodeRootProvider* provider)override;
@@ -192,7 +195,7 @@ NodeItemProvider
 			}
 
 /***********************************************************************
-MemoryNodeProvider
+MemoryNodeProvider (Implements INodeProvider)
 ***********************************************************************/
 
 			namespace tree
@@ -262,7 +265,14 @@ MemoryNodeProvider
 					Ptr<INodeProvider>				GetParent()override;
 					Ptr<INodeProvider>				GetChild(vint index)override;
 				};
+			}
 
+/***********************************************************************
+MemoryNodeRootProvider (Implements INodeProvider + INodeRootProvider)
+***********************************************************************/
+
+			namespace tree
+			{
 				/// <summary>A general implementation for <see cref="INodeRootProvider"/>.</summary>
 				class NodeRootProviderBase : public virtual INodeRootProvider, protected virtual INodeProviderCallback, public Description<NodeRootProviderBase>
 				{
