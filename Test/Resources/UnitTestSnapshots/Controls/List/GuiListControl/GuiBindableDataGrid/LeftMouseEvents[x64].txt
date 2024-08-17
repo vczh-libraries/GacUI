@@ -36,7 +36,7 @@ namespace gacuisrc_unittest
         var <precompile>2 : ::presentation::controls::GuiControl* = null of (::presentation::controls::GuiControl*);
 
         @cpp:Protected
-        var <precompile>3 : ::presentation::controls::list::ListViewColumn^ = null of (::presentation::controls::list::ListViewColumn^);
+        var <precompile>3 : ::presentation::controls::list::DataColumn^ = null of (::presentation::controls::list::DataColumn^);
 
         @cpp:Protected
         var <precompile>4 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
@@ -57,7 +57,7 @@ namespace gacuisrc_unittest
         var <precompile>9 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
-        var list : ::presentation::controls::GuiBindableListView* = null of (::presentation::controls::GuiBindableListView*);
+        var list : ::presentation::controls::GuiBindableDataGrid* = null of (::presentation::controls::GuiBindableDataGrid*);
 
         @cpp:Protected
         var logs : ::presentation::controls::GuiTextList* = null of (::presentation::controls::GuiTextList*);
@@ -103,7 +103,7 @@ namespace gacuisrc_unittest
                 (<precompile>2.Text = "Items");
             }
             {
-                (list = new (::presentation::controls::GuiBindableListView*)(::presentation::theme::ThemeName::ListView));
+                (list = new (::presentation::controls::GuiBindableDataGrid*)(::presentation::theme::ThemeName::ListView));
                 <this>.SetNamedObject("list", list);
             }
             {
@@ -119,7 +119,7 @@ namespace gacuisrc_unittest
             {
                 (<precompile>4.AlignmentToParent = {left : 5; top : 5; right : 5; bottom : 5;} of (::presentation::Margin));
             }
-            (<precompile>3 = new (::presentation::controls::list::ListViewColumn^)());
+            (<precompile>3 = new (::presentation::controls::list::DataColumn^)());
             {
                 (<precompile>3.TextProperty = func (<item> : ::system::Object) : (::system::String)
                 {
