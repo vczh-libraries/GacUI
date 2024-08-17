@@ -27,13 +27,10 @@ namespace gacuisrc_unittest
         var self : ::gacuisrc_unittest::MainWindow* = null of (::gacuisrc_unittest::MainWindow*);
 
         @cpp:Protected
-        var <precompile>0 : ::presentation::controls::list::ListViewColumn^ = null of (::presentation::controls::list::ListViewColumn^);
+        var <precompile>0 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
-        var <precompile>1 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
-
-        @cpp:Protected
-        var list : ::presentation::controls::GuiBindableListView* = null of (::presentation::controls::GuiBindableListView*);
+        var list : ::presentation::controls::GuiListView* = null of (::presentation::controls::GuiListView*);
 
         @cpp:Protected
         func <gacuisrc_unittest-MainWindow>Initialize(<this> : ::gacuisrc_unittest::MainWindow*) : (::system::Void)
@@ -46,7 +43,7 @@ namespace gacuisrc_unittest
                 (self.Text = "GuiSelectableListControl");
             }
             {
-                (list = new (::presentation::controls::GuiBindableListView*)(::presentation::theme::ThemeName::ListView));
+                (list = new (::presentation::controls::GuiListView*)(::presentation::theme::ThemeName::ListView));
                 <this>.SetNamedObject("list", list);
             }
             {
@@ -58,33 +55,15 @@ namespace gacuisrc_unittest
             {
                 (list.HorizontalAlwaysVisible = false);
             }
-            (<precompile>1 = list.BoundsComposition);
+            (<precompile>0 = list.BoundsComposition);
             {
-                (<precompile>1.PreferredMinSize = {x : 400; y : 300;} of (::presentation::Size));
+                (<precompile>0.PreferredMinSize = {x : 400; y : 300;} of (::presentation::Size));
             }
             {
-                (<precompile>1.AlignmentToParent = {left : 0; top : 5; right : 0; bottom : 0;} of (::presentation::Margin));
-            }
-            (<precompile>0 = new (::presentation::controls::list::ListViewColumn^)());
-            {
-                (<precompile>0.TextProperty = func (<item> : ::system::Object) : (::system::String)
-                {
-                    var item = (cast (TextItem^) <item>);
-                    return item.Text;
-                });
-            }
-            {
-                (<precompile>0.Text = "Text");
-            }
-            {
-                var <collection> = list.Columns;
-                <collection>.Add(<precompile>0);
+                (<precompile>0.AlignmentToParent = {left : 0; top : 5; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
                 self.AddChild(list);
-            }
-            {
-                (list.ItemSource = self.items);
             }
             {
                 var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
@@ -141,8 +120,6 @@ namespace gacuisrc_unittest
     @cpp:Friend(typeof(MainWindowConstructor))
     class MainWindow : ::presentation::controls::GuiWindow, MainWindowConstructor
     {
-        var items : observe TextItem^[] = {};
-
         var counter : int = 0;
 
         new* ()
@@ -164,7 +141,9 @@ namespace gacuisrc_unittest
                 while ((item <= <for-end>item))
                 {
                     {
-                        items.Add(new (TextItem^)(("Item " & item)));
+                        var listViewItem = new (ListViewItem^)();
+                        (listViewItem.Text = ("Item " & item));
+                        list.Items.Add(listViewItem);
                     }
                     (item = (item + 1));
                 }

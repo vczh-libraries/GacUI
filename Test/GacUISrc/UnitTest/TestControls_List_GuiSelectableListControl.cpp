@@ -180,6 +180,59 @@ TEST_FILE
 	}
 
 	/***********************************************************************
+	GuiListView
+	***********************************************************************/
+	{
+		const WString resourceListControl = LR"GacUISrc(
+<Resource>
+  <Instance name="MainWindowResource">
+    <Instance ref.Class="gacuisrc_unittest::MainWindow">
+      <ref.Members><![CDATA[
+        var counter : int = 0;
+      ]]></ref.Members>
+      <ref.Ctor><![CDATA[{
+        for (item in range[1, 20])
+        {
+          var listViewItem = new ListViewItem^();
+          listViewItem.Text = $"Item $(item)";
+          list.Items.Add(listViewItem);
+        }
+      }]]></ref.Ctor>
+      <Window ref.Name="self" Text="GuiSelectableListControl" ClientSize="x:320 y:240">
+        <ListView ref.Name="list" View="SmallIcon" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
+          <att.BoundsComposition-set PreferredMinSize="x:400 y:300" AlignmentToParent="left:0 top:5 right:0 bottom:0"/>
+          <ev.SelectionChanged-eval><![CDATA[{
+            self.counter = self.counter + 1;
+            var title = $"[$(self.counter)]";
+            for (item in list.SelectedItems)
+            {
+              title = title & $" $(item)";
+            }
+            self.Text = title & $" [$(list.SelectedItemIndex) -> $(list.SelectedItemText)]";
+          }]]></ev.SelectionChanged-eval>
+        </ListView>
+      </Window>
+    </Instance>
+  </Instance>
+</Resource>
+)GacUISrc";
+
+		TEST_CATEGORY(L"GuiListView/SingleSelect")
+		{
+			GuiSelectableListControl_SingleSelect_TestCases(
+				resourceListControl,
+				WString::Unmanaged(L"GuiSelectableListControl/GuiListView"));
+		});
+
+		TEST_CATEGORY(L"GuiListView/MultiSelect")
+		{
+			GuiSelectableListControl_MultiSelect_TestCases(
+				resourceListControl,
+				WString::Unmanaged(L"GuiSelectableListControl/GuiListView"));
+		});
+	}
+
+	/***********************************************************************
 	GuiBindableListView
 	***********************************************************************/
 	{
