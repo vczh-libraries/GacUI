@@ -1,0 +1,503 @@
+﻿================================(1/3)================================
+module <constructor>gacuisrc_unittest::MainWindow;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace gacuisrc_unittest
+{
+    class MainWindowConstructor
+    {
+        @cpp:Protected
+        var self : ::gacuisrc_unittest::MainWindow* = null of (::gacuisrc_unittest::MainWindow*);
+
+        @cpp:Protected
+        var <precompile>0 : ::presentation::controls::list::ListViewColumn^ = null of (::presentation::controls::list::ListViewColumn^);
+
+        @cpp:Protected
+        var <precompile>1 : ::presentation::controls::list::ListViewColumn^ = null of (::presentation::controls::list::ListViewColumn^);
+
+        @cpp:Protected
+        var <precompile>2 : ::presentation::controls::list::ListViewColumn^ = null of (::presentation::controls::list::ListViewColumn^);
+
+        @cpp:Protected
+        var <precompile>3 : ::presentation::controls::list::ListViewColumn^ = null of (::presentation::controls::list::ListViewColumn^);
+
+        @cpp:Protected
+        var <precompile>4 : ::presentation::controls::list::ListViewColumn^ = null of (::presentation::controls::list::ListViewColumn^);
+
+        @cpp:Protected
+        var <precompile>5 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var list : ::presentation::controls::GuiBindableListView* = null of (::presentation::controls::GuiBindableListView*);
+
+        @cpp:Protected
+        func <gacuisrc_unittest-MainWindow>Initialize(<this> : ::gacuisrc_unittest::MainWindow*) : (::system::Void)
+        {
+            (self = <this>);
+            {
+                (self.ClientSize = {x : 640; y : 480;} of (::presentation::Size));
+            }
+            {
+                (list = new (::presentation::controls::GuiBindableListView*)(::presentation::theme::ThemeName::ListView));
+                <this>.SetNamedObject("list", list);
+            }
+            {
+                (list.SmallImageProperty = func (<item> : ::system::Object) : (::presentation::GuiImageData^)
+                {
+                    var item = (cast (ListViewData^) <item>);
+                    return item.SmallImage;
+                });
+            }
+            {
+                (list.LargeImageProperty = func (<item> : ::system::Object) : (::presentation::GuiImageData^)
+                {
+                    var item = (cast (ListViewData^) <item>);
+                    return item.LargeImage;
+                });
+            }
+            {
+                var <collection> = list.DataColumns;
+                <collection>.Add(0 of (::system::Int32));
+            }
+            {
+                var <collection> = list.DataColumns;
+                <collection>.Add(2 of (::system::Int32));
+            }
+            {
+                var <collection> = list.DataColumns;
+                <collection>.Add(3 of (::system::Int32));
+            }
+            {
+                (list.VerticalAlwaysVisible = false);
+            }
+            {
+                (list.HorizontalAlwaysVisible = false);
+            }
+            (<precompile>5 = list.BoundsComposition);
+            {
+                (<precompile>5.PreferredMinSize = {x : 400; y : 300;} of (::presentation::Size));
+            }
+            {
+                (<precompile>5.AlignmentToParent = {left : 0; top : 5; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            (<precompile>0 = new (::presentation::controls::list::ListViewColumn^)());
+            {
+                (<precompile>0.TextProperty = func (<item> : ::system::Object) : (::system::String)
+                {
+                    var item = (cast (ListViewData^) <item>);
+                    return item.Id;
+                });
+            }
+            {
+                (<precompile>0.Text = "Id");
+            }
+            {
+                var <collection> = list.Columns;
+                <collection>.Add(<precompile>0);
+            }
+            (<precompile>1 = new (::presentation::controls::list::ListViewColumn^)());
+            {
+                (<precompile>1.Size = 100 of (::system::Int32));
+            }
+            {
+                (<precompile>1.TextProperty = func (<item> : ::system::Object) : (::system::String)
+                {
+                    var item = (cast (ListViewData^) <item>);
+                    return item.First;
+                });
+            }
+            {
+                (<precompile>1.Text = "First");
+            }
+            {
+                var <collection> = list.Columns;
+                <collection>.Add(<precompile>1);
+            }
+            (<precompile>2 = new (::presentation::controls::list::ListViewColumn^)());
+            {
+                (<precompile>2.Size = 100 of (::system::Int32));
+            }
+            {
+                (<precompile>2.TextProperty = func (<item> : ::system::Object) : (::system::String)
+                {
+                    var item = (cast (ListViewData^) <item>);
+                    return item.Second;
+                });
+            }
+            {
+                (<precompile>2.Text = "Second");
+            }
+            {
+                var <collection> = list.Columns;
+                <collection>.Add(<precompile>2);
+            }
+            (<precompile>3 = new (::presentation::controls::list::ListViewColumn^)());
+            {
+                (<precompile>3.Size = 100 of (::system::Int32));
+            }
+            {
+                (<precompile>3.TextProperty = func (<item> : ::system::Object) : (::system::String)
+                {
+                    var item = (cast (ListViewData^) <item>);
+                    return item.Third;
+                });
+            }
+            {
+                (<precompile>3.Text = "Third");
+            }
+            {
+                var <collection> = list.Columns;
+                <collection>.Add(<precompile>3);
+            }
+            (<precompile>4 = new (::presentation::controls::list::ListViewColumn^)());
+            {
+                (<precompile>4.Size = 100 of (::system::Int32));
+            }
+            {
+                (<precompile>4.TextProperty = func (<item> : ::system::Object) : (::system::String)
+                {
+                    var item = (cast (ListViewData^) <item>);
+                    return item.Fourth;
+                });
+            }
+            {
+                (<precompile>4.Text = "Fourth");
+            }
+            {
+                var <collection> = list.Columns;
+                <collection>.Add(<precompile>4);
+            }
+            {
+                self.AddChild(list);
+            }
+            {
+                (list.ItemSource = self.items);
+            }
+            {
+                var <created-subscription> = new (::system::Subscription^)
+                {
+                    var <bind-cache>0 : ::presentation::controls::GuiBindableListView* = null of (::presentation::controls::GuiBindableListView*);
+
+                    var <bind-cache>1 : ::presentation::controls::GuiBindableListView* = null of (::presentation::controls::GuiBindableListView*);
+
+                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-handler>1_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-opened> : ::system::Boolean = false;
+
+                    var <bind-closed> : ::system::Boolean = false;
+
+                    func <bind-activator>() : (::system::Void)
+                    {
+                        var <bind-activator-result> = (((("GuiListView [" & <bind-cache>0.SelectedItemIndex) & "] -> [") & <bind-cache>1.SelectedItemText) & "]");
+                        ValueChanged(<bind-activator-result>);
+                    }
+
+                    func <bind-callback>0_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    func <bind-callback>1_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    override func Open() : (::system::Boolean)
+                    {
+                        if ((!<bind-opened>))
+                        {
+                            (<bind-opened> = true);
+                            (<bind-cache>0 = (list ?? null of (::presentation::controls::GuiBindableListView*)));
+                            (<bind-cache>1 = (list ?? null of (::presentation::controls::GuiBindableListView*)));
+                            (<bind-handler>0_0 = (attach(<bind-cache>0.SelectionChanged, <bind-callback>0_0) ?? null));
+                            (<bind-handler>1_0 = (attach(<bind-cache>1.SelectionChanged, <bind-callback>1_0) ?? null));
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Update() : (::system::Boolean)
+                    {
+                        if ((<bind-opened> and (!<bind-closed>)))
+                        {
+                            <bind-activator>();
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Close() : (::system::Boolean)
+                    {
+                        if ((!<bind-closed>))
+                        {
+                            (<bind-closed> = true);
+                            if (<bind-handler>0_0 is not null)
+                            {
+                                detach(<bind-cache>0.SelectionChanged, <bind-handler>0_0);
+                                (<bind-handler>0_0 = null);
+                            }
+                            if (<bind-handler>1_0 is not null)
+                            {
+                                detach(<bind-cache>1.SelectionChanged, <bind-handler>1_0);
+                                (<bind-handler>1_0 = null);
+                            }
+                            (<bind-cache>0 = null of (::presentation::controls::GuiBindableListView*));
+                            (<bind-cache>1 = null of (::presentation::controls::GuiBindableListView*));
+                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
+                            (<bind-handler>1_0 = null of (::system::reflection::EventHandler^));
+                            return true;
+                        }
+                        return false;
+                    }
+                };
+                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
+                {
+                    var <old> = self.Text;
+                    var <new> = (cast (::system::String) <value>);
+                    if ((<old> == <new>))
+                    {
+                        return;
+                    }
+                    (self.Text = <new>);
+                });
+                <this>.AddSubscription(<created-subscription>);
+            }
+        }
+
+        new ()
+        {
+        }
+    }
+}
+
+================================(2/3)================================
+module <instance>gacuisrc_unittest::MainWindow;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace gacuisrc_unittest
+{
+    @cpp:File("MainWindow")
+    @cpp:Friend(typeof(MainWindowConstructor))
+    class MainWindow : ::presentation::controls::GuiWindow, MainWindowConstructor
+    {
+        var largeImages : GuiImageData^[] = null;
+
+        var smallImages : GuiImageData^[] = null;
+
+        func EnsureImages() : (void)
+        {
+            if (largeImages is not null)
+            {
+                return;
+            }
+            (largeImages = {(cast (GuiImageData^) self.ResolveResource("res", "ListViewImages/LargeImages/Cert", true)); (cast (GuiImageData^) self.ResolveResource("res", "ListViewImages/LargeImages/Data", true)); (cast (GuiImageData^) self.ResolveResource("res", "ListViewImages/LargeImages/Link", true)); (cast (GuiImageData^) self.ResolveResource("res", "ListViewImages/LargeImages/Folder", true)); (cast (GuiImageData^) self.ResolveResource("res", "ListViewImages/LargeImages/Light", true));});
+            (smallImages = {(cast (GuiImageData^) self.ResolveResource("res", "ListViewImages/SmallImages/Cert", true)); (cast (GuiImageData^) self.ResolveResource("res", "ListViewImages/SmallImages/Data", true)); (cast (GuiImageData^) self.ResolveResource("res", "ListViewImages/SmallImages/Link", true)); (cast (GuiImageData^) self.ResolveResource("res", "ListViewImages/SmallImages/Folder", true)); (cast (GuiImageData^) self.ResolveResource("res", "ListViewImages/SmallImages/Light", true));});
+        }
+
+        func GetLargeImage(index : int) : (GuiImageData^)
+        {
+            EnsureImages();
+            return largeImages[index];
+        }
+
+        func GetSmallImage(index : int) : (GuiImageData^)
+        {
+            EnsureImages();
+            return smallImages[index];
+        }
+
+        var items : observe ListViewData^[] = {};
+
+        func InitializeItems(count : int) : (void)
+        {
+            {
+                var <for-begin>item : ::system::Int32 = 1;
+                var <for-end>item : ::system::Int32 = count;
+                var item = <for-begin>item;
+                while ((item <= <for-end>item))
+                {
+                    {
+                        var listViewItem = new (ListViewData^)();
+                        (listViewItem.Id = ("Item " & item));
+                        (listViewItem.First = ("1st:" & (item * 1)));
+                        (listViewItem.Second = ("2nd:" & (item * 2)));
+                        (listViewItem.Third = ("3rd:" & (item * 3)));
+                        (listViewItem.Fourth = ("4th:" & (item * 4)));
+                        (listViewItem.LargeImage = GetLargeImage(((item - 1) % 5)));
+                        (listViewItem.SmallImage = GetSmallImage(((item - 1) % 5)));
+                        items.Add(listViewItem);
+                    }
+                    (item = (item + 1));
+                }
+            }
+        }
+
+        new* ()
+            :::presentation::controls::GuiWindow(::presentation::theme::ThemeName::Window)
+        {
+            var <resource> = ::presentation::IGuiResourceManager::GetResourceManager().GetResourceFromClassName("gacuisrc_unittest::MainWindow");
+            var <resolver> = new (::presentation::GuiResourcePathResolver^)(<resource>, <resource>.WorkingDirectory);
+            this.SetResourceResolver(<resolver>);
+            this.<gacuisrc_unittest-MainWindow>Initialize(this);
+        }
+
+        delete
+        {
+            FinalizeInstanceRecursively(this of (::presentation::controls::GuiControlHost*));
+        }
+    }
+}
+
+================================(3/3)================================
+module treeviewdata;
+using system::*;
+using presentation::*;
+
+class ListViewData
+{
+    @cpp:Private
+    var <prop>Id : string = "";
+
+    func GetId() : (string)
+    {
+        return <prop>Id;
+    }
+
+    func SetId(<value> : string) : (void)
+    {
+        (<prop>Id = <value>);
+    }
+
+    prop Id : string{GetId, SetId}
+
+    @cpp:Private
+    var <prop>First : string = "";
+
+    func GetFirst() : (string)
+    {
+        return <prop>First;
+    }
+
+    func SetFirst(<value> : string) : (void)
+    {
+        (<prop>First = <value>);
+    }
+
+    prop First : string{GetFirst, SetFirst}
+
+    @cpp:Private
+    var <prop>Second : string = "";
+
+    func GetSecond() : (string)
+    {
+        return <prop>Second;
+    }
+
+    func SetSecond(<value> : string) : (void)
+    {
+        (<prop>Second = <value>);
+    }
+
+    prop Second : string{GetSecond, SetSecond}
+
+    @cpp:Private
+    var <prop>Third : string = "";
+
+    func GetThird() : (string)
+    {
+        return <prop>Third;
+    }
+
+    func SetThird(<value> : string) : (void)
+    {
+        (<prop>Third = <value>);
+    }
+
+    prop Third : string{GetThird, SetThird}
+
+    @cpp:Private
+    var <prop>Fourth : string = "";
+
+    func GetFourth() : (string)
+    {
+        return <prop>Fourth;
+    }
+
+    func SetFourth(<value> : string) : (void)
+    {
+        (<prop>Fourth = <value>);
+    }
+
+    prop Fourth : string{GetFourth, SetFourth}
+
+    @cpp:Private
+    var <prop>LargeImage : GuiImageData^ = null;
+
+    func GetLargeImage() : (GuiImageData^)
+    {
+        return <prop>LargeImage;
+    }
+
+    func SetLargeImage(<value> : GuiImageData^) : (void)
+    {
+        (<prop>LargeImage = <value>);
+    }
+
+    prop LargeImage : GuiImageData^{GetLargeImage, SetLargeImage}
+
+    @cpp:Private
+    var <prop>SmallImage : GuiImageData^ = null;
+
+    func GetSmallImage() : (GuiImageData^)
+    {
+        return <prop>SmallImage;
+    }
+
+    func SetSmallImage(<value> : GuiImageData^) : (void)
+    {
+        (<prop>SmallImage = <value>);
+    }
+
+    prop SmallImage : GuiImageData^{GetSmallImage, SetSmallImage}
+
+    new ()
+    {
+    }
+}
+

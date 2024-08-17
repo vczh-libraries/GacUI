@@ -81,6 +81,9 @@
     - ComboBox
     - GuiDatePicker
     - GuiDateComboBox
+  - BindableControls
+    - Set or reset item source
+    - Set or reset property bindings
   - BindableDataGrid
     - ItemTemplate with properties
     - Item manipulation
