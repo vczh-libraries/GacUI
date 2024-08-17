@@ -27,7 +27,22 @@ namespace gacuisrc_unittest
         var self : ::gacuisrc_unittest::MainWindow* = null of (::gacuisrc_unittest::MainWindow*);
 
         @cpp:Protected
-        var <precompile>0 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+        var <precompile>0 : ::presentation::controls::list::ListViewColumn^ = null of (::presentation::controls::list::ListViewColumn^);
+
+        @cpp:Protected
+        var <precompile>1 : ::presentation::controls::list::ListViewColumn^ = null of (::presentation::controls::list::ListViewColumn^);
+
+        @cpp:Protected
+        var <precompile>2 : ::presentation::controls::list::ListViewColumn^ = null of (::presentation::controls::list::ListViewColumn^);
+
+        @cpp:Protected
+        var <precompile>3 : ::presentation::controls::list::ListViewColumn^ = null of (::presentation::controls::list::ListViewColumn^);
+
+        @cpp:Protected
+        var <precompile>4 : ::presentation::controls::list::ListViewColumn^ = null of (::presentation::controls::list::ListViewColumn^);
+
+        @cpp:Protected
+        var <precompile>5 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
         var list : ::presentation::controls::GuiListView* = null of (::presentation::controls::GuiListView*);
@@ -37,11 +52,23 @@ namespace gacuisrc_unittest
         {
             (self = <this>);
             {
-                (self.ClientSize = {x : 480; y : 320;} of (::presentation::Size));
+                (self.ClientSize = {x : 640; y : 480;} of (::presentation::Size));
             }
             {
                 (list = new (::presentation::controls::GuiListView*)(::presentation::theme::ThemeName::ListView));
                 <this>.SetNamedObject("list", list);
+            }
+            {
+                var <collection> = list.DataColumns;
+                <collection>.Add(0 of (::system::Int64));
+            }
+            {
+                var <collection> = list.DataColumns;
+                <collection>.Add(2 of (::system::Int64));
+            }
+            {
+                var <collection> = list.DataColumns;
+                <collection>.Add(3 of (::system::Int64));
             }
             {
                 (list.VerticalAlwaysVisible = false);
@@ -49,12 +76,64 @@ namespace gacuisrc_unittest
             {
                 (list.HorizontalAlwaysVisible = false);
             }
-            (<precompile>0 = list.BoundsComposition);
+            (<precompile>5 = list.BoundsComposition);
             {
-                (<precompile>0.PreferredMinSize = {x : 400; y : 300;} of (::presentation::Size));
+                (<precompile>5.PreferredMinSize = {x : 400; y : 300;} of (::presentation::Size));
             }
             {
-                (<precompile>0.AlignmentToParent = {left : 0; top : 5; right : 0; bottom : 0;} of (::presentation::Margin));
+                (<precompile>5.AlignmentToParent = {left : 0; top : 5; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            (<precompile>0 = new (::presentation::controls::list::ListViewColumn^)());
+            {
+                (<precompile>0.Text = "Id");
+            }
+            {
+                var <collection> = list.Columns;
+                <collection>.Add(<precompile>0);
+            }
+            (<precompile>1 = new (::presentation::controls::list::ListViewColumn^)());
+            {
+                (<precompile>1.Size = 100 of (::system::Int64));
+            }
+            {
+                (<precompile>1.Text = "First");
+            }
+            {
+                var <collection> = list.Columns;
+                <collection>.Add(<precompile>1);
+            }
+            (<precompile>2 = new (::presentation::controls::list::ListViewColumn^)());
+            {
+                (<precompile>2.Size = 100 of (::system::Int64));
+            }
+            {
+                (<precompile>2.Text = "Second");
+            }
+            {
+                var <collection> = list.Columns;
+                <collection>.Add(<precompile>2);
+            }
+            (<precompile>3 = new (::presentation::controls::list::ListViewColumn^)());
+            {
+                (<precompile>3.Size = 100 of (::system::Int64));
+            }
+            {
+                (<precompile>3.Text = "Third");
+            }
+            {
+                var <collection> = list.Columns;
+                <collection>.Add(<precompile>3);
+            }
+            (<precompile>4 = new (::presentation::controls::list::ListViewColumn^)());
+            {
+                (<precompile>4.Size = 100 of (::system::Int64));
+            }
+            {
+                (<precompile>4.Text = "Fourth");
+            }
+            {
+                var <collection> = list.Columns;
+                <collection>.Add(<precompile>4);
             }
             {
                 self.AddChild(list);
@@ -196,6 +275,10 @@ namespace gacuisrc_unittest
                     {
                         var listViewItem = new (ListViewItem^)();
                         (listViewItem.Text = ("Item " & item));
+                        listViewItem.SubItems.Add(("1st:" & (item * 1)));
+                        listViewItem.SubItems.Add(("2nd:" & (item * 2)));
+                        listViewItem.SubItems.Add(("3rd:" & (item * 3)));
+                        listViewItem.SubItems.Add(("4th:" & (item * 4)));
                         list.Items.Add(listViewItem);
                     }
                     (item = (item + 1));
