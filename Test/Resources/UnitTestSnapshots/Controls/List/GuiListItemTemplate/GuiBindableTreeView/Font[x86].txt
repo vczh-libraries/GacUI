@@ -47,18 +47,18 @@ namespace gacuisrc_unittest
                 <this>.SetNamedObject("list", list);
             }
             {
-                (list.ChildrenProperty = func (<item> : ::system::Object) : (::system::Enumerable^)
-                {
-                    var item = (cast (TreeViewData^) <item>);
-                    return item.Children;
-                });
-            }
-            {
                 (list.ItemTemplate = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiListItemTemplate*)
                 {
                     {
                         return new (::gacuisrc_unittest::MyListItemTemplate*)();
                     }
+                });
+            }
+            {
+                (list.ChildrenProperty = func (<item> : ::system::Object) : (::system::Enumerable^)
+                {
+                    var item = (cast (TreeViewData^) <item>);
+                    return item.Children;
                 });
             }
             {
