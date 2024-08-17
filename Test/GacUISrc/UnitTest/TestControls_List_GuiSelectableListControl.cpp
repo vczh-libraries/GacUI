@@ -107,4 +107,75 @@ TEST_FILE
 				WString::Unmanaged(L"GuiSelectableListControl/GuiBindableTextList"));
 		});
 	}
+
+	/***********************************************************************
+	GuiBindableTreeView
+	***********************************************************************/
+	{
+		const WString fragmentTreeViewData = LR"GacUISrc(
+  <Script name="TreeViewDataResource"><Workflow><![CDATA[
+    module treeviewdata;
+    using system::*;
+
+    class TreeViewData
+    {
+      prop Text:string = "" {not observe}
+      prop Children:observe TreeViewData^[] = {} {const, not observe}
+
+      new(){}
+      new(text:string){Text=text;}
+    }
+  ]]></Workflow></Script>
+)GacUISrc";
+
+		const WString resourceListControl = LR"GacUISrc(
+<Resource>)GacUISrc" + fragmentTreeViewData + LR"GacUISrc(
+  <Instance name="MainWindowResource">
+    <Instance ref.Class="gacuisrc_unittest::MainWindow">
+      <ref.Members><![CDATA[
+        var items:TreeViewData^ = new TreeViewData^();
+        var counter : int = 0;
+      ]]></ref.Members>
+      <ref.Ctor><![CDATA[{
+        for (item in range[1, 20])
+        {
+          items.Children.Add(new TreeViewData^($"Item $(item)"));
+        }
+      }]]></ref.Ctor>
+      <Window ref.Name="self" Text="GuiSelectableListControl" ClientSize="x:320 y:240">
+        <BindableTreeView ref.Name="list" env.ItemType="TreeViewData^" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
+          <att.BoundsComposition-set PreferredMinSize="x:400 y:300" AlignmentToParent="left:0 top:5 right:0 bottom:0"/>
+          <att.ItemSource-eval>self.items</ItemSource-eval>
+          <att.TextProperty>Text</att.TextProperty>
+          <att.ChildrenProperty>Children</att.ChildrenProperty>
+          <ev.SelectionChanged-eval><![CDATA[{
+            self.counter = self.counter + 1;
+            var title = $"[$(self.counter)]";
+            for (item in list.SelectedItems)
+            {
+              title = title & $" $(item)";
+            }
+            self.Text = title & $" [$(list.SelectedItemIndex) -> $(list.SelectedItemText)]";
+          }]]></ev.SelectionChanged-eval>
+        </BindableTreeView>
+      </Window>
+    </Instance>
+  </Instance>
+</Resource>
+)GacUISrc";
+
+		TEST_CATEGORY(L"GuiBindableTreeView/SingleSelect")
+		{
+			GuiSelectableListControl_SingleSelect_TestCases(
+				resourceListControl,
+				WString::Unmanaged(L"GuiSelectableListControl/GuiBindableTreeView"));
+		});
+
+		TEST_CATEGORY(L"GuiBindableTreeView/MultiSelect")
+		{
+			GuiSelectableListControl_MultiSelect_TestCases(
+				resourceListControl,
+				WString::Unmanaged(L"GuiSelectableListControl/GuiBindableTreeView"));
+		});
+	}
 }
