@@ -36,28 +36,25 @@ namespace gacuisrc_unittest
         var <precompile>2 : ::presentation::controls::GuiControl* = null of (::presentation::controls::GuiControl*);
 
         @cpp:Protected
-        var <precompile>3 : ::presentation::controls::list::ListViewColumn^ = null of (::presentation::controls::list::ListViewColumn^);
+        var <precompile>3 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
         var <precompile>4 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
-        var <precompile>5 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+        var <precompile>5 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
 
         @cpp:Protected
-        var <precompile>6 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
+        var <precompile>6 : ::presentation::controls::GuiControl* = null of (::presentation::controls::GuiControl*);
 
         @cpp:Protected
-        var <precompile>7 : ::presentation::controls::GuiControl* = null of (::presentation::controls::GuiControl*);
+        var <precompile>7 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
         var <precompile>8 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
-        var <precompile>9 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
-
-        @cpp:Protected
-        var list : ::presentation::controls::GuiBindableListView* = null of (::presentation::controls::GuiBindableListView*);
+        var list : ::presentation::controls::GuiListView* = null of (::presentation::controls::GuiListView*);
 
         @cpp:Protected
         var logs : ::presentation::controls::GuiTextList* = null of (::presentation::controls::GuiTextList*);
@@ -95,15 +92,15 @@ namespace gacuisrc_unittest
             {
                 (<precompile>2 = new (::presentation::controls::GuiControl*)(::presentation::theme::ThemeName::GroupBox));
             }
-            (<precompile>5 = <precompile>2.BoundsComposition);
+            (<precompile>4 = <precompile>2.BoundsComposition);
             {
-                (<precompile>5.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+                (<precompile>4.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
                 (<precompile>2.Text = "Items");
             }
             {
-                (list = new (::presentation::controls::GuiBindableListView*)(::presentation::theme::ThemeName::ListView));
+                (list = new (::presentation::controls::GuiListView*)(::presentation::theme::ThemeName::ListView));
                 <this>.SetNamedObject("list", list);
             }
             {
@@ -115,24 +112,9 @@ namespace gacuisrc_unittest
             {
                 (list.HorizontalAlwaysVisible = false);
             }
-            (<precompile>4 = list.BoundsComposition);
+            (<precompile>3 = list.BoundsComposition);
             {
-                (<precompile>4.AlignmentToParent = {left : 5; top : 5; right : 5; bottom : 5;} of (::presentation::Margin));
-            }
-            (<precompile>3 = new (::presentation::controls::list::ListViewColumn^)());
-            {
-                (<precompile>3.TextProperty = func (<item> : ::system::Object) : (::system::String)
-                {
-                    var item = (cast (TextItem^) <item>);
-                    return item.Text;
-                });
-            }
-            {
-                (<precompile>3.Text = "Text");
-            }
-            {
-                var <collection> = list.Columns;
-                <collection>.Add(<precompile>3);
+                (<precompile>3.AlignmentToParent = {left : 5; top : 5; right : 5; bottom : 5;} of (::presentation::Margin));
             }
             {
                 <precompile>2.AddChild(list);
@@ -143,19 +125,19 @@ namespace gacuisrc_unittest
             {
                 <precompile>0.AddChild(<precompile>1);
             }
-            (<precompile>6 = new (::presentation::compositions::GuiCellComposition*)());
+            (<precompile>5 = new (::presentation::compositions::GuiCellComposition*)());
             {
-                <precompile>6.SetSite(0, 1, 1, 1);
+                <precompile>5.SetSite(0, 1, 1, 1);
             }
             {
-                (<precompile>7 = new (::presentation::controls::GuiControl*)(::presentation::theme::ThemeName::GroupBox));
+                (<precompile>6 = new (::presentation::controls::GuiControl*)(::presentation::theme::ThemeName::GroupBox));
             }
-            (<precompile>9 = <precompile>7.BoundsComposition);
+            (<precompile>8 = <precompile>6.BoundsComposition);
             {
-                (<precompile>9.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+                (<precompile>8.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
-                (<precompile>7.Text = "Logs");
+                (<precompile>6.Text = "Logs");
             }
             {
                 (logs = new (::presentation::controls::GuiTextList*)(::presentation::theme::ThemeName::TextList));
@@ -167,24 +149,21 @@ namespace gacuisrc_unittest
             {
                 (logs.HorizontalAlwaysVisible = false);
             }
-            (<precompile>8 = logs.BoundsComposition);
+            (<precompile>7 = logs.BoundsComposition);
             {
-                (<precompile>8.AlignmentToParent = {left : 5; top : 5; right : 5; bottom : 5;} of (::presentation::Margin));
+                (<precompile>7.AlignmentToParent = {left : 5; top : 5; right : 5; bottom : 5;} of (::presentation::Margin));
             }
             {
-                <precompile>7.AddChild(logs);
+                <precompile>6.AddChild(logs);
             }
             {
-                <precompile>6.AddChild(<precompile>7.BoundsComposition);
+                <precompile>5.AddChild(<precompile>6.BoundsComposition);
             }
             {
-                <precompile>0.AddChild(<precompile>6);
+                <precompile>0.AddChild(<precompile>5);
             }
             {
                 self.ContainerComposition.AddChild(<precompile>0);
-            }
-            {
-                (list.ItemSource = self.items);
             }
         }
 
@@ -221,8 +200,6 @@ namespace gacuisrc_unittest
     @cpp:Friend(typeof(MainWindowConstructor))
     class MainWindow : ::presentation::controls::GuiWindow, MainWindowConstructor
     {
-        var items : observe TextItem^[] = {};
-
         func InitializeItems(start : int, count : int) : (void)
         {
             {
@@ -232,7 +209,9 @@ namespace gacuisrc_unittest
                 while ((item <= <for-end>item))
                 {
                     {
-                        items.Add(new (TextItem^)(("Item " & (start + item))));
+                        var listViewItem = new (ListViewItem^)();
+                        (listViewItem.Text = ("Item " & (start + item)));
+                        list.Items.Add(listViewItem);
                     }
                     (item = (item + 1));
                 }

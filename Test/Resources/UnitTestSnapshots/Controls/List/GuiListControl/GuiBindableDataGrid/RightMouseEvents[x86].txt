@@ -128,9 +128,6 @@ namespace gacuisrc_unittest
                 });
             }
             {
-                (<precompile>3.Text = "Text");
-            }
-            {
                 var <collection> = list.Columns;
                 <collection>.Add(<precompile>3);
             }

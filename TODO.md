@@ -60,22 +60,20 @@
       - Select dom node and jump to other tabs with highlight.
 - Non-editing control unit test (using DarkSkin)
   - List
-    - Extend test cases from `GuiBindableListView` to `GuiBindableDataGrid`
-    - Extend test cases from `GuiBindableTreeView` to `GuiTreeView`
     - GuiListControl (`MouseWheel` remaining)
     - ListView
       - Item manipulation
-      - Bindable
-        - BindableDataGrid in the same view
       - Extra mouse operations
       - Extra key operations
+      - BindableListView
+      - BindableDataGrid in the same view
     - TreeView
       - ItemTemplate with `Expanding`, `Expandable`, `Level`, `Image`
       - Item manipulation
-      - Bindable
       - Node events
       - Extra mouse operations
       - Extra key operations (Left/Right -> Collapse/Expand)
+      - BindableTreeView
   - Menu, Toolstrip and Navigation ...
     - ComboBox
     - GuiDatePicker
