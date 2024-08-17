@@ -1,0 +1,16 @@
+<Folder name="ListViewImages">
+  <Folder name="LargeImages">
+    <Image name="Cert" content="File">Cert_32.png</Image>
+    <Image name="Data" content="File">Data_32.png</Image>
+    <Image name="Link" content="File">Link_32.png</Image>
+    <Image name="Folder" content="File">Folder_32.png</Image>
+    <Image name="Light" content="File">Light_32.png</Image>
+  </Folder>
+  <Folder name="SmallImages">
+    <Image name="Cert" content="File">Cert_16.png</Image>
+    <Image name="Data" content="File">Data_16.png</Image>
+    <Image name="Link" content="File">Link_16.png</Image>
+    <Image name="Folder" content="File">Folder_16.png</Image>
+    <Image name="Light" content="File">Light_16.png</Image>
+  </Folder>
+</Folder>

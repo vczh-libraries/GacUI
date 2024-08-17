@@ -1,0 +1,16 @@
+<Folder name="UnitTestConfig">
+  <Xml name="ImageData">
+    <ImageData>
+      <Image Path="ListViewImages/LargeImages/Cert" Format="Png" Width="32" Height="32"/>
+      <Image Path="ListViewImages/LargeImages/Data" Format="Png" Width="32" Height="32"/>
+      <Image Path="ListViewImages/LargeImages/Link" Format="Png" Width="32" Height="32"/>
+      <Image Path="ListViewImages/LargeImages/Folder" Format="Png" Width="32" Height="32"/>
+      <Image Path="ListViewImages/LargeImages/Light" Format="Png" Width="32" Height="32"/>
+      <Image Path="ListViewImages/SmallImages/Cert" Format="Png" Width="16" Height="16"/>
+      <Image Path="ListViewImages/SmallImages/Data" Format="Png" Width="16" Height="16"/>
+      <Image Path="ListViewImages/SmallImages/Link" Format="Png" Width="16" Height="16"/>
+      <Image Path="ListViewImages/SmallImages/Folder" Format="Png" Width="16" Height="16"/>
+      <Image Path="ListViewImages/SmallImages/Light" Format="Png" Width="16" Height="16"/>
+    </ImageData>
+  </Xml>
+</Folder>

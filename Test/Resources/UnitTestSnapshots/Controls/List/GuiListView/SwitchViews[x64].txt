@@ -274,8 +274,8 @@ namespace gacuisrc_unittest
             {
                 return;
             }
-            (largeImages = {(cast (GuiImageData^) self.ResolveResource("res", "LargeImages/Cert", true)); (cast (GuiImageData^) self.ResolveResource("res", "LargeImages/Data", true)); (cast (GuiImageData^) self.ResolveResource("res", "LargeImages/Link", true)); (cast (GuiImageData^) self.ResolveResource("res", "LargeImages/Folder", true)); (cast (GuiImageData^) self.ResolveResource("res", "LargeImages/Light", true));});
-            (smallImages = {(cast (GuiImageData^) self.ResolveResource("res", "SmallImages/Cert", true)); (cast (GuiImageData^) self.ResolveResource("res", "SmallImages/Data", true)); (cast (GuiImageData^) self.ResolveResource("res", "SmallImages/Link", true)); (cast (GuiImageData^) self.ResolveResource("res", "SmallImages/Folder", true)); (cast (GuiImageData^) self.ResolveResource("res", "SmallImages/Light", true));});
+            (largeImages = {(cast (GuiImageData^) self.ResolveResource("res", "ListViewImages/LargeImages/Cert", true)); (cast (GuiImageData^) self.ResolveResource("res", "ListViewImages/LargeImages/Data", true)); (cast (GuiImageData^) self.ResolveResource("res", "ListViewImages/LargeImages/Link", true)); (cast (GuiImageData^) self.ResolveResource("res", "ListViewImages/LargeImages/Folder", true)); (cast (GuiImageData^) self.ResolveResource("res", "ListViewImages/LargeImages/Light", true));});
+            (smallImages = {(cast (GuiImageData^) self.ResolveResource("res", "ListViewImages/SmallImages/Cert", true)); (cast (GuiImageData^) self.ResolveResource("res", "ListViewImages/SmallImages/Data", true)); (cast (GuiImageData^) self.ResolveResource("res", "ListViewImages/SmallImages/Link", true)); (cast (GuiImageData^) self.ResolveResource("res", "ListViewImages/SmallImages/Folder", true)); (cast (GuiImageData^) self.ResolveResource("res", "ListViewImages/SmallImages/Light", true));});
         }
 
         func GetLargeImage(index : int) : (GuiImageData^)
