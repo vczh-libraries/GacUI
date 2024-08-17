@@ -73,7 +73,7 @@ TEST_FILE
         }
       }]]></ref.Ctor>
       <Window ref.Name="self" Text="GuiSelectableListControl" ClientSize="x:320 y:240">
-        <GuiBindableTextList ref.Name="list" env.ItemType="TextItem^" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
+        <BindableTextList ref.Name="list" env.ItemType="TextItem^" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
           <att.BoundsComposition-set PreferredMinSize="x:400 y:300" AlignmentToParent="left:0 top:5 right:0 bottom:0"/>
           <att.ItemSource-eval>self.items</ItemSource-eval>
           <att.TextProperty>Text</att.TextProperty>
@@ -86,7 +86,7 @@ TEST_FILE
             }
             self.Text = title & $" [$(list.SelectedItemIndex) -> $(list.SelectedItemText)]";
           }]]></ev.SelectionChanged-eval>
-        </GuiBindableTextList>
+        </BindableTextList>
       </Window>
     </Instance>
   </Instance>
