@@ -861,6 +861,10 @@ GuiListView
 			void GuiVirtualListView::OnStyleInstalled(vint itemIndex, ItemStyle* style, bool refreshPropertiesOnly)
 			{
 				GuiListViewBase::OnStyleInstalled(itemIndex, style, refreshPropertiesOnly);
+				if (auto textItemStyle = dynamic_cast<templates::GuiTextListItemTemplate*>(style))
+				{
+					textItemStyle->SetTextColor(TypedControlTemplateObject(true)->GetPrimaryTextColor());
+				}
 				if (refreshPropertiesOnly)
 				{
 					if (auto predefinedItemStyle = dynamic_cast<list::DefaultListViewItemTemplate*>(style))

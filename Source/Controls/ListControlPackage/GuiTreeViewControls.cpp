@@ -918,6 +918,10 @@ GuiVirtualTreeView
 			void GuiVirtualTreeView::OnStyleInstalled(vint itemIndex, ItemStyle* style, bool refreshPropertiesOnly)
 			{
 				GuiVirtualTreeListControl::OnStyleInstalled(itemIndex, style, refreshPropertiesOnly);
+				if (auto textItemStyle = dynamic_cast<templates::GuiTextListItemTemplate*>(style))
+				{
+					textItemStyle->SetTextColor(TypedControlTemplateObject(true)->GetTextColor());
+				}
 				if (auto treeItemStyle = dynamic_cast<templates::GuiTreeItemTemplate*>(style))
 				{
 					treeItemStyle->SetTextColor(TypedControlTemplateObject(true)->GetTextColor());

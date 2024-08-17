@@ -27,10 +27,13 @@ namespace gacuisrc_unittest
         var self : ::gacuisrc_unittest::MainWindow* = null of (::gacuisrc_unittest::MainWindow*);
 
         @cpp:Protected
-        var <precompile>0 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+        var <precompile>0 : ::presentation::controls::list::ListViewColumn^ = null of (::presentation::controls::list::ListViewColumn^);
 
         @cpp:Protected
-        var list : ::presentation::controls::GuiBindableTextList* = null of (::presentation::controls::GuiBindableTextList*);
+        var <precompile>1 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var list : ::presentation::controls::GuiBindableListView* = null of (::presentation::controls::GuiBindableListView*);
 
         @cpp:Protected
         func <gacuisrc_unittest-MainWindow>Initialize(<this> : ::gacuisrc_unittest::MainWindow*) : (::system::Void)
@@ -40,8 +43,11 @@ namespace gacuisrc_unittest
                 (self.ClientSize = {x : 320; y : 240;} of (::presentation::Size));
             }
             {
-                (list = new (::presentation::controls::GuiBindableTextList*)(::presentation::theme::ThemeName::TextList));
+                (list = new (::presentation::controls::GuiBindableListView*)(::presentation::theme::ThemeName::ListView));
                 <this>.SetNamedObject("list", list);
+            }
+            {
+                (list.View = Information of (::presentation::controls::ListViewView));
             }
             {
                 (list.ItemTemplate = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiListItemTemplate*)
@@ -52,24 +58,29 @@ namespace gacuisrc_unittest
                 });
             }
             {
-                (list.TextProperty = func (<item> : ::system::Object) : (::system::String)
+                (list.VerticalAlwaysVisible = false);
+            }
+            {
+                (list.HorizontalAlwaysVisible = false);
+            }
+            (<precompile>1 = list.BoundsComposition);
+            {
+                (<precompile>1.PreferredMinSize = {x : 400; y : 300;} of (::presentation::Size));
+            }
+            {
+                (<precompile>1.AlignmentToParent = {left : 0; top : 5; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            (<precompile>0 = new (::presentation::controls::list::ListViewColumn^)());
+            {
+                (<precompile>0.TextProperty = func (<item> : ::system::Object) : (::system::String)
                 {
                     var item = (cast (TextItem^) <item>);
                     return item.Text;
                 });
             }
             {
-                (list.VerticalAlwaysVisible = false);
-            }
-            {
-                (list.HorizontalAlwaysVisible = false);
-            }
-            (<precompile>0 = list.BoundsComposition);
-            {
-                (<precompile>0.PreferredMinSize = {x : 400; y : 300;} of (::presentation::Size));
-            }
-            {
-                (<precompile>0.AlignmentToParent = {left : 0; top : 5; right : 0; bottom : 0;} of (::presentation::Margin));
+                var <collection> = list.Columns;
+                <collection>.Add(<precompile>0);
             }
             {
                 self.AddChild(list);
@@ -80,7 +91,7 @@ namespace gacuisrc_unittest
             {
                 var <created-subscription> = new (::system::Subscription^)
                 {
-                    var <bind-cache>0 : ::presentation::controls::GuiBindableTextList* = null of (::presentation::controls::GuiBindableTextList*);
+                    var <bind-cache>0 : ::presentation::controls::GuiBindableListView* = null of (::presentation::controls::GuiBindableListView*);
 
                     var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
 
@@ -104,7 +115,7 @@ namespace gacuisrc_unittest
                         if ((!<bind-opened>))
                         {
                             (<bind-opened> = true);
-                            (<bind-cache>0 = (list ?? null of (::presentation::controls::GuiBindableTextList*)));
+                            (<bind-cache>0 = (list ?? null of (::presentation::controls::GuiBindableListView*)));
                             (<bind-handler>0_0 = (attach(<bind-cache>0.SelectionChanged, <bind-callback>0_0) ?? null));
                             return true;
                         }
@@ -131,7 +142,7 @@ namespace gacuisrc_unittest
                                 detach(<bind-cache>0.SelectionChanged, <bind-handler>0_0);
                                 (<bind-handler>0_0 = null);
                             }
-                            (<bind-cache>0 = null of (::presentation::controls::GuiBindableTextList*));
+                            (<bind-cache>0 = null of (::presentation::controls::GuiBindableListView*));
                             (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
                             return true;
                         }
