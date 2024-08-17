@@ -292,7 +292,7 @@ TileListViewItemTemplate
 
 				void TileListViewItemTemplate::ResetTextTable(vint dataColumnCount)
 				{
-					if (dataTexts.Count() == dataColumnCount) return;
+					if (text && dataTexts.Count() == dataColumnCount) return;
 					for (vint i = textTable->Children().Count() - 1; i >= 0; i--)
 					{
 						if (auto cell = dynamic_cast<GuiCellComposition*>(textTable->Children()[i]))
