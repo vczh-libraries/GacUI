@@ -590,7 +590,7 @@ GuiListControl
 GuiSelectableListControl
 ***********************************************************************/
 
-			void GuiSelectableListControl::NotifySelectionChanged()
+			void GuiSelectableListControl::NotifySelectionChanged(bool triggeredByItemContentModified)
 			{
 				SelectionChanged.Execute(GetNotifyEventArguments());
 			}
@@ -620,7 +620,7 @@ GuiSelectableListControl
 				{
 					if (GetSelectedItemIndex() == start)
 					{
-						NotifySelectionChanged();
+						NotifySelectionChanged(true);
 					}
 				}
 			}
@@ -790,7 +790,7 @@ GuiSelectableListControl
 						}
 						selectedItems.Add(itemIndex);
 						OnItemSelectionChanged(itemIndex, value);
-						NotifySelectionChanged();
+						NotifySelectionChanged(false);
 					}
 				}
 				else
@@ -798,7 +798,7 @@ GuiSelectableListControl
 					if(selectedItems.Remove(itemIndex))
 					{
 						OnItemSelectionChanged(itemIndex, value);
-						NotifySelectionChanged();
+						NotifySelectionChanged(false);
 					}
 				}
 			}
@@ -830,7 +830,7 @@ GuiSelectableListControl
 						}
 						selectedItemIndexEnd = itemIndex;
 						SetMultipleItemsSelectedSilently(selectedItemIndexStart, selectedItemIndexEnd, true);
-						NotifySelectionChanged();
+						NotifySelectionChanged(false);
 					}
 					else
 					{
@@ -846,7 +846,7 @@ GuiSelectableListControl
 								selectedItems.RemoveAt(index);
 							}
 							OnItemSelectionChanged(itemIndex, index == -1);
-							NotifySelectionChanged();
+							NotifySelectionChanged(false);
 						}
 						else
 						{
@@ -854,7 +854,7 @@ GuiSelectableListControl
 							OnItemSelectionCleared();
 							selectedItems.Add(itemIndex);
 							OnItemSelectionChanged(itemIndex, true);
-							NotifySelectionChanged();
+							NotifySelectionChanged(false);
 						}
 						selectedItemIndexStart = itemIndex;
 						selectedItemIndexEnd = itemIndex;
@@ -923,7 +923,7 @@ GuiSelectableListControl
 					selectedItemIndexStart = -1;
 					selectedItemIndexEnd = -1;
 					OnItemSelectionCleared();
-					NotifySelectionChanged();
+					NotifySelectionChanged(false);
 				}
 			}
 

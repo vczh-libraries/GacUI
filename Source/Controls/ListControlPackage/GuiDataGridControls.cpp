@@ -439,6 +439,31 @@ GuiVirtualDataGrid (Editor)
 				return GuiVirtualListView::GetActivatingAltHost();
 			}
 
+			void GuiVirtualDataGrid::NotifySelectionChanged(bool triggeredByItemContentModified)
+			{
+				GuiVirtualListView::NotifySelectionChanged(triggeredByItemContentModified);
+				if (!skipOnSelectionChanged && !triggeredByItemContentModified)
+				{
+					vint row = GetSelectedItemIndex();
+					if (row != -1)
+					{
+						if (selectedCell.row != row && selectedCell.column != -1)
+						{
+							SelectCell({ row,selectedCell.column }, false);
+						}
+						else
+						{
+							SelectCell({ row,0 }, false);
+						}
+					}
+					else
+					{
+						StopEdit();
+						NotifySelectCell(-1, -1);
+					}
+				}
+			}
+
 			void GuiVirtualDataGrid::OnItemModified(vint start, vint count, vint newCount, bool itemReferenceUpdated)
 			{
 				GuiVirtualListView::OnItemModified(start, count, newCount, itemReferenceUpdated);
@@ -616,30 +641,6 @@ GuiVirtualDataGrid
 				}
 			}
 
-			void GuiVirtualDataGrid::OnSelectionChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
-			{
-				if (!skipOnSelectionChanged)
-				{
-					vint row = GetSelectedItemIndex();
-					if (row != -1)
-					{
-						if (selectedCell.row != row && selectedCell.column != -1)
-						{
-							SelectCell({ row,selectedCell.column }, false);
-						}
-						else
-						{
-							SelectCell({ row,0 }, false);
-						}
-					}
-					else
-					{
-						StopEdit();
-						NotifySelectCell(-1, -1);
-					}
-				}
-			}
-
 			void GuiVirtualDataGrid::OnKeyDown(compositions::GuiGraphicsComposition* sender, compositions::GuiKeyEventArgs& arguments)
 			{
 				if (selectedCell.row != -1)
@@ -731,7 +732,6 @@ GuiVirtualDataGrid
 				SetViewToDefault();
 
 				ColumnClicked.AttachMethod(this, &GuiVirtualDataGrid::OnColumnClicked);
-				SelectionChanged.AttachMethod(this, &GuiVirtualDataGrid::OnSelectionChanged);
 				focusableComposition->GetEventReceiver()->keyDown.AttachMethod(this, &GuiVirtualDataGrid::OnKeyDown);
 				focusableComposition->GetEventReceiver()->keyUp.AttachMethod(this, &GuiVirtualDataGrid::OnKeyUp);
 				SelectedCellChanged.SetAssociatedComposition(boundsComposition);

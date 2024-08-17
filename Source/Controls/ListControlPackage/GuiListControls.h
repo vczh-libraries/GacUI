@@ -378,7 +378,7 @@ Selectable List Control
 				vint											selectedItemIndexStart;
 				vint											selectedItemIndexEnd;
 
-				void											NotifySelectionChanged();
+				virtual void									NotifySelectionChanged(bool triggeredByItemContentModified);
 				void											OnItemModified(vint start, vint count, vint newCount, bool itemReferenceUpdated)override;
 				void											OnStyleInstalled(vint itemIndex, ItemStyle* style, bool refreshPropertiesOnly)override;
 				virtual void									OnItemSelectionChanged(vint itemIndex, bool value);

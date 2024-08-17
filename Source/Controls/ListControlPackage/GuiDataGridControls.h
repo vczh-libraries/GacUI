@@ -93,6 +93,7 @@ GuiVirtualDataGrid
 				bool													currentEditorOpeningEditor = false;
 
 				compositions::IGuiAltActionHost*						GetActivatingAltHost()override;
+				void													NotifySelectionChanged(bool triggeredByItemContentModified)override;
 				void													OnItemModified(vint start, vint count, vint newCount, bool itemReferenceUpdated)override;
 				void													OnStyleInstalled(vint index, ItemStyle* style, bool refreshPropertiesOnly)override;
 				void													OnStyleUninstalled(ItemStyle* style)override;
@@ -102,7 +103,6 @@ GuiVirtualDataGrid
 				bool													StartEdit(vint row, vint column);
 				void													StopEdit();
 				void													OnColumnClicked(compositions::GuiGraphicsComposition* sender, compositions::GuiItemEventArgs& arguments);
-				void													OnSelectionChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void													OnKeyDown(compositions::GuiGraphicsComposition* sender, compositions::GuiKeyEventArgs& arguments);
 				void													OnKeyUp(compositions::GuiGraphicsComposition* sender, compositions::GuiKeyEventArgs& arguments);
 
