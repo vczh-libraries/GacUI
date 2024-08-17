@@ -88,9 +88,8 @@
     - ItemTemplate with properties
     - Item manipulation
     - Extra mouse operations
-    - Extra key operations
-    - `TestControls_List_GuiListControl.cpp`
-    - `TestControls_List_GuiSelectableListControl.cpp`
+    - Extra key operations 
+    - Row and Cell extensions
   - Ribbon ...
   - Check all control key operation, ensure accessibility.
 - More unit test
