@@ -170,6 +170,71 @@ TEST_FILE
 	}
 
 	/***********************************************************************
+	GuiTreeView
+	***********************************************************************/
+	{
+		const WString resourceListItemTemplate = LR"GacUISrc(
+<Resource>)GacUISrc" + fragmentListItemTemplate + LR"GacUISrc(
+  <Instance name="MainWindowResource">
+    <Instance ref.Class="gacuisrc_unittest::MainWindow">
+      <ref.Ctor><![CDATA[{
+        for (item in range[1, 20])
+        {
+          var treeViewItem = new TreeViewItem^(null, $"Item $(item)");
+          var treeNode = new MemoryNodeProvider^(treeViewItem);
+          list.Nodes.Children.Add(treeNode);
+        }
+      }]]></ref.Ctor>
+      <Window ref.Name="self" Text="GuiListItemTemplate" ClientSize="x:320 y:240">
+        <TreeView ref.Name="list" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
+          <att.BoundsComposition-set PreferredMinSize="x:400 y:300" AlignmentToParent="left:0 top:5 right:0 bottom:0"/>
+          <att.ItemTemplate>gacuisrc_unittest::MyListItemTemplate</att.ItemTemplate>
+        </TreeView>
+      </Window>
+    </Instance>
+  </Instance>
+</Resource>
+)GacUISrc";
+
+		const WString resourceGridItemTemplate = LR"GacUISrc(
+<Resource>)GacUISrc" + fragmentListItemTemplate + LR"GacUISrc(
+  <Instance name="MainWindowResource">
+    <Instance ref.Class="gacuisrc_unittest::MainWindow">
+      <ref.Members><![CDATA[
+        func InitializeItems(count:int) : void
+        {
+          for (item in range[1, count])
+          {
+            var treeViewItem = new TreeViewItem^(null, $"Item $(item)");
+            var treeNode = new MemoryNodeProvider^(treeViewItem);
+            list.Nodes.Children.Add(treeNode);
+          }
+        }
+      ]]></ref.Members>
+      <Window ref.Name="self" Text-format="GuiListItemTemplate $(list.SelectedItemIndex)" ClientSize="x:320 y:240">
+        <TreeView ref.Name="list" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
+          <att.BoundsComposition-set PreferredMinSize="x:400 y:300" AlignmentToParent="left:0 top:5 right:0 bottom:0"/>
+          <att.ItemTemplate>gacuisrc_unittest::MyListItemTemplate</att.ItemTemplate>
+        </TreeView>
+      </Window>
+    </Instance>
+  </Instance>
+</Resource>
+)GacUISrc";
+
+		TEST_CATEGORY(L"GuiTreeView")
+		{
+			GuiListItemTemplate_TestCases(
+				resourceListItemTemplate,
+				WString::Unmanaged(L"GuiListItemTemplate/GuiTreeView"));
+
+			GuiListItemTemplate_WithAxis_TestCases(
+				resourceGridItemTemplate,
+				WString::Unmanaged(L"GuiListItemTemplate/GuiTreeView"));
+		});
+	}
+
+	/***********************************************************************
 	GuiBindableTreeView
 	***********************************************************************/
 	{
@@ -226,7 +291,7 @@ TEST_FILE
         {
           for (item in range[1, count])
           {
-          items.Children.Add(new TreeViewData^($"Item $(item)"));  
+            items.Children.Add(new TreeViewData^($"Item $(item)"));  
           }
         }
       ]]></ref.Members>
