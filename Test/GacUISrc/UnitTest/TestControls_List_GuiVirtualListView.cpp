@@ -54,25 +54,6 @@ TEST_FILE
         }
 )GacUISrc";
 
-	const WString fragmentListViewData = LR"GacUISrc(
-  <Script name="ListViewDataResource"><Workflow><![CDATA[
-    module treeviewdata;
-    using system::*;
-    using presentation::*;
-
-    class ListViewData
-    {
-      prop Id:string = "" {not observe}
-      prop First:string = "" {not observe}
-      prop Second:string = "" {not observe}
-      prop Third:string = "" {not observe}
-      prop Fourth:string = "" {not observe}
-      prop LargeImage:GuiImageData^ = null {not observe}
-      prop SmallImage:GuiImageData^ = null {not observe}
-    }
-  ]]></Workflow></Script>
-)GacUISrc";
-
 	/***********************************************************************
 	GuiListView
 	***********************************************************************/
@@ -162,10 +143,29 @@ TEST_FILE
 	}
 
 	/***********************************************************************
-	GuiBindableListView
+	Shared (Bindable)
 	***********************************************************************/
-	{
-		const WString fragmentMembers = LR"GacUISrc(
+
+	const WString fragmentListViewData = LR"GacUISrc(
+  <Script name="ListViewDataResource"><Workflow><![CDATA[
+    module treeviewdata;
+    using system::*;
+    using presentation::*;
+
+    class ListViewData
+    {
+      prop Id:string = "" {not observe}
+      prop First:string = "" {not observe}
+      prop Second:string = "" {not observe}
+      prop Third:string = "" {not observe}
+      prop Fourth:string = "" {not observe}
+      prop LargeImage:GuiImageData^ = null {not observe}
+      prop SmallImage:GuiImageData^ = null {not observe}
+    }
+  ]]></Workflow></Script>
+)GacUISrc";
+
+	const WString fragmentMembers = LR"GacUISrc(
         var items:observe ListViewData^[] = {};
         func InitializeItems(count:int) : void
         {
@@ -184,6 +184,10 @@ TEST_FILE
         }
 )GacUISrc";
 
+	/***********************************************************************
+	GuiBindableListView
+	***********************************************************************/
+	{
 		const WString fragmentWindow = LR"GacUISrc(
       <Window ref.Name="self" Text-format="GuiListView [$(list.SelectedItemIndex)] -&gt; [$(list.SelectedItemText)]" ClientSize="x:640 y:480">
         <BindableListView ref.Name="list" env.ItemType="ListViewData^" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
@@ -236,6 +240,65 @@ TEST_FILE
 			GuiVirtualListView_ViewAndImages_TestCases(
 				resourceWithImage,
 				WString::Unmanaged(L"GuiBindableListView"));
+		});
+	}
+
+	/***********************************************************************
+	GuiBindableDataGrid
+	***********************************************************************/
+	{
+		const WString fragmentWindow = LR"GacUISrc(
+      <Window ref.Name="self" Text-format="GuiListView [$(list.SelectedItemIndex)] -&gt; [$(list.SelectedItemText)]" ClientSize="x:640 y:480">
+        <BindableDataGrid ref.Name="list" env.ItemType="ListViewData^" View="Detail" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
+          <att.BoundsComposition-set PreferredMinSize="x:400 y:300" AlignmentToParent="left:0 top:5 right:0 bottom:0"/>
+          <att.ItemSource-eval>self.items</ItemSource-eval>
+          <att.LargeImageProperty>LargeImage</att.LargeImageProperty>
+          <att.SmallImageProperty>SmallImage</att.SmallImageProperty>
+          <att.Columns>
+            <_ Text="Id" TextProperty="Id"/>
+            <_ Size="100" Text="First" TextProperty="First"/>
+            <_ Size="100" Text="Second" TextProperty="Second"/>
+            <_ Size="100" Text="Third" TextProperty="Third"/>
+            <_ Size="100" Text="Fourth" TextProperty="Fourth"/>
+          </att.Columns>
+          <att.DataColumns>
+            <_>0</_>
+            <_>2</_>
+            <_>3</_>
+          </att.DataColumns>
+        </BindableDataGrid>
+      </Window>
+)GacUISrc";
+
+		const WString resourceWithImage = LR"GacUISrc(
+<Resource>)GacUISrc" + fragmentListViewData + LR"GacUISrc(
+  <Folder name="UnitTestConfig" content="Link">ListViewImagesData.xml</Folder>
+  <Folder name="ListViewImages" content="Link">ListViewImagesFolder.xml</Folder>
+  <Instance name="MainWindowResource">
+    <Instance ref.Class="gacuisrc_unittest::MainWindow">
+      <ref.Members><![CDATA[)GacUISrc" + fragmentLoadImages + fragmentMembers + LR"GacUISrc(
+      ]]></ref.Members>)GacUISrc" + fragmentWindow + LR"GacUISrc(
+    </Instance>
+  </Instance>
+</Resource>
+)GacUISrc";
+
+		const WString resourceWithoutImage = LR"GacUISrc(
+<Resource>)GacUISrc" + fragmentListViewData + LR"GacUISrc(
+  <Instance name="MainWindowResource">
+    <Instance ref.Class="gacuisrc_unittest::MainWindow">
+      <ref.Members><![CDATA[)GacUISrc" + fragmentNotLoadImages + fragmentMembers + LR"GacUISrc(
+      ]]></ref.Members>)GacUISrc" + fragmentWindow + LR"GacUISrc(
+    </Instance>
+  </Instance>
+</Resource>
+)GacUISrc";
+
+		TEST_CATEGORY(L"GuiBindableDataGrid")
+		{
+			GuiVirtualListView_ViewAndImages_TestCases(
+				resourceWithImage,
+				WString::Unmanaged(L"GuiBindableDataGrid/AsListView"));
 		});
 	}
 }
