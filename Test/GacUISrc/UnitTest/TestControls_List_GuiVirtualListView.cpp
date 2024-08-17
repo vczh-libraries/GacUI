@@ -40,6 +40,23 @@ TEST_FILE
   </Folder>
 )GacUISrc";
 
+	const WString fragmentLoadImages = LR"GacUISrc(
+        largeImages = {
+          (cast (GuiImageData^) self.ResolveResource("res", "LargeImages/Cert", true));
+          (cast (GuiImageData^) self.ResolveResource("res", "LargeImages/Data", true));
+          (cast (GuiImageData^) self.ResolveResource("res", "LargeImages/Link", true));
+          (cast (GuiImageData^) self.ResolveResource("res", "LargeImages/Folder", true));
+          (cast (GuiImageData^) self.ResolveResource("res", "LargeImages/Light", true));
+        };
+        smallImages = {
+          (cast (GuiImageData^) self.ResolveResource("res", "SmallImages/Cert", true));
+          (cast (GuiImageData^) self.ResolveResource("res", "SmallImages/Data", true));
+          (cast (GuiImageData^) self.ResolveResource("res", "SmallImages/Link", true));
+          (cast (GuiImageData^) self.ResolveResource("res", "SmallImages/Folder", true));
+          (cast (GuiImageData^) self.ResolveResource("res", "SmallImages/Light", true));
+        };
+)GacUISrc";
+
 	const WString fragmentListViewData = LR"GacUISrc(
   <Script name="ListViewDataResource"><Workflow><![CDATA[
     module treeviewdata;
@@ -73,25 +90,13 @@ TEST_FILE
             listViewItem.SubItems.Add($"2nd:$(item * 2)");
             listViewItem.SubItems.Add($"3rd:$(item * 3)");
             listViewItem.SubItems.Add($"4th:$(item * 4)");
+            listViewItem.LargeImage = largeImages[(item - 1) % 5];
+            listViewItem.SmallImage = smallImages[(item - 1) % 5];
             list.Items.Add(listViewItem);
           }
         }
       ]]></ref.Members>
-      <ref.Ctor><![CDATA[{
-        largeImages = {
-          (cast (GuiImageData^) self.ResolveResource("res", "LargeImages/Cert", true));
-          (cast (GuiImageData^) self.ResolveResource("res", "LargeImages/Data", true));
-          (cast (GuiImageData^) self.ResolveResource("res", "LargeImages/Link", true));
-          (cast (GuiImageData^) self.ResolveResource("res", "LargeImages/Folder", true));
-          (cast (GuiImageData^) self.ResolveResource("res", "LargeImages/Light", true));
-        };
-        smallImages = {
-          (cast (GuiImageData^) self.ResolveResource("res", "SmallImages/Cert", true));
-          (cast (GuiImageData^) self.ResolveResource("res", "SmallImages/Data", true));
-          (cast (GuiImageData^) self.ResolveResource("res", "SmallImages/Link", true));
-          (cast (GuiImageData^) self.ResolveResource("res", "SmallImages/Folder", true));
-          (cast (GuiImageData^) self.ResolveResource("res", "SmallImages/Light", true));
-        };
+      <ref.Ctor><![CDATA[{)GacUISrc" + fragmentLoadImages + LR"GacUISrc(
       }]]></ref.Ctor>
       <Window ref.Name="self" Text-format="GuiListView [$(list.SelectedItemIndex)] -&gt; [$(list.SelectedItemText)]" ClientSize="x:640 y:480">
         <ListView ref.Name="list" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">

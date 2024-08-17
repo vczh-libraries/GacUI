@@ -283,6 +283,8 @@ namespace gacuisrc_unittest
                         listViewItem.SubItems.Add(("2nd:" & (item * 2)));
                         listViewItem.SubItems.Add(("3rd:" & (item * 3)));
                         listViewItem.SubItems.Add(("4th:" & (item * 4)));
+                        (listViewItem.LargeImage = largeImages[((item - 1) % 5)]);
+                        (listViewItem.SmallImage = smallImages[((item - 1) % 5)]);
                         list.Items.Add(listViewItem);
                     }
                     (item = (item + 1));
