@@ -1,0 +1,671 @@
+﻿================================(1/4)================================
+module <constructor>gacuisrc_unittest::MainWindow;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace gacuisrc_unittest
+{
+    class MainWindowConstructor
+    {
+        @cpp:Protected
+        var self : ::gacuisrc_unittest::MainWindow* = null of (::gacuisrc_unittest::MainWindow*);
+
+        @cpp:Protected
+        var <precompile>0 : ::presentation::controls::list::ListViewColumn^ = null of (::presentation::controls::list::ListViewColumn^);
+
+        @cpp:Protected
+        var <precompile>1 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var list : ::presentation::controls::GuiBindableListView* = null of (::presentation::controls::GuiBindableListView*);
+
+        @cpp:Protected
+        func <gacuisrc_unittest-MainWindow>Initialize(<this> : ::gacuisrc_unittest::MainWindow*) : (::system::Void)
+        {
+            (self = <this>);
+            {
+                (self.ClientSize = {x : 320; y : 240;} of (::presentation::Size));
+            }
+            {
+                (self.Text = "GuiListItemTemplate");
+            }
+            {
+                (list = new (::presentation::controls::GuiBindableListView*)(::presentation::theme::ThemeName::ListView));
+                <this>.SetNamedObject("list", list);
+            }
+            {
+                (list.ItemTemplate = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiListItemTemplate*)
+                {
+                    {
+                        return new (::gacuisrc_unittest::MyListItemTemplate*)();
+                    }
+                });
+            }
+            {
+                (list.VerticalAlwaysVisible = false);
+            }
+            {
+                (list.HorizontalAlwaysVisible = false);
+            }
+            (<precompile>1 = list.BoundsComposition);
+            {
+                (<precompile>1.PreferredMinSize = {x : 400; y : 300;} of (::presentation::Size));
+            }
+            {
+                (<precompile>1.AlignmentToParent = {left : 0; top : 5; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            (<precompile>0 = new (::presentation::controls::list::ListViewColumn^)());
+            {
+                (<precompile>0.TextProperty = func (<item> : ::system::Object) : (::system::String)
+                {
+                    var item = (cast (TextItem^) <item>);
+                    return item.Text;
+                });
+            }
+            {
+                var <collection> = list.Columns;
+                <collection>.Add(<precompile>0);
+            }
+            {
+                self.AddChild(list);
+            }
+            {
+                (list.ItemSource = self.items);
+            }
+        }
+
+        new ()
+        {
+        }
+    }
+}
+
+================================(2/4)================================
+module <instance>gacuisrc_unittest::MainWindow;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace gacuisrc_unittest
+{
+    @cpp:File("MainWindow")
+    @cpp:Friend(typeof(MainWindowConstructor))
+    class MainWindow : ::presentation::controls::GuiWindow, MainWindowConstructor
+    {
+        var items : observe TextItem^[] = {};
+
+        new* ()
+            :::presentation::controls::GuiWindow(::presentation::theme::ThemeName::Window)
+        {
+            var <resource> = ::presentation::IGuiResourceManager::GetResourceManager().GetResourceFromClassName("gacuisrc_unittest::MainWindow");
+            var <resolver> = new (::presentation::GuiResourcePathResolver^)(<resource>, <resource>.WorkingDirectory);
+            this.SetResourceResolver(<resolver>);
+            this.<gacuisrc_unittest-MainWindow>Initialize(this);
+            <instance-ctor>();
+        }
+
+        func <instance-ctor>() : (::system::Void)
+        {
+            (list.Arranger = new (FixedHeightItemArranger^)());
+            {
+                var <for-begin>item : ::system::Int32 = 1;
+                var <for-end>item : ::system::Int32 = 20;
+                var item = <for-begin>item;
+                while ((item <= <for-end>item))
+                {
+                    {
+                        items.Add(new (TextItem^)(("Item " & item)));
+                    }
+                    (item = (item + 1));
+                }
+            }
+        }
+
+        delete
+        {
+            FinalizeInstanceRecursively(this of (::presentation::controls::GuiControlHost*));
+        }
+    }
+}
+
+================================(3/4)================================
+module <constructor>gacuisrc_unittest::MyListItemTemplate;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace gacuisrc_unittest
+{
+    class MyListItemTemplateConstructor
+    {
+        @cpp:Protected
+        var self : ::gacuisrc_unittest::MyListItemTemplate* = null of (::gacuisrc_unittest::MyListItemTemplate*);
+
+        @cpp:Protected
+        var <precompile>0 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var <precompile>1 : ::presentation::elements::GuiSolidBorderElement^ = null of (::presentation::elements::GuiSolidBorderElement^);
+
+        @cpp:Protected
+        var <precompile>2 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var <precompile>3 : ::presentation::elements::GuiSolidLabelElement^ = null of (::presentation::elements::GuiSolidLabelElement^);
+
+        @cpp:Protected
+        func <gacuisrc_unittest-MyListItemTemplate>Initialize(<this> : ::gacuisrc_unittest::MyListItemTemplate*) : (::system::Void)
+        {
+            (self = <this>);
+            {
+                (self.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+            }
+            (<precompile>0 = new (::presentation::compositions::GuiBoundsComposition*)());
+            {
+                (<precompile>0.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (<precompile>0.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+            }
+            (<precompile>1 = new (::presentation::elements::GuiSolidBorderElement^)());
+            {
+                (<precompile>0.OwnedElement = <precompile>1);
+            }
+            (<precompile>2 = new (::presentation::compositions::GuiBoundsComposition*)());
+            {
+                (<precompile>2.AlignmentToParent = {left : 5; top : 1; right : 5; bottom : 1;} of (::presentation::Margin));
+            }
+            {
+                (<precompile>2.MinSizeLimitation = LimitToElement of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+            }
+            (<precompile>3 = new (::presentation::elements::GuiSolidLabelElement^)());
+            {
+                (<precompile>3.Ellipse = false);
+            }
+            {
+                (<precompile>2.OwnedElement = <precompile>3);
+            }
+            {
+                <precompile>0.AddChild(<precompile>2);
+            }
+            {
+                self.AddChild(<precompile>0);
+            }
+            {
+                var <created-subscription> = new (::system::Subscription^)
+                {
+                    var <bind-cache>0 : ::gacuisrc_unittest::MyListItemTemplate* = null of (::gacuisrc_unittest::MyListItemTemplate*);
+
+                    var <bind-cache>1 : ::gacuisrc_unittest::MyListItemTemplate* = null of (::gacuisrc_unittest::MyListItemTemplate*);
+
+                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-handler>1_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-opened> : ::system::Boolean = false;
+
+                    var <bind-closed> : ::system::Boolean = false;
+
+                    func <bind-activator>() : (::system::Void)
+                    {
+                        var <bind-activator-result> = (cast (Color) (!<bind-cache>0.VisuallyEnabled) ? "#00000000" : (!<bind-cache>1.Selected) ? "#000088" : "#88FF88") of (::presentation::Color);
+                        ValueChanged(<bind-activator-result>);
+                    }
+
+                    func <bind-callback>0_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    func <bind-callback>1_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    override func Open() : (::system::Boolean)
+                    {
+                        if ((!<bind-opened>))
+                        {
+                            (<bind-opened> = true);
+                            (<bind-cache>0 = (self ?? null of (::gacuisrc_unittest::MyListItemTemplate*)));
+                            (<bind-cache>1 = (self ?? null of (::gacuisrc_unittest::MyListItemTemplate*)));
+                            (<bind-handler>0_0 = (attach(<bind-cache>0.VisuallyEnabledChanged, <bind-callback>0_0) ?? null));
+                            (<bind-handler>1_0 = (attach(<bind-cache>1.SelectedChanged, <bind-callback>1_0) ?? null));
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Update() : (::system::Boolean)
+                    {
+                        if ((<bind-opened> and (!<bind-closed>)))
+                        {
+                            <bind-activator>();
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Close() : (::system::Boolean)
+                    {
+                        if ((!<bind-closed>))
+                        {
+                            (<bind-closed> = true);
+                            if (<bind-handler>0_0 is not null)
+                            {
+                                detach(<bind-cache>0.VisuallyEnabledChanged, <bind-handler>0_0);
+                                (<bind-handler>0_0 = null);
+                            }
+                            if (<bind-handler>1_0 is not null)
+                            {
+                                detach(<bind-cache>1.SelectedChanged, <bind-handler>1_0);
+                                (<bind-handler>1_0 = null);
+                            }
+                            (<bind-cache>0 = null of (::gacuisrc_unittest::MyListItemTemplate*));
+                            (<bind-cache>1 = null of (::gacuisrc_unittest::MyListItemTemplate*));
+                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
+                            (<bind-handler>1_0 = null of (::system::reflection::EventHandler^));
+                            return true;
+                        }
+                        return false;
+                    }
+                };
+                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
+                {
+                    var <old> = <precompile>1.Color;
+                    var <new> = (cast (::presentation::Color) <value>);
+                    if ((<old> == <new>))
+                    {
+                        return;
+                    }
+                    (<precompile>1.Color = <new>);
+                });
+                <this>.AddSubscription(<created-subscription>);
+            }
+            {
+                var <created-subscription> = new (::system::Subscription^)
+                {
+                    var <bind-cache>0 : ::gacuisrc_unittest::MyListItemTemplate* = null of (::gacuisrc_unittest::MyListItemTemplate*);
+
+                    var <bind-cache>1 : ::gacuisrc_unittest::MyListItemTemplate* = null of (::gacuisrc_unittest::MyListItemTemplate*);
+
+                    var <bind-cache>2 : ::gacuisrc_unittest::MyListItemTemplate* = null of (::gacuisrc_unittest::MyListItemTemplate*);
+
+                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-handler>1_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-handler>2_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-opened> : ::system::Boolean = false;
+
+                    var <bind-closed> : ::system::Boolean = false;
+
+                    func <bind-activator>() : (::system::Void)
+                    {
+                        var <bind-activator-result> = ((((("[" & <bind-cache>0.Index) & "] = ") & <bind-cache>1.Text) & "") & ((" " & (cast (string) <bind-cache>2.Context)) ?? ""));
+                        ValueChanged(<bind-activator-result>);
+                    }
+
+                    func <bind-callback>0_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    func <bind-callback>1_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    func <bind-callback>2_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    override func Open() : (::system::Boolean)
+                    {
+                        if ((!<bind-opened>))
+                        {
+                            (<bind-opened> = true);
+                            (<bind-cache>0 = (self ?? null of (::gacuisrc_unittest::MyListItemTemplate*)));
+                            (<bind-cache>1 = (self ?? null of (::gacuisrc_unittest::MyListItemTemplate*)));
+                            (<bind-cache>2 = (self ?? null of (::gacuisrc_unittest::MyListItemTemplate*)));
+                            (<bind-handler>0_0 = (attach(<bind-cache>0.IndexChanged, <bind-callback>0_0) ?? null));
+                            (<bind-handler>1_0 = (attach(<bind-cache>1.TextChanged, <bind-callback>1_0) ?? null));
+                            (<bind-handler>2_0 = (attach(<bind-cache>2.ContextChanged, <bind-callback>2_0) ?? null));
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Update() : (::system::Boolean)
+                    {
+                        if ((<bind-opened> and (!<bind-closed>)))
+                        {
+                            <bind-activator>();
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Close() : (::system::Boolean)
+                    {
+                        if ((!<bind-closed>))
+                        {
+                            (<bind-closed> = true);
+                            if (<bind-handler>0_0 is not null)
+                            {
+                                detach(<bind-cache>0.IndexChanged, <bind-handler>0_0);
+                                (<bind-handler>0_0 = null);
+                            }
+                            if (<bind-handler>1_0 is not null)
+                            {
+                                detach(<bind-cache>1.TextChanged, <bind-handler>1_0);
+                                (<bind-handler>1_0 = null);
+                            }
+                            if (<bind-handler>2_0 is not null)
+                            {
+                                detach(<bind-cache>2.ContextChanged, <bind-handler>2_0);
+                                (<bind-handler>2_0 = null);
+                            }
+                            (<bind-cache>0 = null of (::gacuisrc_unittest::MyListItemTemplate*));
+                            (<bind-cache>1 = null of (::gacuisrc_unittest::MyListItemTemplate*));
+                            (<bind-cache>2 = null of (::gacuisrc_unittest::MyListItemTemplate*));
+                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
+                            (<bind-handler>1_0 = null of (::system::reflection::EventHandler^));
+                            (<bind-handler>2_0 = null of (::system::reflection::EventHandler^));
+                            return true;
+                        }
+                        return false;
+                    }
+                };
+                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
+                {
+                    var <old> = <precompile>3.Text;
+                    var <new> = (cast (::system::String) <value>);
+                    if ((<old> == <new>))
+                    {
+                        return;
+                    }
+                    (<precompile>3.Text = <new>);
+                });
+                <this>.AddSubscription(<created-subscription>);
+            }
+            {
+                var <created-subscription> = new (::system::Subscription^)
+                {
+                    var <bind-cache>0 : ::gacuisrc_unittest::MyListItemTemplate* = null of (::gacuisrc_unittest::MyListItemTemplate*);
+
+                    var <bind-cache>1 : ::gacuisrc_unittest::MyListItemTemplate* = null of (::gacuisrc_unittest::MyListItemTemplate*);
+
+                    var <bind-cache>2 : ::gacuisrc_unittest::MyListItemTemplate* = null of (::gacuisrc_unittest::MyListItemTemplate*);
+
+                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-handler>1_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-handler>2_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-opened> : ::system::Boolean = false;
+
+                    var <bind-closed> : ::system::Boolean = false;
+
+                    func <bind-activator>() : (::system::Void)
+                    {
+                        var <bind-activator-result> = (cast (Color) (!<bind-cache>0.VisuallyEnabled) ? "#888888" : (!<bind-cache>1.Selected) ? <bind-cache>2.TextColor : "#88FF88") of (::presentation::Color);
+                        ValueChanged(<bind-activator-result>);
+                    }
+
+                    func <bind-callback>0_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    func <bind-callback>1_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    func <bind-callback>2_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    override func Open() : (::system::Boolean)
+                    {
+                        if ((!<bind-opened>))
+                        {
+                            (<bind-opened> = true);
+                            (<bind-cache>0 = (self ?? null of (::gacuisrc_unittest::MyListItemTemplate*)));
+                            (<bind-cache>1 = (self ?? null of (::gacuisrc_unittest::MyListItemTemplate*)));
+                            (<bind-cache>2 = (self ?? null of (::gacuisrc_unittest::MyListItemTemplate*)));
+                            (<bind-handler>0_0 = (attach(<bind-cache>0.VisuallyEnabledChanged, <bind-callback>0_0) ?? null));
+                            (<bind-handler>1_0 = (attach(<bind-cache>1.SelectedChanged, <bind-callback>1_0) ?? null));
+                            (<bind-handler>2_0 = (attach(<bind-cache>2.TextColorChanged, <bind-callback>2_0) ?? null));
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Update() : (::system::Boolean)
+                    {
+                        if ((<bind-opened> and (!<bind-closed>)))
+                        {
+                            <bind-activator>();
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Close() : (::system::Boolean)
+                    {
+                        if ((!<bind-closed>))
+                        {
+                            (<bind-closed> = true);
+                            if (<bind-handler>0_0 is not null)
+                            {
+                                detach(<bind-cache>0.VisuallyEnabledChanged, <bind-handler>0_0);
+                                (<bind-handler>0_0 = null);
+                            }
+                            if (<bind-handler>1_0 is not null)
+                            {
+                                detach(<bind-cache>1.SelectedChanged, <bind-handler>1_0);
+                                (<bind-handler>1_0 = null);
+                            }
+                            if (<bind-handler>2_0 is not null)
+                            {
+                                detach(<bind-cache>2.TextColorChanged, <bind-handler>2_0);
+                                (<bind-handler>2_0 = null);
+                            }
+                            (<bind-cache>0 = null of (::gacuisrc_unittest::MyListItemTemplate*));
+                            (<bind-cache>1 = null of (::gacuisrc_unittest::MyListItemTemplate*));
+                            (<bind-cache>2 = null of (::gacuisrc_unittest::MyListItemTemplate*));
+                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
+                            (<bind-handler>1_0 = null of (::system::reflection::EventHandler^));
+                            (<bind-handler>2_0 = null of (::system::reflection::EventHandler^));
+                            return true;
+                        }
+                        return false;
+                    }
+                };
+                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
+                {
+                    var <old> = <precompile>3.Color;
+                    var <new> = (cast (::presentation::Color) <value>);
+                    if ((<old> == <new>))
+                    {
+                        return;
+                    }
+                    (<precompile>3.Color = <new>);
+                });
+                <this>.AddSubscription(<created-subscription>);
+            }
+            {
+                var <created-subscription> = new (::system::Subscription^)
+                {
+                    var <bind-cache>0 : ::gacuisrc_unittest::MyListItemTemplate* = null of (::gacuisrc_unittest::MyListItemTemplate*);
+
+                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-opened> : ::system::Boolean = false;
+
+                    var <bind-closed> : ::system::Boolean = false;
+
+                    func <bind-activator>() : (::system::Void)
+                    {
+                        var <bind-activator-result> = <bind-cache>0.Font of (::presentation::FontProperties);
+                        ValueChanged(<bind-activator-result>);
+                    }
+
+                    func <bind-callback>0_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    override func Open() : (::system::Boolean)
+                    {
+                        if ((!<bind-opened>))
+                        {
+                            (<bind-opened> = true);
+                            (<bind-cache>0 = (self ?? null of (::gacuisrc_unittest::MyListItemTemplate*)));
+                            (<bind-handler>0_0 = (attach(<bind-cache>0.FontChanged, <bind-callback>0_0) ?? null));
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Update() : (::system::Boolean)
+                    {
+                        if ((<bind-opened> and (!<bind-closed>)))
+                        {
+                            <bind-activator>();
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Close() : (::system::Boolean)
+                    {
+                        if ((!<bind-closed>))
+                        {
+                            (<bind-closed> = true);
+                            if (<bind-handler>0_0 is not null)
+                            {
+                                detach(<bind-cache>0.FontChanged, <bind-handler>0_0);
+                                (<bind-handler>0_0 = null);
+                            }
+                            (<bind-cache>0 = null of (::gacuisrc_unittest::MyListItemTemplate*));
+                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
+                            return true;
+                        }
+                        return false;
+                    }
+                };
+                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
+                {
+                    var <old> = <precompile>3.Font;
+                    var <new> = (cast (::presentation::FontProperties) <value>);
+                    if ((<old> == <new>))
+                    {
+                        return;
+                    }
+                    (<precompile>3.Font = <new>);
+                });
+                <this>.AddSubscription(<created-subscription>);
+            }
+        }
+
+        new ()
+        {
+        }
+    }
+}
+
+================================(4/4)================================
+module <instance>gacuisrc_unittest::MyListItemTemplate;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace gacuisrc_unittest
+{
+    @cpp:File("MyListItemTemplate")
+    @cpp:Friend(typeof(MyListItemTemplateConstructor))
+    class MyListItemTemplate : ::presentation::templates::GuiTextListItemTemplate, MyListItemTemplateConstructor
+    {
+        new* ()
+        {
+            var <resource> = ::presentation::IGuiResourceManager::GetResourceManager().GetResourceFromClassName("gacuisrc_unittest::MyListItemTemplate");
+            var <resolver> = new (::presentation::GuiResourcePathResolver^)(<resource>, <resource>.WorkingDirectory);
+            this.SetResourceResolver(<resolver>);
+            this.<gacuisrc_unittest-MyListItemTemplate>Initialize(this);
+        }
+
+        delete
+        {
+            FinalizeInstanceRecursively(this of (::presentation::templates::GuiTemplate*));
+        }
+    }
+}
+
