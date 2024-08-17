@@ -264,6 +264,10 @@ namespace gacuisrc_unittest
     @cpp:Friend(typeof(MainWindowConstructor))
     class MainWindow : ::presentation::controls::GuiWindow, MainWindowConstructor
     {
+        var largeImages : GuiImageData^[] = null;
+
+        var smallImages : GuiImageData^[] = null;
+
         func InitializeItems(count : int) : (void)
         {
             {
@@ -293,6 +297,13 @@ namespace gacuisrc_unittest
             var <resolver> = new (::presentation::GuiResourcePathResolver^)(<resource>, <resource>.WorkingDirectory);
             this.SetResourceResolver(<resolver>);
             this.<gacuisrc_unittest-MainWindow>Initialize(this);
+            <instance-ctor>();
+        }
+
+        func <instance-ctor>() : (::system::Void)
+        {
+            (largeImages = {(cast (GuiImageData^) self.ResolveResource("res", "LargeImages/Cert", true)); (cast (GuiImageData^) self.ResolveResource("res", "LargeImages/Data", true)); (cast (GuiImageData^) self.ResolveResource("res", "LargeImages/Link", true)); (cast (GuiImageData^) self.ResolveResource("res", "LargeImages/Folder", true)); (cast (GuiImageData^) self.ResolveResource("res", "LargeImages/Light", true));});
+            (smallImages = {(cast (GuiImageData^) self.ResolveResource("res", "SmallImages/Cert", true)); (cast (GuiImageData^) self.ResolveResource("res", "SmallImages/Data", true)); (cast (GuiImageData^) self.ResolveResource("res", "SmallImages/Link", true)); (cast (GuiImageData^) self.ResolveResource("res", "SmallImages/Folder", true)); (cast (GuiImageData^) self.ResolveResource("res", "SmallImages/Light", true));});
         }
 
         delete
