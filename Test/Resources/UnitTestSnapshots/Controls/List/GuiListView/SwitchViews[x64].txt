@@ -268,6 +268,28 @@ namespace gacuisrc_unittest
 
         var smallImages : GuiImageData^[] = null;
 
+        func EnsureImages() : (void)
+        {
+            if (largeImages is not null)
+            {
+                return;
+            }
+            (largeImages = {(cast (GuiImageData^) self.ResolveResource("res", "LargeImages/Cert", true)); (cast (GuiImageData^) self.ResolveResource("res", "LargeImages/Data", true)); (cast (GuiImageData^) self.ResolveResource("res", "LargeImages/Link", true)); (cast (GuiImageData^) self.ResolveResource("res", "LargeImages/Folder", true)); (cast (GuiImageData^) self.ResolveResource("res", "LargeImages/Light", true));});
+            (smallImages = {(cast (GuiImageData^) self.ResolveResource("res", "SmallImages/Cert", true)); (cast (GuiImageData^) self.ResolveResource("res", "SmallImages/Data", true)); (cast (GuiImageData^) self.ResolveResource("res", "SmallImages/Link", true)); (cast (GuiImageData^) self.ResolveResource("res", "SmallImages/Folder", true)); (cast (GuiImageData^) self.ResolveResource("res", "SmallImages/Light", true));});
+        }
+
+        func GetLargeImage(index : int) : (GuiImageData^)
+        {
+            EnsureImages();
+            return largeImages[index];
+        }
+
+        func GetSmallImage(index : int) : (GuiImageData^)
+        {
+            EnsureImages();
+            return smallImages[index];
+        }
+
         func InitializeItems(count : int) : (void)
         {
             {
@@ -283,8 +305,8 @@ namespace gacuisrc_unittest
                         listViewItem.SubItems.Add(("2nd:" & (item * 2)));
                         listViewItem.SubItems.Add(("3rd:" & (item * 3)));
                         listViewItem.SubItems.Add(("4th:" & (item * 4)));
-                        (listViewItem.LargeImage = largeImages[((item - 1) % 5)]);
-                        (listViewItem.SmallImage = smallImages[((item - 1) % 5)]);
+                        (listViewItem.LargeImage = GetLargeImage(((item - 1) % 5)));
+                        (listViewItem.SmallImage = GetSmallImage(((item - 1) % 5)));
                         list.Items.Add(listViewItem);
                     }
                     (item = (item + 1));
@@ -299,13 +321,6 @@ namespace gacuisrc_unittest
             var <resolver> = new (::presentation::GuiResourcePathResolver^)(<resource>, <resource>.WorkingDirectory);
             this.SetResourceResolver(<resolver>);
             this.<gacuisrc_unittest-MainWindow>Initialize(this);
-            <instance-ctor>();
-        }
-
-        func <instance-ctor>() : (::system::Void)
-        {
-            (largeImages = {(cast (GuiImageData^) self.ResolveResource("res", "LargeImages/Cert", true)); (cast (GuiImageData^) self.ResolveResource("res", "LargeImages/Data", true)); (cast (GuiImageData^) self.ResolveResource("res", "LargeImages/Link", true)); (cast (GuiImageData^) self.ResolveResource("res", "LargeImages/Folder", true)); (cast (GuiImageData^) self.ResolveResource("res", "LargeImages/Light", true));});
-            (smallImages = {(cast (GuiImageData^) self.ResolveResource("res", "SmallImages/Cert", true)); (cast (GuiImageData^) self.ResolveResource("res", "SmallImages/Data", true)); (cast (GuiImageData^) self.ResolveResource("res", "SmallImages/Link", true)); (cast (GuiImageData^) self.ResolveResource("res", "SmallImages/Folder", true)); (cast (GuiImageData^) self.ResolveResource("res", "SmallImages/Light", true));});
         }
 
         delete

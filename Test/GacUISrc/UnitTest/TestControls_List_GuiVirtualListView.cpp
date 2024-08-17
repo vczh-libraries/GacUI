@@ -41,20 +41,39 @@ TEST_FILE
 )GacUISrc";
 
 	const WString fragmentLoadImages = LR"GacUISrc(
-        largeImages = {
-          (cast (GuiImageData^) self.ResolveResource("res", "LargeImages/Cert", true));
-          (cast (GuiImageData^) self.ResolveResource("res", "LargeImages/Data", true));
-          (cast (GuiImageData^) self.ResolveResource("res", "LargeImages/Link", true));
-          (cast (GuiImageData^) self.ResolveResource("res", "LargeImages/Folder", true));
-          (cast (GuiImageData^) self.ResolveResource("res", "LargeImages/Light", true));
-        };
-        smallImages = {
-          (cast (GuiImageData^) self.ResolveResource("res", "SmallImages/Cert", true));
-          (cast (GuiImageData^) self.ResolveResource("res", "SmallImages/Data", true));
-          (cast (GuiImageData^) self.ResolveResource("res", "SmallImages/Link", true));
-          (cast (GuiImageData^) self.ResolveResource("res", "SmallImages/Folder", true));
-          (cast (GuiImageData^) self.ResolveResource("res", "SmallImages/Light", true));
-        };
+        var largeImages : GuiImageData^[] = null;
+        var smallImages : GuiImageData^[] = null;
+        func EnsureImages() : void
+        {
+          if (largeImages is not null)
+          {
+            return;
+          }
+          largeImages = {
+            (cast (GuiImageData^) self.ResolveResource("res", "LargeImages/Cert", true));
+            (cast (GuiImageData^) self.ResolveResource("res", "LargeImages/Data", true));
+            (cast (GuiImageData^) self.ResolveResource("res", "LargeImages/Link", true));
+            (cast (GuiImageData^) self.ResolveResource("res", "LargeImages/Folder", true));
+            (cast (GuiImageData^) self.ResolveResource("res", "LargeImages/Light", true));
+          };
+          smallImages = {
+            (cast (GuiImageData^) self.ResolveResource("res", "SmallImages/Cert", true));
+            (cast (GuiImageData^) self.ResolveResource("res", "SmallImages/Data", true));
+            (cast (GuiImageData^) self.ResolveResource("res", "SmallImages/Link", true));
+            (cast (GuiImageData^) self.ResolveResource("res", "SmallImages/Folder", true));
+            (cast (GuiImageData^) self.ResolveResource("res", "SmallImages/Light", true));
+          };
+        }
+        func GetLargeImage(index:int) : GuiImageData^
+        {
+          EnsureImages();
+          return largeImages[index];
+        }
+        func GetSmallImage(index:int) : GuiImageData^
+        {
+          EnsureImages();
+          return smallImages[index];
+        }
 )GacUISrc";
 
 	const WString fragmentListViewData = LR"GacUISrc(
@@ -73,13 +92,11 @@ TEST_FILE
 	GuiListView
 	***********************************************************************/
 	{
-		const WString resourceTextList = LR"GacUISrc(
+		const WString resourceWithImage = LR"GacUISrc(
 <Resource>)GacUISrc" + fragmentImages + LR"GacUISrc(
   <Instance name="MainWindowResource">
     <Instance ref.Class="gacuisrc_unittest::MainWindow">
-      <ref.Members><![CDATA[
-        var largeImages : GuiImageData^[] = null;
-        var smallImages : GuiImageData^[] = null;
+      <ref.Members><![CDATA[)GacUISrc" + fragmentLoadImages + LR"GacUISrc(
         func InitializeItems(count:int) : void
         {
           for (item in range[1, count])
@@ -90,14 +107,12 @@ TEST_FILE
             listViewItem.SubItems.Add($"2nd:$(item * 2)");
             listViewItem.SubItems.Add($"3rd:$(item * 3)");
             listViewItem.SubItems.Add($"4th:$(item * 4)");
-            listViewItem.LargeImage = largeImages[(item - 1) % 5];
-            listViewItem.SmallImage = smallImages[(item - 1) % 5];
+            listViewItem.LargeImage = GetLargeImage((item - 1) % 5);
+            listViewItem.SmallImage = GetSmallImage((item - 1) % 5);
             list.Items.Add(listViewItem);
           }
         }
       ]]></ref.Members>
-      <ref.Ctor><![CDATA[{)GacUISrc" + fragmentLoadImages + LR"GacUISrc(
-      }]]></ref.Ctor>
       <Window ref.Name="self" Text-format="GuiListView [$(list.SelectedItemIndex)] -&gt; [$(list.SelectedItemText)]" ClientSize="x:640 y:480">
         <ListView ref.Name="list" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
           <att.BoundsComposition-set PreferredMinSize="x:400 y:300" AlignmentToParent="left:0 top:5 right:0 bottom:0"/>
@@ -130,11 +145,9 @@ TEST_FILE
 
 		TEST_CATEGORY(L"GuiListView")
 		{
-			GuiVirtualListView_TestCases(
-				resourceTextList,
-				WString::Unmanaged(L"GuiListView"),
-				getItems,
-				notifyItemDataModified);
+			GuiVirtualListView_ViewAndImages_TestCases(
+				resourceWithImage,
+				WString::Unmanaged(L"GuiListView"));
 		});
 	}
 }

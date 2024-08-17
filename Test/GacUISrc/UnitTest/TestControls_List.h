@@ -43,6 +43,11 @@ namespace gacui_unittest_template
 		Func<void(GuiWindow*, vint, vint)> notifyItemDataModified
 	);
 
+	extern void GuiVirtualListView_ViewAndImages_TestCases(
+		WString resourceXml,
+		WString pathFragment
+	);
+
 	extern void GuiVirtualListView_TestCases(
 		WString resourceXml,
 		WString pathFragment,

@@ -39,11 +39,9 @@ namespace gacui_unittest_template
 		});
 	}
 
-	void GuiVirtualListView_TestCases(
+	void GuiVirtualListView_ViewAndImages_TestCases(
 		WString resourceXml,
-		WString pathFragment,
-		Func<Ptr<IValueList>(GuiWindow*)> getItems,
-		Func<void(GuiWindow*, vint, vint)> notifyItemDataModified
+		WString pathFragment
 	)
 	{
 		TEST_CASE(L"SwitchViews")
@@ -103,7 +101,15 @@ namespace gacui_unittest_template
 				resourceXml
 				);
 		});
+	}
 
+	void GuiVirtualListView_TestCases(
+		WString resourceXml,
+		WString pathFragment,
+		Func<Ptr<IValueList>(GuiWindow*)> getItems,
+		Func<void(GuiWindow*, vint, vint)> notifyItemDataModified
+	)
+	{
 		ListViewView views[] = {
 			ListViewView::BigIcon,
 			ListViewView::SmallIcon,
