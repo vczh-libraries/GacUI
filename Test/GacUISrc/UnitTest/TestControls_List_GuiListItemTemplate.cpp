@@ -268,13 +268,14 @@ TEST_FILE
         var items:observe TextItem^[] = {};
       ]]></ref.Members>
       <ref.Ctor><![CDATA[{
+        list.Arranger = new FixedHeightItemArranger^();
         for (item in range[1, 20])
         {
           items.Add(new TextItem^($"Item $(item)"));
         }
       }]]></ref.Ctor>
       <Window ref.Name="self" Text="GuiListItemTemplate" ClientSize="x:320 y:240">
-        <BindableListView ref.Name="list" env.ItemType="TextItem^" View="Information" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
+        <BindableListView ref.Name="list" env.ItemType="TextItem^" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
           <att.BoundsComposition-set PreferredMinSize="x:400 y:300" AlignmentToParent="left:0 top:5 right:0 bottom:0"/>
           <att.ItemTemplate>gacuisrc_unittest::MyListItemTemplate</att.ItemTemplate>
           <att.ItemSource-eval>self.items</ItemSource-eval>
@@ -302,8 +303,11 @@ TEST_FILE
           }
         }
       ]]></ref.Members>
+      <ref.Ctor><![CDATA[{
+        list.Arranger = new FixedHeightItemArranger^();
+      }]]></ref.Ctor>
       <Window ref.Name="self" Text-format="GuiListItemTemplate $(list.SelectedItemIndex)" ClientSize="x:320 y:240">
-        <BindableListView ref.Name="list" env.ItemType="TextItem^" View="Information" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
+        <BindableListView ref.Name="list" env.ItemType="TextItem^" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
           <att.BoundsComposition-set PreferredMinSize="x:400 y:300" AlignmentToParent="left:0 top:5 right:0 bottom:0"/>
           <att.ItemTemplate>gacuisrc_unittest::MyListItemTemplate</att.ItemTemplate>
           <att.ItemSource-eval>self.items</ItemSource-eval>
@@ -341,13 +345,14 @@ TEST_FILE
         var items:observe TextItem^[] = {};
       ]]></ref.Members>
       <ref.Ctor><![CDATA[{
+        list.Arranger = new FixedHeightItemArranger^();
         for (item in range[1, 20])
         {
           items.Add(new TextItem^($"Item $(item)"));
         }
       }]]></ref.Ctor>
       <Window ref.Name="self" Text="GuiListItemTemplate" ClientSize="x:320 y:240">
-        <BindableDataGrid ref.Name="list" env.ItemType="TextItem^" View="Information" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
+        <BindableDataGrid ref.Name="list" env.ItemType="TextItem^" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
           <att.BoundsComposition-set PreferredMinSize="x:400 y:300" AlignmentToParent="left:0 top:5 right:0 bottom:0"/>
           <att.ItemTemplate>gacuisrc_unittest::MyListItemTemplate</att.ItemTemplate>
           <att.ItemSource-eval>self.items</ItemSource-eval>
@@ -375,8 +380,11 @@ TEST_FILE
           }
         }
       ]]></ref.Members>
+      <ref.Ctor><![CDATA[{
+        list.Arranger = new FixedHeightItemArranger^();
+      }]]></ref.Ctor>
       <Window ref.Name="self" Text-format="GuiListItemTemplate $(list.SelectedItemIndex)" ClientSize="x:320 y:240">
-        <BindableDataGrid ref.Name="list" env.ItemType="TextItem^" View="Information" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
+        <BindableDataGrid ref.Name="list" env.ItemType="TextItem^" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
           <att.BoundsComposition-set PreferredMinSize="x:400 y:300" AlignmentToParent="left:0 top:5 right:0 bottom:0"/>
           <att.ItemTemplate>gacuisrc_unittest::MyListItemTemplate</att.ItemTemplate>
           <att.ItemSource-eval>self.items</ItemSource-eval>

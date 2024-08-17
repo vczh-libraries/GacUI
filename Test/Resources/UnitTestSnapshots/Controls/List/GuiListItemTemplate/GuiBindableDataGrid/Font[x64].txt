@@ -50,9 +50,6 @@ namespace gacuisrc_unittest
                 <this>.SetNamedObject("list", list);
             }
             {
-                (list.View = Information of (::presentation::controls::ListViewView));
-            }
-            {
                 (list.ItemTemplate = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiListItemTemplate*)
                 {
                     {
@@ -140,6 +137,7 @@ namespace gacuisrc_unittest
 
         func <instance-ctor>() : (::system::Void)
         {
+            (list.Arranger = new (FixedHeightItemArranger^)());
             {
                 var <for-begin>item : ::system::Int64 = 1;
                 var <for-end>item : ::system::Int64 = 20;
