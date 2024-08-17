@@ -154,7 +154,7 @@ TEST_FILE
         {
           for (item in range[1, count])
           {
-            items.Children.Add(new TreeViewData^($"Item $(item)"));
+            items.Children.Add(new TreeViewData^($"Item $(start + item)"));
           }
         }
       ]]></ref.Members>

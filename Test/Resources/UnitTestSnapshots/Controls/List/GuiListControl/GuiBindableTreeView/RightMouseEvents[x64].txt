@@ -225,7 +225,7 @@ namespace gacuisrc_unittest
                 while ((item <= <for-end>item))
                 {
                     {
-                        items.Children.Add(new (TreeViewData^)(("Item " & item)));
+                        items.Children.Add(new (TreeViewData^)(("Item " & (start + item))));
                     }
                     (item = (item + 1));
                 }
