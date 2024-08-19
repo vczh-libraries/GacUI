@@ -77,6 +77,10 @@ IItemProviderCallback
 		virtual IDescriptable*						RequestView(const WString& identifier) = 0;
 	};
 
+/***********************************************************************
+ItemProviderBase
+***********************************************************************/
+
 	/// <summary>Item provider base. This class provider common functionalities for item providers.</summary>
 	class ItemProviderBase : public Object, public virtual IItemProvider, public Description<ItemProviderBase>
 	{
@@ -97,6 +101,10 @@ IItemProviderCallback
 		bool										PopEditing()override;
 		bool										IsEditing()override;
 	};
+
+/***********************************************************************
+ListProvider<T>
+***********************************************************************/
 
 	template<typename T>
 	class ListProvider : public ItemProviderBase, public collections::ObservableListBase<T>

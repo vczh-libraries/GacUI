@@ -169,6 +169,9 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ListControlPackage\DataSource_IItemProvider.cpp">
       <Filter>Controls\ListControlPackage\DataSource</Filter>
     </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ListControlPackage\DataSource_INodeProvider.cpp">
+      <Filter>Controls\ListControlPackage\DataSource</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\GuiButtonControls.h">
@@ -321,6 +324,9 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\GacUIReflectionHelper.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\GacUI.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ListControlPackage\DataSource_IItemProvider.h">
+      <Filter>Controls\ListControlPackage\DataSource</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ListControlPackage\DataSource_INodeProvider.h">
       <Filter>Controls\ListControlPackage\DataSource</Filter>
     </ClInclude>
   </ItemGroup>

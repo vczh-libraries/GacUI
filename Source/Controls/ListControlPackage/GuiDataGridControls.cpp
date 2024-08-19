@@ -700,7 +700,7 @@ GuiVirtualDataGrid
 			{
 			}
 
-			GuiVirtualDataGrid::GuiVirtualDataGrid(theme::ThemeName themeName, GuiListControl::IItemProvider* _itemProvider)
+			GuiVirtualDataGrid::GuiVirtualDataGrid(theme::ThemeName themeName, list::IItemProvider* _itemProvider)
 				:GuiVirtualListView(themeName, _itemProvider)
 			{
 				listViewItemView = dynamic_cast<IListViewItemView*>(_itemProvider->RequestView(IListViewItemView::Identifier));
@@ -741,7 +741,7 @@ GuiVirtualDataGrid
 			{
 			}
 
-			GuiListControl::IItemProvider* GuiVirtualDataGrid::GetItemProvider()
+			list::IItemProvider* GuiVirtualDataGrid::GetItemProvider()
 			{
 				return GuiVirtualListView::GetItemProvider();
 			}
