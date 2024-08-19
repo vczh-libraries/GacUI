@@ -11,6 +11,7 @@
   - Fix `GuiTextList::SelectionChanged` not raised when changing properties of the only selected `list::TextItem`.
   - Fix `GuiVirtualListView` in `Details` view column header height doesn't sync to item arranger in real-time.
 - `GuiTreeItemTemplate` change base class to `GuiListItemTemplate`
+- `GuiListControl::IItemProvider(Callback)?` moved to `vl::presentation::controls::list`.
 - Make `ItemSource` class of bindable list controls reflectable.
 
 ## Known Issues
@@ -94,6 +95,7 @@
   - `GuiTab` item manipulation and `[TAB]`
 - Document
   - `GuiTreeItemTemplate` change base class to `GuiListItemTemplate`
+- `GuiListControl::IItemProvider(Callback)?` moved to `vl::presentation::controls::list`
 
 ## Release Milestone (1.2.11.0)
 
