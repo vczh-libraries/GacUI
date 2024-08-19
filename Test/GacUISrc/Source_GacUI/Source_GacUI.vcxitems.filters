@@ -169,7 +169,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ListControlPackage\DataSourceImpl_IItemProvider_ItemProviderBase.cpp">
       <Filter>Controls\ListControlPackage\DataSource</Filter>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ListControlPackage\DataSource_INodeProvider.cpp">
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ListControlPackage\DataSourceImpl_IItemProvider_NodeItemProvider.cpp">
       <Filter>Controls\ListControlPackage\DataSource</Filter>
     </ClCompile>
   </ItemGroup>
@@ -330,6 +330,9 @@
       <Filter>Controls\ListControlPackage\DataSource</Filter>
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ListControlPackage\DataSourceImpl_IItemProvider_ItemProviderBase.h">
+      <Filter>Controls\ListControlPackage\DataSource</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ListControlPackage\DataSourceImpl_IItemProvider_NodeItemProvider.h">
       <Filter>Controls\ListControlPackage\DataSource</Filter>
     </ClInclude>
   </ItemGroup>
