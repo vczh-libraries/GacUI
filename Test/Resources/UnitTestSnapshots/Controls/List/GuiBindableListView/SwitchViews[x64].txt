@@ -207,7 +207,7 @@ namespace gacuisrc_unittest
 
                     func <bind-activator>() : (::system::Void)
                     {
-                        var <bind-activator-result> = (((("GuiListView [" & <bind-cache>0.SelectedItemIndex) & "] -> [") & <bind-cache>1.SelectedItemText) & "]");
+                        var <bind-activator-result> = (((("GuiBindableListView [" & <bind-cache>0.SelectedItemIndex) & "] -> [") & <bind-cache>1.SelectedItemText) & "]");
                         ValueChanged(<bind-activator-result>);
                     }
 
