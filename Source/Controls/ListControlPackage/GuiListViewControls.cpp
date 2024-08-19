@@ -66,7 +66,7 @@ GuiListViewBase
 			{
 			}
 
-			GuiListViewBase::GuiListViewBase(theme::ThemeName themeName, GuiListControl::IItemProvider* _itemProvider)
+			GuiListViewBase::GuiListViewBase(theme::ThemeName themeName, list::IItemProvider* _itemProvider)
 				:GuiSelectableListControl(themeName, _itemProvider)
 			{
 				ColumnClicked.SetAssociatedComposition(boundsComposition);
@@ -890,7 +890,7 @@ GuiListView
 				view = ListViewView::Unknown;
 			}
 
-			GuiVirtualListView::GuiVirtualListView(theme::ThemeName themeName, GuiListControl::IItemProvider* _itemProvider)
+			GuiVirtualListView::GuiVirtualListView(theme::ThemeName themeName, list::IItemProvider* _itemProvider)
 				:GuiListViewBase(themeName, _itemProvider)
 			{
 				SetView(ListViewView::Detail);

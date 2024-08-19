@@ -22,10 +22,10 @@ RangedItemArrangerBase (ItemSource)
 				class ArrangerItemSource : public Object, public virtual description::IValueObservableList
 				{
 				protected:
-					GuiListControl::IItemProvider*			itemProvider = nullptr;
+					list::IItemProvider*				itemProvider = nullptr;
 
 				public:
-					ArrangerItemSource(GuiListControl::IItemProvider* _itemProvider)
+					ArrangerItemSource(list::IItemProvider* _itemProvider)
 						: itemProvider(_itemProvider)
 					{
 					}
@@ -93,7 +93,7 @@ RangedItemArrangerBase
 					SafeDeleteComposition(repeat);
 				}
 
-				void RangedItemArrangerBase::OnAttached(GuiListControl::IItemProvider* provider)
+				void RangedItemArrangerBase::OnAttached(list::IItemProvider* provider)
 				{
 					itemProvider = provider;
 					if (provider)

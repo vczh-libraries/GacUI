@@ -326,7 +326,7 @@ GuiTextList
 				view = TextListView::Unknown;
 			}
 
-			GuiVirtualTextList::GuiVirtualTextList(theme::ThemeName themeName, GuiListControl::IItemProvider* _itemProvider)
+			GuiVirtualTextList::GuiVirtualTextList(theme::ThemeName themeName, list::IItemProvider* _itemProvider)
 				:GuiSelectableListControl(themeName, _itemProvider)
 			{
 				ItemTemplateChanged.AttachMethod(this, &GuiVirtualTextList::OnItemTemplateChanged);

@@ -114,13 +114,13 @@ GuiVirtualDataGrid
 				/// <summary>Create a data grid control in virtual mode.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				/// <param name="_itemProvider">The item provider for this control.</param>
-				GuiVirtualDataGrid(theme::ThemeName themeName, GuiListControl::IItemProvider* _itemProvider);
+				GuiVirtualDataGrid(theme::ThemeName themeName, list::IItemProvider* _itemProvider);
 				~GuiVirtualDataGrid();
 
 				/// <summary>Selected cell changed event.</summary>
 				compositions::GuiNotifyEvent							SelectedCellChanged;
 
-				IItemProvider*											GetItemProvider()override;
+				list::IItemProvider*									GetItemProvider()override;
 
 				/// <summary>Change the view to data grid's default view.</summary>
 				void													SetViewToDefault();

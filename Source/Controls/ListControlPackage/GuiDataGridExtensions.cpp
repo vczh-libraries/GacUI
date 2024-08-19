@@ -45,7 +45,7 @@ DataVisualizerBase
 					visualizerTemplate = nullptr;
 				}
 
-				void DataVisualizerBase::BeforeVisualizeCell(GuiListControl::IItemProvider* itemProvider, vint row, vint column)
+				void DataVisualizerBase::BeforeVisualizeCell(list::IItemProvider* itemProvider, vint row, vint column)
 				{
 					if (auto listViewItemView = dynamic_cast<IListViewItemView*>(dataGridContext->GetItemProvider()->RequestView(IListViewItemView::Identifier)))
 					{
@@ -162,7 +162,7 @@ DataEditorBase
 					editorTemplate = nullptr;
 				}
 
-				void DataEditorBase::BeforeEditCell(GuiListControl::IItemProvider* itemProvider, vint row, vint column)
+				void DataEditorBase::BeforeEditCell(list::IItemProvider* itemProvider, vint row, vint column)
 				{
 					if (auto listViewItemView = dynamic_cast<IListViewItemView*>(dataGridContext->GetItemProvider()->RequestView(IListViewItemView::Identifier)))
 					{

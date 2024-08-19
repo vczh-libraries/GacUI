@@ -78,7 +78,7 @@ GuiListControl::ItemCallback
 				installedStyles.Clear();
 			}
 
-			void GuiListControl::ItemCallback::OnAttached(IItemProvider* provider)
+			void GuiListControl::ItemCallback::OnAttached(list::IItemProvider* provider)
 			{
 				itemProvider = provider;
 			}
@@ -414,7 +414,7 @@ GuiListControl
 
 #undef DETACH_ITEM_EVENT
 
-			GuiListControl::GuiListControl(theme::ThemeName themeName, IItemProvider* _itemProvider, bool acceptFocus)
+			GuiListControl::GuiListControl(theme::ThemeName themeName, list::IItemProvider* _itemProvider, bool acceptFocus)
 				:GuiScrollView(themeName)
 				, itemProvider(_itemProvider)
 			{
@@ -463,7 +463,7 @@ GuiListControl
 				itemArranger = nullptr;
 			}
 
-			GuiListControl::IItemProvider* GuiListControl::GetItemProvider()
+			list::IItemProvider* GuiListControl::GetItemProvider()
 			{
 				return itemProvider.Obj();
 			}
@@ -719,7 +719,7 @@ GuiSelectableListControl
 				return GetArranger()->FindItemByVirtualKeyDirection(selectedItemIndexEnd, keyDirection);
 			}
 
-			GuiSelectableListControl::GuiSelectableListControl(theme::ThemeName themeName, IItemProvider* _itemProvider)
+			GuiSelectableListControl::GuiSelectableListControl(theme::ThemeName themeName, list::IItemProvider* _itemProvider)
 				:GuiListControl(themeName, _itemProvider, true)
 				, multiSelect(false)
 				, selectedItemIndexStart(-1)
@@ -959,7 +959,7 @@ ItemProviderBase
 					}
 				}
 
-				bool ItemProviderBase::AttachCallback(GuiListControl::IItemProviderCallback* value)
+				bool ItemProviderBase::AttachCallback(list::IItemProviderCallback* value)
 				{
 					if(callbacks.Contains(value))
 					{
@@ -973,7 +973,7 @@ ItemProviderBase
 					}
 				}
 
-				bool ItemProviderBase::DetachCallback(GuiListControl::IItemProviderCallback* value)
+				bool ItemProviderBase::DetachCallback(list::IItemProviderCallback* value)
 				{
 					vint index=callbacks.IndexOf(value);
 					if(index==-1)

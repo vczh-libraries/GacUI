@@ -29,7 +29,7 @@ Interfaces
 				class IDataProcessorCallback : public virtual IDescriptable, public Description<IDataProcessorCallback>
 				{
 				public:
-					virtual GuiListControl::IItemProvider*				GetItemProvider() = 0;
+					virtual list::IItemProvider*						GetItemProvider() = 0;
 					virtual void										OnProcessorChanged() = 0;
 				};
 
@@ -352,7 +352,7 @@ DataProvider
 					void													RefreshAllItems() override;
 					void													NotifyColumnRebuilt() override;
 					void													NotifyColumnChanged() override;
-					GuiListControl::IItemProvider*							GetItemProvider()override;
+					list::IItemProvider*									GetItemProvider()override;
 
 					void													OnProcessorChanged()override;
 					void													OnItemSourceModified(vint start, vint count, vint newCount);

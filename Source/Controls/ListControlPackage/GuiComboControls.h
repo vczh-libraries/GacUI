@@ -65,7 +65,7 @@ ComboBox with GuiListControl
 			/// <summary>Combo box list control. This control is a combo box with a list control in its popup.</summary>
 			class GuiComboBoxListControl
 				: public GuiComboBoxBase
-				, private GuiListControl::IItemProviderCallback
+				, private list::IItemProviderCallback
 				, public Description<GuiComboBoxListControl>
 			{
 			public:
@@ -96,7 +96,7 @@ ComboBox with GuiListControl
 			private:
 				// ===================== GuiListControl::IItemProviderCallback =====================
 
-				void										OnAttached(GuiListControl::IItemProvider* provider)override;
+				void										OnAttached(list::IItemProvider* provider)override;
 				void										OnItemModified(vint start, vint count, vint newCount, bool itemReferenceUpdated)override;
 			public:
 				/// <summary>Create a control with a specified default theme and a list control that will be put in the popup control to show all items.</summary>
@@ -133,7 +133,7 @@ ComboBox with GuiListControl
 				description::Value							GetSelectedItem();
 				/// <summary>Get the item provider in the list control.</summary>
 				/// <returns>The item provider in the list control.</returns>
-				GuiListControl::IItemProvider*				GetItemProvider();
+				list::IItemProvider*						GetItemProvider();
 			};
 		}
 	}

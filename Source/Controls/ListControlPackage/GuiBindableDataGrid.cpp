@@ -522,7 +522,7 @@ DataProvider
 					RefreshAllItems();
 				}
 
-				GuiListControl::IItemProvider* DataProvider::GetItemProvider()
+				list::IItemProvider* DataProvider::GetItemProvider()
 				{
 					return this;
 				}

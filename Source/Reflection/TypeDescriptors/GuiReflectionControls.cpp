@@ -184,12 +184,26 @@ Type Declaration (Extra)
 				CLASS_MEMBER_CONSTRUCTOR(GuiSelectableButton::MutexGroupController*(), NO_PARAMETER)
 			END_CLASS_MEMBER(GuiSelectableButton::MutexGroupController)
 
-			BEGIN_INTERFACE_MEMBER(GuiListControl::IItemProviderCallback)
+			BEGIN_INTERFACE_MEMBER(list::IItemProviderCallback)
 				CLASS_MEMBER_BASE(IDescriptable)
 
 				CLASS_MEMBER_METHOD(OnAttached, {L"provider"})
 				CLASS_MEMBER_METHOD(OnItemModified, {L"start" _ L"count" _ L"newCount" _ L"itemReferenceUpdated"})
-			END_INTERFACE_MEMBER(GuiListControl::IItemProviderCallback)
+			END_INTERFACE_MEMBER(list::IItemProviderCallback)
+
+			BEGIN_INTERFACE_MEMBER(list::IItemProvider)
+				CLASS_MEMBER_BASE(IDescriptable)
+
+				CLASS_MEMBER_METHOD(AttachCallback, {L"value"})
+				CLASS_MEMBER_METHOD(DetachCallback, {L"value"})
+				CLASS_MEMBER_METHOD(PushEditing, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(PopEditing, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(IsEditing, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(Count, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(GetTextValue, { L"itemIndex" })
+				CLASS_MEMBER_METHOD(GetBindingValue, { L"itemIndex" })
+				CLASS_MEMBER_METHOD(RequestView, {L"identifier"})
+			END_INTERFACE_MEMBER(list::IItemProvider)
 
 			BEGIN_INTERFACE_MEMBER_NOPROXY(GuiListControl::IItemArrangerCallback)
 				CLASS_MEMBER_BASE(IDescriptable)
@@ -209,22 +223,8 @@ Type Declaration (Extra)
 				ENUM_CLASS_ITEM(NotMoved)
 			END_ENUM_ITEM(GuiListControl::EnsureItemVisibleResult)
 
-			BEGIN_INTERFACE_MEMBER(GuiListControl::IItemProvider)
-				CLASS_MEMBER_BASE(IDescriptable)
-
-				CLASS_MEMBER_METHOD(AttachCallback, {L"value"})
-				CLASS_MEMBER_METHOD(DetachCallback, {L"value"})
-				CLASS_MEMBER_METHOD(PushEditing, NO_PARAMETER)
-				CLASS_MEMBER_METHOD(PopEditing, NO_PARAMETER)
-				CLASS_MEMBER_METHOD(IsEditing, NO_PARAMETER)
-				CLASS_MEMBER_METHOD(Count, NO_PARAMETER)
-				CLASS_MEMBER_METHOD(GetTextValue, { L"itemIndex" })
-				CLASS_MEMBER_METHOD(GetBindingValue, { L"itemIndex" })
-				CLASS_MEMBER_METHOD(RequestView, {L"identifier"})
-			END_INTERFACE_MEMBER(GuiListControl::IItemProvider)
-
 			BEGIN_INTERFACE_MEMBER(GuiListControl::IItemArranger)
-				CLASS_MEMBER_BASE(GuiListControl::IItemProviderCallback)
+				CLASS_MEMBER_BASE(list::IItemProviderCallback)
 
 				CLASS_MEMBER_PROPERTY_FAST(Callback)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(TotalSize)
@@ -241,7 +241,7 @@ Type Declaration (Extra)
 			END_INTERFACE_MEMBER(GuiListControl::IItemArranger)
 
 			BEGIN_CLASS_MEMBER(ItemProviderBase)
-				CLASS_MEMBER_BASE(GuiListControl::IItemProvider)
+				CLASS_MEMBER_BASE(list::IItemProvider)
 			END_CLASS_MEMBER(ItemProviderBase)
 
 			BEGIN_CLASS_MEMBER(RangedItemArrangerBase)
@@ -285,7 +285,7 @@ Type Declaration (Extra)
 			END_CLASS_MEMBER(TextItem)
 
 			BEGIN_CLASS_MEMBER(TextItemProvider)
-				CLASS_MEMBER_BASE(GuiListControl::IItemProvider)
+				CLASS_MEMBER_BASE(list::IItemProvider)
 				CLASS_MEMBER_BASE(ITextItemView)
 			END_CLASS_MEMBER(TextItemProvider)
 
@@ -355,7 +355,7 @@ Type Declaration (Extra)
 			END_CLASS_MEMBER(ListViewColumn)
 
 			BEGIN_CLASS_MEMBER(ListViewItemProvider)
-				CLASS_MEMBER_BASE(GuiListControl::IItemProvider)
+				CLASS_MEMBER_BASE(list::IItemProvider)
 				CLASS_MEMBER_BASE(IListViewItemView)
 				CLASS_MEMBER_BASE(ListViewColumnItemArranger::IColumnItemView)
 			END_CLASS_MEMBER(ListViewItemProvider)
@@ -956,7 +956,7 @@ Type Declaration (Class)
 
 			BEGIN_CLASS_MEMBER(GuiListControl)
 				CLASS_MEMBER_BASE(GuiScrollView)
-				CONTROL_CONSTRUCTOR_CONTROLT_TEMPLATE_3(GuiListControl, GuiListControl::IItemProvider*, itemProvider, bool, acceptFocus)
+				CONTROL_CONSTRUCTOR_CONTROLT_TEMPLATE_3(GuiListControl, list::IItemProvider*, itemProvider, bool, acceptFocus)
 
 				CLASS_MEMBER_GUIEVENT(AdoptedSizeInvalidated)
 				CLASS_MEMBER_GUIEVENT(ItemLeftButtonDown)
@@ -984,7 +984,7 @@ Type Declaration (Class)
 
 			BEGIN_CLASS_MEMBER(GuiSelectableListControl)
 				CLASS_MEMBER_BASE(GuiListControl)
-				CONTROL_CONSTRUCTOR_CONTROLT_TEMPLATE_INHERITANCE_2(GuiSelectableListControl, GuiListControl::IItemProvider*, itemProvider)
+				CONTROL_CONSTRUCTOR_CONTROLT_TEMPLATE_INHERITANCE_2(GuiSelectableListControl, list::IItemProvider*, itemProvider)
 
 				CLASS_MEMBER_GUIEVENT(SelectionChanged)
 
@@ -1002,7 +1002,7 @@ Type Declaration (Class)
 
 			BEGIN_CLASS_MEMBER(GuiVirtualTextList)
 				CLASS_MEMBER_BASE(GuiSelectableListControl)
-				CONTROL_CONSTRUCTOR_CONTROLT_TEMPLATE_2(GuiVirtualTextList, GuiListControl::IItemProvider*, L"itemProvider")
+				CONTROL_CONSTRUCTOR_CONTROLT_TEMPLATE_2(GuiVirtualTextList, list::IItemProvider*, L"itemProvider")
 
 				CLASS_MEMBER_GUIEVENT(ItemChecked)
 				CLASS_MEMBER_PROPERTY_FAST(View)
@@ -1025,14 +1025,14 @@ Type Declaration (Class)
 
 			BEGIN_CLASS_MEMBER(GuiListViewBase)
 				CLASS_MEMBER_BASE(GuiSelectableListControl)
-				CONTROL_CONSTRUCTOR_CONTROLT_TEMPLATE_2(GuiListViewBase, GuiListControl::IItemProvider*, itemProvider)
+				CONTROL_CONSTRUCTOR_CONTROLT_TEMPLATE_2(GuiListViewBase, list::IItemProvider*, itemProvider)
 
 				CLASS_MEMBER_GUIEVENT(ColumnClicked)
 			END_CLASS_MEMBER(GuiListViewBase)
 
 			BEGIN_CLASS_MEMBER(GuiVirtualListView)
 				CLASS_MEMBER_BASE(GuiListViewBase)
-				CONTROL_CONSTRUCTOR_CONTROLT_TEMPLATE_INHERITANCE_2(GuiVirtualListView, GuiListControl::IItemProvider*, itemProvider)
+				CONTROL_CONSTRUCTOR_CONTROLT_TEMPLATE_INHERITANCE_2(GuiVirtualListView, list::IItemProvider*, itemProvider)
 
 				CLASS_MEMBER_PROPERTY_FAST(View)
 			END_CLASS_MEMBER(GuiVirtualListView)
@@ -1404,7 +1404,7 @@ Type Declaration (Class)
 
 			BEGIN_CLASS_MEMBER(GuiVirtualDataGrid)
 				CLASS_MEMBER_BASE(GuiVirtualListView)
-				CONTROL_CONSTRUCTOR_CONTROLT_TEMPLATE_INHERITANCE_2(GuiVirtualDataGrid, GuiListControl::IItemProvider*, itemProvider)
+				CONTROL_CONSTRUCTOR_CONTROLT_TEMPLATE_INHERITANCE_2(GuiVirtualDataGrid, list::IItemProvider*, itemProvider)
 
 				CLASS_MEMBER_PROPERTY_GUIEVENT_READONLY_FAST(SelectedCell)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(ItemProvider)

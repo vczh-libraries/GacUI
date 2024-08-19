@@ -9,6 +9,7 @@ Interfaces:
 #ifndef VCZH_PRESENTATION_CONTROLS_GUILISTCONTROLS
 #define VCZH_PRESENTATION_CONTROLS_GUILISTCONTROLS
 
+#include "DataSource_IItemProvider.h"
 #include "../GuiContainerControls.h"
 #include "../../GraphicsComposition/GuiGraphicsAxis.h"
 
@@ -33,31 +34,14 @@ List Control
 			{
 				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(ListControlTemplate, GuiScrollView)
 			public:
-				class IItemProvider;
-
 				using ItemStyle = templates::GuiListItemTemplate;
 				using ItemStyleBounds = templates::GuiTemplate;
 				using ItemStyleRecord = collections::Pair<ItemStyle*, ItemStyleBounds*>;
 				using ItemStyleProperty = TemplateProperty<templates::GuiListItemTemplate>;
 
 				//-----------------------------------------------------------
-				// Callback Interfaces
+				// IItemArrangerCallback
 				//-----------------------------------------------------------
-
-				/// <summary>Item provider callback. Item providers use this interface to notify item modification.</summary>
-				class IItemProviderCallback : public virtual IDescriptable, public Description<IItemProviderCallback>
-				{
-				public:
-					/// <summary>Called when an item provider callback object is attached to an item provider.</summary>
-					/// <param name="provider">The item provider.</param>
-					virtual void								OnAttached(IItemProvider* provider)=0;
-					/// <summary>Called when items in the item provider is modified.</summary>
-					/// <param name="start">The index of the first modified item.</param>
-					/// <param name="count">The number of all modified items.</param>
-					/// <param name="newCount">The number of new items. If items are inserted or removed, newCount may not equals to count.</param>
-					/// <param name="itemReferenceUpdated">True when items are replaced, false when only content in items are updated.</param>
-					virtual void								OnItemModified(vint start, vint count, vint newCount, bool itemReferenceUpdated)=0;
-				};
 
 				/// <summary>Item arranger callback. Item arrangers use this interface to communicate with the list control. When setting positions for item controls, functions in this callback object is suggested to call because they use the result from the [T:vl.presentation.controls.compositions.IGuiAxis].</summary>
 				class IItemArrangerCallback : public virtual IDescriptable, public Description<IItemArrangerCallback>
@@ -91,50 +75,7 @@ List Control
 				};
 
 				//-----------------------------------------------------------
-				// Data Source Interfaces
-				//-----------------------------------------------------------
-
-				/// <summary>Item provider for a <see cref="GuiListControl"/>.</summary>
-				class IItemProvider : public virtual IDescriptable, public Description<IItemProvider>
-				{
-				public:
-					/// <summary>Attach an item provider callback to this item provider.</summary>
-					/// <returns>Returns true if this operation succeeded.</returns>
-					/// <param name="value">The item provider callback.</param>
-					virtual bool								AttachCallback(IItemProviderCallback* value) = 0;
-					/// <summary>Detach an item provider callback from this item provider.</summary>
-					/// <returns>Returns true if this operation succeeded.</returns>
-					/// <param name="value">The item provider callback.</param>
-					virtual bool								DetachCallback(IItemProviderCallback* value) = 0;
-					/// <summary>Increase the editing counter indicating that an [T:vl.presentation.templates.GuiListItemTemplate] is editing an item.</summary>
-					virtual void								PushEditing() = 0;
-					/// <summary>Decrease the editing counter indicating that an [T:vl.presentation.templates.GuiListItemTemplate] has stopped editing an item.</summary>
-					/// <returns>Returns false if there is no supression before calling this function.</returns>
-					virtual bool								PopEditing() = 0;
-					/// <summary>Test if an [T:vl.presentation.templates.GuiListItemTemplate] is editing an item.</summary>
-					/// <returns>Returns false if there is no editing.</returns>
-					virtual bool								IsEditing() = 0;
-					/// <summary>Get the number of items in this item proivder.</summary>
-					/// <returns>The number of items in this item proivder.</returns>
-					virtual vint								Count() = 0;
-
-					/// <summary>Get the text representation of an item.</summary>
-					/// <returns>The text representation of an item.</returns>
-					/// <param name="itemIndex">The index of the item.</param>
-					virtual WString								GetTextValue(vint itemIndex) = 0;
-					/// <summary>Get the binding value of an item.</summary>
-					/// <returns>The binding value of an item.</returns>
-					/// <param name="itemIndex">The index of the item.</param>
-					virtual description::Value					GetBindingValue(vint itemIndex) = 0;
-
-					/// <summary>Request a view for this item provider. If the specified view is not supported, it returns null. If you want to get a view of type IXXX, use IXXX::Identifier as the identifier.</summary>
-					/// <returns>The view object.</returns>
-					/// <param name="identifier">The identifier for the requested view.</param>
-					virtual IDescriptable*						RequestView(const WString& identifier) = 0;
-				};
-
-				//-----------------------------------------------------------
-				// Item Layout Interfaces
+				// IItemArranger
 				//-----------------------------------------------------------
 
 				/// <summary>EnsureItemVisible result for item arranger.</summary>
@@ -149,7 +90,7 @@ List Control
 				};
 				
 				/// <summary>Item arranger for a <see cref="GuiListControl"/>. Item arranger decides how to arrange and item controls. When implementing an item arranger, <see cref="IItemArrangerCallback"/> is suggested to use when calculating locations and sizes for item controls.</summary>
-				class IItemArranger : public virtual IItemProviderCallback, public Description<IItemArranger>
+				class IItemArranger : public virtual list::IItemProviderCallback, public Description<IItemArranger>
 				{
 				public:
 					/// <summary>Called when an item arranger in installed to a <see cref="GuiListControl"/>.</summary>
@@ -200,12 +141,12 @@ List Control
 				// ItemCallback
 				//-----------------------------------------------------------
 
-				class ItemCallback : public IItemProviderCallback, public IItemArrangerCallback
+				class ItemCallback : public list::IItemProviderCallback, public IItemArrangerCallback
 				{
 					typedef collections::Dictionary<ItemStyle*, templates::GuiTemplate*>	InstalledStyleMap;
 				protected:
 					GuiListControl*								listControl = nullptr;
-					IItemProvider*								itemProvider = nullptr;
+					list::IItemProvider*						itemProvider = nullptr;
 					InstalledStyleMap							installedStyles;
 
 					ItemStyleRecord								InstallStyle(ItemStyle* style, vint itemIndex);
@@ -216,7 +157,7 @@ List Control
 
 					void										ClearCache();
 
-					void										OnAttached(IItemProvider* provider)override;
+					void										OnAttached(list::IItemProvider* provider)override;
 					void										OnItemModified(vint start, vint count, vint newCount, bool itemReferenceUpdated)override;
 					ItemStyle*									CreateItem(vint itemIndex)override;
 					ItemStyleBounds*							GetItemBounds(ItemStyle* style)override;
@@ -233,7 +174,7 @@ List Control
 				//-----------------------------------------------------------
 
 				Ptr<ItemCallback>								callback;
-				Ptr<IItemProvider>								itemProvider;
+				Ptr<list::IItemProvider>						itemProvider;
 				ItemStyleProperty								itemStyleProperty;
 				Ptr<IItemArranger>								itemArranger;
 				Ptr<compositions::IGuiAxis>						axis;
@@ -290,7 +231,7 @@ List Control
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				/// <param name="_itemProvider">The item provider as a data source.</param>
 				/// <param name="acceptFocus">Set to true if the list control is allowed to have a keyboard focus.</param>
-				GuiListControl(theme::ThemeName themeName, IItemProvider* _itemProvider, bool acceptFocus=false);
+				GuiListControl(theme::ThemeName themeName, list::IItemProvider* _itemProvider, bool acceptFocus=false);
 				~GuiListControl();
 
 				/// <summary>Style provider changed event.</summary>
@@ -329,7 +270,7 @@ List Control
 
 				/// <summary>Get the item provider.</summary>
 				/// <returns>The item provider.</returns>
-				virtual IItemProvider*							GetItemProvider();
+				virtual list::IItemProvider*					GetItemProvider();
 				/// <summary>Get the item style provider.</summary>
 				/// <returns>The item style provider.</returns>
 				virtual ItemStyleProperty						GetItemTemplate();
@@ -395,7 +336,7 @@ Selectable List Control
 				/// <summary>Create a control with a specified style provider.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				/// <param name="_itemProvider">The item provider as a data source.</param>
-				GuiSelectableListControl(theme::ThemeName themeName, IItemProvider* _itemProvider);
+				GuiSelectableListControl(theme::ThemeName themeName, list::IItemProvider* _itemProvider);
 				~GuiSelectableListControl();
 
 				/// <summary>Selection changed event.</summary>
@@ -449,42 +390,6 @@ Predefined ItemProvider
 
 			namespace list
 			{
-				/// <summary>Item provider base. This class provider common functionalities for item providers.</summary>
-				class ItemProviderBase : public Object, public virtual GuiListControl::IItemProvider, public Description<ItemProviderBase>
-				{
-				protected:
-					collections::List<GuiListControl::IItemProviderCallback*>	callbacks;
-					vint														editingCounter = 0;
-					bool														callingOnItemModified = false;
-
-					virtual void								InvokeOnItemModified(vint start, vint count, vint newCount, bool itemReferenceUpdated);
-				public:
-					/// <summary>Create the item provider.</summary>
-					ItemProviderBase();
-					~ItemProviderBase();
-
-					bool										AttachCallback(GuiListControl::IItemProviderCallback* value)override;
-					bool										DetachCallback(GuiListControl::IItemProviderCallback* value)override;
-					void										PushEditing()override;
-					bool										PopEditing()override;
-					bool										IsEditing()override;
-				};
-
-				template<typename T>
-				class ListProvider : public ItemProviderBase, public collections::ObservableListBase<T>
-				{
-				protected:
-					void NotifyUpdateInternal(vint start, vint count, vint newCount)override
-					{
-						InvokeOnItemModified(start, count, newCount, true);
-					}
-				public:
-					vint Count()override
-					{
-						return this->items.Count();
-					}
-				};
-
 				template<typename TBase>
 				class PredefinedListItemTemplate : public TBase
 				{

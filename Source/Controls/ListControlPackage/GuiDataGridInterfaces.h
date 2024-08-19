@@ -31,7 +31,7 @@ Datagrid Interfaces
 				class IDataGridContext : public virtual IDescriptable, public Description<IDataGridContext>
 				{
 				public:
-					virtual GuiListControl::IItemProvider*				GetItemProvider() = 0;
+					virtual list::IItemProvider*						GetItemProvider() = 0;
 					virtual templates::GuiListViewTemplate*				GetListViewControlTemplate() = 0;
 					virtual void										RequestSaveData() = 0;
 				};
@@ -64,7 +64,7 @@ Datagrid Interfaces
 					/// <param name="itemProvider">The item provider.</param>
 					/// <param name="row">The row number of the cell.</param>
 					/// <param name="column">The column number of the cell.</param>
-					virtual void										BeforeVisualizeCell(GuiListControl::IItemProvider* itemProvider, vint row, vint column) = 0;
+					virtual void										BeforeVisualizeCell(list::IItemProvider* itemProvider, vint row, vint column) = 0;
 
 					/// <summary>Set the selected state.</summary>
 					/// <param name="value">Set to true to make this data visualizer looks selected.</param>
@@ -99,7 +99,7 @@ Datagrid Interfaces
 					/// <param name="itemProvider">The item provider.</param>
 					/// <param name="row">The row number of the cell.</param>
 					/// <param name="column">The column number of the cell.</param>
-					virtual void										BeforeEditCell(GuiListControl::IItemProvider* itemProvider, vint row, vint column) = 0;
+					virtual void										BeforeEditCell(list::IItemProvider* itemProvider, vint row, vint column) = 0;
 
 					/// <summary>Test if the edit has saved the data.</summary>
 					/// <returns>Returns true if the data is saved.</returns>

@@ -25,6 +25,9 @@
     <Filter Include="GraphicsComposition">
       <UniqueIdentifier>{2c8a3885-4a06-4efc-9575-8670e591af73}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Controls\ListControlPackage\DataSource">
+      <UniqueIdentifier>{f9301ceb-63ea-4bc4-9674-870d2a8b5a8e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\GuiButtonControls.cpp">
@@ -162,6 +165,9 @@
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsComposition\GuiGraphicsRepeatComposition_Virtual.cpp">
       <Filter>GraphicsComposition</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ListControlPackage\DataSource_IItemProvider.cpp">
+      <Filter>Controls\ListControlPackage\DataSource</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -314,5 +320,8 @@
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\GacUIReflectionHelper.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\GacUI.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ListControlPackage\DataSource_IItemProvider.h">
+      <Filter>Controls\ListControlPackage\DataSource</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

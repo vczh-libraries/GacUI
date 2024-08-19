@@ -49,7 +49,7 @@ namespace vl
 				/// <summary>Create a list view base control.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				/// <param name="_itemProvider">The item provider for this control.</param>
-				GuiListViewBase(theme::ThemeName themeName, GuiListControl::IItemProvider* _itemProvider);
+				GuiListViewBase(theme::ThemeName themeName, list::IItemProvider* _itemProvider);
 				~GuiListViewBase();
 
 				/// <summary>Column clicked event.</summary>
@@ -488,7 +488,7 @@ GuiVirtualListView
 				/// <summary>Create a list view control in virtual mode.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				/// <param name="_itemProvider">The item provider for this control.</param>
-				GuiVirtualListView(theme::ThemeName themeName, GuiListControl::IItemProvider* _itemProvider);
+				GuiVirtualListView(theme::ThemeName themeName, list::IItemProvider* _itemProvider);
 				~GuiVirtualListView();
 
 				/// <summary>Get the current view.</summary>

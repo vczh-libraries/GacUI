@@ -216,7 +216,7 @@ GuiComboBoxListControl
 				}
 			}
 
-			void GuiComboBoxListControl::OnAttached(GuiListControl::IItemProvider* provider)
+			void GuiComboBoxListControl::OnAttached(list::IItemProvider* provider)
 			{
 			}
 
@@ -309,7 +309,7 @@ GuiComboBoxListControl
 				return description::Value();
 			}
 
-			GuiListControl::IItemProvider* GuiComboBoxListControl::GetItemProvider()
+			list::IItemProvider* GuiComboBoxListControl::GetItemProvider()
 			{
 				return containedListControl->GetItemProvider();
 			}

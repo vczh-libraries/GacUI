@@ -296,9 +296,9 @@ Type List (Controls)
 			F(presentation::controls::GuiSaveFileDialog)\
 			F(presentation::controls::GuiSelectableButton::GroupController)\
 			F(presentation::controls::GuiSelectableButton::MutexGroupController)\
-			F(presentation::controls::GuiListControl::IItemProviderCallback)\
+			F(presentation::controls::list::IItemProviderCallback)\
+			F(presentation::controls::list::IItemProvider)\
 			F(presentation::controls::GuiListControl::IItemArrangerCallback)\
-			F(presentation::controls::GuiListControl::IItemProvider)\
 			F(presentation::controls::GuiListControl::EnsureItemVisibleResult)\
 			F(presentation::controls::GuiListControl::IItemArranger)\
 			F(presentation::controls::list::ItemProviderBase)\
@@ -710,9 +710,9 @@ Interface Proxy (Compositions)
 Interface Proxy (Controls)
 ***********************************************************************/
 
-			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(presentation::controls::GuiListControl::IItemProviderCallback)
+			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(presentation::controls::list::IItemProviderCallback)
 
-				void OnAttached(presentation::controls::GuiListControl::IItemProvider* provider)override
+				void OnAttached(presentation::controls::list::IItemProvider* provider)override
 				{
 					INVOKE_INTERFACE_PROXY(OnAttached, provider);
 				}
@@ -723,14 +723,14 @@ Interface Proxy (Controls)
 				}
 			END_INTERFACE_PROXY(presentation::controls::GuiListControl::IItemProviderCallback)
 
-			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(presentation::controls::GuiListControl::IItemProvider)
+			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(presentation::controls::list::IItemProvider)
 
-				bool AttachCallback(presentation::controls::GuiListControl::IItemProviderCallback* value)override
+				bool AttachCallback(presentation::controls::list::IItemProviderCallback* value)override
 				{
 					INVOKEGET_INTERFACE_PROXY(AttachCallback, value);
 				}
 
-				bool DetachCallback(presentation::controls::GuiListControl::IItemProviderCallback* value)override
+				bool DetachCallback(presentation::controls::list::IItemProviderCallback* value)override
 				{
 					INVOKEGET_INTERFACE_PROXY(DetachCallback, value);
 				}
@@ -772,7 +772,7 @@ Interface Proxy (Controls)
 			END_INTERFACE_PROXY(presentation::controls::GuiListControl::IItemProvider)
 			
 			BEGIN_INTERFACE_PROXY_SHAREDPTR(presentation::controls::GuiListControl::IItemArranger,
-				presentation::controls::GuiListControl::IItemProviderCallback
+				presentation::controls::list::IItemProviderCallback
 				)
 
 				void AttachListControl(presentation::controls::GuiListControl* value)override
@@ -1029,7 +1029,7 @@ Interface Proxy (Controls)
 
 			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(presentation::controls::list::IDataGridContext)
 
-				presentation::controls::GuiListControl::IItemProvider* GetItemProvider()override
+				presentation::controls::list::IItemProvider* GetItemProvider()override
 				{
 					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetItemProvider);
 				}
@@ -1096,7 +1096,7 @@ Interface Proxy (Controls)
 
 			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(presentation::controls::list::IDataProcessorCallback)
 
-				presentation::controls::GuiListControl::IItemProvider* GetItemProvider()override
+				presentation::controls::list::IItemProvider* GetItemProvider()override
 				{
 					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetItemProvider);
 				}
