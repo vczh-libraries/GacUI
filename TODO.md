@@ -47,7 +47,7 @@
 
 - GacUI Binary Resource (when new features are added)
   - Upgrade GacUI XML Resource to 1.3, force on all resources instead of only depended or depending resource.
-  - Require binary pattern "[GMR-1.3]" at the beginning of the binary resource.
+  - Require binary pattern "[GXR-1.3]" at the beginning of the binary resource.
   - Resource compiler and loader will check the version and only accept 1.3.
 
 ## Release Milestone (1.2.10.2)
@@ -197,10 +197,6 @@
 
 ## OS Provider Features
 
-- Drag and Drop framework.
-  - Substitutable.
-  - `GuiFakeDragAndDropService`.
-  - Substitute DragAndDrop by default optionally.
 - Windows
   - `INativeImage::SaveToStream` handle correctly for git format. It is possible that LoadFromStream need to process diff between git raw frames.
 - UI Automation.
@@ -215,27 +211,45 @@
     - ListView: only raises an event, developers need to update column headers and data by themselves.
     - DataGrid: swap column object, cells are changed due to binding.
 - ListView.
-  - `GroupedListView` and `BindableGroupedListView` from `GuiVirtualListView`: Group headers on all views.
-  - `TreeListView` and `BindableTreeListView` from `GuiVirtualTreeView`.
-    - Or add such feature to `GuiBindableDataGrid` or a new class `GuiBindableTreeGrid`.
-      - Try to reuse code from treeview.
-- Chart control.
+  - Make a common template base class for `IItemProvider` implementation of bindable and non-bindable pair of the same virtual control:
+    - The template argument would be the base class which implements the differences.
+    - `list::TextItemProvider` vs `GuiBindableTextList::ItemSource`.
+    - `list::ListViewItemProvider` vs `GuiBindableListView::ItemSource`.
+      - Extends to `list::DataProvider`.
+    - `tree::TreeViewItemRootProvider` vs `GuiBindableTreeView::ItemSource`.
+  - `GuiBindableDataGrid`:
+    - Add customizable row visualizer.
+    - The default (or `nullptr`) row visualizer displays cell visualizer and editor.
+  - `GuiBindableTreeDataGrid`:
+    - Offer a default group header row visualizer when users only need one level of collapsable `GuiBindableDataGrid`.
+    - Replace the new `list::DataProvider`'s base class with `tree::NodeItemProvider` offering `GuiBindableTreeView::ItemSource` to make a useful data source.
 - Upgraded Code editor (need VlppParser2)
-- Dock container.
-  - Use drag and drop to perform docking
-  - A small framework for implementing dock guiding UI
-  - A predefined dockable tool window for users that are fine with the default behavior about how to transfer content to the dock container
-  - A "binary tree layout/control" for implementing VS-like dock container
 - Touch support.
+
+## Drag and Drop
+
+- Drag and Drop framework.
+  - Substitutable.
+  - `GuiFakeDragAndDropService`.
+    - Activated by substitution when an OS dependent implementation is not available.
+- Dock container.
+  - Use drag and drop to perform docking.
+  - A small framework for implementing dock guiding UI.
+  - A predefined dockable tool window for users that are fine with the default behavior about how to transfer content to the dock container.
+  - A "binary tree layout/control" for implementing VS-like dock container.
 
 ## Graphics
 
-- 2D drawing API.
-- restriction-based MetaImageElement.
-  - Remove PolygonElement.
+- 2D drawing API, optional at runtime.
   - Default non-text element renderer using 2D drawing API.
+    - Activated only when 2D drawing API is available and renderer implementations are unavailable.
+  - Ensure OS providers without 2D drawing API still work.
+- restriction-based Meta2DElement.
+  - If 2D drawing API is not available, display a text using `SolidLabel`.
 - Meta3DElement and Meta3D data structure.
-  - Default Meta3DElement renderer using MetaImageElement with a surface sorting based algorithm.
+  - Default Meta3DElement renderer using Meta2DElement with a surface sorting based algorithm.
+- 2D Chart control based on Meta2DElement.
+- 3D Chart control based on Meta3DElement.
 - GIF player.
 - video player.
 
@@ -305,6 +319,7 @@
     - Need to be consistent with animation object
   - Consider multiple `-ani` batch control, state configuration and transition, story board, connection to animation coroutine, etc.
 - `<eval Eval="expression"/>` tags.
+- Facade
   - A facade is a class with following methods:
     - **AddChild**: Accept a child facade or a child object.
     - **ApplyTo**: Accept a parent object, which is not a facade.
@@ -312,7 +327,6 @@
   - A facade could have properties but only accept assignment or `-eval` binding.
   - A facade could have an optional **InstanceFacadeVerifier** executed on GacGen compile time.
   - Built-in Layout and Form facade.
-- Facade
   - If `<XFacade>` or `<x:XFacade>` is an accessible and default constructible object, then `<X>` or `<x:X>` triggers a facade.
 
 ## GacUI Resource Compiler (unprioritized)
