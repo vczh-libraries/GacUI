@@ -203,6 +203,7 @@ ListViewColumnItemArranger
 					void										ColumnHeaderSplitterLeftButtonDown(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments);
 					void										ColumnHeaderSplitterLeftButtonUp(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments);
 					void										ColumnHeaderSplitterMouseMove(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments);
+					void										ColumnHeadersCachedBoundsChanged(compositions::GuiGraphicsComposition* composition, compositions::GuiEventArgs& arguments);
 
 					void										FixColumnsAfterViewLocationChanged();
 					void										FixColumnsAfterLayout();
@@ -210,6 +211,7 @@ ListViewColumnItemArranger
 					vint										GetColumnsYOffset();
 					void										DeleteColumnButtons();
 					void										RebuildColumns();
+					void										UpdateRepeatConfig();
 					void										RefreshColumns();
 				public:
 					ListViewColumnItemArranger();

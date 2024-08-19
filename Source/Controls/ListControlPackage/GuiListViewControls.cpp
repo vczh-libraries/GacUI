@@ -194,6 +194,11 @@ ListViewColumnItemArranger
 					}
 				}
 
+				void ListViewColumnItemArranger::ColumnHeadersCachedBoundsChanged(compositions::GuiGraphicsComposition* composition, compositions::GuiEventArgs& arguments)
+				{
+					UpdateRepeatConfig();
+				}
+
 				void ListViewColumnItemArranger::FixColumnsAfterViewLocationChanged()
 				{
 					vint x = GetRepeatComposition()->GetViewLocation().x;
@@ -307,6 +312,12 @@ ListViewColumnItemArranger
 					callback->OnTotalSizeChanged();
 				}
 
+				void ListViewColumnItemArranger::UpdateRepeatConfig()
+				{
+					GetRepeatComposition()->SetItemWidth(GetColumnsWidth());
+					GetRepeatComposition()->SetItemYOffset(GetColumnsYOffset());
+				}
+
 				void ListViewColumnItemArranger::RefreshColumns()
 				{
 					if (columnItemView && listViewItemView)
@@ -320,8 +331,7 @@ ListViewColumnItemArranger
 							button->GetBoundsComposition()->SetExpectedBounds(Rect(Point(0, 0), Size(columnItemView->GetColumnSize(i), 0)));
 						}
 						columnHeaders->ForceCalculateSizeImmediately();
-						GetRepeatComposition()->SetItemWidth(GetColumnsWidth());
-						GetRepeatComposition()->SetItemYOffset(GetColumnsYOffset());
+						UpdateRepeatConfig();
 					}
 				}
 
@@ -330,6 +340,7 @@ ListViewColumnItemArranger
 				{
 					columnHeaders = new GuiStackComposition;
 					columnHeaders->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
+					columnHeaders->CachedBoundsChanged.AttachMethod(this, &ListViewColumnItemArranger::ColumnHeadersCachedBoundsChanged);
 					columnItemViewCallback = Ptr(new ColumnItemViewCallback(this));
 					GetRepeatComposition()->ViewLocationChanged.AttachMethod(this, &ListViewColumnItemArranger::OnViewLocationChanged);
 				}

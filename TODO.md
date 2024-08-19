@@ -9,6 +9,7 @@
   - Fix progress bar is focusable.
   - Fix `GuiListControl` incompatible with non-default axis.
   - Fix `GuiTextList::SelectionChanged` not raised when changing properties of the only selected `list::TextItem`.
+  - Fix `GuiVirtualListView` in `Details` view column header height doesn't sync to item arranger in real-time.
 - `GuiTreeItemTemplate` change base class to `GuiListItemTemplate`
 - Make `ItemSource` class of bindable list controls reflectable.
 
@@ -39,8 +40,7 @@
     - When the content is changed, configuration needs 2 idle frames to be correctly configured.
   - Unit Test for `GuiListItemTemplate/ArrangerAndAxis(WithScrolls)`, items are not aligned to proper corner when scrolls are invisible.
   - Unit Test for `GuiVirtualListView`
-    - `Data_32` isn't property rendered in `UnitTestSnapshotViewer`
-    - `Detail` view doesn't scroll to top by default
+    - `Data_32.png` isn't property rendered in `UnitTestSnapshotViewer`
 
 ## Release (optional)
 
