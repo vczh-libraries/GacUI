@@ -1,4 +1,4 @@
-﻿================================(1/3)================================
+﻿================================(1/2)================================
 module <constructor>gacuisrc_unittest::MainWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -45,7 +45,7 @@ namespace gacuisrc_unittest
         var <precompile>5 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
-        var list : ::presentation::controls::GuiBindableListView* = null of (::presentation::controls::GuiBindableListView*);
+        var list : ::presentation::controls::GuiListView* = null of (::presentation::controls::GuiListView*);
 
         @cpp:Protected
         func <gacuisrc_unittest-MainWindow>Initialize(<this> : ::gacuisrc_unittest::MainWindow*) : (::system::Void)
@@ -55,22 +55,8 @@ namespace gacuisrc_unittest
                 (self.ClientSize = {x : 640; y : 480;} of (::presentation::Size));
             }
             {
-                (list = new (::presentation::controls::GuiBindableListView*)(::presentation::theme::ThemeName::ListView));
+                (list = new (::presentation::controls::GuiListView*)(::presentation::theme::ThemeName::ListView));
                 <this>.SetNamedObject("list", list);
-            }
-            {
-                (list.SmallImageProperty = func (<item> : ::system::Object) : (::presentation::GuiImageData^)
-                {
-                    var item = (cast (ListViewData^) <item>);
-                    return item.SmallImage;
-                });
-            }
-            {
-                (list.LargeImageProperty = func (<item> : ::system::Object) : (::presentation::GuiImageData^)
-                {
-                    var item = (cast (ListViewData^) <item>);
-                    return item.LargeImage;
-                });
             }
             {
                 var <collection> = list.DataColumns;
@@ -99,13 +85,6 @@ namespace gacuisrc_unittest
             }
             (<precompile>0 = new (::presentation::controls::list::ListViewColumn^)());
             {
-                (<precompile>0.TextProperty = func (<item> : ::system::Object) : (::system::String)
-                {
-                    var item = (cast (ListViewData^) <item>);
-                    return item.Id;
-                });
-            }
-            {
                 (<precompile>0.Text = "Id");
             }
             {
@@ -115,13 +94,6 @@ namespace gacuisrc_unittest
             (<precompile>1 = new (::presentation::controls::list::ListViewColumn^)());
             {
                 (<precompile>1.Size = 100 of (::system::Int64));
-            }
-            {
-                (<precompile>1.TextProperty = func (<item> : ::system::Object) : (::system::String)
-                {
-                    var item = (cast (ListViewData^) <item>);
-                    return item.First;
-                });
             }
             {
                 (<precompile>1.Text = "First");
@@ -135,13 +107,6 @@ namespace gacuisrc_unittest
                 (<precompile>2.Size = 100 of (::system::Int64));
             }
             {
-                (<precompile>2.TextProperty = func (<item> : ::system::Object) : (::system::String)
-                {
-                    var item = (cast (ListViewData^) <item>);
-                    return item.Second;
-                });
-            }
-            {
                 (<precompile>2.Text = "Second");
             }
             {
@@ -151,13 +116,6 @@ namespace gacuisrc_unittest
             (<precompile>3 = new (::presentation::controls::list::ListViewColumn^)());
             {
                 (<precompile>3.Size = 100 of (::system::Int64));
-            }
-            {
-                (<precompile>3.TextProperty = func (<item> : ::system::Object) : (::system::String)
-                {
-                    var item = (cast (ListViewData^) <item>);
-                    return item.Third;
-                });
             }
             {
                 (<precompile>3.Text = "Third");
@@ -171,13 +129,6 @@ namespace gacuisrc_unittest
                 (<precompile>4.Size = 100 of (::system::Int64));
             }
             {
-                (<precompile>4.TextProperty = func (<item> : ::system::Object) : (::system::String)
-                {
-                    var item = (cast (ListViewData^) <item>);
-                    return item.Fourth;
-                });
-            }
-            {
                 (<precompile>4.Text = "Fourth");
             }
             {
@@ -188,14 +139,11 @@ namespace gacuisrc_unittest
                 self.AddChild(list);
             }
             {
-                (list.ItemSource = self.items);
-            }
-            {
                 var <created-subscription> = new (::system::Subscription^)
                 {
-                    var <bind-cache>0 : ::presentation::controls::GuiBindableListView* = null of (::presentation::controls::GuiBindableListView*);
+                    var <bind-cache>0 : ::presentation::controls::GuiListView* = null of (::presentation::controls::GuiListView*);
 
-                    var <bind-cache>1 : ::presentation::controls::GuiBindableListView* = null of (::presentation::controls::GuiBindableListView*);
+                    var <bind-cache>1 : ::presentation::controls::GuiListView* = null of (::presentation::controls::GuiListView*);
 
                     var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
 
@@ -226,8 +174,8 @@ namespace gacuisrc_unittest
                         if ((!<bind-opened>))
                         {
                             (<bind-opened> = true);
-                            (<bind-cache>0 = (list ?? null of (::presentation::controls::GuiBindableListView*)));
-                            (<bind-cache>1 = (list ?? null of (::presentation::controls::GuiBindableListView*)));
+                            (<bind-cache>0 = (list ?? null of (::presentation::controls::GuiListView*)));
+                            (<bind-cache>1 = (list ?? null of (::presentation::controls::GuiListView*)));
                             (<bind-handler>0_0 = (attach(<bind-cache>0.SelectionChanged, <bind-callback>0_0) ?? null));
                             (<bind-handler>1_0 = (attach(<bind-cache>1.SelectionChanged, <bind-callback>1_0) ?? null));
                             return true;
@@ -260,8 +208,8 @@ namespace gacuisrc_unittest
                                 detach(<bind-cache>1.SelectionChanged, <bind-handler>1_0);
                                 (<bind-handler>1_0 = null);
                             }
-                            (<bind-cache>0 = null of (::presentation::controls::GuiBindableListView*));
-                            (<bind-cache>1 = null of (::presentation::controls::GuiBindableListView*));
+                            (<bind-cache>0 = null of (::presentation::controls::GuiListView*));
+                            (<bind-cache>1 = null of (::presentation::controls::GuiListView*));
                             (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
                             (<bind-handler>1_0 = null of (::system::reflection::EventHandler^));
                             return true;
@@ -289,7 +237,7 @@ namespace gacuisrc_unittest
     }
 }
 
-================================(2/3)================================
+================================(2/2)================================
 module <instance>gacuisrc_unittest::MainWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -316,45 +264,28 @@ namespace gacuisrc_unittest
     @cpp:Friend(typeof(MainWindowConstructor))
     class MainWindow : ::presentation::controls::GuiWindow, MainWindowConstructor
     {
-        var largeImages : GuiImageData^[] = null;
-
-        var smallImages : GuiImageData^[] = null;
-
-        func EnsureImages() : (void)
-        {
-            if (largeImages is not null)
-            {
-                return;
-            }
-            (largeImages = {(cast (GuiImageData^) self.ResolveResource("res", "ListViewImages/LargeImages/Cert", true)); (cast (GuiImageData^) self.ResolveResource("res", "ListViewImages/LargeImages/Data", true)); (cast (GuiImageData^) self.ResolveResource("res", "ListViewImages/LargeImages/Link", true)); (cast (GuiImageData^) self.ResolveResource("res", "ListViewImages/LargeImages/Folder", true)); (cast (GuiImageData^) self.ResolveResource("res", "ListViewImages/LargeImages/Light", true));});
-            (smallImages = {(cast (GuiImageData^) self.ResolveResource("res", "ListViewImages/SmallImages/Cert", true)); (cast (GuiImageData^) self.ResolveResource("res", "ListViewImages/SmallImages/Data", true)); (cast (GuiImageData^) self.ResolveResource("res", "ListViewImages/SmallImages/Link", true)); (cast (GuiImageData^) self.ResolveResource("res", "ListViewImages/SmallImages/Folder", true)); (cast (GuiImageData^) self.ResolveResource("res", "ListViewImages/SmallImages/Light", true));});
-        }
-
         func GetLargeImage(index : int) : (GuiImageData^)
         {
-            EnsureImages();
-            return largeImages[index];
+            return null;
         }
 
         func GetSmallImage(index : int) : (GuiImageData^)
         {
-            EnsureImages();
-            return smallImages[index];
+            return null;
         }
 
-        var items : observe ListViewData^[] = {};
-
-        func MakeItem(name : string, item : int) : (ListViewData^)
+        func MakeItem(name : string, item : int) : (ListViewItem^)
         {
-            var index = (item == (-1)) ? (items.Count + 1) : item;
-            var listViewItem = new (ListViewData^)();
-            (listViewItem.Id = ((("" & name) & " ") & index));
-            (listViewItem.First = ("1st:" & (index * 1)));
-            (listViewItem.Second = ("2nd:" & (index * 2)));
-            (listViewItem.Third = ("3rd:" & (index * 3)));
-            (listViewItem.Fourth = ("4th:" & (index * 4)));
+            var index = (item == (-1)) ? (list.Items.Count + 1) : item;
+            var listViewItem = new (ListViewItem^)();
+            (listViewItem.Text = ((("" & name) & " ") & index));
+            listViewItem.SubItems.Add(("1st:" & (index * 1)));
+            listViewItem.SubItems.Add(("2nd:" & (index * 2)));
+            listViewItem.SubItems.Add(("3rd:" & (index * 3)));
+            listViewItem.SubItems.Add(("4th:" & (index * 4)));
             (listViewItem.LargeImage = GetLargeImage(((index - 1) % 5)));
             (listViewItem.SmallImage = GetSmallImage(((index - 1) % 5)));
+            return listViewItem;
         }
 
         func InitializeItems(count : int) : (void)
@@ -366,7 +297,7 @@ namespace gacuisrc_unittest
                 while ((item <= <for-end>item))
                 {
                     {
-                        items.Add(MakeItem("Item", item));
+                        list.Items.Add(MakeItem("Item", item));
                     }
                     (item = (item + 1));
                 }
@@ -386,123 +317,6 @@ namespace gacuisrc_unittest
         {
             FinalizeInstanceRecursively(this of (::presentation::controls::GuiControlHost*));
         }
-    }
-}
-
-================================(3/3)================================
-module treeviewdata;
-using system::*;
-using presentation::*;
-
-class ListViewData
-{
-    @cpp:Private
-    var <prop>Id : string = "";
-
-    func GetId() : (string)
-    {
-        return <prop>Id;
-    }
-
-    func SetId(<value> : string) : (void)
-    {
-        (<prop>Id = <value>);
-    }
-
-    prop Id : string{GetId, SetId}
-
-    @cpp:Private
-    var <prop>First : string = "";
-
-    func GetFirst() : (string)
-    {
-        return <prop>First;
-    }
-
-    func SetFirst(<value> : string) : (void)
-    {
-        (<prop>First = <value>);
-    }
-
-    prop First : string{GetFirst, SetFirst}
-
-    @cpp:Private
-    var <prop>Second : string = "";
-
-    func GetSecond() : (string)
-    {
-        return <prop>Second;
-    }
-
-    func SetSecond(<value> : string) : (void)
-    {
-        (<prop>Second = <value>);
-    }
-
-    prop Second : string{GetSecond, SetSecond}
-
-    @cpp:Private
-    var <prop>Third : string = "";
-
-    func GetThird() : (string)
-    {
-        return <prop>Third;
-    }
-
-    func SetThird(<value> : string) : (void)
-    {
-        (<prop>Third = <value>);
-    }
-
-    prop Third : string{GetThird, SetThird}
-
-    @cpp:Private
-    var <prop>Fourth : string = "";
-
-    func GetFourth() : (string)
-    {
-        return <prop>Fourth;
-    }
-
-    func SetFourth(<value> : string) : (void)
-    {
-        (<prop>Fourth = <value>);
-    }
-
-    prop Fourth : string{GetFourth, SetFourth}
-
-    @cpp:Private
-    var <prop>LargeImage : GuiImageData^ = null;
-
-    func GetLargeImage() : (GuiImageData^)
-    {
-        return <prop>LargeImage;
-    }
-
-    func SetLargeImage(<value> : GuiImageData^) : (void)
-    {
-        (<prop>LargeImage = <value>);
-    }
-
-    prop LargeImage : GuiImageData^{GetLargeImage, SetLargeImage}
-
-    @cpp:Private
-    var <prop>SmallImage : GuiImageData^ = null;
-
-    func GetSmallImage() : (GuiImageData^)
-    {
-        return <prop>SmallImage;
-    }
-
-    func SetSmallImage(<value> : GuiImageData^) : (void)
-    {
-        (<prop>SmallImage = <value>);
-    }
-
-    prop SmallImage : GuiImageData^{GetSmallImage, SetSmallImage}
-
-    new ()
-    {
     }
 }
 

@@ -290,6 +290,20 @@ namespace gacuisrc_unittest
             return smallImages[index];
         }
 
+        func MakeItem(name : string, item : int) : (ListViewItem^)
+        {
+            var index = (item == (-1)) ? (list.Items.Count + 1) : item;
+            var listViewItem = new (ListViewItem^)();
+            (listViewItem.Text = ((("" & name) & " ") & index));
+            listViewItem.SubItems.Add(("1st:" & (index * 1)));
+            listViewItem.SubItems.Add(("2nd:" & (index * 2)));
+            listViewItem.SubItems.Add(("3rd:" & (index * 3)));
+            listViewItem.SubItems.Add(("4th:" & (index * 4)));
+            (listViewItem.LargeImage = GetLargeImage(((index - 1) % 5)));
+            (listViewItem.SmallImage = GetSmallImage(((index - 1) % 5)));
+            return listViewItem;
+        }
+
         func InitializeItems(count : int) : (void)
         {
             {
@@ -299,15 +313,7 @@ namespace gacuisrc_unittest
                 while ((item <= <for-end>item))
                 {
                     {
-                        var listViewItem = new (ListViewItem^)();
-                        (listViewItem.Text = ("Item " & item));
-                        listViewItem.SubItems.Add(("1st:" & (item * 1)));
-                        listViewItem.SubItems.Add(("2nd:" & (item * 2)));
-                        listViewItem.SubItems.Add(("3rd:" & (item * 3)));
-                        listViewItem.SubItems.Add(("4th:" & (item * 4)));
-                        (listViewItem.LargeImage = GetLargeImage(((item - 1) % 5)));
-                        (listViewItem.SmallImage = GetSmallImage(((item - 1) % 5)));
-                        list.Items.Add(listViewItem);
+                        list.Items.Add(MakeItem("Item", item));
                     }
                     (item = (item + 1));
                 }

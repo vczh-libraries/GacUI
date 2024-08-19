@@ -59,19 +59,24 @@ TEST_FILE
 	***********************************************************************/
 	{
 		const WString fragmentMembers = LR"GacUISrc(
+        func MakeItem(name:string, item:int) : ListViewItem^
+        {
+          var index = item == -1 ? list.Items.Count + 1 : item;
+          var listViewItem = new ListViewItem^();
+          listViewItem.Text = $"$(name) $(index)";
+          listViewItem.SubItems.Add($"1st:$(index * 1)");
+          listViewItem.SubItems.Add($"2nd:$(index * 2)");
+          listViewItem.SubItems.Add($"3rd:$(index * 3)");
+          listViewItem.SubItems.Add($"4th:$(index * 4)");
+          listViewItem.LargeImage = GetLargeImage((index - 1) % 5);
+          listViewItem.SmallImage = GetSmallImage((index - 1) % 5);
+          return listViewItem;
+        }
         func InitializeItems(count:int) : void
         {
           for (item in range[1, count])
           {
-            var listViewItem = new ListViewItem^();
-            listViewItem.Text = $"Item $(item)";
-            listViewItem.SubItems.Add($"1st:$(item * 1)");
-            listViewItem.SubItems.Add($"2nd:$(item * 2)");
-            listViewItem.SubItems.Add($"3rd:$(item * 3)");
-            listViewItem.SubItems.Add($"4th:$(item * 4)");
-            listViewItem.LargeImage = GetLargeImage((item - 1) % 5);
-            listViewItem.SmallImage = GetSmallImage((item - 1) % 5);
-            list.Items.Add(listViewItem);
+            list.Items.Add(MakeItem("Item", item));
           }
         }
 )GacUISrc";
@@ -122,7 +127,7 @@ TEST_FILE
 
 		auto getItems = [](GuiWindow* window)
 		{
-			auto listControl = FindObjectByName<GuiTextList>(window, L"list");
+			auto listControl = FindObjectByName<GuiListView>(window, L"list");
 			return UnboxValue<Ptr<IValueList>>(BoxParameter(listControl->GetItems()));
 		};
 
@@ -167,19 +172,23 @@ TEST_FILE
 
 	const WString fragmentMembers = LR"GacUISrc(
         var items:observe ListViewData^[] = {};
+        func MakeItem(name:string, item:int) : ListViewData^
+        {
+          var index = item == -1 ? items.Count + 1 : item;
+          var listViewItem = new ListViewData^();
+          listViewItem.Id = $"$(name) $(index)";
+          listViewItem.First = $"1st:$(index * 1)";
+          listViewItem.Second = $"2nd:$(index * 2)";
+          listViewItem.Third = $"3rd:$(index * 3)";
+          listViewItem.Fourth = $"4th:$(index * 4)";
+          listViewItem.LargeImage = GetLargeImage((index - 1) % 5);
+          listViewItem.SmallImage = GetSmallImage((index - 1) % 5);
+        }
         func InitializeItems(count:int) : void
         {
           for (item in range[1, count])
           {
-            var listViewItem = new ListViewData^();
-            listViewItem.Id = $"Item $(item)";
-            listViewItem.First = $"1st:$(item * 1)";
-            listViewItem.Second = $"2nd:$(item * 2)";
-            listViewItem.Third = $"3rd:$(item * 3)";
-            listViewItem.Fourth = $"4th:$(item * 4)";
-            listViewItem.LargeImage = GetLargeImage((item - 1) % 5);
-            listViewItem.SmallImage = GetSmallImage((item - 1) % 5);
-            items.Add(listViewItem);
+            items.Add(MakeItem("Item", item));
           }
         }
 )GacUISrc";
@@ -189,7 +198,7 @@ TEST_FILE
 	***********************************************************************/
 	{
 		const WString fragmentWindow = LR"GacUISrc(
-      <Window ref.Name="self" Text-format="GuiListView [$(list.SelectedItemIndex)] -&gt; [$(list.SelectedItemText)]" ClientSize="x:640 y:480">
+      <Window ref.Name="self" Text-format="GuiBindableListView [$(list.SelectedItemIndex)] -&gt; [$(list.SelectedItemText)]" ClientSize="x:640 y:480">
         <BindableListView ref.Name="list" env.ItemType="ListViewData^" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
           <att.BoundsComposition-set PreferredMinSize="x:400 y:300" AlignmentToParent="left:0 top:5 right:0 bottom:0"/>
           <att.ItemSource-eval>self.items</ItemSource-eval>
@@ -248,7 +257,7 @@ TEST_FILE
 	***********************************************************************/
 	{
 		const WString fragmentWindow = LR"GacUISrc(
-      <Window ref.Name="self" Text-format="GuiListView [$(list.SelectedItemIndex)] -&gt; [$(list.SelectedItemText)]" ClientSize="x:640 y:480">
+      <Window ref.Name="self" Text-format="GuiBindableDataGrid [$(list.SelectedItemIndex)] -&gt; [$(list.SelectedItemText)]" ClientSize="x:640 y:480">
         <BindableDataGrid ref.Name="list" env.ItemType="ListViewData^" View="Detail" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
           <att.BoundsComposition-set PreferredMinSize="x:400 y:300" AlignmentToParent="left:0 top:5 right:0 bottom:0"/>
           <att.ItemSource-eval>self.items</ItemSource-eval>

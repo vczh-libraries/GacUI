@@ -2,6 +2,11 @@
 
 namespace gacui_unittest_template
 {
+	static void InitializeItems(GuiWindow* window, vint count)
+	{
+		Value::From(window).Invoke(L"InitializeItems", (Value_xs(), BoxValue<vint>(count)));
+	}
+
 	void GuiVirtualTextList_TestCases(
 		WString resourceXml,
 		WString pathFragment,
@@ -17,7 +22,7 @@ namespace gacui_unittest_template
 				protocol->OnNextIdleFrame(L"Ready", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
-					Value::From(window).Invoke(L"InitializeItems", (Value_xs(), BoxValue<vint>(5)));
+					InitializeItems(window, 5);
 				});
 				protocol->OnNextIdleFrame(L"5 Items", [=]()
 				{
@@ -76,7 +81,7 @@ namespace gacui_unittest_template
 				protocol->OnNextIdleFrame(L"Ready", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
-					Value::From(window).Invoke(L"InitializeItems", (Value_xs(), BoxValue<vint>(20)));
+					InitializeItems(window, 20);
 				});
 				protocol->OnNextIdleFrame(L"20 Items", [=]()
 				{
@@ -185,7 +190,7 @@ namespace gacui_unittest_template
 						auto listControl = FindObjectByName<GuiVirtualTextList>(window, L"list");
 						listControl->SetView(TextListView::Check);
 					}
-					Value::From(window).Invoke(L"InitializeItems", (Value_xs(), BoxValue<vint>(5)));
+					InitializeItems(window, 5);
 				});
 				protocol->OnNextIdleFrame(L"5 Items", [=]()
 				{
@@ -240,7 +245,7 @@ namespace gacui_unittest_template
 						auto listControl = FindObjectByName<GuiVirtualTextList>(window, L"list");
 						listControl->SetView(TextListView::Radio);
 					}
-					Value::From(window).Invoke(L"InitializeItems", (Value_xs(), BoxValue<vint>(20)));
+					InitializeItems(window, 20);
 				});
 				protocol->OnNextIdleFrame(L"20 Items", [=]()
 				{
@@ -290,7 +295,7 @@ namespace gacui_unittest_template
 						auto listControl = FindObjectByName<GuiVirtualTextList>(window, L"list");
 						listControl->SetView(TextListView::Check);
 					}
-					Value::From(window).Invoke(L"InitializeItems", (Value_xs(), BoxValue<vint>(5)));
+					InitializeItems(window, 5);
 				});
 				protocol->OnNextIdleFrame(L"5 Items", [=]()
 				{

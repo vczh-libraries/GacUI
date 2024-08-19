@@ -2,6 +2,11 @@
 
 namespace gacui_unittest_template
 {
+	static void InitializeItems(GuiWindow* window, vint start, vint count)
+	{
+		Value::From(window).Invoke(L"InitializeItems", (Value_xs(), BoxValue<vint>(start), BoxValue<vint>(count)));
+	}
+
 	void GuiListControl_TestCases(
 		WString resourceXml,
 		WString pathFragment
@@ -14,7 +19,7 @@ namespace gacui_unittest_template
 				protocol->OnNextIdleFrame(L"Ready", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
-					Value::From(window).Invoke(L"InitializeItems", (Value_xs(), BoxValue<vint>(0), BoxValue<vint>(10)));
+					InitializeItems(window, 0, 10);
 				});
 				protocol->OnNextIdleFrame(L"10 Items", [=]()
 				{
@@ -31,7 +36,7 @@ namespace gacui_unittest_template
 				protocol->OnNextIdleFrame(L"Highlight Second", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
-					Value::From(window).Invoke(L"InitializeItems", (Value_xs(), BoxValue<vint>(10), BoxValue<vint>(10)));
+					InitializeItems(window, 10, 10);
 				});
 				protocol->OnNextIdleFrame(L"20 Items", [=]()
 				{
@@ -93,8 +98,8 @@ namespace gacui_unittest_template
 					auto window = GetApplication()->GetMainWindow();
 					auto listControl = FindObjectByName<GuiListControl>(window, L"list");
 					ATTACH_ITEM_EVENTS;
-
-					Value::From(window).Invoke(L"InitializeItems", (Value_xs(), BoxValue<vint>(0), BoxValue<vint>(20)));
+					
+					InitializeItems(window, 0, 20);
 				});
 				protocol->OnNextIdleFrame(L"20 Items", [=]()
 				{
@@ -166,7 +171,7 @@ namespace gacui_unittest_template
 					auto listControl = FindObjectByName<GuiListControl>(window, L"list");
 					ATTACH_ITEM_EVENTS;
 
-					Value::From(window).Invoke(L"InitializeItems", (Value_xs(), BoxValue<vint>(0), BoxValue<vint>(20)));
+					InitializeItems(window, 0, 20);
 				});
 				protocol->OnNextIdleFrame(L"20 Items", [=]()
 				{
@@ -238,7 +243,7 @@ namespace gacui_unittest_template
 					auto listControl = FindObjectByName<GuiListControl>(window, L"list");
 					ATTACH_ITEM_EVENTS;
 
-					Value::From(window).Invoke(L"InitializeItems", (Value_xs(), BoxValue<vint>(0), BoxValue<vint>(20)));
+					InitializeItems(window, 0, 20);
 				});
 				protocol->OnNextIdleFrame(L"20 Items", [=]()
 				{
