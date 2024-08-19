@@ -231,7 +231,7 @@ namespace gacui_unittest_template
 						auto window = GetApplication()->GetMainWindow();
 						auto listControl = FindObjectByName<GuiVirtualListView>(window, L"list");
 						listControl->SetView(view);
-						InitializeItems(window, 20);
+						InitializeItems(window, 100);
 					});
 					protocol->OnNextIdleFrame(L"100 Items", [=]()
 					{
@@ -246,7 +246,7 @@ namespace gacui_unittest_template
 						auto items = getItems(window);
 						UpdateItemText(window, items->Get(0), L"New Text");
 						UpdateItemText(window, items->Get(1), L"Updated Text");
-						UpdateItemText(window, items->Get(1), L"Whatever");
+						UpdateItemText(window, items->Get(2), L"Whatever");
 						notifyItemDataModified(window, 0, 3);
 					});
 					protocol->OnNextIdleFrame(L"Change 1st, 2nd, 3rd", [=]()

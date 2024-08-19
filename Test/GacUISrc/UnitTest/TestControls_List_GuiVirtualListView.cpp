@@ -72,7 +72,7 @@ TEST_FILE
           listViewItem.SmallImage = GetSmallImage((index - 1) % 5);
           return listViewItem;
         }
-        func UpdateItemText(item:ListViewItem^, text:string)
+        func UpdateItemText(item:ListViewItem^, text:string) : void
         {
           item.Text = text;
         }
@@ -189,7 +189,7 @@ TEST_FILE
           listViewItem.SmallImage = GetSmallImage((index - 1) % 5);
           return listViewItem;
         }
-        func UpdateItemText(item:ListViewData^, text:string)
+        func UpdateItemText(item:ListViewData^, text:string) : void
         {
           item.Id = text;
         }
