@@ -11,6 +11,11 @@ DEVELOPER: Zihan Chen(vczh)
 #include "VlppParser.h"
 
 #include "..\..\Source\GuiTypes.h"
+#include "..\..\Source\Controls\ListControlPackage\DataSource_IItemProvider.h"
+#include "..\..\Source\Controls\ListControlPackage\DataSourceImpl_IItemProvider_ItemProviderBase.h"
+#include "..\..\Source\Controls\ListControlPackage\DataSource_INodeProvider.h"
+#include "..\..\Source\Controls\ListControlPackage\DataSourceImpl_IItemProvider_NodeItemProvider.h"
+#include "..\..\Source\Controls\ListControlPackage\DataSourceImpl_INodeProvider_MemoryNodeProvider.h"
 #include "..\..\Source\GraphicsComposition\GuiGraphicsAxis.h"
 #include "..\..\Source\GraphicsElement\GuiGraphicsElementInterfaces.h"
 #include "..\..\Source\GraphicsElement\GuiGraphicsDocumentInterfaces.h"

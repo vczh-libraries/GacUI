@@ -828,8 +828,8 @@ IGuiRemoteProtocolMessages (Elements - SolidLabel)
 					{
 						remoteprotocol::ElementMeasuring_FontHeight measuring;
 						measuring.fontFamily = arguments.font.Value().fontFamily;
-						measuring.fontSize = arguments.font.Value().size + 4;
-						measuring.height = measuring.fontSize;
+						measuring.fontSize = arguments.font.Value().size;
+						measuring.height = measuring.fontSize + 4;
 						measuringForNextRendering.fontHeights->Add(measuring);
 					}
 					break;

@@ -6944,7 +6944,10 @@ GuiScrollView
 				auto ct = TypedControlTemplateObject(true);
 				auto hScroll = ct->GetHorizontalScroll();
 				auto vScroll = ct->GetVerticalScroll();
-				return Point(hScroll ? hScroll->GetPosition() : 0, vScroll ? vScroll->GetPosition() : 0);
+				return Point(
+					(hScroll && hScroll->GetEnabled()) ? hScroll->GetPosition() : 0,
+					(vScroll && vScroll->GetEnabled()) ? vScroll->GetPosition() : 0
+					);
 			}
 
 			void GuiScrollView::SetViewPosition(Point value)
@@ -8105,6 +8108,663 @@ GuiScroll
 }
 
 /***********************************************************************
+.\CONTROLS\LISTCONTROLPACKAGE\DATASOURCEIMPL_IITEMPROVIDER_ITEMPROVIDERBASE.CPP
+***********************************************************************/
+
+namespace vl::presentation::controls::list
+{
+/***********************************************************************
+ItemProviderBase
+***********************************************************************/
+
+	void ItemProviderBase::InvokeOnItemModified(vint start, vint count, vint newCount, bool itemReferenceUpdated)
+	{
+		CHECK_ERROR(!callingOnItemModified, L"ItemProviderBase::InvokeOnItemModified(vint, vint, vint)#Canning modify the observable data source during its item modified event, which will cause this event to be executed recursively.");
+		callingOnItemModified = true;
+		// TODO: (enumerable) foreach
+		for (vint i = 0; i < callbacks.Count(); i++)
+		{
+			callbacks[i]->OnItemModified(start, count, newCount, itemReferenceUpdated);
+		}
+		callingOnItemModified = false;
+	}
+
+	ItemProviderBase::ItemProviderBase()
+	{
+	}
+
+	ItemProviderBase::~ItemProviderBase()
+	{
+		// TODO: (enumerable) foreach
+		for(vint i=0;i<callbacks.Count();i++)
+		{
+			callbacks[i]->OnAttached(0);
+		}
+	}
+
+	bool ItemProviderBase::AttachCallback(IItemProviderCallback* value)
+	{
+		if(callbacks.Contains(value))
+		{
+			return false;
+		}
+		else
+		{
+			callbacks.Add(value);
+			value->OnAttached(this);
+			return true;
+		}
+	}
+
+	bool ItemProviderBase::DetachCallback(IItemProviderCallback* value)
+	{
+		vint index=callbacks.IndexOf(value);
+		if(index==-1)
+		{
+			return false;
+		}
+		else
+		{
+			value->OnAttached(0);
+			callbacks.Remove(value);
+			return true;
+		}
+	}
+
+	void ItemProviderBase::PushEditing()
+	{
+		editingCounter++;
+	}
+
+	bool ItemProviderBase::PopEditing()
+	{
+		if (editingCounter == 0)return false;
+		editingCounter--;
+		return true;
+	}
+
+	bool ItemProviderBase::IsEditing()
+	{
+		return editingCounter > 0;
+	}
+}
+
+/***********************************************************************
+.\CONTROLS\LISTCONTROLPACKAGE\DATASOURCEIMPL_IITEMPROVIDER_NODEITEMPROVIDER.CPP
+***********************************************************************/
+
+namespace vl::presentation::controls::tree
+{
+	using namespace reflection::description;
+
+	const wchar_t* const INodeItemView::Identifier = L"vl::presentation::controls::tree::INodeItemView";
+
+/***********************************************************************
+NodeItemProvider
+***********************************************************************/
+
+	Ptr<INodeProvider> NodeItemProvider::GetNodeByOffset(Ptr<INodeProvider> provider, vint offset)
+	{
+		if (offset == 0) return provider;
+		Ptr<INodeProvider> result;
+		if (provider->GetExpanding() && offset > 0)
+		{
+			offset -= 1;
+			vint count = provider->GetChildCount();
+			for (vint i = 0; (!result && i < count); i++)
+			{
+				auto child = provider->GetChild(i);
+				vint visibleCount = child->CalculateTotalVisibleNodes();
+				if (offset < visibleCount)
+				{
+					result = GetNodeByOffset(child, offset);
+				}
+				else
+				{
+					offset -= visibleCount;
+				}
+			}
+		}
+		return result;
+	}
+
+	void NodeItemProvider::OnAttached(INodeRootProvider* provider)
+	{
+	}
+
+	void NodeItemProvider::OnBeforeItemModified(INodeProvider* parentNode, vint start, vint count, vint newCount, bool itemReferenceUpdated)
+	{
+		vint offset = 0;
+		vint base = CalculateNodeVisibilityIndexInternal(parentNode);
+		if (base != -2 && parentNode->GetExpanding())
+		{
+			for (vint i = 0; i < count; i++)
+			{
+				auto child = parentNode->GetChild(start + i);
+				offset += child->CalculateTotalVisibleNodes();
+			}
+		}
+		offsetBeforeChildModifieds.Set(parentNode, offset);
+	}
+
+	void NodeItemProvider::OnAfterItemModified(INodeProvider* parentNode, vint start, vint count, vint newCount, bool itemReferenceUpdated)
+	{
+		vint offsetBeforeChildModified = 0;
+		{
+			vint index = offsetBeforeChildModifieds.Keys().IndexOf(parentNode);
+			if (index != -1)
+			{
+				offsetBeforeChildModified = offsetBeforeChildModifieds.Values().Get(index);
+				offsetBeforeChildModifieds.Remove(parentNode);
+			}
+		}
+
+		vint base = CalculateNodeVisibilityIndexInternal(parentNode);
+		if (base != -2 && parentNode->GetExpanding())
+		{
+			vint offset = 0;
+			vint firstChildStart = -1;
+			for (vint i = 0; i < newCount; i++)
+			{
+				auto child = parentNode->GetChild(start + i);
+				if (i == 0)
+				{
+					firstChildStart = CalculateNodeVisibilityIndexInternal(child.Obj());
+				}
+				offset += child->CalculateTotalVisibleNodes();
+			}
+
+			if (firstChildStart == -1)
+			{
+				vint childCount = parentNode->GetChildCount();
+				if (childCount == 0)
+				{
+					firstChildStart = base + 1;
+				}
+				else if (start < childCount)
+				{
+					auto child = parentNode->GetChild(start);
+					firstChildStart = CalculateNodeVisibilityIndexInternal(child.Obj());
+				}
+				else
+				{
+					auto child = parentNode->GetChild(start - 1);
+					firstChildStart = CalculateNodeVisibilityIndexInternal(child.Obj());
+					firstChildStart += child->CalculateTotalVisibleNodes();
+				}
+			}
+			InvokeOnItemModified(firstChildStart, offsetBeforeChildModified, offset, itemReferenceUpdated);
+		}
+	}
+
+	void NodeItemProvider::OnItemExpanded(INodeProvider* node)
+	{
+		vint base = CalculateNodeVisibilityIndexInternal(node);
+		if (base != -2)
+		{
+			vint visibility = node->CalculateTotalVisibleNodes();
+			InvokeOnItemModified(base + 1, 0, visibility - 1, true);
+		}
+	}
+
+	void NodeItemProvider::OnItemCollapsed(INodeProvider* node)
+	{
+		vint base = CalculateNodeVisibilityIndexInternal(node);
+		if (base != -2)
+		{
+			vint visibility = 0;
+			vint count = node->GetChildCount();
+			for (vint i = 0; i < count; i++)
+			{
+				auto child = node->GetChild(i);
+				visibility += child->CalculateTotalVisibleNodes();
+			}
+			InvokeOnItemModified(base + 1, visibility, 0, true);
+		}
+	}
+
+	vint NodeItemProvider::CalculateNodeVisibilityIndexInternal(INodeProvider* node)
+	{
+		auto parent = node->GetParent();
+		if (!parent)
+		{
+			return -1;
+		}
+		if (!parent->GetExpanding())
+		{
+			return -2;
+		}
+
+		vint index = CalculateNodeVisibilityIndexInternal(parent.Obj());
+		if (index == -2)
+		{
+			return -2;
+		}
+
+		vint count = parent->GetChildCount();
+		for (vint i = 0; i < count; i++)
+		{
+			auto child = parent->GetChild(i);
+			bool findResult = child == node;
+			if (findResult)
+			{
+				index++;
+			}
+			else
+			{
+				index += child->CalculateTotalVisibleNodes();
+			}
+			if (findResult)
+			{
+				return index;
+			}
+		}
+		return -1;
+	}
+
+	vint NodeItemProvider::CalculateNodeVisibilityIndex(INodeProvider* node)
+	{
+		vint result = CalculateNodeVisibilityIndexInternal(node);
+		return result < 0 ? -1 : result;
+	}
+
+	Ptr<INodeProvider> NodeItemProvider::RequestNode(vint index)
+	{
+		if(root->CanGetNodeByVisibleIndex())
+		{
+			return root->GetNodeByVisibleIndex(index+1);
+		}
+		else
+		{
+			return GetNodeByOffset(root->GetRootNode(), index+1);
+		}
+	}
+
+	NodeItemProvider::NodeItemProvider(Ptr<INodeRootProvider> _root)
+		:root(_root)
+	{
+		root->AttachCallback(this);
+	}
+
+	NodeItemProvider::~NodeItemProvider()
+	{
+		root->DetachCallback(this);
+	}
+
+	Ptr<INodeRootProvider> NodeItemProvider::GetRoot()
+	{
+		return root;
+	}
+
+	vint NodeItemProvider::Count()
+	{
+		return root->GetRootNode()->CalculateTotalVisibleNodes()-1;
+	}
+
+	WString NodeItemProvider::GetTextValue(vint itemIndex)
+	{
+		if (auto node = RequestNode(itemIndex))
+		{
+			return root->GetTextValue(node.Obj());
+		}
+		return L"";
+	}
+
+	description::Value NodeItemProvider::GetBindingValue(vint itemIndex)
+	{
+		if (auto node = RequestNode(itemIndex))
+		{
+			return root->GetBindingValue(node.Obj());
+		}
+		return Value();
+	}
+
+	IDescriptable* NodeItemProvider::RequestView(const WString& identifier)
+	{
+		if(identifier==INodeItemView::Identifier)
+		{
+			return (INodeItemView*)this;
+		}
+		else
+		{
+			return root->RequestView(identifier);
+		}
+	}
+}
+
+/***********************************************************************
+.\CONTROLS\LISTCONTROLPACKAGE\DATASOURCEIMPL_INODEPROVIDER_MEMORYNODEPROVIDER.CPP
+***********************************************************************/
+
+namespace vl::presentation::controls::tree
+{
+/***********************************************************************
+MemoryNodeProvider::NodeCollection
+***********************************************************************/
+
+	void MemoryNodeProvider::NodeCollection::OnBeforeChildModified(vint start, vint count, vint newCount)
+	{
+		if (ownerProvider->expanding)
+		{
+			for (vint i = 0; i < count; i++)
+			{
+				offsetBeforeChildModified += items[start + i]->totalVisibleNodeCount;
+			}
+		}
+		INodeProviderCallback* proxy = ownerProvider->GetCallbackProxyInternal();
+		if (proxy)
+		{
+			proxy->OnBeforeItemModified(ownerProvider, start, count, newCount, true);
+		}
+	}
+
+	void MemoryNodeProvider::NodeCollection::OnAfterChildModified(vint start, vint count, vint newCount)
+	{
+		ownerProvider->childCount += (newCount - count);
+		if (ownerProvider->expanding)
+		{
+			vint offset = 0;
+			for (vint i = 0; i < newCount; i++)
+			{
+				offset += items[start + i]->totalVisibleNodeCount;
+			}
+			ownerProvider->OnChildTotalVisibleNodesChanged(offset - offsetBeforeChildModified);
+		}
+		offsetBeforeChildModified = 0;
+		INodeProviderCallback* proxy = ownerProvider->GetCallbackProxyInternal();
+		if (proxy)
+		{
+			proxy->OnAfterItemModified(ownerProvider, start, count, newCount, true);
+		}
+	}
+
+	bool MemoryNodeProvider::NodeCollection::QueryInsert(vint index, Ptr<MemoryNodeProvider> const& child)
+	{
+		return child->parent == 0;
+	}
+
+	bool MemoryNodeProvider::NodeCollection::QueryRemove(vint index, Ptr<MemoryNodeProvider> const& child)
+	{
+		return child->parent == ownerProvider;
+	}
+
+	void MemoryNodeProvider::NodeCollection::BeforeInsert(vint index, Ptr<MemoryNodeProvider> const& child)
+	{
+		OnBeforeChildModified(index, 0, 1);
+		child->parent = ownerProvider;
+	}
+
+	void MemoryNodeProvider::NodeCollection::BeforeRemove(vint index, Ptr<MemoryNodeProvider> const& child)
+	{
+		OnBeforeChildModified(index, 1, 0);
+		child->parent = 0;
+	}
+
+	void MemoryNodeProvider::NodeCollection::AfterInsert(vint index, Ptr<MemoryNodeProvider> const& child)
+	{
+		OnAfterChildModified(index, 0, 1);
+	}
+
+	void MemoryNodeProvider::NodeCollection::AfterRemove(vint index, vint count)
+	{
+		OnAfterChildModified(index, count, 0);
+	}
+
+	MemoryNodeProvider::NodeCollection::NodeCollection()
+		:ownerProvider(0)
+	{
+	}
+
+/***********************************************************************
+MemoryNodeProvider
+***********************************************************************/
+
+	INodeProviderCallback* MemoryNodeProvider::GetCallbackProxyInternal()
+	{
+		if(parent)
+		{
+			return parent->GetCallbackProxyInternal();
+		}
+		else
+		{
+			return 0;
+		}
+	}
+
+	void MemoryNodeProvider::OnChildTotalVisibleNodesChanged(vint offset)
+	{
+		totalVisibleNodeCount+=offset;
+		if(parent)
+		{
+			parent->OnChildTotalVisibleNodesChanged(offset);
+		}
+	}
+
+	MemoryNodeProvider::MemoryNodeProvider(Ptr<DescriptableObject> _data)
+		:data(_data)
+	{
+		children.ownerProvider=this;
+	}
+
+	MemoryNodeProvider::~MemoryNodeProvider()
+	{
+	}
+
+	Ptr<DescriptableObject> MemoryNodeProvider::GetData()
+	{
+		return data;
+	}
+
+	void MemoryNodeProvider::SetData(const Ptr<DescriptableObject>& value)
+	{
+		data=value;
+		NotifyDataModified();
+	}
+
+	MemoryNodeProvider::NodeCollection& MemoryNodeProvider::Children()
+	{
+		return children;
+	}
+
+	bool MemoryNodeProvider::GetExpanding()
+	{
+		return expanding;
+	}
+
+	void MemoryNodeProvider::SetExpanding(bool value)
+	{
+		if(expanding!=value)
+		{
+			expanding=value;
+			vint offset=0;
+			for(vint i=0;i<childCount;i++)
+			{
+				offset+=children[i]->totalVisibleNodeCount;
+			}
+
+			OnChildTotalVisibleNodesChanged(expanding?offset:-offset);
+			INodeProviderCallback* proxy=GetCallbackProxyInternal();
+			if(proxy)
+			{
+				if(expanding)
+				{
+					proxy->OnItemExpanded(this);
+				}
+				else
+				{
+					proxy->OnItemCollapsed(this);
+				}
+			}
+		}
+	}
+
+	vint MemoryNodeProvider::CalculateTotalVisibleNodes()
+	{
+		return totalVisibleNodeCount;
+	}
+
+	void MemoryNodeProvider::NotifyDataModified()
+	{
+		if (parent)
+		{
+			vint index = parent->children.IndexOf(this);
+			INodeProviderCallback* proxy = GetCallbackProxyInternal();
+			if (proxy)
+			{
+				proxy->OnBeforeItemModified(parent, index, 1, 1, false);
+				proxy->OnAfterItemModified(parent, index, 1, 1, false);
+			}
+		}
+	}
+
+	vint MemoryNodeProvider::GetChildCount()
+	{
+		return childCount;
+	}
+
+	Ptr<INodeProvider> MemoryNodeProvider::GetParent()
+	{
+		return Ptr(parent);
+	}
+
+	Ptr<INodeProvider> MemoryNodeProvider::GetChild(vint index)
+	{
+		if (0 <= index && index < childCount)
+		{
+			return children[index];
+		}
+		else
+		{
+			return nullptr;
+		}
+	}
+
+/***********************************************************************
+NodeRootProviderBase
+***********************************************************************/
+
+	void NodeRootProviderBase::OnAttached(INodeRootProvider* provider)
+	{
+	}
+
+	void NodeRootProviderBase::OnBeforeItemModified(INodeProvider* parentNode, vint start, vint count, vint newCount, bool itemReferenceUpdated)
+	{
+		// TODO: (enumerable) foreach
+		for(vint i=0;i<callbacks.Count();i++)
+		{
+			callbacks[i]->OnBeforeItemModified(parentNode, start, count, newCount, itemReferenceUpdated);
+		}
+	}
+
+	void NodeRootProviderBase::OnAfterItemModified(INodeProvider* parentNode, vint start, vint count, vint newCount, bool itemReferenceUpdated)
+	{
+		// TODO: (enumerable) foreach
+		for(vint i=0;i<callbacks.Count();i++)
+		{
+			callbacks[i]->OnAfterItemModified(parentNode, start, count, newCount, itemReferenceUpdated);
+		}
+	}
+
+	void NodeRootProviderBase::OnItemExpanded(INodeProvider* node)
+	{
+		// TODO: (enumerable) foreach
+		for(vint i=0;i<callbacks.Count();i++)
+		{
+			callbacks[i]->OnItemExpanded(node);
+		}
+	}
+
+	void NodeRootProviderBase::OnItemCollapsed(INodeProvider* node)
+	{
+		// TODO: (enumerable) foreach
+		for(vint i=0;i<callbacks.Count();i++)
+		{
+			callbacks[i]->OnItemCollapsed(node);
+		}
+	}
+
+	NodeRootProviderBase::NodeRootProviderBase()
+	{
+	}
+
+	NodeRootProviderBase::~NodeRootProviderBase()
+	{
+	}
+
+	bool NodeRootProviderBase::CanGetNodeByVisibleIndex()
+	{
+		return false;
+	}
+
+	Ptr<INodeProvider> NodeRootProviderBase::GetNodeByVisibleIndex(vint index)
+	{
+		return nullptr;
+	}
+
+	bool NodeRootProviderBase::AttachCallback(INodeProviderCallback* value)
+	{
+		if(callbacks.Contains(value))
+		{
+			return false;
+		}
+		else
+		{
+			callbacks.Add(value);
+			value->OnAttached(this);
+			return true;
+		}
+	}
+
+	bool NodeRootProviderBase::DetachCallback(INodeProviderCallback* value)
+	{
+		vint index=callbacks.IndexOf(value);
+		if(index==-1)
+		{
+			return false;
+		}
+		else
+		{
+			value->OnAttached(0);
+			callbacks.Remove(value);
+			return true;
+		}
+	}
+
+	IDescriptable* NodeRootProviderBase::RequestView(const WString& identifier)
+	{
+		return 0;
+	}
+
+/***********************************************************************
+MemoryNodeRootProvider
+***********************************************************************/
+
+	INodeProviderCallback* MemoryNodeRootProvider::GetCallbackProxyInternal()
+	{
+		return this;
+	}
+
+	MemoryNodeRootProvider::MemoryNodeRootProvider()
+	{
+		SetExpanding(true);
+	}
+
+	MemoryNodeRootProvider::~MemoryNodeRootProvider()
+	{
+	}
+
+	Ptr<INodeProvider> MemoryNodeRootProvider::GetRootNode()
+	{
+		return Ptr(this);
+	}
+
+	MemoryNodeProvider* MemoryNodeRootProvider::GetMemoryNode(INodeProvider* node)
+	{
+		return dynamic_cast<MemoryNodeProvider*>(node);
+	}
+}
+
+/***********************************************************************
 .\CONTROLS\LISTCONTROLPACKAGE\GUIBINDABLEDATAGRID.CPP
 ***********************************************************************/
 
@@ -8629,7 +9289,7 @@ DataProvider
 					RefreshAllItems();
 				}
 
-				GuiListControl::IItemProvider* DataProvider::GetItemProvider()
+				list::IItemProvider* DataProvider::GetItemProvider()
 				{
 					return this;
 				}
@@ -10434,7 +11094,7 @@ GuiComboBoxListControl
 				}
 			}
 
-			void GuiComboBoxListControl::OnAttached(GuiListControl::IItemProvider* provider)
+			void GuiComboBoxListControl::OnAttached(list::IItemProvider* provider)
 			{
 			}
 
@@ -10527,7 +11187,7 @@ GuiComboBoxListControl
 				return description::Value();
 			}
 
-			GuiListControl::IItemProvider* GuiComboBoxListControl::GetItemProvider()
+			list::IItemProvider* GuiComboBoxListControl::GetItemProvider()
 			{
 				return containedListControl->GetItemProvider();
 			}
@@ -10976,6 +11636,31 @@ GuiVirtualDataGrid (Editor)
 				return GuiVirtualListView::GetActivatingAltHost();
 			}
 
+			void GuiVirtualDataGrid::NotifySelectionChanged(bool triggeredByItemContentModified)
+			{
+				GuiVirtualListView::NotifySelectionChanged(triggeredByItemContentModified);
+				if (!skipOnSelectionChanged && !triggeredByItemContentModified)
+				{
+					vint row = GetSelectedItemIndex();
+					if (row != -1)
+					{
+						if (selectedCell.row != row && selectedCell.column != -1)
+						{
+							SelectCell({ row,selectedCell.column }, false);
+						}
+						else
+						{
+							SelectCell({ row,0 }, false);
+						}
+					}
+					else
+					{
+						StopEdit();
+						NotifySelectCell(-1, -1);
+					}
+				}
+			}
+
 			void GuiVirtualDataGrid::OnItemModified(vint start, vint count, vint newCount, bool itemReferenceUpdated)
 			{
 				GuiVirtualListView::OnItemModified(start, count, newCount, itemReferenceUpdated);
@@ -11153,30 +11838,6 @@ GuiVirtualDataGrid
 				}
 			}
 
-			void GuiVirtualDataGrid::OnSelectionChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
-			{
-				if (!skipOnSelectionChanged)
-				{
-					vint row = GetSelectedItemIndex();
-					if (row != -1)
-					{
-						if (selectedCell.row != row && selectedCell.column != -1)
-						{
-							SelectCell({ row,selectedCell.column }, false);
-						}
-						else
-						{
-							SelectCell({ row,0 }, false);
-						}
-					}
-					else
-					{
-						StopEdit();
-						NotifySelectCell(-1, -1);
-					}
-				}
-			}
-
 			void GuiVirtualDataGrid::OnKeyDown(compositions::GuiGraphicsComposition* sender, compositions::GuiKeyEventArgs& arguments)
 			{
 				if (selectedCell.row != -1)
@@ -11236,7 +11897,7 @@ GuiVirtualDataGrid
 			{
 			}
 
-			GuiVirtualDataGrid::GuiVirtualDataGrid(theme::ThemeName themeName, GuiListControl::IItemProvider* _itemProvider)
+			GuiVirtualDataGrid::GuiVirtualDataGrid(theme::ThemeName themeName, list::IItemProvider* _itemProvider)
 				:GuiVirtualListView(themeName, _itemProvider)
 			{
 				listViewItemView = dynamic_cast<IListViewItemView*>(_itemProvider->RequestView(IListViewItemView::Identifier));
@@ -11268,7 +11929,6 @@ GuiVirtualDataGrid
 				SetViewToDefault();
 
 				ColumnClicked.AttachMethod(this, &GuiVirtualDataGrid::OnColumnClicked);
-				SelectionChanged.AttachMethod(this, &GuiVirtualDataGrid::OnSelectionChanged);
 				focusableComposition->GetEventReceiver()->keyDown.AttachMethod(this, &GuiVirtualDataGrid::OnKeyDown);
 				focusableComposition->GetEventReceiver()->keyUp.AttachMethod(this, &GuiVirtualDataGrid::OnKeyUp);
 				SelectedCellChanged.SetAssociatedComposition(boundsComposition);
@@ -11278,7 +11938,7 @@ GuiVirtualDataGrid
 			{
 			}
 
-			GuiListControl::IItemProvider* GuiVirtualDataGrid::GetItemProvider()
+			list::IItemProvider* GuiVirtualDataGrid::GetItemProvider()
 			{
 				return GuiVirtualListView::GetItemProvider();
 			}
@@ -11390,7 +12050,7 @@ DataVisualizerBase
 					visualizerTemplate = nullptr;
 				}
 
-				void DataVisualizerBase::BeforeVisualizeCell(GuiListControl::IItemProvider* itemProvider, vint row, vint column)
+				void DataVisualizerBase::BeforeVisualizeCell(list::IItemProvider* itemProvider, vint row, vint column)
 				{
 					if (auto listViewItemView = dynamic_cast<IListViewItemView*>(dataGridContext->GetItemProvider()->RequestView(IListViewItemView::Identifier)))
 					{
@@ -11507,7 +12167,7 @@ DataEditorBase
 					editorTemplate = nullptr;
 				}
 
-				void DataEditorBase::BeforeEditCell(GuiListControl::IItemProvider* itemProvider, vint row, vint column)
+				void DataEditorBase::BeforeEditCell(list::IItemProvider* itemProvider, vint row, vint column)
 				{
 					if (auto listViewItemView = dynamic_cast<IListViewItemView*>(dataGridContext->GetItemProvider()->RequestView(IListViewItemView::Identifier)))
 					{
@@ -11854,10 +12514,10 @@ RangedItemArrangerBase (ItemSource)
 				class ArrangerItemSource : public Object, public virtual description::IValueObservableList
 				{
 				protected:
-					GuiListControl::IItemProvider*			itemProvider = nullptr;
+					list::IItemProvider*				itemProvider = nullptr;
 
 				public:
-					ArrangerItemSource(GuiListControl::IItemProvider* _itemProvider)
+					ArrangerItemSource(list::IItemProvider* _itemProvider)
 						: itemProvider(_itemProvider)
 					{
 					}
@@ -11925,7 +12585,7 @@ RangedItemArrangerBase
 					SafeDeleteComposition(repeat);
 				}
 
-				void RangedItemArrangerBase::OnAttached(GuiListControl::IItemProvider* provider)
+				void RangedItemArrangerBase::OnAttached(list::IItemProvider* provider)
 				{
 					itemProvider = provider;
 					if (provider)
@@ -12160,7 +12820,7 @@ GuiListControl::ItemCallback
 				installedStyles.Clear();
 			}
 
-			void GuiListControl::ItemCallback::OnAttached(IItemProvider* provider)
+			void GuiListControl::ItemCallback::OnAttached(list::IItemProvider* provider)
 			{
 				itemProvider = provider;
 			}
@@ -12227,9 +12887,7 @@ GuiListControl::ItemCallback
 
 			void GuiListControl::ItemCallback::SetViewLocation(Point value)
 			{
-				Rect virtualRect(value, listControl->GetViewSize());
-				Rect realRect = listControl->axis->VirtualRectToRealRect(listControl->fullSize, virtualRect);
-				listControl->SetViewPosition(realRect.LeftTop());
+				listControl->SetViewPosition(value);
 			}
 
 			compositions::GuiGraphicsComposition* GuiListControl::ItemCallback::GetContainerComposition()
@@ -12319,8 +12977,7 @@ GuiListControl
 
 			Size GuiListControl::QueryFullSize()
 			{
-				Size virtualSize = itemArranger ? itemArranger->GetTotalSize() : Size(0, 0);
-				fullSize = axis->VirtualSizeToRealSize(virtualSize);
+				fullSize = itemArranger ? itemArranger->GetTotalSize() : Size(0, 0);
 				return fullSize;
 			}
 
@@ -12328,8 +12985,7 @@ GuiListControl
 			{
 				if (itemArranger)
 				{
-					Rect newBounds = axis->RealRectToVirtualRect(fullSize, viewBounds);
-					itemArranger->OnViewChanged(newBounds);
+					itemArranger->OnViewChanged(viewBounds);
 				}
 			}
 
@@ -12345,14 +13001,21 @@ GuiListControl
 			{
 				if (itemArranger)
 				{
+					itemProvider->DetachCallback(itemArranger.Obj());
 					itemArranger->DetachListControl();
 					itemArranger->SetCallback(nullptr);
-					itemProvider->DetachCallback(itemArranger.Obj());
 				}
 				callback->ClearCache();
 
 				itemStyleProperty = styleProperty;
 				itemArranger = arranger;
+
+				if (itemArranger)
+				{
+					itemArranger->SetCallback(callback.Obj());
+					itemArranger->AttachListControl(this);
+					itemProvider->AttachCallback(itemArranger.Obj());
+				}
 
 				if (auto scroll = GetVerticalScroll())
 				{
@@ -12361,13 +13024,6 @@ GuiListControl
 				if (auto scroll = GetHorizontalScroll())
 				{
 					scroll->SetPosition(0);
-				}
-
-				if (itemArranger)
-				{
-					itemProvider->AttachCallback(itemArranger.Obj());
-					itemArranger->SetCallback(callback.Obj());
-					itemArranger->AttachListControl(this);
 				}
 				CalculateView();
 			}
@@ -12500,7 +13156,7 @@ GuiListControl
 
 #undef DETACH_ITEM_EVENT
 
-			GuiListControl::GuiListControl(theme::ThemeName themeName, IItemProvider* _itemProvider, bool acceptFocus)
+			GuiListControl::GuiListControl(theme::ThemeName themeName, list::IItemProvider* _itemProvider, bool acceptFocus)
 				:GuiScrollView(themeName)
 				, itemProvider(_itemProvider)
 			{
@@ -12549,7 +13205,7 @@ GuiListControl
 				itemArranger = nullptr;
 			}
 
-			GuiListControl::IItemProvider* GuiListControl::GetItemProvider()
+			list::IItemProvider* GuiListControl::GetItemProvider()
 			{
 				return itemProvider.Obj();
 			}
@@ -12651,16 +13307,9 @@ GuiListControl
 					vint y = adoptedSizeDiffWithoutScroll.y != -1 ? adoptedSizeDiffWithoutScroll.y : adoptedSizeDiffWithScroll.y;
 
 					Size expectedViewSize(expectedSize.x - x, expectedSize.y - y);
-					if (axis)
-					{
-						expectedViewSize = axis->RealSizeToVirtualSize(expectedViewSize);
-					}
 					Size adoptedViewSize = itemArranger->GetAdoptedSize(expectedViewSize);
-					if (axis)
-					{
-						adoptedViewSize = axis->VirtualSizeToRealSize(adoptedViewSize);
-					}
-					return Size(adoptedViewSize.x + x, adoptedViewSize.y + y);
+					Size adoptedSize = Size(adoptedViewSize.x + x, adoptedViewSize.y + y);
+					return adoptedSize;
 				}
 				return expectedSize;
 			}
@@ -12683,7 +13332,7 @@ GuiListControl
 GuiSelectableListControl
 ***********************************************************************/
 
-			void GuiSelectableListControl::NotifySelectionChanged()
+			void GuiSelectableListControl::NotifySelectionChanged(bool triggeredByItemContentModified)
 			{
 				SelectionChanged.Execute(GetNotifyEventArguments());
 			}
@@ -12695,15 +13344,25 @@ GuiSelectableListControl
 				{
 					ClearSelection();
 				}
-				else if (itemReferenceUpdated && selectedItems.Count() > 0)
+				else if (itemReferenceUpdated)
 				{
-					vint cmin = start;
-					vint cmax = start + count - 1;
-					vint smin = selectedItems[0];
-					vint smax = selectedItems[selectedItems.Count() - 1];
-					if (cmin <= smax && smin <= cmax)
+					if (selectedItems.Count() > 0)
 					{
-						ClearSelection();
+						vint cmin = start;
+						vint cmax = start + count - 1;
+						vint smin = selectedItems[0];
+						vint smax = selectedItems[selectedItems.Count() - 1];
+						if (cmin <= smax && smin <= cmax)
+						{
+							ClearSelection();
+						}
+					}
+				}
+				else
+				{
+					if (GetSelectedItemIndex() == start)
+					{
+						NotifySelectionChanged(true);
 					}
 				}
 			}
@@ -12802,7 +13461,7 @@ GuiSelectableListControl
 				return GetArranger()->FindItemByVirtualKeyDirection(selectedItemIndexEnd, keyDirection);
 			}
 
-			GuiSelectableListControl::GuiSelectableListControl(theme::ThemeName themeName, IItemProvider* _itemProvider)
+			GuiSelectableListControl::GuiSelectableListControl(theme::ThemeName themeName, list::IItemProvider* _itemProvider)
 				:GuiListControl(themeName, _itemProvider, true)
 				, multiSelect(false)
 				, selectedItemIndexStart(-1)
@@ -12873,7 +13532,7 @@ GuiSelectableListControl
 						}
 						selectedItems.Add(itemIndex);
 						OnItemSelectionChanged(itemIndex, value);
-						NotifySelectionChanged();
+						NotifySelectionChanged(false);
 					}
 				}
 				else
@@ -12881,7 +13540,7 @@ GuiSelectableListControl
 					if(selectedItems.Remove(itemIndex))
 					{
 						OnItemSelectionChanged(itemIndex, value);
-						NotifySelectionChanged();
+						NotifySelectionChanged(false);
 					}
 				}
 			}
@@ -12913,7 +13572,7 @@ GuiSelectableListControl
 						}
 						selectedItemIndexEnd = itemIndex;
 						SetMultipleItemsSelectedSilently(selectedItemIndexStart, selectedItemIndexEnd, true);
-						NotifySelectionChanged();
+						NotifySelectionChanged(false);
 					}
 					else
 					{
@@ -12929,7 +13588,7 @@ GuiSelectableListControl
 								selectedItems.RemoveAt(index);
 							}
 							OnItemSelectionChanged(itemIndex, index == -1);
-							NotifySelectionChanged();
+							NotifySelectionChanged(false);
 						}
 						else
 						{
@@ -12937,7 +13596,7 @@ GuiSelectableListControl
 							OnItemSelectionCleared();
 							selectedItems.Add(itemIndex);
 							OnItemSelectionChanged(itemIndex, true);
-							NotifySelectionChanged();
+							NotifySelectionChanged(false);
 						}
 						selectedItemIndexStart = itemIndex;
 						selectedItemIndexEnd = itemIndex;
@@ -13006,86 +13665,7 @@ GuiSelectableListControl
 					selectedItemIndexStart = -1;
 					selectedItemIndexEnd = -1;
 					OnItemSelectionCleared();
-					NotifySelectionChanged();
-				}
-			}
-
-			namespace list
-			{
-
-/***********************************************************************
-ItemProviderBase
-***********************************************************************/
-
-				void ItemProviderBase::InvokeOnItemModified(vint start, vint count, vint newCount, bool itemReferenceUpdated)
-				{
-					CHECK_ERROR(!callingOnItemModified, L"ItemProviderBase::InvokeOnItemModified(vint, vint, vint)#Canning modify the observable data source during its item modified event, which will cause this event to be executed recursively.");
-					callingOnItemModified = true;
-					// TODO: (enumerable) foreach
-					for (vint i = 0; i < callbacks.Count(); i++)
-					{
-						callbacks[i]->OnItemModified(start, count, newCount, itemReferenceUpdated);
-					}
-					callingOnItemModified = false;
-				}
-
-				ItemProviderBase::ItemProviderBase()
-				{
-				}
-
-				ItemProviderBase::~ItemProviderBase()
-				{
-					// TODO: (enumerable) foreach
-					for(vint i=0;i<callbacks.Count();i++)
-					{
-						callbacks[i]->OnAttached(0);
-					}
-				}
-
-				bool ItemProviderBase::AttachCallback(GuiListControl::IItemProviderCallback* value)
-				{
-					if(callbacks.Contains(value))
-					{
-						return false;
-					}
-					else
-					{
-						callbacks.Add(value);
-						value->OnAttached(this);
-						return true;
-					}
-				}
-
-				bool ItemProviderBase::DetachCallback(GuiListControl::IItemProviderCallback* value)
-				{
-					vint index=callbacks.IndexOf(value);
-					if(index==-1)
-					{
-						return false;
-					}
-					else
-					{
-						value->OnAttached(0);
-						callbacks.Remove(value);
-						return true;
-					}
-				}
-
-				void ItemProviderBase::PushEditing()
-				{
-					editingCounter++;
-				}
-
-				bool ItemProviderBase::PopEditing()
-				{
-					if (editingCounter == 0)return false;
-					editingCounter--;
-					return true;
-				}
-
-				bool ItemProviderBase::IsEditing()
-				{
-					return editingCounter > 0;
+					NotifySelectionChanged(false);
 				}
 			}
 		}
@@ -13160,7 +13740,7 @@ GuiListViewBase
 			{
 			}
 
-			GuiListViewBase::GuiListViewBase(theme::ThemeName themeName, GuiListControl::IItemProvider* _itemProvider)
+			GuiListViewBase::GuiListViewBase(theme::ThemeName themeName, list::IItemProvider* _itemProvider)
 				:GuiSelectableListControl(themeName, _itemProvider)
 			{
 				ColumnClicked.SetAssociatedComposition(boundsComposition);
@@ -13288,6 +13868,11 @@ ListViewColumnItemArranger
 					}
 				}
 
+				void ListViewColumnItemArranger::ColumnHeadersCachedBoundsChanged(compositions::GuiGraphicsComposition* composition, compositions::GuiEventArgs& arguments)
+				{
+					UpdateRepeatConfig();
+				}
+
 				void ListViewColumnItemArranger::FixColumnsAfterViewLocationChanged()
 				{
 					vint x = GetRepeatComposition()->GetViewLocation().x;
@@ -13401,6 +13986,12 @@ ListViewColumnItemArranger
 					callback->OnTotalSizeChanged();
 				}
 
+				void ListViewColumnItemArranger::UpdateRepeatConfig()
+				{
+					GetRepeatComposition()->SetItemWidth(GetColumnsWidth());
+					GetRepeatComposition()->SetItemYOffset(GetColumnsYOffset());
+				}
+
 				void ListViewColumnItemArranger::RefreshColumns()
 				{
 					if (columnItemView && listViewItemView)
@@ -13414,8 +14005,7 @@ ListViewColumnItemArranger
 							button->GetBoundsComposition()->SetExpectedBounds(Rect(Point(0, 0), Size(columnItemView->GetColumnSize(i), 0)));
 						}
 						columnHeaders->ForceCalculateSizeImmediately();
-						GetRepeatComposition()->SetItemWidth(GetColumnsWidth());
-						GetRepeatComposition()->SetItemYOffset(GetColumnsYOffset());
+						UpdateRepeatConfig();
 					}
 				}
 
@@ -13424,6 +14014,7 @@ ListViewColumnItemArranger
 				{
 					columnHeaders = new GuiStackComposition;
 					columnHeaders->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
+					columnHeaders->CachedBoundsChanged.AttachMethod(this, &ListViewColumnItemArranger::ColumnHeadersCachedBoundsChanged);
 					columnItemViewCallback = Ptr(new ColumnItemViewCallback(this));
 					GetRepeatComposition()->ViewLocationChanged.AttachMethod(this, &ListViewColumnItemArranger::OnViewLocationChanged);
 				}
@@ -13955,6 +14546,10 @@ GuiListView
 			void GuiVirtualListView::OnStyleInstalled(vint itemIndex, ItemStyle* style, bool refreshPropertiesOnly)
 			{
 				GuiListViewBase::OnStyleInstalled(itemIndex, style, refreshPropertiesOnly);
+				if (auto textItemStyle = dynamic_cast<templates::GuiTextListItemTemplate*>(style))
+				{
+					textItemStyle->SetTextColor(TypedControlTemplateObject(true)->GetPrimaryTextColor());
+				}
 				if (refreshPropertiesOnly)
 				{
 					if (auto predefinedItemStyle = dynamic_cast<list::DefaultListViewItemTemplate*>(style))
@@ -13969,7 +14564,7 @@ GuiListView
 				view = ListViewView::Unknown;
 			}
 
-			GuiVirtualListView::GuiVirtualListView(theme::ThemeName themeName, GuiListControl::IItemProvider* _itemProvider)
+			GuiVirtualListView::GuiVirtualListView(theme::ThemeName themeName, list::IItemProvider* _itemProvider)
 				:GuiListViewBase(themeName, _itemProvider)
 			{
 				SetView(ListViewView::Detail);
@@ -14363,7 +14958,7 @@ TileListViewItemTemplate
 
 				void TileListViewItemTemplate::ResetTextTable(vint dataColumnCount)
 				{
-					if (dataTexts.Count() == dataColumnCount) return;
+					if (text && dataTexts.Count() == dataColumnCount) return;
 					for (vint i = textTable->Children().Count() - 1; i >= 0; i--)
 					{
 						if (auto cell = dynamic_cast<GuiCellComposition*>(textTable->Children()[i]))
@@ -15179,7 +15774,7 @@ GuiTextList
 				view = TextListView::Unknown;
 			}
 
-			GuiVirtualTextList::GuiVirtualTextList(theme::ThemeName themeName, GuiListControl::IItemProvider* _itemProvider)
+			GuiVirtualTextList::GuiVirtualTextList(theme::ThemeName themeName, list::IItemProvider* _itemProvider)
 				:GuiSelectableListControl(themeName, _itemProvider)
 			{
 				ItemTemplateChanged.AttachMethod(this, &GuiVirtualTextList::OnItemTemplateChanged);
@@ -15267,568 +15862,6 @@ namespace vl
 			using namespace elements;
 			using namespace compositions;
 			using namespace reflection::description;
-
-			namespace tree
-			{
-				const wchar_t* const INodeItemView::Identifier = L"vl::presentation::controls::tree::INodeItemView";
-
-/***********************************************************************
-NodeItemProvider
-***********************************************************************/
-
-				Ptr<INodeProvider> NodeItemProvider::GetNodeByOffset(Ptr<INodeProvider> provider, vint offset)
-				{
-					if (offset == 0) return provider;
-					Ptr<INodeProvider> result;
-					if (provider->GetExpanding() && offset > 0)
-					{
-						offset -= 1;
-						vint count = provider->GetChildCount();
-						for (vint i = 0; (!result && i < count); i++)
-						{
-							auto child = provider->GetChild(i);
-							vint visibleCount = child->CalculateTotalVisibleNodes();
-							if (offset < visibleCount)
-							{
-								result = GetNodeByOffset(child, offset);
-							}
-							else
-							{
-								offset -= visibleCount;
-							}
-						}
-					}
-					return result;
-				}
-
-				void NodeItemProvider::OnAttached(INodeRootProvider* provider)
-				{
-				}
-
-				void NodeItemProvider::OnBeforeItemModified(INodeProvider* parentNode, vint start, vint count, vint newCount, bool itemReferenceUpdated)
-				{
-					vint offset = 0;
-					vint base = CalculateNodeVisibilityIndexInternal(parentNode);
-					if (base != -2 && parentNode->GetExpanding())
-					{
-						for (vint i = 0; i < count; i++)
-						{
-							auto child = parentNode->GetChild(start + i);
-							offset += child->CalculateTotalVisibleNodes();
-						}
-					}
-					offsetBeforeChildModifieds.Set(parentNode, offset);
-				}
-
-				void NodeItemProvider::OnAfterItemModified(INodeProvider* parentNode, vint start, vint count, vint newCount, bool itemReferenceUpdated)
-				{
-					vint offsetBeforeChildModified = 0;
-					{
-						vint index = offsetBeforeChildModifieds.Keys().IndexOf(parentNode);
-						if (index != -1)
-						{
-							offsetBeforeChildModified = offsetBeforeChildModifieds.Values().Get(index);
-							offsetBeforeChildModifieds.Remove(parentNode);
-						}
-					}
-
-					vint base = CalculateNodeVisibilityIndexInternal(parentNode);
-					if (base != -2 && parentNode->GetExpanding())
-					{
-						vint offset = 0;
-						vint firstChildStart = -1;
-						for (vint i = 0; i < newCount; i++)
-						{
-							auto child = parentNode->GetChild(start + i);
-							if (i == 0)
-							{
-								firstChildStart = CalculateNodeVisibilityIndexInternal(child.Obj());
-							}
-							offset += child->CalculateTotalVisibleNodes();
-						}
-
-						if (firstChildStart == -1)
-						{
-							vint childCount = parentNode->GetChildCount();
-							if (childCount == 0)
-							{
-								firstChildStart = base + 1;
-							}
-							else if (start < childCount)
-							{
-								auto child = parentNode->GetChild(start);
-								firstChildStart = CalculateNodeVisibilityIndexInternal(child.Obj());
-							}
-							else
-							{
-								auto child = parentNode->GetChild(start - 1);
-								firstChildStart = CalculateNodeVisibilityIndexInternal(child.Obj());
-								firstChildStart += child->CalculateTotalVisibleNodes();
-							}
-						}
-						InvokeOnItemModified(firstChildStart, offsetBeforeChildModified, offset, itemReferenceUpdated);
-					}
-				}
-
-				void NodeItemProvider::OnItemExpanded(INodeProvider* node)
-				{
-					vint base = CalculateNodeVisibilityIndexInternal(node);
-					if (base != -2)
-					{
-						vint visibility = node->CalculateTotalVisibleNodes();
-						InvokeOnItemModified(base + 1, 0, visibility - 1, true);
-					}
-				}
-
-				void NodeItemProvider::OnItemCollapsed(INodeProvider* node)
-				{
-					vint base = CalculateNodeVisibilityIndexInternal(node);
-					if (base != -2)
-					{
-						vint visibility = 0;
-						vint count = node->GetChildCount();
-						for (vint i = 0; i < count; i++)
-						{
-							auto child = node->GetChild(i);
-							visibility += child->CalculateTotalVisibleNodes();
-						}
-						InvokeOnItemModified(base + 1, visibility, 0, true);
-					}
-				}
-
-				vint NodeItemProvider::CalculateNodeVisibilityIndexInternal(INodeProvider* node)
-				{
-					auto parent = node->GetParent();
-					if (!parent)
-					{
-						return -1;
-					}
-					if (!parent->GetExpanding())
-					{
-						return -2;
-					}
-
-					vint index = CalculateNodeVisibilityIndexInternal(parent.Obj());
-					if (index == -2)
-					{
-						return -2;
-					}
-
-					vint count = parent->GetChildCount();
-					for (vint i = 0; i < count; i++)
-					{
-						auto child = parent->GetChild(i);
-						bool findResult = child == node;
-						if (findResult)
-						{
-							index++;
-						}
-						else
-						{
-							index += child->CalculateTotalVisibleNodes();
-						}
-						if (findResult)
-						{
-							return index;
-						}
-					}
-					return -1;
-				}
-
-				vint NodeItemProvider::CalculateNodeVisibilityIndex(INodeProvider* node)
-				{
-					vint result = CalculateNodeVisibilityIndexInternal(node);
-					return result < 0 ? -1 : result;
-				}
-
-				Ptr<INodeProvider> NodeItemProvider::RequestNode(vint index)
-				{
-					if(root->CanGetNodeByVisibleIndex())
-					{
-						return root->GetNodeByVisibleIndex(index+1);
-					}
-					else
-					{
-						return GetNodeByOffset(root->GetRootNode(), index+1);
-					}
-				}
-
-				NodeItemProvider::NodeItemProvider(Ptr<INodeRootProvider> _root)
-					:root(_root)
-				{
-					root->AttachCallback(this);
-				}
-
-				NodeItemProvider::~NodeItemProvider()
-				{
-					root->DetachCallback(this);
-				}
-
-				Ptr<INodeRootProvider> NodeItemProvider::GetRoot()
-				{
-					return root;
-				}
-
-				vint NodeItemProvider::Count()
-				{
-					return root->GetRootNode()->CalculateTotalVisibleNodes()-1;
-				}
-
-				WString NodeItemProvider::GetTextValue(vint itemIndex)
-				{
-					if (auto node = RequestNode(itemIndex))
-					{
-						return root->GetTextValue(node.Obj());
-					}
-					return L"";
-				}
-
-				description::Value NodeItemProvider::GetBindingValue(vint itemIndex)
-				{
-					if (auto node = RequestNode(itemIndex))
-					{
-						return root->GetBindingValue(node.Obj());
-					}
-					return Value();
-				}
-
-				IDescriptable* NodeItemProvider::RequestView(const WString& identifier)
-				{
-					if(identifier==INodeItemView::Identifier)
-					{
-						return (INodeItemView*)this;
-					}
-					else
-					{
-						return root->RequestView(identifier);
-					}
-				}
-
-/***********************************************************************
-MemoryNodeProvider::NodeCollection
-***********************************************************************/
-
-				void MemoryNodeProvider::NodeCollection::OnBeforeChildModified(vint start, vint count, vint newCount)
-				{
-					if (ownerProvider->expanding)
-					{
-						for (vint i = 0; i < count; i++)
-						{
-							offsetBeforeChildModified += items[start + i]->totalVisibleNodeCount;
-						}
-					}
-					INodeProviderCallback* proxy = ownerProvider->GetCallbackProxyInternal();
-					if (proxy)
-					{
-						proxy->OnBeforeItemModified(ownerProvider, start, count, newCount, true);
-					}
-				}
-
-				void MemoryNodeProvider::NodeCollection::OnAfterChildModified(vint start, vint count, vint newCount)
-				{
-					ownerProvider->childCount += (newCount - count);
-					if (ownerProvider->expanding)
-					{
-						vint offset = 0;
-						for (vint i = 0; i < newCount; i++)
-						{
-							offset += items[start + i]->totalVisibleNodeCount;
-						}
-						ownerProvider->OnChildTotalVisibleNodesChanged(offset - offsetBeforeChildModified);
-					}
-					offsetBeforeChildModified = 0;
-					INodeProviderCallback* proxy = ownerProvider->GetCallbackProxyInternal();
-					if (proxy)
-					{
-						proxy->OnAfterItemModified(ownerProvider, start, count, newCount, true);
-					}
-				}
-
-				bool MemoryNodeProvider::NodeCollection::QueryInsert(vint index, Ptr<MemoryNodeProvider> const& child)
-				{
-					return child->parent == 0;
-				}
-
-				bool MemoryNodeProvider::NodeCollection::QueryRemove(vint index, Ptr<MemoryNodeProvider> const& child)
-				{
-					return child->parent == ownerProvider;
-				}
-
-				void MemoryNodeProvider::NodeCollection::BeforeInsert(vint index, Ptr<MemoryNodeProvider> const& child)
-				{
-					OnBeforeChildModified(index, 0, 1);
-					child->parent = ownerProvider;
-				}
-
-				void MemoryNodeProvider::NodeCollection::BeforeRemove(vint index, Ptr<MemoryNodeProvider> const& child)
-				{
-					OnBeforeChildModified(index, 1, 0);
-					child->parent = 0;
-				}
-
-				void MemoryNodeProvider::NodeCollection::AfterInsert(vint index, Ptr<MemoryNodeProvider> const& child)
-				{
-					OnAfterChildModified(index, 0, 1);
-				}
-
-				void MemoryNodeProvider::NodeCollection::AfterRemove(vint index, vint count)
-				{
-					OnAfterChildModified(index, count, 0);
-				}
-
-				MemoryNodeProvider::NodeCollection::NodeCollection()
-					:ownerProvider(0)
-				{
-				}
-
-/***********************************************************************
-MemoryNodeProvider
-***********************************************************************/
-
-				INodeProviderCallback* MemoryNodeProvider::GetCallbackProxyInternal()
-				{
-					if(parent)
-					{
-						return parent->GetCallbackProxyInternal();
-					}
-					else
-					{
-						return 0;
-					}
-				}
-
-				void MemoryNodeProvider::OnChildTotalVisibleNodesChanged(vint offset)
-				{
-					totalVisibleNodeCount+=offset;
-					if(parent)
-					{
-						parent->OnChildTotalVisibleNodesChanged(offset);
-					}
-				}
-
-				MemoryNodeProvider::MemoryNodeProvider(Ptr<DescriptableObject> _data)
-					:data(_data)
-				{
-					children.ownerProvider=this;
-				}
-
-				MemoryNodeProvider::~MemoryNodeProvider()
-				{
-				}
-
-				Ptr<DescriptableObject> MemoryNodeProvider::GetData()
-				{
-					return data;
-				}
-
-				void MemoryNodeProvider::SetData(const Ptr<DescriptableObject>& value)
-				{
-					data=value;
-					NotifyDataModified();
-				}
-
-				MemoryNodeProvider::NodeCollection& MemoryNodeProvider::Children()
-				{
-					return children;
-				}
-
-				bool MemoryNodeProvider::GetExpanding()
-				{
-					return expanding;
-				}
-
-				void MemoryNodeProvider::SetExpanding(bool value)
-				{
-					if(expanding!=value)
-					{
-						expanding=value;
-						vint offset=0;
-						for(vint i=0;i<childCount;i++)
-						{
-							offset+=children[i]->totalVisibleNodeCount;
-						}
-
-						OnChildTotalVisibleNodesChanged(expanding?offset:-offset);
-						INodeProviderCallback* proxy=GetCallbackProxyInternal();
-						if(proxy)
-						{
-							if(expanding)
-							{
-								proxy->OnItemExpanded(this);
-							}
-							else
-							{
-								proxy->OnItemCollapsed(this);
-							}
-						}
-					}
-				}
-
-				vint MemoryNodeProvider::CalculateTotalVisibleNodes()
-				{
-					return totalVisibleNodeCount;
-				}
-
-				void MemoryNodeProvider::NotifyDataModified()
-				{
-					if (parent)
-					{
-						vint index = parent->children.IndexOf(this);
-						INodeProviderCallback* proxy = GetCallbackProxyInternal();
-						if (proxy)
-						{
-							proxy->OnBeforeItemModified(parent, index, 1, 1, false);
-							proxy->OnAfterItemModified(parent, index, 1, 1, false);
-						}
-					}
-				}
-
-				vint MemoryNodeProvider::GetChildCount()
-				{
-					return childCount;
-				}
-
-				Ptr<INodeProvider> MemoryNodeProvider::GetParent()
-				{
-					return Ptr(parent);
-				}
-
-				Ptr<INodeProvider> MemoryNodeProvider::GetChild(vint index)
-				{
-					if (0 <= index && index < childCount)
-					{
-						return children[index];
-					}
-					else
-					{
-						return nullptr;
-					}
-				}
-
-/***********************************************************************
-NodeRootProviderBase
-***********************************************************************/
-
-				void NodeRootProviderBase::OnAttached(INodeRootProvider* provider)
-				{
-				}
-
-				void NodeRootProviderBase::OnBeforeItemModified(INodeProvider* parentNode, vint start, vint count, vint newCount, bool itemReferenceUpdated)
-				{
-					// TODO: (enumerable) foreach
-					for(vint i=0;i<callbacks.Count();i++)
-					{
-						callbacks[i]->OnBeforeItemModified(parentNode, start, count, newCount, itemReferenceUpdated);
-					}
-				}
-
-				void NodeRootProviderBase::OnAfterItemModified(INodeProvider* parentNode, vint start, vint count, vint newCount, bool itemReferenceUpdated)
-				{
-					// TODO: (enumerable) foreach
-					for(vint i=0;i<callbacks.Count();i++)
-					{
-						callbacks[i]->OnAfterItemModified(parentNode, start, count, newCount, itemReferenceUpdated);
-					}
-				}
-
-				void NodeRootProviderBase::OnItemExpanded(INodeProvider* node)
-				{
-					// TODO: (enumerable) foreach
-					for(vint i=0;i<callbacks.Count();i++)
-					{
-						callbacks[i]->OnItemExpanded(node);
-					}
-				}
-
-				void NodeRootProviderBase::OnItemCollapsed(INodeProvider* node)
-				{
-					// TODO: (enumerable) foreach
-					for(vint i=0;i<callbacks.Count();i++)
-					{
-						callbacks[i]->OnItemCollapsed(node);
-					}
-				}
-
-				NodeRootProviderBase::NodeRootProviderBase()
-				{
-				}
-
-				NodeRootProviderBase::~NodeRootProviderBase()
-				{
-				}
-
-				bool NodeRootProviderBase::CanGetNodeByVisibleIndex()
-				{
-					return false;
-				}
-
-				Ptr<INodeProvider> NodeRootProviderBase::GetNodeByVisibleIndex(vint index)
-				{
-					return nullptr;
-				}
-
-				bool NodeRootProviderBase::AttachCallback(INodeProviderCallback* value)
-				{
-					if(callbacks.Contains(value))
-					{
-						return false;
-					}
-					else
-					{
-						callbacks.Add(value);
-						value->OnAttached(this);
-						return true;
-					}
-				}
-
-				bool NodeRootProviderBase::DetachCallback(INodeProviderCallback* value)
-				{
-					vint index=callbacks.IndexOf(value);
-					if(index==-1)
-					{
-						return false;
-					}
-					else
-					{
-						value->OnAttached(0);
-						callbacks.Remove(value);
-						return true;
-					}
-				}
-
-				IDescriptable* NodeRootProviderBase::RequestView(const WString& identifier)
-				{
-					return 0;
-				}
-
-/***********************************************************************
-MemoryNodeRootProvider
-***********************************************************************/
-
-				INodeProviderCallback* MemoryNodeRootProvider::GetCallbackProxyInternal()
-				{
-					return this;
-				}
-
-				MemoryNodeRootProvider::MemoryNodeRootProvider()
-				{
-					SetExpanding(true);
-				}
-
-				MemoryNodeRootProvider::~MemoryNodeRootProvider()
-				{
-				}
-
-				Ptr<INodeProvider> MemoryNodeRootProvider::GetRootNode()
-				{
-					return Ptr(this);
-				}
-
-				MemoryNodeProvider* MemoryNodeRootProvider::GetMemoryNode(INodeProvider* node)
-				{
-					return dynamic_cast<MemoryNodeProvider*>(node);
-				}
-			}
 
 /***********************************************************************
 GuiVirtualTreeListControl
@@ -16172,6 +16205,10 @@ GuiVirtualTreeView
 			void GuiVirtualTreeView::OnStyleInstalled(vint itemIndex, ItemStyle* style, bool refreshPropertiesOnly)
 			{
 				GuiVirtualTreeListControl::OnStyleInstalled(itemIndex, style, refreshPropertiesOnly);
+				if (auto textItemStyle = dynamic_cast<templates::GuiTextListItemTemplate*>(style))
+				{
+					textItemStyle->SetTextColor(TypedControlTemplateObject(true)->GetTextColor());
+				}
 				if (auto treeItemStyle = dynamic_cast<templates::GuiTreeItemTemplate*>(style))
 				{
 					treeItemStyle->SetTextColor(TypedControlTemplateObject(true)->GetTextColor());
@@ -25673,6 +25710,11 @@ GalleryItemArrangerRepeatComposition
 					minimum = Size(1, 1);
 				}
 
+				Size GalleryItemArrangerRepeatComposition::Layout_GetAdoptedSize(Size expectedSize)
+				{
+					return Size(1, 1);
+				}
+
 				GalleryItemArrangerRepeatComposition::GalleryItemArrangerRepeatComposition(GuiBindableRibbonGalleryList* _owner)
 					:owner(_owner)
 				{
@@ -25740,11 +25782,6 @@ GalleryItemArrangerRepeatComposition
 						InvalidateLayout();
 					}
 					return VirtualRepeatEnsureItemVisibleResult::NotMoved;
-				}
-
-				Size GalleryItemArrangerRepeatComposition::GetAdoptedSize(Size expectedSize)
-				{
-					return Size(1, 1);
 				}
 
 				void GalleryItemArrangerRepeatComposition::ScrollUp()
@@ -28271,6 +28308,10 @@ GuiVirtualRepeatCompositionBase
 						needToUpdateTotalSize = (Layout_EndPlaceItem(false, viewBounds, startIndex) == VirtualRepeatEndPlaceItemResult::TotalSizeUpdated) || needToUpdateTotalSize;
 					}
 				}
+				else if (realFullSize != Size(0, 0))
+				{
+					needToUpdateTotalSize = true;
+				}
 
 				if (needToUpdateTotalSize)
 				{
@@ -28392,6 +28433,14 @@ GuiVirtualRepeatCompositionBase
 				itemSourceUpdated = true;
 			}
 
+			Size GuiVirtualRepeatCompositionBase::GetAdoptedSize(Size expectedSize)
+			{
+				Size expectedViewSize = axis->RealSizeToVirtualSize(expectedSize);
+				Size adoptedViewSize = Layout_GetAdoptedSize(expectedViewSize);
+				Size adoptedSize = axis->VirtualSizeToRealSize(adoptedViewSize);
+				return adoptedSize;
+			}
+
 			vint GuiVirtualRepeatCompositionBase::FindItemByRealKeyDirection(vint itemIndex, compositions::KeyDirection key)
 			{
 				return FindItemByVirtualKeyDirection(itemIndex, axis->RealKeyDirectionToVirtualKeyDirection(key));
@@ -28510,6 +28559,13 @@ GuiRepeatFreeHeightItemComposition
 				vint h = offsets[heights.Count() - 1] + heights[heights.Count() - 1];
 				full = Size(w, h);
 				minimum = Size(0, h);
+			}
+
+			Size GuiRepeatFreeHeightItemComposition::Layout_GetAdoptedSize(Size expectedSize)
+			{
+				vint h = expectedSize.x * 2;
+				if (expectedSize.y < h) expectedSize.y = h;
+				return expectedSize;
 			}
 
 			void GuiRepeatFreeHeightItemComposition::OnItemChanged(vint start, vint oldCount, vint newCount)
@@ -28633,13 +28689,6 @@ GuiRepeatFreeHeightItemComposition
 				return moved ? VirtualRepeatEnsureItemVisibleResult::Moved : VirtualRepeatEnsureItemVisibleResult::NotMoved;
 			}
 
-			Size GuiRepeatFreeHeightItemComposition::GetAdoptedSize(Size expectedSize)
-			{
-				vint h = expectedSize.x * 2;
-				if (expectedSize.y < h) expectedSize.y = h;
-				return expectedSize;
-			}
-
 /***********************************************************************
 GuiRepeatFixedHeightItemComposition
 ***********************************************************************/
@@ -28724,6 +28773,14 @@ GuiRepeatFixedHeightItemComposition
 				vint h = rowHeight * itemSource->GetCount() + itemYOffset;
 				full = Size(w1, h);
 				minimum = Size(w2, h);
+			}
+
+			Size GuiRepeatFixedHeightItemComposition::Layout_GetAdoptedSize(Size expectedSize)
+			{
+				if (!itemSource) return expectedSize;
+				vint y = expectedSize.y - itemYOffset;
+				vint itemCount = itemSource->GetCount();
+				return Size(expectedSize.x, itemYOffset + CalculateAdoptedSize(y, itemCount, rowHeight));
 			}
 
 			vint GuiRepeatFixedHeightItemComposition::FindItemByVirtualKeyDirection(vint itemIndex, compositions::KeyDirection key)
@@ -28823,14 +28880,6 @@ GuiRepeatFixedHeightItemComposition
 				}
 
 				return VirtualRepeatEnsureItemVisibleResult::Moved;
-			}
-
-			Size GuiRepeatFixedHeightItemComposition::GetAdoptedSize(Size expectedSize)
-			{
-				if (!itemSource) return expectedSize;
-				vint y = expectedSize.y - itemYOffset;
-				vint itemCount = itemSource->GetCount();
-				return Size(expectedSize.x, itemYOffset + CalculateAdoptedSize(y, itemCount, rowHeight));
 			}
 
 			vint GuiRepeatFixedHeightItemComposition::GetItemWidth()
@@ -28946,6 +28995,22 @@ GuiRepeatFixedSizeMultiColumnItemComposition
 				minimum = Size(itemSize.x, h);
 			}
 
+			Size GuiRepeatFixedSizeMultiColumnItemComposition::Layout_GetAdoptedSize(Size expectedSize)
+			{
+				if (!itemSource) return expectedSize;
+				vint count = itemSource->GetCount();
+				vint columnCount = viewBounds.Width() / itemSize.x;
+				vint rowCount = count / columnCount;
+				if (count % columnCount != 0) rowCount++;
+
+				if (columnCount == 0) columnCount = 1;
+				if (rowCount == 0) rowCount = 1;
+				return Size(
+					CalculateAdoptedSize(expectedSize.x, columnCount, itemSize.x),
+					CalculateAdoptedSize(expectedSize.y, rowCount, itemSize.y)
+				);
+			}
+
 			vint GuiRepeatFixedSizeMultiColumnItemComposition::FindItemByVirtualKeyDirection(vint itemIndex, compositions::KeyDirection key)
 			{
 				vint count = itemSource->GetCount();
@@ -29042,22 +29107,6 @@ GuiRepeatFixedSizeMultiColumnItemComposition
 					if (viewBounds.LeftTop() != location) break;
 				}
 				return moved ? VirtualRepeatEnsureItemVisibleResult::Moved : VirtualRepeatEnsureItemVisibleResult::NotMoved;
-			}
-
-			Size GuiRepeatFixedSizeMultiColumnItemComposition::GetAdoptedSize(Size expectedSize)
-			{
-				if (!itemSource) return expectedSize;
-				vint count = itemSource->GetCount();
-				vint columnCount = viewBounds.Width() / itemSize.x;
-				vint rowCount = count / columnCount;
-				if (count % columnCount != 0) rowCount++;
-
-				if (columnCount == 0) columnCount = 1;
-				if (rowCount == 0) rowCount = 1;
-				return Size(
-					CalculateAdoptedSize(expectedSize.x, columnCount, itemSize.x),
-					CalculateAdoptedSize(expectedSize.y, rowCount, itemSize.y)
-				);
 			}
 
 /***********************************************************************
@@ -29240,6 +29289,16 @@ GuiRepeatFixedHeightMultiColumnItemComposition
 				minimum = Size(w, 0);
 			}
 
+			Size GuiRepeatFixedHeightMultiColumnItemComposition::Layout_GetAdoptedSize(Size expectedSize)
+			{
+				if (!itemSource) return expectedSize;
+				vint count = itemSource->GetCount();
+				vint rowCount = viewBounds.Height() / itemHeight;
+				if (rowCount > count) rowCount = count;
+				if (rowCount == 0) rowCount = 1;
+				return Size(expectedSize.x, CalculateAdoptedSize(expectedSize.y, rowCount, itemHeight));
+			}
+
 			vint GuiRepeatFixedHeightMultiColumnItemComposition::FindItemByVirtualKeyDirection(vint itemIndex, compositions::KeyDirection key)
 			{
 				vint count = itemSource->GetCount();
@@ -29316,16 +29375,6 @@ GuiRepeatFixedHeightMultiColumnItemComposition
 					if (viewBounds.LeftTop() != location) break;
 				}
 				return moved ? VirtualRepeatEnsureItemVisibleResult::Moved : VirtualRepeatEnsureItemVisibleResult::NotMoved;
-			}
-
-			Size GuiRepeatFixedHeightMultiColumnItemComposition::GetAdoptedSize(Size expectedSize)
-			{
-				if (!itemSource) return expectedSize;
-				vint count = itemSource->GetCount();
-				vint rowCount = viewBounds.Height() / itemHeight;
-				if (rowCount > count) rowCount = count;
-				if (rowCount == 0) rowCount = 1;
-				return Size(expectedSize.x, CalculateAdoptedSize(expectedSize.y, rowCount, itemHeight));
 			}
 		}
 	}
