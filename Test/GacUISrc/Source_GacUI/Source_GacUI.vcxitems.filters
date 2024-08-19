@@ -166,7 +166,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsComposition\GuiGraphicsRepeatComposition_Virtual.cpp">
       <Filter>GraphicsComposition</Filter>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ListControlPackage\DataSource_IItemProvider.cpp">
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ListControlPackage\DataSourceImpl_IItemProvider_ItemProviderBase.cpp">
       <Filter>Controls\ListControlPackage\DataSource</Filter>
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ListControlPackage\DataSource_INodeProvider.cpp">
@@ -327,6 +327,9 @@
       <Filter>Controls\ListControlPackage\DataSource</Filter>
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ListControlPackage\DataSource_INodeProvider.h">
+      <Filter>Controls\ListControlPackage\DataSource</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ListControlPackage\DataSourceImpl_IItemProvider_ItemProviderBase.h">
       <Filter>Controls\ListControlPackage\DataSource</Filter>
     </ClInclude>
   </ItemGroup>

@@ -9,7 +9,7 @@ Interfaces:
 #ifndef VCZH_PRESENTATION_CONTROLS_GUILISTCONTROLS
 #define VCZH_PRESENTATION_CONTROLS_GUILISTCONTROLS
 
-#include "DataSource_IItemProvider.h"
+#include "DataSourceImpl_IItemProvider_ItemProviderBase.h"
 #include "../GuiContainerControls.h"
 #include "../../GraphicsComposition/GuiGraphicsAxis.h"
 

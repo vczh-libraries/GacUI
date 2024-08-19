@@ -19,7 +19,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\GuiDateTimeControls.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\GuiDialogs.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\GuiScrollControls.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ListControlPackage\DataSource_IItemProvider.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ListControlPackage\DataSourceImpl_IItemProvider_ItemProviderBase.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ListControlPackage\DataSource_INodeProvider.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ListControlPackage\GuiBindableDataGrid.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ListControlPackage\GuiBindableListControls.cpp" />
@@ -71,6 +71,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\GuiScrollControls.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\IncludeAll.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\IncludeForward.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ListControlPackage\DataSourceImpl_IItemProvider_ItemProviderBase.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ListControlPackage\DataSource_INodeProvider.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ListControlPackage\GuiBindableDataGrid.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ListControlPackage\GuiBindableListControls.h" />
