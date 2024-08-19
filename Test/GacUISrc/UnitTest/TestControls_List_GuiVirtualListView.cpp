@@ -76,6 +76,10 @@ TEST_FILE
         {
           item.Text = text;
         }
+        func UpdateSubItemText(item:ListViewItem^, text:string) : void
+        {
+          item.SubItems[0] = text;
+        }
         func InitializeItems(count:int) : void
         {
           for (item in range[1, count])

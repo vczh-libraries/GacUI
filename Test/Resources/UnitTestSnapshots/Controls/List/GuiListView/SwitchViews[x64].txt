@@ -309,6 +309,11 @@ namespace gacuisrc_unittest
             (item.Text = text);
         }
 
+        func UpdateSubItemText(item : ListViewItem^, text : string) : (void)
+        {
+            (item.SubItems[0] = text);
+        }
+
         func InitializeItems(count : int) : (void)
         {
             {

@@ -17,6 +17,11 @@ namespace gacui_unittest_template
 		Value::From(window).Invoke(L"UpdateItemText", (Value_xs(), item, BoxValue(text)));
 	}
 
+	static void UpdateSubItemText(GuiWindow* window, Value item, WString text)
+	{
+		Value::From(window).Invoke(L"UpdateSubItemText", (Value_xs(), item, BoxValue(text)));
+	}
+
 	void GuiVirtualListView_WithView_TestCases(
 		WString resourceXml,
 		WString pathFragment,
@@ -209,11 +214,29 @@ namespace gacui_unittest_template
 						UpdateItemText(window, items->Get(0), L"New Text");
 						notifyItemDataModified(window, 0, 1);
 					});
-					protocol->OnNextIdleFrame(L"Change 1st Text", [=]()
+					if (view == ListViewView::Tile || view == ListViewView::Information || view == ListViewView::Detail)
 					{
-						auto window = GetApplication()->GetMainWindow();
-						window->Hide();
-					});
+						protocol->OnNextIdleFrame(L"Change 1st Text", [=]()
+						{
+							auto window = GetApplication()->GetMainWindow();
+							auto items = getItems(window);
+							UpdateSubItemText(window, items->Get(0), L"Whatever");
+							notifyItemDataModified(window, 0, 1);
+						});
+						protocol->OnNextIdleFrame(L"Change 1st sub Text", [=]()
+						{
+							auto window = GetApplication()->GetMainWindow();
+							window->Hide();
+						});
+					}
+					else
+					{
+						protocol->OnNextIdleFrame(L"Change 1st Text", [=]()
+						{
+							auto window = GetApplication()->GetMainWindow();
+							window->Hide();
+						});
+					}
 				});
 				GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
 					WString::Unmanaged(L"Controls/List/") + pathFragment + WString::Unmanaged(L"/") + viewName + WString::Unmanaged(L"/UpdateVisibleItems"),
