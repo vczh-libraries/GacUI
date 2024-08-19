@@ -197,6 +197,10 @@ TEST_FILE
         {
           item.Id = text;
         }
+        func UpdateSubItemText(item:ListViewItem^, text:string) : void
+        {
+          item.First = text;
+        }
         func InitializeItems(count:int) : void
         {
           for (item in range[1, count])
@@ -257,11 +261,29 @@ TEST_FILE
 </Resource>
 )GacUISrc";
 
+		auto getItems = [](GuiWindow* window)
+		{
+			auto listControl = FindObjectByName<GuiBindableListView>(window, L"list");
+			return listControl->GetItemSource().Cast<IValueList>();
+		};
+
+		auto notifyItemDataModified = [](GuiWindow* window, vint start, vint count)
+		{
+			auto listControl = FindObjectByName<GuiBindableListView>(window, L"list");
+			listControl->NotifyItemDataModified(start, count);
+		};
+
 		TEST_CATEGORY(L"GuiBindableListView")
 		{
 			GuiVirtualListView_ViewAndImages_TestCases(
 				resourceWithImage,
 				WString::Unmanaged(L"GuiBindableListView"));
+
+			GuiVirtualListView_TestCases(
+				resourceWithoutImage,
+				WString::Unmanaged(L"GuiBindableListView"),
+				getItems,
+				notifyItemDataModified);
 		});
 	}
 
@@ -316,11 +338,29 @@ TEST_FILE
 </Resource>
 )GacUISrc";
 
+		auto getItems = [](GuiWindow* window)
+		{
+			auto listControl = FindObjectByName<GuiBindableDataGrid>(window, L"list");
+			return listControl->GetItemSource().Cast<IValueList>();
+		};
+
+		auto notifyItemDataModified = [](GuiWindow* window, vint start, vint count)
+		{
+			auto listControl = FindObjectByName<GuiBindableDataGrid>(window, L"list");
+			listControl->NotifyItemDataModified(start, count);
+		};
+
 		TEST_CATEGORY(L"GuiBindableDataGrid")
 		{
 			GuiVirtualListView_ViewAndImages_TestCases(
 				resourceWithImage,
 				WString::Unmanaged(L"GuiBindableDataGrid/AsListView"));
+
+			GuiVirtualListView_TestCases(
+				resourceWithoutImage,
+				WString::Unmanaged(L"GuiBindableDataGrid/AsListView"),
+				getItems,
+				notifyItemDataModified);
 		});
 	}
 }
