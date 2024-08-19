@@ -64,9 +64,6 @@
 - Non-editing control unit test (using DarkSkin)
   - List
     - GuiListControl (`MouseWheel` remaining)
-    - ListView
-      - BindableListView
-      - BindableDataGrid in the same view
     - TreeView
       - ItemTemplate with `Expanding`, `Expandable`, `Level`, `Image`
       - Item manipulation
