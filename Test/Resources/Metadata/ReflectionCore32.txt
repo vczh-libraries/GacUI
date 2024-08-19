@@ -2231,13 +2231,13 @@ class presentation::controls::GuiComboBoxListControl : presentation::controls::G
     }
 
     property ContainedListControl : presentation::controls::GuiSelectableListControl* { get:GetContainedListControl }
-    property ItemProvider : presentation::controls::GuiListControl::IItemProvider* { get:GetItemProvider }
+    property ItemProvider : presentation::controls::list::IItemProvider* { get:GetItemProvider }
     property ItemTemplate : system::Function<presentation::templates::GuiTemplate*, system::Object>^ { get:GetItemTemplate set:SetItemTemplate event:ItemTemplateChanged }
     property SelectedIndex : system::Int32 { get:GetSelectedIndex set:SetSelectedIndex event:SelectedIndexChanged }
     property SelectedItem : system::Object { get:GetSelectedItem event:SelectedIndexChanged }
 
     function GetContainedListControl() : presentation::controls::GuiSelectableListControl*;
-    function GetItemProvider() : presentation::controls::GuiListControl::IItemProvider*;
+    function GetItemProvider() : presentation::controls::list::IItemProvider*;
     function GetItemTemplate() : system::Function<presentation::templates::GuiTemplate*, system::Object>^;
     function GetSelectedIndex() : system::Int32;
     function GetSelectedItem() : system::Object;
@@ -2701,7 +2701,7 @@ class presentation::controls::GuiListControl : presentation::controls::GuiScroll
     property Arranger : presentation::controls::GuiListControl::IItemArranger* { get:GetArranger set:SetArranger event:ArrangerChanged }
     property Axis : presentation::compositions::IGuiAxis* { get:GetAxis set:SetAxis event:AxisChanged }
     property DisplayItemBackground : system::Boolean { get:GetDisplayItemBackground set:SetDisplayItemBackground }
-    property ItemProvider : presentation::controls::GuiListControl::IItemProvider* { get:GetItemProvider }
+    property ItemProvider : presentation::controls::list::IItemProvider* { get:GetItemProvider }
     property ItemTemplate : system::Function<presentation::templates::GuiListItemTemplate*, system::Object>^ { get:GetItemTemplate set:SetItemTemplate event:ItemTemplateChanged }
 
     function EnsureItemVisible(itemIndex : system::Int32) : system::Boolean;
@@ -2709,7 +2709,7 @@ class presentation::controls::GuiListControl : presentation::controls::GuiScroll
     function GetArranger() : presentation::controls::GuiListControl::IItemArranger*;
     function GetAxis() : presentation::compositions::IGuiAxis*;
     function GetDisplayItemBackground() : system::Boolean;
-    function GetItemProvider() : presentation::controls::GuiListControl::IItemProvider*;
+    function GetItemProvider() : presentation::controls::list::IItemProvider*;
     function GetItemTemplate() : system::Function<presentation::templates::GuiListItemTemplate*, system::Object>^;
     function SetArranger(value : presentation::controls::GuiListControl::IItemArranger^) : system::Void;
     function SetAxis(value : presentation::compositions::IGuiAxis^) : system::Void;
@@ -2717,7 +2717,7 @@ class presentation::controls::GuiListControl : presentation::controls::GuiScroll
     function SetItemTemplate(value : system::Function<presentation::templates::GuiListItemTemplate*, system::Object>^) : system::Void;
     function TypedControlTemplateObject(ensureExists : system::Boolean) : presentation::templates::GuiListControlTemplate*;
 
-    constructor (themeName : presentation::theme::ThemeName, itemProvider : presentation::controls::GuiListControl::IItemProvider*, acceptFocus : system::Boolean) : presentation::controls::GuiListControl*;
+    constructor (themeName : presentation::theme::ThemeName, itemProvider : presentation::controls::list::IItemProvider*, acceptFocus : system::Boolean) : presentation::controls::GuiListControl*;
 }
 
 @ValueType
@@ -2727,7 +2727,7 @@ enum presentation::controls::GuiListControl::EnsureItemVisibleResult {
     NotMoved = 2,
 }
 
-interface presentation::controls::GuiListControl::IItemArranger : presentation::controls::GuiListControl::IItemProviderCallback {
+interface presentation::controls::GuiListControl::IItemArranger : presentation::controls::list::IItemProviderCallback {
     property Callback : presentation::controls::GuiListControl::IItemArrangerCallback* { get:GetCallback set:SetCallback }
     property TotalSize : presentation::Size { get:GetTotalSize }
 
@@ -2761,31 +2761,6 @@ interface presentation::controls::GuiListControl::IItemArrangerCallback : system
 
 }
 
-interface presentation::controls::GuiListControl::IItemProvider : system::Interface {
-    function AttachCallback(value : presentation::controls::GuiListControl::IItemProviderCallback*) : system::Boolean;
-    function Count() : system::Int32;
-    function DetachCallback(value : presentation::controls::GuiListControl::IItemProviderCallback*) : system::Boolean;
-    function GetBindingValue(itemIndex : system::Int32) : system::Object;
-    function GetTextValue(itemIndex : system::Int32) : system::String;
-    function IsEditing() : system::Boolean;
-    function PopEditing() : system::Boolean;
-    function PushEditing() : system::Void;
-    function RequestView(identifier : system::String) : system::Interface*;
-
-    @InvokeTemplate:::vl::reflection::description::ValueInterfaceProxy<GuiListControl::IItemProvider>::Create($Arguments)
-    @ClosureTemplate:::vl::Func<$Func>(&::vl::reflection::description::ValueInterfaceProxy<GuiListControl::IItemProvider>::Create)
-    constructor (proxy : system::InterfaceProxy^) : presentation::controls::GuiListControl::IItemProvider^;
-}
-
-interface presentation::controls::GuiListControl::IItemProviderCallback : system::Interface {
-    function OnAttached(provider : presentation::controls::GuiListControl::IItemProvider*) : system::Void;
-    function OnItemModified(start : system::Int32, count : system::Int32, newCount : system::Int32, itemReferenceUpdated : system::Boolean) : system::Void;
-
-    @InvokeTemplate:::vl::reflection::description::ValueInterfaceProxy<GuiListControl::IItemProviderCallback>::Create($Arguments)
-    @ClosureTemplate:::vl::Func<$Func>(&::vl::reflection::description::ValueInterfaceProxy<GuiListControl::IItemProviderCallback>::Create)
-    constructor (proxy : system::InterfaceProxy^) : presentation::controls::GuiListControl::IItemProviderCallback^;
-}
-
 class presentation::controls::GuiListView : presentation::controls::GuiVirtualListView {
     property Columns : system::List<presentation::controls::list::ListViewColumn^>^ { get:GetColumns }
     property DataColumns : system::List<system::Int32>^ { get:GetDataColumns }
@@ -2806,7 +2781,7 @@ class presentation::controls::GuiListViewBase : presentation::controls::GuiSelec
 
     function TypedControlTemplateObject(ensureExists : system::Boolean) : presentation::templates::GuiListViewTemplate*;
 
-    constructor (themeName : presentation::theme::ThemeName, itemProvider : presentation::controls::GuiListControl::IItemProvider*) : presentation::controls::GuiListViewBase*;
+    constructor (themeName : presentation::theme::ThemeName, itemProvider : presentation::controls::list::IItemProvider*) : presentation::controls::GuiListViewBase*;
 }
 
 class presentation::controls::GuiListViewColumnHeader : presentation::controls::GuiMenuButton {
@@ -3195,7 +3170,7 @@ class presentation::controls::GuiSelectableListControl : presentation::controls:
     function SetMultiSelect(value : system::Boolean) : system::Void;
     function SetSelected(itemIndex : system::Int32, value : system::Boolean) : system::Void;
 
-    constructor (themeName : presentation::theme::ThemeName, itemProvider : presentation::controls::GuiListControl::IItemProvider*) : presentation::controls::GuiSelectableListControl*;
+    constructor (themeName : presentation::theme::ThemeName, itemProvider : presentation::controls::list::IItemProvider*) : presentation::controls::GuiSelectableListControl*;
 }
 
 class presentation::controls::GuiSinglelineTextBox : presentation::controls::GuiControl, presentation::controls::GuiTextBoxCommonInterface {
@@ -3435,15 +3410,15 @@ class presentation::controls::GuiVirtualDataGrid : presentation::controls::GuiVi
         SelectedCellValue,
     }
 
-    property ItemProvider : presentation::controls::GuiListControl::IItemProvider* { get:GetItemProvider }
+    property ItemProvider : presentation::controls::list::IItemProvider* { get:GetItemProvider }
     property SelectedCell : presentation::GridPos { get:GetSelectedCell event:SelectedCellChanged }
 
-    function GetItemProvider() : presentation::controls::GuiListControl::IItemProvider*;
+    function GetItemProvider() : presentation::controls::list::IItemProvider*;
     function GetSelectedCell() : presentation::GridPos;
     function SelectCell(value : presentation::GridPos, openEditor : system::Boolean) : system::Boolean;
     function SetViewToDefault() : system::Void;
 
-    constructor (themeName : presentation::theme::ThemeName, itemProvider : presentation::controls::GuiListControl::IItemProvider*) : presentation::controls::GuiVirtualDataGrid*;
+    constructor (themeName : presentation::theme::ThemeName, itemProvider : presentation::controls::list::IItemProvider*) : presentation::controls::GuiVirtualDataGrid*;
 }
 
 class presentation::controls::GuiVirtualListView : presentation::controls::GuiListViewBase {
@@ -3452,7 +3427,7 @@ class presentation::controls::GuiVirtualListView : presentation::controls::GuiLi
     function GetView() : presentation::controls::ListViewView;
     function SetView(value : presentation::controls::ListViewView) : system::Void;
 
-    constructor (themeName : presentation::theme::ThemeName, itemProvider : presentation::controls::GuiListControl::IItemProvider*) : presentation::controls::GuiVirtualListView*;
+    constructor (themeName : presentation::theme::ThemeName, itemProvider : presentation::controls::list::IItemProvider*) : presentation::controls::GuiVirtualListView*;
 }
 
 class presentation::controls::GuiVirtualTextList : presentation::controls::GuiSelectableListControl {
@@ -3464,7 +3439,7 @@ class presentation::controls::GuiVirtualTextList : presentation::controls::GuiSe
     function SetView(value : presentation::controls::TextListView) : system::Void;
     function TypedControlTemplateObject(ensureExists : system::Boolean) : presentation::templates::GuiTextListTemplate*;
 
-    constructor (themeName : presentation::theme::ThemeName, L"itemProvider" : presentation::controls::GuiListControl::IItemProvider*) : presentation::controls::GuiVirtualTextList*;
+    constructor (themeName : presentation::theme::ThemeName, L"itemProvider" : presentation::controls::list::IItemProvider*) : presentation::controls::GuiVirtualTextList*;
 }
 
 class presentation::controls::GuiVirtualTreeListControl : presentation::controls::GuiSelectableListControl {
@@ -3844,7 +3819,7 @@ interface presentation::controls::list::IDataEditor : system::Interface {
     property Factory : presentation::controls::list::IDataEditorFactory* { get:GetFactory }
     property Template : presentation::templates::GuiGridEditorTemplate* { get:GetTemplate }
 
-    function BeforeEditCell(itemProvider : presentation::controls::GuiListControl::IItemProvider*, row : system::Int32, column : system::Int32) : system::Void;
+    function BeforeEditCell(itemProvider : presentation::controls::list::IItemProvider*, row : system::Int32, column : system::Int32) : system::Void;
     function GetCellValueSaved() : system::Boolean;
     function GetFactory() : presentation::controls::list::IDataEditorFactory*;
     function GetTemplate() : presentation::templates::GuiGridEditorTemplate*;
@@ -3866,10 +3841,10 @@ interface presentation::controls::list::IDataFilter : system::Interface {
 }
 
 interface presentation::controls::list::IDataGridContext : system::Interface {
-    property ItemProvider : presentation::controls::GuiListControl::IItemProvider* { get:GetItemProvider }
+    property ItemProvider : presentation::controls::list::IItemProvider* { get:GetItemProvider }
     property ListViewControlTemplate : presentation::templates::GuiListViewTemplate* { get:GetListViewControlTemplate }
 
-    function GetItemProvider() : presentation::controls::GuiListControl::IItemProvider*;
+    function GetItemProvider() : presentation::controls::list::IItemProvider*;
     function GetListViewControlTemplate() : presentation::templates::GuiListViewTemplate*;
     function RequestSaveData() : system::Void;
 
@@ -3900,9 +3875,9 @@ interface presentation::controls::list::IDataGridView : system::Interface {
 }
 
 interface presentation::controls::list::IDataProcessorCallback : system::Interface {
-    property ItemProvider : presentation::controls::GuiListControl::IItemProvider* { get:GetItemProvider }
+    property ItemProvider : presentation::controls::list::IItemProvider* { get:GetItemProvider }
 
-    function GetItemProvider() : presentation::controls::GuiListControl::IItemProvider*;
+    function GetItemProvider() : presentation::controls::list::IItemProvider*;
     function OnProcessorChanged() : system::Void;
 
     @InvokeTemplate:::vl::reflection::description::ValueInterfaceProxy<IDataProcessorCallback>::Create($Arguments)
@@ -3923,7 +3898,7 @@ interface presentation::controls::list::IDataVisualizer : system::Interface {
     property Factory : presentation::controls::list::IDataVisualizerFactory* { get:GetFactory }
     property Template : presentation::templates::GuiGridVisualizerTemplate* { get:GetTemplate }
 
-    function BeforeVisualizeCell(itemProvider : presentation::controls::GuiListControl::IItemProvider*, row : system::Int32, column : system::Int32) : system::Void;
+    function BeforeVisualizeCell(itemProvider : presentation::controls::list::IItemProvider*, row : system::Int32, column : system::Int32) : system::Void;
     function GetFactory() : presentation::controls::list::IDataVisualizerFactory*;
     function GetTemplate() : presentation::templates::GuiGridVisualizerTemplate*;
     function SetSelected(value : system::Boolean) : system::Void;
@@ -3933,6 +3908,31 @@ interface presentation::controls::list::IDataVisualizer : system::Interface {
 interface presentation::controls::list::IDataVisualizerFactory : system::Interface {
     function CreateVisualizer(dataGridContext : presentation::controls::list::IDataGridContext*) : presentation::controls::list::IDataVisualizer^;
 
+}
+
+interface presentation::controls::list::IItemProvider : system::Interface {
+    function AttachCallback(value : presentation::controls::list::IItemProviderCallback*) : system::Boolean;
+    function Count() : system::Int32;
+    function DetachCallback(value : presentation::controls::list::IItemProviderCallback*) : system::Boolean;
+    function GetBindingValue(itemIndex : system::Int32) : system::Object;
+    function GetTextValue(itemIndex : system::Int32) : system::String;
+    function IsEditing() : system::Boolean;
+    function PopEditing() : system::Boolean;
+    function PushEditing() : system::Void;
+    function RequestView(identifier : system::String) : system::Interface*;
+
+    @InvokeTemplate:::vl::reflection::description::ValueInterfaceProxy<list::IItemProvider>::Create($Arguments)
+    @ClosureTemplate:::vl::Func<$Func>(&::vl::reflection::description::ValueInterfaceProxy<list::IItemProvider>::Create)
+    constructor (proxy : system::InterfaceProxy^) : presentation::controls::list::IItemProvider^;
+}
+
+interface presentation::controls::list::IItemProviderCallback : system::Interface {
+    function OnAttached(provider : presentation::controls::list::IItemProvider*) : system::Void;
+    function OnItemModified(start : system::Int32, count : system::Int32, newCount : system::Int32, itemReferenceUpdated : system::Boolean) : system::Void;
+
+    @InvokeTemplate:::vl::reflection::description::ValueInterfaceProxy<list::IItemProviderCallback>::Create($Arguments)
+    @ClosureTemplate:::vl::Func<$Func>(&::vl::reflection::description::ValueInterfaceProxy<list::IItemProviderCallback>::Create)
+    constructor (proxy : system::InterfaceProxy^) : presentation::controls::list::IItemProviderCallback^;
 }
 
 interface presentation::controls::list::IListViewItemView : system::Interface {
@@ -3965,7 +3965,7 @@ interface presentation::controls::list::ITextItemView : system::Interface {
     constructor (proxy : system::InterfaceProxy^) : presentation::controls::list::ITextItemView^;
 }
 
-class presentation::controls::list::ItemProviderBase : presentation::controls::GuiListControl::IItemProvider {
+class presentation::controls::list::ItemProviderBase : presentation::controls::list::IItemProvider {
 }
 
 class presentation::controls::list::ListViewColumn : system::ReferenceType {
@@ -4040,7 +4040,7 @@ class presentation::controls::list::ListViewItem : system::ReferenceType {
     constructor () : presentation::controls::list::ListViewItem^;
 }
 
-class presentation::controls::list::ListViewItemProvider : presentation::controls::GuiListControl::IItemProvider, presentation::controls::list::IListViewItemView, presentation::controls::list::ListViewColumnItemArranger::IColumnItemView {
+class presentation::controls::list::ListViewItemProvider : presentation::controls::list::IItemProvider, presentation::controls::list::IListViewItemView, presentation::controls::list::ListViewColumnItemArranger::IColumnItemView {
 }
 
 class presentation::controls::list::MainColumnVisualizerTemplate : presentation::templates::GuiGridVisualizerTemplate {
@@ -4068,7 +4068,7 @@ class presentation::controls::list::TextItem : system::ReferenceType {
     constructor (text : system::String, checked : system::Boolean) : presentation::controls::list::TextItem^;
 }
 
-class presentation::controls::list::TextItemProvider : presentation::controls::GuiListControl::IItemProvider, presentation::controls::list::ITextItemView {
+class presentation::controls::list::TextItemProvider : presentation::controls::list::IItemProvider, presentation::controls::list::ITextItemView {
 }
 
 interface presentation::controls::tree::INodeItemView : system::Interface {
