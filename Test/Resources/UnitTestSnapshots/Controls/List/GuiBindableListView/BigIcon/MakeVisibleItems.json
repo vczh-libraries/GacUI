@@ -400,7 +400,7 @@
               "ellipse": true,
               "multiline": false,
               "font": {"fontFamily": "Segoe WP SemiLight", "size": 14, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "GuiListView [-1] -> []",
+              "text": "GuiBindableListView [-1] -> []",
               "measuringRequest": "FontHeight"
             }
           ]
@@ -2527,7 +2527,7 @@
               "ellipse": true,
               "multiline": false,
               "font": {"fontFamily": "Segoe WP SemiLight", "size": 14, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "GuiListView [-1] -> []",
+              "text": "GuiBindableListView [-1] -> []",
               "measuringRequest": "FontHeight"
             }
           ]
@@ -4074,7 +4074,7 @@
               "ellipse": true,
               "multiline": false,
               "font": {"fontFamily": "Segoe WP SemiLight", "size": 14, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "GuiListView [-1] -> []",
+              "text": "GuiBindableListView [-1] -> []",
               "measuringRequest": "FontHeight"
             }
           ]
@@ -5716,7 +5716,7 @@
               "ellipse": true,
               "multiline": false,
               "font": {"fontFamily": "Segoe WP SemiLight", "size": 14, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "GuiListView [-1] -> []",
+              "text": "GuiBindableListView [-1] -> []",
               "measuringRequest": "FontHeight"
             }
           ]
@@ -7453,7 +7453,7 @@
               "ellipse": true,
               "multiline": false,
               "font": {"fontFamily": "Segoe WP SemiLight", "size": 14, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "GuiListView [-1] -> []",
+              "text": "GuiBindableListView [-1] -> []",
               "measuringRequest": "FontHeight"
             }
           ]
@@ -9000,7 +9000,7 @@
               "ellipse": true,
               "multiline": false,
               "font": {"fontFamily": "Segoe WP SemiLight", "size": 14, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "GuiListView [2] -> [Item 3]",
+              "text": "GuiBindableListView [2] -> [Item 3]",
               "measuringRequest": "FontHeight"
             }
           ]
@@ -10547,7 +10547,7 @@
               "ellipse": true,
               "multiline": false,
               "font": {"fontFamily": "Segoe WP SemiLight", "size": 14, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "GuiListView [-1] -> []",
+              "text": "GuiBindableListView [-1] -> []",
               "measuringRequest": "FontHeight"
             }
           ]
@@ -12094,7 +12094,7 @@
               "ellipse": true,
               "multiline": false,
               "font": {"fontFamily": "Segoe WP SemiLight", "size": 14, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "GuiListView [2] -> [Updated Item 6]",
+              "text": "GuiBindableListView [2] -> [Updated Item 6]",
               "measuringRequest": "FontHeight"
             }
           ]

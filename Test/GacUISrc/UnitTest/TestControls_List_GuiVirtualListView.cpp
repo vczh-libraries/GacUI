@@ -197,7 +197,7 @@ TEST_FILE
         {
           item.Id = text;
         }
-        func UpdateSubItemText(item:ListViewItem^, text:string) : void
+        func UpdateSubItemText(item:ListViewData^, text:string) : void
         {
           item.First = text;
         }

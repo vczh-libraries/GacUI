@@ -363,6 +363,11 @@ namespace gacuisrc_unittest
             (item.Id = text);
         }
 
+        func UpdateSubItemText(item : ListViewData^, text : string) : (void)
+        {
+            (item.First = text);
+        }
+
         func InitializeItems(count : int) : (void)
         {
             {

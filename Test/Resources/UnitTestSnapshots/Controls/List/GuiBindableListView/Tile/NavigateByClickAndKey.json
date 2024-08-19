@@ -589,7 +589,7 @@
               "ellipse": true,
               "multiline": false,
               "font": {"fontFamily": "Segoe WP SemiLight", "size": 14, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "GuiListView [-1] -> []",
+              "text": "GuiBindableListView [-1] -> []",
               "measuringRequest": "FontHeight"
             }
           ]
@@ -2716,7 +2716,7 @@
               "ellipse": true,
               "multiline": false,
               "font": {"fontFamily": "Segoe WP SemiLight", "size": 14, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "GuiListView [-1] -> []",
+              "text": "GuiBindableListView [-1] -> []",
               "measuringRequest": "FontHeight"
             }
           ]
@@ -6429,7 +6429,7 @@
               "ellipse": true,
               "multiline": false,
               "font": {"fontFamily": "Segoe WP SemiLight", "size": 14, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "GuiListView [2] -> [Item 3]",
+              "text": "GuiBindableListView [2] -> [Item 3]",
               "measuringRequest": "FontHeight"
             }
           ]
@@ -10142,7 +10142,7 @@
               "ellipse": true,
               "multiline": false,
               "font": {"fontFamily": "Segoe WP SemiLight", "size": 14, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "GuiListView [29] -> [Item 30]",
+              "text": "GuiBindableListView [29] -> [Item 30]",
               "measuringRequest": "FontHeight"
             }
           ]
@@ -13855,7 +13855,7 @@
               "ellipse": true,
               "multiline": false,
               "font": {"fontFamily": "Segoe WP SemiLight", "size": 14, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "GuiListView [0] -> [Item 1]",
+              "text": "GuiBindableListView [0] -> [Item 1]",
               "measuringRequest": "FontHeight"
             }
           ]
@@ -17568,7 +17568,7 @@
               "ellipse": true,
               "multiline": false,
               "font": {"fontFamily": "Segoe WP SemiLight", "size": 14, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "GuiListView [1] -> [Item 2]",
+              "text": "GuiBindableListView [1] -> [Item 2]",
               "measuringRequest": "FontHeight"
             }
           ]
@@ -21281,7 +21281,7 @@
               "ellipse": true,
               "multiline": false,
               "font": {"fontFamily": "Segoe WP SemiLight", "size": 14, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "GuiListView [3] -> [Item 4]",
+              "text": "GuiBindableListView [3] -> [Item 4]",
               "measuringRequest": "FontHeight"
             }
           ]
@@ -24994,7 +24994,7 @@
               "ellipse": true,
               "multiline": false,
               "font": {"fontFamily": "Segoe WP SemiLight", "size": 14, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "GuiListView [2] -> [Item 3]",
+              "text": "GuiBindableListView [2] -> [Item 3]",
               "measuringRequest": "FontHeight"
             }
           ]
@@ -28707,7 +28707,7 @@
               "ellipse": true,
               "multiline": false,
               "font": {"fontFamily": "Segoe WP SemiLight", "size": 14, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "GuiListView [0] -> [Item 1]",
+              "text": "GuiBindableListView [0] -> [Item 1]",
               "measuringRequest": "FontHeight"
             }
           ]
