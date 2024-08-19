@@ -210,7 +210,7 @@ namespace gacuisrc_unittest
 
                     func <bind-activator>() : (::system::Void)
                     {
-                        var <bind-activator-result> = (((("GuiListView [" & <bind-cache>0.SelectedItemIndex) & "] -> [") & <bind-cache>1.SelectedItemText) & "]");
+                        var <bind-activator-result> = (((("GuiBindableDataGrid [" & <bind-cache>0.SelectedItemIndex) & "] -> [") & <bind-cache>1.SelectedItemText) & "]");
                         ValueChanged(<bind-activator-result>);
                     }
 
@@ -347,6 +347,30 @@ namespace gacuisrc_unittest
 
         var items : observe ListViewData^[] = {};
 
+        func MakeItem(name : string, item : int) : (ListViewData^)
+        {
+            var index = (item == (-1)) ? (items.Count + 1) : item;
+            var listViewItem = new (ListViewData^)();
+            (listViewItem.Id = ((("" & name) & " ") & index));
+            (listViewItem.First = ("1st:" & (index * 1)));
+            (listViewItem.Second = ("2nd:" & (index * 2)));
+            (listViewItem.Third = ("3rd:" & (index * 3)));
+            (listViewItem.Fourth = ("4th:" & (index * 4)));
+            (listViewItem.LargeImage = GetLargeImage(((index - 1) % 5)));
+            (listViewItem.SmallImage = GetSmallImage(((index - 1) % 5)));
+            return listViewItem;
+        }
+
+        func UpdateItemText(item : ListViewData^, text : string) : (void)
+        {
+            (item.Id = text);
+        }
+
+        func UpdateSubItemText(item : ListViewData^, text : string) : (void)
+        {
+            (item.First = text);
+        }
+
         func InitializeItems(count : int) : (void)
         {
             {
@@ -356,15 +380,7 @@ namespace gacuisrc_unittest
                 while ((item <= <for-end>item))
                 {
                     {
-                        var listViewItem = new (ListViewData^)();
-                        (listViewItem.Id = ("Item " & item));
-                        (listViewItem.First = ("1st:" & (item * 1)));
-                        (listViewItem.Second = ("2nd:" & (item * 2)));
-                        (listViewItem.Third = ("3rd:" & (item * 3)));
-                        (listViewItem.Fourth = ("4th:" & (item * 4)));
-                        (listViewItem.LargeImage = GetLargeImage(((item - 1) % 5)));
-                        (listViewItem.SmallImage = GetSmallImage(((item - 1) % 5)));
-                        items.Add(listViewItem);
+                        items.Add(MakeItem("Item", item));
                     }
                     (item = (item + 1));
                 }
