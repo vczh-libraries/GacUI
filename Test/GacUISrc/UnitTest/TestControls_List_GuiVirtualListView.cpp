@@ -183,6 +183,7 @@ TEST_FILE
           listViewItem.Fourth = $"4th:$(index * 4)";
           listViewItem.LargeImage = GetLargeImage((index - 1) % 5);
           listViewItem.SmallImage = GetSmallImage((index - 1) % 5);
+          return listViewItem;
         }
         func InitializeItems(count:int) : void
         {
