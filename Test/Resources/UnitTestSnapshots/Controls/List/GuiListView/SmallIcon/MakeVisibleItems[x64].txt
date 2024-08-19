@@ -288,6 +288,11 @@ namespace gacuisrc_unittest
             return listViewItem;
         }
 
+        func UpdateItemText(item : ListViewItem^, text : string) : (void)
+        {
+            (item.Text = text);
+        }
+
         func InitializeItems(count : int) : (void)
         {
             {

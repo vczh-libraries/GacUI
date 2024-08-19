@@ -277,9 +277,9 @@ namespace gacui_unittest_template
 						auto window = GetApplication()->GetMainWindow();
 						auto listControl = FindObjectByName<GuiVirtualListView>(window, L"list");
 						listControl->SetView(view);
-						InitializeItems(window, 5);
+						InitializeItems(window, 30);
 					});
-					protocol->OnNextIdleFrame(L"5 Items", [=]()
+					protocol->OnNextIdleFrame(L"30 Items", [=]()
 					{
 						auto window = GetApplication()->GetMainWindow();
 						auto listControl = FindObjectByName<GuiSelectableListControl>(window, L"list");
@@ -291,6 +291,7 @@ namespace gacui_unittest_template
 							protocol->LClick(location);
 						}
 					});
+
 					protocol->OnNextIdleFrame(L"Click 3rd", [=]()
 					{
 						protocol->KeyPress(VKEY::KEY_END);
@@ -299,22 +300,36 @@ namespace gacui_unittest_template
 					{
 						protocol->KeyPress(VKEY::KEY_HOME);
 					});
-					protocol->OnNextIdleFrame(L"[HOME]", [=]()
+					if (view == ListViewView::Information || view == ListViewView::Detail)
 					{
-						protocol->KeyPress(VKEY::KEY_RIGHT);
-					});
-					protocol->OnNextIdleFrame(L"[RIGHT]", [=]()
+						protocol->OnNextIdleFrame(L"[HOME]", [=]()
+						{
+							protocol->KeyPress(VKEY::KEY_DOWN);
+						});
+						protocol->OnNextIdleFrame(L"[DOWN]", [=]()
+						{
+							protocol->KeyPress(VKEY::KEY_UP);
+						});
+					}
+					else
 					{
-						protocol->KeyPress(VKEY::KEY_DOWN);
-					});
-					protocol->OnNextIdleFrame(L"[DOWN]", [=]()
-					{
-						protocol->KeyPress(VKEY::KEY_LEFT);
-					});
-					protocol->OnNextIdleFrame(L"[LEFT]", [=]()
-					{
-						protocol->KeyPress(VKEY::KEY_UP);
-					});
+						protocol->OnNextIdleFrame(L"[HOME]", [=]()
+						{
+							protocol->KeyPress(VKEY::KEY_RIGHT);
+						});
+						protocol->OnNextIdleFrame(L"[RIGHT]", [=]()
+						{
+							protocol->KeyPress(VKEY::KEY_DOWN);
+						});
+						protocol->OnNextIdleFrame(L"[DOWN]", [=]()
+						{
+							protocol->KeyPress(VKEY::KEY_LEFT);
+						});
+						protocol->OnNextIdleFrame(L"[LEFT]", [=]()
+						{
+							protocol->KeyPress(VKEY::KEY_UP);
+						});
+					}
 					protocol->OnNextIdleFrame(L"[UP]", [=]()
 					{
 						auto window = GetApplication()->GetMainWindow();
