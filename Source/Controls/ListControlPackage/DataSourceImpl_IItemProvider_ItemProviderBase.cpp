@@ -2,8 +2,6 @@
 
 namespace vl::presentation::controls::list
 {
-	using namespace collections;
-
 /***********************************************************************
 ItemProviderBase
 ***********************************************************************/

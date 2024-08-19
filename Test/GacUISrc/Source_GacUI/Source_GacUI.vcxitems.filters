@@ -172,6 +172,9 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ListControlPackage\DataSourceImpl_IItemProvider_NodeItemProvider.cpp">
       <Filter>Controls\ListControlPackage\DataSource</Filter>
     </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ListControlPackage\DataSourceImpl_INodeProvider_MemoryNodeProvider.cpp">
+      <Filter>Controls\ListControlPackage\DataSource</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\GuiButtonControls.h">
@@ -333,6 +336,9 @@
       <Filter>Controls\ListControlPackage\DataSource</Filter>
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ListControlPackage\DataSourceImpl_IItemProvider_NodeItemProvider.h">
+      <Filter>Controls\ListControlPackage\DataSource</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ListControlPackage\DataSourceImpl_INodeProvider_MemoryNodeProvider.h">
       <Filter>Controls\ListControlPackage\DataSource</Filter>
     </ClInclude>
   </ItemGroup>
