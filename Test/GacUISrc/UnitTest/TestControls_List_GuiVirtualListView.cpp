@@ -72,6 +72,10 @@ TEST_FILE
           listViewItem.SmallImage = GetSmallImage((index - 1) % 5);
           return listViewItem;
         }
+        func UpdateItemText(item:ListViewItem^, text:string)
+        {
+          item.Text = text;
+        }
         func InitializeItems(count:int) : void
         {
           for (item in range[1, count])
@@ -184,6 +188,10 @@ TEST_FILE
           listViewItem.LargeImage = GetLargeImage((index - 1) % 5);
           listViewItem.SmallImage = GetSmallImage((index - 1) % 5);
           return listViewItem;
+        }
+        func UpdateItemText(item:ListViewData^, text:string)
+        {
+          item.Id = text;
         }
         func InitializeItems(count:int) : void
         {

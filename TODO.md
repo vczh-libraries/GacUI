@@ -65,9 +65,6 @@
   - List
     - GuiListControl (`MouseWheel` remaining)
     - ListView
-      - Item manipulation
-      - Extra mouse operations
-      - Extra key operations
       - BindableListView
       - BindableDataGrid in the same view
     - TreeView
