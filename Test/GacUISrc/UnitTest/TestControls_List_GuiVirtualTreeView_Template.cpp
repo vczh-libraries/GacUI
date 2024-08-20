@@ -13,12 +13,11 @@ namespace gacui_unittest_template
 	}
 
 	template<typename ...TPaths>
-	void ExpandItem(
-		UnitTestRemoteProtocol* protocol,
+	Ptr<INodeProvider> GetNodeProvider(
 		GuiWindow* window,
+		GuiVirtualTreeListControl* listControl,
 		Func<Ptr<IValueList>(GuiWindow*)> getRootItems,
 		Func<Ptr<IValueList>(Value)> getChildItems,
-		bool toExpand,
 		vint visibleIndex,
 		TPaths ...paths
 	)
@@ -31,7 +30,6 @@ namespace gacui_unittest_template
 			node = getChildItems(node)->Get(pathIndex[i]);
 		}
 
-		auto listControl = FindObjectByName<GuiVirtualTreeListControl>(window, L"list");
 		auto nodeItemView = dynamic_cast<INodeItemView*>(listControl->GetItemProvider()->RequestView(WString::Unmanaged(INodeItemView::Identifier)));
 		auto nodeProvider = nodeItemView->RequestNode(visibleIndex);
 		if (dynamic_cast<GuiTreeView*>(listControl))
@@ -44,6 +42,40 @@ namespace gacui_unittest_template
 			TEST_ASSERT(nodeData == node);
 		}
 
+		return nodeProvider;
+	}
+
+	template<typename ...TPaths>
+	void ClickExpandItem(
+		UnitTestRemoteProtocol* protocol,
+		GuiWindow* window,
+		Func<Ptr<IValueList>(GuiWindow*)> getRootItems,
+		Func<Ptr<IValueList>(Value)> getChildItems,
+		bool toExpand,
+		vint visibleIndex,
+		TPaths ...paths
+	)
+	{
+		auto listControl = FindObjectByName<GuiVirtualTreeListControl>(window, L"list");
+		auto nodeProvider = GetNodeProvider(window, listControl, getRootItems, getChildItems, visibleIndex, paths...);
+		TEST_ASSERT(nodeProvider->GetExpanding() != toExpand);
+		LClickListItem(protocol, listControl, visibleIndex, 8 + 12 * (sizeof...(paths) - 1));
+		TEST_ASSERT(nodeProvider->GetExpanding() == toExpand);
+	}
+
+	template<typename ...TPaths>
+	void DBClickExpandItem(
+		UnitTestRemoteProtocol* protocol,
+		GuiWindow* window,
+		Func<Ptr<IValueList>(GuiWindow*)> getRootItems,
+		Func<Ptr<IValueList>(Value)> getChildItems,
+		bool toExpand,
+		vint visibleIndex,
+		TPaths ...paths
+	)
+	{
+		auto listControl = FindObjectByName<GuiVirtualTreeListControl>(window, L"list");
+		auto nodeProvider = GetNodeProvider(window, listControl, getRootItems, getChildItems, visibleIndex, paths...);
 		TEST_ASSERT(nodeProvider->GetExpanding() != toExpand);
 		LClickListItem(protocol, listControl, visibleIndex, 8 + 12 * (sizeof...(paths) - 1));
 		TEST_ASSERT(nodeProvider->GetExpanding() == toExpand);
@@ -125,7 +157,7 @@ namespace gacui_unittest_template
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto listControl = FindObjectByName<GuiListControl>(window, L"list");
-					ExpandItem(
+					ClickExpandItem(
 						protocol, window, getRootItems, getChildItems,
 						true,
 						1,
@@ -136,7 +168,7 @@ namespace gacui_unittest_template
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto listControl = FindObjectByName<GuiListControl>(window, L"list");
-					ExpandItem(
+					ClickExpandItem(
 						protocol, window, getRootItems, getChildItems,
 						true,
 						3,
@@ -147,7 +179,7 @@ namespace gacui_unittest_template
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto listControl = FindObjectByName<GuiListControl>(window, L"list");
-					ExpandItem(
+					ClickExpandItem(
 						protocol, window, getRootItems, getChildItems,
 						true,
 						6,
@@ -158,7 +190,7 @@ namespace gacui_unittest_template
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto listControl = FindObjectByName<GuiListControl>(window, L"list");
-					ExpandItem(
+					ClickExpandItem(
 						protocol, window, getRootItems, getChildItems,
 						false,
 						1,
@@ -169,7 +201,7 @@ namespace gacui_unittest_template
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto listControl = FindObjectByName<GuiListControl>(window, L"list");
-					ExpandItem(
+					ClickExpandItem(
 						protocol, window, getRootItems, getChildItems,
 						true,
 						1,
@@ -184,6 +216,89 @@ namespace gacui_unittest_template
 			});
 			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
 				WString::Unmanaged(L"Controls/List/") + pathFragment + WString::Unmanaged(L"/ClickAndExpandCollapseItems"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resourceXml
+				);
+		});
+
+		TEST_CASE(L"DBClickAndExpandCollapseItems")
+		{
+			GacUIUnitTest_SetGuiMainProxy([=](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					InitializeItems(window, 5);
+				});
+				protocol->OnNextIdleFrame(L"5 Items", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiListControl>(window, L"list");
+					LClickListItem(protocol, listControl, 0);
+				});
+				protocol->OnNextIdleFrame(L"Click 1st", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiListControl>(window, L"list");
+					DBClickExpandItem(
+						protocol, window, getRootItems, getChildItems,
+						true,
+						1,
+						1
+					);
+				});
+				protocol->OnNextIdleFrame(L"Expand 2nd", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiListControl>(window, L"list");
+					DBClickExpandItem(
+						protocol, window, getRootItems, getChildItems,
+						true,
+						3,
+						1, 1
+					);
+				});
+				protocol->OnNextIdleFrame(L"Expand 2nd/2nd", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiListControl>(window, L"list");
+					DBClickExpandItem(
+						protocol, window, getRootItems, getChildItems,
+						true,
+						6,
+						1, 2
+					);
+				});
+				protocol->OnNextIdleFrame(L"Expand 2nd/3rd", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiListControl>(window, L"list");
+					DBClickExpandItem(
+						protocol, window, getRootItems, getChildItems,
+						false,
+						1,
+						1
+					);
+				});
+				protocol->OnNextIdleFrame(L"Collapse 2nd", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiListControl>(window, L"list");
+					DBClickExpandItem(
+						protocol, window, getRootItems, getChildItems,
+						true,
+						1,
+						1
+					);
+				});
+				protocol->OnNextIdleFrame(L"Expand 2nd", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					window->Hide();
+				});
+			});
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Controls/List/") + pathFragment + WString::Unmanaged(L"/DBClickAndExpandCollapseItems"),
 				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
 				resourceXml
 				);
