@@ -306,13 +306,7 @@ namespace gacui_unittest_template
 					{
 						auto window = GetApplication()->GetMainWindow();
 						auto listControl = FindObjectByName<GuiSelectableListControl>(window, L"list");
-						{
-							auto itemStyle = listControl->GetArranger()->GetVisibleStyle(2);
-							TEST_ASSERT(itemStyle != nullptr);
-							TEST_ASSERT(listControl->GetArranger()->GetVisibleIndex(itemStyle) == 2);
-							auto location = protocol->LocationOf(itemStyle);
-							protocol->LClick(location);
-						}
+						LClickListItem(protocol, listControl, 2);
 					});
 
 					protocol->OnNextIdleFrame(L"Click 3rd", [=]()

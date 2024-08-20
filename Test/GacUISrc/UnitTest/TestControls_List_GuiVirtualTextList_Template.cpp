@@ -310,13 +310,7 @@ namespace gacui_unittest_template
 					auto items = getItems(window);
 
 					TEST_ASSERT(UnboxValue<Ptr<TextItem>>(items->Get(2))->GetChecked() == false);
-					{
-						auto itemStyle = listControl->GetArranger()->GetVisibleStyle(2);
-						TEST_ASSERT(itemStyle != nullptr);
-						TEST_ASSERT(listControl->GetArranger()->GetVisibleIndex(itemStyle) == 2);
-						auto location = protocol->LocationOf(itemStyle, 0.0, 0.5, 8, 0);
-						protocol->LClick(location);
-					}
+					LClickListItem(protocol, listControl, 2, 8);
 					TEST_ASSERT(UnboxValue<Ptr<TextItem>>(items->Get(2))->GetChecked() == true);
 				});
 				protocol->OnNextIdleFrame(L"Check 3rd", [=]()
@@ -326,13 +320,7 @@ namespace gacui_unittest_template
 					auto items = getItems(window);
 
 					TEST_ASSERT(UnboxValue<Ptr<TextItem>>(items->Get(0))->GetChecked() == false);
-					{
-						auto itemStyle = listControl->GetArranger()->GetVisibleStyle(0);
-						TEST_ASSERT(itemStyle != nullptr);
-						TEST_ASSERT(listControl->GetArranger()->GetVisibleIndex(itemStyle) == 0);
-						auto location = protocol->LocationOf(itemStyle, 0.0, 0.5, 8, 0);
-						protocol->LClick(location);
-					}
+					LClickListItem(protocol, listControl, 0, 8);
 					TEST_ASSERT(UnboxValue<Ptr<TextItem>>(items->Get(0))->GetChecked() == true);
 				});
 				protocol->OnNextIdleFrame(L"Check 1st", [=]()

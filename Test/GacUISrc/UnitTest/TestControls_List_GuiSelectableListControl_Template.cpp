@@ -242,18 +242,13 @@ namespace gacui_unittest_template
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto listControl = FindObjectByName<GuiSelectableListControl>(window, L"list");
-					auto itemStyle = listControl->GetArranger()->GetVisibleStyle(itemIndex);
-					TEST_ASSERT(itemStyle != nullptr);
-					TEST_ASSERT(listControl->GetArranger()->GetVisibleIndex(itemStyle) == itemIndex);
-					auto location = protocol->LocationOf(itemStyle);
-
 					if (leftButton)
 					{
-						protocol->LClick(location, ctrl, shift, false);
+						LClickListItem(protocol, listControl, ctrl, shift, false, itemIndex);
 					}
 					else
 					{
-						protocol->RClick(location, ctrl, shift, false);
+						RClickListItem(protocol, listControl, ctrl, shift, false, itemIndex);
 					}
 				};
 
@@ -640,18 +635,13 @@ namespace gacui_unittest_template
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto listControl = FindObjectByName<GuiSelectableListControl>(window, L"list");
-					auto itemStyle = listControl->GetArranger()->GetVisibleStyle(itemIndex);
-					TEST_ASSERT(itemStyle != nullptr);
-					TEST_ASSERT(listControl->GetArranger()->GetVisibleIndex(itemStyle) == itemIndex);
-					auto location = protocol->LocationOf(itemStyle);
-
 					if (leftButton)
 					{
-						protocol->LClick(location, ctrl, shift, false);
+						LClickListItem(protocol, listControl, ctrl, shift, false, itemIndex);
 					}
 					else
 					{
-						protocol->RClick(location, ctrl, shift, false);
+						RClickListItem(protocol, listControl, ctrl, shift, false, itemIndex);
 					}
 				};
 

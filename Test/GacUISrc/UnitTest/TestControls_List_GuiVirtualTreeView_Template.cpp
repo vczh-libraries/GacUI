@@ -44,12 +44,8 @@ namespace gacui_unittest_template
 			TEST_ASSERT(nodeData == node);
 		}
 
-		auto itemStyle = listControl->GetArranger()->GetVisibleStyle(visibleIndex);
-		TEST_ASSERT(itemStyle != nullptr);
-		TEST_ASSERT(listControl->GetArranger()->GetVisibleIndex(itemStyle) == visibleIndex);
-		auto location = protocol->LocationOf(itemStyle, 0.0, 0.5, 8 + 12 * (sizeof...(paths) - 1), 0);
 		TEST_ASSERT(nodeProvider->GetExpanding() != toExpand);
-		protocol->LClick(location);
+		LClickListItem(protocol, listControl, visibleIndex, 8 + 12 * (sizeof...(paths) - 1));
 		TEST_ASSERT(nodeProvider->GetExpanding() == toExpand);
 	}
 
@@ -123,13 +119,7 @@ namespace gacui_unittest_template
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto listControl = FindObjectByName<GuiListControl>(window, L"list");
-					{
-						auto itemStyle = listControl->GetArranger()->GetVisibleStyle(0);
-						TEST_ASSERT(itemStyle != nullptr);
-						TEST_ASSERT(listControl->GetArranger()->GetVisibleIndex(itemStyle) == 0);
-						auto location = protocol->LocationOf(itemStyle);
-						protocol->LClick(location);
-					}
+					LClickListItem(protocol, listControl, 0);
 				});
 				protocol->OnNextIdleFrame(L"Click 1st", [=]()
 				{

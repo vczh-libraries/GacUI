@@ -7,6 +7,51 @@ namespace gacui_unittest_template
 		Value::From(window).Invoke(L"InitializeItems", (Value_xs(), BoxValue<vint>(start), BoxValue<vint>(count)));
 	}
 
+	NativePoint GetListItemLocation(UnitTestRemoteProtocol* protocol, GuiListControl* listControl, vint index, vint offsetX)
+	{
+		auto itemStyle = listControl->GetArranger()->GetVisibleStyle(index);
+		TEST_ASSERT(itemStyle != nullptr);
+		TEST_ASSERT(listControl->GetArranger()->GetVisibleIndex(itemStyle) == index);
+		auto location = protocol->LocationOf(itemStyle, (offsetX == -1 ? 0.5 : 0.0), 0.5, (offsetX == -1 ? 0 : offsetX), 0);
+		return location;
+	}
+
+	void HoverListItem(UnitTestRemoteProtocol* protocol, GuiListControl* listControl, vint index, vint offsetX)
+	{
+		auto location = GetListItemLocation(protocol, listControl, index, offsetX);
+		protocol->MouseMove(location);
+	}
+
+	void LClickListItem(UnitTestRemoteProtocol* protocol, GuiListControl* listControl, vint index, vint offsetX)
+	{
+		auto location = GetListItemLocation(protocol, listControl, index, offsetX);
+		protocol->LClick(location);
+	}
+
+	void LClickListItem(UnitTestRemoteProtocol* protocol, GuiListControl* listControl, bool ctrl, bool shift, bool alt, vint index, vint offsetX)
+	{
+		auto location = GetListItemLocation(protocol, listControl, index, offsetX);
+		protocol->LClick(location, ctrl, shift, alt);
+	}
+
+	void LDBClickListItem(UnitTestRemoteProtocol* protocol, GuiListControl* listControl, vint index, vint offsetX)
+	{
+		auto location = GetListItemLocation(protocol, listControl, index, offsetX);
+		protocol->LDBClick(location);
+	}
+
+	void RClickListItem(UnitTestRemoteProtocol* protocol, GuiListControl* listControl, vint index, vint offsetX)
+	{
+		auto location = GetListItemLocation(protocol, listControl, index, offsetX);
+		protocol->RClick(location);
+	}
+
+	void RClickListItem(UnitTestRemoteProtocol* protocol, GuiListControl* listControl, bool ctrl, bool shift, bool alt, vint index, vint offsetX)
+	{
+		auto location = GetListItemLocation(protocol, listControl, index, offsetX);
+		protocol->LClick(location, ctrl, shift, alt);
+	}
+
 	void GuiListControl_TestCases(
 		WString resourceXml,
 		WString pathFragment
@@ -105,12 +150,7 @@ namespace gacui_unittest_template
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto listControl = FindObjectByName<GuiListControl>(window, L"list");
-
-					auto itemStyle = listControl->GetArranger()->GetVisibleStyle(0);
-					TEST_ASSERT(itemStyle != nullptr);
-					TEST_ASSERT(listControl->GetArranger()->GetVisibleIndex(itemStyle) == 0);
-					auto location = protocol->LocationOf(itemStyle);
-					protocol->MouseMove(location);
+					HoverListItem(protocol, listControl, 0);
 				});
 				protocol->OnNextIdleFrame(L"Hover 1st", [=]()
 				{
@@ -120,12 +160,7 @@ namespace gacui_unittest_template
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto listControl = FindObjectByName<GuiListControl>(window, L"list");
-
-					auto itemStyle = listControl->GetArranger()->GetVisibleStyle(1);
-					TEST_ASSERT(itemStyle != nullptr);
-					TEST_ASSERT(listControl->GetArranger()->GetVisibleIndex(itemStyle) == 1);
-					auto location = protocol->LocationOf(itemStyle);
-					protocol->MouseMove(location);
+					HoverListItem(protocol, listControl, 1);
 				});
 				protocol->OnNextIdleFrame(L"Hover 2nd", [=]()
 				{
@@ -137,12 +172,7 @@ namespace gacui_unittest_template
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto listControl = FindObjectByName<GuiListControl>(window, L"list");
-
-					auto itemStyle = listControl->GetArranger()->GetVisibleStyle(19);
-					TEST_ASSERT(itemStyle != nullptr);
-					TEST_ASSERT(listControl->GetArranger()->GetVisibleIndex(itemStyle) == 19);
-					auto location = protocol->LocationOf(itemStyle);
-					protocol->MouseMove(location);
+					HoverListItem(protocol, listControl, 19);
 				});
 				protocol->OnNextIdleFrame(L"Hover 20th", [=]()
 				{
@@ -177,12 +207,7 @@ namespace gacui_unittest_template
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto listControl = FindObjectByName<GuiListControl>(window, L"list");
-
-					auto itemStyle = listControl->GetArranger()->GetVisibleStyle(0);
-					TEST_ASSERT(itemStyle != nullptr);
-					TEST_ASSERT(listControl->GetArranger()->GetVisibleIndex(itemStyle) == 0);
-					auto location = protocol->LocationOf(itemStyle);
-					protocol->MouseMove(location);
+					HoverListItem(protocol, listControl, 0);
 				});
 				protocol->OnNextIdleFrame(L"Hover 1st", [=]()
 				{
@@ -192,12 +217,7 @@ namespace gacui_unittest_template
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto listControl = FindObjectByName<GuiListControl>(window, L"list");
-
-					auto itemStyle = listControl->GetArranger()->GetVisibleStyle(1);
-					TEST_ASSERT(itemStyle != nullptr);
-					TEST_ASSERT(listControl->GetArranger()->GetVisibleIndex(itemStyle) == 1);
-					auto location = protocol->LocationOf(itemStyle);
-					protocol->MouseMove(location);
+					HoverListItem(protocol, listControl, 1);
 				});
 				protocol->OnNextIdleFrame(L"Hover 2nd", [=]()
 				{
@@ -209,12 +229,7 @@ namespace gacui_unittest_template
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto listControl = FindObjectByName<GuiListControl>(window, L"list");
-
-					auto itemStyle = listControl->GetArranger()->GetVisibleStyle(19);
-					TEST_ASSERT(itemStyle != nullptr);
-					TEST_ASSERT(listControl->GetArranger()->GetVisibleIndex(itemStyle) == 19);
-					auto location = protocol->LocationOf(itemStyle);
-					protocol->MouseMove(location);
+					HoverListItem(protocol, listControl, 19);
 				});
 				protocol->OnNextIdleFrame(L"Hover 20th", [=]()
 				{
@@ -249,12 +264,7 @@ namespace gacui_unittest_template
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto listControl = FindObjectByName<GuiListControl>(window, L"list");
-
-					auto itemStyle = listControl->GetArranger()->GetVisibleStyle(0);
-					TEST_ASSERT(itemStyle != nullptr);
-					TEST_ASSERT(listControl->GetArranger()->GetVisibleIndex(itemStyle) == 0);
-					auto location = protocol->LocationOf(itemStyle);
-					protocol->MouseMove(location);
+					HoverListItem(protocol, listControl, 0);
 				});
 				protocol->OnNextIdleFrame(L"Hover 1st", [=]()
 				{
@@ -264,12 +274,7 @@ namespace gacui_unittest_template
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto listControl = FindObjectByName<GuiListControl>(window, L"list");
-
-					auto itemStyle = listControl->GetArranger()->GetVisibleStyle(1);
-					TEST_ASSERT(itemStyle != nullptr);
-					TEST_ASSERT(listControl->GetArranger()->GetVisibleIndex(itemStyle) == 1);
-					auto location = protocol->LocationOf(itemStyle);
-					protocol->MouseMove(location);
+					HoverListItem(protocol, listControl, 1);
 				});
 				protocol->OnNextIdleFrame(L"Hover 2nd", [=]()
 				{
@@ -281,12 +286,7 @@ namespace gacui_unittest_template
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto listControl = FindObjectByName<GuiListControl>(window, L"list");
-
-					auto itemStyle = listControl->GetArranger()->GetVisibleStyle(19);
-					TEST_ASSERT(itemStyle != nullptr);
-					TEST_ASSERT(listControl->GetArranger()->GetVisibleIndex(itemStyle) == 19);
-					auto location = protocol->LocationOf(itemStyle);
-					protocol->MouseMove(location);
+					HoverListItem(protocol, listControl, 19);
 				});
 				protocol->OnNextIdleFrame(L"Hover 20th", [=]()
 				{
