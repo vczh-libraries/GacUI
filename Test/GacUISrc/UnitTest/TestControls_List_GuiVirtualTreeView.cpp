@@ -38,7 +38,7 @@ TEST_FILE
           }
         }
       ]]></ref.Members>
-      <Window ref.Name="self" Text-format="GuiTextList [$(list.SelectedItemIndex)] -&gt; [$(list.SelectedItemText)]" ClientSize="x:320 y:240">
+      <Window ref.Name="self" Text-format="GuiTreeView [$(list.SelectedItemIndex)] -&gt; [$(list.SelectedItem.Text ?? '')]" ClientSize="x:320 y:240">
         <TreeView ref.Name="list" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
           <att.BoundsComposition-set PreferredMinSize="x:400 y:300" AlignmentToParent="left:0 top:5 right:0 bottom:0"/>
 )GacUISrc";
@@ -150,7 +150,7 @@ TEST_FILE
           }
         }
       ]]></ref.Members>
-      <Window ref.Name="self" Text-format="GuiBindableTextList [$(list.SelectedItemIndex)] -&gt; [$(list.SelectedItemText)]" ClientSize="x:320 y:240">
+      <Window ref.Name="self" Text-format="GuiBindableTreeView [$(list.SelectedItemIndex)] -&gt; [$((cast (TreeViewData^) list.SelectedItem).Text ?? '')]" ClientSize="x:320 y:240">
         <BindableTreeView ref.Name="list" env.ItemType="TextItem^" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
           <att.BoundsComposition-set PreferredMinSize="x:400 y:300" AlignmentToParent="left:0 top:5 right:0 bottom:0"/>
           <att.ItemSource-eval>self.items</ItemSource-eval>
