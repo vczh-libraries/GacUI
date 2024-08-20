@@ -71,6 +71,24 @@ namespace gacui_unittest_template
 
 		TEST_CASE(L"ClickAndExpandCollapseItems")
 		{
+			GacUIUnitTest_SetGuiMainProxy([=](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					InitializeItems(window, 5);
+				});
+				protocol->OnNextIdleFrame(L"5 Items", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					window->Hide();
+				});
+			});
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Controls/List/") + pathFragment + WString::Unmanaged(L"/ClickAndExpandCollapseItems"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resourceXml
+				);
 		});
 	}
 

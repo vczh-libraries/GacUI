@@ -34,7 +34,15 @@ TEST_FILE
         {
           for (item in range[1, count])
           {
-            list.Nodes.Children.Add(MakeItem("Item", item));
+            var mainItem = MakeItem("Item", item);
+            mainItem.Children.Add(MakeItem("Child 1st", item));
+            mainItem.Children.Add(MakeItem("Child 2nd", item));
+            mainItem.Children.Add(MakeItem("Child 3rd", item));
+            mainItem.Children[1].Children.Add(MakeItem("Leaf 2/1st", item));
+            mainItem.Children[1].Children.Add(MakeItem("Leaf 2/2nd", item));
+            mainItem.Children[2].Children.Add(MakeItem("Leaf 3/1st", item));
+            mainItem.Children[2].Children.Add(MakeItem("Leaf 3/2nd", item));
+            list.Nodes.Children.Add(mainItem);
           }
         }
       ]]></ref.Members>
@@ -146,7 +154,15 @@ TEST_FILE
         {
           for (item in range[1, 20])
           {
-            items.Children.Add(MakeItem("Item", item));
+            var mainItem = MakeItem("Item", item);
+            mainItem.Children.Add(MakeItem("Child 1st", item));
+            mainItem.Children.Add(MakeItem("Child 2nd", item));
+            mainItem.Children.Add(MakeItem("Child 3rd", item));
+            mainItem.Children[1].Children.Add(MakeItem("Leaf 2/1st", item));
+            mainItem.Children[1].Children.Add(MakeItem("Leaf 2/2nd", item));
+            mainItem.Children[2].Children.Add(MakeItem("Leaf 3/1st", item));
+            mainItem.Children[2].Children.Add(MakeItem("Leaf 3/2nd", item));
+            items.Children.Add(mainItem);
           }
         }
       ]]></ref.Members>
