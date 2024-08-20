@@ -44,14 +44,13 @@ namespace gacui_unittest_template
 			TEST_ASSERT(nodeData == node);
 		}
 
-		auto itemStyle = listControl->GetArranger()->GetVisibleStyle(1);
+		auto itemStyle = listControl->GetArranger()->GetVisibleStyle(visibleIndex);
 		TEST_ASSERT(itemStyle != nullptr);
-		TEST_ASSERT(listControl->GetArranger()->GetVisibleIndex(itemStyle) == 1);
+		TEST_ASSERT(listControl->GetArranger()->GetVisibleIndex(itemStyle) == visibleIndex);
 		auto location = protocol->LocationOf(itemStyle, 0.0, 0.5, 8 + 12 * (sizeof...(paths) - 1), 0);
-		vint oldCount = listControl->GetItemProvider()->Count();
+		TEST_ASSERT(nodeProvider->GetExpanding() != toExpand);
 		protocol->LClick(location);
-		vint newCount = listControl->GetItemProvider()->Count();
-		TEST_ASSERT(toExpand ? (oldCount < newCount) : (oldCount > newCount));
+		TEST_ASSERT(nodeProvider->GetExpanding() == toExpand);
 	}
 
 	void GuiTreeItemTemplate_Shared_TestCases(
