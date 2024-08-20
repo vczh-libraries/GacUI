@@ -703,9 +703,9 @@ GuiVirtualDataGrid
 			GuiVirtualDataGrid::GuiVirtualDataGrid(theme::ThemeName themeName, list::IItemProvider* _itemProvider)
 				:GuiVirtualListView(themeName, _itemProvider)
 			{
-				listViewItemView = dynamic_cast<IListViewItemView*>(_itemProvider->RequestView(IListViewItemView::Identifier));
-				columnItemView = dynamic_cast<ListViewColumnItemArranger::IColumnItemView*>(_itemProvider->RequestView(ListViewColumnItemArranger::IColumnItemView::Identifier));
-				dataGridView = dynamic_cast<IDataGridView*>(_itemProvider->RequestView(IDataGridView::Identifier));
+				listViewItemView = dynamic_cast<IListViewItemView*>(_itemProvider->RequestView(WString::Unmanaged(IListViewItemView::Identifier)));
+				columnItemView = dynamic_cast<ListViewColumnItemArranger::IColumnItemView*>(_itemProvider->RequestView(WString::Unmanaged(ListViewColumnItemArranger::IColumnItemView::Identifier)));
+				dataGridView = dynamic_cast<IDataGridView*>(_itemProvider->RequestView(WString::Unmanaged(IDataGridView::Identifier)));
 
 				{
 					auto mainProperty = [](const Value&) { return new MainColumnVisualizerTemplate; };

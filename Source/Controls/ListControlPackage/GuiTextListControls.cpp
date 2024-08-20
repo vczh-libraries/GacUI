@@ -120,7 +120,7 @@ DefaultTextListItemTemplate
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::controls::list::DefaultTextListItemTemplate::OnBulletSelectedChanged(GuiGraphicsComposition*, GuiEventArgs&)#"
 					if (!supressEdit)
 					{
-						if (auto textItemView = dynamic_cast<ITextItemView*>(listControl->GetItemProvider()->RequestView(ITextItemView::Identifier)))
+						if (auto textItemView = dynamic_cast<ITextItemView*>(listControl->GetItemProvider()->RequestView(WString::Unmanaged(ITextItemView::Identifier))))
 						{
 							listControl->GetItemProvider()->PushEditing();
 							textItemView->SetChecked(GetIndex(), bulletButton->GetSelected());
@@ -307,7 +307,7 @@ GuiTextList
 				if (auto textItemStyle = dynamic_cast<templates::GuiTextListItemTemplate*>(style))
 				{
 					textItemStyle->SetTextColor(TypedControlTemplateObject(true)->GetTextColor());
-					if (auto textItemView = dynamic_cast<list::ITextItemView*>(itemProvider->RequestView(list::ITextItemView::Identifier)))
+					if (auto textItemView = dynamic_cast<list::ITextItemView*>(itemProvider->RequestView(WString::Unmanaged(list::ITextItemView::Identifier))))
 					{
 						textItemStyle->SetChecked(textItemView->GetChecked(itemIndex));
 					}

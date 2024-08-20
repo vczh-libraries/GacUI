@@ -80,7 +80,7 @@ BigIconListViewItemTemplate
 					if (auto listView = dynamic_cast<GuiVirtualListView*>(listControl))
 					{
 						auto itemIndex = GetIndex();
-						if (auto view = dynamic_cast<IListViewItemView*>(listView->GetItemProvider()->RequestView(IListViewItemView::Identifier)))
+						if (auto view = dynamic_cast<IListViewItemView*>(listView->GetItemProvider()->RequestView(WString::Unmanaged(IListViewItemView::Identifier))))
 						{
 							auto imageData = view->GetLargeImage(itemIndex);
 							if (imageData)
@@ -160,7 +160,7 @@ SmallIconListViewItemTemplate
 					if (auto listView = dynamic_cast<GuiVirtualListView*>(listControl))
 					{
 						auto itemIndex = GetIndex();
-						if (auto view = dynamic_cast<IListViewItemView*>(listView->GetItemProvider()->RequestView(IListViewItemView::Identifier)))
+						if (auto view = dynamic_cast<IListViewItemView*>(listView->GetItemProvider()->RequestView(WString::Unmanaged(IListViewItemView::Identifier))))
 						{
 							auto imageData = view->GetSmallImage(itemIndex);
 							if (imageData)
@@ -243,7 +243,7 @@ ListListViewItemTemplate
 					if (auto listView = dynamic_cast<GuiVirtualListView*>(listControl))
 					{
 						auto itemIndex = GetIndex();
-						if (auto view = dynamic_cast<IListViewItemView*>(listView->GetItemProvider()->RequestView(IListViewItemView::Identifier)))
+						if (auto view = dynamic_cast<IListViewItemView*>(listView->GetItemProvider()->RequestView(WString::Unmanaged(IListViewItemView::Identifier))))
 						{
 							auto imageData = view->GetSmallImage(itemIndex);
 							if (imageData)
@@ -373,7 +373,7 @@ TileListViewItemTemplate
 					if (auto listView = dynamic_cast<GuiVirtualListView*>(listControl))
 					{
 						auto itemIndex = GetIndex();
-						if (auto view = dynamic_cast<IListViewItemView*>(listView->GetItemProvider()->RequestView(IListViewItemView::Identifier)))
+						if (auto view = dynamic_cast<IListViewItemView*>(listView->GetItemProvider()->RequestView(WString::Unmanaged(IListViewItemView::Identifier))))
 						{
 							auto imageData = view->GetLargeImage(itemIndex);
 							if (imageData)
@@ -548,7 +548,7 @@ InformationListViewItemTemplate
 					if (auto listView = dynamic_cast<GuiVirtualListView*>(listControl))
 					{
 						auto itemIndex = GetIndex();
-						if (auto view = dynamic_cast<IListViewItemView*>(listView->GetItemProvider()->RequestView(IListViewItemView::Identifier)))
+						if (auto view = dynamic_cast<IListViewItemView*>(listView->GetItemProvider()->RequestView(WString::Unmanaged(IListViewItemView::Identifier))))
 						{
 							auto imageData = view->GetLargeImage(itemIndex);
 							if (imageData)
@@ -615,7 +615,7 @@ DetailListViewItemTemplate
 
 				void DetailListViewItemTemplate::UpdateSubItemSize()
 				{
-					if (auto view = dynamic_cast<IListViewItemView*>(listControl->GetItemProvider()->RequestView(IListViewItemView::Identifier)))
+					if (auto view = dynamic_cast<IListViewItemView*>(listControl->GetItemProvider()->RequestView(WString::Unmanaged(IListViewItemView::Identifier))))
 					{
 						if (columnItemView)
 						{
@@ -668,7 +668,7 @@ DetailListViewItemTemplate
 
 				void DetailListViewItemTemplate::OnInitialize()
 				{
-					columnItemView = dynamic_cast<ListViewColumnItemArranger::IColumnItemView*>(listControl->GetItemProvider()->RequestView(ListViewColumnItemArranger::IColumnItemView::Identifier));
+					columnItemView = dynamic_cast<ListViewColumnItemArranger::IColumnItemView*>(listControl->GetItemProvider()->RequestView(WString::Unmanaged(ListViewColumnItemArranger::IColumnItemView::Identifier)));
 
 					{
 						textTable = new GuiTableComposition;
@@ -732,7 +732,7 @@ DetailListViewItemTemplate
 					if (auto listView = dynamic_cast<GuiVirtualListView*>(listControl))
 					{
 						auto itemIndex = GetIndex();
-						if (auto view = dynamic_cast<IListViewItemView*>(listView->GetItemProvider()->RequestView(IListViewItemView::Identifier)))
+						if (auto view = dynamic_cast<IListViewItemView*>(listView->GetItemProvider()->RequestView(WString::Unmanaged(IListViewItemView::Identifier))))
 						{
 							vint subColumnCount = view->GetColumnCount() - 1;
 							if (subColumnCount < 0) subColumnCount = 0;

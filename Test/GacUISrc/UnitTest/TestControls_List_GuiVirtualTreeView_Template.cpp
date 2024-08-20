@@ -12,12 +12,47 @@ namespace gacui_unittest_template
 		return Value::From(window).Invoke(L"MakeItem", (Value_xs(), BoxValue(name), BoxValue<vint>(-1)));
 	}
 
-	// TODO:
-	// ExpandItem and specify (Expand/Collapse, index, path)
-	// verify if the node at the path is rendered in the index-th position
-	// verify Expanded
-	// click
-	// verify Expanded
+	template<typename ...TPaths>
+	void ExpandItem(
+		UnitTestRemoteProtocol* protocol,
+		GuiWindow* window,
+		Func<Ptr<IValueList>(GuiWindow*)> getRootItems,
+		Func<Ptr<IValueList>(Value)> getChildItems,
+		bool toExpand,
+		vint visibleIndex,
+		TPaths ...paths
+	)
+	{
+		static_assert(sizeof...(paths) >= 1);
+		vint pathIndex[] = { paths... };
+		Value node = getRootItems(window)->Get(pathIndex[0]);
+		for (vint i = 1; i < sizeof...(paths); i++)
+		{
+			node = getChildItems(node)->Get(pathIndex[i]);
+		}
+
+		auto listControl = FindObjectByName<GuiVirtualTreeListControl>(window, L"list");
+		auto nodeItemView = dynamic_cast<INodeItemView*>(listControl->GetItemProvider()->RequestView(WString::Unmanaged(INodeItemView::Identifier)));
+		auto nodeProvider = nodeItemView->RequestNode(visibleIndex);
+		if (dynamic_cast<GuiTreeView*>(listControl))
+		{
+			TEST_ASSERT(nodeProvider == node.GetSharedPtr());
+		}
+		else
+		{
+			auto nodeData = listControl->GetNodeRootProvider()->GetBindingValue(nodeProvider.Obj());
+			TEST_ASSERT(nodeData == node);
+		}
+
+		auto itemStyle = listControl->GetArranger()->GetVisibleStyle(1);
+		TEST_ASSERT(itemStyle != nullptr);
+		TEST_ASSERT(listControl->GetArranger()->GetVisibleIndex(itemStyle) == 1);
+		auto location = protocol->LocationOf(itemStyle, 0.0, 0.5, 8 + 12 * (sizeof...(paths) - 1), 0);
+		vint oldCount = listControl->GetItemProvider()->Count();
+		protocol->LClick(location);
+		vint newCount = listControl->GetItemProvider()->Count();
+		TEST_ASSERT(toExpand ? (oldCount < newCount) : (oldCount > newCount));
+	}
 
 	void GuiTreeItemTemplate_Shared_TestCases(
 		WString resourceXml,
@@ -101,61 +136,56 @@ namespace gacui_unittest_template
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto listControl = FindObjectByName<GuiListControl>(window, L"list");
-					{
-						auto itemStyle = listControl->GetArranger()->GetVisibleStyle(1);
-						TEST_ASSERT(itemStyle != nullptr);
-						TEST_ASSERT(listControl->GetArranger()->GetVisibleIndex(itemStyle) == 1);
-						auto location = protocol->LocationOf(itemStyle, 0.0, 0.5, 8, 0);
-						protocol->LClick(location);
-					}
+					ExpandItem(
+						protocol, window, getRootItems, getChildItems,
+						true,
+						1,
+						1
+					);
 				});
 				protocol->OnNextIdleFrame(L"Expand 2nd", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto listControl = FindObjectByName<GuiListControl>(window, L"list");
-					{
-						auto itemStyle = listControl->GetArranger()->GetVisibleStyle(3);
-						TEST_ASSERT(itemStyle != nullptr);
-						TEST_ASSERT(listControl->GetArranger()->GetVisibleIndex(itemStyle) == 3);
-						auto location = protocol->LocationOf(itemStyle, 0.0, 0.5, 8 + 12, 0);
-						protocol->LClick(location);
-					}
+					ExpandItem(
+						protocol, window, getRootItems, getChildItems,
+						true,
+						3,
+						1, 1
+					);
 				});
 				protocol->OnNextIdleFrame(L"Expand 2nd/2nd", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto listControl = FindObjectByName<GuiListControl>(window, L"list");
-					{
-						auto itemStyle = listControl->GetArranger()->GetVisibleStyle(6);
-						TEST_ASSERT(itemStyle != nullptr);
-						TEST_ASSERT(listControl->GetArranger()->GetVisibleIndex(itemStyle) == 6);
-						auto location = protocol->LocationOf(itemStyle, 0.0, 0.5, 8 + 12, 0);
-						protocol->LClick(location);
-					}
+					ExpandItem(
+						protocol, window, getRootItems, getChildItems,
+						true,
+						6,
+						1, 2
+					);
 				});
 				protocol->OnNextIdleFrame(L"Expand 2nd/3rd", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto listControl = FindObjectByName<GuiListControl>(window, L"list");
-					{
-						auto itemStyle = listControl->GetArranger()->GetVisibleStyle(1);
-						TEST_ASSERT(itemStyle != nullptr);
-						TEST_ASSERT(listControl->GetArranger()->GetVisibleIndex(itemStyle) == 1);
-						auto location = protocol->LocationOf(itemStyle, 0.0, 0.5, 8, 0);
-						protocol->LClick(location);
-					}
+					ExpandItem(
+						protocol, window, getRootItems, getChildItems,
+						false,
+						1,
+						1
+					);
 				});
 				protocol->OnNextIdleFrame(L"Collapse 2nd", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto listControl = FindObjectByName<GuiListControl>(window, L"list");
-					{
-						auto itemStyle = listControl->GetArranger()->GetVisibleStyle(1);
-						TEST_ASSERT(itemStyle != nullptr);
-						TEST_ASSERT(listControl->GetArranger()->GetVisibleIndex(itemStyle) == 1);
-						auto location = protocol->LocationOf(itemStyle, 0.0, 0.5, 8, 0);
-						protocol->LClick(location);
-					}
+					ExpandItem(
+						protocol, window, getRootItems, getChildItems,
+						true,
+						1,
+						1
+					);
 				});
 				protocol->OnNextIdleFrame(L"Expand 2nd", [=]()
 				{

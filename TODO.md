@@ -65,7 +65,8 @@
 - Non-editing control unit test (using DarkSkin)
   - List
     - GuiListControl (`MouseWheel` remaining)
-    - TreeView
+    - TreeView (`MouseWheel` remaining)
+      - Node events (mouse + expanded/collapsed) in `TestControls_List_GuiVirtualTreeListControl.cpp`
       - ItemTemplate with `Expanding`, `Expandable`, `Level`, `Image`
       - Item manipulation
       - Node events

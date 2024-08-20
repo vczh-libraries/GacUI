@@ -47,7 +47,7 @@ DataVisualizerBase
 
 				void DataVisualizerBase::BeforeVisualizeCell(list::IItemProvider* itemProvider, vint row, vint column)
 				{
-					if (auto listViewItemView = dynamic_cast<IListViewItemView*>(dataGridContext->GetItemProvider()->RequestView(IListViewItemView::Identifier)))
+					if (auto listViewItemView = dynamic_cast<IListViewItemView*>(dataGridContext->GetItemProvider()->RequestView(WString::Unmanaged(IListViewItemView::Identifier))))
 					{
 						auto style = dataGridContext->GetListViewControlTemplate();
 						visualizerTemplate->SetPrimaryTextColor(style->GetPrimaryTextColor());
@@ -58,7 +58,7 @@ DataVisualizerBase
 						visualizerTemplate->SetSmallImage(listViewItemView->GetSmallImage(row));
 						visualizerTemplate->SetText(column == 0 ? listViewItemView->GetText(row) : listViewItemView->GetSubItem(row, column - 1));
 					}
-					if (auto dataGridView = dynamic_cast<IDataGridView*>(dataGridContext->GetItemProvider()->RequestView(IDataGridView::Identifier)))
+					if (auto dataGridView = dynamic_cast<IDataGridView*>(dataGridContext->GetItemProvider()->RequestView(WString::Unmanaged(IDataGridView::Identifier))))
 					{
 						visualizerTemplate->SetRowValue(itemProvider->GetBindingValue(row));
 						visualizerTemplate->SetCellValue(dataGridView->GetBindingCellValue(row, column));
@@ -164,7 +164,7 @@ DataEditorBase
 
 				void DataEditorBase::BeforeEditCell(list::IItemProvider* itemProvider, vint row, vint column)
 				{
-					if (auto listViewItemView = dynamic_cast<IListViewItemView*>(dataGridContext->GetItemProvider()->RequestView(IListViewItemView::Identifier)))
+					if (auto listViewItemView = dynamic_cast<IListViewItemView*>(dataGridContext->GetItemProvider()->RequestView(WString::Unmanaged(IListViewItemView::Identifier))))
 					{
 						auto style = dataGridContext->GetListViewControlTemplate();
 						editorTemplate->SetPrimaryTextColor(style->GetPrimaryTextColor());
@@ -175,7 +175,7 @@ DataEditorBase
 						editorTemplate->SetSmallImage(listViewItemView->GetSmallImage(row));
 						editorTemplate->SetText(column == 0 ? listViewItemView->GetText(row) : listViewItemView->GetSubItem(row, column - 1));
 					}
-					if (auto dataGridView = dynamic_cast<IDataGridView*>(dataGridContext->GetItemProvider()->RequestView(IDataGridView::Identifier)))
+					if (auto dataGridView = dynamic_cast<IDataGridView*>(dataGridContext->GetItemProvider()->RequestView(WString::Unmanaged(IDataGridView::Identifier))))
 					{
 						editorTemplate->SetRowValue(itemProvider->GetBindingValue(row));
 						editorTemplate->SetCellValue(dataGridView->GetBindingCellValue(row, column));

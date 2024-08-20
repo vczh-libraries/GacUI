@@ -142,7 +142,7 @@ GuiVirtualTreeListControl
 				:GuiSelectableListControl(themeName, new tree::NodeItemProvider(_nodeRootProvider))
 			{
 				nodeItemProvider = dynamic_cast<tree::NodeItemProvider*>(GetItemProvider());
-				nodeItemView = dynamic_cast<tree::INodeItemView*>(GetItemProvider()->RequestView(tree::INodeItemView::Identifier));
+				nodeItemView = dynamic_cast<tree::INodeItemView*>(GetItemProvider()->RequestView(WString::Unmanaged(tree::INodeItemView::Identifier)));
 
 				NodeLeftButtonDown.SetAssociatedComposition(boundsComposition);
 				NodeLeftButtonUp.SetAssociatedComposition(boundsComposition);
@@ -396,7 +396,7 @@ GuiVirtualTreeView
 			GuiVirtualTreeView::GuiVirtualTreeView(theme::ThemeName themeName, Ptr<tree::INodeRootProvider> _nodeRootProvider)
 				:GuiVirtualTreeListControl(themeName, _nodeRootProvider)
 			{
-				treeViewItemView = dynamic_cast<tree::ITreeViewItemView*>(GetNodeRootProvider()->RequestView(tree::ITreeViewItemView::Identifier));
+				treeViewItemView = dynamic_cast<tree::ITreeViewItemView*>(GetNodeRootProvider()->RequestView(WString::Unmanaged(tree::ITreeViewItemView::Identifier)));
 				SetStyleAndArranger(
 					[](const Value&) { return new tree::DefaultTreeItemTemplate; },
 					Ptr(new list::FixedHeightItemArranger)
