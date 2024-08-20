@@ -12,6 +12,15 @@ namespace gacui_unittest_template
 		return Value::From(window).Invoke(L"MakeItem", (Value_xs(), BoxValue(name), BoxValue<vint>(-1)));
 	}
 
+	void GuiTreeItemTemplate_Shared_TestCases(
+		WString resourceXml,
+		WString pathFragment,
+		Func<Ptr<IValueList>(GuiWindow*)> getRootItems,
+		Func<Ptr<IValueList>(Value)> getChildItems,
+		Func<void(Value, WString)> updateText,
+		Func<void(GuiWindow*, Value)> notifyNodeDataModified
+	);
+
 	void GuiVirtualTreeView_TestCases(
 		WString resourceXml,
 		WString pathFragment,
@@ -33,7 +42,7 @@ namespace gacui_unittest_template
 		{
 		});
 
-		GuiTreeItemTemplate_TestCases(
+		GuiTreeItemTemplate_Shared_TestCases(
 			resourceXml,
 			pathFragment,
 			getRootItems,
@@ -43,12 +52,12 @@ namespace gacui_unittest_template
 		);
 	}
 
- void GuiTreeItemTemplate_TestCases(
+	void GuiTreeItemTemplate_Shared_TestCases(
 		WString resourceXml,
 		WString pathFragment,
 		Func<Ptr<IValueList>(GuiWindow*)> getRootItems,
 		Func<Ptr<IValueList>(Value)> getChildItems,
-	 Func<void(Value, WString)> updateText,
+		Func<void(Value, WString)> updateText,
 		Func<void(GuiWindow*, Value)> notifyNodeDataModified
 	)
 	{
@@ -63,5 +72,44 @@ namespace gacui_unittest_template
 		TEST_CASE(L"ClickAndExpandCollapseItems")
 		{
 		});
+	}
+
+	void GuiTreeItemTemplate_TestCases(
+		WString resourceXml,
+		WString pathFragment,
+		Func<Ptr<IValueList>(GuiWindow*)> getRootItems,
+		Func<Ptr<IValueList>(Value)> getChildItems,
+		Func<void(Value, WString)> updateText,
+		Func<void(GuiWindow*, Value)> notifyNodeDataModified
+	)
+	{
+		TEST_CASE(L"MouseVisualEffect")
+		{
+		});
+
+		TEST_CASE(L"Context")
+		{
+		});
+
+		TEST_CASE(L"Font")
+		{
+		});
+
+		TEST_CASE(L"DisplayItemBackground")
+		{
+		});
+
+		TEST_CASE(L"Image")
+		{
+		});
+
+		GuiTreeItemTemplate_Shared_TestCases(
+			resourceXml,
+			pathFragment,
+			getRootItems,
+			getChildItems,
+			updateText,
+			notifyNodeDataModified
+		);
 	}
 }
