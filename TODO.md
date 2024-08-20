@@ -70,9 +70,6 @@
       - ItemTemplate with `Expanding`, `Expandable`, `Level`, `Image`
       - Item manipulation
       - Node events
-      - Extra mouse operations
-      - Extra key operations (Left/Right -> Collapse/Expand)
-      - BindableTreeView
   - Menu, Toolstrip and Navigation ...
     - ComboBox
     - GuiDatePicker
@@ -138,6 +135,7 @@
     - Cannot scroll `GuiScrollView`, key operations needed and also need to be disabled for `GuiListControl` because it has already defined item selection keys.
     - `Gui(Bindable)TextList` cannot check or uncheck items by key (enter and space).
     - `GuiVirtualListView` cannot operate column headers by key.
+    - `GuiVirtualTreeListControl` cannot expand/collapse items by key.
 - Sample unit test project included in release.
   - Reflection enabled
     - Application and `LoadMainWindow` script in separated XML resource files.
