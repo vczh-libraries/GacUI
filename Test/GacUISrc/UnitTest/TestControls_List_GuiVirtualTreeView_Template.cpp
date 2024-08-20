@@ -77,7 +77,7 @@ namespace gacui_unittest_template
 		auto listControl = FindObjectByName<GuiVirtualTreeListControl>(window, L"list");
 		auto nodeProvider = GetNodeProvider(window, listControl, getRootItems, getChildItems, visibleIndex, paths...);
 		TEST_ASSERT(nodeProvider->GetExpanding() != toExpand);
-		LClickListItem(protocol, listControl, visibleIndex, 8 + 12 * (sizeof...(paths) - 1));
+		LDBClickListItem(protocol, listControl, visibleIndex);
 		TEST_ASSERT(nodeProvider->GetExpanding() == toExpand);
 	}
 

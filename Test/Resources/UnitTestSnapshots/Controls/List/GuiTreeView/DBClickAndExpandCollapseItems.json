@@ -5423,8 +5423,8 @@
             {
               "id": 39,
               "size": {"x": 7, "y": 9},
-              "borderColor": "#0A75B9",
-              "backgroundColor": "#0A75B9",
+              "borderColor": "#F1F1F1",
+              "backgroundColor": "#F1F1F1",
               "points": [
                 {"x": 1, "y": 0},
                 {"x": 5, "y": 4},
@@ -5440,8 +5440,8 @@
             {
               "id": 40,
               "size": {"x": 7, "y": 9},
-              "borderColor": "#0A75B9",
-              "backgroundColor": "#0A75B9",
+              "borderColor": "#F1F1F1",
+              "backgroundColor": "#F1F1F1",
               "points": [
                 {"x": 5, "y": 2},
                 {"x": 5, "y": 7},
@@ -7802,8 +7802,8 @@
             {
               "id": 64,
               "size": {"x": 7, "y": 9},
-              "borderColor": "#0A75B9",
-              "backgroundColor": "#0A75B9",
+              "borderColor": "#F1F1F1",
+              "backgroundColor": "#F1F1F1",
               "points": [
                 {"x": 1, "y": 0},
                 {"x": 5, "y": 4},
@@ -7819,8 +7819,8 @@
             {
               "id": 65,
               "size": {"x": 7, "y": 9},
-              "borderColor": "#0A75B9",
-              "backgroundColor": "#0A75B9",
+              "borderColor": "#F1F1F1",
+              "backgroundColor": "#F1F1F1",
               "points": [
                 {"x": 5, "y": 2},
                 {"x": 5, "y": 7},
@@ -10368,8 +10368,8 @@
             {
               "id": 69,
               "size": {"x": 7, "y": 9},
-              "borderColor": "#0A75B9",
-              "backgroundColor": "#0A75B9",
+              "borderColor": "#F1F1F1",
+              "backgroundColor": "#F1F1F1",
               "points": [
                 {"x": 1, "y": 0},
                 {"x": 5, "y": 4},
@@ -10385,8 +10385,8 @@
             {
               "id": 70,
               "size": {"x": 7, "y": 9},
-              "borderColor": "#0A75B9",
-              "backgroundColor": "#0A75B9",
+              "borderColor": "#F1F1F1",
+              "backgroundColor": "#F1F1F1",
               "points": [
                 {"x": 5, "y": 2},
                 {"x": 5, "y": 7},
@@ -12908,7 +12908,7 @@
             {
               "id": 39,
               "size": {"x": 7, "y": 9},
-              "borderColor": "#0A75B9",
+              "borderColor": "#F1F1F1",
               "backgroundColor": "#00000000",
               "points": [
                 {"x": 1, "y": 0},
@@ -12925,7 +12925,7 @@
             {
               "id": 40,
               "size": {"x": 7, "y": 9},
-              "borderColor": "#0A75B9",
+              "borderColor": "#F1F1F1",
               "backgroundColor": "#00000000",
               "points": [
                 {"x": 5, "y": 2},
@@ -14720,8 +14720,8 @@
             {
               "id": 39,
               "size": {"x": 7, "y": 9},
-              "borderColor": "#0A75B9",
-              "backgroundColor": "#0A75B9",
+              "borderColor": "#F1F1F1",
+              "backgroundColor": "#F1F1F1",
               "points": [
                 {"x": 1, "y": 0},
                 {"x": 5, "y": 4},
@@ -14737,8 +14737,8 @@
             {
               "id": 40,
               "size": {"x": 7, "y": 9},
-              "borderColor": "#0A75B9",
-              "backgroundColor": "#0A75B9",
+              "borderColor": "#F1F1F1",
+              "backgroundColor": "#F1F1F1",
               "points": [
                 {"x": 5, "y": 2},
                 {"x": 5, "y": 7},
