@@ -161,7 +161,7 @@ TEST_FILE
 
 	const WString fragmentListViewData = LR"GacUISrc(
   <Script name="ListViewDataResource"><Workflow><![CDATA[
-    module treeviewdata;
+    module listviewdata;
     using system::*;
     using presentation::*;
 

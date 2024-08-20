@@ -7,7 +7,7 @@ TEST_FILE
 	Shared
 	***********************************************************************/
 
-		const WString fragmentTextListItemTemplate = LR"GacUISrc(
+	const WString fragmentTextListItemTemplate = LR"GacUISrc(
   <Instance name="CheckedBulletTemplateResource">
     <Instance ref.Class="gacuisrc_unittest::CheckedBulletTemplate">
       <SelectableButtonTemplate ref.Name="self" PreferredMinSize="x:32 y:16" MinSizeLimitation="LimitToElementAndChildren">

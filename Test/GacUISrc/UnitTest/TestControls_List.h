@@ -54,4 +54,22 @@ namespace gacui_unittest_template
 		Func<Ptr<IValueList>(GuiWindow*)> getItems,
 		Func<void(GuiWindow*, vint, vint)> notifyItemDataModified
 	);
+
+	extern void GuiVirtualTreeView_TestCases(
+		WString resourceXml,
+		WString pathFragment,
+		Func<Ptr<IValueList>(GuiWindow*)> getRootItems,
+		Func<Ptr<IValueList>(Value)> getChildItems,
+		Func<void(Value, WString)> updateText,
+		Func<void(GuiWindow*, Value)> notifyNodeDataModified
+	);
+
+	extern void GuiTreeItemTemplate_TestCases(
+		WString resourceXml,
+		WString pathFragment,
+		Func<Ptr<IValueList>(GuiWindow*)> getRootItems,
+		Func<Ptr<IValueList>(Value)> getChildItems,
+		Func<void(Value, WString)> updateText,
+		Func<void(GuiWindow*, Value)> notifyNodeDataModified
+	);
 }

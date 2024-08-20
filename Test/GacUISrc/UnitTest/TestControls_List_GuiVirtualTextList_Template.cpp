@@ -170,7 +170,7 @@ namespace gacui_unittest_template
 		);
 	}
 
-	extern void GuiTextListItemTemplate_TestCases(
+	void GuiTextListItemTemplate_TestCases(
 		WString resourceXml,
 		WString pathFragment,
 		bool setTextListView,

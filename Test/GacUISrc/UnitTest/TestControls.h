@@ -14,6 +14,7 @@ using namespace vl::presentation::elements;
 using namespace vl::presentation::compositions;
 using namespace vl::presentation::controls;
 using namespace vl::presentation::controls::list;
+using namespace vl::presentation::controls::tree;
 using namespace vl::presentation::unittest;
 
 namespace gacui_unittest_template
