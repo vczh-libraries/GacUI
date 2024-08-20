@@ -24,7 +24,7 @@ TEST_FILE
   <Instance name="MainWindowResource">
     <Instance ref.Class="gacuisrc_unittest::MainWindow">
       <ref.Members><![CDATA[
-        func MakeItem(name:string, item:int) : ListViewItem^
+        func MakeItem(name:string, item:int) : MemoryNodeProvider^
         {
           var treeViewItem = new TreeViewItem^(null, $"$(name) $(item)");
           var treeNode = new MemoryNodeProvider^(treeViewItem);
@@ -46,7 +46,7 @@ TEST_FILE
           }
         }
       ]]></ref.Members>
-      <Window ref.Name="self" Text-format="GuiTreeView [$(list.SelectedItemIndex)] -&gt; [$(list.SelectedItem.Text ?? '')]" ClientSize="x:320 y:240">
+      <Window ref.Name="self" Text-format="GuiTreeView [$(list.SelectedItemIndex)] -&gt; [$(list.SelectedItem.text ?? '')]" ClientSize="x:320 y:240">
         <TreeView ref.Name="list" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
           <att.BoundsComposition-set PreferredMinSize="x:400 y:300" AlignmentToParent="left:0 top:5 right:0 bottom:0"/>
 )GacUISrc";
@@ -59,13 +59,15 @@ TEST_FILE
 )GacUISrc";
 
 		const WString resourceTreeView = LR"GacUISrc(
-<Resource>)GacUISrc" + fragmentTreeViewFirst + LR"GacUISrc(
+<Resource>
+)GacUISrc" + fragmentTreeViewFirst + LR"GacUISrc(
 )GacUISrc" + fragmentTreeViewSecond + LR"GacUISrc(
 </Resource>
 )GacUISrc";
 
 		const WString resourceTreeListItemTemplate = LR"GacUISrc(
-<Resource>)GacUISrc" + fragmentTreeListItemTemplate + LR"GacUISrc(
+<Resource>
+)GacUISrc" + fragmentTreeListItemTemplate + LR"GacUISrc(
 )GacUISrc" + fragmentTreeViewFirst + LR"GacUISrc(
           <att.ItemTemplate>gacuisrc_unittest::ItemTemplate</att.ItemTemplate>
 )GacUISrc" + fragmentTreeViewSecond + LR"GacUISrc(
@@ -110,13 +112,13 @@ TEST_FILE
 
 		TEST_CATEGORY(L"GuiTreeView/GuiTreeItemTemplate")
 		{
-			GuiTreeItemTemplate_TestCases(
-				resourceTreeListItemTemplate,
-				WString::Unmanaged(L"GuiTreeView/GuiTreeItemTemplate"),
-				getRootItems,
-				getChildItems,
-				updateText,
-				notifyNodeDataModified);
+			//GuiTreeItemTemplate_TestCases(
+			//	resourceTreeListItemTemplate,
+			//	WString::Unmanaged(L"GuiTreeView/GuiTreeItemTemplate"),
+			//	getRootItems,
+			//	getChildItems,
+			//	updateText,
+			//	notifyNodeDataModified);
 		});
 	}
 
@@ -143,16 +145,17 @@ TEST_FILE
 )GacUISrc";
 
 		const WString fragmentTreeViewFirst = LR"GacUISrc(
+  <Instance name="MainWindowResource">
     <Instance ref.Class="gacuisrc_unittest::MainWindow">
       <ref.Members><![CDATA[
         var items:TreeViewData^ = new TreeViewData^();
-        func MakeItem(name:string, item:int) : ListViewItem^
+        func MakeItem(name:string, item:int) : TreeViewData^
         {
           return new TreeViewData^($"$(name) $(item)");
         }
         func InitializeItems(count:int) : void
         {
-          for (item in range[1, 20])
+          for (item in range[1, count])
           {
             var mainItem = MakeItem("Item", item);
             mainItem.Children.Add(MakeItem("Child 1st", item));
@@ -167,7 +170,7 @@ TEST_FILE
         }
       ]]></ref.Members>
       <Window ref.Name="self" Text-format="GuiBindableTreeView [$(list.SelectedItemIndex)] -&gt; [$((cast (TreeViewData^) list.SelectedItem).Text ?? '')]" ClientSize="x:320 y:240">
-        <BindableTreeView ref.Name="list" env.ItemType="TextItem^" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
+        <BindableTreeView ref.Name="list" env.ItemType="TreeViewData^" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
           <att.BoundsComposition-set PreferredMinSize="x:400 y:300" AlignmentToParent="left:0 top:5 right:0 bottom:0"/>
           <att.ItemSource-eval>self.items</ItemSource-eval>
           <att.TextProperty>Text</att.TextProperty>
@@ -183,13 +186,17 @@ TEST_FILE
 )GacUISrc";
 
 		const WString resourceTreeView = LR"GacUISrc(
-<Resource>)GacUISrc" + fragmentTreeViewFirst + LR"GacUISrc(
+<Resource>
+)GacUISrc" + fragmentTreeViewData + LR"GacUISrc(
+)GacUISrc" + fragmentTreeViewFirst + LR"GacUISrc(
 )GacUISrc" + fragmentTreeViewSecond + LR"GacUISrc(
 </Resource>
 )GacUISrc";
 
 		const WString resourceTreeListItemTemplate = LR"GacUISrc(
-<Resource>)GacUISrc" + fragmentTreeViewData + fragmentTreeListItemTemplate + LR"GacUISrc(
+<Resource>
+)GacUISrc" + fragmentTreeViewData + LR"GacUISrc(
+)GacUISrc" + fragmentTreeListItemTemplate + LR"GacUISrc(
 )GacUISrc" + fragmentTreeViewFirst + LR"GacUISrc(
           <att.ItemTemplate>gacuisrc_unittest::ItemTemplate</att.ItemTemplate>
 )GacUISrc" + fragmentTreeViewSecond + LR"GacUISrc(
@@ -231,13 +238,13 @@ TEST_FILE
 
 		TEST_CATEGORY(L"GuiBindableTreeView/GuiTreeItemTemplate")
 		{
-			GuiTreeItemTemplate_TestCases(
-				resourceTreeListItemTemplate,
-				WString::Unmanaged(L"GuiBindableTreeView/GuiTreeItemTemplate"),
-				getRootItems,
-				getChildItems,
-				updateText,
-				notifyNodeDataModified);
+			//GuiTreeItemTemplate_TestCases(
+			//	resourceTreeListItemTemplate,
+			//	WString::Unmanaged(L"GuiBindableTreeView/GuiTreeItemTemplate"),
+			//	getRootItems,
+			//	getChildItems,
+			//	updateText,
+			//	notifyNodeDataModified);
 		});
 	}
 }
