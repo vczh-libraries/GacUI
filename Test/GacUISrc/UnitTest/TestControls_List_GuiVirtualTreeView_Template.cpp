@@ -107,7 +107,11 @@ namespace gacui_unittest_template
 		{
 		});
 
-		TEST_CASE(L"NavigateByClickAndKey")
+		TEST_CASE(L"NavigateByClick")
+		{
+		});
+
+		TEST_CASE(L"NavigateByKey")
 		{
 		});
 
