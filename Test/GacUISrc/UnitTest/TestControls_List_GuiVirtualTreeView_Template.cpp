@@ -101,6 +101,123 @@ namespace gacui_unittest_template
 	{
 		TEST_CASE(L"MakeVisibleItems")
 		{
+			GacUIUnitTest_SetGuiMainProxy([=](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					InitializeItems(window, 5);
+				});
+				protocol->OnNextIdleFrame(L"5 Items", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto items = getRootItems(window);
+					items->Insert(0, MakeItem(window, L"First Item"));
+				});
+				protocol->OnNextIdleFrame(L"Add to Top", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto items = getRootItems(window);
+					items->Add(MakeItem(window, L"Last Item"));
+				});
+				protocol->OnNextIdleFrame(L"Add to Last", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto items = getRootItems(window);
+					items->RemoveAt(0);
+					items->RemoveAt(items->GetCount() - 1);
+				});
+				protocol->OnNextIdleFrame(L"Remove Added Items", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiSelectableListControl>(window, L"list");
+					listControl->SetSelected(2, true);
+				});
+				protocol->OnNextIdleFrame(L"Select 3rd", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto items = getRootItems(window);
+					items->Set(2, MakeItem(window, L"Updated Item"));
+				});
+				protocol->OnNextIdleFrame(L"Update 3rd", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiSelectableListControl>(window, L"list");
+					listControl->SetSelected(2, true);
+				});
+				protocol->OnNextIdleFrame(L"Select 3rd", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					window->Hide();
+				});
+			});
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Controls/List/") + pathFragment + WString::Unmanaged(L"/MakeVisibleItems"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resourceXml
+				);
+		});
+
+		TEST_CASE(L"MakeVisibleChildItems")
+		{
+			GacUIUnitTest_SetGuiMainProxy([=](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					InitializeItems(window, 5);
+
+					auto listControl = FindObjectByName<GuiVirtualTreeListControl>(window, L"list");
+					listControl->GetNodeRootProvider()->GetRootNode()->GetChild(1)->SetExpanding(true);
+				});
+				protocol->OnNextIdleFrame(L"5 Items with 2rd Expanded", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto items = getChildItems(getRootItems(window)->Get(1));
+					items->Insert(0, MakeItem(window, L"First Item"));
+				});
+				protocol->OnNextIdleFrame(L"Add to Top", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto items = getChildItems(getRootItems(window)->Get(1));
+					items->Add(MakeItem(window, L"Last Item"));
+				});
+				protocol->OnNextIdleFrame(L"Add to Last", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto items = getChildItems(getRootItems(window)->Get(1));
+					items->RemoveAt(0);
+					items->RemoveAt(items->GetCount() - 1);
+				});
+				protocol->OnNextIdleFrame(L"Remove Added Items", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiSelectableListControl>(window, L"list");
+					listControl->SetSelected(3, true);
+				});
+				protocol->OnNextIdleFrame(L"Select 2nd/2nd", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto items = getChildItems(getRootItems(window)->Get(1));
+					items->Set(1, MakeItem(window, L"Updated Item"));
+				});
+				protocol->OnNextIdleFrame(L"Update 2nd/2nd", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiSelectableListControl>(window, L"list");
+					listControl->SetSelected(3, true);
+				});
+				protocol->OnNextIdleFrame(L"Select 2nd/2nd", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					window->Hide();
+				});
+			});
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Controls/List/") + pathFragment + WString::Unmanaged(L"/MakeVisibleChildItems"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resourceXml
+				);
 		});
 
 		TEST_CASE(L"MakeInvisibleItems")
