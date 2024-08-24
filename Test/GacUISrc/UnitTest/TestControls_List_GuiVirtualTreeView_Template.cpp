@@ -7,9 +7,9 @@ namespace gacui_unittest_template
 		Value::From(window).Invoke(L"InitializeItems", (Value_xs(), BoxValue<vint>(count)));
 	}
 
-	static Value MakeItem(GuiWindow* window, WString name)
+	static Value MakeItem(GuiWindow* window, WString name, vint number)
 	{
-		return Value::From(window).Invoke(L"MakeItem", (Value_xs(), BoxValue(name), BoxValue<vint>(-1)));
+		return Value::From(window).Invoke(L"MakeItem", (Value_xs(), BoxValue(name), BoxValue(number)));
 	}
 
 	template<typename ...TPaths>
@@ -112,13 +112,13 @@ namespace gacui_unittest_template
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto items = getRootItems(window);
-					items->Insert(0, MakeItem(window, L"First Item"));
+					items->Insert(0, MakeItem(window, L"First Item", 101));
 				});
 				protocol->OnNextIdleFrame(L"Add to Top", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto items = getRootItems(window);
-					items->Add(MakeItem(window, L"Last Item"));
+					items->Add(MakeItem(window, L"Last Item", 102));
 				});
 				protocol->OnNextIdleFrame(L"Add to Last", [=]()
 				{
@@ -137,7 +137,7 @@ namespace gacui_unittest_template
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto items = getRootItems(window);
-					items->Set(2, MakeItem(window, L"Updated Item"));
+					items->Set(2, MakeItem(window, L"Updated Item", 103));
 				});
 				protocol->OnNextIdleFrame(L"Update 3rd", [=]()
 				{
@@ -174,13 +174,13 @@ namespace gacui_unittest_template
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto items = getChildItems(getRootItems(window)->Get(1));
-					items->Insert(0, MakeItem(window, L"First Item"));
+					items->Insert(0, MakeItem(window, L"First Item", 101));
 				});
 				protocol->OnNextIdleFrame(L"Add to Top", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto items = getChildItems(getRootItems(window)->Get(1));
-					items->Add(MakeItem(window, L"Last Item"));
+					items->Add(MakeItem(window, L"Last Item", 102));
 				});
 				protocol->OnNextIdleFrame(L"Add to Last", [=]()
 				{
@@ -199,7 +199,7 @@ namespace gacui_unittest_template
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto items = getChildItems(getRootItems(window)->Get(1));
-					items->Set(1, MakeItem(window, L"Updated Item"));
+					items->Set(1, MakeItem(window, L"Updated Item", 103));
 				});
 				protocol->OnNextIdleFrame(L"Update 2nd/2nd", [=]()
 				{
