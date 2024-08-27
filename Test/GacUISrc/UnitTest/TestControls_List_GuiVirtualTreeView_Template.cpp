@@ -372,9 +372,95 @@ namespace gacui_unittest_template
 	{
 		TEST_CASE(L"UpdateVisibleItems")
 		{
+			GacUIUnitTest_SetGuiMainProxy([=](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					InitializeItems(window, 5);
+				});
+				protocol->OnNextIdleFrame(L"5 Items", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiSelectableListControl>(window, L"list");
+					listControl->SetSelected(0, true);
+				});
+				protocol->OnNextIdleFrame(L"Select 1st", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto node = getRootItems(window)->Get(1);
+					updateText(node, L"Updated Text");
+					notifyNodeDataModified(window, node);
+				});
+				protocol->OnNextIdleFrame(L"Change 2nd Text", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto node = getRootItems(window)->Get(0);
+					updateText(node, L"New Text");
+					notifyNodeDataModified(window, node);
+				});
+				protocol->OnNextIdleFrame(L"Change 1st Text", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					window->Hide();
+				});
+			});
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Controls/List/") + pathFragment + WString::Unmanaged(L"/UpdateVisibleItems"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resourceXml
+				);
+		});
+
+		TEST_CASE(L"UpdateVisibleChildItems")
+		{
+			GacUIUnitTest_SetGuiMainProxy([=](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiVirtualTreeListControl>(window, L"list");
+					InitializeItems(window, 5);
+					listControl->GetNodeRootProvider()->GetRootNode()->GetChild(1)->SetExpanding(true);
+				});
+				protocol->OnNextIdleFrame(L"5 Items and Expand 2nd", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiVirtualTreeListControl>(window, L"list");
+					listControl->SetSelected(2, true);
+				});
+				protocol->OnNextIdleFrame(L"Select 2nd/1st", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto node = getChildItems(getRootItems(window)->Get(1))->Get(1);
+					updateText(node, L"Updated Text");
+					notifyNodeDataModified(window, node);
+				});
+				protocol->OnNextIdleFrame(L"Change 2nd/2nd Text", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto node = getChildItems(getRootItems(window)->Get(1))->Get(0);
+					updateText(node, L"New Text");
+					notifyNodeDataModified(window, node);
+				});
+				protocol->OnNextIdleFrame(L"Change 2nd/1st Text", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					window->Hide();
+				});
+			});
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Controls/List/") + pathFragment + WString::Unmanaged(L"/UpdateVisibleChildItems"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resourceXml
+				);
 		});
 
 		TEST_CASE(L"UpdateInvisibleItems")
+		{
+		});
+
+		TEST_CASE(L"UpdateInvisibleChildItems")
 		{
 		});
 

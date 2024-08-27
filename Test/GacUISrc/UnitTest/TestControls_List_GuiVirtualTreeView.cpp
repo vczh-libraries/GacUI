@@ -137,6 +137,7 @@ TEST_FILE
       prop Text:string = "" {not observe}
       prop Image:GuiImageData^ = null {not observe}
       prop Children:observe TreeViewData^[] = {} {const, not observe}
+      prop DoNotUse : object = null {not observe}
 
       new(){}
       new(text:string){Text=text;}
@@ -173,6 +174,7 @@ TEST_FILE
         <BindableTreeView ref.Name="list" env.ItemType="TreeViewData^" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
           <att.BoundsComposition-set PreferredMinSize="x:400 y:300" AlignmentToParent="left:0 top:5 right:0 bottom:0"/>
           <att.ItemSource-eval>self.items</ItemSource-eval>
+          <att.ReverseMappingProperty>DoNotUse</att.ReverseMappingProperty>
           <att.TextProperty>Text</att.TextProperty>
           <att.ImageProperty>Image</att.ImageProperty>
           <att.ChildrenProperty>Children</att.ChildrenProperty>
