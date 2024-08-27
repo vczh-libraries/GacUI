@@ -222,6 +222,36 @@ namespace gacui_unittest_template
 
 		TEST_CASE(L"MakeInvisibleItems")
 		{
+			GacUIUnitTest_SetGuiMainProxy([=](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					window->Hide();
+				});
+			});
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Controls/List/") + pathFragment + WString::Unmanaged(L"/MakeInvisibleItems"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resourceXml
+				);
+		});
+
+		TEST_CASE(L"MakeInvisibleChildItems")
+		{
+			GacUIUnitTest_SetGuiMainProxy([=](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					window->Hide();
+				});
+			});
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Controls/List/") + pathFragment + WString::Unmanaged(L"/MakeInvisibleChildItems"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resourceXml
+				);
 		});
 
 		TEST_CASE(L"NavigateByClick")
