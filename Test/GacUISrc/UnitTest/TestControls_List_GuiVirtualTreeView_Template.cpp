@@ -227,6 +227,76 @@ namespace gacui_unittest_template
 				protocol->OnNextIdleFrame(L"Ready", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
+					InitializeItems(window, 20);
+				});
+				protocol->OnNextIdleFrame(L"20 Items", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiListControl>(window, L"list");
+					listControl->EnsureItemVisible(19);
+				});
+				protocol->OnNextIdleFrame(L"Scroll to Bottom", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiSelectableListControl>(window, L"list");
+					auto items = getRootItems(window);
+					items->Insert(0, MakeItem(window, L"First Item", 101));
+					listControl->SetSelected(0, true);
+				});
+				protocol->OnNextIdleFrame(L"Add to Top and Select", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiListControl>(window, L"list");
+					listControl->EnsureItemVisible(0);
+				});
+				protocol->OnNextIdleFrame(L"Scroll to Top", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiSelectableListControl>(window, L"list");
+					auto items = getRootItems(window);
+					items->Add(MakeItem(window, L"Last Item", 102));
+					listControl->SetSelected(21, true);
+				});
+				protocol->OnNextIdleFrame(L"Add to Last and Select", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiListControl>(window, L"list");
+					listControl->EnsureItemVisible(21);
+				});
+				protocol->OnNextIdleFrame(L"Scroll to Bottom", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto items = getRootItems(window);
+					items->RemoveAt(0);
+					items->RemoveAt(items->GetCount() - 1);
+				});
+				protocol->OnNextIdleFrame(L"Remove Added Items", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiSelectableListControl>(window, L"list");
+					listControl->SetSelected(2, true);
+				});
+				protocol->OnNextIdleFrame(L"Select 3rd", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto items = getRootItems(window);
+					items->Set(2, MakeItem(window, L"Updated Item", 103));
+				});
+				protocol->OnNextIdleFrame(L"Update 3rd", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiSelectableListControl>(window, L"list");
+					listControl->SetSelected(2, true);
+				});
+				protocol->OnNextIdleFrame(L"Select 3rd", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiListControl>(window, L"list");
+					listControl->EnsureItemVisible(0);
+				});
+				protocol->OnNextIdleFrame(L"Scroll to Top", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
 					window->Hide();
 				});
 			});
@@ -242,6 +312,32 @@ namespace gacui_unittest_template
 			GacUIUnitTest_SetGuiMainProxy([=](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
 			{
 				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					InitializeItems(window, 5);
+				});
+				protocol->OnNextIdleFrame(L"5 Items", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiVirtualTreeListControl>(window, L"list");
+					getChildItems(getRootItems(window)->Get(1))->Clear();
+				});
+				protocol->OnNextIdleFrame(L"Remove all children of 2nd", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiVirtualTreeListControl>(window, L"list");
+					auto children = getChildItems(getRootItems(window)->Get(2));
+					children->Insert(0, MakeItem(window, L"First Item", 101));
+					children->Insert(4, MakeItem(window, L"Last Item", 102));
+					listControl->SetSelected(2, true);
+				});
+				protocol->OnNextIdleFrame(L"Add children to 3rd and select", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto node = UnboxValue<Ptr<MemoryNodeProvider>>(getRootItems(window)->Get(2));
+					node->SetExpanding(true);
+				});
+				protocol->OnNextIdleFrame(L"Expand 3rd", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					window->Hide();
