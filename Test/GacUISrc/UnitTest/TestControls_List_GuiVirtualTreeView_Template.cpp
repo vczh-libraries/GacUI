@@ -350,14 +350,6 @@ namespace gacui_unittest_template
 				);
 		});
 
-		TEST_CASE(L"NavigateByClick")
-		{
-		});
-
-		TEST_CASE(L"NavigateByKey")
-		{
-		});
-
 		GuiTreeItemTemplate_Shared_TestCases(
 			resourceXml,
 			pathFragment,
@@ -546,6 +538,24 @@ namespace gacui_unittest_template
 			});
 			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
 				WString::Unmanaged(L"Controls/List/") + pathFragment + WString::Unmanaged(L"/DBClickAndExpandCollapseItems"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resourceXml
+				);
+		});
+
+		TEST_CASE(L"KeyAndExpandCollapseItems")
+		{
+			GacUIUnitTest_SetGuiMainProxy([=](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				// TODO: right/left to expand/collapse items
+				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					window->Hide();
+				});
+			});
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Controls/List/") + pathFragment + WString::Unmanaged(L"/KeyAndExpandCollapseItems"),
 				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
 				resourceXml
 				);
