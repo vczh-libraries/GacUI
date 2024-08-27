@@ -68,6 +68,7 @@
     - TreeView (`MouseWheel` remaining)
       - Node events (mouse/key + expanded/collapsed) in `TestControls_List_GuiVirtualTreeListControl.cpp`
       - ItemTemplate with `Expanding`, `Expandable`, `Level`, `Image`
+      - Update item content
   - Menu, Toolstrip and Navigation ...
     - ComboBox
     - GuiDatePicker
