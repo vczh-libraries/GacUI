@@ -458,10 +458,98 @@ namespace gacui_unittest_template
 
 		TEST_CASE(L"UpdateInvisibleItems")
 		{
+			GacUIUnitTest_SetGuiMainProxy([=](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					InitializeItems(window, 20);
+				});
+				protocol->OnNextIdleFrame(L"20 Items", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiSelectableListControl>(window, L"list");
+					listControl->SetSelected(0, true);
+					listControl->EnsureItemVisible(19);
+				});
+				protocol->OnNextIdleFrame(L"Select 1st and Scroll to Bottom", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto items = getRootItems(window);
+					updateText(items->Get(0), L"New Text");
+					updateText(items->Get(1), L"Updated Text");
+					updateText(items->Get(2), L"Whatever");
+					notifyNodeDataModified(window, items->Get(0));
+					notifyNodeDataModified(window, items->Get(1));
+					notifyNodeDataModified(window, items->Get(2));
+				});
+				protocol->OnNextIdleFrame(L"Change 1st, 2nd, 3rd", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiListControl>(window, L"list");
+					listControl->EnsureItemVisible(0);
+				});
+				protocol->OnNextIdleFrame(L"Scroll to Top", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					window->Hide();
+				});
+			});
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Controls/List/") + pathFragment + WString::Unmanaged(L"/UpdateInvisibleItems"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resourceXml
+				);
 		});
 
 		TEST_CASE(L"UpdateInvisibleChildItems")
 		{
+			GacUIUnitTest_SetGuiMainProxy([=](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					InitializeItems(window, 5);
+				});
+				protocol->OnNextIdleFrame(L"5 Items", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiVirtualTreeListControl>(window, L"list");
+					listControl->GetNodeRootProvider()->GetRootNode()->GetChild(1)->SetExpanding(true);
+				});
+				protocol->OnNextIdleFrame(L"Expand 2nd", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiVirtualTreeListControl>(window, L"list");
+					listControl->GetNodeRootProvider()->GetRootNode()->GetChild(1)->SetExpanding(false);
+				});
+				protocol->OnNextIdleFrame(L"Collapse 2nd", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiSelectableListControl>(window, L"list");
+					auto items = getChildItems(getRootItems(window)->Get(1));
+					updateText(items->Get(0), L"New Text");
+					updateText(items->Get(1), L"Updated Text");
+					updateText(items->Get(2), L"Whatever");
+					listControl->SetSelected(1, true);
+				});
+				protocol->OnNextIdleFrame(L"Select 2nd and Change 2nd/1st, 2nd/2nd, 2nd/3rd", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiVirtualTreeListControl>(window, L"list");
+					listControl->GetNodeRootProvider()->GetRootNode()->GetChild(1)->SetExpanding(true);
+				});
+				protocol->OnNextIdleFrame(L"Expand 2nd", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					window->Hide();
+				});
+			});
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Controls/List/") + pathFragment + WString::Unmanaged(L"/UpdateInvisibleChildItems"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resourceXml
+				);
 		});
 
 		TEST_CASE(L"ClickAndExpandCollapseItems")
