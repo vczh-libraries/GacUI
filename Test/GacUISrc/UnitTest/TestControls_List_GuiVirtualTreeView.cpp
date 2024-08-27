@@ -44,8 +44,9 @@ TEST_FILE
               <att.ControlTemplate>gacuisrc_unittest::CheckedBulletTemplate</att.ControlTemplate>
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
               <ev.Clicked-eval><![CDATA[{
-                var textItemView = self.AssociatedListControl.ItemProvider.RequestView(ITextItemView::GetIdentifier()) as ITextItemView*;
-                textItemView.SetChecked(self.Index, not bullet.Selected);
+                var nodeItemView = self.AssociatedListControl.ItemProvider.RequestView(INodeItemView::GetIdentifier()) as INodeItemView*;
+                var node = nodeItemView.RequestNode(self.Index);
+                node.Expanding = not node.Expanding;
               }]]></ev.Clicked-eval>
             </CheckBox>
           </Cell>

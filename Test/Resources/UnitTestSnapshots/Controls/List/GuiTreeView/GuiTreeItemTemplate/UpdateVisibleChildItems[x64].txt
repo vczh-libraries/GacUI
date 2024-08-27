@@ -674,8 +674,9 @@ namespace gacuisrc_unittest
             {
                 var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
                 {
-                    var textItemView = (self.AssociatedListControl.ItemProvider.RequestView(ITextItemView::GetIdentifier()) as (ITextItemView*));
-                    textItemView.SetChecked(self.Index, (!bullet.Selected));
+                    var nodeItemView = (self.AssociatedListControl.ItemProvider.RequestView(INodeItemView::GetIdentifier()) as (INodeItemView*));
+                    var node = nodeItemView.RequestNode(self.Index);
+                    (node.Expanding = (!node.Expanding));
                 };
                 attach(bullet.Clicked, <event-handler>);
             }
