@@ -548,8 +548,49 @@ namespace gacui_unittest_template
 		{
 			GacUIUnitTest_SetGuiMainProxy([=](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
 			{
-				// TODO: right/left to expand/collapse items
 				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiListControl>(window, L"list");
+					InitializeItems(window, 5);
+					listControl->SetFocused();
+				});
+				protocol->OnNextIdleFrame(L"5 Items", [=]()
+				{
+					protocol->KeyPress(VKEY::KEY_HOME);
+				});
+				protocol->OnNextIdleFrame(L"Click 1st", [=]()
+				{
+					protocol->KeyPress(VKEY::KEY_DOWN);
+					protocol->KeyPress(VKEY::KEY_RIGHT);
+				});
+				protocol->OnNextIdleFrame(L"Expand 2nd", [=]()
+				{
+					protocol->KeyPress(VKEY::KEY_DOWN);
+					protocol->KeyPress(VKEY::KEY_DOWN);
+					protocol->KeyPress(VKEY::KEY_RIGHT);
+				});
+				protocol->OnNextIdleFrame(L"Expand 2nd/2nd", [=]()
+				{
+					protocol->KeyPress(VKEY::KEY_DOWN);
+					protocol->KeyPress(VKEY::KEY_DOWN);
+					protocol->KeyPress(VKEY::KEY_DOWN);
+					protocol->KeyPress(VKEY::KEY_RIGHT);
+				});
+				protocol->OnNextIdleFrame(L"Expand 2nd/3rd", [=]()
+				{
+					protocol->KeyPress(VKEY::KEY_UP);
+					protocol->KeyPress(VKEY::KEY_UP);
+					protocol->KeyPress(VKEY::KEY_UP);
+					protocol->KeyPress(VKEY::KEY_UP);
+					protocol->KeyPress(VKEY::KEY_UP);
+					protocol->KeyPress(VKEY::KEY_LEFT);
+				});
+				protocol->OnNextIdleFrame(L"Collapse 2nd", [=]()
+				{
+					protocol->KeyPress(VKEY::KEY_RIGHT);
+				});
+				protocol->OnNextIdleFrame(L"Expand 2nd", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					window->Hide();
