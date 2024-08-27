@@ -334,7 +334,8 @@ namespace gacui_unittest_template
 				protocol->OnNextIdleFrame(L"Add children to 3rd and select", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
-					auto node = UnboxValue<Ptr<MemoryNodeProvider>>(getRootItems(window)->Get(2));
+					auto listControl = FindObjectByName<GuiVirtualTreeListControl>(window, L"list");
+					auto node = listControl->GetNodeRootProvider()->GetRootNode()->GetChild(2);
 					node->SetExpanding(true);
 				});
 				protocol->OnNextIdleFrame(L"Expand 3rd", [=]()
