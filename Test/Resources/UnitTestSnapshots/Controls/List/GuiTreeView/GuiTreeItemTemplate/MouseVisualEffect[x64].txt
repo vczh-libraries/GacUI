@@ -317,28 +317,31 @@ namespace gacuisrc_unittest
         var self : ::gacuisrc_unittest::ItemTemplate* = null of (::gacuisrc_unittest::ItemTemplate*);
 
         @cpp:Protected
-        var <precompile>0 : ::presentation::compositions::GuiTableComposition* = null of (::presentation::compositions::GuiTableComposition*);
+        var <precompile>0 : ::presentation::elements::GuiSolidBorderElement^ = null of (::presentation::elements::GuiSolidBorderElement^);
 
         @cpp:Protected
-        var <precompile>1 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
+        var <precompile>1 : ::presentation::compositions::GuiTableComposition* = null of (::presentation::compositions::GuiTableComposition*);
 
         @cpp:Protected
         var <precompile>2 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
 
         @cpp:Protected
-        var <precompile>3 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+        var <precompile>3 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
 
         @cpp:Protected
-        var <precompile>4 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
+        var <precompile>4 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
-        var <precompile>5 : ::presentation::elements::GuiImageFrameElement^ = null of (::presentation::elements::GuiImageFrameElement^);
+        var <precompile>5 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
 
         @cpp:Protected
-        var <precompile>6 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
+        var <precompile>6 : ::presentation::elements::GuiImageFrameElement^ = null of (::presentation::elements::GuiImageFrameElement^);
 
         @cpp:Protected
-        var <precompile>7 : ::presentation::elements::GuiSolidLabelElement^ = null of (::presentation::elements::GuiSolidLabelElement^);
+        var <precompile>7 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
+
+        @cpp:Protected
+        var <precompile>8 : ::presentation::elements::GuiSolidLabelElement^ = null of (::presentation::elements::GuiSolidLabelElement^);
 
         @cpp:Protected
         var bullet : ::presentation::controls::GuiSelectableButton* = null of (::presentation::controls::GuiSelectableButton*);
@@ -350,39 +353,43 @@ namespace gacuisrc_unittest
             {
                 (self.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
             }
-            (<precompile>0 = new (::presentation::compositions::GuiTableComposition*)());
+            (<precompile>0 = new (::presentation::elements::GuiSolidBorderElement^)());
             {
-                (<precompile>0.BorderVisible = true);
+                (self.OwnedElement = <precompile>0);
+            }
+            (<precompile>1 = new (::presentation::compositions::GuiTableComposition*)());
+            {
+                (<precompile>1.BorderVisible = true);
             }
             {
-                (<precompile>0.CellPadding = 1 of (::system::Int64));
+                (<precompile>1.CellPadding = 1 of (::system::Int64));
             }
             {
-                (<precompile>0.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+                (<precompile>1.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
-                (<precompile>0.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+                (<precompile>1.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
             }
             {
-                <precompile>0.SetRowsAndColumns(3, 4);
-                <precompile>0.SetRowOption(0, {composeType : Percentage; percentage : 0.5;} of (::presentation::compositions::GuiCellOption));
-                <precompile>0.SetRowOption(1, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
-                <precompile>0.SetRowOption(2, {composeType : Percentage; percentage : 0.5;} of (::presentation::compositions::GuiCellOption));
-                <precompile>0.SetColumnOption(0, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
-                <precompile>0.SetColumnOption(1, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
-                <precompile>0.SetColumnOption(2, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
-                <precompile>0.SetColumnOption(3, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
-            }
-            (<precompile>1 = new (::presentation::compositions::GuiCellComposition*)());
-            {
-                <precompile>1.SetSite(1, 0, 1, 1);
-            }
-            {
-                <precompile>0.AddChild(<precompile>1);
+                <precompile>1.SetRowsAndColumns(3, 4);
+                <precompile>1.SetRowOption(0, {composeType : Percentage; percentage : 0.5;} of (::presentation::compositions::GuiCellOption));
+                <precompile>1.SetRowOption(1, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
+                <precompile>1.SetRowOption(2, {composeType : Percentage; percentage : 0.5;} of (::presentation::compositions::GuiCellOption));
+                <precompile>1.SetColumnOption(0, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
+                <precompile>1.SetColumnOption(1, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
+                <precompile>1.SetColumnOption(2, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
+                <precompile>1.SetColumnOption(3, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
             }
             (<precompile>2 = new (::presentation::compositions::GuiCellComposition*)());
             {
-                <precompile>2.SetSite(1, 1, 1, 1);
+                <precompile>2.SetSite(1, 0, 1, 1);
+            }
+            {
+                <precompile>1.AddChild(<precompile>2);
+            }
+            (<precompile>3 = new (::presentation::compositions::GuiCellComposition*)());
+            {
+                <precompile>3.SetSite(1, 1, 1, 1);
             }
             {
                 (bullet = new (::presentation::controls::GuiSelectableButton*)(::presentation::theme::ThemeName::CheckBox));
@@ -394,9 +401,9 @@ namespace gacuisrc_unittest
             {
                 (bullet.AutoFocus = false);
             }
-            (<precompile>3 = bullet.BoundsComposition);
+            (<precompile>4 = bullet.BoundsComposition);
             {
-                (<precompile>3.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+                (<precompile>4.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
                 (bullet.ControlTemplate = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiControlTemplate*)
@@ -407,50 +414,141 @@ namespace gacuisrc_unittest
                 });
             }
             {
-                <precompile>2.AddChild(bullet.BoundsComposition);
+                <precompile>3.AddChild(bullet.BoundsComposition);
             }
             {
-                <precompile>0.AddChild(<precompile>2);
+                <precompile>1.AddChild(<precompile>3);
             }
-            (<precompile>4 = new (::presentation::compositions::GuiCellComposition*)());
+            (<precompile>5 = new (::presentation::compositions::GuiCellComposition*)());
             {
-                (<precompile>4.PreferredMinSize = {x : 16; y : 16;} of (::presentation::Size));
-            }
-            {
-                <precompile>4.SetSite(1, 2, 1, 1);
-            }
-            (<precompile>5 = new (::presentation::elements::GuiImageFrameElement^)());
-            {
-                (<precompile>5.Stretch = true);
+                (<precompile>5.PreferredMinSize = {x : 16; y : 16;} of (::presentation::Size));
             }
             {
-                (<precompile>4.OwnedElement = <precompile>5);
+                <precompile>5.SetSite(1, 2, 1, 1);
+            }
+            (<precompile>6 = new (::presentation::elements::GuiImageFrameElement^)());
+            {
+                (<precompile>6.Stretch = true);
             }
             {
-                <precompile>0.AddChild(<precompile>4);
-            }
-            (<precompile>6 = new (::presentation::compositions::GuiCellComposition*)());
-            {
-                <precompile>6.SetSite(1, 3, 1, 1);
-            }
-            (<precompile>7 = new (::presentation::elements::GuiSolidLabelElement^)());
-            {
-                (<precompile>7.HorizontalAlignment = Left of (::presentation::Alignment));
+                (<precompile>5.OwnedElement = <precompile>6);
             }
             {
-                (<precompile>7.VerticalAlignment = Center of (::presentation::Alignment));
+                <precompile>1.AddChild(<precompile>5);
+            }
+            (<precompile>7 = new (::presentation::compositions::GuiCellComposition*)());
+            {
+                <precompile>7.SetSite(1, 3, 1, 1);
+            }
+            (<precompile>8 = new (::presentation::elements::GuiSolidLabelElement^)());
+            {
+                (<precompile>8.HorizontalAlignment = Left of (::presentation::Alignment));
             }
             {
-                (<precompile>7.Ellipse = true);
+                (<precompile>8.VerticalAlignment = Center of (::presentation::Alignment));
             }
             {
-                (<precompile>6.OwnedElement = <precompile>7);
+                (<precompile>8.Ellipse = true);
             }
             {
-                <precompile>0.AddChild(<precompile>6);
+                (<precompile>7.OwnedElement = <precompile>8);
             }
             {
-                self.AddChild(<precompile>0);
+                <precompile>1.AddChild(<precompile>7);
+            }
+            {
+                self.AddChild(<precompile>1);
+            }
+            {
+                var <created-subscription> = new (::system::Subscription^)
+                {
+                    var <bind-cache>0 : ::gacuisrc_unittest::ItemTemplate* = null of (::gacuisrc_unittest::ItemTemplate*);
+
+                    var <bind-cache>1 : ::gacuisrc_unittest::ItemTemplate* = null of (::gacuisrc_unittest::ItemTemplate*);
+
+                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-handler>1_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-opened> : ::system::Boolean = false;
+
+                    var <bind-closed> : ::system::Boolean = false;
+
+                    func <bind-activator>() : (::system::Void)
+                    {
+                        var <bind-activator-result> = (cast (Color) (!<bind-cache>0.VisuallyEnabled) ? "#00000000" : (!<bind-cache>1.Selected) ? "#000088" : "#88FF88") of (::presentation::Color);
+                        ValueChanged(<bind-activator-result>);
+                    }
+
+                    func <bind-callback>0_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    func <bind-callback>1_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    override func Open() : (::system::Boolean)
+                    {
+                        if ((!<bind-opened>))
+                        {
+                            (<bind-opened> = true);
+                            (<bind-cache>0 = (self ?? null of (::gacuisrc_unittest::ItemTemplate*)));
+                            (<bind-cache>1 = (self ?? null of (::gacuisrc_unittest::ItemTemplate*)));
+                            (<bind-handler>0_0 = (attach(<bind-cache>0.VisuallyEnabledChanged, <bind-callback>0_0) ?? null));
+                            (<bind-handler>1_0 = (attach(<bind-cache>1.SelectedChanged, <bind-callback>1_0) ?? null));
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Update() : (::system::Boolean)
+                    {
+                        if ((<bind-opened> and (!<bind-closed>)))
+                        {
+                            <bind-activator>();
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Close() : (::system::Boolean)
+                    {
+                        if ((!<bind-closed>))
+                        {
+                            (<bind-closed> = true);
+                            if (<bind-handler>0_0 is not null)
+                            {
+                                detach(<bind-cache>0.VisuallyEnabledChanged, <bind-handler>0_0);
+                                (<bind-handler>0_0 = null);
+                            }
+                            if (<bind-handler>1_0 is not null)
+                            {
+                                detach(<bind-cache>1.SelectedChanged, <bind-handler>1_0);
+                                (<bind-handler>1_0 = null);
+                            }
+                            (<bind-cache>0 = null of (::gacuisrc_unittest::ItemTemplate*));
+                            (<bind-cache>1 = null of (::gacuisrc_unittest::ItemTemplate*));
+                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
+                            (<bind-handler>1_0 = null of (::system::reflection::EventHandler^));
+                            return true;
+                        }
+                        return false;
+                    }
+                };
+                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
+                {
+                    var <old> = <precompile>0.Color;
+                    var <new> = (cast (::presentation::Color) <value>);
+                    if ((<old> == <new>))
+                    {
+                        return;
+                    }
+                    (<precompile>0.Color = <new>);
+                });
+                <this>.AddSubscription(<created-subscription>);
             }
             {
                 var <created-subscription> = new (::system::Subscription^)
@@ -515,13 +613,13 @@ namespace gacuisrc_unittest
                 };
                 attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
                 {
-                    var <old> = <precompile>1.PreferredMinSize;
+                    var <old> = <precompile>2.PreferredMinSize;
                     var <new> = (cast (::presentation::Size) <value>);
                     if ((<old> == <new>))
                     {
                         return;
                     }
-                    (<precompile>1.PreferredMinSize = <new>);
+                    (<precompile>2.PreferredMinSize = <new>);
                 });
                 <this>.AddSubscription(<created-subscription>);
             }
@@ -743,13 +841,13 @@ namespace gacuisrc_unittest
                 };
                 attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
                 {
-                    var <old> = <precompile>5.Image;
+                    var <old> = <precompile>6.Image;
                     var <new> = (cast (::presentation::INativeImage^) <value>);
                     if ((<old> == <new>))
                     {
                         return;
                     }
-                    (<precompile>5.Image = <new>);
+                    (<precompile>6.Image = <new>);
                 });
                 <this>.AddSubscription(<created-subscription>);
             }
@@ -816,13 +914,13 @@ namespace gacuisrc_unittest
                 };
                 attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
                 {
-                    var <old> = <precompile>5.FrameIndex;
+                    var <old> = <precompile>6.FrameIndex;
                     var <new> = (cast (::system::Int64) <value>);
                     if ((<old> == <new>))
                     {
                         return;
                     }
-                    (<precompile>5.FrameIndex = <new>);
+                    (<precompile>6.FrameIndex = <new>);
                 });
                 <this>.AddSubscription(<created-subscription>);
             }
@@ -889,13 +987,13 @@ namespace gacuisrc_unittest
                 };
                 attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
                 {
-                    var <old> = <precompile>5.Enabled;
+                    var <old> = <precompile>6.Enabled;
                     var <new> = (cast (::system::Boolean) <value>);
                     if ((<old> == <new>))
                     {
                         return;
                     }
-                    (<precompile>5.Enabled = <new>);
+                    (<precompile>6.Enabled = <new>);
                 });
                 <this>.AddSubscription(<created-subscription>);
             }
@@ -904,7 +1002,11 @@ namespace gacuisrc_unittest
                 {
                     var <bind-cache>0 : ::gacuisrc_unittest::ItemTemplate* = null of (::gacuisrc_unittest::ItemTemplate*);
 
+                    var <bind-cache>1 : ::gacuisrc_unittest::ItemTemplate* = null of (::gacuisrc_unittest::ItemTemplate*);
+
                     var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-handler>1_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
 
                     var <bind-opened> : ::system::Boolean = false;
 
@@ -912,11 +1014,16 @@ namespace gacuisrc_unittest
 
                     func <bind-activator>() : (::system::Void)
                     {
-                        var <bind-activator-result> = <bind-cache>0.Text of (::system::String);
+                        var <bind-activator-result> = ((("" & <bind-cache>0.Text) & "") & ((cast (string) <bind-cache>1.Context) ?? ""));
                         ValueChanged(<bind-activator-result>);
                     }
 
                     func <bind-callback>0_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    func <bind-callback>1_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
                     {
                         <bind-activator>();
                     }
@@ -927,7 +1034,9 @@ namespace gacuisrc_unittest
                         {
                             (<bind-opened> = true);
                             (<bind-cache>0 = (self ?? null of (::gacuisrc_unittest::ItemTemplate*)));
+                            (<bind-cache>1 = (self ?? null of (::gacuisrc_unittest::ItemTemplate*)));
                             (<bind-handler>0_0 = (attach(<bind-cache>0.TextChanged, <bind-callback>0_0) ?? null));
+                            (<bind-handler>1_0 = (attach(<bind-cache>1.ContextChanged, <bind-callback>1_0) ?? null));
                             return true;
                         }
                         return false;
@@ -953,8 +1062,15 @@ namespace gacuisrc_unittest
                                 detach(<bind-cache>0.TextChanged, <bind-handler>0_0);
                                 (<bind-handler>0_0 = null);
                             }
+                            if (<bind-handler>1_0 is not null)
+                            {
+                                detach(<bind-cache>1.ContextChanged, <bind-handler>1_0);
+                                (<bind-handler>1_0 = null);
+                            }
                             (<bind-cache>0 = null of (::gacuisrc_unittest::ItemTemplate*));
+                            (<bind-cache>1 = null of (::gacuisrc_unittest::ItemTemplate*));
                             (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
+                            (<bind-handler>1_0 = null of (::system::reflection::EventHandler^));
                             return true;
                         }
                         return false;
@@ -962,13 +1078,13 @@ namespace gacuisrc_unittest
                 };
                 attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
                 {
-                    var <old> = <precompile>7.Text;
+                    var <old> = <precompile>8.Text;
                     var <new> = (cast (::system::String) <value>);
                     if ((<old> == <new>))
                     {
                         return;
                     }
-                    (<precompile>7.Text = <new>);
+                    (<precompile>8.Text = <new>);
                 });
                 <this>.AddSubscription(<created-subscription>);
             }
@@ -977,7 +1093,15 @@ namespace gacuisrc_unittest
                 {
                     var <bind-cache>0 : ::gacuisrc_unittest::ItemTemplate* = null of (::gacuisrc_unittest::ItemTemplate*);
 
+                    var <bind-cache>1 : ::gacuisrc_unittest::ItemTemplate* = null of (::gacuisrc_unittest::ItemTemplate*);
+
+                    var <bind-cache>2 : ::gacuisrc_unittest::ItemTemplate* = null of (::gacuisrc_unittest::ItemTemplate*);
+
                     var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-handler>1_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-handler>2_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
 
                     var <bind-opened> : ::system::Boolean = false;
 
@@ -985,11 +1109,21 @@ namespace gacuisrc_unittest
 
                     func <bind-activator>() : (::system::Void)
                     {
-                        var <bind-activator-result> = <bind-cache>0.TextColor of (::presentation::Color);
+                        var <bind-activator-result> = (cast (Color) (!<bind-cache>0.VisuallyEnabled) ? "#888888" : (!<bind-cache>1.Selected) ? <bind-cache>2.TextColor : "#88FF88") of (::presentation::Color);
                         ValueChanged(<bind-activator-result>);
                     }
 
                     func <bind-callback>0_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    func <bind-callback>1_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    func <bind-callback>2_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
                     {
                         <bind-activator>();
                     }
@@ -1000,7 +1134,11 @@ namespace gacuisrc_unittest
                         {
                             (<bind-opened> = true);
                             (<bind-cache>0 = (self ?? null of (::gacuisrc_unittest::ItemTemplate*)));
-                            (<bind-handler>0_0 = (attach(<bind-cache>0.TextColorChanged, <bind-callback>0_0) ?? null));
+                            (<bind-cache>1 = (self ?? null of (::gacuisrc_unittest::ItemTemplate*)));
+                            (<bind-cache>2 = (self ?? null of (::gacuisrc_unittest::ItemTemplate*)));
+                            (<bind-handler>0_0 = (attach(<bind-cache>0.VisuallyEnabledChanged, <bind-callback>0_0) ?? null));
+                            (<bind-handler>1_0 = (attach(<bind-cache>1.SelectedChanged, <bind-callback>1_0) ?? null));
+                            (<bind-handler>2_0 = (attach(<bind-cache>2.TextColorChanged, <bind-callback>2_0) ?? null));
                             return true;
                         }
                         return false;
@@ -1023,11 +1161,25 @@ namespace gacuisrc_unittest
                             (<bind-closed> = true);
                             if (<bind-handler>0_0 is not null)
                             {
-                                detach(<bind-cache>0.TextColorChanged, <bind-handler>0_0);
+                                detach(<bind-cache>0.VisuallyEnabledChanged, <bind-handler>0_0);
                                 (<bind-handler>0_0 = null);
                             }
+                            if (<bind-handler>1_0 is not null)
+                            {
+                                detach(<bind-cache>1.SelectedChanged, <bind-handler>1_0);
+                                (<bind-handler>1_0 = null);
+                            }
+                            if (<bind-handler>2_0 is not null)
+                            {
+                                detach(<bind-cache>2.TextColorChanged, <bind-handler>2_0);
+                                (<bind-handler>2_0 = null);
+                            }
                             (<bind-cache>0 = null of (::gacuisrc_unittest::ItemTemplate*));
+                            (<bind-cache>1 = null of (::gacuisrc_unittest::ItemTemplate*));
+                            (<bind-cache>2 = null of (::gacuisrc_unittest::ItemTemplate*));
                             (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
+                            (<bind-handler>1_0 = null of (::system::reflection::EventHandler^));
+                            (<bind-handler>2_0 = null of (::system::reflection::EventHandler^));
                             return true;
                         }
                         return false;
@@ -1035,13 +1187,13 @@ namespace gacuisrc_unittest
                 };
                 attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
                 {
-                    var <old> = <precompile>7.Color;
+                    var <old> = <precompile>8.Color;
                     var <new> = (cast (::presentation::Color) <value>);
                     if ((<old> == <new>))
                     {
                         return;
                     }
-                    (<precompile>7.Color = <new>);
+                    (<precompile>8.Color = <new>);
                 });
                 <this>.AddSubscription(<created-subscription>);
             }
@@ -1108,13 +1260,13 @@ namespace gacuisrc_unittest
                 };
                 attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
                 {
-                    var <old> = <precompile>7.Font;
+                    var <old> = <precompile>8.Font;
                     var <new> = (cast (::presentation::FontProperties) <value>);
                     if ((<old> == <new>))
                     {
                         return;
                     }
-                    (<precompile>7.Font = <new>);
+                    (<precompile>8.Font = <new>);
                 });
                 <this>.AddSubscription(<created-subscription>);
             }

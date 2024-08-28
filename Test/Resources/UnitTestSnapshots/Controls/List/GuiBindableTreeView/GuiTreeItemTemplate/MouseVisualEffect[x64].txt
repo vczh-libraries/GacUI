@@ -1,4 +1,4 @@
-﻿================================(1/6)================================
+﻿================================(1/7)================================
 module <constructor>gacuisrc_unittest::CheckedBulletTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -246,7 +246,7 @@ namespace gacuisrc_unittest
     }
 }
 
-================================(2/6)================================
+================================(2/7)================================
 module <instance>gacuisrc_unittest::CheckedBulletTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -288,7 +288,7 @@ namespace gacuisrc_unittest
     }
 }
 
-================================(3/6)================================
+================================(3/7)================================
 module <constructor>gacuisrc_unittest::ItemTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -1278,7 +1278,7 @@ namespace gacuisrc_unittest
     }
 }
 
-================================(4/6)================================
+================================(4/7)================================
 module <instance>gacuisrc_unittest::ItemTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -1320,7 +1320,7 @@ namespace gacuisrc_unittest
     }
 }
 
-================================(5/6)================================
+================================(5/7)================================
 module <constructor>gacuisrc_unittest::MainWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -1352,7 +1352,7 @@ namespace gacuisrc_unittest
         var <precompile>0 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
-        var list : ::presentation::controls::GuiTreeView* = null of (::presentation::controls::GuiTreeView*);
+        var list : ::presentation::controls::GuiBindableTreeView* = null of (::presentation::controls::GuiBindableTreeView*);
 
         @cpp:Protected
         func <gacuisrc_unittest-MainWindow>Initialize(<this> : ::gacuisrc_unittest::MainWindow*) : (::system::Void)
@@ -1362,8 +1362,27 @@ namespace gacuisrc_unittest
                 (self.ClientSize = {x : 320; y : 240;} of (::presentation::Size));
             }
             {
-                (list = new (::presentation::controls::GuiTreeView*)(::presentation::theme::ThemeName::TreeView));
+                (list = new (::presentation::controls::GuiBindableTreeView*)(::presentation::theme::ThemeName::TreeView, func (<item> : ::system::Object, <value> : ::system::Object, <update> : ::system::Boolean) : (::system::Object)
+                {
+                    var item = (cast (TreeViewData^) <item>);
+                    if (<update>)
+                    {
+                        (item.DoNotUse = (cast (::system::Object) <value>));
+                        return null of (::system::Object);
+                    }
+                    else
+                    {
+                        return item.DoNotUse;
+                    }
+                }));
                 <this>.SetNamedObject("list", list);
+            }
+            {
+                (list.ImageProperty = func (<item> : ::system::Object) : (::presentation::GuiImageData^)
+                {
+                    var item = (cast (TreeViewData^) <item>);
+                    return item.Image;
+                });
             }
             {
                 (list.ItemTemplate = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiListItemTemplate*)
@@ -1371,6 +1390,20 @@ namespace gacuisrc_unittest
                     {
                         return new (::gacuisrc_unittest::ItemTemplate*)();
                     }
+                });
+            }
+            {
+                (list.ChildrenProperty = func (<item> : ::system::Object) : (::system::Enumerable^)
+                {
+                    var item = (cast (TreeViewData^) <item>);
+                    return item.Children;
+                });
+            }
+            {
+                (list.TextProperty = func (<item> : ::system::Object) : (::system::String)
+                {
+                    var item = (cast (TreeViewData^) <item>);
+                    return item.Text;
                 });
             }
             {
@@ -1390,11 +1423,14 @@ namespace gacuisrc_unittest
                 self.AddChild(list);
             }
             {
+                (list.ItemSource = self.items);
+            }
+            {
                 var <created-subscription> = new (::system::Subscription^)
                 {
-                    var <bind-cache>0 : ::presentation::controls::GuiTreeView* = null of (::presentation::controls::GuiTreeView*);
+                    var <bind-cache>0 : ::presentation::controls::GuiBindableTreeView* = null of (::presentation::controls::GuiBindableTreeView*);
 
-                    var <bind-cache>1 : ::presentation::controls::GuiTreeView* = null of (::presentation::controls::GuiTreeView*);
+                    var <bind-cache>1 : ::presentation::controls::GuiBindableTreeView* = null of (::presentation::controls::GuiBindableTreeView*);
 
                     var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
 
@@ -1406,7 +1442,7 @@ namespace gacuisrc_unittest
 
                     func <bind-activator>() : (::system::Void)
                     {
-                        var <bind-activator-result> = (((("GuiTreeView [" & <bind-cache>0.SelectedItemIndex) & "] -> [") & (<bind-cache>1.SelectedItem.text ?? "")) & "]");
+                        var <bind-activator-result> = (((("GuiBindableTreeView [" & <bind-cache>0.SelectedItemIndex) & "] -> [") & ((cast (TreeViewData^) <bind-cache>1.SelectedItem).Text ?? "")) & "]");
                         ValueChanged(<bind-activator-result>);
                     }
 
@@ -1425,8 +1461,8 @@ namespace gacuisrc_unittest
                         if ((!<bind-opened>))
                         {
                             (<bind-opened> = true);
-                            (<bind-cache>0 = (list ?? null of (::presentation::controls::GuiTreeView*)));
-                            (<bind-cache>1 = (list ?? null of (::presentation::controls::GuiTreeView*)));
+                            (<bind-cache>0 = (list ?? null of (::presentation::controls::GuiBindableTreeView*)));
+                            (<bind-cache>1 = (list ?? null of (::presentation::controls::GuiBindableTreeView*)));
                             (<bind-handler>0_0 = (attach(<bind-cache>0.SelectionChanged, <bind-callback>0_0) ?? null));
                             (<bind-handler>1_0 = (attach(<bind-cache>1.SelectionChanged, <bind-callback>1_0) ?? null));
                             return true;
@@ -1459,8 +1495,8 @@ namespace gacuisrc_unittest
                                 detach(<bind-cache>1.SelectionChanged, <bind-handler>1_0);
                                 (<bind-handler>1_0 = null);
                             }
-                            (<bind-cache>0 = null of (::presentation::controls::GuiTreeView*));
-                            (<bind-cache>1 = null of (::presentation::controls::GuiTreeView*));
+                            (<bind-cache>0 = null of (::presentation::controls::GuiBindableTreeView*));
+                            (<bind-cache>1 = null of (::presentation::controls::GuiBindableTreeView*));
                             (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
                             (<bind-handler>1_0 = null of (::system::reflection::EventHandler^));
                             return true;
@@ -1488,7 +1524,7 @@ namespace gacuisrc_unittest
     }
 }
 
-================================(6/6)================================
+================================(6/7)================================
 module <instance>gacuisrc_unittest::MainWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -1515,11 +1551,11 @@ namespace gacuisrc_unittest
     @cpp:Friend(typeof(MainWindowConstructor))
     class MainWindow : ::presentation::controls::GuiWindow, MainWindowConstructor
     {
-        func MakeItem(name : string, item : int) : (MemoryNodeProvider^)
+        var items : TreeViewData^ = new (TreeViewData^)();
+
+        func MakeItem(name : string, item : int) : (TreeViewData^)
         {
-            var treeViewItem = new (TreeViewItem^)(null, ((("" & name) & " ") & item));
-            var treeNode = new (MemoryNodeProvider^)(treeViewItem);
-            return treeNode;
+            return new (TreeViewData^)(((("" & name) & " ") & item));
         }
 
         func InitializeItems(count : int) : (void)
@@ -1539,7 +1575,7 @@ namespace gacuisrc_unittest
                         mainItem.Children[1].Children.Add(MakeItem("Leaf 2/2nd", item));
                         mainItem.Children[2].Children.Add(MakeItem("Leaf 3/1st", item));
                         mainItem.Children[2].Children.Add(MakeItem("Leaf 3/2nd", item));
-                        list.Nodes.Children.Add(mainItem);
+                        items.Children.Add(mainItem);
                     }
                     (item = (item + 1));
                 }
@@ -1559,6 +1595,84 @@ namespace gacuisrc_unittest
         {
             FinalizeInstanceRecursively(this of (::presentation::controls::GuiControlHost*));
         }
+    }
+}
+
+================================(7/7)================================
+module treeviewdata;
+using system::*;
+using presentation::*;
+
+class TreeViewData
+{
+    @cpp:Private
+    var <prop>Text : string = "";
+
+    func GetText() : (string)
+    {
+        return <prop>Text;
+    }
+
+    func SetText(<value> : string) : (void)
+    {
+        (<prop>Text = <value>);
+    }
+
+    prop Text : string{GetText, SetText}
+
+    @cpp:Private
+    var <prop>Image : GuiImageData^ = null;
+
+    func GetImage() : (GuiImageData^)
+    {
+        return <prop>Image;
+    }
+
+    func SetImage(<value> : GuiImageData^) : (void)
+    {
+        (<prop>Image = <value>);
+    }
+
+    prop Image : GuiImageData^{GetImage, SetImage}
+
+    @cpp:Private
+    var <prop>Children : observe TreeViewData^[] = {};
+
+    func GetChildren() : (observe TreeViewData^[])
+    {
+        return <prop>Children;
+    }
+
+    @cpp:Protected
+    func SetChildren(<value> : observe TreeViewData^[]) : (void)
+    {
+        (<prop>Children = <value>);
+    }
+
+    prop Children : observe TreeViewData^[]{GetChildren}
+
+    @cpp:Private
+    var <prop>DoNotUse : object = null;
+
+    func GetDoNotUse() : (object)
+    {
+        return <prop>DoNotUse;
+    }
+
+    func SetDoNotUse(<value> : object) : (void)
+    {
+        (<prop>DoNotUse = <value>);
+    }
+
+    prop DoNotUse : object{GetDoNotUse, SetDoNotUse}
+
+    new ()
+    {
+    }
+
+    new (text : string)
+    {
+        (Text = text);
     }
 }
 
