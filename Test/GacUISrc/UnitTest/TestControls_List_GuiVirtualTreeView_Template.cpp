@@ -778,13 +778,9 @@ namespace gacui_unittest_template
 		});
 	}
 
-	void GuiTreeItemTemplate_TestCases(
+	void GuiTreeItemTemplate1_TestCases(
 		WString resourceXml,
-		WString pathFragment,
-		Func<Ptr<IValueList>(GuiWindow*)> getRootItems,
-		Func<Ptr<IValueList>(Value)> getChildItems,
-		Func<void(Value, WString)> updateText,
-		Func<void(GuiWindow*, Value)> notifyNodeDataModified
+		WString pathFragment
 	)
 	{
 		TEST_CASE(L"MouseVisualEffect")
@@ -1020,7 +1016,17 @@ namespace gacui_unittest_template
 		TEST_CASE(L"Image")
 		{
 		});
+	}
 
+	void GuiTreeItemTemplate2_TestCases(
+		WString resourceXml,
+		WString pathFragment,
+		Func<Ptr<IValueList>(GuiWindow*)> getRootItems,
+		Func<Ptr<IValueList>(Value)> getChildItems,
+		Func<void(Value, WString)> updateText,
+		Func<void(GuiWindow*, Value)> notifyNodeDataModified
+	)
+	{
 		GuiTreeItemTemplate_Shared_TestCases(
 			resourceXml,
 			pathFragment,

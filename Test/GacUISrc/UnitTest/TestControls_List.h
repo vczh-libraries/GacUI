@@ -72,7 +72,12 @@ namespace gacui_unittest_template
 		Func<void(GuiWindow*, Value)> notifyNodeDataModified
 	);
 
-	extern void GuiTreeItemTemplate_TestCases(
+	extern void GuiTreeItemTemplate1_TestCases(
+		WString resourceXml,
+		WString pathFragment
+	);
+
+	extern void GuiTreeItemTemplate2_TestCases(
 		WString resourceXml,
 		WString pathFragment,
 		Func<Ptr<IValueList>(GuiWindow*)> getRootItems,
