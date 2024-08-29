@@ -778,6 +778,16 @@ namespace gacui_unittest_template
 		});
 	}
 
+	void GuiVirtualTreeView_Images_TestCases(
+		WString resourceXml,
+		WString pathFragment
+	)
+	{
+		TEST_CASE(L"Image")
+		{
+		});
+	}
+
 	void GuiTreeItemTemplate1_TestCases(
 		WString resourceXml,
 		WString pathFragment
@@ -1011,10 +1021,6 @@ namespace gacui_unittest_template
 				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
 				resourceXml
 				);
-		});
-
-		TEST_CASE(L"Image")
-		{
 		});
 	}
 

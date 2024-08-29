@@ -10,6 +10,8 @@ namespace gacui_unittest_template
 	extern void			RClickListItem(UnitTestRemoteProtocol* protocol, GuiListControl* listControl, vint index, vint offsetX = -1);
 	extern void			RClickListItem(UnitTestRemoteProtocol* protocol, GuiListControl* listControl, bool ctrl, bool shift, bool alt, vint index, vint offsetX = -1);
 
+	// GuiListControl
+
 	extern void GuiListControl_TestCases(
 		WString resourceXml,
 		WString pathFragment
@@ -35,6 +37,8 @@ namespace gacui_unittest_template
 		WString pathFragment
 	);
 
+	// TextList
+
 	extern void GuiVirtualTextList_TestCases(
 		WString resourceXml,
 		WString pathFragment,
@@ -51,6 +55,8 @@ namespace gacui_unittest_template
 		Func<void(GuiWindow*, vint, vint)> notifyItemDataModified
 	);
 
+	// ListView
+
 	extern void GuiVirtualListView_ViewAndImages_TestCases(
 		WString resourceXml,
 		WString pathFragment
@@ -63,6 +69,8 @@ namespace gacui_unittest_template
 		Func<void(GuiWindow*, vint, vint)> notifyItemDataModified
 	);
 
+	// TreeView
+
 	extern void GuiVirtualTreeView_TestCases(
 		WString resourceXml,
 		WString pathFragment,
@@ -70,6 +78,11 @@ namespace gacui_unittest_template
 		Func<Ptr<IValueList>(Value)> getChildItems,
 		Func<void(Value, WString)> updateText,
 		Func<void(GuiWindow*, Value)> notifyNodeDataModified
+	);
+
+	extern void GuiVirtualTreeView_Images_TestCases(
+		WString resourceXml,
+		WString pathFragment
 	);
 
 	extern void GuiTreeItemTemplate1_TestCases(
