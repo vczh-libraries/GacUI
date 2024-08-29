@@ -10,6 +10,7 @@
   - Fix `GuiListControl` incompatible with non-default axis.
   - Fix `GuiTextList::SelectionChanged` not raised when changing properties of the only selected `list::TextItem`.
   - Fix `GuiVirtualListView` in `Details` view column header height doesn't sync to item arranger in real-time.
+  - UnitTestSnapshotViewer always not render the second loaded images.
 - `GuiTreeItemTemplate` change base class to `GuiListItemTemplate`
 - `GuiListControl::IItemProvider(Callback)?` moved to `vl::presentation::controls::list`.
 - Make `ItemSource` class of bindable list controls reflectable.
@@ -44,10 +45,6 @@
   - When the content is changed, configuration needs 2 idle frames to be correctly configured.
 - `GuiListItemTemplate/ArrangerAndAxis(WithScrolls)`
   - items are not aligned to proper corner when scrolls are invisible.
-- `GuiVirtualListView`
-  - `Data_32.png` isn't property rendered in `UnitTestSnapshotViewer`
-- `GuiVirtualTreeView`
-  - `Data_16.png` isn't property rendered in `UnitTestSnapshotViewer`
 
 ## Release (optional)
 
