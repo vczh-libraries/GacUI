@@ -1363,9 +1363,14 @@ namespace gacuisrc_unittest
     @cpp:Friend(typeof(MainWindowConstructor))
     class MainWindow : ::presentation::controls::GuiWindow, MainWindowConstructor
     {
+        func GetImage(index : int) : (GuiImageData^)
+        {
+            return null;
+        }
+
         func MakeItem(name : string, item : int) : (MemoryNodeProvider^)
         {
-            var treeViewItem = new (TreeViewItem^)(null, ((("" & name) & " ") & item));
+            var treeViewItem = new (TreeViewItem^)(GetImage(item), ((("" & name) & " ") & item));
             var treeNode = new (MemoryNodeProvider^)(treeViewItem);
             return treeNode;
         }

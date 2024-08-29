@@ -13,7 +13,7 @@ TEST_FILE
 )GacUISrc";
 
 	const WString fragmentMemberWithoutImage = LR"GacUISrc(
-        func GetImage(index:int) : void { return null; }
+        func GetImage(index:int) : GuiImageData^ { return null; }
 )GacUISrc";
 
 	/***********************************************************************
