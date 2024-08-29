@@ -16,6 +16,29 @@ TEST_FILE
         func GetImage(index:int) : GuiImageData^ { return null; }
 )GacUISrc";
 
+	const WString fragmentMemberWithImage = LR"GacUISrc(
+        var smallImages : GuiImageData^[] = null;
+        func EnsureImages() : void
+        {
+          if (smallImages is not null)
+          {
+            return;
+          }
+          smallImages = {
+            (cast (GuiImageData^) self.ResolveResource("res", "ListViewImages/SmallImages/Cert", true));
+            (cast (GuiImageData^) self.ResolveResource("res", "ListViewImages/SmallImages/Data", true));
+            (cast (GuiImageData^) self.ResolveResource("res", "ListViewImages/SmallImages/Link", true));
+            (cast (GuiImageData^) self.ResolveResource("res", "ListViewImages/SmallImages/Folder", true));
+            (cast (GuiImageData^) self.ResolveResource("res", "ListViewImages/SmallImages/Light", true));
+          };
+        }
+        func GetImage(index:int) : GuiImageData^
+        {
+          EnsureImages();
+          return smallImages[(index - 1) % 5];
+        }
+)GacUISrc";
+
 	/***********************************************************************
 	Shared (TreeListItemTemplate)
 	***********************************************************************/
@@ -224,6 +247,28 @@ TEST_FILE
 </Resource>
 )GacUISrc";
 
+		const WString resourceTreeViewWithImage = LR"GacUISrc(
+<Resource>
+)GacUISrc" + fragmentImageResource + LR"GacUISrc(
+)GacUISrc" + fragmentTreeViewFirst + LR"GacUISrc(
+)GacUISrc" + fragmentMemberWithImage + LR"GacUISrc(
+)GacUISrc" + fragmentTreeViewSecond + LR"GacUISrc(
+)GacUISrc" + fragmentTreeViewThird + LR"GacUISrc(
+</Resource>
+)GacUISrc";
+
+		const WString resourceTreeListItemTemplate2WithImage = LR"GacUISrc(
+<Resource>
+)GacUISrc" + fragmentImageResource + LR"GacUISrc(
+)GacUISrc" + fragmentTreeListItemTemplate2 + LR"GacUISrc(
+)GacUISrc" + fragmentTreeViewFirst + LR"GacUISrc(
+)GacUISrc" + fragmentMemberWithImage + LR"GacUISrc(
+)GacUISrc" + fragmentTreeViewSecond + LR"GacUISrc(
+          <att.ItemTemplate>gacuisrc_unittest::ItemTemplate</att.ItemTemplate>
+)GacUISrc" + fragmentTreeViewThird + LR"GacUISrc(
+</Resource>
+)GacUISrc";
+
 		auto getRootItems = [](GuiWindow* window)
 		{
 			auto listControl = FindObjectByName<GuiTreeView>(window, L"list");
@@ -258,16 +303,20 @@ TEST_FILE
 				getChildItems,
 				updateText,
 				notifyNodeDataModified);
+
+			GuiVirtualTreeView_Images_TestCases(
+				resourceTreeViewWithImage,
+				WString::Unmanaged(L"GuiTreeView"));
 		});
 
-		TEST_CATEGORY(L"GuiTreeView/GuiTreeItemTemplate (1)")
+		TEST_CATEGORY(L"GuiTreeItemTemplate/GuiTreeView (1)")
 		{
 			GuiTreeItemTemplate1_TestCases(
 				resourceTreeListItemTemplate1,
 				WString::Unmanaged(L"GuiTreeItemTemplate/GuiTreeView"));
 		});
 
-		TEST_CATEGORY(L"GuiTreeView/GuiTreeItemTemplate (2)")
+		TEST_CATEGORY(L"GuiTreeItemTemplate/GuiTreeView (2)")
 		{
 			GuiTreeItemTemplate2_TestCases(
 				resourceTreeListItemTemplate2,
@@ -276,6 +325,10 @@ TEST_FILE
 				getChildItems,
 				updateText,
 				notifyNodeDataModified);
+
+			GuiVirtualTreeView_Images_TestCases(
+				resourceTreeListItemTemplate2WithImage,
+				WString::Unmanaged(L"GuiTreeItemTemplate/GuiTreeView"));
 		});
 	}
 
@@ -381,6 +434,28 @@ TEST_FILE
 </Resource>
 )GacUISrc";
 
+		const WString resourceTreeViewWithImage = LR"GacUISrc(
+<Resource>
+)GacUISrc" + fragmentImageResource + LR"GacUISrc(
+)GacUISrc" + fragmentTreeViewFirst + LR"GacUISrc(
+)GacUISrc" + fragmentMemberWithImage + LR"GacUISrc(
+)GacUISrc" + fragmentTreeViewSecond + LR"GacUISrc(
+)GacUISrc" + fragmentTreeViewThird + LR"GacUISrc(
+</Resource>
+)GacUISrc";
+
+		const WString resourceTreeListItemTemplate2WithImage = LR"GacUISrc(
+<Resource>
+)GacUISrc" + fragmentImageResource + LR"GacUISrc(
+)GacUISrc" + fragmentTreeListItemTemplate2 + LR"GacUISrc(
+)GacUISrc" + fragmentTreeViewFirst + LR"GacUISrc(
+)GacUISrc" + fragmentMemberWithImage + LR"GacUISrc(
+)GacUISrc" + fragmentTreeViewSecond + LR"GacUISrc(
+          <att.ItemTemplate>gacuisrc_unittest::ItemTemplate</att.ItemTemplate>
+)GacUISrc" + fragmentTreeViewThird + LR"GacUISrc(
+</Resource>
+)GacUISrc";
+
 		auto getRootItems = [](GuiWindow* window)
 		{
 			auto listControl = FindObjectByName<GuiBindableTreeView>(window, L"list");
@@ -412,16 +487,20 @@ TEST_FILE
 				getChildItems,
 				updateText,
 				notifyNodeDataModified);
+
+			GuiVirtualTreeView_Images_TestCases(
+				resourceTreeViewWithImage,
+				WString::Unmanaged(L"GuiBindableTreeView"));
 		});
 
-		TEST_CATEGORY(L"GuiBindableTreeView/GuiTreeItemTemplate (1)")
+		TEST_CATEGORY(L"GuiTreeItemTemplate/GuiBindableTreeView (1)")
 		{
 			GuiTreeItemTemplate1_TestCases(
 				resourceTreeListItemTemplate1,
 				WString::Unmanaged(L"GuiTreeItemTemplate/GuiBindableTreeView"));
 		});
 
-		TEST_CATEGORY(L"GuiBindableTreeView/GuiTreeItemTemplate (2)")
+		TEST_CATEGORY(L"GuiTreeItemTemplate/GuiBindableTreeView (2)")
 		{
 			GuiTreeItemTemplate2_TestCases(
 				resourceTreeListItemTemplate2,
@@ -430,6 +509,10 @@ TEST_FILE
 				getChildItems,
 				updateText,
 				notifyNodeDataModified);
+
+			GuiVirtualTreeView_Images_TestCases(
+				resourceTreeListItemTemplate2WithImage,
+				WString::Unmanaged(L"GuiTreeItemTemplate/GuiBindableTreeView"));
 		});
 	}
 }

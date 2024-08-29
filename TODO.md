@@ -63,11 +63,6 @@
       - Show dom nodes in a tree view in the right side of the rendering tab optionally.
       - Select dom node and jump to other tabs with highlight.
 - Non-editing control unit test (using DarkSkin)
-  - List
-    - GuiListControl (`MouseWheel` remaining)
-    - TreeView (`MouseWheel` remaining)
-      - Node events (mouse/key + expanded/collapsed) in `TestControls_List_GuiVirtualTreeListControl.cpp`
-      - w/ or w/o ItemTemplate with `Image`
   - Menu, Toolstrip and Navigation ...
     - ComboBox
     - GuiDatePicker
@@ -89,6 +84,10 @@
   - `ControlThemeName` property
   - Multiple active `GuiWindow`, modal, order, `Enabled`
   - `GuiTab` item manipulation and `[TAB]`
+  - `MouseWheel`
+    - Behavior on scrolls, trackers, scroll containers and list controls
+    - `GuiListControl` item events
+    - `GuiVirtualTreeListControl` node events
 - Document
   - `GuiTreeItemTemplate` change base class to `GuiListItemTemplate`
 - `GuiListControl::IItemProvider(Callback)?` moved to `vl::presentation::controls::list`

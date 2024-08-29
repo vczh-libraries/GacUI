@@ -785,6 +785,27 @@ namespace gacui_unittest_template
 	{
 		TEST_CASE(L"Image")
 		{
+			GacUIUnitTest_SetGuiMainProxy([=](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					InitializeItems(window, 5);
+
+					auto listControl = FindObjectByName<GuiVirtualTreeListControl>(window, L"list");
+					listControl->GetNodeRootProvider()->GetRootNode()->GetChild(1)->SetExpanding(true);
+				});
+				protocol->OnNextIdleFrame(L"5 Items with 2rd Expanded", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					window->Hide();
+				});
+			});
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Controls/List/") + pathFragment + WString::Unmanaged(L"/Image"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resourceXml
+				);
 		});
 	}
 
