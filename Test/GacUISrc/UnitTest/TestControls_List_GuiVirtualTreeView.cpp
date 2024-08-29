@@ -352,6 +352,7 @@ TEST_FILE
 )GacUISrc" + fragmentTreeViewData + LR"GacUISrc(
 )GacUISrc" + fragmentTreeViewFirst + LR"GacUISrc(
 )GacUISrc" + fragmentMemberWithoutImage + LR"GacUISrc(
+)GacUISrc" + fragmentTreeViewSecond + LR"GacUISrc(
 )GacUISrc" + fragmentTreeViewThird + LR"GacUISrc(
 </Resource>
 )GacUISrc";
@@ -362,6 +363,7 @@ TEST_FILE
 )GacUISrc" + fragmentTreeListItemTemplate1 + LR"GacUISrc(
 )GacUISrc" + fragmentTreeViewFirst + LR"GacUISrc(
 )GacUISrc" + fragmentMemberWithoutImage + LR"GacUISrc(
+)GacUISrc" + fragmentTreeViewSecond + LR"GacUISrc(
           <att.ItemTemplate>gacuisrc_unittest::ItemTemplate</att.ItemTemplate>
 )GacUISrc" + fragmentTreeViewThird + LR"GacUISrc(
 </Resource>
@@ -373,6 +375,7 @@ TEST_FILE
 )GacUISrc" + fragmentTreeListItemTemplate2 + LR"GacUISrc(
 )GacUISrc" + fragmentTreeViewFirst + LR"GacUISrc(
 )GacUISrc" + fragmentMemberWithoutImage + LR"GacUISrc(
+)GacUISrc" + fragmentTreeViewSecond + LR"GacUISrc(
           <att.ItemTemplate>gacuisrc_unittest::ItemTemplate</att.ItemTemplate>
 )GacUISrc" + fragmentTreeViewThird + LR"GacUISrc(
 </Resource>
