@@ -1,6 +1,6 @@
 # TODO
 
-## Completed but not released (1.2.11.0)
+## Completed but not released (1.2.10.2)
 
 - Fixed
   - Fix `INVOKEGET_INTERFACE_PROXY` and `INVOKEGET_INTERFACE_PROXY_NOPARAMS` break build when returning `LazyList<T>`.
@@ -34,14 +34,20 @@
   - Change `GUI_PLUGIN_NAME` to `GUI_PLUGIN_CONTROLLER_(UN)RELATED`.
   - Remove the two parameters from `IGuiPlugin`, the macro above already specified it clear enough.
   - Unrelated plugins are not allowed to depend on related plugins.
-- Controls
-  - Unit Test `(H|V)(Tracker|Scroll)/Mouse`, when `Drag to Center` the handler should be highlighted, because the mouse is right above the handler.
-  - Unit Test for `GuiScrollContainer`
-    - Only calling `Set(Horizontal|Vertical)AlwaysVisible(false)` doesn't make scrolls disappear. `SetVisible(false)` on scrolls are verified called.
-    - When the content is changed, configuration needs 2 idle frames to be correctly configured.
-  - Unit Test for `GuiListItemTemplate/ArrangerAndAxis(WithScrolls)`, items are not aligned to proper corner when scrolls are invisible.
-  - Unit Test for `GuiVirtualListView`
-    - `Data_32.png` isn't property rendered in `UnitTestSnapshotViewer`
+
+## Known Issues (Unit Test)
+
+- `(H|V)(Tracker|Scroll)/Mouse`
+  - when `Drag to Center` the handler should be highlighted, because the mouse is right above the handler.
+- `GuiScrollContainer`
+  - Only calling `Set(Horizontal|Vertical)AlwaysVisible(false)` doesn't make scrolls disappear. `SetVisible(false)` on scrolls are verified called.
+  - When the content is changed, configuration needs 2 idle frames to be correctly configured.
+- `GuiListItemTemplate/ArrangerAndAxis(WithScrolls)`
+  - items are not aligned to proper corner when scrolls are invisible.
+- `GuiVirtualListView`
+  - `Data_32.png` isn't property rendered in `UnitTestSnapshotViewer`
+- `GuiVirtualTreeView`
+  - `Data_16.png` isn't property rendered in `UnitTestSnapshotViewer`
 
 ## Release (optional)
 
@@ -63,6 +69,7 @@
       - Show dom nodes in a tree view in the right side of the rendering tab optionally.
       - Select dom node and jump to other tabs with highlight.
 - Non-editing control unit test (using DarkSkin)
+  - TreeView Node events (mouse/key + expanded/collapsed) in `TestControls_List_GuiVirtualTreeListControl.cpp`
   - Menu, Toolstrip and Navigation ...
     - ComboBox
     - GuiDatePicker

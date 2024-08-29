@@ -437,6 +437,7 @@ TEST_FILE
 		const WString resourceTreeViewWithImage = LR"GacUISrc(
 <Resource>
 )GacUISrc" + fragmentImageResource + LR"GacUISrc(
+)GacUISrc" + fragmentTreeViewData + LR"GacUISrc(
 )GacUISrc" + fragmentTreeViewFirst + LR"GacUISrc(
 )GacUISrc" + fragmentMemberWithImage + LR"GacUISrc(
 )GacUISrc" + fragmentTreeViewSecond + LR"GacUISrc(
@@ -447,6 +448,7 @@ TEST_FILE
 		const WString resourceTreeListItemTemplate2WithImage = LR"GacUISrc(
 <Resource>
 )GacUISrc" + fragmentImageResource + LR"GacUISrc(
+)GacUISrc" + fragmentTreeViewData + LR"GacUISrc(
 )GacUISrc" + fragmentTreeListItemTemplate2 + LR"GacUISrc(
 )GacUISrc" + fragmentTreeViewFirst + LR"GacUISrc(
 )GacUISrc" + fragmentMemberWithImage + LR"GacUISrc(

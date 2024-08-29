@@ -170,7 +170,7 @@ namespace gacui_unittest_template
 					auto listControl = FindObjectByName<GuiVirtualTreeListControl>(window, L"list");
 					listControl->GetNodeRootProvider()->GetRootNode()->GetChild(1)->SetExpanding(true);
 				});
-				protocol->OnNextIdleFrame(L"5 Items with 2rd Expanded", [=]()
+				protocol->OnNextIdleFrame(L"5 Items with 2nd Expanded", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto items = getChildItems(getRootItems(window)->Get(1));
@@ -793,9 +793,9 @@ namespace gacui_unittest_template
 					InitializeItems(window, 5);
 
 					auto listControl = FindObjectByName<GuiVirtualTreeListControl>(window, L"list");
-					listControl->GetNodeRootProvider()->GetRootNode()->GetChild(1)->SetExpanding(true);
+					listControl->GetNodeRootProvider()->GetRootNode()->GetChild(2)->SetExpanding(true);
 				});
-				protocol->OnNextIdleFrame(L"5 Items with 2rd Expanded", [=]()
+				protocol->OnNextIdleFrame(L"5 Items with 3rd Expanded", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					window->Hide();

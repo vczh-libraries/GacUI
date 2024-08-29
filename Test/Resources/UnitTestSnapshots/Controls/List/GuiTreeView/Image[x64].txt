@@ -1,0 +1,251 @@
+﻿================================(1/2)================================
+module <constructor>gacuisrc_unittest::MainWindow;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace gacuisrc_unittest
+{
+    class MainWindowConstructor
+    {
+        @cpp:Protected
+        var self : ::gacuisrc_unittest::MainWindow* = null of (::gacuisrc_unittest::MainWindow*);
+
+        @cpp:Protected
+        var <precompile>0 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var list : ::presentation::controls::GuiTreeView* = null of (::presentation::controls::GuiTreeView*);
+
+        @cpp:Protected
+        func <gacuisrc_unittest-MainWindow>Initialize(<this> : ::gacuisrc_unittest::MainWindow*) : (::system::Void)
+        {
+            (self = <this>);
+            {
+                (self.ClientSize = {x : 320; y : 240;} of (::presentation::Size));
+            }
+            {
+                (list = new (::presentation::controls::GuiTreeView*)(::presentation::theme::ThemeName::TreeView));
+                <this>.SetNamedObject("list", list);
+            }
+            {
+                (list.VerticalAlwaysVisible = false);
+            }
+            {
+                (list.HorizontalAlwaysVisible = false);
+            }
+            (<precompile>0 = list.BoundsComposition);
+            {
+                (<precompile>0.PreferredMinSize = {x : 400; y : 300;} of (::presentation::Size));
+            }
+            {
+                (<precompile>0.AlignmentToParent = {left : 0; top : 5; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                self.AddChild(list);
+            }
+            {
+                var <created-subscription> = new (::system::Subscription^)
+                {
+                    var <bind-cache>0 : ::presentation::controls::GuiTreeView* = null of (::presentation::controls::GuiTreeView*);
+
+                    var <bind-cache>1 : ::presentation::controls::GuiTreeView* = null of (::presentation::controls::GuiTreeView*);
+
+                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-handler>1_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-opened> : ::system::Boolean = false;
+
+                    var <bind-closed> : ::system::Boolean = false;
+
+                    func <bind-activator>() : (::system::Void)
+                    {
+                        var <bind-activator-result> = (((("GuiTreeView [" & <bind-cache>0.SelectedItemIndex) & "] -> [") & (<bind-cache>1.SelectedItem.text ?? "")) & "]");
+                        ValueChanged(<bind-activator-result>);
+                    }
+
+                    func <bind-callback>0_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    func <bind-callback>1_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    override func Open() : (::system::Boolean)
+                    {
+                        if ((!<bind-opened>))
+                        {
+                            (<bind-opened> = true);
+                            (<bind-cache>0 = (list ?? null of (::presentation::controls::GuiTreeView*)));
+                            (<bind-cache>1 = (list ?? null of (::presentation::controls::GuiTreeView*)));
+                            (<bind-handler>0_0 = (attach(<bind-cache>0.SelectionChanged, <bind-callback>0_0) ?? null));
+                            (<bind-handler>1_0 = (attach(<bind-cache>1.SelectionChanged, <bind-callback>1_0) ?? null));
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Update() : (::system::Boolean)
+                    {
+                        if ((<bind-opened> and (!<bind-closed>)))
+                        {
+                            <bind-activator>();
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Close() : (::system::Boolean)
+                    {
+                        if ((!<bind-closed>))
+                        {
+                            (<bind-closed> = true);
+                            if (<bind-handler>0_0 is not null)
+                            {
+                                detach(<bind-cache>0.SelectionChanged, <bind-handler>0_0);
+                                (<bind-handler>0_0 = null);
+                            }
+                            if (<bind-handler>1_0 is not null)
+                            {
+                                detach(<bind-cache>1.SelectionChanged, <bind-handler>1_0);
+                                (<bind-handler>1_0 = null);
+                            }
+                            (<bind-cache>0 = null of (::presentation::controls::GuiTreeView*));
+                            (<bind-cache>1 = null of (::presentation::controls::GuiTreeView*));
+                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
+                            (<bind-handler>1_0 = null of (::system::reflection::EventHandler^));
+                            return true;
+                        }
+                        return false;
+                    }
+                };
+                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
+                {
+                    var <old> = self.Text;
+                    var <new> = (cast (::system::String) <value>);
+                    if ((<old> == <new>))
+                    {
+                        return;
+                    }
+                    (self.Text = <new>);
+                });
+                <this>.AddSubscription(<created-subscription>);
+            }
+        }
+
+        new ()
+        {
+        }
+    }
+}
+
+================================(2/2)================================
+module <instance>gacuisrc_unittest::MainWindow;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace gacuisrc_unittest
+{
+    @cpp:File("MainWindow")
+    @cpp:Friend(typeof(MainWindowConstructor))
+    class MainWindow : ::presentation::controls::GuiWindow, MainWindowConstructor
+    {
+        var smallImages : GuiImageData^[] = null;
+
+        func EnsureImages() : (void)
+        {
+            if (smallImages is not null)
+            {
+                return;
+            }
+            (smallImages = {(cast (GuiImageData^) self.ResolveResource("res", "ListViewImages/SmallImages/Cert", true)); (cast (GuiImageData^) self.ResolveResource("res", "ListViewImages/SmallImages/Data", true)); (cast (GuiImageData^) self.ResolveResource("res", "ListViewImages/SmallImages/Link", true)); (cast (GuiImageData^) self.ResolveResource("res", "ListViewImages/SmallImages/Folder", true)); (cast (GuiImageData^) self.ResolveResource("res", "ListViewImages/SmallImages/Light", true));});
+        }
+
+        func GetImage(index : int) : (GuiImageData^)
+        {
+            EnsureImages();
+            return smallImages[((index - 1) % 5)];
+        }
+
+        func MakeItem(name : string, item : int) : (MemoryNodeProvider^)
+        {
+            var treeViewItem = new (TreeViewItem^)(GetImage(item), ((("" & name) & " ") & item));
+            var treeNode = new (MemoryNodeProvider^)(treeViewItem);
+            return treeNode;
+        }
+
+        func InitializeItems(count : int) : (void)
+        {
+            {
+                var <for-begin>item : ::system::Int64 = 1;
+                var <for-end>item : ::system::Int64 = count;
+                var item = <for-begin>item;
+                while ((item <= <for-end>item))
+                {
+                    {
+                        var mainItem = MakeItem("Item", item);
+                        mainItem.Children.Add(MakeItem("Child 1st", item));
+                        mainItem.Children.Add(MakeItem("Child 2nd", item));
+                        mainItem.Children.Add(MakeItem("Child 3rd", item));
+                        mainItem.Children[1].Children.Add(MakeItem("Leaf 2/1st", item));
+                        mainItem.Children[1].Children.Add(MakeItem("Leaf 2/2nd", item));
+                        mainItem.Children[2].Children.Add(MakeItem("Leaf 3/1st", item));
+                        mainItem.Children[2].Children.Add(MakeItem("Leaf 3/2nd", item));
+                        list.Nodes.Children.Add(mainItem);
+                    }
+                    (item = (item + 1));
+                }
+            }
+        }
+
+        new* ()
+            :::presentation::controls::GuiWindow(::presentation::theme::ThemeName::Window)
+        {
+            var <resource> = ::presentation::IGuiResourceManager::GetResourceManager().GetResourceFromClassName("gacuisrc_unittest::MainWindow");
+            var <resolver> = new (::presentation::GuiResourcePathResolver^)(<resource>, <resource>.WorkingDirectory);
+            this.SetResourceResolver(<resolver>);
+            this.<gacuisrc_unittest-MainWindow>Initialize(this);
+        }
+
+        delete
+        {
+            FinalizeInstanceRecursively(this of (::presentation::controls::GuiControlHost*));
+        }
+    }
+}
+
