@@ -71,6 +71,11 @@ namespace gacui_unittest_template
 
 	// TreeView
 
+	extern void GuiVirtualTreeListControl_TestCases(
+		WString resourceXml,
+		WString pathFragment
+	);
+
 	extern void GuiVirtualTreeView_TestCases(
 		WString resourceXml,
 		WString pathFragment,
