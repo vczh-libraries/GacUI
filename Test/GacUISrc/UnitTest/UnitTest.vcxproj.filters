@@ -43,6 +43,18 @@
     <Filter Include="Source Files\Controls\List">
       <UniqueIdentifier>{708470dd-8bff-4ed0-b29a-b8e9f141beaa}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Controls\Toolstrip">
+      <UniqueIdentifier>{1f9804f9-9bbc-45e7-9ad5-823ea731ab67}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Controls\List\DataGrid">
+      <UniqueIdentifier>{302eaa78-f2db-40a0-9037-15eab1e0fa98}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Controls\Toolstrip\Ribbon">
+      <UniqueIdentifier>{5647b310-c114-410a-8149-f2fc6bed0b37}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Controls\Toolstrip\Combo">
+      <UniqueIdentifier>{71cf3aca-965d-49df-b421-eceec957e1d6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
