@@ -2,9 +2,13 @@
 
 namespace gacui_unittest_template
 {
-	static void InitializeItems(GuiWindow* window, vint count)
+	static void InitializeItems(GuiWindow* window, GuiVirtualTreeListControl* listControl, vint count)
 	{
-		Value::From(window).Invoke(L"InitializeItems", (Value_xs(), BoxValue<vint>(count)));
+		Value::From(window).Invoke(L"InitializeItems", (Value_xs(), BoxValue<vint>(count - 7)));
+		auto lastNode = listControl->GetNodeRootProvider()->GetRootNode()->GetChild(count - 7 - 1);
+		lastNode->SetExpanding(true);
+		lastNode->GetChild(1)->SetExpanding(true);
+		lastNode->GetChild(2)->SetExpanding(true);
 	}
 
 	void GuiVirtualTreeListControl_TestCases(
@@ -16,25 +20,25 @@ namespace gacui_unittest_template
 		listControl->EVENT.AttachLambda([=](auto*, auto& arguments)\
 		{\
 			auto logs = FindObjectByName<GuiTextList>(window, L"logs");\
-			auto item = Ptr(new TextItem(L ## #EVENT L" " + itow(arguments.itemIndex)));\
+			auto item = Ptr(new TextItem(L ## #EVENT L" " + listControl->GetNodeRootProvider()->GetTextValue(arguments.node)));\
 			vint index = logs->GetItems().Add(item);\
 			logs->EnsureItemVisible(index);\
 			logs->SelectItemsByClick(index, false, false, true);\
 		})\
 
 #define ATTACH_NODE_EVENTS\
-		ATTACH_NODE_EVENT(ItemLeftButtonDown);\
-		ATTACH_NODE_EVENT(ItemLeftButtonUp);\
-		ATTACH_NODE_EVENT(ItemLeftButtonDoubleClick);\
-		ATTACH_NODE_EVENT(ItemMiddleButtonDown);\
-		ATTACH_NODE_EVENT(ItemMiddleButtonUp);\
-		ATTACH_NODE_EVENT(ItemMiddleButtonDoubleClick);\
-		ATTACH_NODE_EVENT(ItemRightButtonDown);\
-		ATTACH_NODE_EVENT(ItemRightButtonUp);\
-		ATTACH_NODE_EVENT(ItemRightButtonDoubleClick);\
-		ATTACH_NODE_EVENT(ItemMouseMove);\
-		ATTACH_NODE_EVENT(ItemMouseEnter);\
-		ATTACH_NODE_EVENT(ItemMouseLeave)\
+		ATTACH_NODE_EVENT(NodeLeftButtonDown);\
+		ATTACH_NODE_EVENT(NodeLeftButtonUp);\
+		ATTACH_NODE_EVENT(NodeLeftButtonDoubleClick);\
+		ATTACH_NODE_EVENT(NodeMiddleButtonDown);\
+		ATTACH_NODE_EVENT(NodeMiddleButtonUp);\
+		ATTACH_NODE_EVENT(NodeMiddleButtonDoubleClick);\
+		ATTACH_NODE_EVENT(NodeRightButtonDown);\
+		ATTACH_NODE_EVENT(NodeRightButtonUp);\
+		ATTACH_NODE_EVENT(NodeRightButtonDoubleClick);\
+		ATTACH_NODE_EVENT(NodeMouseMove);\
+		ATTACH_NODE_EVENT(NodeMouseEnter);\
+		ATTACH_NODE_EVENT(NodeMouseLeave)\
 
 		TEST_CASE(L"LeftMouseEvents")
 		{
@@ -43,10 +47,10 @@ namespace gacui_unittest_template
 				protocol->OnNextIdleFrame(L"Ready", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
-					auto listControl = FindObjectByName<GuiListControl>(window, L"list");
+					auto listControl = FindObjectByName<GuiVirtualTreeListControl>(window, L"list");
 					ATTACH_NODE_EVENTS;
 					
-					InitializeItems(window, 20);
+					InitializeItems(window, listControl, 20);
 				});
 				protocol->OnNextIdleFrame(L"20 Items", [=]()
 				{
@@ -100,10 +104,10 @@ namespace gacui_unittest_template
 				protocol->OnNextIdleFrame(L"Ready", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
-					auto listControl = FindObjectByName<GuiListControl>(window, L"list");
+					auto listControl = FindObjectByName<GuiVirtualTreeListControl>(window, L"list");
 					ATTACH_NODE_EVENTS;
 
-					InitializeItems(window, 20);
+					InitializeItems(window, listControl, 20);
 				});
 				protocol->OnNextIdleFrame(L"20 Items", [=]()
 				{
@@ -157,10 +161,10 @@ namespace gacui_unittest_template
 				protocol->OnNextIdleFrame(L"Ready", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
-					auto listControl = FindObjectByName<GuiListControl>(window, L"list");
+					auto listControl = FindObjectByName<GuiVirtualTreeListControl>(window, L"list");
 					ATTACH_NODE_EVENTS;
 
-					InitializeItems(window, 20);
+					InitializeItems(window, listControl, 20);
 				});
 				protocol->OnNextIdleFrame(L"20 Items", [=]()
 				{
