@@ -221,9 +221,21 @@ namespace gacuisrc_unittest
     @cpp:Friend(typeof(MainWindowConstructor))
     class MainWindow : ::presentation::controls::GuiWindow, MainWindowConstructor
     {
+        var smallImages : GuiImageData^[] = null;
+
+        func EnsureImages() : (void)
+        {
+            if (smallImages is not null)
+            {
+                return;
+            }
+            (smallImages = {(cast (GuiImageData^) self.ResolveResource("res", "ListViewImages/SmallImages/Cert", true)); (cast (GuiImageData^) self.ResolveResource("res", "ListViewImages/SmallImages/Data", true)); (cast (GuiImageData^) self.ResolveResource("res", "ListViewImages/SmallImages/Link", true)); (cast (GuiImageData^) self.ResolveResource("res", "ListViewImages/SmallImages/Folder", true)); (cast (GuiImageData^) self.ResolveResource("res", "ListViewImages/SmallImages/Light", true));});
+        }
+
         func GetImage(index : int) : (GuiImageData^)
         {
-            return null;
+            EnsureImages();
+            return smallImages[((index - 1) % 5)];
         }
 
         var items : TreeViewData^ = new (TreeViewData^)();

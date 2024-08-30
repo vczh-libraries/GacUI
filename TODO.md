@@ -66,7 +66,6 @@
       - Show dom nodes in a tree view in the right side of the rendering tab optionally.
       - Select dom node and jump to other tabs with highlight.
 - Non-editing control unit test (using DarkSkin)
-  - TreeView Node events (mouse/key + expanded/collapsed) in `TestControls_List_GuiVirtualTreeListControl.cpp`
   - Menu, Toolstrip and Navigation ...
     - ComboBox
     - GuiDatePicker

@@ -40,7 +40,19 @@ namespace gacuisrc_unittest
                 (self.ClientSize = {x : 320; y : 240;} of (::presentation::Size));
             }
             {
-                (list = new (::presentation::controls::GuiBindableTreeView*)(::presentation::theme::ThemeName::TreeView));
+                (list = new (::presentation::controls::GuiBindableTreeView*)(::presentation::theme::ThemeName::TreeView, func (<item> : ::system::Object, <value> : ::system::Object, <update> : ::system::Boolean) : (::system::Object)
+                {
+                    var item = (cast (TreeViewData^) <item>);
+                    if (<update>)
+                    {
+                        (item.DoNotUse = (cast (::system::Object) <value>));
+                        return null of (::system::Object);
+                    }
+                    else
+                    {
+                        return item.DoNotUse;
+                    }
+                }));
                 <this>.SetNamedObject("list", list);
             }
             {
@@ -209,11 +221,16 @@ namespace gacuisrc_unittest
     @cpp:Friend(typeof(MainWindowConstructor))
     class MainWindow : ::presentation::controls::GuiWindow, MainWindowConstructor
     {
+        func GetImage(index : int) : (GuiImageData^)
+        {
+            return null;
+        }
+
         var items : TreeViewData^ = new (TreeViewData^)();
 
         func MakeItem(name : string, item : int) : (TreeViewData^)
         {
-            return new (TreeViewData^)(((("" & name) & " ") & item));
+            return new (TreeViewData^)(GetImage(item), ((("" & name) & " ") & item));
         }
 
         func InitializeItems(count : int) : (void)
@@ -309,12 +326,28 @@ class TreeViewData
 
     prop Children : observe TreeViewData^[]{GetChildren}
 
+    @cpp:Private
+    var <prop>DoNotUse : object = null;
+
+    func GetDoNotUse() : (object)
+    {
+        return <prop>DoNotUse;
+    }
+
+    func SetDoNotUse(<value> : object) : (void)
+    {
+        (<prop>DoNotUse = <value>);
+    }
+
+    prop DoNotUse : object{GetDoNotUse, SetDoNotUse}
+
     new ()
     {
     }
 
-    new (text : string)
+    new (image : GuiImageData^, text : string)
     {
+        (Image = image);
         (Text = text);
     }
 }
