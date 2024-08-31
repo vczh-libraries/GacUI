@@ -43,11 +43,11 @@ TEST_FILE
       <Window ref.Name="self" Text="GuiToolstripMenuBar" ClientSize="x:320 y:240">
         <ToolstripMenuBar>
           <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:-1"/>
-          <MenuBarButton Text="File">
+          <MenuBarButton ref.Name="menuFile" Text="File">
             <att.SubMenu-set>
               <ToolstripGroupContainer>
                 <GuiToolstripGroup>
-                  <MenuItemButton Text="New">
+                  <MenuItemButton ref.Name="menuFileNew" Text="New">
                     <att.SubMenu-set>
                       <MenuItemButton Text="Plain Text"/>
                       <MenuItemButton Text="XML"/>
@@ -66,8 +66,25 @@ TEST_FILE
               </ToolstripGroupContainer>
             </att.SubMenu-set>
           </MenuBarButton>
-          <MenuBarButton Text="Edit"/>
-          <MenuBarButton Text="About"/>
+          <MenuBarButton ref.Name="menuEdit" Text="Edit">
+            <att.SubMenu-set>
+              <ToolstripGroupContainer>
+                <GuiToolstripGroup>
+                  <MenuItemButton Text="Undo"/>
+                  <MenuItemButton Text="Redo"/>
+                </GuiToolstripGroup>
+                <GuiToolstripGroup>
+                  <MenuItemButton Text="Cut"/>
+                  <MenuItemButton Text="Copy"/>
+                  <MenuItemButton Text="Paste"/>
+                </GuiToolstripGroup>
+                <GuiToolstripGroup>
+                  <MenuItemButton Text="Select All"/>
+                </GuiToolstripGroup>
+              </ToolstripGroupContainer>
+            </att.SubMenu-set>
+          </MenuBarButton>
+          <MenuBarButton ref.Name="menuAbout" Text="About"/>
         </ToolstripMenuBar>
       </Window>
     </Instance>
@@ -192,11 +209,39 @@ TEST_FILE
 				protocol->OnNextIdleFrame(L"Ready", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
-					auto menuButton = FindControlByText<GuiToolstripButton>(window, L"File");
+					auto menuButton = FindObjectByName<GuiToolstripButton>(window, L"menuFile");
 					auto location = protocol->LocationOf(menuButton);
 					protocol->LClick(location);
 				});
 				protocol->OnNextIdleFrame(L"Click on File", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto menuButton = FindObjectByName<GuiToolstripButton>(window, L"menuEdit");
+					auto location = protocol->LocationOf(menuButton);
+					protocol->MouseMove(location);
+				});
+				protocol->OnNextIdleFrame(L"Hover on Edit", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto menuButton = FindObjectByName<GuiToolstripButton>(window, L"menuFile");
+					auto location = protocol->LocationOf(menuButton);
+					protocol->MouseMove(location);
+				});
+				protocol->OnNextIdleFrame(L"Hover on File", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto menuButton = FindObjectByName<GuiToolstripButton>(window, L"menuFileNew");
+					auto location = protocol->LocationOf(menuButton);
+					protocol->MouseMove(location);
+				});
+				protocol->OnNextIdleFrame(L"Hover on File/New", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto menuButton = FindObjectByName<GuiToolstripButton>(window, L"menuAbout");
+					auto location = protocol->LocationOf(menuButton);
+					protocol->MouseMove(location);
+				});
+				protocol->OnNextIdleFrame(L"Hover on About", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					window->Hide();
