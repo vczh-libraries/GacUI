@@ -213,6 +213,9 @@
     <ClCompile Include="TestControls_List_GuiVirtualTreeListControl_Template.cpp">
       <Filter>Source Files\Controls\List</Filter>
     </ClCompile>
+    <ClCompile Include="TestControls_Toolstrip_GuiToolstripMenuBar.cpp">
+      <Filter>Source Files\Controls\Toolstrip</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="TestCompositions.h">
