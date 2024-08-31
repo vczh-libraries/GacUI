@@ -36,6 +36,45 @@ TEST_FILE
 </Resource>
 )GacUISrc";
 
+	const auto resourceSubMenu = LR"GacUISrc(
+<Resource>
+  <Instance name="MainWindowResource">
+    <Instance ref.Class="gacuisrc_unittest::MainWindow">
+      <Window ref.Name="self" Text="GuiToolstripMenuBar" ClientSize="x:320 y:240">
+        <ToolstripMenuBar>
+          <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:-1"/>
+          <MenuBarButton Text="File">
+            <att.SubMenu-set>
+              <ToolstripGroupContainer>
+                <GuiToolstripGroup>
+                  <MenuItemButton Text="New">
+                    <att.SubMenu-set>
+                      <MenuItemButton Text="Plain Text"/>
+                      <MenuItemButton Text="XML"/>
+                      <MenuItemButton Text="Json"/>
+                    </att.SubMenu-set>
+                  </MenuItemButton>
+                  <MenuItemButton Text="Open ..."/>
+                </GuiToolstripGroup>
+                <GuiToolstripGroup>
+                  <MenuItemButton Text="Save"/>
+                  <MenuItemButton Text="Save As ..."/>
+                </GuiToolstripGroup>
+                <GuiToolstripGroup>
+                  <MenuItemButton Text="Exit"/>
+                </GuiToolstripGroup>
+              </ToolstripGroupContainer>
+            </att.SubMenu-set>
+          </MenuBarButton>
+          <MenuBarButton Text="Edit"/>
+          <MenuBarButton Text="About"/>
+        </ToolstripMenuBar>
+      </Window>
+    </Instance>
+  </Instance>
+</Resource>
+)GacUISrc";
+
 	TEST_CATEGORY(L"GuiToolstripMenuBar")
 	{
 		TEST_CASE(L"Click")
@@ -143,6 +182,30 @@ TEST_FILE
 				WString::Unmanaged(L"Controls/Toolstrip/GuiToolstripMenuBar/ShortcutKey"),
 				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
 				resourceMenuBar
+				);
+		});
+
+		TEST_CASE(L"DisplaySubMenu")
+		{
+			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto menuButton = FindControlByText<GuiToolstripButton>(window, L"File");
+					auto location = protocol->LocationOf(menuButton);
+					protocol->LClick(location);
+				});
+				protocol->OnNextIdleFrame(L"Click on File", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					window->Hide();
+				});
+			});
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Controls/Toolstrip/GuiToolstripMenuBar/DisplaySubMenu"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resourceSubMenu
 				);
 		});
 	});
