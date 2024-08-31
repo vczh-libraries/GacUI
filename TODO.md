@@ -346,3 +346,5 @@
 ## New C++/Doc Compiler based on VlppParser2
 
 ## GacStudio
+
+- Run the editing GUI using remote protocol.

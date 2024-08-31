@@ -1,0 +1,213 @@
+﻿================================(1/2)================================
+module <constructor>gacuisrc_unittest::MainWindow;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace gacuisrc_unittest
+{
+    class MainWindowConstructor
+    {
+        @cpp:Protected
+        var self : ::gacuisrc_unittest::MainWindow* = null of (::gacuisrc_unittest::MainWindow*);
+
+        @cpp:Protected
+        var <precompile>0 : ::presentation::controls::GuiToolstripMenuBar* = null of (::presentation::controls::GuiToolstripMenuBar*);
+
+        @cpp:Protected
+        var <precompile>1 : ::presentation::controls::GuiToolstripButton* = null of (::presentation::controls::GuiToolstripButton*);
+
+        @cpp:Protected
+        var <precompile>2 : ::presentation::controls::GuiToolstripButton* = null of (::presentation::controls::GuiToolstripButton*);
+
+        @cpp:Protected
+        var <precompile>3 : ::presentation::controls::GuiToolstripButton* = null of (::presentation::controls::GuiToolstripButton*);
+
+        @cpp:Protected
+        var <precompile>4 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var commandFile : ::presentation::controls::GuiToolstripCommand* = null of (::presentation::controls::GuiToolstripCommand*);
+
+        @cpp:Protected
+        var commandEdit : ::presentation::controls::GuiToolstripCommand* = null of (::presentation::controls::GuiToolstripCommand*);
+
+        @cpp:Protected
+        var commandAbout : ::presentation::controls::GuiToolstripCommand* = null of (::presentation::controls::GuiToolstripCommand*);
+
+        @cpp:Protected
+        func <gacuisrc_unittest-MainWindow>Initialize(<this> : ::gacuisrc_unittest::MainWindow*) : (::system::Void)
+        {
+            (self = <this>);
+            {
+                (self.ClientSize = {x : 320; y : 240;} of (::presentation::Size));
+            }
+            {
+                (self.Text = "GuiToolstripMenuBar");
+            }
+            (commandFile = new (::presentation::controls::GuiToolstripCommand*)());
+            <this>.SetNamedObject("commandFile", commandFile);
+            {
+                (commandFile.ShortcutBuilder = "Ctrl+F");
+            }
+            {
+                (commandFile.Text = "File");
+            }
+            {
+                self.AddComponent(commandFile);
+            }
+            (commandEdit = new (::presentation::controls::GuiToolstripCommand*)());
+            <this>.SetNamedObject("commandEdit", commandEdit);
+            {
+                (commandEdit.ShortcutBuilder = "Ctrl+E");
+            }
+            {
+                (commandEdit.Text = "Edit");
+            }
+            {
+                self.AddComponent(commandEdit);
+            }
+            (commandAbout = new (::presentation::controls::GuiToolstripCommand*)());
+            <this>.SetNamedObject("commandAbout", commandAbout);
+            {
+                (commandAbout.ShortcutBuilder = "Ctrl+A");
+            }
+            {
+                (commandAbout.Text = "About");
+            }
+            {
+                self.AddComponent(commandAbout);
+            }
+            {
+                (<precompile>0 = new (::presentation::controls::GuiToolstripMenuBar*)(::presentation::theme::ThemeName::MenuBar));
+            }
+            (<precompile>4 = <precompile>0.BoundsComposition);
+            {
+                (<precompile>4.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : (-1);} of (::presentation::Margin));
+            }
+            {
+                (<precompile>1 = new (::presentation::controls::GuiToolstripButton*)(::presentation::theme::ThemeName::MenuBarButton));
+            }
+            {
+                (<precompile>1.Alt = "F");
+            }
+            {
+                <precompile>0.ToolstripItems.Add(<precompile>1);
+            }
+            {
+                (<precompile>2 = new (::presentation::controls::GuiToolstripButton*)(::presentation::theme::ThemeName::MenuBarButton));
+            }
+            {
+                (<precompile>2.Alt = "E");
+            }
+            {
+                <precompile>0.ToolstripItems.Add(<precompile>2);
+            }
+            {
+                (<precompile>3 = new (::presentation::controls::GuiToolstripButton*)(::presentation::theme::ThemeName::MenuBarButton));
+            }
+            {
+                (<precompile>3.Alt = "A");
+            }
+            {
+                <precompile>0.ToolstripItems.Add(<precompile>3);
+            }
+            {
+                self.AddChild(<precompile>0);
+            }
+            {
+                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                {
+                    (self.Text = "Clicked File");
+                };
+                attach(commandFile.Executed, <event-handler>);
+            }
+            {
+                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                {
+                    (self.Text = "Clicked Edit");
+                };
+                attach(commandEdit.Executed, <event-handler>);
+            }
+            {
+                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                {
+                    (self.Text = "Clicked About");
+                };
+                attach(commandAbout.Executed, <event-handler>);
+            }
+            {
+                (<precompile>1.Command = commandFile);
+            }
+            {
+                (<precompile>2.Command = commandEdit);
+            }
+            {
+                (<precompile>3.Command = commandAbout);
+            }
+        }
+
+        new ()
+        {
+        }
+    }
+}
+
+================================(2/2)================================
+module <instance>gacuisrc_unittest::MainWindow;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace gacuisrc_unittest
+{
+    @cpp:File("MainWindow")
+    @cpp:Friend(typeof(MainWindowConstructor))
+    class MainWindow : ::presentation::controls::GuiWindow, MainWindowConstructor
+    {
+        new* ()
+            :::presentation::controls::GuiWindow(::presentation::theme::ThemeName::Window)
+        {
+            var <resource> = ::presentation::IGuiResourceManager::GetResourceManager().GetResourceFromClassName("gacuisrc_unittest::MainWindow");
+            var <resolver> = new (::presentation::GuiResourcePathResolver^)(<resource>, <resource>.WorkingDirectory);
+            this.SetResourceResolver(<resolver>);
+            this.<gacuisrc_unittest-MainWindow>Initialize(this);
+        }
+
+        delete
+        {
+            FinalizeInstanceRecursively(this of (::presentation::controls::GuiControlHost*));
+        }
+    }
+}
+

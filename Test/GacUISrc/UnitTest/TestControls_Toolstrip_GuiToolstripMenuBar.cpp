@@ -10,22 +10,22 @@ TEST_FILE
 
         <ToolstripCommand ref.Name="commandFile" Text="File" ShortcutBuilder="Ctrl+F">
           <ev.Executed-eval><![CDATA[{
-            ref.Text = "Clicked File";
+            self.Text = "Clicked File";
           }]]></ev.Executed-eval>
         </ToolstripCommand>
         <ToolstripCommand ref.Name="commandEdit" Text="Edit" ShortcutBuilder="Ctrl+E">
           <ev.Executed-eval><![CDATA[{
-            ref.Text = "Clicked Edit";
+            self.Text = "Clicked Edit";
           }]]></ev.Executed-eval>
         </ToolstripCommand>
         <ToolstripCommand ref.Name="commandAbout" Text="About" ShortcutBuilder="Ctrl+A">
           <ev.Executed-eval><![CDATA[{
-            ref.Text = "Clicked About";
+            self.Text = "Clicked About";
           }]]></ev.Executed-eval>
         </ToolstripCommand>
 
         <ToolstripMenuBar>
-          <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+          <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:-1"/>
           <MenuBarButton Alt="F" Command-ref="commandFile"/>
           <MenuBarButton Alt="E" Command-ref="commandEdit"/>
           <MenuBarButton Alt="A" Command-ref="commandAbout"/>
@@ -67,7 +67,7 @@ TEST_FILE
 				protocol->OnNextIdleFrame(L"Middle Click on Edit", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
-					auto menuButton = FindControlByText<GuiControl>(window, L"Edit");
+					auto menuButton = FindControlByText<GuiControl>(window, L"About");
 					auto location = protocol->LocationOf(menuButton);
 					protocol->RClick(location);
 				});
