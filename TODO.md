@@ -95,6 +95,7 @@
     - Behavior on scrolls, trackers, scroll containers and list controls
     - `GuiListControl` item events
     - `GuiVirtualTreeListControl` node events
+  - A button calling a modal window
 - Copy control unit tests, snapshots and snapshot viewer to `Release` repo.
   - Build and run test.
     - Explain this in decicated `README.md` and mention it in the root one.
