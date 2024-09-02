@@ -65,9 +65,12 @@
     - Unit Test Snapshot Viewer
       - Show dom nodes in a tree view in the right side of the rendering tab optionally.
       - Select dom node and jump to other tabs with highlight.
+  - Fix `CppTest` press `ALT+F4` with `Control/Document Editor/Insert Image` opened and crash in `GuiHostedController::PostAction_LeftButtonUp`.
+    - The click processing is finished after the modal window is closed, but due to `ALT+F4` all windows are deleted at the moment.
 - Non-editing control unit test (using DarkSkin)
   - Menu, Toolstrip and Navigation ...
     - A test for full menu and tool bar showcase with images.
+    - Navigate by click/alt
     - ComboBox
     - GuiDatePicker
     - GuiDateComboBox
@@ -92,6 +95,11 @@
     - Behavior on scrolls, trackers, scroll containers and list controls
     - `GuiListControl` item events
     - `GuiVirtualTreeListControl` node events
+- Copy control unit tests, snapshots and snapshot viewer to `Release` repo.
+  - Build and run test.
+    - Explain this in decicated `README.md` and mention it in the root one.
+  - Verify vcxproj contains all files.
+  - Ensure build woriflow tutorials.
 - Document
   - `GuiTreeItemTemplate` change base class to `GuiListItemTemplate`
 - `GuiListControl::IItemProvider(Callback)?` moved to `vl::presentation::controls::list`
@@ -136,6 +144,7 @@
     - Cannot scroll `GuiScrollView`, key operations needed and also need to be disabled for `GuiListControl` because it has already defined item selection keys.
     - `Gui(Bindable)TextList` cannot check or uncheck items by key (enter and space).
     - `GuiVirtualListView` cannot operate column headers by key.
+    - Active menus without `Alt` assighed (`TAB` and arrow keys?).
 - Sample unit test project included in release.
   - Reflection enabled
     - Application and `LoadMainWindow` script in separated XML resource files.
