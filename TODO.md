@@ -67,6 +67,7 @@
       - Select dom node and jump to other tabs with highlight.
 - Non-editing control unit test (using DarkSkin)
   - Menu, Toolstrip and Navigation ...
+    - A test for full menu and tool bar showcase with images.
     - ComboBox
     - GuiDatePicker
     - GuiDateComboBox

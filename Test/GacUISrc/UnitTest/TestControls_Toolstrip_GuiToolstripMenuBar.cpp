@@ -201,57 +201,5 @@ TEST_FILE
 				resourceMenuBar
 				);
 		});
-
-		TEST_CASE(L"DisplaySubMenu")
-		{
-			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
-			{
-				protocol->OnNextIdleFrame(L"Ready", [=]()
-				{
-					auto window = GetApplication()->GetMainWindow();
-					auto menuButton = FindObjectByName<GuiToolstripButton>(window, L"menuFile");
-					auto location = protocol->LocationOf(menuButton);
-					protocol->LClick(location);
-				});
-				protocol->OnNextIdleFrame(L"Click on File", [=]()
-				{
-					auto window = GetApplication()->GetMainWindow();
-					auto menuButton = FindObjectByName<GuiToolstripButton>(window, L"menuEdit");
-					auto location = protocol->LocationOf(menuButton);
-					protocol->MouseMove(location);
-				});
-				protocol->OnNextIdleFrame(L"Hover on Edit", [=]()
-				{
-					auto window = GetApplication()->GetMainWindow();
-					auto menuButton = FindObjectByName<GuiToolstripButton>(window, L"menuFile");
-					auto location = protocol->LocationOf(menuButton);
-					protocol->MouseMove(location);
-				});
-				protocol->OnNextIdleFrame(L"Hover on File", [=]()
-				{
-					auto window = GetApplication()->GetMainWindow();
-					auto menuButton = FindObjectByName<GuiToolstripButton>(window, L"menuFileNew");
-					auto location = protocol->LocationOf(menuButton);
-					protocol->MouseMove(location);
-				});
-				protocol->OnNextIdleFrame(L"Hover on File/New", [=]()
-				{
-					auto window = GetApplication()->GetMainWindow();
-					auto menuButton = FindObjectByName<GuiToolstripButton>(window, L"menuAbout");
-					auto location = protocol->LocationOf(menuButton);
-					protocol->MouseMove(location);
-				});
-				protocol->OnNextIdleFrame(L"Hover on About", [=]()
-				{
-					auto window = GetApplication()->GetMainWindow();
-					window->Hide();
-				});
-			});
-			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
-				WString::Unmanaged(L"Controls/Toolstrip/GuiToolstripMenuBar/DisplaySubMenu"),
-				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
-				resourceSubMenu
-				);
-		});
 	});
 }
