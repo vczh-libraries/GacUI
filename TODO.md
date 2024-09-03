@@ -359,3 +359,15 @@
 ## GacStudio
 
 - Run the editing GUI using remote protocol.
+- Run the symbol server in a separate process.
+  - e.g. for rendering if all properties in a binding expression is observable, providing fast editing tool.
+- Dedicated solution-project(dependency,external dependency)-item file format.
+  - Solution builds GacUI.xml
+  - Project builds GacUI XML Resource index file.
+  - Each file contains only one item.
+- When create a UI object in a wizard, ask for:
+  - Localization item.
+    - Need to mark properties in reflection about if it needs localization.
+  - ViewModel item.
+  - ViewModel implementation item for testing.
+- Dedicated composition/control property sheet configuration for each class.
