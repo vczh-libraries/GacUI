@@ -9,48 +9,48 @@ TEST_FILE
       <Window ref.Name="self" Text="GuiToolstripMenuBar" ClientSize="x:320 y:240">
         <ToolstripMenuBar>
           <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:-1"/>
-          <MenuBarButton ref.Name="menuFile" Text="File">
+          <MenuBarButton ref.Name="menuFile" Alt="F" Text="File">
             <att.SubMenu-set>
               <ToolstripGroupContainer>
                 <GuiToolstripGroup>
-                  <MenuItemButton ref.Name="menuFileNew" Text="New">
+                  <MenuItemButton ref.Name="menuFileNew" Alt="N" Text="New">
                     <att.SubMenu-set>
-                      <MenuItemButton Text="Plain Text"/>
-                      <MenuItemButton Text="XML"/>
-                      <MenuItemButton Text="Json"/>
+                      <MenuItemButton Alt="P" Text="Plain Text" ev.Clicked-eval="self.Text = 'Plain Text';"/>
+                      <MenuItemButton Alt="X" Text="XML" ev.Clicked-eval="self.Text = 'XML';"/>
+                      <MenuItemButton Alt="J" Text="Json" ev.Clicked-eval="self.Text = 'Json';"/>
                     </att.SubMenu-set>
                   </MenuItemButton>
-                  <MenuItemButton Text="Open ..."/>
+                  <MenuItemButton Alt="O" Text="Open ..." ev.Clicked-eval="self.Text = 'Open ...';"/>
                 </GuiToolstripGroup>
                 <GuiToolstripGroup>
-                  <MenuItemButton Text="Save"/>
-                  <MenuItemButton Text="Save As ..."/>
+                  <MenuItemButton Alt="S" Text="Save" ev.Clicked-eval="self.Text = 'Save';"/>
+                  <MenuItemButton Alt="S" Text="Save As ..." ev.Clicked-eval="self.Text = 'Save As ...';"/>
                 </GuiToolstripGroup>
                 <GuiToolstripGroup>
-                  <MenuItemButton Text="Exit"/>
+                  <MenuItemButton Alt="X" Text="Exit" ev.Clicked-eval="self.Text = 'Exit';"/>
                 </GuiToolstripGroup>
               </ToolstripGroupContainer>
             </att.SubMenu-set>
           </MenuBarButton>
-          <MenuBarButton ref.Name="menuEdit" Text="Edit">
+          <MenuBarButton ref.Name="menuEdit" Alt="E" Text="Edit">
             <att.SubMenu-set>
               <ToolstripGroupContainer>
                 <GuiToolstripGroup>
-                  <MenuItemButton Text="Undo"/>
-                  <MenuItemButton Text="Redo"/>
+                  <MenuItemButton Alt="Z" Text="Undo" ev.Clicked-eval="self.Text = 'Undo';"/>
+                  <MenuItemButton Alt="Y" Text="Redo" ev.Clicked-eval="self.Text = 'Redo';"/>
                 </GuiToolstripGroup>
                 <GuiToolstripGroup>
-                  <MenuItemButton Text="Cut"/>
-                  <MenuItemButton Text="Copy"/>
-                  <MenuItemButton Text="Paste"/>
+                  <MenuItemButton Alt="X" Text="Cut" ev.Clicked-eval="self.Text = 'Cut';"/>
+                  <MenuItemButton Alt="C" Text="Copy" ev.Clicked-eval="self.Text = 'Copy';"/>
+                  <MenuItemButton Alt="P" Text="Paste" ev.Clicked-eval="self.Text = 'Paste';"/>
                 </GuiToolstripGroup>
                 <GuiToolstripGroup>
-                  <MenuItemButton Text="Select All"/>
+                  <MenuItemButton Alt="A" Text="Select All" ev.Clicked-eval="self.Text = 'Select All';"/>
                 </GuiToolstripGroup>
               </ToolstripGroupContainer>
             </att.SubMenu-set>
           </MenuBarButton>
-          <MenuBarButton ref.Name="menuAbout" Text="About"/>
+          <MenuBarButton ref.Name="menuAbout" Alt="A" Text="About" ev.Clicked-eval="self.Text = 'About';"/>
         </ToolstripMenuBar>
       </Window>
     </Instance>

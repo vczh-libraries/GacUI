@@ -138,6 +138,9 @@ namespace gacuisrc_unittest
                 <this>.SetNamedObject("menuFile", menuFile);
             }
             {
+                (menuFile.Alt = "F");
+            }
+            {
                 (menuFile.Text = "File");
             }
             (<precompile>1 = menuFile.EnsureToolstripSubMenu());
@@ -152,11 +155,17 @@ namespace gacuisrc_unittest
                 <this>.SetNamedObject("menuFileNew", menuFileNew);
             }
             {
+                (menuFileNew.Alt = "N");
+            }
+            {
                 (menuFileNew.Text = "New");
             }
             (<precompile>4 = menuFileNew.EnsureToolstripSubMenu());
             {
                 (<precompile>5 = new (::presentation::controls::GuiToolstripButton*)(::presentation::theme::ThemeName::MenuItemButton));
+            }
+            {
+                (<precompile>5.Alt = "P");
             }
             {
                 (<precompile>5.Text = "Plain Text");
@@ -168,6 +177,9 @@ namespace gacuisrc_unittest
                 (<precompile>6 = new (::presentation::controls::GuiToolstripButton*)(::presentation::theme::ThemeName::MenuItemButton));
             }
             {
+                (<precompile>6.Alt = "X");
+            }
+            {
                 (<precompile>6.Text = "XML");
             }
             {
@@ -175,6 +187,9 @@ namespace gacuisrc_unittest
             }
             {
                 (<precompile>7 = new (::presentation::controls::GuiToolstripButton*)(::presentation::theme::ThemeName::MenuItemButton));
+            }
+            {
+                (<precompile>7.Alt = "J");
             }
             {
                 (<precompile>7.Text = "Json");
@@ -187,6 +202,9 @@ namespace gacuisrc_unittest
             }
             {
                 (<precompile>8 = new (::presentation::controls::GuiToolstripButton*)(::presentation::theme::ThemeName::MenuItemButton));
+            }
+            {
+                (<precompile>8.Alt = "O");
             }
             {
                 (<precompile>8.Text = "Open ...");
@@ -204,6 +222,9 @@ namespace gacuisrc_unittest
                 (<precompile>10 = new (::presentation::controls::GuiToolstripButton*)(::presentation::theme::ThemeName::MenuItemButton));
             }
             {
+                (<precompile>10.Alt = "S");
+            }
+            {
                 (<precompile>10.Text = "Save");
             }
             {
@@ -211,6 +232,9 @@ namespace gacuisrc_unittest
             }
             {
                 (<precompile>11 = new (::presentation::controls::GuiToolstripButton*)(::presentation::theme::ThemeName::MenuItemButton));
+            }
+            {
+                (<precompile>11.Alt = "S");
             }
             {
                 (<precompile>11.Text = "Save As ...");
@@ -226,6 +250,9 @@ namespace gacuisrc_unittest
             }
             {
                 (<precompile>13 = new (::presentation::controls::GuiToolstripButton*)(::presentation::theme::ThemeName::MenuItemButton));
+            }
+            {
+                (<precompile>13.Alt = "X");
             }
             {
                 (<precompile>13.Text = "Exit");
@@ -247,6 +274,9 @@ namespace gacuisrc_unittest
                 <this>.SetNamedObject("menuEdit", menuEdit);
             }
             {
+                (menuEdit.Alt = "E");
+            }
+            {
                 (menuEdit.Text = "Edit");
             }
             (<precompile>14 = menuEdit.EnsureToolstripSubMenu());
@@ -260,6 +290,9 @@ namespace gacuisrc_unittest
                 (<precompile>17 = new (::presentation::controls::GuiToolstripButton*)(::presentation::theme::ThemeName::MenuItemButton));
             }
             {
+                (<precompile>17.Alt = "Z");
+            }
+            {
                 (<precompile>17.Text = "Undo");
             }
             {
@@ -267,6 +300,9 @@ namespace gacuisrc_unittest
             }
             {
                 (<precompile>18 = new (::presentation::controls::GuiToolstripButton*)(::presentation::theme::ThemeName::MenuItemButton));
+            }
+            {
+                (<precompile>18.Alt = "Y");
             }
             {
                 (<precompile>18.Text = "Redo");
@@ -284,6 +320,9 @@ namespace gacuisrc_unittest
                 (<precompile>20 = new (::presentation::controls::GuiToolstripButton*)(::presentation::theme::ThemeName::MenuItemButton));
             }
             {
+                (<precompile>20.Alt = "X");
+            }
+            {
                 (<precompile>20.Text = "Cut");
             }
             {
@@ -293,6 +332,9 @@ namespace gacuisrc_unittest
                 (<precompile>21 = new (::presentation::controls::GuiToolstripButton*)(::presentation::theme::ThemeName::MenuItemButton));
             }
             {
+                (<precompile>21.Alt = "C");
+            }
+            {
                 (<precompile>21.Text = "Copy");
             }
             {
@@ -300,6 +342,9 @@ namespace gacuisrc_unittest
             }
             {
                 (<precompile>22 = new (::presentation::controls::GuiToolstripButton*)(::presentation::theme::ThemeName::MenuItemButton));
+            }
+            {
+                (<precompile>22.Alt = "P");
             }
             {
                 (<precompile>22.Text = "Paste");
@@ -315,6 +360,9 @@ namespace gacuisrc_unittest
             }
             {
                 (<precompile>24 = new (::presentation::controls::GuiToolstripButton*)(::presentation::theme::ThemeName::MenuItemButton));
+            }
+            {
+                (<precompile>24.Alt = "A");
             }
             {
                 (<precompile>24.Text = "Select All");
@@ -336,6 +384,9 @@ namespace gacuisrc_unittest
                 <this>.SetNamedObject("menuAbout", menuAbout);
             }
             {
+                (menuAbout.Alt = "A");
+            }
+            {
                 (menuAbout.Text = "About");
             }
             {
@@ -343,6 +394,104 @@ namespace gacuisrc_unittest
             }
             {
                 self.AddChild(<precompile>0);
+            }
+            {
+                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                {
+                    (self.Text = "Plain Text");
+                };
+                attach(<precompile>5.Clicked, <event-handler>);
+            }
+            {
+                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                {
+                    (self.Text = "XML");
+                };
+                attach(<precompile>6.Clicked, <event-handler>);
+            }
+            {
+                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                {
+                    (self.Text = "Json");
+                };
+                attach(<precompile>7.Clicked, <event-handler>);
+            }
+            {
+                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                {
+                    (self.Text = "Open ...");
+                };
+                attach(<precompile>8.Clicked, <event-handler>);
+            }
+            {
+                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                {
+                    (self.Text = "Save");
+                };
+                attach(<precompile>10.Clicked, <event-handler>);
+            }
+            {
+                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                {
+                    (self.Text = "Save As ...");
+                };
+                attach(<precompile>11.Clicked, <event-handler>);
+            }
+            {
+                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                {
+                    (self.Text = "Exit");
+                };
+                attach(<precompile>13.Clicked, <event-handler>);
+            }
+            {
+                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                {
+                    (self.Text = "Undo");
+                };
+                attach(<precompile>17.Clicked, <event-handler>);
+            }
+            {
+                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                {
+                    (self.Text = "Redo");
+                };
+                attach(<precompile>18.Clicked, <event-handler>);
+            }
+            {
+                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                {
+                    (self.Text = "Cut");
+                };
+                attach(<precompile>20.Clicked, <event-handler>);
+            }
+            {
+                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                {
+                    (self.Text = "Copy");
+                };
+                attach(<precompile>21.Clicked, <event-handler>);
+            }
+            {
+                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                {
+                    (self.Text = "Paste");
+                };
+                attach(<precompile>22.Clicked, <event-handler>);
+            }
+            {
+                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                {
+                    (self.Text = "Select All");
+                };
+                attach(<precompile>24.Clicked, <event-handler>);
+            }
+            {
+                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                {
+                    (self.Text = "About");
+                };
+                attach(menuAbout.Clicked, <event-handler>);
             }
         }
 
