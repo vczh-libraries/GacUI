@@ -119,6 +119,46 @@ TEST_FILE
 				protocol->OnNextIdleFrame(L"Ready", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
+					auto menuButton = FindObjectByName<GuiControl>(window, L"menuFile");
+					auto location = protocol->LocationOf(menuButton);
+					protocol->LClick(location);
+				});
+				protocol->OnNextIdleFrame(L"Click on File", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto menuButton = FindObjectByName<GuiControl>(window, L"menuEdit");
+					auto location = protocol->LocationOf(menuButton);
+					protocol->MouseMove(location);
+				});
+				protocol->OnNextIdleFrame(L"Hover on Edit", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto menuButton = FindObjectByName<GuiControl>(window, L"menuFile");
+					auto location = protocol->LocationOf(menuButton);
+					protocol->MouseMove(location);
+				});
+				protocol->OnNextIdleFrame(L"Hover on File", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto menuButton = FindObjectByName<GuiControl>(window, L"menuFileNew");
+					auto location = protocol->LocationOf(menuButton);
+					protocol->MouseMove(location);
+				});
+				protocol->OnNextIdleFrame(L"Hover on File/New", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto menuFileNew = FindObjectByName<GuiControl>(window, L"menuFileNew");
+					auto menuFileSave = FindControlByText<GuiControl>(menuFileNew->GetRelatedControlHost(), L"Save");
+					auto location = protocol->LocationOf(menuFileSave);
+					protocol->MouseMove(location);
+				});
+				protocol->OnNextIdleFrame(L"Hover on File/Save", [=]()
+				{
+					protocol->LClick();
+				});
+				protocol->OnNextIdleFrame(L"Click", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
 					window->Hide();
 				});
 			});
@@ -131,6 +171,59 @@ TEST_FILE
 
 		TEST_CASE(L"AltSubMenu")
 		{
+			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					protocol->KeyPress(VKEY::KEY_MENU);
+				});
+				protocol->OnNextIdleFrame(L"[ALT]", [=]()
+				{
+					protocol->KeyPress(VKEY::KEY_F);
+				});
+				protocol->OnNextIdleFrame(L"[F]", [=]()
+				{
+					protocol->KeyPress(VKEY::KEY_N);
+				});
+				protocol->OnNextIdleFrame(L"[N]", [=]()
+				{
+					protocol->KeyPress(VKEY::KEY_ESCAPE);
+				});
+				protocol->OnNextIdleFrame(L"[ESC]", [=]()
+				{
+					protocol->KeyPress(VKEY::KEY_ESCAPE);
+				});
+				protocol->OnNextIdleFrame(L"[ESC]", [=]()
+				{
+					protocol->KeyPress(VKEY::KEY_E);
+				});
+				protocol->OnNextIdleFrame(L"[E]", [=]()
+				{
+					protocol->KeyPress(VKEY::KEY_ESCAPE);
+				});
+				protocol->OnNextIdleFrame(L"[ESC]", [=]()
+				{
+					protocol->KeyPress(VKEY::KEY_F);
+				});
+				protocol->OnNextIdleFrame(L"[F]", [=]()
+				{
+					protocol->KeyPress(VKEY::KEY_S);
+				});
+				protocol->OnNextIdleFrame(L"[S]", [=]()
+				{
+					protocol->KeyPress(VKEY::KEY_1);
+				});
+				protocol->OnNextIdleFrame(L"[1]", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					window->Hide();
+				});
+			});
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Controls/Toolstrip/GuiToolstripMenuBar/Cascade/AltSubMenu"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resourceMenuCascade
+				);
 		});
 	});
 }
