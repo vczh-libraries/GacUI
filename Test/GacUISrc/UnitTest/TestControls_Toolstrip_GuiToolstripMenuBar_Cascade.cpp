@@ -149,7 +149,7 @@ TEST_FILE
 					auto window = GetApplication()->GetMainWindow();
 					auto menuFileNew = FindObjectByName<GuiControl>(window, L"menuFileNew");
 					auto menuFileSave = FindControlByText<GuiControl>(menuFileNew->GetRelatedControlHost(), L"Save");
-					auto location = protocol->LocationOf(menuFileSave);
+					auto location = protocol->LocationOf(menuFileSave, 0.0, 0.5, 8, 0);
 					protocol->MouseMove(location);
 				});
 				protocol->OnNextIdleFrame(L"Hover on File/Save", [=]()
