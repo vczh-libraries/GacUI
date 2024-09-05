@@ -12,9 +12,9 @@ TEST_FILE
         <ToolstripCommand ref.Name="commandLinkRtf" Text="Rtf" Image-uri="res://ToolstripImages/Rtf" ev.Executed-eval="self.Text = 'Rtf';"/>
         <ToolstripCommand ref.Name="commandLinkHtml" Text="Html" Image-uri="res://ToolstripImages/Html" ev.Executed-eval="self.Text = 'Html';"/>
         <ToolstripCommand ref.Name="commandPrivate" Text="Private Format" Image-uri="res://ToolstripImages/Private" ev.Executed-eval="self.Text = 'Private Format';"/>
-        <ToolstripCommand ref.Name="commandAlignLeft" Text="Left" Image-uri="res://ToolstripImages/AlignLeft" ev.Executed-eval="self.Text = 'Left';"/>
-        <ToolstripCommand ref.Name="commandAlignCenter" Text="Center" Image-uri="res://ToolstripImages/AlignCenter" ev.Executed-eval="self.Text = 'Center';"/>
-        <ToolstripCommand ref.Name="commandAlignRight" Text="Right Format" Image-uri="res://ToolstripImages/AlignRight" ev.Executed-eval="self.Text = 'Right';"/>
+        <ToolstripCommand ref.Name="commandAlignLeft" Text="Left" Image-uri="res://ToolstripImages/AlignLeft" ev.Executed-eval="{self.Text = 'Left'; buttonAlign.Command = commandAlignLeft;}"/>
+        <ToolstripCommand ref.Name="commandAlignCenter" Text="Center" Image-uri="res://ToolstripImages/AlignCenter" ev.Executed-eval="{self.Text = 'Center'; buttonAlign.Command = commandAlignCenter;}"/>
+        <ToolstripCommand ref.Name="commandAlignRight" Text="Right Format" Image-uri="res://ToolstripImages/AlignRight" ev.Executed-eval="{self.Text = 'Right'; buttonAlign.Command = commandAlignRight;}"/>
         <ToolstripCommand ref.Name="commandUndo" Image-uri="res://ToolstripImages/Undo" ev.Executed-eval="self.Text = 'Undo';"/>
         <ToolstripCommand ref.Name="commandRedo" Image-uri="res://ToolstripImages/Redo" ev.Executed-eval="self.Text = 'Redo';"/>
         <ToolstripCommand ref.Name="commandCut" Image-uri="res://ToolstripImages/Cut" Enabled="false"/>
@@ -70,6 +70,35 @@ TEST_FILE
 				protocol->OnNextIdleFrame(L"Ready", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
+					auto menuButton = FindControlByText<GuiControl>(window, L"buttonUndo");
+					auto location = protocol->LocationOf(menuButton);
+					protocol->MouseMove(location);
+				});
+				protocol->OnNextIdleFrame(L"Hover on Undo", [=]()
+				{
+					protocol->_LDown();
+				});
+				protocol->OnNextIdleFrame(L"Left Mouse Down", [=]()
+				{
+					protocol->_LUp();
+				});
+				protocol->OnNextIdleFrame(L"Left Mouse Up", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto menuButton = FindControlByText<GuiControl>(window, L"buttonRedo");
+					auto location = protocol->LocationOf(menuButton);
+					protocol->MClick(location);
+				});
+				protocol->OnNextIdleFrame(L"Middle Click on Redo", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto menuButton = FindControlByText<GuiControl>(window, L"buttonDelete");
+					auto location = protocol->LocationOf(menuButton);
+					protocol->RClick(location);
+				});
+				protocol->OnNextIdleFrame(L"Right Click on Delete", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
 					window->Hide();
 				});
 			});
@@ -82,10 +111,71 @@ TEST_FILE
 
 		TEST_CASE(L"ToolstripDropdownButton")
 		{
+			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto menuButton = FindControlByText<GuiControl>(window, L"buttonLink");
+					auto location = protocol->LocationOf(menuButton);
+					protocol->LClick(location);
+				});
+				protocol->OnNextIdleFrame(L"Dropdown Link", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto menuButton = FindControlByText<GuiControl>(window, L"buttonLinkHtml");
+					auto location = protocol->LocationOf(menuButton);
+					protocol->LClick(location);
+				});
+				protocol->OnNextIdleFrame(L"Click Html", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					window->Hide();
+				});
+			});
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Controls/Toolstrip/GuiToolstripToolBar/ToolstripDropdownButton"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resourceToolBar
+				);
 		});
 
 		TEST_CASE(L"ToolstripSplitButton")
 		{
+			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto menuButton = FindControlByText<GuiControl>(window, L"buttonAlign");
+					auto location = protocol->LocationOf(menuButton);
+					protocol->LClick(location);
+				});
+				protocol->OnNextIdleFrame(L"Click Align", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto menuButton = FindControlByText<GuiControl>(window, L"buttonAlign");
+					auto location = protocol->LocationOf(menuButton, 1.0, 0.5, -3, 0);
+					protocol->LClick(location);
+				});
+				protocol->OnNextIdleFrame(L"Dropdown Align", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto menuButton = FindControlByText<GuiControl>(window, L"buttonAlignRight");
+					auto location = protocol->LocationOf(menuButton);
+					protocol->LClick(location);
+				});
+				protocol->OnNextIdleFrame(L"Click Align Right", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					window->Hide();
+				});
+			});
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Controls/Toolstrip/GuiToolstripToolBar/ToolstripDropdownButton"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resourceToolBar
+				);
 		});
 
 		TEST_CASE(L"Alt")
