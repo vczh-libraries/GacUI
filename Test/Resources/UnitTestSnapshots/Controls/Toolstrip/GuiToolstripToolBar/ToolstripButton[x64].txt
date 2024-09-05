@@ -90,6 +90,9 @@ namespace gacuisrc_unittest
         var commandDelete : ::presentation::controls::GuiToolstripCommand* = null of (::presentation::controls::GuiToolstripCommand*);
 
         @cpp:Protected
+        var buttonLink : ::presentation::controls::GuiToolstripButton* = null of (::presentation::controls::GuiToolstripButton*);
+
+        @cpp:Protected
         var buttonLinkRtf : ::presentation::controls::GuiToolstripButton* = null of (::presentation::controls::GuiToolstripButton*);
 
         @cpp:Protected
@@ -124,9 +127,6 @@ namespace gacuisrc_unittest
 
         @cpp:Protected
         var buttonDelete : ::presentation::controls::GuiToolstripButton* = null of (::presentation::controls::GuiToolstripButton*);
-
-        @cpp:Protected
-        var buttonLink : ::presentation::controls::GuiToolstripButton* = null of (::presentation::controls::GuiToolstripButton*);
 
         @cpp:Protected
         var buttonAlign : ::presentation::controls::GuiToolstripButton* = null of (::presentation::controls::GuiToolstripButton*);

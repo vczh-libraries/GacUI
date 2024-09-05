@@ -120,11 +120,17 @@ Toolstrip Container
 			};
 
 			/// <summary>Toolstrip tool bar.</summary>
-			class GuiToolstripToolBar : public GuiControl, public Description<GuiToolstripToolBar>
+			class GuiToolstripToolBar : public GuiControl, protected IGuiMenuService, public Description<GuiToolstripToolBar>
 			{
 			protected:
 				compositions::GuiStackComposition*				stackComposition;
 				Ptr<GuiToolstripCollection>						toolstripItems;
+
+			private:
+				IGuiMenuService*								GetParentMenuService()override;
+				Direction										GetPreferredDirection()override;
+				bool											IsActiveState()override;
+				bool											IsSubMenuActivatedByMouseDown()override;
 
 			public:
 				/// <summary>Create a control with a specified default theme.</summary>
@@ -135,6 +141,8 @@ Toolstrip Container
 				/// <summary>Get all managed child controls ordered by their positions.</summary>
 				/// <returns>All managed child controls.</returns>
 				collections::ObservableListBase<GuiControl*>&	GetToolstripItems();
+				
+				IDescriptable*									QueryService(const WString& identifier)override;
 			};
 
 /***********************************************************************

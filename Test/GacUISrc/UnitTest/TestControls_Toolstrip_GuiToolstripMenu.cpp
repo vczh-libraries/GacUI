@@ -6,6 +6,13 @@ TEST_FILE
 <Resource>
   <Folder name="UnitTestConfig" content="Link">Toolstrip/ToolstripImagesData.xml</Folder>
   <Folder name="ToolstripImages" content="Link">Toolstrip/ToolstripImagesFolder.xml</Folder>
+
+  <Instance name="MenuToolBarControlTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="gacuisrc_unittest::MenuToolBarControlTemplate">
+      <ControlTemplate MinSizeLimitation="LimitToElementAndChildren"/>
+    </Instance>
+  </Instance>
+
   <Instance name="MainWindowResource">
     <Instance ref.Class="gacuisrc_unittest::MainWindow">
       <Window ref.Name="self" Text="GuiToolstripMenuBar" ClientSize="x:320 y:240">
@@ -25,12 +32,16 @@ TEST_FILE
         <ToolstripMenu ref.Name="menu">
           <ToolstripGroupContainer>
             <ToolstripGroup>
-              <ToolstripToolBar>
+              <ToolstripToolBar ControlTemplate="gacuisrc_unittest::MenuToolBarControlTemplate">
                 <ToolstripGroupContainer>
                   <ToolstripGroup>
-                    <ToolstripButton ref.Name="buttonLinkRtf" Alt="R" Command-ref="commandLinkRtf"/>
-                    <ToolstripButton ref.Name="buttonLinkHtml" Alt="H" Command-ref="commandLinkHtml"/>
-                    <ToolstripButton ref.Name="buttonPrivate" Alt="P" Command-ref="commandPrivate"/>
+                    <ToolstripDropdownButton ref.Name="buttonLink" Alt="L" Image-uri="res://ToolstripImages/Link">
+                      <att.SubMenu-set>
+                        <ToolstripButton ref.Name="buttonLinkRtf" Alt="R" Command-ref="commandLinkRtf"/>
+                        <ToolstripButton ref.Name="buttonLinkHtml" Alt="H" Command-ref="commandLinkHtml"/>
+                        <ToolstripButton ref.Name="buttonPrivate" Alt="P" Command-ref="commandPrivate"/>
+                      </att.SubMenu-set>
+                    </ToolstripDropdownButton>
                   </ToolstripGroup>
                   <ToolstripGroup>
                     <ToolstripButton ref.Name="buttonAlignLeft" Alt="L" Command-ref="commandAlignLeft"/>
@@ -86,6 +97,27 @@ TEST_FILE
 				protocol->LClick(location);
 			});
 			protocol->OnNextIdleFrame(L"Undo", [=]()
+			{
+				auto window = GetApplication()->GetMainWindow();
+				auto button = FindObjectByName<GuiControl>(window, L"button");
+				auto location = protocol->LocationOf(button);
+				protocol->LClick(location);
+			});
+			protocol->OnNextIdleFrame(L"Show Menu", [=]()
+			{
+				auto window = GetApplication()->GetMainWindow();
+				auto button = FindObjectByName<GuiControl>(window, L"buttonLink");
+				auto location = protocol->LocationOf(button);
+				protocol->LClick(location);
+			});
+			protocol->OnNextIdleFrame(L"Show Sub Menu", [=]()
+			{
+				auto window = GetApplication()->GetMainWindow();
+				auto button = FindObjectByName<GuiControl>(window, L"commandLinkRtf");
+				auto location = protocol->LocationOf(button);
+				protocol->LClick(location);
+			});
+			protocol->OnNextIdleFrame(L"Click Rtf", [=]()
 			{
 				protocol->KeyPress(VKEY::KEY_L, true, false, false);
 			});

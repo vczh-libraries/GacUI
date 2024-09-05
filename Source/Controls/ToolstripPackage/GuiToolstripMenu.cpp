@@ -202,6 +202,26 @@ GuiToolstripMenuBar
 /***********************************************************************
 GuiToolstripToolBar
 ***********************************************************************/
+
+			IGuiMenuService* GuiToolstripToolBar::GetParentMenuService()
+			{
+				return nullptr;
+			}
+
+			IGuiMenuService::Direction GuiToolstripToolBar::GetPreferredDirection()
+			{
+				return IGuiMenuService::Horizontal;
+			}
+
+			bool GuiToolstripToolBar::IsActiveState()
+			{
+				return GetOpeningMenu() != nullptr;
+			}
+
+			bool GuiToolstripToolBar::IsSubMenuActivatedByMouseDown()
+			{
+				return false;
+			}
 				
 			GuiToolstripToolBar::GuiToolstripToolBar(theme::ThemeName themeName)
 				:GuiControl(themeName)
@@ -222,6 +242,18 @@ GuiToolstripToolBar
 			collections::ObservableListBase<GuiControl*>& GuiToolstripToolBar::GetToolstripItems()
 			{
 				return *toolstripItems.Obj();
+			}
+
+			IDescriptable* GuiToolstripToolBar::QueryService(const WString& identifier)
+			{
+				if (identifier == IGuiMenuService::Identifier)
+				{
+					return (IGuiMenuService*)this;
+				}
+				else
+				{
+					return GuiControl::QueryService(identifier);
+				}
 			}
 
 /***********************************************************************
