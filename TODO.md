@@ -69,14 +69,10 @@
     - The click processing is finished after the modal window is closed, but due to `ALT+F4` all windows are deleted at the moment.
 - Non-editing control unit test (using DarkSkin)
   - Menu
+    - Context Menu (win11 style)
     - ComboBox
     - GuiDatePicker
     - GuiDateComboBox
-  - Toolstrip
-    - Splitter and different toolbar buttons
-    - Navigate by Click
-    - Navigate by `ALT`
-  - A test for full menu and tool bar showcase with images.
   - BindableControls
     - Set or reset item source
     - Set or reset property bindings

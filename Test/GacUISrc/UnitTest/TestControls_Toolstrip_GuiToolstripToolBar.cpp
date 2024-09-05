@@ -12,9 +12,9 @@ TEST_FILE
         <ToolstripCommand ref.Name="commandLinkRtf" Text="Rtf" Image-uri="res://ToolstripImages/Rtf" ev.Executed-eval="self.Text = 'Rtf';"/>
         <ToolstripCommand ref.Name="commandLinkHtml" Text="Html" Image-uri="res://ToolstripImages/Html" ev.Executed-eval="self.Text = 'Html';"/>
         <ToolstripCommand ref.Name="commandPrivate" Text="Private Format" Image-uri="res://ToolstripImages/Private" ev.Executed-eval="self.Text = 'Private Format';"/>
-        <ToolstripCommand ref.Name="commandAlignLeft" Text="Left" Image-uri="res://ToolstripImages/AlignLeft" ev.Executed-eval="{self.Text = 'Left'; buttonAlign.Command = commandAlignLeft;}"/>
-        <ToolstripCommand ref.Name="commandAlignCenter" Text="Center" Image-uri="res://ToolstripImages/AlignCenter" ev.Executed-eval="{self.Text = 'Center'; buttonAlign.Command = commandAlignCenter;}"/>
-        <ToolstripCommand ref.Name="commandAlignRight" Text="Right Format" Image-uri="res://ToolstripImages/AlignRight" ev.Executed-eval="{self.Text = 'Right'; buttonAlign.Command = commandAlignRight;}"/>
+        <ToolstripCommand ref.Name="commandAlignLeft" ShortcutBuilder="Ctrl+L" Text="Left" Image-uri="res://ToolstripImages/AlignLeft" ev.Executed-eval="{self.Text = 'Left'; buttonAlign.Command = commandAlignLeft;}"/>
+        <ToolstripCommand ref.Name="commandAlignCenter" ShortcutBuilder="Ctrl+C" Text="Center" Image-uri="res://ToolstripImages/AlignCenter" ev.Executed-eval="{self.Text = 'Center'; buttonAlign.Command = commandAlignCenter;}"/>
+        <ToolstripCommand ref.Name="commandAlignRight" ShortcutBuilder="Ctrl+R" Text="Right Format" Image-uri="res://ToolstripImages/AlignRight" ev.Executed-eval="{self.Text = 'Right'; buttonAlign.Command = commandAlignRight;}"/>
         <ToolstripCommand ref.Name="commandUndo" Image-uri="res://ToolstripImages/Undo" ev.Executed-eval="self.Text = 'Undo';"/>
         <ToolstripCommand ref.Name="commandRedo" Image-uri="res://ToolstripImages/Redo" ev.Executed-eval="self.Text = 'Redo';"/>
         <ToolstripCommand ref.Name="commandCut" Image-uri="res://ToolstripImages/Cut" Enabled="false"/>
@@ -178,8 +178,93 @@ TEST_FILE
 				);
 		});
 
-		TEST_CASE(L"Alt")
+		TEST_CASE(L"Alt and Shortcut")
 		{
+			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					protocol->KeyPress(VKEY::KEY_MENU);
+				});
+				protocol->OnNextIdleFrame(L"[ALT]", [=]()
+				{
+					protocol->KeyPress(VKEY::KEY_U);
+				});
+				protocol->OnNextIdleFrame(L"[U]", [=]()
+				{
+					protocol->KeyPress(VKEY::KEY_MENU);
+				});
+				protocol->OnNextIdleFrame(L"[ALT]", [=]()
+				{
+					protocol->KeyPress(VKEY::KEY_R);
+				});
+				protocol->OnNextIdleFrame(L"[R]", [=]()
+				{
+					protocol->KeyPress(VKEY::KEY_MENU);
+				});
+				protocol->OnNextIdleFrame(L"[ALT]", [=]()
+				{
+					protocol->KeyPress(VKEY::KEY_L);
+				});
+				protocol->OnNextIdleFrame(L"[L]", [=]()
+				{
+					protocol->KeyPress(VKEY::KEY_ESCAPE);
+				});
+				protocol->OnNextIdleFrame(L"[ESC]", [=]()
+				{
+					protocol->KeyPress(VKEY::KEY_ESCAPE);
+				});
+				protocol->OnNextIdleFrame(L"[ESC]", [=]()
+				{
+					protocol->KeyPress(VKEY::KEY_MENU);
+				});
+				protocol->OnNextIdleFrame(L"[ALT]", [=]()
+				{
+					protocol->KeyPress(VKEY::KEY_L);
+				});
+				protocol->OnNextIdleFrame(L"[L]", [=]()
+				{
+					protocol->KeyPress(VKEY::KEY_ESCAPE);
+				});
+				protocol->OnNextIdleFrame(L"[ESC]", [=]()
+				{
+					protocol->KeyPress(VKEY::KEY_L);
+				});
+				protocol->OnNextIdleFrame(L"[L]", [=]()
+				{
+					protocol->KeyPress(VKEY::KEY_R);
+				});
+				protocol->OnNextIdleFrame(L"[R]", [=]()
+				{
+					protocol->KeyPress(VKEY::KEY_MENU);
+				});
+				protocol->OnNextIdleFrame(L"[ALT]", [=]()
+				{
+					protocol->KeyPress(VKEY::KEY_A);
+				});
+				protocol->OnNextIdleFrame(L"[A]", [=]()
+				{
+					protocol->KeyPress(VKEY::KEY_C);
+				});
+				protocol->OnNextIdleFrame(L"[C]", [=]()
+				{
+					protocol->KeyPress(VKEY::KEY_L, true, false, false);
+				});
+				protocol->OnNextIdleFrame(L"[CTRL]+[L]", [=]()
+				{
+					protocol->KeyPress(VKEY::KEY_R, true, false, false);
+				});
+				protocol->OnNextIdleFrame(L"[CTRL]+[R]", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					window->Hide();
+				});
+			});
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Controls/Toolstrip/GuiToolstripToolBar/AltAndShortcut"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resourceToolBar
+				);
 		});
 	});
 }

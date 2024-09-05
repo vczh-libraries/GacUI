@@ -842,7 +842,7 @@
               "ellipse": false,
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "",
+              "text": "Ctrl+L",
               "measuringRequest": "TotalSize"
             }
           ]
@@ -915,7 +915,7 @@
               "ellipse": false,
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "",
+              "text": "Ctrl+C",
               "measuringRequest": "TotalSize"
             }
           ]
@@ -988,7 +988,7 @@
               "ellipse": false,
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "",
+              "text": "Ctrl+R",
               "measuringRequest": "TotalSize"
             }
           ]
@@ -3271,7 +3271,7 @@
               "ellipse": false,
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "",
+              "text": "Ctrl+L",
               "measuringRequest": "TotalSize"
             }
           ]
@@ -3344,7 +3344,7 @@
               "ellipse": false,
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "",
+              "text": "Ctrl+C",
               "measuringRequest": "TotalSize"
             }
           ]
@@ -3417,7 +3417,7 @@
               "ellipse": false,
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "",
+              "text": "Ctrl+R",
               "measuringRequest": "TotalSize"
             }
           ]
@@ -5971,7 +5971,7 @@
               "ellipse": false,
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "",
+              "text": "Ctrl+L",
               "measuringRequest": "TotalSize"
             }
           ]
@@ -6044,7 +6044,7 @@
               "ellipse": false,
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "",
+              "text": "Ctrl+C",
               "measuringRequest": "TotalSize"
             }
           ]
@@ -6117,7 +6117,7 @@
               "ellipse": false,
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "",
+              "text": "Ctrl+R",
               "measuringRequest": "TotalSize"
             }
           ]

@@ -310,6 +310,7 @@ namespace gacui_unittest_template
 			// TODO
 		});
 
+#undef ATTACH_ITEM_EVENTS
 #undef ATTACH_ITEM_EVENT
 	}
 }

@@ -168,6 +168,9 @@ namespace gacuisrc_unittest
             (commandAlignLeft = new (::presentation::controls::GuiToolstripCommand*)());
             <this>.SetNamedObject("commandAlignLeft", commandAlignLeft);
             {
+                (commandAlignLeft.ShortcutBuilder = "Ctrl+L");
+            }
+            {
                 (commandAlignLeft.Text = "Left");
             }
             {
@@ -176,6 +179,9 @@ namespace gacuisrc_unittest
             (commandAlignCenter = new (::presentation::controls::GuiToolstripCommand*)());
             <this>.SetNamedObject("commandAlignCenter", commandAlignCenter);
             {
+                (commandAlignCenter.ShortcutBuilder = "Ctrl+C");
+            }
+            {
                 (commandAlignCenter.Text = "Center");
             }
             {
@@ -183,6 +189,9 @@ namespace gacuisrc_unittest
             }
             (commandAlignRight = new (::presentation::controls::GuiToolstripCommand*)());
             <this>.SetNamedObject("commandAlignRight", commandAlignRight);
+            {
+                (commandAlignRight.ShortcutBuilder = "Ctrl+R");
+            }
             {
                 (commandAlignRight.Text = "Right Format");
             }
