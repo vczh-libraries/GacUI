@@ -205,7 +205,7 @@ GuiToolstripToolBar
 
 			IGuiMenuService* GuiToolstripToolBar::GetParentMenuService()
 			{
-				return nullptr;
+				return GetParent() ? GetParent()->QueryTypedService<IGuiMenuService>() : nullptr;
 			}
 
 			IGuiMenuService::Direction GuiToolstripToolBar::GetPreferredDirection()

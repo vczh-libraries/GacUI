@@ -69,6 +69,7 @@
     - The click processing is finished after the modal window is closed, but due to `ALT+F4` all windows are deleted at the moment.
 - Non-editing control unit test (using DarkSkin)
   - Menu
+    - Template/VirtualControl for menu/toolbar and menu/toolbar/splitter
     - ComboBox
     - GuiDatePicker
     - GuiDateComboBox

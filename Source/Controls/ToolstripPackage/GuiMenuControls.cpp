@@ -209,7 +209,7 @@ GuiMenuBar
 
 			IGuiMenuService* GuiMenuBar::GetParentMenuService()
 			{
-				return 0;
+				return GetParent() ? GetParent()->QueryTypedService<IGuiMenuService>() : nullptr;
 			}
 
 			IGuiMenuService::Direction GuiMenuBar::GetPreferredDirection()

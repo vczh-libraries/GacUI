@@ -113,7 +113,7 @@ TEST_FILE
 			protocol->OnNextIdleFrame(L"Show Sub Menu", [=]()
 			{
 				auto window = GetApplication()->GetMainWindow();
-				auto button = FindObjectByName<GuiControl>(window, L"commandLinkRtf");
+				auto button = FindObjectByName<GuiControl>(window, L"buttonLinkRtf");
 				auto location = protocol->LocationOf(button);
 				protocol->LClick(location);
 			});
