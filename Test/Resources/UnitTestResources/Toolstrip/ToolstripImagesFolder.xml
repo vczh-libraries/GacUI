@@ -1,0 +1,15 @@
+<Folder name="ToolstripImages">
+  <Image name="Link" content="File">e_Link.png</Image>
+  <Image name="Rtf" content="File">_FormatRtf.png</Image>
+  <Image name="Html" content="File">_FormatHtml.png</Image>
+  <Image name="Private" content="File">_FormatPrivate.png</Image>
+  <Image name="AlignLeft" content="File">a_TextAlignLeft.png</Image>
+  <Image name="AlignRight" content="File">a_TextAlignRight.png</Image>
+  <Image name="AlignCenter" content="File">a_TextAlignCenter.png</Image>
+  <Image name="Undo" content="File">_Undo.png</Image>
+  <Image name="Redo" content="File">_Redo.png</Image>
+  <Image name="Cut" content="File">_Cut.png</Image>
+  <Image name="Copy" content="File">_Copy.png</Image>
+  <Image name="Paste" content="File">_Paste.png</Image>
+  <Image name="Delete" content="File">_Delete.png</Image>
+</Folder>

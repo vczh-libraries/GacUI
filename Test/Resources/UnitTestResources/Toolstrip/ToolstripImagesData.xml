@@ -1,0 +1,19 @@
+<Folder name="UnitTestConfig">
+  <Xml name="ImageData">
+    <ImageData>
+      <Image Path="ToolstripImages/Link" Format="Png" Width="16" Height="16"/>
+      <Image Path="ToolstripImages/Rtf" Format="Png" Width="16" Height="16"/>
+      <Image Path="ToolstripImages/Html" Format="Png" Width="16" Height="16"/>
+      <Image Path="ToolstripImages/Private" Format="Png" Width="16" Height="16"/>
+      <Image Path="ToolstripImages/AlignLeft" Format="Png" Width="16" Height="16"/>
+      <Image Path="ToolstripImages/AlignRight" Format="Png" Width="16" Height="16"/>
+      <Image Path="ToolstripImages/AlignCenter" Format="Png" Width="16" Height="16"/>
+      <Image Path="ToolstripImages/Undo" Format="Png" Width="16" Height="16"/>
+      <Image Path="ToolstripImages/Redo" Format="Png" Width="16" Height="16"/>
+      <Image Path="ToolstripImages/Cut" Format="Png" Width="16" Height="16"/>
+      <Image Path="ToolstripImages/Copy" Format="Png" Width="16" Height="16"/>
+      <Image Path="ToolstripImages/Paste" Format="Png" Width="16" Height="16"/>
+      <Image Path="ToolstripImages/Delete" Format="Png" Width="16" Height="16"/>
+    </ImageData>
+  </Xml>
+</Folder>

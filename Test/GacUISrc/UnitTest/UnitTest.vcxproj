@@ -219,6 +219,7 @@
     <ClCompile Include="TestControls_List_GuiVirtualTreeView_Template.cpp" />
     <ClCompile Include="TestControls_Toolstrip_GuiToolstripMenuBar.cpp" />
     <ClCompile Include="TestControls_Toolstrip_GuiToolstripMenuBar_Cascade.cpp" />
+    <ClCompile Include="TestControls_Toolstrip_GuiToolstripToolBar.cpp" />
     <ClCompile Include="TestHostedWindowManager.cpp" />
     <ClCompile Include="TestPtrDescriptableObject.cpp" />
     <ClCompile Include="TestQueryParser.cpp" />

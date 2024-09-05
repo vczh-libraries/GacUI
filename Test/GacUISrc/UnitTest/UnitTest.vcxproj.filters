@@ -219,6 +219,9 @@
     <ClCompile Include="TestControls_Toolstrip_GuiToolstripMenuBar_Cascade.cpp">
       <Filter>Source Files\Controls\Toolstrip</Filter>
     </ClCompile>
+    <ClCompile Include="TestControls_Toolstrip_GuiToolstripToolBar.cpp">
+      <Filter>Source Files\Controls\Toolstrip</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="TestCompositions.h">
