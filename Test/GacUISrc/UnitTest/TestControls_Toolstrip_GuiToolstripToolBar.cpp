@@ -70,7 +70,7 @@ TEST_FILE
 				protocol->OnNextIdleFrame(L"Ready", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
-					auto menuButton = FindControlByText<GuiControl>(window, L"buttonUndo");
+					auto menuButton = FindObjectByName<GuiControl>(window, L"buttonUndo");
 					auto location = protocol->LocationOf(menuButton);
 					protocol->MouseMove(location);
 				});
@@ -85,14 +85,14 @@ TEST_FILE
 				protocol->OnNextIdleFrame(L"Left Mouse Up", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
-					auto menuButton = FindControlByText<GuiControl>(window, L"buttonRedo");
+					auto menuButton = FindObjectByName<GuiControl>(window, L"buttonRedo");
 					auto location = protocol->LocationOf(menuButton);
 					protocol->MClick(location);
 				});
 				protocol->OnNextIdleFrame(L"Middle Click on Redo", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
-					auto menuButton = FindControlByText<GuiControl>(window, L"buttonDelete");
+					auto menuButton = FindObjectByName<GuiControl>(window, L"buttonDelete");
 					auto location = protocol->LocationOf(menuButton);
 					protocol->RClick(location);
 				});
@@ -116,14 +116,14 @@ TEST_FILE
 				protocol->OnNextIdleFrame(L"Ready", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
-					auto menuButton = FindControlByText<GuiControl>(window, L"buttonLink");
+					auto menuButton = FindObjectByName<GuiControl>(window, L"buttonLink");
 					auto location = protocol->LocationOf(menuButton);
 					protocol->LClick(location);
 				});
 				protocol->OnNextIdleFrame(L"Dropdown Link", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
-					auto menuButton = FindControlByText<GuiControl>(window, L"buttonLinkHtml");
+					auto menuButton = FindObjectByName<GuiControl>(window, L"buttonLinkHtml");
 					auto location = protocol->LocationOf(menuButton);
 					protocol->LClick(location);
 				});
@@ -147,21 +147,21 @@ TEST_FILE
 				protocol->OnNextIdleFrame(L"Ready", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
-					auto menuButton = FindControlByText<GuiControl>(window, L"buttonAlign");
+					auto menuButton = FindObjectByName<GuiControl>(window, L"buttonAlign");
 					auto location = protocol->LocationOf(menuButton);
 					protocol->LClick(location);
 				});
 				protocol->OnNextIdleFrame(L"Click Align", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
-					auto menuButton = FindControlByText<GuiControl>(window, L"buttonAlign");
+					auto menuButton = FindObjectByName<GuiControl>(window, L"buttonAlign");
 					auto location = protocol->LocationOf(menuButton, 1.0, 0.5, -3, 0);
 					protocol->LClick(location);
 				});
 				protocol->OnNextIdleFrame(L"Dropdown Align", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
-					auto menuButton = FindControlByText<GuiControl>(window, L"buttonAlignRight");
+					auto menuButton = FindObjectByName<GuiControl>(window, L"buttonAlignRight");
 					auto location = protocol->LocationOf(menuButton);
 					protocol->LClick(location);
 				});
@@ -172,7 +172,7 @@ TEST_FILE
 				});
 			});
 			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
-				WString::Unmanaged(L"Controls/Toolstrip/GuiToolstripToolBar/ToolstripDropdownButton"),
+				WString::Unmanaged(L"Controls/Toolstrip/GuiToolstripToolBar/ToolstripSplitButton"),
 				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
 				resourceToolBar
 				);
