@@ -70,6 +70,7 @@
 - Non-editing control unit test (using DarkSkin)
   - Menu
     - Template/VirtualControl for menu/toolbar and menu/toolbar/splitter
+      - More flexible implementation in `GuiToolstripGroupContainer::OnParentLineChanged`
     - ComboBox
     - GuiDatePicker
     - GuiDateComboBox
@@ -100,6 +101,7 @@
     - Explain this in decicated `README.md` and mention it in the root one.
   - Verify vcxproj contains all files.
   - Ensure build woriflow tutorials.
+  - Update Win11 menu tutorial in `Release` repo to use new virtual control
 - Document
   - `GuiTreeItemTemplate` change base class to `GuiListItemTemplate`
 - `GuiListControl::IItemProvider(Callback)?` moved to `vl::presentation::controls::list`

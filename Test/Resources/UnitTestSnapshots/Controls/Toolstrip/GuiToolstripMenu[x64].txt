@@ -303,7 +303,7 @@ namespace gacuisrc_unittest
             }
             (<precompile>5 = buttonLink.EnsureToolstripSubMenu());
             {
-                (buttonLinkRtf = new (::presentation::controls::GuiToolstripButton*)(::presentation::theme::ThemeName::ToolstripButton));
+                (buttonLinkRtf = new (::presentation::controls::GuiToolstripButton*)(::presentation::theme::ThemeName::MenuItemButton));
                 <this>.SetNamedObject("buttonLinkRtf", buttonLinkRtf);
             }
             {
@@ -313,7 +313,7 @@ namespace gacuisrc_unittest
                 <precompile>5.ToolstripItems.Add(buttonLinkRtf);
             }
             {
-                (buttonLinkHtml = new (::presentation::controls::GuiToolstripButton*)(::presentation::theme::ThemeName::ToolstripButton));
+                (buttonLinkHtml = new (::presentation::controls::GuiToolstripButton*)(::presentation::theme::ThemeName::MenuItemButton));
                 <this>.SetNamedObject("buttonLinkHtml", buttonLinkHtml);
             }
             {
@@ -323,7 +323,7 @@ namespace gacuisrc_unittest
                 <precompile>5.ToolstripItems.Add(buttonLinkHtml);
             }
             {
-                (buttonPrivate = new (::presentation::controls::GuiToolstripButton*)(::presentation::theme::ThemeName::ToolstripButton));
+                (buttonPrivate = new (::presentation::controls::GuiToolstripButton*)(::presentation::theme::ThemeName::MenuItemButton));
                 <this>.SetNamedObject("buttonPrivate", buttonPrivate);
             }
             {

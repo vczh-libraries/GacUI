@@ -37,9 +37,9 @@ TEST_FILE
                   <ToolstripGroup>
                     <ToolstripDropdownButton ref.Name="buttonLink" Alt="L" Image-uri="res://ToolstripImages/Link">
                       <att.SubMenu-set>
-                        <ToolstripButton ref.Name="buttonLinkRtf" Alt="R" Command-ref="commandLinkRtf"/>
-                        <ToolstripButton ref.Name="buttonLinkHtml" Alt="H" Command-ref="commandLinkHtml"/>
-                        <ToolstripButton ref.Name="buttonPrivate" Alt="P" Command-ref="commandPrivate"/>
+                        <MenuItemButton ref.Name="buttonLinkRtf" Alt="R" Command-ref="commandLinkRtf"/>
+                        <MenuItemButton ref.Name="buttonLinkHtml" Alt="H" Command-ref="commandLinkHtml"/>
+                        <MenuItemButton ref.Name="buttonPrivate" Alt="P" Command-ref="commandPrivate"/>
                       </att.SubMenu-set>
                     </ToolstripDropdownButton>
                   </ToolstripGroup>
