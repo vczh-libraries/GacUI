@@ -90,9 +90,6 @@ namespace gacuisrc_unittest
         var commandDelete : ::presentation::controls::GuiToolstripCommand* = null of (::presentation::controls::GuiToolstripCommand*);
 
         @cpp:Protected
-        var buttonLink : ::presentation::controls::GuiToolstripButton* = null of (::presentation::controls::GuiToolstripButton*);
-
-        @cpp:Protected
         var buttonLinkRtf : ::presentation::controls::GuiToolstripButton* = null of (::presentation::controls::GuiToolstripButton*);
 
         @cpp:Protected
@@ -100,9 +97,6 @@ namespace gacuisrc_unittest
 
         @cpp:Protected
         var buttonPrivate : ::presentation::controls::GuiToolstripButton* = null of (::presentation::controls::GuiToolstripButton*);
-
-        @cpp:Protected
-        var buttonAlign : ::presentation::controls::GuiToolstripButton* = null of (::presentation::controls::GuiToolstripButton*);
 
         @cpp:Protected
         var buttonAlignLeft : ::presentation::controls::GuiToolstripButton* = null of (::presentation::controls::GuiToolstripButton*);
@@ -130,6 +124,12 @@ namespace gacuisrc_unittest
 
         @cpp:Protected
         var buttonDelete : ::presentation::controls::GuiToolstripButton* = null of (::presentation::controls::GuiToolstripButton*);
+
+        @cpp:Protected
+        var buttonLink : ::presentation::controls::GuiToolstripButton* = null of (::presentation::controls::GuiToolstripButton*);
+
+        @cpp:Protected
+        var buttonAlign : ::presentation::controls::GuiToolstripButton* = null of (::presentation::controls::GuiToolstripButton*);
 
         @cpp:Protected
         func <gacuisrc_unittest-MainWindow>Initialize(<this> : ::gacuisrc_unittest::MainWindow*) : (::system::Void)
@@ -201,10 +201,16 @@ namespace gacuisrc_unittest
             (commandUndo = new (::presentation::controls::GuiToolstripCommand*)());
             <this>.SetNamedObject("commandUndo", commandUndo);
             {
+                (commandUndo.Text = "Undo");
+            }
+            {
                 self.AddComponent(commandUndo);
             }
             (commandRedo = new (::presentation::controls::GuiToolstripCommand*)());
             <this>.SetNamedObject("commandRedo", commandRedo);
+            {
+                (commandRedo.Text = "Redo");
+            }
             {
                 self.AddComponent(commandRedo);
             }
@@ -212,6 +218,9 @@ namespace gacuisrc_unittest
             <this>.SetNamedObject("commandCut", commandCut);
             {
                 (commandCut.Enabled = false);
+            }
+            {
+                (commandCut.Text = "Cut");
             }
             {
                 self.AddComponent(commandCut);
@@ -222,6 +231,9 @@ namespace gacuisrc_unittest
                 (commandCopy.Enabled = false);
             }
             {
+                (commandCopy.Text = "Copy");
+            }
+            {
                 self.AddComponent(commandCopy);
             }
             (commandPaste = new (::presentation::controls::GuiToolstripCommand*)());
@@ -230,12 +242,18 @@ namespace gacuisrc_unittest
                 (commandPaste.Enabled = false);
             }
             {
+                (commandPaste.Text = "Paste");
+            }
+            {
                 self.AddComponent(commandPaste);
             }
             (commandDelete = new (::presentation::controls::GuiToolstripCommand*)());
             <this>.SetNamedObject("commandDelete", commandDelete);
             {
                 (commandDelete.Enabled = false);
+            }
+            {
+                (commandDelete.Text = "Delete");
             }
             {
                 self.AddComponent(commandDelete);
