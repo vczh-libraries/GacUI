@@ -104,6 +104,7 @@
   - Update Win11 menu tutorial in `Release` repo to use new virtual control
 - Document
   - `GuiTreeItemTemplate` change base class to `GuiListItemTemplate`
+  - VirtualControl/ThemeName for toolbar(/splitter) in menu
 - `GuiListControl::IItemProvider(Callback)?` moved to `vl::presentation::controls::list`
 
 ## Release Milestone (1.2.11.0)
