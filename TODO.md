@@ -69,7 +69,6 @@
     - The click processing is finished after the modal window is closed, but due to `ALT+F4` all windows are deleted at the moment.
 - Non-editing control unit test (using DarkSkin)
   - Menu
-    - GuiToolstripMenu (win11 style)
     - ComboBox
     - GuiDatePicker
     - GuiDateComboBox
@@ -80,7 +79,7 @@
     - ItemTemplate with properties
     - Item manipulation
     - Extra mouse operations
-    - Extra key operations 
+    - Extra key operations
     - Row and Cell extensions
   - Ribbon ...
   - Check all control key operation, ensure accessibility.

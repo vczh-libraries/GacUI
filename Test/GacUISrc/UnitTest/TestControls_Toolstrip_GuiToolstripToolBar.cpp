@@ -15,12 +15,12 @@ TEST_FILE
         <ToolstripCommand ref.Name="commandAlignLeft" ShortcutBuilder="Ctrl+L" Text="Left" Image-uri="res://ToolstripImages/AlignLeft" ev.Executed-eval="{self.Text = 'Left'; buttonAlign.Command = commandAlignLeft;}"/>
         <ToolstripCommand ref.Name="commandAlignCenter" ShortcutBuilder="Ctrl+C" Text="Center" Image-uri="res://ToolstripImages/AlignCenter" ev.Executed-eval="{self.Text = 'Center'; buttonAlign.Command = commandAlignCenter;}"/>
         <ToolstripCommand ref.Name="commandAlignRight" ShortcutBuilder="Ctrl+R" Text="Right Format" Image-uri="res://ToolstripImages/AlignRight" ev.Executed-eval="{self.Text = 'Right'; buttonAlign.Command = commandAlignRight;}"/>
-        <ToolstripCommand ref.Name="commandUndo" Image-uri="res://ToolstripImages/Undo" ev.Executed-eval="self.Text = 'Undo';"/>
-        <ToolstripCommand ref.Name="commandRedo" Image-uri="res://ToolstripImages/Redo" ev.Executed-eval="self.Text = 'Redo';"/>
-        <ToolstripCommand ref.Name="commandCut" Image-uri="res://ToolstripImages/Cut" Enabled="false"/>
-        <ToolstripCommand ref.Name="commandCopy" Image-uri="res://ToolstripImages/Copy" Enabled="false"/>
-        <ToolstripCommand ref.Name="commandPaste" Image-uri="res://ToolstripImages/Paste" Enabled="false"/>
-        <ToolstripCommand ref.Name="commandDelete" Image-uri="res://ToolstripImages/Delete" Enabled="false"/>
+        <ToolstripCommand ref.Name="commandUndo" Text="Undo" Image-uri="res://ToolstripImages/Undo" ev.Executed-eval="self.Text = 'Undo';"/>
+        <ToolstripCommand ref.Name="commandRedo" Text="Redo" Image-uri="res://ToolstripImages/Redo" ev.Executed-eval="self.Text = 'Redo';"/>
+        <ToolstripCommand ref.Name="commandCut" Text="Cut" Image-uri="res://ToolstripImages/Cut" Enabled="false"/>
+        <ToolstripCommand ref.Name="commandCopy" Text="Copy" Image-uri="res://ToolstripImages/Copy" Enabled="false"/>
+        <ToolstripCommand ref.Name="commandPaste" Text="Paste" Image-uri="res://ToolstripImages/Paste" Enabled="false"/>
+        <ToolstripCommand ref.Name="commandDelete" Text="Delete" Image-uri="res://ToolstripImages/Delete" Enabled="false"/>
 
         <ToolstripToolBar>
           <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:-1"/>
