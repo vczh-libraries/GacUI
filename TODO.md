@@ -71,6 +71,8 @@
   - Menu
     - Template/VirtualControl for menu/toolbar and menu/toolbar/splitter
       - More flexible implementation in `GuiToolstripGroupContainer::OnParentLineChanged`
+      - Splitter template property in menubar/toolbar/menu templates
+      - `GuiToolstrip(Menu(Bar)?|ToolBar)` find a proper way to set splitter template and/or theme in `GuiToolstripGroupContainer`
     - ComboBox
     - GuiDatePicker
     - GuiDateComboBox
