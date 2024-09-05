@@ -9,36 +9,49 @@ TEST_FILE
   <Instance name="MainWindowResource">
     <Instance ref.Class="gacuisrc_unittest::MainWindow">
       <Window ref.Name="self" Text="GuiToolstripMenuBar" ClientSize="x:320 y:240">
+        <ToolstripCommand ref.Name="commandLinkRtf" Text="Rtf" Image-uri="ToolstripImages/Rtf" ev.Executed-eval="self.Text = 'Rtf';"/>
+        <ToolstripCommand ref.Name="commandLinkHtml" Text="Html" Image-uri="ToolstripImages/Html" ev.Executed-eval="self.Text = 'Html';"/>
+        <ToolstripCommand ref.Name="commandPrivate" Text="Private Format" Image-uri="ToolstripImages/Private" ev.Executed-eval="self.Text = 'Private Format';"/>
+        <ToolstripCommand ref.Name="commandAlignLeft" Text="Left" Image-uri="ToolstripImages/AlignLeft" ev.Executed-eval="self.Text = 'Left';"/>
+        <ToolstripCommand ref.Name="commandAlignCenter" Text="Center" Image-uri="ToolstripImages/AlignCenter" ev.Executed-eval="self.Text = 'Center';"/>
+        <ToolstripCommand ref.Name="commandAlignRight" Text="Right Format" Image-uri="ToolstripImages/AlignRight" ev.Executed-eval="self.Text = 'Right';"/>
+        <ToolstripCommand ref.Name="commandUndo" Image-uri="ToolstripImages/Undo" ev.Executed-eval="self.Text = 'Undo';"/>
+        <ToolstripCommand ref.Name="commandRedo" Image-uri="ToolstripImages/Redo" ev.Executed-eval="self.Text = 'Redo';"/>
+        <ToolstripCommand ref.Name="commandCut" Image-uri="ToolstripImages/Cut" Enabled="false"/>
+        <ToolstripCommand ref.Name="commandCopy" Image-uri="ToolstripImages/Copy" Enabled="false"/>
+        <ToolstripCommand ref.Name="commandPaste" Image-uri="ToolstripImages/Paste" Enabled="false"/>
+        <ToolstripCommand ref.Name="commandDelete" Image-uri="ToolstripImages/Delete" Enabled="false"/>
+
         <ToolstripToolBar>
           <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:-1"/>
           <ToolstripGroupContainer>
             <ToolstripGroup>
               <ToolstripDropdownButton ref.Name="buttonLink" Alt="L" Image-uri="ToolstripImages/Link">
                 <att.SubMenu-set>
-                  <MenuItemButton ref.Name="buttonLinkRtf" Alt="R" Text="Rtf" Image-uri="ToolstripImages/Rtf"/>
-                  <MenuItemButton ref.Name="buttonLinkHtml" Alt="H" Text="Html" Image-uri="ToolstripImages/Html"/>
-                  <MenuItemButton ref.Name="buttonPrivate" Alt="P" Text="Private Format" Image-uri="ToolstripImages/Private"/>
+                  <MenuItemButton ref.Name="buttonLinkRtf" Alt="R" Command-ref="commandLinkRtf"/>
+                  <MenuItemButton ref.Name="buttonLinkHtml" Alt="H" Command-ref="commandLinkHtml"/>
+                  <MenuItemButton ref.Name="buttonPrivate" Alt="P" Command-ref="commandPrivate"/>
                 </att.SubMenu-set>
               </ToolstripDropdownButton>
-              <ToolstripSplitButton ref.Name="buttonAlign" Alt="A" Image-uri="ToolstripImages/AlignLeft">
+              <ToolstripSplitButton ref.Name="buttonAlign" Alt="A" Command-ref="commandAlignLeft">
                 <att.SubMenu-set>
-                  <MenuItemButton ref.Name="buttonAlignLeft" Alt="L" Text="Left" Image-uri="ToolstripImages/AlignLeft"/>
-                  <MenuItemButton ref.Name="buttonAlignCenter" Alt="C" Text="Center" Image-uri="ToolstripImages/AlignCenter"/>
-                  <MenuItemButton ref.Name="buttonAlignRight" Alt="R" Text="Right Format" Image-uri="ToolstripImages/AlignRight"/>
+                  <MenuItemButton ref.Name="buttonAlignLeft" Alt="L" Command-ref="commandAlignLeft"/>
+                  <MenuItemButton ref.Name="buttonAlignCenter" Alt="C" Command-ref="commandAlignCenter"/>
+                  <MenuItemButton ref.Name="buttonAlignRight" Alt="R" Command-ref="commandAlignRight"/>
                 </att.SubMenu-set>
               </ToolstripSplitButton>
             </ToolstripGroup>
             <ToolstripGroup>
-              <ToolstripButton ref.Name="buttonUndo" Alt="U" Image-uri="ToolstripImages/Undo"/>
-              <ToolstripButton ref.Name="buttonRedo" Alt="R" Image-uri="ToolstripImages/Redo"/>
+              <ToolstripButton ref.Name="buttonUndo" Alt="U" Command-ref="commandUndo"/>
+              <ToolstripButton ref.Name="buttonRedo" Alt="R" Command-ref="commandRedo"/>
             </ToolstripGroup>
             <ToolstripGroup>
-              <ToolstripButton ref.Name="buttonCut" Alt="X" Image-uri="ToolstripImages/Cut"/>
-              <ToolstripButton ref.Name="buttonCopy" Alt="C" Image-uri="ToolstripImages/Copy"/>
-              <ToolstripButton ref.Name="buttonPaste" Alt="V" Image-uri="ToolstripImages/Paste"/>
+              <ToolstripButton ref.Name="buttonCut" Alt="X" Command-ref="commandCut"/>
+              <ToolstripButton ref.Name="buttonCopy" Alt="C" Command-ref="commandCopy"/>
+              <ToolstripButton ref.Name="buttonPaste" Alt="V" Command-ref="commandPaste"/>
             </ToolstripGroup>
             <ToolstripGroup>
-              <ToolstripButton ref.Name="buttonDelete" Alt="D" Image-uri="ToolstripImages/Delete"/>
+              <ToolstripButton ref.Name="buttonDelete" Alt="D" Command-ref="commandDelete"/>
             </ToolstripGroup>
           </ToolstripGroupContainer>
         </ToolstripToolBar>
