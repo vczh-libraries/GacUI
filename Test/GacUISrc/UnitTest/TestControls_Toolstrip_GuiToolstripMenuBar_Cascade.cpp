@@ -195,6 +195,14 @@ TEST_FILE
 				});
 				protocol->OnNextIdleFrame(L"[ESC]", [=]()
 				{
+					protocol->KeyPress(VKEY::KEY_ESCAPE);
+				});
+				protocol->OnNextIdleFrame(L"[ESC]", [=]()
+				{
+					protocol->KeyPress(VKEY::KEY_MENU);
+				});
+				protocol->OnNextIdleFrame(L"[ALT]", [=]()
+				{
 					protocol->KeyPress(VKEY::KEY_E);
 				});
 				protocol->OnNextIdleFrame(L"[E]", [=]()
