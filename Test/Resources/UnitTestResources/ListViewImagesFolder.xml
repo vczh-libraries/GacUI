@@ -1,4 +1,4 @@
-<Folder name="ListViewImages">
+<Folder>
   <Folder name="LargeImages">
     <Image name="Cert" content="File">Cert_32.png</Image>
     <Image name="Data" content="File">Data_32.png</Image>

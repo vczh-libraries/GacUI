@@ -1,4 +1,4 @@
-<Folder name="UnitTestConfig">
+<Folder>
   <Xml name="ImageData">
     <ImageData>
       <Image Path="ListViewImages/LargeImages/Cert" Format="Png" Width="32" Height="32"/>

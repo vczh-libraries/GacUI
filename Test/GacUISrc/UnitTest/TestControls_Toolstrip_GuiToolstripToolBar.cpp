@@ -9,24 +9,24 @@ TEST_FILE
   <Instance name="MainWindowResource">
     <Instance ref.Class="gacuisrc_unittest::MainWindow">
       <Window ref.Name="self" Text="GuiToolstripMenuBar" ClientSize="x:320 y:240">
-        <ToolstripCommand ref.Name="commandLinkRtf" Text="Rtf" Image-uri="ToolstripImages/Rtf" ev.Executed-eval="self.Text = 'Rtf';"/>
-        <ToolstripCommand ref.Name="commandLinkHtml" Text="Html" Image-uri="ToolstripImages/Html" ev.Executed-eval="self.Text = 'Html';"/>
-        <ToolstripCommand ref.Name="commandPrivate" Text="Private Format" Image-uri="ToolstripImages/Private" ev.Executed-eval="self.Text = 'Private Format';"/>
-        <ToolstripCommand ref.Name="commandAlignLeft" Text="Left" Image-uri="ToolstripImages/AlignLeft" ev.Executed-eval="self.Text = 'Left';"/>
-        <ToolstripCommand ref.Name="commandAlignCenter" Text="Center" Image-uri="ToolstripImages/AlignCenter" ev.Executed-eval="self.Text = 'Center';"/>
-        <ToolstripCommand ref.Name="commandAlignRight" Text="Right Format" Image-uri="ToolstripImages/AlignRight" ev.Executed-eval="self.Text = 'Right';"/>
-        <ToolstripCommand ref.Name="commandUndo" Image-uri="ToolstripImages/Undo" ev.Executed-eval="self.Text = 'Undo';"/>
-        <ToolstripCommand ref.Name="commandRedo" Image-uri="ToolstripImages/Redo" ev.Executed-eval="self.Text = 'Redo';"/>
-        <ToolstripCommand ref.Name="commandCut" Image-uri="ToolstripImages/Cut" Enabled="false"/>
-        <ToolstripCommand ref.Name="commandCopy" Image-uri="ToolstripImages/Copy" Enabled="false"/>
-        <ToolstripCommand ref.Name="commandPaste" Image-uri="ToolstripImages/Paste" Enabled="false"/>
-        <ToolstripCommand ref.Name="commandDelete" Image-uri="ToolstripImages/Delete" Enabled="false"/>
+        <ToolstripCommand ref.Name="commandLinkRtf" Text="Rtf" Image-uri="res://ToolstripImages/Rtf" ev.Executed-eval="self.Text = 'Rtf';"/>
+        <ToolstripCommand ref.Name="commandLinkHtml" Text="Html" Image-uri="res://ToolstripImages/Html" ev.Executed-eval="self.Text = 'Html';"/>
+        <ToolstripCommand ref.Name="commandPrivate" Text="Private Format" Image-uri="res://ToolstripImages/Private" ev.Executed-eval="self.Text = 'Private Format';"/>
+        <ToolstripCommand ref.Name="commandAlignLeft" Text="Left" Image-uri="res://ToolstripImages/AlignLeft" ev.Executed-eval="self.Text = 'Left';"/>
+        <ToolstripCommand ref.Name="commandAlignCenter" Text="Center" Image-uri="res://ToolstripImages/AlignCenter" ev.Executed-eval="self.Text = 'Center';"/>
+        <ToolstripCommand ref.Name="commandAlignRight" Text="Right Format" Image-uri="res://ToolstripImages/AlignRight" ev.Executed-eval="self.Text = 'Right';"/>
+        <ToolstripCommand ref.Name="commandUndo" Image-uri="res://ToolstripImages/Undo" ev.Executed-eval="self.Text = 'Undo';"/>
+        <ToolstripCommand ref.Name="commandRedo" Image-uri="res://ToolstripImages/Redo" ev.Executed-eval="self.Text = 'Redo';"/>
+        <ToolstripCommand ref.Name="commandCut" Image-uri="res://ToolstripImages/Cut" Enabled="false"/>
+        <ToolstripCommand ref.Name="commandCopy" Image-uri="res://ToolstripImages/Copy" Enabled="false"/>
+        <ToolstripCommand ref.Name="commandPaste" Image-uri="res://ToolstripImages/Paste" Enabled="false"/>
+        <ToolstripCommand ref.Name="commandDelete" Image-uri="res://ToolstripImages/Delete" Enabled="false"/>
 
         <ToolstripToolBar>
           <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:-1"/>
           <ToolstripGroupContainer>
             <ToolstripGroup>
-              <ToolstripDropdownButton ref.Name="buttonLink" Alt="L" Image-uri="ToolstripImages/Link">
+              <ToolstripDropdownButton ref.Name="buttonLink" Alt="L" Image-uri="res://ToolstripImages/Link">
                 <att.SubMenu-set>
                   <MenuItemButton ref.Name="buttonLinkRtf" Alt="R" Command-ref="commandLinkRtf"/>
                   <MenuItemButton ref.Name="buttonLinkHtml" Alt="H" Command-ref="commandLinkHtml"/>
