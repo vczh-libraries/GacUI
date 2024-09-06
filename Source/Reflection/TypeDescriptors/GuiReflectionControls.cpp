@@ -375,6 +375,7 @@ Type Declaration (Extra)
 
 				CLASS_MEMBER_METHOD(GetParentMenuService, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(GetPreferredDirection, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(GetHostThemeName, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(IsActiveState, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(IsSubMenuActivatedByMouseDown, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(MenuItemExecuted, NO_PARAMETER)

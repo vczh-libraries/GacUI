@@ -129,6 +129,7 @@ Toolstrip Container
 			private:
 				IGuiMenuService*								GetParentMenuService()override;
 				Direction										GetPreferredDirection()override;
+				theme::ThemeName								GetHostThemeName()override;
 				bool											IsActiveState()override;
 				bool											IsSubMenuActivatedByMouseDown()override;
 

@@ -213,6 +213,11 @@ GuiToolstripToolBar
 				return IGuiMenuService::Horizontal;
 			}
 
+			theme::ThemeName GuiToolstripToolBar::GetHostThemeName()
+			{
+				return GetControlThemeName();
+			}
+
 			bool GuiToolstripToolBar::IsActiveState()
 			{
 				return GetOpeningMenu() != nullptr;

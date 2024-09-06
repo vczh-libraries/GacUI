@@ -78,6 +78,11 @@ GuiMenu
 				return IGuiMenuService::Vertical;
 			}
 
+			theme::ThemeName GuiMenu::GetHostThemeName()
+			{
+				return GetControlThemeName();
+			}
+
 			bool GuiMenu::IsActiveState()
 			{
 				return true;
@@ -215,6 +220,11 @@ GuiMenuBar
 			IGuiMenuService::Direction GuiMenuBar::GetPreferredDirection()
 			{
 				return IGuiMenuService::Horizontal;
+			}
+
+			theme::ThemeName GuiMenuBar::GetHostThemeName()
+			{
+				return GetControlThemeName();
 			}
 
 			bool GuiMenuBar::IsActiveState()

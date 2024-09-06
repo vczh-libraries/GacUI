@@ -51,6 +51,9 @@ Menu Service
 				/// <summary>Get the preferred direction to open the sub menu.</summary>
 				/// <returns>The preferred direction to open the sub menu.</returns>
 				virtual Direction						GetPreferredDirection()=0;
+				/// <summary>Get the theme name of the host control.</summary>
+				/// <returns>The theme name of the host control.</returns>
+				virtual theme::ThemeName				GetHostThemeName() = 0;
 				/// <summary>Test is this menu is active. When an menu is active, the sub menu is automatically opened when the corresponding menu item is opened.</summary>
 				/// <returns>Returns true if this menu is active.</returns>
 				virtual bool							IsActiveState()=0;
@@ -99,6 +102,7 @@ Menu
 
 				IGuiMenuService*						GetParentMenuService()override;
 				Direction								GetPreferredDirection()override;
+				theme::ThemeName						GetHostThemeName()override;
 				bool									IsActiveState()override;
 				bool									IsSubMenuActivatedByMouseDown()override;
 				void									MenuItemExecuted()override;
@@ -143,6 +147,7 @@ Menu
 			private:
 				IGuiMenuService*						GetParentMenuService()override;
 				Direction								GetPreferredDirection()override;
+				theme::ThemeName						GetHostThemeName()override;
 				bool									IsActiveState()override;
 				bool									IsSubMenuActivatedByMouseDown()override;
 

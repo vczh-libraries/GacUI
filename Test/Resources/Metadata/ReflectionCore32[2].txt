@@ -3559,6 +3559,7 @@ interface presentation::controls::IGuiMenuDropdownProvider : system::Interface {
 }
 
 interface presentation::controls::IGuiMenuService : system::Interface {
+    function GetHostThemeName() : presentation::theme::ThemeName;
     @InvokeTemplate:::vl::presentation::controls::QueryServiceHelper<::vl::presentation::controls::IGuiMenuService>::GetIdentifier($Arguments)
     @ClosureTemplate:::vl::Func<$Func>(&::vl::presentation::controls::QueryServiceHelper<::vl::presentation::controls::IGuiMenuService>::GetIdentifier)
     static function GetIdentifier() : system::String;
