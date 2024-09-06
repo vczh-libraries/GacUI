@@ -11,6 +11,7 @@
   <Instance name="ToolstripInMenuTemplateResource">
     <Instance ref.CodeBehind="false" ref.Class="darkskin::ToolstripInMenuTemplate" ref.Styles="res://DarkSkin/Style">
       <ControlTemplate ContainerComposition-ref="container" MinSizeLimitation="LimitToElementAndChildren">
+        <SolidBackground ref.Style="toolstripMenuBackground"/>
         <Bounds ref.Name="container" AlignmentToParent="left:2 top:2 right:2 bottom:2"/>
       </ControlTemplate>
     </Instance>
@@ -42,7 +43,7 @@
   <Instance name="ToolstripSplitterInMenuTemplateResource">
     <Instance ref.CodeBehind="false" ref.Class="darkskin::ToolstripSplitterInMenuTemplate" ref.Styles="res://DarkSkin/Style">
       <ControlTemplate MinSizeLimitation="LimitToElementAndChildren">
-        <SolidBackground ref.Style="generalBackground"/>
+        <SolidBackground ref.Style="toolstripMenuBackground"/>
         <Bounds AlignmentToParent="left:3 top:1 right:3 bottom:1" PreferredMinSize="x:1 y:0">
           <SolidBackground ref.Style="toolstripMenuBorder"/>
         </Bounds>

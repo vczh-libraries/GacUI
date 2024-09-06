@@ -3792,6 +3792,7 @@ namespace darkskin
 #endif
 	protected:
 		::darkskin::ToolstripInMenuTemplate* __vwsn_precompile_0;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_1;
 		::vl::presentation::compositions::GuiBoundsComposition* container;
 		void __vwsn_darkskin_ToolstripInMenuTemplate_Initialize(::darkskin::ToolstripInMenuTemplate* __vwsn_this_);
 	public:

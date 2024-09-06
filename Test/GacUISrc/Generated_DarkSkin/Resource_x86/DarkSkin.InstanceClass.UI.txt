@@ -30451,6 +30451,9 @@ namespace darkskin
         var <precompile>0 : ::darkskin::ToolstripInMenuTemplate* = null of (::darkskin::ToolstripInMenuTemplate*);
 
         @cpp:Protected
+        var <precompile>1 : ::presentation::elements::GuiSolidBackgroundElement^ = null of (::presentation::elements::GuiSolidBackgroundElement^);
+
+        @cpp:Protected
         var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
@@ -30459,6 +30462,13 @@ namespace darkskin
             (<precompile>0 = <this>);
             {
                 (<precompile>0.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+            }
+            (<precompile>1 = new (::presentation::elements::GuiSolidBackgroundElement^)());
+            {
+                (<precompile>1.Color = (cast (::presentation::Color) "#1B1B1C"));
+            }
+            {
+                (<precompile>0.OwnedElement = <precompile>1);
             }
             (container = new (::presentation::compositions::GuiBoundsComposition*)());
             <this>.SetNamedObject("container", container);
@@ -31506,7 +31516,7 @@ namespace darkskin
             }
             (<precompile>1 = new (::presentation::elements::GuiSolidBackgroundElement^)());
             {
-                (<precompile>1.Color = (cast (::presentation::Color) "#2D2D30"));
+                (<precompile>1.Color = (cast (::presentation::Color) "#1B1B1C"));
             }
             {
                 (<precompile>0.OwnedElement = <precompile>1);

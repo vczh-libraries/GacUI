@@ -15,6 +15,7 @@
 - `GuiListControl::IItemProvider(Callback)?` moved to `vl::presentation::controls::list`.
 - Make `ItemSource` class of bindable list controls reflectable.
 - New theme name/virtual control: `ToolstripToolBarInMenu`, `ToolstripSplitterInMenu`
+- `IGuiMenuService::GetHostThemeName`
 
 ## Known Issues
 
@@ -57,23 +58,10 @@
 ## Release Milestone (1.2.10.2)
 
 - GacUI
-  - Fix `Global Objects` in `GacUI.h`.
-  - Thinking about promote SyncDom data structures for unit test, and complete a diff algorithm.
-    - Unit test framework
-      - Generate `domId` for each dom node: element(id), virtual(-element.id-2), root(-1), hittest(find a way).
-      - Diff algorithm based on `domId`
-      - Mouse wheel trigger functions.
-    - Unit Test Snapshot Viewer
-      - Show dom nodes in a tree view in the right side of the rendering tab optionally.
-      - Select dom node and jump to other tabs with highlight.
   - Fix `CppTest` press `ALT+F4` with `Control/Document Editor/Insert Image` opened and crash in `GuiHostedController::PostAction_LeftButtonUp`.
     - The click processing is finished after the modal window is closed, but due to `ALT+F4` all windows are deleted at the moment.
 - Non-editing control unit test (using DarkSkin)
   - Menu
-    - Template/VirtualControl for menu/toolbar and menu/toolbar/splitter
-      - More flexible implementation in `GuiToolstripGroupContainer::OnParentLineChanged`
-      - Splitter template property in menubar/toolbar/menu templates
-      - `GuiToolstrip(Menu(Bar)?|ToolBar)` find a proper way to set splitter template and/or theme in `GuiToolstripGroupContainer`
     - ComboBox
     - GuiDatePicker
     - GuiDateComboBox
@@ -88,6 +76,24 @@
     - Row and Cell extensions
   - Ribbon ...
   - Check all control key operation, ensure accessibility.
+- Document
+  - `GuiTreeItemTemplate` change base class to `GuiListItemTemplate`
+  - New theme name/virtual control: `ToolstripToolBarInMenu`, `ToolstripSplitterInMenu`
+  - `IGuiMenuService::GetHostThemeName` if exists
+  - `GuiListControl::IItemProvider(Callback)?` moved to `vl::presentation::controls::list`
+
+## Release Milestone (1.2.10.3)
+
+- GacUI
+  - Fix `Global Objects` in `GacUI.h`.
+  - Thinking about promote SyncDom data structures for unit test, and complete a diff algorithm.
+    - Unit test framework
+      - Generate `domId` for each dom node: element(id), virtual(-element.id-2), root(-1), hittest(find a way).
+      - Diff algorithm based on `domId`
+      - Mouse wheel trigger functions.
+    - Unit Test Snapshot Viewer
+      - Show dom nodes in a tree view in the right side of the rendering tab optionally.
+      - Select dom node and jump to other tabs with highlight.
 - More unit test
   - `GuiControl` and servives
   - `[TAB]`
@@ -105,10 +111,6 @@
   - Verify vcxproj contains all files.
   - Ensure build woriflow tutorials.
   - Update Win11 menu tutorial in `Release` repo to use new virtual control
-- Document
-  - `GuiTreeItemTemplate` change base class to `GuiListItemTemplate`
-  - New theme name/virtual control: `ToolstripToolBarInMenu`, `ToolstripSplitterInMenu`
-- `GuiListControl::IItemProvider(Callback)?` moved to `vl::presentation::controls::list`
 
 ## Release Milestone (1.2.11.0)
 

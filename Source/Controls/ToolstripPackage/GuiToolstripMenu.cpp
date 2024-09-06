@@ -552,27 +552,36 @@ GuiToolstripGroupContainer
 
 			void GuiToolstripGroupContainer::OnParentLineChanged()
 			{
-				auto direction = GuiStackComposition::Horizontal;
+				auto newDirection = GuiStackComposition::Horizontal;
+				auto newTheme = theme::ThemeName::ToolstripSplitter;
+
 				if (auto service = QueryTypedService<IGuiMenuService>())
 				{
 					if (service->GetPreferredDirection() == IGuiMenuService::Vertical)
 					{
-						direction = GuiStackComposition::Vertical;
+						newTheme = theme::ThemeName::MenuSplitter;
+						newDirection = GuiStackComposition::Vertical;
+					}
+
+					switch (service->GetHostThemeName())
+					{
+					case theme::ThemeName::MenuBar:
+						newTheme = theme::ThemeName::MenuSplitter;
+						break;
+					case theme::ThemeName::ToolstripToolBar:
+						newTheme = theme::ThemeName::ToolstripSplitter;
+						break;
+					case theme::ThemeName::ToolstripToolBarInMenu:
+						newTheme = theme::ThemeName::ToolstripSplitterInMenu;
+						break;
+					default:;
 					}
 				}
 
-				if (direction != stackComposition->GetDirection())
+				if (newDirection != stackComposition->GetDirection() || newTheme != splitterThemeName)
 				{
-					if (direction == GuiStackComposition::Vertical)
-					{
-						splitterThemeName = theme::ThemeName::MenuSplitter;
-					}
-					else
-					{
-						splitterThemeName = theme::ThemeName::ToolstripSplitter;
-					}
-
-					stackComposition->SetDirection(direction);
+					splitterThemeName = newTheme;
+					stackComposition->SetDirection(newDirection);
 					groupCollection->RebuildSplitters();
 					UpdateLayout();
 				}
