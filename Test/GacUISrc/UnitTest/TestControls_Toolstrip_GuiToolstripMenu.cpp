@@ -7,12 +7,6 @@ TEST_FILE
   <Folder name="UnitTestConfig" content="Link">Toolstrip/ToolstripImagesData.xml</Folder>
   <Folder name="ToolstripImages" content="Link">Toolstrip/ToolstripImagesFolder.xml</Folder>
 
-  <Instance name="MenuToolBarControlTemplateResource">
-    <Instance ref.CodeBehind="false" ref.Class="gacuisrc_unittest::MenuToolBarControlTemplate">
-      <ControlTemplate MinSizeLimitation="LimitToElementAndChildren"/>
-    </Instance>
-  </Instance>
-
   <Instance name="MainWindowResource">
     <Instance ref.Class="gacuisrc_unittest::MainWindow">
       <Window ref.Name="self" Text="GuiToolstripMenuBar" ClientSize="x:320 y:240">
@@ -32,7 +26,7 @@ TEST_FILE
         <ToolstripMenu ref.Name="menu">
           <ToolstripGroupContainer>
             <ToolstripGroup>
-              <ToolstripToolBar ControlTemplate="gacuisrc_unittest::MenuToolBarControlTemplate">
+              <ToolstripToolBarInMenu>
                 <ToolstripGroupContainer>
                   <ToolstripGroup>
                     <ToolstripDropdownButton ref.Name="buttonLink" Alt="L" Image-uri="res://ToolstripImages/Link">
@@ -49,7 +43,7 @@ TEST_FILE
                     <ToolstripButton ref.Name="buttonAlignRight" Alt="R" Command-ref="commandAlignRight"/>
                   </ToolstripGroup>
                 </ToolstripGroupContainer>
-              </ToolstripToolBar>
+              </ToolstripToolBarInMenu>
             </ToolstripGroup>
             <ToolstripGroup>
               <MenuItemButton ref.Name="buttonUndo" Alt="U" Command-ref="commandUndo"/>

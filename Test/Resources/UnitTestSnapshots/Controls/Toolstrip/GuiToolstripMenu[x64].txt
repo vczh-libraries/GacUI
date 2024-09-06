@@ -1,4 +1,4 @@
-﻿================================(1/4)================================
+﻿================================(1/2)================================
 module <constructor>gacuisrc_unittest::MainWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -278,15 +278,7 @@ namespace gacuisrc_unittest
                 (<precompile>1 = new (::presentation::controls::GuiToolstripGroup*)(::presentation::theme::ThemeName::CustomControl));
             }
             {
-                (<precompile>2 = new (::presentation::controls::GuiToolstripToolBar*)(::presentation::theme::ThemeName::ToolstripToolBar));
-            }
-            {
-                (<precompile>2.ControlTemplate = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiControlTemplate*)
-                {
-                    {
-                        return new (::gacuisrc_unittest::MenuToolBarControlTemplate*)();
-                    }
-                });
+                (<precompile>2 = new (::presentation::controls::GuiToolstripToolBar*)(::presentation::theme::ThemeName::ToolstripToolBarInMenu));
             }
             {
                 (<precompile>3 = new (::presentation::controls::GuiToolstripGroupContainer*)(::presentation::theme::ThemeName::CustomControl));
@@ -627,7 +619,7 @@ namespace gacuisrc_unittest
     }
 }
 
-================================(2/4)================================
+================================(2/2)================================
 module <instance>gacuisrc_unittest::MainWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -666,90 +658,6 @@ namespace gacuisrc_unittest
         delete
         {
             FinalizeInstanceRecursively(this of (::presentation::controls::GuiControlHost*));
-        }
-    }
-}
-
-================================(3/4)================================
-module <constructor>gacuisrc_unittest::MenuToolBarControlTemplate;
-using presentation::controls::Gui*;
-using presentation::elements::Gui*Element;
-using presentation::compositions::Gui*Composition;
-using presentation::compositions::Gui*;
-using presentation::templates::Gui*;
-using system::*;
-using system::reflection::*;
-using presentation::*;
-using presentation::Gui*;
-using presentation::controls::*;
-using presentation::controls::list::*;
-using presentation::controls::tree::*;
-using presentation::elements::*;
-using presentation::elements::Gui*;
-using presentation::elements::text::*;
-using presentation::compositions::*;
-using presentation::templates::*;
-using presentation::theme::*;
-
-namespace gacuisrc_unittest
-{
-    class MenuToolBarControlTemplateConstructor
-    {
-        @cpp:Protected
-        var <precompile>0 : ::gacuisrc_unittest::MenuToolBarControlTemplate* = null of (::gacuisrc_unittest::MenuToolBarControlTemplate*);
-
-        @cpp:Protected
-        func <gacuisrc_unittest-MenuToolBarControlTemplate>Initialize(<this> : ::gacuisrc_unittest::MenuToolBarControlTemplate*) : (::system::Void)
-        {
-            (<precompile>0 = <this>);
-            {
-                (<precompile>0.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
-            }
-        }
-
-        new ()
-        {
-        }
-    }
-}
-
-================================(4/4)================================
-module <instance>gacuisrc_unittest::MenuToolBarControlTemplate;
-using presentation::controls::Gui*;
-using presentation::elements::Gui*Element;
-using presentation::compositions::Gui*Composition;
-using presentation::compositions::Gui*;
-using presentation::templates::Gui*;
-using system::*;
-using system::reflection::*;
-using presentation::*;
-using presentation::Gui*;
-using presentation::controls::*;
-using presentation::controls::list::*;
-using presentation::controls::tree::*;
-using presentation::elements::*;
-using presentation::elements::Gui*;
-using presentation::elements::text::*;
-using presentation::compositions::*;
-using presentation::templates::*;
-using presentation::theme::*;
-
-namespace gacuisrc_unittest
-{
-    @cpp:Friend(typeof(MenuToolBarControlTemplateConstructor))
-    class MenuToolBarControlTemplate : ::presentation::templates::GuiControlTemplate, MenuToolBarControlTemplateConstructor
-    {
-        new* ()
-        {
-            var <resource> = ::presentation::IGuiResourceManager::GetResourceManager().GetResourceFromClassName("gacuisrc_unittest::MenuToolBarControlTemplate");
-            var <resolver> = new (::presentation::GuiResourcePathResolver^)(<resource>, <resource>.WorkingDirectory);
-            this.SetResourceResolver(<resolver>);
-            this.<gacuisrc_unittest-MenuToolBarControlTemplate>Initialize(this);
-        }
-
-        delete
-        {
-            FinalizeInstanceRecursively(this of (::presentation::templates::GuiTemplate*));
         }
     }
 }
