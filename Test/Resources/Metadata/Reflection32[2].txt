@@ -1269,6 +1269,7 @@ class darkskin::ToolstripInMenuTemplate : presentation::templates::GuiControlTem
 @FullName:darkskin::ToolstripInMenuTemplateConstructor
 class darkskin::ToolstripInMenuTemplateConstructor : system::ReferenceType {
     property __vwsn_precompile_0 : darkskin::ToolstripInMenuTemplate*;
+    property __vwsn_precompile_1 : presentation::elements::GuiSolidBackgroundElement^;
     property container : presentation::compositions::GuiBoundsComposition*;
 
     function __vwsn_darkskin_ToolstripInMenuTemplate_Initialize(__vwsn_this_ : darkskin::ToolstripInMenuTemplate*) : system::Void;
