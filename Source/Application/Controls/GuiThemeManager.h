@@ -177,10 +177,12 @@ Theme Names
 			F(ToolstripButtonTemplate,		MenuBarButton)				\
 			F(ToolstripButtonTemplate,		MenuItemButton)				\
 			F(ControlTemplate,				ToolstripToolBar)			\
+			F(ControlTemplate,				ToolstripToolBarInMenu)		\
 			F(ToolstripButtonTemplate,		ToolstripButton)			\
 			F(ToolstripButtonTemplate,		ToolstripDropdownButton)	\
 			F(ToolstripButtonTemplate,		ToolstripSplitButton)		\
 			F(ControlTemplate,				ToolstripSplitter)			\
+			F(ControlTemplate,				ToolstripSplitterInMenu)	\
 			F(RibbonTabTemplate,			RibbonTab)					\
 			F(RibbonGroupTemplate,			RibbonGroup)				\
 			F(RibbonGroupMenuTemplate,		RibbonGroupMenu)			\

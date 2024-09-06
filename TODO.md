@@ -14,6 +14,7 @@
 - `GuiTreeItemTemplate` change base class to `GuiListItemTemplate`
 - `GuiListControl::IItemProvider(Callback)?` moved to `vl::presentation::controls::list`.
 - Make `ItemSource` class of bindable list controls reflectable.
+- New theme name/virtual control: `ToolstripToolBarInMenu`, `ToolstripSplitterInMenu`
 
 ## Known Issues
 
@@ -106,7 +107,7 @@
   - Update Win11 menu tutorial in `Release` repo to use new virtual control
 - Document
   - `GuiTreeItemTemplate` change base class to `GuiListItemTemplate`
-  - VirtualControl/ThemeName for toolbar(/splitter) in menu
+  - New theme name/virtual control: `ToolstripToolBarInMenu`, `ToolstripSplitterInMenu`
 - `GuiListControl::IItemProvider(Callback)?` moved to `vl::presentation::controls::list`
 
 ## Release Milestone (1.2.11.0)

@@ -1261,6 +1261,21 @@ class darkskin::ToolstripDropdownButtonTemplateConstructor : system::ReferenceTy
     constructor () : darkskin::ToolstripDropdownButtonTemplateConstructor^;
 }
 
+@FullName:darkskin::ToolstripInMenuTemplate
+class darkskin::ToolstripInMenuTemplate : presentation::templates::GuiControlTemplate, darkskin::ToolstripInMenuTemplateConstructor {
+    constructor () : darkskin::ToolstripInMenuTemplate*;
+}
+
+@FullName:darkskin::ToolstripInMenuTemplateConstructor
+class darkskin::ToolstripInMenuTemplateConstructor : system::ReferenceType {
+    property __vwsn_precompile_0 : darkskin::ToolstripInMenuTemplate*;
+    property container : presentation::compositions::GuiBoundsComposition*;
+
+    function __vwsn_darkskin_ToolstripInMenuTemplate_Initialize(__vwsn_this_ : darkskin::ToolstripInMenuTemplate*) : system::Void;
+
+    constructor () : darkskin::ToolstripInMenuTemplateConstructor^;
+}
+
 @FullName:darkskin::ToolstripMenuTemplate
 class darkskin::ToolstripMenuTemplate : presentation::templates::GuiMenuTemplate, darkskin::ToolstripMenuTemplateConstructor {
     constructor () : darkskin::ToolstripMenuTemplate*;
@@ -1320,6 +1335,23 @@ class darkskin::ToolstripSplitButtonTemplateConstructor : system::ReferenceType 
     function __vwsn_darkskin_ToolstripSplitButtonTemplate_Initialize(__vwsn_this_ : darkskin::ToolstripSplitButtonTemplate*) : system::Void;
 
     constructor () : darkskin::ToolstripSplitButtonTemplateConstructor^;
+}
+
+@FullName:darkskin::ToolstripSplitterInMenuTemplate
+class darkskin::ToolstripSplitterInMenuTemplate : presentation::templates::GuiControlTemplate, darkskin::ToolstripSplitterInMenuTemplateConstructor {
+    constructor () : darkskin::ToolstripSplitterInMenuTemplate*;
+}
+
+@FullName:darkskin::ToolstripSplitterInMenuTemplateConstructor
+class darkskin::ToolstripSplitterInMenuTemplateConstructor : system::ReferenceType {
+    property __vwsn_precompile_0 : darkskin::ToolstripSplitterInMenuTemplate*;
+    property __vwsn_precompile_1 : presentation::elements::GuiSolidBackgroundElement^;
+    property __vwsn_precompile_2 : presentation::compositions::GuiBoundsComposition*;
+    property __vwsn_precompile_3 : presentation::elements::GuiSolidBackgroundElement^;
+
+    function __vwsn_darkskin_ToolstripSplitterInMenuTemplate_Initialize(__vwsn_this_ : darkskin::ToolstripSplitterInMenuTemplate*) : system::Void;
+
+    constructor () : darkskin::ToolstripSplitterInMenuTemplateConstructor^;
 }
 
 @FullName:darkskin::ToolstripSplitterTemplate
@@ -7872,20 +7904,20 @@ interface presentation::theme::ITheme : system::Interface {
 
 @ValueType
 enum presentation::theme::ThemeName {
-    Button = 53,
-    CheckBox = 54,
+    Button = 55,
+    CheckBox = 56,
     CheckTextListItem = 22,
     ComboBox = 11,
     CustomControl = 4,
     CustomFrameWindow = 3,
-    DateComboBox = 57,
-    DatePicker = 56,
+    DateComboBox = 59,
+    DatePicker = 58,
     DocumentLabel = 15,
     DocumentTextBox = 16,
     DocumentViewer = 14,
     GroupBox = 9,
-    HScroll = 58,
-    HTracker = 60,
+    HScroll = 60,
+    HTracker = 62,
     Label = 6,
     ListItemBackground = 20,
     ListView = 17,
@@ -7895,45 +7927,47 @@ enum presentation::theme::ThemeName {
     MenuItemButton = 28,
     MenuSplitter = 26,
     MultilineTextBox = 12,
-    ProgressBar = 62,
-    RadioButton = 55,
+    ProgressBar = 64,
+    RadioButton = 57,
     RadioTextListItem = 23,
-    RibbonButtons = 39,
-    RibbonGallery = 41,
-    RibbonGalleryItemList = 44,
-    RibbonGalleryList = 43,
-    RibbonGroup = 35,
-    RibbonGroupMenu = 36,
-    RibbonIconLabel = 37,
-    RibbonLargeButton = 48,
-    RibbonLargeDropdownButton = 49,
-    RibbonLargeSplitButton = 50,
-    RibbonSmallButton = 45,
-    RibbonSmallDropdownButton = 46,
-    RibbonSmallIconLabel = 38,
-    RibbonSmallSplitButton = 47,
-    RibbonSplitter = 51,
-    RibbonTab = 34,
-    RibbonToolstripHeader = 52,
-    RibbonToolstripMenu = 42,
-    RibbonToolstrips = 40,
+    RibbonButtons = 41,
+    RibbonGallery = 43,
+    RibbonGalleryItemList = 46,
+    RibbonGalleryList = 45,
+    RibbonGroup = 37,
+    RibbonGroupMenu = 38,
+    RibbonIconLabel = 39,
+    RibbonLargeButton = 50,
+    RibbonLargeDropdownButton = 51,
+    RibbonLargeSplitButton = 52,
+    RibbonSmallButton = 47,
+    RibbonSmallDropdownButton = 48,
+    RibbonSmallIconLabel = 40,
+    RibbonSmallSplitButton = 49,
+    RibbonSplitter = 53,
+    RibbonTab = 36,
+    RibbonToolstripHeader = 54,
+    RibbonToolstripMenu = 44,
+    RibbonToolstrips = 42,
     ScrollView = 8,
     ShortcutKey = 7,
     SinglelineTextBox = 13,
     SystemFrameWindow = 2,
     Tab = 10,
     TextList = 19,
-    ToolstripButton = 30,
-    ToolstripDropdownButton = 31,
-    ToolstripSplitButton = 32,
-    ToolstripSplitter = 33,
+    ToolstripButton = 31,
+    ToolstripDropdownButton = 32,
+    ToolstripSplitButton = 33,
+    ToolstripSplitter = 34,
+    ToolstripSplitterInMenu = 35,
     ToolstripToolBar = 29,
+    ToolstripToolBarInMenu = 30,
     Tooltip = 5,
     TreeItemExpander = 21,
     TreeView = 18,
     Unknown = 0,
-    VScroll = 59,
-    VTracker = 61,
+    VScroll = 61,
+    VTracker = 63,
     Window = 1,
 }
 
@@ -7995,7 +8029,9 @@ class presentation::theme::ThemeTemplates : presentation::controls::GuiInstanceR
     property ToolstripDropdownButton : system::Function<presentation::templates::GuiToolstripButtonTemplate*, system::Object>^;
     property ToolstripSplitButton : system::Function<presentation::templates::GuiToolstripButtonTemplate*, system::Object>^;
     property ToolstripSplitter : system::Function<presentation::templates::GuiControlTemplate*, system::Object>^;
+    property ToolstripSplitterInMenu : system::Function<presentation::templates::GuiControlTemplate*, system::Object>^;
     property ToolstripToolBar : system::Function<presentation::templates::GuiControlTemplate*, system::Object>^;
+    property ToolstripToolBarInMenu : system::Function<presentation::templates::GuiControlTemplate*, system::Object>^;
     property Tooltip : system::Function<presentation::templates::GuiWindowTemplate*, system::Object>^;
     property TreeItemExpander : system::Function<presentation::templates::GuiSelectableButtonTemplate*, system::Object>^;
     property TreeView : system::Function<presentation::templates::GuiTreeViewTemplate*, system::Object>^;

@@ -156,10 +156,10 @@ GUI_REGISTER_PLUGIN(GuiReflectionPlugin)
 Compiler
 ***********************************************************************/
 
-// #define BUILD_FAKEDIALOG
+#define BUILD_FAKEDIALOG
 #define BUILD_UNITTESTVIEWER
-// #define BUILD_DARKSKIN
-// #define BUILD_FULLCONTROLTEST
+#define BUILD_DARKSKIN
+#define BUILD_FULLCONTROLTEST
 
 void GuiMain()
 {
