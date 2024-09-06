@@ -219,7 +219,7 @@ Helper Functions
 					if (desc.imageId)
 					{
 						vint index = trace.imageCreations->Keys().IndexOf(desc.imageId.Value());
-						if (index!= 1)
+						if (index != -1)
 						{
 							auto binary = trace.imageCreations->Values()[index].imageData;
 							binary->SeekFromBegin(0);

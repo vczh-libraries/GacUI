@@ -9038,9 +9038,11 @@ GuiPredefinedInstanceLoadersPlugin
 						ADD_VIRTUAL_CONTROL		(MenuSplitter,				GuiControl,						MenuSplitter										);
 						ADD_VIRTUAL_CONTROL		(MenuBarButton,				GuiToolstripButton,				MenuBarButton										);
 						ADD_VIRTUAL_CONTROL		(MenuItemButton,			GuiToolstripButton,				MenuItemButton										);
+						ADD_VIRTUAL_CONTROL		(ToolstripToolBarInMenu,	GuiToolstripToolBar,			ToolstripToolBarInMenu								);
 						ADD_VIRTUAL_CONTROL		(ToolstripDropdownButton,	GuiToolstripButton,				ToolstripDropdownButton								);
 						ADD_VIRTUAL_CONTROL		(ToolstripSplitButton,		GuiToolstripButton,				ToolstripSplitButton								);
 						ADD_VIRTUAL_CONTROL		(ToolstripSplitter,			GuiControl,						ToolstripSplitter									);
+						ADD_VIRTUAL_CONTROL		(ToolstripSplitterInMenu,	GuiControl,						ToolstripSplitterInMenu								);
 						ADD_VIRTUAL_CONTROL		(RibbonSmallButton,			GuiToolstripButton,				RibbonSmallButton									);
 						ADD_VIRTUAL_CONTROL		(RibbonSmallDropdownButton,	GuiToolstripButton,				RibbonSmallDropdownButton							);
 						ADD_VIRTUAL_CONTROL		(RibbonSmallSplitButton,	GuiToolstripButton,				RibbonSmallSplitButton								);

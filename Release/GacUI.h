@@ -9896,10 +9896,12 @@ Theme Names
 			F(ToolstripButtonTemplate,		MenuBarButton)				\
 			F(ToolstripButtonTemplate,		MenuItemButton)				\
 			F(ControlTemplate,				ToolstripToolBar)			\
+			F(ControlTemplate,				ToolstripToolBarInMenu)		\
 			F(ToolstripButtonTemplate,		ToolstripButton)			\
 			F(ToolstripButtonTemplate,		ToolstripDropdownButton)	\
 			F(ToolstripButtonTemplate,		ToolstripSplitButton)		\
 			F(ControlTemplate,				ToolstripSplitter)			\
+			F(ControlTemplate,				ToolstripSplitterInMenu)	\
 			F(RibbonTabTemplate,			RibbonTab)					\
 			F(RibbonGroupTemplate,			RibbonGroup)				\
 			F(RibbonGroupMenuTemplate,		RibbonGroupMenu)			\
@@ -18013,6 +18015,9 @@ Menu Service
 				/// <summary>Get the preferred direction to open the sub menu.</summary>
 				/// <returns>The preferred direction to open the sub menu.</returns>
 				virtual Direction						GetPreferredDirection()=0;
+				/// <summary>Get the theme name of the host control.</summary>
+				/// <returns>The theme name of the host control.</returns>
+				virtual theme::ThemeName				GetHostThemeName() = 0;
 				/// <summary>Test is this menu is active. When an menu is active, the sub menu is automatically opened when the corresponding menu item is opened.</summary>
 				/// <returns>Returns true if this menu is active.</returns>
 				virtual bool							IsActiveState()=0;
@@ -18061,6 +18066,7 @@ Menu
 
 				IGuiMenuService*						GetParentMenuService()override;
 				Direction								GetPreferredDirection()override;
+				theme::ThemeName						GetHostThemeName()override;
 				bool									IsActiveState()override;
 				bool									IsSubMenuActivatedByMouseDown()override;
 				void									MenuItemExecuted()override;
@@ -18105,6 +18111,7 @@ Menu
 			private:
 				IGuiMenuService*						GetParentMenuService()override;
 				Direction								GetPreferredDirection()override;
+				theme::ThemeName						GetHostThemeName()override;
 				bool									IsActiveState()override;
 				bool									IsSubMenuActivatedByMouseDown()override;
 
@@ -20892,11 +20899,18 @@ Toolstrip Container
 			};
 
 			/// <summary>Toolstrip tool bar.</summary>
-			class GuiToolstripToolBar : public GuiControl, public Description<GuiToolstripToolBar>
+			class GuiToolstripToolBar : public GuiControl, protected IGuiMenuService, public Description<GuiToolstripToolBar>
 			{
 			protected:
 				compositions::GuiStackComposition*				stackComposition;
 				Ptr<GuiToolstripCollection>						toolstripItems;
+
+			private:
+				IGuiMenuService*								GetParentMenuService()override;
+				Direction										GetPreferredDirection()override;
+				theme::ThemeName								GetHostThemeName()override;
+				bool											IsActiveState()override;
+				bool											IsSubMenuActivatedByMouseDown()override;
 
 			public:
 				/// <summary>Create a control with a specified default theme.</summary>
@@ -20907,6 +20921,8 @@ Toolstrip Container
 				/// <summary>Get all managed child controls ordered by their positions.</summary>
 				/// <returns>All managed child controls.</returns>
 				collections::ObservableListBase<GuiControl*>&	GetToolstripItems();
+				
+				IDescriptable*									QueryService(const WString& identifier)override;
 			};
 
 /***********************************************************************

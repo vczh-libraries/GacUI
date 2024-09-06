@@ -11900,9 +11900,9 @@ GuiVirtualDataGrid
 			GuiVirtualDataGrid::GuiVirtualDataGrid(theme::ThemeName themeName, list::IItemProvider* _itemProvider)
 				:GuiVirtualListView(themeName, _itemProvider)
 			{
-				listViewItemView = dynamic_cast<IListViewItemView*>(_itemProvider->RequestView(IListViewItemView::Identifier));
-				columnItemView = dynamic_cast<ListViewColumnItemArranger::IColumnItemView*>(_itemProvider->RequestView(ListViewColumnItemArranger::IColumnItemView::Identifier));
-				dataGridView = dynamic_cast<IDataGridView*>(_itemProvider->RequestView(IDataGridView::Identifier));
+				listViewItemView = dynamic_cast<IListViewItemView*>(_itemProvider->RequestView(WString::Unmanaged(IListViewItemView::Identifier)));
+				columnItemView = dynamic_cast<ListViewColumnItemArranger::IColumnItemView*>(_itemProvider->RequestView(WString::Unmanaged(ListViewColumnItemArranger::IColumnItemView::Identifier)));
+				dataGridView = dynamic_cast<IDataGridView*>(_itemProvider->RequestView(WString::Unmanaged(IDataGridView::Identifier)));
 
 				{
 					auto mainProperty = [](const Value&) { return new MainColumnVisualizerTemplate; };
@@ -12052,7 +12052,7 @@ DataVisualizerBase
 
 				void DataVisualizerBase::BeforeVisualizeCell(list::IItemProvider* itemProvider, vint row, vint column)
 				{
-					if (auto listViewItemView = dynamic_cast<IListViewItemView*>(dataGridContext->GetItemProvider()->RequestView(IListViewItemView::Identifier)))
+					if (auto listViewItemView = dynamic_cast<IListViewItemView*>(dataGridContext->GetItemProvider()->RequestView(WString::Unmanaged(IListViewItemView::Identifier))))
 					{
 						auto style = dataGridContext->GetListViewControlTemplate();
 						visualizerTemplate->SetPrimaryTextColor(style->GetPrimaryTextColor());
@@ -12063,7 +12063,7 @@ DataVisualizerBase
 						visualizerTemplate->SetSmallImage(listViewItemView->GetSmallImage(row));
 						visualizerTemplate->SetText(column == 0 ? listViewItemView->GetText(row) : listViewItemView->GetSubItem(row, column - 1));
 					}
-					if (auto dataGridView = dynamic_cast<IDataGridView*>(dataGridContext->GetItemProvider()->RequestView(IDataGridView::Identifier)))
+					if (auto dataGridView = dynamic_cast<IDataGridView*>(dataGridContext->GetItemProvider()->RequestView(WString::Unmanaged(IDataGridView::Identifier))))
 					{
 						visualizerTemplate->SetRowValue(itemProvider->GetBindingValue(row));
 						visualizerTemplate->SetCellValue(dataGridView->GetBindingCellValue(row, column));
@@ -12169,7 +12169,7 @@ DataEditorBase
 
 				void DataEditorBase::BeforeEditCell(list::IItemProvider* itemProvider, vint row, vint column)
 				{
-					if (auto listViewItemView = dynamic_cast<IListViewItemView*>(dataGridContext->GetItemProvider()->RequestView(IListViewItemView::Identifier)))
+					if (auto listViewItemView = dynamic_cast<IListViewItemView*>(dataGridContext->GetItemProvider()->RequestView(WString::Unmanaged(IListViewItemView::Identifier))))
 					{
 						auto style = dataGridContext->GetListViewControlTemplate();
 						editorTemplate->SetPrimaryTextColor(style->GetPrimaryTextColor());
@@ -12180,7 +12180,7 @@ DataEditorBase
 						editorTemplate->SetSmallImage(listViewItemView->GetSmallImage(row));
 						editorTemplate->SetText(column == 0 ? listViewItemView->GetText(row) : listViewItemView->GetSubItem(row, column - 1));
 					}
-					if (auto dataGridView = dynamic_cast<IDataGridView*>(dataGridContext->GetItemProvider()->RequestView(IDataGridView::Identifier)))
+					if (auto dataGridView = dynamic_cast<IDataGridView*>(dataGridContext->GetItemProvider()->RequestView(WString::Unmanaged(IDataGridView::Identifier))))
 					{
 						editorTemplate->SetRowValue(itemProvider->GetBindingValue(row));
 						editorTemplate->SetCellValue(dataGridView->GetBindingCellValue(row, column));
@@ -14041,8 +14041,8 @@ ListViewColumnItemArranger
 					listView = dynamic_cast<GuiListViewBase*>(value);
 					if (listView)
 					{
-						listViewItemView = dynamic_cast<IListViewItemView*>(listView->GetItemProvider()->RequestView(IListViewItemView::Identifier));
-						columnItemView = dynamic_cast<IColumnItemView*>(listView->GetItemProvider()->RequestView(IColumnItemView::Identifier));
+						listViewItemView = dynamic_cast<IListViewItemView*>(listView->GetItemProvider()->RequestView(WString::Unmanaged(IListViewItemView::Identifier)));
+						columnItemView = dynamic_cast<IColumnItemView*>(listView->GetItemProvider()->RequestView(WString::Unmanaged(IColumnItemView::Identifier)));
 						listView->GetContainerComposition()->AddChild(columnHeaders);
 						if (columnItemView)
 						{
@@ -14746,7 +14746,7 @@ BigIconListViewItemTemplate
 					if (auto listView = dynamic_cast<GuiVirtualListView*>(listControl))
 					{
 						auto itemIndex = GetIndex();
-						if (auto view = dynamic_cast<IListViewItemView*>(listView->GetItemProvider()->RequestView(IListViewItemView::Identifier)))
+						if (auto view = dynamic_cast<IListViewItemView*>(listView->GetItemProvider()->RequestView(WString::Unmanaged(IListViewItemView::Identifier))))
 						{
 							auto imageData = view->GetLargeImage(itemIndex);
 							if (imageData)
@@ -14826,7 +14826,7 @@ SmallIconListViewItemTemplate
 					if (auto listView = dynamic_cast<GuiVirtualListView*>(listControl))
 					{
 						auto itemIndex = GetIndex();
-						if (auto view = dynamic_cast<IListViewItemView*>(listView->GetItemProvider()->RequestView(IListViewItemView::Identifier)))
+						if (auto view = dynamic_cast<IListViewItemView*>(listView->GetItemProvider()->RequestView(WString::Unmanaged(IListViewItemView::Identifier))))
 						{
 							auto imageData = view->GetSmallImage(itemIndex);
 							if (imageData)
@@ -14909,7 +14909,7 @@ ListListViewItemTemplate
 					if (auto listView = dynamic_cast<GuiVirtualListView*>(listControl))
 					{
 						auto itemIndex = GetIndex();
-						if (auto view = dynamic_cast<IListViewItemView*>(listView->GetItemProvider()->RequestView(IListViewItemView::Identifier)))
+						if (auto view = dynamic_cast<IListViewItemView*>(listView->GetItemProvider()->RequestView(WString::Unmanaged(IListViewItemView::Identifier))))
 						{
 							auto imageData = view->GetSmallImage(itemIndex);
 							if (imageData)
@@ -15039,7 +15039,7 @@ TileListViewItemTemplate
 					if (auto listView = dynamic_cast<GuiVirtualListView*>(listControl))
 					{
 						auto itemIndex = GetIndex();
-						if (auto view = dynamic_cast<IListViewItemView*>(listView->GetItemProvider()->RequestView(IListViewItemView::Identifier)))
+						if (auto view = dynamic_cast<IListViewItemView*>(listView->GetItemProvider()->RequestView(WString::Unmanaged(IListViewItemView::Identifier))))
 						{
 							auto imageData = view->GetLargeImage(itemIndex);
 							if (imageData)
@@ -15214,7 +15214,7 @@ InformationListViewItemTemplate
 					if (auto listView = dynamic_cast<GuiVirtualListView*>(listControl))
 					{
 						auto itemIndex = GetIndex();
-						if (auto view = dynamic_cast<IListViewItemView*>(listView->GetItemProvider()->RequestView(IListViewItemView::Identifier)))
+						if (auto view = dynamic_cast<IListViewItemView*>(listView->GetItemProvider()->RequestView(WString::Unmanaged(IListViewItemView::Identifier))))
 						{
 							auto imageData = view->GetLargeImage(itemIndex);
 							if (imageData)
@@ -15281,7 +15281,7 @@ DetailListViewItemTemplate
 
 				void DetailListViewItemTemplate::UpdateSubItemSize()
 				{
-					if (auto view = dynamic_cast<IListViewItemView*>(listControl->GetItemProvider()->RequestView(IListViewItemView::Identifier)))
+					if (auto view = dynamic_cast<IListViewItemView*>(listControl->GetItemProvider()->RequestView(WString::Unmanaged(IListViewItemView::Identifier))))
 					{
 						if (columnItemView)
 						{
@@ -15334,7 +15334,7 @@ DetailListViewItemTemplate
 
 				void DetailListViewItemTemplate::OnInitialize()
 				{
-					columnItemView = dynamic_cast<ListViewColumnItemArranger::IColumnItemView*>(listControl->GetItemProvider()->RequestView(ListViewColumnItemArranger::IColumnItemView::Identifier));
+					columnItemView = dynamic_cast<ListViewColumnItemArranger::IColumnItemView*>(listControl->GetItemProvider()->RequestView(WString::Unmanaged(ListViewColumnItemArranger::IColumnItemView::Identifier)));
 
 					{
 						textTable = new GuiTableComposition;
@@ -15398,7 +15398,7 @@ DetailListViewItemTemplate
 					if (auto listView = dynamic_cast<GuiVirtualListView*>(listControl))
 					{
 						auto itemIndex = GetIndex();
-						if (auto view = dynamic_cast<IListViewItemView*>(listView->GetItemProvider()->RequestView(IListViewItemView::Identifier)))
+						if (auto view = dynamic_cast<IListViewItemView*>(listView->GetItemProvider()->RequestView(WString::Unmanaged(IListViewItemView::Identifier))))
 						{
 							vint subColumnCount = view->GetColumnCount() - 1;
 							if (subColumnCount < 0) subColumnCount = 0;
@@ -15568,7 +15568,7 @@ DefaultTextListItemTemplate
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::controls::list::DefaultTextListItemTemplate::OnBulletSelectedChanged(GuiGraphicsComposition*, GuiEventArgs&)#"
 					if (!supressEdit)
 					{
-						if (auto textItemView = dynamic_cast<ITextItemView*>(listControl->GetItemProvider()->RequestView(ITextItemView::Identifier)))
+						if (auto textItemView = dynamic_cast<ITextItemView*>(listControl->GetItemProvider()->RequestView(WString::Unmanaged(ITextItemView::Identifier))))
 						{
 							listControl->GetItemProvider()->PushEditing();
 							textItemView->SetChecked(GetIndex(), bulletButton->GetSelected());
@@ -15755,7 +15755,7 @@ GuiTextList
 				if (auto textItemStyle = dynamic_cast<templates::GuiTextListItemTemplate*>(style))
 				{
 					textItemStyle->SetTextColor(TypedControlTemplateObject(true)->GetTextColor());
-					if (auto textItemView = dynamic_cast<list::ITextItemView*>(itemProvider->RequestView(list::ITextItemView::Identifier)))
+					if (auto textItemView = dynamic_cast<list::ITextItemView*>(itemProvider->RequestView(WString::Unmanaged(list::ITextItemView::Identifier))))
 					{
 						textItemStyle->SetChecked(textItemView->GetChecked(itemIndex));
 					}
@@ -15991,7 +15991,7 @@ GuiVirtualTreeListControl
 				:GuiSelectableListControl(themeName, new tree::NodeItemProvider(_nodeRootProvider))
 			{
 				nodeItemProvider = dynamic_cast<tree::NodeItemProvider*>(GetItemProvider());
-				nodeItemView = dynamic_cast<tree::INodeItemView*>(GetItemProvider()->RequestView(tree::INodeItemView::Identifier));
+				nodeItemView = dynamic_cast<tree::INodeItemView*>(GetItemProvider()->RequestView(WString::Unmanaged(tree::INodeItemView::Identifier)));
 
 				NodeLeftButtonDown.SetAssociatedComposition(boundsComposition);
 				NodeLeftButtonUp.SetAssociatedComposition(boundsComposition);
@@ -16245,7 +16245,7 @@ GuiVirtualTreeView
 			GuiVirtualTreeView::GuiVirtualTreeView(theme::ThemeName themeName, Ptr<tree::INodeRootProvider> _nodeRootProvider)
 				:GuiVirtualTreeListControl(themeName, _nodeRootProvider)
 			{
-				treeViewItemView = dynamic_cast<tree::ITreeViewItemView*>(GetNodeRootProvider()->RequestView(tree::ITreeViewItemView::Identifier));
+				treeViewItemView = dynamic_cast<tree::ITreeViewItemView*>(GetNodeRootProvider()->RequestView(WString::Unmanaged(tree::ITreeViewItemView::Identifier)));
 				SetStyleAndArranger(
 					[](const Value&) { return new tree::DefaultTreeItemTemplate; },
 					Ptr(new list::FixedHeightItemArranger)
@@ -23270,6 +23270,11 @@ GuiMenu
 				return IGuiMenuService::Vertical;
 			}
 
+			theme::ThemeName GuiMenu::GetHostThemeName()
+			{
+				return GetControlThemeName();
+			}
+
 			bool GuiMenu::IsActiveState()
 			{
 				return true;
@@ -23401,12 +23406,17 @@ GuiMenuBar
 
 			IGuiMenuService* GuiMenuBar::GetParentMenuService()
 			{
-				return 0;
+				return GetParent() ? GetParent()->QueryTypedService<IGuiMenuService>() : nullptr;
 			}
 
 			IGuiMenuService::Direction GuiMenuBar::GetPreferredDirection()
 			{
 				return IGuiMenuService::Horizontal;
+			}
+
+			theme::ThemeName GuiMenuBar::GetHostThemeName()
+			{
+				return GetControlThemeName();
 			}
 
 			bool GuiMenuBar::IsActiveState()
@@ -26550,6 +26560,31 @@ GuiToolstripMenuBar
 /***********************************************************************
 GuiToolstripToolBar
 ***********************************************************************/
+
+			IGuiMenuService* GuiToolstripToolBar::GetParentMenuService()
+			{
+				return GetParent() ? GetParent()->QueryTypedService<IGuiMenuService>() : nullptr;
+			}
+
+			IGuiMenuService::Direction GuiToolstripToolBar::GetPreferredDirection()
+			{
+				return IGuiMenuService::Horizontal;
+			}
+
+			theme::ThemeName GuiToolstripToolBar::GetHostThemeName()
+			{
+				return GetControlThemeName();
+			}
+
+			bool GuiToolstripToolBar::IsActiveState()
+			{
+				return GetOpeningMenu() != nullptr;
+			}
+
+			bool GuiToolstripToolBar::IsSubMenuActivatedByMouseDown()
+			{
+				return false;
+			}
 				
 			GuiToolstripToolBar::GuiToolstripToolBar(theme::ThemeName themeName)
 				:GuiControl(themeName)
@@ -26570,6 +26605,18 @@ GuiToolstripToolBar
 			collections::ObservableListBase<GuiControl*>& GuiToolstripToolBar::GetToolstripItems()
 			{
 				return *toolstripItems.Obj();
+			}
+
+			IDescriptable* GuiToolstripToolBar::QueryService(const WString& identifier)
+			{
+				if (identifier == IGuiMenuService::Identifier)
+				{
+					return (IGuiMenuService*)this;
+				}
+				else
+				{
+					return GuiControl::QueryService(identifier);
+				}
 			}
 
 /***********************************************************************
@@ -26863,27 +26910,36 @@ GuiToolstripGroupContainer
 
 			void GuiToolstripGroupContainer::OnParentLineChanged()
 			{
-				auto direction = GuiStackComposition::Horizontal;
+				auto newDirection = GuiStackComposition::Horizontal;
+				auto newTheme = theme::ThemeName::ToolstripSplitter;
+
 				if (auto service = QueryTypedService<IGuiMenuService>())
 				{
 					if (service->GetPreferredDirection() == IGuiMenuService::Vertical)
 					{
-						direction = GuiStackComposition::Vertical;
+						newTheme = theme::ThemeName::MenuSplitter;
+						newDirection = GuiStackComposition::Vertical;
+					}
+
+					switch (service->GetHostThemeName())
+					{
+					case theme::ThemeName::MenuBar:
+						newTheme = theme::ThemeName::MenuSplitter;
+						break;
+					case theme::ThemeName::ToolstripToolBar:
+						newTheme = theme::ThemeName::ToolstripSplitter;
+						break;
+					case theme::ThemeName::ToolstripToolBarInMenu:
+						newTheme = theme::ThemeName::ToolstripSplitterInMenu;
+						break;
+					default:;
 					}
 				}
 
-				if (direction != stackComposition->GetDirection())
+				if (newDirection != stackComposition->GetDirection() || newTheme != splitterThemeName)
 				{
-					if (direction == GuiStackComposition::Vertical)
-					{
-						splitterThemeName = theme::ThemeName::MenuSplitter;
-					}
-					else
-					{
-						splitterThemeName = theme::ThemeName::ToolstripSplitter;
-					}
-
-					stackComposition->SetDirection(direction);
+					splitterThemeName = newTheme;
+					stackComposition->SetDirection(newDirection);
 					groupCollection->RebuildSplitters();
 					UpdateLayout();
 				}
