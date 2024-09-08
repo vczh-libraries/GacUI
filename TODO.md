@@ -63,8 +63,11 @@
 - Non-editing control unit test (using DarkSkin)
   - Menu
     - ComboBox
+      - Property/Mouse/Key/Alt
+      - Item Template applied to ComboBox only or with `GuiTextBox`
     - GuiDatePicker
     - GuiDateComboBox
+      - Refactor and reuse test cases from `GuiDatePicker`
   - BindableControls
     - Set or reset item source
     - Set or reset property bindings
@@ -148,6 +151,7 @@
   - Implement `ColorizedTextElement` and `DocumentElement`.
     - Think about how to calculate size for document.
   - Typing trigger functions in unit test framework.
+  - `GuiBindableDataGrid` with predefined text box editor.
   - Check all control key operation, ensure accessibility.
     - Cannot scroll `GuiScrollView`, key operations needed and also need to be disabled for `GuiListControl` because it has already defined item selection keys.
     - `Gui(Bindable)TextList` cannot check or uncheck items by key (enter and space).
