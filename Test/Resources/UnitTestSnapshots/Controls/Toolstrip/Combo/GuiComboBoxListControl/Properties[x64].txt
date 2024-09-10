@@ -61,7 +61,7 @@ namespace gacuisrc_unittest
             }
             (<precompile>0 = combo.BoundsComposition);
             {
-                (<precompile>0.PreferredMinSize = {x : 160; y : 24;} of (::presentation::Size));
+                (<precompile>0.PreferredMinSize = {x : 160;} of (::presentation::Size));
             }
             {
                 (<precompile>0.AlignmentToParent = {left : 10; top : 10; right : (-1); bottom : (-1);} of (::presentation::Margin));

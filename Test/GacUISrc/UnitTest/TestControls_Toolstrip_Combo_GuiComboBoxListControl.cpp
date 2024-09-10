@@ -14,7 +14,7 @@ TEST_FILE
       }]]></ref.Ctor>
       <Window ref.Name="self" Text="GuiComboBox" ClientSize="x:320 y:240">
         <ComboBox ref.Name="combo">
-          <att.BoundsComposition-set AlignmentToParent="left:10 top:10 right:-1 bottom:-1" PreferredMinSize="x:160 y:24"/>
+          <att.BoundsComposition-set AlignmentToParent="left:10 top:10 right:-1 bottom:-1" PreferredMinSize="x:160"/>
           <att.ListControl>
             <TextList ref.Name="list" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false"/>
           </att.ListControl>
