@@ -16,6 +16,18 @@ namespace gacui_unittest_template
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto comboBox = FindObjectByName<GuiComboBoxListControl>(window, L"combo");
+					comboBox->SetEnabled(false);
+				});
+				protocol->OnNextIdleFrame(L"Disabled", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto comboBox = FindObjectByName<GuiComboBoxListControl>(window, L"combo");
+					comboBox->SetEnabled(true);
+				});
+				protocol->OnNextIdleFrame(L"Enabled", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto comboBox = FindObjectByName<GuiComboBoxListControl>(window, L"combo");
 					auto listControl = FindObjectByName<GuiListControl>(window, L"list");
 					TEST_ASSERT(comboBox->GetContainedListControl() == listControl);
 					TEST_ASSERT(comboBox->GetItemProvider() == listControl->GetItemProvider());
@@ -59,6 +71,7 @@ namespace gacui_unittest_template
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto comboBox = FindObjectByName<GuiComboBoxListControl>(window, L"combo");
+					comboBox->SetContext(BoxValue(WString(L"This")));
 					TEST_ASSERT(comboBox->GetSelectedIndex() == -1);
 					TEST_ASSERT(comboBox->GetSelectedItem().IsNull());
 					TEST_ASSERT(comboBox->GetText() == L"");
@@ -70,6 +83,7 @@ namespace gacui_unittest_template
 					auto window = GetApplication()->GetMainWindow();
 					auto comboBox = FindObjectByName<GuiComboBoxListControl>(window, L"combo");
 					auto listControl = FindObjectByName<GuiListControl>(window, L"list");
+					comboBox->SetContext(BoxValue(WString(L"That")));
 					LClickListItem(protocol, listControl, 1);
 					TEST_ASSERT(comboBox->GetSelectedIndex() == 1);
 					auto value = UnboxValue<Ptr<TextItem>>(comboBox->GetSelectedItem());
