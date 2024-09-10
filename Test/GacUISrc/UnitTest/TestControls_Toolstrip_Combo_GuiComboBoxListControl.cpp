@@ -88,7 +88,7 @@ TEST_FILE
 </Resource>
 )GacUISrc";
 
-	TEST_CATEGORY(L"GuiComboBoxListControl")
+	TEST_CATEGORY(L"GuiComboBoxListControl/ItemTemplate")
 	{
 		GuiComboBoxListControl_TestCases(
 			resourceComboBoxWithItemTemplate,
