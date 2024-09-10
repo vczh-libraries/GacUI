@@ -103,4 +103,11 @@ namespace gacui_unittest_template
 		Func<void(Value, WString)> updateText,
 		Func<void(GuiWindow*, Value)> notifyNodeDataModified
 	);
+
+	// ComboBox
+
+	extern void GuiComboBoxListControl_TestCases(
+		WString resourceXml,
+		WString pathFragment
+	);
 }

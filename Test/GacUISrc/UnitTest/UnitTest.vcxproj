@@ -218,6 +218,7 @@
     <ClCompile Include="TestControls_List_GuiVirtualTreeView.cpp" />
     <ClCompile Include="TestControls_List_GuiVirtualTreeView_Template.cpp" />
     <ClCompile Include="TestControls_Toolstrip_Combo_GuiComboBoxListControl.cpp" />
+    <ClCompile Include="TestControls_Toolstrip_Combo_GuiComboBoxListControl_Template.cpp" />
     <ClCompile Include="TestControls_Toolstrip_GuiToolstripMenu.cpp" />
     <ClCompile Include="TestControls_Toolstrip_GuiToolstripMenuBar.cpp" />
     <ClCompile Include="TestControls_Toolstrip_GuiToolstripMenuBar_Cascade.cpp" />

@@ -228,6 +228,9 @@
     <ClCompile Include="TestControls_Toolstrip_Combo_GuiComboBoxListControl.cpp">
       <Filter>Source Files\Controls\Toolstrip\Combo</Filter>
     </ClCompile>
+    <ClCompile Include="TestControls_Toolstrip_Combo_GuiComboBoxListControl_Template.cpp">
+      <Filter>Source Files\Controls\Toolstrip\Combo</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="TestCompositions.h">
