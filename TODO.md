@@ -63,8 +63,7 @@
 - Non-editing control unit test (using DarkSkin)
   - Menu
     - ComboBox
-      - Property/Mouse/Key/Alt
-      - Item Template applied to ComboBox only or with `GuiTextBox`
+      - Item Template (with `Context`) applied to ComboBox only or with `GuiTextBox`
     - GuiDatePicker
     - GuiDateComboBox
       - Refactor and reuse test cases from `GuiDatePicker`
