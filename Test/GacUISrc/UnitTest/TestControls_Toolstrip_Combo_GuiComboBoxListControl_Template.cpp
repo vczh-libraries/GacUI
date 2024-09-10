@@ -16,6 +16,22 @@ namespace gacui_unittest_template
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto comboBox = FindObjectByName<GuiComboBoxListControl>(window, L"combo");
+					auto listControl = FindObjectByName<GuiListControl>(window, L"list");
+					TEST_ASSERT(comboBox->GetContainedListControl() == listControl);
+					TEST_ASSERT(comboBox->GetItemProvider() == listControl->GetItemProvider());
+					TEST_ASSERT(comboBox->GetSelectedIndex() == -1);
+					TEST_ASSERT(comboBox->GetSelectedItem().IsNull());
+					TEST_ASSERT(comboBox->GetText() == L"");
+					comboBox->SetSelectedIndex(2);
+					TEST_ASSERT(comboBox->GetSelectedIndex() == 2);
+					auto value = UnboxValue<Ptr<TextItem>>(comboBox->GetSelectedItem());
+					TEST_ASSERT(value->GetText() == L"Item 3");
+					TEST_ASSERT(comboBox->GetText() == L"Item 3");
+				});
+				protocol->OnNextIdleFrame(L"Select 3rd", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto comboBox = FindObjectByName<GuiComboBoxListControl>(window, L"combo");
 					comboBox->SetEnabled(false);
 				});
 				protocol->OnNextIdleFrame(L"Disabled", [=]()
@@ -28,12 +44,6 @@ namespace gacui_unittest_template
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto comboBox = FindObjectByName<GuiComboBoxListControl>(window, L"combo");
-					auto listControl = FindObjectByName<GuiListControl>(window, L"list");
-					TEST_ASSERT(comboBox->GetContainedListControl() == listControl);
-					TEST_ASSERT(comboBox->GetItemProvider() == listControl->GetItemProvider());
-					TEST_ASSERT(comboBox->GetSelectedIndex() == -1);
-					TEST_ASSERT(comboBox->GetSelectedItem().IsNull());
-					TEST_ASSERT(comboBox->GetText() == L"");
 					comboBox->SetSelectedIndex(0);
 					TEST_ASSERT(comboBox->GetSelectedIndex() == 0);
 					auto value = UnboxValue<Ptr<TextItem>>(comboBox->GetSelectedItem());
@@ -71,10 +81,15 @@ namespace gacui_unittest_template
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto comboBox = FindObjectByName<GuiComboBoxListControl>(window, L"combo");
+					auto listControl = FindObjectByName<GuiListControl>(window, L"list");
 					comboBox->SetContext(BoxValue(WString(L"This")));
-					TEST_ASSERT(comboBox->GetSelectedIndex() == -1);
-					TEST_ASSERT(comboBox->GetSelectedItem().IsNull());
-					TEST_ASSERT(comboBox->GetText() == L"");
+					listControl->SetContext(BoxValue(WString(L"That")));
+					comboBox->SetSelectedIndex(2);
+				});
+				protocol->OnNextIdleFrame(L"Select 3rd", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto comboBox = FindObjectByName<GuiComboBoxListControl>(window, L"combo");
 					auto location = protocol->LocationOf(comboBox);
 					protocol->LClick(location);
 				});
@@ -83,7 +98,6 @@ namespace gacui_unittest_template
 					auto window = GetApplication()->GetMainWindow();
 					auto comboBox = FindObjectByName<GuiComboBoxListControl>(window, L"combo");
 					auto listControl = FindObjectByName<GuiListControl>(window, L"list");
-					comboBox->SetContext(BoxValue(WString(L"That")));
 					LClickListItem(protocol, listControl, 1);
 					TEST_ASSERT(comboBox->GetSelectedIndex() == 1);
 					auto value = UnboxValue<Ptr<TextItem>>(comboBox->GetSelectedItem());
@@ -111,9 +125,12 @@ namespace gacui_unittest_template
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto comboBox = FindObjectByName<GuiComboBoxListControl>(window, L"combo");
-					TEST_ASSERT(comboBox->GetSelectedIndex() == -1);
-					TEST_ASSERT(comboBox->GetSelectedItem().IsNull());
-					TEST_ASSERT(comboBox->GetText() == L"");
+					comboBox->SetSelectedIndex(2);
+				});
+				protocol->OnNextIdleFrame(L"Select 3rd", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto comboBox = FindObjectByName<GuiComboBoxListControl>(window, L"combo");
 					comboBox->SetFocused();
 				});
 				protocol->OnNextIdleFrame(L"Focused", [=]()
@@ -155,9 +172,10 @@ namespace gacui_unittest_template
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto comboBox = FindObjectByName<GuiComboBoxListControl>(window, L"combo");
-					TEST_ASSERT(comboBox->GetSelectedIndex() == -1);
-					TEST_ASSERT(comboBox->GetSelectedItem().IsNull());
-					TEST_ASSERT(comboBox->GetText() == L"");
+					comboBox->SetSelectedIndex(2);
+				});
+				protocol->OnNextIdleFrame(L"Select 3rd", [=]()
+				{
 					protocol->KeyPress(VKEY::KEY_MENU);
 				});
 				protocol->OnNextIdleFrame(L"[ALT]", [=]()
