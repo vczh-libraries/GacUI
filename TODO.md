@@ -47,6 +47,8 @@
   - When the content is changed, configuration needs 2 idle frames to be correctly configured.
 - `GuiListItemTemplate/ArrangerAndAxis(WithScrolls)`
   - items are not aligned to proper corner when scrolls are invisible.
+- Stop hard-coding coordinates:
+  - `GetListItemLocation`.
 
 ## Release (optional)
 
@@ -63,6 +65,11 @@
 - Non-editing control unit test (using DarkSkin)
   - Menu
     - GuiDatePicker
+      - Stop hard-coding mouse coordinate:
+        - `(H|V)(Scroll|Tracker)`'s `Mouse`. Just call common behavior classes assuming templates implement it.
+        - `GuiToolstripSplitButton`.
+        - `GuiToolstripMenuBar/Cascade/ClickSubMenu`'s `Hover on File/New` try to avoid specifying relative coordinate just because half of the menu item is covered.
+      - So as `GuiDatePicker`.
     - GuiDateComboBox
       - Refactor and reuse test cases from `GuiDatePicker`
   - BindableControls
