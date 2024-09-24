@@ -172,13 +172,19 @@ TEST_FILE
 
 		TEST_CASE(L"Mouse")
 		{
+			// only works with DarkSkin or any template object with:
+			//   GuiPartialView: handle
+
 			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
 			{
 				protocol->OnNextIdleFrame(L"Ready", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto tracker = FindObjectByName<GuiScroll>(window, L"tracker");
-					protocol->MouseMove({ {20},{45} });
+					auto scrollTemplate = tracker->TypedControlTemplateObject(false);
+					auto handle = FindObjectByName<GuiGraphicsComposition>(scrollTemplate, L"handle");
+					auto location = protocol->LocationOf(handle);
+					protocol->MouseMove(location);
 					TEST_ASSERT(tracker->GetPosition() == 0);
 				});
 				protocol->OnNextIdleFrame(L"Hover", [=]()
@@ -189,21 +195,31 @@ TEST_FILE
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto tracker = FindObjectByName<GuiScroll>(window, L"tracker");
-					protocol->MouseMove({ {200},{100} });
+					auto scrollTemplate = tracker->TypedControlTemplateObject(false);
+					auto handle = FindObjectByName<GuiGraphicsComposition>(scrollTemplate, L"handle");
+					auto location = protocol->LocationOf(handle->GetParent(), 1.0, 0.5, 0, 0);
+					protocol->MouseMove(location);
 					TEST_ASSERT(tracker->GetPosition() == 10);
 				});
 				protocol->OnNextIdleFrame(L"Drag to End", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto tracker = FindObjectByName<GuiScroll>(window, L"tracker");
-					protocol->MouseMove({ {0},{0} });
+					auto scrollTemplate = tracker->TypedControlTemplateObject(false);
+					auto handle = FindObjectByName<GuiGraphicsComposition>(scrollTemplate, L"handle");
+					auto location = protocol->LocationOf(handle->GetParent(), 0.0, 0.5, 0, 0);
+					protocol->MouseMove(location);
 					TEST_ASSERT(tracker->GetPosition() == 0);
 				});
 				protocol->OnNextIdleFrame(L"Drag to Front", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto tracker = FindObjectByName<GuiScroll>(window, L"tracker");
-					protocol->MouseMove({ {75},{45} });
+					auto scrollTemplate = tracker->TypedControlTemplateObject(false);
+					auto handle = FindObjectByName<GuiGraphicsComposition>(scrollTemplate, L"handle");
+					auto location = protocol->LocationOf(handle);
+					auto offset = (handle->GetParent()->GetCachedBounds().Width() - handle->GetCachedBounds().Width()) * 4 / 10;
+					protocol->MouseMove({ location.x + offset,location.y });
 					TEST_ASSERT(tracker->GetPosition() == 4);
 				});
 				protocol->OnNextIdleFrame(L"Drag to Center", [=]()
@@ -217,7 +233,10 @@ TEST_FILE
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto tracker = FindObjectByName<GuiScroll>(window, L"tracker");
-					protocol->MouseMove({ {76},{45} });
+					auto scrollTemplate = tracker->TypedControlTemplateObject(false);
+					auto handle = FindObjectByName<GuiGraphicsComposition>(scrollTemplate, L"handle");
+					auto location = protocol->LocationOf(handle, 0.0, 0.0, 1, 1);
+					protocol->MouseMove(location);
 					TEST_ASSERT(tracker->GetPosition() == 4);
 				});
 				protocol->OnNextIdleFrame(L"Hover", [=]()
@@ -376,13 +395,19 @@ TEST_FILE
 
 		TEST_CASE(L"Mouse")
 		{
+			// only works with DarkSkin or any template object with:
+			//   GuiPartialView: handle
+
 			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
 			{
 				protocol->OnNextIdleFrame(L"Ready", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto tracker = FindObjectByName<GuiScroll>(window, L"tracker");
-					protocol->MouseMove({ {25},{43} });
+					auto scrollTemplate = tracker->TypedControlTemplateObject(false);
+					auto handle = FindObjectByName<GuiGraphicsComposition>(scrollTemplate, L"handle");
+					auto location = protocol->LocationOf(handle);
+					protocol->MouseMove(location);
 					TEST_ASSERT(tracker->GetPosition() == 0);
 				});
 				protocol->OnNextIdleFrame(L"Hover", [=]()
@@ -393,21 +418,31 @@ TEST_FILE
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto tracker = FindObjectByName<GuiScroll>(window, L"tracker");
-					protocol->MouseMove({ {100},{200} });
+					auto scrollTemplate = tracker->TypedControlTemplateObject(false);
+					auto handle = FindObjectByName<GuiGraphicsComposition>(scrollTemplate, L"handle");
+					auto location = protocol->LocationOf(handle->GetParent(), 0.5, 1.0, 0, 0);
+					protocol->MouseMove(location);
 					TEST_ASSERT(tracker->GetPosition() == 10);
 				});
 				protocol->OnNextIdleFrame(L"Drag to End", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto tracker = FindObjectByName<GuiScroll>(window, L"tracker");
-					protocol->MouseMove({ {0},{0} });
+					auto scrollTemplate = tracker->TypedControlTemplateObject(false);
+					auto handle = FindObjectByName<GuiGraphicsComposition>(scrollTemplate, L"handle");
+					auto location = protocol->LocationOf(handle->GetParent(), 0.5, 0.0, 0, 0);
+					protocol->MouseMove(location);
 					TEST_ASSERT(tracker->GetPosition() == 0);
 				});
 				protocol->OnNextIdleFrame(L"Drag to Front", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto tracker = FindObjectByName<GuiScroll>(window, L"tracker");
-					protocol->MouseMove({ {25},{98} });
+					auto scrollTemplate = tracker->TypedControlTemplateObject(false);
+					auto handle = FindObjectByName<GuiGraphicsComposition>(scrollTemplate, L"handle");
+					auto location = protocol->LocationOf(handle);
+					auto offset = (handle->GetParent()->GetCachedBounds().Height() - handle->GetCachedBounds().Height()) * 4 / 10;
+					protocol->MouseMove({ location.x,location.y + offset });
 					TEST_ASSERT(tracker->GetPosition() == 4);
 				});
 				protocol->OnNextIdleFrame(L"Drag to Center", [=]()
@@ -421,7 +456,10 @@ TEST_FILE
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto tracker = FindObjectByName<GuiScroll>(window, L"tracker");
-					protocol->MouseMove({ {25},{99} });
+					auto scrollTemplate = tracker->TypedControlTemplateObject(false);
+					auto handle = FindObjectByName<GuiGraphicsComposition>(scrollTemplate, L"handle");
+					auto location = protocol->LocationOf(handle, 0.0, 0.0, 1, 1);
+					protocol->MouseMove(location);
 					TEST_ASSERT(tracker->GetPosition() == 4);
 				});
 				protocol->OnNextIdleFrame(L"Hover", [=]()

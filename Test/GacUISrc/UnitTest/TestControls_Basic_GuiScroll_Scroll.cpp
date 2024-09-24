@@ -240,10 +240,10 @@ TEST_FILE
 
 		TEST_CASE(L"Mouse")
 		{
-			// only works for DarkSkin or any template object with:
+			// only works with DarkSkin or any template object with:
 			//   GuiButton:      buttonIncrease
 			//   GuiButton:      buttonDecrease
-			//   GuiPartialView: handler
+			//   GuiPartialView: handle
 
 			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
 			{
@@ -533,10 +533,10 @@ TEST_FILE
 
 		TEST_CASE(L"Mouse")
 		{
-			// only works for DarkSkin or any template object with:
+			// only works with DarkSkin or any template object with:
 			//   GuiButton:      buttonIncrease
 			//   GuiButton:      buttonDecrease
-			//   GuiPartialView: handler
+			//   GuiPartialView: handle
 
 			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
 			{
