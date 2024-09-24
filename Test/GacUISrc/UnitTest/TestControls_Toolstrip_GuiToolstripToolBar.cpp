@@ -142,6 +142,9 @@ TEST_FILE
 
 		TEST_CASE(L"ToolstripSplitButton")
 		{
+			// only works with DarkSkin or any template object with:
+			//   GuiButton: buttonArrow
+
 			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
 			{
 				protocol->OnNextIdleFrame(L"Ready", [=]()
@@ -155,7 +158,9 @@ TEST_FILE
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto menuButton = FindObjectByName<GuiControl>(window, L"buttonAlign");
-					auto location = protocol->LocationOf(menuButton, 1.0, 0.5, -3, 0);
+					auto toolstripTemplate = menuButton->TypedControlTemplateObject(false);
+					auto handle = FindObjectByName<GuiButton>(toolstripTemplate, L"buttonArrow");
+					auto location = protocol->LocationOf(handle);
 					protocol->LClick(location);
 				});
 				protocol->OnNextIdleFrame(L"Dropdown Align", [=]()

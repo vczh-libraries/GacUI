@@ -40,6 +40,10 @@
 
 ## Known Issues (Unit Test)
 
+- Tests that assuming DarkSkin:
+  - `(H|V)(Tracker|Scroll)/Mouse`
+  - `ToolstripSplitButton`
+  - `GuiDatePicker/Mouse`
 - `(H|V)(Tracker|Scroll)/Mouse`
   - when `Drag to Center` the handler should be highlighted, because the mouse is right above the handler.
 - `GuiScrollContainer`
@@ -49,6 +53,7 @@
   - items are not aligned to proper corner when scrolls are invisible.
 - Stop hard-coding coordinates:
   - `GetListItemLocation`.
+  - `GuiToolstripMenuBar/Cascade/ClickSubMenu`'s `Hover on File/New` try to avoid specifying relative coordinate just because half of the menu item is covered.
 
 ## Release (optional)
 
@@ -66,7 +71,6 @@
   - Menu
     - GuiDatePicker
       - Stop hard-coding mouse coordinate:
-        - `GuiToolstripSplitButton`.
         - `GuiToolstripMenuBar/Cascade/ClickSubMenu`'s `Hover on File/New` try to avoid specifying relative coordinate just because half of the menu item is covered.
       - So as `GuiDatePicker`.
     - GuiDateComboBox

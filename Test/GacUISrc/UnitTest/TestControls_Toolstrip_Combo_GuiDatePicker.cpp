@@ -34,5 +34,12 @@ TEST_FILE
 				resourceDatePicker
 				);
 		});
+
+		TEST_CASE(L"Mouse")
+		{
+			// only works with DarkSkin or any template object with:
+			//   GuiCommonDatePickerLook: look
+
+		});
 	});
 }
