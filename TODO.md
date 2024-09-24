@@ -66,7 +66,7 @@
   - Menu
     - GuiDatePicker
       - Stop hard-coding mouse coordinate:
-        - `(H|V)(Scroll|Tracker)`'s `Mouse`. Just call common behavior classes assuming templates implement it.
+        - `(H|V)(Tracker)`'s `Mouse`. Just call common behavior classes assuming templates implement it.
         - `GuiToolstripSplitButton`.
         - `GuiToolstripMenuBar/Cascade/ClickSubMenu`'s `Hover on File/New` try to avoid specifying relative coordinate just because half of the menu item is covered.
       - So as `GuiDatePicker`.

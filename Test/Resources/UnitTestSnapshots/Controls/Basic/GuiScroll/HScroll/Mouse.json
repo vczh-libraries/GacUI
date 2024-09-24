@@ -3497,8 +3497,8 @@
             {
               "id": 24,
               "size": {"x": 5, "y": 9},
-              "borderColor": "#999999",
-              "backgroundColor": "#999999",
+              "borderColor": "#1997EA",
+              "backgroundColor": "#1997EA",
               "points": [
                 {"x": 0, "y": 0},
                 {"x": 4, "y": 4},
@@ -4520,8 +4520,8 @@
             {
               "id": 23,
               "size": {"x": 5, "y": 9},
-              "borderColor": "#999999",
-              "backgroundColor": "#999999",
+              "borderColor": "#1997EA",
+              "backgroundColor": "#1997EA",
               "points": [
                 {"x": 4, "y": 0},
                 {"x": 0, "y": 4},
