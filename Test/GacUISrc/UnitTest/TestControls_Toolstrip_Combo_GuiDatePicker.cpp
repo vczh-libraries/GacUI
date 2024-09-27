@@ -199,6 +199,7 @@ TEST_FILE
 					auto window = GetApplication()->GetMainWindow();
 					auto datePicker = FindObjectByName<GuiDatePicker>(window, L"datePicker");
 					auto look = FindObjectByName<templates::GuiCommonDatePickerLook>(datePicker->TypedControlTemplateObject(false), L"look");
+					TEST_ASSERT(look->GetDateOfDayButton(4, 5) == DateTime::FromDateTime(1999, 12, 31));
 					auto location = protocol->LocationOf(look->GetDayButton(4, 5));
 					protocol->LClick(location);
 					TEST_ASSERT(datePicker->GetDate() == DateTime::FromDateTime(1999, 12, 31));
