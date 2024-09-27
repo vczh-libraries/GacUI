@@ -70,7 +70,7 @@ TEST_FILE
 			// C<date>: day button before the current month
 			// D<date>: day button of the current month
 			// E<date>: day button after the current month
-			
+
 			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
 			{
 				protocol->OnNextIdleFrame(L"Ready", [=]()
@@ -160,6 +160,60 @@ TEST_FILE
 			// only works with DarkSkin or any template object with:
 			//   GuiCommonDatePickerLook: look
 
+			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto datePicker = FindObjectByName<GuiDatePicker>(window, L"datePicker");
+					auto look = FindObjectByName<templates::GuiCommonDatePickerLook>(datePicker->TypedControlTemplateObject(false), L"look");
+					auto location = protocol->LocationOf(look->GetYearCombo());
+					protocol->LClick(location);
+				});
+				protocol->OnNextIdleFrame(L"Click Year", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto datePicker = FindObjectByName<GuiDatePicker>(window, L"datePicker");
+					protocol->KeyPress(VKEY::KEY_UP);
+					protocol->KeyPress(VKEY::KEY_RETURN);
+					TEST_ASSERT(datePicker->GetDate() == DateTime::FromDateTime(1999, 1, 1));
+				});
+				protocol->OnNextIdleFrame(L"[UP] + [ENTER] -> 1999-1-1", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto datePicker = FindObjectByName<GuiDatePicker>(window, L"datePicker");
+					auto look = FindObjectByName<templates::GuiCommonDatePickerLook>(datePicker->TypedControlTemplateObject(false), L"look");
+					auto location = protocol->LocationOf(look->GetMonthCombo());
+					protocol->LClick(location);
+				});
+				protocol->OnNextIdleFrame(L"Click Month", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto datePicker = FindObjectByName<GuiDatePicker>(window, L"datePicker");
+					protocol->KeyPress(VKEY::KEY_END);
+					protocol->KeyPress(VKEY::KEY_RETURN);
+					TEST_ASSERT(datePicker->GetDate() == DateTime::FromDateTime(1999, 12, 1));
+				});
+				protocol->OnNextIdleFrame(L"[END] + [ENTER] -> 1999-12-1", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto datePicker = FindObjectByName<GuiDatePicker>(window, L"datePicker");
+					auto look = FindObjectByName<templates::GuiCommonDatePickerLook>(datePicker->TypedControlTemplateObject(false), L"look");
+					auto location = protocol->LocationOf(look->GetDayButton(4, 5));
+					protocol->LClick(location);
+					TEST_ASSERT(datePicker->GetDate() == DateTime::FromDateTime(1999, 12, 31));
+				});
+				protocol->OnNextIdleFrame(L"Click 31 -> 1999-12-31", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					window->Hide();
+				});
+			});
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Controls/Toolstrip/Combo/GuiDatePicker/Mouse"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resourceDatePicker
+				);
 		});
 	});
 }
