@@ -6851,15 +6851,25 @@ class presentation::templates::GuiCommonDatePickerLook : presentation::templates
     property DateComboBoxTemplate : system::Function<presentation::templates::GuiComboBoxTemplate*, system::Object>^ { get:GetDateComboBoxTemplate set:SetDateComboBoxTemplate }
     property DateLocale : system::Locale { get:GetDateLocale set:SetDateLocale }
     property DateTextListTemplate : system::Function<presentation::templates::GuiTextListTemplate*, system::Object>^ { get:GetDateTextListTemplate set:SetDateTextListTemplate }
+    property DayColumns : system::Int64 { get:GetDayColumns }
+    property DayRows : system::Int64 { get:GetDayRows }
     property Font : presentation::FontProperties { get:GetFont set:SetFont }
+    property MonthCombo : presentation::controls::GuiComboBoxListControl* { get:GetMonthCombo }
+    property YearCombo : presentation::controls::GuiComboBoxListControl* { get:GetYearCombo }
 
     function GetCommands() : presentation::controls::IDatePickerCommandExecutor*;
     function GetDate() : system::DateTime;
     function GetDateButtonTemplate() : system::Function<presentation::templates::GuiSelectableButtonTemplate*, system::Object>^;
     function GetDateComboBoxTemplate() : system::Function<presentation::templates::GuiComboBoxTemplate*, system::Object>^;
     function GetDateLocale() : system::Locale;
+    function GetDateOfDayButton(row : system::Int64, column : system::Int64) : system::DateTime;
     function GetDateTextListTemplate() : system::Function<presentation::templates::GuiTextListTemplate*, system::Object>^;
+    function GetDayButton(row : system::Int64, column : system::Int64) : presentation::controls::GuiSelectableButton*;
+    function GetDayColumns() : system::Int64;
+    function GetDayRows() : system::Int64;
     function GetFont() : presentation::FontProperties;
+    function GetMonthCombo() : presentation::controls::GuiComboBoxListControl*;
+    function GetYearCombo() : presentation::controls::GuiComboBoxListControl*;
     function SetCommands(value : presentation::controls::IDatePickerCommandExecutor*) : system::Void;
     function SetDate(value : system::DateTime) : system::Void;
     function SetDateButtonTemplate(value : system::Function<presentation::templates::GuiSelectableButtonTemplate*, system::Object>^) : system::Void;

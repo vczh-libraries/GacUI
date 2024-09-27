@@ -433,6 +433,36 @@ GuiCommonDatePickerLook
 				}
 			}
 
+			controls::GuiComboBoxListControl* GuiCommonDatePickerLook::GetYearCombo()
+			{
+				return comboYear;
+			}
+
+			controls::GuiComboBoxListControl* GuiCommonDatePickerLook::GetMonthCombo()
+			{
+				return comboMonth;
+			}
+
+			vint GuiCommonDatePickerLook::GetDayRows()
+			{
+				return DaysOfWeek;
+			}
+
+			vint GuiCommonDatePickerLook::GetDayColumns()
+			{
+				return DayRows;
+			}
+
+			controls::GuiSelectableButton* GuiCommonDatePickerLook::GetDayButton(vint row, vint column)
+			{
+				return buttonDays[row * DaysOfWeek + column];
+			}
+
+			DateTime GuiCommonDatePickerLook::GetDateOfDayButton(vint row, vint column)
+			{
+				return dateDays[row * DaysOfWeek + column];
+			}
+
 /***********************************************************************
 GuiCommonScrollViewLook
 ***********************************************************************/
