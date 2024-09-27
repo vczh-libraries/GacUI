@@ -25,6 +25,34 @@ TEST_FILE
 				protocol->OnNextIdleFrame(L"Ready", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
+					auto datePicker = FindObjectByName<GuiDatePicker>(window, L"datePicker");
+					TEST_ASSERT(datePicker->GetDate() == DateTime::FromDateTime(2000, 1, 1));
+					datePicker->SetDate(DateTime::FromDateTime(1999, 12, 31));
+				});
+				protocol->OnNextIdleFrame(L"1999-12-31", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto datePicker = FindObjectByName<GuiDatePicker>(window, L"datePicker");
+					TEST_ASSERT(datePicker->GetDate() == DateTime::FromDateTime(1999, 12, 31));
+					datePicker->SetDate(DateTime::FromDateTime(2000, 1, 31));
+				});
+				protocol->OnNextIdleFrame(L"2000-1-31", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto datePicker = FindObjectByName<GuiDatePicker>(window, L"datePicker");
+					TEST_ASSERT(datePicker->GetDate() == DateTime::FromDateTime(2000, 1, 31));
+					datePicker->SetDate(DateTime::FromDateTime(2000, 2, 1));
+				});
+				protocol->OnNextIdleFrame(L"2000-2-1", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto datePicker = FindObjectByName<GuiDatePicker>(window, L"datePicker");
+					TEST_ASSERT(datePicker->GetDate() == DateTime::FromDateTime(2000, 2, 1));
+					datePicker->SetDate(DateTime::FromDateTime(2000, 1, 1));
+				});
+				protocol->OnNextIdleFrame(L"2000-1-1", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
 					window->Hide();
 				});
 			});
@@ -33,6 +61,16 @@ TEST_FILE
 				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
 				resourceDatePicker
 				);
+		});
+
+		TEST_CASE(L"Alt")
+		{
+			// Y: year
+			// M: month
+			// C<date>: day button before the current month
+			// D<date>: day button of the current month
+			// E<date>: day button after the current month
+
 		});
 
 		TEST_CASE(L"Mouse")

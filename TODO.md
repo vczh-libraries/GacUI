@@ -70,9 +70,6 @@
 - Non-editing control unit test (using DarkSkin)
   - Menu
     - GuiDatePicker
-      - Stop hard-coding mouse coordinate:
-        - `GuiToolstripMenuBar/Cascade/ClickSubMenu`'s `Hover on File/New` try to avoid specifying relative coordinate just because half of the menu item is covered.
-      - So as `GuiDatePicker`.
     - GuiDateComboBox
       - Refactor and reuse test cases from `GuiDatePicker`
   - BindableControls
