@@ -3,6 +3,7 @@
 ## Completed but not released (1.2.10.2)
 
 - Fixed
+  - Fix `GuiGraphicsComposition::GetGlobalBounds` double calculate `InternalMargin`.
   - Fix `INVOKEGET_INTERFACE_PROXY` and `INVOKEGET_INTERFACE_PROXY_NOPARAMS` break build when returning `LazyList<T>`.
   - Fix button behavior when not IgnoreChildControlMouseEvents.
   - Fix control not losing focus when disabled.

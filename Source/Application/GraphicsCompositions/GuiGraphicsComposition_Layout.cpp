@@ -131,11 +131,11 @@ GuiGraphicsComposition
 				GuiGraphicsComposition* composition = parent;
 				while (composition)
 				{
-					Rect clientArea = composition->GetCachedClientArea();
-					bounds.x1 += clientArea.x1;
-					bounds.x2 += clientArea.x1;
-					bounds.y1 += clientArea.y1;
-					bounds.y2 += clientArea.y1;
+					Point offset = composition->cachedBounds.LeftTop();
+					bounds.x1 += offset.x;
+					bounds.x2 += offset.x;
+					bounds.y1 += offset.y;
+					bounds.y2 += offset.y;
 					composition = composition->parent;
 				}
 				return bounds;
