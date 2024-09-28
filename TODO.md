@@ -69,9 +69,6 @@
   - Fix `CppTest` press `ALT+F4` with `Control/Document Editor/Insert Image` opened and crash in `GuiHostedController::PostAction_LeftButtonUp`.
     - The click processing is finished after the modal window is closed, but due to `ALT+F4` all windows are deleted at the moment.
 - Non-editing control unit test (using DarkSkin)
-  - Menu
-    - GuiDateComboBox
-      - Refactor and reuse test cases from `GuiDatePicker`
   - BindableControls
     - Set or reset item source
     - Set or reset property bindings
@@ -161,6 +158,8 @@
     - `Gui(Bindable)TextList` cannot check or uncheck items by key (enter and space).
     - `GuiVirtualListView` cannot operate column headers by key.
     - Active menus without `Alt` assighed (`TAB` and arrow keys?).
+    - `GuiDateComboBox` does not receive focus property, so that when open year/month combo by `ALT` or mouse, list item cannot be selected only by key.
+      - Add `Alt` and fix `Mouse` test cases after this is fixed.
 - Sample unit test project included in release.
   - Reflection enabled
     - Application and `LoadMainWindow` script in separated XML resource files.
