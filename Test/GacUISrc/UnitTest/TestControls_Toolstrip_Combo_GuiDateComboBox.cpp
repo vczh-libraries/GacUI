@@ -31,29 +31,57 @@ TEST_FILE
 					auto dateCombo = FindObjectByName<GuiDateComboBox>(window, L"dateCombo");
 					TEST_ASSERT(dateCombo->GetSelectedDate() == DateTime::FromDateTime(2000, 1, 1));
 					dateCombo->SetSelectedDate(DateTime::FromDateTime(1999, 12, 31));
+					dateCombo->SetSubMenuOpening(true);
 				});
 				protocol->OnNextIdleFrame(L"1999-12-31", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto dateCombo = FindObjectByName<GuiDateComboBox>(window, L"dateCombo");
+					dateCombo->SetSubMenuOpening(false);
+				});
+				protocol->OnNextIdleFrame(L"Close", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto dateCombo = FindObjectByName<GuiDateComboBox>(window, L"dateCombo");
 					TEST_ASSERT(dateCombo->GetSelectedDate() == DateTime::FromDateTime(1999, 12, 31));
 					dateCombo->SetSelectedDate(DateTime::FromDateTime(2000, 1, 31));
+					dateCombo->SetSubMenuOpening(true);
 				});
 				protocol->OnNextIdleFrame(L"2000-1-31", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto dateCombo = FindObjectByName<GuiDateComboBox>(window, L"dateCombo");
+					dateCombo->SetSubMenuOpening(false);
+				});
+				protocol->OnNextIdleFrame(L"Close", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto dateCombo = FindObjectByName<GuiDateComboBox>(window, L"dateCombo");
 					TEST_ASSERT(dateCombo->GetSelectedDate() == DateTime::FromDateTime(2000, 1, 31));
 					dateCombo->SetSelectedDate(DateTime::FromDateTime(2000, 2, 1));
+					dateCombo->SetSubMenuOpening(true);
 				});
 				protocol->OnNextIdleFrame(L"2000-2-1", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto dateCombo = FindObjectByName<GuiDateComboBox>(window, L"dateCombo");
+					dateCombo->SetSubMenuOpening(false);
+				});
+				protocol->OnNextIdleFrame(L"Close", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto dateCombo = FindObjectByName<GuiDateComboBox>(window, L"dateCombo");
 					TEST_ASSERT(dateCombo->GetSelectedDate() == DateTime::FromDateTime(2000, 2, 1));
 					dateCombo->SetSelectedDate(DateTime::FromDateTime(2000, 1, 1));
+					dateCombo->SetSubMenuOpening(true);
 				});
 				protocol->OnNextIdleFrame(L"2000-1-1", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto dateCombo = FindObjectByName<GuiDateComboBox>(window, L"dateCombo");
+					dateCombo->SetSubMenuOpening(false);
+				});
+				protocol->OnNextIdleFrame(L"Close", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					window->Hide();
