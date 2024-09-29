@@ -12,6 +12,7 @@
   - Fix `GuiTextList::SelectionChanged` not raised when changing properties of the only selected `list::TextItem`.
   - Fix `GuiVirtualListView` in `Details` view column header height doesn't sync to item arranger in real-time.
   - UnitTestSnapshotViewer always not render the second loaded images.
+- Added `/F:EnabledTestFile` to unit test CLI parameters.
 - `GuiTreeItemTemplate` change base class to `GuiListItemTemplate`
 - `GuiListControl::IItemProvider(Callback)?` moved to `vl::presentation::controls::list`.
 - Make `ItemSource` class of bindable list controls reflectable.
@@ -81,6 +82,7 @@
   - Ribbon ...
   - Check all control key operation, ensure accessibility.
 - Document
+  - Added `/F:EnabledTestFile` to unit test CLI parameters.
   - `GuiTreeItemTemplate` change base class to `GuiListItemTemplate`
   - New theme name/virtual control: `ToolstripToolBarInMenu`, `ToolstripSplitterInMenu`
   - `IGuiMenuService::GetHostThemeName` if exists
