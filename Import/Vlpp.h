@@ -9269,7 +9269,7 @@ namespace vl
 		protected:
 			static bool IsDebuggerAttached();
 			static int PrintUsages();
-			static int RunAndDisposeTests(Nullable<WString> option);
+			static int RunAndDisposeTests(const collections::Array<WString>& options);
 
 		public:
 			UnitTest() = delete;

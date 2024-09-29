@@ -1299,6 +1299,7 @@ namespace vl
 	namespace unittest
 	{
 		using namespace vl::console;
+		using namespace vl::collections;
 
 /***********************************************************************
 UnitTest
@@ -1435,34 +1436,53 @@ UnitTest
 
 		int UnitTest::PrintUsages()
 		{
-			PrintMessage(L"Usage: [/D | /R]", MessageKind::Error);
+			PrintMessage(L"Usage: [/D | /R] {/F:TestFile}", MessageKind::Error);
 			return 1;
 		}
 
-		int UnitTest::RunAndDisposeTests(Nullable<WString> option)
+		int UnitTest::RunAndDisposeTests(const collections::Array<WString>& options)
 		{
-			if (option)
+			bool unrecognized = false;
+			bool _D = false;
+			bool _R = false;
+			List<AString> _Fs;
+
+			for (auto&& option : From(options))
 			{
-				if (option.Value() == L"/D")
+				if (option == L"/D")
 				{
-					suppressFailure = false;
+					_D = true;
 				}
-				else if (option.Value() == L"/R")
+				else if (option == L"/R")
 				{
-					suppressFailure = true;
+					_R = true;
+				}
+				else if (option.Length() > 3 && option.Left(3) == L"/F:")
+				{
+					_Fs.Add(wtoa(option.Sub(3, option.Length() - 3)));
 				}
 				else
 				{
-					return PrintUsages();
+					unrecognized = true;
 				}
 			}
-			else if (IsDebuggerAttached())
+
+			if (unrecognized || (_D && _R))
+			{
+				return PrintUsages();
+			}
+
+			if (_D)
 			{
 				suppressFailure = false;
 			}
-			else
+			else if (_R)
 			{
 				suppressFailure = true;
+			}
+			else
+			{
+				suppressFailure = !IsDebuggerAttached();
 			}
 
 			{
@@ -1485,13 +1505,47 @@ UnitTest
 				auto current = testHead;
 				while (current)
 				{
+					bool skipped = false;
 					context.failed = false;
-					PrintMessage(atow(AString::Unmanaged(current->fileName)), MessageKind::File);
-					context.indentation = L"    ";
-					ExecuteAndSuppressFailure(current->testProc);
-					if (!testContext->failed) passedFiles++;
-					totalFiles++;
-					context.indentation = L"";
+					if (_Fs.Count() > 0)
+					{
+						skipped = true;
+						for (auto fileName : From(_Fs))
+						{
+							if (current->fileName == fileName)
+							{
+								skipped = false;
+								break;
+							}
+							else
+							{
+								vint len = (vint)strlen(current->fileName);
+								if (len > fileName.Length())
+								{
+									char delimiter = current->fileName[len - fileName.Length() - 1];
+									if ((delimiter == L'/' || delimiter == L'\\') && current->fileName + (len - fileName.Length()) == fileName)
+									{
+										skipped = false;
+										break;
+									}
+								}
+							}
+						}
+					}
+
+					if (skipped)
+					{
+						PrintMessage(atow(AString::Unmanaged(current->fileName)) + WString::Unmanaged(L" [SKIPPED]"), MessageKind::File);
+					}
+					else
+					{
+						PrintMessage(atow(AString::Unmanaged(current->fileName)), MessageKind::File);
+						context.indentation = L"    ";
+						ExecuteAndSuppressFailure(current->testProc);
+						if (!testContext->failed) passedFiles++;
+						totalFiles++;
+						context.indentation = L"";
+					}
 					current = current->next;
 				}
 
@@ -1506,39 +1560,35 @@ UnitTest
 
 		int UnitTest::RunAndDisposeTests(int argc, wchar_t* argv[])
 		{
-			if (argc < 3)
+			if (argc < 2)
 			{
-				if (argc == 2)
-				{
-					return RunAndDisposeTests({ argv[1] });
-				}
-				else
-				{
-					return RunAndDisposeTests({});
-				}
+				return RunAndDisposeTests({});
 			}
 			else
 			{
-				return PrintUsages();
+				Array<WString> options(argc - 1);
+				for (int i = 1; i < argc; i++)
+				{
+					options[i - 1] = WString::Unmanaged(argv[i]);
+				}
+				return RunAndDisposeTests(options);
 			}
 		}
 
 		int UnitTest::RunAndDisposeTests(int argc, char* argv[])
 		{
-			if (argc < 3)
+			if (argc < 2)
 			{
-				if (argc == 2)
-				{
-					return RunAndDisposeTests({ atow(argv[1]) });
-				}
-				else
-				{
-					return RunAndDisposeTests({});
-				}
+				return RunAndDisposeTests({});
 			}
 			else
 			{
-				return PrintUsages();
+				Array<WString> options(argc - 1);
+				for (int i = 1; i < argc; i++)
+				{
+					options[i - 1] = atow(argv[i]);
+				}
+				return RunAndDisposeTests(options);
 			}
 		}
 

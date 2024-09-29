@@ -15862,6 +15862,13 @@ GuiCommonDatePickerLook
 				void												SetDate(const DateTime& value);
 				const FontProperties&								GetFont();
 				void												SetFont(const FontProperties& value);
+
+				controls::GuiComboBoxListControl*					GetYearCombo();
+				controls::GuiComboBoxListControl*					GetMonthCombo();
+				vint												GetDayRows();
+				vint												GetDayColumns();
+				controls::GuiSelectableButton*						GetDayButton(vint row, vint column);
+				DateTime											GetDateOfDayButton(vint row, vint column);
 			};
 
 /***********************************************************************

@@ -24,10 +24,12 @@
     <att.MenuBarButton>x:MenuBarButtonTemplate</att.MenuBarButton>
     <att.MenuItemButton>x:MenuItemButtonTemplate</att.MenuItemButton>
     <att.ToolstripToolBar>x:ToolstripTemplate</att.ToolstripToolBar>
+    <att.ToolstripToolBarInMenu>x:ToolstripInMenuTemplate</att.ToolstripToolBarInMenu>
     <att.ToolstripButton>x:ToolstripButtonTemplate</att.ToolstripButton>
     <att.ToolstripDropdownButton>x:ToolstripDropdownButtonTemplate</att.ToolstripDropdownButton>
     <att.ToolstripSplitButton>x:ToolstripSplitButtonTemplate</att.ToolstripSplitButton>
     <att.ToolstripSplitter>x:ToolstripSplitterTemplate</att.ToolstripSplitter>
+    <att.ToolstripSplitterInMenu>x:ToolstripSplitterInMenuTemplate</att.ToolstripSplitterInMenu>
     <att.Button>x:ButtonTemplate</att.Button>
     <att.CheckBox>x:CheckBoxTemplate</att.CheckBox>
     <att.RadioButton>x:RadioButtonTemplate</att.RadioButton>

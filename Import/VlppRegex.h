@@ -370,7 +370,7 @@ Regex
 		///                 <li><b>(=regex)</b>: The prefix of the following text should match the regex, but it is not counted in the whole match <b>(DFA incompatible)</b></li>
 		///                 <li><b>(!regex)</b>: Any prefix of the following text should not match the regex, and it is not counted in the whole match <b>(DFA incompatible)</b></li>
 		///                 <li><b>(&lt;#name&gt;regex)</b>: Name the regex "name", and it applies here</li>
-		///                 <li><b>(&lt;&name&gt;)</b>: Copy the named regex "name" here and apply</li>
+		///                 <li><b>(&lt;&amp;name&gt;)</b>: Copy the named regex "name" here and apply</li>
 		///             </ul>
 		///         </li>
 		///     </ul>
