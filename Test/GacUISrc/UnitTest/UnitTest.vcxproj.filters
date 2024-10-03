@@ -237,6 +237,9 @@
     <ClCompile Include="TestControls_Toolstrip_Combo_GuiDateComboBox.cpp">
       <Filter>Source Files\Controls\Toolstrip\Combo</Filter>
     </ClCompile>
+    <ClCompile Include="TestControls_List_DataGrid_Binding.cpp">
+      <Filter>Source Files\Controls\List\DataGrid</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="TestCompositions.h">
