@@ -69,8 +69,8 @@ namespace gacuisrc_unittest
             {
                 (<precompile>0.TextProperty = func (<item> : ::system::Object) : (::system::String)
                 {
-                    var item = (cast (DataGridItem^) <item>);
-                    return item.Language;
+                    var itemToBind = (cast (DataGridItem^) <item>);
+                    return itemToBind.Language;
                 });
             }
             {
@@ -84,8 +84,8 @@ namespace gacuisrc_unittest
             {
                 (<precompile>1.TextProperty = func (<item> : ::system::Object) : (::system::String)
                 {
-                    var item = (cast (DataGridItem^) <item>);
-                    return item.IDE;
+                    var itemToBind = (cast (DataGridItem^) <item>);
+                    return ToString(itemToBind.IDE);
                 });
             }
             {
@@ -97,13 +97,6 @@ namespace gacuisrc_unittest
             }
             (<precompile>2 = new (::presentation::controls::list::DataColumn^)());
             {
-                (<precompile>2.TextProperty = func (<item> : ::system::Object) : (::system::String)
-                {
-                    var item = (cast (DataGridItem^) <item>);
-                    return item.Company;
-                });
-            }
-            {
                 (<precompile>2.Text = "Company");
             }
             {
@@ -112,6 +105,9 @@ namespace gacuisrc_unittest
             }
             {
                 self.AddChild(dataGrid);
+            }
+            {
+                (<precompile>2.TextProperty = [ToString((cast (DataGridItem^) $1).Company)]);
             }
             {
                 (dataGrid.ItemSource = self.items);
@@ -151,7 +147,7 @@ namespace gacuisrc_unittest
     @cpp:Friend(typeof(MainWindowConstructor))
     class MainWindow : ::presentation::controls::GuiWindow, MainWindowConstructor
     {
-        var items : observe DataGridItem^[] = {new (DataGridItem^)("C++", "Visual Studio", "Microsoft"); new (DataGridItem^)("C#", "Visual Studio", "Microsoft"); new (DataGridItem^)("F#", "Visual Studio", "Microsoft"); new (DataGridItem^)("TypeScript", "Visual Studio Code", "Microsoft"); new (DataGridItem^)("Java", "Eclipse", "IBM");};
+        var items : observe DataGridItem^[] = {new (DataGridItem^)("C++"); new (DataGridItem^)("C#"); new (DataGridItem^)("F#"); new (DataGridItem^)("TypeScript", VSCode, Microsoft); new (DataGridItem^)("Java", Eclipse, IBM);};
 
         new* ()
             :::presentation::controls::GuiWindow(::presentation::theme::ThemeName::Window)
@@ -173,6 +169,19 @@ namespace gacuisrc_unittest
 module datagriditem;
 using system::*;
 
+enum IDEs
+{
+    VisualStudio = 0,
+    VSCode = 1,
+    Eclipse = 2,
+}
+
+enum Companys
+{
+    Microsoft = 0,
+    IBM = 1,
+}
+
 class DataGridItem
 {
     @cpp:Private
@@ -191,44 +200,91 @@ class DataGridItem
     prop Language : string{GetLanguage, SetLanguage}
 
     @cpp:Private
-    var <prop>IDE : string = "";
+    var <prop>IDE : IDEs = VisualStudio;
 
-    func GetIDE() : (string)
+    func GetIDE() : (IDEs)
     {
         return <prop>IDE;
     }
 
-    func SetIDE(<value> : string) : (void)
+    func SetIDE(<value> : IDEs) : (void)
     {
         (<prop>IDE = <value>);
     }
 
-    prop IDE : string{GetIDE, SetIDE}
+    prop IDE : IDEs{GetIDE, SetIDE}
 
     @cpp:Private
-    var <prop>Company : string = "";
+    var <prop>Company : Companys = Microsoft;
 
-    func GetCompany() : (string)
+    func GetCompany() : (Companys)
     {
         return <prop>Company;
     }
 
-    func SetCompany(<value> : string) : (void)
+    func SetCompany(<value> : Companys) : (void)
     {
         (<prop>Company = <value>);
     }
 
-    prop Company : string{GetCompany, SetCompany}
+    prop Company : Companys{GetCompany, SetCompany}
 
     new ()
     {
     }
 
-    new (language : string, ide : string, company : string)
+    new (language : string)
+    {
+        (Language = language);
+    }
+
+    new (language : string, ide : IDEs, company : Companys)
     {
         (Language = language);
         (IDE = ide);
         (Company = company);
+    }
+}
+
+func ToString(value : IDEs) : (string)
+{
+    {
+        var <switch>0 : ::IDEs = value;
+        if ((<switch>0 == VisualStudio of (::IDEs)))
+        {
+            return "Visual Studio";
+        }
+        else if ((<switch>0 == VSCode of (::IDEs)))
+        {
+            return "Visual Studio Code";
+        }
+        else if ((<switch>0 == Eclipse of (::IDEs)))
+        {
+            return "Eclipse";
+        }
+        else
+        {
+            return "<ERROR>";
+        }
+    }
+}
+
+func ToString(value : Companys) : (string)
+{
+    {
+        var <switch>1 : ::Companys = value;
+        if ((<switch>1 == Microsoft of (::Companys)))
+        {
+            return "Microsoft";
+        }
+        else if ((<switch>1 == IBM of (::Companys)))
+        {
+            return "IBM";
+        }
+        else
+        {
+            return "<ERROR>";
+        }
     }
 }
 
