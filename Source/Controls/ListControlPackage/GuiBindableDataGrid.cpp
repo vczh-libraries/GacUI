@@ -332,10 +332,23 @@ DataColumn
 
 				void DataColumn::SetFilter(Ptr<IDataFilter> value)
 				{
-					if (associatedFilter) associatedFilter->SetCallback(nullptr);
-					associatedFilter = value;
-					if (associatedFilter) associatedFilter->SetCallback(dataProvider);
-					NotifyChanged(false);
+					if (associatedFilter != value)
+					{
+						if (associatedFilter) associatedFilter->SetCallback(nullptr);
+						associatedFilter = value;
+						if (associatedFilter) associatedFilter->SetCallback(dataProvider);
+
+						if (dataProvider)
+						{
+							vint index = dataProvider->columns.IndexOf(this);
+							if (index != -1)
+							{
+								dataProvider->OnProcessorChanged();
+								return;
+							}
+						}
+						NotifyChanged(false);
+					}
 				}
 
 				Ptr<IDataSorter> DataColumn::GetSorter()
@@ -345,10 +358,23 @@ DataColumn
 
 				void DataColumn::SetSorter(Ptr<IDataSorter> value)
 				{
-					if (associatedSorter) associatedSorter->SetCallback(nullptr);
-					associatedSorter = value;
-					if (associatedSorter) associatedSorter->SetCallback(dataProvider);
-					NotifyChanged(false);
+					if (associatedSorter != value)
+					{
+						if (associatedSorter) associatedSorter->SetCallback(nullptr);
+						associatedSorter = value;
+						if (associatedSorter) associatedSorter->SetCallback(dataProvider);
+
+						if (dataProvider)
+						{
+							vint index = dataProvider->columns.IndexOf(this);
+							if (index == dataProvider->GetSortedColumn())
+							{
+								dataProvider->SortByColumn(index, sortingState == ColumnSortingState::Ascending);
+								return;
+							}
+						}
+						NotifyChanged(false);
+					}
 				}
 
 				Ptr<IDataVisualizerFactory> DataColumn::GetVisualizerFactory()
@@ -701,8 +727,7 @@ DataProvider
 				void DataProvider::SetAdditionalFilter(Ptr<IDataFilter> value)
 				{
 					additionalFilter = value;
-					RebuildFilter();
-					ReorderRows(true);
+					OnProcessorChanged();
 				}
 
 				// ===================== GuiListControl::IItemProvider =====================

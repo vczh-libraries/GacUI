@@ -187,7 +187,6 @@ TEST_FILE
 					TEST_ASSERT(dataGridView->GetSortedColumn() == 3);
 					TEST_ASSERT(dataGridView->IsSortOrderAscending() == false);
 					dataGrid->GetColumns()[3]->SetSorter(UnboxValue<Ptr<IDataSorter>>(Value::From(window).GetProperty(L"companySorterByName")));
-					dataGridView->SortByColumn(3, false);
 				});
 				protocol->OnNextIdleFrame(L"-Company by Name", [=]()
 				{
