@@ -218,15 +218,15 @@ TEST_FILE
 		{
 		});
 
-		TEST_CASE(L"ResetDataSource")
+		TEST_CASE(L"ResetDataSource with sorter and filter activated")
 		{
 		});
 
-		TEST_CASE(L"ReplaceDataSource")
+		TEST_CASE(L"ReplaceDataSource with sorter and filter activated")
 		{
 		});
 
-		TEST_CASE(L"ChangeDataSource")
+		TEST_CASE(L"ChangeDataSource with sorter and filter activated")
 		{
 		});
 	});
