@@ -112,7 +112,7 @@ TEST_FILE
       Eclipse=2,
     }
 
-    enum Companys
+    enum compare
     {
       Microsoft=0,
       IBM=1,
@@ -122,14 +122,14 @@ TEST_FILE
     {
       prop Language:string = "" {not observe}
       prop IDE:IDEs = VisualStudio {not observe}
-      prop Company:Companys = Microsoft {not observe}
+      prop Company:compare = Microsoft {not observe}
 
       new(){}
       new(language:string)
       {
         Language=language;
       }
-      new(language:string, ide:IDEs, company:Companys)
+      new(language:string, ide:IDEs, company:compare)
       {
         Language=language;
         IDE=ide;
@@ -148,7 +148,7 @@ TEST_FILE
       }
     }
 
-    func ToString(value:Companys) : string
+    func ToString(value:compare) : string
     {
       switch(value)
       {

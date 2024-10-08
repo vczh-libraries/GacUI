@@ -70,6 +70,19 @@ namespace gacuisrc_unittest
             }
             (<precompile>0 = new (::presentation::controls::list::DataColumn^)());
             {
+                (<precompile>0.Sorter = new (::presentation::controls::list::IDataSorter^)
+                {
+                    override func SetCallback(value : ::presentation::controls::list::IDataProcessorCallback*) : (::system::Void)
+                    {
+                    }
+
+                    override func Compare(<row1> : ::system::Object, <row2> : ::system::Object) : (::system::Int64)
+                    {
+                        return [Sys::Compare($1.Language, $2.Language)] of ((func (DataGridItem^, DataGridItem^) : (::system::Int64)))((cast (DataGridItem^) <row1>), (cast (DataGridItem^) <row2>));
+                    }
+                });
+            }
+            {
                 (<precompile>0.Size = 150 of (::system::Int64));
             }
             {
@@ -123,6 +136,19 @@ namespace gacuisrc_unittest
                 <collection>.Add(<precompile>2);
             }
             (<precompile>3 = new (::presentation::controls::list::DataColumn^)());
+            {
+                (<precompile>3.Sorter = new (::presentation::controls::list::IDataSorter^)
+                {
+                    override func SetCallback(value : ::presentation::controls::list::IDataProcessorCallback*) : (::system::Void)
+                    {
+                    }
+
+                    override func Compare(<row1> : ::system::Object, <row2> : ::system::Object) : (::system::Int64)
+                    {
+                        return [Sys::Compare((cast (UInt64) $1.Company), (cast (UInt64) $2.Company))] of ((func (DataGridItem^, DataGridItem^) : (::system::Int64)))((cast (DataGridItem^) <row1>), (cast (DataGridItem^) <row2>));
+                    }
+                });
+            }
             {
                 (<precompile>3.Size = 150 of (::system::Int64));
             }
@@ -199,7 +225,7 @@ namespace gacuisrc_unittest
 module datagriditem;
 using system::*;
 
-enum Companys
+enum Companies
 {
     Microsoft = 0,
     Borland = 1,
@@ -254,25 +280,25 @@ class DataGridItem
     prop IDEs : int{GetIDEs, SetIDEs}
 
     @cpp:Private
-    var <prop>Company : Companys = Microsoft;
+    var <prop>Company : Companies = Microsoft;
 
-    func GetCompany() : (Companys)
+    func GetCompany() : (Companies)
     {
         return <prop>Company;
     }
 
-    func SetCompany(<value> : Companys) : (void)
+    func SetCompany(<value> : Companies) : (void)
     {
         (<prop>Company = <value>);
     }
 
-    prop Company : Companys{GetCompany, SetCompany}
+    prop Company : Companies{GetCompany, SetCompany}
 
     new ()
     {
     }
 
-    new (language : string, metaProgramming : bool, ides : int, company : Companys)
+    new (language : string, metaProgramming : bool, ides : int, company : Companies)
     {
         (Language = language);
         (MetaProgramming = metaProgramming);
@@ -281,19 +307,19 @@ class DataGridItem
     }
 }
 
-func ToString(value : Companys) : (string)
+func ToString(value : Companies) : (string)
 {
     {
-        var <switch>0 : ::Companys = value;
-        if ((<switch>0 == Microsoft of (::Companys)))
+        var <switch>0 : ::Companies = value;
+        if ((<switch>0 == Microsoft of (::Companies)))
         {
             return "Microsoft";
         }
-        else if ((<switch>0 == Borland of (::Companys)))
+        else if ((<switch>0 == Borland of (::Companies)))
         {
             return "Borland";
         }
-        else if ((<switch>0 == IBM of (::Companys)))
+        else if ((<switch>0 == IBM of (::Companies)))
         {
             return "IBM";
         }

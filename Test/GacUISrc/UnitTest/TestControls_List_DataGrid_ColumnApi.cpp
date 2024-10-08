@@ -9,7 +9,7 @@ TEST_FILE
     module datagriditem;
     using system::*;
 
-    enum Companys
+    enum Companies
     {
       Microsoft=0,
       Borland=1,
@@ -21,10 +21,10 @@ TEST_FILE
       prop Language:string = "" {not observe}
       prop MetaProgramming:bool = false {not observe}
       prop IDEs:int = 0 {not observe}
-      prop Company:Companys = Microsoft {not observe}
+      prop Company:Companies = Microsoft {not observe}
 
       new(){}
-      new(language:string, metaProgramming:bool, ides:int, company:Companys)
+      new(language:string, metaProgramming:bool, ides:int, company:Companies)
       {
         Language=language;
         MetaProgramming=metaProgramming;
@@ -33,7 +33,7 @@ TEST_FILE
       }
     }
 
-    func ToString(value:Companys) : string
+    func ToString(value:Companies) : string
     {
       switch(value)
       {
@@ -61,10 +61,16 @@ TEST_FILE
           <att.BoundsComposition-set AlignmentToParent="left:5 top:5 right:5 bottom:5"/>
           <att.ItemSource-eval>self.items</att.ItemSource-eval>
           <att.Columns>
-            <_ Text="Language" Size="150" TextProperty="Language"/>
-            <_ Text="Meta Programming" Size="150" TextProperty="MetaProgramming"/>
-            <_ Text="IDE Count" Size="150" TextProperty="IDEs"/>
-            <_ Text="Company" Size="150" TextProperty-eval="[ToString((cast DataGridItem^ $1).Company)]"/>
+            <_ Text="Language" Size="150" TextProperty="Language">
+              <att.Sorter>[Sys::Compare($1.Language, $2.Language)]</att.Sorter>
+            </_>
+            <_ Text="Meta Programming" Size="150" TextProperty="MetaProgramming">
+            </_>
+            <_ Text="IDE Count" Size="150" TextProperty="IDEs">
+            </_>
+            <_ Text="Company" Size="150" TextProperty-eval="[ToString((cast DataGridItem^ $1).Company)]">
+              <att.Sorter>[Sys::Compare(cast UInt64 $1.Company, cast UInt64 $2.Company)]</att.Sorter>
+            </_>
           </att.Columns>
         </BindableDataGrid>
       </Window>
@@ -82,6 +88,95 @@ TEST_FILE
 				protocol->OnNextIdleFrame(L"Ready", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
+					auto dataGrid = FindObjectByName<GuiBindableDataGrid>(window, L"dataGrid");
+					auto dataGridView = dynamic_cast<IDataGridView*>(dataGrid->GetItemProvider()->RequestView(WString::Unmanaged(IDataGridView::Identifier)));
+					TEST_ASSERT(dataGridView->IsColumnSortable(0) == true);
+					TEST_ASSERT(dataGridView->IsColumnSortable(1) == false);
+					TEST_ASSERT(dataGridView->IsColumnSortable(2) == false);
+					TEST_ASSERT(dataGridView->IsColumnSortable(3) == true);
+					TEST_ASSERT(dataGridView->GetSortedColumn() == -1);
+					TEST_ASSERT(dataGridView->IsSortOrderAscending() == true);
+					dataGridView->SortByColumn(0, true);
+				});
+				protocol->OnNextIdleFrame(L"+Language", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto dataGrid = FindObjectByName<GuiBindableDataGrid>(window, L"dataGrid");
+					auto dataGridView = dynamic_cast<IDataGridView*>(dataGrid->GetItemProvider()->RequestView(WString::Unmanaged(IDataGridView::Identifier)));
+					TEST_ASSERT(dataGridView->GetSortedColumn() == 0);
+					TEST_ASSERT(dataGridView->IsSortOrderAscending() == true);
+					dataGridView->SortByColumn(0, false);
+				});
+				protocol->OnNextIdleFrame(L"-Language", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto dataGrid = FindObjectByName<GuiBindableDataGrid>(window, L"dataGrid");
+					auto dataGridView = dynamic_cast<IDataGridView*>(dataGrid->GetItemProvider()->RequestView(WString::Unmanaged(IDataGridView::Identifier)));
+					TEST_ASSERT(dataGridView->GetSortedColumn() == 0);
+					TEST_ASSERT(dataGridView->IsSortOrderAscending() == false);
+					dataGridView->SortByColumn(1, true);
+				});
+				protocol->OnNextIdleFrame(L"+MP", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto dataGrid = FindObjectByName<GuiBindableDataGrid>(window, L"dataGrid");
+					auto dataGridView = dynamic_cast<IDataGridView*>(dataGrid->GetItemProvider()->RequestView(WString::Unmanaged(IDataGridView::Identifier)));
+					TEST_ASSERT(dataGridView->GetSortedColumn() == 1);
+					TEST_ASSERT(dataGridView->IsSortOrderAscending() == true);
+					dataGridView->SortByColumn(1, false);
+				});
+				protocol->OnNextIdleFrame(L"-MP", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto dataGrid = FindObjectByName<GuiBindableDataGrid>(window, L"dataGrid");
+					auto dataGridView = dynamic_cast<IDataGridView*>(dataGrid->GetItemProvider()->RequestView(WString::Unmanaged(IDataGridView::Identifier)));
+					TEST_ASSERT(dataGridView->GetSortedColumn() == 1);
+					TEST_ASSERT(dataGridView->IsSortOrderAscending() == false);
+					dataGridView->SortByColumn(2, true);
+				});
+				protocol->OnNextIdleFrame(L"+IDEs", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto dataGrid = FindObjectByName<GuiBindableDataGrid>(window, L"dataGrid");
+					auto dataGridView = dynamic_cast<IDataGridView*>(dataGrid->GetItemProvider()->RequestView(WString::Unmanaged(IDataGridView::Identifier)));
+					TEST_ASSERT(dataGridView->GetSortedColumn() == 2);
+					TEST_ASSERT(dataGridView->IsSortOrderAscending() == true);
+					dataGridView->SortByColumn(2, false);
+				});
+				protocol->OnNextIdleFrame(L"-IDEs", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto dataGrid = FindObjectByName<GuiBindableDataGrid>(window, L"dataGrid");
+					auto dataGridView = dynamic_cast<IDataGridView*>(dataGrid->GetItemProvider()->RequestView(WString::Unmanaged(IDataGridView::Identifier)));
+					TEST_ASSERT(dataGridView->GetSortedColumn() == 2);
+					TEST_ASSERT(dataGridView->IsSortOrderAscending() == false);
+					dataGridView->SortByColumn(3, true);
+				});
+				protocol->OnNextIdleFrame(L"+Company", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto dataGrid = FindObjectByName<GuiBindableDataGrid>(window, L"dataGrid");
+					auto dataGridView = dynamic_cast<IDataGridView*>(dataGrid->GetItemProvider()->RequestView(WString::Unmanaged(IDataGridView::Identifier)));
+					TEST_ASSERT(dataGridView->GetSortedColumn() == 3);
+					TEST_ASSERT(dataGridView->IsSortOrderAscending() == true);
+					dataGridView->SortByColumn(3, false);
+				});
+				protocol->OnNextIdleFrame(L"-Company", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto dataGrid = FindObjectByName<GuiBindableDataGrid>(window, L"dataGrid");
+					auto dataGridView = dynamic_cast<IDataGridView*>(dataGrid->GetItemProvider()->RequestView(WString::Unmanaged(IDataGridView::Identifier)));
+					TEST_ASSERT(dataGridView->GetSortedColumn() == 3);
+					TEST_ASSERT(dataGridView->IsSortOrderAscending() == false);
+					dataGridView->SortByColumn(-1, false);
+				});
+				protocol->OnNextIdleFrame(L"Reset", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto dataGrid = FindObjectByName<GuiBindableDataGrid>(window, L"dataGrid");
+					auto dataGridView = dynamic_cast<IDataGridView*>(dataGrid->GetItemProvider()->RequestView(WString::Unmanaged(IDataGridView::Identifier)));
+					TEST_ASSERT(dataGridView->GetSortedColumn() == -1);
+					TEST_ASSERT(dataGridView->IsSortOrderAscending() == true);
 					window->Hide();
 				});
 			});

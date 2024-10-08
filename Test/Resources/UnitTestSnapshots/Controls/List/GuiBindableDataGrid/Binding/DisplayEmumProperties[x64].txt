@@ -176,7 +176,7 @@ enum IDEs
     Eclipse = 2,
 }
 
-enum Companys
+enum compare
 {
     Microsoft = 0,
     IBM = 1,
@@ -215,19 +215,19 @@ class DataGridItem
     prop IDE : IDEs{GetIDE, SetIDE}
 
     @cpp:Private
-    var <prop>Company : Companys = Microsoft;
+    var <prop>Company : compare = Microsoft;
 
-    func GetCompany() : (Companys)
+    func GetCompany() : (compare)
     {
         return <prop>Company;
     }
 
-    func SetCompany(<value> : Companys) : (void)
+    func SetCompany(<value> : compare) : (void)
     {
         (<prop>Company = <value>);
     }
 
-    prop Company : Companys{GetCompany, SetCompany}
+    prop Company : compare{GetCompany, SetCompany}
 
     new ()
     {
@@ -238,7 +238,7 @@ class DataGridItem
         (Language = language);
     }
 
-    new (language : string, ide : IDEs, company : Companys)
+    new (language : string, ide : IDEs, company : compare)
     {
         (Language = language);
         (IDE = ide);
@@ -269,15 +269,15 @@ func ToString(value : IDEs) : (string)
     }
 }
 
-func ToString(value : Companys) : (string)
+func ToString(value : compare) : (string)
 {
     {
-        var <switch>1 : ::Companys = value;
-        if ((<switch>1 == Microsoft of (::Companys)))
+        var <switch>1 : ::compare = value;
+        if ((<switch>1 == Microsoft of (::compare)))
         {
             return "Microsoft";
         }
-        else if ((<switch>1 == IBM of (::Companys)))
+        else if ((<switch>1 == IBM of (::compare)))
         {
             return "IBM";
         }
