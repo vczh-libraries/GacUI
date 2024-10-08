@@ -11,6 +11,7 @@
   - Fix `GuiListControl` incompatible with non-default axis.
   - Fix `GuiTextList::SelectionChanged` not raised when changing properties of the only selected `list::TextItem`.
   - Fix `GuiVirtualListView` in `Details` view column header height doesn't sync to item arranger in real-time.
+  - Fix `DataColumn::SetSorter` and `DataColumn::SetFilter` doesn't refresh data grid items.
   - UnitTestSnapshotViewer always not render the second loaded images.
 - Added `/F:EnabledTestFile` to unit test CLI parameters.
 - `GuiTreeItemTemplate` change base class to `GuiListItemTemplate`
