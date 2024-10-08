@@ -662,34 +662,36 @@ DataProvider
 
 				void DataProvider::ReorderRows(bool invokeCallback)
 				{
-					vint oldRowCount = virtualRowToSourceRow.Count();
-					virtualRowToSourceRow.Clear();
+					vint oldRowCount = Count();
 					vint rowCount = itemSource ? itemSource->GetCount() : 0;
+					virtualRowToSourceRow = nullptr;
 
 					if (currentFilter)
 					{
+						virtualRowToSourceRow = Ptr(new List<vint>);
 						for (vint i = 0; i < rowCount; i++)
 						{
 							if (currentFilter->Filter(itemSource->Get(i)))
 							{
-								virtualRowToSourceRow.Add(i);
+								virtualRowToSourceRow->Add(i);
 							}
 						}
 					}
-					else
+					else if (currentSorter)
 					{
+						virtualRowToSourceRow = Ptr(new List<vint>);
 						for (vint i = 0; i < rowCount; i++)
 						{
-							virtualRowToSourceRow.Add(i);
+							virtualRowToSourceRow->Add(i);
 						}
 					}
 
-					if (currentSorter && virtualRowToSourceRow.Count() > 0)
+					if (currentSorter && virtualRowToSourceRow->Count() > 0)
 					{
 						IDataSorter* sorter = currentSorter.Obj();
 						SortLambda(
-							&virtualRowToSourceRow[0],
-							virtualRowToSourceRow.Count(),
+							&virtualRowToSourceRow->operator[](0),
+							virtualRowToSourceRow->Count(),
 							[=](vint a, vint b)
 							{
 								return sorter->Compare(itemSource->Get(a), itemSource->Get(b)) <=> 0;
@@ -698,7 +700,8 @@ DataProvider
 
 					if (invokeCallback)
 					{
-						RebuildAllItems();
+						vint newRowCount = Count();
+						InvokeOnItemModified(0, oldRowCount, newRowCount, true);
 					}
 				}
 
@@ -734,7 +737,21 @@ DataProvider
 
 				vint DataProvider::Count()
 				{
-					return virtualRowToSourceRow.Count();
+					if (itemSource)
+					{
+						if (virtualRowToSourceRow)
+						{
+							return virtualRowToSourceRow->Count();
+						}
+						else
+						{
+							return itemSource->GetCount();
+						}
+					}
+					else
+					{
+						return 0;
+					}
 				}
 
 				WString DataProvider::GetTextValue(vint itemIndex)
@@ -744,7 +761,21 @@ DataProvider
 
 				description::Value DataProvider::GetBindingValue(vint itemIndex)
 				{
-					return itemSource ? itemSource->Get(virtualRowToSourceRow[itemIndex]) : Value();
+					if (itemSource)
+					{
+						if (virtualRowToSourceRow)
+						{
+							return itemSource->Get(virtualRowToSourceRow->Get(itemIndex));
+						}
+						else
+						{
+							return itemSource->Get(itemIndex);
+						}
+					}
+					else
+					{
+						return Value();
+					}
 				}
 
 				IDescriptable* DataProvider::RequestView(const WString& identifier)

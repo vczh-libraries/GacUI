@@ -213,5 +213,21 @@ TEST_FILE
 				resourceDataGrid
 				);
 		});
+
+		TEST_CASE(L"FilterByColumn")
+		{
+		});
+
+		TEST_CASE(L"ResetDataSource")
+		{
+		});
+
+		TEST_CASE(L"ReplaceDataSource")
+		{
+		});
+
+		TEST_CASE(L"ChangeDataSource")
+		{
+		});
 	});
 }

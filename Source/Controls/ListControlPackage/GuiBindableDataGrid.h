@@ -345,7 +345,7 @@ DataProvider
 					Ptr<IDataFilter>										additionalFilter;
 					Ptr<IDataFilter>										currentFilter;
 					Ptr<IDataSorter>										currentSorter;
-					collections::List<vint>									virtualRowToSourceRow;
+					Ptr<collections::List<vint>>							virtualRowToSourceRow;
 
 					bool													NotifyUpdate(vint start, vint count, bool itemReferenceUpdated);
 					void													RebuildAllItems() override;
