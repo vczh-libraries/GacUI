@@ -52,10 +52,28 @@ TEST_FILE
           new DataGridItem^("C#", false, 3, Microsoft);
           new DataGridItem^("F#", false, 2, Microsoft);
           new DataGridItem^("TypeScript", true, 1, Microsoft);
-          new DataGridItem^("Object Pascal", false, 1, Borland);
           new DataGridItem^("Java", false, 3, IBM);
+          new DataGridItem^("Object Pascal", false, 1, Borland);
         };
+        var companySorterById : IDataSorter^ = null;
+        var companySorterByName : IDataSorter^ = null;
       ]]></ref.Members>
+      <ref.Ctor><![CDATA[{
+        companySorterById = dataGrid.Columns[3].Sorter;
+        companySorterByName = new IDataSorter^
+        {
+          override func SetCallback(value:IDataProcessorCallback*) : void
+          {
+          }
+          override func Compare(row1:object, row2:object) : int
+          {
+            return Sys::Compare(
+              ToString((cast DataGridItem^ row1).Company),
+              ToString((cast DataGridItem^ row1).Company)
+              );
+          }
+        };
+      }]]></ref.Ctor>
       <Window ref.Name="self" Text="GuiBindableDataGrid" ClientSize="x:640 y:320">
         <BindableDataGrid ref.Name="dataGrid" env.ItemType="DataGridItem^" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
           <att.BoundsComposition-set AlignmentToParent="left:5 top:5 right:5 bottom:5"/>
@@ -162,6 +180,16 @@ TEST_FILE
 					dataGridView->SortByColumn(3, false);
 				});
 				protocol->OnNextIdleFrame(L"-Company", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto dataGrid = FindObjectByName<GuiBindableDataGrid>(window, L"dataGrid");
+					auto dataGridView = dynamic_cast<IDataGridView*>(dataGrid->GetItemProvider()->RequestView(WString::Unmanaged(IDataGridView::Identifier)));
+					TEST_ASSERT(dataGridView->GetSortedColumn() == 3);
+					TEST_ASSERT(dataGridView->IsSortOrderAscending() == false);
+					dataGrid->GetColumns()[3]->SetSorter(UnboxValue<Ptr<IDataSorter>>(Value::From(window).GetProperty(L"companySorterByName")));
+					dataGridView->SortByColumn(3, false);
+				});
+				protocol->OnNextIdleFrame(L"-Company by Name", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto dataGrid = FindObjectByName<GuiBindableDataGrid>(window, L"dataGrid");

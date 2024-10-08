@@ -203,7 +203,11 @@ namespace gacuisrc_unittest
     @cpp:Friend(typeof(MainWindowConstructor))
     class MainWindow : ::presentation::controls::GuiWindow, MainWindowConstructor
     {
-        var items : observe DataGridItem^[] = {new (DataGridItem^)("C++", true, 4, Microsoft); new (DataGridItem^)("C#", false, 3, Microsoft); new (DataGridItem^)("F#", false, 2, Microsoft); new (DataGridItem^)("TypeScript", true, 1, Microsoft); new (DataGridItem^)("Object Pascal", false, 1, Borland); new (DataGridItem^)("Java", false, 3, IBM);};
+        var items : observe DataGridItem^[] = {new (DataGridItem^)("C++", true, 4, Microsoft); new (DataGridItem^)("C#", false, 3, Microsoft); new (DataGridItem^)("F#", false, 2, Microsoft); new (DataGridItem^)("TypeScript", true, 1, Microsoft); new (DataGridItem^)("Java", false, 3, IBM); new (DataGridItem^)("Object Pascal", false, 1, Borland);};
+
+        var companySorterById : IDataSorter^ = null;
+
+        var companySorterByName : IDataSorter^ = null;
 
         new* ()
             :::presentation::controls::GuiWindow(::presentation::theme::ThemeName::Window)
@@ -212,6 +216,23 @@ namespace gacuisrc_unittest
             var <resolver> = new (::presentation::GuiResourcePathResolver^)(<resource>, <resource>.WorkingDirectory);
             this.SetResourceResolver(<resolver>);
             this.<gacuisrc_unittest-MainWindow>Initialize(this);
+            <instance-ctor>();
+        }
+
+        func <instance-ctor>() : (::system::Void)
+        {
+            (companySorterById = dataGrid.Columns[3].Sorter);
+            (companySorterByName = new (IDataSorter^)
+            {
+                override func SetCallback(value : IDataProcessorCallback*) : (void)
+                {
+                }
+
+                override func Compare(row1 : object, row2 : object) : (int)
+                {
+                    return Sys::Compare(ToString((cast (DataGridItem^) row1).Company), ToString((cast (DataGridItem^) row1).Company));
+                }
+            });
         }
 
         delete
