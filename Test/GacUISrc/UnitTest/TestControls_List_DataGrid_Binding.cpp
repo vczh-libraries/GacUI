@@ -147,7 +147,7 @@ TEST_FILE
         default: { return "<ERROR>"; }
       }
     }
-    
+
     func ToString(value:Companys) : string
     {
       switch(value)
