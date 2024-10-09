@@ -49,6 +49,19 @@ namespace gacuisrc_unittest
         {
             (self = <this>);
             {
+                (self.companySorterByName = new (::presentation::controls::list::IDataSorter^)
+                {
+                    override func SetCallback(value : ::presentation::controls::list::IDataProcessorCallback*) : (::system::Void)
+                    {
+                    }
+
+                    override func Compare(<row1> : ::system::Object, <row2> : ::system::Object) : (::system::Int64)
+                    {
+                        return [Sys::Compare(ToString($1.Company), ToString($2.Company))] of ((func (DataGridItem^, DataGridItem^) : (::system::Int64)))((cast (DataGridItem^) <row1>), (cast (DataGridItem^) <row2>));
+                    }
+                });
+            }
+            {
                 (self.ClientSize = {x : 640; y : 320;} of (::presentation::Size));
             }
             {
@@ -222,17 +235,6 @@ namespace gacuisrc_unittest
         func <instance-ctor>() : (::system::Void)
         {
             (companySorterById = dataGrid.Columns[3].Sorter);
-            (companySorterByName = new (IDataSorter^)
-            {
-                override func SetCallback(value : IDataProcessorCallback*) : (void)
-                {
-                }
-
-                override func Compare(row1 : object, row2 : object) : (int)
-                {
-                    return Sys::Compare(ToString((cast (DataGridItem^) row1).Company), ToString((cast (DataGridItem^) row1).Company));
-                }
-            });
         }
 
         delete

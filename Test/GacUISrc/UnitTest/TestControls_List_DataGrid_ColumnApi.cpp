@@ -60,22 +60,10 @@ TEST_FILE
       ]]></ref.Members>
       <ref.Ctor><![CDATA[{
         companySorterById = dataGrid.Columns[3].Sorter;
-        companySorterByName = new IDataSorter^
-        {
-          override func SetCallback(value:IDataProcessorCallback*) : void
-          {
-          }
-          override func Compare(row1:object, row2:object) : int
-          {
-            return Sys::Compare(
-              ToString((cast DataGridItem^ row1).Company),
-              ToString((cast DataGridItem^ row1).Company)
-              );
-          }
-        };
       }]]></ref.Ctor>
-      <Window ref.Name="self" Text="GuiBindableDataGrid" ClientSize="x:640 y:320">
-        <BindableDataGrid ref.Name="dataGrid" env.ItemType="DataGridItem^" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
+      <Window ref.Name="self" env.ItemType="DataGridItem^" Text="GuiBindableDataGrid" ClientSize="x:640 y:320">
+        <att.companySorterByName>[Sys::Compare(ToString($1.Company), ToString($2.Company))]</att.companySorterByName>
+        <BindableDataGrid ref.Name="dataGrid" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
           <att.BoundsComposition-set AlignmentToParent="left:5 top:5 right:5 bottom:5"/>
           <att.ItemSource-eval>self.items</att.ItemSource-eval>
           <att.Columns>
