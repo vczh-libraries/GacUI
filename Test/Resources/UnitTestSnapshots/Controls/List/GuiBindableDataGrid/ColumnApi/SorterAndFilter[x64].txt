@@ -257,6 +257,8 @@ namespace gacuisrc_unittest
     {
         var items : observe DataGridItem^[] = {new (DataGridItem^)("C++", true, 4, Microsoft); new (DataGridItem^)("C#", false, 3, Microsoft); new (DataGridItem^)("F#", false, 2, Microsoft); new (DataGridItem^)("TypeScript", true, 1, Microsoft); new (DataGridItem^)("Java", false, 3, IBM); new (DataGridItem^)("Object Pascal", false, 1, Borland);};
 
+        var items2 : observe DataGridItem^[] = {new (DataGridItem^)("@C++", true, 4, Microsoft); new (DataGridItem^)("@C#", false, 3, Microsoft); new (DataGridItem^)("@F#", false, 2, Microsoft); new (DataGridItem^)("@TypeScript", true, 1, Microsoft); new (DataGridItem^)("@Java", false, 3, IBM); new (DataGridItem^)("@Object Pascal", false, 1, Borland);};
+
         var companySorterById : IDataSorter^ = null;
 
         var companySorterByName : IDataSorter^ = null;

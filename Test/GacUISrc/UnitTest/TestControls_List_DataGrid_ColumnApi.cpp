@@ -55,6 +55,14 @@ TEST_FILE
           new DataGridItem^("Java", false, 3, IBM);
           new DataGridItem^("Object Pascal", false, 1, Borland);
         };
+        var items2 : observe DataGridItem^[] = {
+          new DataGridItem^("@C++", true, 4, Microsoft);
+          new DataGridItem^("@C#", false, 3, Microsoft);
+          new DataGridItem^("@F#", false, 2, Microsoft);
+          new DataGridItem^("@TypeScript", true, 1, Microsoft);
+          new DataGridItem^("@Java", false, 3, IBM);
+          new DataGridItem^("@Object Pascal", false, 1, Borland);
+        };
         var companySorterById : IDataSorter^ = null;
         var companySorterByName : IDataSorter^ = null;
         var filterByLanguage : IDataFilter^ = null;
@@ -305,12 +313,71 @@ TEST_FILE
 				);
 		});
 
-		TEST_CASE(L"ResetDataSource with sorter and filter activated")
-		{
-		});
-
 		TEST_CASE(L"ReplaceDataSource with sorter and filter activated")
 		{
+			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto dataGrid = FindObjectByName<GuiBindableDataGrid>(window, L"dataGrid");
+					auto dataGridView = dynamic_cast<IDataGridView*>(dataGrid->GetItemProvider()->RequestView(WString::Unmanaged(IDataGridView::Identifier)));
+					dataGrid->SetAdditionalFilter(UnboxValue<Ptr<IDataFilter>>(Value::From(window).GetProperty(L"filterByIDEs")));
+					dataGrid->GetColumns()[3]->SetSorter(UnboxValue<Ptr<IDataSorter>>(Value::From(window).GetProperty(L"companySorterByName")));
+					dataGridView->SortByColumn(3, true);
+				});
+				protocol->OnNextIdleFrame(L"IDEs > 1, Sort by Company", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto dataGrid = FindObjectByName<GuiBindableDataGrid>(window, L"dataGrid");
+					dataGrid->SetItemSource(UnboxValue<Ptr<IValueEnumerable>>(Value::From(window).GetProperty(L"items2")));
+				});
+				protocol->OnNextIdleFrame(L"ItemSource = items2", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto dataGrid = FindObjectByName<GuiBindableDataGrid>(window, L"dataGrid");
+					auto dataGridView = dynamic_cast<IDataGridView*>(dataGrid->GetItemProvider()->RequestView(WString::Unmanaged(IDataGridView::Identifier)));
+					dataGridView->SortByColumn(-1, true);
+				});
+				protocol->OnNextIdleFrame(L"Unsort", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto dataGrid = FindObjectByName<GuiBindableDataGrid>(window, L"dataGrid");
+					auto dataGridView = dynamic_cast<IDataGridView*>(dataGrid->GetItemProvider()->RequestView(WString::Unmanaged(IDataGridView::Identifier)));
+					dataGrid->GetColumns()[3]->SetSorter(UnboxValue<Ptr<IDataSorter>>(Value::From(window).GetProperty(L"companySorterByName")));
+					dataGridView->SortByColumn(3, true);
+				});
+				protocol->OnNextIdleFrame(L"Sort by Company", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto dataGrid = FindObjectByName<GuiBindableDataGrid>(window, L"dataGrid");
+					dataGrid->SetItemSource(nullptr);
+				});
+				protocol->OnNextIdleFrame(L"ItemSource = null", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto dataGrid = FindObjectByName<GuiBindableDataGrid>(window, L"dataGrid");
+					dataGrid->SetItemSource(UnboxValue<Ptr<IValueEnumerable>>(Value::From(window).GetProperty(L"items")));
+				});
+				protocol->OnNextIdleFrame(L"ItemSource = items", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto dataGrid = FindObjectByName<GuiBindableDataGrid>(window, L"dataGrid");
+					auto dataGridView = dynamic_cast<IDataGridView*>(dataGrid->GetItemProvider()->RequestView(WString::Unmanaged(IDataGridView::Identifier)));
+					dataGrid->SetAdditionalFilter(nullptr);
+					dataGridView->SortByColumn(-1, true);
+				});
+				protocol->OnNextIdleFrame(L"Reset", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					window->Hide();
+				});
+			});
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Controls/List/GuiBindableDataGrid/ColumnApi/ReplaceDataSource"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resourceDataGrid
+				);
 		});
 
 		TEST_CASE(L"ChangeDataSource with sorter and filter activated")
