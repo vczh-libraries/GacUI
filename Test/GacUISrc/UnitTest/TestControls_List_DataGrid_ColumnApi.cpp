@@ -210,6 +210,55 @@ TEST_FILE
 
 		TEST_CASE(L"FilterByColumn")
 		{
+			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto dataGrid = FindObjectByName<GuiBindableDataGrid>(window, L"dataGrid");
+					dataGrid->SetAdditionalFilter(UnboxValue<Ptr<IDataFilter>>(Value::From(window).GetProperty(L"filterByCompany")));
+				});
+				protocol->OnNextIdleFrame(L"Company = Microsoft", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto dataGrid = FindObjectByName<GuiBindableDataGrid>(window, L"dataGrid");
+					dataGrid->GetColumns()[2]->SetFilter(UnboxValue<Ptr<IDataFilter>>(Value::From(window).GetProperty(L"filterByIDEs")));
+				});
+				protocol->OnNextIdleFrame(L"IDEs > 1", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto dataGrid = FindObjectByName<GuiBindableDataGrid>(window, L"dataGrid");
+					dataGrid->GetColumns()[0]->SetFilter(UnboxValue<Ptr<IDataFilter>>(Value::From(window).GetProperty(L"filterByLanguage")));
+				});
+				protocol->OnNextIdleFrame(L"Language = C++", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto dataGrid = FindObjectByName<GuiBindableDataGrid>(window, L"dataGrid");
+					dataGrid->SetAdditionalFilter(nullptr);
+				});
+				protocol->OnNextIdleFrame(L"-Company", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto dataGrid = FindObjectByName<GuiBindableDataGrid>(window, L"dataGrid");
+					dataGrid->GetColumns()[2]->SetFilter(nullptr);
+				});
+				protocol->OnNextIdleFrame(L"-IDEs", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto dataGrid = FindObjectByName<GuiBindableDataGrid>(window, L"dataGrid");
+					dataGrid->GetColumns()[0]->SetFilter(nullptr);
+				});
+				protocol->OnNextIdleFrame(L"-Language", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					window->Hide();
+				});
+			});
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Controls/List/GuiBindableDataGrid/ColumnApi/FilterByColumn"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resourceDataGrid
+				);
 		});
 
 		TEST_CASE(L"ResetDataSource with sorter and filter activated")
