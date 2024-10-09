@@ -49,6 +49,45 @@ namespace gacuisrc_unittest
         {
             (self = <this>);
             {
+                (self.filterByCompany = new (::presentation::controls::list::IDataFilter^)
+                {
+                    override func SetCallback(value : ::presentation::controls::list::IDataProcessorCallback*) : (::system::Void)
+                    {
+                    }
+
+                    override func Filter(<row> : ::system::Object) : (::system::Boolean)
+                    {
+                        return [($1.Company == Companies::Microsoft)] of ((func (DataGridItem^) : (::system::Boolean)))((cast (DataGridItem^) <row>));
+                    }
+                });
+            }
+            {
+                (self.filterByIDEs = new (::presentation::controls::list::IDataFilter^)
+                {
+                    override func SetCallback(value : ::presentation::controls::list::IDataProcessorCallback*) : (::system::Void)
+                    {
+                    }
+
+                    override func Filter(<row> : ::system::Object) : (::system::Boolean)
+                    {
+                        return [($1.IDEs > 1)] of ((func (DataGridItem^) : (::system::Boolean)))((cast (DataGridItem^) <row>));
+                    }
+                });
+            }
+            {
+                (self.filterByLanguage = new (::presentation::controls::list::IDataFilter^)
+                {
+                    override func SetCallback(value : ::presentation::controls::list::IDataProcessorCallback*) : (::system::Void)
+                    {
+                    }
+
+                    override func Filter(<row> : ::system::Object) : (::system::Boolean)
+                    {
+                        return [($1.Language == "C++")] of ((func (DataGridItem^) : (::system::Boolean)))((cast (DataGridItem^) <row>));
+                    }
+                });
+            }
+            {
                 (self.companySorterByName = new (::presentation::controls::list::IDataSorter^)
                 {
                     override func SetCallback(value : ::presentation::controls::list::IDataProcessorCallback*) : (::system::Void)
@@ -221,6 +260,12 @@ namespace gacuisrc_unittest
         var companySorterById : IDataSorter^ = null;
 
         var companySorterByName : IDataSorter^ = null;
+
+        var filterByLanguage : IDataFilter^ = null;
+
+        var filterByIDEs : IDataFilter^ = null;
+
+        var filterByCompany : IDataFilter^ = null;
 
         new* ()
             :::presentation::controls::GuiWindow(::presentation::theme::ThemeName::Window)

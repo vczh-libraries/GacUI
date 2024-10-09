@@ -57,12 +57,18 @@ TEST_FILE
         };
         var companySorterById : IDataSorter^ = null;
         var companySorterByName : IDataSorter^ = null;
+        var filterByLanguage : IDataFilter^ = null;
+        var filterByIDEs : IDataFilter^ = null;
+        var filterByCompany : IDataFilter^ = null;
       ]]></ref.Members>
       <ref.Ctor><![CDATA[{
         companySorterById = dataGrid.Columns[3].Sorter;
       }]]></ref.Ctor>
       <Window ref.Name="self" env.ItemType="DataGridItem^" Text="GuiBindableDataGrid" ClientSize="x:640 y:320">
         <att.companySorterByName>[Sys::Compare(ToString($1.Company), ToString($2.Company))]</att.companySorterByName>
+        <att.filterByLanguage>[$1.Language == "C++"]</att.filterByLanguage>
+        <att.filterByIDEs>[$1.IDEs &gt; 1]</att.filterByIDEs>
+        <att.filterByCompany>[$1.Company == Companies::Microsoft]</att.filterByCompany>
         <BindableDataGrid ref.Name="dataGrid" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
           <att.BoundsComposition-set AlignmentToParent="left:5 top:5 right:5 bottom:5"/>
           <att.ItemSource-eval>self.items</att.ItemSource-eval>
