@@ -152,10 +152,17 @@
   - Dialogs.
   - A mechanism to replace `vl::filesystem` implementation.
   - Add window resizing constraint messages.
-  - Implement `ColorizedTextElement` and `DocumentElement`.
+  - Implement `ColorizedTextElement`
+    - Typing trigger functions in unit test framework.
+    - `GuiSinglelineTextBox`
+    - `GuiMultilineTextBox`
+    - `GuiBindableDataGrid` with predefined text box editor.
+    - Ribbon with predefined text box toolstrip component.
+  - Implement `DocumentElement`.
     - Think about how to calculate size for document.
-  - Typing trigger functions in unit test framework.
-  - `GuiBindableDataGrid` with predefined text box editor.
+    - `GuiDocumentViewer`
+    - `GuiDocumentLable`
+      - `<DocumentTextBox/>`
   - Check all control key operation, ensure accessibility.
     - Cannot scroll `GuiScrollView`, key operations needed and also need to be disabled for `GuiListControl` because it has already defined item selection keys.
     - `Gui(Bindable)TextList` cannot check or uncheck items by key (enter and space).
@@ -174,6 +181,10 @@
   - Unit test framework.
   - Unit test framework in Vlpp.
   - Remote Protocol.
+
+## Release Milestone (1.2.12.1)
+
+- Implement `ColorizedTextElement` and `DocumentElement` in all already implemented remote renderers.
 
 ## Release Milestone (1.2.13.0)
 
