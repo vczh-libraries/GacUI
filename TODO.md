@@ -70,6 +70,14 @@
 - GacUI
   - Fix `CppTest` press `ALT+F4` with `Control/Document Editor/Insert Image` opened and crash in `GuiHostedController::PostAction_LeftButtonUp`.
     - The click processing is finished after the modal window is closed, but due to `ALT+F4` all windows are deleted at the moment.
+    - The following instruction only applies in hosted mode, because in trivial mode only enabled windows could be asked to close, this is ensured by the OS.
+      - When calling a modal window, a model window linked list is generated.
+        - If a window already have a pending modal window, it crashes.
+      - When the main window is asked to close:
+        - If there is any root window that has a pending modal window, pick one from such root windows, otherwise pick the main window.
+        - If the picked root window has any child window that has a pending modal window, let the child window handle it.
+        - If the picked root window has no child window that has a pending modal window, close the top.
+        - Otherwise, there must be no pending modal window, close the main window.
 - Non-editing control unit test (using DarkSkin)
   - BindableControls
     - Set or reset item source
