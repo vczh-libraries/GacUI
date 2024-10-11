@@ -397,6 +397,19 @@ TEST_FILE
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto dataGrid = FindObjectByName<GuiBindableDataGrid>(window, L"dataGrid");
+					auto enumCompanies = GetTypeDescriptor(L"Companies")->GetEnumType();
+					auto dataGridItem = Value::Create(GetTypeDescriptor(L"DataGridItem"), (Value_xs(),
+						WString(L"Workflow"),
+						false,
+						vint(0),
+						enumCompanies->ToEnum(enumCompanies->GetItemValue(enumCompanies->IndexOfItem(L"Microsoft")))
+						));
+					dataGrid->GetItemSource().Cast<IValueObservableList>()->Insert(0, dataGridItem);
+				});
+				protocol->OnNextIdleFrame(L"Add first", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto dataGrid = FindObjectByName<GuiBindableDataGrid>(window, L"dataGrid");
 					auto dataGridView = dynamic_cast<IDataGridView*>(dataGrid->GetItemProvider()->RequestView(WString::Unmanaged(IDataGridView::Identifier)));
 					dataGrid->SetAdditionalFilter(nullptr);
 					dataGridView->SortByColumn(-1, true);
