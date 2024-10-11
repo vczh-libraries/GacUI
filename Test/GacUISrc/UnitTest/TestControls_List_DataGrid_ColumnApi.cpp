@@ -399,14 +399,33 @@ TEST_FILE
 					auto dataGrid = FindObjectByName<GuiBindableDataGrid>(window, L"dataGrid");
 					auto enumCompanies = GetTypeDescriptor(L"Companies")->GetEnumType();
 					auto dataGridItem = Value::Create(GetTypeDescriptor(L"DataGridItem"), (Value_xs(),
-						WString(L"Workflow"),
-						false,
-						vint(0),
+						BoxValue<WString>(L"Visual Basic"),
+						BoxValue(false),
+						BoxValue<vint>(2),
 						enumCompanies->ToEnum(enumCompanies->GetItemValue(enumCompanies->IndexOfItem(L"Microsoft")))
 						));
 					dataGrid->GetItemSource().Cast<IValueObservableList>()->Insert(0, dataGridItem);
 				});
-				protocol->OnNextIdleFrame(L"Add first", [=]()
+				protocol->OnNextIdleFrame(L"Add VB at first", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto dataGrid = FindObjectByName<GuiBindableDataGrid>(window, L"dataGrid");
+					auto enumCompanies = GetTypeDescriptor(L"Companies")->GetEnumType();
+					auto dataGridItem = Value::Create(GetTypeDescriptor(L"DataGridItem"), (Value_xs(),
+						BoxValue<WString>(L"Visual Foxpro"),
+						BoxValue(false),
+						BoxValue<vint>(1),
+						enumCompanies->ToEnum(enumCompanies->GetItemValue(enumCompanies->IndexOfItem(L"Microsoft")))
+						));
+					dataGrid->GetItemSource().Cast<IValueObservableList>()->Set(6, dataGridItem);
+				});
+				protocol->OnNextIdleFrame(L"Replace last with Foxpro", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto dataGrid = FindObjectByName<GuiBindableDataGrid>(window, L"dataGrid");
+					dataGrid->GetItemSource().Cast<IValueObservableList>()->RemoveAt(5);
+				});
+				protocol->OnNextIdleFrame(L"Delete Java", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto dataGrid = FindObjectByName<GuiBindableDataGrid>(window, L"dataGrid");
@@ -415,6 +434,21 @@ TEST_FILE
 					dataGridView->SortByColumn(-1, true);
 				});
 				protocol->OnNextIdleFrame(L"Reset", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto dataGrid = FindObjectByName<GuiBindableDataGrid>(window, L"dataGrid");
+					auto dataGridView = dynamic_cast<IDataGridView*>(dataGrid->GetItemProvider()->RequestView(WString::Unmanaged(IDataGridView::Identifier)));
+					dataGrid->SetAdditionalFilter(UnboxValue<Ptr<IDataFilter>>(Value::From(window).GetProperty(L"filterByIDEs")));
+					dataGrid->GetColumns()[3]->SetSorter(UnboxValue<Ptr<IDataSorter>>(Value::From(window).GetProperty(L"companySorterByName")));
+					dataGridView->SortByColumn(3, true);
+				});
+				protocol->OnNextIdleFrame(L"IDEs > 1, Sort by Company", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto dataGrid = FindObjectByName<GuiBindableDataGrid>(window, L"dataGrid");
+					dataGrid->GetItemSource().Cast<IValueObservableList>()->Clear();
+				});
+				protocol->OnNextIdleFrame(L"Clear", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					window->Hide();
