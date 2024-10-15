@@ -52,6 +52,29 @@ namespace gacui_unittest_template
 		protocol->LClick(location, ctrl, shift, alt);
 	}
 
+	void ClickListViewColumn(UnitTestRemoteProtocol* protocol, GuiListControl* listControl, vint index)
+	{
+		auto arranger = dynamic_cast<ListViewColumnItemArranger*>(listControl->GetArranger());
+		TEST_ASSERT(arranger);
+		TEST_ASSERT(0 <= index && index < arranger->GetColumnButtons().Count());
+		auto button = arranger->GetColumnButtons()[index];
+		auto location = protocol->LocationOf(button);
+		protocol->LClick(location);
+	}
+
+	void ClickListViewColumnDropdown(UnitTestRemoteProtocol* protocol, GuiListControl* listControl, vint index)
+	{
+		auto arranger = dynamic_cast<ListViewColumnItemArranger*>(listControl->GetArranger());
+		TEST_ASSERT(arranger);
+		TEST_ASSERT(0 <= index && index < arranger->GetColumnButtons().Count());
+		auto button = arranger->GetColumnButtons()[index];
+		TEST_ASSERT(button->IsSubMenuExists());
+		auto subMenuHost = button->GetSubMenuHost();
+		TEST_ASSERT(subMenuHost);
+		auto location = protocol->LocationOf(subMenuHost);
+		protocol->LClick(location);
+	}
+
 	void GuiListControl_TestCases(
 		WString resourceXml,
 		WString pathFragment

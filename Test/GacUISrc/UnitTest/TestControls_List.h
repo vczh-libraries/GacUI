@@ -9,6 +9,8 @@ namespace gacui_unittest_template
 	extern void			LDBClickListItem(UnitTestRemoteProtocol* protocol, GuiListControl* listControl, vint index, vint offsetX = -1);
 	extern void			RClickListItem(UnitTestRemoteProtocol* protocol, GuiListControl* listControl, vint index, vint offsetX = -1);
 	extern void			RClickListItem(UnitTestRemoteProtocol* protocol, GuiListControl* listControl, bool ctrl, bool shift, bool alt, vint index, vint offsetX = -1);
+	extern void			ClickListViewColumn(UnitTestRemoteProtocol* protocol, GuiListControl* listControl, vint index);
+	extern void			ClickListViewColumnDropdown(UnitTestRemoteProtocol* protocol, GuiListControl* listControl, vint index);
 
 	// GuiListControl
 
