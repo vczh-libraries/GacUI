@@ -185,7 +185,6 @@ MenuButton
 				IGuiMenuService*						ownerMenuService;
 				bool									cascadeAction;
 
-				GuiButton*								GetSubMenuHost();
 				bool									OpenSubMenuInternal();
 				void									OnParentLineChanged()override;
 				compositions::IGuiAltActionHost*		GetActivatingAltHost()override;
@@ -219,6 +218,10 @@ MenuButton
 				compositions::GuiNotifyEvent			ImageChanged;
 				/// <summary>Shortcut text changed event.</summary>
 				compositions::GuiNotifyEvent			ShortcutTextChanged;
+ 
+				/// <summary>Get the button control that used to interact and popup the sub menu.</summary>
+				/// <returns>The button for the sub menu, it could be the menu button itself.</returns>
+				GuiButton*								GetSubMenuHost();
 
 				/// <summary>Get the large image for the menu button.</summary>
 				/// <returns>The large image for the menu button.</returns>

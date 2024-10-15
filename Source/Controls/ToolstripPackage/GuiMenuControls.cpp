@@ -287,12 +287,6 @@ GuiMenuButton
 				hostMouseEnterHandler = host->GetBoundsComposition()->GetEventReceiver()->mouseEnter.AttachMethod(this, &GuiMenuButton::OnMouseEnter);
 			}
 
-			GuiButton* GuiMenuButton::GetSubMenuHost()
-			{
-				GuiButton* button = TypedControlTemplateObject(true)->GetSubMenuHost();
-				return button ? button : this;
-			}
-
 			bool GuiMenuButton::OpenSubMenuInternal()
 			{
 				if (!GetSubMenuOpening())
@@ -426,6 +420,12 @@ GuiMenuButton
 				{
 					DetachSubMenu();
 				}
+			}
+
+			GuiButton* GuiMenuButton::GetSubMenuHost()
+			{
+				GuiButton* button = TypedControlTemplateObject(true)->GetSubMenuHost();
+				return button ? button : this;
 			}
 
 			Ptr<GuiImageData> GuiMenuButton::GetLargeImage()

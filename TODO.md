@@ -19,6 +19,8 @@
 - Make `ItemSource` class of bindable list controls reflectable.
 - New theme name/virtual control: `ToolstripToolBarInMenu`, `ToolstripSplitterInMenu`
 - `IGuiMenuService::GetHostThemeName`
+- `ListViewColumnItemArranger` added `ColumnButtons` and `ColumnSplitters` properties.
+- `GuiMenuButton` exposed `SubMenuHost` property.
 
 ## Known Issues
 
@@ -88,14 +90,14 @@
     - Extra mouse operations
     - Extra key operations
     - Row and Cell extensions
-  - Ribbon ...
-  - Check all control key operation, ensure accessibility.
 - Document
   - Added `/F:EnabledTestFile` to unit test CLI parameters.
   - `GuiTreeItemTemplate` change base class to `GuiListItemTemplate`
   - New theme name/virtual control: `ToolstripToolBarInMenu`, `ToolstripSplitterInMenu`
   - `IGuiMenuService::GetHostThemeName` if exists
   - `GuiListControl::IItemProvider(Callback)?` moved to `vl::presentation::controls::list`
+  - `ListViewColumnItemArranger` added `ColumnButtons` and `ColumnSplitters` properties.
+  - `GuiMenuButton` exposed `SubMenuHost` property.
 
 ## Release Milestone (1.2.10.3)
 
@@ -110,6 +112,7 @@
       - Show dom nodes in a tree view in the right side of the rendering tab optionally.
       - Select dom node and jump to other tabs with highlight.
 - More unit test
+  - Ribbon Controls
   - `GuiControl` and servives
   - `[TAB]`
   - `ControlThemeName` property

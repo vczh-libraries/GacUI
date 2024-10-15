@@ -5080,6 +5080,7 @@ class presentation::controls::GuiMenuButton : presentation::controls::GuiSelecta
     property PreferredMenuClientSize : presentation::Size { get:GetPreferredMenuClientSize set:SetPreferredMenuClientSize }
     property ShortcutText : system::String { get:GetShortcutText set:SetShortcutText event:ShortcutTextChanged }
     property SubMenu : presentation::controls::GuiMenu* { get:GetSubMenu }
+    property SubMenuHost : presentation::controls::GuiButton* { get:GetSubMenuHost }
     property SubMenuOpening : system::Boolean { get:GetSubMenuOpening set:SetSubMenuOpening event:SubMenuOpeningChanged }
 
     function CreateSubMenu(subMenuStyleController : system::Function<presentation::templates::GuiMenuTemplate*, system::Object>^) : presentation::controls::GuiMenu*;
@@ -5090,6 +5091,7 @@ class presentation::controls::GuiMenuButton : presentation::controls::GuiSelecta
     function GetPreferredMenuClientSize() : presentation::Size;
     function GetShortcutText() : system::String;
     function GetSubMenu() : presentation::controls::GuiMenu*;
+    function GetSubMenuHost() : presentation::controls::GuiButton*;
     function GetSubMenuOpening() : system::Boolean;
     function IsSubMenuExists() : system::Boolean;
     function SetCascadeAction(value : system::Boolean) : system::Void;
@@ -6244,6 +6246,12 @@ class presentation::controls::list::ListViewColumn : system::ReferenceType {
 }
 
 class presentation::controls::list::ListViewColumnItemArranger : presentation::controls::list::FixedHeightItemArranger {
+    property ColumnButtons : system::ReadonlyList<presentation::controls::GuiListViewColumnHeader*>^ { get:GetColumnButtons }
+    property ColumnSplitters : system::ReadonlyList<presentation::compositions::GuiBoundsComposition*>^ { get:GetColumnSplitters }
+
+    function GetColumnButtons() : system::ReadonlyList<presentation::controls::GuiListViewColumnHeader*>^;
+    function GetColumnSplitters() : system::ReadonlyList<presentation::compositions::GuiBoundsComposition*>^;
+
     constructor () : presentation::controls::list::ListViewColumnItemArranger^;
 }
 

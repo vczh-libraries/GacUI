@@ -394,6 +394,16 @@ ListViewColumnItemArranger
 					TBase::DetachListControl();
 				}
 
+				const ListViewColumnItemArranger::ColumnHeaderButtonList& ListViewColumnItemArranger::GetColumnButtons()
+				{
+					return columnHeaderButtons;
+				}
+
+				const ListViewColumnItemArranger::ColumnHeaderSplitterList& ListViewColumnItemArranger::GetColumnSplitters()
+				{
+					return columnHeaderSplitters;
+				}
+
 /***********************************************************************
 ListViewSubItems
 ***********************************************************************/

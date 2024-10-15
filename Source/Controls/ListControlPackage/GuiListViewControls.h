@@ -220,6 +220,13 @@ ListViewColumnItemArranger
 					Size										GetTotalSize()override;
 					void										AttachListControl(GuiListControl* value)override;
 					void										DetachListControl()override;
+
+					/// <summary>Get all column buttons for the Detail view.</summary>
+					/// <returns>All column buttons</returns>
+					const ColumnHeaderButtonList&				GetColumnButtons();
+					/// <summary>Get all column splitters for the Detail view.</summary>
+					/// <returns>All column spitters</returns>
+					const ColumnHeaderSplitterList&				GetColumnSplitters();
 				};
 			}
 
