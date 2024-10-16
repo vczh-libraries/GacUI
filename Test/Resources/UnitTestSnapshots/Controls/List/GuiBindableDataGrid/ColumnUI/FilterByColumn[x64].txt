@@ -336,23 +336,27 @@ namespace gacuisrc_unittest
                 (<precompile>6.GroupController = mutexIDEs);
             }
             {
-                attach(<precompile>6.SelectedChanged, [<this>.{
-                          if ((cast GuiSelectableButton* (sender.RelatedControl)).Selected)
-                          {
-                            dataGrid.Columns[2].Filter = null;
-                          }
-                        }($1, $2)]);
+                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                {
+                    if ((cast (GuiSelectableButton*) sender.RelatedControl).Selected)
+                    {
+                        (dataGrid.Columns[2].Filter = null);
+                    }
+                };
+                attach(<precompile>6.SelectedChanged, <event-handler>);
             }
             {
                 (<precompile>8.GroupController = mutexIDEs);
             }
             {
-                attach(<precompile>8.SelectedChanged, [<this>.{
-                          if ((cast GuiSelectableButton* (sender.RelatedControl)).Selected)
-                          {
-                            dataGrid.Columns[2].Filter = filterByIDEs;
-                          }
-                        }($1, $2)]);
+                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                {
+                    if ((cast (GuiSelectableButton*) sender.RelatedControl).Selected)
+                    {
+                        (dataGrid.Columns[2].Filter = self.filterByIDEs);
+                    }
+                };
+                attach(<precompile>8.SelectedChanged, <event-handler>);
             }
             {
                 (columnCompanies.TextProperty = [ToString((cast (DataGridItem^) $1).Company)]);
@@ -361,23 +365,27 @@ namespace gacuisrc_unittest
                 (radioAllCompanies.GroupController = mutexCompanies);
             }
             {
-                attach(radioAllCompanies.SelectedChanged, [<this>.{
-                          if (radioAllCompanies.Selected and filterByCompaniesCallback is not null)
-                          {
-                            filterByCompaniesCallback.OnProcessorChanged();
-                          }
-                        }($1, $2)]);
+                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                {
+                    if ((radioAllCompanies.Selected and self.filterByCompaniesCallback is not null))
+                    {
+                        self.filterByCompaniesCallback.OnProcessorChanged();
+                    }
+                };
+                attach(radioAllCompanies.SelectedChanged, <event-handler>);
             }
             {
                 (radioMicrosoft.GroupController = mutexCompanies);
             }
             {
-                attach(radioMicrosoft.SelectedChanged, [<this>.{
-                          if (radioMicrosoft.Selected and filterByCompaniesCallback is not null)
-                          {
-                            filterByCompaniesCallback.OnProcessorChanged();
-                          }
-                        }($1, $2)]);
+                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                {
+                    if ((radioMicrosoft.Selected and self.filterByCompaniesCallback is not null))
+                    {
+                        self.filterByCompaniesCallback.OnProcessorChanged();
+                    }
+                };
+                attach(radioMicrosoft.SelectedChanged, <event-handler>);
             }
             {
                 (columnCompanies.Filter = new (IDataFilter^)
@@ -443,54 +451,6 @@ namespace gacuisrc_unittest
         var filterByIDEs : IDataFilter^ = null;
 
         var filterByCompaniesCallback : IDataProcessorCallback* = null;
-
-        @cpp:Protected
-        @cpp:UserImpl
-        func {
-                          if ((cast GuiSelectableButton* (sender.RelatedControl)).Selected)
-                          {
-                            dataGrid.Columns[2].Filter = null;
-                          }
-                        }(sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
-        {
-            raise "Not Implemented: {\n                          if ((cast GuiSelectableButton* (sender.RelatedControl)).Selected)\n                          {\n                            dataGrid.Columns[2].Filter = null;\n                          }\n                        }";
-        }
-
-        @cpp:Protected
-        @cpp:UserImpl
-        func {
-                          if ((cast GuiSelectableButton* (sender.RelatedControl)).Selected)
-                          {
-                            dataGrid.Columns[2].Filter = filterByIDEs;
-                          }
-                        }(sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
-        {
-            raise "Not Implemented: {\n                          if ((cast GuiSelectableButton* (sender.RelatedControl)).Selected)\n                          {\n                            dataGrid.Columns[2].Filter = filterByIDEs;\n                          }\n                        }";
-        }
-
-        @cpp:Protected
-        @cpp:UserImpl
-        func {
-                          if (radioAllCompanies.Selected and filterByCompaniesCallback is not null)
-                          {
-                            filterByCompaniesCallback.OnProcessorChanged();
-                          }
-                        }(sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
-        {
-            raise "Not Implemented: {\n                          if (radioAllCompanies.Selected and filterByCompaniesCallback is not null)\n                          {\n                            filterByCompaniesCallback.OnProcessorChanged();\n                          }\n                        }";
-        }
-
-        @cpp:Protected
-        @cpp:UserImpl
-        func {
-                          if (radioMicrosoft.Selected and filterByCompaniesCallback is not null)
-                          {
-                            filterByCompaniesCallback.OnProcessorChanged();
-                          }
-                        }(sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
-        {
-            raise "Not Implemented: {\n                          if (radioMicrosoft.Selected and filterByCompaniesCallback is not null)\n                          {\n                            filterByCompaniesCallback.OnProcessorChanged();\n                          }\n                        }";
-        }
 
         new* ()
             :::presentation::controls::GuiWindow(::presentation::theme::ThemeName::Window)

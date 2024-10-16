@@ -77,22 +77,22 @@ TEST_FILE
                   <Stack Direction="Vertical" Padding="5" AlignmentToParent="left:5 top:5 right:5 bottom:5" MinSizeLimitation="LimitToElementAndChildren">
                     <StackItem>
                       <RadioButton Text="All" Selected="true" GroupController-ref="mutexIDEs">
-                        <ev.SelectedChanged><![CDATA[{
+                        <ev.SelectedChanged-eval><![CDATA[{
                           if ((cast GuiSelectableButton* (sender.RelatedControl)).Selected)
                           {
                             dataGrid.Columns[2].Filter = null;
                           }
-                        }]]></ev.SelectedChanged>
+                        }]]></ev.SelectedChanged-eval>
                       </RadioButton>
                     </StackItem>
                     <StackItem>
                       <RadioButton Text="Multiple IDEs" GroupController-ref="mutexIDEs">
-                        <ev.SelectedChanged><![CDATA[{
+                        <ev.SelectedChanged-eval><![CDATA[{
                           if ((cast GuiSelectableButton* (sender.RelatedControl)).Selected)
                           {
-                            dataGrid.Columns[2].Filter = filterByIDEs;
+                            dataGrid.Columns[2].Filter = self.filterByIDEs;
                           }
-                        }]]></ev.SelectedChanged>
+                        }]]></ev.SelectedChanged-eval>
                       </RadioButton>
                     </StackItem>
                   </Stack>
@@ -126,22 +126,22 @@ TEST_FILE
                   <Stack Direction="Vertical" Padding="5" AlignmentToParent="left:5 top:5 right:5 bottom:5" MinSizeLimitation="LimitToElementAndChildren">
                     <StackItem>
                       <RadioButton ref.Name="radioAllCompanies" Text="All" Selected="true" GroupController-ref="mutexCompanies">
-                        <ev.SelectedChanged><![CDATA[{
-                          if (radioAllCompanies.Selected and filterByCompaniesCallback is not null)
+                        <ev.SelectedChanged-eval><![CDATA[{
+                          if (radioAllCompanies.Selected and self.filterByCompaniesCallback is not null)
                           {
-                            filterByCompaniesCallback.OnProcessorChanged();
+                            self.filterByCompaniesCallback.OnProcessorChanged();
                           }
-                        }]]></ev.SelectedChanged>
+                        }]]></ev.SelectedChanged-eval>
                       </RadioButton>
                     </StackItem>
                     <StackItem>
                       <RadioButton ref.Name="radioMicrosoft" Text="Microsoft" GroupController-ref="mutexCompanies">
-                        <ev.SelectedChanged><![CDATA[{
-                          if (radioMicrosoft.Selected and filterByCompaniesCallback is not null)
+                        <ev.SelectedChanged-eval><![CDATA[{
+                          if (radioMicrosoft.Selected and self.filterByCompaniesCallback is not null)
                           {
-                            filterByCompaniesCallback.OnProcessorChanged();
+                            self.filterByCompaniesCallback.OnProcessorChanged();
                           }
-                        }]]></ev.SelectedChanged>
+                        }]]></ev.SelectedChanged-eval>
                       </RadioButton>
                     </StackItem>
                   </Stack>
@@ -257,6 +257,21 @@ TEST_FILE
 					ClickListViewColumnDropdown(protocol, dataGrid, 2);
 				});
 				protocol->OnNextIdleFrame(L"Expand IDEs", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto dataGrid = FindObjectByName<GuiBindableDataGrid>(window, L"dataGrid");
+					auto radio = FindControlByText<GuiSelectableButton>(dataGrid->GetColumns()[2]->GetPopup(), L"Multiple IDEs");
+					auto location = protocol->LocationOf(radio);
+					protocol->LClick(location);
+				});
+				protocol->OnNextIdleFrame(L"Click Multiple IDEs", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto dataGrid = FindObjectByName<GuiBindableDataGrid>(window, L"dataGrid");
+					auto location = protocol->LocationOf(dataGrid, 1.0, 1.0);
+					protocol->LClick(location);
+				});
+				protocol->OnNextIdleFrame(L"Close Popup", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					window->Hide();
