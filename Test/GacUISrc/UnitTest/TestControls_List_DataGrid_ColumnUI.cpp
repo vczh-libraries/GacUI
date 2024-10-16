@@ -55,11 +55,14 @@ TEST_FILE
           new DataGridItem^("Object Pascal", false, 1, Borland);
           new DataGridItem^("Java", false, 3, IBM);
         };
+        var filterByIDEs : IDataFilter^ = null;
+        var filterByCompaniesCallback : IDataProcessorCallback* = null;
       ]]></ref.Members>
-      <Window ref.Name="self" Text="GuiBindableDataGrid" ClientSize="x:640 y:320">
+      <Window ref.Name="self" Text="GuiBindableDataGrid" env.ItemType="DataGridItem^" ClientSize="x:640 y:320">
+        <att.filterByIDEs>[$1.IDEs &gt; 1]</att.filterByIDEs>
         <x:MutexGroupController ref.Name="mutexIDEs"/>
         <x:MutexGroupController ref.Name="mutexCompanies"/>
-        <BindableDataGrid ref.Name="dataGrid" env.ItemType="DataGridItem^" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
+        <BindableDataGrid ref.Name="dataGrid" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
           <att.BoundsComposition-set AlignmentToParent="left:5 top:5 right:5 bottom:5"/>
           <att.ItemSource-eval>self.items</att.ItemSource-eval>
           <att.Columns>
@@ -73,25 +76,73 @@ TEST_FILE
                 <ToolstripMenu>
                   <Stack Direction="Vertical" Padding="5" AlignmentToParent="left:5 top:5 right:5 bottom:5" MinSizeLimitation="LimitToElementAndChildren">
                     <StackItem>
-                      <RadioButton Text="All" Selected="true" GroupController-ref="mutexIDEs"/>
+                      <RadioButton Text="All" Selected="true" GroupController-ref="mutexIDEs">
+                        <ev.SelectedChanged><![CDATA[{
+                          if ((cast GuiSelectableButton* (sender.RelatedControl)).Selected)
+                          {
+                            dataGrid.Columns[2].Filter = null;
+                          }
+                        }]]></ev.SelectedChanged>
+                      </RadioButton>
                     </StackItem>
                     <StackItem>
-                      <RadioButton Text="Multiple IDEs" GroupController-ref="mutexIDEs"/>
+                      <RadioButton Text="Multiple IDEs" GroupController-ref="mutexIDEs">
+                        <ev.SelectedChanged><![CDATA[{
+                          if ((cast GuiSelectableButton* (sender.RelatedControl)).Selected)
+                          {
+                            dataGrid.Columns[2].Filter = filterByIDEs;
+                          }
+                        }]]></ev.SelectedChanged>
+                      </RadioButton>
                     </StackItem>
                   </Stack>
                 </ToolstripMenu>
               </att.Popup>
             </_>
-            <_ Text="Company" Size="150" TextProperty-eval="[ToString((cast DataGridItem^ $1).Company)]">
+            <_ ref.Name="columnCompanies" Text="Company" Size="150" TextProperty-eval="[ToString((cast DataGridItem^ $1).Company)]">
               <att.Sorter>[Sys::Compare(ToString($1.Company), ToString($2.Company))]</att.Sorter>
+              <att.Filter-eval><![CDATA[
+                new IDataFilter^
+                {
+                  override func SetCallback(value: IDataProcessorCallback*): void
+                  {
+                    self.filterByCompaniesCallback = value;
+                  }
+                  override func Filter(row: object): bool
+                  {
+                    if (radioMicrosoft.Selected)
+                    {
+                      return (cast DataGridItem^ row).Company == Companies::Microsoft;
+                    }
+                    else
+                    {
+                      return true;
+                    }
+                  }
+                }
+              ]]></att.Filter-eval>
               <att.Popup>
                 <ToolstripMenu>
                   <Stack Direction="Vertical" Padding="5" AlignmentToParent="left:5 top:5 right:5 bottom:5" MinSizeLimitation="LimitToElementAndChildren">
                     <StackItem>
-                      <RadioButton Text="All" Selected="true" GroupController-ref="mutexCompanies"/>
+                      <RadioButton ref.Name="radioAllCompanies" Text="All" Selected="true" GroupController-ref="mutexCompanies">
+                        <ev.SelectedChanged><![CDATA[{
+                          if (radioAllCompanies.Selected and filterByCompaniesCallback is not null)
+                          {
+                            filterByCompaniesCallback.OnProcessorChanged();
+                          }
+                        }]]></ev.SelectedChanged>
+                      </RadioButton>
                     </StackItem>
                     <StackItem>
-                      <RadioButton Text="Microsoft" GroupController-ref="mutexCompanies"/>
+                      <RadioButton ref.Name="radioMicrosoft" Text="Microsoft" GroupController-ref="mutexCompanies">
+                        <ev.SelectedChanged><![CDATA[{
+                          if (radioMicrosoft.Selected and filterByCompaniesCallback is not null)
+                          {
+                            filterByCompaniesCallback.OnProcessorChanged();
+                          }
+                        }]]></ev.SelectedChanged>
+                      </RadioButton>
                     </StackItem>
                   </Stack>
                 </ToolstripMenu>

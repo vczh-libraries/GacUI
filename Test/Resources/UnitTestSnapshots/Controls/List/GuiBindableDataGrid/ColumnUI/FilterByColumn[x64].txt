@@ -36,6 +36,15 @@ namespace gacuisrc_unittest
         var dataGrid : ::presentation::controls::GuiBindableDataGrid* = null of (::presentation::controls::GuiBindableDataGrid*);
 
         @cpp:Protected
+        var columnCompanies : ::presentation::controls::list::DataColumn^ = null of (::presentation::controls::list::DataColumn^);
+
+        @cpp:Protected
+        var radioAllCompanies : ::presentation::controls::GuiSelectableButton* = null of (::presentation::controls::GuiSelectableButton*);
+
+        @cpp:Protected
+        var radioMicrosoft : ::presentation::controls::GuiSelectableButton* = null of (::presentation::controls::GuiSelectableButton*);
+
+        @cpp:Protected
         var <precompile>0 : ::presentation::controls::list::DataColumn^ = null of (::presentation::controls::list::DataColumn^);
 
         @cpp:Protected
@@ -63,33 +72,37 @@ namespace gacuisrc_unittest
         var <precompile>8 : ::presentation::controls::GuiSelectableButton* = null of (::presentation::controls::GuiSelectableButton*);
 
         @cpp:Protected
-        var <precompile>9 : ::presentation::controls::list::DataColumn^ = null of (::presentation::controls::list::DataColumn^);
+        var <precompile>9 : ::presentation::controls::GuiToolstripMenu* = null of (::presentation::controls::GuiToolstripMenu*);
 
         @cpp:Protected
-        var <precompile>10 : ::presentation::controls::GuiToolstripMenu* = null of (::presentation::controls::GuiToolstripMenu*);
+        var <precompile>10 : ::presentation::compositions::GuiStackComposition* = null of (::presentation::compositions::GuiStackComposition*);
 
         @cpp:Protected
-        var <precompile>11 : ::presentation::compositions::GuiStackComposition* = null of (::presentation::compositions::GuiStackComposition*);
+        var <precompile>11 : ::presentation::compositions::GuiStackItemComposition* = null of (::presentation::compositions::GuiStackItemComposition*);
 
         @cpp:Protected
         var <precompile>12 : ::presentation::compositions::GuiStackItemComposition* = null of (::presentation::compositions::GuiStackItemComposition*);
 
         @cpp:Protected
-        var <precompile>13 : ::presentation::controls::GuiSelectableButton* = null of (::presentation::controls::GuiSelectableButton*);
-
-        @cpp:Protected
-        var <precompile>14 : ::presentation::compositions::GuiStackItemComposition* = null of (::presentation::compositions::GuiStackItemComposition*);
-
-        @cpp:Protected
-        var <precompile>15 : ::presentation::controls::GuiSelectableButton* = null of (::presentation::controls::GuiSelectableButton*);
-
-        @cpp:Protected
-        var <precompile>16 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+        var <precompile>13 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
         func <gacuisrc_unittest-MainWindow>Initialize(<this> : ::gacuisrc_unittest::MainWindow*) : (::system::Void)
         {
             (self = <this>);
+            {
+                (self.filterByIDEs = new (::presentation::controls::list::IDataFilter^)
+                {
+                    override func SetCallback(value : ::presentation::controls::list::IDataProcessorCallback*) : (::system::Void)
+                    {
+                    }
+
+                    override func Filter(<row> : ::system::Object) : (::system::Boolean)
+                    {
+                        return [($1.IDEs > 1)] of ((func (DataGridItem^) : (::system::Boolean)))((cast (DataGridItem^) <row>));
+                    }
+                });
+            }
             {
                 (self.ClientSize = {x : 640; y : 320;} of (::presentation::Size));
             }
@@ -110,9 +123,9 @@ namespace gacuisrc_unittest
                 (dataGrid = new (::presentation::controls::GuiBindableDataGrid*)(::presentation::theme::ThemeName::ListView));
                 <this>.SetNamedObject("dataGrid", dataGrid);
             }
-            (<precompile>16 = dataGrid.BoundsComposition);
+            (<precompile>13 = dataGrid.BoundsComposition);
             {
-                (<precompile>16.AlignmentToParent = {left : 5; top : 5; right : 5; bottom : 5;} of (::presentation::Margin));
+                (<precompile>13.AlignmentToParent = {left : 5; top : 5; right : 5; bottom : 5;} of (::presentation::Margin));
             }
             {
                 (dataGrid.VerticalAlwaysVisible = false);
@@ -238,60 +251,63 @@ namespace gacuisrc_unittest
                 var <collection> = dataGrid.Columns;
                 <collection>.Add(<precompile>2);
             }
-            (<precompile>9 = new (::presentation::controls::list::DataColumn^)());
+            (columnCompanies = new (::presentation::controls::list::DataColumn^)());
+            <this>.SetNamedObject("columnCompanies", columnCompanies);
             {
-                (<precompile>10 = new (::presentation::controls::GuiToolstripMenu*)(::presentation::theme::ThemeName::Menu, null));
+                (<precompile>9 = new (::presentation::controls::GuiToolstripMenu*)(::presentation::theme::ThemeName::Menu, null));
             }
-            (<precompile>11 = new (::presentation::compositions::GuiStackComposition*)());
+            (<precompile>10 = new (::presentation::compositions::GuiStackComposition*)());
             {
-                (<precompile>11.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
-            }
-            {
-                (<precompile>11.Padding = 5 of (::system::Int64));
+                (<precompile>10.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
             }
             {
-                (<precompile>11.Direction = Vertical of (::presentation::compositions::GuiStackComposition::Direction));
+                (<precompile>10.Padding = 5 of (::system::Int64));
             }
             {
-                (<precompile>11.AlignmentToParent = {left : 5; top : 5; right : 5; bottom : 5;} of (::presentation::Margin));
+                (<precompile>10.Direction = Vertical of (::presentation::compositions::GuiStackComposition::Direction));
+            }
+            {
+                (<precompile>10.AlignmentToParent = {left : 5; top : 5; right : 5; bottom : 5;} of (::presentation::Margin));
+            }
+            (<precompile>11 = new (::presentation::compositions::GuiStackItemComposition*)());
+            {
+                (radioAllCompanies = new (::presentation::controls::GuiSelectableButton*)(::presentation::theme::ThemeName::RadioButton));
+                <this>.SetNamedObject("radioAllCompanies", radioAllCompanies);
+            }
+            {
+                (radioAllCompanies.Selected = true);
+            }
+            {
+                (radioAllCompanies.Text = "All");
+            }
+            {
+                <precompile>11.AddChild(radioAllCompanies.BoundsComposition);
+            }
+            {
+                <precompile>10.AddChild(<precompile>11);
             }
             (<precompile>12 = new (::presentation::compositions::GuiStackItemComposition*)());
             {
-                (<precompile>13 = new (::presentation::controls::GuiSelectableButton*)(::presentation::theme::ThemeName::RadioButton));
+                (radioMicrosoft = new (::presentation::controls::GuiSelectableButton*)(::presentation::theme::ThemeName::RadioButton));
+                <this>.SetNamedObject("radioMicrosoft", radioMicrosoft);
             }
             {
-                (<precompile>13.Selected = true);
+                (radioMicrosoft.Text = "Microsoft");
             }
             {
-                (<precompile>13.Text = "All");
+                <precompile>12.AddChild(radioMicrosoft.BoundsComposition);
             }
             {
-                <precompile>12.AddChild(<precompile>13.BoundsComposition);
+                <precompile>10.AddChild(<precompile>12);
             }
             {
-                <precompile>11.AddChild(<precompile>12);
-            }
-            (<precompile>14 = new (::presentation::compositions::GuiStackItemComposition*)());
-            {
-                (<precompile>15 = new (::presentation::controls::GuiSelectableButton*)(::presentation::theme::ThemeName::RadioButton));
+                <precompile>9.ContainerComposition.AddChild(<precompile>10);
             }
             {
-                (<precompile>15.Text = "Microsoft");
+                (columnCompanies.Popup = <precompile>9);
             }
             {
-                <precompile>14.AddChild(<precompile>15.BoundsComposition);
-            }
-            {
-                <precompile>11.AddChild(<precompile>14);
-            }
-            {
-                <precompile>10.ContainerComposition.AddChild(<precompile>11);
-            }
-            {
-                (<precompile>9.Popup = <precompile>10);
-            }
-            {
-                (<precompile>9.Sorter = new (::presentation::controls::list::IDataSorter^)
+                (columnCompanies.Sorter = new (::presentation::controls::list::IDataSorter^)
                 {
                     override func SetCallback(value : ::presentation::controls::list::IDataProcessorCallback*) : (::system::Void)
                     {
@@ -304,14 +320,14 @@ namespace gacuisrc_unittest
                 });
             }
             {
-                (<precompile>9.Size = 150 of (::system::Int64));
+                (columnCompanies.Size = 150 of (::system::Int64));
             }
             {
-                (<precompile>9.Text = "Company");
+                (columnCompanies.Text = "Company");
             }
             {
                 var <collection> = dataGrid.Columns;
-                <collection>.Add(<precompile>9);
+                <collection>.Add(columnCompanies);
             }
             {
                 self.AddChild(dataGrid);
@@ -320,16 +336,69 @@ namespace gacuisrc_unittest
                 (<precompile>6.GroupController = mutexIDEs);
             }
             {
+                attach(<precompile>6.SelectedChanged, [<this>.{
+                          if ((cast GuiSelectableButton* (sender.RelatedControl)).Selected)
+                          {
+                            dataGrid.Columns[2].Filter = null;
+                          }
+                        }($1, $2)]);
+            }
+            {
                 (<precompile>8.GroupController = mutexIDEs);
             }
             {
-                (<precompile>9.TextProperty = [ToString((cast (DataGridItem^) $1).Company)]);
+                attach(<precompile>8.SelectedChanged, [<this>.{
+                          if ((cast GuiSelectableButton* (sender.RelatedControl)).Selected)
+                          {
+                            dataGrid.Columns[2].Filter = filterByIDEs;
+                          }
+                        }($1, $2)]);
             }
             {
-                (<precompile>13.GroupController = mutexCompanies);
+                (columnCompanies.TextProperty = [ToString((cast (DataGridItem^) $1).Company)]);
             }
             {
-                (<precompile>15.GroupController = mutexCompanies);
+                (radioAllCompanies.GroupController = mutexCompanies);
+            }
+            {
+                attach(radioAllCompanies.SelectedChanged, [<this>.{
+                          if (radioAllCompanies.Selected and filterByCompaniesCallback is not null)
+                          {
+                            filterByCompaniesCallback.OnProcessorChanged();
+                          }
+                        }($1, $2)]);
+            }
+            {
+                (radioMicrosoft.GroupController = mutexCompanies);
+            }
+            {
+                attach(radioMicrosoft.SelectedChanged, [<this>.{
+                          if (radioMicrosoft.Selected and filterByCompaniesCallback is not null)
+                          {
+                            filterByCompaniesCallback.OnProcessorChanged();
+                          }
+                        }($1, $2)]);
+            }
+            {
+                (columnCompanies.Filter = new (IDataFilter^)
+                {
+                    override func SetCallback(value : IDataProcessorCallback*) : (void)
+                    {
+                        (self.filterByCompaniesCallback = value);
+                    }
+
+                    override func Filter(row : object) : (bool)
+                    {
+                        if (radioMicrosoft.Selected)
+                        {
+                            return ((cast (DataGridItem^) row).Company == Companies::Microsoft);
+                        }
+                        else
+                        {
+                            return true;
+                        }
+                    }
+                });
             }
             {
                 (dataGrid.ItemSource = self.items);
@@ -370,6 +439,58 @@ namespace gacuisrc_unittest
     class MainWindow : ::presentation::controls::GuiWindow, MainWindowConstructor
     {
         var items : observe DataGridItem^[] = {new (DataGridItem^)("C++", true, 4, Microsoft); new (DataGridItem^)("C#", false, 3, Microsoft); new (DataGridItem^)("F#", false, 2, Microsoft); new (DataGridItem^)("TypeScript", true, 1, Microsoft); new (DataGridItem^)("Object Pascal", false, 1, Borland); new (DataGridItem^)("Java", false, 3, IBM);};
+
+        var filterByIDEs : IDataFilter^ = null;
+
+        var filterByCompaniesCallback : IDataProcessorCallback* = null;
+
+        @cpp:Protected
+        @cpp:UserImpl
+        func {
+                          if ((cast GuiSelectableButton* (sender.RelatedControl)).Selected)
+                          {
+                            dataGrid.Columns[2].Filter = null;
+                          }
+                        }(sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+        {
+            raise "Not Implemented: {\n                          if ((cast GuiSelectableButton* (sender.RelatedControl)).Selected)\n                          {\n                            dataGrid.Columns[2].Filter = null;\n                          }\n                        }";
+        }
+
+        @cpp:Protected
+        @cpp:UserImpl
+        func {
+                          if ((cast GuiSelectableButton* (sender.RelatedControl)).Selected)
+                          {
+                            dataGrid.Columns[2].Filter = filterByIDEs;
+                          }
+                        }(sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+        {
+            raise "Not Implemented: {\n                          if ((cast GuiSelectableButton* (sender.RelatedControl)).Selected)\n                          {\n                            dataGrid.Columns[2].Filter = filterByIDEs;\n                          }\n                        }";
+        }
+
+        @cpp:Protected
+        @cpp:UserImpl
+        func {
+                          if (radioAllCompanies.Selected and filterByCompaniesCallback is not null)
+                          {
+                            filterByCompaniesCallback.OnProcessorChanged();
+                          }
+                        }(sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+        {
+            raise "Not Implemented: {\n                          if (radioAllCompanies.Selected and filterByCompaniesCallback is not null)\n                          {\n                            filterByCompaniesCallback.OnProcessorChanged();\n                          }\n                        }";
+        }
+
+        @cpp:Protected
+        @cpp:UserImpl
+        func {
+                          if (radioMicrosoft.Selected and filterByCompaniesCallback is not null)
+                          {
+                            filterByCompaniesCallback.OnProcessorChanged();
+                          }
+                        }(sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+        {
+            raise "Not Implemented: {\n                          if (radioMicrosoft.Selected and filterByCompaniesCallback is not null)\n                          {\n                            filterByCompaniesCallback.OnProcessorChanged();\n                          }\n                        }";
+        }
 
         new* ()
             :::presentation::controls::GuiWindow(::presentation::theme::ThemeName::Window)
