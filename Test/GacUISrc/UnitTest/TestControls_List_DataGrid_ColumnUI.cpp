@@ -76,7 +76,7 @@ TEST_FILE
                 <ToolstripMenu>
                   <Stack Direction="Vertical" Padding="5" AlignmentToParent="left:5 top:5 right:5 bottom:5" MinSizeLimitation="LimitToElementAndChildren">
                     <StackItem>
-                      <RadioButton Text="All" Selected="true" GroupController-ref="mutexIDEs">
+                      <RadioButton Text="All IDE Count" Selected="true" GroupController-ref="mutexIDEs">
                         <ev.SelectedChanged-eval><![CDATA[{
                           if ((cast GuiSelectableButton* (sender.RelatedControl)).Selected)
                           {
@@ -125,7 +125,7 @@ TEST_FILE
                 <ToolstripMenu>
                   <Stack Direction="Vertical" Padding="5" AlignmentToParent="left:5 top:5 right:5 bottom:5" MinSizeLimitation="LimitToElementAndChildren">
                     <StackItem>
-                      <RadioButton ref.Name="radioAllCompanies" Text="All" Selected="true" GroupController-ref="mutexCompanies">
+                      <RadioButton ref.Name="radioAllCompanies" Text="All Companies" Selected="true" GroupController-ref="mutexCompanies">
                         <ev.SelectedChanged-eval><![CDATA[{
                           if (radioAllCompanies.Selected and self.filterByCompaniesCallback is not null)
                           {
@@ -265,6 +265,67 @@ TEST_FILE
 					protocol->LClick(location);
 				});
 				protocol->OnNextIdleFrame(L"Click Multiple IDEs", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto dataGrid = FindObjectByName<GuiBindableDataGrid>(window, L"dataGrid");
+					auto location = protocol->LocationOf(dataGrid, 1.0, 1.0);
+					protocol->LClick(location);
+				});
+				protocol->OnNextIdleFrame(L"Close Popup", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto dataGrid = FindObjectByName<GuiBindableDataGrid>(window, L"dataGrid");
+					ClickListViewColumnDropdown(protocol, dataGrid, 2);
+				});
+				protocol->OnNextIdleFrame(L"Expand Companies", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto radio = FindObjectByName<GuiSelectableButton>(window, L"radioMicrosoft");
+					auto location = protocol->LocationOf(radio);
+					protocol->LClick(location);
+				});
+				protocol->OnNextIdleFrame(L"Click Microsoft", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto dataGrid = FindObjectByName<GuiBindableDataGrid>(window, L"dataGrid");
+					auto location = protocol->LocationOf(dataGrid, 1.0, 1.0);
+					protocol->LClick(location);
+				});
+				protocol->OnNextIdleFrame(L"Close Popup", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto dataGrid = FindObjectByName<GuiBindableDataGrid>(window, L"dataGrid");
+					ClickListViewColumnDropdown(protocol, dataGrid, 2);
+				});
+				protocol->OnNextIdleFrame(L"Expand IDEs", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto dataGrid = FindObjectByName<GuiBindableDataGrid>(window, L"dataGrid");
+					auto radio = FindControlByText<GuiSelectableButton>(dataGrid->GetColumns()[2]->GetPopup(), L"All IDE Count");
+					auto location = protocol->LocationOf(radio);
+					protocol->LClick(location);
+				});
+				protocol->OnNextIdleFrame(L"Click All IDE Count", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto dataGrid = FindObjectByName<GuiBindableDataGrid>(window, L"dataGrid");
+					auto location = protocol->LocationOf(dataGrid, 1.0, 1.0);
+					protocol->LClick(location);
+				});
+				protocol->OnNextIdleFrame(L"Close Popup", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto dataGrid = FindObjectByName<GuiBindableDataGrid>(window, L"dataGrid");
+					ClickListViewColumnDropdown(protocol, dataGrid, 2);
+				});
+				protocol->OnNextIdleFrame(L"Expand Companies", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto radio = FindObjectByName<GuiSelectableButton>(window, L"radioAllCompanies");
+					auto location = protocol->LocationOf(radio);
+					protocol->LClick(location);
+				});
+				protocol->OnNextIdleFrame(L"Click All Companies", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto dataGrid = FindObjectByName<GuiBindableDataGrid>(window, L"dataGrid");

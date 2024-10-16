@@ -207,7 +207,7 @@ namespace gacuisrc_unittest
                 (<precompile>6.Selected = true);
             }
             {
-                (<precompile>6.Text = "All");
+                (<precompile>6.Text = "All IDE Count");
             }
             {
                 <precompile>5.AddChild(<precompile>6.BoundsComposition);
@@ -278,7 +278,7 @@ namespace gacuisrc_unittest
                 (radioAllCompanies.Selected = true);
             }
             {
-                (radioAllCompanies.Text = "All");
+                (radioAllCompanies.Text = "All Companies");
             }
             {
                 <precompile>11.AddChild(radioAllCompanies.BoundsComposition);
