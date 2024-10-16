@@ -45,7 +45,7 @@ TEST_FILE
     }
   ]]></Workflow></Script>
   <Instance name="MainWindowResource">
-    <Instance ref.Class="gacuisrc_unittest::MainWindow">
+    <Instance ref.Class="gacuisrc_unittest::MainWindow" xmlns:x="presentation::controls::GuiSelectableButton::*">
       <ref.Members><![CDATA[
         var items : observe DataGridItem^[] = {
           new DataGridItem^("C++", true, 4, Microsoft);
@@ -56,8 +56,10 @@ TEST_FILE
           new DataGridItem^("Java", false, 3, IBM);
         };
       ]]></ref.Members>
-      <Window ref.Name="self" env.ItemType="DataGridItem^" Text="GuiBindableDataGrid" ClientSize="x:640 y:320">
-        <BindableDataGrid ref.Name="dataGrid" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
+      <Window ref.Name="self" Text="GuiBindableDataGrid" ClientSize="x:640 y:320">
+        <x:MutexGroupController ref.Name="mutexIDEs"/>
+        <x:MutexGroupController ref.Name="mutexCompanies"/>
+        <BindableDataGrid ref.Name="dataGrid" env.ItemType="DataGridItem^" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
           <att.BoundsComposition-set AlignmentToParent="left:5 top:5 right:5 bottom:5"/>
           <att.ItemSource-eval>self.items</att.ItemSource-eval>
           <att.Columns>
@@ -67,9 +69,33 @@ TEST_FILE
             <_ Text="Meta Programming" Size="150" TextProperty="MetaProgramming">
             </_>
             <_ Text="IDE Count" Size="150" TextProperty="IDEs">
+              <att.Popup>
+                <ToolstripMenu>
+                  <Stack Direction="Vertical" Padding="5" AlignmentToParent="left:5 top:5 right:5 bottom:5" MinSizeLimitation="LimitToElementAndChildren">
+                    <StackItem>
+                      <RadioButton Text="All" Selected="true" GroupController-ref="mutexIDEs"/>
+                    </StackItem>
+                    <StackItem>
+                      <RadioButton Text="Multiple IDEs" GroupController-ref="mutexIDEs"/>
+                    </StackItem>
+                  </Stack>
+                </ToolstripMenu>
+              </att.Popup>
             </_>
             <_ Text="Company" Size="150" TextProperty-eval="[ToString((cast DataGridItem^ $1).Company)]">
               <att.Sorter>[Sys::Compare(ToString($1.Company), ToString($2.Company))]</att.Sorter>
+              <att.Popup>
+                <ToolstripMenu>
+                  <Stack Direction="Vertical" Padding="5" AlignmentToParent="left:5 top:5 right:5 bottom:5" MinSizeLimitation="LimitToElementAndChildren">
+                    <StackItem>
+                      <RadioButton Text="All" Selected="true" GroupController-ref="mutexCompanies"/>
+                    </StackItem>
+                    <StackItem>
+                      <RadioButton Text="Microsoft" GroupController-ref="mutexCompanies"/>
+                    </StackItem>
+                  </Stack>
+                </ToolstripMenu>
+              </att.Popup>
             </_>
           </att.Columns>
         </BindableDataGrid>
@@ -164,6 +190,29 @@ TEST_FILE
 			});
 			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
 				WString::Unmanaged(L"Controls/List/GuiBindableDataGrid/ColumnUI/SortByColumn"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resourceDataGrid
+				);
+		});
+
+		TEST_CASE(L"FilterByColumn")
+		{
+			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto dataGrid = FindObjectByName<GuiBindableDataGrid>(window, L"dataGrid");
+					ClickListViewColumnDropdown(protocol, dataGrid, 2);
+				});
+				protocol->OnNextIdleFrame(L"Expand IDEs", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					window->Hide();
+				});
+			});
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Controls/List/GuiBindableDataGrid/ColumnUI/FilterByColumn"),
 				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
 				resourceDataGrid
 				);
