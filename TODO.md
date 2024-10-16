@@ -86,10 +86,9 @@
     - Set or reset property bindings
   - BindableDataGrid
     - ItemTemplate with properties
-    - Item manipulation
-    - Extra mouse operations
-    - Extra key operations
-    - Row and Cell extensions
+    - Row and Cell selections (properties, mouse, key)
+    - Row and Cell visualizers
+    - Row and Cell editors
 - Document
   - Added `/F:EnabledTestFile` to unit test CLI parameters.
   - `GuiTreeItemTemplate` change base class to `GuiListItemTemplate`
