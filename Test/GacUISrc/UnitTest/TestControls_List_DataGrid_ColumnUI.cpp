@@ -275,7 +275,7 @@ TEST_FILE
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto dataGrid = FindObjectByName<GuiBindableDataGrid>(window, L"dataGrid");
-					ClickListViewColumnDropdown(protocol, dataGrid, 2);
+					ClickListViewColumnDropdown(protocol, dataGrid, 3);
 				});
 				protocol->OnNextIdleFrame(L"Expand Companies", [=]()
 				{
@@ -316,7 +316,7 @@ TEST_FILE
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto dataGrid = FindObjectByName<GuiBindableDataGrid>(window, L"dataGrid");
-					ClickListViewColumnDropdown(protocol, dataGrid, 2);
+					ClickListViewColumnDropdown(protocol, dataGrid, 3);
 				});
 				protocol->OnNextIdleFrame(L"Expand Companies", [=]()
 				{
