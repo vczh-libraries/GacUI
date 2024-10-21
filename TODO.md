@@ -366,7 +366,29 @@
     - Need to be consistent with animation object
   - Consider multiple `-ani` batch control, state configuration and transition, story board, connection to animation coroutine, etc.
 - `<eval Eval="expression"/>` tags.
-- Facade
+- `<ez:Layout/>`
+  - `xmlns:ez` by default:
+    - `presentation::composition::eazy_layout::GuiEazy*Composition`
+    - `presentation::composition::eazy_layout::GuiEazy*Layout`
+  - A `vl::presentation::composition::eazy_layout::GuiEazyLayoutComposition`
+    - with properties:
+      - `Top`, `Bottom`, `Left`, `Right`: boolean of border visibility
+      - `Padding`: thickness of border and between all leaf containers
+    - accepting following tags as child:
+      - `<ez:Top/>`, `<ez:Bottom/>`, `<ez:Left/>`, `<ez:Right/>`, `<ez:Fill Percentage="1">`: Will be implemented by stack or table
+      - `<ez:Row RowSpan="1" ColumnSpan="1"/>`, `<ez:Column RowSpan="1" ColumnSpan="1"/>`: will be implemented by table
+    - properties of other `ez:` object
+      - `Padding`, `-1` by default means inheriting the value from its parent, defining a new padding of its children
+  - Any `ez:` layout could have multiple `ez:` layout or one control/Composition
+    - Such `control` or `composition` will get `AlignmentToParent` changed in `BuildLayout` if all components are `-1` at the moment
+    - A flag will store into such object, so the second call of `BuildLayout` will know the value is set by itself, and update it propertly
+      - Such flag could be the `<ez:Layout/>` itself passed to calling `SetInternalProperty`
+  - There is no constraint about the number and their order of `ez:` child object
+    - All consecutive rows or columns will be grouped into a table
+    - All direct child of rows of a rows, or columns of a column, are flattened
+    - Use stack if possible
+  - A `BuildLayout` method will be called after the layout tree is prepared. Changing the layout tree will not take effect without calling this method.
+- Facade (low priority)
   - A facade is a class with following methods:
     - **AddChild**: Accept a child facade or a child object.
     - **ApplyTo**: Accept a parent object, which is not a facade.
