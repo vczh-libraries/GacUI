@@ -50,7 +50,6 @@
   - `(H|V)(Tracker|Scroll)/Mouse`
   - `ToolstripSplitButton`
   - `GuiDatePicker/Mouse`
-    - This test seems to still detect the real current date, which appears in log but not in rendering result.
 - `(H|V)(Tracker|Scroll)/Mouse`
   - when `Drag to Center` the handler should be highlighted, because the mouse is right above the handler.
 - `GuiScrollContainer`
@@ -61,6 +60,7 @@
 - Stop hard-coding coordinates:
   - `GetListItemLocation`.
   - `GuiToolstripMenuBar/Cascade/ClickSubMenu`'s `Hover on File/New` try to avoid specifying relative coordinate just because half of the menu item is covered.
+- `GuiDateComboBox` seems to still detect the real current date, which appears in log but not in rendering result.
 
 ## Release (optional)
 
