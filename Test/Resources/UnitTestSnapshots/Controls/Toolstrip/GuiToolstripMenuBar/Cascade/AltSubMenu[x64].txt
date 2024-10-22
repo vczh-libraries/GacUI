@@ -66,6 +66,9 @@ namespace gacuisrc_unittest
         var <precompile>12 : ::presentation::controls::GuiToolstripGroup* = null of (::presentation::controls::GuiToolstripGroup*);
 
         @cpp:Protected
+        var <precompile>13 : ::presentation::controls::GuiToolstripButton* = null of (::presentation::controls::GuiToolstripButton*);
+
+        @cpp:Protected
         var menuFile : ::presentation::controls::GuiToolstripButton* = null of (::presentation::controls::GuiToolstripButton*);
 
         @cpp:Protected
@@ -76,9 +79,6 @@ namespace gacuisrc_unittest
 
         @cpp:Protected
         var menuAbout : ::presentation::controls::GuiToolstripButton* = null of (::presentation::controls::GuiToolstripButton*);
-
-        @cpp:Protected
-        var <precompile>13 : ::presentation::controls::GuiToolstripButton* = null of (::presentation::controls::GuiToolstripButton*);
 
         @cpp:Protected
         var <precompile>14 : ::presentation::controls::GuiToolstripMenu* = null of (::presentation::controls::GuiToolstripMenu*);
