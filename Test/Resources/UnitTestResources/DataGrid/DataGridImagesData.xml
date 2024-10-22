@@ -1,0 +1,8 @@
+<Folder>
+  <Xml name="ImageData">
+    <ImageData>
+      <Image Path="DataGridImages/Male" Format="Png" Width="16" Height="16"/>
+      <Image Path="DataGridImages/Female" Format="Png" Width="16" Height="16"/>
+    </ImageData>
+  </Xml>
+</Folder>
