@@ -27,9 +27,6 @@ namespace gacuisrc_unittest
         var self : ::gacuisrc_unittest::MainWindow* = null of (::gacuisrc_unittest::MainWindow*);
 
         @cpp:Protected
-        var dataGrid : ::presentation::controls::GuiBindableDataGrid* = null of (::presentation::controls::GuiBindableDataGrid*);
-
-        @cpp:Protected
         var <precompile>0 : ::presentation::controls::list::DataColumn^ = null of (::presentation::controls::list::DataColumn^);
 
         @cpp:Protected
@@ -40,6 +37,9 @@ namespace gacuisrc_unittest
 
         @cpp:Protected
         var <precompile>3 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var dataGrid : ::presentation::controls::GuiBindableDataGrid* = null of (::presentation::controls::GuiBindableDataGrid*);
 
         @cpp:Protected
         func <gacuisrc_unittest-MainWindow>Initialize(<this> : ::gacuisrc_unittest::MainWindow*) : (::system::Void)
@@ -55,15 +55,15 @@ namespace gacuisrc_unittest
                 (dataGrid = new (::presentation::controls::GuiBindableDataGrid*)(::presentation::theme::ThemeName::ListView));
                 <this>.SetNamedObject("dataGrid", dataGrid);
             }
-            (<precompile>3 = dataGrid.BoundsComposition);
-            {
-                (<precompile>3.AlignmentToParent = {left : 5; top : 5; right : 5; bottom : 5;} of (::presentation::Margin));
-            }
             {
                 (dataGrid.VerticalAlwaysVisible = false);
             }
             {
                 (dataGrid.HorizontalAlwaysVisible = false);
+            }
+            (<precompile>3 = dataGrid.BoundsComposition);
+            {
+                (<precompile>3.AlignmentToParent = {left : 5; top : 5; right : 5; bottom : 5;} of (::presentation::Margin));
             }
             (<precompile>0 = new (::presentation::controls::list::DataColumn^)());
             {

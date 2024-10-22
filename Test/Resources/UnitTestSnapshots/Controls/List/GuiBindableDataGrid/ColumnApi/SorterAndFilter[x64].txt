@@ -27,9 +27,6 @@ namespace gacuisrc_unittest
         var self : ::gacuisrc_unittest::MainWindow* = null of (::gacuisrc_unittest::MainWindow*);
 
         @cpp:Protected
-        var dataGrid : ::presentation::controls::GuiBindableDataGrid* = null of (::presentation::controls::GuiBindableDataGrid*);
-
-        @cpp:Protected
         var <precompile>0 : ::presentation::controls::list::DataColumn^ = null of (::presentation::controls::list::DataColumn^);
 
         @cpp:Protected
@@ -45,6 +42,9 @@ namespace gacuisrc_unittest
         var <precompile>4 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
+        var dataGrid : ::presentation::controls::GuiBindableDataGrid* = null of (::presentation::controls::GuiBindableDataGrid*);
+
+        @cpp:Protected
         func <gacuisrc_unittest-MainWindow>Initialize(<this> : ::gacuisrc_unittest::MainWindow*) : (::system::Void)
         {
             (self = <this>);
@@ -58,19 +58,6 @@ namespace gacuisrc_unittest
                     override func Filter(<row> : ::system::Object) : (::system::Boolean)
                     {
                         return [($1.Company == Companies::Microsoft)] of ((func (DataGridItem^) : (::system::Boolean)))((cast (DataGridItem^) <row>));
-                    }
-                });
-            }
-            {
-                (self.filterByIDEs = new (::presentation::controls::list::IDataFilter^)
-                {
-                    override func SetCallback(value : ::presentation::controls::list::IDataProcessorCallback*) : (::system::Void)
-                    {
-                    }
-
-                    override func Filter(<row> : ::system::Object) : (::system::Boolean)
-                    {
-                        return [($1.IDEs > 1)] of ((func (DataGridItem^) : (::system::Boolean)))((cast (DataGridItem^) <row>));
                     }
                 });
             }
@@ -101,6 +88,19 @@ namespace gacuisrc_unittest
                 });
             }
             {
+                (self.filterByIDEs = new (::presentation::controls::list::IDataFilter^)
+                {
+                    override func SetCallback(value : ::presentation::controls::list::IDataProcessorCallback*) : (::system::Void)
+                    {
+                    }
+
+                    override func Filter(<row> : ::system::Object) : (::system::Boolean)
+                    {
+                        return [($1.IDEs > 1)] of ((func (DataGridItem^) : (::system::Boolean)))((cast (DataGridItem^) <row>));
+                    }
+                });
+            }
+            {
                 (self.ClientSize = {x : 640; y : 320;} of (::presentation::Size));
             }
             {
@@ -110,15 +110,15 @@ namespace gacuisrc_unittest
                 (dataGrid = new (::presentation::controls::GuiBindableDataGrid*)(::presentation::theme::ThemeName::ListView));
                 <this>.SetNamedObject("dataGrid", dataGrid);
             }
-            (<precompile>4 = dataGrid.BoundsComposition);
-            {
-                (<precompile>4.AlignmentToParent = {left : 5; top : 5; right : 5; bottom : 5;} of (::presentation::Margin));
-            }
             {
                 (dataGrid.VerticalAlwaysVisible = false);
             }
             {
                 (dataGrid.HorizontalAlwaysVisible = false);
+            }
+            (<precompile>4 = dataGrid.BoundsComposition);
+            {
+                (<precompile>4.AlignmentToParent = {left : 5; top : 5; right : 5; bottom : 5;} of (::presentation::Margin));
             }
             (<precompile>0 = new (::presentation::controls::list::DataColumn^)());
             {

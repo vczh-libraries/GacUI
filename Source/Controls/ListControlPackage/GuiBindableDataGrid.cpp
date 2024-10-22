@@ -694,7 +694,8 @@ DataProvider
 							virtualRowToSourceRow->Count(),
 							[=](vint a, vint b)
 							{
-								return sorter->Compare(itemSource->Get(a), itemSource->Get(b)) <=> 0;
+								auto ordering = sorter->Compare(itemSource->Get(a), itemSource->Get(b)) <=> 0;
+								return ordering == 0 ? a <=> b : ordering;
 							});
 					}
 

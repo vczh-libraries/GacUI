@@ -246,6 +246,9 @@
     <ClCompile Include="TestControls_List_DataGrid_ColumnUI.cpp">
       <Filter>Source Files\Controls\List\DataGrid</Filter>
     </ClCompile>
+    <ClCompile Include="TestControls_List_DataGrid_CellVisualizer.cpp">
+      <Filter>Source Files\Controls\List\DataGrid</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="TestCompositions.h">

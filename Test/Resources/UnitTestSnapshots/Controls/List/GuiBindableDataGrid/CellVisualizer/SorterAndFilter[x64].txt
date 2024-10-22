@@ -42,9 +42,25 @@ namespace gacuisrc_unittest
         var dataGrid : ::presentation::controls::GuiBindableDataGrid* = null of (::presentation::controls::GuiBindableDataGrid*);
 
         @cpp:Protected
+        var columnCompanies : ::presentation::controls::list::DataColumn^ = null of (::presentation::controls::list::DataColumn^);
+
+        @cpp:Protected
         func <gacuisrc_unittest-MainWindow>Initialize(<this> : ::gacuisrc_unittest::MainWindow*) : (::system::Void)
         {
             (self = <this>);
+            {
+                (self.filterByIDEs = new (::presentation::controls::list::IDataFilter^)
+                {
+                    override func SetCallback(value : ::presentation::controls::list::IDataProcessorCallback*) : (::system::Void)
+                    {
+                    }
+
+                    override func Filter(<row> : ::system::Object) : (::system::Boolean)
+                    {
+                        return [($1.IDEs > 1)] of ((func (DataGridItem^) : (::system::Boolean)))((cast (DataGridItem^) <row>));
+                    }
+                });
+            }
             {
                 (self.ClientSize = {x : 640; y : 320;} of (::presentation::Size));
             }
@@ -67,10 +83,26 @@ namespace gacuisrc_unittest
             }
             (<precompile>0 = new (::presentation::controls::list::DataColumn^)());
             {
+                (<precompile>0.Sorter = new (::presentation::controls::list::IDataSorter^)
+                {
+                    override func SetCallback(value : ::presentation::controls::list::IDataProcessorCallback*) : (::system::Void)
+                    {
+                    }
+
+                    override func Compare(<row1> : ::system::Object, <row2> : ::system::Object) : (::system::Int64)
+                    {
+                        return [Sys::Compare($1.Language, $2.Language)] of ((func (DataGridItem^, DataGridItem^) : (::system::Int64)))((cast (DataGridItem^) <row1>), (cast (DataGridItem^) <row2>));
+                    }
+                });
+            }
+            {
+                (<precompile>0.Size = 150 of (::system::Int64));
+            }
+            {
                 (<precompile>0.TextProperty = func (<item> : ::system::Object) : (::system::String)
                 {
-                    var itemToBind = (cast (DataGridItem^) <item>);
-                    return itemToBind.Language;
+                    var item = (cast (DataGridItem^) <item>);
+                    return item.Language;
                 });
             }
             {
@@ -82,14 +114,17 @@ namespace gacuisrc_unittest
             }
             (<precompile>1 = new (::presentation::controls::list::DataColumn^)());
             {
+                (<precompile>1.Size = 150 of (::system::Int64));
+            }
+            {
                 (<precompile>1.TextProperty = func (<item> : ::system::Object) : (::system::String)
                 {
-                    var itemToBind = (cast (DataGridItem^) <item>);
-                    return ToString(itemToBind.IDE);
+                    var item = (cast (DataGridItem^) <item>);
+                    return item.MetaProgramming;
                 });
             }
             {
-                (<precompile>1.Text = "IDE");
+                (<precompile>1.Text = "Meta Programming");
             }
             {
                 var <collection> = dataGrid.Columns;
@@ -97,17 +132,52 @@ namespace gacuisrc_unittest
             }
             (<precompile>2 = new (::presentation::controls::list::DataColumn^)());
             {
-                (<precompile>2.Text = "Company");
+                (<precompile>2.Size = 150 of (::system::Int64));
+            }
+            {
+                (<precompile>2.TextProperty = func (<item> : ::system::Object) : (::system::String)
+                {
+                    var item = (cast (DataGridItem^) <item>);
+                    return item.IDEs;
+                });
+            }
+            {
+                (<precompile>2.Text = "IDE Count");
             }
             {
                 var <collection> = dataGrid.Columns;
                 <collection>.Add(<precompile>2);
             }
+            (columnCompanies = new (::presentation::controls::list::DataColumn^)());
+            <this>.SetNamedObject("columnCompanies", columnCompanies);
+            {
+                (columnCompanies.Sorter = new (::presentation::controls::list::IDataSorter^)
+                {
+                    override func SetCallback(value : ::presentation::controls::list::IDataProcessorCallback*) : (::system::Void)
+                    {
+                    }
+
+                    override func Compare(<row1> : ::system::Object, <row2> : ::system::Object) : (::system::Int64)
+                    {
+                        return [Sys::Compare(ToString($1.Company), ToString($2.Company))] of ((func (DataGridItem^, DataGridItem^) : (::system::Int64)))((cast (DataGridItem^) <row1>), (cast (DataGridItem^) <row2>));
+                    }
+                });
+            }
+            {
+                (columnCompanies.Size = 150 of (::system::Int64));
+            }
+            {
+                (columnCompanies.Text = "Company");
+            }
+            {
+                var <collection> = dataGrid.Columns;
+                <collection>.Add(columnCompanies);
+            }
             {
                 self.AddChild(dataGrid);
             }
             {
-                (<precompile>2.TextProperty = [ToString((cast (DataGridItem^) $1).Company)]);
+                (columnCompanies.TextProperty = [ToString((cast (DataGridItem^) $1).Company)]);
             }
             {
                 (dataGrid.ItemSource = self.items);
@@ -147,7 +217,9 @@ namespace gacuisrc_unittest
     @cpp:Friend(typeof(MainWindowConstructor))
     class MainWindow : ::presentation::controls::GuiWindow, MainWindowConstructor
     {
-        var items : observe DataGridItem^[] = {new (DataGridItem^)("C++"); new (DataGridItem^)("C#"); new (DataGridItem^)("F#"); new (DataGridItem^)("TypeScript", VSCode, Microsoft); new (DataGridItem^)("Java", Eclipse, IBM);};
+        var items : observe DataGridItem^[] = {new (DataGridItem^)("C++", true, 4, Microsoft); new (DataGridItem^)("C#", false, 3, Microsoft); new (DataGridItem^)("F#", false, 2, Microsoft); new (DataGridItem^)("TypeScript", true, 1, Microsoft); new (DataGridItem^)("Object Pascal", false, 1, Borland); new (DataGridItem^)("Java", false, 3, IBM);};
+
+        var filterByIDEs : IDataFilter^ = null;
 
         new* ()
             :::presentation::controls::GuiWindow(::presentation::theme::ThemeName::Window)
@@ -169,17 +241,11 @@ namespace gacuisrc_unittest
 module datagriditem;
 using system::*;
 
-enum IDEs
-{
-    VisualStudio = 0,
-    VSCode = 1,
-    Eclipse = 2,
-}
-
-enum compare
+enum Companies
 {
     Microsoft = 0,
-    IBM = 1,
+    Borland = 1,
+    IBM = 2,
 }
 
 class DataGridItem
@@ -200,84 +266,76 @@ class DataGridItem
     prop Language : string{GetLanguage, SetLanguage}
 
     @cpp:Private
-    var <prop>IDE : IDEs = VisualStudio;
+    var <prop>MetaProgramming : bool = false;
 
-    func GetIDE() : (IDEs)
+    func GetMetaProgramming() : (bool)
     {
-        return <prop>IDE;
+        return <prop>MetaProgramming;
     }
 
-    func SetIDE(<value> : IDEs) : (void)
+    func SetMetaProgramming(<value> : bool) : (void)
     {
-        (<prop>IDE = <value>);
+        (<prop>MetaProgramming = <value>);
     }
 
-    prop IDE : IDEs{GetIDE, SetIDE}
+    prop MetaProgramming : bool{GetMetaProgramming, SetMetaProgramming}
 
     @cpp:Private
-    var <prop>Company : compare = Microsoft;
+    var <prop>IDEs : int = 0;
 
-    func GetCompany() : (compare)
+    func GetIDEs() : (int)
+    {
+        return <prop>IDEs;
+    }
+
+    func SetIDEs(<value> : int) : (void)
+    {
+        (<prop>IDEs = <value>);
+    }
+
+    prop IDEs : int{GetIDEs, SetIDEs}
+
+    @cpp:Private
+    var <prop>Company : Companies = Microsoft;
+
+    func GetCompany() : (Companies)
     {
         return <prop>Company;
     }
 
-    func SetCompany(<value> : compare) : (void)
+    func SetCompany(<value> : Companies) : (void)
     {
         (<prop>Company = <value>);
     }
 
-    prop Company : compare{GetCompany, SetCompany}
+    prop Company : Companies{GetCompany, SetCompany}
 
     new ()
     {
     }
 
-    new (language : string)
+    new (language : string, metaProgramming : bool, ides : int, company : Companies)
     {
         (Language = language);
-    }
-
-    new (language : string, ide : IDEs, company : compare)
-    {
-        (Language = language);
-        (IDE = ide);
+        (MetaProgramming = metaProgramming);
+        (IDEs = ides);
         (Company = company);
     }
 }
 
-func ToString(value : IDEs) : (string)
+func ToString(value : Companies) : (string)
 {
     {
-        var <switch>0 : ::IDEs = value;
-        if ((<switch>0 == VisualStudio of (::IDEs)))
-        {
-            return "Visual Studio";
-        }
-        else if ((<switch>0 == VSCode of (::IDEs)))
-        {
-            return "Visual Studio Code";
-        }
-        else if ((<switch>0 == Eclipse of (::IDEs)))
-        {
-            return "Eclipse";
-        }
-        else
-        {
-            return "<ERROR>";
-        }
-    }
-}
-
-func ToString(value : compare) : (string)
-{
-    {
-        var <switch>1 : ::compare = value;
-        if ((<switch>1 == Microsoft of (::compare)))
+        var <switch>0 : ::Companies = value;
+        if ((<switch>0 == Microsoft of (::Companies)))
         {
             return "Microsoft";
         }
-        else if ((<switch>1 == IBM of (::compare)))
+        else if ((<switch>0 == Borland of (::Companies)))
+        {
+            return "Borland";
+        }
+        else if ((<switch>0 == IBM of (::Companies)))
         {
             return "IBM";
         }
