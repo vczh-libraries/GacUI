@@ -38,8 +38,6 @@
 - Bindable list control (optional)
   - When a property referenced by `<att.XXXProperty>` is updated, the list item is not refreshed.
     - Need to find a way to listen to the event.
-  - When a data grid cell editor is created under the mouse, the editor does not receive `MouseEvent` event.
-    - TODO in `GuiBindableDataGrid/ComboEditor`, could also be repro-ed manually.
 - For all list controls, adding item could cause flashing during rendering for about 1 flame.
   - If this issue is solved, remove document in `Breaking changes from 1.0` and `List Controls`.
 - `controller(Unr|R)elatedPlugins` in `IGuiPlugin(Manager)?` lower dependency safety.
@@ -60,6 +58,8 @@
   - When the content is changed, configuration needs 2 idle frames to be correctly configured.
 - `GuiListItemTemplate/ArrangerAndAxis(WithScrolls)`
   - items are not aligned to proper corner when scrolls are invisible.
+- `GuiBindableDataGrid/ComboEditor`
+  - When a data grid cell editor is created under the mouse, the editor does not receive `MouseEvent` event.
 - Stop hard-coding coordinates:
   - `GetListItemLocation`.
   - `GuiToolstripMenuBar/Cascade/ClickSubMenu`'s `Hover on File/New` try to avoid specifying relative coordinate just because half of the menu item is covered.
