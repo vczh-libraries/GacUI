@@ -5661,9 +5661,11 @@ class presentation::controls::GuiVirtualDataGrid : presentation::controls::GuiVi
     }
 
     property ItemProvider : presentation::controls::list::IItemProvider* { get:GetItemProvider }
+    property OpenedEditor : presentation::controls::list::IDataEditor^ { get:GetOpenedEditor }
     property SelectedCell : presentation::GridPos { get:GetSelectedCell event:SelectedCellChanged }
 
     function GetItemProvider() : presentation::controls::list::IItemProvider*;
+    function GetOpenedEditor() : presentation::controls::list::IDataEditor^;
     function GetSelectedCell() : presentation::GridPos;
     function SelectCell(value : presentation::GridPos, openEditor : system::Boolean) : system::Boolean;
     function SetViewToDefault() : system::Void;
