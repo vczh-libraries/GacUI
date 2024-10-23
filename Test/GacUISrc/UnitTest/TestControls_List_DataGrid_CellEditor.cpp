@@ -188,6 +188,40 @@ TEST_FILE
 				protocol->OnNextIdleFrame(L"IDEs > 1 && Sort by Company", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
+					auto dataGrid = FindObjectByName<GuiBindableDataGrid>(window, L"dataGrid");
+					dataGrid->SelectCell({ 1,3 }, true);
+				});
+				protocol->OnNextIdleFrame(L"Start Edit the Second Row", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto dataGrid = FindObjectByName<GuiBindableDataGrid>(window, L"dataGrid");
+					TEST_ASSERT(dataGrid->GetOpenedEditor());
+					auto combo = FindObjectByName<GuiComboBoxListControl>(dataGrid->GetOpenedEditor()->GetTemplate(), L"comboBox");
+					combo->SetSelectedIndex(2);
+				});
+				protocol->OnNextIdleFrame(L"Change from Microsoft to IBM", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto dataGrid = FindObjectByName<GuiBindableDataGrid>(window, L"dataGrid");
+					dataGrid->SetAdditionalFilter(nullptr);
+				});
+				protocol->OnNextIdleFrame(L"Reset Filter", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto dataGrid = FindObjectByName<GuiBindableDataGrid>(window, L"dataGrid");
+					auto dataGridView = dynamic_cast<IDataGridView*>(dataGrid->GetItemProvider()->RequestView(WString::Unmanaged(IDataGridView::Identifier)));
+					dataGridView->SortByColumn(-1, false);
+				});
+				protocol->OnNextIdleFrame(L"Reset Sorting", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto dataGrid = FindObjectByName<GuiBindableDataGrid>(window, L"dataGrid");
+					dataGrid->SetAdditionalFilter(UnboxValue<Ptr<IDataFilter>>(Value::From(window).GetProperty(L"filterByIDEs")));
+					ClickListViewColumn(protocol, dataGrid, 3);
+				});
+				protocol->OnNextIdleFrame(L"IDEs > 1 && Sort by Company", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
 					window->Hide();
 				});
 			});
