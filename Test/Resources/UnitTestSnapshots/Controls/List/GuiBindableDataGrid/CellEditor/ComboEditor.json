@@ -1281,7 +1281,7 @@
             "ElementDesc_SolidLabel",
             {
               "id": 106,
-              "textColor": "#0000FF",
+              "textColor": "#F1F1F1",
               "horizontalAlignment": "Left",
               "verticalAlignment": "Center",
               "wrapLine": false,
@@ -1470,7 +1470,7 @@
             "ElementDesc_SolidLabel",
             {
               "id": 125,
-              "textColor": "#0000FF",
+              "textColor": "#F1F1F1",
               "horizontalAlignment": "Left",
               "verticalAlignment": "Center",
               "wrapLine": false,
@@ -1659,7 +1659,7 @@
             "ElementDesc_SolidLabel",
             {
               "id": 144,
-              "textColor": "#0000FF",
+              "textColor": "#F1F1F1",
               "horizontalAlignment": "Left",
               "verticalAlignment": "Center",
               "wrapLine": false,
@@ -1848,7 +1848,7 @@
             "ElementDesc_SolidLabel",
             {
               "id": 163,
-              "textColor": "#0000FF",
+              "textColor": "#F1F1F1",
               "horizontalAlignment": "Left",
               "verticalAlignment": "Center",
               "wrapLine": false,
@@ -2037,7 +2037,7 @@
             "ElementDesc_SolidLabel",
             {
               "id": 182,
-              "textColor": "#0000FF",
+              "textColor": "#F1F1F1",
               "horizontalAlignment": "Left",
               "verticalAlignment": "Center",
               "wrapLine": false,
@@ -2226,7 +2226,7 @@
             "ElementDesc_SolidLabel",
             {
               "id": 201,
-              "textColor": "#0000FF",
+              "textColor": "#F1F1F1",
               "horizontalAlignment": "Left",
               "verticalAlignment": "Center",
               "wrapLine": false,
@@ -2750,17 +2750,6 @@
           }
         ],
         [
-          "RenderingCommand_BeginBoundary",
-          {
-            "boundary": {
-              "hitTestResult": null,
-              "cursor": "Hand",
-              "bounds": {"x1": 166, "y1": 73, "x2": 311, "y2": 89},
-              "areaClippedBySelf": {"x1": 166, "y1": 73, "x2": 311, "y2": 89}
-            }
-          }
-        ],
-        [
           "RenderingCommand_Element",
           {
             "rendering": {
@@ -2771,7 +2760,6 @@
             "element": 106
           }
         ],
-        ["RenderingCommand_EndBoundary", {}],
         [
           "RenderingCommand_Element",
           {
@@ -2927,17 +2915,6 @@
           }
         ],
         [
-          "RenderingCommand_BeginBoundary",
-          {
-            "boundary": {
-              "hitTestResult": null,
-              "cursor": "Hand",
-              "bounds": {"x1": 166, "y1": 94, "x2": 311, "y2": 110},
-              "areaClippedBySelf": {"x1": 166, "y1": 94, "x2": 311, "y2": 110}
-            }
-          }
-        ],
-        [
           "RenderingCommand_Element",
           {
             "rendering": {
@@ -2948,7 +2925,6 @@
             "element": 125
           }
         ],
-        ["RenderingCommand_EndBoundary", {}],
         [
           "RenderingCommand_Element",
           {
@@ -3104,17 +3080,6 @@
           }
         ],
         [
-          "RenderingCommand_BeginBoundary",
-          {
-            "boundary": {
-              "hitTestResult": null,
-              "cursor": "Hand",
-              "bounds": {"x1": 166, "y1": 115, "x2": 311, "y2": 131},
-              "areaClippedBySelf": {"x1": 166, "y1": 115, "x2": 311, "y2": 131}
-            }
-          }
-        ],
-        [
           "RenderingCommand_Element",
           {
             "rendering": {
@@ -3125,7 +3090,6 @@
             "element": 144
           }
         ],
-        ["RenderingCommand_EndBoundary", {}],
         [
           "RenderingCommand_Element",
           {
@@ -3281,17 +3245,6 @@
           }
         ],
         [
-          "RenderingCommand_BeginBoundary",
-          {
-            "boundary": {
-              "hitTestResult": null,
-              "cursor": "Hand",
-              "bounds": {"x1": 166, "y1": 136, "x2": 311, "y2": 152},
-              "areaClippedBySelf": {"x1": 166, "y1": 136, "x2": 311, "y2": 152}
-            }
-          }
-        ],
-        [
           "RenderingCommand_Element",
           {
             "rendering": {
@@ -3302,7 +3255,6 @@
             "element": 163
           }
         ],
-        ["RenderingCommand_EndBoundary", {}],
         [
           "RenderingCommand_Element",
           {
@@ -3458,17 +3410,6 @@
           }
         ],
         [
-          "RenderingCommand_BeginBoundary",
-          {
-            "boundary": {
-              "hitTestResult": null,
-              "cursor": "Hand",
-              "bounds": {"x1": 166, "y1": 157, "x2": 311, "y2": 173},
-              "areaClippedBySelf": {"x1": 166, "y1": 157, "x2": 311, "y2": 173}
-            }
-          }
-        ],
-        [
           "RenderingCommand_Element",
           {
             "rendering": {
@@ -3479,7 +3420,6 @@
             "element": 182
           }
         ],
-        ["RenderingCommand_EndBoundary", {}],
         [
           "RenderingCommand_Element",
           {
@@ -3635,17 +3575,6 @@
           }
         ],
         [
-          "RenderingCommand_BeginBoundary",
-          {
-            "boundary": {
-              "hitTestResult": null,
-              "cursor": "Hand",
-              "bounds": {"x1": 166, "y1": 178, "x2": 311, "y2": 194},
-              "areaClippedBySelf": {"x1": 166, "y1": 178, "x2": 311, "y2": 194}
-            }
-          }
-        ],
-        [
           "RenderingCommand_Element",
           {
             "rendering": {
@@ -3656,7 +3585,6 @@
             "element": 201
           }
         ],
-        ["RenderingCommand_EndBoundary", {}],
         [
           "RenderingCommand_Element",
           {
@@ -4272,20 +4200,11 @@
                                   },
                                   {
                                     "hitTestResult": null,
-                                    "cursor": "Hand",
-                                    "element": null,
-                                    "bounds": {"x1": 166, "y1": 73, "x2": 311, "y2": 89},
-                                    "validArea": {"x1": 166, "y1": 73, "x2": 311, "y2": 89},
-                                    "children": [
-                                      {
-                                        "hitTestResult": null,
-                                        "cursor": null,
-                                        "element": 106,
-                                        "bounds": {"x1": 174, "y1": 73, "x2": 303, "y2": 89},
-                                        "validArea": {"x1": 174, "y1": 73, "x2": 303, "y2": 89},
-                                        "children": null
-                                      }
-                                    ]
+                                    "cursor": null,
+                                    "element": 106,
+                                    "bounds": {"x1": 174, "y1": 73, "x2": 303, "y2": 89},
+                                    "validArea": {"x1": 174, "y1": 73, "x2": 303, "y2": 89},
+                                    "children": null
                                   },
                                   {
                                     "hitTestResult": null,
@@ -4402,20 +4321,11 @@
                                   },
                                   {
                                     "hitTestResult": null,
-                                    "cursor": "Hand",
-                                    "element": null,
-                                    "bounds": {"x1": 166, "y1": 94, "x2": 311, "y2": 110},
-                                    "validArea": {"x1": 166, "y1": 94, "x2": 311, "y2": 110},
-                                    "children": [
-                                      {
-                                        "hitTestResult": null,
-                                        "cursor": null,
-                                        "element": 125,
-                                        "bounds": {"x1": 174, "y1": 94, "x2": 303, "y2": 110},
-                                        "validArea": {"x1": 174, "y1": 94, "x2": 303, "y2": 110},
-                                        "children": null
-                                      }
-                                    ]
+                                    "cursor": null,
+                                    "element": 125,
+                                    "bounds": {"x1": 174, "y1": 94, "x2": 303, "y2": 110},
+                                    "validArea": {"x1": 174, "y1": 94, "x2": 303, "y2": 110},
+                                    "children": null
                                   },
                                   {
                                     "hitTestResult": null,
@@ -4532,20 +4442,11 @@
                                   },
                                   {
                                     "hitTestResult": null,
-                                    "cursor": "Hand",
-                                    "element": null,
-                                    "bounds": {"x1": 166, "y1": 115, "x2": 311, "y2": 131},
-                                    "validArea": {"x1": 166, "y1": 115, "x2": 311, "y2": 131},
-                                    "children": [
-                                      {
-                                        "hitTestResult": null,
-                                        "cursor": null,
-                                        "element": 144,
-                                        "bounds": {"x1": 174, "y1": 115, "x2": 303, "y2": 131},
-                                        "validArea": {"x1": 174, "y1": 115, "x2": 303, "y2": 131},
-                                        "children": null
-                                      }
-                                    ]
+                                    "cursor": null,
+                                    "element": 144,
+                                    "bounds": {"x1": 174, "y1": 115, "x2": 303, "y2": 131},
+                                    "validArea": {"x1": 174, "y1": 115, "x2": 303, "y2": 131},
+                                    "children": null
                                   },
                                   {
                                     "hitTestResult": null,
@@ -4662,20 +4563,11 @@
                                   },
                                   {
                                     "hitTestResult": null,
-                                    "cursor": "Hand",
-                                    "element": null,
-                                    "bounds": {"x1": 166, "y1": 136, "x2": 311, "y2": 152},
-                                    "validArea": {"x1": 166, "y1": 136, "x2": 311, "y2": 152},
-                                    "children": [
-                                      {
-                                        "hitTestResult": null,
-                                        "cursor": null,
-                                        "element": 163,
-                                        "bounds": {"x1": 174, "y1": 136, "x2": 303, "y2": 152},
-                                        "validArea": {"x1": 174, "y1": 136, "x2": 303, "y2": 152},
-                                        "children": null
-                                      }
-                                    ]
+                                    "cursor": null,
+                                    "element": 163,
+                                    "bounds": {"x1": 174, "y1": 136, "x2": 303, "y2": 152},
+                                    "validArea": {"x1": 174, "y1": 136, "x2": 303, "y2": 152},
+                                    "children": null
                                   },
                                   {
                                     "hitTestResult": null,
@@ -4801,20 +4693,11 @@
                                   },
                                   {
                                     "hitTestResult": null,
-                                    "cursor": "Hand",
-                                    "element": null,
-                                    "bounds": {"x1": 166, "y1": 157, "x2": 311, "y2": 173},
-                                    "validArea": {"x1": 166, "y1": 157, "x2": 311, "y2": 173},
-                                    "children": [
-                                      {
-                                        "hitTestResult": null,
-                                        "cursor": null,
-                                        "element": 182,
-                                        "bounds": {"x1": 174, "y1": 157, "x2": 303, "y2": 173},
-                                        "validArea": {"x1": 174, "y1": 157, "x2": 303, "y2": 173},
-                                        "children": null
-                                      }
-                                    ]
+                                    "cursor": null,
+                                    "element": 182,
+                                    "bounds": {"x1": 174, "y1": 157, "x2": 303, "y2": 173},
+                                    "validArea": {"x1": 174, "y1": 157, "x2": 303, "y2": 173},
+                                    "children": null
                                   },
                                   {
                                     "hitTestResult": null,
@@ -4931,20 +4814,11 @@
                                   },
                                   {
                                     "hitTestResult": null,
-                                    "cursor": "Hand",
-                                    "element": null,
-                                    "bounds": {"x1": 166, "y1": 178, "x2": 311, "y2": 194},
-                                    "validArea": {"x1": 166, "y1": 178, "x2": 311, "y2": 194},
-                                    "children": [
-                                      {
-                                        "hitTestResult": null,
-                                        "cursor": null,
-                                        "element": 201,
-                                        "bounds": {"x1": 174, "y1": 178, "x2": 303, "y2": 194},
-                                        "validArea": {"x1": 174, "y1": 178, "x2": 303, "y2": 194},
-                                        "children": null
-                                      }
-                                    ]
+                                    "cursor": null,
+                                    "element": 201,
+                                    "bounds": {"x1": 174, "y1": 178, "x2": 303, "y2": 194},
+                                    "validArea": {"x1": 174, "y1": 178, "x2": 303, "y2": 194},
+                                    "children": null
                                   },
                                   {
                                     "hitTestResult": null,
@@ -6182,7 +6056,7 @@
             "ElementDesc_SolidLabel",
             {
               "id": 296,
-              "textColor": "#0000FF",
+              "textColor": "#F1F1F1",
               "horizontalAlignment": "Left",
               "verticalAlignment": "Center",
               "wrapLine": false,
@@ -6371,7 +6245,7 @@
             "ElementDesc_SolidLabel",
             {
               "id": 315,
-              "textColor": "#0000FF",
+              "textColor": "#F1F1F1",
               "horizontalAlignment": "Left",
               "verticalAlignment": "Center",
               "wrapLine": false,
@@ -6560,7 +6434,7 @@
             "ElementDesc_SolidLabel",
             {
               "id": 334,
-              "textColor": "#0000FF",
+              "textColor": "#F1F1F1",
               "horizontalAlignment": "Left",
               "verticalAlignment": "Center",
               "wrapLine": false,
@@ -6749,7 +6623,7 @@
             "ElementDesc_SolidLabel",
             {
               "id": 353,
-              "textColor": "#0000FF",
+              "textColor": "#F1F1F1",
               "horizontalAlignment": "Left",
               "verticalAlignment": "Center",
               "wrapLine": false,
@@ -7273,17 +7147,6 @@
           }
         ],
         [
-          "RenderingCommand_BeginBoundary",
-          {
-            "boundary": {
-              "hitTestResult": null,
-              "cursor": "Hand",
-              "bounds": {"x1": 166, "y1": 73, "x2": 311, "y2": 89},
-              "areaClippedBySelf": {"x1": 166, "y1": 73, "x2": 311, "y2": 89}
-            }
-          }
-        ],
-        [
           "RenderingCommand_Element",
           {
             "rendering": {
@@ -7294,7 +7157,6 @@
             "element": 296
           }
         ],
-        ["RenderingCommand_EndBoundary", {}],
         [
           "RenderingCommand_Element",
           {
@@ -7450,17 +7312,6 @@
           }
         ],
         [
-          "RenderingCommand_BeginBoundary",
-          {
-            "boundary": {
-              "hitTestResult": null,
-              "cursor": "Hand",
-              "bounds": {"x1": 166, "y1": 94, "x2": 311, "y2": 110},
-              "areaClippedBySelf": {"x1": 166, "y1": 94, "x2": 311, "y2": 110}
-            }
-          }
-        ],
-        [
           "RenderingCommand_Element",
           {
             "rendering": {
@@ -7471,7 +7322,6 @@
             "element": 315
           }
         ],
-        ["RenderingCommand_EndBoundary", {}],
         [
           "RenderingCommand_Element",
           {
@@ -7627,17 +7477,6 @@
           }
         ],
         [
-          "RenderingCommand_BeginBoundary",
-          {
-            "boundary": {
-              "hitTestResult": null,
-              "cursor": "Hand",
-              "bounds": {"x1": 166, "y1": 115, "x2": 311, "y2": 131},
-              "areaClippedBySelf": {"x1": 166, "y1": 115, "x2": 311, "y2": 131}
-            }
-          }
-        ],
-        [
           "RenderingCommand_Element",
           {
             "rendering": {
@@ -7648,7 +7487,6 @@
             "element": 334
           }
         ],
-        ["RenderingCommand_EndBoundary", {}],
         [
           "RenderingCommand_Element",
           {
@@ -7804,17 +7642,6 @@
           }
         ],
         [
-          "RenderingCommand_BeginBoundary",
-          {
-            "boundary": {
-              "hitTestResult": null,
-              "cursor": "Hand",
-              "bounds": {"x1": 166, "y1": 136, "x2": 311, "y2": 152},
-              "areaClippedBySelf": {"x1": 166, "y1": 136, "x2": 311, "y2": 152}
-            }
-          }
-        ],
-        [
           "RenderingCommand_Element",
           {
             "rendering": {
@@ -7825,7 +7652,6 @@
             "element": 353
           }
         ],
-        ["RenderingCommand_EndBoundary", {}],
         [
           "RenderingCommand_Element",
           {
@@ -8452,20 +8278,11 @@
                                   },
                                   {
                                     "hitTestResult": null,
-                                    "cursor": "Hand",
-                                    "element": null,
-                                    "bounds": {"x1": 166, "y1": 73, "x2": 311, "y2": 89},
-                                    "validArea": {"x1": 166, "y1": 73, "x2": 311, "y2": 89},
-                                    "children": [
-                                      {
-                                        "hitTestResult": null,
-                                        "cursor": null,
-                                        "element": 296,
-                                        "bounds": {"x1": 174, "y1": 73, "x2": 303, "y2": 89},
-                                        "validArea": {"x1": 174, "y1": 73, "x2": 303, "y2": 89},
-                                        "children": null
-                                      }
-                                    ]
+                                    "cursor": null,
+                                    "element": 296,
+                                    "bounds": {"x1": 174, "y1": 73, "x2": 303, "y2": 89},
+                                    "validArea": {"x1": 174, "y1": 73, "x2": 303, "y2": 89},
+                                    "children": null
                                   },
                                   {
                                     "hitTestResult": null,
@@ -8582,20 +8399,11 @@
                                   },
                                   {
                                     "hitTestResult": null,
-                                    "cursor": "Hand",
-                                    "element": null,
-                                    "bounds": {"x1": 166, "y1": 94, "x2": 311, "y2": 110},
-                                    "validArea": {"x1": 166, "y1": 94, "x2": 311, "y2": 110},
-                                    "children": [
-                                      {
-                                        "hitTestResult": null,
-                                        "cursor": null,
-                                        "element": 315,
-                                        "bounds": {"x1": 174, "y1": 94, "x2": 303, "y2": 110},
-                                        "validArea": {"x1": 174, "y1": 94, "x2": 303, "y2": 110},
-                                        "children": null
-                                      }
-                                    ]
+                                    "cursor": null,
+                                    "element": 315,
+                                    "bounds": {"x1": 174, "y1": 94, "x2": 303, "y2": 110},
+                                    "validArea": {"x1": 174, "y1": 94, "x2": 303, "y2": 110},
+                                    "children": null
                                   },
                                   {
                                     "hitTestResult": null,
@@ -8712,20 +8520,11 @@
                                   },
                                   {
                                     "hitTestResult": null,
-                                    "cursor": "Hand",
-                                    "element": null,
-                                    "bounds": {"x1": 166, "y1": 115, "x2": 311, "y2": 131},
-                                    "validArea": {"x1": 166, "y1": 115, "x2": 311, "y2": 131},
-                                    "children": [
-                                      {
-                                        "hitTestResult": null,
-                                        "cursor": null,
-                                        "element": 334,
-                                        "bounds": {"x1": 174, "y1": 115, "x2": 303, "y2": 131},
-                                        "validArea": {"x1": 174, "y1": 115, "x2": 303, "y2": 131},
-                                        "children": null
-                                      }
-                                    ]
+                                    "cursor": null,
+                                    "element": 334,
+                                    "bounds": {"x1": 174, "y1": 115, "x2": 303, "y2": 131},
+                                    "validArea": {"x1": 174, "y1": 115, "x2": 303, "y2": 131},
+                                    "children": null
                                   },
                                   {
                                     "hitTestResult": null,
@@ -8842,20 +8641,11 @@
                                   },
                                   {
                                     "hitTestResult": null,
-                                    "cursor": "Hand",
-                                    "element": null,
-                                    "bounds": {"x1": 166, "y1": 136, "x2": 311, "y2": 152},
-                                    "validArea": {"x1": 166, "y1": 136, "x2": 311, "y2": 152},
-                                    "children": [
-                                      {
-                                        "hitTestResult": null,
-                                        "cursor": null,
-                                        "element": 353,
-                                        "bounds": {"x1": 174, "y1": 136, "x2": 303, "y2": 152},
-                                        "validArea": {"x1": 174, "y1": 136, "x2": 303, "y2": 152},
-                                        "children": null
-                                      }
-                                    ]
+                                    "cursor": null,
+                                    "element": 353,
+                                    "bounds": {"x1": 174, "y1": 136, "x2": 303, "y2": 152},
+                                    "validArea": {"x1": 174, "y1": 136, "x2": 303, "y2": 152},
+                                    "children": null
                                   },
                                   {
                                     "hitTestResult": null,

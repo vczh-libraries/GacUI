@@ -996,24 +996,6 @@ namespace gacuisrc_unittest
             }
             (<precompile>1 = new (::presentation::controls::list::DataColumn^)());
             {
-                (<precompile>1.VisualizerFactory = new (::presentation::controls::list::DataVisualizerFactory^)(func (<viewModel> : ::system::Object) : (::presentation::templates::GuiGridVisualizerTemplate*)
-                {
-                    {
-                        return new (::presentation::controls::list::CellBorderVisualizerTemplate*)();
-                    }
-                }, new (::presentation::controls::list::DataVisualizerFactory^)(func (<viewModel> : ::system::Object) : (::presentation::templates::GuiGridVisualizerTemplate*)
-                {
-                    {
-                        return new (::presentation::controls::list::FocusRectangleVisualizerTemplate*)();
-                    }
-                }, new (::presentation::controls::list::DataVisualizerFactory^)(func (<viewModel> : ::system::Object) : (::presentation::templates::GuiGridVisualizerTemplate*)
-                {
-                    {
-                        return new (::presentation::controls::list::HyperlinkVisualizerTemplate*)();
-                    }
-                }, null))));
-            }
-            {
                 (<precompile>1.TextProperty = func (<item> : ::system::Object) : (::system::String)
                 {
                     var item = (cast (DataGridItem^) <item>);

@@ -204,6 +204,7 @@
     <ClCompile Include="TestControls_CoreApplication_GuiLabel.cpp" />
     <ClCompile Include="TestControls_CoreApplication_GuiWindow.cpp" />
     <ClCompile Include="TestControls_List_DataGrid_Binding.cpp" />
+    <ClCompile Include="TestControls_List_DataGrid_CellEditor.cpp" />
     <ClCompile Include="TestControls_List_DataGrid_CellVisualizer.cpp" />
     <ClCompile Include="TestControls_List_DataGrid_ColumnApi.cpp" />
     <ClCompile Include="TestControls_List_DataGrid_ColumnUI.cpp" />

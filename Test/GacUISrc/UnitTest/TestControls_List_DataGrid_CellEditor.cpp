@@ -102,7 +102,6 @@ TEST_FILE
               <att.Sorter>[Sys::Compare($1.Language, $2.Language)]</att.Sorter>
             </_>
             <_ Text="Meta Programming" Size="150" TextProperty="MetaProgramming">
-              <att.VisualizerFactory>HyperlinkVisualizerTemplate;FocusRectangleVisualizerTemplate;CellBorderVisualizerTemplate</att.VisualizerFactory>
             </_>
             <_ Text="IDE Count" Size="150" TextProperty="IDEs">
             </_>
@@ -120,7 +119,7 @@ TEST_FILE
 
 	TEST_CATEGORY(L"GuiBindableDataGrid")
 	{
-		TEST_CASE(L"SorterAndFilter")
+		TEST_CASE(L"ComboEditor")
 		{
 			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
 			{
@@ -138,7 +137,7 @@ TEST_FILE
 				});
 			});
 			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
-				WString::Unmanaged(L"Controls/List/GuiBindableDataGrid/CellVisualizer/SorterAndFilter"),
+				WString::Unmanaged(L"Controls/List/GuiBindableDataGrid/CellEditor/ComboEditor"),
 				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
 				resourceDataGrid
 				);
