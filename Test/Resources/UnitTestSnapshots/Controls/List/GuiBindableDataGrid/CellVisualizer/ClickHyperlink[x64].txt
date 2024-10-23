@@ -47,9 +47,6 @@ namespace gacuisrc_unittest
             (self = <this>);
             (<precompile>0 = new (::presentation::compositions::GuiStackComposition*)());
             {
-                (<precompile>0.AlignmentToParent = {left : 2; top : 0; right : 2; bottom : 0;} of (::presentation::Margin));
-            }
-            {
                 (<precompile>0.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
             }
             {
@@ -57,6 +54,9 @@ namespace gacuisrc_unittest
             }
             {
                 (<precompile>0.Padding = 2 of (::system::Int64));
+            }
+            {
+                (<precompile>0.AlignmentToParent = {left : 2; top : 0; right : 2; bottom : 0;} of (::presentation::Margin));
             }
             (<precompile>1 = new (::presentation::compositions::GuiStackItemComposition*)());
             (<precompile>2 = new (::presentation::elements::GuiImageFrameElement^)());
@@ -479,9 +479,6 @@ namespace gacuisrc_unittest
             (self = <this>);
             (<precompile>0 = new (::presentation::compositions::GuiStackComposition*)());
             {
-                (<precompile>0.AlignmentToParent = {left : 2; top : 0; right : 2; bottom : 0;} of (::presentation::Margin));
-            }
-            {
                 (<precompile>0.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
             }
             {
@@ -489,6 +486,9 @@ namespace gacuisrc_unittest
             }
             {
                 (<precompile>0.Padding = 2 of (::system::Int64));
+            }
+            {
+                (<precompile>0.AlignmentToParent = {left : 2; top : 0; right : 2; bottom : 0;} of (::presentation::Margin));
             }
             (<precompile>1 = new (::presentation::compositions::GuiStackItemComposition*)());
             (<precompile>2 = new (::presentation::elements::GuiImageFrameElement^)());
@@ -935,30 +935,17 @@ namespace gacuisrc_unittest
                 (dataGrid = new (::presentation::controls::GuiBindableDataGrid*)(::presentation::theme::ThemeName::ListView));
                 <this>.SetNamedObject("dataGrid", dataGrid);
             }
-            (<precompile>3 = dataGrid.BoundsComposition);
-            {
-                (<precompile>3.AlignmentToParent = {left : 5; top : 5; right : 5; bottom : 5;} of (::presentation::Margin));
-            }
             {
                 (dataGrid.VerticalAlwaysVisible = false);
             }
             {
                 (dataGrid.HorizontalAlwaysVisible = false);
             }
-            (<precompile>0 = new (::presentation::controls::list::DataColumn^)());
+            (<precompile>3 = dataGrid.BoundsComposition);
             {
-                (<precompile>0.Sorter = new (::presentation::controls::list::IDataSorter^)
-                {
-                    override func SetCallback(value : ::presentation::controls::list::IDataProcessorCallback*) : (::system::Void)
-                    {
-                    }
-
-                    override func Compare(<row1> : ::system::Object, <row2> : ::system::Object) : (::system::Int64)
-                    {
-                        return [Sys::Compare($1.Language, $2.Language)] of ((func (DataGridItem^, DataGridItem^) : (::system::Int64)))((cast (DataGridItem^) <row1>), (cast (DataGridItem^) <row2>));
-                    }
-                });
+                (<precompile>3.AlignmentToParent = {left : 5; top : 5; right : 5; bottom : 5;} of (::presentation::Margin));
             }
+            (<precompile>0 = new (::presentation::controls::list::DataColumn^)());
             {
                 (<precompile>0.VisualizerFactory = new (::presentation::controls::list::DataVisualizerFactory^)(func (<viewModel> : ::system::Object) : (::presentation::templates::GuiGridVisualizerTemplate*)
                 {
@@ -978,14 +965,27 @@ namespace gacuisrc_unittest
                 }, null))));
             }
             {
+                (<precompile>0.Sorter = new (::presentation::controls::list::IDataSorter^)
+                {
+                    override func SetCallback(value : ::presentation::controls::list::IDataProcessorCallback*) : (::system::Void)
+                    {
+                    }
+
+                    override func Compare(<row1> : ::system::Object, <row2> : ::system::Object) : (::system::Int64)
+                    {
+                        return [Sys::Compare($1.Language, $2.Language)] of ((func (DataGridItem^, DataGridItem^) : (::system::Int64)))((cast (DataGridItem^) <row1>), (cast (DataGridItem^) <row2>));
+                    }
+                });
+            }
+            {
+                (<precompile>0.Size = 150 of (::system::Int64));
+            }
+            {
                 (<precompile>0.TextProperty = func (<item> : ::system::Object) : (::system::String)
                 {
                     var item = (cast (DataGridItem^) <item>);
                     return item.Language;
                 });
-            }
-            {
-                (<precompile>0.Size = 150 of (::system::Int64));
             }
             {
                 (<precompile>0.Text = "Language");
@@ -1014,14 +1014,14 @@ namespace gacuisrc_unittest
                 }, null))));
             }
             {
+                (<precompile>1.Size = 150 of (::system::Int64));
+            }
+            {
                 (<precompile>1.TextProperty = func (<item> : ::system::Object) : (::system::String)
                 {
                     var item = (cast (DataGridItem^) <item>);
                     return item.MetaProgramming;
                 });
-            }
-            {
-                (<precompile>1.Size = 150 of (::system::Int64));
             }
             {
                 (<precompile>1.Text = "Meta Programming");
@@ -1032,14 +1032,14 @@ namespace gacuisrc_unittest
             }
             (<precompile>2 = new (::presentation::controls::list::DataColumn^)());
             {
+                (<precompile>2.Size = 150 of (::system::Int64));
+            }
+            {
                 (<precompile>2.TextProperty = func (<item> : ::system::Object) : (::system::String)
                 {
                     var item = (cast (DataGridItem^) <item>);
                     return item.IDEs;
                 });
-            }
-            {
-                (<precompile>2.Size = 150 of (::system::Int64));
             }
             {
                 (<precompile>2.Text = "IDE Count");
@@ -1050,6 +1050,24 @@ namespace gacuisrc_unittest
             }
             (columnCompanies = new (::presentation::controls::list::DataColumn^)());
             <this>.SetNamedObject("columnCompanies", columnCompanies);
+            {
+                (columnCompanies.VisualizerFactory = new (::presentation::controls::list::DataVisualizerFactory^)(func (<viewModel> : ::system::Object) : (::presentation::templates::GuiGridVisualizerTemplate*)
+                {
+                    {
+                        return new (::presentation::controls::list::CellBorderVisualizerTemplate*)();
+                    }
+                }, new (::presentation::controls::list::DataVisualizerFactory^)(func (<viewModel> : ::system::Object) : (::presentation::templates::GuiGridVisualizerTemplate*)
+                {
+                    {
+                        return new (::presentation::controls::list::FocusRectangleVisualizerTemplate*)();
+                    }
+                }, new (::presentation::controls::list::DataVisualizerFactory^)(func (<viewModel> : ::system::Object) : (::presentation::templates::GuiGridVisualizerTemplate*)
+                {
+                    {
+                        return new (::gacuisrc_unittest::CompanyVisualizer*)();
+                    }
+                }, null))));
+            }
             {
                 (columnCompanies.ValueProperty = func (<item> : ::system::Object, <value> : ::system::Object, <update> : ::system::Boolean) : (::system::Object)
                 {
@@ -1077,24 +1095,6 @@ namespace gacuisrc_unittest
                         return [Sys::Compare(ToString($1.Company), ToString($2.Company))] of ((func (DataGridItem^, DataGridItem^) : (::system::Int64)))((cast (DataGridItem^) <row1>), (cast (DataGridItem^) <row2>));
                     }
                 });
-            }
-            {
-                (columnCompanies.VisualizerFactory = new (::presentation::controls::list::DataVisualizerFactory^)(func (<viewModel> : ::system::Object) : (::presentation::templates::GuiGridVisualizerTemplate*)
-                {
-                    {
-                        return new (::presentation::controls::list::CellBorderVisualizerTemplate*)();
-                    }
-                }, new (::presentation::controls::list::DataVisualizerFactory^)(func (<viewModel> : ::system::Object) : (::presentation::templates::GuiGridVisualizerTemplate*)
-                {
-                    {
-                        return new (::presentation::controls::list::FocusRectangleVisualizerTemplate*)();
-                    }
-                }, new (::presentation::controls::list::DataVisualizerFactory^)(func (<viewModel> : ::system::Object) : (::presentation::templates::GuiGridVisualizerTemplate*)
-                {
-                    {
-                        return new (::gacuisrc_unittest::CompanyVisualizer*)();
-                    }
-                }, null))));
             }
             {
                 (columnCompanies.Size = 150 of (::system::Int64));

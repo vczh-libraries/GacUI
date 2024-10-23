@@ -46,36 +46,28 @@ TEST_FILE
       }
     }
   ]]></Workflow></Script>
-  <Instance name="LanguageVisualizerResource">
-    <Instance ref.CodeBehind="false" ref.Class="gacuisrc_unittest::LanguageVisualizer">
-      <GridVisualizerTemplate ref.Name="self">
-        <Stack Padding="2" Direction="Horizontal" MinSizeLimitation="LimitToElementAndChildren" AlignmentToParent="left:2 top:0 right:2 bottom:0">
-          <StackItem>
-            <ImageFrame HorizontalAlignment="Left" VerticalAlignment="Center">
-              <att.Image-bind>self.Text == "C++" ? (cast (GuiImageData^) self.ResolveResource("res", $"DataGridImages/Male", true)).Image : null</att.Image-bind>
-            </ImageFrame>
-          </StackItem>
-          <StackItem>
-            <SolidLabel Font-bind="self.Font" Text-bind="self.Text" Color-bind="self.PrimaryTextColor" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-          </StackItem>
-        </Stack>
-      </GridVisualizerTemplate>
-    </Instance>
-  </Instance>
-  <Instance name="CompanyVisualizerResource">
-    <Instance ref.CodeBehind="false" ref.Class="gacuisrc_unittest::CompanyVisualizer">
-      <GridVisualizerTemplate ref.Name="self">
-        <Stack Padding="2" Direction="Horizontal" MinSizeLimitation="LimitToElementAndChildren" AlignmentToParent="left:2 top:0 right:2 bottom:0">
-          <StackItem>
-            <ImageFrame HorizontalAlignment="Left" VerticalAlignment="Center">
-              <att.Image-bind>(cast Companies self.CellValue == Companies::Microsoft ? (cast (GuiImageData^) self.ResolveResource("res", $"DataGridImages/Female", true)).Image : null) ?? null</att.Image-bind>
-            </ImageFrame>
-          </StackItem>
-          <StackItem>
-            <SolidLabel Font-bind="self.Font" Text-bind="ToString((cast DataGridItem^ self.RowValue).Company) ?? ''" Color-bind="self.PrimaryTextColor" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-          </StackItem>
-        </Stack>
-      </GridVisualizerTemplate>
+  <Instance name="CompanyEditorResource">
+    <Instance ref.CodeBehind="false" ref.Class="gacuisrc_unittest::CompanyEditor" xmlns:demo="demo::*">
+      <ref.Members>
+        <![CDATA[
+          var items : Companies[] = 
+          {
+            Microsoft of Companies
+            Borland of Companies
+            IBM of Companies
+          };
+        ]]>
+      </ref.Members>
+      <GridEditorTemplate ref.Name="self" CellValue-bind="comboBox.SelectedItem" FocusControl-ref="comboBox">
+        <ComboBox ref.Name="comboBox" SelectedIndex-bind="self.items.IndexOf(self.CellValue)">
+          <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+          <att.ListControl>
+            <BindableTextList ItemSource-eval="self.items" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
+              <att.TextProperty-eval>[ToString(cast Companies $1)]</att.TextProperty-eval>
+            </BindableTextList>
+          </att.ListControl>
+        </ComboBox>
+      </GridEditorTemplate>
     </Instance>
   </Instance>
   <Instance name="MainWindowResource">
@@ -98,7 +90,6 @@ TEST_FILE
           <att.ItemSource-eval>self.items</att.ItemSource-eval>
           <att.Columns>
             <_ Text="Language" Size="150" TextProperty="Language">
-              <att.VisualizerFactory>gacuisrc_unittest::LanguageVisualizer;FocusRectangleVisualizerTemplate;CellBorderVisualizerTemplate</att.VisualizerFactory>
               <att.Sorter>[Sys::Compare($1.Language, $2.Language)]</att.Sorter>
             </_>
             <_ Text="Meta Programming" Size="150" TextProperty="MetaProgramming">
@@ -106,7 +97,8 @@ TEST_FILE
             <_ Text="IDE Count" Size="150" TextProperty="IDEs">
             </_>
             <_ ref.Name="columnCompanies" Text="Company" Size="150" ValueProperty="Company">
-              <att.VisualizerFactory>gacuisrc_unittest::CompanyVisualizer;FocusRectangleVisualizerTemplate;CellBorderVisualizerTemplate</att.VisualizerFactory>
+              <att.TextProperty-eval>[ToString((cast DataGridItem^ $1).Company)]</att.TextProperty-eval>
+              <att.EditorFactory>gacuisrc_unittest::CompanyEditor</att.EditorFactory>
               <att.Sorter>[Sys::Compare(ToString($1.Company), ToString($2.Company))]</att.Sorter>
             </_>
           </att.Columns>
@@ -126,6 +118,23 @@ TEST_FILE
 				protocol->OnNextIdleFrame(L"Ready", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
+					window->Hide();
+				});
+			});
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Controls/List/GuiBindableDataGrid/CellEditor/ComboEditor"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resourceDataGrid
+				);
+		});
+
+		TEST_CASE(L"ComboEditorWithSorterAndFilter")
+		{
+			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
 					auto dataGrid = FindObjectByName<GuiBindableDataGrid>(window, L"dataGrid");
 					dataGrid->SetAdditionalFilter(UnboxValue<Ptr<IDataFilter>>(Value::From(window).GetProperty(L"filterByIDEs")));
 					ClickListViewColumn(protocol, dataGrid, 3);
@@ -137,7 +146,7 @@ TEST_FILE
 				});
 			});
 			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
-				WString::Unmanaged(L"Controls/List/GuiBindableDataGrid/CellEditor/ComboEditor"),
+				WString::Unmanaged(L"Controls/List/GuiBindableDataGrid/CellEditor/ComboEditorWithSorterAndFilter"),
 				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
 				resourceDataGrid
 				);
