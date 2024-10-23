@@ -759,6 +759,11 @@ GuiVirtualDataGrid
 				return selectedCell;
 			}
 
+			Ptr<list::IDataEditor> GuiVirtualDataGrid::GetOpenedEditor()
+			{
+				return currentEditor;
+			}
+
 			bool GuiVirtualDataGrid::SelectCell(const GridPos& value, bool openEditor)
 			{
 				bool validPos = 0 <= value.row && value.row < GetItemProvider()->Count() && 0 <= value.column && value.column < listViewItemView->GetColumnCount();

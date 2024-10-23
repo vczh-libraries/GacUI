@@ -22,6 +22,7 @@
 - `IGuiMenuService::GetHostThemeName`
 - `ListViewColumnItemArranger` added `ColumnButtons` and `ColumnSplitters` properties.
 - `GuiMenuButton` exposed `SubMenuHost` property.
+- `GuiVirtualDataGrid` exposed `OpenedEditor` property.
 
 ## Known Issues
 
@@ -89,7 +90,6 @@
   - BindableDataGrid
     - ItemTemplate with properties
     - Row and Cell selections (properties, mouse, key)
-    - Row and Cell editors
 - Document
   - Added `/F:EnabledTestFile` to unit test CLI parameters.
   - `GuiTreeItemTemplate` change base class to `GuiListItemTemplate`
@@ -98,6 +98,7 @@
   - `GuiListControl::IItemProvider(Callback)?` moved to `vl::presentation::controls::list`
   - `ListViewColumnItemArranger` added `ColumnButtons` and `ColumnSplitters` properties.
   - `GuiMenuButton` exposed `SubMenuHost` property.
+  - `GuiVirtualDataGrid` exposed `OpenedEditor` property.
 
 ## Release Milestone (1.2.10.3)
 

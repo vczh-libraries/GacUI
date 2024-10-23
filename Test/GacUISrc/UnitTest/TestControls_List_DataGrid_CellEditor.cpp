@@ -118,6 +118,32 @@ TEST_FILE
 				protocol->OnNextIdleFrame(L"Ready", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
+					auto dataGrid = FindObjectByName<GuiBindableDataGrid>(window, L"dataGrid");
+					LClickDataCell(protocol, dataGrid, 0, 3);
+				});
+				protocol->OnNextIdleFrame(L"Open Editor in First Row", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto dataGrid = FindObjectByName<GuiBindableDataGrid>(window, L"dataGrid");
+					TEST_ASSERT(dataGrid->GetOpenedEditor());
+					auto combo = FindObjectByName<GuiComboBoxListControl>(dataGrid->GetOpenedEditor()->GetTemplate(), L"comboBox");
+					auto location = protocol->LocationOf(combo);
+					protocol->LClick(location);
+				});
+				protocol->OnNextIdleFrame(L"Open Combo", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto dataGrid = FindObjectByName<GuiBindableDataGrid>(window, L"dataGrid");
+					auto combo = FindObjectByName<GuiComboBoxListControl>(dataGrid->GetOpenedEditor()->GetTemplate(), L"comboBox");
+					LClickListItem(protocol, combo->GetContainedListControl(), 2);
+				});
+				protocol->OnNextIdleFrame(L"Select IBM", [=]()
+				{
+					protocol->KeyPress(VKEY::KEY_ESCAPE);
+				});
+				protocol->OnNextIdleFrame(L"Exit Editor", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
 					window->Hide();
 				});
 			});

@@ -128,6 +128,9 @@ GuiVirtualDataGrid
 				/// <summary>Get the row index and column index of the selected cell.</summary>
 				/// <returns>The row index and column index of the selected cell.</returns>
 				GridPos													GetSelectedCell();
+				/// <summary>Get the opened editor for the selected cell.</summary>
+				/// <returns>The opened editor for the selected cell. If there is no editor, or the editor is not activated, it returns null.</returns>
+				Ptr<list::IDataEditor>									GetOpenedEditor();
 
 				/// <summary>Select a cell.</summary>
 				/// <returns>Returns true if the editor is opened.</returns>
