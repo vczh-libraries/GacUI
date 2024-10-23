@@ -89,7 +89,6 @@
   - BindableDataGrid
     - ItemTemplate with properties
     - Row and Cell selections (properties, mouse, key)
-    - Row and Cell visualizers
     - Row and Cell editors
 - Document
   - Added `/F:EnabledTestFile` to unit test CLI parameters.

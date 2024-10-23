@@ -143,5 +143,44 @@ TEST_FILE
 				resourceDataGrid
 				);
 		});
+
+		TEST_CASE(L"ClickHyperlink")
+		{
+			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto dataGrid = FindObjectByName<GuiBindableDataGrid>(window, L"dataGrid");
+					HoverDataCell(protocol, dataGrid, 1, 1);
+				});
+				protocol->OnNextIdleFrame(L"Hover second link", [=]()
+				{
+					protocol->LClick();
+				});
+				protocol->OnNextIdleFrame(L"Click", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto dataGrid = FindObjectByName<GuiBindableDataGrid>(window, L"dataGrid");
+					HoverDataCell(protocol, dataGrid, 2, 1);
+				});
+				protocol->OnNextIdleFrame(L"Move Away", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto dataGrid = FindObjectByName<GuiBindableDataGrid>(window, L"dataGrid");
+					HoverDataCell(protocol, dataGrid, 1, 1);
+				});
+				protocol->OnNextIdleFrame(L"Move Back", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					window->Hide();
+				});
+			});
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Controls/List/GuiBindableDataGrid/CellVisualizer/ClickHyperlink"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resourceDataGrid
+				);
+		});
 	});
 }

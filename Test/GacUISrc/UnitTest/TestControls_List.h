@@ -3,14 +3,17 @@
 namespace gacui_unittest_template
 {
 	extern NativePoint	GetListItemLocation(UnitTestRemoteProtocol* protocol, GuiListControl* listControl, vint index, vint offsetX);
+	extern NativePoint	GetDataCellLocation(UnitTestRemoteProtocol* protocol, GuiVirtualDataGrid* listControl, vint row, vint column);
 	extern void			HoverListItem(UnitTestRemoteProtocol* protocol, GuiListControl* listControl, vint index, vint offsetX = -1);
 	extern void			LClickListItem(UnitTestRemoteProtocol* protocol, GuiListControl* listControl, vint index, vint offsetX = -1);
 	extern void			LClickListItem(UnitTestRemoteProtocol* protocol, GuiListControl* listControl, bool ctrl, bool shift, bool alt, vint index, vint offsetX = -1);
 	extern void			LDBClickListItem(UnitTestRemoteProtocol* protocol, GuiListControl* listControl, vint index, vint offsetX = -1);
 	extern void			RClickListItem(UnitTestRemoteProtocol* protocol, GuiListControl* listControl, vint index, vint offsetX = -1);
 	extern void			RClickListItem(UnitTestRemoteProtocol* protocol, GuiListControl* listControl, bool ctrl, bool shift, bool alt, vint index, vint offsetX = -1);
-	extern void			ClickListViewColumn(UnitTestRemoteProtocol* protocol, GuiListControl* listControl, vint index);
-	extern void			ClickListViewColumnDropdown(UnitTestRemoteProtocol* protocol, GuiListControl* listControl, vint index);
+	extern void			ClickListViewColumn(UnitTestRemoteProtocol* protocol, GuiVirtualListView* listControl, vint index);
+	extern void			ClickListViewColumnDropdown(UnitTestRemoteProtocol* protocol, GuiVirtualListView* listControl, vint index);
+	extern void			HoverDataCell(UnitTestRemoteProtocol* protocol, GuiVirtualDataGrid* listControl, vint row, vint column);
+	extern void			LClickDataCell(UnitTestRemoteProtocol* protocol, GuiVirtualDataGrid* listControl, vint row, vint column);
 
 	// GuiListControl
 

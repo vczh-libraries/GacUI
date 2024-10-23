@@ -7,6 +7,14 @@ namespace gacui_unittest_template
 		Value::From(window).Invoke(L"InitializeItems", (Value_xs(), BoxValue<vint>(start), BoxValue<vint>(count)));
 	}
 
+	GuiListViewColumnHeader* GetListViewColumn(GuiVirtualListView* listControl, vint index)
+	{
+		auto arranger = dynamic_cast<ListViewColumnItemArranger*>(listControl->GetArranger());
+		TEST_ASSERT(arranger);
+		TEST_ASSERT(0 <= index && index < arranger->GetColumnButtons().Count());
+		return arranger->GetColumnButtons()[index];
+	}
+
 	NativePoint GetListItemLocation(UnitTestRemoteProtocol* protocol, GuiListControl* listControl, vint index, vint offsetX)
 	{
 		auto itemStyle = listControl->GetArranger()->GetVisibleStyle(index);
@@ -14,6 +22,14 @@ namespace gacui_unittest_template
 		TEST_ASSERT(listControl->GetArranger()->GetVisibleIndex(itemStyle) == index);
 		auto location = protocol->LocationOf(itemStyle, (offsetX == -1 ? 0.5 : 0.0), 0.5, (offsetX == -1 ? 0 : offsetX), 0);
 		return location;
+	}
+
+	NativePoint	GetDataCellLocation(UnitTestRemoteProtocol* protocol, GuiVirtualDataGrid* listControl, vint row, vint column)
+	{
+		auto button = GetListViewColumn(listControl, column);
+		auto buttonLocation = protocol->LocationOf(button);
+		auto itemLocation = GetListItemLocation(protocol, listControl, row, -1);
+		return { buttonLocation.x,itemLocation.y };
 	}
 
 	void HoverListItem(UnitTestRemoteProtocol* protocol, GuiListControl* listControl, vint index, vint offsetX)
@@ -52,26 +68,32 @@ namespace gacui_unittest_template
 		protocol->LClick(location, ctrl, shift, alt);
 	}
 
-	void ClickListViewColumn(UnitTestRemoteProtocol* protocol, GuiListControl* listControl, vint index)
+	void ClickListViewColumn(UnitTestRemoteProtocol* protocol, GuiVirtualListView* listControl, vint index)
 	{
-		auto arranger = dynamic_cast<ListViewColumnItemArranger*>(listControl->GetArranger());
-		TEST_ASSERT(arranger);
-		TEST_ASSERT(0 <= index && index < arranger->GetColumnButtons().Count());
-		auto button = arranger->GetColumnButtons()[index];
+		auto button = GetListViewColumn(listControl, index);
 		auto location = protocol->LocationOf(button);
 		protocol->LClick(location);
 	}
 
-	void ClickListViewColumnDropdown(UnitTestRemoteProtocol* protocol, GuiListControl* listControl, vint index)
+	void ClickListViewColumnDropdown(UnitTestRemoteProtocol* protocol, GuiVirtualListView* listControl, vint index)
 	{
-		auto arranger = dynamic_cast<ListViewColumnItemArranger*>(listControl->GetArranger());
-		TEST_ASSERT(arranger);
-		TEST_ASSERT(0 <= index && index < arranger->GetColumnButtons().Count());
-		auto button = arranger->GetColumnButtons()[index];
+		auto button = GetListViewColumn(listControl, index);
 		TEST_ASSERT(button->IsSubMenuExists());
 		auto subMenuHost = button->GetSubMenuHost();
 		TEST_ASSERT(subMenuHost);
 		auto location = protocol->LocationOf(subMenuHost);
+		protocol->LClick(location);
+	}
+
+	void HoverDataCell(UnitTestRemoteProtocol* protocol, GuiVirtualDataGrid* listControl, vint row, vint column)
+	{
+		auto location = GetDataCellLocation(protocol, listControl, row, column);
+		protocol->MouseMove(location);
+	}
+
+	void LClickDataCell(UnitTestRemoteProtocol* protocol, GuiVirtualDataGrid* listControl, vint row, vint column)
+	{
+		auto location = GetDataCellLocation(protocol, listControl, row, column);
 		protocol->LClick(location);
 	}
 
