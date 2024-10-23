@@ -128,20 +128,40 @@ TEST_FILE
 					TEST_ASSERT(dataGrid->GetOpenedEditor());
 					auto combo = FindObjectByName<GuiComboBoxListControl>(dataGrid->GetOpenedEditor()->GetTemplate(), L"comboBox");
 					auto location = protocol->LocationOf(combo);
+					location.x.value += 1; // TODO: GuiButton::OnMouseEnter is not called when the editor is opened right under the mouse
 					protocol->LClick(location);
+					TEST_ASSERT(combo->GetSubMenuOpening() == true);
 				});
 				protocol->OnNextIdleFrame(L"Open Combo", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto dataGrid = FindObjectByName<GuiBindableDataGrid>(window, L"dataGrid");
+					TEST_ASSERT(dataGrid->GetOpenedEditor());
 					auto combo = FindObjectByName<GuiComboBoxListControl>(dataGrid->GetOpenedEditor()->GetTemplate(), L"comboBox");
 					LClickListItem(protocol, combo->GetContainedListControl(), 2);
 				});
 				protocol->OnNextIdleFrame(L"Select IBM", [=]()
 				{
-					protocol->KeyPress(VKEY::KEY_ESCAPE);
+					auto window = GetApplication()->GetMainWindow();
+					auto dataGrid = FindObjectByName<GuiBindableDataGrid>(window, L"dataGrid");
+					LClickDataCell(protocol, dataGrid, 0, 0);
+					TEST_ASSERT(!dataGrid->GetOpenedEditor());
 				});
 				protocol->OnNextIdleFrame(L"Exit Editor", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto dataGrid = FindObjectByName<GuiBindableDataGrid>(window, L"dataGrid");
+					dataGrid->SelectCell({ 0,3 }, true);
+					TEST_ASSERT(dataGrid->GetOpenedEditor());
+				});
+				protocol->OnNextIdleFrame(L"Start Editing by SelectCell", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto dataGrid = FindObjectByName<GuiBindableDataGrid>(window, L"dataGrid");
+					dataGrid->SelectCell(dataGrid->GetSelectedCell(), false);
+					TEST_ASSERT(!dataGrid->GetOpenedEditor());
+				});
+				protocol->OnNextIdleFrame(L"Stop Editing by SelectCell", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					window->Hide();
