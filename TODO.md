@@ -246,6 +246,7 @@
 ## Release Milestone (future releases)
 
 - Strict check in different for-each loops.
+- A new non-XML instance format
 
 ## OS Provider Features
 
@@ -373,9 +374,9 @@
 - `<eval Eval="expression"/>` tags.
 - `<ez:Layout/>`
   - `xmlns:ez` by default:
-    - `presentation::composition::eazy_layout::GuiEazy*Composition`
-    - `presentation::composition::eazy_layout::GuiEazy*Layout`
-  - A `vl::presentation::composition::eazy_layout::GuiEazyLayoutComposition`
+    - `presentation::composition::easy_layout::GuiEasy*Composition`
+    - `presentation::composition::easy_layout::GuiEasy*Layout`
+  - A `vl::presentation::composition::easy_layout::GuiEasyLayoutComposition`
     - with properties:
       - `Top`, `Bottom`, `Left`, `Right`: boolean of border visibility
       - `Padding`: thickness of border and between all leaf containers
