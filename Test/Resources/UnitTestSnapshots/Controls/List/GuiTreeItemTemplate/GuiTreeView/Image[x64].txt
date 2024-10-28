@@ -435,13 +435,13 @@ namespace gacuisrc_unittest
             }
             (<precompile>7 = new (::presentation::elements::GuiSolidLabelElement^)());
             {
-                (<precompile>7.HorizontalAlignment = Left of (::presentation::Alignment));
+                (<precompile>7.Ellipse = true);
             }
             {
                 (<precompile>7.VerticalAlignment = Center of (::presentation::Alignment));
             }
             {
-                (<precompile>7.Ellipse = true);
+                (<precompile>7.HorizontalAlignment = Left of (::presentation::Alignment));
             }
             {
                 (<precompile>6.OwnedElement = <precompile>7);

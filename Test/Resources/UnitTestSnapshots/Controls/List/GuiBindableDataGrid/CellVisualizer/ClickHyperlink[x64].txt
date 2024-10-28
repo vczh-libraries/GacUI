@@ -47,16 +47,16 @@ namespace gacuisrc_unittest
             (self = <this>);
             (<precompile>0 = new (::presentation::compositions::GuiStackComposition*)());
             {
-                (<precompile>0.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+                (<precompile>0.AlignmentToParent = {left : 2; top : 0; right : 2; bottom : 0;} of (::presentation::Margin));
             }
             {
-                (<precompile>0.Direction = Horizontal of (::presentation::compositions::GuiStackComposition::Direction));
+                (<precompile>0.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
             }
             {
                 (<precompile>0.Padding = 2 of (::system::Int64));
             }
             {
-                (<precompile>0.AlignmentToParent = {left : 2; top : 0; right : 2; bottom : 0;} of (::presentation::Margin));
+                (<precompile>0.Direction = Horizontal of (::presentation::compositions::GuiStackComposition::Direction));
             }
             (<precompile>1 = new (::presentation::compositions::GuiStackItemComposition*)());
             (<precompile>2 = new (::presentation::elements::GuiImageFrameElement^)());
@@ -248,79 +248,6 @@ namespace gacuisrc_unittest
 
                     func <bind-activator>() : (::system::Void)
                     {
-                        var <bind-activator-result> = <bind-cache>0.Font of (::presentation::FontProperties);
-                        ValueChanged(<bind-activator-result>);
-                    }
-
-                    func <bind-callback>0_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
-                    {
-                        <bind-activator>();
-                    }
-
-                    override func Open() : (::system::Boolean)
-                    {
-                        if ((!<bind-opened>))
-                        {
-                            (<bind-opened> = true);
-                            (<bind-cache>0 = (self ?? null of (::gacuisrc_unittest::CompanyVisualizer*)));
-                            (<bind-handler>0_0 = (attach(<bind-cache>0.FontChanged, <bind-callback>0_0) ?? null));
-                            return true;
-                        }
-                        return false;
-                    }
-
-                    override func Update() : (::system::Boolean)
-                    {
-                        if ((<bind-opened> and (!<bind-closed>)))
-                        {
-                            <bind-activator>();
-                            return true;
-                        }
-                        return false;
-                    }
-
-                    override func Close() : (::system::Boolean)
-                    {
-                        if ((!<bind-closed>))
-                        {
-                            (<bind-closed> = true);
-                            if (<bind-handler>0_0 is not null)
-                            {
-                                detach(<bind-cache>0.FontChanged, <bind-handler>0_0);
-                                (<bind-handler>0_0 = null);
-                            }
-                            (<bind-cache>0 = null of (::gacuisrc_unittest::CompanyVisualizer*));
-                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
-                            return true;
-                        }
-                        return false;
-                    }
-                };
-                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
-                {
-                    var <old> = <precompile>4.Font;
-                    var <new> = (cast (::presentation::FontProperties) <value>);
-                    if ((<old> == <new>))
-                    {
-                        return;
-                    }
-                    (<precompile>4.Font = <new>);
-                });
-                <this>.AddSubscription(<created-subscription>);
-            }
-            {
-                var <created-subscription> = new (::system::Subscription^)
-                {
-                    var <bind-cache>0 : ::gacuisrc_unittest::CompanyVisualizer* = null of (::gacuisrc_unittest::CompanyVisualizer*);
-
-                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
-
-                    var <bind-opened> : ::system::Boolean = false;
-
-                    var <bind-closed> : ::system::Boolean = false;
-
-                    func <bind-activator>() : (::system::Void)
-                    {
                         var <bind-activator-result> = <bind-cache>0.PrimaryTextColor of (::presentation::Color);
                         ValueChanged(<bind-activator-result>);
                     }
@@ -378,6 +305,79 @@ namespace gacuisrc_unittest
                         return;
                     }
                     (<precompile>4.Color = <new>);
+                });
+                <this>.AddSubscription(<created-subscription>);
+            }
+            {
+                var <created-subscription> = new (::system::Subscription^)
+                {
+                    var <bind-cache>0 : ::gacuisrc_unittest::CompanyVisualizer* = null of (::gacuisrc_unittest::CompanyVisualizer*);
+
+                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-opened> : ::system::Boolean = false;
+
+                    var <bind-closed> : ::system::Boolean = false;
+
+                    func <bind-activator>() : (::system::Void)
+                    {
+                        var <bind-activator-result> = <bind-cache>0.Font of (::presentation::FontProperties);
+                        ValueChanged(<bind-activator-result>);
+                    }
+
+                    func <bind-callback>0_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    override func Open() : (::system::Boolean)
+                    {
+                        if ((!<bind-opened>))
+                        {
+                            (<bind-opened> = true);
+                            (<bind-cache>0 = (self ?? null of (::gacuisrc_unittest::CompanyVisualizer*)));
+                            (<bind-handler>0_0 = (attach(<bind-cache>0.FontChanged, <bind-callback>0_0) ?? null));
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Update() : (::system::Boolean)
+                    {
+                        if ((<bind-opened> and (!<bind-closed>)))
+                        {
+                            <bind-activator>();
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Close() : (::system::Boolean)
+                    {
+                        if ((!<bind-closed>))
+                        {
+                            (<bind-closed> = true);
+                            if (<bind-handler>0_0 is not null)
+                            {
+                                detach(<bind-cache>0.FontChanged, <bind-handler>0_0);
+                                (<bind-handler>0_0 = null);
+                            }
+                            (<bind-cache>0 = null of (::gacuisrc_unittest::CompanyVisualizer*));
+                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
+                            return true;
+                        }
+                        return false;
+                    }
+                };
+                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
+                {
+                    var <old> = <precompile>4.Font;
+                    var <new> = (cast (::presentation::FontProperties) <value>);
+                    if ((<old> == <new>))
+                    {
+                        return;
+                    }
+                    (<precompile>4.Font = <new>);
                 });
                 <this>.AddSubscription(<created-subscription>);
             }
@@ -479,16 +479,16 @@ namespace gacuisrc_unittest
             (self = <this>);
             (<precompile>0 = new (::presentation::compositions::GuiStackComposition*)());
             {
-                (<precompile>0.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+                (<precompile>0.AlignmentToParent = {left : 2; top : 0; right : 2; bottom : 0;} of (::presentation::Margin));
             }
             {
-                (<precompile>0.Direction = Horizontal of (::presentation::compositions::GuiStackComposition::Direction));
+                (<precompile>0.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
             }
             {
                 (<precompile>0.Padding = 2 of (::system::Int64));
             }
             {
-                (<precompile>0.AlignmentToParent = {left : 2; top : 0; right : 2; bottom : 0;} of (::presentation::Margin));
+                (<precompile>0.Direction = Horizontal of (::presentation::compositions::GuiStackComposition::Direction));
             }
             (<precompile>1 = new (::presentation::compositions::GuiStackItemComposition*)());
             (<precompile>2 = new (::presentation::elements::GuiImageFrameElement^)());
@@ -680,79 +680,6 @@ namespace gacuisrc_unittest
 
                     func <bind-activator>() : (::system::Void)
                     {
-                        var <bind-activator-result> = <bind-cache>0.Font of (::presentation::FontProperties);
-                        ValueChanged(<bind-activator-result>);
-                    }
-
-                    func <bind-callback>0_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
-                    {
-                        <bind-activator>();
-                    }
-
-                    override func Open() : (::system::Boolean)
-                    {
-                        if ((!<bind-opened>))
-                        {
-                            (<bind-opened> = true);
-                            (<bind-cache>0 = (self ?? null of (::gacuisrc_unittest::LanguageVisualizer*)));
-                            (<bind-handler>0_0 = (attach(<bind-cache>0.FontChanged, <bind-callback>0_0) ?? null));
-                            return true;
-                        }
-                        return false;
-                    }
-
-                    override func Update() : (::system::Boolean)
-                    {
-                        if ((<bind-opened> and (!<bind-closed>)))
-                        {
-                            <bind-activator>();
-                            return true;
-                        }
-                        return false;
-                    }
-
-                    override func Close() : (::system::Boolean)
-                    {
-                        if ((!<bind-closed>))
-                        {
-                            (<bind-closed> = true);
-                            if (<bind-handler>0_0 is not null)
-                            {
-                                detach(<bind-cache>0.FontChanged, <bind-handler>0_0);
-                                (<bind-handler>0_0 = null);
-                            }
-                            (<bind-cache>0 = null of (::gacuisrc_unittest::LanguageVisualizer*));
-                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
-                            return true;
-                        }
-                        return false;
-                    }
-                };
-                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
-                {
-                    var <old> = <precompile>4.Font;
-                    var <new> = (cast (::presentation::FontProperties) <value>);
-                    if ((<old> == <new>))
-                    {
-                        return;
-                    }
-                    (<precompile>4.Font = <new>);
-                });
-                <this>.AddSubscription(<created-subscription>);
-            }
-            {
-                var <created-subscription> = new (::system::Subscription^)
-                {
-                    var <bind-cache>0 : ::gacuisrc_unittest::LanguageVisualizer* = null of (::gacuisrc_unittest::LanguageVisualizer*);
-
-                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
-
-                    var <bind-opened> : ::system::Boolean = false;
-
-                    var <bind-closed> : ::system::Boolean = false;
-
-                    func <bind-activator>() : (::system::Void)
-                    {
                         var <bind-activator-result> = <bind-cache>0.PrimaryTextColor of (::presentation::Color);
                         ValueChanged(<bind-activator-result>);
                     }
@@ -810,6 +737,79 @@ namespace gacuisrc_unittest
                         return;
                     }
                     (<precompile>4.Color = <new>);
+                });
+                <this>.AddSubscription(<created-subscription>);
+            }
+            {
+                var <created-subscription> = new (::system::Subscription^)
+                {
+                    var <bind-cache>0 : ::gacuisrc_unittest::LanguageVisualizer* = null of (::gacuisrc_unittest::LanguageVisualizer*);
+
+                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-opened> : ::system::Boolean = false;
+
+                    var <bind-closed> : ::system::Boolean = false;
+
+                    func <bind-activator>() : (::system::Void)
+                    {
+                        var <bind-activator-result> = <bind-cache>0.Font of (::presentation::FontProperties);
+                        ValueChanged(<bind-activator-result>);
+                    }
+
+                    func <bind-callback>0_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    override func Open() : (::system::Boolean)
+                    {
+                        if ((!<bind-opened>))
+                        {
+                            (<bind-opened> = true);
+                            (<bind-cache>0 = (self ?? null of (::gacuisrc_unittest::LanguageVisualizer*)));
+                            (<bind-handler>0_0 = (attach(<bind-cache>0.FontChanged, <bind-callback>0_0) ?? null));
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Update() : (::system::Boolean)
+                    {
+                        if ((<bind-opened> and (!<bind-closed>)))
+                        {
+                            <bind-activator>();
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Close() : (::system::Boolean)
+                    {
+                        if ((!<bind-closed>))
+                        {
+                            (<bind-closed> = true);
+                            if (<bind-handler>0_0 is not null)
+                            {
+                                detach(<bind-cache>0.FontChanged, <bind-handler>0_0);
+                                (<bind-handler>0_0 = null);
+                            }
+                            (<bind-cache>0 = null of (::gacuisrc_unittest::LanguageVisualizer*));
+                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
+                            return true;
+                        }
+                        return false;
+                    }
+                };
+                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
+                {
+                    var <old> = <precompile>4.Font;
+                    var <new> = (cast (::presentation::FontProperties) <value>);
+                    if ((<old> == <new>))
+                    {
+                        return;
+                    }
+                    (<precompile>4.Font = <new>);
                 });
                 <this>.AddSubscription(<created-subscription>);
             }
@@ -891,12 +891,6 @@ namespace gacuisrc_unittest
         var self : ::gacuisrc_unittest::MainWindow* = null of (::gacuisrc_unittest::MainWindow*);
 
         @cpp:Protected
-        var dataGrid : ::presentation::controls::GuiBindableDataGrid* = null of (::presentation::controls::GuiBindableDataGrid*);
-
-        @cpp:Protected
-        var columnCompanies : ::presentation::controls::list::DataColumn^ = null of (::presentation::controls::list::DataColumn^);
-
-        @cpp:Protected
         var <precompile>0 : ::presentation::controls::list::DataColumn^ = null of (::presentation::controls::list::DataColumn^);
 
         @cpp:Protected
@@ -907,6 +901,12 @@ namespace gacuisrc_unittest
 
         @cpp:Protected
         var <precompile>3 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var dataGrid : ::presentation::controls::GuiBindableDataGrid* = null of (::presentation::controls::GuiBindableDataGrid*);
+
+        @cpp:Protected
+        var columnCompanies : ::presentation::controls::list::DataColumn^ = null of (::presentation::controls::list::DataColumn^);
 
         @cpp:Protected
         func <gacuisrc_unittest-MainWindow>Initialize(<this> : ::gacuisrc_unittest::MainWindow*) : (::system::Void)
