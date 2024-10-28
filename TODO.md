@@ -86,8 +86,6 @@
   - BindableControls
     - Set or reset item source
     - Set or reset property bindings
-  - BindableDataGrid
-    - Row and Cell selections (properties, mouse, key)
 - Document
   - Added `/F:EnabledTestFile` to unit test CLI parameters.
   - `GuiTreeItemTemplate` change base class to `GuiListItemTemplate`
