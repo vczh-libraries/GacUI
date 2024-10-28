@@ -64,7 +64,7 @@ TEST_FILE
 					TEST_ASSERT(dataGrid->GetSelectedItemIndex() == -1);
 					TEST_ASSERT(dataGrid->GetSelectedCell() == GridPos(-1, -1));
 					dataGrid->SelectCell({ 1,1 }, false);
-					TEST_ASSERT(dataGrid->GetSelectedItemIndex() == -1);
+					TEST_ASSERT(dataGrid->GetSelectedItemIndex() == 1);
 					TEST_ASSERT(dataGrid->GetSelectedCell() == GridPos(1, 1));
 				});
 				protocol->OnNextIdleFrame(L"1,1", [=]()
@@ -72,7 +72,7 @@ TEST_FILE
 					auto window = GetApplication()->GetMainWindow();
 					auto dataGrid = FindObjectByName<GuiBindableDataGrid>(window, L"dataGrid");
 					dataGrid->SelectCell({ 1,2 }, false);
-					TEST_ASSERT(dataGrid->GetSelectedItemIndex() == -1);
+					TEST_ASSERT(dataGrid->GetSelectedItemIndex() == 1);
 					TEST_ASSERT(dataGrid->GetSelectedCell() == GridPos(1, 2));
 				});
 				protocol->OnNextIdleFrame(L"1,2", [=]()
@@ -80,7 +80,7 @@ TEST_FILE
 					auto window = GetApplication()->GetMainWindow();
 					auto dataGrid = FindObjectByName<GuiBindableDataGrid>(window, L"dataGrid");
 					dataGrid->SelectCell({ 2,2 }, false);
-					TEST_ASSERT(dataGrid->GetSelectedItemIndex() == -1);
+					TEST_ASSERT(dataGrid->GetSelectedItemIndex() == 2);
 					TEST_ASSERT(dataGrid->GetSelectedCell() == GridPos(2, 2));
 				});
 				protocol->OnNextIdleFrame(L"2,2", [=]()
@@ -88,7 +88,7 @@ TEST_FILE
 					auto window = GetApplication()->GetMainWindow();
 					auto dataGrid = FindObjectByName<GuiBindableDataGrid>(window, L"dataGrid");
 					dataGrid->SelectCell({ 2,1 }, false);
-					TEST_ASSERT(dataGrid->GetSelectedItemIndex() == -1);
+					TEST_ASSERT(dataGrid->GetSelectedItemIndex() == 2);
 					TEST_ASSERT(dataGrid->GetSelectedCell() == GridPos(2, 1));
 				});
 				protocol->OnNextIdleFrame(L"2,1", [=]()
@@ -96,7 +96,7 @@ TEST_FILE
 					auto window = GetApplication()->GetMainWindow();
 					auto dataGrid = FindObjectByName<GuiBindableDataGrid>(window, L"dataGrid");
 					dataGrid->SelectCell({ 1,1 }, false);
-					TEST_ASSERT(dataGrid->GetSelectedItemIndex() == -1);
+					TEST_ASSERT(dataGrid->GetSelectedItemIndex() == 1);
 					TEST_ASSERT(dataGrid->GetSelectedCell() == GridPos(1, 1));
 				});
 				protocol->OnNextIdleFrame(L"1,1", [=]()

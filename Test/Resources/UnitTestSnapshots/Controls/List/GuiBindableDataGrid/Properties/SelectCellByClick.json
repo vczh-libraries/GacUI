@@ -4537,7 +4537,7 @@
             "ElementDesc_SolidBackground",
             {
               "id": 95,
-              "backgroundColor": "#00000000",
+              "backgroundColor": "#3399FF",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]

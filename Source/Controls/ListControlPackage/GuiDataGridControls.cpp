@@ -796,10 +796,12 @@ GuiVirtualDataGrid
 						{
 							ClearSelection();
 						}
-
-						skipOnSelectionChanged = true;
-						SetSelected(value.row, true);
-						skipOnSelectionChanged = false;
+					}
+					skipOnSelectionChanged = true;
+					SetSelected(value.row, true);
+					skipOnSelectionChanged = false;
+					if (openEditor)
+					{
 						return StartEdit(value.row, value.column);
 					}
 				}
