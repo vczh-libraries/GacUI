@@ -208,6 +208,7 @@
     <ClCompile Include="TestControls_List_DataGrid_CellVisualizer.cpp" />
     <ClCompile Include="TestControls_List_DataGrid_ColumnApi.cpp" />
     <ClCompile Include="TestControls_List_DataGrid_ColumnUI.cpp" />
+    <ClCompile Include="TestControls_List_DataGrid_Properties.cpp" />
     <ClCompile Include="TestControls_List_GuiListControl.cpp" />
     <ClCompile Include="TestControls_List_GuiListControl_Template.cpp" />
     <ClCompile Include="TestControls_List_GuiListItemTemplate.cpp" />

@@ -252,6 +252,9 @@
     <ClCompile Include="TestControls_List_DataGrid_CellEditor.cpp">
       <Filter>Source Files\Controls\List\DataGrid</Filter>
     </ClCompile>
+    <ClCompile Include="TestControls_List_DataGrid_Properties.cpp">
+      <Filter>Source Files\Controls\List\DataGrid</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="TestCompositions.h">
