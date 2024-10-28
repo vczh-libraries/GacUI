@@ -61,8 +61,10 @@ TEST_FILE
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto dataGrid = FindObjectByName<GuiBindableDataGrid>(window, L"dataGrid");
+					TEST_ASSERT(dataGrid->GetSelectedItemIndex() == -1);
 					TEST_ASSERT(dataGrid->GetSelectedCell() == GridPos(-1, -1));
 					dataGrid->SelectCell({ 1,1 }, false);
+					TEST_ASSERT(dataGrid->GetSelectedItemIndex() == -1);
 					TEST_ASSERT(dataGrid->GetSelectedCell() == GridPos(1, 1));
 				});
 				protocol->OnNextIdleFrame(L"1,1", [=]()
@@ -70,6 +72,7 @@ TEST_FILE
 					auto window = GetApplication()->GetMainWindow();
 					auto dataGrid = FindObjectByName<GuiBindableDataGrid>(window, L"dataGrid");
 					dataGrid->SelectCell({ 1,2 }, false);
+					TEST_ASSERT(dataGrid->GetSelectedItemIndex() == -1);
 					TEST_ASSERT(dataGrid->GetSelectedCell() == GridPos(1, 2));
 				});
 				protocol->OnNextIdleFrame(L"1,2", [=]()
@@ -77,6 +80,7 @@ TEST_FILE
 					auto window = GetApplication()->GetMainWindow();
 					auto dataGrid = FindObjectByName<GuiBindableDataGrid>(window, L"dataGrid");
 					dataGrid->SelectCell({ 2,2 }, false);
+					TEST_ASSERT(dataGrid->GetSelectedItemIndex() == -1);
 					TEST_ASSERT(dataGrid->GetSelectedCell() == GridPos(2, 2));
 				});
 				protocol->OnNextIdleFrame(L"2,2", [=]()
@@ -84,6 +88,7 @@ TEST_FILE
 					auto window = GetApplication()->GetMainWindow();
 					auto dataGrid = FindObjectByName<GuiBindableDataGrid>(window, L"dataGrid");
 					dataGrid->SelectCell({ 2,1 }, false);
+					TEST_ASSERT(dataGrid->GetSelectedItemIndex() == -1);
 					TEST_ASSERT(dataGrid->GetSelectedCell() == GridPos(2, 1));
 				});
 				protocol->OnNextIdleFrame(L"2,1", [=]()
@@ -91,6 +96,7 @@ TEST_FILE
 					auto window = GetApplication()->GetMainWindow();
 					auto dataGrid = FindObjectByName<GuiBindableDataGrid>(window, L"dataGrid");
 					dataGrid->SelectCell({ 1,1 }, false);
+					TEST_ASSERT(dataGrid->GetSelectedItemIndex() == -1);
 					TEST_ASSERT(dataGrid->GetSelectedCell() == GridPos(1, 1));
 				});
 				protocol->OnNextIdleFrame(L"1,1", [=]()
@@ -101,6 +107,65 @@ TEST_FILE
 			});
 			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
 				WString::Unmanaged(L"Controls/List/GuiBindableDataGrid/Properties/SelectCell"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resourceDataGridStringProperty
+				);
+		});
+
+		TEST_CASE(L"SelectCellOpenEditor")
+		{
+			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto dataGrid = FindObjectByName<GuiBindableDataGrid>(window, L"dataGrid");
+					TEST_ASSERT(dataGrid->GetSelectedItemIndex() == -1);
+					TEST_ASSERT(dataGrid->GetSelectedCell() == GridPos(-1, -1));
+					dataGrid->SelectCell({ 1,1 }, true);
+					TEST_ASSERT(dataGrid->GetSelectedItemIndex() == 1);
+					TEST_ASSERT(dataGrid->GetSelectedCell() == GridPos(1, 1));
+				});
+				protocol->OnNextIdleFrame(L"1,1", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto dataGrid = FindObjectByName<GuiBindableDataGrid>(window, L"dataGrid");
+					dataGrid->SelectCell({ 1,2 }, true);
+					TEST_ASSERT(dataGrid->GetSelectedItemIndex() == 1);
+					TEST_ASSERT(dataGrid->GetSelectedCell() == GridPos(1, 2));
+				});
+				protocol->OnNextIdleFrame(L"1,2", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto dataGrid = FindObjectByName<GuiBindableDataGrid>(window, L"dataGrid");
+					dataGrid->SelectCell({ 2,2 }, true);
+					TEST_ASSERT(dataGrid->GetSelectedItemIndex() == 2);
+					TEST_ASSERT(dataGrid->GetSelectedCell() == GridPos(2, 2));
+				});
+				protocol->OnNextIdleFrame(L"2,2", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto dataGrid = FindObjectByName<GuiBindableDataGrid>(window, L"dataGrid");
+					dataGrid->SelectCell({ 2,1 }, true);
+					TEST_ASSERT(dataGrid->GetSelectedItemIndex() == 2);
+					TEST_ASSERT(dataGrid->GetSelectedCell() == GridPos(2, 1));
+				});
+				protocol->OnNextIdleFrame(L"2,1", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto dataGrid = FindObjectByName<GuiBindableDataGrid>(window, L"dataGrid");
+					dataGrid->SelectCell({ 1,1 }, true);
+					TEST_ASSERT(dataGrid->GetSelectedItemIndex() == 1);
+					TEST_ASSERT(dataGrid->GetSelectedCell() == GridPos(1, 1));
+				});
+				protocol->OnNextIdleFrame(L"1,1", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					window->Hide();
+				});
+			});
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Controls/List/GuiBindableDataGrid/Properties/SelectCellOpenEditor"),
 				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
 				resourceDataGridStringProperty
 				);
@@ -121,6 +186,7 @@ TEST_FILE
 					auto window = GetApplication()->GetMainWindow();
 					auto dataGrid = FindObjectByName<GuiBindableDataGrid>(window, L"dataGrid");
 					LClickDataCell(protocol, dataGrid, 1, 2);
+					TEST_ASSERT(dataGrid->GetSelectedItemIndex() == 1);
 					TEST_ASSERT(dataGrid->GetSelectedCell() == GridPos(1, 2));
 				});
 				protocol->OnNextIdleFrame(L"1,2", [=]()
@@ -128,6 +194,7 @@ TEST_FILE
 					auto window = GetApplication()->GetMainWindow();
 					auto dataGrid = FindObjectByName<GuiBindableDataGrid>(window, L"dataGrid");
 					LClickDataCell(protocol, dataGrid, 2, 2);
+					TEST_ASSERT(dataGrid->GetSelectedItemIndex() == 2);
 					TEST_ASSERT(dataGrid->GetSelectedCell() == GridPos(2, 2));
 				});
 				protocol->OnNextIdleFrame(L"2,2", [=]()
@@ -135,6 +202,7 @@ TEST_FILE
 					auto window = GetApplication()->GetMainWindow();
 					auto dataGrid = FindObjectByName<GuiBindableDataGrid>(window, L"dataGrid");
 					LClickDataCell(protocol, dataGrid, 2, 1);
+					TEST_ASSERT(dataGrid->GetSelectedItemIndex() == 2);
 					TEST_ASSERT(dataGrid->GetSelectedCell() == GridPos(2, 1));
 				});
 				protocol->OnNextIdleFrame(L"2,1", [=]()
@@ -142,6 +210,7 @@ TEST_FILE
 					auto window = GetApplication()->GetMainWindow();
 					auto dataGrid = FindObjectByName<GuiBindableDataGrid>(window, L"dataGrid");
 					LClickDataCell(protocol, dataGrid, 1, 1);
+					TEST_ASSERT(dataGrid->GetSelectedItemIndex() == 1);
 					TEST_ASSERT(dataGrid->GetSelectedCell() == GridPos(1, 1));
 				});
 				protocol->OnNextIdleFrame(L"1,1", [=]()
@@ -173,6 +242,7 @@ TEST_FILE
 					auto window = GetApplication()->GetMainWindow();
 					auto dataGrid = FindObjectByName<GuiBindableDataGrid>(window, L"dataGrid");
 					protocol->KeyPress(VKEY::KEY_RIGHT);
+					TEST_ASSERT(dataGrid->GetSelectedItemIndex() == 1);
 					TEST_ASSERT(dataGrid->GetSelectedCell() == GridPos(1, 2));
 				});
 				protocol->OnNextIdleFrame(L"1,2", [=]()
@@ -180,6 +250,7 @@ TEST_FILE
 					auto window = GetApplication()->GetMainWindow();
 					auto dataGrid = FindObjectByName<GuiBindableDataGrid>(window, L"dataGrid");
 					protocol->KeyPress(VKEY::KEY_DOWN);
+					TEST_ASSERT(dataGrid->GetSelectedItemIndex() == 2);
 					TEST_ASSERT(dataGrid->GetSelectedCell() == GridPos(2, 2));
 				});
 				protocol->OnNextIdleFrame(L"2,2", [=]()
@@ -187,6 +258,7 @@ TEST_FILE
 					auto window = GetApplication()->GetMainWindow();
 					auto dataGrid = FindObjectByName<GuiBindableDataGrid>(window, L"dataGrid");
 					protocol->KeyPress(VKEY::KEY_LEFT);
+					TEST_ASSERT(dataGrid->GetSelectedItemIndex() == 2);
 					TEST_ASSERT(dataGrid->GetSelectedCell() == GridPos(2, 1));
 				});
 				protocol->OnNextIdleFrame(L"2,1", [=]()
@@ -194,6 +266,7 @@ TEST_FILE
 					auto window = GetApplication()->GetMainWindow();
 					auto dataGrid = FindObjectByName<GuiBindableDataGrid>(window, L"dataGrid");
 					protocol->KeyPress(VKEY::KEY_UP);
+					TEST_ASSERT(dataGrid->GetSelectedItemIndex() == 1);
 					TEST_ASSERT(dataGrid->GetSelectedCell() == GridPos(1, 1));
 				});
 				protocol->OnNextIdleFrame(L"1,1", [=]()

@@ -445,7 +445,11 @@ GuiVirtualDataGrid (Editor)
 				if (!skipOnSelectionChanged && !triggeredByItemContentModified)
 				{
 					vint row = GetSelectedItemIndex();
-					if (row != -1)
+					if (row == selectedCell.row)
+					{
+						// do nothing
+					}
+					else if (row != -1)
 					{
 						if (selectedCell.row != row && selectedCell.column != -1)
 						{
