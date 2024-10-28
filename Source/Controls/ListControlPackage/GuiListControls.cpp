@@ -779,27 +779,32 @@ GuiSelectableListControl
 
 			void GuiSelectableListControl::SetSelected(vint itemIndex, bool value)
 			{
-				if(value)
+				if (0 <= itemIndex && itemIndex < itemProvider->Count())
 				{
-					if(!selectedItems.Contains(itemIndex))
+					if (value)
 					{
-						if(!multiSelect)
+						if (!selectedItems.Contains(itemIndex))
 						{
-							selectedItems.Clear();
-							OnItemSelectionCleared();
+							if (!multiSelect)
+							{
+								selectedItems.Clear();
+								OnItemSelectionCleared();
+							}
+							selectedItems.Add(itemIndex);
+							OnItemSelectionChanged(itemIndex, value);
+							NotifySelectionChanged(false);
 						}
-						selectedItems.Add(itemIndex);
-						OnItemSelectionChanged(itemIndex, value);
-						NotifySelectionChanged(false);
 					}
-				}
-				else
-				{
-					if(selectedItems.Remove(itemIndex))
+					else
 					{
-						OnItemSelectionChanged(itemIndex, value);
-						NotifySelectionChanged(false);
+						if (selectedItems.Remove(itemIndex))
+						{
+							OnItemSelectionChanged(itemIndex, value);
+							NotifySelectionChanged(false);
+						}
 					}
+					selectedItemIndexStart = itemIndex;
+					selectedItemIndexEnd = itemIndex;
 				}
 			}
 

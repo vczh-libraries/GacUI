@@ -13,6 +13,7 @@
   - Fix `GuiVirtualListView` in `Details` view column header height doesn't sync to item arranger in real-time.
   - Fix `DataColumn::SetSorter` and `DataColumn::SetFilter` doesn't refresh data grid items.
   - Fix `GuiBindableDataGrid` not implements stable sorting.
+  - Fix `GuiBindableDataGrid` `[UP]` and `[DOWN]` not working properly right after changing selection by calling `SelectCell`.
   - UnitTestSnapshotViewer always not render the second loaded images.
 - Added `/F:EnabledTestFile` to unit test CLI parameters.
 - `GuiTreeItemTemplate` change base class to `GuiListItemTemplate`
