@@ -80,6 +80,7 @@
     - The click processing is finished after the modal window is closed, but due to `ALT+F4` all windows are deleted at the moment.
     - The following instruction only applies in hosted mode, because in trivial mode only enabled windows could be asked to close, this is ensured by the OS.
     - Close the current window that has keyboard focus. If such window is not initiated (indirectly) by the main window, nothing happens.
+    - `ShowModal` create or reuse an object passing to the next window, maintaining the top window on the modal link. By enumerating all **opened** windows it is possible to know if there are pending modal window.
 - Non-editing control unit test (using DarkSkin)
   - BindableControls
     - Set or reset item source
@@ -102,7 +103,12 @@
   - Fix `Global Objects` in `GacUI.h`.
   - Thinking about promote SyncDom data structures for unit test, and complete a diff algorithm.
     - Unit test framework
-      - Generate `domId` for each dom node: element(id), virtual(-element.id-2), root(-1), hittest(find a way).
+      - Generate `domId` for each dom node:
+        - root = 0
+        - element = (element.id << 2) + 1
+        - virtual = (element.id << 2) + 2
+        - hittest = (composition.id << 2) + 3
+          - the renderer maintaining an increasing id, when one is allocated it is cached in the composition
       - Diff algorithm based on `domId`
       - Mouse wheel trigger functions.
     - Unit Test Snapshot Viewer
