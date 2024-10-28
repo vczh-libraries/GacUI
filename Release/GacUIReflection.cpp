@@ -1958,6 +1958,8 @@ Type Declaration (Extra)
 			BEGIN_CLASS_MEMBER(ListViewColumnItemArranger)
 				CLASS_MEMBER_BASE(FixedHeightItemArranger)
 				CLASS_MEMBER_CONSTRUCTOR(Ptr<ListViewColumnItemArranger>(), NO_PARAMETER)
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(ColumnButtons)
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(ColumnSplitters)
 			END_CLASS_MEMBER(ListViewColumnItemArranger)
 
 			BEGIN_CLASS_MEMBER(ListViewColumnItemArranger::IColumnItemViewCallback)
@@ -2713,7 +2715,8 @@ Type Declaration (Class)
 
 				CLASS_MEMBER_GUIEVENT(BeforeSubMenuOpening)
 				CLASS_MEMBER_GUIEVENT(AfterSubMenuOpening)
-
+					
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(SubMenuHost)
 				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(LargeImage)
 				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(Image)
 				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(ShortcutText)
@@ -3053,8 +3056,9 @@ Type Declaration (Class)
 				CLASS_MEMBER_BASE(GuiVirtualListView)
 				CONTROL_CONSTRUCTOR_CONTROLT_TEMPLATE_INHERITANCE_2(GuiVirtualDataGrid, list::IItemProvider*, itemProvider)
 
-				CLASS_MEMBER_PROPERTY_GUIEVENT_READONLY_FAST(SelectedCell)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(ItemProvider)
+				CLASS_MEMBER_PROPERTY_GUIEVENT_READONLY_FAST(SelectedCell)
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(OpenedEditor)
 
 				CLASS_MEMBER_METHOD(SetViewToDefault, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(SelectCell, { L"value" _ L"openEditor" })

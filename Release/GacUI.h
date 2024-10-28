@@ -18156,7 +18156,6 @@ MenuButton
 				IGuiMenuService*						ownerMenuService;
 				bool									cascadeAction;
 
-				GuiButton*								GetSubMenuHost();
 				bool									OpenSubMenuInternal();
 				void									OnParentLineChanged()override;
 				compositions::IGuiAltActionHost*		GetActivatingAltHost()override;
@@ -18190,6 +18189,10 @@ MenuButton
 				compositions::GuiNotifyEvent			ImageChanged;
 				/// <summary>Shortcut text changed event.</summary>
 				compositions::GuiNotifyEvent			ShortcutTextChanged;
+ 
+				/// <summary>Get the button control that used to interact and popup the sub menu.</summary>
+				/// <returns>The button for the sub menu, it could be the menu button itself.</returns>
+				GuiButton*								GetSubMenuHost();
 
 				/// <summary>Get the large image for the menu button.</summary>
 				/// <returns>The large image for the menu button.</returns>
@@ -18765,6 +18768,13 @@ ListViewColumnItemArranger
 					Size										GetTotalSize()override;
 					void										AttachListControl(GuiListControl* value)override;
 					void										DetachListControl()override;
+
+					/// <summary>Get all column buttons for the Detail view.</summary>
+					/// <returns>All column buttons</returns>
+					const ColumnHeaderButtonList&				GetColumnButtons();
+					/// <summary>Get all column splitters for the Detail view.</summary>
+					/// <returns>All column spitters</returns>
+					const ColumnHeaderSplitterList&				GetColumnSplitters();
 				};
 			}
 
@@ -20159,6 +20169,9 @@ GuiVirtualDataGrid
 				/// <summary>Get the row index and column index of the selected cell.</summary>
 				/// <returns>The row index and column index of the selected cell.</returns>
 				GridPos													GetSelectedCell();
+				/// <summary>Get the opened editor for the selected cell.</summary>
+				/// <returns>The opened editor for the selected cell. If there is no editor, or the editor is not activated, it returns null.</returns>
+				Ptr<list::IDataEditor>									GetOpenedEditor();
 
 				/// <summary>Select a cell.</summary>
 				/// <returns>Returns true if the editor is opened.</returns>
@@ -20522,7 +20535,7 @@ DataProvider
 					Ptr<IDataFilter>										additionalFilter;
 					Ptr<IDataFilter>										currentFilter;
 					Ptr<IDataSorter>										currentSorter;
-					collections::List<vint>									virtualRowToSourceRow;
+					Ptr<collections::List<vint>>							virtualRowToSourceRow;
 
 					bool													NotifyUpdate(vint start, vint count, bool itemReferenceUpdated);
 					void													RebuildAllItems() override;
