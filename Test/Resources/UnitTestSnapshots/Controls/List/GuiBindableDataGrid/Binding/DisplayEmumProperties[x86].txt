@@ -1,0 +1,290 @@
+﻿================================(1/3)================================
+module <constructor>gacuisrc_unittest::MainWindow;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace gacuisrc_unittest
+{
+    class MainWindowConstructor
+    {
+        @cpp:Protected
+        var self : ::gacuisrc_unittest::MainWindow* = null of (::gacuisrc_unittest::MainWindow*);
+
+        @cpp:Protected
+        var <precompile>0 : ::presentation::controls::list::DataColumn^ = null of (::presentation::controls::list::DataColumn^);
+
+        @cpp:Protected
+        var <precompile>1 : ::presentation::controls::list::DataColumn^ = null of (::presentation::controls::list::DataColumn^);
+
+        @cpp:Protected
+        var <precompile>2 : ::presentation::controls::list::DataColumn^ = null of (::presentation::controls::list::DataColumn^);
+
+        @cpp:Protected
+        var <precompile>3 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var dataGrid : ::presentation::controls::GuiBindableDataGrid* = null of (::presentation::controls::GuiBindableDataGrid*);
+
+        @cpp:Protected
+        func <gacuisrc_unittest-MainWindow>Initialize(<this> : ::gacuisrc_unittest::MainWindow*) : (::system::Void)
+        {
+            (self = <this>);
+            {
+                (self.ClientSize = {x : 640; y : 320;} of (::presentation::Size));
+            }
+            {
+                (self.Text = "GuiBindableDataGrid");
+            }
+            {
+                (dataGrid = new (::presentation::controls::GuiBindableDataGrid*)(::presentation::theme::ThemeName::ListView));
+                <this>.SetNamedObject("dataGrid", dataGrid);
+            }
+            {
+                (dataGrid.VerticalAlwaysVisible = false);
+            }
+            {
+                (dataGrid.HorizontalAlwaysVisible = false);
+            }
+            (<precompile>3 = dataGrid.BoundsComposition);
+            {
+                (<precompile>3.AlignmentToParent = {left : 5; top : 5; right : 5; bottom : 5;} of (::presentation::Margin));
+            }
+            (<precompile>0 = new (::presentation::controls::list::DataColumn^)());
+            {
+                (<precompile>0.TextProperty = func (<item> : ::system::Object) : (::system::String)
+                {
+                    var itemToBind = (cast (DataGridItem^) <item>);
+                    return itemToBind.Language;
+                });
+            }
+            {
+                (<precompile>0.Text = "Language");
+            }
+            {
+                var <collection> = dataGrid.Columns;
+                <collection>.Add(<precompile>0);
+            }
+            (<precompile>1 = new (::presentation::controls::list::DataColumn^)());
+            {
+                (<precompile>1.TextProperty = func (<item> : ::system::Object) : (::system::String)
+                {
+                    var itemToBind = (cast (DataGridItem^) <item>);
+                    return ToString(itemToBind.IDE);
+                });
+            }
+            {
+                (<precompile>1.Text = "IDE");
+            }
+            {
+                var <collection> = dataGrid.Columns;
+                <collection>.Add(<precompile>1);
+            }
+            (<precompile>2 = new (::presentation::controls::list::DataColumn^)());
+            {
+                (<precompile>2.Text = "Company");
+            }
+            {
+                var <collection> = dataGrid.Columns;
+                <collection>.Add(<precompile>2);
+            }
+            {
+                self.AddChild(dataGrid);
+            }
+            {
+                (<precompile>2.TextProperty = [ToString((cast (DataGridItem^) $1).Company)]);
+            }
+            {
+                (dataGrid.ItemSource = self.items);
+            }
+        }
+
+        new ()
+        {
+        }
+    }
+}
+
+================================(2/3)================================
+module <instance>gacuisrc_unittest::MainWindow;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace gacuisrc_unittest
+{
+    @cpp:File("MainWindow")
+    @cpp:Friend(typeof(MainWindowConstructor))
+    class MainWindow : ::presentation::controls::GuiWindow, MainWindowConstructor
+    {
+        var items : observe DataGridItem^[] = {new (DataGridItem^)("C++"); new (DataGridItem^)("C#"); new (DataGridItem^)("F#"); new (DataGridItem^)("TypeScript", VSCode, Microsoft); new (DataGridItem^)("Java", Eclipse, IBM);};
+
+        new* ()
+            :::presentation::controls::GuiWindow(::presentation::theme::ThemeName::Window)
+        {
+            var <resource> = ::presentation::IGuiResourceManager::GetResourceManager().GetResourceFromClassName("gacuisrc_unittest::MainWindow");
+            var <resolver> = new (::presentation::GuiResourcePathResolver^)(<resource>, <resource>.WorkingDirectory);
+            this.SetResourceResolver(<resolver>);
+            this.<gacuisrc_unittest-MainWindow>Initialize(this);
+        }
+
+        delete
+        {
+            FinalizeInstanceRecursively(this of (::presentation::controls::GuiControlHost*));
+        }
+    }
+}
+
+================================(3/3)================================
+module datagriditem;
+using system::*;
+
+enum IDEs
+{
+    VisualStudio = 0,
+    VSCode = 1,
+    Eclipse = 2,
+}
+
+enum compare
+{
+    Microsoft = 0,
+    IBM = 1,
+}
+
+class DataGridItem
+{
+    @cpp:Private
+    var <prop>Language : string = "";
+
+    func GetLanguage() : (string)
+    {
+        return <prop>Language;
+    }
+
+    func SetLanguage(<value> : string) : (void)
+    {
+        (<prop>Language = <value>);
+    }
+
+    prop Language : string{GetLanguage, SetLanguage}
+
+    @cpp:Private
+    var <prop>IDE : IDEs = VisualStudio;
+
+    func GetIDE() : (IDEs)
+    {
+        return <prop>IDE;
+    }
+
+    func SetIDE(<value> : IDEs) : (void)
+    {
+        (<prop>IDE = <value>);
+    }
+
+    prop IDE : IDEs{GetIDE, SetIDE}
+
+    @cpp:Private
+    var <prop>Company : compare = Microsoft;
+
+    func GetCompany() : (compare)
+    {
+        return <prop>Company;
+    }
+
+    func SetCompany(<value> : compare) : (void)
+    {
+        (<prop>Company = <value>);
+    }
+
+    prop Company : compare{GetCompany, SetCompany}
+
+    new ()
+    {
+    }
+
+    new (language : string)
+    {
+        (Language = language);
+    }
+
+    new (language : string, ide : IDEs, company : compare)
+    {
+        (Language = language);
+        (IDE = ide);
+        (Company = company);
+    }
+}
+
+func ToString(value : IDEs) : (string)
+{
+    {
+        var <switch>0 : ::IDEs = value;
+        if ((<switch>0 == VisualStudio of (::IDEs)))
+        {
+            return "Visual Studio";
+        }
+        else if ((<switch>0 == VSCode of (::IDEs)))
+        {
+            return "Visual Studio Code";
+        }
+        else if ((<switch>0 == Eclipse of (::IDEs)))
+        {
+            return "Eclipse";
+        }
+        else
+        {
+            return "<ERROR>";
+        }
+    }
+}
+
+func ToString(value : compare) : (string)
+{
+    {
+        var <switch>1 : ::compare = value;
+        if ((<switch>1 == Microsoft of (::compare)))
+        {
+            return "Microsoft";
+        }
+        else if ((<switch>1 == IBM of (::compare)))
+        {
+            return "IBM";
+        }
+        else
+        {
+            return "<ERROR>";
+        }
+    }
+}
+

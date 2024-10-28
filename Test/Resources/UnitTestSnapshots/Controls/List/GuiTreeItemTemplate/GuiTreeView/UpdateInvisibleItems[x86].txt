@@ -435,13 +435,13 @@ namespace gacuisrc_unittest
             }
             (<precompile>7 = new (::presentation::elements::GuiSolidLabelElement^)());
             {
-                (<precompile>7.HorizontalAlignment = Left of (::presentation::Alignment));
+                (<precompile>7.Ellipse = true);
             }
             {
                 (<precompile>7.VerticalAlignment = Center of (::presentation::Alignment));
             }
             {
-                (<precompile>7.Ellipse = true);
+                (<precompile>7.HorizontalAlignment = Left of (::presentation::Alignment));
             }
             {
                 (<precompile>6.OwnedElement = <precompile>7);
@@ -538,79 +538,6 @@ namespace gacuisrc_unittest
 
                     func <bind-activator>() : (::system::Void)
                     {
-                        var <bind-activator-result> = <bind-cache>0.Expandable of (::system::Boolean);
-                        ValueChanged(<bind-activator-result>);
-                    }
-
-                    func <bind-callback>0_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
-                    {
-                        <bind-activator>();
-                    }
-
-                    override func Open() : (::system::Boolean)
-                    {
-                        if ((!<bind-opened>))
-                        {
-                            (<bind-opened> = true);
-                            (<bind-cache>0 = (self ?? null of (::gacuisrc_unittest::ItemTemplate*)));
-                            (<bind-handler>0_0 = (attach(<bind-cache>0.ExpandableChanged, <bind-callback>0_0) ?? null));
-                            return true;
-                        }
-                        return false;
-                    }
-
-                    override func Update() : (::system::Boolean)
-                    {
-                        if ((<bind-opened> and (!<bind-closed>)))
-                        {
-                            <bind-activator>();
-                            return true;
-                        }
-                        return false;
-                    }
-
-                    override func Close() : (::system::Boolean)
-                    {
-                        if ((!<bind-closed>))
-                        {
-                            (<bind-closed> = true);
-                            if (<bind-handler>0_0 is not null)
-                            {
-                                detach(<bind-cache>0.ExpandableChanged, <bind-handler>0_0);
-                                (<bind-handler>0_0 = null);
-                            }
-                            (<bind-cache>0 = null of (::gacuisrc_unittest::ItemTemplate*));
-                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
-                            return true;
-                        }
-                        return false;
-                    }
-                };
-                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
-                {
-                    var <old> = bullet.Visible;
-                    var <new> = (cast (::system::Boolean) <value>);
-                    if ((<old> == <new>))
-                    {
-                        return;
-                    }
-                    (bullet.Visible = <new>);
-                });
-                <this>.AddSubscription(<created-subscription>);
-            }
-            {
-                var <created-subscription> = new (::system::Subscription^)
-                {
-                    var <bind-cache>0 : ::gacuisrc_unittest::ItemTemplate* = null of (::gacuisrc_unittest::ItemTemplate*);
-
-                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
-
-                    var <bind-opened> : ::system::Boolean = false;
-
-                    var <bind-closed> : ::system::Boolean = false;
-
-                    func <bind-activator>() : (::system::Void)
-                    {
                         var <bind-activator-result> = <bind-cache>0.Expanding of (::system::Boolean);
                         ValueChanged(<bind-activator-result>);
                     }
@@ -668,6 +595,79 @@ namespace gacuisrc_unittest
                         return;
                     }
                     (bullet.Selected = <new>);
+                });
+                <this>.AddSubscription(<created-subscription>);
+            }
+            {
+                var <created-subscription> = new (::system::Subscription^)
+                {
+                    var <bind-cache>0 : ::gacuisrc_unittest::ItemTemplate* = null of (::gacuisrc_unittest::ItemTemplate*);
+
+                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-opened> : ::system::Boolean = false;
+
+                    var <bind-closed> : ::system::Boolean = false;
+
+                    func <bind-activator>() : (::system::Void)
+                    {
+                        var <bind-activator-result> = <bind-cache>0.Expandable of (::system::Boolean);
+                        ValueChanged(<bind-activator-result>);
+                    }
+
+                    func <bind-callback>0_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    override func Open() : (::system::Boolean)
+                    {
+                        if ((!<bind-opened>))
+                        {
+                            (<bind-opened> = true);
+                            (<bind-cache>0 = (self ?? null of (::gacuisrc_unittest::ItemTemplate*)));
+                            (<bind-handler>0_0 = (attach(<bind-cache>0.ExpandableChanged, <bind-callback>0_0) ?? null));
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Update() : (::system::Boolean)
+                    {
+                        if ((<bind-opened> and (!<bind-closed>)))
+                        {
+                            <bind-activator>();
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Close() : (::system::Boolean)
+                    {
+                        if ((!<bind-closed>))
+                        {
+                            (<bind-closed> = true);
+                            if (<bind-handler>0_0 is not null)
+                            {
+                                detach(<bind-cache>0.ExpandableChanged, <bind-handler>0_0);
+                                (<bind-handler>0_0 = null);
+                            }
+                            (<bind-cache>0 = null of (::gacuisrc_unittest::ItemTemplate*));
+                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
+                            return true;
+                        }
+                        return false;
+                    }
+                };
+                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
+                {
+                    var <old> = bullet.Visible;
+                    var <new> = (cast (::system::Boolean) <value>);
+                    if ((<old> == <new>))
+                    {
+                        return;
+                    }
+                    (bullet.Visible = <new>);
                 });
                 <this>.AddSubscription(<created-subscription>);
             }

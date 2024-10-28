@@ -1,0 +1,1278 @@
+﻿================================(1/7)================================
+module <constructor>gacuisrc_unittest::CompanyVisualizer;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace gacuisrc_unittest
+{
+    class CompanyVisualizerConstructor
+    {
+        @cpp:Protected
+        var self : ::gacuisrc_unittest::CompanyVisualizer* = null of (::gacuisrc_unittest::CompanyVisualizer*);
+
+        @cpp:Protected
+        var <precompile>0 : ::presentation::compositions::GuiStackComposition* = null of (::presentation::compositions::GuiStackComposition*);
+
+        @cpp:Protected
+        var <precompile>1 : ::presentation::compositions::GuiStackItemComposition* = null of (::presentation::compositions::GuiStackItemComposition*);
+
+        @cpp:Protected
+        var <precompile>2 : ::presentation::elements::GuiImageFrameElement^ = null of (::presentation::elements::GuiImageFrameElement^);
+
+        @cpp:Protected
+        var <precompile>3 : ::presentation::compositions::GuiStackItemComposition* = null of (::presentation::compositions::GuiStackItemComposition*);
+
+        @cpp:Protected
+        var <precompile>4 : ::presentation::elements::GuiSolidLabelElement^ = null of (::presentation::elements::GuiSolidLabelElement^);
+
+        @cpp:Protected
+        func <gacuisrc_unittest-CompanyVisualizer>Initialize(<this> : ::gacuisrc_unittest::CompanyVisualizer*) : (::system::Void)
+        {
+            (self = <this>);
+            (<precompile>0 = new (::presentation::compositions::GuiStackComposition*)());
+            {
+                (<precompile>0.AlignmentToParent = {left : 2; top : 0; right : 2; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (<precompile>0.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+            }
+            {
+                (<precompile>0.Padding = 2 of (::system::Int32));
+            }
+            {
+                (<precompile>0.Direction = Horizontal of (::presentation::compositions::GuiStackComposition::Direction));
+            }
+            (<precompile>1 = new (::presentation::compositions::GuiStackItemComposition*)());
+            (<precompile>2 = new (::presentation::elements::GuiImageFrameElement^)());
+            {
+                (<precompile>2.VerticalAlignment = Center of (::presentation::Alignment));
+            }
+            {
+                (<precompile>2.HorizontalAlignment = Left of (::presentation::Alignment));
+            }
+            {
+                (<precompile>1.OwnedElement = <precompile>2);
+            }
+            {
+                <precompile>0.AddChild(<precompile>1);
+            }
+            (<precompile>3 = new (::presentation::compositions::GuiStackItemComposition*)());
+            (<precompile>4 = new (::presentation::elements::GuiSolidLabelElement^)());
+            {
+                (<precompile>4.VerticalAlignment = Center of (::presentation::Alignment));
+            }
+            {
+                (<precompile>4.HorizontalAlignment = Left of (::presentation::Alignment));
+            }
+            {
+                (<precompile>3.OwnedElement = <precompile>4);
+            }
+            {
+                <precompile>0.AddChild(<precompile>3);
+            }
+            {
+                self.AddChild(<precompile>0);
+            }
+            {
+                var <created-subscription> = new (::system::Subscription^)
+                {
+                    var <bind-cache>0 : ::gacuisrc_unittest::CompanyVisualizer* = null of (::gacuisrc_unittest::CompanyVisualizer*);
+
+                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-opened> : ::system::Boolean = false;
+
+                    var <bind-closed> : ::system::Boolean = false;
+
+                    func <bind-activator>() : (::system::Void)
+                    {
+                        var <bind-activator-result> = (((cast (Companies) <bind-cache>0.CellValue) == Companies::Microsoft) ? (cast (GuiImageData^) self.ResolveResource("res", "DataGridImages/Female", true)).Image : null ?? null) of (::presentation::INativeImage^);
+                        ValueChanged(<bind-activator-result>);
+                    }
+
+                    func <bind-callback>0_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    override func Open() : (::system::Boolean)
+                    {
+                        if ((!<bind-opened>))
+                        {
+                            (<bind-opened> = true);
+                            (<bind-cache>0 = (self ?? null of (::gacuisrc_unittest::CompanyVisualizer*)));
+                            (<bind-handler>0_0 = (attach(<bind-cache>0.CellValueChanged, <bind-callback>0_0) ?? null));
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Update() : (::system::Boolean)
+                    {
+                        if ((<bind-opened> and (!<bind-closed>)))
+                        {
+                            <bind-activator>();
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Close() : (::system::Boolean)
+                    {
+                        if ((!<bind-closed>))
+                        {
+                            (<bind-closed> = true);
+                            if (<bind-handler>0_0 is not null)
+                            {
+                                detach(<bind-cache>0.CellValueChanged, <bind-handler>0_0);
+                                (<bind-handler>0_0 = null);
+                            }
+                            (<bind-cache>0 = null of (::gacuisrc_unittest::CompanyVisualizer*));
+                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
+                            return true;
+                        }
+                        return false;
+                    }
+                };
+                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
+                {
+                    var <old> = <precompile>2.Image;
+                    var <new> = (cast (::presentation::INativeImage^) <value>);
+                    if ((<old> == <new>))
+                    {
+                        return;
+                    }
+                    (<precompile>2.Image = <new>);
+                });
+                <this>.AddSubscription(<created-subscription>);
+            }
+            {
+                var <created-subscription> = new (::system::Subscription^)
+                {
+                    var <bind-cache>0 : ::gacuisrc_unittest::CompanyVisualizer* = null of (::gacuisrc_unittest::CompanyVisualizer*);
+
+                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-opened> : ::system::Boolean = false;
+
+                    var <bind-closed> : ::system::Boolean = false;
+
+                    func <bind-activator>() : (::system::Void)
+                    {
+                        var <bind-activator-result> = (ToString((cast (DataGridItem^) <bind-cache>0.RowValue).Company) ?? "") of (::system::String);
+                        ValueChanged(<bind-activator-result>);
+                    }
+
+                    func <bind-callback>0_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    override func Open() : (::system::Boolean)
+                    {
+                        if ((!<bind-opened>))
+                        {
+                            (<bind-opened> = true);
+                            (<bind-cache>0 = (self ?? null of (::gacuisrc_unittest::CompanyVisualizer*)));
+                            (<bind-handler>0_0 = (attach(<bind-cache>0.RowValueChanged, <bind-callback>0_0) ?? null));
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Update() : (::system::Boolean)
+                    {
+                        if ((<bind-opened> and (!<bind-closed>)))
+                        {
+                            <bind-activator>();
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Close() : (::system::Boolean)
+                    {
+                        if ((!<bind-closed>))
+                        {
+                            (<bind-closed> = true);
+                            if (<bind-handler>0_0 is not null)
+                            {
+                                detach(<bind-cache>0.RowValueChanged, <bind-handler>0_0);
+                                (<bind-handler>0_0 = null);
+                            }
+                            (<bind-cache>0 = null of (::gacuisrc_unittest::CompanyVisualizer*));
+                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
+                            return true;
+                        }
+                        return false;
+                    }
+                };
+                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
+                {
+                    var <old> = <precompile>4.Text;
+                    var <new> = (cast (::system::String) <value>);
+                    if ((<old> == <new>))
+                    {
+                        return;
+                    }
+                    (<precompile>4.Text = <new>);
+                });
+                <this>.AddSubscription(<created-subscription>);
+            }
+            {
+                var <created-subscription> = new (::system::Subscription^)
+                {
+                    var <bind-cache>0 : ::gacuisrc_unittest::CompanyVisualizer* = null of (::gacuisrc_unittest::CompanyVisualizer*);
+
+                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-opened> : ::system::Boolean = false;
+
+                    var <bind-closed> : ::system::Boolean = false;
+
+                    func <bind-activator>() : (::system::Void)
+                    {
+                        var <bind-activator-result> = <bind-cache>0.PrimaryTextColor of (::presentation::Color);
+                        ValueChanged(<bind-activator-result>);
+                    }
+
+                    func <bind-callback>0_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    override func Open() : (::system::Boolean)
+                    {
+                        if ((!<bind-opened>))
+                        {
+                            (<bind-opened> = true);
+                            (<bind-cache>0 = (self ?? null of (::gacuisrc_unittest::CompanyVisualizer*)));
+                            (<bind-handler>0_0 = (attach(<bind-cache>0.PrimaryTextColorChanged, <bind-callback>0_0) ?? null));
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Update() : (::system::Boolean)
+                    {
+                        if ((<bind-opened> and (!<bind-closed>)))
+                        {
+                            <bind-activator>();
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Close() : (::system::Boolean)
+                    {
+                        if ((!<bind-closed>))
+                        {
+                            (<bind-closed> = true);
+                            if (<bind-handler>0_0 is not null)
+                            {
+                                detach(<bind-cache>0.PrimaryTextColorChanged, <bind-handler>0_0);
+                                (<bind-handler>0_0 = null);
+                            }
+                            (<bind-cache>0 = null of (::gacuisrc_unittest::CompanyVisualizer*));
+                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
+                            return true;
+                        }
+                        return false;
+                    }
+                };
+                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
+                {
+                    var <old> = <precompile>4.Color;
+                    var <new> = (cast (::presentation::Color) <value>);
+                    if ((<old> == <new>))
+                    {
+                        return;
+                    }
+                    (<precompile>4.Color = <new>);
+                });
+                <this>.AddSubscription(<created-subscription>);
+            }
+            {
+                var <created-subscription> = new (::system::Subscription^)
+                {
+                    var <bind-cache>0 : ::gacuisrc_unittest::CompanyVisualizer* = null of (::gacuisrc_unittest::CompanyVisualizer*);
+
+                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-opened> : ::system::Boolean = false;
+
+                    var <bind-closed> : ::system::Boolean = false;
+
+                    func <bind-activator>() : (::system::Void)
+                    {
+                        var <bind-activator-result> = <bind-cache>0.Font of (::presentation::FontProperties);
+                        ValueChanged(<bind-activator-result>);
+                    }
+
+                    func <bind-callback>0_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    override func Open() : (::system::Boolean)
+                    {
+                        if ((!<bind-opened>))
+                        {
+                            (<bind-opened> = true);
+                            (<bind-cache>0 = (self ?? null of (::gacuisrc_unittest::CompanyVisualizer*)));
+                            (<bind-handler>0_0 = (attach(<bind-cache>0.FontChanged, <bind-callback>0_0) ?? null));
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Update() : (::system::Boolean)
+                    {
+                        if ((<bind-opened> and (!<bind-closed>)))
+                        {
+                            <bind-activator>();
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Close() : (::system::Boolean)
+                    {
+                        if ((!<bind-closed>))
+                        {
+                            (<bind-closed> = true);
+                            if (<bind-handler>0_0 is not null)
+                            {
+                                detach(<bind-cache>0.FontChanged, <bind-handler>0_0);
+                                (<bind-handler>0_0 = null);
+                            }
+                            (<bind-cache>0 = null of (::gacuisrc_unittest::CompanyVisualizer*));
+                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
+                            return true;
+                        }
+                        return false;
+                    }
+                };
+                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
+                {
+                    var <old> = <precompile>4.Font;
+                    var <new> = (cast (::presentation::FontProperties) <value>);
+                    if ((<old> == <new>))
+                    {
+                        return;
+                    }
+                    (<precompile>4.Font = <new>);
+                });
+                <this>.AddSubscription(<created-subscription>);
+            }
+        }
+
+        new ()
+        {
+        }
+    }
+}
+
+================================(2/7)================================
+module <instance>gacuisrc_unittest::CompanyVisualizer;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace gacuisrc_unittest
+{
+    @cpp:Friend(typeof(CompanyVisualizerConstructor))
+    class CompanyVisualizer : ::presentation::templates::GuiGridVisualizerTemplate, CompanyVisualizerConstructor
+    {
+        new* ()
+        {
+            var <resource> = ::presentation::IGuiResourceManager::GetResourceManager().GetResourceFromClassName("gacuisrc_unittest::CompanyVisualizer");
+            var <resolver> = new (::presentation::GuiResourcePathResolver^)(<resource>, <resource>.WorkingDirectory);
+            this.SetResourceResolver(<resolver>);
+            this.<gacuisrc_unittest-CompanyVisualizer>Initialize(this);
+        }
+
+        delete
+        {
+            FinalizeInstanceRecursively(this of (::presentation::templates::GuiTemplate*));
+        }
+    }
+}
+
+================================(3/7)================================
+module <constructor>gacuisrc_unittest::LanguageVisualizer;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace gacuisrc_unittest
+{
+    class LanguageVisualizerConstructor
+    {
+        @cpp:Protected
+        var self : ::gacuisrc_unittest::LanguageVisualizer* = null of (::gacuisrc_unittest::LanguageVisualizer*);
+
+        @cpp:Protected
+        var <precompile>0 : ::presentation::compositions::GuiStackComposition* = null of (::presentation::compositions::GuiStackComposition*);
+
+        @cpp:Protected
+        var <precompile>1 : ::presentation::compositions::GuiStackItemComposition* = null of (::presentation::compositions::GuiStackItemComposition*);
+
+        @cpp:Protected
+        var <precompile>2 : ::presentation::elements::GuiImageFrameElement^ = null of (::presentation::elements::GuiImageFrameElement^);
+
+        @cpp:Protected
+        var <precompile>3 : ::presentation::compositions::GuiStackItemComposition* = null of (::presentation::compositions::GuiStackItemComposition*);
+
+        @cpp:Protected
+        var <precompile>4 : ::presentation::elements::GuiSolidLabelElement^ = null of (::presentation::elements::GuiSolidLabelElement^);
+
+        @cpp:Protected
+        func <gacuisrc_unittest-LanguageVisualizer>Initialize(<this> : ::gacuisrc_unittest::LanguageVisualizer*) : (::system::Void)
+        {
+            (self = <this>);
+            (<precompile>0 = new (::presentation::compositions::GuiStackComposition*)());
+            {
+                (<precompile>0.AlignmentToParent = {left : 2; top : 0; right : 2; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (<precompile>0.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+            }
+            {
+                (<precompile>0.Padding = 2 of (::system::Int32));
+            }
+            {
+                (<precompile>0.Direction = Horizontal of (::presentation::compositions::GuiStackComposition::Direction));
+            }
+            (<precompile>1 = new (::presentation::compositions::GuiStackItemComposition*)());
+            (<precompile>2 = new (::presentation::elements::GuiImageFrameElement^)());
+            {
+                (<precompile>2.VerticalAlignment = Center of (::presentation::Alignment));
+            }
+            {
+                (<precompile>2.HorizontalAlignment = Left of (::presentation::Alignment));
+            }
+            {
+                (<precompile>1.OwnedElement = <precompile>2);
+            }
+            {
+                <precompile>0.AddChild(<precompile>1);
+            }
+            (<precompile>3 = new (::presentation::compositions::GuiStackItemComposition*)());
+            (<precompile>4 = new (::presentation::elements::GuiSolidLabelElement^)());
+            {
+                (<precompile>4.VerticalAlignment = Center of (::presentation::Alignment));
+            }
+            {
+                (<precompile>4.HorizontalAlignment = Left of (::presentation::Alignment));
+            }
+            {
+                (<precompile>3.OwnedElement = <precompile>4);
+            }
+            {
+                <precompile>0.AddChild(<precompile>3);
+            }
+            {
+                self.AddChild(<precompile>0);
+            }
+            {
+                var <created-subscription> = new (::system::Subscription^)
+                {
+                    var <bind-cache>0 : ::gacuisrc_unittest::LanguageVisualizer* = null of (::gacuisrc_unittest::LanguageVisualizer*);
+
+                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-opened> : ::system::Boolean = false;
+
+                    var <bind-closed> : ::system::Boolean = false;
+
+                    func <bind-activator>() : (::system::Void)
+                    {
+                        var <bind-activator-result> = (<bind-cache>0.Text == "C++") ? (cast (GuiImageData^) self.ResolveResource("res", "DataGridImages/Male", true)).Image : null of (::presentation::INativeImage^);
+                        ValueChanged(<bind-activator-result>);
+                    }
+
+                    func <bind-callback>0_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    override func Open() : (::system::Boolean)
+                    {
+                        if ((!<bind-opened>))
+                        {
+                            (<bind-opened> = true);
+                            (<bind-cache>0 = (self ?? null of (::gacuisrc_unittest::LanguageVisualizer*)));
+                            (<bind-handler>0_0 = (attach(<bind-cache>0.TextChanged, <bind-callback>0_0) ?? null));
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Update() : (::system::Boolean)
+                    {
+                        if ((<bind-opened> and (!<bind-closed>)))
+                        {
+                            <bind-activator>();
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Close() : (::system::Boolean)
+                    {
+                        if ((!<bind-closed>))
+                        {
+                            (<bind-closed> = true);
+                            if (<bind-handler>0_0 is not null)
+                            {
+                                detach(<bind-cache>0.TextChanged, <bind-handler>0_0);
+                                (<bind-handler>0_0 = null);
+                            }
+                            (<bind-cache>0 = null of (::gacuisrc_unittest::LanguageVisualizer*));
+                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
+                            return true;
+                        }
+                        return false;
+                    }
+                };
+                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
+                {
+                    var <old> = <precompile>2.Image;
+                    var <new> = (cast (::presentation::INativeImage^) <value>);
+                    if ((<old> == <new>))
+                    {
+                        return;
+                    }
+                    (<precompile>2.Image = <new>);
+                });
+                <this>.AddSubscription(<created-subscription>);
+            }
+            {
+                var <created-subscription> = new (::system::Subscription^)
+                {
+                    var <bind-cache>0 : ::gacuisrc_unittest::LanguageVisualizer* = null of (::gacuisrc_unittest::LanguageVisualizer*);
+
+                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-opened> : ::system::Boolean = false;
+
+                    var <bind-closed> : ::system::Boolean = false;
+
+                    func <bind-activator>() : (::system::Void)
+                    {
+                        var <bind-activator-result> = <bind-cache>0.Text of (::system::String);
+                        ValueChanged(<bind-activator-result>);
+                    }
+
+                    func <bind-callback>0_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    override func Open() : (::system::Boolean)
+                    {
+                        if ((!<bind-opened>))
+                        {
+                            (<bind-opened> = true);
+                            (<bind-cache>0 = (self ?? null of (::gacuisrc_unittest::LanguageVisualizer*)));
+                            (<bind-handler>0_0 = (attach(<bind-cache>0.TextChanged, <bind-callback>0_0) ?? null));
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Update() : (::system::Boolean)
+                    {
+                        if ((<bind-opened> and (!<bind-closed>)))
+                        {
+                            <bind-activator>();
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Close() : (::system::Boolean)
+                    {
+                        if ((!<bind-closed>))
+                        {
+                            (<bind-closed> = true);
+                            if (<bind-handler>0_0 is not null)
+                            {
+                                detach(<bind-cache>0.TextChanged, <bind-handler>0_0);
+                                (<bind-handler>0_0 = null);
+                            }
+                            (<bind-cache>0 = null of (::gacuisrc_unittest::LanguageVisualizer*));
+                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
+                            return true;
+                        }
+                        return false;
+                    }
+                };
+                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
+                {
+                    var <old> = <precompile>4.Text;
+                    var <new> = (cast (::system::String) <value>);
+                    if ((<old> == <new>))
+                    {
+                        return;
+                    }
+                    (<precompile>4.Text = <new>);
+                });
+                <this>.AddSubscription(<created-subscription>);
+            }
+            {
+                var <created-subscription> = new (::system::Subscription^)
+                {
+                    var <bind-cache>0 : ::gacuisrc_unittest::LanguageVisualizer* = null of (::gacuisrc_unittest::LanguageVisualizer*);
+
+                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-opened> : ::system::Boolean = false;
+
+                    var <bind-closed> : ::system::Boolean = false;
+
+                    func <bind-activator>() : (::system::Void)
+                    {
+                        var <bind-activator-result> = <bind-cache>0.PrimaryTextColor of (::presentation::Color);
+                        ValueChanged(<bind-activator-result>);
+                    }
+
+                    func <bind-callback>0_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    override func Open() : (::system::Boolean)
+                    {
+                        if ((!<bind-opened>))
+                        {
+                            (<bind-opened> = true);
+                            (<bind-cache>0 = (self ?? null of (::gacuisrc_unittest::LanguageVisualizer*)));
+                            (<bind-handler>0_0 = (attach(<bind-cache>0.PrimaryTextColorChanged, <bind-callback>0_0) ?? null));
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Update() : (::system::Boolean)
+                    {
+                        if ((<bind-opened> and (!<bind-closed>)))
+                        {
+                            <bind-activator>();
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Close() : (::system::Boolean)
+                    {
+                        if ((!<bind-closed>))
+                        {
+                            (<bind-closed> = true);
+                            if (<bind-handler>0_0 is not null)
+                            {
+                                detach(<bind-cache>0.PrimaryTextColorChanged, <bind-handler>0_0);
+                                (<bind-handler>0_0 = null);
+                            }
+                            (<bind-cache>0 = null of (::gacuisrc_unittest::LanguageVisualizer*));
+                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
+                            return true;
+                        }
+                        return false;
+                    }
+                };
+                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
+                {
+                    var <old> = <precompile>4.Color;
+                    var <new> = (cast (::presentation::Color) <value>);
+                    if ((<old> == <new>))
+                    {
+                        return;
+                    }
+                    (<precompile>4.Color = <new>);
+                });
+                <this>.AddSubscription(<created-subscription>);
+            }
+            {
+                var <created-subscription> = new (::system::Subscription^)
+                {
+                    var <bind-cache>0 : ::gacuisrc_unittest::LanguageVisualizer* = null of (::gacuisrc_unittest::LanguageVisualizer*);
+
+                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-opened> : ::system::Boolean = false;
+
+                    var <bind-closed> : ::system::Boolean = false;
+
+                    func <bind-activator>() : (::system::Void)
+                    {
+                        var <bind-activator-result> = <bind-cache>0.Font of (::presentation::FontProperties);
+                        ValueChanged(<bind-activator-result>);
+                    }
+
+                    func <bind-callback>0_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    override func Open() : (::system::Boolean)
+                    {
+                        if ((!<bind-opened>))
+                        {
+                            (<bind-opened> = true);
+                            (<bind-cache>0 = (self ?? null of (::gacuisrc_unittest::LanguageVisualizer*)));
+                            (<bind-handler>0_0 = (attach(<bind-cache>0.FontChanged, <bind-callback>0_0) ?? null));
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Update() : (::system::Boolean)
+                    {
+                        if ((<bind-opened> and (!<bind-closed>)))
+                        {
+                            <bind-activator>();
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Close() : (::system::Boolean)
+                    {
+                        if ((!<bind-closed>))
+                        {
+                            (<bind-closed> = true);
+                            if (<bind-handler>0_0 is not null)
+                            {
+                                detach(<bind-cache>0.FontChanged, <bind-handler>0_0);
+                                (<bind-handler>0_0 = null);
+                            }
+                            (<bind-cache>0 = null of (::gacuisrc_unittest::LanguageVisualizer*));
+                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
+                            return true;
+                        }
+                        return false;
+                    }
+                };
+                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
+                {
+                    var <old> = <precompile>4.Font;
+                    var <new> = (cast (::presentation::FontProperties) <value>);
+                    if ((<old> == <new>))
+                    {
+                        return;
+                    }
+                    (<precompile>4.Font = <new>);
+                });
+                <this>.AddSubscription(<created-subscription>);
+            }
+        }
+
+        new ()
+        {
+        }
+    }
+}
+
+================================(4/7)================================
+module <instance>gacuisrc_unittest::LanguageVisualizer;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace gacuisrc_unittest
+{
+    @cpp:Friend(typeof(LanguageVisualizerConstructor))
+    class LanguageVisualizer : ::presentation::templates::GuiGridVisualizerTemplate, LanguageVisualizerConstructor
+    {
+        new* ()
+        {
+            var <resource> = ::presentation::IGuiResourceManager::GetResourceManager().GetResourceFromClassName("gacuisrc_unittest::LanguageVisualizer");
+            var <resolver> = new (::presentation::GuiResourcePathResolver^)(<resource>, <resource>.WorkingDirectory);
+            this.SetResourceResolver(<resolver>);
+            this.<gacuisrc_unittest-LanguageVisualizer>Initialize(this);
+        }
+
+        delete
+        {
+            FinalizeInstanceRecursively(this of (::presentation::templates::GuiTemplate*));
+        }
+    }
+}
+
+================================(5/7)================================
+module <constructor>gacuisrc_unittest::MainWindow;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace gacuisrc_unittest
+{
+    class MainWindowConstructor
+    {
+        @cpp:Protected
+        var self : ::gacuisrc_unittest::MainWindow* = null of (::gacuisrc_unittest::MainWindow*);
+
+        @cpp:Protected
+        var <precompile>0 : ::presentation::controls::list::DataColumn^ = null of (::presentation::controls::list::DataColumn^);
+
+        @cpp:Protected
+        var <precompile>1 : ::presentation::controls::list::DataColumn^ = null of (::presentation::controls::list::DataColumn^);
+
+        @cpp:Protected
+        var <precompile>2 : ::presentation::controls::list::DataColumn^ = null of (::presentation::controls::list::DataColumn^);
+
+        @cpp:Protected
+        var <precompile>3 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var dataGrid : ::presentation::controls::GuiBindableDataGrid* = null of (::presentation::controls::GuiBindableDataGrid*);
+
+        @cpp:Protected
+        var columnCompanies : ::presentation::controls::list::DataColumn^ = null of (::presentation::controls::list::DataColumn^);
+
+        @cpp:Protected
+        func <gacuisrc_unittest-MainWindow>Initialize(<this> : ::gacuisrc_unittest::MainWindow*) : (::system::Void)
+        {
+            (self = <this>);
+            {
+                (self.filterByIDEs = new (::presentation::controls::list::IDataFilter^)
+                {
+                    override func SetCallback(value : ::presentation::controls::list::IDataProcessorCallback*) : (::system::Void)
+                    {
+                    }
+
+                    override func Filter(<row> : ::system::Object) : (::system::Boolean)
+                    {
+                        return [($1.IDEs > 1)] of ((func (DataGridItem^) : (::system::Boolean)))((cast (DataGridItem^) <row>));
+                    }
+                });
+            }
+            {
+                (self.ClientSize = {x : 640; y : 320;} of (::presentation::Size));
+            }
+            {
+                (self.Text = "GuiBindableDataGrid");
+            }
+            {
+                (dataGrid = new (::presentation::controls::GuiBindableDataGrid*)(::presentation::theme::ThemeName::ListView));
+                <this>.SetNamedObject("dataGrid", dataGrid);
+            }
+            {
+                (dataGrid.VerticalAlwaysVisible = false);
+            }
+            {
+                (dataGrid.HorizontalAlwaysVisible = false);
+            }
+            (<precompile>3 = dataGrid.BoundsComposition);
+            {
+                (<precompile>3.AlignmentToParent = {left : 5; top : 5; right : 5; bottom : 5;} of (::presentation::Margin));
+            }
+            (<precompile>0 = new (::presentation::controls::list::DataColumn^)());
+            {
+                (<precompile>0.VisualizerFactory = new (::presentation::controls::list::DataVisualizerFactory^)(func (<viewModel> : ::system::Object) : (::presentation::templates::GuiGridVisualizerTemplate*)
+                {
+                    {
+                        return new (::presentation::controls::list::CellBorderVisualizerTemplate*)();
+                    }
+                }, new (::presentation::controls::list::DataVisualizerFactory^)(func (<viewModel> : ::system::Object) : (::presentation::templates::GuiGridVisualizerTemplate*)
+                {
+                    {
+                        return new (::presentation::controls::list::FocusRectangleVisualizerTemplate*)();
+                    }
+                }, new (::presentation::controls::list::DataVisualizerFactory^)(func (<viewModel> : ::system::Object) : (::presentation::templates::GuiGridVisualizerTemplate*)
+                {
+                    {
+                        return new (::gacuisrc_unittest::LanguageVisualizer*)();
+                    }
+                }, null))));
+            }
+            {
+                (<precompile>0.Sorter = new (::presentation::controls::list::IDataSorter^)
+                {
+                    override func SetCallback(value : ::presentation::controls::list::IDataProcessorCallback*) : (::system::Void)
+                    {
+                    }
+
+                    override func Compare(<row1> : ::system::Object, <row2> : ::system::Object) : (::system::Int32)
+                    {
+                        return [Sys::Compare($1.Language, $2.Language)] of ((func (DataGridItem^, DataGridItem^) : (::system::Int32)))((cast (DataGridItem^) <row1>), (cast (DataGridItem^) <row2>));
+                    }
+                });
+            }
+            {
+                (<precompile>0.Size = 150 of (::system::Int32));
+            }
+            {
+                (<precompile>0.TextProperty = func (<item> : ::system::Object) : (::system::String)
+                {
+                    var item = (cast (DataGridItem^) <item>);
+                    return item.Language;
+                });
+            }
+            {
+                (<precompile>0.Text = "Language");
+            }
+            {
+                var <collection> = dataGrid.Columns;
+                <collection>.Add(<precompile>0);
+            }
+            (<precompile>1 = new (::presentation::controls::list::DataColumn^)());
+            {
+                (<precompile>1.VisualizerFactory = new (::presentation::controls::list::DataVisualizerFactory^)(func (<viewModel> : ::system::Object) : (::presentation::templates::GuiGridVisualizerTemplate*)
+                {
+                    {
+                        return new (::presentation::controls::list::CellBorderVisualizerTemplate*)();
+                    }
+                }, new (::presentation::controls::list::DataVisualizerFactory^)(func (<viewModel> : ::system::Object) : (::presentation::templates::GuiGridVisualizerTemplate*)
+                {
+                    {
+                        return new (::presentation::controls::list::FocusRectangleVisualizerTemplate*)();
+                    }
+                }, new (::presentation::controls::list::DataVisualizerFactory^)(func (<viewModel> : ::system::Object) : (::presentation::templates::GuiGridVisualizerTemplate*)
+                {
+                    {
+                        return new (::presentation::controls::list::HyperlinkVisualizerTemplate*)();
+                    }
+                }, null))));
+            }
+            {
+                (<precompile>1.Size = 150 of (::system::Int32));
+            }
+            {
+                (<precompile>1.TextProperty = func (<item> : ::system::Object) : (::system::String)
+                {
+                    var item = (cast (DataGridItem^) <item>);
+                    return item.MetaProgramming;
+                });
+            }
+            {
+                (<precompile>1.Text = "Meta Programming");
+            }
+            {
+                var <collection> = dataGrid.Columns;
+                <collection>.Add(<precompile>1);
+            }
+            (<precompile>2 = new (::presentation::controls::list::DataColumn^)());
+            {
+                (<precompile>2.Size = 150 of (::system::Int32));
+            }
+            {
+                (<precompile>2.TextProperty = func (<item> : ::system::Object) : (::system::String)
+                {
+                    var item = (cast (DataGridItem^) <item>);
+                    return item.IDEs;
+                });
+            }
+            {
+                (<precompile>2.Text = "IDE Count");
+            }
+            {
+                var <collection> = dataGrid.Columns;
+                <collection>.Add(<precompile>2);
+            }
+            (columnCompanies = new (::presentation::controls::list::DataColumn^)());
+            <this>.SetNamedObject("columnCompanies", columnCompanies);
+            {
+                (columnCompanies.VisualizerFactory = new (::presentation::controls::list::DataVisualizerFactory^)(func (<viewModel> : ::system::Object) : (::presentation::templates::GuiGridVisualizerTemplate*)
+                {
+                    {
+                        return new (::presentation::controls::list::CellBorderVisualizerTemplate*)();
+                    }
+                }, new (::presentation::controls::list::DataVisualizerFactory^)(func (<viewModel> : ::system::Object) : (::presentation::templates::GuiGridVisualizerTemplate*)
+                {
+                    {
+                        return new (::presentation::controls::list::FocusRectangleVisualizerTemplate*)();
+                    }
+                }, new (::presentation::controls::list::DataVisualizerFactory^)(func (<viewModel> : ::system::Object) : (::presentation::templates::GuiGridVisualizerTemplate*)
+                {
+                    {
+                        return new (::gacuisrc_unittest::CompanyVisualizer*)();
+                    }
+                }, null))));
+            }
+            {
+                (columnCompanies.ValueProperty = func (<item> : ::system::Object, <value> : ::system::Object, <update> : ::system::Boolean) : (::system::Object)
+                {
+                    var item = (cast (DataGridItem^) <item>);
+                    if (<update>)
+                    {
+                        (item.Company = (cast (::Companies) <value>));
+                        return null of (::system::Object);
+                    }
+                    else
+                    {
+                        return item.Company;
+                    }
+                });
+            }
+            {
+                (columnCompanies.Sorter = new (::presentation::controls::list::IDataSorter^)
+                {
+                    override func SetCallback(value : ::presentation::controls::list::IDataProcessorCallback*) : (::system::Void)
+                    {
+                    }
+
+                    override func Compare(<row1> : ::system::Object, <row2> : ::system::Object) : (::system::Int32)
+                    {
+                        return [Sys::Compare(ToString($1.Company), ToString($2.Company))] of ((func (DataGridItem^, DataGridItem^) : (::system::Int32)))((cast (DataGridItem^) <row1>), (cast (DataGridItem^) <row2>));
+                    }
+                });
+            }
+            {
+                (columnCompanies.Size = 150 of (::system::Int32));
+            }
+            {
+                (columnCompanies.Text = "Company");
+            }
+            {
+                var <collection> = dataGrid.Columns;
+                <collection>.Add(columnCompanies);
+            }
+            {
+                self.AddChild(dataGrid);
+            }
+            {
+                (dataGrid.ItemSource = self.items);
+            }
+        }
+
+        new ()
+        {
+        }
+    }
+}
+
+================================(6/7)================================
+module <instance>gacuisrc_unittest::MainWindow;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace gacuisrc_unittest
+{
+    @cpp:File("MainWindow")
+    @cpp:Friend(typeof(MainWindowConstructor))
+    class MainWindow : ::presentation::controls::GuiWindow, MainWindowConstructor
+    {
+        var items : observe DataGridItem^[] = {new (DataGridItem^)("C++", true, 4, Microsoft); new (DataGridItem^)("C#", false, 3, Microsoft); new (DataGridItem^)("F#", false, 2, Microsoft); new (DataGridItem^)("TypeScript", true, 1, Microsoft); new (DataGridItem^)("Object Pascal", false, 1, Borland); new (DataGridItem^)("Java", false, 3, IBM);};
+
+        var filterByIDEs : IDataFilter^ = null;
+
+        new* ()
+            :::presentation::controls::GuiWindow(::presentation::theme::ThemeName::Window)
+        {
+            var <resource> = ::presentation::IGuiResourceManager::GetResourceManager().GetResourceFromClassName("gacuisrc_unittest::MainWindow");
+            var <resolver> = new (::presentation::GuiResourcePathResolver^)(<resource>, <resource>.WorkingDirectory);
+            this.SetResourceResolver(<resolver>);
+            this.<gacuisrc_unittest-MainWindow>Initialize(this);
+        }
+
+        delete
+        {
+            FinalizeInstanceRecursively(this of (::presentation::controls::GuiControlHost*));
+        }
+    }
+}
+
+================================(7/7)================================
+module datagriditem;
+using system::*;
+
+enum Companies
+{
+    Microsoft = 0,
+    Borland = 1,
+    IBM = 2,
+}
+
+class DataGridItem
+{
+    @cpp:Private
+    var <prop>Language : string = "";
+
+    func GetLanguage() : (string)
+    {
+        return <prop>Language;
+    }
+
+    func SetLanguage(<value> : string) : (void)
+    {
+        (<prop>Language = <value>);
+    }
+
+    prop Language : string{GetLanguage, SetLanguage}
+
+    @cpp:Private
+    var <prop>MetaProgramming : bool = false;
+
+    func GetMetaProgramming() : (bool)
+    {
+        return <prop>MetaProgramming;
+    }
+
+    func SetMetaProgramming(<value> : bool) : (void)
+    {
+        (<prop>MetaProgramming = <value>);
+    }
+
+    prop MetaProgramming : bool{GetMetaProgramming, SetMetaProgramming}
+
+    @cpp:Private
+    var <prop>IDEs : int = 0;
+
+    func GetIDEs() : (int)
+    {
+        return <prop>IDEs;
+    }
+
+    func SetIDEs(<value> : int) : (void)
+    {
+        (<prop>IDEs = <value>);
+    }
+
+    prop IDEs : int{GetIDEs, SetIDEs}
+
+    @cpp:Private
+    var <prop>Company : Companies = Microsoft;
+
+    func GetCompany() : (Companies)
+    {
+        return <prop>Company;
+    }
+
+    func SetCompany(<value> : Companies) : (void)
+    {
+        (<prop>Company = <value>);
+    }
+
+    prop Company : Companies{GetCompany, SetCompany}
+
+    new ()
+    {
+    }
+
+    new (language : string, metaProgramming : bool, ides : int, company : Companies)
+    {
+        (Language = language);
+        (MetaProgramming = metaProgramming);
+        (IDEs = ides);
+        (Company = company);
+    }
+}
+
+func ToString(value : Companies) : (string)
+{
+    {
+        var <switch>0 : ::Companies = value;
+        if ((<switch>0 == Microsoft of (::Companies)))
+        {
+            return "Microsoft";
+        }
+        else if ((<switch>0 == Borland of (::Companies)))
+        {
+            return "Borland";
+        }
+        else if ((<switch>0 == IBM of (::Companies)))
+        {
+            return "IBM";
+        }
+        else
+        {
+            return "<ERROR>";
+        }
+    }
+}
+
