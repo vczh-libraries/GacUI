@@ -65,7 +65,6 @@
 - Stop hard-coding coordinates:
   - `GetListItemLocation`.
   - `GuiToolstripMenuBar/Cascade/ClickSubMenu`'s `Hover on File/New` try to avoid specifying relative coordinate just because half of the menu item is covered.
-- `GuiDateComboBox` seems to still detect the real current date, which appears in log but not in rendering result.
 
 ## Release (optional)
 

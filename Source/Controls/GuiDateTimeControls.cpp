@@ -250,6 +250,7 @@ GuiDateComboBox
 			void GuiDateComboBox::SetSelectedDate(const DateTime& value)
 			{
 				selectedDate=value;
+				datePicker->SetDate(selectedDate);
 				NotifyUpdateSelectedDate();
 			}
 
