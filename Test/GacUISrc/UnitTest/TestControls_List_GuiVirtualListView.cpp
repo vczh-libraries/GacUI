@@ -314,11 +314,11 @@ TEST_FILE
 					auto listControl = FindObjectByName<GuiBindableListView>(window, L"list");
 					listControl->GetColumns()[0]->SetTextProperty([](const Value& value)
 					{
-						auto text = UnboxValue<WString>(value.GetProperty(L"Language"));
+						auto text = UnboxValue<WString>(value.GetProperty(L"Id"));
 						return text + L"*";
 					});
 				});
-				protocol->OnNextIdleFrame(L"Change TextProperty on Language", [=]()
+				protocol->OnNextIdleFrame(L"Change TextProperty on Id", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					window->Hide();
@@ -436,11 +436,11 @@ TEST_FILE
 					auto listControl = FindObjectByName<GuiBindableDataGrid>(window, L"list");
 					listControl->GetColumns()[0]->SetTextProperty([](const Value& value)
 					{
-						auto text = UnboxValue<WString>(value.GetProperty(L"Language"));
+						auto text = UnboxValue<WString>(value.GetProperty(L"Id"));
 						return text + L"*";
 					});
 				});
-				protocol->OnNextIdleFrame(L"Change TextProperty on Language", [=]()
+				protocol->OnNextIdleFrame(L"Change TextProperty on Id", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					window->Hide();
