@@ -238,4 +238,44 @@ TEST_FILE
 				);
 		});
 	});
+
+	TEST_CASE(L"GuiBindableDataGrid/PropertyBinding")
+	{
+		GacUIUnitTest_SetGuiMainProxy([=](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+		{
+			protocol->OnNextIdleFrame(L"Ready", [=]()
+			{
+				auto window = GetApplication()->GetMainWindow();
+				auto listControl = FindObjectByName<GuiBindableDataGrid>(window, L"dataGrid");
+				listControl->SetItemSource(nullptr);
+			});
+			protocol->OnNextIdleFrame(L"Reset ItemSource", [=]()
+			{
+				auto window = GetApplication()->GetMainWindow();
+				auto listControl = FindObjectByName<GuiBindableDataGrid>(window, L"dataGrid");
+				auto items = UnboxValue<Ptr<IValueEnumerable>>(Value::From(window).GetProperty(L"items"));
+				listControl->SetItemSource(items);
+			});
+			protocol->OnNextIdleFrame(L"Set ItemSource", [=]()
+			{
+				auto window = GetApplication()->GetMainWindow();
+				auto listControl = FindObjectByName<GuiBindableDataGrid>(window, L"dataGrid");
+				listControl->GetColumns()[0]->SetTextProperty([](const Value& value)
+				{
+					auto text = UnboxValue<WString>(value.GetProperty(L"Language"));
+					return text + L"*";
+				});
+			});
+			protocol->OnNextIdleFrame(L"Change TextProperty on Language", [=]()
+			{
+				auto window = GetApplication()->GetMainWindow();
+				window->Hide();
+			});
+		});
+		GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+			WString::Unmanaged(L"Controls/List/GuiBindableDataGrid/Binding/PropertyBinding"),
+			WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+			resourceDataGridStringProperty
+			);
+	});
 }

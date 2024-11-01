@@ -1,0 +1,234 @@
+﻿================================(1/3)================================
+module <constructor>gacuisrc_unittest::MainWindow;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace gacuisrc_unittest
+{
+    class MainWindowConstructor
+    {
+        @cpp:Protected
+        var self : ::gacuisrc_unittest::MainWindow* = null of (::gacuisrc_unittest::MainWindow*);
+
+        @cpp:Protected
+        var dataGrid : ::presentation::controls::GuiBindableDataGrid* = null of (::presentation::controls::GuiBindableDataGrid*);
+
+        @cpp:Protected
+        var <precompile>0 : ::presentation::controls::list::DataColumn^ = null of (::presentation::controls::list::DataColumn^);
+
+        @cpp:Protected
+        var <precompile>1 : ::presentation::controls::list::DataColumn^ = null of (::presentation::controls::list::DataColumn^);
+
+        @cpp:Protected
+        var <precompile>2 : ::presentation::controls::list::DataColumn^ = null of (::presentation::controls::list::DataColumn^);
+
+        @cpp:Protected
+        var <precompile>3 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        func <gacuisrc_unittest-MainWindow>Initialize(<this> : ::gacuisrc_unittest::MainWindow*) : (::system::Void)
+        {
+            (self = <this>);
+            {
+                (self.ClientSize = {x : 640; y : 320;} of (::presentation::Size));
+            }
+            {
+                (self.Text = "GuiBindableDataGrid");
+            }
+            {
+                (dataGrid = new (::presentation::controls::GuiBindableDataGrid*)(::presentation::theme::ThemeName::ListView));
+                <this>.SetNamedObject("dataGrid", dataGrid);
+            }
+            (<precompile>3 = dataGrid.BoundsComposition);
+            {
+                (<precompile>3.AlignmentToParent = {left : 5; top : 5; right : 5; bottom : 5;} of (::presentation::Margin));
+            }
+            {
+                (dataGrid.VerticalAlwaysVisible = false);
+            }
+            {
+                (dataGrid.HorizontalAlwaysVisible = false);
+            }
+            (<precompile>0 = new (::presentation::controls::list::DataColumn^)());
+            {
+                (<precompile>0.TextProperty = func (<item> : ::system::Object) : (::system::String)
+                {
+                    var item = (cast (DataGridItem^) <item>);
+                    return item.Language;
+                });
+            }
+            {
+                (<precompile>0.Text = "Language");
+            }
+            {
+                var <collection> = dataGrid.Columns;
+                <collection>.Add(<precompile>0);
+            }
+            (<precompile>1 = new (::presentation::controls::list::DataColumn^)());
+            {
+                (<precompile>1.TextProperty = func (<item> : ::system::Object) : (::system::String)
+                {
+                    var item = (cast (DataGridItem^) <item>);
+                    return item.IDE;
+                });
+            }
+            {
+                (<precompile>1.Text = "IDE");
+            }
+            {
+                var <collection> = dataGrid.Columns;
+                <collection>.Add(<precompile>1);
+            }
+            (<precompile>2 = new (::presentation::controls::list::DataColumn^)());
+            {
+                (<precompile>2.TextProperty = func (<item> : ::system::Object) : (::system::String)
+                {
+                    var item = (cast (DataGridItem^) <item>);
+                    return item.Company;
+                });
+            }
+            {
+                (<precompile>2.Text = "Company");
+            }
+            {
+                var <collection> = dataGrid.Columns;
+                <collection>.Add(<precompile>2);
+            }
+            {
+                self.AddChild(dataGrid);
+            }
+            {
+                (dataGrid.ItemSource = self.items);
+            }
+        }
+
+        new ()
+        {
+        }
+    }
+}
+
+================================(2/3)================================
+module <instance>gacuisrc_unittest::MainWindow;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace gacuisrc_unittest
+{
+    @cpp:File("MainWindow")
+    @cpp:Friend(typeof(MainWindowConstructor))
+    class MainWindow : ::presentation::controls::GuiWindow, MainWindowConstructor
+    {
+        var items : observe DataGridItem^[] = {new (DataGridItem^)("C++", "Visual Studio", "Microsoft"); new (DataGridItem^)("C#", "Visual Studio", "Microsoft"); new (DataGridItem^)("F#", "Visual Studio", "Microsoft"); new (DataGridItem^)("TypeScript", "Visual Studio Code", "Microsoft"); new (DataGridItem^)("Java", "Eclipse", "IBM");};
+
+        new* ()
+            :::presentation::controls::GuiWindow(::presentation::theme::ThemeName::Window)
+        {
+            var <resource> = ::presentation::IGuiResourceManager::GetResourceManager().GetResourceFromClassName("gacuisrc_unittest::MainWindow");
+            var <resolver> = new (::presentation::GuiResourcePathResolver^)(<resource>, <resource>.WorkingDirectory);
+            this.SetResourceResolver(<resolver>);
+            this.<gacuisrc_unittest-MainWindow>Initialize(this);
+        }
+
+        delete
+        {
+            FinalizeInstanceRecursively(this of (::presentation::controls::GuiControlHost*));
+        }
+    }
+}
+
+================================(3/3)================================
+module datagriditem;
+using system::*;
+
+class DataGridItem
+{
+    @cpp:Private
+    var <prop>Language : string = "";
+
+    func GetLanguage() : (string)
+    {
+        return <prop>Language;
+    }
+
+    func SetLanguage(<value> : string) : (void)
+    {
+        (<prop>Language = <value>);
+    }
+
+    prop Language : string{GetLanguage, SetLanguage}
+
+    @cpp:Private
+    var <prop>IDE : string = "";
+
+    func GetIDE() : (string)
+    {
+        return <prop>IDE;
+    }
+
+    func SetIDE(<value> : string) : (void)
+    {
+        (<prop>IDE = <value>);
+    }
+
+    prop IDE : string{GetIDE, SetIDE}
+
+    @cpp:Private
+    var <prop>Company : string = "";
+
+    func GetCompany() : (string)
+    {
+        return <prop>Company;
+    }
+
+    func SetCompany(<value> : string) : (void)
+    {
+        (<prop>Company = <value>);
+    }
+
+    prop Company : string{GetCompany, SetCompany}
+
+    new ()
+    {
+    }
+
+    new (language : string, ide : string, company : string)
+    {
+        (Language = language);
+        (IDE = ide);
+        (Company = company);
+    }
+}
+
