@@ -420,20 +420,20 @@ TEST_FILE
 				protocol->OnNextIdleFrame(L"5 items", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
-					auto listControl = FindObjectByName<GuiBindableListView>(window, L"list");
+					auto listControl = FindObjectByName<GuiBindableDataGrid>(window, L"list");
 					listControl->SetItemSource(nullptr);
 				});
 				protocol->OnNextIdleFrame(L"Reset ItemSource", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
-					auto listControl = FindObjectByName<GuiBindableListView>(window, L"list");
+					auto listControl = FindObjectByName<GuiBindableDataGrid>(window, L"list");
 					auto items = UnboxValue<Ptr<IValueEnumerable>>(Value::From(window).GetProperty(L"items"));
 					listControl->SetItemSource(items);
 				});
 				protocol->OnNextIdleFrame(L"Set ItemSource", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
-					auto listControl = FindObjectByName<GuiBindableListView>(window, L"list");
+					auto listControl = FindObjectByName<GuiBindableDataGrid>(window, L"list");
 					listControl->GetColumns()[0]->SetTextProperty([](const Value& value)
 					{
 						auto text = UnboxValue<WString>(value.GetProperty(L"Language"));
