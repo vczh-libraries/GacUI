@@ -27,9 +27,6 @@ namespace gacuisrc_unittest
         var self : ::gacuisrc_unittest::MainWindow* = null of (::gacuisrc_unittest::MainWindow*);
 
         @cpp:Protected
-        var list : ::presentation::controls::GuiBindableListView* = null of (::presentation::controls::GuiBindableListView*);
-
-        @cpp:Protected
         var <precompile>0 : ::presentation::controls::list::ListViewColumn^ = null of (::presentation::controls::list::ListViewColumn^);
 
         @cpp:Protected
@@ -46,6 +43,9 @@ namespace gacuisrc_unittest
 
         @cpp:Protected
         var <precompile>5 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var list : ::presentation::controls::GuiBindableListView* = null of (::presentation::controls::GuiBindableListView*);
 
         @cpp:Protected
         func <gacuisrc_unittest-MainWindow>Initialize(<this> : ::gacuisrc_unittest::MainWindow*) : (::system::Void)
@@ -84,18 +84,18 @@ namespace gacuisrc_unittest
                 var <collection> = list.DataColumns;
                 <collection>.Add(3 of (::system::Int64));
             }
-            (<precompile>5 = list.BoundsComposition);
-            {
-                (<precompile>5.AlignmentToParent = {left : 0; top : 5; right : 0; bottom : 0;} of (::presentation::Margin));
-            }
-            {
-                (<precompile>5.PreferredMinSize = {x : 400; y : 300;} of (::presentation::Size));
-            }
             {
                 (list.VerticalAlwaysVisible = false);
             }
             {
                 (list.HorizontalAlwaysVisible = false);
+            }
+            (<precompile>5 = list.BoundsComposition);
+            {
+                (<precompile>5.PreferredMinSize = {x : 400; y : 300;} of (::presentation::Size));
+            }
+            {
+                (<precompile>5.AlignmentToParent = {left : 0; top : 5; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             (<precompile>0 = new (::presentation::controls::list::ListViewColumn^)());
             {
@@ -114,14 +114,14 @@ namespace gacuisrc_unittest
             }
             (<precompile>1 = new (::presentation::controls::list::ListViewColumn^)());
             {
+                (<precompile>1.Size = 100 of (::system::Int64));
+            }
+            {
                 (<precompile>1.TextProperty = func (<item> : ::system::Object) : (::system::String)
                 {
                     var item = (cast (ListViewData^) <item>);
                     return item.First;
                 });
-            }
-            {
-                (<precompile>1.Size = 100 of (::system::Int64));
             }
             {
                 (<precompile>1.Text = "First");
@@ -132,14 +132,14 @@ namespace gacuisrc_unittest
             }
             (<precompile>2 = new (::presentation::controls::list::ListViewColumn^)());
             {
+                (<precompile>2.Size = 100 of (::system::Int64));
+            }
+            {
                 (<precompile>2.TextProperty = func (<item> : ::system::Object) : (::system::String)
                 {
                     var item = (cast (ListViewData^) <item>);
                     return item.Second;
                 });
-            }
-            {
-                (<precompile>2.Size = 100 of (::system::Int64));
             }
             {
                 (<precompile>2.Text = "Second");
@@ -150,14 +150,14 @@ namespace gacuisrc_unittest
             }
             (<precompile>3 = new (::presentation::controls::list::ListViewColumn^)());
             {
+                (<precompile>3.Size = 100 of (::system::Int64));
+            }
+            {
                 (<precompile>3.TextProperty = func (<item> : ::system::Object) : (::system::String)
                 {
                     var item = (cast (ListViewData^) <item>);
                     return item.Third;
                 });
-            }
-            {
-                (<precompile>3.Size = 100 of (::system::Int64));
             }
             {
                 (<precompile>3.Text = "Third");
@@ -168,14 +168,14 @@ namespace gacuisrc_unittest
             }
             (<precompile>4 = new (::presentation::controls::list::ListViewColumn^)());
             {
+                (<precompile>4.Size = 100 of (::system::Int64));
+            }
+            {
                 (<precompile>4.TextProperty = func (<item> : ::system::Object) : (::system::String)
                 {
                     var item = (cast (ListViewData^) <item>);
                     return item.Fourth;
                 });
-            }
-            {
-                (<precompile>4.Size = 100 of (::system::Int64));
             }
             {
                 (<precompile>4.Text = "Fourth");

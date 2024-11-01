@@ -74,15 +74,15 @@ namespace gacuisrc_unittest
             }
             {
                 var <collection> = list.DataColumns;
-                <collection>.Add(0 of (::system::Int64));
+                <collection>.Add(0 of (::system::Int32));
             }
             {
                 var <collection> = list.DataColumns;
-                <collection>.Add(2 of (::system::Int64));
+                <collection>.Add(2 of (::system::Int32));
             }
             {
                 var <collection> = list.DataColumns;
-                <collection>.Add(3 of (::system::Int64));
+                <collection>.Add(3 of (::system::Int32));
             }
             {
                 (list.View = Detail of (::presentation::controls::ListViewView));
@@ -117,7 +117,7 @@ namespace gacuisrc_unittest
             }
             (<precompile>1 = new (::presentation::controls::list::DataColumn^)());
             {
-                (<precompile>1.Size = 100 of (::system::Int64));
+                (<precompile>1.Size = 100 of (::system::Int32));
             }
             {
                 (<precompile>1.TextProperty = func (<item> : ::system::Object) : (::system::String)
@@ -135,7 +135,7 @@ namespace gacuisrc_unittest
             }
             (<precompile>2 = new (::presentation::controls::list::DataColumn^)());
             {
-                (<precompile>2.Size = 100 of (::system::Int64));
+                (<precompile>2.Size = 100 of (::system::Int32));
             }
             {
                 (<precompile>2.TextProperty = func (<item> : ::system::Object) : (::system::String)
@@ -153,7 +153,7 @@ namespace gacuisrc_unittest
             }
             (<precompile>3 = new (::presentation::controls::list::DataColumn^)());
             {
-                (<precompile>3.Size = 100 of (::system::Int64));
+                (<precompile>3.Size = 100 of (::system::Int32));
             }
             {
                 (<precompile>3.TextProperty = func (<item> : ::system::Object) : (::system::String)
@@ -171,7 +171,7 @@ namespace gacuisrc_unittest
             }
             (<precompile>4 = new (::presentation::controls::list::DataColumn^)());
             {
-                (<precompile>4.Size = 100 of (::system::Int64));
+                (<precompile>4.Size = 100 of (::system::Int32));
             }
             {
                 (<precompile>4.TextProperty = func (<item> : ::system::Object) : (::system::String)
@@ -358,8 +358,8 @@ namespace gacuisrc_unittest
         func InitializeItems(count : int) : (void)
         {
             {
-                var <for-begin>item : ::system::Int64 = 1;
-                var <for-end>item : ::system::Int64 = count;
+                var <for-begin>item : ::system::Int32 = 1;
+                var <for-end>item : ::system::Int32 = count;
                 var item = <for-begin>item;
                 while ((item <= <for-end>item))
                 {

@@ -27,25 +27,25 @@ namespace gacuisrc_unittest
         var self : ::gacuisrc_unittest::MainWindow* = null of (::gacuisrc_unittest::MainWindow*);
 
         @cpp:Protected
-        var <precompile>0 : ::presentation::controls::list::DataColumn^ = null of (::presentation::controls::list::DataColumn^);
+        var <precompile>0 : ::presentation::controls::list::ListViewColumn^ = null of (::presentation::controls::list::ListViewColumn^);
 
         @cpp:Protected
-        var <precompile>1 : ::presentation::controls::list::DataColumn^ = null of (::presentation::controls::list::DataColumn^);
+        var <precompile>1 : ::presentation::controls::list::ListViewColumn^ = null of (::presentation::controls::list::ListViewColumn^);
 
         @cpp:Protected
-        var <precompile>2 : ::presentation::controls::list::DataColumn^ = null of (::presentation::controls::list::DataColumn^);
+        var <precompile>2 : ::presentation::controls::list::ListViewColumn^ = null of (::presentation::controls::list::ListViewColumn^);
 
         @cpp:Protected
-        var <precompile>3 : ::presentation::controls::list::DataColumn^ = null of (::presentation::controls::list::DataColumn^);
+        var <precompile>3 : ::presentation::controls::list::ListViewColumn^ = null of (::presentation::controls::list::ListViewColumn^);
 
         @cpp:Protected
-        var <precompile>4 : ::presentation::controls::list::DataColumn^ = null of (::presentation::controls::list::DataColumn^);
+        var <precompile>4 : ::presentation::controls::list::ListViewColumn^ = null of (::presentation::controls::list::ListViewColumn^);
 
         @cpp:Protected
         var <precompile>5 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
-        var list : ::presentation::controls::GuiBindableDataGrid* = null of (::presentation::controls::GuiBindableDataGrid*);
+        var list : ::presentation::controls::GuiBindableListView* = null of (::presentation::controls::GuiBindableListView*);
 
         @cpp:Protected
         func <gacuisrc_unittest-MainWindow>Initialize(<this> : ::gacuisrc_unittest::MainWindow*) : (::system::Void)
@@ -55,7 +55,7 @@ namespace gacuisrc_unittest
                 (self.ClientSize = {x : 640; y : 480;} of (::presentation::Size));
             }
             {
-                (list = new (::presentation::controls::GuiBindableDataGrid*)(::presentation::theme::ThemeName::ListView));
+                (list = new (::presentation::controls::GuiBindableListView*)(::presentation::theme::ThemeName::ListView));
                 <this>.SetNamedObject("list", list);
             }
             {
@@ -74,18 +74,15 @@ namespace gacuisrc_unittest
             }
             {
                 var <collection> = list.DataColumns;
-                <collection>.Add(0 of (::system::Int64));
+                <collection>.Add(0 of (::system::Int32));
             }
             {
                 var <collection> = list.DataColumns;
-                <collection>.Add(2 of (::system::Int64));
+                <collection>.Add(2 of (::system::Int32));
             }
             {
                 var <collection> = list.DataColumns;
-                <collection>.Add(3 of (::system::Int64));
-            }
-            {
-                (list.View = Detail of (::presentation::controls::ListViewView));
+                <collection>.Add(3 of (::system::Int32));
             }
             {
                 (list.VerticalAlwaysVisible = false);
@@ -100,7 +97,7 @@ namespace gacuisrc_unittest
             {
                 (<precompile>5.AlignmentToParent = {left : 0; top : 5; right : 0; bottom : 0;} of (::presentation::Margin));
             }
-            (<precompile>0 = new (::presentation::controls::list::DataColumn^)());
+            (<precompile>0 = new (::presentation::controls::list::ListViewColumn^)());
             {
                 (<precompile>0.TextProperty = func (<item> : ::system::Object) : (::system::String)
                 {
@@ -115,9 +112,9 @@ namespace gacuisrc_unittest
                 var <collection> = list.Columns;
                 <collection>.Add(<precompile>0);
             }
-            (<precompile>1 = new (::presentation::controls::list::DataColumn^)());
+            (<precompile>1 = new (::presentation::controls::list::ListViewColumn^)());
             {
-                (<precompile>1.Size = 100 of (::system::Int64));
+                (<precompile>1.Size = 100 of (::system::Int32));
             }
             {
                 (<precompile>1.TextProperty = func (<item> : ::system::Object) : (::system::String)
@@ -133,9 +130,9 @@ namespace gacuisrc_unittest
                 var <collection> = list.Columns;
                 <collection>.Add(<precompile>1);
             }
-            (<precompile>2 = new (::presentation::controls::list::DataColumn^)());
+            (<precompile>2 = new (::presentation::controls::list::ListViewColumn^)());
             {
-                (<precompile>2.Size = 100 of (::system::Int64));
+                (<precompile>2.Size = 100 of (::system::Int32));
             }
             {
                 (<precompile>2.TextProperty = func (<item> : ::system::Object) : (::system::String)
@@ -151,9 +148,9 @@ namespace gacuisrc_unittest
                 var <collection> = list.Columns;
                 <collection>.Add(<precompile>2);
             }
-            (<precompile>3 = new (::presentation::controls::list::DataColumn^)());
+            (<precompile>3 = new (::presentation::controls::list::ListViewColumn^)());
             {
-                (<precompile>3.Size = 100 of (::system::Int64));
+                (<precompile>3.Size = 100 of (::system::Int32));
             }
             {
                 (<precompile>3.TextProperty = func (<item> : ::system::Object) : (::system::String)
@@ -169,9 +166,9 @@ namespace gacuisrc_unittest
                 var <collection> = list.Columns;
                 <collection>.Add(<precompile>3);
             }
-            (<precompile>4 = new (::presentation::controls::list::DataColumn^)());
+            (<precompile>4 = new (::presentation::controls::list::ListViewColumn^)());
             {
-                (<precompile>4.Size = 100 of (::system::Int64));
+                (<precompile>4.Size = 100 of (::system::Int32));
             }
             {
                 (<precompile>4.TextProperty = func (<item> : ::system::Object) : (::system::String)
@@ -196,9 +193,9 @@ namespace gacuisrc_unittest
             {
                 var <created-subscription> = new (::system::Subscription^)
                 {
-                    var <bind-cache>0 : ::presentation::controls::GuiBindableDataGrid* = null of (::presentation::controls::GuiBindableDataGrid*);
+                    var <bind-cache>0 : ::presentation::controls::GuiBindableListView* = null of (::presentation::controls::GuiBindableListView*);
 
-                    var <bind-cache>1 : ::presentation::controls::GuiBindableDataGrid* = null of (::presentation::controls::GuiBindableDataGrid*);
+                    var <bind-cache>1 : ::presentation::controls::GuiBindableListView* = null of (::presentation::controls::GuiBindableListView*);
 
                     var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
 
@@ -210,7 +207,7 @@ namespace gacuisrc_unittest
 
                     func <bind-activator>() : (::system::Void)
                     {
-                        var <bind-activator-result> = (((("GuiBindableDataGrid [" & <bind-cache>0.SelectedItemIndex) & "] -> [") & <bind-cache>1.SelectedItemText) & "]");
+                        var <bind-activator-result> = (((("GuiBindableListView [" & <bind-cache>0.SelectedItemIndex) & "] -> [") & <bind-cache>1.SelectedItemText) & "]");
                         ValueChanged(<bind-activator-result>);
                     }
 
@@ -229,8 +226,8 @@ namespace gacuisrc_unittest
                         if ((!<bind-opened>))
                         {
                             (<bind-opened> = true);
-                            (<bind-cache>0 = (list ?? null of (::presentation::controls::GuiBindableDataGrid*)));
-                            (<bind-cache>1 = (list ?? null of (::presentation::controls::GuiBindableDataGrid*)));
+                            (<bind-cache>0 = (list ?? null of (::presentation::controls::GuiBindableListView*)));
+                            (<bind-cache>1 = (list ?? null of (::presentation::controls::GuiBindableListView*)));
                             (<bind-handler>0_0 = (attach(<bind-cache>0.SelectionChanged, <bind-callback>0_0) ?? null));
                             (<bind-handler>1_0 = (attach(<bind-cache>1.SelectionChanged, <bind-callback>1_0) ?? null));
                             return true;
@@ -263,8 +260,8 @@ namespace gacuisrc_unittest
                                 detach(<bind-cache>1.SelectionChanged, <bind-handler>1_0);
                                 (<bind-handler>1_0 = null);
                             }
-                            (<bind-cache>0 = null of (::presentation::controls::GuiBindableDataGrid*));
-                            (<bind-cache>1 = null of (::presentation::controls::GuiBindableDataGrid*));
+                            (<bind-cache>0 = null of (::presentation::controls::GuiBindableListView*));
+                            (<bind-cache>1 = null of (::presentation::controls::GuiBindableListView*));
                             (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
                             (<bind-handler>1_0 = null of (::system::reflection::EventHandler^));
                             return true;
@@ -358,8 +355,8 @@ namespace gacuisrc_unittest
         func InitializeItems(count : int) : (void)
         {
             {
-                var <for-begin>item : ::system::Int64 = 1;
-                var <for-end>item : ::system::Int64 = count;
+                var <for-begin>item : ::system::Int32 = 1;
+                var <for-end>item : ::system::Int32 = count;
                 var item = <for-begin>item;
                 while ((item <= <for-end>item))
                 {
