@@ -224,5 +224,50 @@ TEST_FILE
 				getItems,
 				notifyItemDataModified);
 		});
+
+		TEST_CASE(L"GuiBindableTextList/PropertyBinding")
+		{
+			GacUIUnitTest_SetGuiMainProxy([=](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					Value::From(window).Invoke(L"InitializeItems", (Value_xs(), BoxValue<vint>(5)));
+				});
+				protocol->OnNextIdleFrame(L"5 items", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiBindableTextList>(window, L"list");
+					listControl->SetItemSource(nullptr);
+				});
+				protocol->OnNextIdleFrame(L"Reset ItemSource", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiBindableTextList>(window, L"list");
+					auto items = UnboxValue<Ptr<IValueEnumerable>>(Value::From(window).GetProperty(L"items"));
+					listControl->SetItemSource(items);
+				});
+				protocol->OnNextIdleFrame(L"Set ItemSource", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiBindableTextList>(window, L"list");
+					listControl->SetTextProperty([](const Value& value)
+					{
+						auto text = UnboxValue<WString>(value.GetProperty(L"Text"));
+						return text + L"*";
+					});
+				});
+				protocol->OnNextIdleFrame(L"Change TextProperty", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					window->Hide();
+				});
+			});
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Controls/List/GuiBindableTextList/PropertyBinding"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resourceTextList
+				);
+		});
 	}
 }
