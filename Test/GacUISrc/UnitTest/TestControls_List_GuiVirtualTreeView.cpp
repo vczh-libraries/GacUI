@@ -516,5 +516,53 @@ TEST_FILE
 				resourceTreeListItemTemplate2WithImage,
 				WString::Unmanaged(L"GuiTreeItemTemplate/GuiBindableTreeView"));
 		});
+
+		TEST_CASE(L"GuiBindableTreeView/PropertyBinding")
+		{
+			GacUIUnitTest_SetGuiMainProxy([=](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiBindableTreeView>(window, L"list");
+					Value::From(window).Invoke(L"InitializeItems", (Value_xs(), BoxValue<vint>(5)));
+					listControl->GetNodeRootProvider()->GetRootNode()->GetChild(1)->SetExpanding(true);
+				});
+				protocol->OnNextIdleFrame(L"5 items with 2nd Expanded", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiBindableTreeView>(window, L"list");
+					listControl->SetItemSource({});
+				});
+				protocol->OnNextIdleFrame(L"Reset ItemSource", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiBindableTreeView>(window, L"list");
+					auto items = Value::From(window).GetProperty(L"items");
+					listControl->SetItemSource(items);
+					listControl->GetNodeRootProvider()->GetRootNode()->GetChild(1)->SetExpanding(true);
+				});
+				protocol->OnNextIdleFrame(L"Set ItemSource with 2nd Expanded", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiBindableTreeView>(window, L"list");
+					listControl->SetTextProperty([](const Value& value)
+					{
+						auto text = UnboxValue<WString>(value.GetProperty(L"Text"));
+						return text + L"*";
+					});
+				});
+				protocol->OnNextIdleFrame(L"Change TextProperty", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					window->Hide();
+				});
+			});
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Controls/List/GuiBindableTreeView/PropertyBinding"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resourceTreeView
+				);
+		});
 	}
 }
