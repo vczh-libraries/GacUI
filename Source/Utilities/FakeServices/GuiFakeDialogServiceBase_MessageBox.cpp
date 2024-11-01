@@ -49,7 +49,7 @@ View Model (IMessageBoxDialogViewModel)
 FakeDialogServiceBase
 ***********************************************************************/
 
-		FakeDialogServiceBase::MessageBoxButtonsOutput	FakeDialogServiceBase::ShowMessageBox(
+		FakeDialogServiceBase::MessageBoxButtonsOutput FakeDialogServiceBase::ShowMessageBox(
 			INativeWindow* window,
 			const WString& text,
 			const WString& title,
