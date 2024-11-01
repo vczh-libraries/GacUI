@@ -285,6 +285,51 @@ TEST_FILE
 				getItems,
 				notifyItemDataModified);
 		});
+
+		TEST_CASE(L"GuiBindableListView/PropertyBinding")
+		{
+			GacUIUnitTest_SetGuiMainProxy([=](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					Value::From(window).Invoke(L"InitializeItems", (Value_xs(), BoxValue<vint>(5)));
+				});
+				protocol->OnNextIdleFrame(L"5 items", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiBindableListView>(window, L"list");
+					listControl->SetItemSource(nullptr);
+				});
+				protocol->OnNextIdleFrame(L"Reset ItemSource", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiBindableListView>(window, L"list");
+					auto items = UnboxValue<Ptr<IValueEnumerable>>(Value::From(window).GetProperty(L"items"));
+					listControl->SetItemSource(items);
+				});
+				protocol->OnNextIdleFrame(L"Set ItemSource", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiBindableListView>(window, L"list");
+					listControl->GetColumns()[0]->SetTextProperty([](const Value& value)
+					{
+						auto text = UnboxValue<WString>(value.GetProperty(L"Language"));
+						return text + L"*";
+					});
+				});
+				protocol->OnNextIdleFrame(L"Change TextProperty on Language", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					window->Hide();
+				});
+			});
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Controls/List/GuiBindableListView/PropertyBinding"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resourceWithoutImage
+				);
+		});
 	}
 
 	/***********************************************************************
@@ -361,6 +406,51 @@ TEST_FILE
 				WString::Unmanaged(L"GuiBindableDataGrid/AsListView"),
 				getItems,
 				notifyItemDataModified);
+		});
+
+		TEST_CASE(L"GuiBindableDataGrid/PropertyBinding")
+		{
+			GacUIUnitTest_SetGuiMainProxy([=](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					Value::From(window).Invoke(L"InitializeItems", (Value_xs(), BoxValue<vint>(5)));
+				});
+				protocol->OnNextIdleFrame(L"5 items", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiBindableListView>(window, L"list");
+					listControl->SetItemSource(nullptr);
+				});
+				protocol->OnNextIdleFrame(L"Reset ItemSource", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiBindableListView>(window, L"list");
+					auto items = UnboxValue<Ptr<IValueEnumerable>>(Value::From(window).GetProperty(L"items"));
+					listControl->SetItemSource(items);
+				});
+				protocol->OnNextIdleFrame(L"Set ItemSource", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiBindableListView>(window, L"list");
+					listControl->GetColumns()[0]->SetTextProperty([](const Value& value)
+					{
+						auto text = UnboxValue<WString>(value.GetProperty(L"Language"));
+						return text + L"*";
+					});
+				});
+				protocol->OnNextIdleFrame(L"Change TextProperty on Language", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					window->Hide();
+				});
+			});
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Controls/List/GuiBindableDataGrid/AsListView/PropertyBinding"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resourceWithoutImage
+				);
 		});
 	}
 }
