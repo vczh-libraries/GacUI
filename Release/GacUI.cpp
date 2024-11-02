@@ -2726,15 +2726,6 @@ GuiWindow
 				TypedControlTemplateObject(true)->SetMaximized(IsRenderedAsMaximized());
 			}
 
-			void GuiWindow::Opened()
-			{
-				GuiControlHost::Opened();
-				if (auto ct = TypedControlTemplateObject(false))
-				{
-					UpdateIcon(GetNativeWindow(), ct);
-				}
-			}
-
 			void GuiWindow::DpiChanged(bool preparing)
 			{
 				if (!preparing)
@@ -2744,6 +2735,54 @@ GuiWindow
 						UpdateCustomFramePadding(GetNativeWindow(), ct);
 					}
 				}
+			}
+
+			void GuiWindow::Opened()
+			{
+				GuiControlHost::Opened();
+				if (auto ct = TypedControlTemplateObject(false))
+				{
+					UpdateIcon(GetNativeWindow(), ct);
+				}
+			}
+
+			void GuiWindow::BeforeClosing(bool& cancel)
+			{
+				if (GetHostedApplication() && this == GetApplication()->GetMainWindow())
+				{
+					GuiWindow* pickedWindow = nullptr;
+
+					if (showModalRecord)
+					{
+						pickedWindow = showModalRecord->current;
+					}
+					else
+					{
+						for (auto window : From(GetApplication()->GetWindows()))
+						{
+							if (window->GetVisible() && window->showModalRecord)
+							{
+								pickedWindow = window->showModalRecord->current;
+								break;
+							}
+						}
+					}
+
+					if (pickedWindow && pickedWindow != this)
+					{
+						if (pickedWindow->GetFocused())
+						{
+							pickedWindow->Hide();
+						}
+						else
+						{
+							pickedWindow->SetFocused();
+						}
+						cancel = true;
+						return;
+					}
+				}
+				GuiControlHost::BeforeClosing(cancel);
 			}
 
 			void GuiWindow::AssignFrameConfig(const NativeWindowFrameConfig& config)
@@ -2915,7 +2954,6 @@ GuiWindow
 
 			void GuiWindow::ShowWithOwner(GuiWindow* owner)
 			{
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::controls::GuiWindow::ShowWithOwner(GuiWindow*)#"
 				auto ownerNativeWindow = owner->GetNativeWindow();
 				auto nativeWindow = GetNativeWindow();
 				auto previousParent = nativeWindow->GetParent();
@@ -2928,21 +2966,40 @@ GuiWindow
 					});
 				}
 				Show();
-#undef ERROR_MESSAGE_PREFIX
 			}
 
 			void GuiWindow::ShowModal(GuiWindow* owner, const Func<void()>& callback)
 			{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::controls::GuiWindow::ShowModal(GuiWindow*, const Func<void()>&)#"
+				CHECK_ERROR(!showModalRecord, ERROR_MESSAGE_PREFIX L"Cannot call this function nestedly.");
+				CHECK_ERROR(owner && owner->GetEnabled(), ERROR_MESSAGE_PREFIX L"The owner should not have been disabled.");
+
+				if (!owner->showModalRecord)
+				{
+					owner->showModalRecord = Ptr(new ShowModalRecord{ owner,owner });
+				}
+
+				showModalRecord = owner->showModalRecord;
+				showModalRecord->current = this;
 				owner->SetEnabled(false);
 				GetNativeWindow()->SetParent(owner->GetNativeWindow());
+
 				auto container = Ptr(new IGuiGraphicsEventHandler::Container);
 				auto disposeFlag = GetDisposedFlag();
 				container->handler = WindowReadyToClose.AttachLambda([=](GuiGraphicsComposition* sender, GuiEventArgs& arguments)
 				{
-					GetNativeWindow()->SetParent(nullptr);
 					callback();
+
+					GetNativeWindow()->SetParent(nullptr);
 					owner->SetEnabled(true);
 					owner->SetFocused();
+					showModalRecord = nullptr;
+					owner->showModalRecord->current = owner;
+					if (owner->showModalRecord->current == owner->showModalRecord->origin)
+					{
+						owner->showModalRecord = nullptr;
+					}
+
 					GetApplication()->InvokeInMainThread(this, [=]()
 					{
 						if (!disposeFlag->IsDisposed())
@@ -2953,6 +3010,7 @@ GuiWindow
 					});
 				});
 				Show();
+#undef ERROR_MESSAGE_PREFIX
 			}
 
 			void GuiWindow::ShowModalAndDelete(GuiWindow* owner, const Func<void()>& callback)
@@ -51364,7 +51422,7 @@ View Model (IMessageBoxDialogViewModel)
 FakeDialogServiceBase
 ***********************************************************************/
 
-		FakeDialogServiceBase::MessageBoxButtonsOutput	FakeDialogServiceBase::ShowMessageBox(
+		FakeDialogServiceBase::MessageBoxButtonsOutput FakeDialogServiceBase::ShowMessageBox(
 			INativeWindow* window,
 			const WString& text,
 			const WString& title,
