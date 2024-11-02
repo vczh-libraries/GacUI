@@ -94,7 +94,7 @@
   - `GuiMenuButton` exposed `SubMenuHost` property.
   - `GuiVirtualDataGrid` exposed `OpenedEditor` property.
 
-## Release Milestone (1.2.10.3)
+## Release Milestone (1.2.11.0)
 
 - GacUI
   - Fix `Global Objects` in `GacUI.h`.
@@ -111,6 +111,14 @@
     - Unit Test Snapshot Viewer
       - Show dom nodes in a tree view in the right side of the rendering tab optionally.
       - Select dom node and jump to other tabs with highlight.
+- Remote protocol redirection back to native rendering:
+  - In the test project, C++ side will expose the remote protocol via dll.
+  - Implement the remote protocol on a native `INativeController` instance.
+    - It could not be used on `GuiHostedController` or `GuiRemoteController`, which is not a native implementation.
+  - The experiment will only run a very simple UI that covers all implemented remote protocol so far.
+
+## Release Milestone (1.2.12.0)
+
 - More unit test
   - Ribbon Controls
   - `GuiControl` and servives
@@ -123,24 +131,11 @@
     - `GuiListControl` item events
     - `GuiVirtualTreeListControl` node events
   - A button calling a modal window
-- Copy control unit tests, snapshots and snapshot viewer to `Release` repo.
-  - Build and run test.
-    - Explain this in decicated `README.md` and mention it in the root one.
-  - Verify vcxproj contains all files.
-  - Ensure build woriflow tutorials.
-  - Update Win11 menu tutorial in `Release` repo to use new virtual control
-
-## Release Milestone (1.2.11.0)
-
 - GacUI
   - `<RawRendering/>` element.
     - It will be mapped to `GDIElement` or `Direct2DElement` in different renderers.
     - In remote protocol, it is an element with no extra properties.
     - In HTML, it would open a `<div/>` and you can do whatever you want using JavaScript.
-- Remote protocol redirection back to native rendering:
-  - In the test project, C++ side will expose the remote protocol via dll.
-  - Implement the remote protocol on a native `INativeController` instance.
-    - It could not be used on `GuiHostedController` or `GuiRemoteController`, which is not a native implementation.
 - JavaScript rendering:
   - Delete all `GacJS` code. This repo will be used to implement the HTML logic.
   - A codegen for remote protocol and print TypeScript code.
@@ -151,12 +146,15 @@
     - https://github.com/WICG/canvas-formatted-text/blob/main/README.md
       - layout provider could not be done until this is implemented.
   - Try EsBuild to replace WebPack.
-- The experiment will only run a very simple UI that covers all implemented remote protocol so far.
-  - Basic elements
-  - Image
-  - No text box or document
+  - The experiment will only run a very simple UI that covers all implemented remote protocol so far.
+- Copy control unit tests, snapshots and snapshot viewer to `Release` repo.
+  - Build and run test.
+    - Explain this in decicated `README.md` and mention it in the root one.
+  - Verify vcxproj contains all files.
+  - Ensure build woriflow tutorials.
+  - Update Win11 menu tutorial in `Release` repo to use new virtual control
 
-## Release Milestone (1.2.12.0)
+## Release Milestone (1.2.13.0)
 
 - All control unit test (using DarkSkin)
   - Tooltip.
@@ -193,11 +191,11 @@
   - Unit test framework in Vlpp.
   - Remote Protocol.
 
-## Release Milestone (1.2.12.1)
+## Release Milestone (1.2.13.1)
 
 - Implement `ColorizedTextElement` and `DocumentElement` in all already implemented remote renderers.
 
-## Release Milestone (1.2.13.0)
+## Release Milestone (1.3.0.0)
 
 - SyncObj architecture that streams ViewModel object changes.
   - See README.md in Workflow repo (**ViewModel Remoting C++ Codegen**).
@@ -213,7 +211,7 @@
   - Fix `/doc/current/gacui/home.html`
     - Introduction to hosted / remote
 
-## Release Milestone (1.3.0.0)
+## Release Milestone (1.3.1.0)
 
 - A remote protocol implementation on existing `INativeController` implementation.
   - Network protocols are not included as default implementation.
@@ -225,7 +223,7 @@
 - Rewrite `GacBuild.ps1` and `GacClear.ps1` in C++, but still keep them just doing redirection for backward compatibility.
 - Get rid of `Deploy.bat` in `GacGen.ps1` and `GacGen.exe`.
 
-## Release Milestone (1.3.1.0)
+## Release Milestone (1.4.0.0)
 - `Variant` and `Union` with full support.
   - Document.
   - Document `vl::Overloading`.
@@ -243,6 +241,29 @@
 
 - Strict check in different for-each loops.
 - A new non-XML instance format
+- `<eval Eval="expression"/>` tags.
+- `<ez:Layout/>`
+  - `xmlns:ez` by default:
+    - `presentation::composition::easy_layout::GuiEasy*Composition`
+    - `presentation::composition::easy_layout::GuiEasy*Layout`
+  - A `vl::presentation::composition::easy_layout::GuiEasyLayoutComposition`
+    - with properties:
+      - `Top`, `Bottom`, `Left`, `Right`: boolean of border visibility
+      - `Padding`: thickness of border and between all leaf containers
+    - accepting following tags as child:
+      - `<ez:Top/>`, `<ez:Bottom/>`, `<ez:Left/>`, `<ez:Right/>`, `<ez:Fill Percentage="1">`: Will be implemented by stack or table
+      - `<ez:Row RowSpan="1" ColumnSpan="1"/>`, `<ez:Column RowSpan="1" ColumnSpan="1"/>`: will be implemented by table
+    - properties of other `ez:` object
+      - `Padding`, `-1` by default means inheriting the value from its parent, defining a new padding of its children
+  - Any `ez:` layout could have multiple `ez:` layout or one control/Composition
+    - Such `control` or `composition` will get `AlignmentToParent` changed in `BuildLayout` if all components are `-1` at the moment
+    - A flag will store into such object, so the second call of `BuildLayout` will know the value is set by itself, and update it propertly
+      - Such flag could be the `<ez:Layout/>` itself passed to calling `SetInternalProperty`
+  - There is no constraint about the number and their order of `ez:` child object
+    - All consecutive rows or columns will be grouped into a table
+    - All direct child of rows of a rows, or columns of a column, are flattened
+    - Use stack if possible
+  - A `BuildLayout` method will be called after the layout tree is prepared. Changing the layout tree will not take effect without calling this method.
 
 ## OS Provider Features
 
@@ -308,7 +329,7 @@
   - Unit Test (**Remote**)
   - Windows
     - GDI (**Normal**, **Hosted**, Remote)
-    - Direct2d (**Normal**, **Hosted**, Remotec)
+    - Direct2d (**Normal**, **Hosted**, Remote)
     - UWP (Remote)
   - Linux
     - gGac repo: improve development process for release
@@ -367,38 +388,6 @@
     - "NAME(initial value in expression)"
     - Need to be consistent with animation object
   - Consider multiple `-ani` batch control, state configuration and transition, story board, connection to animation coroutine, etc.
-- `<eval Eval="expression"/>` tags.
-- `<ez:Layout/>`
-  - `xmlns:ez` by default:
-    - `presentation::composition::easy_layout::GuiEasy*Composition`
-    - `presentation::composition::easy_layout::GuiEasy*Layout`
-  - A `vl::presentation::composition::easy_layout::GuiEasyLayoutComposition`
-    - with properties:
-      - `Top`, `Bottom`, `Left`, `Right`: boolean of border visibility
-      - `Padding`: thickness of border and between all leaf containers
-    - accepting following tags as child:
-      - `<ez:Top/>`, `<ez:Bottom/>`, `<ez:Left/>`, `<ez:Right/>`, `<ez:Fill Percentage="1">`: Will be implemented by stack or table
-      - `<ez:Row RowSpan="1" ColumnSpan="1"/>`, `<ez:Column RowSpan="1" ColumnSpan="1"/>`: will be implemented by table
-    - properties of other `ez:` object
-      - `Padding`, `-1` by default means inheriting the value from its parent, defining a new padding of its children
-  - Any `ez:` layout could have multiple `ez:` layout or one control/Composition
-    - Such `control` or `composition` will get `AlignmentToParent` changed in `BuildLayout` if all components are `-1` at the moment
-    - A flag will store into such object, so the second call of `BuildLayout` will know the value is set by itself, and update it propertly
-      - Such flag could be the `<ez:Layout/>` itself passed to calling `SetInternalProperty`
-  - There is no constraint about the number and their order of `ez:` child object
-    - All consecutive rows or columns will be grouped into a table
-    - All direct child of rows of a rows, or columns of a column, are flattened
-    - Use stack if possible
-  - A `BuildLayout` method will be called after the layout tree is prepared. Changing the layout tree will not take effect without calling this method.
-- Facade (low priority)
-  - A facade is a class with following methods:
-    - **AddChild**: Accept a child facade or a child object.
-    - **ApplyTo**: Accept a parent object, which is not a facade.
-    - **Initialize** (optional): Called on the instance object between construction and `<ref.Ctor>`.
-  - A facade could have properties but only accept assignment or `-eval` binding.
-  - A facade could have an optional **InstanceFacadeVerifier** executed on GacGen compile time.
-  - Built-in Layout and Form facade.
-  - If `<XFacade>` or `<x:XFacade>` is an accessible and default constructible object, then `<X>` or `<x:X>` triggers a facade.
 
 ## GacUI Resource Compiler (unprioritized)
 
@@ -415,6 +404,15 @@
   - Calculate dependencies by only parsing.
   - Cache workflow assembly per resource in file.
   - Codegen c++ from multiple workflow assembly.
+- Facade
+  - A facade is a class with following methods:
+    - **AddChild**: Accept a child facade or a child object.
+    - **ApplyTo**: Accept a parent object, which is not a facade.
+    - **Initialize** (optional): Called on the instance object between construction and `<ref.Ctor>`.
+  - A facade could have properties but only accept assignment or `-eval` binding.
+  - A facade could have an optional **InstanceFacadeVerifier** executed on GacGen compile time.
+  - Built-in Layout and Form facade.
+  - If `<XFacade>` or `<x:XFacade>` is an accessible and default constructible object, then `<X>` or `<x:X>` triggers a facade.
 
 ## New C++/Doc Compiler based on VlppParser2
 
