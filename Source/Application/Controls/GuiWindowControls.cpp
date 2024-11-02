@@ -1035,7 +1035,7 @@ GuiWindow
 			void GuiWindow::ShowModal(GuiWindow* owner, const Func<void()>& callback)
 			{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::controls::GuiWindow::ShowModal(GuiWindow*, const Func<void()>&)#"
-				CHECK_ERROR(showModalRecord, ERROR_MESSAGE_PREFIX L"Cannot call this function nestedly.");
+				CHECK_ERROR(!showModalRecord, ERROR_MESSAGE_PREFIX L"Cannot call this function nestedly.");
 				CHECK_ERROR(owner && owner->GetEnabled(), ERROR_MESSAGE_PREFIX L"The owner should not have been disabled.");
 
 				if (!owner->showModalRecord)

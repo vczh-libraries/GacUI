@@ -3,18 +3,19 @@
 ## Completed but not released (1.2.10.2)
 
 - Fixed
-  - Fix `GuiGraphicsComposition::GetGlobalBounds` double calculate `InternalMargin`.
-  - Fix `INVOKEGET_INTERFACE_PROXY` and `INVOKEGET_INTERFACE_PROXY_NOPARAMS` break build when returning `LazyList<T>`.
-  - Fix button behavior when not IgnoreChildControlMouseEvents.
-  - Fix control not losing focus when disabled.
-  - Fix progress bar is focusable.
-  - Fix `GuiListControl` incompatible with non-default axis.
-  - Fix `GuiTextList::SelectionChanged` not raised when changing properties of the only selected `list::TextItem`.
-  - Fix `GuiVirtualListView` in `Details` view column header height doesn't sync to item arranger in real-time.
-  - Fix `DataColumn::SetSorter` and `DataColumn::SetFilter` doesn't refresh data grid items.
-  - Fix `GuiBindableDataGrid` not implements stable sorting.
-  - Fix `GuiBindableDataGrid` `[UP]` and `[DOWN]` not working properly right after changing selection by calling `SelectCell`.
+  - `GuiGraphicsComposition::GetGlobalBounds` double calculate `InternalMargin`.
+  - `INVOKEGET_INTERFACE_PROXY` and `INVOKEGET_INTERFACE_PROXY_NOPARAMS` break build when returning `LazyList<T>`.
+  - button behavior when not IgnoreChildControlMouseEvents.
+  - control not losing focus when disabled.
+  - progress bar is focusable.
+  - `GuiListControl` incompatible with non-default axis.
+  - `GuiTextList::SelectionChanged` not raised when changing properties of the only selected `list::TextItem`.
+  - `GuiVirtualListView` in `Details` view column header height doesn't sync to item arranger in real-time.
+  - `DataColumn::SetSorter` and `DataColumn::SetFilter` doesn't refresh data grid items.
+  - `GuiBindableDataGrid` not implements stable sorting.
+  - `GuiBindableDataGrid` `[UP]` and `[DOWN]` not working properly right after changing selection by calling `SelectCell`.
   - UnitTestSnapshotViewer always not render the second loaded images.
+  - Crash when closing the (even disabled) main window with pending modal windows exist.
 - Added `/F:EnabledTestFile` to unit test CLI parameters.
 - `GuiTreeItemTemplate` change base class to `GuiListItemTemplate`
 - `GuiListControl::IItemProvider(Callback)?` moved to `vl::presentation::controls::list`.
