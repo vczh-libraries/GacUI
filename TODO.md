@@ -78,13 +78,6 @@
 
 ## Release Milestone (1.2.10.2)
 
-- GacUI
-  - Fix `CppTest` press `ALT+F4` with `Control/Document Editor/Insert Image` opened and crash in `GuiHostedController::PostAction_LeftButtonUp`.
-    - The click processing is finished after the modal window is closed, but due to `ALT+F4` all windows are deleted at the moment.
-    - The following instruction only applies in hosted mode, because in trivial mode only enabled windows could be asked to close, this is ensured by the OS.
-    - Close the current window that has keyboard focus.
-      - If the focused window is the main window, and there are pending modal windows, a random top modal window is focused and no window is closed.
-    - `ShowModal` create or reuse an object passing to the next window, maintaining the top window on the modal link. By enumerating all **opened** windows it is possible to know if there are pending modal window.
 - Document
   - Added `/F:EnabledTestFile` to unit test CLI parameters.
   - `GuiTreeItemTemplate` change base class to `GuiListItemTemplate`
