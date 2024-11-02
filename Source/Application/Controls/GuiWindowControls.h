@@ -240,7 +240,14 @@ Window
 				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(WindowTemplate, GuiControlHost)
 				friend class GuiApplication;
 			protected:
+				struct ShowModalRecord
+				{
+					GuiWindow*		origin = nullptr;
+					GuiWindow*		current = nullptr;
+				};
+
 				bool									registeredInApplication = false;
+				Ptr<ShowModalRecord>					showModalRecord;
 
 			protected:
 				compositions::IGuiAltActionHost*		previousAltHost = nullptr;
@@ -262,8 +269,9 @@ Window
 				void									ApplyFrameConfig();
 
 				void									Moved()override;
-				void									Opened()override;
 				void									DpiChanged(bool preparing)override;
+				void									Opened()override;
+				void									BeforeClosing(bool& cancel)override;
 				void									AssignFrameConfig(const NativeWindowFrameConfig& config)override;
 				void									OnNativeWindowChanged()override;
 				void									OnVisualStatusChanged()override;
