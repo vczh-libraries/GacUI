@@ -78,16 +78,6 @@
 
 ## Release Milestone (1.2.10.2)
 
-- Document
-  - Added `/F:EnabledTestFile` to unit test CLI parameters.
-  - `GuiTreeItemTemplate` change base class to `GuiListItemTemplate`
-  - New theme name/virtual control: `ToolstripToolBarInMenu`, `ToolstripSplitterInMenu`
-  - `IGuiMenuService::GetHostThemeName` if exists
-  - `GuiListControl::IItemProvider(Callback)?` moved to `vl::presentation::controls::list`
-  - `ListViewColumnItemArranger` added `ColumnButtons` and `ColumnSplitters` properties.
-  - `GuiMenuButton` exposed `SubMenuHost` property.
-  - `GuiVirtualDataGrid` exposed `OpenedEditor` property.
-
 ## Release Milestone (1.2.11.0)
 
 - GacUI
