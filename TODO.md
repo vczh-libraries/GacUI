@@ -1,30 +1,6 @@
 # TODO
 
-## Completed but not released (1.2.10.2)
-
-- Fixed
-  - `GuiGraphicsComposition::GetGlobalBounds` double calculate `InternalMargin`.
-  - `INVOKEGET_INTERFACE_PROXY` and `INVOKEGET_INTERFACE_PROXY_NOPARAMS` break build when returning `LazyList<T>`.
-  - button behavior when not IgnoreChildControlMouseEvents.
-  - control not losing focus when disabled.
-  - progress bar is focusable.
-  - `GuiListControl` incompatible with non-default axis.
-  - `GuiTextList::SelectionChanged` not raised when changing properties of the only selected `list::TextItem`.
-  - `GuiVirtualListView` in `Details` view column header height doesn't sync to item arranger in real-time.
-  - `DataColumn::SetSorter` and `DataColumn::SetFilter` doesn't refresh data grid items.
-  - `GuiBindableDataGrid` not implements stable sorting.
-  - `GuiBindableDataGrid` `[UP]` and `[DOWN]` not working properly right after changing selection by calling `SelectCell`.
-  - UnitTestSnapshotViewer always not render the second loaded images.
-  - Crash when closing the (even disabled) main window with pending modal windows exist.
-- Added `/F:EnabledTestFile` to unit test CLI parameters.
-- `GuiTreeItemTemplate` change base class to `GuiListItemTemplate`
-- `GuiListControl::IItemProvider(Callback)?` moved to `vl::presentation::controls::list`.
-- Make `ItemSource` class of bindable list controls reflectable.
-- New theme name/virtual control: `ToolstripToolBarInMenu`, `ToolstripSplitterInMenu`
-- `IGuiMenuService::GetHostThemeName`
-- `ListViewColumnItemArranger` added `ColumnButtons` and `ColumnSplitters` properties.
-- `GuiMenuButton` exposed `SubMenuHost` property.
-- `GuiVirtualDataGrid` exposed `OpenedEditor` property.
+## Completed but not released (1.2.11.0)
 
 ## Known Issues
 
@@ -75,8 +51,6 @@
   - Upgrade GacUI XML Resource to 1.3, force on all resources instead of only depended or depending resource.
   - Require binary pattern "[GXR-1.3]" at the beginning of the binary resource.
   - Resource compiler and loader will check the version and only accept 1.3.
-
-## Release Milestone (1.2.10.2)
 
 ## Release Milestone (1.2.11.0)
 
