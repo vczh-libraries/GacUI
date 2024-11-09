@@ -149,11 +149,11 @@
   - Unit test framework in Vlpp.
   - Remote Protocol.
 
-## Release Milestone (1.2.13.1)
+## Release Milestone (1.3.0.0)
 
 - Implement `ColorizedTextElement` and `DocumentElement` in all already implemented remote renderers.
 
-## Release Milestone (1.3.0.0)
+## Release Milestone (1.4.0.0)
 
 - SyncObj architecture that streams ViewModel object changes.
   - See README.md in Workflow repo (**ViewModel Remoting C++ Codegen**).
@@ -169,7 +169,7 @@
   - Fix `/doc/current/gacui/home.html`
     - Introduction to hosted / remote
 
-## Release Milestone (1.3.1.0)
+## Release Milestone (1.4.1.0)
 
 - A remote protocol implementation on existing `INativeController` implementation.
   - Network protocols are not included as default implementation.
@@ -181,7 +181,7 @@
 - Rewrite `GacBuild.ps1` and `GacClear.ps1` in C++, but still keep them just doing redirection for backward compatibility.
 - Get rid of `Deploy.bat` in `GacGen.ps1` and `GacGen.exe`.
 
-## Release Milestone (1.4.0.0)
+## Release Milestone (1.5.0.0)
 - `Variant` and `Union` with full support.
   - Document.
   - Document `vl::Overloading`.
