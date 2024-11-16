@@ -100,6 +100,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Lib_GacUI_App_Reflection", 
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Lib_GacUI_Utilities_Reflection", "Lib_GacUI_Utilities_Reflection\Lib_GacUI_Utilities_Reflection.vcxproj", "{F8037BFA-7D7D-4811-BC87-DF033EA38AB7}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GacUI_Remoting_Tests", "GacUI_Remoting_Tests", "{1F207079-CD21-4802-8331-B391E27F6C0A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
