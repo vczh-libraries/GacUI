@@ -2,6 +2,9 @@
 
 ## Completed but not released (1.2.11.0)
 
+- Fixed:
+  - `#include <arm_acle.h>` is needed for `__yield` in `VlppOS.cpp`
+
 ## Known Issues
 
 - Replace `LoadLibrary` with `GetModuleHandle` in `EnableCrossKernelCrashing`.
@@ -55,8 +58,6 @@
 ## Release Milestone (1.2.11.0)
 
 - GacUI
-  - `#include <arm_acle.h>` is needed for `__yield` in `VlppOS.cpp`
-    - Referenced by iGac
   - Fix `Global Objects` in `GacUI.h`.
   - Thinking about promote SyncDom data structures for unit test, and complete a diff algorithm.
     - Unit test framework
