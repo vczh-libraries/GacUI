@@ -21,13 +21,16 @@
 - **Core**: Minimum source code that opens and renders a window in the OS.
 - **CoreApplication** -> **Core**: Minimum source code that runs `GuiApplication`.
 - **GacUI** -> **CoreApplication**: All controls.
+- **Reflection** -> **GacUI**: All GacUI reflection definition.
+
 - **Utilities** -> **CoreApplication**: Utilities.
 - **Utilities_Controls** -> **Utilities** + **GacUI**: Utilities that brings UI.
+- **Utilities_Reflection** -> **Utilities_Controls** + **Reflection**: Utilities UI reflection definition.
+
 - **UnitTest** -> **Core**: Unit test framework
 - **UnitTest_Controls** -> **GacUI**: Unit test snapshot viewer.
-- **Reflection** -> **Utilities_Controls**: All reflection definition.
-- **Utilities_Reflection** -> **Utilities_Controls** + **Reflection**: Utilities UI reflection definition.
 - **UnitTest_Reflection** -> **UnitTest_Controls** + **Reflection**: Unit test snapshot viewer reflection definition.
+
 - **Compiler** -> **Reflection**: GacUI XML Compiler.
 - **Windows** -> **Utilities**: Windows platform provider.
 
