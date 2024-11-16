@@ -61,10 +61,6 @@
   <ImportGroup Label="Shared">
     <Import Project="..\Source_GacUI_ProtocolCompiler\Source_GacUI_ProtocolCompiler.vcxitems" Label="Shared" />
     <Import Project="..\Source_GacUI_UnitTest\Source_GacUI_UnitTest.vcxitems" Label="Shared" />
-    <Import Project="..\Source_GacUI_Compiler\Source_GacUI_Compiler.vcxitems" Label="Shared" />
-    <Import Project="..\Source_GacUI_Utilities_Controls\Source_GacUI_Utilities_Controls.vcxitems" Label="Shared" />
-    <Import Project="..\Source_GacUI_Utilities_Reflection\Source_GacUI_Utilities_Reflection.vcxitems" Label="Shared" />
-    <Import Project="..\Generated_DarkSkin\Generated_DarkSkin.vcxitems" Label="Shared" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -252,8 +248,17 @@
     <ClCompile Include="TestResource.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Lib_GacUI_App_Reflection\Lib_GacUI_App_Reflection.vcxproj">
+      <Project>{338e42de-9928-40b7-9f76-ea990f15d248}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Lib_GacUI_Compiler_Reflection\Lib_GacUI_Compiler_Reflection.vcxproj">
+      <Project>{66d0edd1-2747-47a6-abda-49ab8f30f7bc}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\Lib_GacUI_Reflection\Lib_GacUI_Reflection.vcxproj">
       <Project>{543b32d9-e229-472a-9d11-9bf12c7982bd}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Lib_GacUI_Utilities_Reflection\Lib_GacUI_Utilities_Reflection.vcxproj">
+      <Project>{f8037bfa-7d7d-4811-bc87-df033ea38ab7}</Project>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

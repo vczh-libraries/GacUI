@@ -60,10 +60,7 @@
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
   <ImportGroup Label="Shared">
-    <Import Project="..\Generated_DarkSkin\Generated_DarkSkin.vcxitems" Label="Shared" />
     <Import Project="..\Generated_FullControlTest\Generated_FullControlTest.vcxitems" Label="Shared" />
-    <Import Project="..\Source_GacUI_Utilities_Controls\Source_GacUI_Utilities_Controls.vcxitems" Label="Shared" />
-    <Import Project="..\Source_GacUI_Utilities_Reflection\Source_GacUI_Utilities_Reflection.vcxitems" Label="Shared" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -179,6 +176,9 @@
     <ResourceCompile Include="Resource.rc" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Lib_GacUI_App_Metaonly\Lib_GacUI_App_Metaonly.vcxproj">
+      <Project>{4c523741-6f2c-49cc-a9e8-719ae6892db8}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\Lib_GacUI_Metaonly\Lib_GacUI_Metaonly.vcxproj">
       <Project>{bf177697-a8b5-4580-87e7-de77c0a29c9f}</Project>
     </ProjectReference>
