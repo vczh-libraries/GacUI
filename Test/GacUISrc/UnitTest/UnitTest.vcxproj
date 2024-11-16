@@ -59,7 +59,6 @@
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
   <ImportGroup Label="Shared">
-    <Import Project="..\Source_GacUI_ProtocolCompiler\Source_GacUI_ProtocolCompiler.vcxitems" Label="Shared" />
     <Import Project="..\Source_GacUI_UnitTest\Source_GacUI_UnitTest.vcxitems" Label="Shared" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
