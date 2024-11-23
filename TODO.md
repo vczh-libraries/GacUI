@@ -72,6 +72,13 @@
     - Unit Test Snapshot Viewer
       - Show dom nodes in a tree view in the right side of the rendering tab optionally.
       - Select dom node and jump to other tabs with highlight.
+- Remote protocol channel
+  - `GuiRemoteController` -> remote protocol -> `IRemoteProtocolSchedulerChannel<T>` -> `IRemoteProtocolSchedulerChannelAsync<T>` (another thread)
+  - `IRemoteProtocolRendererChannelAsync<T>` (another thread) -> `IRemoteProtocolRendererChannel<T>` -> remote protocol -> `INativeController`
+  - Use sync in unit test instead of the current implementation
+- Refactor unit test
+  - Print remote protocol commands (Frame) in a separated file
+  - Print remote protocol commands (SyncDom) in a separated file
 - Remote protocol redirection back to native rendering:
   - In the test project, C++ side will expose the remote protocol via dll.
   - Implement the remote protocol on a native `INativeController` instance.
