@@ -72,6 +72,8 @@
     - Unit Test Snapshot Viewer
       - Show dom nodes in a tree view in the right side of the rendering tab optionally.
       - Select dom node and jump to other tabs with highlight.
+- Remote protocol
+  - Investigate about generating data structure in flat memory layout, so that no effort needed for binary serialization 
 - Remote protocol channel
   - `GuiRemoteController` -> remote protocol -> `IRemoteProtocolSchedulerChannel<T>` -> `IRemoteProtocolSchedulerChannelAsync<T>` (another thread)
   - `IRemoteProtocolRendererChannelAsync<T>` (another thread) -> `IRemoteProtocolRendererChannel<T>` -> remote protocol -> `INativeController`
