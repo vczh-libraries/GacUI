@@ -148,6 +148,7 @@
         ]
       ],
       "root": {
+        "id": 0,
         "hitTestResult": null,
         "cursor": null,
         "element": null,
@@ -155,6 +156,7 @@
         "validArea": {"x1": 0, "y1": 0, "x2": 0, "y2": 0},
         "children": [
           {
+            "id": 4,
             "hitTestResult": null,
             "cursor": null,
             "element": 1,
@@ -162,6 +164,7 @@
             "validArea": {"x1": 0, "y1": 0, "x2": 640, "y2": 480},
             "children": [
               {
+                "id": 8,
                 "hitTestResult": null,
                 "cursor": null,
                 "element": 2,
@@ -170,6 +173,7 @@
                 "children": null
               },
               {
+                "id": 12,
                 "hitTestResult": null,
                 "cursor": null,
                 "element": 3,
@@ -178,6 +182,7 @@
                 "children": null
               },
               {
+                "id": 17,
                 "hitTestResult": null,
                 "cursor": null,
                 "element": null,
@@ -185,6 +190,7 @@
                 "validArea": {"x1": 10, "y1": 10, "x2": 630, "y2": 470},
                 "children": [
                   {
+                    "id": 16,
                     "hitTestResult": null,
                     "cursor": null,
                     "element": 4,
@@ -193,6 +199,7 @@
                     "children": null
                   },
                   {
+                    "id": 20,
                     "hitTestResult": null,
                     "cursor": null,
                     "element": 5,
