@@ -37,6 +37,7 @@ struct ElementRendering
 
 struct ElementBoundary
 {
+    var id : int;
     var hitTestResult : WindowHitTestResult?;
     var cursor: WindowSystemCursorType?;
     var bounds : Rect;

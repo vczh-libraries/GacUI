@@ -2212,6 +2212,13 @@
         "name": "ElementBoundary",
         "members": [{
             "$ast": "StructMember",
+            "name": "id",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Integer"
+            }
+        }, {
+            "$ast": "StructMember",
             "name": "hitTestResult",
             "type": {
                 "$ast": "OptionalType",
@@ -2421,6 +2428,13 @@
         "name": "RenderingDom",
         "members": [{
             "$ast": "StructMember",
+            "name": "id",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Integer"
+            }
+        }, {
+            "$ast": "StructMember",
             "name": "hitTestResult",
             "type": {
                 "$ast": "OptionalType",
@@ -2509,11 +2523,8 @@
             "$ast": "StructMember",
             "name": "element",
             "type": {
-                "$ast": "OptionalType",
-                "element": {
-                    "$ast": "PrimitiveType",
-                    "type": "Integer"
-                }
+                "$ast": "PrimitiveType",
+                "type": "Integer"
             }
         }],
         "type": "Struct"

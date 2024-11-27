@@ -61,13 +61,7 @@
   - Fix `Global Objects` in `GacUI.h`.
   - Thinking about promote SyncDom data structures for unit test, and complete a diff algorithm.
     - Unit test framework
-      - Generate `domId` for each dom node:
-        - root = 0
-        - element = (element.id << 2) + 1
-        - virtual = (element.id << 2) + 2
-        - hittest = (composition.id << 2) + 3
-          - the renderer maintaining an increasing id, when one is allocated it is cached in the composition
-      - Diff algorithm based on `domId`
+      - Diff algorithm based on `RenderingDom::domId` (begins from -1, not consecutive)
       - Mouse wheel trigger functions.
     - Unit Test Snapshot Viewer
       - Show dom nodes in a tree view in the right side of the rendering tab optionally.

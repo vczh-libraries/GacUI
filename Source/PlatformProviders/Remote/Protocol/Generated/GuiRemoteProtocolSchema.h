@@ -315,6 +315,7 @@ namespace vl::presentation::remoteprotocol
 
 	struct ElementBoundary
 	{
+		::vl::vint id;
 		::vl::Nullable<::vl::presentation::INativeWindowListener::HitTestResult> hitTestResult;
 		::vl::Nullable<::vl::presentation::INativeCursor::SystemCursorType> cursor;
 		::vl::presentation::Rect bounds;
@@ -343,6 +344,7 @@ namespace vl::presentation::remoteprotocol
 
 	struct RenderingDom
 	{
+		::vl::vint id;
 		::vl::Nullable<::vl::presentation::INativeWindowListener::HitTestResult> hitTestResult;
 		::vl::Nullable<::vl::presentation::INativeCursor::SystemCursorType> cursor;
 		::vl::Nullable<::vl::vint> element;
@@ -363,7 +365,7 @@ namespace vl::presentation::remoteprotocol
 	struct RenderingCommand_Element
 	{
 		::vl::presentation::remoteprotocol::ElementRendering rendering;
-		::vl::Nullable<::vl::vint> element;
+		::vl::vint element;
 	};
 
 	struct RenderingFrame

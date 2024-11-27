@@ -36,6 +36,11 @@ namespace vl
 			class GuiControlHost;
 		}
 
+		namespace elements
+		{
+			class GuiRemoteGraphicsRenderTarget;
+		}
+
 		namespace compositions
 		{
 			class GuiGraphicsComposition_Trivial;
@@ -64,6 +69,7 @@ Basic Construction
 				friend class GuiWindowComposition;
 				friend class controls::GuiControl;
 				friend class GuiGraphicsHost;
+				friend class elements::GuiRemoteGraphicsRenderTarget;
 
 				friend void InvokeOnCompositionStateChanged(compositions::GuiGraphicsComposition* composition);
 			public:
@@ -98,6 +104,7 @@ Basic Construction
 				bool										visible = true;
 				bool										transparentToMouse = false;
 				MinSizeLimitation							minSizeLimitation = MinSizeLimitation::NoLimit;
+				vint										remoteId = -1;
 
 				Ptr<compositions::GuiGraphicsEventReceiver>	eventReceiver;
 				GraphicsHostRecord*							relatedHostRecord = nullptr;

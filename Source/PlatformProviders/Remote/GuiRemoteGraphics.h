@@ -44,6 +44,7 @@ GuiRemoteGraphicsRenderTarget
 			NativeSize							canvasSize;
 			vint								usedFrameIds = 0;
 			vint								usedElementIds = 0;
+			vint								usedCompositionIds = 0;
 			RendererMap							renderers;
 			collections::SortedList<vint>		createdRenderers;
 			collections::SortedList<vint>		destroyedRenderers;

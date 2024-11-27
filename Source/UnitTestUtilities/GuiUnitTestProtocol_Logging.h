@@ -32,12 +32,19 @@ UnitTestRemoteProtocol
 
 		RenderingResultRef TransformLastRenderingResult(CommandListRef commandListRef)
 		{
+			// dom id:
+			// root: -1
+			// element:           (elementId << 2) + 0
+			// parent of element: (elementId << 2) + 1
+			// hittest:           (compositionId << 2) + 2
+			// parent of hittest: (compositionId << 2) + 3
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Logging<TProtocol>::TransformLastRenderingResult(CommandListRef)#"
 
 			RenderingResultRefList domStack;
 			collections::List<vint> domBoundaries;
 
 			auto domRoot = Ptr(new UnitTestRenderingDom);
+			domRoot->id = 0;
 			auto domCurrent = domRoot;
 			domStack.Add(domRoot);
 
@@ -92,6 +99,7 @@ UnitTestRemoteProtocol
 			auto prepareParentFromCommand = [&](
 				Rect commandBounds,
 				Rect commandValidArea,
+				vint newDomId,
 				auto&& calculateValidAreaFromDom
 				)
 			{
@@ -131,6 +139,7 @@ UnitTestRemoteProtocol
 							// create a virtual node to satisfy the clipper
 							popTo(i);
 							auto parent = Ptr(new UnitTestRenderingDom);
+							parent->id = newDomId;
 							parent->bounds = commandValidArea;
 							parent->validArea = commandValidArea;
 							push(parent);
@@ -156,10 +165,12 @@ UnitTestRemoteProtocol
 						prepareParentFromCommand(
 							command.boundary.bounds,
 							command.boundary.areaClippedBySelf,
+							(command.boundary.id << 2) + 3,
 							[&](auto&& dom) { return dom->validArea.Intersect(command.boundary.bounds); }
 							);
 
 						auto dom = Ptr(new UnitTestRenderingDom);
+						dom->id = (command.boundary.id << 2) + 2;
 						dom->hitTestResult = command.boundary.hitTestResult;
 						dom->cursor = command.boundary.cursor;
 						dom->bounds = command.boundary.bounds;
@@ -178,10 +189,12 @@ UnitTestRemoteProtocol
 						prepareParentFromCommand(
 							command.rendering.bounds,
 							command.rendering.areaClippedByParent,
+							(command.element << 2) + 1,
 							[&](auto&& dom) { return dom->validArea; }
 							);
 
 						auto dom = Ptr(new UnitTestRenderingDom);
+						dom->id = (command.element << 2) + 0;
 						dom->element = command.element;
 						dom->bounds = command.rendering.bounds;
 						dom->validArea = command.rendering.bounds.Intersect(command.rendering.areaClippedByParent);

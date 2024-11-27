@@ -214,6 +214,13 @@ GuiRemoteGraphicsRenderTarget
 
 		if (arguments.hitTestResult || arguments.cursor)
 		{
+			// GetHitTestResultFromGenerator or GetCursorFromGenerator ensures generator must be a composition
+			auto composition = dynamic_cast<GuiGraphicsComposition*>(generator);
+			if (composition->remoteId == -1)
+			{
+				composition->remoteId = ++usedCompositionIds;
+			}
+			arguments.id = composition->remoteId;
 			arguments.bounds = clipper;
 			arguments.areaClippedBySelf = validArea;
 			remote->remoteMessages.RequestRendererBeginBoundary(arguments);

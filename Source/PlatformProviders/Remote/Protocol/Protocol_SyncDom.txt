@@ -13,6 +13,7 @@ union ElementDescVariant
 
 class RenderingDom
 {
+    var id: int;
     var hitTestResult: WindowHitTestResult?;
     var cursor: WindowSystemCursorType?;
     var element: int?;
@@ -33,7 +34,7 @@ struct RenderingCommand_EndBoundary
 struct RenderingCommand_Element
 {
     var rendering: ElementRendering;
-    var element: int?;
+    var element: int;
 }
 
 union RenderingCommand
