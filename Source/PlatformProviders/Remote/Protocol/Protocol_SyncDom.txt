@@ -50,7 +50,6 @@ struct RenderingFrame
     var frameName : string?;
     var windowSize: WindowSizingConfig;
     var elements: ElementDescVariant[int];
-    var commands: RenderingCommand[];
     var root: RenderingDom;
 }
 

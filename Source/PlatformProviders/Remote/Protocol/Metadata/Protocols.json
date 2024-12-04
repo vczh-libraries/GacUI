@@ -2586,16 +2586,6 @@
             }
         }, {
             "$ast": "StructMember",
-            "name": "commands",
-            "type": {
-                "$ast": "ArrayType",
-                "element": {
-                    "$ast": "ReferenceType",
-                    "name": "RenderingCommand"
-                }
-            }
-        }, {
-            "$ast": "StructMember",
             "name": "root",
             "type": {
                 "$ast": "ReferenceType",

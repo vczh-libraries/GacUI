@@ -374,7 +374,6 @@ namespace vl::presentation::remoteprotocol
 		::vl::Nullable<::vl::WString> frameName;
 		::vl::presentation::remoteprotocol::WindowSizingConfig windowSize;
 		::vl::Ptr<::vl::collections::Dictionary<::vl::vint, ::vl::presentation::remoteprotocol::ElementDescVariant>> elements;
-		::vl::Ptr<::vl::collections::List<::vl::presentation::remoteprotocol::RenderingCommand>> commands;
 		::vl::Ptr<::vl::presentation::remoteprotocol::RenderingDom> root;
 	};
 

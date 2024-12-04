@@ -633,7 +633,6 @@ namespace vl::presentation::remoteprotocol
 		ConvertCustomTypeToJsonField(node, L"frameName", value.frameName);
 		ConvertCustomTypeToJsonField(node, L"windowSize", value.windowSize);
 		ConvertCustomTypeToJsonField(node, L"elements", value.elements);
-		ConvertCustomTypeToJsonField(node, L"commands", value.commands);
 		ConvertCustomTypeToJsonField(node, L"root", value.root);
 		return node;
 	}
@@ -1494,7 +1493,6 @@ namespace vl::presentation::remoteprotocol
 			if (field->name.value == L"frameName") ConvertJsonToCustomType(field->value, value.frameName); else
 			if (field->name.value == L"windowSize") ConvertJsonToCustomType(field->value, value.windowSize); else
 			if (field->name.value == L"elements") ConvertJsonToCustomType(field->value, value.elements); else
-			if (field->name.value == L"commands") ConvertJsonToCustomType(field->value, value.commands); else
 			if (field->name.value == L"root") ConvertJsonToCustomType(field->value, value.root); else
 			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
 		}
