@@ -177,7 +177,7 @@ void GacUIUnitTest_Start(const WString& appName, Nullable<UnitTestScreenConfig> 
 	}
 
 	{
-		File snapshotFile = GacUIUnitTest_PrepareSnapshotFile(appName, WString::Unmanaged(L"[commands].json"));
+		File snapshotFile = GacUIUnitTest_PrepareSnapshotFile(appName, WString::Unmanaged(L"[commands].txt"));
 
 		JsonFormatting formatting;
 		formatting.spaceAfterColon = true;

@@ -42,19 +42,6 @@
           ]
         ]
       ],
-      "commands": [
-        [
-          "RenderingCommand_Element",
-          {
-            "rendering": {
-              "id": 1,
-              "bounds": {"x1": 0, "y1": 0, "x2": 640, "y2": 480},
-              "areaClippedByParent": {"x1": 0, "y1": 0, "x2": 640, "y2": 480}
-            },
-            "element": 1
-          }
-        ]
-      ],
       "root": {
         "id": 0,
         "hitTestResult": null,
