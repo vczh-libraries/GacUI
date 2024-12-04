@@ -208,11 +208,11 @@ UnitTestRemoteProtocol
 
 		bool LogRenderingResult()
 		{
-			if (this->lastRenderingCommands)
+			auto lastRenderingCommandsPair = this->TryGetLastRenderingCommandsAndReset();
+			if (lastRenderingCommandsPair.value)
 			{
-				candidateFrameId = this->lastFrameId;
-				candidateRenderingResult = this->lastRenderingCommands;
-				this->lastRenderingCommands = {};
+				candidateFrameId = lastRenderingCommandsPair.key;
+				candidateRenderingResult = lastRenderingCommandsPair.value;
 				everRendered = true;
 			}
 			else if (everRendered)
@@ -227,7 +227,6 @@ UnitTestRemoteProtocol
 						{},
 						this->sizingConfig,
 						descs,
-						candidateRenderingResult,
 						transformed
 						});
 					candidateRenderingResult = {};
@@ -248,6 +247,11 @@ UnitTestRemoteProtocol
 		const auto& GetLoggedTrace()
 		{
 			return this->loggedTrace;
+		}
+
+		const auto& GetLoggedFrames()
+		{
+			return this->loggedFrames;
 		}
 	};
 }

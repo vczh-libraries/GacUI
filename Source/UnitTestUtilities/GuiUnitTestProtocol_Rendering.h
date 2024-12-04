@@ -31,9 +31,13 @@ UnitTestRemoteProtocol
 		using ImageMetadataMap = collections::Dictionary<vint, remoteprotocol::ImageMetadata>;
 		using CommandList = UnitTestRenderingCommandList;
 		using CommandListRef = UnitTestRenderingCommandListRef;
+		using CommandListFrame = collections::Pair<vint, CommandListRef>;
 	protected:
 
 		remoteprotocol::RenderingTrace			loggedTrace;
+		collections::List<CommandListFrame>		loggedFrames;
+		bool									lastRenderingCommandsOpening = false;
+
 		ElementDescMap							lastElementDescs;
 		IdSet									removedElementIds;
 		IdSet									removedImageIds;
@@ -41,8 +45,6 @@ UnitTestRemoteProtocol
 
 		remoteprotocol::ElementMeasurings		measuringForNextRendering;
 		regex::Regex							regexCrLf{ L"/n|/r(/n)?" };
-		vint									lastFrameId = 0;
-		CommandListRef							lastRenderingCommands;
 
 		void ResetCreatedObjects()
 		{
@@ -67,10 +69,27 @@ UnitTestRemoteProtocol
 IGuiRemoteProtocolMessages (Rendering)
 ***********************************************************************/
 
+		CommandListRef GetLastRenderingCommands()
+		{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering<TProtocol>::GetLastRenderingCommands()#"
+			CHECK_ERROR(lastRenderingCommandsOpening, ERROR_MESSAGE_PREFIX L"The latest frame of commands is not accepting new commands.");
+			return loggedFrames[loggedFrames.Count() - 1].value;
+#undef ERROR_MESSAGE_PREFIX
+		}
+
+		CommandListFrame TryGetLastRenderingCommandsAndReset()
+		{
+			CommandListFrame emptyFrame{ -1,nullptr };
+			if (loggedFrames.Count() == 0) return emptyFrame;
+			if (!lastRenderingCommandsOpening) return emptyFrame;
+			lastRenderingCommandsOpening = false;
+			return loggedFrames[loggedFrames.Count() - 1];
+		}
+
 		void RequestRendererBeginRendering(const remoteprotocol::ElementBeginRendering& arguments) override
 		{
-			lastFrameId = arguments.frameId;
-			lastRenderingCommands = Ptr(new CommandList);
+			lastRenderingCommandsOpening = true;
+			loggedFrames.Add({ arguments.frameId,Ptr(new CommandList) });
 		}
 
 		void RequestRendererEndRendering(vint id) override
@@ -81,18 +100,18 @@ IGuiRemoteProtocolMessages (Rendering)
 
 		void RequestRendererBeginBoundary(const remoteprotocol::ElementBoundary& arguments) override
 		{
-			lastRenderingCommands->Add(remoteprotocol::RenderingCommand_BeginBoundary{ arguments });
+			GetLastRenderingCommands()->Add(remoteprotocol::RenderingCommand_BeginBoundary{ arguments });
 		}
 
 		void RequestRendererEndBoundary() override
 		{
-			lastRenderingCommands->Add(remoteprotocol::RenderingCommand_EndBoundary{});
+			GetLastRenderingCommands()->Add(remoteprotocol::RenderingCommand_EndBoundary{});
 		}
 
 		template<typename T>
 		void RequestRendererRenderElement(const remoteprotocol::ElementRendering& rendering, const T& element)
 		{
-			lastRenderingCommands->Add(remoteprotocol::RenderingCommand_Element{ rendering,element.id });
+			GetLastRenderingCommands()->Add(remoteprotocol::RenderingCommand_Element{ rendering,element.id });
 		}
 
 		void RequestRendererRenderElement(const remoteprotocol::ElementRendering& arguments) override
@@ -105,7 +124,7 @@ IGuiRemoteProtocolMessages (Rendering)
 			if (rendererType == remoteprotocol::RendererType::FocusRectangle)
 			{
 				// FocusRectangle does not has a ElementDesc
-				lastRenderingCommands->Add(remoteprotocol::RenderingCommand_Element{ arguments,arguments.id });
+				GetLastRenderingCommands()->Add(remoteprotocol::RenderingCommand_Element{ arguments,arguments.id });
 				return;
 			}
 

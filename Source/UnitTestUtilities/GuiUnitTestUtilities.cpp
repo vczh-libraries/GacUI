@@ -168,6 +168,47 @@ void GacUIUnitTest_Start(const WString& appName, Nullable<UnitTestScreenConfig> 
 			CHECK_ERROR(succeeded, ERROR_MESSAGE_PREFIX L"Failed to write the snapshot file.");
 		}
 	}
+
+	{
+		File snapshotFile = GacUIUnitTest_PrepareSnapshotFile(appName, WString::Unmanaged(L"[commands].json"));
+
+		JsonFormatting formatting;
+		formatting.spaceAfterColon = true;
+		formatting.spaceAfterComma = true;
+		formatting.crlf = false;
+		formatting.compact = true;
+
+		auto textLog = stream::GenerateToStream([&unitTestProtocol, &formatting](stream::TextWriter& writer)
+		{
+			auto&& loggedFrames = unitTestProtocol.GetLoggedFrames();
+			for (auto [id, commands] : loggedFrames)
+			{
+				writer.WriteLine(L"========================================");
+				writer.WriteLine(itow(id));
+				writer.WriteLine(L"========================================");
+				for (auto command : *commands.Obj())
+				{
+					auto jsonLog = remoteprotocol::ConvertCustomTypeToJson(command);
+					writer.WriteLine(JsonToString(jsonLog, formatting));
+				}
+			};
+		});
+
+		bool skipWriting = false;
+		if (snapshotFile.Exists())
+		{
+			auto previousLog = snapshotFile.ReadAllTextByBom();
+			if (previousLog == textLog)
+			{
+				skipWriting = true;
+			}
+		}
+		if (!skipWriting)
+		{
+			bool succeeded = snapshotFile.WriteAllText(textLog, true, stream::BomEncoder::Utf8);
+			CHECK_ERROR(succeeded, ERROR_MESSAGE_PREFIX L"Failed to write the snapshot file.");
+		}
+	}
 #undef ERROR_MESSAGE_PREFIX
 }
 
