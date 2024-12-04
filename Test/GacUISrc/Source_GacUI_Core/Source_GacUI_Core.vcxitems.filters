@@ -46,6 +46,9 @@
     <Filter Include="PlatformProviders\Remote\ProtocolCombinators">
       <UniqueIdentifier>{e14f29ac-0fb5-49d4-bb16-e9fd57104835}</UniqueIdentifier>
     </Filter>
+    <Filter Include="PlatformProviders\Remote\Protocol\FrameOperations">
+      <UniqueIdentifier>{f7073608-c87a-405d-a9bb-7331963bc267}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiDocument.cpp">
@@ -195,6 +198,9 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Hosted\GuiHostedApplication.cpp">
       <Filter>PlatformProviders\Hosted</Filter>
     </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Remote\Protocol\FrameOperations\GuiRemoteProtocolSchema_BuildFrame.cpp">
+      <Filter>PlatformProviders\Remote\Protocol\FrameOperations</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiDocument.h">
@@ -297,6 +303,9 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Hosted\GuiHostedApplication.h">
       <Filter>PlatformProviders\Hosted</Filter>
     </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Remote\Protocol\FrameOperations\GuiRemoteProtocolSchema_BuildFrame.h">
+      <Filter>PlatformProviders\Remote\Protocol\FrameOperations</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Remote\Protocol\Protocol_Controller.txt">
@@ -306,6 +315,21 @@
       <Filter>PlatformProviders\Remote\Protocol</Filter>
     </Text>
     <Text Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Remote\Protocol\Protocol_MainWindow.txt">
+      <Filter>PlatformProviders\Remote\Protocol</Filter>
+    </Text>
+    <Text Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Remote\Protocol\Protocol_SyncDom.txt">
+      <Filter>PlatformProviders\Remote\Protocol</Filter>
+    </Text>
+    <Text Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Remote\Protocol\Protocol_IO.txt">
+      <Filter>PlatformProviders\Remote\Protocol</Filter>
+    </Text>
+    <Text Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Remote\Protocol\Protocol_Renderer.txt">
+      <Filter>PlatformProviders\Remote\Protocol</Filter>
+    </Text>
+    <Text Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Remote\Protocol\Protocol_Renderer_BasicElements.txt">
+      <Filter>PlatformProviders\Remote\Protocol</Filter>
+    </Text>
+    <Text Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Remote\Protocol\Protocol_Renderer_ImageFrame.txt">
       <Filter>PlatformProviders\Remote\Protocol</Filter>
     </Text>
   </ItemGroup>
