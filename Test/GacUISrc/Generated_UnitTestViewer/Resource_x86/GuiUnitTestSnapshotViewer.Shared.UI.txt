@@ -84,10 +84,6 @@ namespace gaclib_controls
 
         prop ElementsAsJsonText : string{GetElementsAsJsonText}
 
-        func GetCommandsAsJsonText() : (string);
-
-        prop CommandsAsJsonText : string{GetCommandsAsJsonText}
-
         func GetDomAsJsonText() : (string);
 
         prop DomAsJsonText : string{GetDomAsJsonText}

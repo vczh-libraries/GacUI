@@ -112,6 +112,26 @@ File GacUIUnitTest_PrepareSnapshotFile(const WString& appName, const WString& ex
 #undef ERROR_MESSAGE_PREFIX
 }
 
+void GacUIUnitTest_WriteSnapshotFileIfChanged(File& snapshotFile, const WString& textLog)
+{
+#define ERROR_MESSAGE_PREFIX L"GacUIUnitTest_WriteSnapshotFileIfChanged(File&, const WString&)#"
+	bool skipWriting = false;
+	if (snapshotFile.Exists())
+	{
+		auto previousLog = snapshotFile.ReadAllTextByBom();
+		if (previousLog == textLog)
+		{
+			skipWriting = true;
+		}
+	}
+	if (!skipWriting)
+	{
+		bool succeeded = snapshotFile.WriteAllText(textLog, true, stream::BomEncoder::Utf8);
+		CHECK_ERROR(succeeded, ERROR_MESSAGE_PREFIX L"Failed to write the snapshot file.");
+	}
+#undef ERROR_MESSAGE_PREFIX
+}
+
 void GacUIUnitTest_Start(const WString& appName, Nullable<UnitTestScreenConfig> config)
 {
 #define ERROR_MESSAGE_PREFIX L"GacUIUnitTest_Start(const WString&, Nullable<UnitTestScreenConfig>)#"
@@ -153,20 +173,7 @@ void GacUIUnitTest_Start(const WString& appName, Nullable<UnitTestScreenConfig> 
 			CHECK_ERROR(textLog == textLog2, ERROR_MESSAGE_PREFIX L"Serialization and deserialization doesn't match.");
 		}
 
-		bool skipWriting = false;
-		if (snapshotFile.Exists())
-		{
-			auto previousLog = snapshotFile.ReadAllTextByBom();
-			if (previousLog == textLog)
-			{
-				skipWriting = true;
-			}
-		}
-		if (!skipWriting)
-		{
-			bool succeeded = snapshotFile.WriteAllText(textLog, true, stream::BomEncoder::Utf8);
-			CHECK_ERROR(succeeded, ERROR_MESSAGE_PREFIX L"Failed to write the snapshot file.");
-		}
+		GacUIUnitTest_WriteSnapshotFileIfChanged(snapshotFile, textLog);
 	}
 
 	{
@@ -194,20 +201,7 @@ void GacUIUnitTest_Start(const WString& appName, Nullable<UnitTestScreenConfig> 
 			};
 		});
 
-		bool skipWriting = false;
-		if (snapshotFile.Exists())
-		{
-			auto previousLog = snapshotFile.ReadAllTextByBom();
-			if (previousLog == textLog)
-			{
-				skipWriting = true;
-			}
-		}
-		if (!skipWriting)
-		{
-			bool succeeded = snapshotFile.WriteAllText(textLog, true, stream::BomEncoder::Utf8);
-			CHECK_ERROR(succeeded, ERROR_MESSAGE_PREFIX L"Failed to write the snapshot file.");
-		}
+		GacUIUnitTest_WriteSnapshotFileIfChanged(snapshotFile, textLog);
 	}
 #undef ERROR_MESSAGE_PREFIX
 }

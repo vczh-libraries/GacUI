@@ -60,15 +60,6 @@ UnitTestSnapshotFrame
 			return elements;
 		}
 
-		WString GetCommandsAsJsonText() override
-		{
-			if (commands == L"")
-			{
-				commands = JsonToString(ConvertCustomTypeToJson(frame.commands), formatting);
-			}
-			return commands;
-		}
-
 		WString GetDomAsJsonText() override
 		{
 			if (dom == L"")

@@ -36,7 +36,6 @@
       {
         prop Name: string {const, not observe}
         prop ElementsAsJsonText: string {const, not observe}
-        prop CommandsAsJsonText: string {const, not observe}
         prop DomAsJsonText: string {const, not observe}
       }
 
@@ -140,12 +139,6 @@
                     <MultilineTextBox VerticalAlwaysVisible="false" HorizontalAlwaysVisible="false">
                       <att.BoundsComposition-set AlignmentToParent="left:5 top:5 right:5 bottom:5"/>
                       <att.Text-bind>(cast (IUnitTestSnapshotFrame^) textListFrames.SelectedItem).DomAsJsonText ?? ''</att.Text-bind>
-                    </MultilineTextBox>
-                  </TabPage>
-                  <TabPage Text="Commands">
-                    <MultilineTextBox VerticalAlwaysVisible="false" HorizontalAlwaysVisible="false">
-                      <att.BoundsComposition-set AlignmentToParent="left:5 top:5 right:5 bottom:5"/>
-                      <att.Text-bind>(cast (IUnitTestSnapshotFrame^) textListFrames.SelectedItem).CommandsAsJsonText ?? ''</att.Text-bind>
                     </MultilineTextBox>
                   </TabPage>
                   <TabPage Text="Elements">
