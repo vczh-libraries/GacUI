@@ -60,6 +60,7 @@
 - GacUI
   - Fix `Global Objects` in `GacUI.h`.
   - Diff algorithm based on `RenderingDom::domId` (begins from -1, not consecutive)
+    - Eliminate `RenderingCommand` and its branches, refactor `BuildDomFromRenderingCommands` into a class accepting commands as methods.
     - Add diff commands
     - Add a new `IGuiRemoteProtocol` combinator to do the diff.
   - Mouse wheel trigger functions.
