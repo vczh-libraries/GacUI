@@ -59,19 +59,20 @@
 
 - GacUI
   - Fix `Global Objects` in `GacUI.h`.
-  - Thinking about promote SyncDom data structures for unit test, and complete a diff algorithm.
-    - Unit test framework
-      - Diff algorithm based on `RenderingDom::domId` (begins from -1, not consecutive)
-      - Mouse wheel trigger functions.
-    - Unit Test Snapshot Viewer
-      - Show dom nodes in a tree view in the right side of the rendering tab optionally.
-      - Select dom node and jump to other tabs with highlight.
+  - Diff algorithm based on `RenderingDom::domId` (begins from -1, not consecutive)
+    - Add diff commands
+    - Add a new `IGuiRemoteProtocol` combinator to do the diff.
+  - Mouse wheel trigger functions.
+  - Unit Test Snapshot Viewer
+    - Show dom nodes in a tree view in the right side of the rendering tab optionally.
+    - Select dom node and jump to other tabs with highlight.
 - Remote protocol
   - Investigate about generating data structure in flat memory layout, so that no effort needed for binary serialization 
 - Remote protocol channel
   - `GuiRemoteController` -> remote protocol -> `IRemoteProtocolSchedulerChannel<T>` -> `IRemoteProtocolSchedulerChannelAsync<T>` (another thread)
   - `IRemoteProtocolRendererChannelAsync<T>` (another thread) -> `IRemoteProtocolRendererChannel<T>` -> remote protocol -> `INativeController`
   - Use sync in unit test instead of the current implementation
+    - Processing happens between `GuiRemoteProtocolFilterVerifier` and `UnitTestRemoteProtocol` in `GuiUnitTestUtilities.cpp`
 - Refactor unit test
   - Print remote protocol commands (SyncDom diff) in a separated file
 - Remote protocol redirection back to native rendering:
