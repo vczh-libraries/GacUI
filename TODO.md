@@ -62,7 +62,9 @@
   - Diff algorithm based on `RenderingDom::domId` (begins from -1, not consecutive)
     - Eliminate `RenderingCommand` and its branches, refactor `BuildDomFromRenderingCommands` into a class accepting commands as methods.
     - Add diff commands
-    - Add a new `IGuiRemoteProtocol` combinator to do the diff.
+    - Add a new `IGuiRemoteProtocol` combinator translating from rendering commands to dom/diff commands.
+    - Add an option to unit test start functions to enable/disable diff commands.
+      - For non-diff unit tests, it calls diff function explicitly to log both rendering/diff commands.
   - Mouse wheel trigger functions.
   - Unit Test Snapshot Viewer
     - Show dom nodes in a tree view in the right side of the rendering tab optionally.
@@ -72,6 +74,13 @@
 - Remote protocol channel
   - `GuiRemoteController` -> remote protocol -> `IRemoteProtocolSchedulerChannel<T>` -> `IRemoteProtocolSchedulerChannelAsync<T>` (another thread)
   - `IRemoteProtocolRendererChannelAsync<T>` (another thread) -> `IRemoteProtocolRendererChannel<T>` -> remote protocol -> `INativeController`
+  - Predefined `IRemoteProtocol(SchedulerRenderer)Channel<JsonValue>`
+    - Predefined `JsonValue` to `WString` converting
+    - Predefined `ObjectString<T>` converting 
+  - Predefined `IRemoteProtocol(SchedulerRenderer)Channel<T>` for binary
+  - Predefined `IRemoteProtocol(SchedulerRenderer)Channel<T>` for `IRemoteProtocolSchedulerChannelAsync<T>`
+  - Predefined `IRemoteProtocolRendererChannelAsync<T>`
+  - `IRemoteProtocolSchedulerChannel` and `IRemoteProtocolRendererChannel` could be merged into one single interface.
   - Use sync in unit test instead of the current implementation
     - Processing happens between `GuiRemoteProtocolFilterVerifier` and `UnitTestRemoteProtocol` in `GuiUnitTestUtilities.cpp`
 - Refactor unit test
