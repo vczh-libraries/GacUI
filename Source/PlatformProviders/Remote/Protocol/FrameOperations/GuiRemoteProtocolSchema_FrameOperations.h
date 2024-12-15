@@ -19,4 +19,11 @@ namespace vl::presentation::remoteprotocol
 	* parent of hittest: (compositionId << 2) + 3
 	*/
 	extern Ptr<RenderingDom>		BuildDomFromRenderingCommands(Ptr<collections::List<RenderingCommand>> commandListRef);
+
+	extern Ptr<RenderingDom>		CopyDom(Ptr<RenderingDom> root);
+
+	using DomIndexItem = collections::Pair<vint, Ptr<RenderingDom>>;
+	using DomIndex = collections::Array<DomIndexItem>;
+	extern void						BuildDomIndex(Ptr<RenderingDom> root, DomIndex& index);
+	extern void						UpdateDomInplace(Ptr<RenderingDom> root, DomIndex& index, const RenderingDom_DiffsInOrder& diffs);
 }

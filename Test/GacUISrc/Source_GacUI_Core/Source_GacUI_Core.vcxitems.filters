@@ -201,6 +201,12 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Remote\Protocol\FrameOperations\GuiRemoteProtocolSchema_BuildFrame.cpp">
       <Filter>PlatformProviders\Remote\Protocol\FrameOperations</Filter>
     </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Remote\Protocol\FrameOperations\GuiRemoteProtocolSchema_DiffFrame.cpp">
+      <Filter>PlatformProviders\Remote\Protocol\FrameOperations</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Remote\Protocol\FrameOperations\GuiRemoteProtocolSchema_CopyDom.cpp">
+      <Filter>PlatformProviders\Remote\Protocol\FrameOperations</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiDocument.h">
@@ -303,7 +309,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Hosted\GuiHostedApplication.h">
       <Filter>PlatformProviders\Hosted</Filter>
     </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Remote\Protocol\FrameOperations\GuiRemoteProtocolSchema_BuildFrame.h">
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Remote\Protocol\FrameOperations\GuiRemoteProtocolSchema_FrameOperations.h">
       <Filter>PlatformProviders\Remote\Protocol\FrameOperations</Filter>
     </ClInclude>
   </ItemGroup>

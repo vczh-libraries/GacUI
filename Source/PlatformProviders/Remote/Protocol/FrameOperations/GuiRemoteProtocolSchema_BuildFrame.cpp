@@ -1,4 +1,4 @@
-#include "GuiRemoteProtocolSchema_BuildFrame.h"
+#include "GuiRemoteProtocolSchema_FrameOperations.h"
 
 namespace vl::presentation::remoteprotocol
 {

@@ -8,7 +8,7 @@ Unit Test Snapsnot and other Utilities
 #define VCZH_PRESENTATION_GUIUNITTESTPROTOCOL_LOGGING
 
 #include "GuiUnitTestProtocol_Rendering.h"
-#include "../PlatformProviders/Remote/Protocol/FrameOperations/GuiRemoteProtocolSchema_BuildFrame.h"
+#include "../PlatformProviders/Remote/Protocol/FrameOperations/GuiRemoteProtocolSchema_FrameOperations.h"
 
 namespace vl::presentation::unittest
 {
