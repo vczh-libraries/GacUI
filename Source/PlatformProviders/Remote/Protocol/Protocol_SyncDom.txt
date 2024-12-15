@@ -32,7 +32,7 @@ struct RenderingDom_Diff
     var id: int;
     var isNew: bool;
     var content: RenderingDomContent?;
-    var children: RenderingDom[]?;
+    var children: int[];
 }
 
 struct RenderingDom_DiffsInOrder

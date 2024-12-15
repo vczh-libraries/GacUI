@@ -2534,13 +2534,10 @@
             "$ast": "StructMember",
             "name": "children",
             "type": {
-                "$ast": "OptionalType",
+                "$ast": "ArrayType",
                 "element": {
-                    "$ast": "ArrayType",
-                    "element": {
-                        "$ast": "ReferenceType",
-                        "name": "RenderingDom"
-                    }
+                    "$ast": "PrimitiveType",
+                    "type": "Integer"
                 }
             }
         }],

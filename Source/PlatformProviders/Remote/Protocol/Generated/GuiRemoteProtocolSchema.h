@@ -369,7 +369,7 @@ namespace vl::presentation::remoteprotocol
 		::vl::vint id;
 		bool isNew;
 		::vl::Nullable<::vl::presentation::remoteprotocol::RenderingDomContent> content;
-		::vl::Nullable<::vl::Ptr<::vl::collections::List<::vl::Ptr<::vl::presentation::remoteprotocol::RenderingDom>>>> children;
+		::vl::Ptr<::vl::collections::List<::vl::vint>> children;
 	};
 
 	struct RenderingDom_DiffsInOrder
