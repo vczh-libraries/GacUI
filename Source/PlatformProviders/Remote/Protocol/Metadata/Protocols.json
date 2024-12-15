@@ -2425,15 +2425,8 @@
     }, {
         "$ast": "StructDecl",
         "attributes": [],
-        "name": "RenderingDom",
+        "name": "RenderingDomContent",
         "members": [{
-            "$ast": "StructMember",
-            "name": "id",
-            "type": {
-                "$ast": "PrimitiveType",
-                "type": "Integer"
-            }
-        }, {
             "$ast": "StructMember",
             "name": "hitTestResult",
             "type": {
@@ -2477,6 +2470,26 @@
                 "$ast": "ReferenceType",
                 "name": "Rect"
             }
+        }],
+        "type": "Struct"
+    }, {
+        "$ast": "StructDecl",
+        "attributes": [],
+        "name": "RenderingDom",
+        "members": [{
+            "$ast": "StructMember",
+            "name": "id",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Integer"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "content",
+            "type": {
+                "$ast": "ReferenceType",
+                "name": "RenderingDomContent"
+            }
         }, {
             "$ast": "StructMember",
             "name": "children",
@@ -2489,6 +2502,65 @@
             }
         }],
         "type": "Class"
+    }, {
+        "$ast": "StructDecl",
+        "attributes": [],
+        "name": "RenderingDom_Diff",
+        "members": [{
+            "$ast": "StructMember",
+            "name": "id",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Integer"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "isNew",
+            "type": {
+                "$ast": "PrimitiveType",
+                "type": "Boolean"
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "content",
+            "type": {
+                "$ast": "OptionalType",
+                "element": {
+                    "$ast": "ReferenceType",
+                    "name": "RenderingDomContent"
+                }
+            }
+        }, {
+            "$ast": "StructMember",
+            "name": "children",
+            "type": {
+                "$ast": "OptionalType",
+                "element": {
+                    "$ast": "ArrayType",
+                    "element": {
+                        "$ast": "ReferenceType",
+                        "name": "RenderingDom"
+                    }
+                }
+            }
+        }],
+        "type": "Struct"
+    }, {
+        "$ast": "StructDecl",
+        "attributes": [],
+        "name": "RenderingDom_DiffsInOrder",
+        "members": [{
+            "$ast": "StructMember",
+            "name": "diffsInOrder",
+            "type": {
+                "$ast": "ArrayType",
+                "element": {
+                    "$ast": "ReferenceType",
+                    "name": "RenderingDom_Diff"
+                }
+            }
+        }],
+        "type": "Struct"
     }, {
         "$ast": "StructDecl",
         "attributes": [],

@@ -11,15 +11,33 @@ union ElementDescVariant
     ElementDesc_ImageFrame,
 }
 
-class RenderingDom
+struct RenderingDomContent
 {
-    var id: int;
     var hitTestResult: WindowHitTestResult?;
     var cursor: WindowSystemCursorType?;
     var element: int?;
     var bounds: Rect;
     var validArea: Rect;
+}
+
+class RenderingDom
+{
+    var id: int;
+    var content: RenderingDomContent;
     var children: RenderingDom[];
+}
+
+struct RenderingDom_Diff
+{
+    var id: int;
+    var isNew: bool;
+    var content: RenderingDomContent?;
+    var children: RenderingDom[]?;
+}
+
+struct RenderingDom_DiffsInOrder
+{
+    var diffsInOrder: RenderingDom_Diff[];
 }
 
 struct RenderingCommand_BeginBoundary

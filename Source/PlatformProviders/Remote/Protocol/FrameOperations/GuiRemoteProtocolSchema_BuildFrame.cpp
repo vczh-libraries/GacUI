@@ -79,7 +79,7 @@ namespace vl::presentation::remoteprotocol
 				// if the command is not clipped
 				for (vint i = domStack.Count() - 1; i >= min; i--)
 				{
-					if (domStack[i]->validArea.Contains(commandBounds) || i == 0)
+					if (domStack[i]->content.validArea.Contains(commandBounds) || i == 0)
 					{
 						// find the deepest node that could contain the command
 						popTo(i);
@@ -109,8 +109,8 @@ namespace vl::presentation::remoteprotocol
 						popTo(i);
 						auto parent = Ptr(new RenderingDom);
 						parent->id = newDomId;
-						parent->bounds = commandValidArea;
-						parent->validArea = commandValidArea;
+						parent->content.bounds = commandValidArea;
+						parent->content.validArea = commandValidArea;
 						push(parent);
 						found = true;
 						break;
@@ -135,15 +135,15 @@ namespace vl::presentation::remoteprotocol
 						command.boundary.bounds,
 						command.boundary.areaClippedBySelf,
 						(command.boundary.id << 2) + 3,
-						[&](auto&& dom) { return dom->validArea.Intersect(command.boundary.bounds); }
+						[&](auto&& dom) { return dom->content.validArea.Intersect(command.boundary.bounds); }
 						);
 
 					auto dom = Ptr(new RenderingDom);
 					dom->id = (command.boundary.id << 2) + 2;
-					dom->hitTestResult = command.boundary.hitTestResult;
-					dom->cursor = command.boundary.cursor;
-					dom->bounds = command.boundary.bounds;
-					dom->validArea = command.boundary.areaClippedBySelf;
+					dom->content.hitTestResult = command.boundary.hitTestResult;
+					dom->content.cursor = command.boundary.cursor;
+					dom->content.bounds = command.boundary.bounds;
+					dom->content.validArea = command.boundary.areaClippedBySelf;
 					domBoundaries.Add(push(dom));
 				},
 				[&](const remoteprotocol::RenderingCommand_EndBoundary& command)
@@ -159,14 +159,14 @@ namespace vl::presentation::remoteprotocol
 						command.rendering.bounds,
 						command.rendering.areaClippedByParent,
 						(command.element << 2) + 1,
-						[&](auto&& dom) { return dom->validArea; }
+						[&](auto&& dom) { return dom->content.validArea; }
 						);
 
 					auto dom = Ptr(new RenderingDom);
 					dom->id = (command.element << 2) + 0;
-					dom->element = command.element;
-					dom->bounds = command.rendering.bounds;
-					dom->validArea = command.rendering.bounds.Intersect(command.rendering.areaClippedByParent);
+					dom->content.element = command.element;
+					dom->content.bounds = command.rendering.bounds;
+					dom->content.validArea = command.rendering.bounds.Intersect(command.rendering.areaClippedByParent);
 					push(dom);
 				}));
 		}

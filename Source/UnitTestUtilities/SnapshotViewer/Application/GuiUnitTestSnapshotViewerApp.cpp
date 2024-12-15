@@ -49,17 +49,17 @@ Helper Functions
 		auto bounds = new GuiBoundsComposition;
 		container->AddChild(bounds);
 
-		bounds->SetExpectedBounds(Rect({ dom->bounds.x1 - x,dom->bounds.y1 - y }, { dom->bounds.Width(),dom->bounds.Height() }));
+		bounds->SetExpectedBounds(Rect({ dom->content.bounds.x1 - x,dom->content.bounds.y1 - y }, { dom->content.bounds.Width(),dom->content.bounds.Height() }));
 
-		auto cursor = dom->cursor;
-		if (dom->cursor)
+		auto cursor = dom->content.cursor;
+		if (dom->content.cursor)
 		{
 			cursorCounter++;
 		}
 
-		if (dom->hitTestResult && cursorCounter == 0)
+		if (dom->content.hitTestResult && cursorCounter == 0)
 		{
-			switch (dom->hitTestResult.Value())
+			switch (dom->content.hitTestResult.Value())
 			{
 			case INativeWindowListener::BorderLeft:
 			case INativeWindowListener::BorderRight:
@@ -94,9 +94,9 @@ Helper Functions
 			bounds->SetAssociatedCursor(GetCurrentController()->ResourceService()->GetSystemCursor(cursor.Value()));
 		}
 
-		if (dom->element)
+		if (dom->content.element)
 		{
-			switch (trace.createdElements->Get(dom->element.Value()))
+			switch (trace.createdElements->Get(dom->content.element.Value()))
 			{
 			case remoteprotocol::RendererType::FocusRectangle:
 				{
@@ -108,7 +108,7 @@ Helper Functions
 				{
 					auto element = Ptr(GuiSolidBorderElement::Create());
 					bounds->SetOwnedElement(element);
-					auto& desc = frame.elements->Get(dom->element.Value()).Get<remoteprotocol::ElementDesc_SolidBorder>();
+					auto& desc = frame.elements->Get(dom->content.element.Value()).Get<remoteprotocol::ElementDesc_SolidBorder>();
 
 					element->SetColor(desc.borderColor);
 					element->SetShape(desc.shape);
@@ -118,7 +118,7 @@ Helper Functions
 				{
 					auto element = Ptr(Gui3DBorderElement::Create());
 					bounds->SetOwnedElement(element);
-					auto& desc = frame.elements->Get(dom->element.Value()).Get<remoteprotocol::ElementDesc_SinkBorder>();
+					auto& desc = frame.elements->Get(dom->content.element.Value()).Get<remoteprotocol::ElementDesc_SinkBorder>();
 
 					element->SetColors(desc.leftTopColor, desc.rightBottomColor);
 				}
@@ -127,7 +127,7 @@ Helper Functions
 				{
 					auto element = Ptr(Gui3DSplitterElement::Create());
 					bounds->SetOwnedElement(element);
-					auto& desc = frame.elements->Get(dom->element.Value()).Get<remoteprotocol::ElementDesc_SinkSplitter>();
+					auto& desc = frame.elements->Get(dom->content.element.Value()).Get<remoteprotocol::ElementDesc_SinkSplitter>();
 
 					element->SetColors(desc.leftTopColor, desc.rightBottomColor);
 					element->SetDirection(desc.direction);
@@ -137,7 +137,7 @@ Helper Functions
 				{
 					auto element = Ptr(GuiSolidBackgroundElement::Create());
 					bounds->SetOwnedElement(element);
-					auto& desc = frame.elements->Get(dom->element.Value()).Get<remoteprotocol::ElementDesc_SolidBackground>();
+					auto& desc = frame.elements->Get(dom->content.element.Value()).Get<remoteprotocol::ElementDesc_SolidBackground>();
 
 					element->SetColor(desc.backgroundColor);
 					element->SetShape(desc.shape);
@@ -147,7 +147,7 @@ Helper Functions
 				{
 					auto element = Ptr(GuiGradientBackgroundElement::Create());
 					bounds->SetOwnedElement(element);
-					auto& desc = frame.elements->Get(dom->element.Value()).Get<remoteprotocol::ElementDesc_GradientBackground>();
+					auto& desc = frame.elements->Get(dom->content.element.Value()).Get<remoteprotocol::ElementDesc_GradientBackground>();
 
 					element->SetColors(desc.leftTopColor, desc.rightBottomColor);
 					element->SetDirection(desc.direction);
@@ -158,7 +158,7 @@ Helper Functions
 				{
 					auto element = Ptr(GuiInnerShadowElement::Create());
 					bounds->SetOwnedElement(element);
-					auto& desc = frame.elements->Get(dom->element.Value()).Get<remoteprotocol::ElementDesc_InnerShadow>();
+					auto& desc = frame.elements->Get(dom->content.element.Value()).Get<remoteprotocol::ElementDesc_InnerShadow>();
 
 					element->SetColor(desc.shadowColor);
 					element->SetThickness(desc.thickness);
@@ -168,7 +168,7 @@ Helper Functions
 				{
 					auto element = Ptr(GuiSolidLabelElement::Create());
 					bounds->SetOwnedElement(element);
-					auto& desc = frame.elements->Get(dom->element.Value()).Get<remoteprotocol::ElementDesc_SolidLabel>();
+					auto& desc = frame.elements->Get(dom->content.element.Value()).Get<remoteprotocol::ElementDesc_SolidLabel>();
 
 					element->SetColor(desc.textColor);
 					element->SetAlignments(GetAlignment(desc.horizontalAlignment), GetAlignment(desc.verticalAlignment));
@@ -184,7 +184,7 @@ Helper Functions
 				{
 					auto element = Ptr(GuiPolygonElement::Create());
 					bounds->SetOwnedElement(element);
-					auto& desc = frame.elements->Get(dom->element.Value()).Get<remoteprotocol::ElementDesc_Polygon>();
+					auto& desc = frame.elements->Get(dom->content.element.Value()).Get<remoteprotocol::ElementDesc_Polygon>();
 
 					element->SetSize(desc.size);
 					element->SetBorderColor(desc.borderColor);
@@ -200,7 +200,7 @@ Helper Functions
 				{
 					auto element = Ptr(GuiImageFrameElement::Create());
 					bounds->SetOwnedElement(element);
-					auto& desc = frame.elements->Get(dom->element.Value()).Get<remoteprotocol::ElementDesc_ImageFrame>();
+					auto& desc = frame.elements->Get(dom->content.element.Value()).Get<remoteprotocol::ElementDesc_ImageFrame>();
 
 					element->SetAlignments(GetAlignment(desc.horizontalAlignment), GetAlignment(desc.verticalAlignment));
 					element->SetStretch(desc.stretch);
@@ -228,11 +228,11 @@ Helper Functions
 		{
 			for (auto child : *dom->children.Obj())
 			{
-				InstallDom(trace, frame, bounds, dom->bounds.x1, dom->bounds.y1, child, cursorCounter);
+				InstallDom(trace, frame, bounds, dom->content.bounds.x1, dom->content.bounds.y1, child, cursorCounter);
 			}
 		}
 
-		if (dom->cursor)
+		if (dom->content.cursor)
 		{
 			cursorCounter--;
 		}
