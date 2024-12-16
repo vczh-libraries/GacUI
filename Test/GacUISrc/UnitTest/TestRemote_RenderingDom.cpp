@@ -135,4 +135,48 @@ TEST_FILE
 		TEST_ASSERT(jsonFormatted == jsonParsed);
 		TEST_ASSERT(jsonFormatted == jsonCopied);
 	});
+
+	TEST_CASE(L"BuildDomIndex")
+	{
+	});
+
+	TEST_CASE(L"Diff SingleRoot -> SingleRoot")
+	{
+	});
+
+	TEST_CASE(L"Diff BinaryTree -> BinaryTree")
+	{
+	});
+
+	TEST_CASE(L"Diff SingleRoot with content changed")
+	{
+	});
+
+	TEST_CASE(L"Diff BinaryTree with root content changed")
+	{
+	});
+
+	TEST_CASE(L"Diff BinaryTree with leaves content changed")
+	{
+	});
+
+	TEST_CASE(L"Diff SingleRoot with children null -> []")
+	{
+	});
+
+	TEST_CASE(L"Diff SingleRoot with children [] -> null")
+	{
+	});
+
+	TEST_CASE(L"Diff SingleRoot -> BinaryTree with children null")
+	{
+	});
+
+	TEST_CASE(L"Diff SingleRoot -> BinaryTree with children []")
+	{
+	});
+
+	TEST_CASE(L"Diff BinaryTree -> SingleRoot")
+	{
+	});
 }
