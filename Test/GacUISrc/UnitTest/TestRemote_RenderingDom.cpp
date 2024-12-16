@@ -86,9 +86,8 @@ TEST_FILE
 	formatting.compact = true;
 	formatting.indentation = L"  ";
 
-	TEST_CASE(L"CopyDom SingleRoot")
+	auto runCopyDom = [&](Ptr<json::JsonNode> jsonNode)
 	{
-		auto jsonNode = json::JsonParse(WString::Unmanaged(inputDomJsonSingleRoot), jsonParser);
 		auto jsonFormatted = GenerateToStream([&](TextWriter& writer)
 		{
 			json::JsonPrint(jsonNode, writer, formatting);
@@ -109,31 +108,18 @@ TEST_FILE
 
 		TEST_ASSERT(jsonFormatted == jsonParsed);
 		TEST_ASSERT(jsonFormatted == jsonCopied);
+	};
+
+	TEST_CASE(L"CopyDom SingleRoot")
+	{
+		auto jsonNode = json::JsonParse(WString::Unmanaged(inputDomJsonSingleRoot), jsonParser);
+		runCopyDom(jsonNode);
 	});
 
 	TEST_CASE(L"CopyDom BinaryTree")
 	{
 		auto jsonNode = json::JsonParse(WString::Unmanaged(inputDomJsonBinaryTree), jsonParser);
-		auto jsonFormatted = GenerateToStream([&](TextWriter& writer)
-		{
-			json::JsonPrint(jsonNode, writer, formatting);
-		});
-
-		Ptr<RenderingDom> domParsed;
-		ConvertJsonToCustomType(jsonNode, domParsed);
-		auto jsonParsed = GenerateToStream([&](TextWriter& writer)
-		{
-			json::JsonPrint(ConvertCustomTypeToJson(domParsed), writer, formatting);
-		});
-
-		auto domCopied = CopyDom(domParsed);
-		auto jsonCopied = GenerateToStream([&](TextWriter& writer)
-		{
-			json::JsonPrint(ConvertCustomTypeToJson(domCopied), writer, formatting);
-		});
-
-		TEST_ASSERT(jsonFormatted == jsonParsed);
-		TEST_ASSERT(jsonFormatted == jsonCopied);
+		runCopyDom(jsonNode);
 	});
 
 	TEST_CASE(L"BuildDomIndex SingleRoot")
@@ -174,12 +160,43 @@ TEST_FILE
 		TEST_ASSERT(index[4].value == dom->children->Get(0)->children->Get(1));
 	});
 
+	auto runDiffDom = [&](Ptr<RenderingDom> domFrom, Ptr<RenderingDom> domTo, RenderingDom_DiffsInOrder& diffs)
+	{
+		DomIndex indexFrom, indexTo;
+		BuildDomIndex(domFrom, indexFrom);
+		BuildDomIndex(domTo, indexTo);
+		DiffDom(domFrom, indexFrom, domTo, indexTo, diffs);
+		UpdateDomInplace(domFrom, indexFrom, diffs);
+		
+		auto jsonFrom = GenerateToStream([&](TextWriter& writer)
+		{
+			json::JsonPrint(ConvertCustomTypeToJson(domFrom), writer, formatting);
+		});
+		auto jsonTo = GenerateToStream([&](TextWriter& writer)
+		{
+			json::JsonPrint(ConvertCustomTypeToJson(domTo), writer, formatting);
+		});
+		TEST_ASSERT(jsonFrom == jsonTo);
+	};
+
 	TEST_CASE(L"Diff SingleRoot -> SingleRoot")
 	{
+		Ptr<RenderingDom> dom;
+		ConvertJsonToCustomType(json::JsonParse(WString::Unmanaged(inputDomJsonBinaryTree), jsonParser), dom);
+
+		RenderingDom_DiffsInOrder diffs;
+		runDiffDom(dom, dom, diffs);
+		TEST_ASSERT(diffs.diffsInOrder->Count() == 0);
 	});
 
 	TEST_CASE(L"Diff BinaryTree -> BinaryTree")
 	{
+		Ptr<RenderingDom> dom;
+		ConvertJsonToCustomType(json::JsonParse(WString::Unmanaged(inputDomJsonBinaryTree), jsonParser), dom);
+
+		RenderingDom_DiffsInOrder diffs;
+		runDiffDom(dom, dom, diffs);
+		TEST_ASSERT(diffs.diffsInOrder->Count() == 0);
 	});
 
 	TEST_CASE(L"Diff SingleRoot with content changed")

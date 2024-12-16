@@ -26,4 +26,5 @@ namespace vl::presentation::remoteprotocol
 	using DomIndex = collections::Array<DomIndexItem>;
 	extern void						BuildDomIndex(Ptr<RenderingDom> root, DomIndex& index);
 	extern void						UpdateDomInplace(Ptr<RenderingDom> root, DomIndex& index, const RenderingDom_DiffsInOrder& diffs);
+	extern void						DiffDom(Ptr<RenderingDom> domFrom, DomIndex& indexFrom, Ptr<RenderingDom> domTo, DomIndex& indexTo, RenderingDom_DiffsInOrder& diffs);
 }

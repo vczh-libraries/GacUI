@@ -47,4 +47,9 @@ namespace vl::presentation::remoteprotocol
 	void UpdateDomInplace(Ptr<RenderingDom> root, DomIndex& index, const RenderingDom_DiffsInOrder& diffs)
 	{
 	}
+
+	void DiffDom(Ptr<RenderingDom> domFrom, DomIndex& indexFrom, Ptr<RenderingDom> domTo, DomIndex& indexTo, RenderingDom_DiffsInOrder& diffs)
+	{
+		diffs.diffsInOrder = Ptr(new List<RenderingDom_Diff>);
+	}
 }
