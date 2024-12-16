@@ -136,8 +136,42 @@ TEST_FILE
 		TEST_ASSERT(jsonFormatted == jsonCopied);
 	});
 
-	TEST_CASE(L"BuildDomIndex")
+	TEST_CASE(L"BuildDomIndex SingleRoot")
 	{
+		auto jsonNode = json::JsonParse(WString::Unmanaged(inputDomJsonSingleRoot), jsonParser);
+
+		Ptr<RenderingDom> dom;
+		ConvertJsonToCustomType(jsonNode, dom);
+
+		DomIndex index;
+		BuildDomIndex(dom, index);
+
+		TEST_ASSERT(index.Count() == 1);
+		TEST_ASSERT(index[0].key == -1);
+		TEST_ASSERT(index[0].value == dom);
+	});
+
+	TEST_CASE(L"BuildDomIndex BinaryTree")
+	{
+		auto jsonNode = json::JsonParse(WString::Unmanaged(inputDomJsonBinaryTree), jsonParser);
+
+		Ptr<RenderingDom> dom;
+		ConvertJsonToCustomType(jsonNode, dom);
+
+		DomIndex index;
+		BuildDomIndex(dom, index);
+
+		TEST_ASSERT(index.Count() == 5);
+		TEST_ASSERT(index[0].key == -1);
+		TEST_ASSERT(index[0].value == dom);
+		TEST_ASSERT(index[1].key == 0);
+		TEST_ASSERT(index[1].value == dom->children->Get(0));
+		TEST_ASSERT(index[2].key == 1);
+		TEST_ASSERT(index[2].value == dom->children->Get(1));
+		TEST_ASSERT(index[3].key == 2);
+		TEST_ASSERT(index[3].value == dom->children->Get(0)->children->Get(0));
+		TEST_ASSERT(index[4].key == 3);
+		TEST_ASSERT(index[4].value == dom->children->Get(0)->children->Get(1));
 	});
 
 	TEST_CASE(L"Diff SingleRoot -> SingleRoot")
