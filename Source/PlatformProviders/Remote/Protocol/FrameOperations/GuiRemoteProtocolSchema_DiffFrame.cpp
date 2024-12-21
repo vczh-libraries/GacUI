@@ -86,14 +86,12 @@ namespace vl::presentation::remoteprotocol
 					{
 						markCreated();
 					}
-					else if (to.diffType == RenderingDom_DiffType::Modified)
+					else
 					{
 						// Modified will be delayed and processed together with Created 
 						readingFrom++;
-					}
-					else
-					{
-						CHECK_ERROR(to.diffType == RenderingDom_DiffType::Deleted, ERROR_MESSAGE_PREFIX L"Diff of existing node must have diffType != Created.");
+						readingTo++;
+						CHECK_ERROR(to.diffType != RenderingDom_DiffType::Created, ERROR_MESSAGE_PREFIX L"Diff of existing node must have diffType != Created.");
 					}
 				}
 				else
