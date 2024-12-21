@@ -17,14 +17,14 @@ namespace vl::presentation::remoteprotocol
 		return counter;
 	}
 
-	void BuildDomIndexInternal(Ptr<RenderingDom> root, DomIndex& index, vint& writing)
+	void BuildDomIndexInternal(Ptr<RenderingDom> dom, vint parentId, DomIndex& index, vint& writing)
 	{
-		index[writing++] = { root->id,root };
-		if (root->children)
+		index[writing++] = { dom->id,parentId,dom };
+		if (dom->children)
 		{
-			for (auto child : *root->children.Obj())
+			for (auto child : *dom->children.Obj())
 			{
-				BuildDomIndexInternal(child, index, writing);
+				BuildDomIndexInternal(child, dom->id, index, writing);
 			}
 		}
 	}
@@ -36,10 +36,10 @@ namespace vl::presentation::remoteprotocol
 		index.Resize(count);
 		if (count > 0)
 		{
-			BuildDomIndexInternal(root, index, writing);
+			BuildDomIndexInternal(root, -1, index, writing);
 			SortLambda(&index[0], count, [](const DomIndexItem& a, const DomIndexItem& b)
 			{
-				return a.key <=> b.key;
+				return a.id <=> b.id;
 			});
 		}
 	}
@@ -59,7 +59,7 @@ namespace vl::presentation::remoteprotocol
 
 		auto pushDeleted = [&]()
 		{
-			auto&& dom = indexFrom[readingFrom++].value;
+			auto&& dom = indexFrom[readingFrom++].dom;
 			RenderingDom_Diff diff;
 
 			diff.id = dom->id;
@@ -69,7 +69,7 @@ namespace vl::presentation::remoteprotocol
 
 		auto pushCreated = [&]()
 		{
-			auto&& dom = indexTo[readingTo++].value;
+			auto&& dom = indexTo[readingTo++].dom;
 			RenderingDom_Diff diff;
 			diff.id = dom->id;
 			diff.diffType = RenderingDom_DiffType::Created;
@@ -89,8 +89,8 @@ namespace vl::presentation::remoteprotocol
 
 		auto pushModified = [&]()
 		{
-			auto&& domFrom = indexFrom[readingFrom++].value;
-			auto&& domTo = indexTo[readingTo++].value;
+			auto&& domFrom = indexFrom[readingFrom++].dom;
+			auto&& domTo = indexTo[readingTo++].dom;
 			RenderingDom_Diff diff;
 			diff.id = domFrom->id;
 			diff.diffType = RenderingDom_DiffType::Modified;
@@ -146,11 +146,11 @@ namespace vl::presentation::remoteprotocol
 		{
 			if (readingFrom < indexFrom.Count() || readingTo < indexTo.Count())
 			{
-				if (indexFrom[readingFrom].key < indexTo[readingTo].key)
+				if (indexFrom[readingFrom].id < indexTo[readingTo].id)
 				{
 					pushDeleted();
 				}
-				else if (indexFrom[readingFrom].key > indexTo[readingTo].key)
+				else if (indexFrom[readingFrom].id > indexTo[readingTo].id)
 				{
 					pushCreated();
 				}

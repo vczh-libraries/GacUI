@@ -133,8 +133,8 @@ TEST_FILE
 		BuildDomIndex(dom, index);
 
 		TEST_ASSERT(index.Count() == 1);
-		TEST_ASSERT(index[0].key == -1);
-		TEST_ASSERT(index[0].value == dom);
+		TEST_ASSERT(index[0].id == -1);
+		TEST_ASSERT(index[0].dom == dom);
 	});
 
 	TEST_CASE(L"BuildDomIndex BinaryTree")
@@ -148,16 +148,21 @@ TEST_FILE
 		BuildDomIndex(dom, index);
 
 		TEST_ASSERT(index.Count() == 5);
-		TEST_ASSERT(index[0].key == -1);
-		TEST_ASSERT(index[0].value == dom);
-		TEST_ASSERT(index[1].key == 0);
-		TEST_ASSERT(index[1].value == dom->children->Get(0));
-		TEST_ASSERT(index[2].key == 1);
-		TEST_ASSERT(index[2].value == dom->children->Get(1));
-		TEST_ASSERT(index[3].key == 2);
-		TEST_ASSERT(index[3].value == dom->children->Get(0)->children->Get(0));
-		TEST_ASSERT(index[4].key == 3);
-		TEST_ASSERT(index[4].value == dom->children->Get(0)->children->Get(1));
+		TEST_ASSERT(index[0].id == -1);
+		TEST_ASSERT(index[0].parentId == -1);
+		TEST_ASSERT(index[0].dom == dom);
+		TEST_ASSERT(index[1].id == 0);
+		TEST_ASSERT(index[1].parentId == -1);
+		TEST_ASSERT(index[1].dom == dom->children->Get(0));
+		TEST_ASSERT(index[2].id == 1);
+		TEST_ASSERT(index[2].parentId == -1);
+		TEST_ASSERT(index[2].dom == dom->children->Get(1));
+		TEST_ASSERT(index[3].id == 2);
+		TEST_ASSERT(index[3].parentId == 0);
+		TEST_ASSERT(index[3].dom == dom->children->Get(0)->children->Get(0));
+		TEST_ASSERT(index[4].id == 3);
+		TEST_ASSERT(index[4].parentId == 0);
+		TEST_ASSERT(index[4].dom == dom->children->Get(0)->children->Get(1));
 	});
 
 	auto runDiffDom = [&](Ptr<RenderingDom> domFrom, Ptr<RenderingDom> domTo, RenderingDom_DiffsInOrder& diffs)
@@ -182,7 +187,7 @@ TEST_FILE
 	TEST_CASE(L"Diff SingleRoot -> SingleRoot")
 	{
 		Ptr<RenderingDom> dom;
-		ConvertJsonToCustomType(json::JsonParse(WString::Unmanaged(inputDomJsonBinaryTree), jsonParser), dom);
+		ConvertJsonToCustomType(json::JsonParse(WString::Unmanaged(inputDomJsonSingleRoot), jsonParser), dom);
 
 		RenderingDom_DiffsInOrder diffs;
 		runDiffDom(dom, dom, diffs);
@@ -201,6 +206,15 @@ TEST_FILE
 
 	TEST_CASE(L"Diff SingleRoot with content changed")
 	{
+		Ptr<RenderingDom> domFrom, domTo;
+		ConvertJsonToCustomType(json::JsonParse(WString::Unmanaged(inputDomJsonSingleRoot), jsonParser), domFrom);
+		domTo = CopyDom(domFrom);
+
+		domTo->content.element = 0;
+
+		RenderingDom_DiffsInOrder diffs;
+		runDiffDom(domFrom, domTo, diffs);
+		TEST_ASSERT(diffs.diffsInOrder->Count() == 1);
 	});
 
 	TEST_CASE(L"Diff BinaryTree with root content changed")
