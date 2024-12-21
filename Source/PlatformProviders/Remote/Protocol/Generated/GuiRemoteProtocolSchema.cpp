@@ -222,6 +222,21 @@ namespace vl::presentation::remoteprotocol
 #undef ERROR_MESSAGE_PREFIX
 	}
 
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::RenderingDom_DiffType>(const ::vl::presentation::remoteprotocol::RenderingDom_DiffType & value)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::RenderingDom_DiffType>(const ::vl::presentation::remoteprotocol::RenderingDom_DiffType&)#"
+		auto node = Ptr(new glr::json::JsonString);
+		switch (value)
+		{
+		case ::vl::presentation::remoteprotocol::RenderingDom_DiffType::Deleted: node->content.value = WString::Unmanaged(L"Deleted"); break;
+		case ::vl::presentation::remoteprotocol::RenderingDom_DiffType::Created: node->content.value = WString::Unmanaged(L"Created"); break;
+		case ::vl::presentation::remoteprotocol::RenderingDom_DiffType::Modified: node->content.value = WString::Unmanaged(L"Modified"); break;
+		default: CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported enum value.");
+		}
+		return node;
+#undef ERROR_MESSAGE_PREFIX
+	}
+
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::NativeCoordinate>(const ::vl::presentation::NativeCoordinate & value)
 	{
 		auto node = Ptr(new glr::json::JsonObject);
@@ -616,7 +631,7 @@ namespace vl::presentation::remoteprotocol
 	{
 		auto node = Ptr(new glr::json::JsonObject);
 		ConvertCustomTypeToJsonField(node, L"id", value.id);
-		ConvertCustomTypeToJsonField(node, L"isNew", value.isNew);
+		ConvertCustomTypeToJsonField(node, L"diffType", value.diffType);
 		ConvertCustomTypeToJsonField(node, L"content", value.content);
 		ConvertCustomTypeToJsonField(node, L"children", value.children);
 		return node;
@@ -846,6 +861,18 @@ namespace vl::presentation::remoteprotocol
 		if (jsonNode->content.value == L"ImageFrame") value = ::vl::presentation::remoteprotocol::RendererType::ImageFrame; else
 		if (jsonNode->content.value == L"UnsupportedColorizedText") value = ::vl::presentation::remoteprotocol::RendererType::UnsupportedColorizedText; else
 		if (jsonNode->content.value == L"UnsupportedDocument") value = ::vl::presentation::remoteprotocol::RendererType::UnsupportedDocument; else
+		CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported enum value.");
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::RenderingDom_DiffType>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::RenderingDom_DiffType& value)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<::vl::presentation::remoteprotocol::RenderingDom_DiffType>(Ptr<JsonNode>, ::vl::presentation::remoteprotocol::RenderingDom_DiffType&)#"
+		auto jsonNode = node.Cast<glr::json::JsonString>();
+		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
+		if (jsonNode->content.value == L"Deleted") value = ::vl::presentation::remoteprotocol::RenderingDom_DiffType::Deleted; else
+		if (jsonNode->content.value == L"Created") value = ::vl::presentation::remoteprotocol::RenderingDom_DiffType::Created; else
+		if (jsonNode->content.value == L"Modified") value = ::vl::presentation::remoteprotocol::RenderingDom_DiffType::Modified; else
 		CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported enum value.");
 #undef ERROR_MESSAGE_PREFIX
 	}
@@ -1488,7 +1515,7 @@ namespace vl::presentation::remoteprotocol
 		for (auto field : jsonNode->fields)
 		{
 			if (field->name.value == L"id") ConvertJsonToCustomType(field->value, value.id); else
-			if (field->name.value == L"isNew") ConvertJsonToCustomType(field->value, value.isNew); else
+			if (field->name.value == L"diffType") ConvertJsonToCustomType(field->value, value.diffType); else
 			if (field->name.value == L"content") ConvertJsonToCustomType(field->value, value.content); else
 			if (field->name.value == L"children") ConvertJsonToCustomType(field->value, value.children); else
 			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");

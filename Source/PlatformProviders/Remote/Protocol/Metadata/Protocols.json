@@ -2503,6 +2503,20 @@
         }],
         "type": "Class"
     }, {
+        "$ast": "EnumDecl",
+        "attributes": [],
+        "name": "RenderingDom_DiffType",
+        "members": [{
+            "$ast": "EnumMember",
+            "name": "Deleted"
+        }, {
+            "$ast": "EnumMember",
+            "name": "Created"
+        }, {
+            "$ast": "EnumMember",
+            "name": "Modified"
+        }]
+    }, {
         "$ast": "StructDecl",
         "attributes": [],
         "name": "RenderingDom_Diff",
@@ -2515,10 +2529,10 @@
             }
         }, {
             "$ast": "StructMember",
-            "name": "isNew",
+            "name": "diffType",
             "type": {
-                "$ast": "PrimitiveType",
-                "type": "Boolean"
+                "$ast": "ReferenceType",
+                "name": "RenderingDom_DiffType"
             }
         }, {
             "$ast": "StructMember",

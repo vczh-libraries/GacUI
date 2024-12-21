@@ -140,6 +140,13 @@ namespace vl::presentation::remoteprotocol
 		UnsupportedDocument,
 	};
 
+	enum class RenderingDom_DiffType
+	{
+		Deleted,
+		Created,
+		Modified,
+	};
+
 	using ElementDescVariant = ::vl::Variant<
 		::vl::presentation::remoteprotocol::ElementDesc_SolidBorder,
 		::vl::presentation::remoteprotocol::ElementDesc_SinkBorder,
@@ -367,7 +374,7 @@ namespace vl::presentation::remoteprotocol
 	struct RenderingDom_Diff
 	{
 		::vl::vint id;
-		bool isNew;
+		::vl::presentation::remoteprotocol::RenderingDom_DiffType diffType;
 		::vl::Nullable<::vl::presentation::remoteprotocol::RenderingDomContent> content;
 		::vl::Ptr<::vl::collections::List<::vl::vint>> children;
 	};
@@ -421,6 +428,7 @@ namespace vl::presentation::remoteprotocol
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::ElementSolidLabelMeasuringRequest>(const ::vl::presentation::remoteprotocol::ElementSolidLabelMeasuringRequest & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::INativeImage::FormatType>(const ::vl::presentation::INativeImage::FormatType & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::RendererType>(const ::vl::presentation::remoteprotocol::RendererType & value);
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::RenderingDom_DiffType>(const ::vl::presentation::remoteprotocol::RenderingDom_DiffType & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::NativeCoordinate>(const ::vl::presentation::NativeCoordinate & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::NativePoint>(const ::vl::presentation::NativePoint & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::NativeSize>(const ::vl::presentation::NativeSize & value);
@@ -481,6 +489,7 @@ namespace vl::presentation::remoteprotocol
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ElementSolidLabelMeasuringRequest>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::ElementSolidLabelMeasuringRequest& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::INativeImage::FormatType>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::INativeImage::FormatType& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::RendererType>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::RendererType& value);
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::RenderingDom_DiffType>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::RenderingDom_DiffType& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::NativeCoordinate>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::NativeCoordinate& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::NativePoint>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::NativePoint& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::NativeSize>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::NativeSize& value);

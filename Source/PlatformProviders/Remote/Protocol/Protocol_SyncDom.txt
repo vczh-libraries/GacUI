@@ -27,10 +27,17 @@ class RenderingDom
     var children: RenderingDom[];
 }
 
+enum RenderingDom_DiffType
+{
+    Deleted,
+    Created,
+    Modified,
+}
+
 struct RenderingDom_Diff
 {
     var id: int;
-    var isNew: bool;
+    var diffType: RenderingDom_DiffType;
     var content: RenderingDomContent?;
     var children: int[];
 }
