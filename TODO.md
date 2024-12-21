@@ -90,6 +90,7 @@
   - Implement the remote protocol on a native `INativeController` instance.
     - It could not be used on `GuiHostedController` or `GuiRemoteController`, which is not a native implementation.
   - The experiment will only run a very simple UI that covers all implemented remote protocol so far.
+- `UpdateDomInplace` performed binary search, create a common implementation to share with `SortedList`.
 
 ## Release Milestone (1.2.12.0)
 
