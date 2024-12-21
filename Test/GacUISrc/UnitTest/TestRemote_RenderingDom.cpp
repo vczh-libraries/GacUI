@@ -245,6 +245,10 @@ TEST_FILE
 	{
 	});
 
+	TEST_CASE(L"Diff SingleRoot -> BinaryTree")
+	{
+	});
+
 	TEST_CASE(L"Diff BinaryTree -> SingleRoot")
 	{
 	});
