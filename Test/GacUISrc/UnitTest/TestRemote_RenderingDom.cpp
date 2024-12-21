@@ -182,6 +182,10 @@ TEST_FILE
 			json::JsonPrint(ConvertCustomTypeToJson(domTo), writer, formatting);
 		});
 		TEST_ASSERT(jsonFrom == jsonTo);
+
+		DomIndex indexFrom2;
+		BuildDomIndex(domFrom, indexFrom2);
+		TEST_ASSERT(CompareEnumerable(indexFrom, indexFrom2) == 0);
 	};
 
 	TEST_CASE(L"Diff SingleRoot -> SingleRoot")

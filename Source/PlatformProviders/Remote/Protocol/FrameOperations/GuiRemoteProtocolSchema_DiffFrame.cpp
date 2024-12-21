@@ -29,6 +29,17 @@ namespace vl::presentation::remoteprotocol
 		}
 	}
 
+	void SortDomIndex(DomIndex& index)
+	{
+		if (index.Count() > 0)
+		{
+			SortLambda(&index[0], index.Count(), [](const DomIndexItem& a, const DomIndexItem& b)
+			{
+				return a.id <=> b.id;
+			});
+		}
+	}
+
 	void BuildDomIndex(Ptr<RenderingDom> root, DomIndex& index)
 	{
 		vint count = CountDomIndex(root);
@@ -37,21 +48,137 @@ namespace vl::presentation::remoteprotocol
 		if (count > 0)
 		{
 			BuildDomIndexInternal(root, -1, index, writing);
-			SortLambda(&index[0], count, [](const DomIndexItem& a, const DomIndexItem& b)
-			{
-				return a.id <=> b.id;
-			});
+			SortDomIndex(index);
 		}
 	}
 
 	void UpdateDomInplace(Ptr<RenderingDom> root, DomIndex& index, const RenderingDom_DiffsInOrder& diffs)
 	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::UpdateDomInplace(Ptr<RenderingDom>, DomIndex&, const RenderingDom_DiffsInOrder&)#"
+		CHECK_ERROR(root && root->id == -1, ERROR_MESSAGE_PREFIX L"Roots of a DOM must have ID -1.");
+
+		vint createdCount = 0;
+
+		// creating
+		{
+			vint readingFrom = 0;
+			vint readingTo = 0;
+
+			auto markCreated = [&]()
+			{
+				auto&& to = diffs.diffsInOrder->Get(readingTo++);
+				CHECK_ERROR(to.diffType == RenderingDom_DiffType::Created, ERROR_MESSAGE_PREFIX L"Diff of unexisting node must have diffType == Created.");
+				createdCount++;
+			};
+
+			while (diffs.diffsInOrder && readingTo < diffs.diffsInOrder->Count())
+			{
+				if (readingFrom < index.Count())
+				{
+					auto&& from = index[readingFrom];
+					auto&& to = diffs.diffsInOrder->Get(readingTo);
+					if (from.id < to.id)
+					{
+						// Nothing happened to this DOM node
+						readingFrom++;
+					}
+					else if (from.id > to.id)
+					{
+						markCreated();
+					}
+					else if (to.diffType == RenderingDom_DiffType::Modified)
+					{
+						// Modified will be delayed and processed together with Created 
+						readingFrom++;
+					}
+					else
+					{
+						CHECK_ERROR(to.diffType == RenderingDom_DiffType::Deleted, ERROR_MESSAGE_PREFIX L"Diff of existing node must have diffType != Created.");
+					}
+				}
+				else
+				{
+					markCreated();
+				}
+			}
+		}
+
+		{
+			vint writing = index.Count();
+			index.Resize(index.Count() + createdCount);
+			if (diffs.diffsInOrder)
+			{
+
+				for (auto&& to : *diffs.diffsInOrder.Obj())
+				{
+					if (to.diffType == RenderingDom_DiffType::Created)
+					{
+						auto dom = Ptr(new RenderingDom);
+						dom->id = to.id;
+						index[writing++] = { to.id,-1,dom };
+					}
+				}
+			}
+			SortDomIndex(index);
+		}
+
+		// modifying
+		{
+			vint readingFrom = 0;
+			vint readingTo = 0;
+
+			while (readingFrom < index.Count() && (diffs.diffsInOrder && readingTo < diffs.diffsInOrder->Count()))
+			{
+				bool hasFrom = readingFrom < index.Count();
+				bool hasTo = diffs.diffsInOrder && readingTo < diffs.diffsInOrder->Count();
+
+				auto&& from = index[readingFrom];
+				auto&& to = diffs.diffsInOrder->Get(readingTo);
+				if (from.id < to.id)
+				{
+					readingFrom++;
+				}
+				else if (from.id > to.id)
+				{
+					readingTo++;
+				}
+				else if (to.diffType != RenderingDom_DiffType::Deleted)
+				{
+					readingFrom++;
+					readingTo++;
+
+					if (to.content)
+					{
+						from.dom->content = to.content.Value();
+					}
+
+					if (to.children)
+					{
+						if (to.children->Count() == 0)
+						{
+							from.dom->children = nullptr;
+						}
+						else
+						{
+							from.dom->children = Ptr(new List<Ptr<RenderingDom>>);
+							for (vint childId : *to.children.Obj())
+							{
+
+							}
+						}
+					}
+				}
+			}
+		}
+
+		// deleting
+#undef ERROR_MESSAGE_PREFIX
 	}
 
 	void DiffDom(Ptr<RenderingDom> domFrom, DomIndex& indexFrom, Ptr<RenderingDom> domTo, DomIndex& indexTo, RenderingDom_DiffsInOrder& diffs)
 	{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::DiffDom(Ptr<RenderingDom>, DomIndex&, Ptr<RenderingDom>, DomIndex&, RenderingDom_DiffsInOrder&)#"
-		CHECK_ERROR(domFrom && domTo && domFrom->id == domTo->id, ERROR_MESSAGE_PREFIX L"Roots if two DOM tree must have the same ID.");
+		CHECK_ERROR(domFrom && domTo && domFrom->id == domTo->id, ERROR_MESSAGE_PREFIX L"Roots of two DOMs tree must have the same ID.");
 		diffs.diffsInOrder = Ptr(new List<RenderingDom_Diff>);
 
 		vint readingFrom = 0;
