@@ -113,6 +113,7 @@ namespace vl::presentation::remoteprotocol
 				{
 					if (to.diffType == RenderingDom_DiffType::Created)
 					{
+						// parentId will be filled later
 						auto dom = Ptr(new RenderingDom);
 						dom->id = to.id;
 						index[writing++] = { to.id,-1,dom };
@@ -181,6 +182,8 @@ namespace vl::presentation::remoteprotocol
 									}
 									else
 									{
+										// Fill parentId of the new DOM node
+										index[mid].parentId = from.id;
 										from.dom->children->Add(index[mid].dom);
 										found = true;
 										break;
@@ -195,6 +198,66 @@ namespace vl::presentation::remoteprotocol
 		}
 
 		// deleting
+		{
+			vint readingFrom = 0;
+			vint readingTo = 0;
+			List<vint> deleteIndices;
+
+			while (diffs.diffsInOrder && readingTo < diffs.diffsInOrder->Count())
+			{
+				if (readingFrom < index.Count())
+				{
+					auto&& from = index[readingFrom];
+					auto&& to = diffs.diffsInOrder->Get(readingTo);
+					if (from.id < to.id)
+					{
+						readingFrom++;
+					}
+					else if (from.id > to.id)
+					{
+						readingTo++;
+					}
+					else
+					{
+						if (to.diffType == RenderingDom_DiffType::Deleted)
+						{
+							deleteIndices.Add(readingFrom);
+						}
+						readingFrom++;
+						readingTo++;
+					}
+				}
+				else
+				{
+					CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Nodes to be deleted must should appear in the index before modification");
+				}
+			}
+
+			vint reading = 0;
+			vint writing = 0;
+			vint testing = 0;
+
+			while (reading < index.Count())
+			{
+				if (testing < deleteIndices.Count() && deleteIndices[testing] == reading)
+				{
+					// A node to delete is found, mark and skip
+					testing++;
+					reading++;
+				}
+				else
+				{
+					if (reading != writing)
+					{
+						// Compact index by removing deleted entries
+						index[writing] = index[reading];
+					}
+					reading++;
+					writing++;
+				}
+			}
+			index.Resize(index.Count() - deleteIndices.Count());
+		}
 #undef ERROR_MESSAGE_PREFIX
 	}
 
