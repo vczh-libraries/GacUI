@@ -141,53 +141,56 @@ namespace vl::presentation::remoteprotocol
 				{
 					readingTo++;
 				}
-				else if (to.diffType != RenderingDom_DiffType::Deleted)
+				else
 				{
 					readingFrom++;
 					readingTo++;
 
-					if (to.content)
+					if (to.diffType != RenderingDom_DiffType::Deleted)
 					{
-						from.dom->content = to.content.Value();
-					}
-
-					if (to.children)
-					{
-						if (to.children->Count() == 0)
+						if (to.content)
 						{
-							from.dom->children = nullptr;
+							from.dom->content = to.content.Value();
 						}
-						else
+
+						if (to.children)
 						{
-							from.dom->children = Ptr(new List<Ptr<RenderingDom>>);
-							for (vint childId : *to.children.Obj())
+							if (to.children->Count() == 0)
 							{
-								// Binary search in index for childId
-								vint start = 0;
-								vint end = index.Count() - 1;
-								bool found = false;
-								while (start <= end)
+								from.dom->children = nullptr;
+							}
+							else
+							{
+								from.dom->children = Ptr(new List<Ptr<RenderingDom>>);
+								for (vint childId : *to.children.Obj())
 								{
-									vint mid = (start + end) / 2;
-									vint midId = index[mid].id;
-									if (childId < midId)
+									// Binary search in index for childId
+									vint start = 0;
+									vint end = index.Count() - 1;
+									bool found = false;
+									while (start <= end)
 									{
-										end = mid - 1;
+										vint mid = (start + end) / 2;
+										vint midId = index[mid].id;
+										if (childId < midId)
+										{
+											end = mid - 1;
+										}
+										else if (childId > midId)
+										{
+											start = mid + 1;
+										}
+										else
+										{
+											// Fill parentId of the new DOM node
+											index[mid].parentId = from.id;
+											from.dom->children->Add(index[mid].dom);
+											found = true;
+											break;
+										}
 									}
-									else if (childId > midId)
-									{
-										start = mid + 1;
-									}
-									else
-									{
-										// Fill parentId of the new DOM node
-										index[mid].parentId = from.id;
-										from.dom->children->Add(index[mid].dom);
-										found = true;
-										break;
-									}
+									CHECK_ERROR(found, ERROR_MESSAGE_PREFIX L"Unknown DOM id in diff.");
 								}
-								CHECK_ERROR(found, ERROR_MESSAGE_PREFIX L"Unknown DOM id in diff.");
 							}
 						}
 					}
@@ -355,7 +358,7 @@ namespace vl::presentation::remoteprotocol
 
 		while (true)
 		{
-			if (readingFrom < indexFrom.Count() || readingTo < indexTo.Count())
+			if (readingFrom < indexFrom.Count() && readingTo < indexTo.Count())
 			{
 				if (indexFrom[readingFrom].id < indexTo[readingTo].id)
 				{

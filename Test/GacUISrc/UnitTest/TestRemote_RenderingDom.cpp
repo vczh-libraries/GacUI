@@ -292,19 +292,40 @@ TEST_FILE
 		TEST_ASSERT(diffs.diffsInOrder->Count() == 0);
 	});
 
-	TEST_CASE(L"Diff SingleRoot -> BinaryTree with children null")
+	TEST_CASE(L"Diff SingleRoot -> BinaryTree")
 	{
+		Ptr<RenderingDom> domFrom, domTo;
+		ConvertJsonToCustomType(json::JsonParse(WString::Unmanaged(inputDomJsonSingleRoot), jsonParser), domFrom);
+		ConvertJsonToCustomType(json::JsonParse(WString::Unmanaged(inputDomJsonBinaryTree), jsonParser), domTo);
+
+		RenderingDom_DiffsInOrder diffs;
+		runDiffDom(domFrom, domTo, diffs);
+		TEST_ASSERT(diffs.diffsInOrder->Count() == 5);
 	});
 
 	TEST_CASE(L"Diff SingleRoot -> BinaryTree with children []")
 	{
-	});
+		Ptr<RenderingDom> domFrom, domTo;
+		ConvertJsonToCustomType(json::JsonParse(WString::Unmanaged(inputDomJsonSingleRoot), jsonParser), domFrom);
+		ConvertJsonToCustomType(json::JsonParse(WString::Unmanaged(inputDomJsonBinaryTree), jsonParser), domTo);
 
-	TEST_CASE(L"Diff SingleRoot -> BinaryTree")
-	{
+		domTo->children->Get(0)->children->Get(0)->children = Ptr(new List<Ptr<RenderingDom>>);
+		domTo->children->Get(0)->children->Get(1)->children = Ptr(new List<Ptr<RenderingDom>>);
+		domTo->children->Get(1)->children = Ptr(new List<Ptr<RenderingDom>>);
+
+		RenderingDom_DiffsInOrder diffs;
+		runDiffDom(domFrom, domTo, diffs);
+		TEST_ASSERT(diffs.diffsInOrder->Count() == 5);
 	});
 
 	TEST_CASE(L"Diff BinaryTree -> SingleRoot")
 	{
+		Ptr<RenderingDom> domFrom, domTo;
+		ConvertJsonToCustomType(json::JsonParse(WString::Unmanaged(inputDomJsonBinaryTree), jsonParser), domFrom);
+		ConvertJsonToCustomType(json::JsonParse(WString::Unmanaged(inputDomJsonSingleRoot), jsonParser), domTo);
+
+		RenderingDom_DiffsInOrder diffs;
+		runDiffDom(domFrom, domTo, diffs);
+		TEST_ASSERT(diffs.diffsInOrder->Count() == 5);
 	});
 }
