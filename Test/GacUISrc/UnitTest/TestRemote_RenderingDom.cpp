@@ -6,6 +6,28 @@ using namespace vl::stream;
 using namespace vl::glr;
 using namespace vl::presentation::remoteprotocol;
 
+static void AssertDomsEqual(Ptr<RenderingDom> dom1, Ptr<RenderingDom> dom2)
+{
+	TEST_ASSERT(dom1->id == dom2->id);
+	TEST_ASSERT(dom1->content.hitTestResult == dom2->content.hitTestResult);
+	TEST_ASSERT(dom1->content.cursor == dom2->content.cursor);
+	TEST_ASSERT(dom1->content.element == dom2->content.element);
+	TEST_ASSERT(dom1->content.bounds == dom2->content.bounds);
+	TEST_ASSERT(dom1->content.validArea == dom2->content.validArea);
+
+	vint count1 = dom1->children ? dom1->children->Count() : 0;
+	vint count2 = dom2->children ? dom2->children->Count() : 0;
+	TEST_ASSERT(count1 == count2);
+
+	if (count1 > 0)
+	{
+		for (auto [child, i] : indexed(*dom1->children.Obj()))
+		{
+			AssertDomsEqual(child, dom2->children->Get(i));
+		}
+	}
+};
+
 TEST_FILE
 {
 	const wchar_t* inputDomJsonSingleRoot = LR"Dom(
@@ -172,16 +194,7 @@ TEST_FILE
 		BuildDomIndex(domTo, indexTo);
 		DiffDom(domFrom, indexFrom, domTo, indexTo, diffs);
 		UpdateDomInplace(domFrom, indexFrom, diffs);
-		
-		auto jsonFrom = GenerateToStream([&](TextWriter& writer)
-		{
-			json::JsonPrint(ConvertCustomTypeToJson(domFrom), writer, formatting);
-		});
-		auto jsonTo = GenerateToStream([&](TextWriter& writer)
-		{
-			json::JsonPrint(ConvertCustomTypeToJson(domTo), writer, formatting);
-		});
-		TEST_ASSERT(jsonFrom == jsonTo);
+		AssertDomsEqual(domFrom, domTo);
 
 		DomIndex indexFrom2;
 		BuildDomIndex(domFrom, indexFrom2);
@@ -223,18 +236,60 @@ TEST_FILE
 
 	TEST_CASE(L"Diff BinaryTree with root content changed")
 	{
+		Ptr<RenderingDom> domFrom, domTo;
+		ConvertJsonToCustomType(json::JsonParse(WString::Unmanaged(inputDomJsonBinaryTree), jsonParser), domFrom);
+		domTo = CopyDom(domFrom);
+
+		domTo->content.element = 0;
+
+		RenderingDom_DiffsInOrder diffs;
+		runDiffDom(domFrom, domTo, diffs);
+		TEST_ASSERT(diffs.diffsInOrder->Count() == 1);
 	});
 
 	TEST_CASE(L"Diff BinaryTree with leaves content changed")
 	{
+		Ptr<RenderingDom> domFrom, domTo;
+		ConvertJsonToCustomType(json::JsonParse(WString::Unmanaged(inputDomJsonBinaryTree), jsonParser), domFrom);
+		domTo = CopyDom(domFrom);
+
+		domTo->children->Get(0)->children->Get(0)->content.element = 0;
+		domTo->children->Get(0)->children->Get(1)->content.element = 0;
+		domTo->children->Get(1)->content.element = 0;
+
+		RenderingDom_DiffsInOrder diffs;
+		runDiffDom(domFrom, domTo, diffs);
+		TEST_ASSERT(diffs.diffsInOrder->Count() == 3);
 	});
 
 	TEST_CASE(L"Diff SingleRoot with children null -> []")
 	{
+		Ptr<RenderingDom> domFrom, domTo;
+		ConvertJsonToCustomType(json::JsonParse(WString::Unmanaged(inputDomJsonSingleRoot), jsonParser), domFrom);
+		domTo = CopyDom(domFrom);
+
+		TEST_ASSERT(!domFrom->children);
+		TEST_ASSERT(!domTo->children);
+		domTo->children = Ptr(new List<Ptr<RenderingDom>>);
+
+		RenderingDom_DiffsInOrder diffs;
+		runDiffDom(domFrom, domTo, diffs);
+		TEST_ASSERT(diffs.diffsInOrder->Count() == 0);
 	});
 
 	TEST_CASE(L"Diff SingleRoot with children [] -> null")
 	{
+		Ptr<RenderingDom> domFrom, domTo;
+		ConvertJsonToCustomType(json::JsonParse(WString::Unmanaged(inputDomJsonSingleRoot), jsonParser), domFrom);
+		domTo = CopyDom(domFrom);
+
+		TEST_ASSERT(!domFrom->children);
+		TEST_ASSERT(!domTo->children);
+		domFrom->children = Ptr(new List<Ptr<RenderingDom>>);
+
+		RenderingDom_DiffsInOrder diffs;
+		runDiffDom(domFrom, domTo, diffs);
+		TEST_ASSERT(diffs.diffsInOrder->Count() == 0);
 	});
 
 	TEST_CASE(L"Diff SingleRoot -> BinaryTree with children null")
