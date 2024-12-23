@@ -65,6 +65,7 @@
     - Add a new `IGuiRemoteProtocol` combinator translating from rendering commands to dom/diff commands.
     - Add an option to unit test start functions to enable/disable diff commands.
       - For non-diff unit tests, it calls diff function explicitly to log both rendering/diff commands.
+        - Call `UpdateDomInplace` to verify results.
   - Mouse wheel trigger functions.
   - Unit Test Snapshot Viewer
     - Show dom nodes in a tree view in the right side of the rendering tab optionally.

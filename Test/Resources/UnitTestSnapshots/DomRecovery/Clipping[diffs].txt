@@ -1,0 +1,13 @@
+﻿========================================
+1
+========================================
+0: {"hitTestResult": null, "cursor": null, "element": null, "bounds": {"x1": 0, "y1": 0, "x2": 0, "y2": 0}, "validArea": {"x1": 0, "y1": 0, "x2": 0, "y2": 0}}
+  4: {"hitTestResult": null, "cursor": null, "element": 1, "bounds": {"x1": 0, "y1": 0, "x2": 640, "y2": 480}, "validArea": {"x1": 0, "y1": 0, "x2": 640, "y2": 480}}
+    8: {"hitTestResult": null, "cursor": null, "element": 2, "bounds": {"x1": 20, "y1": -20, "x2": 120, "y2": 500}, "validArea": {"x1": 20, "y1": 0, "x2": 120, "y2": 480}}
+    12: {"hitTestResult": null, "cursor": null, "element": 3, "bounds": {"x1": 520, "y1": -20, "x2": 620, "y2": 500}, "validArea": {"x1": 520, "y1": 0, "x2": 620, "y2": 480}}
+    17: {"hitTestResult": null, "cursor": null, "element": null, "bounds": {"x1": 10, "y1": 10, "x2": 630, "y2": 470}, "validArea": {"x1": 10, "y1": 10, "x2": 630, "y2": 470}}
+      16: {"hitTestResult": null, "cursor": null, "element": 4, "bounds": {"x1": -20, "y1": 20, "x2": 660, "y2": 120}, "validArea": {"x1": 10, "y1": 20, "x2": 630, "y2": 120}}
+      20: {"hitTestResult": null, "cursor": null, "element": 5, "bounds": {"x1": -20, "y1": 360, "x2": 660, "y2": 460}, "validArea": {"x1": 10, "y1": 360, "x2": 630, "y2": 460}}
+========================================
+2
+========================================

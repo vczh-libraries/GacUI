@@ -225,7 +225,7 @@ void GacUIUnitTest_Start(const WString& appName, Nullable<UnitTestScreenConfig> 
 				writer.WriteLine(L"========================================");
 
 				auto nextDom = BuildDomFromRenderingCommands(commands);
-				if (dom)
+				if (!dom)
 				{
 					dom = nextDom;
 					BuildDomIndex(dom, domIndex);
