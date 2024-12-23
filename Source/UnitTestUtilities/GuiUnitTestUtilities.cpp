@@ -203,6 +203,82 @@ void GacUIUnitTest_Start(const WString& appName, Nullable<UnitTestScreenConfig> 
 
 		GacUIUnitTest_WriteSnapshotFileIfChanged(snapshotFile, textLog);
 	}
+
+	{
+		File snapshotFile = GacUIUnitTest_PrepareSnapshotFile(appName, WString::Unmanaged(L"[diffs].txt"));
+
+		JsonFormatting formatting;
+		formatting.spaceAfterColon = true;
+		formatting.spaceAfterComma = true;
+		formatting.crlf = false;
+		formatting.compact = true;
+
+		auto textLog = stream::GenerateToStream([&unitTestProtocol, &formatting](stream::TextWriter& writer)
+		{
+			Ptr<RenderingDom> dom;
+			DomIndex domIndex;
+			auto&& loggedFrames = unitTestProtocol.GetLoggedFrames();
+			for (auto [id, commands] : loggedFrames)
+			{
+				writer.WriteLine(L"========================================");
+				writer.WriteLine(itow(id));
+				writer.WriteLine(L"========================================");
+
+				auto nextDom = BuildDomFromRenderingCommands(commands);
+				if (dom)
+				{
+					dom = nextDom;
+					BuildDomIndex(dom, domIndex);
+
+					List<Pair<vint, Ptr<RenderingDom>>> lines;
+					lines.Add({ 0,dom });
+					for (vint i = 0; i < lines.Count(); i++)
+					{
+						for (vint j = 0; j < lines[i].key; j++)
+						{
+							writer.WriteString(L"  ");
+						}
+
+						auto line = lines[i].value;
+						writer.WriteString(itow(line->id));
+						writer.WriteString(L": ");
+
+						auto jsonLog = remoteprotocol::ConvertCustomTypeToJson(line->content);
+						writer.WriteLine(JsonToString(jsonLog, formatting));
+
+						if (line->children)
+						{
+							for (auto child : *line->children.Obj())
+							{
+								lines.Add({ lines[i].key + 1,child });
+							}
+						}
+					}
+				}
+				else
+				{
+					DomIndex nextDomIndex;
+					BuildDomIndex(nextDom, nextDomIndex);
+
+					RenderingDom_DiffsInOrder diffs;
+					DiffDom(dom, domIndex, nextDom, nextDomIndex, diffs);
+					if (diffs.diffsInOrder)
+					{
+						for (auto&& diff : *diffs.diffsInOrder.Obj())
+						{
+							auto jsonLog = remoteprotocol::ConvertCustomTypeToJson(diff);
+							writer.WriteLine(JsonToString(jsonLog, formatting));
+						}
+					}
+
+					dom = nextDom;
+					domIndex = std::move(nextDomIndex);
+				}
+			};
+		});
+
+		GacUIUnitTest_WriteSnapshotFileIfChanged(snapshotFile, textLog);
+	}
 #undef ERROR_MESSAGE_PREFIX
 }
 
