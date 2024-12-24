@@ -61,8 +61,11 @@
   - Fix `Global Objects` in `GacUI.h`.
   - Diff algorithm based on `RenderingDom::domId` (begins from -1, not consecutive)
     - Eliminate `RenderingCommand` and its branches, refactor `BuildDomFromRenderingCommands` into a class accepting commands as methods.
+      - Log using own format.
+      - Stop storing `RenderingCommand`.
+      - Refactor `BuildDomFromRenderingCommands` into a class.
     - Add diff commands
-    - Add a new `IGuiRemoteProtocol` combinator translating from rendering commands to dom/diff commands.
+      - Add a new `IGuiRemoteProtocol` combinator translating from rendering commands to dom/diff commands.
     - Add an option to unit test start functions to enable/disable diff commands.
       - For non-diff unit tests, it calls diff function explicitly to log both rendering/diff commands.
         - Call `UpdateDomInplace` to verify results.
@@ -84,8 +87,6 @@
   - `IRemoteProtocolSchedulerChannel` and `IRemoteProtocolRendererChannel` could be merged into one single interface.
   - Use sync in unit test instead of the current implementation
     - Processing happens between `GuiRemoteProtocolFilterVerifier` and `UnitTestRemoteProtocol` in `GuiUnitTestUtilities.cpp`
-- Refactor unit test
-  - Print remote protocol commands (SyncDom diff) in a separated file
 - Remote protocol redirection back to native rendering:
   - In the test project, C++ side will expose the remote protocol via dll.
   - Implement the remote protocol on a native `INativeController` instance.
