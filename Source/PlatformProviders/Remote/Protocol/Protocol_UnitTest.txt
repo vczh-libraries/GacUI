@@ -1,0 +1,29 @@
+union UnitTest_ElementDescVariant
+{
+    ElementDesc_SolidBorder,
+    ElementDesc_SinkBorder,
+    ElementDesc_SinkSplitter,
+    ElementDesc_SolidBackground,
+    ElementDesc_GradientBackground,
+    ElementDesc_InnerShadow,
+    ElementDesc_Polygon,
+    ElementDesc_SolidLabel,
+    ElementDesc_ImageFrame,
+}
+
+struct UnitTest_RenderingFrame
+{
+    var frameId : int;
+    var frameName : string?;
+    var windowSize: WindowSizingConfig;
+    var elements: UnitTest_ElementDescVariant[int];
+    var root: RenderingDom;
+}
+
+struct UnitTest_RenderingTrace
+{
+    var createdElements: RendererType[int];
+    var imageCreations: ImageCreation[.id];
+    var imageMetadatas: ImageMetadata[.id];
+    var frames: UnitTest_RenderingFrame[];
+}

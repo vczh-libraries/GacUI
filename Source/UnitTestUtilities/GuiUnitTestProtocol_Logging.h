@@ -34,7 +34,7 @@ UnitTestRemoteProtocol
 			{
 				if (candidateFrame)
 				{
-					auto descs = Ptr(new collections::Dictionary<vint, remoteprotocol::ElementDescVariant>);
+					auto descs = Ptr(new collections::Dictionary<vint, ElementDescVariant>);
 					CopyFrom(*descs.Obj(), this->lastElementDescs);
 					this->loggedTrace.frames->Add({
 						candidateFrame->frameId,

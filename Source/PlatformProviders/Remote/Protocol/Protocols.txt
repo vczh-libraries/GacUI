@@ -5,3 +5,4 @@ Protocol_Renderer_BasicElements
 Protocol_Renderer_ImageFrame
 Protocol_Renderer
 Protocol_SyncDom
+Protocol_UnitTest

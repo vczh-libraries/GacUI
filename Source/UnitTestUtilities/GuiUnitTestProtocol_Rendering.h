@@ -17,7 +17,7 @@ namespace vl::presentation::unittest
 UnitTestRemoteProtocol
 ***********************************************************************/
 
-	using ElementDescVariant = remoteprotocol::ElementDescVariant;
+	using ElementDescVariant = remoteprotocol::UnitTest_ElementDescVariant;
 	using UnitTestRenderingDom = remoteprotocol::RenderingDom;
 
 	struct UnitTestLoggedFrame
@@ -38,18 +38,18 @@ UnitTestRemoteProtocol
 		using ImageMetadataMap = collections::Dictionary<vint, remoteprotocol::ImageMetadata>;
 
 	protected:
-		remoteprotocol::RenderingDomBuilder		renderingDomBuilder;
-		remoteprotocol::RenderingTrace			loggedTrace;
-		UnitTestLoggedFrameList					loggedFrames;
-		bool									lastRenderingCommandsOpening = false;
+		remoteprotocol::RenderingDomBuilder				renderingDomBuilder;
+		remoteprotocol::UnitTest_RenderingTrace			loggedTrace;
+		UnitTestLoggedFrameList							loggedFrames;
+		bool											lastRenderingCommandsOpening = false;
 
-		ElementDescMap							lastElementDescs;
-		IdSet									removedElementIds;
-		IdSet									removedImageIds;
-		Ptr<Base64ToImageMetadataMap>			cachedImageMetadatas;
+		ElementDescMap									lastElementDescs;
+		IdSet											removedElementIds;
+		IdSet											removedImageIds;
+		Ptr<Base64ToImageMetadataMap>					cachedImageMetadatas;
 
-		remoteprotocol::ElementMeasurings		measuringForNextRendering;
-		regex::Regex							regexCrLf{ L"/n|/r(/n)?" };
+		remoteprotocol::ElementMeasurings				measuringForNextRendering;
+		regex::Regex									regexCrLf{ L"/n|/r(/n)?" };
 
 		void ResetCreatedObjects()
 		{
@@ -65,7 +65,7 @@ UnitTestRemoteProtocol
 			: TProtocol(std::forward<TArgs&&>(args)...)
 		{
 			ResetCreatedObjects();
-			loggedTrace.frames = Ptr(new collections::List<remoteprotocol::RenderingFrame>);
+			loggedTrace.frames = Ptr(new collections::List<remoteprotocol::UnitTest_RenderingFrame>);
 		}
 
 	protected:

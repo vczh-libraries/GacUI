@@ -38,8 +38,8 @@ Helper Functions
 	}
 
 	void InstallDom(
-		const remoteprotocol::RenderingTrace& trace,
-		const remoteprotocol::RenderingFrame& frame,
+		const remoteprotocol::UnitTest_RenderingTrace& trace,
+		const remoteprotocol::UnitTest_RenderingFrame& frame,
 		GuiGraphicsComposition* container,
 		vint x,
 		vint y,
@@ -238,7 +238,7 @@ Helper Functions
 		}
 	}
 	
-	GuiBoundsComposition* BuildRootComposition(const remoteprotocol::RenderingTrace& trace, const remoteprotocol::RenderingFrame& frame)
+	GuiBoundsComposition* BuildRootComposition(const remoteprotocol::UnitTest_RenderingTrace& trace, const remoteprotocol::UnitTest_RenderingFrame& frame)
 	{
 		vint w = frame.windowSize.clientBounds.Width().value;
 		vint h = frame.windowSize.clientBounds.Height().value;

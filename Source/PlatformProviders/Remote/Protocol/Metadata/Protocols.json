@@ -2391,38 +2391,6 @@
             }
         }
     }, {
-        "$ast": "UnionDecl",
-        "attributes": [],
-        "name": "ElementDescVariant",
-        "members": [{
-            "$ast": "UnionMember",
-            "name": "ElementDesc_SolidBorder"
-        }, {
-            "$ast": "UnionMember",
-            "name": "ElementDesc_SinkBorder"
-        }, {
-            "$ast": "UnionMember",
-            "name": "ElementDesc_SinkSplitter"
-        }, {
-            "$ast": "UnionMember",
-            "name": "ElementDesc_SolidBackground"
-        }, {
-            "$ast": "UnionMember",
-            "name": "ElementDesc_GradientBackground"
-        }, {
-            "$ast": "UnionMember",
-            "name": "ElementDesc_InnerShadow"
-        }, {
-            "$ast": "UnionMember",
-            "name": "ElementDesc_Polygon"
-        }, {
-            "$ast": "UnionMember",
-            "name": "ElementDesc_SolidLabel"
-        }, {
-            "$ast": "UnionMember",
-            "name": "ElementDesc_ImageFrame"
-        }]
-    }, {
         "$ast": "StructDecl",
         "attributes": [],
         "name": "RenderingDomContent",
@@ -2573,9 +2541,41 @@
         }],
         "type": "Struct"
     }, {
+        "$ast": "UnionDecl",
+        "attributes": [],
+        "name": "UnitTest_ElementDescVariant",
+        "members": [{
+            "$ast": "UnionMember",
+            "name": "ElementDesc_SolidBorder"
+        }, {
+            "$ast": "UnionMember",
+            "name": "ElementDesc_SinkBorder"
+        }, {
+            "$ast": "UnionMember",
+            "name": "ElementDesc_SinkSplitter"
+        }, {
+            "$ast": "UnionMember",
+            "name": "ElementDesc_SolidBackground"
+        }, {
+            "$ast": "UnionMember",
+            "name": "ElementDesc_GradientBackground"
+        }, {
+            "$ast": "UnionMember",
+            "name": "ElementDesc_InnerShadow"
+        }, {
+            "$ast": "UnionMember",
+            "name": "ElementDesc_Polygon"
+        }, {
+            "$ast": "UnionMember",
+            "name": "ElementDesc_SolidLabel"
+        }, {
+            "$ast": "UnionMember",
+            "name": "ElementDesc_ImageFrame"
+        }]
+    }, {
         "$ast": "StructDecl",
         "attributes": [],
-        "name": "RenderingFrame",
+        "name": "UnitTest_RenderingFrame",
         "members": [{
             "$ast": "StructMember",
             "name": "frameId",
@@ -2607,7 +2607,7 @@
                 "$ast": "MapType",
                 "element": {
                     "$ast": "ReferenceType",
-                    "name": "ElementDescVariant"
+                    "name": "UnitTest_ElementDescVariant"
                 },
                 "keyType": {
                     "$ast": "PrimitiveType",
@@ -2626,7 +2626,7 @@
     }, {
         "$ast": "StructDecl",
         "attributes": [],
-        "name": "RenderingTrace",
+        "name": "UnitTest_RenderingTrace",
         "members": [{
             "$ast": "StructMember",
             "name": "createdElements",
@@ -2664,7 +2664,7 @@
                 "$ast": "ArrayType",
                 "element": {
                     "$ast": "ReferenceType",
-                    "name": "RenderingFrame"
+                    "name": "UnitTest_RenderingFrame"
                 }
             }
         }],

@@ -16,20 +16,20 @@ UnitTestSnapshotFrame
 	class UnitTestSnapshotFrame : public Object, public virtual IUnitTestSnapshotFrame
 	{
 	protected:
-		vint				index;
-		RenderingFrame		frame;
-		WString				elements;
-		WString				commands;
-		WString				dom;
-		JsonFormatting		formatting;
+		vint						index;
+		UnitTest_RenderingFrame		frame;
+		WString						elements;
+		WString						commands;
+		WString						dom;
+		JsonFormatting				formatting;
 
-		friend const remoteprotocol::RenderingFrame& GetRenderingFrame(Ptr<IUnitTestSnapshotFrame> frame)
+		friend const remoteprotocol::UnitTest_RenderingFrame& GetRenderingFrame(Ptr<IUnitTestSnapshotFrame> frame)
 		{
 			return frame.Cast<UnitTestSnapshotFrame>()->frame;
 		}
 
 	public:
-		UnitTestSnapshotFrame(vint _index, RenderingFrame _frame)
+		UnitTestSnapshotFrame(vint _index, UnitTest_RenderingFrame _frame)
 			: index(_index)
 			, frame(_frame)
 		{
@@ -78,10 +78,10 @@ UnitTestSnapshotFileNode
 	{
 	protected:
 		File								file;
-		Ptr<RenderingTrace>					renderingTrace;
+		Ptr<UnitTest_RenderingTrace>		renderingTrace;
 		List<Ptr<UnitTestSnapshotFrame>>	frames;
 
-		friend const remoteprotocol::RenderingTrace& GetRenderingTrace(Ptr<gaclib_controls::IUnitTestSnapshotFileNode> node)
+		friend const remoteprotocol::UnitTest_RenderingTrace& GetRenderingTrace(Ptr<gaclib_controls::IUnitTestSnapshotFileNode> node)
 		{
 			return *node.Cast<UnitTestSnapshotFileNode>()->renderingTrace.Obj();
 		}
@@ -96,7 +96,7 @@ UnitTestSnapshotFileNode
 					glr::json::Parser parser;
 					jsonNode = JsonParse(jsonText, parser);
 				}
-				renderingTrace = Ptr(new RenderingTrace);
+				renderingTrace = Ptr(new UnitTest_RenderingTrace);
 				ConvertJsonToCustomType(jsonNode, *renderingTrace.Obj());
 
 				frames.Clear();

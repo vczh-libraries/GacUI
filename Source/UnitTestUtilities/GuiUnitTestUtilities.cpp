@@ -166,7 +166,7 @@ void GacUIUnitTest_Start(const WString& appName, Nullable<UnitTestScreenConfig> 
 		auto jsonLog = remoteprotocol::ConvertCustomTypeToJson(unitTestProtocol.GetLoggedTrace());
 		auto textLog = JsonToString(jsonLog, formatting);
 		{
-			remoteprotocol::RenderingTrace deserialized;
+			remoteprotocol::UnitTest_RenderingTrace deserialized;
 			remoteprotocol::ConvertJsonToCustomType(jsonLog, deserialized);
 			auto jsonLog2 = remoteprotocol::ConvertCustomTypeToJson(deserialized);
 			auto textLog2 = JsonToString(jsonLog2, formatting);

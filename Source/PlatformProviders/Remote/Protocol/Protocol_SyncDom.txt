@@ -1,16 +1,3 @@
-union ElementDescVariant
-{
-    ElementDesc_SolidBorder,
-    ElementDesc_SinkBorder,
-    ElementDesc_SinkSplitter,
-    ElementDesc_SolidBackground,
-    ElementDesc_GradientBackground,
-    ElementDesc_InnerShadow,
-    ElementDesc_Polygon,
-    ElementDesc_SolidLabel,
-    ElementDesc_ImageFrame,
-}
-
 struct RenderingDomContent
 {
     var hitTestResult: WindowHitTestResult?;
@@ -45,21 +32,4 @@ struct RenderingDom_Diff
 struct RenderingDom_DiffsInOrder
 {
     var diffsInOrder: RenderingDom_Diff[];
-}
-
-struct RenderingFrame
-{
-    var frameId : int;
-    var frameName : string?;
-    var windowSize: WindowSizingConfig;
-    var elements: ElementDescVariant[int];
-    var root: RenderingDom;
-}
-
-struct RenderingTrace
-{
-    var createdElements: RendererType[int];
-    var imageCreations: ImageCreation[.id];
-    var imageMetadatas: ImageMetadata[.id];
-    var frames: RenderingFrame[];
 }
