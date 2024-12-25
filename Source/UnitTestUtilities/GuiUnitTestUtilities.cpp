@@ -188,12 +188,12 @@ void GacUIUnitTest_Start(const WString& appName, Nullable<UnitTestScreenConfig> 
 		auto textLog = stream::GenerateToStream([&unitTestProtocol, &formatting](stream::TextWriter& writer)
 		{
 			auto&& loggedFrames = unitTestProtocol.GetLoggedFrames();
-			for (auto [id, commands] : loggedFrames)
+			for (auto loggedFrame : loggedFrames)
 			{
 				writer.WriteLine(L"========================================");
-				writer.WriteLine(itow(id));
+				writer.WriteLine(itow(loggedFrame->frameId));
 				writer.WriteLine(L"========================================");
-				for (auto command : *commands.Obj())
+				for (auto command : *loggedFrame->renderingCommands.Obj())
 				{
 					auto jsonLog = remoteprotocol::ConvertCustomTypeToJson(command);
 					writer.WriteLine(JsonToString(jsonLog, formatting));
@@ -218,16 +218,15 @@ void GacUIUnitTest_Start(const WString& appName, Nullable<UnitTestScreenConfig> 
 			Ptr<RenderingDom> dom;
 			DomIndex domIndex;
 			auto&& loggedFrames = unitTestProtocol.GetLoggedFrames();
-			for (auto [id, commands] : loggedFrames)
+			for (auto loggedFrame : loggedFrames)
 			{
 				writer.WriteLine(L"========================================");
-				writer.WriteLine(itow(id));
+				writer.WriteLine(itow(loggedFrame->frameId));
 				writer.WriteLine(L"========================================");
 
-				auto nextDom = BuildDomFromRenderingCommands(commands);
 				if (!dom)
 				{
-					dom = nextDom;
+					dom = loggedFrame->renderingDom;
 					BuildDomIndex(dom, domIndex);
 
 					List<Pair<vint, Ptr<RenderingDom>>> lines;
@@ -258,10 +257,10 @@ void GacUIUnitTest_Start(const WString& appName, Nullable<UnitTestScreenConfig> 
 				else
 				{
 					DomIndex nextDomIndex;
-					BuildDomIndex(nextDom, nextDomIndex);
+					BuildDomIndex(loggedFrame->renderingDom, nextDomIndex);
 
 					RenderingDom_DiffsInOrder diffs;
-					DiffDom(dom, domIndex, nextDom, nextDomIndex, diffs);
+					DiffDom(dom, domIndex, loggedFrame->renderingDom, nextDomIndex, diffs);
 					if (diffs.diffsInOrder)
 					{
 						for (auto&& diff : *diffs.diffsInOrder.Obj())
@@ -271,7 +270,7 @@ void GacUIUnitTest_Start(const WString& appName, Nullable<UnitTestScreenConfig> 
 						}
 					}
 
-					dom = nextDom;
+					dom = loggedFrame->renderingDom;
 					domIndex = std::move(nextDomIndex);
 				}
 			};

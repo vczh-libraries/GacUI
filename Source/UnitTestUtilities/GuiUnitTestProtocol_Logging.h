@@ -8,7 +8,6 @@ Unit Test Snapsnot and other Utilities
 #define VCZH_PRESENTATION_GUIUNITTESTPROTOCOL_LOGGING
 
 #include "GuiUnitTestProtocol_Rendering.h"
-#include "../PlatformProviders/Remote/Protocol/FrameOperations/GuiRemoteProtocolSchema_FrameOperations.h"
 
 namespace vl::presentation::unittest
 {
@@ -26,33 +25,29 @@ UnitTestRemoteProtocol
 	protected:
 
 		bool								everRendered = false;
-		vint								candidateFrameId = 0;
-		CommandListRef						candidateRenderingResult;
+		Ptr<UnitTestLoggedFrame>			candidateFrame;
 
 		bool LogRenderingResult()
 		{
-			auto lastRenderingCommandsPair = this->TryGetLastRenderingCommandsAndReset();
-			if (lastRenderingCommandsPair.value)
+			if (auto lastFrame = this->TryGetLastRenderingFrameAndReset())
 			{
-				candidateFrameId = lastRenderingCommandsPair.key;
-				candidateRenderingResult = lastRenderingCommandsPair.value;
+				candidateFrame = lastFrame;
 				everRendered = true;
 			}
 			else if (everRendered)
 			{
-				if (candidateRenderingResult)
+				if (candidateFrame)
 				{
 					auto descs = Ptr(new collections::Dictionary<vint, remoteprotocol::ElementDescVariant>);
 					CopyFrom(*descs.Obj(), this->lastElementDescs);
-					auto transformed = BuildDomFromRenderingCommands(candidateRenderingResult);
 					this->loggedTrace.frames->Add({
-						candidateFrameId,
+						candidateFrame->frameId,
 						{},
 						this->sizingConfig,
 						descs,
-						transformed
+						candidateFrame->renderingDom
 						});
-					candidateRenderingResult = {};
+					candidateFrame = {};
 					return true;
 				}
 			}
