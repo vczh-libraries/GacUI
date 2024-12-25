@@ -126,7 +126,7 @@ IGuiRemoteProtocolMessages (Rendering)
 			lastFrame->renderingCommandsLog.Add(L"RequestRendererBeginBoundary: " + stream::GenerateToStream([&](stream::TextWriter& writer)
 			{
 				auto jsonLog = remoteprotocol::ConvertCustomTypeToJson(arguments);
-				writer.WriteLine(glr::json::JsonToString(jsonLog, formatting));
+				writer.WriteString(glr::json::JsonToString(jsonLog, formatting));
 			}));
 		}
 
@@ -154,7 +154,7 @@ IGuiRemoteProtocolMessages (Rendering)
 				lastFrame->renderingCommandsLog.Add(L"RequestRendererRenderElement: " + stream::GenerateToStream([&](stream::TextWriter& writer)
 				{
 					auto jsonLog = remoteprotocol::ConvertCustomTypeToJson(arguments);
-					writer.WriteLine(glr::json::JsonToString(jsonLog, formatting));
+					writer.WriteString(glr::json::JsonToString(jsonLog, formatting));
 				}));
 			}
 
