@@ -26,7 +26,6 @@ UnitTestRemoteProtocol
 	struct UnitTestLoggedFrame
 	{
 		vint								frameId;
-		UnitTestRenderingCommandListRef		renderingCommands;
 		collections::List<WString>			renderingCommandsLog;
 		Ptr<UnitTestRenderingDom>			renderingDom;
 	};
@@ -41,10 +40,8 @@ UnitTestRemoteProtocol
 		using ElementDescMap = collections::Dictionary<vint, ElementDescVariant>;
 		using ImageMetadataMap = collections::Dictionary<vint, remoteprotocol::ImageMetadata>;
 
-	public:
-
 	protected:
-
+		remoteprotocol::RenderingDomBuilder		renderingDomBuilder;
 		remoteprotocol::RenderingTrace			loggedTrace;
 		UnitTestLoggedFrameList					loggedFrames;
 		bool									lastRenderingCommandsOpening = false;
@@ -98,32 +95,35 @@ IGuiRemoteProtocolMessages (Rendering)
 
 		void RequestRendererBeginRendering(const remoteprotocol::ElementBeginRendering& arguments) override
 		{
+			renderingDomBuilder.RequestRendererBeginRendering();
+
 			lastRenderingCommandsOpening = true;
 			auto frame = Ptr(new UnitTestLoggedFrame);
 			frame->frameId = arguments.frameId;
-			frame->renderingCommands = Ptr(new UnitTestRenderingCommandList);
 			loggedFrames.Add(frame);
 		}
 
 		void RequestRendererEndRendering(vint id) override
 		{
+			auto dom = renderingDomBuilder.RequestRendererEndRendering();
+
 			auto lastFrame = GetLastRenderingFrame();
-			lastFrame->renderingDom = BuildDomFromRenderingCommands(lastFrame->renderingCommands);
+			lastFrame->renderingDom = dom;
 			this->GetEvents()->RespondRendererEndRendering(id, measuringForNextRendering);
 			measuringForNextRendering = {};
 		}
 
 		void RequestRendererBeginBoundary(const remoteprotocol::ElementBoundary& arguments) override
 		{
-			auto lastFrame = GetLastRenderingFrame();
-			lastFrame->renderingCommands->Add(remoteprotocol::RenderingCommand_BeginBoundary{ arguments });
+			renderingDomBuilder.RequestRendererBeginBoundary(arguments);
 
 			glr::json::JsonFormatting formatting;
 			formatting.spaceAfterColon = true;
 			formatting.spaceAfterComma = true;
 			formatting.crlf = false;
 			formatting.compact = true;
-			lastFrame->renderingCommandsLog.Add(L"RequestRendererBeginBoundary: " + stream::GenerateToStream([&](stream::TextWriter& writer)
+
+			GetLastRenderingFrame()->renderingCommandsLog.Add(L"RequestRendererBeginBoundary: " + stream::GenerateToStream([&](stream::TextWriter& writer)
 			{
 				auto jsonLog = remoteprotocol::ConvertCustomTypeToJson(arguments);
 				writer.WriteString(glr::json::JsonToString(jsonLog, formatting));
@@ -132,9 +132,9 @@ IGuiRemoteProtocolMessages (Rendering)
 
 		void RequestRendererEndBoundary() override
 		{
-			auto lastFrame = GetLastRenderingFrame();
-			lastFrame->renderingCommands->Add(remoteprotocol::RenderingCommand_EndBoundary{});
-			lastFrame->renderingCommandsLog.Add(L"RequestRendererEndBoundary");
+			renderingDomBuilder.RequestRendererEndBoundary();
+
+			GetLastRenderingFrame()->renderingCommandsLog.Add(L"RequestRendererEndBoundary");
 		}
 
 		void RequestRendererRenderElement(const remoteprotocol::ElementRendering& arguments) override
@@ -143,15 +143,14 @@ IGuiRemoteProtocolMessages (Rendering)
 			vint index = loggedTrace.createdElements->Keys().IndexOf(arguments.id);
 			CHECK_ERROR(index != -1, ERROR_MESSAGE_PREFIX L"Renderer with the specified id has not been created.");
 			{
-				auto lastFrame = GetLastRenderingFrame();
-				lastFrame->renderingCommands->Add(remoteprotocol::RenderingCommand_Element{ arguments,arguments.id });
+				renderingDomBuilder.RequestRendererRenderElement(arguments);
 
 				glr::json::JsonFormatting formatting;
 				formatting.spaceAfterColon = true;
 				formatting.spaceAfterComma = true;
 				formatting.crlf = false;
 				formatting.compact = true;
-				lastFrame->renderingCommandsLog.Add(L"RequestRendererRenderElement: " + stream::GenerateToStream([&](stream::TextWriter& writer)
+				GetLastRenderingFrame()->renderingCommandsLog.Add(L"RequestRendererRenderElement: " + stream::GenerateToStream([&](stream::TextWriter& writer)
 				{
 					auto jsonLog = remoteprotocol::ConvertCustomTypeToJson(arguments);
 					writer.WriteString(glr::json::JsonToString(jsonLog, formatting));

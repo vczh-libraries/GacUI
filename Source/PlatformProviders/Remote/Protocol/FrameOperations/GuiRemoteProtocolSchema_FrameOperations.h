@@ -18,7 +18,36 @@ namespace vl::presentation::remoteprotocol
 	* hittest:           (compositionId << 2) + 2
 	* parent of hittest: (compositionId << 2) + 3
 	*/
-	extern Ptr<RenderingDom>		BuildDomFromRenderingCommands(Ptr<collections::List<RenderingCommand>> commandListRef);
+
+	class RenderingDomBuilder
+	{
+		using RenderingResultRef = Ptr<RenderingDom>;
+		using RenderingResultRefList = collections::List<RenderingResultRef>;
+	protected:
+		RenderingResultRefList		domStack;
+		collections::List<vint>		domBoundaries;
+		Ptr<RenderingDom>			domRoot;
+		Ptr<RenderingDom>			domCurrent;
+
+		vint						GetCurrentBoundary();
+		vint						Push(RenderingResultRef ref);
+		void						PopTo(vint index);
+		void						Pop();
+		void						PopBoundary();
+
+		template<typename TCallback>
+		void						PrepareParentFromCommand(Rect commandBounds, Rect commandValidArea, vint newDomId, TCallback&& calculateValidAreaFromDom);
+	public:
+		RenderingDomBuilder() = default;
+		~RenderingDomBuilder() = default;
+
+		void						RequestRendererBeginRendering();
+		void						RequestRendererBeginBoundary(const remoteprotocol::ElementBoundary& arguments);
+		void						RequestRendererEndBoundary();
+		void						RequestRendererRenderElement(const remoteprotocol::ElementRendering& arguments);
+		Ptr<RenderingDom>			RequestRendererEndRendering();
+	};
+
 	extern Ptr<RenderingDom>		CopyDom(Ptr<RenderingDom> root);
 
 	struct DomIndexItem
