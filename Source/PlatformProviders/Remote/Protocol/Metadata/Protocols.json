@@ -2575,59 +2575,6 @@
     }, {
         "$ast": "StructDecl",
         "attributes": [],
-        "name": "RenderingCommand_BeginBoundary",
-        "members": [{
-            "$ast": "StructMember",
-            "name": "boundary",
-            "type": {
-                "$ast": "ReferenceType",
-                "name": "ElementBoundary"
-            }
-        }],
-        "type": "Struct"
-    }, {
-        "$ast": "StructDecl",
-        "attributes": [],
-        "name": "RenderingCommand_EndBoundary",
-        "members": [],
-        "type": "Struct"
-    }, {
-        "$ast": "StructDecl",
-        "attributes": [],
-        "name": "RenderingCommand_Element",
-        "members": [{
-            "$ast": "StructMember",
-            "name": "rendering",
-            "type": {
-                "$ast": "ReferenceType",
-                "name": "ElementRendering"
-            }
-        }, {
-            "$ast": "StructMember",
-            "name": "element",
-            "type": {
-                "$ast": "PrimitiveType",
-                "type": "Integer"
-            }
-        }],
-        "type": "Struct"
-    }, {
-        "$ast": "UnionDecl",
-        "attributes": [],
-        "name": "RenderingCommand",
-        "members": [{
-            "$ast": "UnionMember",
-            "name": "RenderingCommand_BeginBoundary"
-        }, {
-            "$ast": "UnionMember",
-            "name": "RenderingCommand_EndBoundary"
-        }, {
-            "$ast": "UnionMember",
-            "name": "RenderingCommand_Element"
-        }]
-    }, {
-        "$ast": "StructDecl",
-        "attributes": [],
         "name": "RenderingFrame",
         "members": [{
             "$ast": "StructMember",

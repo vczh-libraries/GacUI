@@ -18,9 +18,6 @@ UnitTestRemoteProtocol
 ***********************************************************************/
 
 	using ElementDescVariant = remoteprotocol::ElementDescVariant;
-	using UnitTestRenderingCommand = remoteprotocol::RenderingCommand;
-	using UnitTestRenderingCommandList = collections::List<UnitTestRenderingCommand>;
-	using UnitTestRenderingCommandListRef = Ptr<UnitTestRenderingCommandList>;
 	using UnitTestRenderingDom = remoteprotocol::RenderingDom;
 
 	struct UnitTestLoggedFrame

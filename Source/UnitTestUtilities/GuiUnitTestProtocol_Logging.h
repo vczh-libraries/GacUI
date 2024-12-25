@@ -19,11 +19,7 @@ UnitTestRemoteProtocol
 	template<typename TProtocol>
 	class UnitTestRemoteProtocol_Logging : public TProtocol
 	{
-		using CommandList = UnitTestRenderingCommandList;
-		using CommandListRef = UnitTestRenderingCommandListRef;
-		using LoggedFrameList = collections::List<remoteprotocol::RenderingFrame>;
 	protected:
-
 		bool								everRendered = false;
 		Ptr<UnitTestLoggedFrame>			candidateFrame;
 

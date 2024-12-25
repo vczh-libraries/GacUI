@@ -39,9 +39,6 @@ namespace vl::presentation::remoteprotocol
 	struct RenderingDom;
 	struct RenderingDom_Diff;
 	struct RenderingDom_DiffsInOrder;
-	struct RenderingCommand_BeginBoundary;
-	struct RenderingCommand_EndBoundary;
-	struct RenderingCommand_Element;
 	struct RenderingFrame;
 	struct RenderingTrace;
 }
@@ -89,9 +86,6 @@ namespace vl::presentation::remoteprotocol
 	template<> struct JsonNameHelper<::vl::Ptr<::vl::presentation::remoteprotocol::RenderingDom>> { static constexpr const wchar_t* Name = L"RenderingDom"; };
 	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::RenderingDom_Diff> { static constexpr const wchar_t* Name = L"RenderingDom_Diff"; };
 	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::RenderingDom_DiffsInOrder> { static constexpr const wchar_t* Name = L"RenderingDom_DiffsInOrder"; };
-	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::RenderingCommand_BeginBoundary> { static constexpr const wchar_t* Name = L"RenderingCommand_BeginBoundary"; };
-	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::RenderingCommand_EndBoundary> { static constexpr const wchar_t* Name = L"RenderingCommand_EndBoundary"; };
-	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::RenderingCommand_Element> { static constexpr const wchar_t* Name = L"RenderingCommand_Element"; };
 	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::RenderingFrame> { static constexpr const wchar_t* Name = L"RenderingFrame"; };
 	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::RenderingTrace> { static constexpr const wchar_t* Name = L"RenderingTrace"; };
 }
@@ -157,12 +151,6 @@ namespace vl::presentation::remoteprotocol
 		::vl::presentation::remoteprotocol::ElementDesc_Polygon,
 		::vl::presentation::remoteprotocol::ElementDesc_SolidLabel,
 		::vl::presentation::remoteprotocol::ElementDesc_ImageFrame
-	>;
-
-	using RenderingCommand = ::vl::Variant<
-		::vl::presentation::remoteprotocol::RenderingCommand_BeginBoundary,
-		::vl::presentation::remoteprotocol::RenderingCommand_EndBoundary,
-		::vl::presentation::remoteprotocol::RenderingCommand_Element
 	>;
 
 	struct FontConfig
@@ -384,21 +372,6 @@ namespace vl::presentation::remoteprotocol
 		::vl::Ptr<::vl::collections::List<::vl::presentation::remoteprotocol::RenderingDom_Diff>> diffsInOrder;
 	};
 
-	struct RenderingCommand_BeginBoundary
-	{
-		::vl::presentation::remoteprotocol::ElementBoundary boundary;
-	};
-
-	struct RenderingCommand_EndBoundary
-	{
-	};
-
-	struct RenderingCommand_Element
-	{
-		::vl::presentation::remoteprotocol::ElementRendering rendering;
-		::vl::vint element;
-	};
-
 	struct RenderingFrame
 	{
 		::vl::vint frameId;
@@ -471,9 +444,6 @@ namespace vl::presentation::remoteprotocol
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::RenderingDom>(const ::vl::presentation::remoteprotocol::RenderingDom & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::RenderingDom_Diff>(const ::vl::presentation::remoteprotocol::RenderingDom_Diff & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::RenderingDom_DiffsInOrder>(const ::vl::presentation::remoteprotocol::RenderingDom_DiffsInOrder & value);
-	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::RenderingCommand_BeginBoundary>(const ::vl::presentation::remoteprotocol::RenderingCommand_BeginBoundary & value);
-	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::RenderingCommand_EndBoundary>(const ::vl::presentation::remoteprotocol::RenderingCommand_EndBoundary & value);
-	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::RenderingCommand_Element>(const ::vl::presentation::remoteprotocol::RenderingCommand_Element & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::RenderingFrame>(const ::vl::presentation::remoteprotocol::RenderingFrame & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::RenderingTrace>(const ::vl::presentation::remoteprotocol::RenderingTrace & value);
 
@@ -532,9 +502,6 @@ namespace vl::presentation::remoteprotocol
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::RenderingDom>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::RenderingDom& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::RenderingDom_Diff>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::RenderingDom_Diff& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::RenderingDom_DiffsInOrder>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::RenderingDom_DiffsInOrder& value);
-	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::RenderingCommand_BeginBoundary>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::RenderingCommand_BeginBoundary& value);
-	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::RenderingCommand_EndBoundary>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::RenderingCommand_EndBoundary& value);
-	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::RenderingCommand_Element>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::RenderingCommand_Element& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::RenderingFrame>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::RenderingFrame& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::RenderingTrace>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::RenderingTrace& value);
 

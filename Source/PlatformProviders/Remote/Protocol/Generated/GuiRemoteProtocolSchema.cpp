@@ -644,27 +644,6 @@ namespace vl::presentation::remoteprotocol
 		return node;
 	}
 
-	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::RenderingCommand_BeginBoundary>(const ::vl::presentation::remoteprotocol::RenderingCommand_BeginBoundary & value)
-	{
-		auto node = Ptr(new glr::json::JsonObject);
-		ConvertCustomTypeToJsonField(node, L"boundary", value.boundary);
-		return node;
-	}
-
-	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::RenderingCommand_EndBoundary>(const ::vl::presentation::remoteprotocol::RenderingCommand_EndBoundary & value)
-	{
-		auto node = Ptr(new glr::json::JsonObject);
-		return node;
-	}
-
-	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::RenderingCommand_Element>(const ::vl::presentation::remoteprotocol::RenderingCommand_Element & value)
-	{
-		auto node = Ptr(new glr::json::JsonObject);
-		ConvertCustomTypeToJsonField(node, L"rendering", value.rendering);
-		ConvertCustomTypeToJsonField(node, L"element", value.element);
-		return node;
-	}
-
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::RenderingFrame>(const ::vl::presentation::remoteprotocol::RenderingFrame & value)
 	{
 		auto node = Ptr(new glr::json::JsonObject);
@@ -1531,45 +1510,6 @@ namespace vl::presentation::remoteprotocol
 		for (auto field : jsonNode->fields)
 		{
 			if (field->name.value == L"diffsInOrder") ConvertJsonToCustomType(field->value, value.diffsInOrder); else
-			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
-		}
-#undef ERROR_MESSAGE_PREFIX
-	}
-
-	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::RenderingCommand_BeginBoundary>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::RenderingCommand_BeginBoundary& value)
-	{
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<::vl::presentation::remoteprotocol::RenderingCommand_BeginBoundary>(Ptr<JsonNode>, ::vl::presentation::remoteprotocol::RenderingCommand_BeginBoundary&)#"
-		auto jsonNode = node.Cast<glr::json::JsonObject>();
-		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
-		for (auto field : jsonNode->fields)
-		{
-			if (field->name.value == L"boundary") ConvertJsonToCustomType(field->value, value.boundary); else
-			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
-		}
-#undef ERROR_MESSAGE_PREFIX
-	}
-
-	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::RenderingCommand_EndBoundary>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::RenderingCommand_EndBoundary& value)
-	{
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<::vl::presentation::remoteprotocol::RenderingCommand_EndBoundary>(Ptr<JsonNode>, ::vl::presentation::remoteprotocol::RenderingCommand_EndBoundary&)#"
-		auto jsonNode = node.Cast<glr::json::JsonObject>();
-		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
-		for (auto field : jsonNode->fields)
-		{
-			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
-		}
-#undef ERROR_MESSAGE_PREFIX
-	}
-
-	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::RenderingCommand_Element>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::RenderingCommand_Element& value)
-	{
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::ConvertJsonToCustomType<::vl::presentation::remoteprotocol::RenderingCommand_Element>(Ptr<JsonNode>, ::vl::presentation::remoteprotocol::RenderingCommand_Element&)#"
-		auto jsonNode = node.Cast<glr::json::JsonObject>();
-		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
-		for (auto field : jsonNode->fields)
-		{
-			if (field->name.value == L"rendering") ConvertJsonToCustomType(field->value, value.rendering); else
-			if (field->name.value == L"element") ConvertJsonToCustomType(field->value, value.element); else
 			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unsupported struct member.");
 		}
 #undef ERROR_MESSAGE_PREFIX

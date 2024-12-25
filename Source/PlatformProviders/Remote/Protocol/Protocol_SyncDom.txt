@@ -47,28 +47,6 @@ struct RenderingDom_DiffsInOrder
     var diffsInOrder: RenderingDom_Diff[];
 }
 
-struct RenderingCommand_BeginBoundary
-{
-    var boundary: ElementBoundary;
-}
-
-struct RenderingCommand_EndBoundary
-{
-}
-
-struct RenderingCommand_Element
-{
-    var rendering: ElementRendering;
-    var element: int;
-}
-
-union RenderingCommand
-{
-    RenderingCommand_BeginBoundary,
-    RenderingCommand_EndBoundary,
-    RenderingCommand_Element,
-}
-
 struct RenderingFrame
 {
     var frameId : int;
