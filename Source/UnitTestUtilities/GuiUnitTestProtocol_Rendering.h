@@ -27,6 +27,7 @@ UnitTestRemoteProtocol
 	{
 		vint								frameId;
 		UnitTestRenderingCommandListRef		renderingCommands;
+		collections::List<WString>			renderingCommandsLog;
 		Ptr<UnitTestRenderingDom>			renderingDom;
 	};
 
@@ -114,18 +115,14 @@ IGuiRemoteProtocolMessages (Rendering)
 
 		void RequestRendererBeginBoundary(const remoteprotocol::ElementBoundary& arguments) override
 		{
-			GetLastRenderingFrame()->renderingCommands->Add(remoteprotocol::RenderingCommand_BeginBoundary{ arguments });
+			auto lastFrame = GetLastRenderingFrame();
+			lastFrame->renderingCommands->Add(remoteprotocol::RenderingCommand_BeginBoundary{ arguments });
 		}
 
 		void RequestRendererEndBoundary() override
 		{
-			GetLastRenderingFrame()->renderingCommands->Add(remoteprotocol::RenderingCommand_EndBoundary{});
-		}
-
-		template<typename T>
-		void RequestRendererRenderElement(const remoteprotocol::ElementRendering& rendering, const T& element)
-		{
-			GetLastRenderingFrame()->renderingCommands->Add(remoteprotocol::RenderingCommand_Element{ rendering,element.id });
+			auto lastFrame = GetLastRenderingFrame();
+			lastFrame->renderingCommands->Add(remoteprotocol::RenderingCommand_EndBoundary{});
 		}
 
 		void RequestRendererRenderElement(const remoteprotocol::ElementRendering& arguments) override
@@ -133,12 +130,15 @@ IGuiRemoteProtocolMessages (Rendering)
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering<TProtocol>::RequestRendererRenderElement(const ElementRendering&)#"
 			vint index = loggedTrace.createdElements->Keys().IndexOf(arguments.id);
 			CHECK_ERROR(index != -1, ERROR_MESSAGE_PREFIX L"Renderer with the specified id has not been created.");
+			{
+				auto lastFrame = GetLastRenderingFrame();
+				lastFrame->renderingCommands->Add(remoteprotocol::RenderingCommand_Element{ arguments,arguments.id });
+			}
 
 			auto rendererType = loggedTrace.createdElements->Values()[index];
 			if (rendererType == remoteprotocol::RendererType::FocusRectangle)
 			{
 				// FocusRectangle does not has a ElementDesc
-				GetLastRenderingFrame()->renderingCommands->Add(remoteprotocol::RenderingCommand_Element{ arguments,arguments.id });
 				return;
 			}
 
@@ -152,11 +152,9 @@ IGuiRemoteProtocolMessages (Rendering)
 				[&](const remoteprotocol::ElementDesc_SolidLabel& solidLabel)
 				{
 					CalculateSolidLabelSizeIfNecessary(arguments.bounds.Width(), arguments.bounds.Height(), solidLabel);
-					RequestRendererRenderElement(arguments, solidLabel);
 				},
 				[&](const auto& element)
 				{
-					RequestRendererRenderElement(arguments, element);
 				}));
 #undef ERROR_MESSAGE_PREFIX
 		}
