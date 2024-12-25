@@ -193,10 +193,9 @@ void GacUIUnitTest_Start(const WString& appName, Nullable<UnitTestScreenConfig> 
 				writer.WriteLine(L"========================================");
 				writer.WriteLine(itow(loggedFrame->frameId));
 				writer.WriteLine(L"========================================");
-				for (auto command : *loggedFrame->renderingCommands.Obj())
+				for (auto&& commandLog : loggedFrame->renderingCommandsLog)
 				{
-					auto jsonLog = remoteprotocol::ConvertCustomTypeToJson(command);
-					writer.WriteLine(JsonToString(jsonLog, formatting));
+					writer.WriteLine(commandLog);
 				}
 			};
 		});

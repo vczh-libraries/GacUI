@@ -117,12 +117,24 @@ IGuiRemoteProtocolMessages (Rendering)
 		{
 			auto lastFrame = GetLastRenderingFrame();
 			lastFrame->renderingCommands->Add(remoteprotocol::RenderingCommand_BeginBoundary{ arguments });
+
+			glr::json::JsonFormatting formatting;
+			formatting.spaceAfterColon = true;
+			formatting.spaceAfterComma = true;
+			formatting.crlf = false;
+			formatting.compact = true;
+			lastFrame->renderingCommandsLog.Add(L"RequestRendererBeginBoundary: " + stream::GenerateToStream([&](stream::TextWriter& writer)
+			{
+				auto jsonLog = remoteprotocol::ConvertCustomTypeToJson(arguments);
+				writer.WriteLine(glr::json::JsonToString(jsonLog, formatting));
+			}));
 		}
 
 		void RequestRendererEndBoundary() override
 		{
 			auto lastFrame = GetLastRenderingFrame();
 			lastFrame->renderingCommands->Add(remoteprotocol::RenderingCommand_EndBoundary{});
+			lastFrame->renderingCommandsLog.Add(L"RequestRendererEndBoundary");
 		}
 
 		void RequestRendererRenderElement(const remoteprotocol::ElementRendering& arguments) override
@@ -133,6 +145,17 @@ IGuiRemoteProtocolMessages (Rendering)
 			{
 				auto lastFrame = GetLastRenderingFrame();
 				lastFrame->renderingCommands->Add(remoteprotocol::RenderingCommand_Element{ arguments,arguments.id });
+
+				glr::json::JsonFormatting formatting;
+				formatting.spaceAfterColon = true;
+				formatting.spaceAfterComma = true;
+				formatting.crlf = false;
+				formatting.compact = true;
+				lastFrame->renderingCommandsLog.Add(L"RequestRendererRenderElement: " + stream::GenerateToStream([&](stream::TextWriter& writer)
+				{
+					auto jsonLog = remoteprotocol::ConvertCustomTypeToJson(arguments);
+					writer.WriteLine(glr::json::JsonToString(jsonLog, formatting));
+				}));
 			}
 
 			auto rendererType = loggedTrace.createdElements->Values()[index];
