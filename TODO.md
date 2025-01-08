@@ -76,7 +76,7 @@
   - `IRemoteProtocolRendererChannelAsync<T>` (another thread) -> `IRemoteProtocolRendererChannel<T>` -> remote protocol -> `INativeController`
   - Predefined `IRemoteProtocol(SchedulerRenderer)Channel<JsonValue>`
     - Predefined `JsonValue` to `WString` converting
-    - Predefined `ObjectString<T>` converting 
+    - Predefined `ObjectString<T>` converting
   - Predefined `IRemoteProtocol(SchedulerRenderer)Channel<T>` for binary
   - Predefined `IRemoteProtocol(SchedulerRenderer)Channel<T>` for `IRemoteProtocolSchedulerChannelAsync<T>`
   - Predefined `IRemoteProtocolRendererChannelAsync<T>`
