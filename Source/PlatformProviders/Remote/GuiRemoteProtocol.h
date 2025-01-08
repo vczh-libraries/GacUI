@@ -14,5 +14,6 @@ Interfaces:
 #include "GuiRemoteProtocol_Shared.h"
 #include "GuiRemoteProtocol_FilterVerifier.h"
 #include "GuiRemoteProtocol_Filter.h"
+#include "GuiRemoteProtocol_Channeling.h"
 
 #endif

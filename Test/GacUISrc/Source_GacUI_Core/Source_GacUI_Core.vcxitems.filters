@@ -22,9 +22,6 @@
     <Filter Include="PlatformProviders\Hosted">
       <UniqueIdentifier>{8194fce2-bfab-4bb1-a966-33ae0a012062}</UniqueIdentifier>
     </Filter>
-    <Filter Include="PlatformProviders\GacGen">
-      <UniqueIdentifier>{0de502fc-a6e3-4061-a107-80814e08eaca}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Utilities">
       <UniqueIdentifier>{3c027ba9-3010-43d5-b011-d663581d1b48}</UniqueIdentifier>
     </Filter>
@@ -48,6 +45,9 @@
     </Filter>
     <Filter Include="PlatformProviders\Remote\Protocol\FrameOperations">
       <UniqueIdentifier>{f7073608-c87a-405d-a9bb-7331963bc267}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="PlatformProviders\GacGen">
+      <UniqueIdentifier>{0de502fc-a6e3-4061-a107-80814e08eaca}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -311,6 +311,9 @@
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Remote\Protocol\FrameOperations\GuiRemoteProtocolSchema_FrameOperations.h">
       <Filter>PlatformProviders\Remote\Protocol\FrameOperations</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Remote\GuiRemoteProtocol_Channeling.h">
+      <Filter>PlatformProviders\Remote\ProtocolCombinators</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
