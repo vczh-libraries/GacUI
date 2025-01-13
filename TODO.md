@@ -5,8 +5,8 @@
 - Fixed:
   - `#include <arm_acle.h>` is needed for `__yield` in `VlppOS.cpp`
   - `IGuiRemoteProtocolChannel<TPackage>` and `IGuiRemoteProtocolChannelReceiver<TPackage>`
-  - `GuiRemoteProtocol_ToJsonChannel` creates `IGuiRemoteProtocol` from `IGuiRemoteProtocolChannel<Ptr<JsonNode>>`
-  - `GuiRemoteProtocol_FromJsonChannel` creates `IGuiRemoteProtocolChannel<Ptr<JsonNode>>` from `IGuiRemoteProtocol`
+  - `GuiRemoteProtocolFromJsonChannel` creates `IGuiRemoteProtocol` from `IGuiRemoteProtocolChannel<Ptr<JsonNode>>`
+  - `GuiRemoteJsonChannelFromProtocol` creates `IGuiRemoteProtocolChannel<Ptr<JsonNode>>` from `IGuiRemoteProtocol`
 
 ## Known Issues
 
@@ -77,10 +77,9 @@
 - Remote protocol channel
   - [x] `IGuiRemoteProtocolChannel<TPackage>` and `IGuiRemoteProtocolChannelReceiver<TPackage>`.
   - Json channel
-    - [x] `GuiRemoteProtocol_ToJsonChannel` creates `IGuiRemoteProtocol` from `IGuiRemoteProtocolChannel<Ptr<JsonNode>>`.
-    - [x] `GuiRemoteProtocol_FromJsonChannel` creates `IGuiRemoteProtocolChannel<Ptr<JsonNode>>` from `IGuiRemoteProtocol`.
-    - [ ] Unit test
-    -   Processing happens between `GuiRemoteProtocolFilterVerifier` and `UnitTestRemoteProtocol` in `GuiUnitTestUtilities.cpp`
+    - [x] `GuiRemoteProtocolFromJsonChannel` creates `IGuiRemoteProtocol` from `IGuiRemoteProtocolChannel<Ptr<JsonNode>>`.
+    - [x] `GuiRemoteJsonChannelFromProtocol` creates `IGuiRemoteProtocolChannel<Ptr<JsonNode>>` from `IGuiRemoteProtocol`.
+    - [x] Unit test
   - [ ] Binary channel
   - [ ] Json to `ObjectString<T>` channel conversion
   - [ ] Sync to Async channel conversion

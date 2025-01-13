@@ -43,10 +43,10 @@ IGuiRemoteProtocolChannel<T>
 	using IJsonChannel = IGuiRemoteProtocolChannel<Ptr<glr::json::JsonNode>>;
 
 /***********************************************************************
-GuiRemoteProtocol_ToJsonChannel
+GuiRemoteProtocolFromJsonChannel
 ***********************************************************************/
 	
-	class GuiRemoteProtocol_ToJsonChannel
+	class GuiRemoteProtocolFromJsonChannel
 		: public Object
 		, public virtual IGuiRemoteProtocol
 		, protected IJsonChannelReceiver
@@ -57,7 +57,7 @@ GuiRemoteProtocol_ToJsonChannel
 
 		void OnReceive(const Ptr<glr::json::JsonNode>& package) override
 		{
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::channeling::GuiRemoteProtocol_ToJsonChannel::OnReceive(const Ptr<JsonNode>&)#"
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::channeling::GuiRemoteProtocolFromJsonChannel::OnReceive(const Ptr<JsonNode>&)#"
 			auto jsonArray = package.Cast<glr::json::JsonArray>();
 			CHECK_ERROR(jsonArray && jsonArray->items.Count() == 4, ERROR_MESSAGE_PREFIX L"A JSON array with 4 elements is expected.");
 
@@ -201,7 +201,7 @@ GuiRemoteProtocol_ToJsonChannel
 #undef MESSAGE_NOREQ_RES
 #undef MESSAGE_NOREQ_NORES
 
-		GuiRemoteProtocol_ToJsonChannel(IJsonChannel* _channel)
+		GuiRemoteProtocolFromJsonChannel(IJsonChannel* _channel)
 			: channel(_channel)
 		{
 		}
@@ -229,10 +229,10 @@ GuiRemoteProtocol_ToJsonChannel
 	};
 
 /***********************************************************************
-GuiRemoteProtocol_FromJsonChannel
+GuiRemoteJsonChannelFromProtocol
 ***********************************************************************/
 
-	class GuiRemoteProtocol_FromJsonChannel
+	class GuiRemoteJsonChannelFromProtocol
 		: public Object
 		, public virtual IJsonChannel
 		, protected virtual IGuiRemoteProtocolEvents
@@ -310,7 +310,7 @@ GuiRemoteProtocol_FromJsonChannel
 #undef MESSAGE_NORES
 	public:
 
-		GuiRemoteProtocol_FromJsonChannel(IGuiRemoteProtocol* _protocol)
+		GuiRemoteJsonChannelFromProtocol(IGuiRemoteProtocol* _protocol)
 			: protocol(_protocol)
 		{
 		}
@@ -321,9 +321,14 @@ GuiRemoteProtocol_FromJsonChannel
 			protocol->Initialize(this);
 		}
 
+		IJsonChannelReceiver* GetReceiver() override
+		{
+			return receiver;
+		}
+
 		void Write(const Ptr<glr::json::JsonNode>& package) override
 		{
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::channeling::GuiRemoteProtocol_FromJsonChannel::Write(const Ptr<JsonNode>&)#"
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::channeling::GuiRemoteJsonChannelFromProtocol::Write(const Ptr<JsonNode>&)#"
 			auto jsonArray = package.Cast<glr::json::JsonArray>();
 			CHECK_ERROR(jsonArray && jsonArray->items.Count() == 3, ERROR_MESSAGE_PREFIX L"A JSON array with 3 elements is expected.");
 

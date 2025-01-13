@@ -40,6 +40,7 @@ namespace vl::presentation::unittest
 		NativeMargin				customFramePadding;
 		FontConfig					fontConfig;
 		ScreenConfig				screenConfig;
+		bool						useSyncChannel = false;
 
 		void						FastInitialize(vint width, vint height, vint taskBarHeight = 0);
 	};
