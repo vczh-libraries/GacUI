@@ -99,7 +99,7 @@ GuiRemoteProtocolFromJsonChannel
 			if (jsonMessage->content.value == L ## #NAME)\
 			{\
 				auto jsonId = jsonArray->items[2].Cast<glr::json::JsonNumber>();\
-				CHECK_ERROR(jsonMessage, ERROR_MESSAGE_PREFIX L"The third element should be a number.");\
+				CHECK_ERROR(jsonId, ERROR_MESSAGE_PREFIX L"The third element should be a number.");\
 				RESPONSE arguments;\
 				ConvertJsonToCustomType(jsonArray->items[3], arguments);\
 				events->Respond ## NAME(wtoi(jsonId->content.value), arguments);\
@@ -120,14 +120,6 @@ GuiRemoteProtocolFromJsonChannel
 			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unrecognized category name");
 #undef ERROR_MESSAGE_PREFIX
 		}
-	
-#define MESSAGE_NODROP(NAME)
-#define MESSAGE_DROPREP(NAME)												vint lastDropRepeatRequest ## NAME = -1;
-#define MESSAGE_HANDLER(NAME, REQUEST, RESPONSE, REQTAG, RESTAG, DROPTAG)	MESSAGE_ ## DROPTAG(NAME)
-		GACUI_REMOTEPROTOCOL_MESSAGES(MESSAGE_HANDLER)
-#undef MESSAGE_HANDLER
-#undef MESSAGE_DROPREP
-#undef MESSAGE_NODROP
 
 	public:
 
@@ -292,8 +284,8 @@ GuiRemoteJsonChannelFromProtocol
 			jsonCategory->content.value = WString::Unmanaged(L"Respond");\
 			auto jsonName = Ptr(new glr::json::JsonString);\
 			jsonName->content.value = WString::Unmanaged(L ## #NAME);\
-			auto jsonId = Ptr(new glr::json::JsonLiteral);\
-			jsonId->value = glr::json::JsonLiteralValue::Null;\
+			auto jsonId = Ptr(new glr::json::JsonNumber);\
+			jsonId->content.value = itow(id);\
 			auto jsonRequest = ConvertCustomTypeToJson(arguments);\
 			auto jsonArray = Ptr(new glr::json::JsonArray);\
 			jsonArray->items.Add(jsonCategory);\
@@ -317,7 +309,7 @@ GuiRemoteJsonChannelFromProtocol
 
 		void Initialize(IJsonChannelReceiver* _receiver) override
 		{
-			receiver = receiver;
+			receiver = _receiver;
 			protocol->Initialize(this);
 		}
 

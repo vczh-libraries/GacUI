@@ -277,7 +277,7 @@ void GacUIUnitTest_Start(const WString& appName, Nullable<UnitTestScreenConfig> 
 	channeling::GuiRemoteJsonChannelFromProtocol channelReceiver(unitTestProtocol.GetProtocol());
 	channeling::GuiRemoteProtocolFromJsonChannel channelSender(&channelReceiver);
 
-	repeatfiltering::GuiRemoteProtocolFilterVerifier verifierProtocol(unitTestProtocol.GetProtocol());
+	repeatfiltering::GuiRemoteProtocolFilterVerifier verifierProtocol(globalConfig.useSyncChannel ? &channelSender : unitTestProtocol.GetProtocol());
 	repeatfiltering::GuiRemoteProtocolFilter filteredProtocol(&verifierProtocol);
 
 	UnitTestContextImpl unitTestContext(&unitTestProtocol);
