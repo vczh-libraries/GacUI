@@ -4,6 +4,9 @@
 
 - Fixed:
   - `#include <arm_acle.h>` is needed for `__yield` in `VlppOS.cpp`
+  - `IGuiRemoteProtocolChannel<TPackage>` and `IGuiRemoteProtocolChannelReceiver<TPackage>`
+  - `GuiRemoteProtocol_ToJsonChannel` creates `IGuiRemoteProtocol` from `IGuiRemoteProtocolChannel<Ptr<JsonNode>>`
+  - `GuiRemoteProtocol_FromJsonChannel` creates `IGuiRemoteProtocolChannel<Ptr<JsonNode>>` from `IGuiRemoteProtocol`
 
 ## Known Issues
 
@@ -72,19 +75,18 @@
 - Remote protocol
   - Investigate about generating data structure in flat memory layout, so that no effort needed for binary serialization 
 - Remote protocol channel
-  - `GuiRemoteController` -> remote protocol -> `IRemoteProtocolSchedulerChannel<T>` -> `IRemoteProtocolSchedulerChannelAsync<T>` (another thread)
-  - `IRemoteProtocolRendererChannelAsync<T>` (another thread) -> `IRemoteProtocolRendererChannel<T>` -> remote protocol -> `INativeController`
-  - Predefined `IRemoteProtocol(SchedulerRenderer)Channel<JsonValue>`
-    - Predefined `JsonValue` to `WString` converting
-    - Predefined `ObjectString<T>` converting
-  - Predefined `IRemoteProtocol(SchedulerRenderer)Channel<T>` for binary
-  - Predefined `IRemoteProtocol(SchedulerRenderer)Channel<T>` for `IRemoteProtocolSchedulerChannelAsync<T>`
-  - Predefined `IRemoteProtocolRendererChannelAsync<T>`
-  - `IRemoteProtocolSchedulerChannel` and `IRemoteProtocolRendererChannel` could be merged into one single interface.
-  - Use sync in unit test instead of the current implementation
-    - Processing happens between `GuiRemoteProtocolFilterVerifier` and `UnitTestRemoteProtocol` in `GuiUnitTestUtilities.cpp`
+  - [x] `IGuiRemoteProtocolChannel<TPackage>` and `IGuiRemoteProtocolChannelReceiver<TPackage>`.
+  - Json channel
+    - [x] `GuiRemoteProtocol_ToJsonChannel` creates `IGuiRemoteProtocol` from `IGuiRemoteProtocolChannel<Ptr<JsonNode>>`.
+    - [x] `GuiRemoteProtocol_FromJsonChannel` creates `IGuiRemoteProtocolChannel<Ptr<JsonNode>>` from `IGuiRemoteProtocol`.
+    - [ ] Unit test
+    -   Processing happens between `GuiRemoteProtocolFilterVerifier` and `UnitTestRemoteProtocol` in `GuiUnitTestUtilities.cpp`
+  - [ ] Binary channel
+  - [ ] Json to `ObjectString<T>` channel conversion
+  - [ ] Sync to Async channel conversion
 - Remote protocol redirection back to native rendering:
   - In the test project, C++ side will expose the remote protocol via dll.
+    - Use string first, and then change to binary.
   - Implement the remote protocol on a native `INativeController` instance.
     - It could not be used on `GuiHostedController` or `GuiRemoteController`, which is not a native implementation.
   - The experiment will only run a very simple UI that covers all implemented remote protocol so far.
