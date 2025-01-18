@@ -179,6 +179,24 @@ IGuiRemoteProtocolMessages (Rendering)
 		}
 
 /***********************************************************************
+IGuiRemoteProtocolMessages (Rendering - Dom)
+***********************************************************************/
+
+		void RequestRendererRenderDom(const Ptr<remoteprotocol::RenderingDom>& arguments) override
+		{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering<TProtocol>::RequestRendererRenderElement(const RenderingDom&)#"
+			CHECK_FAIL(L"Not Implemented!");
+#undef ERROR_MESSAGE_PREFIX
+		}
+
+		void RequestRendererRenderDomDiff(const remoteprotocol::RenderingDom_Diff& arguments) override
+		{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering<TProtocol>::RequestRendererRenderElement(const RenderingDom_Diff&)#"
+			CHECK_FAIL(L"Not Implemented!");
+#undef ERROR_MESSAGE_PREFIX
+		}
+
+/***********************************************************************
 IGuiRemoteProtocolMessages (Elements)
 ***********************************************************************/
 

@@ -33,3 +33,7 @@ struct RenderingDom_DiffsInOrder
 {
     var diffsInOrder: RenderingDom_Diff[];
 }
+
+
+message RendererRenderDom                      { request: RenderingDom; }
+message RendererRenderDomDiff                  { request: RenderingDom_Diff; }

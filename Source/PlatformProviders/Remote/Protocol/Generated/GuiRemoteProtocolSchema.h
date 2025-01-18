@@ -549,6 +549,8 @@ namespace vl::presentation::remoteprotocol
 	HANDLER(RendererRenderElement, ::vl::presentation::remoteprotocol::ElementRendering, void, REQ, NORES, NODROP)\
 	HANDLER(RendererEndBoundary, void, void, NOREQ, NORES, NODROP)\
 	HANDLER(RendererEndRendering, void, ::vl::presentation::remoteprotocol::ElementMeasurings, NOREQ, RES, NODROP)\
+	HANDLER(RendererRenderDom, ::vl::Ptr<::vl::presentation::remoteprotocol::RenderingDom>, void, REQ, NORES, NODROP)\
+	HANDLER(RendererRenderDomDiff, ::vl::presentation::remoteprotocol::RenderingDom_Diff, void, REQ, NORES, NODROP)\
 
 #define GACUI_REMOTEPROTOCOL_EVENTS(HANDLER)\
 	HANDLER(ControllerConnect, void, NOREQ, NODROP)\
@@ -575,6 +577,7 @@ namespace vl::presentation::remoteprotocol
 	HANDLER(::vl::Ptr<::vl::collections::List<::vl::presentation::remoteprotocol::GlobalShortcutKey>>)\
 	HANDLER(::vl::Ptr<::vl::collections::List<::vl::presentation::remoteprotocol::RendererCreation>>)\
 	HANDLER(::vl::Ptr<::vl::collections::List<::vl::vint>>)\
+	HANDLER(::vl::Ptr<::vl::presentation::remoteprotocol::RenderingDom>)\
 	HANDLER(::vl::WString)\
 	HANDLER(::vl::presentation::NativeRect)\
 	HANDLER(::vl::presentation::NativeSize)\
@@ -592,6 +595,7 @@ namespace vl::presentation::remoteprotocol
 	HANDLER(::vl::presentation::remoteprotocol::ElementDesc_SolidLabel)\
 	HANDLER(::vl::presentation::remoteprotocol::ElementRendering)\
 	HANDLER(::vl::presentation::remoteprotocol::ImageCreation)\
+	HANDLER(::vl::presentation::remoteprotocol::RenderingDom_Diff)\
 	HANDLER(::vl::presentation::remoteprotocol::WindowShowing)\
 	HANDLER(::vl::vint)\
 	HANDLER(bool)\

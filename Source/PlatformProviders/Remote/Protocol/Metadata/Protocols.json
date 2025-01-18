@@ -2541,6 +2541,30 @@
         }],
         "type": "Struct"
     }, {
+        "$ast": "MessageDecl",
+        "attributes": [],
+        "name": "RendererRenderDom",
+        "request": {
+            "$ast": "MessageRequest",
+            "type": {
+                "$ast": "ReferenceType",
+                "name": "RenderingDom"
+            }
+        },
+        "response": null
+    }, {
+        "$ast": "MessageDecl",
+        "attributes": [],
+        "name": "RendererRenderDomDiff",
+        "request": {
+            "$ast": "MessageRequest",
+            "type": {
+                "$ast": "ReferenceType",
+                "name": "RenderingDom_Diff"
+            }
+        },
+        "response": null
+    }, {
         "$ast": "UnionDecl",
         "attributes": [],
         "name": "UnitTest_ElementDescVariant",
