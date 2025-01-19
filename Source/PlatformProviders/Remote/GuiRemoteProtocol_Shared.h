@@ -195,6 +195,11 @@ Passing through
 	class GuiRemoteProtocolCombinator_PassingThrough : public GuiRemoteProtocolCombinator<TEvents>
 	{
 	public:
+		GuiRemoteProtocolCombinator_PassingThrough(IGuiRemoteProtocol* _protocol)
+			: GuiRemoteProtocolCombinator<TEvents>(_protocol)
+		{
+		}
+
 #define MESSAGE_NOREQ_NORES(NAME, REQUEST, RESPONSE)					void Request ## NAME() override { this->targetProtocol->Request ## NAME(); }
 #define MESSAGE_NOREQ_RES(NAME, REQUEST, RESPONSE)						void Request ## NAME(vint id) override { this->targetProtocol->Request ## NAME(id); }
 #define MESSAGE_REQ_NORES(NAME, REQUEST, RESPONSE)						void Request ## NAME(const REQUEST& arguments) override { this->targetProtocol->Request ## NAME(arguments); }

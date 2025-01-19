@@ -315,6 +315,9 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Remote\GuiRemoteProtocol_Channeling.h">
       <Filter>PlatformProviders\Remote\ProtocolCombinators</Filter>
     </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Remote\GuiRemoteProtocol_DomDiff.h">
+      <Filter>PlatformProviders\Remote\ProtocolCombinators</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Remote\Protocol\Protocol_Controller.txt">
