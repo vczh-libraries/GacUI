@@ -247,7 +247,9 @@ IGuiRemoteProtocolMessages (Rendering - Dom)
 			{
 				receivedDomDiffMessage = true;
 			}
-			CHECK_FAIL(L"Not Implemented!");
+			
+			remoteprotocol::UpdateDomInplace(receivedDom, receivedDomIndex, arguments);
+			GetLastRenderingFrame()->renderingDiffs = arguments;
 #undef ERROR_MESSAGE_PREFIX
 		}
 

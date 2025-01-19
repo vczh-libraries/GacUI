@@ -118,7 +118,7 @@ namespace vl::presentation::remoteprotocol
 		domStack.Clear();
 		domBoundaries.Clear();
 		domRoot = Ptr(new RenderingDom);
-		domRoot->id = 0;
+		domRoot->id = -1;
 		domCurrent = domRoot;
 		domStack.Add(domRoot);
 	}
