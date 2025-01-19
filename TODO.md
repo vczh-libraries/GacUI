@@ -62,10 +62,8 @@
 
 - GacUI
   - Fix `Global Objects` in `GacUI.h`.
-  - Diff algorithm based on `RenderingDom::domId` (begins from -1, not consecutive)
-    - Add a test case for `GuiRemoteProtocolDomDiffConverter`.
-    - For diff-disabled (default) unit tests, it calls diff function explicitly to log both rendering/diff commands.
-      - Call `UpdateDomInplace` to verify results.
+  - For diff-disabled (default) unit tests, it calls diff function explicitly to log both rendering/diff commands.
+    - Call `UpdateDomInplace` to verify results.
   - Mouse wheel trigger functions.
   - Unit Test Snapshot Viewer
     - Show dom nodes in a tree view in the right side of the rendering tab optionally.
