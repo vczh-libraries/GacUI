@@ -2560,7 +2560,7 @@
             "$ast": "MessageRequest",
             "type": {
                 "$ast": "ReferenceType",
-                "name": "RenderingDom_Diff"
+                "name": "RenderingDom_DiffsInOrder"
             }
         },
         "response": null

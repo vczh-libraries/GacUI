@@ -550,7 +550,7 @@ namespace vl::presentation::remoteprotocol
 	HANDLER(RendererEndBoundary, void, void, NOREQ, NORES, NODROP)\
 	HANDLER(RendererEndRendering, void, ::vl::presentation::remoteprotocol::ElementMeasurings, NOREQ, RES, NODROP)\
 	HANDLER(RendererRenderDom, ::vl::Ptr<::vl::presentation::remoteprotocol::RenderingDom>, void, REQ, NORES, NODROP)\
-	HANDLER(RendererRenderDomDiff, ::vl::presentation::remoteprotocol::RenderingDom_Diff, void, REQ, NORES, NODROP)\
+	HANDLER(RendererRenderDomDiff, ::vl::presentation::remoteprotocol::RenderingDom_DiffsInOrder, void, REQ, NORES, NODROP)\
 
 #define GACUI_REMOTEPROTOCOL_EVENTS(HANDLER)\
 	HANDLER(ControllerConnect, void, NOREQ, NODROP)\
@@ -595,7 +595,7 @@ namespace vl::presentation::remoteprotocol
 	HANDLER(::vl::presentation::remoteprotocol::ElementDesc_SolidLabel)\
 	HANDLER(::vl::presentation::remoteprotocol::ElementRendering)\
 	HANDLER(::vl::presentation::remoteprotocol::ImageCreation)\
-	HANDLER(::vl::presentation::remoteprotocol::RenderingDom_Diff)\
+	HANDLER(::vl::presentation::remoteprotocol::RenderingDom_DiffsInOrder)\
 	HANDLER(::vl::presentation::remoteprotocol::WindowShowing)\
 	HANDLER(::vl::vint)\
 	HANDLER(bool)\

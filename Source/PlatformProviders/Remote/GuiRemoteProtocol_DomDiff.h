@@ -29,6 +29,7 @@ GuiRemoteEventDomDiffConverter
 		using TBase = GuiRemoteEventCombinator_PassingThrough;
 	protected:
 		Ptr<RenderingDom>				lastDom;
+		DomIndex						lastDomIndex;
 
 	public:
 		GuiRemoteEventDomDiffConverter()
@@ -65,15 +66,22 @@ GuiRemoteProtocolDomDiffConverter
 		void RequestRendererEndRendering(vint id) override
 		{
 			auto dom = renderingDomBuilder.RequestRendererEndRendering();
+			DomIndex domIndex;
+			BuildDomIndex(dom, domIndex);
 
 			if (eventCombinator.lastDom)
 			{
+				RenderingDom_DiffsInOrder diffs;
+				DiffDom(eventCombinator.lastDom, eventCombinator.lastDomIndex, dom, domIndex, diffs);
+				targetProtocol->RequestRendererRenderDomDiff(diffs);
 			}
 			else
 			{
-				eventCombinator.lastDom = dom;
 				targetProtocol->RequestRendererRenderDom(dom);
 			}
+
+			eventCombinator.lastDom = dom;
+			eventCombinator.lastDomIndex = std::move(domIndex);
 		}
 
 		void RequestRendererBeginBoundary(const remoteprotocol::ElementBoundary& arguments) override
