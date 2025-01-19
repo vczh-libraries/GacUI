@@ -277,12 +277,21 @@ void GacUIUnitTest_Start(const WString& appName, Nullable<UnitTestScreenConfig> 
 	channeling::GuiRemoteJsonChannelFromProtocol channelReceiver(unitTestProtocol.GetProtocol());
 	channeling::GuiRemoteProtocolFromJsonChannel channelSender(&channelReceiver);
 
-	repeatfiltering::GuiRemoteProtocolFilterVerifier verifierProtocol(globalConfig.useSyncChannel ? &channelSender : unitTestProtocol.GetProtocol());
+	repeatfiltering::GuiRemoteProtocolFilterVerifier verifierProtocol(
+		globalConfig.useSyncChannel
+		? &channelSender
+		: unitTestProtocol.GetProtocol()
+		);
 	repeatfiltering::GuiRemoteProtocolFilter filteredProtocol(&verifierProtocol);
+	GuiRemoteProtocolDomDiffConverter diffConverterProtocol(&filteredProtocol);
 
 	UnitTestContextImpl unitTestContext(&unitTestProtocol);
 	guiMainUnitTestContext = &unitTestContext;
-	SetupRemoteNativeController(&filteredProtocol);
+	SetupRemoteNativeController(
+		globalConfig.useDomDiff
+		? static_cast<IGuiRemoteProtocol*>(&diffConverterProtocol)
+		: &filteredProtocol
+		);
 	GacUIUnitTest_SetGuiMainProxy({});
 
 	GacUIUnitTest_LogUI(appName, unitTestProtocol);
