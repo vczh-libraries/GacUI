@@ -241,11 +241,21 @@ void GacUIUnitTest_LogDiffs(const WString& appName, UnitTestRemoteProtocol& unit
 				DomIndex nextDomIndex;
 				BuildDomIndex(loggedFrame->renderingDom, nextDomIndex);
 
-				RenderingDom_DiffsInOrder diffs;
-				DiffDom(dom, domIndex, loggedFrame->renderingDom, nextDomIndex, diffs);
-				if (diffs.diffsInOrder)
+				Ptr<List<RenderingDom_Diff>> diffList;
+				if (loggedFrame->renderingDiffs)
 				{
-					for (auto&& diff : *diffs.diffsInOrder.Obj())
+					diffList = loggedFrame->renderingDiffs.Value().diffsInOrder;
+				}
+				else
+				{
+					RenderingDom_DiffsInOrder diffs;
+					DiffDom(dom, domIndex, loggedFrame->renderingDom, nextDomIndex, diffs);
+					diffList = diffs.diffsInOrder;
+				}
+
+				if (diffList)
+				{
+					for (auto&& diff : *diffList.Obj())
 					{
 						auto jsonLog = remoteprotocol::ConvertCustomTypeToJson(diff);
 						writer.WriteLine(JsonToString(jsonLog, formatting));

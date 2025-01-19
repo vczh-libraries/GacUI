@@ -22,9 +22,10 @@ UnitTestRemoteProtocol
 
 	struct UnitTestLoggedFrame
 	{
-		vint								frameId;
-		collections::List<WString>			renderingCommandsLog;
-		Ptr<UnitTestRenderingDom>			renderingDom;
+		vint													frameId;
+		collections::List<WString>								renderingCommandsLog;
+		Nullable<remoteprotocol::RenderingDom_DiffsInOrder>		renderingDiffs;
+		Ptr<UnitTestRenderingDom>								renderingDom;
 	};
 
 	using UnitTestLoggedFrameList = collections::List<Ptr<UnitTestLoggedFrame>>;
@@ -42,6 +43,9 @@ UnitTestRemoteProtocol
 		remoteprotocol::UnitTest_RenderingTrace			loggedTrace;
 		UnitTestLoggedFrameList							loggedFrames;
 		bool											lastRenderingCommandsOpening = false;
+
+		Ptr<remoteprotocol::RenderingDom>				receivedDom;
+		remoteprotocol::DomIndex						receivedDomIndex;
 		bool											receivedDomDiffMessage = false;
 		bool											receivedElementMessage = false;
 
@@ -107,15 +111,14 @@ IGuiRemoteProtocolMessages (Rendering)
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering<TProtocol>::RequestRendererEndRendering(vint)#"
 			CHECK_ERROR(receivedElementMessage || receivedDomDiffMessage, ERROR_MESSAGE_PREFIX L"Either dom-diff or element message should be sent before this message.");
 
+			auto lastFrame = GetLastRenderingFrame();
 			if (receivedElementMessage)
 			{
-				auto dom = renderingDomBuilder.RequestRendererEndRendering();
-				auto lastFrame = GetLastRenderingFrame();
-				lastFrame->renderingDom = dom;
+				lastFrame->renderingDom = renderingDomBuilder.RequestRendererEndRendering();
 			}
 			if (receivedDomDiffMessage)
 			{
-				CHECK_FAIL(L"Not Implemented!");
+				lastFrame->renderingDom = receivedDom;
 			}
 			this->GetEvents()->RespondRendererEndRendering(id, measuringForNextRendering);
 			measuringForNextRendering = {};
@@ -230,7 +233,9 @@ IGuiRemoteProtocolMessages (Rendering - Dom)
 			{
 				receivedDomDiffMessage = true;
 			}
-			CHECK_FAIL(L"Not Implemented!");
+
+			receivedDom = arguments;
+			remoteprotocol::BuildDomIndex(receivedDom, receivedDomIndex);
 #undef ERROR_MESSAGE_PREFIX
 		}
 
