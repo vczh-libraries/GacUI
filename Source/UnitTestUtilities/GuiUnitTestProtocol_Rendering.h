@@ -170,6 +170,26 @@ IGuiRemoteProtocolMessages (Rendering - Element)
 #undef ERROR_MESSAGE_PREFIX
 		}
 
+		void EnsureRenderedElement(vint id, Rect bounds)
+		{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering<TProtocol>::EnsureRenderedElement(id&)#"
+			index = lastElementDescs.Keys().IndexOf(id);
+			CHECK_ERROR(index != -1, ERROR_MESSAGE_PREFIX L"Renderer with the specified id has not been updated after created.");
+			lastElementDescs.Values()[index].Apply(Overloading(
+				[](remoteprotocol::RendererType)
+				{
+					CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Renderer with the specified id has not been updated after created.");
+				},
+				[&](const remoteprotocol::ElementDesc_SolidLabel& solidLabel)
+				{
+					CalculateSolidLabelSizeIfNecessary(bounds.Width(), bounds.Height(), solidLabel);
+				},
+				[&](const auto& element)
+				{
+				}));
+#undef ERROR_MESSAGE_PREFIX
+		}
+
 		void RequestRendererRenderElement(const remoteprotocol::ElementRendering& arguments) override
 		{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering<TProtocol>::RequestRendererRenderElement(const ElementRendering&)#"
@@ -204,26 +224,28 @@ IGuiRemoteProtocolMessages (Rendering - Element)
 				return;
 			}
 
-			index = lastElementDescs.Keys().IndexOf(arguments.id);
-			CHECK_ERROR(index != -1, ERROR_MESSAGE_PREFIX L"Renderer with the specified id has not been updated after created.");
-			lastElementDescs.Values()[index].Apply(Overloading(
-				[](remoteprotocol::RendererType)
-				{
-					CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Renderer with the specified id has not been updated after created.");
-				},
-				[&](const remoteprotocol::ElementDesc_SolidLabel& solidLabel)
-				{
-					CalculateSolidLabelSizeIfNecessary(arguments.bounds.Width(), arguments.bounds.Height(), solidLabel);
-				},
-				[&](const auto& element)
-				{
-				}));
+			EnsureRenderedElement(arguments.id, arguments.bounds);
 #undef ERROR_MESSAGE_PREFIX
 		}
 
 /***********************************************************************
 IGuiRemoteProtocolMessages (Rendering - Dom)
 ***********************************************************************/
+
+		void CalculateSolidLabelSizesIfNecessary(Ptr<remoteprotocol::RenderingDom> dom)
+		{
+			if (dom->content.element)
+			{
+				EnsureRenderedElement(dom->content.element.Value(), dom->content.bounds);
+			}
+			if (dom->children)
+			{
+				for (auto child : *dom->children.Obj())
+				{
+					CalculateSolidLabelSizesIfNecessary(child);
+				}
+			}
+		}
 
 		void RequestRendererRenderDom(const Ptr<remoteprotocol::RenderingDom>& arguments) override
 		{

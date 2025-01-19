@@ -1,7 +1,7 @@
 ﻿========================================
 1
 ========================================
-0: {"hitTestResult": null, "cursor": null, "element": null, "bounds": {"x1": 0, "y1": 0, "x2": 0, "y2": 0}, "validArea": {"x1": 0, "y1": 0, "x2": 0, "y2": 0}}
+-1: {"hitTestResult": null, "cursor": null, "element": null, "bounds": {"x1": 0, "y1": 0, "x2": 0, "y2": 0}, "validArea": {"x1": 0, "y1": 0, "x2": 0, "y2": 0}}
   4: {"hitTestResult": null, "cursor": null, "element": 1, "bounds": {"x1": 0, "y1": 0, "x2": 480, "y2": 320}, "validArea": {"x1": 0, "y1": 0, "x2": 480, "y2": 320}}
     8: {"hitTestResult": null, "cursor": null, "element": 2, "bounds": {"x1": 0, "y1": 0, "x2": 480, "y2": 320}, "validArea": {"x1": 0, "y1": 0, "x2": 480, "y2": 320}}
       6: {"hitTestResult": "BorderLeftTop", "cursor": null, "element": null, "bounds": {"x1": 0, "y1": 0, "x2": 8, "y2": 8}, "validArea": {"x1": 0, "y1": 0, "x2": 8, "y2": 8}}
