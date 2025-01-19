@@ -721,27 +721,15 @@
                             },
                             "children": [
                               {
-                                "id": 92,
+                                "id": 96,
                                 "content": {
                                   "hitTestResult": null,
                                   "cursor": null,
-                                  "element": 23,
-                                  "bounds": {"x1": 14, "y1": 42, "x2": 44, "y2": 60},
-                                  "validArea": {"x1": 14, "y1": 42, "x2": 44, "y2": 60}
+                                  "element": 24,
+                                  "bounds": {"x1": 17, "y1": 43, "x2": 41, "y2": 59},
+                                  "validArea": {"x1": 17, "y1": 43, "x2": 41, "y2": 59}
                                 },
-                                "children": [
-                                  {
-                                    "id": 96,
-                                    "content": {
-                                      "hitTestResult": null,
-                                      "cursor": null,
-                                      "element": 24,
-                                      "bounds": {"x1": 17, "y1": 43, "x2": 41, "y2": 59},
-                                      "validArea": {"x1": 17, "y1": 43, "x2": 41, "y2": 59}
-                                    },
-                                    "children": null
-                                  }
-                                ]
+                                "children": null
                               }
                             ]
                           }
@@ -1449,27 +1437,15 @@
                             },
                             "children": [
                               {
-                                "id": 92,
+                                "id": 96,
                                 "content": {
                                   "hitTestResult": null,
                                   "cursor": null,
-                                  "element": 23,
-                                  "bounds": {"x1": 14, "y1": 42, "x2": 44, "y2": 60},
-                                  "validArea": {"x1": 14, "y1": 42, "x2": 44, "y2": 60}
+                                  "element": 24,
+                                  "bounds": {"x1": 17, "y1": 43, "x2": 41, "y2": 59},
+                                  "validArea": {"x1": 17, "y1": 43, "x2": 41, "y2": 59}
                                 },
-                                "children": [
-                                  {
-                                    "id": 96,
-                                    "content": {
-                                      "hitTestResult": null,
-                                      "cursor": null,
-                                      "element": 24,
-                                      "bounds": {"x1": 17, "y1": 43, "x2": 41, "y2": 59},
-                                      "validArea": {"x1": 17, "y1": 43, "x2": 41, "y2": 59}
-                                    },
-                                    "children": null
-                                  }
-                                ]
+                                "children": null
                               }
                             ]
                           }

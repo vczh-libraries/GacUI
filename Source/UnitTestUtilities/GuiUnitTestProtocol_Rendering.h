@@ -118,7 +118,9 @@ IGuiRemoteProtocolMessages (Rendering)
 			}
 			if (receivedDomDiffMessage)
 			{
-				lastFrame->renderingDom = receivedDom;
+				// receivedDom will be updated in RequestRendererRenderDomDiff
+				// store a copy to log
+				lastFrame->renderingDom = CopyDom(receivedDom);
 			}
 			this->GetEvents()->RespondRendererEndRendering(id, measuringForNextRendering);
 			measuringForNextRendering = {};
