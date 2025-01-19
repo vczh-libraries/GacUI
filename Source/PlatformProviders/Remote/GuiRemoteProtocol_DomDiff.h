@@ -49,18 +49,20 @@ GuiRemoteProtocolDomDiffConverter
 	
 	class GuiRemoteProtocolDomDiffConverter : public GuiRemoteProtocolCombinator_PassingThrough<GuiRemoteEventDomDiffConverter>
 	{
+		using TBase = GuiRemoteProtocolCombinator_PassingThrough<GuiRemoteEventDomDiffConverter>;
 	protected:
 		RenderingDomBuilder				renderingDomBuilder;
 
 	public:
 		GuiRemoteProtocolDomDiffConverter(IGuiRemoteProtocol* _protocol)
-			: GuiRemoteProtocolCombinator_PassingThrough<GuiRemoteEventDomDiffConverter>(_protocol)
+			: TBase(_protocol)
 		{
 		}
 
 		void RequestRendererBeginRendering(const remoteprotocol::ElementBeginRendering& arguments) override
 		{
 			renderingDomBuilder.RequestRendererBeginRendering();
+			TBase::RequestRendererBeginRendering(arguments);
 		}
 
 		void RequestRendererEndRendering(vint id) override
@@ -82,6 +84,7 @@ GuiRemoteProtocolDomDiffConverter
 
 			eventCombinator.lastDom = dom;
 			eventCombinator.lastDomIndex = std::move(domIndex);
+			TBase::RequestRendererEndRendering(id);
 		}
 
 		void RequestRendererBeginBoundary(const remoteprotocol::ElementBoundary& arguments) override
