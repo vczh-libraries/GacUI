@@ -295,7 +295,10 @@ void GacUIUnitTest_Start(const WString& appName, Nullable<UnitTestScreenConfig> 
 	GacUIUnitTest_SetGuiMainProxy({});
 
 	GacUIUnitTest_LogUI(appName, unitTestProtocol);
-	GacUIUnitTest_LogCommands(appName, unitTestProtocol);
+	if (!globalConfig.useDomDiff)
+	{
+		GacUIUnitTest_LogCommands(appName, unitTestProtocol);
+	}
 	GacUIUnitTest_LogDiffs(appName, unitTestProtocol);
 }
 

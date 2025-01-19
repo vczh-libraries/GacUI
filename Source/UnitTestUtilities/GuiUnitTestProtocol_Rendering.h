@@ -42,6 +42,8 @@ UnitTestRemoteProtocol
 		remoteprotocol::UnitTest_RenderingTrace			loggedTrace;
 		UnitTestLoggedFrameList							loggedFrames;
 		bool											lastRenderingCommandsOpening = false;
+		bool											receivedDomDiffMessage = false;
+		bool											receivedElementMessage = false;
 
 		ElementDescMap									lastElementDescs;
 		IdSet											removedElementIds;
@@ -92,8 +94,8 @@ IGuiRemoteProtocolMessages (Rendering)
 
 		void RequestRendererBeginRendering(const remoteprotocol::ElementBeginRendering& arguments) override
 		{
-			renderingDomBuilder.RequestRendererBeginRendering();
-
+			receivedDomDiffMessage = false;
+			receivedElementMessage = false;
 			lastRenderingCommandsOpening = true;
 			auto frame = Ptr(new UnitTestLoggedFrame);
 			frame->frameId = arguments.frameId;
@@ -102,16 +104,38 @@ IGuiRemoteProtocolMessages (Rendering)
 
 		void RequestRendererEndRendering(vint id) override
 		{
-			auto dom = renderingDomBuilder.RequestRendererEndRendering();
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering<TProtocol>::RequestRendererEndRendering(vint)#"
+			CHECK_ERROR(receivedElementMessage || receivedDomDiffMessage, ERROR_MESSAGE_PREFIX L"Either dom-diff or element message should be sent before this message.");
 
-			auto lastFrame = GetLastRenderingFrame();
-			lastFrame->renderingDom = dom;
+			if (receivedElementMessage)
+			{
+				auto dom = renderingDomBuilder.RequestRendererEndRendering();
+				auto lastFrame = GetLastRenderingFrame();
+				lastFrame->renderingDom = dom;
+			}
+			if (receivedDomDiffMessage)
+			{
+				CHECK_FAIL(L"Not Implemented!");
+			}
 			this->GetEvents()->RespondRendererEndRendering(id, measuringForNextRendering);
 			measuringForNextRendering = {};
+#undef ERROR_MESSAGE_PREFIX
 		}
+
+/***********************************************************************
+IGuiRemoteProtocolMessages (Rendering - Element)
+***********************************************************************/
 
 		void RequestRendererBeginBoundary(const remoteprotocol::ElementBoundary& arguments) override
 		{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering<TProtocol>::RequestRendererBeginBoundary(const ElementBoundary&)#"
+			CHECK_ERROR(!receivedDomDiffMessage, ERROR_MESSAGE_PREFIX L"This message could not be used with dom-diff messages in the same rendering cycle.");
+			if (!receivedElementMessage)
+			{
+				renderingDomBuilder.RequestRendererBeginRendering();
+				receivedElementMessage = true;
+			}
+
 			renderingDomBuilder.RequestRendererBeginBoundary(arguments);
 
 			glr::json::JsonFormatting formatting;
@@ -125,18 +149,34 @@ IGuiRemoteProtocolMessages (Rendering)
 				auto jsonLog = remoteprotocol::ConvertCustomTypeToJson(arguments);
 				writer.WriteString(glr::json::JsonToString(jsonLog, formatting));
 			}));
+#undef ERROR_MESSAGE_PREFIX
 		}
 
 		void RequestRendererEndBoundary() override
 		{
-			renderingDomBuilder.RequestRendererEndBoundary();
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering<TProtocol>::RequestRendererEndBoundary()#"
+			CHECK_ERROR(!receivedDomDiffMessage, ERROR_MESSAGE_PREFIX L"This message could not be used with dom-diff messages in the same rendering cycle.");
+			if (!receivedElementMessage)
+			{
+				renderingDomBuilder.RequestRendererBeginRendering();
+				receivedElementMessage = true;
+			}
 
+			renderingDomBuilder.RequestRendererEndBoundary();
 			GetLastRenderingFrame()->renderingCommandsLog.Add(L"RequestRendererEndBoundary");
+#undef ERROR_MESSAGE_PREFIX
 		}
 
 		void RequestRendererRenderElement(const remoteprotocol::ElementRendering& arguments) override
 		{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering<TProtocol>::RequestRendererRenderElement(const ElementRendering&)#"
+			CHECK_ERROR(!receivedDomDiffMessage, ERROR_MESSAGE_PREFIX L"This message could not be used with dom-diff messages in the same rendering cycle.");
+			if (!receivedElementMessage)
+			{
+				renderingDomBuilder.RequestRendererBeginRendering();
+				receivedElementMessage = true;
+			}
+
 			vint index = loggedTrace.createdElements->Keys().IndexOf(arguments.id);
 			CHECK_ERROR(index != -1, ERROR_MESSAGE_PREFIX L"Renderer with the specified id has not been created.");
 			{
@@ -185,6 +225,11 @@ IGuiRemoteProtocolMessages (Rendering - Dom)
 		void RequestRendererRenderDom(const Ptr<remoteprotocol::RenderingDom>& arguments) override
 		{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering<TProtocol>::RequestRendererRenderElement(const RenderingDom&)#"
+			CHECK_ERROR(!receivedElementMessage, ERROR_MESSAGE_PREFIX L"This message could not be used with element messages in the same rendering cycle.");
+			if (!receivedDomDiffMessage)
+			{
+				receivedDomDiffMessage = true;
+			}
 			CHECK_FAIL(L"Not Implemented!");
 #undef ERROR_MESSAGE_PREFIX
 		}
@@ -192,6 +237,11 @@ IGuiRemoteProtocolMessages (Rendering - Dom)
 		void RequestRendererRenderDomDiff(const remoteprotocol::RenderingDom_DiffsInOrder& arguments) override
 		{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering<TProtocol>::RequestRendererRenderElement(const RenderingDom_DiffsInOrder&)#"
+			CHECK_ERROR(!receivedElementMessage, ERROR_MESSAGE_PREFIX L"This message could not be used with element messages in the same rendering cycle.");
+			if (!receivedDomDiffMessage)
+			{
+				receivedDomDiffMessage = true;
+			}
 			CHECK_FAIL(L"Not Implemented!");
 #undef ERROR_MESSAGE_PREFIX
 		}
