@@ -5,6 +5,9 @@ GacUI::Remote Window
 
 ***********************************************************************/
 
+#ifndef VCZH_PRESENTATION_GUIREMOTECONTROLLER_REMOTEPROTOCOLSCHEMA_FRAMEOPERATIONS
+#define VCZH_PRESENTATION_GUIREMOTECONTROLLER_REMOTEPROTOCOLSCHEMA_FRAMEOPERATIONS
+
 #include "../Generated/GuiRemoteProtocolSchema.h"
 
 namespace vl::presentation::remoteprotocol
@@ -64,3 +67,5 @@ namespace vl::presentation::remoteprotocol
 	extern void						UpdateDomInplace(Ptr<RenderingDom> root, DomIndex& index, const RenderingDom_DiffsInOrder& diffs);
 	extern void						DiffDom(Ptr<RenderingDom> domFrom, DomIndex& indexFrom, Ptr<RenderingDom> domTo, DomIndex& indexTo, RenderingDom_DiffsInOrder& diffs);
 }
+
+#endif
