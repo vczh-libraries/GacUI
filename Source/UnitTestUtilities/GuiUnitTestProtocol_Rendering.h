@@ -173,6 +173,16 @@ IGuiRemoteProtocolMessages (Rendering - Element)
 		void EnsureRenderedElement(vint id, Rect bounds)
 		{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering<TProtocol>::EnsureRenderedElement(id&)#"
+
+			vint index = loggedTrace.createdElements->Keys().IndexOf(id);
+			CHECK_ERROR(index != -1, ERROR_MESSAGE_PREFIX L"Renderer with the specified id has not been created.");
+			auto rendererType = loggedTrace.createdElements->Values()[index];
+			if (rendererType == remoteprotocol::RendererType::FocusRectangle)
+			{
+				// FocusRectangle does not has a ElementDesc
+				return;
+			}
+
 			index = lastElementDescs.Keys().IndexOf(id);
 			CHECK_ERROR(index != -1, ERROR_MESSAGE_PREFIX L"Renderer with the specified id has not been updated after created.");
 			lastElementDescs.Values()[index].Apply(Overloading(
@@ -187,6 +197,7 @@ IGuiRemoteProtocolMessages (Rendering - Element)
 				[&](const auto& element)
 				{
 				}));
+
 #undef ERROR_MESSAGE_PREFIX
 		}
 
@@ -200,8 +211,6 @@ IGuiRemoteProtocolMessages (Rendering - Element)
 				receivedElementMessage = true;
 			}
 
-			vint index = loggedTrace.createdElements->Keys().IndexOf(arguments.id);
-			CHECK_ERROR(index != -1, ERROR_MESSAGE_PREFIX L"Renderer with the specified id has not been created.");
 			{
 				renderingDomBuilder.RequestRendererRenderElement(arguments);
 
@@ -215,13 +224,6 @@ IGuiRemoteProtocolMessages (Rendering - Element)
 					auto jsonLog = remoteprotocol::ConvertCustomTypeToJson(arguments);
 					writer.WriteString(glr::json::JsonToString(jsonLog, formatting));
 				}));
-			}
-
-			auto rendererType = loggedTrace.createdElements->Values()[index];
-			if (rendererType == remoteprotocol::RendererType::FocusRectangle)
-			{
-				// FocusRectangle does not has a ElementDesc
-				return;
 			}
 
 			EnsureRenderedElement(arguments.id, arguments.bounds);
@@ -258,6 +260,7 @@ IGuiRemoteProtocolMessages (Rendering - Dom)
 
 			receivedDom = arguments;
 			remoteprotocol::BuildDomIndex(receivedDom, receivedDomIndex);
+			CalculateSolidLabelSizesIfNecessary(receivedDom);
 #undef ERROR_MESSAGE_PREFIX
 		}
 
@@ -272,6 +275,7 @@ IGuiRemoteProtocolMessages (Rendering - Dom)
 			
 			remoteprotocol::UpdateDomInplace(receivedDom, receivedDomIndex, arguments);
 			GetLastRenderingFrame()->renderingDiffs = arguments;
+			CalculateSolidLabelSizesIfNecessary(receivedDom);
 #undef ERROR_MESSAGE_PREFIX
 		}
 
