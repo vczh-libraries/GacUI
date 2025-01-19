@@ -8,36 +8,13 @@ Interfaces:
 
 ***********************************************************************/
 
-#ifndef VCZH_PRESENTATION_GUIREMOTECONTROLLER_GUIREMOTEPROTOCOL_CHANNELING
-#define VCZH_PRESENTATION_GUIREMOTECONTROLLER_GUIREMOTEPROTOCOL_CHANNELING
+#ifndef VCZH_PRESENTATION_GUIREMOTECONTROLLER_GUIREMOTEPROTOCOL_CHANNEL_JSON
+#define VCZH_PRESENTATION_GUIREMOTECONTROLLER_GUIREMOTEPROTOCOL_CHANNEL_JSON
 
-#include "GuiRemoteProtocol_FilterVerifier.h"
+#include "GuiRemoteProtocol_Channel_Shared.h"
 
 namespace vl::presentation::remoteprotocol::channeling
 {
-
-/***********************************************************************
-IGuiRemoteProtocolChannel<T>
-***********************************************************************/
-
-	template<typename TPackage>
-	class IGuiRemoteProtocolChannelReceiver : public virtual Interface
-	{
-	public:
-		virtual void											OnReceive(const TPackage& package) = 0;
-	};
-
-	template<typename TPackage>
-	class IGuiRemoteProtocolChannel : public virtual Interface
-	{
-	public:
-		virtual void											Initialize(IGuiRemoteProtocolChannelReceiver<TPackage>* receiver) = 0;
-		virtual IGuiRemoteProtocolChannelReceiver<TPackage>*	GetReceiver() = 0;
-		virtual void											Write(const TPackage& package) = 0;
-		virtual WString											GetExecutablePath() = 0;
-		virtual void											Submit() = 0;
-		virtual void											ProcessRemoteEvents() = 0;
-	};
 
 	using IJsonChannelReceiver = IGuiRemoteProtocolChannelReceiver<Ptr<glr::json::JsonNode>>;
 	using IJsonChannel = IGuiRemoteProtocolChannel<Ptr<glr::json::JsonNode>>;

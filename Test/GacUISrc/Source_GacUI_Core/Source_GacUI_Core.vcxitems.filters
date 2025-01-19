@@ -40,14 +40,20 @@
     <Filter Include="PlatformProviders\Remote\Protocol\Metadata">
       <UniqueIdentifier>{4dac0ff7-cdf1-490c-9a48-243cb8ae6025}</UniqueIdentifier>
     </Filter>
-    <Filter Include="PlatformProviders\Remote\ProtocolCombinators">
-      <UniqueIdentifier>{e14f29ac-0fb5-49d4-bb16-e9fd57104835}</UniqueIdentifier>
-    </Filter>
     <Filter Include="PlatformProviders\Remote\Protocol\FrameOperations">
       <UniqueIdentifier>{f7073608-c87a-405d-a9bb-7331963bc267}</UniqueIdentifier>
     </Filter>
     <Filter Include="PlatformProviders\GacGen">
       <UniqueIdentifier>{0de502fc-a6e3-4061-a107-80814e08eaca}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="PlatformProviders\Remote\IGuiRemoteProtocol">
+      <UniqueIdentifier>{50c0dd09-c950-49e7-946e-ab073c92ea24}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="PlatformProviders\Remote\IGuiRemoteProtocol\ProtocolChannels">
+      <UniqueIdentifier>{24eebcdf-d745-4206-b016-2a2f97169b5f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="PlatformProviders\Remote\IGuiRemoteProtocol\ProtocolCombinators">
+      <UniqueIdentifier>{e14f29ac-0fb5-49d4-bb16-e9fd57104835}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -294,17 +300,11 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Remote\GuiRemoteGraphics_ImageService.h">
       <Filter>PlatformProviders\Remote</Filter>
     </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Remote\GuiRemoteProtocol.h">
-      <Filter>PlatformProviders\Remote\ProtocolCombinators</Filter>
-    </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Remote\GuiRemoteProtocol_Filter.h">
-      <Filter>PlatformProviders\Remote\ProtocolCombinators</Filter>
+      <Filter>PlatformProviders\Remote\IGuiRemoteProtocol\ProtocolCombinators</Filter>
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Remote\GuiRemoteProtocol_FilterVerifier.h">
-      <Filter>PlatformProviders\Remote\ProtocolCombinators</Filter>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Remote\GuiRemoteProtocol_Shared.h">
-      <Filter>PlatformProviders\Remote\ProtocolCombinators</Filter>
+      <Filter>PlatformProviders\Remote\IGuiRemoteProtocol\ProtocolCombinators</Filter>
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Hosted\GuiHostedApplication.h">
       <Filter>PlatformProviders\Hosted</Filter>
@@ -312,11 +312,20 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Remote\Protocol\FrameOperations\GuiRemoteProtocolSchema_FrameOperations.h">
       <Filter>PlatformProviders\Remote\Protocol\FrameOperations</Filter>
     </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Remote\GuiRemoteProtocol_Channeling.h">
-      <Filter>PlatformProviders\Remote\ProtocolCombinators</Filter>
-    </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Remote\GuiRemoteProtocol_DomDiff.h">
-      <Filter>PlatformProviders\Remote\ProtocolCombinators</Filter>
+      <Filter>PlatformProviders\Remote\IGuiRemoteProtocol\ProtocolCombinators</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Remote\GuiRemoteProtocol_Channel_Shared.h">
+      <Filter>PlatformProviders\Remote\IGuiRemoteProtocol\ProtocolChannels</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Remote\GuiRemoteProtocol_Channel_Json.h">
+      <Filter>PlatformProviders\Remote\IGuiRemoteProtocol\ProtocolChannels</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Remote\GuiRemoteProtocol.h">
+      <Filter>PlatformProviders\Remote\IGuiRemoteProtocol</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Remote\GuiRemoteProtocol_Shared.h">
+      <Filter>PlatformProviders\Remote\IGuiRemoteProtocol</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

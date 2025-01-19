@@ -15,6 +15,6 @@ Interfaces:
 #include "GuiRemoteProtocol_FilterVerifier.h"
 #include "GuiRemoteProtocol_Filter.h"
 #include "GuiRemoteProtocol_DomDiff.h"
-#include "GuiRemoteProtocol_Channeling.h"
+#include "GuiRemoteProtocol_Channel_Json.h"
 
 #endif
