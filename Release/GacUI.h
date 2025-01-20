@@ -4633,6 +4633,11 @@ namespace vl
 			class GuiControlHost;
 		}
 
+		namespace elements
+		{
+			class GuiRemoteGraphicsRenderTarget;
+		}
+
 		namespace compositions
 		{
 			class GuiGraphicsComposition_Trivial;
@@ -4661,6 +4666,7 @@ Basic Construction
 				friend class GuiWindowComposition;
 				friend class controls::GuiControl;
 				friend class GuiGraphicsHost;
+				friend class elements::GuiRemoteGraphicsRenderTarget;
 
 				friend void InvokeOnCompositionStateChanged(compositions::GuiGraphicsComposition* composition);
 			public:
@@ -4695,6 +4701,7 @@ Basic Construction
 				bool										visible = true;
 				bool										transparentToMouse = false;
 				MinSizeLimitation							minSizeLimitation = MinSizeLimitation::NoLimit;
+				vint										remoteId = -1;
 
 				Ptr<compositions::GuiGraphicsEventReceiver>	eventReceiver;
 				GraphicsHostRecord*							relatedHostRecord = nullptr;
@@ -22145,12 +22152,12 @@ namespace vl::presentation::remoteprotocol
 	struct ElementMeasuring_FontHeight;
 	struct ElementMeasuring_ElementMinSize;
 	struct ElementMeasurings;
+	struct RenderingDomContent;
 	struct RenderingDom;
-	struct RenderingCommand_BeginBoundary;
-	struct RenderingCommand_EndBoundary;
-	struct RenderingCommand_Element;
-	struct RenderingFrame;
-	struct RenderingTrace;
+	struct RenderingDom_Diff;
+	struct RenderingDom_DiffsInOrder;
+	struct UnitTest_RenderingFrame;
+	struct UnitTest_RenderingTrace;
 }
 namespace vl::presentation::remoteprotocol
 {
@@ -22192,12 +22199,12 @@ namespace vl::presentation::remoteprotocol
 	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::ElementMeasuring_FontHeight> { static constexpr const wchar_t* Name = L"ElementMeasuring_FontHeight"; };
 	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::ElementMeasuring_ElementMinSize> { static constexpr const wchar_t* Name = L"ElementMeasuring_ElementMinSize"; };
 	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::ElementMeasurings> { static constexpr const wchar_t* Name = L"ElementMeasurings"; };
+	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::RenderingDomContent> { static constexpr const wchar_t* Name = L"RenderingDomContent"; };
 	template<> struct JsonNameHelper<::vl::Ptr<::vl::presentation::remoteprotocol::RenderingDom>> { static constexpr const wchar_t* Name = L"RenderingDom"; };
-	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::RenderingCommand_BeginBoundary> { static constexpr const wchar_t* Name = L"RenderingCommand_BeginBoundary"; };
-	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::RenderingCommand_EndBoundary> { static constexpr const wchar_t* Name = L"RenderingCommand_EndBoundary"; };
-	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::RenderingCommand_Element> { static constexpr const wchar_t* Name = L"RenderingCommand_Element"; };
-	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::RenderingFrame> { static constexpr const wchar_t* Name = L"RenderingFrame"; };
-	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::RenderingTrace> { static constexpr const wchar_t* Name = L"RenderingTrace"; };
+	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::RenderingDom_Diff> { static constexpr const wchar_t* Name = L"RenderingDom_Diff"; };
+	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::RenderingDom_DiffsInOrder> { static constexpr const wchar_t* Name = L"RenderingDom_DiffsInOrder"; };
+	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::UnitTest_RenderingFrame> { static constexpr const wchar_t* Name = L"UnitTest_RenderingFrame"; };
+	template<> struct JsonNameHelper<::vl::presentation::remoteprotocol::UnitTest_RenderingTrace> { static constexpr const wchar_t* Name = L"UnitTest_RenderingTrace"; };
 }
 namespace vl::presentation::remoteprotocol
 {
@@ -22244,7 +22251,14 @@ namespace vl::presentation::remoteprotocol
 		UnsupportedDocument,
 	};
 
-	using ElementDescVariant = ::vl::Variant<
+	enum class RenderingDom_DiffType
+	{
+		Deleted,
+		Created,
+		Modified,
+	};
+
+	using UnitTest_ElementDescVariant = ::vl::Variant<
 		::vl::presentation::remoteprotocol::ElementDesc_SolidBorder,
 		::vl::presentation::remoteprotocol::ElementDesc_SinkBorder,
 		::vl::presentation::remoteprotocol::ElementDesc_SinkSplitter,
@@ -22254,12 +22268,6 @@ namespace vl::presentation::remoteprotocol
 		::vl::presentation::remoteprotocol::ElementDesc_Polygon,
 		::vl::presentation::remoteprotocol::ElementDesc_SolidLabel,
 		::vl::presentation::remoteprotocol::ElementDesc_ImageFrame
-	>;
-
-	using RenderingCommand = ::vl::Variant<
-		::vl::presentation::remoteprotocol::RenderingCommand_BeginBoundary,
-		::vl::presentation::remoteprotocol::RenderingCommand_EndBoundary,
-		::vl::presentation::remoteprotocol::RenderingCommand_Element
 	>;
 
 	struct FontConfig
@@ -22425,6 +22433,7 @@ namespace vl::presentation::remoteprotocol
 
 	struct ElementBoundary
 	{
+		::vl::vint id;
 		::vl::Nullable<::vl::presentation::INativeWindowListener::HitTestResult> hitTestResult;
 		::vl::Nullable<::vl::presentation::INativeCursor::SystemCursorType> cursor;
 		::vl::presentation::Rect bounds;
@@ -22451,47 +22460,50 @@ namespace vl::presentation::remoteprotocol
 		::vl::Ptr<::vl::collections::List<::vl::presentation::remoteprotocol::ImageMetadata>> createdImages;
 	};
 
-	struct RenderingDom
+	struct RenderingDomContent
 	{
 		::vl::Nullable<::vl::presentation::INativeWindowListener::HitTestResult> hitTestResult;
 		::vl::Nullable<::vl::presentation::INativeCursor::SystemCursorType> cursor;
 		::vl::Nullable<::vl::vint> element;
 		::vl::presentation::Rect bounds;
 		::vl::presentation::Rect validArea;
+	};
+
+	struct RenderingDom
+	{
+		::vl::vint id;
+		::vl::presentation::remoteprotocol::RenderingDomContent content;
 		::vl::Ptr<::vl::collections::List<::vl::Ptr<::vl::presentation::remoteprotocol::RenderingDom>>> children;
 	};
 
-	struct RenderingCommand_BeginBoundary
+	struct RenderingDom_Diff
 	{
-		::vl::presentation::remoteprotocol::ElementBoundary boundary;
+		::vl::vint id;
+		::vl::presentation::remoteprotocol::RenderingDom_DiffType diffType;
+		::vl::Nullable<::vl::presentation::remoteprotocol::RenderingDomContent> content;
+		::vl::Ptr<::vl::collections::List<::vl::vint>> children;
 	};
 
-	struct RenderingCommand_EndBoundary
+	struct RenderingDom_DiffsInOrder
 	{
+		::vl::Ptr<::vl::collections::List<::vl::presentation::remoteprotocol::RenderingDom_Diff>> diffsInOrder;
 	};
 
-	struct RenderingCommand_Element
-	{
-		::vl::presentation::remoteprotocol::ElementRendering rendering;
-		::vl::Nullable<::vl::vint> element;
-	};
-
-	struct RenderingFrame
+	struct UnitTest_RenderingFrame
 	{
 		::vl::vint frameId;
 		::vl::Nullable<::vl::WString> frameName;
 		::vl::presentation::remoteprotocol::WindowSizingConfig windowSize;
-		::vl::Ptr<::vl::collections::Dictionary<::vl::vint, ::vl::presentation::remoteprotocol::ElementDescVariant>> elements;
-		::vl::Ptr<::vl::collections::List<::vl::presentation::remoteprotocol::RenderingCommand>> commands;
+		::vl::Ptr<::vl::collections::Dictionary<::vl::vint, ::vl::presentation::remoteprotocol::UnitTest_ElementDescVariant>> elements;
 		::vl::Ptr<::vl::presentation::remoteprotocol::RenderingDom> root;
 	};
 
-	struct RenderingTrace
+	struct UnitTest_RenderingTrace
 	{
 		::vl::Ptr<::vl::collections::Dictionary<::vl::vint, ::vl::presentation::remoteprotocol::RendererType>> createdElements;
 		::vl::Ptr<::vl::presentation::remoteprotocol::ArrayMap<::vl::vint, ::vl::presentation::remoteprotocol::ImageCreation, &::vl::presentation::remoteprotocol::ImageCreation::id>> imageCreations;
 		::vl::Ptr<::vl::presentation::remoteprotocol::ArrayMap<::vl::vint, ::vl::presentation::remoteprotocol::ImageMetadata, &::vl::presentation::remoteprotocol::ImageMetadata::id>> imageMetadatas;
-		::vl::Ptr<::vl::collections::List<::vl::presentation::remoteprotocol::RenderingFrame>> frames;
+		::vl::Ptr<::vl::collections::List<::vl::presentation::remoteprotocol::UnitTest_RenderingFrame>> frames;
 	};
 
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::INativeWindowListener::HitTestResult>(const ::vl::presentation::INativeWindowListener::HitTestResult & value);
@@ -22506,6 +22518,7 @@ namespace vl::presentation::remoteprotocol
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::ElementSolidLabelMeasuringRequest>(const ::vl::presentation::remoteprotocol::ElementSolidLabelMeasuringRequest & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::INativeImage::FormatType>(const ::vl::presentation::INativeImage::FormatType & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::RendererType>(const ::vl::presentation::remoteprotocol::RendererType & value);
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::RenderingDom_DiffType>(const ::vl::presentation::remoteprotocol::RenderingDom_DiffType & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::NativeCoordinate>(const ::vl::presentation::NativeCoordinate & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::NativePoint>(const ::vl::presentation::NativePoint & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::NativeSize>(const ::vl::presentation::NativeSize & value);
@@ -22544,12 +22557,12 @@ namespace vl::presentation::remoteprotocol
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::ElementMeasuring_FontHeight>(const ::vl::presentation::remoteprotocol::ElementMeasuring_FontHeight & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::ElementMeasuring_ElementMinSize>(const ::vl::presentation::remoteprotocol::ElementMeasuring_ElementMinSize & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::ElementMeasurings>(const ::vl::presentation::remoteprotocol::ElementMeasurings & value);
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::RenderingDomContent>(const ::vl::presentation::remoteprotocol::RenderingDomContent & value);
 	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::RenderingDom>(const ::vl::presentation::remoteprotocol::RenderingDom & value);
-	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::RenderingCommand_BeginBoundary>(const ::vl::presentation::remoteprotocol::RenderingCommand_BeginBoundary & value);
-	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::RenderingCommand_EndBoundary>(const ::vl::presentation::remoteprotocol::RenderingCommand_EndBoundary & value);
-	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::RenderingCommand_Element>(const ::vl::presentation::remoteprotocol::RenderingCommand_Element & value);
-	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::RenderingFrame>(const ::vl::presentation::remoteprotocol::RenderingFrame & value);
-	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::RenderingTrace>(const ::vl::presentation::remoteprotocol::RenderingTrace & value);
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::RenderingDom_Diff>(const ::vl::presentation::remoteprotocol::RenderingDom_Diff & value);
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::RenderingDom_DiffsInOrder>(const ::vl::presentation::remoteprotocol::RenderingDom_DiffsInOrder & value);
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::UnitTest_RenderingFrame>(const ::vl::presentation::remoteprotocol::UnitTest_RenderingFrame & value);
+	template<> vl::Ptr<vl::glr::json::JsonNode> ConvertCustomTypeToJson<::vl::presentation::remoteprotocol::UnitTest_RenderingTrace>(const ::vl::presentation::remoteprotocol::UnitTest_RenderingTrace & value);
 
 	template<> void ConvertJsonToCustomType<::vl::presentation::INativeWindowListener::HitTestResult>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::INativeWindowListener::HitTestResult& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::INativeCursor::SystemCursorType>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::INativeCursor::SystemCursorType& value);
@@ -22563,6 +22576,7 @@ namespace vl::presentation::remoteprotocol
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ElementSolidLabelMeasuringRequest>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::ElementSolidLabelMeasuringRequest& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::INativeImage::FormatType>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::INativeImage::FormatType& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::RendererType>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::RendererType& value);
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::RenderingDom_DiffType>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::RenderingDom_DiffType& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::NativeCoordinate>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::NativeCoordinate& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::NativePoint>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::NativePoint& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::NativeSize>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::NativeSize& value);
@@ -22601,12 +22615,12 @@ namespace vl::presentation::remoteprotocol
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ElementMeasuring_FontHeight>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::ElementMeasuring_FontHeight& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ElementMeasuring_ElementMinSize>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::ElementMeasuring_ElementMinSize& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::ElementMeasurings>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::ElementMeasurings& value);
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::RenderingDomContent>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::RenderingDomContent& value);
 	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::RenderingDom>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::RenderingDom& value);
-	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::RenderingCommand_BeginBoundary>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::RenderingCommand_BeginBoundary& value);
-	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::RenderingCommand_EndBoundary>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::RenderingCommand_EndBoundary& value);
-	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::RenderingCommand_Element>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::RenderingCommand_Element& value);
-	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::RenderingFrame>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::RenderingFrame& value);
-	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::RenderingTrace>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::RenderingTrace& value);
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::RenderingDom_Diff>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::RenderingDom_Diff& value);
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::RenderingDom_DiffsInOrder>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::RenderingDom_DiffsInOrder& value);
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::UnitTest_RenderingFrame>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::UnitTest_RenderingFrame& value);
+	template<> void ConvertJsonToCustomType<::vl::presentation::remoteprotocol::UnitTest_RenderingTrace>(vl::Ptr<vl::glr::json::JsonNode> node, ::vl::presentation::remoteprotocol::UnitTest_RenderingTrace& value);
 
 #define GACUI_REMOTEPROTOCOL_MESSAGES(HANDLER)\
 	HANDLER(ControllerGetFontConfig, void, ::vl::presentation::remoteprotocol::FontConfig, NOREQ, RES, NODROP)\
@@ -22652,6 +22666,8 @@ namespace vl::presentation::remoteprotocol
 	HANDLER(RendererRenderElement, ::vl::presentation::remoteprotocol::ElementRendering, void, REQ, NORES, NODROP)\
 	HANDLER(RendererEndBoundary, void, void, NOREQ, NORES, NODROP)\
 	HANDLER(RendererEndRendering, void, ::vl::presentation::remoteprotocol::ElementMeasurings, NOREQ, RES, NODROP)\
+	HANDLER(RendererRenderDom, ::vl::Ptr<::vl::presentation::remoteprotocol::RenderingDom>, void, REQ, NORES, NODROP)\
+	HANDLER(RendererRenderDomDiff, ::vl::presentation::remoteprotocol::RenderingDom_DiffsInOrder, void, REQ, NORES, NODROP)\
 
 #define GACUI_REMOTEPROTOCOL_EVENTS(HANDLER)\
 	HANDLER(ControllerConnect, void, NOREQ, NODROP)\
@@ -22678,6 +22694,7 @@ namespace vl::presentation::remoteprotocol
 	HANDLER(::vl::Ptr<::vl::collections::List<::vl::presentation::remoteprotocol::GlobalShortcutKey>>)\
 	HANDLER(::vl::Ptr<::vl::collections::List<::vl::presentation::remoteprotocol::RendererCreation>>)\
 	HANDLER(::vl::Ptr<::vl::collections::List<::vl::vint>>)\
+	HANDLER(::vl::Ptr<::vl::presentation::remoteprotocol::RenderingDom>)\
 	HANDLER(::vl::WString)\
 	HANDLER(::vl::presentation::NativeRect)\
 	HANDLER(::vl::presentation::NativeSize)\
@@ -22695,6 +22712,7 @@ namespace vl::presentation::remoteprotocol
 	HANDLER(::vl::presentation::remoteprotocol::ElementDesc_SolidLabel)\
 	HANDLER(::vl::presentation::remoteprotocol::ElementRendering)\
 	HANDLER(::vl::presentation::remoteprotocol::ImageCreation)\
+	HANDLER(::vl::presentation::remoteprotocol::RenderingDom_DiffsInOrder)\
 	HANDLER(::vl::presentation::remoteprotocol::WindowShowing)\
 	HANDLER(::vl::vint)\
 	HANDLER(bool)\
@@ -22891,6 +22909,7 @@ GuiRemoteGraphicsRenderTarget
 			NativeSize							canvasSize;
 			vint								usedFrameIds = 0;
 			vint								usedElementIds = 0;
+			vint								usedCompositionIds = 0;
 			RendererMap							renderers;
 			collections::SortedList<vint>		createdRenderers;
 			collections::SortedList<vint>		destroyedRenderers;
@@ -23257,8 +23276,11 @@ IGuiRemoteProtocol
 	};
 
 	template<typename TEvents>
+	class GuiRemoteProtocolCombinator;
+
+	template<typename TEvents>
 		requires(std::is_base_of_v<GuiRemoteEventCombinator, TEvents>)
-	class GuiRemoteProtocolCombinator : public Object, public virtual IGuiRemoteProtocol
+	class GuiRemoteProtocolCombinator<TEvents> : public Object, public virtual IGuiRemoteProtocol
 	{
 	protected:
 		IGuiRemoteProtocol*				targetProtocol = nullptr;
@@ -23292,6 +23314,239 @@ IGuiRemoteProtocol
 		{
 			targetProtocol->ProcessRemoteEvents();
 		}
+	};
+
+	template<>
+	class GuiRemoteProtocolCombinator<void> : public Object, public virtual IGuiRemoteProtocol
+	{
+	protected:
+		IGuiRemoteProtocol*				targetProtocol = nullptr;
+		IGuiRemoteProtocolEvents*		events = nullptr;
+
+	public:
+		GuiRemoteProtocolCombinator(IGuiRemoteProtocol* _protocol)
+			: targetProtocol(_protocol)
+		{
+		}
+
+		// protocol
+
+		WString GetExecutablePath() override
+		{
+			return targetProtocol->GetExecutablePath();
+		}
+
+		void Initialize(IGuiRemoteProtocolEvents* _events) override
+		{
+			events = _events;
+			targetProtocol->Initialize(_events);
+		}
+
+		void Submit() override
+		{
+			targetProtocol->Submit();
+		}
+
+		void ProcessRemoteEvents() override
+		{
+			targetProtocol->ProcessRemoteEvents();
+		}
+	};
+
+/***********************************************************************
+Passing through
+***********************************************************************/
+
+	class GuiRemoteEventCombinator_PassingThrough : public GuiRemoteEventCombinator
+	{
+	public:
+#define EVENT_NOREQ(NAME, REQUEST)					void On ## NAME() override { this->targetEvents->On ## NAME(); }
+#define EVENT_REQ(NAME, REQUEST)					void On ## NAME(const REQUEST& arguments) override { this->targetEvents->On ## NAME(arguments); }
+#define EVENT_HANDLER(NAME, REQUEST, REQTAG, ...)	EVENT_ ## REQTAG(NAME, REQUEST)
+		GACUI_REMOTEPROTOCOL_EVENTS(EVENT_HANDLER)
+#undef EVENT_HANDLER
+#undef EVENT_REQ
+#undef EVENT_NOREQ
+
+#define MESSAGE_NORES(NAME, RESPONSE)
+#define MESSAGE_RES(NAME, RESPONSE)										void Respond ## NAME(vint id, const RESPONSE& arguments) override { this->targetEvents->Respond ## NAME(id, arguments); }
+#define MESSAGE_HANDLER(NAME, REQUEST, RESPONSE, REQTAG, RESTAG, ...)	MESSAGE_ ## RESTAG(NAME, RESPONSE)
+			GACUI_REMOTEPROTOCOL_MESSAGES(MESSAGE_HANDLER)
+#undef MESSAGE_HANDLER
+#undef MESSAGE_RES
+#undef MESSAGE_NORES
+	};
+
+	template<typename TEvents>
+	class GuiRemoteProtocolCombinator_PassingThrough : public GuiRemoteProtocolCombinator<TEvents>
+	{
+	public:
+		GuiRemoteProtocolCombinator_PassingThrough(IGuiRemoteProtocol* _protocol)
+			: GuiRemoteProtocolCombinator<TEvents>(_protocol)
+		{
+		}
+
+#define MESSAGE_NOREQ_NORES(NAME, REQUEST, RESPONSE)					void Request ## NAME() override { this->targetProtocol->Request ## NAME(); }
+#define MESSAGE_NOREQ_RES(NAME, REQUEST, RESPONSE)						void Request ## NAME(vint id) override { this->targetProtocol->Request ## NAME(id); }
+#define MESSAGE_REQ_NORES(NAME, REQUEST, RESPONSE)						void Request ## NAME(const REQUEST& arguments) override { this->targetProtocol->Request ## NAME(arguments); }
+#define MESSAGE_REQ_RES(NAME, REQUEST, RESPONSE)						void Request ## NAME(vint id, const REQUEST& arguments) override { this->targetProtocol->Request ## NAME(id, arguments); }
+#define MESSAGE_HANDLER(NAME, REQUEST, RESPONSE, REQTAG, RESTAG, ...)	MESSAGE_ ## REQTAG ## _ ## RESTAG(NAME, REQUEST, RESPONSE)
+		GACUI_REMOTEPROTOCOL_MESSAGES(MESSAGE_HANDLER)
+#undef MESSAGE_HANDLER
+#undef MESSAGE_REQ_RES
+#undef MESSAGE_REQ_NORES
+#undef MESSAGE_NOREQ_RES
+#undef MESSAGE_NOREQ_NORES
+	};
+}
+
+#endif
+
+/***********************************************************************
+.\PLATFORMPROVIDERS\REMOTE\GUIREMOTEPROTOCOL_CHANNEL_SHARED.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI::Remote Window
+
+Interfaces:
+  IGuiRemoteProtocol
+
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_GUIREMOTECONTROLLER_GUIREMOTEPROTOCOL_CHANNEL
+#define VCZH_PRESENTATION_GUIREMOTECONTROLLER_GUIREMOTEPROTOCOL_CHANNEL
+
+
+namespace vl::presentation::remoteprotocol::channeling
+{
+
+/***********************************************************************
+IGuiRemoteProtocolChannel<T>
+***********************************************************************/
+
+	template<typename TPackage>
+	class IGuiRemoteProtocolChannelReceiver : public virtual Interface
+	{
+	public:
+		virtual void											OnReceive(const TPackage& package) = 0;
+	};
+
+	template<typename TPackage>
+	class IGuiRemoteProtocolChannel : public virtual Interface
+	{
+	public:
+		virtual void											Initialize(IGuiRemoteProtocolChannelReceiver<TPackage>* receiver) = 0;
+		virtual IGuiRemoteProtocolChannelReceiver<TPackage>*	GetReceiver() = 0;
+		virtual void											Write(const TPackage& package) = 0;
+		virtual WString											GetExecutablePath() = 0;
+		virtual void											Submit() = 0;
+		virtual void											ProcessRemoteEvents() = 0;
+	};
+}
+
+#endif
+
+/***********************************************************************
+.\PLATFORMPROVIDERS\REMOTE\GUIREMOTEPROTOCOL_CHANNEL_JSON.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI::Remote Window
+
+Interfaces:
+  IGuiRemoteProtocol
+
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_GUIREMOTECONTROLLER_GUIREMOTEPROTOCOL_CHANNEL_JSON
+#define VCZH_PRESENTATION_GUIREMOTECONTROLLER_GUIREMOTEPROTOCOL_CHANNEL_JSON
+
+
+namespace vl::presentation::remoteprotocol::channeling
+{
+	using IJsonChannelReceiver = IGuiRemoteProtocolChannelReceiver<Ptr<glr::json::JsonNode>>;
+	using IJsonChannel = IGuiRemoteProtocolChannel<Ptr<glr::json::JsonNode>>;
+
+/***********************************************************************
+GuiRemoteProtocolFromJsonChannel
+***********************************************************************/
+	
+	class GuiRemoteProtocolFromJsonChannel
+		: public Object
+		, public virtual IGuiRemoteProtocol
+		, protected IJsonChannelReceiver
+	{
+	protected:
+		IJsonChannel*				channel = nullptr;
+		IGuiRemoteProtocolEvents*	events = nullptr;
+
+		void						OnReceive(const Ptr<glr::json::JsonNode>& package) override;
+
+	public:
+
+#define MESSAGE_NOREQ_NORES(NAME, REQUEST, RESPONSE)	void Request ## NAME() override;
+#define MESSAGE_NOREQ_RES(NAME, REQUEST, RESPONSE)		void Request ## NAME(vint id) override;
+#define MESSAGE_REQ_NORES(NAME, REQUEST, RESPONSE)		void Request ## NAME(const REQUEST& arguments) override;
+#define MESSAGE_REQ_RES(NAME, REQUEST, RESPONSE)		void Request ## NAME(vint id, const REQUEST& arguments) override;
+#define MESSAGE_HANDLER(NAME, REQUEST, RESPONSE, REQTAG, RESTAG, ...)	MESSAGE_ ## REQTAG ## _ ## RESTAG(NAME, REQUEST, RESPONSE)
+		GACUI_REMOTEPROTOCOL_MESSAGES(MESSAGE_HANDLER)
+#undef MESSAGE_HANDLER
+#undef MESSAGE_REQ_RES
+#undef MESSAGE_REQ_NORES
+#undef MESSAGE_NOREQ_RES
+#undef MESSAGE_NOREQ_NORES
+
+		GuiRemoteProtocolFromJsonChannel(IJsonChannel* _channel);
+		~GuiRemoteProtocolFromJsonChannel();
+
+		void											Initialize(IGuiRemoteProtocolEvents* _events) override;
+		WString											GetExecutablePath() override;
+		void											Submit() override;
+		void											ProcessRemoteEvents() override;
+	};
+
+/***********************************************************************
+GuiRemoteJsonChannelFromProtocol
+***********************************************************************/
+
+	class GuiRemoteJsonChannelFromProtocol
+		: public Object
+		, public virtual IJsonChannel
+		, protected virtual IGuiRemoteProtocolEvents
+	{
+	protected:
+		IJsonChannelReceiver*							receiver = nullptr;
+		IGuiRemoteProtocol*								protocol = nullptr;
+
+#define EVENT_NOREQ(NAME, REQUEST)						void On ## NAME() override;
+#define EVENT_REQ(NAME, REQUEST)						void On ## NAME(const REQUEST& arguments) override;
+#define EVENT_HANDLER(NAME, REQUEST, REQTAG, ...)						EVENT_ ## REQTAG(NAME, REQUEST)
+		GACUI_REMOTEPROTOCOL_EVENTS(EVENT_HANDLER)
+#undef EVENT_HANDLER
+#undef EVENT_REQ
+#undef EVENT_NOREQ
+
+#define MESSAGE_NORES(NAME, RESPONSE)
+#define MESSAGE_RES(NAME, RESPONSE)						void Respond ## NAME(vint id, const RESPONSE& arguments) override;
+#define MESSAGE_HANDLER(NAME, REQUEST, RESPONSE, REQTAG, RESTAG, ...)	MESSAGE_ ## RESTAG(NAME, RESPONSE)
+			GACUI_REMOTEPROTOCOL_MESSAGES(MESSAGE_HANDLER)
+#undef MESSAGE_HANDLER
+#undef MESSAGE_RES
+#undef MESSAGE_NORES
+	public:
+
+		GuiRemoteJsonChannelFromProtocol(IGuiRemoteProtocol* _protocol);
+		~GuiRemoteJsonChannelFromProtocol();
+
+		void											Initialize(IJsonChannelReceiver* _receiver) override;
+		IJsonChannelReceiver*							GetReceiver() override;
+		void											Write(const Ptr<glr::json::JsonNode>& package) override;
+		WString											GetExecutablePath() override;
+		void											Submit() override;
+		void											ProcessRemoteEvents() override;
 	};
 }
 
@@ -23336,41 +23591,16 @@ GuiRemoteEventFilterVerifier
 	public:
 		bool													submitting = false;
 
-		void ClearDropRepeatMasks()
-		{
-#define EVENT_NODROP(NAME)
-#define EVENT_DROPREP(NAME)									lastDropRepeatEvent ## NAME = false;
-#define EVENT_DROPCON(NAME)
-#define EVENT_HANDLER(NAME, REQUEST, REQTAG, DROPTAG, ...)	EVENT_ ## DROPTAG(NAME)
-			GACUI_REMOTEPROTOCOL_EVENTS(EVENT_HANDLER)
-#undef EVENT_HANDLER
-#undef EVENT_DROPCON
-#undef EVENT_DROPREP
-#undef EVENT_NODROP
-		}
+		GuiRemoteEventFilterVerifier();
+		~GuiRemoteEventFilterVerifier();
 
-		void ClearDropConsecutiveMasks()
-		{
-#define EVENT_NODROP(NAME)
-#define EVENT_DROPREP(NAME)
-#define EVENT_DROPCON(NAME)									lastDropConsecutiveEvent ## NAME = false;
-#define EVENT_HANDLER(NAME, REQUEST, REQTAG, DROPTAG, ...)	EVENT_ ## DROPTAG(NAME)
-			GACUI_REMOTEPROTOCOL_EVENTS(EVENT_HANDLER)
-#undef EVENT_HANDLER
-#undef EVENT_DROPCON
-#undef EVENT_DROPREP
-#undef EVENT_NODROP
-		}
+		void													ClearDropRepeatMasks();
+		void													ClearDropConsecutiveMasks();
 
 		// responses
 
 #define MESSAGE_NORES(NAME, RESPONSE)
-#define MESSAGE_RES(NAME, RESPONSE)\
-		void Respond ## NAME(vint id, const RESPONSE& arguments) override\
-		{\
-			targetEvents->Respond ## NAME(id, arguments);\
-		}\
-	
+#define MESSAGE_RES(NAME, RESPONSE)								void Respond ## NAME(vint id, const RESPONSE& arguments) override;
 #define MESSAGE_HANDLER(NAME, REQUEST, RESPONSE, REQTAG, RESTAG, ...)	MESSAGE_ ## RESTAG(NAME, RESPONSE)
 			GACUI_REMOTEPROTOCOL_MESSAGES(MESSAGE_HANDLER)
 #undef MESSAGE_HANDLER
@@ -23378,54 +23608,13 @@ GuiRemoteEventFilterVerifier
 #undef MESSAGE_NORES
 
 		// events
-	
-#define EVENT_NODROP(NAME)
-	
-#define EVENT_DROPREP(NAME)\
-			CHECK_ERROR(!lastDropRepeatEvent ## NAME, L"vl::presentation::remoteprotocol::GuiRemoteEventFilterVerifier::On" L ## #NAME L"(...)#[@DropRepeat] event repeated.");\
-			lastDropRepeatEvent ## NAME = true;\
-	
-#define EVENT_DROPCON(NAME)\
-			CHECK_ERROR(!lastDropConsecutiveEvent ## NAME, L"vl::presentation::remoteprotocol::GuiRemoteEventFilterVerifier::On" L ## #NAME L"(...)#[@DropConsecutive] event repeated.");\
-			ClearDropConsecutiveMasks();\
-			lastDropConsecutiveEvent ## NAME = true;\
-	
-#define EVENT_NOREQ(NAME, REQUEST, DROPTAG)\
-		void On ## NAME() override\
-		{\
-			if (submitting)\
-			{\
-				EVENT_ ## DROPTAG(NAME);\
-				targetEvents->On ## NAME();\
-			}\
-			else\
-			{\
-				targetEvents->On ## NAME();\
-			}\
-		}\
-	
-#define EVENT_REQ(NAME, REQUEST, DROPTAG)\
-		void On ## NAME(const REQUEST& arguments) override\
-		{\
-			if (submitting)\
-			{\
-				EVENT_ ## DROPTAG(NAME);\
-				targetEvents->On ## NAME(arguments);\
-			}\
-			else\
-			{\
-				targetEvents->On ## NAME(arguments);\
-			}\
-		}\
-	
+#define EVENT_NOREQ(NAME, REQUEST, DROPTAG)						void On ## NAME() override;
+#define EVENT_REQ(NAME, REQUEST, DROPTAG)						void On ## NAME(const REQUEST& arguments) override;
 #define EVENT_HANDLER(NAME, REQUEST, REQTAG, DROPTAG, ...)	EVENT_ ## REQTAG(NAME, REQUEST, DROPTAG)
 		GACUI_REMOTEPROTOCOL_EVENTS(EVENT_HANDLER)
 #undef EVENT_HANDLER
 #undef EVENT_REQ
 #undef EVENT_NOREQ
-#undef EVENT_DROPCON
-#undef EVENT_DROPREP
-#undef EVENT_NOREP
 	};
 
 /***********************************************************************
@@ -23438,7 +23627,7 @@ GuiRemoteProtocolFilterVerifier
 	{
 		friend class GuiRemoteProtocolFilter;
 	protected:
-		vint													lastRequestId = -1;
+		vint																lastRequestId = -1;
 	
 #define MESSAGE_NODROP(NAME)
 #define MESSAGE_DROPREP(NAME)												bool lastDropRepeatRequest ## NAME = false;
@@ -23448,62 +23637,20 @@ GuiRemoteProtocolFilterVerifier
 #undef MESSAGE_DROPREP
 #undef MESSAGE_NODROP
 	
-		void ClearDropRepeatMasks()
-		{
-#define MESSAGE_NODROP(NAME)
-#define MESSAGE_DROPREP(NAME)												lastDropRepeatRequest ## NAME = false;
-#define MESSAGE_HANDLER(NAME, REQUEST, RESPONSE, REQTAG, RESTAG, DROPTAG)	MESSAGE_ ## DROPTAG(NAME)
-			GACUI_REMOTEPROTOCOL_MESSAGES(MESSAGE_HANDLER)
-#undef MESSAGE_HANDLER
-#undef MESSAGE_DROPREP
-#undef MESSAGE_NODROP
-		}
+		void																ClearDropRepeatMasks();
+
 	public:
-		GuiRemoteProtocolFilterVerifier(IGuiRemoteProtocol* _protocol)
-			: GuiRemoteProtocolCombinator<GuiRemoteEventFilterVerifier>(_protocol)
-		{
-		}
-	
-	protected:
+		GuiRemoteProtocolFilterVerifier(IGuiRemoteProtocol* _protocol);
+		~GuiRemoteProtocolFilterVerifier();
 	
 	public:
 	
 		// messages
 	
-#define MESSAGE_NODROP(NAME)
-	
-#define MESSAGE_DROPREP(NAME)\
-			CHECK_ERROR(!lastDropRepeatRequest ## NAME, L"vl::presentation::remoteprotocol::GuiRemoteProtocolFilterVerifier::Request" L ## #NAME L"(...)#[@DropRepeat] message repeated.");\
-			lastDropRepeatRequest ## NAME = true;\
-	
-#define MESSAGE_NOREQ_NORES(NAME, REQUEST, RESPONSE, DROPTAG)\
-		void Request ## NAME() override\
-		{\
-			MESSAGE_ ## DROPTAG(NAME);\
-			targetProtocol->Request ## NAME();\
-		}\
-	
-#define MESSAGE_NOREQ_RES(NAME, REQUEST, RESPONSE, DROPTAG)\
-		void Request ## NAME(vint id) override\
-		{\
-			MESSAGE_ ## DROPTAG(NAME);\
-			targetProtocol->Request ## NAME(id);\
-		}\
-	
-#define MESSAGE_REQ_NORES(NAME, REQUEST, RESPONSE, DROPTAG)\
-		void Request ## NAME(const REQUEST& arguments) override\
-		{\
-			MESSAGE_ ## DROPTAG(NAME);\
-			targetProtocol->Request ## NAME(arguments);\
-		}\
-	
-#define MESSAGE_REQ_RES(NAME, REQUEST, RESPONSE, DROPTAG)\
-		void Request ## NAME(vint id, const REQUEST& arguments) override\
-		{\
-			MESSAGE_ ## DROPTAG(NAME);\
-			targetProtocol->Request ## NAME(id, arguments);\
-		}\
-	
+#define MESSAGE_NOREQ_NORES(NAME, REQUEST, RESPONSE, DROPTAG)				void Request ## NAME() override;
+#define MESSAGE_NOREQ_RES(NAME, REQUEST, RESPONSE, DROPTAG)					void Request ## NAME(vint id) override;
+#define MESSAGE_REQ_NORES(NAME, REQUEST, RESPONSE, DROPTAG)					void Request ## NAME(const REQUEST& arguments) override;
+#define MESSAGE_REQ_RES(NAME, REQUEST, RESPONSE, DROPTAG)					void Request ## NAME(vint id, const REQUEST& arguments) override;
 #define MESSAGE_HANDLER(NAME, REQUEST, RESPONSE, REQTAG, RESTAG, DROPTAG, ...)	MESSAGE_ ## REQTAG ## _ ## RESTAG(NAME, REQUEST, RESPONSE, DROPTAG)
 		GACUI_REMOTEPROTOCOL_MESSAGES(MESSAGE_HANDLER)
 #undef MESSAGE_HANDLER
@@ -23511,23 +23658,10 @@ GuiRemoteProtocolFilterVerifier
 #undef MESSAGE_REQ_NORES
 #undef MESSAGE_NOREQ_RES
 #undef MESSAGE_NOREQ_NORES
-#undef MESSAGE_DROPREP
-#undef MESSAGE_NODROP
 	
 		// protocol
 	
-		void Submit() override
-		{
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::repeatfiltering::GuiRemoteProtocolFilterVerifier::Submit()#"
-			CHECK_ERROR(!eventCombinator.submitting, ERROR_MESSAGE_PREFIX L"This function is not allowed to be called recursively.");
-			eventCombinator.submitting = true;
-			GuiRemoteProtocolCombinator<GuiRemoteEventFilterVerifier>::Submit();
-			ClearDropRepeatMasks();
-			eventCombinator.ClearDropRepeatMasks();
-			eventCombinator.ClearDropConsecutiveMasks();
-			eventCombinator.submitting = false;
-#undef ERROR_MESSAGE_PREFIX
-		}
+		void																Submit() override;
 	};
 }
 
@@ -23644,95 +23778,17 @@ GuiRemoteEventFilter
 	public:
 		bool													submitting = false;
 		collections::Dictionary<vint, FilteredResponseNames>	responseIds;
+
+		GuiRemoteEventFilter();
+		~GuiRemoteEventFilter();
 	
-		void ProcessResponses()
-		{
-			for (auto&& response : filteredResponses)
-			{
-#define MESSAGE_NORES(NAME, RESPONSE)
-#define MESSAGE_RES(NAME, RESPONSE)\
-				case FilteredResponseNames::NAME:\
-					targetEvents->Respond ## NAME(response.id, response.arguments.Get<RESPONSE>());\
-					break;\
-	
-#define MESSAGE_HANDLER(NAME, REQUEST, RESPONSE, REQTAG, RESTAG, ...)	MESSAGE_ ## RESTAG(NAME, RESPONSE)
-				switch (response.name)
-				{
-				GACUI_REMOTEPROTOCOL_MESSAGES(MESSAGE_HANDLER)
-				default:
-					CHECK_FAIL(L"vl::presentation::remoteprotocol::GuiRemoteEventFilter::ProcessResponses()#Unrecognized response.");
-				}
-#undef MESSAGE_HANDLER
-#undef MESSAGE_RES
-#undef MESSAGE_NORES
-			}
-	
-			filteredResponses.Clear();
-		}
-	
-		void ProcessEvents()
-		{
-#define EVENT_NODROP(NAME)
-#define EVENT_DROPREP(NAME)									lastDropRepeatEvent ## NAME = -1;
-#define EVENT_DROPCON(NAME)									lastDropConsecutiveEvent ## NAME = -1;
-#define EVENT_HANDLER(NAME, REQUEST, REQTAG, DROPTAG, ...)	EVENT_ ## DROPTAG(NAME)
-			GACUI_REMOTEPROTOCOL_EVENTS(EVENT_HANDLER)
-#undef EVENT_HANDLER
-#undef EVENT_DROPCON
-#undef EVENT_DROPREP
-#undef EVENT_NODROP
-	
-			collections::List<FilteredEvent> events(std::move(filteredEvents));
-	
-			for (auto&& event : events)
-			{
-				if (event.dropped)
-				{
-					continue;
-				}
-	
-#define EVENT_NOREQ(NAME, REQUEST)\
-				case FilteredEventNames::NAME:\
-					targetEvents->On ## NAME();\
-					break;\
-	
-#define EVENT_REQ(NAME, REQUEST)\
-				case FilteredEventNames::NAME:\
-					targetEvents->On ## NAME(event.arguments.Get<REQUEST>());\
-					break;\
-	
-#define EVENT_HANDLER(NAME, REQUEST, REQTAG, ...)	EVENT_ ## REQTAG(NAME, REQUEST)
-				switch (event.name)
-				{
-				GACUI_REMOTEPROTOCOL_EVENTS(EVENT_HANDLER)
-				default:
-					CHECK_FAIL(L"vl::presentation::remoteprotocol::GuiRemoteEventFilter::ProcessEvents()#Unrecognized event.");
-				}
-#undef EVENT_HANDLER
-#undef EVENT_REQ
-#undef EVENT_NOREQ
-			}
-		}
+		void													ProcessResponses();	
+		void													ProcessEvents();
 
 		// responses
 
 #define MESSAGE_NORES(NAME, RESPONSE)
-#define MESSAGE_RES(NAME, RESPONSE)\
-		void Respond ## NAME(vint id, const RESPONSE& arguments) override\
-		{\
-			CHECK_ERROR(\
-				responseIds[id] == FilteredResponseNames::NAME,\
-				L"vl::presentation::remoteprotocol::GuiRemoteEventFilter::"\
-				L"Respond" L ## #NAME L"()#"\
-				L"Messages sending to IGuiRemoteProtocol should be responded by calling the correct function.");\
-			responseIds.Remove(id);\
-			FilteredResponse response;\
-			response.id = id;\
-			response.name = FilteredResponseNames::NAME;\
-			response.arguments = arguments;\
-			filteredResponses.Add(response);\
-		}\
-	
+#define MESSAGE_RES(NAME, RESPONSE)								void Respond ## NAME(vint id, const RESPONSE& arguments) override;
 #define MESSAGE_HANDLER(NAME, REQUEST, RESPONSE, REQTAG, RESTAG, ...)	MESSAGE_ ## RESTAG(NAME, RESPONSE)
 			GACUI_REMOTEPROTOCOL_MESSAGES(MESSAGE_HANDLER)
 #undef MESSAGE_HANDLER
@@ -23740,64 +23796,14 @@ GuiRemoteEventFilter
 #undef MESSAGE_NORES
 
 		// events
-	
-#define EVENT_NODROP(NAME)
-	
-#define EVENT_DROPREP(NAME)\
-			if (lastDropRepeatEvent ## NAME != -1)\
-			{\
-				filteredEvents[lastDropRepeatEvent ## NAME].dropped = true;\
-			}\
-			lastDropRepeatEvent ## NAME = filteredEvents.Count() - 1\
-	
-#define EVENT_DROPCON(NAME)\
-			if (lastDropConsecutiveEvent ## NAME != -1 && lastDropConsecutiveEvent ## NAME == filteredEvents.Count() - 1)\
-			{\
-				filteredEvents[lastDropConsecutiveEvent ## NAME].dropped = true;\
-			}\
-			lastDropConsecutiveEvent ## NAME = filteredEvents.Count() - 1\
-	
-#define EVENT_NOREQ(NAME, REQUEST, DROPTAG)\
-		void On ## NAME() override\
-		{\
-			if (submitting)\
-			{\
-				EVENT_ ## DROPTAG(NAME);\
-				FilteredEvent event;\
-				event.name = FilteredEventNames::NAME;\
-				filteredEvents.Add(event);\
-			}\
-			else\
-			{\
-				targetEvents->On ## NAME();\
-			}\
-		}\
-	
-#define EVENT_REQ(NAME, REQUEST, DROPTAG)\
-		void On ## NAME(const REQUEST& arguments) override\
-		{\
-			if (submitting)\
-			{\
-				EVENT_ ## DROPTAG(NAME);\
-				FilteredEvent event;\
-				event.name = FilteredEventNames::NAME;\
-				event.arguments = arguments;\
-				filteredEvents.Add(event);\
-			}\
-			else\
-			{\
-				targetEvents->On ## NAME(arguments);\
-			}\
-		}\
-	
+
+#define EVENT_NOREQ(NAME, REQUEST, DROPTAG)			void On ## NAME() override;
+#define EVENT_REQ(NAME, REQUEST, DROPTAG)			void On ## NAME(const REQUEST& arguments) override;
 #define EVENT_HANDLER(NAME, REQUEST, REQTAG, DROPTAG, ...)	EVENT_ ## REQTAG(NAME, REQUEST, DROPTAG)
 		GACUI_REMOTEPROTOCOL_EVENTS(EVENT_HANDLER)
 #undef EVENT_HANDLER
 #undef EVENT_REQ
 #undef EVENT_NOREQ
-#undef EVENT_DROPCON
-#undef EVENT_DROPREP
-#undef EVENT_NOREP
 	};
 
 /***********************************************************************
@@ -23807,8 +23813,8 @@ GuiRemoteProtocolFilter
 	class GuiRemoteProtocolFilter : public GuiRemoteProtocolCombinator<GuiRemoteEventFilter>
 	{
 	protected:
-		vint													lastRequestId = -1;
-		collections::List<FilteredRequest>						filteredRequests;
+		vint																lastRequestId = -1;
+		collections::List<FilteredRequest>									filteredRequests;
 	
 #define MESSAGE_NODROP(NAME)
 #define MESSAGE_DROPREP(NAME)												vint lastDropRepeatRequest ## NAME = -1;
@@ -23817,140 +23823,23 @@ GuiRemoteProtocolFilter
 #undef MESSAGE_HANDLER
 #undef MESSAGE_DROPREP
 #undef MESSAGE_NODROP
-	
-		void ProcessRequests()
-		{
-#define MESSAGE_NODROP(NAME)
-#define MESSAGE_DROPREP(NAME)												lastDropRepeatRequest ## NAME = -1;
-#define MESSAGE_HANDLER(NAME, REQUEST, RESPONSE, REQTAG, RESTAG, DROPTAG)	MESSAGE_ ## DROPTAG(NAME)
-			GACUI_REMOTEPROTOCOL_MESSAGES(MESSAGE_HANDLER)
-#undef MESSAGE_HANDLER
-#undef MESSAGE_DROPREP
-#undef MESSAGE_NODROP
-	
-			for (auto&& request : filteredRequests)
-			{
-				CHECK_ERROR(\
-					!request.dropped || request.id == -1,\
-					L"vl::presentation::remoteprotocol::GuiRemoteProtocolFilter::ProcessRequests()#"\
-					L"Messages with id cannot be dropped.");\
-				if (request.dropped)
-				{
-					continue;
-				}
-	
-#define MESSAGE_NOREQ_NORES(NAME, REQUEST, RESPONSE)\
-				case FilteredRequestNames::NAME:\
-					targetProtocol->Request ## NAME();\
-					break;\
-	
-#define MESSAGE_NOREQ_RES(NAME, REQUEST, RESPONSE)\
-				case FilteredRequestNames::NAME:\
-					targetProtocol->Request ## NAME(request.id);\
-					break;\
-	
-#define MESSAGE_REQ_NORES(NAME, REQUEST, RESPONSE)\
-				case FilteredRequestNames::NAME:\
-					targetProtocol->Request ## NAME(request.arguments.Get<REQUEST>());\
-					break;\
-	
-#define MESSAGE_REQ_RES(NAME, REQUEST, RESPONSE)\
-				case FilteredRequestNames::NAME:\
-					targetProtocol->Request ## NAME(request.id, request.arguments.Get<REQUEST>());\
-					break;\
-	
-#define MESSAGE_HANDLER(NAME, REQUEST, RESPONSE, REQTAG, RESTAG, ...)	MESSAGE_ ## REQTAG ## _ ## RESTAG(NAME, REQUEST, RESPONSE)
-				switch (request.name)
-				{
-				GACUI_REMOTEPROTOCOL_MESSAGES(MESSAGE_HANDLER)
-				default:
-					CHECK_FAIL(L"vl::presentation::remoteprotocol::GuiRemoteProtocolFilter::ProcessRequests()#Unrecognized request.");
-				}
-#undef MESSAGE_HANDLER
-#undef MESSAGE_REQ_RES
-#undef MESSAGE_REQ_NORES
-#undef MESSAGE_NOREQ_RES
-#undef MESSAGE_NOREQ_NORES
-			}
-	
-			CHECK_ERROR(eventCombinator.responseIds.Count() == 0, L"Messages sending to IGuiRemoteProtocol should be all responded.");
-			filteredRequests.Clear();
-		}
+
+		void																ProcessRequests();
 	public:
-		GuiRemoteProtocolFilter(IGuiRemoteProtocol* _protocol)
-			: GuiRemoteProtocolCombinator<GuiRemoteEventFilter>(_protocol)
-		{
-		}
+		GuiRemoteProtocolFilter(IGuiRemoteProtocol* _protocol);
+		~GuiRemoteProtocolFilter();
 	
 	protected:
 	
 	public:
 	
 		// messages
-	
-#define MESSAGE_NODROP(NAME)
-	
-#define MESSAGE_DROPREP(NAME)\
-			if (lastDropRepeatRequest ## NAME != -1)\
-			{\
-				filteredRequests[lastDropRepeatRequest ## NAME].dropped = true;\
-			}\
-			lastDropRepeatRequest ## NAME = filteredRequests.Count()\
-	
-#define MESSAGE_NOREQ_NORES(NAME, REQUEST, RESPONSE, DROPTAG)\
-		void Request ## NAME() override\
-		{\
-			MESSAGE_ ## DROPTAG(NAME);\
-			FilteredRequest request;\
-			request.name = FilteredRequestNames::NAME;\
-			filteredRequests.Add(request);\
-		}\
-	
-#define MESSAGE_NOREQ_RES(NAME, REQUEST, RESPONSE, DROPTAG)\
-		void Request ## NAME(vint id) override\
-		{\
-			MESSAGE_ ## DROPTAG(NAME);\
-			CHECK_ERROR(\
-				lastRequestId < id,\
-				L"vl::presentation::remoteprotocol::GuiRemoteProtocolFilter::"\
-				L"Request" L ## #NAME L"()#"\
-				L"Id of a message sending to IGuiRemoteProtocol should be increasing.");\
-			lastRequestId = id;\
-			FilteredRequest request;\
-			request.id = id;\
-			request.name = FilteredRequestNames::NAME;\
-			filteredRequests.Add(request);\
-			eventCombinator.responseIds.Add(id, FilteredResponseNames::NAME);\
-		}\
-	
-#define MESSAGE_REQ_NORES(NAME, REQUEST, RESPONSE, DROPTAG)\
-		void Request ## NAME(const REQUEST& arguments) override\
-		{\
-			MESSAGE_ ## DROPTAG(NAME);\
-			FilteredRequest request;\
-			request.name = FilteredRequestNames::NAME;\
-			request.arguments = arguments;\
-			filteredRequests.Add(request);\
-		}\
-	
-#define MESSAGE_REQ_RES(NAME, REQUEST, RESPONSE, DROPTAG)\
-		void Request ## NAME(vint id, const REQUEST& arguments) override\
-		{\
-			MESSAGE_ ## DROPTAG(NAME);\
-			CHECK_ERROR(\
-				lastRequestId < id,\
-				L"vl::presentation::remoteprotocol::GuiRemoteProtocolFilter::"\
-				L"Request" L ## #NAME L"()#"\
-				L"Id of a message sending to IGuiRemoteProtocol should be increasing.");\
-			lastRequestId = id;\
-			FilteredRequest request;\
-			request.id = id;\
-			request.name = FilteredRequestNames::NAME;\
-			request.arguments = arguments;\
-			filteredRequests.Add(request);\
-			eventCombinator.responseIds.Add(id, FilteredResponseNames::NAME);\
-		}\
-	
+
+
+#define MESSAGE_NOREQ_NORES(NAME, REQUEST, RESPONSE, DROPTAG)				void Request ## NAME() override;
+#define MESSAGE_NOREQ_RES(NAME, REQUEST, RESPONSE, DROPTAG)					void Request ## NAME(vint id) override;
+#define MESSAGE_REQ_NORES(NAME, REQUEST, RESPONSE, DROPTAG)					void Request ## NAME(const REQUEST& arguments) override;
+#define MESSAGE_REQ_RES(NAME, REQUEST, RESPONSE, DROPTAG)					void Request ## NAME(vint id, const REQUEST& arguments) override;
 #define MESSAGE_HANDLER(NAME, REQUEST, RESPONSE, REQTAG, RESTAG, DROPTAG, ...)	MESSAGE_ ## REQTAG ## _ ## RESTAG(NAME, REQUEST, RESPONSE, DROPTAG)
 		GACUI_REMOTEPROTOCOL_MESSAGES(MESSAGE_HANDLER)
 #undef MESSAGE_HANDLER
@@ -23958,37 +23847,150 @@ GuiRemoteProtocolFilter
 #undef MESSAGE_REQ_NORES
 #undef MESSAGE_NOREQ_RES
 #undef MESSAGE_NOREQ_NORES
-#undef MESSAGE_DROPREP
-#undef MESSAGE_NODROP
-	
+
 		// protocol
+
+		void																Initialize(IGuiRemoteProtocolEvents* _events) override;
+		void																Submit() override;
+	};
+}
+
+#endif
+
+/***********************************************************************
+.\PLATFORMPROVIDERS\REMOTE\PROTOCOL\FRAMEOPERATIONS\GUIREMOTEPROTOCOLSCHEMA_FRAMEOPERATIONS.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI::Remote Window
+
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_GUIREMOTECONTROLLER_REMOTEPROTOCOLSCHEMA_FRAMEOPERATIONS
+#define VCZH_PRESENTATION_GUIREMOTECONTROLLER_REMOTEPROTOCOLSCHEMA_FRAMEOPERATIONS
+
+
+namespace vl::presentation::remoteprotocol
+{
+	/*
+	* dom id:
+	* 
+	* root:              -1
+	* element:           (elementId << 2) + 0
+	* parent of element: (elementId << 2) + 1
+	* hittest:           (compositionId << 2) + 2
+	* parent of hittest: (compositionId << 2) + 3
+	*/
+
+	class RenderingDomBuilder
+	{
+		using RenderingResultRef = Ptr<RenderingDom>;
+		using RenderingResultRefList = collections::List<RenderingResultRef>;
+	protected:
+		RenderingResultRefList		domStack;
+		collections::List<vint>		domBoundaries;
+		Ptr<RenderingDom>			domRoot;
+		Ptr<RenderingDom>			domCurrent;
+
+		vint						GetCurrentBoundary();
+		vint						Push(RenderingResultRef ref);
+		void						PopTo(vint index);
+		void						Pop();
+		void						PopBoundary();
+
+		template<typename TCallback>
+		void						PrepareParentFromCommand(Rect commandBounds, Rect commandValidArea, vint newDomId, TCallback&& calculateValidAreaFromDom);
+	public:
+		RenderingDomBuilder() = default;
+		~RenderingDomBuilder() = default;
+
+		void						RequestRendererBeginRendering();
+		void						RequestRendererBeginBoundary(const remoteprotocol::ElementBoundary& arguments);
+		void						RequestRendererEndBoundary();
+		void						RequestRendererRenderElement(const remoteprotocol::ElementRendering& arguments);
+		Ptr<RenderingDom>			RequestRendererEndRendering();
+	};
+
+	extern Ptr<RenderingDom>		CopyDom(Ptr<RenderingDom> root);
+
+	struct DomIndexItem
+	{
+		vint				id;
+		vint				parentId;
+		Ptr<RenderingDom>	dom;
+
+		auto operator<=>(const DomIndexItem&) const = default;
+	};
+	using DomIndex = collections::Array<DomIndexItem>;
+
+	extern void						BuildDomIndex(Ptr<RenderingDom> root, DomIndex& index);
+	extern void						UpdateDomInplace(Ptr<RenderingDom> root, DomIndex& index, const RenderingDom_DiffsInOrder& diffs);
+	extern void						DiffDom(Ptr<RenderingDom> domFrom, DomIndex& indexFrom, Ptr<RenderingDom> domTo, DomIndex& indexTo, RenderingDom_DiffsInOrder& diffs);
+}
+
+#endif
+
+/***********************************************************************
+.\PLATFORMPROVIDERS\REMOTE\GUIREMOTEPROTOCOL_DOMDIFF.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI::Remote Window
+
+Interfaces:
+  IGuiRemoteProtocol
+
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_GUIREMOTECONTROLLER_GUIREMOTEPROTOCOL_DOMDIFF
+#define VCZH_PRESENTATION_GUIREMOTECONTROLLER_GUIREMOTEPROTOCOL_DOMDIFF
+
+
+namespace vl::presentation::remoteprotocol
+{
+
+/***********************************************************************
+GuiRemoteEventDomDiffConverter
+***********************************************************************/
+
+	class GuiRemoteProtocolDomDiffConverter;
+
+	class GuiRemoteEventDomDiffConverter : public GuiRemoteEventCombinator_PassingThrough
+	{
+		friend class GuiRemoteProtocolDomDiffConverter;
+		using TBase = GuiRemoteEventCombinator_PassingThrough;
+	protected:
+		Ptr<RenderingDom>				lastDom;
+		DomIndex						lastDomIndex;
+
+	public:
+		GuiRemoteEventDomDiffConverter();
+		~GuiRemoteEventDomDiffConverter();
+
+		void							OnControllerConnect() override;
+	};
+
+/***********************************************************************
+GuiRemoteProtocolDomDiffConverter
+***********************************************************************/
 	
-		void Initialize(IGuiRemoteProtocolEvents* _events) override
-		{
-			if (auto verifierProtocol = dynamic_cast<GuiRemoteProtocolFilterVerifier*>(targetProtocol))
-			{
-				verifierProtocol->targetProtocol->Initialize(&eventCombinator);
-				eventCombinator.targetEvents = &verifierProtocol->eventCombinator;
-				verifierProtocol->eventCombinator.targetEvents = _events;
-			}
-			else
-			{
-				GuiRemoteProtocolCombinator<GuiRemoteEventFilter>::Initialize(_events);
-			}
-		}
-	
-		void Submit() override
-		{
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::repeatfiltering::GuiRemoteProtocolFilter::Submit()#"
-			CHECK_ERROR(!eventCombinator.submitting, ERROR_MESSAGE_PREFIX L"This function is not allowed to be called recursively.");
-			eventCombinator.submitting = true;
-			ProcessRequests();
-			eventCombinator.ProcessResponses();
-			GuiRemoteProtocolCombinator<GuiRemoteEventFilter>::Submit();
-			eventCombinator.submitting = false;
-			eventCombinator.ProcessEvents();
-#undef ERROR_MESSAGE_PREFIX
-		}
+	class GuiRemoteProtocolDomDiffConverter : public GuiRemoteProtocolCombinator_PassingThrough<GuiRemoteEventDomDiffConverter>
+	{
+		using TBase = GuiRemoteProtocolCombinator_PassingThrough<GuiRemoteEventDomDiffConverter>;
+	protected:
+		RenderingDomBuilder				renderingDomBuilder;
+
+	public:
+		GuiRemoteProtocolDomDiffConverter(IGuiRemoteProtocol* _protocol);
+		~GuiRemoteProtocolDomDiffConverter();
+
+		void							RequestRendererBeginRendering(const remoteprotocol::ElementBeginRendering& arguments) override;
+		void							RequestRendererEndRendering(vint id) override;
+		void							RequestRendererBeginBoundary(const remoteprotocol::ElementBoundary& arguments) override;
+		void							RequestRendererEndBoundary() override;
+		void							RequestRendererRenderElement(const remoteprotocol::ElementRendering& arguments) override;
 	};
 }
 

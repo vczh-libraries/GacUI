@@ -56,6 +56,8 @@ namespace vl::presentation::unittest
 		NativeMargin				customFramePadding;
 		FontConfig					fontConfig;
 		ScreenConfig				screenConfig;
+		bool						useDomDiff = false;
+		bool						useSyncChannel = false;
 
 		void						FastInitialize(vint width, vint height, vint taskBarHeight = 0);
 	};
@@ -594,11 +596,18 @@ namespace vl::presentation::unittest
 UnitTestRemoteProtocol
 ***********************************************************************/
 
-	using ElementDescVariant = remoteprotocol::ElementDescVariant;
-	using UnitTestRenderingCommand = remoteprotocol::RenderingCommand;
-	using UnitTestRenderingCommandList = collections::List<UnitTestRenderingCommand>;
-	using UnitTestRenderingCommandListRef = Ptr<UnitTestRenderingCommandList>;
+	using ElementDescVariant = remoteprotocol::UnitTest_ElementDescVariant;
 	using UnitTestRenderingDom = remoteprotocol::RenderingDom;
+
+	struct UnitTestLoggedFrame
+	{
+		vint													frameId;
+		collections::List<WString>								renderingCommandsLog;
+		Nullable<remoteprotocol::RenderingDom_DiffsInOrder>		renderingDiffs;
+		Ptr<UnitTestRenderingDom>								renderingDom;
+	};
+
+	using UnitTestLoggedFrameList = collections::List<Ptr<UnitTestLoggedFrame>>;
 	
 	template<typename TProtocol>
 	class UnitTestRemoteProtocol_Rendering : public TProtocol
@@ -607,20 +616,25 @@ UnitTestRemoteProtocol
 		using Base64ToImageMetadataMap = collections::Dictionary<WString, remoteprotocol::ImageMetadata>;
 		using ElementDescMap = collections::Dictionary<vint, ElementDescVariant>;
 		using ImageMetadataMap = collections::Dictionary<vint, remoteprotocol::ImageMetadata>;
-		using CommandList = UnitTestRenderingCommandList;
-		using CommandListRef = UnitTestRenderingCommandListRef;
+
 	protected:
+		remoteprotocol::RenderingDomBuilder				renderingDomBuilder;
+		remoteprotocol::UnitTest_RenderingTrace			loggedTrace;
+		UnitTestLoggedFrameList							loggedFrames;
+		bool											lastRenderingCommandsOpening = false;
 
-		remoteprotocol::RenderingTrace			loggedTrace;
-		ElementDescMap							lastElementDescs;
-		IdSet									removedElementIds;
-		IdSet									removedImageIds;
-		Ptr<Base64ToImageMetadataMap>			cachedImageMetadatas;
+		Ptr<remoteprotocol::RenderingDom>				receivedDom;
+		remoteprotocol::DomIndex						receivedDomIndex;
+		bool											receivedDomDiffMessage = false;
+		bool											receivedElementMessage = false;
 
-		remoteprotocol::ElementMeasurings		measuringForNextRendering;
-		regex::Regex							regexCrLf{ L"/n|/r(/n)?" };
-		vint									lastFrameId = 0;
-		CommandListRef							lastRenderingCommands;
+		ElementDescMap									lastElementDescs;
+		IdSet											removedElementIds;
+		IdSet											removedImageIds;
+		Ptr<Base64ToImageMetadataMap>					cachedImageMetadatas;
+
+		remoteprotocol::ElementMeasurings				measuringForNextRendering;
+		regex::Regex									regexCrLf{ L"/n|/r(/n)?" };
 
 		void ResetCreatedObjects()
 		{
@@ -636,7 +650,7 @@ UnitTestRemoteProtocol
 			: TProtocol(std::forward<TArgs&&>(args)...)
 		{
 			ResetCreatedObjects();
-			loggedTrace.frames = Ptr(new collections::List<remoteprotocol::RenderingFrame>);
+			loggedTrace.frames = Ptr(new collections::List<remoteprotocol::UnitTest_RenderingFrame>);
 		}
 
 	protected:
@@ -645,49 +659,112 @@ UnitTestRemoteProtocol
 IGuiRemoteProtocolMessages (Rendering)
 ***********************************************************************/
 
+		Ptr<UnitTestLoggedFrame> GetLastRenderingFrame()
+		{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering<TProtocol>::GetLastRenderingCommands()#"
+			CHECK_ERROR(lastRenderingCommandsOpening, ERROR_MESSAGE_PREFIX L"The latest frame of commands is not accepting new commands.");
+			return loggedFrames[loggedFrames.Count() - 1];
+#undef ERROR_MESSAGE_PREFIX
+		}
+
+		Ptr<UnitTestLoggedFrame> TryGetLastRenderingFrameAndReset()
+		{
+			if (loggedFrames.Count() == 0) return nullptr;
+			if (!lastRenderingCommandsOpening) return nullptr;
+			lastRenderingCommandsOpening = false;
+			return loggedFrames[loggedFrames.Count() - 1];
+		}
+
 		void RequestRendererBeginRendering(const remoteprotocol::ElementBeginRendering& arguments) override
 		{
-			lastFrameId = arguments.frameId;
-			lastRenderingCommands = Ptr(new CommandList);
+			receivedDomDiffMessage = false;
+			receivedElementMessage = false;
+			lastRenderingCommandsOpening = true;
+			auto frame = Ptr(new UnitTestLoggedFrame);
+			frame->frameId = arguments.frameId;
+			loggedFrames.Add(frame);
 		}
 
 		void RequestRendererEndRendering(vint id) override
 		{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering<TProtocol>::RequestRendererEndRendering(vint)#"
+			CHECK_ERROR(receivedElementMessage || receivedDomDiffMessage, ERROR_MESSAGE_PREFIX L"Either dom-diff or element message should be sent before this message.");
+
+			auto lastFrame = GetLastRenderingFrame();
+			if (receivedElementMessage)
+			{
+				lastFrame->renderingDom = renderingDomBuilder.RequestRendererEndRendering();
+			}
+			if (receivedDomDiffMessage)
+			{
+				// receivedDom will be updated in RequestRendererRenderDomDiff
+				// store a copy to log
+				lastFrame->renderingDom = CopyDom(receivedDom);
+			}
 			this->GetEvents()->RespondRendererEndRendering(id, measuringForNextRendering);
 			measuringForNextRendering = {};
+#undef ERROR_MESSAGE_PREFIX
 		}
+
+/***********************************************************************
+IGuiRemoteProtocolMessages (Rendering - Element)
+***********************************************************************/
 
 		void RequestRendererBeginBoundary(const remoteprotocol::ElementBoundary& arguments) override
 		{
-			lastRenderingCommands->Add(remoteprotocol::RenderingCommand_BeginBoundary{ arguments });
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering<TProtocol>::RequestRendererBeginBoundary(const ElementBoundary&)#"
+			CHECK_ERROR(!receivedDomDiffMessage, ERROR_MESSAGE_PREFIX L"This message could not be used with dom-diff messages in the same rendering cycle.");
+			if (!receivedElementMessage)
+			{
+				renderingDomBuilder.RequestRendererBeginRendering();
+				receivedElementMessage = true;
+			}
+
+			renderingDomBuilder.RequestRendererBeginBoundary(arguments);
+
+			glr::json::JsonFormatting formatting;
+			formatting.spaceAfterColon = true;
+			formatting.spaceAfterComma = true;
+			formatting.crlf = false;
+			formatting.compact = true;
+
+			GetLastRenderingFrame()->renderingCommandsLog.Add(L"RequestRendererBeginBoundary: " + stream::GenerateToStream([&](stream::TextWriter& writer)
+			{
+				auto jsonLog = remoteprotocol::ConvertCustomTypeToJson(arguments);
+				writer.WriteString(glr::json::JsonToString(jsonLog, formatting));
+			}));
+#undef ERROR_MESSAGE_PREFIX
 		}
 
 		void RequestRendererEndBoundary() override
 		{
-			lastRenderingCommands->Add(remoteprotocol::RenderingCommand_EndBoundary{});
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering<TProtocol>::RequestRendererEndBoundary()#"
+			CHECK_ERROR(!receivedDomDiffMessage, ERROR_MESSAGE_PREFIX L"This message could not be used with dom-diff messages in the same rendering cycle.");
+			if (!receivedElementMessage)
+			{
+				renderingDomBuilder.RequestRendererBeginRendering();
+				receivedElementMessage = true;
+			}
+
+			renderingDomBuilder.RequestRendererEndBoundary();
+			GetLastRenderingFrame()->renderingCommandsLog.Add(L"RequestRendererEndBoundary");
+#undef ERROR_MESSAGE_PREFIX
 		}
 
-		template<typename T>
-		void RequestRendererRenderElement(const remoteprotocol::ElementRendering& rendering, const T& element)
+		void EnsureRenderedElement(vint id, Rect bounds)
 		{
-			lastRenderingCommands->Add(remoteprotocol::RenderingCommand_Element{ rendering,element.id });
-		}
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering<TProtocol>::EnsureRenderedElement(id&)#"
 
-		void RequestRendererRenderElement(const remoteprotocol::ElementRendering& arguments) override
-		{
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering<TProtocol>::RequestRendererRenderElement(const ElementRendering&)#"
-			vint index = loggedTrace.createdElements->Keys().IndexOf(arguments.id);
+			vint index = loggedTrace.createdElements->Keys().IndexOf(id);
 			CHECK_ERROR(index != -1, ERROR_MESSAGE_PREFIX L"Renderer with the specified id has not been created.");
-
 			auto rendererType = loggedTrace.createdElements->Values()[index];
 			if (rendererType == remoteprotocol::RendererType::FocusRectangle)
 			{
 				// FocusRectangle does not has a ElementDesc
-				lastRenderingCommands->Add(remoteprotocol::RenderingCommand_Element{ arguments,arguments.id });
 				return;
 			}
 
-			index = lastElementDescs.Keys().IndexOf(arguments.id);
+			index = lastElementDescs.Keys().IndexOf(id);
 			CHECK_ERROR(index != -1, ERROR_MESSAGE_PREFIX L"Renderer with the specified id has not been updated after created.");
 			lastElementDescs.Values()[index].Apply(Overloading(
 				[](remoteprotocol::RendererType)
@@ -696,13 +773,90 @@ IGuiRemoteProtocolMessages (Rendering)
 				},
 				[&](const remoteprotocol::ElementDesc_SolidLabel& solidLabel)
 				{
-					CalculateSolidLabelSizeIfNecessary(arguments.bounds.Width(), arguments.bounds.Height(), solidLabel);
-					RequestRendererRenderElement(arguments, solidLabel);
+					CalculateSolidLabelSizeIfNecessary(bounds.Width(), bounds.Height(), solidLabel);
 				},
 				[&](const auto& element)
 				{
-					RequestRendererRenderElement(arguments, element);
 				}));
+
+#undef ERROR_MESSAGE_PREFIX
+		}
+
+		void RequestRendererRenderElement(const remoteprotocol::ElementRendering& arguments) override
+		{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering<TProtocol>::RequestRendererRenderElement(const ElementRendering&)#"
+			CHECK_ERROR(!receivedDomDiffMessage, ERROR_MESSAGE_PREFIX L"This message could not be used with dom-diff messages in the same rendering cycle.");
+			if (!receivedElementMessage)
+			{
+				renderingDomBuilder.RequestRendererBeginRendering();
+				receivedElementMessage = true;
+			}
+
+			{
+				renderingDomBuilder.RequestRendererRenderElement(arguments);
+
+				glr::json::JsonFormatting formatting;
+				formatting.spaceAfterColon = true;
+				formatting.spaceAfterComma = true;
+				formatting.crlf = false;
+				formatting.compact = true;
+				GetLastRenderingFrame()->renderingCommandsLog.Add(L"RequestRendererRenderElement: " + stream::GenerateToStream([&](stream::TextWriter& writer)
+				{
+					auto jsonLog = remoteprotocol::ConvertCustomTypeToJson(arguments);
+					writer.WriteString(glr::json::JsonToString(jsonLog, formatting));
+				}));
+			}
+
+			EnsureRenderedElement(arguments.id, arguments.bounds);
+#undef ERROR_MESSAGE_PREFIX
+		}
+
+/***********************************************************************
+IGuiRemoteProtocolMessages (Rendering - Dom)
+***********************************************************************/
+
+		void CalculateSolidLabelSizesIfNecessary(Ptr<remoteprotocol::RenderingDom> dom)
+		{
+			if (dom->content.element)
+			{
+				EnsureRenderedElement(dom->content.element.Value(), dom->content.bounds);
+			}
+			if (dom->children)
+			{
+				for (auto child : *dom->children.Obj())
+				{
+					CalculateSolidLabelSizesIfNecessary(child);
+				}
+			}
+		}
+
+		void RequestRendererRenderDom(const Ptr<remoteprotocol::RenderingDom>& arguments) override
+		{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering<TProtocol>::RequestRendererRenderElement(const RenderingDom&)#"
+			CHECK_ERROR(!receivedElementMessage, ERROR_MESSAGE_PREFIX L"This message could not be used with element messages in the same rendering cycle.");
+			if (!receivedDomDiffMessage)
+			{
+				receivedDomDiffMessage = true;
+			}
+
+			receivedDom = arguments;
+			remoteprotocol::BuildDomIndex(receivedDom, receivedDomIndex);
+			CalculateSolidLabelSizesIfNecessary(receivedDom);
+#undef ERROR_MESSAGE_PREFIX
+		}
+
+		void RequestRendererRenderDomDiff(const remoteprotocol::RenderingDom_DiffsInOrder& arguments) override
+		{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Rendering<TProtocol>::RequestRendererRenderElement(const RenderingDom_DiffsInOrder&)#"
+			CHECK_ERROR(!receivedElementMessage, ERROR_MESSAGE_PREFIX L"This message could not be used with element messages in the same rendering cycle.");
+			if (!receivedDomDiffMessage)
+			{
+				receivedDomDiffMessage = true;
+			}
+			
+			remoteprotocol::UpdateDomInplace(receivedDom, receivedDomIndex, arguments);
+			GetLastRenderingFrame()->renderingDiffs = arguments;
+			CalculateSolidLabelSizesIfNecessary(receivedDom);
 #undef ERROR_MESSAGE_PREFIX
 		}
 
@@ -1138,205 +1292,31 @@ UnitTestRemoteProtocol
 	template<typename TProtocol>
 	class UnitTestRemoteProtocol_Logging : public TProtocol
 	{
-		using CommandList = UnitTestRenderingCommandList;
-		using CommandListRef = UnitTestRenderingCommandListRef;
-		using RenderingResultRef = Ptr<UnitTestRenderingDom>;
-		using RenderingResultRefList = collections::List<RenderingResultRef>;
-		using LoggedFrameList = collections::List<remoteprotocol::RenderingFrame>;
 	protected:
-
 		bool								everRendered = false;
-		vint								candidateFrameId = 0;
-		CommandListRef						candidateRenderingResult;
-
-		RenderingResultRef TransformLastRenderingResult(CommandListRef commandListRef)
-		{
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Logging<TProtocol>::TransformLastRenderingResult(CommandListRef)#"
-
-			RenderingResultRefList domStack;
-			collections::List<vint> domBoundaries;
-
-			auto domRoot = Ptr(new UnitTestRenderingDom);
-			auto domCurrent = domRoot;
-			domStack.Add(domRoot);
-
-			auto getCurrentBoundary = [&]() -> vint
-			{
-				if (domBoundaries.Count() > 0)
-				{
-					return domBoundaries[domBoundaries.Count() - 1];
-				}
-				else
-				{
-					return 0;
-				}
-			};
-
-			auto push = [&](RenderingResultRef ref)
-			{
-				CHECK_ERROR(ref, ERROR_MESSAGE_PREFIX L"[push] Cannot push a null dom object.");
-				vint index = domStack.Add(ref);
-				if (!domCurrent->children) domCurrent->children = Ptr(new RenderingResultRefList);
-				domCurrent->children->Add(ref);
-				domCurrent = ref;
-				return index;
-			};
-
-			auto popTo = [&](vint index)
-			{
-				if (index == domStack.Count() - 1) return;
-				CHECK_ERROR(0 <= index && index < domStack.Count(), ERROR_MESSAGE_PREFIX L"[popTo] Cannot pop to an invalid position.");
-				CHECK_ERROR(index >= getCurrentBoundary(), ERROR_MESSAGE_PREFIX L"[popTo] Cannot pop across a boundary.");
-				while (domStack.Count() - 1 > index)
-				{
-					domStack.RemoveAt(domStack.Count() - 1);
-				}
-				domCurrent = domStack[index];
-			};
-
-			auto pop = [&]()
-			{
-				popTo(domStack.Count() - 2);
-			};
-
-			auto popBoundary = [&]()
-			{
-				CHECK_ERROR(domBoundaries.Count() > 0, ERROR_MESSAGE_PREFIX L"[popBoundary] Cannot pop a boundary when none is in the stack.");
-				auto boundaryIndex = domBoundaries.Count() - 1;
-				auto boundary = domBoundaries[boundaryIndex];
-				domBoundaries.RemoveAt(boundaryIndex);
-				popTo(boundary - 1);
-			};
-
-			auto prepareParentFromCommand = [&](
-				Rect commandBounds,
-				Rect commandValidArea,
-				auto&& calculateValidAreaFromDom
-				)
-			{
-				vint min = getCurrentBoundary();
-				bool found = false;
-				if (commandValidArea.Contains(commandBounds))
-				{
-					// if the command is not clipped
-					for (vint i = domStack.Count() - 1; i >= min; i--)
-					{
-						if (domStack[i]->validArea.Contains(commandBounds) || i == 0)
-						{
-							// find the deepest node that could contain the command
-							popTo(i);
-							found = true;
-							break;
-						}
-					}
-				}
-				else
-				{
-					// otherwise, a parent node causing such clipping should be found or created
-					for (vint i = domStack.Count() - 1; i >= min; i--)
-					{
-						auto domValidArea = calculateValidAreaFromDom(domStack[i]);
-						if (domValidArea == commandValidArea)
-						{
-							// if there is a node who clips command's bound to its valid area
-							// that is the parent node of the command
-							popTo(i);
-							found = true;
-							break;
-						}
-						else if (domValidArea.Contains(commandValidArea) || i == 0)
-						{
-							// otherwise find a deepest node who could visually contain the command
-							// create a virtual node to satisfy the clipper
-							popTo(i);
-							auto parent = Ptr(new UnitTestRenderingDom);
-							parent->bounds = commandValidArea;
-							parent->validArea = commandValidArea;
-							push(parent);
-							found = true;
-							break;
-						}
-					}
-				}
-
-				// if the new boundary could not fit in the current boundary
-				// there must be something wrong
-				CHECK_ERROR(found, ERROR_MESSAGE_PREFIX L"Incorrect valid area of dom.");
-			};
-
-			for (auto&& command : *commandListRef.Obj())
-			{
-				command.Apply(Overloading(
-					[&](const remoteprotocol::RenderingCommand_BeginBoundary& command)
-					{
-						// a new boundary should be a new node covering existing nodes
-						// the valid area of boundary is clipped by its bounds
-						// so the valid area to compare from its potential parent dom needs to clipped by its bounds
-						prepareParentFromCommand(
-							command.boundary.bounds,
-							command.boundary.areaClippedBySelf,
-							[&](auto&& dom) { return dom->validArea.Intersect(command.boundary.bounds); }
-							);
-
-						auto dom = Ptr(new UnitTestRenderingDom);
-						dom->hitTestResult = command.boundary.hitTestResult;
-						dom->cursor = command.boundary.cursor;
-						dom->bounds = command.boundary.bounds;
-						dom->validArea = command.boundary.areaClippedBySelf;
-						domBoundaries.Add(push(dom));
-					},
-					[&](const remoteprotocol::RenderingCommand_EndBoundary& command)
-					{
-						popBoundary();
-					},
-					[&](const remoteprotocol::RenderingCommand_Element& command)
-					{
-						// a new element should be a new node covering existing nodes
-						// the valid area of boundary is clipped by its parent
-						// so the valid area to compare from its potential parent dom is its valid area
-						prepareParentFromCommand(
-							command.rendering.bounds,
-							command.rendering.areaClippedByParent,
-							[&](auto&& dom) { return dom->validArea; }
-							);
-
-						auto dom = Ptr(new UnitTestRenderingDom);
-						dom->element = command.element;
-						dom->bounds = command.rendering.bounds;
-						dom->validArea = command.rendering.bounds.Intersect(command.rendering.areaClippedByParent);
-						push(dom);
-					}));
-			}
-
-			return domRoot;
-#undef ERROR_MESSAGE_PREFIX
-		}
+		Ptr<UnitTestLoggedFrame>			candidateFrame;
 
 		bool LogRenderingResult()
 		{
-			if (this->lastRenderingCommands)
+			if (auto lastFrame = this->TryGetLastRenderingFrameAndReset())
 			{
-				candidateFrameId = this->lastFrameId;
-				candidateRenderingResult = this->lastRenderingCommands;
-				this->lastRenderingCommands = {};
+				candidateFrame = lastFrame;
 				everRendered = true;
 			}
 			else if (everRendered)
 			{
-				if (candidateRenderingResult)
+				if (candidateFrame)
 				{
-					auto descs = Ptr(new collections::Dictionary<vint, remoteprotocol::ElementDescVariant>);
+					auto descs = Ptr(new collections::Dictionary<vint, ElementDescVariant>);
 					CopyFrom(*descs.Obj(), this->lastElementDescs);
-					auto transformed = TransformLastRenderingResult(candidateRenderingResult);
 					this->loggedTrace.frames->Add({
-						candidateFrameId,
+						candidateFrame->frameId,
 						{},
 						this->sizingConfig,
 						descs,
-						candidateRenderingResult,
-						transformed
+						candidateFrame->renderingDom
 						});
-					candidateRenderingResult = {};
+					candidateFrame = {};
 					return true;
 				}
 			}
@@ -1354,6 +1334,11 @@ UnitTestRemoteProtocol
 		const auto& GetLoggedTrace()
 		{
 			return this->loggedTrace;
+		}
+
+		const auto& GetLoggedFrames()
+		{
+			return this->loggedFrames;
 		}
 	};
 }
