@@ -57,6 +57,11 @@
   - Upgrade GacUI XML Resource to 1.3, force on all resources instead of only depended or depending resource.
   - Require binary pattern "[GXR-1.3]" at the beginning of the binary resource.
   - Resource compiler and loader will check the version and only accept 1.3.
+- Create another release folder, containing a new h/cpp grouping configuration.
+  - Group files into how vcxitems described in GacUISrc.
+  - Create each lib project for each grouped source files.
+  - Create each exe project to reference just enough/designed subset of libs.
+  - Verify if source dependencies are satisfied.
 
 ## Release Milestone (1.2.11.0)
 
