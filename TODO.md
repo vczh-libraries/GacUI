@@ -86,7 +86,6 @@
     - It could not be used on `GuiHostedController` or `GuiRemoteController`, which is not a native implementation.
   - The experiment will only run a very simple UI that covers all implemented remote protocol so far.
 - `UpdateDomInplace` performed binary search, create a common implementation to share with `SortedList`.
-- Move implementation from protocol combinators and channels to cpp files.
 
 ## Release Milestone (1.2.12.0)
 

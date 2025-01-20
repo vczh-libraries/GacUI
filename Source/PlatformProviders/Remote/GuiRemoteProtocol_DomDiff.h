@@ -32,15 +32,10 @@ GuiRemoteEventDomDiffConverter
 		DomIndex						lastDomIndex;
 
 	public:
-		GuiRemoteEventDomDiffConverter()
-		{
-		}
+		GuiRemoteEventDomDiffConverter();
+		~GuiRemoteEventDomDiffConverter();
 
-		void OnControllerConnect() override
-		{
-			lastDom = {};
-			TBase::OnControllerConnect();
-		}
+		void							OnControllerConnect() override;
 	};
 
 /***********************************************************************
@@ -54,53 +49,14 @@ GuiRemoteProtocolDomDiffConverter
 		RenderingDomBuilder				renderingDomBuilder;
 
 	public:
-		GuiRemoteProtocolDomDiffConverter(IGuiRemoteProtocol* _protocol)
-			: TBase(_protocol)
-		{
-		}
+		GuiRemoteProtocolDomDiffConverter(IGuiRemoteProtocol* _protocol);
+		~GuiRemoteProtocolDomDiffConverter();
 
-		void RequestRendererBeginRendering(const remoteprotocol::ElementBeginRendering& arguments) override
-		{
-			renderingDomBuilder.RequestRendererBeginRendering();
-			TBase::RequestRendererBeginRendering(arguments);
-		}
-
-		void RequestRendererEndRendering(vint id) override
-		{
-			auto dom = renderingDomBuilder.RequestRendererEndRendering();
-			DomIndex domIndex;
-			BuildDomIndex(dom, domIndex);
-
-			if (eventCombinator.lastDom)
-			{
-				RenderingDom_DiffsInOrder diffs;
-				DiffDom(eventCombinator.lastDom, eventCombinator.lastDomIndex, dom, domIndex, diffs);
-				targetProtocol->RequestRendererRenderDomDiff(diffs);
-			}
-			else
-			{
-				targetProtocol->RequestRendererRenderDom(dom);
-			}
-
-			eventCombinator.lastDom = dom;
-			eventCombinator.lastDomIndex = std::move(domIndex);
-			TBase::RequestRendererEndRendering(id);
-		}
-
-		void RequestRendererBeginBoundary(const remoteprotocol::ElementBoundary& arguments) override
-		{
-			renderingDomBuilder.RequestRendererBeginBoundary(arguments);
-		}
-
-		void RequestRendererEndBoundary() override
-		{
-			renderingDomBuilder.RequestRendererEndBoundary();
-		}
-
-		void RequestRendererRenderElement(const remoteprotocol::ElementRendering& arguments) override
-		{
-			renderingDomBuilder.RequestRendererRenderElement(arguments);
-		}
+		void							RequestRendererBeginRendering(const remoteprotocol::ElementBeginRendering& arguments) override;
+		void							RequestRendererEndRendering(vint id) override;
+		void							RequestRendererBeginBoundary(const remoteprotocol::ElementBoundary& arguments) override;
+		void							RequestRendererEndBoundary() override;
+		void							RequestRendererRenderElement(const remoteprotocol::ElementRendering& arguments) override;
 	};
 }
 
