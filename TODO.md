@@ -62,6 +62,11 @@
   - Create each lib project for each grouped source files.
   - Create each exe project to reference just enough/designed subset of libs.
   - Verify if source dependencies are satisfied.
+- Remote protocol player for Windows (and port to others)
+  - GUI runs compiled XML resource in an isolated domain (e.g. dll)
+  - Single GUI mode
+  - Multiple GUI mode (with a simple window manager, and a test app for displaying instructions)
+  - Implemented in both C++ and TypeScript
 
 ## Release Milestone (1.2.11.0)
 
