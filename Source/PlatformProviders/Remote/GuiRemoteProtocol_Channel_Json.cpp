@@ -54,6 +54,7 @@ Metadata
 			package->fields.Add(field);
 		}
 
+		if (arguments)
 		{
 			auto field = Ptr(new glr::json::JsonObjectField);
 			field->name.value = WString::Unmanaged(L"arguments");

@@ -87,7 +87,7 @@
     - [x] `GuiRemoteJsonChannelFromProtocol` creates `IGuiRemoteProtocolChannel<Ptr<JsonNode>>` from `IGuiRemoteProtocol`.
     - [x] Unit test
   - [ ] Binary channel
-  - [ ] Json to `ObjectString<T>` channel conversion
+  - [x] Json to `ObjectString<T>` channel conversion
   - [ ] Sync to Async channel conversion
     - Could refactor `JsonChannel(P|Unp)ack` to a general naming convention, so that the async channel could schedule and block properly.
 - Remote protocol redirection back to native rendering:

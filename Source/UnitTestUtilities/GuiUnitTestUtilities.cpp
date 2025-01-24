@@ -285,17 +285,18 @@ void GacUIUnitTest_Start(const WString& appName, Nullable<UnitTestScreenConfig> 
 
 	// Renderer
 	UnitTestRemoteProtocol unitTestProtocol(appName, globalConfig);
+	auto jsonParser = Ptr(new glr::json::Parser);
 
 	// Data Processing in Renderer
 	channeling::GuiRemoteJsonChannelFromProtocol channelReceiver(unitTestProtocol.GetProtocol());
-	channeling::GuiRemoteJsonChannelStringDeserializer channelJsonDeserializer(&channelReceiver, Ptr(new glr::json::Parser));
+	channeling::GuiRemoteJsonChannelStringDeserializer channelJsonDeserializer(&channelReceiver, jsonParser);
 	channeling::GuiRemoteUtfStringChannelDeserializer<wchar_t, char8_t> channelUtf8Deserializer(&channelJsonDeserializer);
 
 	// Boundary between Binaries
 
 	// Data Processing in Core
 	channeling::GuiRemoteUtfStringChannelSerializer<wchar_t, char8_t> channelUtf8Serializer(&channelUtf8Deserializer);
-	channeling::GuiRemoteJsonChannelStringSerializer channelJsonSerializer(&channelUtf8Serializer);
+	channeling::GuiRemoteJsonChannelStringSerializer channelJsonSerializer(&channelUtf8Serializer, jsonParser);
 	channeling::GuiRemoteProtocolFromJsonChannel channelSender(&channelJsonSerializer);
 
 	// Core
