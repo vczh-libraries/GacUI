@@ -376,7 +376,7 @@ GuiRemoteJsonChannelFromProtocol
 JsonToStringSerializer
 ***********************************************************************/
 
-	void JsonToStringSerializer::Serialize(Ptr<glr::json::Parser> parser, SourceType source, DestType& dest)
+	void JsonToStringSerializer::Serialize(Ptr<glr::json::Parser> parser, const SourceType& source, DestType& dest)
 	{
 		glr::json::JsonFormatting formatting;
 		formatting.spaceAfterColon = false;
@@ -386,8 +386,12 @@ JsonToStringSerializer
 		dest = glr::json::JsonToString(source, formatting);
 	}
 
-	void JsonToStringSerializer::Deserialize(Ptr<glr::json::Parser> parser, DestType& source, SourceType& dest)
+	void JsonToStringSerializer::Deserialize(Ptr<glr::json::Parser> parser, const DestType& source, SourceType& dest)
 	{
-		dest = glr::json::JsonParse(source, *parser.Obj());
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::channeling::GuiRemoteJsonChannelFromProtocol::Write(const Ptr<JsonNode>&)#"
+		auto value = glr::json::JsonParse(source, *parser.Obj());
+		dest = value.Cast<glr::json::JsonObject>();
+		CHECK_ERROR(dest, ERROR_MESSAGE_PREFIX L"JSON parssing between the channel should be JsonObject.");
+#undef ERROR_MESSAGE_PREFIX
 	}
 }

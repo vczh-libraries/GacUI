@@ -47,7 +47,7 @@ Serialization
 	class GuiRemoteProtocolChannelTransformerBase
 		: public Object
 		, public virtual IGuiRemoteProtocolChannel<TFrom>
-		, protected virtual IGuiRemoteProtocolChannelReceiver<TFrom>
+		, protected virtual IGuiRemoteProtocolChannelReceiver<TTo>
 	{
 	protected:
 		IGuiRemoteProtocolChannel<TTo>*							channel = nullptr;
@@ -136,7 +136,7 @@ Serialization
 		{
 		}
 
-		void Write(const typename TSerialization::SourceType& package) override
+		void Write(const typename TSerialization::DestType& package) override
 		{
 			typename TSerialization::SourceType deserialized;
 			TSerialization::Deserialize(context, package, deserialized);
@@ -152,11 +152,11 @@ String Transformation
 	static void ConvertUtfString(const ObjectString<TFrom>& source, ObjectString<TTo> dest)
 	{
 		vint len = _utftoutf<TFrom, TTo>(source.Buffer(), nullptr, 0);
-		if (len < 1) return {};
+		if (len < 1) dest = {};
 		TTo* buffer = new TTo[len];
 		memset(buffer, 0, len * sizeof(TTo));
 		_utftoutf<TFrom, TTo>(source.Buffer(), buffer, len);
-		return ObjectString<TTo>::TakeOver(buffer, len - 1);
+		dest = ObjectString<TTo>::TakeOver(buffer, len - 1);
 	}
 
 	template<typename TFrom, typename TTo>
@@ -166,12 +166,12 @@ String Transformation
 		using DestType = ObjectString<TTo>;
 		using ContextType = std::nullptr_t;
 
-		static void Serialize(const ContextType&, const ObjectString<SourceType>& source, ObjectString<DestType>& dest)
+		static void Serialize(const ContextType&, const SourceType& source, DestType& dest)
 		{
 			ConvertUtfString(source, dest);
 		}
 
-		static void Deserialize(const ContextType&, const ObjectString<DestType>& source, ObjectString<SourceType>& dest)
+		static void Deserialize(const ContextType&, const DestType& source, SourceType& dest)
 		{
 			ConvertUtfString(source, dest);
 		}

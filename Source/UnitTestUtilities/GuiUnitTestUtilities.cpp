@@ -283,10 +283,22 @@ void GacUIUnitTest_Start(const WString& appName, Nullable<UnitTestScreenConfig> 
 		globalConfig.FastInitialize(1024, 768);
 	}
 
+	// Renderer
 	UnitTestRemoteProtocol unitTestProtocol(appName, globalConfig);
-	channeling::GuiRemoteJsonChannelFromProtocol channelReceiver(unitTestProtocol.GetProtocol());
-	channeling::GuiRemoteProtocolFromJsonChannel channelSender(&channelReceiver);
 
+	// Data Processing in Renderer
+	channeling::GuiRemoteJsonChannelFromProtocol channelReceiver(unitTestProtocol.GetProtocol());
+	channeling::GuiRemoteJsonChannelStringDeserializer channelJsonDeserializer(&channelReceiver, Ptr(new glr::json::Parser));
+	channeling::GuiRemoteUtfStringChannelDeserializer<wchar_t, char8_t> channelUtf8Deserializer(&channelJsonDeserializer);
+
+	// Boundary between Binaries
+
+	// Data Processing in Core
+	channeling::GuiRemoteUtfStringChannelSerializer<wchar_t, char8_t> channelUtf8Serializer(&channelUtf8Deserializer);
+	channeling::GuiRemoteJsonChannelStringSerializer channelJsonSerializer(&channelUtf8Serializer);
+	channeling::GuiRemoteProtocolFromJsonChannel channelSender(&channelJsonSerializer);
+
+	// Core
 	repeatfiltering::GuiRemoteProtocolFilterVerifier verifierProtocol(
 		globalConfig.useSyncChannel
 		? &channelSender
