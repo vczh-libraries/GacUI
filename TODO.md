@@ -99,6 +99,7 @@
 - `UpdateDomInplace` performed binary search, create a common implementation to share with `SortedList`.
 - `GuiRemoteProtocolFromJsonChannel::OnReceive` should use a map instead of a series of if-statments.
 - `GuiRemoteJsonChannelFromProtocol::Write` should use a map instead of a series of if-statments.
+- `vl::presentation::remoteprotocol::channeling::ConvertUtfString` move into `Vlpp` repo.
 
 ## Release Milestone (1.2.12.0)
 

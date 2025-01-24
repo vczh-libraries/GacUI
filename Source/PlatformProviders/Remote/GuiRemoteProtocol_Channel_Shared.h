@@ -143,6 +143,39 @@ Serialization
 			this->channel->Write(deserialized);
 		}
 	};
+
+/***********************************************************************
+String Transformation
+***********************************************************************/
+
+	template<typename TFrom, typename TTo>
+	static void ConvertUtfString(const ObjectString<TFrom>& source, ObjectString<TTo> dest)
+	{
+		vint len = _utftoutf<TFrom, TTo>(source.Buffer(), nullptr, 0);
+		if (len < 1) return {};
+		TTo* buffer = new TTo[len];
+		memset(buffer, 0, len * sizeof(TTo));
+		_utftoutf<TFrom, TTo>(source.Buffer(), buffer, len);
+		return ObjectString<TTo>::TakeOver(buffer, len - 1);
+	}
+
+	template<typename TFrom, typename TTo>
+	struct StringSerializer
+	{
+		using SourceType = ObjectString<TFrom>;
+		using DestType = ObjectString<TTo>;
+		using ContextType = std::nullptr_t;
+
+		static void Serialize(const ContextType&, const ObjectString<SourceType>& source, ObjectString<DestType>& dest)
+		{
+			ConvertUtfString(source, dest);
+		}
+
+		static void Deserialize(const ContextType&, const ObjectString<DestType>& source, ObjectString<SourceType>& dest)
+		{
+			ConvertUtfString(source, dest);
+		}
+	};
 }
 
 #endif

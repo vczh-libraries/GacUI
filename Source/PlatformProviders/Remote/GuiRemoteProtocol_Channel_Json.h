@@ -111,6 +111,10 @@ GuiRemoteJsonChannelFromProtocol
 		void											Submit() override;
 		void											ProcessRemoteEvents() override;
 	};
+
+/***********************************************************************
+Metadata
+***********************************************************************/
 }
 
 #endif
