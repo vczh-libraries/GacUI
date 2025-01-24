@@ -89,6 +89,7 @@
   - [ ] Binary channel
   - [ ] Json to `ObjectString<T>` channel conversion
   - [ ] Sync to Async channel conversion
+    - Could refactor `JsonChannel(P|Unp)ack` to a general naming convention, so that the async channel could schedule and block properly.
 - Remote protocol redirection back to native rendering:
   - In the test project, C++ side will expose the remote protocol via dll.
     - Use string first, and then change to binary.

@@ -38,6 +38,111 @@ IGuiRemoteProtocolChannel<T>
 		virtual void											Submit() = 0;
 		virtual void											ProcessRemoteEvents() = 0;
 	};
+
+/***********************************************************************
+Serialization
+***********************************************************************/
+
+	template<typename TFrom, typename TTo>
+	class GuiRemoteProtocolChannelTransformerBase
+		: public Object
+		, public virtual IGuiRemoteProtocolChannel<TFrom>
+		, protected virtual IGuiRemoteProtocolChannelReceiver<TFrom>
+	{
+	protected:
+		IGuiRemoteProtocolChannel<TTo>*							channel = nullptr;
+		IGuiRemoteProtocolChannelReceiver<TFrom>*				receiver = nullptr;
+
+	public:
+		GuiRemoteProtocolChannelTransformerBase(IGuiRemoteProtocolChannel<TTo>* _channel) 
+			: channel(_channel)
+		{
+		}
+
+		void Initialize(IGuiRemoteProtocolChannelReceiver<TFrom>* _receiver) override
+		{
+			receiver = _receiver;
+			channel->Initialize(this);
+		}
+
+		IGuiRemoteProtocolChannelReceiver<TFrom>* GetReceiver() override
+		{
+			return receiver;
+		}
+
+		WString GetExecutablePath() override
+		{
+			return channel->GetExecutablePath();
+		}
+
+		void Submit() override
+		{
+			channel->Submit();
+		}
+
+		void ProcessRemoteEvents() override
+		{
+			channel->ProcessRemoteEvents();
+		}
+	};
+
+	template<typename TSerialization>
+	class GuiRemoteProtocolChannelSerializer
+		: public GuiRemoteProtocolChannelTransformerBase<typename TSerialization::SourceType, typename TSerialization::DestType>
+	{
+	protected:
+		typename TSerialization::ContextType					context;
+
+		void OnReceive(const typename TSerialization::DestType& package) override
+		{
+			typename TSerialization::SourceType deserialized;
+			TSerialization::Deserialize(context, package, deserialized);
+			this->receiver->OnReceive(deserialized);
+		}
+
+	public:
+		GuiRemoteProtocolChannelSerializer(IGuiRemoteProtocolChannel<typename TSerialization::DestType>* _channel, const typename TSerialization::ContextType& _context = {})
+			: GuiRemoteProtocolChannelTransformerBase<typename TSerialization::SourceType, typename TSerialization::DestType>(_channel)
+			, context(_context)
+		{
+		}
+
+		void Write(const typename TSerialization::SourceType& package) override
+		{
+			typename TSerialization::DestType serialized;
+			TSerialization::Serialize(context, package, serialized);
+			this->channel->Write(serialized);
+		}
+	};
+
+	template<typename TSerialization>
+	class GuiRemoteProtocolChannelDeserializer
+		: public GuiRemoteProtocolChannelTransformerBase<typename TSerialization::DestType, typename TSerialization::SourceType>
+	{
+	protected:
+		typename TSerialization::ContextType					context;
+
+		void OnReceive(const typename TSerialization::SourceType& package) override
+		{
+			typename TSerialization::DestType serialized;
+			TSerialization::Serialize(context, package, serialized);
+			this->receiver->OnReceive(serialized);
+		}
+
+	public:
+		GuiRemoteProtocolChannelDeserializer(IGuiRemoteProtocolChannel<typename TSerialization::SourceType>* _channel, const typename TSerialization::ContextType& _context = {})
+			: GuiRemoteProtocolChannelTransformerBase<typename TSerialization::DestType, typename TSerialization::SourceType>(_channel)
+			, context(_context)
+		{
+		}
+
+		void Write(const typename TSerialization::SourceType& package) override
+		{
+			typename TSerialization::SourceType deserialized;
+			TSerialization::Deserialize(context, package, deserialized);
+			this->channel->Write(deserialized);
+		}
+	};
 }
 
 #endif
