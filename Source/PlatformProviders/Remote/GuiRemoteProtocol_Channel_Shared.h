@@ -160,7 +160,7 @@ String Transformation
 	}
 
 	template<typename TFrom, typename TTo>
-	struct StringSerializer
+	struct UtfStringSerializer
 	{
 		using SourceType = ObjectString<TFrom>;
 		using DestType = ObjectString<TTo>;
@@ -176,6 +176,12 @@ String Transformation
 			ConvertUtfString(source, dest);
 		}
 	};
+
+	template<typename TFrom, typename TTo>
+	using GuiRemoteUtfStringChannelSerializer = GuiRemoteProtocolChannelSerializer<UtfStringSerializer<TFrom, TTo>>;
+
+	template<typename TFrom, typename TTo>
+	using GuiRemoteUtfStringChannelDeserializer = GuiRemoteProtocolChannelDeserializer<UtfStringSerializer<TFrom, TTo>>;
 }
 
 #endif

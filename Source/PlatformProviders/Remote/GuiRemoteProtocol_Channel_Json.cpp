@@ -371,4 +371,23 @@ GuiRemoteJsonChannelFromProtocol
 	{
 		protocol->ProcessRemoteEvents();
 	}
+
+/***********************************************************************
+JsonToStringSerializer
+***********************************************************************/
+
+	void JsonToStringSerializer::Serialize(Ptr<glr::json::Parser> parser, SourceType source, DestType& dest)
+	{
+		glr::json::JsonFormatting formatting;
+		formatting.spaceAfterColon = false;
+		formatting.spaceAfterComma = false;
+		formatting.crlf = false;
+		formatting.compact = true;
+		dest = glr::json::JsonToString(source, formatting);
+	}
+
+	void JsonToStringSerializer::Deserialize(Ptr<glr::json::Parser> parser, DestType& source, SourceType& dest)
+	{
+		dest = glr::json::JsonParse(source, *parser.Obj());
+	}
 }

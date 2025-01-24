@@ -113,8 +113,21 @@ GuiRemoteJsonChannelFromProtocol
 	};
 
 /***********************************************************************
-Metadata
+JsonToStringSerializer
 ***********************************************************************/
+
+	struct JsonToStringSerializer
+	{
+		using SourceType = Ptr<glr::json::JsonNode>;
+		using DestType = WString;
+		using ContextType = Ptr<glr::json::Parser>;
+
+		static void										Serialize(Ptr<glr::json::Parser> parser, SourceType source, DestType& dest);
+		static void										Deserialize(Ptr<glr::json::Parser> parser, DestType& source, SourceType& dest);
+	};
+
+	using GuiRemoteJsonChannelStringSerializer = GuiRemoteProtocolChannelSerializer<JsonToStringSerializer>;
+	using GuiRemoteJsonChannelStringDeserializer = GuiRemoteProtocolChannelDeserializer<JsonToStringSerializer>;
 }
 
 #endif
