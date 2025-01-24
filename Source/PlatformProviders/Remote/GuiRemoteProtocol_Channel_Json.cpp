@@ -2,39 +2,142 @@
 
 namespace vl::presentation::remoteprotocol::channeling
 {
+/***********************************************************************
+Metadata
+***********************************************************************/
+
+	void JsonChannelPack(ProtocolSemantic semantic, vint id, const WString& name, Ptr<glr::json::JsonNode> arguments, Ptr<glr::json::JsonObject>& package)
+	{
+		package = Ptr(new glr::json::JsonObject);
+
+		{
+			auto value = Ptr(new glr::json::JsonString);
+			switch (semantic)
+			{
+			case ProtocolSemantic::Request:
+				value->content.value = WString::Unmanaged(L"Request");
+				break;
+			case ProtocolSemantic::Response:
+				value->content.value = WString::Unmanaged(L"Response");
+				break;
+			case ProtocolSemantic::Event:
+				value->content.value = WString::Unmanaged(L"Event");
+				break;
+			default:
+				value->content.value = WString::Unmanaged(L"Unknown");
+			}
+
+			auto field = Ptr(new glr::json::JsonObjectField);
+			field->name.value = WString::Unmanaged(L"semantic");
+			field->value = value;
+			package->fields.Add(field);
+		}
+
+		if (id != -1)
+		{
+			auto value = Ptr(new glr::json::JsonNumber);
+			value->content.value = itow(id);
+
+			auto field = Ptr(new glr::json::JsonObjectField);
+			field->name.value = WString::Unmanaged(L"id");
+			field->value = value;
+			package->fields.Add(field);
+		}
+
+		{
+			auto value = Ptr(new glr::json::JsonString);
+			value->content.value = name;
+
+			auto field = Ptr(new glr::json::JsonObjectField);
+			field->name.value = WString::Unmanaged(L"name");
+			field->value = value;
+			package->fields.Add(field);
+		}
+
+		{
+			auto field = Ptr(new glr::json::JsonObjectField);
+			field->name.value = WString::Unmanaged(L"arguments");
+			field->value = arguments;
+			package->fields.Add(field);
+		}
+	}
+
+	void JsonChannelUnpack(Ptr<glr::json::JsonObject> package, ProtocolSemantic& semantic, vint& id, WString& name, Ptr<glr::json::JsonNode>& arguments)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::channeling::JsonChannelPack(Ptr<JsonObject>, ProtocolSemantic&, vint&, WString&, Ptr<JsonNode>&)#"
+
+		for (auto&& field : package->fields)
+		{
+			if (field->name.value == L"semantic")
+			{
+				auto value = field->value.Cast<glr::json::JsonString>();
+				CHECK_ERROR(value, ERROR_MESSAGE_PREFIX L"The semantic field should be a string.");
+
+				if (value->content.value == L"Request")
+				{
+					semantic = ProtocolSemantic::Request;
+				}
+				else if (value->content.value == L"Response")
+				{
+					semantic = ProtocolSemantic::Response;
+				}
+				else if (value->content.value == L"Event")
+				{
+					semantic = ProtocolSemantic::Event;
+				}
+			}
+			else if (field->name.value == L"id")
+			{
+				auto value = field->value.Cast<glr::json::JsonNumber>();
+				CHECK_ERROR(value, ERROR_MESSAGE_PREFIX L"The id field should be a number.");
+
+				id = wtoi(value->content.value);
+			}
+			else if (field->name.value == L"name")
+			{
+				auto value = field->value.Cast<glr::json::JsonString>();
+				CHECK_ERROR(value, ERROR_MESSAGE_PREFIX L"The name field should be a string.");
+
+				name = value->content.value;
+			}
+			else if (field->name.value == L"arguments")
+			{
+				arguments = field->value;
+			}
+		}
+#undef ERROR_MESSAGE_PREFIX
+	}
 
 /***********************************************************************
 GuiRemoteProtocolFromJsonChannel
 ***********************************************************************/
 
-	void GuiRemoteProtocolFromJsonChannel::OnReceive(const Ptr<glr::json::JsonNode>& package)
+	void GuiRemoteProtocolFromJsonChannel::OnReceive(const Ptr<glr::json::JsonObject>& package)
 	{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::channeling::GuiRemoteProtocolFromJsonChannel::OnReceive(const Ptr<JsonNode>&)#"
-		auto jsonArray = package.Cast<glr::json::JsonArray>();
-		CHECK_ERROR(jsonArray && jsonArray->items.Count() == 4, ERROR_MESSAGE_PREFIX L"A JSON array with 4 elements is expected.");
 
-		auto jsonCategory = jsonArray->items[0].Cast<glr::json::JsonString>();
-		CHECK_ERROR(jsonCategory, ERROR_MESSAGE_PREFIX L"The first element should be a string.");
-
-		auto jsonMessage = jsonArray->items[1].Cast<glr::json::JsonString>();
-		CHECK_ERROR(jsonMessage, ERROR_MESSAGE_PREFIX L"The second element should be a string.");
+		ProtocolSemantic semantic = ProtocolSemantic::Unknown;
+		vint id = -1;
+		WString name;
+		Ptr<glr::json::JsonNode> jsonArguments;
+		JsonChannelUnpack(package, semantic, id, name, jsonArguments);
 
 #define EVENT_NOREQ(NAME, REQUEST)\
-		if (jsonMessage->content.value == L ## #NAME)\
+		if (name == L ## #NAME)\
 		{\
 			events->On ## NAME();\
 		} else\
 
 #define EVENT_REQ(NAME, REQUEST)\
-		if (jsonMessage->content.value == L ## #NAME)\
+		if (name == L ## #NAME)\
 		{\
 			REQUEST arguments;\
-			ConvertJsonToCustomType(jsonArray->items[3], arguments);\
+			ConvertJsonToCustomType(jsonArguments, arguments);\
 			events->On ## NAME(arguments);\
 		} else\
 
 #define EVENT_HANDLER(NAME, REQUEST, REQTAG, ...)	EVENT_ ## REQTAG(NAME, REQUEST)
-		if (jsonCategory->content.value == L"Event")
+		if (semantic == ProtocolSemantic::Event)
 		{
 			GACUI_REMOTEPROTOCOL_EVENTS(EVENT_HANDLER)
 			{
@@ -48,17 +151,15 @@ GuiRemoteProtocolFromJsonChannel
 
 #define MESSAGE_NORES(NAME, RESPONSE)
 #define MESSAGE_RES(NAME, RESPONSE)\
-		if (jsonMessage->content.value == L ## #NAME)\
+		if (name == L ## #NAME)\
 		{\
-			auto jsonId = jsonArray->items[2].Cast<glr::json::JsonNumber>();\
-			CHECK_ERROR(jsonId, ERROR_MESSAGE_PREFIX L"The third element should be a number.");\
 			RESPONSE arguments;\
-			ConvertJsonToCustomType(jsonArray->items[3], arguments);\
-			events->Respond ## NAME(wtoi(jsonId->content.value), arguments);\
+			ConvertJsonToCustomType(jsonArguments, arguments);\
+			events->Respond ## NAME(id, arguments);\
 		} else\
 
 #define MESSAGE_HANDLER(NAME, REQUEST, RESPONSE, REQTAG, RESTAG, ...)	MESSAGE_ ## RESTAG(NAME, RESPONSE)
-		if (jsonCategory->content.value == L"Respond")
+		if (semantic == ProtocolSemantic::Response)
 		{
 			GACUI_REMOTEPROTOCOL_MESSAGES(MESSAGE_HANDLER)
 			{
@@ -76,63 +177,33 @@ GuiRemoteProtocolFromJsonChannel
 #define MESSAGE_NOREQ_NORES(NAME, REQUEST, RESPONSE)\
 	void GuiRemoteProtocolFromJsonChannel::Request ## NAME()\
 	{\
-		auto jsonName = Ptr(new glr::json::JsonString);\
-		jsonName->content.value = WString::Unmanaged(L ## #NAME);\
-		auto jsonId = Ptr(new glr::json::JsonLiteral);\
-		jsonId->value = glr::json::JsonLiteralValue::Null;\
-		auto jsonRequest = Ptr(new glr::json::JsonLiteral);\
-		jsonRequest->value = glr::json::JsonLiteralValue::Null;\
-		auto jsonArray = Ptr(new glr::json::JsonArray);\
-		jsonArray->items.Add(jsonName);\
-		jsonArray->items.Add(jsonId);\
-		jsonArray->items.Add(jsonRequest);\
-		channel->Write(jsonArray);\
+		Ptr<glr::json::JsonObject> package;\
+		JsonChannelPack(ProtocolSemantic::Request, -1, WString::Unmanaged(L ## #NAME), {}, package);\
+		channel->Write(package);\
 	}\
 
 #define MESSAGE_NOREQ_RES(NAME, REQUEST, RESPONSE)\
 	void GuiRemoteProtocolFromJsonChannel::Request ## NAME(vint id)\
 	{\
-		auto jsonName = Ptr(new glr::json::JsonString);\
-		jsonName->content.value = WString::Unmanaged(L ## #NAME);\
-		auto jsonId = Ptr(new glr::json::JsonNumber);\
-		jsonId->content.value = itow(id);\
-		auto jsonRequest = Ptr(new glr::json::JsonLiteral);\
-		jsonRequest->value = glr::json::JsonLiteralValue::Null;\
-		auto jsonArray = Ptr(new glr::json::JsonArray);\
-		jsonArray->items.Add(jsonName);\
-		jsonArray->items.Add(jsonId);\
-		jsonArray->items.Add(jsonRequest);\
-		channel->Write(jsonArray);\
+		Ptr<glr::json::JsonObject> package;\
+		JsonChannelPack(ProtocolSemantic::Request, id, WString::Unmanaged(L ## #NAME), {}, package);\
+		channel->Write(package);\
 	}\
 
 #define MESSAGE_REQ_NORES(NAME, REQUEST, RESPONSE)\
 	void GuiRemoteProtocolFromJsonChannel::Request ## NAME(const REQUEST& arguments)\
 	{\
-		auto jsonName = Ptr(new glr::json::JsonString);\
-		jsonName->content.value = WString::Unmanaged(L ## #NAME);\
-		auto jsonId = Ptr(new glr::json::JsonLiteral);\
-		jsonId->value = glr::json::JsonLiteralValue::Null;\
-		auto jsonRequest = ConvertCustomTypeToJson(arguments);\
-		auto jsonArray = Ptr(new glr::json::JsonArray);\
-		jsonArray->items.Add(jsonName);\
-		jsonArray->items.Add(jsonId);\
-		jsonArray->items.Add(jsonRequest);\
-		channel->Write(jsonArray);\
+		Ptr<glr::json::JsonObject> package;\
+		JsonChannelPack(ProtocolSemantic::Request, -1, WString::Unmanaged(L ## #NAME), ConvertCustomTypeToJson(arguments), package);\
+		channel->Write(package);\
 	}\
 
 #define MESSAGE_REQ_RES(NAME, REQUEST, RESPONSE)\
 	void GuiRemoteProtocolFromJsonChannel::Request ## NAME(vint id, const REQUEST& arguments)\
 	{\
-		auto jsonName = Ptr(new glr::json::JsonString);\
-		jsonName->content.value = WString::Unmanaged(L ## #NAME);\
-		auto jsonId = Ptr(new glr::json::JsonNumber);\
-		jsonId->content.value = itow(id);\
-		auto jsonRequest = ConvertCustomTypeToJson(arguments);\
-		auto jsonArray = Ptr(new glr::json::JsonArray);\
-		jsonArray->items.Add(jsonName);\
-		jsonArray->items.Add(jsonId);\
-		jsonArray->items.Add(jsonRequest);\
-		channel->Write(jsonArray);\
+		Ptr<glr::json::JsonObject> package;\
+		JsonChannelPack(ProtocolSemantic::Request, id, WString::Unmanaged(L ## #NAME), ConvertCustomTypeToJson(arguments), package);\
+		channel->Write(package);\
 	}\
 
 #define MESSAGE_HANDLER(NAME, REQUEST, RESPONSE, REQTAG, RESTAG, ...)	MESSAGE_ ## REQTAG ## _ ## RESTAG(NAME, REQUEST, RESPONSE)
@@ -180,38 +251,17 @@ GuiRemoteJsonChannelFromProtocol
 #define EVENT_NOREQ(NAME, REQUEST)\
 	void GuiRemoteJsonChannelFromProtocol::On ## NAME()\
 	{\
-		auto jsonCategory = Ptr(new glr::json::JsonString);\
-		jsonCategory->content.value = WString::Unmanaged(L"Event");\
-		auto jsonName = Ptr(new glr::json::JsonString);\
-		jsonName->content.value = WString::Unmanaged(L ## #NAME);\
-		auto jsonId = Ptr(new glr::json::JsonLiteral);\
-		jsonId->value = glr::json::JsonLiteralValue::Null;\
-		auto jsonRequest = Ptr(new glr::json::JsonLiteral);\
-		jsonRequest->value = glr::json::JsonLiteralValue::Null;\
-		auto jsonArray = Ptr(new glr::json::JsonArray);\
-		jsonArray->items.Add(jsonCategory);\
-		jsonArray->items.Add(jsonName);\
-		jsonArray->items.Add(jsonId);\
-		jsonArray->items.Add(jsonRequest);\
-		receiver->OnReceive(jsonArray);\
+		Ptr<glr::json::JsonObject> package;\
+		JsonChannelPack(ProtocolSemantic::Event, -1, WString::Unmanaged(L ## #NAME), {}, package);\
+		receiver->OnReceive(package);\
 	}\
 
 #define EVENT_REQ(NAME, REQUEST)\
 	void GuiRemoteJsonChannelFromProtocol::On ## NAME(const REQUEST& arguments)\
 	{\
-		auto jsonCategory = Ptr(new glr::json::JsonString);\
-		jsonCategory->content.value = WString::Unmanaged(L"Event");\
-		auto jsonName = Ptr(new glr::json::JsonString);\
-		jsonName->content.value = WString::Unmanaged(L ## #NAME);\
-		auto jsonId = Ptr(new glr::json::JsonLiteral);\
-		jsonId->value = glr::json::JsonLiteralValue::Null;\
-		auto jsonRequest = ConvertCustomTypeToJson(arguments);\
-		auto jsonArray = Ptr(new glr::json::JsonArray);\
-		jsonArray->items.Add(jsonCategory);\
-		jsonArray->items.Add(jsonName);\
-		jsonArray->items.Add(jsonId);\
-		jsonArray->items.Add(jsonRequest);\
-		receiver->OnReceive(jsonArray);\
+		Ptr<glr::json::JsonObject> package;\
+		JsonChannelPack(ProtocolSemantic::Event, -1, WString::Unmanaged(L ## #NAME), ConvertCustomTypeToJson(arguments), package);\
+		receiver->OnReceive(package);\
 	}\
 
 #define EVENT_HANDLER(NAME, REQUEST, REQTAG, ...)						EVENT_ ## REQTAG(NAME, REQUEST)
@@ -224,19 +274,9 @@ GuiRemoteJsonChannelFromProtocol
 #define MESSAGE_RES(NAME, RESPONSE)\
 	void GuiRemoteJsonChannelFromProtocol::Respond ## NAME(vint id, const RESPONSE& arguments)\
 	{\
-		auto jsonCategory = Ptr(new glr::json::JsonString);\
-		jsonCategory->content.value = WString::Unmanaged(L"Respond");\
-		auto jsonName = Ptr(new glr::json::JsonString);\
-		jsonName->content.value = WString::Unmanaged(L ## #NAME);\
-		auto jsonId = Ptr(new glr::json::JsonNumber);\
-		jsonId->content.value = itow(id);\
-		auto jsonRequest = ConvertCustomTypeToJson(arguments);\
-		auto jsonArray = Ptr(new glr::json::JsonArray);\
-		jsonArray->items.Add(jsonCategory);\
-		jsonArray->items.Add(jsonName);\
-		jsonArray->items.Add(jsonId);\
-		jsonArray->items.Add(jsonRequest);\
-		receiver->OnReceive(jsonArray);\
+		Ptr<glr::json::JsonObject> package;\
+		JsonChannelPack(ProtocolSemantic::Response, id, WString::Unmanaged(L ## #NAME), ConvertCustomTypeToJson(arguments), package);\
+		receiver->OnReceive(package);\
 	}\
 
 #define MESSAGE_HANDLER(NAME, REQUEST, RESPONSE, REQTAG, RESTAG, ...)	MESSAGE_ ## RESTAG(NAME, RESPONSE)
@@ -265,45 +305,42 @@ GuiRemoteJsonChannelFromProtocol
 		return receiver;
 	}
 
-	void GuiRemoteJsonChannelFromProtocol::Write(const Ptr<glr::json::JsonNode>& package)
+	void GuiRemoteJsonChannelFromProtocol::Write(const Ptr<glr::json::JsonObject>& package)
 	{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::channeling::GuiRemoteJsonChannelFromProtocol::Write(const Ptr<JsonNode>&)#"
-		auto jsonArray = package.Cast<glr::json::JsonArray>();
-		CHECK_ERROR(jsonArray && jsonArray->items.Count() == 3, ERROR_MESSAGE_PREFIX L"A JSON array with 3 elements is expected.");
 
-		auto jsonMessage = jsonArray->items[0].Cast<glr::json::JsonString>();
-		CHECK_ERROR(jsonMessage, ERROR_MESSAGE_PREFIX L"The first element should be a string.");
+		ProtocolSemantic semantic = ProtocolSemantic::Unknown;
+		vint id = -1;
+		WString name;
+		Ptr<glr::json::JsonNode> jsonArguments;
+		JsonChannelUnpack(package, semantic, id, name, jsonArguments);
 
 #define MESSAGE_NOREQ_NORES(NAME, REQUEST, RESPONSE)\
-		if (jsonMessage->content.value == L ## #NAME)\
+		if (name == L ## #NAME)\
 		{\
 			protocol->Request ## NAME();\
 		} else\
 
 #define MESSAGE_NOREQ_RES(NAME, REQUEST, RESPONSE)\
-		if (jsonMessage->content.value == L ## #NAME)\
+		if (name == L ## #NAME)\
 		{\
-			auto jsonId = jsonArray->items[1].Cast<glr::json::JsonNumber>();\
-			CHECK_ERROR(jsonMessage, ERROR_MESSAGE_PREFIX L"The second element should be a number.");\
-			protocol->Request ## NAME(wtoi(jsonId->content.value));\
+			protocol->Request ## NAME(id);\
 		} else\
 
 #define MESSAGE_REQ_NORES(NAME, REQUEST, RESPONSE)\
-		if (jsonMessage->content.value == L ## #NAME)\
+		if (name == L ## #NAME)\
 		{\
 			REQUEST arguments;\
-			ConvertJsonToCustomType(jsonArray->items[2], arguments);\
+			ConvertJsonToCustomType(jsonArguments, arguments);\
 			protocol->Request ## NAME(arguments);\
 		} else\
 
 #define MESSAGE_REQ_RES(NAME, REQUEST, RESPONSE)\
-		if (jsonMessage->content.value == L ## #NAME)\
+		if (name == L ## #NAME)\
 		{\
-			auto jsonId = jsonArray->items[1].Cast<glr::json::JsonNumber>();\
-			CHECK_ERROR(jsonMessage, ERROR_MESSAGE_PREFIX L"The second element should be a number.");\
 			REQUEST arguments;\
-			ConvertJsonToCustomType(jsonArray->items[2], arguments);\
-			protocol->Request ## NAME(wtoi(jsonId->content.value), arguments);\
+			ConvertJsonToCustomType(jsonArguments, arguments);\
+			protocol->Request ## NAME(id, arguments);\
 		} else\
 
 #define MESSAGE_HANDLER(NAME, REQUEST, RESPONSE, REQTAG, RESTAG, ...)	MESSAGE_ ## REQTAG ## _ ## RESTAG(NAME, REQUEST, RESPONSE)

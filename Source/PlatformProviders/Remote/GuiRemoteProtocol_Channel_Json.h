@@ -15,8 +15,23 @@ Interfaces:
 
 namespace vl::presentation::remoteprotocol::channeling
 {
-	using IJsonChannelReceiver = IGuiRemoteProtocolChannelReceiver<Ptr<glr::json::JsonNode>>;
-	using IJsonChannel = IGuiRemoteProtocolChannel<Ptr<glr::json::JsonNode>>;
+	using IJsonChannelReceiver = IGuiRemoteProtocolChannelReceiver<Ptr<glr::json::JsonObject>>;
+	using IJsonChannel = IGuiRemoteProtocolChannel<Ptr<glr::json::JsonObject>>;
+
+/***********************************************************************
+Metadata
+***********************************************************************/
+
+	enum class ProtocolSemantic
+	{
+		Request,
+		Response,
+		Event,
+		Unknown,
+	};
+
+	extern void JsonChannelPack(ProtocolSemantic semantic, vint id, const WString& name, Ptr<glr::json::JsonNode> arguments, Ptr<glr::json::JsonObject>& package);
+	extern void JsonChannelUnpack(Ptr<glr::json::JsonObject> package, ProtocolSemantic& semantic, vint& id, WString& name, Ptr<glr::json::JsonNode>& arguments);
 
 /***********************************************************************
 GuiRemoteProtocolFromJsonChannel
@@ -31,7 +46,7 @@ GuiRemoteProtocolFromJsonChannel
 		IJsonChannel*				channel = nullptr;
 		IGuiRemoteProtocolEvents*	events = nullptr;
 
-		void						OnReceive(const Ptr<glr::json::JsonNode>& package) override;
+		void						OnReceive(const Ptr<glr::json::JsonObject>& package) override;
 
 	public:
 
@@ -91,7 +106,7 @@ GuiRemoteJsonChannelFromProtocol
 
 		void											Initialize(IJsonChannelReceiver* _receiver) override;
 		IJsonChannelReceiver*							GetReceiver() override;
-		void											Write(const Ptr<glr::json::JsonNode>& package) override;
+		void											Write(const Ptr<glr::json::JsonObject>& package) override;
 		WString											GetExecutablePath() override;
 		void											Submit() override;
 		void											ProcessRemoteEvents() override;

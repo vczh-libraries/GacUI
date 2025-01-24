@@ -96,6 +96,8 @@
     - It could not be used on `GuiHostedController` or `GuiRemoteController`, which is not a native implementation.
   - The experiment will only run a very simple UI that covers all implemented remote protocol so far.
 - `UpdateDomInplace` performed binary search, create a common implementation to share with `SortedList`.
+- `GuiRemoteProtocolFromJsonChannel::OnReceive` should use a map instead of a series of if-statments.
+- `GuiRemoteJsonChannelFromProtocol::Write` should use a map instead of a series of if-statments.
 
 ## Release Milestone (1.2.12.0)
 
