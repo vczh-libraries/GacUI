@@ -54,7 +54,7 @@ Serialization
 		IGuiRemoteProtocolChannelReceiver<TFrom>*				receiver = nullptr;
 
 	public:
-		GuiRemoteProtocolChannelTransformerBase(IGuiRemoteProtocolChannel<TTo>* _channel) 
+		GuiRemoteProtocolChannelTransformerBase(IGuiRemoteProtocolChannel<TTo>* _channel)
 			: channel(_channel)
 		{
 		}
