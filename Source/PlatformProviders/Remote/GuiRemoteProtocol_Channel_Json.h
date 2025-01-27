@@ -24,6 +24,7 @@ Metadata
 
 	enum class ProtocolSemantic
 	{
+		Message,
 		Request,
 		Response,
 		Event,

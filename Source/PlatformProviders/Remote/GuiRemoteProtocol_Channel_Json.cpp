@@ -14,6 +14,9 @@ Metadata
 			auto value = Ptr(new glr::json::JsonString);
 			switch (semantic)
 			{
+			case ProtocolSemantic::Message:
+				value->content.value = WString::Unmanaged(L"Message");
+				break;
 			case ProtocolSemantic::Request:
 				value->content.value = WString::Unmanaged(L"Request");
 				break;
@@ -74,7 +77,11 @@ Metadata
 				auto value = field->value.Cast<glr::json::JsonString>();
 				CHECK_ERROR(value, ERROR_MESSAGE_PREFIX L"The semantic field should be a string.");
 
-				if (value->content.value == L"Request")
+				if (value->content.value == L"Message")
+				{
+					semantic = ProtocolSemantic::Message;
+				}
+				else if (value->content.value == L"Request")
 				{
 					semantic = ProtocolSemantic::Request;
 				}
@@ -179,7 +186,7 @@ GuiRemoteProtocolFromJsonChannel
 	void GuiRemoteProtocolFromJsonChannel::Request ## NAME()\
 	{\
 		Ptr<glr::json::JsonObject> package;\
-		JsonChannelPack(ProtocolSemantic::Request, -1, WString::Unmanaged(L ## #NAME), {}, package);\
+		JsonChannelPack(ProtocolSemantic::Message, -1, WString::Unmanaged(L ## #NAME), {}, package);\
 		channel->Write(package);\
 	}\
 
@@ -195,7 +202,7 @@ GuiRemoteProtocolFromJsonChannel
 	void GuiRemoteProtocolFromJsonChannel::Request ## NAME(const REQUEST& arguments)\
 	{\
 		Ptr<glr::json::JsonObject> package;\
-		JsonChannelPack(ProtocolSemantic::Request, -1, WString::Unmanaged(L ## #NAME), ConvertCustomTypeToJson(arguments), package);\
+		JsonChannelPack(ProtocolSemantic::Message, -1, WString::Unmanaged(L ## #NAME), ConvertCustomTypeToJson(arguments), package);\
 		channel->Write(package);\
 	}\
 
