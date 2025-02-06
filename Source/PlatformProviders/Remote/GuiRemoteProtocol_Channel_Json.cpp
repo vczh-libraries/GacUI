@@ -3,10 +3,10 @@
 namespace vl::presentation::remoteprotocol::channeling
 {
 /***********************************************************************
-Metadata
+ChannelPackageSemantic
 ***********************************************************************/
 
-	void JsonChannelPack(ProtocolSemantic semantic, vint id, const WString& name, Ptr<glr::json::JsonNode> arguments, Ptr<glr::json::JsonObject>& package)
+	void JsonChannelPack(ChannelPackageSemantic semantic, vint id, const WString& name, Ptr<glr::json::JsonNode> arguments, Ptr<glr::json::JsonObject>& package)
 	{
 		package = Ptr(new glr::json::JsonObject);
 
@@ -14,16 +14,16 @@ Metadata
 			auto value = Ptr(new glr::json::JsonString);
 			switch (semantic)
 			{
-			case ProtocolSemantic::Message:
+			case ChannelPackageSemantic::Message:
 				value->content.value = WString::Unmanaged(L"Message");
 				break;
-			case ProtocolSemantic::Request:
+			case ChannelPackageSemantic::Request:
 				value->content.value = WString::Unmanaged(L"Request");
 				break;
-			case ProtocolSemantic::Response:
+			case ChannelPackageSemantic::Response:
 				value->content.value = WString::Unmanaged(L"Response");
 				break;
-			case ProtocolSemantic::Event:
+			case ChannelPackageSemantic::Event:
 				value->content.value = WString::Unmanaged(L"Event");
 				break;
 			default:
@@ -66,7 +66,7 @@ Metadata
 		}
 	}
 
-	void JsonChannelUnpack(Ptr<glr::json::JsonObject> package, ProtocolSemantic& semantic, vint& id, WString& name, Ptr<glr::json::JsonNode>& arguments)
+	void JsonChannelUnpack(Ptr<glr::json::JsonObject> package, ChannelPackageSemantic& semantic, vint& id, WString& name, Ptr<glr::json::JsonNode>& arguments)
 	{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::channeling::JsonChannelPack(Ptr<JsonObject>, ProtocolSemantic&, vint&, WString&, Ptr<JsonNode>&)#"
 
@@ -79,19 +79,19 @@ Metadata
 
 				if (value->content.value == L"Message")
 				{
-					semantic = ProtocolSemantic::Message;
+					semantic = ChannelPackageSemantic::Message;
 				}
 				else if (value->content.value == L"Request")
 				{
-					semantic = ProtocolSemantic::Request;
+					semantic = ChannelPackageSemantic::Request;
 				}
 				else if (value->content.value == L"Response")
 				{
-					semantic = ProtocolSemantic::Response;
+					semantic = ChannelPackageSemantic::Response;
 				}
 				else if (value->content.value == L"Event")
 				{
-					semantic = ProtocolSemantic::Event;
+					semantic = ChannelPackageSemantic::Event;
 				}
 			}
 			else if (field->name.value == L"id")
@@ -116,6 +116,12 @@ Metadata
 #undef ERROR_MESSAGE_PREFIX
 	}
 
+	void ChannelPackageSemanticUnpack(Ptr<glr::json::JsonObject> package, ChannelPackageSemantic& semantic, vint& id, WString& name)
+	{
+		Ptr<glr::json::JsonNode> arguments;
+		JsonChannelUnpack(package, semantic, id, name, arguments);
+	}
+
 /***********************************************************************
 GuiRemoteProtocolFromJsonChannel
 ***********************************************************************/
@@ -124,7 +130,7 @@ GuiRemoteProtocolFromJsonChannel
 	{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::channeling::GuiRemoteProtocolFromJsonChannel::OnReceive(const Ptr<JsonNode>&)#"
 
-		ProtocolSemantic semantic = ProtocolSemantic::Unknown;
+		auto semantic = ChannelPackageSemantic::Unknown;
 		vint id = -1;
 		WString name;
 		Ptr<glr::json::JsonNode> jsonArguments;
@@ -145,7 +151,7 @@ GuiRemoteProtocolFromJsonChannel
 		} else\
 
 #define EVENT_HANDLER(NAME, REQUEST, REQTAG, ...)	EVENT_ ## REQTAG(NAME, REQUEST)
-		if (semantic == ProtocolSemantic::Event)
+		if (semantic == ChannelPackageSemantic::Event)
 		{
 			GACUI_REMOTEPROTOCOL_EVENTS(EVENT_HANDLER)
 			{
@@ -167,7 +173,7 @@ GuiRemoteProtocolFromJsonChannel
 		} else\
 
 #define MESSAGE_HANDLER(NAME, REQUEST, RESPONSE, REQTAG, RESTAG, ...)	MESSAGE_ ## RESTAG(NAME, RESPONSE)
-		if (semantic == ProtocolSemantic::Response)
+		if (semantic == ChannelPackageSemantic::Response)
 		{
 			GACUI_REMOTEPROTOCOL_MESSAGES(MESSAGE_HANDLER)
 			{
@@ -186,7 +192,7 @@ GuiRemoteProtocolFromJsonChannel
 	void GuiRemoteProtocolFromJsonChannel::Request ## NAME()\
 	{\
 		Ptr<glr::json::JsonObject> package;\
-		JsonChannelPack(ProtocolSemantic::Message, -1, WString::Unmanaged(L ## #NAME), {}, package);\
+		JsonChannelPack(ChannelPackageSemantic::Message, -1, WString::Unmanaged(L ## #NAME), {}, package);\
 		channel->Write(package);\
 	}\
 
@@ -194,7 +200,7 @@ GuiRemoteProtocolFromJsonChannel
 	void GuiRemoteProtocolFromJsonChannel::Request ## NAME(vint id)\
 	{\
 		Ptr<glr::json::JsonObject> package;\
-		JsonChannelPack(ProtocolSemantic::Request, id, WString::Unmanaged(L ## #NAME), {}, package);\
+		JsonChannelPack(ChannelPackageSemantic::Request, id, WString::Unmanaged(L ## #NAME), {}, package);\
 		channel->Write(package);\
 	}\
 
@@ -202,7 +208,7 @@ GuiRemoteProtocolFromJsonChannel
 	void GuiRemoteProtocolFromJsonChannel::Request ## NAME(const REQUEST& arguments)\
 	{\
 		Ptr<glr::json::JsonObject> package;\
-		JsonChannelPack(ProtocolSemantic::Message, -1, WString::Unmanaged(L ## #NAME), ConvertCustomTypeToJson(arguments), package);\
+		JsonChannelPack(ChannelPackageSemantic::Message, -1, WString::Unmanaged(L ## #NAME), ConvertCustomTypeToJson(arguments), package);\
 		channel->Write(package);\
 	}\
 
@@ -210,7 +216,7 @@ GuiRemoteProtocolFromJsonChannel
 	void GuiRemoteProtocolFromJsonChannel::Request ## NAME(vint id, const REQUEST& arguments)\
 	{\
 		Ptr<glr::json::JsonObject> package;\
-		JsonChannelPack(ProtocolSemantic::Request, id, WString::Unmanaged(L ## #NAME), ConvertCustomTypeToJson(arguments), package);\
+		JsonChannelPack(ChannelPackageSemantic::Request, id, WString::Unmanaged(L ## #NAME), ConvertCustomTypeToJson(arguments), package);\
 		channel->Write(package);\
 	}\
 
@@ -260,7 +266,7 @@ GuiRemoteJsonChannelFromProtocol
 	void GuiRemoteJsonChannelFromProtocol::On ## NAME()\
 	{\
 		Ptr<glr::json::JsonObject> package;\
-		JsonChannelPack(ProtocolSemantic::Event, -1, WString::Unmanaged(L ## #NAME), {}, package);\
+		JsonChannelPack(ChannelPackageSemantic::Event, -1, WString::Unmanaged(L ## #NAME), {}, package);\
 		receiver->OnReceive(package);\
 	}\
 
@@ -268,7 +274,7 @@ GuiRemoteJsonChannelFromProtocol
 	void GuiRemoteJsonChannelFromProtocol::On ## NAME(const REQUEST& arguments)\
 	{\
 		Ptr<glr::json::JsonObject> package;\
-		JsonChannelPack(ProtocolSemantic::Event, -1, WString::Unmanaged(L ## #NAME), ConvertCustomTypeToJson(arguments), package);\
+		JsonChannelPack(ChannelPackageSemantic::Event, -1, WString::Unmanaged(L ## #NAME), ConvertCustomTypeToJson(arguments), package);\
 		receiver->OnReceive(package);\
 	}\
 
@@ -283,7 +289,7 @@ GuiRemoteJsonChannelFromProtocol
 	void GuiRemoteJsonChannelFromProtocol::Respond ## NAME(vint id, const RESPONSE& arguments)\
 	{\
 		Ptr<glr::json::JsonObject> package;\
-		JsonChannelPack(ProtocolSemantic::Response, id, WString::Unmanaged(L ## #NAME), ConvertCustomTypeToJson(arguments), package);\
+		JsonChannelPack(ChannelPackageSemantic::Response, id, WString::Unmanaged(L ## #NAME), ConvertCustomTypeToJson(arguments), package);\
 		receiver->OnReceive(package);\
 	}\
 
@@ -317,7 +323,7 @@ GuiRemoteJsonChannelFromProtocol
 	{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::channeling::GuiRemoteJsonChannelFromProtocol::Write(const Ptr<JsonNode>&)#"
 
-		ProtocolSemantic semantic = ProtocolSemantic::Unknown;
+		auto semantic = ChannelPackageSemantic::Unknown;
 		vint id = -1;
 		WString name;
 		Ptr<glr::json::JsonNode> jsonArguments;

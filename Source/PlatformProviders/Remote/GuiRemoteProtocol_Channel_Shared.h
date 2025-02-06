@@ -4,7 +4,7 @@ Developer: Zihan Chen(vczh)
 GacUI::Remote Window
 
 Interfaces:
-  IGuiRemoteProtocol
+  IGuiRemoteProtocolChannel<T>
 
 ***********************************************************************/
 

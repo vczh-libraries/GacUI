@@ -4,14 +4,14 @@ Developer: Zihan Chen(vczh)
 GacUI::Remote Window
 
 Interfaces:
-  IGuiRemoteProtocol
+  IGuiRemoteProtocolChannel<T>
 
 ***********************************************************************/
 
 #ifndef VCZH_PRESENTATION_GUIREMOTECONTROLLER_GUIREMOTEPROTOCOL_CHANNEL_JSON
 #define VCZH_PRESENTATION_GUIREMOTECONTROLLER_GUIREMOTEPROTOCOL_CHANNEL_JSON
 
-#include "GuiRemoteProtocol_Channel_Shared.h"
+#include "GuiRemoteProtocol_Channel_Async.h"
 
 namespace vl::presentation::remoteprotocol::channeling
 {
@@ -19,20 +19,10 @@ namespace vl::presentation::remoteprotocol::channeling
 	using IJsonChannel = IGuiRemoteProtocolChannel<Ptr<glr::json::JsonObject>>;
 
 /***********************************************************************
-Metadata
+ChannelPackageSemantic
 ***********************************************************************/
 
-	enum class ProtocolSemantic
-	{
-		Message,
-		Request,
-		Response,
-		Event,
-		Unknown,
-	};
-
-	extern void JsonChannelPack(ProtocolSemantic semantic, vint id, const WString& name, Ptr<glr::json::JsonNode> arguments, Ptr<glr::json::JsonObject>& package);
-	extern void JsonChannelUnpack(Ptr<glr::json::JsonObject> package, ProtocolSemantic& semantic, vint& id, WString& name, Ptr<glr::json::JsonNode>& arguments);
+	extern void				ChannelPackageSemanticUnpack(Ptr<glr::json::JsonObject> package, ChannelPackageSemantic& semantic, vint& id, WString& name);
 
 /***********************************************************************
 GuiRemoteProtocolFromJsonChannel
