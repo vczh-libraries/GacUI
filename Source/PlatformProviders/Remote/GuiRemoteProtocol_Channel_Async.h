@@ -58,9 +58,44 @@ void ChannelPackageSemanticUnpack(
 				))>,
 			"ChannelPackageSemanticUnpack must be defined for this TPackage"
 			);
+
+	public:
+
+		using TChannelThreadProc = Func<void()>;
+		using TUIThreadProc = Func<void()>;
+		using TStartingProc = Func<void(TChannelThreadProc, TUIThreadProc)>;
+		using TStoppingProc = Func<void()>;
+		using TUIMainProc = Func<void(GuiRemoteProtocolAsyncChannelSerializer<TPackage>*)>;
+
 	protected:
 		IGuiRemoteProtocolChannel<TPackage>*						channel = nullptr;
 		IGuiRemoteProtocolChannelReceiver<TPackage>*				receiver = nullptr;
+		TStartingProc												proc_starting;
+		TStoppingProc												proc_stopping;
+		TUIMainProc													proc_ui;
+		volatile bool												started = false;
+		volatile bool												stopped = false;
+
+		void ChannelThreadProc()
+		{
+			CHECK_FAIL(L"Not Implemented!");
+			// TODO: after both of thread procs ended, call OnStopped.
+		}
+
+		void UIThreadProc()
+		{
+			CHECK_FAIL(L"Not Implemented!");
+			// TODO: after both of thread procs ended, call OnStopped.
+		}
+
+		void OnStopped()
+		{
+			proc_starting = {};
+			proc_stopping = {};
+			proc_ui = {};
+		}
+
+	protected:
 
 		void OnReceive(const TPackage& package) override
 		{
@@ -75,12 +110,6 @@ void ChannelPackageSemanticUnpack(
 		}
 
 	public:
-
-		using TChannelThreadProc = Func<void()>;
-		using TUIThreadProc = Func<void()>;
-		using TStartingProc = Func<void(TChannelThreadProc, TUIThreadProc)>;
-		using TStoppingProc = Func<void()>;
-		using TUIMainProc = Func<void(GuiRemoteProtocolAsyncChannelSerializer<TPackage>*)>;
 
 		/// <summary>
 		/// Start the async channel.
@@ -109,12 +138,38 @@ void ChannelPackageSemanticUnpack(
 			TStoppingProc stoppingProc
 		)
 		{
-			CHECK_FAIL(L"Not Implemented!");
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::channeling::GuiRemoteProtocolAsyncChannelSerializer<TPackage>::Start(...)#"
+			CHECK_ERROR(!started, ERROR_MESSAGE_PREFIX L"This function can only be called once.");
+
+			channel = _channel;
+			proc_starting = startingProc;
+			proc_stopping = stoppingProc;
+			proc_ui = uiProc;
+
+			TChannelThreadProc thread_channel = [this]()
+			{
+				ChannelThreadProc();
+			};
+
+			TUIThreadProc thread_ui = [this]()
+			{
+				UIThreadProc();
+			};
+
+			startingProc(thread_channel, thread_ui);
+			started = true;
+
+#undef ERROR_MESSAGE_PREFIX
+		}
+
+		bool IsStarted()
+		{
+			return started && !stopped;
 		}
 
 		bool IsStopped()
 		{
-			CHECK_FAIL(L"Not Implemented!");
+			return stopped;
 		}
 
 		void WaitForStopped()
@@ -123,6 +178,7 @@ void ChannelPackageSemanticUnpack(
 		}
 
 	public:
+
 		GuiRemoteProtocolAsyncChannelSerializer()
 		{
 		}
