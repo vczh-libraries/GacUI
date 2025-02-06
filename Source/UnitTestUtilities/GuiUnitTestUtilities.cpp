@@ -297,6 +297,9 @@ void GacUIUnitTest_Start(const WString& appName, Nullable<UnitTestScreenConfig> 
 	// Data Processing in Core
 	channeling::GuiRemoteUtfStringChannelSerializer<wchar_t, char8_t> channelUtf8Serializer(&channelUtf8Deserializer);
 	channeling::GuiRemoteJsonChannelStringSerializer channelJsonSerializer(&channelUtf8Serializer, jsonParser);
+
+	// Boundary between threads
+
 	channeling::GuiRemoteProtocolFromJsonChannel channelSender(&channelJsonSerializer);
 
 	// Core
