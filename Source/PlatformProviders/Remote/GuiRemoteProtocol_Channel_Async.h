@@ -76,11 +76,38 @@ void ChannelPackageSemanticUnpack(
 
 	public:
 
-		using TUIMainProc = Func<void()>;
-		using TStartingProc = Func<void(TUIMainProc uiMainProc)>;
+		using TChannelThreadProc = Func<void()>;
+		using TUIThreadProc = Func<void()>;
+		using TStartingProc = Func<void(TChannelThreadProc, TUIThreadProc)>;
 		using TStoppingProc = Func<void()>;
+		using TUIMainProc = Func<void(GuiRemoteProtocolAsyncChannelSerializer<TPackage>*)>;
 
-		void Start(TStartingProc startingProc, TStoppingProc stoppingProc)
+		/// <summary>
+		/// Start the async channel.
+		/// </summary>
+		/// <param name="_channel">
+		/// A channel object that runs in the <see cref="TChannelThreadProc"/> argument offered to startingProc.
+		/// </param>
+		/// <param name="uiProc">
+		/// A callback that runs in the <see cref="TUIThreadProc"/> argument offered to startingProc, which is supposed to call <see cref="SetupRemoteNativeController"/>.
+		/// An example of argument to <see cref="SetupRemoteNativeController"/> would be
+		///   <see cref="GuiRemoteProtocolDomDiffConverter"/> over
+		///   <see cref="repeatfiltering::GuiRemoteProtocolFilter"/> over
+		///   <see cref="GuiRemoteProtocolFromJsonChannel"/> over
+		///   <see cref="GuiRemoteProtocolAsyncChannelSerializer`1/> (which is an argument to uiProc)
+		/// </param>
+		/// <param name="startingProc">
+		/// A callback executed in the current thread, that responsible to start two threads for arguments <see cref="TChannelThreadProc"/> and <see cref="TUIThreadProc"/>.
+		/// </param>
+		/// <param name="stoppingProc">
+		/// A callback executed in the current thread, that responsible to clean up after arguments to startingProc are all ended.
+		/// </param>
+		void Start(
+			IGuiRemoteProtocolChannel<TPackage>* _channel,
+			TUIMainProc uiProc,
+			TStartingProc startingProc,
+			TStoppingProc stoppingProc
+		)
 		{
 			CHECK_FAIL(L"Not Implemented!");
 		}
@@ -96,8 +123,7 @@ void ChannelPackageSemanticUnpack(
 		}
 
 	public:
-		GuiRemoteProtocolAsyncChannelSerializer(IGuiRemoteProtocolChannel<TPackage>* _channel)
-			: channel(_channel)
+		GuiRemoteProtocolAsyncChannelSerializer()
 		{
 		}
 
