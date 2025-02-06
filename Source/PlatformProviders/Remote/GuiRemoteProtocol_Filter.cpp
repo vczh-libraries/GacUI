@@ -338,8 +338,8 @@ GuiRemoteProtocolFilter
 		CHECK_ERROR(!eventCombinator.submitting, ERROR_MESSAGE_PREFIX L"This function is not allowed to be called recursively.");
 		eventCombinator.submitting = true;
 		ProcessRequests();
-		eventCombinator.ProcessResponses();
 		GuiRemoteProtocolCombinator<GuiRemoteEventFilter>::Submit();
+		eventCombinator.ProcessResponses();
 		eventCombinator.submitting = false;
 		eventCombinator.ProcessEvents();
 #undef ERROR_MESSAGE_PREFIX
