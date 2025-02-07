@@ -28,6 +28,7 @@
   - Change `GUI_PLUGIN_NAME` to `GUI_PLUGIN_CONTROLLER_(UN)RELATED`.
   - Remove the two parameters from `IGuiPlugin`, the macro above already specified it clear enough.
   - Unrelated plugins are not allowed to depend on related plugins.
+- TODO in `GuiRemoteProtocolAsyncChannelSerializer<TPackage>::ChannelThreadProc`.
 
 ## Known Issues (Unit Test)
 
@@ -89,6 +90,7 @@
   - [ ] Binary channel
   - [x] Json to `ObjectString<T>` channel conversion
   - [ ] Sync to Async channel conversion
+    - [ ] Move `TPackage` unrelated members to a base class and move into `GuiRemoteProtocol_Channel_Async.cpp`.
 - Remote protocol redirection back to native rendering:
   - In the test project, C++ side will expose the remote protocol via dll.
     - Use string first, and then change to binary.

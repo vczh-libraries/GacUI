@@ -29,6 +29,13 @@ Metadata
 		Unknown,
 	};
 
+	enum class ChannelAsyncState
+	{
+		Ready,
+		Running,
+		Stopped,
+	};
+
 /***********************************************************************
 Async
   A certain package type could run in async mode
@@ -66,6 +73,7 @@ void ChannelPackageSemanticUnpack(
 		using TStartingProc = Func<void(TChannelThreadProc, TUIThreadProc)>;
 		using TStoppingProc = Func<void()>;
 		using TUIMainProc = Func<void(GuiRemoteProtocolAsyncChannelSerializer<TPackage>*)>;
+		using TCallbackProc = Func<void()>;
 
 	protected:
 		IGuiRemoteProtocolChannel<TPackage>*						channel = nullptr;
@@ -76,16 +84,27 @@ void ChannelPackageSemanticUnpack(
 		volatile bool												started = false;
 		volatile bool												stopped = false;
 
-		void ChannelThreadProc()
-		{
-			CHECK_FAIL(L"Not Implemented!");
-			// TODO: after both of thread procs ended, call OnStopped.
-		}
-
 		void UIThreadProc()
 		{
 			CHECK_FAIL(L"Not Implemented!");
-			// TODO: after both of thread procs ended, call OnStopped.
+			// Signal and wait for ChannelThreadProc to finish
+			// All remaining queued callbacks should be executed
+			// Call OnStopped after stopped.
+		}
+
+		void ChannelThreadProc()
+		{
+			// TODO:
+			//   The current version always start a channel thread
+			//   So that it does not matter whether the underlying IO is sync or asyc
+			//   But async IO does not need a channel thread
+			//   Refactor and optimize the channel thread to be optional in the future
+
+			// All members of "_channel" argument to Start is called in this thread
+			// So that the implementation does not need to care about thread safety
+			CHECK_FAIL(L"Not Implemented!");
+			// The thread stopped after receiving a signal from UIThreadProc
+			// All remaining queued callbacks should be executed
 		}
 
 		void OnStopped()
@@ -99,6 +118,7 @@ void ChannelPackageSemanticUnpack(
 
 		void OnReceive(const TPackage& package) override
 		{
+			// Called from any thread
 			CHECK_FAIL(L"Not Implemented!");
 		}
 
@@ -106,7 +126,36 @@ void ChannelPackageSemanticUnpack(
 
 		void Write(const TPackage& package) override
 		{
+			// Called from UI thread
 			CHECK_FAIL(L"Not Implemented!");
+		}
+
+		void Submit() override
+		{
+			// Called from UI thread
+			// Block until the response of the top request is received
+			// Re-entrance recursively is possible
+			CHECK_FAIL(L"Not Implemented!");
+		}
+
+		void ProcessRemoteEvents() override
+		{
+			// Called from UI thread
+			CHECK_FAIL(L"Not Implemented!");
+		}
+
+		void QueueToChannelThread(TCallbackProc callback)
+		{
+			// Called from any thread
+			// The callback will be executed in ChannelThreadProc
+			// Throw when the thread has stopped
+		}
+
+		void QueueToUIThread(TCallbackProc callback)
+		{
+			// Called from any thread
+			// The callback will be executed in ProcessRemoteEvents
+			// Throw when the thread has stopped
 		}
 
 	public:
@@ -162,14 +211,23 @@ void ChannelPackageSemanticUnpack(
 #undef ERROR_MESSAGE_PREFIX
 		}
 
-		bool IsStarted()
+		ChannelAsyncState GetAsyncStateUnsafe()
 		{
-			return started && !stopped;
-		}
-
-		bool IsStopped()
-		{
-			return stopped;
+			if (started)
+			{
+				if (stopped)
+				{
+					return ChannelAsyncState::Stopped;
+				}
+				else
+				{
+					return ChannelAsyncState::Running;
+				}
+			}
+			else
+			{
+				return ChannelAsyncState::Ready;
+			}
 		}
 
 		void WaitForStopped()
@@ -185,27 +243,20 @@ void ChannelPackageSemanticUnpack(
 
 		void Initialize(IGuiRemoteProtocolChannelReceiver<TPackage>* _receiver) override
 		{
+			// Called from UI thread
 			receiver = _receiver;
 			channel->Initialize(this);
 		}
 
 		IGuiRemoteProtocolChannelReceiver<TPackage>* GetReceiver() override
 		{
+			// Called from UI thread
 			return receiver;
 		}
 
 		WString GetExecutablePath() override
 		{
-			CHECK_FAIL(L"Not Implemented!");
-		}
-
-		void Submit() override
-		{
-			CHECK_FAIL(L"Not Implemented!");
-		}
-
-		void ProcessRemoteEvents() override
-		{
+			// Called from UI thread
 			CHECK_FAIL(L"Not Implemented!");
 		}
 	};
