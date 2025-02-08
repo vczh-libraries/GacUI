@@ -8,15 +8,20 @@ namespace vl::presentation::remoteprotocol::channeling
 GuiRemoteProtocolAsyncChannelSerializerBase
 ***********************************************************************/
 
-	void GuiRemoteProtocolAsyncChannelSerializerBase::QueueTask(SpinLock& lock, collections::List<TTaskProc>& tasks, TTaskProc task)
+	void GuiRemoteProtocolAsyncChannelSerializerBase::QueueTask(SpinLock& lock, collections::List<TTaskProc>& tasks, TTaskProc task, EventObject* signalAfterQueue)
 	{
 		SPIN_LOCK(lock)
 		{
 			tasks.Add(task);
 		}
+
+		if (signalAfterQueue)
+		{
+			signalAfterQueue->Signal();
+		}
 	}
 
-	void GuiRemoteProtocolAsyncChannelSerializerBase::QueueTaskAndWait(SpinLock& lock, collections::List<TTaskProc>& tasks, TTaskProc task)
+	void GuiRemoteProtocolAsyncChannelSerializerBase::QueueTaskAndWait(SpinLock& lock, collections::List<TTaskProc>& tasks, TTaskProc task, EventObject* signalAfterQueue)
 	{
 		auto taskEvent = Ptr(new vl::EventObject);
 		taskEvent->CreateAutoUnsignal(false);
@@ -26,7 +31,7 @@ GuiRemoteProtocolAsyncChannelSerializerBase
 			taskEvent->Signal();
 		};
 
-		QueueTask(lock, tasks, taskWithEvent);
+		QueueTask(lock, tasks, taskWithEvent, signalAfterQueue);
 		taskEvent->Wait();
 	}
 
@@ -66,23 +71,23 @@ GuiRemoteProtocolAsyncChannelSerializerBase
 	{
 	}
 
-	void GuiRemoteProtocolAsyncChannelSerializerBase::QueueToChannelThread(TTaskProc task)
+	void GuiRemoteProtocolAsyncChannelSerializerBase::QueueToChannelThread(TTaskProc task, EventObject* signalAfterQueue)
 	{
-		QueueTask(channelThreadLock, channelThreadTasks, task);
+		QueueTask(channelThreadLock, channelThreadTasks, task, signalAfterQueue);
 	}
 
-	void GuiRemoteProtocolAsyncChannelSerializerBase::QueueToChannelThreadAndWait(TTaskProc task)
+	void GuiRemoteProtocolAsyncChannelSerializerBase::QueueToChannelThreadAndWait(TTaskProc task, EventObject* signalAfterQueue)
 	{
-		QueueTaskAndWait(channelThreadLock, channelThreadTasks, task);
+		QueueTaskAndWait(channelThreadLock, channelThreadTasks, task, signalAfterQueue);
 	}
 
-	void GuiRemoteProtocolAsyncChannelSerializerBase::QueueToUIThread(TTaskProc task)
+	void GuiRemoteProtocolAsyncChannelSerializerBase::QueueToUIThread(TTaskProc task, EventObject* signalAfterQueue)
 	{
-		QueueTask(uiThreadLock, uiThreadTasks, task);
+		QueueTask(uiThreadLock, uiThreadTasks, task, signalAfterQueue);
 	}
 
-	void GuiRemoteProtocolAsyncChannelSerializerBase::QueueToUIThreadAndWait(TTaskProc task)
+	void GuiRemoteProtocolAsyncChannelSerializerBase::QueueToUIThreadAndWait(TTaskProc task, EventObject* signalAfterQueue)
 	{
-		QueueTaskAndWait(uiThreadLock, uiThreadTasks, task);
+		QueueTaskAndWait(uiThreadLock, uiThreadTasks, task, signalAfterQueue);
 	}
 }

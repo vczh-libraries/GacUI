@@ -62,22 +62,22 @@ void ChannelPackageSemanticUnpack(
 		SpinLock													uiThreadLock;
 
 	protected:
-		void			QueueTask(SpinLock& lock, collections::List<TTaskProc>& tasks, TTaskProc task);
-		void			QueueTaskAndWait(SpinLock& lock, collections::List<TTaskProc>& tasks, TTaskProc task);
+		void			QueueTask(SpinLock& lock, collections::List<TTaskProc>& tasks, TTaskProc task, EventObject* signalAfterQueue);
+		void			QueueTaskAndWait(SpinLock& lock, collections::List<TTaskProc>& tasks, TTaskProc task, EventObject* signalAfterQueue);
 		void			FetchTasks(SpinLock& lock, collections::List<TTaskProc>& tasks, collections::List<TTaskProc>& results);
 		void			FetchAndExecuteTasks(SpinLock& lock, collections::List<TTaskProc>& tasks);
 
 		void			FetchAndExecuteChannelTasks();
 		void			FetchAndExecuteUITasks();
 
+		void			QueueToChannelThread(TTaskProc task, EventObject* signalAfterQueue);
+		void			QueueToChannelThreadAndWait(TTaskProc task, EventObject* signalAfterQueue);
+		void			QueueToUIThread(TTaskProc task, EventObject* signalAfterQueue);
+		void			QueueToUIThreadAndWait(TTaskProc task, EventObject* signalAfterQueue);
+
 	public:
 		GuiRemoteProtocolAsyncChannelSerializerBase();
 		~GuiRemoteProtocolAsyncChannelSerializerBase();
-
-		void			QueueToChannelThread(TTaskProc task);
-		void			QueueToChannelThreadAndWait(TTaskProc task);
-		void			QueueToUIThread(TTaskProc task);
-		void			QueueToUIThreadAndWait(TTaskProc task);
 	};
 
 	template<typename TPackage>
@@ -114,6 +114,7 @@ void ChannelPackageSemanticUnpack(
 		volatile bool												stopped = false;
 		Nullable<WString>											executablePath; 
 
+		EventObject													eventChannelTaskQueued;
 		EventObject													eventChannelThreadStopped;
 		EventObject													eventUIThreadStopped;
 
@@ -124,6 +125,7 @@ void ChannelPackageSemanticUnpack(
 
 			// Signal and wait for ChannelThreadProc to finish
 			stopping = true;
+			eventChannelTaskQueued.Signal();
 			eventChannelThreadStopped.Wait();
 
 			// All remaining queued callbacks should be executed
@@ -140,9 +142,16 @@ void ChannelPackageSemanticUnpack(
 
 			// All members of "_channel" argument to Start is called in this thread
 			// So that the implementation does not need to care about thread safety
-			CHECK_FAIL(L"Not Implemented!");
+
 			// The thread stopped after receiving a signal from UIThreadProc
+			while (!stopping)
+			{
+				eventChannelTaskQueued.Wait();
+				FetchAndExecuteChannelTasks();
+			}
+
 			// All remaining queued callbacks should be executed
+			FetchAndExecuteChannelTasks();
 		}
 
 	protected:
@@ -150,6 +159,8 @@ void ChannelPackageSemanticUnpack(
 		void OnReceive(const TPackage& package) override
 		{
 			// Called from any thread
+			// If it is a response, unblock Submit()
+			// If it is an event, send to ProcessRemoteEvents()
 			CHECK_FAIL(L"Not Implemented!");
 		}
 
@@ -173,6 +184,9 @@ void ChannelPackageSemanticUnpack(
 		{
 			// Called from UI thread
 			FetchAndExecuteUITasks();
+
+			// Process of queued events from channel
+			CHECK_FAIL(L"Not Implemented!");
 		}
 
 	public:
@@ -216,6 +230,7 @@ void ChannelPackageSemanticUnpack(
 				UIThreadProc();
 			};
 
+			eventChannelTaskQueued.CreateAutoUnsignal(false);
 			eventChannelThreadStopped.CreateManualUnsignal(false);
 			eventUIThreadStopped.CreateManualUnsignal(false);
 			startingProc(thread_channel, thread_ui);
@@ -257,10 +272,10 @@ void ChannelPackageSemanticUnpack(
 		{
 			// Called from UI thread
 			receiver = _receiver;
-			QueueTaskAndWait(channelThreadLock, channelThreadTasks, [this]()
+			QueueToChannelThreadAndWait([this]()
 			{
 				channel->Initialize(this);
-			});
+			}, &eventChannelTaskQueued);
 		}
 
 		IGuiRemoteProtocolChannelReceiver<TPackage>* GetReceiver() override
@@ -274,10 +289,10 @@ void ChannelPackageSemanticUnpack(
 			// Called from UI thread
 			if (!executablePath)
 			{
-				QueueTaskAndWait(channelThreadLock, channelThreadTasks, [this]()
+				QueueToChannelThreadAndWait([this]()
 				{
 					executablePath = channel->GetExecutablePath();
-				});
+				}, &eventChannelTaskQueued);
 			}
 			return executablePath.Value();
 		}
