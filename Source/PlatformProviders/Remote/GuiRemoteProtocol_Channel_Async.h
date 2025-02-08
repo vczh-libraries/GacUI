@@ -50,9 +50,39 @@ void ChannelPackageSemanticUnpack(
   );
 ***********************************************************************/
 
+	class GuiRemoteProtocolAsyncChannelSerializerBase : public Object
+	{
+	public:
+		using TTaskProc = Func<void()>;
+
+	private:
+		collections::List<TTaskProc>								channelThreadTasks;
+		SpinLock													channelThreadLock;
+		collections::List<TTaskProc>								uiThreadTasks;
+		SpinLock													uiThreadLock;
+
+	protected:
+		void			QueueTask(SpinLock& lock, collections::List<TTaskProc>& tasks, TTaskProc task);
+		void			QueueTaskAndWait(SpinLock& lock, collections::List<TTaskProc>& tasks, TTaskProc task);
+		void			FetchTasks(SpinLock& lock, collections::List<TTaskProc>& tasks, collections::List<TTaskProc>& results);
+		void			FetchAndExecuteTasks(SpinLock& lock, collections::List<TTaskProc>& tasks);
+
+		void			FetchAndExecuteChannelTasks();
+		void			FetchAndExecuteUITasks();
+
+	public:
+		GuiRemoteProtocolAsyncChannelSerializerBase();
+		~GuiRemoteProtocolAsyncChannelSerializerBase();
+
+		void			QueueToChannelThread(TTaskProc task);
+		void			QueueToChannelThreadAndWait(TTaskProc task);
+		void			QueueToUIThread(TTaskProc task);
+		void			QueueToUIThreadAndWait(TTaskProc task);
+	};
+
 	template<typename TPackage>
 	class GuiRemoteProtocolAsyncChannelSerializer
-		: public Object
+		: public GuiRemoteProtocolAsyncChannelSerializerBase
 		, public virtual IGuiRemoteProtocolChannel<TPackage>
 		, protected virtual IGuiRemoteProtocolChannelReceiver<TPackage>
 	{
@@ -67,29 +97,37 @@ void ChannelPackageSemanticUnpack(
 			);
 
 	public:
-
 		using TChannelThreadProc = Func<void()>;
 		using TUIThreadProc = Func<void()>;
 		using TStartingProc = Func<void(TChannelThreadProc, TUIThreadProc)>;
 		using TStoppingProc = Func<void()>;
 		using TUIMainProc = Func<void(GuiRemoteProtocolAsyncChannelSerializer<TPackage>*)>;
-		using TCallbackProc = Func<void()>;
 
 	protected:
+
 		IGuiRemoteProtocolChannel<TPackage>*						channel = nullptr;
 		IGuiRemoteProtocolChannelReceiver<TPackage>*				receiver = nullptr;
-		TStartingProc												proc_starting;
-		TStoppingProc												proc_stopping;
-		TUIMainProc													proc_ui;
+		TUIMainProc													uiMainProc;
+
 		volatile bool												started = false;
+		volatile bool												stopping = false;
 		volatile bool												stopped = false;
+		Nullable<WString>											executablePath; 
+
+		EventObject													eventChannelThreadStopped;
+		EventObject													eventUIThreadStopped;
 
 		void UIThreadProc()
 		{
-			CHECK_FAIL(L"Not Implemented!");
+			uiMainProc(this);
+			uiMainProc = {};
+
 			// Signal and wait for ChannelThreadProc to finish
+			stopping = true;
+			eventChannelThreadStopped.Wait();
+
 			// All remaining queued callbacks should be executed
-			// Call OnStopped after stopped.
+			FetchAndExecuteUITasks();
 		}
 
 		void ChannelThreadProc()
@@ -105,13 +143,6 @@ void ChannelPackageSemanticUnpack(
 			CHECK_FAIL(L"Not Implemented!");
 			// The thread stopped after receiving a signal from UIThreadProc
 			// All remaining queued callbacks should be executed
-		}
-
-		void OnStopped()
-		{
-			proc_starting = {};
-			proc_stopping = {};
-			proc_ui = {};
 		}
 
 	protected:
@@ -141,21 +172,7 @@ void ChannelPackageSemanticUnpack(
 		void ProcessRemoteEvents() override
 		{
 			// Called from UI thread
-			CHECK_FAIL(L"Not Implemented!");
-		}
-
-		void QueueToChannelThread(TCallbackProc callback)
-		{
-			// Called from any thread
-			// The callback will be executed in ChannelThreadProc
-			// Throw when the thread has stopped
-		}
-
-		void QueueToUIThread(TCallbackProc callback)
-		{
-			// Called from any thread
-			// The callback will be executed in ProcessRemoteEvents
-			// Throw when the thread has stopped
+			FetchAndExecuteUITasks();
 		}
 
 	public:
@@ -166,7 +183,7 @@ void ChannelPackageSemanticUnpack(
 		/// <param name="_channel">
 		/// A channel object that runs in the <see cref="TChannelThreadProc"/> argument offered to startingProc.
 		/// </param>
-		/// <param name="uiProc">
+		/// <param name="_uiMainProc">
 		/// A callback that runs in the <see cref="TUIThreadProc"/> argument offered to startingProc, which is supposed to call <see cref="SetupRemoteNativeController"/>.
 		/// An example of argument to <see cref="SetupRemoteNativeController"/> would be
 		///   <see cref="GuiRemoteProtocolDomDiffConverter"/> over
@@ -177,23 +194,17 @@ void ChannelPackageSemanticUnpack(
 		/// <param name="startingProc">
 		/// A callback executed in the current thread, that responsible to start two threads for arguments <see cref="TChannelThreadProc"/> and <see cref="TUIThreadProc"/>.
 		/// </param>
-		/// <param name="stoppingProc">
-		/// A callback executed in the current thread, that responsible to clean up after arguments to startingProc are all ended.
-		/// </param>
 		void Start(
 			IGuiRemoteProtocolChannel<TPackage>* _channel,
-			TUIMainProc uiProc,
-			TStartingProc startingProc,
-			TStoppingProc stoppingProc
+			TUIMainProc _uiMainProc,
+			TStartingProc startingProc
 		)
 		{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::channeling::GuiRemoteProtocolAsyncChannelSerializer<TPackage>::Start(...)#"
 			CHECK_ERROR(!started, ERROR_MESSAGE_PREFIX L"This function can only be called once.");
 
 			channel = _channel;
-			proc_starting = startingProc;
-			proc_stopping = stoppingProc;
-			proc_ui = uiProc;
+			uiMainProc = _uiMainProc;
 
 			TChannelThreadProc thread_channel = [this]()
 			{
@@ -205,6 +216,8 @@ void ChannelPackageSemanticUnpack(
 				UIThreadProc();
 			};
 
+			eventChannelThreadStopped.CreateManualUnsignal(false);
+			eventUIThreadStopped.CreateManualUnsignal(false);
 			startingProc(thread_channel, thread_ui);
 			started = true;
 
@@ -232,20 +245,22 @@ void ChannelPackageSemanticUnpack(
 
 		void WaitForStopped()
 		{
-			CHECK_FAIL(L"Not Implemented!");
+			eventUIThreadStopped.Wait();
 		}
 
 	public:
 
-		GuiRemoteProtocolAsyncChannelSerializer()
-		{
-		}
+		GuiRemoteProtocolAsyncChannelSerializer() = default;
+		~GuiRemoteProtocolAsyncChannelSerializer() = default;
 
 		void Initialize(IGuiRemoteProtocolChannelReceiver<TPackage>* _receiver) override
 		{
 			// Called from UI thread
 			receiver = _receiver;
-			channel->Initialize(this);
+			QueueTaskAndWait(channelThreadLock, channelThreadTasks, [this]()
+			{
+				channel->Initialize(this);
+			});
 		}
 
 		IGuiRemoteProtocolChannelReceiver<TPackage>* GetReceiver() override
@@ -257,7 +272,14 @@ void ChannelPackageSemanticUnpack(
 		WString GetExecutablePath() override
 		{
 			// Called from UI thread
-			CHECK_FAIL(L"Not Implemented!");
+			if (!executablePath)
+			{
+				QueueTaskAndWait(channelThreadLock, channelThreadTasks, [this]()
+				{
+					executablePath = channel->GetExecutablePath();
+				});
+			}
+			return executablePath.Value();
 		}
 	};
 }

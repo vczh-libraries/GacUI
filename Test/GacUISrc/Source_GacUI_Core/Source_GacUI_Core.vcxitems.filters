@@ -225,6 +225,9 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Remote\GuiRemoteProtocol_Channel_Json.cpp">
       <Filter>PlatformProviders\Remote\IGuiRemoteProtocol\ProtocolChannels</Filter>
     </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Remote\GuiRemoteProtocol_Channel_Async.cpp">
+      <Filter>PlatformProviders\Remote\IGuiRemoteProtocol\ProtocolChannels</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiDocument.h">
