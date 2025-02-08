@@ -108,6 +108,7 @@ void ChannelPackageSemanticUnpack(
 		IGuiRemoteProtocolChannel<TPackage>*						channel = nullptr;
 		IGuiRemoteProtocolChannelReceiver<TPackage>*				receiver = nullptr;
 		TUIMainProc													uiMainProc;
+		collections::List<TPackage>									uiPendingPackages;
 
 		volatile bool												started = false;
 		volatile bool												stopping = false;
@@ -136,7 +137,7 @@ void ChannelPackageSemanticUnpack(
 		{
 			// TODO:
 			//   The current version always start a channel thread
-			//   So that it does not matter whether the underlying IO is sync or asyc
+			//   So that it does not matter whether the underlying IO is sync or async
 			//   But async IO does not need a channel thread
 			//   Refactor and optimize the channel thread to be optional in the future
 
@@ -158,7 +159,7 @@ void ChannelPackageSemanticUnpack(
 
 		void OnReceive(const TPackage& package) override
 		{
-			// Called from any thread
+			// Called from any thread, very likely the channel thread
 			// If it is a response, unblock Submit()
 			// If it is an event, send to ProcessRemoteEvents()
 			CHECK_FAIL(L"Not Implemented!");
@@ -169,12 +170,24 @@ void ChannelPackageSemanticUnpack(
 		void Write(const TPackage& package) override
 		{
 			// Called from UI thread
-			CHECK_FAIL(L"Not Implemented!");
+			uiPendingPackages.Add(package);
 		}
 
 		void Submit() override
 		{
+			// TODO: Assert if there is at most only one request
+			CHECK_FAIL(L"Not Implemented!");
+
 			// Called from UI thread
+			QueueToChannelThread([this, packages = std::move(uiPendingPackages)]()
+			{
+				for (auto&& package : packages)
+				{
+					channel->Write(package);
+				}
+				channel->Submit();
+			}, &eventChannelTaskQueued);
+
 			// Block until the response of the top request is received
 			// Re-entrance recursively is possible
 			CHECK_FAIL(L"Not Implemented!");
@@ -182,6 +195,11 @@ void ChannelPackageSemanticUnpack(
 
 		void ProcessRemoteEvents() override
 		{
+			QueueToChannelThread([this]()
+			{
+				channel->ProcessRemoteEvents();
+			}, &eventChannelTaskQueued);
+
 			// Called from UI thread
 			FetchAndExecuteUITasks();
 
