@@ -110,17 +110,22 @@ void ChannelPackageSemanticUnpack(
 		TUIMainProc													uiMainProc;
 		collections::List<TPackage>									uiPendingPackages;
 
-		SpinLock													lockPendingEvents;
-		collections::List<TPackage>									pendingEvents;
+		SpinLock													lockEvents;
+		collections::List<TPackage>									queuedEvents;
+
+		SpinLock													lockResponses;
+		EventObject													eventManualResponses;
+		collections::Dictionary<vint, TPackage>						queuedResponses;
+		collections::List<vint>										pendingRequests;
 
 		volatile bool												started = false;
 		volatile bool												stopping = false;
 		volatile bool												stopped = false;
 		Nullable<WString>											executablePath; 
 
-		EventObject													eventChannelTaskQueued;
-		EventObject													eventChannelThreadStopped;
-		EventObject													eventUIThreadStopped;
+		EventObject													eventAutoChannelTaskQueued;
+		EventObject													eventManualChannelThreadStopped;
+		EventObject													eventManualUIThreadStopped;
 
 		void UIThreadProc()
 		{
@@ -129,8 +134,8 @@ void ChannelPackageSemanticUnpack(
 
 			// Signal and wait for ChannelThreadProc to finish
 			stopping = true;
-			eventChannelTaskQueued.Signal();
-			eventChannelThreadStopped.Wait();
+			eventAutoChannelTaskQueued.Signal();
+			eventManualChannelThreadStopped.Wait();
 
 			// All remaining queued callbacks should be executed
 			FetchAndExecuteUITasks();
@@ -150,7 +155,7 @@ void ChannelPackageSemanticUnpack(
 			// The thread stopped after receiving a signal from UIThreadProc
 			while (!stopping)
 			{
-				eventChannelTaskQueued.Wait();
+				eventAutoChannelTaskQueued.Wait();
 				FetchAndExecuteChannelTasks();
 			}
 
@@ -171,22 +176,33 @@ void ChannelPackageSemanticUnpack(
 			vint id = -1;
 			WString name;
 			ChannelPackageSemanticUnpack(package, semantic, id, name);
+
 			switch (semantic)
 			{
 			case ChannelPackageSemantic::Event:
 				{
-					SPIN_LOCK(lockPendingEvents)
+					SPIN_LOCK(lockEvents)
 					{
-						pendingEvents.Add(package);
+						queuedEvents.Add(package);
 					}
 				}
 				break;
 			case ChannelPackageSemantic::Response:
-				CHECK_FAIL(L"Not Implemented!");
+				{
+					SPIN_LOCK(lockResponses)
+					{
+						queuedResponses.Add(id, package);
+						if (pendingRequests.Count() > 0 && pendingRequests[pendingRequests.Count() - 1] == id)
+						{
+							eventManualResponses.Signal();
+						}
+					}
+				}
 				break;
 			default:
 				CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Only responses and events are expected.");
 			}
+
 #undef ERROR_MESSAGE_PREFIX
 		}
 
@@ -211,7 +227,7 @@ void ChannelPackageSemanticUnpack(
 					channel->Write(package);
 				}
 				channel->Submit();
-			}, &eventChannelTaskQueued);
+			}, &eventAutoChannelTaskQueued);
 
 			// Block until the response of the top request is received
 			// Re-entrance recursively is possible
@@ -223,16 +239,16 @@ void ChannelPackageSemanticUnpack(
 			QueueToChannelThread([this]()
 			{
 				channel->ProcessRemoteEvents();
-			}, &eventChannelTaskQueued);
+			}, &eventAutoChannelTaskQueued);
 
 			// Called from UI thread
 			FetchAndExecuteUITasks();
 
 			// Process of queued events from channel
 			collections::List<TPackage> events;
-			SPIN_LOCK(lockPendingEvents)
+			SPIN_LOCK(lockEvents)
 			{
-				events = std::move(pendingEvents);
+				events = std::move(queuedEvents);
 			}
 
 			for (auto&& event : events)
@@ -282,9 +298,10 @@ void ChannelPackageSemanticUnpack(
 				UIThreadProc();
 			};
 
-			eventChannelTaskQueued.CreateAutoUnsignal(false);
-			eventChannelThreadStopped.CreateManualUnsignal(false);
-			eventUIThreadStopped.CreateManualUnsignal(false);
+			eventManualResponses.CreateManualUnsignal(false);
+			eventAutoChannelTaskQueued.CreateAutoUnsignal(false);
+			eventManualChannelThreadStopped.CreateManualUnsignal(false);
+			eventManualUIThreadStopped.CreateManualUnsignal(false);
 			startingProc(thread_channel, thread_ui);
 			started = true;
 
@@ -312,7 +329,7 @@ void ChannelPackageSemanticUnpack(
 
 		void WaitForStopped()
 		{
-			eventUIThreadStopped.Wait();
+			eventManualUIThreadStopped.Wait();
 		}
 
 	public:
@@ -327,7 +344,7 @@ void ChannelPackageSemanticUnpack(
 			QueueToChannelThreadAndWait([this]()
 			{
 				channel->Initialize(this);
-			}, &eventChannelTaskQueued);
+			}, &eventAutoChannelTaskQueued);
 		}
 
 		IGuiRemoteProtocolChannelReceiver<TPackage>* GetReceiver() override
@@ -344,7 +361,7 @@ void ChannelPackageSemanticUnpack(
 				QueueToChannelThreadAndWait([this]()
 				{
 					executablePath = channel->GetExecutablePath();
-				}, &eventChannelTaskQueued);
+				}, &eventAutoChannelTaskQueued);
 			}
 			return executablePath.Value();
 		}
