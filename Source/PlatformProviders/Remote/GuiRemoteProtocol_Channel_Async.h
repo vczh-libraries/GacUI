@@ -110,6 +110,9 @@ void ChannelPackageSemanticUnpack(
 		TUIMainProc													uiMainProc;
 		collections::List<TPackage>									uiPendingPackages;
 
+		SpinLock													lockPendingEvents;
+		collections::List<TPackage>									pendingEvents;
+
 		volatile bool												started = false;
 		volatile bool												stopping = false;
 		volatile bool												stopped = false;
@@ -159,10 +162,32 @@ void ChannelPackageSemanticUnpack(
 
 		void OnReceive(const TPackage& package) override
 		{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::channeling::GuiRemoteProtocolAsyncChannelSerializer<TPackage>::OnReceive(...)#"
 			// Called from any thread, very likely the channel thread
 			// If it is a response, unblock Submit()
 			// If it is an event, send to ProcessRemoteEvents()
-			CHECK_FAIL(L"Not Implemented!");
+
+			auto semantic = ChannelPackageSemantic::Unknown;
+			vint id = -1;
+			WString name;
+			ChannelPackageSemanticUnpack(package, semantic, id, name);
+			switch (semantic)
+			{
+			case ChannelPackageSemantic::Event:
+				{
+					SPIN_LOCK(lockPendingEvents)
+					{
+						pendingEvents.Add(package);
+					}
+				}
+				break;
+			case ChannelPackageSemantic::Response:
+				CHECK_FAIL(L"Not Implemented!");
+				break;
+			default:
+				CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Only responses and events are expected.");
+			}
+#undef ERROR_MESSAGE_PREFIX
 		}
 
 	public:
@@ -204,7 +229,16 @@ void ChannelPackageSemanticUnpack(
 			FetchAndExecuteUITasks();
 
 			// Process of queued events from channel
-			CHECK_FAIL(L"Not Implemented!");
+			collections::List<TPackage> events;
+			SPIN_LOCK(lockPendingEvents)
+			{
+				events = std::move(pendingEvents);
+			}
+
+			for (auto&& event : events)
+			{
+				receiver->OnReceive(event);
+			}
 		}
 
 	public:
