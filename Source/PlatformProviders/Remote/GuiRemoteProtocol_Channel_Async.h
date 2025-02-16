@@ -218,28 +218,29 @@ void ChannelPackageSemanticUnpack(
 		{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::channeling::GuiRemoteProtocolAsyncChannelSerializer<TPackage>::Submit(...)#"
 
+			// Ensure at most one request per submit
+			vint requestId = false;
+			for (auto&& package : uiPendingPackages)
+			{
+				auto semantic = ChannelPackageSemantic::Unknown;
+				vint id = -1;
+				WString name;
+				ChannelPackageSemanticUnpack(package, semantic, id, name);
+
+				if (semantic == ChannelPackageSemantic::Request)
+				{
+					CHECK_ERROR(requestId == -1, ERROR_MESSAGE_PREFIX L"Only one request (message that requires a response) is allowed between Submit() calls.");
+					requestId = id;
+					SPIN_LOCK(lockResponses)
+					{
+						pendingRequests.Add(id);
+					}
+				}
+			}
+
 			// Called from UI thread
 			QueueToChannelThread([this, packages = std::move(uiPendingPackages)]()
 			{
-				bool requestExists = false;
-				for (auto&& package : packages)
-				{
-					auto semantic = ChannelPackageSemantic::Unknown;
-					vint id = -1;
-					WString name;
-					ChannelPackageSemanticUnpack(package, semantic, id, name);
-
-					if (semantic == ChannelPackageSemantic::Request)
-					{
-						CHECK_ERROR(!requestExists, ERROR_MESSAGE_PREFIX L"Only one request (message that requires a response) is allowed between Submit() calls.");
-						requestExists = true;
-						SPIN_LOCK(lockResponses)
-						{
-							pendingRequests.Add(id);
-						}
-					}
-				}
-
 				for (auto&& package : packages)
 				{
 					channel->Write(package);
@@ -249,7 +250,23 @@ void ChannelPackageSemanticUnpack(
 
 			// Block until the response of the top request is received
 			// Re-entrance recursively is possible
-			CHECK_FAIL(L"Not Implemented!");
+			if (requestId != -1)
+			{
+				eventManualResponses.Wait();
+				TPackage response;
+				SPIN_LOCK(lockResponses)
+				{
+					response = queuedResponses[requestId];
+					queuedResponses.Remove(requestId);
+					pendingRequests.RemoveAt(pendingRequests.Count() - 1);
+
+					if (pendingRequests.Count() == 0 || !queuedResponses.Keys().Contains(pendingRequests[pendingRequests.Count() - 1]))
+					{
+						eventManualResponses.Unsignal();
+					}
+				}
+				receiver->OnReceive(response);
+			}
 
 #undef ERROR_MESSAGE_PREFIX
 		}
