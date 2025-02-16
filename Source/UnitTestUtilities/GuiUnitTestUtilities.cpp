@@ -304,9 +304,9 @@ void GacUIUnitTest_Start(const WString& appName, Nullable<UnitTestScreenConfig> 
 
 	// Core
 	repeatfiltering::GuiRemoteProtocolFilterVerifier verifierProtocol(
-		globalConfig.useSyncChannel
-		? &channelSender
-		: unitTestProtocol.GetProtocol()
+		globalConfig.useChannel == UnitTestRemoteChannel::None
+		? unitTestProtocol.GetProtocol()
+		: &channelSender
 		);
 	repeatfiltering::GuiRemoteProtocolFilter filteredProtocol(&verifierProtocol);
 	GuiRemoteProtocolDomDiffConverter diffConverterProtocol(&filteredProtocol);
@@ -326,6 +326,11 @@ void GacUIUnitTest_Start(const WString& appName, Nullable<UnitTestScreenConfig> 
 		GacUIUnitTest_LogCommands(appName, unitTestProtocol);
 	}
 	GacUIUnitTest_LogDiffs(appName, unitTestProtocol);
+}
+
+void GacUIUnitTest_StartAsync(const WString& appName, Nullable<UnitTestScreenConfig> config)
+{
+	CHECK_FAIL(L"Not Implemented!");
 }
 
 void GacUIUnitTest_Start_WithResourceAsText(const WString& appName, Nullable<UnitTestScreenConfig> config, const WString& resourceText)
@@ -363,7 +368,15 @@ void GacUIUnitTest_Start_WithResourceAsText(const WString& appName, Nullable<Uni
 		}
 		previousMainProxy(protocol, context);
 	});
-	GacUIUnitTest_Start(appName, config);
+
+	if (config && config.Value().useChannel == UnitTestRemoteChannel::Async)
+	{
+		GacUIUnitTest_StartAsync(appName, config);
+	}
+	else
+	{
+		GacUIUnitTest_Start(appName, config);
+	}
 #undef ERROR_MESSAGE_PREFIX
 }
 

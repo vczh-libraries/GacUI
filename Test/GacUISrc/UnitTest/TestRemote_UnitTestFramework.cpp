@@ -381,7 +381,7 @@ TEST_FILE
 
 			UnitTestScreenConfig globalConfig;
 			globalConfig.FastInitialize(1024, 768);
-			globalConfig.useSyncChannel = true;
+			globalConfig.useChannel = UnitTestRemoteChannel::Sync;
 
 			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
 				WString::Unmanaged(L"UnitTestFramework/Channel/Sync"),
@@ -414,7 +414,7 @@ TEST_FILE
 			UnitTestScreenConfig globalConfig;
 			globalConfig.FastInitialize(1024, 768);
 			globalConfig.useDomDiff = true;
-			globalConfig.useSyncChannel = true;
+			globalConfig.useChannel = UnitTestRemoteChannel::Sync;
 
 			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
 				WString::Unmanaged(L"UnitTestFramework/Channel/Everything"),

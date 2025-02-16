@@ -258,6 +258,9 @@
     <ClCompile Include="TestRemote_RenderingDom.cpp">
       <Filter>Source Files\Remote</Filter>
     </ClCompile>
+    <ClCompile Include="TestRemote_UnitTestFramework_Async.cpp">
+      <Filter>Source Files\Remote</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="TestCompositions.h">
