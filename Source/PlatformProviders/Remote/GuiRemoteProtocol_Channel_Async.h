@@ -216,12 +216,30 @@ void ChannelPackageSemanticUnpack(
 
 		void Submit() override
 		{
-			// TODO: Assert if there is at most only one request
-			CHECK_FAIL(L"Not Implemented!");
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::channeling::GuiRemoteProtocolAsyncChannelSerializer<TPackage>::Submit(...)#"
 
 			// Called from UI thread
 			QueueToChannelThread([this, packages = std::move(uiPendingPackages)]()
 			{
+				bool requestExists = false;
+				for (auto&& package : packages)
+				{
+					auto semantic = ChannelPackageSemantic::Unknown;
+					vint id = -1;
+					WString name;
+					ChannelPackageSemanticUnpack(package, semantic, id, name);
+
+					if (semantic == ChannelPackageSemantic::Request)
+					{
+						CHECK_ERROR(!requestExists, ERROR_MESSAGE_PREFIX L"Only one request (message that requires a response) is allowed between Submit() calls.");
+						requestExists = true;
+						SPIN_LOCK(lockResponses)
+						{
+							pendingRequests.Add(id);
+						}
+					}
+				}
+
 				for (auto&& package : packages)
 				{
 					channel->Write(package);
@@ -232,6 +250,8 @@ void ChannelPackageSemanticUnpack(
 			// Block until the response of the top request is received
 			// Re-entrance recursively is possible
 			CHECK_FAIL(L"Not Implemented!");
+
+#undef ERROR_MESSAGE_PREFIX
 		}
 
 		void ProcessRemoteEvents() override
