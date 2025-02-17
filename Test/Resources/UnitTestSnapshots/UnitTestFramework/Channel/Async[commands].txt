@@ -1,0 +1,310 @@
+﻿========================================
+1
+========================================
+RequestRendererRenderElement: {"id": 1, "bounds": {"x1": 0, "y1": 0, "x2": 320, "y2": 240}, "areaClippedByParent": {"x1": 0, "y1": 0, "x2": 320, "y2": 240}}
+RequestRendererRenderElement: {"id": 2, "bounds": {"x1": 0, "y1": 0, "x2": 320, "y2": 240}, "areaClippedByParent": {"x1": 0, "y1": 0, "x2": 320, "y2": 240}}
+RequestRendererBeginBoundary: {"id": 1, "hitTestResult": "ButtonMinimum", "cursor": null, "bounds": {"x1": 218, "y1": 0, "x2": 252, "y2": 22}, "areaClippedBySelf": {"x1": 218, "y1": 0, "x2": 252, "y2": 22}}
+RequestRendererRenderElement: {"id": 3, "bounds": {"x1": 219, "y1": 1, "x2": 251, "y2": 21}, "areaClippedByParent": {"x1": 219, "y1": 1, "x2": 251, "y2": 21}}
+RequestRendererRenderElement: {"id": 4, "bounds": {"x1": 219, "y1": 1, "x2": 251, "y2": 21}, "areaClippedByParent": {"x1": 219, "y1": 1, "x2": 251, "y2": 21}}
+RequestRendererRenderElement: {"id": 6, "bounds": {"x1": 223, "y1": 3, "x2": 247, "y2": 19}, "areaClippedByParent": {"x1": 219, "y1": 1, "x2": 251, "y2": 21}}
+RequestRendererRenderElement: {"id": 7, "bounds": {"x1": 223, "y1": 3, "x2": 247, "y2": 19}, "areaClippedByParent": {"x1": 223, "y1": 3, "x2": 247, "y2": 19}}
+RequestRendererEndBoundary
+RequestRendererBeginBoundary: {"id": 2, "hitTestResult": "ButtonMaximum", "cursor": null, "bounds": {"x1": 252, "y1": 0, "x2": 286, "y2": 22}, "areaClippedBySelf": {"x1": 252, "y1": 0, "x2": 286, "y2": 22}}
+RequestRendererRenderElement: {"id": 8, "bounds": {"x1": 253, "y1": 1, "x2": 285, "y2": 21}, "areaClippedByParent": {"x1": 253, "y1": 1, "x2": 285, "y2": 21}}
+RequestRendererRenderElement: {"id": 9, "bounds": {"x1": 253, "y1": 1, "x2": 285, "y2": 21}, "areaClippedByParent": {"x1": 253, "y1": 1, "x2": 285, "y2": 21}}
+RequestRendererRenderElement: {"id": 11, "bounds": {"x1": 257, "y1": 3, "x2": 281, "y2": 19}, "areaClippedByParent": {"x1": 253, "y1": 1, "x2": 285, "y2": 21}}
+RequestRendererRenderElement: {"id": 12, "bounds": {"x1": 257, "y1": 3, "x2": 281, "y2": 19}, "areaClippedByParent": {"x1": 257, "y1": 3, "x2": 281, "y2": 19}}
+RequestRendererEndBoundary
+RequestRendererBeginBoundary: {"id": 3, "hitTestResult": "ButtonClose", "cursor": null, "bounds": {"x1": 286, "y1": 0, "x2": 320, "y2": 22}, "areaClippedBySelf": {"x1": 286, "y1": 0, "x2": 320, "y2": 22}}
+RequestRendererRenderElement: {"id": 14, "bounds": {"x1": 287, "y1": 1, "x2": 319, "y2": 21}, "areaClippedByParent": {"x1": 287, "y1": 1, "x2": 319, "y2": 21}}
+RequestRendererRenderElement: {"id": 15, "bounds": {"x1": 287, "y1": 1, "x2": 319, "y2": 21}, "areaClippedByParent": {"x1": 287, "y1": 1, "x2": 319, "y2": 21}}
+RequestRendererRenderElement: {"id": 17, "bounds": {"x1": 291, "y1": 3, "x2": 315, "y2": 19}, "areaClippedByParent": {"x1": 287, "y1": 1, "x2": 319, "y2": 21}}
+RequestRendererRenderElement: {"id": 18, "bounds": {"x1": 291, "y1": 3, "x2": 315, "y2": 19}, "areaClippedByParent": {"x1": 291, "y1": 3, "x2": 315, "y2": 19}}
+RequestRendererEndBoundary
+RequestRendererBeginBoundary: {"id": 4, "hitTestResult": "Title", "cursor": null, "bounds": {"x1": 0, "y1": 0, "x2": 218, "y2": 22}, "areaClippedBySelf": {"x1": 0, "y1": 0, "x2": 218, "y2": 22}}
+RequestRendererRenderElement: {"id": 20, "bounds": {"x1": 5, "y1": 5, "x2": 213, "y2": 17}, "areaClippedByParent": {"x1": 0, "y1": 0, "x2": 218, "y2": 22}}
+RequestRendererEndBoundary
+RequestRendererBeginBoundary: {"id": 5, "hitTestResult": "Client", "cursor": null, "bounds": {"x1": 0, "y1": 22, "x2": 320, "y2": 240}, "areaClippedBySelf": {"x1": 0, "y1": 22, "x2": 320, "y2": 240}}
+RequestRendererEndBoundary
+========================================
+2
+========================================
+RequestRendererRenderElement: {"id": 1, "bounds": {"x1": 0, "y1": 0, "x2": 320, "y2": 240}, "areaClippedByParent": {"x1": 0, "y1": 0, "x2": 320, "y2": 240}}
+RequestRendererRenderElement: {"id": 2, "bounds": {"x1": 0, "y1": 0, "x2": 320, "y2": 240}, "areaClippedByParent": {"x1": 0, "y1": 0, "x2": 320, "y2": 240}}
+RequestRendererBeginBoundary: {"id": 1, "hitTestResult": "ButtonMinimum", "cursor": null, "bounds": {"x1": 218, "y1": 0, "x2": 252, "y2": 22}, "areaClippedBySelf": {"x1": 218, "y1": 0, "x2": 252, "y2": 22}}
+RequestRendererRenderElement: {"id": 3, "bounds": {"x1": 219, "y1": 1, "x2": 251, "y2": 21}, "areaClippedByParent": {"x1": 219, "y1": 1, "x2": 251, "y2": 21}}
+RequestRendererRenderElement: {"id": 4, "bounds": {"x1": 219, "y1": 1, "x2": 251, "y2": 21}, "areaClippedByParent": {"x1": 219, "y1": 1, "x2": 251, "y2": 21}}
+RequestRendererRenderElement: {"id": 6, "bounds": {"x1": 223, "y1": 3, "x2": 247, "y2": 19}, "areaClippedByParent": {"x1": 219, "y1": 1, "x2": 251, "y2": 21}}
+RequestRendererRenderElement: {"id": 7, "bounds": {"x1": 223, "y1": 3, "x2": 247, "y2": 19}, "areaClippedByParent": {"x1": 223, "y1": 3, "x2": 247, "y2": 19}}
+RequestRendererEndBoundary
+RequestRendererBeginBoundary: {"id": 2, "hitTestResult": "ButtonMaximum", "cursor": null, "bounds": {"x1": 252, "y1": 0, "x2": 286, "y2": 22}, "areaClippedBySelf": {"x1": 252, "y1": 0, "x2": 286, "y2": 22}}
+RequestRendererRenderElement: {"id": 8, "bounds": {"x1": 253, "y1": 1, "x2": 285, "y2": 21}, "areaClippedByParent": {"x1": 253, "y1": 1, "x2": 285, "y2": 21}}
+RequestRendererRenderElement: {"id": 9, "bounds": {"x1": 253, "y1": 1, "x2": 285, "y2": 21}, "areaClippedByParent": {"x1": 253, "y1": 1, "x2": 285, "y2": 21}}
+RequestRendererRenderElement: {"id": 11, "bounds": {"x1": 257, "y1": 3, "x2": 281, "y2": 19}, "areaClippedByParent": {"x1": 253, "y1": 1, "x2": 285, "y2": 21}}
+RequestRendererRenderElement: {"id": 12, "bounds": {"x1": 257, "y1": 3, "x2": 281, "y2": 19}, "areaClippedByParent": {"x1": 257, "y1": 3, "x2": 281, "y2": 19}}
+RequestRendererEndBoundary
+RequestRendererBeginBoundary: {"id": 3, "hitTestResult": "ButtonClose", "cursor": null, "bounds": {"x1": 286, "y1": 0, "x2": 320, "y2": 22}, "areaClippedBySelf": {"x1": 286, "y1": 0, "x2": 320, "y2": 22}}
+RequestRendererRenderElement: {"id": 14, "bounds": {"x1": 287, "y1": 1, "x2": 319, "y2": 21}, "areaClippedByParent": {"x1": 287, "y1": 1, "x2": 319, "y2": 21}}
+RequestRendererRenderElement: {"id": 15, "bounds": {"x1": 287, "y1": 1, "x2": 319, "y2": 21}, "areaClippedByParent": {"x1": 287, "y1": 1, "x2": 319, "y2": 21}}
+RequestRendererRenderElement: {"id": 17, "bounds": {"x1": 291, "y1": 3, "x2": 315, "y2": 19}, "areaClippedByParent": {"x1": 287, "y1": 1, "x2": 319, "y2": 21}}
+RequestRendererRenderElement: {"id": 18, "bounds": {"x1": 291, "y1": 3, "x2": 315, "y2": 19}, "areaClippedByParent": {"x1": 291, "y1": 3, "x2": 315, "y2": 19}}
+RequestRendererEndBoundary
+RequestRendererBeginBoundary: {"id": 4, "hitTestResult": "Title", "cursor": null, "bounds": {"x1": 0, "y1": 0, "x2": 218, "y2": 22}, "areaClippedBySelf": {"x1": 0, "y1": 0, "x2": 218, "y2": 22}}
+RequestRendererRenderElement: {"id": 20, "bounds": {"x1": 5, "y1": 5, "x2": 213, "y2": 17}, "areaClippedByParent": {"x1": 0, "y1": 0, "x2": 218, "y2": 22}}
+RequestRendererEndBoundary
+RequestRendererBeginBoundary: {"id": 5, "hitTestResult": "Client", "cursor": null, "bounds": {"x1": 0, "y1": 22, "x2": 320, "y2": 240}, "areaClippedBySelf": {"x1": 0, "y1": 22, "x2": 320, "y2": 240}}
+RequestRendererRenderElement: {"id": 21, "bounds": {"x1": 5, "y1": 27, "x2": 14, "y2": 32}, "areaClippedByParent": {"x1": 5, "y1": 27, "x2": 14, "y2": 32}}
+RequestRendererRenderElement: {"id": 22, "bounds": {"x1": 5, "y1": 27, "x2": 14, "y2": 32}, "areaClippedByParent": {"x1": 5, "y1": 27, "x2": 14, "y2": 32}}
+RequestRendererRenderElement: {"id": 24, "bounds": {"x1": 9, "y1": 29, "x2": 10, "y2": 30}, "areaClippedByParent": {"x1": 5, "y1": 27, "x2": 14, "y2": 32}}
+RequestRendererEndBoundary
+========================================
+3
+========================================
+RequestRendererRenderElement: {"id": 1, "bounds": {"x1": 0, "y1": 0, "x2": 320, "y2": 240}, "areaClippedByParent": {"x1": 0, "y1": 0, "x2": 320, "y2": 240}}
+RequestRendererRenderElement: {"id": 2, "bounds": {"x1": 0, "y1": 0, "x2": 320, "y2": 240}, "areaClippedByParent": {"x1": 0, "y1": 0, "x2": 320, "y2": 240}}
+RequestRendererBeginBoundary: {"id": 1, "hitTestResult": "ButtonMinimum", "cursor": null, "bounds": {"x1": 218, "y1": 0, "x2": 252, "y2": 28}, "areaClippedBySelf": {"x1": 218, "y1": 0, "x2": 252, "y2": 28}}
+RequestRendererRenderElement: {"id": 3, "bounds": {"x1": 219, "y1": 1, "x2": 251, "y2": 27}, "areaClippedByParent": {"x1": 219, "y1": 1, "x2": 251, "y2": 27}}
+RequestRendererRenderElement: {"id": 4, "bounds": {"x1": 219, "y1": 1, "x2": 251, "y2": 27}, "areaClippedByParent": {"x1": 219, "y1": 1, "x2": 251, "y2": 27}}
+RequestRendererRenderElement: {"id": 6, "bounds": {"x1": 223, "y1": 3, "x2": 247, "y2": 25}, "areaClippedByParent": {"x1": 219, "y1": 1, "x2": 251, "y2": 27}}
+RequestRendererRenderElement: {"id": 7, "bounds": {"x1": 223, "y1": 3, "x2": 247, "y2": 25}, "areaClippedByParent": {"x1": 223, "y1": 3, "x2": 247, "y2": 25}}
+RequestRendererEndBoundary
+RequestRendererBeginBoundary: {"id": 2, "hitTestResult": "ButtonMaximum", "cursor": null, "bounds": {"x1": 252, "y1": 0, "x2": 286, "y2": 28}, "areaClippedBySelf": {"x1": 252, "y1": 0, "x2": 286, "y2": 28}}
+RequestRendererRenderElement: {"id": 8, "bounds": {"x1": 253, "y1": 1, "x2": 285, "y2": 27}, "areaClippedByParent": {"x1": 253, "y1": 1, "x2": 285, "y2": 27}}
+RequestRendererRenderElement: {"id": 9, "bounds": {"x1": 253, "y1": 1, "x2": 285, "y2": 27}, "areaClippedByParent": {"x1": 253, "y1": 1, "x2": 285, "y2": 27}}
+RequestRendererRenderElement: {"id": 11, "bounds": {"x1": 257, "y1": 3, "x2": 281, "y2": 25}, "areaClippedByParent": {"x1": 253, "y1": 1, "x2": 285, "y2": 27}}
+RequestRendererRenderElement: {"id": 12, "bounds": {"x1": 257, "y1": 3, "x2": 281, "y2": 25}, "areaClippedByParent": {"x1": 257, "y1": 3, "x2": 281, "y2": 25}}
+RequestRendererEndBoundary
+RequestRendererBeginBoundary: {"id": 3, "hitTestResult": "ButtonClose", "cursor": null, "bounds": {"x1": 286, "y1": 0, "x2": 320, "y2": 28}, "areaClippedBySelf": {"x1": 286, "y1": 0, "x2": 320, "y2": 28}}
+RequestRendererRenderElement: {"id": 14, "bounds": {"x1": 287, "y1": 1, "x2": 319, "y2": 27}, "areaClippedByParent": {"x1": 287, "y1": 1, "x2": 319, "y2": 27}}
+RequestRendererRenderElement: {"id": 15, "bounds": {"x1": 287, "y1": 1, "x2": 319, "y2": 27}, "areaClippedByParent": {"x1": 287, "y1": 1, "x2": 319, "y2": 27}}
+RequestRendererRenderElement: {"id": 17, "bounds": {"x1": 291, "y1": 3, "x2": 315, "y2": 25}, "areaClippedByParent": {"x1": 287, "y1": 1, "x2": 319, "y2": 27}}
+RequestRendererRenderElement: {"id": 18, "bounds": {"x1": 291, "y1": 3, "x2": 315, "y2": 25}, "areaClippedByParent": {"x1": 291, "y1": 3, "x2": 315, "y2": 25}}
+RequestRendererEndBoundary
+RequestRendererBeginBoundary: {"id": 4, "hitTestResult": "Title", "cursor": null, "bounds": {"x1": 0, "y1": 0, "x2": 218, "y2": 28}, "areaClippedBySelf": {"x1": 0, "y1": 0, "x2": 218, "y2": 28}}
+RequestRendererRenderElement: {"id": 20, "bounds": {"x1": 5, "y1": 5, "x2": 213, "y2": 23}, "areaClippedByParent": {"x1": 0, "y1": 0, "x2": 218, "y2": 28}}
+RequestRendererEndBoundary
+RequestRendererBeginBoundary: {"id": 5, "hitTestResult": "Client", "cursor": null, "bounds": {"x1": 0, "y1": 28, "x2": 320, "y2": 240}, "areaClippedBySelf": {"x1": 0, "y1": 28, "x2": 320, "y2": 240}}
+RequestRendererRenderElement: {"id": 21, "bounds": {"x1": 5, "y1": 33, "x2": 14, "y2": 38}, "areaClippedByParent": {"x1": 5, "y1": 33, "x2": 14, "y2": 38}}
+RequestRendererRenderElement: {"id": 22, "bounds": {"x1": 5, "y1": 33, "x2": 14, "y2": 38}, "areaClippedByParent": {"x1": 5, "y1": 33, "x2": 14, "y2": 38}}
+RequestRendererRenderElement: {"id": 24, "bounds": {"x1": 9, "y1": 35, "x2": 10, "y2": 36}, "areaClippedByParent": {"x1": 5, "y1": 33, "x2": 14, "y2": 38}}
+RequestRendererEndBoundary
+========================================
+4
+========================================
+RequestRendererRenderElement: {"id": 1, "bounds": {"x1": 0, "y1": 0, "x2": 320, "y2": 240}, "areaClippedByParent": {"x1": 0, "y1": 0, "x2": 320, "y2": 240}}
+RequestRendererRenderElement: {"id": 2, "bounds": {"x1": 0, "y1": 0, "x2": 320, "y2": 240}, "areaClippedByParent": {"x1": 0, "y1": 0, "x2": 320, "y2": 240}}
+RequestRendererBeginBoundary: {"id": 1, "hitTestResult": "ButtonMinimum", "cursor": null, "bounds": {"x1": 218, "y1": 0, "x2": 252, "y2": 28}, "areaClippedBySelf": {"x1": 218, "y1": 0, "x2": 252, "y2": 28}}
+RequestRendererRenderElement: {"id": 3, "bounds": {"x1": 219, "y1": 1, "x2": 251, "y2": 27}, "areaClippedByParent": {"x1": 219, "y1": 1, "x2": 251, "y2": 27}}
+RequestRendererRenderElement: {"id": 4, "bounds": {"x1": 219, "y1": 1, "x2": 251, "y2": 27}, "areaClippedByParent": {"x1": 219, "y1": 1, "x2": 251, "y2": 27}}
+RequestRendererRenderElement: {"id": 6, "bounds": {"x1": 223, "y1": 3, "x2": 247, "y2": 25}, "areaClippedByParent": {"x1": 219, "y1": 1, "x2": 251, "y2": 27}}
+RequestRendererRenderElement: {"id": 7, "bounds": {"x1": 223, "y1": 3, "x2": 247, "y2": 25}, "areaClippedByParent": {"x1": 223, "y1": 3, "x2": 247, "y2": 25}}
+RequestRendererEndBoundary
+RequestRendererBeginBoundary: {"id": 2, "hitTestResult": "ButtonMaximum", "cursor": null, "bounds": {"x1": 252, "y1": 0, "x2": 286, "y2": 28}, "areaClippedBySelf": {"x1": 252, "y1": 0, "x2": 286, "y2": 28}}
+RequestRendererRenderElement: {"id": 8, "bounds": {"x1": 253, "y1": 1, "x2": 285, "y2": 27}, "areaClippedByParent": {"x1": 253, "y1": 1, "x2": 285, "y2": 27}}
+RequestRendererRenderElement: {"id": 9, "bounds": {"x1": 253, "y1": 1, "x2": 285, "y2": 27}, "areaClippedByParent": {"x1": 253, "y1": 1, "x2": 285, "y2": 27}}
+RequestRendererRenderElement: {"id": 11, "bounds": {"x1": 257, "y1": 3, "x2": 281, "y2": 25}, "areaClippedByParent": {"x1": 253, "y1": 1, "x2": 285, "y2": 27}}
+RequestRendererRenderElement: {"id": 12, "bounds": {"x1": 257, "y1": 3, "x2": 281, "y2": 25}, "areaClippedByParent": {"x1": 257, "y1": 3, "x2": 281, "y2": 25}}
+RequestRendererEndBoundary
+RequestRendererBeginBoundary: {"id": 3, "hitTestResult": "ButtonClose", "cursor": null, "bounds": {"x1": 286, "y1": 0, "x2": 320, "y2": 28}, "areaClippedBySelf": {"x1": 286, "y1": 0, "x2": 320, "y2": 28}}
+RequestRendererRenderElement: {"id": 14, "bounds": {"x1": 287, "y1": 1, "x2": 319, "y2": 27}, "areaClippedByParent": {"x1": 287, "y1": 1, "x2": 319, "y2": 27}}
+RequestRendererRenderElement: {"id": 15, "bounds": {"x1": 287, "y1": 1, "x2": 319, "y2": 27}, "areaClippedByParent": {"x1": 287, "y1": 1, "x2": 319, "y2": 27}}
+RequestRendererRenderElement: {"id": 17, "bounds": {"x1": 291, "y1": 3, "x2": 315, "y2": 25}, "areaClippedByParent": {"x1": 287, "y1": 1, "x2": 319, "y2": 27}}
+RequestRendererRenderElement: {"id": 18, "bounds": {"x1": 291, "y1": 3, "x2": 315, "y2": 25}, "areaClippedByParent": {"x1": 291, "y1": 3, "x2": 315, "y2": 25}}
+RequestRendererEndBoundary
+RequestRendererBeginBoundary: {"id": 4, "hitTestResult": "Title", "cursor": null, "bounds": {"x1": 0, "y1": 0, "x2": 218, "y2": 28}, "areaClippedBySelf": {"x1": 0, "y1": 0, "x2": 218, "y2": 28}}
+RequestRendererRenderElement: {"id": 20, "bounds": {"x1": 5, "y1": 5, "x2": 213, "y2": 23}, "areaClippedByParent": {"x1": 0, "y1": 0, "x2": 218, "y2": 28}}
+RequestRendererEndBoundary
+RequestRendererBeginBoundary: {"id": 5, "hitTestResult": "Client", "cursor": null, "bounds": {"x1": 0, "y1": 28, "x2": 320, "y2": 240}, "areaClippedBySelf": {"x1": 0, "y1": 28, "x2": 320, "y2": 240}}
+RequestRendererRenderElement: {"id": 21, "bounds": {"x1": 5, "y1": 33, "x2": 37, "y2": 53}, "areaClippedByParent": {"x1": 5, "y1": 33, "x2": 37, "y2": 53}}
+RequestRendererRenderElement: {"id": 22, "bounds": {"x1": 5, "y1": 33, "x2": 37, "y2": 53}, "areaClippedByParent": {"x1": 5, "y1": 33, "x2": 37, "y2": 53}}
+RequestRendererRenderElement: {"id": 24, "bounds": {"x1": 9, "y1": 35, "x2": 33, "y2": 51}, "areaClippedByParent": {"x1": 5, "y1": 33, "x2": 37, "y2": 53}}
+RequestRendererEndBoundary
+========================================
+5
+========================================
+RequestRendererRenderElement: {"id": 1, "bounds": {"x1": 0, "y1": 0, "x2": 320, "y2": 240}, "areaClippedByParent": {"x1": 0, "y1": 0, "x2": 320, "y2": 240}}
+RequestRendererRenderElement: {"id": 2, "bounds": {"x1": 0, "y1": 0, "x2": 320, "y2": 240}, "areaClippedByParent": {"x1": 0, "y1": 0, "x2": 320, "y2": 240}}
+RequestRendererBeginBoundary: {"id": 1, "hitTestResult": "ButtonMinimum", "cursor": null, "bounds": {"x1": 218, "y1": 0, "x2": 252, "y2": 28}, "areaClippedBySelf": {"x1": 218, "y1": 0, "x2": 252, "y2": 28}}
+RequestRendererRenderElement: {"id": 3, "bounds": {"x1": 219, "y1": 1, "x2": 251, "y2": 27}, "areaClippedByParent": {"x1": 219, "y1": 1, "x2": 251, "y2": 27}}
+RequestRendererRenderElement: {"id": 4, "bounds": {"x1": 219, "y1": 1, "x2": 251, "y2": 27}, "areaClippedByParent": {"x1": 219, "y1": 1, "x2": 251, "y2": 27}}
+RequestRendererRenderElement: {"id": 6, "bounds": {"x1": 223, "y1": 3, "x2": 247, "y2": 25}, "areaClippedByParent": {"x1": 219, "y1": 1, "x2": 251, "y2": 27}}
+RequestRendererRenderElement: {"id": 7, "bounds": {"x1": 223, "y1": 3, "x2": 247, "y2": 25}, "areaClippedByParent": {"x1": 223, "y1": 3, "x2": 247, "y2": 25}}
+RequestRendererEndBoundary
+RequestRendererBeginBoundary: {"id": 2, "hitTestResult": "ButtonMaximum", "cursor": null, "bounds": {"x1": 252, "y1": 0, "x2": 286, "y2": 28}, "areaClippedBySelf": {"x1": 252, "y1": 0, "x2": 286, "y2": 28}}
+RequestRendererRenderElement: {"id": 8, "bounds": {"x1": 253, "y1": 1, "x2": 285, "y2": 27}, "areaClippedByParent": {"x1": 253, "y1": 1, "x2": 285, "y2": 27}}
+RequestRendererRenderElement: {"id": 9, "bounds": {"x1": 253, "y1": 1, "x2": 285, "y2": 27}, "areaClippedByParent": {"x1": 253, "y1": 1, "x2": 285, "y2": 27}}
+RequestRendererRenderElement: {"id": 11, "bounds": {"x1": 257, "y1": 3, "x2": 281, "y2": 25}, "areaClippedByParent": {"x1": 253, "y1": 1, "x2": 285, "y2": 27}}
+RequestRendererRenderElement: {"id": 12, "bounds": {"x1": 257, "y1": 3, "x2": 281, "y2": 25}, "areaClippedByParent": {"x1": 257, "y1": 3, "x2": 281, "y2": 25}}
+RequestRendererEndBoundary
+RequestRendererBeginBoundary: {"id": 3, "hitTestResult": "ButtonClose", "cursor": null, "bounds": {"x1": 286, "y1": 0, "x2": 320, "y2": 28}, "areaClippedBySelf": {"x1": 286, "y1": 0, "x2": 320, "y2": 28}}
+RequestRendererRenderElement: {"id": 14, "bounds": {"x1": 287, "y1": 1, "x2": 319, "y2": 27}, "areaClippedByParent": {"x1": 287, "y1": 1, "x2": 319, "y2": 27}}
+RequestRendererRenderElement: {"id": 15, "bounds": {"x1": 287, "y1": 1, "x2": 319, "y2": 27}, "areaClippedByParent": {"x1": 287, "y1": 1, "x2": 319, "y2": 27}}
+RequestRendererRenderElement: {"id": 17, "bounds": {"x1": 291, "y1": 3, "x2": 315, "y2": 25}, "areaClippedByParent": {"x1": 287, "y1": 1, "x2": 319, "y2": 27}}
+RequestRendererRenderElement: {"id": 18, "bounds": {"x1": 291, "y1": 3, "x2": 315, "y2": 25}, "areaClippedByParent": {"x1": 291, "y1": 3, "x2": 315, "y2": 25}}
+RequestRendererEndBoundary
+RequestRendererBeginBoundary: {"id": 4, "hitTestResult": "Title", "cursor": null, "bounds": {"x1": 0, "y1": 0, "x2": 218, "y2": 28}, "areaClippedBySelf": {"x1": 0, "y1": 0, "x2": 218, "y2": 28}}
+RequestRendererRenderElement: {"id": 20, "bounds": {"x1": 5, "y1": 5, "x2": 213, "y2": 23}, "areaClippedByParent": {"x1": 0, "y1": 0, "x2": 218, "y2": 28}}
+RequestRendererEndBoundary
+RequestRendererBeginBoundary: {"id": 5, "hitTestResult": "Client", "cursor": null, "bounds": {"x1": 0, "y1": 28, "x2": 320, "y2": 240}, "areaClippedBySelf": {"x1": 0, "y1": 28, "x2": 320, "y2": 240}}
+RequestRendererRenderElement: {"id": 21, "bounds": {"x1": 5, "y1": 33, "x2": 37, "y2": 53}, "areaClippedByParent": {"x1": 5, "y1": 33, "x2": 37, "y2": 53}}
+RequestRendererRenderElement: {"id": 22, "bounds": {"x1": 5, "y1": 33, "x2": 37, "y2": 53}, "areaClippedByParent": {"x1": 5, "y1": 33, "x2": 37, "y2": 53}}
+RequestRendererRenderElement: {"id": 24, "bounds": {"x1": 9, "y1": 35, "x2": 33, "y2": 51}, "areaClippedByParent": {"x1": 5, "y1": 33, "x2": 37, "y2": 53}}
+RequestRendererEndBoundary
+========================================
+6
+========================================
+RequestRendererRenderElement: {"id": 1, "bounds": {"x1": 0, "y1": 0, "x2": 320, "y2": 240}, "areaClippedByParent": {"x1": 0, "y1": 0, "x2": 320, "y2": 240}}
+RequestRendererRenderElement: {"id": 2, "bounds": {"x1": 0, "y1": 0, "x2": 320, "y2": 240}, "areaClippedByParent": {"x1": 0, "y1": 0, "x2": 320, "y2": 240}}
+RequestRendererBeginBoundary: {"id": 1, "hitTestResult": "ButtonMinimum", "cursor": null, "bounds": {"x1": 218, "y1": 0, "x2": 252, "y2": 28}, "areaClippedBySelf": {"x1": 218, "y1": 0, "x2": 252, "y2": 28}}
+RequestRendererRenderElement: {"id": 3, "bounds": {"x1": 219, "y1": 1, "x2": 251, "y2": 27}, "areaClippedByParent": {"x1": 219, "y1": 1, "x2": 251, "y2": 27}}
+RequestRendererRenderElement: {"id": 4, "bounds": {"x1": 219, "y1": 1, "x2": 251, "y2": 27}, "areaClippedByParent": {"x1": 219, "y1": 1, "x2": 251, "y2": 27}}
+RequestRendererRenderElement: {"id": 6, "bounds": {"x1": 223, "y1": 3, "x2": 247, "y2": 25}, "areaClippedByParent": {"x1": 219, "y1": 1, "x2": 251, "y2": 27}}
+RequestRendererRenderElement: {"id": 7, "bounds": {"x1": 223, "y1": 3, "x2": 247, "y2": 25}, "areaClippedByParent": {"x1": 223, "y1": 3, "x2": 247, "y2": 25}}
+RequestRendererEndBoundary
+RequestRendererBeginBoundary: {"id": 2, "hitTestResult": "ButtonMaximum", "cursor": null, "bounds": {"x1": 252, "y1": 0, "x2": 286, "y2": 28}, "areaClippedBySelf": {"x1": 252, "y1": 0, "x2": 286, "y2": 28}}
+RequestRendererRenderElement: {"id": 8, "bounds": {"x1": 253, "y1": 1, "x2": 285, "y2": 27}, "areaClippedByParent": {"x1": 253, "y1": 1, "x2": 285, "y2": 27}}
+RequestRendererRenderElement: {"id": 9, "bounds": {"x1": 253, "y1": 1, "x2": 285, "y2": 27}, "areaClippedByParent": {"x1": 253, "y1": 1, "x2": 285, "y2": 27}}
+RequestRendererRenderElement: {"id": 11, "bounds": {"x1": 257, "y1": 3, "x2": 281, "y2": 25}, "areaClippedByParent": {"x1": 253, "y1": 1, "x2": 285, "y2": 27}}
+RequestRendererRenderElement: {"id": 12, "bounds": {"x1": 257, "y1": 3, "x2": 281, "y2": 25}, "areaClippedByParent": {"x1": 257, "y1": 3, "x2": 281, "y2": 25}}
+RequestRendererEndBoundary
+RequestRendererBeginBoundary: {"id": 3, "hitTestResult": "ButtonClose", "cursor": null, "bounds": {"x1": 286, "y1": 0, "x2": 320, "y2": 28}, "areaClippedBySelf": {"x1": 286, "y1": 0, "x2": 320, "y2": 28}}
+RequestRendererRenderElement: {"id": 14, "bounds": {"x1": 287, "y1": 1, "x2": 319, "y2": 27}, "areaClippedByParent": {"x1": 287, "y1": 1, "x2": 319, "y2": 27}}
+RequestRendererRenderElement: {"id": 15, "bounds": {"x1": 287, "y1": 1, "x2": 319, "y2": 27}, "areaClippedByParent": {"x1": 287, "y1": 1, "x2": 319, "y2": 27}}
+RequestRendererRenderElement: {"id": 17, "bounds": {"x1": 291, "y1": 3, "x2": 315, "y2": 25}, "areaClippedByParent": {"x1": 287, "y1": 1, "x2": 319, "y2": 27}}
+RequestRendererRenderElement: {"id": 18, "bounds": {"x1": 291, "y1": 3, "x2": 315, "y2": 25}, "areaClippedByParent": {"x1": 291, "y1": 3, "x2": 315, "y2": 25}}
+RequestRendererEndBoundary
+RequestRendererBeginBoundary: {"id": 4, "hitTestResult": "Title", "cursor": null, "bounds": {"x1": 0, "y1": 0, "x2": 218, "y2": 28}, "areaClippedBySelf": {"x1": 0, "y1": 0, "x2": 218, "y2": 28}}
+RequestRendererRenderElement: {"id": 20, "bounds": {"x1": 5, "y1": 5, "x2": 213, "y2": 23}, "areaClippedByParent": {"x1": 0, "y1": 0, "x2": 218, "y2": 28}}
+RequestRendererEndBoundary
+RequestRendererBeginBoundary: {"id": 5, "hitTestResult": "Client", "cursor": null, "bounds": {"x1": 0, "y1": 28, "x2": 320, "y2": 240}, "areaClippedBySelf": {"x1": 0, "y1": 28, "x2": 320, "y2": 240}}
+RequestRendererRenderElement: {"id": 21, "bounds": {"x1": 5, "y1": 33, "x2": 37, "y2": 53}, "areaClippedByParent": {"x1": 5, "y1": 33, "x2": 37, "y2": 53}}
+RequestRendererRenderElement: {"id": 22, "bounds": {"x1": 5, "y1": 33, "x2": 37, "y2": 53}, "areaClippedByParent": {"x1": 5, "y1": 33, "x2": 37, "y2": 53}}
+RequestRendererRenderElement: {"id": 24, "bounds": {"x1": 9, "y1": 35, "x2": 33, "y2": 51}, "areaClippedByParent": {"x1": 5, "y1": 33, "x2": 37, "y2": 53}}
+RequestRendererEndBoundary
+========================================
+7
+========================================
+RequestRendererRenderElement: {"id": 1, "bounds": {"x1": 0, "y1": 0, "x2": 320, "y2": 240}, "areaClippedByParent": {"x1": 0, "y1": 0, "x2": 320, "y2": 240}}
+RequestRendererRenderElement: {"id": 2, "bounds": {"x1": 0, "y1": 0, "x2": 320, "y2": 240}, "areaClippedByParent": {"x1": 0, "y1": 0, "x2": 320, "y2": 240}}
+RequestRendererBeginBoundary: {"id": 1, "hitTestResult": "ButtonMinimum", "cursor": null, "bounds": {"x1": 218, "y1": 0, "x2": 252, "y2": 28}, "areaClippedBySelf": {"x1": 218, "y1": 0, "x2": 252, "y2": 28}}
+RequestRendererRenderElement: {"id": 3, "bounds": {"x1": 219, "y1": 1, "x2": 251, "y2": 27}, "areaClippedByParent": {"x1": 219, "y1": 1, "x2": 251, "y2": 27}}
+RequestRendererRenderElement: {"id": 4, "bounds": {"x1": 219, "y1": 1, "x2": 251, "y2": 27}, "areaClippedByParent": {"x1": 219, "y1": 1, "x2": 251, "y2": 27}}
+RequestRendererRenderElement: {"id": 6, "bounds": {"x1": 223, "y1": 3, "x2": 247, "y2": 25}, "areaClippedByParent": {"x1": 219, "y1": 1, "x2": 251, "y2": 27}}
+RequestRendererRenderElement: {"id": 7, "bounds": {"x1": 223, "y1": 3, "x2": 247, "y2": 25}, "areaClippedByParent": {"x1": 223, "y1": 3, "x2": 247, "y2": 25}}
+RequestRendererEndBoundary
+RequestRendererBeginBoundary: {"id": 2, "hitTestResult": "ButtonMaximum", "cursor": null, "bounds": {"x1": 252, "y1": 0, "x2": 286, "y2": 28}, "areaClippedBySelf": {"x1": 252, "y1": 0, "x2": 286, "y2": 28}}
+RequestRendererRenderElement: {"id": 8, "bounds": {"x1": 253, "y1": 1, "x2": 285, "y2": 27}, "areaClippedByParent": {"x1": 253, "y1": 1, "x2": 285, "y2": 27}}
+RequestRendererRenderElement: {"id": 9, "bounds": {"x1": 253, "y1": 1, "x2": 285, "y2": 27}, "areaClippedByParent": {"x1": 253, "y1": 1, "x2": 285, "y2": 27}}
+RequestRendererRenderElement: {"id": 11, "bounds": {"x1": 257, "y1": 3, "x2": 281, "y2": 25}, "areaClippedByParent": {"x1": 253, "y1": 1, "x2": 285, "y2": 27}}
+RequestRendererRenderElement: {"id": 12, "bounds": {"x1": 257, "y1": 3, "x2": 281, "y2": 25}, "areaClippedByParent": {"x1": 257, "y1": 3, "x2": 281, "y2": 25}}
+RequestRendererEndBoundary
+RequestRendererBeginBoundary: {"id": 3, "hitTestResult": "ButtonClose", "cursor": null, "bounds": {"x1": 286, "y1": 0, "x2": 320, "y2": 28}, "areaClippedBySelf": {"x1": 286, "y1": 0, "x2": 320, "y2": 28}}
+RequestRendererRenderElement: {"id": 14, "bounds": {"x1": 287, "y1": 1, "x2": 319, "y2": 27}, "areaClippedByParent": {"x1": 287, "y1": 1, "x2": 319, "y2": 27}}
+RequestRendererRenderElement: {"id": 15, "bounds": {"x1": 287, "y1": 1, "x2": 319, "y2": 27}, "areaClippedByParent": {"x1": 287, "y1": 1, "x2": 319, "y2": 27}}
+RequestRendererRenderElement: {"id": 17, "bounds": {"x1": 291, "y1": 3, "x2": 315, "y2": 25}, "areaClippedByParent": {"x1": 287, "y1": 1, "x2": 319, "y2": 27}}
+RequestRendererRenderElement: {"id": 18, "bounds": {"x1": 291, "y1": 3, "x2": 315, "y2": 25}, "areaClippedByParent": {"x1": 291, "y1": 3, "x2": 315, "y2": 25}}
+RequestRendererEndBoundary
+RequestRendererBeginBoundary: {"id": 4, "hitTestResult": "Title", "cursor": null, "bounds": {"x1": 0, "y1": 0, "x2": 218, "y2": 28}, "areaClippedBySelf": {"x1": 0, "y1": 0, "x2": 218, "y2": 28}}
+RequestRendererRenderElement: {"id": 20, "bounds": {"x1": 5, "y1": 5, "x2": 213, "y2": 23}, "areaClippedByParent": {"x1": 0, "y1": 0, "x2": 218, "y2": 28}}
+RequestRendererEndBoundary
+RequestRendererBeginBoundary: {"id": 5, "hitTestResult": "Client", "cursor": null, "bounds": {"x1": 0, "y1": 28, "x2": 320, "y2": 240}, "areaClippedBySelf": {"x1": 0, "y1": 28, "x2": 320, "y2": 240}}
+RequestRendererRenderElement: {"id": 21, "bounds": {"x1": 5, "y1": 33, "x2": 37, "y2": 53}, "areaClippedByParent": {"x1": 5, "y1": 33, "x2": 37, "y2": 53}}
+RequestRendererRenderElement: {"id": 22, "bounds": {"x1": 5, "y1": 33, "x2": 37, "y2": 53}, "areaClippedByParent": {"x1": 5, "y1": 33, "x2": 37, "y2": 53}}
+RequestRendererRenderElement: {"id": 24, "bounds": {"x1": 9, "y1": 35, "x2": 33, "y2": 51}, "areaClippedByParent": {"x1": 5, "y1": 33, "x2": 37, "y2": 53}}
+RequestRendererEndBoundary
+========================================
+8
+========================================
+RequestRendererRenderElement: {"id": 1, "bounds": {"x1": 0, "y1": 0, "x2": 320, "y2": 240}, "areaClippedByParent": {"x1": 0, "y1": 0, "x2": 320, "y2": 240}}
+RequestRendererRenderElement: {"id": 2, "bounds": {"x1": 0, "y1": 0, "x2": 320, "y2": 240}, "areaClippedByParent": {"x1": 0, "y1": 0, "x2": 320, "y2": 240}}
+RequestRendererBeginBoundary: {"id": 1, "hitTestResult": "ButtonMinimum", "cursor": null, "bounds": {"x1": 218, "y1": 0, "x2": 252, "y2": 28}, "areaClippedBySelf": {"x1": 218, "y1": 0, "x2": 252, "y2": 28}}
+RequestRendererRenderElement: {"id": 3, "bounds": {"x1": 219, "y1": 1, "x2": 251, "y2": 27}, "areaClippedByParent": {"x1": 219, "y1": 1, "x2": 251, "y2": 27}}
+RequestRendererRenderElement: {"id": 4, "bounds": {"x1": 219, "y1": 1, "x2": 251, "y2": 27}, "areaClippedByParent": {"x1": 219, "y1": 1, "x2": 251, "y2": 27}}
+RequestRendererRenderElement: {"id": 6, "bounds": {"x1": 223, "y1": 3, "x2": 247, "y2": 25}, "areaClippedByParent": {"x1": 219, "y1": 1, "x2": 251, "y2": 27}}
+RequestRendererRenderElement: {"id": 7, "bounds": {"x1": 223, "y1": 3, "x2": 247, "y2": 25}, "areaClippedByParent": {"x1": 223, "y1": 3, "x2": 247, "y2": 25}}
+RequestRendererEndBoundary
+RequestRendererBeginBoundary: {"id": 2, "hitTestResult": "ButtonMaximum", "cursor": null, "bounds": {"x1": 252, "y1": 0, "x2": 286, "y2": 28}, "areaClippedBySelf": {"x1": 252, "y1": 0, "x2": 286, "y2": 28}}
+RequestRendererRenderElement: {"id": 8, "bounds": {"x1": 253, "y1": 1, "x2": 285, "y2": 27}, "areaClippedByParent": {"x1": 253, "y1": 1, "x2": 285, "y2": 27}}
+RequestRendererRenderElement: {"id": 9, "bounds": {"x1": 253, "y1": 1, "x2": 285, "y2": 27}, "areaClippedByParent": {"x1": 253, "y1": 1, "x2": 285, "y2": 27}}
+RequestRendererRenderElement: {"id": 11, "bounds": {"x1": 257, "y1": 3, "x2": 281, "y2": 25}, "areaClippedByParent": {"x1": 253, "y1": 1, "x2": 285, "y2": 27}}
+RequestRendererRenderElement: {"id": 12, "bounds": {"x1": 257, "y1": 3, "x2": 281, "y2": 25}, "areaClippedByParent": {"x1": 257, "y1": 3, "x2": 281, "y2": 25}}
+RequestRendererEndBoundary
+RequestRendererBeginBoundary: {"id": 3, "hitTestResult": "ButtonClose", "cursor": null, "bounds": {"x1": 286, "y1": 0, "x2": 320, "y2": 28}, "areaClippedBySelf": {"x1": 286, "y1": 0, "x2": 320, "y2": 28}}
+RequestRendererRenderElement: {"id": 14, "bounds": {"x1": 287, "y1": 1, "x2": 319, "y2": 27}, "areaClippedByParent": {"x1": 287, "y1": 1, "x2": 319, "y2": 27}}
+RequestRendererRenderElement: {"id": 15, "bounds": {"x1": 287, "y1": 1, "x2": 319, "y2": 27}, "areaClippedByParent": {"x1": 287, "y1": 1, "x2": 319, "y2": 27}}
+RequestRendererRenderElement: {"id": 17, "bounds": {"x1": 291, "y1": 3, "x2": 315, "y2": 25}, "areaClippedByParent": {"x1": 287, "y1": 1, "x2": 319, "y2": 27}}
+RequestRendererRenderElement: {"id": 18, "bounds": {"x1": 291, "y1": 3, "x2": 315, "y2": 25}, "areaClippedByParent": {"x1": 291, "y1": 3, "x2": 315, "y2": 25}}
+RequestRendererEndBoundary
+RequestRendererBeginBoundary: {"id": 4, "hitTestResult": "Title", "cursor": null, "bounds": {"x1": 0, "y1": 0, "x2": 218, "y2": 28}, "areaClippedBySelf": {"x1": 0, "y1": 0, "x2": 218, "y2": 28}}
+RequestRendererRenderElement: {"id": 20, "bounds": {"x1": 5, "y1": 5, "x2": 213, "y2": 23}, "areaClippedByParent": {"x1": 0, "y1": 0, "x2": 218, "y2": 28}}
+RequestRendererEndBoundary
+RequestRendererBeginBoundary: {"id": 5, "hitTestResult": "Client", "cursor": null, "bounds": {"x1": 0, "y1": 28, "x2": 320, "y2": 240}, "areaClippedBySelf": {"x1": 0, "y1": 28, "x2": 320, "y2": 240}}
+RequestRendererRenderElement: {"id": 21, "bounds": {"x1": 5, "y1": 33, "x2": 37, "y2": 53}, "areaClippedByParent": {"x1": 5, "y1": 33, "x2": 37, "y2": 53}}
+RequestRendererRenderElement: {"id": 22, "bounds": {"x1": 5, "y1": 33, "x2": 37, "y2": 53}, "areaClippedByParent": {"x1": 5, "y1": 33, "x2": 37, "y2": 53}}
+RequestRendererRenderElement: {"id": 23, "bounds": {"x1": 6, "y1": 34, "x2": 36, "y2": 52}, "areaClippedByParent": {"x1": 5, "y1": 33, "x2": 37, "y2": 53}}
+RequestRendererRenderElement: {"id": 24, "bounds": {"x1": 9, "y1": 35, "x2": 33, "y2": 51}, "areaClippedByParent": {"x1": 5, "y1": 33, "x2": 37, "y2": 53}}
+RequestRendererEndBoundary
+========================================
+9
+========================================
+RequestRendererRenderElement: {"id": 1, "bounds": {"x1": 0, "y1": 0, "x2": 320, "y2": 240}, "areaClippedByParent": {"x1": 0, "y1": 0, "x2": 320, "y2": 240}}
+RequestRendererRenderElement: {"id": 2, "bounds": {"x1": 0, "y1": 0, "x2": 320, "y2": 240}, "areaClippedByParent": {"x1": 0, "y1": 0, "x2": 320, "y2": 240}}
+RequestRendererBeginBoundary: {"id": 1, "hitTestResult": "ButtonMinimum", "cursor": null, "bounds": {"x1": 218, "y1": 0, "x2": 252, "y2": 28}, "areaClippedBySelf": {"x1": 218, "y1": 0, "x2": 252, "y2": 28}}
+RequestRendererRenderElement: {"id": 3, "bounds": {"x1": 219, "y1": 1, "x2": 251, "y2": 27}, "areaClippedByParent": {"x1": 219, "y1": 1, "x2": 251, "y2": 27}}
+RequestRendererRenderElement: {"id": 4, "bounds": {"x1": 219, "y1": 1, "x2": 251, "y2": 27}, "areaClippedByParent": {"x1": 219, "y1": 1, "x2": 251, "y2": 27}}
+RequestRendererRenderElement: {"id": 6, "bounds": {"x1": 223, "y1": 3, "x2": 247, "y2": 25}, "areaClippedByParent": {"x1": 219, "y1": 1, "x2": 251, "y2": 27}}
+RequestRendererRenderElement: {"id": 7, "bounds": {"x1": 223, "y1": 3, "x2": 247, "y2": 25}, "areaClippedByParent": {"x1": 223, "y1": 3, "x2": 247, "y2": 25}}
+RequestRendererEndBoundary
+RequestRendererBeginBoundary: {"id": 2, "hitTestResult": "ButtonMaximum", "cursor": null, "bounds": {"x1": 252, "y1": 0, "x2": 286, "y2": 28}, "areaClippedBySelf": {"x1": 252, "y1": 0, "x2": 286, "y2": 28}}
+RequestRendererRenderElement: {"id": 8, "bounds": {"x1": 253, "y1": 1, "x2": 285, "y2": 27}, "areaClippedByParent": {"x1": 253, "y1": 1, "x2": 285, "y2": 27}}
+RequestRendererRenderElement: {"id": 9, "bounds": {"x1": 253, "y1": 1, "x2": 285, "y2": 27}, "areaClippedByParent": {"x1": 253, "y1": 1, "x2": 285, "y2": 27}}
+RequestRendererRenderElement: {"id": 11, "bounds": {"x1": 257, "y1": 3, "x2": 281, "y2": 25}, "areaClippedByParent": {"x1": 253, "y1": 1, "x2": 285, "y2": 27}}
+RequestRendererRenderElement: {"id": 12, "bounds": {"x1": 257, "y1": 3, "x2": 281, "y2": 25}, "areaClippedByParent": {"x1": 257, "y1": 3, "x2": 281, "y2": 25}}
+RequestRendererEndBoundary
+RequestRendererBeginBoundary: {"id": 3, "hitTestResult": "ButtonClose", "cursor": null, "bounds": {"x1": 286, "y1": 0, "x2": 320, "y2": 28}, "areaClippedBySelf": {"x1": 286, "y1": 0, "x2": 320, "y2": 28}}
+RequestRendererRenderElement: {"id": 14, "bounds": {"x1": 287, "y1": 1, "x2": 319, "y2": 27}, "areaClippedByParent": {"x1": 287, "y1": 1, "x2": 319, "y2": 27}}
+RequestRendererRenderElement: {"id": 15, "bounds": {"x1": 287, "y1": 1, "x2": 319, "y2": 27}, "areaClippedByParent": {"x1": 287, "y1": 1, "x2": 319, "y2": 27}}
+RequestRendererRenderElement: {"id": 17, "bounds": {"x1": 291, "y1": 3, "x2": 315, "y2": 25}, "areaClippedByParent": {"x1": 287, "y1": 1, "x2": 319, "y2": 27}}
+RequestRendererRenderElement: {"id": 18, "bounds": {"x1": 291, "y1": 3, "x2": 315, "y2": 25}, "areaClippedByParent": {"x1": 291, "y1": 3, "x2": 315, "y2": 25}}
+RequestRendererEndBoundary
+RequestRendererBeginBoundary: {"id": 4, "hitTestResult": "Title", "cursor": null, "bounds": {"x1": 0, "y1": 0, "x2": 218, "y2": 28}, "areaClippedBySelf": {"x1": 0, "y1": 0, "x2": 218, "y2": 28}}
+RequestRendererRenderElement: {"id": 20, "bounds": {"x1": 5, "y1": 5, "x2": 213, "y2": 23}, "areaClippedByParent": {"x1": 0, "y1": 0, "x2": 218, "y2": 28}}
+RequestRendererEndBoundary
+RequestRendererBeginBoundary: {"id": 5, "hitTestResult": "Client", "cursor": null, "bounds": {"x1": 0, "y1": 28, "x2": 320, "y2": 240}, "areaClippedBySelf": {"x1": 0, "y1": 28, "x2": 320, "y2": 240}}
+RequestRendererRenderElement: {"id": 21, "bounds": {"x1": 5, "y1": 33, "x2": 37, "y2": 53}, "areaClippedByParent": {"x1": 5, "y1": 33, "x2": 37, "y2": 53}}
+RequestRendererRenderElement: {"id": 22, "bounds": {"x1": 5, "y1": 33, "x2": 37, "y2": 53}, "areaClippedByParent": {"x1": 5, "y1": 33, "x2": 37, "y2": 53}}
+RequestRendererRenderElement: {"id": 23, "bounds": {"x1": 6, "y1": 34, "x2": 36, "y2": 52}, "areaClippedByParent": {"x1": 5, "y1": 33, "x2": 37, "y2": 53}}
+RequestRendererRenderElement: {"id": 24, "bounds": {"x1": 9, "y1": 35, "x2": 33, "y2": 51}, "areaClippedByParent": {"x1": 5, "y1": 33, "x2": 37, "y2": 53}}
+RequestRendererEndBoundary
+========================================
+10
+========================================
+RequestRendererRenderElement: {"id": 1, "bounds": {"x1": 0, "y1": 0, "x2": 320, "y2": 240}, "areaClippedByParent": {"x1": 0, "y1": 0, "x2": 320, "y2": 240}}
+RequestRendererRenderElement: {"id": 2, "bounds": {"x1": 0, "y1": 0, "x2": 320, "y2": 240}, "areaClippedByParent": {"x1": 0, "y1": 0, "x2": 320, "y2": 240}}
+RequestRendererBeginBoundary: {"id": 1, "hitTestResult": "ButtonMinimum", "cursor": null, "bounds": {"x1": 218, "y1": 0, "x2": 252, "y2": 28}, "areaClippedBySelf": {"x1": 218, "y1": 0, "x2": 252, "y2": 28}}
+RequestRendererRenderElement: {"id": 3, "bounds": {"x1": 219, "y1": 1, "x2": 251, "y2": 27}, "areaClippedByParent": {"x1": 219, "y1": 1, "x2": 251, "y2": 27}}
+RequestRendererRenderElement: {"id": 4, "bounds": {"x1": 219, "y1": 1, "x2": 251, "y2": 27}, "areaClippedByParent": {"x1": 219, "y1": 1, "x2": 251, "y2": 27}}
+RequestRendererRenderElement: {"id": 6, "bounds": {"x1": 223, "y1": 3, "x2": 247, "y2": 25}, "areaClippedByParent": {"x1": 219, "y1": 1, "x2": 251, "y2": 27}}
+RequestRendererRenderElement: {"id": 7, "bounds": {"x1": 223, "y1": 3, "x2": 247, "y2": 25}, "areaClippedByParent": {"x1": 223, "y1": 3, "x2": 247, "y2": 25}}
+RequestRendererEndBoundary
+RequestRendererBeginBoundary: {"id": 2, "hitTestResult": "ButtonMaximum", "cursor": null, "bounds": {"x1": 252, "y1": 0, "x2": 286, "y2": 28}, "areaClippedBySelf": {"x1": 252, "y1": 0, "x2": 286, "y2": 28}}
+RequestRendererRenderElement: {"id": 8, "bounds": {"x1": 253, "y1": 1, "x2": 285, "y2": 27}, "areaClippedByParent": {"x1": 253, "y1": 1, "x2": 285, "y2": 27}}
+RequestRendererRenderElement: {"id": 9, "bounds": {"x1": 253, "y1": 1, "x2": 285, "y2": 27}, "areaClippedByParent": {"x1": 253, "y1": 1, "x2": 285, "y2": 27}}
+RequestRendererRenderElement: {"id": 11, "bounds": {"x1": 257, "y1": 3, "x2": 281, "y2": 25}, "areaClippedByParent": {"x1": 253, "y1": 1, "x2": 285, "y2": 27}}
+RequestRendererRenderElement: {"id": 12, "bounds": {"x1": 257, "y1": 3, "x2": 281, "y2": 25}, "areaClippedByParent": {"x1": 257, "y1": 3, "x2": 281, "y2": 25}}
+RequestRendererEndBoundary
+RequestRendererBeginBoundary: {"id": 3, "hitTestResult": "ButtonClose", "cursor": null, "bounds": {"x1": 286, "y1": 0, "x2": 320, "y2": 28}, "areaClippedBySelf": {"x1": 286, "y1": 0, "x2": 320, "y2": 28}}
+RequestRendererRenderElement: {"id": 14, "bounds": {"x1": 287, "y1": 1, "x2": 319, "y2": 27}, "areaClippedByParent": {"x1": 287, "y1": 1, "x2": 319, "y2": 27}}
+RequestRendererRenderElement: {"id": 15, "bounds": {"x1": 287, "y1": 1, "x2": 319, "y2": 27}, "areaClippedByParent": {"x1": 287, "y1": 1, "x2": 319, "y2": 27}}
+RequestRendererRenderElement: {"id": 17, "bounds": {"x1": 291, "y1": 3, "x2": 315, "y2": 25}, "areaClippedByParent": {"x1": 287, "y1": 1, "x2": 319, "y2": 27}}
+RequestRendererRenderElement: {"id": 18, "bounds": {"x1": 291, "y1": 3, "x2": 315, "y2": 25}, "areaClippedByParent": {"x1": 291, "y1": 3, "x2": 315, "y2": 25}}
+RequestRendererEndBoundary
+RequestRendererBeginBoundary: {"id": 4, "hitTestResult": "Title", "cursor": null, "bounds": {"x1": 0, "y1": 0, "x2": 218, "y2": 28}, "areaClippedBySelf": {"x1": 0, "y1": 0, "x2": 218, "y2": 28}}
+RequestRendererRenderElement: {"id": 20, "bounds": {"x1": 5, "y1": 5, "x2": 213, "y2": 23}, "areaClippedByParent": {"x1": 0, "y1": 0, "x2": 218, "y2": 28}}
+RequestRendererEndBoundary
+RequestRendererBeginBoundary: {"id": 5, "hitTestResult": "Client", "cursor": null, "bounds": {"x1": 0, "y1": 28, "x2": 320, "y2": 240}, "areaClippedBySelf": {"x1": 0, "y1": 28, "x2": 320, "y2": 240}}
+RequestRendererRenderElement: {"id": 21, "bounds": {"x1": 5, "y1": 33, "x2": 37, "y2": 53}, "areaClippedByParent": {"x1": 5, "y1": 33, "x2": 37, "y2": 53}}
+RequestRendererRenderElement: {"id": 22, "bounds": {"x1": 5, "y1": 33, "x2": 37, "y2": 53}, "areaClippedByParent": {"x1": 5, "y1": 33, "x2": 37, "y2": 53}}
+RequestRendererRenderElement: {"id": 23, "bounds": {"x1": 6, "y1": 34, "x2": 36, "y2": 52}, "areaClippedByParent": {"x1": 5, "y1": 33, "x2": 37, "y2": 53}}
+RequestRendererRenderElement: {"id": 24, "bounds": {"x1": 9, "y1": 35, "x2": 33, "y2": 51}, "areaClippedByParent": {"x1": 5, "y1": 33, "x2": 37, "y2": 53}}
+RequestRendererEndBoundary

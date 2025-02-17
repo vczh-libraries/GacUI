@@ -104,6 +104,8 @@ void ChannelPackageSemanticUnpack(
 		using TUIMainProc = Func<void(GuiRemoteProtocolAsyncChannelSerializer<TPackage>*)>;
 
 	protected:
+		using TPendingRequestGroup = collections::List<vint>;
+		using TPendingRequestStack = collections::List<Ptr<TPendingRequestGroup>>;
 
 		IGuiRemoteProtocolChannel<TPackage>*						channel = nullptr;
 		IGuiRemoteProtocolChannelReceiver<TPackage>*				receiver = nullptr;
@@ -116,7 +118,7 @@ void ChannelPackageSemanticUnpack(
 		SpinLock													lockResponses;
 		EventObject													eventManualResponses;
 		collections::Dictionary<vint, TPackage>						queuedResponses;
-		collections::List<vint>										pendingRequests;
+		TPendingRequestStack										pendingRequests;
 
 		volatile bool												started = false;
 		volatile bool												stopping = false;
@@ -139,6 +141,7 @@ void ChannelPackageSemanticUnpack(
 
 			// All remaining queued callbacks should be executed
 			FetchAndExecuteUITasks();
+			eventManualUIThreadStopped.Signal();
 		}
 
 		void ChannelThreadProc()
@@ -161,9 +164,23 @@ void ChannelPackageSemanticUnpack(
 
 			// All remaining queued callbacks should be executed
 			FetchAndExecuteChannelTasks();
+			eventManualChannelThreadStopped.Signal();
 		}
 
 	protected:
+
+		bool AreCurrentPendingRequestGroupSatisfied()
+		{
+			if (pendingRequests.Count() == 0) return false;
+			for (vint requestId : *pendingRequests[pendingRequests.Count() - 1].Obj())
+			{
+				if (!queuedResponses.Keys().Contains(requestId))
+				{
+					return false;
+				}
+			}
+			return true;
+		}
 
 		void OnReceive(const TPackage& package) override
 		{
@@ -192,7 +209,7 @@ void ChannelPackageSemanticUnpack(
 					SPIN_LOCK(lockResponses)
 					{
 						queuedResponses.Add(id, package);
-						if (pendingRequests.Count() > 0 && pendingRequests[pendingRequests.Count() - 1] == id)
+						if (AreCurrentPendingRequestGroupSatisfied())
 						{
 							eventManualResponses.Signal();
 						}
@@ -218,8 +235,8 @@ void ChannelPackageSemanticUnpack(
 		{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::channeling::GuiRemoteProtocolAsyncChannelSerializer<TPackage>::Submit(...)#"
 
-			// Ensure at most one request per submit
-			vint requestId = -1;
+			// Group all pending requests into a group
+			Ptr<TPendingRequestGroup> requestGroup;
 			for (auto&& package : uiPendingPackages)
 			{
 				auto semantic = ChannelPackageSemantic::Unknown;
@@ -229,12 +246,18 @@ void ChannelPackageSemanticUnpack(
 
 				if (semantic == ChannelPackageSemantic::Request)
 				{
-					CHECK_ERROR(requestId == -1, ERROR_MESSAGE_PREFIX L"Only one request (message that requires a response) is allowed between Submit() calls.");
-					requestId = id;
-					SPIN_LOCK(lockResponses)
+					if (!requestGroup)
 					{
-						pendingRequests.Add(id);
+						requestGroup = Ptr(new TPendingRequestGroup);
 					}
+					requestGroup->Add(id);
+				}
+			}
+			if (requestGroup)
+			{
+				SPIN_LOCK(lockResponses)
+				{
+					pendingRequests.Add(requestGroup);
 				}
 			}
 
@@ -248,24 +271,31 @@ void ChannelPackageSemanticUnpack(
 				channel->Submit();
 			}, &eventAutoChannelTaskQueued);
 
-			// Block until the response of the top request is received
+			// Block until the all responses of the top request group are received
 			// Re-entrance recursively is possible
-			if (requestId != -1)
+			if (requestGroup)
 			{
 				eventManualResponses.Wait();
-				TPackage response;
+				collections::List<TPackage> responses;
 				SPIN_LOCK(lockResponses)
 				{
-					response = queuedResponses[requestId];
-					queuedResponses.Remove(requestId);
+					for (vint id : *requestGroup.Obj())
+					{
+						responses.Add(queuedResponses[id]);
+						queuedResponses.Remove(id);
+					}
 					pendingRequests.RemoveAt(pendingRequests.Count() - 1);
 
-					if (pendingRequests.Count() == 0 || !queuedResponses.Keys().Contains(pendingRequests[pendingRequests.Count() - 1]))
+					if (!AreCurrentPendingRequestGroupSatisfied())
 					{
 						eventManualResponses.Unsignal();
 					}
 				}
-				receiver->OnReceive(response);
+
+				for (auto&& response : responses)
+				{
+					receiver->OnReceive(response);
+				}
 			}
 
 #undef ERROR_MESSAGE_PREFIX

@@ -1,0 +1,81 @@
+﻿========================================
+1
+========================================
+-1: {"hitTestResult": null, "cursor": null, "element": null, "bounds": {"x1": 0, "y1": 0, "x2": 0, "y2": 0}, "validArea": {"x1": 0, "y1": 0, "x2": 0, "y2": 0}}
+  4: {"hitTestResult": null, "cursor": null, "element": 1, "bounds": {"x1": 0, "y1": 0, "x2": 320, "y2": 240}, "validArea": {"x1": 0, "y1": 0, "x2": 320, "y2": 240}}
+    8: {"hitTestResult": null, "cursor": null, "element": 2, "bounds": {"x1": 0, "y1": 0, "x2": 320, "y2": 240}, "validArea": {"x1": 0, "y1": 0, "x2": 320, "y2": 240}}
+      6: {"hitTestResult": "ButtonMinimum", "cursor": null, "element": null, "bounds": {"x1": 218, "y1": 0, "x2": 252, "y2": 22}, "validArea": {"x1": 218, "y1": 0, "x2": 252, "y2": 22}}
+      10: {"hitTestResult": "ButtonMaximum", "cursor": null, "element": null, "bounds": {"x1": 252, "y1": 0, "x2": 286, "y2": 22}, "validArea": {"x1": 252, "y1": 0, "x2": 286, "y2": 22}}
+      14: {"hitTestResult": "ButtonClose", "cursor": null, "element": null, "bounds": {"x1": 286, "y1": 0, "x2": 320, "y2": 22}, "validArea": {"x1": 286, "y1": 0, "x2": 320, "y2": 22}}
+      18: {"hitTestResult": "Title", "cursor": null, "element": null, "bounds": {"x1": 0, "y1": 0, "x2": 218, "y2": 22}, "validArea": {"x1": 0, "y1": 0, "x2": 218, "y2": 22}}
+      22: {"hitTestResult": "Client", "cursor": null, "element": null, "bounds": {"x1": 0, "y1": 22, "x2": 320, "y2": 240}, "validArea": {"x1": 0, "y1": 22, "x2": 320, "y2": 240}}
+        12: {"hitTestResult": null, "cursor": null, "element": 3, "bounds": {"x1": 219, "y1": 1, "x2": 251, "y2": 21}, "validArea": {"x1": 219, "y1": 1, "x2": 251, "y2": 21}}
+        32: {"hitTestResult": null, "cursor": null, "element": 8, "bounds": {"x1": 253, "y1": 1, "x2": 285, "y2": 21}, "validArea": {"x1": 253, "y1": 1, "x2": 285, "y2": 21}}
+        56: {"hitTestResult": null, "cursor": null, "element": 14, "bounds": {"x1": 287, "y1": 1, "x2": 319, "y2": 21}, "validArea": {"x1": 287, "y1": 1, "x2": 319, "y2": 21}}
+        80: {"hitTestResult": null, "cursor": null, "element": 20, "bounds": {"x1": 5, "y1": 5, "x2": 213, "y2": 17}, "validArea": {"x1": 5, "y1": 5, "x2": 213, "y2": 17}}
+          16: {"hitTestResult": null, "cursor": null, "element": 4, "bounds": {"x1": 219, "y1": 1, "x2": 251, "y2": 21}, "validArea": {"x1": 219, "y1": 1, "x2": 251, "y2": 21}}
+          36: {"hitTestResult": null, "cursor": null, "element": 9, "bounds": {"x1": 253, "y1": 1, "x2": 285, "y2": 21}, "validArea": {"x1": 253, "y1": 1, "x2": 285, "y2": 21}}
+          60: {"hitTestResult": null, "cursor": null, "element": 15, "bounds": {"x1": 287, "y1": 1, "x2": 319, "y2": 21}, "validArea": {"x1": 287, "y1": 1, "x2": 319, "y2": 21}}
+            24: {"hitTestResult": null, "cursor": null, "element": 6, "bounds": {"x1": 223, "y1": 3, "x2": 247, "y2": 19}, "validArea": {"x1": 223, "y1": 3, "x2": 247, "y2": 19}}
+            44: {"hitTestResult": null, "cursor": null, "element": 11, "bounds": {"x1": 257, "y1": 3, "x2": 281, "y2": 19}, "validArea": {"x1": 257, "y1": 3, "x2": 281, "y2": 19}}
+            68: {"hitTestResult": null, "cursor": null, "element": 17, "bounds": {"x1": 291, "y1": 3, "x2": 315, "y2": 19}, "validArea": {"x1": 291, "y1": 3, "x2": 315, "y2": 19}}
+              28: {"hitTestResult": null, "cursor": null, "element": 7, "bounds": {"x1": 223, "y1": 3, "x2": 247, "y2": 19}, "validArea": {"x1": 223, "y1": 3, "x2": 247, "y2": 19}}
+              48: {"hitTestResult": null, "cursor": null, "element": 12, "bounds": {"x1": 257, "y1": 3, "x2": 281, "y2": 19}, "validArea": {"x1": 257, "y1": 3, "x2": 281, "y2": 19}}
+              72: {"hitTestResult": null, "cursor": null, "element": 18, "bounds": {"x1": 291, "y1": 3, "x2": 315, "y2": 19}, "validArea": {"x1": 291, "y1": 3, "x2": 315, "y2": 19}}
+========================================
+2
+========================================
+{"id": 22, "diffType": "Modified", "content": null, "children": [84]}
+{"id": 84, "diffType": "Created", "content": {"hitTestResult": null, "cursor": null, "element": 21, "bounds": {"x1": 5, "y1": 27, "x2": 14, "y2": 32}, "validArea": {"x1": 5, "y1": 27, "x2": 14, "y2": 32}}, "children": [88]}
+{"id": 88, "diffType": "Created", "content": {"hitTestResult": null, "cursor": null, "element": 22, "bounds": {"x1": 5, "y1": 27, "x2": 14, "y2": 32}, "validArea": {"x1": 5, "y1": 27, "x2": 14, "y2": 32}}, "children": [96]}
+{"id": 96, "diffType": "Created", "content": {"hitTestResult": null, "cursor": null, "element": 24, "bounds": {"x1": 9, "y1": 29, "x2": 10, "y2": 30}, "validArea": {"x1": 9, "y1": 29, "x2": 10, "y2": 30}}, "children": null}
+========================================
+3
+========================================
+{"id": 6, "diffType": "Modified", "content": {"hitTestResult": "ButtonMinimum", "cursor": null, "element": null, "bounds": {"x1": 218, "y1": 0, "x2": 252, "y2": 28}, "validArea": {"x1": 218, "y1": 0, "x2": 252, "y2": 28}}, "children": null}
+{"id": 10, "diffType": "Modified", "content": {"hitTestResult": "ButtonMaximum", "cursor": null, "element": null, "bounds": {"x1": 252, "y1": 0, "x2": 286, "y2": 28}, "validArea": {"x1": 252, "y1": 0, "x2": 286, "y2": 28}}, "children": null}
+{"id": 12, "diffType": "Modified", "content": {"hitTestResult": null, "cursor": null, "element": 3, "bounds": {"x1": 219, "y1": 1, "x2": 251, "y2": 27}, "validArea": {"x1": 219, "y1": 1, "x2": 251, "y2": 27}}, "children": null}
+{"id": 14, "diffType": "Modified", "content": {"hitTestResult": "ButtonClose", "cursor": null, "element": null, "bounds": {"x1": 286, "y1": 0, "x2": 320, "y2": 28}, "validArea": {"x1": 286, "y1": 0, "x2": 320, "y2": 28}}, "children": null}
+{"id": 16, "diffType": "Modified", "content": {"hitTestResult": null, "cursor": null, "element": 4, "bounds": {"x1": 219, "y1": 1, "x2": 251, "y2": 27}, "validArea": {"x1": 219, "y1": 1, "x2": 251, "y2": 27}}, "children": null}
+{"id": 18, "diffType": "Modified", "content": {"hitTestResult": "Title", "cursor": null, "element": null, "bounds": {"x1": 0, "y1": 0, "x2": 218, "y2": 28}, "validArea": {"x1": 0, "y1": 0, "x2": 218, "y2": 28}}, "children": null}
+{"id": 22, "diffType": "Modified", "content": {"hitTestResult": "Client", "cursor": null, "element": null, "bounds": {"x1": 0, "y1": 28, "x2": 320, "y2": 240}, "validArea": {"x1": 0, "y1": 28, "x2": 320, "y2": 240}}, "children": null}
+{"id": 24, "diffType": "Modified", "content": {"hitTestResult": null, "cursor": null, "element": 6, "bounds": {"x1": 223, "y1": 3, "x2": 247, "y2": 25}, "validArea": {"x1": 223, "y1": 3, "x2": 247, "y2": 25}}, "children": null}
+{"id": 28, "diffType": "Modified", "content": {"hitTestResult": null, "cursor": null, "element": 7, "bounds": {"x1": 223, "y1": 3, "x2": 247, "y2": 25}, "validArea": {"x1": 223, "y1": 3, "x2": 247, "y2": 25}}, "children": null}
+{"id": 32, "diffType": "Modified", "content": {"hitTestResult": null, "cursor": null, "element": 8, "bounds": {"x1": 253, "y1": 1, "x2": 285, "y2": 27}, "validArea": {"x1": 253, "y1": 1, "x2": 285, "y2": 27}}, "children": null}
+{"id": 36, "diffType": "Modified", "content": {"hitTestResult": null, "cursor": null, "element": 9, "bounds": {"x1": 253, "y1": 1, "x2": 285, "y2": 27}, "validArea": {"x1": 253, "y1": 1, "x2": 285, "y2": 27}}, "children": null}
+{"id": 44, "diffType": "Modified", "content": {"hitTestResult": null, "cursor": null, "element": 11, "bounds": {"x1": 257, "y1": 3, "x2": 281, "y2": 25}, "validArea": {"x1": 257, "y1": 3, "x2": 281, "y2": 25}}, "children": null}
+{"id": 48, "diffType": "Modified", "content": {"hitTestResult": null, "cursor": null, "element": 12, "bounds": {"x1": 257, "y1": 3, "x2": 281, "y2": 25}, "validArea": {"x1": 257, "y1": 3, "x2": 281, "y2": 25}}, "children": null}
+{"id": 56, "diffType": "Modified", "content": {"hitTestResult": null, "cursor": null, "element": 14, "bounds": {"x1": 287, "y1": 1, "x2": 319, "y2": 27}, "validArea": {"x1": 287, "y1": 1, "x2": 319, "y2": 27}}, "children": null}
+{"id": 60, "diffType": "Modified", "content": {"hitTestResult": null, "cursor": null, "element": 15, "bounds": {"x1": 287, "y1": 1, "x2": 319, "y2": 27}, "validArea": {"x1": 287, "y1": 1, "x2": 319, "y2": 27}}, "children": null}
+{"id": 68, "diffType": "Modified", "content": {"hitTestResult": null, "cursor": null, "element": 17, "bounds": {"x1": 291, "y1": 3, "x2": 315, "y2": 25}, "validArea": {"x1": 291, "y1": 3, "x2": 315, "y2": 25}}, "children": null}
+{"id": 72, "diffType": "Modified", "content": {"hitTestResult": null, "cursor": null, "element": 18, "bounds": {"x1": 291, "y1": 3, "x2": 315, "y2": 25}, "validArea": {"x1": 291, "y1": 3, "x2": 315, "y2": 25}}, "children": null}
+{"id": 80, "diffType": "Modified", "content": {"hitTestResult": null, "cursor": null, "element": 20, "bounds": {"x1": 5, "y1": 5, "x2": 213, "y2": 23}, "validArea": {"x1": 5, "y1": 5, "x2": 213, "y2": 23}}, "children": null}
+{"id": 84, "diffType": "Modified", "content": {"hitTestResult": null, "cursor": null, "element": 21, "bounds": {"x1": 5, "y1": 33, "x2": 14, "y2": 38}, "validArea": {"x1": 5, "y1": 33, "x2": 14, "y2": 38}}, "children": null}
+{"id": 88, "diffType": "Modified", "content": {"hitTestResult": null, "cursor": null, "element": 22, "bounds": {"x1": 5, "y1": 33, "x2": 14, "y2": 38}, "validArea": {"x1": 5, "y1": 33, "x2": 14, "y2": 38}}, "children": null}
+{"id": 96, "diffType": "Modified", "content": {"hitTestResult": null, "cursor": null, "element": 24, "bounds": {"x1": 9, "y1": 35, "x2": 10, "y2": 36}, "validArea": {"x1": 9, "y1": 35, "x2": 10, "y2": 36}}, "children": null}
+========================================
+4
+========================================
+{"id": 84, "diffType": "Modified", "content": {"hitTestResult": null, "cursor": null, "element": 21, "bounds": {"x1": 5, "y1": 33, "x2": 37, "y2": 53}, "validArea": {"x1": 5, "y1": 33, "x2": 37, "y2": 53}}, "children": null}
+{"id": 88, "diffType": "Modified", "content": {"hitTestResult": null, "cursor": null, "element": 22, "bounds": {"x1": 5, "y1": 33, "x2": 37, "y2": 53}, "validArea": {"x1": 5, "y1": 33, "x2": 37, "y2": 53}}, "children": null}
+{"id": 96, "diffType": "Modified", "content": {"hitTestResult": null, "cursor": null, "element": 24, "bounds": {"x1": 9, "y1": 35, "x2": 33, "y2": 51}, "validArea": {"x1": 9, "y1": 35, "x2": 33, "y2": 51}}, "children": null}
+========================================
+5
+========================================
+========================================
+6
+========================================
+========================================
+7
+========================================
+========================================
+8
+========================================
+{"id": 88, "diffType": "Modified", "content": null, "children": [92]}
+{"id": 92, "diffType": "Created", "content": {"hitTestResult": null, "cursor": null, "element": 23, "bounds": {"x1": 6, "y1": 34, "x2": 36, "y2": 52}, "validArea": {"x1": 6, "y1": 34, "x2": 36, "y2": 52}}, "children": [96]}
+========================================
+9
+========================================
+========================================
+10
+========================================
