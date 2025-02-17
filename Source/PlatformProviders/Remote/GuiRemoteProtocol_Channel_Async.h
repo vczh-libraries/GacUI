@@ -219,7 +219,7 @@ void ChannelPackageSemanticUnpack(
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::channeling::GuiRemoteProtocolAsyncChannelSerializer<TPackage>::Submit(...)#"
 
 			// Ensure at most one request per submit
-			vint requestId = false;
+			vint requestId = -1;
 			for (auto&& package : uiPendingPackages)
 			{
 				auto semantic = ChannelPackageSemantic::Unknown;

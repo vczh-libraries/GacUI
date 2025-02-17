@@ -17,6 +17,7 @@ GuiRemoteEventFilter
 
 	void GuiRemoteEventFilter::ProcessResponses()
 	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::repeatfiltering::GuiRemoteProtocolFilter::ProcessResponses()#"
 		for (auto&& response : filteredResponses)
 		{
 #define MESSAGE_NORES(NAME, RESPONSE)
@@ -30,14 +31,16 @@ GuiRemoteEventFilter
 			{
 			GACUI_REMOTEPROTOCOL_MESSAGES(MESSAGE_HANDLER)
 			default:
-				CHECK_FAIL(L"vl::presentation::remoteprotocol::GuiRemoteEventFilter::ProcessResponses()#Unrecognized response.");
+				CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unrecognized response.");
 			}
 #undef MESSAGE_HANDLER
 #undef MESSAGE_RES
 #undef MESSAGE_NORES
 		}
-	
+
+		CHECK_ERROR(responseIds.Count() == 0,  L"Messages sending to IGuiRemoteProtocol should be all responded.");
 		filteredResponses.Clear();
+#undef ERROR_MESSAGE_PREFIX
 	}
 	
 	void GuiRemoteEventFilter::ProcessEvents()
@@ -228,7 +231,6 @@ GuiRemoteProtocolFilter
 #undef MESSAGE_NOREQ_NORES
 		}
 	
-		CHECK_ERROR(eventCombinator.responseIds.Count() == 0, L"Messages sending to IGuiRemoteProtocol should be all responded.");
 		filteredRequests.Clear();
 	}
 
@@ -337,8 +339,8 @@ GuiRemoteProtocolFilter
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::repeatfiltering::GuiRemoteProtocolFilter::Submit()#"
 		CHECK_ERROR(!eventCombinator.submitting, ERROR_MESSAGE_PREFIX L"This function is not allowed to be called recursively.");
 		eventCombinator.submitting = true;
-		GuiRemoteProtocolCombinator<GuiRemoteEventFilter>::Submit();
 		ProcessRequests();
+		GuiRemoteProtocolCombinator<GuiRemoteEventFilter>::Submit();
 		eventCombinator.ProcessResponses();
 		eventCombinator.submitting = false;
 		eventCombinator.ProcessEvents();
