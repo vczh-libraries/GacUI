@@ -375,8 +375,40 @@ void GacUIUnitTest_StartAsync(const WString& appName, Nullable<UnitTestScreenCon
 			channeling::GuiRemoteProtocolAsyncJsonChannelSerializer::TUIThreadProc uiThreadProc
 			)
 		{
-			Thread::CreateAndStart(channelThreadProc);
-			Thread::CreateAndStart(uiThreadProc);
+			Thread::CreateAndStart([channelThreadProc]()
+			{
+				try
+				{
+					channelThreadProc();
+				}
+				catch (const Exception& e)
+				{
+					(void)e;
+					throw;
+				}
+				catch (const Error& e)
+				{
+					(void)e;
+					throw;
+				}
+			});
+			Thread::CreateAndStart([uiThreadProc]()
+			{
+				try
+				{
+				uiThreadProc();
+				}
+				catch (const Exception& e)
+				{
+					(void)e;
+					throw;
+				}
+				catch (const Error& e)
+				{
+					(void)e;
+					throw;
+				}
+			});
 		});
 
 	asyncChannelSender.WaitForStopped();

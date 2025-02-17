@@ -337,8 +337,8 @@ GuiRemoteProtocolFilter
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::repeatfiltering::GuiRemoteProtocolFilter::Submit()#"
 		CHECK_ERROR(!eventCombinator.submitting, ERROR_MESSAGE_PREFIX L"This function is not allowed to be called recursively.");
 		eventCombinator.submitting = true;
-		ProcessRequests();
 		GuiRemoteProtocolCombinator<GuiRemoteEventFilter>::Submit();
+		ProcessRequests();
 		eventCombinator.ProcessResponses();
 		eventCombinator.submitting = false;
 		eventCombinator.ProcessEvents();
