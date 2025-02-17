@@ -68,5 +68,13 @@ TEST_FILE
 				globalConfig
 				);
 		});
+
+		TEST_CASE(L"Exit on Half Way")
+		{
+		});
+
+		TEST_CASE(L"Disconnect and Reconnect")
+		{
+		});
 	});
 }

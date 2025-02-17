@@ -330,7 +330,62 @@ void GacUIUnitTest_Start(const WString& appName, Nullable<UnitTestScreenConfig> 
 
 void GacUIUnitTest_StartAsync(const WString& appName, Nullable<UnitTestScreenConfig> config)
 {
-	CHECK_FAIL(L"Not Implemented!");
+	TEST_ASSERT(config && config.Value().useChannel == UnitTestRemoteChannel::Async);
+
+	// Renderer
+	UnitTestRemoteProtocol unitTestProtocol(appName, config.Value());
+	auto jsonParser = Ptr(new glr::json::Parser);
+
+	// Data Processing in Renderer
+	channeling::GuiRemoteJsonChannelFromProtocol channelReceiver(unitTestProtocol.GetProtocol());
+	channeling::GuiRemoteJsonChannelStringDeserializer channelJsonDeserializer(&channelReceiver, jsonParser);
+	channeling::GuiRemoteUtfStringChannelDeserializer<wchar_t, char8_t> channelUtf8Deserializer(&channelJsonDeserializer);
+
+	// Boundary between Binaries
+
+	// Data Processing in Core
+	channeling::GuiRemoteUtfStringChannelSerializer<wchar_t, char8_t> channelUtf8Serializer(&channelUtf8Deserializer);
+	channeling::GuiRemoteJsonChannelStringSerializer channelJsonSerializer(&channelUtf8Serializer, jsonParser);
+
+	// Boundary between threads
+
+	channeling::GuiRemoteProtocolAsyncJsonChannelSerializer asyncChannelSender;
+	asyncChannelSender.Start(
+		&channelJsonSerializer,
+		[&unitTestProtocol, config](channeling::GuiRemoteProtocolAsyncJsonChannelSerializer* channel)
+		{
+			channeling::GuiRemoteProtocolFromJsonChannel channelSender(channel);
+
+			// Core
+			repeatfiltering::GuiRemoteProtocolFilterVerifier verifierProtocol(&channelSender);
+			repeatfiltering::GuiRemoteProtocolFilter filteredProtocol(&verifierProtocol);
+			GuiRemoteProtocolDomDiffConverter diffConverterProtocol(&filteredProtocol);
+
+			UnitTestContextImpl unitTestContext(&unitTestProtocol);
+			guiMainUnitTestContext = &unitTestContext;
+			SetupRemoteNativeController(
+				config.Value().useDomDiff
+				? static_cast<IGuiRemoteProtocol*>(&diffConverterProtocol)
+				: &filteredProtocol
+				);
+			GacUIUnitTest_SetGuiMainProxy({});
+		},
+		[](
+			channeling::GuiRemoteProtocolAsyncJsonChannelSerializer::TChannelThreadProc channelThreadProc,
+			channeling::GuiRemoteProtocolAsyncJsonChannelSerializer::TUIThreadProc uiThreadProc
+			)
+		{
+			Thread::CreateAndStart(channelThreadProc);
+			Thread::CreateAndStart(uiThreadProc);
+		});
+
+	asyncChannelSender.WaitForStopped();
+	GacUIUnitTest_LogUI(appName, unitTestProtocol);
+	if (!config.Value().useDomDiff)
+	{
+		GacUIUnitTest_LogCommands(appName, unitTestProtocol);
+	}
+	GacUIUnitTest_LogDiffs(appName, unitTestProtocol);
 }
 
 void GacUIUnitTest_Start_WithResourceAsText(const WString& appName, Nullable<UnitTestScreenConfig> config, const WString& resourceText)

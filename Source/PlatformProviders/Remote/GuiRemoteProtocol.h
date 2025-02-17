@@ -16,5 +16,11 @@ Interfaces:
 #include "GuiRemoteProtocol_Filter.h"
 #include "GuiRemoteProtocol_DomDiff.h"
 #include "GuiRemoteProtocol_Channel_Json.h"
+#include "GuiRemoteProtocol_Channel_Async.h"
+
+namespace vl::presentation::remoteprotocol::channeling
+{
+	using GuiRemoteProtocolAsyncJsonChannelSerializer = GuiRemoteProtocolAsyncChannelSerializer<Ptr<glr::json::JsonObject>>;
+}
 
 #endif

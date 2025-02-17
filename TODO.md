@@ -89,7 +89,8 @@
     - [x] Unit test
   - [ ] Binary channel
   - [x] Json to `ObjectString<T>` channel conversion
-  - [ ] Sync to Async channel conversion
+  - [x] Sync to Async channel conversion
+    - [ ] Test sending disconnect or other events when `Submit()` is pending on the event.
 - Remote protocol redirection back to native rendering:
   - In the test project, C++ side will expose the remote protocol via dll.
     - Use string first, and then change to binary.
