@@ -91,6 +91,7 @@
   - [x] Json to `ObjectString<T>` channel conversion
   - [x] Sync to Async channel conversion
     - [ ] Test sending disconnect or other events when `Submit()` is pending on the event.
+      - Support failure injection in unit test.
 - Remote protocol redirection back to native rendering:
   - In the test project, C++ side will expose the remote protocol via dll.
     - Use string first, and then change to binary.
