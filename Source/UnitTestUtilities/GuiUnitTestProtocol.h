@@ -108,8 +108,9 @@ IGuiRemoteProtocolMessages (Initialization)
 IGuiRemoteProtocol
 ***********************************************************************/
 
-		void Submit() override
+		void Submit(bool& disconnected) override
 		{
+			// TODO: Failure injection to disconnected
 		}
 
 		void ProcessRemoteEvents() override

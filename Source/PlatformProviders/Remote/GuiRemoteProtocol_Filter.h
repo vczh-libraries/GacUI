@@ -180,7 +180,7 @@ GuiRemoteProtocolFilter
 		// protocol
 
 		void																Initialize(IGuiRemoteProtocolEvents* _events) override;
-		void																Submit() override;
+		void																Submit(bool& disconnected) override;
 	};
 }
 

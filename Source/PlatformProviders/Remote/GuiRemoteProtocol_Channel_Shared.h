@@ -35,7 +35,7 @@ IGuiRemoteProtocolChannel<T>
 		virtual IGuiRemoteProtocolChannelReceiver<TPackage>*	GetReceiver() = 0;
 		virtual void											Write(const TPackage& package) = 0;
 		virtual WString											GetExecutablePath() = 0;
-		virtual void											Submit() = 0;
+		virtual void											Submit(bool& disconnected) = 0;
 		virtual void											ProcessRemoteEvents() = 0;
 	};
 
@@ -75,9 +75,9 @@ Serialization
 			return channel->GetExecutablePath();
 		}
 
-		void Submit() override
+		void Submit(bool& disconnected) override
 		{
-			channel->Submit();
+			channel->Submit(disconnected);
 		}
 
 		void ProcessRemoteEvents() override

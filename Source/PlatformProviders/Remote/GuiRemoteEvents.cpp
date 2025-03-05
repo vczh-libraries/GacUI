@@ -16,9 +16,9 @@ GuiRemoteMessages
 	{
 	}
 
-	void GuiRemoteMessages::Submit()
+	void GuiRemoteMessages::Submit(bool& disconnected)
 	{
-		remote->remoteProtocol->Submit();
+		remote->remoteProtocol->Submit(disconnected);
 	}
 
 /***********************************************************************

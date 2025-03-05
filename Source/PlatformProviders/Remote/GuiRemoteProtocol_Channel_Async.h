@@ -231,7 +231,7 @@ void ChannelPackageSemanticUnpack(
 			uiPendingPackages.Add(package);
 		}
 
-		void Submit() override
+		void Submit(bool& disconnected) override
 		{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::channeling::GuiRemoteProtocolAsyncChannelSerializer<TPackage>::Submit(...)#"
 

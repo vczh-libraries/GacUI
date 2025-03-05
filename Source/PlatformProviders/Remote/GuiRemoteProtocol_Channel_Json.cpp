@@ -248,9 +248,9 @@ GuiRemoteProtocolFromJsonChannel
 		return channel->GetExecutablePath();
 	}
 	
-	void GuiRemoteProtocolFromJsonChannel::Submit()
+	void GuiRemoteProtocolFromJsonChannel::Submit(bool& disconnected)
 	{
-		channel->Submit();
+		channel->Submit(disconnected);
 	}
 
 	void GuiRemoteProtocolFromJsonChannel::ProcessRemoteEvents()
@@ -376,9 +376,9 @@ GuiRemoteJsonChannelFromProtocol
 		return protocol->GetExecutablePath();
 	}
 
-	void GuiRemoteJsonChannelFromProtocol::Submit()
+	void GuiRemoteJsonChannelFromProtocol::Submit(bool& disconnected)
 	{
-		protocol->Submit();
+		protocol->Submit(disconnected);
 	}
 
 	void GuiRemoteJsonChannelFromProtocol::ProcessRemoteEvents()

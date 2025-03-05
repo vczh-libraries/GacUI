@@ -105,7 +105,7 @@ GuiRemoteProtocolFilterVerifier
 	
 		// protocol
 	
-		void																Submit() override;
+		void																Submit(bool& disconnected) override;
 	};
 }
 

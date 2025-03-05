@@ -79,7 +79,7 @@ IGuiRemoteProtocol
 	{
 	public:
 		virtual void			Initialize(IGuiRemoteProtocolEvents* events) = 0;
-		virtual void			Submit() = 0;
+		virtual void			Submit(bool& disconnected) = 0;
 		virtual void			ProcessRemoteEvents() = 0;
 	};
 
@@ -119,9 +119,9 @@ IGuiRemoteProtocol
 			targetProtocol->Initialize(&eventCombinator);
 		}
 
-		void Submit() override
+		void Submit(bool& disconnected) override
 		{
-			targetProtocol->Submit();
+			targetProtocol->Submit(disconnected);
 		}
 
 		void ProcessRemoteEvents() override
@@ -156,9 +156,9 @@ IGuiRemoteProtocol
 			targetProtocol->Initialize(_events);
 		}
 
-		void Submit() override
+		void Submit(bool& disconnected) override
 		{
-			targetProtocol->Submit();
+			targetProtocol->Submit(disconnected);
 		}
 
 		void ProcessRemoteEvents() override

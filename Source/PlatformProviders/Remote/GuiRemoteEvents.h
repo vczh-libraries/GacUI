@@ -41,7 +41,7 @@ GuiRemoteMessages
 		GuiRemoteMessages(GuiRemoteController* _remote);
 		~GuiRemoteMessages();
 
-		void	Submit();
+		void										Submit(bool& disconnected);
 
 		// messages
 

@@ -58,7 +58,7 @@ GuiRemoteProtocolFromJsonChannel
 
 		void											Initialize(IGuiRemoteProtocolEvents* _events) override;
 		WString											GetExecutablePath() override;
-		void											Submit() override;
+		void											Submit(bool& disconnected) override;
 		void											ProcessRemoteEvents() override;
 	};
 
@@ -99,7 +99,7 @@ GuiRemoteJsonChannelFromProtocol
 		IJsonChannelReceiver*							GetReceiver() override;
 		void											Write(const Ptr<glr::json::JsonObject>& package) override;
 		WString											GetExecutablePath() override;
-		void											Submit() override;
+		void											Submit(bool& disconnected) override;
 		void											ProcessRemoteEvents() override;
 	};
 

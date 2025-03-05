@@ -396,7 +396,7 @@ void GacUIUnitTest_StartAsync(const WString& appName, Nullable<UnitTestScreenCon
 			{
 				try
 				{
-				uiThreadProc();
+					uiThreadProc();
 				}
 				catch (const Exception& e)
 				{
