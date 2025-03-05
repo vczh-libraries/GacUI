@@ -29,6 +29,9 @@
   - Remove the two parameters from `IGuiPlugin`, the macro above already specified it clear enough.
   - Unrelated plugins are not allowed to depend on related plugins.
 - TODO in `GuiRemoteProtocolAsyncChannelSerializer<TPackage>::ChannelThreadProc`.
+- `ProceduredThread` and `LambdaThread` cause small memory leak.
+  - `delete this;` eventually calls `SuspendThread` on the thread itself, making all following clean up code skipped.
+  - Windows confirmed, Linux need to test.
 
 ## Known Issues (Unit Test)
 
