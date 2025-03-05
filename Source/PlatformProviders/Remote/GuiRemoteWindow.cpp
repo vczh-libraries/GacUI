@@ -25,7 +25,9 @@ GuiRemoteWindow
 	{
 		sizingConfigInvalidated = false;
 		vint idGetBounds = remoteMessages.RequestWindowGetBounds();
-		remoteMessages.Submit();
+		bool disconnected = false;
+		remoteMessages.Submit(disconnected);
+		if (disconnected) return;
 		OnWindowBoundsUpdated(remoteMessages.RetrieveWindowGetBounds(idGetBounds));
 	}
 
@@ -64,7 +66,9 @@ GuiRemoteWindow
 			windowShowing.activate = activate;
 			windowShowing.sizeState = sizeState;
 			remoteMessages.RequestWindowNotifyShow(windowShowing);
-			remoteMessages.Submit();
+			bool disconnected = false;
+			remoteMessages.Submit(disconnected);
+			// there is no result from this request, assuming succeeded
 
 			remoteWindowSizingConfig.sizeState = sizeState;
 			Opened();
@@ -111,7 +115,9 @@ GuiRemoteWindow (events)
 			{
 				remoteMessages.RequestIOReleaseCapture();
 			}
-			remoteMessages.Submit();
+			bool disconnected = false;
+			remoteMessages.Submit(disconnected);
+			// there is no result from this request, assuming succeeded
 		}
 	}
 
@@ -471,7 +477,9 @@ GuiRemoteWindow (INativeWindow)
 		{
 			statusCapturing = true;
 			remoteMessages.RequestIORequireCapture();
-			remoteMessages.Submit();
+			bool disconnected = false;
+			remoteMessages.Submit(disconnected);
+			// there is no result from this request, assuming succeeded
 		}
 		return true;
 	}
@@ -482,7 +490,9 @@ GuiRemoteWindow (INativeWindow)
 		{
 			statusCapturing = false;
 			remoteMessages.RequestIOReleaseCapture();
-			remoteMessages.Submit();
+			bool disconnected = false;
+			remoteMessages.Submit(disconnected);
+			// there is no result from this request, assuming succeeded
 		}
 		return true;
 	}

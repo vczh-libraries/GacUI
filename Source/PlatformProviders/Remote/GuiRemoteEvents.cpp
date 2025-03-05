@@ -118,7 +118,10 @@ GuiRemoteEvents (events)
 	{
 		remote->remoteMessages.RequestControllerConnectionEstablished();
 		remote->OnControllerConnect();
-		remote->remoteMessages.Submit();
+		bool disconnected = false;
+		remote->remoteMessages.Submit(disconnected);
+		// there is no result from this request, assuming succeeded
+		// if disconnected, OnControllerDisconnect will be called
 	}
 
 	void GuiRemoteEvents::OnControllerDisconnect()

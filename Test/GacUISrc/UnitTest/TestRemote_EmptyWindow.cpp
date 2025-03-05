@@ -30,7 +30,7 @@ namespace remote_empty_window_tests
 		{
 		}
 
-		void Submit() override
+		void Submit(bool& disconnected) override
 		{
 			CHECK_ERROR(!connectionStoppedSubmitted, L"IGuiRemoteProtocol::Submit is not allowed to call after connection stopped.");
 			if (connectionStopped)

@@ -84,7 +84,9 @@ GuiRemoteController::INativeInputService
 	bool GuiRemoteController::IsKeyPressing(VKEY code)
 	{
 		vint idIsKeyPressing = remoteMessages.RequestIOIsKeyPressing(code);
-		remoteMessages.Submit();
+		bool disconnected = false;
+		remoteMessages.Submit(disconnected);
+		if (disconnected) return false;
 		bool result = remoteMessages.RetrieveIOIsKeyPressing(idIsKeyPressing);
 		return result;
 	}
@@ -92,7 +94,9 @@ GuiRemoteController::INativeInputService
 	bool GuiRemoteController::IsKeyToggled(VKEY code)
 	{
 		vint idIsKeyToggled = remoteMessages.RequestIOIsKeyToggled(code);
-		remoteMessages.Submit();
+		bool disconnected = false;
+		remoteMessages.Submit(disconnected);
+		if (disconnected) return false;
 		bool result = remoteMessages.RetrieveIOIsKeyToggled(idIsKeyToggled);
 		return result;
 	}
@@ -150,7 +154,9 @@ GuiRemoteController::INativeInputService
 		hotKeyIds.Add(id, entry);
 
 		UpdateGlobalShortcutKey();
-		remoteMessages.Submit();
+		bool disconnected = false;
+		remoteMessages.Submit(disconnected);
+		// there is no result from this request, assuming succeeded
 
 		return id;
 	}
@@ -165,7 +171,9 @@ GuiRemoteController::INativeInputService
 		hotKeySet.Remove(entry);
 
 		UpdateGlobalShortcutKey();
-		remoteMessages.Submit();
+		bool disconnected = false;
+		remoteMessages.Submit(disconnected);
+		// there is no result from this request, assuming succeeded
 
 		return true;
 	}
@@ -283,8 +291,9 @@ GuiRemoteController::INativeWindowService
 		if (!connectionStopped)
 		{
 			remoteProtocol->ProcessRemoteEvents();
-			remoteMessages.Submit();
-			if (timerEnabled)
+			bool disconnected = false;
+			remoteMessages.Submit(disconnected);
+			if (timerEnabled && !disconnected)
 			{
 				callbackService.InvokeGlobalTimer();
 			}
@@ -302,7 +311,9 @@ GuiRemoteController (events)
 		UpdateGlobalShortcutKey();
 		vint idGetFontConfig = remoteMessages.RequestControllerGetFontConfig();
 		vint idGetScreenConfig = remoteMessages.RequestControllerGetScreenConfig();
-		remoteMessages.Submit();
+		bool disconnected = false;
+		remoteMessages.Submit(disconnected);
+		if (disconnected) return;
 		remoteFontConfig = remoteMessages.RetrieveControllerGetFontConfig(idGetFontConfig);
 		remoteScreenConfig = remoteMessages.RetrieveControllerGetScreenConfig(idGetScreenConfig);
 		remoteWindow.OnControllerConnect();
@@ -360,7 +371,9 @@ GuiRemoteController
 	{
 		imageService.Finalize();
 		remoteMessages.RequestControllerConnectionStopped();
-		remoteMessages.Submit();
+		bool disconnected = false;
+		remoteMessages.Submit(disconnected);
+		// there is no result from this request, assuming succeeded
 	}
 
 /***********************************************************************

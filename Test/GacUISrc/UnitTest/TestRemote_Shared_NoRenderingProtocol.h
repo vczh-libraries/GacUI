@@ -32,7 +32,7 @@ namespace remote_protocol_tests
 		{
 		}
 		
-		void Submit() override
+		void Submit(bool& disconnected) override
 		{
 		}
 		

@@ -268,7 +268,9 @@ void ChannelPackageSemanticUnpack(
 				{
 					channel->Write(package);
 				}
-				channel->Submit();
+				bool disconnected = false;
+				channel->Submit(disconnected);
+				// TODO: do not ignore diconnected
 			}, &eventAutoChannelTaskQueued);
 
 			// Block until the all responses of the top request group are received

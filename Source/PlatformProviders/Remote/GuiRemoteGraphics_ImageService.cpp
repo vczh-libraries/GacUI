@@ -35,7 +35,9 @@ GuiRemoteGraphicsImage
 		auto arguments = GenerateImageCreation();
 
 		vint idImageCreated = remote->remoteMessages.RequestImageCreated(arguments);
-		remote->remoteMessages.Submit();
+		bool disconnected = false;
+		remote->remoteMessages.Submit(disconnected);
+		if (disconnected) return;
 		auto imageMetadata = remote->remoteMessages.RetrieveImageCreated(idImageCreated);
 		UpdateFromImageMetadata(imageMetadata);
 	}
