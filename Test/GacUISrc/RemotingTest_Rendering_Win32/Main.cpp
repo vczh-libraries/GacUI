@@ -17,9 +17,11 @@ namespace vl::presentation
 	}
 }
 
+extern int StartNamedPipeClient();
+
 int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int CmdShow)
 {
-	int result = 0;
+	int result = StartNamedPipeClient();
 #if VCZH_CHECK_MEMORY_LEAKS
 	_CrtDumpMemoryLeaks();
 #endif

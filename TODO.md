@@ -97,8 +97,12 @@
       - Support failure injection in unit test, making `UnitTestRemoteProtocol::Submit()` returns `true` to its `disconnected` parameter.
       - TODO in `GuiRemoteProtocolAsyncChannelSerializer<TPackage>::Submit()` fill `disconnected` properly.
 - Remote protocol redirection back to native rendering:
-  - In the test project, C++ side will expose the remote protocol via dll.
-    - Use string first, and then change to binary.
+  - `RemotingTest_Core`
+  - `RemotingTest_Rendering_Win32`
+  - [NamedPipe](https://learn.microsoft.com/en-us/windows/win32/ipc/named-pipe-server-using-overlapped-i-o)
+  - [HttpServer](https://learn.microsoft.com/en-us/windows/win32/http/using-http-server-api)
+  - [HttpClient](https://learn.microsoft.com/en-us/windows/win32/winhttp/winhttp-start-page)
+  - Use string first, and then change to binary.
   - Implement the remote protocol on a native `INativeController` instance.
     - It could not be used on `GuiHostedController` or `GuiRemoteController`, which is not a native implementation.
   - The experiment will only run a very simple UI that covers all implemented remote protocol so far.

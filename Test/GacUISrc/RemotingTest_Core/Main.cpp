@@ -1,11 +1,12 @@
-#define GAC_HEADER_USE_NAMESPACE
-#include "../../../Source/GacUI.h"
+#include <crtdbg.h>
 
-void GuiMain()
-{
-}
+extern int StartNamedPipeServer();
 
-int wmain(vint argc, wchar_t* argv[])
+int wmain(int argc, wchar_t* argv[])
 {
-	return 0;
+	int result = StartNamedPipeServer();
+#if VCZH_CHECK_MEMORY_LEAKS
+	_CrtDumpMemoryLeaks();
+#endif
+	return result;
 }
