@@ -225,6 +225,7 @@
     <Xml Include="..\..\Resources\App\FullControlTest\TextListTabPage.xml" />
     <Xml Include="..\..\Resources\App\FullControlTest\ToolbarImages\Images.xml" />
     <Xml Include="..\..\Resources\App\FullControlTest\TreeViewTabPage.xml" />
+    <Xml Include="..\..\Resources\App\RemoteProtocolTest\Resource.xml" />
     <Xml Include="..\..\Resources\App\UI1_StyleTemplate.xml" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

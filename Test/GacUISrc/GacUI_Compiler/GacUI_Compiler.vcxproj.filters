@@ -28,6 +28,9 @@
     <Filter Include="Resource Files\Dialogs">
       <UniqueIdentifier>{04c2bed1-669a-4109-b5e0-517d87d838b3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files\RemoteProtocolTest">
+      <UniqueIdentifier>{5625af0c-c57b-4543-9b2e-a7166c490394}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -188,6 +191,9 @@
     </Xml>
     <Xml Include="..\..\Resources\App\DarkSkin\BaselineDocuments.xml">
       <Filter>Resource Files\DarkSkin</Filter>
+    </Xml>
+    <Xml Include="..\..\Resources\App\RemoteProtocolTest\Resource.xml">
+      <Filter>Resource Files\RemoteProtocolTest</Filter>
     </Xml>
   </ItemGroup>
 </Project>

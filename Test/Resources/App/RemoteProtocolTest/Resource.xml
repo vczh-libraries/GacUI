@@ -1,0 +1,24 @@
+<Resource>
+  <Folder name="GacGenConfig">
+    <Folder name="Cpp">
+      <Text name="SourceFolder">Source</Text>
+      <Text name="Resource">..\..\..\UIRes\RemoteProtocolTest.bin</Text>
+      <Text name="NormalInclude">GacUI.h</Text>
+      <Text name="Name">Demo</Text>
+    </Folder>
+  </Folder>
+
+  <Instance name="MainWindowResource">
+    <Instance ref.Class="demo::MainWindow" xmlns:demo="demo::*">
+      <Window ref.Name="self" Text="Remote Protocol Test" ClientSize="x:640 y:480">
+        <att.BoundsComposition-set PreferredMinSize="x:640 y:480"/>
+        <Button ref.Name="buttonClickMe" Text="Click Me!">
+          <att.BoundsComposition-set AlignmentToParent="left:10 top:10 right:-1 bottom:-1"/>
+          <ev.Clicked-eval><![CDATA[{
+            buttonClickMe.Text = "You have clicked!";
+          }]]></ev.Clicked-eval>
+        </Button>
+      </Window>
+    </Instance>
+  </Instance>
+</Resource>

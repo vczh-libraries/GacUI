@@ -76,6 +76,26 @@ const wchar_t* FULLCONTROLTEST_SOURCE_FOLDER()
 	}
 }
 
+const wchar_t* REMOTEPROTOCOLTEST_BINARY_FOLDER()
+{
+	switch (targetCpuArchitecture)
+	{
+	case GuiResourceCpuArchitecture::x86: return L"../GacUISrc/Generated_RemoteProtocolTest/Resource_x86/";
+	case GuiResourceCpuArchitecture::x64: return L"../GacUISrc/Generated_RemoteProtocolTest/Resource_x64/";
+	default: CHECK_FAIL(L"The target CPU architecture is unspecified.");
+	}
+}
+
+const wchar_t* REMOTEPROTOCOLTEST_SOURCE_FOLDER()
+{
+	switch (targetCpuArchitecture)
+	{
+	case GuiResourceCpuArchitecture::x86: return L"../GacUISrc/Generated_RemoteProtocolTest/Source_x86/";
+	case GuiResourceCpuArchitecture::x64: return L"../GacUISrc/Generated_RemoteProtocolTest/Source_x64/";
+	default: CHECK_FAIL(L"The target CPU architecture is unspecified.");
+	}
+}
+
 const wchar_t* DIALOGS_BINARY_FOLDER()
 {
 	switch (targetCpuArchitecture)
@@ -156,10 +176,11 @@ GUI_REGISTER_PLUGIN(GuiReflectionPlugin)
 Compiler
 ***********************************************************************/
 
-#define BUILD_FAKEDIALOG
-#define BUILD_UNITTESTVIEWER
-#define BUILD_DARKSKIN
-#define BUILD_FULLCONTROLTEST
+// #define BUILD_FAKEDIALOG
+// #define BUILD_UNITTESTVIEWER
+// #define BUILD_DARKSKIN
+// #define BUILD_FULLCONTROLTEST
+#define BUILD_REMOTEPROTOCOL_TEST
 
 void GuiMain()
 {
@@ -221,6 +242,21 @@ void GuiMain()
 		(GetResourcePath() / L"App/FullControlTest/Resource.xml"),
 		(GetResourcePath() / FULLCONTROLTEST_BINARY_FOLDER()),
 		(GetResourcePath() / FULLCONTROLTEST_SOURCE_FOLDER()),
+		false
+	));
+#endif
+
+#ifdef BUILD_REMOTEPROTOCOL_TEST=
+	LoadResource(CompileResources(
+		targetCpuArchitecture,
+		L"Demo",
+		L"Source: Generated_RemoteProtocolTest",
+		L"../../../../Source/GacUI.h;../../../../Source/Utilities/FakeServices/Dialogs/Source/GuiFakeDialogServiceUI.h",
+		L"../../../../Source/Reflection/TypeDescriptors/GuiReflectionPlugin.h;../../../../Source/Utilities/FakeServices/Dialogs/Source/GuiFakeDialogServiceUIReflection.h",
+		dependencies,
+		(GetResourcePath() / L"App/RemoteProtocolTest/Resource.xml"),
+		(GetResourcePath() / REMOTEPROTOCOLTEST_BINARY_FOLDER()),
+		(GetResourcePath() / REMOTEPROTOCOLTEST_SOURCE_FOLDER()),
 		false
 	));
 #endif
