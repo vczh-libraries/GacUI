@@ -96,6 +96,9 @@
     - [ ] Test sending disconnect or other events when `Submit()` is pending on the event.
       - Support failure injection in unit test, making `UnitTestRemoteProtocol::Submit()` returns `true` to its `disconnected` parameter.
       - TODO in `GuiRemoteProtocolAsyncChannelSerializer<TPackage>::Submit()` fill `disconnected` properly.
+    - [ ] `Start` -> `StartWithUIThread` and `StartWithUIAndChannelThread`.
+      - Move all UI and channel thread resources to two structs for easy refactoring.
+      - The `StartWithUIThread` is useful when channel communication does not require to be done in a single thread, everything will be called from the UI thread and the receiver could be called from any non-UI thread.
 - Remote protocol redirection back to native rendering:
   - `RemotingTest_Core`
   - `RemotingTest_Rendering_Win32`
