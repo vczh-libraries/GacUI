@@ -328,6 +328,28 @@ void GacUIUnitTest_Start(const WString& appName, Nullable<UnitTestScreenConfig> 
 	GacUIUnitTest_LogDiffs(appName, unitTestProtocol);
 }
 
+template<typename T>
+void RunInNewThread(T&& threadProc)
+{
+	Thread::CreateAndStart([threadProc]()
+	{
+		try
+		{
+			threadProc();
+		}
+		catch (const Exception& e)
+		{
+			(void)e;
+			throw;
+		}
+		catch (const Error& e)
+		{
+			(void)e;
+			throw;
+		}
+	});
+}
+
 void GacUIUnitTest_StartAsync(const WString& appName, Nullable<UnitTestScreenConfig> config)
 {
 	TEST_ASSERT(config && config.Value().useChannel == UnitTestRemoteChannel::Async);
@@ -375,40 +397,8 @@ void GacUIUnitTest_StartAsync(const WString& appName, Nullable<UnitTestScreenCon
 			channeling::GuiRemoteProtocolAsyncJsonChannelSerializer::TUIThreadProc uiThreadProc
 			)
 		{
-			Thread::CreateAndStart([channelThreadProc]()
-			{
-				try
-				{
-					channelThreadProc();
-				}
-				catch (const Exception& e)
-				{
-					(void)e;
-					throw;
-				}
-				catch (const Error& e)
-				{
-					(void)e;
-					throw;
-				}
-			});
-			Thread::CreateAndStart([uiThreadProc]()
-			{
-				try
-				{
-					uiThreadProc();
-				}
-				catch (const Exception& e)
-				{
-					(void)e;
-					throw;
-				}
-				catch (const Error& e)
-				{
-					(void)e;
-					throw;
-				}
-			});
+			RunInNewThread(channelThreadProc);
+			RunInNewThread(uiThreadProc);
 		});
 
 	asyncChannelSender.WaitForStopped();
