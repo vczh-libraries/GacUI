@@ -21,7 +21,7 @@ protected:
 	bool											connected = false;
 	List<WString>									pendingMessages;
 
-	void OnReceive(const WString& package)
+	void OnReceiveThreadUnsafe(const WString& package)
 	{
 		Console::Write(L"Received: ");
 		Console::WriteLine(package);
@@ -39,12 +39,12 @@ public:
 	{
 	}
 
-	void AcceptRenderer()
+	void AcceptRendererThreadUnsafe()
 	{
 		Console::WriteLine(L"> Wait for renderer...");
 	}
 
-	void WriteError(const WString& error)
+	void WriteErrorThreadUnsafe(const WString& error)
 	{
 		CHECK_FAIL(L"Not Implemented!");
 	}
@@ -99,12 +99,12 @@ void RunInNewThread(T&& threadProc, NamedPipeServerChannel* channel)
 		}
 		catch (const Exception& e)
 		{
-			channel->WriteError(e.Message());
+			channel->WriteErrorThreadUnsafe(e.Message());
 			throw;
 		}
 		catch (const Error& e)
 		{
-			channel->WriteError(WString::Unmanaged(e.Description()));
+			channel->WriteErrorThreadUnsafe(WString::Unmanaged(e.Description()));
 			throw;
 		}
 	});
@@ -149,7 +149,7 @@ int StartNamedPipeServer()
 				RunInNewThread(uiThreadProc, &namedPipeServerChannel);
 			});
 
-		namedPipeServerChannel.AcceptRenderer();
+		namedPipeServerChannel.AcceptRendererThreadUnsafe();
 		asyncChannelSender.WaitForStopped();
 	}
 	CloseHandle(hPipe);
