@@ -44,6 +44,11 @@ public:
 		Console::WriteLine(L"> Wait for renderer...");
 	}
 
+	void WriteError(const WString& error)
+	{
+		CHECK_FAIL(L"Not Implemented!");
+	}
+
 	void Initialize(IGuiRemoteProtocolChannelReceiver<WString>* _receiver) override
 	{
 		receiver = _receiver;
@@ -84,9 +89,9 @@ public:
 };
 
 template<typename T>
-void RunInNewThread(T&& threadProc)
+void RunInNewThread(T&& threadProc, NamedPipeServerChannel* channel)
 {
-	Thread::CreateAndStart([threadProc]()
+	Thread::CreateAndStart([=]()
 	{
 		try
 		{
@@ -94,12 +99,12 @@ void RunInNewThread(T&& threadProc)
 		}
 		catch (const Exception& e)
 		{
-			(void)e;
+			channel->WriteError(e.Message());
 			throw;
 		}
 		catch (const Error& e)
 		{
-			(void)e;
+			channel->WriteError(WString::Unmanaged(e.Description()));
 			throw;
 		}
 	});
@@ -135,13 +140,13 @@ int StartNamedPipeServer()
 				GuiRemoteProtocolDomDiffConverter diffConverterProtocol(&filteredProtocol);
 				SetupRemoteNativeController(&filteredProtocol);
 			},
-			[](
+			[&namedPipeServerChannel](
 				channeling::GuiRemoteProtocolAsyncJsonChannelSerializer::TChannelThreadProc channelThreadProc,
 				channeling::GuiRemoteProtocolAsyncJsonChannelSerializer::TUIThreadProc uiThreadProc
 				)
 			{
-				RunInNewThread(channelThreadProc);
-				RunInNewThread(uiThreadProc);
+				RunInNewThread(channelThreadProc, &namedPipeServerChannel);
+				RunInNewThread(uiThreadProc, &namedPipeServerChannel);
 			});
 
 		namedPipeServerChannel.AcceptRenderer();
