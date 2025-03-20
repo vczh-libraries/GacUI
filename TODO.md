@@ -103,7 +103,11 @@
   - `RemotingTest_Core`
   - `RemotingTest_Rendering_Win32`
   - [NamedPipe](https://learn.microsoft.com/en-us/windows/win32/ipc/named-pipe-server-using-overlapped-i-o)
+    - Disallow disconnect and reconnect.
   - [HttpServer](https://learn.microsoft.com/en-us/windows/win32/http/using-http-server-api)
+    - Allow only one client by verifying a random guid in the message which is given from the registration request.
+    - Allow disconnect and reconnect.
+    - When TypeScript rendering is completed, the demo in `Release` repo would become a website server.
   - [HttpClient](https://learn.microsoft.com/en-us/windows/win32/winhttp/winhttp-start-page)
   - Use string first, and then change to binary.
   - Implement the remote protocol on a native `INativeController` instance.
