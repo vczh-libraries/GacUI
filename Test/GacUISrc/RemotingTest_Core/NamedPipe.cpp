@@ -7,6 +7,7 @@ using namespace vl::console;
 using namespace vl::collections;
 using namespace vl::presentation;
 using namespace vl::presentation::remoteprotocol;
+using namespace vl::presentation::remoteprotocol::repeatfiltering;
 using namespace vl::presentation::remoteprotocol::channeling;
 
 const wchar_t* NamedPipeId = L"\\\\.\\pipe\\GacUIRemoteProtocol";
@@ -128,21 +129,21 @@ int StartNamedPipeServer()
 		NamedPipeCoreChannel namedPipeServerChannel(hPipe);
 
 		auto jsonParser = Ptr(new glr::json::Parser);
-		channeling::GuiRemoteJsonChannelStringSerializer channelJsonSerializer(&namedPipeServerChannel, jsonParser);
+		GuiRemoteJsonChannelStringSerializer channelJsonSerializer(&namedPipeServerChannel, jsonParser);
 
-		channeling::GuiRemoteProtocolAsyncJsonChannelSerializer asyncChannelSender;
+		GuiRemoteProtocolAsyncJsonChannelSerializer asyncChannelSender;
 		asyncChannelSender.Start(
 			&channelJsonSerializer,
-			[](channeling::GuiRemoteProtocolAsyncJsonChannelSerializer* channel)
+			[](GuiRemoteProtocolAsyncJsonChannelSerializer* channel)
 			{
-				channeling::GuiRemoteProtocolFromJsonChannel channelSender(channel);
-				repeatfiltering::GuiRemoteProtocolFilter filteredProtocol(&channelSender);
+				GuiRemoteProtocolFromJsonChannel channelSender(channel);
+				GuiRemoteProtocolFilter filteredProtocol(&channelSender);
 				GuiRemoteProtocolDomDiffConverter diffConverterProtocol(&filteredProtocol);
 				SetupRemoteNativeController(&filteredProtocol);
 			},
 			[&namedPipeServerChannel](
-				channeling::GuiRemoteProtocolAsyncJsonChannelSerializer::TChannelThreadProc channelThreadProc,
-				channeling::GuiRemoteProtocolAsyncJsonChannelSerializer::TUIThreadProc uiThreadProc
+				GuiRemoteProtocolAsyncJsonChannelSerializer::TChannelThreadProc channelThreadProc,
+				GuiRemoteProtocolAsyncJsonChannelSerializer::TUIThreadProc uiThreadProc
 				)
 			{
 				RunInNewThread(channelThreadProc, &namedPipeServerChannel);

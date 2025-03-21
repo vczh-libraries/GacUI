@@ -14,24 +14,27 @@ const wchar_t* NamedPipeId = L"\\\\.\\pipe\\GacUIRemoteProtocol";
 
 class NamedPipeRendererChannel
 	: public Object
-	, public IGuiRemoteProtocolChannel<WString>
+	, protected virtual IGuiRemoteProtocolChannelReceiver<WString>
 {
 protected:
-	IGuiRemoteProtocolChannelReceiver<WString>*		receiver = nullptr;
 	HANDLE											hPipe = INVALID_HANDLE_VALUE;
+	IGuiRemoteProtocolChannel<WString>*				channel = nullptr;
 	EventObject										eventDisconnected;
 
-	void OnReceiveThreadUnsafe(const WString& package)
+	void OnReceive(const WString& package) override
 	{
-		receiver->OnReceive(package);
+		// Send to core
+		CHECK_FAIL(L"Not Implemented!");
 	}
 
 public:
 
-	NamedPipeRendererChannel(HANDLE _hPipe)
+	NamedPipeRendererChannel(HANDLE _hPipe, IGuiRemoteProtocolChannel<WString>* _channel)
 		: hPipe(_hPipe)
+		, channel(_channel)
 	{
 		eventDisconnected.CreateManualUnsignal(false);
+		_channel->Initialize(this);
 	}
 
 	~NamedPipeRendererChannel()
@@ -41,36 +44,6 @@ public:
 	void WaitForDisconnected()
 	{
 		eventDisconnected.Wait();
-	}
-
-	void Initialize(IGuiRemoteProtocolChannelReceiver<WString>* _receiver) override
-	{
-		receiver = _receiver;
-	}
-
-	IGuiRemoteProtocolChannelReceiver<WString>* GetReceiver() override
-	{
-		return receiver;
-	}
-
-	void Write(const WString& package) override
-	{
-		CHECK_FAIL(L"Not Implemented!");
-	}
-
-	WString GetExecutablePath() override
-	{
-		CHECK_FAIL(L"This function should not be called!");
-	}
-
-	void Submit(bool& disconnected) override
-	{
-		CHECK_FAIL(L"This function should not be called!");
-	}
-
-	void ProcessRemoteEvents() override
-	{
-		CHECK_FAIL(L"This function should not be called!");
 	}
 };
 
@@ -99,11 +72,15 @@ int StartNamedPipeClient()
 
 	int result = 0;
 	{
-		NamedPipeRendererChannel namedPipeServerChannel(hPipe);
+		auto jsonParser = Ptr(new glr::json::Parser);
 		GuiRemoteRendererSingle remoteRenderer;
+		GuiRemoteJsonChannelFromProtocol channelReceiver(&remoteRenderer);
+		GuiRemoteJsonChannelStringDeserializer channelJsonDeserializer(&channelReceiver, jsonParser);
+		NamedPipeRendererChannel namedPipeServerChannel(hPipe, &channelJsonDeserializer);
+
 		InstallRemoteRenderer(&remoteRenderer);
 		result = SetupRawWindowsDirect2DRenderer();
-		namedPipeServerChannel.WaitForDisconnected(); 
+		namedPipeServerChannel.WaitForDisconnected();
 	}
 	CloseHandle(hPipe);
 	return result;
