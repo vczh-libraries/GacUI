@@ -45,7 +45,7 @@ public:
 		Console::WriteLine(L"> Renderer connected");
 		asyncChannel->QueueToChannelThread([]()
 		{
-			Console::WriteLine(L"> Send pending nessages");
+			Console::WriteLine(L"> Sending pending nessages ...");
 			// Set connected and process pendingMessages
 		}, nullptr);
 	}
@@ -86,7 +86,7 @@ public:
 
 	void Submit(bool& disconnected) override
 	{
-		Console::Write(L"Submit");
+		Console::WriteLine(L"Submit");
 	}
 
 	void ProcessRemoteEvents() override
@@ -156,6 +156,48 @@ int StartNamedPipeServer()
 			});
 
 		Console::WriteLine(L"> Wait for renderer...");
+		{
+			OVERLAPPED overlapped;
+			ZeroMemory(&overlapped, sizeof(overlapped));
+			overlapped.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
+			CHECK_ERROR(overlapped.hEvent != NULL, L"ConnectNamedPipe failed on CreateEvent.");
+
+			BOOL result = ConnectNamedPipe(hPipe, &overlapped);
+			CHECK_ERROR(result == 0, L"ConnectNamedPipe failed.");
+			if (GetLastError() == ERROR_PIPE_CONNECTED)
+			{
+				CloseHandle(overlapped.hEvent);
+				namedPipeServerChannel.RendererConnectedThreadUnsafe(&asyncChannelSender);
+			}
+			else
+			{
+				struct ConnectNamedPipeContext
+				{
+					HANDLE hWait;
+					HANDLE hEvent;
+					NamedPipeCoreChannel* namedPipeChannel;
+					GuiRemoteProtocolAsyncJsonChannelSerializer* asyncChannel;
+				};
+				auto context = new ConnectNamedPipeContext;
+				context->hWait = INVALID_HANDLE_VALUE;
+				context->hEvent = overlapped.hEvent;
+				context->namedPipeChannel = &namedPipeServerChannel;
+				context->asyncChannel = &asyncChannelSender;
+				RegisterWaitForSingleObject(
+					&context->hWait,
+					overlapped.hEvent,
+					[](PVOID lpParameter, BOOLEAN TimerOrWaitFired)
+					{
+						auto context = (ConnectNamedPipeContext*)lpParameter;
+						UnregisterWait(context->hWait);
+						CloseHandle(context->hEvent);
+						context->namedPipeChannel->RendererConnectedThreadUnsafe(context->asyncChannel);
+					},
+					context,
+					INFINITE,
+					WT_EXECUTEONLYONCE);
+			}
+		}
 		asyncChannelSender.WaitForStopped();
 	}
 	CloseHandle(hPipe);
