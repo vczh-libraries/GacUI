@@ -103,6 +103,9 @@ void ChannelPackageSemanticUnpack(
 		using TStoppingProc = Func<void()>;
 		using TUIMainProc = Func<void(GuiRemoteProtocolAsyncChannelSerializer<TPackage>*)>;
 
+		using GuiRemoteProtocolAsyncChannelSerializerBase::QueueToChannelThread;
+		using GuiRemoteProtocolAsyncChannelSerializerBase::QueueToUIThread;
+
 	protected:
 		using TPendingRequestGroup = collections::List<vint>;
 		using TPendingRequestStack = collections::List<Ptr<TPendingRequestGroup>>;

@@ -40,9 +40,14 @@ public:
 	{
 	}
 
-	void AcceptRendererThreadUnsafe()
+	void RendererConnectedThreadUnsafe(GuiRemoteProtocolAsyncJsonChannelSerializer* asyncChannel)
 	{
-		Console::WriteLine(L"> Wait for renderer...");
+		Console::WriteLine(L"> Renderer connected");
+		asyncChannel->QueueToChannelThread([]()
+		{
+			Console::WriteLine(L"> Send pending nessages");
+			// Set connected and process pendingMessages
+		}, nullptr);
 	}
 
 	void WriteErrorThreadUnsafe(const WString& error)
@@ -150,7 +155,7 @@ int StartNamedPipeServer()
 				RunInNewThread(uiThreadProc, &namedPipeServerChannel);
 			});
 
-		namedPipeServerChannel.AcceptRendererThreadUnsafe();
+		Console::WriteLine(L"> Wait for renderer...");
 		asyncChannelSender.WaitForStopped();
 	}
 	CloseHandle(hPipe);
