@@ -43,11 +43,11 @@ public:
 	void RendererConnectedThreadUnsafe(GuiRemoteProtocolAsyncJsonChannelSerializer* asyncChannel)
 	{
 		Console::WriteLine(L"> Renderer connected");
-		asyncChannel->QueueToChannelThread([]()
+		asyncChannel->ExecuteInChannelThread([]()
 		{
 			Console::WriteLine(L"> Sending pending nessages ...");
 			// Set connected and process pendingMessages
-		}, nullptr);
+		});
 	}
 
 	void WriteErrorThreadUnsafe(const WString& error)
