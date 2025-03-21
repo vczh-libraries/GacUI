@@ -55,6 +55,12 @@
     <Filter Include="PlatformProviders\Remote\IGuiRemoteProtocol\ProtocolCombinators">
       <UniqueIdentifier>{e14f29ac-0fb5-49d4-bb16-e9fd57104835}</UniqueIdentifier>
     </Filter>
+    <Filter Include="PlatformProviders\RemoteRenderer">
+      <UniqueIdentifier>{b175defb-96cf-41c9-80a1-64371b0b5a26}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="PlatformProviders\RemoteRenderer\Single">
+      <UniqueIdentifier>{0b733e66-dbe2-464c-9e3f-4e32e13e83d1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiDocument.cpp">
@@ -228,6 +234,21 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Remote\GuiRemoteProtocol_Channel_Async.cpp">
       <Filter>PlatformProviders\Remote\IGuiRemoteProtocol\ProtocolChannels</Filter>
     </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\RemoteRenderer\GuiRemoteRendererSingle.cpp">
+      <Filter>PlatformProviders\RemoteRenderer\Single</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\RemoteRenderer\GuiRemoteRendererSingle_Controller.cpp">
+      <Filter>PlatformProviders\RemoteRenderer\Single</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\RemoteRenderer\GuiRemoteRendererSingle_IO.cpp">
+      <Filter>PlatformProviders\RemoteRenderer\Single</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\RemoteRenderer\GuiRemoteRendererSingle_MainWindow.cpp">
+      <Filter>PlatformProviders\RemoteRenderer\Single</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\RemoteRenderer\GuiRemoteRendererSingle_Rendering.cpp">
+      <Filter>PlatformProviders\RemoteRenderer\Single</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiDocument.h">
@@ -344,6 +365,9 @@
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Remote\GuiRemoteProtocol_Channel_Async.h">
       <Filter>PlatformProviders\Remote\IGuiRemoteProtocol\ProtocolChannels</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\RemoteRenderer\GuiRemoteRendererSingle.h">
+      <Filter>PlatformProviders\RemoteRenderer\Single</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

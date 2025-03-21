@@ -13,7 +13,7 @@ const wchar_t* NamedPipeId = L"\\\\.\\pipe\\GacUIRemoteProtocol";
 
 class NamedPipeCoreChannel
 	: public Object
-	, public IGuiRemoteProtocolChannel<WString>
+	, public virtual IGuiRemoteProtocolChannel<WString>
 {
 protected:
 	IGuiRemoteProtocolChannelReceiver<WString>*		receiver = nullptr;
