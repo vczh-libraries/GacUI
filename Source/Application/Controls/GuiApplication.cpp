@@ -487,8 +487,57 @@ GuiApplicationMain
 					ThreadLocalStorage::DisposeStorages();
 				}
 			}
+
+			void GuiRawInitialize()
+			{
+				if (!GACUI_UNITTEST_ONLY_SKIP_TYPE_AND_PLUGIN_LOAD_UNLOAD)
+				{
+#ifndef VCZH_DEBUG_NO_REFLECTION
+					GetGlobalTypeManager()->Load();
+#endif
+					GetPluginManager()->Load(true, true);
+				}
+				else
+				{
+					GetPluginManager()->Load(false, true);
+				}
+
+				GetCurrentController()->InputService()->StartTimer();
+				{
+					IAsyncScheduler::RegisterSchedulerForCurrentThread(Ptr(new UIThreadAsyncScheduler));
+					IAsyncScheduler::RegisterDefaultScheduler(Ptr(new OtherThreadAsyncScheduler));
+					GuiMain();
+					IAsyncScheduler::UnregisterDefaultScheduler();
+					IAsyncScheduler::UnregisterSchedulerForCurrentThread();
+				}
+				GetCurrentController()->InputService()->StopTimer();
+				FinalizeGlobalStorage();
+
+				if (!GACUI_UNITTEST_ONLY_SKIP_TYPE_AND_PLUGIN_LOAD_UNLOAD)
+				{
+					GetPluginManager()->Unload(true, true);
+					DestroyPluginManager();
+#ifndef VCZH_DEBUG_NO_REFLECTION
+					ResetGlobalTypeManager();
+#endif
+				}
+				else
+				{
+					GetPluginManager()->Unload(false, true);
+				}
+
+				if (!GACUI_UNITTEST_ONLY_SKIP_THREAD_LOCAL_STORAGE_DISPOSE_STORAGES)
+				{
+					ThreadLocalStorage::DisposeStorages();
+				}
+			}
 		}
 	}
+}
+
+void GuiRawMain()
+{
+	vl::presentation::controls::GuiRawInitialize();
 }
 
 void GuiApplicationMain()

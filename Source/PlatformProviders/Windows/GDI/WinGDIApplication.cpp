@@ -202,7 +202,7 @@ using namespace vl::presentation;
 using namespace vl::presentation::windows;
 using namespace vl::presentation::elements_windows_gdi;
 
-int SetupWindowsGDIRendererInternal(bool hosted)
+int SetupWindowsGDIRendererInternal(bool hosted, bool raw)
 {
 	InitDpiAwareness(false);
 	CoInitializeEx(NULL, COINIT_MULTITHREADED);
@@ -232,7 +232,7 @@ int SetupWindowsGDIRendererInternal(bool hosted)
 		nativeController->CallbackService()->InstallListener(&listener);
 		gdiListener = &listener;
 		// main
-		RendererMainGDI(hostedController);
+		RendererMainGDI(hostedController, raw);
 		// uninstall listener
 		gdiListener = nullptr;
 		nativeController->CallbackService()->UninstallListener(&listener);
@@ -251,10 +251,15 @@ int SetupWindowsGDIRendererInternal(bool hosted)
 
 int SetupWindowsGDIRenderer()
 {
-	return SetupWindowsGDIRendererInternal(false);
+	return SetupWindowsGDIRendererInternal(false, false);
 }
 
 int SetupHostedWindowsGDIRenderer()
 {
-	return SetupWindowsGDIRendererInternal(true);
+	return SetupWindowsGDIRendererInternal(true, false);
+}
+
+int SetupRawWindowsGDIRenderer()
+{
+	return SetupWindowsGDIRendererInternal(false, true);
 }

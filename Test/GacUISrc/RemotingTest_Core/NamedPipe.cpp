@@ -11,7 +11,7 @@ using namespace vl::presentation::remoteprotocol::channeling;
 
 const wchar_t* NamedPipeId = L"\\\\.\\pipe\\GacUIRemoteProtocol";
 
-class NamedPipeServerChannel
+class NamedPipeCoreChannel
 	: public Object
 	, public IGuiRemoteProtocolChannel<WString>
 {
@@ -30,12 +30,12 @@ protected:
 
 public:
 
-	NamedPipeServerChannel(HANDLE _hPipe)
+	NamedPipeCoreChannel(HANDLE _hPipe)
 		: hPipe(_hPipe)
 	{
 	}
 
-	~NamedPipeServerChannel()
+	~NamedPipeCoreChannel()
 	{
 	}
 
@@ -89,7 +89,7 @@ public:
 };
 
 template<typename T>
-void RunInNewThread(T&& threadProc, NamedPipeServerChannel* channel)
+void RunInNewThread(T&& threadProc, NamedPipeCoreChannel* channel)
 {
 	Thread::CreateAndStart([=]()
 	{
@@ -125,7 +125,7 @@ int StartNamedPipeServer()
 	Console::Write(L"> Named pipe created, waiting on: ");
 	Console::WriteLine(NamedPipeId);
 	{
-		NamedPipeServerChannel namedPipeServerChannel(hPipe);
+		NamedPipeCoreChannel namedPipeServerChannel(hPipe);
 
 		auto jsonParser = Ptr(new glr::json::Parser);
 		channeling::GuiRemoteJsonChannelStringSerializer channelJsonSerializer(&namedPipeServerChannel, jsonParser);

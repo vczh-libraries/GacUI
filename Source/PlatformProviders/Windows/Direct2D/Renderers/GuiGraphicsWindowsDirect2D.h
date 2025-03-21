@@ -147,6 +147,6 @@ OS Supporting
 	}
 }
 
-extern void RendererMainDirect2D(vl::presentation::GuiHostedController* hostedController);
+extern void RendererMainDirect2D(vl::presentation::GuiHostedController* hostedController, bool raw);
 
 #endif

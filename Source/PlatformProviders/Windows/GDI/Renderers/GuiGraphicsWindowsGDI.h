@@ -118,6 +118,6 @@ OS Supporting
 	}
 }
 
-extern void RendererMainGDI(vl::presentation::GuiHostedController* hostedController);
+extern void RendererMainGDI(vl::presentation::GuiHostedController* hostedController, bool raw);
 
 #endif

@@ -707,9 +707,11 @@ NativeMain
 using namespace vl::presentation;
 using namespace vl::presentation::elements;
 
+
+extern void GuiRawMain();
 extern void GuiApplicationMain();
 
-void RendererMainDirect2D(GuiHostedController* hostedController)
+void RendererMainDirect2D(GuiHostedController* hostedController, bool raw)
 {
 	elements_windows_d2d::WindowsDirect2DResourceManager resourceManager;
 	elements_windows_d2d::SetWindowsDirect2DResourceManager(&resourceManager);
@@ -738,7 +740,14 @@ void RendererMainDirect2D(GuiHostedController* hostedController)
 		elements::GuiDocumentElement::GuiDocumentElementRenderer::Register();
 
 		if (hostedController) hostedController->Initialize();
-		GuiApplicationMain();
+		if (raw)
+		{
+			GuiRawMain();
+		}
+		else
+		{
+			GuiApplicationMain();
+		}
 		if (hostedController) hostedController->Finalize();
 	}
 

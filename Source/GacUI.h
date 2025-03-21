@@ -54,6 +54,8 @@ extern int SetupWindowsGDIRenderer();
 extern int SetupWindowsDirect2DRenderer();
 extern int SetupHostedWindowsGDIRenderer();
 extern int SetupHostedWindowsDirect2DRenderer();
+extern int SetupRawWindowsGDIRenderer();
+extern int SetupRawWindowsDirect2DRenderer();
 
 // Gtk
 extern int SetupGtkRenderer();

@@ -620,7 +620,7 @@ using namespace vl::presentation;
 using namespace vl::presentation::windows;
 using namespace vl::presentation::elements_windows_d2d;
 
-int SetupWindowsDirect2DRendererInternal(bool hosted)
+int SetupWindowsDirect2DRendererInternal(bool hosted, bool raw)
 {
 	InitDpiAwareness(true);
 	CoInitializeEx(NULL, COINIT_MULTITHREADED);
@@ -650,7 +650,7 @@ int SetupWindowsDirect2DRendererInternal(bool hosted)
 		nativeController->CallbackService()->InstallListener(&listener);
 		direct2DListener = &listener;
 		// main
-		RendererMainDirect2D(hostedController);
+		RendererMainDirect2D(hostedController, raw);
 		// uninstall listener
 		direct2DListener = nullptr;
 		nativeController->CallbackService()->UninstallListener(&listener);
@@ -669,10 +669,15 @@ int SetupWindowsDirect2DRendererInternal(bool hosted)
 
 int SetupWindowsDirect2DRenderer()
 {
-	return SetupWindowsDirect2DRendererInternal(false);
+	return SetupWindowsDirect2DRendererInternal(false, false);
 }
 
 int SetupHostedWindowsDirect2DRenderer()
 {
-	return SetupWindowsDirect2DRendererInternal(true);
+	return SetupWindowsDirect2DRendererInternal(true, false);
+}
+
+int SetupRawWindowsDirect2DRenderer()
+{
+	return SetupWindowsDirect2DRendererInternal(false, true);
 }
