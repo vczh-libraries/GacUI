@@ -192,6 +192,7 @@ int StartNamedPipeServer()
 						UnregisterWait(context->hWait);
 						CloseHandle(context->hEvent);
 						context->namedPipeChannel->RendererConnectedThreadUnsafe(context->asyncChannel);
+						delete context;
 					},
 					context,
 					INFINITE,
