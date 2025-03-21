@@ -1,5 +1,6 @@
 #include "../../../Source/GacUI.h"
 #include "../../../Source/PlatformProviders/Remote/GuiRemoteProtocol.h"
+#include "../../../Source/PlatformProviders/RemoteRenderer/GuiRemoteRendererSingle.h"
 #include <Windows.h>
 
 using namespace vl;
@@ -7,6 +8,7 @@ using namespace vl::collections;
 using namespace vl::presentation;
 using namespace vl::presentation::remoteprotocol;
 using namespace vl::presentation::remoteprotocol::channeling;
+using namespace vl::presentation::remote_renderer;
 
 const wchar_t* NamedPipeId = L"\\\\.\\pipe\\GacUIRemoteProtocol";
 
@@ -72,6 +74,8 @@ public:
 	}
 };
 
+extern void InstallRemoteRenderer(GuiRemoteRendererSingle* _remoteRenderer);
+
 int StartNamedPipeClient()
 {
 	HANDLE hPipe = CreateFile(
@@ -96,8 +100,10 @@ int StartNamedPipeClient()
 	int result = 0;
 	{
 		NamedPipeRendererChannel namedPipeServerChannel(hPipe);
-		namedPipeServerChannel.WaitForDisconnected(); 
+		GuiRemoteRendererSingle remoteRenderer;
+		InstallRemoteRenderer(&remoteRenderer);
 		result = SetupRawWindowsDirect2DRenderer();
+		namedPipeServerChannel.WaitForDisconnected(); 
 	}
 	CloseHandle(hPipe);
 	return result;

@@ -20,6 +20,7 @@ namespace vl::presentation::remote_renderer
 		GuiRemoteRendererSingle();
 		~GuiRemoteRendererSingle();
 
+		WString			GetExecutablePath() override;
 		void			Initialize(IGuiRemoteProtocolEvents* events) override;
 		void			Submit(bool& disconnected) override;
 		void			ProcessRemoteEvents() override;
@@ -87,6 +88,7 @@ namespace vl::presentation::remote_renderer
 		void			RequestRendererUpdateElement_GradientBackground(const remoteprotocol::ElementDesc_GradientBackground& arguments) override;
 		void			RequestRendererUpdateElement_InnerShadow(const remoteprotocol::ElementDesc_InnerShadow& arguments) override;
 		void			RequestRendererUpdateElement_Polygon(const remoteprotocol::ElementDesc_Polygon& arguments) override;
+		void			RequestRendererUpdateElement_SolidLabel(const remoteprotocol::ElementDesc_SolidLabel& arguments) override;
 		void			RequestImageCreated(vint id, const remoteprotocol::ImageCreation& arguments) override;
 		void			RequestImageDestroyed(const vint& arguments) override;
 		void			RequestRendererUpdateElement_ImageFrame(const remoteprotocol::ElementDesc_ImageFrame& arguments) override;
