@@ -155,7 +155,7 @@ int StartNamedPipeServer()
 				RunInNewThread(uiThreadProc, &namedPipeServerChannel);
 			});
 
-		Console::WriteLine(L"> Wait for renderer...");
+		Console::WriteLine(L"> Waiting for a renderer ...");
 		{
 			OVERLAPPED overlapped;
 			ZeroMemory(&overlapped, sizeof(overlapped));
