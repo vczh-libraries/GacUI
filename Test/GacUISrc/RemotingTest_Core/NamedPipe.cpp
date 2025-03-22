@@ -47,7 +47,7 @@ public:
 		BeginReadingLoopUnsafe();
 		asyncChannel->ExecuteInChannelThread([this]()
 		{
-			Console::WriteLine(L"> Sending pending nessages ...");
+			Console::WriteLine(L"> Sending pending messages ...");
 			connected = true;
 			SendPendingMessages();
 		});
