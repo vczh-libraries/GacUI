@@ -13,7 +13,9 @@ protected:
 	HANDLE											hPipe = INVALID_HANDLE_VALUE;
 
 private:
+	BYTE											bufferReadFile[65536];
 	stream::MemoryStream							streamReadFile;
+	HANDLE											hWaitHandleReadFile = INVALID_HANDLE_VALUE;
 	OVERLAPPED										overlappedReadFile;
 	HANDLE											hEventReadFile = INVALID_HANDLE_VALUE;
 
@@ -25,11 +27,72 @@ protected:
 
 	virtual void OnReadStringThreadUnsafe(const WString& str) = 0;
 
+private:
+
+	void SubmitReadBufferUnsafe(vint bytes)
+	{
+	}
+
+	void FinishReadingUnsafe()
+	{
+	}
+
+protected:
+
 	void BeginReadingLoopUnsafe()
 	{
-		ResetEvent(hEventReadFile);
-		ZeroMemory(&overlappedReadFile, sizeof(overlappedReadFile));
-		overlappedReadFile.hEvent = hEventReadFile;
+	RESTART_LOOP:
+		{
+			ResetEvent(hEventReadFile);
+			ZeroMemory(&overlappedReadFile, sizeof(overlappedReadFile));
+			overlappedReadFile.hEvent = hEventReadFile;
+			DWORD read = 0;
+			BOOL result = ReadFile(hPipe, &bufferReadFile, sizeof(bufferReadFile), &read, &overlappedReadFile);
+
+			if (result == TRUE)
+			{
+				SubmitReadBufferUnsafe((vint)read);
+				FinishReadingUnsafe();
+				goto RESTART_LOOP;
+			}
+
+			DWORD error = GetLastError();
+			if (error == ERROR_MORE_DATA)
+			{
+				SubmitReadBufferUnsafe((vint)read);
+				goto RESTART_LOOP;
+			}
+
+			CHECK_ERROR(error == ERROR_IO_PENDING, L"ReadFile failed on unexpected GetLastError.");
+
+			RegisterWaitForSingleObject(
+				&hWaitHandleReadFile,
+				hEventReadFile,
+				[](PVOID lpParameter, BOOLEAN TimerOrWaitFired)
+				{
+					auto self = (NamedPipeShared*)lpParameter;
+					UnregisterWait(self->hWaitHandleReadFile);
+					self->hWaitHandleReadFile = INVALID_HANDLE_VALUE;
+
+					DWORD read = 0;
+					BOOL result = GetOverlappedResult(self->hPipe, &self->overlappedReadFile, &read, FALSE);
+					if (result == TRUE)
+					{
+						self->SubmitReadBufferUnsafe((vint)read);
+						self->FinishReadingUnsafe();
+					}
+					else
+					{
+						DWORD error = GetLastError();
+						CHECK_ERROR(error == ERROR_IO_PENDING, L"GetOverlappedResult(ReadFile) failed on unexpected GetLastError.");
+						self->SubmitReadBufferUnsafe((vint)read);
+					}
+					self->BeginReadingLoopUnsafe();
+				},
+				this,
+				INFINITE,
+				WT_EXECUTEONLYONCE);
+		}
 	}
 
 private:

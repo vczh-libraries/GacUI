@@ -182,10 +182,8 @@ int StartNamedPipeServer()
 			case ERROR_IO_PENDING:
 				WaitForSingleObject(overlapped.hEvent, INFINITE);
 				break;
-			case ERROR_PIPE_CONNECTED:
-				break;
 			default:
-				CHECK_FAIL(L"ConnectNamedPipe failed on unexpected GetLastError.");
+				CHECK_ERROR(error == ERROR_PIPE_CONNECTED, L"ConnectNamedPipe failed on unexpected GetLastError.");
 			}
 
 			CloseHandle(overlapped.hEvent);

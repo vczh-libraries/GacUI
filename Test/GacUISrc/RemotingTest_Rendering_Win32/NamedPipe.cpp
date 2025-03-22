@@ -18,6 +18,7 @@ protected:
 
 	void OnReadStringThreadUnsafe(const WString& str) override
 	{
+		return;
 		GetCurrentController()->AsyncService()->InvokeInMainThread(
 			GetCurrentController()->WindowService()->GetMainWindow(),
 			[this, str]()
@@ -40,6 +41,7 @@ public:
 		eventDisconnected.CreateManualUnsignal(false);
 		_channel->Initialize(this);
 		// TODO: Call BeginReadingLoopUnsafe after main window created
+		BeginReadingLoopUnsafe();
 	}
 
 	~NamedPipeRendererChannel()
