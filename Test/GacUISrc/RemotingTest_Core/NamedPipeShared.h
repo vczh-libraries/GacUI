@@ -99,6 +99,10 @@ protected:
 			}
 
 			DWORD error = GetLastError();
+			if (error == ERROR_BROKEN_PIPE)
+			{
+				return;
+			}
 			if (error == ERROR_MORE_DATA)
 			{
 				SubmitReadBufferUnsafe((vint)read);
@@ -126,7 +130,11 @@ protected:
 					else
 					{
 						DWORD error = GetLastError();
-						CHECK_ERROR(error == ERROR_IO_PENDING, L"GetOverlappedResult(ReadFile) failed on unexpected GetLastError.");
+						if (error == ERROR_BROKEN_PIPE)
+						{
+							return;
+						}
+						CHECK_ERROR(error == ERROR_MORE_DATA, L"GetOverlappedResult(ReadFile) failed on unexpected GetLastError.");
 						self->SubmitReadBufferUnsafe((vint)read);
 					}
 					self->BeginReadingLoopUnsafe();
