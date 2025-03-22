@@ -168,6 +168,9 @@
       <Project>{04d56a3c-3a31-4cbd-b1f1-955fa5848057}</Project>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="NamedPipeShared.h" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

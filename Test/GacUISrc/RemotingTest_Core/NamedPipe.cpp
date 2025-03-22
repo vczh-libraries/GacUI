@@ -1,103 +1,50 @@
 #include "../../../Source/GacUI.h"
 #include "../../../Source/PlatformProviders/Remote/GuiRemoteProtocol.h"
-#include <Windows.h>
+#include "NamedPipeShared.h"
 
-using namespace vl;
-using namespace vl::console;
-using namespace vl::collections;
 using namespace vl::presentation;
 using namespace vl::presentation::remoteprotocol;
 using namespace vl::presentation::remoteprotocol::repeatfiltering;
 using namespace vl::presentation::remoteprotocol::channeling;
 
-const wchar_t* NamedPipeId = L"\\\\.\\pipe\\GacUIRemoteProtocol";
-
 class NamedPipeCoreChannel
-	: public Object
+	: public NamedPipeShared
 	, public virtual IGuiRemoteProtocolChannel<WString>
 {
 protected:
 	IGuiRemoteProtocolChannelReceiver<WString>*		receiver = nullptr;
-	HANDLE											hPipe = INVALID_HANDLE_VALUE;
 	bool											connected = false;
 	List<WString>									pendingMessages;
 	vint											pendingMessageCount = 0;
-	stream::MemoryStream							bufferStream;
-	OVERLAPPED										overlappedWriteFile;
-	HANDLE											hWriteFileOverlappedEvent = INVALID_HANDLE_VALUE;
 
-	void OnReceiveThreadUnsafe(const WString& package)
+	void OnReadStringThreadUnsafe(const WString& str) override
 	{
 		Console::Write(L"Received: ");
-		Console::WriteLine(package);
-		receiver->OnReceive(package);
-	}
-
-	vint32_t WriteInt32ToStream(vint32_t number)
-	{
-		return (vint32_t)bufferStream.Write(&number, sizeof(number));
-	}
-
-	vint32_t WriteStringToStream(const WString& str)
-	{
-		vint32_t bytes = 0;
-		{
-			vint32_t count = (vint32_t)str.Length();
-			bytes += (vint32_t)bufferStream.Write(&count, sizeof(count));
-		}
-		bytes += (vint32_t)bufferStream.Write((void*)str.Buffer(), sizeof(wchar_t) * str.Length());
-		return bytes;
-	}
-
-	void BeginSendStream()
-	{
-		vint32_t bytes = 0;
-		bufferStream.SeekFromBegin(0);
-		bufferStream.Write(&bytes, sizeof(bytes));
-	}
-
-	void EndSendStream(vint32_t bytes)
-	{
-		bufferStream.SeekFromBegin(0);
-		WriteInt32ToStream(bytes);
-
-		WaitForSingleObject(hWriteFileOverlappedEvent, INFINITE);
-		ResetEvent(hWriteFileOverlappedEvent);
-		ZeroMemory(&overlappedWriteFile, sizeof(overlappedWriteFile));
-		overlappedWriteFile.hEvent = hWriteFileOverlappedEvent;
-		WriteFile(hPipe, bufferStream.GetInternalBuffer(), (DWORD)(bytes + sizeof(bytes)), NULL, &overlappedWriteFile);
+		Console::WriteLine(str);
+		receiver->OnReceive(str);
 	}
 
 	void SendPendingMessages()
 	{
-		vint32_t bytes = 0;
-		BeginSendStream();
-		bytes += WriteInt32ToStream((vint32_t)pendingMessageCount);
-		for (vint i = 0; i < pendingMessageCount; i++)
-		{
-			bytes += WriteStringToStream(pendingMessages[i]);
-		}
-		EndSendStream(bytes);
+		SendStringArray(pendingMessageCount, pendingMessages);
 		pendingMessageCount = 0;
 	}
 
 public:
 
 	NamedPipeCoreChannel(HANDLE _hPipe)
-		: hPipe(_hPipe)
+		: NamedPipeShared(_hPipe)
 	{
-		hWriteFileOverlappedEvent = CreateEvent(NULL, TRUE, TRUE, NULL);
-		CHECK_ERROR(hWriteFileOverlappedEvent != NULL, L"NamedPipeCoreChannel initialization failed on CreateEvent.");
 	}
 
 	~NamedPipeCoreChannel()
 	{
-		CloseHandle(hWriteFileOverlappedEvent);
 	}
 
 	void RendererConnectedThreadUnsafe(GuiRemoteProtocolAsyncJsonChannelSerializer* asyncChannel)
 	{
 		Console::WriteLine(L"> Renderer connected");
+		BeginReadingLoopUnsafe();
 		asyncChannel->ExecuteInChannelThread([this]()
 		{
 			Console::WriteLine(L"> Sending pending nessages ...");
@@ -108,8 +55,7 @@ public:
 
 	void WriteErrorThreadUnsafe(const WString& error)
 	{
-		BeginSendStream();
-		EndSendStream(WriteStringToStream(L"!" + error));
+		SendSingleString(L"!" + error);
 	}
 
 	void Initialize(IGuiRemoteProtocolChannelReceiver<WString>* _receiver) override

@@ -1,40 +1,45 @@
 #include "../../../Source/GacUI.h"
 #include "../../../Source/PlatformProviders/Remote/GuiRemoteProtocol.h"
 #include "../../../Source/PlatformProviders/RemoteRenderer/GuiRemoteRendererSingle.h"
-#include <Windows.h>
+#include "../RemotingTest_Core/NamedPipeShared.h"
 
-using namespace vl;
-using namespace vl::collections;
 using namespace vl::presentation;
 using namespace vl::presentation::remoteprotocol;
 using namespace vl::presentation::remoteprotocol::channeling;
 using namespace vl::presentation::remote_renderer;
 
-const wchar_t* NamedPipeId = L"\\\\.\\pipe\\GacUIRemoteProtocol";
-
 class NamedPipeRendererChannel
-	: public Object
+	: public NamedPipeShared
 	, protected virtual IGuiRemoteProtocolChannelReceiver<WString>
 {
 protected:
-	HANDLE											hPipe = INVALID_HANDLE_VALUE;
 	IGuiRemoteProtocolChannel<WString>*				channel = nullptr;
 	EventObject										eventDisconnected;
 
+	void OnReadStringThreadUnsafe(const WString& str) override
+	{
+		GetCurrentController()->AsyncService()->InvokeInMainThread(
+			GetCurrentController()->WindowService()->GetMainWindow(),
+			[this, str]()
+			{
+				channel->Write(str);
+			});
+	}
+
 	void OnReceive(const WString& package) override
 	{
-		// Send to core
-		CHECK_FAIL(L"Not Implemented!");
+		SendSingleString(package);
 	}
 
 public:
 
 	NamedPipeRendererChannel(HANDLE _hPipe, IGuiRemoteProtocolChannel<WString>* _channel)
-		: hPipe(_hPipe)
+		: NamedPipeShared(_hPipe)
 		, channel(_channel)
 	{
 		eventDisconnected.CreateManualUnsignal(false);
 		_channel->Initialize(this);
+		// TODO: Call BeginReadingLoopUnsafe after main window created
 	}
 
 	~NamedPipeRendererChannel()
