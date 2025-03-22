@@ -29,12 +29,46 @@ protected:
 
 private:
 
-	void SubmitReadBufferUnsafe(vint bytes)
+	void BeginReadingUnsafe()
 	{
+		streamReadFile.SeekFromBegin(0);
 	}
 
-	void FinishReadingUnsafe()
+	void SubmitReadBufferUnsafe(vint bytes)
 	{
+		streamReadFile.Write(bufferReadFile, bytes);
+	}
+
+	void EndReadingUnsafe()
+	{
+		vint32_t position = (vint32_t)streamReadFile.Position();
+		streamReadFile.SeekFromBegin(0);
+
+		vint32_t bytes = 0;
+		vint consumed = 0;
+		consumed = streamReadFile.Read(&bytes, sizeof(bytes));
+		CHECK_ERROR(consumed == sizeof(bytes), L"ReadFile failed on incomplete message.");
+		CHECK_ERROR(bytes == position - sizeof(bytes), L"ReadFile failed on incomplete message.");
+
+		Array<wchar_t> strBuffer;
+		while (streamReadFile.Position() < position)
+		{
+			vint32_t count = 0;
+			consumed = streamReadFile.Read(&count, sizeof(count));
+			CHECK_ERROR(consumed == sizeof(count) && streamReadFile.Position() <= position, L"ReadFile failed on incomplete message.");
+
+			if (count == 0)
+			{
+				OnReadStringThreadUnsafe(WString::Empty);
+			}
+			else
+			{
+				strBuffer.Resize(count);
+				consumed = streamReadFile.Read(&strBuffer[0], count * sizeof(wchar_t));
+				CHECK_ERROR(consumed == count * sizeof(wchar_t) && streamReadFile.Position() <= position, L"ReadFile failed on incomplete message.");
+				OnReadStringThreadUnsafe(WString::CopyFrom(&strBuffer[0], count));
+			}
+		}
 	}
 
 protected:
@@ -43,6 +77,7 @@ protected:
 	{
 	RESTART_LOOP:
 		{
+			BeginReadingUnsafe();
 			ResetEvent(hEventReadFile);
 			ZeroMemory(&overlappedReadFile, sizeof(overlappedReadFile));
 			overlappedReadFile.hEvent = hEventReadFile;
@@ -52,7 +87,7 @@ protected:
 			if (result == TRUE)
 			{
 				SubmitReadBufferUnsafe((vint)read);
-				FinishReadingUnsafe();
+				EndReadingUnsafe();
 				goto RESTART_LOOP;
 			}
 
@@ -79,7 +114,7 @@ protected:
 					if (result == TRUE)
 					{
 						self->SubmitReadBufferUnsafe((vint)read);
-						self->FinishReadingUnsafe();
+						self->EndReadingUnsafe();
 					}
 					else
 					{
@@ -105,11 +140,12 @@ private:
 	vint32_t WriteStringToStream(const WString& str)
 	{
 		vint32_t bytes = 0;
+		vint32_t count = (vint32_t)str.Length();
+		bytes += (vint32_t)streamWriteFile.Write(&count, sizeof(count));
+		if (count > 0)
 		{
-			vint32_t count = (vint32_t)str.Length();
-			bytes += (vint32_t)streamWriteFile.Write(&count, sizeof(count));
+			bytes += (vint32_t)streamWriteFile.Write((void*)str.Buffer(), sizeof(wchar_t) * str.Length());
 		}
-		bytes += (vint32_t)streamWriteFile.Write((void*)str.Buffer(), sizeof(wchar_t) * str.Length());
 		return bytes;
 	}
 
