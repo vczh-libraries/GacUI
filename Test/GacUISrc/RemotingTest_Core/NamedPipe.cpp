@@ -21,6 +21,10 @@ protected:
 	HANDLE											hPipe = INVALID_HANDLE_VALUE;
 	bool											connected = false;
 	List<WString>									pendingMessages;
+	vint											pendingMessageCount = 0;
+	stream::MemoryStream							bufferStream;
+	OVERLAPPED										overlappedWriteFile;
+	HANDLE											hWriteFileOverlappedEvent = INVALID_HANDLE_VALUE;
 
 	void OnReceiveThreadUnsafe(const WString& package)
 	{
@@ -29,30 +33,83 @@ protected:
 		receiver->OnReceive(package);
 	}
 
+	vint32_t WriteInt32ToStream(vint32_t number)
+	{
+		return (vint32_t)bufferStream.Write(&number, sizeof(number));
+	}
+
+	vint32_t WriteStringToStream(const WString& str)
+	{
+		vint32_t bytes = 0;
+		{
+			vint32_t count = (vint32_t)str.Length();
+			bytes += (vint32_t)bufferStream.Write(&count, sizeof(count));
+		}
+		bytes += (vint32_t)bufferStream.Write((void*)str.Buffer(), sizeof(wchar_t) * str.Length());
+		return bytes;
+	}
+
+	void BeginSendStream()
+	{
+		vint32_t bytes = 0;
+		bufferStream.SeekFromBegin(0);
+		bufferStream.Write(&bytes, sizeof(bytes));
+	}
+
+	void EndSendStream(vint32_t bytes)
+	{
+		bufferStream.SeekFromBegin(0);
+		WriteInt32ToStream(bytes);
+
+		WaitForSingleObject(hWriteFileOverlappedEvent, INFINITE);
+		ResetEvent(hWriteFileOverlappedEvent);
+		ZeroMemory(&overlappedWriteFile, sizeof(overlappedWriteFile));
+		overlappedWriteFile.hEvent = hWriteFileOverlappedEvent;
+		WriteFile(hPipe, bufferStream.GetInternalBuffer(), (DWORD)(bytes + sizeof(bytes)), NULL, &overlappedWriteFile);
+	}
+
+	void SendPendingMessages()
+	{
+		vint32_t bytes = 0;
+		BeginSendStream();
+		bytes += WriteInt32ToStream((vint32_t)pendingMessageCount);
+		for (vint i = 0; i < pendingMessageCount; i++)
+		{
+			bytes += WriteStringToStream(pendingMessages[i]);
+		}
+		EndSendStream(bytes);
+		pendingMessageCount = 0;
+	}
+
 public:
 
 	NamedPipeCoreChannel(HANDLE _hPipe)
 		: hPipe(_hPipe)
 	{
+		hWriteFileOverlappedEvent = CreateEvent(NULL, TRUE, TRUE, NULL);
+		CHECK_ERROR(hWriteFileOverlappedEvent != NULL, L"NamedPipeCoreChannel initialization failed on CreateEvent.");
 	}
 
 	~NamedPipeCoreChannel()
 	{
+		CloseHandle(hWriteFileOverlappedEvent);
 	}
 
 	void RendererConnectedThreadUnsafe(GuiRemoteProtocolAsyncJsonChannelSerializer* asyncChannel)
 	{
 		Console::WriteLine(L"> Renderer connected");
-		asyncChannel->ExecuteInChannelThread([]()
+		asyncChannel->ExecuteInChannelThread([this]()
 		{
 			Console::WriteLine(L"> Sending pending nessages ...");
-			// Set connected and process pendingMessages
+			connected = true;
+			SendPendingMessages();
 		});
 	}
 
 	void WriteErrorThreadUnsafe(const WString& error)
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		BeginSendStream();
+		EndSendStream(WriteStringToStream(L"!" + error));
 	}
 
 	void Initialize(IGuiRemoteProtocolChannelReceiver<WString>* _receiver) override
@@ -69,14 +126,15 @@ public:
 	{
 		Console::Write(L"Sent: ");
 		Console::WriteLine(package);
-		if (connected)
+		if (pendingMessageCount < pendingMessages.Count() - 1)
 		{
-			CHECK_FAIL(L"Not Implemented!");
+			pendingMessages[pendingMessageCount] = package;
 		}
 		else
 		{
 			pendingMessages.Add(package);
 		}
+		pendingMessageCount++;
 	}
 
 	WString GetExecutablePath() override
@@ -86,7 +144,15 @@ public:
 
 	void Submit(bool& disconnected) override
 	{
-		Console::WriteLine(L"Submit");
+		if (connected)
+		{
+			Console::WriteLine(L"Submit");
+			SendPendingMessages();
+		}
+		else
+		{
+			Console::WriteLine(L"Submit (pending)");
+		}
 	}
 
 	void ProcessRemoteEvents() override
@@ -163,7 +229,22 @@ int StartNamedPipeServer()
 			CHECK_ERROR(overlapped.hEvent != NULL, L"ConnectNamedPipe failed on CreateEvent.");
 
 			BOOL result = ConnectNamedPipe(hPipe, &overlapped);
-			CHECK_ERROR(result == 0, L"ConnectNamedPipe failed.");
+			CHECK_ERROR(result == FALSE, L"ConnectNamedPipe failed.");
+			DWORD error = GetLastError();
+			switch (error)
+			{
+			case ERROR_IO_PENDING:
+				WaitForSingleObject(overlapped.hEvent, INFINITE);
+				break;
+			case ERROR_PIPE_CONNECTED:
+				break;
+			default:
+				CHECK_FAIL(L"ConnectNamedPipe failed on unexpected GetLastError.");
+			}
+
+			CloseHandle(overlapped.hEvent);
+			namedPipeServerChannel.RendererConnectedThreadUnsafe(&asyncChannelSender);
+			/*
 			if (GetLastError() == ERROR_PIPE_CONNECTED)
 			{
 				CloseHandle(overlapped.hEvent);
@@ -198,6 +279,7 @@ int StartNamedPipeServer()
 					INFINITE,
 					WT_EXECUTEONLYONCE);
 			}
+			*/
 		}
 		asyncChannelSender.WaitForStopped();
 	}
