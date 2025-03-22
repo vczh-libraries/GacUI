@@ -188,42 +188,6 @@ int StartNamedPipeServer()
 
 			CloseHandle(overlapped.hEvent);
 			namedPipeServerChannel.RendererConnectedThreadUnsafe(&asyncChannelSender);
-			/*
-			if (GetLastError() == ERROR_PIPE_CONNECTED)
-			{
-				CloseHandle(overlapped.hEvent);
-				namedPipeServerChannel.RendererConnectedThreadUnsafe(&asyncChannelSender);
-			}
-			else
-			{
-				struct ConnectNamedPipeContext
-				{
-					HANDLE hWait;
-					HANDLE hEvent;
-					NamedPipeCoreChannel* namedPipeChannel;
-					GuiRemoteProtocolAsyncJsonChannelSerializer* asyncChannel;
-				};
-				auto context = new ConnectNamedPipeContext;
-				context->hWait = INVALID_HANDLE_VALUE;
-				context->hEvent = overlapped.hEvent;
-				context->namedPipeChannel = &namedPipeServerChannel;
-				context->asyncChannel = &asyncChannelSender;
-				RegisterWaitForSingleObject(
-					&context->hWait,
-					overlapped.hEvent,
-					[](PVOID lpParameter, BOOLEAN TimerOrWaitFired)
-					{
-						auto context = (ConnectNamedPipeContext*)lpParameter;
-						UnregisterWait(context->hWait);
-						CloseHandle(context->hEvent);
-						context->namedPipeChannel->RendererConnectedThreadUnsafe(context->asyncChannel);
-						delete context;
-					},
-					context,
-					INFINITE,
-					WT_EXECUTEONLYONCE);
-			}
-			*/
 		}
 		asyncChannelSender.WaitForStopped();
 	}
