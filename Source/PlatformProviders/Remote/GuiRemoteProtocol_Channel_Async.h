@@ -120,6 +120,7 @@ void ChannelPackageSemanticUnpack(
 		collections::Dictionary<vint, TPackage>						queuedResponses;
 		TPendingRequestStack										pendingRequests;
 
+		volatile bool												connectionAvailable = false;
 		volatile bool												started = false;
 		volatile bool												stopping = false;
 		volatile bool												stopped = false;
@@ -200,6 +201,10 @@ void ChannelPackageSemanticUnpack(
 				{
 					SPIN_LOCK(lockEvents)
 					{
+						if (name == L"ControllerConnect")
+						{
+							connectionAvailable = true;
+						}
 						queuedEvents.Add(package);
 					}
 				}
@@ -262,7 +267,7 @@ void ChannelPackageSemanticUnpack(
 			}
 
 			// Called from UI thread
-			QueueToChannelThread([this, packages = std::move(uiPendingPackages)]()
+			QueueToChannelThread([this, requestAvailable = (bool)requestGroup, packages = std::move(uiPendingPackages)]()
 			{
 				for (auto&& package : packages)
 				{
@@ -270,7 +275,14 @@ void ChannelPackageSemanticUnpack(
 				}
 				bool disconnected = false;
 				channel->Submit(disconnected);
-				// TODO: do not ignore diconnected
+				if (disconnected)
+				{
+					connectionAvailable = false;
+					if (requestAvailable)
+					{
+						eventManualResponses.Signal();
+					}
+				}
 			}, &eventAutoChannelTaskQueued);
 
 			// Block until the all responses of the top request group are received
@@ -278,6 +290,17 @@ void ChannelPackageSemanticUnpack(
 			if (requestGroup)
 			{
 				eventManualResponses.Wait();
+				if (!connectionAvailable)
+				{
+					pendingRequests.RemoveAt(pendingRequests.Count() - 1);
+					disconnected = true;
+					if (pendingRequests.Count() == 0)
+					{
+						eventManualResponses.Unsignal();
+					}
+					return;
+				}
+
 				collections::List<TPackage> responses;
 				SPIN_LOCK(lockResponses)
 				{
@@ -297,6 +320,13 @@ void ChannelPackageSemanticUnpack(
 				for (auto&& response : responses)
 				{
 					receiver->OnReceive(response);
+				}
+			}
+			else
+			{
+				if (!connectionAvailable)
+				{
+					disconnected = true;
 				}
 			}
 
