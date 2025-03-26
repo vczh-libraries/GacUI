@@ -23,11 +23,11 @@ GuiRemoteWindow
 
 	void GuiRemoteWindow::RequestGetBounds()
 	{
-		sizingConfigInvalidated = false;
 		vint idGetBounds = remoteMessages.RequestWindowGetBounds();
 		bool disconnected = false;
 		remoteMessages.Submit(disconnected);
 		if (disconnected) return;
+		sizingConfigInvalidated = false;
 		OnWindowBoundsUpdated(remoteMessages.RetrieveWindowGetBounds(idGetBounds));
 	}
 
@@ -92,6 +92,7 @@ GuiRemoteWindow (events)
 		}
 
 		sizingConfigInvalidated = true;
+		remoteMessages.RequestWindowNotifySetBounds(remoteWindowSizingConfig.bounds);
 		RequestGetBounds();
 
 		if (remote->applicationRunning)
@@ -238,6 +239,17 @@ GuiRemoteWindow (INativeWindow)
 	{
 		if (remoteWindowSizingConfig.bounds != bounds)
 		{
+			auto x1 = remoteWindowSizingConfig.clientBounds.x1 - remoteWindowSizingConfig.bounds.x1;
+			auto y1 = remoteWindowSizingConfig.clientBounds.y1 - remoteWindowSizingConfig.bounds.y1;
+			auto x2 = remoteWindowSizingConfig.clientBounds.x2 - remoteWindowSizingConfig.bounds.x2;
+			auto y2 = remoteWindowSizingConfig.clientBounds.y2 - remoteWindowSizingConfig.bounds.y2;
+			remoteWindowSizingConfig.bounds = bounds;
+			remoteWindowSizingConfig.clientBounds = {
+				x1 + remoteWindowSizingConfig.bounds.x1,
+				y1 + remoteWindowSizingConfig.bounds.y1,
+				x2 + remoteWindowSizingConfig.bounds.x2,
+				y2 + remoteWindowSizingConfig.bounds.y2
+			};
 			remoteMessages.RequestWindowNotifySetBounds(bounds);
 			sizingConfigInvalidated = true;
 		}
@@ -253,6 +265,17 @@ GuiRemoteWindow (INativeWindow)
 	{
 		if (remoteWindowSizingConfig.clientBounds.GetSize() != size)
 		{
+			auto x1 = remoteWindowSizingConfig.bounds.x1 - remoteWindowSizingConfig.clientBounds.x1;
+			auto y1 = remoteWindowSizingConfig.bounds.y1 - remoteWindowSizingConfig.clientBounds.y1;
+			auto x2 = remoteWindowSizingConfig.bounds.x2 - remoteWindowSizingConfig.clientBounds.x2;
+			auto y2 = remoteWindowSizingConfig.bounds.y2 - remoteWindowSizingConfig.clientBounds.y2;
+			remoteWindowSizingConfig.clientBounds = { remoteWindowSizingConfig.clientBounds.LeftTop(),size };
+			remoteWindowSizingConfig.bounds = {
+				x1 + remoteWindowSizingConfig.clientBounds.x1,
+				y1 + remoteWindowSizingConfig.clientBounds.y1,
+				x2 + remoteWindowSizingConfig.clientBounds.x2,
+				y2 + remoteWindowSizingConfig.clientBounds.y2
+			};
 			remoteMessages.RequestWindowNotifySetClientSize(size);
 			sizingConfigInvalidated = true;
 		}

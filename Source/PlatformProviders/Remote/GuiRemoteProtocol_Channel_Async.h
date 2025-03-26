@@ -104,7 +104,11 @@ void ChannelPackageSemanticUnpack(
 		using TUIMainProc = Func<void(GuiRemoteProtocolAsyncChannelSerializer<TPackage>*)>;
 
 	protected:
-		using TPendingRequestGroup = collections::List<vint>;
+		struct TPendingRequestGroup
+		{
+			vint													connectionCounter = -1;
+			collections::List<vint>									requestIds;
+		};
 		using TPendingRequestStack = collections::List<Ptr<TPendingRequestGroup>>;
 
 		IGuiRemoteProtocolChannel<TPackage>*						channel = nullptr;
@@ -120,11 +124,14 @@ void ChannelPackageSemanticUnpack(
 		collections::Dictionary<vint, TPackage>						queuedResponses;
 		TPendingRequestStack										pendingRequests;
 
+		SpinLock													lockConnection;
+		volatile vint												connectionCounter = 0;
 		volatile bool												connectionAvailable = false;
+
 		volatile bool												started = false;
 		volatile bool												stopping = false;
 		volatile bool												stopped = false;
-		Nullable<WString>											executablePath; 
+		Nullable<WString>											executablePath;
 
 		EventObject													eventAutoChannelTaskQueued;
 		EventObject													eventManualChannelThreadStopped;
@@ -170,10 +177,11 @@ void ChannelPackageSemanticUnpack(
 
 	protected:
 
-		bool AreCurrentPendingRequestGroupSatisfied()
+		bool AreCurrentPendingRequestGroupSatisfied(bool disconnected)
 		{
 			if (pendingRequests.Count() == 0) return false;
-			for (vint requestId : *pendingRequests[pendingRequests.Count() - 1].Obj())
+			if (disconnected) return true;
+			for (vint requestId : pendingRequests[pendingRequests.Count() - 1]->requestIds)
 			{
 				if (!queuedResponses.Keys().Contains(requestId))
 				{
@@ -201,10 +209,6 @@ void ChannelPackageSemanticUnpack(
 				{
 					SPIN_LOCK(lockEvents)
 					{
-						if (name == L"ControllerConnect")
-						{
-							connectionAvailable = true;
-						}
 						queuedEvents.Add(package);
 					}
 				}
@@ -214,7 +218,7 @@ void ChannelPackageSemanticUnpack(
 					SPIN_LOCK(lockResponses)
 					{
 						queuedResponses.Add(id, package);
-						if (AreCurrentPendingRequestGroupSatisfied())
+						if (AreCurrentPendingRequestGroupSatisfied(false))
 						{
 							eventManualResponses.Signal();
 						}
@@ -240,8 +244,19 @@ void ChannelPackageSemanticUnpack(
 		{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::channeling::GuiRemoteProtocolAsyncChannelSerializer<TPackage>::Submit(...)#"
 
+			SPIN_LOCK(lockConnection)
+			{
+				if (!connectionAvailable)
+				{
+					disconnected = true;
+					uiPendingPackages.Clear();
+					return;
+				}
+			}
+
 			// Group all pending requests into a group
-			Ptr<TPendingRequestGroup> requestGroup;
+			auto requestGroup = Ptr(new TPendingRequestGroup);
+			requestGroup->connectionCounter = connectionCounter;
 			for (auto&& package : uiPendingPackages)
 			{
 				auto semantic = ChannelPackageSemantic::Unknown;
@@ -251,23 +266,16 @@ void ChannelPackageSemanticUnpack(
 
 				if (semantic == ChannelPackageSemantic::Request)
 				{
-					if (!requestGroup)
-					{
-						requestGroup = Ptr(new TPendingRequestGroup);
-					}
-					requestGroup->Add(id);
+					requestGroup->requestIds.Add(id);
 				}
 			}
-			if (requestGroup)
+			SPIN_LOCK(lockResponses)
 			{
-				SPIN_LOCK(lockResponses)
-				{
-					pendingRequests.Add(requestGroup);
-				}
+				pendingRequests.Add(requestGroup);
 			}
 
 			// Called from UI thread
-			QueueToChannelThread([this, requestAvailable = (bool)requestGroup, packages = std::move(uiPendingPackages)]()
+			QueueToChannelThread([this, requestGroup, packages = std::move(uiPendingPackages)]()
 			{
 				for (auto&& package : packages)
 				{
@@ -277,57 +285,58 @@ void ChannelPackageSemanticUnpack(
 				channel->Submit(disconnected);
 				if (disconnected)
 				{
-					connectionAvailable = false;
-					if (requestAvailable)
+					SPIN_LOCK(lockConnection)
 					{
-						eventManualResponses.Signal();
+						if (requestGroup->connectionCounter == connectionCounter)
+						{
+							connectionAvailable = false;
+						}
 					}
+				}
+
+				if (disconnected || requestGroup->requestIds.Count() == 0)
+				{
+					eventManualResponses.Signal();
 				}
 			}, &eventAutoChannelTaskQueued);
 
 			// Block until the all responses of the top request group are received
 			// Re-entrance recursively is possible
-			if (requestGroup)
+			eventManualResponses.Wait();
+			SPIN_LOCK(lockConnection)
 			{
-				eventManualResponses.Wait();
-				if (!connectionAvailable)
+				if (requestGroup->connectionCounter != connectionCounter || !connectionAvailable)
 				{
-					pendingRequests.RemoveAt(pendingRequests.Count() - 1);
 					disconnected = true;
-					if (pendingRequests.Count() == 0)
-					{
-						eventManualResponses.Unsignal();
-					}
-					return;
 				}
+			}
 
-				collections::List<TPackage> responses;
-				SPIN_LOCK(lockResponses)
+			collections::List<TPackage> responses;
+			SPIN_LOCK(lockResponses)
+			{
+				if (!disconnected)
 				{
-					for (vint id : *requestGroup.Obj())
+					for (vint id : requestGroup->requestIds)
 					{
 						responses.Add(queuedResponses[id]);
 						queuedResponses.Remove(id);
 					}
-					pendingRequests.RemoveAt(pendingRequests.Count() - 1);
-
-					if (!AreCurrentPendingRequestGroupSatisfied())
-					{
-						eventManualResponses.Unsignal();
-					}
+				}
+				pendingRequests.RemoveAt(pendingRequests.Count() - 1);
+				if (pendingRequests.Count() == 0)
+				{
+					queuedResponses.Clear();
 				}
 
-				for (auto&& response : responses)
+				if (!AreCurrentPendingRequestGroupSatisfied(disconnected))
 				{
-					receiver->OnReceive(response);
+					eventManualResponses.Unsignal();
 				}
 			}
-			else
+
+			for (auto&& response : responses)
 			{
-				if (!connectionAvailable)
-				{
-					disconnected = true;
-				}
+				receiver->OnReceive(response);
 			}
 
 #undef ERROR_MESSAGE_PREFIX
@@ -352,6 +361,21 @@ void ChannelPackageSemanticUnpack(
 
 			for (auto&& event : events)
 			{
+				{
+					auto semantic = ChannelPackageSemantic::Unknown;
+					vint id = -1;
+					WString name;
+					ChannelPackageSemanticUnpack(event, semantic, id, name);
+
+					if (name == L"ControllerConnect")
+					{
+						SPIN_LOCK(lockConnection)
+						{
+							connectionCounter++;
+							connectionAvailable = true;
+						}
+					}
+				}
 				receiver->OnReceive(event);
 			}
 		}

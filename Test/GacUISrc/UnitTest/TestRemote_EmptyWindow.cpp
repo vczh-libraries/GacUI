@@ -526,7 +526,7 @@ TEST_FILE
 			protocol.sizingConfig.bounds = { 270, 130, 370, 330 };
 			protocol.sizingConfig.clientBounds = { 270, 130, 370, 330 };
 			protocol.GetEvents()->OnControllerConnect();
-			assertConfigs({ 270, 130, 370, 330 });
+			assertConfigs({ 270, 120, 370, 320 });
 
 			window->Hide(true);
 		});
@@ -725,8 +725,6 @@ TEST_FILE
 		protocol.OnNextFrame([&]()
 		{
 			listener.AssertCallbacks(
-				L"Moved()",
-				L"Moved()",
 				L"Opened()",
 				L"GotFocus()",
 				L"RenderingAsActivated()"
@@ -805,8 +803,6 @@ TEST_FILE
 		protocol.OnNextFrame([&]()
 		{
 			listener.AssertCallbacks(
-				L"Moved()",
-				L"Moved()",
 				L"Opened()",
 				L"GotFocus()",
 				L"RenderingAsActivated()"

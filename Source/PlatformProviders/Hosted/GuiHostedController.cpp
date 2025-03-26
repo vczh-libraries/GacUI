@@ -1022,7 +1022,33 @@ GuiHostedController::INativeWindowService
 
 			SettingHostedWindowsBeforeRunning();
 			wmManager->needRefresh = true;
-			nativeController->WindowService()->Run(nativeWindow);
+			try
+			{
+				nativeController->WindowService()->Run(nativeWindow);
+			}
+			catch (const Exception& e)
+			{
+				(void)e;
+				DestroyHostedWindowsAfterRunning();
+				throw;
+			}
+			catch (const Error& e)
+			{
+				(void)e;
+				DestroyHostedWindowsAfterRunning();
+				throw;
+			}
+			catch (const unittest::UnitTestAssertError& e)
+			{
+				(void)e;
+				DestroyHostedWindowsAfterRunning();
+				throw;
+			}
+			catch (...)
+			{
+				DestroyHostedWindowsAfterRunning();
+				throw;
+			}
 			CHECK_ERROR((nativeWindow == nullptr) == (mainWindow == nullptr), ERROR_MESSAGE_PREFIX L"Hosted windows should have been destroyed if the native windows is destroyed.");
 			DestroyHostedWindowsAfterRunning();
 #undef ERROR_MESSAGE_PREFIX

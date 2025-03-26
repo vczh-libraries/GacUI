@@ -44,6 +44,10 @@ namespace remote_startup_tests
 		void RequestControllerConnectionStopped() override
 		{
 		}
+
+		void RequestWindowNotifySetBounds(const NativeRect& arguments) override
+		{
+		}
 	
 		void RequestWindowGetBounds(vint id) override
 		{

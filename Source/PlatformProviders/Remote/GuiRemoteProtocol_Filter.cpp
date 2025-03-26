@@ -38,7 +38,7 @@ GuiRemoteEventFilter
 #undef MESSAGE_NORES
 		}
 
-		CHECK_ERROR(responseIds.Count() == 0,  L"Messages sending to IGuiRemoteProtocol should be all responded.");
+		CHECK_ERROR(responseIds.Count() == 0, ERROR_MESSAGE_PREFIX L"Messages sending to IGuiRemoteProtocol should be all responded.");
 		filteredResponses.Clear();
 #undef ERROR_MESSAGE_PREFIX
 	}
@@ -341,7 +341,11 @@ GuiRemoteProtocolFilter
 		eventCombinator.submitting = true;
 		ProcessRequests();
 		GuiRemoteProtocolCombinator<GuiRemoteEventFilter>::Submit(disconnected);
-		if (!disconnected)
+		if (disconnected)
+		{
+			eventCombinator.responseIds.Clear();
+		}
+		else
 		{
 			eventCombinator.ProcessResponses();
 		}
