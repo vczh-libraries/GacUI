@@ -18,7 +18,7 @@
     <ClCompile Include="Main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="NamedPipe.cpp">
+    <ClCompile Include="NamedPipeRendererChannel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

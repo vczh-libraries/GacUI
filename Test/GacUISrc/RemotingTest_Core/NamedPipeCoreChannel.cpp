@@ -47,9 +47,7 @@ public:
 		BeginReadingLoopUnsafe();
 		asyncChannel->ExecuteInChannelThread([this]()
 		{
-			Console::WriteLine(L"> Sending pending messages ...");
 			connected = true;
-			SendPendingMessages();
 		});
 	}
 
@@ -92,12 +90,20 @@ public:
 	{
 		if (connected)
 		{
-			Console::WriteLine(L"Submit");
-			SendPendingMessages();
+			if (pendingMessageCount > 0)
+			{
+				Console::WriteLine(L"Submit");
+				SendPendingMessages();
+			}
 		}
 		else
 		{
-			Console::WriteLine(L"Submit (pending)");
+			if (pendingMessageCount > 0)
+			{
+				Console::WriteLine(L"Submit (unconnected)");
+				pendingMessageCount = 0;
+			}
+			disconnected = true;
 		}
 	}
 

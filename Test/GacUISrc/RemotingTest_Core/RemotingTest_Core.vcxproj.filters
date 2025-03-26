@@ -21,7 +21,7 @@
     <ClCompile Include="GuiMain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="NamedPipe.cpp">
+    <ClCompile Include="NamedPipeCoreChannel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
