@@ -16,14 +16,16 @@ protected:
 	IGuiRemoteProtocolChannel<WString>*				channel = nullptr;
 	EventObject										eventDisconnected;
 
-	void OnReadStringThreadUnsafe(const WString& str) override
+	void OnReadStringThreadUnsafe(Ptr<List<WString>> strs) override
 	{
-		return;
 		GetCurrentController()->AsyncService()->InvokeInMainThread(
 			GetCurrentController()->WindowService()->GetMainWindow(),
-			[this, str]()
+			[this, strs]()
 			{
-				channel->Write(str);
+				for (auto str : *strs.Obj())
+				{
+					channel->Write(str);
+				}
 			});
 	}
 
@@ -40,11 +42,18 @@ public:
 	{
 		eventDisconnected.CreateManualUnsignal(false);
 		_channel->Initialize(this);
-		// TODO: Call BeginReadingLoopUnsafe after main window created
-		BeginReadingLoopUnsafe();
 	}
 
 	~NamedPipeRendererChannel()
+	{
+	}
+
+	void RegisterMainWindow(INativeWindow* _window)
+	{
+		BeginReadingLoopUnsafe();
+	}
+
+	void UnregisterMainWindow()
 	{
 	}
 
@@ -54,7 +63,27 @@ public:
 	}
 };
 
-extern void InstallRemoteRenderer(GuiRemoteRendererSingle* _remoteRenderer);
+NamedPipeRendererChannel* channel = nullptr;
+GuiRemoteRendererSingle* renderer = nullptr;
+
+void GuiMain()
+{
+	auto mainWindow = GetCurrentController()->WindowService()->CreateNativeWindow(INativeWindow::Normal);
+	mainWindow->SetTitle(L"Connecting ...");
+	{
+		auto size = mainWindow->Convert(Size(320, 240));
+		auto screen = GetCurrentController()->ScreenService()->GetScreen((vint)0);
+		auto client = screen->GetClientBounds();
+		auto x = client.Left() + (client.Width() - size.x) / 2;
+		auto y = client.Top() + (client.Height() - size.y) / 2;
+		mainWindow->SetBounds({ {x,y},size });
+	}
+	channel->RegisterMainWindow(mainWindow);
+	renderer->RegisterMainWindow(mainWindow);
+	GetCurrentController()->WindowService()->Run(mainWindow);
+	renderer->UnregisterMainWindow();
+	channel->UnregisterMainWindow();
+}
 
 int StartNamedPipeClient()
 {
@@ -68,9 +97,12 @@ int StartNamedPipeClient()
 		GuiRemoteJsonChannelStringDeserializer channelJsonDeserializer(&channelReceiver, jsonParser);
 		NamedPipeRendererChannel namedPipeServerChannel(hPipe, &channelJsonDeserializer);
 
-		InstallRemoteRenderer(&remoteRenderer);
+		channel = &namedPipeServerChannel;
+		renderer = &remoteRenderer;
 		result = SetupRawWindowsDirect2DRenderer();
 		namedPipeServerChannel.WaitForDisconnected();
+		renderer = nullptr;
+		channel = nullptr;
 	}
 	CloseHandle(hPipe);
 	return result;

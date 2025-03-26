@@ -15,13 +15,22 @@ namespace vl::presentation::remote_renderer
 	class GuiRemoteRendererSingle
 		: public Object
 		, public virtual IGuiRemoteProtocol
+		, protected virtual INativeWindowListener
 	{
+	protected:
+		INativeWindow*				window = nullptr;
+		IGuiRemoteProtocolEvents*	events = nullptr;
+
+		void			Opened() override;
+
 	public:
 		GuiRemoteRendererSingle();
 		~GuiRemoteRendererSingle();
 
+		void			RegisterMainWindow(INativeWindow* _window);
+		void			UnregisterMainWindow();
 		WString			GetExecutablePath() override;
-		void			Initialize(IGuiRemoteProtocolEvents* events) override;
+		void			Initialize(IGuiRemoteProtocolEvents* _events) override;
 		void			Submit(bool& disconnected) override;
 		void			ProcessRemoteEvents() override;
 

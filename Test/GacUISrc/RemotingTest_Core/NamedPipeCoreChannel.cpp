@@ -17,11 +17,14 @@ protected:
 	List<WString>									pendingMessages;
 	vint											pendingMessageCount = 0;
 
-	void OnReadStringThreadUnsafe(const WString& str) override
+	void OnReadStringThreadUnsafe(Ptr<List<WString>> strs) override
 	{
-		Console::Write(L"Received: ");
-		Console::WriteLine(str);
-		receiver->OnReceive(str);
+		for (auto str : *strs.Obj())
+		{
+			Console::Write(L"Received: ");
+			Console::WriteLine(str);
+			receiver->OnReceive(str);
+		}
 	}
 
 	void SendPendingMessages()

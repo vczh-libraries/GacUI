@@ -25,7 +25,7 @@ private:
 
 protected:
 
-	virtual void OnReadStringThreadUnsafe(const WString& str) = 0;
+	virtual void OnReadStringThreadUnsafe(Ptr<List<WString>> strs) = 0;
 
 private:
 
@@ -56,6 +56,7 @@ private:
 		CHECK_ERROR(consumed == sizeof(count), L"ReadFile failed on incomplete message.");
 
 		Array<wchar_t> strBuffer;
+		auto strs = Ptr(new List<WString>);
 		for (vint i = 0; i < count; i++)
 		{
 			vint32_t length = 0;
@@ -64,16 +65,17 @@ private:
 
 			if (length == 0)
 			{
-				OnReadStringThreadUnsafe(WString::Empty);
+				strs->Add(WString::Empty);
 			}
 			else
 			{
 				strBuffer.Resize(length);
 				consumed = streamReadFile.Read(&strBuffer[0], length * sizeof(wchar_t));
 				CHECK_ERROR(consumed == length * sizeof(wchar_t) && streamReadFile.Position() <= position, L"ReadFile failed on incomplete message.");
-				OnReadStringThreadUnsafe(WString::CopyFrom(&strBuffer[0], length));
+				strs->Add(WString::CopyFrom(&strBuffer[0], length));
 			}
 		}
+		OnReadStringThreadUnsafe(strs);
 
 		CHECK_ERROR(streamReadFile.Position() == position, L"ReadFile failed on incomplete message.");
 	}

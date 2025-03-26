@@ -1,23 +1,9 @@
 #define GAC_HEADER_USE_NAMESPACE
 #include "../../../Source/GacUI.h"
-#include "../../../Source/PlatformProviders/RemoteRenderer/GuiRemoteRendererSingle.h"
 #include <Windows.h>
 
 using namespace vl;
 using namespace vl::presentation;
-using namespace vl::presentation::remoteprotocol;
-using namespace vl::presentation::remote_renderer;
-
-GuiRemoteRendererSingle* remoteRenderer = nullptr;
-
-void InstallRemoteRenderer(GuiRemoteRendererSingle* _remoteRenderer)
-{
-	remoteRenderer = _remoteRenderer;
-}
-
-void GuiMain()
-{
-}
 
 namespace vl::presentation
 {
