@@ -130,16 +130,7 @@ void RunInNewThread(T&& threadProc, NamedPipeCoreChannel* channel)
 
 int StartNamedPipeServer()
 {
-	HANDLE hPipe = CreateNamedPipe(
-		NamedPipeId,
-		PIPE_ACCESS_DUPLEX | FILE_FLAG_FIRST_PIPE_INSTANCE | FILE_FLAG_OVERLAPPED,
-		PIPE_TYPE_MESSAGE | PIPE_READMODE_MESSAGE | PIPE_REJECT_REMOTE_CLIENTS,
-		1,
-		65536,
-		65536,
-		6000,
-		NULL);
-	CHECK_ERROR(hPipe != INVALID_HANDLE_VALUE, L"CreateNamedPipe failed.");
+	HANDLE hPipe = NamedPipeCoreChannel::ServerCreatePipe();
 	Console::Write(L"> Named pipe created, waiting on: ");
 	Console::WriteLine(NamedPipeId);
 	{
@@ -168,27 +159,8 @@ int StartNamedPipeServer()
 			});
 
 		Console::WriteLine(L"> Waiting for a renderer ...");
-		{
-			OVERLAPPED overlapped;
-			ZeroMemory(&overlapped, sizeof(overlapped));
-			overlapped.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
-			CHECK_ERROR(overlapped.hEvent != NULL, L"ConnectNamedPipe failed on CreateEvent.");
-
-			BOOL result = ConnectNamedPipe(hPipe, &overlapped);
-			CHECK_ERROR(result == FALSE, L"ConnectNamedPipe failed.");
-			DWORD error = GetLastError();
-			switch (error)
-			{
-			case ERROR_IO_PENDING:
-				WaitForSingleObject(overlapped.hEvent, INFINITE);
-				break;
-			default:
-				CHECK_ERROR(error == ERROR_PIPE_CONNECTED, L"ConnectNamedPipe failed on unexpected GetLastError.");
-			}
-
-			CloseHandle(overlapped.hEvent);
-			namedPipeServerChannel.RendererConnectedThreadUnsafe(&asyncChannelSender);
-		}
+		NamedPipeCoreChannel::ServerWaitForClient(hPipe);
+		namedPipeServerChannel.RendererConnectedThreadUnsafe(&asyncChannelSender);
 		asyncChannelSender.WaitForStopped();
 	}
 	CloseHandle(hPipe);

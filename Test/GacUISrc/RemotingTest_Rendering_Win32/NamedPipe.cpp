@@ -58,25 +58,8 @@ extern void InstallRemoteRenderer(GuiRemoteRendererSingle* _remoteRenderer);
 
 int StartNamedPipeClient()
 {
-	HANDLE hPipe = CreateFile(
-		NamedPipeId,
-		GENERIC_READ | GENERIC_WRITE,
-		0,
-		NULL,
-		OPEN_EXISTING,
-		FILE_FLAG_OVERLAPPED,
-		NULL);
-	CHECK_ERROR(hPipe != INVALID_HANDLE_VALUE, L"CreateFile failed.");
-	CHECK_ERROR(GetLastError() == 0, L"Another renderer already connected.");
-
-	DWORD dwPipeMode = PIPE_READMODE_MESSAGE;
-	BOOL bSucceeded = SetNamedPipeHandleState(
-		hPipe,
-		&dwPipeMode,
-		NULL,
-		NULL);
-	CHECK_ERROR(bSucceeded, L"SetNamedPipeHandleState failed.");
-
+	HANDLE hPipe = NamedPipeRendererChannel::ClientCreatePipe();
+	NamedPipeRendererChannel::ClientWaitForServer(hPipe);
 	int result = 0;
 	{
 		auto jsonParser = Ptr(new glr::json::Parser);

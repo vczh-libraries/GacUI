@@ -222,4 +222,67 @@ public:
 		CloseHandle(hEventReadFile);
 		CloseHandle(hEventWriteFile);
 	}
+
+	static HANDLE ServerCreatePipe()
+	{
+		HANDLE hPipe = CreateNamedPipe(
+			NamedPipeId,
+			PIPE_ACCESS_DUPLEX | FILE_FLAG_FIRST_PIPE_INSTANCE | FILE_FLAG_OVERLAPPED,
+			PIPE_TYPE_MESSAGE | PIPE_READMODE_MESSAGE | PIPE_REJECT_REMOTE_CLIENTS,
+			1,
+			65536,
+			65536,
+			6000,
+			NULL);
+		CHECK_ERROR(hPipe != INVALID_HANDLE_VALUE, L"CreateNamedPipe failed.");
+		return hPipe;
+	}
+
+	static void ServerWaitForClient(HANDLE hPipe)
+	{
+		OVERLAPPED overlapped;
+		ZeroMemory(&overlapped, sizeof(overlapped));
+		overlapped.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
+		CHECK_ERROR(overlapped.hEvent != NULL, L"ConnectNamedPipe failed on CreateEvent.");
+
+		BOOL result = ConnectNamedPipe(hPipe, &overlapped);
+		CHECK_ERROR(result == FALSE, L"ConnectNamedPipe failed.");
+		DWORD error = GetLastError();
+		switch (error)
+		{
+		case ERROR_IO_PENDING:
+			WaitForSingleObject(overlapped.hEvent, INFINITE);
+			break;
+		default:
+			CHECK_ERROR(error == ERROR_PIPE_CONNECTED, L"ConnectNamedPipe failed on unexpected GetLastError.");
+		}
+
+		CloseHandle(overlapped.hEvent);
+	}
+
+	static HANDLE ClientCreatePipe()
+	{
+		HANDLE hPipe = CreateFile(
+			NamedPipeId,
+			GENERIC_READ | GENERIC_WRITE,
+			0,
+			NULL,
+			OPEN_EXISTING,
+			FILE_FLAG_OVERLAPPED,
+			NULL);
+		CHECK_ERROR(hPipe != INVALID_HANDLE_VALUE, L"CreateFile failed.");
+		CHECK_ERROR(GetLastError() == 0, L"Another renderer already connected.");
+		return hPipe;
+	}
+
+	static void ClientWaitForServer(HANDLE hPipe)
+	{
+		DWORD dwPipeMode = PIPE_READMODE_MESSAGE;
+		BOOL bSucceeded = SetNamedPipeHandleState(
+			hPipe,
+			&dwPipeMode,
+			NULL,
+			NULL);
+		CHECK_ERROR(bSucceeded, L"SetNamedPipeHandleState failed.");
+	}
 };
