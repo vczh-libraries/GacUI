@@ -2,9 +2,72 @@
 
 namespace vl::presentation::remote_renderer
 {
+	using namespace remoteprotocol;
+
+	remoteprotocol::ScreenConfig GuiRemoteRendererSingle::GetScreenConfig(INativeScreen* screen)
+	{
+		ScreenConfig response;
+		response.bounds = screen->GetBounds();
+		response.clientBounds = screen->GetClientBounds();
+		response.scalingX = screen->GetScalingX();
+		response.scalingY = screen->GetScalingY();
+		return response;
+	}
+
+	remoteprotocol::WindowSizingConfig GuiRemoteRendererSingle::GetWindowSizingConfig()
+	{
+		WindowSizingConfig response;
+		response.bounds = window->GetBounds();
+		response.clientBounds = window->GetClientBoundsInScreen();
+		response.sizeState = window->GetSizeState();
+		response.customFramePadding = window->GetCustomFramePadding();
+		return response;
+	}
+
+	void GuiRemoteRendererSingle::UpdateConfigsIfNecessary()
+	{
+		if (screen)
+		{
+			auto currentScreen = GetCurrentController()->ScreenService()->GetScreen(window);
+			if (screen != currentScreen)
+			{
+				screen = currentScreen;
+				events->OnControllerScreenUpdated(GetScreenConfig(screen));
+			}
+
+			auto newWindowSizingConfig = GetWindowSizingConfig();
+			if (newWindowSizingConfig.bounds != windowSizingConfig.bounds)
+			{
+				windowSizingConfig = newWindowSizingConfig;
+				if (!updatingBounds)
+				{
+					events->OnWindowBoundsUpdated(windowSizingConfig);
+				}
+			}
+			else if (
+				newWindowSizingConfig.clientBounds != windowSizingConfig.clientBounds ||
+				newWindowSizingConfig.clientBounds != windowSizingConfig.clientBounds ||
+				newWindowSizingConfig.clientBounds != windowSizingConfig.clientBounds)
+			{
+				windowSizingConfig = newWindowSizingConfig;
+				events->OnWindowBoundsUpdated(windowSizingConfig);
+			}
+		}
+	}
+
 	void GuiRemoteRendererSingle::Opened()
 	{
 		events->OnControllerConnect();
+	}
+
+	void GuiRemoteRendererSingle::Moved()
+	{
+		UpdateConfigsIfNecessary();
+	}
+
+	void GuiRemoteRendererSingle::DpiChanged(bool preparing)
+	{
+		UpdateConfigsIfNecessary();
 	}
 
 	GuiRemoteRendererSingle::GuiRemoteRendererSingle()

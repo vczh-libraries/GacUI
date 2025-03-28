@@ -18,10 +18,20 @@ namespace vl::presentation::remote_renderer
 		, protected virtual INativeWindowListener
 	{
 	protected:
-		INativeWindow*				window = nullptr;
-		IGuiRemoteProtocolEvents*	events = nullptr;
+		INativeWindow*							window = nullptr;
+		INativeScreen*							screen = nullptr;
+		IGuiRemoteProtocolEvents*				events = nullptr;
 
-		void			Opened() override;
+		bool									updatingBounds = false;
+		remoteprotocol::WindowSizingConfig		windowSizingConfig;
+
+		remoteprotocol::ScreenConfig			GetScreenConfig(INativeScreen* screen);
+		remoteprotocol::WindowSizingConfig		GetWindowSizingConfig();
+		void									UpdateConfigsIfNecessary();
+
+		void									Opened() override;
+		void									Moved() override;
+		void									DpiChanged(bool preparing) override;
 
 	public:
 		GuiRemoteRendererSingle();

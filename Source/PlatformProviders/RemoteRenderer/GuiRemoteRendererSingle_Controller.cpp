@@ -17,13 +17,8 @@ namespace vl::presentation::remote_renderer
 
 	void GuiRemoteRendererSingle::RequestControllerGetScreenConfig(vint id)
 	{
-		ScreenConfig response;
-		auto primary = GetCurrentController()->ScreenService()->GetScreen((vint)0);
-		response.bounds = primary->GetBounds();
-		response.clientBounds = primary->GetClientBounds();
-		response.scalingX = primary->GetScalingX();
-		response.scalingY = primary->GetScalingY();
-		events->RespondControllerGetScreenConfig(id, response);
+		auto primary = screen ? screen : GetCurrentController()->ScreenService()->GetScreen((vint)0);
+		events->RespondControllerGetScreenConfig(id, GetScreenConfig(primary));
 	}
 
 	void GuiRemoteRendererSingle::RequestControllerConnectionEstablished()
