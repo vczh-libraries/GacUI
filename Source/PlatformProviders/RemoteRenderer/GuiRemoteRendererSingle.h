@@ -33,6 +33,9 @@ namespace vl::presentation::remote_renderer
 		void									Moved() override;
 		void									DpiChanged(bool preparing) override;
 
+	protected:
+		remoteprotocol::ElementMeasurings		elementMeasurings;
+
 	public:
 		GuiRemoteRendererSingle();
 		~GuiRemoteRendererSingle();

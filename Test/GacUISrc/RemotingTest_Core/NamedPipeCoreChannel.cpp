@@ -56,6 +56,8 @@ public:
 
 	void WriteErrorThreadUnsafe(const WString& error)
 	{
+		Console::Write(L"Error: ");
+		Console::WriteLine(error);
 		SendSingleString(L"!" + error);
 	}
 
@@ -156,7 +158,7 @@ int StartNamedPipeServer()
 				GuiRemoteProtocolFromJsonChannel channelSender(channel);
 				GuiRemoteProtocolFilter filteredProtocol(&channelSender);
 				GuiRemoteProtocolDomDiffConverter diffConverterProtocol(&filteredProtocol);
-				SetupRemoteNativeController(&filteredProtocol);
+				SetupRemoteNativeController(&diffConverterProtocol);
 			},
 			[&namedPipeServerChannel](
 				GuiRemoteProtocolAsyncJsonChannelSerializer::TChannelThreadProc channelThreadProc,

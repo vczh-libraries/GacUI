@@ -24,7 +24,10 @@ protected:
 			{
 				for (auto str : *strs.Obj())
 				{
-					channel->Write(str);
+					if (str.Length() > 0 && str[0] != L'!')
+					{
+						channel->Write(str);
+					}
 				}
 			});
 	}

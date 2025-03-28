@@ -20,8 +20,8 @@ namespace vl::presentation::remote_renderer
 			auto primary = GetCurrentController()->ScreenService()->GetScreen((vint)0);
 			NativeRect screenBounds = primary->GetBounds();
 			NativeRect windowBounds = arguments;
-			windowBounds.x1 = (windowBounds.Width() - screenBounds.Width()) / 2;
-			windowBounds.y1 = (windowBounds.Height() - screenBounds.Height()) / 2;
+			windowBounds.x1 = (screenBounds.Width() - windowBounds.Width()) / 2;
+			windowBounds.y1 = (screenBounds.Height() - windowBounds.Height()) / 2;
 			window->SetBounds(windowBounds);
 
 			screen = primary;
