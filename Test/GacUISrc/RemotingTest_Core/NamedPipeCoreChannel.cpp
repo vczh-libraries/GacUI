@@ -21,8 +21,7 @@ protected:
 	{
 		for (auto str : *strs.Obj())
 		{
-			Console::Write(L"Received: ");
-			Console::WriteLine(str);
+			Console::WriteLine(L"Received: " + str);
 			receiver->OnReceive(str);
 		}
 	}
@@ -56,8 +55,7 @@ public:
 
 	void WriteErrorThreadUnsafe(const WString& error)
 	{
-		Console::Write(L"Error: ");
-		Console::WriteLine(error);
+		Console::WriteLine(L"Error: " + error);
 		SendSingleString(L"!" + error);
 	}
 
@@ -73,8 +71,7 @@ public:
 
 	void Write(const WString& package) override
 	{
-		Console::Write(L"Sent: ");
-		Console::WriteLine(package);
+		Console::WriteLine(L"Sent: " + package);
 		if (pendingMessageCount < pendingMessages.Count() - 1)
 		{
 			pendingMessages[pendingMessageCount] = package;
@@ -142,8 +139,7 @@ void RunInNewThread(T&& threadProc, NamedPipeCoreChannel* channel)
 int StartNamedPipeServer()
 {
 	HANDLE hPipe = NamedPipeCoreChannel::ServerCreatePipe();
-	Console::Write(L"> Named pipe created, waiting on: ");
-	Console::WriteLine(NamedPipeId);
+	Console::WriteLine(L"> Named pipe created, waiting on: " + WString::Unmanaged(NamedPipeId));
 	{
 		NamedPipeCoreChannel namedPipeServerChannel(hPipe);
 

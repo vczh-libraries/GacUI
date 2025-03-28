@@ -193,8 +193,8 @@ void ChannelPackageSemanticUnpack(
 
 		void OnReceive(const TPackage& package) override
 		{
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::channeling::GuiRemoteProtocolAsyncChannelSerializer<TPackage>::OnReceive(...)#"
 			// Called from any thread, very likely the channel thread
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::channeling::GuiRemoteProtocolAsyncChannelSerializer<TPackage>::OnReceive(...)#"
 			// If it is a response, unblock Submit()
 			// If it is an event, send to ProcessRemoteEvents()
 
@@ -242,6 +242,7 @@ void ChannelPackageSemanticUnpack(
 
 		void Submit(bool& disconnected) override
 		{
+			// Called from UI thread
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::channeling::GuiRemoteProtocolAsyncChannelSerializer<TPackage>::Submit(...)#"
 
 			SPIN_LOCK(lockConnection)
@@ -274,7 +275,6 @@ void ChannelPackageSemanticUnpack(
 				pendingRequests.Add(requestGroup);
 			}
 
-			// Called from UI thread
 			QueueToChannelThread([this, requestGroup, packages = std::move(uiPendingPackages)]()
 			{
 				for (auto&& package : packages)
@@ -344,12 +344,12 @@ void ChannelPackageSemanticUnpack(
 
 		void ProcessRemoteEvents() override
 		{
+			// Called from UI thread
 			QueueToChannelThread([this]()
 			{
 				channel->ProcessRemoteEvents();
 			}, &eventAutoChannelTaskQueued);
 
-			// Called from UI thread
 			FetchAndExecuteUITasks();
 
 			// Process of queued events from channel
