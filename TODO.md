@@ -93,6 +93,7 @@
   - [ ] Binary channel
   - [x] Json to `ObjectString<T>` channel conversion
   - [x] Sync to Async channel conversion
+    - BUG: `eventManualResponses` in `GuiRemoteProtocolAsyncChannelSerializer::Submit` seems to have race condition
     - [ ] Test sending disconnect or other events when `Submit()` is pending on the event.
       - Support failure injection in unit test, making `UnitTestRemoteProtocol::Submit()` returns `true` to its `disconnected` parameter.
     - [ ] `Start` -> `StartWithUIThread` and `StartWithUIAndChannelThread`.
