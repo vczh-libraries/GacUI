@@ -104,12 +104,11 @@ void ChannelPackageSemanticUnpack(
 		using TUIMainProc = Func<void(GuiRemoteProtocolAsyncChannelSerializer<TPackage>*)>;
 
 	protected:
-		struct TPendingRequestGroup
+		struct PendingRequestGroup
 		{
 			vint													connectionCounter = -1;
 			collections::List<vint>									requestIds;
 		};
-		using TPendingRequestStack = collections::List<Ptr<TPendingRequestGroup>>;
 
 		IGuiRemoteProtocolChannel<TPackage>*						channel = nullptr;
 		IGuiRemoteProtocolChannelReceiver<TPackage>*				receiver = nullptr;
@@ -120,9 +119,9 @@ void ChannelPackageSemanticUnpack(
 		collections::List<TPackage>									queuedEvents;
 
 		SpinLock													lockResponses;
-		EventObject													eventManualResponses;
+		EventObject													eventAutoResponses;
 		collections::Dictionary<vint, TPackage>						queuedResponses;
-		TPendingRequestStack										pendingRequests;
+		Ptr<PendingRequestGroup>									pendingRequest;
 
 		SpinLock													lockConnection;
 		volatile vint												connectionCounter = 0;
@@ -179,9 +178,9 @@ void ChannelPackageSemanticUnpack(
 
 		bool AreCurrentPendingRequestGroupSatisfied(bool disconnected)
 		{
-			if (pendingRequests.Count() == 0) return false;
+			if (!pendingRequest) return false;
 			if (disconnected) return true;
-			for (vint requestId : pendingRequests[pendingRequests.Count() - 1]->requestIds)
+			for (vint requestId : pendingRequest->requestIds)
 			{
 				if (!queuedResponses.Keys().Contains(requestId))
 				{
@@ -220,7 +219,7 @@ void ChannelPackageSemanticUnpack(
 						queuedResponses.Add(id, package);
 						if (AreCurrentPendingRequestGroupSatisfied(false))
 						{
-							eventManualResponses.Signal();
+							eventAutoResponses.Signal();
 						}
 					}
 				}
@@ -256,7 +255,7 @@ void ChannelPackageSemanticUnpack(
 			}
 
 			// Group all pending requests into a group
-			auto requestGroup = Ptr(new TPendingRequestGroup);
+			auto requestGroup = Ptr(new PendingRequestGroup);
 			requestGroup->connectionCounter = connectionCounter;
 			for (auto&& package : uiPendingPackages)
 			{
@@ -272,7 +271,8 @@ void ChannelPackageSemanticUnpack(
 			}
 			SPIN_LOCK(lockResponses)
 			{
-				pendingRequests.Add(requestGroup);
+				CHECK_ERROR(!pendingRequest, ERROR_MESSAGE_PREFIX L"Internal error.");
+				pendingRequest = requestGroup;
 			}
 
 			QueueToChannelThread([this, requestGroup, packages = std::move(uiPendingPackages)]()
@@ -296,13 +296,13 @@ void ChannelPackageSemanticUnpack(
 
 				if (disconnected || requestGroup->requestIds.Count() == 0)
 				{
-					eventManualResponses.Signal();
+					eventAutoResponses.Signal();
 				}
 			}, &eventAutoChannelTaskQueued);
 
 			// Block until the all responses of the top request group are received
 			// Re-entrance recursively is possible
-			eventManualResponses.Wait();
+			eventAutoResponses.Wait();
 			SPIN_LOCK(lockConnection)
 			{
 				if (requestGroup->connectionCounter != connectionCounter || !connectionAvailable)
@@ -322,16 +322,8 @@ void ChannelPackageSemanticUnpack(
 						queuedResponses.Remove(id);
 					}
 				}
-				pendingRequests.RemoveAt(pendingRequests.Count() - 1);
-				if (pendingRequests.Count() == 0)
-				{
-					queuedResponses.Clear();
-				}
-
-				if (!AreCurrentPendingRequestGroupSatisfied(disconnected))
-				{
-					eventManualResponses.Unsignal();
-				}
+				pendingRequest = nullptr;
+				queuedResponses.Clear();
 			}
 
 			for (auto&& response : responses)
@@ -421,7 +413,7 @@ void ChannelPackageSemanticUnpack(
 				UIThreadProc();
 			};
 
-			eventManualResponses.CreateManualUnsignal(false);
+			eventAutoResponses.CreateAutoUnsignal(false);
 			eventAutoChannelTaskQueued.CreateAutoUnsignal(false);
 			eventManualChannelThreadStopped.CreateManualUnsignal(false);
 			eventManualUIThreadStopped.CreateManualUnsignal(false);
