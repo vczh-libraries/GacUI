@@ -72,7 +72,7 @@ public:
 	void Write(const WString& package) override
 	{
 		Console::WriteLine(L"Sent: " + package);
-		if (pendingMessageCount < pendingMessages.Count() - 1)
+		if (pendingMessageCount < pendingMessages.Count())
 		{
 			pendingMessages[pendingMessageCount] = package;
 		}
