@@ -9,6 +9,7 @@ Interfaces:
 ***********************************************************************/
 
 #include "../Remote/GuiRemoteProtocol_Shared.h"
+#include "../Remote/Protocol/FrameOperations/GuiRemoteProtocolSchema_FrameOperations.h"
 
 namespace vl::presentation::remote_renderer
 {
@@ -36,10 +37,14 @@ namespace vl::presentation::remote_renderer
 	protected:
 		using ElementMap = collections::Dictionary<vint, Ptr<elements::IGuiGraphicsElement>>;
 		using ImageMap = collections::Dictionary<vint, Ptr<INativeImage>>;
+		using LabelMeasuringList = collections::List<collections::Pair<vint, remoteprotocol::ElementSolidLabelMeasuringRequest>>;
 
 		remoteprotocol::ElementMeasurings		elementMeasurings;
+		LabelMeasuringList						labelMeasurings;
 		ElementMap								availableElements;
 		ImageMap								availableImages;
+		Ptr<remoteprotocol::RenderingDom>		renderingDom;
+		remoteprotocol::DomIndex				renderingDomIndex;
 
 		Alignment								GetAlignment(remoteprotocol::ElementHorizontalAlignment alignment);
 		Alignment								GetAlignment(remoteprotocol::ElementVerticalAlignment alignment);

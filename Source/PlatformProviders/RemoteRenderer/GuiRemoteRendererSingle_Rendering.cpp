@@ -98,7 +98,21 @@ namespace vl::presentation::remote_renderer
 
 	void GuiRemoteRendererSingle::RequestRendererEndRendering(vint id)
 	{
+		for (auto [id, measuring] : labelMeasurings)
+		{
+			switch (measuring)
+			{
+			case ElementSolidLabelMeasuringRequest::FontHeight:
+				CHECK_FAIL(L"Not Implemented!");
+				break;
+			case ElementSolidLabelMeasuringRequest::TotalSize:
+				CHECK_FAIL(L"Not Implemented!");
+				break;
+			}
+		}
+
 		events->RespondRendererEndRendering(id, elementMeasurings);
+		labelMeasurings.Clear();
 	}
 
 	void GuiRemoteRendererSingle::RequestRendererBeginBoundary(const remoteprotocol::ElementBoundary& arguments)
@@ -223,15 +237,7 @@ namespace vl::presentation::remote_renderer
 
 		if (arguments.measuringRequest)
 		{
-			switch (arguments.measuringRequest.Value())
-			{
-			case ElementSolidLabelMeasuringRequest::FontHeight:
-				CHECK_FAIL(L"Not Implemented!");
-				break;
-			case ElementSolidLabelMeasuringRequest::TotalSize:
-				CHECK_FAIL(L"Not Implemented!");
-				break;
-			}
+			labelMeasurings.Add({ arguments.id,arguments.measuringRequest.Value() });
 		}
 	}
 	
@@ -292,9 +298,19 @@ namespace vl::presentation::remote_renderer
 
 	void GuiRemoteRendererSingle::RequestRendererRenderDom(const Ptr<remoteprotocol::RenderingDom>& arguments)
 	{
+		renderingDom = arguments;
+		if (renderingDom)
+		{
+			BuildDomIndex(renderingDom, renderingDomIndex);
+		}
 	}
 
 	void GuiRemoteRendererSingle::RequestRendererRenderDomDiff(const remoteprotocol::RenderingDom_DiffsInOrder& arguments)
 	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remote_renderer::GuiRemoteRendererSingle::RequestRendererRenderDomDiff(const RenderingDom_DiffsInOrder&)#"
+		CHECK_ERROR(renderingDom, ERROR_MESSAGE_PREFIX L"This function must be called after RequestRendererRenderDom.");
+
+		UpdateDomInplace(renderingDom, renderingDomIndex, arguments);
+#undef ERROR_MESSAGE_PREFIX
 	}
 }
