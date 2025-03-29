@@ -102,6 +102,7 @@ namespace vl::presentation::remote_renderer
 
 	void GuiRemoteRendererSingle::RequestRendererEndRendering(vint id)
 	{
+		// TODO: Trigger repaint and call RespondRendererEndRendering at the end of the next repaint event
 		events->RespondRendererEndRendering(id, elementMeasurings);
 		labelMeasurings.Clear();
 	}
