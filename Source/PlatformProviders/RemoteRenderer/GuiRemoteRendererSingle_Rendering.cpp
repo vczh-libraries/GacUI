@@ -26,6 +26,10 @@ namespace vl::presentation::remote_renderer
 		}
 	}
 
+/***********************************************************************
+* Rendering
+***********************************************************************/
+
 	void GuiRemoteRendererSingle::RequestRendererCreated(const Ptr<collections::List<remoteprotocol::RendererCreation>>& arguments)
 	{
 		if (arguments)
@@ -98,43 +102,13 @@ namespace vl::presentation::remote_renderer
 
 	void GuiRemoteRendererSingle::RequestRendererEndRendering(vint id)
 	{
-		for (auto [id, measuring] : labelMeasurings)
-		{
-			switch (measuring)
-			{
-			case ElementSolidLabelMeasuringRequest::FontHeight:
-				CHECK_FAIL(L"Not Implemented!");
-				break;
-			case ElementSolidLabelMeasuringRequest::TotalSize:
-				CHECK_FAIL(L"Not Implemented!");
-				break;
-			}
-		}
-
 		events->RespondRendererEndRendering(id, elementMeasurings);
 		labelMeasurings.Clear();
 	}
 
-	void GuiRemoteRendererSingle::RequestRendererBeginBoundary(const remoteprotocol::ElementBoundary& arguments)
-	{
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::remote_renderer::GuiRemoteRendererSingle::RequestRendererBeginBoundary(const ElementBoundary&)#"
-		CHECK_FAIL(ERROR_MESSAGE_PREFIX L"The current implementation require dom-diff enabled in core side.");
-#undef ERROR_MESSAGE_PREFIX
-	}
-
-	void GuiRemoteRendererSingle::RequestRendererEndBoundary()
-	{
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::remote_renderer::GuiRemoteRendererSingle::RequestRendererEndBoundary()#"
-		CHECK_FAIL(ERROR_MESSAGE_PREFIX L"The current implementation require dom-diff enabled in core side.");
-#undef ERROR_MESSAGE_PREFIX
-	}
-
-	void GuiRemoteRendererSingle::RequestRendererRenderElement(const remoteprotocol::ElementRendering& arguments)
-	{
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::remote_renderer::GuiRemoteRendererSingle::RequestRendererRenderElement(const ElementRendering&)#"
-		CHECK_FAIL(ERROR_MESSAGE_PREFIX L"The current implementation require dom-diff enabled in core side.");
-#undef ERROR_MESSAGE_PREFIX
-	}
+/***********************************************************************
+* Rendering (Elemnents)
+***********************************************************************/
 
 	void GuiRemoteRendererSingle::RequestRendererUpdateElement_SolidBorder(const remoteprotocol::ElementDesc_SolidBorder& arguments)
 	{
@@ -219,6 +193,10 @@ namespace vl::presentation::remote_renderer
 		}
 	}
 
+/***********************************************************************
+* Rendering (Elemnents -- Label)
+***********************************************************************/
+
 	void GuiRemoteRendererSingle::RequestRendererUpdateElement_SolidLabel(const remoteprotocol::ElementDesc_SolidLabel& arguments)
 	{
 		vint index = availableElements.Keys().IndexOf(arguments.id);
@@ -232,20 +210,28 @@ namespace vl::presentation::remote_renderer
 		element->SetWrapLineHeightCalculation(arguments.wrapLineHeightCalculation);
 		element->SetEllipse(arguments.ellipse);
 		element->SetMultiline(arguments.multiline);
-		element->SetFont(arguments.font.Value());
-		element->SetText(arguments.text.Value());
+
+		if (arguments.font)
+		{
+			element->SetFont(arguments.font.Value());
+		}
+		if (arguments.text)
+		{
+			element->SetText(arguments.text.Value());
+		}
 
 		if (arguments.measuringRequest)
 		{
 			labelMeasurings.Add({ arguments.id,arguments.measuringRequest.Value() });
 		}
 	}
-	
-	void GuiRemoteRendererSingle::RequestImageCreated(vint id, const remoteprotocol::ImageCreation& arguments)
-	{
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::remote_renderer::GuiRemoteRendererSingle::RequestImageCreated(const ImageCreation&)#"
-		CHECK_ERROR(!arguments.imageDataOmitted && arguments.imageData, ERROR_MESSAGE_PREFIX L"Binary content of the image is missing.");
 
+/***********************************************************************
+* Rendering (Elements -- Image)
+***********************************************************************/
+
+	remoteprotocol::ImageMetadata GuiRemoteRendererSingle::CreateImage(const remoteprotocol::ImageCreation& arguments)
+	{
 		arguments.imageData->SeekFromBegin(0);
 		auto image = GetCurrentController()->ImageService()->CreateImageFromStream(*arguments.imageData.Obj());
 		if (availableImages.Keys().Contains(arguments.id))
@@ -266,7 +252,16 @@ namespace vl::presentation::remote_renderer
 			auto frame = image->GetFrame(i);
 			response.frames->Add({ frame->GetSize() });
 		}
-		events->RespondImageCreated(id, response);
+
+		return response;
+	}
+	
+	void GuiRemoteRendererSingle::RequestImageCreated(vint id, const remoteprotocol::ImageCreation& arguments)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remote_renderer::GuiRemoteRendererSingle::RequestImageCreated(const ImageCreation&)#"
+		CHECK_ERROR(!arguments.imageDataOmitted && arguments.imageData, ERROR_MESSAGE_PREFIX L"Binary content of the image is missing.");
+
+		events->RespondImageCreated(id, CreateImage(arguments));
 #undef ERROR_MESSAGE_PREFIX
 	}
 
@@ -277,6 +272,8 @@ namespace vl::presentation::remote_renderer
 
 	void GuiRemoteRendererSingle::RequestRendererUpdateElement_ImageFrame(const remoteprotocol::ElementDesc_ImageFrame& arguments)
 	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remote_renderer::GuiRemoteRendererSingle::RequestRendererUpdateElement_ImageFrame(const arguments&)#"
+
 		vint index = availableElements.Keys().IndexOf(arguments.id);
 		if (index == -1) return;
 		auto element = availableElements.Values()[index].Cast<GuiImageFrameElement>();
@@ -289,9 +286,43 @@ namespace vl::presentation::remote_renderer
 		if (arguments.imageId)
 		{
 			vint index = availableImages.Keys().IndexOf(arguments.imageId.Value());
-			if (index != -1)
+			if (index == -1)
+			{
+				CHECK_ERROR(arguments.imageCreation && !arguments.imageCreation.Value().imageDataOmitted && arguments.imageCreation.Value().imageData, ERROR_MESSAGE_PREFIX L"Binary content of the image is missing.");
+
+				auto response = CreateImage(arguments.imageCreation.Value());
+				element->SetImage(availableImages[response.id], arguments.imageFrame);
+
+				if (!elementMeasurings.createdImages)
+				{
+					elementMeasurings.createdImages = Ptr(new List<ImageMetadata>);
+				}
+				elementMeasurings.createdImages->Add(response);
+			}
+			else
 			{
 				element->SetImage(availableImages.Values()[index], arguments.imageFrame);
+			}
+		}
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+/***********************************************************************
+* Rendering (Dom)
+***********************************************************************/
+
+	void GuiRemoteRendererSingle::CheckDom()
+	{
+		for (auto [id, measuring] : labelMeasurings)
+		{
+			switch (measuring)
+			{
+			case ElementSolidLabelMeasuringRequest::FontHeight:
+				CHECK_FAIL(L"Not Implemented!");
+				break;
+			case ElementSolidLabelMeasuringRequest::TotalSize:
+				CHECK_FAIL(L"Not Implemented!");
+				break;
 			}
 		}
 	}
@@ -303,6 +334,7 @@ namespace vl::presentation::remote_renderer
 		{
 			BuildDomIndex(renderingDom, renderingDomIndex);
 		}
+		CheckDom();
 	}
 
 	void GuiRemoteRendererSingle::RequestRendererRenderDomDiff(const remoteprotocol::RenderingDom_DiffsInOrder& arguments)
@@ -311,6 +343,32 @@ namespace vl::presentation::remote_renderer
 		CHECK_ERROR(renderingDom, ERROR_MESSAGE_PREFIX L"This function must be called after RequestRendererRenderDom.");
 
 		UpdateDomInplace(renderingDom, renderingDomIndex, arguments);
+		CheckDom();
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+/***********************************************************************
+* Rendering (Commands)
+***********************************************************************/
+
+	void GuiRemoteRendererSingle::RequestRendererBeginBoundary(const remoteprotocol::ElementBoundary& arguments)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remote_renderer::GuiRemoteRendererSingle::RequestRendererBeginBoundary(const ElementBoundary&)#"
+		CHECK_FAIL(ERROR_MESSAGE_PREFIX L"The current implementation require dom-diff enabled in core side.");
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	void GuiRemoteRendererSingle::RequestRendererEndBoundary()
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remote_renderer::GuiRemoteRendererSingle::RequestRendererEndBoundary()#"
+		CHECK_FAIL(ERROR_MESSAGE_PREFIX L"The current implementation require dom-diff enabled in core side.");
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	void GuiRemoteRendererSingle::RequestRendererRenderElement(const remoteprotocol::ElementRendering& arguments)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remote_renderer::GuiRemoteRendererSingle::RequestRendererRenderElement(const ElementRendering&)#"
+		CHECK_FAIL(ERROR_MESSAGE_PREFIX L"The current implementation require dom-diff enabled in core side.");
 #undef ERROR_MESSAGE_PREFIX
 	}
 }

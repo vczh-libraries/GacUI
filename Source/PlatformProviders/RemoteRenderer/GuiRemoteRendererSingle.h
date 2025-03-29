@@ -48,6 +48,8 @@ namespace vl::presentation::remote_renderer
 
 		Alignment								GetAlignment(remoteprotocol::ElementHorizontalAlignment alignment);
 		Alignment								GetAlignment(remoteprotocol::ElementVerticalAlignment alignment);
+		remoteprotocol::ImageMetadata			CreateImage(const remoteprotocol::ImageCreation& arguments);
+		void									CheckDom();
 
 	public:
 		GuiRemoteRendererSingle();
