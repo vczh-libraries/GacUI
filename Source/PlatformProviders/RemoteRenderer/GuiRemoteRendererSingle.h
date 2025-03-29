@@ -48,6 +48,7 @@ namespace vl::presentation::remote_renderer
 
 		Alignment								GetAlignment(remoteprotocol::ElementHorizontalAlignment alignment);
 		Alignment								GetAlignment(remoteprotocol::ElementVerticalAlignment alignment);
+		remoteprotocol::ImageMetadata			CreateImageMetadata(vint id, INativeImage* image);
 		remoteprotocol::ImageMetadata			CreateImage(const remoteprotocol::ImageCreation& arguments);
 		void									CheckDom();
 

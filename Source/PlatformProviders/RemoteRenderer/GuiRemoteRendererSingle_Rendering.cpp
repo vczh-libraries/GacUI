@@ -230,6 +230,21 @@ namespace vl::presentation::remote_renderer
 * Rendering (Elements -- Image)
 ***********************************************************************/
 
+	remoteprotocol::ImageMetadata GuiRemoteRendererSingle::CreateImageMetadata(vint id, INativeImage* image)
+	{
+		ImageMetadata response;
+		response.id = id;
+		response.format = image->GetFormat();
+		response.frames = Ptr(new List<ImageFrameMetadata>);
+		for (vint i = 0; i < image->GetFrameCount(); i++)
+		{
+			auto frame = image->GetFrame(i);
+			response.frames->Add({ frame->GetSize() });
+		}
+
+		return response;
+	}
+
 	remoteprotocol::ImageMetadata GuiRemoteRendererSingle::CreateImage(const remoteprotocol::ImageCreation& arguments)
 	{
 		arguments.imageData->SeekFromBegin(0);
@@ -242,18 +257,7 @@ namespace vl::presentation::remote_renderer
 		{
 			availableImages.Add(arguments.id, image);
 		}
-
-		ImageMetadata response;
-		response.id = arguments.id;
-		response.format = image->GetFormat();
-		response.frames = Ptr(new List<ImageFrameMetadata>);
-		for (vint i = 0; i < image->GetFrameCount(); i++)
-		{
-			auto frame = image->GetFrame(i);
-			response.frames->Add({ frame->GetSize() });
-		}
-
-		return response;
+		return CreateImageMetadata(arguments.id, image.Obj());
 	}
 	
 	void GuiRemoteRendererSingle::RequestImageCreated(vint id, const remoteprotocol::ImageCreation& arguments)
@@ -283,8 +287,18 @@ namespace vl::presentation::remote_renderer
 		element->SetStretch(arguments.stretch);
 		element->SetEnabled(arguments.enabled);
 
+		if (arguments.imageId && arguments.imageCreation)
+		{
+			CHECK_ERROR(arguments.imageId.Value() == arguments.imageCreation.Value().id, ERROR_MESSAGE_PREFIX L"imageId and imageCreation.id must be identical.");
+		}
+
 		if (arguments.imageId)
 		{
+			if (arguments.imageCreation && !elementMeasurings.createdImages)
+			{
+				elementMeasurings.createdImages = Ptr(new List<ImageMetadata>);
+			}
+
 			vint index = availableImages.Keys().IndexOf(arguments.imageId.Value());
 			if (index == -1)
 			{
@@ -292,16 +306,16 @@ namespace vl::presentation::remote_renderer
 
 				auto response = CreateImage(arguments.imageCreation.Value());
 				element->SetImage(availableImages[response.id], arguments.imageFrame);
-
-				if (!elementMeasurings.createdImages)
-				{
-					elementMeasurings.createdImages = Ptr(new List<ImageMetadata>);
-				}
 				elementMeasurings.createdImages->Add(response);
 			}
 			else
 			{
-				element->SetImage(availableImages.Values()[index], arguments.imageFrame);
+				auto image = availableImages.Values()[index];
+				element->SetImage(image, arguments.imageFrame);
+				if (arguments.imageCreation)
+				{
+					elementMeasurings.createdImages->Add(CreateImageMetadata(arguments.imageId.Value(), image.Obj()));
+				}
 			}
 		}
 #undef ERROR_MESSAGE_PREFIX
