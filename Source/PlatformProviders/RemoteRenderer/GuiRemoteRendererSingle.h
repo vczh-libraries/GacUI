@@ -34,7 +34,15 @@ namespace vl::presentation::remote_renderer
 		void									DpiChanged(bool preparing) override;
 
 	protected:
+		using ElementMap = collections::Dictionary<vint, Ptr<elements::IGuiGraphicsElement>>;
+		using ImageMap = collections::Dictionary<vint, Ptr<INativeImage>>;
+
 		remoteprotocol::ElementMeasurings		elementMeasurings;
+		ElementMap								availableElements;
+		ImageMap								availableImages;
+
+		Alignment								GetAlignment(remoteprotocol::ElementHorizontalAlignment alignment);
+		Alignment								GetAlignment(remoteprotocol::ElementVerticalAlignment alignment);
 
 	public:
 		GuiRemoteRendererSingle();

@@ -2,12 +2,93 @@
 
 namespace vl::presentation::remote_renderer
 {
+	using namespace collections;
+	using namespace elements;
+	using namespace remoteprotocol;
+
+	Alignment GuiRemoteRendererSingle::GetAlignment(remoteprotocol::ElementHorizontalAlignment alignment)
+	{
+		switch (alignment)
+		{
+		case remoteprotocol::ElementHorizontalAlignment::Left: return Alignment::Left;
+		case remoteprotocol::ElementHorizontalAlignment::Right: return Alignment::Right;
+		default: return Alignment::Center;
+		}
+	}
+
+	Alignment GuiRemoteRendererSingle::GetAlignment(remoteprotocol::ElementVerticalAlignment alignment)
+	{
+		switch (alignment)
+		{
+		case remoteprotocol::ElementVerticalAlignment::Top: return Alignment::Top;
+		case remoteprotocol::ElementVerticalAlignment::Bottom: return Alignment::Bottom;
+		default: return Alignment::Center;
+		}
+	}
+
 	void GuiRemoteRendererSingle::RequestRendererCreated(const Ptr<collections::List<remoteprotocol::RendererCreation>>& arguments)
 	{
+		if (arguments)
+		{
+			for (auto&& rc : *arguments.Obj())
+			{
+				Ptr<IGuiGraphicsElement> element;
+				switch (rc.type)
+				{
+				case RendererType::FocusRectangle:
+					element = Ptr(GuiFocusRectangleElement::Create());
+					break;
+				case RendererType::SolidBorder:
+					element = Ptr(GuiSolidBorderElement::Create());
+					break;
+				case RendererType::SinkBorder:
+					element = Ptr(Gui3DBorderElement::Create());
+					break;
+				case RendererType::SinkSplitter:
+					element = Ptr(Gui3DSplitterElement::Create());
+					break;
+				case RendererType::SolidBackground:
+					element = Ptr(GuiSolidBackgroundElement::Create());
+					break;
+				case RendererType::GradientBackground:
+					element = Ptr(GuiGradientBackgroundElement::Create());
+					break;
+				case RendererType::InnerShadow:
+					element = Ptr(GuiInnerShadowElement::Create());
+					break;
+				case RendererType::SolidLabel:
+					element = Ptr(GuiSolidLabelElement::Create());
+					break;
+				case RendererType::Polygon:
+					element = Ptr(GuiPolygonElement::Create());
+					break;
+				case RendererType::ImageFrame:
+					element = Ptr(GuiImageFrameElement::Create());
+					break;
+				default:;
+				}
+
+				if (availableElements.Keys().Contains(rc.id))
+				{
+					availableElements.Set(rc.id, element);
+				}
+				else
+				{
+					availableElements.Add(rc.id, element);
+				}
+			}
+		}
 	}
 
 	void GuiRemoteRendererSingle::RequestRendererDestroyed(const Ptr<collections::List<vint>>& arguments)
 	{
+		if (arguments)
+		{
+			for (auto id : *arguments.Obj())
+			{
+				availableElements.Remove(id);
+			}
+		}
 	}
 
 	void GuiRemoteRendererSingle::RequestRendererBeginRendering(const remoteprotocol::ElementBeginRendering& arguments)
@@ -43,47 +124,170 @@ namespace vl::presentation::remote_renderer
 
 	void GuiRemoteRendererSingle::RequestRendererUpdateElement_SolidBorder(const remoteprotocol::ElementDesc_SolidBorder& arguments)
 	{
+		vint index = availableElements.Keys().IndexOf(arguments.id);
+		if (index == -1) return;
+		auto element = availableElements.Values()[index].Cast<GuiSolidBorderElement>();
+		if (!element) return;
+
+		element->SetColor(arguments.borderColor);
+		element->SetShape(arguments.shape);
 	}
 
 	void GuiRemoteRendererSingle::RequestRendererUpdateElement_SinkBorder(const remoteprotocol::ElementDesc_SinkBorder& arguments)
 	{
+		vint index = availableElements.Keys().IndexOf(arguments.id);
+		if (index == -1) return;
+		auto element = availableElements.Values()[index].Cast<Gui3DBorderElement>();
+		if (!element) return;
+
+		element->SetColors(arguments.leftTopColor, arguments.rightBottomColor);
 	}
 
 	void GuiRemoteRendererSingle::RequestRendererUpdateElement_SinkSplitter(const remoteprotocol::ElementDesc_SinkSplitter& arguments)
 	{
+		vint index = availableElements.Keys().IndexOf(arguments.id);
+		if (index == -1) return;
+		auto element = availableElements.Values()[index].Cast<Gui3DSplitterElement>();
+		if (!element) return;
+
+		element->SetColors(arguments.leftTopColor, arguments.rightBottomColor);
+		element->SetDirection(arguments.direction);
 	}
 
 	void GuiRemoteRendererSingle::RequestRendererUpdateElement_SolidBackground(const remoteprotocol::ElementDesc_SolidBackground& arguments)
 	{
+		vint index = availableElements.Keys().IndexOf(arguments.id);
+		if (index == -1) return;
+		auto element = availableElements.Values()[index].Cast<GuiSolidBackgroundElement>();
+		if (!element) return;
+
+		element->SetColor(arguments.backgroundColor);
+		element->SetShape(arguments.shape);
 	}
 
 	void GuiRemoteRendererSingle::RequestRendererUpdateElement_GradientBackground(const remoteprotocol::ElementDesc_GradientBackground& arguments)
 	{
+		vint index = availableElements.Keys().IndexOf(arguments.id);
+		if (index == -1) return;
+		auto element = availableElements.Values()[index].Cast<GuiGradientBackgroundElement>();
+		if (!element) return;
+
+		element->SetColors(arguments.leftTopColor, arguments.rightBottomColor);
+		element->SetDirection(arguments.direction);
+		element->SetShape(arguments.shape);
 	}
 
 	void GuiRemoteRendererSingle::RequestRendererUpdateElement_InnerShadow(const remoteprotocol::ElementDesc_InnerShadow& arguments)
 	{
+		vint index = availableElements.Keys().IndexOf(arguments.id);
+		if (index == -1) return;
+		auto element = availableElements.Values()[index].Cast<GuiInnerShadowElement>();
+		if (!element) return;
+
+		element->SetColor(arguments.shadowColor);
+		element->SetThickness(arguments.thickness);
 	}
 
 	void GuiRemoteRendererSingle::RequestRendererUpdateElement_Polygon(const remoteprotocol::ElementDesc_Polygon& arguments)
 	{
+		vint index = availableElements.Keys().IndexOf(arguments.id);
+		if (index == -1) return;
+		auto element = availableElements.Values()[index].Cast<GuiPolygonElement>();
+		if (!element) return;
+
+		element->SetSize(arguments.size);
+		element->SetBorderColor(arguments.borderColor);
+		element->SetBackgroundColor(arguments.backgroundColor);
+
+		if (arguments.points && arguments.points->Count() > 0)
+		{
+			element->SetPoints(&arguments.points->Get(0), arguments.points->Count());
+		}
 	}
 
 	void GuiRemoteRendererSingle::RequestRendererUpdateElement_SolidLabel(const remoteprotocol::ElementDesc_SolidLabel& arguments)
 	{
+		vint index = availableElements.Keys().IndexOf(arguments.id);
+		if (index == -1) return;
+		auto element = availableElements.Values()[index].Cast<GuiSolidLabelElement>();
+		if (!element) return;
+
+		element->SetColor(arguments.textColor);
+		element->SetAlignments(GetAlignment(arguments.horizontalAlignment), GetAlignment(arguments.verticalAlignment));
+		element->SetWrapLine(arguments.wrapLine);
+		element->SetWrapLineHeightCalculation(arguments.wrapLineHeightCalculation);
+		element->SetEllipse(arguments.ellipse);
+		element->SetMultiline(arguments.multiline);
+		element->SetFont(arguments.font.Value());
+		element->SetText(arguments.text.Value());
+
+		if (arguments.measuringRequest)
+		{
+			switch (arguments.measuringRequest.Value())
+			{
+			case ElementSolidLabelMeasuringRequest::FontHeight:
+				CHECK_FAIL(L"Not Implemented!");
+				break;
+			case ElementSolidLabelMeasuringRequest::TotalSize:
+				CHECK_FAIL(L"Not Implemented!");
+				break;
+			}
+		}
 	}
 	
 	void GuiRemoteRendererSingle::RequestImageCreated(vint id, const remoteprotocol::ImageCreation& arguments)
 	{
-		CHECK_FAIL(L"Not Implemented");
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::remote_renderer::GuiRemoteRendererSingle::RequestImageCreated(const ImageCreation&)#"
+		CHECK_ERROR(!arguments.imageDataOmitted && arguments.imageData, ERROR_MESSAGE_PREFIX L"Binary content of the image is missing.");
+
+		arguments.imageData->SeekFromBegin(0);
+		auto image = GetCurrentController()->ImageService()->CreateImageFromStream(*arguments.imageData.Obj());
+		if (availableImages.Keys().Contains(arguments.id))
+		{
+			availableImages.Set(arguments.id, image);
+		}
+		else
+		{
+			availableImages.Add(arguments.id, image);
+		}
+
+		ImageMetadata response;
+		response.id = arguments.id;
+		response.format = image->GetFormat();
+		response.frames = Ptr(new List<ImageFrameMetadata>);
+		for (vint i = 0; i < image->GetFrameCount(); i++)
+		{
+			auto frame = image->GetFrame(i);
+			response.frames->Add({ frame->GetSize() });
+		}
+		events->RespondImageCreated(id, response);
+#undef ERROR_MESSAGE_PREFIX
 	}
 
 	void GuiRemoteRendererSingle::RequestImageDestroyed(const vint& arguments)
 	{
+		availableImages.Remove(arguments);
 	}
 
 	void GuiRemoteRendererSingle::RequestRendererUpdateElement_ImageFrame(const remoteprotocol::ElementDesc_ImageFrame& arguments)
 	{
+		vint index = availableElements.Keys().IndexOf(arguments.id);
+		if (index == -1) return;
+		auto element = availableElements.Values()[index].Cast<GuiImageFrameElement>();
+		if (!element) return;
+
+		element->SetAlignments(GetAlignment(arguments.horizontalAlignment), GetAlignment(arguments.verticalAlignment));
+		element->SetStretch(arguments.stretch);
+		element->SetEnabled(arguments.enabled);
+
+		if (arguments.imageId)
+		{
+			vint index = availableImages.Keys().IndexOf(arguments.imageId.Value());
+			if (index != -1)
+			{
+				element->SetImage(availableImages.Values()[index], arguments.imageFrame);
+			}
+		}
 	}
 
 	void GuiRemoteRendererSingle::RequestRendererRenderDom(const Ptr<remoteprotocol::RenderingDom>& arguments)
