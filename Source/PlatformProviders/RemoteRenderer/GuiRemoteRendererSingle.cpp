@@ -47,8 +47,8 @@ namespace vl::presentation::remote_renderer
 			}
 			else if (
 				newWindowSizingConfig.clientBounds != windowSizingConfig.clientBounds ||
-				newWindowSizingConfig.clientBounds != windowSizingConfig.clientBounds ||
-				newWindowSizingConfig.clientBounds != windowSizingConfig.clientBounds)
+				newWindowSizingConfig.sizeState != windowSizingConfig.sizeState ||
+				newWindowSizingConfig.customFramePadding != windowSizingConfig.customFramePadding)
 			{
 				windowSizingConfig = newWindowSizingConfig;
 				events->OnWindowBoundsUpdated(windowSizingConfig);
