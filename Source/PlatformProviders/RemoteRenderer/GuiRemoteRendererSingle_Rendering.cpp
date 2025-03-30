@@ -221,13 +221,40 @@ namespace vl::presentation::remote_renderer
 
 		if (arguments.measuringRequest)
 		{
+			Size minSize;
+			if (auto renderer = element->GetRenderer())
+			{
+				minSize = renderer->GetMinSize();
+			}
+
 			switch (arguments.measuringRequest.Value())
 			{
 			case ElementSolidLabelMeasuringRequest::FontHeight:
-				CHECK_FAIL(L"Not Implemented!");
+				{
+					ElementMeasuring_FontHeight response;
+					response.fontFamily = element->GetFont().fontFamily;
+					response.fontSize = element->GetFont().size;
+					response.height = minSize.y;
+
+					if (!elementMeasurings.fontHeights)
+					{
+						elementMeasurings.fontHeights = Ptr(new List<ElementMeasuring_FontHeight>);
+					}
+					elementMeasurings.fontHeights->Add(response);
+				}
 				break;
 			case ElementSolidLabelMeasuringRequest::TotalSize:
-				CHECK_FAIL(L"Not Implemented!");
+				{
+					ElementMeasuring_ElementMinSize response;
+					response.id = arguments.id;
+					response.minSize = minSize;
+
+					if (!elementMeasurings.minSizes)
+					{
+						elementMeasurings.minSizes = Ptr(new List<ElementMeasuring_ElementMinSize>);
+					}
+					elementMeasurings.minSizes->Add(response);
+				}
 				break;
 			}
 		}
