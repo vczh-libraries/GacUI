@@ -72,6 +72,8 @@ namespace vl::presentation::remote_renderer
 				default:;
 				}
 
+				element->GetRenderer()->SetRenderTarget(GetGuiGraphicsResourceManager()->GetRenderTarget(window));
+
 				if (availableElements.Keys().Contains(rc.id))
 				{
 					availableElements.Set(rc.id, element);
@@ -91,18 +93,19 @@ namespace vl::presentation::remote_renderer
 			for (auto id : *arguments.Obj())
 			{
 				availableElements.Remove(id);
+				solidLabelMeasurings.Remove(id);
 			}
 		}
 	}
 
 	void GuiRemoteRendererSingle::RequestRendererBeginRendering(const remoteprotocol::ElementBeginRendering& arguments)
 	{
-		elementMeasurings = {};
 	}
 
 	void GuiRemoteRendererSingle::RequestRendererEndRendering(vint id)
 	{
 		events->RespondRendererEndRendering(id, elementMeasurings);
+		elementMeasurings = {};
 	}
 
 /***********************************************************************
@@ -221,20 +224,27 @@ namespace vl::presentation::remote_renderer
 
 		if (arguments.measuringRequest)
 		{
-			Size minSize;
-			if (auto renderer = element->GetRenderer())
+			SolidLabelMeasuring measuring;
+			measuring.request = arguments.measuringRequest.Value();
+			index = solidLabelMeasurings.Keys().IndexOf(arguments.id);
+			if (solidLabelMeasurings.Keys().Contains(arguments.id))
 			{
-				minSize = renderer->GetMinSize();
+				solidLabelMeasurings.Set(arguments.id, measuring);
+			}
+			else
+			{
+				solidLabelMeasurings.Add(arguments.id, measuring);
 			}
 
-			switch (arguments.measuringRequest.Value())
+			auto renderer = element->GetRenderer();
+			switch (measuring.request)
 			{
 			case ElementSolidLabelMeasuringRequest::FontHeight:
 				{
 					ElementMeasuring_FontHeight response;
 					response.fontFamily = element->GetFont().fontFamily;
 					response.fontSize = element->GetFont().size;
-					response.height = minSize.y;
+					response.height = renderer->GetMinSize().y;
 
 					if (!elementMeasurings.fontHeights)
 					{
@@ -247,7 +257,7 @@ namespace vl::presentation::remote_renderer
 				{
 					ElementMeasuring_ElementMinSize response;
 					response.id = arguments.id;
-					response.minSize = minSize;
+					response.minSize = renderer->GetMinSize();
 
 					if (!elementMeasurings.minSizes)
 					{
@@ -413,24 +423,69 @@ namespace vl::presentation::remote_renderer
 * Rendering (Commands)
 ***********************************************************************/
 
+	void GuiRemoteRendererSingle::UpdateRenderTarget(elements::IGuiGraphicsRenderTarget* rt)
+	{
+		for (auto element : availableElements.Values())
+		{
+			element->GetRenderer()->SetRenderTarget(rt);
+		}
+	}
+
 	void GuiRemoteRendererSingle::Render(Ptr<remoteprotocol::RenderingDom> dom, elements::IGuiGraphicsRenderTarget* rt)
 	{
-		if (dom->content.validArea.Width() <= 0 || dom->content.validArea.Height() <= 0)
-		{
-			return;
-		}
-
 		if (dom->content.element)
 		{
 			vint index = availableElements.Keys().IndexOf(dom->content.element.Value());
 			if (index != -1)
 			{
 				auto element = availableElements.Values()[index];
-				if (auto renderer = element->GetRenderer())
+				rt->PushClipper(dom->content.validArea, nullptr);
+				element->GetRenderer()->Render(dom->content.bounds);
+				rt->PopClipper(nullptr);
+
+				if (auto solidLabel = element.Cast<GuiSolidLabelElement>())
 				{
-					rt->PushClipper(dom->content.validArea, nullptr);
-					renderer->Render(dom->content.bounds);
-					rt->PopClipper(nullptr);
+					index = solidLabelMeasurings.Keys().IndexOf(dom->content.element.Value());
+					if (index != -1)
+					{
+						auto& measuring = const_cast<SolidLabelMeasuring&>(solidLabelMeasurings.Values()[index]);
+						auto minSize = element->GetRenderer()->GetMinSize();
+						if (!measuring.minSize || measuring.minSize.Value() != minSize)
+						{
+							measuring.minSize = minSize;
+
+							switch (measuring.request)
+							{
+							case ElementSolidLabelMeasuringRequest::FontHeight:
+								{
+									ElementMeasuring_FontHeight response;
+									response.fontFamily = solidLabel->GetFont().fontFamily;
+									response.fontSize = solidLabel->GetFont().size;
+									response.height = minSize.y;
+
+									if (!elementMeasurings.fontHeights)
+									{
+										elementMeasurings.fontHeights = Ptr(new List<ElementMeasuring_FontHeight>);
+									}
+									elementMeasurings.fontHeights->Add(response);
+								}
+								break;
+							case ElementSolidLabelMeasuringRequest::TotalSize:
+								{
+									ElementMeasuring_ElementMinSize response;
+									response.id = dom->content.element.Value();
+									response.minSize = minSize;
+
+									if (!elementMeasurings.minSizes)
+									{
+										elementMeasurings.minSizes = Ptr(new List<ElementMeasuring_ElementMinSize>);
+									}
+									elementMeasurings.minSizes->Add(response);
+								}
+								break;
+							}
+						}
+					}
 				}
 			}
 		}
@@ -439,7 +494,10 @@ namespace vl::presentation::remote_renderer
 		{
 			for (auto child : *dom->children.Obj())
 			{
-				Render(child, rt);
+				if (child->content.validArea.Width() > 0 && child->content.validArea.Height()> 0)
+				{
+					Render(child, rt);
+				}
 			}
 		}
 	}
@@ -465,7 +523,9 @@ namespace vl::presentation::remote_renderer
 			needRefresh = true;
 			break;
 		case RenderTargetFailure::LostDevice:
+			UpdateRenderTarget(nullptr);
 			GetGuiGraphicsResourceManager()->RecreateRenderTarget(window);
+			UpdateRenderTarget(GetGuiGraphicsResourceManager()->GetRenderTarget(window));
 			needRefresh = true;
 			break;
 		default:;

@@ -36,10 +36,19 @@ namespace vl::presentation::remote_renderer
 		void									DpiChanged(bool preparing) override;
 
 	protected:
+		struct SolidLabelMeasuring
+		{
+			remoteprotocol::ElementSolidLabelMeasuringRequest		request;
+			Nullable<Size>											minSize;
+		};
+
 		using ElementMap = collections::Dictionary<vint, Ptr<elements::IGuiGraphicsElement>>;
 		using ImageMap = collections::Dictionary<vint, Ptr<INativeImage>>;
+		using SolidLabelMeasuringMap = collections::Dictionary<vint, SolidLabelMeasuring>;
 
 		remoteprotocol::ElementMeasurings		elementMeasurings;
+		SolidLabelMeasuringMap					solidLabelMeasurings;
+
 		ElementMap								availableElements;
 		ImageMap								availableImages;
 		Ptr<remoteprotocol::RenderingDom>		renderingDom;
@@ -55,6 +64,7 @@ namespace vl::presentation::remote_renderer
 		bool									supressPaint = false;
 		bool									needRefresh = false;
 
+		void									UpdateRenderTarget(elements::IGuiGraphicsRenderTarget* rt);
 		void									Render(Ptr<remoteprotocol::RenderingDom> dom, elements::IGuiGraphicsRenderTarget* rt);
 		void									GlobalTimer() override;
 		void									Paint() override;

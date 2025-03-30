@@ -68,9 +68,14 @@ namespace vl::presentation::remote_renderer
 
 	void GuiRemoteRendererSingle::DpiChanged(bool preparing)
 	{
-		if (!preparing)
+		if (preparing)
+		{
+			UpdateRenderTarget(nullptr);
+		}
+		else
 		{
 			GetGuiGraphicsResourceManager()->RecreateRenderTarget(window);
+			UpdateRenderTarget(GetGuiGraphicsResourceManager()->GetRenderTarget(window));
 			UpdateConfigsIfNecessary();
 		}
 	}
