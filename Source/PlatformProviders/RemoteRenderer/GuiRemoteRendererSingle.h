@@ -17,6 +17,7 @@ namespace vl::presentation::remote_renderer
 		: public Object
 		, public virtual IGuiRemoteProtocol
 		, protected virtual INativeWindowListener
+		, protected virtual INativeControllerListener
 	{
 	protected:
 		INativeWindow*							window = nullptr;
@@ -37,10 +38,8 @@ namespace vl::presentation::remote_renderer
 	protected:
 		using ElementMap = collections::Dictionary<vint, Ptr<elements::IGuiGraphicsElement>>;
 		using ImageMap = collections::Dictionary<vint, Ptr<INativeImage>>;
-		using LabelMeasuringList = collections::List<collections::Pair<vint, remoteprotocol::ElementSolidLabelMeasuringRequest>>;
 
 		remoteprotocol::ElementMeasurings		elementMeasurings;
-		LabelMeasuringList						labelMeasurings;
 		ElementMap								availableElements;
 		ImageMap								availableImages;
 		Ptr<remoteprotocol::RenderingDom>		renderingDom;
@@ -51,6 +50,14 @@ namespace vl::presentation::remote_renderer
 		remoteprotocol::ImageMetadata			CreateImageMetadata(vint id, INativeImage* image);
 		remoteprotocol::ImageMetadata			CreateImage(const remoteprotocol::ImageCreation& arguments);
 		void									CheckDom();
+
+	protected:
+		bool									supressPaint = false;
+		bool									needRefresh = false;
+
+		void									Render(Ptr<remoteprotocol::RenderingDom> dom, elements::IGuiGraphicsRenderTarget* rt);
+		void									GlobalTimer() override;
+		void									Paint() override;
 
 	public:
 		GuiRemoteRendererSingle();

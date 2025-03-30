@@ -102,9 +102,7 @@ namespace vl::presentation::remote_renderer
 
 	void GuiRemoteRendererSingle::RequestRendererEndRendering(vint id)
 	{
-		// TODO: Trigger repaint and call RespondRendererEndRendering at the end of the next repaint event
 		events->RespondRendererEndRendering(id, elementMeasurings);
-		labelMeasurings.Clear();
 	}
 
 /***********************************************************************
@@ -223,7 +221,15 @@ namespace vl::presentation::remote_renderer
 
 		if (arguments.measuringRequest)
 		{
-			labelMeasurings.Add({ arguments.id,arguments.measuringRequest.Value() });
+			switch (arguments.measuringRequest.Value())
+			{
+			case ElementSolidLabelMeasuringRequest::FontHeight:
+				CHECK_FAIL(L"Not Implemented!");
+				break;
+			case ElementSolidLabelMeasuringRequest::TotalSize:
+				CHECK_FAIL(L"Not Implemented!");
+				break;
+			}
 		}
 	}
 
@@ -328,18 +334,7 @@ namespace vl::presentation::remote_renderer
 
 	void GuiRemoteRendererSingle::CheckDom()
 	{
-		for (auto [id, measuring] : labelMeasurings)
-		{
-			switch (measuring)
-			{
-			case ElementSolidLabelMeasuringRequest::FontHeight:
-				CHECK_FAIL(L"Not Implemented!");
-				break;
-			case ElementSolidLabelMeasuringRequest::TotalSize:
-				CHECK_FAIL(L"Not Implemented!");
-				break;
-			}
-		}
+		needRefresh = true;
 	}
 
 	void GuiRemoteRendererSingle::RequestRendererRenderDom(const Ptr<remoteprotocol::RenderingDom>& arguments)
@@ -385,5 +380,76 @@ namespace vl::presentation::remote_renderer
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::remote_renderer::GuiRemoteRendererSingle::RequestRendererRenderElement(const ElementRendering&)#"
 		CHECK_FAIL(ERROR_MESSAGE_PREFIX L"The current implementation require dom-diff enabled in core side.");
 #undef ERROR_MESSAGE_PREFIX
+	}
+
+/***********************************************************************
+* Rendering (Commands)
+***********************************************************************/
+
+	void GuiRemoteRendererSingle::Render(Ptr<remoteprotocol::RenderingDom> dom, elements::IGuiGraphicsRenderTarget* rt)
+	{
+		if (dom->content.validArea.Width() <= 0 || dom->content.validArea.Height() <= 0)
+		{
+			return;
+		}
+
+		if (dom->content.element)
+		{
+			vint index = availableElements.Keys().IndexOf(dom->content.element.Value());
+			if (index != -1)
+			{
+				auto element = availableElements.Values()[index];
+				if (auto renderer = element->GetRenderer())
+				{
+					rt->PushClipper(dom->content.validArea, nullptr);
+					renderer->Render(dom->content.bounds);
+					rt->PopClipper(nullptr);
+				}
+			}
+		}
+
+		if (dom->children)
+		{
+			for (auto child : *dom->children.Obj())
+			{
+				Render(child, rt);
+			}
+		}
+	}
+	
+	void GuiRemoteRendererSingle::GlobalTimer()
+	{
+		if (!needRefresh) return;
+		needRefresh = false;
+		if (!window) return;
+		if (!renderingDom) return;
+
+		supressPaint = true;
+		auto rt = GetGuiGraphicsResourceManager()->GetRenderTarget(window);
+		rt->StartRendering();
+		Render(renderingDom, rt);
+		auto result = rt->StopRendering();
+		supressPaint = false;
+
+		switch (result)
+		{
+		case RenderTargetFailure::ResizeWhileRendering:
+			GetGuiGraphicsResourceManager()->ResizeRenderTarget(window);
+			needRefresh = true;
+			break;
+		case RenderTargetFailure::LostDevice:
+			GetGuiGraphicsResourceManager()->RecreateRenderTarget(window);
+			needRefresh = true;
+			break;
+		default:;
+		}
+	}
+
+	void GuiRemoteRendererSingle::Paint()
+	{
+		if (!supressPaint)
+		{
+			needRefresh = true;
+		}
 	}
 }

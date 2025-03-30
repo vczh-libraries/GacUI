@@ -2,6 +2,7 @@
 
 namespace vl::presentation::remote_renderer
 {
+	using namespace elements;
 	using namespace remoteprotocol;
 
 	remoteprotocol::ScreenConfig GuiRemoteRendererSingle::GetScreenConfig(INativeScreen* screen)
@@ -67,7 +68,11 @@ namespace vl::presentation::remote_renderer
 
 	void GuiRemoteRendererSingle::DpiChanged(bool preparing)
 	{
-		UpdateConfigsIfNecessary();
+		if (!preparing)
+		{
+			GetGuiGraphicsResourceManager()->RecreateRenderTarget(window);
+			UpdateConfigsIfNecessary();
+		}
 	}
 
 	GuiRemoteRendererSingle::GuiRemoteRendererSingle()
@@ -82,10 +87,12 @@ namespace vl::presentation::remote_renderer
 	{
 		window = _window;
 		window->InstallListener(this);
+		GetCurrentController()->CallbackService()->InstallListener(this);
 	}
 
 	void GuiRemoteRendererSingle::UnregisterMainWindow()
 	{
+		GetCurrentController()->CallbackService()->UninstallListener(this);
 		window->UninstallListener(this);
 		window = nullptr;
 	}
