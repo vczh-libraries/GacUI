@@ -32,6 +32,7 @@
 - `ProceduredThread` and `LambdaThread` cause small memory leak.
   - `delete this;` eventually calls `SuspendThread` on the thread itself, making all following clean up code skipped.
   - Windows confirmed, Linux need to test.
+- TODO in `GuiRemoteWindow::OnControllerConnect`.
 
 ## Known Issues (Unit Test)
 

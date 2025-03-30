@@ -95,6 +95,12 @@ GuiRemoteWindow (events)
 		remoteMessages.RequestWindowNotifySetBounds(remoteWindowSizingConfig.bounds);
 		RequestGetBounds();
 
+		// TODO:
+		//   This is a workaround to call GuiWindow::UpdateCustomFramePadding
+		//   Refactor to make it more elegant.
+		for (auto l : listeners) l->DpiChanged(true);
+		for (auto l : listeners) l->DpiChanged(false);
+
 		if (remote->applicationRunning)
 		{
 			remoteMessages.RequestWindowNotifySetTitle(styleTitle);
