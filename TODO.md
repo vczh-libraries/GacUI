@@ -102,16 +102,20 @@
 - Remote protocol redirection back to native rendering:
   - `RemotingTest_Core`
   - `RemotingTest_Rendering_Win32`
-  - [NamedPipe](https://learn.microsoft.com/en-us/windows/win32/ipc/named-pipe-server-using-overlapped-i-o)
+  - [x] [NamedPipe](https://learn.microsoft.com/en-us/windows/win32/ipc/named-pipe-server-using-overlapped-i-o)
     - Disallow disconnect and reconnect.
-  - [HttpServer](https://learn.microsoft.com/en-us/windows/win32/http/using-http-server-api)
+  - [ ] [HttpServer](https://learn.microsoft.com/en-us/windows/win32/http/using-http-server-api)
     - Allow only one client by verifying a random guid in the message which is given from the registration request.
     - Allow disconnect and reconnect.
     - When TypeScript rendering is completed, the demo in `Release` repo would become a website server.
-  - [HttpClient](https://learn.microsoft.com/en-us/windows/win32/winhttp/winhttp-start-page)
-  - Use string first, and then change to binary.
+  - [ ] [HttpClient](https://learn.microsoft.com/en-us/windows/win32/winhttp/winhttp-start-page)
+  - [ ] Use string first, and then change to binary.
   - Implement the remote protocol on a native `INativeController` instance.
     - It could not be used on `GuiHostedController` or `GuiRemoteController`, which is not a native implementation.
+    - [ ] Crash when close.
+    - [ ] Moving across different dpi monitors doesn't change window size
+    - [ ] IO not handled
+    - [ ] QueryClose not handled
   - The experiment will only run a very simple UI that covers all implemented remote protocol so far.
 - `UpdateDomInplace` performed binary search, create a common implementation to share with `SortedList`.
 - `GuiRemoteProtocolFromJsonChannel::OnReceive` should use a map instead of a series of if-statments.
