@@ -501,6 +501,31 @@ namespace vl::presentation::remote_renderer
 			}
 		}
 	}
+
+	INativeWindowListener::HitTestResult GuiRemoteRendererSingle::HitTest(Ptr<remoteprotocol::RenderingDom> dom, Point location)
+	{
+		if (dom->children)
+		{
+			for (auto child : *dom->children.Obj())
+			{
+				if (child->content.validArea.Contains(location))
+				{
+					auto result = HitTest(child, location);
+					if (result != INativeWindowListener::NoDecision)
+					{
+						return result;
+					}
+				}
+			}
+		}
+
+		if (dom->content.hitTestResult)
+		{
+			return dom->content.hitTestResult.Value();
+		}
+
+		return INativeWindowListener::NoDecision;
+	}
 	
 	void GuiRemoteRendererSingle::GlobalTimer()
 	{
@@ -538,5 +563,10 @@ namespace vl::presentation::remote_renderer
 		{
 			needRefresh = true;
 		}
+	}
+
+	INativeWindowListener::HitTestResult GuiRemoteRendererSingle::HitTest(NativePoint location)
+	{
+		return renderingDom ? HitTest(renderingDom, window->Convert(location)) : INativeWindowListener::NoDecision;
 	}
 }

@@ -898,13 +898,14 @@ WindowsForm
 								return true;
 							}
 							break;
+						case WM_NCLBUTTONUP:
 						case WM_LBUTTONUP:
 							{
-								POINTS location = MAKEPOINTS(lParam);
+								NativeWindowMouseInfo info = ConvertMouse(wParam, lParam, false, nonClient);
 								// TODO: (enumerable) this for-loop needs to be removed, because it is not looping, just leave the body
 								for (vint i = 0; i < listeners.Count(); i++)
 								{
-									switch (PerformHitTest(From(listeners), { location.x,location.y }))
+									switch (PerformHitTest(From(listeners), { info.x,info.y }))
 									{
 									case INativeWindowListener::ButtonMinimum:
 										ShowMinimized();

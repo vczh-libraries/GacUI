@@ -80,6 +80,16 @@ namespace vl::presentation::remote_renderer
 		}
 	}
 
+	void GuiRemoteRendererSingle::RenderingAsActivated()
+	{
+		events->OnWindowActivatedUpdated(true);
+	}
+
+	void GuiRemoteRendererSingle::RenderingAsDeactivated()
+	{
+		events->OnWindowActivatedUpdated(false);
+	}
+
 	GuiRemoteRendererSingle::GuiRemoteRendererSingle()
 	{
 	}

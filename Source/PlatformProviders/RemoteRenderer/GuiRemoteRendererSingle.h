@@ -34,6 +34,8 @@ namespace vl::presentation::remote_renderer
 		void									Opened() override;
 		void									Moved() override;
 		void									DpiChanged(bool preparing) override;
+		void									RenderingAsActivated() override;
+		void									RenderingAsDeactivated() override;
 
 	protected:
 		struct SolidLabelMeasuring
@@ -66,8 +68,11 @@ namespace vl::presentation::remote_renderer
 
 		void									UpdateRenderTarget(elements::IGuiGraphicsRenderTarget* rt);
 		void									Render(Ptr<remoteprotocol::RenderingDom> dom, elements::IGuiGraphicsRenderTarget* rt);
+		INativeWindowListener::HitTestResult	HitTest(Ptr<remoteprotocol::RenderingDom> dom, Point location);
+
 		void									GlobalTimer() override;
 		void									Paint() override;
+		INativeWindowListener::HitTestResult	HitTest(NativePoint location) override;
 
 	public:
 		GuiRemoteRendererSingle();
