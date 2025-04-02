@@ -116,6 +116,7 @@
     - [ ] Moving across different dpi monitors doesn't change window size
     - [ ] IO not handled
     - [ ] QueryClose not handled
+    - [ ] Measuring information sent from Rendering to Core even when there is no requirement or size changing
   - The experiment will only run a very simple UI that covers all implemented remote protocol so far.
 - `UpdateDomInplace` performed binary search, create a common implementation to share with `SortedList`.
 - `GuiRemoteProtocolFromJsonChannel::OnReceive` should use a map instead of a series of if-statments.
