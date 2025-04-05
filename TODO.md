@@ -4,9 +4,12 @@
 
 - Fixed:
   - `#include <arm_acle.h>` is needed for `__yield` in `VlppOS.cpp`
+- Added:
   - `IGuiRemoteProtocolChannel<TPackage>` and `IGuiRemoteProtocolChannelReceiver<TPackage>`
   - `GuiRemoteProtocolFromJsonChannel` creates `IGuiRemoteProtocol` from `IGuiRemoteProtocolChannel<Ptr<JsonNode>>`
   - `GuiRemoteJsonChannelFromProtocol` creates `IGuiRemoteProtocolChannel<Ptr<JsonNode>>` from `IGuiRemoteProtocol`
+  - `SetupRawWindowsDirect2DRenderer`
+  - `SetupRawWindowsGDIRenderer`
 
 ## Known Issues
 
@@ -68,7 +71,7 @@
   - Create each exe project to reference just enough/designed subset of libs.
   - Verify if source dependencies are satisfied.
 - Remote protocol player for Windows (and port to others)
-  - GUI runs compiled XML resource in an isolated domain (e.g. dll)
+  - GUI runs compiled XML resource in an separated process
   - Single GUI mode
   - Multiple GUI mode (with a simple window manager, and a test app for displaying instructions)
   - Implemented in both C++ and TypeScript
@@ -114,14 +117,20 @@
     - It could not be used on `GuiHostedController` or `GuiRemoteController`, which is not a native implementation.
     - [ ] Crash when close.
     - [ ] Moving across different dpi monitors doesn't change window size
+      - [ ] Ensure DPI is properly handled in `Core`
     - [ ] IO not handled
     - [ ] QueryClose not handled
+    - [ ] MinSize not handled when resizing the main window
+      - Or implement it in `1.2.13.0`
     - [ ] Measuring information sent from Rendering to Core even when there is no requirement or size changing
   - The experiment will only run a very simple UI that covers all implemented remote protocol so far.
 - `UpdateDomInplace` performed binary search, create a common implementation to share with `SortedList`.
 - `GuiRemoteProtocolFromJsonChannel::OnReceive` should use a map instead of a series of if-statments.
 - `GuiRemoteJsonChannelFromProtocol::Write` should use a map instead of a series of if-statments.
 - `vl::presentation::remoteprotocol::channeling::ConvertUtfString` move into `Vlpp` repo.
+- Document
+  - `SetupRawWindowsDirect2DRenderer`
+  - `SetupRawWindowsGDIRenderer`
 
 ## Release Milestone (1.2.12.0)
 
@@ -145,8 +154,8 @@
 - JavaScript rendering:
   - Delete all `GacJS` code. This repo will be used to implement the HTML logic.
   - A codegen for remote protocol and print TypeScript code.
-  - In the test project, C++ side will start a HTTP service on Windows.
-  - JavaScript side will separate the rendering and the protocol.
+  - In the test project, C++ side will start a HTTP service on Windows (`RemotingTest_Core`).
+  - JavaScript side will separate the rendering and the network protocol.
   - Try DOM.
   - Try Canvas.
     - https://github.com/WICG/canvas-formatted-text/blob/main/README.md
@@ -196,6 +205,8 @@
   - Unit test framework.
   - Unit test framework in Vlpp.
   - Remote Protocol.
+  - Starting GacUI Core with Remote Protocol.
+  - Starting GacUI Rendering with `GuiRemoteRendererSingle`.
 
 ## Release Milestone (1.3.0.0)
 
