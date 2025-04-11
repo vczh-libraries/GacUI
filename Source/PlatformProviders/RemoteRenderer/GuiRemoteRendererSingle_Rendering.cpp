@@ -420,7 +420,7 @@ namespace vl::presentation::remote_renderer
 	}
 
 /***********************************************************************
-* Rendering (Commands)
+* Rendering (INativeWindow)
 ***********************************************************************/
 
 	void GuiRemoteRendererSingle::UpdateRenderTarget(elements::IGuiGraphicsRenderTarget* rt)

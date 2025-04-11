@@ -81,6 +81,26 @@ namespace vl::presentation::remote_renderer
 		void									Paint() override;
 		INativeWindowListener::HitTestResult	HitTest(NativePoint location) override;
 
+	protected:
+
+		void									LeftButtonDown(const NativeWindowMouseInfo& info) override;
+		void									LeftButtonUp(const NativeWindowMouseInfo& info) override;
+		void									LeftButtonDoubleClick(const NativeWindowMouseInfo& info) override;
+		void									RightButtonDown(const NativeWindowMouseInfo& info) override;
+		void									RightButtonUp(const NativeWindowMouseInfo& info) override;
+		void									RightButtonDoubleClick(const NativeWindowMouseInfo& info) override;
+		void									MiddleButtonDown(const NativeWindowMouseInfo& info) override;
+		void									MiddleButtonUp(const NativeWindowMouseInfo& info) override;
+		void									MiddleButtonDoubleClick(const NativeWindowMouseInfo& info) override;
+		void									HorizontalWheel(const NativeWindowMouseInfo& info) override;
+		void									VerticalWheel(const NativeWindowMouseInfo& info) override;
+		void									MouseMoving(const NativeWindowMouseInfo& info) override;
+		void									MouseEntered() override;
+		void									MouseLeaved() override;
+		void									KeyDown(const NativeWindowKeyInfo& info) override;
+		void									KeyUp(const NativeWindowKeyInfo& info) override;
+		void									Char(const NativeWindowCharInfo& info) override;
+
 	public:
 		GuiRemoteRendererSingle();
 		~GuiRemoteRendererSingle();

@@ -117,7 +117,6 @@
     - It could not be used on `GuiHostedController` or `GuiRemoteController`, which is not a native implementation.
     - [ ] Moving across different dpi monitors doesn't change window size
       - [ ] Ensure DPI is properly handled in `Core`
-    - [ ] IO not handled
     - [ ] MinSize not handled when resizing the main window
       - Or implement it in `1.2.13.0`
     - [ ] Measuring information sent from Rendering to Core even when there is no requirement or size changing
