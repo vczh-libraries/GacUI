@@ -47,6 +47,13 @@ namespace vl::presentation::unittest
 		auto operator<=>(const WindowStyleConfig&) const = default;
 	};
 
+	enum class UnitTestRemoteChannel
+	{
+		None,
+		Sync,
+		Async,
+	};
+
 	struct UnitTestScreenConfig
 	{
 		using FontConfig = vl::presentation::remoteprotocol::FontConfig;
@@ -57,7 +64,7 @@ namespace vl::presentation::unittest
 		FontConfig					fontConfig;
 		ScreenConfig				screenConfig;
 		bool						useDomDiff = false;
-		bool						useSyncChannel = false;
+		UnitTestRemoteChannel		useChannel = UnitTestRemoteChannel::None;
 
 		void						FastInitialize(vint width, vint height, vint taskBarHeight = 0);
 	};
@@ -1453,8 +1460,9 @@ IGuiRemoteProtocolMessages (Initialization)
 IGuiRemoteProtocol
 ***********************************************************************/
 
-		void Submit() override
+		void Submit(bool& disconnected) override
 		{
+			// TODO: Failure injection to disconnected
 		}
 
 		void ProcessRemoteEvents() override
@@ -1514,6 +1522,7 @@ extern void										GacUIUnitTest_Finalize();
 extern void										GacUIUnitTest_SetGuiMainProxy(const vl::presentation::unittest::UnitTestMainFunc& proxy);
 extern void										GacUIUnitTest_LinkGuiMainProxy(const vl::presentation::unittest::UnitTestLinkFunc& proxy);
 extern void										GacUIUnitTest_Start(const vl::WString& appName, vl::Nullable<vl::presentation::unittest::UnitTestScreenConfig> config = {});
+extern void										GacUIUnitTest_StartAsync(const vl::WString& appName, vl::Nullable<vl::presentation::unittest::UnitTestScreenConfig> config = {});
 extern void										GacUIUnitTest_Start_WithResourceAsText(const vl::WString& appName, vl::Nullable<vl::presentation::unittest::UnitTestScreenConfig> config, const vl::WString& resourceText);
 extern vl::Ptr<vl::presentation::GuiResource>	GacUIUnitTest_CompileAndLoad(const vl::WString& xmlResource);
 

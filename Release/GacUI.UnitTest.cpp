@@ -317,14 +317,30 @@ void GacUIUnitTest_Start(const WString& appName, Nullable<UnitTestScreenConfig> 
 		globalConfig.FastInitialize(1024, 768);
 	}
 
+	// Renderer
 	UnitTestRemoteProtocol unitTestProtocol(appName, globalConfig);
-	channeling::GuiRemoteJsonChannelFromProtocol channelReceiver(unitTestProtocol.GetProtocol());
-	channeling::GuiRemoteProtocolFromJsonChannel channelSender(&channelReceiver);
+	auto jsonParser = Ptr(new glr::json::Parser);
 
+	// Data Processing in Renderer
+	channeling::GuiRemoteJsonChannelFromProtocol channelReceiver(unitTestProtocol.GetProtocol());
+	channeling::GuiRemoteJsonChannelStringDeserializer channelJsonDeserializer(&channelReceiver, jsonParser);
+	channeling::GuiRemoteUtfStringChannelDeserializer<wchar_t, char8_t> channelUtf8Deserializer(&channelJsonDeserializer);
+
+	// Boundary between Binaries
+
+	// Data Processing in Core
+	channeling::GuiRemoteUtfStringChannelSerializer<wchar_t, char8_t> channelUtf8Serializer(&channelUtf8Deserializer);
+	channeling::GuiRemoteJsonChannelStringSerializer channelJsonSerializer(&channelUtf8Serializer, jsonParser);
+
+	// Boundary between threads
+
+	channeling::GuiRemoteProtocolFromJsonChannel channelSender(&channelJsonSerializer);
+
+	// Core
 	repeatfiltering::GuiRemoteProtocolFilterVerifier verifierProtocol(
-		globalConfig.useSyncChannel
-		? &channelSender
-		: unitTestProtocol.GetProtocol()
+		globalConfig.useChannel == UnitTestRemoteChannel::None
+		? unitTestProtocol.GetProtocol()
+		: &channelSender
 		);
 	repeatfiltering::GuiRemoteProtocolFilter filteredProtocol(&verifierProtocol);
 	GuiRemoteProtocolDomDiffConverter diffConverterProtocol(&filteredProtocol);
@@ -340,6 +356,88 @@ void GacUIUnitTest_Start(const WString& appName, Nullable<UnitTestScreenConfig> 
 
 	GacUIUnitTest_LogUI(appName, unitTestProtocol);
 	if (!globalConfig.useDomDiff)
+	{
+		GacUIUnitTest_LogCommands(appName, unitTestProtocol);
+	}
+	GacUIUnitTest_LogDiffs(appName, unitTestProtocol);
+}
+
+template<typename T>
+void RunInNewThread(T&& threadProc)
+{
+	Thread::CreateAndStart([threadProc]()
+	{
+		try
+		{
+			threadProc();
+		}
+		catch (const Exception& e)
+		{
+			(void)e;
+			throw;
+		}
+		catch (const Error& e)
+		{
+			(void)e;
+			throw;
+		}
+	});
+}
+
+void GacUIUnitTest_StartAsync(const WString& appName, Nullable<UnitTestScreenConfig> config)
+{
+	TEST_ASSERT(config && config.Value().useChannel == UnitTestRemoteChannel::Async);
+
+	// Renderer
+	UnitTestRemoteProtocol unitTestProtocol(appName, config.Value());
+	auto jsonParser = Ptr(new glr::json::Parser);
+
+	// Data Processing in Renderer
+	channeling::GuiRemoteJsonChannelFromProtocol channelReceiver(unitTestProtocol.GetProtocol());
+	channeling::GuiRemoteJsonChannelStringDeserializer channelJsonDeserializer(&channelReceiver, jsonParser);
+	channeling::GuiRemoteUtfStringChannelDeserializer<wchar_t, char8_t> channelUtf8Deserializer(&channelJsonDeserializer);
+
+	// Boundary between Binaries
+
+	// Data Processing in Core
+	channeling::GuiRemoteUtfStringChannelSerializer<wchar_t, char8_t> channelUtf8Serializer(&channelUtf8Deserializer);
+	channeling::GuiRemoteJsonChannelStringSerializer channelJsonSerializer(&channelUtf8Serializer, jsonParser);
+
+	// Boundary between threads
+
+	channeling::GuiRemoteProtocolAsyncJsonChannelSerializer asyncChannelSender;
+	asyncChannelSender.Start(
+		&channelJsonSerializer,
+		[&unitTestProtocol, config](channeling::GuiRemoteProtocolAsyncJsonChannelSerializer* channel)
+		{
+			channeling::GuiRemoteProtocolFromJsonChannel channelSender(channel);
+
+			// Core
+			repeatfiltering::GuiRemoteProtocolFilterVerifier verifierProtocol(&channelSender);
+			repeatfiltering::GuiRemoteProtocolFilter filteredProtocol(&verifierProtocol);
+			GuiRemoteProtocolDomDiffConverter diffConverterProtocol(&filteredProtocol);
+
+			UnitTestContextImpl unitTestContext(&unitTestProtocol);
+			guiMainUnitTestContext = &unitTestContext;
+			SetupRemoteNativeController(
+				config.Value().useDomDiff
+				? static_cast<IGuiRemoteProtocol*>(&diffConverterProtocol)
+				: &filteredProtocol
+				);
+			GacUIUnitTest_SetGuiMainProxy({});
+		},
+		[](
+			channeling::GuiRemoteProtocolAsyncJsonChannelSerializer::TChannelThreadProc channelThreadProc,
+			channeling::GuiRemoteProtocolAsyncJsonChannelSerializer::TUIThreadProc uiThreadProc
+			)
+		{
+			RunInNewThread(channelThreadProc);
+			RunInNewThread(uiThreadProc);
+		});
+
+	asyncChannelSender.WaitForStopped();
+	GacUIUnitTest_LogUI(appName, unitTestProtocol);
+	if (!config.Value().useDomDiff)
 	{
 		GacUIUnitTest_LogCommands(appName, unitTestProtocol);
 	}
@@ -381,7 +479,15 @@ void GacUIUnitTest_Start_WithResourceAsText(const WString& appName, Nullable<Uni
 		}
 		previousMainProxy(protocol, context);
 	});
-	GacUIUnitTest_Start(appName, config);
+
+	if (config && config.Value().useChannel == UnitTestRemoteChannel::Async)
+	{
+		GacUIUnitTest_StartAsync(appName, config);
+	}
+	else
+	{
+		GacUIUnitTest_Start(appName, config);
+	}
 #undef ERROR_MESSAGE_PREFIX
 }
 
