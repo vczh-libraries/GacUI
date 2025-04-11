@@ -32,6 +32,11 @@ protected:
 			});
 	}
 
+	void OnReadStoppedThreadUnsafe() override
+	{
+		eventDisconnected.Signal();
+	}
+
 	void OnReceive(const WString& package) override
 	{
 		SendSingleString(package);
@@ -103,10 +108,10 @@ int StartNamedPipeClient()
 		channel = &namedPipeServerChannel;
 		renderer = &remoteRenderer;
 		result = SetupRawWindowsDirect2DRenderer();
+		CloseHandle(hPipe);
 		namedPipeServerChannel.WaitForDisconnected();
 		renderer = nullptr;
 		channel = nullptr;
 	}
-	CloseHandle(hPipe);
 	return result;
 }

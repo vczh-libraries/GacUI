@@ -29,7 +29,9 @@ namespace vl::presentation::remote_renderer
 	{
 		if (window)
 		{
+			disconnectingFromCore = true;
 			window->ReleaseCapture();
+			window->Hide(true);
 		}
 	}
 }

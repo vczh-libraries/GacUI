@@ -56,9 +56,38 @@ namespace vl::presentation::remote_renderer
 		}
 	}
 
+	void GuiRemoteRendererSingle::NativeWindowDestroying(INativeWindow* _window)
+	{
+		if (window == _window)
+		{
+			window->UninstallListener(this);
+			window = nullptr;
+		}
+	}
+
 	void GuiRemoteRendererSingle::Opened()
 	{
 		events->OnControllerConnect();
+	}
+
+	void GuiRemoteRendererSingle::BeforeClosing(bool& cancel)
+	{
+		if (!disconnectingFromCore)
+		{
+			cancel = true;
+			events->OnControllerRequestExit();
+		}
+	}
+
+	void GuiRemoteRendererSingle::AfterClosing()
+	{
+		renderingDom = nullptr;
+		availableElements.Clear();
+		availableImages.Clear();
+	}
+
+	void GuiRemoteRendererSingle::Closed()
+	{
 	}
 
 	void GuiRemoteRendererSingle::Moved()
@@ -82,11 +111,13 @@ namespace vl::presentation::remote_renderer
 
 	void GuiRemoteRendererSingle::RenderingAsActivated()
 	{
+		if (disconnectingFromCore) return;
 		events->OnWindowActivatedUpdated(true);
 	}
 
 	void GuiRemoteRendererSingle::RenderingAsDeactivated()
 	{
+		if (disconnectingFromCore) return;
 		events->OnWindowActivatedUpdated(false);
 	}
 
@@ -108,8 +139,6 @@ namespace vl::presentation::remote_renderer
 	void GuiRemoteRendererSingle::UnregisterMainWindow()
 	{
 		GetCurrentController()->CallbackService()->UninstallListener(this);
-		window->UninstallListener(this);
-		window = nullptr;
 	}
 
 	WString GuiRemoteRendererSingle::GetExecutablePath()

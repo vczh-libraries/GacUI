@@ -26,6 +26,7 @@ private:
 protected:
 
 	virtual void OnReadStringThreadUnsafe(Ptr<List<WString>> strs) = 0;
+	virtual void OnReadStoppedThreadUnsafe() = 0;
 
 private:
 
@@ -103,6 +104,7 @@ protected:
 			DWORD error = GetLastError();
 			if (error == ERROR_BROKEN_PIPE)
 			{
+				OnReadStoppedThreadUnsafe();
 				return;
 			}
 			if (error == ERROR_MORE_DATA)
@@ -134,6 +136,7 @@ protected:
 						DWORD error = GetLastError();
 						if (error == ERROR_BROKEN_PIPE)
 						{
+							self->OnReadStoppedThreadUnsafe();
 							return;
 						}
 						CHECK_ERROR(error == ERROR_MORE_DATA, L"GetOverlappedResult(ReadFile) failed on unexpected GetLastError.");

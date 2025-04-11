@@ -23,6 +23,7 @@ namespace vl::presentation::remote_renderer
 		INativeWindow*							window = nullptr;
 		INativeScreen*							screen = nullptr;
 		IGuiRemoteProtocolEvents*				events = nullptr;
+		bool									disconnectingFromCore = false;
 
 		bool									updatingBounds = false;
 		remoteprotocol::WindowSizingConfig		windowSizingConfig;
@@ -31,7 +32,13 @@ namespace vl::presentation::remote_renderer
 		remoteprotocol::WindowSizingConfig		GetWindowSizingConfig();
 		void									UpdateConfigsIfNecessary();
 
+		void									NativeWindowDestroying(INativeWindow* _window) override;
+
 		void									Opened() override;
+		void									BeforeClosing(bool& cancel) override;
+		void									AfterClosing() override;
+		void									Closed() override;
+
 		void									Moved() override;
 		void									DpiChanged(bool preparing) override;
 		void									RenderingAsActivated() override;

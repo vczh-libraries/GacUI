@@ -14,6 +14,8 @@ class NamedPipeCoreChannel
 protected:
 	IGuiRemoteProtocolChannelReceiver<WString>*		receiver = nullptr;
 	bool											connected = false;
+	EventObject										eventDisconnected;
+
 	List<WString>									pendingMessages;
 	vint											pendingMessageCount = 0;
 
@@ -24,6 +26,11 @@ protected:
 			Console::WriteLine(L"Received: " + str);
 			receiver->OnReceive(str);
 		}
+	}
+
+	void OnReadStoppedThreadUnsafe() override
+	{
+		eventDisconnected.Signal();
 	}
 
 	void SendPendingMessages()
@@ -37,6 +44,7 @@ public:
 	NamedPipeCoreChannel(HANDLE _hPipe)
 		: NamedPipeShared(_hPipe)
 	{
+		eventDisconnected.CreateManualUnsignal(false);
 	}
 
 	~NamedPipeCoreChannel()
@@ -51,6 +59,11 @@ public:
 		{
 			connected = true;
 		});
+	}
+
+	void WaitForDisconnected()
+	{
+		eventDisconnected.Wait();
 	}
 
 	void WriteErrorThreadUnsafe(const WString& error)
@@ -169,7 +182,8 @@ int StartNamedPipeServer()
 		NamedPipeCoreChannel::ServerWaitForClient(hPipe);
 		namedPipeServerChannel.RendererConnectedThreadUnsafe(&asyncChannelSender);
 		asyncChannelSender.WaitForStopped();
+		CloseHandle(hPipe);
+		namedPipeServerChannel.WaitForDisconnected();
 	}
-	CloseHandle(hPipe);
 	return 0;
 }
