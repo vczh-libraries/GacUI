@@ -37,7 +37,9 @@ namespace vl::presentation::remote_renderer
 			}
 
 			auto newWindowSizingConfig = GetWindowSizingConfig();
-			if (newWindowSizingConfig.bounds != windowSizingConfig.bounds)
+			if (
+				newWindowSizingConfig.bounds != windowSizingConfig.bounds ||
+				newWindowSizingConfig.clientBounds != windowSizingConfig.clientBounds)
 			{
 				windowSizingConfig = newWindowSizingConfig;
 				if (!updatingBounds)
@@ -46,7 +48,6 @@ namespace vl::presentation::remote_renderer
 				}
 			}
 			else if (
-				newWindowSizingConfig.clientBounds != windowSizingConfig.clientBounds ||
 				newWindowSizingConfig.sizeState != windowSizingConfig.sizeState ||
 				newWindowSizingConfig.customFramePadding != windowSizingConfig.customFramePadding)
 			{

@@ -21,9 +21,23 @@ protected:
 
 	void OnReadStringThreadUnsafe(Ptr<List<WString>> strs) override
 	{
+		static WString filteredStrings[] = {
+			WString::Unmanaged(LR"JSON({"semantic":"Event","name":"IOMouseMoving")JSON"),
+			WString::Unmanaged(LR"JSON({"semantic":"Event","name":"IOMouseEntered")JSON"),
+			WString::Unmanaged(LR"JSON({"semantic":"Event","name":"IOMouseLeaved")JSON"),
+			WString::Unmanaged(LR"JSON({"semantic":"Event","name":"WindowBoundsUpdated")JSON")
+		};
 		for (auto str : *strs.Obj())
 		{
+			for (auto&& filtered : filteredStrings)
+			{
+				if (str.Length() > filtered.Length() && str.Left(filtered.Length()) == filtered)
+				{
+					goto ON_RECEIVE;
+				}
+			}
 			Console::WriteLine(L"Received: " + str);
+		ON_RECEIVE:
 			receiver->OnReceive(str);
 		}
 	}

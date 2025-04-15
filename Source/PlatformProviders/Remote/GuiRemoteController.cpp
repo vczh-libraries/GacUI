@@ -342,6 +342,7 @@ GuiRemoteController (events)
 	void GuiRemoteController::OnControllerScreenUpdated(const remoteprotocol::ScreenConfig& arguments)
 	{
 		remoteScreenConfig = arguments;
+		remoteWindow.OnControllerScreenUpdated(arguments);
 	}
 
 /***********************************************************************

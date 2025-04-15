@@ -115,8 +115,10 @@
   - [ ] Use string first, and then change to binary.
   - Implement the remote protocol on a native `INativeController` instance.
     - It could not be used on `GuiHostedController` or `GuiRemoteController`, which is not a native implementation.
+    - [ ] `SetupRawWindowsGDIRenderer` black screen
     - [ ] Moving across different dpi monitors doesn't change window size
-      - [ ] Ensure DPI is properly handled in `Core`
+    - [ ] Changing DPI cause glitch on rendering
+      - Elements are recreated but initial update element messages are not sent
     - [ ] MinSize not handled when resizing the main window
       - Or implement it in `1.2.13.0`
     - [ ] Measuring information sent from Rendering to Core even when there is no requirement or size changing
