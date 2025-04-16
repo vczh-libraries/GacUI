@@ -43,6 +43,7 @@ namespace vl::presentation::elements_remoteprotocol
 		vint							id = -1;
 		vuint64_t						renderingBatchId = 0;
 		bool							updated = true;
+		bool							renderTargetChanged = false;
 
 		void							InitializeInternal();
 		void							FinalizeInternal();

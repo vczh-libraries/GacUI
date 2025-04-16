@@ -41,6 +41,8 @@ GuiSolidBorderElementRenderer
 		{
 			id = newRenderTarget->AllocateNewElementId();
 			newRenderTarget->RegisterRenderer(this);
+			updated = true;
+			renderTargetChanged = true;
 		}
 	}
 
@@ -72,6 +74,7 @@ GuiSolidBorderElementRenderer
 	void RENDERER_CLASS_TYPE::ResetUpdated()
 	{
 		updated = false;
+		renderTargetChanged = false;
 	}
 
 	RENDERER_TEMPLATE_HEADER
@@ -362,12 +365,12 @@ GuiSolidLabelElementRenderer
 			elementFont = GetCurrentController()->ResourceService()->GetDefaultFont();
 		}
 
-		if (fullContent || lastFont != elementFont)
+		if (renderTargetChanged || fullContent || lastFont != elementFont)
 		{
 			arguments.font = elementFont;
 		}
 
-		if (fullContent || lastText != elementText)
+		if (renderTargetChanged || fullContent || lastText != elementText)
 		{
 			arguments.text = elementText;
 		}
