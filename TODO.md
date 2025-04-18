@@ -116,11 +116,12 @@
   - Implement the remote protocol on a native `INativeController` instance.
     - It could not be used on `GuiHostedController` or `GuiRemoteController`, which is not a native implementation.
     - [ ] `SetupRawWindowsGDIRenderer` black screen
-    - [ ] Moving across different dpi monitors doesn't change window size
     - [ ] MinSize not handled when resizing the main window
       - Or implement it in `1.2.13.0`
     - [ ] Measuring information sent from Rendering to Core even when there is no requirement or size changing
     - [ ] Global shortcut key not handled
+    - [ ] Add a tab for the current test app
+    - [ ] Add another tab for LoremIpsum data grid, with add and clear button
   - The experiment will only run a very simple UI that covers all implemented remote protocol so far.
 - `UpdateDomInplace` performed binary search, create a common implementation to share with `SortedList`.
 - `GuiRemoteProtocolFromJsonChannel::OnReceive` should use a map instead of a series of if-statments.
