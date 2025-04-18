@@ -33,6 +33,12 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Source_x86\DemoReflection.h">
       <Filter>x86</Filter>
     </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Source_x86\ClickMeTab.h">
+      <Filter>x86</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Source_x64\ClickMeTab.h">
+      <Filter>x64</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)Source_x64\Demo.cpp">
@@ -58,6 +64,12 @@
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)Source_x86\MainWindow.cpp">
       <Filter>x86</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Source_x86\ClickMeTab.cpp">
+      <Filter>x86</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Source_x64\ClickMeTab.cpp">
+      <Filter>x64</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

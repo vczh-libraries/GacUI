@@ -30,11 +30,29 @@ namespace vl
 		namespace description
 		{
 #ifndef VCZH_DEBUG_NO_REFLECTION
+			IMPL_CPP_TYPE_INFO(demo::ClickMeTab)
+			IMPL_CPP_TYPE_INFO(demo::ClickMeTabConstructor)
 			IMPL_CPP_TYPE_INFO(demo::MainWindow)
 			IMPL_CPP_TYPE_INFO(demo::MainWindowConstructor)
 
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 #define _ ,
+			BEGIN_CLASS_MEMBER(::demo::ClickMeTab)
+				CLASS_MEMBER_BASE(::vl::presentation::controls::GuiTabPage)
+				CLASS_MEMBER_BASE(::demo::ClickMeTabConstructor)
+				CLASS_MEMBER_CONSTRUCTOR(::demo::ClickMeTab*(), NO_PARAMETER)
+			END_CLASS_MEMBER(::demo::ClickMeTab)
+
+			BEGIN_CLASS_MEMBER(::demo::ClickMeTabConstructor)
+				CLASS_MEMBER_BASE(::vl::reflection::DescriptableObject)
+				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::demo::ClickMeTabConstructor>(), NO_PARAMETER)
+				CLASS_MEMBER_METHOD(__vwsn_demo_ClickMeTab_Initialize, { L"__vwsn_this_" })
+				CLASS_MEMBER_FIELD(__vwsn_precompile_0)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_1)
+				CLASS_MEMBER_FIELD(buttonClickMe)
+				CLASS_MEMBER_FIELD(self)
+			END_CLASS_MEMBER(::demo::ClickMeTabConstructor)
+
 			BEGIN_CLASS_MEMBER(::demo::MainWindow)
 				CLASS_MEMBER_BASE(::vl::presentation::controls::GuiWindow)
 				CLASS_MEMBER_BASE(::demo::MainWindowConstructor)
@@ -47,7 +65,7 @@ namespace vl
 				CLASS_MEMBER_METHOD(__vwsn_demo_MainWindow_Initialize, { L"__vwsn_this_" })
 				CLASS_MEMBER_FIELD(__vwsn_precompile_0)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_1)
-				CLASS_MEMBER_FIELD(buttonClickMe)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_2)
 				CLASS_MEMBER_FIELD(self)
 			END_CLASS_MEMBER(::demo::MainWindowConstructor)
 
@@ -57,6 +75,8 @@ namespace vl
 			public:
 				void Load(ITypeManager* manager)
 				{
+					ADD_TYPE_INFO(::demo::ClickMeTab)
+					ADD_TYPE_INFO(::demo::ClickMeTabConstructor)
 					ADD_TYPE_INFO(::demo::MainWindow)
 					ADD_TYPE_INFO(::demo::MainWindowConstructor)
 				}

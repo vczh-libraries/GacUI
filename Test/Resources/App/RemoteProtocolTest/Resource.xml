@@ -8,9 +8,9 @@
     </Folder>
   </Folder>
 
-  <Instance name="MainWindowResource">
-    <Instance ref.Class="demo::MainWindow" xmlns:demo="demo::*">
-      <Window ref.Name="self" Text="Remote Protocol Test" ClientSize="x:640 y:480">
+  <Instance name="ClickMeTabResource">
+    <Instance ref.Class="demo::ClickMeTab">
+      <TabPage ref.Name="self" Text="Home">
         <att.BoundsComposition-set PreferredMinSize="x:640 y:480"/>
         <Button ref.Name="buttonClickMe" Text="Click Me!">
           <att.BoundsComposition-set AlignmentToParent="left:10 top:10 right:-1 bottom:-1"/>
@@ -18,6 +18,19 @@
             buttonClickMe.Text = "You have clicked!";
           }]]></ev.Clicked-eval>
         </Button>
+      </TabPage>
+    </Instance>
+  </Instance>
+
+  <Instance name="MainWindowResource">
+    <Instance ref.Class="demo::MainWindow" xmlns:demo="demo::*">
+      <Window ref.Name="self" Text="Remote Protocol Test" ClientSize="x:640 y:480">
+        <Tab>
+          <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+          <att.Pages>
+            <demo:ClickMeTab/>
+          </att.Pages>
+        </Tab>
       </Window>
     </Instance>
   </Instance>
