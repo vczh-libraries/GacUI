@@ -1,4 +1,4 @@
-﻿================================(1/2)================================
+﻿================================(1/3)================================
 module <instance>demo::ClickMeTab;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -37,7 +37,46 @@ namespace demo
     }
 }
 
-================================(2/2)================================
+================================(2/3)================================
+module <instance>demo::DataGridTab;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace demo
+{
+    @cpp:File("DataGridTab")
+    class DataGridTab : ::presentation::controls::GuiTabPage
+    {
+        new* ()
+            :::presentation::controls::GuiTabPage((cast (::presentation::theme::ThemeName) (cast (::system::UInt64) 0)))
+        {
+            raise "Not Implemented";
+        }
+
+        delete
+        {
+            FinalizeInstanceRecursively(this of (::presentation::controls::GuiCustomControl*));
+        }
+    }
+}
+
+================================(3/3)================================
 module <instance>demo::MainWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;

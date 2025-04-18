@@ -32,6 +32,8 @@ namespace vl
 #ifndef VCZH_DEBUG_NO_REFLECTION
 			IMPL_CPP_TYPE_INFO(demo::ClickMeTab)
 			IMPL_CPP_TYPE_INFO(demo::ClickMeTabConstructor)
+			IMPL_CPP_TYPE_INFO(demo::DataGridTab)
+			IMPL_CPP_TYPE_INFO(demo::DataGridTabConstructor)
 			IMPL_CPP_TYPE_INFO(demo::MainWindow)
 			IMPL_CPP_TYPE_INFO(demo::MainWindowConstructor)
 
@@ -48,10 +50,22 @@ namespace vl
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::demo::ClickMeTabConstructor>(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(__vwsn_demo_ClickMeTab_Initialize, { L"__vwsn_this_" })
 				CLASS_MEMBER_FIELD(__vwsn_precompile_0)
-				CLASS_MEMBER_FIELD(__vwsn_precompile_1)
 				CLASS_MEMBER_FIELD(buttonClickMe)
 				CLASS_MEMBER_FIELD(self)
 			END_CLASS_MEMBER(::demo::ClickMeTabConstructor)
+
+			BEGIN_CLASS_MEMBER(::demo::DataGridTab)
+				CLASS_MEMBER_BASE(::vl::presentation::controls::GuiTabPage)
+				CLASS_MEMBER_BASE(::demo::DataGridTabConstructor)
+				CLASS_MEMBER_CONSTRUCTOR(::demo::DataGridTab*(), NO_PARAMETER)
+			END_CLASS_MEMBER(::demo::DataGridTab)
+
+			BEGIN_CLASS_MEMBER(::demo::DataGridTabConstructor)
+				CLASS_MEMBER_BASE(::vl::reflection::DescriptableObject)
+				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::demo::DataGridTabConstructor>(), NO_PARAMETER)
+				CLASS_MEMBER_METHOD(__vwsn_demo_DataGridTab_Initialize, { L"__vwsn_this_" })
+				CLASS_MEMBER_FIELD(self)
+			END_CLASS_MEMBER(::demo::DataGridTabConstructor)
 
 			BEGIN_CLASS_MEMBER(::demo::MainWindow)
 				CLASS_MEMBER_BASE(::vl::presentation::controls::GuiWindow)
@@ -66,6 +80,8 @@ namespace vl
 				CLASS_MEMBER_FIELD(__vwsn_precompile_0)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_1)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_2)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_3)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_4)
 				CLASS_MEMBER_FIELD(self)
 			END_CLASS_MEMBER(::demo::MainWindowConstructor)
 
@@ -77,6 +93,8 @@ namespace vl
 				{
 					ADD_TYPE_INFO(::demo::ClickMeTab)
 					ADD_TYPE_INFO(::demo::ClickMeTabConstructor)
+					ADD_TYPE_INFO(::demo::DataGridTab)
+					ADD_TYPE_INFO(::demo::DataGridTabConstructor)
 					ADD_TYPE_INFO(::demo::MainWindow)
 					ADD_TYPE_INFO(::demo::MainWindowConstructor)
 				}

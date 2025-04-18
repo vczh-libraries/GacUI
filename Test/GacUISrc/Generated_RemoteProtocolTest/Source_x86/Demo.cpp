@@ -76,10 +76,6 @@ namespace demo
 	void ClickMeTabConstructor::__vwsn_demo_ClickMeTab_Initialize(::demo::ClickMeTab* __vwsn_this_)
 	{
 		(this->self = __vwsn_this_);
-		(this->__vwsn_precompile_1 = ::vl::__vwsn::This(this->self)->GetBoundsComposition());
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_1)->SetPreferredMinSize([&](){ ::vl::presentation::Size __vwsn_temp__; __vwsn_temp__.x = static_cast<::vl::vint32_t>(640); __vwsn_temp__.y = static_cast<::vl::vint32_t>(480); return __vwsn_temp__; }());
-		}
 		{
 			::vl::__vwsn::This(this->self)->SetText(::vl::WString::Unmanaged(L"Home"));
 		}
@@ -107,7 +103,23 @@ namespace demo
 		: self(static_cast<::demo::ClickMeTab*>(nullptr))
 		, buttonClickMe(static_cast<::vl::presentation::controls::GuiButton*>(nullptr))
 		, __vwsn_precompile_0(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
-		, __vwsn_precompile_1(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+	{
+	}
+
+/***********************************************************************
+Class (::demo::DataGridTabConstructor)
+***********************************************************************/
+
+	void DataGridTabConstructor::__vwsn_demo_DataGridTab_Initialize(::demo::DataGridTab* __vwsn_this_)
+	{
+		(this->self = __vwsn_this_);
+		{
+			::vl::__vwsn::This(this->self)->SetText(::vl::WString::Unmanaged(L"DataGrid"));
+		}
+	}
+
+	DataGridTabConstructor::DataGridTabConstructor()
+		: self(static_cast<::demo::DataGridTab*>(nullptr))
 	{
 	}
 
@@ -121,6 +133,10 @@ Class (::demo::MainWindowConstructor)
 		{
 			::vl::__vwsn::This(this->self)->SetClientSize([&](){ ::vl::presentation::Size __vwsn_temp__; __vwsn_temp__.x = static_cast<::vl::vint32_t>(640); __vwsn_temp__.y = static_cast<::vl::vint32_t>(480); return __vwsn_temp__; }());
 		}
+		(this->__vwsn_precompile_4 = ::vl::__vwsn::This(this->self)->GetBoundsComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_4)->SetPreferredMinSize([&](){ ::vl::presentation::Size __vwsn_temp__; __vwsn_temp__.x = static_cast<::vl::vint32_t>(640); __vwsn_temp__.y = static_cast<::vl::vint32_t>(480); return __vwsn_temp__; }());
+		}
 		{
 			::vl::__vwsn::This(this->self)->SetText(::vl::WString::Unmanaged(L"Remote Protocol Test"));
 		}
@@ -131,6 +147,11 @@ Class (::demo::MainWindowConstructor)
 		{
 			auto __vwsn_collection_ = ::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueObservableList>(::vl::__vwsn::This(this->__vwsn_precompile_0)->GetPages());
 			::vl::__vwsn::This(__vwsn_collection_.Obj())->Add(::vl::__vwsn::Box(this->__vwsn_precompile_2));
+		}
+		(this->__vwsn_precompile_3 = new ::demo::DataGridTab());
+		{
+			auto __vwsn_collection_ = ::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueObservableList>(::vl::__vwsn::This(this->__vwsn_precompile_0)->GetPages());
+			::vl::__vwsn::This(__vwsn_collection_.Obj())->Add(::vl::__vwsn::Box(this->__vwsn_precompile_3));
 		}
 		(this->__vwsn_precompile_1 = ::vl::__vwsn::This(this->__vwsn_precompile_0)->GetBoundsComposition());
 		{
@@ -146,6 +167,8 @@ Class (::demo::MainWindowConstructor)
 		, __vwsn_precompile_0(static_cast<::vl::presentation::controls::GuiTab*>(nullptr))
 		, __vwsn_precompile_1(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
 		, __vwsn_precompile_2(static_cast<::demo::ClickMeTab*>(nullptr))
+		, __vwsn_precompile_3(static_cast<::demo::DataGridTab*>(nullptr))
+		, __vwsn_precompile_4(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
 	{
 	}
 

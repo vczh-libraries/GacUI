@@ -32,6 +32,8 @@ namespace demo
 {
 	class ClickMeTabConstructor;
 	class ClickMeTab;
+	class DataGridTabConstructor;
+	class DataGridTab;
 	class MainWindowConstructor;
 	class MainWindow;
 
@@ -45,10 +47,21 @@ namespace demo
 		::demo::ClickMeTab* self;
 		::vl::presentation::controls::GuiButton* buttonClickMe;
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_0;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_1;
 		void __vwsn_demo_ClickMeTab_Initialize(::demo::ClickMeTab* __vwsn_this_);
 	public:
 		ClickMeTabConstructor();
+	};
+
+	class DataGridTabConstructor : public ::vl::Object, public ::vl::reflection::Description<DataGridTabConstructor>
+	{
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<DataGridTabConstructor>;
+#endif
+	protected:
+		::demo::DataGridTab* self;
+		void __vwsn_demo_DataGridTab_Initialize(::demo::DataGridTab* __vwsn_this_);
+	public:
+		DataGridTabConstructor();
 	};
 
 	class MainWindowConstructor : public ::vl::Object, public ::vl::reflection::Description<MainWindowConstructor>
@@ -61,6 +74,8 @@ namespace demo
 		::vl::presentation::controls::GuiTab* __vwsn_precompile_0;
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_1;
 		::demo::ClickMeTab* __vwsn_precompile_2;
+		::demo::DataGridTab* __vwsn_precompile_3;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_4;
 		void __vwsn_demo_MainWindow_Initialize(::demo::MainWindow* __vwsn_this_);
 	public:
 		MainWindowConstructor();

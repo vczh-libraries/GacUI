@@ -12,6 +12,7 @@ https://github.com/vczh-libraries
 
 #include "Demo.h"
 #include "ClickMeTab.h"
+#include "DataGridTab.h"
 #include "MainWindow.h"
 
 #endif

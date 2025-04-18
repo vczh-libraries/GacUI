@@ -39,6 +39,8 @@ namespace vl
 #ifndef VCZH_DEBUG_NO_REFLECTION
 			DECL_TYPE_INFO(::demo::ClickMeTab)
 			DECL_TYPE_INFO(::demo::ClickMeTabConstructor)
+			DECL_TYPE_INFO(::demo::DataGridTab)
+			DECL_TYPE_INFO(::demo::DataGridTabConstructor)
 			DECL_TYPE_INFO(::demo::MainWindow)
 			DECL_TYPE_INFO(::demo::MainWindowConstructor)
 #endif
