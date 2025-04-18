@@ -121,6 +121,8 @@
     - [ ] Measuring information sent from Rendering to Core even when there is no requirement or size changing
     - [ ] Global shortcut key not handled
     - [ ] Add another tab for LoremIpsum data grid, with add and clear button
+    - [ ] Display error when core crashes or stops unexpectedly
+      - [ ] Inject error from a button in the home page
   - The experiment will only run a very simple UI that covers all implemented remote protocol so far.
 - `UpdateDomInplace` performed binary search, create a common implementation to share with `SortedList`.
 - `GuiRemoteProtocolFromJsonChannel::OnReceive` should use a map instead of a series of if-statments.
