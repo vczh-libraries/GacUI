@@ -67,7 +67,7 @@
           </att.Columns>
 
           <Cell Site="row:0 column:0">
-            <Button Alt="X" Text="Add 10 Rows">
+            <Button Alt="X" Text="Add 3 Rows">
               <ev.Clicked-eval><![CDATA[{
                 for (i in range [1, 3])
                 {

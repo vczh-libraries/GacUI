@@ -211,7 +211,7 @@ namespace demo
                 (<precompile>2.Alt = "X");
             }
             {
-                (<precompile>2.Text = "Add 10 Rows");
+                (<precompile>2.Text = "Add 3 Rows");
             }
             {
                 <precompile>1.AddChild(<precompile>2.BoundsComposition);
