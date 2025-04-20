@@ -82,7 +82,7 @@ namespace vl
 
 			BEGIN_CLASS_MEMBER(::demo::DataItem)
 				CLASS_MEMBER_BASE(::vl::reflection::DescriptableObject)
-				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::demo::DataItem>(), NO_PARAMETER)
+				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::demo::DataItem>(const ::vl::WString&, const ::vl::WString&, const ::vl::WString&), { L"name" _ L"title" _ L"description" })
 				CLASS_MEMBER_METHOD(GetDescription, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(GetName, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(GetTitle, NO_PARAMETER)

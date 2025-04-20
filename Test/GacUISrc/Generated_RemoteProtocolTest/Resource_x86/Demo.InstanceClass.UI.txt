@@ -324,12 +324,25 @@ namespace demo
             {
                 var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
                 {
+                    {
+                        var <for-begin>i : ::system::Int32 = 1;
+                        var <for-end>i : ::system::Int32 = 3;
+                        var i = <for-begin>i;
+                        while ((i <= <for-end>i))
+                        {
+                            {
+                                self.itemSource.Add(new (DataItem^)(Sys::LoremIpsumTitle(12), Sys::LoremIpsumTitle(20), Sys::LoremIpsumSentence(40)));
+                            }
+                            (i = (i + 1));
+                        }
+                    }
                 };
                 attach(<precompile>2.Clicked, <event-handler>);
             }
             {
                 var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
                 {
+                    self.itemSource.Clear();
                 };
                 attach(<precompile>4.Clicked, <event-handler>);
             }
@@ -577,8 +590,11 @@ namespace demo
 
         prop Description : string{GetDescription, SetDescription}
 
-        new ()
+        new (name : string, title : string, description : string)
         {
+            (Name = name);
+            (Title = title);
+            (Description = description);
         }
     }
 }

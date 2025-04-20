@@ -114,6 +114,18 @@ Closures
 
 	void __vwsnf5_Demo_demo_DataGridTabConstructor___vwsn_demo_DataGridTab_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
+		{
+			auto __vwsn_for_begin_i = static_cast<::vl::vint64_t>(1L);
+			auto __vwsn_for_end_i = static_cast<::vl::vint64_t>(3L);
+			auto i = __vwsn_for_begin_i;
+			while ((i <= __vwsn_for_end_i))
+			{
+				{
+					::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0->self)->itemSource.Obj())->Add(::vl::__vwsn::Box(::vl::Ptr<::demo::DataItem>(new ::demo::DataItem(::vl::reflection::description::Sys::LoremIpsumTitle(static_cast<::vl::vint64_t>(12L)), ::vl::reflection::description::Sys::LoremIpsumTitle(static_cast<::vl::vint64_t>(20L)), ::vl::reflection::description::Sys::LoremIpsumSentence(static_cast<::vl::vint64_t>(40L))))));
+				}
+				(i = (i + static_cast<::vl::vint64_t>(1L)));
+			}
+		}
 	}
 
 	//-------------------------------------------------------------------
@@ -125,6 +137,7 @@ Closures
 
 	void __vwsnf6_Demo_demo_DataGridTabConstructor___vwsn_demo_DataGridTab_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
+		::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0->self)->itemSource.Obj())->Clear();
 	}
 }
 
@@ -370,11 +383,14 @@ Class (::demo::DataItem)
 		(this->__vwsn_prop_Description = __vwsn_value_);
 	}
 
-	DataItem::DataItem()
+	DataItem::DataItem(const ::vl::WString& name, const ::vl::WString& title, const ::vl::WString& description)
 		: __vwsn_prop_Name(::vl::WString::Unmanaged(L""))
 		, __vwsn_prop_Title(::vl::WString::Unmanaged(L""))
 		, __vwsn_prop_Description(::vl::WString::Unmanaged(L""))
 	{
+		this->SetName(name);
+		this->SetTitle(title);
+		this->SetDescription(description);
 	}
 
 /***********************************************************************

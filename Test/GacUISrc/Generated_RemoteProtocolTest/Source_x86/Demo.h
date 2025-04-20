@@ -106,7 +106,7 @@ namespace demo
 	public:
 		::vl::WString GetDescription();
 		void SetDescription(const ::vl::WString& __vwsn_value_);
-		DataItem();
+		DataItem(const ::vl::WString& name, const ::vl::WString& title, const ::vl::WString& description);
 	};
 
 	class MainWindowConstructor : public ::vl::Object, public ::vl::reflection::Description<MainWindowConstructor>

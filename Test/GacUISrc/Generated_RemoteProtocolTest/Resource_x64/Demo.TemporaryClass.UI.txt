@@ -171,8 +171,11 @@ namespace demo
 
         prop Description : string{GetDescription, SetDescription}
 
-        new ()
+        new (name : string, title : string, description : string)
         {
+            (Name = name);
+            (Title = title);
+            (Description = description);
         }
     }
 }
