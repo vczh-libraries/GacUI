@@ -124,6 +124,8 @@
       - [ ] Inject error from a button in the home page
       - [ ] Switch the window back to non-custom border to offer a chance for existing
     - [ ] The key after `ALT` is not consumed, it needs to press 2 times.
+    - [ ] Cursor changing not handled.
+    - [ ] Pressing `Add 3 rows` 3 times crashes.
   - The experiment will only run a very simple UI that covers all implemented remote protocol so far.
 - `UpdateDomInplace` performed binary search, create a common implementation to share with `SortedList`.
 - `GuiRemoteProtocolFromJsonChannel::OnReceive` should use a map instead of a series of if-statments.
