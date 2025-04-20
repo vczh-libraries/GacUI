@@ -11,7 +11,7 @@
   <Instance name="ClickMeTabResource">
     <Instance ref.Class="demo::ClickMeTab">
       <TabPage ref.Name="self" Text="Home">
-        <Button ref.Name="buttonClickMe" Text="Click Me!">
+        <Button ref.Name="buttonClickMe" Alt="X" Text="Click Me!">
           <att.BoundsComposition-set AlignmentToParent="left:10 top:10 right:-1 bottom:-1"/>
           <ev.Clicked-eval><![CDATA[{
             buttonClickMe.Text = "You have clicked!";
@@ -21,8 +21,32 @@
     </Instance>
   </Instance>
 
+  <Script name="ViewModelResource">
+    <Workflow>
+      <![CDATA[
+        module viewmodel;
+        
+        using system::*;
+        using presentation::*;
+        
+        namespace demo
+        {
+          class DataItem
+          {
+            prop Name : string = "" {not observe}
+            prop Title : string = "" {not observe}
+            prop Description : string = "" {not observe}
+          }
+        }
+      ]]>
+    </Workflow>
+  </Script>
+
   <Instance name="DataGridTabResource">
     <Instance ref.Class="demo::DataGridTab">
+      <ref.Members><![CDATA[
+        var itemSource : observe DataItem^[] = {};
+      ]]></ref.Members>
       <TabPage ref.Name="self" Text="DataGrid">
         <Table CellPadding="10" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
           <att.Rows>
@@ -36,20 +60,32 @@
           </att.Columns>
 
           <Cell Site="row:0 column:0">
-            <Button Text="Add 10 Rows">
+            <Button Alt="X" Text="Add 10 Rows">
               <ev.Clicked-eval><![CDATA[{
               }]]></ev.Clicked-eval>
             </Button>
           </Cell>
           <Cell Site="row:0 column:1">
-            <Button Text="Clear">
+            <Button Alt="Y" Text="Clear">
               <ev.Clicked-eval><![CDATA[{
               }]]></ev.Clicked-eval>
             </Button>
           </Cell>
           <Cell Site="row:1 column:0 columnSpan:3">
-            <BindableDataGrid VerticalAlwaysVisible="false" HorizontalAlwaysVisible="false">
+            <BindableDataGrid Alt="Z" env.ItemType="demo::DataItem^" VerticalAlwaysVisible="false" HorizontalAlwaysVisible="false">
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+              <att.ItemSource-eval>self.itemSource</att.ItemSource-eval>
+              <att.Columns>
+                <DataColumn Text="Name" Size="120">
+                  <att.TextProperty>Name</att.TextProperty>
+                </DataColumn>
+                <DataColumn Text="Title" Size="160">
+                  <att.TextProperty>Title</att.TextProperty>
+                </DataColumn>
+                <DataColumn Text="Description" Size="300">
+                  <att.TextProperty>Description</att.TextProperty>
+                </DataColumn>
+              </att.Columns>
             </BindableDataGrid>
           </Cell>
         </Table>
@@ -64,8 +100,8 @@
         <Tab>
           <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
           <att.Pages>
-            <demo:ClickMeTab/>
-            <demo:DataGridTab/>
+            <demo:ClickMeTab Alt="A"/>
+            <demo:DataGridTab Alt="B"/>
           </att.Pages>
         </Tab>
       </Window>

@@ -28,6 +28,9 @@ namespace vl_workflow_global
 	struct __vwsnf1_Demo_demo_ClickMeTabConstructor___vwsn_demo_ClickMeTab_Initialize_;
 	struct __vwsnf2_Demo_demo_DataGridTabConstructor___vwsn_demo_DataGridTab_Initialize_;
 	struct __vwsnf3_Demo_demo_DataGridTabConstructor___vwsn_demo_DataGridTab_Initialize_;
+	struct __vwsnf4_Demo_demo_DataGridTabConstructor___vwsn_demo_DataGridTab_Initialize_;
+	struct __vwsnf5_Demo_demo_DataGridTabConstructor___vwsn_demo_DataGridTab_Initialize_;
+	struct __vwsnf6_Demo_demo_DataGridTabConstructor___vwsn_demo_DataGridTab_Initialize_;
 }
 
 namespace demo
@@ -36,6 +39,7 @@ namespace demo
 	class ClickMeTab;
 	class DataGridTabConstructor;
 	class DataGridTab;
+	class DataItem;
 	class MainWindowConstructor;
 	class MainWindow;
 
@@ -58,6 +62,9 @@ namespace demo
 	{
 		friend struct ::vl_workflow_global::__vwsnf2_Demo_demo_DataGridTabConstructor___vwsn_demo_DataGridTab_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf3_Demo_demo_DataGridTabConstructor___vwsn_demo_DataGridTab_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf4_Demo_demo_DataGridTabConstructor___vwsn_demo_DataGridTab_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf5_Demo_demo_DataGridTabConstructor___vwsn_demo_DataGridTab_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf6_Demo_demo_DataGridTabConstructor___vwsn_demo_DataGridTab_Initialize_;
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<DataGridTabConstructor>;
 #endif
@@ -70,10 +77,36 @@ namespace demo
 		::vl::presentation::controls::GuiButton* __vwsn_precompile_4;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_5;
 		::vl::presentation::controls::GuiBindableDataGrid* __vwsn_precompile_6;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_7;
+		::vl::Ptr<::vl::presentation::controls::list::DataColumn> __vwsn_precompile_7;
+		::vl::Ptr<::vl::presentation::controls::list::DataColumn> __vwsn_precompile_8;
+		::vl::Ptr<::vl::presentation::controls::list::DataColumn> __vwsn_precompile_9;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_10;
 		void __vwsn_demo_DataGridTab_Initialize(::demo::DataGridTab* __vwsn_this_);
 	public:
 		DataGridTabConstructor();
+	};
+
+	class DataItem : public ::vl::Object, public ::vl::reflection::Description<DataItem>
+	{
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<DataItem>;
+#endif
+	private:
+		::vl::WString __vwsn_prop_Name;
+	public:
+		::vl::WString GetName();
+		void SetName(const ::vl::WString& __vwsn_value_);
+	private:
+		::vl::WString __vwsn_prop_Title;
+	public:
+		::vl::WString GetTitle();
+		void SetTitle(const ::vl::WString& __vwsn_value_);
+	private:
+		::vl::WString __vwsn_prop_Description;
+	public:
+		::vl::WString GetDescription();
+		void SetDescription(const ::vl::WString& __vwsn_value_);
+		DataItem();
 	};
 
 	class MainWindowConstructor : public ::vl::Object, public ::vl::reflection::Description<MainWindowConstructor>
@@ -126,7 +159,7 @@ Closures
 
 		__vwsnf2_Demo_demo_DataGridTabConstructor___vwsn_demo_DataGridTab_Initialize_(::demo::DataGridTabConstructor* __vwsnctorthis_0);
 
-		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
+		::vl::WString operator()(const ::vl::reflection::description::Value& __vwsn_item_) const;
 	};
 
 	struct __vwsnf3_Demo_demo_DataGridTabConstructor___vwsn_demo_DataGridTab_Initialize_
@@ -134,6 +167,33 @@ Closures
 		::demo::DataGridTabConstructor* __vwsnthis_0;
 
 		__vwsnf3_Demo_demo_DataGridTabConstructor___vwsn_demo_DataGridTab_Initialize_(::demo::DataGridTabConstructor* __vwsnctorthis_0);
+
+		::vl::WString operator()(const ::vl::reflection::description::Value& __vwsn_item_) const;
+	};
+
+	struct __vwsnf4_Demo_demo_DataGridTabConstructor___vwsn_demo_DataGridTab_Initialize_
+	{
+		::demo::DataGridTabConstructor* __vwsnthis_0;
+
+		__vwsnf4_Demo_demo_DataGridTabConstructor___vwsn_demo_DataGridTab_Initialize_(::demo::DataGridTabConstructor* __vwsnctorthis_0);
+
+		::vl::WString operator()(const ::vl::reflection::description::Value& __vwsn_item_) const;
+	};
+
+	struct __vwsnf5_Demo_demo_DataGridTabConstructor___vwsn_demo_DataGridTab_Initialize_
+	{
+		::demo::DataGridTabConstructor* __vwsnthis_0;
+
+		__vwsnf5_Demo_demo_DataGridTabConstructor___vwsn_demo_DataGridTab_Initialize_(::demo::DataGridTabConstructor* __vwsnctorthis_0);
+
+		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
+	};
+
+	struct __vwsnf6_Demo_demo_DataGridTabConstructor___vwsn_demo_DataGridTab_Initialize_
+	{
+		::demo::DataGridTabConstructor* __vwsnthis_0;
+
+		__vwsnf6_Demo_demo_DataGridTabConstructor___vwsn_demo_DataGridTab_Initialize_(::demo::DataGridTabConstructor* __vwsnctorthis_0);
 
 		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
 	};

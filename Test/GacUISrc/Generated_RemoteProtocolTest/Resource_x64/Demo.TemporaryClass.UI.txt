@@ -1,4 +1,4 @@
-﻿================================(1/3)================================
+﻿================================(1/4)================================
 module <instance>demo::ClickMeTab;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -37,7 +37,7 @@ namespace demo
     }
 }
 
-================================(2/3)================================
+================================(2/4)================================
 module <instance>demo::DataGridTab;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -63,6 +63,8 @@ namespace demo
     @cpp:File("DataGridTab")
     class DataGridTab : ::presentation::controls::GuiTabPage
     {
+        var itemSource : observe DataItem^[] = {};
+
         new* ()
             :::presentation::controls::GuiTabPage((cast (::presentation::theme::ThemeName) (cast (::system::UInt64) 0)))
         {
@@ -76,7 +78,7 @@ namespace demo
     }
 }
 
-================================(3/3)================================
+================================(3/4)================================
 module <instance>demo::MainWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -111,6 +113,66 @@ namespace demo
         delete
         {
             FinalizeInstanceRecursively(this of (::presentation::controls::GuiControlHost*));
+        }
+    }
+}
+
+================================(4/4)================================
+module viewmodel;
+using system::*;
+using presentation::*;
+
+namespace demo
+{
+    class DataItem
+    {
+        @cpp:Private
+        var <prop>Name : string = "";
+
+        func GetName() : (string)
+        {
+            return <prop>Name;
+        }
+
+        func SetName(<value> : string) : (void)
+        {
+            (<prop>Name = <value>);
+        }
+
+        prop Name : string{GetName, SetName}
+
+        @cpp:Private
+        var <prop>Title : string = "";
+
+        func GetTitle() : (string)
+        {
+            return <prop>Title;
+        }
+
+        func SetTitle(<value> : string) : (void)
+        {
+            (<prop>Title = <value>);
+        }
+
+        prop Title : string{GetTitle, SetTitle}
+
+        @cpp:Private
+        var <prop>Description : string = "";
+
+        func GetDescription() : (string)
+        {
+            return <prop>Description;
+        }
+
+        func SetDescription(<value> : string) : (void)
+        {
+            (<prop>Description = <value>);
+        }
+
+        prop Description : string{GetDescription, SetDescription}
+
+        new ()
+        {
         }
     }
 }

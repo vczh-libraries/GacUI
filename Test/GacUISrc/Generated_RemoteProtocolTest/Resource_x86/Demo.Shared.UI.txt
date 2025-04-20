@@ -1,0 +1,60 @@
+﻿================================(1/1)================================
+module viewmodel;
+using system::*;
+using presentation::*;
+
+namespace demo
+{
+    class DataItem
+    {
+        @cpp:Private
+        var <prop>Name : string = "";
+
+        func GetName() : (string)
+        {
+            return <prop>Name;
+        }
+
+        func SetName(<value> : string) : (void)
+        {
+            (<prop>Name = <value>);
+        }
+
+        prop Name : string{GetName, SetName}
+
+        @cpp:Private
+        var <prop>Title : string = "";
+
+        func GetTitle() : (string)
+        {
+            return <prop>Title;
+        }
+
+        func SetTitle(<value> : string) : (void)
+        {
+            (<prop>Title = <value>);
+        }
+
+        prop Title : string{GetTitle, SetTitle}
+
+        @cpp:Private
+        var <prop>Description : string = "";
+
+        func GetDescription() : (string)
+        {
+            return <prop>Description;
+        }
+
+        func SetDescription(<value> : string) : (void)
+        {
+            (<prop>Description = <value>);
+        }
+
+        prop Description : string{GetDescription, SetDescription}
+
+        new ()
+        {
+        }
+    }
+}
+

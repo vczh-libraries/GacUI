@@ -41,6 +41,7 @@ namespace vl
 			DECL_TYPE_INFO(::demo::ClickMeTabConstructor)
 			DECL_TYPE_INFO(::demo::DataGridTab)
 			DECL_TYPE_INFO(::demo::DataGridTabConstructor)
+			DECL_TYPE_INFO(::demo::DataItem)
 			DECL_TYPE_INFO(::demo::MainWindow)
 			DECL_TYPE_INFO(::demo::MainWindowConstructor)
 #endif

@@ -37,6 +37,7 @@ namespace demo
 {
 	DataGridTab::DataGridTab()
 		: ::vl::presentation::controls::GuiTabPage(::vl::presentation::theme::ThemeName::CustomControl)
+		, itemSource(::vl::reflection::description::IValueObservableList::Create())
 	{
 		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString::Unmanaged(L"demo::DataGridTab"));
 		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
