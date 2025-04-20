@@ -120,7 +120,6 @@
       - Or implement it in `1.2.13.0`
     - [ ] Measuring information sent from Rendering to Core even when there is no requirement or size changing
     - [ ] Global shortcut key not handled
-    - [ ] Add another tab for LoremIpsum data grid, with add and clear button
     - [ ] Display error when core crashes or stops unexpectedly
       - [ ] Inject error from a button in the home page
       - [ ] Switch the window back to non-custom border to offer a chance for existing
