@@ -117,7 +117,7 @@ protected:
 			}
 
 			DWORD error = GetLastError();
-			if (error == ERROR_BROKEN_PIPE)
+			if (error == ERROR_BROKEN_PIPE || error == ERROR_INVALID_HANDLE)
 			{
 				OnReadStoppedThreadUnsafe();
 				return;
@@ -143,7 +143,7 @@ protected:
 					else
 					{
 						DWORD error = GetLastError();
-						if (error == ERROR_BROKEN_PIPE)
+						if (error == ERROR_BROKEN_PIPE || error == ERROR_INVALID_HANDLE)
 						{
 							self->OnReadStoppedThreadUnsafe();
 							return;

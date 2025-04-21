@@ -118,6 +118,7 @@
     - MinSize not handled when resizing the main window
       - Or implement it in `1.2.13.0`
     - Measuring information sent from Rendering to Core even when there is no requirement or size changing
+      - Measuring result of the same font repeats in `fontHeights`
     - Global shortcut key not handled
     - Display error when core crashes or stops unexpectedly
       - Inject error from a button in the home page
