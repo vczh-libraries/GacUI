@@ -345,12 +345,26 @@ TEST_FILE
 			// Force rendering
 			AssertEventLogs(
 				eventLogs,
-				L"Created(<1:SolidLabel>, <2:SolidLabel>)",
-				L"Updated(1, #000000, Left, Top, <flags:>, <font:One:12>, <text:Hello>, <request:TotalSize>)",
-				L"Updated(2, #000000, Left, Top, <flags:[e]>, <font:One:12>, <text:World>, <request:FontHeight>)",
+				L"Created(<3:SolidLabel>, <4:SolidLabel>)",
+				L"Updated(3, #000000, Left, Top, <flags:>, <font:One:12>, <text:Hello>, <request:TotalSize>)",
+				L"Updated(4, #000000, Left, Top, <flags:[e]>, <font:One:12>, <text:World>, <request:FontHeight>)",
+				L"Destroyed(1, 2)",
 				L"Begin()",
-				L"Render(1, {0,0:100,12}, {0,0:640,480})",
-				L"Render(2, {0,12:100,12}, {0,0:640,480})",
+				L"Render(3, {0,0:100,12}, {0,0:640,480})",
+				L"Render(4, {0,12:100,12}, {0,0:640,480})",
+				L"End()"
+				);
+			TEST_ASSERT(!protocol.measuringForNextRendering.fontHeights);
+			TEST_ASSERT(!protocol.measuringForNextRendering.minSizes);
+		});
+
+		protocol.OnNextFrame([&]()
+		{
+			AssertEventLogs(
+				eventLogs,
+				L"Begin()",
+				L"Render(3, {0,0:100,12}, {0,0:640,480})",
+				L"Render(4, {0,12:100,12}, {0,0:640,480})",
 				L"End()"
 				);
 			TEST_ASSERT(!protocol.measuringForNextRendering.fontHeights);
@@ -379,12 +393,13 @@ TEST_FILE
 			// Force rendering
 			AssertEventLogs(
 				eventLogs,
-				L"Created(<1:SolidLabel>, <2:SolidLabel>)",
-				L"Updated(1, #000000, Left, Top, <flags:>, <font:One:12>, <text:Hello>, <request:TotalSize>)",
-				L"Updated(2, #000000, Left, Top, <flags:[e]>, <font:One:12>, <text:World>, <request:FontHeight>)",
+				L"Created(<5:SolidLabel>, <6:SolidLabel>)",
+				L"Updated(5, #000000, Left, Top, <flags:>, <font:One:12>, <text:Hello>, <request:TotalSize>)",
+				L"Updated(6, #000000, Left, Top, <flags:[e]>, <font:One:12>, <text:World>, <request:FontHeight>)",
+				L"Destroyed(3, 4)",
 				L"Begin()",
-				L"Render(1, {0,0:100,12}, {0,0:640,480})",
-				L"Render(2, {0,12:100,12}, {0,0:640,480})",
+				L"Render(5, {0,0:100,12}, {0,0:640,480})",
+				L"Render(6, {0,12:100,12}, {0,0:640,480})",
 				L"End()"
 				);
 			TEST_ASSERT(!protocol.measuringForNextRendering.fontHeights);
@@ -398,8 +413,8 @@ TEST_FILE
 			AssertEventLogs(
 				eventLogs,
 				L"Begin()",
-				L"Render(1, {0,0:100,12}, {0,0:640,480})",
-				L"Render(2, {0,12:100,12}, {0,0:640,480})",
+				L"Render(5, {0,0:100,12}, {0,0:640,480})",
+				L"Render(6, {0,12:100,12}, {0,0:640,480})",
 				L"End()"
 				);
 			TEST_ASSERT(!protocol.measuringForNextRendering.fontHeights);
@@ -414,8 +429,8 @@ TEST_FILE
 				controlHost->Hide();
 			},
 			// Layout stablized
-			L"Render(1, {0,0:100,24}, {0,0:640,480})",
-			L"Render(2, {0,24:100,24}, {0,0:640,480})"
+			L"Render(5, {0,0:100,12}, {0,0:640,480})",
+			L"Render(6, {0,12:100,24}, {0,0:640,480})"
 			);
 
 		SetGuiMainProxy(MakeGuiMain(protocol, eventLogs, controlHost));

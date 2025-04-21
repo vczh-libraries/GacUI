@@ -300,18 +300,32 @@ TEST_FILE
 
 		protocol.OnNextFrame([&]()
 		{
-			// There will be no ImageCreated
+			// There will be no ImageCreated but ImageFrame are recreated
 			// Instead metadata will be asked via Updated
 			AssertEventLogs(
 				eventLogs,
-				L"Created(<1:ImageFrame>, <2:ImageFrame>, <3:ImageFrame>)",
-				L"Updated(1, (8:0), Left, Top, <flags:[e]>, <imageCreation:{id:8, data:30x40}>)",
-				L"Updated(2, (8:0), Left, Top, <flags:[e]>, <imageCreation:{id:8, data:omitted}>)",
-				L"Updated(3, (9:0), Left, Top, <flags:[e]>, <imageCreation:{id:9, data:50x60}>)",
+				L"Created(<4:ImageFrame>, <5:ImageFrame>, <6:ImageFrame>)",
+				L"Updated(4, (8:0), Left, Top, <flags:[e]>, <imageCreation:{id:8, data:30x40}>)",
+				L"Updated(5, (8:0), Left, Top, <flags:[e]>, <imageCreation:{id:8, data:omitted}>)",
+				L"Updated(6, (9:0), Left, Top, <flags:[e]>, <imageCreation:{id:9, data:50x60}>)",
+				L"Destroyed(1, 2, 3)",
 				L"Begin()",
-				L"Render(1, {10,10:30,40}, {0,0:640,480})",
-				L"Render(2, {20,20:30,40}, {0,0:640,480})",
-				L"Render(3, {30,30:50,60}, {0,0:640,480})",
+				L"Render(4, {10,10:30,40}, {0,0:640,480})",
+				L"Render(5, {20,20:30,40}, {0,0:640,480})",
+				L"Render(6, {30,30:50,60}, {0,0:640,480})",
+				L"End()"
+				);
+			TEST_ASSERT(!protocol.measuringForNextRendering.createdImages);
+		});
+
+		protocol.OnNextFrame([&]()
+		{
+			AssertEventLogs(
+				eventLogs,
+				L"Begin()",
+				L"Render(4, {10,10:30,40}, {0,0:640,480})",
+				L"Render(5, {20,20:30,40}, {0,0:640,480})",
+				L"Render(6, {30,30:50,60}, {0,0:640,480})",
 				L"End()"
 				);
 			TEST_ASSERT(!protocol.measuringForNextRendering.createdImages);
