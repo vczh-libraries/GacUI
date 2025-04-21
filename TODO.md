@@ -212,7 +212,9 @@
 
 ## Release Milestone (1.3.0.0)
 
+- New control `GuiSinglelineDocumentTextBox` or a singleline mode for `GuiDocumentViewer`
 - Implement `ColorizedTextElement` and `DocumentElement` in all already implemented remote renderers.
+  - Allow renderer and core in different unicode encoding.
 
 ## Release Milestone (1.4.0.0)
 
@@ -221,26 +223,19 @@
   - GacGen offers Metadata of interfaces
   - Network protocols are not included as default implementation
 - New tutorials
+  - A GacUI SyncDom process connecting to a server process for streaming graphics.
+    - GDI+ implements in C#.
+    - GDI/D2D implements in C++.
   - A GacUI D2D process connecting to a server process for streaming ViewModel
     - ViewModel implements in C++ and C#
+- Rewrite `GacBuild.ps1` and `GacClear.ps1` in C++, but still keep them just doing redirection for backward compatibility.
+- Get rid of `Deploy.bat` in `GacGen.ps1` and `GacGen.exe`.
 - Document
   - SyncObj.
   - Fix `/doc/current/home.html`
     - Introduction to hosted / remote
   - Fix `/doc/current/gacui/home.html`
     - Introduction to hosted / remote
-
-## Release Milestone (1.4.1.0)
-
-- A remote protocol implementation on existing `INativeController` implementation.
-  - Network protocols are not included as default implementation.
-  - Take care of `wchar_t` when server and client have different understanding to its size.
-- New tutorials.
-  - A GacUI SyncDom process connecting to a server process for streaming graphics.
-    - GDI+ implements in C#.
-    - GDI/D2D implements in C++.
-- Rewrite `GacBuild.ps1` and `GacClear.ps1` in C++, but still keep them just doing redirection for backward compatibility.
-- Get rid of `Deploy.bat` in `GacGen.ps1` and `GacGen.exe`.
 
 ## Release Milestone (1.5.0.0)
 - `Variant` and `Union` with full support.
@@ -260,6 +255,7 @@
 
 - Strict check in different for-each loops.
 - A new non-XML instance format
+- Compact version of table's colummns and rows property so that they could also be written in attributes.
 - `<eval Eval="expression"/>` tags.
 - `<ez:Layout/>`
   - `xmlns:ez` by default:
@@ -272,6 +268,7 @@
     - accepting following tags as child:
       - `<ez:Top/>`, `<ez:Bottom/>`, `<ez:Left/>`, `<ez:Right/>`, `<ez:Fill Percentage="1">`: Will be implemented by stack or table
       - `<ez:Row RowSpan="1" ColumnSpan="1"/>`, `<ez:Column RowSpan="1" ColumnSpan="1"/>`: will be implemented by table
+      - Is it possible to make them attributes of children instead of tags?
     - properties of other `ez:` object
       - `Padding`, `-1` by default means inheriting the value from its parent, defining a new padding of its children
   - Any `ez:` layout could have multiple `ez:` layout or one control/Composition
