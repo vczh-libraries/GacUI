@@ -246,7 +246,7 @@ void GuiMain()
 	));
 #endif
 
-#ifdef BUILD_REMOTEPROTOCOL_TEST=
+#ifdef BUILD_REMOTEPROTOCOL_TEST
 	LoadResource(CompileResources(
 		targetCpuArchitecture,
 		L"Demo",

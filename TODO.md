@@ -106,25 +106,24 @@
   - `RemotingTest_Core`
   - `RemotingTest_Rendering_Win32`
   - [x] [NamedPipe](https://learn.microsoft.com/en-us/windows/win32/ipc/named-pipe-server-using-overlapped-i-o)
-    - Disallow disconnect and reconnect.=
+    - Disallow disconnect and reconnect.
+    - [ ] Use string first, and then change to binary.
   - [ ] [HttpServer](https://learn.microsoft.com/en-us/windows/win32/http/using-http-server-api)
     - Allow only one client by verifying a random guid in the message which is given from the registration request.
     - Allow disconnect and reconnect.
     - When TypeScript rendering is completed, the demo in `Release` repo would become a website server.
   - [ ] [HttpClient](https://learn.microsoft.com/en-us/windows/win32/winhttp/winhttp-start-page)
-  - [ ] Use string first, and then change to binary.
-  - Implement the remote protocol on a native `INativeController` instance.
-    - It could not be used on `GuiHostedController` or `GuiRemoteController`, which is not a native implementation.
-    - [ ] `SetupRawWindowsGDIRenderer` black screen
-    - [ ] MinSize not handled when resizing the main window
+  - Implement the remote protocol on a native `INativeController` instance. It could not be used on `GuiHostedController` or `GuiRemoteController`, which is not a native implementation.
+    - `SetupRawWindowsGDIRenderer` black screen
+    - MinSize not handled when resizing the main window
       - Or implement it in `1.2.13.0`
-    - [ ] Measuring information sent from Rendering to Core even when there is no requirement or size changing
-    - [ ] Global shortcut key not handled
-    - [ ] Display error when core crashes or stops unexpectedly
-      - [ ] Inject error from a button in the home page
-      - [ ] Switch the window back to non-custom border to offer a chance for existing
-    - [ ] The key after `ALT` is not consumed, it needs to press 2 times.
-    - [ ] Cursor changing not handled.
+    - Measuring information sent from Rendering to Core even when there is no requirement or size changing
+    - Global shortcut key not handled
+    - Display error when core crashes or stops unexpectedly
+      - Inject error from a button in the home page
+      - Switch the window back to non-custom border to offer a chance for existing
+    - The key after `ALT` is not consumed, it needs to press 2 times.
+    - Cursor changing not handled.
   - The experiment will only run a very simple UI that covers all implemented remote protocol so far.
 - `UpdateDomInplace` performed binary search, create a common implementation to share with `SortedList`.
 - `GuiRemoteProtocolFromJsonChannel::OnReceive` should use a map instead of a series of if-statments.
@@ -347,16 +346,16 @@
 - Port GacUI to other platforms:
   - Unit Test (**Remote**)
   - Windows
-    - GDI (**Normal**, **Hosted**, Remote)
-    - Direct2d (**Normal**, **Hosted**, Remote)
+    - GDI (**Normal**, **Hosted**, **Remote**)
+    - Direct2d (**Normal**, **Hosted**, **Remote**)
     - UWP (Remote)
   - Linux
     - gGac repo: improve development process for release
   - macOS
     - iGac repo: improve development process for release
-  - Browser (Remote)
-    - HTTP for test purpose
-    - WebAssembly
+  - Browser
+    - HTTP for test purpose (Remote)
+    - WebAssembly (Remote)
   - CLI (optional, needs dedicated skin)
     - Command-line/Powershell in Windows (Remote)
     - Ncurses on Ubuntu (Remote)

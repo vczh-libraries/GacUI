@@ -36,7 +36,9 @@ protected:
 					goto ON_RECEIVE;
 				}
 			}
+#ifdef _DEBUG
 			Console::WriteLine(L"Received: " + str);
+#endif
 		ON_RECEIVE:
 			receiver->OnReceive(str);
 		}
@@ -98,7 +100,9 @@ public:
 
 	void Write(const WString& package) override
 	{
+#ifdef _DEBUG
 		Console::WriteLine(L"Sent: " + package);
+#endif
 		if (pendingMessageCount < pendingMessages.Count())
 		{
 			pendingMessages[pendingMessageCount] = package;
@@ -121,7 +125,9 @@ public:
 		{
 			if (pendingMessageCount > 0)
 			{
+#ifdef _DEBUG
 				Console::WriteLine(L"Submit");
+#endif
 				SendPendingMessages();
 			}
 		}
@@ -129,7 +135,9 @@ public:
 		{
 			if (pendingMessageCount > 0)
 			{
+#ifdef _DEBUG
 				Console::WriteLine(L"Submit (unconnected)");
+#endif
 				pendingMessageCount = 0;
 			}
 			disconnected = true;
