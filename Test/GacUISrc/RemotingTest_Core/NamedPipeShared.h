@@ -9,11 +9,15 @@ constexpr const wchar_t* NamedPipeId = L"\\\\.\\pipe\\GacUIRemoteProtocol";
 
 class NamedPipeShared : public Object
 {
+	// NamedPipe doesn't support a single message that is larger than 64K
+	static constexpr vint32_t						MaxMessageSize = 65536;
+
 protected:
 	HANDLE											hPipe = INVALID_HANDLE_VALUE;
 
 private:
-	BYTE											bufferReadFile[65536];
+	bool											firstRead = true;
+	BYTE											bufferReadFile[MaxMessageSize];
 	stream::MemoryStream							streamReadFile;
 	HANDLE											hWaitHandleReadFile = INVALID_HANDLE_VALUE;
 	OVERLAPPED										overlappedReadFile;
@@ -32,7 +36,10 @@ private:
 
 	void BeginReadingUnsafe()
 	{
-		streamReadFile.SeekFromBegin(0);
+		if (firstRead)
+		{
+			streamReadFile.SeekFromBegin(0);
+		}
 	}
 
 	void SubmitReadBufferUnsafe(vint bytes)
@@ -50,7 +57,15 @@ private:
 		vint consumed = 0;
 		consumed = streamReadFile.Read(&bytes, sizeof(bytes));
 		CHECK_ERROR(consumed == sizeof(bytes), L"ReadFile failed on incomplete message.");
-		CHECK_ERROR(bytes == position - sizeof(bytes), L"ReadFile failed on incomplete message.");
+
+		if (bytes > position - sizeof(bytes))
+		{
+			firstRead = false;
+			streamReadFile.SeekFromBegin(position);
+			return;
+		}
+		CHECK_ERROR(bytes == position - sizeof(bytes), L"ReadFile failed on corrupted message.");
+		firstRead = true;
 
 		vint32_t count = 0;
 		consumed = streamReadFile.Read(&count, sizeof(count));
@@ -107,13 +122,7 @@ protected:
 				OnReadStoppedThreadUnsafe();
 				return;
 			}
-			if (error == ERROR_MORE_DATA)
-			{
-				SubmitReadBufferUnsafe((vint)read);
-				goto RESTART_LOOP;
-			}
-
-			CHECK_ERROR(error == ERROR_IO_PENDING, L"ReadFile failed on unexpected GetLastError.");
+			CHECK_ERROR(error == ERROR_MORE_DATA || error == ERROR_IO_PENDING, L"ReadFile failed on unexpected GetLastError.");
 
 			RegisterWaitForSingleObject(
 				&hWaitHandleReadFile,
@@ -181,11 +190,19 @@ private:
 		streamWriteFile.SeekFromBegin(0);
 		WriteInt32ToStream(bytes);
 
-		WaitForSingleObject(hEventWriteFile, INFINITE);
-		ResetEvent(hEventWriteFile);
-		ZeroMemory(&overlappedWriteFile, sizeof(overlappedWriteFile));
-		overlappedWriteFile.hEvent = hEventWriteFile;
-		WriteFile(hPipe, streamWriteFile.GetInternalBuffer(), (DWORD)(bytes + sizeof(bytes)), NULL, &overlappedWriteFile);
+		vint32_t length = bytes + sizeof(bytes);
+		for (vint i = 0; i < (length + MaxMessageSize - 1) / MaxMessageSize; i++)
+		{
+			vint offset = i * MaxMessageSize;
+			vint bytesToSend = length >= (i + 1) * MaxMessageSize ? MaxMessageSize : length % MaxMessageSize;
+			auto buffer = (LPCVOID)((char*)streamWriteFile.GetInternalBuffer() + offset);
+
+			WaitForSingleObject(hEventWriteFile, INFINITE);
+			ResetEvent(hEventWriteFile);
+			ZeroMemory(&overlappedWriteFile, sizeof(overlappedWriteFile));
+			overlappedWriteFile.hEvent = hEventWriteFile;
+			WriteFile(hPipe, buffer, (DWORD)bytesToSend, NULL, &overlappedWriteFile);
+		}
 	}
 
 protected:
