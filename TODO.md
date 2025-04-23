@@ -169,7 +169,7 @@
     - Explain this in decicated `README.md` and mention it in the root one.
   - Verify vcxproj contains all files.
   - Ensure build woriflow tutorials.
-  - Update Win11 menu tutorial in `Release` repo to use new virtual control
+  - Update Win11 menu tutorial in `Release` repo to use new virtual control: `ToolstripToolBarInMenu`, `ToolstripSplitterInMenu`
 
 ## Release Milestone (1.2.13.0)
 
