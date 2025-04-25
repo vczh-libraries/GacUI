@@ -119,6 +119,13 @@ namespace vl::presentation::remote_renderer
 
 	void GuiRemoteRendererSingle::MouseMoving(const NativeWindowMouseInfo& info)
 	{
+		if (renderingDom)
+		{
+			INativeWindowListener::HitTestResult hitTestResult = INativeWindowListener::NoDecision;
+			INativeCursor* cursor = nullptr;
+			HitTest(renderingDom, window->Convert(NativePoint{ info.x,info.y }), hitTestResult, cursor);
+			window->SetWindowCursor(cursor);
+		}
 		events->OnIOMouseMoving(info);
 	}
 

@@ -502,7 +502,7 @@ namespace vl::presentation::remote_renderer
 		}
 	}
 
-	INativeWindowListener::HitTestResult GuiRemoteRendererSingle::HitTest(Ptr<remoteprotocol::RenderingDom> dom, Point location)
+	void GuiRemoteRendererSingle::HitTestInternal(Ptr<remoteprotocol::RenderingDom> dom, Point location, Nullable<INativeWindowListener::HitTestResult>& hitTestResult, Nullable<INativeCursor::SystemCursorType>& cursorType)
 	{
 		if (dom->children)
 		{
@@ -510,23 +510,30 @@ namespace vl::presentation::remote_renderer
 			{
 				if (child->content.validArea.Contains(location))
 				{
-					auto result = HitTest(child, location);
-					if (result != INativeWindowListener::NoDecision)
+					HitTestInternal(child, location, hitTestResult, cursorType);
+
+					if (!hitTestResult && child->content.hitTestResult)
 					{
-						return result;
+						hitTestResult = child->content.hitTestResult;
+					}
+					if (!cursorType && child->content.cursor)
+					{
+						cursorType = child->content.cursor;
 					}
 				}
 			}
 		}
-
-		if (dom->content.hitTestResult)
-		{
-			return dom->content.hitTestResult.Value();
-		}
-
-		return INativeWindowListener::NoDecision;
 	}
-	
+
+	void GuiRemoteRendererSingle::HitTest(Ptr<remoteprotocol::RenderingDom> dom, Point location, INativeWindowListener::HitTestResult& hitTestResult, INativeCursor*& cursor)
+	{
+		Nullable<INativeWindowListener::HitTestResult> hitTestResultNullable;
+		Nullable<INativeCursor::SystemCursorType> cursorTypeNullable;
+		HitTestInternal(dom, location, hitTestResultNullable, cursorTypeNullable);
+		hitTestResult = hitTestResultNullable ? hitTestResultNullable.Value() : INativeWindowListener::NoDecision;
+		cursor = cursorTypeNullable ? GetCurrentController()->ResourceService()->GetSystemCursor(cursorTypeNullable.Value()) : GetCurrentController()->ResourceService()->GetDefaultSystemCursor();
+	}
+
 	void GuiRemoteRendererSingle::GlobalTimer()
 	{
 		if (!needRefresh) return;
@@ -567,6 +574,12 @@ namespace vl::presentation::remote_renderer
 
 	INativeWindowListener::HitTestResult GuiRemoteRendererSingle::HitTest(NativePoint location)
 	{
-		return renderingDom ? HitTest(renderingDom, window->Convert(location)) : INativeWindowListener::NoDecision;
+		INativeWindowListener::HitTestResult hitTestResult = INativeWindowListener::NoDecision;
+		INativeCursor* cursor = nullptr;
+		if (renderingDom)
+		{
+			HitTest(renderingDom, window->Convert(location), hitTestResult, cursor);
+		}
+		return hitTestResult;
 	}
 }

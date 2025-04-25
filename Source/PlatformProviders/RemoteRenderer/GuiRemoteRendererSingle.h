@@ -75,7 +75,8 @@ namespace vl::presentation::remote_renderer
 
 		void									UpdateRenderTarget(elements::IGuiGraphicsRenderTarget* rt);
 		void									Render(Ptr<remoteprotocol::RenderingDom> dom, elements::IGuiGraphicsRenderTarget* rt);
-		INativeWindowListener::HitTestResult	HitTest(Ptr<remoteprotocol::RenderingDom> dom, Point location);
+		void									HitTestInternal(Ptr<remoteprotocol::RenderingDom> dom, Point location, Nullable<INativeWindowListener::HitTestResult>& hitTestResult, Nullable<INativeCursor::SystemCursorType>& cursorType);
+		void									HitTest(Ptr<remoteprotocol::RenderingDom> dom, Point location, INativeWindowListener::HitTestResult& hitTestResult, INativeCursor*& cursor);
 
 		void									GlobalTimer() override;
 		void									Paint() override;
