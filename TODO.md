@@ -211,7 +211,15 @@
 
 ## Release Milestone (1.3.0.0)
 
-- New control `GuiSinglelineDocumentTextBox` or a singleline mode for `GuiDocumentViewer`
+- `GuiDocumentViewer` and `GuiDocumentLabel`:
+  - Paragraph mode: default and work like current.
+  - Multiline mode: each paragraph is a line, line padding shrinks, no line wrapping, multiple lines are forbidden in one paragraph (auto concatenate), incoming document will be modified before inserting. `GetText()` use one `CRLF` between paragraphs.
+  - Singleline mode: similar to multiline mode but paragraphs from the second will all be discarded.
+  - In non-paragraph mode:
+    - `GuiDocumentViewer` displays two scroll bars accordingly.
+    - `GuiDocumentLabel` auto expands horizontally according to content, no extra line wrapping option for non-paragraph mode.
+    - `<DocumentTextBox/>` needs to adjust horizontal offset according to cursor.
+      - It is also a `GuiDocumentLabel`, need further consideration, do we need a new control instead of just a skin?
 - Implement `ColorizedTextElement` and `DocumentElement` in all already implemented remote renderers.
   - Allow renderer and core in different unicode encoding.
 
