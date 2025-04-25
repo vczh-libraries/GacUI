@@ -113,19 +113,19 @@
     - Allow disconnect and reconnect.
     - When TypeScript rendering is completed, the demo in `Release` repo would become a website server.
   - [ ] [HttpClient](https://learn.microsoft.com/en-us/windows/win32/winhttp/winhttp-start-page)
-  - Implement the remote protocol on a native `INativeController` instance. It could not be used on `GuiHostedController` or `GuiRemoteController`, which is not a native implementation.
-    - `SetupRawWindowsGDIRenderer` black screen
-    - MinSize not handled when resizing the main window
-      - Or implement it in `1.2.13.0`
-    - Measuring information sent from Rendering to Core even when there is no requirement or size changing
-      - Measuring result of the same font repeats in `fontHeights`
-    - Global shortcut key not handled
-    - Display error when core crashes or stops unexpectedly
-      - Inject error from a button in the home page
-      - Switch the window back to non-custom border to offer a chance for existing
-    - The key after `ALT` is not consumed, it needs to press 2 times.
-    - Cursor changing not handled.
-  - The experiment will only run a very simple UI that covers all implemented remote protocol so far.
+- Implement the remote protocol on a native `INativeController` instance. It could not be used on `GuiHostedController` or `GuiRemoteController`, which is not a native implementation.
+  - `SetupRawWindowsGDIRenderer` black screen
+  - MinSize not handled when resizing the main window
+    - Or implement it in `1.2.13.0`
+  - Measuring information sent from Rendering to Core even when there is no requirement or size changing
+    - Measuring result of the same font repeats in `fontHeights`
+  - Global shortcut key not handled
+  - Display error when core crashes or stops unexpectedly
+    - Inject error from a button in the home page
+    - Switch the window back to non-custom border to offer a chance for existing
+  - The key after `ALT` is not consumed, it needs to press 2 times
+  - Cursor changing not handled
+  - Test menu with shortcut and open a message box
 - `UpdateDomInplace` performed binary search, create a common implementation to share with `SortedList`.
 - `GuiRemoteProtocolFromJsonChannel::OnReceive` should use a map instead of a series of if-statments.
 - `GuiRemoteJsonChannelFromProtocol::Write` should use a map instead of a series of if-statments.
