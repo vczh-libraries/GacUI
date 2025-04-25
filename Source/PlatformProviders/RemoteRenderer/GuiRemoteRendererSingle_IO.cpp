@@ -146,6 +146,10 @@ namespace vl::presentation::remote_renderer
 
 	void GuiRemoteRendererSingle::KeyUp(const NativeWindowKeyInfo& info)
 	{
+		if (!info.ctrl && !info.shift && info.code == VKEY::KEY_MENU)
+		{
+			window->SupressAlt();
+		}
 		events->OnIOKeyUp(info);
 	}
 
