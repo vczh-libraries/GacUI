@@ -124,7 +124,6 @@
   - Display error when core crashes or stops unexpectedly
     - Inject error from a button in the home page
     - Switch the window back to non-custom border to offer a chance for existing
-  - The key after `ALT` is not consumed, it needs to press 2 times
   - Test menu with shortcut and open a message box
 - `UpdateDomInplace` performed binary search, create a common implementation to share with `SortedList`.
 - `GuiRemoteProtocolFromJsonChannel::OnReceive` should use a map instead of a series of if-statments.
