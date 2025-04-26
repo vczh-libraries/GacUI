@@ -124,11 +124,15 @@
   - Display error when core crashes or stops unexpectedly
     - Inject error from a button in the home page
     - Switch the window back to non-custom border to offer a chance for existing
-  - Test menu with shortcut and open a message box
+  - Icon in test menu
+  - Calling `self.Close()` in exit menu would crash, calling `self.Hide()` prings false positive memory leaks, could be the same reason.
+    - Thread exits before window destroyed.
 - `UpdateDomInplace` performed binary search, create a common implementation to share with `SortedList`.
 - `GuiRemoteProtocolFromJsonChannel::OnReceive` should use a map instead of a series of if-statments.
 - `GuiRemoteJsonChannelFromProtocol::Write` should use a map instead of a series of if-statments.
 - `vl::presentation::remoteprotocol::channeling::ConvertUtfString` move into `Vlpp` repo.
+- Hosted mode
+  - All sub windows seem to have max/min button rendered, need to fix.
 - Document
   - `SetupRawWindowsDirect2DRenderer`
   - `SetupRawWindowsGDIRenderer`

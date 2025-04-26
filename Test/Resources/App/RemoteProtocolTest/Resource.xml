@@ -112,14 +112,93 @@
   <Instance name="MainWindowResource">
     <Instance ref.Class="demo::MainWindow" xmlns:demo="demo::*">
       <Window ref.Name="self" Text="Remote Protocol Test" ClientSize="x:640 y:480">
+        <MessageDialog ref.Name="dialogQueryClose"
+                       Input="DisplayOKCancel"
+                       DefaultButton="DefaultSecond"
+                       Icon="IconQuestion"
+                       Title-eval="self.Text"
+                       Text="Do you want to exit?"
+          />
+        <ev.WindowClosing-eval><![CDATA[{
+          if (dialogQueryClose.ShowDialog() == INativeDialogService::MessageBoxButtonsOutput::SelectCancel)
+          {
+            arguments.cancel = true;
+          }
+        }]]></ev.WindowClosing-eval>
+
         <att.BoundsComposition-set PreferredMinSize="x:640 y:480"/>
-        <Tab>
-          <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-          <att.Pages>
-            <demo:ClickMeTab Alt="A"/>
-            <demo:DataGridTab Alt="B"/>
-          </att.Pages>
-        </Tab>
+        <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
+          <att.Rows>
+            <_>composeType:MinSize</_>
+            <_>composeType:Percentage percentage:1.0</_>
+          </att.Rows>
+          <att.Columns>
+            <_>composeType:Percentage percentage:1.0</_>
+          </att.Columns>
+
+          <Cell Site="row:0 column:0">
+            <ToolstripMenuBar>
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+              <MenuBarButton Text="File">
+                <att.SubMenu-set>
+                  <ToolstripGroupContainer>
+                    <GuiToolstripGroup>
+                      <MenuItemButton ref.Name="menuFileNew" Text="New">
+                        <att.SubMenu-set>
+                          <MenuItemButton Text="Plain Text"/>
+                          <MenuItemButton Text="XML"/>
+                          <MenuItemButton Text="Json"/>
+                        </att.SubMenu-set>
+                      </MenuItemButton>
+                      <MenuItemButton Text="Open ..."/>
+                    </GuiToolstripGroup>
+                    <GuiToolstripGroup>
+                      <MenuItemButton Text="Save"/>
+                      <MenuItemButton Text="Save As ..."/>
+                    </GuiToolstripGroup>
+                    <GuiToolstripGroup>
+                      <MenuItemButton Text="Exit">
+                        <ev.Clicked-eval><![CDATA[{
+                          GuiApplication::GetApplication().InvokeInMainThread(self, func():void
+                          {
+                            self.Hide();
+                          });
+                        }]]></ev.Clicked-eval>
+                      </MenuItemButton>
+                    </GuiToolstripGroup>
+                  </ToolstripGroupContainer>
+                </att.SubMenu-set>
+              </MenuBarButton>
+              <MenuBarButton Text="Edit">
+                <att.SubMenu-set>
+                  <ToolstripGroupContainer>
+                    <GuiToolstripGroup>
+                      <MenuItemButton Text="Undo"/>
+                      <MenuItemButton Text="Redo"/>
+                    </GuiToolstripGroup>
+                    <GuiToolstripGroup>
+                      <MenuItemButton Text="Cut"/>
+                      <MenuItemButton Text="Copy"/>
+                      <MenuItemButton Text="Paste"/>
+                    </GuiToolstripGroup>
+                    <GuiToolstripGroup>
+                      <MenuItemButton Text="Select All"/>
+                    </GuiToolstripGroup>
+                  </ToolstripGroupContainer>
+                </att.SubMenu-set>
+              </MenuBarButton>
+            </ToolstripMenuBar>
+          </Cell>
+          <Cell Site="row:1 column:0">
+            <Tab>
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+              <att.Pages>
+                <demo:ClickMeTab Alt="A"/>
+                <demo:DataGridTab Alt="B"/>
+              </att.Pages>
+            </Tab>
+          </Cell>
+        </Table>
       </Window>
     </Instance>
   </Instance>
