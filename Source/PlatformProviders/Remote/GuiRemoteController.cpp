@@ -283,6 +283,7 @@ GuiRemoteController::INativeWindowService
 		applicationRunning = true;
 		window->Show();
 		while (RunOneCycle());
+		asyncService.ExecuteAsyncTasks();
 		applicationRunning = false;
 	}
 
