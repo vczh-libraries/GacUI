@@ -254,7 +254,9 @@ GuiHostedWindow
 
 			if (this != controller->mainWindow)
 			{
-				// for main window, the underlying INativeWindow will run the process
+				// when the main window is being closed
+				// the underlying INativeWindow will run the process
+				// so we don't need to worry about it here
 				bool cancel = false;
 				for (auto listener : listeners)
 				{

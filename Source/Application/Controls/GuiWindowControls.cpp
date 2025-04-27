@@ -597,9 +597,9 @@ GuiControlHost
 
 			void GuiControlHost::Hide()
 			{
-				if(host->GetNativeWindow())
+				if (auto window = host->GetNativeWindow())
 				{
-					host->GetNativeWindow()->Hide(false);
+					window->Hide(false);
 				}
 			}
 
@@ -607,16 +607,17 @@ GuiControlHost
 			{
 				if (auto window = host->GetNativeWindow())
 				{
-					auto mainWindow = GetCurrentController()->WindowService()->GetMainWindow();
-					if (mainWindow == window)
-					{
-						SetNativeWindow(nullptr);
-						GetCurrentController()->WindowService()->DestroyNativeWindow(window);
-					}
-					else
-					{
-						window->Hide(true);
-					}
+					window->Hide(true);
+					// auto mainWindow = GetCurrentController()->WindowService()->GetMainWindow();
+					// if (mainWindow == window)
+					// {
+					// 	SetNativeWindow(nullptr);
+					// 	GetCurrentController()->WindowService()->DestroyNativeWindow(window);
+					// }
+					// else
+					// {
+					// 	window->Hide(true);
+					// }
 				}
 			}
 
