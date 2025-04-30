@@ -206,9 +206,13 @@ namespace vl::presentation::remote_renderer
 		{
 		case ElementSolidLabelMeasuringRequest::FontHeight:
 			{
+				Pair<WString, vint> key = { solidLabel->GetFont().fontFamily,solidLabel->GetFont().size };
+				if (fontHeightMeasurings.Contains(key)) return;
+				fontHeightMeasurings.Add(key);
+
 				ElementMeasuring_FontHeight response;
-				response.fontFamily = solidLabel->GetFont().fontFamily;
-				response.fontSize = solidLabel->GetFont().size;
+				response.fontFamily = key.key;
+				response.fontSize = key.value;
 				response.height = minSize.y;
 
 				if (!elementMeasurings.fontHeights)
