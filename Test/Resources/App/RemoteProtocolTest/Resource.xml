@@ -7,6 +7,7 @@
       <Text name="Name">Demo</Text>
     </Folder>
   </Folder>
+  <Folder name="ToolbarImages" content="Link">ToolbarImages/Images.xml</Folder>
 
   <Instance name="ClickMeTabResource">
     <Instance ref.Class="demo::ClickMeTab">
@@ -173,13 +174,13 @@
                 <att.SubMenu-set>
                   <ToolstripGroupContainer>
                     <GuiToolstripGroup>
-                      <MenuItemButton Text="Undo"/>
-                      <MenuItemButton Text="Redo"/>
+                      <MenuItemButton Text="Undo" Image-uri="res://ToolbarImages/Undo"/>
+                      <MenuItemButton Text="Redo" Image-uri="res://ToolbarImages/Redo"/>
                     </GuiToolstripGroup>
                     <GuiToolstripGroup>
-                      <MenuItemButton Text="Cut"/>
-                      <MenuItemButton Text="Copy"/>
-                      <MenuItemButton Text="Paste"/>
+                      <MenuItemButton Text="Cut" Image-uri="res://ToolbarImages/Cut"/>
+                      <MenuItemButton Text="Copy" Image-uri="res://ToolbarImages/Copy"/>
+                      <MenuItemButton Text="Paste" Image-uri="res://ToolbarImages/Paste"/>
                     </GuiToolstripGroup>
                     <GuiToolstripGroup>
                       <MenuItemButton Text="Select All"/>

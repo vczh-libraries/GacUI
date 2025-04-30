@@ -31,6 +31,9 @@
     <Filter Include="Resource Files\RemoteProtocolTest">
       <UniqueIdentifier>{5625af0c-c57b-4543-9b2e-a7166c490394}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files\RemoteProtocolTest\ToolbarImages">
+      <UniqueIdentifier>{093116cc-5995-493e-a51c-035f36e6ae37}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -194,6 +197,9 @@
     </Xml>
     <Xml Include="..\..\Resources\App\RemoteProtocolTest\Resource.xml">
       <Filter>Resource Files\RemoteProtocolTest</Filter>
+    </Xml>
+    <Xml Include="..\..\Resources\App\RemoteProtocolTest\ToolbarImages\Images.xml">
+      <Filter>Resource Files\RemoteProtocolTest\ToolbarImages</Filter>
     </Xml>
   </ItemGroup>
 </Project>

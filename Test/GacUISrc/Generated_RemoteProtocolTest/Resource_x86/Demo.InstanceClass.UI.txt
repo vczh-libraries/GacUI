@@ -851,6 +851,21 @@ namespace demo
                 attach(<precompile>16.Clicked, <event-handler>);
             }
             {
+                (<precompile>21.Image = (cast (::presentation::GuiImageData^) <this>.ResolveResource("res", "ToolbarImages/Undo", true)));
+            }
+            {
+                (<precompile>22.Image = (cast (::presentation::GuiImageData^) <this>.ResolveResource("res", "ToolbarImages/Redo", true)));
+            }
+            {
+                (<precompile>24.Image = (cast (::presentation::GuiImageData^) <this>.ResolveResource("res", "ToolbarImages/Cut", true)));
+            }
+            {
+                (<precompile>25.Image = (cast (::presentation::GuiImageData^) <this>.ResolveResource("res", "ToolbarImages/Copy", true)));
+            }
+            {
+                (<precompile>26.Image = (cast (::presentation::GuiImageData^) <this>.ResolveResource("res", "ToolbarImages/Paste", true)));
+            }
+            {
                 var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiRequestEventArgs*) : (::system::Void)
                 {
                     if ((dialogQueryClose.ShowDialog() == INativeDialogService::MessageBoxButtonsOutput::SelectCancel))
