@@ -928,24 +928,27 @@ GuiImageFrameElementRenderer
 
 			void GuiImageFrameElementRenderer::UpdateBitmap(IWindowsDirect2DRenderTarget* renderTarget)
 			{
-				if(renderTarget && element->GetImage())
+				if (element->GetImage() && 0 <= element->GetFrameIndex() && element->GetFrameIndex() < element->GetImage()->GetFrameCount())
 				{
-					INativeImageFrame* frame=element->GetImage()->GetFrame(element->GetFrameIndex());
-					bitmap=renderTarget->GetBitmap(frame, element->GetEnabled());
+					INativeImageFrame* frame = element->GetImage()->GetFrame(element->GetFrameIndex());
+					if (renderTarget)
+					{
+						bitmap = renderTarget->GetBitmap(frame, element->GetEnabled());
+					}
 
 					if (element->GetStretch())
 					{
-						minSize=Size(0,0);
+						minSize = Size(0, 0);
 					}
 					else
 					{
-						minSize=frame->GetSize();
+						minSize = frame->GetSize();
 					}
 				}
 				else
 				{
-					bitmap=nullptr;
-					minSize=Size(0, 0);
+					bitmap = nullptr;
+					minSize = Size(0, 0);
 				}
 			}
 

@@ -422,11 +422,11 @@ GuiImageFrameElement
 ***********************************************************************/
 
 			GuiImageFrameElement::GuiImageFrameElement()
-				:frameIndex(0)
-				,hAlignment(Alignment::Left)
-				,vAlignment(Alignment::Top)
-				,stretch(false)
-				,enabled(true)
+				: frameIndex(0)
+				, hAlignment(Alignment::Left)
+				, vAlignment(Alignment::Top)
+				, stretch(false)
+				, enabled(true)
 			{
 			}
 
@@ -452,17 +452,19 @@ GuiImageFrameElement
 
 			void GuiImageFrameElement::SetImage(Ptr<INativeImage> _image, vint _frameIndex)
 			{
-				if(image!=_image || frameIndex!=_frameIndex)
+				if (image != _image || frameIndex != _frameIndex)
 				{
-					if(!_image)
+					if (!_image)
 					{
-						image=0;
-						frameIndex=0;
+						image = nullptr;
+						frameIndex = 0;
 					}
-					else if(0<=_frameIndex && _frameIndex<_image->GetFrameCount())
+					else if (0 <= _frameIndex)
 					{
-						image=_image;
-						frameIndex=_frameIndex;
+						// do not check frame count because
+						// on remote protocol metadata could have not been loaded yet
+						image = _image;
+						frameIndex = _frameIndex;
 					}
 					InvokeOnElementStateChanged();
 				}
@@ -490,10 +492,10 @@ GuiImageFrameElement
 
 			void GuiImageFrameElement::SetAlignments(Alignment horizontal, Alignment vertical)
 			{
-				if(hAlignment!=horizontal || vAlignment!=vertical)
+				if (hAlignment != horizontal || vAlignment != vertical)
 				{
-					hAlignment=horizontal;
-					vAlignment=vertical;
+					hAlignment = horizontal;
+					vAlignment = vertical;
 					InvokeOnElementStateChanged();
 				}
 			}
@@ -505,9 +507,9 @@ GuiImageFrameElement
 
 			void GuiImageFrameElement::SetStretch(bool value)
 			{
-				if(stretch!=value)
+				if (stretch != value)
 				{
-					stretch=value;
+					stretch = value;
 					InvokeOnElementStateChanged();
 				}
 			}
@@ -519,9 +521,9 @@ GuiImageFrameElement
 
 			void GuiImageFrameElement::SetEnabled(bool value)
 			{
-				if(enabled!=value)
+				if (enabled != value)
 				{
-					enabled=value;
+					enabled = value;
 					InvokeOnElementStateChanged();
 				}
 			}
