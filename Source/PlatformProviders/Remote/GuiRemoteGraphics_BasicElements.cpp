@@ -457,13 +457,24 @@ GuiImageFrameElementRenderer
 		if (image)
 		{
 			needUpdateSize = true;
-			if (fullContent && image->status == GuiRemoteGraphicsImage::MetadataStatus::Retrived)
+			if (fullContent)
 			{
-				image->status = GuiRemoteGraphicsImage::MetadataStatus::Uninitialized;
+				if (fullContent && image->status == GuiRemoteGraphicsImage::MetadataStatus::Retrived)
+				{
+					image->status = GuiRemoteGraphicsImage::MetadataStatus::Uninitialized;
+				}
+			}
+			else
+			{
+				if (image->status == GuiRemoteGraphicsImage::MetadataStatus::Uninitialized)
+				{
+					image->EnsureMetadata();
+				}
 			}
 			if (image->status == GuiRemoteGraphicsImage::MetadataStatus::Retrived)
 			{
 				UpdateMinSizeFromImage(image);
+				renderTargetChanged = false;
 			}
 		}
 

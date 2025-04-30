@@ -173,12 +173,17 @@ GuiRemoteGraphicsImageService
 	{
 	}
 
-	void GuiRemoteGraphicsImageService::OnControllerConnect()
+	void GuiRemoteGraphicsImageService::ResetImageMetadata()
 	{
 		for (auto image : images.Values())
 		{
 			image->status = GuiRemoteGraphicsImage::MetadataStatus::Uninitialized;
 		}
+	}
+
+	void GuiRemoteGraphicsImageService::OnControllerConnect()
+	{
+		ResetImageMetadata();
 	}
 
 	void GuiRemoteGraphicsImageService::OnControllerDisconnect()

@@ -37,8 +37,8 @@ TEST_FILE
 			// Render for the first time, the size of image is updated to the composition
 			AssertEventLogs(
 				eventLogs,
-				L"ImageCreated({id:8, data:30x40})",
 				L"Created(<1:ImageFrame>)",
+				L"ImageCreated({id:8, data:30x40})",
 				L"Updated(1, (8:0), Left, Top, <flags:[e]>)",
 				L"Begin()",
 				L"Render(1, {0,0:0,0}, {0,0:640,480})",
@@ -96,8 +96,8 @@ TEST_FILE
 			// Render for the first time, the size of image is updated to the composition
 			AssertEventLogs(
 				eventLogs,
-				L"ImageCreated({id:8, data:30x40})",
 				L"Created(<1:ImageFrame>)",
+				L"ImageCreated({id:8, data:30x40})",
 				L"Updated(1, (8:0), Left, Top, <flags:[e]>)",
 				L"Begin()",
 				L"Render(1, {0,0:0,0}, {0,0:640,480})",
@@ -153,8 +153,8 @@ TEST_FILE
 			// Render for the first time, the size of image is updated to the composition
 			AssertEventLogs(
 				eventLogs,
-				L"ImageCreated({id:9, data:50x60})",
 				L"ImageDestroyed(8)",
+				L"ImageCreated({id:9, data:50x60})",
 				L"Updated(1, (9:0), Left, Top, <flags:[s]>)",
 				L"Begin()",
 				L"Render(1, {10,10:0,0}, {0,0:640,480})",
@@ -268,11 +268,11 @@ TEST_FILE
 			// Render for the first time, the size of image is updated to the composition
 			AssertEventLogs(
 				eventLogs,
-				L"ImageCreated({id:8, data:30x40})",
-				L"ImageCreated({id:9, data:50x60})",
 				L"Created(<1:ImageFrame>, <2:ImageFrame>, <3:ImageFrame>)",
+				L"ImageCreated({id:8, data:30x40})",
 				L"Updated(1, (8:0), Left, Top, <flags:[e]>)",
 				L"Updated(2, (8:0), Left, Top, <flags:[e]>)",
+				L"ImageCreated({id:9, data:50x60})",
 				L"Updated(3, (9:0), Left, Top, <flags:[e]>)",
 				L"Begin()",
 				L"Render(1, {0,0:0,0}, {0,0:640,480})",

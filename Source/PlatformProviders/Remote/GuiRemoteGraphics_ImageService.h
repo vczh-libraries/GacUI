@@ -104,6 +104,7 @@ GuiRemoteGraphicsImageService
 		GuiRemoteGraphicsImageService(GuiRemoteController* _remote);
 		~GuiRemoteGraphicsImageService();
 
+		void								ResetImageMetadata();
 		void								OnControllerConnect();
 		void								OnControllerDisconnect();
 		void								Initialize();
