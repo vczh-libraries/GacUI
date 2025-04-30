@@ -54,8 +54,10 @@ namespace vl::presentation::remote_renderer
 		using ElementMap = collections::Dictionary<vint, Ptr<elements::IGuiGraphicsElement>>;
 		using ImageMap = collections::Dictionary<vint, Ptr<INativeImage>>;
 		using SolidLabelMeasuringMap = collections::Dictionary<vint, SolidLabelMeasuring>;
+		using FontHeightMeasuringSet = collections::SortedList<collections::Pair<WString, vint>>;
 
 		remoteprotocol::ElementMeasurings		elementMeasurings;
+		FontHeightMeasuringSet					fontHeightMeasurings;
 		SolidLabelMeasuringMap					solidLabelMeasurings;
 
 		ElementMap								availableElements;
@@ -65,6 +67,7 @@ namespace vl::presentation::remote_renderer
 
 		Alignment								GetAlignment(remoteprotocol::ElementHorizontalAlignment alignment);
 		Alignment								GetAlignment(remoteprotocol::ElementVerticalAlignment alignment);
+		void									StoreLabelMeasuring(vint id, remoteprotocol::ElementSolidLabelMeasuringRequest request, Ptr<elements::GuiSolidLabelElement> solidLabel, Size minSize);
 		remoteprotocol::ImageMetadata			CreateImageMetadata(vint id, INativeImage* image);
 		remoteprotocol::ImageMetadata			CreateImage(const remoteprotocol::ImageCreation& arguments);
 		void									CheckDom();

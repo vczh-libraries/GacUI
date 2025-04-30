@@ -106,6 +106,7 @@ namespace vl::presentation::remote_renderer
 	{
 		events->RespondRendererEndRendering(id, elementMeasurings);
 		elementMeasurings = {};
+		fontHeightMeasurings.Clear();
 	}
 
 /***********************************************************************
@@ -199,6 +200,40 @@ namespace vl::presentation::remote_renderer
 * Rendering (Elemnents -- Label)
 ***********************************************************************/
 
+	void GuiRemoteRendererSingle::StoreLabelMeasuring(vint id, remoteprotocol::ElementSolidLabelMeasuringRequest request, Ptr<elements::GuiSolidLabelElement> solidLabel, Size minSize)
+	{
+		switch (request)
+		{
+		case ElementSolidLabelMeasuringRequest::FontHeight:
+			{
+				ElementMeasuring_FontHeight response;
+				response.fontFamily = solidLabel->GetFont().fontFamily;
+				response.fontSize = solidLabel->GetFont().size;
+				response.height = minSize.y;
+
+				if (!elementMeasurings.fontHeights)
+				{
+					elementMeasurings.fontHeights = Ptr(new List<ElementMeasuring_FontHeight>);
+				}
+				elementMeasurings.fontHeights->Add(response);
+			}
+			break;
+		case ElementSolidLabelMeasuringRequest::TotalSize:
+			{
+				ElementMeasuring_ElementMinSize response;
+				response.id = id;
+				response.minSize = minSize;
+
+				if (!elementMeasurings.minSizes)
+				{
+					elementMeasurings.minSizes = Ptr(new List<ElementMeasuring_ElementMinSize>);
+				}
+				elementMeasurings.minSizes->Add(response);
+			}
+			break;
+		}
+	}
+
 	void GuiRemoteRendererSingle::RequestRendererUpdateElement_SolidLabel(const remoteprotocol::ElementDesc_SolidLabel& arguments)
 	{
 		vint index = availableElements.Keys().IndexOf(arguments.id);
@@ -236,37 +271,7 @@ namespace vl::presentation::remote_renderer
 				solidLabelMeasurings.Add(arguments.id, measuring);
 			}
 
-			auto renderer = element->GetRenderer();
-			switch (measuring.request)
-			{
-			case ElementSolidLabelMeasuringRequest::FontHeight:
-				{
-					ElementMeasuring_FontHeight response;
-					response.fontFamily = element->GetFont().fontFamily;
-					response.fontSize = element->GetFont().size;
-					response.height = renderer->GetMinSize().y;
-
-					if (!elementMeasurings.fontHeights)
-					{
-						elementMeasurings.fontHeights = Ptr(new List<ElementMeasuring_FontHeight>);
-					}
-					elementMeasurings.fontHeights->Add(response);
-				}
-				break;
-			case ElementSolidLabelMeasuringRequest::TotalSize:
-				{
-					ElementMeasuring_ElementMinSize response;
-					response.id = arguments.id;
-					response.minSize = renderer->GetMinSize();
-
-					if (!elementMeasurings.minSizes)
-					{
-						elementMeasurings.minSizes = Ptr(new List<ElementMeasuring_ElementMinSize>);
-					}
-					elementMeasurings.minSizes->Add(response);
-				}
-				break;
-			}
+			StoreLabelMeasuring(arguments.id, measuring.request, element, element->GetRenderer()->GetMinSize());
 		}
 	}
 
@@ -453,37 +458,7 @@ namespace vl::presentation::remote_renderer
 						if (!measuring.minSize || measuring.minSize.Value() != minSize)
 						{
 							measuring.minSize = minSize;
-
-							switch (measuring.request)
-							{
-							case ElementSolidLabelMeasuringRequest::FontHeight:
-								{
-									ElementMeasuring_FontHeight response;
-									response.fontFamily = solidLabel->GetFont().fontFamily;
-									response.fontSize = solidLabel->GetFont().size;
-									response.height = minSize.y;
-
-									if (!elementMeasurings.fontHeights)
-									{
-										elementMeasurings.fontHeights = Ptr(new List<ElementMeasuring_FontHeight>);
-									}
-									elementMeasurings.fontHeights->Add(response);
-								}
-								break;
-							case ElementSolidLabelMeasuringRequest::TotalSize:
-								{
-									ElementMeasuring_ElementMinSize response;
-									response.id = dom->content.element.Value();
-									response.minSize = minSize;
-
-									if (!elementMeasurings.minSizes)
-									{
-										elementMeasurings.minSizes = Ptr(new List<ElementMeasuring_ElementMinSize>);
-									}
-									elementMeasurings.minSizes->Add(response);
-								}
-								break;
-							}
+							StoreLabelMeasuring(dom->content.element.Value(), measuring.request, solidLabel, minSize);
 						}
 					}
 				}
