@@ -25,6 +25,8 @@
   - `delete this;` eventually calls `SuspendThread` on the thread itself, making all following clean up code skipped.
   - Windows confirmed, Linux need to test.
 - TODO in `GuiRemoteWindow::OnControllerConnect`.
+- Remote Protocol
+  - `GuiRemoteGraphicsRenderTarget::fontHeights` could be moved to `GuiRemoteGraphicsResourceManager` as the measuring should not be different.
 
 ## Unit Test
 
