@@ -459,9 +459,31 @@ namespace vl::presentation::remote_renderer
 					{
 						auto& measuring = const_cast<SolidLabelMeasuring&>(solidLabelMeasurings.Values()[index]);
 						auto minSize = element->GetRenderer()->GetMinSize();
-						if (!measuring.minSize || measuring.minSize.Value() != minSize)
+
+						bool measuringChanged = false;
+						if (!measuring.minSize)
 						{
-							measuring.minSize = minSize;
+							measuringChanged = true;
+						}
+						else switch (measuring.request)
+						{
+						case ElementSolidLabelMeasuringRequest::FontHeight:
+							if (measuring.minSize.Value().y != minSize.y)
+							{
+								measuringChanged = true;
+							}
+							break;
+						case ElementSolidLabelMeasuringRequest::TotalSize:
+							if (measuring.minSize.Value() != minSize)
+							{
+								measuringChanged = true;
+							}
+							break;
+						}
+
+						measuring.minSize = minSize;
+						if (measuringChanged)
+						{
 							StoreLabelMeasuring(dom->content.element.Value(), measuring.request, solidLabel, minSize);
 						}
 					}

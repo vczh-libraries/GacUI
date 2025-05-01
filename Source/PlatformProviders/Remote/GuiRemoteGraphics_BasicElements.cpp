@@ -383,7 +383,7 @@ GuiSolidLabelElementRenderer
 			TryFetchMinSizeFromCache();
 			if (!needFontHeight)
 			{
-				arguments.measuringRequest = {};
+				arguments.measuringRequest.Reset();
 			}
 		}
 
