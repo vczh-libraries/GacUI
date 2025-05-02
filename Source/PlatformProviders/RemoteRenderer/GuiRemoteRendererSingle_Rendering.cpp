@@ -547,6 +547,7 @@ namespace vl::presentation::remote_renderer
 		rt->StartRendering();
 		Render(renderingDom, rt);
 		auto result = rt->StopRendering();
+		window->RedrawContent();
 		supressPaint = false;
 
 		switch (result)
