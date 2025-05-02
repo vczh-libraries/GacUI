@@ -142,6 +142,15 @@ namespace vl::presentation::remote_renderer
 		GetCurrentController()->CallbackService()->UninstallListener(this);
 	}
 
+	void GuiRemoteRendererSingle::ForceExitByFatelError()
+	{
+		if (window)
+		{
+			disconnectingFromCore = true;
+			window->Hide(true);
+		}
+	}
+
 	WString GuiRemoteRendererSingle::GetExecutablePath()
 	{
 		CHECK_FAIL(L"This function should not be called!");

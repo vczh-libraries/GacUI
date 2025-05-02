@@ -111,6 +111,8 @@ namespace vl::presentation::remote_renderer
 
 		void			RegisterMainWindow(INativeWindow* _window);
 		void			UnregisterMainWindow();
+		void			ForceExitByFatelError();
+
 		WString			GetExecutablePath() override;
 		void			Initialize(IGuiRemoteProtocolEvents* _events) override;
 		void			Submit(bool& disconnected) override;

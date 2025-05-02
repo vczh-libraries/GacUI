@@ -6,6 +6,8 @@ using namespace vl::presentation;
 using namespace vl::presentation::templates;
 using namespace vl::presentation::controls;
 
+extern void WriteErrorToRendererChannel(const WString& message);
+
 void GuiMain()
 {
 	theme::RegisterTheme(Ptr(new darkskin::Theme));
@@ -13,6 +15,17 @@ void GuiMain()
 		demo::MainWindow window;
 		window.ForceCalculateSizeImmediately();
 		window.MoveToScreenCenter();
-		GetApplication()->Run(&window);
+		try
+		{
+			GetApplication()->Run(&window);
+		}
+		catch (const Exception& e)
+		{
+			WriteErrorToRendererChannel(e.Message());
+		}
+		catch (const Error& e)
+		{
+			WriteErrorToRendererChannel(WString::Unmanaged(e.Description()));
+		}
 	}
 }

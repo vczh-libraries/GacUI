@@ -1,12 +1,18 @@
 #include "../../../Source/GacUI.h"
 #include "../../../Source/PlatformProviders/Remote/GuiRemoteProtocol.h"
 #include "../../../Source/PlatformProviders/RemoteRenderer/GuiRemoteRendererSingle.h"
+#include "../../../Source/PlatformProviders/Windows/WinNativeWindow.h"
 #include "../RemotingTest_Core/NamedPipeShared.h"
 
 using namespace vl::presentation;
 using namespace vl::presentation::remoteprotocol;
 using namespace vl::presentation::remoteprotocol::channeling;
 using namespace vl::presentation::remote_renderer;
+
+class NamedPipeRendererChannel;
+
+NamedPipeRendererChannel* rendererChannel = nullptr;
+GuiRemoteRendererSingle* renderer = nullptr;
 
 class NamedPipeRendererChannel
 	: public NamedPipeShared
@@ -24,9 +30,25 @@ protected:
 			{
 				for (auto str : *strs.Obj())
 				{
-					if (str.Length() > 0 && str[0] != L'!')
+					if (str.Length() > 0)
 					{
-						channel->Write(str);
+						if (str[0] == L'!')
+						{
+							auto mainWindow = GetCurrentController()->WindowService()->GetMainWindow();
+							auto title = mainWindow->GetTitle();
+							auto errorMessage = str.Right(str.Length() - 1);
+							MessageBox(
+								windows::GetWindowsForm(mainWindow)->GetWindowHandle(),
+								errorMessage.Buffer(),
+								title.Buffer(),
+								MB_OK | MB_ICONERROR | MB_APPLMODAL
+								);
+							renderer->ForceExitByFatelError();
+						}
+						else
+						{
+							channel->Write(str);
+						}
 					}
 				}
 			});
@@ -71,9 +93,6 @@ public:
 	}
 };
 
-NamedPipeRendererChannel* channel = nullptr;
-GuiRemoteRendererSingle* renderer = nullptr;
-
 void GuiMain()
 {
 	auto mainWindow = GetCurrentController()->WindowService()->CreateNativeWindow(INativeWindow::Normal);
@@ -86,11 +105,11 @@ void GuiMain()
 		auto y = client.Top() + (client.Height() - size.y) / 2;
 		mainWindow->SetBounds({ {x,y},size });
 	}
-	channel->RegisterMainWindow(mainWindow);
+	rendererChannel->RegisterMainWindow(mainWindow);
 	renderer->RegisterMainWindow(mainWindow);
 	GetCurrentController()->WindowService()->Run(mainWindow);
 	renderer->UnregisterMainWindow();
-	channel->UnregisterMainWindow();
+	rendererChannel->UnregisterMainWindow();
 }
 
 int StartNamedPipeClient()
@@ -103,15 +122,15 @@ int StartNamedPipeClient()
 		GuiRemoteRendererSingle remoteRenderer;
 		GuiRemoteJsonChannelFromProtocol channelReceiver(&remoteRenderer);
 		GuiRemoteJsonChannelStringDeserializer channelJsonDeserializer(&channelReceiver, jsonParser);
-		NamedPipeRendererChannel namedPipeServerChannel(hPipe, &channelJsonDeserializer);
+		NamedPipeRendererChannel namedPipeRendererChannel(hPipe, &channelJsonDeserializer);
 
-		channel = &namedPipeServerChannel;
+		rendererChannel = &namedPipeRendererChannel;
 		renderer = &remoteRenderer;
 		result = SetupRawWindowsDirect2DRenderer();
 		CloseHandle(hPipe);
-		namedPipeServerChannel.WaitForDisconnected();
+		namedPipeRendererChannel.WaitForDisconnected();
 		renderer = nullptr;
-		channel = nullptr;
+		rendererChannel = nullptr;
 	}
 	return result;
 }

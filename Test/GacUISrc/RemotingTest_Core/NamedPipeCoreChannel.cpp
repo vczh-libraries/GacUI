@@ -7,6 +7,9 @@ using namespace vl::presentation::remoteprotocol;
 using namespace vl::presentation::remoteprotocol::repeatfiltering;
 using namespace vl::presentation::remoteprotocol::channeling;
 
+class NamedPipeCoreChannel;
+NamedPipeCoreChannel* coreChannel = nullptr;
+
 class NamedPipeCoreChannel
 	: public NamedPipeShared
 	, public virtual IGuiRemoteProtocolChannel<WString>
@@ -149,6 +152,11 @@ public:
 	}
 };
 
+void WriteErrorToRendererChannel(const WString& message)
+{
+	coreChannel->WriteErrorThreadUnsafe(message);
+}
+
 template<typename T>
 void RunInNewThread(T&& threadProc, NamedPipeCoreChannel* channel)
 {
@@ -161,12 +169,12 @@ void RunInNewThread(T&& threadProc, NamedPipeCoreChannel* channel)
 		catch (const Exception& e)
 		{
 			channel->WriteErrorThreadUnsafe(e.Message());
-			throw;
+			return;
 		}
 		catch (const Error& e)
 		{
 			channel->WriteErrorThreadUnsafe(WString::Unmanaged(e.Description()));
-			throw;
+			return;
 		}
 	});
 }
@@ -176,36 +184,38 @@ int StartNamedPipeServer()
 	HANDLE hPipe = NamedPipeCoreChannel::ServerCreatePipe();
 	Console::WriteLine(L"> Named pipe created, waiting on: " + WString::Unmanaged(NamedPipeId));
 	{
-		NamedPipeCoreChannel namedPipeServerChannel(hPipe);
+		NamedPipeCoreChannel namedPipeCoreChannel(hPipe);
 
 		auto jsonParser = Ptr(new glr::json::Parser);
-		GuiRemoteJsonChannelStringSerializer channelJsonSerializer(&namedPipeServerChannel, jsonParser);
+		GuiRemoteJsonChannelStringSerializer channelJsonSerializer(&namedPipeCoreChannel, jsonParser);
 
 		GuiRemoteProtocolAsyncJsonChannelSerializer asyncChannelSender;
 		asyncChannelSender.Start(
 			&channelJsonSerializer,
-			[](GuiRemoteProtocolAsyncJsonChannelSerializer* channel)
+			[&namedPipeCoreChannel](GuiRemoteProtocolAsyncJsonChannelSerializer* channel)
 			{
 				GuiRemoteProtocolFromJsonChannel channelSender(channel);
 				GuiRemoteProtocolFilter filteredProtocol(&channelSender);
 				GuiRemoteProtocolDomDiffConverter diffConverterProtocol(&filteredProtocol);
+				coreChannel = &namedPipeCoreChannel;
 				SetupRemoteNativeController(&diffConverterProtocol);
+				coreChannel = nullptr;
 			},
-			[&namedPipeServerChannel](
+			[&namedPipeCoreChannel](
 				GuiRemoteProtocolAsyncJsonChannelSerializer::TChannelThreadProc channelThreadProc,
 				GuiRemoteProtocolAsyncJsonChannelSerializer::TUIThreadProc uiThreadProc
 				)
 			{
-				RunInNewThread(channelThreadProc, &namedPipeServerChannel);
-				RunInNewThread(uiThreadProc, &namedPipeServerChannel);
+				Thread::CreateAndStart(channelThreadProc);
+				Thread::CreateAndStart(uiThreadProc);
 			});
 
 		Console::WriteLine(L"> Waiting for a renderer ...");
 		NamedPipeCoreChannel::ServerWaitForClient(hPipe);
-		namedPipeServerChannel.RendererConnectedThreadUnsafe(&asyncChannelSender);
+		namedPipeCoreChannel.RendererConnectedThreadUnsafe(&asyncChannelSender);
 		asyncChannelSender.WaitForStopped();
 		CloseHandle(hPipe);
-		namedPipeServerChannel.WaitForDisconnected();
+		namedPipeCoreChannel.WaitForDisconnected();
 	}
 	return 0;
 }
