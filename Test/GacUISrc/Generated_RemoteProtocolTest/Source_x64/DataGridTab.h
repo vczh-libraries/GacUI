@@ -27,11 +27,11 @@ namespace demo
 	class DataGridTab : public ::vl::presentation::controls::GuiTabPage, public ::demo::DataGridTabConstructor, public ::vl::reflection::Description<DataGridTab>
 	{
 		friend class ::demo::DataGridTabConstructor;
-		friend struct ::vl_workflow_global::__vwsnf2_Demo_demo_DataGridTabConstructor___vwsn_demo_DataGridTab_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf3_Demo_demo_DataGridTabConstructor___vwsn_demo_DataGridTab_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf4_Demo_demo_DataGridTabConstructor___vwsn_demo_DataGridTab_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf5_Demo_demo_DataGridTabConstructor___vwsn_demo_DataGridTab_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf6_Demo_demo_DataGridTabConstructor___vwsn_demo_DataGridTab_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf7_Demo_demo_DataGridTabConstructor___vwsn_demo_DataGridTab_Initialize_;
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<DataGridTab>;
 #endif
