@@ -217,8 +217,8 @@ TEST_FILE
 			// It skips one frame comparing to before
 			AssertEventLogs(
 				eventLogs,
-				L"Updated(1, #000000, Left, Top, <flags:[e]>, <font:Three:16>, <notext>, <request:FontHeight>)",
-				L"Updated(2, #000000, Left, Top, <flags:[e]>, <font:Two:14>, <notext>, <request:FontHeight>)",
+				L"Updated(1, #000000, Left, Top, <flags:[e]>, <font:Three:16>, <notext>, <norequest>)",
+				L"Updated(2, #000000, Left, Top, <flags:[e]>, <font:Two:14>, <notext>, <norequest>)",
 				L"Begin()",
 				L"Render(1, {0,0:100,14}, {0,0:640,480})",
 				L"Render(2, {0,14:100,16}, {0,0:640,480})",
