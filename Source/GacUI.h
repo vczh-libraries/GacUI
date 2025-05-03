@@ -3,23 +3,37 @@ Vczh Library++ 3.0
 Developer: Zihan Chen(vczh)
 GacUI Header Files and Common Namespaces
 
-Global Objects:
+Resource:
 	vl::reflection::description::					GetGlobalTypeManager
 	vl::presentation::								GetParserManager
-	vl::presentation::								GetResourceResolverManager
-	vl::presentation::								GetCurrentController
-	vl::presentation::								GetInstanceLoaderManager
-	vl::presentation::elements::					GetGuiGraphicsResourceManager
-	vl::presentation::controls::					GetApplication
 	vl::presentation::controls::					GetPluginManager
-	vl::presentation::theme::						GetCurrentTheme
+	vl::presentation::								GetResourceResolverManager
+	vl::presentation::								GetResourceManager
 
-	vl::presentation::windows::						GetDirect2DFactory
-	vl::presentation::windows::						GetDirectWriteFactory
-	vl::presentation::elements_windows_gdi::		GetWindowsGDIResourceManager
-	vl::presentation::elements_windows_gdi::		GetWindowsGDIObjectProvider
+Platform:
+	vl::presentation::								GetCurrentController
+	vl::presentation::								GetNativeServiceSubstitution
+	vl::presentation::elements::					GetGuiGraphicsResourceManager
+	vl::presentation::IGuiHostedApplication::		GetHostedApplication
+
+GacUI:
+	vl::presentation::controls::					GetApplication
+	vl::presentation::theme::						GetCurrentTheme
+	vl::presentation::								GetInstanceLoaderManager
+	vl::presentation::								Workflow_GetSharedManager
+
+Windows:
+	vl::presentation::windows::						GetD3D11Device
 	vl::presentation::elements_windows_d2d::		GetWindowsDirect2DResourceManager
 	vl::presentation::elements_windows_d2d::		GetWindowsDirect2DObjectProvider
+	{
+		vl::presentation::windows::					GetDirect2DFactory
+		vl::presentation::windows::					GetDirectWriteFactory
+	}
+	vl::presentation::elements_windows_gdi::		GetWindowsGDIResourceManager
+	vl::presentation::elements_windows_gdi::		GetWindowsGDIObjectProvider
+	vl::presentation::windows::						GetWindowsNativeController
+
 ***********************************************************************/
 
 #ifndef VCZH_PRESENTATION_GACUI
