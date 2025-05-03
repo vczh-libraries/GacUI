@@ -2582,9 +2582,9 @@ GuiControlHost
 
 			void GuiControlHost::Hide()
 			{
-				if(host->GetNativeWindow())
+				if (auto window = host->GetNativeWindow())
 				{
-					host->GetNativeWindow()->Hide(false);
+					window->Hide(false);
 				}
 			}
 
@@ -2592,16 +2592,17 @@ GuiControlHost
 			{
 				if (auto window = host->GetNativeWindow())
 				{
-					auto mainWindow = GetCurrentController()->WindowService()->GetMainWindow();
-					if (mainWindow == window)
-					{
-						SetNativeWindow(nullptr);
-						GetCurrentController()->WindowService()->DestroyNativeWindow(window);
-					}
-					else
-					{
-						window->Hide(true);
-					}
+					window->Hide(true);
+					// auto mainWindow = GetCurrentController()->WindowService()->GetMainWindow();
+					// if (mainWindow == window)
+					// {
+					// 	SetNativeWindow(nullptr);
+					// 	GetCurrentController()->WindowService()->DestroyNativeWindow(window);
+					// }
+					// else
+					// {
+					// 	window->Hide(true);
+					// }
 				}
 			}
 
@@ -33894,11 +33895,11 @@ GuiImageFrameElement
 ***********************************************************************/
 
 			GuiImageFrameElement::GuiImageFrameElement()
-				:frameIndex(0)
-				,hAlignment(Alignment::Left)
-				,vAlignment(Alignment::Top)
-				,stretch(false)
-				,enabled(true)
+				: frameIndex(0)
+				, hAlignment(Alignment::Left)
+				, vAlignment(Alignment::Top)
+				, stretch(false)
+				, enabled(true)
 			{
 			}
 
@@ -33924,17 +33925,19 @@ GuiImageFrameElement
 
 			void GuiImageFrameElement::SetImage(Ptr<INativeImage> _image, vint _frameIndex)
 			{
-				if(image!=_image || frameIndex!=_frameIndex)
+				if (image != _image || frameIndex != _frameIndex)
 				{
-					if(!_image)
+					if (!_image)
 					{
-						image=0;
-						frameIndex=0;
+						image = nullptr;
+						frameIndex = 0;
 					}
-					else if(0<=_frameIndex && _frameIndex<_image->GetFrameCount())
+					else if (0 <= _frameIndex)
 					{
-						image=_image;
-						frameIndex=_frameIndex;
+						// do not check frame count because
+						// on remote protocol metadata could have not been loaded yet
+						image = _image;
+						frameIndex = _frameIndex;
 					}
 					InvokeOnElementStateChanged();
 				}
@@ -33962,10 +33965,10 @@ GuiImageFrameElement
 
 			void GuiImageFrameElement::SetAlignments(Alignment horizontal, Alignment vertical)
 			{
-				if(hAlignment!=horizontal || vAlignment!=vertical)
+				if (hAlignment != horizontal || vAlignment != vertical)
 				{
-					hAlignment=horizontal;
-					vAlignment=vertical;
+					hAlignment = horizontal;
+					vAlignment = vertical;
 					InvokeOnElementStateChanged();
 				}
 			}
@@ -33977,9 +33980,9 @@ GuiImageFrameElement
 
 			void GuiImageFrameElement::SetStretch(bool value)
 			{
-				if(stretch!=value)
+				if (stretch != value)
 				{
-					stretch=value;
+					stretch = value;
 					InvokeOnElementStateChanged();
 				}
 			}
@@ -33991,9 +33994,9 @@ GuiImageFrameElement
 
 			void GuiImageFrameElement::SetEnabled(bool value)
 			{
-				if(enabled!=value)
+				if (enabled != value)
 				{
-					enabled=value;
+					enabled = value;
 					InvokeOnElementStateChanged();
 				}
 			}
@@ -37345,7 +37348,9 @@ GuiHostedWindow
 
 			if (this != controller->mainWindow)
 			{
-				// for main window, the underlying INativeWindow will run the process
+				// when the main window is being closed
+				// the underlying INativeWindow will run the process
+				// so we don't need to worry about it here
 				bool cancel = false;
 				for (auto listener : listeners)
 				{
@@ -38473,6 +38478,7 @@ GuiRemoteController::INativeWindowService
 		applicationRunning = true;
 		window->Show();
 		while (RunOneCycle());
+		asyncService.ExecuteAsyncTasks();
 		applicationRunning = false;
 	}
 
@@ -38532,6 +38538,7 @@ GuiRemoteController (events)
 	void GuiRemoteController::OnControllerScreenUpdated(const remoteprotocol::ScreenConfig& arguments)
 	{
 		remoteScreenConfig = arguments;
+		remoteWindow.OnControllerScreenUpdated(arguments);
 	}
 
 /***********************************************************************
@@ -39391,6 +39398,8 @@ GuiSolidBorderElementRenderer
 		{
 			id = newRenderTarget->AllocateNewElementId();
 			newRenderTarget->RegisterRenderer(this);
+			updated = true;
+			renderTargetChanged = true;
 		}
 	}
 
@@ -39422,6 +39431,7 @@ GuiSolidBorderElementRenderer
 	void RENDERER_CLASS_TYPE::ResetUpdated()
 	{
 		updated = false;
+		renderTargetChanged = false;
 	}
 
 	RENDERER_TEMPLATE_HEADER
@@ -39712,12 +39722,12 @@ GuiSolidLabelElementRenderer
 			elementFont = GetCurrentController()->ResourceService()->GetDefaultFont();
 		}
 
-		if (fullContent || lastFont != elementFont)
+		if (renderTargetChanged || fullContent || lastFont != elementFont)
 		{
 			arguments.font = elementFont;
 		}
 
-		if (fullContent || lastText != elementText)
+		if (renderTargetChanged || fullContent || lastText != elementText)
 		{
 			arguments.text = elementText;
 		}
@@ -39730,7 +39740,7 @@ GuiSolidLabelElementRenderer
 			TryFetchMinSizeFromCache();
 			if (!needFontHeight)
 			{
-				arguments.measuringRequest = {};
+				arguments.measuringRequest.Reset();
 			}
 		}
 
@@ -39789,9 +39799,9 @@ GuiImageFrameElementRenderer
 	{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::elements_remoteprotocol::GuiImageFrameElementRenderer::TryFetchMinSizeFromCache()#"
 		auto image = GetRemoteImage();
-		if (image)
+		if (!image || image->status != GuiRemoteGraphicsImage::MetadataStatus::Retrived)
 		{
-			CHECK_ERROR(image->status == GuiRemoteGraphicsImage::MetadataStatus::Retrived, ERROR_MESSAGE_PREFIX L"The expected metadata of an image does not exist.");
+			return;
 		}
 		UpdateMinSizeFromImage(image);
 		needUpdateSize = false;
@@ -39804,13 +39814,24 @@ GuiImageFrameElementRenderer
 		if (image)
 		{
 			needUpdateSize = true;
-			if (fullContent && image->status == GuiRemoteGraphicsImage::MetadataStatus::Retrived)
+			if (fullContent)
 			{
-				image->status = GuiRemoteGraphicsImage::MetadataStatus::Uninitialized;
+				if (fullContent && image->status == GuiRemoteGraphicsImage::MetadataStatus::Retrived)
+				{
+					image->status = GuiRemoteGraphicsImage::MetadataStatus::Uninitialized;
+				}
+			}
+			else
+			{
+				if (image->status == GuiRemoteGraphicsImage::MetadataStatus::Uninitialized)
+				{
+					image->EnsureMetadata();
+				}
 			}
 			if (image->status == GuiRemoteGraphicsImage::MetadataStatus::Retrived)
 			{
 				UpdateMinSizeFromImage(image);
+				renderTargetChanged = false;
 			}
 		}
 
@@ -39845,7 +39866,7 @@ GuiImageFrameElementRenderer
 			arguments.verticalAlignment = ElementVerticalAlignment::Center;
 		}
 
-		if (needUpdateSize && image)
+		if ((renderTargetChanged || needUpdateSize) && image)
 		{
 			arguments.imageCreation = image->GenerateImageCreation();
 		}
@@ -40102,12 +40123,17 @@ GuiRemoteGraphicsImageService
 	{
 	}
 
-	void GuiRemoteGraphicsImageService::OnControllerConnect()
+	void GuiRemoteGraphicsImageService::ResetImageMetadata()
 	{
 		for (auto image : images.Values())
 		{
 			image->status = GuiRemoteGraphicsImage::MetadataStatus::Uninitialized;
 		}
+	}
+
+	void GuiRemoteGraphicsImageService::OnControllerConnect()
+	{
+		ResetImageMetadata();
 	}
 
 	void GuiRemoteGraphicsImageService::OnControllerDisconnect()
@@ -44336,7 +44362,9 @@ namespace vl::presentation::remote_renderer
 			}
 
 			auto newWindowSizingConfig = GetWindowSizingConfig();
-			if (newWindowSizingConfig.bounds != windowSizingConfig.bounds)
+			if (
+				newWindowSizingConfig.bounds != windowSizingConfig.bounds ||
+				newWindowSizingConfig.clientBounds != windowSizingConfig.clientBounds)
 			{
 				windowSizingConfig = newWindowSizingConfig;
 				if (!updatingBounds)
@@ -44345,7 +44373,6 @@ namespace vl::presentation::remote_renderer
 				}
 			}
 			else if (
-				newWindowSizingConfig.clientBounds != windowSizingConfig.clientBounds ||
 				newWindowSizingConfig.sizeState != windowSizingConfig.sizeState ||
 				newWindowSizingConfig.customFramePadding != windowSizingConfig.customFramePadding)
 			{
@@ -44438,6 +44465,15 @@ namespace vl::presentation::remote_renderer
 	void GuiRemoteRendererSingle::UnregisterMainWindow()
 	{
 		GetCurrentController()->CallbackService()->UninstallListener(this);
+	}
+
+	void GuiRemoteRendererSingle::ForceExitByFatelError()
+	{
+		if (window)
+		{
+			disconnectingFromCore = true;
+			window->Hide(true);
+		}
 	}
 
 	WString GuiRemoteRendererSingle::GetExecutablePath()
@@ -44625,6 +44661,13 @@ namespace vl::presentation::remote_renderer
 
 	void GuiRemoteRendererSingle::MouseMoving(const NativeWindowMouseInfo& info)
 	{
+		if (renderingDom)
+		{
+			INativeWindowListener::HitTestResult hitTestResult = INativeWindowListener::NoDecision;
+			INativeCursor* cursor = nullptr;
+			HitTest(renderingDom, window->Convert(NativePoint{ info.x,info.y }), hitTestResult, cursor);
+			window->SetWindowCursor(cursor);
+		}
 		events->OnIOMouseMoving(info);
 	}
 
@@ -44645,6 +44688,10 @@ namespace vl::presentation::remote_renderer
 
 	void GuiRemoteRendererSingle::KeyUp(const NativeWindowKeyInfo& info)
 	{
+		if (!info.ctrl && !info.shift && info.code == VKEY::KEY_MENU)
+		{
+			window->SupressAlt();
+		}
 		events->OnIOKeyUp(info);
 	}
 
@@ -44927,6 +44974,7 @@ namespace vl::presentation::remote_renderer
 	{
 		events->RespondRendererEndRendering(id, elementMeasurings);
 		elementMeasurings = {};
+		fontHeightMeasurings.Clear();
 	}
 
 /***********************************************************************
@@ -45020,6 +45068,44 @@ namespace vl::presentation::remote_renderer
 * Rendering (Elemnents -- Label)
 ***********************************************************************/
 
+	void GuiRemoteRendererSingle::StoreLabelMeasuring(vint id, remoteprotocol::ElementSolidLabelMeasuringRequest request, Ptr<elements::GuiSolidLabelElement> solidLabel, Size minSize)
+	{
+		switch (request)
+		{
+		case ElementSolidLabelMeasuringRequest::FontHeight:
+			{
+				Pair<WString, vint> key = { solidLabel->GetFont().fontFamily,solidLabel->GetFont().size };
+				if (fontHeightMeasurings.Contains(key)) return;
+				fontHeightMeasurings.Add(key);
+
+				ElementMeasuring_FontHeight response;
+				response.fontFamily = key.key;
+				response.fontSize = key.value;
+				response.height = minSize.y;
+
+				if (!elementMeasurings.fontHeights)
+				{
+					elementMeasurings.fontHeights = Ptr(new List<ElementMeasuring_FontHeight>);
+				}
+				elementMeasurings.fontHeights->Add(response);
+			}
+			break;
+		case ElementSolidLabelMeasuringRequest::TotalSize:
+			{
+				ElementMeasuring_ElementMinSize response;
+				response.id = id;
+				response.minSize = minSize;
+
+				if (!elementMeasurings.minSizes)
+				{
+					elementMeasurings.minSizes = Ptr(new List<ElementMeasuring_ElementMinSize>);
+				}
+				elementMeasurings.minSizes->Add(response);
+			}
+			break;
+		}
+	}
+
 	void GuiRemoteRendererSingle::RequestRendererUpdateElement_SolidLabel(const remoteprotocol::ElementDesc_SolidLabel& arguments)
 	{
 		vint index = availableElements.Keys().IndexOf(arguments.id);
@@ -45057,37 +45143,7 @@ namespace vl::presentation::remote_renderer
 				solidLabelMeasurings.Add(arguments.id, measuring);
 			}
 
-			auto renderer = element->GetRenderer();
-			switch (measuring.request)
-			{
-			case ElementSolidLabelMeasuringRequest::FontHeight:
-				{
-					ElementMeasuring_FontHeight response;
-					response.fontFamily = element->GetFont().fontFamily;
-					response.fontSize = element->GetFont().size;
-					response.height = renderer->GetMinSize().y;
-
-					if (!elementMeasurings.fontHeights)
-					{
-						elementMeasurings.fontHeights = Ptr(new List<ElementMeasuring_FontHeight>);
-					}
-					elementMeasurings.fontHeights->Add(response);
-				}
-				break;
-			case ElementSolidLabelMeasuringRequest::TotalSize:
-				{
-					ElementMeasuring_ElementMinSize response;
-					response.id = arguments.id;
-					response.minSize = renderer->GetMinSize();
-
-					if (!elementMeasurings.minSizes)
-					{
-						elementMeasurings.minSizes = Ptr(new List<ElementMeasuring_ElementMinSize>);
-					}
-					elementMeasurings.minSizes->Add(response);
-				}
-				break;
-			}
+			StoreLabelMeasuring(arguments.id, measuring.request, element, element->GetRenderer()->GetMinSize());
 		}
 	}
 
@@ -45271,40 +45327,32 @@ namespace vl::presentation::remote_renderer
 					{
 						auto& measuring = const_cast<SolidLabelMeasuring&>(solidLabelMeasurings.Values()[index]);
 						auto minSize = element->GetRenderer()->GetMinSize();
-						if (!measuring.minSize || measuring.minSize.Value() != minSize)
+
+						bool measuringChanged = false;
+						if (!measuring.minSize)
 						{
-							measuring.minSize = minSize;
-
-							switch (measuring.request)
+							measuringChanged = true;
+						}
+						else switch (measuring.request)
+						{
+						case ElementSolidLabelMeasuringRequest::FontHeight:
+							if (measuring.minSize.Value().y != minSize.y)
 							{
-							case ElementSolidLabelMeasuringRequest::FontHeight:
-								{
-									ElementMeasuring_FontHeight response;
-									response.fontFamily = solidLabel->GetFont().fontFamily;
-									response.fontSize = solidLabel->GetFont().size;
-									response.height = minSize.y;
-
-									if (!elementMeasurings.fontHeights)
-									{
-										elementMeasurings.fontHeights = Ptr(new List<ElementMeasuring_FontHeight>);
-									}
-									elementMeasurings.fontHeights->Add(response);
-								}
-								break;
-							case ElementSolidLabelMeasuringRequest::TotalSize:
-								{
-									ElementMeasuring_ElementMinSize response;
-									response.id = dom->content.element.Value();
-									response.minSize = minSize;
-
-									if (!elementMeasurings.minSizes)
-									{
-										elementMeasurings.minSizes = Ptr(new List<ElementMeasuring_ElementMinSize>);
-									}
-									elementMeasurings.minSizes->Add(response);
-								}
-								break;
+								measuringChanged = true;
 							}
+							break;
+						case ElementSolidLabelMeasuringRequest::TotalSize:
+							if (measuring.minSize.Value() != minSize)
+							{
+								measuringChanged = true;
+							}
+							break;
+						}
+
+						measuring.minSize = minSize;
+						if (measuringChanged)
+						{
+							StoreLabelMeasuring(dom->content.element.Value(), measuring.request, solidLabel, minSize);
 						}
 					}
 				}
@@ -45323,7 +45371,7 @@ namespace vl::presentation::remote_renderer
 		}
 	}
 
-	INativeWindowListener::HitTestResult GuiRemoteRendererSingle::HitTest(Ptr<remoteprotocol::RenderingDom> dom, Point location)
+	void GuiRemoteRendererSingle::HitTestInternal(Ptr<remoteprotocol::RenderingDom> dom, Point location, Nullable<INativeWindowListener::HitTestResult>& hitTestResult, Nullable<INativeCursor::SystemCursorType>& cursorType)
 	{
 		if (dom->children)
 		{
@@ -45331,23 +45379,30 @@ namespace vl::presentation::remote_renderer
 			{
 				if (child->content.validArea.Contains(location))
 				{
-					auto result = HitTest(child, location);
-					if (result != INativeWindowListener::NoDecision)
+					HitTestInternal(child, location, hitTestResult, cursorType);
+
+					if (!hitTestResult && child->content.hitTestResult)
 					{
-						return result;
+						hitTestResult = child->content.hitTestResult;
+					}
+					if (!cursorType && child->content.cursor)
+					{
+						cursorType = child->content.cursor;
 					}
 				}
 			}
 		}
-
-		if (dom->content.hitTestResult)
-		{
-			return dom->content.hitTestResult.Value();
-		}
-
-		return INativeWindowListener::NoDecision;
 	}
-	
+
+	void GuiRemoteRendererSingle::HitTest(Ptr<remoteprotocol::RenderingDom> dom, Point location, INativeWindowListener::HitTestResult& hitTestResult, INativeCursor*& cursor)
+	{
+		Nullable<INativeWindowListener::HitTestResult> hitTestResultNullable;
+		Nullable<INativeCursor::SystemCursorType> cursorTypeNullable;
+		HitTestInternal(dom, location, hitTestResultNullable, cursorTypeNullable);
+		hitTestResult = hitTestResultNullable ? hitTestResultNullable.Value() : INativeWindowListener::NoDecision;
+		cursor = cursorTypeNullable ? GetCurrentController()->ResourceService()->GetSystemCursor(cursorTypeNullable.Value()) : GetCurrentController()->ResourceService()->GetDefaultSystemCursor();
+	}
+
 	void GuiRemoteRendererSingle::GlobalTimer()
 	{
 		if (!needRefresh) return;
@@ -45360,6 +45415,7 @@ namespace vl::presentation::remote_renderer
 		rt->StartRendering();
 		Render(renderingDom, rt);
 		auto result = rt->StopRendering();
+		window->RedrawContent();
 		supressPaint = false;
 
 		switch (result)
@@ -45388,7 +45444,13 @@ namespace vl::presentation::remote_renderer
 
 	INativeWindowListener::HitTestResult GuiRemoteRendererSingle::HitTest(NativePoint location)
 	{
-		return renderingDom ? HitTest(renderingDom, window->Convert(location)) : INativeWindowListener::NoDecision;
+		INativeWindowListener::HitTestResult hitTestResult = INativeWindowListener::NoDecision;
+		INativeCursor* cursor = nullptr;
+		if (renderingDom)
+		{
+			HitTest(renderingDom, window->Convert(location), hitTestResult, cursor);
+		}
+		return hitTestResult;
 	}
 }
 

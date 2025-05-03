@@ -8,6 +8,9 @@ Interfaces:
 
 ***********************************************************************/
 
+#ifndef VCZH_PRESENTATION_GUIREMOTECONTROLLER_REMOTERENDERER_GUIREMOTERENDERERSINGLE
+#define VCZH_PRESENTATION_GUIREMOTECONTROLLER_REMOTERENDERER_GUIREMOTERENDERERSINGLE
+
 #include "../Remote/GuiRemoteProtocol_Shared.h"
 #include "../Remote/Protocol/FrameOperations/GuiRemoteProtocolSchema_FrameOperations.h"
 
@@ -132,3 +135,5 @@ namespace vl::presentation::remote_renderer
 #undef MESSAGE_NOREQ_NORES
 	};
 }
+
+#endif

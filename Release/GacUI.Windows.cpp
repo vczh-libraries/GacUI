@@ -5133,24 +5133,27 @@ GuiImageFrameElementRenderer
 
 			void GuiImageFrameElementRenderer::UpdateBitmap(IWindowsDirect2DRenderTarget* renderTarget)
 			{
-				if(renderTarget && element->GetImage())
+				if (element->GetImage() && 0 <= element->GetFrameIndex() && element->GetFrameIndex() < element->GetImage()->GetFrameCount())
 				{
-					INativeImageFrame* frame=element->GetImage()->GetFrame(element->GetFrameIndex());
-					bitmap=renderTarget->GetBitmap(frame, element->GetEnabled());
+					INativeImageFrame* frame = element->GetImage()->GetFrame(element->GetFrameIndex());
+					if (renderTarget)
+					{
+						bitmap = renderTarget->GetBitmap(frame, element->GetEnabled());
+					}
 
 					if (element->GetStretch())
 					{
-						minSize=Size(0,0);
+						minSize = Size(0, 0);
 					}
 					else
 					{
-						minSize=frame->GetSize();
+						minSize = frame->GetSize();
 					}
 				}
 				else
 				{
-					bitmap=nullptr;
-					minSize=Size(0, 0);
+					bitmap = nullptr;
+					minSize = Size(0, 0);
 				}
 			}
 
@@ -9678,25 +9681,25 @@ GuiImageFrameElementRenderer
 
 			void GuiImageFrameElementRenderer::UpdateBitmap()
 			{
-				if(element->GetImage())
+				if (element->GetImage() && 0 <= element->GetFrameIndex() && element->GetFrameIndex() < element->GetImage()->GetFrameCount())
 				{
-					auto resourceManager=GetWindowsGDIResourceManager();
-					INativeImageFrame* frame=element->GetImage()->GetFrame(element->GetFrameIndex());
-					bitmap=resourceManager->GetBitmap(frame, element->GetEnabled());
+					auto resourceManager = GetWindowsGDIResourceManager();
+					INativeImageFrame* frame = element->GetImage()->GetFrame(element->GetFrameIndex());
+					bitmap = resourceManager->GetBitmap(frame, element->GetEnabled());
 
 					if (element->GetStretch())
 					{
-						minSize=Size(0,0);
+						minSize = Size(0, 0);
 					}
 					else
 					{
-						minSize=frame->GetSize();
+						minSize = frame->GetSize();
 					}
 				}
 				else
 				{
-					bitmap=0;
-					minSize=Size(0, 0);
+					bitmap = nullptr;
+					minSize = Size(0, 0);
 				}
 			}
 
@@ -9760,7 +9763,7 @@ GuiImageFrameElementRenderer
 						}
 						destination=Rect(x, y, x+minSize.x, y+minSize.y);
 					}
-					if(element->GetImage()->GetFormat()==INativeImage::Gif &&  element->GetFrameIndex()>0)
+					if(element->GetImage()->GetFormat()==INativeImage::Gif && element->GetFrameIndex()>0)
 					{
 						auto resourceManager=GetWindowsGDIResourceManager();
 						vint max=element->GetFrameIndex();

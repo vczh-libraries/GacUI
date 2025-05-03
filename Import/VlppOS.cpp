@@ -466,6 +466,7 @@ Licensed under https://github.com/vczh-libraries/License
 
 
 #if defined VCZH_ARM
+#include <arm_acle.h>
 #elif defined VCZH_MSVC || defined VCZH_GCC
 #include <emmintrin.h>
 #endif

@@ -22848,6 +22848,7 @@ GuiRemoteGraphicsImageService
 		GuiRemoteGraphicsImageService(GuiRemoteController* _remote);
 		~GuiRemoteGraphicsImageService();
 
+		void								ResetImageMetadata();
 		void								OnControllerConnect();
 		void								OnControllerDisconnect();
 		void								Initialize();
@@ -23027,6 +23028,7 @@ namespace vl::presentation::elements_remoteprotocol
 		vint							id = -1;
 		vuint64_t						renderingBatchId = 0;
 		bool							updated = true;
+		bool							renderTargetChanged = false;
 
 		void							InitializeInternal();
 		void							FinalizeInternal();
@@ -24605,6 +24607,9 @@ Interfaces:
 
 ***********************************************************************/
 
+#ifndef VCZH_PRESENTATION_GUIREMOTECONTROLLER_REMOTERENDERER_GUIREMOTERENDERERSINGLE
+#define VCZH_PRESENTATION_GUIREMOTECONTROLLER_REMOTERENDERER_GUIREMOTERENDERERSINGLE
+
 
 namespace vl::presentation::remote_renderer
 {
@@ -24649,8 +24654,10 @@ namespace vl::presentation::remote_renderer
 		using ElementMap = collections::Dictionary<vint, Ptr<elements::IGuiGraphicsElement>>;
 		using ImageMap = collections::Dictionary<vint, Ptr<INativeImage>>;
 		using SolidLabelMeasuringMap = collections::Dictionary<vint, SolidLabelMeasuring>;
+		using FontHeightMeasuringSet = collections::SortedList<collections::Pair<WString, vint>>;
 
 		remoteprotocol::ElementMeasurings		elementMeasurings;
+		FontHeightMeasuringSet					fontHeightMeasurings;
 		SolidLabelMeasuringMap					solidLabelMeasurings;
 
 		ElementMap								availableElements;
@@ -24660,6 +24667,7 @@ namespace vl::presentation::remote_renderer
 
 		Alignment								GetAlignment(remoteprotocol::ElementHorizontalAlignment alignment);
 		Alignment								GetAlignment(remoteprotocol::ElementVerticalAlignment alignment);
+		void									StoreLabelMeasuring(vint id, remoteprotocol::ElementSolidLabelMeasuringRequest request, Ptr<elements::GuiSolidLabelElement> solidLabel, Size minSize);
 		remoteprotocol::ImageMetadata			CreateImageMetadata(vint id, INativeImage* image);
 		remoteprotocol::ImageMetadata			CreateImage(const remoteprotocol::ImageCreation& arguments);
 		void									CheckDom();
@@ -24670,7 +24678,8 @@ namespace vl::presentation::remote_renderer
 
 		void									UpdateRenderTarget(elements::IGuiGraphicsRenderTarget* rt);
 		void									Render(Ptr<remoteprotocol::RenderingDom> dom, elements::IGuiGraphicsRenderTarget* rt);
-		INativeWindowListener::HitTestResult	HitTest(Ptr<remoteprotocol::RenderingDom> dom, Point location);
+		void									HitTestInternal(Ptr<remoteprotocol::RenderingDom> dom, Point location, Nullable<INativeWindowListener::HitTestResult>& hitTestResult, Nullable<INativeCursor::SystemCursorType>& cursorType);
+		void									HitTest(Ptr<remoteprotocol::RenderingDom> dom, Point location, INativeWindowListener::HitTestResult& hitTestResult, INativeCursor*& cursor);
 
 		void									GlobalTimer() override;
 		void									Paint() override;
@@ -24702,6 +24711,8 @@ namespace vl::presentation::remote_renderer
 
 		void			RegisterMainWindow(INativeWindow* _window);
 		void			UnregisterMainWindow();
+		void			ForceExitByFatelError();
+
 		WString			GetExecutablePath() override;
 		void			Initialize(IGuiRemoteProtocolEvents* _events) override;
 		void			Submit(bool& disconnected) override;
@@ -24721,6 +24732,8 @@ namespace vl::presentation::remote_renderer
 #undef MESSAGE_NOREQ_NORES
 	};
 }
+
+#endif
 
 /***********************************************************************
 .\PLATFORMPROVIDERS\REMOTE\GUIREMOTEPROTOCOL_DOMDIFF.H
