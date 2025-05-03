@@ -251,6 +251,15 @@ void GacUIUnitTest_LogDiffs(const WString& appName, UnitTestRemoteProtocol& unit
 					RenderingDom_DiffsInOrder diffs;
 					DiffDom(dom, domIndex, loggedFrame->renderingDom, nextDomIndex, diffs);
 					diffList = diffs.diffsInOrder;
+
+					auto copiedDom = CopyDom(dom);
+					DomIndex copiedDomIndex;
+					BuildDomIndex(copiedDom, copiedDomIndex);
+					UpdateDomInplace(copiedDom, copiedDomIndex, diffs);
+
+					auto expectedJson = JsonToString(remoteprotocol::ConvertCustomTypeToJson(loggedFrame->renderingDom));
+					auto actualJson = JsonToString(remoteprotocol::ConvertCustomTypeToJson(copiedDom));
+					TEST_ASSERT(actualJson == expectedJson);
 				}
 
 				if (diffList)
