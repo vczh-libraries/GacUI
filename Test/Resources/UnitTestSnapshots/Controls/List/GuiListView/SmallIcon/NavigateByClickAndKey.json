@@ -2327,7 +2327,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 1",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -2364,7 +2364,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 2",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -2401,7 +2401,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 3",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -2438,7 +2438,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 4",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -2475,7 +2475,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 5",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -2512,7 +2512,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 6",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -2549,7 +2549,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 7",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -2586,7 +2586,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 8",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -2623,7 +2623,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 9",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -2660,7 +2660,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 10",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -2697,7 +2697,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 11",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -2734,7 +2734,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 12",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -2771,7 +2771,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 13",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -2808,7 +2808,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 14",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -2845,7 +2845,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 15",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -2882,7 +2882,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 16",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -2919,7 +2919,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 17",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -2956,7 +2956,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 18",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -2993,7 +2993,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 19",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -3030,7 +3030,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 20",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -3067,7 +3067,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 21",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -3104,7 +3104,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 22",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -3141,7 +3141,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 23",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -3178,7 +3178,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 24",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -3215,7 +3215,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 25",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -3252,7 +3252,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 26",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -3289,7 +3289,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 27",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -3326,7 +3326,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 28",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -3363,7 +3363,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 29",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -3400,7 +3400,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 30",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ]
@@ -5084,7 +5084,7 @@
               "multiline": false,
               "font": {"fontFamily": "Segoe WP SemiLight", "size": 14, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "GuiListView [2] -> [Item 3]",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -5277,7 +5277,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 1",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -5314,7 +5314,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 2",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -5351,7 +5351,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 3",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -5388,7 +5388,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 4",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -5425,7 +5425,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 5",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -5462,7 +5462,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 6",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -5499,7 +5499,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 7",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -5536,7 +5536,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 8",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -5573,7 +5573,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 9",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -5610,7 +5610,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 10",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -5647,7 +5647,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 11",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -5684,7 +5684,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 12",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -5721,7 +5721,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 13",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -5758,7 +5758,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 14",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -5795,7 +5795,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 15",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -5832,7 +5832,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 16",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -5869,7 +5869,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 17",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -5906,7 +5906,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 18",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -5943,7 +5943,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 19",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -5980,7 +5980,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 20",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -6017,7 +6017,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 21",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -6054,7 +6054,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 22",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -6091,7 +6091,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 23",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -6128,7 +6128,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 24",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -6165,7 +6165,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 25",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -6202,7 +6202,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 26",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -6239,7 +6239,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 27",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -6276,7 +6276,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 28",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -6313,7 +6313,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 29",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -6350,7 +6350,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 30",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ]
@@ -8034,7 +8034,7 @@
               "multiline": false,
               "font": {"fontFamily": "Segoe WP SemiLight", "size": 14, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "GuiListView [29] -> [Item 30]",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -8227,7 +8227,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 1",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -8264,7 +8264,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 2",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -8301,7 +8301,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 3",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -8338,7 +8338,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 4",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -8375,7 +8375,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 5",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -8412,7 +8412,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 6",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -8449,7 +8449,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 7",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -8486,7 +8486,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 8",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -8523,7 +8523,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 9",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -8560,7 +8560,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 10",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -8597,7 +8597,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 11",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -8634,7 +8634,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 12",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -8671,7 +8671,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 13",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -8708,7 +8708,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 14",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -8745,7 +8745,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 15",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -8782,7 +8782,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 16",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -8819,7 +8819,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 17",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -8856,7 +8856,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 18",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -8893,7 +8893,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 19",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -8930,7 +8930,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 20",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -8967,7 +8967,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 21",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -9004,7 +9004,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 22",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -9041,7 +9041,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 23",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -9078,7 +9078,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 24",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -9115,7 +9115,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 25",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -9152,7 +9152,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 26",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -9189,7 +9189,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 27",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -9226,7 +9226,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 28",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -9263,7 +9263,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 29",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -9300,7 +9300,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 30",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ]
@@ -10984,7 +10984,7 @@
               "multiline": false,
               "font": {"fontFamily": "Segoe WP SemiLight", "size": 14, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "GuiListView [0] -> [Item 1]",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -11177,7 +11177,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 1",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -11214,7 +11214,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 2",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -11251,7 +11251,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 3",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -11288,7 +11288,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 4",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -11325,7 +11325,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 5",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -11362,7 +11362,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 6",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -11399,7 +11399,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 7",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -11436,7 +11436,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 8",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -11473,7 +11473,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 9",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -11510,7 +11510,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 10",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -11547,7 +11547,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 11",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -11584,7 +11584,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 12",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -11621,7 +11621,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 13",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -11658,7 +11658,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 14",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -11695,7 +11695,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 15",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -11732,7 +11732,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 16",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -11769,7 +11769,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 17",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -11806,7 +11806,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 18",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -11843,7 +11843,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 19",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -11880,7 +11880,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 20",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -11917,7 +11917,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 21",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -11954,7 +11954,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 22",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -11991,7 +11991,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 23",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -12028,7 +12028,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 24",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -12065,7 +12065,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 25",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -12102,7 +12102,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 26",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -12139,7 +12139,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 27",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -12176,7 +12176,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 28",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -12213,7 +12213,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 29",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -12250,7 +12250,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 30",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ]
@@ -13934,7 +13934,7 @@
               "multiline": false,
               "font": {"fontFamily": "Segoe WP SemiLight", "size": 14, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "GuiListView [1] -> [Item 2]",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -14127,7 +14127,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 1",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -14164,7 +14164,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 2",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -14201,7 +14201,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 3",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -14238,7 +14238,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 4",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -14275,7 +14275,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 5",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -14312,7 +14312,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 6",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -14349,7 +14349,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 7",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -14386,7 +14386,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 8",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -14423,7 +14423,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 9",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -14460,7 +14460,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 10",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -14497,7 +14497,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 11",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -14534,7 +14534,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 12",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -14571,7 +14571,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 13",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -14608,7 +14608,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 14",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -14645,7 +14645,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 15",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -14682,7 +14682,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 16",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -14719,7 +14719,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 17",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -14756,7 +14756,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 18",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -14793,7 +14793,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 19",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -14830,7 +14830,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 20",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -14867,7 +14867,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 21",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -14904,7 +14904,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 22",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -14941,7 +14941,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 23",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -14978,7 +14978,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 24",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -15015,7 +15015,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 25",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -15052,7 +15052,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 26",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -15089,7 +15089,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 27",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -15126,7 +15126,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 28",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -15163,7 +15163,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 29",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -15200,7 +15200,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 30",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ]
@@ -16884,7 +16884,7 @@
               "multiline": false,
               "font": {"fontFamily": "Segoe WP SemiLight", "size": 14, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "GuiListView [3] -> [Item 4]",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -17077,7 +17077,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 1",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -17114,7 +17114,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 2",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -17151,7 +17151,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 3",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -17188,7 +17188,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 4",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -17225,7 +17225,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 5",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -17262,7 +17262,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 6",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -17299,7 +17299,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 7",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -17336,7 +17336,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 8",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -17373,7 +17373,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 9",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -17410,7 +17410,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 10",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -17447,7 +17447,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 11",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -17484,7 +17484,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 12",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -17521,7 +17521,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 13",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -17558,7 +17558,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 14",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -17595,7 +17595,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 15",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -17632,7 +17632,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 16",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -17669,7 +17669,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 17",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -17706,7 +17706,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 18",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -17743,7 +17743,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 19",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -17780,7 +17780,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 20",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -17817,7 +17817,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 21",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -17854,7 +17854,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 22",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -17891,7 +17891,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 23",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -17928,7 +17928,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 24",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -17965,7 +17965,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 25",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -18002,7 +18002,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 26",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -18039,7 +18039,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 27",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -18076,7 +18076,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 28",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -18113,7 +18113,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 29",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -18150,7 +18150,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 30",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ]
@@ -19834,7 +19834,7 @@
               "multiline": false,
               "font": {"fontFamily": "Segoe WP SemiLight", "size": 14, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "GuiListView [2] -> [Item 3]",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -20027,7 +20027,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 1",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -20064,7 +20064,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 2",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -20101,7 +20101,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 3",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -20138,7 +20138,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 4",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -20175,7 +20175,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 5",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -20212,7 +20212,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 6",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -20249,7 +20249,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 7",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -20286,7 +20286,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 8",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -20323,7 +20323,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 9",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -20360,7 +20360,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 10",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -20397,7 +20397,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 11",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -20434,7 +20434,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 12",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -20471,7 +20471,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 13",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -20508,7 +20508,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 14",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -20545,7 +20545,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 15",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -20582,7 +20582,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 16",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -20619,7 +20619,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 17",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -20656,7 +20656,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 18",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -20693,7 +20693,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 19",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -20730,7 +20730,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 20",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -20767,7 +20767,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 21",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -20804,7 +20804,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 22",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -20841,7 +20841,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 23",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -20878,7 +20878,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 24",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -20915,7 +20915,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 25",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -20952,7 +20952,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 26",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -20989,7 +20989,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 27",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -21026,7 +21026,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 28",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -21063,7 +21063,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 29",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -21100,7 +21100,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 30",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ]
@@ -22784,7 +22784,7 @@
               "multiline": false,
               "font": {"fontFamily": "Segoe WP SemiLight", "size": 14, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "GuiListView [0] -> [Item 1]",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -22977,7 +22977,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 1",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -23014,7 +23014,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 2",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -23051,7 +23051,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 3",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -23088,7 +23088,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 4",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -23125,7 +23125,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 5",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -23162,7 +23162,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 6",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -23199,7 +23199,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 7",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -23236,7 +23236,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 8",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -23273,7 +23273,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 9",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -23310,7 +23310,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 10",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -23347,7 +23347,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 11",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -23384,7 +23384,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 12",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -23421,7 +23421,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 13",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -23458,7 +23458,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 14",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -23495,7 +23495,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 15",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -23532,7 +23532,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 16",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -23569,7 +23569,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 17",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -23606,7 +23606,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 18",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -23643,7 +23643,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 19",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -23680,7 +23680,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 20",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -23717,7 +23717,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 21",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -23754,7 +23754,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 22",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -23791,7 +23791,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 23",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -23828,7 +23828,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 24",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -23865,7 +23865,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 25",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -23902,7 +23902,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 26",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -23939,7 +23939,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 27",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -23976,7 +23976,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 28",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -24013,7 +24013,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 29",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -24050,7 +24050,7 @@
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Item 30",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ]

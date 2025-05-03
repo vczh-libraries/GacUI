@@ -18066,7 +18066,7 @@
               "multiline": false,
               "font": {"fontFamily": "Segoe WP SemiLight", "size": 14, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "GuiBindableDataGrid [0] -> [First Item 101]",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -24907,7 +24907,7 @@
               "multiline": false,
               "font": {"fontFamily": "Segoe WP SemiLight", "size": 14, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "GuiBindableDataGrid [0] -> [First Item 101]",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -32227,7 +32227,7 @@
               "multiline": false,
               "font": {"fontFamily": "Segoe WP SemiLight", "size": 14, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "GuiBindableDataGrid [101] -> [Last Item 102]",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -39547,7 +39547,7 @@
               "multiline": false,
               "font": {"fontFamily": "Segoe WP SemiLight", "size": 14, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "GuiBindableDataGrid [101] -> [Last Item 102]",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -45252,7 +45252,7 @@
               "multiline": false,
               "font": {"fontFamily": "Segoe WP SemiLight", "size": 14, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "GuiBindableDataGrid [101] -> [Last Item 102]",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -50815,7 +50815,7 @@
               "multiline": false,
               "font": {"fontFamily": "Segoe WP SemiLight", "size": 14, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "GuiBindableDataGrid [2] -> [Item 3]",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -56378,7 +56378,7 @@
               "multiline": false,
               "font": {"fontFamily": "Segoe WP SemiLight", "size": 14, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "GuiBindableDataGrid [-1] -> []",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -61941,7 +61941,7 @@
               "multiline": false,
               "font": {"fontFamily": "Segoe WP SemiLight", "size": 14, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "GuiBindableDataGrid [2] -> [Updated Item 101]",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -67504,7 +67504,7 @@
               "multiline": false,
               "font": {"fontFamily": "Segoe WP SemiLight", "size": 14, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "GuiBindableDataGrid [2] -> [Updated Item 101]",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],

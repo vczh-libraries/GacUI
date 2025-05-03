@@ -17316,7 +17316,7 @@
               "multiline": false,
               "font": {"fontFamily": "Segoe WP SemiLight", "size": 14, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "GuiBindableListView [0] -> [First Item 101]",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -24157,7 +24157,7 @@
               "multiline": false,
               "font": {"fontFamily": "Segoe WP SemiLight", "size": 14, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "GuiBindableListView [0] -> [First Item 101]",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -31477,7 +31477,7 @@
               "multiline": false,
               "font": {"fontFamily": "Segoe WP SemiLight", "size": 14, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "GuiBindableListView [101] -> [Last Item 102]",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -38797,7 +38797,7 @@
               "multiline": false,
               "font": {"fontFamily": "Segoe WP SemiLight", "size": 14, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "GuiBindableListView [101] -> [Last Item 102]",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -44502,7 +44502,7 @@
               "multiline": false,
               "font": {"fontFamily": "Segoe WP SemiLight", "size": 14, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "GuiBindableListView [-1] -> []",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -50065,7 +50065,7 @@
               "multiline": false,
               "font": {"fontFamily": "Segoe WP SemiLight", "size": 14, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "GuiBindableListView [2] -> [Item 3]",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -55628,7 +55628,7 @@
               "multiline": false,
               "font": {"fontFamily": "Segoe WP SemiLight", "size": 14, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "GuiBindableListView [-1] -> []",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -61191,7 +61191,7 @@
               "multiline": false,
               "font": {"fontFamily": "Segoe WP SemiLight", "size": 14, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "GuiBindableListView [2] -> [Updated Item 101]",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -66754,7 +66754,7 @@
               "multiline": false,
               "font": {"fontFamily": "Segoe WP SemiLight", "size": 14, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "GuiBindableListView [2] -> [Updated Item 101]",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],

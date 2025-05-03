@@ -1042,7 +1042,7 @@
               "multiline": false,
               "font": {"fontFamily": "Segoe WP SemiLight", "size": 14, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Hover",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -1758,7 +1758,7 @@
               "multiline": false,
               "font": {"fontFamily": "Segoe WP SemiLight", "size": 14, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "MouseDown",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -2474,7 +2474,7 @@
               "multiline": false,
               "font": {"fontFamily": "Segoe WP SemiLight", "size": 14, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "MouseUp",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -3190,7 +3190,7 @@
               "multiline": false,
               "font": {"fontFamily": "Segoe WP SemiLight", "size": 14, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Focused",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -3918,7 +3918,7 @@
               "multiline": false,
               "font": {"fontFamily": "Segoe WP SemiLight", "size": 14, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Disabled",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],
@@ -4634,7 +4634,7 @@
               "multiline": false,
               "font": {"fontFamily": "Segoe WP SemiLight", "size": 14, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
               "text": "Pressed",
-              "measuringRequest": "FontHeight"
+              "measuringRequest": null
             }
           ]
         ],

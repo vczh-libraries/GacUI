@@ -2008,12 +2008,10 @@ interface gaclib_controls::IUnitTestSnapshotFileNode : system::Interface {
 
 @FullName:gaclib_controls::IUnitTestSnapshotFrame
 interface gaclib_controls::IUnitTestSnapshotFrame : system::Interface {
-    property CommandsAsJsonText : system::String { get:GetCommandsAsJsonText }
     property DomAsJsonText : system::String { get:GetDomAsJsonText }
     property ElementsAsJsonText : system::String { get:GetElementsAsJsonText }
     property Name : system::String { get:GetName }
 
-    function GetCommandsAsJsonText() : system::String;
     function GetDomAsJsonText() : system::String;
     function GetElementsAsJsonText() : system::String;
     function GetName() : system::String;
@@ -2226,9 +2224,6 @@ class gaclib_controls::UnitTestSnapshotViewerWindowConstructor : system::Referen
     property __vwsn_precompile_19 : presentation::controls::GuiMultilineTextBox*;
     property __vwsn_precompile_2 : presentation::compositions::GuiColumnSplitterComposition*;
     property __vwsn_precompile_20 : presentation::compositions::GuiBoundsComposition*;
-    property __vwsn_precompile_21 : presentation::controls::GuiTabPage*;
-    property __vwsn_precompile_22 : presentation::controls::GuiMultilineTextBox*;
-    property __vwsn_precompile_23 : presentation::compositions::GuiBoundsComposition*;
     property __vwsn_precompile_3 : presentation::compositions::GuiCellComposition*;
     property __vwsn_precompile_4 : presentation::compositions::GuiBoundsComposition*;
     property __vwsn_precompile_5 : presentation::compositions::GuiCellComposition*;
