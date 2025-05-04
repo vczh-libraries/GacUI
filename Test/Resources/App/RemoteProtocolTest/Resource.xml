@@ -178,12 +178,32 @@
                       <MenuItemButton Text="Save As ..."/>
                     </GuiToolstripGroup>
                     <GuiToolstripGroup>
-                      <MenuItemButton Text="Exit">
+                      <MenuItemButton Text="self.Hide() (InvokeInMainThread)">
                         <ev.Clicked-eval><![CDATA[{
                           GuiApplication::GetApplication().InvokeInMainThread(self, func():void
                           {
                             self.Hide();
                           });
+                        }]]></ev.Clicked-eval>
+                      </MenuItemButton>
+                      <MenuItemButton Text="self.Hide()">
+                        <ev.Clicked-eval><![CDATA[{
+                          self.Hide();
+                        }]]></ev.Clicked-eval>
+                      </MenuItemButton>
+                    </GuiToolstripGroup>
+                    <GuiToolstripGroup>
+                      <MenuItemButton Text="self.Close() (InvokeInMainThread)">
+                        <ev.Clicked-eval><![CDATA[{
+                          GuiApplication::GetApplication().InvokeInMainThread(self, func():void
+                          {
+                            self.Close();
+                          });
+                        }]]></ev.Clicked-eval>
+                      </MenuItemButton>
+                      <MenuItemButton Text="self.Close()">
+                        <ev.Clicked-eval><![CDATA[{
+                          self.Close();
                         }]]></ev.Clicked-eval>
                       </MenuItemButton>
                     </GuiToolstripGroup>
