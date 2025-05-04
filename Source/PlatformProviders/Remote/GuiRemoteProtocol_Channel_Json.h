@@ -34,8 +34,32 @@ GuiRemoteProtocolFromJsonChannel
 		, protected IJsonChannelReceiver
 	{
 	protected:
-		IJsonChannel*				channel = nullptr;
-		IGuiRemoteProtocolEvents*	events = nullptr;
+		IJsonChannel*					channel = nullptr;
+		IGuiRemoteProtocolEvents*		events = nullptr;
+
+		using OnReceiveEventHandler = void (GuiRemoteProtocolFromJsonChannel::*)(Ptr<glr::json::JsonNode>);
+		using OnReceiveEventHandlerMap = collections::Dictionary<WString, OnReceiveEventHandler>;
+		OnReceiveEventHandlerMap		onReceiveEventHandlers;
+
+		using OnReceiveResponseHandler = void (GuiRemoteProtocolFromJsonChannel::*)(vint, Ptr<glr::json::JsonNode>);
+		using OnReceiveResponseHandlerMap = collections::Dictionary<WString, OnReceiveResponseHandler>;
+		OnReceiveResponseHandlerMap		onReceiveResponseHandlers;
+
+#define EVENT_NOREQ(NAME, REQUEST)					void OnReceive_Event_ ## NAME (Ptr<glr::json::JsonNode> jsonArguments);
+#define EVENT_REQ(NAME, REQUEST)					void OnReceive_Event_ ## NAME (Ptr<glr::json::JsonNode> jsonArguments);
+#define EVENT_HANDLER(NAME, REQUEST, REQTAG, ...)	EVENT_ ## REQTAG(NAME, REQUEST)
+		GACUI_REMOTEPROTOCOL_EVENTS(EVENT_HANDLER)
+#undef EVENT_HANDLER
+#undef EVENT_REQ
+#undef EVENT_NOREQ
+
+#define MESSAGE_NORES(NAME, RESPONSE)
+#define MESSAGE_RES(NAME, RESPONSE)										void OnReceive_Response_ ## NAME (vint id, Ptr<glr::json::JsonNode> jsonArguments);
+#define MESSAGE_HANDLER(NAME, REQUEST, RESPONSE, REQTAG, RESTAG, ...)	MESSAGE_ ## RESTAG(NAME, RESPONSE)
+		GACUI_REMOTEPROTOCOL_MESSAGES(MESSAGE_HANDLER)
+#undef MESSAGE_HANDLER
+#undef MESSAGE_RES
+#undef MESSAGE_NORES
 
 		void						OnReceive(const Ptr<glr::json::JsonObject>& package) override;
 
@@ -77,7 +101,7 @@ GuiRemoteJsonChannelFromProtocol
 
 #define EVENT_NOREQ(NAME, REQUEST)						void On ## NAME() override;
 #define EVENT_REQ(NAME, REQUEST)						void On ## NAME(const REQUEST& arguments) override;
-#define EVENT_HANDLER(NAME, REQUEST, REQTAG, ...)						EVENT_ ## REQTAG(NAME, REQUEST)
+#define EVENT_HANDLER(NAME, REQUEST, REQTAG, ...)		EVENT_ ## REQTAG(NAME, REQUEST)
 		GACUI_REMOTEPROTOCOL_EVENTS(EVENT_HANDLER)
 #undef EVENT_HANDLER
 #undef EVENT_REQ
@@ -86,10 +110,29 @@ GuiRemoteJsonChannelFromProtocol
 #define MESSAGE_NORES(NAME, RESPONSE)
 #define MESSAGE_RES(NAME, RESPONSE)						void Respond ## NAME(vint id, const RESPONSE& arguments) override;
 #define MESSAGE_HANDLER(NAME, REQUEST, RESPONSE, REQTAG, RESTAG, ...)	MESSAGE_ ## RESTAG(NAME, RESPONSE)
-			GACUI_REMOTEPROTOCOL_MESSAGES(MESSAGE_HANDLER)
+		GACUI_REMOTEPROTOCOL_MESSAGES(MESSAGE_HANDLER)
 #undef MESSAGE_HANDLER
 #undef MESSAGE_RES
 #undef MESSAGE_NORES
+
+	protected:
+
+		using WriteHandler = void (GuiRemoteJsonChannelFromProtocol::*)(vint, Ptr<glr::json::JsonNode>);
+		using WriteHandlerMap = collections::Dictionary<WString, WriteHandler>;
+		WriteHandlerMap			writeHandlers;
+
+#define MESSAGE_NOREQ_NORES(NAME, REQUEST, RESPONSE)					void Write_ ## NAME (vint id, Ptr<glr::json::JsonNode> jsonArguments);
+#define MESSAGE_NOREQ_RES(NAME, REQUEST, RESPONSE)						void Write_ ## NAME (vint id, Ptr<glr::json::JsonNode> jsonArguments);
+#define MESSAGE_REQ_NORES(NAME, REQUEST, RESPONSE)						void Write_ ## NAME (vint id, Ptr<glr::json::JsonNode> jsonArguments);
+#define MESSAGE_REQ_RES(NAME, REQUEST, RESPONSE)						void Write_ ## NAME (vint id, Ptr<glr::json::JsonNode> jsonArguments);
+#define MESSAGE_HANDLER(NAME, REQUEST, RESPONSE, REQTAG, RESTAG, ...)	MESSAGE_ ## REQTAG ## _ ## RESTAG(NAME, REQUEST, RESPONSE)
+		GACUI_REMOTEPROTOCOL_MESSAGES(MESSAGE_HANDLER)
+#undef MESSAGE_HANDLER
+#undef MESSAGE_REQ_RES
+#undef MESSAGE_REQ_NORES
+#undef MESSAGE_NOREQ_RES
+#undef MESSAGE_NOREQ_NORES
+
 	public:
 
 		GuiRemoteJsonChannelFromProtocol(IGuiRemoteProtocol* _protocol);
