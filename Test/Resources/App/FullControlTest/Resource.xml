@@ -147,6 +147,44 @@
             <TabPage Alt="W" Text="Window Manager">
               <Stack ref.Style="windowManagerContent"/>
             </TabPage>
+            <TabPage Alt="X" Text="Exit">
+              <Stack Direction="Vertical" AlignmentToParent="left:5 top:5 right:5 bottom:5" Padding="5" MinSizeLimitation="LimitToElementAndChildren">
+                <StackItem>
+                  <Button Text="self.Hide() (InvokeInMainThread)">
+                    <ev.Clicked-eval><![CDATA[{
+                      GuiApplication::GetApplication().InvokeInMainThread(self, func():void
+                      {
+                        self.Hide();
+                      });
+                    }]]></ev.Clicked-eval>
+                  </Button>
+                </StackItem>
+                <StackItem>
+                  <Button Text="self.Hide()">
+                    <ev.Clicked-eval><![CDATA[{
+                      self.Hide();
+                    }]]></ev.Clicked-eval>
+                  </Button>
+                </StackItem>
+                <StackItem>
+                  <Button Text="self.Close() (InvokeInMainThread)">
+                    <ev.Clicked-eval><![CDATA[{
+                      GuiApplication::GetApplication().InvokeInMainThread(self, func():void
+                      {
+                        self.Close();
+                      });
+                    }]]></ev.Clicked-eval>
+                  </Button>
+                </StackItem>
+                <StackItem>
+                  <Button Text="self.Close()">
+                    <ev.Clicked-eval><![CDATA[{
+                      self.Close();
+                    }]]></ev.Clicked-eval>
+                  </Button>
+                </StackItem>
+              </Stack>
+            </TabPage>
           </att.Pages>
         </Tab>
       </Window>
