@@ -111,10 +111,12 @@ namespace vl::presentation::remote_renderer
 
 	void GuiRemoteRendererSingle::HorizontalWheel(const NativeWindowMouseInfo& info)
 	{
+		events->OnIOHWheel(info);
 	}
 
 	void GuiRemoteRendererSingle::VerticalWheel(const NativeWindowMouseInfo& info)
 	{
+		events->OnIOVWheel(info);
 	}
 
 	void GuiRemoteRendererSingle::MouseMoving(const NativeWindowMouseInfo& info)
