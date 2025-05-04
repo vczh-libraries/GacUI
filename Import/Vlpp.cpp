@@ -698,7 +698,7 @@ String Conversions (buffer walkthrough)
 	template vint			_utftoutf<wchar_t, char32_t>(const wchar_t* s, char32_t* d, vint chars);
 
 /***********************************************************************
-String Conversions (direct)
+String Conversions (ObjectString)
 ***********************************************************************/
 
 	template<typename TFrom, typename TTo, vint(*Convert)(const TFrom*, TTo*, vint)>
@@ -711,6 +711,75 @@ String Conversions (direct)
 		Convert(source.Buffer(), buffer, len);
 		return ObjectString<TTo>::TakeOver(buffer, len - 1);
 	}
+
+	template<typename TFrom, typename TTo>
+	ObjectString<TTo> ConvertUtfString(const ObjectString<TFrom>& source)
+	{
+		return ConvertStringDirect<TFrom, TTo, _utftoutf<TFrom, TTo>>(source);
+	}
+
+#if defined VCZH_WCHAR_UTF16
+	template<>
+	ObjectString<char16_t> ConvertUtfString<wchar_t, char16_t>(const ObjectString<wchar_t>& source)
+	{
+		return ObjectString<char16_t>::UnsafeCastFrom<wchar_t>(source);
+	}
+	template<>
+	ObjectString<wchar_t> ConvertUtfString<char16_t, wchar_t>(const ObjectString<char16_t>& source)
+	{
+		return ObjectString<wchar_t>::UnsafeCastFrom<char16_t>(source);
+	}
+#elif defined VCZH_WCHAR_UTF32
+	template<>
+	ObjectString<char32_t> ConvertUtfString<wchar_t, char32_t>(const ObjectString<wchar_t>& source)
+	{
+		return ObjectString<char32_t>::UnsafeCastFrom<wchar_t>(source);
+	}
+	template<>
+	ObjectString<wchar_t> ConvertUtfString<char32_t, wchar_t>(const ObjectString<char32_t>& source)
+	{
+		return ObjectString<wchar_t>::UnsafeCastFrom<char32_t>(source);
+	}
+#endif
+
+	template ObjectString<char8_t>		ConvertUtfString<wchar_t, char8_t>(const ObjectString<wchar_t>& source);
+	template ObjectString<char16_t>		ConvertUtfString<wchar_t, char16_t>(const ObjectString<wchar_t>& source);
+	template ObjectString<wchar_t>		ConvertUtfString<char8_t, wchar_t>(const ObjectString<char8_t>& source);
+	template ObjectString<char16_t>		ConvertUtfString<char8_t, char16_t>(const ObjectString<char8_t>& source);
+	template ObjectString<wchar_t>		ConvertUtfString<char16_t, wchar_t>(const ObjectString<char16_t>& source);
+	template ObjectString<char8_t>		ConvertUtfString<char16_t, char8_t>(const ObjectString<char16_t>& source);
+
+	template ObjectString<char8_t>		ConvertUtfString<char32_t, char8_t>(const ObjectString<char32_t>& source);
+	template ObjectString<char16_t>		ConvertUtfString<char32_t, char16_t>(const ObjectString<char32_t>& source);
+	template ObjectString<wchar_t>		ConvertUtfString<char32_t, wchar_t>(const ObjectString<char32_t>& source);
+	template ObjectString<char32_t>		ConvertUtfString<char8_t, char32_t>(const ObjectString<char8_t>& source);
+	template ObjectString<char32_t>		ConvertUtfString<char16_t, char32_t>(const ObjectString<char16_t>& source);
+	template ObjectString<char32_t>		ConvertUtfString<wchar_t, char32_t>(const ObjectString<wchar_t>& source);
+
+	template<typename TFrom, typename TTo>
+	void ConvertUtfString(const ObjectString<TFrom>& source, ObjectString<TTo>& dest)
+	{
+		dest = ConvertUtfString<TFrom, TTo>(source);
+	}
+
+	template void		ConvertUtfString<wchar_t, char8_t>(const ObjectString<wchar_t>& source, ObjectString<char8_t>& dest);
+	template void		ConvertUtfString<wchar_t, char16_t>(const ObjectString<wchar_t>& source, ObjectString<char16_t>& dest);
+	template void		ConvertUtfString<char8_t, wchar_t>(const ObjectString<char8_t>& source, ObjectString<wchar_t>& dest);
+	template void		ConvertUtfString<char8_t, char16_t>(const ObjectString<char8_t>& source, ObjectString<char16_t>& dest);
+	template void		ConvertUtfString<char16_t, wchar_t>(const ObjectString<char16_t>& source, ObjectString<wchar_t>& dest);
+	template void		ConvertUtfString<char16_t, char8_t>(const ObjectString<char16_t>& source, ObjectString<char8_t>& dest);
+
+	template void		ConvertUtfString<char32_t, char8_t>(const ObjectString<char32_t>& source, ObjectString<char8_t>& dest);
+	template void		ConvertUtfString<char32_t, char16_t>(const ObjectString<char32_t>& source, ObjectString<char16_t>& dest);
+	template void		ConvertUtfString<char32_t, wchar_t>(const ObjectString<char32_t>& source, ObjectString<wchar_t>& dest);
+	template void		ConvertUtfString<char8_t, char32_t>(const ObjectString<char8_t>& source, ObjectString<char32_t>& dest);
+	template void		ConvertUtfString<char16_t, char32_t>(const ObjectString<char16_t>& source, ObjectString<char32_t>& dest);
+	template void		ConvertUtfString<wchar_t, char32_t>(const ObjectString<wchar_t>& source, ObjectString<char32_t>& dest);
+
+/***********************************************************************
+String Conversions (direct)
+***********************************************************************/
+
 #if defined VCZH_WCHAR_UTF16
 	U32String				wtou32	(const WString& source)		{ return ConvertStringDirect<wchar_t, char32_t, _utftoutf<wchar_t, char32_t>>(source); }
 	WString					u32tow	(const U32String& source)	{ return ConvertStringDirect<char32_t, wchar_t, _utftoutf<char32_t, wchar_t>>(source); }

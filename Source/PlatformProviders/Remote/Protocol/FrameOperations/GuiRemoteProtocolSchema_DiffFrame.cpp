@@ -164,32 +164,18 @@ namespace vl::presentation::remoteprotocol
 								from.dom->children = Ptr(new List<Ptr<RenderingDom>>);
 								for (vint childId : *to.children.Obj())
 								{
-									// Binary search in index for childId
-									vint start = 0;
-									vint end = index.Count() - 1;
-									bool found = false;
-									while (start <= end)
-									{
-										vint mid = (start + end) / 2;
-										vint midId = index[mid].id;
-										if (childId < midId)
-										{
-											end = mid - 1;
-										}
-										else if (childId > midId)
-										{
-											start = mid + 1;
-										}
-										else
-										{
-											// Fill parentId of the new DOM node
-											index[mid].parentId = from.id;
-											from.dom->children->Add(index[mid].dom);
-											found = true;
-											break;
-										}
-									}
-									CHECK_ERROR(found, ERROR_MESSAGE_PREFIX L"Unknown DOM id in diff.");
+									vint indexToInsert = 0;
+									vint indexOfChild = BinarySearchLambda(
+										&index[0],
+										index.Count(),
+										childId,
+										indexToInsert,
+										[](const DomIndexItem& item, vint id) { return item.id <=> id; }
+										);
+									CHECK_ERROR(indexOfChild != -1, ERROR_MESSAGE_PREFIX L"Unknown DOM id in diff.");
+
+									index[indexOfChild].parentId = from.id;
+									from.dom->children->Add(index[indexOfChild].dom);
 								}
 							}
 						}

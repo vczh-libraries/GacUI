@@ -2270,6 +2270,72 @@ List
 /***********************************************************************
 SortedList
 ***********************************************************************/
+		
+		/// <summary>Get the position of an element in an array by performing binary search.</summary>
+		/// <typeparam name="T">Type of elements in the array.</typeparam>
+		/// <typeparam name="K">Type of the element to find.</typeparam>
+		/// <typeparam name="F">The comparison function.</typeparam>
+		/// <returns>Returns the position. Returns -1 if it does not exist.</returns>
+		/// <param name="buffer">The array to find in.</param>
+		/// <param name="count">The number of elements in the array.</param>
+		/// <param name="item">The element to find.</param>
+		/// <param name="index">
+		/// If the element exist, this argument returns one of the element that equals to the specified value.
+		/// If the element doesn not exist,
+		/// this argument returns either the greatest element that less than the specified value,
+		/// or the least element that greater than the specified value.
+		/// </param>
+		/// <param name="orderer">The comparar for two elements returning std::(strong|weak)_ordering.</param>
+		template<typename T, typename K, typename F>
+		vint BinarySearchLambda(const T* buffer, vint count, const K& item, vint& index, F&& orderer)
+		{
+			vint start = 0;
+			vint end = count - 1;
+			index = -1;
+			while (start <= end)
+			{
+				index = start + (end - start) / 2;
+				auto ordering = orderer(buffer[index], item);
+				if constexpr (!std::is_same_v<decltype(ordering), std::partial_ordering>)
+				{
+					// VS2022 seems not happy with
+					// requires(!std::is_same_v<decltype(std::declval<F>()(std::declval<T>(), std::declval<K>())), std::partial_ordering>)
+					CHECK_ERROR(ordering != std::partial_ordering::unordered, L"vl::collections::BinarySearchLambda<T, K, F>(const T*, vint, const K&, vint&, F&&)#This function could not apply on elements in partial ordering.");
+				}
+
+				if (ordering < 0)
+				{
+					start = index + 1;
+				}
+				else if (ordering > 0)
+				{
+					end = index - 1;
+				}
+				else
+				{
+					return index;
+				}
+			}
+			return -1;
+		}
+
+		/// <summary>Get the position of an element in an array by performing binary search.</summary>
+		/// <typeparam name="T">Type of elements in the array.</typeparam>
+		/// <returns>Returns the position. Returns -1 if it does not exist.</returns>
+		/// <param name="buffer">The array to find in.</param>
+		/// <param name="count">The number of elements in the array.</param>
+		/// <param name="item">The element to find.</param>
+		/// <param name="index">
+		/// If the element exist, this argument returns one of the element that equals to the specified value.
+		/// If the element doesn not exist,
+		/// this argument returns either the greatest element that less than the specified value,
+		/// or the least element that greater than the specified value.
+		/// </param>
+		template<typename T>
+		vint BinarySearchLambda2(const T* buffer, vint count, const T& item, vint& index)
+		{
+			return BinarySearchLambda<T, T>(buffer, count, item, index, [](const T& a, const T& b) { return a <=> b; });
+		}
 
 		/// <summary>SortedList: linear container with dynamic size in runtime for ordered values. All elements are kept in order, and are contiguous in memory.</summary>
 		/// <typeparam name="T">Type of elements.</typeparam>
@@ -2279,45 +2345,10 @@ SortedList
 			using K = typename KeyType<T>::Type;
 		protected:
 
-			/// <summary>Get the position of an element in this list by performing binary search.</summary>
-			/// <typeparam name="Key">Type of the element to find.</typeparam>
-			/// <returns>Returns the position. Returns -1 if it does not exist.</returns>
-			/// <param name="item">The element to find.</param>
-			/// <param name="index">
-			/// If the element exist, this argument returns one of the element that equals to the specified value.
-			/// If the element doesn not exist,
-			/// this argument returns either the greatest element that less than the specified value,
-			/// or the lest element that greater than the specified value.
-			/// </param>
 			template<typename Key>
 			vint IndexOfInternal(const Key& item, vint& index)const
 			{
-				vint start = 0;
-				vint end = this->count - 1;
-				index = -1;
-				while (start <= end)
-				{
-					index = start + (end - start) / 2;
-					auto ordering = this->buffer[index] <=> item;
-					if constexpr (std::is_same_v<decltype(ordering), std::partial_ordering>)
-					{
-						CHECK_ERROR(ordering != std::partial_ordering::unordered, L"vl::collections::SortedList<T>::IndexOfInternal(Key&, vint&)#This function could not apply on elements in partial ordering.");
-					}
-
-					if (ordering < 0)
-					{
-						start = index + 1;
-					}
-					else if (ordering > 0)
-					{
-						end = index - 1;
-					}
-					else
-					{
-						return index;
-					}
-				}
-				return -1;
+				return BinarySearchLambda<T, Key>(this->buffer, this->count, item, index, [](const T& a, const Key& b) { return a <=> b; });
 			}
 
 			vint Insert(vint index, const T& item)
@@ -9075,6 +9106,44 @@ String Conversions (buffer walkthrough)
 	extern template vint		_utftoutf<char8_t, char32_t>(const char8_t* s, char32_t* d, vint chars);
 	extern template vint		_utftoutf<char16_t, char32_t>(const char16_t* s, char32_t* d, vint chars);
 	extern template vint		_utftoutf<wchar_t, char32_t>(const wchar_t* s, char32_t* d, vint chars);
+
+/***********************************************************************
+String Conversions (ObjectString)
+***********************************************************************/
+
+	template<typename TFrom, typename TTo>
+	ObjectString<TTo> ConvertUtfString(const ObjectString<TFrom>& source);
+
+	extern template ObjectString<char8_t>		ConvertUtfString<wchar_t, char8_t>(const ObjectString<wchar_t>& source);
+	extern template ObjectString<char16_t>		ConvertUtfString<wchar_t, char16_t>(const ObjectString<wchar_t>& source);
+	extern template ObjectString<wchar_t>		ConvertUtfString<char8_t, wchar_t>(const ObjectString<char8_t>& source);
+	extern template ObjectString<char16_t>		ConvertUtfString<char8_t, char16_t>(const ObjectString<char8_t>& source);
+	extern template ObjectString<wchar_t>		ConvertUtfString<char16_t, wchar_t>(const ObjectString<char16_t>& source);
+	extern template ObjectString<char8_t>		ConvertUtfString<char16_t, char8_t>(const ObjectString<char16_t>& source);
+
+	extern template ObjectString<char8_t>		ConvertUtfString<char32_t, char8_t>(const ObjectString<char32_t>& source);
+	extern template ObjectString<char16_t>		ConvertUtfString<char32_t, char16_t>(const ObjectString<char32_t>& source);
+	extern template ObjectString<wchar_t>		ConvertUtfString<char32_t, wchar_t>(const ObjectString<char32_t>& source);
+	extern template ObjectString<char32_t>		ConvertUtfString<char8_t, char32_t>(const ObjectString<char8_t>& source);
+	extern template ObjectString<char32_t>		ConvertUtfString<char16_t, char32_t>(const ObjectString<char16_t>& source);
+	extern template ObjectString<char32_t>		ConvertUtfString<wchar_t, char32_t>(const ObjectString<wchar_t>& source);
+
+	template<typename TFrom, typename TTo>
+	void ConvertUtfString(const ObjectString<TFrom>& source, ObjectString<TTo>& dest);
+
+	extern template void		ConvertUtfString<wchar_t, char8_t>(const ObjectString<wchar_t>&source, ObjectString<char8_t>& dest);
+	extern template void		ConvertUtfString<wchar_t, char16_t>(const ObjectString<wchar_t>&source, ObjectString<char16_t>& dest);
+	extern template void		ConvertUtfString<char8_t, wchar_t>(const ObjectString<char8_t>&source, ObjectString<wchar_t>& dest);
+	extern template void		ConvertUtfString<char8_t, char16_t>(const ObjectString<char8_t>&source, ObjectString<char16_t>& dest);
+	extern template void		ConvertUtfString<char16_t, wchar_t>(const ObjectString<char16_t>&source, ObjectString<wchar_t>& dest);
+	extern template void		ConvertUtfString<char16_t, char8_t>(const ObjectString<char16_t>&source, ObjectString<char8_t>& dest);
+
+	extern template void		ConvertUtfString<char32_t, char8_t>(const ObjectString<char32_t>&source, ObjectString<char8_t>& dest);
+	extern template void		ConvertUtfString<char32_t, char16_t>(const ObjectString<char32_t>&source, ObjectString<char16_t>& dest);
+	extern template void		ConvertUtfString<char32_t, wchar_t>(const ObjectString<char32_t>&source, ObjectString<wchar_t>& dest);
+	extern template void		ConvertUtfString<char8_t, char32_t>(const ObjectString<char8_t>&source, ObjectString<char32_t>& dest);
+	extern template void		ConvertUtfString<char16_t, char32_t>(const ObjectString<char16_t>&source, ObjectString<char32_t>& dest);
+	extern template void		ConvertUtfString<wchar_t, char32_t>(const ObjectString<wchar_t>&source, ObjectString<char32_t>& dest);
 
 /***********************************************************************
 String Conversions (Utf)

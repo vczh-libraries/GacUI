@@ -149,17 +149,6 @@ String Transformation
 ***********************************************************************/
 
 	template<typename TFrom, typename TTo>
-	static void ConvertUtfString(const ObjectString<TFrom>& source, ObjectString<TTo>& dest)
-	{
-		vint len = _utftoutf<TFrom, TTo>(source.Buffer(), nullptr, 0);
-		if (len < 1) dest = {};
-		TTo* buffer = new TTo[len];
-		memset(buffer, 0, len * sizeof(TTo));
-		_utftoutf<TFrom, TTo>(source.Buffer(), buffer, len);
-		dest = ObjectString<TTo>::TakeOver(buffer, len - 1);
-	}
-
-	template<typename TFrom, typename TTo>
 	struct UtfStringSerializer
 	{
 		using SourceType = ObjectString<TFrom>;
