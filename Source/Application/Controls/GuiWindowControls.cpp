@@ -736,7 +736,7 @@ GuiWindow
 				}
 				else if (frameConfig == BoolOption::AlwaysFalse || templateConfig == BoolOption::AlwaysFalse)
 				{
-					variable = true;
+					variable = false;
 				}
 
 				return true;
