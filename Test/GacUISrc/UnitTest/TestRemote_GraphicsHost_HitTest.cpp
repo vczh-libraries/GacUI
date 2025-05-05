@@ -28,8 +28,18 @@ TEST_FILE
 				L"EndBoundary()",
 				L"End()"
 				);
-			controlHost->Hide();
 		});
+
+		AssertRenderingEventLogs(
+			protocol,
+			eventLogs,
+			[&]()
+			{
+				controlHost->Hide();
+			},
+			L"BeginBoundary(Title, null, {10,10:620,460}, {10,10:620,460})",
+			L"EndBoundary()"
+			);
 
 		SetGuiMainProxy(MakeGuiMain(protocol, eventLogs, controlHost));
 		StartRemoteControllerTest(protocol);
@@ -66,8 +76,19 @@ TEST_FILE
 				L"EndBoundary()",
 				L"End()"
 				);
-			controlHost->Hide();
 		});
+
+		AssertRenderingEventLogs(
+			protocol,
+			eventLogs,
+			[&]()
+			{
+				controlHost->Hide();
+			},
+			L"Render(1, {10,10:620,460}, {0,0:640,480})",
+			L"BeginBoundary(null, Hand, {10,10:620,460}, {10,10:620,460})",
+			L"EndBoundary()"
+			);
 
 		SetGuiMainProxy(MakeGuiMain(protocol, eventLogs, controlHost));
 		StartRemoteControllerTest(protocol);
@@ -109,8 +130,19 @@ TEST_FILE
 				L"EndBoundary()",
 				L"End()"
 				);
-			controlHost->Hide();
 		});
+
+		AssertRenderingEventLogs(
+			protocol,
+			eventLogs,
+			[&]()
+			{
+				controlHost->Hide();
+			},
+			L"BeginBoundary(Title, Hand, {10,10:620,460}, {10,10:620,460})",
+			L"Render(1, {20,20:600,440}, {10,10:620,460})",
+			L"EndBoundary()"
+			);
 
 		SetGuiMainProxy(MakeGuiMain(protocol, eventLogs, controlHost));
 		StartRemoteControllerTest(protocol);
@@ -152,8 +184,19 @@ TEST_FILE
 				L"EndBoundary()",
 				L"End()"
 				);
-			controlHost->Hide();
 		});
+
+		AssertRenderingEventLogs(
+			protocol,
+			eventLogs,
+			[&]()
+			{
+				controlHost->Hide();
+			},
+			L"BeginBoundary(Title, null, {10,10:620,460}, {10,10:620,460})",
+			L"Render(1, {20,20:600,440}, {10,10:620,460})",
+			L"EndBoundary()"
+			);
 
 		SetGuiMainProxy(MakeGuiMain(protocol, eventLogs, controlHost));
 		StartRemoteControllerTest(protocol);
@@ -197,8 +240,21 @@ TEST_FILE
 				L"EndBoundary()",
 				L"End()"
 				);
-			controlHost->Hide();
 		});
+
+		AssertRenderingEventLogs(
+			protocol,
+			eventLogs,
+			[&]()
+			{
+				controlHost->Hide();
+			},
+			L"BeginBoundary(Title, null, {10,10:620,460}, {10,10:620,460})",
+			L"Render(1, {20,20:600,440}, {10,10:620,460})",
+			L"BeginBoundary(Icon, null, {20,20:600,440}, {20,20:600,440})",
+			L"EndBoundary()",
+			L"EndBoundary()"
+			);
 
 		SetGuiMainProxy(MakeGuiMain(protocol, eventLogs, controlHost));
 		StartRemoteControllerTest(protocol);
@@ -256,8 +312,30 @@ TEST_FILE
 				);
 			delete childHost;
 			childHost = nullptr;
-			controlHost->Hide();
 		});
+
+		protocol.OnNextFrame([&]()
+		{
+			AssertEventLogs(
+				eventLogs,
+				L"Destroyed(1)",
+				L"Begin()",
+				L"BeginBoundary(Title, null, {10,10:620,460}, {10,10:620,460})",
+				L"EndBoundary()",
+				L"End()"
+				);
+		});
+
+		AssertRenderingEventLogsNoLayout(
+			protocol,
+			eventLogs,
+			[&]()
+			{
+				controlHost->Hide();
+			},
+			L"BeginBoundary(Title, null, {10,10:620,460}, {10,10:620,460})",
+			L"EndBoundary()"
+			);
 
 		SetGuiMainProxy(MakeGuiMain(protocol, eventLogs, controlHost));
 		StartRemoteControllerTest(protocol);

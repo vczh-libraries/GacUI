@@ -418,7 +418,11 @@ GuiRemoteWindow (INativeWindow)
 			}
 			for (auto l : listeners) l->AfterClosing();
 		}
-		remote->DestroyNativeWindow(this);
+
+		remote->AsyncService()->InvokeInMainThread(this, [this]()
+		{
+			remote->DestroyNativeWindow(this);
+		});
 	}
 
 	bool GuiRemoteWindow::IsVisible()

@@ -75,3 +75,6 @@
 ========================================
 {"id": 88, "diffType": "Modified", "content": null, "children": [92]}
 {"id": 92, "diffType": "Created", "content": {"hitTestResult": null, "cursor": null, "element": 23, "bounds": {"x1": 14, "y1": 42, "x2": 44, "y2": 60}, "validArea": {"x1": 14, "y1": 42, "x2": 44, "y2": 60}}, "children": [96]}
+========================================
+7
+========================================

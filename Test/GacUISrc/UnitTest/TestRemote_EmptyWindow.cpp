@@ -119,12 +119,7 @@ TEST_FILE
 			window->Hide(true);
 			listener.AssertCallbacks(
 				L"BeforeClosing()",
-				L"AfterClosing()",
-				L"LostFocus()",
-				L"RenderingAsDeactivated()",
-				L"Closed()",
-				L"Destroying()",
-				L"Destroyed()"
+				L"AfterClosing()"
 			);
 		});
 		SetGuiMainProxy([&]()
@@ -135,9 +130,15 @@ TEST_FILE
 			window->InstallListener(&listener);
 			window->SetTitle(L"EmptyWindow");
 			ws->Run(window);
-			TEST_CASE(L"Test if no more events are generated after existing")
+			TEST_CASE(L"Finishing events")
 			{
-				listener.AssertCallbacks();
+				listener.AssertCallbacks(
+					L"LostFocus()",
+					L"RenderingAsDeactivated()",
+					L"Closed()",
+					L"Destroying()",
+					L"Destroyed()"
+				);
 			});
 		});
 		StartRemoteControllerTest(protocol);
@@ -166,12 +167,7 @@ TEST_FILE
 			window->Hide(true);
 			listener.AssertCallbacks(
 				L"BeforeClosing()",
-				L"AfterClosing()",
-				L"LostFocus()",
-				L"RenderingAsDeactivated()",
-				L"Closed()",
-				L"Destroying()",
-				L"Destroyed()"
+				L"AfterClosing()"
 			);
 		});
 		SetGuiMainProxy([&]()
@@ -181,9 +177,15 @@ TEST_FILE
 			auto window = ws->CreateNativeWindow(INativeWindow::Normal);
 			window->InstallListener(&listener);
 			ws->Run(window);
-			TEST_CASE(L"Test if no more events are generated after existing")
+			TEST_CASE(L"Finishing events")
 			{
-				listener.AssertCallbacks();
+				listener.AssertCallbacks(
+					L"LostFocus()",
+					L"RenderingAsDeactivated()",
+					L"Closed()",
+					L"Destroying()",
+					L"Destroyed()"
+				);
 			});
 		});
 		StartRemoteControllerTest(protocol);
@@ -191,7 +193,7 @@ TEST_FILE
 
 	TEST_CATEGORY(L"Block closing the non-main window (1)")
 	{
-		BlockClosingWindowListener listener;
+		BlockClosingWindowListener listener, subListener;
 		EmptyWindowProtocol protocol;
 		protocol.OnNextFrame([&]()
 		{
@@ -201,7 +203,6 @@ TEST_FILE
 				L"RenderingAsActivated()"
 			);
 
-			BlockClosingWindowListener subListener;
 			auto ws = GetCurrentController()->WindowService();
 			auto window = ws->GetMainWindow();
 			auto subWindow = ws->CreateNativeWindow(INativeWindow::Normal);
@@ -255,17 +256,9 @@ TEST_FILE
 			window->Hide(true);
 			listener.AssertCallbacks(
 				L"BeforeClosing()",
-				L"AfterClosing()",
-				L"LostFocus()",
-				L"RenderingAsDeactivated()",
-				L"Closed()",
-				L"Destroying()",
-				L"Destroyed()"
+				L"AfterClosing()"
 			);
-			subListener.AssertCallbacks(
-				L"Destroying()",
-				L"Destroyed()"
-			);
+			subListener.AssertCallbacks();
 		});
 		SetGuiMainProxy([&]()
 		{
@@ -274,9 +267,19 @@ TEST_FILE
 			auto window = ws->CreateNativeWindow(INativeWindow::Normal);
 			window->InstallListener(&listener);
 			ws->Run(window);
-			TEST_CASE(L"Test if no more events are generated after existing")
+			TEST_CASE(L"Finishing events")
 			{
-				listener.AssertCallbacks();
+				listener.AssertCallbacks(
+					L"LostFocus()",
+					L"RenderingAsDeactivated()",
+					L"Closed()",
+					L"Destroying()",
+					L"Destroyed()"
+				);
+				subListener.AssertCallbacks(
+					L"Destroying()",
+					L"Destroyed()"
+				);
 			});
 		});
 		StartRemoteControllerTest(protocol);
@@ -284,7 +287,7 @@ TEST_FILE
 
 	TEST_CATEGORY(L"Block closing the non-main window (2)")
 	{
-		BlockClosingWindowListener listener;
+		BlockClosingWindowListener listener, subListener;
 		EmptyWindowProtocol protocol;
 		protocol.OnNextFrame([&]()
 		{
@@ -294,7 +297,6 @@ TEST_FILE
 				L"RenderingAsActivated()"
 			);
 
-			BlockClosingWindowListener subListener;
 			auto ws = GetCurrentController()->WindowService();
 			auto window = ws->GetMainWindow();
 			auto subWindow = ws->CreateNativeWindow(INativeWindow::Normal);
@@ -329,19 +331,9 @@ TEST_FILE
 			window->Hide(true);
 			listener.AssertCallbacks(
 				L"BeforeClosing()",
-				L"AfterClosing()",
-				L"RenderingAsDeactivated()",
-				L"Closed()",
-				L"Destroying()",
-				L"Destroyed()"
+				L"AfterClosing()"
 			);
-			subListener.AssertCallbacks(
-				L"LostFocus()",
-				L"RenderingAsDeactivated()",
-				L"Closed()",
-				L"Destroying()",
-				L"Destroyed()"
-			);
+			subListener.AssertCallbacks();
 		});
 		SetGuiMainProxy([&]()
 		{
@@ -350,9 +342,21 @@ TEST_FILE
 			auto window = ws->CreateNativeWindow(INativeWindow::Normal);
 			window->InstallListener(&listener);
 			ws->Run(window);
-			TEST_CASE(L"Test if no more events are generated after existing")
+			TEST_CASE(L"Finishing events")
 			{
-				listener.AssertCallbacks();
+				listener.AssertCallbacks(
+					L"RenderingAsDeactivated()",
+					L"Closed()",
+					L"Destroying()",
+					L"Destroyed()"
+				);
+				subListener.AssertCallbacks(
+					L"LostFocus()",
+					L"RenderingAsDeactivated()",
+					L"Closed()",
+					L"Destroying()",
+					L"Destroyed()"
+				);
 			});
 		});
 		StartRemoteControllerTest(protocol);
@@ -360,7 +364,7 @@ TEST_FILE
 
 	TEST_CATEGORY(L"ControllerRequestExit event")
 	{
-		BlockClosingWindowListener listener;
+		BlockClosingWindowListener listener, subListener;
 		EmptyWindowProtocol protocol;
 		protocol.OnNextFrame([&]()
 		{
@@ -370,7 +374,6 @@ TEST_FILE
 				L"RenderingAsActivated()"
 			);
 
-			BlockClosingWindowListener subListener;
 			auto ws = GetCurrentController()->WindowService();
 			auto window = ws->GetMainWindow();
 			auto subWindow = ws->CreateNativeWindow(INativeWindow::Normal);
@@ -400,19 +403,9 @@ TEST_FILE
 			protocol.GetEvents()->OnControllerRequestExit();
 			listener.AssertCallbacks(
 				L"BeforeClosing()",
-				L"AfterClosing()",
-				L"RenderingAsDeactivated()",
-				L"Closed()",
-				L"Destroying()",
-				L"Destroyed()"
+				L"AfterClosing()"
 			);
-			subListener.AssertCallbacks(
-				L"LostFocus()",
-				L"RenderingAsDeactivated()",
-				L"Closed()",
-				L"Destroying()",
-				L"Destroyed()"
-			);
+			subListener.AssertCallbacks();
 		});
 		SetGuiMainProxy([&]()
 		{
@@ -421,9 +414,21 @@ TEST_FILE
 			auto window = ws->CreateNativeWindow(INativeWindow::Normal);
 			window->InstallListener(&listener);
 			ws->Run(window);
-			TEST_CASE(L"Test if no more events are generated after existing")
+			TEST_CASE(L"Finishing events")
 			{
-				listener.AssertCallbacks();
+				listener.AssertCallbacks(
+					L"RenderingAsDeactivated()",
+					L"Closed()",
+					L"Destroying()",
+					L"Destroyed()"
+				);
+				subListener.AssertCallbacks(
+					L"LostFocus()",
+					L"RenderingAsDeactivated()",
+					L"Closed()",
+					L"Destroying()",
+					L"Destroyed()"
+				);
 			});
 		});
 		StartRemoteControllerTest(protocol);
@@ -431,7 +436,7 @@ TEST_FILE
 
 	TEST_CATEGORY(L"ControllerForceExit event")
 	{
-		BlockClosingWindowListener listener;
+		BlockClosingWindowListener listener, subListener;
 		EmptyWindowProtocol protocol;
 		protocol.OnNextFrame([&]()
 		{
@@ -441,7 +446,6 @@ TEST_FILE
 				L"RenderingAsActivated()"
 			);
 
-			BlockClosingWindowListener subListener;
 			auto ws = GetCurrentController()->WindowService();
 			auto window = ws->GetMainWindow();
 			auto subWindow = ws->CreateNativeWindow(INativeWindow::Normal);
@@ -462,19 +466,8 @@ TEST_FILE
 
 			listener.blockClosing = true;
 			protocol.GetEvents()->OnControllerForceExit();
-			listener.AssertCallbacks(
-				L"RenderingAsDeactivated()",
-				L"Closed()",
-				L"Destroying()",
-				L"Destroyed()"
-			);
-			subListener.AssertCallbacks(
-				L"LostFocus()",
-				L"RenderingAsDeactivated()",
-				L"Closed()",
-				L"Destroying()",
-				L"Destroyed()"
-			);
+			listener.AssertCallbacks();
+			subListener.AssertCallbacks();
 		});
 		SetGuiMainProxy([&]()
 		{
@@ -483,9 +476,21 @@ TEST_FILE
 			auto window = ws->CreateNativeWindow(INativeWindow::Normal);
 			window->InstallListener(&listener);
 			ws->Run(window);
-			TEST_CASE(L"Test if no more events are generated after existing")
+			TEST_CASE(L"Finishing events")
 			{
-				listener.AssertCallbacks();
+				listener.AssertCallbacks(
+					L"RenderingAsDeactivated()",
+					L"Closed()",
+					L"Destroying()",
+					L"Destroyed()"
+				);
+				subListener.AssertCallbacks(
+					L"LostFocus()",
+					L"RenderingAsDeactivated()",
+					L"Closed()",
+					L"Destroying()",
+					L"Destroyed()"
+				);
 			});
 		});
 		StartRemoteControllerTest(protocol);
@@ -687,17 +692,9 @@ TEST_FILE
 			window->Hide(true);
 			listener.AssertCallbacks(
 				L"BeforeClosing()",
-				L"AfterClosing()",
-				L"LostFocus()",
-				L"RenderingAsDeactivated()",
-				L"Closed()",
-				L"Destroying()",
-				L"Destroyed()"
+				L"AfterClosing()"
 			);
-			subListener.AssertCallbacks(
-				L"Destroying()",
-				L"Destroyed()"
-			);
+			subListener.AssertCallbacks();
 		});
 
 		SetGuiMainProxy([&]()
@@ -707,9 +704,19 @@ TEST_FILE
 			window = ws->CreateNativeWindow(INativeWindow::Normal);
 			window->InstallListener(&listener);
 			ws->Run(window);
-			TEST_CASE(L"Test if no more events are generated after existing")
+			TEST_CASE(L"Finishing events")
 			{
-				listener.AssertCallbacks();
+				listener.AssertCallbacks(
+					L"LostFocus()",
+					L"RenderingAsDeactivated()",
+					L"Closed()",
+					L"Destroying()",
+					L"Destroyed()"
+				);
+				subListener.AssertCallbacks(
+					L"Destroying()",
+					L"Destroyed()"
+				);
 			});
 		});
 		StartRemoteControllerTest(protocol);
@@ -768,12 +775,7 @@ TEST_FILE
 			window->Hide(true);
 			listener.AssertCallbacks(
 				L"BeforeClosing()",
-				L"AfterClosing()",
-				L"LostFocus()",
-				L"RenderingAsDeactivated()",
-				L"Closed()",
-				L"Destroying()",
-				L"Destroyed()"
+				L"AfterClosing()"
 			);
 		});
 
@@ -785,9 +787,15 @@ TEST_FILE
 			window->InstallListener(&listener);
 			window->SetClientSize({ 100,200 });
 			ws->Run(window);
-			TEST_CASE(L"Test if no more events are generated after existing")
+			TEST_CASE(L"Finishing events")
 			{
-				listener.AssertCallbacks();
+				listener.AssertCallbacks(
+					L"LostFocus()",
+					L"RenderingAsDeactivated()",
+					L"Closed()",
+					L"Destroying()",
+					L"Destroyed()"
+				);
 			});
 		});
 		StartRemoteControllerTest(protocol);
@@ -849,10 +857,7 @@ TEST_FILE
 			protocol.GetEvents()->OnControllerRequestExit();
 			listener.AssertCallbacks(
 				L"BeforeClosing()",
-				L"AfterClosing()",
-				L"Closed()",
-				L"Destroying()",
-				L"Destroyed()"
+				L"AfterClosing()"
 			);
 		});
 
@@ -864,9 +869,13 @@ TEST_FILE
 			window->InstallListener(&listener);
 			window->SetClientSize({ 100,200 });
 			ws->Run(window);
-			TEST_CASE(L"Test if no more events are generated after existing")
+			TEST_CASE(L"Finishing events")
 			{
-				listener.AssertCallbacks();
+				listener.AssertCallbacks(
+					L"Closed()",
+					L"Destroying()",
+					L"Destroyed()"
+				);
 			});
 		});
 		StartRemoteControllerTest(protocol);
