@@ -8,9 +8,41 @@ namespace vl::presentation::remote_renderer
 * Rendering (Commands)
 ***********************************************************************/
 
+	void GuiRemoteRendererSingle::UnregisterGlobalShortcutKeys()
+	{
+		auto inputService = GetCurrentController()->InputService();
+		for (vint id : globalShortcuts.Keys())
+		{
+			inputService->UnregisterGlobalShortcutKey(id);
+		}
+		globalShortcuts.Clear();
+
+	}
+
+	void GuiRemoteRendererSingle::GlobalShortcutKeyActivated(vint id)
+	{
+		vint index = globalShortcuts.Keys().IndexOf(id);
+		if (index != -1)
+		{
+			events->OnIOGlobalShortcutKey(globalShortcuts.Values()[index].id);
+		}
+	}
+
 	void GuiRemoteRendererSingle::RequestIOUpdateGlobalShortcutKey(const Ptr<collections::List<remoteprotocol::GlobalShortcutKey>>& arguments)
 	{
-		// calls events->OnIOGlobalShortcutKey when activated
+		UnregisterGlobalShortcutKeys();
+		if (arguments)
+		{
+			auto inputService = GetCurrentController()->InputService();
+			for (auto&& shortcut : *arguments.Obj())
+			{
+				vint id = inputService->RegisterGlobalShortcutKey(shortcut.ctrl, shortcut.shift, shortcut.alt, shortcut.code);
+				if (id != -1)
+				{
+					globalShortcuts.Add(id, shortcut);
+				}
+			}
+		}
 	}
 
 	void GuiRemoteRendererSingle::RequestIORequireCapture()

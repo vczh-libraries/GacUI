@@ -48,6 +48,14 @@ namespace vl::presentation::remote_renderer
 		void									RenderingAsDeactivated() override;
 
 	protected:
+		using GlobalShortcutMap = collections::Dictionary<vint, remoteprotocol::GlobalShortcutKey>;
+
+		GlobalShortcutMap						globalShortcuts;
+
+		void									UnregisterGlobalShortcutKeys();
+		void									GlobalShortcutKeyActivated(vint id) override;
+
+	protected:
 		struct SolidLabelMeasuring
 		{
 			remoteprotocol::ElementSolidLabelMeasuringRequest		request;

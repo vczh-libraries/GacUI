@@ -139,6 +139,7 @@ namespace vl::presentation::remote_renderer
 
 	void GuiRemoteRendererSingle::UnregisterMainWindow()
 	{
+		UnregisterGlobalShortcutKeys();
 		GetCurrentController()->CallbackService()->UninstallListener(this);
 	}
 
