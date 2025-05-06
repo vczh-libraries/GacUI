@@ -26,10 +26,12 @@ https://github.com/vczh-libraries
 namespace vl_workflow_global
 {
 	struct __vwsnf10_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_;
-	struct __vwsnf11_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_;
-	struct __vwsnf12_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize__;
+	struct __vwsnf11_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize__;
+	struct __vwsnf12_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_;
 	struct __vwsnf13_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_;
-	struct __vwsnf14_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_;
+	struct __vwsnf14_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize__;
+	struct __vwsnf15_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_;
+	struct __vwsnf16_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_;
 	struct __vwsnf1_Demo_demo_ClickMeTabConstructor___vwsn_demo_ClickMeTab_Initialize_;
 	struct __vwsnf2_Demo_demo_ClickMeTabConstructor___vwsn_demo_ClickMeTab_Initialize_;
 	struct __vwsnf3_Demo_demo_DataGridTabConstructor___vwsn_demo_DataGridTab_Initialize_;
@@ -38,7 +40,7 @@ namespace vl_workflow_global
 	struct __vwsnf6_Demo_demo_DataGridTabConstructor___vwsn_demo_DataGridTab_Initialize_;
 	struct __vwsnf7_Demo_demo_DataGridTabConstructor___vwsn_demo_DataGridTab_Initialize_;
 	struct __vwsnf8_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_;
-	struct __vwsnf9_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize__;
+	struct __vwsnf9_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_;
 }
 
 namespace demo
@@ -65,6 +67,10 @@ namespace demo
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_2;
 		::vl::presentation::controls::GuiButton* __vwsn_precompile_3;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_4;
+		::vl::presentation::controls::GuiLabel* __vwsn_precompile_5;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_6;
+		::vl::presentation::controls::GuiLabel* __vwsn_precompile_7;
 		void __vwsn_demo_ClickMeTab_Initialize(::demo::ClickMeTab* __vwsn_this_);
 	public:
 		ClickMeTabConstructor();
@@ -124,59 +130,65 @@ namespace demo
 	class MainWindowConstructor : public ::vl::Object, public ::vl::reflection::Description<MainWindowConstructor>
 	{
 		friend struct ::vl_workflow_global::__vwsnf10_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf11_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf12_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize__;
+		friend struct ::vl_workflow_global::__vwsnf11_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize__;
+		friend struct ::vl_workflow_global::__vwsnf12_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf13_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf14_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf14_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize__;
+		friend struct ::vl_workflow_global::__vwsnf15_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf16_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf8_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf9_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize__;
+		friend struct ::vl_workflow_global::__vwsnf9_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_;
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<MainWindowConstructor>;
 #endif
 	protected:
 		::demo::MainWindow* self;
 		::vl::presentation::controls::GuiMessageDialog* dialogQueryClose;
+		::vl::presentation::controls::GuiMessageDialog* dialogLocalShortcut;
+		::vl::presentation::controls::GuiMessageDialog* dialogGlobalShortcut;
 		::vl::presentation::controls::GuiToolstripButton* menuFileNew;
-		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0;
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1;
-		::vl::presentation::controls::GuiToolstripMenuBar* __vwsn_precompile_2;
-		::vl::presentation::controls::GuiToolstripButton* __vwsn_precompile_3;
-		::vl::presentation::controls::GuiToolstripMenu* __vwsn_precompile_4;
-		::vl::presentation::controls::GuiToolstripGroupContainer* __vwsn_precompile_5;
-		::vl::presentation::controls::GuiToolstripGroup* __vwsn_precompile_6;
-		::vl::presentation::controls::GuiToolstripMenu* __vwsn_precompile_7;
-		::vl::presentation::controls::GuiToolstripButton* __vwsn_precompile_8;
-		::vl::presentation::controls::GuiToolstripButton* __vwsn_precompile_9;
+		::vl::presentation::controls::GuiToolstripCommand* __vwsn_precompile_0;
+		::vl::presentation::controls::GuiToolstripCommand* __vwsn_precompile_1;
+		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_2;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_3;
+		::vl::presentation::controls::GuiToolstripMenuBar* __vwsn_precompile_4;
+		::vl::presentation::controls::GuiToolstripButton* __vwsn_precompile_5;
+		::vl::presentation::controls::GuiToolstripMenu* __vwsn_precompile_6;
+		::vl::presentation::controls::GuiToolstripGroupContainer* __vwsn_precompile_7;
+		::vl::presentation::controls::GuiToolstripGroup* __vwsn_precompile_8;
+		::vl::presentation::controls::GuiToolstripMenu* __vwsn_precompile_9;
 		::vl::presentation::controls::GuiToolstripButton* __vwsn_precompile_10;
 		::vl::presentation::controls::GuiToolstripButton* __vwsn_precompile_11;
-		::vl::presentation::controls::GuiToolstripGroup* __vwsn_precompile_12;
+		::vl::presentation::controls::GuiToolstripButton* __vwsn_precompile_12;
 		::vl::presentation::controls::GuiToolstripButton* __vwsn_precompile_13;
-		::vl::presentation::controls::GuiToolstripButton* __vwsn_precompile_14;
-		::vl::presentation::controls::GuiToolstripGroup* __vwsn_precompile_15;
+		::vl::presentation::controls::GuiToolstripGroup* __vwsn_precompile_14;
+		::vl::presentation::controls::GuiToolstripButton* __vwsn_precompile_15;
 		::vl::presentation::controls::GuiToolstripButton* __vwsn_precompile_16;
-		::vl::presentation::controls::GuiToolstripButton* __vwsn_precompile_17;
-		::vl::presentation::controls::GuiToolstripGroup* __vwsn_precompile_18;
+		::vl::presentation::controls::GuiToolstripGroup* __vwsn_precompile_17;
+		::vl::presentation::controls::GuiToolstripButton* __vwsn_precompile_18;
 		::vl::presentation::controls::GuiToolstripButton* __vwsn_precompile_19;
-		::vl::presentation::controls::GuiToolstripButton* __vwsn_precompile_20;
+		::vl::presentation::controls::GuiToolstripGroup* __vwsn_precompile_20;
 		::vl::presentation::controls::GuiToolstripButton* __vwsn_precompile_21;
-		::vl::presentation::controls::GuiToolstripMenu* __vwsn_precompile_22;
-		::vl::presentation::controls::GuiToolstripGroupContainer* __vwsn_precompile_23;
-		::vl::presentation::controls::GuiToolstripGroup* __vwsn_precompile_24;
-		::vl::presentation::controls::GuiToolstripButton* __vwsn_precompile_25;
-		::vl::presentation::controls::GuiToolstripButton* __vwsn_precompile_26;
-		::vl::presentation::controls::GuiToolstripGroup* __vwsn_precompile_27;
+		::vl::presentation::controls::GuiToolstripButton* __vwsn_precompile_22;
+		::vl::presentation::controls::GuiToolstripButton* __vwsn_precompile_23;
+		::vl::presentation::controls::GuiToolstripMenu* __vwsn_precompile_24;
+		::vl::presentation::controls::GuiToolstripGroupContainer* __vwsn_precompile_25;
+		::vl::presentation::controls::GuiToolstripGroup* __vwsn_precompile_26;
+		::vl::presentation::controls::GuiToolstripButton* __vwsn_precompile_27;
 		::vl::presentation::controls::GuiToolstripButton* __vwsn_precompile_28;
-		::vl::presentation::controls::GuiToolstripButton* __vwsn_precompile_29;
+		::vl::presentation::controls::GuiToolstripGroup* __vwsn_precompile_29;
 		::vl::presentation::controls::GuiToolstripButton* __vwsn_precompile_30;
-		::vl::presentation::controls::GuiToolstripGroup* __vwsn_precompile_31;
+		::vl::presentation::controls::GuiToolstripButton* __vwsn_precompile_31;
 		::vl::presentation::controls::GuiToolstripButton* __vwsn_precompile_32;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_33;
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_34;
-		::vl::presentation::controls::GuiTab* __vwsn_precompile_35;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_36;
-		::demo::ClickMeTab* __vwsn_precompile_37;
-		::demo::DataGridTab* __vwsn_precompile_38;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_39;
+		::vl::presentation::controls::GuiToolstripGroup* __vwsn_precompile_33;
+		::vl::presentation::controls::GuiToolstripButton* __vwsn_precompile_34;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_35;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_36;
+		::vl::presentation::controls::GuiTab* __vwsn_precompile_37;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_38;
+		::demo::ClickMeTab* __vwsn_precompile_39;
+		::demo::DataGridTab* __vwsn_precompile_40;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_41;
 		void __vwsn_demo_MainWindow_Initialize(::demo::MainWindow* __vwsn_this_);
 	public:
 		MainWindowConstructor();
@@ -209,22 +221,22 @@ Closures
 		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
 	};
 
-	struct __vwsnf11_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_
+	struct __vwsnf11_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize__
 	{
 		::demo::MainWindowConstructor* __vwsnthis_0;
 
-		__vwsnf11_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_(::demo::MainWindowConstructor* __vwsnctorthis_0);
-
-		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
-	};
-
-	struct __vwsnf12_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize__
-	{
-		::demo::MainWindowConstructor* __vwsnthis_0;
-
-		__vwsnf12_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize__(::demo::MainWindowConstructor* __vwsnctorthis_0);
+		__vwsnf11_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize__(::demo::MainWindowConstructor* __vwsnctorthis_0);
 
 		void operator()() const;
+	};
+
+	struct __vwsnf12_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_
+	{
+		::demo::MainWindowConstructor* __vwsnthis_0;
+
+		__vwsnf12_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_(::demo::MainWindowConstructor* __vwsnctorthis_0);
+
+		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
 	};
 
 	struct __vwsnf13_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_
@@ -236,11 +248,29 @@ Closures
 		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
 	};
 
-	struct __vwsnf14_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_
+	struct __vwsnf14_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize__
 	{
 		::demo::MainWindowConstructor* __vwsnthis_0;
 
-		__vwsnf14_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_(::demo::MainWindowConstructor* __vwsnctorthis_0);
+		__vwsnf14_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize__(::demo::MainWindowConstructor* __vwsnctorthis_0);
+
+		void operator()() const;
+	};
+
+	struct __vwsnf15_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_
+	{
+		::demo::MainWindowConstructor* __vwsnthis_0;
+
+		__vwsnf15_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_(::demo::MainWindowConstructor* __vwsnctorthis_0);
+
+		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
+	};
+
+	struct __vwsnf16_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_
+	{
+		::demo::MainWindowConstructor* __vwsnthis_0;
+
+		__vwsnf16_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_(::demo::MainWindowConstructor* __vwsnctorthis_0);
 
 		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiRequestEventArgs* arguments) const;
 	};
@@ -317,13 +347,13 @@ Closures
 		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
 	};
 
-	struct __vwsnf9_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize__
+	struct __vwsnf9_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_
 	{
 		::demo::MainWindowConstructor* __vwsnthis_0;
 
-		__vwsnf9_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize__(::demo::MainWindowConstructor* __vwsnctorthis_0);
+		__vwsnf9_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_(::demo::MainWindowConstructor* __vwsnctorthis_0);
 
-		void operator()() const;
+		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
 	};
 }
 

@@ -15,6 +15,8 @@
         <Table CellPadding="10" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
           <att.Rows>
             <_>composeType:MinSize</_>
+            <_>composeType:MinSize</_>
+            <_>composeType:MinSize</_>
             <_>composeType:Percentage percentage:1.0</_>
           </att.Rows>
           <att.Columns>
@@ -36,6 +38,12 @@
                 raise "This is a fatel error!";
               }]]></ev.Clicked-eval>
             </Button>
+          </Cell>
+          <Cell Site="row:1 column:0 columnSpan:3">
+            <Label Text="Local shortcut key: Ctrl+Q"/>
+          </Cell>
+          <Cell Site="row:2 column:0 columnSpan:3">
+            <Label Text="Global shortcut key: Ctrl+Shift+Alt+Q"/>
           </Cell>
         </Table>
       </TabPage>
@@ -140,6 +148,24 @@
                        Title-eval="self.Text"
                        Text="Do you want to exit?"
           />
+        <MessageDialog ref.Name="dialogLocalShortcut"
+                       Title-eval="self.Text"
+                       Text="You pressed Ctrl+Q!"
+          />
+        <MessageDialog ref.Name="dialogGlobalShortcut"
+                       Title-eval="self.Text"
+                       Text="You pressed Ctrl+Shift+Alt+Q!"
+          />
+        <ToolstripCommand ShortcutBuilder="Ctrl+Q">
+          <ev.Executed-eval><![CDATA[{
+            dialogLocalShortcut.ShowDialog();
+          }]]></ev.Executed-eval>
+        </ToolstripCommand>
+        <ToolstripCommand ShortcutBuilder="global:Ctrl+Shift+Alt+Q">
+          <ev.Executed-eval><![CDATA[{
+            dialogGlobalShortcut.ShowDialog();
+          }]]></ev.Executed-eval>
+        </ToolstripCommand>
         <ev.WindowClosing-eval><![CDATA[{
           if (dialogQueryClose.ShowDialog() == INativeDialogService::MessageBoxButtonsOutput::SelectCancel)
           {

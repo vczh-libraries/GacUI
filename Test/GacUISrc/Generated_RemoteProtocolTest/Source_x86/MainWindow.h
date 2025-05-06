@@ -28,12 +28,14 @@ namespace demo
 	{
 		friend class ::demo::MainWindowConstructor;
 		friend struct ::vl_workflow_global::__vwsnf10_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf11_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf12_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize__;
+		friend struct ::vl_workflow_global::__vwsnf11_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize__;
+		friend struct ::vl_workflow_global::__vwsnf12_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf13_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf14_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf14_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize__;
+		friend struct ::vl_workflow_global::__vwsnf15_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf16_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf8_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf9_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize__;
+		friend struct ::vl_workflow_global::__vwsnf9_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_;
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<MainWindow>;
 #endif

@@ -10,7 +10,7 @@ namespace vl::presentation::remote_renderer
 
 	void GuiRemoteRendererSingle::RequestIOUpdateGlobalShortcutKey(const Ptr<collections::List<remoteprotocol::GlobalShortcutKey>>& arguments)
 	{
-		CHECK_ERROR(arguments->Count() == 0, L"Not Implemented");
+		// calls events->OnIOGlobalShortcutKey when activated
 	}
 
 	void GuiRemoteRendererSingle::RequestIORequireCapture()
