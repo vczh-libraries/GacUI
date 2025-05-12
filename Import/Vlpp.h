@@ -9127,7 +9127,7 @@ String Conversions (ObjectString)
 	template<>
 	ObjectString<wchar_t> ConvertUtfString<char32_t, wchar_t>(const ObjectString<char32_t>& source);
 	extern template ObjectString<char16_t>		ConvertUtfString<wchar_t, char16_t>(const ObjectString<wchar_t>& source);
-	extern template ObjectString<char16_t>		ConvertUtfString<char8_t, char16_t>(const ObjectString<char8_t>& source);
+	extern template ObjectString<wchar_t>		ConvertUtfString<char16_t, wchar_t>(const ObjectString<char16_t>& source);
 #endif
 
 	extern template ObjectString<char8_t>		ConvertUtfString<wchar_t, char8_t>(const ObjectString<wchar_t>& source);

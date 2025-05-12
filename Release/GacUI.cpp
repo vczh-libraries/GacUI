@@ -2721,7 +2721,7 @@ GuiWindow
 				}
 				else if (frameConfig == BoolOption::AlwaysFalse || templateConfig == BoolOption::AlwaysFalse)
 				{
-					variable = true;
+					variable = false;
 				}
 
 				return true;
@@ -40604,6 +40604,42 @@ ChannelPackageSemantic
 GuiRemoteProtocolFromJsonChannel
 ***********************************************************************/
 
+#define EVENT_NOREQ(NAME, REQUEST)\
+	void GuiRemoteProtocolFromJsonChannel::OnReceive_Event_ ## NAME (Ptr<glr::json::JsonNode> jsonArguments)\
+	{\
+		events->On ## NAME();\
+	}\
+
+#define EVENT_REQ(NAME, REQUEST)\
+	void GuiRemoteProtocolFromJsonChannel::OnReceive_Event_ ## NAME (Ptr<glr::json::JsonNode> jsonArguments)\
+	{\
+		REQUEST arguments;\
+		ConvertJsonToCustomType(jsonArguments, arguments);\
+		events->On ## NAME(arguments);\
+	}\
+
+#define EVENT_HANDLER(NAME, REQUEST, REQTAG, ...)	EVENT_ ## REQTAG(NAME, REQUEST)
+	GACUI_REMOTEPROTOCOL_EVENTS(EVENT_HANDLER)
+#undef EVENT_HANDLER
+#undef EVENT_REQ
+#undef EVENT_NOREQ
+
+#define MESSAGE_NORES(NAME, RESPONSE)
+
+#define MESSAGE_RES(NAME, RESPONSE)\
+	void GuiRemoteProtocolFromJsonChannel::OnReceive_Response_ ## NAME (vint id, Ptr<glr::json::JsonNode> jsonArguments)\
+	{\
+		RESPONSE arguments;\
+		ConvertJsonToCustomType(jsonArguments, arguments);\
+		events->Respond ## NAME(id, arguments);\
+	}\
+
+#define MESSAGE_HANDLER(NAME, REQUEST, RESPONSE, REQTAG, RESTAG, ...)	MESSAGE_ ## RESTAG(NAME, RESPONSE)
+		GACUI_REMOTEPROTOCOL_MESSAGES(MESSAGE_HANDLER)
+#undef MESSAGE_HANDLER
+#undef MESSAGE_RES
+#undef MESSAGE_NORES
+
 	void GuiRemoteProtocolFromJsonChannel::OnReceive(const Ptr<glr::json::JsonObject>& package)
 	{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::channeling::GuiRemoteProtocolFromJsonChannel::OnReceive(const Ptr<JsonNode>&)#"
@@ -40614,55 +40650,35 @@ GuiRemoteProtocolFromJsonChannel
 		Ptr<glr::json::JsonNode> jsonArguments;
 		JsonChannelUnpack(package, semantic, id, name, jsonArguments);
 
-#define EVENT_NOREQ(NAME, REQUEST)\
-		if (name == L ## #NAME)\
-		{\
-			events->On ## NAME();\
-		} else\
-
-#define EVENT_REQ(NAME, REQUEST)\
-		if (name == L ## #NAME)\
-		{\
-			REQUEST arguments;\
-			ConvertJsonToCustomType(jsonArguments, arguments);\
-			events->On ## NAME(arguments);\
-		} else\
-
-#define EVENT_HANDLER(NAME, REQUEST, REQTAG, ...)	EVENT_ ## REQTAG(NAME, REQUEST)
 		if (semantic == ChannelPackageSemantic::Event)
 		{
-			GACUI_REMOTEPROTOCOL_EVENTS(EVENT_HANDLER)
+			vint index = onReceiveEventHandlers.Keys().IndexOf(name);
+			if (index == -1)
 			{
 				CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unrecognized event name");
 			}
+			else
+			{
+				(this->*onReceiveEventHandlers.Values()[index])(jsonArguments);
+			}
 		}
-		else
-#undef EVENT_HANDLER
-#undef EVENT_REQ
-#undef EVENT_NOREQ
-
-#define MESSAGE_NORES(NAME, RESPONSE)
-#define MESSAGE_RES(NAME, RESPONSE)\
-		if (name == L ## #NAME)\
-		{\
-			RESPONSE arguments;\
-			ConvertJsonToCustomType(jsonArguments, arguments);\
-			events->Respond ## NAME(id, arguments);\
-		} else\
-
-#define MESSAGE_HANDLER(NAME, REQUEST, RESPONSE, REQTAG, RESTAG, ...)	MESSAGE_ ## RESTAG(NAME, RESPONSE)
-		if (semantic == ChannelPackageSemantic::Response)
+		else if (semantic == ChannelPackageSemantic::Response)
 		{
-			GACUI_REMOTEPROTOCOL_MESSAGES(MESSAGE_HANDLER)
+			vint index = onReceiveResponseHandlers.Keys().IndexOf(name);
+			if (index == -1)
 			{
 				CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unrecognized response name");
 			}
-		} else
-#undef MESSAGE_HANDLER
-#undef MESSAGE_RES
-#undef MESSAGE_NORES
+			else
+			{
+				(this->*onReceiveResponseHandlers.Values()[index])(id, jsonArguments);
+			}
+		}
+		else
+		{
+			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unrecognized category name");
+		}
 
-		CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unrecognized category name");
 #undef ERROR_MESSAGE_PREFIX
 	}
 
@@ -40709,6 +40725,21 @@ GuiRemoteProtocolFromJsonChannel
 	GuiRemoteProtocolFromJsonChannel::GuiRemoteProtocolFromJsonChannel(IJsonChannel* _channel)
 		: channel(_channel)
 	{
+#define EVENT_NOREQ(NAME, REQUEST)					onReceiveEventHandlers.Add(WString::Unmanaged(L ## #NAME), &GuiRemoteProtocolFromJsonChannel::OnReceive_Event_ ## NAME);
+#define EVENT_REQ(NAME, REQUEST)					onReceiveEventHandlers.Add(WString::Unmanaged(L ## #NAME), &GuiRemoteProtocolFromJsonChannel::OnReceive_Event_ ## NAME);
+#define EVENT_HANDLER(NAME, REQUEST, REQTAG, ...)	EVENT_ ## REQTAG(NAME, REQUEST)
+		GACUI_REMOTEPROTOCOL_EVENTS(EVENT_HANDLER)
+#undef EVENT_HANDLER
+#undef EVENT_REQ
+#undef EVENT_NOREQ
+
+#define MESSAGE_NORES(NAME, RESPONSE)
+#define MESSAGE_RES(NAME, RESPONSE)										onReceiveResponseHandlers.Add(WString::Unmanaged(L ## #NAME), &GuiRemoteProtocolFromJsonChannel::OnReceive_Response_ ## NAME);
+#define MESSAGE_HANDLER(NAME, REQUEST, RESPONSE, REQTAG, RESTAG, ...)	MESSAGE_ ## RESTAG(NAME, RESPONSE)
+		GACUI_REMOTEPROTOCOL_MESSAGES(MESSAGE_HANDLER)
+#undef MESSAGE_HANDLER
+#undef MESSAGE_RES
+#undef MESSAGE_NORES
 	}
 
 	GuiRemoteProtocolFromJsonChannel::~GuiRemoteProtocolFromJsonChannel()
@@ -40777,9 +40808,56 @@ GuiRemoteJsonChannelFromProtocol
 #undef MESSAGE_RES
 #undef MESSAGE_NORES
 
+#define MESSAGE_NOREQ_NORES(NAME, REQUEST, RESPONSE)\
+	void GuiRemoteJsonChannelFromProtocol::Write_ ## NAME(vint id, Ptr<glr::json::JsonNode> jsonArguments)\
+	{\
+		protocol->Request ## NAME();\
+	}\
+
+#define MESSAGE_NOREQ_RES(NAME, REQUEST, RESPONSE)\
+	void GuiRemoteJsonChannelFromProtocol::Write_ ## NAME(vint id, Ptr<glr::json::JsonNode> jsonArguments)\
+	{\
+		protocol->Request ## NAME(id);\
+	}\
+
+#define MESSAGE_REQ_NORES(NAME, REQUEST, RESPONSE)\
+	void GuiRemoteJsonChannelFromProtocol::Write_ ## NAME(vint id, Ptr<glr::json::JsonNode> jsonArguments)\
+	{\
+		REQUEST arguments;\
+		ConvertJsonToCustomType(jsonArguments, arguments);\
+		protocol->Request ## NAME(arguments);\
+	}\
+
+#define MESSAGE_REQ_RES(NAME, REQUEST, RESPONSE)\
+	void GuiRemoteJsonChannelFromProtocol::Write_ ## NAME(vint id, Ptr<glr::json::JsonNode> jsonArguments)\
+	{\
+		REQUEST arguments;\
+		ConvertJsonToCustomType(jsonArguments, arguments);\
+		protocol->Request ## NAME(id, arguments);\
+	}\
+
+#define MESSAGE_HANDLER(NAME, REQUEST, RESPONSE, REQTAG, RESTAG, ...)	MESSAGE_ ## REQTAG ## _ ## RESTAG(NAME, REQUEST, RESPONSE)
+		GACUI_REMOTEPROTOCOL_MESSAGES(MESSAGE_HANDLER)
+#undef MESSAGE_HANDLER
+#undef MESSAGE_REQ_RES
+#undef MESSAGE_REQ_NORES
+#undef MESSAGE_NOREQ_RES
+#undef MESSAGE_NOREQ_NORES
+
 	GuiRemoteJsonChannelFromProtocol::GuiRemoteJsonChannelFromProtocol(IGuiRemoteProtocol* _protocol)
 		: protocol(_protocol)
 	{
+#define MESSAGE_NOREQ_NORES(NAME, REQUEST, RESPONSE)					writeHandlers.Add(WString::Unmanaged(L ## #NAME), &GuiRemoteJsonChannelFromProtocol::Write_ ## NAME);;
+#define MESSAGE_NOREQ_RES(NAME, REQUEST, RESPONSE)						writeHandlers.Add(WString::Unmanaged(L ## #NAME), &GuiRemoteJsonChannelFromProtocol::Write_ ## NAME);;
+#define MESSAGE_REQ_NORES(NAME, REQUEST, RESPONSE)						writeHandlers.Add(WString::Unmanaged(L ## #NAME), &GuiRemoteJsonChannelFromProtocol::Write_ ## NAME);;
+#define MESSAGE_REQ_RES(NAME, REQUEST, RESPONSE)						writeHandlers.Add(WString::Unmanaged(L ## #NAME), &GuiRemoteJsonChannelFromProtocol::Write_ ## NAME);;
+#define MESSAGE_HANDLER(NAME, REQUEST, RESPONSE, REQTAG, RESTAG, ...)	MESSAGE_ ## REQTAG ## _ ## RESTAG(NAME, REQUEST, RESPONSE)
+		GACUI_REMOTEPROTOCOL_MESSAGES(MESSAGE_HANDLER)
+#undef MESSAGE_HANDLER
+#undef MESSAGE_REQ_RES
+#undef MESSAGE_REQ_NORES
+#undef MESSAGE_NOREQ_RES
+#undef MESSAGE_NOREQ_NORES
 	}
 
 	GuiRemoteJsonChannelFromProtocol::~GuiRemoteJsonChannelFromProtocol()
@@ -40807,44 +40885,15 @@ GuiRemoteJsonChannelFromProtocol
 		Ptr<glr::json::JsonNode> jsonArguments;
 		JsonChannelUnpack(package, semantic, id, name, jsonArguments);
 
-#define MESSAGE_NOREQ_NORES(NAME, REQUEST, RESPONSE)\
-		if (name == L ## #NAME)\
-		{\
-			protocol->Request ## NAME();\
-		} else\
-
-#define MESSAGE_NOREQ_RES(NAME, REQUEST, RESPONSE)\
-		if (name == L ## #NAME)\
-		{\
-			protocol->Request ## NAME(id);\
-		} else\
-
-#define MESSAGE_REQ_NORES(NAME, REQUEST, RESPONSE)\
-		if (name == L ## #NAME)\
-		{\
-			REQUEST arguments;\
-			ConvertJsonToCustomType(jsonArguments, arguments);\
-			protocol->Request ## NAME(arguments);\
-		} else\
-
-#define MESSAGE_REQ_RES(NAME, REQUEST, RESPONSE)\
-		if (name == L ## #NAME)\
-		{\
-			REQUEST arguments;\
-			ConvertJsonToCustomType(jsonArguments, arguments);\
-			protocol->Request ## NAME(id, arguments);\
-		} else\
-
-#define MESSAGE_HANDLER(NAME, REQUEST, RESPONSE, REQTAG, RESTAG, ...)	MESSAGE_ ## REQTAG ## _ ## RESTAG(NAME, REQUEST, RESPONSE)
-		GACUI_REMOTEPROTOCOL_MESSAGES(MESSAGE_HANDLER)
+		vint index = writeHandlers.Keys().IndexOf(name);
+		if (index == -1)
 		{
 			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unrecognized request name");
 		}
-#undef MESSAGE_HANDLER
-#undef MESSAGE_REQ_RES
-#undef MESSAGE_REQ_NORES
-#undef MESSAGE_NOREQ_RES
-#undef MESSAGE_NOREQ_NORES
+		else
+		{
+			(this->*writeHandlers.Values()[index])(id, jsonArguments);
+		}
 
 #undef ERROR_MESSAGE_PREFIX
 	}
@@ -41946,7 +41995,11 @@ GuiRemoteWindow (INativeWindow)
 			}
 			for (auto l : listeners) l->AfterClosing();
 		}
-		remote->DestroyNativeWindow(this);
+
+		remote->AsyncService()->InvokeInMainThread(this, [this]()
+		{
+			remote->DestroyNativeWindow(this);
+		});
 	}
 
 	bool GuiRemoteWindow::IsVisible()
@@ -42539,32 +42592,18 @@ namespace vl::presentation::remoteprotocol
 								from.dom->children = Ptr(new List<Ptr<RenderingDom>>);
 								for (vint childId : *to.children.Obj())
 								{
-									// Binary search in index for childId
-									vint start = 0;
-									vint end = index.Count() - 1;
-									bool found = false;
-									while (start <= end)
-									{
-										vint mid = (start + end) / 2;
-										vint midId = index[mid].id;
-										if (childId < midId)
-										{
-											end = mid - 1;
-										}
-										else if (childId > midId)
-										{
-											start = mid + 1;
-										}
-										else
-										{
-											// Fill parentId of the new DOM node
-											index[mid].parentId = from.id;
-											from.dom->children->Add(index[mid].dom);
-											found = true;
-											break;
-										}
-									}
-									CHECK_ERROR(found, ERROR_MESSAGE_PREFIX L"Unknown DOM id in diff.");
+									vint indexToInsert = 0;
+									vint indexOfChild = BinarySearchLambda(
+										&index[0],
+										index.Count(),
+										childId,
+										indexToInsert,
+										[](const DomIndexItem& item, vint id) { return item.id <=> id; }
+										);
+									CHECK_ERROR(indexOfChild != -1, ERROR_MESSAGE_PREFIX L"Unknown DOM id in diff.");
+
+									index[indexOfChild].parentId = from.id;
+									from.dom->children->Add(index[indexOfChild].dom);
 								}
 							}
 						}
@@ -44464,6 +44503,7 @@ namespace vl::presentation::remote_renderer
 
 	void GuiRemoteRendererSingle::UnregisterMainWindow()
 	{
+		UnregisterGlobalShortcutKeys();
 		GetCurrentController()->CallbackService()->UninstallListener(this);
 	}
 
@@ -44550,9 +44590,41 @@ namespace vl::presentation::remote_renderer
 * Rendering (Commands)
 ***********************************************************************/
 
+	void GuiRemoteRendererSingle::UnregisterGlobalShortcutKeys()
+	{
+		auto inputService = GetCurrentController()->InputService();
+		for (vint id : globalShortcuts.Keys())
+		{
+			inputService->UnregisterGlobalShortcutKey(id);
+		}
+		globalShortcuts.Clear();
+
+	}
+
+	void GuiRemoteRendererSingle::GlobalShortcutKeyActivated(vint id)
+	{
+		vint index = globalShortcuts.Keys().IndexOf(id);
+		if (index != -1)
+		{
+			events->OnIOGlobalShortcutKey(globalShortcuts.Values()[index].id);
+		}
+	}
+
 	void GuiRemoteRendererSingle::RequestIOUpdateGlobalShortcutKey(const Ptr<collections::List<remoteprotocol::GlobalShortcutKey>>& arguments)
 	{
-		CHECK_ERROR(arguments->Count() == 0, L"Not Implemented");
+		UnregisterGlobalShortcutKeys();
+		if (arguments)
+		{
+			auto inputService = GetCurrentController()->InputService();
+			for (auto&& shortcut : *arguments.Obj())
+			{
+				vint id = inputService->RegisterGlobalShortcutKey(shortcut.ctrl, shortcut.shift, shortcut.alt, shortcut.code);
+				if (id != -1)
+				{
+					globalShortcuts.Add(id, shortcut);
+				}
+			}
+		}
 	}
 
 	void GuiRemoteRendererSingle::RequestIORequireCapture()
@@ -44653,10 +44725,12 @@ namespace vl::presentation::remote_renderer
 
 	void GuiRemoteRendererSingle::HorizontalWheel(const NativeWindowMouseInfo& info)
 	{
+		events->OnIOHWheel(info);
 	}
 
 	void GuiRemoteRendererSingle::VerticalWheel(const NativeWindowMouseInfo& info)
 	{
+		events->OnIOVWheel(info);
 	}
 
 	void GuiRemoteRendererSingle::MouseMoving(const NativeWindowMouseInfo& info)
