@@ -15,6 +15,7 @@ UnitTestSnapshotFrame
 
 	class UnitTestSnapshotFrame : public Object, public virtual IUnitTestSnapshotFrame
 	{
+		friend const remoteprotocol::UnitTest_RenderingFrame& GetRenderingFrame(Ptr<IUnitTestSnapshotFrame> frame);
 	protected:
 		vint						index;
 		UnitTest_RenderingFrame		frame;
@@ -22,11 +23,6 @@ UnitTestSnapshotFrame
 		WString						commands;
 		WString						dom;
 		JsonFormatting				formatting;
-
-		friend const remoteprotocol::UnitTest_RenderingFrame& GetRenderingFrame(Ptr<IUnitTestSnapshotFrame> frame)
-		{
-			return frame.Cast<UnitTestSnapshotFrame>()->frame;
-		}
 
 	public:
 		UnitTestSnapshotFrame(vint _index, UnitTest_RenderingFrame _frame)
@@ -70,21 +66,22 @@ UnitTestSnapshotFrame
 		}
 	};
 
+	const remoteprotocol::UnitTest_RenderingFrame& GetRenderingFrame(Ptr<IUnitTestSnapshotFrame> frame)
+	{
+		return frame.Cast<UnitTestSnapshotFrame>()->frame;
+	}
+
 /***********************************************************************
 UnitTestSnapshotFileNode
 ***********************************************************************/
 
 	class UnitTestSnapshotFileNode : public Object, public virtual IUnitTestSnapshotFileNode
 	{
+		friend const remoteprotocol::UnitTest_RenderingTrace& GetRenderingTrace(Ptr<gaclib_controls::IUnitTestSnapshotFileNode> node);
 	protected:
 		File								file;
 		Ptr<UnitTest_RenderingTrace>		renderingTrace;
 		List<Ptr<UnitTestSnapshotFrame>>	frames;
-
-		friend const remoteprotocol::UnitTest_RenderingTrace& GetRenderingTrace(Ptr<gaclib_controls::IUnitTestSnapshotFileNode> node)
-		{
-			return *node.Cast<UnitTestSnapshotFileNode>()->renderingTrace.Obj();
-		}
 
 		void EnsureLoaded()
 		{
@@ -145,6 +142,11 @@ UnitTestSnapshotFileNode
 			CHECK_FAIL(L"Not Implemented!");
 		}
 	};
+
+	const remoteprotocol::UnitTest_RenderingTrace& GetRenderingTrace(Ptr<gaclib_controls::IUnitTestSnapshotFileNode> node)
+	{
+		return *node.Cast<UnitTestSnapshotFileNode>()->renderingTrace.Obj();
+	}
 
 /***********************************************************************
 UnitTestSnapshotFolderNode
