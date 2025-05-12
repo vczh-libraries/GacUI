@@ -9,6 +9,8 @@
   - **CppTest_Reflection**: Compile and run generated C++ files.
   - **GacUI_Host**: Load the compiled binary file and run.
   - **Playground**: Compile and load XML with generated DarkSkin.
+  - **RemotingTest_Core**: GacUI running in remote protocol (`/Pipe`, `/Http`)
+  - **RemoteTest_Rendering_Win32**: Renderer connects to **RemotingTest_Core** using NamedPipe or Http (`/Pipe`, `/Http`)
 - **UnitTest**: Test cases for GacUI.
 - **UnitTestViewer**: Render snapshots generated in **UnitTest**.
 
