@@ -2185,7 +2185,7 @@ GuiControlHost
 				calledDestroyed = true;
 				if (deleteWhenDestroyed)
 				{
-					GetApplication()->InvokeInMainThread(this, [=]()
+					GetApplication()->InvokeInMainThread(this, [=, this]()
 					{
 						DeleteThis();
 					});
@@ -3036,7 +3036,7 @@ GuiWindow
 
 				auto container = Ptr(new IGuiGraphicsEventHandler::Container);
 				auto disposeFlag = GetDisposedFlag();
-				container->handler = WindowReadyToClose.AttachLambda([=](GuiGraphicsComposition* sender, GuiEventArgs& arguments)
+				container->handler = WindowReadyToClose.AttachLambda([=, this](GuiGraphicsComposition* sender, GuiEventArgs& arguments)
 				{
 					callback();
 
@@ -3050,7 +3050,7 @@ GuiWindow
 						owner->showModalRecord = nullptr;
 					}
 
-					GetApplication()->InvokeInMainThread(this, [=]()
+					GetApplication()->InvokeInMainThread(this, [=, this]()
 					{
 						if (!disposeFlag->IsDisposed())
 						{
@@ -3065,7 +3065,7 @@ GuiWindow
 
 			void GuiWindow::ShowModalAndDelete(GuiWindow* owner, const Func<void()>& callback)
 			{
-				ShowModal(owner, [=]()
+				ShowModal(owner, [=, this]()
 				{
 					callback();
 					DeleteAfterProcessingAllEvents({});
@@ -3074,7 +3074,7 @@ GuiWindow
 
 			void GuiWindow::ShowModalAndDelete(GuiWindow* owner, const Func<void()>& callbackClosed, const Func<void()>& callbackDeleted)
 			{
-				ShowModal(owner, [=]()
+				ShowModal(owner, [=, this]()
 				{
 					callbackClosed();
 					DeleteAfterProcessingAllEvents(callbackDeleted);
@@ -6979,7 +6979,7 @@ GuiScrollView
 
 			void GuiScrollView::CalculateView()
 			{
-				TryDelayExecuteIfNotDeleted([=]()
+				TryDelayExecuteIfNotDeleted([=, this]()
 				{
 					auto ct = TypedControlTemplateObject(true);
 					auto hScroll = ct->GetHorizontalScroll();
@@ -9568,7 +9568,7 @@ DataProvider
 						SortLambda(
 							&virtualRowToSourceRow->operator[](0),
 							virtualRowToSourceRow->Count(),
-							[=](vint a, vint b)
+							[=, this](vint a, vint b)
 							{
 								auto ordering = sorter->Compare(itemSource->Get(a), itemSource->Get(b)) <=> 0;
 								return ordering == 0 ? a <=> b : ordering;
@@ -11232,7 +11232,7 @@ GuiComboBoxListControl
 
 			void GuiComboBoxListControl::OnListControlAdoptedSizeInvalidated(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
-				TryDelayExecuteIfNotDeleted([=]() { AdoptSubMenuSize(); });
+				TryDelayExecuteIfNotDeleted([=, this]() { AdoptSubMenuSize(); });
 			}
 
 			void GuiComboBoxListControl::OnListControlItemMouseDown(compositions::GuiGraphicsComposition* sender, compositions::GuiItemMouseEventArgs& arguments)
@@ -13436,7 +13436,7 @@ GuiListControl
 					if (auto host = GetBoundsComposition()->GetRelatedGraphicsHost())
 					{
 						auto flag = GetDisposedFlag();
-						host->InvokeAfterRendering([=]()
+						host->InvokeAfterRendering([=, this]()
 						{
 							if (!flag->IsDisposed())
 							{
@@ -17588,7 +17588,7 @@ GuiCommonScrollBehavior
 
 			void GuiCommonScrollBehavior::AttachHandle(compositions::GuiGraphicsComposition* handle)
 			{
-				handle->GetEventReceiver()->leftButtonDown.AttachLambda([=](GuiGraphicsComposition*, GuiMouseEventArgs& arguments)
+				handle->GetEventReceiver()->leftButtonDown.AttachLambda([=, this](GuiGraphicsComposition*, GuiMouseEventArgs& arguments)
 				{
 					if (scrollTemplate->GetVisuallyEnabled())
 					{
@@ -17598,7 +17598,7 @@ GuiCommonScrollBehavior
 					}
 				});
 
-				handle->GetEventReceiver()->leftButtonUp.AttachLambda([=](GuiGraphicsComposition*, GuiMouseEventArgs&)
+				handle->GetEventReceiver()->leftButtonUp.AttachLambda([=, this](GuiGraphicsComposition*, GuiMouseEventArgs&)
 				{
 					if (scrollTemplate->GetVisuallyEnabled())
 					{
@@ -17622,7 +17622,7 @@ GuiCommonScrollBehavior
 
 			void GuiCommonScrollBehavior::AttachDecreaseButton(controls::GuiButton* button)
 			{
-				button->Clicked.AttachLambda([=](GuiGraphicsComposition*, GuiEventArgs&)
+				button->Clicked.AttachLambda([=, this](GuiGraphicsComposition*, GuiEventArgs&)
 				{
 					scrollTemplate->GetCommands()->SmallDecrease();
 				});
@@ -17630,7 +17630,7 @@ GuiCommonScrollBehavior
 
 			void GuiCommonScrollBehavior::AttachIncreaseButton(controls::GuiButton* button)
 			{
-				button->Clicked.AttachLambda([=](GuiGraphicsComposition*, GuiEventArgs&)
+				button->Clicked.AttachLambda([=, this](GuiGraphicsComposition*, GuiEventArgs&)
 				{
 					scrollTemplate->GetCommands()->SmallIncrease();
 				});
@@ -17638,7 +17638,7 @@ GuiCommonScrollBehavior
 
 			void GuiCommonScrollBehavior::AttachHorizontalScrollHandle(compositions::GuiPartialViewComposition* partialView)
 			{
-				partialView->GetParent()->GetEventReceiver()->leftButtonDown.AttachLambda([=](GuiGraphicsComposition*, GuiMouseEventArgs& arguments)
+				partialView->GetParent()->GetEventReceiver()->leftButtonDown.AttachLambda([=, this](GuiGraphicsComposition*, GuiMouseEventArgs& arguments)
 				{
 					if (scrollTemplate->GetVisuallyEnabled())
 					{
@@ -17658,7 +17658,7 @@ GuiCommonScrollBehavior
 
 			void GuiCommonScrollBehavior::AttachVerticalScrollHandle(compositions::GuiPartialViewComposition* partialView)
 			{
-				partialView->GetParent()->GetEventReceiver()->leftButtonDown.AttachLambda([=](GuiGraphicsComposition*, GuiMouseEventArgs& arguments)
+				partialView->GetParent()->GetEventReceiver()->leftButtonDown.AttachLambda([=, this](GuiGraphicsComposition*, GuiMouseEventArgs& arguments)
 				{
 					if (scrollTemplate->GetVisuallyEnabled())
 					{
@@ -17678,7 +17678,7 @@ GuiCommonScrollBehavior
 
 			void GuiCommonScrollBehavior::AttachHorizontalTrackerHandle(compositions::GuiPartialViewComposition* partialView)
 			{
-				partialView->GetEventReceiver()->mouseMove.AttachLambda([=](GuiGraphicsComposition*, GuiMouseEventArgs& arguments)
+				partialView->GetEventReceiver()->mouseMove.AttachLambda([=, this](GuiGraphicsComposition*, GuiMouseEventArgs& arguments)
 				{
 					if (dragging)
 					{
@@ -17695,7 +17695,7 @@ GuiCommonScrollBehavior
 
 			void GuiCommonScrollBehavior::AttachVerticalTrackerHandle(compositions::GuiPartialViewComposition* partialView)
 			{
-				partialView->GetEventReceiver()->mouseMove.AttachLambda([=](GuiGraphicsComposition*, GuiMouseEventArgs& arguments)
+				partialView->GetEventReceiver()->mouseMove.AttachLambda([=, this](GuiGraphicsComposition*, GuiMouseEventArgs& arguments)
 				{
 					if (dragging)
 					{
@@ -18711,7 +18711,7 @@ GuiDocumentCommonInterface
 
 			void GuiDocumentCommonInterface::EditRun(TextPos begin, TextPos end, Ptr<DocumentModel> model, bool copy)
 			{
-				EditTextInternal(begin, end, [=](TextPos begin, TextPos end, vint& paragraphCount, vint& lastParagraphLength)
+				EditTextInternal(begin, end, [=, this](TextPos begin, TextPos end, vint& paragraphCount, vint& lastParagraphLength)
 				{
 					documentElement->EditRun(begin, end, model, copy);
 					paragraphCount=model->paragraphs.Count();
@@ -18721,7 +18721,7 @@ GuiDocumentCommonInterface
 
 			void GuiDocumentCommonInterface::EditText(TextPos begin, TextPos end, bool frontSide, const collections::Array<WString>& text)
 			{
-				EditTextInternal(begin, end, [=, &text](TextPos begin, TextPos end, vint& paragraphCount, vint& lastParagraphLength)
+				EditTextInternal(begin, end, [=, this, &text](TextPos begin, TextPos end, vint& paragraphCount, vint& lastParagraphLength)
 				{
 					documentElement->EditText(begin, end, frontSide, text);
 					paragraphCount=text.Count();
@@ -18731,7 +18731,7 @@ GuiDocumentCommonInterface
 
 			void GuiDocumentCommonInterface::EditStyle(TextPos begin, TextPos end, Ptr<DocumentStyleProperties> style)
 			{
-				EditStyleInternal(begin, end, [=](TextPos begin, TextPos end)
+				EditStyleInternal(begin, end, [=, this](TextPos begin, TextPos end)
 				{
 					documentElement->EditStyle(begin, end, style);
 				});
@@ -18739,7 +18739,7 @@ GuiDocumentCommonInterface
 
 			void GuiDocumentCommonInterface::EditImage(TextPos begin, TextPos end, Ptr<GuiImageData> image)
 			{
-				EditTextInternal(begin, end, [=](TextPos begin, TextPos end, vint& paragraphCount, vint& lastParagraphLength)
+				EditTextInternal(begin, end, [=, this](TextPos begin, TextPos end, vint& paragraphCount, vint& lastParagraphLength)
 				{
 					documentElement->EditImage(begin, end, image);
 					paragraphCount=1;
@@ -18749,7 +18749,7 @@ GuiDocumentCommonInterface
 
 			void GuiDocumentCommonInterface::EditHyperlink(vint paragraphIndex, vint begin, vint end, const WString& reference, const WString& normalStyleName, const WString& activeStyleName)
 			{
-				EditStyleInternal(TextPos(paragraphIndex, begin), TextPos(paragraphIndex, end), [=](TextPos begin, TextPos end)
+				EditStyleInternal(TextPos(paragraphIndex, begin), TextPos(paragraphIndex, end), [=, this](TextPos begin, TextPos end)
 				{
 					documentElement->EditHyperlink(begin.row, begin.column, end.column, reference, normalStyleName, activeStyleName);
 				});
@@ -18757,7 +18757,7 @@ GuiDocumentCommonInterface
 
 			void GuiDocumentCommonInterface::RemoveHyperlink(vint paragraphIndex, vint begin, vint end)
 			{
-				EditStyleInternal(TextPos(paragraphIndex, begin), TextPos(paragraphIndex, end), [=](TextPos begin, TextPos end)
+				EditStyleInternal(TextPos(paragraphIndex, begin), TextPos(paragraphIndex, end), [=, this](TextPos begin, TextPos end)
 				{
 					documentElement->RemoveHyperlink(begin.row, begin.column, end.column);
 				});
@@ -18765,7 +18765,7 @@ GuiDocumentCommonInterface
 
 			void GuiDocumentCommonInterface::EditStyleName(TextPos begin, TextPos end, const WString& styleName)
 			{
-				EditStyleInternal(begin, end, [=](TextPos begin, TextPos end)
+				EditStyleInternal(begin, end, [=, this](TextPos begin, TextPos end)
 				{
 					documentElement->EditStyleName(begin, end, styleName);
 				});
@@ -18773,7 +18773,7 @@ GuiDocumentCommonInterface
 
 			void GuiDocumentCommonInterface::RemoveStyleName(TextPos begin, TextPos end)
 			{
-				EditStyleInternal(begin, end, [=](TextPos begin, TextPos end)
+				EditStyleInternal(begin, end, [=, this](TextPos begin, TextPos end)
 				{
 					documentElement->RemoveStyleName(begin, end);
 				});
@@ -18792,7 +18792,7 @@ GuiDocumentCommonInterface
 
 			void GuiDocumentCommonInterface::ClearStyle(TextPos begin, TextPos end)
 			{
-				EditStyleInternal(begin, end, [=](TextPos begin, TextPos end)
+				EditStyleInternal(begin, end, [=, this](TextPos begin, TextPos end)
 				{
 					documentElement->ClearStyle(begin, end);
 				});
@@ -21759,7 +21759,7 @@ GuiGrammarAutoComplete
 			{
 				if(element && elementModifyLock)
 				{
-					GetApplication()->InvokeInMainThread(ownerComposition->GetRelatedControlHost(), [=]()
+					GetApplication()->InvokeInMainThread(ownerComposition->GetRelatedControlHost(), [=, this]()
 					{
 						// submit a task if the RepeatingParsingExecutor notices a new parsing result
 						SubmitTask(arguments);
@@ -22438,7 +22438,7 @@ GuiGrammarAutoComplete
 				if(newContext.modifiedNode)
 				{
 					OnContextFinishedAsync(context);
-					GetApplication()->InvokeInMainThread(ownerComposition->GetRelatedControlHost(), [=]()
+					GetApplication()->InvokeInMainThread(ownerComposition->GetRelatedControlHost(), [=, this]()
 					{
 						PostList(newContext, byGlobalCorrection);
 					});
@@ -25545,7 +25545,7 @@ GuiBindableRibbonGalleryList
 						groupItemFlow->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 						groupItemFlow->SetAlignmentToParent(Margin(0, 0, 0, 0));
 						groupItemFlow->SetItemSource(group->GetItemValues());
-						groupItemFlow->SetItemTemplate([=](const Value& groupItemValue)->GuiTemplate*
+						groupItemFlow->SetItemTemplate([=, this](const Value& groupItemValue)->GuiTemplate*
 						{
 							auto groupItemTemplate = new GuiTemplate;
 							groupItemTemplate->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
@@ -25557,7 +25557,7 @@ GuiBindableRibbonGalleryList
 							}
 							backgroundButton->SetAutoFocus(false);
 							backgroundButton->SetAutoSelection(false);
-							backgroundButton->Clicked.AttachLambda([=](GuiGraphicsComposition* sender, GuiEventArgs& arguments)
+							backgroundButton->Clicked.AttachLambda([=, this](GuiGraphicsComposition* sender, GuiEventArgs& arguments)
 							{
 								auto groupIndex = groupStack->GetStackItems().IndexOf(dynamic_cast<GuiStackItemComposition*>(groupTemplate->GetParent()));
 								auto itemIndex = groupItemFlow->GetFlowItems().IndexOf(dynamic_cast<GuiFlowItemComposition*>(groupItemTemplate->GetParent()));
@@ -25566,14 +25566,14 @@ GuiBindableRibbonGalleryList
 								itemList->EnsureItemVisible(index);
 								subMenu->Close();
 							});
-							backgroundButton->GetBoundsComposition()->GetEventReceiver()->mouseEnter.AttachLambda([=](GuiGraphicsComposition* sender, GuiEventArgs& arguments)
+							backgroundButton->GetBoundsComposition()->GetEventReceiver()->mouseEnter.AttachLambda([=, this](GuiGraphicsComposition* sender, GuiEventArgs& arguments)
 							{
 								auto groupIndex = groupStack->GetStackItems().IndexOf(dynamic_cast<GuiStackItemComposition*>(groupTemplate->GetParent()));
 								auto itemIndex = groupItemFlow->GetFlowItems().IndexOf(dynamic_cast<GuiFlowItemComposition*>(groupItemTemplate->GetParent()));
 								auto index = GalleryPosToIndex({ groupIndex,itemIndex });
 								StartPreview(index);
 							});
-							backgroundButton->GetBoundsComposition()->GetEventReceiver()->mouseLeave.AttachLambda([=](GuiGraphicsComposition* sender, GuiEventArgs& arguments)
+							backgroundButton->GetBoundsComposition()->GetEventReceiver()->mouseLeave.AttachLambda([=, this](GuiGraphicsComposition* sender, GuiEventArgs& arguments)
 							{
 								auto groupIndex = groupStack->GetStackItems().IndexOf(dynamic_cast<GuiStackItemComposition*>(groupTemplate->GetParent()));
 								auto itemIndex = groupItemFlow->GetFlowItems().IndexOf(dynamic_cast<GuiFlowItemComposition*>(groupItemTemplate->GetParent()));
@@ -26395,7 +26395,7 @@ GuiToolstripCommand
 						if (auto control = dynamic_cast<GuiControl*>(attachedRootObject))
 						{
 							renderTargetChangedHandler = control->ControlSignalTrigerred.AttachLambda(
-								[=](GuiGraphicsComposition* sender, GuiControlSignalEventArgs& arguments)
+								[=, this](GuiGraphicsComposition* sender, GuiControlSignalEventArgs& arguments)
 								{
 									OnRenderTargetChanged(sender, arguments);
 								});
@@ -30111,7 +30111,7 @@ GuiResponsiveStackComposition
 
 #define DEFINE_AVAILABLE \
 			auto availables = From(responsiveChildren) \
-				.Where([=](GuiResponsiveCompositionBase* child) \
+				.Where([=, this](GuiResponsiveCompositionBase* child) \
 				{ \
 					return ((vint)direction & (vint)child->GetDirection()) != 0; \
 				}) \
