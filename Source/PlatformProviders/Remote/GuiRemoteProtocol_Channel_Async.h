@@ -124,8 +124,8 @@ void ChannelPackageSemanticUnpack(
 		Ptr<PendingRequestGroup>									pendingRequest;
 
 		SpinLock													lockConnection;
-		volatile vint												connectionCounter = 0;
-		volatile bool												connectionAvailable = false;
+		vint														connectionCounter = 0;
+		bool														connectionAvailable = false;
 
 		volatile bool												started = false;
 		volatile bool												stopping = false;

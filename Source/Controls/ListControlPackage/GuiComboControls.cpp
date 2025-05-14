@@ -188,7 +188,7 @@ GuiComboBoxListControl
 
 			void GuiComboBoxListControl::OnListControlAdoptedSizeInvalidated(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
-				TryDelayExecuteIfNotDeleted([=]() { AdoptSubMenuSize(); });
+				TryDelayExecuteIfNotDeleted([=, this]() { AdoptSubMenuSize(); });
 			}
 
 			void GuiComboBoxListControl::OnListControlItemMouseDown(compositions::GuiGraphicsComposition* sender, compositions::GuiItemMouseEventArgs& arguments)

@@ -692,7 +692,7 @@ DataProvider
 						SortLambda(
 							&virtualRowToSourceRow->operator[](0),
 							virtualRowToSourceRow->Count(),
-							[=](vint a, vint b)
+							[=, this](vint a, vint b)
 							{
 								auto ordering = sorter->Compare(itemSource->Get(a), itemSource->Get(b)) <=> 0;
 								return ordering == 0 ? a <=> b : ordering;

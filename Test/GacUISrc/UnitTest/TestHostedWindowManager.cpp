@@ -180,7 +180,7 @@ struct WindowManager : hosted_window_manager::WindowManager<wchar_t>
 			if (h < window->bounds.Height().value) h = window->bounds.Height().value;
 		}
 
-		WString snapshot = GenerateToStream([=](StreamWriter& writer)
+		WString snapshot = GenerateToStream([=, this](StreamWriter& writer)
 		{
 			writer.WriteLine(title);
 			for (vint y = 0; y < h; y++)

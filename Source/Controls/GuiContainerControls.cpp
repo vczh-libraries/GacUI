@@ -426,7 +426,7 @@ GuiScrollView
 
 			void GuiScrollView::CalculateView()
 			{
-				TryDelayExecuteIfNotDeleted([=]()
+				TryDelayExecuteIfNotDeleted([=, this]()
 				{
 					auto ct = TypedControlTemplateObject(true);
 					auto hScroll = ct->GetHorizontalScroll();

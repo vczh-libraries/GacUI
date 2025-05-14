@@ -413,7 +413,7 @@ GuiBindableRibbonGalleryList
 						groupItemFlow->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 						groupItemFlow->SetAlignmentToParent(Margin(0, 0, 0, 0));
 						groupItemFlow->SetItemSource(group->GetItemValues());
-						groupItemFlow->SetItemTemplate([=](const Value& groupItemValue)->GuiTemplate*
+						groupItemFlow->SetItemTemplate([=, this](const Value& groupItemValue)->GuiTemplate*
 						{
 							auto groupItemTemplate = new GuiTemplate;
 							groupItemTemplate->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
@@ -425,7 +425,7 @@ GuiBindableRibbonGalleryList
 							}
 							backgroundButton->SetAutoFocus(false);
 							backgroundButton->SetAutoSelection(false);
-							backgroundButton->Clicked.AttachLambda([=](GuiGraphicsComposition* sender, GuiEventArgs& arguments)
+							backgroundButton->Clicked.AttachLambda([=, this](GuiGraphicsComposition* sender, GuiEventArgs& arguments)
 							{
 								auto groupIndex = groupStack->GetStackItems().IndexOf(dynamic_cast<GuiStackItemComposition*>(groupTemplate->GetParent()));
 								auto itemIndex = groupItemFlow->GetFlowItems().IndexOf(dynamic_cast<GuiFlowItemComposition*>(groupItemTemplate->GetParent()));
@@ -434,14 +434,14 @@ GuiBindableRibbonGalleryList
 								itemList->EnsureItemVisible(index);
 								subMenu->Close();
 							});
-							backgroundButton->GetBoundsComposition()->GetEventReceiver()->mouseEnter.AttachLambda([=](GuiGraphicsComposition* sender, GuiEventArgs& arguments)
+							backgroundButton->GetBoundsComposition()->GetEventReceiver()->mouseEnter.AttachLambda([=, this](GuiGraphicsComposition* sender, GuiEventArgs& arguments)
 							{
 								auto groupIndex = groupStack->GetStackItems().IndexOf(dynamic_cast<GuiStackItemComposition*>(groupTemplate->GetParent()));
 								auto itemIndex = groupItemFlow->GetFlowItems().IndexOf(dynamic_cast<GuiFlowItemComposition*>(groupItemTemplate->GetParent()));
 								auto index = GalleryPosToIndex({ groupIndex,itemIndex });
 								StartPreview(index);
 							});
-							backgroundButton->GetBoundsComposition()->GetEventReceiver()->mouseLeave.AttachLambda([=](GuiGraphicsComposition* sender, GuiEventArgs& arguments)
+							backgroundButton->GetBoundsComposition()->GetEventReceiver()->mouseLeave.AttachLambda([=, this](GuiGraphicsComposition* sender, GuiEventArgs& arguments)
 							{
 								auto groupIndex = groupStack->GetStackItems().IndexOf(dynamic_cast<GuiStackItemComposition*>(groupTemplate->GetParent()));
 								auto itemIndex = groupItemFlow->GetFlowItems().IndexOf(dynamic_cast<GuiFlowItemComposition*>(groupItemTemplate->GetParent()));

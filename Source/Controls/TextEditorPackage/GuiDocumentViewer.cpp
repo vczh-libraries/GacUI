@@ -777,7 +777,7 @@ GuiDocumentCommonInterface
 
 			void GuiDocumentCommonInterface::EditRun(TextPos begin, TextPos end, Ptr<DocumentModel> model, bool copy)
 			{
-				EditTextInternal(begin, end, [=](TextPos begin, TextPos end, vint& paragraphCount, vint& lastParagraphLength)
+				EditTextInternal(begin, end, [=, this](TextPos begin, TextPos end, vint& paragraphCount, vint& lastParagraphLength)
 				{
 					documentElement->EditRun(begin, end, model, copy);
 					paragraphCount=model->paragraphs.Count();
@@ -787,7 +787,7 @@ GuiDocumentCommonInterface
 
 			void GuiDocumentCommonInterface::EditText(TextPos begin, TextPos end, bool frontSide, const collections::Array<WString>& text)
 			{
-				EditTextInternal(begin, end, [=, &text](TextPos begin, TextPos end, vint& paragraphCount, vint& lastParagraphLength)
+				EditTextInternal(begin, end, [=, this, &text](TextPos begin, TextPos end, vint& paragraphCount, vint& lastParagraphLength)
 				{
 					documentElement->EditText(begin, end, frontSide, text);
 					paragraphCount=text.Count();
@@ -797,7 +797,7 @@ GuiDocumentCommonInterface
 
 			void GuiDocumentCommonInterface::EditStyle(TextPos begin, TextPos end, Ptr<DocumentStyleProperties> style)
 			{
-				EditStyleInternal(begin, end, [=](TextPos begin, TextPos end)
+				EditStyleInternal(begin, end, [=, this](TextPos begin, TextPos end)
 				{
 					documentElement->EditStyle(begin, end, style);
 				});
@@ -805,7 +805,7 @@ GuiDocumentCommonInterface
 
 			void GuiDocumentCommonInterface::EditImage(TextPos begin, TextPos end, Ptr<GuiImageData> image)
 			{
-				EditTextInternal(begin, end, [=](TextPos begin, TextPos end, vint& paragraphCount, vint& lastParagraphLength)
+				EditTextInternal(begin, end, [=, this](TextPos begin, TextPos end, vint& paragraphCount, vint& lastParagraphLength)
 				{
 					documentElement->EditImage(begin, end, image);
 					paragraphCount=1;
@@ -815,7 +815,7 @@ GuiDocumentCommonInterface
 
 			void GuiDocumentCommonInterface::EditHyperlink(vint paragraphIndex, vint begin, vint end, const WString& reference, const WString& normalStyleName, const WString& activeStyleName)
 			{
-				EditStyleInternal(TextPos(paragraphIndex, begin), TextPos(paragraphIndex, end), [=](TextPos begin, TextPos end)
+				EditStyleInternal(TextPos(paragraphIndex, begin), TextPos(paragraphIndex, end), [=, this](TextPos begin, TextPos end)
 				{
 					documentElement->EditHyperlink(begin.row, begin.column, end.column, reference, normalStyleName, activeStyleName);
 				});
@@ -823,7 +823,7 @@ GuiDocumentCommonInterface
 
 			void GuiDocumentCommonInterface::RemoveHyperlink(vint paragraphIndex, vint begin, vint end)
 			{
-				EditStyleInternal(TextPos(paragraphIndex, begin), TextPos(paragraphIndex, end), [=](TextPos begin, TextPos end)
+				EditStyleInternal(TextPos(paragraphIndex, begin), TextPos(paragraphIndex, end), [=, this](TextPos begin, TextPos end)
 				{
 					documentElement->RemoveHyperlink(begin.row, begin.column, end.column);
 				});
@@ -831,7 +831,7 @@ GuiDocumentCommonInterface
 
 			void GuiDocumentCommonInterface::EditStyleName(TextPos begin, TextPos end, const WString& styleName)
 			{
-				EditStyleInternal(begin, end, [=](TextPos begin, TextPos end)
+				EditStyleInternal(begin, end, [=, this](TextPos begin, TextPos end)
 				{
 					documentElement->EditStyleName(begin, end, styleName);
 				});
@@ -839,7 +839,7 @@ GuiDocumentCommonInterface
 
 			void GuiDocumentCommonInterface::RemoveStyleName(TextPos begin, TextPos end)
 			{
-				EditStyleInternal(begin, end, [=](TextPos begin, TextPos end)
+				EditStyleInternal(begin, end, [=, this](TextPos begin, TextPos end)
 				{
 					documentElement->RemoveStyleName(begin, end);
 				});
@@ -858,7 +858,7 @@ GuiDocumentCommonInterface
 
 			void GuiDocumentCommonInterface::ClearStyle(TextPos begin, TextPos end)
 			{
-				EditStyleInternal(begin, end, [=](TextPos begin, TextPos end)
+				EditStyleInternal(begin, end, [=, this](TextPos begin, TextPos end)
 				{
 					documentElement->ClearStyle(begin, end);
 				});

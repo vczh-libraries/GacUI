@@ -450,7 +450,7 @@ GuiResponsiveStackComposition
 
 #define DEFINE_AVAILABLE \
 			auto availables = From(responsiveChildren) \
-				.Where([=](GuiResponsiveCompositionBase* child) \
+				.Where([=, this](GuiResponsiveCompositionBase* child) \
 				{ \
 					return ((vint)direction & (vint)child->GetDirection()) != 0; \
 				}) \

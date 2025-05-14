@@ -2651,7 +2651,7 @@
               "ellipse": true,
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "Saturday, January 1, 2000",
+              "text": "Saturday, 01 January 2000",
               "measuringRequest": "FontHeight"
             }
           ]
@@ -5398,7 +5398,7 @@
               "ellipse": true,
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "Saturday, January 1, 2000",
+              "text": "Saturday, 01 January 2000",
               "measuringRequest": "FontHeight"
             }
           ]
@@ -9340,7 +9340,7 @@
               "ellipse": true,
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "Saturday, January 1, 2000",
+              "text": "Saturday, 01 January 2000",
               "measuringRequest": "FontHeight"
             }
           ]
@@ -14041,7 +14041,7 @@
               "ellipse": true,
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "Saturday, January 1, 2000",
+              "text": "Saturday, 01 January 2000",
               "measuringRequest": "FontHeight"
             }
           ]
@@ -18313,7 +18313,7 @@
               "ellipse": true,
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "Saturday, January 1, 2000",
+              "text": "Saturday, 01 January 2000",
               "measuringRequest": "FontHeight"
             }
           ]
@@ -23344,7 +23344,7 @@
               "ellipse": true,
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "Saturday, January 1, 2000",
+              "text": "Saturday, 01 January 2000",
               "measuringRequest": "FontHeight"
             }
           ]
@@ -27946,7 +27946,7 @@
               "ellipse": true,
               "multiline": false,
               "font": {"fontFamily": "GacUI Default Font", "size": 12, "bold": false, "italic": false, "underline": false, "strikeline": false, "antialias": true, "verticalAntialias": false},
-              "text": "Friday, December 31, 1999",
+              "text": "Friday, 31 December 1999",
               "measuringRequest": null
             }
           ]

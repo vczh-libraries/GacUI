@@ -619,7 +619,7 @@ GuiCommonScrollBehavior
 
 			void GuiCommonScrollBehavior::AttachHandle(compositions::GuiGraphicsComposition* handle)
 			{
-				handle->GetEventReceiver()->leftButtonDown.AttachLambda([=](GuiGraphicsComposition*, GuiMouseEventArgs& arguments)
+				handle->GetEventReceiver()->leftButtonDown.AttachLambda([=, this](GuiGraphicsComposition*, GuiMouseEventArgs& arguments)
 				{
 					if (scrollTemplate->GetVisuallyEnabled())
 					{
@@ -629,7 +629,7 @@ GuiCommonScrollBehavior
 					}
 				});
 
-				handle->GetEventReceiver()->leftButtonUp.AttachLambda([=](GuiGraphicsComposition*, GuiMouseEventArgs&)
+				handle->GetEventReceiver()->leftButtonUp.AttachLambda([=, this](GuiGraphicsComposition*, GuiMouseEventArgs&)
 				{
 					if (scrollTemplate->GetVisuallyEnabled())
 					{
@@ -653,7 +653,7 @@ GuiCommonScrollBehavior
 
 			void GuiCommonScrollBehavior::AttachDecreaseButton(controls::GuiButton* button)
 			{
-				button->Clicked.AttachLambda([=](GuiGraphicsComposition*, GuiEventArgs&)
+				button->Clicked.AttachLambda([=, this](GuiGraphicsComposition*, GuiEventArgs&)
 				{
 					scrollTemplate->GetCommands()->SmallDecrease();
 				});
@@ -661,7 +661,7 @@ GuiCommonScrollBehavior
 
 			void GuiCommonScrollBehavior::AttachIncreaseButton(controls::GuiButton* button)
 			{
-				button->Clicked.AttachLambda([=](GuiGraphicsComposition*, GuiEventArgs&)
+				button->Clicked.AttachLambda([=, this](GuiGraphicsComposition*, GuiEventArgs&)
 				{
 					scrollTemplate->GetCommands()->SmallIncrease();
 				});
@@ -669,7 +669,7 @@ GuiCommonScrollBehavior
 
 			void GuiCommonScrollBehavior::AttachHorizontalScrollHandle(compositions::GuiPartialViewComposition* partialView)
 			{
-				partialView->GetParent()->GetEventReceiver()->leftButtonDown.AttachLambda([=](GuiGraphicsComposition*, GuiMouseEventArgs& arguments)
+				partialView->GetParent()->GetEventReceiver()->leftButtonDown.AttachLambda([=, this](GuiGraphicsComposition*, GuiMouseEventArgs& arguments)
 				{
 					if (scrollTemplate->GetVisuallyEnabled())
 					{
@@ -689,7 +689,7 @@ GuiCommonScrollBehavior
 
 			void GuiCommonScrollBehavior::AttachVerticalScrollHandle(compositions::GuiPartialViewComposition* partialView)
 			{
-				partialView->GetParent()->GetEventReceiver()->leftButtonDown.AttachLambda([=](GuiGraphicsComposition*, GuiMouseEventArgs& arguments)
+				partialView->GetParent()->GetEventReceiver()->leftButtonDown.AttachLambda([=, this](GuiGraphicsComposition*, GuiMouseEventArgs& arguments)
 				{
 					if (scrollTemplate->GetVisuallyEnabled())
 					{
@@ -709,7 +709,7 @@ GuiCommonScrollBehavior
 
 			void GuiCommonScrollBehavior::AttachHorizontalTrackerHandle(compositions::GuiPartialViewComposition* partialView)
 			{
-				partialView->GetEventReceiver()->mouseMove.AttachLambda([=](GuiGraphicsComposition*, GuiMouseEventArgs& arguments)
+				partialView->GetEventReceiver()->mouseMove.AttachLambda([=, this](GuiGraphicsComposition*, GuiMouseEventArgs& arguments)
 				{
 					if (dragging)
 					{
@@ -726,7 +726,7 @@ GuiCommonScrollBehavior
 
 			void GuiCommonScrollBehavior::AttachVerticalTrackerHandle(compositions::GuiPartialViewComposition* partialView)
 			{
-				partialView->GetEventReceiver()->mouseMove.AttachLambda([=](GuiGraphicsComposition*, GuiMouseEventArgs& arguments)
+				partialView->GetEventReceiver()->mouseMove.AttachLambda([=, this](GuiGraphicsComposition*, GuiMouseEventArgs& arguments)
 				{
 					if (dragging)
 					{

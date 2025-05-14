@@ -517,7 +517,7 @@ GuiListControl
 					if (auto host = GetBoundsComposition()->GetRelatedGraphicsHost())
 					{
 						auto flag = GetDisposedFlag();
-						host->InvokeAfterRendering([=]()
+						host->InvokeAfterRendering([=, this]()
 						{
 							if (!flag->IsDisposed())
 							{

@@ -144,7 +144,7 @@ GuiGrammarAutoComplete
 			{
 				if(element && elementModifyLock)
 				{
-					GetApplication()->InvokeInMainThread(ownerComposition->GetRelatedControlHost(), [=]()
+					GetApplication()->InvokeInMainThread(ownerComposition->GetRelatedControlHost(), [=, this]()
 					{
 						// submit a task if the RepeatingParsingExecutor notices a new parsing result
 						SubmitTask(arguments);
@@ -823,7 +823,7 @@ GuiGrammarAutoComplete
 				if(newContext.modifiedNode)
 				{
 					OnContextFinishedAsync(context);
-					GetApplication()->InvokeInMainThread(ownerComposition->GetRelatedControlHost(), [=]()
+					GetApplication()->InvokeInMainThread(ownerComposition->GetRelatedControlHost(), [=, this]()
 					{
 						PostList(newContext, byGlobalCorrection);
 					});

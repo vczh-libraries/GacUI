@@ -348,14 +348,14 @@ WorkflowReferenceNamesVisitor
 				CopyFrom(
 					properties,
 					From(repr->setters)
-						.SelectMany([=](Pair<GlobalStringKey, Ptr<GuiAttSetterRepr::SetterValue>> item)
+						.SelectMany([=, this](Pair<GlobalStringKey, Ptr<GuiAttSetterRepr::SetterValue>> item)
 						{
 							return From(item.value->values)
-								.Where([=](Ptr<GuiValueRepr> value)
+								.Where([=, this](Ptr<GuiValueRepr> value)
 								{
 									return resolvingResult.propertyResolvings.Keys().Contains(value.Obj());
 								})
-								.Select([=](Ptr<GuiValueRepr> value)
+								.Select([=, this](Ptr<GuiValueRepr> value)
 								{
 									auto loader = resolvingResult.propertyResolvings[value.Obj()].loader;
 									return Pair<GlobalStringKey, IGuiInstanceLoader*>(item.key, loader);

@@ -162,7 +162,7 @@ GuiToolstripCommand
 						if (auto control = dynamic_cast<GuiControl*>(attachedRootObject))
 						{
 							renderTargetChangedHandler = control->ControlSignalTrigerred.AttachLambda(
-								[=](GuiGraphicsComposition* sender, GuiControlSignalEventArgs& arguments)
+								[=, this](GuiGraphicsComposition* sender, GuiControlSignalEventArgs& arguments)
 								{
 									OnRenderTargetChanged(sender, arguments);
 								});
