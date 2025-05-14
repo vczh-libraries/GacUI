@@ -392,7 +392,7 @@ FutureAndPromiseAsync
 
 				bool SendResult(const Value& result)override
 				{
-					return Send([=]()
+					return Send([=, this]()
 					{
 						cr->SetResult(result);
 					});
@@ -400,7 +400,7 @@ FutureAndPromiseAsync
 
 				bool SendFailure(Ptr<IValueException> failure)override
 				{
-					return Send([=]()
+					return Send([=, this]()
 					{
 						cr->SetFailure(failure);
 					});

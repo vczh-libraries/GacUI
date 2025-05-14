@@ -13746,14 +13746,14 @@ ValidateSemantic(Expression)
 									}
 								}
 
-								auto discardFirst = [=](const WString& key, const List<IMethodInfo*>& methods)
+								auto discardFirst = [=, this](const WString& key, const List<IMethodInfo*>& methods)
 									{
 										for (auto method : methods)
 										{
 											manager->errors.Add(WfErrors::InterfaceMethodNotImplemented(node, method));
 										}
 									};
-								auto discardSecond = [=](const WString& key, const List<Ptr<WfFunctionDeclaration>>& methods)
+								auto discardSecond = [=, this](const WString& key, const List<Ptr<WfFunctionDeclaration>>& methods)
 									{
 										for (auto decl : methods)
 										{
@@ -13767,7 +13767,7 @@ ValidateSemantic(Expression)
 									implementMethods,
 									discardFirst,
 									discardSecond,
-									[=](const WString& key, const List<IMethodInfo*>& interfaces, const List<Ptr<WfFunctionDeclaration>>& implements)
+									[=, this](const WString& key, const List<IMethodInfo*>& interfaces, const List<Ptr<WfFunctionDeclaration>>& implements)
 									{
 										Group<WString, IMethodInfo*> typedInterfaceMethods;
 										Group<WString, Ptr<WfFunctionDeclaration>> typedImplementMethods;
@@ -13789,7 +13789,7 @@ ValidateSemantic(Expression)
 											typedImplementMethods,
 											discardFirst,
 											discardSecond,
-											[=](const WString& key, const List<IMethodInfo*>& interfaces, const List<Ptr<WfFunctionDeclaration>>& implements)
+											[=, this](const WString& key, const List<IMethodInfo*>& interfaces, const List<Ptr<WfFunctionDeclaration>>& implements)
 											{
 												if (interfaces.Count() > 1)
 												{
@@ -19412,7 +19412,7 @@ WfGenerateExpressionVisitor
 								if (index != -1)
 								{
 									ITypeInfo* types[] = { enumValueType.Obj(),result.type.Obj() };
-									ConvertMultipleTypes(types, (sizeof(types) / sizeof(*types)), [=]()
+									ConvertMultipleTypes(types, (sizeof(types) / sizeof(*types)), [=, this]()
 									{
 										writer.WriteString(config->ConvertType(result.type->GetTypeDescriptor()));
 										writer.WriteString(L"::");
@@ -20973,7 +20973,7 @@ namespace vl
 				writer.WriteLine(L"");
 
 				if (From(customFilesClasses.Get(fileName))
-					.Any([=](Ptr<WfClassDeclaration> decl)
+					.Any([=, this](Ptr<WfClassDeclaration> decl)
 					{
 						return IsClassHasUserImplMethods(decl, true);
 					}))
@@ -25282,7 +25282,7 @@ GenerateInstructions(Expression)
 
 					WfCodegenLambdaContext lc;
 					lc.orderedLambdaExpression = node;
-					auto functionIndex = AddClosure(context, lc, [=](vint index)
+					auto functionIndex = AddClosure(context, lc, [=, this](vint index)
 					{
 						return L"<lambda:(" + itow(index) + L")> in " + context.functionContext->function->name;
 					});
@@ -26064,7 +26064,7 @@ GenerateInstructions(Expression)
 				{
 					WfCodegenLambdaContext lc;
 					lc.functionExpression = node;
-					VisitFunction(context, node->function.Obj(), lc, [=](vint index)
+					VisitFunction(context, node->function.Obj(), lc, [=, this](vint index)
 					{
 						return L"<lambda:" + node->function->name.value + L"(" + itow(index) + L")> in " + context.functionContext->function->name;
 					});
@@ -26174,7 +26174,7 @@ GenerateInstructions(Expression)
 						{
 							WfCodegenLambdaContext lc;
 							lc.functionDeclaration = func.Obj();
-							auto functionIndex = AddClosure(context, lc, [=](vint index)
+							auto functionIndex = AddClosure(context, lc, [=, this](vint index)
 							{
 								return L"<method:" + func->name.value + L"<" + result.type->GetTypeDescriptor()->GetTypeName() + L">(" + itow(index) + L")> in " + context.functionContext->function->name;
 							});
@@ -26190,7 +26190,7 @@ GenerateInstructions(Expression)
 							INSTRUCTION(Ins::LoadMethodInfo(methodInfo));
 							WfCodegenLambdaContext lc;
 							lc.functionDeclaration = func.Obj();
-							VisitFunction(context, func.Obj(), lc, [=, &declVisitor](vint index)
+							VisitFunction(context, func.Obj(), lc, [=, this, &declVisitor](vint index)
 							{
 								return L"<method:" + func->name.value + L"<" + result.type->GetTypeDescriptor()->GetTypeName() + L">(" + itow(index + declVisitor.closureFunctions.Count()) + L")> in " + context.functionContext->function->name;
 							});
