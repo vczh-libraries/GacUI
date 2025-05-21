@@ -49,6 +49,52 @@ TEST_FILE
 </Resource>
 )GacUISrc";
 
+	const auto resourceTabWithHeaders = LR"GacUISrc(
+<Resource>
+  <Instance name="MainWindowResource">
+    <Instance ref.Class="gacuisrc_unittest::MainWindow">
+      <Window ref.Name="self" Text="GuiRibbonTab" ClientSize="x:480 y:240">
+        <RibbonTab ref.Name="tab">
+          <att.BoundsComposition-set AlignmentToParent="left:0 top:5 right:0 bottom:-1"/>
+
+          <att.BeforeHeaders-set>
+            <Button ref.Name="buttonBefore" Text="BEFORE">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+              <ev.Clicked-eval><![CDATA[{
+                self.Text = "Clicked BEFORE!";
+              }]]></ev.Clicked-eval>
+            </Button>
+          </att.BeforeHeaders-set>
+
+          <att.AfterHeaders-set>
+            <Button ref.Name="buttonAfter" Text="AFTER">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+              <ev.Clicked-eval><![CDATA[{
+                self.Text = "Clicked AFTER!";
+              }]]></ev.Clicked-eval>
+            </Button>
+          </att.AfterHeaders-set>
+
+          <att.Pages>
+            <RibbonTabPage ref.Name="tabPageOptions" Text="Options">
+              <att.ContainerComposition-set PreferredMinSize="y:110"/>
+              <att.Groups>
+                <RibbonGroup Text="Option (RG)"/>
+              </att.Groups>
+            </RibbonTabPage>
+            <RibbonTabPage ref.Name="tabPageLabel" Text="Label" Highlighted="true">
+              <att.Groups>
+                <RibbonGroup Text="Label (RG)"/>
+              </att.Groups>
+            </RibbonTabPage>
+          </att.Pages>
+        </RibbonTab>
+      </Window>
+    </Instance>
+  </Instance>
+</Resource>
+)GacUISrc";
+
 	TEST_CATEGORY(L"GuiRibbonTab")
 	{
 		TEST_CASE(L"Navigation")
@@ -81,22 +127,6 @@ TEST_FILE
 					TEST_ASSERT(tab->GetSelectedPage() == tabPageOptions);
 				});
 				protocol->OnNextIdleFrame(L"Show Options", [=]()
-				{
-					auto window = GetApplication()->GetMainWindow();
-					protocol->LClick({ { {140}, {50} } });
-					auto tab = FindObjectByName<GuiTab>(window, L"tab");
-					auto tabPage = FindObjectByName<GuiTabPage>(window, L"tabPageLabel");
-					TEST_ASSERT(tab->GetSelectedPage() == tabPage);
-				});
-				protocol->OnNextIdleFrame(L"Click Label", [=]()
-				{
-					auto window = GetApplication()->GetMainWindow();
-					protocol->LClick({ { {50}, {50} } });
-					auto tab = FindObjectByName<GuiTab>(window, L"tab");
-					auto tabPage = FindObjectByName<GuiTabPage>(window, L"tabPageOptions");
-					TEST_ASSERT(tab->GetSelectedPage() == tabPage);
-				});
-				protocol->OnNextIdleFrame(L"Click Options", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					protocol->KeyPress(VKEY::KEY_MENU);
@@ -173,6 +203,63 @@ TEST_FILE
 
 		TEST_CASE(L"BeforeHeaders and AfterHeaders")
 		{
+			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto tab = FindObjectByName<GuiTab>(window, L"tab");
+					auto tabPageOptions = FindObjectByName<GuiTabPage>(window, L"tabPageOptions");
+					auto tabPageLabel = FindObjectByName<GuiTabPage>(window, L"tabPageLabel");
+					TEST_ASSERT(tab->GetPages().Count() == 2);
+					TEST_ASSERT(tab->GetPages()[0] == tabPageOptions);
+					TEST_ASSERT(tab->GetPages()[1] == tabPageLabel);
+					TEST_ASSERT(tabPageOptions->GetOwnerTab() == tab);
+					TEST_ASSERT(tabPageLabel->GetOwnerTab() == tab);
+					TEST_ASSERT(tab->GetSelectedPage() == tabPageOptions);
+					tab->SetSelectedPage(tabPageLabel);
+					TEST_ASSERT(tab->GetSelectedPage() == tabPageLabel);
+				});
+				protocol->OnNextIdleFrame(L"Show Label", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto tab = FindObjectByName<GuiTab>(window, L"tab");
+					auto tabPageOptions = FindObjectByName<GuiTabPage>(window, L"tabPageOptions");
+					auto tabPageLabel = FindObjectByName<GuiTabPage>(window, L"tabPageLabel");
+					TEST_ASSERT(tab->GetSelectedPage() == tabPageLabel);
+					tab->SetSelectedPage(tabPageOptions);
+					TEST_ASSERT(tab->GetSelectedPage() == tabPageOptions);
+				});
+				protocol->OnNextIdleFrame(L"Show Options", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto button = FindObjectByName<GuiButton>(window, L"buttonBefore");
+					auto location = protocol->LocationOf(button);
+					protocol->LClick(location);
+				});
+				protocol->OnNextIdleFrame(L"Click BEFORE", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto button = FindObjectByName<GuiButton>(window, L"buttonAfter");
+					auto location = protocol->LocationOf(button);
+					protocol->LClick(location);
+				});
+				protocol->OnNextIdleFrame(L"Click AFTER", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					window->SetClientSize({ 320,200 });
+				});
+				protocol->OnNextIdleFrame(L"Window Shrinked", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					window->Hide();
+				});
+			});
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Controls/Ribbon/GuiRibbonTab/Headers"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resourceTabWithHeaders
+				);
 		});
 	});
 

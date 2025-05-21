@@ -1,0 +1,232 @@
+﻿================================(1/2)================================
+module <constructor>gacuisrc_unittest::MainWindow;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace gacuisrc_unittest
+{
+    class MainWindowConstructor
+    {
+        @cpp:Protected
+        var self : ::gacuisrc_unittest::MainWindow* = null of (::gacuisrc_unittest::MainWindow*);
+
+        @cpp:Protected
+        var tab : ::presentation::controls::GuiRibbonTab* = null of (::presentation::controls::GuiRibbonTab*);
+
+        @cpp:Protected
+        var tabPageOptions : ::presentation::controls::GuiRibbonTabPage* = null of (::presentation::controls::GuiRibbonTabPage*);
+
+        @cpp:Protected
+        var tabPageLabel : ::presentation::controls::GuiRibbonTabPage* = null of (::presentation::controls::GuiRibbonTabPage*);
+
+        @cpp:Protected
+        var <precompile>0 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var <precompile>1 : ::presentation::compositions::GuiGraphicsComposition* = null of (::presentation::compositions::GuiGraphicsComposition*);
+
+        @cpp:Protected
+        var <precompile>2 : ::presentation::controls::GuiRibbonGroup* = null of (::presentation::controls::GuiRibbonGroup*);
+
+        @cpp:Protected
+        var <precompile>3 : ::presentation::controls::GuiRibbonGroup* = null of (::presentation::controls::GuiRibbonGroup*);
+
+        @cpp:Protected
+        var <precompile>4 : ::presentation::compositions::GuiGraphicsComposition* = null of (::presentation::compositions::GuiGraphicsComposition*);
+
+        @cpp:Protected
+        var <precompile>5 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var <precompile>6 : ::presentation::compositions::GuiGraphicsComposition* = null of (::presentation::compositions::GuiGraphicsComposition*);
+
+        @cpp:Protected
+        var <precompile>7 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var buttonBefore : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
+
+        @cpp:Protected
+        var buttonAfter : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
+
+        @cpp:Protected
+        func <gacuisrc_unittest-MainWindow>Initialize(<this> : ::gacuisrc_unittest::MainWindow*) : (::system::Void)
+        {
+            (self = <this>);
+            {
+                (self.ClientSize = {x : 480; y : 240;} of (::presentation::Size));
+            }
+            {
+                (self.Text = "GuiRibbonTab");
+            }
+            {
+                (tab = new (::presentation::controls::GuiRibbonTab*)(::presentation::theme::ThemeName::RibbonTab));
+                <this>.SetNamedObject("tab", tab);
+            }
+            (<precompile>6 = tab.AfterHeaders);
+            {
+                (buttonAfter = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
+                <this>.SetNamedObject("buttonAfter", buttonAfter);
+            }
+            (<precompile>7 = buttonAfter.BoundsComposition);
+            {
+                (<precompile>7.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (buttonAfter.Text = "AFTER");
+            }
+            {
+                <precompile>6.AddChild(buttonAfter.BoundsComposition);
+            }
+            (<precompile>4 = tab.BeforeHeaders);
+            {
+                (buttonBefore = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
+                <this>.SetNamedObject("buttonBefore", buttonBefore);
+            }
+            (<precompile>5 = buttonBefore.BoundsComposition);
+            {
+                (<precompile>5.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (buttonBefore.Text = "BEFORE");
+            }
+            {
+                <precompile>4.AddChild(buttonBefore.BoundsComposition);
+            }
+            {
+                (tabPageOptions = new (::presentation::controls::GuiRibbonTabPage*)(::presentation::theme::ThemeName::CustomControl));
+                <this>.SetNamedObject("tabPageOptions", tabPageOptions);
+            }
+            {
+                (<precompile>2 = new (::presentation::controls::GuiRibbonGroup*)(::presentation::theme::ThemeName::RibbonGroup));
+            }
+            {
+                (<precompile>2.Text = "Option (RG)");
+            }
+            {
+                var <collection> = tabPageOptions.Groups;
+                <collection>.Add(<precompile>2);
+            }
+            (<precompile>1 = tabPageOptions.ContainerComposition);
+            {
+                (<precompile>1.PreferredMinSize = {y : 110;} of (::presentation::Size));
+            }
+            {
+                (tabPageOptions.Text = "Options");
+            }
+            {
+                var <collection> = tab.Pages;
+                <collection>.Add(tabPageOptions);
+            }
+            {
+                (tabPageLabel = new (::presentation::controls::GuiRibbonTabPage*)(::presentation::theme::ThemeName::CustomControl));
+                <this>.SetNamedObject("tabPageLabel", tabPageLabel);
+            }
+            {
+                (tabPageLabel.Highlighted = true);
+            }
+            {
+                (<precompile>3 = new (::presentation::controls::GuiRibbonGroup*)(::presentation::theme::ThemeName::RibbonGroup));
+            }
+            {
+                (<precompile>3.Text = "Label (RG)");
+            }
+            {
+                var <collection> = tabPageLabel.Groups;
+                <collection>.Add(<precompile>3);
+            }
+            {
+                (tabPageLabel.Text = "Label");
+            }
+            {
+                var <collection> = tab.Pages;
+                <collection>.Add(tabPageLabel);
+            }
+            (<precompile>0 = tab.BoundsComposition);
+            {
+                (<precompile>0.AlignmentToParent = {left : 0; top : 5; right : 0; bottom : (-1);} of (::presentation::Margin));
+            }
+            {
+                self.AddChild(tab);
+            }
+            {
+                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                {
+                    (self.Text = "Clicked BEFORE!");
+                };
+                attach(buttonBefore.Clicked, <event-handler>);
+            }
+            {
+                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                {
+                    (self.Text = "Clicked AFTER!");
+                };
+                attach(buttonAfter.Clicked, <event-handler>);
+            }
+        }
+
+        new ()
+        {
+        }
+    }
+}
+
+================================(2/2)================================
+module <instance>gacuisrc_unittest::MainWindow;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace gacuisrc_unittest
+{
+    @cpp:File("MainWindow")
+    @cpp:Friend(typeof(MainWindowConstructor))
+    class MainWindow : ::presentation::controls::GuiWindow, MainWindowConstructor
+    {
+        new* ()
+            :::presentation::controls::GuiWindow(::presentation::theme::ThemeName::Window)
+        {
+            var <resource> = ::presentation::IGuiResourceManager::GetResourceManager().GetResourceFromClassName("gacuisrc_unittest::MainWindow");
+            var <resolver> = new (::presentation::GuiResourcePathResolver^)(<resource>, <resource>.WorkingDirectory);
+            this.SetResourceResolver(<resolver>);
+            this.<gacuisrc_unittest-MainWindow>Initialize(this);
+        }
+
+        delete
+        {
+            FinalizeInstanceRecursively(this of (::presentation::controls::GuiControlHost*));
+        }
+    }
+}
+
