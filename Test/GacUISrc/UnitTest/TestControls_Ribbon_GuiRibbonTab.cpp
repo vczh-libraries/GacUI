@@ -276,10 +276,17 @@ TEST_FILE
 
 	TEST_CATEGORY(L"GuiRibbonGroup")
 	{
+		// Automatically resizing window from max to min in width stepping every 32 pixels
+		// Expandable
+		// Image
 	});
 
 	TEST_CATEGORY(L"GuiRibbonButtons")
 	{
+		// Automatically resizing window from max to min in width stepping every 32 pixels
+		// MaxSize/MinSize
+		// GuiRibbonIconLabel
+		// <Ribbon(Small|Large)(Dropdown|Split)?Button/>
 	});
 
 	TEST_CATEGORY(L"GuiRibbonToolstrips")
