@@ -55,6 +55,9 @@
     <Filter Include="Source Files\Controls\Toolstrip\Combo">
       <UniqueIdentifier>{71cf3aca-965d-49df-b421-eceec957e1d6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Controls\Ribbon">
+      <UniqueIdentifier>{a6b28b80-be09-4f8c-9192-c445df364e34}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -260,6 +263,9 @@
     </ClCompile>
     <ClCompile Include="TestRemote_UnitTestFramework_Async.cpp">
       <Filter>Source Files\Remote</Filter>
+    </ClCompile>
+    <ClCompile Include="TestControls_Ribbon_GuiRibbonTab.cpp">
+      <Filter>Source Files\Controls\Ribbon</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
