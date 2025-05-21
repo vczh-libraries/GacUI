@@ -174,9 +174,32 @@ TEST_FILE
 		TEST_CASE(L"BeforeHeaders and AfterHeaders")
 		{
 		});
+	});
 
-		TEST_CASE(L"Menu")
+	TEST_CATEGORY(L"GuiRibbonToolstripMenu")
+	{
+		TEST_CASE(L"Trivial")
 		{
 		});
+
+		TEST_CASE(L"ContentComposition")
+		{
+		});
+	});
+
+	TEST_CATEGORY(L"GuiRibbonGroup")
+	{
+	});
+
+	TEST_CATEGORY(L"GuiRibbonButtons")
+	{
+	});
+
+	TEST_CATEGORY(L"GuiRibbonToolstrips")
+	{
+	});
+
+	TEST_CATEGORY(L"GuiRibbonGallery")
+	{
 	});
 }
