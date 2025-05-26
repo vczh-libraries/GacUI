@@ -1,4 +1,6 @@
-#include "TestControls.h"
+#include "TestControls_List.h"
+
+using namespace gacui_unittest_template;
 
 TEST_FILE
 {
@@ -183,7 +185,7 @@ TEST_FILE
               </Cell>
 
               <Cell Site="row:1 column:0">
-                <TextList HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
+                <TextList ref.Name="listFiles" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
                   <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
                   <att.Items>
                     <_ Text="First"/>
@@ -454,6 +456,12 @@ TEST_FILE
 					protocol->LClick(location);
 				});
 				protocol->OnNextIdleFrame(L"Click HOME", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto list = FindObjectByName<GuiTextList>(window, L"listFiles");
+					LClickListItem(protocol, list, 1);
+				});
+				protocol->OnNextIdleFrame(L"Select Second", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto menu = FindObjectByName<GuiRibbonToolstripMenu>(window, L"ribbonMenu");
