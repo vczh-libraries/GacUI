@@ -152,6 +152,85 @@ TEST_FILE
 </Resource>
 )GacUISrc";
 
+	const auto resourceTabWithMenuWithContent = LR"GacUISrc(
+<Resource>
+  <Folder name="UnitTestConfig" content="Link">Toolstrip/ToolstripImagesData.xml</Folder>
+  <Folder name="ToolstripImages" content="Link">Toolstrip/ToolstripImagesFolder.xml</Folder>
+
+  <Instance name="MainWindowResource">
+    <Instance ref.Class="gacuisrc_unittest::MainWindow">
+      <Window ref.Name="self" Text="GuiRibbonTab" ClientSize="x:320 y:320">
+        <ToolstripCommand ref.Name="commandUndo" Text="Undo" Image-uri="res://ToolstripImages/Undo"/>
+        <ToolstripCommand ref.Name="commandRedo" Text="Redo" Image-uri="res://ToolstripImages/Redo"/>
+        <ToolstripCommand ref.Name="commandCut" Text="Cut" Image-uri="res://ToolstripImages/Cut" Enabled="false"/>
+        <ToolstripCommand ref.Name="commandCopy" Text="Copy" Image-uri="res://ToolstripImages/Copy" Enabled="false"/>
+        <ToolstripCommand ref.Name="commandPaste" Text="Paste" Image-uri="res://ToolstripImages/Paste" Enabled="false"/>
+        <ToolstripCommand ref.Name="commandDelete" Text="Delete" Image-uri="res://ToolstripImages/Delete" Enabled="false"/>
+
+        <RibbonToolstripMenu ref.Name="ribbonMenu">
+          <att.ContentComposition-set>
+            <Table CellPadding="5" BorderVisible="true" MinSizeLimitation="LimitToElementAndChildren" AlignmentToParent="left:0 top:0 right:0 bottom:0">
+              <att.Rows>
+                <_>composeType:MinSize</_>
+                <_>composeType:Percentage percentage:1.0</_>
+              </att.Rows>
+              <att.Columns>
+                <_>composeType:Percentage percentage:1.0</_>
+              </att.Columns>
+
+              <Cell Site="row:0 column:0">
+                <Label Text="Select a File:"/>
+              </Cell>
+
+              <Cell Site="row:1 column:0">
+                <TextList HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
+                  <att.BoundsComposition-set PreferredMinSize="x:120 y:80" AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+                </TextList>
+              </Cell>
+            </Table>
+          </att.ContentComposition-set>
+
+          <ToolstripGroupContainer>
+            <ToolstripGroup>
+              <MenuItemButton ref.Name="buttonUndo" Alt="U" Command-ref="commandUndo"/>
+              <MenuItemButton ref.Name="buttonRedo" Alt="R" Command-ref="commandRedo"/>
+            </ToolstripGroup>
+            <ToolstripGroup>
+              <MenuItemButton ref.Name="buttonCut" Alt="X" Command-ref="commandCut"/>
+              <MenuItemButton ref.Name="buttonCopy" Alt="C" Command-ref="commandCopy"/>
+              <MenuItemButton ref.Name="buttonPaste" Alt="V" Command-ref="commandPaste"/>
+            </ToolstripGroup>
+            <ToolstripGroup>
+              <MenuItemButton ref.Name="buttonDelete" Alt="D" Command-ref="commandDelete"/>
+            </ToolstripGroup>
+          </ToolstripGroupContainer>
+        </RibbonToolstrioMenu>
+
+        <RibbonTab ref.Name="tab">
+          <att.BoundsComposition-set AlignmentToParent="left:0 top:5 right:0 bottom:-1"/>
+
+          <att.BeforeHeaders-set>
+            <Button ref.Name="buttonHome" Text="HOME">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+              <ev.Clicked-eval><![CDATA[{
+                ribbonMenu.ShowPopup(buttonHome, true);
+              }]]></ev.Clicked-eval>
+            </Button>
+          </att.BeforeHeaders-set>
+
+          <att.Pages>
+            <RibbonTabPage ref.Name="tabPageOptions" Text="Options">
+              <att.ContainerComposition-set PreferredMinSize="y:110"/>
+            </RibbonTabPage>
+            <RibbonTabPage ref.Name="tabPageLabel" Text="Label" Highlighted="true"/>
+          </att.Pages>
+        </RibbonTab>
+      </Window>
+    </Instance>
+  </Instance>
+</Resource>
+)GacUISrc";
+
 	TEST_CATEGORY(L"GuiRibbonTab")
 	{
 		TEST_CASE(L"Navigation")
@@ -355,8 +434,40 @@ TEST_FILE
 				);
 		});
 
-		TEST_CASE(L"ContentComposition")
+		TEST_CASE(L"MenuWithContent")
 		{
+			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto button = FindObjectByName<GuiButton>(window, L"buttonHome");
+					auto location = protocol->LocationOf(button);
+					protocol->LClick(location);
+				});
+				protocol->OnNextIdleFrame(L"Click HOME", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto menu = FindObjectByName<GuiRibbonToolstripMenu>(window, L"ribbonMenu");
+					auto button = FindControlByText<GuiToolstripButton>(menu, L"Undo");
+					auto location = protocol->LocationOf(button);
+					protocol->MouseMove(location);
+				});
+				protocol->OnNextIdleFrame(L"Hover Undo", [=]()
+				{
+					protocol->LClick();
+				});
+				protocol->OnNextIdleFrame(L"Click", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					window->Hide();
+				});
+			});
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Controls/Ribbon/GuiRibbonTab/MenuWithContent"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resourceTabWithMenuWithContent
+				);
 		});
 	});
 
