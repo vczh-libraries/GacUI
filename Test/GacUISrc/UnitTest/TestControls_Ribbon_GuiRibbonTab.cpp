@@ -169,7 +169,7 @@ TEST_FILE
 
         <RibbonToolstripMenu ref.Name="ribbonMenu">
           <att.ContentComposition-set>
-            <Table CellPadding="5" BorderVisible="true" MinSizeLimitation="LimitToElementAndChildren" AlignmentToParent="left:0 top:0 right:0 bottom:0">
+            <Table CellPadding="5" BorderVisible="true" AlignmentToParent="left:0 top:0 right:0 bottom:0" PreferredMinSize="y:80">
               <att.Rows>
                 <_>composeType:MinSize</_>
                 <_>composeType:Percentage percentage:1.0</_>
@@ -184,7 +184,7 @@ TEST_FILE
 
               <Cell Site="row:1 column:0">
                 <TextList HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
-                  <att.BoundsComposition-set PreferredMinSize="x:120 y:80" AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+                  <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
                 </TextList>
               </Cell>
             </Table>

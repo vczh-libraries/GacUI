@@ -108,6 +108,18 @@ GuiControl
 				}
 			}
 
+			void GuiControl::FixingMissingControlTemplateCallback(templates::GuiControlTemplate* value)
+			{
+			}
+
+			void GuiControl::CallFixingMissingControlTemplateCallback()
+			{
+				if (controlTemplateObject)
+				{
+					FixingMissingControlTemplateCallback(controlTemplateObject);
+				}
+			}
+
 			void GuiControl::OnChildInserted(GuiControl* control)
 			{
 				GuiControl* oldParent=control->parent;

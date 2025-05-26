@@ -804,6 +804,9 @@ GuiWindow
 
 			void GuiWindow::Opened()
 			{
+				// Workaround:
+				// Constructor calling SetNativeWindow skips AfterControlTemplateInstalled_ of all sub classes
+				CallFixingMissingControlTemplateCallback();
 				GuiControlHost::Opened();
 				if (auto ct = TypedControlTemplateObject(false))
 				{

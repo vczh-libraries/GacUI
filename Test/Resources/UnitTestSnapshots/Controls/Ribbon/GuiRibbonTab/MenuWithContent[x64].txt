@@ -205,10 +205,7 @@ namespace gacuisrc_unittest
                 (<precompile>5.CellPadding = 5 of (::system::Int64));
             }
             {
-                (<precompile>5.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
-            }
-            {
-                (<precompile>5.PreferredMinSize = {x : 1; y : 1;} of (::presentation::Size));
+                (<precompile>5.PreferredMinSize = {y : 80;} of (::presentation::Size));
             }
             {
                 (<precompile>5.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
@@ -249,9 +246,6 @@ namespace gacuisrc_unittest
                 (<precompile>9.HorizontalAlwaysVisible = false);
             }
             (<precompile>10 = <precompile>9.BoundsComposition);
-            {
-                (<precompile>10.PreferredMinSize = {x : 120; y : 80;} of (::presentation::Size));
-            }
             {
                 (<precompile>10.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
