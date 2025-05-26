@@ -69,10 +69,10 @@ namespace gacuisrc_unittest
         var <precompile>10 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
-        var <precompile>11 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+        var <precompile>11 : ::presentation::controls::list::TextItem^ = null of (::presentation::controls::list::TextItem^);
 
         @cpp:Protected
-        var <precompile>12 : ::presentation::compositions::GuiGraphicsComposition* = null of (::presentation::compositions::GuiGraphicsComposition*);
+        var <precompile>12 : ::presentation::controls::list::TextItem^ = null of (::presentation::controls::list::TextItem^);
 
         @cpp:Protected
         var commandUndo : ::presentation::controls::GuiToolstripCommand* = null of (::presentation::controls::GuiToolstripCommand*);
@@ -117,10 +117,28 @@ namespace gacuisrc_unittest
         var buttonHome : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
 
         @cpp:Protected
-        var <precompile>13 : ::presentation::compositions::GuiGraphicsComposition* = null of (::presentation::compositions::GuiGraphicsComposition*);
+        var <precompile>13 : ::presentation::controls::list::TextItem^ = null of (::presentation::controls::list::TextItem^);
 
         @cpp:Protected
-        var <precompile>14 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+        var <precompile>14 : ::presentation::controls::list::TextItem^ = null of (::presentation::controls::list::TextItem^);
+
+        @cpp:Protected
+        var <precompile>15 : ::presentation::controls::list::TextItem^ = null of (::presentation::controls::list::TextItem^);
+
+        @cpp:Protected
+        var <precompile>16 : ::presentation::controls::list::TextItem^ = null of (::presentation::controls::list::TextItem^);
+
+        @cpp:Protected
+        var <precompile>17 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var <precompile>18 : ::presentation::compositions::GuiGraphicsComposition* = null of (::presentation::compositions::GuiGraphicsComposition*);
+
+        @cpp:Protected
+        var <precompile>19 : ::presentation::compositions::GuiGraphicsComposition* = null of (::presentation::compositions::GuiGraphicsComposition*);
+
+        @cpp:Protected
+        var <precompile>20 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
         func <gacuisrc_unittest-MainWindow>Initialize(<this> : ::gacuisrc_unittest::MainWindow*) : (::system::Void)
@@ -245,6 +263,54 @@ namespace gacuisrc_unittest
             {
                 (<precompile>9.HorizontalAlwaysVisible = false);
             }
+            (<precompile>11 = new (::presentation::controls::list::TextItem^)());
+            {
+                (<precompile>11.Text = "First");
+            }
+            {
+                var <collection> = <precompile>9.Items;
+                <collection>.Add(<precompile>11);
+            }
+            (<precompile>12 = new (::presentation::controls::list::TextItem^)());
+            {
+                (<precompile>12.Text = "Second");
+            }
+            {
+                var <collection> = <precompile>9.Items;
+                <collection>.Add(<precompile>12);
+            }
+            (<precompile>13 = new (::presentation::controls::list::TextItem^)());
+            {
+                (<precompile>13.Text = "Third");
+            }
+            {
+                var <collection> = <precompile>9.Items;
+                <collection>.Add(<precompile>13);
+            }
+            (<precompile>14 = new (::presentation::controls::list::TextItem^)());
+            {
+                (<precompile>14.Text = "Fourth");
+            }
+            {
+                var <collection> = <precompile>9.Items;
+                <collection>.Add(<precompile>14);
+            }
+            (<precompile>15 = new (::presentation::controls::list::TextItem^)());
+            {
+                (<precompile>15.Text = "Fifth");
+            }
+            {
+                var <collection> = <precompile>9.Items;
+                <collection>.Add(<precompile>15);
+            }
+            (<precompile>16 = new (::presentation::controls::list::TextItem^)());
+            {
+                (<precompile>16.Text = "Sixth");
+            }
+            {
+                var <collection> = <precompile>9.Items;
+                <collection>.Add(<precompile>16);
+            }
             (<precompile>10 = <precompile>9.BoundsComposition);
             {
                 (<precompile>10.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
@@ -349,28 +415,28 @@ namespace gacuisrc_unittest
                 (tab = new (::presentation::controls::GuiRibbonTab*)(::presentation::theme::ThemeName::RibbonTab));
                 <this>.SetNamedObject("tab", tab);
             }
-            (<precompile>13 = tab.BeforeHeaders);
+            (<precompile>19 = tab.BeforeHeaders);
             {
                 (buttonHome = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
                 <this>.SetNamedObject("buttonHome", buttonHome);
             }
-            (<precompile>14 = buttonHome.BoundsComposition);
+            (<precompile>20 = buttonHome.BoundsComposition);
             {
-                (<precompile>14.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+                (<precompile>20.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
                 (buttonHome.Text = "HOME");
             }
             {
-                <precompile>13.AddChild(buttonHome.BoundsComposition);
+                <precompile>19.AddChild(buttonHome.BoundsComposition);
             }
             {
                 (tabPageOptions = new (::presentation::controls::GuiRibbonTabPage*)(::presentation::theme::ThemeName::CustomControl));
                 <this>.SetNamedObject("tabPageOptions", tabPageOptions);
             }
-            (<precompile>12 = tabPageOptions.ContainerComposition);
+            (<precompile>18 = tabPageOptions.ContainerComposition);
             {
-                (<precompile>12.PreferredMinSize = {y : 110;} of (::presentation::Size));
+                (<precompile>18.PreferredMinSize = {y : 110;} of (::presentation::Size));
             }
             {
                 (tabPageOptions.Text = "Options");
@@ -393,9 +459,9 @@ namespace gacuisrc_unittest
                 var <collection> = tab.Pages;
                 <collection>.Add(tabPageLabel);
             }
-            (<precompile>11 = tab.BoundsComposition);
+            (<precompile>17 = tab.BoundsComposition);
             {
-                (<precompile>11.AlignmentToParent = {left : 0; top : 5; right : 0; bottom : (-1);} of (::presentation::Margin));
+                (<precompile>17.AlignmentToParent = {left : 0; top : 5; right : 0; bottom : (-1);} of (::presentation::Margin));
             }
             {
                 self.AddChild(tab);

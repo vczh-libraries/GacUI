@@ -185,6 +185,14 @@ TEST_FILE
               <Cell Site="row:1 column:0">
                 <TextList HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
                   <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+                  <att.Items>
+                    <_ Text="First"/>
+                    <_ Text="Second"/>
+                    <_ Text="Third"/>
+                    <_ Text="Fourth"/>
+                    <_ Text="Fifth"/>
+                    <_ Text="Sixth"/>
+                  </att.Items>
                 </TextList>
               </Cell>
             </Table>
