@@ -175,9 +175,7 @@ GuiApplication
 
 			void GuiApplication::RegisterPopupClosed(GuiPopup* popup)
 			{
-				if(openingPopups.Remove(popup))
-				{
-				}
+				openingPopups.Remove(popup);
 			}
 
 			void GuiApplication::TooltipMouseEnter(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
@@ -453,18 +451,18 @@ GuiApplicationMain
 				}
 
 				GetCurrentController()->InputService()->StartTimer();
+				IAsyncScheduler::RegisterSchedulerForCurrentThread(Ptr(new UIThreadAsyncScheduler));
+				IAsyncScheduler::RegisterDefaultScheduler(Ptr(new OtherThreadAsyncScheduler));
+				GuiInitializeUtilities();
 				{
 					GuiApplication app;
 					application = &app;
-					IAsyncScheduler::RegisterSchedulerForCurrentThread(Ptr(new UIThreadAsyncScheduler));
-					IAsyncScheduler::RegisterDefaultScheduler(Ptr(new OtherThreadAsyncScheduler));
-					GuiInitializeUtilities();
 					GuiMain();
-					GuiFinalizeUtilities();
-					IAsyncScheduler::UnregisterDefaultScheduler();
-					IAsyncScheduler::UnregisterSchedulerForCurrentThread();
-					application = nullptr;
 				}
+				application = nullptr;
+				GuiFinalizeUtilities();
+				IAsyncScheduler::UnregisterDefaultScheduler();
+				IAsyncScheduler::UnregisterSchedulerForCurrentThread();
 				GetCurrentController()->InputService()->StopTimer();
 				theme::FinalizeTheme();
 				FinalizeGlobalStorage();
@@ -503,13 +501,11 @@ GuiApplicationMain
 				}
 
 				GetCurrentController()->InputService()->StartTimer();
-				{
-					IAsyncScheduler::RegisterSchedulerForCurrentThread(Ptr(new UIThreadAsyncScheduler));
-					IAsyncScheduler::RegisterDefaultScheduler(Ptr(new OtherThreadAsyncScheduler));
-					GuiMain();
-					IAsyncScheduler::UnregisterDefaultScheduler();
-					IAsyncScheduler::UnregisterSchedulerForCurrentThread();
-				}
+				IAsyncScheduler::RegisterSchedulerForCurrentThread(Ptr(new UIThreadAsyncScheduler));
+				IAsyncScheduler::RegisterDefaultScheduler(Ptr(new OtherThreadAsyncScheduler));
+				GuiMain();
+				IAsyncScheduler::UnregisterDefaultScheduler();
+				IAsyncScheduler::UnregisterSchedulerForCurrentThread();
 				GetCurrentController()->InputService()->StopTimer();
 				FinalizeGlobalStorage();
 
