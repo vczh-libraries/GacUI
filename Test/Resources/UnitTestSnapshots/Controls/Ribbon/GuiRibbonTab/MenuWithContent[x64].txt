@@ -51,28 +51,28 @@ namespace gacuisrc_unittest
         var <precompile>4 : ::presentation::compositions::GuiGraphicsComposition* = null of (::presentation::compositions::GuiGraphicsComposition*);
 
         @cpp:Protected
-        var <precompile>5 : ::presentation::controls::GuiLabel* = null of (::presentation::controls::GuiLabel*);
+        var <precompile>5 : ::presentation::compositions::GuiTableComposition* = null of (::presentation::compositions::GuiTableComposition*);
 
         @cpp:Protected
-        var <precompile>6 : ::presentation::compositions::GuiTableComposition* = null of (::presentation::compositions::GuiTableComposition*);
+        var <precompile>6 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
 
         @cpp:Protected
-        var <precompile>7 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
+        var <precompile>7 : ::presentation::controls::GuiLabel* = null of (::presentation::controls::GuiLabel*);
 
         @cpp:Protected
-        var <precompile>8 : ::presentation::controls::GuiLabel* = null of (::presentation::controls::GuiLabel*);
+        var <precompile>8 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
 
         @cpp:Protected
-        var <precompile>9 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
+        var <precompile>9 : ::presentation::controls::GuiTextList* = null of (::presentation::controls::GuiTextList*);
 
         @cpp:Protected
-        var <precompile>10 : ::presentation::controls::GuiTextList* = null of (::presentation::controls::GuiTextList*);
+        var <precompile>10 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
         var <precompile>11 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
-        var <precompile>12 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+        var <precompile>12 : ::presentation::compositions::GuiGraphicsComposition* = null of (::presentation::compositions::GuiGraphicsComposition*);
 
         @cpp:Protected
         var commandUndo : ::presentation::controls::GuiToolstripCommand* = null of (::presentation::controls::GuiToolstripCommand*);
@@ -120,10 +120,7 @@ namespace gacuisrc_unittest
         var <precompile>13 : ::presentation::compositions::GuiGraphicsComposition* = null of (::presentation::compositions::GuiGraphicsComposition*);
 
         @cpp:Protected
-        var <precompile>14 : ::presentation::compositions::GuiGraphicsComposition* = null of (::presentation::compositions::GuiGraphicsComposition*);
-
-        @cpp:Protected
-        var <precompile>15 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+        var <precompile>14 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
         func <gacuisrc_unittest-MainWindow>Initialize(<this> : ::gacuisrc_unittest::MainWindow*) : (::system::Void)
@@ -200,78 +197,72 @@ namespace gacuisrc_unittest
                 <this>.SetNamedObject("ribbonMenu", ribbonMenu);
             }
             (<precompile>4 = ribbonMenu.ContentComposition);
+            (<precompile>5 = new (::presentation::compositions::GuiTableComposition*)());
             {
-                (<precompile>5 = new (::presentation::controls::GuiLabel*)(::presentation::theme::ThemeName::Label));
+                (<precompile>5.BorderVisible = true);
             }
             {
-                (<precompile>5.Text = "Select a File:");
+                (<precompile>5.CellPadding = 5 of (::system::Int64));
             }
             {
-                <precompile>4.AddChild(<precompile>5.BoundsComposition);
-            }
-            (<precompile>6 = new (::presentation::compositions::GuiTableComposition*)());
-            {
-                (<precompile>6.BorderVisible = true);
+                (<precompile>5.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
             }
             {
-                (<precompile>6.CellPadding = 5 of (::system::Int64));
+                (<precompile>5.PreferredMinSize = {x : 1; y : 1;} of (::presentation::Size));
             }
             {
-                (<precompile>6.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+                (<precompile>5.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
-                (<precompile>6.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+                <precompile>5.SetRowsAndColumns(2, 1);
+                <precompile>5.SetRowOption(0, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
+                <precompile>5.SetRowOption(1, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
+                <precompile>5.SetColumnOption(0, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
+            }
+            (<precompile>6 = new (::presentation::compositions::GuiCellComposition*)());
+            {
+                <precompile>6.SetSite(0, 0, 1, 1);
             }
             {
-                <precompile>6.SetRowsAndColumns(2, 1);
-                <precompile>6.SetRowOption(0, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
-                <precompile>6.SetRowOption(1, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
-                <precompile>6.SetColumnOption(0, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
-            }
-            (<precompile>7 = new (::presentation::compositions::GuiCellComposition*)());
-            {
-                <precompile>7.SetSite(0, 0, 1, 1);
+                (<precompile>7 = new (::presentation::controls::GuiLabel*)(::presentation::theme::ThemeName::Label));
             }
             {
-                (<precompile>8 = new (::presentation::controls::GuiLabel*)(::presentation::theme::ThemeName::Label));
+                (<precompile>7.Text = "Select a File:");
             }
             {
-                (<precompile>8.Text = "Select a File:");
+                <precompile>6.AddChild(<precompile>7.BoundsComposition);
             }
             {
-                <precompile>7.AddChild(<precompile>8.BoundsComposition);
+                <precompile>5.AddChild(<precompile>6);
+            }
+            (<precompile>8 = new (::presentation::compositions::GuiCellComposition*)());
+            {
+                <precompile>8.SetSite(1, 0, 1, 1);
             }
             {
-                <precompile>6.AddChild(<precompile>7);
-            }
-            (<precompile>9 = new (::presentation::compositions::GuiCellComposition*)());
-            {
-                <precompile>9.SetSite(1, 0, 1, 1);
+                (<precompile>9 = new (::presentation::controls::GuiTextList*)(::presentation::theme::ThemeName::TextList));
             }
             {
-                (<precompile>10 = new (::presentation::controls::GuiTextList*)(::presentation::theme::ThemeName::TextList));
+                (<precompile>9.VerticalAlwaysVisible = false);
             }
             {
-                (<precompile>10.VerticalAlwaysVisible = false);
+                (<precompile>9.HorizontalAlwaysVisible = false);
+            }
+            (<precompile>10 = <precompile>9.BoundsComposition);
+            {
+                (<precompile>10.PreferredMinSize = {x : 120; y : 80;} of (::presentation::Size));
             }
             {
-                (<precompile>10.HorizontalAlwaysVisible = false);
-            }
-            (<precompile>11 = <precompile>10.BoundsComposition);
-            {
-                (<precompile>11.PreferredMinSize = {x : 120; y : 80;} of (::presentation::Size));
+                (<precompile>10.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
-                (<precompile>11.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+                <precompile>8.AddChild(<precompile>9.BoundsComposition);
             }
             {
-                <precompile>9.AddChild(<precompile>10.BoundsComposition);
+                <precompile>5.AddChild(<precompile>8);
             }
             {
-                <precompile>6.AddChild(<precompile>9);
-            }
-            {
-                <precompile>4.AddChild(<precompile>6);
+                <precompile>4.AddChild(<precompile>5);
             }
             {
                 (<precompile>0 = new (::presentation::controls::GuiToolstripGroupContainer*)(::presentation::theme::ThemeName::CustomControl));
@@ -364,28 +355,28 @@ namespace gacuisrc_unittest
                 (tab = new (::presentation::controls::GuiRibbonTab*)(::presentation::theme::ThemeName::RibbonTab));
                 <this>.SetNamedObject("tab", tab);
             }
-            (<precompile>14 = tab.BeforeHeaders);
+            (<precompile>13 = tab.BeforeHeaders);
             {
                 (buttonHome = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
                 <this>.SetNamedObject("buttonHome", buttonHome);
             }
-            (<precompile>15 = buttonHome.BoundsComposition);
+            (<precompile>14 = buttonHome.BoundsComposition);
             {
-                (<precompile>15.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+                (<precompile>14.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
                 (buttonHome.Text = "HOME");
             }
             {
-                <precompile>14.AddChild(buttonHome.BoundsComposition);
+                <precompile>13.AddChild(buttonHome.BoundsComposition);
             }
             {
                 (tabPageOptions = new (::presentation::controls::GuiRibbonTabPage*)(::presentation::theme::ThemeName::CustomControl));
                 <this>.SetNamedObject("tabPageOptions", tabPageOptions);
             }
-            (<precompile>13 = tabPageOptions.ContainerComposition);
+            (<precompile>12 = tabPageOptions.ContainerComposition);
             {
-                (<precompile>13.PreferredMinSize = {y : 110;} of (::presentation::Size));
+                (<precompile>12.PreferredMinSize = {y : 110;} of (::presentation::Size));
             }
             {
                 (tabPageOptions.Text = "Options");
@@ -408,9 +399,9 @@ namespace gacuisrc_unittest
                 var <collection> = tab.Pages;
                 <collection>.Add(tabPageLabel);
             }
-            (<precompile>12 = tab.BoundsComposition);
+            (<precompile>11 = tab.BoundsComposition);
             {
-                (<precompile>12.AlignmentToParent = {left : 0; top : 5; right : 0; bottom : (-1);} of (::presentation::Margin));
+                (<precompile>11.AlignmentToParent = {left : 0; top : 5; right : 0; bottom : (-1);} of (::presentation::Margin));
             }
             {
                 self.AddChild(tab);

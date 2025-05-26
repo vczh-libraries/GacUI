@@ -125,7 +125,7 @@ TEST_FILE
               <MenuItemButton ref.Name="buttonDelete" Alt="D" Command-ref="commandDelete"/>
             </ToolstripGroup>
           </ToolstripGroupContainer>
-        </RibbonToolstrioMenu>
+        </RibbonToolstripMenu>
 
         <RibbonTab ref.Name="tab">
           <att.BoundsComposition-set AlignmentToParent="left:0 top:5 right:0 bottom:-1"/>
@@ -204,7 +204,7 @@ TEST_FILE
               <MenuItemButton ref.Name="buttonDelete" Alt="D" Command-ref="commandDelete"/>
             </ToolstripGroup>
           </ToolstripGroupContainer>
-        </RibbonToolstrioMenu>
+        </RibbonToolstripMenu>
 
         <RibbonTab ref.Name="tab">
           <att.BoundsComposition-set AlignmentToParent="left:0 top:5 right:0 bottom:-1"/>
