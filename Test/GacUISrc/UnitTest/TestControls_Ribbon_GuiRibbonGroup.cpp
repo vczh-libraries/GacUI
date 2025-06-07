@@ -18,17 +18,17 @@ TEST_FILE
             <RibbonTabPage ref.Name="tabPageOptions" Text="Options">
               <att.ContainerComposition-set PreferredMinSize="y:110"/>
               <att.Groups>
-                <RibbonGroup Text="1st" LargeImage-uri="res://ListViewImages/LargeImages/Cert" Expandable="true">
+                <RibbonGroup ref.Name="group1" Text="1st" LargeImage-uri="res://ListViewImages/LargeImages/Cert" Expandable="true">
                   <att.Items>
                     <Label Text="1st Group"/>
                   </att.Items>
                 </RibbonGroup>
-                <RibbonGroup Text="2nd" LargeImage-uri="res://ListViewImages/LargeImages/Folder">
+                <RibbonGroup ref.Name="group2" Text="2nd" LargeImage-uri="res://ListViewImages/LargeImages/Folder">
                   <att.Items>
                     <Label Text="2nd Group"/>
                   </att.Items>
                 </RibbonGroup>
-                <RibbonGroup Text="3rd" LargeImage-uri="res://ListViewImages/LargeImages/Light">
+                <RibbonGroup ref.Name="group3" Text="3rd" LargeImage-uri="res://ListViewImages/LargeImages/Light">
                   <att.Items>
                     <Label Text="3rd Group"/>
                   </att.Items>
@@ -62,5 +62,64 @@ TEST_FILE
 				resourceRibbonGroup
 				);
 		});
+	});
+
+	TEST_CATEGORY(L"GuiRibbonGroup")
+	{
+		TEST_CASE(L"ClickCollapsedGroup")
+		{
+			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					window->SetClientSize({ 240,window->GetClientSize().y });
+				});
+				protocol->OnNextIdleFrame(L"Width [240]", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto group = FindObjectByName<GuiRibbonGroup>(window, L"group1");
+					auto location = protocol->LocationOf(group);
+					protocol->LClick(location);
+				});
+				protocol->OnNextIdleFrame(L"Click 1st", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto group = FindObjectByName<GuiRibbonGroup>(window, L"group2");
+					auto location = protocol->LocationOf(group);
+					protocol->LClick(location);
+				});
+				protocol->OnNextIdleFrame(L"Click 2nd", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto group = FindObjectByName<GuiRibbonGroup>(window, L"group3");
+					auto location = protocol->LocationOf(group);
+					protocol->LClick(location);
+				});
+				protocol->OnNextIdleFrame(L"Click 3rd", [=]()
+				{
+					protocol->LClick(NativePoint{ {1},{1} });
+				});
+				protocol->OnNextIdleFrame(L"Click Title", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					window->SetClientSize({ 480,window->GetClientSize().y });
+				});
+				protocol->OnNextIdleFrame(L"Width [480]", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					window->Hide();
+				});
+			});
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Controls/Ribbon/GuiRibbonGroup/ClickCollapsedGroup"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resourceRibbonGroup
+				);
+		});
+	});
+
+	TEST_CATEGORY(L"ExpandButton")
+	{
 	});
 }
