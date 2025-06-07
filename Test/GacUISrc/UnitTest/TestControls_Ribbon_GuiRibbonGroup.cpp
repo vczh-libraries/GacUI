@@ -1,4 +1,4 @@
-#include "TestControls_List.h"
+#include "TestControls_Ribbon.h"
 
 using namespace gacui_unittest_template;
 
@@ -41,7 +41,7 @@ TEST_FILE
 		{
 			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
 			{
-				protocol->OnNextIdleFrame(L"Ready", [=]()
+				TestReactiveView(protocol, L"Ready", 160, 480, 40, [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					window->Hide();
