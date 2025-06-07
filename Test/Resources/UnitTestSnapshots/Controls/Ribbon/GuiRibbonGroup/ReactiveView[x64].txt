@@ -45,10 +45,19 @@ namespace gacuisrc_unittest
         var <precompile>2 : ::presentation::controls::GuiRibbonGroup* = null of (::presentation::controls::GuiRibbonGroup*);
 
         @cpp:Protected
-        var <precompile>3 : ::presentation::controls::GuiRibbonGroup* = null of (::presentation::controls::GuiRibbonGroup*);
+        var <precompile>3 : ::presentation::controls::GuiLabel* = null of (::presentation::controls::GuiLabel*);
 
         @cpp:Protected
         var <precompile>4 : ::presentation::controls::GuiRibbonGroup* = null of (::presentation::controls::GuiRibbonGroup*);
+
+        @cpp:Protected
+        var <precompile>5 : ::presentation::controls::GuiLabel* = null of (::presentation::controls::GuiLabel*);
+
+        @cpp:Protected
+        var <precompile>6 : ::presentation::controls::GuiRibbonGroup* = null of (::presentation::controls::GuiRibbonGroup*);
+
+        @cpp:Protected
+        var <precompile>7 : ::presentation::controls::GuiLabel* = null of (::presentation::controls::GuiLabel*);
 
         @cpp:Protected
         func <gacuisrc_unittest-MainWindow>Initialize(<this> : ::gacuisrc_unittest::MainWindow*) : (::system::Void)
@@ -72,31 +81,64 @@ namespace gacuisrc_unittest
                 (<precompile>2 = new (::presentation::controls::GuiRibbonGroup*)(::presentation::theme::ThemeName::RibbonGroup));
             }
             {
-                (<precompile>2.Text = "1st Group");
+                (<precompile>3 = new (::presentation::controls::GuiLabel*)(::presentation::theme::ThemeName::Label));
+            }
+            {
+                (<precompile>3.Text = "1st Group");
+            }
+            {
+                var <collection> = <precompile>2.Items;
+                <collection>.Add(<precompile>3);
+            }
+            {
+                (<precompile>2.Expandable = true);
+            }
+            {
+                (<precompile>2.Text = "1st");
             }
             {
                 var <collection> = tabPageOptions.Groups;
                 <collection>.Add(<precompile>2);
             }
             {
-                (<precompile>3 = new (::presentation::controls::GuiRibbonGroup*)(::presentation::theme::ThemeName::RibbonGroup));
-            }
-            {
-                (<precompile>3.Text = "2nd Group");
-            }
-            {
-                var <collection> = tabPageOptions.Groups;
-                <collection>.Add(<precompile>3);
-            }
-            {
                 (<precompile>4 = new (::presentation::controls::GuiRibbonGroup*)(::presentation::theme::ThemeName::RibbonGroup));
             }
             {
-                (<precompile>4.Text = "3rd Group");
+                (<precompile>5 = new (::presentation::controls::GuiLabel*)(::presentation::theme::ThemeName::Label));
+            }
+            {
+                (<precompile>5.Text = "2nd Group");
+            }
+            {
+                var <collection> = <precompile>4.Items;
+                <collection>.Add(<precompile>5);
+            }
+            {
+                (<precompile>4.Text = "2nd");
             }
             {
                 var <collection> = tabPageOptions.Groups;
                 <collection>.Add(<precompile>4);
+            }
+            {
+                (<precompile>6 = new (::presentation::controls::GuiRibbonGroup*)(::presentation::theme::ThemeName::RibbonGroup));
+            }
+            {
+                (<precompile>7 = new (::presentation::controls::GuiLabel*)(::presentation::theme::ThemeName::Label));
+            }
+            {
+                (<precompile>7.Text = "3rd Group");
+            }
+            {
+                var <collection> = <precompile>6.Items;
+                <collection>.Add(<precompile>7);
+            }
+            {
+                (<precompile>6.Text = "3rd");
+            }
+            {
+                var <collection> = tabPageOptions.Groups;
+                <collection>.Add(<precompile>6);
             }
             (<precompile>1 = tabPageOptions.ContainerComposition);
             {
@@ -129,6 +171,15 @@ namespace gacuisrc_unittest
             }
             {
                 self.AddChild(tab);
+            }
+            {
+                (<precompile>2.LargeImage = (cast (::presentation::GuiImageData^) <this>.ResolveResource("res", "ListViewImages/LargeImages/Cert", true)));
+            }
+            {
+                (<precompile>4.LargeImage = (cast (::presentation::GuiImageData^) <this>.ResolveResource("res", "ListViewImages/LargeImages/Folder", true)));
+            }
+            {
+                (<precompile>6.LargeImage = (cast (::presentation::GuiImageData^) <this>.ResolveResource("res", "ListViewImages/LargeImages/Light", true)));
             }
         }
 

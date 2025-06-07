@@ -6,8 +6,8 @@ TEST_FILE
 {
 	const auto resourceRibbonGroup = LR"GacUISrc(
 <Resource>
-  <Folder name="UnitTestConfig" content="Link">Toolstrip/ToolstripImagesData.xml</Folder>
-  <Folder name="ToolstripImages" content="Link">Toolstrip/ToolstripImagesFolder.xml</Folder>
+  <Folder name="UnitTestConfig" content="Link">ListViewImagesData.xml</Folder>
+  <Folder name="ListViewImages" content="Link">ListViewImagesFolder.xml</Folder>
 
   <Instance name="MainWindowResource">
     <Instance ref.Class="gacuisrc_unittest::MainWindow">
@@ -18,11 +18,20 @@ TEST_FILE
             <RibbonTabPage ref.Name="tabPageOptions" Text="Options">
               <att.ContainerComposition-set PreferredMinSize="y:110"/>
               <att.Groups>
-                <RibbonGroup Text="1st Group">
+                <RibbonGroup Text="1st" LargeImage-uri="res://ListViewImages/LargeImages/Cert" Expandable="true">
+                  <att.Items>
+                    <Label Text="1st Group"/>
+                  </att.Items>
                 </RibbonGroup>
-                <RibbonGroup Text="2nd Group">
+                <RibbonGroup Text="2nd" LargeImage-uri="res://ListViewImages/LargeImages/Folder">
+                  <att.Items>
+                    <Label Text="2nd Group"/>
+                  </att.Items>
                 </RibbonGroup>
-                <RibbonGroup Text="3rd Group">
+                <RibbonGroup Text="3rd" LargeImage-uri="res://ListViewImages/LargeImages/Light">
+                  <att.Items>
+                    <Label Text="3rd Group"/>
+                  </att.Items>
                 </RibbonGroup>
               </att.Groups>
             </RibbonTabPage>
