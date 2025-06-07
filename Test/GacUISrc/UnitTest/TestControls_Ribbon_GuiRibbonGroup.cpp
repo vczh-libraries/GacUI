@@ -19,6 +19,9 @@ TEST_FILE
               <att.ContainerComposition-set PreferredMinSize="y:110"/>
               <att.Groups>
                 <RibbonGroup ref.Name="group1" Text="1st" LargeImage-uri="res://ListViewImages/LargeImages/Cert" Expandable="true">
+                  <ev.ExpandButtonClicked-eval><![CDATA[{
+                    self.Text = "Expanded!";
+                  }]]></ev.ExpandButtonClicked-eval>
                   <att.Items>
                     <Label Text="1st Group"/>
                   </att.Items>
@@ -62,10 +65,7 @@ TEST_FILE
 				resourceRibbonGroup
 				);
 		});
-	});
 
-	TEST_CATEGORY(L"GuiRibbonGroup")
-	{
 		TEST_CASE(L"ClickCollapsedGroup")
 		{
 			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
@@ -117,9 +117,29 @@ TEST_FILE
 				resourceRibbonGroup
 				);
 		});
-	});
 
-	TEST_CATEGORY(L"ExpandButton")
-	{
+		TEST_CASE(L"ClickExpandButton")
+		{
+			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto group = FindObjectByName<GuiRibbonGroup>(window, L"group1");
+					auto location = protocol->LocationOf(group, 1.0, 1.0, -5, -5);
+					protocol->LClick(location);
+				});
+				protocol->OnNextIdleFrame(L"Click Expand Button", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					window->Hide();
+				});
+			});
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Controls/Ribbon/GuiRibbonGroup/ClickExpandButton"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resourceRibbonGroup
+				);
+		});
 	});
 }

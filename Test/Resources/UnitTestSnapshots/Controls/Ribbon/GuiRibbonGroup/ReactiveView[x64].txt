@@ -179,6 +179,13 @@ namespace gacuisrc_unittest
                 (group1.LargeImage = (cast (::presentation::GuiImageData^) <this>.ResolveResource("res", "ListViewImages/LargeImages/Cert", true)));
             }
             {
+                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                {
+                    (self.Text = "Expanded!");
+                };
+                attach(group1.ExpandButtonClicked, <event-handler>);
+            }
+            {
                 (group2.LargeImage = (cast (::presentation::GuiImageData^) <this>.ResolveResource("res", "ListViewImages/LargeImages/Folder", true)));
             }
             {
