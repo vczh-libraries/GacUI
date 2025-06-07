@@ -36,10 +36,19 @@ namespace gacuisrc_unittest
         var group1 : ::presentation::controls::GuiRibbonGroup* = null of (::presentation::controls::GuiRibbonGroup*);
 
         @cpp:Protected
+        var label1 : ::presentation::controls::GuiLabel* = null of (::presentation::controls::GuiLabel*);
+
+        @cpp:Protected
         var group2 : ::presentation::controls::GuiRibbonGroup* = null of (::presentation::controls::GuiRibbonGroup*);
 
         @cpp:Protected
+        var label2 : ::presentation::controls::GuiLabel* = null of (::presentation::controls::GuiLabel*);
+
+        @cpp:Protected
         var group3 : ::presentation::controls::GuiRibbonGroup* = null of (::presentation::controls::GuiRibbonGroup*);
+
+        @cpp:Protected
+        var label3 : ::presentation::controls::GuiLabel* = null of (::presentation::controls::GuiLabel*);
 
         @cpp:Protected
         var tabPageLabel : ::presentation::controls::GuiRibbonTabPage* = null of (::presentation::controls::GuiRibbonTabPage*);
@@ -49,15 +58,6 @@ namespace gacuisrc_unittest
 
         @cpp:Protected
         var <precompile>1 : ::presentation::compositions::GuiGraphicsComposition* = null of (::presentation::compositions::GuiGraphicsComposition*);
-
-        @cpp:Protected
-        var <precompile>2 : ::presentation::controls::GuiLabel* = null of (::presentation::controls::GuiLabel*);
-
-        @cpp:Protected
-        var <precompile>3 : ::presentation::controls::GuiLabel* = null of (::presentation::controls::GuiLabel*);
-
-        @cpp:Protected
-        var <precompile>4 : ::presentation::controls::GuiLabel* = null of (::presentation::controls::GuiLabel*);
 
         @cpp:Protected
         func <gacuisrc_unittest-MainWindow>Initialize(<this> : ::gacuisrc_unittest::MainWindow*) : (::system::Void)
@@ -82,14 +82,15 @@ namespace gacuisrc_unittest
                 <this>.SetNamedObject("group1", group1);
             }
             {
-                (<precompile>2 = new (::presentation::controls::GuiLabel*)(::presentation::theme::ThemeName::Label));
+                (label1 = new (::presentation::controls::GuiLabel*)(::presentation::theme::ThemeName::Label));
+                <this>.SetNamedObject("label1", label1);
             }
             {
-                (<precompile>2.Text = "1st Group");
+                (label1.Text = "1st Group");
             }
             {
                 var <collection> = group1.Items;
-                <collection>.Add(<precompile>2);
+                <collection>.Add(label1);
             }
             {
                 (group1.Expandable = true);
@@ -106,14 +107,15 @@ namespace gacuisrc_unittest
                 <this>.SetNamedObject("group2", group2);
             }
             {
-                (<precompile>3 = new (::presentation::controls::GuiLabel*)(::presentation::theme::ThemeName::Label));
+                (label2 = new (::presentation::controls::GuiLabel*)(::presentation::theme::ThemeName::Label));
+                <this>.SetNamedObject("label2", label2);
             }
             {
-                (<precompile>3.Text = "2nd Group");
+                (label2.Text = "2nd Group");
             }
             {
                 var <collection> = group2.Items;
-                <collection>.Add(<precompile>3);
+                <collection>.Add(label2);
             }
             {
                 (group2.Text = "2nd");
@@ -127,14 +129,15 @@ namespace gacuisrc_unittest
                 <this>.SetNamedObject("group3", group3);
             }
             {
-                (<precompile>4 = new (::presentation::controls::GuiLabel*)(::presentation::theme::ThemeName::Label));
+                (label3 = new (::presentation::controls::GuiLabel*)(::presentation::theme::ThemeName::Label));
+                <this>.SetNamedObject("label3", label3);
             }
             {
-                (<precompile>4.Text = "3rd Group");
+                (label3.Text = "3rd Group");
             }
             {
                 var <collection> = group3.Items;
-                <collection>.Add(<precompile>4);
+                <collection>.Add(label3);
             }
             {
                 (group3.Text = "3rd");

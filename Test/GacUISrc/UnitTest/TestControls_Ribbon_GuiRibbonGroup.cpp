@@ -23,17 +23,17 @@ TEST_FILE
                     self.Text = "Expanded!";
                   }]]></ev.ExpandButtonClicked-eval>
                   <att.Items>
-                    <Label Text="1st Group"/>
+                    <Label ref.Name="label1" Text="1st Group"/>
                   </att.Items>
                 </RibbonGroup>
                 <RibbonGroup ref.Name="group2" Text="2nd" LargeImage-uri="res://ListViewImages/LargeImages/Folder">
                   <att.Items>
-                    <Label Text="2nd Group"/>
+                    <Label ref.Name="label2" Text="2nd Group"/>
                   </att.Items>
                 </RibbonGroup>
                 <RibbonGroup ref.Name="group3" Text="3rd" LargeImage-uri="res://ListViewImages/LargeImages/Light">
                   <att.Items>
-                    <Label Text="3rd Group"/>
+                    <Label ref.Name="label3" Text="3rd Group"/>
                   </att.Items>
                 </RibbonGroup>
               </att.Groups>
@@ -137,6 +137,53 @@ TEST_FILE
 			});
 			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
 				WString::Unmanaged(L"Controls/Ribbon/GuiRibbonGroup/ClickExpandButton"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resourceRibbonGroup
+				);
+		});
+
+		TEST_CASE(L"ClickExpandButtonCollapsed")
+		{
+			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					window->SetClientSize({ 240,window->GetClientSize().y });
+				});
+				protocol->OnNextIdleFrame(L"Width [240]", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto group = FindObjectByName<GuiRibbonGroup>(window, L"group1");
+					auto location = protocol->LocationOf(group);
+					protocol->LClick(location);
+				});
+				protocol->OnNextIdleFrame(L"Click 1st", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto label = FindObjectByName<GuiLabel>(window, L"label1");
+					auto menu = label->GetRelatedControlHost();
+					TEST_ASSERT(dynamic_cast<GuiMenu*>(menu));
+					auto location = protocol->LocationOf(menu, 1.0, 1.0, -8, -8);
+					protocol->LClick(location);
+				});
+				protocol->OnNextIdleFrame(L"Click Expand Button", [=]()
+				{
+					protocol->LClick(NativePoint{ {1},{1} });
+				});
+				protocol->OnNextIdleFrame(L"Click Title", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					window->SetClientSize({ 480,window->GetClientSize().y });
+				});
+				protocol->OnNextIdleFrame(L"Width [480]", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					window->Hide();
+				});
+			});
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Controls/Ribbon/GuiRibbonGroup/ClickExpandButtonCollapsed"),
 				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
 				resourceRibbonGroup
 				);
