@@ -58,38 +58,37 @@
     [60, "SolidBorder"],
     [61, "SolidBackground"],
     [62, "ImageFrame"],
-    [63, "SolidBackground"],
-    [64, "Polygon"],
-    [65, "SolidBorder"],
-    [66, "SolidBackground"],
-    [67, "ImageFrame"],
+    [63, "Polygon"],
+    [64, "SolidBorder"],
+    [65, "SolidBackground"],
+    [66, "ImageFrame"],
+    [67, "SolidBackground"],
     [68, "SolidBackground"],
-    [69, "SolidBackground"],
-    [70, "Polygon"],
-    [71, "SolidBackground"],
-    [72, "SinkSplitter"],
-    [73, "SolidBorder"],
-    [74, "SolidBackground"],
-    [75, "ImageFrame"],
-    [76, "SolidBorder"],
-    [77, "SolidBackground"],
-    [78, "ImageFrame"],
-    [79, "SolidBackground"],
-    [80, "SinkSplitter"],
-    [81, "SolidBorder"],
-    [82, "SolidBackground"],
-    [83, "ImageFrame"],
-    [84, "SolidBorder"],
-    [85, "SolidBackground"],
-    [86, "ImageFrame"],
-    [87, "SolidBorder"],
-    [88, "SolidBackground"],
-    [89, "ImageFrame"],
-    [90, "SolidBackground"],
-    [91, "SinkSplitter"],
-    [92, "SolidBorder"],
-    [93, "SolidBackground"],
-    [94, "ImageFrame"]
+    [69, "Polygon"],
+    [70, "SolidBackground"],
+    [71, "SinkSplitter"],
+    [72, "SolidBorder"],
+    [73, "SolidBackground"],
+    [74, "ImageFrame"],
+    [75, "SolidBorder"],
+    [76, "SolidBackground"],
+    [77, "ImageFrame"],
+    [78, "SolidBackground"],
+    [79, "SinkSplitter"],
+    [80, "SolidBorder"],
+    [81, "SolidBackground"],
+    [82, "ImageFrame"],
+    [83, "SolidBorder"],
+    [84, "SolidBackground"],
+    [85, "ImageFrame"],
+    [86, "SolidBorder"],
+    [87, "SolidBackground"],
+    [88, "ImageFrame"],
+    [89, "SolidBackground"],
+    [90, "SinkSplitter"],
+    [91, "SolidBorder"],
+    [92, "SolidBackground"],
+    [93, "ImageFrame"]
   ],
   "imageCreations": [
     {"id": 8, "imageData": "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8\/9hAAACT0lEQVR4nH2TMYskVRSFvxoHrI36Dgh2g1CvwWA22teZ2T4zA6HLbDM7M5wOzXY2Uoz6H0yFhmUu1DObbN5ma7SvsjZxT4O4b0Aog1Zwe2Rveu79ONxzbzVNEwC7rndACwQgUECFCIoq9LtvN5n\/qWqaJnZdH4BttajWzIFaUGdyTigFZm+mn1TYdd9v4yngA3PeAdeHxbguLnP5ySX+I0\/8OeE+rdn\/Ffn1t8eX9ocuuj7ePvsy6L+AM6A9VId1tg6r\/9GK2LRbzALsA8wD46JaU9SeOjgHQhYgh0xIiYSQHCkZsMUksiWmt00Adg8ARiDnSLaMyPDKAwbFQRG5jqgWs\/smnDo4owDWYHtHfgVpb0gOiodiqIAsQgHQ6TxnmoiUAzbfYsnB3sguker+OFSEuxWWQW95kMIZ94qUhJhh7vrYKCEise5QAXBYdsBDQHX13Y2jaHd49PnaamF1Ptrei2gdlgMOR\/PxbLS5cTwwRf2uvvth21fTNHG9666Xi+Vz7x3ONVAgppfEmMj7TAiBcKINw92Yc96eA\/Chef+Z5+bmZuz7aBeLi1nbtnjvccXhzBjuXh92X19lM6P9Imi1Wj5NKW2OgIrwpJnR\/RhxcwtX31x1m9Y\/OdyDBNIBm7uZCtFf+o7aeuccksIRUIi\/vBzXm2dtzlKXc+bi8Yt3YmuaZgwhBO9csNpyvE2NiuI5gP5UNwx3frVaPf3KHbPfVhXDMIxm1nvv2+Vy2ThnjQqk28QwDKMKXfXvO7fbXYvUSgqSjpsu9Ep9\/z7tb0p8VhnV40RtAAAAAElFTkSuQmCC", "imageDataOmitted": false},
@@ -1053,20 +1052,9 @@
         [
           63,
           [
-            "ElementDesc_SolidBackground",
-            {
-              "id": 63,
-              "backgroundColor": "#00000000",
-              "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
-            }
-          ]
-        ],
-        [
-          64,
-          [
             "ElementDesc_Polygon",
             {
-              "id": 64,
+              "id": 63,
               "size": {"x": 5, "y": 3},
               "borderColor": "#999999",
               "backgroundColor": "#999999",
@@ -1079,12 +1067,23 @@
           ]
         ],
         [
-          65,
+          64,
           [
             "ElementDesc_SolidBorder",
             {
-              "id": 65,
+              "id": 64,
               "borderColor": "#00000000",
+              "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
+            }
+          ]
+        ],
+        [
+          65,
+          [
+            "ElementDesc_SolidBackground",
+            {
+              "id": 65,
+              "backgroundColor": "#00000000",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
@@ -1092,19 +1091,19 @@
         [
           66,
           [
-            "ElementDesc_SolidBackground",
-            {
-              "id": 66,
-              "backgroundColor": "#00000000",
-              "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
-            }
+            "ElementDesc_ImageFrame",
+            {"id": 66, "imageId": 12, "imageFrame": 0, "horizontalAlignment": "Left", "verticalAlignment": "Top", "stretch": false, "enabled": true, "imageCreation": null}
           ]
         ],
         [
           67,
           [
-            "ElementDesc_ImageFrame",
-            {"id": 67, "imageId": 12, "imageFrame": 0, "horizontalAlignment": "Left", "verticalAlignment": "Top", "stretch": false, "enabled": true, "imageCreation": null}
+            "ElementDesc_SolidBackground",
+            {
+              "id": 67,
+              "backgroundColor": "#00000000",
+              "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
+            }
           ]
         ],
         [
@@ -1121,20 +1120,9 @@
         [
           69,
           [
-            "ElementDesc_SolidBackground",
-            {
-              "id": 69,
-              "backgroundColor": "#00000000",
-              "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
-            }
-          ]
-        ],
-        [
-          70,
-          [
             "ElementDesc_Polygon",
             {
-              "id": 70,
+              "id": 69,
               "size": {"x": 5, "y": 3},
               "borderColor": "#999999",
               "backgroundColor": "#999999",
@@ -1147,30 +1135,41 @@
           ]
         ],
         [
-          71,
+          70,
           [
             "ElementDesc_SolidBackground",
             {
-              "id": 71,
+              "id": 70,
               "backgroundColor": "#2D2D30",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
         ],
         [
-          72,
+          71,
           [
             "ElementDesc_SinkSplitter",
-            {"id": 72, "leftTopColor": "#222224", "rightBottomColor": "#464648", "direction": "Vertical"}
+            {"id": 71, "leftTopColor": "#222224", "rightBottomColor": "#464648", "direction": "Vertical"}
+          ]
+        ],
+        [
+          72,
+          [
+            "ElementDesc_SolidBorder",
+            {
+              "id": 72,
+              "borderColor": "#00000000",
+              "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
+            }
           ]
         ],
         [
           73,
           [
-            "ElementDesc_SolidBorder",
+            "ElementDesc_SolidBackground",
             {
               "id": 73,
-              "borderColor": "#00000000",
+              "backgroundColor": "#00000000",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
@@ -1178,28 +1177,28 @@
         [
           74,
           [
-            "ElementDesc_SolidBackground",
-            {
-              "id": 74,
-              "backgroundColor": "#00000000",
-              "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
-            }
+            "ElementDesc_ImageFrame",
+            {"id": 74, "imageId": 15, "imageFrame": 0, "horizontalAlignment": "Left", "verticalAlignment": "Top", "stretch": false, "enabled": true, "imageCreation": null}
           ]
         ],
         [
           75,
           [
-            "ElementDesc_ImageFrame",
-            {"id": 75, "imageId": 15, "imageFrame": 0, "horizontalAlignment": "Left", "verticalAlignment": "Top", "stretch": false, "enabled": true, "imageCreation": null}
+            "ElementDesc_SolidBorder",
+            {
+              "id": 75,
+              "borderColor": "#00000000",
+              "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
+            }
           ]
         ],
         [
           76,
           [
-            "ElementDesc_SolidBorder",
+            "ElementDesc_SolidBackground",
             {
               "id": 76,
-              "borderColor": "#00000000",
+              "backgroundColor": "#00000000",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
@@ -1207,46 +1206,46 @@
         [
           77,
           [
-            "ElementDesc_SolidBackground",
-            {
-              "id": 77,
-              "backgroundColor": "#00000000",
-              "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
-            }
+            "ElementDesc_ImageFrame",
+            {"id": 77, "imageId": 16, "imageFrame": 0, "horizontalAlignment": "Left", "verticalAlignment": "Top", "stretch": false, "enabled": true, "imageCreation": null}
           ]
         ],
         [
           78,
           [
-            "ElementDesc_ImageFrame",
-            {"id": 78, "imageId": 16, "imageFrame": 0, "horizontalAlignment": "Left", "verticalAlignment": "Top", "stretch": false, "enabled": true, "imageCreation": null}
-          ]
-        ],
-        [
-          79,
-          [
             "ElementDesc_SolidBackground",
             {
-              "id": 79,
+              "id": 78,
               "backgroundColor": "#2D2D30",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
         ],
         [
-          80,
+          79,
           [
             "ElementDesc_SinkSplitter",
-            {"id": 80, "leftTopColor": "#222224", "rightBottomColor": "#464648", "direction": "Vertical"}
+            {"id": 79, "leftTopColor": "#222224", "rightBottomColor": "#464648", "direction": "Vertical"}
+          ]
+        ],
+        [
+          80,
+          [
+            "ElementDesc_SolidBorder",
+            {
+              "id": 80,
+              "borderColor": "#00000000",
+              "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
+            }
           ]
         ],
         [
           81,
           [
-            "ElementDesc_SolidBorder",
+            "ElementDesc_SolidBackground",
             {
               "id": 81,
-              "borderColor": "#00000000",
+              "backgroundColor": "#00000000",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
@@ -1254,28 +1253,28 @@
         [
           82,
           [
-            "ElementDesc_SolidBackground",
-            {
-              "id": 82,
-              "backgroundColor": "#00000000",
-              "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
-            }
+            "ElementDesc_ImageFrame",
+            {"id": 82, "imageId": 17, "imageFrame": 0, "horizontalAlignment": "Left", "verticalAlignment": "Top", "stretch": false, "enabled": false, "imageCreation": null}
           ]
         ],
         [
           83,
           [
-            "ElementDesc_ImageFrame",
-            {"id": 83, "imageId": 17, "imageFrame": 0, "horizontalAlignment": "Left", "verticalAlignment": "Top", "stretch": false, "enabled": false, "imageCreation": null}
+            "ElementDesc_SolidBorder",
+            {
+              "id": 83,
+              "borderColor": "#00000000",
+              "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
+            }
           ]
         ],
         [
           84,
           [
-            "ElementDesc_SolidBorder",
+            "ElementDesc_SolidBackground",
             {
               "id": 84,
-              "borderColor": "#00000000",
+              "backgroundColor": "#00000000",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
@@ -1283,28 +1282,28 @@
         [
           85,
           [
-            "ElementDesc_SolidBackground",
-            {
-              "id": 85,
-              "backgroundColor": "#00000000",
-              "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
-            }
+            "ElementDesc_ImageFrame",
+            {"id": 85, "imageId": 18, "imageFrame": 0, "horizontalAlignment": "Left", "verticalAlignment": "Top", "stretch": false, "enabled": false, "imageCreation": null}
           ]
         ],
         [
           86,
           [
-            "ElementDesc_ImageFrame",
-            {"id": 86, "imageId": 18, "imageFrame": 0, "horizontalAlignment": "Left", "verticalAlignment": "Top", "stretch": false, "enabled": false, "imageCreation": null}
+            "ElementDesc_SolidBorder",
+            {
+              "id": 86,
+              "borderColor": "#00000000",
+              "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
+            }
           ]
         ],
         [
           87,
           [
-            "ElementDesc_SolidBorder",
+            "ElementDesc_SolidBackground",
             {
               "id": 87,
-              "borderColor": "#00000000",
+              "backgroundColor": "#00000000",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
@@ -1312,46 +1311,46 @@
         [
           88,
           [
-            "ElementDesc_SolidBackground",
-            {
-              "id": 88,
-              "backgroundColor": "#00000000",
-              "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
-            }
+            "ElementDesc_ImageFrame",
+            {"id": 88, "imageId": 19, "imageFrame": 0, "horizontalAlignment": "Left", "verticalAlignment": "Top", "stretch": false, "enabled": false, "imageCreation": null}
           ]
         ],
         [
           89,
           [
-            "ElementDesc_ImageFrame",
-            {"id": 89, "imageId": 19, "imageFrame": 0, "horizontalAlignment": "Left", "verticalAlignment": "Top", "stretch": false, "enabled": false, "imageCreation": null}
-          ]
-        ],
-        [
-          90,
-          [
             "ElementDesc_SolidBackground",
             {
-              "id": 90,
+              "id": 89,
               "backgroundColor": "#2D2D30",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
         ],
         [
-          91,
+          90,
           [
             "ElementDesc_SinkSplitter",
-            {"id": 91, "leftTopColor": "#222224", "rightBottomColor": "#464648", "direction": "Vertical"}
+            {"id": 90, "leftTopColor": "#222224", "rightBottomColor": "#464648", "direction": "Vertical"}
+          ]
+        ],
+        [
+          91,
+          [
+            "ElementDesc_SolidBorder",
+            {
+              "id": 91,
+              "borderColor": "#00000000",
+              "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
+            }
           ]
         ],
         [
           92,
           [
-            "ElementDesc_SolidBorder",
+            "ElementDesc_SolidBackground",
             {
               "id": 92,
-              "borderColor": "#00000000",
+              "backgroundColor": "#00000000",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
@@ -1359,19 +1358,8 @@
         [
           93,
           [
-            "ElementDesc_SolidBackground",
-            {
-              "id": 93,
-              "backgroundColor": "#00000000",
-              "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
-            }
-          ]
-        ],
-        [
-          94,
-          [
             "ElementDesc_ImageFrame",
-            {"id": 94, "imageId": 20, "imageFrame": 0, "horizontalAlignment": "Left", "verticalAlignment": "Top", "stretch": false, "enabled": false, "imageCreation": null}
+            {"id": 93, "imageId": 20, "imageFrame": 0, "horizontalAlignment": "Left", "verticalAlignment": "Top", "stretch": false, "enabled": false, "imageCreation": null}
           ]
         ]
       ],
@@ -1729,8 +1717,8 @@
                                   "hitTestResult": null,
                                   "cursor": null,
                                   "element": 61,
-                                  "bounds": {"x1": 11, "y1": 39, "x2": 33, "y2": 61},
-                                  "validArea": {"x1": 11, "y1": 39, "x2": 33, "y2": 61}
+                                  "bounds": {"x1": 11, "y1": 39, "x2": 43, "y2": 61},
+                                  "validArea": {"x1": 11, "y1": 39, "x2": 43, "y2": 61}
                                 },
                                 "children": [
                                   {
@@ -1743,25 +1731,13 @@
                                       "validArea": {"x1": 14, "y1": 42, "x2": 30, "y2": 58}
                                     },
                                     "children": null
-                                  }
-                                ]
-                              },
-                              {
-                                "id": 252,
-                                "content": {
-                                  "hitTestResult": null,
-                                  "cursor": null,
-                                  "element": 63,
-                                  "bounds": {"x1": 34, "y1": 39, "x2": 43, "y2": 61},
-                                  "validArea": {"x1": 34, "y1": 39, "x2": 43, "y2": 61}
-                                },
-                                "children": [
+                                  },
                                   {
-                                    "id": 256,
+                                    "id": 252,
                                     "content": {
                                       "hitTestResult": null,
                                       "cursor": null,
-                                      "element": 64,
+                                      "element": 63,
                                       "bounds": {"x1": 36, "y1": 48, "x2": 41, "y2": 51},
                                       "validArea": {"x1": 36, "y1": 48, "x2": 41, "y2": 51}
                                     },
@@ -1772,31 +1748,31 @@
                             ]
                           },
                           {
-                            "id": 260,
+                            "id": 256,
                             "content": {
                               "hitTestResult": null,
                               "cursor": null,
-                              "element": 65,
+                              "element": 64,
                               "bounds": {"x1": 44, "y1": 38, "x2": 78, "y2": 62},
                               "validArea": {"x1": 44, "y1": 38, "x2": 78, "y2": 62}
                             },
                             "children": [
                               {
-                                "id": 264,
+                                "id": 260,
                                 "content": {
                                   "hitTestResult": null,
                                   "cursor": null,
-                                  "element": 66,
+                                  "element": 65,
                                   "bounds": {"x1": 45, "y1": 39, "x2": 67, "y2": 61},
                                   "validArea": {"x1": 45, "y1": 39, "x2": 67, "y2": 61}
                                 },
                                 "children": [
                                   {
-                                    "id": 268,
+                                    "id": 264,
                                     "content": {
                                       "hitTestResult": null,
                                       "cursor": null,
-                                      "element": 67,
+                                      "element": 66,
                                       "bounds": {"x1": 48, "y1": 42, "x2": 64, "y2": 58},
                                       "validArea": {"x1": 48, "y1": 42, "x2": 64, "y2": 58}
                                     },
@@ -1805,31 +1781,31 @@
                                 ]
                               },
                               {
-                                "id": 272,
+                                "id": 268,
                                 "content": {
                                   "hitTestResult": null,
                                   "cursor": null,
-                                  "element": 68,
+                                  "element": 67,
                                   "bounds": {"x1": 68, "y1": 39, "x2": 77, "y2": 61},
                                   "validArea": {"x1": 68, "y1": 39, "x2": 77, "y2": 61}
                                 },
                                 "children": [
                                   {
-                                    "id": 276,
+                                    "id": 272,
                                     "content": {
                                       "hitTestResult": null,
                                       "cursor": null,
-                                      "element": 69,
+                                      "element": 68,
                                       "bounds": {"x1": 68, "y1": 39, "x2": 77, "y2": 61},
                                       "validArea": {"x1": 68, "y1": 39, "x2": 77, "y2": 61}
                                     },
                                     "children": [
                                       {
-                                        "id": 280,
+                                        "id": 276,
                                         "content": {
                                           "hitTestResult": null,
                                           "cursor": null,
-                                          "element": 70,
+                                          "element": 69,
                                           "bounds": {"x1": 70, "y1": 48, "x2": 75, "y2": 51},
                                           "validArea": {"x1": 70, "y1": 48, "x2": 75, "y2": 51}
                                         },
@@ -1842,21 +1818,21 @@
                             ]
                           },
                           {
-                            "id": 284,
+                            "id": 280,
                             "content": {
                               "hitTestResult": null,
                               "cursor": null,
-                              "element": 71,
+                              "element": 70,
                               "bounds": {"x1": 78, "y1": 38, "x2": 84, "y2": 62},
                               "validArea": {"x1": 78, "y1": 38, "x2": 84, "y2": 62}
                             },
                             "children": [
                               {
-                                "id": 288,
+                                "id": 284,
                                 "content": {
                                   "hitTestResult": null,
                                   "cursor": null,
-                                  "element": 72,
+                                  "element": 71,
                                   "bounds": {"x1": 81, "y1": 39, "x2": 81, "y2": 61},
                                   "validArea": {"x1": 81, "y1": 39, "x2": 81, "y2": 61}
                                 },
@@ -1865,31 +1841,31 @@
                             ]
                           },
                           {
-                            "id": 292,
+                            "id": 288,
                             "content": {
                               "hitTestResult": null,
                               "cursor": null,
-                              "element": 73,
+                              "element": 72,
                               "bounds": {"x1": 84, "y1": 38, "x2": 108, "y2": 62},
                               "validArea": {"x1": 84, "y1": 38, "x2": 108, "y2": 62}
                             },
                             "children": [
                               {
-                                "id": 296,
+                                "id": 292,
                                 "content": {
                                   "hitTestResult": null,
                                   "cursor": null,
-                                  "element": 74,
+                                  "element": 73,
                                   "bounds": {"x1": 85, "y1": 39, "x2": 107, "y2": 61},
                                   "validArea": {"x1": 85, "y1": 39, "x2": 107, "y2": 61}
                                 },
                                 "children": [
                                   {
-                                    "id": 300,
+                                    "id": 296,
                                     "content": {
                                       "hitTestResult": null,
                                       "cursor": null,
-                                      "element": 75,
+                                      "element": 74,
                                       "bounds": {"x1": 88, "y1": 42, "x2": 104, "y2": 58},
                                       "validArea": {"x1": 88, "y1": 42, "x2": 104, "y2": 58}
                                     },
@@ -1900,31 +1876,31 @@
                             ]
                           },
                           {
-                            "id": 304,
+                            "id": 300,
                             "content": {
                               "hitTestResult": null,
                               "cursor": null,
-                              "element": 76,
+                              "element": 75,
                               "bounds": {"x1": 108, "y1": 38, "x2": 132, "y2": 62},
                               "validArea": {"x1": 108, "y1": 38, "x2": 132, "y2": 62}
                             },
                             "children": [
                               {
-                                "id": 308,
+                                "id": 304,
                                 "content": {
                                   "hitTestResult": null,
                                   "cursor": null,
-                                  "element": 77,
+                                  "element": 76,
                                   "bounds": {"x1": 109, "y1": 39, "x2": 131, "y2": 61},
                                   "validArea": {"x1": 109, "y1": 39, "x2": 131, "y2": 61}
                                 },
                                 "children": [
                                   {
-                                    "id": 312,
+                                    "id": 308,
                                     "content": {
                                       "hitTestResult": null,
                                       "cursor": null,
-                                      "element": 78,
+                                      "element": 77,
                                       "bounds": {"x1": 112, "y1": 42, "x2": 128, "y2": 58},
                                       "validArea": {"x1": 112, "y1": 42, "x2": 128, "y2": 58}
                                     },
@@ -1935,21 +1911,21 @@
                             ]
                           },
                           {
-                            "id": 316,
+                            "id": 312,
                             "content": {
                               "hitTestResult": null,
                               "cursor": null,
-                              "element": 79,
+                              "element": 78,
                               "bounds": {"x1": 132, "y1": 38, "x2": 138, "y2": 62},
                               "validArea": {"x1": 132, "y1": 38, "x2": 138, "y2": 62}
                             },
                             "children": [
                               {
-                                "id": 320,
+                                "id": 316,
                                 "content": {
                                   "hitTestResult": null,
                                   "cursor": null,
-                                  "element": 80,
+                                  "element": 79,
                                   "bounds": {"x1": 135, "y1": 39, "x2": 135, "y2": 61},
                                   "validArea": {"x1": 135, "y1": 39, "x2": 135, "y2": 61}
                                 },
@@ -1958,31 +1934,31 @@
                             ]
                           },
                           {
-                            "id": 324,
+                            "id": 320,
                             "content": {
                               "hitTestResult": null,
                               "cursor": null,
-                              "element": 81,
+                              "element": 80,
                               "bounds": {"x1": 138, "y1": 38, "x2": 162, "y2": 62},
                               "validArea": {"x1": 138, "y1": 38, "x2": 162, "y2": 62}
                             },
                             "children": [
                               {
-                                "id": 328,
+                                "id": 324,
                                 "content": {
                                   "hitTestResult": null,
                                   "cursor": null,
-                                  "element": 82,
+                                  "element": 81,
                                   "bounds": {"x1": 139, "y1": 39, "x2": 161, "y2": 61},
                                   "validArea": {"x1": 139, "y1": 39, "x2": 161, "y2": 61}
                                 },
                                 "children": [
                                   {
-                                    "id": 332,
+                                    "id": 328,
                                     "content": {
                                       "hitTestResult": null,
                                       "cursor": null,
-                                      "element": 83,
+                                      "element": 82,
                                       "bounds": {"x1": 142, "y1": 42, "x2": 158, "y2": 58},
                                       "validArea": {"x1": 142, "y1": 42, "x2": 158, "y2": 58}
                                     },
@@ -1993,31 +1969,31 @@
                             ]
                           },
                           {
-                            "id": 336,
+                            "id": 332,
                             "content": {
                               "hitTestResult": null,
                               "cursor": null,
-                              "element": 84,
+                              "element": 83,
                               "bounds": {"x1": 162, "y1": 38, "x2": 186, "y2": 62},
                               "validArea": {"x1": 162, "y1": 38, "x2": 186, "y2": 62}
                             },
                             "children": [
                               {
-                                "id": 340,
+                                "id": 336,
                                 "content": {
                                   "hitTestResult": null,
                                   "cursor": null,
-                                  "element": 85,
+                                  "element": 84,
                                   "bounds": {"x1": 163, "y1": 39, "x2": 185, "y2": 61},
                                   "validArea": {"x1": 163, "y1": 39, "x2": 185, "y2": 61}
                                 },
                                 "children": [
                                   {
-                                    "id": 344,
+                                    "id": 340,
                                     "content": {
                                       "hitTestResult": null,
                                       "cursor": null,
-                                      "element": 86,
+                                      "element": 85,
                                       "bounds": {"x1": 166, "y1": 42, "x2": 182, "y2": 58},
                                       "validArea": {"x1": 166, "y1": 42, "x2": 182, "y2": 58}
                                     },
@@ -2028,31 +2004,31 @@
                             ]
                           },
                           {
-                            "id": 348,
+                            "id": 344,
                             "content": {
                               "hitTestResult": null,
                               "cursor": null,
-                              "element": 87,
+                              "element": 86,
                               "bounds": {"x1": 186, "y1": 38, "x2": 210, "y2": 62},
                               "validArea": {"x1": 186, "y1": 38, "x2": 210, "y2": 62}
                             },
                             "children": [
                               {
-                                "id": 352,
+                                "id": 348,
                                 "content": {
                                   "hitTestResult": null,
                                   "cursor": null,
-                                  "element": 88,
+                                  "element": 87,
                                   "bounds": {"x1": 187, "y1": 39, "x2": 209, "y2": 61},
                                   "validArea": {"x1": 187, "y1": 39, "x2": 209, "y2": 61}
                                 },
                                 "children": [
                                   {
-                                    "id": 356,
+                                    "id": 352,
                                     "content": {
                                       "hitTestResult": null,
                                       "cursor": null,
-                                      "element": 89,
+                                      "element": 88,
                                       "bounds": {"x1": 190, "y1": 42, "x2": 206, "y2": 58},
                                       "validArea": {"x1": 190, "y1": 42, "x2": 206, "y2": 58}
                                     },
@@ -2063,21 +2039,21 @@
                             ]
                           },
                           {
-                            "id": 360,
+                            "id": 356,
                             "content": {
                               "hitTestResult": null,
                               "cursor": null,
-                              "element": 90,
+                              "element": 89,
                               "bounds": {"x1": 210, "y1": 38, "x2": 216, "y2": 62},
                               "validArea": {"x1": 210, "y1": 38, "x2": 216, "y2": 62}
                             },
                             "children": [
                               {
-                                "id": 364,
+                                "id": 360,
                                 "content": {
                                   "hitTestResult": null,
                                   "cursor": null,
-                                  "element": 91,
+                                  "element": 90,
                                   "bounds": {"x1": 213, "y1": 39, "x2": 213, "y2": 61},
                                   "validArea": {"x1": 213, "y1": 39, "x2": 213, "y2": 61}
                                 },
@@ -2086,31 +2062,31 @@
                             ]
                           },
                           {
-                            "id": 368,
+                            "id": 364,
                             "content": {
                               "hitTestResult": null,
                               "cursor": null,
-                              "element": 92,
+                              "element": 91,
                               "bounds": {"x1": 216, "y1": 38, "x2": 240, "y2": 62},
                               "validArea": {"x1": 216, "y1": 38, "x2": 240, "y2": 62}
                             },
                             "children": [
                               {
-                                "id": 372,
+                                "id": 368,
                                 "content": {
                                   "hitTestResult": null,
                                   "cursor": null,
-                                  "element": 93,
+                                  "element": 92,
                                   "bounds": {"x1": 217, "y1": 39, "x2": 239, "y2": 61},
                                   "validArea": {"x1": 217, "y1": 39, "x2": 239, "y2": 61}
                                 },
                                 "children": [
                                   {
-                                    "id": 376,
+                                    "id": 372,
                                     "content": {
                                       "hitTestResult": null,
                                       "cursor": null,
-                                      "element": 94,
+                                      "element": 93,
                                       "bounds": {"x1": 220, "y1": 42, "x2": 236, "y2": 58},
                                       "validArea": {"x1": 220, "y1": 42, "x2": 236, "y2": 58}
                                     },
@@ -2958,20 +2934,9 @@
         [
           63,
           [
-            "ElementDesc_SolidBackground",
-            {
-              "id": 63,
-              "backgroundColor": "#00000000",
-              "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
-            }
-          ]
-        ],
-        [
-          64,
-          [
             "ElementDesc_Polygon",
             {
-              "id": 64,
+              "id": 63,
               "size": {"x": 5, "y": 3},
               "borderColor": "#999999",
               "backgroundColor": "#999999",
@@ -2984,12 +2949,23 @@
           ]
         ],
         [
-          65,
+          64,
           [
             "ElementDesc_SolidBorder",
             {
-              "id": 65,
+              "id": 64,
               "borderColor": "#00000000",
+              "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
+            }
+          ]
+        ],
+        [
+          65,
+          [
+            "ElementDesc_SolidBackground",
+            {
+              "id": 65,
+              "backgroundColor": "#54545C",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
@@ -2997,19 +2973,19 @@
         [
           66,
           [
-            "ElementDesc_SolidBackground",
-            {
-              "id": 66,
-              "backgroundColor": "#54545C",
-              "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
-            }
+            "ElementDesc_ImageFrame",
+            {"id": 66, "imageId": 12, "imageFrame": 0, "horizontalAlignment": "Left", "verticalAlignment": "Top", "stretch": false, "enabled": true, "imageCreation": null}
           ]
         ],
         [
           67,
           [
-            "ElementDesc_ImageFrame",
-            {"id": 67, "imageId": 12, "imageFrame": 0, "horizontalAlignment": "Left", "verticalAlignment": "Top", "stretch": false, "enabled": true, "imageCreation": null}
+            "ElementDesc_SolidBackground",
+            {
+              "id": 67,
+              "backgroundColor": "#54545C",
+              "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
+            }
           ]
         ],
         [
@@ -3018,7 +2994,7 @@
             "ElementDesc_SolidBackground",
             {
               "id": 68,
-              "backgroundColor": "#54545C",
+              "backgroundColor": "#00000000",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
@@ -3026,20 +3002,9 @@
         [
           69,
           [
-            "ElementDesc_SolidBackground",
-            {
-              "id": 69,
-              "backgroundColor": "#00000000",
-              "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
-            }
-          ]
-        ],
-        [
-          70,
-          [
             "ElementDesc_Polygon",
             {
-              "id": 70,
+              "id": 69,
               "size": {"x": 5, "y": 3},
               "borderColor": "#999999",
               "backgroundColor": "#999999",
@@ -3052,30 +3017,41 @@
           ]
         ],
         [
-          71,
+          70,
           [
             "ElementDesc_SolidBackground",
             {
-              "id": 71,
+              "id": 70,
               "backgroundColor": "#2D2D30",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
         ],
         [
-          72,
+          71,
           [
             "ElementDesc_SinkSplitter",
-            {"id": 72, "leftTopColor": "#222224", "rightBottomColor": "#464648", "direction": "Vertical"}
+            {"id": 71, "leftTopColor": "#222224", "rightBottomColor": "#464648", "direction": "Vertical"}
+          ]
+        ],
+        [
+          72,
+          [
+            "ElementDesc_SolidBorder",
+            {
+              "id": 72,
+              "borderColor": "#00000000",
+              "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
+            }
           ]
         ],
         [
           73,
           [
-            "ElementDesc_SolidBorder",
+            "ElementDesc_SolidBackground",
             {
               "id": 73,
-              "borderColor": "#00000000",
+              "backgroundColor": "#00000000",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
@@ -3083,28 +3059,28 @@
         [
           74,
           [
-            "ElementDesc_SolidBackground",
-            {
-              "id": 74,
-              "backgroundColor": "#00000000",
-              "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
-            }
+            "ElementDesc_ImageFrame",
+            {"id": 74, "imageId": 15, "imageFrame": 0, "horizontalAlignment": "Left", "verticalAlignment": "Top", "stretch": false, "enabled": true, "imageCreation": null}
           ]
         ],
         [
           75,
           [
-            "ElementDesc_ImageFrame",
-            {"id": 75, "imageId": 15, "imageFrame": 0, "horizontalAlignment": "Left", "verticalAlignment": "Top", "stretch": false, "enabled": true, "imageCreation": null}
+            "ElementDesc_SolidBorder",
+            {
+              "id": 75,
+              "borderColor": "#00000000",
+              "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
+            }
           ]
         ],
         [
           76,
           [
-            "ElementDesc_SolidBorder",
+            "ElementDesc_SolidBackground",
             {
               "id": 76,
-              "borderColor": "#00000000",
+              "backgroundColor": "#00000000",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
@@ -3112,46 +3088,46 @@
         [
           77,
           [
-            "ElementDesc_SolidBackground",
-            {
-              "id": 77,
-              "backgroundColor": "#00000000",
-              "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
-            }
+            "ElementDesc_ImageFrame",
+            {"id": 77, "imageId": 16, "imageFrame": 0, "horizontalAlignment": "Left", "verticalAlignment": "Top", "stretch": false, "enabled": true, "imageCreation": null}
           ]
         ],
         [
           78,
           [
-            "ElementDesc_ImageFrame",
-            {"id": 78, "imageId": 16, "imageFrame": 0, "horizontalAlignment": "Left", "verticalAlignment": "Top", "stretch": false, "enabled": true, "imageCreation": null}
-          ]
-        ],
-        [
-          79,
-          [
             "ElementDesc_SolidBackground",
             {
-              "id": 79,
+              "id": 78,
               "backgroundColor": "#2D2D30",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
         ],
         [
-          80,
+          79,
           [
             "ElementDesc_SinkSplitter",
-            {"id": 80, "leftTopColor": "#222224", "rightBottomColor": "#464648", "direction": "Vertical"}
+            {"id": 79, "leftTopColor": "#222224", "rightBottomColor": "#464648", "direction": "Vertical"}
+          ]
+        ],
+        [
+          80,
+          [
+            "ElementDesc_SolidBorder",
+            {
+              "id": 80,
+              "borderColor": "#00000000",
+              "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
+            }
           ]
         ],
         [
           81,
           [
-            "ElementDesc_SolidBorder",
+            "ElementDesc_SolidBackground",
             {
               "id": 81,
-              "borderColor": "#00000000",
+              "backgroundColor": "#00000000",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
@@ -3159,28 +3135,28 @@
         [
           82,
           [
-            "ElementDesc_SolidBackground",
-            {
-              "id": 82,
-              "backgroundColor": "#00000000",
-              "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
-            }
+            "ElementDesc_ImageFrame",
+            {"id": 82, "imageId": 17, "imageFrame": 0, "horizontalAlignment": "Left", "verticalAlignment": "Top", "stretch": false, "enabled": false, "imageCreation": null}
           ]
         ],
         [
           83,
           [
-            "ElementDesc_ImageFrame",
-            {"id": 83, "imageId": 17, "imageFrame": 0, "horizontalAlignment": "Left", "verticalAlignment": "Top", "stretch": false, "enabled": false, "imageCreation": null}
+            "ElementDesc_SolidBorder",
+            {
+              "id": 83,
+              "borderColor": "#00000000",
+              "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
+            }
           ]
         ],
         [
           84,
           [
-            "ElementDesc_SolidBorder",
+            "ElementDesc_SolidBackground",
             {
               "id": 84,
-              "borderColor": "#00000000",
+              "backgroundColor": "#00000000",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
@@ -3188,28 +3164,28 @@
         [
           85,
           [
-            "ElementDesc_SolidBackground",
-            {
-              "id": 85,
-              "backgroundColor": "#00000000",
-              "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
-            }
+            "ElementDesc_ImageFrame",
+            {"id": 85, "imageId": 18, "imageFrame": 0, "horizontalAlignment": "Left", "verticalAlignment": "Top", "stretch": false, "enabled": false, "imageCreation": null}
           ]
         ],
         [
           86,
           [
-            "ElementDesc_ImageFrame",
-            {"id": 86, "imageId": 18, "imageFrame": 0, "horizontalAlignment": "Left", "verticalAlignment": "Top", "stretch": false, "enabled": false, "imageCreation": null}
+            "ElementDesc_SolidBorder",
+            {
+              "id": 86,
+              "borderColor": "#00000000",
+              "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
+            }
           ]
         ],
         [
           87,
           [
-            "ElementDesc_SolidBorder",
+            "ElementDesc_SolidBackground",
             {
               "id": 87,
-              "borderColor": "#00000000",
+              "backgroundColor": "#00000000",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
@@ -3217,46 +3193,46 @@
         [
           88,
           [
-            "ElementDesc_SolidBackground",
-            {
-              "id": 88,
-              "backgroundColor": "#00000000",
-              "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
-            }
+            "ElementDesc_ImageFrame",
+            {"id": 88, "imageId": 19, "imageFrame": 0, "horizontalAlignment": "Left", "verticalAlignment": "Top", "stretch": false, "enabled": false, "imageCreation": null}
           ]
         ],
         [
           89,
           [
-            "ElementDesc_ImageFrame",
-            {"id": 89, "imageId": 19, "imageFrame": 0, "horizontalAlignment": "Left", "verticalAlignment": "Top", "stretch": false, "enabled": false, "imageCreation": null}
-          ]
-        ],
-        [
-          90,
-          [
             "ElementDesc_SolidBackground",
             {
-              "id": 90,
+              "id": 89,
               "backgroundColor": "#2D2D30",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
         ],
         [
-          91,
+          90,
           [
             "ElementDesc_SinkSplitter",
-            {"id": 91, "leftTopColor": "#222224", "rightBottomColor": "#464648", "direction": "Vertical"}
+            {"id": 90, "leftTopColor": "#222224", "rightBottomColor": "#464648", "direction": "Vertical"}
+          ]
+        ],
+        [
+          91,
+          [
+            "ElementDesc_SolidBorder",
+            {
+              "id": 91,
+              "borderColor": "#00000000",
+              "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
+            }
           ]
         ],
         [
           92,
           [
-            "ElementDesc_SolidBorder",
+            "ElementDesc_SolidBackground",
             {
               "id": 92,
-              "borderColor": "#00000000",
+              "backgroundColor": "#00000000",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
@@ -3264,19 +3240,8 @@
         [
           93,
           [
-            "ElementDesc_SolidBackground",
-            {
-              "id": 93,
-              "backgroundColor": "#00000000",
-              "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
-            }
-          ]
-        ],
-        [
-          94,
-          [
             "ElementDesc_ImageFrame",
-            {"id": 94, "imageId": 20, "imageFrame": 0, "horizontalAlignment": "Left", "verticalAlignment": "Top", "stretch": false, "enabled": false, "imageCreation": null}
+            {"id": 93, "imageId": 20, "imageFrame": 0, "horizontalAlignment": "Left", "verticalAlignment": "Top", "stretch": false, "enabled": false, "imageCreation": null}
           ]
         ]
       ],
@@ -3634,8 +3599,8 @@
                                   "hitTestResult": null,
                                   "cursor": null,
                                   "element": 61,
-                                  "bounds": {"x1": 11, "y1": 39, "x2": 33, "y2": 61},
-                                  "validArea": {"x1": 11, "y1": 39, "x2": 33, "y2": 61}
+                                  "bounds": {"x1": 11, "y1": 39, "x2": 43, "y2": 61},
+                                  "validArea": {"x1": 11, "y1": 39, "x2": 43, "y2": 61}
                                 },
                                 "children": [
                                   {
@@ -3648,25 +3613,13 @@
                                       "validArea": {"x1": 14, "y1": 42, "x2": 30, "y2": 58}
                                     },
                                     "children": null
-                                  }
-                                ]
-                              },
-                              {
-                                "id": 252,
-                                "content": {
-                                  "hitTestResult": null,
-                                  "cursor": null,
-                                  "element": 63,
-                                  "bounds": {"x1": 34, "y1": 39, "x2": 43, "y2": 61},
-                                  "validArea": {"x1": 34, "y1": 39, "x2": 43, "y2": 61}
-                                },
-                                "children": [
+                                  },
                                   {
-                                    "id": 256,
+                                    "id": 252,
                                     "content": {
                                       "hitTestResult": null,
                                       "cursor": null,
-                                      "element": 64,
+                                      "element": 63,
                                       "bounds": {"x1": 36, "y1": 48, "x2": 41, "y2": 51},
                                       "validArea": {"x1": 36, "y1": 48, "x2": 41, "y2": 51}
                                     },
@@ -3677,31 +3630,31 @@
                             ]
                           },
                           {
-                            "id": 260,
+                            "id": 256,
                             "content": {
                               "hitTestResult": null,
                               "cursor": null,
-                              "element": 65,
+                              "element": 64,
                               "bounds": {"x1": 44, "y1": 38, "x2": 78, "y2": 62},
                               "validArea": {"x1": 44, "y1": 38, "x2": 78, "y2": 62}
                             },
                             "children": [
                               {
-                                "id": 264,
+                                "id": 260,
                                 "content": {
                                   "hitTestResult": null,
                                   "cursor": null,
-                                  "element": 66,
+                                  "element": 65,
                                   "bounds": {"x1": 45, "y1": 39, "x2": 67, "y2": 61},
                                   "validArea": {"x1": 45, "y1": 39, "x2": 67, "y2": 61}
                                 },
                                 "children": [
                                   {
-                                    "id": 268,
+                                    "id": 264,
                                     "content": {
                                       "hitTestResult": null,
                                       "cursor": null,
-                                      "element": 67,
+                                      "element": 66,
                                       "bounds": {"x1": 48, "y1": 42, "x2": 64, "y2": 58},
                                       "validArea": {"x1": 48, "y1": 42, "x2": 64, "y2": 58}
                                     },
@@ -3710,31 +3663,31 @@
                                 ]
                               },
                               {
-                                "id": 272,
+                                "id": 268,
                                 "content": {
                                   "hitTestResult": null,
                                   "cursor": null,
-                                  "element": 68,
+                                  "element": 67,
                                   "bounds": {"x1": 68, "y1": 39, "x2": 77, "y2": 61},
                                   "validArea": {"x1": 68, "y1": 39, "x2": 77, "y2": 61}
                                 },
                                 "children": [
                                   {
-                                    "id": 276,
+                                    "id": 272,
                                     "content": {
                                       "hitTestResult": null,
                                       "cursor": null,
-                                      "element": 69,
+                                      "element": 68,
                                       "bounds": {"x1": 68, "y1": 39, "x2": 77, "y2": 61},
                                       "validArea": {"x1": 68, "y1": 39, "x2": 77, "y2": 61}
                                     },
                                     "children": [
                                       {
-                                        "id": 280,
+                                        "id": 276,
                                         "content": {
                                           "hitTestResult": null,
                                           "cursor": null,
-                                          "element": 70,
+                                          "element": 69,
                                           "bounds": {"x1": 70, "y1": 48, "x2": 75, "y2": 51},
                                           "validArea": {"x1": 70, "y1": 48, "x2": 75, "y2": 51}
                                         },
@@ -3747,21 +3700,21 @@
                             ]
                           },
                           {
-                            "id": 284,
+                            "id": 280,
                             "content": {
                               "hitTestResult": null,
                               "cursor": null,
-                              "element": 71,
+                              "element": 70,
                               "bounds": {"x1": 78, "y1": 38, "x2": 84, "y2": 62},
                               "validArea": {"x1": 78, "y1": 38, "x2": 84, "y2": 62}
                             },
                             "children": [
                               {
-                                "id": 288,
+                                "id": 284,
                                 "content": {
                                   "hitTestResult": null,
                                   "cursor": null,
-                                  "element": 72,
+                                  "element": 71,
                                   "bounds": {"x1": 81, "y1": 39, "x2": 81, "y2": 61},
                                   "validArea": {"x1": 81, "y1": 39, "x2": 81, "y2": 61}
                                 },
@@ -3770,31 +3723,31 @@
                             ]
                           },
                           {
-                            "id": 292,
+                            "id": 288,
                             "content": {
                               "hitTestResult": null,
                               "cursor": null,
-                              "element": 73,
+                              "element": 72,
                               "bounds": {"x1": 84, "y1": 38, "x2": 108, "y2": 62},
                               "validArea": {"x1": 84, "y1": 38, "x2": 108, "y2": 62}
                             },
                             "children": [
                               {
-                                "id": 296,
+                                "id": 292,
                                 "content": {
                                   "hitTestResult": null,
                                   "cursor": null,
-                                  "element": 74,
+                                  "element": 73,
                                   "bounds": {"x1": 85, "y1": 39, "x2": 107, "y2": 61},
                                   "validArea": {"x1": 85, "y1": 39, "x2": 107, "y2": 61}
                                 },
                                 "children": [
                                   {
-                                    "id": 300,
+                                    "id": 296,
                                     "content": {
                                       "hitTestResult": null,
                                       "cursor": null,
-                                      "element": 75,
+                                      "element": 74,
                                       "bounds": {"x1": 88, "y1": 42, "x2": 104, "y2": 58},
                                       "validArea": {"x1": 88, "y1": 42, "x2": 104, "y2": 58}
                                     },
@@ -3805,31 +3758,31 @@
                             ]
                           },
                           {
-                            "id": 304,
+                            "id": 300,
                             "content": {
                               "hitTestResult": null,
                               "cursor": null,
-                              "element": 76,
+                              "element": 75,
                               "bounds": {"x1": 108, "y1": 38, "x2": 132, "y2": 62},
                               "validArea": {"x1": 108, "y1": 38, "x2": 132, "y2": 62}
                             },
                             "children": [
                               {
-                                "id": 308,
+                                "id": 304,
                                 "content": {
                                   "hitTestResult": null,
                                   "cursor": null,
-                                  "element": 77,
+                                  "element": 76,
                                   "bounds": {"x1": 109, "y1": 39, "x2": 131, "y2": 61},
                                   "validArea": {"x1": 109, "y1": 39, "x2": 131, "y2": 61}
                                 },
                                 "children": [
                                   {
-                                    "id": 312,
+                                    "id": 308,
                                     "content": {
                                       "hitTestResult": null,
                                       "cursor": null,
-                                      "element": 78,
+                                      "element": 77,
                                       "bounds": {"x1": 112, "y1": 42, "x2": 128, "y2": 58},
                                       "validArea": {"x1": 112, "y1": 42, "x2": 128, "y2": 58}
                                     },
@@ -3840,21 +3793,21 @@
                             ]
                           },
                           {
-                            "id": 316,
+                            "id": 312,
                             "content": {
                               "hitTestResult": null,
                               "cursor": null,
-                              "element": 79,
+                              "element": 78,
                               "bounds": {"x1": 132, "y1": 38, "x2": 138, "y2": 62},
                               "validArea": {"x1": 132, "y1": 38, "x2": 138, "y2": 62}
                             },
                             "children": [
                               {
-                                "id": 320,
+                                "id": 316,
                                 "content": {
                                   "hitTestResult": null,
                                   "cursor": null,
-                                  "element": 80,
+                                  "element": 79,
                                   "bounds": {"x1": 135, "y1": 39, "x2": 135, "y2": 61},
                                   "validArea": {"x1": 135, "y1": 39, "x2": 135, "y2": 61}
                                 },
@@ -3863,31 +3816,31 @@
                             ]
                           },
                           {
-                            "id": 324,
+                            "id": 320,
                             "content": {
                               "hitTestResult": null,
                               "cursor": null,
-                              "element": 81,
+                              "element": 80,
                               "bounds": {"x1": 138, "y1": 38, "x2": 162, "y2": 62},
                               "validArea": {"x1": 138, "y1": 38, "x2": 162, "y2": 62}
                             },
                             "children": [
                               {
-                                "id": 328,
+                                "id": 324,
                                 "content": {
                                   "hitTestResult": null,
                                   "cursor": null,
-                                  "element": 82,
+                                  "element": 81,
                                   "bounds": {"x1": 139, "y1": 39, "x2": 161, "y2": 61},
                                   "validArea": {"x1": 139, "y1": 39, "x2": 161, "y2": 61}
                                 },
                                 "children": [
                                   {
-                                    "id": 332,
+                                    "id": 328,
                                     "content": {
                                       "hitTestResult": null,
                                       "cursor": null,
-                                      "element": 83,
+                                      "element": 82,
                                       "bounds": {"x1": 142, "y1": 42, "x2": 158, "y2": 58},
                                       "validArea": {"x1": 142, "y1": 42, "x2": 158, "y2": 58}
                                     },
@@ -3898,31 +3851,31 @@
                             ]
                           },
                           {
-                            "id": 336,
+                            "id": 332,
                             "content": {
                               "hitTestResult": null,
                               "cursor": null,
-                              "element": 84,
+                              "element": 83,
                               "bounds": {"x1": 162, "y1": 38, "x2": 186, "y2": 62},
                               "validArea": {"x1": 162, "y1": 38, "x2": 186, "y2": 62}
                             },
                             "children": [
                               {
-                                "id": 340,
+                                "id": 336,
                                 "content": {
                                   "hitTestResult": null,
                                   "cursor": null,
-                                  "element": 85,
+                                  "element": 84,
                                   "bounds": {"x1": 163, "y1": 39, "x2": 185, "y2": 61},
                                   "validArea": {"x1": 163, "y1": 39, "x2": 185, "y2": 61}
                                 },
                                 "children": [
                                   {
-                                    "id": 344,
+                                    "id": 340,
                                     "content": {
                                       "hitTestResult": null,
                                       "cursor": null,
-                                      "element": 86,
+                                      "element": 85,
                                       "bounds": {"x1": 166, "y1": 42, "x2": 182, "y2": 58},
                                       "validArea": {"x1": 166, "y1": 42, "x2": 182, "y2": 58}
                                     },
@@ -3933,31 +3886,31 @@
                             ]
                           },
                           {
-                            "id": 348,
+                            "id": 344,
                             "content": {
                               "hitTestResult": null,
                               "cursor": null,
-                              "element": 87,
+                              "element": 86,
                               "bounds": {"x1": 186, "y1": 38, "x2": 210, "y2": 62},
                               "validArea": {"x1": 186, "y1": 38, "x2": 210, "y2": 62}
                             },
                             "children": [
                               {
-                                "id": 352,
+                                "id": 348,
                                 "content": {
                                   "hitTestResult": null,
                                   "cursor": null,
-                                  "element": 88,
+                                  "element": 87,
                                   "bounds": {"x1": 187, "y1": 39, "x2": 209, "y2": 61},
                                   "validArea": {"x1": 187, "y1": 39, "x2": 209, "y2": 61}
                                 },
                                 "children": [
                                   {
-                                    "id": 356,
+                                    "id": 352,
                                     "content": {
                                       "hitTestResult": null,
                                       "cursor": null,
-                                      "element": 89,
+                                      "element": 88,
                                       "bounds": {"x1": 190, "y1": 42, "x2": 206, "y2": 58},
                                       "validArea": {"x1": 190, "y1": 42, "x2": 206, "y2": 58}
                                     },
@@ -3968,21 +3921,21 @@
                             ]
                           },
                           {
-                            "id": 360,
+                            "id": 356,
                             "content": {
                               "hitTestResult": null,
                               "cursor": null,
-                              "element": 90,
+                              "element": 89,
                               "bounds": {"x1": 210, "y1": 38, "x2": 216, "y2": 62},
                               "validArea": {"x1": 210, "y1": 38, "x2": 216, "y2": 62}
                             },
                             "children": [
                               {
-                                "id": 364,
+                                "id": 360,
                                 "content": {
                                   "hitTestResult": null,
                                   "cursor": null,
-                                  "element": 91,
+                                  "element": 90,
                                   "bounds": {"x1": 213, "y1": 39, "x2": 213, "y2": 61},
                                   "validArea": {"x1": 213, "y1": 39, "x2": 213, "y2": 61}
                                 },
@@ -3991,31 +3944,31 @@
                             ]
                           },
                           {
-                            "id": 368,
+                            "id": 364,
                             "content": {
                               "hitTestResult": null,
                               "cursor": null,
-                              "element": 92,
+                              "element": 91,
                               "bounds": {"x1": 216, "y1": 38, "x2": 240, "y2": 62},
                               "validArea": {"x1": 216, "y1": 38, "x2": 240, "y2": 62}
                             },
                             "children": [
                               {
-                                "id": 372,
+                                "id": 368,
                                 "content": {
                                   "hitTestResult": null,
                                   "cursor": null,
-                                  "element": 93,
+                                  "element": 92,
                                   "bounds": {"x1": 217, "y1": 39, "x2": 239, "y2": 61},
                                   "validArea": {"x1": 217, "y1": 39, "x2": 239, "y2": 61}
                                 },
                                 "children": [
                                   {
-                                    "id": 376,
+                                    "id": 372,
                                     "content": {
                                       "hitTestResult": null,
                                       "cursor": null,
-                                      "element": 94,
+                                      "element": 93,
                                       "bounds": {"x1": 220, "y1": 42, "x2": 236, "y2": 58},
                                       "validArea": {"x1": 220, "y1": 42, "x2": 236, "y2": 58}
                                     },
@@ -4863,20 +4816,9 @@
         [
           63,
           [
-            "ElementDesc_SolidBackground",
-            {
-              "id": 63,
-              "backgroundColor": "#00000000",
-              "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
-            }
-          ]
-        ],
-        [
-          64,
-          [
             "ElementDesc_Polygon",
             {
-              "id": 64,
+              "id": 63,
               "size": {"x": 5, "y": 3},
               "borderColor": "#999999",
               "backgroundColor": "#999999",
@@ -4889,12 +4831,23 @@
           ]
         ],
         [
-          65,
+          64,
           [
             "ElementDesc_SolidBorder",
             {
-              "id": 65,
+              "id": 64,
               "borderColor": "#00000000",
+              "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
+            }
+          ]
+        ],
+        [
+          65,
+          [
+            "ElementDesc_SolidBackground",
+            {
+              "id": 65,
+              "backgroundColor": "#007ACC",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
@@ -4902,19 +4855,19 @@
         [
           66,
           [
-            "ElementDesc_SolidBackground",
-            {
-              "id": 66,
-              "backgroundColor": "#007ACC",
-              "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
-            }
+            "ElementDesc_ImageFrame",
+            {"id": 66, "imageId": 12, "imageFrame": 0, "horizontalAlignment": "Left", "verticalAlignment": "Top", "stretch": false, "enabled": true, "imageCreation": null}
           ]
         ],
         [
           67,
           [
-            "ElementDesc_ImageFrame",
-            {"id": 67, "imageId": 12, "imageFrame": 0, "horizontalAlignment": "Left", "verticalAlignment": "Top", "stretch": false, "enabled": true, "imageCreation": null}
+            "ElementDesc_SolidBackground",
+            {
+              "id": 67,
+              "backgroundColor": "#54545C",
+              "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
+            }
           ]
         ],
         [
@@ -4923,7 +4876,7 @@
             "ElementDesc_SolidBackground",
             {
               "id": 68,
-              "backgroundColor": "#54545C",
+              "backgroundColor": "#007ACC",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
@@ -4931,20 +4884,9 @@
         [
           69,
           [
-            "ElementDesc_SolidBackground",
-            {
-              "id": 69,
-              "backgroundColor": "#007ACC",
-              "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
-            }
-          ]
-        ],
-        [
-          70,
-          [
             "ElementDesc_Polygon",
             {
-              "id": 70,
+              "id": 69,
               "size": {"x": 5, "y": 3},
               "borderColor": "#FFFFFF",
               "backgroundColor": "#FFFFFF",
@@ -4957,30 +4899,41 @@
           ]
         ],
         [
-          71,
+          70,
           [
             "ElementDesc_SolidBackground",
             {
-              "id": 71,
+              "id": 70,
               "backgroundColor": "#2D2D30",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
         ],
         [
-          72,
+          71,
           [
             "ElementDesc_SinkSplitter",
-            {"id": 72, "leftTopColor": "#222224", "rightBottomColor": "#464648", "direction": "Vertical"}
+            {"id": 71, "leftTopColor": "#222224", "rightBottomColor": "#464648", "direction": "Vertical"}
+          ]
+        ],
+        [
+          72,
+          [
+            "ElementDesc_SolidBorder",
+            {
+              "id": 72,
+              "borderColor": "#00000000",
+              "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
+            }
           ]
         ],
         [
           73,
           [
-            "ElementDesc_SolidBorder",
+            "ElementDesc_SolidBackground",
             {
               "id": 73,
-              "borderColor": "#00000000",
+              "backgroundColor": "#00000000",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
@@ -4988,28 +4941,28 @@
         [
           74,
           [
-            "ElementDesc_SolidBackground",
-            {
-              "id": 74,
-              "backgroundColor": "#00000000",
-              "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
-            }
+            "ElementDesc_ImageFrame",
+            {"id": 74, "imageId": 15, "imageFrame": 0, "horizontalAlignment": "Left", "verticalAlignment": "Top", "stretch": false, "enabled": true, "imageCreation": null}
           ]
         ],
         [
           75,
           [
-            "ElementDesc_ImageFrame",
-            {"id": 75, "imageId": 15, "imageFrame": 0, "horizontalAlignment": "Left", "verticalAlignment": "Top", "stretch": false, "enabled": true, "imageCreation": null}
+            "ElementDesc_SolidBorder",
+            {
+              "id": 75,
+              "borderColor": "#00000000",
+              "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
+            }
           ]
         ],
         [
           76,
           [
-            "ElementDesc_SolidBorder",
+            "ElementDesc_SolidBackground",
             {
               "id": 76,
-              "borderColor": "#00000000",
+              "backgroundColor": "#00000000",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
@@ -5017,46 +4970,46 @@
         [
           77,
           [
-            "ElementDesc_SolidBackground",
-            {
-              "id": 77,
-              "backgroundColor": "#00000000",
-              "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
-            }
+            "ElementDesc_ImageFrame",
+            {"id": 77, "imageId": 16, "imageFrame": 0, "horizontalAlignment": "Left", "verticalAlignment": "Top", "stretch": false, "enabled": true, "imageCreation": null}
           ]
         ],
         [
           78,
           [
-            "ElementDesc_ImageFrame",
-            {"id": 78, "imageId": 16, "imageFrame": 0, "horizontalAlignment": "Left", "verticalAlignment": "Top", "stretch": false, "enabled": true, "imageCreation": null}
-          ]
-        ],
-        [
-          79,
-          [
             "ElementDesc_SolidBackground",
             {
-              "id": 79,
+              "id": 78,
               "backgroundColor": "#2D2D30",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
         ],
         [
-          80,
+          79,
           [
             "ElementDesc_SinkSplitter",
-            {"id": 80, "leftTopColor": "#222224", "rightBottomColor": "#464648", "direction": "Vertical"}
+            {"id": 79, "leftTopColor": "#222224", "rightBottomColor": "#464648", "direction": "Vertical"}
+          ]
+        ],
+        [
+          80,
+          [
+            "ElementDesc_SolidBorder",
+            {
+              "id": 80,
+              "borderColor": "#00000000",
+              "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
+            }
           ]
         ],
         [
           81,
           [
-            "ElementDesc_SolidBorder",
+            "ElementDesc_SolidBackground",
             {
               "id": 81,
-              "borderColor": "#00000000",
+              "backgroundColor": "#00000000",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
@@ -5064,28 +5017,28 @@
         [
           82,
           [
-            "ElementDesc_SolidBackground",
-            {
-              "id": 82,
-              "backgroundColor": "#00000000",
-              "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
-            }
+            "ElementDesc_ImageFrame",
+            {"id": 82, "imageId": 17, "imageFrame": 0, "horizontalAlignment": "Left", "verticalAlignment": "Top", "stretch": false, "enabled": false, "imageCreation": null}
           ]
         ],
         [
           83,
           [
-            "ElementDesc_ImageFrame",
-            {"id": 83, "imageId": 17, "imageFrame": 0, "horizontalAlignment": "Left", "verticalAlignment": "Top", "stretch": false, "enabled": false, "imageCreation": null}
+            "ElementDesc_SolidBorder",
+            {
+              "id": 83,
+              "borderColor": "#00000000",
+              "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
+            }
           ]
         ],
         [
           84,
           [
-            "ElementDesc_SolidBorder",
+            "ElementDesc_SolidBackground",
             {
               "id": 84,
-              "borderColor": "#00000000",
+              "backgroundColor": "#00000000",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
@@ -5093,28 +5046,28 @@
         [
           85,
           [
-            "ElementDesc_SolidBackground",
-            {
-              "id": 85,
-              "backgroundColor": "#00000000",
-              "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
-            }
+            "ElementDesc_ImageFrame",
+            {"id": 85, "imageId": 18, "imageFrame": 0, "horizontalAlignment": "Left", "verticalAlignment": "Top", "stretch": false, "enabled": false, "imageCreation": null}
           ]
         ],
         [
           86,
           [
-            "ElementDesc_ImageFrame",
-            {"id": 86, "imageId": 18, "imageFrame": 0, "horizontalAlignment": "Left", "verticalAlignment": "Top", "stretch": false, "enabled": false, "imageCreation": null}
+            "ElementDesc_SolidBorder",
+            {
+              "id": 86,
+              "borderColor": "#00000000",
+              "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
+            }
           ]
         ],
         [
           87,
           [
-            "ElementDesc_SolidBorder",
+            "ElementDesc_SolidBackground",
             {
               "id": 87,
-              "borderColor": "#00000000",
+              "backgroundColor": "#00000000",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
@@ -5122,46 +5075,46 @@
         [
           88,
           [
-            "ElementDesc_SolidBackground",
-            {
-              "id": 88,
-              "backgroundColor": "#00000000",
-              "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
-            }
+            "ElementDesc_ImageFrame",
+            {"id": 88, "imageId": 19, "imageFrame": 0, "horizontalAlignment": "Left", "verticalAlignment": "Top", "stretch": false, "enabled": false, "imageCreation": null}
           ]
         ],
         [
           89,
           [
-            "ElementDesc_ImageFrame",
-            {"id": 89, "imageId": 19, "imageFrame": 0, "horizontalAlignment": "Left", "verticalAlignment": "Top", "stretch": false, "enabled": false, "imageCreation": null}
-          ]
-        ],
-        [
-          90,
-          [
             "ElementDesc_SolidBackground",
             {
-              "id": 90,
+              "id": 89,
               "backgroundColor": "#2D2D30",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
         ],
         [
-          91,
+          90,
           [
             "ElementDesc_SinkSplitter",
-            {"id": 91, "leftTopColor": "#222224", "rightBottomColor": "#464648", "direction": "Vertical"}
+            {"id": 90, "leftTopColor": "#222224", "rightBottomColor": "#464648", "direction": "Vertical"}
+          ]
+        ],
+        [
+          91,
+          [
+            "ElementDesc_SolidBorder",
+            {
+              "id": 91,
+              "borderColor": "#00000000",
+              "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
+            }
           ]
         ],
         [
           92,
           [
-            "ElementDesc_SolidBorder",
+            "ElementDesc_SolidBackground",
             {
               "id": 92,
-              "borderColor": "#00000000",
+              "backgroundColor": "#00000000",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
@@ -5169,19 +5122,8 @@
         [
           93,
           [
-            "ElementDesc_SolidBackground",
-            {
-              "id": 93,
-              "backgroundColor": "#00000000",
-              "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
-            }
-          ]
-        ],
-        [
-          94,
-          [
             "ElementDesc_ImageFrame",
-            {"id": 94, "imageId": 20, "imageFrame": 0, "horizontalAlignment": "Left", "verticalAlignment": "Top", "stretch": false, "enabled": false, "imageCreation": null}
+            {"id": 93, "imageId": 20, "imageFrame": 0, "horizontalAlignment": "Left", "verticalAlignment": "Top", "stretch": false, "enabled": false, "imageCreation": null}
           ]
         ]
       ],
@@ -5539,8 +5481,8 @@
                                   "hitTestResult": null,
                                   "cursor": null,
                                   "element": 61,
-                                  "bounds": {"x1": 11, "y1": 39, "x2": 33, "y2": 61},
-                                  "validArea": {"x1": 11, "y1": 39, "x2": 33, "y2": 61}
+                                  "bounds": {"x1": 11, "y1": 39, "x2": 43, "y2": 61},
+                                  "validArea": {"x1": 11, "y1": 39, "x2": 43, "y2": 61}
                                 },
                                 "children": [
                                   {
@@ -5553,25 +5495,13 @@
                                       "validArea": {"x1": 14, "y1": 42, "x2": 30, "y2": 58}
                                     },
                                     "children": null
-                                  }
-                                ]
-                              },
-                              {
-                                "id": 252,
-                                "content": {
-                                  "hitTestResult": null,
-                                  "cursor": null,
-                                  "element": 63,
-                                  "bounds": {"x1": 34, "y1": 39, "x2": 43, "y2": 61},
-                                  "validArea": {"x1": 34, "y1": 39, "x2": 43, "y2": 61}
-                                },
-                                "children": [
+                                  },
                                   {
-                                    "id": 256,
+                                    "id": 252,
                                     "content": {
                                       "hitTestResult": null,
                                       "cursor": null,
-                                      "element": 64,
+                                      "element": 63,
                                       "bounds": {"x1": 36, "y1": 48, "x2": 41, "y2": 51},
                                       "validArea": {"x1": 36, "y1": 48, "x2": 41, "y2": 51}
                                     },
@@ -5582,31 +5512,31 @@
                             ]
                           },
                           {
-                            "id": 260,
+                            "id": 256,
                             "content": {
                               "hitTestResult": null,
                               "cursor": null,
-                              "element": 65,
+                              "element": 64,
                               "bounds": {"x1": 44, "y1": 38, "x2": 78, "y2": 62},
                               "validArea": {"x1": 44, "y1": 38, "x2": 78, "y2": 62}
                             },
                             "children": [
                               {
-                                "id": 264,
+                                "id": 260,
                                 "content": {
                                   "hitTestResult": null,
                                   "cursor": null,
-                                  "element": 66,
+                                  "element": 65,
                                   "bounds": {"x1": 45, "y1": 39, "x2": 67, "y2": 61},
                                   "validArea": {"x1": 45, "y1": 39, "x2": 67, "y2": 61}
                                 },
                                 "children": [
                                   {
-                                    "id": 268,
+                                    "id": 264,
                                     "content": {
                                       "hitTestResult": null,
                                       "cursor": null,
-                                      "element": 67,
+                                      "element": 66,
                                       "bounds": {"x1": 48, "y1": 42, "x2": 64, "y2": 58},
                                       "validArea": {"x1": 48, "y1": 42, "x2": 64, "y2": 58}
                                     },
@@ -5615,31 +5545,31 @@
                                 ]
                               },
                               {
-                                "id": 272,
+                                "id": 268,
                                 "content": {
                                   "hitTestResult": null,
                                   "cursor": null,
-                                  "element": 68,
+                                  "element": 67,
                                   "bounds": {"x1": 68, "y1": 39, "x2": 77, "y2": 61},
                                   "validArea": {"x1": 68, "y1": 39, "x2": 77, "y2": 61}
                                 },
                                 "children": [
                                   {
-                                    "id": 276,
+                                    "id": 272,
                                     "content": {
                                       "hitTestResult": null,
                                       "cursor": null,
-                                      "element": 69,
+                                      "element": 68,
                                       "bounds": {"x1": 68, "y1": 39, "x2": 77, "y2": 61},
                                       "validArea": {"x1": 68, "y1": 39, "x2": 77, "y2": 61}
                                     },
                                     "children": [
                                       {
-                                        "id": 280,
+                                        "id": 276,
                                         "content": {
                                           "hitTestResult": null,
                                           "cursor": null,
-                                          "element": 70,
+                                          "element": 69,
                                           "bounds": {"x1": 70, "y1": 48, "x2": 75, "y2": 51},
                                           "validArea": {"x1": 70, "y1": 48, "x2": 75, "y2": 51}
                                         },
@@ -5652,21 +5582,21 @@
                             ]
                           },
                           {
-                            "id": 284,
+                            "id": 280,
                             "content": {
                               "hitTestResult": null,
                               "cursor": null,
-                              "element": 71,
+                              "element": 70,
                               "bounds": {"x1": 78, "y1": 38, "x2": 84, "y2": 62},
                               "validArea": {"x1": 78, "y1": 38, "x2": 84, "y2": 62}
                             },
                             "children": [
                               {
-                                "id": 288,
+                                "id": 284,
                                 "content": {
                                   "hitTestResult": null,
                                   "cursor": null,
-                                  "element": 72,
+                                  "element": 71,
                                   "bounds": {"x1": 81, "y1": 39, "x2": 81, "y2": 61},
                                   "validArea": {"x1": 81, "y1": 39, "x2": 81, "y2": 61}
                                 },
@@ -5675,31 +5605,31 @@
                             ]
                           },
                           {
-                            "id": 292,
+                            "id": 288,
                             "content": {
                               "hitTestResult": null,
                               "cursor": null,
-                              "element": 73,
+                              "element": 72,
                               "bounds": {"x1": 84, "y1": 38, "x2": 108, "y2": 62},
                               "validArea": {"x1": 84, "y1": 38, "x2": 108, "y2": 62}
                             },
                             "children": [
                               {
-                                "id": 296,
+                                "id": 292,
                                 "content": {
                                   "hitTestResult": null,
                                   "cursor": null,
-                                  "element": 74,
+                                  "element": 73,
                                   "bounds": {"x1": 85, "y1": 39, "x2": 107, "y2": 61},
                                   "validArea": {"x1": 85, "y1": 39, "x2": 107, "y2": 61}
                                 },
                                 "children": [
                                   {
-                                    "id": 300,
+                                    "id": 296,
                                     "content": {
                                       "hitTestResult": null,
                                       "cursor": null,
-                                      "element": 75,
+                                      "element": 74,
                                       "bounds": {"x1": 88, "y1": 42, "x2": 104, "y2": 58},
                                       "validArea": {"x1": 88, "y1": 42, "x2": 104, "y2": 58}
                                     },
@@ -5710,31 +5640,31 @@
                             ]
                           },
                           {
-                            "id": 304,
+                            "id": 300,
                             "content": {
                               "hitTestResult": null,
                               "cursor": null,
-                              "element": 76,
+                              "element": 75,
                               "bounds": {"x1": 108, "y1": 38, "x2": 132, "y2": 62},
                               "validArea": {"x1": 108, "y1": 38, "x2": 132, "y2": 62}
                             },
                             "children": [
                               {
-                                "id": 308,
+                                "id": 304,
                                 "content": {
                                   "hitTestResult": null,
                                   "cursor": null,
-                                  "element": 77,
+                                  "element": 76,
                                   "bounds": {"x1": 109, "y1": 39, "x2": 131, "y2": 61},
                                   "validArea": {"x1": 109, "y1": 39, "x2": 131, "y2": 61}
                                 },
                                 "children": [
                                   {
-                                    "id": 312,
+                                    "id": 308,
                                     "content": {
                                       "hitTestResult": null,
                                       "cursor": null,
-                                      "element": 78,
+                                      "element": 77,
                                       "bounds": {"x1": 112, "y1": 42, "x2": 128, "y2": 58},
                                       "validArea": {"x1": 112, "y1": 42, "x2": 128, "y2": 58}
                                     },
@@ -5745,21 +5675,21 @@
                             ]
                           },
                           {
-                            "id": 316,
+                            "id": 312,
                             "content": {
                               "hitTestResult": null,
                               "cursor": null,
-                              "element": 79,
+                              "element": 78,
                               "bounds": {"x1": 132, "y1": 38, "x2": 138, "y2": 62},
                               "validArea": {"x1": 132, "y1": 38, "x2": 138, "y2": 62}
                             },
                             "children": [
                               {
-                                "id": 320,
+                                "id": 316,
                                 "content": {
                                   "hitTestResult": null,
                                   "cursor": null,
-                                  "element": 80,
+                                  "element": 79,
                                   "bounds": {"x1": 135, "y1": 39, "x2": 135, "y2": 61},
                                   "validArea": {"x1": 135, "y1": 39, "x2": 135, "y2": 61}
                                 },
@@ -5768,31 +5698,31 @@
                             ]
                           },
                           {
-                            "id": 324,
+                            "id": 320,
                             "content": {
                               "hitTestResult": null,
                               "cursor": null,
-                              "element": 81,
+                              "element": 80,
                               "bounds": {"x1": 138, "y1": 38, "x2": 162, "y2": 62},
                               "validArea": {"x1": 138, "y1": 38, "x2": 162, "y2": 62}
                             },
                             "children": [
                               {
-                                "id": 328,
+                                "id": 324,
                                 "content": {
                                   "hitTestResult": null,
                                   "cursor": null,
-                                  "element": 82,
+                                  "element": 81,
                                   "bounds": {"x1": 139, "y1": 39, "x2": 161, "y2": 61},
                                   "validArea": {"x1": 139, "y1": 39, "x2": 161, "y2": 61}
                                 },
                                 "children": [
                                   {
-                                    "id": 332,
+                                    "id": 328,
                                     "content": {
                                       "hitTestResult": null,
                                       "cursor": null,
-                                      "element": 83,
+                                      "element": 82,
                                       "bounds": {"x1": 142, "y1": 42, "x2": 158, "y2": 58},
                                       "validArea": {"x1": 142, "y1": 42, "x2": 158, "y2": 58}
                                     },
@@ -5803,31 +5733,31 @@
                             ]
                           },
                           {
-                            "id": 336,
+                            "id": 332,
                             "content": {
                               "hitTestResult": null,
                               "cursor": null,
-                              "element": 84,
+                              "element": 83,
                               "bounds": {"x1": 162, "y1": 38, "x2": 186, "y2": 62},
                               "validArea": {"x1": 162, "y1": 38, "x2": 186, "y2": 62}
                             },
                             "children": [
                               {
-                                "id": 340,
+                                "id": 336,
                                 "content": {
                                   "hitTestResult": null,
                                   "cursor": null,
-                                  "element": 85,
+                                  "element": 84,
                                   "bounds": {"x1": 163, "y1": 39, "x2": 185, "y2": 61},
                                   "validArea": {"x1": 163, "y1": 39, "x2": 185, "y2": 61}
                                 },
                                 "children": [
                                   {
-                                    "id": 344,
+                                    "id": 340,
                                     "content": {
                                       "hitTestResult": null,
                                       "cursor": null,
-                                      "element": 86,
+                                      "element": 85,
                                       "bounds": {"x1": 166, "y1": 42, "x2": 182, "y2": 58},
                                       "validArea": {"x1": 166, "y1": 42, "x2": 182, "y2": 58}
                                     },
@@ -5838,31 +5768,31 @@
                             ]
                           },
                           {
-                            "id": 348,
+                            "id": 344,
                             "content": {
                               "hitTestResult": null,
                               "cursor": null,
-                              "element": 87,
+                              "element": 86,
                               "bounds": {"x1": 186, "y1": 38, "x2": 210, "y2": 62},
                               "validArea": {"x1": 186, "y1": 38, "x2": 210, "y2": 62}
                             },
                             "children": [
                               {
-                                "id": 352,
+                                "id": 348,
                                 "content": {
                                   "hitTestResult": null,
                                   "cursor": null,
-                                  "element": 88,
+                                  "element": 87,
                                   "bounds": {"x1": 187, "y1": 39, "x2": 209, "y2": 61},
                                   "validArea": {"x1": 187, "y1": 39, "x2": 209, "y2": 61}
                                 },
                                 "children": [
                                   {
-                                    "id": 356,
+                                    "id": 352,
                                     "content": {
                                       "hitTestResult": null,
                                       "cursor": null,
-                                      "element": 89,
+                                      "element": 88,
                                       "bounds": {"x1": 190, "y1": 42, "x2": 206, "y2": 58},
                                       "validArea": {"x1": 190, "y1": 42, "x2": 206, "y2": 58}
                                     },
@@ -5873,21 +5803,21 @@
                             ]
                           },
                           {
-                            "id": 360,
+                            "id": 356,
                             "content": {
                               "hitTestResult": null,
                               "cursor": null,
-                              "element": 90,
+                              "element": 89,
                               "bounds": {"x1": 210, "y1": 38, "x2": 216, "y2": 62},
                               "validArea": {"x1": 210, "y1": 38, "x2": 216, "y2": 62}
                             },
                             "children": [
                               {
-                                "id": 364,
+                                "id": 360,
                                 "content": {
                                   "hitTestResult": null,
                                   "cursor": null,
-                                  "element": 91,
+                                  "element": 90,
                                   "bounds": {"x1": 213, "y1": 39, "x2": 213, "y2": 61},
                                   "validArea": {"x1": 213, "y1": 39, "x2": 213, "y2": 61}
                                 },
@@ -5896,31 +5826,31 @@
                             ]
                           },
                           {
-                            "id": 368,
+                            "id": 364,
                             "content": {
                               "hitTestResult": null,
                               "cursor": null,
-                              "element": 92,
+                              "element": 91,
                               "bounds": {"x1": 216, "y1": 38, "x2": 240, "y2": 62},
                               "validArea": {"x1": 216, "y1": 38, "x2": 240, "y2": 62}
                             },
                             "children": [
                               {
-                                "id": 372,
+                                "id": 368,
                                 "content": {
                                   "hitTestResult": null,
                                   "cursor": null,
-                                  "element": 93,
+                                  "element": 92,
                                   "bounds": {"x1": 217, "y1": 39, "x2": 239, "y2": 61},
                                   "validArea": {"x1": 217, "y1": 39, "x2": 239, "y2": 61}
                                 },
                                 "children": [
                                   {
-                                    "id": 376,
+                                    "id": 372,
                                     "content": {
                                       "hitTestResult": null,
                                       "cursor": null,
-                                      "element": 94,
+                                      "element": 93,
                                       "bounds": {"x1": 220, "y1": 42, "x2": 236, "y2": 58},
                                       "validArea": {"x1": 220, "y1": 42, "x2": 236, "y2": 58}
                                     },
@@ -6927,20 +6857,9 @@
         [
           63,
           [
-            "ElementDesc_SolidBackground",
-            {
-              "id": 63,
-              "backgroundColor": "#00000000",
-              "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
-            }
-          ]
-        ],
-        [
-          64,
-          [
             "ElementDesc_Polygon",
             {
-              "id": 64,
+              "id": 63,
               "size": {"x": 5, "y": 3},
               "borderColor": "#999999",
               "backgroundColor": "#999999",
@@ -6953,12 +6872,23 @@
           ]
         ],
         [
-          65,
+          64,
           [
             "ElementDesc_SolidBorder",
             {
-              "id": 65,
+              "id": 64,
               "borderColor": "#00000000",
+              "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
+            }
+          ]
+        ],
+        [
+          65,
+          [
+            "ElementDesc_SolidBackground",
+            {
+              "id": 65,
+              "backgroundColor": "#00000000",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
@@ -6966,19 +6896,19 @@
         [
           66,
           [
-            "ElementDesc_SolidBackground",
-            {
-              "id": 66,
-              "backgroundColor": "#00000000",
-              "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
-            }
+            "ElementDesc_ImageFrame",
+            {"id": 66, "imageId": 13, "imageFrame": 0, "horizontalAlignment": "Left", "verticalAlignment": "Top", "stretch": false, "enabled": true, "imageCreation": null}
           ]
         ],
         [
           67,
           [
-            "ElementDesc_ImageFrame",
-            {"id": 67, "imageId": 13, "imageFrame": 0, "horizontalAlignment": "Left", "verticalAlignment": "Top", "stretch": false, "enabled": true, "imageCreation": null}
+            "ElementDesc_SolidBackground",
+            {
+              "id": 67,
+              "backgroundColor": "#00000000",
+              "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
+            }
           ]
         ],
         [
@@ -6995,20 +6925,9 @@
         [
           69,
           [
-            "ElementDesc_SolidBackground",
-            {
-              "id": 69,
-              "backgroundColor": "#00000000",
-              "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
-            }
-          ]
-        ],
-        [
-          70,
-          [
             "ElementDesc_Polygon",
             {
-              "id": 70,
+              "id": 69,
               "size": {"x": 5, "y": 3},
               "borderColor": "#999999",
               "backgroundColor": "#999999",
@@ -7021,30 +6940,41 @@
           ]
         ],
         [
-          71,
+          70,
           [
             "ElementDesc_SolidBackground",
             {
-              "id": 71,
+              "id": 70,
               "backgroundColor": "#2D2D30",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
         ],
         [
-          72,
+          71,
           [
             "ElementDesc_SinkSplitter",
-            {"id": 72, "leftTopColor": "#222224", "rightBottomColor": "#464648", "direction": "Vertical"}
+            {"id": 71, "leftTopColor": "#222224", "rightBottomColor": "#464648", "direction": "Vertical"}
+          ]
+        ],
+        [
+          72,
+          [
+            "ElementDesc_SolidBorder",
+            {
+              "id": 72,
+              "borderColor": "#00000000",
+              "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
+            }
           ]
         ],
         [
           73,
           [
-            "ElementDesc_SolidBorder",
+            "ElementDesc_SolidBackground",
             {
               "id": 73,
-              "borderColor": "#00000000",
+              "backgroundColor": "#00000000",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
@@ -7052,28 +6982,28 @@
         [
           74,
           [
-            "ElementDesc_SolidBackground",
-            {
-              "id": 74,
-              "backgroundColor": "#00000000",
-              "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
-            }
+            "ElementDesc_ImageFrame",
+            {"id": 74, "imageId": 15, "imageFrame": 0, "horizontalAlignment": "Left", "verticalAlignment": "Top", "stretch": false, "enabled": true, "imageCreation": null}
           ]
         ],
         [
           75,
           [
-            "ElementDesc_ImageFrame",
-            {"id": 75, "imageId": 15, "imageFrame": 0, "horizontalAlignment": "Left", "verticalAlignment": "Top", "stretch": false, "enabled": true, "imageCreation": null}
+            "ElementDesc_SolidBorder",
+            {
+              "id": 75,
+              "borderColor": "#00000000",
+              "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
+            }
           ]
         ],
         [
           76,
           [
-            "ElementDesc_SolidBorder",
+            "ElementDesc_SolidBackground",
             {
               "id": 76,
-              "borderColor": "#00000000",
+              "backgroundColor": "#00000000",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
@@ -7081,46 +7011,46 @@
         [
           77,
           [
-            "ElementDesc_SolidBackground",
-            {
-              "id": 77,
-              "backgroundColor": "#00000000",
-              "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
-            }
+            "ElementDesc_ImageFrame",
+            {"id": 77, "imageId": 16, "imageFrame": 0, "horizontalAlignment": "Left", "verticalAlignment": "Top", "stretch": false, "enabled": true, "imageCreation": null}
           ]
         ],
         [
           78,
           [
-            "ElementDesc_ImageFrame",
-            {"id": 78, "imageId": 16, "imageFrame": 0, "horizontalAlignment": "Left", "verticalAlignment": "Top", "stretch": false, "enabled": true, "imageCreation": null}
-          ]
-        ],
-        [
-          79,
-          [
             "ElementDesc_SolidBackground",
             {
-              "id": 79,
+              "id": 78,
               "backgroundColor": "#2D2D30",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
         ],
         [
-          80,
+          79,
           [
             "ElementDesc_SinkSplitter",
-            {"id": 80, "leftTopColor": "#222224", "rightBottomColor": "#464648", "direction": "Vertical"}
+            {"id": 79, "leftTopColor": "#222224", "rightBottomColor": "#464648", "direction": "Vertical"}
+          ]
+        ],
+        [
+          80,
+          [
+            "ElementDesc_SolidBorder",
+            {
+              "id": 80,
+              "borderColor": "#00000000",
+              "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
+            }
           ]
         ],
         [
           81,
           [
-            "ElementDesc_SolidBorder",
+            "ElementDesc_SolidBackground",
             {
               "id": 81,
-              "borderColor": "#00000000",
+              "backgroundColor": "#00000000",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
@@ -7128,28 +7058,28 @@
         [
           82,
           [
-            "ElementDesc_SolidBackground",
-            {
-              "id": 82,
-              "backgroundColor": "#00000000",
-              "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
-            }
+            "ElementDesc_ImageFrame",
+            {"id": 82, "imageId": 17, "imageFrame": 0, "horizontalAlignment": "Left", "verticalAlignment": "Top", "stretch": false, "enabled": false, "imageCreation": null}
           ]
         ],
         [
           83,
           [
-            "ElementDesc_ImageFrame",
-            {"id": 83, "imageId": 17, "imageFrame": 0, "horizontalAlignment": "Left", "verticalAlignment": "Top", "stretch": false, "enabled": false, "imageCreation": null}
+            "ElementDesc_SolidBorder",
+            {
+              "id": 83,
+              "borderColor": "#00000000",
+              "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
+            }
           ]
         ],
         [
           84,
           [
-            "ElementDesc_SolidBorder",
+            "ElementDesc_SolidBackground",
             {
               "id": 84,
-              "borderColor": "#00000000",
+              "backgroundColor": "#00000000",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
@@ -7157,28 +7087,28 @@
         [
           85,
           [
-            "ElementDesc_SolidBackground",
-            {
-              "id": 85,
-              "backgroundColor": "#00000000",
-              "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
-            }
+            "ElementDesc_ImageFrame",
+            {"id": 85, "imageId": 18, "imageFrame": 0, "horizontalAlignment": "Left", "verticalAlignment": "Top", "stretch": false, "enabled": false, "imageCreation": null}
           ]
         ],
         [
           86,
           [
-            "ElementDesc_ImageFrame",
-            {"id": 86, "imageId": 18, "imageFrame": 0, "horizontalAlignment": "Left", "verticalAlignment": "Top", "stretch": false, "enabled": false, "imageCreation": null}
+            "ElementDesc_SolidBorder",
+            {
+              "id": 86,
+              "borderColor": "#00000000",
+              "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
+            }
           ]
         ],
         [
           87,
           [
-            "ElementDesc_SolidBorder",
+            "ElementDesc_SolidBackground",
             {
               "id": 87,
-              "borderColor": "#00000000",
+              "backgroundColor": "#00000000",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
@@ -7186,46 +7116,46 @@
         [
           88,
           [
-            "ElementDesc_SolidBackground",
-            {
-              "id": 88,
-              "backgroundColor": "#00000000",
-              "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
-            }
+            "ElementDesc_ImageFrame",
+            {"id": 88, "imageId": 19, "imageFrame": 0, "horizontalAlignment": "Left", "verticalAlignment": "Top", "stretch": false, "enabled": false, "imageCreation": null}
           ]
         ],
         [
           89,
           [
-            "ElementDesc_ImageFrame",
-            {"id": 89, "imageId": 19, "imageFrame": 0, "horizontalAlignment": "Left", "verticalAlignment": "Top", "stretch": false, "enabled": false, "imageCreation": null}
-          ]
-        ],
-        [
-          90,
-          [
             "ElementDesc_SolidBackground",
             {
-              "id": 90,
+              "id": 89,
               "backgroundColor": "#2D2D30",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
         ],
         [
-          91,
+          90,
           [
             "ElementDesc_SinkSplitter",
-            {"id": 91, "leftTopColor": "#222224", "rightBottomColor": "#464648", "direction": "Vertical"}
+            {"id": 90, "leftTopColor": "#222224", "rightBottomColor": "#464648", "direction": "Vertical"}
+          ]
+        ],
+        [
+          91,
+          [
+            "ElementDesc_SolidBorder",
+            {
+              "id": 91,
+              "borderColor": "#00000000",
+              "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
+            }
           ]
         ],
         [
           92,
           [
-            "ElementDesc_SolidBorder",
+            "ElementDesc_SolidBackground",
             {
               "id": 92,
-              "borderColor": "#00000000",
+              "backgroundColor": "#00000000",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
@@ -7233,19 +7163,8 @@
         [
           93,
           [
-            "ElementDesc_SolidBackground",
-            {
-              "id": 93,
-              "backgroundColor": "#00000000",
-              "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
-            }
-          ]
-        ],
-        [
-          94,
-          [
             "ElementDesc_ImageFrame",
-            {"id": 94, "imageId": 20, "imageFrame": 0, "horizontalAlignment": "Left", "verticalAlignment": "Top", "stretch": false, "enabled": false, "imageCreation": null}
+            {"id": 93, "imageId": 20, "imageFrame": 0, "horizontalAlignment": "Left", "verticalAlignment": "Top", "stretch": false, "enabled": false, "imageCreation": null}
           ]
         ]
       ],
@@ -7603,8 +7522,8 @@
                                   "hitTestResult": null,
                                   "cursor": null,
                                   "element": 61,
-                                  "bounds": {"x1": 11, "y1": 39, "x2": 33, "y2": 61},
-                                  "validArea": {"x1": 11, "y1": 39, "x2": 33, "y2": 61}
+                                  "bounds": {"x1": 11, "y1": 39, "x2": 43, "y2": 61},
+                                  "validArea": {"x1": 11, "y1": 39, "x2": 43, "y2": 61}
                                 },
                                 "children": [
                                   {
@@ -7617,25 +7536,13 @@
                                       "validArea": {"x1": 14, "y1": 42, "x2": 30, "y2": 58}
                                     },
                                     "children": null
-                                  }
-                                ]
-                              },
-                              {
-                                "id": 252,
-                                "content": {
-                                  "hitTestResult": null,
-                                  "cursor": null,
-                                  "element": 63,
-                                  "bounds": {"x1": 34, "y1": 39, "x2": 43, "y2": 61},
-                                  "validArea": {"x1": 34, "y1": 39, "x2": 43, "y2": 61}
-                                },
-                                "children": [
+                                  },
                                   {
-                                    "id": 256,
+                                    "id": 252,
                                     "content": {
                                       "hitTestResult": null,
                                       "cursor": null,
-                                      "element": 64,
+                                      "element": 63,
                                       "bounds": {"x1": 36, "y1": 48, "x2": 41, "y2": 51},
                                       "validArea": {"x1": 36, "y1": 48, "x2": 41, "y2": 51}
                                     },
@@ -7646,31 +7553,31 @@
                             ]
                           },
                           {
-                            "id": 260,
+                            "id": 256,
                             "content": {
                               "hitTestResult": null,
                               "cursor": null,
-                              "element": 65,
+                              "element": 64,
                               "bounds": {"x1": 44, "y1": 38, "x2": 78, "y2": 62},
                               "validArea": {"x1": 44, "y1": 38, "x2": 78, "y2": 62}
                             },
                             "children": [
                               {
-                                "id": 264,
+                                "id": 260,
                                 "content": {
                                   "hitTestResult": null,
                                   "cursor": null,
-                                  "element": 66,
+                                  "element": 65,
                                   "bounds": {"x1": 45, "y1": 39, "x2": 67, "y2": 61},
                                   "validArea": {"x1": 45, "y1": 39, "x2": 67, "y2": 61}
                                 },
                                 "children": [
                                   {
-                                    "id": 268,
+                                    "id": 264,
                                     "content": {
                                       "hitTestResult": null,
                                       "cursor": null,
-                                      "element": 67,
+                                      "element": 66,
                                       "bounds": {"x1": 48, "y1": 42, "x2": 64, "y2": 58},
                                       "validArea": {"x1": 48, "y1": 42, "x2": 64, "y2": 58}
                                     },
@@ -7679,31 +7586,31 @@
                                 ]
                               },
                               {
-                                "id": 272,
+                                "id": 268,
                                 "content": {
                                   "hitTestResult": null,
                                   "cursor": null,
-                                  "element": 68,
+                                  "element": 67,
                                   "bounds": {"x1": 68, "y1": 39, "x2": 77, "y2": 61},
                                   "validArea": {"x1": 68, "y1": 39, "x2": 77, "y2": 61}
                                 },
                                 "children": [
                                   {
-                                    "id": 276,
+                                    "id": 272,
                                     "content": {
                                       "hitTestResult": null,
                                       "cursor": null,
-                                      "element": 69,
+                                      "element": 68,
                                       "bounds": {"x1": 68, "y1": 39, "x2": 77, "y2": 61},
                                       "validArea": {"x1": 68, "y1": 39, "x2": 77, "y2": 61}
                                     },
                                     "children": [
                                       {
-                                        "id": 280,
+                                        "id": 276,
                                         "content": {
                                           "hitTestResult": null,
                                           "cursor": null,
-                                          "element": 70,
+                                          "element": 69,
                                           "bounds": {"x1": 70, "y1": 48, "x2": 75, "y2": 51},
                                           "validArea": {"x1": 70, "y1": 48, "x2": 75, "y2": 51}
                                         },
@@ -7716,21 +7623,21 @@
                             ]
                           },
                           {
-                            "id": 284,
+                            "id": 280,
                             "content": {
                               "hitTestResult": null,
                               "cursor": null,
-                              "element": 71,
+                              "element": 70,
                               "bounds": {"x1": 78, "y1": 38, "x2": 84, "y2": 62},
                               "validArea": {"x1": 78, "y1": 38, "x2": 84, "y2": 62}
                             },
                             "children": [
                               {
-                                "id": 288,
+                                "id": 284,
                                 "content": {
                                   "hitTestResult": null,
                                   "cursor": null,
-                                  "element": 72,
+                                  "element": 71,
                                   "bounds": {"x1": 81, "y1": 39, "x2": 81, "y2": 61},
                                   "validArea": {"x1": 81, "y1": 39, "x2": 81, "y2": 61}
                                 },
@@ -7739,31 +7646,31 @@
                             ]
                           },
                           {
-                            "id": 292,
+                            "id": 288,
                             "content": {
                               "hitTestResult": null,
                               "cursor": null,
-                              "element": 73,
+                              "element": 72,
                               "bounds": {"x1": 84, "y1": 38, "x2": 108, "y2": 62},
                               "validArea": {"x1": 84, "y1": 38, "x2": 108, "y2": 62}
                             },
                             "children": [
                               {
-                                "id": 296,
+                                "id": 292,
                                 "content": {
                                   "hitTestResult": null,
                                   "cursor": null,
-                                  "element": 74,
+                                  "element": 73,
                                   "bounds": {"x1": 85, "y1": 39, "x2": 107, "y2": 61},
                                   "validArea": {"x1": 85, "y1": 39, "x2": 107, "y2": 61}
                                 },
                                 "children": [
                                   {
-                                    "id": 300,
+                                    "id": 296,
                                     "content": {
                                       "hitTestResult": null,
                                       "cursor": null,
-                                      "element": 75,
+                                      "element": 74,
                                       "bounds": {"x1": 88, "y1": 42, "x2": 104, "y2": 58},
                                       "validArea": {"x1": 88, "y1": 42, "x2": 104, "y2": 58}
                                     },
@@ -7774,31 +7681,31 @@
                             ]
                           },
                           {
-                            "id": 304,
+                            "id": 300,
                             "content": {
                               "hitTestResult": null,
                               "cursor": null,
-                              "element": 76,
+                              "element": 75,
                               "bounds": {"x1": 108, "y1": 38, "x2": 132, "y2": 62},
                               "validArea": {"x1": 108, "y1": 38, "x2": 132, "y2": 62}
                             },
                             "children": [
                               {
-                                "id": 308,
+                                "id": 304,
                                 "content": {
                                   "hitTestResult": null,
                                   "cursor": null,
-                                  "element": 77,
+                                  "element": 76,
                                   "bounds": {"x1": 109, "y1": 39, "x2": 131, "y2": 61},
                                   "validArea": {"x1": 109, "y1": 39, "x2": 131, "y2": 61}
                                 },
                                 "children": [
                                   {
-                                    "id": 312,
+                                    "id": 308,
                                     "content": {
                                       "hitTestResult": null,
                                       "cursor": null,
-                                      "element": 78,
+                                      "element": 77,
                                       "bounds": {"x1": 112, "y1": 42, "x2": 128, "y2": 58},
                                       "validArea": {"x1": 112, "y1": 42, "x2": 128, "y2": 58}
                                     },
@@ -7809,21 +7716,21 @@
                             ]
                           },
                           {
-                            "id": 316,
+                            "id": 312,
                             "content": {
                               "hitTestResult": null,
                               "cursor": null,
-                              "element": 79,
+                              "element": 78,
                               "bounds": {"x1": 132, "y1": 38, "x2": 138, "y2": 62},
                               "validArea": {"x1": 132, "y1": 38, "x2": 138, "y2": 62}
                             },
                             "children": [
                               {
-                                "id": 320,
+                                "id": 316,
                                 "content": {
                                   "hitTestResult": null,
                                   "cursor": null,
-                                  "element": 80,
+                                  "element": 79,
                                   "bounds": {"x1": 135, "y1": 39, "x2": 135, "y2": 61},
                                   "validArea": {"x1": 135, "y1": 39, "x2": 135, "y2": 61}
                                 },
@@ -7832,31 +7739,31 @@
                             ]
                           },
                           {
-                            "id": 324,
+                            "id": 320,
                             "content": {
                               "hitTestResult": null,
                               "cursor": null,
-                              "element": 81,
+                              "element": 80,
                               "bounds": {"x1": 138, "y1": 38, "x2": 162, "y2": 62},
                               "validArea": {"x1": 138, "y1": 38, "x2": 162, "y2": 62}
                             },
                             "children": [
                               {
-                                "id": 328,
+                                "id": 324,
                                 "content": {
                                   "hitTestResult": null,
                                   "cursor": null,
-                                  "element": 82,
+                                  "element": 81,
                                   "bounds": {"x1": 139, "y1": 39, "x2": 161, "y2": 61},
                                   "validArea": {"x1": 139, "y1": 39, "x2": 161, "y2": 61}
                                 },
                                 "children": [
                                   {
-                                    "id": 332,
+                                    "id": 328,
                                     "content": {
                                       "hitTestResult": null,
                                       "cursor": null,
-                                      "element": 83,
+                                      "element": 82,
                                       "bounds": {"x1": 142, "y1": 42, "x2": 158, "y2": 58},
                                       "validArea": {"x1": 142, "y1": 42, "x2": 158, "y2": 58}
                                     },
@@ -7867,31 +7774,31 @@
                             ]
                           },
                           {
-                            "id": 336,
+                            "id": 332,
                             "content": {
                               "hitTestResult": null,
                               "cursor": null,
-                              "element": 84,
+                              "element": 83,
                               "bounds": {"x1": 162, "y1": 38, "x2": 186, "y2": 62},
                               "validArea": {"x1": 162, "y1": 38, "x2": 186, "y2": 62}
                             },
                             "children": [
                               {
-                                "id": 340,
+                                "id": 336,
                                 "content": {
                                   "hitTestResult": null,
                                   "cursor": null,
-                                  "element": 85,
+                                  "element": 84,
                                   "bounds": {"x1": 163, "y1": 39, "x2": 185, "y2": 61},
                                   "validArea": {"x1": 163, "y1": 39, "x2": 185, "y2": 61}
                                 },
                                 "children": [
                                   {
-                                    "id": 344,
+                                    "id": 340,
                                     "content": {
                                       "hitTestResult": null,
                                       "cursor": null,
-                                      "element": 86,
+                                      "element": 85,
                                       "bounds": {"x1": 166, "y1": 42, "x2": 182, "y2": 58},
                                       "validArea": {"x1": 166, "y1": 42, "x2": 182, "y2": 58}
                                     },
@@ -7902,31 +7809,31 @@
                             ]
                           },
                           {
-                            "id": 348,
+                            "id": 344,
                             "content": {
                               "hitTestResult": null,
                               "cursor": null,
-                              "element": 87,
+                              "element": 86,
                               "bounds": {"x1": 186, "y1": 38, "x2": 210, "y2": 62},
                               "validArea": {"x1": 186, "y1": 38, "x2": 210, "y2": 62}
                             },
                             "children": [
                               {
-                                "id": 352,
+                                "id": 348,
                                 "content": {
                                   "hitTestResult": null,
                                   "cursor": null,
-                                  "element": 88,
+                                  "element": 87,
                                   "bounds": {"x1": 187, "y1": 39, "x2": 209, "y2": 61},
                                   "validArea": {"x1": 187, "y1": 39, "x2": 209, "y2": 61}
                                 },
                                 "children": [
                                   {
-                                    "id": 356,
+                                    "id": 352,
                                     "content": {
                                       "hitTestResult": null,
                                       "cursor": null,
-                                      "element": 89,
+                                      "element": 88,
                                       "bounds": {"x1": 190, "y1": 42, "x2": 206, "y2": 58},
                                       "validArea": {"x1": 190, "y1": 42, "x2": 206, "y2": 58}
                                     },
@@ -7937,21 +7844,21 @@
                             ]
                           },
                           {
-                            "id": 360,
+                            "id": 356,
                             "content": {
                               "hitTestResult": null,
                               "cursor": null,
-                              "element": 90,
+                              "element": 89,
                               "bounds": {"x1": 210, "y1": 38, "x2": 216, "y2": 62},
                               "validArea": {"x1": 210, "y1": 38, "x2": 216, "y2": 62}
                             },
                             "children": [
                               {
-                                "id": 364,
+                                "id": 360,
                                 "content": {
                                   "hitTestResult": null,
                                   "cursor": null,
-                                  "element": 91,
+                                  "element": 90,
                                   "bounds": {"x1": 213, "y1": 39, "x2": 213, "y2": 61},
                                   "validArea": {"x1": 213, "y1": 39, "x2": 213, "y2": 61}
                                 },
@@ -7960,31 +7867,31 @@
                             ]
                           },
                           {
-                            "id": 368,
+                            "id": 364,
                             "content": {
                               "hitTestResult": null,
                               "cursor": null,
-                              "element": 92,
+                              "element": 91,
                               "bounds": {"x1": 216, "y1": 38, "x2": 240, "y2": 62},
                               "validArea": {"x1": 216, "y1": 38, "x2": 240, "y2": 62}
                             },
                             "children": [
                               {
-                                "id": 372,
+                                "id": 368,
                                 "content": {
                                   "hitTestResult": null,
                                   "cursor": null,
-                                  "element": 93,
+                                  "element": 92,
                                   "bounds": {"x1": 217, "y1": 39, "x2": 239, "y2": 61},
                                   "validArea": {"x1": 217, "y1": 39, "x2": 239, "y2": 61}
                                 },
                                 "children": [
                                   {
-                                    "id": 376,
+                                    "id": 372,
                                     "content": {
                                       "hitTestResult": null,
                                       "cursor": null,
-                                      "element": 94,
+                                      "element": 93,
                                       "bounds": {"x1": 220, "y1": 42, "x2": 236, "y2": 58},
                                       "validArea": {"x1": 220, "y1": 42, "x2": 236, "y2": 58}
                                     },

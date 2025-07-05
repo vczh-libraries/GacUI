@@ -27,15 +27,6 @@ namespace gacuisrc_unittest
         var self : ::gacuisrc_unittest::MainWindow* = null of (::gacuisrc_unittest::MainWindow*);
 
         @cpp:Protected
-        var tab : ::presentation::controls::GuiRibbonTab* = null of (::presentation::controls::GuiRibbonTab*);
-
-        @cpp:Protected
-        var tabPageOptions : ::presentation::controls::GuiRibbonTabPage* = null of (::presentation::controls::GuiRibbonTabPage*);
-
-        @cpp:Protected
-        var tabPageLabel : ::presentation::controls::GuiRibbonTabPage* = null of (::presentation::controls::GuiRibbonTabPage*);
-
-        @cpp:Protected
         var <precompile>0 : ::presentation::controls::GuiToolstripGroupContainer* = null of (::presentation::controls::GuiToolstripGroupContainer*);
 
         @cpp:Protected
@@ -73,6 +64,36 @@ namespace gacuisrc_unittest
 
         @cpp:Protected
         var <precompile>12 : ::presentation::controls::list::TextItem^ = null of (::presentation::controls::list::TextItem^);
+
+        @cpp:Protected
+        var tab : ::presentation::controls::GuiRibbonTab* = null of (::presentation::controls::GuiRibbonTab*);
+
+        @cpp:Protected
+        var tabPageOptions : ::presentation::controls::GuiRibbonTabPage* = null of (::presentation::controls::GuiRibbonTabPage*);
+
+        @cpp:Protected
+        var tabPageLabel : ::presentation::controls::GuiRibbonTabPage* = null of (::presentation::controls::GuiRibbonTabPage*);
+
+        @cpp:Protected
+        var <precompile>13 : ::presentation::controls::list::TextItem^ = null of (::presentation::controls::list::TextItem^);
+
+        @cpp:Protected
+        var <precompile>14 : ::presentation::controls::list::TextItem^ = null of (::presentation::controls::list::TextItem^);
+
+        @cpp:Protected
+        var <precompile>15 : ::presentation::controls::list::TextItem^ = null of (::presentation::controls::list::TextItem^);
+
+        @cpp:Protected
+        var <precompile>16 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var <precompile>17 : ::presentation::compositions::GuiGraphicsComposition* = null of (::presentation::compositions::GuiGraphicsComposition*);
+
+        @cpp:Protected
+        var <precompile>18 : ::presentation::compositions::GuiGraphicsComposition* = null of (::presentation::compositions::GuiGraphicsComposition*);
+
+        @cpp:Protected
+        var <precompile>19 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
         var commandUndo : ::presentation::controls::GuiToolstripCommand* = null of (::presentation::controls::GuiToolstripCommand*);
@@ -118,27 +139,6 @@ namespace gacuisrc_unittest
 
         @cpp:Protected
         var listFiles : ::presentation::controls::GuiTextList* = null of (::presentation::controls::GuiTextList*);
-
-        @cpp:Protected
-        var <precompile>13 : ::presentation::controls::list::TextItem^ = null of (::presentation::controls::list::TextItem^);
-
-        @cpp:Protected
-        var <precompile>14 : ::presentation::controls::list::TextItem^ = null of (::presentation::controls::list::TextItem^);
-
-        @cpp:Protected
-        var <precompile>15 : ::presentation::controls::list::TextItem^ = null of (::presentation::controls::list::TextItem^);
-
-        @cpp:Protected
-        var <precompile>16 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
-
-        @cpp:Protected
-        var <precompile>17 : ::presentation::compositions::GuiGraphicsComposition* = null of (::presentation::compositions::GuiGraphicsComposition*);
-
-        @cpp:Protected
-        var <precompile>18 : ::presentation::compositions::GuiGraphicsComposition* = null of (::presentation::compositions::GuiGraphicsComposition*);
-
-        @cpp:Protected
-        var <precompile>19 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
         func <gacuisrc_unittest-MainWindow>Initialize(<this> : ::gacuisrc_unittest::MainWindow*) : (::system::Void)
@@ -258,12 +258,6 @@ namespace gacuisrc_unittest
                 (listFiles = new (::presentation::controls::GuiTextList*)(::presentation::theme::ThemeName::TextList));
                 <this>.SetNamedObject("listFiles", listFiles);
             }
-            {
-                (listFiles.VerticalAlwaysVisible = false);
-            }
-            {
-                (listFiles.HorizontalAlwaysVisible = false);
-            }
             (<precompile>10 = new (::presentation::controls::list::TextItem^)());
             {
                 (<precompile>10.Text = "First");
@@ -311,6 +305,12 @@ namespace gacuisrc_unittest
             {
                 var <collection> = listFiles.Items;
                 <collection>.Add(<precompile>15);
+            }
+            {
+                (listFiles.VerticalAlwaysVisible = false);
+            }
+            {
+                (listFiles.HorizontalAlwaysVisible = false);
             }
             (<precompile>9 = listFiles.BoundsComposition);
             {
