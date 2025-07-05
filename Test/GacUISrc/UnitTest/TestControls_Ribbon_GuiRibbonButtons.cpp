@@ -25,7 +25,7 @@ TEST_FILE
               <att.Groups>
                 <RibbonGroup ref.Name="group1" Text="Buttons" LargeImage-uri="res://ListViewImages/LargeImages/Cert" Expandable="true">
                   <att.Items>
-                    <RibbonLargeDropdownButton Text="Cert" LargeImage-uri="res://ListViewImages/LargeImages/Cert">
+                    <RibbonLargeDropdownButton ref.Name="buttonLarge" Text="Cert" LargeImage-uri="res://ListViewImages/LargeImages/Cert">
                       <att.SubMenu-set>
                         <MenuItemButton Command-eval="self.commandCert"/>
                         <MenuItemButton Command-eval="self.commandData"/>
@@ -37,8 +37,8 @@ TEST_FILE
                     <RibbonSplitter/>
                     <RibbonButtons MaxSize="Large" MinSize="Icon">
                       <att.Buttons>
-                        <ToolstripButton Command-eval="self.commandCert"/>
-                        <ToolstripDropdownButton Command-eval="self.commandData">
+                        <ToolstripButton ref.Name="buttonCert" Command-eval="self.commandCert"/>
+                        <ToolstripDropdownButton ref.Name="buttonData" Command-eval="self.commandData">
                           <att.SubMenu-set>
                             <MenuItemButton Text="Data1"/>
                             <MenuItemButton Text="Data2"/>
@@ -46,7 +46,7 @@ TEST_FILE
                             <MenuItemButton Text="Data3"/>
                           </att.SubMenu-set>
                         </ToolstripDropdownButton>
-                        <ToolstripSplitButton Command-eval="self.commandLink">
+                        <ToolstripSplitButton ref.Name="buttonLink" Command-eval="self.commandLink">
                           <att.SubMenu-set>
                             <MenuItemButton Text="Link1"/>
                             <MenuItemButton Text="Link2"/>
@@ -59,7 +59,7 @@ TEST_FILE
                     <RibbonSplitter/>
                     <RibbonButtons MaxSize="Large" MinSize="Icon">
                       <att.Buttons>
-                        <ToolstripDropdownButton Command-eval="self.commandFolder">
+                        <ToolstripDropdownButton ref.Name="buttonFolder" Command-eval="self.commandFolder">
                           <att.SubMenu-set>
                             <MenuItemButton Text="Folder1"/>
                             <MenuItemButton Text="Folder2"/>
@@ -67,7 +67,7 @@ TEST_FILE
                             <MenuItemButton Text="Folder3"/>
                           </att.SubMenu-set>
                         </ToolstripDropdownButton>
-                        <ToolstripSplitButton Command-eval="self.commandLight">
+                        <ToolstripSplitButton ref.Name="buttonLight" Command-eval="self.commandLight">
                           <att.SubMenu-set>
                             <MenuItemButton Text="Light1"/>
                             <MenuItemButton Text="Light2"/>
@@ -103,6 +103,78 @@ TEST_FILE
 			});
 			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
 				WString::Unmanaged(L"Controls/Ribbon/GuiRibbonButtons/ReactiveView"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resourceRibbonButtons
+				);
+		});
+
+		TEST_CASE(L"Dropdowns")
+		{
+			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				const wchar_t* ClickBlankFrameName = L"Reset";
+
+				auto clickFrames = [=](const WString& firstFrame, const WString& buttonName)
+				{
+					protocol->OnNextIdleFrame(firstFrame, [=]()
+					{
+						protocol->_LDown();
+					});
+					protocol->OnNextIdleFrame(L"Down[" + buttonName + L"]", [=]()
+					{
+						protocol->_LUp();
+					});
+					protocol->OnNextIdleFrame(L"Up[" + buttonName + L"]", [=]()
+					{
+						protocol->LClick({ { {1},{1} } });
+					});
+				};
+
+				auto clickButtonFrames = [=, &clickFrames](const WString& firstFrame, const WString& buttonName)
+				{
+					protocol->OnNextIdleFrame(firstFrame, [=]()
+					{
+						auto window = GetApplication()->GetMainWindow();
+						auto button = FindObjectByName<GuiToolstripButton>(window, buttonName);
+						auto location = protocol->LocationOf(button);
+						protocol->MouseMove(location);
+					});
+					clickFrames(L"Hover[" + buttonName + L"]", buttonName);
+				};
+
+				auto clickSplitButtonFrames = [=, &clickFrames](const WString& firstFrame, const WString& buttonName, bool large)
+				{
+					protocol->OnNextIdleFrame(firstFrame, [=]()
+					{
+						auto window = GetApplication()->GetMainWindow();
+						auto button = FindObjectByName<GuiToolstripButton>(window, buttonName);
+						auto location = protocol->LocationOf(button);
+						protocol->MouseMove(location);
+					});
+					clickFrames(L"Hover[" + buttonName + L"]", buttonName);
+					protocol->OnNextIdleFrame(ClickBlankFrameName, [=]()
+					{
+						auto window = GetApplication()->GetMainWindow();
+						auto button = FindObjectByName<GuiToolstripButton>(window, buttonName);
+						auto location = large ? protocol->LocationOf(button, 0.5, 1.0, 0, -2) : protocol->LocationOf(button, 1.0, 0.5, -2, 0);
+						protocol->MouseMove(location);
+					});
+					clickFrames(L"Hover[" + buttonName + L"]", buttonName);
+				};
+
+				clickButtonFrames(L"Ready", L"buttonLarge");
+				//clickButtonFrames(L"Ready", L"buttonCert");
+				//clickButtonFrames(L"Ready", L"buttonData");
+				//clickSplitButtonFrames(L"Ready", L"buttonLink", true);
+				
+				protocol->OnNextIdleFrame(ClickBlankFrameName, [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					window->Hide();
+				});
+			});
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Controls/Ribbon/GuiRibbonButtons/Dropdowns"),
 				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
 				resourceRibbonButtons
 				);
