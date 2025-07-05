@@ -148,7 +148,7 @@ TEST_FILE
 					{
 						auto window = GetApplication()->GetMainWindow();
 						auto button = FindObjectByName<GuiToolstripButton>(window, buttonName);
-						auto location = protocol->LocationOf(button);
+						auto location = large ? protocol->LocationOf(button, 0.5, 0.0, 0, 2) : protocol->LocationOf(button, 0.0, 0.5, 2, 0);
 						protocol->MouseMove(location);
 					});
 					clickFrames(L"Hover[" + buttonName + L"]", buttonName);
@@ -163,11 +163,37 @@ TEST_FILE
 				};
 
 				clickButtonFrames(L"Ready", L"buttonLarge");
-				//clickButtonFrames(L"Ready", L"buttonCert");
-				//clickButtonFrames(L"Ready", L"buttonData");
-				//clickSplitButtonFrames(L"Ready", L"buttonLink", true);
+				clickButtonFrames(ClickBlankFrameName, L"buttonCert");
+				clickButtonFrames(ClickBlankFrameName, L"buttonData");
+				clickSplitButtonFrames(ClickBlankFrameName, L"buttonLink", true);
 				
 				protocol->OnNextIdleFrame(ClickBlankFrameName, [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					window->SetClientSize({ 320,window->GetClientSize().y });
+				});
+
+				clickButtonFrames(L"Width = 320", L"buttonCert");
+				clickButtonFrames(ClickBlankFrameName, L"buttonData");
+				clickSplitButtonFrames(ClickBlankFrameName, L"buttonLink", false);
+				
+				protocol->OnNextIdleFrame(ClickBlankFrameName, [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					window->SetClientSize({ 200,window->GetClientSize().y });
+				});
+
+				clickButtonFrames(L"Width = 200", L"buttonCert");
+				clickButtonFrames(ClickBlankFrameName, L"buttonData");
+				clickSplitButtonFrames(ClickBlankFrameName, L"buttonLink", false);
+				
+				protocol->OnNextIdleFrame(ClickBlankFrameName, [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					window->SetClientSize({ 480,window->GetClientSize().y });
+				});
+				
+				protocol->OnNextIdleFrame(L"Width = 480", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					window->Hide();
