@@ -199,6 +199,14 @@ namespace darkskin
                 });
             }
             {
+                (<precompile>0.HTracker = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiScrollTemplate*)
+                {
+                    {
+                        return new (::darkskin::HTrackerTemplate*)();
+                    }
+                });
+            }
+            {
                 (<precompile>0.VScroll = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiScrollTemplate*)
                 {
                     {
@@ -235,6 +243,22 @@ namespace darkskin
                 {
                     {
                         return new (::darkskin::RadioButtonTemplate*)();
+                    }
+                });
+            }
+            {
+                (<precompile>0.CheckBox = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiSelectableButtonTemplate*)
+                {
+                    {
+                        return new (::darkskin::CheckBoxTemplate*)();
+                    }
+                });
+            }
+            {
+                (<precompile>0.Button = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiButtonTemplate*)
+                {
+                    {
+                        return new (::darkskin::ButtonTemplate*)();
                     }
                 });
             }
@@ -383,6 +407,46 @@ namespace darkskin
                 });
             }
             {
+                (<precompile>0.SinglelineTextBox = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiSinglelineTextBoxTemplate*)
+                {
+                    {
+                        return new (::darkskin::SinglelineTextBoxTemplate*)();
+                    }
+                });
+            }
+            {
+                (<precompile>0.MultilineTextBox = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiMultilineTextBoxTemplate*)
+                {
+                    {
+                        return new (::darkskin::MultilineTextBoxTemplate*)();
+                    }
+                });
+            }
+            {
+                (<precompile>0.ComboBox = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiComboBoxTemplate*)
+                {
+                    {
+                        return new (::darkskin::ComboBoxTemplate*)();
+                    }
+                });
+            }
+            {
+                (<precompile>0.Tab = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiTabTemplate*)
+                {
+                    {
+                        return new (::darkskin::TabTemplate*)();
+                    }
+                });
+            }
+            {
+                (<precompile>0.GroupBox = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiControlTemplate*)
+                {
+                    {
+                        return new (::darkskin::GroupBoxTemplate*)();
+                    }
+                });
+            }
+            {
                 (<precompile>0.ScrollView = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiScrollViewTemplate*)
                 {
                     {
@@ -399,10 +463,26 @@ namespace darkskin
                 });
             }
             {
+                (<precompile>0.Label = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiLabelTemplate*)
+                {
+                    {
+                        return new (::darkskin::LabelTemplate*)();
+                    }
+                });
+            }
+            {
                 (<precompile>0.Tooltip = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiWindowTemplate*)
                 {
                     {
                         return new (::darkskin::TooltipTemplate*)();
+                    }
+                });
+            }
+            {
+                (<precompile>0.CustomControl = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiControlTemplate*)
+                {
+                    {
+                        return new (::darkskin::CustomControlTemplate*)();
                     }
                 });
             }
@@ -424,86 +504,6 @@ namespace darkskin
             }
             {
                 (<precompile>0.PreferCustomFrameWindow = true);
-            }
-            {
-                (<precompile>0.MultilineTextBox = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiMultilineTextBoxTemplate*)
-                {
-                    {
-                        return new (::darkskin::MultilineTextBoxTemplate*)();
-                    }
-                });
-            }
-            {
-                (<precompile>0.Tab = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiTabTemplate*)
-                {
-                    {
-                        return new (::darkskin::TabTemplate*)();
-                    }
-                });
-            }
-            {
-                (<precompile>0.ComboBox = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiComboBoxTemplate*)
-                {
-                    {
-                        return new (::darkskin::ComboBoxTemplate*)();
-                    }
-                });
-            }
-            {
-                (<precompile>0.CheckBox = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiSelectableButtonTemplate*)
-                {
-                    {
-                        return new (::darkskin::CheckBoxTemplate*)();
-                    }
-                });
-            }
-            {
-                (<precompile>0.GroupBox = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiControlTemplate*)
-                {
-                    {
-                        return new (::darkskin::GroupBoxTemplate*)();
-                    }
-                });
-            }
-            {
-                (<precompile>0.HTracker = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiScrollTemplate*)
-                {
-                    {
-                        return new (::darkskin::HTrackerTemplate*)();
-                    }
-                });
-            }
-            {
-                (<precompile>0.SinglelineTextBox = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiSinglelineTextBoxTemplate*)
-                {
-                    {
-                        return new (::darkskin::SinglelineTextBoxTemplate*)();
-                    }
-                });
-            }
-            {
-                (<precompile>0.CustomControl = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiControlTemplate*)
-                {
-                    {
-                        return new (::darkskin::CustomControlTemplate*)();
-                    }
-                });
-            }
-            {
-                (<precompile>0.Label = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiLabelTemplate*)
-                {
-                    {
-                        return new (::darkskin::LabelTemplate*)();
-                    }
-                });
-            }
-            {
-                (<precompile>0.Button = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiButtonTemplate*)
-                {
-                    {
-                        return new (::darkskin::ButtonTemplate*)();
-                    }
-                });
             }
             {
                 (<precompile>0.Name = "DarkSkin");
@@ -583,6 +583,9 @@ namespace darkskin
     class ButtonTemplateConstructor
     {
         @cpp:Protected
+        var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
         var self : ::darkskin::ButtonTemplate* = null of (::darkskin::ButtonTemplate*);
 
         @cpp:Protected
@@ -605,9 +608,6 @@ namespace darkskin
 
         @cpp:Protected
         var <precompile>6 : ::presentation::elements::GuiSolidLabelElement^ = null of (::presentation::elements::GuiSolidLabelElement^);
-
-        @cpp:Protected
-        var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
         func <darkskin-ButtonTemplate>Initialize(<this> : ::darkskin::ButtonTemplate*) : (::system::Void)
@@ -1249,6 +1249,9 @@ namespace darkskin
     class CheckBoxTemplateConstructor
     {
         @cpp:Protected
+        var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
         var self : ::darkskin::CheckBoxTemplate* = null of (::darkskin::CheckBoxTemplate*);
 
         @cpp:Protected
@@ -1292,9 +1295,6 @@ namespace darkskin
 
         @cpp:Protected
         var <precompile>13 : ::presentation::elements::GuiSolidLabelElement^ = null of (::presentation::elements::GuiSolidLabelElement^);
-
-        @cpp:Protected
-        var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
         func <darkskin-CheckBoxTemplate>Initialize(<this> : ::darkskin::CheckBoxTemplate*) : (::system::Void)
@@ -2209,6 +2209,9 @@ namespace darkskin
     class RadioButtonTemplateConstructor
     {
         @cpp:Protected
+        var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
         var self : ::darkskin::RadioButtonTemplate* = null of (::darkskin::RadioButtonTemplate*);
 
         @cpp:Protected
@@ -2252,9 +2255,6 @@ namespace darkskin
 
         @cpp:Protected
         var <precompile>13 : ::presentation::elements::GuiSolidLabelElement^ = null of (::presentation::elements::GuiSolidLabelElement^);
-
-        @cpp:Protected
-        var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
         func <darkskin-RadioButtonTemplate>Initialize(<this> : ::darkskin::RadioButtonTemplate*) : (::system::Void)
@@ -3217,6 +3217,9 @@ namespace darkskin
     class DocumentTextBoxTemplateConstructor
     {
         @cpp:Protected
+        var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
         var self : ::darkskin::DocumentTextBoxTemplate* = null of (::darkskin::DocumentTextBoxTemplate*);
 
         @cpp:Protected
@@ -3227,9 +3230,6 @@ namespace darkskin
 
         @cpp:Protected
         var <precompile>2 : ::presentation::elements::GuiSolidBackgroundElement^ = null of (::presentation::elements::GuiSolidBackgroundElement^);
-
-        @cpp:Protected
-        var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
         func <darkskin-DocumentTextBoxTemplate>Initialize(<this> : ::darkskin::DocumentTextBoxTemplate*) : (::system::Void)
@@ -3448,6 +3448,9 @@ namespace darkskin
         var self : ::darkskin::DocumentViewerTemplate* = null of (::darkskin::DocumentViewerTemplate*);
 
         @cpp:Protected
+        var look : ::presentation::templates::GuiCommonScrollViewLook* = null of (::presentation::templates::GuiCommonScrollViewLook*);
+
+        @cpp:Protected
         var <precompile>0 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
@@ -3455,9 +3458,6 @@ namespace darkskin
 
         @cpp:Protected
         var <precompile>2 : ::presentation::elements::GuiSolidBackgroundElement^ = null of (::presentation::elements::GuiSolidBackgroundElement^);
-
-        @cpp:Protected
-        var look : ::presentation::templates::GuiCommonScrollViewLook* = null of (::presentation::templates::GuiCommonScrollViewLook*);
 
         @cpp:Protected
         func <darkskin-DocumentViewerTemplate>Initialize(<this> : ::darkskin::DocumentViewerTemplate*) : (::system::Void)
@@ -3692,6 +3692,9 @@ namespace darkskin
     class ComboBoxTemplateConstructor
     {
         @cpp:Protected
+        var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
         var self : ::darkskin::ComboBoxTemplate* = null of (::darkskin::ComboBoxTemplate*);
 
         @cpp:Protected
@@ -3720,9 +3723,6 @@ namespace darkskin
 
         @cpp:Protected
         var <precompile>8 : ::presentation::elements::GuiPolygonElement^ = null of (::presentation::elements::GuiPolygonElement^);
-
-        @cpp:Protected
-        var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
         func <darkskin-ComboBoxTemplate>Initialize(<this> : ::darkskin::ComboBoxTemplate*) : (::system::Void)
@@ -5447,13 +5447,13 @@ namespace darkskin
     class ItemBackgroundTemplateConstructor
     {
         @cpp:Protected
+        var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
         var self : ::darkskin::ItemBackgroundTemplate* = null of (::darkskin::ItemBackgroundTemplate*);
 
         @cpp:Protected
         var <precompile>0 : ::presentation::elements::GuiSolidBackgroundElement^ = null of (::presentation::elements::GuiSolidBackgroundElement^);
-
-        @cpp:Protected
-        var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
         func <darkskin-ItemBackgroundTemplate>Initialize(<this> : ::darkskin::ItemBackgroundTemplate*) : (::system::Void)
@@ -5664,7 +5664,13 @@ namespace darkskin
     class ListViewColumnHeaderTemplateConstructor
     {
         @cpp:Protected
+        var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
         var self : ::darkskin::ListViewColumnHeaderTemplate* = null of (::darkskin::ListViewColumnHeaderTemplate*);
+
+        @cpp:Protected
+        var buttonArrow : ::presentation::controls::GuiSelectableButton* = null of (::presentation::controls::GuiSelectableButton*);
 
         @cpp:Protected
         var <precompile>0 : ::presentation::elements::GuiSolidBackgroundElement^ = null of (::presentation::elements::GuiSolidBackgroundElement^);
@@ -5710,12 +5716,6 @@ namespace darkskin
 
         @cpp:Protected
         var <precompile>14 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
-
-        @cpp:Protected
-        var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
-
-        @cpp:Protected
-        var buttonArrow : ::presentation::controls::GuiSelectableButton* = null of (::presentation::controls::GuiSelectableButton*);
 
         @cpp:Protected
         func <darkskin-ListViewColumnHeaderTemplate>Initialize(<this> : ::darkskin::ListViewColumnHeaderTemplate*) : (::system::Void)
@@ -5880,12 +5880,12 @@ namespace darkskin
                 (buttonArrow = new (::presentation::controls::GuiSelectableButton*)(::presentation::theme::ThemeName::CheckBox));
                 <this>.SetNamedObject("buttonArrow", buttonArrow);
             }
-            {
-                (buttonArrow.AutoFocus = false);
-            }
             (<precompile>14 = buttonArrow.BoundsComposition);
             {
                 (<precompile>14.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (buttonArrow.AutoFocus = false);
             }
             {
                 (buttonArrow.ControlTemplate = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiControlTemplate*)
@@ -7059,6 +7059,9 @@ namespace darkskin
         var self : ::darkskin::ListViewTemplate* = null of (::darkskin::ListViewTemplate*);
 
         @cpp:Protected
+        var look : ::presentation::templates::GuiCommonScrollViewLook* = null of (::presentation::templates::GuiCommonScrollViewLook*);
+
+        @cpp:Protected
         var <precompile>0 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
@@ -7066,9 +7069,6 @@ namespace darkskin
 
         @cpp:Protected
         var <precompile>2 : ::presentation::elements::GuiSolidBackgroundElement^ = null of (::presentation::elements::GuiSolidBackgroundElement^);
-
-        @cpp:Protected
-        var look : ::presentation::templates::GuiCommonScrollViewLook* = null of (::presentation::templates::GuiCommonScrollViewLook*);
 
         @cpp:Protected
         func <darkskin-ListViewTemplate>Initialize(<this> : ::darkskin::ListViewTemplate*) : (::system::Void)
@@ -7325,6 +7325,9 @@ namespace darkskin
         var self : ::darkskin::TextListTemplate* = null of (::darkskin::TextListTemplate*);
 
         @cpp:Protected
+        var look : ::presentation::templates::GuiCommonScrollViewLook* = null of (::presentation::templates::GuiCommonScrollViewLook*);
+
+        @cpp:Protected
         var <precompile>0 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
@@ -7332,9 +7335,6 @@ namespace darkskin
 
         @cpp:Protected
         var <precompile>2 : ::presentation::elements::GuiSolidBackgroundElement^ = null of (::presentation::elements::GuiSolidBackgroundElement^);
-
-        @cpp:Protected
-        var look : ::presentation::templates::GuiCommonScrollViewLook* = null of (::presentation::templates::GuiCommonScrollViewLook*);
 
         @cpp:Protected
         func <darkskin-TextListTemplate>Initialize(<this> : ::darkskin::TextListTemplate*) : (::system::Void)
@@ -7593,6 +7593,9 @@ namespace darkskin
         var self : ::darkskin::TreeViewTemplate* = null of (::darkskin::TreeViewTemplate*);
 
         @cpp:Protected
+        var look : ::presentation::templates::GuiCommonScrollViewLook* = null of (::presentation::templates::GuiCommonScrollViewLook*);
+
+        @cpp:Protected
         var <precompile>0 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
@@ -7600,9 +7603,6 @@ namespace darkskin
 
         @cpp:Protected
         var <precompile>2 : ::presentation::elements::GuiSolidBackgroundElement^ = null of (::presentation::elements::GuiSolidBackgroundElement^);
-
-        @cpp:Protected
-        var look : ::presentation::templates::GuiCommonScrollViewLook* = null of (::presentation::templates::GuiCommonScrollViewLook*);
 
         @cpp:Protected
         func <darkskin-TreeViewTemplate>Initialize(<this> : ::darkskin::TreeViewTemplate*) : (::system::Void)
@@ -7850,6 +7850,9 @@ namespace darkskin
     class DateButtonTemplateConstructor
     {
         @cpp:Protected
+        var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
         var self : ::darkskin::DateButtonTemplate* = null of (::darkskin::DateButtonTemplate*);
 
         @cpp:Protected
@@ -7860,9 +7863,6 @@ namespace darkskin
 
         @cpp:Protected
         var <precompile>2 : ::presentation::elements::GuiFocusRectangleElement^ = null of (::presentation::elements::GuiFocusRectangleElement^);
-
-        @cpp:Protected
-        var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
         func <darkskin-DateButtonTemplate>Initialize(<this> : ::darkskin::DateButtonTemplate*) : (::system::Void)
@@ -8644,7 +8644,13 @@ namespace darkskin
     class GroupBoxTemplateConstructor
     {
         @cpp:Protected
+        var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
         var self : ::darkskin::GroupBoxTemplate* = null of (::darkskin::GroupBoxTemplate*);
+
+        @cpp:Protected
+        var titleBounds : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
         var <precompile>0 : ::presentation::elements::GuiSolidBackgroundElement^ = null of (::presentation::elements::GuiSolidBackgroundElement^);
@@ -8663,12 +8669,6 @@ namespace darkskin
 
         @cpp:Protected
         var <precompile>5 : ::presentation::elements::GuiSolidLabelElement^ = null of (::presentation::elements::GuiSolidLabelElement^);
-
-        @cpp:Protected
-        var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
-
-        @cpp:Protected
-        var titleBounds : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
         func <darkskin-GroupBoxTemplate>Initialize(<this> : ::darkskin::GroupBoxTemplate*) : (::system::Void)
@@ -11135,6 +11135,9 @@ namespace darkskin
     class RibbonGalleryTemplateConstructor
     {
         @cpp:Protected
+        var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
         var self : ::darkskin::RibbonGalleryTemplate* = null of (::darkskin::RibbonGalleryTemplate*);
 
         @cpp:Protected
@@ -11175,9 +11178,6 @@ namespace darkskin
 
         @cpp:Protected
         var <precompile>12 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
-
-        @cpp:Protected
-        var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
         func <darkskin-RibbonGalleryTemplate>Initialize(<this> : ::darkskin::RibbonGalleryTemplate*) : (::system::Void)
@@ -11280,12 +11280,12 @@ namespace darkskin
             {
                 (<precompile>5 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
             }
-            {
-                (<precompile>5.AutoFocus = false);
-            }
             (<precompile>6 = <precompile>5.BoundsComposition);
             {
                 (<precompile>6.AlignmentToParent = {left : 4; top : 0; right : 4; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (<precompile>5.AutoFocus = false);
             }
             {
                 (<precompile>5.ControlTemplate = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiControlTemplate*)
@@ -11308,12 +11308,12 @@ namespace darkskin
             {
                 (<precompile>8 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
             }
-            {
-                (<precompile>8.AutoFocus = false);
-            }
             (<precompile>9 = <precompile>8.BoundsComposition);
             {
                 (<precompile>9.AlignmentToParent = {left : 4; top : 0; right : 4; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (<precompile>8.AutoFocus = false);
             }
             {
                 (<precompile>8.ControlTemplate = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiControlTemplate*)
@@ -11336,12 +11336,12 @@ namespace darkskin
             {
                 (<precompile>11 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
             }
-            {
-                (<precompile>11.AutoFocus = false);
-            }
             (<precompile>12 = <precompile>11.BoundsComposition);
             {
                 (<precompile>12.AlignmentToParent = {left : 4; top : 0; right : 4; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (<precompile>11.AutoFocus = false);
             }
             {
                 (<precompile>11.ControlTemplate = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiControlTemplate*)
@@ -11988,6 +11988,9 @@ namespace darkskin
     class RibbonGroupMenuTemplateConstructor
     {
         @cpp:Protected
+        var container : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
+
+        @cpp:Protected
         var self : ::darkskin::RibbonGroupMenuTemplate* = null of (::darkskin::RibbonGroupMenuTemplate*);
 
         @cpp:Protected
@@ -12010,9 +12013,6 @@ namespace darkskin
 
         @cpp:Protected
         var <precompile>6 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
-
-        @cpp:Protected
-        var container : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
 
         @cpp:Protected
         func <darkskin-RibbonGroupMenuTemplate>Initialize(<this> : ::darkskin::RibbonGroupMenuTemplate*) : (::system::Void)
@@ -12074,12 +12074,12 @@ namespace darkskin
             {
                 (<precompile>5 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
             }
-            {
-                (<precompile>5.AutoFocus = false);
-            }
             (<precompile>6 = <precompile>5.BoundsComposition);
             {
                 (<precompile>6.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (<precompile>5.AutoFocus = false);
             }
             {
                 (<precompile>5.ControlTemplate = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiControlTemplate*)
@@ -12259,7 +12259,13 @@ namespace darkskin
     class RibbonGroupTemplateConstructor
     {
         @cpp:Protected
+        var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
         var self : ::darkskin::RibbonGroupTemplate* = null of (::darkskin::RibbonGroupTemplate*);
+
+        @cpp:Protected
+        var table : ::presentation::compositions::GuiTableComposition* = null of (::presentation::compositions::GuiTableComposition*);
 
         @cpp:Protected
         var <precompile>0 : ::presentation::elements::GuiSolidBorderElement^ = null of (::presentation::elements::GuiSolidBorderElement^);
@@ -12284,12 +12290,6 @@ namespace darkskin
 
         @cpp:Protected
         var <precompile>7 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
-
-        @cpp:Protected
-        var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
-
-        @cpp:Protected
-        var table : ::presentation::compositions::GuiTableComposition* = null of (::presentation::compositions::GuiTableComposition*);
 
         @cpp:Protected
         func <darkskin-RibbonGroupTemplate>Initialize(<this> : ::darkskin::RibbonGroupTemplate*) : (::system::Void)
@@ -12385,12 +12385,12 @@ namespace darkskin
             {
                 (<precompile>6 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
             }
-            {
-                (<precompile>6.AutoFocus = false);
-            }
             (<precompile>7 = <precompile>6.BoundsComposition);
             {
                 (<precompile>7.AlignmentToParent = {left : (-1); top : (-1); right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (<precompile>6.AutoFocus = false);
             }
             {
                 (<precompile>6.ControlTemplate = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiControlTemplate*)
@@ -12730,6 +12730,9 @@ namespace darkskin
     class RibbonIconLabelTemplateConstructor
     {
         @cpp:Protected
+        var container : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
+
+        @cpp:Protected
         var self : ::darkskin::RibbonIconLabelTemplate* = null of (::darkskin::RibbonIconLabelTemplate*);
 
         @cpp:Protected
@@ -12743,9 +12746,6 @@ namespace darkskin
 
         @cpp:Protected
         var <precompile>3 : ::presentation::elements::GuiImageFrameElement^ = null of (::presentation::elements::GuiImageFrameElement^);
-
-        @cpp:Protected
-        var container : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
 
         @cpp:Protected
         func <darkskin-RibbonIconLabelTemplate>Initialize(<this> : ::darkskin::RibbonIconLabelTemplate*) : (::system::Void)
@@ -13102,6 +13102,9 @@ namespace darkskin
     class RibbonLargeButtonTemplateConstructor
     {
         @cpp:Protected
+        var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
         var self : ::darkskin::RibbonLargeButtonTemplate* = null of (::darkskin::RibbonLargeButtonTemplate*);
 
         @cpp:Protected
@@ -13130,9 +13133,6 @@ namespace darkskin
 
         @cpp:Protected
         var <precompile>8 : ::presentation::elements::GuiSolidLabelElement^ = null of (::presentation::elements::GuiSolidLabelElement^);
-
-        @cpp:Protected
-        var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
         func <darkskin-RibbonLargeButtonTemplate>Initialize(<this> : ::darkskin::RibbonLargeButtonTemplate*) : (::system::Void)
@@ -13970,6 +13970,9 @@ namespace darkskin
     class RibbonLargeDropdownButtonTemplateConstructor
     {
         @cpp:Protected
+        var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
         var self : ::darkskin::RibbonLargeDropdownButtonTemplate* = null of (::darkskin::RibbonLargeDropdownButtonTemplate*);
 
         @cpp:Protected
@@ -14010,9 +14013,6 @@ namespace darkskin
 
         @cpp:Protected
         var <precompile>12 : ::presentation::elements::GuiPolygonElement^ = null of (::presentation::elements::GuiPolygonElement^);
-
-        @cpp:Protected
-        var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
         func <darkskin-RibbonLargeDropdownButtonTemplate>Initialize(<this> : ::darkskin::RibbonLargeDropdownButtonTemplate*) : (::system::Void)
@@ -15112,7 +15112,13 @@ namespace darkskin
     class RibbonLargeSplitButtonTemplateConstructor
     {
         @cpp:Protected
+        var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
         var self : ::darkskin::RibbonLargeSplitButtonTemplate* = null of (::darkskin::RibbonLargeSplitButtonTemplate*);
+
+        @cpp:Protected
+        var buttonArrow : ::presentation::controls::GuiSelectableButton* = null of (::presentation::controls::GuiSelectableButton*);
 
         @cpp:Protected
         var <precompile>0 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
@@ -15143,12 +15149,6 @@ namespace darkskin
 
         @cpp:Protected
         var <precompile>9 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
-
-        @cpp:Protected
-        var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
-
-        @cpp:Protected
-        var buttonArrow : ::presentation::controls::GuiSelectableButton* = null of (::presentation::controls::GuiSelectableButton*);
 
         @cpp:Protected
         func <darkskin-RibbonLargeSplitButtonTemplate>Initialize(<this> : ::darkskin::RibbonLargeSplitButtonTemplate*) : (::system::Void)
@@ -15244,12 +15244,12 @@ namespace darkskin
                 (buttonArrow = new (::presentation::controls::GuiSelectableButton*)(::presentation::theme::ThemeName::CheckBox));
                 <this>.SetNamedObject("buttonArrow", buttonArrow);
             }
-            {
-                (buttonArrow.AutoFocus = false);
-            }
             (<precompile>9 = buttonArrow.BoundsComposition);
             {
                 (<precompile>9.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (buttonArrow.AutoFocus = false);
             }
             {
                 (buttonArrow.ControlTemplate = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiControlTemplate*)
@@ -16005,6 +16005,9 @@ namespace darkskin
     class RibbonSmallButtonTemplateConstructor
     {
         @cpp:Protected
+        var container : ::presentation::compositions::GuiTableComposition* = null of (::presentation::compositions::GuiTableComposition*);
+
+        @cpp:Protected
         var self : ::darkskin::RibbonSmallButtonTemplate* = null of (::darkskin::RibbonSmallButtonTemplate*);
 
         @cpp:Protected
@@ -16030,9 +16033,6 @@ namespace darkskin
 
         @cpp:Protected
         var <precompile>7 : ::presentation::elements::GuiSolidLabelElement^ = null of (::presentation::elements::GuiSolidLabelElement^);
-
-        @cpp:Protected
-        var container : ::presentation::compositions::GuiTableComposition* = null of (::presentation::compositions::GuiTableComposition*);
 
         @cpp:Protected
         func <darkskin-RibbonSmallButtonTemplate>Initialize(<this> : ::darkskin::RibbonSmallButtonTemplate*) : (::system::Void)
@@ -16859,6 +16859,9 @@ namespace darkskin
     class RibbonSmallDropdownButtonTemplateConstructor
     {
         @cpp:Protected
+        var container : ::presentation::compositions::GuiTableComposition* = null of (::presentation::compositions::GuiTableComposition*);
+
+        @cpp:Protected
         var self : ::darkskin::RibbonSmallDropdownButtonTemplate* = null of (::darkskin::RibbonSmallDropdownButtonTemplate*);
 
         @cpp:Protected
@@ -16874,31 +16877,28 @@ namespace darkskin
         var <precompile>3 : ::presentation::elements::GuiSolidBackgroundElement^ = null of (::presentation::elements::GuiSolidBackgroundElement^);
 
         @cpp:Protected
-        var <precompile>4 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
+        var <precompile>4 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
-        var <precompile>5 : ::presentation::elements::GuiImageFrameElement^ = null of (::presentation::elements::GuiImageFrameElement^);
+        var <precompile>5 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
 
         @cpp:Protected
-        var <precompile>6 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
+        var <precompile>6 : ::presentation::elements::GuiImageFrameElement^ = null of (::presentation::elements::GuiImageFrameElement^);
 
         @cpp:Protected
-        var <precompile>7 : ::presentation::elements::GuiSolidLabelElement^ = null of (::presentation::elements::GuiSolidLabelElement^);
+        var <precompile>7 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
 
         @cpp:Protected
-        var <precompile>8 : ::presentation::compositions::GuiTableComposition* = null of (::presentation::compositions::GuiTableComposition*);
+        var <precompile>8 : ::presentation::elements::GuiSolidLabelElement^ = null of (::presentation::elements::GuiSolidLabelElement^);
 
         @cpp:Protected
-        var <precompile>9 : ::presentation::elements::GuiSolidBackgroundElement^ = null of (::presentation::elements::GuiSolidBackgroundElement^);
+        var <precompile>9 : ::presentation::compositions::GuiTableComposition* = null of (::presentation::compositions::GuiTableComposition*);
 
         @cpp:Protected
         var <precompile>10 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
 
         @cpp:Protected
         var <precompile>11 : ::presentation::elements::GuiPolygonElement^ = null of (::presentation::elements::GuiPolygonElement^);
-
-        @cpp:Protected
-        var container : ::presentation::compositions::GuiTableComposition* = null of (::presentation::compositions::GuiTableComposition*);
 
         @cpp:Protected
         func <darkskin-RibbonSmallDropdownButtonTemplate>Initialize(<this> : ::darkskin::RibbonSmallDropdownButtonTemplate*) : (::system::Void)
@@ -16931,7 +16931,7 @@ namespace darkskin
             }
             (<precompile>2 = new (::presentation::compositions::GuiBoundsComposition*)());
             {
-                (<precompile>2.AlignmentToParent = {left : 1; top : 1; right : 11; bottom : 1;} of (::presentation::Margin));
+                (<precompile>2.AlignmentToParent = {left : 1; top : 1; right : 1; bottom : 1;} of (::presentation::Margin));
             }
             {
                 (<precompile>2.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
@@ -16939,6 +16939,13 @@ namespace darkskin
             (<precompile>3 = new (::presentation::elements::GuiSolidBackgroundElement^)());
             {
                 (<precompile>2.OwnedElement = <precompile>3);
+            }
+            (<precompile>4 = new (::presentation::compositions::GuiBoundsComposition*)());
+            {
+                (<precompile>4.AlignmentToParent = {left : 0; top : 0; right : 10; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (<precompile>4.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
             }
             (container = new (::presentation::compositions::GuiTableComposition*)());
             <this>.SetNamedObject("container", container);
@@ -16957,62 +16964,58 @@ namespace darkskin
                 container.SetColumnOption(0, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
                 container.SetColumnOption(1, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
             }
-            (<precompile>4 = new (::presentation::compositions::GuiCellComposition*)());
+            (<precompile>5 = new (::presentation::compositions::GuiCellComposition*)());
             {
-                <precompile>4.SetSite(0, 0, 1, 1);
+                <precompile>5.SetSite(0, 0, 1, 1);
             }
-            (<precompile>5 = new (::presentation::elements::GuiImageFrameElement^)());
+            (<precompile>6 = new (::presentation::elements::GuiImageFrameElement^)());
             {
-                (<precompile>4.OwnedElement = <precompile>5);
-            }
-            {
-                container.AddChild(<precompile>4);
-            }
-            (<precompile>6 = new (::presentation::compositions::GuiCellComposition*)());
-            {
-                <precompile>6.SetSite(0, 1, 1, 1);
-            }
-            (<precompile>7 = new (::presentation::elements::GuiSolidLabelElement^)());
-            {
-                (<precompile>7.VerticalAlignment = Center of (::presentation::Alignment));
+                (<precompile>5.OwnedElement = <precompile>6);
             }
             {
-                (<precompile>7.HorizontalAlignment = Center of (::presentation::Alignment));
+                container.AddChild(<precompile>5);
+            }
+            (<precompile>7 = new (::presentation::compositions::GuiCellComposition*)());
+            {
+                <precompile>7.SetSite(0, 1, 1, 1);
+            }
+            (<precompile>8 = new (::presentation::elements::GuiSolidLabelElement^)());
+            {
+                (<precompile>8.VerticalAlignment = Center of (::presentation::Alignment));
             }
             {
-                (<precompile>6.OwnedElement = <precompile>7);
+                (<precompile>8.HorizontalAlignment = Center of (::presentation::Alignment));
             }
             {
-                container.AddChild(<precompile>6);
+                (<precompile>7.OwnedElement = <precompile>8);
             }
             {
-                <precompile>2.AddChild(container);
+                container.AddChild(<precompile>7);
             }
             {
-                self.AddChild(<precompile>2);
-            }
-            (<precompile>8 = new (::presentation::compositions::GuiTableComposition*)());
-            {
-                (<precompile>8.PreferredMinSize = {x : 9; y : 0;} of (::presentation::Size));
+                <precompile>4.AddChild(container);
             }
             {
-                (<precompile>8.AlignmentToParent = {left : (-1); top : 1; right : 1; bottom : 1;} of (::presentation::Margin));
+                <precompile>2.AddChild(<precompile>4);
+            }
+            (<precompile>9 = new (::presentation::compositions::GuiTableComposition*)());
+            {
+                (<precompile>9.PreferredMinSize = {x : 9; y : 0;} of (::presentation::Size));
             }
             {
-                (<precompile>8.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+                (<precompile>9.AlignmentToParent = {left : (-1); top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
-                <precompile>8.SetRowsAndColumns(3, 3);
-                <precompile>8.SetRowOption(0, {composeType : Percentage; percentage : 0.5;} of (::presentation::compositions::GuiCellOption));
-                <precompile>8.SetRowOption(1, {composeType : Absolute; absolute : 3;} of (::presentation::compositions::GuiCellOption));
-                <precompile>8.SetRowOption(2, {composeType : Percentage; percentage : 0.5;} of (::presentation::compositions::GuiCellOption));
-                <precompile>8.SetColumnOption(0, {composeType : Percentage; percentage : 0.5;} of (::presentation::compositions::GuiCellOption));
-                <precompile>8.SetColumnOption(1, {composeType : Absolute; absolute : 5;} of (::presentation::compositions::GuiCellOption));
-                <precompile>8.SetColumnOption(2, {composeType : Percentage; percentage : 0.5;} of (::presentation::compositions::GuiCellOption));
+                (<precompile>9.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
             }
-            (<precompile>9 = new (::presentation::elements::GuiSolidBackgroundElement^)());
             {
-                (<precompile>8.OwnedElement = <precompile>9);
+                <precompile>9.SetRowsAndColumns(3, 3);
+                <precompile>9.SetRowOption(0, {composeType : Percentage; percentage : 0.5;} of (::presentation::compositions::GuiCellOption));
+                <precompile>9.SetRowOption(1, {composeType : Absolute; absolute : 3;} of (::presentation::compositions::GuiCellOption));
+                <precompile>9.SetRowOption(2, {composeType : Percentage; percentage : 0.5;} of (::presentation::compositions::GuiCellOption));
+                <precompile>9.SetColumnOption(0, {composeType : Percentage; percentage : 0.5;} of (::presentation::compositions::GuiCellOption));
+                <precompile>9.SetColumnOption(1, {composeType : Absolute; absolute : 5;} of (::presentation::compositions::GuiCellOption));
+                <precompile>9.SetColumnOption(2, {composeType : Percentage; percentage : 0.5;} of (::presentation::compositions::GuiCellOption));
             }
             (<precompile>10 = new (::presentation::compositions::GuiCellComposition*)());
             {
@@ -17029,10 +17032,13 @@ namespace darkskin
                 (<precompile>10.OwnedElement = <precompile>11);
             }
             {
-                <precompile>8.AddChild(<precompile>10);
+                <precompile>9.AddChild(<precompile>10);
             }
             {
-                self.AddChild(<precompile>8);
+                <precompile>2.AddChild(<precompile>9);
+            }
+            {
+                self.AddChild(<precompile>2);
             }
             {
                 var <created-subscription> = new (::system::Subscription^)
@@ -17297,13 +17303,13 @@ namespace darkskin
                 };
                 attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
                 {
-                    var <old> = <precompile>5.Image;
+                    var <old> = <precompile>6.Image;
                     var <new> = (cast (::presentation::INativeImage^) <value>);
                     if ((<old> == <new>))
                     {
                         return;
                     }
-                    (<precompile>5.Image = <new>);
+                    (<precompile>6.Image = <new>);
                 });
                 <this>.AddSubscription(<created-subscription>);
             }
@@ -17370,13 +17376,13 @@ namespace darkskin
                 };
                 attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
                 {
-                    var <old> = <precompile>5.Enabled;
+                    var <old> = <precompile>6.Enabled;
                     var <new> = (cast (::system::Boolean) <value>);
                     if ((<old> == <new>))
                     {
                         return;
                     }
-                    (<precompile>5.Enabled = <new>);
+                    (<precompile>6.Enabled = <new>);
                 });
                 <this>.AddSubscription(<created-subscription>);
             }
@@ -17443,13 +17449,13 @@ namespace darkskin
                 };
                 attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
                 {
-                    var <old> = <precompile>5.FrameIndex;
+                    var <old> = <precompile>6.FrameIndex;
                     var <new> = (cast (::system::Int64) <value>);
                     if ((<old> == <new>))
                     {
                         return;
                     }
-                    (<precompile>5.FrameIndex = <new>);
+                    (<precompile>6.FrameIndex = <new>);
                 });
                 <this>.AddSubscription(<created-subscription>);
             }
@@ -17516,13 +17522,13 @@ namespace darkskin
                 };
                 attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
                 {
-                    var <old> = <precompile>7.Text;
+                    var <old> = <precompile>8.Text;
                     var <new> = (cast (::system::String) <value>);
                     if ((<old> == <new>))
                     {
                         return;
                     }
-                    (<precompile>7.Text = <new>);
+                    (<precompile>8.Text = <new>);
                 });
                 <this>.AddSubscription(<created-subscription>);
             }
@@ -17607,13 +17613,13 @@ namespace darkskin
                 };
                 attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
                 {
-                    var <old> = <precompile>7.Color;
+                    var <old> = <precompile>8.Color;
                     var <new> = (cast (::presentation::Color) <value>);
                     if ((<old> == <new>))
                     {
                         return;
                     }
-                    (<precompile>7.Color = <new>);
+                    (<precompile>8.Color = <new>);
                 });
                 <this>.AddSubscription(<created-subscription>);
             }
@@ -17680,122 +17686,13 @@ namespace darkskin
                 };
                 attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
                 {
-                    var <old> = <precompile>7.Font;
+                    var <old> = <precompile>8.Font;
                     var <new> = (cast (::presentation::FontProperties) <value>);
                     if ((<old> == <new>))
                     {
                         return;
                     }
-                    (<precompile>7.Font = <new>);
-                });
-                <this>.AddSubscription(<created-subscription>);
-            }
-            {
-                var <created-subscription> = new (::system::Subscription^)
-                {
-                    var <bind-cache>0 : ::darkskin::RibbonSmallDropdownButtonTemplate* = null of (::darkskin::RibbonSmallDropdownButtonTemplate*);
-
-                    var <bind-cache>1 : ::darkskin::RibbonSmallDropdownButtonTemplate* = null of (::darkskin::RibbonSmallDropdownButtonTemplate*);
-
-                    var <bind-cache>2 : ::darkskin::RibbonSmallDropdownButtonTemplate* = null of (::darkskin::RibbonSmallDropdownButtonTemplate*);
-
-                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
-
-                    var <bind-handler>1_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
-
-                    var <bind-handler>2_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
-
-                    var <bind-opened> : ::system::Boolean = false;
-
-                    var <bind-closed> : ::system::Boolean = false;
-
-                    func <bind-activator>() : (::system::Void)
-                    {
-                        var <bind-activator-result> = (cast (Color) let state = <bind-cache>0.State in ((!<bind-cache>1.VisuallyEnabled) ? "#00000000" : ((state == ButtonState::Pressed) or <bind-cache>2.SubMenuOpening) ? "#007ACC" : (state == ButtonState::Active) ? "#54545C" : "#00000000")) of (::presentation::Color);
-                        ValueChanged(<bind-activator-result>);
-                    }
-
-                    func <bind-callback>0_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
-                    {
-                        <bind-activator>();
-                    }
-
-                    func <bind-callback>1_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
-                    {
-                        <bind-activator>();
-                    }
-
-                    func <bind-callback>2_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
-                    {
-                        <bind-activator>();
-                    }
-
-                    override func Open() : (::system::Boolean)
-                    {
-                        if ((!<bind-opened>))
-                        {
-                            (<bind-opened> = true);
-                            (<bind-cache>0 = (self ?? null of (::darkskin::RibbonSmallDropdownButtonTemplate*)));
-                            (<bind-cache>1 = (self ?? null of (::darkskin::RibbonSmallDropdownButtonTemplate*)));
-                            (<bind-cache>2 = (self ?? null of (::darkskin::RibbonSmallDropdownButtonTemplate*)));
-                            (<bind-handler>0_0 = (attach(<bind-cache>0.StateChanged, <bind-callback>0_0) ?? null));
-                            (<bind-handler>1_0 = (attach(<bind-cache>1.VisuallyEnabledChanged, <bind-callback>1_0) ?? null));
-                            (<bind-handler>2_0 = (attach(<bind-cache>2.SubMenuOpeningChanged, <bind-callback>2_0) ?? null));
-                            return true;
-                        }
-                        return false;
-                    }
-
-                    override func Update() : (::system::Boolean)
-                    {
-                        if ((<bind-opened> and (!<bind-closed>)))
-                        {
-                            <bind-activator>();
-                            return true;
-                        }
-                        return false;
-                    }
-
-                    override func Close() : (::system::Boolean)
-                    {
-                        if ((!<bind-closed>))
-                        {
-                            (<bind-closed> = true);
-                            if (<bind-handler>0_0 is not null)
-                            {
-                                detach(<bind-cache>0.StateChanged, <bind-handler>0_0);
-                                (<bind-handler>0_0 = null);
-                            }
-                            if (<bind-handler>1_0 is not null)
-                            {
-                                detach(<bind-cache>1.VisuallyEnabledChanged, <bind-handler>1_0);
-                                (<bind-handler>1_0 = null);
-                            }
-                            if (<bind-handler>2_0 is not null)
-                            {
-                                detach(<bind-cache>2.SubMenuOpeningChanged, <bind-handler>2_0);
-                                (<bind-handler>2_0 = null);
-                            }
-                            (<bind-cache>0 = null of (::darkskin::RibbonSmallDropdownButtonTemplate*));
-                            (<bind-cache>1 = null of (::darkskin::RibbonSmallDropdownButtonTemplate*));
-                            (<bind-cache>2 = null of (::darkskin::RibbonSmallDropdownButtonTemplate*));
-                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
-                            (<bind-handler>1_0 = null of (::system::reflection::EventHandler^));
-                            (<bind-handler>2_0 = null of (::system::reflection::EventHandler^));
-                            return true;
-                        }
-                        return false;
-                    }
-                };
-                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
-                {
-                    var <old> = <precompile>9.Color;
-                    var <new> = (cast (::presentation::Color) <value>);
-                    if ((<old> == <new>))
-                    {
-                        return;
-                    }
-                    (<precompile>9.Color = <new>);
+                    (<precompile>8.Font = <new>);
                 });
                 <this>.AddSubscription(<created-subscription>);
             }
@@ -18095,6 +17992,9 @@ namespace darkskin
     class RibbonSmallIconLabelTemplateConstructor
     {
         @cpp:Protected
+        var container : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
+
+        @cpp:Protected
         var self : ::darkskin::RibbonSmallIconLabelTemplate* = null of (::darkskin::RibbonSmallIconLabelTemplate*);
 
         @cpp:Protected
@@ -18117,9 +18017,6 @@ namespace darkskin
 
         @cpp:Protected
         var <precompile>6 : ::presentation::elements::GuiSolidLabelElement^ = null of (::presentation::elements::GuiSolidLabelElement^);
-
-        @cpp:Protected
-        var container : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
 
         @cpp:Protected
         func <darkskin-RibbonSmallIconLabelTemplate>Initialize(<this> : ::darkskin::RibbonSmallIconLabelTemplate*) : (::system::Void)
@@ -18723,7 +18620,13 @@ namespace darkskin
     class RibbonSmallSplitButtonTemplateConstructor
     {
         @cpp:Protected
+        var container : ::presentation::compositions::GuiTableComposition* = null of (::presentation::compositions::GuiTableComposition*);
+
+        @cpp:Protected
         var self : ::darkskin::RibbonSmallSplitButtonTemplate* = null of (::darkskin::RibbonSmallSplitButtonTemplate*);
+
+        @cpp:Protected
+        var buttonArrow : ::presentation::controls::GuiSelectableButton* = null of (::presentation::controls::GuiSelectableButton*);
 
         @cpp:Protected
         var <precompile>0 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
@@ -18760,12 +18663,6 @@ namespace darkskin
 
         @cpp:Protected
         var <precompile>11 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
-
-        @cpp:Protected
-        var container : ::presentation::compositions::GuiTableComposition* = null of (::presentation::compositions::GuiTableComposition*);
-
-        @cpp:Protected
-        var buttonArrow : ::presentation::controls::GuiSelectableButton* = null of (::presentation::controls::GuiSelectableButton*);
 
         @cpp:Protected
         func <darkskin-RibbonSmallSplitButtonTemplate>Initialize(<this> : ::darkskin::RibbonSmallSplitButtonTemplate*) : (::system::Void)
@@ -18883,12 +18780,12 @@ namespace darkskin
                 (buttonArrow = new (::presentation::controls::GuiSelectableButton*)(::presentation::theme::ThemeName::CheckBox));
                 <this>.SetNamedObject("buttonArrow", buttonArrow);
             }
-            {
-                (buttonArrow.AutoFocus = false);
-            }
             (<precompile>11 = buttonArrow.BoundsComposition);
             {
                 (<precompile>11.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (buttonArrow.AutoFocus = false);
             }
             {
                 (buttonArrow.ControlTemplate = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiControlTemplate*)
@@ -20064,6 +19961,12 @@ namespace darkskin
     class RibbonToolstripMenuTemplateConstructor
     {
         @cpp:Protected
+        var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var content : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
+
+        @cpp:Protected
         var <precompile>0 : ::darkskin::RibbonToolstripMenuTemplate* = null of (::darkskin::RibbonToolstripMenuTemplate*);
 
         @cpp:Protected
@@ -20101,12 +20004,6 @@ namespace darkskin
 
         @cpp:Protected
         var <precompile>12 : ::presentation::elements::GuiSolidBackgroundElement^ = null of (::presentation::elements::GuiSolidBackgroundElement^);
-
-        @cpp:Protected
-        var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
-
-        @cpp:Protected
-        var content : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
 
         @cpp:Protected
         func <darkskin-RibbonToolstripMenuTemplate>Initialize(<this> : ::darkskin::RibbonToolstripMenuTemplate*) : (::system::Void)
@@ -20919,6 +20816,21 @@ namespace darkskin
         var self : ::darkskin::HScrollTemplate* = null of (::darkskin::HScrollTemplate*);
 
         @cpp:Protected
+        var behavior : ::presentation::templates::GuiCommonScrollBehavior* = null of (::presentation::templates::GuiCommonScrollBehavior*);
+
+        @cpp:Protected
+        var buttonDecrease : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
+
+        @cpp:Protected
+        var buttonIncrease : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
+
+        @cpp:Protected
+        var handleContainer : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var handle : ::presentation::compositions::GuiPartialViewComposition* = null of (::presentation::compositions::GuiPartialViewComposition*);
+
+        @cpp:Protected
         var <precompile>0 : ::presentation::elements::GuiSolidBackgroundElement^ = null of (::presentation::elements::GuiSolidBackgroundElement^);
 
         @cpp:Protected
@@ -20944,21 +20856,6 @@ namespace darkskin
 
         @cpp:Protected
         var <precompile>8 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
-
-        @cpp:Protected
-        var behavior : ::presentation::templates::GuiCommonScrollBehavior* = null of (::presentation::templates::GuiCommonScrollBehavior*);
-
-        @cpp:Protected
-        var buttonDecrease : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
-
-        @cpp:Protected
-        var buttonIncrease : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
-
-        @cpp:Protected
-        var handleContainer : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
-
-        @cpp:Protected
-        var handle : ::presentation::compositions::GuiPartialViewComposition* = null of (::presentation::compositions::GuiPartialViewComposition*);
 
         @cpp:Protected
         func <darkskin-HScrollTemplate>Initialize(<this> : ::darkskin::HScrollTemplate*) : (::system::Void)
@@ -21007,12 +20904,12 @@ namespace darkskin
                 (buttonDecrease = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
                 <this>.SetNamedObject("buttonDecrease", buttonDecrease);
             }
-            {
-                (buttonDecrease.AutoFocus = false);
-            }
             (<precompile>4 = buttonDecrease.BoundsComposition);
             {
                 (<precompile>4.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (buttonDecrease.AutoFocus = false);
             }
             {
                 (buttonDecrease.ControlTemplate = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiControlTemplate*)
@@ -21042,12 +20939,12 @@ namespace darkskin
                 (buttonIncrease = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
                 <this>.SetNamedObject("buttonIncrease", buttonIncrease);
             }
-            {
-                (buttonIncrease.AutoFocus = false);
-            }
             (<precompile>6 = buttonIncrease.BoundsComposition);
             {
                 (<precompile>6.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (buttonIncrease.AutoFocus = false);
             }
             {
                 (buttonIncrease.ControlTemplate = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiControlTemplate*)
@@ -21079,12 +20976,12 @@ namespace darkskin
             {
                 (<precompile>7 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
             }
-            {
-                (<precompile>7.AutoFocus = false);
-            }
             (<precompile>8 = <precompile>7.BoundsComposition);
             {
                 (<precompile>8.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (<precompile>7.AutoFocus = false);
             }
             {
                 (<precompile>7.ControlTemplate = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiControlTemplate*)
@@ -21463,6 +21360,12 @@ namespace darkskin
         var self : ::darkskin::HTrackerTemplate* = null of (::darkskin::HTrackerTemplate*);
 
         @cpp:Protected
+        var behavior : ::presentation::templates::GuiCommonScrollBehavior* = null of (::presentation::templates::GuiCommonScrollBehavior*);
+
+        @cpp:Protected
+        var handle : ::presentation::compositions::GuiPartialViewComposition* = null of (::presentation::compositions::GuiPartialViewComposition*);
+
+        @cpp:Protected
         var <precompile>0 : ::presentation::elements::GuiSolidBackgroundElement^ = null of (::presentation::elements::GuiSolidBackgroundElement^);
 
         @cpp:Protected
@@ -21485,12 +21388,6 @@ namespace darkskin
 
         @cpp:Protected
         var <precompile>7 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
-
-        @cpp:Protected
-        var behavior : ::presentation::templates::GuiCommonScrollBehavior* = null of (::presentation::templates::GuiCommonScrollBehavior*);
-
-        @cpp:Protected
-        var handle : ::presentation::compositions::GuiPartialViewComposition* = null of (::presentation::compositions::GuiPartialViewComposition*);
 
         @cpp:Protected
         func <darkskin-HTrackerTemplate>Initialize(<this> : ::darkskin::HTrackerTemplate*) : (::system::Void)
@@ -21565,14 +21462,14 @@ namespace darkskin
                 (<precompile>6 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
             }
             {
-                (<precompile>6.AutoFocus = false);
-            }
-            {
                 (<precompile>6.Font = {size : 1;} of (::presentation::FontProperties));
             }
             (<precompile>7 = <precompile>6.BoundsComposition);
             {
                 (<precompile>7.AlignmentToParent = {left : 1; top : 1; right : 1; bottom : 1;} of (::presentation::Margin));
+            }
+            {
+                (<precompile>6.AutoFocus = false);
             }
             {
                 (<precompile>6.ControlTemplate = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiControlTemplate*)
@@ -22166,6 +22063,9 @@ namespace darkskin
     class ProgressBarTemplateConstructor
     {
         @cpp:Protected
+        var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
         var self : ::darkskin::ProgressBarTemplate* = null of (::darkskin::ProgressBarTemplate*);
 
         @cpp:Protected
@@ -22182,9 +22082,6 @@ namespace darkskin
 
         @cpp:Protected
         var <precompile>4 : ::presentation::elements::GuiSolidBackgroundElement^ = null of (::presentation::elements::GuiSolidBackgroundElement^);
-
-        @cpp:Protected
-        var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
         func <darkskin-ProgressBarTemplate>Initialize(<this> : ::darkskin::ProgressBarTemplate*) : (::system::Void)
@@ -22740,6 +22637,9 @@ namespace darkskin
         var self : ::darkskin::ScrollViewTemplate* = null of (::darkskin::ScrollViewTemplate*);
 
         @cpp:Protected
+        var look : ::presentation::templates::GuiCommonScrollViewLook* = null of (::presentation::templates::GuiCommonScrollViewLook*);
+
+        @cpp:Protected
         var <precompile>0 : ::presentation::elements::GuiSolidBackgroundElement^ = null of (::presentation::elements::GuiSolidBackgroundElement^);
 
         @cpp:Protected
@@ -22747,9 +22647,6 @@ namespace darkskin
 
         @cpp:Protected
         var <precompile>2 : ::presentation::elements::GuiSolidBorderElement^ = null of (::presentation::elements::GuiSolidBorderElement^);
-
-        @cpp:Protected
-        var look : ::presentation::templates::GuiCommonScrollViewLook* = null of (::presentation::templates::GuiCommonScrollViewLook*);
 
         @cpp:Protected
         func <darkskin-ScrollViewTemplate>Initialize(<this> : ::darkskin::ScrollViewTemplate*) : (::system::Void)
@@ -23399,6 +23296,21 @@ namespace darkskin
         var self : ::darkskin::VScrollTemplate* = null of (::darkskin::VScrollTemplate*);
 
         @cpp:Protected
+        var behavior : ::presentation::templates::GuiCommonScrollBehavior* = null of (::presentation::templates::GuiCommonScrollBehavior*);
+
+        @cpp:Protected
+        var buttonDecrease : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
+
+        @cpp:Protected
+        var buttonIncrease : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
+
+        @cpp:Protected
+        var handleContainer : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var handle : ::presentation::compositions::GuiPartialViewComposition* = null of (::presentation::compositions::GuiPartialViewComposition*);
+
+        @cpp:Protected
         var <precompile>0 : ::presentation::elements::GuiSolidBackgroundElement^ = null of (::presentation::elements::GuiSolidBackgroundElement^);
 
         @cpp:Protected
@@ -23424,21 +23336,6 @@ namespace darkskin
 
         @cpp:Protected
         var <precompile>8 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
-
-        @cpp:Protected
-        var behavior : ::presentation::templates::GuiCommonScrollBehavior* = null of (::presentation::templates::GuiCommonScrollBehavior*);
-
-        @cpp:Protected
-        var buttonDecrease : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
-
-        @cpp:Protected
-        var buttonIncrease : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
-
-        @cpp:Protected
-        var handleContainer : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
-
-        @cpp:Protected
-        var handle : ::presentation::compositions::GuiPartialViewComposition* = null of (::presentation::compositions::GuiPartialViewComposition*);
 
         @cpp:Protected
         func <darkskin-VScrollTemplate>Initialize(<this> : ::darkskin::VScrollTemplate*) : (::system::Void)
@@ -23487,12 +23384,12 @@ namespace darkskin
                 (buttonDecrease = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
                 <this>.SetNamedObject("buttonDecrease", buttonDecrease);
             }
-            {
-                (buttonDecrease.AutoFocus = false);
-            }
             (<precompile>4 = buttonDecrease.BoundsComposition);
             {
                 (<precompile>4.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (buttonDecrease.AutoFocus = false);
             }
             {
                 (buttonDecrease.ControlTemplate = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiControlTemplate*)
@@ -23522,12 +23419,12 @@ namespace darkskin
                 (buttonIncrease = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
                 <this>.SetNamedObject("buttonIncrease", buttonIncrease);
             }
-            {
-                (buttonIncrease.AutoFocus = false);
-            }
             (<precompile>6 = buttonIncrease.BoundsComposition);
             {
                 (<precompile>6.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (buttonIncrease.AutoFocus = false);
             }
             {
                 (buttonIncrease.ControlTemplate = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiControlTemplate*)
@@ -23559,12 +23456,12 @@ namespace darkskin
             {
                 (<precompile>7 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
             }
-            {
-                (<precompile>7.AutoFocus = false);
-            }
             (<precompile>8 = <precompile>7.BoundsComposition);
             {
                 (<precompile>8.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (<precompile>7.AutoFocus = false);
             }
             {
                 (<precompile>7.ControlTemplate = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiControlTemplate*)
@@ -23943,6 +23840,12 @@ namespace darkskin
         var self : ::darkskin::VTrackerTemplate* = null of (::darkskin::VTrackerTemplate*);
 
         @cpp:Protected
+        var behavior : ::presentation::templates::GuiCommonScrollBehavior* = null of (::presentation::templates::GuiCommonScrollBehavior*);
+
+        @cpp:Protected
+        var handle : ::presentation::compositions::GuiPartialViewComposition* = null of (::presentation::compositions::GuiPartialViewComposition*);
+
+        @cpp:Protected
         var <precompile>0 : ::presentation::elements::GuiSolidBackgroundElement^ = null of (::presentation::elements::GuiSolidBackgroundElement^);
 
         @cpp:Protected
@@ -23965,12 +23868,6 @@ namespace darkskin
 
         @cpp:Protected
         var <precompile>7 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
-
-        @cpp:Protected
-        var behavior : ::presentation::templates::GuiCommonScrollBehavior* = null of (::presentation::templates::GuiCommonScrollBehavior*);
-
-        @cpp:Protected
-        var handle : ::presentation::compositions::GuiPartialViewComposition* = null of (::presentation::compositions::GuiPartialViewComposition*);
 
         @cpp:Protected
         func <darkskin-VTrackerTemplate>Initialize(<this> : ::darkskin::VTrackerTemplate*) : (::system::Void)
@@ -24045,14 +23942,14 @@ namespace darkskin
                 (<precompile>6 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
             }
             {
-                (<precompile>6.AutoFocus = false);
-            }
-            {
                 (<precompile>6.Font = {size : 1;} of (::presentation::FontProperties));
             }
             (<precompile>7 = <precompile>6.BoundsComposition);
             {
                 (<precompile>7.AlignmentToParent = {left : 1; top : 1; right : 1; bottom : 1;} of (::presentation::Margin));
+            }
+            {
+                (<precompile>6.AutoFocus = false);
             }
             {
                 (<precompile>6.ControlTemplate = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiControlTemplate*)
@@ -25168,13 +25065,13 @@ namespace darkskin
         var self : ::darkskin::TabHeaderTemplate* = null of (::darkskin::TabHeaderTemplate*);
 
         @cpp:Protected
+        var CurrentTabPage : ::presentation::controls::GuiTabPage* = null of (::presentation::controls::GuiTabPage*);
+
+        @cpp:Protected
         var <precompile>0 : ::presentation::controls::GuiSelectableButton* = null of (::presentation::controls::GuiSelectableButton*);
 
         @cpp:Protected
         var <precompile>1 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
-
-        @cpp:Protected
-        var CurrentTabPage : ::presentation::controls::GuiTabPage* = null of (::presentation::controls::GuiTabPage*);
 
         @cpp:Protected
         func <darkskin-TabHeaderTemplate>Initialize(<this> : ::darkskin::TabHeaderTemplate*) : (::system::Void)
@@ -25190,12 +25087,12 @@ namespace darkskin
             {
                 (<precompile>0.AutoSelection = false);
             }
-            {
-                (<precompile>0.AutoFocus = false);
-            }
             (<precompile>1 = <precompile>0.BoundsComposition);
             {
                 (<precompile>1.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (<precompile>0.AutoFocus = false);
             }
             {
                 (<precompile>0.ControlTemplate = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiControlTemplate*)
@@ -25282,6 +25179,9 @@ namespace darkskin
                 <this>.AddSubscription(<created-subscription>);
             }
             {
+                (<precompile>0.Context = CurrentTabPage);
+            }
+            {
                 var <created-subscription> = new (::system::Subscription^)
                 {
                     var <bind-cache>0 : ::presentation::controls::GuiTabPage* = null of (::presentation::controls::GuiTabPage*);
@@ -25353,9 +25253,6 @@ namespace darkskin
                     (<precompile>0.Alt = <new>);
                 });
                 <this>.AddSubscription(<created-subscription>);
-            }
-            {
-                (<precompile>0.Context = CurrentTabPage);
             }
             {
                 var <created-subscription> = new (::system::Subscription^)
@@ -25544,7 +25441,19 @@ namespace darkskin
     class TabTemplateConstructor
     {
         @cpp:Protected
+        var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
         var self : ::darkskin::TabTemplate* = null of (::darkskin::TabTemplate*);
+
+        @cpp:Protected
+        var beforeHeadersContainer : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
+
+        @cpp:Protected
+        var afterHeadersContainer : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
+
+        @cpp:Protected
+        var header : ::presentation::compositions::GuiRepeatFlowComposition* = null of (::presentation::compositions::GuiRepeatFlowComposition*);
 
         @cpp:Protected
         var <precompile>0 : ::presentation::compositions::GuiTableComposition* = null of (::presentation::compositions::GuiTableComposition*);
@@ -25566,18 +25475,6 @@ namespace darkskin
 
         @cpp:Protected
         var <precompile>6 : ::presentation::elements::GuiSolidBorderElement^ = null of (::presentation::elements::GuiSolidBorderElement^);
-
-        @cpp:Protected
-        var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
-
-        @cpp:Protected
-        var beforeHeadersContainer : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
-
-        @cpp:Protected
-        var afterHeadersContainer : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
-
-        @cpp:Protected
-        var header : ::presentation::compositions::GuiRepeatFlowComposition* = null of (::presentation::compositions::GuiRepeatFlowComposition*);
 
         @cpp:Protected
         func <darkskin-TabTemplate>Initialize(<this> : ::darkskin::TabTemplate*) : (::system::Void)
@@ -25635,9 +25532,6 @@ namespace darkskin
             (header = new (::presentation::compositions::GuiRepeatFlowComposition*)());
             <this>.SetNamedObject("header", header);
             {
-                (header.ExtraMargin = {left : 2; top : 2; right : 2; bottom : 0;} of (::presentation::Margin));
-            }
-            {
                 (header.ItemTemplate = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiTemplate*)
                 {
                     {
@@ -25648,6 +25542,9 @@ namespace darkskin
                     }
                     raise "Cannot find a matched control template to create.";
                 });
+            }
+            {
+                (header.ExtraMargin = {left : 2; top : 2; right : 2; bottom : 0;} of (::presentation::Margin));
             }
             {
                 (header.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
@@ -26100,6 +25997,9 @@ namespace darkskin
         var self : ::darkskin::MultilineTextBoxTemplate* = null of (::darkskin::MultilineTextBoxTemplate*);
 
         @cpp:Protected
+        var look : ::presentation::templates::GuiCommonScrollViewLook* = null of (::presentation::templates::GuiCommonScrollViewLook*);
+
+        @cpp:Protected
         var <precompile>0 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
@@ -26107,9 +26007,6 @@ namespace darkskin
 
         @cpp:Protected
         var <precompile>2 : ::presentation::elements::GuiSolidBackgroundElement^ = null of (::presentation::elements::GuiSolidBackgroundElement^);
-
-        @cpp:Protected
-        var look : ::presentation::templates::GuiCommonScrollViewLook* = null of (::presentation::templates::GuiCommonScrollViewLook*);
 
         @cpp:Protected
         func <darkskin-MultilineTextBoxTemplate>Initialize(<this> : ::darkskin::MultilineTextBoxTemplate*) : (::system::Void)
@@ -26344,6 +26241,9 @@ namespace darkskin
     class SinglelineTextBoxTemplateConstructor
     {
         @cpp:Protected
+        var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
         var self : ::darkskin::SinglelineTextBoxTemplate* = null of (::darkskin::SinglelineTextBoxTemplate*);
 
         @cpp:Protected
@@ -26354,9 +26254,6 @@ namespace darkskin
 
         @cpp:Protected
         var <precompile>2 : ::presentation::elements::GuiSolidBackgroundElement^ = null of (::presentation::elements::GuiSolidBackgroundElement^);
-
-        @cpp:Protected
-        var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
         func <darkskin-SinglelineTextBoxTemplate>Initialize(<this> : ::darkskin::SinglelineTextBoxTemplate*) : (::system::Void)
@@ -28916,6 +28813,9 @@ namespace darkskin
     class ToolstripButtonTemplateConstructor
     {
         @cpp:Protected
+        var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
         var self : ::darkskin::ToolstripButtonTemplate* = null of (::darkskin::ToolstripButtonTemplate*);
 
         @cpp:Protected
@@ -28932,9 +28832,6 @@ namespace darkskin
 
         @cpp:Protected
         var <precompile>4 : ::presentation::elements::GuiImageFrameElement^ = null of (::presentation::elements::GuiImageFrameElement^);
-
-        @cpp:Protected
-        var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
         func <darkskin-ToolstripButtonTemplate>Initialize(<this> : ::darkskin::ToolstripButtonTemplate*) : (::system::Void)
@@ -29491,6 +29388,9 @@ namespace darkskin
     class ToolstripDropdownButtonTemplateConstructor
     {
         @cpp:Protected
+        var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
         var self : ::darkskin::ToolstripDropdownButtonTemplate* = null of (::darkskin::ToolstripDropdownButtonTemplate*);
 
         @cpp:Protected
@@ -29506,22 +29406,19 @@ namespace darkskin
         var <precompile>3 : ::presentation::elements::GuiSolidBackgroundElement^ = null of (::presentation::elements::GuiSolidBackgroundElement^);
 
         @cpp:Protected
-        var <precompile>4 : ::presentation::elements::GuiImageFrameElement^ = null of (::presentation::elements::GuiImageFrameElement^);
+        var <precompile>4 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
-        var <precompile>5 : ::presentation::compositions::GuiTableComposition* = null of (::presentation::compositions::GuiTableComposition*);
+        var <precompile>5 : ::presentation::elements::GuiImageFrameElement^ = null of (::presentation::elements::GuiImageFrameElement^);
 
         @cpp:Protected
-        var <precompile>6 : ::presentation::elements::GuiSolidBackgroundElement^ = null of (::presentation::elements::GuiSolidBackgroundElement^);
+        var <precompile>6 : ::presentation::compositions::GuiTableComposition* = null of (::presentation::compositions::GuiTableComposition*);
 
         @cpp:Protected
         var <precompile>7 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
 
         @cpp:Protected
         var <precompile>8 : ::presentation::elements::GuiPolygonElement^ = null of (::presentation::elements::GuiPolygonElement^);
-
-        @cpp:Protected
-        var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
         func <darkskin-ToolstripDropdownButtonTemplate>Initialize(<this> : ::darkskin::ToolstripDropdownButtonTemplate*) : (::system::Void)
@@ -29554,7 +29451,7 @@ namespace darkskin
             }
             (<precompile>2 = new (::presentation::compositions::GuiBoundsComposition*)());
             {
-                (<precompile>2.AlignmentToParent = {left : 1; top : 1; right : 11; bottom : 1;} of (::presentation::Margin));
+                (<precompile>2.AlignmentToParent = {left : 1; top : 1; right : 1; bottom : 1;} of (::presentation::Margin));
             }
             {
                 (<precompile>2.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
@@ -29562,6 +29459,13 @@ namespace darkskin
             (<precompile>3 = new (::presentation::elements::GuiSolidBackgroundElement^)());
             {
                 (<precompile>2.OwnedElement = <precompile>3);
+            }
+            (<precompile>4 = new (::presentation::compositions::GuiBoundsComposition*)());
+            {
+                (<precompile>4.AlignmentToParent = {left : 0; top : 0; right : 10; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (<precompile>4.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
             }
             (container = new (::presentation::compositions::GuiBoundsComposition*)());
             <this>.SetNamedObject("container", container);
@@ -29571,38 +29475,34 @@ namespace darkskin
             {
                 (container.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
             }
-            (<precompile>4 = new (::presentation::elements::GuiImageFrameElement^)());
+            (<precompile>5 = new (::presentation::elements::GuiImageFrameElement^)());
             {
-                (container.OwnedElement = <precompile>4);
+                (container.OwnedElement = <precompile>5);
             }
             {
-                <precompile>2.AddChild(container);
+                <precompile>4.AddChild(container);
             }
             {
-                self.AddChild(<precompile>2);
+                <precompile>2.AddChild(<precompile>4);
             }
-            (<precompile>5 = new (::presentation::compositions::GuiTableComposition*)());
+            (<precompile>6 = new (::presentation::compositions::GuiTableComposition*)());
             {
-                (<precompile>5.PreferredMinSize = {x : 9; y : 0;} of (::presentation::Size));
-            }
-            {
-                (<precompile>5.AlignmentToParent = {left : (-1); top : 1; right : 1; bottom : 1;} of (::presentation::Margin));
+                (<precompile>6.PreferredMinSize = {x : 9; y : 0;} of (::presentation::Size));
             }
             {
-                (<precompile>5.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+                (<precompile>6.AlignmentToParent = {left : (-1); top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
-                <precompile>5.SetRowsAndColumns(3, 3);
-                <precompile>5.SetRowOption(0, {composeType : Percentage; percentage : 0.5;} of (::presentation::compositions::GuiCellOption));
-                <precompile>5.SetRowOption(1, {composeType : Absolute; absolute : 3;} of (::presentation::compositions::GuiCellOption));
-                <precompile>5.SetRowOption(2, {composeType : Percentage; percentage : 0.5;} of (::presentation::compositions::GuiCellOption));
-                <precompile>5.SetColumnOption(0, {composeType : Percentage; percentage : 0.5;} of (::presentation::compositions::GuiCellOption));
-                <precompile>5.SetColumnOption(1, {composeType : Absolute; absolute : 5;} of (::presentation::compositions::GuiCellOption));
-                <precompile>5.SetColumnOption(2, {composeType : Percentage; percentage : 0.5;} of (::presentation::compositions::GuiCellOption));
+                (<precompile>6.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
             }
-            (<precompile>6 = new (::presentation::elements::GuiSolidBackgroundElement^)());
             {
-                (<precompile>5.OwnedElement = <precompile>6);
+                <precompile>6.SetRowsAndColumns(3, 3);
+                <precompile>6.SetRowOption(0, {composeType : Percentage; percentage : 0.5;} of (::presentation::compositions::GuiCellOption));
+                <precompile>6.SetRowOption(1, {composeType : Absolute; absolute : 3;} of (::presentation::compositions::GuiCellOption));
+                <precompile>6.SetRowOption(2, {composeType : Percentage; percentage : 0.5;} of (::presentation::compositions::GuiCellOption));
+                <precompile>6.SetColumnOption(0, {composeType : Percentage; percentage : 0.5;} of (::presentation::compositions::GuiCellOption));
+                <precompile>6.SetColumnOption(1, {composeType : Absolute; absolute : 5;} of (::presentation::compositions::GuiCellOption));
+                <precompile>6.SetColumnOption(2, {composeType : Percentage; percentage : 0.5;} of (::presentation::compositions::GuiCellOption));
             }
             (<precompile>7 = new (::presentation::compositions::GuiCellComposition*)());
             {
@@ -29619,10 +29519,13 @@ namespace darkskin
                 (<precompile>7.OwnedElement = <precompile>8);
             }
             {
-                <precompile>5.AddChild(<precompile>7);
+                <precompile>6.AddChild(<precompile>7);
             }
             {
-                self.AddChild(<precompile>5);
+                <precompile>2.AddChild(<precompile>6);
+            }
+            {
+                self.AddChild(<precompile>2);
             }
             {
                 var <created-subscription> = new (::system::Subscription^)
@@ -29887,13 +29790,13 @@ namespace darkskin
                 };
                 attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
                 {
-                    var <old> = <precompile>4.Image;
+                    var <old> = <precompile>5.Image;
                     var <new> = (cast (::presentation::INativeImage^) <value>);
                     if ((<old> == <new>))
                     {
                         return;
                     }
-                    (<precompile>4.Image = <new>);
+                    (<precompile>5.Image = <new>);
                 });
                 <this>.AddSubscription(<created-subscription>);
             }
@@ -29960,13 +29863,13 @@ namespace darkskin
                 };
                 attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
                 {
-                    var <old> = <precompile>4.Enabled;
+                    var <old> = <precompile>5.Enabled;
                     var <new> = (cast (::system::Boolean) <value>);
                     if ((<old> == <new>))
                     {
                         return;
                     }
-                    (<precompile>4.Enabled = <new>);
+                    (<precompile>5.Enabled = <new>);
                 });
                 <this>.AddSubscription(<created-subscription>);
             }
@@ -30033,122 +29936,13 @@ namespace darkskin
                 };
                 attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
                 {
-                    var <old> = <precompile>4.FrameIndex;
+                    var <old> = <precompile>5.FrameIndex;
                     var <new> = (cast (::system::Int64) <value>);
                     if ((<old> == <new>))
                     {
                         return;
                     }
-                    (<precompile>4.FrameIndex = <new>);
-                });
-                <this>.AddSubscription(<created-subscription>);
-            }
-            {
-                var <created-subscription> = new (::system::Subscription^)
-                {
-                    var <bind-cache>0 : ::darkskin::ToolstripDropdownButtonTemplate* = null of (::darkskin::ToolstripDropdownButtonTemplate*);
-
-                    var <bind-cache>1 : ::darkskin::ToolstripDropdownButtonTemplate* = null of (::darkskin::ToolstripDropdownButtonTemplate*);
-
-                    var <bind-cache>2 : ::darkskin::ToolstripDropdownButtonTemplate* = null of (::darkskin::ToolstripDropdownButtonTemplate*);
-
-                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
-
-                    var <bind-handler>1_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
-
-                    var <bind-handler>2_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
-
-                    var <bind-opened> : ::system::Boolean = false;
-
-                    var <bind-closed> : ::system::Boolean = false;
-
-                    func <bind-activator>() : (::system::Void)
-                    {
-                        var <bind-activator-result> = (cast (Color) let state = <bind-cache>0.State in ((!<bind-cache>1.VisuallyEnabled) ? "#00000000" : ((state == ButtonState::Pressed) or <bind-cache>2.SubMenuOpening) ? "#007ACC" : (state == ButtonState::Active) ? "#54545C" : "#00000000")) of (::presentation::Color);
-                        ValueChanged(<bind-activator-result>);
-                    }
-
-                    func <bind-callback>0_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
-                    {
-                        <bind-activator>();
-                    }
-
-                    func <bind-callback>1_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
-                    {
-                        <bind-activator>();
-                    }
-
-                    func <bind-callback>2_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
-                    {
-                        <bind-activator>();
-                    }
-
-                    override func Open() : (::system::Boolean)
-                    {
-                        if ((!<bind-opened>))
-                        {
-                            (<bind-opened> = true);
-                            (<bind-cache>0 = (self ?? null of (::darkskin::ToolstripDropdownButtonTemplate*)));
-                            (<bind-cache>1 = (self ?? null of (::darkskin::ToolstripDropdownButtonTemplate*)));
-                            (<bind-cache>2 = (self ?? null of (::darkskin::ToolstripDropdownButtonTemplate*)));
-                            (<bind-handler>0_0 = (attach(<bind-cache>0.StateChanged, <bind-callback>0_0) ?? null));
-                            (<bind-handler>1_0 = (attach(<bind-cache>1.VisuallyEnabledChanged, <bind-callback>1_0) ?? null));
-                            (<bind-handler>2_0 = (attach(<bind-cache>2.SubMenuOpeningChanged, <bind-callback>2_0) ?? null));
-                            return true;
-                        }
-                        return false;
-                    }
-
-                    override func Update() : (::system::Boolean)
-                    {
-                        if ((<bind-opened> and (!<bind-closed>)))
-                        {
-                            <bind-activator>();
-                            return true;
-                        }
-                        return false;
-                    }
-
-                    override func Close() : (::system::Boolean)
-                    {
-                        if ((!<bind-closed>))
-                        {
-                            (<bind-closed> = true);
-                            if (<bind-handler>0_0 is not null)
-                            {
-                                detach(<bind-cache>0.StateChanged, <bind-handler>0_0);
-                                (<bind-handler>0_0 = null);
-                            }
-                            if (<bind-handler>1_0 is not null)
-                            {
-                                detach(<bind-cache>1.VisuallyEnabledChanged, <bind-handler>1_0);
-                                (<bind-handler>1_0 = null);
-                            }
-                            if (<bind-handler>2_0 is not null)
-                            {
-                                detach(<bind-cache>2.SubMenuOpeningChanged, <bind-handler>2_0);
-                                (<bind-handler>2_0 = null);
-                            }
-                            (<bind-cache>0 = null of (::darkskin::ToolstripDropdownButtonTemplate*));
-                            (<bind-cache>1 = null of (::darkskin::ToolstripDropdownButtonTemplate*));
-                            (<bind-cache>2 = null of (::darkskin::ToolstripDropdownButtonTemplate*));
-                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
-                            (<bind-handler>1_0 = null of (::system::reflection::EventHandler^));
-                            (<bind-handler>2_0 = null of (::system::reflection::EventHandler^));
-                            return true;
-                        }
-                        return false;
-                    }
-                };
-                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
-                {
-                    var <old> = <precompile>6.Color;
-                    var <new> = (cast (::presentation::Color) <value>);
-                    if ((<old> == <new>))
-                    {
-                        return;
-                    }
-                    (<precompile>6.Color = <new>);
+                    (<precompile>5.FrameIndex = <new>);
                 });
                 <this>.AddSubscription(<created-subscription>);
             }
@@ -30448,13 +30242,13 @@ namespace darkskin
     class ToolstripInMenuTemplateConstructor
     {
         @cpp:Protected
+        var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
         var <precompile>0 : ::darkskin::ToolstripInMenuTemplate* = null of (::darkskin::ToolstripInMenuTemplate*);
 
         @cpp:Protected
         var <precompile>1 : ::presentation::elements::GuiSolidBackgroundElement^ = null of (::presentation::elements::GuiSolidBackgroundElement^);
-
-        @cpp:Protected
-        var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
         func <darkskin-ToolstripInMenuTemplate>Initialize(<this> : ::darkskin::ToolstripInMenuTemplate*) : (::system::Void)
@@ -30559,6 +30353,9 @@ namespace darkskin
     class ToolstripMenuTemplateConstructor
     {
         @cpp:Protected
+        var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
         var <precompile>0 : ::darkskin::ToolstripMenuTemplate* = null of (::darkskin::ToolstripMenuTemplate*);
 
         @cpp:Protected
@@ -30569,9 +30366,6 @@ namespace darkskin
 
         @cpp:Protected
         var <precompile>3 : ::presentation::elements::GuiSolidBorderElement^ = null of (::presentation::elements::GuiSolidBorderElement^);
-
-        @cpp:Protected
-        var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
         func <darkskin-ToolstripMenuTemplate>Initialize(<this> : ::darkskin::ToolstripMenuTemplate*) : (::system::Void)
@@ -30693,7 +30487,13 @@ namespace darkskin
     class ToolstripSplitButtonTemplateConstructor
     {
         @cpp:Protected
+        var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
         var self : ::darkskin::ToolstripSplitButtonTemplate* = null of (::darkskin::ToolstripSplitButtonTemplate*);
+
+        @cpp:Protected
+        var buttonArrow : ::presentation::controls::GuiSelectableButton* = null of (::presentation::controls::GuiSelectableButton*);
 
         @cpp:Protected
         var <precompile>0 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
@@ -30721,12 +30521,6 @@ namespace darkskin
 
         @cpp:Protected
         var <precompile>8 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
-
-        @cpp:Protected
-        var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
-
-        @cpp:Protected
-        var buttonArrow : ::presentation::controls::GuiSelectableButton* = null of (::presentation::controls::GuiSelectableButton*);
 
         @cpp:Protected
         func <darkskin-ToolstripSplitButtonTemplate>Initialize(<this> : ::darkskin::ToolstripSplitButtonTemplate*) : (::system::Void)
@@ -30811,12 +30605,12 @@ namespace darkskin
                 (buttonArrow = new (::presentation::controls::GuiSelectableButton*)(::presentation::theme::ThemeName::CheckBox));
                 <this>.SetNamedObject("buttonArrow", buttonArrow);
             }
-            {
-                (buttonArrow.AutoFocus = false);
-            }
             (<precompile>8 = buttonArrow.BoundsComposition);
             {
                 (<precompile>8.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (buttonArrow.AutoFocus = false);
             }
             {
                 (buttonArrow.ControlTemplate = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiControlTemplate*)
@@ -31650,13 +31444,13 @@ namespace darkskin
             }
             (<precompile>3 = new (::presentation::elements::Gui3DSplitterElement^)());
             {
+                (<precompile>3.Direction = Vertical of (::presentation::elements::Gui3DSplitterElement::Direction));
+            }
+            {
                 (<precompile>3.Color2 = (cast (::presentation::Color) "#464648"));
             }
             {
                 (<precompile>3.Color1 = (cast (::presentation::Color) "#222224"));
-            }
-            {
-                (<precompile>3.Direction = Vertical of (::presentation::elements::Gui3DSplitterElement::Direction));
             }
             {
                 (<precompile>2.OwnedElement = <precompile>3);
@@ -31739,13 +31533,13 @@ namespace darkskin
     class ToolstripTemplateConstructor
     {
         @cpp:Protected
+        var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
         var <precompile>0 : ::darkskin::ToolstripTemplate* = null of (::darkskin::ToolstripTemplate*);
 
         @cpp:Protected
         var <precompile>1 : ::presentation::elements::GuiSolidBackgroundElement^ = null of (::presentation::elements::GuiSolidBackgroundElement^);
-
-        @cpp:Protected
-        var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
         func <darkskin-ToolstripTemplate>Initialize(<this> : ::darkskin::ToolstripTemplate*) : (::system::Void)
@@ -31934,7 +31728,16 @@ namespace darkskin
     class CustomFrameWindowTemplateConstructor
     {
         @cpp:Protected
+        var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
         var self : ::darkskin::CustomFrameWindowTemplate* = null of (::darkskin::CustomFrameWindowTemplate*);
+
+        @cpp:Protected
+        var frameTable : ::presentation::compositions::GuiTableComposition* = null of (::presentation::compositions::GuiTableComposition*);
+
+        @cpp:Protected
+        var contentTable : ::presentation::compositions::GuiTableComposition* = null of (::presentation::compositions::GuiTableComposition*);
 
         @cpp:Protected
         var <precompile>0 : ::presentation::elements::GuiSolidBackgroundElement^ = null of (::presentation::elements::GuiSolidBackgroundElement^);
@@ -31976,16 +31779,16 @@ namespace darkskin
         var <precompile>12 : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
 
         @cpp:Protected
-        var <precompile>13 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+        var <precompile>13 : ::presentation::compositions::GuiGraphicsComposition* = null of (::presentation::compositions::GuiGraphicsComposition*);
 
         @cpp:Protected
-        var <precompile>14 : ::presentation::compositions::GuiGraphicsComposition* = null of (::presentation::compositions::GuiGraphicsComposition*);
+        var <precompile>14 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
-        var <precompile>15 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+        var <precompile>15 : ::presentation::elements::GuiPolygonElement^ = null of (::presentation::elements::GuiPolygonElement^);
 
         @cpp:Protected
-        var <precompile>16 : ::presentation::elements::GuiPolygonElement^ = null of (::presentation::elements::GuiPolygonElement^);
+        var <precompile>16 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
         var <precompile>17 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
@@ -31994,22 +31797,22 @@ namespace darkskin
         var <precompile>18 : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
 
         @cpp:Protected
-        var <precompile>19 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+        var <precompile>19 : ::presentation::compositions::GuiGraphicsComposition* = null of (::presentation::compositions::GuiGraphicsComposition*);
 
         @cpp:Protected
-        var <precompile>20 : ::presentation::compositions::GuiGraphicsComposition* = null of (::presentation::compositions::GuiGraphicsComposition*);
+        var <precompile>20 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
-        var <precompile>21 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+        var <precompile>21 : ::presentation::elements::GuiPolygonElement^ = null of (::presentation::elements::GuiPolygonElement^);
 
         @cpp:Protected
-        var <precompile>22 : ::presentation::elements::GuiPolygonElement^ = null of (::presentation::elements::GuiPolygonElement^);
+        var <precompile>22 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
-        var <precompile>23 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+        var <precompile>23 : ::presentation::elements::GuiPolygonElement^ = null of (::presentation::elements::GuiPolygonElement^);
 
         @cpp:Protected
-        var <precompile>24 : ::presentation::elements::GuiPolygonElement^ = null of (::presentation::elements::GuiPolygonElement^);
+        var <precompile>24 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
         var <precompile>25 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
@@ -32018,16 +31821,16 @@ namespace darkskin
         var <precompile>26 : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
 
         @cpp:Protected
-        var <precompile>27 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+        var <precompile>27 : ::presentation::compositions::GuiGraphicsComposition* = null of (::presentation::compositions::GuiGraphicsComposition*);
 
         @cpp:Protected
-        var <precompile>28 : ::presentation::compositions::GuiGraphicsComposition* = null of (::presentation::compositions::GuiGraphicsComposition*);
+        var <precompile>28 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
-        var <precompile>29 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+        var <precompile>29 : ::presentation::elements::GuiPolygonElement^ = null of (::presentation::elements::GuiPolygonElement^);
 
         @cpp:Protected
-        var <precompile>30 : ::presentation::elements::GuiPolygonElement^ = null of (::presentation::elements::GuiPolygonElement^);
+        var <precompile>30 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
         var <precompile>31 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
@@ -32040,15 +31843,6 @@ namespace darkskin
 
         @cpp:Protected
         var <precompile>34 : ::presentation::elements::GuiImageFrameElement^ = null of (::presentation::elements::GuiImageFrameElement^);
-
-        @cpp:Protected
-        var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
-
-        @cpp:Protected
-        var frameTable : ::presentation::compositions::GuiTableComposition* = null of (::presentation::compositions::GuiTableComposition*);
-
-        @cpp:Protected
-        var contentTable : ::presentation::compositions::GuiTableComposition* = null of (::presentation::compositions::GuiTableComposition*);
 
         @cpp:Protected
         var <precompile>35 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
@@ -32220,36 +32014,36 @@ namespace darkskin
             {
                 (<precompile>12 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
             }
+            (<precompile>16 = <precompile>12.BoundsComposition);
+            {
+                (<precompile>16.AlignmentToParent = {left : 1; top : 1; right : 1; bottom : 1;} of (::presentation::Margin));
+            }
             {
                 (<precompile>12.AutoFocus = false);
             }
-            (<precompile>14 = <precompile>12.ContainerComposition);
-            (<precompile>15 = new (::presentation::compositions::GuiBoundsComposition*)());
+            (<precompile>13 = <precompile>12.ContainerComposition);
+            (<precompile>14 = new (::presentation::compositions::GuiBoundsComposition*)());
             {
-                (<precompile>15.PreferredMinSize = {x : 24; y : 16;} of (::presentation::Size));
+                (<precompile>14.PreferredMinSize = {x : 24; y : 16;} of (::presentation::Size));
             }
             {
-                (<precompile>15.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+                (<precompile>14.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
-                (<precompile>15.MinSizeLimitation = LimitToElement of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+                (<precompile>14.MinSizeLimitation = LimitToElement of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
             }
-            (<precompile>16 = new (::presentation::elements::GuiPolygonElement^)());
+            (<precompile>15 = new (::presentation::elements::GuiPolygonElement^)());
             {
-                (<precompile>16.Points = {{x : 8; y : 12;} of (::presentation::Point); {x : 15; y : 12;} of (::presentation::Point); {x : 15; y : 13;} of (::presentation::Point); {x : 8; y : 13;} of (::presentation::Point);});
-            }
-            {
-                (<precompile>16.Size = {x : 24; y : 16;} of (::presentation::Size));
+                (<precompile>15.Points = {{x : 8; y : 12;} of (::presentation::Point); {x : 15; y : 12;} of (::presentation::Point); {x : 15; y : 13;} of (::presentation::Point); {x : 8; y : 13;} of (::presentation::Point);});
             }
             {
-                (<precompile>15.OwnedElement = <precompile>16);
+                (<precompile>15.Size = {x : 24; y : 16;} of (::presentation::Size));
             }
             {
-                <precompile>14.AddChild(<precompile>15);
+                (<precompile>14.OwnedElement = <precompile>15);
             }
-            (<precompile>13 = <precompile>12.BoundsComposition);
             {
-                (<precompile>13.AlignmentToParent = {left : 1; top : 1; right : 1; bottom : 1;} of (::presentation::Margin));
+                <precompile>13.AddChild(<precompile>14);
             }
             {
                 (<precompile>12.ControlTemplate = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiControlTemplate*)
@@ -32272,59 +32066,59 @@ namespace darkskin
             {
                 (<precompile>18 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
             }
+            (<precompile>24 = <precompile>18.BoundsComposition);
+            {
+                (<precompile>24.AlignmentToParent = {left : 1; top : 1; right : 1; bottom : 1;} of (::presentation::Margin));
+            }
             {
                 (<precompile>18.AutoFocus = false);
             }
-            (<precompile>20 = <precompile>18.ContainerComposition);
-            (<precompile>21 = new (::presentation::compositions::GuiBoundsComposition*)());
+            (<precompile>19 = <precompile>18.ContainerComposition);
+            (<precompile>20 = new (::presentation::compositions::GuiBoundsComposition*)());
             {
-                (<precompile>21.PreferredMinSize = {x : 24; y : 16;} of (::presentation::Size));
+                (<precompile>20.PreferredMinSize = {x : 24; y : 16;} of (::presentation::Size));
             }
             {
-                (<precompile>21.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+                (<precompile>20.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
-                (<precompile>21.MinSizeLimitation = LimitToElement of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+                (<precompile>20.MinSizeLimitation = LimitToElement of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
             }
-            (<precompile>22 = new (::presentation::elements::GuiPolygonElement^)());
+            (<precompile>21 = new (::presentation::elements::GuiPolygonElement^)());
             {
-                (<precompile>22.Points = {{x : 6; y : 2;} of (::presentation::Point); {x : 17; y : 2;} of (::presentation::Point); {x : 17; y : 13;} of (::presentation::Point); {x : 6; y : 13;} of (::presentation::Point); {x : 6; y : 2;} of (::presentation::Point); {x : 6; y : 2;} of (::presentation::Point); {x : 6; y : 13;} of (::presentation::Point); {x : 17; y : 13;} of (::presentation::Point); {x : 17; y : 4;} of (::presentation::Point); {x : 6; y : 4;} of (::presentation::Point);});
-            }
-            {
-                (<precompile>22.Size = {x : 24; y : 16;} of (::presentation::Size));
+                (<precompile>21.Points = {{x : 6; y : 2;} of (::presentation::Point); {x : 17; y : 2;} of (::presentation::Point); {x : 17; y : 13;} of (::presentation::Point); {x : 6; y : 13;} of (::presentation::Point); {x : 6; y : 2;} of (::presentation::Point); {x : 6; y : 2;} of (::presentation::Point); {x : 6; y : 13;} of (::presentation::Point); {x : 17; y : 13;} of (::presentation::Point); {x : 17; y : 4;} of (::presentation::Point); {x : 6; y : 4;} of (::presentation::Point);});
             }
             {
-                (<precompile>21.OwnedElement = <precompile>22);
+                (<precompile>21.Size = {x : 24; y : 16;} of (::presentation::Size));
             }
             {
-                <precompile>20.AddChild(<precompile>21);
-            }
-            (<precompile>23 = new (::presentation::compositions::GuiBoundsComposition*)());
-            {
-                (<precompile>23.PreferredMinSize = {x : 24; y : 16;} of (::presentation::Size));
+                (<precompile>20.OwnedElement = <precompile>21);
             }
             {
-                (<precompile>23.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+                <precompile>19.AddChild(<precompile>20);
+            }
+            (<precompile>22 = new (::presentation::compositions::GuiBoundsComposition*)());
+            {
+                (<precompile>22.PreferredMinSize = {x : 24; y : 16;} of (::presentation::Size));
             }
             {
-                (<precompile>23.MinSizeLimitation = LimitToElement of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
-            }
-            (<precompile>24 = new (::presentation::elements::GuiPolygonElement^)());
-            {
-                (<precompile>24.Points = {{x : 9; y : 6;} of (::presentation::Point); {x : 14; y : 6;} of (::presentation::Point); {x : 14; y : 13;} of (::presentation::Point); {x : 6; y : 13;} of (::presentation::Point); {x : 6; y : 6;} of (::presentation::Point); {x : 9; y : 6;} of (::presentation::Point); {x : 9; y : 7;} of (::presentation::Point); {x : 6; y : 7;} of (::presentation::Point); {x : 6; y : 13;} of (::presentation::Point); {x : 14; y : 13;} of (::presentation::Point); {x : 14; y : 7;} of (::presentation::Point); {x : 9; y : 7;} of (::presentation::Point); {x : 9; y : 2;} of (::presentation::Point); {x : 17; y : 2;} of (::presentation::Point); {x : 17; y : 9;} of (::presentation::Point); {x : 14; y : 9;} of (::presentation::Point); {x : 14; y : 9;} of (::presentation::Point); {x : 17; y : 9;} of (::presentation::Point); {x : 17; y : 3;} of (::presentation::Point); {x : 9; y : 3;} of (::presentation::Point);});
+                (<precompile>22.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
-                (<precompile>24.Size = {x : 24; y : 16;} of (::presentation::Size));
+                (<precompile>22.MinSizeLimitation = LimitToElement of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+            }
+            (<precompile>23 = new (::presentation::elements::GuiPolygonElement^)());
+            {
+                (<precompile>23.Points = {{x : 9; y : 6;} of (::presentation::Point); {x : 14; y : 6;} of (::presentation::Point); {x : 14; y : 13;} of (::presentation::Point); {x : 6; y : 13;} of (::presentation::Point); {x : 6; y : 6;} of (::presentation::Point); {x : 9; y : 6;} of (::presentation::Point); {x : 9; y : 7;} of (::presentation::Point); {x : 6; y : 7;} of (::presentation::Point); {x : 6; y : 13;} of (::presentation::Point); {x : 14; y : 13;} of (::presentation::Point); {x : 14; y : 7;} of (::presentation::Point); {x : 9; y : 7;} of (::presentation::Point); {x : 9; y : 2;} of (::presentation::Point); {x : 17; y : 2;} of (::presentation::Point); {x : 17; y : 9;} of (::presentation::Point); {x : 14; y : 9;} of (::presentation::Point); {x : 14; y : 9;} of (::presentation::Point); {x : 17; y : 9;} of (::presentation::Point); {x : 17; y : 3;} of (::presentation::Point); {x : 9; y : 3;} of (::presentation::Point);});
             }
             {
-                (<precompile>23.OwnedElement = <precompile>24);
+                (<precompile>23.Size = {x : 24; y : 16;} of (::presentation::Size));
             }
             {
-                <precompile>20.AddChild(<precompile>23);
+                (<precompile>22.OwnedElement = <precompile>23);
             }
-            (<precompile>19 = <precompile>18.BoundsComposition);
             {
-                (<precompile>19.AlignmentToParent = {left : 1; top : 1; right : 1; bottom : 1;} of (::presentation::Margin));
+                <precompile>19.AddChild(<precompile>22);
             }
             {
                 (<precompile>18.ControlTemplate = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiControlTemplate*)
@@ -32350,36 +32144,36 @@ namespace darkskin
             {
                 (<precompile>26 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
             }
+            (<precompile>30 = <precompile>26.BoundsComposition);
+            {
+                (<precompile>30.AlignmentToParent = {left : 1; top : 1; right : 1; bottom : 1;} of (::presentation::Margin));
+            }
             {
                 (<precompile>26.AutoFocus = false);
             }
-            (<precompile>28 = <precompile>26.ContainerComposition);
-            (<precompile>29 = new (::presentation::compositions::GuiBoundsComposition*)());
+            (<precompile>27 = <precompile>26.ContainerComposition);
+            (<precompile>28 = new (::presentation::compositions::GuiBoundsComposition*)());
             {
-                (<precompile>29.PreferredMinSize = {x : 24; y : 16;} of (::presentation::Size));
+                (<precompile>28.PreferredMinSize = {x : 24; y : 16;} of (::presentation::Size));
             }
             {
-                (<precompile>29.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+                (<precompile>28.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
-                (<precompile>29.MinSizeLimitation = LimitToElement of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+                (<precompile>28.MinSizeLimitation = LimitToElement of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
             }
-            (<precompile>30 = new (::presentation::elements::GuiPolygonElement^)());
+            (<precompile>29 = new (::presentation::elements::GuiPolygonElement^)());
             {
-                (<precompile>30.Points = {{x : 7; y : 2;} of (::presentation::Point); {x : 11; y : 6;} of (::presentation::Point); {x : 12; y : 6;} of (::presentation::Point); {x : 16; y : 2;} of (::presentation::Point); {x : 17; y : 3;} of (::presentation::Point); {x : 13; y : 7;} of (::presentation::Point); {x : 13; y : 8;} of (::presentation::Point); {x : 17; y : 12;} of (::presentation::Point); {x : 16; y : 13;} of (::presentation::Point); {x : 12; y : 9;} of (::presentation::Point); {x : 11; y : 9;} of (::presentation::Point); {x : 7; y : 13;} of (::presentation::Point); {x : 6; y : 12;} of (::presentation::Point); {x : 10; y : 8;} of (::presentation::Point); {x : 10; y : 7;} of (::presentation::Point); {x : 6; y : 3;} of (::presentation::Point);});
-            }
-            {
-                (<precompile>30.Size = {x : 24; y : 16;} of (::presentation::Size));
+                (<precompile>29.Points = {{x : 7; y : 2;} of (::presentation::Point); {x : 11; y : 6;} of (::presentation::Point); {x : 12; y : 6;} of (::presentation::Point); {x : 16; y : 2;} of (::presentation::Point); {x : 17; y : 3;} of (::presentation::Point); {x : 13; y : 7;} of (::presentation::Point); {x : 13; y : 8;} of (::presentation::Point); {x : 17; y : 12;} of (::presentation::Point); {x : 16; y : 13;} of (::presentation::Point); {x : 12; y : 9;} of (::presentation::Point); {x : 11; y : 9;} of (::presentation::Point); {x : 7; y : 13;} of (::presentation::Point); {x : 6; y : 12;} of (::presentation::Point); {x : 10; y : 8;} of (::presentation::Point); {x : 10; y : 7;} of (::presentation::Point); {x : 6; y : 3;} of (::presentation::Point);});
             }
             {
-                (<precompile>29.OwnedElement = <precompile>30);
+                (<precompile>29.Size = {x : 24; y : 16;} of (::presentation::Size));
             }
             {
-                <precompile>28.AddChild(<precompile>29);
+                (<precompile>28.OwnedElement = <precompile>29);
             }
-            (<precompile>27 = <precompile>26.BoundsComposition);
             {
-                (<precompile>27.AlignmentToParent = {left : 1; top : 1; right : 1; bottom : 1;} of (::presentation::Margin));
+                <precompile>27.AddChild(<precompile>28);
             }
             {
                 (<precompile>26.ControlTemplate = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiControlTemplate*)
@@ -32452,10 +32246,10 @@ namespace darkskin
             }
             (<precompile>37 = new (::presentation::elements::GuiSolidLabelElement^)());
             {
-                (<precompile>37.Ellipse = true);
+                (<precompile>37.Font = {fontFamily : "Segoe WP SemiLight"; size : 14; antialias : true;} of (::presentation::FontProperties));
             }
             {
-                (<precompile>37.Font = {fontFamily : "Segoe WP SemiLight"; size : 14; antialias : true;} of (::presentation::FontProperties));
+                (<precompile>37.Ellipse = true);
             }
             {
                 (<precompile>36.OwnedElement = <precompile>37);
@@ -32633,6 +32427,152 @@ namespace darkskin
 
                     func <bind-activator>() : (::system::Void)
                     {
+                        var <bind-activator-result> = (cast (Color) (!<bind-cache>0.VisuallyEnabled) ? "#6D6D6D" : "#F1F1F1") of (::presentation::Color);
+                        ValueChanged(<bind-activator-result>);
+                    }
+
+                    func <bind-callback>0_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    override func Open() : (::system::Boolean)
+                    {
+                        if ((!<bind-opened>))
+                        {
+                            (<bind-opened> = true);
+                            (<bind-cache>0 = (self ?? null of (::darkskin::CustomFrameWindowTemplate*)));
+                            (<bind-handler>0_0 = (attach(<bind-cache>0.VisuallyEnabledChanged, <bind-callback>0_0) ?? null));
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Update() : (::system::Boolean)
+                    {
+                        if ((<bind-opened> and (!<bind-closed>)))
+                        {
+                            <bind-activator>();
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Close() : (::system::Boolean)
+                    {
+                        if ((!<bind-closed>))
+                        {
+                            (<bind-closed> = true);
+                            if (<bind-handler>0_0 is not null)
+                            {
+                                detach(<bind-cache>0.VisuallyEnabledChanged, <bind-handler>0_0);
+                                (<bind-handler>0_0 = null);
+                            }
+                            (<bind-cache>0 = null of (::darkskin::CustomFrameWindowTemplate*));
+                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
+                            return true;
+                        }
+                        return false;
+                    }
+                };
+                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
+                {
+                    var <old> = <precompile>15.BackgroundColor;
+                    var <new> = (cast (::presentation::Color) <value>);
+                    if ((<old> == <new>))
+                    {
+                        return;
+                    }
+                    (<precompile>15.BackgroundColor = <new>);
+                });
+                <this>.AddSubscription(<created-subscription>);
+            }
+            {
+                var <created-subscription> = new (::system::Subscription^)
+                {
+                    var <bind-cache>0 : ::darkskin::CustomFrameWindowTemplate* = null of (::darkskin::CustomFrameWindowTemplate*);
+
+                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-opened> : ::system::Boolean = false;
+
+                    var <bind-closed> : ::system::Boolean = false;
+
+                    func <bind-activator>() : (::system::Void)
+                    {
+                        var <bind-activator-result> = (cast (Color) (!<bind-cache>0.VisuallyEnabled) ? "#6D6D6D" : "#F1F1F1") of (::presentation::Color);
+                        ValueChanged(<bind-activator-result>);
+                    }
+
+                    func <bind-callback>0_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    override func Open() : (::system::Boolean)
+                    {
+                        if ((!<bind-opened>))
+                        {
+                            (<bind-opened> = true);
+                            (<bind-cache>0 = (self ?? null of (::darkskin::CustomFrameWindowTemplate*)));
+                            (<bind-handler>0_0 = (attach(<bind-cache>0.VisuallyEnabledChanged, <bind-callback>0_0) ?? null));
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Update() : (::system::Boolean)
+                    {
+                        if ((<bind-opened> and (!<bind-closed>)))
+                        {
+                            <bind-activator>();
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Close() : (::system::Boolean)
+                    {
+                        if ((!<bind-closed>))
+                        {
+                            (<bind-closed> = true);
+                            if (<bind-handler>0_0 is not null)
+                            {
+                                detach(<bind-cache>0.VisuallyEnabledChanged, <bind-handler>0_0);
+                                (<bind-handler>0_0 = null);
+                            }
+                            (<bind-cache>0 = null of (::darkskin::CustomFrameWindowTemplate*));
+                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
+                            return true;
+                        }
+                        return false;
+                    }
+                };
+                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
+                {
+                    var <old> = <precompile>15.BorderColor;
+                    var <new> = (cast (::presentation::Color) <value>);
+                    if ((<old> == <new>))
+                    {
+                        return;
+                    }
+                    (<precompile>15.BorderColor = <new>);
+                });
+                <this>.AddSubscription(<created-subscription>);
+            }
+            {
+                var <created-subscription> = new (::system::Subscription^)
+                {
+                    var <bind-cache>0 : ::darkskin::CustomFrameWindowTemplate* = null of (::darkskin::CustomFrameWindowTemplate*);
+
+                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-opened> : ::system::Boolean = false;
+
+                    var <bind-closed> : ::system::Boolean = false;
+
+                    func <bind-activator>() : (::system::Void)
+                    {
                         var <bind-activator-result> = <bind-cache>0.MinimizedBox of (::system::Boolean);
                         ValueChanged(<bind-activator-result>);
                     }
@@ -32690,152 +32630,6 @@ namespace darkskin
                         return;
                     }
                     (<precompile>12.Enabled = <new>);
-                });
-                <this>.AddSubscription(<created-subscription>);
-            }
-            {
-                var <created-subscription> = new (::system::Subscription^)
-                {
-                    var <bind-cache>0 : ::darkskin::CustomFrameWindowTemplate* = null of (::darkskin::CustomFrameWindowTemplate*);
-
-                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
-
-                    var <bind-opened> : ::system::Boolean = false;
-
-                    var <bind-closed> : ::system::Boolean = false;
-
-                    func <bind-activator>() : (::system::Void)
-                    {
-                        var <bind-activator-result> = (cast (Color) (!<bind-cache>0.VisuallyEnabled) ? "#6D6D6D" : "#F1F1F1") of (::presentation::Color);
-                        ValueChanged(<bind-activator-result>);
-                    }
-
-                    func <bind-callback>0_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
-                    {
-                        <bind-activator>();
-                    }
-
-                    override func Open() : (::system::Boolean)
-                    {
-                        if ((!<bind-opened>))
-                        {
-                            (<bind-opened> = true);
-                            (<bind-cache>0 = (self ?? null of (::darkskin::CustomFrameWindowTemplate*)));
-                            (<bind-handler>0_0 = (attach(<bind-cache>0.VisuallyEnabledChanged, <bind-callback>0_0) ?? null));
-                            return true;
-                        }
-                        return false;
-                    }
-
-                    override func Update() : (::system::Boolean)
-                    {
-                        if ((<bind-opened> and (!<bind-closed>)))
-                        {
-                            <bind-activator>();
-                            return true;
-                        }
-                        return false;
-                    }
-
-                    override func Close() : (::system::Boolean)
-                    {
-                        if ((!<bind-closed>))
-                        {
-                            (<bind-closed> = true);
-                            if (<bind-handler>0_0 is not null)
-                            {
-                                detach(<bind-cache>0.VisuallyEnabledChanged, <bind-handler>0_0);
-                                (<bind-handler>0_0 = null);
-                            }
-                            (<bind-cache>0 = null of (::darkskin::CustomFrameWindowTemplate*));
-                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
-                            return true;
-                        }
-                        return false;
-                    }
-                };
-                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
-                {
-                    var <old> = <precompile>16.BackgroundColor;
-                    var <new> = (cast (::presentation::Color) <value>);
-                    if ((<old> == <new>))
-                    {
-                        return;
-                    }
-                    (<precompile>16.BackgroundColor = <new>);
-                });
-                <this>.AddSubscription(<created-subscription>);
-            }
-            {
-                var <created-subscription> = new (::system::Subscription^)
-                {
-                    var <bind-cache>0 : ::darkskin::CustomFrameWindowTemplate* = null of (::darkskin::CustomFrameWindowTemplate*);
-
-                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
-
-                    var <bind-opened> : ::system::Boolean = false;
-
-                    var <bind-closed> : ::system::Boolean = false;
-
-                    func <bind-activator>() : (::system::Void)
-                    {
-                        var <bind-activator-result> = (cast (Color) (!<bind-cache>0.VisuallyEnabled) ? "#6D6D6D" : "#F1F1F1") of (::presentation::Color);
-                        ValueChanged(<bind-activator-result>);
-                    }
-
-                    func <bind-callback>0_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
-                    {
-                        <bind-activator>();
-                    }
-
-                    override func Open() : (::system::Boolean)
-                    {
-                        if ((!<bind-opened>))
-                        {
-                            (<bind-opened> = true);
-                            (<bind-cache>0 = (self ?? null of (::darkskin::CustomFrameWindowTemplate*)));
-                            (<bind-handler>0_0 = (attach(<bind-cache>0.VisuallyEnabledChanged, <bind-callback>0_0) ?? null));
-                            return true;
-                        }
-                        return false;
-                    }
-
-                    override func Update() : (::system::Boolean)
-                    {
-                        if ((<bind-opened> and (!<bind-closed>)))
-                        {
-                            <bind-activator>();
-                            return true;
-                        }
-                        return false;
-                    }
-
-                    override func Close() : (::system::Boolean)
-                    {
-                        if ((!<bind-closed>))
-                        {
-                            (<bind-closed> = true);
-                            if (<bind-handler>0_0 is not null)
-                            {
-                                detach(<bind-cache>0.VisuallyEnabledChanged, <bind-handler>0_0);
-                                (<bind-handler>0_0 = null);
-                            }
-                            (<bind-cache>0 = null of (::darkskin::CustomFrameWindowTemplate*));
-                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
-                            return true;
-                        }
-                        return false;
-                    }
-                };
-                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
-                {
-                    var <old> = <precompile>16.BorderColor;
-                    var <new> = (cast (::presentation::Color) <value>);
-                    if ((<old> == <new>))
-                    {
-                        return;
-                    }
-                    (<precompile>16.BorderColor = <new>);
                 });
                 <this>.AddSubscription(<created-subscription>);
             }
@@ -33016,7 +32810,7 @@ namespace darkskin
 
                     func <bind-activator>() : (::system::Void)
                     {
-                        var <bind-activator-result> = <bind-cache>0.MaximizedBox of (::system::Boolean);
+                        var <bind-activator-result> = (cast (Color) (!<bind-cache>0.VisuallyEnabled) ? "#6D6D6D" : "#F1F1F1") of (::presentation::Color);
                         ValueChanged(<bind-activator-result>);
                     }
 
@@ -33031,7 +32825,7 @@ namespace darkskin
                         {
                             (<bind-opened> = true);
                             (<bind-cache>0 = (self ?? null of (::darkskin::CustomFrameWindowTemplate*)));
-                            (<bind-handler>0_0 = (attach(<bind-cache>0.MaximizedBoxChanged, <bind-callback>0_0) ?? null));
+                            (<bind-handler>0_0 = (attach(<bind-cache>0.VisuallyEnabledChanged, <bind-callback>0_0) ?? null));
                             return true;
                         }
                         return false;
@@ -33054,7 +32848,7 @@ namespace darkskin
                             (<bind-closed> = true);
                             if (<bind-handler>0_0 is not null)
                             {
-                                detach(<bind-cache>0.MaximizedBoxChanged, <bind-handler>0_0);
+                                detach(<bind-cache>0.VisuallyEnabledChanged, <bind-handler>0_0);
                                 (<bind-handler>0_0 = null);
                             }
                             (<bind-cache>0 = null of (::darkskin::CustomFrameWindowTemplate*));
@@ -33066,13 +32860,13 @@ namespace darkskin
                 };
                 attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
                 {
-                    var <old> = <precompile>18.Enabled;
-                    var <new> = (cast (::system::Boolean) <value>);
+                    var <old> = <precompile>21.BackgroundColor;
+                    var <new> = (cast (::presentation::Color) <value>);
                     if ((<old> == <new>))
                     {
                         return;
                     }
-                    (<precompile>18.Enabled = <new>);
+                    (<precompile>21.BackgroundColor = <new>);
                 });
                 <this>.AddSubscription(<created-subscription>);
             }
@@ -33139,86 +32933,13 @@ namespace darkskin
                 };
                 attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
                 {
-                    var <old> = <precompile>22.BackgroundColor;
+                    var <old> = <precompile>21.BorderColor;
                     var <new> = (cast (::presentation::Color) <value>);
                     if ((<old> == <new>))
                     {
                         return;
                     }
-                    (<precompile>22.BackgroundColor = <new>);
-                });
-                <this>.AddSubscription(<created-subscription>);
-            }
-            {
-                var <created-subscription> = new (::system::Subscription^)
-                {
-                    var <bind-cache>0 : ::darkskin::CustomFrameWindowTemplate* = null of (::darkskin::CustomFrameWindowTemplate*);
-
-                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
-
-                    var <bind-opened> : ::system::Boolean = false;
-
-                    var <bind-closed> : ::system::Boolean = false;
-
-                    func <bind-activator>() : (::system::Void)
-                    {
-                        var <bind-activator-result> = (cast (Color) (!<bind-cache>0.VisuallyEnabled) ? "#6D6D6D" : "#F1F1F1") of (::presentation::Color);
-                        ValueChanged(<bind-activator-result>);
-                    }
-
-                    func <bind-callback>0_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
-                    {
-                        <bind-activator>();
-                    }
-
-                    override func Open() : (::system::Boolean)
-                    {
-                        if ((!<bind-opened>))
-                        {
-                            (<bind-opened> = true);
-                            (<bind-cache>0 = (self ?? null of (::darkskin::CustomFrameWindowTemplate*)));
-                            (<bind-handler>0_0 = (attach(<bind-cache>0.VisuallyEnabledChanged, <bind-callback>0_0) ?? null));
-                            return true;
-                        }
-                        return false;
-                    }
-
-                    override func Update() : (::system::Boolean)
-                    {
-                        if ((<bind-opened> and (!<bind-closed>)))
-                        {
-                            <bind-activator>();
-                            return true;
-                        }
-                        return false;
-                    }
-
-                    override func Close() : (::system::Boolean)
-                    {
-                        if ((!<bind-closed>))
-                        {
-                            (<bind-closed> = true);
-                            if (<bind-handler>0_0 is not null)
-                            {
-                                detach(<bind-cache>0.VisuallyEnabledChanged, <bind-handler>0_0);
-                                (<bind-handler>0_0 = null);
-                            }
-                            (<bind-cache>0 = null of (::darkskin::CustomFrameWindowTemplate*));
-                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
-                            return true;
-                        }
-                        return false;
-                    }
-                };
-                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
-                {
-                    var <old> = <precompile>22.BorderColor;
-                    var <new> = (cast (::presentation::Color) <value>);
-                    if ((<old> == <new>))
-                    {
-                        return;
-                    }
-                    (<precompile>22.BorderColor = <new>);
+                    (<precompile>21.BorderColor = <new>);
                 });
                 <this>.AddSubscription(<created-subscription>);
             }
@@ -33285,13 +33006,13 @@ namespace darkskin
                 };
                 attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
                 {
-                    var <old> = <precompile>21.Visible;
+                    var <old> = <precompile>20.Visible;
                     var <new> = (cast (::system::Boolean) <value>);
                     if ((<old> == <new>))
                     {
                         return;
                     }
-                    (<precompile>21.Visible = <new>);
+                    (<precompile>20.Visible = <new>);
                 });
                 <this>.AddSubscription(<created-subscription>);
             }
@@ -33358,13 +33079,13 @@ namespace darkskin
                 };
                 attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
                 {
-                    var <old> = <precompile>24.BackgroundColor;
+                    var <old> = <precompile>23.BackgroundColor;
                     var <new> = (cast (::presentation::Color) <value>);
                     if ((<old> == <new>))
                     {
                         return;
                     }
-                    (<precompile>24.BackgroundColor = <new>);
+                    (<precompile>23.BackgroundColor = <new>);
                 });
                 <this>.AddSubscription(<created-subscription>);
             }
@@ -33431,13 +33152,13 @@ namespace darkskin
                 };
                 attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
                 {
-                    var <old> = <precompile>24.BorderColor;
+                    var <old> = <precompile>23.BorderColor;
                     var <new> = (cast (::presentation::Color) <value>);
                     if ((<old> == <new>))
                     {
                         return;
                     }
-                    (<precompile>24.BorderColor = <new>);
+                    (<precompile>23.BorderColor = <new>);
                 });
                 <this>.AddSubscription(<created-subscription>);
             }
@@ -33504,13 +33225,86 @@ namespace darkskin
                 };
                 attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
                 {
-                    var <old> = <precompile>23.Visible;
+                    var <old> = <precompile>22.Visible;
                     var <new> = (cast (::system::Boolean) <value>);
                     if ((<old> == <new>))
                     {
                         return;
                     }
-                    (<precompile>23.Visible = <new>);
+                    (<precompile>22.Visible = <new>);
+                });
+                <this>.AddSubscription(<created-subscription>);
+            }
+            {
+                var <created-subscription> = new (::system::Subscription^)
+                {
+                    var <bind-cache>0 : ::darkskin::CustomFrameWindowTemplate* = null of (::darkskin::CustomFrameWindowTemplate*);
+
+                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-opened> : ::system::Boolean = false;
+
+                    var <bind-closed> : ::system::Boolean = false;
+
+                    func <bind-activator>() : (::system::Void)
+                    {
+                        var <bind-activator-result> = <bind-cache>0.MaximizedBox of (::system::Boolean);
+                        ValueChanged(<bind-activator-result>);
+                    }
+
+                    func <bind-callback>0_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    override func Open() : (::system::Boolean)
+                    {
+                        if ((!<bind-opened>))
+                        {
+                            (<bind-opened> = true);
+                            (<bind-cache>0 = (self ?? null of (::darkskin::CustomFrameWindowTemplate*)));
+                            (<bind-handler>0_0 = (attach(<bind-cache>0.MaximizedBoxChanged, <bind-callback>0_0) ?? null));
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Update() : (::system::Boolean)
+                    {
+                        if ((<bind-opened> and (!<bind-closed>)))
+                        {
+                            <bind-activator>();
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Close() : (::system::Boolean)
+                    {
+                        if ((!<bind-closed>))
+                        {
+                            (<bind-closed> = true);
+                            if (<bind-handler>0_0 is not null)
+                            {
+                                detach(<bind-cache>0.MaximizedBoxChanged, <bind-handler>0_0);
+                                (<bind-handler>0_0 = null);
+                            }
+                            (<bind-cache>0 = null of (::darkskin::CustomFrameWindowTemplate*));
+                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
+                            return true;
+                        }
+                        return false;
+                    }
+                };
+                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
+                {
+                    var <old> = <precompile>18.Enabled;
+                    var <new> = (cast (::system::Boolean) <value>);
+                    if ((<old> == <new>))
+                    {
+                        return;
+                    }
+                    (<precompile>18.Enabled = <new>);
                 });
                 <this>.AddSubscription(<created-subscription>);
             }
@@ -33741,13 +33535,13 @@ namespace darkskin
                 };
                 attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
                 {
-                    var <old> = <precompile>30.BackgroundColor;
+                    var <old> = <precompile>29.BackgroundColor;
                     var <new> = (cast (::presentation::Color) <value>);
                     if ((<old> == <new>))
                     {
                         return;
                     }
-                    (<precompile>30.BackgroundColor = <new>);
+                    (<precompile>29.BackgroundColor = <new>);
                 });
                 <this>.AddSubscription(<created-subscription>);
             }
@@ -33814,13 +33608,13 @@ namespace darkskin
                 };
                 attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
                 {
-                    var <old> = <precompile>30.BorderColor;
+                    var <old> = <precompile>29.BorderColor;
                     var <new> = (cast (::presentation::Color) <value>);
                     if ((<old> == <new>))
                     {
                         return;
                     }
-                    (<precompile>30.BorderColor = <new>);
+                    (<precompile>29.BorderColor = <new>);
                 });
                 <this>.AddSubscription(<created-subscription>);
             }
@@ -34437,13 +34231,13 @@ namespace darkskin
     class SystemFrameWindowTemplateConstructor
     {
         @cpp:Protected
+        var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
         var <precompile>0 : ::darkskin::SystemFrameWindowTemplate* = null of (::darkskin::SystemFrameWindowTemplate*);
 
         @cpp:Protected
         var <precompile>1 : ::presentation::elements::GuiSolidBackgroundElement^ = null of (::presentation::elements::GuiSolidBackgroundElement^);
-
-        @cpp:Protected
-        var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
         func <darkskin-SystemFrameWindowTemplate>Initialize(<this> : ::darkskin::SystemFrameWindowTemplate*) : (::system::Void)
@@ -34551,6 +34345,9 @@ namespace darkskin
     class TooltipTemplateConstructor
     {
         @cpp:Protected
+        var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
         var <precompile>0 : ::darkskin::TooltipTemplate* = null of (::darkskin::TooltipTemplate*);
 
         @cpp:Protected
@@ -34561,9 +34358,6 @@ namespace darkskin
 
         @cpp:Protected
         var <precompile>3 : ::presentation::elements::GuiSolidBorderElement^ = null of (::presentation::elements::GuiSolidBorderElement^);
-
-        @cpp:Protected
-        var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
         func <darkskin-TooltipTemplate>Initialize(<this> : ::darkskin::TooltipTemplate*) : (::system::Void)
