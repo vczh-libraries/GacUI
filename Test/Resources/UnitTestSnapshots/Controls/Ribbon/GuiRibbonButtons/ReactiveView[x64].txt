@@ -90,19 +90,79 @@ namespace gacuisrc_unittest
         var <precompile>12 : ::presentation::controls::GuiToolstripButton* = null of (::presentation::controls::GuiToolstripButton*);
 
         @cpp:Protected
-        var <precompile>13 : ::presentation::controls::GuiToolstripButton* = null of (::presentation::controls::GuiToolstripButton*);
+        var <precompile>13 : ::presentation::controls::GuiToolstripMenu* = null of (::presentation::controls::GuiToolstripMenu*);
 
         @cpp:Protected
-        var <precompile>14 : ::presentation::controls::GuiControl* = null of (::presentation::controls::GuiControl*);
+        var <precompile>14 : ::presentation::controls::GuiToolstripButton* = null of (::presentation::controls::GuiToolstripButton*);
 
         @cpp:Protected
-        var <precompile>15 : ::presentation::controls::GuiRibbonButtons* = null of (::presentation::controls::GuiRibbonButtons*);
+        var <precompile>15 : ::presentation::controls::GuiToolstripButton* = null of (::presentation::controls::GuiToolstripButton*);
 
         @cpp:Protected
-        var <precompile>16 : ::presentation::controls::GuiToolstripButton* = null of (::presentation::controls::GuiToolstripButton*);
+        var <precompile>16 : ::presentation::controls::GuiControl* = null of (::presentation::controls::GuiControl*);
 
         @cpp:Protected
         var <precompile>17 : ::presentation::controls::GuiToolstripButton* = null of (::presentation::controls::GuiToolstripButton*);
+
+        @cpp:Protected
+        var <precompile>18 : ::presentation::controls::GuiToolstripButton* = null of (::presentation::controls::GuiToolstripButton*);
+
+        @cpp:Protected
+        var <precompile>19 : ::presentation::controls::GuiToolstripMenu* = null of (::presentation::controls::GuiToolstripMenu*);
+
+        @cpp:Protected
+        var <precompile>20 : ::presentation::controls::GuiToolstripButton* = null of (::presentation::controls::GuiToolstripButton*);
+
+        @cpp:Protected
+        var <precompile>21 : ::presentation::controls::GuiToolstripButton* = null of (::presentation::controls::GuiToolstripButton*);
+
+        @cpp:Protected
+        var <precompile>22 : ::presentation::controls::GuiControl* = null of (::presentation::controls::GuiControl*);
+
+        @cpp:Protected
+        var <precompile>23 : ::presentation::controls::GuiToolstripButton* = null of (::presentation::controls::GuiToolstripButton*);
+
+        @cpp:Protected
+        var <precompile>24 : ::presentation::controls::GuiControl* = null of (::presentation::controls::GuiControl*);
+
+        @cpp:Protected
+        var <precompile>25 : ::presentation::controls::GuiRibbonButtons* = null of (::presentation::controls::GuiRibbonButtons*);
+
+        @cpp:Protected
+        var <precompile>26 : ::presentation::controls::GuiToolstripButton* = null of (::presentation::controls::GuiToolstripButton*);
+
+        @cpp:Protected
+        var <precompile>27 : ::presentation::controls::GuiToolstripMenu* = null of (::presentation::controls::GuiToolstripMenu*);
+
+        @cpp:Protected
+        var <precompile>28 : ::presentation::controls::GuiToolstripButton* = null of (::presentation::controls::GuiToolstripButton*);
+
+        @cpp:Protected
+        var <precompile>29 : ::presentation::controls::GuiToolstripButton* = null of (::presentation::controls::GuiToolstripButton*);
+
+        @cpp:Protected
+        var <precompile>30 : ::presentation::controls::GuiControl* = null of (::presentation::controls::GuiControl*);
+
+        @cpp:Protected
+        var <precompile>31 : ::presentation::controls::GuiToolstripButton* = null of (::presentation::controls::GuiToolstripButton*);
+
+        @cpp:Protected
+        var <precompile>32 : ::presentation::controls::GuiToolstripButton* = null of (::presentation::controls::GuiToolstripButton*);
+
+        @cpp:Protected
+        var <precompile>33 : ::presentation::controls::GuiToolstripMenu* = null of (::presentation::controls::GuiToolstripMenu*);
+
+        @cpp:Protected
+        var <precompile>34 : ::presentation::controls::GuiToolstripButton* = null of (::presentation::controls::GuiToolstripButton*);
+
+        @cpp:Protected
+        var <precompile>35 : ::presentation::controls::GuiToolstripButton* = null of (::presentation::controls::GuiToolstripButton*);
+
+        @cpp:Protected
+        var <precompile>36 : ::presentation::controls::GuiControl* = null of (::presentation::controls::GuiControl*);
+
+        @cpp:Protected
+        var <precompile>37 : ::presentation::controls::GuiToolstripButton* = null of (::presentation::controls::GuiToolstripButton*);
 
         @cpp:Protected
         func <gacuisrc_unittest-MainWindow>Initialize(<this> : ::gacuisrc_unittest::MainWindow*) : (::system::Void)
@@ -227,48 +287,184 @@ namespace gacuisrc_unittest
             {
                 (<precompile>12 = new (::presentation::controls::GuiToolstripButton*)(::presentation::theme::ThemeName::ToolstripDropdownButton));
             }
+            (<precompile>13 = <precompile>12.EnsureToolstripSubMenu());
+            {
+                (<precompile>14 = new (::presentation::controls::GuiToolstripButton*)(::presentation::theme::ThemeName::MenuItemButton));
+            }
+            {
+                (<precompile>14.Text = "Data1");
+            }
+            {
+                <precompile>13.ToolstripItems.Add(<precompile>14);
+            }
+            {
+                (<precompile>15 = new (::presentation::controls::GuiToolstripButton*)(::presentation::theme::ThemeName::MenuItemButton));
+            }
+            {
+                (<precompile>15.Text = "Data2");
+            }
+            {
+                <precompile>13.ToolstripItems.Add(<precompile>15);
+            }
+            {
+                (<precompile>16 = new (::presentation::controls::GuiControl*)(::presentation::theme::ThemeName::MenuSplitter));
+            }
+            {
+                <precompile>13.ToolstripItems.Add(<precompile>16);
+            }
+            {
+                (<precompile>17 = new (::presentation::controls::GuiToolstripButton*)(::presentation::theme::ThemeName::MenuItemButton));
+            }
+            {
+                (<precompile>17.Text = "Data3");
+            }
+            {
+                <precompile>13.ToolstripItems.Add(<precompile>17);
+            }
             {
                 var <collection> = <precompile>10.Buttons;
                 <collection>.Add(<precompile>12);
             }
             {
-                (<precompile>13 = new (::presentation::controls::GuiToolstripButton*)(::presentation::theme::ThemeName::ToolstripSplitButton));
+                (<precompile>18 = new (::presentation::controls::GuiToolstripButton*)(::presentation::theme::ThemeName::ToolstripSplitButton));
+            }
+            (<precompile>19 = <precompile>18.EnsureToolstripSubMenu());
+            {
+                (<precompile>20 = new (::presentation::controls::GuiToolstripButton*)(::presentation::theme::ThemeName::MenuItemButton));
+            }
+            {
+                (<precompile>20.Text = "Link1");
+            }
+            {
+                <precompile>19.ToolstripItems.Add(<precompile>20);
+            }
+            {
+                (<precompile>21 = new (::presentation::controls::GuiToolstripButton*)(::presentation::theme::ThemeName::MenuItemButton));
+            }
+            {
+                (<precompile>21.Text = "Link2");
+            }
+            {
+                <precompile>19.ToolstripItems.Add(<precompile>21);
+            }
+            {
+                (<precompile>22 = new (::presentation::controls::GuiControl*)(::presentation::theme::ThemeName::MenuSplitter));
+            }
+            {
+                <precompile>19.ToolstripItems.Add(<precompile>22);
+            }
+            {
+                (<precompile>23 = new (::presentation::controls::GuiToolstripButton*)(::presentation::theme::ThemeName::MenuItemButton));
+            }
+            {
+                (<precompile>23.Text = "Link3");
+            }
+            {
+                <precompile>19.ToolstripItems.Add(<precompile>23);
             }
             {
                 var <collection> = <precompile>10.Buttons;
-                <collection>.Add(<precompile>13);
+                <collection>.Add(<precompile>18);
             }
             {
                 var <collection> = group1.Items;
                 <collection>.Add(<precompile>10);
             }
             {
-                (<precompile>14 = new (::presentation::controls::GuiControl*)(::presentation::theme::ThemeName::RibbonSplitter));
+                (<precompile>24 = new (::presentation::controls::GuiControl*)(::presentation::theme::ThemeName::RibbonSplitter));
             }
             {
                 var <collection> = group1.Items;
-                <collection>.Add(<precompile>14);
+                <collection>.Add(<precompile>24);
             }
             {
-                (<precompile>15 = new (::presentation::controls::GuiRibbonButtons*)(::presentation::theme::ThemeName::RibbonButtons, Large of (::presentation::controls::RibbonButtonSize), Icon of (::presentation::controls::RibbonButtonSize)));
+                (<precompile>25 = new (::presentation::controls::GuiRibbonButtons*)(::presentation::theme::ThemeName::RibbonButtons, Large of (::presentation::controls::RibbonButtonSize), Icon of (::presentation::controls::RibbonButtonSize)));
             }
             {
-                (<precompile>16 = new (::presentation::controls::GuiToolstripButton*)(::presentation::theme::ThemeName::ToolstripDropdownButton));
+                (<precompile>26 = new (::presentation::controls::GuiToolstripButton*)(::presentation::theme::ThemeName::ToolstripDropdownButton));
+            }
+            (<precompile>27 = <precompile>26.EnsureToolstripSubMenu());
+            {
+                (<precompile>28 = new (::presentation::controls::GuiToolstripButton*)(::presentation::theme::ThemeName::MenuItemButton));
             }
             {
-                var <collection> = <precompile>15.Buttons;
-                <collection>.Add(<precompile>16);
+                (<precompile>28.Text = "Folder1");
             }
             {
-                (<precompile>17 = new (::presentation::controls::GuiToolstripButton*)(::presentation::theme::ThemeName::ToolstripSplitButton));
+                <precompile>27.ToolstripItems.Add(<precompile>28);
             }
             {
-                var <collection> = <precompile>15.Buttons;
-                <collection>.Add(<precompile>17);
+                (<precompile>29 = new (::presentation::controls::GuiToolstripButton*)(::presentation::theme::ThemeName::MenuItemButton));
+            }
+            {
+                (<precompile>29.Text = "Folder2");
+            }
+            {
+                <precompile>27.ToolstripItems.Add(<precompile>29);
+            }
+            {
+                (<precompile>30 = new (::presentation::controls::GuiControl*)(::presentation::theme::ThemeName::MenuSplitter));
+            }
+            {
+                <precompile>27.ToolstripItems.Add(<precompile>30);
+            }
+            {
+                (<precompile>31 = new (::presentation::controls::GuiToolstripButton*)(::presentation::theme::ThemeName::MenuItemButton));
+            }
+            {
+                (<precompile>31.Text = "Folder3");
+            }
+            {
+                <precompile>27.ToolstripItems.Add(<precompile>31);
+            }
+            {
+                var <collection> = <precompile>25.Buttons;
+                <collection>.Add(<precompile>26);
+            }
+            {
+                (<precompile>32 = new (::presentation::controls::GuiToolstripButton*)(::presentation::theme::ThemeName::ToolstripSplitButton));
+            }
+            (<precompile>33 = <precompile>32.EnsureToolstripSubMenu());
+            {
+                (<precompile>34 = new (::presentation::controls::GuiToolstripButton*)(::presentation::theme::ThemeName::MenuItemButton));
+            }
+            {
+                (<precompile>34.Text = "Light1");
+            }
+            {
+                <precompile>33.ToolstripItems.Add(<precompile>34);
+            }
+            {
+                (<precompile>35 = new (::presentation::controls::GuiToolstripButton*)(::presentation::theme::ThemeName::MenuItemButton));
+            }
+            {
+                (<precompile>35.Text = "Light2");
+            }
+            {
+                <precompile>33.ToolstripItems.Add(<precompile>35);
+            }
+            {
+                (<precompile>36 = new (::presentation::controls::GuiControl*)(::presentation::theme::ThemeName::MenuSplitter));
+            }
+            {
+                <precompile>33.ToolstripItems.Add(<precompile>36);
+            }
+            {
+                (<precompile>37 = new (::presentation::controls::GuiToolstripButton*)(::presentation::theme::ThemeName::MenuItemButton));
+            }
+            {
+                (<precompile>37.Text = "Light3");
+            }
+            {
+                <precompile>33.ToolstripItems.Add(<precompile>37);
+            }
+            {
+                var <collection> = <precompile>25.Buttons;
+                <collection>.Add(<precompile>32);
             }
             {
                 var <collection> = group1.Items;
-                <collection>.Add(<precompile>15);
+                <collection>.Add(<precompile>25);
             }
             {
                 (group1.Expandable = true);
@@ -356,13 +552,13 @@ namespace gacuisrc_unittest
                 (<precompile>12.Command = self.commandData);
             }
             {
-                (<precompile>13.Command = self.commandLink);
+                (<precompile>18.Command = self.commandLink);
             }
             {
-                (<precompile>16.Command = self.commandFolder);
+                (<precompile>26.Command = self.commandFolder);
             }
             {
-                (<precompile>17.Command = self.commandLight);
+                (<precompile>32.Command = self.commandLight);
             }
         }
 

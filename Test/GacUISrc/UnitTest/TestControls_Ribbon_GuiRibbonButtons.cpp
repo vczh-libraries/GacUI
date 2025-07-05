@@ -38,15 +38,43 @@ TEST_FILE
                     <RibbonButtons MaxSize="Large" MinSize="Icon">
                       <att.Buttons>
                         <ToolstripButton Command-eval="self.commandCert"/>
-                        <ToolstripDropdownButton Command-eval="self.commandData"/>
-                        <ToolstripSplitButton Command-eval="self.commandLink"/>
+                        <ToolstripDropdownButton Command-eval="self.commandData">
+                          <att.SubMenu-set>
+                            <MenuItemButton Text="Data1"/>
+                            <MenuItemButton Text="Data2"/>
+                            <MenuSplitter/>
+                            <MenuItemButton Text="Data3"/>
+                          </att.SubMenu-set>
+                        </ToolstripDropdownButton>
+                        <ToolstripSplitButton Command-eval="self.commandLink">
+                          <att.SubMenu-set>
+                            <MenuItemButton Text="Link1"/>
+                            <MenuItemButton Text="Link2"/>
+                            <MenuSplitter/>
+                            <MenuItemButton Text="Link3"/>
+                          </att.SubMenu-set>
+                        </ToolstripSplitButton>
                       </att.Buttons>
                     </RibbonButtons>
                     <RibbonSplitter/>
                     <RibbonButtons MaxSize="Large" MinSize="Icon">
                       <att.Buttons>
-                        <ToolstripDropdownButton Command-eval="self.commandFolder"/>
-                        <ToolstripSplitButton Command-eval="self.commandLight"/>
+                        <ToolstripDropdownButton Command-eval="self.commandFolder">
+                          <att.SubMenu-set>
+                            <MenuItemButton Text="Folder1"/>
+                            <MenuItemButton Text="Folder2"/>
+                            <MenuSplitter/>
+                            <MenuItemButton Text="Folder3"/>
+                          </att.SubMenu-set>
+                        </ToolstripDropdownButton>
+                        <ToolstripSplitButton Command-eval="self.commandLight">
+                          <att.SubMenu-set>
+                            <MenuItemButton Text="Light1"/>
+                            <MenuItemButton Text="Light2"/>
+                            <MenuSplitter/>
+                            <MenuItemButton Text="Light3"/>
+                          </att.SubMenu-set>
+                        </ToolstripSplitButton>
                       </att.Buttons>
                     </RibbonButtons>
                   </att.Items>
