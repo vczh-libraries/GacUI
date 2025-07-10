@@ -487,10 +487,6 @@ TEST_FILE
 		});
 	});
 
-	TEST_CATEGORY(L"GuiRibbonToolstrips")
-	{
-	});
-
 	TEST_CATEGORY(L"GuiRibbonGallery")
 	{
 	});
