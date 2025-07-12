@@ -270,6 +270,9 @@
     <ClCompile Include="TestControls_Ribbon_GuiRibbonButtons.cpp">
       <Filter>Source Files\Controls\Ribbon</Filter>
     </ClCompile>
+    <ClCompile Include="TestControls_Ribbon_Gallery.cpp">
+      <Filter>Source Files\Controls\Ribbon</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="TestCompositions.h">

@@ -218,6 +218,7 @@
     <ClCompile Include="TestControls_List_GuiVirtualTreeListControl_Template.cpp" />
     <ClCompile Include="TestControls_List_GuiVirtualTreeView.cpp" />
     <ClCompile Include="TestControls_List_GuiVirtualTreeView_Template.cpp" />
+    <ClCompile Include="TestControls_Ribbon_Gallery.cpp" />
     <ClCompile Include="TestControls_Ribbon_GuiRibbonButtons.cpp" />
     <ClCompile Include="TestControls_Ribbon_GuiRibbonGroup.cpp" />
     <ClCompile Include="TestControls_Ribbon_GuiRibbonTab.cpp" />
