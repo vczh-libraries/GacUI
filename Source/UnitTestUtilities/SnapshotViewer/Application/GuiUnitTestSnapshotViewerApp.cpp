@@ -86,6 +86,7 @@ Helper Functions
 			case INativeWindowListener::Title:
 				cursor = INativeCursor::SizeAll;
 				break;
+			default:;
 			}
 		}
 
