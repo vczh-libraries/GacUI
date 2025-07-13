@@ -166,7 +166,7 @@ TEST_FILE
   <Instance name="GalleryItemTemplateResource">
     <Instance ref.Class="gacuisrc_unittest::GalleryItemTemplate">
       <ref.Parameter Name="ViewModel" Class="GalleryItem"/>
-      <TextListItemTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
+      <TextListItemTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren" PreferredMinSize="x:72">
         <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren" CellPadding="2">
           <att.Rows>
             <_>composeType:Percentage percentage:0.5</_>
@@ -180,7 +180,7 @@ TEST_FILE
           </att.Columns>
 
           <Cell Site="row:1 column:1">
-            <Label Text-bind="cast (string) ViewModel.id ?? ''"/>
+            <Label Text-bind="cast (string) ViewModel.Id ?? ''"/>
           </Cell>
         </Table>
       </TextListItemTemplate>
@@ -229,7 +229,7 @@ TEST_FILE
 		{
 			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
 			{
-				TestReactiveView(protocol, L"Ready", 160, 480, 40, [=]()
+				TestReactiveView(protocol, L"Ready", 230, 480, 50, [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					window->Hide();
