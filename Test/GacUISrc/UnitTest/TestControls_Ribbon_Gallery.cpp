@@ -180,7 +180,7 @@ TEST_FILE
           </att.Columns>
 
           <Cell Site="row:1 column:1">
-            <Label Text-bind="(string) ViewModel.Id"/>
+            <Label Text-bind="cast (string) ViewModel.id ?? ''"/>
           </Cell>
         </Table>
       </TextListItemTemplate>
