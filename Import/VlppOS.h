@@ -405,6 +405,48 @@ namespace vl
 	};
 
 #define INVLOC vl::Locale::Invariant()
+
+	/// <summary>Platform-specific locale implementation interface.</summary>
+	class ILocaleImpl : public virtual Interface
+	{
+	public:
+		virtual Locale							Invariant() const = 0;
+		virtual Locale							SystemDefault() const = 0;
+		virtual Locale							UserDefault() const = 0;
+		virtual void							Enumerate(collections::List<Locale>& locales) const = 0;
+
+		virtual void							GetShortDateFormats(const WString& localeName, collections::List<WString>& formats) const = 0;
+		virtual void							GetLongDateFormats(const WString& localeName, collections::List<WString>& formats) const = 0;
+		virtual void							GetYearMonthDateFormats(const WString& localeName, collections::List<WString>& formats) const = 0;
+		virtual void							GetLongTimeFormats(const WString& localeName, collections::List<WString>& formats) const = 0;
+		virtual void							GetShortTimeFormats(const WString& localeName, collections::List<WString>& formats) const = 0;
+
+		virtual WString							FormatDate(const WString& localeName, const WString& format, DateTime date) const = 0;
+		virtual WString							FormatTime(const WString& localeName, const WString& format, DateTime time) const = 0;
+		virtual WString							FormatNumber(const WString& localeName, const WString& number) const = 0;
+		virtual WString							FormatCurrency(const WString& localeName, const WString& currency) const = 0;
+
+		virtual WString							GetShortDayOfWeekName(const WString& localeName, vint dayOfWeek) const = 0;
+		virtual WString							GetLongDayOfWeekName(const WString& localeName, vint dayOfWeek) const = 0;
+		virtual WString							GetShortMonthName(const WString& localeName, vint month) const = 0;
+		virtual WString							GetLongMonthName(const WString& localeName, vint month) const = 0;
+
+		virtual WString							ToLower(const WString& localeName, const WString& str) const = 0;
+		virtual WString							ToUpper(const WString& localeName, const WString& str) const = 0;
+		virtual WString							ToLinguisticLower(const WString& localeName, const WString& str) const = 0;
+		virtual WString							ToLinguisticUpper(const WString& localeName, const WString& str) const = 0;
+
+		virtual vint							Compare(const WString& localeName, const WString& s1, const WString& s2, Locale::Normalization normalization) const = 0;
+		virtual vint							CompareOrdinal(const WString& s1, const WString& s2) const = 0;
+		virtual vint							CompareOrdinalIgnoreCase(const WString& s1, const WString& s2) const = 0;
+		virtual collections::Pair<vint, vint>	FindFirst(const WString& localeName, const WString& text, const WString& find, Locale::Normalization normalization) const = 0;
+		virtual collections::Pair<vint, vint>	FindLast(const WString& localeName, const WString& text, const WString& find, Locale::Normalization normalization) const = 0;
+		virtual bool							StartsWith(const WString& localeName, const WString& text, const WString& find, Locale::Normalization normalization) const = 0;
+		virtual bool							EndsWith(const WString& localeName, const WString& text, const WString& find, Locale::Normalization normalization) const = 0;
+	};
+	
+	extern ILocaleImpl*							GetDefaultLocaleImpl();
+	extern void									InjectLocaleImpl(ILocaleImpl* impl);
 }
 
 #endif
