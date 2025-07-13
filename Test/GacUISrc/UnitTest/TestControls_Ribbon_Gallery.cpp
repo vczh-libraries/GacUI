@@ -53,6 +53,27 @@ TEST_FILE
 				protocol->OnNextIdleFrame(L"Ready", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
+					auto gallery = FindObjectByName<GuiRibbonGallery>(window, L"gallery");
+					auto location = protocol->LocationOf(gallery, 1.0, 0.2, -10, 0);
+					protocol->LClick(location);
+				});
+				protocol->OnNextIdleFrame(L"Click ScrollUp", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto gallery = FindObjectByName<GuiRibbonGallery>(window, L"gallery");
+					auto location = protocol->LocationOf(gallery, 1.0, 0.5, -10, 0);
+					protocol->LClick(location);
+				});
+				protocol->OnNextIdleFrame(L"Click ScrollDown", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto gallery = FindObjectByName<GuiRibbonGallery>(window, L"gallery");
+					auto location = protocol->LocationOf(gallery, 1.0, 0.8, -10, 0);
+					protocol->LClick(location);
+				});
+				protocol->OnNextIdleFrame(L"Click Dropdown", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
 					window->Hide();
 				});
 			});

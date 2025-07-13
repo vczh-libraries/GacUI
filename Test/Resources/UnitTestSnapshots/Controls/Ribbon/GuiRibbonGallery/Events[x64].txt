@@ -112,6 +112,27 @@ namespace gacuisrc_unittest
             {
                 (group1.LargeImage = (cast (::presentation::GuiImageData^) <this>.ResolveResource("res", "ListViewImages/LargeImages/Cert", true)));
             }
+            {
+                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                {
+                    (self.Text = "RequestedScrollUp");
+                };
+                attach(gallery.RequestedScrollUp, <event-handler>);
+            }
+            {
+                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                {
+                    (self.Text = "RequestedScrollDown");
+                };
+                attach(gallery.RequestedScrollDown, <event-handler>);
+            }
+            {
+                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                {
+                    (self.Text = "RequestedDropdown");
+                };
+                attach(gallery.RequestedDropdown, <event-handler>);
+            }
         }
 
         new ()
