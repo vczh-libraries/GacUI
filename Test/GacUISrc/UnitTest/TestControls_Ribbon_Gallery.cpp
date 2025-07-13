@@ -22,6 +22,15 @@ TEST_FILE
                   <att.Items>
                     <RibbonGallery ref.Name="gallery">
                       <att.BoundsComposition-set PreferredMinSize="x:200"/>
+                      <ev.RequestedScrollUp-eval><![CDATA[{
+                        self.Text = "RequestedScrollUp";
+                      }]]></ev.RequestedScrollUp-eval>
+                      <ev.RequestedScrollDown-eval><![CDATA[{
+                        self.Text = "RequestedScrollDown";
+                      }]]></ev.RequestedScrollDown-eval>
+                      <ev.RequestedDropdown-eval><![CDATA[{
+                        self.Text = "RequestedDropdown";
+                      }]]></ev.RequestedDropdown-eval>
                     </RibbonGallery>
                   </att.Items>
                 </RibbonGroup>
