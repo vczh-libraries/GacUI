@@ -147,9 +147,6 @@ TEST_FILE
 
 	const auto resourceBindableRibbonGallery = LR"GacUISrc(
 <Resource>
-  <Folder name="UnitTestConfig" content="Link">ListViewImagesData.xml</Folder>
-  <Folder name="ListViewImages" content="Link">ListViewImagesFolder.xml</Folder>
-
   <Script name="GalleryItemResource"><Workflow><![CDATA[
     module galleryitem;
     using system::*;
@@ -183,9 +180,9 @@ TEST_FILE
             <RibbonTabPage ref.Name="tabPageBindable" Text="Bindable Gallery">
               <att.ContainerComposition-set PreferredMinSize="y:110"/>
               <att.Groups>
-                <RibbonGroup ref.Name="group1" Text="Bindable Gallery" LargeImage-uri="res://ListViewImages/LargeImages/Cert" Expandable="true">
+                <RibbonGroup ref.Name="group1" Text="Bindable Gallery">
                   <att.Items>
-                    <BindableRibbonGalleryList ref.Name="bindableGallery" MaxCount="5" MinCount="3">
+                    <BindableRibbonGalleryList ref.Name="bindableGallery" MaxCount="5" MinCount="3" env.ItemType="GalleryItem^">
                       <att.BoundsComposition-set PreferredMinSize="x:200"/>
                       <att.ItemSource-eval>self.items</att.ItemSource-eval>
                     </BindableRibbonGalleryList>
