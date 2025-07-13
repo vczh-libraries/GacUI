@@ -132,14 +132,125 @@ When you see `<Button>`,
 try all mappings and for example `presentation::elements::Gui*`,
 replacing `*` with the tag and you will get `presentation::elements::GuiButton`,
 it is an existing C++ class!
-So `<Button>` means `presentation::elements::GuiButton`.
+So `<Button>` means `presentation::controls::GuiButton`.
+Following the same rule, `<Table>` would be `presentation::compositions::GuiTableComposition` and `<SolidLabel>` would be `presentation::elements::GuiSolidLabelElement`.
 
 Take this file `Test\Resources\Metadata\Reflection64.txt` as an index, it collects all valid C++ classes and their members, but written in my own format.
 When there is a `@FullName` on top of a class, it means the full name in C++, the class name will be the full name in XML.
 When there is no `@FullName` but the class name begins with `presentation::`, the full name in C++ begins with `vl::presentation::`.
 
-## Layout
+## XML in a Single String
 
-## Properties and Events
+To define an empty window, the XML looks like:
 
-## Workflow Script
+```xml
+<Resource>
+  <Instance name="MainWindowResource">
+    <Instance ref.Class="gacuisrc_unittest::MainWindow">
+      <Window ref.Name="self" Text="GuiRibbonGallery" ClientSize="x:480 y:320">
+      </Window>
+    </Instance>
+  </Instance>
+</Resource>
+```
+
+The first `<Instance>` defines the resource named `MainWindowResource`, the `<Instance>` inside is the content. You can also add a script like this:
+
+```xml
+<Resource>
+  <Instance name="MainWindowResource">
+    <Instance ref.Class="gacuisrc_unittest::MainWindow">
+      <Window ref.Name="self" Text="GuiRibbonGallery" ClientSize="x:480 y:320">
+        <Label Text="This is a demo"/>
+      </Window>
+    </Instance>
+  </Instance>
+
+  <Folder name="Scripts">
+    <Script name="ViewModelResource">
+      <Workflow>
+        <![CDATA[
+          module viewmodel;
+          
+          using system::*;
+          using presentation::*;
+          
+          namespace demo
+          {
+            enum MyCategory
+            {
+              Black = 0,
+              Red = 1,
+              Lime = 2,
+              Blue = 3,
+              White = 4,
+            }
+
+            func ToString(value : DateTime) : string
+            {
+              return $"$(value.month)/$(value.day)/$(value.year)";
+            }
+          }
+        ]]>
+      </Workflow>
+    </Script>
+  </Folder>
+</Resource>
+```
+
+One more `Scripts\ViewModelResource` is added to the resource, and the content of the new resource is defined by `<Workflow>`
+
+## UI Layout
+
+## Properties
+
+There are two ways to add a property:
+
+```xml
+<Label Text="This is a demo"/>
+```
+
+```xml
+<Label>
+  <att.Text>This is a demo</att.Text>
+</Label>
+```
+
+If the object assigned to a property cannot be written as a string, the second way is the only way to do that, for example:
+
+```xml
+<Label>
+</Label>
+```
+
+To access properties in the nested level, the `-set` binding is required:
+
+```xml
+<Label>
+  <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 botton:0"/>
+</Label>
+```
+
+This example changes the property `AlignmentToParent` to the object in label's `BoundsComposition` property.
+
+If a property name looks like `Name-binding`, it means the property `Name` should interpret the content using the specified way `-binding`. There are more predefined bindings like `-ref`, `-uri`, `-eval`, `-bind`, etc.
+
+## Events
+
+An event is subscribed like:
+
+```xml
+<Button>
+  <ev.Clicked-eval><![CDATA[{
+    // some code
+  }]]></ev.Clicked-eval>
+</Button>
+```
+
+It means when button's `Clicked` event happens, execute some code.
+
+Code in an event of in the `<Workflow>` resource item should be Workflow Script instead of C++.
+
+# The Workflow Script
+
+For now just sample other test files for Workflow Script.
