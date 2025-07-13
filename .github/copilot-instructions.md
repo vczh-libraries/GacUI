@@ -198,7 +198,7 @@ The first `<Instance>` defines the resource named `MainWindowResource`, the `<In
 </Resource>
 ```
 
-One more `Scripts\ViewModelResource` is added to the resource, and the content of the new resource is defined by `<Workflow>`
+One more `Scripts\ViewModelResource` is added to the resource, and the content of the new resource is defined by `<Workflow>`. Code inside `<Workflow>` will always be Workflow Script instead of C++.
 
 ## UI Layout
 
