@@ -144,4 +144,102 @@ TEST_FILE
 			);
 		});
 	});
+
+	const auto resourceBindableRibbonGallery = LR"GacUISrc(
+<Resource>
+  <Script name="GalleryItemResource"><Workflow><![CDATA[
+    module galleryitem;
+    using system::*;
+
+    class GalleryItem
+    {
+      prop Id:int = 0 {not observe}
+
+      new(){}
+      new(id:int)
+      {
+        Id=id;
+      }
+    }
+  ]]></Workflow></Script>
+
+  <Instance name="GalleryItemTemplateResource">
+    <Instance ref.Class="gacuisrc_unittest::GalleryItemTemplate">
+      <ref.Parameter Name="ViewModel" Class="GalleryItem"/>
+      <TextListItemTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren" PreferredMinSize="x:72">
+        <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren" CellPadding="2">
+          <att.Rows>
+            <_>composeType:Percentage percentage:0.5</_>
+            <_>composeType:MinSize</_>
+            <_>composeType:Percentage percentage:0.5</_>
+          </att.Rows>
+          <att.Columns>
+            <_>composeType:Percentage percentage:0.5</_>
+            <_>composeType:MinSize</_>
+            <_>composeType:Percentage percentage:0.5</_>
+          </att.Columns>
+
+          <Cell Site="row:1 column:1">
+            <Label Text-bind="cast (string) ViewModel.Id ?? ''"/>
+          </Cell>
+        </Table>
+      </TextListItemTemplate>
+    </Instance>
+  </Instance>
+
+  <Instance name="MainWindowResource">
+    <Instance ref.Class="gacuisrc_unittest::MainWindow">
+      <ref.Members><![CDATA[
+        var items : observe GalleryItem^[] = {
+          new GalleryItem^(1);
+          new GalleryItem^(2);
+          new GalleryItem^(3);
+          new GalleryItem^(4);
+        };
+      ]]></ref.Members>
+      <Window ref.Name="self" Text="GuiBindableRibbonGalleryList" ClientSize="x:480 y:320">
+        <RibbonTab ref.Name="tab">
+          <att.BoundsComposition-set AlignmentToParent="left:0 top:5 right:0 bottom:-1"/>
+          <att.Pages>
+            <RibbonTabPage ref.Name="tabPageBindable" Text="Bindable Gallery">
+              <att.ContainerComposition-set PreferredMinSize="y:110"/>
+              <att.Groups>
+                <RibbonGroup ref.Name="group1" Text="Bindable Gallery">
+                  <att.Items>
+                    <BindableRibbonGalleryList ref.Name="bindableGallery" MaxCount="5" MinCount="3" env.ItemType="GalleryItem^">
+                      <att.BoundsComposition-set PreferredMinSize="x:200"/>
+                      <att.ItemSource-eval>self.items</att.ItemSource-eval>
+                      <att.ItemTemplate>gacuisrc_unittest::GalleryItemTemplate</att.ItemTemplate>
+                    </BindableRibbonGalleryList>
+                  </att.Items>
+                </RibbonGroup>
+              </att.Groups>
+            </RibbonTabPage>
+          </att.Pages>
+        </RibbonTab>
+      </Window>
+    </Instance>
+  </Instance>
+</Resource>
+)GacUISrc";
+
+	TEST_CATEGORY(L"GuiBindableRibbonGalleryList")
+	{
+		TEST_CASE(L"ReactiveView")
+		{
+			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				TestReactiveView(protocol, L"Ready", 230, 480, 50, [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					window->Hide();
+				});
+			});
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Controls/Ribbon/GuiBindableRibbonGalleryList/ReactiveView"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resourceBindableRibbonGallery
+			);
+		});
+	});
 }
