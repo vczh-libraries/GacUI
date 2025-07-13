@@ -486,8 +486,4 @@ TEST_FILE
 				);
 		});
 	});
-
-	TEST_CATEGORY(L"GuiRibbonGallery")
-	{
-	});
 }
