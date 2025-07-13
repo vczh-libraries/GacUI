@@ -21,7 +21,7 @@ Here are some basic rules.
 ## Basic Structure
 
 ```C++
-#include "TestControlsh"
+#include "TestControls.h"
 
 using namespace gacui_unittest_template;
 
