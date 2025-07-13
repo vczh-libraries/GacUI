@@ -163,6 +163,30 @@ TEST_FILE
     }
   ]]></Workflow></Script>
 
+  <Instance name="GalleryItemTemplateResource">
+    <Instance ref.Class="gacuisrc_unittest::GalleryItemTemplate">
+      <ref.Parameter Name="ViewModel" Class="GalleryItem"/>
+      <TextListItemTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
+        <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren" CellPadding="2">
+          <att.Rows>
+            <_>composeType:Percentage percentage:1.0</_>
+            <_>composeType:Percentage percentage:1.0</_>
+            <_>composeType:Percentage percentage:1.0</_>
+          </att.Rows>
+          <att.Columns>
+            <_>composeType:Percentage percentage:1.0</_>
+            <_>composeType:Percentage percentage:1.0</_>
+            <_>composeType:Percentage percentage:1.0</_>
+          </att.Columns>
+
+          <Cell Site="row:1 column:1">
+            <Label Text-bind="ViewModel.Id" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+          </Cell>
+        </Table>
+      </TextListItemTemplate>
+    </Instance>
+  </Instance>
+
   <Instance name="MainWindowResource">
     <Instance ref.Class="gacuisrc_unittest::MainWindow">
       <ref.Members><![CDATA[
@@ -182,7 +206,7 @@ TEST_FILE
               <att.Groups>
                 <RibbonGroup ref.Name="group1" Text="Bindable Gallery">
                   <att.Items>
-                    <BindableRibbonGalleryList ref.Name="bindableGallery" MaxCount="5" MinCount="3" env.ItemType="GalleryItem^">
+                    <BindableRibbonGalleryList ref.Name="bindableGallery" MaxCount="5" MinCount="3" env.ItemType="GalleryItem^" ItemTemplate="gacuisrc_unittest:GalleryItemTemplate">
                       <att.BoundsComposition-set PreferredMinSize="x:200"/>
                       <att.ItemSource-eval>self.items</att.ItemSource-eval>
                     </BindableRibbonGalleryList>
