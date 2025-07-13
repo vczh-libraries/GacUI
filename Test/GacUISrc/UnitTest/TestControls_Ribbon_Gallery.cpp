@@ -80,71 +80,6 @@ TEST_FILE
 </Resource>
 )GacUISrc";
 
-	TEST_CATEGORY(L"GuiRibbonGallery")
-	{
-		TEST_CASE(L"Events")
-		{
-			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
-			{
-				protocol->OnNextIdleFrame(L"Ready", [=]()
-				{
-					auto window = GetApplication()->GetMainWindow();
-					auto gallery = FindObjectByName<GuiRibbonGallery>(window, L"gallery");
-					auto location = protocol->LocationOf(gallery, 1.0, 0.2, -10, 0);
-					protocol->LClick(location);
-				});
-				protocol->OnNextIdleFrame(L"Click ScrollUp", [=]()
-				{
-					auto window = GetApplication()->GetMainWindow();
-					auto gallery = FindObjectByName<GuiRibbonGallery>(window, L"gallery");
-					auto location = protocol->LocationOf(gallery, 1.0, 0.5, -10, 0);
-					protocol->LClick(location);
-				});
-				protocol->OnNextIdleFrame(L"Click ScrollDown", [=]()
-				{
-					auto window = GetApplication()->GetMainWindow();
-					auto gallery = FindObjectByName<GuiRibbonGallery>(window, L"gallery");
-					auto location = protocol->LocationOf(gallery, 1.0, 0.8, -10, 0);
-					protocol->LClick(location);
-				});
-				protocol->OnNextIdleFrame(L"Click Dropdown", [=]()
-				{
-					auto window = GetApplication()->GetMainWindow();
-					window->Hide();
-				});
-			});
-			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
-				WString::Unmanaged(L"Controls/Ribbon/GuiRibbonGallery/Events"),
-				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
-				resourceRibbonGallery
-			);
-		});
-
-		TEST_CASE(L"Container")
-		{
-			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
-			{
-				protocol->OnNextIdleFrame(L"Ready", [=]()
-				{
-					auto window = GetApplication()->GetMainWindow();
-					auto button = FindObjectByName<GuiButton>(window, L"button");
-					auto location = protocol->LocationOf(button);
-					protocol->LClick(location);
-				});
-				protocol->OnNextIdleFrame(L"Clicked Button", [=]()
-				{
-					auto window = GetApplication()->GetMainWindow();
-					window->Hide();
-				});
-			});
-			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
-				WString::Unmanaged(L"Controls/Ribbon/GuiRibbonGallery/Container"),
-				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
-				resourceRibbonGalleryContainer
-			);
-		});
-	});
-
 	const auto resourceBindableRibbonGallery = LR"GacUISrc(
 <Resource>
   <Script name="GalleryItemResource"><Workflow><![CDATA[
@@ -222,6 +157,71 @@ TEST_FILE
   </Instance>
 </Resource>
 )GacUISrc";
+
+	TEST_CATEGORY(L"GuiRibbonGallery")
+	{
+		TEST_CASE(L"Events")
+		{
+			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto gallery = FindObjectByName<GuiRibbonGallery>(window, L"gallery");
+					auto location = protocol->LocationOf(gallery, 1.0, 0.2, -10, 0);
+					protocol->LClick(location);
+				});
+				protocol->OnNextIdleFrame(L"Click ScrollUp", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto gallery = FindObjectByName<GuiRibbonGallery>(window, L"gallery");
+					auto location = protocol->LocationOf(gallery, 1.0, 0.5, -10, 0);
+					protocol->LClick(location);
+				});
+				protocol->OnNextIdleFrame(L"Click ScrollDown", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto gallery = FindObjectByName<GuiRibbonGallery>(window, L"gallery");
+					auto location = protocol->LocationOf(gallery, 1.0, 0.8, -10, 0);
+					protocol->LClick(location);
+				});
+				protocol->OnNextIdleFrame(L"Click Dropdown", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					window->Hide();
+				});
+			});
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Controls/Ribbon/GuiRibbonGallery/Events"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resourceRibbonGallery
+			);
+		});
+
+		TEST_CASE(L"Container")
+		{
+			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto button = FindObjectByName<GuiButton>(window, L"button");
+					auto location = protocol->LocationOf(button);
+					protocol->LClick(location);
+				});
+				protocol->OnNextIdleFrame(L"Clicked Button", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					window->Hide();
+				});
+			});
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Controls/Ribbon/GuiRibbonGallery/Container"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resourceRibbonGalleryContainer
+			);
+		});
+	});
 
 	TEST_CATEGORY(L"GuiBindableRibbonGalleryList")
 	{
