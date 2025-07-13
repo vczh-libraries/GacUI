@@ -169,18 +169,18 @@ TEST_FILE
       <TextListItemTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
         <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren" CellPadding="2">
           <att.Rows>
-            <_>composeType:Percentage percentage:1.0</_>
-            <_>composeType:Percentage percentage:1.0</_>
-            <_>composeType:Percentage percentage:1.0</_>
+            <_>composeType:Percentage percentage:0.5</_>
+            <_>composeType:MinSize</_>
+            <_>composeType:Percentage percentage:0.5</_>
           </att.Rows>
           <att.Columns>
-            <_>composeType:Percentage percentage:1.0</_>
-            <_>composeType:Percentage percentage:1.0</_>
-            <_>composeType:Percentage percentage:1.0</_>
+            <_>composeType:Percentage percentage:0.5</_>
+            <_>composeType:MinSize</_>
+            <_>composeType:Percentage percentage:0.5</_>
           </att.Columns>
 
           <Cell Site="row:1 column:1">
-            <Label Text-bind="ViewModel.Id" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            <Label Text-bind="(string) ViewModel.Id"/>
           </Cell>
         </Table>
       </TextListItemTemplate>
@@ -206,9 +206,10 @@ TEST_FILE
               <att.Groups>
                 <RibbonGroup ref.Name="group1" Text="Bindable Gallery">
                   <att.Items>
-                    <BindableRibbonGalleryList ref.Name="bindableGallery" MaxCount="5" MinCount="3" env.ItemType="GalleryItem^" ItemTemplate="gacuisrc_unittest:GalleryItemTemplate">
+                    <BindableRibbonGalleryList ref.Name="bindableGallery" MaxCount="5" MinCount="3" env.ItemType="GalleryItem^">
                       <att.BoundsComposition-set PreferredMinSize="x:200"/>
                       <att.ItemSource-eval>self.items</att.ItemSource-eval>
+                      <att.ItemTemplate>gacuisrc_unittest::GalleryItemTemplate</att.ItemTemplate>
                     </BindableRibbonGalleryList>
                   </att.Items>
                 </RibbonGroup>
