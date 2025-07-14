@@ -102,67 +102,49 @@ TEST_FILE
 
 	TEST_CATEGORY(L"Application")
 	{
+		auto navibateButtons = []<typename TLastCallback>(UnitTestRemoteProtocol* protocol, const WString& firstFrame, vint count, TLastCallback && lastCallback)
+		{
+			protocol->OnNextIdleFrame(firstFrame, [=]()
+			{
+				auto window = GetApplication()->GetMainWindow();
+				auto button1 = FindObjectByName<GuiButton>(window, L"button1");
+				
+				button1->SetFocused();
+				TEST_ASSERT(button1->GetFocused());
+			});
+
+			for (vint i = 0; i < count; i++)
+			{
+				protocol->OnNextIdleFrame((i == 0 ? L"Focused button1" : L"[TAB]"), [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto button = FindObjectByName<GuiButton>(window, L"button" + itow((i + 1) % count + 1));
+
+					protocol->KeyPress(VKEY::KEY_TAB, false, false, false);
+					TEST_ASSERT(button->GetFocused());
+				});
+			}
+
+			for (vint i = 0; i < count; i++)
+			{
+				protocol->OnNextIdleFrame((i == 0 ? L"[TAB]" : L"[SHIFT]+[TAB]"), [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto button = FindObjectByName<GuiButton>(window, L"button" + itow(count - i));
+
+					protocol->KeyPress(VKEY::KEY_TAB, false, true, false);
+					TEST_ASSERT(button->GetFocused());
+				});
+			}
+
+			protocol->OnNextIdleFrame(L"[SHIFT]+[TAB]", std::forward<TLastCallback&&>(lastCallback));
+		};
+
 		TEST_CASE(L"TabNavigate")
 		{
-			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			GacUIUnitTest_SetGuiMainProxy([&navibateButtons](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
 			{
-				protocol->OnNextIdleFrame(L"Ready", [=]()
-				{
-					auto window = GetApplication()->GetMainWindow();
-					auto button1 = FindObjectByName<GuiButton>(window, L"button1");
-					
-					button1->SetFocused();
-					TEST_ASSERT(button1->GetFocused());
-				});
-				protocol->OnNextIdleFrame(L"Focused button1", [=]()
-				{
-					auto window = GetApplication()->GetMainWindow();
-					auto button2 = FindObjectByName<GuiButton>(window, L"button2");
-					
-					protocol->KeyPress(VKEY::KEY_TAB, false, false, false);
-					TEST_ASSERT(button2->GetFocused());
-				});
-				protocol->OnNextIdleFrame(L"[TAB]", [=]()
-				{
-					auto window = GetApplication()->GetMainWindow();
-					auto button3 = FindObjectByName<GuiButton>(window, L"button3");
-					
-					protocol->KeyPress(VKEY::KEY_TAB, false, false, false);
-					TEST_ASSERT(button3->GetFocused());
-				});
-				protocol->OnNextIdleFrame(L"[TAB]", [=]()
-				{
-					auto window = GetApplication()->GetMainWindow();
-					auto button1 = FindObjectByName<GuiButton>(window, L"button1");
-					
-					protocol->KeyPress(VKEY::KEY_TAB, false, false, false);
-					TEST_ASSERT(button1->GetFocused());
-				});
-				protocol->OnNextIdleFrame(L"[TAB]", [=]()
-				{
-					auto window = GetApplication()->GetMainWindow();
-					auto button3 = FindObjectByName<GuiButton>(window, L"button3");
-					
-					protocol->KeyPress(VKEY::KEY_TAB, false, true, false);
-					TEST_ASSERT(button3->GetFocused());
-				});
-				protocol->OnNextIdleFrame(L"[SHIFT]+[TAB]", [=]()
-				{
-					auto window = GetApplication()->GetMainWindow();
-					auto button2 = FindObjectByName<GuiButton>(window, L"button2");
-					
-					protocol->KeyPress(VKEY::KEY_TAB, false, true, false);
-					TEST_ASSERT(button2->GetFocused());
-				});
-				protocol->OnNextIdleFrame(L"[SHIFT]+[TAB]", [=]()
-				{
-					auto window = GetApplication()->GetMainWindow();
-					auto button1 = FindObjectByName<GuiButton>(window, L"button1");
-					
-					protocol->KeyPress(VKEY::KEY_TAB, false, true, false);
-					TEST_ASSERT(button1->GetFocused());
-				});
-				protocol->OnNextIdleFrame(L"[SHIFT]+[TAB]", [=]()
+				navibateButtons(protocol, L"Ready", 3, [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					window->Hide();
@@ -177,97 +159,9 @@ TEST_FILE
 
 		TEST_CASE(L"TabNavigateWithContainer")
 		{
-			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			GacUIUnitTest_SetGuiMainProxy([&navibateButtons](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
 			{
-				protocol->OnNextIdleFrame(L"Ready", [=]()
-				{
-					auto window = GetApplication()->GetMainWindow();
-					auto button1 = FindObjectByName<GuiButton>(window, L"button1");
-					
-					button1->SetFocused();
-					TEST_ASSERT(button1->GetFocused());
-				});
-				protocol->OnNextIdleFrame(L"Focused button1", [=]()
-				{
-					auto window = GetApplication()->GetMainWindow();
-					auto button2 = FindObjectByName<GuiButton>(window, L"button2");
-					
-					protocol->KeyPress(VKEY::KEY_TAB, false, false, false);
-					TEST_ASSERT(button2->GetFocused());
-				});
-				protocol->OnNextIdleFrame(L"[TAB]", [=]()
-				{
-					auto window = GetApplication()->GetMainWindow();
-					auto button3 = FindObjectByName<GuiButton>(window, L"button3");
-					
-					protocol->KeyPress(VKEY::KEY_TAB, false, false, false);
-					TEST_ASSERT(button3->GetFocused());
-				});
-				protocol->OnNextIdleFrame(L"[TAB]", [=]()
-				{
-					auto window = GetApplication()->GetMainWindow();
-					auto button4 = FindObjectByName<GuiButton>(window, L"button4");
-					
-					protocol->KeyPress(VKEY::KEY_TAB, false, false, false);
-					TEST_ASSERT(button4->GetFocused());
-				});
-				protocol->OnNextIdleFrame(L"[TAB]", [=]()
-				{
-					auto window = GetApplication()->GetMainWindow();
-					auto button5 = FindObjectByName<GuiButton>(window, L"button5");
-					
-					protocol->KeyPress(VKEY::KEY_TAB, false, false, false);
-					TEST_ASSERT(button5->GetFocused());
-				});
-				protocol->OnNextIdleFrame(L"[TAB]", [=]()
-				{
-					auto window = GetApplication()->GetMainWindow();
-					auto button1 = FindObjectByName<GuiButton>(window, L"button1");
-					
-					protocol->KeyPress(VKEY::KEY_TAB, false, false, false);
-					TEST_ASSERT(button1->GetFocused());
-				});
-				protocol->OnNextIdleFrame(L"[TAB]", [=]()
-				{
-					auto window = GetApplication()->GetMainWindow();
-					auto button5 = FindObjectByName<GuiButton>(window, L"button5");
-					
-					protocol->KeyPress(VKEY::KEY_TAB, false, true, false);
-					TEST_ASSERT(button5->GetFocused());
-				});
-				protocol->OnNextIdleFrame(L"[SHIFT]+[TAB]", [=]()
-				{
-					auto window = GetApplication()->GetMainWindow();
-					auto button4 = FindObjectByName<GuiButton>(window, L"button4");
-					
-					protocol->KeyPress(VKEY::KEY_TAB, false, true, false);
-					TEST_ASSERT(button4->GetFocused());
-				});
-				protocol->OnNextIdleFrame(L"[SHIFT]+[TAB]", [=]()
-				{
-					auto window = GetApplication()->GetMainWindow();
-					auto button3 = FindObjectByName<GuiButton>(window, L"button3");
-					
-					protocol->KeyPress(VKEY::KEY_TAB, false, true, false);
-					TEST_ASSERT(button3->GetFocused());
-				});
-				protocol->OnNextIdleFrame(L"[SHIFT]+[TAB]", [=]()
-				{
-					auto window = GetApplication()->GetMainWindow();
-					auto button2 = FindObjectByName<GuiButton>(window, L"button2");
-					
-					protocol->KeyPress(VKEY::KEY_TAB, false, true, false);
-					TEST_ASSERT(button2->GetFocused());
-				});
-				protocol->OnNextIdleFrame(L"[SHIFT]+[TAB]", [=]()
-				{
-					auto window = GetApplication()->GetMainWindow();
-					auto button1 = FindObjectByName<GuiButton>(window, L"button1");
-					
-					protocol->KeyPress(VKEY::KEY_TAB, false, true, false);
-					TEST_ASSERT(button1->GetFocused());
-				});
-				protocol->OnNextIdleFrame(L"[SHIFT]+[TAB]", [=]()
+				navibateButtons(protocol, L"Ready", 5, [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					window->Hide();
