@@ -191,5 +191,101 @@ TEST_FILE
 				resourceTabNavigateWithContainer
 			);
 		});
+
+		TEST_CASE(L"FocusedAndDisable")
+		{
+			GacUIUnitTest_SetGuiMainProxy([&navibateButtons](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto button1 = FindObjectByName<GuiButton>(window, L"button1");
+					
+					button1->SetFocused();
+					TEST_ASSERT(button1->GetFocused());
+				});
+				protocol->OnNextIdleFrame(L"Focused button1", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto button1 = FindObjectByName<GuiButton>(window, L"button1");
+
+					button1->SetEnabled(false);
+				});
+				protocol->OnNextIdleFrame(L"Deleted button1", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					window->Hide();
+				});
+			});
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Application/FocusedAndDisable"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resourceTabNavigate
+			);
+		});
+
+		TEST_CASE(L"FocusedAndHide")
+		{
+			GacUIUnitTest_SetGuiMainProxy([&navibateButtons](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto button1 = FindObjectByName<GuiButton>(window, L"button1");
+					
+					button1->SetFocused();
+					TEST_ASSERT(button1->GetFocused());
+				});
+				protocol->OnNextIdleFrame(L"Focused button1", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto button1 = FindObjectByName<GuiButton>(window, L"button1");
+
+					button1->SetVisible(false);
+				});
+				protocol->OnNextIdleFrame(L"Deleted button1", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					window->Hide();
+				});
+			});
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Application/FocusedAndHide"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resourceTabNavigate
+			);
+		});
+
+		TEST_CASE(L"FocusedAndDelete")
+		{
+			GacUIUnitTest_SetGuiMainProxy([&navibateButtons](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto button1 = FindObjectByName<GuiButton>(window, L"button1");
+					
+					button1->SetFocused();
+					TEST_ASSERT(button1->GetFocused());
+				});
+				protocol->OnNextIdleFrame(L"Focused button1", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto button1 = FindObjectByName<GuiButton>(window, L"button1");
+
+					SafeDeleteControl(button1);
+				});
+				protocol->OnNextIdleFrame(L"Deleted button1", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					window->Hide();
+				});
+			});
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Application/FocusedAndDelete"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resourceTabNavigate
+			);
+		});
 	});
 }
