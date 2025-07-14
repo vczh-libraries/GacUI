@@ -180,6 +180,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="TestApplication_Tab.cpp" />
     <ClCompile Include="TestCompositions_AllNested.cpp" />
     <ClCompile Include="TestCompositions_Bounds.cpp" />
     <ClCompile Include="TestCompositions_Flow.cpp" />
