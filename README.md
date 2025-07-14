@@ -20,7 +20,9 @@ For **Gaclib**: click [here](http://vczh-libraries.github.io/doc/current/home.ht
 
 For **GacUI**: click [here](http://vczh-libraries.github.io/doc/current/gacui/home.html)
 
-[gaclib.net](http://www.gaclib.net/) is a mirror to github pages above.
+[gaclib.net](http://gaclib.net/) is a mirror to github pages above.
+
+The deepwiki website [indexed GacUI](https://deepwiki.com/vczh-libraries/GacUI), it provides high level ideas with acceptable accuracy, but it is problematic in details.
 
 ## Content of This Project
 
