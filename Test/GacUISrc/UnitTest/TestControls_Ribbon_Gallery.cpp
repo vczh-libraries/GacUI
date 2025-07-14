@@ -1,4 +1,5 @@
 #include "TestControls_Ribbon.h"
+#include "TestControls_List.h"
 
 using namespace gacui_unittest_template;
 
@@ -236,7 +237,7 @@ TEST_FILE
 					auto window = GetApplication()->GetMainWindow();
 					Value::From(window).Invoke(L"InitializeGallery", (Value_xs(), BoxValue<vint>(4)));
 				});
-				TestReactiveView(protocol, L"Initialize Gallery", 230, 480, 50, [=]()
+				TestReactiveView(protocol, L"4 Items", 230, 480, 50, [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					window->Hide();
@@ -244,6 +245,42 @@ TEST_FILE
 			});
 			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
 				WString::Unmanaged(L"Controls/Ribbon/GuiBindableRibbonGalleryList/ReactiveView"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resourceBindableRibbonGallery
+			);
+		});
+
+		TEST_CASE(L"Dropdown")
+		{
+			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					Value::From(window).Invoke(L"InitializeGallery", (Value_xs(), BoxValue<vint>(10)));
+				});
+				protocol->OnNextIdleFrame(L"10 Items", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto gallery = FindObjectByName<GuiBindableRibbonGalleryList>(window, L"bindableGallery");
+					auto location = protocol->LocationOf(gallery, 1.0, 0.8, -10, 0);
+					protocol->LClick(location);
+				});
+				protocol->OnNextIdleFrame(L"Click Dropdown", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto gallery = FindObjectByName<GuiBindableRibbonGalleryList>(window, L"bindableGallery");
+					auto listControl = gallery->GetListControlInDropdown();
+					LClickListItem(protocol, listControl, 1);
+				});
+				protocol->OnNextIdleFrame(L"Click Second Item", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					window->Hide();
+				});
+			});
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Controls/Ribbon/GuiBindableRibbonGalleryList/Dropdown"),
 				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
 				resourceBindableRibbonGallery
 			);
