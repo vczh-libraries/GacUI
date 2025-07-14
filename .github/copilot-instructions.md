@@ -16,6 +16,11 @@ In this repo, we are developing GacUI using C++. This is a crossed-platform UI l
     - `List<T>` for vector, `SortedList<T>` if elements need to keep ordered.
     - `Dictionary<K, V>` for 1:1 mapping and `Group<K, V>` for 1:n mapping.
   - Do not use regular expression unless directed by me.
+- This is the document of dependencies:
+  - `Vlpp`, basic C++ constructions: https://gaclib.net/doc/current/vlpp/home.html
+  - `VlppOS`, a simple OS abstraction: https://gaclib.net/doc/current/vlppos/home.html
+  - `VlppRegex`, regular expression: https://gaclib.net/doc/current/vlppregex/home.html
+  - `VlppReflection`, reflection: https://gaclib.net/doc/current/vlppreflection/home.html
 
 ## for Copilot Chat/Agent in Visual Studio
 
@@ -142,6 +147,8 @@ You can perform mouse, keyboard, typing or any other user actions on the UI.
 Find examples by yourself for arguments.
 
 # Writing GacUI XML
+
+This is the document of GacUI XML: https://gaclib.net/doc/current/gacui/xmlres/home.html
 
 ## Mapping XML Entity to C++ Entity
 
@@ -298,4 +305,4 @@ Code in an event of in the `<Workflow>` resource item should be Workflow Script 
 
 # The Workflow Script
 
-For now just sample other test files for Workflow Script.
+This is the document of Workflow Script: https://gaclib.net/doc/current/workflow/lang.html
