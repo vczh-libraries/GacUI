@@ -1278,6 +1278,7 @@ Type Declaration (Class)
 				CLASS_MEMBER_PROPERTY_EVENT_READONLY_FAST(SelectedIndex, SelectionChanged)
 				CLASS_MEMBER_PROPERTY_EVENT_READONLY_FAST(SelectedItem, SelectionChanged)
 				CLASS_MEMBER_PROPERTY_FAST(VisibleItemCount)
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(ListControlInDropdown)
 
 				CLASS_MEMBER_METHOD(IndexToGalleryPos, { L"index" })
 				CLASS_MEMBER_METHOD(GalleryPosToIndex, { L"pos" })

@@ -257,6 +257,10 @@ Ribbon Gallery List
 				/// <param name="value">The minimum items visible in the drop down menu.</param>
 				void													SetVisibleItemCount(vint value);
 
+				/// <summary>Get the list control in the dropdown menu.</summary>
+				/// <returns>The list control in the dropdown menu.</returns>
+				GuiSelectableListControl*								GetListControlInDropdown();
+
 				/// <summary>Get the dropdown menu.</summary>
 				/// <returns>The dropdown menu.</returns>
 				GuiToolstripMenu*										GetSubMenu();

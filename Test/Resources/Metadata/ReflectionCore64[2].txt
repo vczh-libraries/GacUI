@@ -2080,6 +2080,7 @@ class presentation::controls::GuiBindableRibbonGalleryList : presentation::contr
     }
 
     property ItemTemplate : system::Function<presentation::templates::GuiListItemTemplate*, system::Object>^ { get:GetItemTemplate set:SetItemTemplate event:ItemTemplateChanged }
+    property ListControlInDropdown : presentation::controls::GuiSelectableListControl* { get:GetListControlInDropdown }
     property MaxCount : system::Int64 { get:GetMaxCount set:SetMaxCount }
     property MinCount : system::Int64 { get:GetMinCount set:SetMinCount }
     property SelectedIndex : system::Int64 { get:GetSelectedIndex event:SelectionChanged }
@@ -2090,6 +2091,7 @@ class presentation::controls::GuiBindableRibbonGalleryList : presentation::contr
     function ApplyItem(index : system::Int64) : system::Void;
     function GalleryPosToIndex(pos : presentation::controls::GalleryPos) : system::Int64;
     function GetItemTemplate() : system::Function<presentation::templates::GuiListItemTemplate*, system::Object>^;
+    function GetListControlInDropdown() : presentation::controls::GuiSelectableListControl*;
     function GetMaxCount() : system::Int64;
     function GetMinCount() : system::Int64;
     function GetSelectedIndex() : system::Int64;

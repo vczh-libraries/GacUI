@@ -702,6 +702,11 @@ GuiBindableRibbonGalleryList
 				}
 			}
 
+			GuiSelectableListControl* GuiBindableRibbonGalleryList::GetListControlInDropdown()
+			{
+				return itemList;
+			}
+
 			GuiToolstripMenu* GuiBindableRibbonGalleryList::GetSubMenu()
 			{
 				return subMenu;

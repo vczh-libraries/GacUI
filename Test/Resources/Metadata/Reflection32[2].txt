@@ -116,26 +116,26 @@ class darkskin::CustomFrameWindowTemplateConstructor : system::ReferenceType {
     property __vwsn_precompile_10 : presentation::compositions::GuiCellComposition*;
     property __vwsn_precompile_11 : presentation::compositions::GuiCellComposition*;
     property __vwsn_precompile_12 : presentation::controls::GuiButton*;
-    property __vwsn_precompile_13 : presentation::compositions::GuiBoundsComposition*;
-    property __vwsn_precompile_14 : presentation::compositions::GuiGraphicsComposition*;
-    property __vwsn_precompile_15 : presentation::compositions::GuiBoundsComposition*;
-    property __vwsn_precompile_16 : presentation::elements::GuiPolygonElement^;
+    property __vwsn_precompile_13 : presentation::compositions::GuiGraphicsComposition*;
+    property __vwsn_precompile_14 : presentation::compositions::GuiBoundsComposition*;
+    property __vwsn_precompile_15 : presentation::elements::GuiPolygonElement^;
+    property __vwsn_precompile_16 : presentation::compositions::GuiBoundsComposition*;
     property __vwsn_precompile_17 : presentation::compositions::GuiCellComposition*;
     property __vwsn_precompile_18 : presentation::controls::GuiButton*;
-    property __vwsn_precompile_19 : presentation::compositions::GuiBoundsComposition*;
+    property __vwsn_precompile_19 : presentation::compositions::GuiGraphicsComposition*;
     property __vwsn_precompile_2 : presentation::elements::GuiSolidBorderElement^;
-    property __vwsn_precompile_20 : presentation::compositions::GuiGraphicsComposition*;
-    property __vwsn_precompile_21 : presentation::compositions::GuiBoundsComposition*;
-    property __vwsn_precompile_22 : presentation::elements::GuiPolygonElement^;
-    property __vwsn_precompile_23 : presentation::compositions::GuiBoundsComposition*;
-    property __vwsn_precompile_24 : presentation::elements::GuiPolygonElement^;
+    property __vwsn_precompile_20 : presentation::compositions::GuiBoundsComposition*;
+    property __vwsn_precompile_21 : presentation::elements::GuiPolygonElement^;
+    property __vwsn_precompile_22 : presentation::compositions::GuiBoundsComposition*;
+    property __vwsn_precompile_23 : presentation::elements::GuiPolygonElement^;
+    property __vwsn_precompile_24 : presentation::compositions::GuiBoundsComposition*;
     property __vwsn_precompile_25 : presentation::compositions::GuiCellComposition*;
     property __vwsn_precompile_26 : presentation::controls::GuiButton*;
-    property __vwsn_precompile_27 : presentation::compositions::GuiBoundsComposition*;
-    property __vwsn_precompile_28 : presentation::compositions::GuiGraphicsComposition*;
-    property __vwsn_precompile_29 : presentation::compositions::GuiBoundsComposition*;
+    property __vwsn_precompile_27 : presentation::compositions::GuiGraphicsComposition*;
+    property __vwsn_precompile_28 : presentation::compositions::GuiBoundsComposition*;
+    property __vwsn_precompile_29 : presentation::elements::GuiPolygonElement^;
     property __vwsn_precompile_3 : presentation::compositions::GuiCellComposition*;
-    property __vwsn_precompile_30 : presentation::elements::GuiPolygonElement^;
+    property __vwsn_precompile_30 : presentation::compositions::GuiBoundsComposition*;
     property __vwsn_precompile_31 : presentation::compositions::GuiCellComposition*;
     property __vwsn_precompile_32 : presentation::compositions::GuiTableComposition*;
     property __vwsn_precompile_33 : presentation::compositions::GuiCellComposition*;
@@ -852,12 +852,12 @@ class darkskin::RibbonSmallDropdownButtonTemplateConstructor : system::Reference
     property __vwsn_precompile_11 : presentation::elements::GuiPolygonElement^;
     property __vwsn_precompile_2 : presentation::compositions::GuiBoundsComposition*;
     property __vwsn_precompile_3 : presentation::elements::GuiSolidBackgroundElement^;
-    property __vwsn_precompile_4 : presentation::compositions::GuiCellComposition*;
-    property __vwsn_precompile_5 : presentation::elements::GuiImageFrameElement^;
-    property __vwsn_precompile_6 : presentation::compositions::GuiCellComposition*;
-    property __vwsn_precompile_7 : presentation::elements::GuiSolidLabelElement^;
-    property __vwsn_precompile_8 : presentation::compositions::GuiTableComposition*;
-    property __vwsn_precompile_9 : presentation::elements::GuiSolidBackgroundElement^;
+    property __vwsn_precompile_4 : presentation::compositions::GuiBoundsComposition*;
+    property __vwsn_precompile_5 : presentation::compositions::GuiCellComposition*;
+    property __vwsn_precompile_6 : presentation::elements::GuiImageFrameElement^;
+    property __vwsn_precompile_7 : presentation::compositions::GuiCellComposition*;
+    property __vwsn_precompile_8 : presentation::elements::GuiSolidLabelElement^;
+    property __vwsn_precompile_9 : presentation::compositions::GuiTableComposition*;
     property container : presentation::compositions::GuiTableComposition*;
     property self : darkskin::RibbonSmallDropdownButtonTemplate*;
 
@@ -1248,9 +1248,9 @@ class darkskin::ToolstripDropdownButtonTemplateConstructor : system::ReferenceTy
     property __vwsn_precompile_1 : presentation::elements::GuiSolidBorderElement^;
     property __vwsn_precompile_2 : presentation::compositions::GuiBoundsComposition*;
     property __vwsn_precompile_3 : presentation::elements::GuiSolidBackgroundElement^;
-    property __vwsn_precompile_4 : presentation::elements::GuiImageFrameElement^;
-    property __vwsn_precompile_5 : presentation::compositions::GuiTableComposition*;
-    property __vwsn_precompile_6 : presentation::elements::GuiSolidBackgroundElement^;
+    property __vwsn_precompile_4 : presentation::compositions::GuiBoundsComposition*;
+    property __vwsn_precompile_5 : presentation::elements::GuiImageFrameElement^;
+    property __vwsn_precompile_6 : presentation::compositions::GuiTableComposition*;
     property __vwsn_precompile_7 : presentation::compositions::GuiCellComposition*;
     property __vwsn_precompile_8 : presentation::elements::GuiPolygonElement^;
     property container : presentation::compositions::GuiBoundsComposition*;
@@ -4323,6 +4323,7 @@ class presentation::controls::GuiBindableRibbonGalleryList : presentation::contr
     }
 
     property ItemTemplate : system::Function<presentation::templates::GuiListItemTemplate*, system::Object>^ { get:GetItemTemplate set:SetItemTemplate event:ItemTemplateChanged }
+    property ListControlInDropdown : presentation::controls::GuiSelectableListControl* { get:GetListControlInDropdown }
     property MaxCount : system::Int32 { get:GetMaxCount set:SetMaxCount }
     property MinCount : system::Int32 { get:GetMinCount set:SetMinCount }
     property SelectedIndex : system::Int32 { get:GetSelectedIndex event:SelectionChanged }
@@ -4333,6 +4334,7 @@ class presentation::controls::GuiBindableRibbonGalleryList : presentation::contr
     function ApplyItem(index : system::Int32) : system::Void;
     function GalleryPosToIndex(pos : presentation::controls::GalleryPos) : system::Int32;
     function GetItemTemplate() : system::Function<presentation::templates::GuiListItemTemplate*, system::Object>^;
+    function GetListControlInDropdown() : presentation::controls::GuiSelectableListControl*;
     function GetMaxCount() : system::Int32;
     function GetMinCount() : system::Int32;
     function GetSelectedIndex() : system::Int32;
