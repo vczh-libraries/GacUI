@@ -44,20 +44,20 @@ namespace gacuisrc_unittest
             (self = <this>);
             (ViewModel = <this>.ViewModel);
             {
-                (self.PreferredMinSize = {x : 72;} of (::presentation::Size));
+                (self.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
             }
             {
-                (self.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+                (self.PreferredMinSize = {x : 72;} of (::presentation::Size));
             }
             (<precompile>0 = new (::presentation::compositions::GuiTableComposition*)());
             {
                 (<precompile>0.CellPadding = 2 of (::system::Int64));
             }
             {
-                (<precompile>0.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+                (<precompile>0.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
             }
             {
-                (<precompile>0.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+                (<precompile>0.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
                 <precompile>0.SetRowsAndColumns(3, 3);
@@ -229,6 +229,12 @@ namespace gacuisrc_unittest
         var self : ::gacuisrc_unittest::MainWindow* = null of (::gacuisrc_unittest::MainWindow*);
 
         @cpp:Protected
+        var tab : ::presentation::controls::GuiRibbonTab* = null of (::presentation::controls::GuiRibbonTab*);
+
+        @cpp:Protected
+        var group1 : ::presentation::controls::GuiRibbonGroup* = null of (::presentation::controls::GuiRibbonGroup*);
+
+        @cpp:Protected
         var <precompile>0 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
@@ -236,12 +242,6 @@ namespace gacuisrc_unittest
 
         @cpp:Protected
         var <precompile>2 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
-
-        @cpp:Protected
-        var tab : ::presentation::controls::GuiRibbonTab* = null of (::presentation::controls::GuiRibbonTab*);
-
-        @cpp:Protected
-        var group1 : ::presentation::controls::GuiRibbonGroup* = null of (::presentation::controls::GuiRibbonGroup*);
 
         @cpp:Protected
         var tabPageBindable : ::presentation::controls::GuiRibbonTabPage* = null of (::presentation::controls::GuiRibbonTabPage*);
@@ -276,12 +276,6 @@ namespace gacuisrc_unittest
                 <this>.SetNamedObject("bindableGallery", bindableGallery);
             }
             {
-                (bindableGallery.MinCount = 3 of (::system::Int64));
-            }
-            {
-                (bindableGallery.MaxCount = 5 of (::system::Int64));
-            }
-            {
                 (bindableGallery.ItemTemplate = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiListItemTemplate*)
                 {
                     {
@@ -292,6 +286,12 @@ namespace gacuisrc_unittest
                     }
                     raise "Cannot find a matched control template to create.";
                 });
+            }
+            {
+                (bindableGallery.MinCount = 3 of (::system::Int64));
+            }
+            {
+                (bindableGallery.MaxCount = 5 of (::system::Int64));
             }
             (<precompile>2 = bindableGallery.BoundsComposition);
             {
@@ -325,9 +325,6 @@ namespace gacuisrc_unittest
             }
             {
                 self.AddChild(tab);
-            }
-            {
-                (bindableGallery.ItemSource = self.items);
             }
         }
 
@@ -364,7 +361,23 @@ namespace gacuisrc_unittest
     @cpp:Friend(typeof(MainWindowConstructor))
     class MainWindow : ::presentation::controls::GuiWindow, MainWindowConstructor
     {
-        var items : observe GalleryItem^[] = {new (GalleryItem^)(1); new (GalleryItem^)(2); new (GalleryItem^)(3); new (GalleryItem^)(4);};
+        func InitializeGallery(count : int) : (void)
+        {
+            var items : observe GalleryItem^[] = {};
+            {
+                var <for-begin>item : ::system::Int64 = 1;
+                var <for-end>item : ::system::Int64 = count;
+                var item = <for-begin>item;
+                while ((item <= <for-end>item))
+                {
+                    {
+                        items.Add(new (GalleryItem^)(item));
+                    }
+                    (item = (item + 1));
+                }
+            }
+            (bindableGallery.ItemSource = items);
+        }
 
         new* ()
             :::presentation::controls::GuiWindow(::presentation::theme::ThemeName::Window)

@@ -27,7 +27,13 @@ namespace gacuisrc_unittest
         var self : ::gacuisrc_unittest::MainWindow* = null of (::gacuisrc_unittest::MainWindow*);
 
         @cpp:Protected
-        var button : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
+        var tab : ::presentation::controls::GuiRibbonTab* = null of (::presentation::controls::GuiRibbonTab*);
+
+        @cpp:Protected
+        var group1 : ::presentation::controls::GuiRibbonGroup* = null of (::presentation::controls::GuiRibbonGroup*);
+
+        @cpp:Protected
+        var gallery : ::presentation::controls::GuiRibbonGallery* = null of (::presentation::controls::GuiRibbonGallery*);
 
         @cpp:Protected
         var <precompile>0 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
@@ -39,19 +45,13 @@ namespace gacuisrc_unittest
         var <precompile>2 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
-        var <precompile>3 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
-
-        @cpp:Protected
-        var tab : ::presentation::controls::GuiRibbonTab* = null of (::presentation::controls::GuiRibbonTab*);
-
-        @cpp:Protected
-        var group1 : ::presentation::controls::GuiRibbonGroup* = null of (::presentation::controls::GuiRibbonGroup*);
-
-        @cpp:Protected
-        var gallery : ::presentation::controls::GuiRibbonGallery* = null of (::presentation::controls::GuiRibbonGallery*);
-
-        @cpp:Protected
         var tabPageContainer : ::presentation::controls::GuiRibbonTabPage* = null of (::presentation::controls::GuiRibbonTabPage*);
+
+        @cpp:Protected
+        var button : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
+
+        @cpp:Protected
+        var <precompile>3 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
         func <gacuisrc_unittest-MainWindow>Initialize(<this> : ::gacuisrc_unittest::MainWindow*) : (::system::Void)

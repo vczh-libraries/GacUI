@@ -125,12 +125,15 @@ TEST_FILE
   <Instance name="MainWindowResource">
     <Instance ref.Class="gacuisrc_unittest::MainWindow">
       <ref.Members><![CDATA[
-        var items : observe GalleryItem^[] = {
-          new GalleryItem^(1);
-          new GalleryItem^(2);
-          new GalleryItem^(3);
-          new GalleryItem^(4);
-        };
+        func InitializeGallery(count:int) : void
+        {
+          var items : observe GalleryItem^[] = {};
+          for (item in range[1, count])
+          {
+            items.Add(new GalleryItem^(item));
+          }
+          bindableGallery.ItemSource = items;
+        }
       ]]></ref.Members>
       <Window ref.Name="self" Text="GuiBindableRibbonGalleryList" ClientSize="x:480 y:320">
         <RibbonTab ref.Name="tab">
@@ -143,7 +146,6 @@ TEST_FILE
                   <att.Items>
                     <BindableRibbonGalleryList ref.Name="bindableGallery" MaxCount="5" MinCount="3" env.ItemType="GalleryItem^">
                       <att.BoundsComposition-set PreferredMinSize="x:200"/>
-                      <att.ItemSource-eval>self.items</att.ItemSource-eval>
                       <att.ItemTemplate>gacuisrc_unittest::GalleryItemTemplate</att.ItemTemplate>
                     </BindableRibbonGalleryList>
                   </att.Items>
@@ -229,7 +231,12 @@ TEST_FILE
 		{
 			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
 			{
-				TestReactiveView(protocol, L"Ready", 230, 480, 50, [=]()
+				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					Value::From(window).Invoke(L"InitializeGallery", (Value_xs(), BoxValue<vint>(4)));
+				});
+				TestReactiveView(protocol, L"Initialize Gallery", 230, 480, 50, [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					window->Hide();
