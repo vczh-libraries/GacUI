@@ -34,17 +34,19 @@
   - `(H|V)(Tracker|Scroll)/Mouse`
   - `ToolstripSplitButton`
   - `GuiDatePicker/Mouse`
-- Same issue
+  - `GuiRibbonGallery` and `GuiBindableRibbonGalleryList` Up/Down/Dropdown button. 
+- Stop hard-coding coordinates:
+  - `GetListItemLocation`.
+  - `GuiToolstripMenuBar/Cascade/ClickSubMenu`'s `Hover on File/New` try to avoid specifying relative coordinate just because half of the menu item is covered.
+- Compositions created or moved under the cursor, proper mouse events are not triggered.
   - `(H|V)(Tracker|Scroll)/Mouse`
     - when `Drag to Center` the handler should be highlighted, because the mouse is right above the handler.
   - `GuiBindableDataGrid/ComboEditor`
     - When a data grid cell editor is created under the mouse, the editor does not receive `MouseEvent` event.
+- `Application/FocusedAndHide`
+  - The hidden button does not lost focus.
 - `GuiScrollContainer`
   - Only calling `Set(Horizontal|Vertical)AlwaysVisible(false)` doesn't make scrolls disappear. `SetVisible(false)` on scrolls are verified called.
   - When the content is changed, configuration needs 2 idle frames to be correctly configured.
 - `GuiListItemTemplate/ArrangerAndAxis(WithScrolls)`
   - items are not aligned to proper corner when scrolls are invisible.
-- Stop hard-coding coordinates:
-  - `GetListItemLocation`.
-  - `GuiToolstripMenuBar/Cascade/ClickSubMenu`'s `Hover on File/New` try to avoid specifying relative coordinate just because half of the menu item is covered.
-  - `GuiRibbonGallery` and `GuiBindableRibbonGalleryList` Up/Down/Dropdown button. 

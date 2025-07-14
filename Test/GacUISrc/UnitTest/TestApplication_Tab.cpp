@@ -210,6 +210,7 @@ TEST_FILE
 					auto button1 = FindObjectByName<GuiButton>(window, L"button1");
 
 					button1->SetEnabled(false);
+					TEST_ASSERT(!button1->GetFocused());
 				});
 				protocol->OnNextIdleFrame(L"Deleted button1", [=]()
 				{
@@ -242,6 +243,7 @@ TEST_FILE
 					auto button1 = FindObjectByName<GuiButton>(window, L"button1");
 
 					button1->SetVisible(false);
+					// TEST_ASSERT(!button1->GetFocused());
 				});
 				protocol->OnNextIdleFrame(L"Deleted button1", [=]()
 				{
