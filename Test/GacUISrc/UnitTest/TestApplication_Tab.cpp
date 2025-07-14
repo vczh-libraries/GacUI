@@ -55,11 +55,10 @@ TEST_FILE
             <_>composeType:MinSize</_>
             <_>composeType:MinSize</_>
             <_>composeType:MinSize</_>
-            <_>composeType:MinSize</_>
-            <_>composeType:MinSize</_>
             <_>composeType:Percentage percentage:1.0</_>
           </att.Rows>
           <att.Columns>
+            <_>composeType:MinSize</_>
             <_>composeType:MinSize</_>
             <_>composeType:Percentage percentage:1.0</_>
           </att.Columns>
@@ -82,16 +81,35 @@ TEST_FILE
             </Button>
           </Cell>
           
-          <Cell Site="row:3 column:0">
-            <Button ref.Name="button4" Text="Fourth">
-              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-            </Button>
-          </Cell>
-          
-          <Cell Site="row:4 column:0">
-            <Button ref.Name="button5" Text="Fifth">
-              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-            </Button>
+          <Cell Site="row:0 column:1 rowSpan:4">
+            <GroupBox Text="Group 4th">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:-1"/>
+              <Table AlignmentToParent="left:5 top:5 right:5 bottom:5" MinSizeLimitation="LimitToElementAndChildren" CellPadding="2" BorderVisible="false">
+                <att.Rows>
+                  <_>composeType:MinSize</_>
+                  <_>composeType:MinSize</_>
+                  <_>composeType:Percentage percentage:1.0</_>
+                </att.Rows>
+                <att.Columns>
+                  <_>composeType:Percentage percentage:1.0</_>
+                </att.Columns>
+                
+                <Cell Site="row:0 column:0">
+                  <Button ref.Name="button4" Text="Fourth">
+                    <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+                  </Button>
+                </Cell>
+                
+                <Cell Site="row:1 column:0">
+                  <GroupBox Text="Group 5th">
+                    <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+                    <Button ref.Name="button5" Text="Fifth">
+                      <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+                    </Button>
+                  </GroupBox>
+                </Cell>
+              </Table>
+            </GroupBox>
           </Cell>
         </Table>
       </Window>
