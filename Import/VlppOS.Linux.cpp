@@ -262,7 +262,7 @@ static_assert(false, "Do not build this file for Windows applications.");
 
 namespace vl
 {
-	ILocaleImpl* GetDefaultLocaleImpl()
+	ILocaleImpl* GetOSLocaleImpl()
 	{
 		return GetDefaultLocaleImpl();
 	}

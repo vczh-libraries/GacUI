@@ -36,48 +36,49 @@
         <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
           <SolidBorder ref.Style="toolstripBorder"/>
         </Bounds>
-        <Bounds AlignmentToParent="left:1 top:1 right:11 bottom:1">
+        <Bounds AlignmentToParent="left:1 top:1 right:1 bottom:1">
           <SolidBackground ref.Style="toolstripBackground"/>
-          <Table ref.Name ="container" CellPadding="3" AlignmentToParent="left:0 top:0 right:0 bottom:0">
+          <Bounds AlignmentToParent="left:0 top:0 right:10 bottom:0">
+            <Table ref.Name ="container" CellPadding="3" AlignmentToParent="left:0 top:0 right:0 bottom:0">
+              <att.Rows>
+                <CellOption>composeType:MinSize</CellOption>
+              </att.Rows>
+              <att.Columns>
+                <CellOption>composeType:MinSize</CellOption>
+                <CellOption>composeType:MinSize</CellOption>
+              </att.Columns>
+          
+              <Cell Site="row:0 column:0">
+                <ImageFrame Image-bind="self.Image.Image ?? null" FrameIndex-bind="self.Image.FrameIndex ?? 0" Enabled-bind="self.VisuallyEnabled"/>
+              </Cell>
+              <Cell Site="row:0 column:1">
+                <SolidLabel ref.Style="buttonText" Text-bind="self.Text" Font-bind="self.Font" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+              </Cell>
+            </Table>
+          </Bounds>
+          <Table AlignmentToParent="left:-1 top:0 right:0 bottom:0" PreferredMinSize="x:9 y:0">
             <att.Rows>
-              <CellOption>composeType:MinSize</CellOption>
+              <CellOption>composeType:Percentage percentage:0.5</CellOption>
+              <CellOption>composeType:Absolute absolute:3</CellOption>
+              <CellOption>composeType:Percentage percentage:0.5</CellOption>
             </att.Rows>
             <att.Columns>
-              <CellOption>composeType:MinSize</CellOption>
-              <CellOption>composeType:MinSize</CellOption>
+              <CellOption>composeType:Percentage percentage:0.5</CellOption>
+              <CellOption>composeType:Absolute absolute:5</CellOption>
+              <CellOption>composeType:Percentage percentage:0.5</CellOption>
             </att.Columns>
-
-            <Cell Site="row:0 column:0">
-              <ImageFrame Image-bind="self.Image.Image ?? null" FrameIndex-bind="self.Image.FrameIndex ?? 0" Enabled-bind="self.VisuallyEnabled"/>
-            </Cell>
-            <Cell Site="row:0 column:1">
-              <SolidLabel ref.Style="buttonText" Text-bind="self.Text" Font-bind="self.Font" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+          
+            <Cell Site="row:1 column:1">
+              <Polygon ref.Style="toolstripArrow" Size="x:5 y:3">
+                <att.Points>
+                  <Point>x:0 y:0</Point>
+                  <Point>x:2 y:2</Point>
+                  <Point>x:4 y:0</Point>
+                </att.Points>
+              </Polygon>
             </Cell>
           </Table>
         </Bounds>
-        <Table AlignmentToParent="left:-1 top:1 right:1 bottom:1" PreferredMinSize="x:9 y:0">
-          <SolidBackground ref.Style="toolstripBackground"/>
-          <att.Rows>
-            <CellOption>composeType:Percentage percentage:0.5</CellOption>
-            <CellOption>composeType:Absolute absolute:3</CellOption>
-            <CellOption>composeType:Percentage percentage:0.5</CellOption>
-          </att.Rows>
-          <att.Columns>
-            <CellOption>composeType:Percentage percentage:0.5</CellOption>
-            <CellOption>composeType:Absolute absolute:5</CellOption>
-            <CellOption>composeType:Percentage percentage:0.5</CellOption>
-          </att.Columns>
-
-          <Cell Site="row:1 column:1">
-            <Polygon ref.Style="toolstripArrow" Size="x:5 y:3">
-              <att.Points>
-                <Point>x:0 y:0</Point>
-                <Point>x:2 y:2</Point>
-                <Point>x:4 y:0</Point>
-              </att.Points>
-            </Polygon>
-          </Cell>
-        </Table>
       </ToolstripButtonTemplate>
     </Instance>
   </Instance>

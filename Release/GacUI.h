@@ -10098,6 +10098,8 @@ Basic Construction
 				virtual void							CheckAndStoreControlTemplate(templates::GuiControlTemplate* value);
 				virtual void							EnsureControlTemplateExists();
 				virtual void							RebuildControlTemplate();
+				virtual void							FixingMissingControlTemplateCallback(templates::GuiControlTemplate* value);
+				virtual void							CallFixingMissingControlTemplateCallback();
 				virtual void							OnChildInserted(GuiControl* control);
 				virtual void							OnChildRemoved(GuiControl* control);
 				virtual void							OnParentChanged(GuiControl* oldParent, GuiControl* newParent);
@@ -10389,6 +10391,17 @@ Basic Construction
 					CHECK_ERROR(ct, L"The assigned control template is not vl::presentation::templates::Gui" L ## # TEMPLATE L"."); \
 					NAME = ct; \
 					BASE_TYPE::CheckAndStoreControlTemplate(value); \
+				} \
+				void FixingMissingControlTemplateCallback(templates::GuiControlTemplate* value)override \
+				{ \
+					BASE_TYPE::FixingMissingControlTemplateCallback(value); \
+					if (!NAME) \
+					{ \
+						auto ct = dynamic_cast<templates::Gui##TEMPLATE*>(value); \
+						CHECK_ERROR(ct, L"The assigned control template is not vl::presentation::templates::Gui" L ## # TEMPLATE L"."); \
+						NAME = ct; \
+						AfterControlTemplateInstalled_(true); \
+					} \
 				} \
 			public: \
 				templates::Gui##TEMPLATE* TypedControlTemplateObject(bool ensureExists) \

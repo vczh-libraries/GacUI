@@ -2332,7 +2332,7 @@ SortedList
 		/// or the least element that greater than the specified value.
 		/// </param>
 		template<typename T>
-		vint BinarySearchLambda2(const T* buffer, vint count, const T& item, vint& index)
+		vint BinarySearchLambda(const T* buffer, vint count, const T& item, vint& index)
 		{
 			return BinarySearchLambda<T, T>(buffer, count, item, index, [](const T& a, const T& b) { return a <=> b; });
 		}

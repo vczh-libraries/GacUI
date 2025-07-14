@@ -852,8 +852,8 @@ DefaultLocaleImpl
 	};
 
 #ifdef VCZH_GCC
-#undefine _wcsicmp
-#undefine _wcsnicmp
+#undef _wcsicmp
+#undef _wcsnicmp
 #endif
 
 	DefaultLocaleImpl defaultLocaleImpl;

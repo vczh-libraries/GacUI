@@ -345,9 +345,7 @@ GuiApplication
 
 			void GuiApplication::RegisterPopupClosed(GuiPopup* popup)
 			{
-				if(openingPopups.Remove(popup))
-				{
-				}
+				openingPopups.Remove(popup);
 			}
 
 			void GuiApplication::TooltipMouseEnter(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
@@ -623,18 +621,18 @@ GuiApplicationMain
 				}
 
 				GetCurrentController()->InputService()->StartTimer();
+				IAsyncScheduler::RegisterSchedulerForCurrentThread(Ptr(new UIThreadAsyncScheduler));
+				IAsyncScheduler::RegisterDefaultScheduler(Ptr(new OtherThreadAsyncScheduler));
+				GuiInitializeUtilities();
 				{
 					GuiApplication app;
 					application = &app;
-					IAsyncScheduler::RegisterSchedulerForCurrentThread(Ptr(new UIThreadAsyncScheduler));
-					IAsyncScheduler::RegisterDefaultScheduler(Ptr(new OtherThreadAsyncScheduler));
-					GuiInitializeUtilities();
 					GuiMain();
-					GuiFinalizeUtilities();
-					IAsyncScheduler::UnregisterDefaultScheduler();
-					IAsyncScheduler::UnregisterSchedulerForCurrentThread();
-					application = nullptr;
 				}
+				application = nullptr;
+				GuiFinalizeUtilities();
+				IAsyncScheduler::UnregisterDefaultScheduler();
+				IAsyncScheduler::UnregisterSchedulerForCurrentThread();
 				GetCurrentController()->InputService()->StopTimer();
 				theme::FinalizeTheme();
 				FinalizeGlobalStorage();
@@ -673,13 +671,11 @@ GuiApplicationMain
 				}
 
 				GetCurrentController()->InputService()->StartTimer();
-				{
-					IAsyncScheduler::RegisterSchedulerForCurrentThread(Ptr(new UIThreadAsyncScheduler));
-					IAsyncScheduler::RegisterDefaultScheduler(Ptr(new OtherThreadAsyncScheduler));
-					GuiMain();
-					IAsyncScheduler::UnregisterDefaultScheduler();
-					IAsyncScheduler::UnregisterSchedulerForCurrentThread();
-				}
+				IAsyncScheduler::RegisterSchedulerForCurrentThread(Ptr(new UIThreadAsyncScheduler));
+				IAsyncScheduler::RegisterDefaultScheduler(Ptr(new OtherThreadAsyncScheduler));
+				GuiMain();
+				IAsyncScheduler::UnregisterDefaultScheduler();
+				IAsyncScheduler::UnregisterSchedulerForCurrentThread();
 				GetCurrentController()->InputService()->StopTimer();
 				FinalizeGlobalStorage();
 
@@ -822,6 +818,18 @@ GuiControl
 					boundsComposition->AddChild(controlTemplateObject);
 					controlTemplateObject->GetContainerComposition()->AddChild(containerComposition);
 					AfterControlTemplateInstalled(initialize);
+				}
+			}
+
+			void GuiControl::FixingMissingControlTemplateCallback(templates::GuiControlTemplate* value)
+			{
+			}
+
+			void GuiControl::CallFixingMissingControlTemplateCallback()
+			{
+				if (controlTemplateObject)
+				{
+					FixingMissingControlTemplateCallback(controlTemplateObject);
 				}
 			}
 
@@ -2789,6 +2797,9 @@ GuiWindow
 
 			void GuiWindow::Opened()
 			{
+				// Workaround:
+				// Constructor calling SetNativeWindow skips AfterControlTemplateInstalled_ of all sub classes
+				CallFixingMissingControlTemplateCallback();
 				GuiControlHost::Opened();
 				if (auto ct = TypedControlTemplateObject(false))
 				{
