@@ -254,6 +254,70 @@ One more `Scripts\ViewModelResource` is added to the resource, and the content o
 
 ## UI Layout
 
+This is the GacUI XML document for UI layout: https://gaclib.net/doc/current/gacui/components/compositions/home.html
+
+To expand a composition to the whole parent client area:
+
+```XML
+<AnyComposition AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+```
+
+- `MinSizeLimitation="LimitToElementAndChildren"` for a composition limites its minimum size to the sum of its all children.
+- `AlignmentToParent="left:8 top:8 right:8 bottom:8"` for a composition stickes itself to the parent's whole client area with 8 pixels on each side. If the number is -1, it means it doesn't stick the the specific parent's client area side. When both `left` and `right` is -1, it stick to the left. When both `top` and `bottom` is -1, it stick to the top. The default value is all -1.
+
+`BoundsComposition` of a control is its boundary composition. To expand a control to the whole parent client area:
+
+```XML
+<AnyControl>
+  <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+</AnyControl>
+```
+
+`<Cell>`, `<RowSplitter>`, `<ColumnSplitter>`, `<StackItem>` and `<FlowItem>` are controlled by its parent composition, no positions or size limits needs to adjusted.
+
+### Bounds
+
+`<Bounds>` is useful to define a space.
+
+### Table
+
+The most useful composition is `<Table>`, it is a grid layout with rows and columns. There are 3 sizing modes for rows and columns:
+- `<_>composeType:MinSize</_>`: The size is decided by its content.
+- `<_>composeType:Absolute absolute:10</_>`: The size is 10.
+- `<_>composeType:Percentage percentage:0.5</_>`: The size is 50% of all space excludes MinSizes and Absolutes.
+
+The `CellPadding` property defines the space between cells, default 0. The `BorderVisible` adds `CellPadding` arounds the border, default true. Obviously the following two tables are identical.
+```XML
+<Table AlignmentToParent="left:8 top:8 right:8 bottom:8" CellPadding="5" BorderVisible="false"/>
+<Table AlignmentToParent="left:3 top:3 right:3 bottom:3" CellPadding="5" BorderVisible="true"/>
+```
+
+In order to make a table expanded to the whole window and placing a button at the center:
+- Set rows to Percentage 0.5; MinSize; Percentage 0.5
+- Set columns to Percentage 0.5; MinSize; Percentage 0.5
+- Put the button to the center cell, which is `Site="row:1 column:1"`
+
+We can also list 3 buttons vertically in the top-left corner of the window:
+- Set rows to MinSize; MinSize; MinSize; Percentage 1.0
+- Set columns to MinSize; Percentage 1.0
+- Put 3 button to all MinSize cells, which is `Site="row:0 column:0"`, `Site="row:1 column:0"`, `Site="row:2 column:0"`
+
+To make a dialog with big content with OK and Cancel buttons at the bottom-right corner:
+- Set rows to Percentage 1.0; MinSize
+- Set columns to Percentage 1.0; MinSize; MinSize
+- Put the content to the cell that automatically expands to the rest of the space, which is `Site="row:0 column:0"`
+- Put 2 button to all MinSize cells, which is `Site="row:1 column:1"`, `Site="row:1 column:2"`
+
+### Others
+
+Please read the document of GacUI XML for other compositions: https://gaclib.net/doc/current/gacui/components/compositions/home.html
+- Stack/StackItem
+- Flow/FlowItem
+- SharedSizeRoot/SharedSizeItem
+- SideAligned
+- PartialView
+- etc
+
 ## Properties
 
 There are two ways to add a property:

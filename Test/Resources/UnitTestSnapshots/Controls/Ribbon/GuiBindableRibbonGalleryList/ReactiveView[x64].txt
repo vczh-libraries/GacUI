@@ -51,9 +51,6 @@ namespace gacuisrc_unittest
             }
             (<precompile>0 = new (::presentation::compositions::GuiTableComposition*)());
             {
-                (<precompile>0.CellPadding = 2 of (::system::Int64));
-            }
-            {
                 (<precompile>0.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
             }
             {

@@ -103,7 +103,7 @@ TEST_FILE
     <Instance ref.Class="gacuisrc_unittest::GalleryItemTemplate">
       <ref.Parameter Name="ViewModel" Class="GalleryItem"/>
       <TextListItemTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren" PreferredMinSize="x:72">
-        <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren" CellPadding="2">
+        <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
           <att.Rows>
             <_>composeType:Percentage percentage:0.5</_>
             <_>composeType:MinSize</_>
