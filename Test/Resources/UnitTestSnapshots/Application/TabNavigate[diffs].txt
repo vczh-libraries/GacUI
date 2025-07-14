@@ -88,3 +88,71 @@
 ========================================
 5
 ========================================
+========================================
+6
+========================================
+{"id": 88, "diffType": "Modified", "content": null, "children": [92]}
+{"id": 92, "diffType": "Created", "content": {"hitTestResult": null, "cursor": null, "element": 23, "bounds": {"x1": 14, "y1": 42, "x2": 92, "y2": 60}, "validArea": {"x1": 14, "y1": 42, "x2": 92, "y2": 60}}, "children": [96]}
+========================================
+7
+========================================
+========================================
+8
+========================================
+{"id": 88, "diffType": "Modified", "content": null, "children": [96]}
+{"id": 92, "diffType": "Deleted", "content": null, "children": null}
+{"id": 104, "diffType": "Modified", "content": null, "children": [108]}
+{"id": 108, "diffType": "Created", "content": {"hitTestResult": null, "cursor": null, "element": 27, "bounds": {"x1": 14, "y1": 67, "x2": 92, "y2": 85}, "validArea": {"x1": 14, "y1": 67, "x2": 92, "y2": 85}}, "children": [112]}
+========================================
+9
+========================================
+========================================
+10
+========================================
+{"id": 104, "diffType": "Modified", "content": null, "children": [112]}
+{"id": 108, "diffType": "Deleted", "content": null, "children": null}
+{"id": 120, "diffType": "Modified", "content": null, "children": [124]}
+{"id": 124, "diffType": "Created", "content": {"hitTestResult": null, "cursor": null, "element": 31, "bounds": {"x1": 14, "y1": 92, "x2": 92, "y2": 110}, "validArea": {"x1": 14, "y1": 92, "x2": 92, "y2": 110}}, "children": [128]}
+========================================
+11
+========================================
+========================================
+12
+========================================
+{"id": 88, "diffType": "Modified", "content": null, "children": [92]}
+{"id": 92, "diffType": "Created", "content": {"hitTestResult": null, "cursor": null, "element": 23, "bounds": {"x1": 14, "y1": 42, "x2": 92, "y2": 60}, "validArea": {"x1": 14, "y1": 42, "x2": 92, "y2": 60}}, "children": [96]}
+{"id": 120, "diffType": "Modified", "content": null, "children": [128]}
+{"id": 124, "diffType": "Deleted", "content": null, "children": null}
+========================================
+13
+========================================
+========================================
+14
+========================================
+{"id": 88, "diffType": "Modified", "content": null, "children": [96]}
+{"id": 92, "diffType": "Deleted", "content": null, "children": null}
+{"id": 120, "diffType": "Modified", "content": null, "children": [124]}
+{"id": 124, "diffType": "Created", "content": {"hitTestResult": null, "cursor": null, "element": 31, "bounds": {"x1": 14, "y1": 92, "x2": 92, "y2": 110}, "validArea": {"x1": 14, "y1": 92, "x2": 92, "y2": 110}}, "children": [128]}
+========================================
+15
+========================================
+========================================
+16
+========================================
+{"id": 104, "diffType": "Modified", "content": null, "children": [108]}
+{"id": 108, "diffType": "Created", "content": {"hitTestResult": null, "cursor": null, "element": 27, "bounds": {"x1": 14, "y1": 67, "x2": 92, "y2": 85}, "validArea": {"x1": 14, "y1": 67, "x2": 92, "y2": 85}}, "children": [112]}
+{"id": 120, "diffType": "Modified", "content": null, "children": [128]}
+{"id": 124, "diffType": "Deleted", "content": null, "children": null}
+========================================
+17
+========================================
+========================================
+18
+========================================
+{"id": 88, "diffType": "Modified", "content": null, "children": [92]}
+{"id": 92, "diffType": "Created", "content": {"hitTestResult": null, "cursor": null, "element": 23, "bounds": {"x1": 14, "y1": 42, "x2": 92, "y2": 60}, "validArea": {"x1": 14, "y1": 42, "x2": 92, "y2": 60}}, "children": [96]}
+{"id": 104, "diffType": "Modified", "content": null, "children": [112]}
+{"id": 108, "diffType": "Deleted", "content": null, "children": null}
+========================================
+19
+========================================

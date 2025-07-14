@@ -54,6 +54,62 @@ TEST_FILE
 				protocol->OnNextIdleFrame(L"Ready", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
+					auto button1 = FindObjectByName<GuiButton>(window, L"button1");
+					
+					button1->SetFocused();
+					TEST_ASSERT(button1->GetFocused());
+				});
+				protocol->OnNextIdleFrame(L"Focused button1", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto button2 = FindObjectByName<GuiButton>(window, L"button2");
+					
+					protocol->KeyPress(VKEY::KEY_TAB, false, false, false);
+					TEST_ASSERT(button2->GetFocused());
+				});
+				protocol->OnNextIdleFrame(L"[TAB]", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto button3 = FindObjectByName<GuiButton>(window, L"button3");
+					
+					protocol->KeyPress(VKEY::KEY_TAB, false, false, false);
+					TEST_ASSERT(button3->GetFocused());
+				});
+				protocol->OnNextIdleFrame(L"[TAB]", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto button1 = FindObjectByName<GuiButton>(window, L"button1");
+					
+					protocol->KeyPress(VKEY::KEY_TAB, false, false, false);
+					TEST_ASSERT(button1->GetFocused());
+				});
+				protocol->OnNextIdleFrame(L"[TAB]", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto button3 = FindObjectByName<GuiButton>(window, L"button3");
+					
+					protocol->KeyPress(VKEY::KEY_TAB, false, true, false);
+					TEST_ASSERT(button3->GetFocused());
+				});
+				protocol->OnNextIdleFrame(L"[SHIFT]+[TAB]", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto button2 = FindObjectByName<GuiButton>(window, L"button2");
+					
+					protocol->KeyPress(VKEY::KEY_TAB, false, true, false);
+					TEST_ASSERT(button2->GetFocused());
+				});
+				protocol->OnNextIdleFrame(L"[SHIFT]+[TAB]", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto button1 = FindObjectByName<GuiButton>(window, L"button1");
+					
+					protocol->KeyPress(VKEY::KEY_TAB, false, true, false);
+					TEST_ASSERT(button1->GetFocused());
+				});
+				protocol->OnNextIdleFrame(L"[SHIFT]+[TAB]", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
 					window->Hide();
 				});
 			});
