@@ -34,8 +34,6 @@
   - `(H|V)(Tracker|Scroll)/Mouse`
   - `ToolstripSplitButton`
   - `GuiDatePicker/Mouse`
-- Tests that are OS awared:
-  - `GuiDatePicker`, `GuiDateComboBox`, inject unit test specific time and locale object. Otherwise Window and Linux will see different printed date in snapshots.
 - Same issue
   - `(H|V)(Tracker|Scroll)/Mouse`
     - when `Drag to Center` the handler should be highlighted, because the mouse is right above the handler.

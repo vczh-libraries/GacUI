@@ -153,6 +153,7 @@ void SetGuiMainProxy(const Func<void()>& proxy)
 template<typename T>
 int UnitTestMain(int argc, T* argv[])
 {
+	InjectLocaleImpl(GetDefaultLocaleImpl());
 	UnitTestFrameworkConfig config;
 	config.snapshotFolder = unittest_framework_tests::GetTestSnapshotPath();
 	config.resourceFolder = unittest_framework_tests::GetTestDataPath();
