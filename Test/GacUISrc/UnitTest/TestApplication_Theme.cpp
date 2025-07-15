@@ -89,5 +89,58 @@ TEST_FILE
 				resourceControlThemeName
 			);
 		});
+
+		TEST_CASE(L"ControlTemplate")
+		{
+			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				auto checkboxTheme = theme::GetCurrentTheme()->CreateStyle(theme::ThemeName::CheckBox);
+				auto radiobuttonTheme = theme::GetCurrentTheme()->CreateStyle(theme::ThemeName::RadioButton);
+
+				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto checkbox1 = FindObjectByName<GuiSelectableButton>(window, L"checkbox1");
+					auto checkbox2 = FindObjectByName<GuiSelectableButton>(window, L"checkbox2");
+
+					TEST_ASSERT(checkbox1->GetControlThemeName() == theme::ThemeName::CheckBox);
+					TEST_ASSERT(checkbox2->GetControlThemeName() == theme::ThemeName::CheckBox);
+					TEST_ASSERT(!checkbox1->GetControlTemplate());
+					TEST_ASSERT(!checkbox2->GetControlTemplate());
+
+					checkbox1->SetControlTemplate(radiobuttonTheme);
+					checkbox2->SetControlTemplate(radiobuttonTheme);
+
+					TEST_ASSERT(checkbox1->GetControlThemeName() == theme::ThemeName::CheckBox);
+					TEST_ASSERT(checkbox2->GetControlThemeName() == theme::ThemeName::CheckBox);
+					TEST_ASSERT(checkbox1->GetControlTemplate());
+					TEST_ASSERT(checkbox2->GetControlTemplate());
+				});
+				protocol->OnNextIdleFrame(L"Become RadioButton", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto checkbox1 = FindObjectByName<GuiSelectableButton>(window, L"checkbox1");
+					auto checkbox2 = FindObjectByName<GuiSelectableButton>(window, L"checkbox2");
+
+					checkbox1->SetControlTemplate({});
+					checkbox2->SetControlTemplate({});
+
+					TEST_ASSERT(checkbox1->GetControlThemeName() == theme::ThemeName::CheckBox);
+					TEST_ASSERT(checkbox2->GetControlThemeName() == theme::ThemeName::CheckBox);
+					TEST_ASSERT(!checkbox1->GetControlTemplate());
+					TEST_ASSERT(!checkbox2->GetControlTemplate());
+				});
+				protocol->OnNextIdleFrame(L"Back to CheckBox", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					window->Hide();
+				});
+			});
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Application/ControlTemplate"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resourceControlThemeName
+			);
+		});
 	});
 }
