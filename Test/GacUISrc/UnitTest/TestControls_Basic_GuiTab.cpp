@@ -83,6 +83,22 @@ TEST_FILE
 				protocol->OnNextIdleFrame(L"Click Options", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
+					window->Hide();
+				});
+			});
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Controls/Basic/GuiTab/Navigation"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resourceTabWithAlt
+				);
+		});
+		TEST_CASE(L"NavigationAlt")
+		{
+			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
 					protocol->KeyPress(VKEY::KEY_MENU);
 				});
 				protocol->OnNextIdleFrame(L"[ALT]", [=]()
@@ -149,7 +165,7 @@ TEST_FILE
 				});
 			});
 			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
-				WString::Unmanaged(L"Controls/Basic/GuiTab/Navigation"),
+				WString::Unmanaged(L"Controls/Basic/GuiTab/NavigationAlt"),
 				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
 				resourceTabWithAlt
 				);
