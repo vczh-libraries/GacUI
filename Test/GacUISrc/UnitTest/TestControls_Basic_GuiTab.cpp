@@ -322,6 +322,43 @@ TEST_FILE
 				protocol->OnNextIdleFrame(L"Select Second", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
+					auto tab = FindObjectByName<GuiTab>(window, L"tab");
+
+					{
+						auto tabPage = new GuiTabPage(theme::ThemeName::CustomControl);
+						tabPage->SetText(L"First(2)");
+						tab->GetPages().Insert(1, tabPage);
+					}
+					{
+						auto tabPage = new GuiTabPage(theme::ThemeName::CustomControl);
+						tabPage->SetText(L"Third");
+						tab->GetPages().Add(tabPage);
+					}
+					checkPages(2, L"First", L"First(2)", L"Second", L"Third");
+				});
+				protocol->OnNextIdleFrame(L"Add First(2) and Third", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto tab = FindObjectByName<GuiTab>(window, L"tab");
+
+					auto tabPage = tab->GetSelectedPage();
+					tab->GetPages().Remove(tabPage);
+					SafeDeleteControl(tabPage);
+					checkPages(2, L"First", L"First(2)", L"Third");
+				});
+				protocol->OnNextIdleFrame(L"Delete Second", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto tab = FindObjectByName<GuiTab>(window, L"tab");
+
+					auto tabPage = tab->GetSelectedPage();
+					tab->GetPages().Remove(tabPage);
+					SafeDeleteControl(tabPage);
+					checkPages(1, L"First", L"First(2)");
+				});
+				protocol->OnNextIdleFrame(L"Delete Third", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
 					window->Hide();
 				});
 			});
