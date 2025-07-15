@@ -212,6 +212,48 @@ TEST_FILE
 				protocol->OnNextIdleFrame(L"[RIGHT]", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
+					auto nestedTab = FindObjectByName<GuiTab>(window, L"nestedTab");
+					protocol->KeyPress(VKEY::KEY_TAB);
+					TEST_ASSERT(nestedTab->GetSelectedPage() == nestedTab->GetPages()[0]);
+				});
+				protocol->OnNextIdleFrame(L"[TAB]", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto nestedTab = FindObjectByName<GuiTab>(window, L"nestedTab");
+					protocol->KeyPress(VKEY::KEY_RIGHT);
+					TEST_ASSERT(nestedTab->GetSelectedPage() == nestedTab->GetPages()[1]);
+				});
+				protocol->OnNextIdleFrame(L"[RIGHT]", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto nestedTab = FindObjectByName<GuiTab>(window, L"nestedTab");
+					protocol->KeyPress(VKEY::KEY_RIGHT);
+					TEST_ASSERT(nestedTab->GetSelectedPage() == nestedTab->GetPages()[2]);
+				});
+				protocol->OnNextIdleFrame(L"[RIGHT]", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto tab = FindObjectByName<GuiTab>(window, L"tab");
+					protocol->KeyPress(VKEY::KEY_TAB, false, true, false);
+					TEST_ASSERT(tab->GetSelectedPage() == tab->GetPages()[2]);
+				});
+				protocol->OnNextIdleFrame(L"[SHIFT+TAB]", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto tab = FindObjectByName<GuiTab>(window, L"tab");
+					protocol->KeyPress(VKEY::KEY_LEFT);
+					TEST_ASSERT(tab->GetSelectedPage() == tab->GetPages()[1]);
+				});
+				protocol->OnNextIdleFrame(L"[LEFT]", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto tab = FindObjectByName<GuiTab>(window, L"tab");
+					protocol->KeyPress(VKEY::KEY_LEFT);
+					TEST_ASSERT(tab->GetSelectedPage() == tab->GetPages()[0]);
+				});
+				protocol->OnNextIdleFrame(L"[LEFT]", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
 					window->Hide();
 				});
 			});
