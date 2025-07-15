@@ -25,6 +25,16 @@ TEST_FILE
                 <att.BoundsComposition-set AlignmentToParent="left:5 top:5 right:-1 bottom:-1"/>
               </Label>
             </TabPage>
+            <TabPage ref.Name="tabPageNested" Text="Nested">
+              <Tab ref.Name="nestedTab">
+                <att.BoundsComposition-set AlignmentToParent="left:5 top:5 right:5 bottom:5"/>
+                <att.Pages>
+                  <TabPage Text="First"/>
+                  <TabPage Text="Second"/>
+                  <TabPage Text="Third"/>
+                </att.Pages>
+              </Tab>
+            </TabPage>
           </att.Pages>
         </Tab>
       </Window>
@@ -45,9 +55,11 @@ TEST_FILE
 					auto tab = FindObjectByName<GuiTab>(window, L"tab");
 					auto tabPageOptions = FindObjectByName<GuiTabPage>(window, L"tabPageOptions");
 					auto tabPageLabel = FindObjectByName<GuiTabPage>(window, L"tabPageLabel");
-					TEST_ASSERT(tab->GetPages().Count() == 2);
+					auto tabPageNested = FindObjectByName<GuiTabPage>(window, L"tabPageNested");
+					TEST_ASSERT(tab->GetPages().Count() == 3);
 					TEST_ASSERT(tab->GetPages()[0] == tabPageOptions);
 					TEST_ASSERT(tab->GetPages()[1] == tabPageLabel);
+					TEST_ASSERT(tab->GetPages()[2] == tabPageNested);
 					TEST_ASSERT(tabPageOptions->GetOwnerTab() == tab);
 					TEST_ASSERT(tabPageLabel->GetOwnerTab() == tab);
 					TEST_ASSERT(tab->GetSelectedPage() == tabPageOptions);
@@ -92,6 +104,7 @@ TEST_FILE
 				resourceTabWithAlt
 				);
 		});
+
 		TEST_CASE(L"NavigationAlt")
 		{
 			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)

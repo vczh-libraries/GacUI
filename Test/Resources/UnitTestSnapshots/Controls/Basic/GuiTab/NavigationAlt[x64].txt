@@ -36,6 +36,12 @@ namespace gacuisrc_unittest
         var tabPageLabel : ::presentation::controls::GuiTabPage* = null of (::presentation::controls::GuiTabPage*);
 
         @cpp:Protected
+        var tabPageNested : ::presentation::controls::GuiTabPage* = null of (::presentation::controls::GuiTabPage*);
+
+        @cpp:Protected
+        var nestedTab : ::presentation::controls::GuiTab* = null of (::presentation::controls::GuiTab*);
+
+        @cpp:Protected
         var <precompile>0 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
@@ -58,6 +64,18 @@ namespace gacuisrc_unittest
 
         @cpp:Protected
         var <precompile>7 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var <precompile>8 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var <precompile>9 : ::presentation::controls::GuiTabPage* = null of (::presentation::controls::GuiTabPage*);
+
+        @cpp:Protected
+        var <precompile>10 : ::presentation::controls::GuiTabPage* = null of (::presentation::controls::GuiTabPage*);
+
+        @cpp:Protected
+        var <precompile>11 : ::presentation::controls::GuiTabPage* = null of (::presentation::controls::GuiTabPage*);
 
         @cpp:Protected
         func <gacuisrc_unittest-MainWindow>Initialize(<this> : ::gacuisrc_unittest::MainWindow*) : (::system::Void)
@@ -161,6 +179,58 @@ namespace gacuisrc_unittest
             {
                 var <collection> = tab.Pages;
                 <collection>.Add(tabPageLabel);
+            }
+            {
+                (tabPageNested = new (::presentation::controls::GuiTabPage*)(::presentation::theme::ThemeName::CustomControl));
+                <this>.SetNamedObject("tabPageNested", tabPageNested);
+            }
+            {
+                (tabPageNested.Text = "Nested");
+            }
+            {
+                (nestedTab = new (::presentation::controls::GuiTab*)(::presentation::theme::ThemeName::Tab));
+                <this>.SetNamedObject("nestedTab", nestedTab);
+            }
+            {
+                (<precompile>9 = new (::presentation::controls::GuiTabPage*)(::presentation::theme::ThemeName::CustomControl));
+            }
+            {
+                (<precompile>9.Text = "First");
+            }
+            {
+                var <collection> = nestedTab.Pages;
+                <collection>.Add(<precompile>9);
+            }
+            {
+                (<precompile>10 = new (::presentation::controls::GuiTabPage*)(::presentation::theme::ThemeName::CustomControl));
+            }
+            {
+                (<precompile>10.Text = "Second");
+            }
+            {
+                var <collection> = nestedTab.Pages;
+                <collection>.Add(<precompile>10);
+            }
+            {
+                (<precompile>11 = new (::presentation::controls::GuiTabPage*)(::presentation::theme::ThemeName::CustomControl));
+            }
+            {
+                (<precompile>11.Text = "Third");
+            }
+            {
+                var <collection> = nestedTab.Pages;
+                <collection>.Add(<precompile>11);
+            }
+            (<precompile>8 = nestedTab.BoundsComposition);
+            {
+                (<precompile>8.AlignmentToParent = {left : 5; top : 5; right : 5; bottom : 5;} of (::presentation::Margin));
+            }
+            {
+                tabPageNested.AddChild(nestedTab);
+            }
+            {
+                var <collection> = tab.Pages;
+                <collection>.Add(tabPageNested);
             }
             (<precompile>0 = tab.BoundsComposition);
             {
