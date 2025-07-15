@@ -183,5 +183,43 @@ TEST_FILE
 				resourceTabWithAlt
 				);
 		});
+
+		TEST_CASE(L"NavigationTab")
+		{
+			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto tab = FindObjectByName<GuiTab>(window, L"tab");
+					protocol->KeyPress(VKEY::KEY_TAB);
+					TEST_ASSERT(tab->GetSelectedPage() == tab->GetPages()[0]);
+				});
+				protocol->OnNextIdleFrame(L"[TAB]", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto tab = FindObjectByName<GuiTab>(window, L"tab");
+					protocol->KeyPress(VKEY::KEY_RIGHT);
+					TEST_ASSERT(tab->GetSelectedPage() == tab->GetPages()[1]);
+				});
+				protocol->OnNextIdleFrame(L"[RIGHT]", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto tab = FindObjectByName<GuiTab>(window, L"tab");
+					protocol->KeyPress(VKEY::KEY_RIGHT);
+					TEST_ASSERT(tab->GetSelectedPage() == tab->GetPages()[2]);
+				});
+				protocol->OnNextIdleFrame(L"[RIGHT]", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					window->Hide();
+				});
+			});
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Controls/Basic/GuiTab/NavigationTab"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resourceTabWithAlt
+				);
+		});
 	});
 }
