@@ -300,18 +300,27 @@ TEST_FILE
 					}
 				};
 
-				protocol->OnNextIdleFrame(L"Ready", [&checkPages]()
+				auto createPage = [](const WString& name)
+				{
+					auto tabPage = new GuiTabPage(theme::ThemeName::CustomControl);
+					tabPage->SetText(name);
+
+					auto label = new GuiLabel(theme::ThemeName::Label);
+					label->SetText(name);
+					tabPage->AddChild(label);
+					return tabPage;
+				};
+
+				protocol->OnNextIdleFrame(L"Ready", [&checkPages, &createPage]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto tab = FindObjectByName<GuiTab>(window, L"tab");
 					checkPages(0, L"First");
 
-					auto tabPage = new GuiTabPage(theme::ThemeName::CustomControl);
-					tabPage->SetText(L"Second");
-					tab->GetPages().Add(tabPage);
+					tab->GetPages().Add(createPage(L"Second"));
 					checkPages(0, L"First", L"Second");
 				});
-				protocol->OnNextIdleFrame(L"Add Second", [=]()
+				protocol->OnNextIdleFrame(L"Add Second", [&checkPages]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto tab = FindObjectByName<GuiTab>(window, L"tab");
@@ -319,24 +328,16 @@ TEST_FILE
 					tab->SetSelectedPage(tab->GetPages()[1]);
 					checkPages(1, L"First", L"Second");
 				});
-				protocol->OnNextIdleFrame(L"Select Second", [=]()
+				protocol->OnNextIdleFrame(L"Select Second", [&checkPages, &createPage]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto tab = FindObjectByName<GuiTab>(window, L"tab");
 
-					{
-						auto tabPage = new GuiTabPage(theme::ThemeName::CustomControl);
-						tabPage->SetText(L"First(2)");
-						tab->GetPages().Insert(1, tabPage);
-					}
-					{
-						auto tabPage = new GuiTabPage(theme::ThemeName::CustomControl);
-						tabPage->SetText(L"Third");
-						tab->GetPages().Add(tabPage);
-					}
+					tab->GetPages().Insert(1, createPage(L"First(2)"));
+					tab->GetPages().Add(createPage(L"Third"));
 					checkPages(2, L"First", L"First(2)", L"Second", L"Third");
 				});
-				protocol->OnNextIdleFrame(L"Add First(2) and Third", [=]()
+				protocol->OnNextIdleFrame(L"Add First(2) and Third", [&checkPages]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto tab = FindObjectByName<GuiTab>(window, L"tab");
@@ -346,7 +347,7 @@ TEST_FILE
 					SafeDeleteControl(tabPage);
 					checkPages(2, L"First", L"First(2)", L"Third");
 				});
-				protocol->OnNextIdleFrame(L"Delete Second", [=]()
+				protocol->OnNextIdleFrame(L"Delete Second", [&checkPages]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto tab = FindObjectByName<GuiTab>(window, L"tab");
