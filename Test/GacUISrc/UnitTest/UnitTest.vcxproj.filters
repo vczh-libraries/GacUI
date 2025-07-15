@@ -279,6 +279,9 @@
     <ClCompile Include="TestApplication_Tab.cpp">
       <Filter>Source Files\Controls\Application</Filter>
     </ClCompile>
+    <ClCompile Include="TestApplication_Theme.cpp">
+      <Filter>Source Files\Controls\Application</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="TestCompositions.h">
