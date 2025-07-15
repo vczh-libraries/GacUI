@@ -16,6 +16,7 @@ TEST_FILE
             <_>composeType:Percentage percentage:1.0</_>
           </att.Rows>
           <att.Columns>
+            <_>composeType:MinSize</_>
             <_>composeType:Percentage percentage:1.0</_>
           </att.Columns>
           
@@ -44,6 +45,39 @@ TEST_FILE
 			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
 			{
 				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto checkbox1 = FindObjectByName<GuiSelectableButton>(window, L"checkbox1");
+					auto checkbox2 = FindObjectByName<GuiSelectableButton>(window, L"checkbox2");
+
+					TEST_ASSERT(checkbox1->GetControlThemeName() == theme::ThemeName::CheckBox);
+					TEST_ASSERT(checkbox2->GetControlThemeName() == theme::ThemeName::CheckBox);
+					TEST_ASSERT(!checkbox1->GetControlTemplate());
+					TEST_ASSERT(!checkbox2->GetControlTemplate());
+
+					checkbox1->SetControlThemeName(theme::ThemeName::RadioButton);
+					checkbox2->SetControlThemeName(theme::ThemeName::RadioButton);
+
+					TEST_ASSERT(checkbox1->GetControlThemeName() == theme::ThemeName::RadioButton);
+					TEST_ASSERT(checkbox2->GetControlThemeName() == theme::ThemeName::RadioButton);
+					TEST_ASSERT(!checkbox1->GetControlTemplate());
+					TEST_ASSERT(!checkbox2->GetControlTemplate());
+				});
+				protocol->OnNextIdleFrame(L"Become RadioButton", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto checkbox1 = FindObjectByName<GuiSelectableButton>(window, L"checkbox1");
+					auto checkbox2 = FindObjectByName<GuiSelectableButton>(window, L"checkbox2");
+
+					checkbox1->SetControlThemeName(theme::ThemeName::CheckBox);
+					checkbox2->SetControlThemeName(theme::ThemeName::CheckBox);
+
+					TEST_ASSERT(checkbox1->GetControlThemeName() == theme::ThemeName::CheckBox);
+					TEST_ASSERT(checkbox2->GetControlThemeName() == theme::ThemeName::CheckBox);
+					TEST_ASSERT(!checkbox1->GetControlTemplate());
+					TEST_ASSERT(!checkbox2->GetControlTemplate());
+				});
+				protocol->OnNextIdleFrame(L"Back to CheckBox", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					window->Hide();
