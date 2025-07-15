@@ -43,6 +43,23 @@ TEST_FILE
 </Resource>
 )GacUISrc";
 
+	const auto resourceOneTab = LR"GacUISrc(
+<Resource>
+  <Instance name="MainWindowResource">
+    <Instance ref.Class="gacuisrc_unittest::MainWindow">
+      <Window ref.Name="self" Text="GuiTab" ClientSize="x:320 y:240">
+        <Tab ref.Name="tab">
+          <att.BoundsComposition-set AlignmentToParent="left:0 top:5 right:0 bottom:0"/>
+          <att.Pages>
+            <TabPage Text="First" Alt="O"/>
+          </att.Pages>
+        </Tab>
+      </Window>
+    </Instance>
+  </Instance>
+</Resource>
+)GacUISrc";
+
 	TEST_CATEGORY(L"GuiTab")
 	{
 		TEST_CASE(L"Navigation")
@@ -261,6 +278,57 @@ TEST_FILE
 				WString::Unmanaged(L"Controls/Basic/GuiTab/NavigationTab"),
 				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
 				resourceTabWithAlt
+				);
+		});
+
+		TEST_CASE(L"ModifyPages")
+		{
+			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				auto checkPages = [](vint index, auto ...names)
+				{
+					constexpr vint tabCount = sizeof...(names);
+					const wchar_t* tabNames[] = { names... };
+					auto window = GetApplication()->GetMainWindow();
+					auto tab = FindObjectByName<GuiTab>(window, L"tab");
+
+					TEST_ASSERT(tab->GetPages().Count() == tabCount);
+					TEST_ASSERT(tab->GetSelectedPage() == tab->GetPages()[index]);
+					for(vint i=0; i < sizeof...(names); i++)
+					{
+						TEST_ASSERT(tab->GetPages()[i]->GetText() == WString::Unmanaged(tabNames[i]));
+					}
+				};
+
+				protocol->OnNextIdleFrame(L"Ready", [&checkPages]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto tab = FindObjectByName<GuiTab>(window, L"tab");
+					checkPages(0, L"First");
+
+					auto tabPage = new GuiTabPage(theme::ThemeName::CustomControl);
+					tabPage->SetText(L"Second");
+					tab->GetPages().Add(tabPage);
+					checkPages(0, L"First", L"Second");
+				});
+				protocol->OnNextIdleFrame(L"Add Second", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto tab = FindObjectByName<GuiTab>(window, L"tab");
+
+					tab->SetSelectedPage(tab->GetPages()[1]);
+					checkPages(1, L"First", L"Second");
+				});
+				protocol->OnNextIdleFrame(L"Select Second", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					window->Hide();
+				});
+			});
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Controls/Basic/GuiTab/ModifyPages"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resourceOneTab
 				);
 		});
 	});
