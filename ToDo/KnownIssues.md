@@ -50,3 +50,6 @@
   - When the content is changed, configuration needs 2 idle frames to be correctly configured.
 - `GuiListItemTemplate/ArrangerAndAxis(WithScrolls)`
   - items are not aligned to proper corner when scrolls are invisible.
+- Features with no plan in unit test:
+  - `GuiControl`
+    - `QueryService` and `AddService`
