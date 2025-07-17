@@ -352,7 +352,44 @@ namespace gacui_unittest_template
 
 		TEST_CASE(L"MouseWheel")
 		{
-			// TODO
+			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiListControl>(window, L"list");
+
+					InitializeItems(window, 0, 30);
+					auto location = protocol->LocationOf(listControl);
+					protocol->MouseMove(location);
+				});
+				protocol->OnNextIdleFrame(L"30 Items", [=]()
+				{
+					protocol->WheelDown(1);
+				});
+				protocol->OnNextIdleFrame(L"Scroll Down", [=]()
+				{
+					protocol->WheelDown(100);
+				});
+				protocol->OnNextIdleFrame(L"Scroll to End", [=]()
+				{
+					protocol->WheelUp(1);
+				});
+				protocol->OnNextIdleFrame(L"Scroll Up", [=]()
+				{
+					protocol->WheelUp(100);
+				});
+				protocol->OnNextIdleFrame(L"Scroll to Begin", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					window->Hide();
+				});
+			});
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Controls/List/") + pathFragment + WString::Unmanaged(L"/MouseWheel"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resourceXml
+				);
 		});
 
 #undef ATTACH_ITEM_EVENTS

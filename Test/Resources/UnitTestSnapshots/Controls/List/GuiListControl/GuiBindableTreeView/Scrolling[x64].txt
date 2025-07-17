@@ -27,6 +27,12 @@ namespace gacuisrc_unittest
         var self : ::gacuisrc_unittest::MainWindow* = null of (::gacuisrc_unittest::MainWindow*);
 
         @cpp:Protected
+        var list : ::presentation::controls::GuiBindableTreeView* = null of (::presentation::controls::GuiBindableTreeView*);
+
+        @cpp:Protected
+        var logs : ::presentation::controls::GuiTextList* = null of (::presentation::controls::GuiTextList*);
+
+        @cpp:Protected
         var <precompile>0 : ::presentation::compositions::GuiTableComposition* = null of (::presentation::compositions::GuiTableComposition*);
 
         @cpp:Protected
@@ -54,12 +60,6 @@ namespace gacuisrc_unittest
         var <precompile>8 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
-        var list : ::presentation::controls::GuiBindableTreeView* = null of (::presentation::controls::GuiBindableTreeView*);
-
-        @cpp:Protected
-        var logs : ::presentation::controls::GuiTextList* = null of (::presentation::controls::GuiTextList*);
-
-        @cpp:Protected
         func <gacuisrc_unittest-MainWindow>Initialize(<this> : ::gacuisrc_unittest::MainWindow*) : (::system::Void)
         {
             (self = <this>);
@@ -71,13 +71,13 @@ namespace gacuisrc_unittest
             }
             (<precompile>0 = new (::presentation::compositions::GuiTableComposition*)());
             {
-                (<precompile>0.BorderVisible = false);
+                (<precompile>0.AlignmentToParent = {left : 0; top : 5; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
                 (<precompile>0.CellPadding = 5 of (::system::Int64));
             }
             {
-                (<precompile>0.AlignmentToParent = {left : 0; top : 5; right : 0; bottom : 0;} of (::presentation::Margin));
+                (<precompile>0.BorderVisible = false);
             }
             {
                 <precompile>0.SetRowsAndColumns(1, 2);
@@ -117,15 +117,15 @@ namespace gacuisrc_unittest
                     return item.Text;
                 });
             }
+            (<precompile>3 = list.BoundsComposition);
+            {
+                (<precompile>3.AlignmentToParent = {left : 5; top : 5; right : 5; bottom : 5;} of (::presentation::Margin));
+            }
             {
                 (list.VerticalAlwaysVisible = false);
             }
             {
                 (list.HorizontalAlwaysVisible = false);
-            }
-            (<precompile>3 = list.BoundsComposition);
-            {
-                (<precompile>3.AlignmentToParent = {left : 5; top : 5; right : 5; bottom : 5;} of (::presentation::Margin));
             }
             {
                 <precompile>2.AddChild(list);
@@ -154,15 +154,15 @@ namespace gacuisrc_unittest
                 (logs = new (::presentation::controls::GuiTextList*)(::presentation::theme::ThemeName::TextList));
                 <this>.SetNamedObject("logs", logs);
             }
+            (<precompile>7 = logs.BoundsComposition);
+            {
+                (<precompile>7.AlignmentToParent = {left : 5; top : 5; right : 5; bottom : 5;} of (::presentation::Margin));
+            }
             {
                 (logs.VerticalAlwaysVisible = false);
             }
             {
                 (logs.HorizontalAlwaysVisible = false);
-            }
-            (<precompile>7 = logs.BoundsComposition);
-            {
-                (<precompile>7.AlignmentToParent = {left : 5; top : 5; right : 5; bottom : 5;} of (::presentation::Margin));
             }
             {
                 <precompile>6.AddChild(logs);
