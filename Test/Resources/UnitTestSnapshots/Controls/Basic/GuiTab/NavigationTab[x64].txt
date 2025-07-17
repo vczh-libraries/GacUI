@@ -27,21 +27,6 @@ namespace gacuisrc_unittest
         var self : ::gacuisrc_unittest::MainWindow* = null of (::gacuisrc_unittest::MainWindow*);
 
         @cpp:Protected
-        var tab : ::presentation::controls::GuiTab* = null of (::presentation::controls::GuiTab*);
-
-        @cpp:Protected
-        var tabPageOptions : ::presentation::controls::GuiTabPage* = null of (::presentation::controls::GuiTabPage*);
-
-        @cpp:Protected
-        var tabPageLabel : ::presentation::controls::GuiTabPage* = null of (::presentation::controls::GuiTabPage*);
-
-        @cpp:Protected
-        var tabPageNested : ::presentation::controls::GuiTabPage* = null of (::presentation::controls::GuiTabPage*);
-
-        @cpp:Protected
-        var nestedTab : ::presentation::controls::GuiTab* = null of (::presentation::controls::GuiTab*);
-
-        @cpp:Protected
         var <precompile>0 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
@@ -78,6 +63,21 @@ namespace gacuisrc_unittest
         var <precompile>11 : ::presentation::controls::GuiTabPage* = null of (::presentation::controls::GuiTabPage*);
 
         @cpp:Protected
+        var tab : ::presentation::controls::GuiTab* = null of (::presentation::controls::GuiTab*);
+
+        @cpp:Protected
+        var tabPageOptions : ::presentation::controls::GuiTabPage* = null of (::presentation::controls::GuiTabPage*);
+
+        @cpp:Protected
+        var tabPageLabel : ::presentation::controls::GuiTabPage* = null of (::presentation::controls::GuiTabPage*);
+
+        @cpp:Protected
+        var tabPageNested : ::presentation::controls::GuiTabPage* = null of (::presentation::controls::GuiTabPage*);
+
+        @cpp:Protected
+        var nestedTab : ::presentation::controls::GuiTab* = null of (::presentation::controls::GuiTab*);
+
+        @cpp:Protected
         func <gacuisrc_unittest-MainWindow>Initialize(<this> : ::gacuisrc_unittest::MainWindow*) : (::system::Void)
         {
             (self = <this>);
@@ -103,13 +103,13 @@ namespace gacuisrc_unittest
             }
             (<precompile>1 = new (::presentation::compositions::GuiStackComposition*)());
             {
-                (<precompile>1.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
-            }
-            {
                 (<precompile>1.Padding = 5 of (::system::Int64));
             }
             {
                 (<precompile>1.Direction = Vertical of (::presentation::compositions::GuiStackComposition::Direction));
+            }
+            {
+                (<precompile>1.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
             }
             {
                 (<precompile>1.AlignmentToParent = {left : 5; top : 5; right : 5; bottom : 5;} of (::presentation::Margin));

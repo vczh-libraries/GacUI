@@ -86,16 +86,16 @@ namespace gacuisrc_unittest
                 (<precompile>0.ExtraMargin = {left : 5; top : 5; right : 5; bottom : 5;} of (::presentation::Margin));
             }
             {
-                (<precompile>0.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+                (<precompile>0.Padding = 5 of (::system::Int64));
+            }
+            {
+                (<precompile>0.Direction = Vertical of (::presentation::compositions::GuiStackComposition::Direction));
             }
             {
                 (<precompile>0.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
             }
             {
-                (<precompile>0.Padding = 5 of (::system::Int64));
-            }
-            {
-                (<precompile>0.Direction = Vertical of (::presentation::compositions::GuiStackComposition::Direction));
+                (<precompile>0.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             (<precompile>1 = new (::presentation::compositions::GuiStackItemComposition*)());
             (b = new (::gacuisrc_unittest::MyControl*)());
@@ -492,10 +492,10 @@ namespace gacuisrc_unittest
                 (<precompile>1.CellPadding = 5 of (::system::Int64));
             }
             {
-                (<precompile>1.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+                (<precompile>1.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
             }
             {
-                (<precompile>1.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+                (<precompile>1.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
                 <precompile>1.SetRowsAndColumns(5, 2);
@@ -577,10 +577,10 @@ namespace gacuisrc_unittest
             (container = new (::presentation::compositions::GuiBoundsComposition*)());
             <this>.SetNamedObject("container", container);
             {
-                (container.AlignmentToParent = {left : 1; top : 1; right : 1; bottom : 1;} of (::presentation::Margin));
+                (container.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
             }
             {
-                (container.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+                (container.AlignmentToParent = {left : 1; top : 1; right : 1; bottom : 1;} of (::presentation::Margin));
             }
             {
                 <precompile>10.AddChild(container);

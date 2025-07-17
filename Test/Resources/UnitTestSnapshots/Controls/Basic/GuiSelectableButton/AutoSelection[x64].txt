@@ -69,16 +69,16 @@ namespace gacuisrc_unittest
             }
             (<precompile>1 = new (::presentation::compositions::GuiStackComposition*)());
             {
-                (<precompile>1.AlignmentToParent = {left : 5; top : 5; right : 5; bottom : 5;} of (::presentation::Margin));
+                (<precompile>1.Padding = 5 of (::system::Int64));
+            }
+            {
+                (<precompile>1.Direction = Vertical of (::presentation::compositions::GuiStackComposition::Direction));
             }
             {
                 (<precompile>1.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
             }
             {
-                (<precompile>1.Padding = 5 of (::system::Int64));
-            }
-            {
-                (<precompile>1.Direction = Vertical of (::presentation::compositions::GuiStackComposition::Direction));
+                (<precompile>1.AlignmentToParent = {left : 5; top : 5; right : 5; bottom : 5;} of (::presentation::Margin));
             }
             (<precompile>2 = new (::presentation::compositions::GuiStackItemComposition*)());
             {

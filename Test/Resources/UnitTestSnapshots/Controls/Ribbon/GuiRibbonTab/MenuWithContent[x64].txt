@@ -66,15 +66,6 @@ namespace gacuisrc_unittest
         var <precompile>12 : ::presentation::controls::list::TextItem^ = null of (::presentation::controls::list::TextItem^);
 
         @cpp:Protected
-        var tab : ::presentation::controls::GuiRibbonTab* = null of (::presentation::controls::GuiRibbonTab*);
-
-        @cpp:Protected
-        var tabPageOptions : ::presentation::controls::GuiRibbonTabPage* = null of (::presentation::controls::GuiRibbonTabPage*);
-
-        @cpp:Protected
-        var tabPageLabel : ::presentation::controls::GuiRibbonTabPage* = null of (::presentation::controls::GuiRibbonTabPage*);
-
-        @cpp:Protected
         var <precompile>13 : ::presentation::controls::list::TextItem^ = null of (::presentation::controls::list::TextItem^);
 
         @cpp:Protected
@@ -85,6 +76,15 @@ namespace gacuisrc_unittest
 
         @cpp:Protected
         var <precompile>16 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var tab : ::presentation::controls::GuiRibbonTab* = null of (::presentation::controls::GuiRibbonTab*);
+
+        @cpp:Protected
+        var tabPageOptions : ::presentation::controls::GuiRibbonTabPage* = null of (::presentation::controls::GuiRibbonTabPage*);
+
+        @cpp:Protected
+        var tabPageLabel : ::presentation::controls::GuiRibbonTabPage* = null of (::presentation::controls::GuiRibbonTabPage*);
 
         @cpp:Protected
         var <precompile>17 : ::presentation::compositions::GuiGraphicsComposition* = null of (::presentation::compositions::GuiGraphicsComposition*);
@@ -217,13 +217,13 @@ namespace gacuisrc_unittest
             (<precompile>4 = ribbonMenu.ContentComposition);
             (<precompile>5 = new (::presentation::compositions::GuiTableComposition*)());
             {
+                (<precompile>5.PreferredMinSize = {y : 80;} of (::presentation::Size));
+            }
+            {
                 (<precompile>5.BorderVisible = true);
             }
             {
                 (<precompile>5.CellPadding = 5 of (::system::Int64));
-            }
-            {
-                (<precompile>5.PreferredMinSize = {y : 80;} of (::presentation::Size));
             }
             {
                 (<precompile>5.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
