@@ -47,16 +47,16 @@ namespace gacuisrc_unittest
             (self = <this>);
             (<precompile>0 = new (::presentation::compositions::GuiStackComposition*)());
             {
-                (<precompile>0.AlignmentToParent = {left : 2; top : 0; right : 2; bottom : 0;} of (::presentation::Margin));
+                (<precompile>0.Padding = 2 of (::system::Int32));
+            }
+            {
+                (<precompile>0.Direction = Horizontal of (::presentation::compositions::GuiStackComposition::Direction));
             }
             {
                 (<precompile>0.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
             }
             {
-                (<precompile>0.Padding = 2 of (::system::Int32));
-            }
-            {
-                (<precompile>0.Direction = Horizontal of (::presentation::compositions::GuiStackComposition::Direction));
+                (<precompile>0.AlignmentToParent = {left : 2; top : 0; right : 2; bottom : 0;} of (::presentation::Margin));
             }
             (<precompile>1 = new (::presentation::compositions::GuiStackItemComposition*)());
             (<precompile>2 = new (::presentation::elements::GuiImageFrameElement^)());
@@ -479,16 +479,16 @@ namespace gacuisrc_unittest
             (self = <this>);
             (<precompile>0 = new (::presentation::compositions::GuiStackComposition*)());
             {
-                (<precompile>0.AlignmentToParent = {left : 2; top : 0; right : 2; bottom : 0;} of (::presentation::Margin));
+                (<precompile>0.Padding = 2 of (::system::Int32));
+            }
+            {
+                (<precompile>0.Direction = Horizontal of (::presentation::compositions::GuiStackComposition::Direction));
             }
             {
                 (<precompile>0.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
             }
             {
-                (<precompile>0.Padding = 2 of (::system::Int32));
-            }
-            {
-                (<precompile>0.Direction = Horizontal of (::presentation::compositions::GuiStackComposition::Direction));
+                (<precompile>0.AlignmentToParent = {left : 2; top : 0; right : 2; bottom : 0;} of (::presentation::Margin));
             }
             (<precompile>1 = new (::presentation::compositions::GuiStackItemComposition*)());
             (<precompile>2 = new (::presentation::elements::GuiImageFrameElement^)());

@@ -1,0 +1,247 @@
+﻿================================(1/2)================================
+module <constructor>gacuisrc_unittest::MainWindow;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace gacuisrc_unittest
+{
+    class MainWindowConstructor
+    {
+        @cpp:Protected
+        var self : ::gacuisrc_unittest::MainWindow* = null of (::gacuisrc_unittest::MainWindow*);
+
+        @cpp:Protected
+        var <precompile>0 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var <precompile>1 : ::presentation::compositions::GuiGraphicsComposition* = null of (::presentation::compositions::GuiGraphicsComposition*);
+
+        @cpp:Protected
+        var tab : ::presentation::controls::GuiRibbonTab* = null of (::presentation::controls::GuiRibbonTab*);
+
+        @cpp:Protected
+        var tabPageOptions : ::presentation::controls::GuiRibbonTabPage* = null of (::presentation::controls::GuiRibbonTabPage*);
+
+        @cpp:Protected
+        var tabPageLabel : ::presentation::controls::GuiRibbonTabPage* = null of (::presentation::controls::GuiRibbonTabPage*);
+
+        @cpp:Protected
+        var group1 : ::presentation::controls::GuiRibbonGroup* = null of (::presentation::controls::GuiRibbonGroup*);
+
+        @cpp:Protected
+        var label1 : ::presentation::controls::GuiLabel* = null of (::presentation::controls::GuiLabel*);
+
+        @cpp:Protected
+        var group2 : ::presentation::controls::GuiRibbonGroup* = null of (::presentation::controls::GuiRibbonGroup*);
+
+        @cpp:Protected
+        var label2 : ::presentation::controls::GuiLabel* = null of (::presentation::controls::GuiLabel*);
+
+        @cpp:Protected
+        var group3 : ::presentation::controls::GuiRibbonGroup* = null of (::presentation::controls::GuiRibbonGroup*);
+
+        @cpp:Protected
+        var label3 : ::presentation::controls::GuiLabel* = null of (::presentation::controls::GuiLabel*);
+
+        @cpp:Protected
+        func <gacuisrc_unittest-MainWindow>Initialize(<this> : ::gacuisrc_unittest::MainWindow*) : (::system::Void)
+        {
+            (self = <this>);
+            {
+                (self.ClientSize = {x : 480; y : 320;} of (::presentation::Size));
+            }
+            {
+                (self.Text = "GuiRibbonTab");
+            }
+            {
+                (tab = new (::presentation::controls::GuiRibbonTab*)(::presentation::theme::ThemeName::RibbonTab));
+                <this>.SetNamedObject("tab", tab);
+            }
+            {
+                (tabPageOptions = new (::presentation::controls::GuiRibbonTabPage*)(::presentation::theme::ThemeName::CustomControl));
+                <this>.SetNamedObject("tabPageOptions", tabPageOptions);
+            }
+            {
+                (group1 = new (::presentation::controls::GuiRibbonGroup*)(::presentation::theme::ThemeName::RibbonGroup));
+                <this>.SetNamedObject("group1", group1);
+            }
+            {
+                (label1 = new (::presentation::controls::GuiLabel*)(::presentation::theme::ThemeName::Label));
+                <this>.SetNamedObject("label1", label1);
+            }
+            {
+                (label1.Text = "1st Group");
+            }
+            {
+                var <collection> = group1.Items;
+                <collection>.Add(label1);
+            }
+            {
+                (group1.Expandable = true);
+            }
+            {
+                (group1.Text = "1st");
+            }
+            {
+                var <collection> = tabPageOptions.Groups;
+                <collection>.Add(group1);
+            }
+            {
+                (group2 = new (::presentation::controls::GuiRibbonGroup*)(::presentation::theme::ThemeName::RibbonGroup));
+                <this>.SetNamedObject("group2", group2);
+            }
+            {
+                (label2 = new (::presentation::controls::GuiLabel*)(::presentation::theme::ThemeName::Label));
+                <this>.SetNamedObject("label2", label2);
+            }
+            {
+                (label2.Text = "2nd Group");
+            }
+            {
+                var <collection> = group2.Items;
+                <collection>.Add(label2);
+            }
+            {
+                (group2.Text = "2nd");
+            }
+            {
+                var <collection> = tabPageOptions.Groups;
+                <collection>.Add(group2);
+            }
+            {
+                (group3 = new (::presentation::controls::GuiRibbonGroup*)(::presentation::theme::ThemeName::RibbonGroup));
+                <this>.SetNamedObject("group3", group3);
+            }
+            {
+                (label3 = new (::presentation::controls::GuiLabel*)(::presentation::theme::ThemeName::Label));
+                <this>.SetNamedObject("label3", label3);
+            }
+            {
+                (label3.Text = "3rd Group");
+            }
+            {
+                var <collection> = group3.Items;
+                <collection>.Add(label3);
+            }
+            {
+                (group3.Text = "3rd");
+            }
+            {
+                var <collection> = tabPageOptions.Groups;
+                <collection>.Add(group3);
+            }
+            (<precompile>1 = tabPageOptions.ContainerComposition);
+            {
+                (<precompile>1.PreferredMinSize = {y : 110;} of (::presentation::Size));
+            }
+            {
+                (tabPageOptions.Text = "Options");
+            }
+            {
+                var <collection> = tab.Pages;
+                <collection>.Add(tabPageOptions);
+            }
+            {
+                (tabPageLabel = new (::presentation::controls::GuiRibbonTabPage*)(::presentation::theme::ThemeName::CustomControl));
+                <this>.SetNamedObject("tabPageLabel", tabPageLabel);
+            }
+            {
+                (tabPageLabel.Highlighted = true);
+            }
+            {
+                (tabPageLabel.Text = "Label");
+            }
+            {
+                var <collection> = tab.Pages;
+                <collection>.Add(tabPageLabel);
+            }
+            (<precompile>0 = tab.BoundsComposition);
+            {
+                (<precompile>0.AlignmentToParent = {left : 0; top : 5; right : 0; bottom : (-1);} of (::presentation::Margin));
+            }
+            {
+                self.AddChild(tab);
+            }
+            {
+                (group1.LargeImage = (cast (::presentation::GuiImageData^) <this>.ResolveResource("res", "ListViewImages/LargeImages/Cert", true)));
+            }
+            {
+                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                {
+                    (self.Text = "Expanded!");
+                };
+                attach(group1.ExpandButtonClicked, <event-handler>);
+            }
+            {
+                (group2.LargeImage = (cast (::presentation::GuiImageData^) <this>.ResolveResource("res", "ListViewImages/LargeImages/Folder", true)));
+            }
+            {
+                (group3.LargeImage = (cast (::presentation::GuiImageData^) <this>.ResolveResource("res", "ListViewImages/LargeImages/Light", true)));
+            }
+        }
+
+        new ()
+        {
+        }
+    }
+}
+
+================================(2/2)================================
+module <instance>gacuisrc_unittest::MainWindow;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace gacuisrc_unittest
+{
+    @cpp:File("MainWindow")
+    @cpp:Friend(typeof(MainWindowConstructor))
+    class MainWindow : ::presentation::controls::GuiWindow, MainWindowConstructor
+    {
+        new* ()
+            :::presentation::controls::GuiWindow(::presentation::theme::ThemeName::Window)
+        {
+            var <resource> = ::presentation::IGuiResourceManager::GetResourceManager().GetResourceFromClassName("gacuisrc_unittest::MainWindow");
+            var <resolver> = new (::presentation::GuiResourcePathResolver^)(<resource>, <resource>.WorkingDirectory);
+            this.SetResourceResolver(<resolver>);
+            this.<gacuisrc_unittest-MainWindow>Initialize(this);
+        }
+
+        delete
+        {
+            FinalizeInstanceRecursively(this of (::presentation::controls::GuiControlHost*));
+        }
+    }
+}
+

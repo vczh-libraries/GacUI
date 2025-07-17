@@ -66,6 +66,9 @@ namespace gacuisrc_unittest
         var <precompile>12 : ::presentation::compositions::GuiStackItemComposition* = null of (::presentation::compositions::GuiStackItemComposition*);
 
         @cpp:Protected
+        var <precompile>13 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
         var dataGrid : ::presentation::controls::GuiBindableDataGrid* = null of (::presentation::controls::GuiBindableDataGrid*);
 
         @cpp:Protected
@@ -82,9 +85,6 @@ namespace gacuisrc_unittest
 
         @cpp:Protected
         var radioMicrosoft : ::presentation::controls::GuiSelectableButton* = null of (::presentation::controls::GuiSelectableButton*);
-
-        @cpp:Protected
-        var <precompile>13 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
         func <gacuisrc_unittest-MainWindow>Initialize(<this> : ::gacuisrc_unittest::MainWindow*) : (::system::Void)
@@ -188,16 +188,16 @@ namespace gacuisrc_unittest
             }
             (<precompile>4 = new (::presentation::compositions::GuiStackComposition*)());
             {
-                (<precompile>4.AlignmentToParent = {left : 5; top : 5; right : 5; bottom : 5;} of (::presentation::Margin));
+                (<precompile>4.Padding = 5 of (::system::Int32));
+            }
+            {
+                (<precompile>4.Direction = Vertical of (::presentation::compositions::GuiStackComposition::Direction));
             }
             {
                 (<precompile>4.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
             }
             {
-                (<precompile>4.Padding = 5 of (::system::Int32));
-            }
-            {
-                (<precompile>4.Direction = Vertical of (::presentation::compositions::GuiStackComposition::Direction));
+                (<precompile>4.AlignmentToParent = {left : 5; top : 5; right : 5; bottom : 5;} of (::presentation::Margin));
             }
             (<precompile>5 = new (::presentation::compositions::GuiStackItemComposition*)());
             {
@@ -258,16 +258,16 @@ namespace gacuisrc_unittest
             }
             (<precompile>10 = new (::presentation::compositions::GuiStackComposition*)());
             {
-                (<precompile>10.AlignmentToParent = {left : 5; top : 5; right : 5; bottom : 5;} of (::presentation::Margin));
+                (<precompile>10.Padding = 5 of (::system::Int32));
+            }
+            {
+                (<precompile>10.Direction = Vertical of (::presentation::compositions::GuiStackComposition::Direction));
             }
             {
                 (<precompile>10.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
             }
             {
-                (<precompile>10.Padding = 5 of (::system::Int32));
-            }
-            {
-                (<precompile>10.Direction = Vertical of (::presentation::compositions::GuiStackComposition::Direction));
+                (<precompile>10.AlignmentToParent = {left : 5; top : 5; right : 5; bottom : 5;} of (::presentation::Margin));
             }
             (<precompile>11 = new (::presentation::compositions::GuiStackItemComposition*)());
             {
