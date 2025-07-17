@@ -119,13 +119,39 @@ TEST_FILE
 }
 ```
 
-There can be multiple `TEST_CATEGORY` but usually just one.
-There will always be multiple `TEST_CASE`.
-There name will also appear in the arguments to `GacUIUnitTest_StartFast_WithResourceAsText`.
+If multiple test cases are in the same file:
+- There can be only one `TEST_FILE`.
+- There can be multiple `TEST_CATEGORY` but usually just one.
+- There can be multiple `TEST_CASE` in a `TEST_CATEGORY`.
+- There name will also appear in the arguments to `GacUIUnitTest_StartFast_WithResourceAsText` unless directed.
 
 In `GacUIUnitTest_SetGuiMainProxy`, there will be multiple `protocol->OnNextIdleFrame`. Each creates a new frame.
 Name of the frame does not say what to do in this frame, but actually what have been done previously.
 The code of the last frame is always closing the window.
+
+If there are shared variable that updates in any frame in one `TEST_CASE`, they must be organized like this:
+- Shared variables should be only in `TEST_CASE`.
+- Lambda captures should be exactly like this example, `[&]` for the proxy and `[&, protocol]` for the frame.
+
+```C++
+TEST_CASE(L"Topic")
+{
+  vint sharedVariable = 0;
+
+	GacUIUnitTest_SetGuiMainProxy([&](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+	{
+		protocol->OnNextIdleFrame(L"Ready", [&, protocol]()
+		{
+			// Use sharedVariable
+		});
+	});
+	GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+		WString::Unmanaged(L"Controls/Category/ClassNameUnderTest/Topic"),
+		WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+		resourceTestSubject
+	);
+});
+```
 
 ## Accessing objects defined in the XML
 
