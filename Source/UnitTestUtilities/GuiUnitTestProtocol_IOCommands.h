@@ -168,6 +168,84 @@ Mouse Move Events
 Mouse Wheel Events
 ***********************************************************************/
 
+		void _Wheel(vint up, Nullable<NativePoint> position = {})
+		{
+			if (position) MouseMove(position.Value());
+			auto info = MakeMouseInfo();
+			info.wheel = up;
+			UseEvents().OnIOVWheel(info);
+		}
+
+		void _Wheel(vint up, Nullable<NativePoint> position, bool ctrl, bool shift, bool alt)
+		{
+			if (ctrl) _KeyDown(VKEY::KEY_CONTROL);
+			if (shift) _KeyDown(VKEY::KEY_SHIFT);
+			if (alt) _KeyDown(VKEY::KEY_MENU);
+			_Wheel(up, position);
+			if (alt) _KeyUp(VKEY::KEY_MENU);
+			if (shift) _KeyUp(VKEY::KEY_SHIFT);
+			if (ctrl) _KeyUp(VKEY::KEY_CONTROL);
+		}
+
+		void _HWheel(vint right, Nullable<NativePoint> position = {})
+		{
+			if (position) MouseMove(position.Value());
+			auto info = MakeMouseInfo();
+			info.wheel = right;
+			UseEvents().OnIOHWheel(info);
+		}
+
+		void _HWheel(vint right, Nullable<NativePoint> position, bool ctrl, bool shift, bool alt)
+		{
+			if (ctrl) _KeyDown(VKEY::KEY_CONTROL);
+			if (shift) _KeyDown(VKEY::KEY_SHIFT);
+			if (alt) _KeyDown(VKEY::KEY_MENU);
+			_HWheel(right, position);
+			if (alt) _KeyUp(VKEY::KEY_MENU);
+			if (shift) _KeyUp(VKEY::KEY_SHIFT);
+			if (ctrl) _KeyUp(VKEY::KEY_CONTROL);
+		}
+
+		void WheelDown(vint jumps = 1, Nullable<NativePoint> position = {})
+		{
+			_Wheel(-jumps * 120, position);
+		}
+
+		void WheelDown(vint jumps, Nullable<NativePoint> position, bool ctrl, bool shift, bool alt)
+		{
+			_Wheel(-jumps * 120, position, ctrl, shift, alt);
+		}
+
+		void WheelUp(vint jumps = 1, Nullable<NativePoint> position = {})
+		{
+			_Wheel(jumps * 120, position);
+		}
+
+		void WheelUp(vint jumps, Nullable<NativePoint> position, bool ctrl, bool shift, bool alt)
+		{
+			_Wheel(jumps * 120, position, ctrl, shift, alt);
+		}
+
+		void HWheelLeft(vint jumps = 1, Nullable<NativePoint> position = {})
+		{
+			_HWheel(-jumps * 120, position);
+		}
+
+		void HWheelLeft(vint jumps, Nullable<NativePoint> position, bool ctrl, bool shift, bool alt)
+		{
+			_HWheel(-jumps * 120, position, ctrl, shift, alt);
+		}
+
+		void HWheelRight(vint jumps = 1, Nullable<NativePoint> position = {})
+		{
+			_HWheel(jumps * 120, position);
+		}
+
+		void HWheelRight(vint jumps, Nullable<NativePoint> position, bool ctrl, bool shift, bool alt)
+		{
+			_HWheel(jumps * 120, position, ctrl, shift, alt);
+		}
+
 /***********************************************************************
 Mouse Click Events
 ***********************************************************************/

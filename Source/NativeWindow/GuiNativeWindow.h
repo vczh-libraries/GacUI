@@ -497,7 +497,7 @@ INativeWindow
 			T							x;
 			/// <summary>The mouse position of y dimension.</summary>
 			T							y;
-			/// <summary>The delta of the wheel.</summary>
+			/// <summary>The delta of the wheel. 120 for every tick, position for up/right, negative for down/left</summary>
 			vint						wheel;
 			/// <summary>True if the mouse is in the non-client area.</summary>
 			bool						nonClient;
