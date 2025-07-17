@@ -58,7 +58,7 @@ private:
 		consumed = streamReadFile.Read(&bytes, sizeof(bytes));
 		CHECK_ERROR(consumed == sizeof(bytes), L"ReadFile failed on incomplete message.");
 
-		if (bytes > position - sizeof(bytes))
+		if (bytes > position - (vint32_t)sizeof(bytes))
 		{
 			firstRead = false;
 			streamReadFile.SeekFromBegin(position);
