@@ -2639,7 +2639,7 @@ INativeWindow
 			T							x;
 			/// <summary>The mouse position of y dimension.</summary>
 			T							y;
-			/// <summary>The delta of the wheel.</summary>
+			/// <summary>The delta of the wheel. 120 for every tick, position for up/right, negative for down/left</summary>
 			vint						wheel;
 			/// <summary>True if the mouse is in the non-client area.</summary>
 			bool						nonClient;
@@ -21769,6 +21769,10 @@ Ribbon Gallery List
 				/// <summary>Set minimum items visible in the drop down menu.</summary>
 				/// <param name="value">The minimum items visible in the drop down menu.</param>
 				void													SetVisibleItemCount(vint value);
+
+				/// <summary>Get the list control in the dropdown menu.</summary>
+				/// <returns>The list control in the dropdown menu.</returns>
+				GuiSelectableListControl*								GetListControlInDropdown();
 
 				/// <summary>Get the dropdown menu.</summary>
 				/// <returns>The dropdown menu.</returns>

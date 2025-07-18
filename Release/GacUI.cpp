@@ -6889,7 +6889,7 @@ GuiScrollView
 						{
 							vint position = scroll->GetPosition();
 							vint move = scroll->GetSmallMove();
-							position -= move * arguments.wheel / 60;
+							position = move * arguments.wheel / 60;
 							scroll->SetPosition(position);
 						}
 					}
@@ -25843,6 +25843,11 @@ GuiBindableRibbonGalleryList
 					visibleItemCount = value;
 					UpdateLayoutSizeOffset();
 				}
+			}
+
+			GuiSelectableListControl* GuiBindableRibbonGalleryList::GetListControlInDropdown()
+			{
+				return itemList;
 			}
 
 			GuiToolstripMenu* GuiBindableRibbonGalleryList::GetSubMenu()
