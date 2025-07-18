@@ -34,7 +34,8 @@
   - `(H|V)(Tracker|Scroll)/Mouse`
   - `ToolstripSplitButton`
   - `GuiDatePicker/Mouse`
-  - `GuiRibbonGallery` and `GuiBindableRibbonGalleryList` Up/Down/Dropdown button. 
+  - `GuiRibbonGallery` and `GuiBindableRibbonGalleryList` Up/Down/Dropdown button.
+  - `Application/Windows` window frame operation.
 - Stop hard-coding coordinates:
   - `GetListItemLocation`.
   - `GuiToolstripMenuBar/Cascade/ClickSubMenu`'s `Hover on File/New` try to avoid specifying relative coordinate just because half of the menu item is covered.
