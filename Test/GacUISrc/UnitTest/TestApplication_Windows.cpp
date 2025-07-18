@@ -82,5 +82,134 @@ TEST_FILE
 				resourceEmptyWindows
 			);
 		});
+
+		TEST_CASE(L"Closing")
+		{
+			GuiWindow* subWindowA = nullptr;
+			GuiWindow* subWindowB = nullptr;
+
+			GacUIUnitTest_SetGuiMainProxy([&](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Ready", [&, protocol]()
+				{
+					{
+						subWindowA = UnboxValue<GuiWindow*>(Value::Create(L"gacuisrc_unittest::SubWindow"));
+						subWindowA->SetText(L"SubWindow A");
+						subWindowA->SetLocation({ {100},{50} });
+						subWindowA->Show();
+					}
+					{
+						subWindowB = UnboxValue<GuiWindow*>(Value::Create(L"gacuisrc_unittest::SubWindow"));
+						subWindowB->SetText(L"SubWindow B");
+						subWindowB->SetLocation({ {200},{100} });
+						subWindowB->Show();
+					}
+				});
+				protocol->OnNextIdleFrame(L"Created two SubWindows", [&, protocol]()
+				{
+					subWindowA->Hide();
+					SafeDeleteControl(subWindowA);
+					subWindowA = nullptr;
+
+					subWindowB->Hide();
+					SafeDeleteControl(subWindowB);
+					subWindowB = nullptr;
+
+					auto window = GetApplication()->GetMainWindow();
+					window->Hide();
+				});
+			});
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Application/Windows/Closing"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resourceEmptyWindows
+			);
+		});
+
+		TEST_CASE(L"Dragging")
+		{
+			GuiWindow* subWindowA = nullptr;
+			GuiWindow* subWindowB = nullptr;
+
+			GacUIUnitTest_SetGuiMainProxy([&](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Ready", [&, protocol]()
+				{
+					{
+						subWindowA = UnboxValue<GuiWindow*>(Value::Create(L"gacuisrc_unittest::SubWindow"));
+						subWindowA->SetText(L"SubWindow A");
+						subWindowA->SetLocation({ {100},{50} });
+						subWindowA->Show();
+					}
+					{
+						subWindowB = UnboxValue<GuiWindow*>(Value::Create(L"gacuisrc_unittest::SubWindow"));
+						subWindowB->SetText(L"SubWindow B");
+						subWindowB->SetLocation({ {200},{100} });
+						subWindowB->Show();
+					}
+				});
+				protocol->OnNextIdleFrame(L"Created two SubWindows", [&, protocol]()
+				{
+					subWindowA->Hide();
+					SafeDeleteControl(subWindowA);
+					subWindowA = nullptr;
+
+					subWindowB->Hide();
+					SafeDeleteControl(subWindowB);
+					subWindowB = nullptr;
+
+					auto window = GetApplication()->GetMainWindow();
+					window->Hide();
+				});
+			});
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Application/Windows/Dragging"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resourceEmptyWindows
+			);
+		});
+
+		TEST_CASE(L"Resizing")
+		{
+			GuiWindow* subWindowA = nullptr;
+			GuiWindow* subWindowB = nullptr;
+
+			GacUIUnitTest_SetGuiMainProxy([&](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Ready", [&, protocol]()
+				{
+					{
+						subWindowA = UnboxValue<GuiWindow*>(Value::Create(L"gacuisrc_unittest::SubWindow"));
+						subWindowA->SetText(L"SubWindow A");
+						subWindowA->SetLocation({ {100},{50} });
+						subWindowA->Show();
+					}
+					{
+						subWindowB = UnboxValue<GuiWindow*>(Value::Create(L"gacuisrc_unittest::SubWindow"));
+						subWindowB->SetText(L"SubWindow B");
+						subWindowB->SetLocation({ {200},{100} });
+						subWindowB->Show();
+					}
+				});
+				protocol->OnNextIdleFrame(L"Created two SubWindows", [&, protocol]()
+				{
+					subWindowA->Hide();
+					SafeDeleteControl(subWindowA);
+					subWindowA = nullptr;
+
+					subWindowB->Hide();
+					SafeDeleteControl(subWindowB);
+					subWindowB = nullptr;
+
+					auto window = GetApplication()->GetMainWindow();
+					window->Hide();
+				});
+			});
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Application/Windows/Resizing"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resourceEmptyWindows
+			);
+		});
 	});
 }
