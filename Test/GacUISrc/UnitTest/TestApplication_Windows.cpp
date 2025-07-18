@@ -189,7 +189,49 @@ TEST_FILE
 					protocol->MouseMove(location);
 					protocol->_LUp();
 				});
-				deleteTwoWindows(L"Top Border Down", protocol);
+				protocol->OnNextIdleFrame(L"Top Border Down", [&, protocol]()
+				{
+					auto location = protocol->LocationOf(subWindowA, 0.5, 1.0, 0, -3);
+					protocol->_LDown(location);
+					location.y.value += 10;
+					protocol->MouseMove(location);
+				});
+				protocol->OnNextIdleFrame(L"Bottom Border Down", [&, protocol]()
+				{
+					auto location = protocol->GetMousePosition();
+					location.y.value -= 9999;
+					protocol->MouseMove(location);
+					protocol->_LUp();
+				});
+				protocol->OnNextIdleFrame(L"Bottom Border Up", [&, protocol]()
+				{
+					auto location = protocol->LocationOf(subWindowA, 0.0, 0.5, 3, 0);
+					protocol->_LDown(location);
+					location.x.value -= 10;
+					protocol->MouseMove(location);
+				});
+				protocol->OnNextIdleFrame(L"Left Border Left", [&, protocol]()
+				{
+					auto location = protocol->GetMousePosition();
+					location.x.value += 9999;
+					protocol->MouseMove(location);
+					protocol->_LUp();
+				});
+				protocol->OnNextIdleFrame(L"Left Border Right", [&, protocol]()
+				{
+					auto location = protocol->LocationOf(subWindowA, 1.0, 0.5, -3, 0);
+					protocol->_LDown(location);
+					location.x.value += 10;
+					protocol->MouseMove(location);
+				});
+				protocol->OnNextIdleFrame(L"Right Border Right", [&, protocol]()
+				{
+					auto location = protocol->GetMousePosition();
+					location.x.value -= 9999;
+					protocol->MouseMove(location);
+					protocol->_LUp();
+				});
+				deleteTwoWindows(L"Right Border Left", protocol);
 			});
 			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
 				WString::Unmanaged(L"Application/Windows/Resizing"),
