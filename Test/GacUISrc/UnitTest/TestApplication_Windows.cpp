@@ -110,7 +110,7 @@ TEST_FILE
 					auto location = protocol->LocationOf(subWindowA, 0.0, 0.0, 10, 10);
 					protocol->LClick(location);
 				});
-				deleteTwoWindows(L"Enable and Click SubWIndowA", protocol);
+				deleteTwoWindows(L"Enable and Click SubWindowA", protocol);
 			});
 			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
 				WString::Unmanaged(L"Application/Windows/Enabling"),
@@ -124,7 +124,17 @@ TEST_FILE
 			GacUIUnitTest_SetGuiMainProxy([&](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
 			{
 				createTwoWindows(protocol);
-				deleteTwoWindows(L"Created two SubWindows", protocol);
+				protocol->OnNextIdleFrame(L"Created two SubWindows", [&, protocol]()
+				{
+					auto location = protocol->LocationOf(subWindowA, 1.0, 0.0, -15, 15);
+					protocol->LClick(location);
+				});
+				protocol->OnNextIdleFrame(L"Close SubWindowA", [&, protocol]()
+				{
+					auto location = protocol->LocationOf(subWindowB, 1.0, 0.0, -15, 15);
+					protocol->LClick(location);
+				});
+				deleteTwoWindows(L"Close SubWindowB", protocol);
 			});
 			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
 				WString::Unmanaged(L"Application/Windows/Closing"),

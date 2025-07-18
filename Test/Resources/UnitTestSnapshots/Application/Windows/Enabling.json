@@ -3635,7 +3635,7 @@
     },
     {
       "frameId": 14,
-      "frameName": "Enable and Click SubWIndowA",
+      "frameName": "Enable and Click SubWindowA",
       "windowSize": {
         "bounds": {
           "x1": {"value": 272},
