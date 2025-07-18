@@ -164,6 +164,14 @@ Mouse Move Events
 			UseEvents().OnIOMouseMoving(MakeMouseInfo());
 		}
 
+		NativePoint GetMousePosition()
+		{
+#define ERROR_MESSAGE_PREFIX CLASS_PREFIX L"GetMousePosition()#"
+			CHECK_ERROR(mousePosition, CLASS_PREFIX L"The mouse position is not set.");
+			return mousePosition.Value();
+#undef ERROR_MESSAGE_PREFIX
+		}
+
 /***********************************************************************
 Mouse Wheel Events
 ***********************************************************************/

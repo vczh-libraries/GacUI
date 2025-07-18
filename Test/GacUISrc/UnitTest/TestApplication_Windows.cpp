@@ -148,7 +148,20 @@ TEST_FILE
 			GacUIUnitTest_SetGuiMainProxy([&](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
 			{
 				createTwoWindows(protocol);
-				deleteTwoWindows(L"Created two SubWindows", protocol);
+				protocol->OnNextIdleFrame(L"Created two SubWindows", [&, protocol]()
+				{
+					auto location = protocol->LocationOf(subWindowA, 0.5, 0.0, 0, 15);
+					protocol->_LDown(location);
+				});
+				protocol->OnNextIdleFrame(L"Begin Dragging", [&, protocol]()
+				{
+					auto location = protocol->GetMousePosition();
+					location.x.value -= 50;
+					location.y.value -= 25;
+					protocol->MouseMove(location);
+					protocol->_LUp();
+				});
+				deleteTwoWindows(L"End Dragging", protocol);
 			});
 			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
 				WString::Unmanaged(L"Application/Windows/Dragging"),

@@ -54,3 +54,13 @@
 - Features with no plan in unit test:
   - `GuiControl`
     - `QueryService` and `AddService`
+
+## Unprioritized
+
+- FakeDialogService
+  - message box disable `X` button if `Cancel` is not in the button list or `OK` is the only button.
+- GDI
+  - Big cursor of document empty line (GDI)
+  - In hosted mode, non-main window doesn't shrink when moving back to low DPI monitor.
+- Hosted
+  - When dragging left/top border if the main window, the window move if the size is smaller than the minimum size.

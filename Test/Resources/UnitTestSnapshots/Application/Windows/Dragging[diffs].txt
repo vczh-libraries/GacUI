@@ -127,6 +127,27 @@
 ========================================
 11
 ========================================
+{"id": 8, "diffType": "Modified", "content": null, "children": [6, 10, 14, 18, 22, 26, 30, 34, 38, 42, 46, 50, 54, 172, 88]}
+========================================
+12
+========================================
+========================================
+13
+========================================
+{"id": 88, "diffType": "Modified", "content": {"hitTestResult": null, "cursor": null, "element": 22, "bounds": {"x1": 50, "y1": 25, "x2": 299, "y2": 225}, "validArea": {"x1": 50, "y1": 25, "x2": 299, "y2": 225}}, "children": null}
+{"id": 92, "diffType": "Modified", "content": {"hitTestResult": null, "cursor": null, "element": 23, "bounds": {"x1": 50, "y1": 25, "x2": 299, "y2": 225}, "validArea": {"x1": 50, "y1": 25, "x2": 299, "y2": 225}}, "children": null}
+{"id": 140, "diffType": "Modified", "content": {"hitTestResult": null, "cursor": null, "element": 35, "bounds": {"x1": 258, "y1": 34, "x2": 290, "y2": 60}, "validArea": {"x1": 258, "y1": 34, "x2": 290, "y2": 60}}, "children": null}
+{"id": 144, "diffType": "Modified", "content": {"hitTestResult": null, "cursor": null, "element": 36, "bounds": {"x1": 258, "y1": 34, "x2": 290, "y2": 60}, "validArea": {"x1": 258, "y1": 34, "x2": 290, "y2": 60}}, "children": null}
+{"id": 152, "diffType": "Modified", "content": {"hitTestResult": null, "cursor": null, "element": 38, "bounds": {"x1": 262, "y1": 36, "x2": 286, "y2": 58}, "validArea": {"x1": 262, "y1": 36, "x2": 286, "y2": 58}}, "children": null}
+{"id": 156, "diffType": "Modified", "content": {"hitTestResult": null, "cursor": null, "element": 39, "bounds": {"x1": 262, "y1": 36, "x2": 286, "y2": 58}, "validArea": {"x1": 262, "y1": 36, "x2": 286, "y2": 58}}, "children": null}
+{"id": 164, "diffType": "Modified", "content": {"hitTestResult": null, "cursor": null, "element": 41, "bounds": {"x1": 63, "y1": 38, "x2": 184, "y2": 56}, "validArea": {"x1": 63, "y1": 38, "x2": 184, "y2": 56}}, "children": null}
+{"id": 168, "diffType": "Modified", "content": {"hitTestResult": null, "cursor": null, "element": 42, "bounds": {"x1": 63, "y1": 66, "x2": 291, "y2": 82}, "validArea": {"x1": 63, "y1": 66, "x2": 291, "y2": 82}}, "children": null}
+========================================
+14
+========================================
+========================================
+15
+========================================
 {"id": 8, "diffType": "Modified", "content": null, "children": [6, 10, 14, 18, 22, 26, 30, 34, 38, 42, 46, 50, 54]}
 {"id": 88, "diffType": "Deleted", "content": null, "children": null}
 {"id": 92, "diffType": "Deleted", "content": null, "children": null}
