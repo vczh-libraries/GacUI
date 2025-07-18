@@ -239,5 +239,88 @@ TEST_FILE
 				resourceEmptyWindows
 			);
 		});
+
+		TEST_CASE(L"ShowModal")
+		{
+			GacUIUnitTest_SetGuiMainProxy([&](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Ready", [&, protocol]()
+				{
+					subWindowA = UnboxValue<GuiWindow*>(Value::Create(L"gacuisrc_unittest::SubWindow"));
+					subWindowA->SetText(L"SubWindow A");
+					subWindowA->SetLocation({ {100},{50} });
+					subWindowA->Show();
+				});
+				protocol->OnNextIdleFrame(L"Create SubWindowA", [&, protocol]()
+				{
+					subWindowB = UnboxValue<GuiWindow*>(Value::Create(L"gacuisrc_unittest::SubWindow"));
+					subWindowB->SetText(L"SubWindow B");
+					subWindowB->SetLocation({ {200},{100} });
+					subWindowB->ShowModal(subWindowA, []()
+					{
+						auto window = GetApplication()->GetMainWindow();
+						window->SetText(L"SubWindowB Closed");
+					});
+				});
+				protocol->OnNextIdleFrame(L"Create SubWindowB via ShowModal", [&, protocol]()
+				{
+					auto location = protocol->LocationOf(subWindowA, 0.5, 0.0, 0, 15);
+					protocol->_LDown(location);
+					location.x.value -= 50;
+					location.y.value -= 25;
+					protocol->MouseMove(location);
+					protocol->_LUp();
+					subWindowA->SetText(L"DraggedA");
+				});
+				protocol->OnNextIdleFrame(L"Drag SubWindowA", [&, protocol]()
+				{
+					auto location = protocol->LocationOf(subWindowB, 0.5, 0.0, 0, 15);
+					protocol->_LDown(location);
+					location.x.value -= 50;
+					location.y.value -= 25;
+					protocol->MouseMove(location);
+					protocol->_LUp();
+					subWindowB->SetText(L"DraggedB");
+				});
+				protocol->OnNextIdleFrame(L"Drag SubWindowB", [&, protocol]()
+				{
+					auto location = protocol->LocationOf(subWindowB, 1.0, 0.0, -15, 15);
+					protocol->LClick(location);
+				});
+				protocol->OnNextIdleFrame(L"Close SubWindowB", [&, protocol]()
+				{
+					auto location = protocol->LocationOf(subWindowA, 0.5, 0.0, 0, 15);
+					protocol->_LDown(location);
+					location.x.value -= 50;
+					location.y.value -= 25;
+					protocol->MouseMove(location);
+					protocol->_LUp();
+					subWindowA->SetText(L"Dragged Again");
+				});
+				protocol->OnNextIdleFrame(L"Drag SubWindowA", [&, protocol]()
+				{
+					auto location = protocol->LocationOf(subWindowA, 1.0, 0.0, -15, 15);
+					protocol->LClick(location);
+				});
+				protocol->OnNextIdleFrame(L"Close SubWindowA", [&, protocol]()
+				{
+					subWindowA->Hide();
+					SafeDeleteControl(subWindowA);
+					subWindowA = nullptr;
+
+					subWindowB->Hide();
+					SafeDeleteControl(subWindowB);
+					subWindowB = nullptr;
+
+					auto window = GetApplication()->GetMainWindow();
+					window->Hide();
+				});
+			});
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Application/Windows/ShowModal"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resourceEmptyWindows
+			);
+		});
 	});
 }
