@@ -175,7 +175,21 @@ TEST_FILE
 			GacUIUnitTest_SetGuiMainProxy([&](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
 			{
 				createTwoWindows(protocol);
-				deleteTwoWindows(L"Created two SubWindows", protocol);
+				protocol->OnNextIdleFrame(L"Created two SubWindows", [&, protocol]()
+				{
+					auto location = protocol->LocationOf(subWindowA, 0.5, 0.0, 0, 3);
+					protocol->_LDown(location);
+					location.y.value -= 10;
+					protocol->MouseMove(location);
+				});
+				protocol->OnNextIdleFrame(L"Top Border Up", [&, protocol]()
+				{
+					auto location = protocol->GetMousePosition();
+					location.y.value += 9999;
+					protocol->MouseMove(location);
+					protocol->_LUp();
+				});
+				deleteTwoWindows(L"Top Border Down", protocol);
 			});
 			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
 				WString::Unmanaged(L"Application/Windows/Resizing"),
