@@ -30,28 +30,50 @@ TEST_FILE
 
 	TEST_CATEGORY(L"Windows")
 	{
+		GuiWindow* subWindowA = nullptr;
+		GuiWindow* subWindowB = nullptr;
+
+		auto createTwoWindows = [&](UnitTestRemoteProtocol* protocol)
+		{
+			protocol->OnNextIdleFrame(L"Ready", [&, protocol]()
+			{
+				{
+					subWindowA = UnboxValue<GuiWindow*>(Value::Create(L"gacuisrc_unittest::SubWindow"));
+					subWindowA->SetText(L"SubWindow A");
+					subWindowA->SetLocation({ {100},{50} });
+					subWindowA->Show();
+				}
+				{
+					subWindowB = UnboxValue<GuiWindow*>(Value::Create(L"gacuisrc_unittest::SubWindow"));
+					subWindowB->SetText(L"SubWindow B");
+					subWindowB->SetLocation({ {200},{100} });
+					subWindowB->Show();
+				}
+			});
+		};
+
+		auto deleteTwoWindows = [&](const WString& name, UnitTestRemoteProtocol* protocol)
+		{
+			protocol->OnNextIdleFrame(name, [&, protocol]()
+			{
+				subWindowA->Hide();
+				SafeDeleteControl(subWindowA);
+				subWindowA = nullptr;
+
+				subWindowB->Hide();
+				SafeDeleteControl(subWindowB);
+				subWindowB = nullptr;
+
+				auto window = GetApplication()->GetMainWindow();
+				window->Hide();
+			});
+		};
+
 		TEST_CASE(L"Order")
 		{
-			GuiWindow* subWindowA = nullptr;
-			GuiWindow* subWindowB = nullptr;
-
 			GacUIUnitTest_SetGuiMainProxy([&](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
 			{
-				protocol->OnNextIdleFrame(L"Ready", [&, protocol]()
-				{
-					{
-						subWindowA = UnboxValue<GuiWindow*>(Value::Create(L"gacuisrc_unittest::SubWindow"));
-						subWindowA->SetText(L"SubWindow A");
-						subWindowA->SetLocation({ {100},{50} });
-						subWindowA->Show();
-					}
-					{
-						subWindowB = UnboxValue<GuiWindow*>(Value::Create(L"gacuisrc_unittest::SubWindow"));
-						subWindowB->SetText(L"SubWindow B");
-						subWindowB->SetLocation({ {200},{100} });
-						subWindowB->Show();
-					}
-				});
+				createTwoWindows(protocol);
 				protocol->OnNextIdleFrame(L"Created two SubWindows", [&, protocol]()
 				{
 					auto location = protocol->LocationOf(subWindowA, 0.0, 0.0, 10, 10);
@@ -62,19 +84,7 @@ TEST_FILE
 					auto location = protocol->LocationOf(subWindowB, 1.0, 1.0, -10, -10);
 					protocol->LClick(location);
 				});
-				protocol->OnNextIdleFrame(L"Click SubWindowB", [&, protocol]()
-				{
-					subWindowA->Hide();
-					SafeDeleteControl(subWindowA);
-					subWindowA = nullptr;
-
-					subWindowB->Hide();
-					SafeDeleteControl(subWindowB);
-					subWindowB = nullptr;
-
-					auto window = GetApplication()->GetMainWindow();
-					window->Hide();
-				});
+				deleteTwoWindows(L"Click SubWindowB", protocol);
 			});
 			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
 				WString::Unmanaged(L"Application/Windows/Order"),
@@ -85,39 +95,10 @@ TEST_FILE
 
 		TEST_CASE(L"Closing")
 		{
-			GuiWindow* subWindowA = nullptr;
-			GuiWindow* subWindowB = nullptr;
-
 			GacUIUnitTest_SetGuiMainProxy([&](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
 			{
-				protocol->OnNextIdleFrame(L"Ready", [&, protocol]()
-				{
-					{
-						subWindowA = UnboxValue<GuiWindow*>(Value::Create(L"gacuisrc_unittest::SubWindow"));
-						subWindowA->SetText(L"SubWindow A");
-						subWindowA->SetLocation({ {100},{50} });
-						subWindowA->Show();
-					}
-					{
-						subWindowB = UnboxValue<GuiWindow*>(Value::Create(L"gacuisrc_unittest::SubWindow"));
-						subWindowB->SetText(L"SubWindow B");
-						subWindowB->SetLocation({ {200},{100} });
-						subWindowB->Show();
-					}
-				});
-				protocol->OnNextIdleFrame(L"Created two SubWindows", [&, protocol]()
-				{
-					subWindowA->Hide();
-					SafeDeleteControl(subWindowA);
-					subWindowA = nullptr;
-
-					subWindowB->Hide();
-					SafeDeleteControl(subWindowB);
-					subWindowB = nullptr;
-
-					auto window = GetApplication()->GetMainWindow();
-					window->Hide();
-				});
+				createTwoWindows(protocol);
+				deleteTwoWindows(L"Created two SubWindows", protocol);
 			});
 			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
 				WString::Unmanaged(L"Application/Windows/Closing"),
@@ -128,39 +109,10 @@ TEST_FILE
 
 		TEST_CASE(L"Dragging")
 		{
-			GuiWindow* subWindowA = nullptr;
-			GuiWindow* subWindowB = nullptr;
-
 			GacUIUnitTest_SetGuiMainProxy([&](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
 			{
-				protocol->OnNextIdleFrame(L"Ready", [&, protocol]()
-				{
-					{
-						subWindowA = UnboxValue<GuiWindow*>(Value::Create(L"gacuisrc_unittest::SubWindow"));
-						subWindowA->SetText(L"SubWindow A");
-						subWindowA->SetLocation({ {100},{50} });
-						subWindowA->Show();
-					}
-					{
-						subWindowB = UnboxValue<GuiWindow*>(Value::Create(L"gacuisrc_unittest::SubWindow"));
-						subWindowB->SetText(L"SubWindow B");
-						subWindowB->SetLocation({ {200},{100} });
-						subWindowB->Show();
-					}
-				});
-				protocol->OnNextIdleFrame(L"Created two SubWindows", [&, protocol]()
-				{
-					subWindowA->Hide();
-					SafeDeleteControl(subWindowA);
-					subWindowA = nullptr;
-
-					subWindowB->Hide();
-					SafeDeleteControl(subWindowB);
-					subWindowB = nullptr;
-
-					auto window = GetApplication()->GetMainWindow();
-					window->Hide();
-				});
+				createTwoWindows(protocol);
+				deleteTwoWindows(L"Created two SubWindows", protocol);
 			});
 			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
 				WString::Unmanaged(L"Application/Windows/Dragging"),
@@ -171,39 +123,10 @@ TEST_FILE
 
 		TEST_CASE(L"Resizing")
 		{
-			GuiWindow* subWindowA = nullptr;
-			GuiWindow* subWindowB = nullptr;
-
 			GacUIUnitTest_SetGuiMainProxy([&](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
 			{
-				protocol->OnNextIdleFrame(L"Ready", [&, protocol]()
-				{
-					{
-						subWindowA = UnboxValue<GuiWindow*>(Value::Create(L"gacuisrc_unittest::SubWindow"));
-						subWindowA->SetText(L"SubWindow A");
-						subWindowA->SetLocation({ {100},{50} });
-						subWindowA->Show();
-					}
-					{
-						subWindowB = UnboxValue<GuiWindow*>(Value::Create(L"gacuisrc_unittest::SubWindow"));
-						subWindowB->SetText(L"SubWindow B");
-						subWindowB->SetLocation({ {200},{100} });
-						subWindowB->Show();
-					}
-				});
-				protocol->OnNextIdleFrame(L"Created two SubWindows", [&, protocol]()
-				{
-					subWindowA->Hide();
-					SafeDeleteControl(subWindowA);
-					subWindowA = nullptr;
-
-					subWindowB->Hide();
-					SafeDeleteControl(subWindowB);
-					subWindowB = nullptr;
-
-					auto window = GetApplication()->GetMainWindow();
-					window->Hide();
-				});
+				createTwoWindows(protocol);
+				deleteTwoWindows(L"Created two SubWindows", protocol);
 			});
 			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
 				WString::Unmanaged(L"Application/Windows/Resizing"),
