@@ -93,6 +93,32 @@ TEST_FILE
 			);
 		});
 
+		TEST_CASE(L"Enabling")
+		{
+			GacUIUnitTest_SetGuiMainProxy([&](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				createTwoWindows(protocol);
+				protocol->OnNextIdleFrame(L"Created two SubWindows", [&, protocol]()
+				{
+					subWindowA->SetEnabled(false);
+					auto location = protocol->LocationOf(subWindowA, 0.0, 0.0, 10, 10);
+					protocol->LClick(location);
+				});
+				protocol->OnNextIdleFrame(L"Disable and Click SubWIndowA", [&, protocol]()
+				{
+					subWindowA->SetEnabled(true);
+					auto location = protocol->LocationOf(subWindowA, 0.0, 0.0, 10, 10);
+					protocol->LClick(location);
+				});
+				deleteTwoWindows(L"Enable and Click SubWIndowA", protocol);
+			});
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Application/Windows/Enabling"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resourceEmptyWindows
+			);
+		});
+
 		TEST_CASE(L"Closing")
 		{
 			GacUIUnitTest_SetGuiMainProxy([&](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
