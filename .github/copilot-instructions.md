@@ -64,7 +64,7 @@ After running all unit test projects, some files may be changed:
 GacUI is a UI library, but unfortunately it is not widely accepted like WPF or react native. It could be difficult for you to find detailed information. If you are not sure about something:
 
 - Read the source code in `Source`.
-- Read all test files in `C:\Code\VczhLibraries\GacUI\Test\GacUISrc\UnitTest`.
+- Read all test files in `Test\GacUISrc\UnitTest`.
 
 Here are some basic rules.
 
