@@ -3172,7 +3172,8 @@ Helper Functions
 
 			IWfDebuggerCallback* GetDebuggerCallback()
 			{
-				return GetDebuggerCallback(GetDebuggerForCurrentThread().Obj());
+				auto debugger = GetDebuggerForCurrentThread();
+				return GetDebuggerCallback(debugger.Obj());
 			}
 
 			IWfDebuggerCallback* GetDebuggerCallback(WfDebugger* debugger)
@@ -3182,12 +3183,27 @@ Helper Functions
 
 			Ptr<WfDebugger> GetDebuggerForCurrentThread()
 			{
-				return threadDebugger.HasData() ? threadDebugger.Get() : nullptr;
+				if (threadDebugger.HasData())
+				{
+					return threadDebugger.Get();
+				}
+				else
+				{
+					return {};
+				}
 			}
 
 			void SetDebuggerForCurrentThread(Ptr<WfDebugger> debugger)
 			{
+#define ERROR_PREFIX L"vl::workflow::runtime::SetDebuggerForCurrentThread(Ptr<WfDebugger>)#"
+				CHECK_ERROR(debugger, ERROR_PREFIX L"This function cannot be called with nullptr.");
 				threadDebugger.Set(debugger);
+#undef ERROR_PREFIX
+			}
+
+			void ResetDebuggerForCurrentThread()
+			{
+				threadDebugger.Clear();
 			}
 		}
 	}

@@ -1505,6 +1505,8 @@ Debugger
 			/// <summary>Set the debugger for the current thread.</summary>
 			/// <param name="debugger">The debugger.</param>
 			extern void									SetDebuggerForCurrentThread(Ptr<WfDebugger> debugger);
+			/// <summary>Reset the debugger for the current thread.</summary>
+			extern void									ResetDebuggerForCurrentThread();
 		}
 	}
 }
