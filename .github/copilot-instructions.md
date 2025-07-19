@@ -1,4 +1,4 @@
-In this repo, we are developing GacUI using C++. This is a crossed-platform UI library, but during development phrase, we are in Windows with Visual Studio. GacUI defines UI using XML, each XML entity maps to C++ entity in the source code. Examples of the XML and unit test framework API could be found in many test files.
+In this repo, we are developing a crossed-platform C++ library.
 
 # General Instruction
 
@@ -24,10 +24,15 @@ In this repo, we are developing GacUI using C++. This is a crossed-platform UI l
 
 ## for Copilot Chat/Agent in Visual Studio
 
+- You are on Windows running in Visual Studio
 - Before saying anything, say "Yes, vczh!". I use it to make sure instruction files are taking effect.
 - Before generating any code, if the file is changed, read it. Not all changes come from you, I will edit the file too. Do not generate code based on out-dated version in your memory.
 
 ## for Copilot Authoring a Pull Request
+
+- You are on Linux
+
+### Verifying via Unit Test
 
 There are unit test projects that available in Linux, they are authored as makefile.
 To use compile and run a unit test project, you need to `cd` to each folder that stores the makefile, and:
@@ -396,3 +401,4 @@ Code in an event of in the `<Workflow>` resource item should be Workflow Script 
 # The Workflow Script
 
 This is the document of Workflow Script: https://gaclib.net/doc/current/workflow/lang.html
+
