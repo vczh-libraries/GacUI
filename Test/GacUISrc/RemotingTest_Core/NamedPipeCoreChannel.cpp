@@ -1,12 +1,7 @@
 #include "../../../Source/GacUI.h"
 #include "CoreChannel.h"
 
-CoreChannel* coreChannel = nullptr;
-
-void WriteErrorToRendererChannel(const WString& message)
-{
-	coreChannel->WriteErrorThreadUnsafe(message);
-}
+extern CoreChannel* coreChannel;
 
 template<typename T>
 void RunInNewThread(T&& threadProc, CoreChannel* channel)

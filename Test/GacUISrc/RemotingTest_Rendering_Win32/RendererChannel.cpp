@@ -44,7 +44,7 @@ void RendererChannel::OnReceive(const WString& package)
 }
 
 RendererChannel::RendererChannel(GuiRemoteRendererSingle* _renderer, HANDLE _hPipe, IGuiRemoteProtocolChannel<WString>* _channel)
-	: NamedPipeShared(_hPipe)
+	: NamedPipeShared(this, _hPipe)
 	, renderer(_renderer)
 	, channel(_channel)
 {

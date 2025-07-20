@@ -8,6 +8,7 @@ using namespace vl::presentation::remoteprotocol::channeling;
 
 class CoreChannel
 	: public NamedPipeShared
+	, protected virtual INetworkProtocolCallback
 	, public virtual IGuiRemoteProtocolChannel<vl::WString>
 {
 protected:

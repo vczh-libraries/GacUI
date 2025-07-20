@@ -1,5 +1,12 @@
 #include "CoreChannel.h"
 
+CoreChannel* coreChannel = nullptr;
+
+void WriteErrorToRendererChannel(const WString& message)
+{
+	coreChannel->WriteErrorThreadUnsafe(message);
+}
+
 void CoreChannel::OnReadStringThreadUnsafe(Ptr<List<WString>> strs)
 {
 	static WString filteredStrings[] = {
@@ -37,7 +44,7 @@ void CoreChannel::SendPendingMessages()
 }
 
 CoreChannel::CoreChannel(HANDLE _hPipe)
-	: NamedPipeShared(_hPipe)
+	: NamedPipeShared(this, _hPipe)
 {
 	eventDisconnected.CreateManualUnsignal(false);
 }

@@ -9,6 +9,7 @@ using namespace vl::presentation::remote_renderer;
 
 class RendererChannel
 	: public NamedPipeShared
+	, protected virtual INetworkProtocolCallback
 	, protected virtual IGuiRemoteProtocolChannelReceiver<WString>
 {
 protected:

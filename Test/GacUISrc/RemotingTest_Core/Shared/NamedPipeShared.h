@@ -12,31 +12,19 @@ protected:
 	HANDLE											hPipe = INVALID_HANDLE_VALUE;
 
 private:
-	bool											firstRead = true;
-	BYTE											bufferReadFile[MaxMessageSize];
-	stream::MemoryStream							streamReadFile;
-	HANDLE											hWaitHandleReadFile = INVALID_HANDLE_VALUE;
-	OVERLAPPED										overlappedReadFile;
-	HANDLE											hEventReadFile = INVALID_HANDLE_VALUE;
-
-	stream::MemoryStream							streamWriteFile;
-	OVERLAPPED										overlappedWriteFile;
-	HANDLE											hEventWriteFile = INVALID_HANDLE_VALUE;
-
-/***********************************************************************
-Callback
-***********************************************************************/
-
-protected:
-
-	virtual void									OnReadStringThreadUnsafe(Ptr<List<WString>> strs) = 0;
-	virtual void									OnReadStoppedThreadUnsafe() = 0;
+	INetworkProtocolCallback*						callback = nullptr;
 
 /***********************************************************************
 Reading
 ***********************************************************************/
 
 private:
+	bool											firstRead = true;
+	BYTE											bufferReadFile[MaxMessageSize];
+	stream::MemoryStream							streamReadFile;
+	HANDLE											hWaitHandleReadFile = INVALID_HANDLE_VALUE;
+	OVERLAPPED										overlappedReadFile;
+	HANDLE											hEventReadFile = INVALID_HANDLE_VALUE;
 
 	void											BeginReadingUnsafe();
 	void											SubmitReadBufferUnsafe(vint bytes);
@@ -51,6 +39,9 @@ Writing
 ***********************************************************************/
 
 private:
+	stream::MemoryStream							streamWriteFile;
+	OVERLAPPED										overlappedWriteFile;
+	HANDLE											hEventWriteFile = INVALID_HANDLE_VALUE;
 
 	vint32_t										WriteInt32ToStream(vint32_t number);
 	vint32_t										WriteStringToStream(const WString& str);
@@ -68,7 +59,7 @@ Helpers
 
 public:
 
-	NamedPipeShared(HANDLE _hPipe);
+	NamedPipeShared(INetworkProtocolCallback* _callback, HANDLE _hPipe);
 	~NamedPipeShared();
 
 	static HANDLE									ServerCreatePipe();

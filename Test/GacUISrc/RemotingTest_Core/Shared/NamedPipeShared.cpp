@@ -65,7 +65,7 @@ void NamedPipeShared::EndReadingUnsafe()
 			strs->Add(WString::CopyFrom(&strBuffer[0], length));
 		}
 	}
-	OnReadStringThreadUnsafe(strs);
+	callback->OnReadStringThreadUnsafe(strs);
 
 	CHECK_ERROR(streamReadFile.Position() == position, L"ReadFile failed on incomplete message.");
 }
@@ -91,7 +91,7 @@ RESTART_LOOP:
 		DWORD error = GetLastError();
 		if (error == ERROR_BROKEN_PIPE || error == ERROR_INVALID_HANDLE)
 		{
-			OnReadStoppedThreadUnsafe();
+			callback->OnReadStoppedThreadUnsafe();
 			return;
 		}
 		CHECK_ERROR(error == ERROR_MORE_DATA || error == ERROR_IO_PENDING, L"ReadFile failed on unexpected GetLastError.");
@@ -117,7 +117,7 @@ RESTART_LOOP:
 					DWORD error = GetLastError();
 					if (error == ERROR_BROKEN_PIPE || error == ERROR_INVALID_HANDLE)
 					{
-						self->OnReadStoppedThreadUnsafe();
+						self->callback->OnReadStoppedThreadUnsafe();
 						return;
 					}
 					CHECK_ERROR(error == ERROR_MORE_DATA, L"GetOverlappedResult(ReadFile) failed on unexpected GetLastError.");
@@ -204,8 +204,9 @@ void NamedPipeShared::SendSingleString(const WString& str)
 Common
 ***********************************************************************/
 
-NamedPipeShared::NamedPipeShared(HANDLE _hPipe)
-	: hPipe(_hPipe)
+NamedPipeShared::NamedPipeShared(INetworkProtocolCallback* _callback, HANDLE _hPipe)
+	: callback(_callback)
+	, hPipe(_hPipe)
 {
 	hEventReadFile = CreateEvent(NULL, TRUE, TRUE, NULL);
 	CHECK_ERROR(hEventReadFile != NULL, L"NamedPipeCoreChannel initialization failed on CreateEvent(hEventReadFile).");
