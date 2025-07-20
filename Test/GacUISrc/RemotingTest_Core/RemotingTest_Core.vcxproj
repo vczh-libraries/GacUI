@@ -159,6 +159,7 @@
     <ClCompile Include="GuiMain.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="NamedPipeCoreChannel.cpp" />
+    <ClCompile Include="Shared\NamedPipeShared.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Lib_GacUI\Lib_GacUI.vcxproj">
@@ -169,7 +170,8 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="NamedPipeShared.h" />
+    <ClInclude Include="Shared\NamedPipeShared.h" />
+    <ClInclude Include="Shared\ProtocalCallback.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

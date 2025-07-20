@@ -1,14 +1,11 @@
 #include "../../../Source/GacUI.h"
 #include "../../../Source/PlatformProviders/Remote/GuiRemoteProtocol.h"
-#include "NamedPipeShared.h"
+#include "Shared/NamedPipeShared.h"
 
 using namespace vl::presentation;
 using namespace vl::presentation::remoteprotocol;
 using namespace vl::presentation::remoteprotocol::repeatfiltering;
 using namespace vl::presentation::remoteprotocol::channeling;
-
-class NamedPipeCoreChannel;
-NamedPipeCoreChannel* coreChannel = nullptr;
 
 class NamedPipeCoreChannel
 	: public NamedPipeShared
@@ -151,6 +148,8 @@ public:
 	{
 	}
 };
+
+NamedPipeCoreChannel* coreChannel = nullptr;
 
 void WriteErrorToRendererChannel(const WString& message)
 {
