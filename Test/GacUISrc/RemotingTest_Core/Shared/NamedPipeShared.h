@@ -1,13 +1,9 @@
-#include <VlppOS.h>
+#include "ProtocalCallback.h"
 #include <Windows.h>
-
-using namespace vl;
-using namespace vl::console;
-using namespace vl::collections;
 
 constexpr const wchar_t* NamedPipeId = L"\\\\.\\pipe\\GacUIRemoteProtocol";
 
-class NamedPipeShared : public Object
+class NamedPipeShared : public virtual INetworkProtocol, public Object
 {
 	// NamedPipe doesn't support a single message that is larger than 64K
 	static constexpr vint32_t						MaxMessageSize = 65536;
@@ -27,10 +23,18 @@ private:
 	OVERLAPPED										overlappedWriteFile;
 	HANDLE											hEventWriteFile = INVALID_HANDLE_VALUE;
 
+/***********************************************************************
+Callback
+***********************************************************************/
+
 protected:
 
 	virtual void									OnReadStringThreadUnsafe(Ptr<List<WString>> strs) = 0;
 	virtual void									OnReadStoppedThreadUnsafe() = 0;
+
+/***********************************************************************
+Reading
+***********************************************************************/
 
 private:
 
@@ -40,7 +44,11 @@ private:
 
 protected:
 
-	void											BeginReadingLoopUnsafe();
+	void											BeginReadingLoopUnsafe() override;
+
+/***********************************************************************
+Writing
+***********************************************************************/
 
 private:
 
@@ -51,8 +59,12 @@ private:
 
 protected:
 
-	void											SendStringArray(vint count, List<WString>& strs);
-	void											SendSingleString(const WString& str);
+	void											SendStringArray(vint count, List<WString>& strs) override;
+	void											SendSingleString(const WString& str) override;
+
+/***********************************************************************
+Helpers
+***********************************************************************/
 
 public:
 
