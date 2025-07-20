@@ -57,9 +57,13 @@ protected:
 Helpers
 ***********************************************************************/
 
+protected:
+
+	void											InstallCallback(INetworkProtocolCallback* _callback) override;
+
 public:
 
-	NamedPipeShared(INetworkProtocolCallback* _callback, HANDLE _hPipe);
+	NamedPipeShared(HANDLE _hPipe);
 	~NamedPipeShared();
 
 	static HANDLE									ServerCreatePipe();

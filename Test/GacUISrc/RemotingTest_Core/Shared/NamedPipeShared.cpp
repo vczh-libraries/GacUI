@@ -201,12 +201,16 @@ void NamedPipeShared::SendSingleString(const WString& str)
 }
 
 /***********************************************************************
-Common
+Helpers
 ***********************************************************************/
 
-NamedPipeShared::NamedPipeShared(INetworkProtocolCallback* _callback, HANDLE _hPipe)
-	: callback(_callback)
-	, hPipe(_hPipe)
+void NamedPipeShared::InstallCallback(INetworkProtocolCallback* _callback)
+{
+	callback = _callback;
+}
+
+NamedPipeShared::NamedPipeShared(HANDLE _hPipe)
+	: hPipe(_hPipe)
 {
 	hEventReadFile = CreateEvent(NULL, TRUE, TRUE, NULL);
 	CHECK_ERROR(hEventReadFile != NULL, L"NamedPipeCoreChannel initialization failed on CreateEvent(hEventReadFile).");

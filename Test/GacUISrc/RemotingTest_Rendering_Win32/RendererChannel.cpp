@@ -44,10 +44,11 @@ void RendererChannel::OnReceive(const WString& package)
 }
 
 RendererChannel::RendererChannel(GuiRemoteRendererSingle* _renderer, HANDLE _hPipe, IGuiRemoteProtocolChannel<WString>* _channel)
-	: NamedPipeShared(this, _hPipe)
+	: NamedPipeShared(_hPipe)
 	, renderer(_renderer)
 	, channel(_channel)
 {
+	InstallCallback(this);
 	eventDisconnected.CreateManualUnsignal(false);
 	_channel->Initialize(this);
 }
