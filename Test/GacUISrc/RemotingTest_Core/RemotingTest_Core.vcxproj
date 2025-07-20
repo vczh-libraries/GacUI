@@ -156,6 +156,7 @@
     </ProjectReference>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="CoreChannel.cpp" />
     <ClCompile Include="GuiMain.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="NamedPipeCoreChannel.cpp" />
@@ -170,6 +171,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="CoreChannel.h" />
     <ClInclude Include="Shared\NamedPipeShared.h" />
     <ClInclude Include="Shared\ProtocalCallback.h" />
   </ItemGroup>

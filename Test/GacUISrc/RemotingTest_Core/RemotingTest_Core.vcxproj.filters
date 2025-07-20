@@ -30,6 +30,9 @@
     <ClCompile Include="Shared\NamedPipeShared.cpp">
       <Filter>Shared</Filter>
     </ClCompile>
+    <ClCompile Include="CoreChannel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Shared\NamedPipeShared.h">
@@ -37,6 +40,9 @@
     </ClInclude>
     <ClInclude Include="Shared\ProtocalCallback.h">
       <Filter>Shared</Filter>
+    </ClInclude>
+    <ClInclude Include="CoreChannel.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
