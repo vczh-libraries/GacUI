@@ -158,6 +158,7 @@
     <ClCompile Include="..\RemotingTest_Core\Shared\NamedPipeShared.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="NamedPipeRendererChannel.cpp" />
+    <ClCompile Include="RendererChannel.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Lib_GacUI\Lib_GacUI.vcxproj">
@@ -167,6 +168,7 @@
   <ItemGroup>
     <ClInclude Include="..\RemotingTest_Core\Shared\NamedPipeShared.h" />
     <ClInclude Include="..\RemotingTest_Core\Shared\ProtocalCallback.h" />
+    <ClInclude Include="RendererChannel.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
