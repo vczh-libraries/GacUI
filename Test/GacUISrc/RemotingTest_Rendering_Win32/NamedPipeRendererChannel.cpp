@@ -9,16 +9,13 @@ using namespace vl::presentation::remoteprotocol;
 using namespace vl::presentation::remoteprotocol::channeling;
 using namespace vl::presentation::remote_renderer;
 
-class NamedPipeRendererChannel;
-
-NamedPipeRendererChannel* rendererChannel = nullptr;
-GuiRemoteRendererSingle* renderer = nullptr;
 
 class NamedPipeRendererChannel
 	: public NamedPipeShared
 	, protected virtual IGuiRemoteProtocolChannelReceiver<WString>
 {
 protected:
+	GuiRemoteRendererSingle*						renderer = nullptr;
 	IGuiRemoteProtocolChannel<WString>*				channel = nullptr;
 	EventObject										eventDisconnected;
 
@@ -66,8 +63,9 @@ protected:
 
 public:
 
-	NamedPipeRendererChannel(HANDLE _hPipe, IGuiRemoteProtocolChannel<WString>* _channel)
+	NamedPipeRendererChannel(GuiRemoteRendererSingle* _renderer, HANDLE _hPipe, IGuiRemoteProtocolChannel<WString>* _channel)
 		: NamedPipeShared(_hPipe)
+		, renderer(_renderer)
 		, channel(_channel)
 	{
 		eventDisconnected.CreateManualUnsignal(false);
@@ -92,6 +90,9 @@ public:
 		eventDisconnected.Wait();
 	}
 };
+
+NamedPipeRendererChannel* rendererChannel = nullptr;
+GuiRemoteRendererSingle* renderer = nullptr;
 
 void GuiMain()
 {
@@ -122,7 +123,7 @@ int StartNamedPipeClient()
 		GuiRemoteRendererSingle remoteRenderer;
 		GuiRemoteJsonChannelFromProtocol channelReceiver(&remoteRenderer);
 		GuiRemoteJsonChannelStringDeserializer channelJsonDeserializer(&channelReceiver, jsonParser);
-		NamedPipeRendererChannel namedPipeRendererChannel(hPipe, &channelJsonDeserializer);
+		NamedPipeRendererChannel namedPipeRendererChannel(&remoteRenderer, hPipe, &channelJsonDeserializer);
 
 		rendererChannel = &namedPipeRendererChannel;
 		renderer = &remoteRenderer;
