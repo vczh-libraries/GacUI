@@ -38,7 +38,7 @@
     <ClInclude Include="Shared\NamedPipeShared.h">
       <Filter>Shared</Filter>
     </ClInclude>
-    <ClInclude Include="Shared\ProtocalCallback.h">
+    <ClInclude Include="Shared\ProtocolCallback.h">
       <Filter>Shared</Filter>
     </ClInclude>
     <ClInclude Include="CoreChannel.h">

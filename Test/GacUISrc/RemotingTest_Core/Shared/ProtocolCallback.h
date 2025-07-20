@@ -1,3 +1,6 @@
+#ifndef VCZH_REMOTINGTEST_SHARED_PROTOCOLCALLBACK
+#define VCZH_REMOTINGTEST_SHARED_PROTOCOLCALLBACK
+
 #include <VlppOS.h>
 
 using namespace vl;
@@ -19,3 +22,5 @@ public:
 	virtual void				SendStringArray(vint count, List<WString>& strs) = 0;
 	virtual void				SendSingleString(const WString& str) = 0;
 };
+
+#endif

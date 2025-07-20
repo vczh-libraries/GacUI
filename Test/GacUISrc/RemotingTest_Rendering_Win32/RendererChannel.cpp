@@ -40,15 +40,15 @@ void RendererChannel::OnReadStoppedThreadUnsafe()
 
 void RendererChannel::OnReceive(const WString& package)
 {
-	SendSingleString(package);
+	networkProtocol->SendSingleString(package);
 }
 
-RendererChannel::RendererChannel(GuiRemoteRendererSingle* _renderer, HANDLE _hPipe, IGuiRemoteProtocolChannel<WString>* _channel)
-	: NamedPipeShared(_hPipe)
+RendererChannel::RendererChannel(GuiRemoteRendererSingle* _renderer, INetworkProtocol* _networkProtocol, IGuiRemoteProtocolChannel<WString>* _channel)
+	: networkProtocol(_networkProtocol)
 	, renderer(_renderer)
 	, channel(_channel)
 {
-	InstallCallback(this);
+	networkProtocol->InstallCallback(this);
 	eventDisconnected.CreateManualUnsignal(false);
 	_channel->Initialize(this);
 }
@@ -59,7 +59,7 @@ RendererChannel::~RendererChannel()
 
 void RendererChannel::RegisterMainWindow(INativeWindow* _window)
 {
-	BeginReadingLoopUnsafe();
+	networkProtocol->BeginReadingLoopUnsafe();
 }
 
 void RendererChannel::UnregisterMainWindow()

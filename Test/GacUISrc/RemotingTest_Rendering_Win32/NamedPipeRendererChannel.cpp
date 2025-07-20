@@ -1,5 +1,6 @@
 #include "../../../Source/GacUI.h"
 #include "RendererChannel.h"
+#include "../RemotingTest_Core/Shared/NamedPipeShared.h"
 
 using namespace vl::presentation;
 using namespace vl::presentation::remoteprotocol;
@@ -33,13 +34,15 @@ int StartNamedPipeClient()
 {
 	HANDLE hPipe = NamedPipeShared::ClientCreatePipe();
 	NamedPipeShared::ClientWaitForServer(hPipe);
+	NamedPipeShared namedPipeShared(hPipe);
+
 	int result = 0;
 	{
 		auto jsonParser = Ptr(new glr::json::Parser);
 		GuiRemoteRendererSingle remoteRenderer;
 		GuiRemoteJsonChannelFromProtocol channelReceiver(&remoteRenderer);
 		GuiRemoteJsonChannelStringDeserializer channelJsonDeserializer(&channelReceiver, jsonParser);
-		RendererChannel namedPipeRendererChannel(&remoteRenderer, hPipe, &channelJsonDeserializer);
+		RendererChannel namedPipeRendererChannel(&remoteRenderer, &namedPipeShared, &channelJsonDeserializer);
 
 		rendererChannel = &namedPipeRendererChannel;
 		renderer = &remoteRenderer;

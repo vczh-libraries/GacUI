@@ -1,5 +1,6 @@
 #include "../../../Source/GacUI.h"
 #include "CoreChannel.h"
+#include "Shared/NamedPipeShared.h"
 
 extern CoreChannel* coreChannel;
 
@@ -28,9 +29,11 @@ void RunInNewThread(T&& threadProc, CoreChannel* channel)
 int StartNamedPipeServer()
 {
 	HANDLE hPipe = NamedPipeShared::ServerCreatePipe();
+	NamedPipeShared namedPipeShared(hPipe);
+
 	Console::WriteLine(L"> Named pipe created, waiting on: " + WString::Unmanaged(NamedPipeId));
 	{
-		CoreChannel namedPipeCoreChannel(hPipe);
+		CoreChannel namedPipeCoreChannel(&namedPipeShared);
 
 		auto jsonParser = Ptr(new glr::json::Parser);
 		GuiRemoteJsonChannelStringSerializer channelJsonSerializer(&namedPipeCoreChannel, jsonParser);

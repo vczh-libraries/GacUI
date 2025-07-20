@@ -32,14 +32,14 @@ void CoreChannel::OnReadStoppedThreadUnsafe()
 
 void CoreChannel::SendPendingMessages()
 {
-	SendStringArray(pendingMessageCount, pendingMessages);
+	networkProtocol->SendStringArray(pendingMessageCount, pendingMessages);
 	pendingMessageCount = 0;
 }
 
-CoreChannel::CoreChannel(HANDLE _hPipe)
-	: NamedPipeShared(_hPipe)
+CoreChannel::CoreChannel(INetworkProtocol* _networkProtocol)
+	: networkProtocol(_networkProtocol)
 {
-	InstallCallback(this);
+	networkProtocol->InstallCallback(this);
 	eventDisconnected.CreateManualUnsignal(false);
 }
 
@@ -50,7 +50,7 @@ CoreChannel::~CoreChannel()
 void CoreChannel::RendererConnectedThreadUnsafe(GuiRemoteProtocolAsyncJsonChannelSerializer* asyncChannel)
 {
 	Console::WriteLine(L"> Renderer connected");
-	BeginReadingLoopUnsafe();
+	networkProtocol->BeginReadingLoopUnsafe();
 	asyncChannel->ExecuteInChannelThread([this]()
 	{
 		connected = true;
@@ -65,7 +65,7 @@ void CoreChannel::WaitForDisconnected()
 void CoreChannel::WriteErrorThreadUnsafe(const WString& error)
 {
 	Console::WriteLine(L"Error: " + error);
-	SendSingleString(L"!" + error);
+	networkProtocol->SendSingleString(L"!" + error);
 }
 
 void CoreChannel::Initialize(IGuiRemoteProtocolChannelReceiver<WString>* _receiver)
@@ -96,7 +96,7 @@ void CoreChannel::Write(const WString& package)
 
 WString CoreChannel::GetExecutablePath()
 {
-	return WString::Unmanaged(NamedPipeId);
+	return WString::Unmanaged(L"RemotingTest_Core.vcxproj");
 }
 
 void CoreChannel::Submit(bool& disconnected)

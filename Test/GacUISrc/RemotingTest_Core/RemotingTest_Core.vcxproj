@@ -173,7 +173,7 @@
   <ItemGroup>
     <ClInclude Include="CoreChannel.h" />
     <ClInclude Include="Shared\NamedPipeShared.h" />
-    <ClInclude Include="Shared\ProtocalCallback.h" />
+    <ClInclude Include="Shared\ProtocolCallback.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

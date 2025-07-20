@@ -1,4 +1,7 @@
-#include "ProtocalCallback.h"
+#ifndef VCZH_REMOTINGTEST_SHARED_NAMEDPIPESHARED
+#define VCZH_REMOTINGTEST_SHARED_NAMEDPIPESHARED
+
+#include "ProtocolCallback.h"
 #include <Windows.h>
 
 constexpr const wchar_t* NamedPipeId = L"\\\\.\\pipe\\GacUIRemoteProtocol";
@@ -71,3 +74,5 @@ public:
 	static HANDLE									ClientCreatePipe();
 	static void										ClientWaitForServer(HANDLE hPipe);
 };
+
+#endif

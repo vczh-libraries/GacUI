@@ -1,5 +1,5 @@
 #include "../../../Source/PlatformProviders/Remote/GuiRemoteProtocol.h"
-#include "Shared/NamedPipeShared.h"
+#include "Shared/ProtocolCallback.h"
 
 using namespace vl::presentation;
 using namespace vl::presentation::remoteprotocol;
@@ -7,11 +7,11 @@ using namespace vl::presentation::remoteprotocol::repeatfiltering;
 using namespace vl::presentation::remoteprotocol::channeling;
 
 class CoreChannel
-	: public NamedPipeShared
-	, protected virtual INetworkProtocolCallback
+	: protected virtual INetworkProtocolCallback
 	, public virtual IGuiRemoteProtocolChannel<vl::WString>
 {
 protected:
+	INetworkProtocol*									networkProtocol = nullptr;
 	IGuiRemoteProtocolChannelReceiver<vl::WString>*		receiver = nullptr;
 	bool												connected = false;
 	vl::EventObject										eventDisconnected;
@@ -25,7 +25,7 @@ protected:
 
 public:
 
-	CoreChannel(HANDLE _hPipe);
+	CoreChannel(INetworkProtocol* _networkProtocol);
 	~CoreChannel();
 
 	void												RendererConnectedThreadUnsafe(GuiRemoteProtocolAsyncJsonChannelSerializer* asyncChannel);
