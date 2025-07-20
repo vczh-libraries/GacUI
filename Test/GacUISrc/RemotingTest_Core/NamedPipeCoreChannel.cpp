@@ -1,3 +1,4 @@
+#include "../../../Source/GacUI.h"
 #include "CoreChannel.h"
 
 CoreChannel* coreChannel = nullptr;

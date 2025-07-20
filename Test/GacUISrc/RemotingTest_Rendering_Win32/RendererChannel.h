@@ -1,7 +1,5 @@
-#include "../../../Source/GacUI.h"
 #include "../../../Source/PlatformProviders/Remote/GuiRemoteProtocol.h"
 #include "../../../Source/PlatformProviders/RemoteRenderer/GuiRemoteRendererSingle.h"
-#include "../../../Source/PlatformProviders/Windows/WinNativeWindow.h"
 #include "../RemotingTest_Core/Shared/NamedPipeShared.h"
 
 using namespace vl::presentation;

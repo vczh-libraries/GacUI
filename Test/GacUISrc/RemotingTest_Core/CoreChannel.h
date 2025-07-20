@@ -1,4 +1,3 @@
-#include "../../../Source/GacUI.h"
 #include "../../../Source/PlatformProviders/Remote/GuiRemoteProtocol.h"
 #include "Shared/NamedPipeShared.h"
 

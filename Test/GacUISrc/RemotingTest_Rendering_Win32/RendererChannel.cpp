@@ -1,9 +1,5 @@
 #include "RendererChannel.h"
-
-using namespace vl::presentation;
-using namespace vl::presentation::remoteprotocol;
-using namespace vl::presentation::remoteprotocol::channeling;
-using namespace vl::presentation::remote_renderer;
+#include "../../../Source/PlatformProviders/Windows/WinNativeWindow.h"
 
 void RendererChannel::OnReadStringThreadUnsafe(Ptr<List<WString>> strs)
 {

@@ -1,3 +1,4 @@
+#include "../../../Source/GacUI.h"
 #include "RendererChannel.h"
 
 using namespace vl::presentation;
