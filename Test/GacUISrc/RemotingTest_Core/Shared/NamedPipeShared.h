@@ -6,24 +6,24 @@
 
 constexpr const wchar_t* NamedPipeId = L"\\\\.\\pipe\\GacUIRemoteProtocol";
 
-class NamedPipeShared : public virtual INetworkProtocol, public Object
+class NamedPipeSharedCommon : public INetworkProtocol
 {
-	// NamedPipe doesn't support a single message that is larger than 64K
-	static constexpr vint32_t						MaxMessageSize = 65536;
-
 protected:
+	INetworkProtocolCallback*						callback = nullptr;
 	HANDLE											hPipe = INVALID_HANDLE_VALUE;
 
-private:
-	INetworkProtocolCallback*						callback = nullptr;
+protected:
+	void											InstallCallback(INetworkProtocolCallback* _callback);
 
-/***********************************************************************
-Reading
-***********************************************************************/
+	NamedPipeSharedCommon(HANDLE _hPipe);
+	~NamedPipeSharedCommon();
+};
 
+class NamedPipeSharedReading : public virtual NamedPipeSharedCommon
+{
 private:
 	bool											firstRead = true;
-	BYTE											bufferReadFile[MaxMessageSize];
+	Array<BYTE>										bufferReadFile;
 	stream::MemoryStream							streamReadFile;
 	HANDLE											hWaitHandleReadFile = INVALID_HANDLE_VALUE;
 	OVERLAPPED										overlappedReadFile;
@@ -34,13 +34,14 @@ private:
 	void											EndReadingUnsafe();
 
 protected:
+	void											BeginReadingLoopUnsafe();
 
-	void											BeginReadingLoopUnsafe() override;
+	NamedPipeSharedReading(HANDLE _hPipe);
+	~NamedPipeSharedReading();
+};
 
-/***********************************************************************
-Writing
-***********************************************************************/
-
+class NamedPipeSharedWriting : public virtual NamedPipeSharedCommon
+{
 private:
 	stream::MemoryStream							streamWriteFile;
 	OVERLAPPED										overlappedWriteFile;
@@ -52,22 +53,25 @@ private:
 	void											EndSendStream(vint32_t bytes);
 
 protected:
+	void											SendStringArray(vint count, List<WString>& strs);
+	void											SendSingleString(const WString& str);
 
-	void											SendStringArray(vint count, List<WString>& strs) override;
-	void											SendSingleString(const WString& str) override;
+	NamedPipeSharedWriting(HANDLE _hPipe);
+	~NamedPipeSharedWriting();
+};
 
-/***********************************************************************
-Helpers
-***********************************************************************/
-
-protected:
-
-	void											InstallCallback(INetworkProtocolCallback* _callback) override;
-
+class NamedPipeShared
+	: public NamedPipeSharedReading
+	, public NamedPipeSharedWriting
+{
 public:
-
 	NamedPipeShared(HANDLE _hPipe);
 	~NamedPipeShared();
+
+	void											InstallCallback(INetworkProtocolCallback* _callback) override;
+	void											BeginReadingLoopUnsafe() override;
+	void											SendStringArray(vint count, List<WString>& strs) override;
+	void											SendSingleString(const WString& str) override;
 
 	static HANDLE									ServerCreatePipe();
 	static void										ServerWaitForClient(HANDLE hPipe);

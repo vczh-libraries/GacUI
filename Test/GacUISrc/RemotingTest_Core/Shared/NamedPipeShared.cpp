@@ -4,11 +4,33 @@ using namespace vl;
 using namespace vl::console;
 using namespace vl::collections;
 
+
+// NamedPipe doesn't support a single message that is larger than 64K
+static constexpr vint32_t						MaxMessageSize = 65536;
+
 /***********************************************************************
-Reading
+NamedPipeSharedCommon
 ***********************************************************************/
 
-void NamedPipeShared::BeginReadingUnsafe()
+void NamedPipeSharedCommon::InstallCallback(INetworkProtocolCallback* _callback)
+{
+	callback = _callback;
+}
+
+NamedPipeSharedCommon::NamedPipeSharedCommon(HANDLE _hPipe)
+	: hPipe(_hPipe)
+{
+}
+
+NamedPipeSharedCommon::~NamedPipeSharedCommon()
+{
+}
+
+/***********************************************************************
+NamedPipeSharedReading
+***********************************************************************/
+
+void NamedPipeSharedReading::BeginReadingUnsafe()
 {
 	if (firstRead)
 	{
@@ -16,12 +38,12 @@ void NamedPipeShared::BeginReadingUnsafe()
 	}
 }
 
-void NamedPipeShared::SubmitReadBufferUnsafe(vint bytes)
+void NamedPipeSharedReading::SubmitReadBufferUnsafe(vint bytes)
 {
-	streamReadFile.Write(bufferReadFile, bytes);
+	streamReadFile.Write(&bufferReadFile[0], bytes);
 }
 
-void NamedPipeShared::EndReadingUnsafe()
+void NamedPipeSharedReading::EndReadingUnsafe()
 {
 	vint32_t position = (vint32_t)streamReadFile.Position();
 	streamReadFile.SeekFromBegin(0);
@@ -70,7 +92,7 @@ void NamedPipeShared::EndReadingUnsafe()
 	CHECK_ERROR(streamReadFile.Position() == position, L"ReadFile failed on incomplete message.");
 }
 
-void NamedPipeShared::BeginReadingLoopUnsafe()
+void NamedPipeSharedReading::BeginReadingLoopUnsafe()
 {
 RESTART_LOOP:
 	{
@@ -79,7 +101,7 @@ RESTART_LOOP:
 		ZeroMemory(&overlappedReadFile, sizeof(overlappedReadFile));
 		overlappedReadFile.hEvent = hEventReadFile;
 		DWORD read = 0;
-		BOOL result = ReadFile(hPipe, &bufferReadFile, sizeof(bufferReadFile), &read, &overlappedReadFile);
+		BOOL result = ReadFile(hPipe, &bufferReadFile[0], sizeof(BYTE) * MaxMessageSize, &read, &overlappedReadFile);
 
 		if (result == TRUE)
 		{
@@ -131,16 +153,29 @@ RESTART_LOOP:
 	}
 }
 
+NamedPipeSharedReading::NamedPipeSharedReading(HANDLE _hPipe)
+	: NamedPipeSharedCommon(_hPipe)
+	, bufferReadFile(MaxMessageSize)
+{
+	hEventReadFile = CreateEvent(NULL, TRUE, TRUE, NULL);
+	CHECK_ERROR(hEventReadFile != NULL, L"NamedPipeCoreChannel initialization failed on CreateEvent(hEventReadFile).");
+}
+
+NamedPipeSharedReading::~NamedPipeSharedReading()
+{
+	CloseHandle(hEventReadFile);
+}
+
 /***********************************************************************
-Writing
+NamedPipeSharedWriting
 ***********************************************************************/
 
-vint32_t NamedPipeShared::WriteInt32ToStream(vint32_t number)
+vint32_t NamedPipeSharedWriting::WriteInt32ToStream(vint32_t number)
 {
 	return (vint32_t)streamWriteFile.Write(&number, sizeof(number));
 }
 
-vint32_t NamedPipeShared::WriteStringToStream(const WString& str)
+vint32_t NamedPipeSharedWriting::WriteStringToStream(const WString& str)
 {
 	vint32_t bytes = 0;
 	vint32_t count = (vint32_t)str.Length();
@@ -152,14 +187,14 @@ vint32_t NamedPipeShared::WriteStringToStream(const WString& str)
 	return bytes;
 }
 
-void NamedPipeShared::BeginSendStream()
+void NamedPipeSharedWriting::BeginSendStream()
 {
 	vint32_t bytes = 0;
 	streamWriteFile.SeekFromBegin(0);
 	streamWriteFile.Write(&bytes, sizeof(bytes));
 }
 
-void NamedPipeShared::EndSendStream(vint32_t bytes)
+void NamedPipeSharedWriting::EndSendStream(vint32_t bytes)
 {
 	streamWriteFile.SeekFromBegin(0);
 	WriteInt32ToStream(bytes);
@@ -179,7 +214,7 @@ void NamedPipeShared::EndSendStream(vint32_t bytes)
 	}
 }
 
-void NamedPipeShared::SendStringArray(vint count, List<WString>& strs)
+void NamedPipeSharedWriting::SendStringArray(vint count, List<WString>& strs)
 {
 	vint32_t bytes = 0;
 	BeginSendStream();
@@ -191,7 +226,7 @@ void NamedPipeShared::SendStringArray(vint count, List<WString>& strs)
 	EndSendStream(bytes);
 }
 
-void NamedPipeShared::SendSingleString(const WString& str)
+void NamedPipeSharedWriting::SendSingleString(const WString& str)
 {
 	vint32_t bytes = 0;
 	BeginSendStream();
@@ -200,28 +235,51 @@ void NamedPipeShared::SendSingleString(const WString& str)
 	EndSendStream(bytes);
 }
 
-/***********************************************************************
-Helpers
-***********************************************************************/
-
-void NamedPipeShared::InstallCallback(INetworkProtocolCallback* _callback)
+NamedPipeSharedWriting::NamedPipeSharedWriting(HANDLE _hPipe)
+	: NamedPipeSharedCommon(_hPipe)
 {
-	callback = _callback;
-}
-
-NamedPipeShared::NamedPipeShared(HANDLE _hPipe)
-	: hPipe(_hPipe)
-{
-	hEventReadFile = CreateEvent(NULL, TRUE, TRUE, NULL);
-	CHECK_ERROR(hEventReadFile != NULL, L"NamedPipeCoreChannel initialization failed on CreateEvent(hEventReadFile).");
 	hEventWriteFile = CreateEvent(NULL, TRUE, TRUE, NULL);
 	CHECK_ERROR(hEventWriteFile != NULL, L"NamedPipeCoreChannel initialization failed on CreateEvent(hEventWriteFile).");
 }
 
+NamedPipeSharedWriting::~NamedPipeSharedWriting()
+{
+	CloseHandle(hEventWriteFile);
+}
+
+/***********************************************************************
+NamedPipeShared
+***********************************************************************/
+
+NamedPipeShared::NamedPipeShared(HANDLE _hPipe)
+	: NamedPipeSharedCommon(_hPipe)
+	, NamedPipeSharedReading(_hPipe)
+	, NamedPipeSharedWriting(_hPipe)
+{
+}
+
 NamedPipeShared::~NamedPipeShared()
 {
-	CloseHandle(hEventReadFile);
-	CloseHandle(hEventWriteFile);
+}
+
+void NamedPipeShared::InstallCallback(INetworkProtocolCallback* _callback)
+{
+	NamedPipeSharedCommon::InstallCallback(_callback);
+}
+
+void NamedPipeShared::BeginReadingLoopUnsafe()
+{
+	NamedPipeSharedReading::BeginReadingLoopUnsafe();
+}
+
+void NamedPipeShared::SendStringArray(vint count, List<WString>& strs)
+{
+	NamedPipeSharedWriting::SendStringArray(count, strs);
+}
+
+void NamedPipeShared::SendSingleString(const WString& str)
+{
+	NamedPipeSharedWriting::SendSingleString(str);
 }
 
 /***********************************************************************
