@@ -42,7 +42,7 @@
       <Filter>Shared</Filter>
     </ClInclude>
     <ClInclude Include="CoreChannel.h">
-      <Filter>Header Files</Filter>
+      <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
