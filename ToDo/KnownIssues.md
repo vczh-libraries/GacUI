@@ -54,6 +54,7 @@
 - Features with no plan in unit test:
   - `GuiControl`
     - `QueryService` and `AddService`
+- Clicking `Fatal Error` in `RemotingTest_Rendering_Win32 /Pipe` sometimes hang.
 
 ## Unprioritized
 

@@ -9,6 +9,9 @@ constexpr const wchar_t* HttpServerUrl_Response = L"Response";
 
 class HttpServer : public INetworkProtocol
 {
+protected:
+	INetworkProtocolCallback*						callback = nullptr;
+
 public:
 	HttpServer();
 	~HttpServer();
@@ -16,7 +19,7 @@ public:
 	void											WaitForClient();
 	void											StopHttpServer();
 
-	void											InstallCallback(INetworkProtocolCallback* callback) override;
+	void											InstallCallback(INetworkProtocolCallback* _callback) override;
 	void											BeginReadingLoopUnsafe() override;
 	void											SendStringArray(vint count, List<WString>& strs) override;
 	void											SendSingleString(const WString& str) override;

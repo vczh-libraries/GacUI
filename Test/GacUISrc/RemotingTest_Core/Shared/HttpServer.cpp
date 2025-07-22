@@ -18,9 +18,9 @@ void HttpServer::StopHttpServer()
 	CHECK_FAIL(L"Not Implemented!");
 }
 
-void HttpServer::InstallCallback(INetworkProtocolCallback* callback)
+void HttpServer::InstallCallback(INetworkProtocolCallback* _callback)
 {
-	CHECK_FAIL(L"Not Implemented!");
+	callback = _callback;
 }
 
 void HttpServer::BeginReadingLoopUnsafe()
