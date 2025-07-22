@@ -260,6 +260,16 @@ NamedPipeShared::NamedPipeShared(HANDLE _hPipe)
 
 NamedPipeShared::~NamedPipeShared()
 {
+	StopNamedPipe();
+}
+
+void NamedPipeShared::StopNamedPipe()
+{
+	if (hPipe != INVALID_HANDLE_VALUE)
+	{
+		CloseHandle(hPipe);
+		hPipe = INVALID_HANDLE_VALUE;
+	}
 }
 
 void NamedPipeShared::InstallCallback(INetworkProtocolCallback* _callback)
@@ -283,10 +293,10 @@ void NamedPipeShared::SendSingleString(const WString& str)
 }
 
 /***********************************************************************
-Server Helpers
+NamedPipeServer
 ***********************************************************************/
 
-HANDLE NamedPipeShared::ServerCreatePipe()
+HANDLE NamedPipeServer::ServerCreatePipe()
 {
 	HANDLE hPipe = CreateNamedPipe(
 		NamedPipeId,
@@ -301,7 +311,16 @@ HANDLE NamedPipeShared::ServerCreatePipe()
 	return hPipe;
 }
 
-void NamedPipeShared::ServerWaitForClient(HANDLE hPipe)
+NamedPipeServer::NamedPipeServer()
+	: NamedPipeShared(ServerCreatePipe())
+{
+}
+
+NamedPipeServer::~NamedPipeServer()
+{
+}
+
+void NamedPipeServer::WaitForClient()
 {
 	OVERLAPPED overlapped;
 	ZeroMemory(&overlapped, sizeof(overlapped));
@@ -324,10 +343,10 @@ void NamedPipeShared::ServerWaitForClient(HANDLE hPipe)
 }
 
 /***********************************************************************
-Client Helpers
+NamedPipeClient
 ***********************************************************************/
 
-HANDLE NamedPipeShared::ClientCreatePipe()
+HANDLE NamedPipeClient::ClientCreatePipe()
 {
 	HANDLE hPipe = CreateFile(
 		NamedPipeId,
@@ -342,7 +361,16 @@ HANDLE NamedPipeShared::ClientCreatePipe()
 	return hPipe;
 }
 
-void NamedPipeShared::ClientWaitForServer(HANDLE hPipe)
+NamedPipeClient::NamedPipeClient()
+	: NamedPipeShared(ClientCreatePipe())
+{
+}
+
+NamedPipeClient::~NamedPipeClient()
+{
+}
+
+void NamedPipeClient::WaitForServer()
 {
 	DWORD dwPipeMode = PIPE_READMODE_MESSAGE;
 	BOOL bSucceeded = SetNamedPipeHandleState(

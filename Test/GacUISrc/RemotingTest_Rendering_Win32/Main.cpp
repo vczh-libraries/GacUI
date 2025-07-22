@@ -17,6 +17,7 @@ namespace vl::presentation
 }
 
 extern int StartNamedPipeClient();
+extern int StartHttpClient();
 
 int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int CmdShow)
 {

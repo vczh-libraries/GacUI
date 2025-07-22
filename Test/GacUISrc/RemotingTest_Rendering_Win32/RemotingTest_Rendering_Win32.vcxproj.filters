@@ -30,6 +30,15 @@
     <ClCompile Include="RendererChannel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="HttpRendererChannel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\RemotingTest_Core\Shared\HttpClient.cpp">
+      <Filter>Shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\RemotingTest_Core\Shared\HttpServer.cpp">
+      <Filter>Shared</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\RemotingTest_Core\Shared\NamedPipeShared.h">
@@ -40,6 +49,12 @@
     </ClInclude>
     <ClInclude Include="RendererChannel.h">
       <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\RemotingTest_Core\Shared\HttpClient.h">
+      <Filter>Shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\RemotingTest_Core\Shared\HttpServer.h">
+      <Filter>Shared</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

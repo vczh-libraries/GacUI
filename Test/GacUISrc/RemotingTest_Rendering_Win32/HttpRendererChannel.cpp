@@ -1,6 +1,6 @@
 #include "../../../Source/GacUI.h"
 #include "RendererChannel.h"
-#include "../RemotingTest_Core/Shared/NamedPipeShared.h"
+#include "../RemotingTest_Core/Shared/HttpClient.h"
 
 using namespace vl::presentation;
 using namespace vl::presentation::remoteprotocol;
@@ -30,10 +30,10 @@ void GuiMain()
 	rendererChannel->UnregisterMainWindow();
 }
 
-int StartNamedPipeClient()
+int StartHttpClient()
 {
-	NamedPipeClient namedPipeClient;
-	namedPipeClient.WaitForServer();
+	HttpClient httpClient;
+	httpClient.WaitForClient();
 
 	int result = 0;
 	{
@@ -41,12 +41,12 @@ int StartNamedPipeClient()
 		GuiRemoteRendererSingle remoteRenderer;
 		GuiRemoteJsonChannelFromProtocol channelReceiver(&remoteRenderer);
 		GuiRemoteJsonChannelStringDeserializer channelJsonDeserializer(&channelReceiver, jsonParser);
-		RendererChannel namedPipeRendererChannel(&remoteRenderer, &namedPipeClient, &channelJsonDeserializer);
+		RendererChannel namedPipeRendererChannel(&remoteRenderer, &httpClient, &channelJsonDeserializer);
 
 		rendererChannel = &namedPipeRendererChannel;
 		renderer = &remoteRenderer;
 		result = SetupRawWindowsDirect2DRenderer();
-		namedPipeClient.StopNamedPipe();
+		httpClient.StopHttpClient();
 		namedPipeRendererChannel.WaitForDisconnected();
 		renderer = nullptr;
 		rendererChannel = nullptr;

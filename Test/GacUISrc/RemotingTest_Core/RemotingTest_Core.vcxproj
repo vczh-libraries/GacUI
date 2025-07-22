@@ -158,8 +158,11 @@
   <ItemGroup>
     <ClCompile Include="CoreChannel.cpp" />
     <ClCompile Include="GuiMain.cpp" />
+    <ClCompile Include="HttpCoreChannel.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="NamedPipeCoreChannel.cpp" />
+    <ClCompile Include="Shared\HttpClient.cpp" />
+    <ClCompile Include="Shared\HttpServer.cpp" />
     <ClCompile Include="Shared\NamedPipeShared.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -172,6 +175,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CoreChannel.h" />
+    <ClInclude Include="Shared\HttpClient.h" />
+    <ClInclude Include="Shared\HttpServer.h" />
     <ClInclude Include="Shared\NamedPipeShared.h" />
     <ClInclude Include="Shared\ProtocolCallback.h" />
   </ItemGroup>

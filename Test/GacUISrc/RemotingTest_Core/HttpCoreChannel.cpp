@@ -1,16 +1,16 @@
 #include "../../../Source/GacUI.h"
 #include "CoreChannel.h"
-#include "Shared/NamedPipeShared.h"
+#include "Shared/HttpServer.h"
 
 extern CoreChannel* coreChannel;
 
-int StartNamedPipeServer()
+int StartHttpServer()
 {
-	NamedPipeServer namedPipeServer;
+	HttpServer httpServer;
 
-	Console::WriteLine(L"> Named pipe created, waiting on: " + WString::Unmanaged(NamedPipeId));
+	Console::WriteLine(L"> HTTP server created, waiting on: " + WString::Unmanaged(HttpServerUrl));
 	{
-		CoreChannel namedPipeCoreChannel(&namedPipeServer);
+		CoreChannel namedPipeCoreChannel(&httpServer);
 
 		auto jsonParser = Ptr(new glr::json::Parser);
 		GuiRemoteJsonChannelStringSerializer channelJsonSerializer(&namedPipeCoreChannel, jsonParser);
@@ -37,10 +37,10 @@ int StartNamedPipeServer()
 			});
 
 		Console::WriteLine(L"> Waiting for a renderer ...");
-		namedPipeServer.WaitForClient();
+		httpServer.WaitForClient();
 		namedPipeCoreChannel.RendererConnectedThreadUnsafe(&asyncChannelSender);
 		asyncChannelSender.WaitForStopped();
-		namedPipeServer.StopNamedPipe();
+		httpServer.StopHttpServer();
 		namedPipeCoreChannel.WaitForDisconnected();
 	}
 	return 0;

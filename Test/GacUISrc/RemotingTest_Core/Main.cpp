@@ -1,6 +1,7 @@
 #include <crtdbg.h>
 
 extern int StartNamedPipeServer();
+extern int StartHttpServer();
 
 int wmain(int argc, wchar_t* argv[])
 {

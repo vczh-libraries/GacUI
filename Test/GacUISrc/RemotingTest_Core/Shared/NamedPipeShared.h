@@ -64,19 +64,42 @@ class NamedPipeShared
 	: public NamedPipeSharedReading
 	, public NamedPipeSharedWriting
 {
-public:
+protected:
 	NamedPipeShared(HANDLE _hPipe);
 	~NamedPipeShared();
+
+public:
+
+	void											StopNamedPipe();
 
 	void											InstallCallback(INetworkProtocolCallback* _callback) override;
 	void											BeginReadingLoopUnsafe() override;
 	void											SendStringArray(vint count, List<WString>& strs) override;
 	void											SendSingleString(const WString& str) override;
+};
 
+class NamedPipeServer : public NamedPipeShared
+{
+protected:
 	static HANDLE									ServerCreatePipe();
-	static void										ServerWaitForClient(HANDLE hPipe);
+
+public:
+	NamedPipeServer();
+	~NamedPipeServer();
+
+	void											WaitForClient();
+};
+
+class NamedPipeClient : public NamedPipeShared
+{
+protected:
 	static HANDLE									ClientCreatePipe();
-	static void										ClientWaitForServer(HANDLE hPipe);
+
+public:
+	NamedPipeClient();
+	~NamedPipeClient();
+
+	void											WaitForServer();
 };
 
 #endif
