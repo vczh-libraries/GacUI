@@ -25,8 +25,11 @@
   - `delete this;` eventually calls `SuspendThread` on the thread itself, making all following clean up code skipped.
   - Windows confirmed, Linux need to test.
 - TODO in `GuiRemoteWindow::OnControllerConnect`.
-- Remote Protocol
-  - `GuiRemoteGraphicsRenderTarget::fontHeights` could be moved to `GuiRemoteGraphicsResourceManager` as the measuring should not be different.
+
+## Remote Protocol
+- `GuiRemoteGraphicsRenderTarget::fontHeights` could be moved to `GuiRemoteGraphicsResourceManager` as the measuring should not be different.
+- `RemotingTest_Rendering_Win32`
+  - Clicking `Fatal Error` in `RemotingTest_Rendering_Win32 /Pipe` sometimes hang.
 
 ## Unit Test
 
@@ -54,7 +57,6 @@
 - Features with no plan in unit test:
   - `GuiControl`
     - `QueryService` and `AddService`
-- Clicking `Fatal Error` in `RemotingTest_Rendering_Win32 /Pipe` sometimes hang.
 
 ## Unprioritized
 
