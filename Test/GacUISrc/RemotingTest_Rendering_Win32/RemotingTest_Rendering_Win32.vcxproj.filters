@@ -39,6 +39,9 @@
     <ClCompile Include="..\RemotingTest_Core\Shared\HttpServer.cpp">
       <Filter>Shared</Filter>
     </ClCompile>
+    <ClCompile Include="GuiMain.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\RemotingTest_Core\Shared\NamedPipeShared.h">

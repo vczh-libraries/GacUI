@@ -11,12 +11,6 @@ class NamedPipeSharedCommon : public INetworkProtocol
 protected:
 	INetworkProtocolCallback*						callback = nullptr;
 	HANDLE											hPipe = INVALID_HANDLE_VALUE;
-
-protected:
-	void											InstallCallback(INetworkProtocolCallback* _callback);
-
-	NamedPipeSharedCommon(HANDLE _hPipe);
-	~NamedPipeSharedCommon();
 };
 
 class NamedPipeSharedReading : public virtual NamedPipeSharedCommon
@@ -36,7 +30,7 @@ private:
 protected:
 	void											BeginReadingLoopUnsafe();
 
-	NamedPipeSharedReading(HANDLE _hPipe);
+	NamedPipeSharedReading();
 	~NamedPipeSharedReading();
 };
 
@@ -56,7 +50,7 @@ protected:
 	void											SendStringArray(vint count, List<WString>& strs);
 	void											SendSingleString(const WString& str);
 
-	NamedPipeSharedWriting(HANDLE _hPipe);
+	NamedPipeSharedWriting();
 	~NamedPipeSharedWriting();
 };
 

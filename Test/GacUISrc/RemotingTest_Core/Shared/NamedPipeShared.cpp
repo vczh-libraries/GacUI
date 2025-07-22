@@ -9,24 +9,6 @@ using namespace vl::collections;
 static constexpr vint32_t						MaxMessageSize = 65536;
 
 /***********************************************************************
-NamedPipeSharedCommon
-***********************************************************************/
-
-void NamedPipeSharedCommon::InstallCallback(INetworkProtocolCallback* _callback)
-{
-	callback = _callback;
-}
-
-NamedPipeSharedCommon::NamedPipeSharedCommon(HANDLE _hPipe)
-	: hPipe(_hPipe)
-{
-}
-
-NamedPipeSharedCommon::~NamedPipeSharedCommon()
-{
-}
-
-/***********************************************************************
 NamedPipeSharedReading
 ***********************************************************************/
 
@@ -153,9 +135,8 @@ RESTART_LOOP:
 	}
 }
 
-NamedPipeSharedReading::NamedPipeSharedReading(HANDLE _hPipe)
-	: NamedPipeSharedCommon(_hPipe)
-	, bufferReadFile(MaxMessageSize)
+NamedPipeSharedReading::NamedPipeSharedReading()
+	: bufferReadFile(MaxMessageSize)
 {
 	hEventReadFile = CreateEvent(NULL, TRUE, TRUE, NULL);
 	CHECK_ERROR(hEventReadFile != NULL, L"NamedPipeCoreChannel initialization failed on CreateEvent(hEventReadFile).");
@@ -235,8 +216,7 @@ void NamedPipeSharedWriting::SendSingleString(const WString& str)
 	EndSendStream(bytes);
 }
 
-NamedPipeSharedWriting::NamedPipeSharedWriting(HANDLE _hPipe)
-	: NamedPipeSharedCommon(_hPipe)
+NamedPipeSharedWriting::NamedPipeSharedWriting()
 {
 	hEventWriteFile = CreateEvent(NULL, TRUE, TRUE, NULL);
 	CHECK_ERROR(hEventWriteFile != NULL, L"NamedPipeCoreChannel initialization failed on CreateEvent(hEventWriteFile).");
@@ -252,10 +232,8 @@ NamedPipeShared
 ***********************************************************************/
 
 NamedPipeShared::NamedPipeShared(HANDLE _hPipe)
-	: NamedPipeSharedCommon(_hPipe)
-	, NamedPipeSharedReading(_hPipe)
-	, NamedPipeSharedWriting(_hPipe)
 {
+	hPipe = _hPipe;
 }
 
 NamedPipeShared::~NamedPipeShared()
@@ -274,7 +252,7 @@ void NamedPipeShared::StopNamedPipe()
 
 void NamedPipeShared::InstallCallback(INetworkProtocolCallback* _callback)
 {
-	NamedPipeSharedCommon::InstallCallback(_callback);
+	callback = _callback;
 }
 
 void NamedPipeShared::BeginReadingLoopUnsafe()
