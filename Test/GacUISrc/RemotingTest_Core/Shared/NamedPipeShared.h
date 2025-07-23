@@ -64,7 +64,7 @@ protected:
 
 public:
 
-	void											StopNamedPipe();
+	void											Stop();
 
 	void											InstallCallback(INetworkProtocolCallback* _callback) override;
 	void											BeginReadingLoopUnsafe() override;

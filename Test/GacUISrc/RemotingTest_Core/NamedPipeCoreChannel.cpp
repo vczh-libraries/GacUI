@@ -40,7 +40,7 @@ int StartNamedPipeServer()
 		namedPipeServer.WaitForClient();
 		namedPipeCoreChannel.RendererConnectedThreadUnsafe(&asyncChannelSender);
 		asyncChannelSender.WaitForStopped();
-		namedPipeServer.StopNamedPipe();
+		namedPipeServer.Stop();
 		namedPipeCoreChannel.WaitForDisconnected();
 	}
 	return 0;

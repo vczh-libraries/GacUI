@@ -238,10 +238,10 @@ NamedPipeShared::NamedPipeShared(HANDLE _hPipe)
 
 NamedPipeShared::~NamedPipeShared()
 {
-	StopNamedPipe();
+	Stop();
 }
 
-void NamedPipeShared::StopNamedPipe()
+void NamedPipeShared::Stop()
 {
 	if (hPipe != INVALID_HANDLE_VALUE)
 	{

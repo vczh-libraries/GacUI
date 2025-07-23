@@ -40,7 +40,7 @@ int StartHttpServer()
 		httpServer.WaitForClient();
 		namedPipeCoreChannel.RendererConnectedThreadUnsafe(&asyncChannelSender);
 		asyncChannelSender.WaitForStopped();
-		httpServer.StopHttpServer();
+		httpServer.Stop();
 		namedPipeCoreChannel.WaitForDisconnected();
 	}
 	return 0;

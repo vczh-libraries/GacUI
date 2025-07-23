@@ -13,7 +13,7 @@ public:
 	~HttpClient();
 
 	void											WaitForClient();
-	void											StopHttpClient();
+	void											Stop();
 
 	void											InstallCallback(INetworkProtocolCallback* _callback) override;
 	void											BeginReadingLoopUnsafe() override;

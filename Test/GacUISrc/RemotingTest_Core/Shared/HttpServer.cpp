@@ -13,7 +13,7 @@ void HttpServer::WaitForClient()
 	CHECK_FAIL(L"Not Implemented!");
 }
 
-void HttpServer::StopHttpServer()
+void HttpServer::Stop()
 {
 	CHECK_FAIL(L"Not Implemented!");
 }

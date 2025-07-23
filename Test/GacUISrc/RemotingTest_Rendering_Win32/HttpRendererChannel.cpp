@@ -26,7 +26,7 @@ int StartHttpClient()
 		rendererChannel = &namedPipeRendererChannel;
 		renderer = &remoteRenderer;
 		result = SetupRawWindowsDirect2DRenderer();
-		httpClient.StopHttpClient();
+		httpClient.Stop();
 		namedPipeRendererChannel.WaitForDisconnected();
 		renderer = nullptr;
 		rendererChannel = nullptr;

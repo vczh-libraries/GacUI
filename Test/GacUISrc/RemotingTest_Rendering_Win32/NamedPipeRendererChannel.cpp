@@ -26,7 +26,7 @@ int StartNamedPipeClient()
 		rendererChannel = &namedPipeRendererChannel;
 		renderer = &remoteRenderer;
 		result = SetupRawWindowsDirect2DRenderer();
-		namedPipeClient.StopNamedPipe();
+		namedPipeClient.Stop();
 		namedPipeRendererChannel.WaitForDisconnected();
 		renderer = nullptr;
 		rendererChannel = nullptr;
