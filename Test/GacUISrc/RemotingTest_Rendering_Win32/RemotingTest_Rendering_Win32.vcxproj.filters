@@ -21,16 +21,10 @@
     <ClCompile Include="Main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="NamedPipeRendererChannel.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\RemotingTest_Core\Shared\NamedPipeShared.cpp">
       <Filter>Shared</Filter>
     </ClCompile>
     <ClCompile Include="RendererChannel.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="HttpRendererChannel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\RemotingTest_Core\Shared\HttpClient.cpp">

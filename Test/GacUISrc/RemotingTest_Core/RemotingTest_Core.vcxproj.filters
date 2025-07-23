@@ -24,9 +24,6 @@
     <ClCompile Include="GuiMain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="NamedPipeCoreChannel.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Shared\NamedPipeShared.cpp">
       <Filter>Shared</Filter>
     </ClCompile>
@@ -38,9 +35,6 @@
     </ClCompile>
     <ClCompile Include="Shared\HttpServer.cpp">
       <Filter>Shared</Filter>
-    </ClCompile>
-    <ClCompile Include="HttpCoreChannel.cpp">
-      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

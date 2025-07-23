@@ -159,9 +159,7 @@
     <ClCompile Include="..\RemotingTest_Core\Shared\HttpServer.cpp" />
     <ClCompile Include="..\RemotingTest_Core\Shared\NamedPipeShared.cpp" />
     <ClCompile Include="GuiMain.cpp" />
-    <ClCompile Include="HttpRendererChannel.cpp" />
     <ClCompile Include="Main.cpp" />
-    <ClCompile Include="NamedPipeRendererChannel.cpp" />
     <ClCompile Include="RendererChannel.cpp" />
   </ItemGroup>
   <ItemGroup>
