@@ -30,50 +30,36 @@ void GuiMain()
 	rendererChannel->UnregisterMainWindow();
 }
 
+template<typename TClient>
+int StartClient(TClient& client)
+{
+	auto jsonParser = Ptr(new glr::json::Parser);
+	GuiRemoteRendererSingle remoteRenderer;
+	GuiRemoteJsonChannelFromProtocol channelReceiver(&remoteRenderer);
+	GuiRemoteJsonChannelStringDeserializer channelJsonDeserializer(&channelReceiver, jsonParser);
+	RendererChannel namedPipeRendererChannel(&remoteRenderer, &client, &channelJsonDeserializer);
+
+	rendererChannel = &namedPipeRendererChannel;
+	renderer = &remoteRenderer;
+	int result = SetupRawWindowsDirect2DRenderer();
+	client.Stop();
+	namedPipeRendererChannel.WaitForDisconnected();
+	renderer = nullptr;
+	rendererChannel = nullptr;
+
+	return result;
+}
+
 int StartNamedPipeClient()
 {
 	NamedPipeClient namedPipeClient;
 	namedPipeClient.WaitForServer();
-
-	int result = 0;
-	{
-		auto jsonParser = Ptr(new glr::json::Parser);
-		GuiRemoteRendererSingle remoteRenderer;
-		GuiRemoteJsonChannelFromProtocol channelReceiver(&remoteRenderer);
-		GuiRemoteJsonChannelStringDeserializer channelJsonDeserializer(&channelReceiver, jsonParser);
-		RendererChannel namedPipeRendererChannel(&remoteRenderer, &namedPipeClient, &channelJsonDeserializer);
-
-		rendererChannel = &namedPipeRendererChannel;
-		renderer = &remoteRenderer;
-		result = SetupRawWindowsDirect2DRenderer();
-		namedPipeClient.Stop();
-		namedPipeRendererChannel.WaitForDisconnected();
-		renderer = nullptr;
-		rendererChannel = nullptr;
-	}
-	return result;
+	return StartClient(namedPipeClient);
 }
 
 int StartHttpClient()
 {
 	HttpClient httpClient;
 	httpClient.WaitForClient();
-
-	int result = 0;
-	{
-		auto jsonParser = Ptr(new glr::json::Parser);
-		GuiRemoteRendererSingle remoteRenderer;
-		GuiRemoteJsonChannelFromProtocol channelReceiver(&remoteRenderer);
-		GuiRemoteJsonChannelStringDeserializer channelJsonDeserializer(&channelReceiver, jsonParser);
-		RendererChannel namedPipeRendererChannel(&remoteRenderer, &httpClient, &channelJsonDeserializer);
-
-		rendererChannel = &namedPipeRendererChannel;
-		renderer = &remoteRenderer;
-		result = SetupRawWindowsDirect2DRenderer();
-		httpClient.Stop();
-		namedPipeRendererChannel.WaitForDisconnected();
-		renderer = nullptr;
-		rendererChannel = nullptr;
-	}
-	return result;
+	return StartClient(httpClient);
 }
