@@ -11,11 +11,6 @@ using namespace vl::presentation::controls;
 
 CoreChannel* coreChannel = nullptr;
 
-void WriteErrorToRendererChannel(const WString& message)
-{
-	coreChannel->WriteErrorThreadUnsafe(message);
-}
-
 void GuiMain()
 {
 	theme::RegisterTheme(Ptr(new darkskin::Theme));
@@ -29,11 +24,11 @@ void GuiMain()
 		}
 		catch (const Exception& e)
 		{
-			WriteErrorToRendererChannel(e.Message());
+			coreChannel->WriteErrorThreadUnsafe(e.Message());
 		}
 		catch (const Error& e)
 		{
-			WriteErrorToRendererChannel(WString::Unmanaged(e.Description()));
+			coreChannel->WriteErrorThreadUnsafe(WString::Unmanaged(e.Description()));
 		}
 	}
 }
