@@ -97,7 +97,92 @@ HttpServer::~HttpServer()
 
 void HttpServer::WaitForClient()
 {
-	CHECK_FAIL(L"Not Implemented!");
+	ULONG result = NO_ERROR;
+	ULONG bytesReturned = 0;
+
+	Array<BYTE> httpRequest(sizeof(HTTP_REQUEST) + 4096);
+
+	while (true)
+	{
+		ZeroMemory(&httpRequest[0], httpRequest.Count());
+		PHTTP_REQUEST pRequest = (PHTTP_REQUEST)&httpRequest[0];
+
+		result = HttpReceiveHttpRequest(
+			httpRequestQueue,
+			HTTP_NULL_ID,
+			0,
+			pRequest,
+			(ULONG)httpRequest.Count(),
+			&bytesReturned,
+			NULL);
+
+		if (result == ERROR_MORE_DATA)
+		{
+			CHECK_FAIL(L"HttpReceiveHttpRequest failed (ERROR_MORE_DATA).");
+		}
+		CHECK_ERROR(result == NO_ERROR, L"HttpReceiveHttpRequest failed.");
+
+		if (pRequest->Verb == HttpVerbGET && pRequest->CookedUrl.pFullUrl == urlConnect)
+		{
+			ULONG bytesSent = 0;
+			HTTP_RESPONSE httpResponse;
+			HTTP_DATA_CHUNK httpResponseBody;
+			ZeroMemory(&httpResponse, sizeof(httpResponse));
+			ZeroMemory(&httpResponseBody, sizeof(httpResponseBody));
+
+			httpResponse.StatusCode = 200;
+			httpResponse.pReason = "OK";
+			httpResponse.EntityChunkCount = 1;
+			httpResponse.pEntityChunks = &httpResponseBody;
+
+			U8String body = wtou8(urlGuid);
+			httpResponseBody.DataChunkType = HttpDataChunkFromMemory;
+			httpResponseBody.FromMemory.pBuffer = (PVOID)body.Buffer();
+			httpResponseBody.FromMemory.BufferLength = (ULONG)body.Length();
+
+			char headerContentType[] = "text/plain; charset=utf8";
+			httpResponse.Headers.KnownHeaders[HttpHeaderContentType].pRawValue = headerContentType;
+			httpResponse.Headers.KnownHeaders[HttpHeaderContentType].RawValueLength = sizeof(headerContentType) - 1;
+
+			result = HttpSendHttpResponse(
+				httpRequestQueue,
+				pRequest->RequestId,
+				0,
+				&httpResponse,
+				NULL,
+				&bytesSent,
+				NULL,
+				0,
+				NULL,
+				NULL);
+			CHECK_ERROR(result == NO_ERROR, L"HttpSendResponse failed (200).");
+
+			break;
+		}
+		else
+		{
+			ULONG bytesSent = 0;
+			HTTP_RESPONSE httpResponse;
+			ZeroMemory(&httpResponse, sizeof(httpResponse));
+
+			httpResponse.StatusCode = 404;
+			httpResponse.pReason = "The first request must be /GacUIRemoting/Connect";
+
+			result = HttpSendHttpResponse(
+				httpRequestQueue,
+				pRequest->RequestId,
+				0,
+				&httpResponse,
+				NULL,
+				&bytesSent,
+				NULL,
+				0,
+				NULL,
+				NULL);
+			CHECK_ERROR(result == NO_ERROR, L"HttpSendResponse failed (404).");
+			Console::WriteLine(L"Unexpected request received: " + WString::Unmanaged(pRequest->CookedUrl.pFullUrl));
+		}
+	}
 }
 
 void HttpServer::Stop()

@@ -36,24 +36,24 @@ void GuiMain()
 template<typename TServer>
 void StartServer(TServer& server)
 {
-	CoreChannel namedPipeCoreChannel(&server);
+	CoreChannel serverCoreChannel(&server);
 
 	auto jsonParser = Ptr(new glr::json::Parser);
-	GuiRemoteJsonChannelStringSerializer channelJsonSerializer(&namedPipeCoreChannel, jsonParser);
+	GuiRemoteJsonChannelStringSerializer channelJsonSerializer(&serverCoreChannel, jsonParser);
 
 	GuiRemoteProtocolAsyncJsonChannelSerializer asyncChannelSender;
 	asyncChannelSender.Start(
 		&channelJsonSerializer,
-		[&namedPipeCoreChannel](GuiRemoteProtocolAsyncJsonChannelSerializer* channel)
+		[&serverCoreChannel](GuiRemoteProtocolAsyncJsonChannelSerializer* channel)
 		{
 			GuiRemoteProtocolFromJsonChannel channelSender(channel);
 			GuiRemoteProtocolFilter filteredProtocol(&channelSender);
 			GuiRemoteProtocolDomDiffConverter diffConverterProtocol(&filteredProtocol);
-			coreChannel = &namedPipeCoreChannel;
+			coreChannel = &serverCoreChannel;
 			SetupRemoteNativeController(&diffConverterProtocol);
 			coreChannel = nullptr;
 		},
-		[&namedPipeCoreChannel](
+		[&serverCoreChannel](
 			GuiRemoteProtocolAsyncJsonChannelSerializer::TChannelThreadProc channelThreadProc,
 			GuiRemoteProtocolAsyncJsonChannelSerializer::TUIThreadProc uiThreadProc
 			)
@@ -64,10 +64,10 @@ void StartServer(TServer& server)
 
 	Console::WriteLine(L"> Waiting for a renderer ...");
 	server.WaitForClient();
-	namedPipeCoreChannel.RendererConnectedThreadUnsafe(&asyncChannelSender);
+	serverCoreChannel.RendererConnectedThreadUnsafe(&asyncChannelSender);
 	asyncChannelSender.WaitForStopped();
 	server.Stop();
-	namedPipeCoreChannel.WaitForDisconnected();
+	serverCoreChannel.WaitForDisconnected();
 }
 
 int StartNamedPipeServer()

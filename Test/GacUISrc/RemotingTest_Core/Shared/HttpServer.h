@@ -3,7 +3,7 @@
 
 #include "ProtocolCallback.h"
 
-constexpr const wchar_t* HttpServerUrl = L"localhost:8888/GacUIRemoting";
+constexpr const wchar_t* HttpServerUrl = L"localhost:8888";
 
 /*
 * URL: /Request
@@ -12,7 +12,7 @@ constexpr const wchar_t* HttpServerUrl = L"localhost:8888/GacUIRemoting";
 * 
 * It can only be called once, all subsequence calls will be rejected.
 */
-constexpr const wchar_t* HttpServerUrl_Connect = L"/Connect";
+constexpr const wchar_t* HttpServerUrl_Connect = L"/GacUIRemoting/Connect";
 
 /*
 * URL: /Request/GUID
@@ -22,14 +22,14 @@ constexpr const wchar_t* HttpServerUrl_Connect = L"/Connect";
 * It will be pending or timeout if no request is issued.
 * If a request is issued but no living request available, it waits.
 */
-constexpr const wchar_t* HttpServerUrl_Request = L"/Request";
+constexpr const wchar_t* HttpServerUrl_Request = L"/GacUIRemoting/Request";
 
 /*
 * URL: /Response/GUID
 * To send responses or events to the server.
 * Returns nothing.
 */
-constexpr const wchar_t* HttpServerUrl_Response = L"/Response";
+constexpr const wchar_t* HttpServerUrl_Response = L"/GacUIRemoting/Response";
 
 class HttpServer : public INetworkProtocol
 {
@@ -43,6 +43,7 @@ protected:
 	HANDLE											httpRequestQueue = INVALID_HANDLE_VALUE;
 	HTTP_SERVER_SESSION_ID							httpSessionId = HTTP_NULL_ID;
 	HTTP_URL_GROUP_ID								httpUrlGroupId = HTTP_NULL_ID;
+	OVERLAPPED										overlappedRequest;
 
 public:
 	HttpServer();

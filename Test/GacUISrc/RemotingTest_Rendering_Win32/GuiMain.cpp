@@ -37,13 +37,13 @@ int StartClient(TClient& client)
 	GuiRemoteRendererSingle remoteRenderer;
 	GuiRemoteJsonChannelFromProtocol channelReceiver(&remoteRenderer);
 	GuiRemoteJsonChannelStringDeserializer channelJsonDeserializer(&channelReceiver, jsonParser);
-	RendererChannel namedPipeRendererChannel(&remoteRenderer, &client, &channelJsonDeserializer);
+	RendererChannel clientRendererChannel(&remoteRenderer, &client, &channelJsonDeserializer);
 
-	rendererChannel = &namedPipeRendererChannel;
+	rendererChannel = &clientRendererChannel;
 	renderer = &remoteRenderer;
 	int result = SetupRawWindowsDirect2DRenderer();
 	client.Stop();
-	namedPipeRendererChannel.WaitForDisconnected();
+	clientRendererChannel.WaitForDisconnected();
 	renderer = nullptr;
 	rendererChannel = nullptr;
 
