@@ -8,7 +8,7 @@ constexpr const wchar_t* HttpServerUrl = L"localhost:8888";
 /*
 * URL: /Request
 * To connect and initialize the server.
-* Returns a GUID.
+* Returns available URLs.
 * 
 * It can only be called once, all subsequence calls will be rejected.
 */

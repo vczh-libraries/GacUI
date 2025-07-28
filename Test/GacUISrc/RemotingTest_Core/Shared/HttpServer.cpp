@@ -1,5 +1,7 @@
 #include "HttpServer.h"
 
+using namespace vl::glr::json;
+
 HttpServer::HttpServer()
 {
 	{
@@ -135,12 +137,53 @@ void HttpServer::WaitForClient()
 			httpResponse.EntityChunkCount = 1;
 			httpResponse.pEntityChunks = &httpResponseBody;
 
-			U8String body = wtou8(urlGuid);
+			U8String body;
+			{
+				auto jsonObject = Ptr(new JsonObject);
+				{
+					auto jsonValue = Ptr(new JsonString);
+					jsonValue->content.value = urlRequest.Right(urlRequest.Length() - wcslen(HttpServerUrl) - 7);
+
+					auto jsonField = Ptr(new JsonObjectField);
+					jsonField->name.value = WString::Unmanaged(L"request");
+					jsonField->value = jsonValue;
+
+					jsonObject->fields.Add(jsonField);
+				}
+				{
+					auto jsonValue = Ptr(new JsonString);
+					jsonValue->content.value = urlResponse.Right(urlResponse.Length() - wcslen(HttpServerUrl) - 7);
+
+					auto jsonField = Ptr(new JsonObjectField);
+					jsonField->name.value = WString::Unmanaged(L"response");
+					jsonField->value = jsonValue;
+
+					jsonObject->fields.Add(jsonField);
+				}
+				{
+					auto jsonValue = Ptr(new JsonString);
+					jsonValue->content.value = WString::Unmanaged(L"request to wait for next request; response to send events with one optional response.");
+
+					auto jsonField = Ptr(new JsonObjectField);
+					jsonField->name.value = WString::Unmanaged(L"comments");
+					jsonField->value = jsonValue;
+
+					jsonObject->fields.Add(jsonField);
+				}
+
+				JsonFormatting formatting;
+				formatting.spaceAfterColon = true;
+				formatting.spaceAfterComma = true;
+				formatting.crlf = true;
+				formatting.compact = false;
+				formatting.indentation = L"  ";
+				body = wtou8(JsonToString(jsonObject, formatting));
+			}
 			httpResponseBody.DataChunkType = HttpDataChunkFromMemory;
 			httpResponseBody.FromMemory.pBuffer = (PVOID)body.Buffer();
 			httpResponseBody.FromMemory.BufferLength = (ULONG)body.Length();
 
-			char headerContentType[] = "text/plain; charset=utf8";
+			char headerContentType[] = "application/json; charset=utf8";
 			httpResponse.Headers.KnownHeaders[HttpHeaderContentType].pRawValue = headerContentType;
 			httpResponse.Headers.KnownHeaders[HttpHeaderContentType].RawValueLength = sizeof(headerContentType) - 1;
 
