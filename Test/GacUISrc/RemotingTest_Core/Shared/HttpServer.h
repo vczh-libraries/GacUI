@@ -45,6 +45,11 @@ protected:
 	HTTP_URL_GROUP_ID								httpUrlGroupId = HTTP_NULL_ID;
 	OVERLAPPED										overlappedRequest;
 
+	HTTP_REQUEST_ID									httpRequestIdCurrent = HTTP_NULL_ID;
+
+	HTTP_REQUEST_ID									WaitForRequest();
+	void											Send404Response(HTTP_REQUEST_ID requestId, PCSTR reason);
+	void											SendJsonResponse(HTTP_REQUEST_ID requestId, Ptr<JsonNode> jsonBody);
 public:
 	HttpServer();
 	~HttpServer();

@@ -1,6 +1,70 @@
 #include "HttpServer.h"
 
-using namespace vl::glr::json;
+HTTP_REQUEST_ID HttpServer::WaitForRequest()
+{
+	CHECK_FAIL(L"Not Implemented!");
+}
+
+void HttpServer::Send404Response(HTTP_REQUEST_ID requestId, PCSTR reason)
+{
+	ULONG bytesSent = 0;
+	HTTP_RESPONSE httpResponse;
+	ZeroMemory(&httpResponse, sizeof(httpResponse));
+
+	httpResponse.StatusCode = 404;
+	httpResponse.pReason = reason;
+
+	ULONG result = NO_ERROR;
+	result = HttpSendHttpResponse(
+		httpRequestQueue,
+		requestId,
+		0,
+		&httpResponse,
+		NULL,
+		&bytesSent,
+		NULL,
+		0,
+		NULL,
+		NULL);
+	CHECK_ERROR(result == NO_ERROR, L"HttpSendResponse failed (404).");
+}
+
+void HttpServer::SendJsonResponse(HTTP_REQUEST_ID requestId, Ptr<JsonNode> jsonBody)
+{
+	ULONG bytesSent = 0;
+	HTTP_RESPONSE httpResponse;
+	HTTP_DATA_CHUNK httpResponseBody;
+	ZeroMemory(&httpResponse, sizeof(httpResponse));
+	ZeroMemory(&httpResponseBody, sizeof(httpResponseBody));
+
+	httpResponse.StatusCode = 200;
+	httpResponse.pReason = "OK";
+	httpResponse.EntityChunkCount = 1;
+	httpResponse.pEntityChunks = &httpResponseBody;
+
+	U8String body = wtou8(JsonToString(jsonBody));
+	httpResponseBody.DataChunkType = HttpDataChunkFromMemory;
+	httpResponseBody.FromMemory.pBuffer = (PVOID)body.Buffer();
+	httpResponseBody.FromMemory.BufferLength = (ULONG)body.Length();
+
+	char headerContentType[] = "application/json; charset=utf8";
+	httpResponse.Headers.KnownHeaders[HttpHeaderContentType].pRawValue = headerContentType;
+	httpResponse.Headers.KnownHeaders[HttpHeaderContentType].RawValueLength = sizeof(headerContentType) - 1;
+
+	ULONG result = NO_ERROR;
+	result = HttpSendHttpResponse(
+		httpRequestQueue,
+		requestId,
+		0,
+		&httpResponse,
+		NULL,
+		&bytesSent,
+		NULL,
+		0,
+		NULL,
+		NULL);
+	CHECK_ERROR(result == NO_ERROR, L"HttpSendResponse failed (200).");
+}
 
 HttpServer::HttpServer()
 {
@@ -126,103 +190,44 @@ void HttpServer::WaitForClient()
 
 		if (pRequest->Verb == HttpVerbGET && pRequest->CookedUrl.pFullUrl == urlConnect)
 		{
-			ULONG bytesSent = 0;
-			HTTP_RESPONSE httpResponse;
-			HTTP_DATA_CHUNK httpResponseBody;
-			ZeroMemory(&httpResponse, sizeof(httpResponse));
-			ZeroMemory(&httpResponseBody, sizeof(httpResponseBody));
-
-			httpResponse.StatusCode = 200;
-			httpResponse.pReason = "OK";
-			httpResponse.EntityChunkCount = 1;
-			httpResponse.pEntityChunks = &httpResponseBody;
-
-			U8String body;
+			auto jsonObject = Ptr(new JsonObject);
 			{
-				auto jsonObject = Ptr(new JsonObject);
-				{
-					auto jsonValue = Ptr(new JsonString);
-					jsonValue->content.value = urlRequest.Right(urlRequest.Length() - wcslen(HttpServerUrl) - 7);
+				auto jsonValue = Ptr(new JsonString);
+				jsonValue->content.value = urlRequest.Right(urlRequest.Length() - wcslen(HttpServerUrl) - 7);
 
-					auto jsonField = Ptr(new JsonObjectField);
-					jsonField->name.value = WString::Unmanaged(L"request");
-					jsonField->value = jsonValue;
+				auto jsonField = Ptr(new JsonObjectField);
+				jsonField->name.value = WString::Unmanaged(L"request");
+				jsonField->value = jsonValue;
 
-					jsonObject->fields.Add(jsonField);
-				}
-				{
-					auto jsonValue = Ptr(new JsonString);
-					jsonValue->content.value = urlResponse.Right(urlResponse.Length() - wcslen(HttpServerUrl) - 7);
-
-					auto jsonField = Ptr(new JsonObjectField);
-					jsonField->name.value = WString::Unmanaged(L"response");
-					jsonField->value = jsonValue;
-
-					jsonObject->fields.Add(jsonField);
-				}
-				{
-					auto jsonValue = Ptr(new JsonString);
-					jsonValue->content.value = WString::Unmanaged(L"request to wait for next request; response to send events with one optional response.");
-
-					auto jsonField = Ptr(new JsonObjectField);
-					jsonField->name.value = WString::Unmanaged(L"comments");
-					jsonField->value = jsonValue;
-
-					jsonObject->fields.Add(jsonField);
-				}
-
-				JsonFormatting formatting;
-				formatting.spaceAfterColon = true;
-				formatting.spaceAfterComma = true;
-				formatting.crlf = true;
-				formatting.compact = false;
-				formatting.indentation = L"  ";
-				body = wtou8(JsonToString(jsonObject, formatting));
+				jsonObject->fields.Add(jsonField);
 			}
-			httpResponseBody.DataChunkType = HttpDataChunkFromMemory;
-			httpResponseBody.FromMemory.pBuffer = (PVOID)body.Buffer();
-			httpResponseBody.FromMemory.BufferLength = (ULONG)body.Length();
+			{
+				auto jsonValue = Ptr(new JsonString);
+				jsonValue->content.value = urlResponse.Right(urlResponse.Length() - wcslen(HttpServerUrl) - 7);
 
-			char headerContentType[] = "application/json; charset=utf8";
-			httpResponse.Headers.KnownHeaders[HttpHeaderContentType].pRawValue = headerContentType;
-			httpResponse.Headers.KnownHeaders[HttpHeaderContentType].RawValueLength = sizeof(headerContentType) - 1;
+				auto jsonField = Ptr(new JsonObjectField);
+				jsonField->name.value = WString::Unmanaged(L"response");
+				jsonField->value = jsonValue;
 
-			result = HttpSendHttpResponse(
-				httpRequestQueue,
-				pRequest->RequestId,
-				0,
-				&httpResponse,
-				NULL,
-				&bytesSent,
-				NULL,
-				0,
-				NULL,
-				NULL);
-			CHECK_ERROR(result == NO_ERROR, L"HttpSendResponse failed (200).");
+				jsonObject->fields.Add(jsonField);
+			}
+			{
+				auto jsonValue = Ptr(new JsonString);
+				jsonValue->content.value = WString::Unmanaged(L"request to wait for next request; response to send events with one optional response.");
 
+				auto jsonField = Ptr(new JsonObjectField);
+				jsonField->name.value = WString::Unmanaged(L"comments");
+				jsonField->value = jsonValue;
+
+				jsonObject->fields.Add(jsonField);
+			}
+
+			SendJsonResponse(pRequest->RequestId, jsonObject);
 			break;
 		}
 		else
 		{
-			ULONG bytesSent = 0;
-			HTTP_RESPONSE httpResponse;
-			ZeroMemory(&httpResponse, sizeof(httpResponse));
-
-			httpResponse.StatusCode = 404;
-			httpResponse.pReason = "The first request must be /GacUIRemoting/Connect";
-
-			result = HttpSendHttpResponse(
-				httpRequestQueue,
-				pRequest->RequestId,
-				0,
-				&httpResponse,
-				NULL,
-				&bytesSent,
-				NULL,
-				0,
-				NULL,
-				NULL);
-			CHECK_ERROR(result == NO_ERROR, L"HttpSendResponse failed (404).");
+			Send404Response(pRequest->RequestId, "The first request must be /GacUIRemoting/Connect");
 			Console::WriteLine(L"Unexpected request received: " + WString::Unmanaged(pRequest->CookedUrl.pFullUrl));
 		}
 	}
@@ -255,10 +260,32 @@ void HttpServer::BeginReadingLoopUnsafe()
 
 void HttpServer::SendStringArray(vint count, List<WString>& strs)
 {
-	CHECK_FAIL(L"Not Implemented!");
+	auto requestId = WaitForRequest();
+	if (requestId != HTTP_NULL_ID)
+	{
+		auto jsonArray = Ptr(new JsonArray);
+		for (vint i = 0; i < count; i++)
+		{
+			auto jsonValue = Ptr(new JsonString);
+			jsonValue->content.value = strs[i];
+			jsonArray->items.Add(jsonValue);
+		}
+
+		SendJsonResponse(requestId, jsonArray);
+	}
 }
 
 void HttpServer::SendSingleString(const WString& str)
 {
-	CHECK_FAIL(L"Not Implemented!");
+	auto requestId = WaitForRequest();
+	if (requestId != HTTP_NULL_ID)
+	{
+		auto jsonValue = Ptr(new JsonString);
+		jsonValue->content.value = str;
+
+		auto jsonArray = Ptr(new JsonArray);
+		jsonArray->items.Add(jsonValue);
+
+		SendJsonResponse(requestId, jsonArray);
+	}
 }

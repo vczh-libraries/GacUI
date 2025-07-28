@@ -13,6 +13,7 @@
 using namespace vl;
 using namespace vl::console;
 using namespace vl::collections;
+using namespace vl::glr::json;
 
 class INetworkProtocolCallback : public virtual Interface
 {
