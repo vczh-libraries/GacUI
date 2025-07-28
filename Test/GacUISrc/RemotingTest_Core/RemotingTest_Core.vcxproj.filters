@@ -36,6 +36,9 @@
     <ClCompile Include="Shared\HttpServer.cpp">
       <Filter>Shared</Filter>
     </ClCompile>
+    <ClCompile Include="Shared\ProtocolCallback.cpp">
+      <Filter>Shared</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Shared\NamedPipeShared.h">

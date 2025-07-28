@@ -2,7 +2,6 @@
 #define VCZH_REMOTINGTEST_SHARED_NAMEDPIPESHARED
 
 #include "ProtocolCallback.h"
-#include <Windows.h>
 
 constexpr const wchar_t* NamedPipeId = L"\\\\.\\pipe\\GacUIRemoteProtocol";
 

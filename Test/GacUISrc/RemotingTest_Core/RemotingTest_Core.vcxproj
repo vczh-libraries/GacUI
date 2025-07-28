@@ -162,6 +162,7 @@
     <ClCompile Include="Shared\HttpClient.cpp" />
     <ClCompile Include="Shared\HttpServer.cpp" />
     <ClCompile Include="Shared\NamedPipeShared.cpp" />
+    <ClCompile Include="Shared\ProtocolCallback.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Lib_GacUI\Lib_GacUI.vcxproj">

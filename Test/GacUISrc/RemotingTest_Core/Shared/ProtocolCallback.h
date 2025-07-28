@@ -2,6 +2,13 @@
 #define VCZH_REMOTINGTEST_SHARED_PROTOCOLCALLBACK
 
 #include <VlppOS.h>
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif
+#include <windows.h>
+#include <http.h>
+#define RPC_USE_NATIVE_WCHAR
+#include <rpc.h>
 
 using namespace vl;
 using namespace vl::console;

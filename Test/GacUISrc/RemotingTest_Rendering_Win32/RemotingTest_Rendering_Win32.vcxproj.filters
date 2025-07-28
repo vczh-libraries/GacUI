@@ -36,6 +36,9 @@
     <ClCompile Include="GuiMain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\RemotingTest_Core\Shared\ProtocolCallback.cpp">
+      <Filter>Shared</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\RemotingTest_Core\Shared\NamedPipeShared.h">

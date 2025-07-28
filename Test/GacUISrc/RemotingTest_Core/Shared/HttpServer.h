@@ -1,5 +1,5 @@
-#ifndef VCZH_REMOTINGTEST_SHARED_HTTPSERVERSHARED
-#define VCZH_REMOTINGTEST_SHARED_HTTPSERVERSHARED
+#ifndef VCZH_REMOTINGTEST_SHARED_HTTPSERVER
+#define VCZH_REMOTINGTEST_SHARED_HTTPSERVER
 
 #include "ProtocolCallback.h"
 
@@ -35,6 +35,14 @@ class HttpServer : public INetworkProtocol
 {
 protected:
 	INetworkProtocolCallback*						callback = nullptr;
+	WString											urlGuid;
+	WString											urlConnect;
+	WString											urlRequest;
+	WString											urlResponse;
+
+	HANDLE											httpRequestQueue = INVALID_HANDLE_VALUE;
+	HTTP_SERVER_SESSION_ID							httpSessionId = HTTP_NULL_ID;
+	HTTP_URL_GROUP_ID								httpUrlGroupId = HTTP_NULL_ID;
 
 public:
 	HttpServer();
