@@ -4,107 +4,187 @@
 HttpServer (Reading)
 ***********************************************************************/
 
-void HttpServer::BeginReadingUnsafe()
+void HttpServer::OnHttpConnectionBrokenUnsafe()
 {
-	if (httpRequestIdReading == HTTP_NULL_ID)
+	switch (state)
 	{
-		streamReadFile.SeekFromBegin(0);
+	case State::WaitForClientConnection:
+		WaitForClient_OnHttpConnectionBrokenUnsafe();
+		break;
+	case State::Running:
+		BeginReadingLoopUnsafe_OnHttpConnectionBrokenUnsafe();
+		break;
+	default:
+		CHECK_FAIL(L"Unexpected HTTP request.");
 	}
 }
 
-void HttpServer::SubmitReadBufferUnsafe(vint bytes)
+void HttpServer::OnHttpRequestReceivedUnsafe(PHTTP_REQUEST pRequest)
 {
-	if(httpRequestIdReading == HTTP_NULL_ID)
+	switch (state)
 	{
-		PHTTP_REQUEST pRequest = (PHTTP_REQUEST)&bufferReadFile[0];
-		httpRequestIdReading = pRequest->RequestId;
+	case State::WaitForClientConnection:
+		WaitForClient_OnHttpRequestReceivedUnsafe(pRequest);
+		break;
+	case State::Running:
+		BeginReadingLoopUnsafe_OnHttpRequestReceivedUnsafe(pRequest);
+		break;
+	default:
+		CHECK_FAIL(L"Unexpected HTTP request.");
 	}
-	streamReadFile.Write(&bufferReadFile[0], bytes);
 }
 
-void HttpServer::EndReadingUnsafe()
+void HttpServer::ListenToHttpRequest()
 {
-	httpRequestIdReading = HTTP_NULL_ID;
-	PHTTP_REQUEST pRequest = (PHTTP_REQUEST)&bufferReadFile[0];
+	ResetEvent(hEventRequest);
+	ZeroMemory(&overlappedRequest, sizeof(overlappedRequest));
+	overlappedRequest.hEvent = hEventRequest;
 
-	if (pRequest->Verb == HttpVerbGET && pRequest->CookedUrl.pFullUrl == urlConnect)
+	ZeroMemory(&bufferRequest[0], sizeof(HTTP_REQUEST));
+	PHTTP_REQUEST pRequest = (PHTTP_REQUEST)&bufferRequest[0];
+
+	ULONG result = HttpReceiveHttpRequest(
+		httpRequestQueue,
+		HTTP_NULL_ID,
+		0,
+		pRequest,
+		(ULONG)bufferRequest.Count(),
+		NULL,
+		&overlappedRequest);
+
+	if (result == ERROR_CONNECTION_INVALID)
 	{
-		Send404Response(pRequest->RequestId, "Subsequent connection to GacUI Core is denied.");
+		OnHttpConnectionBrokenUnsafe();
 		return;
 	}
+	CHECK_ERROR(result == ERROR_IO_PENDING, L"HttpReceiveHttpRequest(Overlapped) failed on unexpected result.");
 
-	if (pRequest->Verb == HttpVerbPOST && pRequest->CookedUrl.pFullUrl == urlRequest)
-	{
-		CHECK_FAIL(L"Not Implemented!");
-	}
+	RegisterWaitForSingleObject(
+		&hWaitHandleRequest,
+		hEventRequest,
+		[](PVOID lpParameter, BOOLEAN TimerOrWaitFired)
+		{
+			auto self = (HttpServer*)lpParameter;
+			UnregisterWait(self->hWaitHandleRequest);
+			self->hWaitHandleRequest = INVALID_HANDLE_VALUE;
 
-	if (pRequest->Verb == HttpVerbPOST && pRequest->CookedUrl.pFullUrl == urlResponse)
+			DWORD read = 0;
+			BOOL result = GetOverlappedResult(self->httpRequestQueue, &self->overlappedRequest, &read, FALSE);
+			if (result == TRUE)
+			{
+				PHTTP_REQUEST pRequest = (PHTTP_REQUEST)&self->bufferRequest[0];
+				self->OnHttpRequestReceivedUnsafe(pRequest);
+			}
+			else
+			{
+				DWORD error = GetLastError();
+				if (error == ERROR_CONNECTION_INVALID)
+				{
+					self->OnHttpConnectionBrokenUnsafe();
+					return;
+				}
+				CHECK_ERROR(error == ERROR_MORE_DATA, L"GetOverlappedResult(Request) failed on unexpected GetLastError.");
+				CHECK_ERROR(self->bufferRequest.Count() < (vint)read, L"GetOverlappedResult(Request) failed on unexpected read size.");
+
+				PHTTP_REQUEST pRequest = (PHTTP_REQUEST)&self->bufferRequest[0];
+				HTTP_REQUEST_ID httpRequestIdReading = pRequest->RequestId;
+				self->bufferRequest.Resize((vint)read);
+				ZeroMemory(&self->bufferRequest[0], sizeof(HTTP_REQUEST));
+
+				ULONG bytesReturned = 0;
+				ULONG result = HttpReceiveHttpRequest(
+					self->httpRequestQueue,
+					httpRequestIdReading,
+					0,
+					pRequest,
+					(ULONG)self->bufferRequest.Count(),
+					&bytesReturned,
+					NULL);
+
+				if (result == ERROR_CONNECTION_INVALID)
+				{
+					self->OnHttpConnectionBrokenUnsafe();
+					return;
+				}
+				CHECK_ERROR(result == NO_ERROR, L"HttpReceiveHttpRequest(Request) failed on unexpected result.");
+				self->OnHttpRequestReceivedUnsafe(pRequest);
+			}
+			self->BeginReadingLoopUnsafe();
+		},
+		this,
+		INFINITE,
+		WT_EXECUTEONLYONCE);
+}
+
+/***********************************************************************
+HttpServer (WaitForClient)
+***********************************************************************/
+
+void HttpServer::WaitForClient_OnHttpConnectionBrokenUnsafe()
+{
+	CHECK_FAIL(L"HTTP server stopped while waiting for client connection.");
+}
+
+void HttpServer::WaitForClient_OnHttpRequestReceivedUnsafe(PHTTP_REQUEST pRequest)
+{
+	if (pRequest->Verb == HttpVerbGET && pRequest->CookedUrl.pFullUrl == urlConnect)
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		Send404Response(pRequest->RequestId, "The first request must be /GacUIRemoting/Connect");
 	}
+	else
+	{
+		Send404Response(pRequest->RequestId, "The first request must be /GacUIRemoting/Connect");
+		Console::WriteLine(L"Unexpected request received: " + WString::Unmanaged(pRequest->CookedUrl.pFullUrl));
+		ListenToHttpRequest();
+	}
+}
+
+void HttpServer::WaitForClient()
+{
+	CHECK_ERROR(state == State::Ready, L"WaitForClient() can only be called for once.");
+
+	state = State::WaitForClientConnection;
+	ResetEvent(hEventWaitForClient);
+	ListenToHttpRequest();
+	WaitForSingleObject(hEventWaitForClient, INFINITE);
+
+	CHECK_ERROR(state == State::Running, L"WaitForClient() failed to connect to a client.");
+}
+
+/***********************************************************************
+HttpServer (BeginReadingLoopUnsafe)
+***********************************************************************/
+
+void HttpServer::BeginReadingLoopUnsafe_OnHttpConnectionBrokenUnsafe()
+{
+	state = State::Stopping;
+	callback->OnReadStoppedThreadUnsafe();
+}
+
+void HttpServer::BeginReadingLoopUnsafe_OnHttpRequestReceivedUnsafe(PHTTP_REQUEST pRequest)
+{
+	if (pRequest->Verb == HttpVerbGET && pRequest->CookedUrl.pFullUrl == urlConnect)
+	{
+		Send404Response(pRequest->RequestId, "Subsequential requests to /GacUIRemoting/Connect is denied");
+	}
+	else if (pRequest->Verb == HttpVerbPOST && pRequest->CookedUrl.pFullUrl == urlRequest)
+	{
+		Send404Response(pRequest->RequestId, "Not Implemented");
+	}
+	else if (pRequest->Verb == HttpVerbPOST && pRequest->CookedUrl.pFullUrl == urlResponse)
+	{
+		Send404Response(pRequest->RequestId, "Not Implemented");
+	}
+	else
+	{
+		Send404Response(pRequest->RequestId, "Unknown URL");
+	}
+	ListenToHttpRequest();
 }
 
 void HttpServer::BeginReadingLoopUnsafe()
 {
-RESTART_LOOP:
-	{
-		BeginReadingUnsafe();
-		ResetEvent(hEventReadFile);
-		ZeroMemory(&overlappedReadFile, sizeof(overlappedReadFile));
-		overlappedReadFile.hEvent = hEventReadFile;
-
-		ZeroMemory(&bufferReadFile[0], sizeof(HTTP_REQUEST));
-		PHTTP_REQUEST pRequest = (PHTTP_REQUEST)&bufferReadFile[0];
-
-		ULONG result = HttpReceiveHttpRequest(
-			httpRequestQueue,
-			httpRequestIdReading,
-			0,
-			pRequest,
-			(ULONG)bufferReadFile.Count(),
-			NULL,
-			&overlappedReadFile);
-
-		if (result == ERROR_CONNECTION_INVALID)
-		{
-			callback->OnReadStoppedThreadUnsafe();
-			return;
-		}
-		CHECK_ERROR(result == ERROR_IO_PENDING, L"HttpReceiveHttpRequest failed on unexpected result.");
-
-		RegisterWaitForSingleObject(
-			&hWaitHandleReadFile,
-			hEventReadFile,
-			[](PVOID lpParameter, BOOLEAN TimerOrWaitFired)
-			{
-				auto self = (HttpServer*)lpParameter;
-				UnregisterWait(self->hWaitHandleReadFile);
-				self->hWaitHandleReadFile = INVALID_HANDLE_VALUE;
-
-				DWORD read = 0;
-				BOOL result = GetOverlappedResult(self->httpRequestQueue, &self->overlappedReadFile, &read, FALSE);
-				if (result == TRUE)
-				{
-					self->SubmitReadBufferUnsafe((vint)read);
-					self->EndReadingUnsafe();
-				}
-				else
-				{
-					DWORD error = GetLastError();
-					if (error == ERROR_CONNECTION_INVALID)
-					{
-						self->callback->OnReadStoppedThreadUnsafe();
-						return;
-					}
-					CHECK_ERROR(error == ERROR_MORE_DATA, L"GetOverlappedResult(ReadFile) failed on unexpected GetLastError.");
-					self->SubmitReadBufferUnsafe((vint)read);
-				}
-				self->BeginReadingLoopUnsafe();
-			},
-			this,
-			INFINITE,
-			WT_EXECUTEONLYONCE);
-	}
+	ListenToHttpRequest();
 }
 
 /***********************************************************************
@@ -214,10 +294,13 @@ HttpServer
 ***********************************************************************/
 
 HttpServer::HttpServer()
-	: bufferReadFile(HttpBodyBlockSize)
+	: bufferRequest(HttpBodyInitSize)
 {
-	hEventReadFile = CreateEvent(NULL, TRUE, TRUE, NULL);
-	CHECK_ERROR(hEventReadFile != NULL, L"HttpServer initialization failed on CreateEvent(hEventReadFile).");
+	hEventRequest = CreateEvent(NULL, TRUE, TRUE, NULL);
+	CHECK_ERROR(hEventRequest != NULL, L"HttpServer initialization failed on CreateEvent(hEventRequest).");
+
+	hEventWaitForClient = CreateEvent(NULL, TRUE, TRUE, NULL);
+	CHECK_ERROR(hEventWaitForClient != NULL, L"HttpServer initialization failed on CreateEvent(hEventWaitForClient).");
 
 	{
 		RPC_STATUS status = -1;
@@ -310,77 +393,8 @@ HttpServer::HttpServer()
 HttpServer::~HttpServer()
 {
 	Stop();
-	CloseHandle(hEventReadFile);
-}
-
-void HttpServer::WaitForClient()
-{
-	ULONG result = NO_ERROR;
-	ULONG bytesReturned = 0;
-
-	while (true)
-	{
-		ZeroMemory(&bufferReadFile[0], sizeof(HTTP_REQUEST));
-		PHTTP_REQUEST pRequest = (PHTTP_REQUEST)&bufferReadFile[0];
-
-		result = HttpReceiveHttpRequest(
-			httpRequestQueue,
-			HTTP_NULL_ID,
-			0,
-			pRequest,
-			(ULONG)bufferReadFile.Count(),
-			&bytesReturned,
-			NULL);
-
-		if (result == ERROR_MORE_DATA)
-		{
-			CHECK_FAIL(L"HttpReceiveHttpRequest failed (ERROR_MORE_DATA).");
-		}
-		CHECK_ERROR(result == NO_ERROR, L"HttpReceiveHttpRequest failed.");
-
-		if (pRequest->Verb == HttpVerbGET && pRequest->CookedUrl.pFullUrl == urlConnect)
-		{
-			auto jsonObject = Ptr(new JsonObject);
-			{
-				auto jsonValue = Ptr(new JsonString);
-				jsonValue->content.value = urlRequest.Right(urlRequest.Length() - wcslen(HttpServerUrl) - 7);
-
-				auto jsonField = Ptr(new JsonObjectField);
-				jsonField->name.value = WString::Unmanaged(L"request");
-				jsonField->value = jsonValue;
-
-				jsonObject->fields.Add(jsonField);
-			}
-			{
-				auto jsonValue = Ptr(new JsonString);
-				jsonValue->content.value = urlResponse.Right(urlResponse.Length() - wcslen(HttpServerUrl) - 7);
-
-				auto jsonField = Ptr(new JsonObjectField);
-				jsonField->name.value = WString::Unmanaged(L"response");
-				jsonField->value = jsonValue;
-
-				jsonObject->fields.Add(jsonField);
-			}
-			{
-				auto jsonValue = Ptr(new JsonString);
-				jsonValue->content.value = WString::Unmanaged(L"request to wait for next request; response to send events with one optional response.");
-
-				auto jsonField = Ptr(new JsonObjectField);
-				jsonField->name.value = WString::Unmanaged(L"comments");
-				jsonField->value = jsonValue;
-
-				jsonObject->fields.Add(jsonField);
-			}
-
-			SendJsonResponse(pRequest->RequestId, jsonObject);
-			break;
-		}
-		else
-		{
-			Send404Response(pRequest->RequestId, "The first request must be /GacUIRemoting/Connect");
-			Console::WriteLine(L"Unexpected request received: " + WString::Unmanaged(pRequest->CookedUrl.pFullUrl));
-		}
-	}
+	CloseHandle(hEventRequest);
+	CloseHandle(hEventWaitForClient);
 }
 
 void HttpServer::Stop()

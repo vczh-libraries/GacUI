@@ -33,8 +33,8 @@ constexpr const wchar_t* HttpServerUrl_Response = L"/GacUIRemoting/Response";
 
 class HttpServer : public INetworkProtocol
 {
-	// Just a random number
-	static constexpr vint32_t						HttpBodyBlockSize = 1024;
+	static constexpr vint32_t						HttpBodyInitSize = 1024;
+
 protected:
 	INetworkProtocolCallback*						callback = nullptr;
 	WString											urlGuid;
@@ -45,19 +45,61 @@ protected:
 	HANDLE											httpRequestQueue = INVALID_HANDLE_VALUE;
 	HTTP_SERVER_SESSION_ID							httpSessionId = HTTP_NULL_ID;
 	HTTP_URL_GROUP_ID								httpUrlGroupId = HTTP_NULL_ID;
-	OVERLAPPED										overlappedRequest;
+
+/***********************************************************************
+HttpServer (Reading)
+***********************************************************************/
 
 protected:
-	HTTP_REQUEST_ID									httpRequestIdReading = HTTP_NULL_ID;
-	Array<BYTE>										bufferReadFile;
-	stream::MemoryStream							streamReadFile;
-	HANDLE											hWaitHandleReadFile = INVALID_HANDLE_VALUE;
-	OVERLAPPED										overlappedReadFile;
-	HANDLE											hEventReadFile = INVALID_HANDLE_VALUE;
 
-	void											BeginReadingUnsafe();
-	void											SubmitReadBufferUnsafe(vint bytes);
-	void											EndReadingUnsafe();
+	enum class State
+	{
+		Ready,
+		WaitForClientConnection,
+		Running,
+		Stopping,
+	};
+
+	State											state = State::Ready;
+
+	Array<BYTE>										bufferRequest;
+	HANDLE											hWaitHandleRequest = INVALID_HANDLE_VALUE;
+	OVERLAPPED										overlappedRequest;
+	HANDLE											hEventRequest = INVALID_HANDLE_VALUE;
+
+	void											ListenToHttpRequest();
+	void											OnHttpConnectionBrokenUnsafe();
+	void											OnHttpRequestReceivedUnsafe(PHTTP_REQUEST pRequest);
+
+/***********************************************************************
+HttpServer (WaitForClient)
+***********************************************************************/
+
+protected:
+	HANDLE											hEventWaitForClient = INVALID_HANDLE_VALUE;
+
+	void											WaitForClient_OnHttpConnectionBrokenUnsafe();
+	void											WaitForClient_OnHttpRequestReceivedUnsafe(PHTTP_REQUEST pRequest);
+
+public:
+
+	void											WaitForClient();
+
+/***********************************************************************
+HttpServer (BeginReadingLoopUnsafe)
+***********************************************************************/
+
+protected:
+
+	void											BeginReadingLoopUnsafe_OnHttpConnectionBrokenUnsafe();
+	void											BeginReadingLoopUnsafe_OnHttpRequestReceivedUnsafe(PHTTP_REQUEST pRequest);
+
+public:
+	void											BeginReadingLoopUnsafe() override;
+
+/***********************************************************************
+HttpServer (Writing)
+***********************************************************************/
 
 protected:
 	HTTP_REQUEST_ID									httpRequestIdCurrent = HTTP_NULL_ID;
@@ -65,15 +107,18 @@ protected:
 	HTTP_REQUEST_ID									WaitForRequest();
 	void											Send404Response(HTTP_REQUEST_ID requestId, PCSTR reason);
 	void											SendJsonResponse(HTTP_REQUEST_ID requestId, Ptr<JsonNode> jsonBody);
+
+/***********************************************************************
+HttpServer
+***********************************************************************/
+
 public:
 	HttpServer();
 	~HttpServer();
 
-	void											WaitForClient();
 	void											Stop();
 
 	void											InstallCallback(INetworkProtocolCallback* _callback) override;
-	void											BeginReadingLoopUnsafe() override;
 	void											SendStringArray(vint count, List<WString>& strs) override;
 	void											SendSingleString(const WString& str) override;
 };
