@@ -108,8 +108,8 @@ protected:
 	HTTP_REQUEST_ID									httpRequestIdCurrent = HTTP_NULL_ID;
 
 	HTTP_REQUEST_ID									WaitForRequest();
-	void											Send404Response(HTTP_REQUEST_ID requestId, PCSTR reason);
-	void											SendJsonResponse(HTTP_REQUEST_ID requestId, Ptr<JsonNode> jsonBody);
+	static void										Send404Response(HANDLE httpRequestQueue, HTTP_REQUEST_ID requestId, PCSTR reason);
+	static void										SendJsonResponse(HANDLE httpRequestQueue, HTTP_REQUEST_ID requestId, Ptr<JsonNode> jsonBody);
 
 /***********************************************************************
 HttpServer

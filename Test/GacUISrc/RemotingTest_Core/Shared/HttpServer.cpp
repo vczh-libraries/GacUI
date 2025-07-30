@@ -221,13 +221,13 @@ void HttpServer::WaitForClient_OnHttpRequestReceivedUnsafe(PHTTP_REQUEST pReques
 			jsonObject->fields.Add(jsonField);
 		}
 
-		SendJsonResponse(pRequest->RequestId, jsonObject);
+		SendJsonResponse(httpRequestQueue, pRequest->RequestId, jsonObject);
 		state = State::Running;
 		SetEvent(hEventWaitForClient);
 	}
 	else
 	{
-		Send404Response(pRequest->RequestId, "The first request must be /GacUIRemoting/Connect");
+		Send404Response(httpRequestQueue, pRequest->RequestId, "The first request must be /GacUIRemoting/Connect");
 		Console::WriteLine(L"Unexpected request received: " + WString::Unmanaged(pRequest->CookedUrl.pFullUrl));
 		ListenToHttpRequest();
 	}
@@ -259,19 +259,19 @@ void HttpServer::BeginReadingLoopUnsafe_OnHttpRequestReceivedUnsafe(PHTTP_REQUES
 {
 	if (pRequest->Verb == HttpVerbGET && pRequest->CookedUrl.pFullUrl == urlConnect)
 	{
-		Send404Response(pRequest->RequestId, "Subsequential requests to /GacUIRemoting/Connect is denied");
+		Send404Response(httpRequestQueue, pRequest->RequestId, "Subsequential requests to /GacUIRemoting/Connect is denied");
 	}
 	else if (pRequest->Verb == HttpVerbPOST && pRequest->CookedUrl.pFullUrl == urlRequest)
 	{
-		Send404Response(pRequest->RequestId, "Not Implemented");
+		Send404Response(httpRequestQueue, pRequest->RequestId, "Not Implemented");
 	}
 	else if (pRequest->Verb == HttpVerbPOST && pRequest->CookedUrl.pFullUrl == urlResponse)
 	{
-		Send404Response(pRequest->RequestId, "Not Implemented");
+		Send404Response(httpRequestQueue, pRequest->RequestId, "Not Implemented");
 	}
 	else
 	{
-		Send404Response(pRequest->RequestId, "Unknown URL");
+		Send404Response(httpRequestQueue, pRequest->RequestId, "Unknown URL");
 	}
 	ListenToHttpRequest();
 }
@@ -290,7 +290,7 @@ HTTP_REQUEST_ID HttpServer::WaitForRequest()
 	CHECK_FAIL(L"Not Implemented!");
 }
 
-void HttpServer::Send404Response(HTTP_REQUEST_ID requestId, PCSTR reason)
+void HttpServer::Send404Response(HANDLE httpRequestQueue, HTTP_REQUEST_ID requestId, PCSTR reason)
 {
 	ULONG bytesSent = 0;
 	HTTP_RESPONSE httpResponse;
@@ -314,7 +314,7 @@ void HttpServer::Send404Response(HTTP_REQUEST_ID requestId, PCSTR reason)
 	CHECK_ERROR(result == NO_ERROR, L"HttpSendResponse failed (404).");
 }
 
-void HttpServer::SendJsonResponse(HTTP_REQUEST_ID requestId, Ptr<JsonNode> jsonBody)
+void HttpServer::SendJsonResponse(HANDLE httpRequestQueue, HTTP_REQUEST_ID requestId, Ptr<JsonNode> jsonBody)
 {
 	ULONG bytesSent = 0;
 	HTTP_RESPONSE httpResponse;
@@ -364,7 +364,7 @@ void HttpServer::SendStringArray(vint count, List<WString>& strs)
 			jsonArray->items.Add(jsonValue);
 		}
 
-		SendJsonResponse(requestId, jsonArray);
+		SendJsonResponse(httpRequestQueue, requestId, jsonArray);
 	}
 }
 
@@ -379,7 +379,7 @@ void HttpServer::SendSingleString(const WString& str)
 		auto jsonArray = Ptr(new JsonArray);
 		jsonArray->items.Add(jsonValue);
 
-		SendJsonResponse(requestId, jsonArray);
+		SendJsonResponse(httpRequestQueue, requestId, jsonArray);
 	}
 }
 
