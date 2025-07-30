@@ -70,7 +70,8 @@ protected:
 	void											OnHttpConnectionBrokenUnsafe();
 	void											OnHttpRequestReceivedUnsafe(PHTTP_REQUEST pRequest);
 	ULONG											ListenToHttpRequest_Init(OVERLAPPED* overlapped);
-	ULONG											ListenToHttpRequest_MoreData(vint expectedBufferSize);
+	ULONG											ListenToHttpRequest_InitMoreData(ULONG* bytesReturned);
+	ULONG											ListenToHttpRequest_OverlappedMoreData(vint expectedBufferSize);
 	void											ListenToHttpRequest();
 
 /***********************************************************************

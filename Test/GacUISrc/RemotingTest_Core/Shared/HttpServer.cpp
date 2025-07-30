@@ -36,8 +36,8 @@ void HttpServer::OnHttpRequestReceivedUnsafe(PHTTP_REQUEST pRequest)
 
 ULONG HttpServer::ListenToHttpRequest_Init(OVERLAPPED* overlapped)
 {
-	ZeroMemory(&bufferRequest[0], sizeof(HTTP_REQUEST));
 	PHTTP_REQUEST pRequest = (PHTTP_REQUEST)&bufferRequest[0];
+	ZeroMemory(&bufferRequest[0], sizeof(HTTP_REQUEST));
 
 	ULONG result = HttpReceiveHttpRequest(
 		httpRequestQueue,
@@ -51,7 +51,25 @@ ULONG HttpServer::ListenToHttpRequest_Init(OVERLAPPED* overlapped)
 	return result;
 }
 
-ULONG HttpServer::ListenToHttpRequest_MoreData(vint expectedBufferSize)
+ULONG HttpServer::ListenToHttpRequest_InitMoreData(ULONG* bytesReturned)
+{
+	PHTTP_REQUEST pRequest = (PHTTP_REQUEST)&bufferRequest[0];
+	HTTP_REQUEST_ID httpRequestIdReading = pRequest->RequestId;
+	ZeroMemory(&bufferRequest[0], sizeof(HTTP_REQUEST));
+
+	ULONG result = HttpReceiveHttpRequest(
+		httpRequestQueue,
+		httpRequestIdReading,
+		0,
+		pRequest,
+		(ULONG)bufferRequest.Count(),
+		bytesReturned,
+		NULL);
+
+	return result;
+}
+
+ULONG HttpServer::ListenToHttpRequest_OverlappedMoreData(vint expectedBufferSize)
 {
 	PHTTP_REQUEST pRequest = (PHTTP_REQUEST)&bufferRequest[0];
 	HTTP_REQUEST_ID httpRequestIdReading = pRequest->RequestId;
@@ -86,6 +104,31 @@ void HttpServer::ListenToHttpRequest()
 		OnHttpConnectionBrokenUnsafe();
 		return;
 	}
+
+	if (result == ERROR_MORE_DATA)
+	{
+		ULONG bytesReturned = 0;
+		result = ListenToHttpRequest_InitMoreData(&bytesReturned);
+		if (result == ERROR_CONNECTION_INVALID)
+		{
+			OnHttpConnectionBrokenUnsafe();
+			return;
+		}
+		CHECK_ERROR(result == ERROR_MORE_DATA, L"HttpReceiveHttpRequest(Request) failed on unexpected result.");
+
+		result = ListenToHttpRequest_OverlappedMoreData((vint)bytesReturned);
+		if (result == ERROR_CONNECTION_INVALID)
+		{
+			OnHttpConnectionBrokenUnsafe();
+			return;
+		}
+		CHECK_ERROR(result == NO_ERROR, L"HttpReceiveHttpRequest(Request) failed on unexpected result.");
+
+		PHTTP_REQUEST pRequest = (PHTTP_REQUEST)&bufferRequest[0];
+		OnHttpRequestReceivedUnsafe(pRequest);
+		return;
+	}
+
 	CHECK_ERROR(result == ERROR_IO_PENDING, L"HttpReceiveHttpRequest(Overlapped) failed on unexpected result.");
 
 	RegisterWaitForSingleObject(
@@ -115,7 +158,7 @@ void HttpServer::ListenToHttpRequest()
 				CHECK_ERROR(error == ERROR_MORE_DATA, L"GetOverlappedResult(Request) failed on unexpected GetLastError.");
 				CHECK_ERROR(self->bufferRequest.Count() < (vint)read, L"GetOverlappedResult(Request) failed on unexpected read size.");
 
-				ULONG result = self->ListenToHttpRequest_MoreData((vint)read);
+				ULONG result = self->ListenToHttpRequest_OverlappedMoreData((vint)read);
 				if (result == ERROR_CONNECTION_INVALID)
 				{
 					self->OnHttpConnectionBrokenUnsafe();
