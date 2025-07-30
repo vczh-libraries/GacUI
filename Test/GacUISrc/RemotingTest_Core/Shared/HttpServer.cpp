@@ -36,14 +36,13 @@ void HttpServer::OnHttpRequestReceivedUnsafe(PHTTP_REQUEST pRequest)
 
 ULONG HttpServer::ListenToHttpRequest_Init(OVERLAPPED* overlapped)
 {
-	PHTTP_REQUEST pRequest = (PHTTP_REQUEST)&bufferRequest[0];
 	ZeroMemory(&bufferRequest[0], sizeof(HTTP_REQUEST));
 
 	ULONG result = HttpReceiveHttpRequest(
 		httpRequestQueue,
 		HTTP_NULL_ID,
 		0,
-		pRequest,
+		(PHTTP_REQUEST)&bufferRequest[0],
 		(ULONG)bufferRequest.Count(),
 		NULL,
 		overlapped);
@@ -53,15 +52,13 @@ ULONG HttpServer::ListenToHttpRequest_Init(OVERLAPPED* overlapped)
 
 ULONG HttpServer::ListenToHttpRequest_InitMoreData(ULONG* bytesReturned)
 {
-	PHTTP_REQUEST pRequest = (PHTTP_REQUEST)&bufferRequest[0];
-	HTTP_REQUEST_ID httpRequestIdReading = pRequest->RequestId;
-	ZeroMemory(&bufferRequest[0], sizeof(HTTP_REQUEST));
+	HTTP_REQUEST_ID httpRequestIdReading = ((PHTTP_REQUEST)&bufferRequest[0])->RequestId;
 
 	ULONG result = HttpReceiveHttpRequest(
 		httpRequestQueue,
 		httpRequestIdReading,
 		0,
-		pRequest,
+		(PHTTP_REQUEST)&bufferRequest[0],
 		(ULONG)bufferRequest.Count(),
 		bytesReturned,
 		NULL);
@@ -71,17 +68,15 @@ ULONG HttpServer::ListenToHttpRequest_InitMoreData(ULONG* bytesReturned)
 
 ULONG HttpServer::ListenToHttpRequest_OverlappedMoreData(vint expectedBufferSize)
 {
-	PHTTP_REQUEST pRequest = (PHTTP_REQUEST)&bufferRequest[0];
-	HTTP_REQUEST_ID httpRequestIdReading = pRequest->RequestId;
+	HTTP_REQUEST_ID httpRequestIdReading = ((PHTTP_REQUEST)&bufferRequest[0])->RequestId;
 	bufferRequest.Resize(expectedBufferSize);
-	ZeroMemory(&bufferRequest[0], sizeof(HTTP_REQUEST));
 
 	ULONG bytesReturned = 0;
 	ULONG result = HttpReceiveHttpRequest(
 		httpRequestQueue,
 		httpRequestIdReading,
 		0,
-		pRequest,
+		(PHTTP_REQUEST)&bufferRequest[0],
 		(ULONG)bufferRequest.Count(),
 		&bytesReturned,
 		NULL);
@@ -102,6 +97,12 @@ void HttpServer::ListenToHttpRequest()
 	if (result == ERROR_CONNECTION_INVALID)
 	{
 		OnHttpConnectionBrokenUnsafe();
+		return;
+	}
+
+	if (result == NO_ERROR)
+	{
+		OnHttpRequestReceivedUnsafe(pRequest);
 		return;
 	}
 
@@ -169,7 +170,6 @@ void HttpServer::ListenToHttpRequest()
 				PHTTP_REQUEST pRequest = (PHTTP_REQUEST)&self->bufferRequest[0];
 				self->OnHttpRequestReceivedUnsafe(pRequest);
 			}
-			self->BeginReadingLoopUnsafe();
 		},
 		this,
 		INFINITE,
