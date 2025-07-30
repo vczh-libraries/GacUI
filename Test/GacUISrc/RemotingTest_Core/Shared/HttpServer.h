@@ -6,7 +6,7 @@
 constexpr const wchar_t* HttpServerUrl = L"localhost:8888";
 
 /*
-* URL: /Request
+* GET: /Request
 * To connect and initialize the server.
 * Returns available URLs.
 * 
@@ -15,7 +15,7 @@ constexpr const wchar_t* HttpServerUrl = L"localhost:8888";
 constexpr const wchar_t* HttpServerUrl_Connect = L"/GacUIRemoting/Connect";
 
 /*
-* URL: /Request/GUID
+* POST: /Request/GUID
 * Client should always maintain a living request on the server.
 * 
 * Returns only when a request is issued.
@@ -25,7 +25,7 @@ constexpr const wchar_t* HttpServerUrl_Connect = L"/GacUIRemoting/Connect";
 constexpr const wchar_t* HttpServerUrl_Request = L"/GacUIRemoting/Request";
 
 /*
-* URL: /Response/GUID
+* POST: /Response/GUID
 * To send responses or events to the server.
 * Returns nothing.
 */
@@ -33,6 +33,8 @@ constexpr const wchar_t* HttpServerUrl_Response = L"/GacUIRemoting/Response";
 
 class HttpServer : public INetworkProtocol
 {
+	// Just a random number
+	static constexpr vint32_t						HttpBodyBlockSize = 1024;
 protected:
 	INetworkProtocolCallback*						callback = nullptr;
 	WString											urlGuid;
@@ -45,6 +47,19 @@ protected:
 	HTTP_URL_GROUP_ID								httpUrlGroupId = HTTP_NULL_ID;
 	OVERLAPPED										overlappedRequest;
 
+protected:
+	HTTP_REQUEST_ID									httpRequestIdReading = HTTP_NULL_ID;
+	Array<BYTE>										bufferReadFile;
+	stream::MemoryStream							streamReadFile;
+	HANDLE											hWaitHandleReadFile = INVALID_HANDLE_VALUE;
+	OVERLAPPED										overlappedReadFile;
+	HANDLE											hEventReadFile = INVALID_HANDLE_VALUE;
+
+	void											BeginReadingUnsafe();
+	void											SubmitReadBufferUnsafe(vint bytes);
+	void											EndReadingUnsafe();
+
+protected:
 	HTTP_REQUEST_ID									httpRequestIdCurrent = HTTP_NULL_ID;
 
 	HTTP_REQUEST_ID									WaitForRequest();

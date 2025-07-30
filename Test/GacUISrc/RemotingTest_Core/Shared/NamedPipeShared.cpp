@@ -4,10 +4,6 @@ using namespace vl;
 using namespace vl::console;
 using namespace vl::collections;
 
-
-// NamedPipe doesn't support a single message that is larger than 64K
-static constexpr vint32_t						MaxMessageSize = 65536;
-
 /***********************************************************************
 NamedPipeSharedReading
 ***********************************************************************/
@@ -139,7 +135,7 @@ NamedPipeSharedReading::NamedPipeSharedReading()
 	: bufferReadFile(MaxMessageSize)
 {
 	hEventReadFile = CreateEvent(NULL, TRUE, TRUE, NULL);
-	CHECK_ERROR(hEventReadFile != NULL, L"NamedPipeCoreChannel initialization failed on CreateEvent(hEventReadFile).");
+	CHECK_ERROR(hEventReadFile != NULL, L"NamedPipeShared initialization failed on CreateEvent(hEventReadFile).");
 }
 
 NamedPipeSharedReading::~NamedPipeSharedReading()

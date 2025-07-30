@@ -8,6 +8,9 @@ constexpr const wchar_t* NamedPipeId = L"\\\\.\\pipe\\GacUIRemoteProtocol";
 class NamedPipeSharedCommon : public INetworkProtocol
 {
 protected:
+	// NamedPipe doesn't support a single message that is larger than 64K
+	static constexpr vint32_t						MaxMessageSize = 65536;
+
 	INetworkProtocolCallback*						callback = nullptr;
 	HANDLE											hPipe = INVALID_HANDLE_VALUE;
 };
