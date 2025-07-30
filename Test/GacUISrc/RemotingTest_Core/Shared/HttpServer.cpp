@@ -129,7 +129,41 @@ void HttpServer::WaitForClient_OnHttpRequestReceivedUnsafe(PHTTP_REQUEST pReques
 {
 	if (pRequest->Verb == HttpVerbGET && pRequest->CookedUrl.pFullUrl == urlConnect)
 	{
-		Send404Response(pRequest->RequestId, "The first request must be /GacUIRemoting/Connect");
+		auto jsonObject = Ptr(new JsonObject);
+		{
+			auto jsonValue = Ptr(new JsonString);
+			jsonValue->content.value = urlRequest.Right(urlRequest.Length() - wcslen(HttpServerUrl) - 7);
+
+			auto jsonField = Ptr(new JsonObjectField);
+			jsonField->name.value = WString::Unmanaged(L"request");
+			jsonField->value = jsonValue;
+
+			jsonObject->fields.Add(jsonField);
+		}
+		{
+			auto jsonValue = Ptr(new JsonString);
+			jsonValue->content.value = urlResponse.Right(urlResponse.Length() - wcslen(HttpServerUrl) - 7);
+
+			auto jsonField = Ptr(new JsonObjectField);
+			jsonField->name.value = WString::Unmanaged(L"response");
+			jsonField->value = jsonValue;
+
+			jsonObject->fields.Add(jsonField);
+		}
+		{
+			auto jsonValue = Ptr(new JsonString);
+			jsonValue->content.value = WString::Unmanaged(L"request to wait for next request; response to send events with one optional response.");
+
+			auto jsonField = Ptr(new JsonObjectField);
+			jsonField->name.value = WString::Unmanaged(L"comments");
+			jsonField->value = jsonValue;
+
+			jsonObject->fields.Add(jsonField);
+		}
+
+		SendJsonResponse(pRequest->RequestId, jsonObject);
+		state = State::Running;
+		SetEvent(hEventWaitForClient);
 	}
 	else
 	{
