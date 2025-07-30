@@ -67,9 +67,11 @@ protected:
 	OVERLAPPED										overlappedRequest;
 	HANDLE											hEventRequest = INVALID_HANDLE_VALUE;
 
-	void											ListenToHttpRequest();
 	void											OnHttpConnectionBrokenUnsafe();
 	void											OnHttpRequestReceivedUnsafe(PHTTP_REQUEST pRequest);
+	ULONG											ListenToHttpRequest_Init(OVERLAPPED* overlapped);
+	ULONG											ListenToHttpRequest_MoreData(vint expectedBufferSize);
+	void											ListenToHttpRequest();
 
 /***********************************************************************
 HttpServer (WaitForClient)
