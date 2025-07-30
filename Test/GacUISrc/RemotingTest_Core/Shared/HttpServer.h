@@ -107,9 +107,15 @@ HttpServer (Writing)
 protected:
 	HTTP_REQUEST_ID									httpRequestIdCurrent = HTTP_NULL_ID;
 
-	HTTP_REQUEST_ID									WaitForRequest();
 	static void										Send404Response(HANDLE httpRequestQueue, HTTP_REQUEST_ID requestId, PCSTR reason);
 	static void										SendJsonResponse(HANDLE httpRequestQueue, HTTP_REQUEST_ID requestId, Ptr<JsonNode> jsonBody);
+
+	HTTP_REQUEST_ID									WaitForRequest();
+
+public:
+
+	void											SendStringArray(vint count, List<WString>& strs) override;
+	void											SendSingleString(const WString& str) override;
 
 /***********************************************************************
 HttpServer
@@ -122,8 +128,6 @@ public:
 	void											Stop();
 
 	void											InstallCallback(INetworkProtocolCallback* _callback) override;
-	void											SendStringArray(vint count, List<WString>& strs) override;
-	void											SendSingleString(const WString& str) override;
 };
 
 #endif

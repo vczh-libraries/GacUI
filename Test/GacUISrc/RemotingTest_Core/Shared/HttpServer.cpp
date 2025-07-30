@@ -285,11 +285,6 @@ void HttpServer::BeginReadingLoopUnsafe()
 HttpServer (Writing)
 ***********************************************************************/
 
-HTTP_REQUEST_ID HttpServer::WaitForRequest()
-{
-	CHECK_FAIL(L"Not Implemented!");
-}
-
 void HttpServer::Send404Response(HANDLE httpRequestQueue, HTTP_REQUEST_ID requestId, PCSTR reason)
 {
 	ULONG bytesSent = 0;
@@ -349,6 +344,11 @@ void HttpServer::SendJsonResponse(HANDLE httpRequestQueue, HTTP_REQUEST_ID reque
 		NULL,
 		NULL);
 	CHECK_ERROR(result == NO_ERROR, L"HttpSendResponse failed (200).");
+}
+
+HTTP_REQUEST_ID HttpServer::WaitForRequest()
+{
+	CHECK_FAIL(L"Not Implemented!");
 }
 
 void HttpServer::SendStringArray(vint count, List<WString>& strs)
