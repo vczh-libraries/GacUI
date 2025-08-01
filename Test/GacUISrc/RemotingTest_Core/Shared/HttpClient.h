@@ -6,6 +6,16 @@
 class HttpClient : public INetworkProtocol
 {
 protected:
+
+	enum class State
+	{
+		Ready,
+		WaitForServerConnection,
+		Running,
+		Stopping,
+	};
+
+	State											state = State::Ready;
 	INetworkProtocolCallback*						callback = nullptr;
 
 	HINTERNET										httpSession = NULL;
@@ -27,6 +37,13 @@ public:
 HttpClient (WaitForServer)
 ***********************************************************************/
 
+protected:
+
+	HANDLE											hEventWaitForServer = INVALID_HANDLE_VALUE;
+	DWORD											dwWaitForServerInternetStatus = 0;
+
+public:
+
 	void											WaitForServer();
 
 /***********************************************************************
@@ -45,6 +62,10 @@ public:
 /***********************************************************************
 HttpClient
 ***********************************************************************/
+
+protected:
+
+	void											WinHttpStatusCallback(DWORD dwInternetStatus, LPVOID lpvStatusInformation, DWORD dwStatusInformationLength);
 
 public:
 	HttpClient();

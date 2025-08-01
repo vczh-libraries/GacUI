@@ -15,7 +15,38 @@ HttpClient (WaitForServer)
 
 void HttpClient::WaitForServer()
 {
-	CHECK_FAIL(L"Not Implemented!");
+	DWORD lastError = 0;
+	state = State::WaitForServerConnection;
+	LPCWSTR acceptTypes[] = { L"application/json; charset=utf8", NULL };
+	BOOL httpResult = FALSE;
+
+	HINTERNET httpRequest = WinHttpOpenRequest(
+		httpConnection,
+		L"GET",
+		L"/GacUIRemoting/Connect",
+		NULL,
+		WINHTTP_NO_REFERER,
+		acceptTypes,
+		WINHTTP_FLAG_REFRESH);
+	lastError = GetLastError();
+	CHECK_ERROR(httpRequest != NULL, L"WinHttpOpenRequest failed.");
+
+	dwWaitForServerInternetStatus = 0;
+	ResetEvent(hEventWaitForServer);
+	httpResult = WinHttpSendRequest(
+		httpRequest,
+		WINHTTP_NO_ADDITIONAL_HEADERS,
+		0,
+		WINHTTP_NO_REQUEST_DATA,
+		0,
+		0,
+		NULL);
+	lastError = GetLastError();
+	CHECK_ERROR(httpResult == TRUE, L"WinHttpSendRequest failed.");
+	WaitForSingleObject(hEventWaitForServer, INFINITE);
+	CHECK_ERROR(dwWaitForServerInternetStatus == WINHTTP_CALLBACK_STATUS_SENDREQUEST_COMPLETE, L"WinHttpSendRequest failed.");
+
+	WinHttpCloseHandle(httpRequest);
 }
 
 /***********************************************************************
@@ -52,14 +83,36 @@ void HttpClient::SendSingleString(const WString& str)
 HttpClient
 ***********************************************************************/
 
+void HttpClient::WinHttpStatusCallback(DWORD dwInternetStatus, LPVOID lpvStatusInformation, DWORD dwStatusInformationLength)
+{
+	if (state == State::WaitForServerConnection)
+	{
+		switch (dwInternetStatus)
+		{
+		case WINHTTP_CALLBACK_STATUS_SENDREQUEST_COMPLETE:
+		case WINHTTP_CALLBACK_STATUS_REQUEST_ERROR:
+			{
+				dwWaitForServerInternetStatus = dwInternetStatus;
+				SetEvent(hEventWaitForServer);
+			}
+			break;
+		}
+	}
+}
+
 HttpClient::HttpClient()
 {
+	DWORD lastError = 0;
+	hEventWaitForServer = CreateEvent(NULL, FALSE, TRUE, NULL);
+	CHECK_ERROR(hEventWaitForServer != NULL, L"HttpClient initialization failed on CreateEvent(hEventWaitForServer).");
+
 	httpSession = WinHttpOpen(
 		L"RemotingTest_Rendering_Win32.exe",
 		WINHTTP_ACCESS_TYPE_NO_PROXY,
-		NULL,
-		NULL,
+		WINHTTP_NO_PROXY_NAME,
+		WINHTTP_NO_PROXY_BYPASS,
 		WINHTTP_FLAG_ASYNC);
+	lastError = GetLastError();
 	CHECK_ERROR(httpSession != NULL, L"WinHttpOpen failed.");
 
 	httpConnection = WinHttpConnect(
@@ -67,12 +120,26 @@ HttpClient::HttpClient()
 		L"localhost",
 		8888,
 		0);
+	lastError = GetLastError();
 	CHECK_ERROR(httpConnection != NULL, L"WinHttpConnect failed.");
+
+	WINHTTP_STATUS_CALLBACK previousCallback = WinHttpSetStatusCallback(
+		httpSession,
+		(WINHTTP_STATUS_CALLBACK)[](HINTERNET hInternet, DWORD_PTR dwContext, DWORD dwInternetStatus, LPVOID lpvStatusInformation, DWORD dwStatusInformationLength) -> void
+		{
+			auto self = reinterpret_cast<HttpClient*>(dwContext);
+			self->WinHttpStatusCallback(dwInternetStatus, lpvStatusInformation, dwStatusInformationLength);
+		},
+		WINHTTP_CALLBACK_FLAG_ALL_NOTIFICATIONS,
+		reinterpret_cast<DWORD_PTR>(this));
+	lastError = GetLastError();
+	CHECK_ERROR(previousCallback == NULL, L"WinHttpSetStatusCallback failed.");
 }
 
 HttpClient::~HttpClient()
 {
 	Stop();
+	CloseHandle(hEventWaitForServer);
 }
 
 void HttpClient::Stop()
@@ -80,6 +147,11 @@ void HttpClient::Stop()
 	if (httpSession != NULL)
 	{
 		WinHttpCloseHandle(httpConnection);
+		WinHttpSetStatusCallback(
+			httpSession,
+			NULL,
+			WINHTTP_CALLBACK_FLAG_ALL_NOTIFICATIONS,
+			NULL);
 		WinHttpCloseHandle(httpSession);
 
 		httpConnection = NULL;
