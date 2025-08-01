@@ -60,6 +60,6 @@ int StartNamedPipeClient()
 int StartHttpClient()
 {
 	HttpClient httpClient;
-	httpClient.WaitForClient();
+	httpClient.WaitForServer();
 	return StartClient(httpClient);
 }

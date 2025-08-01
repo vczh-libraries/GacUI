@@ -8,17 +8,45 @@ class HttpClient : public INetworkProtocol
 protected:
 	INetworkProtocolCallback*						callback = nullptr;
 
+/***********************************************************************
+HttpClient (Reading)
+***********************************************************************/
+
+protected:
+
+public:
+
+	void											BeginReadingLoopUnsafe() override;
+
+/***********************************************************************
+HttpClient (WaitForServer)
+***********************************************************************/
+
+	void											WaitForServer();
+
+/***********************************************************************
+HttpClient (Writing)
+***********************************************************************/
+
+protected:
+
+	void											SendJsonRequest(Ptr<JsonNode> jsonBody);
+
+public:
+
+	void											SendStringArray(vint count, List<WString>& strs) override;
+	void											SendSingleString(const WString& str) override;
+
+/***********************************************************************
+HttpClient
+***********************************************************************/
+
 public:
 	HttpClient();
 	~HttpClient();
-
-	void											WaitForClient();
 	void											Stop();
 
 	void											InstallCallback(INetworkProtocolCallback* _callback) override;
-	void											BeginReadingLoopUnsafe() override;
-	void											SendStringArray(vint count, List<WString>& strs) override;
-	void											SendSingleString(const WString& str) override;
 };
 
 #endif
