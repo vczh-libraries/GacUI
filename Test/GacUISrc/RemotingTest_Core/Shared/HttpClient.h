@@ -42,6 +42,8 @@ protected:
 	HANDLE											hEventWaitForServer = INVALID_HANDLE_VALUE;
 	DWORD											dwWaitForServerInternetStatus = 0;
 
+	void											WinHttpStatusCallback_WaitForServer(DWORD dwInternetStatus, LPVOID lpvStatusInformation, DWORD dwStatusInformationLength);
+
 public:
 
 	void											WaitForServer();
