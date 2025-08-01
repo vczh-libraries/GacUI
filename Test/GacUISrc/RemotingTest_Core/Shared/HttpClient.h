@@ -16,6 +16,7 @@ protected:
 	};
 
 	State											state = State::Ready;
+	glr::json::Parser								jsonParser;
 	INetworkProtocolCallback*						callback = nullptr;
 
 	HINTERNET										httpSession = NULL;
@@ -40,7 +41,9 @@ HttpClient (WaitForServer)
 protected:
 
 	HANDLE											hEventWaitForServer = INVALID_HANDLE_VALUE;
-	DWORD											dwWaitForServerInternetStatus = 0;
+	DWORD											dwInternetStatus_WaitForServer = 0;
+	LPVOID											lpvStatusInformation_WaitForServer = NULL;
+	DWORD											dwStatusInformationLength_WaitForServer = 0;
 
 	void											WinHttpStatusCallback_WaitForServer(DWORD dwInternetStatus, LPVOID lpvStatusInformation, DWORD dwStatusInformationLength);
 

@@ -19,9 +19,12 @@ void HttpClient::WinHttpStatusCallback_WaitForServer(DWORD dwInternetStatus, LPV
 	{
 	case WINHTTP_CALLBACK_STATUS_SENDREQUEST_COMPLETE:
 	case WINHTTP_CALLBACK_STATUS_HEADERS_AVAILABLE:
+	case WINHTTP_CALLBACK_STATUS_READ_COMPLETE:
 	case WINHTTP_CALLBACK_STATUS_REQUEST_ERROR:
 		{
-			dwWaitForServerInternetStatus = dwInternetStatus;
+			dwInternetStatus_WaitForServer = dwInternetStatus;
+			lpvStatusInformation_WaitForServer = lpvStatusInformation;
+			dwStatusInformationLength_WaitForServer = dwStatusInformationLength;
 			SetEvent(hEventWaitForServer);
 		}
 		break;
@@ -46,7 +49,6 @@ void HttpClient::WaitForServer()
 	lastError = GetLastError();
 	CHECK_ERROR(httpRequest != NULL, L"WinHttpOpenRequest failed.");
 	{
-		dwWaitForServerInternetStatus = 0;
 		ResetEvent(hEventWaitForServer);
 		httpResult = WinHttpSendRequest(
 			httpRequest,
@@ -59,16 +61,15 @@ void HttpClient::WaitForServer()
 		lastError = GetLastError();
 		CHECK_ERROR(httpResult == TRUE, L"WinHttpSendRequest failed.");
 		WaitForSingleObject(hEventWaitForServer, INFINITE);
-		CHECK_ERROR(dwWaitForServerInternetStatus == WINHTTP_CALLBACK_STATUS_SENDREQUEST_COMPLETE, L"WinHttpSendRequest failed.");
+		CHECK_ERROR(dwInternetStatus_WaitForServer == WINHTTP_CALLBACK_STATUS_SENDREQUEST_COMPLETE, L"WinHttpSendRequest failed to complete.");
 	}
 	{
-		dwWaitForServerInternetStatus = 0;
 		ResetEvent(hEventWaitForServer);
 		httpResult = WinHttpReceiveResponse(httpRequest, NULL);
 		lastError = GetLastError();
 		CHECK_ERROR(httpResult == TRUE, L"WinHttpReceiveResponse failed.");
 		WaitForSingleObject(hEventWaitForServer, INFINITE);
-		CHECK_ERROR(dwWaitForServerInternetStatus == WINHTTP_CALLBACK_STATUS_HEADERS_AVAILABLE, L"WinHttpSendRequest failed.");
+		CHECK_ERROR(dwInternetStatus_WaitForServer == WINHTTP_CALLBACK_STATUS_HEADERS_AVAILABLE, L"WinHttpSendRequest failed to complete.");
 	}
 
 	DWORD statusCode = 0;
@@ -100,6 +101,7 @@ void HttpClient::WaitForServer()
 
 		Array<wchar_t> headerBuffer(headerLength + 1);
 		ZeroMemory(&headerBuffer[0], headerBuffer.Count() * sizeof(wchar_t));
+
 		httpResult = WinHttpQueryHeaders(
 			httpRequest,
 			WINHTTP_QUERY_CONTENT_TYPE,
@@ -119,6 +121,46 @@ void HttpClient::WaitForServer()
 			&dataLength);
 		lastError = GetLastError();
 		CHECK_ERROR(httpResult == TRUE, L"WinHttpQueryDataAvailable failed.");
+	}
+	{
+		Array<char8_t> bodyBuffer(dataLength + 1);
+		ZeroMemory(&bodyBuffer[0], bodyBuffer.Count() * sizeof(char8_t));
+
+		ResetEvent(hEventWaitForServer);
+		httpResult = WinHttpReadData(
+			httpRequest,
+			&bodyBuffer[0],
+			dataLength,
+			NULL);
+		lastError = GetLastError();
+		CHECK_ERROR(httpResult == TRUE, L"WinHttpReadData failed.");
+		WaitForSingleObject(hEventWaitForServer, INFINITE);
+		CHECK_ERROR(dwInternetStatus_WaitForServer == WINHTTP_CALLBACK_STATUS_READ_COMPLETE, L"WinHttpReadData failed to complete.");
+		CHECK_ERROR(dwStatusInformationLength_WaitForServer == dataLength, L"WinHttpReadData failed to read full data.");
+
+		U8String bodyUtf8 = U8String::Unmanaged(&bodyBuffer[0]);
+		auto bodyJson = JsonParse(u8tow(bodyUtf8), jsonParser);
+		auto bodyObject = bodyJson.Cast<JsonObject>();
+		CHECK_ERROR(bodyObject, L"/Connect response body must be a JSON object.");
+
+		for (auto field : bodyObject->fields)
+		{
+			if (field->name.value == L"request")
+			{
+				auto value = field->value.Cast<JsonString>();
+				CHECK_ERROR(value, L"/Connect response body must contain a \"request\" field with a string value.");
+				urlRequest = value->content.value;
+			}
+			else if (field->name.value == L"response")
+			{
+				auto value = field->value.Cast<JsonString>();
+				CHECK_ERROR(value, L"/Connect response body must contain a \"response\" field with a string value.");
+				urlResponse = value->content.value;
+			}
+		}
+
+		CHECK_ERROR(urlRequest != L"", L"/Connect response body missing the \"request\" field.");
+		CHECK_ERROR(urlResponse != L"", L"/Connect response body missing the \"response\" field.");
 	}
 	WinHttpCloseHandle(httpRequest);
 }
