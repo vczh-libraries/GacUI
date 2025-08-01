@@ -105,13 +105,17 @@ HttpServer (Writing)
 ***********************************************************************/
 
 protected:
-	HTTP_REQUEST_ID									httpRequestIdCurrent = HTTP_NULL_ID;
+	SpinLock										pendingRequestLock;
+	HTTP_REQUEST_ID									httpPendingRequestId = HTTP_NULL_ID;
+	Ptr<JsonArray>									pendingRequestToSend;
 
 	static void										Send404Response(HANDLE httpRequestQueue, HTTP_REQUEST_ID requestId, PCSTR reason);
-	static void										SendJsonResponse(HANDLE httpRequestQueue, HTTP_REQUEST_ID requestId, Ptr<JsonNode> jsonBody);
+	static ULONG									SendJsonResponse(HANDLE httpRequestQueue, HTTP_REQUEST_ID requestId, Ptr<JsonNode> jsonBody);
 
-	HTTP_REQUEST_ID									WaitForRequest();
-
+	// All following functions must be called inside SPIN_LOCK(pendingRequestLock)
+	void											OnNewHttpRequestForPendingRequest(HTTP_REQUEST_ID httpRequestId);
+	void											BeginSubmitPendingRequest();
+	void											EndSubmitPendingRequest();
 public:
 
 	void											SendStringArray(vint count, List<WString>& strs) override;

@@ -115,7 +115,7 @@ void HttpServer::ListenToHttpRequest()
 			OnHttpConnectionBrokenUnsafe();
 			return;
 		}
-		CHECK_ERROR(result == ERROR_MORE_DATA, L"HttpReceiveHttpRequest(Request) failed on unexpected result.");
+		CHECK_ERROR(result == ERROR_MORE_DATA, L"HttpReceiveHttpRequest(#1) failed on unexpected result.");
 
 		result = ListenToHttpRequest_OverlappedMoreData((vint)bytesReturned);
 		if (result == ERROR_CONNECTION_INVALID)
@@ -123,14 +123,14 @@ void HttpServer::ListenToHttpRequest()
 			OnHttpConnectionBrokenUnsafe();
 			return;
 		}
-		CHECK_ERROR(result == NO_ERROR, L"HttpReceiveHttpRequest(Request) failed on unexpected result.");
+		CHECK_ERROR(result == NO_ERROR, L"HttpReceiveHttpRequest(#2) failed on unexpected result.");
 
 		PHTTP_REQUEST pRequest = (PHTTP_REQUEST)&bufferRequest[0];
 		OnHttpRequestReceivedUnsafe(pRequest);
 		return;
 	}
 
-	CHECK_ERROR(result == ERROR_IO_PENDING, L"HttpReceiveHttpRequest(Overlapped) failed on unexpected result.");
+	CHECK_ERROR(result == ERROR_IO_PENDING, L"HttpReceiveHttpRequest(#3) failed on unexpected result.");
 
 	RegisterWaitForSingleObject(
 		&hWaitHandleRequest,
@@ -156,8 +156,8 @@ void HttpServer::ListenToHttpRequest()
 					self->OnHttpConnectionBrokenUnsafe();
 					return;
 				}
-				CHECK_ERROR(error == ERROR_MORE_DATA, L"GetOverlappedResult(Request) failed on unexpected GetLastError.");
-				CHECK_ERROR(self->bufferRequest.Count() < (vint)read, L"GetOverlappedResult(Request) failed on unexpected read size.");
+				CHECK_ERROR(error == ERROR_MORE_DATA, L"GetOverlappedResult(#4) failed on unexpected GetLastError.");
+				CHECK_ERROR(self->bufferRequest.Count() < (vint)read, L"GetOverlappedResult(#5) failed on unexpected read size.");
 
 				ULONG result = self->ListenToHttpRequest_OverlappedMoreData((vint)read);
 				if (result == ERROR_CONNECTION_INVALID)
@@ -165,7 +165,7 @@ void HttpServer::ListenToHttpRequest()
 					self->OnHttpConnectionBrokenUnsafe();
 					return;
 				}
-				CHECK_ERROR(result == NO_ERROR, L"HttpReceiveHttpRequest(Request) failed on unexpected result.");
+				CHECK_ERROR(result == NO_ERROR, L"HttpReceiveHttpRequest(#6) failed on unexpected result.");
 
 				PHTTP_REQUEST pRequest = (PHTTP_REQUEST)&self->bufferRequest[0];
 				self->OnHttpRequestReceivedUnsafe(pRequest);
@@ -221,7 +221,8 @@ void HttpServer::WaitForClient_OnHttpRequestReceivedUnsafe(PHTTP_REQUEST pReques
 			jsonObject->fields.Add(jsonField);
 		}
 
-		SendJsonResponse(httpRequestQueue, pRequest->RequestId, jsonObject);
+		ULONG result = SendJsonResponse(httpRequestQueue, pRequest->RequestId, jsonObject);
+		CHECK_ERROR(result == NO_ERROR, L"HttpSendHttpResponse failed for establishing a connection.");
 		state = State::Running;
 		SetEvent(hEventWaitForClient);
 	}
@@ -263,7 +264,10 @@ void HttpServer::BeginReadingLoopUnsafe_OnHttpRequestReceivedUnsafe(PHTTP_REQUES
 	}
 	else if (pRequest->Verb == HttpVerbPOST && pRequest->CookedUrl.pFullUrl == urlRequest)
 	{
-		Send404Response(httpRequestQueue, pRequest->RequestId, "Not Implemented");
+		SPIN_LOCK(pendingRequestLock)
+		{
+			OnNewHttpRequestForPendingRequest(pRequest->RequestId);
+		}
 	}
 	else if (pRequest->Verb == HttpVerbPOST && pRequest->CookedUrl.pFullUrl == urlResponse)
 	{
@@ -306,10 +310,10 @@ void HttpServer::Send404Response(HANDLE httpRequestQueue, HTTP_REQUEST_ID reques
 		0,
 		NULL,
 		NULL);
-	CHECK_ERROR(result == NO_ERROR, L"HttpSendResponse failed (404).");
+	CHECK_ERROR(result == NO_ERROR, L"HttpSendHttpResponse failed (404).");
 }
 
-void HttpServer::SendJsonResponse(HANDLE httpRequestQueue, HTTP_REQUEST_ID requestId, Ptr<JsonNode> jsonBody)
+ULONG HttpServer::SendJsonResponse(HANDLE httpRequestQueue, HTTP_REQUEST_ID requestId, Ptr<JsonNode> jsonBody)
 {
 	ULONG bytesSent = 0;
 	HTTP_RESPONSE httpResponse;
@@ -343,43 +347,80 @@ void HttpServer::SendJsonResponse(HANDLE httpRequestQueue, HTTP_REQUEST_ID reque
 		0,
 		NULL,
 		NULL);
-	CHECK_ERROR(result == NO_ERROR, L"HttpSendResponse failed (200).");
+	return result;
 }
 
-HTTP_REQUEST_ID HttpServer::WaitForRequest()
+void HttpServer::OnNewHttpRequestForPendingRequest(HTTP_REQUEST_ID httpRequestId)
 {
-	CHECK_FAIL(L"Not Implemented!");
+	if (httpPendingRequestId != HTTP_NULL_ID)
+	{
+		ULONG result = HttpCancelHttpRequest(
+			httpRequestQueue,
+			httpPendingRequestId,
+			NULL);
+		CHECK_ERROR(result == NO_ERROR || result == ERROR_CONNECTION_INVALID, L"HttpCancelHttpRequest failed for canceling outdated /Request.");
+	}
+	httpPendingRequestId = httpRequestId;
+	if (pendingRequestToSend)
+	{
+		ULONG result = SendJsonResponse(httpRequestQueue, httpPendingRequestId, pendingRequestToSend);
+		CHECK_ERROR(result == NO_ERROR, L"HttpSendHttpResponse failed for responding /Request.");
+	}
+}
+
+void HttpServer::BeginSubmitPendingRequest()
+{
+	if (!pendingRequestToSend)
+	{
+		pendingRequestToSend = Ptr(new JsonArray);
+	}
+}
+
+void HttpServer::EndSubmitPendingRequest()
+{
+	if (httpPendingRequestId != HTTP_NULL_ID && pendingRequestToSend)
+	{
+		ULONG result = SendJsonResponse(httpRequestQueue, httpPendingRequestId, pendingRequestToSend);
+		if (result == NO_ERROR)
+		{
+			httpPendingRequestId = HTTP_NULL_ID;
+			pendingRequestToSend = nullptr;
+		}
+		else if (result == ERROR_CONNECTION_INVALID)
+		{
+			httpPendingRequestId = HTTP_NULL_ID;
+		}
+		else
+		{
+			CHECK_FAIL(L"HttpSendHttpResponse failed for responding /Request.");
+		}
+	}
 }
 
 void HttpServer::SendStringArray(vint count, List<WString>& strs)
 {
-	auto requestId = WaitForRequest();
-	if (requestId != HTTP_NULL_ID)
+	SPIN_LOCK(pendingRequestLock)
 	{
-		auto jsonArray = Ptr(new JsonArray);
+		BeginSubmitPendingRequest();
 		for (vint i = 0; i < count; i++)
 		{
 			auto jsonValue = Ptr(new JsonString);
 			jsonValue->content.value = strs[i];
-			jsonArray->items.Add(jsonValue);
+			pendingRequestToSend->items.Add(jsonValue);
 		}
-
-		SendJsonResponse(httpRequestQueue, requestId, jsonArray);
+		EndSubmitPendingRequest();
 	}
 }
 
 void HttpServer::SendSingleString(const WString& str)
 {
-	auto requestId = WaitForRequest();
-	if (requestId != HTTP_NULL_ID)
+	SPIN_LOCK(pendingRequestLock)
 	{
+		BeginSubmitPendingRequest();
 		auto jsonValue = Ptr(new JsonString);
 		jsonValue->content.value = str;
-
-		auto jsonArray = Ptr(new JsonArray);
-		jsonArray->items.Add(jsonValue);
-
-		SendJsonResponse(httpRequestQueue, requestId, jsonArray);
+		pendingRequestToSend->items.Add(jsonValue);
+		EndSubmitPendingRequest();
 	}
 }
 
