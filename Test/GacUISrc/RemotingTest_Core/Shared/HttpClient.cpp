@@ -54,7 +54,7 @@ void HttpClient::WaitForServer()
 		WINHTTP_NO_REQUEST_DATA,
 		0,
 		0,
-		NULL);
+		reinterpret_cast<DWORD_PTR>(this));
 	lastError = GetLastError();
 	CHECK_ERROR(httpResult == TRUE, L"WinHttpSendRequest failed.");
 	WaitForSingleObject(hEventWaitForServer, INFINITE);
@@ -113,7 +113,7 @@ HttpClient::HttpClient()
 
 	httpSession = WinHttpOpen(
 		L"RemotingTest_Rendering_Win32.exe",
-		WINHTTP_ACCESS_TYPE_NO_PROXY,
+		WINHTTP_ACCESS_TYPE_DEFAULT_PROXY,
 		WINHTTP_NO_PROXY_NAME,
 		WINHTTP_NO_PROXY_BYPASS,
 		WINHTTP_FLAG_ASYNC);
@@ -124,11 +124,14 @@ HttpClient::HttpClient()
 		httpSession,
 		(WINHTTP_STATUS_CALLBACK)[](HINTERNET hInternet, DWORD_PTR dwContext, DWORD dwInternetStatus, LPVOID lpvStatusInformation, DWORD dwStatusInformationLength) -> void
 		{
-			auto self = reinterpret_cast<HttpClient*>(dwContext);
-			self->WinHttpStatusCallback(dwInternetStatus, lpvStatusInformation, dwStatusInformationLength);
+			if (dwContext)
+			{
+				auto self = reinterpret_cast<HttpClient*>(dwContext);
+				self->WinHttpStatusCallback(dwInternetStatus, lpvStatusInformation, dwStatusInformationLength);
+			}
 		},
 		WINHTTP_CALLBACK_FLAG_ALL_NOTIFICATIONS,
-		reinterpret_cast<DWORD_PTR>(this));
+		NULL);
 	lastError = GetLastError();
 	CHECK_ERROR(previousCallback != WINHTTP_INVALID_STATUS_CALLBACK, L"WinHttpSetStatusCallback failed.");
 
