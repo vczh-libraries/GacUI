@@ -13,24 +13,6 @@ void HttpClient::BeginReadingLoopUnsafe()
 HttpClient (WaitForServer)
 ***********************************************************************/
 
-void HttpClient::WinHttpStatusCallback_WaitForServer(DWORD dwInternetStatus, LPVOID lpvStatusInformation, DWORD dwStatusInformationLength)
-{
-	switch (dwInternetStatus)
-	{
-	case WINHTTP_CALLBACK_STATUS_SENDREQUEST_COMPLETE:
-	case WINHTTP_CALLBACK_STATUS_HEADERS_AVAILABLE:
-	case WINHTTP_CALLBACK_STATUS_READ_COMPLETE:
-	case WINHTTP_CALLBACK_STATUS_REQUEST_ERROR:
-		{
-			dwInternetStatus_WaitForServer = dwInternetStatus;
-			lpvStatusInformation_WaitForServer = lpvStatusInformation;
-			dwStatusInformationLength_WaitForServer = dwStatusInformationLength;
-			SetEvent(hEventWaitForServer);
-		}
-		break;
-	}
-}
-
 void HttpClient::WaitForServer()
 {
 	DWORD lastError = 0;
@@ -48,6 +30,33 @@ void HttpClient::WaitForServer()
 		WINHTTP_FLAG_REFRESH);
 	lastError = GetLastError();
 	CHECK_ERROR(httpRequest != NULL, L"WinHttpOpenRequest failed.");
+	{
+		WINHTTP_STATUS_CALLBACK previousCallback = WinHttpSetStatusCallback(
+			httpRequest,
+			(WINHTTP_STATUS_CALLBACK)[](HINTERNET hInternet, DWORD_PTR dwContext, DWORD dwInternetStatus, LPVOID lpvStatusInformation, DWORD dwStatusInformationLength) -> void
+			{
+				if (!dwContext) return;
+				auto self = reinterpret_cast<HttpClient*>(dwContext);
+				switch (dwInternetStatus)
+				{
+				case WINHTTP_CALLBACK_STATUS_SENDREQUEST_COMPLETE:
+				case WINHTTP_CALLBACK_STATUS_HEADERS_AVAILABLE:
+				case WINHTTP_CALLBACK_STATUS_READ_COMPLETE:
+				case WINHTTP_CALLBACK_STATUS_REQUEST_ERROR:
+					{
+						self->dwInternetStatus_WaitForServer = dwInternetStatus;
+						self->lpvStatusInformation_WaitForServer = lpvStatusInformation;
+						self->dwStatusInformationLength_WaitForServer = dwStatusInformationLength;
+						SetEvent(self->hEventWaitForServer);
+					}
+					break;
+				}
+			},
+			WINHTTP_CALLBACK_FLAG_ALL_NOTIFICATIONS,
+			NULL);
+		lastError = GetLastError();
+		CHECK_ERROR(previousCallback != WINHTTP_INVALID_STATUS_CALLBACK, L"WinHttpSetStatusCallback failed.");
+	}
 	{
 		ResetEvent(hEventWaitForServer);
 		httpResult = WinHttpSendRequest(
@@ -163,6 +172,7 @@ void HttpClient::WaitForServer()
 		CHECK_ERROR(urlResponse != L"", L"/Connect response body missing the \"response\" field.");
 	}
 	WinHttpCloseHandle(httpRequest);
+	state = State::Running;
 }
 
 /***********************************************************************
@@ -199,14 +209,6 @@ void HttpClient::SendSingleString(const WString& str)
 HttpClient
 ***********************************************************************/
 
-void HttpClient::WinHttpStatusCallback(DWORD dwInternetStatus, LPVOID lpvStatusInformation, DWORD dwStatusInformationLength)
-{
-	if (state == State::WaitForServerConnection)
-	{
-		WinHttpStatusCallback_WaitForServer(dwInternetStatus, lpvStatusInformation, dwStatusInformationLength);
-	}
-}
-
 HttpClient::HttpClient()
 {
 	DWORD lastError = 0;
@@ -221,21 +223,6 @@ HttpClient::HttpClient()
 		WINHTTP_FLAG_ASYNC);
 	lastError = GetLastError();
 	CHECK_ERROR(httpSession != NULL, L"WinHttpOpen failed.");
-
-	WINHTTP_STATUS_CALLBACK previousCallback = WinHttpSetStatusCallback(
-		httpSession,
-		(WINHTTP_STATUS_CALLBACK)[](HINTERNET hInternet, DWORD_PTR dwContext, DWORD dwInternetStatus, LPVOID lpvStatusInformation, DWORD dwStatusInformationLength) -> void
-		{
-			if (dwContext)
-			{
-				auto self = reinterpret_cast<HttpClient*>(dwContext);
-				self->WinHttpStatusCallback(dwInternetStatus, lpvStatusInformation, dwStatusInformationLength);
-			}
-		},
-		WINHTTP_CALLBACK_FLAG_ALL_NOTIFICATIONS,
-		NULL);
-	lastError = GetLastError();
-	CHECK_ERROR(previousCallback != WINHTTP_INVALID_STATUS_CALLBACK, L"WinHttpSetStatusCallback failed.");
 
 	httpConnection = WinHttpConnect(
 		httpSession,

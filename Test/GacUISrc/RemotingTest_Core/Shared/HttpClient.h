@@ -45,8 +45,6 @@ protected:
 	LPVOID											lpvStatusInformation_WaitForServer = NULL;
 	DWORD											dwStatusInformationLength_WaitForServer = 0;
 
-	void											WinHttpStatusCallback_WaitForServer(DWORD dwInternetStatus, LPVOID lpvStatusInformation, DWORD dwStatusInformationLength);
-
 public:
 
 	void											WaitForServer();
@@ -67,10 +65,6 @@ public:
 /***********************************************************************
 HttpClient
 ***********************************************************************/
-
-protected:
-
-	void											WinHttpStatusCallback(DWORD dwInternetStatus, LPVOID lpvStatusInformation, DWORD dwStatusInformationLength);
 
 public:
 	HttpClient();
