@@ -18,6 +18,7 @@ void HttpClient::WinHttpStatusCallback_WaitForServer(DWORD dwInternetStatus, LPV
 	switch (dwInternetStatus)
 	{
 	case WINHTTP_CALLBACK_STATUS_SENDREQUEST_COMPLETE:
+	case WINHTTP_CALLBACK_STATUS_HEADERS_AVAILABLE:
 	case WINHTTP_CALLBACK_STATUS_REQUEST_ERROR:
 		{
 			dwWaitForServerInternetStatus = dwInternetStatus;
@@ -44,22 +45,81 @@ void HttpClient::WaitForServer()
 		WINHTTP_FLAG_REFRESH);
 	lastError = GetLastError();
 	CHECK_ERROR(httpRequest != NULL, L"WinHttpOpenRequest failed.");
+	{
+		dwWaitForServerInternetStatus = 0;
+		ResetEvent(hEventWaitForServer);
+		httpResult = WinHttpSendRequest(
+			httpRequest,
+			WINHTTP_NO_ADDITIONAL_HEADERS,
+			0,
+			WINHTTP_NO_REQUEST_DATA,
+			0,
+			0,
+			reinterpret_cast<DWORD_PTR>(this));
+		lastError = GetLastError();
+		CHECK_ERROR(httpResult == TRUE, L"WinHttpSendRequest failed.");
+		WaitForSingleObject(hEventWaitForServer, INFINITE);
+		CHECK_ERROR(dwWaitForServerInternetStatus == WINHTTP_CALLBACK_STATUS_SENDREQUEST_COMPLETE, L"WinHttpSendRequest failed.");
+	}
+	{
+		dwWaitForServerInternetStatus = 0;
+		ResetEvent(hEventWaitForServer);
+		httpResult = WinHttpReceiveResponse(httpRequest, NULL);
+		lastError = GetLastError();
+		CHECK_ERROR(httpResult == TRUE, L"WinHttpReceiveResponse failed.");
+		WaitForSingleObject(hEventWaitForServer, INFINITE);
+		CHECK_ERROR(dwWaitForServerInternetStatus == WINHTTP_CALLBACK_STATUS_HEADERS_AVAILABLE, L"WinHttpSendRequest failed.");
+	}
 
-	dwWaitForServerInternetStatus = 0;
-	ResetEvent(hEventWaitForServer);
-	httpResult = WinHttpSendRequest(
-		httpRequest,
-		WINHTTP_NO_ADDITIONAL_HEADERS,
-		0,
-		WINHTTP_NO_REQUEST_DATA,
-		0,
-		0,
-		reinterpret_cast<DWORD_PTR>(this));
-	lastError = GetLastError();
-	CHECK_ERROR(httpResult == TRUE, L"WinHttpSendRequest failed.");
-	WaitForSingleObject(hEventWaitForServer, INFINITE);
-	CHECK_ERROR(dwWaitForServerInternetStatus == WINHTTP_CALLBACK_STATUS_SENDREQUEST_COMPLETE, L"WinHttpSendRequest failed.");
+	DWORD statusCode = 0;
+	DWORD dataLength = 0;
+	DWORD dwordLength = sizeof(DWORD);
+	{
+		httpResult = WinHttpQueryHeaders(
+			httpRequest,
+			WINHTTP_QUERY_STATUS_CODE | WINHTTP_QUERY_FLAG_NUMBER,
+			WINHTTP_HEADER_NAME_BY_INDEX,
+			&statusCode,
+			&dwordLength,
+			WINHTTP_NO_HEADER_INDEX);
+		lastError = GetLastError();
+		CHECK_ERROR(httpResult == TRUE, L"WinHttpQueryHeaders failed to retrieve status code.");
+		CHECK_ERROR(statusCode == 200, L"/Connect did not return status code: 200.");
+	}
+	{
+		DWORD headerLength = 0;
+		httpResult = WinHttpQueryHeaders(
+			httpRequest,
+			WINHTTP_QUERY_CONTENT_TYPE,
+			WINHTTP_HEADER_NAME_BY_INDEX,
+			NULL,
+			&headerLength,
+			WINHTTP_NO_HEADER_INDEX);
+		lastError = GetLastError();
+		CHECK_ERROR(httpResult == FALSE && lastError == ERROR_INSUFFICIENT_BUFFER, L"WinHttpQueryHeaders failed to retrieve content type.");
 
+		Array<wchar_t> headerBuffer(headerLength + 1);
+		ZeroMemory(&headerBuffer[0], headerBuffer.Count() * sizeof(wchar_t));
+		httpResult = WinHttpQueryHeaders(
+			httpRequest,
+			WINHTTP_QUERY_CONTENT_TYPE,
+			WINHTTP_HEADER_NAME_BY_INDEX,
+			&headerBuffer[0],
+			&headerLength,
+			WINHTTP_NO_HEADER_INDEX);
+		lastError = GetLastError();
+		CHECK_ERROR(httpResult == TRUE, L"WinHttpQueryHeaders failed to retrieve content-type.");
+
+		const wchar_t* header = &headerBuffer[0];
+		CHECK_ERROR(wcscmp(header, L"application/json; charset=utf8") == 0, L"/Content did not return content type: application/json; charset=utf8.");
+	}
+	{
+		httpResult = WinHttpQueryDataAvailable(
+			httpRequest,
+			&dataLength);
+		lastError = GetLastError();
+		CHECK_ERROR(httpResult == TRUE, L"WinHttpQueryDataAvailable failed.");
+	}
 	WinHttpCloseHandle(httpRequest);
 }
 
