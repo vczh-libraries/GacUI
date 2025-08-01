@@ -36,6 +36,7 @@ class HttpServer : public INetworkProtocol
 	static constexpr vint32_t						HttpBodyInitSize = 1024;
 
 protected:
+	glr::json::Parser								jsonParser;
 	INetworkProtocolCallback*						callback = nullptr;
 	WString											urlGuid;
 	WString											urlConnect;
@@ -96,6 +97,8 @@ protected:
 
 	void											BeginReadingLoopUnsafe_OnHttpConnectionBrokenUnsafe();
 	void											BeginReadingLoopUnsafe_OnHttpRequestReceivedUnsafe(PHTTP_REQUEST pRequest);
+
+	void											SubmitResponse(PHTTP_REQUEST pRequest);
 
 public:
 	void											BeginReadingLoopUnsafe() override;

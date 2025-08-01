@@ -271,13 +271,44 @@ void HttpServer::BeginReadingLoopUnsafe_OnHttpRequestReceivedUnsafe(PHTTP_REQUES
 	}
 	else if (pRequest->Verb == HttpVerbPOST && pRequest->CookedUrl.pFullUrl == urlResponse)
 	{
-		Send404Response(httpRequestQueue, pRequest->RequestId, "Not Implemented");
+		SubmitResponse(pRequest);
+		ULONG result = SendJsonResponse(httpRequestQueue, pRequest->RequestId, Ptr(new JsonObject));
+		CHECK_ERROR(result == NO_ERROR, L"HttpSendHttpResponse failed for responding /Response.");
 	}
 	else
 	{
 		Send404Response(httpRequestQueue, pRequest->RequestId, "Unknown URL");
 	}
 	ListenToHttpRequest();
+}
+
+void HttpServer::SubmitResponse(PHTTP_REQUEST pRequest)
+{
+	auto& headerContentType = pRequest->Headers.KnownHeaders[HttpHeaderContentType];
+	CHECK_ERROR(headerContentType.pRawValue != NULL, L"/Response missing Content-Type header.");
+	CHECK_ERROR(
+		strncmp((const char*)headerContentType.pRawValue, "application/json; charset=utf8", headerContentType.RawValueLength) == 0,
+		L"/Response Content-Type header must be \"application/json; charset=utf8\".");
+
+	CHECK_ERROR(pRequest->EntityChunkCount == 1, L"/Response must have exactly one entity chunk.");
+	auto& entityChunk = pRequest->pEntityChunks[0];
+	CHECK_ERROR(
+		entityChunk.DataChunkType == HttpDataChunkFromMemory,
+		L"/Response entity chunk must be of raw binary data.");
+
+	U8String bodyUtf8 = U8String::CopyFrom((const char8_t*)entityChunk.FromMemory.pBuffer, entityChunk.FromMemory.BufferLength);
+	auto bodyJson = JsonParse(u8tow(bodyUtf8), jsonParser);
+	auto bodyArray = bodyJson.Cast<JsonArray>();
+	CHECK_ERROR(bodyArray, L"/Response body must be a JSON array of strings.");
+
+	auto strs = Ptr(new List<WString>);
+	for (auto&& item : bodyArray->items)
+	{
+		auto itemString = item.Cast<JsonString>();
+		CHECK_ERROR(itemString, L"/Response body must be a JSON array of strings.");
+		strs->Add(itemString->content.value);
+	}
+	callback->OnReadStringThreadUnsafe(strs);
 }
 
 void HttpServer::BeginReadingLoopUnsafe()
