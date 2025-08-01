@@ -9,6 +9,7 @@
 #include <http.h>
 #define RPC_USE_NATIVE_WCHAR
 #include <rpc.h>
+#include <winhttp.h>
 
 using namespace vl;
 using namespace vl::console;

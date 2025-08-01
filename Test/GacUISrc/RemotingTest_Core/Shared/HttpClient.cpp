@@ -54,15 +54,37 @@ HttpClient
 
 HttpClient::HttpClient()
 {
+	httpSession = WinHttpOpen(
+		L"RemotingTest_Rendering_Win32.exe",
+		WINHTTP_ACCESS_TYPE_NO_PROXY,
+		NULL,
+		NULL,
+		WINHTTP_FLAG_ASYNC);
+	CHECK_ERROR(httpSession != NULL, L"WinHttpOpen failed.");
+
+	httpConnection = WinHttpConnect(
+		httpSession,
+		L"localhost",
+		8888,
+		0);
+	CHECK_ERROR(httpConnection != NULL, L"WinHttpConnect failed.");
 }
 
 HttpClient::~HttpClient()
 {
+	Stop();
 }
 
 void HttpClient::Stop()
 {
-	CHECK_FAIL(L"Not Implemented!");
+	if (httpSession != NULL)
+	{
+		WinHttpCloseHandle(httpConnection);
+		WinHttpCloseHandle(httpSession);
+
+		httpConnection = NULL;
+		httpSession = NULL;
+	}
 }
 
 void HttpClient::InstallCallback(INetworkProtocolCallback* _callback)

@@ -8,6 +8,11 @@ class HttpClient : public INetworkProtocol
 protected:
 	INetworkProtocolCallback*						callback = nullptr;
 
+	HINTERNET										httpSession = NULL;
+	HINTERNET										httpConnection = NULL;
+	WString											urlRequest;
+	WString											urlResponse;
+
 /***********************************************************************
 HttpClient (Reading)
 ***********************************************************************/
