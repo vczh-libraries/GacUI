@@ -415,6 +415,10 @@ void HttpClient::SendJsonRequest(Ptr<JsonNode> jsonBody)
 			{
 			case WINHTTP_CALLBACK_STATUS_SENDREQUEST_COMPLETE:
 				{
+					SPIN_LOCK(self->requestBodiesLock)
+					{
+						self->requestBodies.Remove(httpRequest);
+					}
 					ThreadPoolLite::Queue([=]()
 					{
 						DWORD lastError = 0;
@@ -458,6 +462,10 @@ void HttpClient::SendJsonRequest(Ptr<JsonNode> jsonBody)
 				break;
 			case WINHTTP_CALLBACK_STATUS_REQUEST_ERROR:
 				{
+					SPIN_LOCK(self->requestBodiesLock)
+					{
+						self->requestBodies.Remove(httpRequest);
+					}
 					ThreadPoolLite::Queue([=]()
 					{
 						CHECK_ERROR(self->state == State::Stopping, L"/Response failed to complete.");
@@ -486,15 +494,20 @@ void HttpClient::SendJsonRequest(Ptr<JsonNode> jsonBody)
 	}
 	CHECK_ERROR(httpResult == TRUE, L"WinHttpAddRequestHeaders failed.");
 
-	U8String body = wtou8(JsonToString(jsonBody));
+	U8String bodyUtf8 = wtou8(JsonToString(jsonBody));
+	SPIN_LOCK(requestBodiesLock)
+	{
+		requestBodies.Add(httpRequest, bodyUtf8);
+	}
+
 	httpResult = WinHttpSendRequest(
 		httpRequest,
 		WINHTTP_NO_ADDITIONAL_HEADERS,
 		0,
-		(LPVOID)body.Buffer(),
-		(DWORD)body.Length(),
-		(DWORD)body.Length(),
-		reinterpret_cast<DWORD_PTR>(httpRequest));
+		(LPVOID)bodyUtf8.Buffer(),
+		(DWORD)bodyUtf8.Length(),
+		(DWORD)bodyUtf8.Length(),
+		reinterpret_cast<DWORD_PTR>(this));
 	lastError = GetLastError();
 	if (lastError == ERROR_INVALID_HANDLE)
 	{

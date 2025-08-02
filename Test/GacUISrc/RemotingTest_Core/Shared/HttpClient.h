@@ -53,6 +53,8 @@ HttpClient (Writing)
 ***********************************************************************/
 
 protected:
+	SpinLock										requestBodiesLock;
+	Dictionary<HINTERNET, U8String>					requestBodies;
 
 	void											SendJsonRequest(Ptr<JsonNode> jsonBody);
 
