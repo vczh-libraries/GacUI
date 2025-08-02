@@ -119,10 +119,9 @@ void HttpClient::BeginReadingLoopUnsafe()
 								CHECK_ERROR(wcscmp(header, L"application/json; charset=utf8") == 0, L"/Request did not return content type: application/json; charset=utf8.");
 							}
 							{
-								DWORD dataLength = 0;
 								httpResult = WinHttpQueryDataAvailable(
 									httpRequest,
-									&dataLength);
+									NULL);
 								lastError = GetLastError();
 								if (lastError == ERROR_INVALID_HANDLE)
 								{
@@ -130,42 +129,58 @@ void HttpClient::BeginReadingLoopUnsafe()
 									return;
 								}
 								CHECK_ERROR(httpResult == TRUE, L"WinHttpQueryDataAvailable failed.");
-
-								Array<char8_t> bodyBuffer(dataLength + 1);
-								ZeroMemory(&bodyBuffer[0], bodyBuffer.Count() * sizeof(char8_t));
-
-								DWORD bytesRead = 0;
-								httpResult = WinHttpReadData(
-									httpRequest,
-									&bodyBuffer[0],
-									dataLength,
-									&bytesRead);
-								lastError = GetLastError();
-								if (lastError == ERROR_INVALID_HANDLE)
-								{
-									CHECK_ERROR(self->state == State::Stopping, L"WinHttpReadData failed with ERROR_INVALID_HANDLE but client is not stopping.");
-									return;
-								}
-								CHECK_ERROR(httpResult == TRUE, L"WinHttpReadData failed.");
-								CHECK_ERROR(bytesRead == dataLength, L"WinHttpReadData failed to read full data.");
-
-								U8String bodyUtf8 = U8String::Unmanaged(&bodyBuffer[0]);
-								auto bodyJson = JsonParse(u8tow(bodyUtf8), self->jsonParser);
-								auto bodyArray = bodyJson.Cast<JsonArray>();
-								CHECK_ERROR(bodyArray, L"/Request response body must be a JSON array of strings.");
-
-								auto strs = Ptr(new List<WString>);
-								for (auto&& item : bodyArray->items)
-								{
-									auto itemString = item.Cast<JsonString>();
-									CHECK_ERROR(itemString, L"/Request response body must be a JSON array of strings.");
-									strs->Add(itemString->content.value);
-								}
-								self->callback->OnReadStringThreadUnsafe(strs);
-
-								WinHttpCloseHandle(httpRequest);
-								self->BeginReadingLoopUnsafe();
 							}
+						});
+					}
+					break;
+				case WINHTTP_CALLBACK_STATUS_DATA_AVAILABLE:
+					{
+						ThreadPoolLite::Queue([=]()
+						{
+							DWORD dataAvailable = *(PDWORD)lpvStatusInformation;
+							if (self->httpRespondBodyBuffer.Count() < dataAvailable + 1)
+							{
+								self->httpRespondBodyBuffer.Resize(dataAvailable + 1);
+							}
+							ZeroMemory(&self->httpRespondBodyBuffer[0], self->httpRespondBodyBuffer.Count());
+
+							DWORD lastError = 0;
+							BOOL httpResult = WinHttpReadData(
+								httpRequest,
+								&self->httpRespondBodyBuffer[0],
+								dataAvailable,
+								NULL);
+							lastError = GetLastError();
+							if (lastError == ERROR_INVALID_HANDLE)
+							{
+								CHECK_ERROR(self->state == State::Stopping, L"WinHttpReadData failed with ERROR_INVALID_HANDLE but client is not stopping.");
+								return;
+							}
+							CHECK_ERROR(httpResult == TRUE, L"WinHttpReadData failed.");
+						});
+					}
+					break;
+				case WINHTTP_CALLBACK_STATUS_READ_COMPLETE:
+					{
+						ThreadPoolLite::Queue([=]()
+						{
+							self->httpRespondBodyBuffer[dwStatusInformationLength] = 0;
+							U8String bodyUtf8 = U8String::Unmanaged(&self->httpRespondBodyBuffer[0]);
+							auto bodyJson = JsonParse(u8tow(bodyUtf8), self->jsonParser);
+							auto bodyArray = bodyJson.Cast<JsonArray>();
+							CHECK_ERROR(bodyArray, L"/Request response body must be a JSON array of strings.");
+
+							auto strs = Ptr(new List<WString>);
+							for (auto&& item : bodyArray->items)
+							{
+								auto itemString = item.Cast<JsonString>();
+								CHECK_ERROR(itemString, L"/Request response body must be a JSON array of strings.");
+								strs->Add(itemString->content.value);
+							}
+							self->callback->OnReadStringThreadUnsafe(strs);
+
+							WinHttpCloseHandle(httpRequest);
+							self->BeginReadingLoopUnsafe();
 						});
 					}
 					break;
@@ -415,9 +430,9 @@ void HttpClient::SendJsonRequest(Ptr<JsonNode> jsonBody)
 			{
 			case WINHTTP_CALLBACK_STATUS_SENDREQUEST_COMPLETE:
 				{
-					SPIN_LOCK(self->requestBodiesLock)
+					SPIN_LOCK(self->httpRequestBodiesLock)
 					{
-						self->requestBodies.Remove(httpRequest);
+						self->httpRequestBodies.Remove(httpRequest);
 					}
 					ThreadPoolLite::Queue([=]()
 					{
@@ -462,9 +477,9 @@ void HttpClient::SendJsonRequest(Ptr<JsonNode> jsonBody)
 				break;
 			case WINHTTP_CALLBACK_STATUS_REQUEST_ERROR:
 				{
-					SPIN_LOCK(self->requestBodiesLock)
+					SPIN_LOCK(self->httpRequestBodiesLock)
 					{
-						self->requestBodies.Remove(httpRequest);
+						self->httpRequestBodies.Remove(httpRequest);
 					}
 					ThreadPoolLite::Queue([=]()
 					{
@@ -495,9 +510,9 @@ void HttpClient::SendJsonRequest(Ptr<JsonNode> jsonBody)
 	CHECK_ERROR(httpResult == TRUE, L"WinHttpAddRequestHeaders failed.");
 
 	U8String bodyUtf8 = wtou8(JsonToString(jsonBody));
-	SPIN_LOCK(requestBodiesLock)
+	SPIN_LOCK(httpRequestBodiesLock)
 	{
-		requestBodies.Add(httpRequest, bodyUtf8);
+		httpRequestBodies.Add(httpRequest, bodyUtf8);
 	}
 
 	httpResult = WinHttpSendRequest(

@@ -29,6 +29,7 @@ HttpClient (Reading)
 ***********************************************************************/
 
 protected:
+	Array<char8_t>									httpRespondBodyBuffer;
 
 public:
 
@@ -53,8 +54,8 @@ HttpClient (Writing)
 ***********************************************************************/
 
 protected:
-	SpinLock										requestBodiesLock;
-	Dictionary<HINTERNET, U8String>					requestBodies;
+	SpinLock										httpRequestBodiesLock;
+	Dictionary<HINTERNET, U8String>					httpRequestBodies;
 
 	void											SendJsonRequest(Ptr<JsonNode> jsonBody);
 
