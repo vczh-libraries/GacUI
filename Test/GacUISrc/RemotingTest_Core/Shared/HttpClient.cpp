@@ -629,6 +629,8 @@ void HttpClient::Stop()
 
 		httpConnection = NULL;
 		httpSession = NULL;
+
+		callback->OnReadStoppedThreadUnsafe();
 	}
 }
 
