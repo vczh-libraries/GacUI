@@ -97,7 +97,7 @@ void HttpClient::BeginReadingLoopUnsafe()
 								}
 								CHECK_ERROR(httpResult == FALSE && lastError == ERROR_INSUFFICIENT_BUFFER, L"WinHttpQueryHeaders failed to retrieve content type.");
 
-								Array<wchar_t> headerBuffer(headerLength + 1);
+								Array<wchar_t> headerBuffer(headerLength / 2 + 1);
 								ZeroMemory(&headerBuffer[0], headerBuffer.Count() * sizeof(wchar_t));
 
 								httpResult = WinHttpQueryHeaders(
