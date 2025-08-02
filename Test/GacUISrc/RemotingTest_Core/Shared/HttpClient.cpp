@@ -15,6 +15,7 @@ HttpClient (WaitForServer)
 
 void HttpClient::WaitForServer()
 {
+	if (state == State::Stopping) return;
 	CHECK_ERROR(state == State::Ready, L"WaitForServer can only be called once.");
 	DWORD lastError = 0;
 	state = State::WaitForServerConnection;
@@ -181,6 +182,7 @@ HttpClient (Writing)
 
 void HttpClient::SendJsonRequest(Ptr<JsonNode> jsonBody)
 {
+	if (state == State::Stopping) return;
 	CHECK_ERROR(state == State::Running, L"SendJsonRequest can only be called when client is running.");
 	DWORD lastError = 0;
 	BOOL httpResult = FALSE;
@@ -194,6 +196,11 @@ void HttpClient::SendJsonRequest(Ptr<JsonNode> jsonBody)
 		NULL,
 		WINHTTP_FLAG_REFRESH);
 	lastError = GetLastError();
+	if (lastError == ERROR_INVALID_HANDLE)
+	{
+		CHECK_ERROR(state == State::Stopping, L"WinHttpOpenRequest failed with ERROR_INVALID_HANDLE.");
+		return;
+	}
 	CHECK_ERROR(httpRequest != NULL, L"WinHttpOpenRequest failed.");
 
 	WINHTTP_STATUS_CALLBACK previousCallback = WinHttpSetStatusCallback(
@@ -201,6 +208,7 @@ void HttpClient::SendJsonRequest(Ptr<JsonNode> jsonBody)
 		(WINHTTP_STATUS_CALLBACK)[](HINTERNET httpRequest, DWORD_PTR dwContext, DWORD dwInternetStatus, LPVOID lpvStatusInformation, DWORD dwStatusInformationLength) -> void
 		{
 			if (!dwContext) return;
+			auto self = reinterpret_cast<HttpClient*>(dwContext);
 			switch (dwInternetStatus)
 			{
 			case WINHTTP_CALLBACK_STATUS_SENDREQUEST_COMPLETE:
@@ -210,6 +218,11 @@ void HttpClient::SendJsonRequest(Ptr<JsonNode> jsonBody)
 						DWORD lastError = 0;
 						BOOL httpResult = WinHttpReceiveResponse(httpRequest, NULL);
 						lastError = GetLastError();
+						if (lastError == ERROR_INVALID_HANDLE)
+						{
+							CHECK_ERROR(self->state == State::Stopping, L"WinHttpReceiveResponse failed with ERROR_INVALID_HANDLE but client is not stopping.");
+							return;
+						}
 						CHECK_ERROR(httpResult == TRUE, L"WinHttpReceiveResponse failed.");
 					});
 				}
@@ -229,6 +242,11 @@ void HttpClient::SendJsonRequest(Ptr<JsonNode> jsonBody)
 							&dwordLength,
 							WINHTTP_NO_HEADER_INDEX);
 						lastError = GetLastError();
+						if (lastError == ERROR_INVALID_HANDLE)
+						{
+							CHECK_ERROR(self->state == State::Stopping, L"WinHttpQueryHeaders failed with ERROR_INVALID_HANDLE but client is not stopping.");
+							return;
+						}
 						CHECK_ERROR(httpResult == TRUE, L"WinHttpQueryHeaders failed to retrieve status code.");
 						CHECK_ERROR(statusCode == 200, L"SendJsonRequest did not return status code: 200.");
 
@@ -238,7 +256,10 @@ void HttpClient::SendJsonRequest(Ptr<JsonNode> jsonBody)
 				break;
 			case WINHTTP_CALLBACK_STATUS_REQUEST_ERROR:
 				{
-					CHECK_FAIL(L"/Response failed to complete.");
+					ThreadPoolLite::Queue([=]()
+					{
+						CHECK_ERROR(self->state == State::Stopping, L"/Response failed to complete.");
+					});
 				}
 				break;
 			}
@@ -254,6 +275,12 @@ void HttpClient::SendJsonRequest(Ptr<JsonNode> jsonBody)
 		-1,
 		WINHTTP_ADDREQ_FLAG_ADD);
 	lastError = GetLastError();
+	if (lastError == ERROR_INVALID_HANDLE)
+	{
+		CHECK_ERROR(state == State::Stopping, L"WinHttpAddRequestHeaders failed with ERROR_INVALID_HANDLE.");
+		WinHttpCloseHandle(httpRequest);
+		return;
+	}
 	CHECK_ERROR(httpResult == TRUE, L"WinHttpAddRequestHeaders failed.");
 
 	U8String body = wtou8(JsonToString(jsonBody));
@@ -266,6 +293,12 @@ void HttpClient::SendJsonRequest(Ptr<JsonNode> jsonBody)
 		(DWORD)body.Length(),
 		reinterpret_cast<DWORD_PTR>(httpRequest));
 	lastError = GetLastError();
+	if (lastError == ERROR_INVALID_HANDLE)
+	{
+		CHECK_ERROR(state == State::Stopping, L"WinHttpSendRequest failed with ERROR_INVALID_HANDLE.");
+		WinHttpCloseHandle(httpRequest);
+		return;
+	}
 	CHECK_ERROR(httpResult == TRUE, L"WinHttpSendRequest failed.");
 }
 
@@ -328,6 +361,8 @@ void HttpClient::Stop()
 {
 	if (httpSession != NULL)
 	{
+		state = State::Stopping;
+
 		WinHttpCloseHandle(httpConnection);
 		WinHttpSetStatusCallback(
 			httpSession,
