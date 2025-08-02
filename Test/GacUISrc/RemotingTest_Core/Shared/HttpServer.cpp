@@ -36,7 +36,7 @@ void HttpServer::OnHttpRequestReceivedUnsafe(PHTTP_REQUEST pRequest)
 
 ULONG HttpServer::ListenToHttpRequest_Init(OVERLAPPED* overlapped)
 {
-	ZeroMemory(&bufferRequest[0], sizeof(HTTP_REQUEST));
+	ZeroMemory(&bufferRequest[0], bufferRequest.Count());
 
 	ULONG result = HttpReceiveHttpRequest(
 		httpRequestQueue,
@@ -53,6 +53,7 @@ ULONG HttpServer::ListenToHttpRequest_Init(OVERLAPPED* overlapped)
 ULONG HttpServer::ListenToHttpRequest_InitMoreData(ULONG* bytesReturned)
 {
 	HTTP_REQUEST_ID httpRequestIdReading = ((PHTTP_REQUEST)&bufferRequest[0])->RequestId;
+	ZeroMemory(&bufferRequest[0], bufferRequest.Count());
 
 	ULONG result = HttpReceiveHttpRequest(
 		httpRequestQueue,
@@ -70,6 +71,7 @@ ULONG HttpServer::ListenToHttpRequest_OverlappedMoreData(vint expectedBufferSize
 {
 	HTTP_REQUEST_ID httpRequestIdReading = ((PHTTP_REQUEST)&bufferRequest[0])->RequestId;
 	bufferRequest.Resize(expectedBufferSize);
+	ZeroMemory(&bufferRequest[0], bufferRequest.Count());
 
 	ULONG bytesReturned = 0;
 	ULONG result = HttpReceiveHttpRequest(
@@ -284,31 +286,51 @@ void HttpServer::BeginReadingLoopUnsafe_OnHttpRequestReceivedUnsafe(PHTTP_REQUES
 
 void HttpServer::SubmitResponse(PHTTP_REQUEST pRequest)
 {
-	auto& headerContentType = pRequest->Headers.KnownHeaders[HttpHeaderContentType];
-	CHECK_ERROR(headerContentType.pRawValue != NULL, L"/Response missing Content-Type header.");
-	CHECK_ERROR(
-		strncmp((const char*)headerContentType.pRawValue, "application/json; charset=utf8", headerContentType.RawValueLength) == 0,
-		L"/Response Content-Type header must be \"application/json; charset=utf8\".");
-
-	CHECK_ERROR(pRequest->EntityChunkCount == 1, L"/Response must have exactly one entity chunk.");
-	auto& entityChunk = pRequest->pEntityChunks[0];
-	CHECK_ERROR(
-		entityChunk.DataChunkType == HttpDataChunkFromMemory,
-		L"/Response entity chunk must be of raw binary data.");
-
-	U8String bodyUtf8 = U8String::CopyFrom((const char8_t*)entityChunk.FromMemory.pBuffer, entityChunk.FromMemory.BufferLength);
-	auto bodyJson = JsonParse(u8tow(bodyUtf8), jsonParser);
-	auto bodyArray = bodyJson.Cast<JsonArray>();
-	CHECK_ERROR(bodyArray, L"/Response body must be a JSON array of strings.");
-
-	auto strs = Ptr(new List<WString>);
-	for (auto&& item : bodyArray->items)
+	ULONG bodyLength = 0;
+	ULONG bodyReceived = 0;
 	{
-		auto itemString = item.Cast<JsonString>();
-		CHECK_ERROR(itemString, L"/Response body must be a JSON array of strings.");
-		strs->Add(itemString->content.value);
+		auto& headerContentType = pRequest->Headers.KnownHeaders[HttpHeaderContentType];
+		CHECK_ERROR(headerContentType.pRawValue != NULL, L"/Response missing Content-Type header.");
+		CHECK_ERROR(
+			strncmp((const char*)headerContentType.pRawValue, "application/json; charset=utf8", headerContentType.RawValueLength) == 0,
+			L"/Response Content-Type header must be \"application/json; charset=utf8\".");
 	}
-	callback->OnReadStringThreadUnsafe(strs);
+	{
+		auto& headerContentLength = pRequest->Headers.KnownHeaders[HttpHeaderContentLength];
+		CHECK_ERROR(headerContentLength.pRawValue != NULL, L"/Response missing Content-Type header.");
+		bodyLength = (ULONG)atoi(headerContentLength.pRawValue);
+	}
+	CHECK_ERROR(pRequest->Flags & HTTP_REQUEST_FLAG_MORE_ENTITY_BODY_EXISTS, L"/Response must contain body data.");
+
+	Array<char8_t> bodyBuffer(bodyLength + 1);
+	ZeroMemory(&bodyBuffer[0], bodyBuffer.Count() * sizeof(char8_t));
+	{
+		ULONG result = NO_ERROR;
+		result = HttpReceiveRequestEntityBody(
+			httpRequestQueue,
+			pRequest->RequestId,
+			HTTP_RECEIVE_REQUEST_ENTITY_BODY_FLAG_FILL_BUFFER,
+			&bodyBuffer[0],
+			bodyLength,
+			&bodyReceived,
+			NULL);
+		CHECK_ERROR(result == NO_ERROR, L"HttpReceiveRequestEntityBody.");
+	}
+	{
+		U8String bodyUtf8 = U8String::Unmanaged(&bodyBuffer[0]);
+		auto bodyJson = JsonParse(u8tow(bodyUtf8), jsonParser);
+		auto bodyArray = bodyJson.Cast<JsonArray>();
+		CHECK_ERROR(bodyArray, L"/Response body must be a JSON array of strings.");
+
+		auto strs = Ptr(new List<WString>);
+		for (auto&& item : bodyArray->items)
+		{
+			auto itemString = item.Cast<JsonString>();
+			CHECK_ERROR(itemString, L"/Response body must be a JSON array of strings.");
+			strs->Add(itemString->content.value);
+		}
+		callback->OnReadStringThreadUnsafe(strs);
+	}
 }
 
 void HttpServer::BeginReadingLoopUnsafe()
