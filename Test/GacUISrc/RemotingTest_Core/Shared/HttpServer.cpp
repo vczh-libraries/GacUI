@@ -96,7 +96,7 @@ void HttpServer::ListenToHttpRequest()
 	PHTTP_REQUEST pRequest = (PHTTP_REQUEST)&bufferRequest[0];
 
 	ULONG result = ListenToHttpRequest_Init(&overlappedRequest);
-	if (result == ERROR_CONNECTION_INVALID)
+	if (result == ERROR_CONNECTION_INVALID || result == ERROR_OPERATION_ABORTED)
 	{
 		OnHttpConnectionBrokenUnsafe();
 		return;
@@ -112,7 +112,7 @@ void HttpServer::ListenToHttpRequest()
 	{
 		ULONG bytesReturned = 0;
 		result = ListenToHttpRequest_InitMoreData(&bytesReturned);
-		if (result == ERROR_CONNECTION_INVALID)
+		if (result == ERROR_CONNECTION_INVALID || result == ERROR_OPERATION_ABORTED)
 		{
 			OnHttpConnectionBrokenUnsafe();
 			return;
@@ -120,7 +120,7 @@ void HttpServer::ListenToHttpRequest()
 		CHECK_ERROR(result == ERROR_MORE_DATA, L"HttpReceiveHttpRequest(#1) failed on unexpected result.");
 
 		result = ListenToHttpRequest_OverlappedMoreData((vint)bytesReturned);
-		if (result == ERROR_CONNECTION_INVALID)
+		if (result == ERROR_CONNECTION_INVALID || result == ERROR_OPERATION_ABORTED)
 		{
 			OnHttpConnectionBrokenUnsafe();
 			return;
@@ -153,7 +153,7 @@ void HttpServer::ListenToHttpRequest()
 			else
 			{
 				DWORD error = GetLastError();
-				if (error == ERROR_CONNECTION_INVALID)
+				if (error == ERROR_CONNECTION_INVALID || error == ERROR_OPERATION_ABORTED)
 				{
 					self->OnHttpConnectionBrokenUnsafe();
 					return;
@@ -162,7 +162,7 @@ void HttpServer::ListenToHttpRequest()
 				CHECK_ERROR(self->bufferRequest.Count() < (vint)read, L"GetOverlappedResult(#5) failed on unexpected read size.");
 
 				ULONG result = self->ListenToHttpRequest_OverlappedMoreData((vint)read);
-				if (result == ERROR_CONNECTION_INVALID)
+				if (result == ERROR_CONNECTION_INVALID || result == ERROR_OPERATION_ABORTED)
 				{
 					self->OnHttpConnectionBrokenUnsafe();
 					return;
@@ -411,13 +411,16 @@ void HttpServer::OnNewHttpRequestForPendingRequest(HTTP_REQUEST_ID httpRequestId
 			httpRequestQueue,
 			httpPendingRequestId,
 			NULL);
-		CHECK_ERROR(result == NO_ERROR || result == ERROR_CONNECTION_INVALID, L"HttpCancelHttpRequest failed for canceling outdated /Request.");
+		CHECK_ERROR(
+			result == NO_ERROR || result == ERROR_CONNECTION_INVALID || result == ERROR_OPERATION_ABORTED,
+			L"HttpCancelHttpRequest failed for canceling outdated /Request.");
 	}
 	httpPendingRequestId = httpRequestId;
 	if (pendingRequestToSend)
 	{
 		ULONG result = SendJsonResponse(httpRequestQueue, httpPendingRequestId, pendingRequestToSend);
 		CHECK_ERROR(result == NO_ERROR, L"HttpSendHttpResponse failed for responding /Request.");
+		pendingRequestToSend = nullptr;
 	}
 }
 
@@ -439,7 +442,7 @@ void HttpServer::EndSubmitPendingRequest()
 			httpPendingRequestId = HTTP_NULL_ID;
 			pendingRequestToSend = nullptr;
 		}
-		else if (result == ERROR_CONNECTION_INVALID)
+		else if (result == ERROR_CONNECTION_INVALID || result == ERROR_OPERATION_ABORTED)
 		{
 			httpPendingRequestId = HTTP_NULL_ID;
 		}
