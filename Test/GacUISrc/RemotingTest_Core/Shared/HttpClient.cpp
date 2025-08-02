@@ -45,7 +45,6 @@ void HttpClient::WaitForServer()
 				case WINHTTP_CALLBACK_STATUS_REQUEST_ERROR:
 					{
 						self->dwInternetStatus_WaitForServer = dwInternetStatus;
-						self->lpvStatusInformation_WaitForServer = lpvStatusInformation;
 						self->dwStatusInformationLength_WaitForServer = dwStatusInformationLength;
 						SetEvent(self->hEventWaitForServer);
 					}

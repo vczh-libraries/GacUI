@@ -42,7 +42,6 @@ protected:
 
 	HANDLE											hEventWaitForServer = INVALID_HANDLE_VALUE;
 	DWORD											dwInternetStatus_WaitForServer = 0;
-	LPVOID											lpvStatusInformation_WaitForServer = NULL;
 	DWORD											dwStatusInformationLength_WaitForServer = 0;
 
 public:
