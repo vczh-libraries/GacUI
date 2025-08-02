@@ -14,7 +14,7 @@ void HttpClient::BeginReadingLoopUnsafe()
 	LPCWSTR acceptTypes[] = { L"application/json; charset=utf8", NULL };
 	HINTERNET httpRequest = WinHttpOpenRequest(
 		httpConnection,
-		L"GET",
+		L"POST",
 		urlRequest.Buffer(),
 		NULL,
 		WINHTTP_NO_REFERER,
@@ -45,9 +45,10 @@ void HttpClient::BeginReadingLoopUnsafe()
 						DWORD lastError = 0;
 						BOOL httpResult = WinHttpReceiveResponse(httpRequest, NULL);
 						lastError = GetLastError();
-						if (httpResult == FALSE && lastError == ERROR_INVALID_HANDLE)
+						if (lastError == ERROR_INVALID_HANDLE)
 						{
 							CHECK_ERROR(self->state == State::Stopping, L"WinHttpReceiveResponse failed with ERROR_INVALID_HANDLE but client is not stopping.");
+							WinHttpCloseHandle(httpRequest);
 							return;
 						}
 						CHECK_ERROR(httpResult == TRUE, L"WinHttpReceiveResponse failed.");
@@ -58,7 +59,6 @@ void HttpClient::BeginReadingLoopUnsafe()
 				{
 					ThreadPoolLite::Queue([=]()
 					{
-						if (self->state == State::Stopping) return;
 						DWORD lastError = 0;
 						DWORD statusCode = 0;
 						DWORD dwordLength = sizeof(DWORD);
@@ -70,7 +70,7 @@ void HttpClient::BeginReadingLoopUnsafe()
 							&dwordLength,
 							WINHTTP_NO_HEADER_INDEX);
 						lastError = GetLastError();
-						if (httpResult == FALSE && lastError == ERROR_INVALID_HANDLE)
+						if (lastError == ERROR_INVALID_HANDLE)
 						{
 							CHECK_ERROR(self->state == State::Stopping, L"WinHttpQueryHeaders failed with ERROR_INVALID_HANDLE but client is not stopping.");
 							return;
@@ -87,7 +87,7 @@ void HttpClient::BeginReadingLoopUnsafe()
 							&headerLength,
 							WINHTTP_NO_HEADER_INDEX);
 						lastError = GetLastError();
-						if (httpResult == FALSE && lastError == ERROR_INVALID_HANDLE)
+						if (lastError == ERROR_INVALID_HANDLE)
 						{
 							CHECK_ERROR(self->state == State::Stopping, L"WinHttpQueryHeaders failed with ERROR_INVALID_HANDLE but client is not stopping.");
 							return;
@@ -105,7 +105,7 @@ void HttpClient::BeginReadingLoopUnsafe()
 							&headerLength,
 							WINHTTP_NO_HEADER_INDEX);
 						lastError = GetLastError();
-						if (httpResult == FALSE && lastError == ERROR_INVALID_HANDLE)
+						if (lastError == ERROR_INVALID_HANDLE)
 						{
 							CHECK_ERROR(self->state == State::Stopping, L"WinHttpQueryHeaders failed with ERROR_INVALID_HANDLE but client is not stopping.");
 							return;
@@ -120,7 +120,7 @@ void HttpClient::BeginReadingLoopUnsafe()
 							httpRequest,
 							&dataLength);
 						lastError = GetLastError();
-						if (httpResult == FALSE && lastError == ERROR_INVALID_HANDLE)
+						if (lastError == ERROR_INVALID_HANDLE)
 						{
 							CHECK_ERROR(self->state == State::Stopping, L"WinHttpQueryDataAvailable failed with ERROR_INVALID_HANDLE but client is not stopping.");
 							return;
@@ -137,7 +137,7 @@ void HttpClient::BeginReadingLoopUnsafe()
 							dataLength,
 							&bytesRead);
 						lastError = GetLastError();
-						if (httpResult == FALSE && lastError == ERROR_INVALID_HANDLE)
+						if (lastError == ERROR_INVALID_HANDLE)
 						{
 							CHECK_ERROR(self->state == State::Stopping, L"WinHttpReadData failed with ERROR_INVALID_HANDLE but client is not stopping.");
 							return;
@@ -168,8 +168,8 @@ void HttpClient::BeginReadingLoopUnsafe()
 				{
 					ThreadPoolLite::Queue([=]()
 					{
-						if (self->state == State::Stopping) return;
-						CHECK_FAIL(L"/Request failed to complete.");
+						CHECK_ERROR(self->state == State::Stopping, L"/Request failed to complete.");
+						WinHttpCloseHandle(httpRequest);
 					});
 				}
 				break;
@@ -454,6 +454,7 @@ void HttpClient::SendJsonRequest(Ptr<JsonNode> jsonBody)
 					ThreadPoolLite::Queue([=]()
 					{
 						CHECK_ERROR(self->state == State::Stopping, L"/Response failed to complete.");
+						WinHttpCloseHandle(httpRequest);
 					});
 				}
 				break;
