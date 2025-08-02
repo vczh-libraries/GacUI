@@ -1,5 +1,7 @@
 #include "HttpClient.h"
 
+using namespace vl;
+
 /***********************************************************************
 HttpClient (Reading)
 ***********************************************************************/
@@ -15,6 +17,7 @@ HttpClient (WaitForServer)
 
 void HttpClient::WaitForServer()
 {
+	CHECK_ERROR(state == State::Ready, L"WaitForServer can only be called once.");
 	DWORD lastError = 0;
 	state = State::WaitForServerConnection;
 	LPCWSTR acceptTypes[] = { L"application/json; charset=utf8", NULL };
@@ -33,7 +36,7 @@ void HttpClient::WaitForServer()
 	{
 		WINHTTP_STATUS_CALLBACK previousCallback = WinHttpSetStatusCallback(
 			httpRequest,
-			(WINHTTP_STATUS_CALLBACK)[](HINTERNET hInternet, DWORD_PTR dwContext, DWORD dwInternetStatus, LPVOID lpvStatusInformation, DWORD dwStatusInformationLength) -> void
+			(WINHTTP_STATUS_CALLBACK)[](HINTERNET httpRequest, DWORD_PTR dwContext, DWORD dwInternetStatus, LPVOID lpvStatusInformation, DWORD dwStatusInformationLength) -> void
 			{
 				if (!dwContext) return;
 				auto self = reinterpret_cast<HttpClient*>(dwContext);
@@ -180,7 +183,92 @@ HttpClient (Writing)
 
 void HttpClient::SendJsonRequest(Ptr<JsonNode> jsonBody)
 {
-	CHECK_FAIL(L"Not Implemented!");
+	CHECK_ERROR(state == State::Running, L"SendJsonRequest can only be called when client is running.");
+	DWORD lastError = 0;
+	BOOL httpResult = FALSE;
+
+	HINTERNET httpRequest = WinHttpOpenRequest(
+		httpConnection,
+		L"POST",
+		urlResponse.Buffer(),
+		NULL,
+		WINHTTP_NO_REFERER,
+		NULL,
+		WINHTTP_FLAG_REFRESH);
+	lastError = GetLastError();
+	CHECK_ERROR(httpRequest != NULL, L"WinHttpOpenRequest failed.");
+
+	WINHTTP_STATUS_CALLBACK previousCallback = WinHttpSetStatusCallback(
+		httpRequest,
+		(WINHTTP_STATUS_CALLBACK)[](HINTERNET httpRequest, DWORD_PTR dwContext, DWORD dwInternetStatus, LPVOID lpvStatusInformation, DWORD dwStatusInformationLength) -> void
+		{
+			if (!dwContext) return;
+			switch (dwInternetStatus)
+			{
+			case WINHTTP_CALLBACK_STATUS_SENDREQUEST_COMPLETE:
+				{
+					ThreadPoolLite::Queue([=]()
+					{
+						DWORD lastError = 0;
+						BOOL httpResult = WinHttpReceiveResponse(httpRequest, NULL);
+						lastError = GetLastError();
+						CHECK_ERROR(httpResult == TRUE, L"WinHttpReceiveResponse failed.");
+					});
+				}
+				break;
+			case WINHTTP_CALLBACK_STATUS_HEADERS_AVAILABLE:
+				{
+					ThreadPoolLite::Queue([=]()
+					{
+						DWORD lastError = 0;
+						DWORD statusCode = 0;
+						DWORD dwordLength = sizeof(DWORD);
+						BOOL httpResult = WinHttpQueryHeaders(
+							httpRequest,
+							WINHTTP_QUERY_STATUS_CODE | WINHTTP_QUERY_FLAG_NUMBER,
+							WINHTTP_HEADER_NAME_BY_INDEX,
+							&statusCode,
+							&dwordLength,
+							WINHTTP_NO_HEADER_INDEX);
+						lastError = GetLastError();
+						CHECK_ERROR(httpResult == TRUE, L"WinHttpQueryHeaders failed to retrieve status code.");
+						CHECK_ERROR(statusCode == 200, L"SendJsonRequest did not return status code: 200.");
+
+						WinHttpCloseHandle(httpRequest);
+					});
+				}
+				break;
+			case WINHTTP_CALLBACK_STATUS_REQUEST_ERROR:
+				{
+					CHECK_FAIL(L"/Response failed to complete.");
+				}
+				break;
+			}
+		},
+		WINHTTP_CALLBACK_FLAG_ALL_NOTIFICATIONS,
+		NULL);
+	lastError = GetLastError();
+	CHECK_ERROR(previousCallback != WINHTTP_INVALID_STATUS_CALLBACK, L"WinHttpSetStatusCallback failed.");
+
+	httpResult = WinHttpAddRequestHeaders(
+		httpRequest,
+		L"Content-Type: application/json; charset=utf8",
+		-1,
+		WINHTTP_ADDREQ_FLAG_ADD);
+	lastError = GetLastError();
+	CHECK_ERROR(httpResult == TRUE, L"WinHttpAddRequestHeaders failed.");
+
+	U8String body = wtou8(JsonToString(jsonBody));
+	httpResult = WinHttpSendRequest(
+		httpRequest,
+		WINHTTP_NO_ADDITIONAL_HEADERS,
+		0,
+		(LPVOID)body.Buffer(),
+		(DWORD)body.Length(),
+		(DWORD)body.Length(),
+		reinterpret_cast<DWORD_PTR>(httpRequest));
+	lastError = GetLastError();
+	CHECK_ERROR(httpResult == TRUE, L"WinHttpSendRequest failed.");
 }
 
 void HttpClient::SendStringArray(vint count, List<WString>& strs)
