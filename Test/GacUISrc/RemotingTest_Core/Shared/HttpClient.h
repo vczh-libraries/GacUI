@@ -29,7 +29,10 @@ HttpClient (Reading)
 ***********************************************************************/
 
 protected:
+	static constexpr vint32_t						HttpRespondBodyStep = 65536;
 	Array<char8_t>									httpRespondBodyBuffer;
+	DWORD											httpRespondBodyBufferWriting = 0;
+	DWORD											httpRespondBodyBufferWritingAvailable = 0;
 
 public:
 
