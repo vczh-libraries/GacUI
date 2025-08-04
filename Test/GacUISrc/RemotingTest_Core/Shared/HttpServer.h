@@ -46,7 +46,7 @@ protected:
 	HTTP_URL_GROUP_ID								httpUrlGroupId = HTTP_NULL_ID;
 
 /***********************************************************************
-HttpServer (Reading)
+HttpServer (ListenToHttpRequest)
 ***********************************************************************/
 
 protected:
@@ -82,8 +82,6 @@ protected:
 
 	void											GenerateNewUrls();
 	void											SendConnectResponse(PHTTP_REQUEST pRequest);
-	void											WaitForClient_OnHttpConnectionBrokenUnsafe();
-	void											WaitForClient_OnHttpRequestReceivedUnsafe(PHTTP_REQUEST pRequest);
 
 public:
 
@@ -94,9 +92,6 @@ HttpServer (BeginReadingLoopUnsafe)
 ***********************************************************************/
 
 protected:
-
-	void											BeginReadingLoopUnsafe_OnHttpConnectionBrokenUnsafe();
-	void											BeginReadingLoopUnsafe_OnHttpRequestReceivedUnsafe(PHTTP_REQUEST pRequest);
 
 	void											SubmitResponse(PHTTP_REQUEST pRequest);
 

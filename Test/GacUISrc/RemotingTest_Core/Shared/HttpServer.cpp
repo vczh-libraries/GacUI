@@ -1,7 +1,7 @@
 #include "HttpServer.h"
 
 /***********************************************************************
-HttpServer (Reading)
+HttpServer (ListenToHttpRequest)
 ***********************************************************************/
 
 void HttpServer::OnHttpConnectionBrokenUnsafe()
@@ -9,10 +9,11 @@ void HttpServer::OnHttpConnectionBrokenUnsafe()
 	switch (state)
 	{
 	case State::WaitForClientConnection:
-		WaitForClient_OnHttpConnectionBrokenUnsafe();
+		CHECK_FAIL(L"HTTP server stopped while waiting for client connection.");
 		break;
 	case State::Running:
-		BeginReadingLoopUnsafe_OnHttpConnectionBrokenUnsafe();
+		state = State::Stopping;
+		callback->OnReadStoppedThreadUnsafe();
 		break;
 	default:
 		CHECK_FAIL(L"Unexpected HTTP request.");
@@ -21,17 +22,35 @@ void HttpServer::OnHttpConnectionBrokenUnsafe()
 
 void HttpServer::OnHttpRequestReceivedUnsafe(PHTTP_REQUEST pRequest)
 {
-	switch (state)
+	if (pRequest->Verb == HttpVerbGET && wcscmp(pRequest->CookedUrl.pAbsPath, HttpServerUrl_Connect) == 0)
 	{
-	case State::WaitForClientConnection:
-		WaitForClient_OnHttpRequestReceivedUnsafe(pRequest);
-		break;
-	case State::Running:
-		BeginReadingLoopUnsafe_OnHttpRequestReceivedUnsafe(pRequest);
-		break;
-	default:
-		CHECK_FAIL(L"Unexpected HTTP request.");
+		GenerateNewUrls();
+		SendConnectResponse(pRequest);
+
+		if (state == State::WaitForClientConnection)
+		{
+			state = State::Running;
+			SetEvent(hEventWaitForClient);
+		}
 	}
+	else if (pRequest->Verb == HttpVerbPOST && pRequest->CookedUrl.pAbsPath == urlRequest)
+	{
+		SPIN_LOCK(pendingRequestLock)
+		{
+			OnNewHttpRequestForPendingRequest(pRequest->RequestId);
+		}
+	}
+	else if (pRequest->Verb == HttpVerbPOST && pRequest->CookedUrl.pAbsPath == urlResponse)
+	{
+		SubmitResponse(pRequest);
+		ULONG result = SendJsonResponse(httpRequestQueue, pRequest->RequestId, Ptr(new JsonObject));
+		CHECK_ERROR(result == NO_ERROR, L"HttpSendHttpResponse failed for responding /Response.");
+	}
+	else
+	{
+		Send404Response(httpRequestQueue, pRequest->RequestId, "Unknown URL");
+	}
+	ListenToHttpRequest();
 }
 
 ULONG HttpServer::ListenToHttpRequest_Init(OVERLAPPED* overlapped)
@@ -238,29 +257,6 @@ void HttpServer::SendConnectResponse(PHTTP_REQUEST pRequest)
 	CHECK_ERROR(result == NO_ERROR, L"HttpSendHttpResponse failed for establishing a connection.");
 }
 
-void HttpServer::WaitForClient_OnHttpConnectionBrokenUnsafe()
-{
-	CHECK_FAIL(L"HTTP server stopped while waiting for client connection.");
-}
-
-void HttpServer::WaitForClient_OnHttpRequestReceivedUnsafe(PHTTP_REQUEST pRequest)
-{
-	if (pRequest->Verb == HttpVerbGET && wcscmp(pRequest->CookedUrl.pAbsPath, HttpServerUrl_Connect) == 0)
-	{
-		GenerateNewUrls();
-		SendConnectResponse(pRequest);
-
-		state = State::Running;
-		SetEvent(hEventWaitForClient);
-	}
-	else
-	{
-		Send404Response(httpRequestQueue, pRequest->RequestId, "The first request must be /GacUIRemoting/Connect");
-		Console::WriteLine(L"Unexpected request received: " + WString::Unmanaged(pRequest->CookedUrl.pFullUrl));
-		ListenToHttpRequest();
-	}
-}
-
 void HttpServer::WaitForClient()
 {
 	CHECK_ERROR(state == State::Ready, L"WaitForClient() can only be called for once.");
@@ -276,38 +272,6 @@ void HttpServer::WaitForClient()
 /***********************************************************************
 HttpServer (BeginReadingLoopUnsafe)
 ***********************************************************************/
-
-void HttpServer::BeginReadingLoopUnsafe_OnHttpConnectionBrokenUnsafe()
-{
-	state = State::Stopping;
-	callback->OnReadStoppedThreadUnsafe();
-}
-
-void HttpServer::BeginReadingLoopUnsafe_OnHttpRequestReceivedUnsafe(PHTTP_REQUEST pRequest)
-{
-	if (pRequest->Verb == HttpVerbGET && wcscmp(pRequest->CookedUrl.pAbsPath, HttpServerUrl_Connect) == 0)
-	{
-		Send404Response(httpRequestQueue, pRequest->RequestId, "Subsequential requests to /GacUIRemoting/Connect is denied");
-	}
-	else if (pRequest->Verb == HttpVerbPOST && pRequest->CookedUrl.pAbsPath == urlRequest)
-	{
-		SPIN_LOCK(pendingRequestLock)
-		{
-			OnNewHttpRequestForPendingRequest(pRequest->RequestId);
-		}
-	}
-	else if (pRequest->Verb == HttpVerbPOST && pRequest->CookedUrl.pAbsPath == urlResponse)
-	{
-		SubmitResponse(pRequest);
-		ULONG result = SendJsonResponse(httpRequestQueue, pRequest->RequestId, Ptr(new JsonObject));
-		CHECK_ERROR(result == NO_ERROR, L"HttpSendHttpResponse failed for responding /Response.");
-	}
-	else
-	{
-		Send404Response(httpRequestQueue, pRequest->RequestId, "Unknown URL");
-	}
-	ListenToHttpRequest();
-}
 
 void HttpServer::SubmitResponse(PHTTP_REQUEST pRequest)
 {
@@ -360,7 +324,7 @@ void HttpServer::SubmitResponse(PHTTP_REQUEST pRequest)
 
 void HttpServer::BeginReadingLoopUnsafe()
 {
-	ListenToHttpRequest();
+	// Does nothing since ListenToHttpRequest is looping after WaitForClient is called
 }
 
 /***********************************************************************
