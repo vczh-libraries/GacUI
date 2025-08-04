@@ -35,6 +35,7 @@ void HttpServer::OnHttpRequestReceivedUnsafe(PHTTP_REQUEST pRequest)
 			SPIN_LOCK(pendingRequestLock)
 			{
 				OnCancelCurrentHttpRequestForPendingRequest();
+				pendingRequestToSend = nullptr;
 			}
 			callback->OnReconnectedUnsafe();
 		}

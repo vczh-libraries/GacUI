@@ -32,6 +32,7 @@ void CoreChannel::OnReadStoppedThreadUnsafe()
 
 void CoreChannel::OnReconnectedUnsafe()
 {
+	Console::WriteLine(L"> New renderer connected");
 	receiver->OnReceive(WString::Unmanaged(
 		LR"JSON({"semantic":"Event","name":"ControllerDisconnect"})JSON"
 		));
