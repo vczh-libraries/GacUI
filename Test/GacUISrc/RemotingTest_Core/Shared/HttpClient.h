@@ -34,6 +34,7 @@ protected:
 	DWORD											httpRespondBodyBufferWriting = 0;
 	DWORD											httpRespondBodyBufferWritingAvailable = 0;
 
+	void											RaiseErrorUnsafe(WString errorMessage);
 public:
 
 	void											BeginReadingLoopUnsafe() override;

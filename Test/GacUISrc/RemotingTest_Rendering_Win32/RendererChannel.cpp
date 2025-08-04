@@ -13,16 +13,20 @@ void RendererChannel::OnReadStringThreadUnsafe(Ptr<List<WString>> strs)
 				{
 					if (str[0] == L'!')
 					{
-						auto mainWindow = GetCurrentController()->WindowService()->GetMainWindow();
-						auto title = mainWindow->GetTitle();
-						auto errorMessage = str.Right(str.Length() - 1);
-						MessageBox(
-							windows::GetWindowsForm(mainWindow)->GetWindowHandle(),
-							errorMessage.Buffer(),
-							title.Buffer(),
-							MB_OK | MB_ICONERROR | MB_APPLMODAL
+						if (!displayedError)
+						{
+							displayedError = true;
+							auto mainWindow = GetCurrentController()->WindowService()->GetMainWindow();
+							auto title = mainWindow->GetTitle();
+							auto errorMessage = str.Right(str.Length() - 1);
+							MessageBox(
+								windows::GetWindowsForm(mainWindow)->GetWindowHandle(),
+								errorMessage.Buffer(),
+								title.Buffer(),
+								MB_OK | MB_ICONERROR | MB_APPLMODAL
 							);
-						renderer->ForceExitByFatelError();
+							renderer->ForceExitByFatelError();
+						}
 					}
 					else
 					{

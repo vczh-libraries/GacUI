@@ -16,6 +16,7 @@ protected:
 	GuiRemoteRendererSingle*						renderer = nullptr;
 	IGuiRemoteProtocolChannel<WString>*				channel = nullptr;
 	EventObject										eventDisconnected;
+	bool											displayedError = false;
 
 	void											OnReadStringThreadUnsafe(Ptr<List<WString>> strs) override;
 	void											OnReadStoppedThreadUnsafe() override;

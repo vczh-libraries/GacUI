@@ -4,6 +4,13 @@
 HttpClient (Reading)
 ***********************************************************************/
 
+void HttpClient::RaiseErrorUnsafe(WString errorMessage)
+{
+	auto strs = Ptr(new List<WString>);
+	strs->Add(WString::Unmanaged(L"!") + errorMessage);
+	callback->OnReadStringThreadUnsafe(strs);
+}
+
 void HttpClient::BeginReadingLoopUnsafe()
 {
 	if (state == State::Stopping) return;
@@ -78,7 +85,12 @@ void HttpClient::BeginReadingLoopUnsafe()
 									return;
 								}
 								CHECK_ERROR(httpResult == TRUE, L"WinHttpQueryHeaders failed to retrieve status code.");
-								CHECK_ERROR(statusCode == 200, L"BeginReadingLoopUnsafe did not return status code: 200.");
+								if (statusCode != 200)
+								{
+									WinHttpCloseHandle(httpRequest);
+									self->RaiseErrorUnsafe(WString::Unmanaged(L"/Request returned status code: ") + itow(statusCode) + L", another renderer may have connected to the core.");
+									return;
+								}
 							}
 							{
 								DWORD headerLength = 0;
@@ -213,8 +225,11 @@ void HttpClient::BeginReadingLoopUnsafe()
 					{
 						ThreadPoolLite::Queue([=]()
 						{
-							CHECK_ERROR(self->state == State::Stopping, L"/Request failed to complete.");
 							WinHttpCloseHandle(httpRequest);
+							if (self->state != State::Stopping)
+							{
+								self->RaiseErrorUnsafe(WString::Unmanaged(L"/Request canceled, another renderer may have connected to the core."));
+							}
 						});
 					}
 					break;
@@ -494,9 +509,12 @@ void HttpClient::SendJsonRequest(Ptr<JsonNode> jsonBody)
 							return;
 						}
 						CHECK_ERROR(httpResult == TRUE, L"WinHttpQueryHeaders failed to retrieve status code.");
-						CHECK_ERROR(statusCode == 200, L"SendJsonRequest did not return status code: 200.");
 
 						WinHttpCloseHandle(httpRequest);
+						if (statusCode != 200)
+						{
+							self->RaiseErrorUnsafe(WString::Unmanaged(L"/Response returned status code: ") + itow(statusCode) + L", another renderer may have connected to the core.");
+						}
 					});
 				}
 				break;
@@ -508,8 +526,11 @@ void HttpClient::SendJsonRequest(Ptr<JsonNode> jsonBody)
 					}
 					ThreadPoolLite::Queue([=]()
 					{
-						CHECK_ERROR(self->state == State::Stopping, L"/Response failed to complete.");
 						WinHttpCloseHandle(httpRequest);
+						if (self->state != State::Stopping)
+						{
+							self->RaiseErrorUnsafe(WString::Unmanaged(L"/Response canceled, another renderer may have connected to the core."));
+						}
 					});
 				}
 				break;
