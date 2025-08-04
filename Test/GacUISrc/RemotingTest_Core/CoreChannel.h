@@ -7,7 +7,7 @@ using namespace vl::presentation::remoteprotocol::repeatfiltering;
 using namespace vl::presentation::remoteprotocol::channeling;
 
 class CoreChannel
-	: protected virtual INetworkProtocolCallback
+	: protected virtual INetworkProtocolCoreCallback
 	, public virtual IGuiRemoteProtocolChannel<vl::WString>
 {
 protected:
@@ -21,6 +21,7 @@ protected:
 
 	void												OnReadStringThreadUnsafe(vl::Ptr<vl::collections::List<vl::WString>> strs) override;
 	void												OnReadStoppedThreadUnsafe() override;
+	void												OnReconnectedUnsafe() override;
 	void												SendPendingMessages();
 
 public:

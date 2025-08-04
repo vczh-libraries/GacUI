@@ -37,7 +37,7 @@ class HttpServer : public INetworkProtocol
 
 protected:
 	glr::json::Parser								jsonParser;
-	INetworkProtocolCallback*						callback = nullptr;
+	INetworkProtocolCoreCallback*					callback = nullptr;
 	WString											urlRequest;
 	WString											urlResponse;
 

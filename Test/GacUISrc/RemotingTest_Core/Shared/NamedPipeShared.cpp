@@ -249,6 +249,7 @@ void NamedPipeShared::Stop()
 void NamedPipeShared::InstallCallback(INetworkProtocolCallback* _callback)
 {
 	callback = _callback;
+	CHECK_ERROR(callback, L"NamedPipeShared::InstallCallback needs a valid INetworkProtocolCallback.");
 }
 
 void NamedPipeShared::BeginReadingLoopUnsafe()

@@ -637,4 +637,5 @@ void HttpClient::Stop()
 void HttpClient::InstallCallback(INetworkProtocolCallback* _callback)
 {
 	callback = _callback;
+	CHECK_ERROR(callback, L"HttpClient::InstallCallback needs a valid INetworkProtocolCallback.");
 }

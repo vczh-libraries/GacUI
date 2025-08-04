@@ -30,6 +30,13 @@ void CoreChannel::OnReadStoppedThreadUnsafe()
 	eventDisconnected.Signal();
 }
 
+void CoreChannel::OnReconnectedUnsafe()
+{
+	receiver->OnReceive(WString::Unmanaged(
+		LR"JSON({"semantic":"Event","name":"ControllerDisconnect"})JSON"
+		));
+}
+
 void CoreChannel::SendPendingMessages()
 {
 	networkProtocol->SendStringArray(pendingMessageCount, pendingMessages);

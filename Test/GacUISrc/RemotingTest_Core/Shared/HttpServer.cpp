@@ -32,6 +32,10 @@ void HttpServer::OnHttpRequestReceivedUnsafe(PHTTP_REQUEST pRequest)
 			state = State::Running;
 			SetEvent(hEventWaitForClient);
 		}
+		else
+		{
+			callback->OnReconnectedUnsafe();
+		}
 	}
 	else if (pRequest->Verb == HttpVerbPOST && pRequest->CookedUrl.pAbsPath == urlRequest)
 	{
@@ -575,5 +579,6 @@ void HttpServer::Stop()
 
 void HttpServer::InstallCallback(INetworkProtocolCallback* _callback)
 {
-	callback = _callback;
+	callback = dynamic_cast<INetworkProtocolCoreCallback*>(_callback);
+	CHECK_ERROR(callback, L"HttpServer::InstallCallback needs a valid INetworkProtocolCoreCallback.");
 }

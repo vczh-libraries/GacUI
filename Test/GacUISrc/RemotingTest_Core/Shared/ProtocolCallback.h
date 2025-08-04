@@ -23,6 +23,12 @@ public:
 	virtual void				OnReadStoppedThreadUnsafe() = 0;
 };
 
+class INetworkProtocolCoreCallback : public virtual INetworkProtocolCallback
+{
+public:
+	virtual void				OnReconnectedUnsafe() = 0;
+};
+
 class INetworkProtocol : public virtual Interface
 {
 public:
