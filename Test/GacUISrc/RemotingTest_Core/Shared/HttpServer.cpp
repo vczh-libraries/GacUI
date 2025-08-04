@@ -189,12 +189,29 @@ void HttpServer::WaitForClient_OnHttpConnectionBrokenUnsafe()
 
 void HttpServer::WaitForClient_OnHttpRequestReceivedUnsafe(PHTTP_REQUEST pRequest)
 {
-	if (pRequest->Verb == HttpVerbGET && pRequest->CookedUrl.pFullUrl == urlConnect)
+	if (pRequest->Verb == HttpVerbGET && wcscmp(pRequest->CookedUrl.pAbsPath, HttpServerUrl_Connect) == 0)
 	{
+		{
+			RPC_STATUS status = -1;
+			UUID guid;
+			status = UuidCreate(&guid);
+			CHECK_ERROR(status == RPC_S_OK, L"UuidCreate failed.");
+
+			RPC_WSTR guidString = nullptr;
+			status = UuidToString(&guid, &guidString);
+			CHECK_ERROR(status == RPC_S_OK, L"UuidToString failed.");
+
+			urlRequest = WString::Unmanaged(HttpServerUrl_Request) + L"/" + WString::Unmanaged(guidString);
+			urlResponse = WString::Unmanaged(HttpServerUrl_Response) + L"/" + WString::Unmanaged(guidString);
+
+			status = RpcStringFree(&guidString);
+			CHECK_ERROR(status == RPC_S_OK, L"RpcStringFree failed.");
+		}
+
 		auto jsonObject = Ptr(new JsonObject);
 		{
 			auto jsonValue = Ptr(new JsonString);
-			jsonValue->content.value = urlRequest.Right(urlRequest.Length() - wcslen(HttpServerUrl) - 7);
+			jsonValue->content.value = urlRequest;
 
 			auto jsonField = Ptr(new JsonObjectField);
 			jsonField->name.value = WString::Unmanaged(L"request");
@@ -204,7 +221,7 @@ void HttpServer::WaitForClient_OnHttpRequestReceivedUnsafe(PHTTP_REQUEST pReques
 		}
 		{
 			auto jsonValue = Ptr(new JsonString);
-			jsonValue->content.value = urlResponse.Right(urlResponse.Length() - wcslen(HttpServerUrl) - 7);
+			jsonValue->content.value = urlResponse;
 
 			auto jsonField = Ptr(new JsonObjectField);
 			jsonField->name.value = WString::Unmanaged(L"response");
@@ -260,18 +277,18 @@ void HttpServer::BeginReadingLoopUnsafe_OnHttpConnectionBrokenUnsafe()
 
 void HttpServer::BeginReadingLoopUnsafe_OnHttpRequestReceivedUnsafe(PHTTP_REQUEST pRequest)
 {
-	if (pRequest->Verb == HttpVerbGET && pRequest->CookedUrl.pFullUrl == urlConnect)
+	if (pRequest->Verb == HttpVerbGET && wcscmp(pRequest->CookedUrl.pAbsPath, HttpServerUrl_Connect) == 0)
 	{
 		Send404Response(httpRequestQueue, pRequest->RequestId, "Subsequential requests to /GacUIRemoting/Connect is denied");
 	}
-	else if (pRequest->Verb == HttpVerbPOST && pRequest->CookedUrl.pFullUrl == urlRequest)
+	else if (pRequest->Verb == HttpVerbPOST && pRequest->CookedUrl.pAbsPath == urlRequest)
 	{
 		SPIN_LOCK(pendingRequestLock)
 		{
 			OnNewHttpRequestForPendingRequest(pRequest->RequestId);
 		}
 	}
-	else if (pRequest->Verb == HttpVerbPOST && pRequest->CookedUrl.pFullUrl == urlResponse)
+	else if (pRequest->Verb == HttpVerbPOST && pRequest->CookedUrl.pAbsPath == urlResponse)
 	{
 		SubmitResponse(pRequest);
 		ULONG result = SendJsonResponse(httpRequestQueue, pRequest->RequestId, Ptr(new JsonObject));
@@ -492,25 +509,6 @@ HttpServer::HttpServer()
 
 	hEventWaitForClient = CreateEvent(NULL, TRUE, TRUE, NULL);
 	CHECK_ERROR(hEventWaitForClient != NULL, L"HttpServer initialization failed on CreateEvent(hEventWaitForClient).");
-
-	{
-		RPC_STATUS status = -1;
-		UUID guid;
-		status = UuidCreate(&guid);
-		CHECK_ERROR(status == RPC_S_OK, L"UuidCreate failed.");
-
-		RPC_WSTR guidString = nullptr;
-		status = UuidToString(&guid, &guidString);
-		CHECK_ERROR(status == RPC_S_OK, L"UuidToString failed.");
-
-		urlGuid = guidString;
-		urlConnect = WString::Unmanaged(L"http://") + WString::Unmanaged(HttpServerUrl) + WString::Unmanaged(HttpServerUrl_Connect);
-		urlRequest = WString::Unmanaged(L"http://") + WString::Unmanaged(HttpServerUrl) + WString::Unmanaged(HttpServerUrl_Request) + L"/" + urlGuid;
-		urlResponse = WString::Unmanaged(L"http://") + WString::Unmanaged(HttpServerUrl) + WString::Unmanaged(HttpServerUrl_Response) + L"/" + urlGuid;
-
-		status = RpcStringFree(&guidString);
-		CHECK_ERROR(status == RPC_S_OK, L"RpcStringFree failed.");
-	}
 	{
 		ULONG result = NO_ERROR;
 
@@ -545,21 +543,21 @@ HttpServer::HttpServer()
 
 		result = HttpAddUrlToUrlGroup(
 			httpUrlGroupId,
-			urlConnect.Buffer(),
+			(WString::Unmanaged(L"http://") + WString::Unmanaged(HttpServerUrl) + WString::Unmanaged(HttpServerUrl_Connect)).Buffer(),
 			0,
 			0);
 		CHECK_ERROR(result == NO_ERROR, L"HttpAddUrlToUrlGroup failed (urlConnect).");
 
 		result = HttpAddUrlToUrlGroup(
 			httpUrlGroupId,
-			urlRequest.Buffer(),
+			(WString::Unmanaged(L"http://") + WString::Unmanaged(HttpServerUrl) + WString::Unmanaged(HttpServerUrl_Request)).Buffer(),
 			0,
 			0);
 		CHECK_ERROR(result == NO_ERROR, L"HttpAddUrlToUrlGroup failed (urlRequest).");
 
 		result = HttpAddUrlToUrlGroup(
 			httpUrlGroupId,
-			urlResponse.Buffer(),
+			(WString::Unmanaged(L"http://") + WString::Unmanaged(HttpServerUrl) + WString::Unmanaged(HttpServerUrl_Response)).Buffer(),
 			0,
 			0);
 		CHECK_ERROR(result == NO_ERROR, L"HttpAddUrlToUrlGroup failed (urlResponse).");
