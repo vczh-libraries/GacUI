@@ -182,6 +182,62 @@ void HttpServer::ListenToHttpRequest()
 HttpServer (WaitForClient)
 ***********************************************************************/
 
+void HttpServer::GenerateNewUrls()
+{
+	RPC_STATUS status = -1;
+	UUID guid;
+	status = UuidCreate(&guid);
+	CHECK_ERROR(status == RPC_S_OK, L"UuidCreate failed.");
+
+	RPC_WSTR guidString = nullptr;
+	status = UuidToString(&guid, &guidString);
+	CHECK_ERROR(status == RPC_S_OK, L"UuidToString failed.");
+
+	urlRequest = WString::Unmanaged(HttpServerUrl_Request) + L"/" + WString::Unmanaged(guidString);
+	urlResponse = WString::Unmanaged(HttpServerUrl_Response) + L"/" + WString::Unmanaged(guidString);
+
+	status = RpcStringFree(&guidString);
+	CHECK_ERROR(status == RPC_S_OK, L"RpcStringFree failed.");
+}
+
+void HttpServer::SendConnectResponse(PHTTP_REQUEST pRequest)
+{
+	auto jsonObject = Ptr(new JsonObject);
+	{
+		auto jsonValue = Ptr(new JsonString);
+		jsonValue->content.value = urlRequest;
+
+		auto jsonField = Ptr(new JsonObjectField);
+		jsonField->name.value = WString::Unmanaged(L"request");
+		jsonField->value = jsonValue;
+
+		jsonObject->fields.Add(jsonField);
+	}
+	{
+		auto jsonValue = Ptr(new JsonString);
+		jsonValue->content.value = urlResponse;
+
+		auto jsonField = Ptr(new JsonObjectField);
+		jsonField->name.value = WString::Unmanaged(L"response");
+		jsonField->value = jsonValue;
+
+		jsonObject->fields.Add(jsonField);
+	}
+	{
+		auto jsonValue = Ptr(new JsonString);
+		jsonValue->content.value = WString::Unmanaged(L"request to wait for next request; response to send events with one optional response.");
+
+		auto jsonField = Ptr(new JsonObjectField);
+		jsonField->name.value = WString::Unmanaged(L"comments");
+		jsonField->value = jsonValue;
+
+		jsonObject->fields.Add(jsonField);
+	}
+
+	ULONG result = SendJsonResponse(httpRequestQueue, pRequest->RequestId, jsonObject);
+	CHECK_ERROR(result == NO_ERROR, L"HttpSendHttpResponse failed for establishing a connection.");
+}
+
 void HttpServer::WaitForClient_OnHttpConnectionBrokenUnsafe()
 {
 	CHECK_FAIL(L"HTTP server stopped while waiting for client connection.");
@@ -191,57 +247,9 @@ void HttpServer::WaitForClient_OnHttpRequestReceivedUnsafe(PHTTP_REQUEST pReques
 {
 	if (pRequest->Verb == HttpVerbGET && wcscmp(pRequest->CookedUrl.pAbsPath, HttpServerUrl_Connect) == 0)
 	{
-		{
-			RPC_STATUS status = -1;
-			UUID guid;
-			status = UuidCreate(&guid);
-			CHECK_ERROR(status == RPC_S_OK, L"UuidCreate failed.");
+		GenerateNewUrls();
+		SendConnectResponse(pRequest);
 
-			RPC_WSTR guidString = nullptr;
-			status = UuidToString(&guid, &guidString);
-			CHECK_ERROR(status == RPC_S_OK, L"UuidToString failed.");
-
-			urlRequest = WString::Unmanaged(HttpServerUrl_Request) + L"/" + WString::Unmanaged(guidString);
-			urlResponse = WString::Unmanaged(HttpServerUrl_Response) + L"/" + WString::Unmanaged(guidString);
-
-			status = RpcStringFree(&guidString);
-			CHECK_ERROR(status == RPC_S_OK, L"RpcStringFree failed.");
-		}
-
-		auto jsonObject = Ptr(new JsonObject);
-		{
-			auto jsonValue = Ptr(new JsonString);
-			jsonValue->content.value = urlRequest;
-
-			auto jsonField = Ptr(new JsonObjectField);
-			jsonField->name.value = WString::Unmanaged(L"request");
-			jsonField->value = jsonValue;
-
-			jsonObject->fields.Add(jsonField);
-		}
-		{
-			auto jsonValue = Ptr(new JsonString);
-			jsonValue->content.value = urlResponse;
-
-			auto jsonField = Ptr(new JsonObjectField);
-			jsonField->name.value = WString::Unmanaged(L"response");
-			jsonField->value = jsonValue;
-
-			jsonObject->fields.Add(jsonField);
-		}
-		{
-			auto jsonValue = Ptr(new JsonString);
-			jsonValue->content.value = WString::Unmanaged(L"request to wait for next request; response to send events with one optional response.");
-
-			auto jsonField = Ptr(new JsonObjectField);
-			jsonField->name.value = WString::Unmanaged(L"comments");
-			jsonField->value = jsonValue;
-
-			jsonObject->fields.Add(jsonField);
-		}
-
-		ULONG result = SendJsonResponse(httpRequestQueue, pRequest->RequestId, jsonObject);
-		CHECK_ERROR(result == NO_ERROR, L"HttpSendHttpResponse failed for establishing a connection.");
 		state = State::Running;
 		SetEvent(hEventWaitForClient);
 	}
@@ -256,8 +264,8 @@ void HttpServer::WaitForClient_OnHttpRequestReceivedUnsafe(PHTTP_REQUEST pReques
 void HttpServer::WaitForClient()
 {
 	CHECK_ERROR(state == State::Ready, L"WaitForClient() can only be called for once.");
-
 	state = State::WaitForClientConnection;
+
 	ResetEvent(hEventWaitForClient);
 	ListenToHttpRequest();
 	WaitForSingleObject(hEventWaitForClient, INFINITE);

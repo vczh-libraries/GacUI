@@ -80,6 +80,8 @@ HttpServer (WaitForClient)
 protected:
 	HANDLE											hEventWaitForClient = INVALID_HANDLE_VALUE;
 
+	void											GenerateNewUrls();
+	void											SendConnectResponse(PHTTP_REQUEST pRequest);
 	void											WaitForClient_OnHttpConnectionBrokenUnsafe();
 	void											WaitForClient_OnHttpRequestReceivedUnsafe(PHTTP_REQUEST pRequest);
 
