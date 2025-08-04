@@ -111,6 +111,7 @@ protected:
 	static ULONG									SendJsonResponse(HANDLE httpRequestQueue, HTTP_REQUEST_ID requestId, Ptr<JsonNode> jsonBody);
 
 	// All following functions must be called inside SPIN_LOCK(pendingRequestLock)
+	void											OnCancelCurrentHttpRequestForPendingRequest();
 	void											OnNewHttpRequestForPendingRequest(HTTP_REQUEST_ID httpRequestId);
 	void											BeginSubmitPendingRequest();
 	void											EndSubmitPendingRequest();

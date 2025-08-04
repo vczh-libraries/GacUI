@@ -25,8 +25,6 @@ void HttpServer::OnHttpRequestReceivedUnsafe(PHTTP_REQUEST pRequest)
 	if (pRequest->Verb == HttpVerbGET && wcscmp(pRequest->CookedUrl.pAbsPath, HttpServerUrl_Connect) == 0)
 	{
 		GenerateNewUrls();
-		SendConnectResponse(pRequest);
-
 		if (state == State::WaitForClientConnection)
 		{
 			state = State::Running;
@@ -34,8 +32,13 @@ void HttpServer::OnHttpRequestReceivedUnsafe(PHTTP_REQUEST pRequest)
 		}
 		else
 		{
+			SPIN_LOCK(pendingRequestLock)
+			{
+				OnCancelCurrentHttpRequestForPendingRequest();
+			}
 			callback->OnReconnectedUnsafe();
 		}
+		SendConnectResponse(pRequest);
 	}
 	else if (pRequest->Verb == HttpVerbPOST && pRequest->CookedUrl.pAbsPath == urlRequest)
 	{
@@ -396,7 +399,7 @@ ULONG HttpServer::SendJsonResponse(HANDLE httpRequestQueue, HTTP_REQUEST_ID requ
 	return result;
 }
 
-void HttpServer::OnNewHttpRequestForPendingRequest(HTTP_REQUEST_ID httpRequestId)
+void HttpServer::OnCancelCurrentHttpRequestForPendingRequest()
 {
 	if (httpPendingRequestId != HTTP_NULL_ID)
 	{
@@ -407,7 +410,13 @@ void HttpServer::OnNewHttpRequestForPendingRequest(HTTP_REQUEST_ID httpRequestId
 		CHECK_ERROR(
 			result == NO_ERROR || result == ERROR_CONNECTION_INVALID || result == ERROR_OPERATION_ABORTED,
 			L"HttpCancelHttpRequest failed for canceling outdated /Request.");
+		httpPendingRequestId = HTTP_NULL_ID;
 	}
+}
+
+void HttpServer::OnNewHttpRequestForPendingRequest(HTTP_REQUEST_ID httpRequestId)
+{
+	OnCancelCurrentHttpRequestForPendingRequest();
 	httpPendingRequestId = httpRequestId;
 	if (pendingRequestToSend)
 	{
