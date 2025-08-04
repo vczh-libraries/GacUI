@@ -13,6 +13,7 @@ class CoreChannel
 protected:
 	INetworkProtocol*									networkProtocol = nullptr;
 	IGuiRemoteProtocolChannelReceiver<vl::WString>*		receiver = nullptr;
+	GuiRemoteProtocolAsyncJsonChannelSerializer*		asyncChannel = nullptr;
 	bool												connected = false;
 	vl::EventObject										eventDisconnected;
 
@@ -29,7 +30,7 @@ public:
 	CoreChannel(INetworkProtocol* _networkProtocol);
 	~CoreChannel();
 
-	void												RendererConnectedThreadUnsafe(GuiRemoteProtocolAsyncJsonChannelSerializer* asyncChannel);
+	void												RendererConnectedThreadUnsafe(GuiRemoteProtocolAsyncJsonChannelSerializer* _asyncChannel);
 	void												WaitForDisconnected();
 	void												WriteErrorThreadUnsafe(const vl::WString& error);
 

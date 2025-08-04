@@ -86,9 +86,9 @@ GuiRemoteWindow (events)
 
 	void GuiRemoteWindow::OnControllerConnect()
 	{
-		if (disconnected)
+		if (controllerDisconnected)
 		{
-			disconnected = false;
+			controllerDisconnected = false;
 		}
 
 		sizingConfigInvalidated = true;
@@ -130,7 +130,7 @@ GuiRemoteWindow (events)
 
 	void GuiRemoteWindow::OnControllerDisconnect()
 	{
-		disconnected = true;
+		controllerDisconnected = true;
 	}
 
 	void GuiRemoteWindow::OnControllerScreenUpdated(const remoteprotocol::ScreenConfig& arguments)

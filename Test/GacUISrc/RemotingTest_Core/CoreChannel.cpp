@@ -8,21 +8,32 @@ void CoreChannel::OnReadStringThreadUnsafe(Ptr<List<WString>> strs)
 		WString::Unmanaged(LR"JSON({"semantic":"Event","name":"IOMouseLeaved")JSON"),
 		WString::Unmanaged(LR"JSON({"semantic":"Event","name":"WindowBoundsUpdated")JSON")
 	};
-	for (auto str : *strs.Obj())
+	asyncChannel->ExecuteInChannelThread([this, strs]()
 	{
-		for (auto&& filtered : filteredStrings)
-		{
-			if (str.Length() > filtered.Length() && str.Left(filtered.Length()) == filtered)
-			{
-				goto ON_RECEIVE;
-			}
-		}
 #ifdef _DEBUG
-		Console::WriteLine(L"Received: " + str);
+		for (auto str : *strs.Obj())
+		{
+			for (auto&& filtered : filteredStrings)
+			{
+				if (str.Length() > filtered.Length() && str.Left(filtered.Length()) == filtered)
+				{
+					goto SKIP_PRINTING;
+				}
+			}
+			Console::WriteLine(L"Received: " + str);
+		SKIP_PRINTING:;
+		}
 #endif
-	ON_RECEIVE:
-		receiver->OnReceive(str);
-	}
+
+		for (auto str : *strs.Obj())
+		{
+			if (str == LR"JSON({"semantic":"Event","name":"ControllerConnect"})JSON")
+			{
+				connected = true;
+			}
+			receiver->OnReceive(str);
+		}
+	});
 }
 
 void CoreChannel::OnReadStoppedThreadUnsafe()
@@ -32,10 +43,15 @@ void CoreChannel::OnReadStoppedThreadUnsafe()
 
 void CoreChannel::OnReconnectedUnsafe()
 {
-	Console::WriteLine(L"> New renderer connected");
-	receiver->OnReceive(WString::Unmanaged(
-		LR"JSON({"semantic":"Event","name":"ControllerDisconnect"})JSON"
-		));
+	asyncChannel->ExecuteInChannelThread([this]()
+	{
+		Console::WriteLine(L"> New renderer connected");
+		connected = false;
+
+		receiver->OnReceive(WString::Unmanaged(
+			LR"JSON({"semantic":"Event","name":"ControllerDisconnect"})JSON"
+			));
+	});
 }
 
 void CoreChannel::SendPendingMessages()
@@ -55,12 +71,14 @@ CoreChannel::~CoreChannel()
 {
 }
 
-void CoreChannel::RendererConnectedThreadUnsafe(GuiRemoteProtocolAsyncJsonChannelSerializer* asyncChannel)
+void CoreChannel::RendererConnectedThreadUnsafe(GuiRemoteProtocolAsyncJsonChannelSerializer* _asyncChannel)
 {
-	Console::WriteLine(L"> Renderer connected");
+	asyncChannel = _asyncChannel;
 	networkProtocol->BeginReadingLoopUnsafe();
+
 	asyncChannel->ExecuteInChannelThread([this]()
 	{
+		Console::WriteLine(L"> Renderer connected");
 		connected = true;
 	});
 }
@@ -72,7 +90,10 @@ void CoreChannel::WaitForDisconnected()
 
 void CoreChannel::WriteErrorThreadUnsafe(const WString& error)
 {
-	Console::WriteLine(L"Error: " + error);
+	asyncChannel->ExecuteInChannelThread([error]()
+	{
+		Console::WriteLine(L"Error: " + error);
+	});
 	networkProtocol->SendSingleString(L"!" + error);
 }
 
