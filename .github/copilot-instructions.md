@@ -862,11 +862,11 @@ TEST_FILE
 				{
 					// Click this button
 				});
-        protocol->OnNextIdleFrame(L"Clicked this button", [=]()
+				protocol->OnNextIdleFrame(L"Clicked this button", [=]()
 				{
 					// Type that text
 				});
-        protocol->OnNextIdleFrame(L"Typed that text", [=]()
+				protocol->OnNextIdleFrame(L"Typed that text", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					window->Hide();
