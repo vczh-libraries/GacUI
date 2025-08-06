@@ -549,9 +549,9 @@ The buffer will be deleted when `MemoryStream` is destroyed.
 
 ### EncoderStream and DecoderStream
 
-An `EncoderStream` transform the data using the given `IEncoder` and then write to a given writable stream.
+An `EncoderStream` transform the data using the given `IEncoder` and then write to a given writable stream. It is write only stream.
 
-A `DecoderStream` read data from a given readable stream and then transform the data using the given `IDecoder`.
+A `DecoderStream` read data from a given readable stream and then transform the data using the given `IDecoder`. It is a read only stream.
 
 By stacking multiple encoders, decoders and stream together, we can create a pipeline of data processing.
 
@@ -577,9 +577,64 @@ Or just use `File` to do the work which is much simpler.
 
 #### UTF Encoding
 
+- `BomEncoder` and `BomDecoder` convert data between `wchar_t` and a specified UTF encoding with BOM added to the very beginning.
+- `UtfGeneralEncoder<Native, Expect>` encode from `Expext` to `Native`, `UtfGeneralDecoder<Native, Expect>` decode from `Native` to `Expect`. They should be one of `wchar_t`, `char8_t`, `char16_t`, `char32_t` and `char16be_t`.
+  - Unlike `BomEncoder` and `BomDecoder`, `UtfGeneralEncoder` and `UtfGeneralDecodes` is without BOM.
+  - `char16be_t` means UTF-16 Big Endian, which is not a C++ native type, it can't be used with any string literal.
+  - There are aliases for them to convert between `wchar_t` and any other UTF encoding:
+    - `Utf8Encoder` and `Utf8Decoder`
+    - `Utf16Encoder` and `Utf16Decoder`
+    - `Utf16BEEncoder` and `Utf16BEDecoder`
+    - `Utf32Encoder` and `Utf32Decoder`
+- `MbcsEncoder` and `MbcsDecoder` convert data between `wchar_t` and `char`, which is ASCII.
+  - `BomEncoder::Mbcs` also handles ASCII meanwhile there is no BOM for ASCII. A `BomEncoder(BomEncoder::Mbcs)` works like a `MbcsEncoder`.
+  - The actual encoding of `char` depends on the user setting in the running OS.
+
+There is a function `TestEncoding` to scan a binary data and guess the most possible UTF encoding.
+
 #### Base64 Encoding
 
+`Utf8Base64Encoder` and `Utf6Base64Decoder` convert between binary data to Base64 in UTF8 encoding.
+They can work with `UtfGeneralEncoder` and `UtfGeneralDecoder` to convert binary data to Base64 in a `WString`.
+Here is some examples:
+
+```C++
+MemoryStream memoryStream;
+{
+  UtfGeneralEncoder<wchar_t, char8_t> u8towEncoder;
+  EncoderStream u8towStream(memoryStream, u8towEncoder);
+  Utf8Base64Encoder base64Encoder;
+  EncoderStream base64Stream(u8t0wStream, base64Encoder);
+  base64Stream.Write(binary ...);
+}
+memoryStream.SeekFromBegin(0);
+{
+  StreamReader reader(memoryStream);
+  auto base64 = reader.ReadToEnd(reader);
+}
+```
+
+```C++
+MemoryStream memoryStreamn;
+{
+  StreamWriter writer(memoryStream);
+  writer.WriteString(base64);
+}
+memoryStream.SeekFromBegin(0);
+{
+  UtfGeneralEncoder<wchar_t, char8_t> wtou8Decoder;
+  DecoderStream wtou8Stream(memoryStream, wtou8Decoder);
+  Utf8Base64Decoder base64Decoder;
+  DecoderStream base64Stream(wtou8Stream, base64Decoder);
+  base64Stream.Read(binary ...);
+}
+```
+
 #### Lzw Encoding
+
+- `LzwEncoder` compress binary data.
+- `LzwDecoder` decompress binary data.
+- There are help functions `CopyStream`, `CompressStream` and `DecompressStream` to make the code simpler.
 
 ### Other Streams
 
@@ -593,33 +648,184 @@ or when the same part of the data needs to be modified repeatly.
 
 ## Multi-Threading
 
-### Thread
+Use static functions `ThreadPoolLite::Queue` or `ThreadPoolLite::QueueLambda` to run a function in another thread.
 
-### ThreadPoolLite
+Use static function `Thread::Sleep` to pause the current thread for some milliseconds.
 
-### ThreadVariable<T>
+Use static function `Thread::GetCurrentThreadId` to get an identifier for the OS native thread running the current function.
 
-## Synchronization
+`Thread::CreateAndStart` could be used to run a function in another thread while returning a `Thread*` to control it, but this is not recommended.
+Always use `ThreadPoolLite` if possible.
+A `ThreadPoolLite` call with an `EventObject` is a better version of `Thread::Wait`.
+
+## Non-WaitableObject
+
+Only use `SpinLock` when the protected code exists super fast.
+Only use `CriticalSection` when the protected code costs time.
 
 ### SpinLock
 
-### Mutex
+- `Enter` blocks the current thread, and when it returns, the current thread owns the spin lock.
+  - Only one thread owns the spin lock.
+  - `TryEnter` does not block the current thread, and there is a chance that the current thread will own the spin lock, indicated by the return value.
+- `Leave` releases the spin lock from the current thread.
 
-### EventObject
+When it is able to `Enter` and `Leave` in the same function, use `SPIN_LOCK` to simplify the code.
+It is also exception safety, so you don't need to worry about try-catch:
 
-### CriticalSection
+```C++
+SpinLock lock;
+SPIN_LOCK(lock)
+{
+  // fast code that owns the spin lock
+}
+```
 
-### Semaphore
+### CritcalSection
+
+- `Enter` blocks the current thread, and when it returns, the current thread owns the critical section.
+  - Only one thread owns the critical section.
+  - `TryEnter` does not block the current thread, and there is a chance that the current thread will own the critical section, indicated by the return value.
+- `Leave` releases the critical section from the current thread.
+
+When it is able to `Enter` and `Leave` in the same function, use `CS_LOCK` to simplify the code.
+It is also exception safety, so you don't need to worry about try-catch:
+
+```C++
+CriticalSection cs;
+CS_LOCK(cs)
+{
+  // slow code that owns the critical section
+}
+```
 
 ### ReaderWriterLock
 
+`ReaderWriterLock` is an advanced version of `CriticalSection`:
+  - Multiple threads could own the same reader lock. When it happens, it prevents any thread from owning the writer lock.
+  - Only one threads could own the writer lock. When it happens, it prevents any thread from owning the reader lock.
+- Call `TryEnterReader`, `EnterReader` and `LeaveReader` to access the reader lock.
+- Call `TryEnterWriter`, `EnterWriter` and `LeaveWriter` to access the writer lock.
+
+When it is able to `EnterReader` and `LeaveReader` in the same function, use `READER_LOCK` to simplify the code.
+When it is able to `EnterWriter` and `LeaveWriter` in the same function, use `WRITER_LOCK` to simplify the code.
+They are also exception safety, so you don't need to worry about try-catch:
+
+```C++
+ReaderWriterLock rwlock;
+READER_LOCK(rwlock)
+{
+  // code that owns the reader lock
+}
+WRITER_LOCK(rwlock)
+{
+  // code that owns the writer lock
+}
+```
+
 ### ConditionVariable
+
+A `ConditionVariable` works with a `CriticalSection` or a `ReaderWriterLock`.
+  - Call `SleepWith` to work with a `CriticalSection`. It works on both Windows and Linux.
+  - Call `SleepWithForTime` to work with a `CriticalSection` with a timeout. It only works on Windows.
+  - Call `SleepWithReader`, `SleepWithReaderForTime`, `SleepWriter` or `SleepWriterForTime` to work with a `ReaderWriterLock`. They only work on Windows.
+
+The `Sleep*` function temporarily releases the lock from the current thread, and block the current thread until it owns the lock again.
+  - Before calling the `Sleep*` function, the current thread must own the lock.
+  - Calling the `Sleep*` function releases the lock from the current thread, and block the current thread.
+  - The `Sleep*` function returns when `WakeOnePending` or `WaitAllPendings` is called.
+    - The `Sleep*ForTime` function could also return when it reaches the timeout. But this will not always happen, because:
+      - `WaitOnePending` only activates one thread pending on the condition variable.
+      - `WaitAllPendings` activates all thread but they are also controlled by the lock.
+    - When `Sleep*` returns, the current thread owns the lock.
+
+## WaitableObject
+
+All locks mentioned here implements `WaitableObject`. A `WaitableObject` offer these functions to wait while blocking the current thread:
+  - `Wait`: wait until it signals. It could return false meaning the wait operation did not succeed and there is no guarantee about the status of the `WaitableObject`.
+  - `WaitForTime`: wait until it signals with a timeout. It could return false like `Wait`, including reaching the timeout.
+    - IMPORTANT: it is Windows only.
+
+There are also static functions `WaitAll`, `WaitAllForTime`, `WaitAny`, `WaitAnyForTime` to wait for multiple `WaitableObject` at the same time.
+  - IMPORTANT: they are Windows only.
+
+All following classes are named after Windows API. Their Linux version works exactly like Windows but with less features.
+
+### Mutex
+
+- `Mutex` pretty much serves the same purpose like `SpinLock` and `CriticalSection`, but it could be shared across multiple processes, meanwhile costs more OS resource. Prefer `SpinLock` or `CriticalSection` one only operates in one process.
+- The constructor does not actually create a mutex. You must call `Create` and `Open` later.
+- The `Create` method creates a mutex.
+  - If the name is not empty, the mutex is associated to a name, which works across different processes.
+  - No thread owns a mutex that is just created.
+- The `Open` method shares a created mutex with a name.
+- Calling `Wait` will block the current thread until it owns the mutex. Calling `Release` release the owned mutex to other threads.
+
+### Semaphore
+
+- The constructor does not actually create a semaphore. You must call `Create` and `Open` later.
+- The `Create` method creates a semaphore.
+  - If the name is not empty, the semaphore is associated to a name, which works across different processes.
+  - No thread owns a semaphore that is just created.
+- The `Open` method shares a created semaphore with a name.
+- Calling `Wait` will block the current thread until it owns the semaphore.
+  - Calling `Release` release the semaphore, for once or multiple times.
+  - Unlike `Mutex`, multiple threads could own the same semaphore, as long as enough `Release` is called. And a thread doesn't need to own a semaphore to release it.
+
+### EventObject
+
+- The constructor does not actually create an event object. You must call `CreateAutoUnsignal`, `CreateManualUnsignal` and `Open` later.
+- The `CreateAutoUnsignal` and `CreateManualUnsignal` method creates an event object.
+  - An auto unsignal event object means, when it is owned by a thread, it automatically unsignaled. So only one thread will be unblocked. Otherwise multiple threads waiting for this event object will be unblocked at the same time.
+  - If the name is not empty, the event object is associated to a name, which works across different processes.
+- The `Open` method shares a created event object with a name.
+- Calling `Wait` will block the current thread until it is signaled.
+- Calling `Signal` to signal an event object.
+- Calling `Unsignal` to unsignal an event object.
 
 # Using VlppRegex
 
+## Syntax
+
+The regular expression here is pretty much the same as the .NET regular expression, but there are several important differences:
+  - Both `/` and `\` do escaping. This is because C++ also do escaping using `\`, using `\` results in too many `\` in the code. Always prefer `/` if possible.
+  - Unlike other regular expression, here `.` accept the actual '.' character, while `/.` or `\.` accepts all characters.
+  - Using DFA incompatible features significantly slow down the performance, avoid that if possible.
+  - Detailed description is included in the comment of class `Regex_<T>`.
+
+## Executing a Regular Expression
+
+The definition and the string to match could be in different UTF encoding.
+`Regex_<T>` accepts `ObjectString<T>` as the definition.
+`MatchHead<U>`, `Match<U>`, `TestHead<U>`, `Test<U>`, `Search<U>`, `Split<U>` and `Cut<U>` accepts `ObjectString<U>` to match with the regular expression.
+
+- `MatchHead` finds the longest prefix of the string which matches the regular expression.
+  - `TestHeader` performs a similar action, but it only returns `bool` without detailed information.
+- `Match` finds the eariest substring which matches the regular expression.
+  - `Test` performs a similar action, but it only returns `bool` without detailed information.
+- `Search` finds all substrings which match the regular expression. All results do not overlap with each other.
+- `Split` use the regular expression as a splitter, finding all remaining substrings.
+- `Cut` combines both `Search` and `Split`, finding all substrings in order, regardless if one matches or not.
+
+## Aliases
+
+- `RegexString` -> `RegexString_<wchar_t>`
+- `RegexMatch` -> `RegexMatch_<wchar_t>`
+- `Regex` -> `Regex_<wchar_t>`
+- `RegexToken` -> `RegexToken_<wchar_t>`
+- `RegexProc` -> `RegexProc_<wchar_t>`
+- `RegexTokens` -> `RegexTokens_<wchar_t>`
+- `RegexLexerWalker` -> `RegexLexerWalker_<wchar_t>`
+- `RegexLexerColorizer` -> `RegexLexerColorizer_<wchar_t>`
+- `RegexLexer` -> `RegexLexer_<wchar_t>`
+
 # Using VlppReflection
 
+(The document for VlppReflection is not ready)
+
 # Using VlppParser2
+
+(The document for VlppParser2 is not ready)
 
 # Writing GacUI Test Code
 
