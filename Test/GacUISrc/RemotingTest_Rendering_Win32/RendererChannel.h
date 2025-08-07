@@ -20,6 +20,12 @@ protected:
 
 	void											OnReadStringThreadUnsafe(Ptr<List<WString>> strs) override;
 	void											OnReadStoppedThreadUnsafe() override;
+
+protected:
+	SpinLock										cacheLock;
+	bool											isCaching = false;
+	List<WString>									cachedPackages;
+
 	void											OnReceive(const WString& package) override;
 
 public:

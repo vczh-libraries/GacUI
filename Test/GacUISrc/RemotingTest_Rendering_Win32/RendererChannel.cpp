@@ -44,7 +44,33 @@ void RendererChannel::OnReadStoppedThreadUnsafe()
 
 void RendererChannel::OnReceive(const WString& package)
 {
-	networkProtocol->SendSingleString(package);
+	List<WString> packagesToSend;
+	bool shouldSendBatch = false;
+	
+	SPIN_LOCK(cacheLock)
+	{
+		if (isCaching)
+		{
+			cachedPackages.Add(package);
+			return;
+		}
+
+		if (cachedPackages.Count() > 0)
+		{
+			packagesToSend = std::move(cachedPackages);
+			packagesToSend.Add(package);
+			shouldSendBatch = true;
+		}
+	}
+	
+	if (shouldSendBatch)
+	{
+		networkProtocol->SendStringArray(packagesToSend.Count(), packagesToSend);
+	}
+	else
+	{
+		networkProtocol->SendSingleString(package);
+	}
 }
 
 RendererChannel::RendererChannel(GuiRemoteRendererSingle* _renderer, INetworkProtocol* _networkProtocol, IGuiRemoteProtocolChannel<WString>* _channel)
@@ -77,10 +103,22 @@ void RendererChannel::WaitForDisconnected()
 
 void RendererChannel::BeforeWrite(const ChannelPackageInfo& info)
 {
-	CHECK_FAIL(L"Not implemented");
+	if (info.semantic == ChannelPackageSemantic::Request)
+	{
+		SPIN_LOCK(cacheLock)
+		{
+			isCaching = true;
+		}
+	}
 }
 
 void RendererChannel::BeforeOnReceive(const ChannelPackageInfo& info)
 {
-	CHECK_FAIL(L"Not implemented");
+	if (info.semantic == ChannelPackageSemantic::Response)
+	{
+		SPIN_LOCK(cacheLock)
+		{
+			isCaching = false;
+		}
+	}
 }
