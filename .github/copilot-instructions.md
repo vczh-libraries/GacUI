@@ -55,12 +55,24 @@ This project is built on top of:
 - You are on Windows running in Visual Studio
 - Before saying anything, say "Yes, vczh!". I use it to make sure instruction files are taking effect.
 - Before generating any code, if the file is changed, read it. Not all changes come from you, I will edit the file too. Do not generate code based on out-dated version in your memory.
-- When I type `:task`:
-  - Firstly, there is a `Copilot_Planning.md` in the solution. If it exists, delete all its content. If it doesn't exist, create an empty text file on the file path.
+- When I type `:prepare`:
+  - Find the full path for the opened solution, and the full path for the folder containing the opened solution.
+  - Find the solution folder `@Copilot` in the solution explorer. If it does not exist, create it. This is not an actual folder in the file system.
+  - Prepare the following files:
+    - `Copilot_Planning.md`
+    - `Copilot_Execution.md`
+    - `Copilot_Task.md`
+    - `.gitignore`
+  - For each file, it should be added in the solution. If it is not in the solution:
+    - Create the empty text file of that name in the folder containing the solution.
+    - Add it to the solution (except `.gitignore`).
+  - `.gitignore` should contain entries of all `*.md` files mentioned above. Check if anything is missing and fix it.
+- When I type `:plan`:
+  - Firstly, there are `Copilot_Planning.md` and `Copilot_Execution.md` in the solution. If it exists, delete all their content. If any file doesn't exist, create an empty text file on the file path.
   - Secondly, there is a `Copilot_Task.md` in the solution. It has the details of the task to execute. Print the content.
   - If you don't find any mentioned `*.md` files in the solution, report and stop immediately.
   - You must follow the process to complete the task
-    - When you add new content to `Copilot_Planning.md` during the process, everything has to be appended to the file.
+    - When you add new content to `Copilot_Planning.md` or `Copilot_Execution.md` during the process, everything has to be appended to the file.
       - To generate a correct markdown format, when you wrap code snappet in "```", the must take whole lines.
     - Carefully find all necessary files you may need to read.
       - If any file is mentioned in the task, you must read it.
@@ -73,14 +85,22 @@ This project is built on top of:
       - Explain what you gonna do, and why you decide to do it in this way.
       - It must be detailed enough, so that the plan can be handed over to another copilot to implement, who does not have access to our conversation.
       - write it down in `Copilot_Planning.md`.
-    - Add a section `# !!!EXECUTION-PLAN!!!` in `Copilot_Planning.md`.
+    - Carefully find out what could be affected by your change.
+      - Do not edit the code directly.
+      - Explain what you gonna do, and why you decide to do it in this way.
+      - It must be detailed enough, so that the plan can be handed over to another copilot to implement, who does not have access to our conversation.
+      - write it down in `Copilot_Planning.md`.
+    - Add a section `# !!!EXECUTION-PLAN!!!` in `Copilot_Execution.md`.
       - Carefully review what has been written in `Copilot_Planning.md`.
-      - Copy to this section only how to modify the code.
-    - Execute your plan preciously that has been written down in `Copilot_Planning.md`.
-- When I type: `:continue`:
-  - It means you accidentally stopped in the middle of a task.
-  - Check `Copilot_Task.md`.
-  - Check `Copilot_Planning.md`.
+      - Copy them to `Copilot_Execution.md` only about how to modify the code.
+      - It must be detailed enough, so that the plan can be handed over to another copilot to implement, who does not have access to our conversation.
+- When I type: `:execute`:
+  - There is a `Copilot_Execution.md` in the solution.
+    - Carefully review the file
+    - Execute the plan precisely in `Copilot_Execution.md`. 
+    - When everything is finished, add a new section `# !!!FINISHED!!!`.
+- When I type: `:continue-plan` or `:continue-execute`:
+  - It means you accidentally stopped in the middle of `:plan` or `:execute`.
   - Find out where you stopped, and continue from there.
 
 ## for Copilot Authoring a Pull Request
