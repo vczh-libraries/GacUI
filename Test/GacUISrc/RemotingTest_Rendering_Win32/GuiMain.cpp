@@ -39,6 +39,9 @@ int StartClient(TClient& client)
 	GuiRemoteJsonChannelStringDeserializer channelJsonDeserializer(&channelReceiver, jsonParser);
 	RendererChannel clientRendererChannel(&remoteRenderer, &client, &channelJsonDeserializer);
 
+	channelReceiver.BeforeWrite.Add([&](const ChannelPackageInfo&) {});
+	channelReceiver.BeforeOnReceive.Add([&](const ChannelPackageInfo&) {});
+
 	rendererChannel = &clientRendererChannel;
 	renderer = &remoteRenderer;
 	int result = SetupRawWindowsDirect2DRenderer();

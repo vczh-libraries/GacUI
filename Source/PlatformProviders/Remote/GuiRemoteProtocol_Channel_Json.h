@@ -22,7 +22,7 @@ namespace vl::presentation::remoteprotocol::channeling
 ChannelPackageSemantic
 ***********************************************************************/
 
-	extern void				ChannelPackageSemanticUnpack(Ptr<glr::json::JsonObject> package, ChannelPackageSemantic& semantic, vint& id, WString& name);
+	extern void				ChannelPackageSemanticUnpack(Ptr<glr::json::JsonObject> package, ChannelPackageInfo& info);
 
 /***********************************************************************
 GuiRemoteProtocolFromJsonChannel
@@ -79,6 +79,9 @@ GuiRemoteProtocolFromJsonChannel
 
 		GuiRemoteProtocolFromJsonChannel(IJsonChannel* _channel);
 		~GuiRemoteProtocolFromJsonChannel();
+
+		vl::Event<void(const ChannelPackageInfo&)>		BeforeWrite;
+		vl::Event<void(const ChannelPackageInfo&)>		BeforeOnReceive;
 
 		void											Initialize(IGuiRemoteProtocolEvents* _events) override;
 		WString											GetExecutablePath() override;
@@ -137,6 +140,9 @@ GuiRemoteJsonChannelFromProtocol
 
 		GuiRemoteJsonChannelFromProtocol(IGuiRemoteProtocol* _protocol);
 		~GuiRemoteJsonChannelFromProtocol();
+
+		vl::Event<void(const ChannelPackageInfo&)>		BeforeWrite;
+		vl::Event<void(const ChannelPackageInfo&)>		BeforeOnReceive;
 
 		void											Initialize(IJsonChannelReceiver* _receiver) override;
 		IJsonChannelReceiver*							GetReceiver() override;

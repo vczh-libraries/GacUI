@@ -29,6 +29,13 @@ Metadata
 		Unknown,
 	};
 
+	struct ChannelPackageInfo
+	{
+		ChannelPackageSemantic		semantic = ChannelPackageSemantic::Unknown;
+		vint						id = -1;
+		WString						name;
+	};
+
 	enum class ChannelAsyncState
 	{
 		Ready,
@@ -44,9 +51,7 @@ Async
 
 void ChannelPackageSemanticUnpack(
   const T& package,
-  ChannelPackageSemantic& semantic,
-  vint& id,
-  WString& name
+  ChannelPackageInfo& info
   );
 ***********************************************************************/
 
@@ -89,9 +94,7 @@ void ChannelPackageSemanticUnpack(
 		static_assert(
 			std::is_same_v<void, decltype(ChannelPackageSemanticUnpack(
 				std::declval<const TPackage&>(),
-				std::declval<ChannelPackageSemantic&>(),
-				std::declval<vint&>(),
-				std::declval<WString&>()
+				std::declval<ChannelPackageInfo&>()
 				))>,
 			"ChannelPackageSemanticUnpack must be defined for this TPackage"
 			);
@@ -197,12 +200,10 @@ void ChannelPackageSemanticUnpack(
 			// If it is a response, unblock Submit()
 			// If it is an event, send to ProcessRemoteEvents()
 
-			auto semantic = ChannelPackageSemantic::Unknown;
-			vint id = -1;
-			WString name;
-			ChannelPackageSemanticUnpack(package, semantic, id, name);
+			ChannelPackageInfo info;
+			ChannelPackageSemanticUnpack(package, info);
 
-			switch (semantic)
+			switch (info.semantic)
 			{
 			case ChannelPackageSemantic::Event:
 				{
@@ -216,7 +217,7 @@ void ChannelPackageSemanticUnpack(
 				{
 					SPIN_LOCK(lockResponses)
 					{
-						queuedResponses.Add(id, package);
+						queuedResponses.Add(info.id, package);
 						if (AreCurrentPendingRequestGroupSatisfied(false))
 						{
 							eventAutoResponses.Signal();
@@ -259,14 +260,12 @@ void ChannelPackageSemanticUnpack(
 			requestGroup->connectionCounter = connectionCounter;
 			for (auto&& package : uiPendingPackages)
 			{
-				auto semantic = ChannelPackageSemantic::Unknown;
-				vint id = -1;
-				WString name;
-				ChannelPackageSemanticUnpack(package, semantic, id, name);
+				ChannelPackageInfo info;
+				ChannelPackageSemanticUnpack(package, info);
 
-				if (semantic == ChannelPackageSemantic::Request)
+				if (info.semantic == ChannelPackageSemantic::Request)
 				{
-					requestGroup->requestIds.Add(id);
+					requestGroup->requestIds.Add(info.id);
 				}
 			}
 			SPIN_LOCK(lockResponses)
@@ -354,12 +353,10 @@ void ChannelPackageSemanticUnpack(
 			for (auto&& event : events)
 			{
 				{
-					auto semantic = ChannelPackageSemantic::Unknown;
-					vint id = -1;
-					WString name;
-					ChannelPackageSemanticUnpack(event, semantic, id, name);
+					ChannelPackageInfo info;
+					ChannelPackageSemanticUnpack(event, info);
 
-					if (name == L"ControllerConnect")
+					if (info.name == L"ControllerConnect")
 					{
 						SPIN_LOCK(lockConnection)
 						{

@@ -55,6 +55,34 @@ This project is built on top of:
 - You are on Windows running in Visual Studio
 - Before saying anything, say "Yes, vczh!". I use it to make sure instruction files are taking effect.
 - Before generating any code, if the file is changed, read it. Not all changes come from you, I will edit the file too. Do not generate code based on out-dated version in your memory.
+- When I type `:prepare`:
+  - Find out the full path of the solution, and then the full path of the folder containing the solution.
+  - There should be a `Copilot_Task.md` in the solution. Tell me if the file exists or not, and if not, create an empty one, on the same folder as the solution.
+  - There should be a `Copilot_Planning.md` in the solution. Tell me if the file exists or not, and if not, create an empty one, on the same folder as the solution.
+  - Add a `.gitignore` file on the same folder as the solution, containing the above two `*.md` files. Skip if the `.gitignore` file already exists.
+  - If you created any `*.md` file, add it to the solution directly, not in any project, placing under the `Solution Items` node in the solution explorer.
+- When I type `:execute`:
+  - Firstly, there is a `Copilot_Planning.md` in the solution. If it exists, delete all its content. If it doesn't exist, create an empty text file on the file path.
+  - Secondly, there is a `Copilot_Task.md` in the solution. It has the details of the task to execute. Print the content.
+  - You must follow the process to complete the task
+    - When you add new content to `Copilot_Planning.md` during the process, everything has to be appended to the file.
+    - Carefully find all necessary files you may need to read.
+      - If any file is mentioned in the task, you must read it.
+      - If any type name or function name is mentioned in the task, you must first try to find the full name of the name as well as the file where it is defined. Read the file.
+        - Write down the full name and the file name in `Copilot_Planning.md`.
+    - Carefully think about the task, make a overall design.
+      - Write down the design in `Copilot_Planning.md`.
+    - Carefully think about how to implement the design.
+      - Do not edit the code directly.
+      - Explain what you gonna do, and why you decide to do it in this way.
+      - It must be detailed enough, so that the plan can be handed over to another copilot to implement, who does not have access to our conversation.
+      - write it down in `Copilot_Planning.md`.
+    - Execute your plan preciously that has been written down in `Copilot_Planning.md`.
+- When I type: `:continue`:
+  - It means you accidentally stopped in the middle of a task.
+  - Check `Copilot_Task.md`.
+  - Check `Copilot_Planning.md`.
+  - Find out where you stopped, and continue from there.
 
 ## for Copilot Authoring a Pull Request
 
