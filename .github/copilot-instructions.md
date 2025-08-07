@@ -55,15 +55,10 @@ This project is built on top of:
 - You are on Windows running in Visual Studio
 - Before saying anything, say "Yes, vczh!". I use it to make sure instruction files are taking effect.
 - Before generating any code, if the file is changed, read it. Not all changes come from you, I will edit the file too. Do not generate code based on out-dated version in your memory.
-- When I type `:prepare`:
-  - Find out the full path of the solution, and then the full path of the folder containing the solution.
-  - There should be a `Copilot_Task.md` in the solution. Tell me if the file exists or not, and if not, create an empty one, on the same folder as the solution.
-  - There should be a `Copilot_Planning.md` in the solution. Tell me if the file exists or not, and if not, create an empty one, on the same folder as the solution.
-  - Add a `.gitignore` file on the same folder as the solution, containing the above two `*.md` files. Skip if the `.gitignore` file already exists.
-  - If you created any `*.md` file, add it to the solution directly, not in any project, placing under the `Solution Items` node in the solution explorer.
 - When I type `:task`:
   - Firstly, there is a `Copilot_Planning.md` in the solution. If it exists, delete all its content. If it doesn't exist, create an empty text file on the file path.
   - Secondly, there is a `Copilot_Task.md` in the solution. It has the details of the task to execute. Print the content.
+  - If you don't find any mentioned `*.md` files in the solution, report and stop immediately.
   - You must follow the process to complete the task
     - When you add new content to `Copilot_Planning.md` during the process, everything has to be appended to the file.
       - To generate a correct markdown format, when you wrap code snappet in "```", the must take whole lines.
