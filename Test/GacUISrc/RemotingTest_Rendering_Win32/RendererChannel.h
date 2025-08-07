@@ -30,4 +30,7 @@ public:
 	void											RegisterMainWindow(INativeWindow* _window);
 	void											UnregisterMainWindow();
 	void											WaitForDisconnected();
+
+	void											BeforeWrite(const ChannelPackageInfo& info);
+	void											BeforeOnReceive(const ChannelPackageInfo& info);
 };

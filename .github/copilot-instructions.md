@@ -61,11 +61,12 @@ This project is built on top of:
   - There should be a `Copilot_Planning.md` in the solution. Tell me if the file exists or not, and if not, create an empty one, on the same folder as the solution.
   - Add a `.gitignore` file on the same folder as the solution, containing the above two `*.md` files. Skip if the `.gitignore` file already exists.
   - If you created any `*.md` file, add it to the solution directly, not in any project, placing under the `Solution Items` node in the solution explorer.
-- When I type `:execute`:
+- When I type `:task`:
   - Firstly, there is a `Copilot_Planning.md` in the solution. If it exists, delete all its content. If it doesn't exist, create an empty text file on the file path.
   - Secondly, there is a `Copilot_Task.md` in the solution. It has the details of the task to execute. Print the content.
   - You must follow the process to complete the task
     - When you add new content to `Copilot_Planning.md` during the process, everything has to be appended to the file.
+      - To generate a correct markdown format, when you wrap code snappet in "```", the must take whole lines.
     - Carefully find all necessary files you may need to read.
       - If any file is mentioned in the task, you must read it.
       - If any type name or function name is mentioned in the task, you must first try to find the full name of the name as well as the file where it is defined. Read the file.
@@ -77,6 +78,9 @@ This project is built on top of:
       - Explain what you gonna do, and why you decide to do it in this way.
       - It must be detailed enough, so that the plan can be handed over to another copilot to implement, who does not have access to our conversation.
       - write it down in `Copilot_Planning.md`.
+    - Add a section `# !!!EXECUTION-PLAN!!!` in `Copilot_Planning.md`.
+      - Carefully review what has been written in `Copilot_Planning.md`.
+      - Copy to this section only how to modify the code.
     - Execute your plan preciously that has been written down in `Copilot_Planning.md`.
 - When I type: `:continue`:
   - It means you accidentally stopped in the middle of a task.

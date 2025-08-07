@@ -74,3 +74,13 @@ void RendererChannel::WaitForDisconnected()
 {
 	eventDisconnected.Wait();
 }
+
+void RendererChannel::BeforeWrite(const ChannelPackageInfo& info)
+{
+	CHECK_FAIL(L"Not implemented");
+}
+
+void RendererChannel::BeforeOnReceive(const ChannelPackageInfo& info)
+{
+	CHECK_FAIL(L"Not implemented");
+}
