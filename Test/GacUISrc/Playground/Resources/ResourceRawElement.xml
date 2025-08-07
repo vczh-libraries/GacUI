@@ -1,0 +1,12 @@
+<Resource>
+  <Instance name="MainWindowResource">
+    <Instance ref.CodeBehind="false" ref.Class="demo::TestWindow" xmlns:demo="demo::*">
+      <Window ref.Name="self" Text="RawElement" ClientSize="x:640 y:480">
+        <att.BoundsComposition-set PreferredMinSize="x:640 y:480"/>
+        <Bounds AlignmentToParent="left:5 top:5 right:5 bottom:5">
+          <RawElement/>
+        </Bounds>
+      </Window>
+    </Instance>
+  </Instance>
+</Resource>

@@ -4,6 +4,7 @@ GuiInstanceLoader_Plugin.cpp
 		default: GuiControl*, GuiGraphicsComposition*
 	GuiInstanceRootObject
 		default: GuiComponent*
+	GuiRawElement
 GuiInstanceLoader_TemplateControl.h
 	GuiControl
 GuiInstanceLoader_Compositions.cpp
@@ -192,6 +193,37 @@ GuiControlInstanceLoader
 				}
 			};
 
+/***********************************************************************
+GuiRawElementInstanceLoader
+***********************************************************************/
+
+			class GuiRawElementInstanceLoader : public Object, public IGuiInstanceLoader
+			{
+			protected:
+				GlobalStringKey							typeName;
+
+			public:
+				GuiRawElementInstanceLoader()
+				{
+					typeName = GlobalStringKey::Get(L"presentation::elements::GuiRawElement");
+				}
+
+				GlobalStringKey GetTypeName()override
+				{
+					return typeName;
+				}
+
+				bool CanCreate(const TypeInfo& typeInfo) override
+				{
+					return typeName == typeInfo.typeName;
+				}
+
+				Ptr<workflow::WfStatement> CreateInstance(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, GuiResourceTextPos tagPosition, GuiResourceError::List& errors)override
+				{
+					CHECK_FAIL(L"GuiRawElementInstanceLoader::CreateInstance is not implemented");
+				}
+			};
+
 #endif
 			
 /***********************************************************************
@@ -245,7 +277,7 @@ GuiPredefinedInstanceLoadersPlugin
 
 #define ADD_TEMPLATE_CONTROL(TYPENAME, THEME_NAME)\
 						manager->SetLoader(\
-						Ptr(new GuiTemplateControlInstanceLoader<TYPENAME>(\
+							Ptr(new GuiTemplateControlInstanceLoader<TYPENAME>(\
 								L"presentation::controls::" L ## #TYPENAME,\
 								theme::ThemeName::THEME_NAME\
 								)\
@@ -253,7 +285,7 @@ GuiPredefinedInstanceLoadersPlugin
 
 #define ADD_VIRTUAL_CONTROL(VIRTUALTYPENAME, TYPENAME, THEME_NAME)\
 						manager->CreateVirtualType(GlobalStringKey::Get(description::TypeInfo<TYPENAME>::content.typeName),\
-						Ptr(new GuiTemplateControlInstanceLoader<TYPENAME>(\
+							Ptr(new GuiTemplateControlInstanceLoader<TYPENAME>(\
 								L"presentation::controls::Gui" L ## #VIRTUALTYPENAME,\
 								theme::ThemeName::THEME_NAME\
 								)\
@@ -261,13 +293,18 @@ GuiPredefinedInstanceLoadersPlugin
 
 #define ADD_VIRTUAL_CONTROL_F(VIRTUALTYPENAME, TYPENAME, THEME_NAME, INIT_FUNCTION)\
 						manager->CreateVirtualType(GlobalStringKey::Get(description::TypeInfo<TYPENAME>::content.typeName),\
-						Ptr(new GuiTemplateControlInstanceLoader<TYPENAME>(\
+							Ptr(new GuiTemplateControlInstanceLoader<TYPENAME>(\
 								L"presentation::controls::Gui" L ## #VIRTUALTYPENAME,\
 								theme::ThemeName::THEME_NAME,\
 								nullptr,\
 								INIT_FUNCTION\
 								)\
 							))
+
+						manager->CreateVirtualType(
+							GlobalStringKey::Get(description::TypeInfo<IGuiGraphicsElement>::content.typeName),
+							Ptr(new GuiRawElementInstanceLoader)
+							);
 
 						manager->SetLoader(Ptr(new GuiControlInstanceLoader));
 

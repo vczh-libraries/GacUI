@@ -133,7 +133,7 @@ void GuiMain()
 	LoadDarkSkinTypes();
 
 	List<WString> names;
-	names.Add(L"Resource");
+	names.Add(L"ResourceRawElement");
 
 	Group<WString, WString> deps;
 
