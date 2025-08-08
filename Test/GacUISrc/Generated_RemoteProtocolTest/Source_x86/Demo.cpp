@@ -367,6 +367,17 @@ namespace rptest
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_0)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_6));
 		}
+		(this->__vwsn_precompile_8 = new ::vl::presentation::compositions::GuiCellComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_8)->SetSite(static_cast<::vl::vint32_t>(3), static_cast<::vl::vint32_t>(0), static_cast<::vl::vint32_t>(1), static_cast<::vl::vint32_t>(3));
+		}
+		(this->__vwsn_precompile_9 = ::vl::reflection::description::GuiRawElement_Constructor());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_8)->SetOwnedElement(this->__vwsn_precompile_9);
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_8));
+		}
 		{
 			::vl::__vwsn::This(::vl::__vwsn::This(this->self)->GetContainerComposition())->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_0));
 		}
@@ -391,6 +402,8 @@ namespace rptest
 		, __vwsn_precompile_5(static_cast<::vl::presentation::controls::GuiLabel*>(nullptr))
 		, __vwsn_precompile_6(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
 		, __vwsn_precompile_7(static_cast<::vl::presentation::controls::GuiLabel*>(nullptr))
+		, __vwsn_precompile_8(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
+		, __vwsn_precompile_9(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>())
 	{
 	}
 

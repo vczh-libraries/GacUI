@@ -54,6 +54,12 @@ namespace rptest
         var <precompile>7 : ::presentation::controls::GuiLabel* = null of (::presentation::controls::GuiLabel*);
 
         @cpp:Protected
+        var <precompile>8 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
+
+        @cpp:Protected
+        var <precompile>9 : ::presentation::elements::IGuiGraphicsElement^ = null of (::presentation::elements::IGuiGraphicsElement^);
+
+        @cpp:Protected
         func <rptest-ClickMeTab>Initialize(<this> : ::rptest::ClickMeTab*) : (::system::Void)
         {
             (self = <this>);
@@ -150,6 +156,17 @@ namespace rptest
             }
             {
                 <precompile>0.AddChild(<precompile>6);
+            }
+            (<precompile>8 = new (::presentation::compositions::GuiCellComposition*)());
+            {
+                <precompile>8.SetSite(3, 0, 1, 3);
+            }
+            (<precompile>9 = ::presentation::elements::IGuiGraphicsElement::CreateRawElement());
+            {
+                (<precompile>8.OwnedElement = <precompile>9);
+            }
+            {
+                <precompile>0.AddChild(<precompile>8);
             }
             {
                 self.ContainerComposition.AddChild(<precompile>0);

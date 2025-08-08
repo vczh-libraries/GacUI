@@ -45,6 +45,9 @@
           <Cell Site="row:2 column:0 columnSpan:3">
             <Label Text="Global shortcut key: Ctrl+Shift+Alt+Q"/>
           </Cell>
+          <Cell Site="row:3 column:0 columnSpan:3">
+            <Raw/>
+          </Cell>
         </Table>
       </TabPage>
     </Instance>
