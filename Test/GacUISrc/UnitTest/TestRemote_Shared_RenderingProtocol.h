@@ -73,6 +73,9 @@ namespace remote_protocol_tests
 					case RendererType::ImageFrame:
 						writer.WriteString(L"ImageFrame");
 						break;
+					case RendererType::Raw:
+						writer.WriteString(L"Raw");
+						break;
 					default:
 						CHECK_FAIL(L"Unrecognized RenderType");
 					}

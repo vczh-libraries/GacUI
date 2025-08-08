@@ -79,6 +79,18 @@ namespace vl::presentation::elements_remoteprotocol
 		void							OnElementStateChanged() override;
 	};
 
+	class GuiRawElementRenderer : public GuiRemoteProtocolElementRenderer<GuiFocusRectangleElement, GuiRawElementRenderer, remoteprotocol::RendererType::Raw>
+	{
+		friend class GuiElementRendererBase<GuiFocusRectangleElement, GuiRawElementRenderer, GuiRemoteGraphicsRenderTarget>;
+	public:
+		GuiRawElementRenderer();
+
+		bool							IsUpdated() override;
+		void							ResetUpdated() override;
+		void							SendUpdateElementMessages(bool fullContent) override;
+		void							OnElementStateChanged() override;
+	};
+
 	class GuiSolidBorderElementRenderer : public GuiRemoteProtocolElementRenderer<GuiSolidBorderElement, GuiSolidBorderElementRenderer, remoteprotocol::RendererType::SolidBorder>
 	{
 		friend class GuiElementRendererBase<GuiSolidBorderElement, GuiSolidBorderElementRenderer, GuiRemoteGraphicsRenderTarget>;

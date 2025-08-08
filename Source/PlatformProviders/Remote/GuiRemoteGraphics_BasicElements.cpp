@@ -157,6 +157,35 @@ GuiSolidBorderElementRenderer
 	}
 
 /***********************************************************************
+GuiRawElementRenderer
+***********************************************************************/
+
+	GuiRawElementRenderer::GuiRawElementRenderer()
+	{
+	}
+	
+	bool GuiRawElementRenderer::IsUpdated()
+	{
+		// there is no properties for this element
+		return false;
+	}
+
+	void GuiRawElementRenderer::ResetUpdated()
+	{
+		// nothing to update
+	}
+
+	void GuiRawElementRenderer::OnElementStateChanged()
+	{
+		// nothing to update
+	}
+
+	void GuiRawElementRenderer::SendUpdateElementMessages(bool fullContent)
+	{
+		// nothing to update
+	}
+
+/***********************************************************************
 GuiSolidBorderElementRenderer
 ***********************************************************************/
 

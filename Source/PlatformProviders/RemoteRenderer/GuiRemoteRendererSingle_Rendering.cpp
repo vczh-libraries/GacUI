@@ -42,6 +42,9 @@ namespace vl::presentation::remote_renderer
 				case RendererType::FocusRectangle:
 					element = Ptr(GuiFocusRectangleElement::Create());
 					break;
+				case RendererType::Raw:
+					// Do Nothing
+					break;
 				case RendererType::SolidBorder:
 					element = Ptr(GuiSolidBorderElement::Create());
 					break;

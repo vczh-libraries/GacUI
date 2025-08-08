@@ -179,9 +179,9 @@ IGuiRemoteProtocolMessages (Rendering - Element)
 			vint index = loggedTrace.createdElements->Keys().IndexOf(id);
 			CHECK_ERROR(index != -1, ERROR_MESSAGE_PREFIX L"Renderer with the specified id has not been created.");
 			auto rendererType = loggedTrace.createdElements->Values()[index];
-			if (rendererType == remoteprotocol::RendererType::FocusRectangle)
+			if (rendererType == remoteprotocol::RendererType::FocusRectangle || rendererType == remoteprotocol::RendererType::Raw)
 			{
-				// FocusRectangle does not has a ElementDesc
+				// FocusRectangle or Raw does not have a ElementDesc
 				return;
 			}
 

@@ -105,6 +105,9 @@ Helper Functions
 					bounds->SetOwnedElement(element);
 				}
 				break;
+			case remoteprotocol::RendererType::Raw:
+				// Do Nothing
+				break;
 			case remoteprotocol::RendererType::SolidBorder:
 				{
 					auto element = Ptr(GuiSolidBorderElement::Create());
