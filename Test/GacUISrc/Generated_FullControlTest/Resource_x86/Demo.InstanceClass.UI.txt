@@ -2195,6 +2195,18 @@ namespace demo
         var <precompile>34 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
+        var <precompile>35 : ::demo::ElementTabPage* = null of (::demo::ElementTabPage*);
+
+        @cpp:Protected
+        var <precompile>36 : ::demo::AnimationTabPage* = null of (::demo::AnimationTabPage*);
+
+        @cpp:Protected
+        var <precompile>37 : ::demo::LocalizedStringsTabPage* = null of (::demo::LocalizedStringsTabPage*);
+
+        @cpp:Protected
+        var <precompile>38 : ::demo::LocalizedDialogsTabPage* = null of (::demo::LocalizedDialogsTabPage*);
+
+        @cpp:Protected
         var checkFrame : ::presentation::controls::GuiSelectableButton* = null of (::presentation::controls::GuiSelectableButton*);
 
         @cpp:Protected
@@ -2220,18 +2232,6 @@ namespace demo
 
         @cpp:Protected
         var editorToolstrip : ::demo::DocumentEditorToolstrip* = null of (::demo::DocumentEditorToolstrip*);
-
-        @cpp:Protected
-        var <precompile>35 : ::demo::ElementTabPage* = null of (::demo::ElementTabPage*);
-
-        @cpp:Protected
-        var <precompile>36 : ::demo::AnimationTabPage* = null of (::demo::AnimationTabPage*);
-
-        @cpp:Protected
-        var <precompile>37 : ::demo::LocalizedStringsTabPage* = null of (::demo::LocalizedStringsTabPage*);
-
-        @cpp:Protected
-        var <precompile>38 : ::demo::LocalizedDialogsTabPage* = null of (::demo::LocalizedDialogsTabPage*);
 
         @cpp:Protected
         var <precompile>39 : ::demo::DatePickerTabPage* = null of (::demo::DatePickerTabPage*);
@@ -6184,15 +6184,6 @@ namespace demo
         var <precompile>34 : ::presentation::controls::GuiSelectableButton* = null of (::presentation::controls::GuiSelectableButton*);
 
         @cpp:Protected
-        var mutexGroupController : ::presentation::controls::GuiSelectableButton::MutexGroupController* = null of (::presentation::controls::GuiSelectableButton::MutexGroupController*);
-
-        @cpp:Protected
-        var comboView : ::presentation::controls::GuiComboBoxListControl* = null of (::presentation::controls::GuiComboBoxListControl*);
-
-        @cpp:Protected
-        var bindableTextList : ::presentation::controls::GuiBindableTextList* = null of (::presentation::controls::GuiBindableTextList*);
-
-        @cpp:Protected
         var <precompile>35 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
@@ -6203,6 +6194,15 @@ namespace demo
 
         @cpp:Protected
         var <precompile>38 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var mutexGroupController : ::presentation::controls::GuiSelectableButton::MutexGroupController* = null of (::presentation::controls::GuiSelectableButton::MutexGroupController*);
+
+        @cpp:Protected
+        var comboView : ::presentation::controls::GuiComboBoxListControl* = null of (::presentation::controls::GuiComboBoxListControl*);
+
+        @cpp:Protected
+        var bindableTextList : ::presentation::controls::GuiBindableTextList* = null of (::presentation::controls::GuiBindableTextList*);
 
         @cpp:Protected
         var <precompile>39 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
@@ -6907,9 +6907,6 @@ namespace demo
         var <precompile>34 : ::presentation::controls::tree::MemoryNodeProvider^ = null of (::presentation::controls::tree::MemoryNodeProvider^);
 
         @cpp:Protected
-        var bindableTreeView : ::presentation::controls::GuiBindableTreeView* = null of (::presentation::controls::GuiBindableTreeView*);
-
-        @cpp:Protected
         var <precompile>35 : ::presentation::controls::tree::MemoryNodeProvider^ = null of (::presentation::controls::tree::MemoryNodeProvider^);
 
         @cpp:Protected
@@ -6920,6 +6917,9 @@ namespace demo
 
         @cpp:Protected
         var <precompile>38 : ::presentation::controls::tree::MemoryNodeProvider^ = null of (::presentation::controls::tree::MemoryNodeProvider^);
+
+        @cpp:Protected
+        var bindableTreeView : ::presentation::controls::GuiBindableTreeView* = null of (::presentation::controls::GuiBindableTreeView*);
 
         @cpp:Protected
         var <precompile>39 : ::presentation::controls::tree::MemoryNodeProvider^ = null of (::presentation::controls::tree::MemoryNodeProvider^);
@@ -9707,13 +9707,13 @@ namespace demo
             }
             (<precompile>6 = new (::presentation::elements::GuiSolidLabelElement^)());
             {
-                (<precompile>6.Ellipse = true);
-            }
-            {
                 (<precompile>6.VerticalAlignment = Center of (::presentation::Alignment));
             }
             {
                 (<precompile>6.HorizontalAlignment = Left of (::presentation::Alignment));
+            }
+            {
+                (<precompile>6.Ellipse = true);
             }
             {
                 (<precompile>6.Color = (cast (::presentation::Color) "#FF8000"));
@@ -16326,18 +16326,6 @@ namespace demo
         var <precompile>34 : ::presentation::controls::GuiRibbonGroup* = null of (::presentation::controls::GuiRibbonGroup*);
 
         @cpp:Protected
-        var dialogMessage : ::presentation::controls::GuiMessageDialog* = null of (::presentation::controls::GuiMessageDialog*);
-
-        @cpp:Protected
-        var toolstripHome : ::presentation::controls::GuiToolstripMenu* = null of (::presentation::controls::GuiToolstripMenu*);
-
-        @cpp:Protected
-        var buttonHome : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
-
-        @cpp:Protected
-        var styleGallery : ::presentation::controls::GuiBindableRibbonGalleryList* = null of (::presentation::controls::GuiBindableRibbonGalleryList*);
-
-        @cpp:Protected
         var <precompile>35 : ::presentation::controls::GuiRibbonToolstrips* = null of (::presentation::controls::GuiRibbonToolstrips*);
 
         @cpp:Protected
@@ -16348,6 +16336,18 @@ namespace demo
 
         @cpp:Protected
         var <precompile>38 : ::presentation::controls::GuiToolstripButton* = null of (::presentation::controls::GuiToolstripButton*);
+
+        @cpp:Protected
+        var dialogMessage : ::presentation::controls::GuiMessageDialog* = null of (::presentation::controls::GuiMessageDialog*);
+
+        @cpp:Protected
+        var toolstripHome : ::presentation::controls::GuiToolstripMenu* = null of (::presentation::controls::GuiToolstripMenu*);
+
+        @cpp:Protected
+        var buttonHome : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
+
+        @cpp:Protected
+        var styleGallery : ::presentation::controls::GuiBindableRibbonGalleryList* = null of (::presentation::controls::GuiBindableRibbonGalleryList*);
 
         @cpp:Protected
         var <precompile>39 : ::presentation::controls::GuiToolstripGroup* = null of (::presentation::controls::GuiToolstripGroup*);
@@ -17268,9 +17268,6 @@ namespace demo
                 (<precompile>81 = new (::presentation::controls::GuiRibbonTabPage*)(::presentation::theme::ThemeName::CustomControl));
             }
             {
-                (<precompile>81.Highlighted = true);
-            }
-            {
                 (<precompile>82 = new (::presentation::controls::GuiRibbonGroup*)(::presentation::theme::ThemeName::RibbonGroup));
             }
             {
@@ -17316,6 +17313,9 @@ namespace demo
             {
                 var <collection> = <precompile>81.Groups;
                 <collection>.Add(<precompile>82);
+            }
+            {
+                (<precompile>81.Highlighted = true);
             }
             {
                 (<precompile>81.Alt = "I");
@@ -18579,13 +18579,13 @@ namespace demo
             (styleLabel = new (::presentation::elements::GuiSolidLabelElement^)());
             <this>.SetNamedObject("styleLabel", styleLabel);
             {
-                (styleLabel.Ellipse = true);
-            }
-            {
                 (styleLabel.VerticalAlignment = Center of (::presentation::Alignment));
             }
             {
                 (styleLabel.HorizontalAlignment = Center of (::presentation::Alignment));
+            }
+            {
+                (styleLabel.Ellipse = true);
             }
             {
                 (styleLabel.Color = (cast (::presentation::Color) "#FFFFFF"));
@@ -18605,10 +18605,10 @@ namespace demo
             }
             (<precompile>3 = new (::presentation::elements::GuiSolidLabelElement^)());
             {
-                (<precompile>3.Ellipse = true);
+                (<precompile>3.HorizontalAlignment = Center of (::presentation::Alignment));
             }
             {
-                (<precompile>3.HorizontalAlignment = Center of (::presentation::Alignment));
+                (<precompile>3.Ellipse = true);
             }
             {
                 (<precompile>2.OwnedElement = <precompile>3);
@@ -19055,9 +19055,6 @@ namespace demo
         var <precompile>34 : ::presentation::controls::GuiToolstripButton* = null of (::presentation::controls::GuiToolstripButton*);
 
         @cpp:Protected
-        var buttonAlignment : ::presentation::controls::GuiToolstripButton* = null of (::presentation::controls::GuiToolstripButton*);
-
-        @cpp:Protected
         var <precompile>35 : ::presentation::controls::GuiToolstripMenu* = null of (::presentation::controls::GuiToolstripMenu*);
 
         @cpp:Protected
@@ -19068,6 +19065,9 @@ namespace demo
 
         @cpp:Protected
         var <precompile>38 : ::presentation::controls::GuiToolstripButton* = null of (::presentation::controls::GuiToolstripButton*);
+
+        @cpp:Protected
+        var buttonAlignment : ::presentation::controls::GuiToolstripButton* = null of (::presentation::controls::GuiToolstripButton*);
 
         @cpp:Protected
         var <precompile>39 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
@@ -20980,6 +20980,18 @@ namespace demo
         var <precompile>34 : ::presentation::compositions::GuiStackItemComposition* = null of (::presentation::compositions::GuiStackItemComposition*);
 
         @cpp:Protected
+        var <precompile>35 : ::presentation::compositions::GuiStackItemComposition* = null of (::presentation::compositions::GuiStackItemComposition*);
+
+        @cpp:Protected
+        var <precompile>36 : ::presentation::compositions::GuiStackItemComposition* = null of (::presentation::compositions::GuiStackItemComposition*);
+
+        @cpp:Protected
+        var <precompile>37 : ::presentation::compositions::GuiStackItemComposition* = null of (::presentation::compositions::GuiStackItemComposition*);
+
+        @cpp:Protected
+        var <precompile>38 : ::presentation::compositions::GuiStackItemComposition* = null of (::presentation::compositions::GuiStackItemComposition*);
+
+        @cpp:Protected
         var dialogOpen : ::presentation::controls::GuiOpenFileDialog* = null of (::presentation::controls::GuiOpenFileDialog*);
 
         @cpp:Protected
@@ -21032,18 +21044,6 @@ namespace demo
 
         @cpp:Protected
         var lstFiles : ::presentation::controls::GuiBindableTextList* = null of (::presentation::controls::GuiBindableTextList*);
-
-        @cpp:Protected
-        var <precompile>35 : ::presentation::compositions::GuiStackItemComposition* = null of (::presentation::compositions::GuiStackItemComposition*);
-
-        @cpp:Protected
-        var <precompile>36 : ::presentation::compositions::GuiStackItemComposition* = null of (::presentation::compositions::GuiStackItemComposition*);
-
-        @cpp:Protected
-        var <precompile>37 : ::presentation::compositions::GuiStackItemComposition* = null of (::presentation::compositions::GuiStackItemComposition*);
-
-        @cpp:Protected
-        var <precompile>38 : ::presentation::compositions::GuiStackItemComposition* = null of (::presentation::compositions::GuiStackItemComposition*);
 
         @cpp:Protected
         var <precompile>39 : ::presentation::controls::GuiLabel* = null of (::presentation::controls::GuiLabel*);
@@ -28855,9 +28855,6 @@ namespace demo
         var <precompile>34 : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
 
         @cpp:Protected
-        var responsive : ::presentation::compositions::GuiResponsiveGroupComposition* = null of (::presentation::compositions::GuiResponsiveGroupComposition*);
-
-        @cpp:Protected
         var <precompile>35 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
 
         @cpp:Protected
@@ -28868,6 +28865,9 @@ namespace demo
 
         @cpp:Protected
         var <precompile>38 : ::presentation::controls::GuiLabel* = null of (::presentation::controls::GuiLabel*);
+
+        @cpp:Protected
+        var responsive : ::presentation::compositions::GuiResponsiveGroupComposition* = null of (::presentation::compositions::GuiResponsiveGroupComposition*);
 
         @cpp:Protected
         var <precompile>39 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
@@ -29524,9 +29524,6 @@ namespace demo
         var <precompile>34 : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
 
         @cpp:Protected
-        var responsive : ::presentation::compositions::GuiResponsiveStackComposition* = null of (::presentation::compositions::GuiResponsiveStackComposition*);
-
-        @cpp:Protected
         var <precompile>35 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
 
         @cpp:Protected
@@ -29537,6 +29534,9 @@ namespace demo
 
         @cpp:Protected
         var <precompile>38 : ::presentation::controls::GuiLabel* = null of (::presentation::controls::GuiLabel*);
+
+        @cpp:Protected
+        var responsive : ::presentation::compositions::GuiResponsiveStackComposition* = null of (::presentation::compositions::GuiResponsiveStackComposition*);
 
         @cpp:Protected
         var <precompile>39 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
@@ -30428,13 +30428,13 @@ namespace demo
         var <precompile>34 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
 
         @cpp:Protected
+        var <precompile>35 : ::presentation::controls::GuiLabel* = null of (::presentation::controls::GuiLabel*);
+
+        @cpp:Protected
         var responsive : ::presentation::compositions::GuiResponsiveViewComposition* = null of (::presentation::compositions::GuiResponsiveViewComposition*);
 
         @cpp:Protected
         var documentBox : ::presentation::controls::GuiDocumentLabel* = null of (::presentation::controls::GuiDocumentLabel*);
-
-        @cpp:Protected
-        var <precompile>35 : ::presentation::controls::GuiLabel* = null of (::presentation::controls::GuiLabel*);
 
         @cpp:Protected
         func <demo-ResponsiveViewControl>Initialize(<this> : ::demo::ResponsiveViewControl*) : (::system::Void)

@@ -4,13 +4,13 @@
       <Text name="SourceFolder">Source</Text>
       <Text name="Resource">..\..\..\UIRes\RemoteProtocolTest.bin</Text>
       <Text name="NormalInclude">GacUI.h</Text>
-      <Text name="Name">Demo</Text>
+      <Text name="Name">RemoteProtocolTest</Text>
     </Folder>
   </Folder>
   <Folder name="ToolbarImages" content="Link">ToolbarImages/Images.xml</Folder>
 
   <Instance name="ClickMeTabResource">
-    <Instance ref.Class="demo::ClickMeTab">
+    <Instance ref.Class="rptest::ClickMeTab">
       <TabPage ref.Name="self" Text="Home">
         <Table CellPadding="10" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
           <att.Rows>
@@ -58,7 +58,7 @@
         using system::*;
         using presentation::*;
         
-        namespace demo
+        namespace rptest
         {
           class DataItem
           {
@@ -79,7 +79,7 @@
   </Script>
 
   <Instance name="DataGridTabResource">
-    <Instance ref.Class="demo::DataGridTab">
+    <Instance ref.Class="rptest::DataGridTab">
       <ref.Members><![CDATA[
         var itemSource : observe DataItem^[] = {};
       ]]></ref.Members>
@@ -117,7 +117,7 @@
             </Button>
           </Cell>
           <Cell Site="row:1 column:0 columnSpan:3">
-            <BindableDataGrid Alt="Z" env.ItemType="demo::DataItem^" VerticalAlwaysVisible="false" HorizontalAlwaysVisible="false">
+            <BindableDataGrid Alt="Z" env.ItemType="rptest::DataItem^" VerticalAlwaysVisible="false" HorizontalAlwaysVisible="false">
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
               <att.ItemSource-eval>self.itemSource</att.ItemSource-eval>
               <att.Columns>
@@ -139,7 +139,7 @@
   </Instance>
 
   <Instance name="MainWindowResource">
-    <Instance ref.Class="demo::MainWindow" xmlns:demo="demo::*">
+    <Instance ref.Class="rptest::MainWindow" xmlns:rptest="rptest::*">
       <Window ref.Name="self" Text="Remote Protocol Test" ClientSize="x:640 y:480">
         <MessageDialog ref.Name="dialogQueryClose"
                        Input="DisplayOKCancel"
@@ -260,8 +260,8 @@
             <Tab>
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
               <att.Pages>
-                <demo:ClickMeTab Alt="A"/>
-                <demo:DataGridTab Alt="B"/>
+                <rptest:ClickMeTab Alt="A"/>
+                <rptest:DataGridTab Alt="B"/>
               </att.Pages>
             </Tab>
           </Cell>

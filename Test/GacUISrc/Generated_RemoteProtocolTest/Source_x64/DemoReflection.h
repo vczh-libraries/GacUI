@@ -37,13 +37,13 @@ namespace vl
 		namespace description
 		{
 #ifndef VCZH_DEBUG_NO_REFLECTION
-			DECL_TYPE_INFO(::demo::ClickMeTab)
-			DECL_TYPE_INFO(::demo::ClickMeTabConstructor)
-			DECL_TYPE_INFO(::demo::DataGridTab)
-			DECL_TYPE_INFO(::demo::DataGridTabConstructor)
-			DECL_TYPE_INFO(::demo::DataItem)
-			DECL_TYPE_INFO(::demo::MainWindow)
-			DECL_TYPE_INFO(::demo::MainWindowConstructor)
+			DECL_TYPE_INFO(::rptest::ClickMeTab)
+			DECL_TYPE_INFO(::rptest::ClickMeTabConstructor)
+			DECL_TYPE_INFO(::rptest::DataGridTab)
+			DECL_TYPE_INFO(::rptest::DataGridTabConstructor)
+			DECL_TYPE_INFO(::rptest::DataItem)
+			DECL_TYPE_INFO(::rptest::MainWindow)
+			DECL_TYPE_INFO(::rptest::MainWindowConstructor)
 #endif
 
 			extern bool LoadDemoTypes();

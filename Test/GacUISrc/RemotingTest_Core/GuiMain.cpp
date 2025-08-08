@@ -15,7 +15,7 @@ void GuiMain()
 {
 	theme::RegisterTheme(Ptr(new darkskin::Theme));
 	{
-		demo::MainWindow window;
+		rptest::MainWindow window;
 		window.ForceCalculateSizeImmediately();
 		window.MoveToScreenCenter();
 		try

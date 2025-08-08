@@ -30,18 +30,18 @@ https://github.com/vczh-libraries
 #define GLOBAL_OBJ &::vl_workflow_global::Demo::Instance()
 
 /***********************************************************************
-Class (::demo::ClickMeTab)
+Class (::rptest::ClickMeTab)
 ***********************************************************************/
 
-namespace demo
+namespace rptest
 {
 	ClickMeTab::ClickMeTab()
 		: ::vl::presentation::controls::GuiTabPage(::vl::presentation::theme::ThemeName::CustomControl)
 	{
-		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString::Unmanaged(L"demo::ClickMeTab"));
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString::Unmanaged(L"rptest::ClickMeTab"));
 		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
 		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
-		::vl::__vwsn::This(this)->__vwsn_demo_ClickMeTab_Initialize(this);
+		::vl::__vwsn::This(this)->__vwsn_rptest_ClickMeTab_Initialize(this);
 	}
 
 	ClickMeTab::~ClickMeTab()

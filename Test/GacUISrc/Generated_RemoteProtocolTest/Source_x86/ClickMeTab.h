@@ -22,13 +22,13 @@ https://github.com/vczh-libraries
 #pragma GCC diagnostic push
 #endif
 
-namespace demo
+namespace rptest
 {
-	class ClickMeTab : public ::vl::presentation::controls::GuiTabPage, public ::demo::ClickMeTabConstructor, public ::vl::reflection::Description<ClickMeTab>
+	class ClickMeTab : public ::vl::presentation::controls::GuiTabPage, public ::rptest::ClickMeTabConstructor, public ::vl::reflection::Description<ClickMeTab>
 	{
-		friend class ::demo::ClickMeTabConstructor;
-		friend struct ::vl_workflow_global::__vwsnf1_Demo_demo_ClickMeTabConstructor___vwsn_demo_ClickMeTab_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf2_Demo_demo_ClickMeTabConstructor___vwsn_demo_ClickMeTab_Initialize_;
+		friend class ::rptest::ClickMeTabConstructor;
+		friend struct ::vl_workflow_global::__vwsnf1_Demo_rptest_ClickMeTabConstructor___vwsn_rptest_ClickMeTab_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf2_Demo_rptest_ClickMeTabConstructor___vwsn_rptest_ClickMeTab_Initialize_;
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ClickMeTab>;
 #endif

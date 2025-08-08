@@ -24,19 +24,10 @@ namespace gaclib_controls
     class UnitTestSnapshotViewerWindowConstructor
     {
         @cpp:Protected
-        var ViewModel : ::gaclib_controls::IUnitTestSnapshotViewerViewModel^ = null of (::gaclib_controls::IUnitTestSnapshotViewerViewModel^);
-
-        @cpp:Protected
         var self : ::gaclib_controls::UnitTestSnapshotViewerWindow* = null of (::gaclib_controls::UnitTestSnapshotViewerWindow*);
 
         @cpp:Protected
-        var treeViewFileNodes : ::presentation::controls::GuiBindableTreeView* = null of (::presentation::controls::GuiBindableTreeView*);
-
-        @cpp:Protected
-        var textListFrames : ::presentation::controls::GuiBindableTextList* = null of (::presentation::controls::GuiBindableTextList*);
-
-        @cpp:Protected
-        var scRendering : ::presentation::controls::GuiScrollContainer* = null of (::presentation::controls::GuiScrollContainer*);
+        var ViewModel : ::gaclib_controls::IUnitTestSnapshotViewerViewModel^ = null of (::gaclib_controls::IUnitTestSnapshotViewerViewModel^);
 
         @cpp:Protected
         var <precompile>0 : ::presentation::compositions::GuiTableComposition* = null of (::presentation::compositions::GuiTableComposition*);
@@ -102,6 +93,15 @@ namespace gaclib_controls
         var <precompile>20 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
+        var treeViewFileNodes : ::presentation::controls::GuiBindableTreeView* = null of (::presentation::controls::GuiBindableTreeView*);
+
+        @cpp:Protected
+        var textListFrames : ::presentation::controls::GuiBindableTextList* = null of (::presentation::controls::GuiBindableTextList*);
+
+        @cpp:Protected
+        var scRendering : ::presentation::controls::GuiScrollContainer* = null of (::presentation::controls::GuiScrollContainer*);
+
+        @cpp:Protected
         func <gaclib_controls-UnitTestSnapshotViewerWindow>Initialize(<this> : ::gaclib_controls::UnitTestSnapshotViewerWindow*) : (::system::Void)
         {
             (self = <this>);
@@ -111,13 +111,13 @@ namespace gaclib_controls
             }
             (<precompile>0 = new (::presentation::compositions::GuiTableComposition*)());
             {
-                (<precompile>0.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
-            }
-            {
                 (<precompile>0.CellPadding = 5 of (::system::Int32));
             }
             {
                 (<precompile>0.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (<precompile>0.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
             }
             {
                 <precompile>0.SetRowsAndColumns(1, 4);
@@ -157,6 +157,12 @@ namespace gaclib_controls
                 });
             }
             {
+                (treeViewFileNodes.HorizontalAlwaysVisible = false);
+            }
+            {
+                (treeViewFileNodes.VerticalAlwaysVisible = false);
+            }
+            {
                 (treeViewFileNodes.TextProperty = func (<item> : ::system::Object) : (::system::String)
                 {
                     var item = (cast (IUnitTestSnapshotFileNode^) <item>);
@@ -166,12 +172,6 @@ namespace gaclib_controls
             (<precompile>4 = treeViewFileNodes.BoundsComposition);
             {
                 (<precompile>4.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
-            }
-            {
-                (treeViewFileNodes.HorizontalAlwaysVisible = false);
-            }
-            {
-                (treeViewFileNodes.VerticalAlwaysVisible = false);
             }
             {
                 <precompile>3.AddChild(treeViewFileNodes.BoundsComposition);
@@ -197,6 +197,12 @@ namespace gaclib_controls
                 <this>.SetNamedObject("textListFrames", textListFrames);
             }
             {
+                (textListFrames.HorizontalAlwaysVisible = false);
+            }
+            {
+                (textListFrames.VerticalAlwaysVisible = false);
+            }
+            {
                 (textListFrames.TextProperty = func (<item> : ::system::Object) : (::system::String)
                 {
                     var item = (cast (IUnitTestSnapshotFrame^) <item>);
@@ -206,12 +212,6 @@ namespace gaclib_controls
             (<precompile>9 = textListFrames.BoundsComposition);
             {
                 (<precompile>9.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
-            }
-            {
-                (textListFrames.HorizontalAlwaysVisible = false);
-            }
-            {
-                (textListFrames.VerticalAlwaysVisible = false);
             }
             {
                 <precompile>8.AddChild(textListFrames);
@@ -247,15 +247,15 @@ namespace gaclib_controls
                 (scRendering = new (::presentation::controls::GuiScrollContainer*)(::presentation::theme::ThemeName::ScrollView));
                 <this>.SetNamedObject("scRendering", scRendering);
             }
-            (<precompile>14 = scRendering.BoundsComposition);
-            {
-                (<precompile>14.AlignmentToParent = {left : 5; top : 5; right : 5; bottom : 5;} of (::presentation::Margin));
-            }
             {
                 (scRendering.HorizontalAlwaysVisible = false);
             }
             {
                 (scRendering.VerticalAlwaysVisible = false);
+            }
+            (<precompile>14 = scRendering.BoundsComposition);
+            {
+                (<precompile>14.AlignmentToParent = {left : 5; top : 5; right : 5; bottom : 5;} of (::presentation::Margin));
             }
             {
                 <precompile>13.AddChild(scRendering);
@@ -273,15 +273,15 @@ namespace gaclib_controls
             {
                 (<precompile>16 = new (::presentation::controls::GuiMultilineTextBox*)(::presentation::theme::ThemeName::MultilineTextBox));
             }
-            (<precompile>17 = <precompile>16.BoundsComposition);
-            {
-                (<precompile>17.AlignmentToParent = {left : 5; top : 5; right : 5; bottom : 5;} of (::presentation::Margin));
-            }
             {
                 (<precompile>16.HorizontalAlwaysVisible = false);
             }
             {
                 (<precompile>16.VerticalAlwaysVisible = false);
+            }
+            (<precompile>17 = <precompile>16.BoundsComposition);
+            {
+                (<precompile>17.AlignmentToParent = {left : 5; top : 5; right : 5; bottom : 5;} of (::presentation::Margin));
             }
             {
                 <precompile>15.AddChild(<precompile>16);
@@ -299,15 +299,15 @@ namespace gaclib_controls
             {
                 (<precompile>19 = new (::presentation::controls::GuiMultilineTextBox*)(::presentation::theme::ThemeName::MultilineTextBox));
             }
-            (<precompile>20 = <precompile>19.BoundsComposition);
-            {
-                (<precompile>20.AlignmentToParent = {left : 5; top : 5; right : 5; bottom : 5;} of (::presentation::Margin));
-            }
             {
                 (<precompile>19.HorizontalAlwaysVisible = false);
             }
             {
                 (<precompile>19.VerticalAlwaysVisible = false);
+            }
+            (<precompile>20 = <precompile>19.BoundsComposition);
+            {
+                (<precompile>20.AlignmentToParent = {left : 5; top : 5; right : 5; bottom : 5;} of (::presentation::Margin));
             }
             {
                 <precompile>18.AddChild(<precompile>19);

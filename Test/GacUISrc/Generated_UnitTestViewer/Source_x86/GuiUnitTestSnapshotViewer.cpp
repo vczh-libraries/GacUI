@@ -586,13 +586,13 @@ Class (::gaclib_controls::UnitTestSnapshotViewerWindowConstructor)
 		}
 		(this->__vwsn_precompile_0 = new ::vl::presentation::compositions::GuiTableComposition());
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
-		}
-		{
 			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetCellPadding(static_cast<::vl::vint32_t>(5));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetRowsAndColumns(static_cast<::vl::vint32_t>(1), static_cast<::vl::vint32_t>(4));
@@ -628,17 +628,17 @@ Class (::gaclib_controls::UnitTestSnapshotViewerWindowConstructor)
 			::vl::__vwsn::This(this->treeViewFileNodes)->SetChildrenProperty(vl::Func(::vl_workflow_global::__vwsnf1_GuiUnitTestSnapshotViewer_gaclib_controls_UnitTestSnapshotViewerWindowConstructor___vwsn_gaclib_controls_UnitTestSnapshotViewerWindow_Initialize_(this)));
 		}
 		{
+			::vl::__vwsn::This(this->treeViewFileNodes)->SetHorizontalAlwaysVisible(false);
+		}
+		{
+			::vl::__vwsn::This(this->treeViewFileNodes)->SetVerticalAlwaysVisible(false);
+		}
+		{
 			::vl::__vwsn::This(this->treeViewFileNodes)->SetTextProperty(vl::Func(::vl_workflow_global::__vwsnf2_GuiUnitTestSnapshotViewer_gaclib_controls_UnitTestSnapshotViewerWindowConstructor___vwsn_gaclib_controls_UnitTestSnapshotViewerWindow_Initialize_(this)));
 		}
 		(this->__vwsn_precompile_4 = ::vl::__vwsn::This(this->treeViewFileNodes)->GetBoundsComposition());
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_4)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
-		}
-		{
-			::vl::__vwsn::This(this->treeViewFileNodes)->SetHorizontalAlwaysVisible(false);
-		}
-		{
-			::vl::__vwsn::This(this->treeViewFileNodes)->SetVerticalAlwaysVisible(false);
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_3)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->treeViewFileNodes)->GetBoundsComposition()));
@@ -664,17 +664,17 @@ Class (::gaclib_controls::UnitTestSnapshotViewerWindowConstructor)
 			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"textListFrames"), ::vl::__vwsn::Box(this->textListFrames));
 		}
 		{
+			::vl::__vwsn::This(this->textListFrames)->SetHorizontalAlwaysVisible(false);
+		}
+		{
+			::vl::__vwsn::This(this->textListFrames)->SetVerticalAlwaysVisible(false);
+		}
+		{
 			::vl::__vwsn::This(this->textListFrames)->SetTextProperty(vl::Func(::vl_workflow_global::__vwsnf3_GuiUnitTestSnapshotViewer_gaclib_controls_UnitTestSnapshotViewerWindowConstructor___vwsn_gaclib_controls_UnitTestSnapshotViewerWindow_Initialize_(this)));
 		}
 		(this->__vwsn_precompile_9 = ::vl::__vwsn::This(this->textListFrames)->GetBoundsComposition());
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_9)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
-		}
-		{
-			::vl::__vwsn::This(this->textListFrames)->SetHorizontalAlwaysVisible(false);
-		}
-		{
-			::vl::__vwsn::This(this->textListFrames)->SetVerticalAlwaysVisible(false);
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_8)->AddChild(static_cast<::vl::presentation::controls::GuiControl*>(this->textListFrames));
@@ -710,15 +710,15 @@ Class (::gaclib_controls::UnitTestSnapshotViewerWindowConstructor)
 			(this->scRendering = new ::vl::presentation::controls::GuiScrollContainer(::vl::presentation::theme::ThemeName::ScrollView));
 			::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"scRendering"), ::vl::__vwsn::Box(this->scRendering));
 		}
-		(this->__vwsn_precompile_14 = ::vl::__vwsn::This(this->scRendering)->GetBoundsComposition());
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_14)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(5); __vwsn_temp__.top = static_cast<::vl::vint32_t>(5); __vwsn_temp__.right = static_cast<::vl::vint32_t>(5); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(5); return __vwsn_temp__; }());
-		}
 		{
 			::vl::__vwsn::This(this->scRendering)->SetHorizontalAlwaysVisible(false);
 		}
 		{
 			::vl::__vwsn::This(this->scRendering)->SetVerticalAlwaysVisible(false);
+		}
+		(this->__vwsn_precompile_14 = ::vl::__vwsn::This(this->scRendering)->GetBoundsComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_14)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(5); __vwsn_temp__.top = static_cast<::vl::vint32_t>(5); __vwsn_temp__.right = static_cast<::vl::vint32_t>(5); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(5); return __vwsn_temp__; }());
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_13)->AddChild(static_cast<::vl::presentation::controls::GuiControl*>(this->scRendering));
@@ -736,15 +736,15 @@ Class (::gaclib_controls::UnitTestSnapshotViewerWindowConstructor)
 		{
 			(this->__vwsn_precompile_16 = new ::vl::presentation::controls::GuiMultilineTextBox(::vl::presentation::theme::ThemeName::MultilineTextBox));
 		}
-		(this->__vwsn_precompile_17 = ::vl::__vwsn::This(this->__vwsn_precompile_16)->GetBoundsComposition());
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_17)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(5); __vwsn_temp__.top = static_cast<::vl::vint32_t>(5); __vwsn_temp__.right = static_cast<::vl::vint32_t>(5); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(5); return __vwsn_temp__; }());
-		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_16)->SetHorizontalAlwaysVisible(false);
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_16)->SetVerticalAlwaysVisible(false);
+		}
+		(this->__vwsn_precompile_17 = ::vl::__vwsn::This(this->__vwsn_precompile_16)->GetBoundsComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_17)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(5); __vwsn_temp__.top = static_cast<::vl::vint32_t>(5); __vwsn_temp__.right = static_cast<::vl::vint32_t>(5); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(5); return __vwsn_temp__; }());
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_15)->AddChild(static_cast<::vl::presentation::controls::GuiControl*>(this->__vwsn_precompile_16));
@@ -762,15 +762,15 @@ Class (::gaclib_controls::UnitTestSnapshotViewerWindowConstructor)
 		{
 			(this->__vwsn_precompile_19 = new ::vl::presentation::controls::GuiMultilineTextBox(::vl::presentation::theme::ThemeName::MultilineTextBox));
 		}
-		(this->__vwsn_precompile_20 = ::vl::__vwsn::This(this->__vwsn_precompile_19)->GetBoundsComposition());
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_20)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(5); __vwsn_temp__.top = static_cast<::vl::vint32_t>(5); __vwsn_temp__.right = static_cast<::vl::vint32_t>(5); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(5); return __vwsn_temp__; }());
-		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_19)->SetHorizontalAlwaysVisible(false);
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_19)->SetVerticalAlwaysVisible(false);
+		}
+		(this->__vwsn_precompile_20 = ::vl::__vwsn::This(this->__vwsn_precompile_19)->GetBoundsComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_20)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(5); __vwsn_temp__.top = static_cast<::vl::vint32_t>(5); __vwsn_temp__.right = static_cast<::vl::vint32_t>(5); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(5); return __vwsn_temp__; }());
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_18)->AddChild(static_cast<::vl::presentation::controls::GuiControl*>(this->__vwsn_precompile_19));
@@ -826,11 +826,8 @@ Class (::gaclib_controls::UnitTestSnapshotViewerWindowConstructor)
 	}
 
 	UnitTestSnapshotViewerWindowConstructor::UnitTestSnapshotViewerWindowConstructor()
-		: ViewModel(::vl::Ptr<::gaclib_controls::IUnitTestSnapshotViewerViewModel>())
-		, self(static_cast<::gaclib_controls::UnitTestSnapshotViewerWindow*>(nullptr))
-		, treeViewFileNodes(static_cast<::vl::presentation::controls::GuiBindableTreeView*>(nullptr))
-		, textListFrames(static_cast<::vl::presentation::controls::GuiBindableTextList*>(nullptr))
-		, scRendering(static_cast<::vl::presentation::controls::GuiScrollContainer*>(nullptr))
+		: self(static_cast<::gaclib_controls::UnitTestSnapshotViewerWindow*>(nullptr))
+		, ViewModel(::vl::Ptr<::gaclib_controls::IUnitTestSnapshotViewerViewModel>())
 		, __vwsn_precompile_0(static_cast<::vl::presentation::compositions::GuiTableComposition*>(nullptr))
 		, __vwsn_precompile_1(static_cast<::vl::presentation::compositions::GuiColumnSplitterComposition*>(nullptr))
 		, __vwsn_precompile_2(static_cast<::vl::presentation::compositions::GuiColumnSplitterComposition*>(nullptr))
@@ -852,6 +849,9 @@ Class (::gaclib_controls::UnitTestSnapshotViewerWindowConstructor)
 		, __vwsn_precompile_18(static_cast<::vl::presentation::controls::GuiTabPage*>(nullptr))
 		, __vwsn_precompile_19(static_cast<::vl::presentation::controls::GuiMultilineTextBox*>(nullptr))
 		, __vwsn_precompile_20(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, treeViewFileNodes(static_cast<::vl::presentation::controls::GuiBindableTreeView*>(nullptr))
+		, textListFrames(static_cast<::vl::presentation::controls::GuiBindableTextList*>(nullptr))
+		, scRendering(static_cast<::vl::presentation::controls::GuiScrollContainer*>(nullptr))
 	{
 	}
 

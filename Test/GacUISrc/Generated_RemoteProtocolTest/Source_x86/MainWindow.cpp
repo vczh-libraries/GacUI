@@ -30,18 +30,18 @@ https://github.com/vczh-libraries
 #define GLOBAL_OBJ &::vl_workflow_global::Demo::Instance()
 
 /***********************************************************************
-Class (::demo::MainWindow)
+Class (::rptest::MainWindow)
 ***********************************************************************/
 
-namespace demo
+namespace rptest
 {
 	MainWindow::MainWindow()
 		: ::vl::presentation::controls::GuiWindow(::vl::presentation::theme::ThemeName::Window)
 	{
-		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString::Unmanaged(L"demo::MainWindow"));
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString::Unmanaged(L"rptest::MainWindow"));
 		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
 		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
-		::vl::__vwsn::This(this)->__vwsn_demo_MainWindow_Initialize(this);
+		::vl::__vwsn::This(this)->__vwsn_rptest_MainWindow_Initialize(this);
 	}
 
 	MainWindow::~MainWindow()

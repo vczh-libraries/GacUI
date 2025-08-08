@@ -16446,13 +16446,13 @@ Class (::demo::CategoryDisplayerConstructor)
 		}
 		(this->__vwsn_precompile_6 = ::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiSolidLabelElement>()));
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_6.Obj())->SetEllipse(true);
-		}
-		{
 			::vl::__vwsn::This(this->__vwsn_precompile_6.Obj())->SetVerticalAlignment(::vl::presentation::Alignment::Center);
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_6.Obj())->SetHorizontalAlignment(::vl::presentation::Alignment::Left);
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_6.Obj())->SetEllipse(true);
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_6.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#FF8000")));
@@ -19698,9 +19698,6 @@ Class (::demo::DocumentEditorRibbonConstructor)
 			(this->__vwsn_precompile_81 = new ::vl::presentation::controls::GuiRibbonTabPage(::vl::presentation::theme::ThemeName::CustomControl));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_81)->SetHighlighted(true);
-		}
-		{
 			(this->__vwsn_precompile_82 = new ::vl::presentation::controls::GuiRibbonGroup(::vl::presentation::theme::ThemeName::RibbonGroup));
 		}
 		{
@@ -19746,6 +19743,9 @@ Class (::demo::DocumentEditorRibbonConstructor)
 		{
 			auto __vwsn_collection_ = ::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(this->__vwsn_precompile_81)->GetGroups());
 			::vl::__vwsn::This(__vwsn_collection_.Obj())->Add(::vl::__vwsn::Box(this->__vwsn_precompile_82));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_81)->SetHighlighted(true);
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_81)->SetAlt(::vl::WString::Unmanaged(L"I"));
@@ -20046,14 +20046,14 @@ Class (::demo::DocumentEditorRibbonConstructor)
 		, __vwsn_precompile_32(static_cast<::vl::presentation::controls::GuiControl*>(nullptr))
 		, __vwsn_precompile_33(static_cast<::vl::presentation::controls::GuiToolstripButton*>(nullptr))
 		, __vwsn_precompile_34(static_cast<::vl::presentation::controls::GuiRibbonGroup*>(nullptr))
-		, dialogMessage(static_cast<::vl::presentation::controls::GuiMessageDialog*>(nullptr))
-		, toolstripHome(static_cast<::vl::presentation::controls::GuiToolstripMenu*>(nullptr))
-		, buttonHome(static_cast<::vl::presentation::controls::GuiButton*>(nullptr))
-		, styleGallery(static_cast<::vl::presentation::controls::GuiBindableRibbonGalleryList*>(nullptr))
 		, __vwsn_precompile_35(static_cast<::vl::presentation::controls::GuiRibbonToolstrips*>(nullptr))
 		, __vwsn_precompile_36(static_cast<::vl::presentation::controls::GuiToolstripGroup*>(nullptr))
 		, __vwsn_precompile_37(static_cast<::vl::presentation::controls::GuiToolstripButton*>(nullptr))
 		, __vwsn_precompile_38(static_cast<::vl::presentation::controls::GuiToolstripButton*>(nullptr))
+		, dialogMessage(static_cast<::vl::presentation::controls::GuiMessageDialog*>(nullptr))
+		, toolstripHome(static_cast<::vl::presentation::controls::GuiToolstripMenu*>(nullptr))
+		, buttonHome(static_cast<::vl::presentation::controls::GuiButton*>(nullptr))
+		, styleGallery(static_cast<::vl::presentation::controls::GuiBindableRibbonGalleryList*>(nullptr))
 		, __vwsn_precompile_39(static_cast<::vl::presentation::controls::GuiToolstripGroup*>(nullptr))
 		, __vwsn_precompile_40(static_cast<::vl::presentation::controls::GuiToolstripButton*>(nullptr))
 		, __vwsn_precompile_41(static_cast<::vl::presentation::controls::GuiToolstripButton*>(nullptr))
@@ -21048,11 +21048,11 @@ Class (::demo::DocumentEditorToolstripConstructor)
 		, __vwsn_precompile_32(static_cast<::vl::presentation::controls::GuiToolstripButton*>(nullptr))
 		, __vwsn_precompile_33(static_cast<::vl::presentation::controls::GuiToolstripButton*>(nullptr))
 		, __vwsn_precompile_34(static_cast<::vl::presentation::controls::GuiToolstripButton*>(nullptr))
-		, buttonAlignment(static_cast<::vl::presentation::controls::GuiToolstripButton*>(nullptr))
 		, __vwsn_precompile_35(static_cast<::vl::presentation::controls::GuiToolstripMenu*>(nullptr))
 		, __vwsn_precompile_36(static_cast<::vl::presentation::controls::GuiToolstripButton*>(nullptr))
 		, __vwsn_precompile_37(static_cast<::vl::presentation::controls::GuiToolstripButton*>(nullptr))
 		, __vwsn_precompile_38(static_cast<::vl::presentation::controls::GuiToolstripButton*>(nullptr))
+		, buttonAlignment(static_cast<::vl::presentation::controls::GuiToolstripButton*>(nullptr))
 		, __vwsn_precompile_39(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
 		, __vwsn_precompile_40(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(nullptr))
 		, __vwsn_precompile_41(static_cast<::vl::presentation::controls::GuiToolstripToolBar*>(nullptr))
@@ -23968,6 +23968,10 @@ Class (::demo::LocalizedFileDialogTabPageConstructor)
 		, __vwsn_precompile_32(static_cast<::vl::presentation::compositions::GuiStackItemComposition*>(nullptr))
 		, __vwsn_precompile_33(static_cast<::vl::presentation::compositions::GuiStackItemComposition*>(nullptr))
 		, __vwsn_precompile_34(static_cast<::vl::presentation::compositions::GuiStackItemComposition*>(nullptr))
+		, __vwsn_precompile_35(static_cast<::vl::presentation::compositions::GuiStackItemComposition*>(nullptr))
+		, __vwsn_precompile_36(static_cast<::vl::presentation::compositions::GuiStackItemComposition*>(nullptr))
+		, __vwsn_precompile_37(static_cast<::vl::presentation::compositions::GuiStackItemComposition*>(nullptr))
+		, __vwsn_precompile_38(static_cast<::vl::presentation::compositions::GuiStackItemComposition*>(nullptr))
 		, dialogOpen(static_cast<::vl::presentation::controls::GuiOpenFileDialog*>(nullptr))
 		, txtTitle(static_cast<::vl::presentation::controls::GuiSinglelineTextBox*>(nullptr))
 		, dialogSave(static_cast<::vl::presentation::controls::GuiSaveFileDialog*>(nullptr))
@@ -23986,10 +23990,6 @@ Class (::demo::LocalizedFileDialogTabPageConstructor)
 		, chkFileDialogDirectoryMustExist(static_cast<::vl::presentation::controls::GuiSelectableButton*>(nullptr))
 		, chkFileDialogAddToRecent(static_cast<::vl::presentation::controls::GuiSelectableButton*>(nullptr))
 		, lstFiles(static_cast<::vl::presentation::controls::GuiBindableTextList*>(nullptr))
-		, __vwsn_precompile_35(static_cast<::vl::presentation::compositions::GuiStackItemComposition*>(nullptr))
-		, __vwsn_precompile_36(static_cast<::vl::presentation::compositions::GuiStackItemComposition*>(nullptr))
-		, __vwsn_precompile_37(static_cast<::vl::presentation::compositions::GuiStackItemComposition*>(nullptr))
-		, __vwsn_precompile_38(static_cast<::vl::presentation::compositions::GuiStackItemComposition*>(nullptr))
 		, __vwsn_precompile_39(static_cast<::vl::presentation::controls::GuiLabel*>(nullptr))
 		, __vwsn_precompile_40(static_cast<::vl::presentation::compositions::GuiStackItemComposition*>(nullptr))
 		, __vwsn_precompile_41(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
@@ -25597,6 +25597,10 @@ Class (::demo::MainWindowConstructor)
 		, __vwsn_precompile_32(static_cast<::vl::presentation::controls::GuiTabPage*>(nullptr))
 		, __vwsn_precompile_33(static_cast<::vl::presentation::controls::GuiTab*>(nullptr))
 		, __vwsn_precompile_34(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, __vwsn_precompile_35(static_cast<::demo::ElementTabPage*>(nullptr))
+		, __vwsn_precompile_36(static_cast<::demo::AnimationTabPage*>(nullptr))
+		, __vwsn_precompile_37(static_cast<::demo::LocalizedStringsTabPage*>(nullptr))
+		, __vwsn_precompile_38(static_cast<::demo::LocalizedDialogsTabPage*>(nullptr))
 		, checkFrame(static_cast<::vl::presentation::controls::GuiSelectableButton*>(nullptr))
 		, checkMax(static_cast<::vl::presentation::controls::GuiSelectableButton*>(nullptr))
 		, checkMin(static_cast<::vl::presentation::controls::GuiSelectableButton*>(nullptr))
@@ -25606,10 +25610,6 @@ Class (::demo::MainWindowConstructor)
 		, checkTitle(static_cast<::vl::presentation::controls::GuiSelectableButton*>(nullptr))
 		, editorRibbon(static_cast<::demo::DocumentEditorRibbon*>(nullptr))
 		, editorToolstrip(static_cast<::demo::DocumentEditorToolstrip*>(nullptr))
-		, __vwsn_precompile_35(static_cast<::demo::ElementTabPage*>(nullptr))
-		, __vwsn_precompile_36(static_cast<::demo::AnimationTabPage*>(nullptr))
-		, __vwsn_precompile_37(static_cast<::demo::LocalizedStringsTabPage*>(nullptr))
-		, __vwsn_precompile_38(static_cast<::demo::LocalizedDialogsTabPage*>(nullptr))
 		, __vwsn_precompile_39(static_cast<::demo::DatePickerTabPage*>(nullptr))
 		, __vwsn_precompile_40(static_cast<::vl::presentation::controls::GuiTabPage*>(nullptr))
 		, __vwsn_precompile_41(static_cast<::vl::presentation::compositions::GuiStackComposition*>(nullptr))
@@ -28791,11 +28791,11 @@ Class (::demo::ResponsiveGroupControlConstructor)
 		, __vwsn_precompile_32(static_cast<::vl::presentation::controls::GuiLabel*>(nullptr))
 		, __vwsn_precompile_33(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
 		, __vwsn_precompile_34(static_cast<::vl::presentation::controls::GuiButton*>(nullptr))
-		, responsive(static_cast<::vl::presentation::compositions::GuiResponsiveGroupComposition*>(nullptr))
 		, __vwsn_precompile_35(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
 		, __vwsn_precompile_36(static_cast<::vl::presentation::controls::GuiButton*>(nullptr))
 		, __vwsn_precompile_37(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
 		, __vwsn_precompile_38(static_cast<::vl::presentation::controls::GuiLabel*>(nullptr))
+		, responsive(static_cast<::vl::presentation::compositions::GuiResponsiveGroupComposition*>(nullptr))
 		, __vwsn_precompile_39(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
 		, __vwsn_precompile_40(static_cast<::vl::presentation::controls::GuiLabel*>(nullptr))
 	{
@@ -29184,11 +29184,11 @@ Class (::demo::ResponsiveStackControlConstructor)
 		, __vwsn_precompile_32(static_cast<::vl::presentation::controls::GuiLabel*>(nullptr))
 		, __vwsn_precompile_33(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
 		, __vwsn_precompile_34(static_cast<::vl::presentation::controls::GuiButton*>(nullptr))
-		, responsive(static_cast<::vl::presentation::compositions::GuiResponsiveStackComposition*>(nullptr))
 		, __vwsn_precompile_35(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
 		, __vwsn_precompile_36(static_cast<::vl::presentation::controls::GuiButton*>(nullptr))
 		, __vwsn_precompile_37(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
 		, __vwsn_precompile_38(static_cast<::vl::presentation::controls::GuiLabel*>(nullptr))
+		, responsive(static_cast<::vl::presentation::compositions::GuiResponsiveStackComposition*>(nullptr))
 		, __vwsn_precompile_39(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
 		, __vwsn_precompile_40(static_cast<::vl::presentation::controls::GuiLabel*>(nullptr))
 	{
@@ -29756,9 +29756,9 @@ Class (::demo::ResponsiveViewControlConstructor)
 		, __vwsn_precompile_32(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
 		, __vwsn_precompile_33(static_cast<::vl::presentation::controls::GuiLabel*>(nullptr))
 		, __vwsn_precompile_34(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
+		, __vwsn_precompile_35(static_cast<::vl::presentation::controls::GuiLabel*>(nullptr))
 		, responsive(static_cast<::vl::presentation::compositions::GuiResponsiveViewComposition*>(nullptr))
 		, documentBox(static_cast<::vl::presentation::controls::GuiDocumentLabel*>(nullptr))
-		, __vwsn_precompile_35(static_cast<::vl::presentation::controls::GuiLabel*>(nullptr))
 	{
 	}
 
@@ -30065,13 +30065,13 @@ Class (::demo::StyleItemTemplateConstructor)
 		(this->styleLabel = ::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiSolidLabelElement>()));
 		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"styleLabel"), ::vl::__vwsn::Box(this->styleLabel));
 		{
-			::vl::__vwsn::This(this->styleLabel.Obj())->SetEllipse(true);
-		}
-		{
 			::vl::__vwsn::This(this->styleLabel.Obj())->SetVerticalAlignment(::vl::presentation::Alignment::Center);
 		}
 		{
 			::vl::__vwsn::This(this->styleLabel.Obj())->SetHorizontalAlignment(::vl::presentation::Alignment::Center);
+		}
+		{
+			::vl::__vwsn::This(this->styleLabel.Obj())->SetEllipse(true);
 		}
 		{
 			::vl::__vwsn::This(this->styleLabel.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#FFFFFF")));
@@ -30091,10 +30091,10 @@ Class (::demo::StyleItemTemplateConstructor)
 		}
 		(this->__vwsn_precompile_3 = ::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiSolidLabelElement>()));
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_3.Obj())->SetEllipse(true);
+			::vl::__vwsn::This(this->__vwsn_precompile_3.Obj())->SetHorizontalAlignment(::vl::presentation::Alignment::Center);
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_3.Obj())->SetHorizontalAlignment(::vl::presentation::Alignment::Center);
+			::vl::__vwsn::This(this->__vwsn_precompile_3.Obj())->SetEllipse(true);
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_2)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_3));
@@ -31422,13 +31422,13 @@ Class (::demo::TextListTabPageConstructor)
 		, __vwsn_precompile_32(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
 		, __vwsn_precompile_33(static_cast<::vl::presentation::compositions::GuiStackItemComposition*>(nullptr))
 		, __vwsn_precompile_34(static_cast<::vl::presentation::controls::GuiSelectableButton*>(nullptr))
-		, mutexGroupController(static_cast<::vl::presentation::controls::GuiSelectableButton::MutexGroupController*>(nullptr))
-		, comboView(static_cast<::vl::presentation::controls::GuiComboBoxListControl*>(nullptr))
-		, bindableTextList(static_cast<::vl::presentation::controls::GuiBindableTextList*>(nullptr))
 		, __vwsn_precompile_35(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
 		, __vwsn_precompile_36(static_cast<::vl::presentation::compositions::GuiStackItemComposition*>(nullptr))
 		, __vwsn_precompile_37(static_cast<::vl::presentation::controls::GuiSelectableButton*>(nullptr))
 		, __vwsn_precompile_38(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, mutexGroupController(static_cast<::vl::presentation::controls::GuiSelectableButton::MutexGroupController*>(nullptr))
+		, comboView(static_cast<::vl::presentation::controls::GuiComboBoxListControl*>(nullptr))
+		, bindableTextList(static_cast<::vl::presentation::controls::GuiBindableTextList*>(nullptr))
 		, __vwsn_precompile_39(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
 		, __vwsn_precompile_40(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
 		, __vwsn_precompile_41(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
@@ -31792,11 +31792,11 @@ Class (::demo::TreeViewTabPageConstructor)
 		, __vwsn_precompile_32(::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider>())
 		, __vwsn_precompile_33(::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider>())
 		, __vwsn_precompile_34(::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider>())
-		, bindableTreeView(static_cast<::vl::presentation::controls::GuiBindableTreeView*>(nullptr))
 		, __vwsn_precompile_35(::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider>())
 		, __vwsn_precompile_36(::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider>())
 		, __vwsn_precompile_37(::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider>())
 		, __vwsn_precompile_38(::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider>())
+		, bindableTreeView(static_cast<::vl::presentation::controls::GuiBindableTreeView*>(nullptr))
 		, __vwsn_precompile_39(::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider>())
 		, __vwsn_precompile_40(::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider>())
 		, __vwsn_precompile_41(::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider>())

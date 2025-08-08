@@ -30,19 +30,19 @@ https://github.com/vczh-libraries
 #define GLOBAL_OBJ &::vl_workflow_global::Demo::Instance()
 
 /***********************************************************************
-Class (::demo::DataGridTab)
+Class (::rptest::DataGridTab)
 ***********************************************************************/
 
-namespace demo
+namespace rptest
 {
 	DataGridTab::DataGridTab()
 		: ::vl::presentation::controls::GuiTabPage(::vl::presentation::theme::ThemeName::CustomControl)
 		, itemSource(::vl::reflection::description::IValueObservableList::Create())
 	{
-		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString::Unmanaged(L"demo::DataGridTab"));
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString::Unmanaged(L"rptest::DataGridTab"));
 		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
 		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
-		::vl::__vwsn::This(this)->__vwsn_demo_DataGridTab_Initialize(this);
+		::vl::__vwsn::This(this)->__vwsn_rptest_DataGridTab_Initialize(this);
 	}
 
 	DataGridTab::~DataGridTab()

@@ -1,5 +1,5 @@
 ﻿================================(1/4)================================
-module <instance>demo::ClickMeTab;
+module <instance>rptest::ClickMeTab;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
 using presentation::compositions::Gui*Composition;
@@ -19,7 +19,7 @@ using presentation::compositions::*;
 using presentation::templates::*;
 using presentation::theme::*;
 
-namespace demo
+namespace rptest
 {
     @cpp:File("ClickMeTab")
     class ClickMeTab : ::presentation::controls::GuiTabPage
@@ -38,7 +38,7 @@ namespace demo
 }
 
 ================================(2/4)================================
-module <instance>demo::DataGridTab;
+module <instance>rptest::DataGridTab;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
 using presentation::compositions::Gui*Composition;
@@ -58,7 +58,7 @@ using presentation::compositions::*;
 using presentation::templates::*;
 using presentation::theme::*;
 
-namespace demo
+namespace rptest
 {
     @cpp:File("DataGridTab")
     class DataGridTab : ::presentation::controls::GuiTabPage
@@ -79,7 +79,7 @@ namespace demo
 }
 
 ================================(3/4)================================
-module <instance>demo::MainWindow;
+module <instance>rptest::MainWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
 using presentation::compositions::Gui*Composition;
@@ -99,7 +99,7 @@ using presentation::compositions::*;
 using presentation::templates::*;
 using presentation::theme::*;
 
-namespace demo
+namespace rptest
 {
     @cpp:File("MainWindow")
     class MainWindow : ::presentation::controls::GuiWindow
@@ -122,7 +122,7 @@ module viewmodel;
 using system::*;
 using presentation::*;
 
-namespace demo
+namespace rptest
 {
     class DataItem
     {

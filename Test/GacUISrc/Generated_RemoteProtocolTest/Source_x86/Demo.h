@@ -25,25 +25,25 @@ https://github.com/vczh-libraries
 
 namespace vl_workflow_global
 {
-	struct __vwsnf10_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_;
-	struct __vwsnf11_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize__;
-	struct __vwsnf12_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_;
-	struct __vwsnf13_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_;
-	struct __vwsnf14_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize__;
-	struct __vwsnf15_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_;
-	struct __vwsnf16_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_;
-	struct __vwsnf1_Demo_demo_ClickMeTabConstructor___vwsn_demo_ClickMeTab_Initialize_;
-	struct __vwsnf2_Demo_demo_ClickMeTabConstructor___vwsn_demo_ClickMeTab_Initialize_;
-	struct __vwsnf3_Demo_demo_DataGridTabConstructor___vwsn_demo_DataGridTab_Initialize_;
-	struct __vwsnf4_Demo_demo_DataGridTabConstructor___vwsn_demo_DataGridTab_Initialize_;
-	struct __vwsnf5_Demo_demo_DataGridTabConstructor___vwsn_demo_DataGridTab_Initialize_;
-	struct __vwsnf6_Demo_demo_DataGridTabConstructor___vwsn_demo_DataGridTab_Initialize_;
-	struct __vwsnf7_Demo_demo_DataGridTabConstructor___vwsn_demo_DataGridTab_Initialize_;
-	struct __vwsnf8_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_;
-	struct __vwsnf9_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_;
+	struct __vwsnf10_Demo_rptest_MainWindowConstructor___vwsn_rptest_MainWindow_Initialize_;
+	struct __vwsnf11_Demo_rptest_MainWindowConstructor___vwsn_rptest_MainWindow_Initialize__;
+	struct __vwsnf12_Demo_rptest_MainWindowConstructor___vwsn_rptest_MainWindow_Initialize_;
+	struct __vwsnf13_Demo_rptest_MainWindowConstructor___vwsn_rptest_MainWindow_Initialize_;
+	struct __vwsnf14_Demo_rptest_MainWindowConstructor___vwsn_rptest_MainWindow_Initialize__;
+	struct __vwsnf15_Demo_rptest_MainWindowConstructor___vwsn_rptest_MainWindow_Initialize_;
+	struct __vwsnf16_Demo_rptest_MainWindowConstructor___vwsn_rptest_MainWindow_Initialize_;
+	struct __vwsnf1_Demo_rptest_ClickMeTabConstructor___vwsn_rptest_ClickMeTab_Initialize_;
+	struct __vwsnf2_Demo_rptest_ClickMeTabConstructor___vwsn_rptest_ClickMeTab_Initialize_;
+	struct __vwsnf3_Demo_rptest_DataGridTabConstructor___vwsn_rptest_DataGridTab_Initialize_;
+	struct __vwsnf4_Demo_rptest_DataGridTabConstructor___vwsn_rptest_DataGridTab_Initialize_;
+	struct __vwsnf5_Demo_rptest_DataGridTabConstructor___vwsn_rptest_DataGridTab_Initialize_;
+	struct __vwsnf6_Demo_rptest_DataGridTabConstructor___vwsn_rptest_DataGridTab_Initialize_;
+	struct __vwsnf7_Demo_rptest_DataGridTabConstructor___vwsn_rptest_DataGridTab_Initialize_;
+	struct __vwsnf8_Demo_rptest_MainWindowConstructor___vwsn_rptest_MainWindow_Initialize_;
+	struct __vwsnf9_Demo_rptest_MainWindowConstructor___vwsn_rptest_MainWindow_Initialize_;
 }
 
-namespace demo
+namespace rptest
 {
 	class ClickMeTabConstructor;
 	class ClickMeTab;
@@ -55,13 +55,13 @@ namespace demo
 
 	class ClickMeTabConstructor : public ::vl::Object, public ::vl::reflection::Description<ClickMeTabConstructor>
 	{
-		friend struct ::vl_workflow_global::__vwsnf1_Demo_demo_ClickMeTabConstructor___vwsn_demo_ClickMeTab_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf2_Demo_demo_ClickMeTabConstructor___vwsn_demo_ClickMeTab_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf1_Demo_rptest_ClickMeTabConstructor___vwsn_rptest_ClickMeTab_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf2_Demo_rptest_ClickMeTabConstructor___vwsn_rptest_ClickMeTab_Initialize_;
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ClickMeTabConstructor>;
 #endif
 	protected:
-		::demo::ClickMeTab* self;
+		::rptest::ClickMeTab* self;
 		::vl::presentation::controls::GuiButton* buttonClickMe;
 		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1;
@@ -71,23 +71,23 @@ namespace demo
 		::vl::presentation::controls::GuiLabel* __vwsn_precompile_5;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_6;
 		::vl::presentation::controls::GuiLabel* __vwsn_precompile_7;
-		void __vwsn_demo_ClickMeTab_Initialize(::demo::ClickMeTab* __vwsn_this_);
+		void __vwsn_rptest_ClickMeTab_Initialize(::rptest::ClickMeTab* __vwsn_this_);
 	public:
 		ClickMeTabConstructor();
 	};
 
 	class DataGridTabConstructor : public ::vl::Object, public ::vl::reflection::Description<DataGridTabConstructor>
 	{
-		friend struct ::vl_workflow_global::__vwsnf3_Demo_demo_DataGridTabConstructor___vwsn_demo_DataGridTab_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf4_Demo_demo_DataGridTabConstructor___vwsn_demo_DataGridTab_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf5_Demo_demo_DataGridTabConstructor___vwsn_demo_DataGridTab_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf6_Demo_demo_DataGridTabConstructor___vwsn_demo_DataGridTab_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf7_Demo_demo_DataGridTabConstructor___vwsn_demo_DataGridTab_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf3_Demo_rptest_DataGridTabConstructor___vwsn_rptest_DataGridTab_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf4_Demo_rptest_DataGridTabConstructor___vwsn_rptest_DataGridTab_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf5_Demo_rptest_DataGridTabConstructor___vwsn_rptest_DataGridTab_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf6_Demo_rptest_DataGridTabConstructor___vwsn_rptest_DataGridTab_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf7_Demo_rptest_DataGridTabConstructor___vwsn_rptest_DataGridTab_Initialize_;
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<DataGridTabConstructor>;
 #endif
 	protected:
-		::demo::DataGridTab* self;
+		::rptest::DataGridTab* self;
 		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1;
 		::vl::presentation::controls::GuiButton* __vwsn_precompile_2;
@@ -99,7 +99,7 @@ namespace demo
 		::vl::Ptr<::vl::presentation::controls::list::DataColumn> __vwsn_precompile_8;
 		::vl::Ptr<::vl::presentation::controls::list::DataColumn> __vwsn_precompile_9;
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_10;
-		void __vwsn_demo_DataGridTab_Initialize(::demo::DataGridTab* __vwsn_this_);
+		void __vwsn_rptest_DataGridTab_Initialize(::rptest::DataGridTab* __vwsn_this_);
 	public:
 		DataGridTabConstructor();
 	};
@@ -129,20 +129,20 @@ namespace demo
 
 	class MainWindowConstructor : public ::vl::Object, public ::vl::reflection::Description<MainWindowConstructor>
 	{
-		friend struct ::vl_workflow_global::__vwsnf10_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf11_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize__;
-		friend struct ::vl_workflow_global::__vwsnf12_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf13_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf14_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize__;
-		friend struct ::vl_workflow_global::__vwsnf15_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf16_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf8_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf9_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf10_Demo_rptest_MainWindowConstructor___vwsn_rptest_MainWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf11_Demo_rptest_MainWindowConstructor___vwsn_rptest_MainWindow_Initialize__;
+		friend struct ::vl_workflow_global::__vwsnf12_Demo_rptest_MainWindowConstructor___vwsn_rptest_MainWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf13_Demo_rptest_MainWindowConstructor___vwsn_rptest_MainWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf14_Demo_rptest_MainWindowConstructor___vwsn_rptest_MainWindow_Initialize__;
+		friend struct ::vl_workflow_global::__vwsnf15_Demo_rptest_MainWindowConstructor___vwsn_rptest_MainWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf16_Demo_rptest_MainWindowConstructor___vwsn_rptest_MainWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf8_Demo_rptest_MainWindowConstructor___vwsn_rptest_MainWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf9_Demo_rptest_MainWindowConstructor___vwsn_rptest_MainWindow_Initialize_;
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<MainWindowConstructor>;
 #endif
 	protected:
-		::demo::MainWindow* self;
+		::rptest::MainWindow* self;
 		::vl::presentation::controls::GuiMessageDialog* dialogQueryClose;
 		::vl::presentation::controls::GuiMessageDialog* dialogLocalShortcut;
 		::vl::presentation::controls::GuiMessageDialog* dialogGlobalShortcut;
@@ -186,10 +186,10 @@ namespace demo
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_36;
 		::vl::presentation::controls::GuiTab* __vwsn_precompile_37;
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_38;
-		::demo::ClickMeTab* __vwsn_precompile_39;
-		::demo::DataGridTab* __vwsn_precompile_40;
+		::rptest::ClickMeTab* __vwsn_precompile_39;
+		::rptest::DataGridTab* __vwsn_precompile_40;
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_41;
-		void __vwsn_demo_MainWindow_Initialize(::demo::MainWindow* __vwsn_this_);
+		void __vwsn_rptest_MainWindow_Initialize(::rptest::MainWindow* __vwsn_this_);
 	public:
 		MainWindowConstructor();
 	};
@@ -212,146 +212,146 @@ namespace vl_workflow_global
 Closures
 ***********************************************************************/
 
-	struct __vwsnf10_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_
+	struct __vwsnf10_Demo_rptest_MainWindowConstructor___vwsn_rptest_MainWindow_Initialize_
 	{
-		::demo::MainWindowConstructor* __vwsnthis_0;
+		::rptest::MainWindowConstructor* __vwsnthis_0;
 
-		__vwsnf10_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_(::demo::MainWindowConstructor* __vwsnctorthis_0);
+		__vwsnf10_Demo_rptest_MainWindowConstructor___vwsn_rptest_MainWindow_Initialize_(::rptest::MainWindowConstructor* __vwsnctorthis_0);
 
 		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
 	};
 
-	struct __vwsnf11_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize__
+	struct __vwsnf11_Demo_rptest_MainWindowConstructor___vwsn_rptest_MainWindow_Initialize__
 	{
-		::demo::MainWindowConstructor* __vwsnthis_0;
+		::rptest::MainWindowConstructor* __vwsnthis_0;
 
-		__vwsnf11_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize__(::demo::MainWindowConstructor* __vwsnctorthis_0);
+		__vwsnf11_Demo_rptest_MainWindowConstructor___vwsn_rptest_MainWindow_Initialize__(::rptest::MainWindowConstructor* __vwsnctorthis_0);
 
 		void operator()() const;
 	};
 
-	struct __vwsnf12_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_
+	struct __vwsnf12_Demo_rptest_MainWindowConstructor___vwsn_rptest_MainWindow_Initialize_
 	{
-		::demo::MainWindowConstructor* __vwsnthis_0;
+		::rptest::MainWindowConstructor* __vwsnthis_0;
 
-		__vwsnf12_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_(::demo::MainWindowConstructor* __vwsnctorthis_0);
+		__vwsnf12_Demo_rptest_MainWindowConstructor___vwsn_rptest_MainWindow_Initialize_(::rptest::MainWindowConstructor* __vwsnctorthis_0);
 
 		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
 	};
 
-	struct __vwsnf13_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_
+	struct __vwsnf13_Demo_rptest_MainWindowConstructor___vwsn_rptest_MainWindow_Initialize_
 	{
-		::demo::MainWindowConstructor* __vwsnthis_0;
+		::rptest::MainWindowConstructor* __vwsnthis_0;
 
-		__vwsnf13_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_(::demo::MainWindowConstructor* __vwsnctorthis_0);
+		__vwsnf13_Demo_rptest_MainWindowConstructor___vwsn_rptest_MainWindow_Initialize_(::rptest::MainWindowConstructor* __vwsnctorthis_0);
 
 		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
 	};
 
-	struct __vwsnf14_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize__
+	struct __vwsnf14_Demo_rptest_MainWindowConstructor___vwsn_rptest_MainWindow_Initialize__
 	{
-		::demo::MainWindowConstructor* __vwsnthis_0;
+		::rptest::MainWindowConstructor* __vwsnthis_0;
 
-		__vwsnf14_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize__(::demo::MainWindowConstructor* __vwsnctorthis_0);
+		__vwsnf14_Demo_rptest_MainWindowConstructor___vwsn_rptest_MainWindow_Initialize__(::rptest::MainWindowConstructor* __vwsnctorthis_0);
 
 		void operator()() const;
 	};
 
-	struct __vwsnf15_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_
+	struct __vwsnf15_Demo_rptest_MainWindowConstructor___vwsn_rptest_MainWindow_Initialize_
 	{
-		::demo::MainWindowConstructor* __vwsnthis_0;
+		::rptest::MainWindowConstructor* __vwsnthis_0;
 
-		__vwsnf15_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_(::demo::MainWindowConstructor* __vwsnctorthis_0);
+		__vwsnf15_Demo_rptest_MainWindowConstructor___vwsn_rptest_MainWindow_Initialize_(::rptest::MainWindowConstructor* __vwsnctorthis_0);
 
 		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
 	};
 
-	struct __vwsnf16_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_
+	struct __vwsnf16_Demo_rptest_MainWindowConstructor___vwsn_rptest_MainWindow_Initialize_
 	{
-		::demo::MainWindowConstructor* __vwsnthis_0;
+		::rptest::MainWindowConstructor* __vwsnthis_0;
 
-		__vwsnf16_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_(::demo::MainWindowConstructor* __vwsnctorthis_0);
+		__vwsnf16_Demo_rptest_MainWindowConstructor___vwsn_rptest_MainWindow_Initialize_(::rptest::MainWindowConstructor* __vwsnctorthis_0);
 
 		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiRequestEventArgs* arguments) const;
 	};
 
-	struct __vwsnf1_Demo_demo_ClickMeTabConstructor___vwsn_demo_ClickMeTab_Initialize_
+	struct __vwsnf1_Demo_rptest_ClickMeTabConstructor___vwsn_rptest_ClickMeTab_Initialize_
 	{
-		::demo::ClickMeTabConstructor* __vwsnthis_0;
+		::rptest::ClickMeTabConstructor* __vwsnthis_0;
 
-		__vwsnf1_Demo_demo_ClickMeTabConstructor___vwsn_demo_ClickMeTab_Initialize_(::demo::ClickMeTabConstructor* __vwsnctorthis_0);
+		__vwsnf1_Demo_rptest_ClickMeTabConstructor___vwsn_rptest_ClickMeTab_Initialize_(::rptest::ClickMeTabConstructor* __vwsnctorthis_0);
 
 		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
 	};
 
-	struct __vwsnf2_Demo_demo_ClickMeTabConstructor___vwsn_demo_ClickMeTab_Initialize_
+	struct __vwsnf2_Demo_rptest_ClickMeTabConstructor___vwsn_rptest_ClickMeTab_Initialize_
 	{
-		::demo::ClickMeTabConstructor* __vwsnthis_0;
+		::rptest::ClickMeTabConstructor* __vwsnthis_0;
 
-		__vwsnf2_Demo_demo_ClickMeTabConstructor___vwsn_demo_ClickMeTab_Initialize_(::demo::ClickMeTabConstructor* __vwsnctorthis_0);
+		__vwsnf2_Demo_rptest_ClickMeTabConstructor___vwsn_rptest_ClickMeTab_Initialize_(::rptest::ClickMeTabConstructor* __vwsnctorthis_0);
 
 		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
 	};
 
-	struct __vwsnf3_Demo_demo_DataGridTabConstructor___vwsn_demo_DataGridTab_Initialize_
+	struct __vwsnf3_Demo_rptest_DataGridTabConstructor___vwsn_rptest_DataGridTab_Initialize_
 	{
-		::demo::DataGridTabConstructor* __vwsnthis_0;
+		::rptest::DataGridTabConstructor* __vwsnthis_0;
 
-		__vwsnf3_Demo_demo_DataGridTabConstructor___vwsn_demo_DataGridTab_Initialize_(::demo::DataGridTabConstructor* __vwsnctorthis_0);
+		__vwsnf3_Demo_rptest_DataGridTabConstructor___vwsn_rptest_DataGridTab_Initialize_(::rptest::DataGridTabConstructor* __vwsnctorthis_0);
 
 		::vl::WString operator()(const ::vl::reflection::description::Value& __vwsn_item_) const;
 	};
 
-	struct __vwsnf4_Demo_demo_DataGridTabConstructor___vwsn_demo_DataGridTab_Initialize_
+	struct __vwsnf4_Demo_rptest_DataGridTabConstructor___vwsn_rptest_DataGridTab_Initialize_
 	{
-		::demo::DataGridTabConstructor* __vwsnthis_0;
+		::rptest::DataGridTabConstructor* __vwsnthis_0;
 
-		__vwsnf4_Demo_demo_DataGridTabConstructor___vwsn_demo_DataGridTab_Initialize_(::demo::DataGridTabConstructor* __vwsnctorthis_0);
+		__vwsnf4_Demo_rptest_DataGridTabConstructor___vwsn_rptest_DataGridTab_Initialize_(::rptest::DataGridTabConstructor* __vwsnctorthis_0);
 
 		::vl::WString operator()(const ::vl::reflection::description::Value& __vwsn_item_) const;
 	};
 
-	struct __vwsnf5_Demo_demo_DataGridTabConstructor___vwsn_demo_DataGridTab_Initialize_
+	struct __vwsnf5_Demo_rptest_DataGridTabConstructor___vwsn_rptest_DataGridTab_Initialize_
 	{
-		::demo::DataGridTabConstructor* __vwsnthis_0;
+		::rptest::DataGridTabConstructor* __vwsnthis_0;
 
-		__vwsnf5_Demo_demo_DataGridTabConstructor___vwsn_demo_DataGridTab_Initialize_(::demo::DataGridTabConstructor* __vwsnctorthis_0);
+		__vwsnf5_Demo_rptest_DataGridTabConstructor___vwsn_rptest_DataGridTab_Initialize_(::rptest::DataGridTabConstructor* __vwsnctorthis_0);
 
 		::vl::WString operator()(const ::vl::reflection::description::Value& __vwsn_item_) const;
 	};
 
-	struct __vwsnf6_Demo_demo_DataGridTabConstructor___vwsn_demo_DataGridTab_Initialize_
+	struct __vwsnf6_Demo_rptest_DataGridTabConstructor___vwsn_rptest_DataGridTab_Initialize_
 	{
-		::demo::DataGridTabConstructor* __vwsnthis_0;
+		::rptest::DataGridTabConstructor* __vwsnthis_0;
 
-		__vwsnf6_Demo_demo_DataGridTabConstructor___vwsn_demo_DataGridTab_Initialize_(::demo::DataGridTabConstructor* __vwsnctorthis_0);
+		__vwsnf6_Demo_rptest_DataGridTabConstructor___vwsn_rptest_DataGridTab_Initialize_(::rptest::DataGridTabConstructor* __vwsnctorthis_0);
 
 		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
 	};
 
-	struct __vwsnf7_Demo_demo_DataGridTabConstructor___vwsn_demo_DataGridTab_Initialize_
+	struct __vwsnf7_Demo_rptest_DataGridTabConstructor___vwsn_rptest_DataGridTab_Initialize_
 	{
-		::demo::DataGridTabConstructor* __vwsnthis_0;
+		::rptest::DataGridTabConstructor* __vwsnthis_0;
 
-		__vwsnf7_Demo_demo_DataGridTabConstructor___vwsn_demo_DataGridTab_Initialize_(::demo::DataGridTabConstructor* __vwsnctorthis_0);
+		__vwsnf7_Demo_rptest_DataGridTabConstructor___vwsn_rptest_DataGridTab_Initialize_(::rptest::DataGridTabConstructor* __vwsnctorthis_0);
 
 		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
 	};
 
-	struct __vwsnf8_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_
+	struct __vwsnf8_Demo_rptest_MainWindowConstructor___vwsn_rptest_MainWindow_Initialize_
 	{
-		::demo::MainWindowConstructor* __vwsnthis_0;
+		::rptest::MainWindowConstructor* __vwsnthis_0;
 
-		__vwsnf8_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_(::demo::MainWindowConstructor* __vwsnctorthis_0);
+		__vwsnf8_Demo_rptest_MainWindowConstructor___vwsn_rptest_MainWindow_Initialize_(::rptest::MainWindowConstructor* __vwsnctorthis_0);
 
 		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
 	};
 
-	struct __vwsnf9_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_
+	struct __vwsnf9_Demo_rptest_MainWindowConstructor___vwsn_rptest_MainWindow_Initialize_
 	{
-		::demo::MainWindowConstructor* __vwsnthis_0;
+		::rptest::MainWindowConstructor* __vwsnthis_0;
 
-		__vwsnf9_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_(::demo::MainWindowConstructor* __vwsnctorthis_0);
+		__vwsnf9_Demo_rptest_MainWindowConstructor___vwsn_rptest_MainWindow_Initialize_(::rptest::MainWindowConstructor* __vwsnctorthis_0);
 
 		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
 	};
