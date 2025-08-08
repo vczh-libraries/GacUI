@@ -59,6 +59,11 @@ GuiHostedGraphicsResourceManager
 			{
 				return nativeManager->GetLayoutProvider();
 			}
+
+			Ptr<IGuiGraphicsElement> GuiHostedGraphicsResourceManager::CreateRawElement()
+			{
+				return nativeManager->CreateRawElement();
+			}
 		}
 	}
 }

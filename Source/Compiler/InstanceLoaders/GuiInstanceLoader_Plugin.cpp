@@ -220,7 +220,31 @@ GuiRawElementInstanceLoader
 
 				Ptr<workflow::WfStatement> CreateInstance(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, GuiResourceTextPos tagPosition, GuiResourceError::List& errors)override
 				{
-					CHECK_FAIL(L"GuiRawElementInstanceLoader::CreateInstance is not implemented");
+					if (CanCreate(typeInfo))
+					{
+						auto elementTypeInfo = TypeInfoRetriver<IGuiGraphicsElement>::CreateTypeInfo();
+						auto refType = GetTypeFromTypeInfo(elementTypeInfo.Obj());
+
+						auto refCreateRawElement = Ptr(new WfChildExpression);
+						refCreateRawElement->parent = refType;
+						refCreateRawElement->name.value = L"CreateRawElement";
+
+						auto call = Ptr(new WfCallExpression);
+						call->function = refCreateRawElement;
+
+						auto refVariable = Ptr(new WfReferenceExpression);
+						refVariable->name.value = variableName.ToString();
+
+						auto assign = Ptr(new WfBinaryExpression);
+						assign->op = WfBinaryOperator::Assign;
+						assign->first = refVariable;
+						assign->second = call;
+
+						auto stat = Ptr(new WfExpressionStatement);
+						stat->expression = assign;
+						return stat;
+					}
+					return nullptr;
 				}
 			};
 

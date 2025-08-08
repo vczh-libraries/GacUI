@@ -111,6 +111,7 @@ GuiRemoteGraphicsResourceManager
 			void								RecreateRenderTarget(INativeWindow* window) override;
 			void								ResizeRenderTarget(INativeWindow* window) override;
 			IGuiGraphicsLayoutProvider*			GetLayoutProvider() override;
+			Ptr<IGuiGraphicsElement>			CreateRawElement() override;
 		};
 	}
 }

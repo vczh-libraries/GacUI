@@ -424,4 +424,9 @@ GuiRemoteGraphicsResourceManager
 	{
 		CHECK_FAIL(L"Not Implemented!");
 	}
+
+	Ptr<IGuiGraphicsElement> GuiRemoteGraphicsResourceManager::CreateRawElement()
+	{
+		CHECK_FAIL(L"Not Implemented!");
+	}
 }

@@ -76,6 +76,11 @@ Resource Manager
 				/// </summary>
 				/// <returns>Returns the layout provider.</returns>
 				virtual IGuiGraphicsLayoutProvider*		GetLayoutProvider() = 0;
+				/// <summary>
+				/// Create a raw element based on the current renderer.
+				/// </summary>
+				/// <returns>Returns the created graphics element.</returns>
+				virtual Ptr<IGuiGraphicsElement>		CreateRawElement() = 0;
 			};
 
 			/// <summary>
@@ -144,14 +149,14 @@ Helpers
 			public:
 				static vint GetElementType()
 				{
-					static vint elementType = -1; 
+					static vint elementType = -1;
 					if (elementType == -1)
 					{
 						auto manager = GetGuiGraphicsResourceManager(); 
 						CHECK_ERROR(manager != nullptr, L"SetGuiGraphicsResourceManager must be called before registering element types."); 
 						elementType = manager->RegisterElementType(WString::Unmanaged(TElement::ElementTypeName)); 
 					}
-					return elementType; 
+					return elementType;
 				}
 
 				static TElement* Create()

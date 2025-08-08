@@ -22,6 +22,7 @@ Type Declaration (Extra)
 
 			BEGIN_INTERFACE_MEMBER_NOPROXY(IGuiGraphicsElement)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(OwnerComposition)
+				CLASS_MEMBER_STATIC_EXTERNALMETHOD(CreateRawElement, NO_PARAMETER, Ptr<IGuiGraphicsElement>(*)(), vl::reflection::description::GuiRawElement_Constructor)
 			END_INTERFACE_MEMBER(IGuiGraphicsElement)
 
 			BEGIN_CLASS_MEMBER(IGuiGraphicsParagraph)

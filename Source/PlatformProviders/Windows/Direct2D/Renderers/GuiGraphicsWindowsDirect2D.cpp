@@ -631,6 +631,11 @@ WindowsGDIResourceManager
 					return layoutProvider.Obj();
 				}
 
+				Ptr<IGuiGraphicsElement> CreateRawElement() override
+				{
+					return Ptr(GuiDirect2DElement::Create());
+				}
+
 				void NativeWindowCreated(INativeWindow* window)override
 				{
 					auto renderTarget = Ptr(new WindowsDirect2DRenderTarget(window));

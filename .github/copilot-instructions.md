@@ -98,13 +98,17 @@ This project is built on top of:
   - Carefully review what has been written in `Copilot_Planning.md`.
   - Copy them to `Copilot_Execution.md` only about how to modify the code.
   - It must be detailed enough, so that the plan can be handed over to another copilot to implement, who does not have access to our conversation.
+  - Break the execution plan down into steps
+    - Each step begins with a new section `Step N: Description of the step`, followed by the detailed plan
+    - Each step can only touch one file.
 
 ### :execute
 
-- There is a `Copilot_Execution.md` in the solution.
+- There is a `Copilot_Execution.md` in the solution, do not read `Copilot_Planning.md` anymore.
   - Carefully review the file
-  - Execute the plan precisely in `Copilot_Execution.md`. 
-  - When everything is finished, add a new section `# !!!FINISHED!!!`.
+  - Execute the plan precisely in `Copilot_Execution.md`.
+  - When each step is finished, append `(FINISHED)` to the step title.
+  - When everything is finished, add a new section `# !!!FINISHED!!!` to `Copilot_Execution.md`.
 
 ### :fix-execute
 
