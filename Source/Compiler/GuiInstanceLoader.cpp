@@ -999,6 +999,10 @@ GuiInstanceLoaderManager
 				{
 					return CopyTypeInfo(ctor->GetMethod(0)->GetReturn());
 				}
+				else if (td == description::GetTypeDescriptor<elements::IGuiGraphicsElement>())
+				{
+					return Ptr(new SharedPtrTypeInfo(Ptr(new TypeDescriptorTypeInfo(td, TypeInfoHint::Normal))));
+				}
 				else
 				{
 					return Ptr(new RawPtrTypeInfo(Ptr(new TypeDescriptorTypeInfo(td, TypeInfoHint::Normal))));

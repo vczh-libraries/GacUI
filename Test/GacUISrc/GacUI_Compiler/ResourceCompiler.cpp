@@ -139,14 +139,14 @@ FilePath CompileResources(
 	File(assemblyPath64).Delete();
 
 	auto precompiledFolder = PrecompileResource(resource, targetCpuArchitecture, &debugCallback, errors);
+	WriteWorkflowScript(precompiledFolder, L"Workflow/Shared", workflowPath1);
+	WriteWorkflowScript(precompiledFolder, L"Workflow/TemporaryClass", workflowPath2);
+	auto compiled = WriteWorkflowScript(precompiledFolder, L"Workflow/InstanceClass", workflowPath3);
 	if (errors.Count() > 0)
 	{
 		WriteErrors(errors, errorPath);
 		CHECK_FAIL(L"Error");
 	}
-	WriteWorkflowScript(precompiledFolder, L"Workflow/Shared", workflowPath1);
-	WriteWorkflowScript(precompiledFolder, L"Workflow/TemporaryClass", workflowPath2);
-	auto compiled = WriteWorkflowScript(precompiledFolder, L"Workflow/InstanceClass", workflowPath3);
 
 	if (outputCppFolder != L"")
 	{
