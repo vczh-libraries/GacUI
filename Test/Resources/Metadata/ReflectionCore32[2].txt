@@ -4500,6 +4500,9 @@ class presentation::elements::GuiSolidLabelElement : presentation::elements::IGu
 interface presentation::elements::IGuiGraphicsElement : system::Interface {
     property OwnerComposition : presentation::compositions::GuiGraphicsComposition* { get:GetOwnerComposition }
 
+    @InvokeTemplate:::vl::reflection::description::GuiRawElement_Constructor($Arguments)
+    @ClosureTemplate:::vl::Func<$Func>(&::vl::reflection::description::GuiRawElement_Constructor)
+    static function CreateRawElement() : presentation::elements::IGuiGraphicsElement^;
     function GetOwnerComposition() : presentation::compositions::GuiGraphicsComposition*;
 
 }
