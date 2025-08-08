@@ -1,6 +1,7 @@
 enum RendererType
 {
     FocusRectangle,
+    Raw,
     SolidBorder,
     SinkBorder,
     SinkSplitter,

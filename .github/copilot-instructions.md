@@ -70,16 +70,7 @@ This project is built on top of:
 
 ### :plan
 
-#### Clean Up
-
-- Before planning, clean up some log files:
-  - There are `Copilot_Planning.md` in the solution. If it exists, delete all their content. If any file doesn't exist, create an empty text file on the file path.
-  - There are `Copilot_Execution.md` in the solution. If it exists, delete all their content. If any file doesn't exist, create an empty text file on the file path.
-  - There is a `Copilot_Task.md` in the solution. Print the content.
-- If you don't find any mentioned `*.md` files in the solution, report and stop immediately.
-
-#### Planning Process
-
+- Wipe out everything in `Copilot_Planning.md` and `Copilot_Execution.md`.
 - `Copilot_Task.md` It has the details of the task to execute. 
 - From now on, DO NOT change any code, ONLY change `Copilot_Planning.md` and `Copilot_Execution.md`.
   - When you add new content to `Copilot_Planning.md` or `Copilot_Execution.md` during the process, everything has to be appended to the file.
@@ -94,14 +85,16 @@ This project is built on top of:
   - Do not edit the code directly.
   - Explain what you gonna do, and why you decide to do it in this way.
   - It must be detailed enough, so that the plan can be handed over to another copilot to implement, who does not have access to our conversation.
+  - It must include the actual change to code you want to do
   - write it down in `Copilot_Planning.md`.
 - Carefully find out what could be affected by your change.
   - Do not edit the code directly.
   - Explain what you gonna do, and why you decide to do it in this way.
   - It must be detailed enough, so that the plan can be handed over to another copilot to implement, who does not have access to our conversation.
+  - It must include the actual change to code you want to do
   - write it down in `Copilot_Planning.md`.
 - Add a section `# !!!FINISHED!!!` in `Copilot_Planning.md`
-  - From now on you don't need to update `Copilot_Planning.md` anymore.
+  - From now on DO NOT update `Copilot_Planning.md` anymore.
 - Add a section `# !!!EXECUTION-PLAN!!!` in `Copilot_Execution.md`.
   - Carefully review what has been written in `Copilot_Planning.md`.
   - Copy them to `Copilot_Execution.md` only about how to modify the code.
@@ -125,12 +118,14 @@ This project is built on top of:
 
 ### :task
 
-- Do both `:plan` and `:execute` in order.
+- Do `:cleanup`, `:plan` and `:execute` in order.
 
 ### :continue
 
 - It means you accidentally stopped in the middle of `:task`.
 - Find out where you stopped, and continue from there.
+  - If there is no `# !!!FINISHED!!!` in `Copilot_Planning.md`, it means `:plan` has not completed.
+  - If there is no `# !!!FINISHED!!!` in `Copilot_Execution.md`, it means `:execute` has not completed.
 
 ## :continue-plan
 

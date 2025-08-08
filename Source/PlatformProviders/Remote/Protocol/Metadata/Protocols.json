@@ -2084,6 +2084,9 @@
             "name": "FocusRectangle"
         }, {
             "$ast": "EnumMember",
+            "name": "Raw"
+        }, {
+            "$ast": "EnumMember",
             "name": "SolidBorder"
         }, {
             "$ast": "EnumMember",

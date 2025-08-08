@@ -121,6 +121,7 @@ namespace vl::presentation::remoteprotocol
 	enum class RendererType
 	{
 		FocusRectangle,
+		Raw,
 		SolidBorder,
 		SinkBorder,
 		SinkSplitter,

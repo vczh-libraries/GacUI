@@ -205,6 +205,7 @@ namespace vl::presentation::remoteprotocol
 		switch (value)
 		{
 		case ::vl::presentation::remoteprotocol::RendererType::FocusRectangle: node->content.value = WString::Unmanaged(L"FocusRectangle"); break;
+		case ::vl::presentation::remoteprotocol::RendererType::Raw: node->content.value = WString::Unmanaged(L"Raw"); break;
 		case ::vl::presentation::remoteprotocol::RendererType::SolidBorder: node->content.value = WString::Unmanaged(L"SolidBorder"); break;
 		case ::vl::presentation::remoteprotocol::RendererType::SinkBorder: node->content.value = WString::Unmanaged(L"SinkBorder"); break;
 		case ::vl::presentation::remoteprotocol::RendererType::SinkSplitter: node->content.value = WString::Unmanaged(L"SinkSplitter"); break;
@@ -829,6 +830,7 @@ namespace vl::presentation::remoteprotocol
 		auto jsonNode = node.Cast<glr::json::JsonString>();
 		CHECK_ERROR(jsonNode, ERROR_MESSAGE_PREFIX L"Json node does not match the expected type.");
 		if (jsonNode->content.value == L"FocusRectangle") value = ::vl::presentation::remoteprotocol::RendererType::FocusRectangle; else
+		if (jsonNode->content.value == L"Raw") value = ::vl::presentation::remoteprotocol::RendererType::Raw; else
 		if (jsonNode->content.value == L"SolidBorder") value = ::vl::presentation::remoteprotocol::RendererType::SolidBorder; else
 		if (jsonNode->content.value == L"SinkBorder") value = ::vl::presentation::remoteprotocol::RendererType::SinkBorder; else
 		if (jsonNode->content.value == L"SinkSplitter") value = ::vl::presentation::remoteprotocol::RendererType::SinkSplitter; else
