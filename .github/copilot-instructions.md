@@ -70,9 +70,17 @@ This project is built on top of:
 
 ### :plan
 
-- Firstly, there are `Copilot_Planning.md` and `Copilot_Execution.md` in the solution. If it exists, delete all their content. If any file doesn't exist, create an empty text file on the file path.
-- Secondly, there is a `Copilot_Task.md` in the solution. It has the details of the task to execute. Print the content.
+#### Clean Up
+
+- Before planning, clean up some log files:
+  - There are `Copilot_Planning.md` in the solution. If it exists, delete all their content. If any file doesn't exist, create an empty text file on the file path.
+  - There are `Copilot_Execution.md` in the solution. If it exists, delete all their content. If any file doesn't exist, create an empty text file on the file path.
+  - There is a `Copilot_Task.md` in the solution. Print the content.
 - If you don't find any mentioned `*.md` files in the solution, report and stop immediately.
+
+#### Planning Process
+
+- `Copilot_Task.md` It has the details of the task to execute. 
 - From now on, DO NOT change any code, ONLY change `Copilot_Planning.md` and `Copilot_Execution.md`.
   - When you add new content to `Copilot_Planning.md` or `Copilot_Execution.md` during the process, everything has to be appended to the file.
   - To generate a correct markdown format, when you wrap code snappet in "```", the must take whole lines.

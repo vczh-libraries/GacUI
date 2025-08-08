@@ -222,11 +222,8 @@ GuiRawElementInstanceLoader
 				{
 					if (CanCreate(typeInfo))
 					{
-						auto elementTypeInfo = TypeInfoRetriver<IGuiGraphicsElement>::CreateTypeInfo();
-						auto refType = GetTypeFromTypeInfo(elementTypeInfo.Obj());
-
 						auto refCreateRawElement = Ptr(new WfChildExpression);
-						refCreateRawElement->parent = refType;
+						refCreateRawElement->parent = GetExpressionFromTypeDescriptor(description::GetTypeDescriptor<IGuiGraphicsElement>());
 						refCreateRawElement->name.value = L"CreateRawElement";
 
 						auto call = Ptr(new WfCallExpression);
