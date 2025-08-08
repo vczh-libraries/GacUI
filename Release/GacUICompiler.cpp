@@ -2553,6 +2553,10 @@ GuiInstanceLoaderManager
 				{
 					return CopyTypeInfo(ctor->GetMethod(0)->GetReturn());
 				}
+				else if (td == description::GetTypeDescriptor<elements::IGuiGraphicsElement>())
+				{
+					return Ptr(new SharedPtrTypeInfo(Ptr(new TypeDescriptorTypeInfo(td, TypeInfoHint::Normal))));
+				}
 				else
 				{
 					return Ptr(new RawPtrTypeInfo(Ptr(new TypeDescriptorTypeInfo(td, TypeInfoHint::Normal))));
@@ -8742,6 +8746,7 @@ GuiInstanceLoader_Plugin.cpp
 		default: GuiControl*, GuiGraphicsComposition*
 	GuiInstanceRootObject
 		default: GuiComponent*
+	GuiRawElement
 GuiInstanceLoader_TemplateControl.h
 	GuiControl
 GuiInstanceLoader_Compositions.cpp
@@ -8929,6 +8934,58 @@ GuiControlInstanceLoader
 				}
 			};
 
+/***********************************************************************
+GuiRawElementInstanceLoader
+***********************************************************************/
+
+			class GuiRawElementInstanceLoader : public Object, public IGuiInstanceLoader
+			{
+			protected:
+				GlobalStringKey							typeName;
+
+			public:
+				GuiRawElementInstanceLoader()
+				{
+					typeName = GlobalStringKey::Get(L"presentation::elements::GuiRawElement");
+				}
+
+				GlobalStringKey GetTypeName()override
+				{
+					return typeName;
+				}
+
+				bool CanCreate(const TypeInfo& typeInfo) override
+				{
+					return typeName == typeInfo.typeName;
+				}
+
+				Ptr<workflow::WfStatement> CreateInstance(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, GuiResourceTextPos tagPosition, GuiResourceError::List& errors)override
+				{
+					if (CanCreate(typeInfo))
+					{
+						auto refCreateRawElement = Ptr(new WfChildExpression);
+						refCreateRawElement->parent = GetExpressionFromTypeDescriptor(description::GetTypeDescriptor<IGuiGraphicsElement>());
+						refCreateRawElement->name.value = L"CreateRawElement";
+
+						auto call = Ptr(new WfCallExpression);
+						call->function = refCreateRawElement;
+
+						auto refVariable = Ptr(new WfReferenceExpression);
+						refVariable->name.value = variableName.ToString();
+
+						auto assign = Ptr(new WfBinaryExpression);
+						assign->op = WfBinaryOperator::Assign;
+						assign->first = refVariable;
+						assign->second = call;
+
+						auto stat = Ptr(new WfExpressionStatement);
+						stat->expression = assign;
+						return stat;
+					}
+					return nullptr;
+				}
+			};
+
 #endif
 			
 /***********************************************************************
@@ -8982,7 +9039,7 @@ GuiPredefinedInstanceLoadersPlugin
 
 #define ADD_TEMPLATE_CONTROL(TYPENAME, THEME_NAME)\
 						manager->SetLoader(\
-						Ptr(new GuiTemplateControlInstanceLoader<TYPENAME>(\
+							Ptr(new GuiTemplateControlInstanceLoader<TYPENAME>(\
 								L"presentation::controls::" L ## #TYPENAME,\
 								theme::ThemeName::THEME_NAME\
 								)\
@@ -8990,7 +9047,7 @@ GuiPredefinedInstanceLoadersPlugin
 
 #define ADD_VIRTUAL_CONTROL(VIRTUALTYPENAME, TYPENAME, THEME_NAME)\
 						manager->CreateVirtualType(GlobalStringKey::Get(description::TypeInfo<TYPENAME>::content.typeName),\
-						Ptr(new GuiTemplateControlInstanceLoader<TYPENAME>(\
+							Ptr(new GuiTemplateControlInstanceLoader<TYPENAME>(\
 								L"presentation::controls::Gui" L ## #VIRTUALTYPENAME,\
 								theme::ThemeName::THEME_NAME\
 								)\
@@ -8998,13 +9055,18 @@ GuiPredefinedInstanceLoadersPlugin
 
 #define ADD_VIRTUAL_CONTROL_F(VIRTUALTYPENAME, TYPENAME, THEME_NAME, INIT_FUNCTION)\
 						manager->CreateVirtualType(GlobalStringKey::Get(description::TypeInfo<TYPENAME>::content.typeName),\
-						Ptr(new GuiTemplateControlInstanceLoader<TYPENAME>(\
+							Ptr(new GuiTemplateControlInstanceLoader<TYPENAME>(\
 								L"presentation::controls::Gui" L ## #VIRTUALTYPENAME,\
 								theme::ThemeName::THEME_NAME,\
 								nullptr,\
 								INIT_FUNCTION\
 								)\
 							))
+
+						manager->CreateVirtualType(
+							GlobalStringKey::Get(description::TypeInfo<IGuiGraphicsElement>::content.typeName),
+							Ptr(new GuiRawElementInstanceLoader)
+							);
 
 						manager->SetLoader(Ptr(new GuiControlInstanceLoader));
 

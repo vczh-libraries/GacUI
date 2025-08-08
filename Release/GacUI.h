@@ -7409,6 +7409,11 @@ Resource Manager
 				/// </summary>
 				/// <returns>Returns the layout provider.</returns>
 				virtual IGuiGraphicsLayoutProvider*		GetLayoutProvider() = 0;
+				/// <summary>
+				/// Create a raw element based on the current renderer.
+				/// </summary>
+				/// <returns>Returns the created graphics element.</returns>
+				virtual Ptr<IGuiGraphicsElement>		CreateRawElement() = 0;
 			};
 
 			/// <summary>
@@ -7477,14 +7482,14 @@ Helpers
 			public:
 				static vint GetElementType()
 				{
-					static vint elementType = -1; 
+					static vint elementType = -1;
 					if (elementType == -1)
 					{
 						auto manager = GetGuiGraphicsResourceManager(); 
 						CHECK_ERROR(manager != nullptr, L"SetGuiGraphicsResourceManager must be called before registering element types."); 
 						elementType = manager->RegisterElementType(WString::Unmanaged(TElement::ElementTypeName)); 
 					}
-					return elementType; 
+					return elementType;
 				}
 
 				static TElement* Create()
@@ -7755,6 +7760,7 @@ GuiHostedGraphicsResourceManager
 				void								RecreateRenderTarget(INativeWindow* window) override;
 				void								ResizeRenderTarget(INativeWindow* window) override;
 				IGuiGraphicsLayoutProvider*			GetLayoutProvider() override;
+				Ptr<IGuiGraphicsElement>			CreateRawElement() override;
 			};
 		}
 	}
@@ -22255,6 +22261,7 @@ namespace vl::presentation::remoteprotocol
 	enum class RendererType
 	{
 		FocusRectangle,
+		Raw,
 		SolidBorder,
 		SinkBorder,
 		SinkSplitter,
@@ -22994,6 +23001,7 @@ GuiRemoteGraphicsResourceManager
 			void								RecreateRenderTarget(INativeWindow* window) override;
 			void								ResizeRenderTarget(INativeWindow* window) override;
 			IGuiGraphicsLayoutProvider*			GetLayoutProvider() override;
+			Ptr<IGuiGraphicsElement>			CreateRawElement() override;
 		};
 	}
 }
@@ -23036,6 +23044,16 @@ namespace vl::presentation::elements_remoteprotocol
 		virtual void							NotifyMinSizeCacheInvalidated() = 0;
 	};
 
+	class GuiRemoteRawElement : public GuiElementBase<GuiRemoteRawElement>
+	{
+		friend class GuiElementBase<GuiRemoteRawElement>;
+		static constexpr const wchar_t* ElementTypeName = L"Raw";
+	protected:
+
+		GuiRemoteRawElement();
+	public:
+	};
+
 	template<typename TElement, typename TRenderer, remoteprotocol::RendererType _RendererType>
 	class GuiRemoteProtocolElementRenderer
 		: public GuiElementRendererBase<TElement, TRenderer, GuiRemoteGraphicsRenderTarget>
@@ -23074,6 +23092,18 @@ namespace vl::presentation::elements_remoteprotocol
 		friend class GuiElementRendererBase<GuiFocusRectangleElement, GuiFocusRectangleElementRenderer, GuiRemoteGraphicsRenderTarget>;
 	public:
 		GuiFocusRectangleElementRenderer();
+
+		bool							IsUpdated() override;
+		void							ResetUpdated() override;
+		void							SendUpdateElementMessages(bool fullContent) override;
+		void							OnElementStateChanged() override;
+	};
+
+	class GuiRawElementRenderer : public GuiRemoteProtocolElementRenderer<GuiRemoteRawElement, GuiRawElementRenderer, remoteprotocol::RendererType::Raw>
+	{
+		friend class GuiElementRendererBase<GuiRemoteRawElement, GuiRawElementRenderer, GuiRemoteGraphicsRenderTarget>;
+	public:
+		GuiRawElementRenderer();
 
 		bool							IsUpdated() override;
 		void							ResetUpdated() override;
@@ -23633,6 +23663,13 @@ Metadata
 		Unknown,
 	};
 
+	struct ChannelPackageInfo
+	{
+		ChannelPackageSemantic		semantic = ChannelPackageSemantic::Unknown;
+		vint						id = -1;
+		WString						name;
+	};
+
 	enum class ChannelAsyncState
 	{
 		Ready,
@@ -23648,9 +23685,7 @@ Async
 
 void ChannelPackageSemanticUnpack(
   const T& package,
-  ChannelPackageSemantic& semantic,
-  vint& id,
-  WString& name
+  ChannelPackageInfo& info
   );
 ***********************************************************************/
 
@@ -23693,9 +23728,7 @@ void ChannelPackageSemanticUnpack(
 		static_assert(
 			std::is_same_v<void, decltype(ChannelPackageSemanticUnpack(
 				std::declval<const TPackage&>(),
-				std::declval<ChannelPackageSemantic&>(),
-				std::declval<vint&>(),
-				std::declval<WString&>()
+				std::declval<ChannelPackageInfo&>()
 				))>,
 			"ChannelPackageSemanticUnpack must be defined for this TPackage"
 			);
@@ -23801,12 +23834,10 @@ void ChannelPackageSemanticUnpack(
 			// If it is a response, unblock Submit()
 			// If it is an event, send to ProcessRemoteEvents()
 
-			auto semantic = ChannelPackageSemantic::Unknown;
-			vint id = -1;
-			WString name;
-			ChannelPackageSemanticUnpack(package, semantic, id, name);
+			ChannelPackageInfo info;
+			ChannelPackageSemanticUnpack(package, info);
 
-			switch (semantic)
+			switch (info.semantic)
 			{
 			case ChannelPackageSemantic::Event:
 				{
@@ -23820,7 +23851,7 @@ void ChannelPackageSemanticUnpack(
 				{
 					SPIN_LOCK(lockResponses)
 					{
-						queuedResponses.Add(id, package);
+						queuedResponses.Add(info.id, package);
 						if (AreCurrentPendingRequestGroupSatisfied(false))
 						{
 							eventAutoResponses.Signal();
@@ -23863,14 +23894,12 @@ void ChannelPackageSemanticUnpack(
 			requestGroup->connectionCounter = connectionCounter;
 			for (auto&& package : uiPendingPackages)
 			{
-				auto semantic = ChannelPackageSemantic::Unknown;
-				vint id = -1;
-				WString name;
-				ChannelPackageSemanticUnpack(package, semantic, id, name);
+				ChannelPackageInfo info;
+				ChannelPackageSemanticUnpack(package, info);
 
-				if (semantic == ChannelPackageSemantic::Request)
+				if (info.semantic == ChannelPackageSemantic::Request)
 				{
-					requestGroup->requestIds.Add(id);
+					requestGroup->requestIds.Add(info.id);
 				}
 			}
 			SPIN_LOCK(lockResponses)
@@ -23958,12 +23987,10 @@ void ChannelPackageSemanticUnpack(
 			for (auto&& event : events)
 			{
 				{
-					auto semantic = ChannelPackageSemantic::Unknown;
-					vint id = -1;
-					WString name;
-					ChannelPackageSemanticUnpack(event, semantic, id, name);
+					ChannelPackageInfo info;
+					ChannelPackageSemanticUnpack(event, info);
 
-					if (name == L"ControllerConnect")
+					if (info.name == L"ControllerConnect")
 					{
 						SPIN_LOCK(lockConnection)
 						{
@@ -24120,7 +24147,7 @@ namespace vl::presentation::remoteprotocol::channeling
 ChannelPackageSemantic
 ***********************************************************************/
 
-	extern void				ChannelPackageSemanticUnpack(Ptr<glr::json::JsonObject> package, ChannelPackageSemantic& semantic, vint& id, WString& name);
+	extern void				ChannelPackageSemanticUnpack(Ptr<glr::json::JsonObject> package, ChannelPackageInfo& info);
 
 /***********************************************************************
 GuiRemoteProtocolFromJsonChannel
@@ -24177,6 +24204,9 @@ GuiRemoteProtocolFromJsonChannel
 
 		GuiRemoteProtocolFromJsonChannel(IJsonChannel* _channel);
 		~GuiRemoteProtocolFromJsonChannel();
+
+		vl::Event<void(const ChannelPackageInfo&)>		BeforeWrite;
+		vl::Event<void(const ChannelPackageInfo&)>		BeforeOnReceive;
 
 		void											Initialize(IGuiRemoteProtocolEvents* _events) override;
 		WString											GetExecutablePath() override;
@@ -24235,6 +24265,9 @@ GuiRemoteJsonChannelFromProtocol
 
 		GuiRemoteJsonChannelFromProtocol(IGuiRemoteProtocol* _protocol);
 		~GuiRemoteJsonChannelFromProtocol();
+
+		vl::Event<void(const ChannelPackageInfo&)>		BeforeWrite;
+		vl::Event<void(const ChannelPackageInfo&)>		BeforeOnReceive;
 
 		void											Initialize(IJsonChannelReceiver* _receiver) override;
 		IJsonChannelReceiver*							GetReceiver() override;
@@ -25835,6 +25868,7 @@ External Functions
 			extern Ptr<presentation::INativeImage>							INativeImage_Constructor(const WString& path);
 			extern presentation::INativeCursor*								INativeCursor_Constructor1();
 			extern presentation::INativeCursor*								INativeCursor_Constructor2(presentation::INativeCursor::SystemCursorType type);
+			extern Ptr<presentation::elements::IGuiGraphicsElement>			GuiRawElement_Constructor();
 
 			template<typename T>
 			Ptr<T> Element_Constructor()
@@ -29618,7 +29652,7 @@ GuiRemoteWindow
 		collections::List<INativeWindowListener*>			listeners;
 		INativeWindow::WindowMode							windowMode = INativeWindow::Normal;
 
-		bool												disconnected = false;
+		bool												controllerDisconnected = false;
 		remoteprotocol::WindowSizingConfig					remoteWindowSizingConfig;
 		bool												sizingConfigInvalidated = false;
 		double												scalingX = 1;
