@@ -1157,13 +1157,17 @@ RegexLexer
 		{
 		public:
 			NOT_COPYABLE(RegexLexer_<T>);
+
 			/// <summary>Create a lexical analyzer by a set of regular expressions. [F:vl.regex.RegexToken.token] will be the index of the matched regular expression in the first argument.</summary>
-			/// <param name="tokens">ALl regular expression, each one represent a kind of tokens.</param>
-			
+			/// <param name="tokens">All regular expression, each one represent a kind of tokens.</param>
 			RegexLexer_(const collections::IEnumerable<ObjectString<T>>& tokens);
+			/// <summary>Create a lexical analyzer from definitions storing in a stream. The definition should be serialized by <see cref="Serialize"/>.</summary>
+			/// <param name="inputStream">The stream storing the definition.</param>
 			RegexLexer_(stream::IStream& inputStream);
 			~RegexLexer_() = default;
 
+			/// <summary>Serialize the definition of the lexical analyzer.</summary>
+			/// <param name="outputStream">The stream to store the definition.</param>
 			void				Serialize(stream::IStream & outputStream);
 		};
 

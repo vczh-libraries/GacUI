@@ -619,10 +619,10 @@ Semaphore
 				return false;
 			}
 		}
-        	else
-        	{
+		else
+		{
 			AString astr = wtoa(name);
-            
+
 			if ((internalData->semNamed = sem_open(astr.Buffer(), O_CREAT, 0777, initialCount)) == SEM_FAILED)
 			{
 				delete internalData;
