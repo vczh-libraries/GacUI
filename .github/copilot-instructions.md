@@ -141,7 +141,6 @@ but your actual work is just making an execution plan.
 - It means you accidentally stopped in the middle of `:execute`.
 - Find out where you stopped, and continue from there.
 
-
 ## for Copilot Authoring a Pull Request
 
 - If you are running in Visual Studio in Ask/Agent mode, ignore this section.
