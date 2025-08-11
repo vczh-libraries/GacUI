@@ -381,9 +381,19 @@ ULONG HttpServer::SendJsonResponse(HANDLE httpRequestQueue, HTTP_REQUEST_ID requ
 	httpResponseBody.FromMemory.pBuffer = (PVOID)body.Buffer();
 	httpResponseBody.FromMemory.BufferLength = (ULONG)body.Length();
 
-	char headerContentType[] = "application/json; charset=utf8";
+	static const char headerContentType[] = "application/json; charset=utf8";
 	httpResponse.Headers.KnownHeaders[HttpHeaderContentType].pRawValue = headerContentType;
 	httpResponse.Headers.KnownHeaders[HttpHeaderContentType].RawValueLength = sizeof(headerContentType) - 1;
+
+	static const char headerACAOName[] = "Access-Control-Allow-Origin";
+	static HTTP_UNKNOWN_HEADER unknownHeaders[] = { {
+		sizeof(headerACAOName) - 1,
+		1,
+		headerACAOName,
+		"*"
+	}};
+	httpResponse.Headers.UnknownHeaderCount = sizeof(unknownHeaders) / sizeof(HTTP_UNKNOWN_HEADER);
+	httpResponse.Headers.pUnknownHeaders = unknownHeaders;
 
 	ULONG result = NO_ERROR;
 	result = HttpSendHttpResponse(
