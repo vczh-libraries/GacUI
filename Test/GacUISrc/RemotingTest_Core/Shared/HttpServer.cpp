@@ -348,6 +348,16 @@ void HttpServer::Send404Response(HANDLE httpRequestQueue, HTTP_REQUEST_ID reques
 	httpResponse.StatusCode = 404;
 	httpResponse.pReason = reason;
 
+	static const char headerACAOName[] = "Access-Control-Allow-Origin";
+	static HTTP_UNKNOWN_HEADER unknownHeaders[] = { {
+		sizeof(headerACAOName) - 1,
+		1,
+		headerACAOName,
+		"*"
+	} };
+	httpResponse.Headers.UnknownHeaderCount = sizeof(unknownHeaders) / sizeof(HTTP_UNKNOWN_HEADER);
+	httpResponse.Headers.pUnknownHeaders = unknownHeaders;
+
 	ULONG result = NO_ERROR;
 	result = HttpSendHttpResponse(
 		httpRequestQueue,
