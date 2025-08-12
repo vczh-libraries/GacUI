@@ -108,6 +108,7 @@ protected:
 	Ptr<JsonArray>									pendingRequestToSend;
 
 	static void										Send404Response(HANDLE httpRequestQueue, HTTP_REQUEST_ID requestId, PCSTR reason);
+	static void										SendOptionsResponse(HANDLE httpRequestQueue, HTTP_REQUEST_ID requestId);
 	static ULONG									SendJsonResponse(HANDLE httpRequestQueue, HTTP_REQUEST_ID requestId, Ptr<JsonNode> jsonBody);
 
 	// All following functions must be called inside SPIN_LOCK(pendingRequestLock)

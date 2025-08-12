@@ -54,6 +54,10 @@ void HttpServer::OnHttpRequestReceivedUnsafe(PHTTP_REQUEST pRequest)
 		ULONG result = SendJsonResponse(httpRequestQueue, pRequest->RequestId, Ptr(new JsonObject));
 		CHECK_ERROR(result == NO_ERROR, L"HttpSendHttpResponse failed for responding /Response.");
 	}
+	else if (pRequest->Verb == HttpVerbOPTIONS && pRequest->CookedUrl.pAbsPath == urlResponse)
+	{
+		SendOptionsResponse(httpRequestQueue, pRequest->RequestId);
+	}
 	else
 	{
 		Send404Response(httpRequestQueue, pRequest->RequestId, "Unknown URL");
@@ -371,6 +375,53 @@ void HttpServer::Send404Response(HANDLE httpRequestQueue, HTTP_REQUEST_ID reques
 		NULL,
 		NULL);
 	CHECK_ERROR(result == NO_ERROR, L"HttpSendHttpResponse failed (404).");
+}
+
+void HttpServer::SendOptionsResponse(HANDLE httpRequestQueue, HTTP_REQUEST_ID requestId)
+{
+	ULONG bytesSent = 0;
+	HTTP_RESPONSE httpResponse;
+	ZeroMemory(&httpResponse, sizeof(httpResponse));
+
+	httpResponse.StatusCode = 200;
+
+	static const char headerACAOName[] = "Access-Control-Allow-Origin";
+	static const char headerACAMName[] = "Access-Control-Allow-Methods";
+	static const char headerACAMValue[] = "POST, OPTIONS";
+	static const char headerACAHName[] = "Access-Control-Allow-Headers";
+	static const char headerACAHValue[] = "Content-Type";
+	static HTTP_UNKNOWN_HEADER unknownHeaders[] = { {
+		sizeof(headerACAOName) - 1,
+		1,
+		headerACAOName,
+		"*"
+	},{
+		sizeof(headerACAMName) - 1,
+		sizeof(headerACAMValue) - 1,
+		headerACAMName,
+		headerACAMValue
+	},{
+		sizeof(headerACAHName) - 1,
+		sizeof(headerACAHValue) - 1,
+		headerACAHName,
+		headerACAHValue
+	} };
+	httpResponse.Headers.UnknownHeaderCount = sizeof(unknownHeaders) / sizeof(HTTP_UNKNOWN_HEADER);
+	httpResponse.Headers.pUnknownHeaders = unknownHeaders;
+
+	ULONG result = NO_ERROR;
+	result = HttpSendHttpResponse(
+		httpRequestQueue,
+		requestId,
+		0,
+		&httpResponse,
+		NULL,
+		&bytesSent,
+		NULL,
+		0,
+		NULL,
+		NULL);
+	CHECK_ERROR(result == NO_ERROR, L"HttpSendHttpResponse failed (OPTIONS).");
 }
 
 ULONG HttpServer::SendJsonResponse(HANDLE httpRequestQueue, HTTP_REQUEST_ID requestId, Ptr<JsonNode> jsonBody)
