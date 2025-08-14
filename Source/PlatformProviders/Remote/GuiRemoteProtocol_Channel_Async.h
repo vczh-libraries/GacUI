@@ -96,6 +96,7 @@ void ChannelPackageSemanticUnpack(
 		: public GuiRemoteProtocolAsyncChannelSerializerBase
 		, public virtual IGuiRemoteProtocolChannel<TPackage>
 		, protected virtual IGuiRemoteProtocolChannelReceiver<TPackage>
+		, protected virtual IGuiRemoteEventProcessor
 	{
 		static_assert(
 			std::is_same_v<void, decltype(ChannelPackageSemanticUnpack(
@@ -294,10 +295,10 @@ void ChannelPackageSemanticUnpack(
 				{
 					channel->Write(package);
 				}
-				bool disconnected = false;
+			 bool disconnected = false;
 				channel->Submit(disconnected);
-				if (disconnected)
-				{
+			 if (disconnected)
+			 {
 					SPIN_LOCK(lockConnection)
 					{
 						if (requestGroup->connectionCounter == connectionCounter)
@@ -347,15 +348,20 @@ void ChannelPackageSemanticUnpack(
 #undef ERROR_MESSAGE_PREFIX
 		}
 
+	protected:
+
 		void ProcessRemoteEvents() override
 		{
 			// Called from UI thread
 			ENSURE_THREAD_ID(threadIdUI);
-			QueueToChannelThread([this]()
+			if (channel->GetRemoteEventProcessor())
 			{
-				ENSURE_THREAD_ID(threadIdChannel);
-				channel->ProcessRemoteEvents();
-			}, &eventAutoChannelTaskQueued);
+				QueueToChannelThread([this]()
+				{
+					ENSURE_THREAD_ID(threadIdChannel);
+					channel->GetRemoteEventProcessor()->ProcessRemoteEvents();
+				}, &eventAutoChannelTaskQueued);
+			}
 
 			FetchAndExecuteUITasks();
 
@@ -383,6 +389,13 @@ void ChannelPackageSemanticUnpack(
 				}
 				receiver->OnReceive(event);
 			}
+		}
+
+	public:
+
+		IGuiRemoteEventProcessor* GetRemoteEventProcessor() override
+		{
+			return this;
 		}
 
 	public:

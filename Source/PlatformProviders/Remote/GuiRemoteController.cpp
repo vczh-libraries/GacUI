@@ -291,7 +291,10 @@ GuiRemoteController::INativeWindowService
 	{
 		if (!connectionStopped)
 		{
-			remoteProtocol->ProcessRemoteEvents();
+			if (auto processor = remoteProtocol->GetRemoteEventProcessor())
+			{
+				processor->ProcessRemoteEvents();
+			}
 			bool disconnected = false;
 			remoteMessages.Submit(disconnected);
 			if (timerEnabled && !disconnected)

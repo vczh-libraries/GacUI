@@ -153,6 +153,7 @@ void CoreChannel::Submit(bool& disconnected)
 	}
 }
 
-void CoreChannel::ProcessRemoteEvents()
+IGuiRemoteEventProcessor* CoreChannel::GetRemoteEventProcessor()
 {
+	return nullptr;
 }

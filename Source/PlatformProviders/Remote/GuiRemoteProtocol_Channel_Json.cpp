@@ -291,9 +291,9 @@ GuiRemoteProtocolFromJsonChannel
 		channel->Submit(disconnected);
 	}
 
-	void GuiRemoteProtocolFromJsonChannel::ProcessRemoteEvents()
+	IGuiRemoteEventProcessor* GuiRemoteProtocolFromJsonChannel::GetRemoteEventProcessor()
 	{
-		channel->ProcessRemoteEvents();
+		return channel->GetRemoteEventProcessor();
 	}
 
 /***********************************************************************
@@ -442,9 +442,9 @@ GuiRemoteJsonChannelFromProtocol
 		protocol->Submit(disconnected);
 	}
 
-	void GuiRemoteJsonChannelFromProtocol::ProcessRemoteEvents()
+	IGuiRemoteEventProcessor* GuiRemoteJsonChannelFromProtocol::GetRemoteEventProcessor()
 	{
-		protocol->ProcessRemoteEvents();
+		return protocol->GetRemoteEventProcessor();
 	}
 
 /***********************************************************************

@@ -120,14 +120,14 @@ namespace vl::presentation::remote_renderer
 		GuiRemoteRendererSingle();
 		~GuiRemoteRendererSingle();
 
-		void			RegisterMainWindow(INativeWindow* _window);
-		void			UnregisterMainWindow();
-		void			ForceExitByFatelError();
+		void									RegisterMainWindow(INativeWindow* _window);
+		void									UnregisterMainWindow();
+		void									ForceExitByFatelError();
 
-		WString			GetExecutablePath() override;
-		void			Initialize(IGuiRemoteProtocolEvents* _events) override;
-		void			Submit(bool& disconnected) override;
-		void			ProcessRemoteEvents() override;
+		WString									GetExecutablePath() override;
+		void									Initialize(IGuiRemoteProtocolEvents* _events) override;
+		void									Submit(bool& disconnected) override;
+		IGuiRemoteEventProcessor*				GetRemoteEventProcessor() override;
 
 
 #define MESSAGE_NOREQ_NORES(NAME, REQUEST, RESPONSE)					void Request ## NAME() override;

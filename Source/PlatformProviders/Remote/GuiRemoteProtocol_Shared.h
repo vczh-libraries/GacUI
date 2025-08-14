@@ -70,6 +70,16 @@ IGuiRemoteProtocolConfig
 	};
 
 /***********************************************************************
+IGuiRemoteEventProcessor
+***********************************************************************/
+
+	class IGuiRemoteEventProcessor : public virtual Interface
+	{
+	public:
+		virtual void			ProcessRemoteEvents() = 0;
+	};
+
+/***********************************************************************
 IGuiRemoteProtocol
 ***********************************************************************/
 
@@ -78,9 +88,9 @@ IGuiRemoteProtocol
 		, public virtual IGuiRemoteProtocolMessages
 	{
 	public:
-		virtual void			Initialize(IGuiRemoteProtocolEvents* events) = 0;
-		virtual void			Submit(bool& disconnected) = 0;
-		virtual void			ProcessRemoteEvents() = 0;
+		virtual void						Initialize(IGuiRemoteProtocolEvents* events) = 0;
+		virtual void						Submit(bool& disconnected) = 0;
+		virtual IGuiRemoteEventProcessor*	GetRemoteEventProcessor() = 0;
 	};
 
 	class GuiRemoteEventCombinator : public Object, public virtual IGuiRemoteProtocolEvents
@@ -124,9 +134,9 @@ IGuiRemoteProtocol
 			targetProtocol->Submit(disconnected);
 		}
 
-		void ProcessRemoteEvents() override
+		IGuiRemoteEventProcessor* GetRemoteEventProcessor() override
 		{
-			targetProtocol->ProcessRemoteEvents();
+			return targetProtocol->GetRemoteEventProcessor();
 		}
 	};
 
@@ -161,9 +171,9 @@ IGuiRemoteProtocol
 			targetProtocol->Submit(disconnected);
 		}
 
-		void ProcessRemoteEvents() override
+		IGuiRemoteEventProcessor* GetRemoteEventProcessor() override
 		{
-			targetProtocol->ProcessRemoteEvents();
+			return targetProtocol->GetRemoteEventProcessor();
 		}
 	};
 

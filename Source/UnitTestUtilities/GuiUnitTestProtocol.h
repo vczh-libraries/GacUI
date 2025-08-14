@@ -56,7 +56,9 @@ UnitTestRemoteProtocol
 		UnitTestRemoteProtocol_IOCommands
 	>::Type;
 
-	class UnitTestRemoteProtocol : public UnitTestRemoteProtocolFeatures
+	class UnitTestRemoteProtocol 
+		: public UnitTestRemoteProtocolFeatures
+		, protected virtual IGuiRemoteEventProcessor
 	{
 		using EventPair = collections::Pair<Nullable<WString>, Func<void()>>;
 	protected:
@@ -113,6 +115,8 @@ IGuiRemoteProtocol
 			// TODO: Failure injection to disconnected
 		}
 
+	protected:
+
 		void ProcessRemoteEvents() override
 		{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol::ProcessRemoteEvents()#"
@@ -135,6 +139,13 @@ IGuiRemoteProtocol
 				}
 			}
 #undef ERROR_MESSAGE_PREFIX
+		}
+
+	public:
+
+		IGuiRemoteEventProcessor* GetRemoteEventProcessor() override
+		{
+			return this;
 		}
 	};
 }

@@ -36,9 +36,9 @@ namespace remote_protocol_tests
 		{
 		}
 		
-		void ProcessRemoteEvents() override
+		IGuiRemoteEventProcessor* GetRemoteEventProcessor() override
 		{
-			CHECK_FAIL(L"Not Implemented in NotImplementedProtocolBase!");
+			return nullptr;
 		}
 	};
 
@@ -48,8 +48,11 @@ namespace remote_protocol_tests
 		UnitTestRemoteProtocol_IO
 	>::Type;
 	
-	class SingleScreenProtocol : public SingleScreenProtocolFeatures
+	class SingleScreenProtocol 
+		: public SingleScreenProtocolFeatures
+		, protected virtual IGuiRemoteEventProcessor
 	{
+		
 	public:
 		List<Func<void()>>			processRemoteEvents;
 		vint						nextEventIndex = 0;
@@ -64,7 +67,9 @@ namespace remote_protocol_tests
 		{
 			processRemoteEvents.Add(std::move(callback));
 		}
-	
+
+	protected:
+
 		void ProcessRemoteEvents() override
 		{
 			TEST_CASE(L"Execute frame[" + itow(nextEventIndex) + L"]")
@@ -72,6 +77,13 @@ namespace remote_protocol_tests
 				processRemoteEvents[nextEventIndex]();
 			});
 			nextEventIndex++;
+		}
+
+	public:
+		
+		IGuiRemoteEventProcessor* GetRemoteEventProcessor() override
+		{
+			return this;
 		}
 
 		void RequestControllerConnectionEstablished() override

@@ -39,5 +39,5 @@ public:
 	void												Write(const vl::WString& package) override;
 	vl::WString											GetExecutablePath() override;
 	void												Submit(bool& disconnected) override;
-	void												ProcessRemoteEvents() override;
+	IGuiRemoteEventProcessor*							GetRemoteEventProcessor() override;
 };

@@ -167,8 +167,8 @@ namespace vl::presentation::remote_renderer
 		CHECK_FAIL(L"This function should not be called!");
 	}
 
-	void GuiRemoteRendererSingle::ProcessRemoteEvents()
+	IGuiRemoteEventProcessor* GuiRemoteRendererSingle::GetRemoteEventProcessor()
 	{
-		CHECK_FAIL(L"This function should not be called!");
+		return nullptr;
 	}
 }
