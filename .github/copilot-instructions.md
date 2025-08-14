@@ -55,8 +55,11 @@ This project is built on top of:
 - You are on Windows running in Visual Studio
 - Before saying anything, say "Yes, vczh!". I use it to make sure instruction files are taking effect.
 - Before generating any code, if the file is changed, read it. Not all changes come from you, I will edit the file too. Do not generate code based on out-dated version in your memory.
-- I would like to add custom commands. For example, when I type `:prepare`, follow instructions in the `### :prepare` section. Same for others.
+- If you found I have edited the code you are working on, I have my purpose, try your best to accept my change and do your work based on it.
+- I would like to add custom commands.
+  - When I type `:COMMAND`, follow instructions in the `### :COMMAND` section below.
   - If you can't find the section, warn me and stop immediately.
+  - I may have some comment following `:COMMAND`.
 
 ### :prepare
 
