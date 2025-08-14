@@ -293,7 +293,7 @@ GuiRemoteProtocolFromJsonChannel
 
 	void GuiRemoteProtocolFromJsonChannel::ProcessRemoteEvents()
 	{
-	 channel->ProcessRemoteEvents();
+		channel->ProcessRemoteEvents();
 	}
 
 /***********************************************************************
