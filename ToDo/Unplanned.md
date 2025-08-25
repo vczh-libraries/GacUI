@@ -118,7 +118,7 @@
   - macOS
     - iGac repo: improve development process for release
   - Browser
-    - HTTP for test purpose (Remote)
+    - HTTP for test purpose (**Remote**)
     - WebAssembly (Remote)
   - CLI (optional, needs dedicated skin)
     - Command-line/Powershell in Windows (Remote)
