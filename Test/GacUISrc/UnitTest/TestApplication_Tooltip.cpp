@@ -175,7 +175,23 @@ TEST_FILE
 			
 			GacUIUnitTest_SetGuiMainProxy([&](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
 			{
-				protocol->OnNextIdleFrame(L"Ready", [=]()
+				protocol->OnNextIdleFrame(L"Ready", [&, protocol]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto buttonTooltipA = FindObjectByName<GuiButton>(window, L"buttonTooltipA");
+					auto location = protocol->LocationOf(buttonTooltipA);
+					protocol->MouseMove(location);
+				});
+				protocol->OnNextIdleFrame(L"Mouse Hover on TooltipA", [&, protocol]()
+				{
+					timer.Tooltip();
+				});
+				protocol->OnNextIdleFrame(L"After timer.Tooltip", [&, protocol]()
+				{
+					protocol->MouseMove({0, 0});
+					timer.Tooltip();
+				});
+				protocol->OnNextIdleFrame(L"After leaving tooltip", [&, protocol]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					window->Hide();
@@ -194,7 +210,33 @@ TEST_FILE
 			
 			GacUIUnitTest_SetGuiMainProxy([&](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
 			{
-				protocol->OnNextIdleFrame(L"Ready", [=]()
+				protocol->OnNextIdleFrame(L"Ready", [&, protocol]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto buttonTooltipA = FindObjectByName<GuiButton>(window, L"buttonTooltipA");
+					auto location = protocol->LocationOf(buttonTooltipA);
+					protocol->MouseMove(location);
+				});
+				protocol->OnNextIdleFrame(L"Mouse Hover on TooltipA", [&, protocol]()
+				{
+					timer.Tooltip();
+				});
+				protocol->OnNextIdleFrame(L"After timer.Tooltip", [&, protocol]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto buttonTooltipB = FindObjectByName<GuiButton>(window, L"buttonTooltipB");
+					auto location = protocol->LocationOf(buttonTooltipB);
+					protocol->MouseMove(location);
+				});
+				protocol->OnNextIdleFrame(L"Mouse Hover on TooltipB", [&, protocol]()
+				{
+					timer.Tooltip();
+				});
+				protocol->OnNextIdleFrame(L"After timer.Tooltip for B", [&, protocol]()
+				{
+					timer.WaitForClosing();
+				});
+				protocol->OnNextIdleFrame(L"After timer.WaitForClosing", [&, protocol]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					window->Hide();
