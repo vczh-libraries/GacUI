@@ -1,14 +1,19 @@
 # Design
 
-- The problem I would like to solve is in the chat messages sending with this request, under the `#Problem` section. If there are other sections, they are extra instructions for you in higher priority.
+- The problem I would like to solve is in the chat messages sending with this request, under the `# Problem` section. If there are other sections, they are extra instructions for you in higher priority.
 - Before solving my problem, read `Copilot_Task.md` and find if there is any `# !!!FINISHED!!!` mark.
   - If there is only a title, you are on a fresh start.
-  - If the mark exists, it means the content of the file is out-dated. You must execute `.\copilotPrepare.ps1` to clean up everything from the last run.
-    - You must execute `.\copilotPrepare.ps1`, must not be `copilotPrepare.ps1`, as PowerShell refuses to run a script file if there is only a simple file name.
-    - Make sure the current directory is set to the folder containing the solution file, which I believe is the default location.
+  - If the mark exists:
+    - If there is an `# Update` section in the chat message, it means I am going to propose some change to `Copilot_Task.md`.
+      - Everything under the `# Update` section is used to update the problem description. It must also be copied to the `# PROBLEM DESCRIPTION` section, with a new sub-section `## UPDATE`.
+      - Follow my update to change the design document.
+    - If there is only a `# Problem` section,  it means the content of the file is out-dated.
+      - you must execute `.\copilotPrepare.ps1` to clean up everything from the last run.
+      - You must execute `.\copilotPrepare.ps1`, must not be `copilotPrepare.ps1`, as PowerShell refuses to run a script file if there is only a simple file name.
+      - Make sure the current directory is set to the folder containing the solution file, which I believe is the default location.
   - If the mark does not exist, it means you are accidentally stopped. Please continue the work, the problem description should be in `Copilot_Task.md`.
 - Your goal is to write a design document to `Copilot_Task.md`. DO NOT update any other file including source code.
-- Repeat my problem description in `Copilot_Task.md` precisely under a `#PROBLEM DESCRIPTION` section. In case when you accidentally stop later, you will know what you are told to do.
+- Repeat my problem description in `Copilot_Task.md` precisely under a `# PROBLEM DESCRIPTION` section. In case when you accidentally stop later, you will know what you are told to do.
 - As an experienced C++ developer for large scale systems, you need to:
   - Analyse the source code and provide a high-level design document.
   - The design document must present your idea, about how to solve the problem in architecture-wide level.

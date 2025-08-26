@@ -2,6 +2,97 @@
 
 using namespace gacui_unittest_template;
 
+namespace vl
+{
+	extern IDateTimeImpl* GetOSDateTimeImpl();
+}
+
+class TooltipTimer : protected vl::IDateTimeImpl
+{
+private:
+	vl::IDateTimeImpl*		osImpl = nullptr;
+	vl::DateTime			currentTime;
+	
+public:
+	TooltipTimer()
+	{
+		// Store the current DateTime implementation before injection
+		osImpl = vl::GetOSDateTimeImpl();
+		
+		// Initialize controlled time to 2000-1-1 0:0:0:000
+		currentTime = vl::DateTime::FromDateTime(2000, 1, 1, 0, 0, 0, 0);
+		
+		// Inject ourselves as the DateTime implementation
+		vl::InjectDateTimeImpl(this);
+	}
+	
+	~TooltipTimer()
+	{
+		try
+		{
+			// Restore original DateTime implementation
+			vl::InjectDateTimeImpl(nullptr);
+		}
+		catch (...)
+		{
+			// Don't let exceptions escape destructor
+		}
+	}
+	
+	void Tooltip()
+	{
+		currentTime = currentTime.Forward(600); // 600ms forward
+	}
+	
+	void WaitForClosing()
+	{
+		currentTime = currentTime.Forward(5100); // 5100ms forward
+	}
+	
+protected:
+	// IDateTimeImpl interface implementation
+	vl::DateTime FromDateTime(vint _year, vint _month, vint _day, vint _hour, vint _minute, vint _second, vint _milliseconds) override
+	{
+		// Delegate to original implementation for proper DateTime construction
+		return osImpl->FromDateTime(_year, _month, _day, _hour, _minute, _second, _milliseconds);
+	}
+	
+	vl::DateTime FromOSInternal(vuint64_t osInternal) override
+	{
+		return osImpl->FromOSInternal(osInternal);
+	}
+	
+	vuint64_t LocalTime() override
+	{
+		return currentTime.osMilliseconds; // Return our controlled time
+	}
+	
+	vuint64_t UtcTime() override
+	{
+		return osImpl->LocalToUtcTime(currentTime.osInternal);
+	}
+	
+	vuint64_t LocalToUtcTime(vuint64_t osInternal) override
+	{
+		return osImpl->LocalToUtcTime(osInternal);
+	}
+	
+	vuint64_t UtcToLocalTime(vuint64_t osInternal) override
+	{
+		return osImpl->UtcToLocalTime(osInternal);
+	}
+	
+	vuint64_t Forward(vuint64_t osInternal, vuint64_t milliseconds) override
+	{
+		return osImpl->Forward(osInternal, milliseconds);
+	}
+	
+	vuint64_t Backward(vuint64_t osInternal, vuint64_t milliseconds) override
+	{
+		return osImpl->Backward(osInternal, milliseconds);
+	}
+};
+
 TEST_FILE
 {
 	const auto resourceTooltipWindows = LR"GacUISrc(
@@ -46,6 +137,8 @@ TEST_FILE
 	{
 		TEST_CASE(L"ShowTooltipAndWaitForClosing")
 		{
+			TooltipTimer timer;
+			
 			GacUIUnitTest_SetGuiMainProxy([&](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
 			{
 				protocol->OnNextIdleFrame(L"Ready", [=]()
@@ -63,6 +156,8 @@ TEST_FILE
 		
 		TEST_CASE(L"ShowTooltipAndLeave")
 		{
+			TooltipTimer timer;
+			
 			GacUIUnitTest_SetGuiMainProxy([&](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
 			{
 				protocol->OnNextIdleFrame(L"Ready", [=]()
@@ -80,6 +175,8 @@ TEST_FILE
 		
 		TEST_CASE(L"ShowTooltipAndSwitchToAnother")
 		{
+			TooltipTimer timer;
+			
 			GacUIUnitTest_SetGuiMainProxy([&](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
 			{
 				protocol->OnNextIdleFrame(L"Ready", [=]()
