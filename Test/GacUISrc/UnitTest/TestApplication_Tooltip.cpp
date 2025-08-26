@@ -213,17 +213,6 @@ TEST_FILE
 				protocol->OnNextIdleFrame(L"Ready", [&, protocol]()
 				{
 					auto window = GetApplication()->GetMainWindow();
-					auto buttonTooltipA = FindObjectByName<GuiButton>(window, L"buttonTooltipA");
-					auto location = protocol->LocationOf(buttonTooltipA);
-					protocol->MouseMove(location);
-				});
-				protocol->OnNextIdleFrame(L"Mouse Hover on TooltipA", [&, protocol]()
-				{
-					timer.Tooltip();
-				});
-				protocol->OnNextIdleFrame(L"After timer.Tooltip", [&, protocol]()
-				{
-					auto window = GetApplication()->GetMainWindow();
 					auto buttonTooltipB = FindObjectByName<GuiButton>(window, L"buttonTooltipB");
 					auto location = protocol->LocationOf(buttonTooltipB);
 					protocol->MouseMove(location);
@@ -232,7 +221,18 @@ TEST_FILE
 				{
 					timer.Tooltip();
 				});
-				protocol->OnNextIdleFrame(L"After timer.Tooltip for B", [&, protocol]()
+				protocol->OnNextIdleFrame(L"After timer.Tooltip", [&, protocol]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto buttonTooltipA = FindObjectByName<GuiButton>(window, L"buttonTooltipA");
+					auto location = protocol->LocationOf(buttonTooltipA);
+					protocol->MouseMove(location);
+				});
+				protocol->OnNextIdleFrame(L"Mouse Hover on TooltipA", [&, protocol]()
+				{
+					timer.Tooltip();
+				});
+				protocol->OnNextIdleFrame(L"After timer.Tooltip for A", [&, protocol]()
 				{
 					timer.WaitForClosing();
 				});
