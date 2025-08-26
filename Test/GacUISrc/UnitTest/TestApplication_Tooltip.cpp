@@ -141,7 +141,22 @@ TEST_FILE
 			
 			GacUIUnitTest_SetGuiMainProxy([&](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
 			{
-				protocol->OnNextIdleFrame(L"Ready", [=]()
+				protocol->OnNextIdleFrame(L"Ready", [&, protocol]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto buttonTooltipA = FindObjectByName<GuiButton>(window, L"buttonTooltipA");
+					auto location = protocol->LocationOf(buttonTooltipA);
+					protocol->MouseMove(location);
+				});
+				protocol->OnNextIdleFrame(L"Mouse Hover on TooltipA", [&, protocol]()
+				{
+					timer.Tooltip();
+				});
+				protocol->OnNextIdleFrame(L"After timer.Tooltip", [&, protocol]()
+				{
+					timer.WaitForClosing();
+				});
+				protocol->OnNextIdleFrame(L"After timer.WaitForClosing", [&, protocol]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					window->Hide();
