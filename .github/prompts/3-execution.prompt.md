@@ -9,6 +9,7 @@
 - Your goal is to summary code change in `Copilot_Execution.md` and apply them to source files.
 - **Copilot_Execution.md**:
   - All changes you need to made is already in `Copilot_Planning.md`, but it contains many explanation.
+    - If there is only a title in `Copilot_Planning.md`, it means I believe the plan in `Copilot_Task.md` is detailed enough. Use `Copilot_Task.md` instead in the following steps.
   - Read `Copilot_Planning.md`, copy only code changes to `Copilot_Execution.md`, including which part of code will be replaced with what new code.
   - Code changes in both `Improvement Plan` and `Test Plan` will need to be included. Create `Improvement Plan` and `Test Plan` in `Copilot_Execution.md` for them.
   - Do not include any explanations or comments around the code change, please only include the code changes.

@@ -4,10 +4,12 @@
 - Before solving my problem, read `Copilot_Task.md` and find if there is any `# !!!FINISHED!!!` mark.
   - If there is only a title, you are on a fresh start.
   - If the mark exists:
-    - If there is an `# Update` section in the chat message, it means I am going to propose some change to `Copilot_Task.md`.
+    - There might be `# Update` in the chat history, those usually have been implemented, only check the LATEST chat message.
+    - If there is an `# Update` section in the LATEST chat message, it means I am going to propose some change to `Copilot_Task.md`.
+      - There might be `# Update` in the chat history, those usually have been implemented, only take care of the one in the LATEST chat message.
       - Everything under the `# Update` section is used to update the problem description. It must also be copied to the `# PROBLEM DESCRIPTION` section, with a new sub-section `## UPDATE`.
       - Follow my update to change the design document.
-    - If there is only a `# Problem` section,  it means the content of the file is out-dated.
+    - If there is only a `# Problem` section in the LATEST chat message, it means the content of the file is out-dated.
       - you must execute `.\copilotPrepare.ps1` to clean up everything from the last run.
       - You must execute `.\copilotPrepare.ps1`, must not be `copilotPrepare.ps1`, as PowerShell refuses to run a script file if there is only a simple file name.
       - Make sure the current directory is set to the folder containing the solution file, which I believe is the default location.

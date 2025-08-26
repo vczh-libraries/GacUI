@@ -4,7 +4,8 @@
 - If there is anything in the chat message, they are extra instructions for you in higher priority.
 - Before solving my problem, read `Copilot_Planning.md` and find if there is any `# !!!FINISHED!!!` mark.
   - If there is only a title, you are on a fresh start.
-  - If the mark exists, follow my instructions to update the document (especially when there is an `# Update` section in the chat message).
+  - If the mark exists, follow my instructions to update the document.
+    - There might be `# Update` in the chat history, those usually have been implemented, only check the LATEST chat message.
     - Copy my update precisely to the beginning of the document. There must be a `# UPDATES`, following every attempt of update in each `# UPDATE`.
   - If the mark does not exist, it means you are accidentally stopped. Please continue the work.
 - Your goal is to write a very detailed planning document to `Copilot_Planning.md`. DO NOT update any other file including source code.
