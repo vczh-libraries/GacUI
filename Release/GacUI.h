@@ -23305,6 +23305,16 @@ IGuiRemoteProtocolConfig
 	};
 
 /***********************************************************************
+IGuiRemoteEventProcessor
+***********************************************************************/
+
+	class IGuiRemoteEventProcessor : public virtual Interface
+	{
+	public:
+		virtual void			ProcessRemoteEvents() = 0;
+	};
+
+/***********************************************************************
 IGuiRemoteProtocol
 ***********************************************************************/
 
@@ -23313,9 +23323,9 @@ IGuiRemoteProtocol
 		, public virtual IGuiRemoteProtocolMessages
 	{
 	public:
-		virtual void			Initialize(IGuiRemoteProtocolEvents* events) = 0;
-		virtual void			Submit(bool& disconnected) = 0;
-		virtual void			ProcessRemoteEvents() = 0;
+		virtual void						Initialize(IGuiRemoteProtocolEvents* events) = 0;
+		virtual void						Submit(bool& disconnected) = 0;
+		virtual IGuiRemoteEventProcessor*	GetRemoteEventProcessor() = 0;
 	};
 
 	class GuiRemoteEventCombinator : public Object, public virtual IGuiRemoteProtocolEvents
@@ -23359,9 +23369,9 @@ IGuiRemoteProtocol
 			targetProtocol->Submit(disconnected);
 		}
 
-		void ProcessRemoteEvents() override
+		IGuiRemoteEventProcessor* GetRemoteEventProcessor() override
 		{
-			targetProtocol->ProcessRemoteEvents();
+			return targetProtocol->GetRemoteEventProcessor();
 		}
 	};
 
@@ -23396,9 +23406,9 @@ IGuiRemoteProtocol
 			targetProtocol->Submit(disconnected);
 		}
 
-		void ProcessRemoteEvents() override
+		IGuiRemoteEventProcessor* GetRemoteEventProcessor() override
 		{
-			targetProtocol->ProcessRemoteEvents();
+			return targetProtocol->GetRemoteEventProcessor();
 		}
 	};
 
@@ -23491,7 +23501,7 @@ IGuiRemoteProtocolChannel<T>
 		virtual void											Write(const TPackage& package) = 0;
 		virtual WString											GetExecutablePath() = 0;
 		virtual void											Submit(bool& disconnected) = 0;
-		virtual void											ProcessRemoteEvents() = 0;
+		virtual IGuiRemoteEventProcessor*						GetRemoteEventProcessor() = 0;
 	};
 
 /***********************************************************************
@@ -23535,9 +23545,9 @@ Serialization
 			channel->Submit(disconnected);
 		}
 
-		void ProcessRemoteEvents() override
+		IGuiRemoteEventProcessor* GetRemoteEventProcessor() override
 		{
-			channel->ProcessRemoteEvents();
+			return channel->GetRemoteEventProcessor();
 		}
 	};
 
@@ -23719,11 +23729,18 @@ void ChannelPackageSemanticUnpack(
 		~GuiRemoteProtocolAsyncChannelSerializerBase();
 	};
 
+#ifdef _DEBUG
+#define ENSURE_THREAD_ID(ID) CHECK_ERROR(ID == Thread::GetCurrentThreadId(), L"Expected to be called in thread: " ## #ID)
+#else
+#define ENSURE_THREAD_ID(ID) ((void)0)
+#endif
+
 	template<typename TPackage>
 	class GuiRemoteProtocolAsyncChannelSerializer
 		: public GuiRemoteProtocolAsyncChannelSerializerBase
 		, public virtual IGuiRemoteProtocolChannel<TPackage>
 		, protected virtual IGuiRemoteProtocolChannelReceiver<TPackage>
+		, protected virtual IGuiRemoteEventProcessor
 	{
 		static_assert(
 			std::is_same_v<void, decltype(ChannelPackageSemanticUnpack(
@@ -23746,6 +23763,9 @@ void ChannelPackageSemanticUnpack(
 			vint													connectionCounter = -1;
 			collections::List<vint>									requestIds;
 		};
+
+		vint														threadIdUI = -1;
+		vint														threadIdChannel = -1;
 
 		IGuiRemoteProtocolChannel<TPackage>*						channel = nullptr;
 		IGuiRemoteProtocolChannelReceiver<TPackage>*				receiver = nullptr;
@@ -23775,6 +23795,7 @@ void ChannelPackageSemanticUnpack(
 
 		void UIThreadProc()
 		{
+			threadIdUI = Thread::GetCurrentThreadId();
 			uiMainProc(this);
 			uiMainProc = {};
 
@@ -23800,6 +23821,7 @@ void ChannelPackageSemanticUnpack(
 			// So that the implementation does not need to care about thread safety
 
 			// The thread stopped after receiving a signal from UIThreadProc
+			threadIdChannel = Thread::GetCurrentThreadId();
 			while (!stopping)
 			{
 				eventAutoChannelTaskQueued.Wait();
@@ -23871,6 +23893,7 @@ void ChannelPackageSemanticUnpack(
 		void Write(const TPackage& package) override
 		{
 			// Called from UI thread
+			ENSURE_THREAD_ID(threadIdUI);
 			uiPendingPackages.Add(package);
 		}
 
@@ -23879,6 +23902,7 @@ void ChannelPackageSemanticUnpack(
 			// Called from UI thread
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::remoteprotocol::channeling::GuiRemoteProtocolAsyncChannelSerializer<TPackage>::Submit(...)#"
 
+			ENSURE_THREAD_ID(threadIdUI);
 			SPIN_LOCK(lockConnection)
 			{
 				if (!connectionAvailable)
@@ -23910,14 +23934,15 @@ void ChannelPackageSemanticUnpack(
 
 			QueueToChannelThread([this, requestGroup, packages = std::move(uiPendingPackages)]()
 			{
+				ENSURE_THREAD_ID(threadIdChannel);
 				for (auto&& package : packages)
 				{
 					channel->Write(package);
 				}
-				bool disconnected = false;
+			 bool disconnected = false;
 				channel->Submit(disconnected);
-				if (disconnected)
-				{
+			 if (disconnected)
+			 {
 					SPIN_LOCK(lockConnection)
 					{
 						if (requestGroup->connectionCounter == connectionCounter)
@@ -23967,13 +23992,20 @@ void ChannelPackageSemanticUnpack(
 #undef ERROR_MESSAGE_PREFIX
 		}
 
+	protected:
+
 		void ProcessRemoteEvents() override
 		{
 			// Called from UI thread
-			QueueToChannelThread([this]()
+			ENSURE_THREAD_ID(threadIdUI);
+			if (channel->GetRemoteEventProcessor())
 			{
-				channel->ProcessRemoteEvents();
-			}, &eventAutoChannelTaskQueued);
+				QueueToChannelThread([this]()
+				{
+					ENSURE_THREAD_ID(threadIdChannel);
+					channel->GetRemoteEventProcessor()->ProcessRemoteEvents();
+				}, &eventAutoChannelTaskQueued);
+			}
 
 			FetchAndExecuteUITasks();
 
@@ -24001,6 +24033,13 @@ void ChannelPackageSemanticUnpack(
 				}
 				receiver->OnReceive(event);
 			}
+		}
+
+	public:
+
+		IGuiRemoteEventProcessor* GetRemoteEventProcessor() override
+		{
+			return this;
 		}
 
 	public:
@@ -24091,9 +24130,11 @@ void ChannelPackageSemanticUnpack(
 		void Initialize(IGuiRemoteProtocolChannelReceiver<TPackage>* _receiver) override
 		{
 			// Called from UI thread
+			ENSURE_THREAD_ID(threadIdUI);
 			receiver = _receiver;
 			QueueToChannelThreadAndWait([this]()
 			{
+				ENSURE_THREAD_ID(threadIdChannel);
 				channel->Initialize(this);
 			}, &eventAutoChannelTaskQueued);
 		}
@@ -24101,16 +24142,19 @@ void ChannelPackageSemanticUnpack(
 		IGuiRemoteProtocolChannelReceiver<TPackage>* GetReceiver() override
 		{
 			// Called from UI thread
+			ENSURE_THREAD_ID(threadIdUI);
 			return receiver;
 		}
 
 		WString GetExecutablePath() override
 		{
 			// Called from UI thread
+			ENSURE_THREAD_ID(threadIdUI);
 			if (!executablePath)
 			{
 				QueueToChannelThreadAndWait([this]()
 				{
+					ENSURE_THREAD_ID(threadIdChannel);
 					executablePath = channel->GetExecutablePath();
 				}, &eventAutoChannelTaskQueued);
 			}
@@ -24118,6 +24162,8 @@ void ChannelPackageSemanticUnpack(
 		}
 	};
 }
+
+#undef ENSURE_THREAD_ID
 
 #endif
 
@@ -24211,7 +24257,7 @@ GuiRemoteProtocolFromJsonChannel
 		void											Initialize(IGuiRemoteProtocolEvents* _events) override;
 		WString											GetExecutablePath() override;
 		void											Submit(bool& disconnected) override;
-		void											ProcessRemoteEvents() override;
+		IGuiRemoteEventProcessor*						GetRemoteEventProcessor() override;
 	};
 
 /***********************************************************************
@@ -24274,7 +24320,7 @@ GuiRemoteJsonChannelFromProtocol
 		void											Write(const Ptr<glr::json::JsonObject>& package) override;
 		WString											GetExecutablePath() override;
 		void											Submit(bool& disconnected) override;
-		void											ProcessRemoteEvents() override;
+		IGuiRemoteEventProcessor*						GetRemoteEventProcessor() override;
 	};
 
 /***********************************************************************
@@ -24799,14 +24845,14 @@ namespace vl::presentation::remote_renderer
 		GuiRemoteRendererSingle();
 		~GuiRemoteRendererSingle();
 
-		void			RegisterMainWindow(INativeWindow* _window);
-		void			UnregisterMainWindow();
-		void			ForceExitByFatelError();
+		void									RegisterMainWindow(INativeWindow* _window);
+		void									UnregisterMainWindow();
+		void									ForceExitByFatelError();
 
-		WString			GetExecutablePath() override;
-		void			Initialize(IGuiRemoteProtocolEvents* _events) override;
-		void			Submit(bool& disconnected) override;
-		void			ProcessRemoteEvents() override;
+		WString									GetExecutablePath() override;
+		void									Initialize(IGuiRemoteProtocolEvents* _events) override;
+		void									Submit(bool& disconnected) override;
+		IGuiRemoteEventProcessor*				GetRemoteEventProcessor() override;
 
 
 #define MESSAGE_NOREQ_NORES(NAME, REQUEST, RESPONSE)					void Request ## NAME() override;

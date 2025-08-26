@@ -6075,6 +6075,115 @@ Range-Based For-Loop Iterator with Index
 		{
 			return {};
 		}
+
+/***********************************************************************
+Optimized Range-Based For-Loop Iterator for ArrayBase
+***********************************************************************/
+
+		template<typename T>
+		struct RangeBasedForLoopIteratorForList
+		{
+		protected:
+			const ArrayBase<T>&		arrayBase;
+			vint					index;
+
+		public:
+			RangeBasedForLoopIteratorForList(const ArrayBase<T>& _arrayBase)
+				: arrayBase(_arrayBase)
+				, index(0)
+			{
+			}
+
+			void operator++()
+			{
+				++index;
+			}
+
+			const T& operator*() const
+			{
+				return arrayBase.Get(index);
+			}
+
+			bool operator==(const RangeBasedForLoopEnding&) const
+			{
+				return index >= arrayBase.Count();
+			}
+
+			bool operator!=(const RangeBasedForLoopEnding&) const
+			{
+				return index < arrayBase.Count();
+			}
+
+			friend bool operator==(const RangeBasedForLoopEnding&, const RangeBasedForLoopIteratorForList<T>& iterator)
+			{
+				return iterator.index >= iterator.arrayBase.Count();
+			}
+
+			friend bool operator!=(const RangeBasedForLoopEnding&, const RangeBasedForLoopIteratorForList<T>& iterator)
+			{
+				return iterator.index < iterator.arrayBase.Count();
+			}
+		};
+
+		template<typename T>
+		RangeBasedForLoopIteratorForList<T> begin(const ArrayBase<T>& arrayBase)
+		{
+			return { arrayBase };
+		}
+
+		template<typename T>
+		RangeBasedForLoopEnding end(const ArrayBase<T>& arrayBase)
+		{
+			return {};
+		}
+
+/***********************************************************************
+Optimized Range-Based For-Loop Iterator for ArrayBase with Index
+***********************************************************************/
+
+		template<typename T>
+		struct RangeBasedForLoopIteratorWithIndexForList : public RangeBasedForLoopIteratorForList<T>
+		{
+		public:
+			RangeBasedForLoopIteratorWithIndexForList(const ArrayBase<T>& arrayBase)
+				: RangeBasedForLoopIteratorForList<T>(arrayBase)
+			{
+			}
+
+			Tuple<const T&, vint> operator*() const
+			{
+				return { this->arrayBase.Get(this->index), this->index };
+			}
+		};
+
+		template<typename T>
+		struct ArrayBaseWithIndex
+		{
+			const ArrayBase<T>&		arrayBase;
+
+			ArrayBaseWithIndex(const ArrayBase<T>& _arrayBase)
+				: arrayBase(_arrayBase)
+			{
+			}
+		};
+
+		template<typename T>
+		ArrayBaseWithIndex<T> indexed(const ArrayBase<T>& arrayBase)
+		{
+			return { arrayBase };
+		}
+
+		template<typename T>
+		RangeBasedForLoopIteratorWithIndexForList<T> begin(const ArrayBaseWithIndex<T>& wrapper)
+		{
+			return { wrapper.arrayBase };
+		}
+
+		template<typename T>
+		RangeBasedForLoopEnding end(const ArrayBaseWithIndex<T>& wrapper)
+		{
+			return {};
+		}
 	}
 }
 

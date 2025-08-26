@@ -38512,7 +38512,10 @@ GuiRemoteController::INativeWindowService
 	{
 		if (!connectionStopped)
 		{
-			remoteProtocol->ProcessRemoteEvents();
+			if (auto processor = remoteProtocol->GetRemoteEventProcessor())
+			{
+				processor->ProcessRemoteEvents();
+			}
 			bool disconnected = false;
 			remoteMessages.Submit(disconnected);
 			if (timerEnabled && !disconnected)
@@ -40838,9 +40841,9 @@ GuiRemoteProtocolFromJsonChannel
 		channel->Submit(disconnected);
 	}
 
-	void GuiRemoteProtocolFromJsonChannel::ProcessRemoteEvents()
+	IGuiRemoteEventProcessor* GuiRemoteProtocolFromJsonChannel::GetRemoteEventProcessor()
 	{
-	 channel->ProcessRemoteEvents();
+		return channel->GetRemoteEventProcessor();
 	}
 
 /***********************************************************************
@@ -40989,9 +40992,9 @@ GuiRemoteJsonChannelFromProtocol
 		protocol->Submit(disconnected);
 	}
 
-	void GuiRemoteJsonChannelFromProtocol::ProcessRemoteEvents()
+	IGuiRemoteEventProcessor* GuiRemoteJsonChannelFromProtocol::GetRemoteEventProcessor()
 	{
-		protocol->ProcessRemoteEvents();
+		return protocol->GetRemoteEventProcessor();
 	}
 
 /***********************************************************************
@@ -44614,9 +44617,9 @@ namespace vl::presentation::remote_renderer
 		CHECK_FAIL(L"This function should not be called!");
 	}
 
-	void GuiRemoteRendererSingle::ProcessRemoteEvents()
+	IGuiRemoteEventProcessor* GuiRemoteRendererSingle::GetRemoteEventProcessor()
 	{
-		CHECK_FAIL(L"This function should not be called!");
+		return nullptr;
 	}
 }
 

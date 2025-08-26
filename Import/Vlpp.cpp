@@ -1511,6 +1511,9 @@ UnitTest
 
 		int UnitTest::RunAndDisposeTests(const collections::Array<WString>& options)
 		{
+#ifdef VCZH_MSVC
+			_set_abort_behavior(0, _WRITE_ABORT_MSG);
+#endif
 			bool unrecognized = false;
 			bool _D = false;
 			bool _R = false;
