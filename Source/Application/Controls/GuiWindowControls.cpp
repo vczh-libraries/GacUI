@@ -117,8 +117,9 @@ GuiControlHost
 			{
 				if (!info.left && !info.middle && !info.right)
 				{
-					GuiControl* tooltipControl = GetTooltipOwner(tooltipLocation);
-					MoveIntoTooltipControl(tooltipControl, Point(host->GetNativeWindow()->Convert(NativePoint(info.x, info.y))));
+					auto location = Point(host->GetNativeWindow()->Convert(NativePoint(info.x, info.y)));
+					GuiControl* tooltipControl = GetTooltipOwner(location);
+					MoveIntoTooltipControl(tooltipControl, location);
 				}
 			}
 
