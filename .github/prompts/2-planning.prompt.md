@@ -1,0 +1,26 @@
+# Planning
+
+- The design document is in `Copilot_Task.md`. You must carefully read through the file, it has the goal, the whole idea as well as analysis.
+- If there is anything in the chat message, they are extra instructions for you in higher priority.
+- Before solving my problem, read `Copilot_Planning.md` and find if there is any `# !!!FINISHED!!!` mark.
+  - If there is only a title, you are on a fresh start.
+  - If the mark exists, follow my instructions to update the document.
+  - If the mark does not exist, it means you are accidentally stopped. Please continue the work.
+- Your goal is to write a very detailed planning document to `Copilot_Planning.md`. DO NOT update any other file including source code.
+- You need to write complete two main sections in `Copilot_Planning.md`, `Improvement Plan` and `Test Plan`.
+- **Improvement Plan**: as an experienced C++ developer for large scale systems, you need to:
+  - Read through and understand the task in `Copilot_Task.md`. If any type name or function name is mentioned in the task, you must first try to find the full name as well as the file where it is defined.
+  - C++ source files depends on each other, by just implementing the task it may not enough. Find out what will be affected.
+  - Propose any code change you would like to do. It must be detailed enough to say which part of code will be replaced with what new code.
+  - Explain why you want to make these changes.
+  - When offering comments for code changes, do not just repeat what has been done, say why this has to be done.
+    - If the code is simple and obvious, no comment is needed. Actually most of the code should not have comments.
+    - Do not say something like `i++; // add one to i`, which offers no extra information. Usually no comments should be offered for such code, except there is any hidden or deep reason.
+- **Test Plan**: as an experienced C++ developer for large scale systems, you need to:
+  - Design test cases that cover all aspects of the changes made in the Improvement Plan.
+  - Ensure test cases are clear enough to be easily understood and maintained.
+  - Carefully think about corner cases to cover.
+  - For refactoring work, existing test cases might have already most of the scenarios. Carefully review them and only add new test cases if necessary.
+  - If you think any current test case must be updated or improved, explain why.
+- Append everything to `Copilot_Planning.md`. Make sure only wrap code in code block, do not wrap markdown content in code block.
+- Append `# !!!FINISHED!!!` to `Copilot_Planning.md` to indicate the work has been finished.

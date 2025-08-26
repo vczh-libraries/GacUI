@@ -1,0 +1,21 @@
+# Execution
+
+- The design document is in `Copilot_Task.md`, the planning document is in `Copilot_Planning.md`.
+- If there is anything in the chat message, they are extra instructions for you in higher priority.
+- Before solving my problem, read `Copilot_Execution.md` and find if there is any `# !!!FINISHED!!!` mark.
+  - If there is only a title, you are on a fresh start.
+  - If the mark does not exist, it means you are accidentally stopped. Please continue editing `Copilot_Execution.md`.
+  - If the mark exist, it means you are accidentally stopped, but the editing on `Copilot_Execution.md` is actually finished, please continue editing source code.
+- Your goal is to summary code change in `Copilot_Execution.md` and apply them to source files.
+- **Copilot_Execution.md**:
+  - All changes you need to made is already in `Copilot_Planning.md`, but it contains many explanation.
+  - Read `Copilot_Planning.md`, copy only code changes to `Copilot_Execution.md`, including which part of code will be replaced with what new code.
+  - Code changes in both `Improvement Plan` and `Test Plan` will need to be included. Create `Improvement Plan` and `Test Plan` in `Copilot_Execution.md` for them.
+  - Do not include any explanations or comments around the code change, please only include the code changes.
+  - Make sure only wrap code in code block, do not wrap markdown content in code block.
+  - Append `# !!!FINISHED!!!` to `Copilot_Execution.md` to indicate the work has been finished.
+- **Execution**:
+  - Apply all instructions in `Copilot_Execution.md` to the source code.
+- **Verifying**
+  - Fix all compile errors.
+  - You do not have to worry about running unit tests at the moment. Do not run unit tests, you are good if the code compiles.
