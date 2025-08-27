@@ -13,7 +13,7 @@ Carefully review the file and pick what you need and complete the guideline.
 Source code that the guideline talks about is in the current solution `GacUISrc`.
 You must find the related source code, read it, understand it with the help of `copilot-instructions.md`.
 
-Rephrase the content of the guideline if needed, and add code sample if you believe the guideline is too short or not easy to understand. Add only code sample around utility usage, less in general programming patterns (or even no if the utility does not connect with such pattern)
+Rephrase the content of the guideline if needed, and add code sample if you believe the guideline is too short or not easy to understand. Add only code sample around utility usage, less in general programming patterns (or even no if the utility does not connect with such pattern). Do not generate code samples about "doing this is better than that", just use some words.
 
 Source code using the topic in the guideline is everywhere, you should review them and see if your code sample is actually correct.
 
