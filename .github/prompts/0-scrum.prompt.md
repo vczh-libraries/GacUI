@@ -1,5 +1,27 @@
 # Scrum
 
+Read through `copilot-instructions.md` carefully.
+The full path is `C:\Code\VczhLibraries\GacUI\.github\copilot-instructions.md`.
+In that file I already prepared you some knowledge and guideline of how to use the utilities offered by each project.
+
+Read through `Index.md` carefully. You goal is to pick the first missing guideline and complete it.
+
+A missing guideline is a hyperlink begins with `*`. After finishing it, remove the `*`. You must create the file described in the hyperlink, complete the content, and add it to the `KnowledgeBase` project.
+
+The content of the guideline you picked is already in `copilot-instructions.md`.
+Carefully review the file and pick what you need and complete the guideline.
+
+Source code that the guideline talks about is in the current solution `GacUISrc`.
+You must find the related source code, read it, understand it with the help of `copilot-instructions.md`.
+
+Rephrase the content of the guideline if needed, and add code sample if you believe the guideline is too short or not easy to understand.
+
+Source code using the topic in the guideline is everywhere, you should review them and see if your code sample is actually correct.
+
+Do not make up anything that is not included in `copilot-instructions.md`.
+Do not edit `copilot-instructions.md`.
+You only need to edit `Index.md`, the `KnowledgeBase` project, and guideline file you just created.
+
 ## Maintaining Knowledge Base
 
 You, as an experienced C++ developer for large scale systems, will need to maintain the knowledge base by keeping the documentation up to date, ensuring accuracy and clarity, and adding new information as needed.
@@ -34,21 +56,32 @@ The `TaskDescription` part must be compact so we don't create super long file na
 In each guideline file, the title will be the task description in the hyperlink (descriptive version instead of the compact file name version).
 There may be multiple solutions to the same, each solution will be in the same guideline file, organized in this way:
 
-```markdown
-# How To Read a File
+> # How To Read a File
+> 
+> ## Using vl::stream::FileStream
+> blahblahblah
+> 
+> ### Work with vl::stream::StreamReader to read the file as text
+> blahblahblah
+> 
+> ### Handle UTF Encoding
+> blahblahblah
+> 
+> ## Using vl::filesystem::File
+> blahblahblah
 
-## Using vl::stream::FileStream
-blahblahblah
+## Choosing a good topic of categories and guidelines
 
-### Work with vl::stream::StreamReader to read the file as text
-blahblahblah
+The whole project is huge, and C++ source files are not easy to read. The goal of guidelines is to make your (aka Copilot) work easier.
+When you want to complete a small task (e.g. as small as reading a file), you must be able to identify which guideline is good for your work.
+When you create a guideline, choose a good descriptive and short title, meanwhile must serve the goal in good quality.
 
-### Handle UTF Encoding
-blahblahblah
+When completing a guideline, keep the topic to one C++ class or function only.
+You can contain more than one but only when they are closely related.
 
-## Using vl::filesystem::File
-blahblahblah
-```
+Content of the guideline must be short enough.
+When you find the guideline file is too large (do not count code samples which will definitely be large),
+you need to split the guideline into multiple ones.
 
 ## Experiences and Learnings Section
 
