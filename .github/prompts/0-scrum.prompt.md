@@ -1,7 +1,6 @@
 # Scrum
 
 Read through `copilot-instructions.md` carefully.
-The full path is `C:\Code\VczhLibraries\GacUI\.github\copilot-instructions.md`.
 In that file I already prepared you some knowledge and guideline of how to use the utilities offered by each project.
 
 Read through `Index.md` carefully. You goal is to pick the first missing guideline and complete it.
