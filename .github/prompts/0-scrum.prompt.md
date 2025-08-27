@@ -5,7 +5,7 @@ In that file I already prepared you some knowledge and guideline of how to use t
 
 Read through `Index.md` carefully. You goal is to pick the first incomplete category and complete every guidelines in it.
 
-A missing guideline is a hyperlink begins with `*`. After finishing it, remove the `*`. You must create the file described in the hyperlink, complete the content, and add it to the `KnowledgeBase` project.
+A missing guideline is a hyperlink begins with `*`. After finishing it, remove the `*`. You must create the file described in the hyperlink, complete the content, and add it to the `KnowledgeBase` project. Begins from `VlppOS` as previous projects are all finished.
 
 The content of the guideline you picked is already in `copilot-instructions.md`.
 Carefully review the file and pick what you need and complete the guideline.
