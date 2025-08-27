@@ -21,6 +21,8 @@ Do not make up anything that is not included in `copilot-instructions.md`.
 Do not edit `copilot-instructions.md`.
 You only need to edit `Index.md`, the `KnowledgeBase` project, and guideline file you just created.
 
+Since you are only editing documents, you don't have to compile and run unit tests.
+
 ## Maintaining Knowledge Base
 
 You, as an experienced C++ developer for large scale systems, will need to maintain the knowledge base by keeping the documentation up to date, ensuring accuracy and clarity, and adding new information as needed.
