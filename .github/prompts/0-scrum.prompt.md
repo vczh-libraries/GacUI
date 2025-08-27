@@ -3,7 +3,7 @@
 Read through `copilot-instructions.md` carefully.
 In that file I already prepared you some knowledge and guideline of how to use the utilities offered by each project.
 
-Read through `Index.md` carefully. You goal is to pick the first missing guideline and complete it.
+Read through `Index.md` carefully. You goal is to pick the first incomplete category and complete every guidelines in it.
 
 A missing guideline is a hyperlink begins with `*`. After finishing it, remove the `*`. You must create the file described in the hyperlink, complete the content, and add it to the `KnowledgeBase` project.
 
