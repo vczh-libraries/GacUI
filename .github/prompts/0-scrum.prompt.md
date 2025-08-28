@@ -11,14 +11,20 @@ Since you are only editing documents, you don't have to compile and run unit tes
 
 ## Goal
 
-Your goal is to complete the `Index.md`.
-From `copilot-instructions.md` you can find the `# Using PROJECT-NAME` section for all projects.
-Each `## Title` under `# Using PROJECT-NAME` will becomes a category.
+Your goal is to complete one `API Explanation` of the first incomplete category.
+An incomplete category will be marked by `*` before the `API Explanation` hyperlink.
+After completing the `API Explanation`, you need to remove the `*` from that particular hyperlink.
 
-Complete all categories in `Index.md`. Follow the format specified mentioned in `Project/Choosing APIs`.
-You will need to also generate the hyperlink for each category, but you don't need to create that file.
+You need to read through the whole `Index.md` carefully, and identify which part of `copilot-instruction.md` belongs to this category, and which part does not.
 
-When listing bullet points in a category, you must mention everything that `copilot-instructions.md` has.
+Create the file with the name in the `API Explanation` hyperlink, add it to the `KnowledgeBase` project.
+
+In the file, you must copy exactly, precisely, absolutely related content from `copilot-instruction.md`.
+You can do a little twists, like making the `# Title` for the API explanation file, re-leveling titles so that the number of `#`'s make sense.
+
+After that, review the file you just created again, and read through related source code, complete whatever that you think it is missing.
+Things that does not appear in `copilot-instruction.md` is less important, but I think it is still worth mentioning.
+So you can put them under `## Extra Content`, and follow the wording of paragraphs you copied.
 
 ## Using and Maintaining Knowledge Base
 
@@ -39,7 +45,7 @@ This file serves as the main entry point for the knowledge base, providing an ov
 
 ### Project/Choosing APIs
 
-There are multiple categories under `Choosing APIs`. Each category begins with a short and accurate title `#### * Category`.
+There are multiple categories under `Choosing APIs`. Each category begins with a short and accurate title `#### Category`.
 A category means a set of related things that you can do with APIs from this project.
 
 Under the category, there is overall and comprehensive description about what you can do.
