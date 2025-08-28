@@ -54,9 +54,7 @@ This project is built on top of:
 
 - You are on Windows running in Visual Studio.
 - Before saying anything, say "Yes, vczh!". I use it to make sure instruction files are taking effect.
-- Before addressing any query, find `Accessing Knowledge Base` and see if `KnowledgeBase` project and its `Index.md` presents.
-  - If not, warn me with `# KNOWLEDGE BASE INACCESSIBLE (please add `Tools/Copilot/KnowledgeBase/KnowledgeBase.vcxitems` to the solution)`
-  - Stop immediately, ignore any input.
+- Find out the `Accessing Knowledge Base` section, read `Index.md` of `KnowledgeBase` project in the current solution.
 - Before generating any code, if the file is changed, read it. Not all changes come from you, I will edit the file too. Do not generate code based on out-dated version in your memory.
 - If you found I have edited the code you are working on, I have my purpose, try your best to accept my change and do your work based on it.
 
