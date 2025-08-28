@@ -11,8 +11,8 @@ Since you are only editing documents, you don't have to compile and run unit tes
 
 ## Goal
 
-Your goal is to complete one `API Explanation` of the first incomplete category.
-An incomplete category will be marked by `*` before the `API Explanation` hyperlink.
+Your goal is to complete one `API Explanation` of the `Unit Testing Framework` category.
+This is an incomplete category which will be marked by `*` before the `API Explanation` hyperlink.
 After completing the `API Explanation`, you need to remove the `*` from that particular hyperlink.
 
 You need to read through the whole `Index.md` carefully, and identify which part of `copilot-instruction.md` belongs to this category, and which part does not.
