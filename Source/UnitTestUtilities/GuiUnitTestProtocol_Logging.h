@@ -22,6 +22,7 @@ UnitTestRemoteProtocol
 	protected:
 		bool								everRendered = false;
 		Ptr<UnitTestLoggedFrame>			candidateFrame;
+		vint								idlingCounter = 0;
 
 		bool LogRenderingResult()
 		{
@@ -34,6 +35,7 @@ UnitTestRemoteProtocol
 			{
 				if (candidateFrame)
 				{
+					idlingCounter = 0;
 					auto descs = Ptr(new collections::Dictionary<vint, ElementDescVariant>);
 					CopyFrom(*descs.Obj(), this->lastElementDescs);
 					this->loggedTrace.frames->Add({
@@ -45,6 +47,15 @@ UnitTestRemoteProtocol
 						});
 					candidateFrame = {};
 					return true;
+				}
+				else
+				{
+					idlingCounter++;
+					if (idlingCounter == 100)
+					{
+						TEST_PRINT(L"The last frame didn't trigger UI updating. The action registered by OnNextIdleFrame should always make any element or layout to change.");
+						TEST_ASSERT(idlingCounter < 100);
+					}
 				}
 			}
 			return false;

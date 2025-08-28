@@ -1385,13 +1385,6 @@ UnitTest
 				Category,
 				Case,
 			};
-
-			enum class FailureMode
-			{
-				Debug,    // corresponds to /D - no exception suppression
-				Release,  // corresponds to /R - suppress and continue  
-				Copilot   // corresponds to /C - suppress, record, and rethrow
-			};
 			
 			struct UnitTestContext
 			{
@@ -1406,7 +1399,7 @@ UnitTest
 			vint							passedFiles = 0;
 			vint							totalCases = 0;
 			vint							passedCases = 0;
-			FailureMode						failureMode = FailureMode::Debug;
+			UnitTest::FailureMode			failureMode = UnitTest::FailureMode::NotRunning;
 
 			template<typename TMessage>
 			void RecordFailure(TMessage errorMessage)
@@ -1430,7 +1423,7 @@ UnitTest
 				catch (const UnitTestAssertError& e)
 				{
 					RecordFailure(e.message);
-					if (failureMode == FailureMode::Copilot)
+					if (failureMode == UnitTest::FailureMode::Copilot)
 					{
 						throw UnitTestJustCrashError{};
 					}
@@ -1438,7 +1431,7 @@ UnitTest
 				catch (const UnitTestConfigError& e)
 				{
 					RecordFailure(e.message);
-					if (failureMode == FailureMode::Copilot)
+					if (failureMode == UnitTest::FailureMode::Copilot)
 					{
 						throw UnitTestJustCrashError{};
 					}
@@ -1446,7 +1439,7 @@ UnitTest
 				catch (const Error& e)
 				{
 					RecordFailure(e.Description());
-					if (failureMode == FailureMode::Copilot)
+					if (failureMode == UnitTest::FailureMode::Copilot)
 					{
 						throw UnitTestJustCrashError{};
 					}
@@ -1454,7 +1447,7 @@ UnitTest
 				catch (const Exception& e)
 				{
 					RecordFailure(e.Message());
-					if (failureMode == FailureMode::Copilot)
+					if (failureMode == UnitTest::FailureMode::Copilot)
 					{
 						throw UnitTestJustCrashError{};
 					}
@@ -1466,7 +1459,7 @@ UnitTest
 				catch (...)
 				{
 					RecordFailure(L"Unknown exception occurred!");
-					if (failureMode == FailureMode::Copilot)
+					if (failureMode == UnitTest::FailureMode::Copilot)
 					{
 						throw UnitTestJustCrashError{};
 					}
@@ -1495,10 +1488,10 @@ UnitTest
 			{
 				switch (failureMode)
 				{
-				case vl::unittest::execution_impl::FailureMode::Release:
+				case UnitTest::FailureMode::Release:
 					SuppressCFailure(std::forward<TCallback&&>(callback));
 					break;
-				case vl::unittest::execution_impl::FailureMode::Copilot:
+				case UnitTest::FailureMode::Copilot:
 					SuppressCppFailure(std::forward<TCallback&&>(callback));
 					break;
 				default:
@@ -1507,6 +1500,11 @@ UnitTest
 			}
 		}
 		using namespace execution_impl;
+
+		UnitTest::FailureMode UnitTest::GetFailureMode()
+		{
+			return execution_impl::failureMode;
+		}
 
 		void UnitTest::PrintMessage(const WString& string, MessageKind kind)
 		{
