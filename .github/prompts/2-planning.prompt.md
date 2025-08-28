@@ -1,6 +1,6 @@
 # Planning
 
-- The design document is in `Copilot_Task.md`. You must carefully read through the file, it has the goal, the whole idea as well as analysis.
+- The design document is in `Copilot_Task.md`. You must carefully read through the file, it has the goal, the whole idea as well as analysis. If `Copilot_Task.md` mentions anything about updating the knowledge base, ignore it as it will be addressed later.
 - If there is anything in the chat message, they are extra instructions for you in higher priority.
 - Before solving my problem, read `Copilot_Planning.md` and find if there is any `# !!!FINISHED!!!` mark.
   - If there is only a title, you are on a fresh start.

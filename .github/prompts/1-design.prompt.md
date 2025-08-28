@@ -16,6 +16,7 @@
   - If the mark does not exist, it means you are accidentally stopped. Please continue the work, the problem description should be in `Copilot_Task.md`.
 - Your goal is to write a design document to `Copilot_Task.md`. DO NOT update any other file including source code.
 - Repeat my problem description in `Copilot_Task.md` precisely under a `# PROBLEM DESCRIPTION` section. In case when you accidentally stop later, you will know what you are told to do.
+  - If the problem description is like `Complete task 1-1`, it means you should find the actual problem description from `Copilot_Scrum.md`. Read the whole file througly, understand the context. Copy everything of the task from `Copilot_Scrum.md` precisely in words.
 - As an experienced C++ developer for large scale systems, you need to:
   - Analyse the source code and provide a high-level design document.
   - The design document must present your idea, about how to solve the problem in architecture-wide level.
