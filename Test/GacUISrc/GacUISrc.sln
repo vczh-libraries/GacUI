@@ -114,16 +114,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "@Copilot", "@Copilot", "{02
 		copilotPrepare.ps1 = copilotPrepare.ps1
 		Copilot_Execution.md = Copilot_Execution.md
 		Copilot_Planning.md = Copilot_Planning.md
-		Copilot_Scrum.md = Copilot_Scrum.md
 		Copilot_Task.md = Copilot_Task.md
+		Copilot_Scrum.md = Copilot_Scrum.md
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "KnowledgeBase", "..\..\..\Tools\Copilot\KnowledgeBase\KnowledgeBase.vcxitems", "{D178E490-7C2B-43FA-A8B3-A3BED748EB38}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "@CopilotExternal", "@CopilotExternal", "{A3BDF97F-9582-42DC-B1BF-76F43708E6D7}"
-	ProjectSection(SolutionItems) = preProject
-		..\..\.github\copilot-instructions.md = ..\..\.github\copilot-instructions.md
-	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
