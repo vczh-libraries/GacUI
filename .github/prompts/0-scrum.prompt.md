@@ -1,24 +1,27 @@
 # Scrum
 
 - The problem I would like to solve is in the chat messages sending with this request. Only check the LATEST chat message for the problem:
-  - Read `Copilot_Scrum.md` and find if there is any `# !!!FINISHED!!!` mark. If there is not, it means are accidentally stopped. Please continue to complete the work. The problem to solve should be in the `# DESIGN REQUEST` section.
   - If there is an `# Problem` section, it means I am starting a fresh new request. You should override `Copilot_Scrum.md` with only one title `# !!!SCRUM!!!`. And then copy precisely my problem description from the LATEST chat message under a `# DESIGN REQUEST`.
-  - If there is an `# Update` section, it means I am going to propose some change to `Copilot_Scrum.md`, you should continue to work out more details.
+  - If there is an `# Update` section, it means I am going to propose some change to `Copilot_Scrum.md`, you should continue to work out more details. It must also be copied to the `# PROBLEM DESCRIPTION` section, with a new sub-section `## UPDATE`.
+      - Follow my update to change the design document.
+  - If there is a `# Continue` section, read `Copilot_Scrum.md` and find if there is any `# !!!FINISHED!!!` mark. If there is not, it means are accidentally stopped. Please continue to complete the work. The problem to solve should be in the `# DESIGN REQUEST` section.
 - Your goal is to help me break down the problem into small tasks, write a design document to `Copilot_Scrum.md`. DO NOT update any other file including source code.
-  - Each task should be small enough to only represent a single idea or feature upgrade.
+  - Each task should be small enough to only represent a single idea or feature upgrade. But don't break tasks too small, each task should still be self-contained.
   - Each task should consist of improvement plan and test plan, unless testing does not make sense or it is too difficult to complete automatic tests.
   - Each task should be self contained.
   - The order of tasks is important. At the end of any task, the project should be able to compile and test.
 - Break the problem in to phrases and tasks.
   - A phrase should begin with a title `## Phrase 1: A short name`. Under a phrase there is a comprehensive description about the goal of this phrase. A phrase contains multiple tasks.
   - A task should begin with a title `### Task 1-1: A short name`. Under a task there is a comprehensive description about the goal of this task. The first number is the phrase number, the second is for the task itself.
+  - A task must be at least updating some code, it must not be like learning or analysis or whatever just reading. Reading, thinking and planning is your immediate work to do.
 - The reason I would like you to solve the problem in this way instead of making an immediate plan of code improvement is that, it is complicated and should work across the whole project. As an experienced C++ developer for large scale systems, you need to:
   - Take in consideration of the knowledge base, finding anything that would be helpful for the current problem.
   - Read through the code base carefully. The project is complicated, one small decision may have widely impact to the other part of the project.
   - Think thoroughly.
 - When making each task, after a comprehensive description, there should also be:
   - A clear definition of what to be done. Keep it high-level, you can mention what should be done to update a certain group of classes, but do not include any actual code change.
-  - A clear definition of what to test. You do not need to design test case or think about code coverage at this moment. Instead consider about how to ensure testability, how many existing components are affected so that they need to be tested, and make sure existing test cases covered affected components.
+  - A clear definition of what to test in Unit Test. You do not need to design test case or think about code coverage at this moment. Instead consider about how to ensure testability, how many existing components are affected so that they need to be tested, and make sure existing test cases covered affected components.
+  - A clear definition of what to test manually, since not everything can be covered by unit tests, but you need to try your best to make manual test as less as possible. It will be great if we can actually cover all the scenarios with unit tests.
   - Reasons about why you think it is necessary to have this task.
   - Any support evidences from source code or knowledge base. If you can't find anything from the knowledge base, what do you think need to be added.
 - Append `# !!!FINISHED!!!` to `Copilot_Scrum.md` to indicate the design reaches the end.

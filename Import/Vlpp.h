@@ -9404,6 +9404,12 @@ namespace vl
 		/// A <b>TEST_ASSERT</b> failure will report an error and skip rest of the current <b>TEST_CASE</b>, the execution will continue.
 		/// </p>
 		/// <p>
+		/// When the test program is started with command line option "/C" (Copilot mode),
+		/// A <b>TEST_ASSERT</b> failure will report an error and cause immediate program termination.
+		/// This mode is designed for automated testing where you want to stop at the first failure.
+		/// The "/D", "/R", and "/C" options are mutually exclusive.
+		/// </p>
+		/// <p>
 		/// <b>TEST_ERROR</b> execute one statement, it fails when no [T:vl.Error] is thrown.
 		/// </p>
 		/// <p>
@@ -9518,6 +9524,10 @@ namespace vl
 			const wchar_t*				message;
 
 			UnitTestConfigError(const wchar_t* _message) :message(_message) {}
+		};
+
+		struct UnitTestJustCrashError
+		{
 		};
 
 #define TEST_FILE\
