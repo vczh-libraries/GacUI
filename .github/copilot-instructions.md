@@ -116,6 +116,33 @@ The following data types are preferred:
 - Use `atomic_vint` for atomic integers, it is a rename of `std::atomic<vint>`.
 - Use `DateTime` for date times.
 
+## Writing Test Code
+
+```C++
+using namespace vl;
+using namespace vl::unittest;
+
+TEST_FILE
+{
+	TEST_CASE(L"TOPIC-NAME")
+	{
+    TEST_ASSERT(EXPRESSION-TO-VERIFY);
+	});
+
+	TEST_CATEGORY(L"CATEGORY-NAME")
+	{
+		TEST_CASE(L"TOPIC-NAME")
+		{
+			TEST_ASSERT(EXPRESSION-TO-VERIFY);
+		});
+	});
+}
+```
+
+There can be mulitple `TEST_CATEGORY`, `TEST_CATEGORY` can be nested inside another `TEST_CATEGORY`.
+There can be mulitple `TEST_CASE` in `TEST_FILE` or `TEST_CATEGORY`, `TEST_CASE` cannot be nested inside another `TEST_CASE`.
+`TEST_ASSERT` can only appear in `TEST_CASE`.
+
 ## String
 
 `ObjectString<T>` is an immutable string. It cannot be modified after initialized. Any updating results in a new string value returned.
@@ -1130,11 +1157,11 @@ The `return` keyword is not necessary as `INVOKEGET_INTERFACE_PROXY_NOPARAMS` or
 
 (The document for VlppParser2 is not ready)
 
-# Writing GacUI Test Code
+# Using GacUI
 
 Here are some basic rules.
 
-## Basic Structure
+## Writing GacUI Test Code
 
 ```C++
 #include "TestControls.h"
@@ -1219,14 +1246,14 @@ TEST_CASE(L"Topic")
 });
 ```
 
-## Accessing objects defined in the XML
+### Accessing objects defined in the XML
 
 Obtain the main window using `GetApplication()->GetMainWindow();`.
 Obtain any named control using `FindObjectByName<CLASS-NAME>(MAIN-WINDOW, L"name")`, the name reflects in the XML using `ref.Name` attribute.
 Obtain any control with text using `FindControlByText<CLASS-NAME>(MAIN-WINDOW, L"text")`, the name reflects in the XML using `Text` attribute.
 You should define a variable for any object obtained above.
 
-## Performing IO Actions
+### Performing IO Actions
 
 All methods you can use defines in the `UnitTestRemoteProtocol_IOCommands` class in `Source\UnitTestUtilities\GuiUnitTestProtocol_IOCommands.h`.
 Call the like `protocol->LClick();`, there are `KeyPress`, `_Key(Down(Repeat)?|Up)`, `MouseMove`, `[LMR]((DB)?Click`, `_[LMR](Down|Up|DBClick)`.
@@ -1238,11 +1265,11 @@ There are 4 more arguments for the function: ratioX, ratioY, offsetX, offsetY. I
 You can perform mouse, keyboard, typing or any other user actions on the UI. 
 Find examples by yourself for arguments.
 
-# Writing GacUI XML
+## Writing GacUI XML
 
 This is the document of GacUI XML: https://gaclib.net/doc/current/gacui/xmlres/home.html
 
-## Mapping XML Entity to C++ Entity
+### Mapping XML Entity to C++ Entity
 
 Most of XML tags are calling to constructors for classes in the follow folder:
 
@@ -1283,7 +1310,7 @@ Take this file `Test\Resources\Metadata\Reflection64.txt` as an index, it collec
 When there is a `@FullName` on top of a class, it means the full name in C++, the class name will be the full name in XML.
 When there is no `@FullName` but the class name begins with `presentation::`, the full name in C++ begins with `vl::presentation::`.
 
-## XML in a Single String
+### XML in a Single String
 
 To define an empty window, the XML looks like:
 
@@ -1344,7 +1371,7 @@ The first `<Instance>` defines the resource named `MainWindowResource`, the `<In
 
 One more `Scripts\ViewModelResource` is added to the resource, and the content of the new resource is defined by `<Workflow>`. Code inside `<Workflow>` will always be Workflow Script instead of C++.
 
-## UI Layout
+### UI Layout
 
 This is the GacUI XML document for UI layout: https://gaclib.net/doc/current/gacui/components/compositions/home.html
 
@@ -1367,11 +1394,11 @@ To expand a composition to the whole parent client area:
 
 `<Cell>`, `<RowSplitter>`, `<ColumnSplitter>`, `<StackItem>` and `<FlowItem>` are controlled by its parent composition, no positions or size limits needs to adjusted.
 
-### Bounds
+#### Bounds
 
 `<Bounds>` is useful to define a space.
 
-### Table
+#### Table
 
 The most useful composition is `<Table>`, it is a grid layout with rows and columns. There are 3 sizing modes for rows and columns:
 - `<_>composeType:MinSize</_>`: The size is decided by its content.
@@ -1400,7 +1427,7 @@ To make a dialog with big content with OK and Cancel buttons at the bottom-right
 - Put the content to the cell that automatically expands to the rest of the space, which is `Site="row:0 column:0"`
 - Put 2 button to all MinSize cells, which is `Site="row:1 column:1"`, `Site="row:1 column:2"`
 
-### Others
+#### Others
 
 Please read the document of GacUI XML for other compositions: https://gaclib.net/doc/current/gacui/components/compositions/home.html
 - Stack/StackItem
@@ -1410,7 +1437,7 @@ Please read the document of GacUI XML for other compositions: https://gaclib.net
 - PartialView
 - etc
 
-## Properties
+### Properties
 
 There are two ways to add a property:
 
@@ -1443,7 +1470,7 @@ This example changes the property `AlignmentToParent` to the object in label's `
 
 If a property name looks like `Name-binding`, it means the property `Name` should interpret the content using the specified way `-binding`. There are more predefined bindings like `-ref`, `-uri`, `-eval`, `-bind`, etc.
 
-## Events
+### Events
 
 An event is subscribed like:
 
