@@ -34,7 +34,7 @@ namespace gacuisrc_unittest
                 (self.ClientSize = {x : 480; y : 320;} of (::presentation::Size));
             }
             {
-                (self.Text = "Dialog Message Test");
+                (self.Text = "MessageDialog");
             }
         }
 
