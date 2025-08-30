@@ -180,6 +180,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="TestApplication_Dialog_Color.cpp" />
+    <ClCompile Include="TestApplication_Dialog_File.cpp" />
+    <ClCompile Include="TestApplication_Dialog_Font.cpp" />
+    <ClCompile Include="TestApplication_Dialog_Message.cpp" />
     <ClCompile Include="TestApplication_Tab.cpp" />
     <ClCompile Include="TestApplication_Theme.cpp" />
     <ClCompile Include="TestApplication_Tooltip.cpp" />

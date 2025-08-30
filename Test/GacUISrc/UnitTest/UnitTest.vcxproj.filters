@@ -288,6 +288,18 @@
     <ClCompile Include="TestApplication_Tooltip.cpp">
       <Filter>Source Files\Controls\Application</Filter>
     </ClCompile>
+    <ClCompile Include="TestApplication_Dialog_File.cpp">
+      <Filter>Source Files\Controls\Application</Filter>
+    </ClCompile>
+    <ClCompile Include="TestApplication_Dialog_Color.cpp">
+      <Filter>Source Files\Controls\Application</Filter>
+    </ClCompile>
+    <ClCompile Include="TestApplication_Dialog_Font.cpp">
+      <Filter>Source Files\Controls\Application</Filter>
+    </ClCompile>
+    <ClCompile Include="TestApplication_Dialog_Message.cpp">
+      <Filter>Source Files\Controls\Application</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="TestCompositions.h">
