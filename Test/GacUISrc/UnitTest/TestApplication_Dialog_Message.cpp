@@ -182,7 +182,6 @@ TEST_FILE
 						auto location = protocol->LocationOf(button);
 						GetApplication()->InvokeInMainThread(window, [=]()
 						{
-							// OnNextIdleFrame cannot be blocked by a modal dialog
 							protocol->LClick(location);
 						});
 					});
