@@ -2115,8 +2115,9 @@ GuiControlHost
 			{
 				if (!info.left && !info.middle && !info.right)
 				{
-					GuiControl* tooltipControl = GetTooltipOwner(tooltipLocation);
-					MoveIntoTooltipControl(tooltipControl, Point(host->GetNativeWindow()->Convert(NativePoint(info.x, info.y))));
+					auto location = Point(host->GetNativeWindow()->Convert(NativePoint(info.x, info.y)));
+					GuiControl* tooltipControl = GetTooltipOwner(location);
+					MoveIntoTooltipControl(tooltipControl, location);
 				}
 			}
 
@@ -36879,9 +36880,20 @@ GuiHostedController::INativeWindowService
 			}
 		}
 
+		namespace GuiHostedController_UnitTestHelper
+		{
+			static bool exceptionOccuredUnderUnitTestReleaseMode = false;
+
+			bool ExceptionOccuredUnderUnitTestReleaseMode()
+			{
+				return exceptionOccuredUnderUnitTestReleaseMode;
+			}
+		}
+
 		void GuiHostedController::Run(INativeWindow* window)
 		{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::GuiHostedController::Run(INativeWindow*)#"
+			GuiHostedController_UnitTestHelper::exceptionOccuredUnderUnitTestReleaseMode = false;
 			CHECK_ERROR(!mainWindow, ERROR_MESSAGE_PREFIX L"This function has been called.");
 			auto hostedWindow = dynamic_cast<GuiHostedWindow*>(window);
 			CHECK_ERROR(hostedWindow, ERROR_MESSAGE_PREFIX L"The window is not created by GuiHostedController.");
@@ -36889,32 +36901,68 @@ GuiHostedController::INativeWindowService
 
 			SettingHostedWindowsBeforeRunning();
 			wmManager->needRefresh = true;
-			try
+			if (unittest::UnitTest::GetFailureMode() == unittest::UnitTest::FailureMode::NotRunning)
 			{
 				nativeController->WindowService()->Run(nativeWindow);
 			}
-			catch (const Exception& e)
+			else
 			{
-				(void)e;
-				DestroyHostedWindowsAfterRunning();
-				throw;
-			}
-			catch (const Error& e)
-			{
-				(void)e;
-				DestroyHostedWindowsAfterRunning();
-				throw;
-			}
-			catch (const unittest::UnitTestAssertError& e)
-			{
-				(void)e;
-				DestroyHostedWindowsAfterRunning();
-				throw;
-			}
-			catch (...)
-			{
-				DestroyHostedWindowsAfterRunning();
-				throw;
+				try
+				{
+					nativeController->WindowService()->Run(nativeWindow);
+				}
+				catch (const Exception& e)
+				{
+					(void)e;
+					if (unittest::UnitTest::GetFailureMode() == unittest::UnitTest::FailureMode::Release)
+					{
+						GuiHostedController_UnitTestHelper::exceptionOccuredUnderUnitTestReleaseMode = true;
+						unittest::UnitTest::PrintMessage(e.Message(), unittest::UnitTest::MessageKind::Error);
+					}
+					else
+					{
+						DestroyHostedWindowsAfterRunning();
+						throw;
+					}
+				}
+				catch (const Error& e)
+				{
+					(void)e;
+					if (unittest::UnitTest::GetFailureMode() == unittest::UnitTest::FailureMode::Release)
+					{
+						GuiHostedController_UnitTestHelper::exceptionOccuredUnderUnitTestReleaseMode = true;
+						unittest::UnitTest::PrintMessage(e.Description(), unittest::UnitTest::MessageKind::Error);
+					}
+					else
+					{
+						DestroyHostedWindowsAfterRunning();
+						throw;
+					}
+				}
+				catch (const unittest::UnitTestAssertError& e)
+				{
+					(void)e;
+					if (unittest::UnitTest::GetFailureMode() == unittest::UnitTest::FailureMode::Release)
+					{
+						GuiHostedController_UnitTestHelper::exceptionOccuredUnderUnitTestReleaseMode = true;
+						unittest::UnitTest::PrintMessage(e.message, unittest::UnitTest::MessageKind::Error);
+					}
+					else
+					{
+						DestroyHostedWindowsAfterRunning();
+						throw;
+					}
+				}
+				catch (...)
+				{
+					if (unittest::UnitTest::GetFailureMode() != unittest::UnitTest::FailureMode::Release)
+					{
+						GuiHostedController_UnitTestHelper::exceptionOccuredUnderUnitTestReleaseMode = true;
+						unittest::UnitTest::PrintMessage(WString::Unmanaged(L"Runtime exception occurred!"), unittest::UnitTest::MessageKind::Error);
+						DestroyHostedWindowsAfterRunning();
+						throw;
+					}
+				}
 			}
 			CHECK_ERROR((nativeWindow == nullptr) == (mainWindow == nullptr), ERROR_MESSAGE_PREFIX L"Hosted windows should have been destroyed if the native windows is destroyed.");
 			DestroyHostedWindowsAfterRunning();

@@ -54,6 +54,11 @@ namespace vl::presentation::unittest
 	}
 }
 
+namespace vl::presentation::GuiHostedController_UnitTestHelper
+{
+	extern bool ExceptionOccuredUnderUnitTestReleaseMode();
+}
+
 using namespace vl;
 using namespace vl::collections;
 using namespace vl::filesystem;
@@ -63,6 +68,7 @@ using namespace vl::presentation;
 using namespace vl::presentation::remoteprotocol;
 using namespace vl::presentation::controls;
 using namespace vl::presentation::unittest;
+using namespace vl::presentation::GuiHostedController_UnitTestHelper;
 
 class UnitTestContextImpl : public Object, public virtual IUnitTestContext
 {
@@ -362,6 +368,7 @@ void GacUIUnitTest_Start(const WString& appName, Nullable<UnitTestScreenConfig> 
 		: &filteredProtocol
 		);
 	GacUIUnitTest_SetGuiMainProxy({});
+	TEST_ASSERT(!ExceptionOccuredUnderUnitTestReleaseMode());
 
 	GacUIUnitTest_LogUI(appName, unitTestProtocol);
 	if (!globalConfig.useDomDiff)
@@ -445,6 +452,8 @@ void GacUIUnitTest_StartAsync(const WString& appName, Nullable<UnitTestScreenCon
 		});
 
 	asyncChannelSender.WaitForStopped();
+	TEST_ASSERT(!ExceptionOccuredUnderUnitTestReleaseMode());
+
 	GacUIUnitTest_LogUI(appName, unitTestProtocol);
 	if (!config.Value().useDomDiff)
 	{

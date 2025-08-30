@@ -2121,6 +2121,8 @@ namespace vl
 		/// <summary>Absolute file path.</summary>
 		class FilePath : public Object
 		{
+			friend class LinuxFileSystemImpl;
+			friend class WindowsFileSystemImpl;
 		protected:
 			WString						fullPath;
 
@@ -2138,9 +2140,9 @@ namespace vl
 			/// In Linux and macOS, it is "/".
 			/// But you can always use "/", it is also supported in Windows.
 			/// </remarks>
-			static const wchar_t		Delimiter = L'\\';
+			static constexpr wchar_t	Delimiter = L'\\';
 #elif defined VCZH_GCC
-			static const wchar_t		Delimiter = L'/';
+			static constexpr wchar_t	Delimiter = L'/';
 #endif
 
 			/// <summary>Create a root path.</summary>
@@ -2312,6 +2314,31 @@ namespace vl
 			/// <param name="newName">The new folder name.</param>
 			bool						Rename(const WString& newName)const;
 		};
+
+		/// <summary>Platform-specific file system implementation interface.</summary>
+		class IFileSystemImpl : public virtual Interface
+		{
+		public:
+			// FilePath operations
+			virtual void Initialize(WString& fullPath) const = 0;
+			virtual bool IsFile(const WString& fullPath) const = 0;
+			virtual bool IsFolder(const WString& fullPath) const = 0;
+			virtual bool IsRoot(const WString& fullPath) const = 0;
+			virtual WString GetRelativePathFor(const WString& fromPath, const WString& toPath) const = 0;
+			
+			// File operations
+			virtual bool FileDelete(const FilePath& filePath) const = 0;
+			virtual bool FileRename(const FilePath& filePath, const WString& newName) const = 0;
+			
+			// Folder operations
+			virtual bool GetFolders(const FilePath& folderPath, collections::List<Folder>& folders) const = 0;
+			virtual bool GetFiles(const FilePath& folderPath, collections::List<File>& files) const = 0;
+			virtual bool CreateFolder(const FilePath& folderPath) const = 0;
+			virtual bool DeleteFolder(const FilePath& folderPath) const = 0;
+			virtual bool FolderRename(const FilePath& folderPath, const WString& newName) const = 0;
+		};
+
+		extern void InjectFileSystemImpl(IFileSystemImpl* impl);
 	}
 }
 
