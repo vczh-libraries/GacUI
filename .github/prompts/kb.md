@@ -1,22 +1,21 @@
-# Verifying
+# Update Knowledge Base
 
-- All instructions in `Copilot_Execution.md` has already been applied to the source code.
-- Your goal is to verify if they are good enough. You need to compiler the whole solution. Fix the code to avoid all compile errors.
-  - If there is any compile warning, only fix warnings that caused by your code change. Do no fix any other warnings.
-  - Run the unit test and see if they passed. If anything is good, you will only see test files and test cases that are executed.
-    - Make sure added test cases are actually executed.
-    - When all test cases passes, there will be a summarize about how many test cases are executed. Otherwise it crashed.
-    - If any test case fails on a test assertion, the content of `TEST_ASSERT` or other macros will be printed to the output.
-    - If any test case just crashes, the failed test case will be the last one printed. In this case, you might need to add logging to the code.
-      - In any test case, `TEST_PRINT` would help.
-      - In other source code, `vl::console::Console::WriteLine` would help. In `Vlpp` project, you should `#include` `Console.h`. In other projects, the `Console` class should just be available.
-      - When added logging are not longer necessary, you should remove all of them.
-  - Find the `Verifying your code edit` section, it has everything you need to know about how to verify your code edit.
-- For every attempt of fixing the source code:
-  - Explain why the original change did not work.
-  - Explain what you need to do.
-  - Explain why you think it would solve the build break or test break.
-  - Log these in `Copilot_Execution.md`, with section `# Fixing attempt No.<attempt_number>`.
+- Your goal is to update the knowledge base.
+- If there is an `# Update` section in the LATEST chat message, it means you must update the knowledge base according to the work you have implemented in the document.
+  - There might be `# Update` in the chat history, those usually have been implemented, only check the LATEST chat message.
+  - I have not designed what to do, so please print a `# NOT IMPLEMENTED!` and stop immediately.
+- If there is no title in the section, it means you must update the knowledge base according to the LATEST chat message.
+
+## Implement the Knowledge Base
+
+- Find out the `Accessing Knowledge Base` section. Understand the organization of the knowledge base.
+- Read the `Index.md` of the knowledge base first.
+- There could be multiple places as the request might include multiple knowledges. For each knowledge:
+  - Find out which project does it belong to.
+  - Read through all categories, find out which category is the best fit.
+    - If there is no obvious best answer, create a new category. It means you also need to create an hyperlink and a new file and add it to the `KnowledgeBase` project.
+  - Update the category description if you think there is anything worth menthioning.
+  - Read through the file of the hyperlink in the category, update the content to reflect the change I want you to make.
 
 # for Copilot with Agent mode in Visual Studio
 
@@ -69,17 +68,4 @@ At the end of the category, there is a hyperlink: `[API Explanation](./KB_Projec
 When you create a new guideline:
 - A hyperlink must insert to a appropriate position in `Index.md`.
 - The file must be added to the `KnowledgeBase` project.
-
-# Verifying your code edit
-
-- In `Unit Test Projects to Execute` section there are multiple project names.
-- You must verify your code by executing each project in order. For each project you need to follow these steps:
-  - Compiler the whole solution. Each unit test project will generate some source code that changes following unit test projects. That's why you need to compile before each execution.
-  - Call `.\copilotExecute.ps1 -Executable <PROJECT-NAME>`. `<PROJECT-NAME>` is the project name in the list.
-    - You must call `.\copilotExecute.ps1`, must not call `copilotExecute.ps1`, as PowerShell refuses to run a script file if there is only a simple file name.
-    - Make sure the current directory is set to the folder containing the solution file, which I believe is the default location.
-
-## Unit Test Projects to Execute
-
-- `UnitTest`
 
