@@ -9,7 +9,7 @@ TEST_FILE
   <Instance name="MainWindowResource">
     <Instance ref.Class="gacuisrc_unittest::MainWindow">
       <ref.Members><![CDATA[
-        func UpdateWindowTitle(result : MessageBoxButtonsOutput) : void
+        func UpdateWindowTitle(result : INativeDialogService::MessageBoxButtonsOutput) : void
         {
           switch(result)
           {

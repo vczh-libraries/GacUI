@@ -1,6 +1,9 @@
 # Verifying
 
 - All instructions in `Copilot_Execution.md` has already been applied to the source code.
+- If you spot any difference between `Copilot_Execution.md` and the current code:
+  - It means I edited them. I have my reason. DO NOT change the code back to match `Copilot_Execution.md`.
+  - Write down every differences you spotted, make a `# User Update Spotted` section in `Copilot_Execution.md`.
 - Your goal is to verify if they are good enough. You need to compiler the whole solution. Fix the code to avoid all compile errors.
   - If there is any compile warning, only fix warnings that caused by your code change. Do no fix any other warnings.
   - Run the unit test and see if they passed. If anything is good, you will only see test files and test cases that are executed.

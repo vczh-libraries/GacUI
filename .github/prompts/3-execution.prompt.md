@@ -5,7 +5,12 @@
 - Before solving my problem, read `Copilot_Execution.md` and find if there is any `# !!!FINISHED!!!` mark.
   - If there is only a title, you are on a fresh start.
   - If the mark does not exist, it means you are accidentally stopped. Please continue editing `Copilot_Execution.md`.
-  - If the mark exist, it means you are accidentally stopped, but the editing on `Copilot_Execution.md` is actually finished, please continue editing source code.
+  - If the mark exists:
+    - There might be `# Update` in the chat history, those usually have been implemented, only check the LATEST chat message.
+    - If there is an `# Update` section in the LATEST chat message:
+      - Copy my update precisely to the beginning of the document. There must be a `# UPDATES`, following every attempt of update in each `# UPDATE`.
+    - If the LATEST chat message is empty:
+      - It means you are accidentally stopped, but the editing on `Copilot_Execution.md` is actually finished, please continue editing source code.
 - Your goal is to summary code change in `Copilot_Execution.md` and apply them to source files.
 - **Copilot_Execution.md**:
   - All changes you need to made is already in `Copilot_Planning.md`, but it contains many explanation.
