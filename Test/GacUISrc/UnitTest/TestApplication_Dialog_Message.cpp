@@ -172,7 +172,10 @@ TEST_FILE
 					auto window = GetApplication()->GetMainWindow();
 					auto button1 = FindControlByText<GuiButton>(window, L"DisplayOK");
 					auto location = protocol->LocationOf(button1);
-					protocol->LClick(location);
+					GetApplication()->InvokeInMainThread(window, [=]()
+					{
+						protocol->LClick(location);
+					});
 				});
 				protocol->OnNextIdleFrame(L"Show DisplayOK", [=]()
 				{
