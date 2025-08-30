@@ -1,0 +1,1158 @@
+﻿================================(1/7)================================
+module imageloader;
+using presentation::*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+
+func LoadListView(root : GuiInstanceRootObject*, callback : (func (ListViewItem^) : (void))) : (void)
+{
+    {
+        var item = new (ListViewItem^)();
+        (item.Text = "Task");
+        (item.LargeImage = (cast (GuiImageData^) root.ResolveResource("res", "LargeImages/Task", true)));
+        (item.SmallImage = (cast (GuiImageData^) root.ResolveResource("res", "SmallImages/Task", true)));
+        item.SubItems.Add("005");
+        item.SubItems.Add("16x16");
+        item.SubItems.Add("005_Task_16x16_72.png");
+        callback(item);
+    }
+    {
+        var item = new (ListViewItem^)();
+        (item.Text = "Reminder");
+        (item.LargeImage = (cast (GuiImageData^) root.ResolveResource("res", "LargeImages/Reminder", true)));
+        (item.SmallImage = (cast (GuiImageData^) root.ResolveResource("res", "SmallImages/Reminder", true)));
+        item.SubItems.Add("008");
+        item.SubItems.Add("16x16");
+        item.SubItems.Add("008_Reminder_16x16_72.png");
+        callback(item);
+    }
+    {
+        var item = new (ListViewItem^)();
+        (item.Text = "Tip");
+        (item.LargeImage = (cast (GuiImageData^) root.ResolveResource("res", "LargeImages/Tip", true)));
+        (item.SmallImage = (cast (GuiImageData^) root.ResolveResource("res", "SmallImages/Tip", true)));
+        item.SubItems.Add("023");
+        item.SubItems.Add("16x16");
+        item.SubItems.Add("023_Tip_16x16_72.png");
+        callback(item);
+    }
+    {
+        var item = new (ListViewItem^)();
+        (item.Text = "ArrowCurve_Blue_Left");
+        (item.LargeImage = (cast (GuiImageData^) root.ResolveResource("res", "LargeImages/ArrowCurve_Blue_Left", true)));
+        (item.SmallImage = (cast (GuiImageData^) root.ResolveResource("res", "SmallImages/ArrowCurve_Blue_Left", true)));
+        item.SubItems.Add("112");
+        item.SubItems.Add("16x16");
+        item.SubItems.Add("112_ArrowCurve_Blue_Left_16x16_72.png");
+        callback(item);
+    }
+    {
+        var item = new (ListViewItem^)();
+        (item.Text = "ArrowCurve_Blue_Right");
+        (item.LargeImage = (cast (GuiImageData^) root.ResolveResource("res", "LargeImages/ArrowCurve_Blue_Right", true)));
+        (item.SmallImage = (cast (GuiImageData^) root.ResolveResource("res", "SmallImages/ArrowCurve_Blue_Right", true)));
+        item.SubItems.Add("112");
+        item.SubItems.Add("16x16");
+        item.SubItems.Add("112_ArrowCurve_Blue_Right_16x16_72.png");
+        callback(item);
+    }
+    {
+        var item = new (ListViewItem^)();
+        (item.Text = "DownArrowLong_Blue");
+        (item.LargeImage = (cast (GuiImageData^) root.ResolveResource("res", "LargeImages/DownArrowLong_Blue", true)));
+        (item.SmallImage = (cast (GuiImageData^) root.ResolveResource("res", "SmallImages/DownArrowLong_Blue", true)));
+        item.SubItems.Add("112");
+        item.SubItems.Add("16x16");
+        item.SubItems.Add("112_DownArrowLong_Blue_16x16_72.png");
+        callback(item);
+    }
+    {
+        var item = new (ListViewItem^)();
+        (item.Text = "DownArrowLong_Green");
+        (item.LargeImage = (cast (GuiImageData^) root.ResolveResource("res", "LargeImages/DownArrowLong_Green", true)));
+        (item.SmallImage = (cast (GuiImageData^) root.ResolveResource("res", "SmallImages/DownArrowLong_Green", true)));
+        item.SubItems.Add("112");
+        item.SubItems.Add("16x16");
+        item.SubItems.Add("112_DownArrowLong_Green_16x16_72.png");
+        callback(item);
+    }
+    {
+        var item = new (ListViewItem^)();
+        (item.Text = "DownArrowLong_Grey");
+        (item.LargeImage = (cast (GuiImageData^) root.ResolveResource("res", "LargeImages/DownArrowLong_Grey", true)));
+        (item.SmallImage = (cast (GuiImageData^) root.ResolveResource("res", "SmallImages/DownArrowLong_Grey", true)));
+        item.SubItems.Add("112");
+        item.SubItems.Add("16x16");
+        item.SubItems.Add("112_DownArrowLong_Grey_16x16_72.png");
+        callback(item);
+    }
+    {
+        var item = new (ListViewItem^)();
+        (item.Text = "DownArrowLong_Orange");
+        (item.LargeImage = (cast (GuiImageData^) root.ResolveResource("res", "LargeImages/DownArrowLong_Orange", true)));
+        (item.SmallImage = (cast (GuiImageData^) root.ResolveResource("res", "SmallImages/DownArrowLong_Orange", true)));
+        item.SubItems.Add("112");
+        item.SubItems.Add("16x16");
+        item.SubItems.Add("112_DownArrowLong_Orange_16x16_72.png");
+        callback(item);
+    }
+    {
+        var item = new (ListViewItem^)();
+        (item.Text = "LeftArrowLong_Blue");
+        (item.LargeImage = (cast (GuiImageData^) root.ResolveResource("res", "LargeImages/LeftArrowLong_Blue", true)));
+        (item.SmallImage = (cast (GuiImageData^) root.ResolveResource("res", "SmallImages/LeftArrowLong_Blue", true)));
+        item.SubItems.Add("112");
+        item.SubItems.Add("16x16");
+        item.SubItems.Add("112_LeftArrowLong_Blue_16x16_72.png");
+        callback(item);
+    }
+    {
+        var item = new (ListViewItem^)();
+        (item.Text = "LeftArrowLong_Green");
+        (item.LargeImage = (cast (GuiImageData^) root.ResolveResource("res", "LargeImages/LeftArrowLong_Green", true)));
+        (item.SmallImage = (cast (GuiImageData^) root.ResolveResource("res", "SmallImages/LeftArrowLong_Green", true)));
+        item.SubItems.Add("112");
+        item.SubItems.Add("16x16");
+        item.SubItems.Add("112_LeftArrowLong_Green_16x16_72.png");
+        callback(item);
+    }
+    {
+        var item = new (ListViewItem^)();
+        (item.Text = "LeftArrowLong_Grey");
+        (item.LargeImage = (cast (GuiImageData^) root.ResolveResource("res", "LargeImages/LeftArrowLong_Grey", true)));
+        (item.SmallImage = (cast (GuiImageData^) root.ResolveResource("res", "SmallImages/LeftArrowLong_Grey", true)));
+        item.SubItems.Add("112");
+        item.SubItems.Add("16x16");
+        item.SubItems.Add("112_LeftArrowLong_Grey_16x16_72.png");
+        callback(item);
+    }
+    {
+        var item = new (ListViewItem^)();
+        (item.Text = "LeftArrowLong_Orange");
+        (item.LargeImage = (cast (GuiImageData^) root.ResolveResource("res", "LargeImages/LeftArrowLong_Orange", true)));
+        (item.SmallImage = (cast (GuiImageData^) root.ResolveResource("res", "SmallImages/LeftArrowLong_Orange", true)));
+        item.SubItems.Add("112");
+        item.SubItems.Add("16x16");
+        item.SubItems.Add("112_LeftArrowLong_Orange_16x16_72.png");
+        callback(item);
+    }
+    {
+        var item = new (ListViewItem^)();
+        (item.Text = "Minus_Blue");
+        (item.LargeImage = (cast (GuiImageData^) root.ResolveResource("res", "LargeImages/Minus_Blue", true)));
+        (item.SmallImage = (cast (GuiImageData^) root.ResolveResource("res", "SmallImages/Minus_Blue", true)));
+        item.SubItems.Add("112");
+        item.SubItems.Add("16x16");
+        item.SubItems.Add("112_Minus_Blue_16x16_72.png");
+        callback(item);
+    }
+    {
+        var item = new (ListViewItem^)();
+        (item.Text = "Minus_Green");
+        (item.LargeImage = (cast (GuiImageData^) root.ResolveResource("res", "LargeImages/Minus_Green", true)));
+        (item.SmallImage = (cast (GuiImageData^) root.ResolveResource("res", "SmallImages/Minus_Green", true)));
+        item.SubItems.Add("112");
+        item.SubItems.Add("16x16");
+        item.SubItems.Add("112_Minus_Green_16x16_72.png");
+        callback(item);
+    }
+    {
+        var item = new (ListViewItem^)();
+        (item.Text = "Minus_Grey");
+        (item.LargeImage = (cast (GuiImageData^) root.ResolveResource("res", "LargeImages/Minus_Grey", true)));
+        (item.SmallImage = (cast (GuiImageData^) root.ResolveResource("res", "SmallImages/Minus_Grey", true)));
+        item.SubItems.Add("112");
+        item.SubItems.Add("16x16");
+        item.SubItems.Add("112_Minus_Grey_16x16_72.png");
+        callback(item);
+    }
+    {
+        var item = new (ListViewItem^)();
+        (item.Text = "Minus_Orange");
+        (item.LargeImage = (cast (GuiImageData^) root.ResolveResource("res", "LargeImages/Minus_Orange", true)));
+        (item.SmallImage = (cast (GuiImageData^) root.ResolveResource("res", "SmallImages/Minus_Orange", true)));
+        item.SubItems.Add("112");
+        item.SubItems.Add("16x16");
+        item.SubItems.Add("112_Minus_Orange_16x16_72.png");
+        callback(item);
+    }
+    {
+        var item = new (ListViewItem^)();
+        (item.Text = "Plus_Blue");
+        (item.LargeImage = (cast (GuiImageData^) root.ResolveResource("res", "LargeImages/Plus_Blue", true)));
+        (item.SmallImage = (cast (GuiImageData^) root.ResolveResource("res", "SmallImages/Plus_Blue", true)));
+        item.SubItems.Add("112");
+        item.SubItems.Add("16x16");
+        item.SubItems.Add("112_Plus_Blue_16x16_72.png");
+        callback(item);
+    }
+    {
+        var item = new (ListViewItem^)();
+        (item.Text = "Plus_Green");
+        (item.LargeImage = (cast (GuiImageData^) root.ResolveResource("res", "LargeImages/Plus_Green", true)));
+        (item.SmallImage = (cast (GuiImageData^) root.ResolveResource("res", "SmallImages/Plus_Green", true)));
+        item.SubItems.Add("112");
+        item.SubItems.Add("16x16");
+        item.SubItems.Add("112_Plus_Green_16x16_72.png");
+        callback(item);
+    }
+    {
+        var item = new (ListViewItem^)();
+        (item.Text = "Plus_Grey");
+        (item.LargeImage = (cast (GuiImageData^) root.ResolveResource("res", "LargeImages/Plus_Grey", true)));
+        (item.SmallImage = (cast (GuiImageData^) root.ResolveResource("res", "SmallImages/Plus_Grey", true)));
+        item.SubItems.Add("112");
+        item.SubItems.Add("16x16");
+        item.SubItems.Add("112_Plus_Grey_16x16_72.png");
+        callback(item);
+    }
+    {
+        var item = new (ListViewItem^)();
+        (item.Text = "Plus_Orange");
+        (item.LargeImage = (cast (GuiImageData^) root.ResolveResource("res", "LargeImages/Plus_Orange", true)));
+        (item.SmallImage = (cast (GuiImageData^) root.ResolveResource("res", "SmallImages/Plus_Orange", true)));
+        item.SubItems.Add("112");
+        item.SubItems.Add("16x16");
+        item.SubItems.Add("112_Plus_Orange_16x16_72.png");
+        callback(item);
+    }
+    {
+        var item = new (ListViewItem^)();
+        (item.Text = "RightArrowLong_Blue");
+        (item.LargeImage = (cast (GuiImageData^) root.ResolveResource("res", "LargeImages/RightArrowLong_Blue", true)));
+        (item.SmallImage = (cast (GuiImageData^) root.ResolveResource("res", "SmallImages/RightArrowLong_Blue", true)));
+        item.SubItems.Add("112");
+        item.SubItems.Add("16x16");
+        item.SubItems.Add("112_RightArrowLong_Blue_16x16_72.png");
+        callback(item);
+    }
+    {
+        var item = new (ListViewItem^)();
+        (item.Text = "RightArrowLong_Green");
+        (item.LargeImage = (cast (GuiImageData^) root.ResolveResource("res", "LargeImages/RightArrowLong_Green", true)));
+        (item.SmallImage = (cast (GuiImageData^) root.ResolveResource("res", "SmallImages/RightArrowLong_Green", true)));
+        item.SubItems.Add("112");
+        item.SubItems.Add("16x16");
+        item.SubItems.Add("112_RightArrowLong_Green_16x16_72.png");
+        callback(item);
+    }
+    {
+        var item = new (ListViewItem^)();
+        (item.Text = "RightArrowLong_Grey");
+        (item.LargeImage = (cast (GuiImageData^) root.ResolveResource("res", "LargeImages/RightArrowLong_Grey", true)));
+        (item.SmallImage = (cast (GuiImageData^) root.ResolveResource("res", "SmallImages/RightArrowLong_Grey", true)));
+        item.SubItems.Add("112");
+        item.SubItems.Add("16x16");
+        item.SubItems.Add("112_RightArrowLong_Grey_16x16_72.png");
+        callback(item);
+    }
+    {
+        var item = new (ListViewItem^)();
+        (item.Text = "RightArrowLong_Orange");
+        (item.LargeImage = (cast (GuiImageData^) root.ResolveResource("res", "LargeImages/RightArrowLong_Orange", true)));
+        (item.SmallImage = (cast (GuiImageData^) root.ResolveResource("res", "SmallImages/RightArrowLong_Orange", true)));
+        item.SubItems.Add("112");
+        item.SubItems.Add("16x16");
+        item.SubItems.Add("112_RightArrowLong_Orange_16x16_72.png");
+        callback(item);
+    }
+    {
+        var item = new (ListViewItem^)();
+        (item.Text = "UpArrowLong_Blue");
+        (item.LargeImage = (cast (GuiImageData^) root.ResolveResource("res", "LargeImages/UpArrowLong_Blue", true)));
+        (item.SmallImage = (cast (GuiImageData^) root.ResolveResource("res", "SmallImages/UpArrowLong_Blue", true)));
+        item.SubItems.Add("112");
+        item.SubItems.Add("16x16");
+        item.SubItems.Add("112_UpArrowLong_Blue_16x16_72.png");
+        callback(item);
+    }
+    {
+        var item = new (ListViewItem^)();
+        (item.Text = "UpArrowLong_Green");
+        (item.LargeImage = (cast (GuiImageData^) root.ResolveResource("res", "LargeImages/UpArrowLong_Green", true)));
+        (item.SmallImage = (cast (GuiImageData^) root.ResolveResource("res", "SmallImages/UpArrowLong_Green", true)));
+        item.SubItems.Add("112");
+        item.SubItems.Add("16x16");
+        item.SubItems.Add("112_UpArrowLong_Green_16x16_72.png");
+        callback(item);
+    }
+    {
+        var item = new (ListViewItem^)();
+        (item.Text = "UpArrowLong_Grey");
+        (item.LargeImage = (cast (GuiImageData^) root.ResolveResource("res", "LargeImages/UpArrowLong_Grey", true)));
+        (item.SmallImage = (cast (GuiImageData^) root.ResolveResource("res", "SmallImages/UpArrowLong_Grey", true)));
+        item.SubItems.Add("112");
+        item.SubItems.Add("16x16");
+        item.SubItems.Add("112_UpArrowLong_Grey_16x16_72.png");
+        callback(item);
+    }
+    {
+        var item = new (ListViewItem^)();
+        (item.Text = "UpArrowLong_Orange");
+        (item.LargeImage = (cast (GuiImageData^) root.ResolveResource("res", "LargeImages/UpArrowLong_Orange", true)));
+        (item.SmallImage = (cast (GuiImageData^) root.ResolveResource("res", "SmallImages/UpArrowLong_Orange", true)));
+        item.SubItems.Add("112");
+        item.SubItems.Add("16x16");
+        item.SubItems.Add("112_UpArrowLong_Orange_16x16_72.png");
+        callback(item);
+    }
+}
+
+================================(2/7)================================
+module viewmodel;
+using system::*;
+using presentation::*;
+
+namespace demo
+{
+    class MyTextItem
+    {
+        @cpp:Private
+        var <prop>Name : string = "";
+
+        func GetName() : (string)
+        {
+            return <prop>Name;
+        }
+
+        func SetName(<value> : string) : (void)
+        {
+            (<prop>Name = <value>);
+        }
+
+        prop Name : string{GetName, SetName}
+
+        @cpp:Private
+        var <prop>Checked : bool = false;
+
+        func GetChecked() : (bool)
+        {
+            return <prop>Checked;
+        }
+
+        func SetChecked(<value> : bool) : (void)
+        {
+            (<prop>Checked = <value>);
+        }
+
+        prop Checked : bool{GetChecked, SetChecked}
+
+        new ()
+        {
+        }
+    }
+
+    enum MyCategory
+    {
+        Black = 0,
+        Red = 1,
+        Lime = 2,
+        Blue = 3,
+        White = 4,
+    }
+
+    enum MyGender
+    {
+        Male = 0,
+        Female = 1,
+    }
+
+    class MyDataItem
+    {
+        @cpp:Private
+        var <prop>Name : string = "";
+
+        func GetName() : (string)
+        {
+            return <prop>Name;
+        }
+
+        func SetName(<value> : string) : (void)
+        {
+            (<prop>Name = <value>);
+        }
+
+        prop Name : string{GetName, SetName}
+
+        @cpp:Private
+        var <prop>Gender : MyGender = Male;
+
+        func GetGender() : (MyGender)
+        {
+            return <prop>Gender;
+        }
+
+        func SetGender(<value> : MyGender) : (void)
+        {
+            (<prop>Gender = <value>);
+        }
+
+        prop Gender : MyGender{GetGender, SetGender}
+
+        @cpp:Private
+        var <prop>Category : MyCategory = White;
+
+        func GetCategory() : (MyCategory)
+        {
+            return <prop>Category;
+        }
+
+        func SetCategory(<value> : MyCategory) : (void)
+        {
+            (<prop>Category = <value>);
+        }
+
+        prop Category : MyCategory{GetCategory, SetCategory}
+
+        @cpp:Private
+        var <prop>Birthday : DateTime = (cast (DateTime) "2000-01-01 00:00:00.000");
+
+        func GetBirthday() : (DateTime)
+        {
+            return <prop>Birthday;
+        }
+
+        func SetBirthday(<value> : DateTime) : (void)
+        {
+            (<prop>Birthday = <value>);
+        }
+
+        prop Birthday : DateTime{GetBirthday, SetBirthday}
+
+        @cpp:Private
+        var <prop>Website : string = "";
+
+        func GetWebsite() : (string)
+        {
+            return <prop>Website;
+        }
+
+        func SetWebsite(<value> : string) : (void)
+        {
+            (<prop>Website = <value>);
+        }
+
+        prop Website : string{GetWebsite, SetWebsite}
+
+        @cpp:Private
+        var <prop>LargeImage : GuiImageData^ = null;
+
+        func GetLargeImage() : (GuiImageData^)
+        {
+            return <prop>LargeImage;
+        }
+
+        func SetLargeImage(<value> : GuiImageData^) : (void)
+        {
+            (<prop>LargeImage = <value>);
+        }
+
+        prop LargeImage : GuiImageData^{GetLargeImage, SetLargeImage}
+
+        @cpp:Private
+        var <prop>SmallImage : GuiImageData^ = null;
+
+        func GetSmallImage() : (GuiImageData^)
+        {
+            return <prop>SmallImage;
+        }
+
+        func SetSmallImage(<value> : GuiImageData^) : (void)
+        {
+            (<prop>SmallImage = <value>);
+        }
+
+        prop SmallImage : GuiImageData^{GetSmallImage, SetSmallImage}
+
+        new ()
+        {
+        }
+
+        new (name : string, gender : MyGender, category : MyCategory, birthday : DateTime, website : string)
+        {
+            (Name = name);
+            (Gender = gender);
+            (Category = category);
+            (Birthday = birthday);
+            (Website = website);
+        }
+    }
+
+    func ToString(value : MyCategory) : (string)
+    {
+        {
+            var <switch>0 : ::demo::MyCategory = value;
+            if ((<switch>0 == Black of (::demo::MyCategory)))
+            {
+                return "Black";
+            }
+            else if ((<switch>0 == Red of (::demo::MyCategory)))
+            {
+                return "Red";
+            }
+            else if ((<switch>0 == Lime of (::demo::MyCategory)))
+            {
+                return "Lime";
+            }
+            else if ((<switch>0 == Blue of (::demo::MyCategory)))
+            {
+                return "Blue";
+            }
+            else if ((<switch>0 == White of (::demo::MyCategory)))
+            {
+                return "White";
+            }
+        }
+        return "";
+    }
+
+    func ToColor(value : MyCategory) : (Color)
+    {
+        {
+            var <switch>1 : ::demo::MyCategory = value;
+            if ((<switch>1 == Red of (::demo::MyCategory)))
+            {
+                return (cast (Color) "#FF0000");
+            }
+            else if ((<switch>1 == Lime of (::demo::MyCategory)))
+            {
+                return (cast (Color) "#00FF00");
+            }
+            else if ((<switch>1 == Blue of (::demo::MyCategory)))
+            {
+                return (cast (Color) "#0000FF");
+            }
+            else if ((<switch>1 == White of (::demo::MyCategory)))
+            {
+                return (cast (Color) "#FFFFFF");
+            }
+        }
+        return (cast (Color) "#000000");
+    }
+
+    func ToString(value : MyGender) : (string)
+    {
+        {
+            var <switch>2 : ::demo::MyGender = value;
+            if ((<switch>2 == Male of (::demo::MyGender)))
+            {
+                return "Male";
+            }
+            else if ((<switch>2 == Female of (::demo::MyGender)))
+            {
+                return "Female";
+            }
+        }
+        return "";
+    }
+
+    func ToString(value : DateTime) : (string)
+    {
+        return ((((("" & value.month) & "/") & value.day) & "/") & value.year);
+    }
+}
+
+================================(3/7)================================
+module Animation;
+using system::*;
+using presentation::*;
+
+namespace demo
+{
+    class ColorDef
+    {
+        @cpp:Private
+        var <prop>Top : Color = (cast (Color) "#000000");
+
+        func GetTop() : (Color)
+        {
+            return <prop>Top;
+        }
+
+        func SetTop(<value> : Color) : (void)
+        {
+            if ((<prop>Top != <value>))
+            {
+                (<prop>Top = <value>);
+                TopChanged();
+            }
+        }
+
+        event TopChanged();
+
+        prop Top : Color{GetTop, SetTop : TopChanged}
+
+        @cpp:Private
+        var <prop>Bottom : Color = (cast (Color) "#000000");
+
+        func GetBottom() : (Color)
+        {
+            return <prop>Bottom;
+        }
+
+        func SetBottom(<value> : Color) : (void)
+        {
+            if ((<prop>Bottom != <value>))
+            {
+                (<prop>Bottom = <value>);
+                BottomChanged();
+            }
+        }
+
+        event BottomChanged();
+
+        prop Bottom : Color{GetBottom, SetBottom : BottomChanged}
+
+        @cpp:Private
+        var <prop>Shadow : Color = (cast (Color) "#000000A0");
+
+        func GetShadow() : (Color)
+        {
+            return <prop>Shadow;
+        }
+
+        func SetShadow(<value> : Color) : (void)
+        {
+            if ((<prop>Shadow != <value>))
+            {
+                (<prop>Shadow = <value>);
+                ShadowChanged();
+            }
+        }
+
+        event ShadowChanged();
+
+        prop Shadow : Color{GetShadow, SetShadow : ShadowChanged}
+
+        @cpp:Private
+        var <prop>Thickness : int = 0;
+
+        func GetThickness() : (int)
+        {
+            return <prop>Thickness;
+        }
+
+        func SetThickness(<value> : int) : (void)
+        {
+            if ((<prop>Thickness != <value>))
+            {
+                (<prop>Thickness = <value>);
+                ThicknessChanged();
+            }
+        }
+
+        event ThicknessChanged();
+
+        prop Thickness : int{GetThickness, SetThickness : ThicknessChanged}
+
+        static func Dark() : (ColorDef^)
+        {
+            var def = new (ColorDef^)();
+            (def.Top = (cast (Color) "#9999FF"));
+            (def.Bottom = (cast (Color) "#5555FF"));
+            (def.Thickness = 0);
+            return def;
+        }
+
+        static func Light() : (ColorDef^)
+        {
+            var def = new (ColorDef^)();
+            (def.Top = (cast (Color) "#DDDDFF"));
+            (def.Bottom = (cast (Color) "#9999FF"));
+            (def.Thickness = 0);
+            return def;
+        }
+
+        static func Sink() : (ColorDef^)
+        {
+            var def = new (ColorDef^)();
+            (def.Top = (cast (Color) "#5555FF"));
+            (def.Bottom = (cast (Color) "#0000FF"));
+            (def.Thickness = 10);
+            return def;
+        }
+
+        new ()
+        {
+        }
+    }
+
+    func F(x : double) : (double)
+    {
+        var y = ((x * x) * 2);
+        return y;
+    }
+
+    func G(x : double) : (double)
+    {
+        if ((x < 0.5))
+        {
+            return F(x);
+        }
+        else
+        {
+            return (1 - F((1 - x)));
+        }
+    }
+}
+
+================================(4/7)================================
+module ribbonscript;
+using presentation::*;
+
+namespace demo
+{
+    class StyleItem
+    {
+        var Name : string = "";
+
+        var Style : DocumentStyle^ = null;
+
+        new (name : string, size : DocumentFontSize?, color : Color?, bold : bool?, italic : bool?, underline : bool?, strikeline : bool?)
+        {
+            (Name = name);
+            (Style = new (DocumentStyle^)());
+            (Style.parentStyleName = "#Context");
+            (Style.styles = new (DocumentStyleProperties^)());
+            (Style.styles.size = size);
+            (Style.styles.color = color);
+            (Style.styles.bold = bold);
+            (Style.styles.italic = italic);
+            (Style.styles.underline = underline);
+            (Style.styles.strikeline = strikeline);
+        }
+    }
+
+    class StyleGroup
+    {
+        var Name : string = "";
+
+        var Items : observe StyleItem^[] = {};
+
+        new ()
+        {
+        }
+    }
+}
+
+================================(5/7)================================
+module <localized-strings>demo::StringResource;
+
+namespace demo
+{
+    interface IStringResourceStrings
+    {
+        func Currency(<ls>0 : ::system::String) : (::system::String);
+
+        func DateFormat(<ls>0 : ::system::DateTime) : (::system::String);
+
+        func Label() : (::system::String);
+
+        func LongDate(<ls>0 : ::system::DateTime) : (::system::String);
+
+        func LongTime(<ls>0 : ::system::DateTime) : (::system::String);
+
+        func Number(<ls>0 : ::system::String) : (::system::String);
+
+        func Sentence(<ls>0 : ::system::String) : (::system::String);
+
+        func ShortDate(<ls>0 : ::system::DateTime) : (::system::String);
+
+        func ShortTime(<ls>0 : ::system::DateTime) : (::system::String);
+
+        func TimeFormat(<ls>0 : ::system::DateTime) : (::system::String);
+
+        func Title() : (::system::String);
+
+        func YearMonthDate(<ls>0 : ::system::DateTime) : (::system::String);
+    }
+}
+
+namespace demo
+{
+    var <ls>StringResource : IStringResourceStrings^[::system::Locale] = {};
+}
+
+namespace demo
+{
+    class StringResource
+    {
+        static func <ls_en-US>BuildStrings(<ls>locale : ::system::Locale) : (::demo::IStringResourceStrings^)
+        {
+            return new (::demo::IStringResourceStrings^)
+            {
+                override func Currency(<ls>0 : ::system::String) : (::system::String)
+                {
+                    var <ls>_0 = ::system::Localization::FormatCurrency(<ls>locale, <ls>0);
+                    return ("Currency: " & <ls>_0);
+                }
+
+                override func DateFormat(<ls>0 : ::system::DateTime) : (::system::String)
+                {
+                    var <ls>_0 = ::system::Localization::FormatDate(<ls>locale, "yyyy", <ls>0);
+                    return ("DateFormat: " & <ls>_0);
+                }
+
+                override func Label() : (::system::String)
+                {
+                    return "Selected Locale:";
+                }
+
+                override func LongDate(<ls>0 : ::system::DateTime) : (::system::String)
+                {
+                    var <ls>_0 = ::system::Localization::FormatDate(<ls>locale, ::presentation::helper_types::LocalizedStrings::FirstOrEmpty(::system::Localization::GetLongDateFormats(<ls>locale)), <ls>0);
+                    return ("LongDate: " & <ls>_0);
+                }
+
+                override func LongTime(<ls>0 : ::system::DateTime) : (::system::String)
+                {
+                    var <ls>_0 = ::system::Localization::FormatTime(<ls>locale, ::presentation::helper_types::LocalizedStrings::FirstOrEmpty(::system::Localization::GetLongTimeFormats(<ls>locale)), <ls>0);
+                    return ("LongTime: " & <ls>_0);
+                }
+
+                override func Number(<ls>0 : ::system::String) : (::system::String)
+                {
+                    var <ls>_0 = ::system::Localization::FormatNumber(<ls>locale, <ls>0);
+                    return ("Number: " & <ls>_0);
+                }
+
+                override func Sentence(<ls>0 : ::system::String) : (::system::String)
+                {
+                    var <ls>_0 = <ls>0;
+                    return (("$Good morning, " & <ls>_0) & "!$");
+                }
+
+                override func ShortDate(<ls>0 : ::system::DateTime) : (::system::String)
+                {
+                    var <ls>_0 = ::system::Localization::FormatDate(<ls>locale, ::presentation::helper_types::LocalizedStrings::FirstOrEmpty(::system::Localization::GetShortDateFormats(<ls>locale)), <ls>0);
+                    return ("ShortDate: " & <ls>_0);
+                }
+
+                override func ShortTime(<ls>0 : ::system::DateTime) : (::system::String)
+                {
+                    var <ls>_0 = ::system::Localization::FormatTime(<ls>locale, ::presentation::helper_types::LocalizedStrings::FirstOrEmpty(::system::Localization::GetShortTimeFormats(<ls>locale)), <ls>0);
+                    return ("ShortTime: " & <ls>_0);
+                }
+
+                override func TimeFormat(<ls>0 : ::system::DateTime) : (::system::String)
+                {
+                    var <ls>_0 = ::system::Localization::FormatTime(<ls>locale, "HH", <ls>0);
+                    return ("TimeFormat: " & <ls>_0);
+                }
+
+                override func Title() : (::system::String)
+                {
+                    return "Localization";
+                }
+
+                override func YearMonthDate(<ls>0 : ::system::DateTime) : (::system::String)
+                {
+                    var <ls>_0 = ::system::Localization::FormatDate(<ls>locale, ::presentation::helper_types::LocalizedStrings::FirstOrEmpty(::system::Localization::GetYearMonthDateFormats(<ls>locale)), <ls>0);
+                    return ("YearMonthDate: " & <ls>_0);
+                }
+            };
+        }
+
+        static func <ls_zh-CN>BuildStrings(<ls>locale : ::system::Locale) : (::demo::IStringResourceStrings^)
+        {
+            return new (::demo::IStringResourceStrings^)
+            {
+                override func Currency(<ls>0 : ::system::String) : (::system::String)
+                {
+                    var <ls>_0 = ::system::Localization::FormatCurrency(<ls>locale, <ls>0);
+                    return ("货币：" & <ls>_0);
+                }
+
+                override func DateFormat(<ls>0 : ::system::DateTime) : (::system::String)
+                {
+                    var <ls>_0 = ::system::Localization::FormatDate(<ls>locale, "yyyy", <ls>0);
+                    return ("日期格式：" & <ls>_0);
+                }
+
+                override func Label() : (::system::String)
+                {
+                    return "语言设置：";
+                }
+
+                override func LongDate(<ls>0 : ::system::DateTime) : (::system::String)
+                {
+                    var <ls>_0 = ::system::Localization::FormatDate(<ls>locale, ::presentation::helper_types::LocalizedStrings::FirstOrEmpty(::system::Localization::GetLongDateFormats(<ls>locale)), <ls>0);
+                    return ("长日期：" & <ls>_0);
+                }
+
+                override func LongTime(<ls>0 : ::system::DateTime) : (::system::String)
+                {
+                    var <ls>_0 = ::system::Localization::FormatTime(<ls>locale, ::presentation::helper_types::LocalizedStrings::FirstOrEmpty(::system::Localization::GetLongTimeFormats(<ls>locale)), <ls>0);
+                    return ("长时间：" & <ls>_0);
+                }
+
+                override func Number(<ls>0 : ::system::String) : (::system::String)
+                {
+                    var <ls>_0 = ::system::Localization::FormatNumber(<ls>locale, <ls>0);
+                    return ("数字：" & <ls>_0);
+                }
+
+                override func Sentence(<ls>0 : ::system::String) : (::system::String)
+                {
+                    var <ls>_0 = <ls>0;
+                    return (("$" & <ls>_0) & "，早上好！$");
+                }
+
+                override func ShortDate(<ls>0 : ::system::DateTime) : (::system::String)
+                {
+                    var <ls>_0 = ::system::Localization::FormatDate(<ls>locale, ::presentation::helper_types::LocalizedStrings::FirstOrEmpty(::system::Localization::GetShortDateFormats(<ls>locale)), <ls>0);
+                    return ("短日期：" & <ls>_0);
+                }
+
+                override func ShortTime(<ls>0 : ::system::DateTime) : (::system::String)
+                {
+                    var <ls>_0 = ::system::Localization::FormatTime(<ls>locale, ::presentation::helper_types::LocalizedStrings::FirstOrEmpty(::system::Localization::GetShortTimeFormats(<ls>locale)), <ls>0);
+                    return ("短时间：" & <ls>_0);
+                }
+
+                override func TimeFormat(<ls>0 : ::system::DateTime) : (::system::String)
+                {
+                    var <ls>_0 = ::system::Localization::FormatTime(<ls>locale, "HH", <ls>0);
+                    return ("时间格式： " & <ls>_0);
+                }
+
+                override func Title() : (::system::String)
+                {
+                    return "本地化";
+                }
+
+                override func YearMonthDate(<ls>0 : ::system::DateTime) : (::system::String)
+                {
+                    var <ls>_0 = ::system::Localization::FormatDate(<ls>locale, ::presentation::helper_types::LocalizedStrings::FirstOrEmpty(::system::Localization::GetYearMonthDateFormats(<ls>locale)), <ls>0);
+                    return ("年月：" & <ls>_0);
+                }
+            };
+        }
+
+        static func Install(<ls>locale : ::system::Locale, <ls>impl : IStringResourceStrings^) : (void)
+        {
+            if (<ls>StringResource.Keys.Contains(<ls>locale))
+            {
+                raise (("Localized strings \"demo::StringResource\" has already registered for locale \"" & <ls>locale) & "\".");
+            }
+            <ls>StringResource.Set(<ls>locale, <ls>impl);
+        }
+
+        static func Get(<ls>locale : ::system::Locale) : (IStringResourceStrings^)
+        {
+            if (<ls>StringResource.Keys.Contains(<ls>locale))
+            {
+                return <ls>StringResource[<ls>locale];
+            }
+            return <ls>StringResource[(cast (::system::Locale) "en-US")];
+        }
+
+        new ()
+        {
+        }
+    }
+}
+
+namespace demo
+{
+    static
+    {
+        ::demo::StringResource::Install((cast (::system::Locale) "en-US"), StringResource::<ls_en-US>BuildStrings((cast (::system::Locale) "en-US")));
+        ::demo::StringResource::Install((cast (::system::Locale) "zh-CN"), StringResource::<ls_zh-CN>BuildStrings((cast (::system::Locale) "zh-CN")));
+    }
+}
+
+================================(6/7)================================
+module refresh_viewmodel;
+using system::*;
+using presentation::*;
+
+namespace demo
+{
+    class RefreshItem
+    {
+        @cpp:Private
+        var <prop>Name : string = "";
+
+        func GetName() : (string)
+        {
+            return <prop>Name;
+        }
+
+        func SetName(<value> : string) : (void)
+        {
+            (<prop>Name = <value>);
+        }
+
+        prop Name : string{GetName, SetName}
+
+        @cpp:Private
+        var <prop>Title : string = "";
+
+        func GetTitle() : (string)
+        {
+            return <prop>Title;
+        }
+
+        func SetTitle(<value> : string) : (void)
+        {
+            (<prop>Title = <value>);
+        }
+
+        prop Title : string{GetTitle, SetTitle}
+
+        @cpp:Private
+        var <prop>Sub1 : string = "One";
+
+        func GetSub1() : (string)
+        {
+            return <prop>Sub1;
+        }
+
+        func SetSub1(<value> : string) : (void)
+        {
+            (<prop>Sub1 = <value>);
+        }
+
+        prop Sub1 : string{GetSub1, SetSub1}
+
+        @cpp:Private
+        var <prop>Sub2 : string = "Two";
+
+        func GetSub2() : (string)
+        {
+            return <prop>Sub2;
+        }
+
+        func SetSub2(<value> : string) : (void)
+        {
+            (<prop>Sub2 = <value>);
+        }
+
+        prop Sub2 : string{GetSub2, SetSub2}
+
+        @cpp:Private
+        var <prop>Sub3 : string = "Three";
+
+        func GetSub3() : (string)
+        {
+            return <prop>Sub3;
+        }
+
+        func SetSub3(<value> : string) : (void)
+        {
+            (<prop>Sub3 = <value>);
+        }
+
+        prop Sub3 : string{GetSub3, SetSub3}
+
+        @cpp:Private
+        var <prop>Selected : bool = false;
+
+        func GetSelected() : (bool)
+        {
+            return <prop>Selected;
+        }
+
+        func SetSelected(<value> : bool) : (void)
+        {
+            (<prop>Selected = <value>);
+        }
+
+        prop Selected : bool{GetSelected, SetSelected}
+
+        @cpp:Private
+        var <prop>LargeImage : GuiImageData^ = null;
+
+        func GetLargeImage() : (GuiImageData^)
+        {
+            return <prop>LargeImage;
+        }
+
+        func SetLargeImage(<value> : GuiImageData^) : (void)
+        {
+            (<prop>LargeImage = <value>);
+        }
+
+        prop LargeImage : GuiImageData^{GetLargeImage, SetLargeImage}
+
+        @cpp:Private
+        var <prop>SmallImage : GuiImageData^ = null;
+
+        func GetSmallImage() : (GuiImageData^)
+        {
+            return <prop>SmallImage;
+        }
+
+        func SetSmallImage(<value> : GuiImageData^) : (void)
+        {
+            (<prop>SmallImage = <value>);
+        }
+
+        prop SmallImage : GuiImageData^{GetSmallImage, SetSmallImage}
+
+        @cpp:Private
+        var <prop>Children : observe RefreshItem^[] = {};
+
+        func GetChildren() : (observe RefreshItem^[])
+        {
+            return <prop>Children;
+        }
+
+        @cpp:Protected
+        func SetChildren(<value> : observe RefreshItem^[]) : (void)
+        {
+            (<prop>Children = <value>);
+        }
+
+        prop Children : observe RefreshItem^[]{GetChildren}
+
+        @cpp:Private
+        var <prop>DoNotUse : object = null;
+
+        func GetDoNotUse() : (object)
+        {
+            return <prop>DoNotUse;
+        }
+
+        func SetDoNotUse(<value> : object) : (void)
+        {
+            (<prop>DoNotUse = <value>);
+        }
+
+        prop DoNotUse : object{GetDoNotUse, SetDoNotUse}
+
+        new (name : string, title : string)
+        {
+            (Name = name);
+            (Title = title);
+        }
+
+        new (name : string, title : string, children : RefreshItem^{})
+        {
+            (Name = name);
+            (Title = title);
+            {
+                var <for-enumerable>child = children of (::system::Enumerable^);
+                var <for-enumerator>child = <for-enumerable>child.CreateEnumerator();
+                while (<for-enumerator>child.Next())
+                {
+                    var child = (cast (::demo::RefreshItem^) <for-enumerator>child.GetCurrent());
+                    {
+                        Children.Add(child);
+                    }
+                }
+            }
+        }
+    }
+}
+
+================================(7/7)================================
+module fontHelper;
+using presentation::*;
+
+func ChangeFontSize(oldFont : FontProperties, deltaSize : int) : (FontProperties)
+{
+    return {fontFamily : oldFont.fontFamily; size : (oldFont.size + deltaSize); antialias : true;};
+}
+

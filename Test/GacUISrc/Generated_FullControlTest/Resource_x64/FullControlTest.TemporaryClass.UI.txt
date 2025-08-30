@@ -1,0 +1,3887 @@
+﻿================================(1/61)================================
+module <instance>demo::DataGridTabPage;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace demo
+{
+    class DataGridTabPage : ::presentation::controls::GuiTabPage
+    {
+        var tempData : observe MyDataItem^[] = null;
+
+        new* ()
+            :::presentation::controls::GuiTabPage((cast (::presentation::theme::ThemeName) (cast (::system::UInt64) 0)))
+        {
+            raise "Not Implemented";
+        }
+
+        delete
+        {
+            FinalizeInstanceRecursively(this of (::presentation::controls::GuiCustomControl*));
+        }
+    }
+}
+
+================================(2/61)================================
+module <instance>demo::ElementTabPage;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace demo
+{
+    class ElementTabPage : ::presentation::controls::GuiTabPage
+    {
+        new* ()
+            :::presentation::controls::GuiTabPage((cast (::presentation::theme::ThemeName) (cast (::system::UInt64) 0)))
+        {
+            raise "Not Implemented";
+        }
+
+        delete
+        {
+            FinalizeInstanceRecursively(this of (::presentation::controls::GuiCustomControl*));
+        }
+    }
+}
+
+================================(3/61)================================
+module <instance>demo::ListViewTabPage;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace demo
+{
+    class ListViewTabPage : ::presentation::controls::GuiTabPage
+    {
+        var itemsToBind : observe ListViewItem^[] = {};
+
+        new* ()
+            :::presentation::controls::GuiTabPage((cast (::presentation::theme::ThemeName) (cast (::system::UInt64) 0)))
+        {
+            raise "Not Implemented";
+        }
+
+        delete
+        {
+            FinalizeInstanceRecursively(this of (::presentation::controls::GuiCustomControl*));
+        }
+    }
+}
+
+================================(4/61)================================
+module <instance>demo::MainWindow;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace demo
+{
+    @cpp:File("MainWindow")
+    class MainWindow : ::presentation::controls::GuiWindow
+    {
+        var openedSubWindows : GuiWindow^[] = {};
+
+        new* ()
+            :::presentation::controls::GuiWindow((cast (::presentation::theme::ThemeName) (cast (::system::UInt64) 0)))
+        {
+            raise "Not Implemented";
+        }
+
+        delete
+        {
+            FinalizeInstanceRecursively(this of (::presentation::controls::GuiControlHost*));
+        }
+    }
+}
+
+================================(5/61)================================
+module <instance>demo::RepeatTabPage;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace demo
+{
+    class RepeatTabPage : ::presentation::controls::GuiTabPage
+    {
+        new* ()
+            :::presentation::controls::GuiTabPage((cast (::presentation::theme::ThemeName) (cast (::system::UInt64) 0)))
+        {
+            raise "Not Implemented";
+        }
+
+        delete
+        {
+            FinalizeInstanceRecursively(this of (::presentation::controls::GuiCustomControl*));
+        }
+    }
+}
+
+================================(6/61)================================
+module <instance>demo::SubWindow;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace demo
+{
+    class SubWindow : ::presentation::controls::GuiWindow
+    {
+        var openedSubWindows : GuiWindow^[] = {};
+
+        new* ()
+            :::presentation::controls::GuiWindow((cast (::presentation::theme::ThemeName) (cast (::system::UInt64) 0)))
+        {
+            raise "Not Implemented";
+        }
+
+        delete
+        {
+            FinalizeInstanceRecursively(this of (::presentation::controls::GuiControlHost*));
+        }
+    }
+}
+
+================================(7/61)================================
+module <instance>demo::TextListTabPage;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace demo
+{
+    class TextListTabPage : ::presentation::controls::GuiTabPage
+    {
+        var counter : int = 0;
+
+        var itemsToBind : observe MyTextItem^[] = {};
+
+        new* ()
+            :::presentation::controls::GuiTabPage((cast (::presentation::theme::ThemeName) (cast (::system::UInt64) 0)))
+        {
+            raise "Not Implemented";
+        }
+
+        delete
+        {
+            FinalizeInstanceRecursively(this of (::presentation::controls::GuiCustomControl*));
+        }
+    }
+}
+
+================================(8/61)================================
+module <instance>demo::TreeViewTabPage;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace demo
+{
+    class TreeViewTabPage : ::presentation::controls::GuiTabPage
+    {
+        var nodesToBind : MemoryNodeProvider^ = null;
+
+        new* ()
+            :::presentation::controls::GuiTabPage((cast (::presentation::theme::ThemeName) (cast (::system::UInt64) 0)))
+        {
+            raise "Not Implemented";
+        }
+
+        delete
+        {
+            FinalizeInstanceRecursively(this of (::presentation::controls::GuiCustomControl*));
+        }
+    }
+}
+
+================================(9/61)================================
+module <instance>demo::AnimationTabPage;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace demo
+{
+    class AnimationTabPage : ::presentation::controls::GuiTabPage
+    {
+        @cpp:Private
+        static func BallAnimation(container : GuiBoundsComposition*, ball : GuiBoundsComposition*) : (IGuiAnimation^)
+        {
+            raise "Not Implemented";
+        }
+
+        @cpp:Private
+        static func BallAnimationWithDelay(container : GuiBoundsComposition*, ball : GuiBoundsComposition*, delay : int) : (IGuiAnimation^)
+        {
+            raise "Not Implemented";
+        }
+
+        @cpp:Private
+        static func WaitingAnimation(container : GuiBoundsComposition*) : (IGuiAnimation^)
+        {
+            raise "Not Implemented";
+        }
+
+        @cpp:Private
+        var gradientColorDef : ColorAnimation^ = new (ColorAnimation^)(ColorDef::Dark());
+
+        @cpp:Private
+        var lastGradientAnimation : IGuiAnimation^ = null;
+
+        func PerformGradientAnimation(target : ColorDef^) : (void)
+        {
+            raise "Not Implemented";
+        }
+
+        var counter : int = 0;
+
+        new* ()
+            :::presentation::controls::GuiTabPage((cast (::presentation::theme::ThemeName) (cast (::system::UInt64) 0)))
+        {
+            raise "Not Implemented";
+        }
+
+        delete
+        {
+            FinalizeInstanceRecursively(this of (::presentation::controls::GuiCustomControl*));
+        }
+    }
+}
+
+================================(10/61)================================
+module <animation>demo::ColorAnimation;
+
+namespace demo
+{
+    class ColorAnimation
+    {
+        @cpp:Private
+        var <prop>Begin : ::demo::ColorDef^ = null of (::demo::ColorDef^);
+
+        func GetBegin() : (::demo::ColorDef^)
+        {
+            return <prop>Begin;
+        }
+
+        func SetBegin(<value> : ::demo::ColorDef^) : (void)
+        {
+            if ((<prop>Begin != <value>))
+            {
+                (<prop>Begin = <value>);
+                BeginChanged();
+            }
+        }
+
+        event BeginChanged();
+
+        prop Begin : ::demo::ColorDef^{GetBegin, SetBegin : BeginChanged}
+
+        @cpp:Private
+        var <prop>End : ::demo::ColorDef^ = null of (::demo::ColorDef^);
+
+        func GetEnd() : (::demo::ColorDef^)
+        {
+            return <prop>End;
+        }
+
+        func SetEnd(<value> : ::demo::ColorDef^) : (void)
+        {
+            if ((<prop>End != <value>))
+            {
+                (<prop>End = <value>);
+                EndChanged();
+            }
+        }
+
+        event EndChanged();
+
+        prop End : ::demo::ColorDef^{GetEnd, SetEnd : EndChanged}
+
+        @cpp:Private
+        var <prop>Current : ::demo::ColorDef^ = null of (::demo::ColorDef^);
+
+        func GetCurrent() : (::demo::ColorDef^)
+        {
+            return <prop>Current;
+        }
+
+        func SetCurrent(<value> : ::demo::ColorDef^) : (void)
+        {
+            if ((<prop>Current != <value>))
+            {
+                (<prop>Current = <value>);
+                CurrentChanged();
+            }
+        }
+
+        event CurrentChanged();
+
+        prop Current : ::demo::ColorDef^{GetCurrent, SetCurrent : CurrentChanged}
+
+        @cpp:Private
+        var <ani-int> : (func (::system::Double) : (::system::Double)) = [$1];
+
+        @cpp:Private
+        var <ani-int>Thickness : (func (::system::Double) : (::system::Double)) = [$1];
+
+        func GetTimeScale(<ani>begin : ::demo::ColorDef^, <ani>end : ::demo::ColorDef^, <ani>current : ::demo::ColorDef^) : (::system::Double)
+        {
+            raise "Not Implemented";
+        }
+
+        func Interpolate(<ani>begin : ::demo::ColorDef^, <ani>end : ::demo::ColorDef^, <ani>current : ::demo::ColorDef^, <ani>ratio : ::system::Double) : (::system::Void)
+        {
+            raise "Not Implemented";
+        }
+
+        func Interpolate(<ani>ratio : ::system::Double) : (::system::Void)
+        {
+            raise "Not Implemented";
+        }
+
+        func CreateAnimation(<ani>target : ::demo::ColorDef^, <ani>time : ::system::UInt64) : (::presentation::controls::IGuiAnimation^)
+        {
+            raise "Not Implemented";
+        }
+
+        new (<ani>current : ::demo::ColorDef^)
+        {
+            raise "Not Implemented";
+        }
+    }
+}
+
+================================(11/61)================================
+module <instance>demo::DateEditor;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace demo
+{
+    class DateEditor : ::presentation::templates::GuiGridEditorTemplate
+    {
+        new* ()
+        {
+            raise "Not Implemented";
+        }
+
+        delete
+        {
+            FinalizeInstanceRecursively(this of (::presentation::templates::GuiTemplate*));
+        }
+    }
+}
+
+================================(12/61)================================
+module <instance>demo::DateFilter;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace demo
+{
+    class DateFilter : ::presentation::controls::GuiCustomControl
+    {
+        @cpp:Private
+        var callback : IDataProcessorCallback* = null;
+
+        @cpp:Private
+        func UpdateFilter() : (void)
+        {
+            raise "Not Implemented";
+        }
+
+        @cpp:Private
+        var <prop>Filter : IDataFilter^ = null;
+
+        func GetFilter() : (IDataFilter^)
+        {
+            return <prop>Filter;
+        }
+
+        @cpp:Protected
+        func SetFilter(<value> : IDataFilter^) : (void)
+        {
+            (<prop>Filter = <value>);
+        }
+
+        prop Filter : IDataFilter^{GetFilter}
+
+        new* ()
+            :::presentation::controls::GuiCustomControl((cast (::presentation::theme::ThemeName) (cast (::system::UInt64) 0)))
+        {
+            raise "Not Implemented";
+        }
+
+        delete
+        {
+            FinalizeInstanceRecursively(this of (::presentation::controls::GuiCustomControl*));
+        }
+    }
+}
+
+================================(13/61)================================
+module <instance>demo::TextEditor;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace demo
+{
+    class TextEditor : ::presentation::templates::GuiGridEditorTemplate
+    {
+        new* ()
+        {
+            raise "Not Implemented";
+        }
+
+        delete
+        {
+            FinalizeInstanceRecursively(this of (::presentation::templates::GuiTemplate*));
+        }
+    }
+}
+
+================================(14/61)================================
+module <instance>demo::CategoryDisplayer;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace demo
+{
+    class CategoryDisplayer : ::presentation::controls::GuiCustomControl
+    {
+        @cpp:Private
+        var <prop>Category : MyCategory = Black;
+
+        func GetCategory() : (MyCategory)
+        {
+            return <prop>Category;
+        }
+
+        func SetCategory(<value> : MyCategory) : (void)
+        {
+            if ((<prop>Category != <value>))
+            {
+                (<prop>Category = <value>);
+                CategoryChanged();
+            }
+        }
+
+        event CategoryChanged();
+
+        prop Category : MyCategory{GetCategory, SetCategory : CategoryChanged}
+
+        new* ()
+            :::presentation::controls::GuiCustomControl((cast (::presentation::theme::ThemeName) (cast (::system::UInt64) 0)))
+        {
+            raise "Not Implemented";
+        }
+
+        delete
+        {
+            FinalizeInstanceRecursively(this of (::presentation::controls::GuiCustomControl*));
+        }
+    }
+}
+
+================================(15/61)================================
+module <instance>demo::CategoryEditor;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace demo
+{
+    class CategoryEditor : ::presentation::templates::GuiGridEditorTemplate
+    {
+        var items : MyCategory[] = {Black of (MyCategory); Red of (MyCategory); Lime of (MyCategory); Blue of (MyCategory); White of (MyCategory);};
+
+        new* ()
+        {
+            raise "Not Implemented";
+        }
+
+        delete
+        {
+            FinalizeInstanceRecursively(this of (::presentation::templates::GuiTemplate*));
+        }
+    }
+}
+
+================================(16/61)================================
+module <instance>demo::CategoryItemTemplate;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace demo
+{
+    class CategoryItemTemplate : ::presentation::templates::GuiTextListItemTemplate
+    {
+        func GetSelectedCategory() : (demo::MyCategory)
+        {
+            raise "Not Implemented";
+        }
+
+        prop SelectedCategory : demo::MyCategory{GetSelectedCategory}
+
+        new* (<ctor-parameter>SelectedCategory : demo::MyCategory)
+        {
+            raise "Not Implemented";
+        }
+
+        delete
+        {
+            FinalizeInstanceRecursively(this of (::presentation::templates::GuiTemplate*));
+        }
+    }
+}
+
+================================(17/61)================================
+module <instance>demo::CategoryVisualizer;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace demo
+{
+    class CategoryVisualizer : ::presentation::templates::GuiGridVisualizerTemplate
+    {
+        new* ()
+        {
+            raise "Not Implemented";
+        }
+
+        delete
+        {
+            FinalizeInstanceRecursively(this of (::presentation::templates::GuiTemplate*));
+        }
+    }
+}
+
+================================(18/61)================================
+module <instance>demo::GenderDisplayer;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace demo
+{
+    class GenderDisplayer : ::presentation::controls::GuiCustomControl
+    {
+        @cpp:Private
+        var <prop>Gender : MyGender = Male;
+
+        func GetGender() : (MyGender)
+        {
+            return <prop>Gender;
+        }
+
+        func SetGender(<value> : MyGender) : (void)
+        {
+            if ((<prop>Gender != <value>))
+            {
+                (<prop>Gender = <value>);
+                GenderChanged();
+            }
+        }
+
+        event GenderChanged();
+
+        prop Gender : MyGender{GetGender, SetGender : GenderChanged}
+
+        new* ()
+            :::presentation::controls::GuiCustomControl((cast (::presentation::theme::ThemeName) (cast (::system::UInt64) 0)))
+        {
+            raise "Not Implemented";
+        }
+
+        delete
+        {
+            FinalizeInstanceRecursively(this of (::presentation::controls::GuiCustomControl*));
+        }
+    }
+}
+
+================================(19/61)================================
+module <instance>demo::GenderEditor;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace demo
+{
+    class GenderEditor : ::presentation::templates::GuiGridEditorTemplate
+    {
+        var items : MyGender[] = {Male of (MyGender); Female of (MyGender);};
+
+        new* ()
+        {
+            raise "Not Implemented";
+        }
+
+        delete
+        {
+            FinalizeInstanceRecursively(this of (::presentation::templates::GuiTemplate*));
+        }
+    }
+}
+
+================================(20/61)================================
+module <instance>demo::GenderItemTemplate;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace demo
+{
+    class GenderItemTemplate : ::presentation::templates::GuiTextListItemTemplate
+    {
+        func GetSelectedGender() : (demo::MyGender)
+        {
+            raise "Not Implemented";
+        }
+
+        prop SelectedGender : demo::MyGender{GetSelectedGender}
+
+        new* (<ctor-parameter>SelectedGender : demo::MyGender)
+        {
+            raise "Not Implemented";
+        }
+
+        delete
+        {
+            FinalizeInstanceRecursively(this of (::presentation::templates::GuiTemplate*));
+        }
+    }
+}
+
+================================(21/61)================================
+module <instance>demo::GenderVisualizer;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace demo
+{
+    class GenderVisualizer : ::presentation::templates::GuiGridVisualizerTemplate
+    {
+        new* ()
+        {
+            raise "Not Implemented";
+        }
+
+        delete
+        {
+            FinalizeInstanceRecursively(this of (::presentation::templates::GuiTemplate*));
+        }
+    }
+}
+
+================================(22/61)================================
+module <instance>demo::DatePickerTabPage;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace demo
+{
+    class DatePickerTabPage : ::presentation::controls::GuiTabPage
+    {
+        new* ()
+            :::presentation::controls::GuiTabPage((cast (::presentation::theme::ThemeName) (cast (::system::UInt64) 0)))
+        {
+            raise "Not Implemented";
+        }
+
+        delete
+        {
+            FinalizeInstanceRecursively(this of (::presentation::controls::GuiCustomControl*));
+        }
+    }
+}
+
+================================(23/61)================================
+module <instance>demo::HyperlinkWindow;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace demo
+{
+    class HyperlinkWindow : ::presentation::controls::GuiWindow
+    {
+        @cpp:Private
+        var <prop>Url : string? = null;
+
+        func GetUrl() : (string?)
+        {
+            return <prop>Url;
+        }
+
+        func SetUrl(<value> : string?) : (void)
+        {
+            if ((<prop>Url != <value>))
+            {
+                (<prop>Url = <value>);
+                UrlChanged();
+            }
+        }
+
+        event UrlChanged();
+
+        prop Url : string?{GetUrl, SetUrl : UrlChanged}
+
+        new* ()
+            :::presentation::controls::GuiWindow((cast (::presentation::theme::ThemeName) (cast (::system::UInt64) 0)))
+        {
+            raise "Not Implemented";
+        }
+
+        delete
+        {
+            FinalizeInstanceRecursively(this of (::presentation::controls::GuiControlHost*));
+        }
+    }
+}
+
+================================(24/61)================================
+module <instance>demo::DocumentEditorBase;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace demo
+{
+    @cpp:File("DocumentEditorBase")
+    class DocumentEditorBase : ::presentation::controls::GuiCustomControl
+    {
+        @cpp:Protected
+        @cpp:Private
+        var <prop>EditModeCommand : ToolstripCommand* = null;
+
+        func GetEditModeCommand() : (ToolstripCommand*)
+        {
+            return <prop>EditModeCommand;
+        }
+
+        @cpp:Protected
+        func SetEditModeCommand(<value> : ToolstripCommand*) : (void)
+        {
+            if ((<prop>EditModeCommand != <value>))
+            {
+                (<prop>EditModeCommand = <value>);
+                EditModeCommandChanged();
+            }
+        }
+
+        event EditModeCommandChanged();
+
+        prop EditModeCommand : ToolstripCommand*{GetEditModeCommand : EditModeCommandChanged}
+
+        @cpp:Private
+        func SetEditMode(editMode : DocumentCommonInterface::EditMode) : (void)
+        {
+            raise "Not Implemented";
+        }
+
+        @cpp:Protected
+        func SelectAlignmentCommand() : (ToolstripCommand*)
+        {
+            raise "Not Implemented";
+        }
+
+        @cpp:Private
+        func SetAlignment(alignment : Alignment?) : (void)
+        {
+            raise "Not Implemented";
+        }
+
+        @cpp:Private
+        @cpp:Private
+        var <prop>HasEditableSelection : bool = false;
+
+        func GetHasEditableSelection() : (bool)
+        {
+            return <prop>HasEditableSelection;
+        }
+
+        func SetHasEditableSelection(<value> : bool) : (void)
+        {
+            if ((<prop>HasEditableSelection != <value>))
+            {
+                (<prop>HasEditableSelection = <value>);
+                HasEditableSelectionChanged();
+            }
+        }
+
+        event HasEditableSelectionChanged();
+
+        prop HasEditableSelection : bool{GetHasEditableSelection, SetHasEditableSelection : HasEditableSelectionChanged}
+
+        @cpp:Private
+        @cpp:Private
+        var <prop>HasEditableSelectionInSingleParagraph : bool = false;
+
+        func GetHasEditableSelectionInSingleParagraph() : (bool)
+        {
+            return <prop>HasEditableSelectionInSingleParagraph;
+        }
+
+        func SetHasEditableSelectionInSingleParagraph(<value> : bool) : (void)
+        {
+            if ((<prop>HasEditableSelectionInSingleParagraph != <value>))
+            {
+                (<prop>HasEditableSelectionInSingleParagraph = <value>);
+                HasEditableSelectionInSingleParagraphChanged();
+            }
+        }
+
+        event HasEditableSelectionInSingleParagraphChanged();
+
+        prop HasEditableSelectionInSingleParagraph : bool{GetHasEditableSelectionInSingleParagraph, SetHasEditableSelectionInSingleParagraph : HasEditableSelectionInSingleParagraphChanged}
+
+        @cpp:Private
+        func HasEditableCursor() : (bool)
+        {
+            raise "Not Implemented";
+        }
+
+        @cpp:Private
+        func HasEditableHyperlink(forEdit : bool) : (bool)
+        {
+            raise "Not Implemented";
+        }
+
+        @cpp:Protected
+        func GetMenuContainer() : (GraphicsComposition*)
+        {
+            raise "Not Implemented";
+        }
+
+        @cpp:Protected
+        func GetToolstripContainer() : (GraphicsComposition*)
+        {
+            raise "Not Implemented";
+        }
+
+        @cpp:UserImpl
+        func LoadAsPrivateFormat(fileName : string) : (void)
+        {
+            raise "Not Implemented";
+        }
+
+        @cpp:UserImpl
+        func SaveAsPrivateFormat(fileName : string) : (void)
+        {
+            raise "Not Implemented";
+        }
+
+        @cpp:UserImpl
+        func SaveAsRTF(fileName : string) : (void)
+        {
+            raise "Not Implemented";
+        }
+
+        @cpp:UserImpl
+        func SaveAsHTML(fileName : string) : (void)
+        {
+            raise "Not Implemented";
+        }
+
+        @cpp:Private
+        func SaveDocument() : (void)
+        {
+            raise "Not Implemented";
+        }
+
+        func CancelWindowClose() : (bool)
+        {
+            raise "Not Implemented";
+        }
+
+        prop MenuContainer : GraphicsComposition*{GetMenuContainer}
+
+        prop ToolstripContainer : GraphicsComposition*{GetToolstripContainer}
+
+        new* ()
+            :::presentation::controls::GuiCustomControl((cast (::presentation::theme::ThemeName) (cast (::system::UInt64) 0)))
+        {
+            raise "Not Implemented";
+        }
+
+        delete
+        {
+            FinalizeInstanceRecursively(this of (::presentation::controls::GuiCustomControl*));
+        }
+    }
+}
+
+================================(25/61)================================
+module <instance>demo::DocumentEditorRibbon;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace demo
+{
+    class DocumentEditorRibbon : ::demo::DocumentEditorBase
+    {
+        @cpp:Private
+        @cpp:Private
+        var <prop>AlignLeftSelected : bool = true;
+
+        func GetAlignLeftSelected() : (bool)
+        {
+            return <prop>AlignLeftSelected;
+        }
+
+        func SetAlignLeftSelected(<value> : bool) : (void)
+        {
+            if ((<prop>AlignLeftSelected != <value>))
+            {
+                (<prop>AlignLeftSelected = <value>);
+                AlignLeftSelectedChanged();
+            }
+        }
+
+        event AlignLeftSelectedChanged();
+
+        prop AlignLeftSelected : bool{GetAlignLeftSelected, SetAlignLeftSelected : AlignLeftSelectedChanged}
+
+        @cpp:Private
+        @cpp:Private
+        var <prop>AlignCenterSelected : bool = true;
+
+        func GetAlignCenterSelected() : (bool)
+        {
+            return <prop>AlignCenterSelected;
+        }
+
+        func SetAlignCenterSelected(<value> : bool) : (void)
+        {
+            if ((<prop>AlignCenterSelected != <value>))
+            {
+                (<prop>AlignCenterSelected = <value>);
+                AlignCenterSelectedChanged();
+            }
+        }
+
+        event AlignCenterSelectedChanged();
+
+        prop AlignCenterSelected : bool{GetAlignCenterSelected, SetAlignCenterSelected : AlignCenterSelectedChanged}
+
+        @cpp:Private
+        @cpp:Private
+        var <prop>AlignRightSelected : bool = true;
+
+        func GetAlignRightSelected() : (bool)
+        {
+            return <prop>AlignRightSelected;
+        }
+
+        func SetAlignRightSelected(<value> : bool) : (void)
+        {
+            if ((<prop>AlignRightSelected != <value>))
+            {
+                (<prop>AlignRightSelected = <value>);
+                AlignRightSelectedChanged();
+            }
+        }
+
+        event AlignRightSelectedChanged();
+
+        prop AlignRightSelected : bool{GetAlignRightSelected, SetAlignRightSelected : AlignRightSelectedChanged}
+
+        @cpp:Private
+        @cpp:Private
+        var <prop>StyleGroups : demo::StyleGroup^[] = null;
+
+        func GetStyleGroups() : (demo::StyleGroup^[])
+        {
+            return <prop>StyleGroups;
+        }
+
+        func SetStyleGroups(<value> : demo::StyleGroup^[]) : (void)
+        {
+            if ((<prop>StyleGroups != <value>))
+            {
+                (<prop>StyleGroups = <value>);
+                StyleGroupsChanged();
+            }
+        }
+
+        event StyleGroupsChanged();
+
+        prop StyleGroups : demo::StyleGroup^[]{GetStyleGroups, SetStyleGroups : StyleGroupsChanged}
+
+        @cpp:Private
+        func GenerateStyleGroups() : (demo::StyleGroup^[])
+        {
+            raise "Not Implemented";
+        }
+
+        @cpp:Private
+        func SelectStyleName(styleName : string?) : (void)
+        {
+            raise "Not Implemented";
+        }
+
+        new* ()
+        {
+            raise "Not Implemented";
+        }
+
+        delete
+        {
+            FinalizeInstanceRecursively(this of (::presentation::controls::GuiCustomControl*));
+        }
+    }
+}
+
+================================(26/61)================================
+module <instance>demo::StyleItemTemplate;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace demo
+{
+    class StyleItemTemplate : ::presentation::templates::GuiTextListItemTemplate
+    {
+        func GetViewModel() : (demo::StyleItem^)
+        {
+            raise "Not Implemented";
+        }
+
+        prop ViewModel : demo::StyleItem^{GetViewModel}
+
+        new* (<ctor-parameter>ViewModel : demo::StyleItem^)
+        {
+            raise "Not Implemented";
+        }
+
+        delete
+        {
+            FinalizeInstanceRecursively(this of (::presentation::templates::GuiTemplate*));
+        }
+    }
+}
+
+================================(27/61)================================
+module <instance>demo::DocumentEditorToolstrip;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace demo
+{
+    class DocumentEditorToolstrip : ::demo::DocumentEditorBase
+    {
+        new* ()
+        {
+            raise "Not Implemented";
+        }
+
+        delete
+        {
+            FinalizeInstanceRecursively(this of (::presentation::controls::GuiCustomControl*));
+        }
+    }
+}
+
+================================(28/61)================================
+module <instance>demo::LocaleSelector;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace demo
+{
+    class LocaleSelector : ::presentation::controls::GuiCustomControl
+    {
+        func GetLocaleIndex(locale : Locale) : (int)
+        {
+            raise "Not Implemented";
+        }
+
+        new* ()
+            :::presentation::controls::GuiCustomControl((cast (::presentation::theme::ThemeName) (cast (::system::UInt64) 0)))
+        {
+            raise "Not Implemented";
+        }
+
+        delete
+        {
+            FinalizeInstanceRecursively(this of (::presentation::controls::GuiCustomControl*));
+        }
+    }
+}
+
+================================(29/61)================================
+module <instance>demo::LocalizedColorDialogTabPage;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace demo
+{
+    class LocalizedColorDialogTabPage : ::presentation::controls::GuiTabPage
+    {
+        new* ()
+            :::presentation::controls::GuiTabPage((cast (::presentation::theme::ThemeName) (cast (::system::UInt64) 0)))
+        {
+            raise "Not Implemented";
+        }
+
+        delete
+        {
+            FinalizeInstanceRecursively(this of (::presentation::controls::GuiCustomControl*));
+        }
+    }
+}
+
+================================(30/61)================================
+module <instance>demo::LocalizedDialogsTabPage;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace demo
+{
+    class LocalizedDialogsTabPage : ::presentation::controls::GuiTabPage
+    {
+        new* ()
+            :::presentation::controls::GuiTabPage((cast (::presentation::theme::ThemeName) (cast (::system::UInt64) 0)))
+        {
+            raise "Not Implemented";
+        }
+
+        delete
+        {
+            FinalizeInstanceRecursively(this of (::presentation::controls::GuiCustomControl*));
+        }
+    }
+}
+
+================================(31/61)================================
+module <instance>demo::LocalizedFileDialogTabPage;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace demo
+{
+    class LocalizedFileDialogTabPage : ::presentation::controls::GuiTabPage
+    {
+        func SetDialogProperties(dialog : GuiFileDialogBase*) : (void)
+        {
+            raise "Not Implemented";
+        }
+
+        new* ()
+            :::presentation::controls::GuiTabPage((cast (::presentation::theme::ThemeName) (cast (::system::UInt64) 0)))
+        {
+            raise "Not Implemented";
+        }
+
+        delete
+        {
+            FinalizeInstanceRecursively(this of (::presentation::controls::GuiCustomControl*));
+        }
+    }
+}
+
+================================(32/61)================================
+module <instance>demo::LocalizedFontDialogTabPage;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace demo
+{
+    class LocalizedFontDialogTabPage : ::presentation::controls::GuiTabPage
+    {
+        new* ()
+            :::presentation::controls::GuiTabPage((cast (::presentation::theme::ThemeName) (cast (::system::UInt64) 0)))
+        {
+            raise "Not Implemented";
+        }
+
+        delete
+        {
+            FinalizeInstanceRecursively(this of (::presentation::controls::GuiCustomControl*));
+        }
+    }
+}
+
+================================(33/61)================================
+module <instance>demo::LocalizedMessageDialogTabPage;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace demo
+{
+    class LocalizedMessageDialogTabPage : ::presentation::controls::GuiTabPage
+    {
+        var inputValues : INativeDialogService::MessageBoxButtonsInput[] = {INativeDialogService::MessageBoxButtonsInput::DisplayOK; INativeDialogService::MessageBoxButtonsInput::DisplayOKCancel; INativeDialogService::MessageBoxButtonsInput::DisplayYesNo; INativeDialogService::MessageBoxButtonsInput::DisplayYesNoCancel; INativeDialogService::MessageBoxButtonsInput::DisplayRetryCancel; INativeDialogService::MessageBoxButtonsInput::DisplayAbortRetryIgnore; INativeDialogService::MessageBoxButtonsInput::DisplayCancelTryAgainContinue;};
+
+        var inputTexts : string[] = {"DisplayOK"; "DisplayOKCancel"; "DisplayYesNo"; "DisplayYesNoCancel"; "DisplayRetryCancel"; "DisplayAbortRetryIgnore"; "DisplayCancelTryAgainContinue";};
+
+        var defaultButtonValues : INativeDialogService::MessageBoxDefaultButton[] = {INativeDialogService::MessageBoxDefaultButton::DefaultFirst; INativeDialogService::MessageBoxDefaultButton::DefaultSecond; INativeDialogService::MessageBoxDefaultButton::DefaultThird;};
+
+        var defaultButtonTexts : string[] = {"DefaultFirst"; "DefaultSecond"; "DefaultThird";};
+
+        var iconValues : INativeDialogService::MessageBoxIcons[] = {INativeDialogService::MessageBoxIcons::IconNone; INativeDialogService::MessageBoxIcons::IconError; INativeDialogService::MessageBoxIcons::IconQuestion; INativeDialogService::MessageBoxIcons::IconWarning; INativeDialogService::MessageBoxIcons::IconInformation;};
+
+        var iconTexts : string[] = {"IconNone"; "IconError"; "IconQuestion"; "IconWarning"; "IconInformation";};
+
+        var outputValues : INativeDialogService::MessageBoxButtonsOutput[] = {INativeDialogService::MessageBoxButtonsOutput::SelectOK; INativeDialogService::MessageBoxButtonsOutput::SelectCancel; INativeDialogService::MessageBoxButtonsOutput::SelectYes; INativeDialogService::MessageBoxButtonsOutput::SelectNo; INativeDialogService::MessageBoxButtonsOutput::SelectRetry; INativeDialogService::MessageBoxButtonsOutput::SelectAbort; INativeDialogService::MessageBoxButtonsOutput::SelectIgnore; INativeDialogService::MessageBoxButtonsOutput::SelectTryAgain; INativeDialogService::MessageBoxButtonsOutput::SelectContinue;};
+
+        var outputTexts : string[] = {"SelectOK"; "SelectCancel"; "SelectYes"; "SelectNo"; "SelectRetry"; "SelectAbort"; "SelectIgnore"; "SelectTryAgain"; "SelectContinue";};
+
+        new* ()
+            :::presentation::controls::GuiTabPage((cast (::presentation::theme::ThemeName) (cast (::system::UInt64) 0)))
+        {
+            raise "Not Implemented";
+        }
+
+        delete
+        {
+            FinalizeInstanceRecursively(this of (::presentation::controls::GuiCustomControl*));
+        }
+    }
+}
+
+================================(34/61)================================
+module <instance>demo::LocalizedStringsTabPage;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace demo
+{
+    class LocalizedStringsTabPage : ::presentation::controls::GuiTabPage
+    {
+        var dateTime : DateTime = Sys::GetLocalTime();
+
+        var number : int = 2147483647;
+
+        var currency : double = 1342177.28;
+
+        @cpp:Private
+        var <prop>Strings : ::demo::IStringResourceStrings^ = ::demo::StringResource::Get((cast (::system::Locale) "en-US"));
+
+        func GetStrings() : (::demo::IStringResourceStrings^)
+        {
+            return <prop>Strings;
+        }
+
+        func SetStrings(<value> : ::demo::IStringResourceStrings^) : (void)
+        {
+            if ((<prop>Strings != <value>))
+            {
+                (<prop>Strings = <value>);
+                StringsChanged();
+            }
+        }
+
+        event StringsChanged();
+
+        prop Strings : ::demo::IStringResourceStrings^{GetStrings, SetStrings : StringsChanged}
+
+        new* ()
+            :::presentation::controls::GuiTabPage((cast (::presentation::theme::ThemeName) (cast (::system::UInt64) 0)))
+        {
+            raise "Not Implemented";
+        }
+
+        delete
+        {
+            FinalizeInstanceRecursively(this of (::presentation::controls::GuiCustomControl*));
+        }
+    }
+}
+
+================================(35/61)================================
+module <instance>demo::TestWindow;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace demo
+{
+    class TestWindow : ::presentation::controls::GuiWindow
+    {
+        new* ()
+            :::presentation::controls::GuiWindow((cast (::presentation::theme::ThemeName) (cast (::system::UInt64) 0)))
+        {
+            raise "Not Implemented";
+        }
+
+        delete
+        {
+            FinalizeInstanceRecursively(this of (::presentation::controls::GuiControlHost*));
+        }
+    }
+}
+
+================================(36/61)================================
+module <instance>demo::RefreshBindableDataGridTabPage;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace demo
+{
+    class RefreshBindableDataGridTabPage : ::presentation::controls::GuiTabPage
+    {
+        var items : observe RefreshItem^[] = {new (RefreshItem^)("First", "1st"); new (RefreshItem^)("Second", "2nd"); new (RefreshItem^)("Third", "3rd"); new (RefreshItem^)("Fourth", "4th");};
+
+        new* ()
+            :::presentation::controls::GuiTabPage((cast (::presentation::theme::ThemeName) (cast (::system::UInt64) 0)))
+        {
+            raise "Not Implemented";
+        }
+
+        delete
+        {
+            FinalizeInstanceRecursively(this of (::presentation::controls::GuiCustomControl*));
+        }
+    }
+}
+
+================================(37/61)================================
+module <instance>demo::RefreshBindableListViewTabPage;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace demo
+{
+    class RefreshBindableListViewTabPage : ::presentation::controls::GuiTabPage
+    {
+        var items : observe RefreshItem^[] = {new (RefreshItem^)("First", "1st"); new (RefreshItem^)("Second", "2nd"); new (RefreshItem^)("Third", "3rd"); new (RefreshItem^)("Fourth", "4th");};
+
+        new* ()
+            :::presentation::controls::GuiTabPage((cast (::presentation::theme::ThemeName) (cast (::system::UInt64) 0)))
+        {
+            raise "Not Implemented";
+        }
+
+        delete
+        {
+            FinalizeInstanceRecursively(this of (::presentation::controls::GuiCustomControl*));
+        }
+    }
+}
+
+================================(38/61)================================
+module <instance>demo::RefreshBindableTextListTabPage;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace demo
+{
+    class RefreshBindableTextListTabPage : ::presentation::controls::GuiTabPage
+    {
+        var items : observe RefreshItem^[] = {new (RefreshItem^)("First", "1st"); new (RefreshItem^)("Second", "2nd"); new (RefreshItem^)("Third", "3rd");};
+
+        new* ()
+            :::presentation::controls::GuiTabPage((cast (::presentation::theme::ThemeName) (cast (::system::UInt64) 0)))
+        {
+            raise "Not Implemented";
+        }
+
+        delete
+        {
+            FinalizeInstanceRecursively(this of (::presentation::controls::GuiCustomControl*));
+        }
+    }
+}
+
+================================(39/61)================================
+module <instance>demo::RefreshBindableTreeViewTabPage;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace demo
+{
+    class RefreshBindableTreeViewTabPage : ::presentation::controls::GuiTabPage
+    {
+        var rootItem : RefreshItem^ = new (RefreshItem^)("", "", {new (RefreshItem^)("First", "1st", {new (RefreshItem^)("First (1)", "1st (1)"); new (RefreshItem^)("Second (1)", "2nd (1)"); new (RefreshItem^)("Third (1)", "3rd (1)");}); new (RefreshItem^)("Second", "2nd", {new (RefreshItem^)("First (2)", "1st (2)"); new (RefreshItem^)("Second (2)", "2nd (2)"); new (RefreshItem^)("Third (2)", "3rd (2)");}); new (RefreshItem^)("Third", "3rd"); new (RefreshItem^)("Fourth", "4th");});
+
+        new* ()
+            :::presentation::controls::GuiTabPage((cast (::presentation::theme::ThemeName) (cast (::system::UInt64) 0)))
+        {
+            raise "Not Implemented";
+        }
+
+        delete
+        {
+            FinalizeInstanceRecursively(this of (::presentation::controls::GuiCustomControl*));
+        }
+    }
+}
+
+================================(40/61)================================
+module <instance>demo::RefreshListViewTabPage;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace demo
+{
+    class RefreshListViewTabPage : ::presentation::controls::GuiTabPage
+    {
+        new* ()
+            :::presentation::controls::GuiTabPage((cast (::presentation::theme::ThemeName) (cast (::system::UInt64) 0)))
+        {
+            raise "Not Implemented";
+        }
+
+        delete
+        {
+            FinalizeInstanceRecursively(this of (::presentation::controls::GuiCustomControl*));
+        }
+    }
+}
+
+================================(41/61)================================
+module <instance>demo::RefreshTextListTabPage;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace demo
+{
+    class RefreshTextListTabPage : ::presentation::controls::GuiTabPage
+    {
+        new* ()
+            :::presentation::controls::GuiTabPage((cast (::presentation::theme::ThemeName) (cast (::system::UInt64) 0)))
+        {
+            raise "Not Implemented";
+        }
+
+        delete
+        {
+            FinalizeInstanceRecursively(this of (::presentation::controls::GuiCustomControl*));
+        }
+    }
+}
+
+================================(42/61)================================
+module <instance>demo::RefreshTreeViewTabPage;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace demo
+{
+    class RefreshTreeViewTabPage : ::presentation::controls::GuiTabPage
+    {
+        new* ()
+            :::presentation::controls::GuiTabPage((cast (::presentation::theme::ThemeName) (cast (::system::UInt64) 0)))
+        {
+            raise "Not Implemented";
+        }
+
+        delete
+        {
+            FinalizeInstanceRecursively(this of (::presentation::controls::GuiCustomControl*));
+        }
+    }
+}
+
+================================(43/61)================================
+module <instance>demo::EnglishNumbersController;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace demo
+{
+    class EnglishNumbersController : ::presentation::controls::GuiCustomControl
+    {
+        @cpp:Private
+        var counter : int = 0;
+
+        @cpp:Private
+        var <prop>ItemsToBind : observe MyTextItem^[] = {};
+
+        func GetItemsToBind() : (observe MyTextItem^[])
+        {
+            return <prop>ItemsToBind;
+        }
+
+        @cpp:Protected
+        func SetItemsToBind(<value> : observe MyTextItem^[]) : (void)
+        {
+            (<prop>ItemsToBind = <value>);
+        }
+
+        prop ItemsToBind : observe MyTextItem^[]{GetItemsToBind}
+
+        @cpp:Private
+        func ToText_1to9(i : int) : (string)
+        {
+            raise "Not Implemented";
+        }
+
+        @cpp:Private
+        func ToText_11to19(i : int) : (string)
+        {
+            raise "Not Implemented";
+        }
+
+        @cpp:Private
+        func NumberToText_1To99(i : int) : (string)
+        {
+            raise "Not Implemented";
+        }
+
+        @cpp:Private
+        func NumberToText_0to999(i : int) : (string)
+        {
+            raise "Not Implemented";
+        }
+
+        @cpp:Private
+        func NumberToText(i : int) : (string)
+        {
+            raise "Not Implemented";
+        }
+
+        new* ()
+            :::presentation::controls::GuiCustomControl((cast (::presentation::theme::ThemeName) (cast (::system::UInt64) 0)))
+        {
+            raise "Not Implemented";
+        }
+
+        delete
+        {
+            FinalizeInstanceRecursively(this of (::presentation::controls::GuiCustomControl*));
+        }
+    }
+}
+
+================================(44/61)================================
+module <instance>demo::EnglishNumbersControllerTabPage;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace demo
+{
+    class EnglishNumbersControllerTabPage : ::presentation::controls::GuiTabPage
+    {
+        @cpp:Private
+        var <prop>ItemsToBind : observe MyTextItem^[] = {};
+
+        func GetItemsToBind() : (observe MyTextItem^[])
+        {
+            return <prop>ItemsToBind;
+        }
+
+        @cpp:Protected
+        func SetItemsToBind(<value> : observe MyTextItem^[]) : (void)
+        {
+            (<prop>ItemsToBind = <value>);
+        }
+
+        prop ItemsToBind : observe MyTextItem^[]{GetItemsToBind}
+
+        @cpp:Private
+        var <prop>ContentComposition : GuiGraphicsComposition* = null;
+
+        func GetContentComposition() : (GuiGraphicsComposition*)
+        {
+            return <prop>ContentComposition;
+        }
+
+        @cpp:Protected
+        func SetContentComposition(<value> : GuiGraphicsComposition*) : (void)
+        {
+            (<prop>ContentComposition = <value>);
+        }
+
+        prop ContentComposition : GuiGraphicsComposition*{GetContentComposition}
+
+        new* ()
+            :::presentation::controls::GuiTabPage((cast (::presentation::theme::ThemeName) (cast (::system::UInt64) 0)))
+        {
+            raise "Not Implemented";
+        }
+
+        delete
+        {
+            FinalizeInstanceRecursively(this of (::presentation::controls::GuiCustomControl*));
+        }
+    }
+}
+
+================================(45/61)================================
+module <instance>demo::RepeatItemTemplate;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace demo
+{
+    class RepeatItemTemplate : ::presentation::templates::GuiControlTemplate
+    {
+        func GetViewModel() : (demo::MyTextItem^)
+        {
+            raise "Not Implemented";
+        }
+
+        prop ViewModel : demo::MyTextItem^{GetViewModel}
+
+        new* (<ctor-parameter>ViewModel : demo::MyTextItem^)
+        {
+            raise "Not Implemented";
+        }
+
+        delete
+        {
+            FinalizeInstanceRecursively(this of (::presentation::templates::GuiTemplate*));
+        }
+    }
+}
+
+================================(46/61)================================
+module <instance>demo::SharedSizeItemTemplate;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace demo
+{
+    class SharedSizeItemTemplate : ::presentation::templates::GuiControlTemplate
+    {
+        func GetViewModel() : (demo::MyTextItem^)
+        {
+            raise "Not Implemented";
+        }
+
+        prop ViewModel : demo::MyTextItem^{GetViewModel}
+
+        new* (<ctor-parameter>ViewModel : demo::MyTextItem^)
+        {
+            raise "Not Implemented";
+        }
+
+        delete
+        {
+            FinalizeInstanceRecursively(this of (::presentation::templates::GuiTemplate*));
+        }
+    }
+}
+
+================================(47/61)================================
+module <instance>demo::SharedSizeTextItemTemplate;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace demo
+{
+    class SharedSizeTextItemTemplate : ::presentation::templates::GuiTextListItemTemplate
+    {
+        func GetViewModel() : (demo::MyTextItem^)
+        {
+            raise "Not Implemented";
+        }
+
+        prop ViewModel : demo::MyTextItem^{GetViewModel}
+
+        new* (<ctor-parameter>ViewModel : demo::MyTextItem^)
+        {
+            raise "Not Implemented";
+        }
+
+        delete
+        {
+            FinalizeInstanceRecursively(this of (::presentation::templates::GuiTemplate*));
+        }
+    }
+}
+
+================================(48/61)================================
+module <instance>demo::ResponsiveGroupControl;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace demo
+{
+    class ResponsiveGroupControl : ::presentation::controls::GuiCustomControl
+    {
+        new* ()
+            :::presentation::controls::GuiCustomControl((cast (::presentation::theme::ThemeName) (cast (::system::UInt64) 0)))
+        {
+            raise "Not Implemented";
+        }
+
+        delete
+        {
+            FinalizeInstanceRecursively(this of (::presentation::controls::GuiCustomControl*));
+        }
+    }
+}
+
+================================(49/61)================================
+module <instance>demo::ResponsiveStackControl;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace demo
+{
+    class ResponsiveStackControl : ::presentation::controls::GuiCustomControl
+    {
+        new* ()
+            :::presentation::controls::GuiCustomControl((cast (::presentation::theme::ThemeName) (cast (::system::UInt64) 0)))
+        {
+            raise "Not Implemented";
+        }
+
+        delete
+        {
+            FinalizeInstanceRecursively(this of (::presentation::controls::GuiCustomControl*));
+        }
+    }
+}
+
+================================(50/61)================================
+module <instance>demo::ResponsiveTabPage;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace demo
+{
+    class ResponsiveTabPage : ::presentation::controls::GuiTabPage
+    {
+        new* ()
+            :::presentation::controls::GuiTabPage((cast (::presentation::theme::ThemeName) (cast (::system::UInt64) 0)))
+        {
+            raise "Not Implemented";
+        }
+
+        delete
+        {
+            FinalizeInstanceRecursively(this of (::presentation::controls::GuiCustomControl*));
+        }
+    }
+}
+
+================================(51/61)================================
+module <instance>demo::ResponsiveViewControl;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace demo
+{
+    class ResponsiveViewControl : ::presentation::controls::GuiCustomControl
+    {
+        new* ()
+            :::presentation::controls::GuiCustomControl((cast (::presentation::theme::ThemeName) (cast (::system::UInt64) 0)))
+        {
+            raise "Not Implemented";
+        }
+
+        delete
+        {
+            FinalizeInstanceRecursively(this of (::presentation::controls::GuiCustomControl*));
+        }
+    }
+}
+
+================================(52/61)================================
+module <instance>demo::DocumentBoxSubTabPage;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace demo
+{
+    class DocumentBoxSubTabPage : ::presentation::controls::GuiTabPage
+    {
+        @cpp:Private
+        var <prop>TextBoxAcceptTabInput : bool = true;
+
+        func GetTextBoxAcceptTabInput() : (bool)
+        {
+            return <prop>TextBoxAcceptTabInput;
+        }
+
+        func SetTextBoxAcceptTabInput(<value> : bool) : (void)
+        {
+            if ((<prop>TextBoxAcceptTabInput != <value>))
+            {
+                (<prop>TextBoxAcceptTabInput = <value>);
+                TextBoxAcceptTabInputChanged();
+            }
+        }
+
+        event TextBoxAcceptTabInputChanged();
+
+        prop TextBoxAcceptTabInput : bool{GetTextBoxAcceptTabInput, SetTextBoxAcceptTabInput : TextBoxAcceptTabInputChanged}
+
+        new* ()
+            :::presentation::controls::GuiTabPage((cast (::presentation::theme::ThemeName) (cast (::system::UInt64) 0)))
+        {
+            raise "Not Implemented";
+        }
+
+        delete
+        {
+            FinalizeInstanceRecursively(this of (::presentation::controls::GuiCustomControl*));
+        }
+    }
+}
+
+================================(53/61)================================
+module <instance>demo::TextBoxSubTabPage;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace demo
+{
+    class TextBoxSubTabPage : ::presentation::controls::GuiTabPage
+    {
+        @cpp:Private
+        var <prop>TextBoxAcceptTabInput : bool = true;
+
+        func GetTextBoxAcceptTabInput() : (bool)
+        {
+            return <prop>TextBoxAcceptTabInput;
+        }
+
+        func SetTextBoxAcceptTabInput(<value> : bool) : (void)
+        {
+            if ((<prop>TextBoxAcceptTabInput != <value>))
+            {
+                (<prop>TextBoxAcceptTabInput = <value>);
+                TextBoxAcceptTabInputChanged();
+            }
+        }
+
+        event TextBoxAcceptTabInputChanged();
+
+        prop TextBoxAcceptTabInput : bool{GetTextBoxAcceptTabInput, SetTextBoxAcceptTabInput : TextBoxAcceptTabInputChanged}
+
+        new* ()
+            :::presentation::controls::GuiTabPage((cast (::presentation::theme::ThemeName) (cast (::system::UInt64) 0)))
+        {
+            raise "Not Implemented";
+        }
+
+        delete
+        {
+            FinalizeInstanceRecursively(this of (::presentation::controls::GuiCustomControl*));
+        }
+    }
+}
+
+================================(54/61)================================
+module <instance>demo::TextBoxTabPage;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace demo
+{
+    class TextBoxTabPage : ::presentation::controls::GuiTabPage
+    {
+        @cpp:Protected
+        var flag : bool = false;
+
+        event OnMakeFontLarger();
+
+        event OnMakeFontSmaller();
+
+        @cpp:Protected
+        func UpdateFont(newFont : FontProperties) : (void)
+        {
+            raise "Not Implemented";
+        }
+
+        new* ()
+            :::presentation::controls::GuiTabPage((cast (::presentation::theme::ThemeName) (cast (::system::UInt64) 0)))
+        {
+            raise "Not Implemented";
+        }
+
+        delete
+        {
+            FinalizeInstanceRecursively(this of (::presentation::controls::GuiCustomControl*));
+        }
+    }
+}
+
+================================(55/61)================================
+module imageloader;
+using presentation::*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+
+func LoadListView(root : GuiInstanceRootObject*, callback : (func (ListViewItem^) : (void))) : (void)
+{
+    {
+        var item = new (ListViewItem^)();
+        (item.Text = "Task");
+        (item.LargeImage = (cast (GuiImageData^) root.ResolveResource("res", "LargeImages/Task", true)));
+        (item.SmallImage = (cast (GuiImageData^) root.ResolveResource("res", "SmallImages/Task", true)));
+        item.SubItems.Add("005");
+        item.SubItems.Add("16x16");
+        item.SubItems.Add("005_Task_16x16_72.png");
+        callback(item);
+    }
+    {
+        var item = new (ListViewItem^)();
+        (item.Text = "Reminder");
+        (item.LargeImage = (cast (GuiImageData^) root.ResolveResource("res", "LargeImages/Reminder", true)));
+        (item.SmallImage = (cast (GuiImageData^) root.ResolveResource("res", "SmallImages/Reminder", true)));
+        item.SubItems.Add("008");
+        item.SubItems.Add("16x16");
+        item.SubItems.Add("008_Reminder_16x16_72.png");
+        callback(item);
+    }
+    {
+        var item = new (ListViewItem^)();
+        (item.Text = "Tip");
+        (item.LargeImage = (cast (GuiImageData^) root.ResolveResource("res", "LargeImages/Tip", true)));
+        (item.SmallImage = (cast (GuiImageData^) root.ResolveResource("res", "SmallImages/Tip", true)));
+        item.SubItems.Add("023");
+        item.SubItems.Add("16x16");
+        item.SubItems.Add("023_Tip_16x16_72.png");
+        callback(item);
+    }
+    {
+        var item = new (ListViewItem^)();
+        (item.Text = "ArrowCurve_Blue_Left");
+        (item.LargeImage = (cast (GuiImageData^) root.ResolveResource("res", "LargeImages/ArrowCurve_Blue_Left", true)));
+        (item.SmallImage = (cast (GuiImageData^) root.ResolveResource("res", "SmallImages/ArrowCurve_Blue_Left", true)));
+        item.SubItems.Add("112");
+        item.SubItems.Add("16x16");
+        item.SubItems.Add("112_ArrowCurve_Blue_Left_16x16_72.png");
+        callback(item);
+    }
+    {
+        var item = new (ListViewItem^)();
+        (item.Text = "ArrowCurve_Blue_Right");
+        (item.LargeImage = (cast (GuiImageData^) root.ResolveResource("res", "LargeImages/ArrowCurve_Blue_Right", true)));
+        (item.SmallImage = (cast (GuiImageData^) root.ResolveResource("res", "SmallImages/ArrowCurve_Blue_Right", true)));
+        item.SubItems.Add("112");
+        item.SubItems.Add("16x16");
+        item.SubItems.Add("112_ArrowCurve_Blue_Right_16x16_72.png");
+        callback(item);
+    }
+    {
+        var item = new (ListViewItem^)();
+        (item.Text = "DownArrowLong_Blue");
+        (item.LargeImage = (cast (GuiImageData^) root.ResolveResource("res", "LargeImages/DownArrowLong_Blue", true)));
+        (item.SmallImage = (cast (GuiImageData^) root.ResolveResource("res", "SmallImages/DownArrowLong_Blue", true)));
+        item.SubItems.Add("112");
+        item.SubItems.Add("16x16");
+        item.SubItems.Add("112_DownArrowLong_Blue_16x16_72.png");
+        callback(item);
+    }
+    {
+        var item = new (ListViewItem^)();
+        (item.Text = "DownArrowLong_Green");
+        (item.LargeImage = (cast (GuiImageData^) root.ResolveResource("res", "LargeImages/DownArrowLong_Green", true)));
+        (item.SmallImage = (cast (GuiImageData^) root.ResolveResource("res", "SmallImages/DownArrowLong_Green", true)));
+        item.SubItems.Add("112");
+        item.SubItems.Add("16x16");
+        item.SubItems.Add("112_DownArrowLong_Green_16x16_72.png");
+        callback(item);
+    }
+    {
+        var item = new (ListViewItem^)();
+        (item.Text = "DownArrowLong_Grey");
+        (item.LargeImage = (cast (GuiImageData^) root.ResolveResource("res", "LargeImages/DownArrowLong_Grey", true)));
+        (item.SmallImage = (cast (GuiImageData^) root.ResolveResource("res", "SmallImages/DownArrowLong_Grey", true)));
+        item.SubItems.Add("112");
+        item.SubItems.Add("16x16");
+        item.SubItems.Add("112_DownArrowLong_Grey_16x16_72.png");
+        callback(item);
+    }
+    {
+        var item = new (ListViewItem^)();
+        (item.Text = "DownArrowLong_Orange");
+        (item.LargeImage = (cast (GuiImageData^) root.ResolveResource("res", "LargeImages/DownArrowLong_Orange", true)));
+        (item.SmallImage = (cast (GuiImageData^) root.ResolveResource("res", "SmallImages/DownArrowLong_Orange", true)));
+        item.SubItems.Add("112");
+        item.SubItems.Add("16x16");
+        item.SubItems.Add("112_DownArrowLong_Orange_16x16_72.png");
+        callback(item);
+    }
+    {
+        var item = new (ListViewItem^)();
+        (item.Text = "LeftArrowLong_Blue");
+        (item.LargeImage = (cast (GuiImageData^) root.ResolveResource("res", "LargeImages/LeftArrowLong_Blue", true)));
+        (item.SmallImage = (cast (GuiImageData^) root.ResolveResource("res", "SmallImages/LeftArrowLong_Blue", true)));
+        item.SubItems.Add("112");
+        item.SubItems.Add("16x16");
+        item.SubItems.Add("112_LeftArrowLong_Blue_16x16_72.png");
+        callback(item);
+    }
+    {
+        var item = new (ListViewItem^)();
+        (item.Text = "LeftArrowLong_Green");
+        (item.LargeImage = (cast (GuiImageData^) root.ResolveResource("res", "LargeImages/LeftArrowLong_Green", true)));
+        (item.SmallImage = (cast (GuiImageData^) root.ResolveResource("res", "SmallImages/LeftArrowLong_Green", true)));
+        item.SubItems.Add("112");
+        item.SubItems.Add("16x16");
+        item.SubItems.Add("112_LeftArrowLong_Green_16x16_72.png");
+        callback(item);
+    }
+    {
+        var item = new (ListViewItem^)();
+        (item.Text = "LeftArrowLong_Grey");
+        (item.LargeImage = (cast (GuiImageData^) root.ResolveResource("res", "LargeImages/LeftArrowLong_Grey", true)));
+        (item.SmallImage = (cast (GuiImageData^) root.ResolveResource("res", "SmallImages/LeftArrowLong_Grey", true)));
+        item.SubItems.Add("112");
+        item.SubItems.Add("16x16");
+        item.SubItems.Add("112_LeftArrowLong_Grey_16x16_72.png");
+        callback(item);
+    }
+    {
+        var item = new (ListViewItem^)();
+        (item.Text = "LeftArrowLong_Orange");
+        (item.LargeImage = (cast (GuiImageData^) root.ResolveResource("res", "LargeImages/LeftArrowLong_Orange", true)));
+        (item.SmallImage = (cast (GuiImageData^) root.ResolveResource("res", "SmallImages/LeftArrowLong_Orange", true)));
+        item.SubItems.Add("112");
+        item.SubItems.Add("16x16");
+        item.SubItems.Add("112_LeftArrowLong_Orange_16x16_72.png");
+        callback(item);
+    }
+    {
+        var item = new (ListViewItem^)();
+        (item.Text = "Minus_Blue");
+        (item.LargeImage = (cast (GuiImageData^) root.ResolveResource("res", "LargeImages/Minus_Blue", true)));
+        (item.SmallImage = (cast (GuiImageData^) root.ResolveResource("res", "SmallImages/Minus_Blue", true)));
+        item.SubItems.Add("112");
+        item.SubItems.Add("16x16");
+        item.SubItems.Add("112_Minus_Blue_16x16_72.png");
+        callback(item);
+    }
+    {
+        var item = new (ListViewItem^)();
+        (item.Text = "Minus_Green");
+        (item.LargeImage = (cast (GuiImageData^) root.ResolveResource("res", "LargeImages/Minus_Green", true)));
+        (item.SmallImage = (cast (GuiImageData^) root.ResolveResource("res", "SmallImages/Minus_Green", true)));
+        item.SubItems.Add("112");
+        item.SubItems.Add("16x16");
+        item.SubItems.Add("112_Minus_Green_16x16_72.png");
+        callback(item);
+    }
+    {
+        var item = new (ListViewItem^)();
+        (item.Text = "Minus_Grey");
+        (item.LargeImage = (cast (GuiImageData^) root.ResolveResource("res", "LargeImages/Minus_Grey", true)));
+        (item.SmallImage = (cast (GuiImageData^) root.ResolveResource("res", "SmallImages/Minus_Grey", true)));
+        item.SubItems.Add("112");
+        item.SubItems.Add("16x16");
+        item.SubItems.Add("112_Minus_Grey_16x16_72.png");
+        callback(item);
+    }
+    {
+        var item = new (ListViewItem^)();
+        (item.Text = "Minus_Orange");
+        (item.LargeImage = (cast (GuiImageData^) root.ResolveResource("res", "LargeImages/Minus_Orange", true)));
+        (item.SmallImage = (cast (GuiImageData^) root.ResolveResource("res", "SmallImages/Minus_Orange", true)));
+        item.SubItems.Add("112");
+        item.SubItems.Add("16x16");
+        item.SubItems.Add("112_Minus_Orange_16x16_72.png");
+        callback(item);
+    }
+    {
+        var item = new (ListViewItem^)();
+        (item.Text = "Plus_Blue");
+        (item.LargeImage = (cast (GuiImageData^) root.ResolveResource("res", "LargeImages/Plus_Blue", true)));
+        (item.SmallImage = (cast (GuiImageData^) root.ResolveResource("res", "SmallImages/Plus_Blue", true)));
+        item.SubItems.Add("112");
+        item.SubItems.Add("16x16");
+        item.SubItems.Add("112_Plus_Blue_16x16_72.png");
+        callback(item);
+    }
+    {
+        var item = new (ListViewItem^)();
+        (item.Text = "Plus_Green");
+        (item.LargeImage = (cast (GuiImageData^) root.ResolveResource("res", "LargeImages/Plus_Green", true)));
+        (item.SmallImage = (cast (GuiImageData^) root.ResolveResource("res", "SmallImages/Plus_Green", true)));
+        item.SubItems.Add("112");
+        item.SubItems.Add("16x16");
+        item.SubItems.Add("112_Plus_Green_16x16_72.png");
+        callback(item);
+    }
+    {
+        var item = new (ListViewItem^)();
+        (item.Text = "Plus_Grey");
+        (item.LargeImage = (cast (GuiImageData^) root.ResolveResource("res", "LargeImages/Plus_Grey", true)));
+        (item.SmallImage = (cast (GuiImageData^) root.ResolveResource("res", "SmallImages/Plus_Grey", true)));
+        item.SubItems.Add("112");
+        item.SubItems.Add("16x16");
+        item.SubItems.Add("112_Plus_Grey_16x16_72.png");
+        callback(item);
+    }
+    {
+        var item = new (ListViewItem^)();
+        (item.Text = "Plus_Orange");
+        (item.LargeImage = (cast (GuiImageData^) root.ResolveResource("res", "LargeImages/Plus_Orange", true)));
+        (item.SmallImage = (cast (GuiImageData^) root.ResolveResource("res", "SmallImages/Plus_Orange", true)));
+        item.SubItems.Add("112");
+        item.SubItems.Add("16x16");
+        item.SubItems.Add("112_Plus_Orange_16x16_72.png");
+        callback(item);
+    }
+    {
+        var item = new (ListViewItem^)();
+        (item.Text = "RightArrowLong_Blue");
+        (item.LargeImage = (cast (GuiImageData^) root.ResolveResource("res", "LargeImages/RightArrowLong_Blue", true)));
+        (item.SmallImage = (cast (GuiImageData^) root.ResolveResource("res", "SmallImages/RightArrowLong_Blue", true)));
+        item.SubItems.Add("112");
+        item.SubItems.Add("16x16");
+        item.SubItems.Add("112_RightArrowLong_Blue_16x16_72.png");
+        callback(item);
+    }
+    {
+        var item = new (ListViewItem^)();
+        (item.Text = "RightArrowLong_Green");
+        (item.LargeImage = (cast (GuiImageData^) root.ResolveResource("res", "LargeImages/RightArrowLong_Green", true)));
+        (item.SmallImage = (cast (GuiImageData^) root.ResolveResource("res", "SmallImages/RightArrowLong_Green", true)));
+        item.SubItems.Add("112");
+        item.SubItems.Add("16x16");
+        item.SubItems.Add("112_RightArrowLong_Green_16x16_72.png");
+        callback(item);
+    }
+    {
+        var item = new (ListViewItem^)();
+        (item.Text = "RightArrowLong_Grey");
+        (item.LargeImage = (cast (GuiImageData^) root.ResolveResource("res", "LargeImages/RightArrowLong_Grey", true)));
+        (item.SmallImage = (cast (GuiImageData^) root.ResolveResource("res", "SmallImages/RightArrowLong_Grey", true)));
+        item.SubItems.Add("112");
+        item.SubItems.Add("16x16");
+        item.SubItems.Add("112_RightArrowLong_Grey_16x16_72.png");
+        callback(item);
+    }
+    {
+        var item = new (ListViewItem^)();
+        (item.Text = "RightArrowLong_Orange");
+        (item.LargeImage = (cast (GuiImageData^) root.ResolveResource("res", "LargeImages/RightArrowLong_Orange", true)));
+        (item.SmallImage = (cast (GuiImageData^) root.ResolveResource("res", "SmallImages/RightArrowLong_Orange", true)));
+        item.SubItems.Add("112");
+        item.SubItems.Add("16x16");
+        item.SubItems.Add("112_RightArrowLong_Orange_16x16_72.png");
+        callback(item);
+    }
+    {
+        var item = new (ListViewItem^)();
+        (item.Text = "UpArrowLong_Blue");
+        (item.LargeImage = (cast (GuiImageData^) root.ResolveResource("res", "LargeImages/UpArrowLong_Blue", true)));
+        (item.SmallImage = (cast (GuiImageData^) root.ResolveResource("res", "SmallImages/UpArrowLong_Blue", true)));
+        item.SubItems.Add("112");
+        item.SubItems.Add("16x16");
+        item.SubItems.Add("112_UpArrowLong_Blue_16x16_72.png");
+        callback(item);
+    }
+    {
+        var item = new (ListViewItem^)();
+        (item.Text = "UpArrowLong_Green");
+        (item.LargeImage = (cast (GuiImageData^) root.ResolveResource("res", "LargeImages/UpArrowLong_Green", true)));
+        (item.SmallImage = (cast (GuiImageData^) root.ResolveResource("res", "SmallImages/UpArrowLong_Green", true)));
+        item.SubItems.Add("112");
+        item.SubItems.Add("16x16");
+        item.SubItems.Add("112_UpArrowLong_Green_16x16_72.png");
+        callback(item);
+    }
+    {
+        var item = new (ListViewItem^)();
+        (item.Text = "UpArrowLong_Grey");
+        (item.LargeImage = (cast (GuiImageData^) root.ResolveResource("res", "LargeImages/UpArrowLong_Grey", true)));
+        (item.SmallImage = (cast (GuiImageData^) root.ResolveResource("res", "SmallImages/UpArrowLong_Grey", true)));
+        item.SubItems.Add("112");
+        item.SubItems.Add("16x16");
+        item.SubItems.Add("112_UpArrowLong_Grey_16x16_72.png");
+        callback(item);
+    }
+    {
+        var item = new (ListViewItem^)();
+        (item.Text = "UpArrowLong_Orange");
+        (item.LargeImage = (cast (GuiImageData^) root.ResolveResource("res", "LargeImages/UpArrowLong_Orange", true)));
+        (item.SmallImage = (cast (GuiImageData^) root.ResolveResource("res", "SmallImages/UpArrowLong_Orange", true)));
+        item.SubItems.Add("112");
+        item.SubItems.Add("16x16");
+        item.SubItems.Add("112_UpArrowLong_Orange_16x16_72.png");
+        callback(item);
+    }
+}
+
+================================(56/61)================================
+module viewmodel;
+using system::*;
+using presentation::*;
+
+namespace demo
+{
+    class MyTextItem
+    {
+        @cpp:Private
+        var <prop>Name : string = "";
+
+        func GetName() : (string)
+        {
+            return <prop>Name;
+        }
+
+        func SetName(<value> : string) : (void)
+        {
+            (<prop>Name = <value>);
+        }
+
+        prop Name : string{GetName, SetName}
+
+        @cpp:Private
+        var <prop>Checked : bool = false;
+
+        func GetChecked() : (bool)
+        {
+            return <prop>Checked;
+        }
+
+        func SetChecked(<value> : bool) : (void)
+        {
+            (<prop>Checked = <value>);
+        }
+
+        prop Checked : bool{GetChecked, SetChecked}
+
+        new ()
+        {
+        }
+    }
+
+    enum MyCategory
+    {
+        Black = 0,
+        Red = 1,
+        Lime = 2,
+        Blue = 3,
+        White = 4,
+    }
+
+    enum MyGender
+    {
+        Male = 0,
+        Female = 1,
+    }
+
+    class MyDataItem
+    {
+        @cpp:Private
+        var <prop>Name : string = "";
+
+        func GetName() : (string)
+        {
+            return <prop>Name;
+        }
+
+        func SetName(<value> : string) : (void)
+        {
+            (<prop>Name = <value>);
+        }
+
+        prop Name : string{GetName, SetName}
+
+        @cpp:Private
+        var <prop>Gender : MyGender = Male;
+
+        func GetGender() : (MyGender)
+        {
+            return <prop>Gender;
+        }
+
+        func SetGender(<value> : MyGender) : (void)
+        {
+            (<prop>Gender = <value>);
+        }
+
+        prop Gender : MyGender{GetGender, SetGender}
+
+        @cpp:Private
+        var <prop>Category : MyCategory = White;
+
+        func GetCategory() : (MyCategory)
+        {
+            return <prop>Category;
+        }
+
+        func SetCategory(<value> : MyCategory) : (void)
+        {
+            (<prop>Category = <value>);
+        }
+
+        prop Category : MyCategory{GetCategory, SetCategory}
+
+        @cpp:Private
+        var <prop>Birthday : DateTime = (cast (DateTime) "2000-01-01 00:00:00.000");
+
+        func GetBirthday() : (DateTime)
+        {
+            return <prop>Birthday;
+        }
+
+        func SetBirthday(<value> : DateTime) : (void)
+        {
+            (<prop>Birthday = <value>);
+        }
+
+        prop Birthday : DateTime{GetBirthday, SetBirthday}
+
+        @cpp:Private
+        var <prop>Website : string = "";
+
+        func GetWebsite() : (string)
+        {
+            return <prop>Website;
+        }
+
+        func SetWebsite(<value> : string) : (void)
+        {
+            (<prop>Website = <value>);
+        }
+
+        prop Website : string{GetWebsite, SetWebsite}
+
+        @cpp:Private
+        var <prop>LargeImage : GuiImageData^ = null;
+
+        func GetLargeImage() : (GuiImageData^)
+        {
+            return <prop>LargeImage;
+        }
+
+        func SetLargeImage(<value> : GuiImageData^) : (void)
+        {
+            (<prop>LargeImage = <value>);
+        }
+
+        prop LargeImage : GuiImageData^{GetLargeImage, SetLargeImage}
+
+        @cpp:Private
+        var <prop>SmallImage : GuiImageData^ = null;
+
+        func GetSmallImage() : (GuiImageData^)
+        {
+            return <prop>SmallImage;
+        }
+
+        func SetSmallImage(<value> : GuiImageData^) : (void)
+        {
+            (<prop>SmallImage = <value>);
+        }
+
+        prop SmallImage : GuiImageData^{GetSmallImage, SetSmallImage}
+
+        new ()
+        {
+        }
+
+        new (name : string, gender : MyGender, category : MyCategory, birthday : DateTime, website : string)
+        {
+            (Name = name);
+            (Gender = gender);
+            (Category = category);
+            (Birthday = birthday);
+            (Website = website);
+        }
+    }
+
+    func ToString(value : MyCategory) : (string)
+    {
+        {
+            var <switch>0 : ::demo::MyCategory = value;
+            if ((<switch>0 == Black of (::demo::MyCategory)))
+            {
+                return "Black";
+            }
+            else if ((<switch>0 == Red of (::demo::MyCategory)))
+            {
+                return "Red";
+            }
+            else if ((<switch>0 == Lime of (::demo::MyCategory)))
+            {
+                return "Lime";
+            }
+            else if ((<switch>0 == Blue of (::demo::MyCategory)))
+            {
+                return "Blue";
+            }
+            else if ((<switch>0 == White of (::demo::MyCategory)))
+            {
+                return "White";
+            }
+        }
+        return "";
+    }
+
+    func ToColor(value : MyCategory) : (Color)
+    {
+        {
+            var <switch>1 : ::demo::MyCategory = value;
+            if ((<switch>1 == Red of (::demo::MyCategory)))
+            {
+                return (cast (Color) "#FF0000");
+            }
+            else if ((<switch>1 == Lime of (::demo::MyCategory)))
+            {
+                return (cast (Color) "#00FF00");
+            }
+            else if ((<switch>1 == Blue of (::demo::MyCategory)))
+            {
+                return (cast (Color) "#0000FF");
+            }
+            else if ((<switch>1 == White of (::demo::MyCategory)))
+            {
+                return (cast (Color) "#FFFFFF");
+            }
+        }
+        return (cast (Color) "#000000");
+    }
+
+    func ToString(value : MyGender) : (string)
+    {
+        {
+            var <switch>2 : ::demo::MyGender = value;
+            if ((<switch>2 == Male of (::demo::MyGender)))
+            {
+                return "Male";
+            }
+            else if ((<switch>2 == Female of (::demo::MyGender)))
+            {
+                return "Female";
+            }
+        }
+        return "";
+    }
+
+    func ToString(value : DateTime) : (string)
+    {
+        return ((((("" & value.month) & "/") & value.day) & "/") & value.year);
+    }
+}
+
+================================(57/61)================================
+module Animation;
+using system::*;
+using presentation::*;
+
+namespace demo
+{
+    class ColorDef
+    {
+        @cpp:Private
+        var <prop>Top : Color = (cast (Color) "#000000");
+
+        func GetTop() : (Color)
+        {
+            return <prop>Top;
+        }
+
+        func SetTop(<value> : Color) : (void)
+        {
+            if ((<prop>Top != <value>))
+            {
+                (<prop>Top = <value>);
+                TopChanged();
+            }
+        }
+
+        event TopChanged();
+
+        prop Top : Color{GetTop, SetTop : TopChanged}
+
+        @cpp:Private
+        var <prop>Bottom : Color = (cast (Color) "#000000");
+
+        func GetBottom() : (Color)
+        {
+            return <prop>Bottom;
+        }
+
+        func SetBottom(<value> : Color) : (void)
+        {
+            if ((<prop>Bottom != <value>))
+            {
+                (<prop>Bottom = <value>);
+                BottomChanged();
+            }
+        }
+
+        event BottomChanged();
+
+        prop Bottom : Color{GetBottom, SetBottom : BottomChanged}
+
+        @cpp:Private
+        var <prop>Shadow : Color = (cast (Color) "#000000A0");
+
+        func GetShadow() : (Color)
+        {
+            return <prop>Shadow;
+        }
+
+        func SetShadow(<value> : Color) : (void)
+        {
+            if ((<prop>Shadow != <value>))
+            {
+                (<prop>Shadow = <value>);
+                ShadowChanged();
+            }
+        }
+
+        event ShadowChanged();
+
+        prop Shadow : Color{GetShadow, SetShadow : ShadowChanged}
+
+        @cpp:Private
+        var <prop>Thickness : int = 0;
+
+        func GetThickness() : (int)
+        {
+            return <prop>Thickness;
+        }
+
+        func SetThickness(<value> : int) : (void)
+        {
+            if ((<prop>Thickness != <value>))
+            {
+                (<prop>Thickness = <value>);
+                ThicknessChanged();
+            }
+        }
+
+        event ThicknessChanged();
+
+        prop Thickness : int{GetThickness, SetThickness : ThicknessChanged}
+
+        static func Dark() : (ColorDef^)
+        {
+            var def = new (ColorDef^)();
+            (def.Top = (cast (Color) "#9999FF"));
+            (def.Bottom = (cast (Color) "#5555FF"));
+            (def.Thickness = 0);
+            return def;
+        }
+
+        static func Light() : (ColorDef^)
+        {
+            var def = new (ColorDef^)();
+            (def.Top = (cast (Color) "#DDDDFF"));
+            (def.Bottom = (cast (Color) "#9999FF"));
+            (def.Thickness = 0);
+            return def;
+        }
+
+        static func Sink() : (ColorDef^)
+        {
+            var def = new (ColorDef^)();
+            (def.Top = (cast (Color) "#5555FF"));
+            (def.Bottom = (cast (Color) "#0000FF"));
+            (def.Thickness = 10);
+            return def;
+        }
+
+        new ()
+        {
+        }
+    }
+
+    func F(x : double) : (double)
+    {
+        var y = ((x * x) * 2);
+        return y;
+    }
+
+    func G(x : double) : (double)
+    {
+        if ((x < 0.5))
+        {
+            return F(x);
+        }
+        else
+        {
+            return (1 - F((1 - x)));
+        }
+    }
+}
+
+================================(58/61)================================
+module ribbonscript;
+using presentation::*;
+
+namespace demo
+{
+    class StyleItem
+    {
+        var Name : string = "";
+
+        var Style : DocumentStyle^ = null;
+
+        new (name : string, size : DocumentFontSize?, color : Color?, bold : bool?, italic : bool?, underline : bool?, strikeline : bool?)
+        {
+            (Name = name);
+            (Style = new (DocumentStyle^)());
+            (Style.parentStyleName = "#Context");
+            (Style.styles = new (DocumentStyleProperties^)());
+            (Style.styles.size = size);
+            (Style.styles.color = color);
+            (Style.styles.bold = bold);
+            (Style.styles.italic = italic);
+            (Style.styles.underline = underline);
+            (Style.styles.strikeline = strikeline);
+        }
+    }
+
+    class StyleGroup
+    {
+        var Name : string = "";
+
+        var Items : observe StyleItem^[] = {};
+
+        new ()
+        {
+        }
+    }
+}
+
+================================(59/61)================================
+module <localized-strings>demo::StringResource;
+
+namespace demo
+{
+    interface IStringResourceStrings
+    {
+        func Currency(<ls>0 : ::system::String) : (::system::String);
+
+        func DateFormat(<ls>0 : ::system::DateTime) : (::system::String);
+
+        func Label() : (::system::String);
+
+        func LongDate(<ls>0 : ::system::DateTime) : (::system::String);
+
+        func LongTime(<ls>0 : ::system::DateTime) : (::system::String);
+
+        func Number(<ls>0 : ::system::String) : (::system::String);
+
+        func Sentence(<ls>0 : ::system::String) : (::system::String);
+
+        func ShortDate(<ls>0 : ::system::DateTime) : (::system::String);
+
+        func ShortTime(<ls>0 : ::system::DateTime) : (::system::String);
+
+        func TimeFormat(<ls>0 : ::system::DateTime) : (::system::String);
+
+        func Title() : (::system::String);
+
+        func YearMonthDate(<ls>0 : ::system::DateTime) : (::system::String);
+    }
+}
+
+namespace demo
+{
+    var <ls>StringResource : IStringResourceStrings^[::system::Locale] = {};
+}
+
+namespace demo
+{
+    class StringResource
+    {
+        static func <ls_en-US>BuildStrings(<ls>locale : ::system::Locale) : (::demo::IStringResourceStrings^)
+        {
+            return new (::demo::IStringResourceStrings^)
+            {
+                override func Currency(<ls>0 : ::system::String) : (::system::String)
+                {
+                    var <ls>_0 = ::system::Localization::FormatCurrency(<ls>locale, <ls>0);
+                    return ("Currency: " & <ls>_0);
+                }
+
+                override func DateFormat(<ls>0 : ::system::DateTime) : (::system::String)
+                {
+                    var <ls>_0 = ::system::Localization::FormatDate(<ls>locale, "yyyy", <ls>0);
+                    return ("DateFormat: " & <ls>_0);
+                }
+
+                override func Label() : (::system::String)
+                {
+                    return "Selected Locale:";
+                }
+
+                override func LongDate(<ls>0 : ::system::DateTime) : (::system::String)
+                {
+                    var <ls>_0 = ::system::Localization::FormatDate(<ls>locale, ::presentation::helper_types::LocalizedStrings::FirstOrEmpty(::system::Localization::GetLongDateFormats(<ls>locale)), <ls>0);
+                    return ("LongDate: " & <ls>_0);
+                }
+
+                override func LongTime(<ls>0 : ::system::DateTime) : (::system::String)
+                {
+                    var <ls>_0 = ::system::Localization::FormatTime(<ls>locale, ::presentation::helper_types::LocalizedStrings::FirstOrEmpty(::system::Localization::GetLongTimeFormats(<ls>locale)), <ls>0);
+                    return ("LongTime: " & <ls>_0);
+                }
+
+                override func Number(<ls>0 : ::system::String) : (::system::String)
+                {
+                    var <ls>_0 = ::system::Localization::FormatNumber(<ls>locale, <ls>0);
+                    return ("Number: " & <ls>_0);
+                }
+
+                override func Sentence(<ls>0 : ::system::String) : (::system::String)
+                {
+                    var <ls>_0 = <ls>0;
+                    return (("$Good morning, " & <ls>_0) & "!$");
+                }
+
+                override func ShortDate(<ls>0 : ::system::DateTime) : (::system::String)
+                {
+                    var <ls>_0 = ::system::Localization::FormatDate(<ls>locale, ::presentation::helper_types::LocalizedStrings::FirstOrEmpty(::system::Localization::GetShortDateFormats(<ls>locale)), <ls>0);
+                    return ("ShortDate: " & <ls>_0);
+                }
+
+                override func ShortTime(<ls>0 : ::system::DateTime) : (::system::String)
+                {
+                    var <ls>_0 = ::system::Localization::FormatTime(<ls>locale, ::presentation::helper_types::LocalizedStrings::FirstOrEmpty(::system::Localization::GetShortTimeFormats(<ls>locale)), <ls>0);
+                    return ("ShortTime: " & <ls>_0);
+                }
+
+                override func TimeFormat(<ls>0 : ::system::DateTime) : (::system::String)
+                {
+                    var <ls>_0 = ::system::Localization::FormatTime(<ls>locale, "HH", <ls>0);
+                    return ("TimeFormat: " & <ls>_0);
+                }
+
+                override func Title() : (::system::String)
+                {
+                    return "Localization";
+                }
+
+                override func YearMonthDate(<ls>0 : ::system::DateTime) : (::system::String)
+                {
+                    var <ls>_0 = ::system::Localization::FormatDate(<ls>locale, ::presentation::helper_types::LocalizedStrings::FirstOrEmpty(::system::Localization::GetYearMonthDateFormats(<ls>locale)), <ls>0);
+                    return ("YearMonthDate: " & <ls>_0);
+                }
+            };
+        }
+
+        static func <ls_zh-CN>BuildStrings(<ls>locale : ::system::Locale) : (::demo::IStringResourceStrings^)
+        {
+            return new (::demo::IStringResourceStrings^)
+            {
+                override func Currency(<ls>0 : ::system::String) : (::system::String)
+                {
+                    var <ls>_0 = ::system::Localization::FormatCurrency(<ls>locale, <ls>0);
+                    return ("货币：" & <ls>_0);
+                }
+
+                override func DateFormat(<ls>0 : ::system::DateTime) : (::system::String)
+                {
+                    var <ls>_0 = ::system::Localization::FormatDate(<ls>locale, "yyyy", <ls>0);
+                    return ("日期格式：" & <ls>_0);
+                }
+
+                override func Label() : (::system::String)
+                {
+                    return "语言设置：";
+                }
+
+                override func LongDate(<ls>0 : ::system::DateTime) : (::system::String)
+                {
+                    var <ls>_0 = ::system::Localization::FormatDate(<ls>locale, ::presentation::helper_types::LocalizedStrings::FirstOrEmpty(::system::Localization::GetLongDateFormats(<ls>locale)), <ls>0);
+                    return ("长日期：" & <ls>_0);
+                }
+
+                override func LongTime(<ls>0 : ::system::DateTime) : (::system::String)
+                {
+                    var <ls>_0 = ::system::Localization::FormatTime(<ls>locale, ::presentation::helper_types::LocalizedStrings::FirstOrEmpty(::system::Localization::GetLongTimeFormats(<ls>locale)), <ls>0);
+                    return ("长时间：" & <ls>_0);
+                }
+
+                override func Number(<ls>0 : ::system::String) : (::system::String)
+                {
+                    var <ls>_0 = ::system::Localization::FormatNumber(<ls>locale, <ls>0);
+                    return ("数字：" & <ls>_0);
+                }
+
+                override func Sentence(<ls>0 : ::system::String) : (::system::String)
+                {
+                    var <ls>_0 = <ls>0;
+                    return (("$" & <ls>_0) & "，早上好！$");
+                }
+
+                override func ShortDate(<ls>0 : ::system::DateTime) : (::system::String)
+                {
+                    var <ls>_0 = ::system::Localization::FormatDate(<ls>locale, ::presentation::helper_types::LocalizedStrings::FirstOrEmpty(::system::Localization::GetShortDateFormats(<ls>locale)), <ls>0);
+                    return ("短日期：" & <ls>_0);
+                }
+
+                override func ShortTime(<ls>0 : ::system::DateTime) : (::system::String)
+                {
+                    var <ls>_0 = ::system::Localization::FormatTime(<ls>locale, ::presentation::helper_types::LocalizedStrings::FirstOrEmpty(::system::Localization::GetShortTimeFormats(<ls>locale)), <ls>0);
+                    return ("短时间：" & <ls>_0);
+                }
+
+                override func TimeFormat(<ls>0 : ::system::DateTime) : (::system::String)
+                {
+                    var <ls>_0 = ::system::Localization::FormatTime(<ls>locale, "HH", <ls>0);
+                    return ("时间格式： " & <ls>_0);
+                }
+
+                override func Title() : (::system::String)
+                {
+                    return "本地化";
+                }
+
+                override func YearMonthDate(<ls>0 : ::system::DateTime) : (::system::String)
+                {
+                    var <ls>_0 = ::system::Localization::FormatDate(<ls>locale, ::presentation::helper_types::LocalizedStrings::FirstOrEmpty(::system::Localization::GetYearMonthDateFormats(<ls>locale)), <ls>0);
+                    return ("年月：" & <ls>_0);
+                }
+            };
+        }
+
+        static func Install(<ls>locale : ::system::Locale, <ls>impl : IStringResourceStrings^) : (void)
+        {
+            if (<ls>StringResource.Keys.Contains(<ls>locale))
+            {
+                raise (("Localized strings \"demo::StringResource\" has already registered for locale \"" & <ls>locale) & "\".");
+            }
+            <ls>StringResource.Set(<ls>locale, <ls>impl);
+        }
+
+        static func Get(<ls>locale : ::system::Locale) : (IStringResourceStrings^)
+        {
+            if (<ls>StringResource.Keys.Contains(<ls>locale))
+            {
+                return <ls>StringResource[<ls>locale];
+            }
+            return <ls>StringResource[(cast (::system::Locale) "en-US")];
+        }
+
+        new ()
+        {
+        }
+    }
+}
+
+namespace demo
+{
+    static
+    {
+        ::demo::StringResource::Install((cast (::system::Locale) "en-US"), StringResource::<ls_en-US>BuildStrings((cast (::system::Locale) "en-US")));
+        ::demo::StringResource::Install((cast (::system::Locale) "zh-CN"), StringResource::<ls_zh-CN>BuildStrings((cast (::system::Locale) "zh-CN")));
+    }
+}
+
+================================(60/61)================================
+module refresh_viewmodel;
+using system::*;
+using presentation::*;
+
+namespace demo
+{
+    class RefreshItem
+    {
+        @cpp:Private
+        var <prop>Name : string = "";
+
+        func GetName() : (string)
+        {
+            return <prop>Name;
+        }
+
+        func SetName(<value> : string) : (void)
+        {
+            (<prop>Name = <value>);
+        }
+
+        prop Name : string{GetName, SetName}
+
+        @cpp:Private
+        var <prop>Title : string = "";
+
+        func GetTitle() : (string)
+        {
+            return <prop>Title;
+        }
+
+        func SetTitle(<value> : string) : (void)
+        {
+            (<prop>Title = <value>);
+        }
+
+        prop Title : string{GetTitle, SetTitle}
+
+        @cpp:Private
+        var <prop>Sub1 : string = "One";
+
+        func GetSub1() : (string)
+        {
+            return <prop>Sub1;
+        }
+
+        func SetSub1(<value> : string) : (void)
+        {
+            (<prop>Sub1 = <value>);
+        }
+
+        prop Sub1 : string{GetSub1, SetSub1}
+
+        @cpp:Private
+        var <prop>Sub2 : string = "Two";
+
+        func GetSub2() : (string)
+        {
+            return <prop>Sub2;
+        }
+
+        func SetSub2(<value> : string) : (void)
+        {
+            (<prop>Sub2 = <value>);
+        }
+
+        prop Sub2 : string{GetSub2, SetSub2}
+
+        @cpp:Private
+        var <prop>Sub3 : string = "Three";
+
+        func GetSub3() : (string)
+        {
+            return <prop>Sub3;
+        }
+
+        func SetSub3(<value> : string) : (void)
+        {
+            (<prop>Sub3 = <value>);
+        }
+
+        prop Sub3 : string{GetSub3, SetSub3}
+
+        @cpp:Private
+        var <prop>Selected : bool = false;
+
+        func GetSelected() : (bool)
+        {
+            return <prop>Selected;
+        }
+
+        func SetSelected(<value> : bool) : (void)
+        {
+            (<prop>Selected = <value>);
+        }
+
+        prop Selected : bool{GetSelected, SetSelected}
+
+        @cpp:Private
+        var <prop>LargeImage : GuiImageData^ = null;
+
+        func GetLargeImage() : (GuiImageData^)
+        {
+            return <prop>LargeImage;
+        }
+
+        func SetLargeImage(<value> : GuiImageData^) : (void)
+        {
+            (<prop>LargeImage = <value>);
+        }
+
+        prop LargeImage : GuiImageData^{GetLargeImage, SetLargeImage}
+
+        @cpp:Private
+        var <prop>SmallImage : GuiImageData^ = null;
+
+        func GetSmallImage() : (GuiImageData^)
+        {
+            return <prop>SmallImage;
+        }
+
+        func SetSmallImage(<value> : GuiImageData^) : (void)
+        {
+            (<prop>SmallImage = <value>);
+        }
+
+        prop SmallImage : GuiImageData^{GetSmallImage, SetSmallImage}
+
+        @cpp:Private
+        var <prop>Children : observe RefreshItem^[] = {};
+
+        func GetChildren() : (observe RefreshItem^[])
+        {
+            return <prop>Children;
+        }
+
+        @cpp:Protected
+        func SetChildren(<value> : observe RefreshItem^[]) : (void)
+        {
+            (<prop>Children = <value>);
+        }
+
+        prop Children : observe RefreshItem^[]{GetChildren}
+
+        @cpp:Private
+        var <prop>DoNotUse : object = null;
+
+        func GetDoNotUse() : (object)
+        {
+            return <prop>DoNotUse;
+        }
+
+        func SetDoNotUse(<value> : object) : (void)
+        {
+            (<prop>DoNotUse = <value>);
+        }
+
+        prop DoNotUse : object{GetDoNotUse, SetDoNotUse}
+
+        new (name : string, title : string)
+        {
+            (Name = name);
+            (Title = title);
+        }
+
+        new (name : string, title : string, children : RefreshItem^{})
+        {
+            (Name = name);
+            (Title = title);
+            {
+                var <for-enumerable>child = children of (::system::Enumerable^);
+                var <for-enumerator>child = <for-enumerable>child.CreateEnumerator();
+                while (<for-enumerator>child.Next())
+                {
+                    var child = (cast (::demo::RefreshItem^) <for-enumerator>child.GetCurrent());
+                    {
+                        Children.Add(child);
+                    }
+                }
+            }
+        }
+    }
+}
+
+================================(61/61)================================
+module fontHelper;
+using presentation::*;
+
+func ChangeFontSize(oldFont : FontProperties, deltaSize : int) : (FontProperties)
+{
+    return {fontFamily : oldFont.fontFamily; size : (oldFont.size + deltaSize); antialias : true;};
+}
+

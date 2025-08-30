@@ -10,7 +10,7 @@ https://github.com/vczh-libraries
 #ifndef VCZH_WORKFLOW_COMPILER_GENERATED_MAINWINDOW
 #define VCZH_WORKFLOW_COMPILER_GENERATED_MAINWINDOW
 
-#include "Demo.h"
+#include "RemoteProtocolTest.h"
 
 #if defined( _MSC_VER)
 #pragma warning(push)
@@ -27,15 +27,15 @@ namespace rptest
 	class MainWindow : public ::vl::presentation::controls::GuiWindow, public ::rptest::MainWindowConstructor, public ::vl::reflection::Description<MainWindow>
 	{
 		friend class ::rptest::MainWindowConstructor;
-		friend struct ::vl_workflow_global::__vwsnf10_Demo_rptest_MainWindowConstructor___vwsn_rptest_MainWindow_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf11_Demo_rptest_MainWindowConstructor___vwsn_rptest_MainWindow_Initialize__;
-		friend struct ::vl_workflow_global::__vwsnf12_Demo_rptest_MainWindowConstructor___vwsn_rptest_MainWindow_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf13_Demo_rptest_MainWindowConstructor___vwsn_rptest_MainWindow_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf14_Demo_rptest_MainWindowConstructor___vwsn_rptest_MainWindow_Initialize__;
-		friend struct ::vl_workflow_global::__vwsnf15_Demo_rptest_MainWindowConstructor___vwsn_rptest_MainWindow_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf16_Demo_rptest_MainWindowConstructor___vwsn_rptest_MainWindow_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf8_Demo_rptest_MainWindowConstructor___vwsn_rptest_MainWindow_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf9_Demo_rptest_MainWindowConstructor___vwsn_rptest_MainWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf10_RemoteProtocolTest_rptest_MainWindowConstructor___vwsn_rptest_MainWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf11_RemoteProtocolTest_rptest_MainWindowConstructor___vwsn_rptest_MainWindow_Initialize__;
+		friend struct ::vl_workflow_global::__vwsnf12_RemoteProtocolTest_rptest_MainWindowConstructor___vwsn_rptest_MainWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf13_RemoteProtocolTest_rptest_MainWindowConstructor___vwsn_rptest_MainWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf14_RemoteProtocolTest_rptest_MainWindowConstructor___vwsn_rptest_MainWindow_Initialize__;
+		friend struct ::vl_workflow_global::__vwsnf15_RemoteProtocolTest_rptest_MainWindowConstructor___vwsn_rptest_MainWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf16_RemoteProtocolTest_rptest_MainWindowConstructor___vwsn_rptest_MainWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf8_RemoteProtocolTest_rptest_MainWindowConstructor___vwsn_rptest_MainWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf9_RemoteProtocolTest_rptest_MainWindowConstructor___vwsn_rptest_MainWindow_Initialize_;
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<MainWindow>;
 #endif

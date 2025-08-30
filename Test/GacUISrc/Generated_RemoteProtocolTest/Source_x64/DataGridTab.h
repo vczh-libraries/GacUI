@@ -10,7 +10,7 @@ https://github.com/vczh-libraries
 #ifndef VCZH_WORKFLOW_COMPILER_GENERATED_DATAGRIDTAB
 #define VCZH_WORKFLOW_COMPILER_GENERATED_DATAGRIDTAB
 
-#include "Demo.h"
+#include "RemoteProtocolTest.h"
 
 #if defined( _MSC_VER)
 #pragma warning(push)
@@ -27,11 +27,11 @@ namespace rptest
 	class DataGridTab : public ::vl::presentation::controls::GuiTabPage, public ::rptest::DataGridTabConstructor, public ::vl::reflection::Description<DataGridTab>
 	{
 		friend class ::rptest::DataGridTabConstructor;
-		friend struct ::vl_workflow_global::__vwsnf3_Demo_rptest_DataGridTabConstructor___vwsn_rptest_DataGridTab_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf4_Demo_rptest_DataGridTabConstructor___vwsn_rptest_DataGridTab_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf5_Demo_rptest_DataGridTabConstructor___vwsn_rptest_DataGridTab_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf6_Demo_rptest_DataGridTabConstructor___vwsn_rptest_DataGridTab_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf7_Demo_rptest_DataGridTabConstructor___vwsn_rptest_DataGridTab_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf3_RemoteProtocolTest_rptest_DataGridTabConstructor___vwsn_rptest_DataGridTab_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf4_RemoteProtocolTest_rptest_DataGridTabConstructor___vwsn_rptest_DataGridTab_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf5_RemoteProtocolTest_rptest_DataGridTabConstructor___vwsn_rptest_DataGridTab_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf6_RemoteProtocolTest_rptest_DataGridTabConstructor___vwsn_rptest_DataGridTab_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf7_RemoteProtocolTest_rptest_DataGridTabConstructor___vwsn_rptest_DataGridTab_Initialize_;
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<DataGridTab>;
 #endif

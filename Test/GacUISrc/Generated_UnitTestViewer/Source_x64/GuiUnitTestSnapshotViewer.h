@@ -139,11 +139,8 @@ namespace gaclib_controls
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<UnitTestSnapshotViewerWindowConstructor>;
 #endif
 	protected:
-		::vl::Ptr<::gaclib_controls::IUnitTestSnapshotViewerViewModel> ViewModel;
 		::gaclib_controls::UnitTestSnapshotViewerWindow* self;
-		::vl::presentation::controls::GuiBindableTreeView* treeViewFileNodes;
-		::vl::presentation::controls::GuiBindableTextList* textListFrames;
-		::vl::presentation::controls::GuiScrollContainer* scRendering;
+		::vl::Ptr<::gaclib_controls::IUnitTestSnapshotViewerViewModel> ViewModel;
 		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0;
 		::vl::presentation::compositions::GuiColumnSplitterComposition* __vwsn_precompile_1;
 		::vl::presentation::compositions::GuiColumnSplitterComposition* __vwsn_precompile_2;
@@ -165,6 +162,9 @@ namespace gaclib_controls
 		::vl::presentation::controls::GuiTabPage* __vwsn_precompile_18;
 		::vl::presentation::controls::GuiMultilineTextBox* __vwsn_precompile_19;
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_20;
+		::vl::presentation::controls::GuiBindableTreeView* treeViewFileNodes;
+		::vl::presentation::controls::GuiBindableTextList* textListFrames;
+		::vl::presentation::controls::GuiScrollContainer* scRendering;
 		void __vwsn_gaclib_controls_UnitTestSnapshotViewerWindow_Initialize(::gaclib_controls::UnitTestSnapshotViewerWindow* __vwsn_this_);
 	public:
 		UnitTestSnapshotViewerWindowConstructor();

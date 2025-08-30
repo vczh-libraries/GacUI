@@ -10,7 +10,7 @@ https://github.com/vczh-libraries
 #ifndef VCZH_WORKFLOW_COMPILER_GENERATED_CLICKMETAB
 #define VCZH_WORKFLOW_COMPILER_GENERATED_CLICKMETAB
 
-#include "Demo.h"
+#include "RemoteProtocolTest.h"
 
 #if defined( _MSC_VER)
 #pragma warning(push)
@@ -27,8 +27,8 @@ namespace rptest
 	class ClickMeTab : public ::vl::presentation::controls::GuiTabPage, public ::rptest::ClickMeTabConstructor, public ::vl::reflection::Description<ClickMeTab>
 	{
 		friend class ::rptest::ClickMeTabConstructor;
-		friend struct ::vl_workflow_global::__vwsnf1_Demo_rptest_ClickMeTabConstructor___vwsn_rptest_ClickMeTab_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf2_Demo_rptest_ClickMeTabConstructor___vwsn_rptest_ClickMeTab_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf1_RemoteProtocolTest_rptest_ClickMeTabConstructor___vwsn_rptest_ClickMeTab_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf2_RemoteProtocolTest_rptest_ClickMeTabConstructor___vwsn_rptest_ClickMeTab_Initialize_;
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ClickMeTab>;
 #endif
