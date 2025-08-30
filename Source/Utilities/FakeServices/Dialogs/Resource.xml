@@ -12,13 +12,13 @@
   <Folder name="UnitTestConfig">
     <Xml name="ImageData">
       <ImageData>
-        <Image Path="DataGridImages/None" Format="Png" Width="240" Height="240"/>
-        <Image Path="DataGridImages/Error" Format="Png" Width="240" Height="240"/>
-        <Image Path="DataGridImages/Question" Format="Png" Width="240" Height="240"/>
-        <Image Path="DataGridImages/Warning" Format="Png" Width="240" Height="240"/>
-        <Image Path="DataGridImages/Information" Format="Png" Width="240" Height="240"/>
-        <Image Path="DataGridImages/File" Format="Png" Width="240" Height="240"/>
-        <Image Path="DataGridImages/Folder" Format="Png" Width="240" Height="240"/>
+        <Image Path="Images/None" Format="Png" Width="240" Height="240"/>
+        <Image Path="Images/Error" Format="Png" Width="240" Height="240"/>
+        <Image Path="Images/Question" Format="Png" Width="240" Height="240"/>
+        <Image Path="Images/Warning" Format="Png" Width="240" Height="240"/>
+        <Image Path="Images/Information" Format="Png" Width="240" Height="240"/>
+        <Image Path="Images/File" Format="Png" Width="240" Height="240"/>
+        <Image Path="Images/Folder" Format="Png" Width="240" Height="240"/>
       </ImageData>
     </Xml>
   </Folder>

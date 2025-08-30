@@ -176,10 +176,10 @@ GUI_REGISTER_PLUGIN(GuiReflectionPlugin)
 Compiler
 ***********************************************************************/
 
-// #define BUILD_FAKEDIALOG
-// #define BUILD_UNITTESTVIEWER
-// #define BUILD_DARKSKIN
-// #define BUILD_FULLCONTROLTEST
+#define BUILD_FAKEDIALOG
+#define BUILD_UNITTESTVIEWER
+#define BUILD_DARKSKIN
+#define BUILD_FULLCONTROLTEST
 #define BUILD_REMOTEPROTOCOL_TEST
 
 void GuiMain()
@@ -234,7 +234,7 @@ void GuiMain()
 #ifdef BUILD_FULLCONTROLTEST
 	LoadResource(CompileResources(
 		targetCpuArchitecture,
-		L"Demo",
+		L"FullControlTest",
 		L"Source: Generated_FullControlTest",
 		L"../../../../Source/GacUI.h;../../../../Source/Utilities/FakeServices/Dialogs/Source/GuiFakeDialogServiceUI.h",
 		L"../../../../Source/Reflection/TypeDescriptors/GuiReflectionPlugin.h;../../../../Source/Utilities/FakeServices/Dialogs/Source/GuiFakeDialogServiceUIReflection.h",
@@ -249,7 +249,7 @@ void GuiMain()
 #ifdef BUILD_REMOTEPROTOCOL_TEST
 	LoadResource(CompileResources(
 		targetCpuArchitecture,
-		L"Demo",
+		L"RemoteProtocolTest",
 		L"Source: Generated_RemoteProtocolTest",
 		L"../../../../Source/GacUI.h;../../../../Source/Utilities/FakeServices/Dialogs/Source/GuiFakeDialogServiceUI.h",
 		L"../../../../Source/Reflection/TypeDescriptors/GuiReflectionPlugin.h;../../../../Source/Utilities/FakeServices/Dialogs/Source/GuiFakeDialogServiceUIReflection.h",

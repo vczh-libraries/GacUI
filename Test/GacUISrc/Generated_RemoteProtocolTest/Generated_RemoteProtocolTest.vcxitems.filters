@@ -12,25 +12,25 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Source_x64\MainWindow.h">
       <Filter>x64</Filter>
     </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)Source_x64\Demo.h">
+    <ClInclude Include="$(MSBuildThisFileDirectory)Source_x64\RemoteProtocolTest.h">
       <Filter>x64</Filter>
     </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)Source_x64\DemoIncludes.h">
+    <ClInclude Include="$(MSBuildThisFileDirectory)Source_x64\RemoteProtocolTestIncludes.h">
       <Filter>x64</Filter>
     </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)Source_x64\DemoReflection.h">
+    <ClInclude Include="$(MSBuildThisFileDirectory)Source_x64\RemoteProtocolTestReflection.h">
       <Filter>x64</Filter>
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)Source_x86\MainWindow.h">
       <Filter>x86</Filter>
     </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)Source_x86\Demo.h">
+    <ClInclude Include="$(MSBuildThisFileDirectory)Source_x86\RemoteProtocolTest.h">
       <Filter>x86</Filter>
     </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)Source_x86\DemoIncludes.h">
+    <ClInclude Include="$(MSBuildThisFileDirectory)Source_x86\RemoteProtocolTestIncludes.h">
       <Filter>x86</Filter>
     </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)Source_x86\DemoReflection.h">
+    <ClInclude Include="$(MSBuildThisFileDirectory)Source_x86\RemoteProtocolTestReflection.h">
       <Filter>x86</Filter>
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)Source_x86\ClickMeTab.h">
@@ -47,25 +47,25 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="$(MSBuildThisFileDirectory)Source_x64\Demo.cpp">
+    <ClCompile Include="$(MSBuildThisFileDirectory)Source_x64\RemoteProtocolTest.cpp">
       <Filter>x64</Filter>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)Source_x64\DemoReflection.cpp">
+    <ClCompile Include="$(MSBuildThisFileDirectory)Source_x64\RemoteProtocolTestReflection.cpp">
       <Filter>x64</Filter>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)Source_x64\DemoResource.cpp">
+    <ClCompile Include="$(MSBuildThisFileDirectory)Source_x64\RemoteProtocolTestResource.cpp">
       <Filter>x64</Filter>
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)Source_x64\MainWindow.cpp">
       <Filter>x64</Filter>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)Source_x86\Demo.cpp">
+    <ClCompile Include="$(MSBuildThisFileDirectory)Source_x86\RemoteProtocolTest.cpp">
       <Filter>x86</Filter>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)Source_x86\DemoReflection.cpp">
+    <ClCompile Include="$(MSBuildThisFileDirectory)Source_x86\RemoteProtocolTestReflection.cpp">
       <Filter>x86</Filter>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)Source_x86\DemoResource.cpp">
+    <ClCompile Include="$(MSBuildThisFileDirectory)Source_x86\RemoteProtocolTestResource.cpp">
       <Filter>x86</Filter>
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)Source_x86\MainWindow.cpp">

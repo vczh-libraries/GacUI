@@ -1,7 +1,7 @@
 #pragma comment(linker,"\"/manifestdependency:type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
 
 #include "DarkSkin.h"
-#include "DemoReflection.h"
+#include "FullControlTestReflection.h"
 #include "../../../Source/PlatformProviders/Windows/WinNativeWindow.h"
 #include "resource.h"
 
@@ -17,7 +17,7 @@ using namespace demo;
 
 void GuiMain()
 {
-	LoadDemoTypes();
+	LoadFullControlTestTypes();
 	windows::SetWindowDefaultIcon(MAINICON);
 	theme::RegisterTheme(Ptr(new darkskin::Theme));
 	{

@@ -12,16 +12,16 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Source_x86\MainWindow.h">
       <Filter>x86</Filter>
     </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)Source_x86\Demo.h">
+    <ClInclude Include="$(MSBuildThisFileDirectory)Source_x86\FullControlTest.h">
       <Filter>x86</Filter>
     </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)Source_x86\Demo1.h">
+    <ClInclude Include="$(MSBuildThisFileDirectory)Source_x86\FullControlTest1.h">
       <Filter>x86</Filter>
     </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)Source_x86\DemoIncludes.h">
+    <ClInclude Include="$(MSBuildThisFileDirectory)Source_x86\FullControlTestIncludes.h">
       <Filter>x86</Filter>
     </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)Source_x86\DemoReflection.h">
+    <ClInclude Include="$(MSBuildThisFileDirectory)Source_x86\FullControlTestReflection.h">
       <Filter>x86</Filter>
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)Source_x86\DocumentEditorBase.h">
@@ -30,16 +30,16 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Source_x64\MainWindow.h">
       <Filter>x64</Filter>
     </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)Source_x64\Demo.h">
+    <ClInclude Include="$(MSBuildThisFileDirectory)Source_x64\FullControlTest.h">
       <Filter>x64</Filter>
     </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)Source_x64\Demo1.h">
+    <ClInclude Include="$(MSBuildThisFileDirectory)Source_x64\FullControlTest1.h">
       <Filter>x64</Filter>
     </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)Source_x64\DemoIncludes.h">
+    <ClInclude Include="$(MSBuildThisFileDirectory)Source_x64\FullControlTestIncludes.h">
       <Filter>x64</Filter>
     </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)Source_x64\DemoReflection.h">
+    <ClInclude Include="$(MSBuildThisFileDirectory)Source_x64\FullControlTestReflection.h">
       <Filter>x64</Filter>
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)Source_x64\DocumentEditorBase.h">
@@ -47,13 +47,13 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="$(MSBuildThisFileDirectory)Source_x86\Demo.cpp">
+    <ClCompile Include="$(MSBuildThisFileDirectory)Source_x86\FullControlTest.cpp">
       <Filter>x86</Filter>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)Source_x86\DemoReflection.cpp">
+    <ClCompile Include="$(MSBuildThisFileDirectory)Source_x86\FullControlTestReflection.cpp">
       <Filter>x86</Filter>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)Source_x86\DemoResource.cpp">
+    <ClCompile Include="$(MSBuildThisFileDirectory)Source_x86\FullControlTestResource.cpp">
       <Filter>x86</Filter>
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)Source_x86\DocumentEditorBase.cpp">
@@ -62,13 +62,13 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Source_x86\MainWindow.cpp">
       <Filter>x86</Filter>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)Source_x64\Demo.cpp">
+    <ClCompile Include="$(MSBuildThisFileDirectory)Source_x64\FullControlTest.cpp">
       <Filter>x64</Filter>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)Source_x64\DemoReflection.cpp">
+    <ClCompile Include="$(MSBuildThisFileDirectory)Source_x64\FullControlTestReflection.cpp">
       <Filter>x64</Filter>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)Source_x64\DemoResource.cpp">
+    <ClCompile Include="$(MSBuildThisFileDirectory)Source_x64\FullControlTestResource.cpp">
       <Filter>x64</Filter>
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)Source_x64\DocumentEditorBase.cpp">
