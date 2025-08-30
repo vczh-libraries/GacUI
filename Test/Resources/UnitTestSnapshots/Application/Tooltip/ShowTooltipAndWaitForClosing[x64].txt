@@ -27,12 +27,6 @@ namespace gacuisrc_unittest
         var self : ::gacuisrc_unittest::MainWindow* = null of (::gacuisrc_unittest::MainWindow*);
 
         @cpp:Protected
-        var buttonTooltipA : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
-
-        @cpp:Protected
-        var buttonTooltipB : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
-
-        @cpp:Protected
         var <precompile>0 : ::presentation::compositions::GuiTableComposition* = null of (::presentation::compositions::GuiTableComposition*);
 
         @cpp:Protected
@@ -54,6 +48,12 @@ namespace gacuisrc_unittest
         var <precompile>6 : ::presentation::controls::GuiLabel* = null of (::presentation::controls::GuiLabel*);
 
         @cpp:Protected
+        var buttonTooltipA : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
+
+        @cpp:Protected
+        var buttonTooltipB : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
+
+        @cpp:Protected
         func <gacuisrc_unittest-MainWindow>Initialize(<this> : ::gacuisrc_unittest::MainWindow*) : (::system::Void)
         {
             (self = <this>);
@@ -65,10 +65,10 @@ namespace gacuisrc_unittest
             }
             (<precompile>0 = new (::presentation::compositions::GuiTableComposition*)());
             {
-                (<precompile>0.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+                (<precompile>0.CellPadding = 5 of (::system::Int64));
             }
             {
-                (<precompile>0.CellPadding = 5 of (::system::Int64));
+                (<precompile>0.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
                 <precompile>0.SetRowsAndColumns(3, 2);

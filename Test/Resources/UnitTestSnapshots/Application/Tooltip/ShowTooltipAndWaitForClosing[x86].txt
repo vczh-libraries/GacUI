@@ -36,25 +36,22 @@ namespace gacuisrc_unittest
         var <precompile>2 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
-        var <precompile>3 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
+        var <precompile>3 : ::presentation::controls::GuiLabel* = null of (::presentation::controls::GuiLabel*);
 
         @cpp:Protected
-        var <precompile>4 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+        var <precompile>4 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
 
         @cpp:Protected
-        var <precompile>5 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
+        var <precompile>5 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
-        var <precompile>6 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+        var <precompile>6 : ::presentation::controls::GuiLabel* = null of (::presentation::controls::GuiLabel*);
 
         @cpp:Protected
-        var button1 : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
+        var buttonTooltipA : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
 
         @cpp:Protected
-        var button2 : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
-
-        @cpp:Protected
-        var button3 : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
+        var buttonTooltipB : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
 
         @cpp:Protected
         func <gacuisrc_unittest-MainWindow>Initialize(<this> : ::gacuisrc_unittest::MainWindow*) : (::system::Void)
@@ -64,27 +61,20 @@ namespace gacuisrc_unittest
                 (self.ClientSize = {x : 480; y : 320;} of (::presentation::Size));
             }
             {
-                (self.Text = "TabNavigate");
+                (self.Text = "Tooltip");
             }
             (<precompile>0 = new (::presentation::compositions::GuiTableComposition*)());
             {
-                (<precompile>0.BorderVisible = true);
-            }
-            {
-                (<precompile>0.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
-            }
-            {
-                (<precompile>0.CellPadding = 5 of (::system::Int64));
+                (<precompile>0.CellPadding = 5 of (::system::Int32));
             }
             {
                 (<precompile>0.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
-                <precompile>0.SetRowsAndColumns(4, 2);
+                <precompile>0.SetRowsAndColumns(3, 2);
                 <precompile>0.SetRowOption(0, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
                 <precompile>0.SetRowOption(1, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
-                <precompile>0.SetRowOption(2, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
-                <precompile>0.SetRowOption(3, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
+                <precompile>0.SetRowOption(2, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
                 <precompile>0.SetColumnOption(0, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
                 <precompile>0.SetColumnOption(1, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
             }
@@ -93,63 +83,60 @@ namespace gacuisrc_unittest
                 <precompile>1.SetSite(0, 0, 1, 1);
             }
             {
-                (button1 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
-                <this>.SetNamedObject("button1", button1);
+                (buttonTooltipA = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
+                <this>.SetNamedObject("buttonTooltipA", buttonTooltipA);
             }
-            (<precompile>2 = button1.BoundsComposition);
+            {
+                (<precompile>3 = new (::presentation::controls::GuiLabel*)(::presentation::theme::ThemeName::Label));
+            }
+            {
+                (<precompile>3.Text = "This is Tooltip A");
+            }
+            {
+                (buttonTooltipA.TooltipControl = <precompile>3);
+            }
+            (<precompile>2 = buttonTooltipA.BoundsComposition);
             {
                 (<precompile>2.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
-                (button1.Text = "First");
+                (buttonTooltipA.Text = "TooltipA");
             }
             {
-                <precompile>1.AddChild(button1.BoundsComposition);
+                <precompile>1.AddChild(buttonTooltipA.BoundsComposition);
             }
             {
                 <precompile>0.AddChild(<precompile>1);
             }
-            (<precompile>3 = new (::presentation::compositions::GuiCellComposition*)());
+            (<precompile>4 = new (::presentation::compositions::GuiCellComposition*)());
             {
-                <precompile>3.SetSite(1, 0, 1, 1);
+                <precompile>4.SetSite(1, 0, 1, 1);
             }
             {
-                (button2 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
-                <this>.SetNamedObject("button2", button2);
-            }
-            (<precompile>4 = button2.BoundsComposition);
-            {
-                (<precompile>4.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+                (buttonTooltipB = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
+                <this>.SetNamedObject("buttonTooltipB", buttonTooltipB);
             }
             {
-                (button2.Text = "Second");
+                (<precompile>6 = new (::presentation::controls::GuiLabel*)(::presentation::theme::ThemeName::Label));
             }
             {
-                <precompile>3.AddChild(button2.BoundsComposition);
+                (<precompile>6.Text = "This is Tooltip B");
             }
             {
-                <precompile>0.AddChild(<precompile>3);
+                (buttonTooltipB.TooltipControl = <precompile>6);
             }
-            (<precompile>5 = new (::presentation::compositions::GuiCellComposition*)());
+            (<precompile>5 = buttonTooltipB.BoundsComposition);
             {
-                <precompile>5.SetSite(2, 0, 1, 1);
-            }
-            {
-                (button3 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
-                <this>.SetNamedObject("button3", button3);
-            }
-            (<precompile>6 = button3.BoundsComposition);
-            {
-                (<precompile>6.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+                (<precompile>5.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
-                (button3.Text = "Third");
+                (buttonTooltipB.Text = "TooltipB");
             }
             {
-                <precompile>5.AddChild(button3.BoundsComposition);
+                <precompile>4.AddChild(buttonTooltipB.BoundsComposition);
             }
             {
-                <precompile>0.AddChild(<precompile>5);
+                <precompile>0.AddChild(<precompile>4);
             }
             {
                 self.ContainerComposition.AddChild(<precompile>0);

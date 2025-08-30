@@ -1,0 +1,569 @@
+﻿================================(1/2)================================
+module <constructor>gacuisrc_unittest::MainWindow;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace gacuisrc_unittest
+{
+    class MainWindowConstructor
+    {
+        @cpp:Protected
+        var self : ::gacuisrc_unittest::MainWindow* = null of (::gacuisrc_unittest::MainWindow*);
+
+        @cpp:Protected
+        var dialogDisplayOK : ::presentation::controls::GuiMessageDialog* = null of (::presentation::controls::GuiMessageDialog*);
+
+        @cpp:Protected
+        var dialogDisplayOKCancel : ::presentation::controls::GuiMessageDialog* = null of (::presentation::controls::GuiMessageDialog*);
+
+        @cpp:Protected
+        var dialogDisplayYesNo : ::presentation::controls::GuiMessageDialog* = null of (::presentation::controls::GuiMessageDialog*);
+
+        @cpp:Protected
+        var dialogDisplayYesNoCancel : ::presentation::controls::GuiMessageDialog* = null of (::presentation::controls::GuiMessageDialog*);
+
+        @cpp:Protected
+        var dialogDisplayRetryCancel : ::presentation::controls::GuiMessageDialog* = null of (::presentation::controls::GuiMessageDialog*);
+
+        @cpp:Protected
+        var dialogDisplayAbortRetryIgnore : ::presentation::controls::GuiMessageDialog* = null of (::presentation::controls::GuiMessageDialog*);
+
+        @cpp:Protected
+        var dialogDisplayCancelTryAgainContinue : ::presentation::controls::GuiMessageDialog* = null of (::presentation::controls::GuiMessageDialog*);
+
+        @cpp:Protected
+        var <precompile>0 : ::presentation::compositions::GuiTableComposition* = null of (::presentation::compositions::GuiTableComposition*);
+
+        @cpp:Protected
+        var <precompile>1 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
+
+        @cpp:Protected
+        var <precompile>2 : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
+
+        @cpp:Protected
+        var <precompile>3 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var <precompile>4 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
+
+        @cpp:Protected
+        var <precompile>5 : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
+
+        @cpp:Protected
+        var <precompile>6 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var <precompile>7 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
+
+        @cpp:Protected
+        var <precompile>8 : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
+
+        @cpp:Protected
+        var <precompile>9 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var <precompile>10 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
+
+        @cpp:Protected
+        var <precompile>11 : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
+
+        @cpp:Protected
+        var <precompile>12 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var <precompile>13 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
+
+        @cpp:Protected
+        var <precompile>14 : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
+
+        @cpp:Protected
+        var <precompile>15 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var <precompile>16 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
+
+        @cpp:Protected
+        var <precompile>17 : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
+
+        @cpp:Protected
+        var <precompile>18 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var <precompile>19 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
+
+        @cpp:Protected
+        var <precompile>20 : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
+
+        @cpp:Protected
+        var <precompile>21 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        func <gacuisrc_unittest-MainWindow>Initialize(<this> : ::gacuisrc_unittest::MainWindow*) : (::system::Void)
+        {
+            (self = <this>);
+            {
+                (self.ClientSize = {x : 480; y : 320;} of (::presentation::Size));
+            }
+            {
+                (self.Text = "MessageDialog");
+            }
+            (dialogDisplayOK = new (::presentation::controls::GuiMessageDialog*)());
+            <this>.SetNamedObject("dialogDisplayOK", dialogDisplayOK);
+            {
+                (dialogDisplayOK.Title = "DisplayOK");
+            }
+            {
+                (dialogDisplayOK.DefaultButton = DefaultFirst of (::presentation::INativeDialogService::MessageBoxDefaultButton));
+            }
+            {
+                (dialogDisplayOK.Input = DisplayOK of (::presentation::INativeDialogService::MessageBoxButtonsInput));
+            }
+            {
+                (dialogDisplayOK.Text = "Select a button!");
+            }
+            {
+                self.AddComponent(dialogDisplayOK);
+            }
+            (dialogDisplayOKCancel = new (::presentation::controls::GuiMessageDialog*)());
+            <this>.SetNamedObject("dialogDisplayOKCancel", dialogDisplayOKCancel);
+            {
+                (dialogDisplayOKCancel.Icon = IconError of (::presentation::INativeDialogService::MessageBoxIcons));
+            }
+            {
+                (dialogDisplayOKCancel.Title = "DisplayOKCancel");
+            }
+            {
+                (dialogDisplayOKCancel.DefaultButton = DefaultSecond of (::presentation::INativeDialogService::MessageBoxDefaultButton));
+            }
+            {
+                (dialogDisplayOKCancel.Input = DisplayOKCancel of (::presentation::INativeDialogService::MessageBoxButtonsInput));
+            }
+            {
+                (dialogDisplayOKCancel.Text = "Select a button!");
+            }
+            {
+                self.AddComponent(dialogDisplayOKCancel);
+            }
+            (dialogDisplayYesNo = new (::presentation::controls::GuiMessageDialog*)());
+            <this>.SetNamedObject("dialogDisplayYesNo", dialogDisplayYesNo);
+            {
+                (dialogDisplayYesNo.Icon = IconWarning of (::presentation::INativeDialogService::MessageBoxIcons));
+            }
+            {
+                (dialogDisplayYesNo.Title = "DisplayYesNo");
+            }
+            {
+                (dialogDisplayYesNo.DefaultButton = DefaultSecond of (::presentation::INativeDialogService::MessageBoxDefaultButton));
+            }
+            {
+                (dialogDisplayYesNo.Input = DisplayYesNo of (::presentation::INativeDialogService::MessageBoxButtonsInput));
+            }
+            {
+                (dialogDisplayYesNo.Text = "Select a button!");
+            }
+            {
+                self.AddComponent(dialogDisplayYesNo);
+            }
+            (dialogDisplayYesNoCancel = new (::presentation::controls::GuiMessageDialog*)());
+            <this>.SetNamedObject("dialogDisplayYesNoCancel", dialogDisplayYesNoCancel);
+            {
+                (dialogDisplayYesNoCancel.Icon = IconQuestion of (::presentation::INativeDialogService::MessageBoxIcons));
+            }
+            {
+                (dialogDisplayYesNoCancel.Title = "DisplayYesNoCancel");
+            }
+            {
+                (dialogDisplayYesNoCancel.DefaultButton = DefaultSecond of (::presentation::INativeDialogService::MessageBoxDefaultButton));
+            }
+            {
+                (dialogDisplayYesNoCancel.Input = DisplayYesNoCancel of (::presentation::INativeDialogService::MessageBoxButtonsInput));
+            }
+            {
+                (dialogDisplayYesNoCancel.Text = "Select a button!");
+            }
+            {
+                self.AddComponent(dialogDisplayYesNoCancel);
+            }
+            (dialogDisplayRetryCancel = new (::presentation::controls::GuiMessageDialog*)());
+            <this>.SetNamedObject("dialogDisplayRetryCancel", dialogDisplayRetryCancel);
+            {
+                (dialogDisplayRetryCancel.Icon = IconInformation of (::presentation::INativeDialogService::MessageBoxIcons));
+            }
+            {
+                (dialogDisplayRetryCancel.Title = "DisplayRetryCancel");
+            }
+            {
+                (dialogDisplayRetryCancel.DefaultButton = DefaultSecond of (::presentation::INativeDialogService::MessageBoxDefaultButton));
+            }
+            {
+                (dialogDisplayRetryCancel.Input = DisplayRetryCancel of (::presentation::INativeDialogService::MessageBoxButtonsInput));
+            }
+            {
+                (dialogDisplayRetryCancel.Text = "Select a button!");
+            }
+            {
+                self.AddComponent(dialogDisplayRetryCancel);
+            }
+            (dialogDisplayAbortRetryIgnore = new (::presentation::controls::GuiMessageDialog*)());
+            <this>.SetNamedObject("dialogDisplayAbortRetryIgnore", dialogDisplayAbortRetryIgnore);
+            {
+                (dialogDisplayAbortRetryIgnore.Title = "DisplayAbortRetryIgnore");
+            }
+            {
+                (dialogDisplayAbortRetryIgnore.DefaultButton = DefaultSecond of (::presentation::INativeDialogService::MessageBoxDefaultButton));
+            }
+            {
+                (dialogDisplayAbortRetryIgnore.Input = DisplayAbortRetryIgnore of (::presentation::INativeDialogService::MessageBoxButtonsInput));
+            }
+            {
+                (dialogDisplayAbortRetryIgnore.Text = "Select a button!");
+            }
+            {
+                self.AddComponent(dialogDisplayAbortRetryIgnore);
+            }
+            (dialogDisplayCancelTryAgainContinue = new (::presentation::controls::GuiMessageDialog*)());
+            <this>.SetNamedObject("dialogDisplayCancelTryAgainContinue", dialogDisplayCancelTryAgainContinue);
+            {
+                (dialogDisplayCancelTryAgainContinue.Title = "DisplayCancelTryAgainContinue");
+            }
+            {
+                (dialogDisplayCancelTryAgainContinue.DefaultButton = DefaultSecond of (::presentation::INativeDialogService::MessageBoxDefaultButton));
+            }
+            {
+                (dialogDisplayCancelTryAgainContinue.Input = DisplayCancelTryAgainContinue of (::presentation::INativeDialogService::MessageBoxButtonsInput));
+            }
+            {
+                (dialogDisplayCancelTryAgainContinue.Text = "Select a button!");
+            }
+            {
+                self.AddComponent(dialogDisplayCancelTryAgainContinue);
+            }
+            (<precompile>0 = new (::presentation::compositions::GuiTableComposition*)());
+            {
+                (<precompile>0.CellPadding = 5 of (::system::Int32));
+            }
+            {
+                (<precompile>0.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                <precompile>0.SetRowsAndColumns(8, 2);
+                <precompile>0.SetRowOption(0, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
+                <precompile>0.SetRowOption(1, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
+                <precompile>0.SetRowOption(2, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
+                <precompile>0.SetRowOption(3, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
+                <precompile>0.SetRowOption(4, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
+                <precompile>0.SetRowOption(5, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
+                <precompile>0.SetRowOption(6, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
+                <precompile>0.SetRowOption(7, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
+                <precompile>0.SetColumnOption(0, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
+                <precompile>0.SetColumnOption(1, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
+            }
+            (<precompile>1 = new (::presentation::compositions::GuiCellComposition*)());
+            {
+                <precompile>1.SetSite(0, 0, 1, 1);
+            }
+            {
+                (<precompile>2 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
+            }
+            (<precompile>3 = <precompile>2.BoundsComposition);
+            {
+                (<precompile>3.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (<precompile>2.Text = "DisplayOK");
+            }
+            {
+                <precompile>1.AddChild(<precompile>2.BoundsComposition);
+            }
+            {
+                <precompile>0.AddChild(<precompile>1);
+            }
+            (<precompile>4 = new (::presentation::compositions::GuiCellComposition*)());
+            {
+                <precompile>4.SetSite(1, 0, 1, 1);
+            }
+            {
+                (<precompile>5 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
+            }
+            (<precompile>6 = <precompile>5.BoundsComposition);
+            {
+                (<precompile>6.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (<precompile>5.Text = "DisplayOKCancel");
+            }
+            {
+                <precompile>4.AddChild(<precompile>5.BoundsComposition);
+            }
+            {
+                <precompile>0.AddChild(<precompile>4);
+            }
+            (<precompile>7 = new (::presentation::compositions::GuiCellComposition*)());
+            {
+                <precompile>7.SetSite(2, 0, 1, 1);
+            }
+            {
+                (<precompile>8 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
+            }
+            (<precompile>9 = <precompile>8.BoundsComposition);
+            {
+                (<precompile>9.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (<precompile>8.Text = "DisplayYesNo");
+            }
+            {
+                <precompile>7.AddChild(<precompile>8.BoundsComposition);
+            }
+            {
+                <precompile>0.AddChild(<precompile>7);
+            }
+            (<precompile>10 = new (::presentation::compositions::GuiCellComposition*)());
+            {
+                <precompile>10.SetSite(3, 0, 1, 1);
+            }
+            {
+                (<precompile>11 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
+            }
+            (<precompile>12 = <precompile>11.BoundsComposition);
+            {
+                (<precompile>12.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (<precompile>11.Text = "DisplayYesNoCancel");
+            }
+            {
+                <precompile>10.AddChild(<precompile>11.BoundsComposition);
+            }
+            {
+                <precompile>0.AddChild(<precompile>10);
+            }
+            (<precompile>13 = new (::presentation::compositions::GuiCellComposition*)());
+            {
+                <precompile>13.SetSite(4, 0, 1, 1);
+            }
+            {
+                (<precompile>14 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
+            }
+            (<precompile>15 = <precompile>14.BoundsComposition);
+            {
+                (<precompile>15.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (<precompile>14.Text = "DisplayRetryCancel");
+            }
+            {
+                <precompile>13.AddChild(<precompile>14.BoundsComposition);
+            }
+            {
+                <precompile>0.AddChild(<precompile>13);
+            }
+            (<precompile>16 = new (::presentation::compositions::GuiCellComposition*)());
+            {
+                <precompile>16.SetSite(5, 0, 1, 1);
+            }
+            {
+                (<precompile>17 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
+            }
+            (<precompile>18 = <precompile>17.BoundsComposition);
+            {
+                (<precompile>18.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (<precompile>17.Text = "DisplayAbortRetryIgnore");
+            }
+            {
+                <precompile>16.AddChild(<precompile>17.BoundsComposition);
+            }
+            {
+                <precompile>0.AddChild(<precompile>16);
+            }
+            (<precompile>19 = new (::presentation::compositions::GuiCellComposition*)());
+            {
+                <precompile>19.SetSite(6, 0, 1, 1);
+            }
+            {
+                (<precompile>20 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
+            }
+            (<precompile>21 = <precompile>20.BoundsComposition);
+            {
+                (<precompile>21.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (<precompile>20.Text = "DisplayCancelTryAgainContinue");
+            }
+            {
+                <precompile>19.AddChild(<precompile>20.BoundsComposition);
+            }
+            {
+                <precompile>0.AddChild(<precompile>19);
+            }
+            {
+                self.ContainerComposition.AddChild(<precompile>0);
+            }
+            {
+                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                {
+                    var result = dialogDisplayOK.ShowDialog();
+                    self.UpdateWindowTitle(result);
+                };
+                attach(<precompile>2.Clicked, <event-handler>);
+            }
+            {
+                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                {
+                    var result = dialogDisplayOKCancel.ShowDialog();
+                    self.UpdateWindowTitle(result);
+                };
+                attach(<precompile>5.Clicked, <event-handler>);
+            }
+            {
+                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                {
+                    var result = dialogDisplayYesNo.ShowDialog();
+                    self.UpdateWindowTitle(result);
+                };
+                attach(<precompile>8.Clicked, <event-handler>);
+            }
+            {
+                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                {
+                    var result = dialogDisplayYesNoCancel.ShowDialog();
+                    self.UpdateWindowTitle(result);
+                };
+                attach(<precompile>11.Clicked, <event-handler>);
+            }
+            {
+                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                {
+                    var result = dialogDisplayRetryCancel.ShowDialog();
+                    self.UpdateWindowTitle(result);
+                };
+                attach(<precompile>14.Clicked, <event-handler>);
+            }
+            {
+                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                {
+                    var result = dialogDisplayAbortRetryIgnore.ShowDialog();
+                    self.UpdateWindowTitle(result);
+                };
+                attach(<precompile>17.Clicked, <event-handler>);
+            }
+            {
+                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                {
+                    var result = dialogDisplayCancelTryAgainContinue.ShowDialog();
+                    self.UpdateWindowTitle(result);
+                };
+                attach(<precompile>20.Clicked, <event-handler>);
+            }
+        }
+
+        new ()
+        {
+        }
+    }
+}
+
+================================(2/2)================================
+module <instance>gacuisrc_unittest::MainWindow;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace gacuisrc_unittest
+{
+    @cpp:File("MainWindow")
+    @cpp:Friend(typeof(MainWindowConstructor))
+    class MainWindow : ::presentation::controls::GuiWindow, MainWindowConstructor
+    {
+        func UpdateWindowTitle(result : INativeDialogService::MessageBoxButtonsOutput) : (void)
+        {
+            {
+                var <switch>0 : ::presentation::INativeDialogService::MessageBoxButtonsOutput = result;
+                if ((<switch>0 == SelectOK of (::presentation::INativeDialogService::MessageBoxButtonsOutput)))
+                {
+                    (self.Text = "SelectOK");
+                }
+                else if ((<switch>0 == SelectCancel of (::presentation::INativeDialogService::MessageBoxButtonsOutput)))
+                {
+                    (self.Text = "SelectCancel");
+                }
+                else if ((<switch>0 == SelectYes of (::presentation::INativeDialogService::MessageBoxButtonsOutput)))
+                {
+                    (self.Text = "SelectYes");
+                }
+                else if ((<switch>0 == SelectNo of (::presentation::INativeDialogService::MessageBoxButtonsOutput)))
+                {
+                    (self.Text = "SelectNo");
+                }
+                else if ((<switch>0 == SelectRetry of (::presentation::INativeDialogService::MessageBoxButtonsOutput)))
+                {
+                    (self.Text = "SelectRetry");
+                }
+                else if ((<switch>0 == SelectAbort of (::presentation::INativeDialogService::MessageBoxButtonsOutput)))
+                {
+                    (self.Text = "SelectAbort");
+                }
+                else if ((<switch>0 == SelectIgnore of (::presentation::INativeDialogService::MessageBoxButtonsOutput)))
+                {
+                    (self.Text = "SelectIgnore");
+                }
+                else if ((<switch>0 == SelectTryAgain of (::presentation::INativeDialogService::MessageBoxButtonsOutput)))
+                {
+                    (self.Text = "SelectTryAgain");
+                }
+                else if ((<switch>0 == SelectContinue of (::presentation::INativeDialogService::MessageBoxButtonsOutput)))
+                {
+                    (self.Text = "SelectContinue");
+                }
+            }
+        }
+
+        new* ()
+            :::presentation::controls::GuiWindow(::presentation::theme::ThemeName::Window)
+        {
+            var <resource> = ::presentation::IGuiResourceManager::GetResourceManager().GetResourceFromClassName("gacuisrc_unittest::MainWindow");
+            var <resolver> = new (::presentation::GuiResourcePathResolver^)(<resource>, <resource>.WorkingDirectory);
+            this.SetResourceResolver(<resolver>);
+            this.<gacuisrc_unittest-MainWindow>Initialize(this);
+        }
+
+        delete
+        {
+            FinalizeInstanceRecursively(this of (::presentation::controls::GuiControlHost*));
+        }
+    }
+}
+

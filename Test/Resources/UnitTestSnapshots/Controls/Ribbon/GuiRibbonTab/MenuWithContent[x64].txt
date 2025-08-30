@@ -78,15 +78,6 @@ namespace gacuisrc_unittest
         var <precompile>16 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
-        var tab : ::presentation::controls::GuiRibbonTab* = null of (::presentation::controls::GuiRibbonTab*);
-
-        @cpp:Protected
-        var tabPageOptions : ::presentation::controls::GuiRibbonTabPage* = null of (::presentation::controls::GuiRibbonTabPage*);
-
-        @cpp:Protected
-        var tabPageLabel : ::presentation::controls::GuiRibbonTabPage* = null of (::presentation::controls::GuiRibbonTabPage*);
-
-        @cpp:Protected
         var <precompile>17 : ::presentation::compositions::GuiGraphicsComposition* = null of (::presentation::compositions::GuiGraphicsComposition*);
 
         @cpp:Protected
@@ -94,6 +85,15 @@ namespace gacuisrc_unittest
 
         @cpp:Protected
         var <precompile>19 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var tab : ::presentation::controls::GuiRibbonTab* = null of (::presentation::controls::GuiRibbonTab*);
+
+        @cpp:Protected
+        var tabPageOptions : ::presentation::controls::GuiRibbonTabPage* = null of (::presentation::controls::GuiRibbonTabPage*);
+
+        @cpp:Protected
+        var tabPageLabel : ::presentation::controls::GuiRibbonTabPage* = null of (::presentation::controls::GuiRibbonTabPage*);
 
         @cpp:Protected
         var commandUndo : ::presentation::controls::GuiToolstripCommand* = null of (::presentation::controls::GuiToolstripCommand*);

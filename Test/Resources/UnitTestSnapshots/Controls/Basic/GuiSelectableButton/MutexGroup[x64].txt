@@ -27,15 +27,6 @@ namespace gacuisrc_unittest
         var self : ::gacuisrc_unittest::MainWindow* = null of (::gacuisrc_unittest::MainWindow*);
 
         @cpp:Protected
-        var button1 : ::presentation::controls::GuiSelectableButton* = null of (::presentation::controls::GuiSelectableButton*);
-
-        @cpp:Protected
-        var button2 : ::presentation::controls::GuiSelectableButton* = null of (::presentation::controls::GuiSelectableButton*);
-
-        @cpp:Protected
-        var button3 : ::presentation::controls::GuiSelectableButton* = null of (::presentation::controls::GuiSelectableButton*);
-
-        @cpp:Protected
         var <precompile>0 : ::presentation::compositions::GuiStackComposition* = null of (::presentation::compositions::GuiStackComposition*);
 
         @cpp:Protected
@@ -57,9 +48,6 @@ namespace gacuisrc_unittest
         var <precompile>6 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
-        var button4 : ::presentation::controls::GuiSelectableButton* = null of (::presentation::controls::GuiSelectableButton*);
-
-        @cpp:Protected
         var <precompile>7 : ::presentation::compositions::GuiStackItemComposition* = null of (::presentation::compositions::GuiStackItemComposition*);
 
         @cpp:Protected
@@ -76,6 +64,18 @@ namespace gacuisrc_unittest
 
         @cpp:Protected
         var <precompile>12 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var button1 : ::presentation::controls::GuiSelectableButton* = null of (::presentation::controls::GuiSelectableButton*);
+
+        @cpp:Protected
+        var button2 : ::presentation::controls::GuiSelectableButton* = null of (::presentation::controls::GuiSelectableButton*);
+
+        @cpp:Protected
+        var button3 : ::presentation::controls::GuiSelectableButton* = null of (::presentation::controls::GuiSelectableButton*);
+
+        @cpp:Protected
+        var button4 : ::presentation::controls::GuiSelectableButton* = null of (::presentation::controls::GuiSelectableButton*);
 
         @cpp:Protected
         var mutex1 : ::presentation::controls::GuiSelectableButton::MutexGroupController* = null of (::presentation::controls::GuiSelectableButton::MutexGroupController*);

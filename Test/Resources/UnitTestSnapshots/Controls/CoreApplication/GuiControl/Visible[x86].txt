@@ -489,10 +489,10 @@ namespace gacuisrc_unittest
                 (<precompile>1.BorderVisible = true);
             }
             {
-                (<precompile>1.CellPadding = 5 of (::system::Int32));
+                (<precompile>1.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
             }
             {
-                (<precompile>1.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+                (<precompile>1.CellPadding = 5 of (::system::Int32));
             }
             {
                 (<precompile>1.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));

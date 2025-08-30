@@ -27,58 +27,14 @@ namespace gacuisrc_unittest
         var self : ::gacuisrc_unittest::MainWindow* = null of (::gacuisrc_unittest::MainWindow*);
 
         @cpp:Protected
-        var <precompile>0 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
-
-        @cpp:Protected
-        var button1 : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
-
-        @cpp:Protected
-        var button2 : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
-
-        @cpp:Protected
         func <gacuisrc_unittest-MainWindow>Initialize(<this> : ::gacuisrc_unittest::MainWindow*) : (::system::Void)
         {
             (self = <this>);
             {
-                (self.ClientSize = {x : 320; y : 240;} of (::presentation::Size));
+                (self.ClientSize = {x : 480; y : 320;} of (::presentation::Size));
             }
             {
-                (self.Text = "GuiButton");
-            }
-            {
-                (button1 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
-                <this>.SetNamedObject("button1", button1);
-            }
-            {
-                (button2 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
-                <this>.SetNamedObject("button2", button2);
-            }
-            (<precompile>0 = button2.BoundsComposition);
-            {
-                (<precompile>0.AlignmentToParent = {left : 10; top : 10; right : 10; bottom : 10;} of (::presentation::Margin));
-            }
-            {
-                (button2.Text = "This is a Button");
-            }
-            {
-                button1.AddChild(button2);
-            }
-            {
-                self.AddChild(button1);
-            }
-            {
-                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
-                {
-                    (button2.Text = "Clicked!");
-                };
-                attach(button2.Clicked, <event-handler>);
-            }
-            {
-                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
-                {
-                    (self.Text = "Clicked!");
-                };
-                attach(button1.Clicked, <event-handler>);
+                (self.Text = "Dialog Font Test");
             }
         }
 

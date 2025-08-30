@@ -27,12 +27,6 @@ namespace gacuisrc_unittest
         var self : ::gacuisrc_unittest::MainWindow* = null of (::gacuisrc_unittest::MainWindow*);
 
         @cpp:Protected
-        var button1 : ::presentation::controls::GuiSelectableButton* = null of (::presentation::controls::GuiSelectableButton*);
-
-        @cpp:Protected
-        var button2 : ::presentation::controls::GuiSelectableButton* = null of (::presentation::controls::GuiSelectableButton*);
-
-        @cpp:Protected
         var <precompile>0 : ::presentation::controls::GuiControl* = null of (::presentation::controls::GuiControl*);
 
         @cpp:Protected
@@ -46,6 +40,12 @@ namespace gacuisrc_unittest
 
         @cpp:Protected
         var <precompile>4 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var button1 : ::presentation::controls::GuiSelectableButton* = null of (::presentation::controls::GuiSelectableButton*);
+
+        @cpp:Protected
+        var button2 : ::presentation::controls::GuiSelectableButton* = null of (::presentation::controls::GuiSelectableButton*);
 
         @cpp:Protected
         func <gacuisrc_unittest-MainWindow>Initialize(<this> : ::gacuisrc_unittest::MainWindow*) : (::system::Void)
