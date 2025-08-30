@@ -70,7 +70,7 @@ TEST_FILE
                        Text="Select a button!" 
                        Title="DisplayCancelTryAgainContinue"/>
 
-        <Table AlignmentToParent="left:8 top:8 right:8 bottom:8" CellPadding="2">
+        <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="5">
           <att.Rows>
             <_>composeType:MinSize</_>
             <_>composeType:MinSize</_>
@@ -178,6 +178,7 @@ TEST_FILE
 						auto location = protocol->LocationOf(button);
 						GetApplication()->InvokeInMainThread(window, [=]()
 						{
+							// OnNextIdleFrame cannot be blocked by a modal dialog
 							protocol->LClick(location);
 						});
 					});

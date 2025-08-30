@@ -244,10 +244,10 @@ namespace gacuisrc_unittest
             }
             (<precompile>0 = new (::presentation::compositions::GuiTableComposition*)());
             {
-                (<precompile>0.CellPadding = 2 of (::system::Int64));
+                (<precompile>0.CellPadding = 5 of (::system::Int64));
             }
             {
-                (<precompile>0.AlignmentToParent = {left : 8; top : 8; right : 8; bottom : 8;} of (::presentation::Margin));
+                (<precompile>0.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
                 <precompile>0.SetRowsAndColumns(8, 2);
