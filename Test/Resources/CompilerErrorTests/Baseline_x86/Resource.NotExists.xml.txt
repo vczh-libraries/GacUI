@@ -1,2 +1,0 @@
- # .\Resource.NotExists.xml
-(-2, -2): Failed to load file ".\Resource.NotExists.xml".
