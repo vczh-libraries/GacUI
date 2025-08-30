@@ -46,7 +46,20 @@ namespace compiler_error_tests
 	#endif
 	}
 	
-	WString GetTestBaselinePath()
+	WString GetTestSharedBaselinePath()
+	{
+	#if defined VCZH_MSVC
+	#ifdef _WIN64
+		return GetExePath() + L"..\\..\\..\\Resources\\CompilerErrorTests\\Baseline";
+	#else
+		return GetExePath() + L"..\\..\\Resources\\CompilerErrorTests\\Baseline";
+	#endif
+	#elif defined VCZH_GCC
+		return L"../../Resources/CompilerErrorTests/Baseline";
+	#endif
+	}
+	
+	WString GetTestPlatformBaselinePath()
 	{
 	#if defined VCZH_MSVC
 	#ifdef _WIN64

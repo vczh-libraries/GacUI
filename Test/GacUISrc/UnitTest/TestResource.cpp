@@ -9,7 +9,8 @@ using namespace vl::presentation;
 namespace compiler_error_tests
 {
 	extern WString GetTestResourcePath();
-	extern WString GetTestBaselinePath();
+	extern WString GetTestSharedBaselinePath();
+	extern WString GetTestPlatformBaselinePath();
 	extern WString GetTestOutputPath();
 }
 using namespace compiler_error_tests;
@@ -17,14 +18,19 @@ using namespace compiler_error_tests;
 void WriteErrors(GuiResourceError::List& errors, const WString& resourceName)
 {
 	auto outputPath = FilePath(GetTestOutputPath()) / (resourceName + L".txt");
-	auto baselinePath = FilePath(GetTestBaselinePath()) / (resourceName + L".txt");
+	auto baselineShared = FilePath(GetTestSharedBaselinePath()) / (resourceName + L".txt");
+	auto baselinePlatform = FilePath(GetTestPlatformBaselinePath()) / (resourceName + L".txt");
+
+	bool baselineSharedExists = File(baselineShared).Exists();
+	bool baselinePlatformExists = File(baselinePlatform).Exists();
+	TEST_ASSERT(baselineSharedExists ^ baselinePlatformExists);
 
 	List<WString> output;
 	GuiResourceError::SortAndLog(errors, output, GetTestResourcePath());
 	File(outputPath).WriteAllLines(output, false, BomEncoder::Utf8);
 
 	List<WString> baseline;
-	File(baselinePath).ReadAllLinesByBom(baseline);
+	File(baselineSharedExists ? baselineShared : baselinePlatform).ReadAllLinesByBom(baseline);
 	if (baseline.Count() > 0 && baseline[baseline.Count() - 1] == L"")
 	{
 		baseline.RemoveAt(baseline.Count() - 1);
