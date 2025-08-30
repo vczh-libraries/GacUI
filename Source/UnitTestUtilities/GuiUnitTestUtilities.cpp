@@ -517,7 +517,11 @@ Ptr<GuiResource> GacUIUnitTest_CompileAndLoad(const WString& xmlResource)
 		nullptr,
 		errors
 		);
-	CHECK_ERROR(precompiledFolder && errors.Count() == 0, ERROR_MESSAGE_PREFIX L"Failed to precompile XML resource.");
+	if (!precompiledFolder || errors.Count() > 0)
+	{
+		GacUIUnitTest_PrintErrors(errors);
+		CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Failed to precompile XML resource.");
+	}
 
 	auto compiledWorkflow = precompiledFolder->GetValueByPath(WString::Unmanaged(L"Workflow/InstanceClass")).Cast<GuiInstanceCompiledWorkflow>();
 	CHECK_ERROR(compiledWorkflow, ERROR_MESSAGE_PREFIX L"Failed to compile generated Workflow script.");
