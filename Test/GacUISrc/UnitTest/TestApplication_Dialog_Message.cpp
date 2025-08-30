@@ -8,7 +8,153 @@ TEST_FILE
 <Resource>
   <Instance name="MainWindowResource">
     <Instance ref.Class="gacuisrc_unittest::MainWindow">
+      <ref.Members><![CDATA[
+        func UpdateWindowTitle(result : MessageBoxButtonsOutput) : void
+        {
+          switch(result)
+          {
+            case SelectOK: { self.Text = "SelectOK"; }
+            case SelectCancel: { self.Text = "SelectCancel"; }
+            case SelectYes: { self.Text = "SelectYes"; }
+            case SelectNo: { self.Text = "SelectNo"; }
+            case SelectRetry: { self.Text = "SelectRetry"; }
+            case SelectAbort: { self.Text = "SelectAbort"; }
+            case SelectIgnore: { self.Text = "SelectIgnore"; }
+            case SelectTryAgain: { self.Text = "SelectTryAgain"; }
+            case SelectContinue: { self.Text = "SelectContinue"; }
+          }
+        }
+      ]]></ref.Members>
+
       <Window ref.Name="self" Text="MessageDialog" ClientSize="x:480 y:320">
+        <MessageDialog ref.Name="dialogDisplayOK" 
+                       Input="DisplayOK" 
+                       DefaultButton="DefaultFirst"
+                       Text="Select a button!" 
+                       Title="DisplayOK"/>
+
+        <MessageDialog ref.Name="dialogDisplayOKCancel" 
+                       Input="DisplayOKCancel" 
+                       DefaultButton="DefaultSecond"
+                       Text="Select a button!" 
+                       Title="DisplayOKCancel"/>
+
+        <MessageDialog ref.Name="dialogDisplayYesNo" 
+                       Input="DisplayYesNo" 
+                       DefaultButton="DefaultSecond"
+                       Text="Select a button!" 
+                       Title="DisplayYesNo"/>
+
+        <MessageDialog ref.Name="dialogDisplayYesNoCancel" 
+                       Input="DisplayYesNoCancel" 
+                       DefaultButton="DefaultSecond"
+                       Text="Select a button!" 
+                       Title="DisplayYesNoCancel"/>
+
+        <MessageDialog ref.Name="dialogDisplayRetryCancel" 
+                       Input="DisplayRetryCancel" 
+                       DefaultButton="DefaultSecond"
+                       Text="Select a button!" 
+                       Title="DisplayRetryCancel"/>
+
+        <MessageDialog ref.Name="dialogDisplayAbortRetryIgnore" 
+                       Input="DisplayAbortRetryIgnore" 
+                       DefaultButton="DefaultSecond"
+                       Text="Select a button!" 
+                       Title="DisplayAbortRetryIgnore"/>
+
+        <MessageDialog ref.Name="dialogDisplayCancelTryAgainContinue" 
+                       Input="DisplayCancelTryAgainContinue" 
+                       DefaultButton="DefaultSecond"
+                       Text="Select a button!" 
+                       Title="DisplayCancelTryAgainContinue"/>
+
+        <Table AlignmentToParent="left:8 top:8 right:8 bottom:8" CellPadding="2">
+          <att.Rows>
+            <_>composeType:MinSize</_>
+            <_>composeType:MinSize</_>
+            <_>composeType:MinSize</_>
+            <_>composeType:MinSize</_>
+            <_>composeType:MinSize</_>
+            <_>composeType:MinSize</_>
+            <_>composeType:MinSize</_>
+            <_>composeType:Percentage percentage:1.0</_>
+          </att.Rows>
+          <att.Columns>
+            <_>composeType:MinSize</_>
+            <_>composeType:Percentage percentage:1.0</_>
+          </att.Columns>
+
+          <Cell Site="row:0 column:0">
+            <Button Text="DisplayOK">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+              <ev.Clicked-eval><![CDATA[{
+                var result = dialogDisplayOK.ShowDialog();
+                self.UpdateWindowTitle(result);
+              }]]></ev.Clicked-eval>
+            </Button>
+          </Cell>
+
+          <Cell Site="row:1 column:0">
+            <Button Text="DisplayOKCancel">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+              <ev.Clicked-eval><![CDATA[{
+                var result = dialogDisplayOKCancel.ShowDialog();
+                self.UpdateWindowTitle(result);
+              }]]></ev.Clicked-eval>
+            </Button>
+          </Cell>
+
+          <Cell Site="row:2 column:0">
+            <Button Text="DisplayYesNo">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+              <ev.Clicked-eval><![CDATA[{
+                var result = dialogDisplayYesNo.ShowDialog();
+                self.UpdateWindowTitle(result);
+              }]]></ev.Clicked-eval>
+            </Button>
+          </Cell>
+
+          <Cell Site="row:3 column:0">
+            <Button Text="DisplayYesNoCancel">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+              <ev.Clicked-eval><![CDATA[{
+                var result = dialogDisplayYesNoCancel.ShowDialog();
+                self.UpdateWindowTitle(result);
+              }]]></ev.Clicked-eval>
+            </Button>
+          </Cell>
+
+          <Cell Site="row:4 column:0">
+            <Button Text="DisplayRetryCancel">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+              <ev.Clicked-eval><![CDATA[{
+                var result = dialogDisplayRetryCancel.ShowDialog();
+                self.UpdateWindowTitle(result);
+              }]]></ev.Clicked-eval>
+            </Button>
+          </Cell>
+
+          <Cell Site="row:5 column:0">
+            <Button Text="DisplayAbortRetryIgnore">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+              <ev.Clicked-eval><![CDATA[{
+                var result = dialogDisplayAbortRetryIgnore.ShowDialog();
+                self.UpdateWindowTitle(result);
+              }]]></ev.Clicked-eval>
+            </Button>
+          </Cell>
+
+          <Cell Site="row:6 column:0">
+            <Button Text="DisplayCancelTryAgainContinue">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+              <ev.Clicked-eval><![CDATA[{
+                var result = dialogDisplayCancelTryAgainContinue.ShowDialog();
+                self.UpdateWindowTitle(result);
+              }]]></ev.Clicked-eval>
+            </Button>
+          </Cell>
+        </Table>
       </Window>
     </Instance>
   </Instance>
@@ -22,6 +168,17 @@ TEST_FILE
 			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
 			{
 				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto button1 = FindControlByText<GuiButton>(window, L"DisplayOK");
+					auto location = protocol->LocationOf(button1);
+					protocol->LClick(location);
+				});
+				protocol->OnNextIdleFrame(L"Show DisplayOK", [=]()
+				{
+					protocol->KeyPress(VKEY::KEY_RETURN);
+				});
+				protocol->OnNextIdleFrame(L"[ENTER]", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					window->Hide();
