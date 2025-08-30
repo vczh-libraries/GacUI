@@ -16,10 +16,10 @@
   - Single GUI mode
   - Multiple GUI mode (with a simple window manager, and a test app for displaying instructions)
   - Implemented in both C++ and TypeScript
-
-## Probably
-
 - Strict check in different for-each loops.
+
+## GacUI XML Resource
+
 - A new non-XML instance format
 - Compact version of table's colummns and rows property so that they could also be written in attributes.
 - `<eval Eval="expression"/>` tags.
@@ -46,6 +46,21 @@
     - All direct child of rows of a rows, or columns of a column, are flattened
     - Use stack if possible
   - A `BuildLayout` method will be called after the layout tree is prepared. Changing the layout tree will not take effect without calling this method.
+- Consider `-ani` binding, create an animation controller object that change the binded property, with predefined interpolation and other stuff.
+  - All types that can do interpolation are value types, consider following formats:
+    - "NAME:initial value"
+    - "NAME(initial value in expression)"
+    - Need to be consistent with animation object
+  - Consider multiple `-ani` batch control, state configuration and transition, story board, connection to animation coroutine, etc.
+- Facade (if `<ez:Layout/>` is implemented without the idea of facade, this would be canceled)
+  - A facade is a class with following methods:
+    - **AddChild**: Accept a child facade or a child object.
+    - **ApplyTo**: Accept a parent object, which is not a facade.
+    - **Initialize** (optional): Called on the instance object between construction and `<ref.Ctor>`.
+  - A facade could have properties but only accept assignment or `-eval` binding.
+  - A facade could have an optional **InstanceFacadeVerifier** executed on GacGen compile time.
+  - Built-in Layout and Form facade.
+  - If `<XFacade>` or `<x:XFacade>` is an accessible and default constructible object, then `<X>` or `<x:X>` triggers a facade.
 
 ## OS Provider Features
 
@@ -134,7 +149,7 @@
     - .NET
     - Python
 
-## GacUI (unprioritized)
+## GacUI
 
 - DarkSkin Color Theme.
   - Create a `DarkSkinPalette` class with a static getter method to retrive default colors.
@@ -142,29 +157,18 @@
   - Add a static setter to `DarkSkinPalette`.
     - A window can be called to update all its controls' and components' template.
     - The above function will be called inside the setter.
+- New default control templates with animation, written in XML generated C++ code.
 - `INativeWindow` add callback for state changing.
   - Including `MaximizedBox`, `MinimizedBox`, `Border`, `SizeBox`, `IconVisible`, `TitleBar`, `Icon`, `Title`, `SizeState`.
   - In `GuiControlHost` or `GuiWindow`, setting border or state doesn't update the control template, it is updated in that callback.
   - Delete `GuiControlHost` and `GuiWindow`'s `OnVisualStatusChanged`.
 - Rewrite calculator state machine demo, when "+" is pressed, jump into "WaitingAnotherOperandForPlus" state machine, instead of storing the operation in a loop. So there will be no loop except for waiting for numbers.
-- Check makefile for ParserGen/GlrParserGen/CodePack/CppMerge/GacGen
-  - Write maketools.sh
 - Add `MoveToScreenCenterAfterLayout` as what is done in `FakeDialogServiceBase::ShowModalDialogAndDelete`.
-- New default control templates with animation, written in XML generated C++ code.
 - Use the embedded data codegen / compress / decompress functions from `VlppParser2` to replace one in `GacUI`.
 - Use collection interfaces on function signatures.
   - Only if `Vlpp` decides to add collection interfaces.
 
-## GacUI Resource Compiler (unplanned releases)
-
-- Consider `-ani` binding, create an animation controller object that change the binded property, with predefined interpolation and other stuff.
-  - All types that can do interpolation are value types, consider following formats:
-    - "NAME:initial value"
-    - "NAME(initial value in expression)"
-    - Need to be consistent with animation object
-  - Consider multiple `-ani` batch control, state configuration and transition, story board, connection to animation coroutine, etc.
-
-## GacUI Resource Compiler (unprioritized)
+## GacUI Resource Compiler
 
 - In the final pass, only workflow scripts are printed.
   - Use WorkflowCompiler.exe to do codegen externally.
@@ -179,20 +183,12 @@
   - Calculate dependencies by only parsing.
   - Cache workflow assembly per resource in file.
   - Codegen c++ from multiple workflow assembly.
-- Facade
-  - A facade is a class with following methods:
-    - **AddChild**: Accept a child facade or a child object.
-    - **ApplyTo**: Accept a parent object, which is not a facade.
-    - **Initialize** (optional): Called on the instance object between construction and `<ref.Ctor>`.
-  - A facade could have properties but only accept assignment or `-eval` binding.
-  - A facade could have an optional **InstanceFacadeVerifier** executed on GacGen compile time.
-  - Built-in Layout and Form facade.
-  - If `<XFacade>` or `<x:XFacade>` is an accessible and default constructible object, then `<X>` or `<x:X>` triggers a facade.
 
 ## New C++/Doc Compiler based on VlppParser2
 
 ## GacStudio
 
+- All sub processes need `_set_abort_behavior(0, _WRITE_ABORT_MSG);` to disable vcruntime crashing dialog.
 - Run the editing GUI using remote protocol.
 - Run the symbol server in a separate process.
   - e.g. for rendering if all properties in a binding expression is observable, providing fast editing tool.

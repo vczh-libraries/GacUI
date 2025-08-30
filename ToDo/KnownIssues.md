@@ -58,7 +58,7 @@
   - `GuiControl`
     - `QueryService` and `AddService`
 
-## Unprioritized
+## Depriorized
 
 - FakeDialogService
   - message box disable `X` button if `Cancel` is not in the button list or `OK` is the only button.

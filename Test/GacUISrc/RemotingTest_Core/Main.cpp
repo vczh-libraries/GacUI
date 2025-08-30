@@ -8,6 +8,9 @@ extern int StartHttpServer();
 
 int main(int argc, char* argv[])
 {
+#ifdef VCZH_MSVC
+	_set_abort_behavior(0, _WRITE_ABORT_MSG);
+#endif
 	int result = -1;
 	CHECK_ERROR(argc == 2, L"main(...)#An command line argument must be provided.");
 	if (strcmp(argv[1], "/Pipe") == 0)
