@@ -35,24 +35,28 @@ TEST_FILE
                        Title="DisplayOK"/>
 
         <MessageDialog ref.Name="dialogDisplayOKCancel" 
+                       Icon="IconError"
                        Input="DisplayOKCancel" 
                        DefaultButton="DefaultSecond"
                        Text="Select a button!" 
                        Title="DisplayOKCancel"/>
 
         <MessageDialog ref.Name="dialogDisplayYesNo" 
+                       Icon="IconWarning"
                        Input="DisplayYesNo" 
                        DefaultButton="DefaultSecond"
                        Text="Select a button!" 
                        Title="DisplayYesNo"/>
 
         <MessageDialog ref.Name="dialogDisplayYesNoCancel" 
+                       Icon="IconQuestion"
                        Input="DisplayYesNoCancel" 
                        DefaultButton="DefaultSecond"
                        Text="Select a button!" 
                        Title="DisplayYesNoCancel"/>
 
         <MessageDialog ref.Name="dialogDisplayRetryCancel" 
+                       Icon="IconInformation"
                        Input="DisplayRetryCancel" 
                        DefaultButton="DefaultSecond"
                        Text="Select a button!" 

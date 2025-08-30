@@ -143,6 +143,9 @@ namespace gacuisrc_unittest
             (dialogDisplayOKCancel = new (::presentation::controls::GuiMessageDialog*)());
             <this>.SetNamedObject("dialogDisplayOKCancel", dialogDisplayOKCancel);
             {
+                (dialogDisplayOKCancel.Icon = IconError of (::presentation::INativeDialogService::MessageBoxIcons));
+            }
+            {
                 (dialogDisplayOKCancel.Title = "DisplayOKCancel");
             }
             {
@@ -159,6 +162,9 @@ namespace gacuisrc_unittest
             }
             (dialogDisplayYesNo = new (::presentation::controls::GuiMessageDialog*)());
             <this>.SetNamedObject("dialogDisplayYesNo", dialogDisplayYesNo);
+            {
+                (dialogDisplayYesNo.Icon = IconWarning of (::presentation::INativeDialogService::MessageBoxIcons));
+            }
             {
                 (dialogDisplayYesNo.Title = "DisplayYesNo");
             }
@@ -177,6 +183,9 @@ namespace gacuisrc_unittest
             (dialogDisplayYesNoCancel = new (::presentation::controls::GuiMessageDialog*)());
             <this>.SetNamedObject("dialogDisplayYesNoCancel", dialogDisplayYesNoCancel);
             {
+                (dialogDisplayYesNoCancel.Icon = IconQuestion of (::presentation::INativeDialogService::MessageBoxIcons));
+            }
+            {
                 (dialogDisplayYesNoCancel.Title = "DisplayYesNoCancel");
             }
             {
@@ -193,6 +202,9 @@ namespace gacuisrc_unittest
             }
             (dialogDisplayRetryCancel = new (::presentation::controls::GuiMessageDialog*)());
             <this>.SetNamedObject("dialogDisplayRetryCancel", dialogDisplayRetryCancel);
+            {
+                (dialogDisplayRetryCancel.Icon = IconInformation of (::presentation::INativeDialogService::MessageBoxIcons));
+            }
             {
                 (dialogDisplayRetryCancel.Title = "DisplayRetryCancel");
             }
