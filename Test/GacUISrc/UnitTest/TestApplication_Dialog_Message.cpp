@@ -1,5 +1,6 @@
 #include "TestControls.h"
 
+using namespace vl::collections;
 using namespace gacui_unittest_template;
 
 TEST_FILE
@@ -165,27 +166,36 @@ TEST_FILE
 	{
 		TEST_CASE(L"Open and Close")
 		{
-			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			auto showMessageDialogs = []<typename TLastCallback>(UnitTestRemoteProtocol* protocol, const WString& firstFrame, TLastCallback && lastCallback, auto ...dialogNameArgs)
 			{
-				protocol->OnNextIdleFrame(L"Ready", [=]()
+				const wchar_t* dialogNames[] = { dialogNameArgs... };
+				for (auto [dialogName, index] : indexed(From(dialogNames)))
 				{
-					auto window = GetApplication()->GetMainWindow();
-					auto button1 = FindControlByText<GuiButton>(window, L"DisplayOK");
-					auto location = protocol->LocationOf(button1);
-					GetApplication()->InvokeInMainThread(window, [=]()
+					protocol->OnNextIdleFrame(WString::Unmanaged(index == 0 ? L"Ready" : L"[ENTER]"), [=]()
 					{
-						protocol->LClick(location);
+						auto window = GetApplication()->GetMainWindow();
+						auto button = FindControlByText<GuiButton>(window, WString::Unmanaged(dialogName));
+						auto location = protocol->LocationOf(button);
+						GetApplication()->InvokeInMainThread(window, [=]()
+						{
+							protocol->LClick(location);
+						});
 					});
-				});
-				protocol->OnNextIdleFrame(L"Show DisplayOK", [=]()
-				{
-					protocol->KeyPress(VKEY::KEY_RETURN);
-				});
-				protocol->OnNextIdleFrame(L"[ENTER]", [=]()
+					protocol->OnNextIdleFrame(WString::Unmanaged(L"Show ") + WString::Unmanaged(dialogName), [=]()
+					{
+						protocol->KeyPress(VKEY::KEY_RETURN);
+					});
+				}
+				protocol->OnNextIdleFrame(L"[ENTER]", std::forward<TLastCallback&&>(lastCallback));
+			};
+
+			GacUIUnitTest_SetGuiMainProxy([&](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				showMessageDialogs(protocol, L"Ready", []()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					window->Hide();
-				});
+				}, L"DisplayOK", L"DisplayOKCancel", L"DisplayYesNo", L"DisplayYesNoCancel", L"DisplayRetryCancel", L"DisplayAbortRetryIgnore", L"DisplayCancelTryAgainContinue");
 			});
 			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
 				WString::Unmanaged(L"Application/Dialog_Message/OpenAndClose"),
