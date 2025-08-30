@@ -176,7 +176,7 @@ void HttpClient::BeginReadingLoopUnsafe()
 
 							self->httpRespondBodyBufferWritingAvailable = dataAvailable;
 							DWORD bufferSize = self->httpRespondBodyBufferWriting + dataAvailable + 1;
-							if (self->httpRespondBodyBuffer.Count() < bufferSize)
+							if (self->httpRespondBodyBuffer.Count() < (vint)bufferSize)
 							{
 								self->httpRespondBodyBuffer.Resize((bufferSize + HttpRespondBodyStep - 1) / HttpRespondBodyStep * HttpRespondBodyStep);
 							}
