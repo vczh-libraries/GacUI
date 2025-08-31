@@ -65,5 +65,3 @@
 - GDI
   - Big cursor of document empty line (GDI)
   - In hosted mode, non-main window doesn't shrink when moving back to low DPI monitor.
-- Hosted
-  - When dragging left/top border if the main window, the window move if the size is smaller than the minimum size.
