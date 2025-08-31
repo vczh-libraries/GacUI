@@ -27,10 +27,10 @@ namespace gacuisrc_unittest
         var self : ::gacuisrc_unittest::MainWindow* = null of (::gacuisrc_unittest::MainWindow*);
 
         @cpp:Protected
-        var list : ::presentation::controls::GuiBindableTextList* = null of (::presentation::controls::GuiBindableTextList*);
+        var <precompile>0 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
-        var <precompile>0 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+        var list : ::presentation::controls::GuiBindableTextList* = null of (::presentation::controls::GuiBindableTextList*);
 
         @cpp:Protected
         func <gacuisrc_unittest-MainWindow>Initialize(<this> : ::gacuisrc_unittest::MainWindow*) : (::system::Void)
@@ -65,18 +65,18 @@ namespace gacuisrc_unittest
                     return item.Text;
                 });
             }
-            (<precompile>0 = list.BoundsComposition);
-            {
-                (<precompile>0.AlignmentToParent = {left : 0; top : 5; right : 0; bottom : 0;} of (::presentation::Margin));
-            }
-            {
-                (<precompile>0.PreferredMinSize = {x : 400; y : 300;} of (::presentation::Size));
-            }
             {
                 (list.VerticalAlwaysVisible = false);
             }
             {
                 (list.HorizontalAlwaysVisible = false);
+            }
+            (<precompile>0 = list.BoundsComposition);
+            {
+                (<precompile>0.PreferredMinSize = {x : 400; y : 300;} of (::presentation::Size));
+            }
+            {
+                (<precompile>0.AlignmentToParent = {left : 0; top : 5; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
                 self.AddChild(list);

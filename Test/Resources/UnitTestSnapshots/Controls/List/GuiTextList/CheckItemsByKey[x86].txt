@@ -30,7 +30,7 @@ namespace gacuisrc_unittest
         var <precompile>0 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
-        var list : ::presentation::controls::GuiBindableTextList* = null of (::presentation::controls::GuiBindableTextList*);
+        var list : ::presentation::controls::GuiTextList* = null of (::presentation::controls::GuiTextList*);
 
         @cpp:Protected
         func <gacuisrc_unittest-MainWindow>Initialize(<this> : ::gacuisrc_unittest::MainWindow*) : (::system::Void)
@@ -40,30 +40,8 @@ namespace gacuisrc_unittest
                 (self.ClientSize = {x : 320; y : 240;} of (::presentation::Size));
             }
             {
-                (list = new (::presentation::controls::GuiBindableTextList*)(::presentation::theme::ThemeName::TextList));
+                (list = new (::presentation::controls::GuiTextList*)(::presentation::theme::ThemeName::TextList));
                 <this>.SetNamedObject("list", list);
-            }
-            {
-                (list.CheckedProperty = func (<item> : ::system::Object, <value> : ::system::Boolean, <update> : ::system::Boolean) : (::system::Boolean)
-                {
-                    var item = (cast (TextItem^) <item>);
-                    if (<update>)
-                    {
-                        (item.Checked = <value>);
-                        return false;
-                    }
-                    else
-                    {
-                        return item.Checked;
-                    }
-                });
-            }
-            {
-                (list.TextProperty = func (<item> : ::system::Object) : (::system::String)
-                {
-                    var item = (cast (TextItem^) <item>);
-                    return item.Text;
-                });
             }
             {
                 (list.VerticalAlwaysVisible = false);
@@ -82,14 +60,11 @@ namespace gacuisrc_unittest
                 self.AddChild(list);
             }
             {
-                (list.ItemSource = self.items);
-            }
-            {
                 var <created-subscription> = new (::system::Subscription^)
                 {
-                    var <bind-cache>0 : ::presentation::controls::GuiBindableTextList* = null of (::presentation::controls::GuiBindableTextList*);
+                    var <bind-cache>0 : ::presentation::controls::GuiTextList* = null of (::presentation::controls::GuiTextList*);
 
-                    var <bind-cache>1 : ::presentation::controls::GuiBindableTextList* = null of (::presentation::controls::GuiBindableTextList*);
+                    var <bind-cache>1 : ::presentation::controls::GuiTextList* = null of (::presentation::controls::GuiTextList*);
 
                     var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
 
@@ -101,7 +76,7 @@ namespace gacuisrc_unittest
 
                     func <bind-activator>() : (::system::Void)
                     {
-                        var <bind-activator-result> = (((("GuiBindableTextList [" & <bind-cache>0.SelectedItemIndex) & "] -> [") & <bind-cache>1.SelectedItemText) & "]");
+                        var <bind-activator-result> = (((("GuiTextList [" & <bind-cache>0.SelectedItemIndex) & "] -> [") & <bind-cache>1.SelectedItemText) & "]");
                         ValueChanged(<bind-activator-result>);
                     }
 
@@ -120,8 +95,8 @@ namespace gacuisrc_unittest
                         if ((!<bind-opened>))
                         {
                             (<bind-opened> = true);
-                            (<bind-cache>0 = (list ?? null of (::presentation::controls::GuiBindableTextList*)));
-                            (<bind-cache>1 = (list ?? null of (::presentation::controls::GuiBindableTextList*)));
+                            (<bind-cache>0 = (list ?? null of (::presentation::controls::GuiTextList*)));
+                            (<bind-cache>1 = (list ?? null of (::presentation::controls::GuiTextList*)));
                             (<bind-handler>0_0 = (attach(<bind-cache>0.SelectionChanged, <bind-callback>0_0) ?? null));
                             (<bind-handler>1_0 = (attach(<bind-cache>1.SelectionChanged, <bind-callback>1_0) ?? null));
                             return true;
@@ -154,8 +129,8 @@ namespace gacuisrc_unittest
                                 detach(<bind-cache>1.SelectionChanged, <bind-handler>1_0);
                                 (<bind-handler>1_0 = null);
                             }
-                            (<bind-cache>0 = null of (::presentation::controls::GuiBindableTextList*));
-                            (<bind-cache>1 = null of (::presentation::controls::GuiBindableTextList*));
+                            (<bind-cache>0 = null of (::presentation::controls::GuiTextList*));
+                            (<bind-cache>1 = null of (::presentation::controls::GuiTextList*));
                             (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
                             (<bind-handler>1_0 = null of (::system::reflection::EventHandler^));
                             return true;
@@ -210,18 +185,16 @@ namespace gacuisrc_unittest
     @cpp:Friend(typeof(MainWindowConstructor))
     class MainWindow : ::presentation::controls::GuiWindow, MainWindowConstructor
     {
-        var items : observe TextItem^[] = {};
-
         func InitializeItems(count : int) : (void)
         {
             {
-                var <for-begin>item : ::system::Int64 = 1;
-                var <for-end>item : ::system::Int64 = count;
+                var <for-begin>item : ::system::Int32 = 1;
+                var <for-end>item : ::system::Int32 = count;
                 var item = <for-begin>item;
                 while ((item <= <for-end>item))
                 {
                     {
-                        items.Add(new (TextItem^)(("Item " & item)));
+                        list.Items.Add(new (TextItem^)(("Item " & item)));
                     }
                     (item = (item + 1));
                 }
