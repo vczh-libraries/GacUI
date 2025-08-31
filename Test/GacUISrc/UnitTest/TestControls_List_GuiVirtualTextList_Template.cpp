@@ -168,11 +168,9 @@ namespace gacui_unittest_template
 				protocol->OnNextIdleFrame(L"Ready", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
-					if(setTextListView)
-					{
-						auto listControl = FindObjectByName<GuiVirtualTextList>(window, L"list");
-						listControl->SetView(TextListView::Check);
-					}
+					auto listControl = FindObjectByName<GuiVirtualTextList>(window, L"list");
+					listControl->SetView(TextListView::Check);
+					listControl->SetFocused();
 					InitializeItems(window, 5);
 				});
 				protocol->OnNextIdleFrame(L"5 Items", [=]()
