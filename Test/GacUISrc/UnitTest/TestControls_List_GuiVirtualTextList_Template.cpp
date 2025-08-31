@@ -204,6 +204,12 @@ namespace gacui_unittest_template
 				{
 					protocol->KeyPress(VKEY::KEY_SPACE);
 					assertChecked(2);
+					protocol->KeyPress(VKEY::KEY_SPACE, true, false, false);
+					assertChecked(2);
+					protocol->KeyPress(VKEY::KEY_SPACE, false, true, false);
+					assertChecked(2);
+					protocol->KeyPress(VKEY::KEY_SPACE, false, false, true);
+					assertChecked(2);
 				});
 				protocol->OnNextIdleFrame(L"[SPACE] to Check", [&, protocol]()
 				{
