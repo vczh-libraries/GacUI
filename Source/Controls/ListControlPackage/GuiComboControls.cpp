@@ -32,6 +32,21 @@ GuiComboBoxBase
 				SetPreferredMenuClientSize(size);
 			}
 
+			void GuiComboBoxBase::OnKeyDown(compositions::GuiGraphicsComposition* sender, compositions::GuiKeyEventArgs& arguments)
+			{
+				if (!arguments.autoRepeatKeyDown)
+				{
+					switch (arguments.code)
+					{
+					case VKEY::KEY_ESCAPE:
+						GetSubMenu()->Hide();
+						arguments.handled = true;
+						break;
+					default:;
+					}
+				}
+			}
+
 			GuiComboBoxBase::GuiComboBoxBase(theme::ThemeName themeName)
 				:GuiMenuButton(themeName)
 			{
@@ -39,6 +54,7 @@ GuiComboBoxBase
 				SetCascadeAction(false);
 
 				boundsComposition->CachedBoundsChanged.AttachMethod(this, &GuiComboBoxBase::OnCachedBoundsChanged);
+				boundsComposition->GetEventReceiver()->keyDown.AttachMethod(this, &GuiComboBoxBase::OnKeyDown);
 			}
 
 			GuiComboBoxBase::~GuiComboBoxBase()
@@ -205,8 +221,6 @@ GuiComboBoxListControl
 					{
 					case VKEY::KEY_RETURN:
 						DisplaySelectedContent(containedListControl->GetSelectedItemIndex());
-						arguments.handled = true;
-					case VKEY::KEY_ESCAPE:
 						GetSubMenu()->Hide();
 						arguments.handled = true;
 						break;
