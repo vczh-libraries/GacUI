@@ -2,110 +2,67 @@
 
 # DESIGN REQUEST
 
-Currently `GuiVirtualTextList` doesn't handle [SPACE] key. It should handle that to toggle all selected item's `Checked` property.
+- I would like to add an `autoFocusDropDown` boolean argument to `GuiComboBoxBase`'s constructor. All sub classes should provide `false` except for `GuiDateComboBox`.
+- When this argument is set to `true`, when the sub menu displays, it should has the focus.
+- We need to attach `OnKeyDown` also to the sub menu, so `[ESC]` will always work.
 
-If all selected items are checked, uncheck every selected items. If at least one selected item is not checked, checke every selected items.
+Everything could be in 1 single task.
 
-## UPDATE
-
-I don't agree with the current design. By the way I think only one task is enough. Since `Checked` is a concept that only happen in `GuiVirtualTextList` and all sub classes, so we should never add anything to its base class (e.g. `GuiSelectableListControl` in your design).
-
-You can just register a key handler just like how `GuiSelectableListControl` is doing, but just handle [SPACE]. And since the logic is simple, you may not add helper functions.
-
-You should not touch any `GuiVirtualTextList` sub class, I believe `ITextItemView` is already enough for you.
+# PROBLEM DESCRIPTION
 
 ## UPDATE
 
-FYI `GuiVirtualTextList_TestCases` should be a good place to add the new test case. You not only need to follow existing test cases to create snapshots, you should also check after pressing [SPACE] if Checked of items changed or unchanged as expected.
+No unit test work is needed
 
-You could name the test case `CheckItemsByKey`
+## Phrase 1: Enhance GuiComboBoxBase for Automatic Dropdown Focus Support
 
-## Phrase 1: Implement Space Key Handling in GuiVirtualTextList
+This phrase introduces auto-focus capability to combo box controls, enabling dropdown contents to automatically receive focus when opened. This is particularly useful for controls like date pickers where immediate keyboard interaction with the dropdown is expected. The implementation will be backward-compatible and will specifically benefit GuiDateComboBox for better user experience.
 
-This phrase focuses on implementing space key handling directly in `GuiVirtualTextList` to toggle the checked state of all selected items. The implementation will follow the existing pattern used in `GuiSelectableListControl` for keyboard handling but will be specific to the checked items functionality that only exists in `GuiVirtualTextList`.
+### Task 1-1: Add AutoFocusDropDown Parameter to GuiComboBoxBase Constructor
 
-The space key handling will register a key event handler in the constructor, similar to how `GuiSelectableListControl` handles its keyboard events. The logic will be straightforward: examine all selected items through the `ITextItemView` interface, determine the target state (check all if any are unchecked, uncheck all if all are checked), and update each selected item accordingly.
-
-### Task 1-1: Add Space Key Handler to GuiVirtualTextList [PROCESSED]
-
-Implement space key handling directly in `GuiVirtualTextList` by adding a key event handler that toggles the checked state of all selected items based on their current state.
+Modify the GuiComboBoxBase constructor to accept an autoFocusDropDown parameter, implement automatic focus setting behavior when the submenu opens, and ensure ESC key handling works consistently across all submenu content.
 
 **What to be done:**
-- Add a key event handler to `GuiVirtualTextList` constructor that specifically handles `VKEY::KEY_SPACE`
-- Implement the toggle logic inline within the event handler without additional helper functions
-- Use the existing `ITextItemView` interface to query and modify checked states
-- Follow the existing pattern used by `GuiSelectableListControl` for keyboard event handling
-- Ensure the implementation uses the item provider's editing system (`PushEditing`/`PopEditing`) for consistency
-- Fire the `ItemChecked` event for each item that changes state
-- Only operate on currently selected items and do nothing if no items are selected
+- Add a `bool autoFocusDropDown` parameter to `GuiComboBoxBase` constructor with default value `false`
+- Store the autoFocusDropDown flag as a protected member variable in GuiComboBoxBase
+- Implement automatic focus setting in the submenu opening logic when autoFocusDropDown is true
+- Attach a key event handler to the submenu's focusable composition to ensure ESC key works consistently
+- Update all existing constructors of GuiComboBoxBase subclasses:
+  - `GuiComboButton`: pass `false` for autoFocusDropDown parameter (maintain existing behavior)
+  - `GuiComboBoxListControl`: pass `false` for autoFocusDropDown parameter (maintain existing behavior)
+  - `GuiDateComboBox`: pass `true` for autoFocusDropDown parameter (enable auto-focus)
+- Ensure the implementation is backward compatible and doesn't affect existing behavior for controls that don't need auto-focus
+- Locate the appropriate event handler (likely in AfterSubMenuOpening or equivalent) to implement the focus setting logic
+- Ensure proper focus restoration when the submenu closes
 
 **What to test in Unit Test:**
-- Test space key handling with single item selected (both checked and unchecked states)
-- Test space key handling with multiple items selected in various combinations:
-  - All items checked (should uncheck all)
-  - All items unchecked (should check all)  
-  - Mixed checked states (should check all unchecked items)
-- Test space key with no items selected (should do nothing)
-- Test space key works correctly with different `TextListView` types (Check, Radio)
-- Verify that `ItemChecked` events are fired for each changed item
-- Test that other keyboard navigation keys are not affected
-- Test integration with item provider editing system
-- Test that the functionality works with custom item providers that implement `ITextItemView`
+- No unit test work is needed as specified by the user
 
 **What to test manually:**
-- Interactive testing to ensure space key feels natural with keyboard navigation flow
-- Visual verification that checked state updates immediately when space is pressed
-- Test with different control templates to ensure proper visual feedback
-- Verify that the toggle behavior is intuitive and consistent with user expectations
+- Interactive keyboard navigation in GuiDateComboBox dropdown after opening
+- Visual verification that focus indicator appears on the dropdown content when auto-focus is enabled
+- Test that TAB navigation works properly within the focused dropdown
+- Verify that the user experience feels natural and responsive for date selection scenarios
+- Test that ESC key handling works properly in both auto-focus and non-auto-focus modes
+- Test that GuiComboButton and GuiComboBoxListControl maintain their existing behavior (no auto-focus)
+- Test that clicking outside the dropdown properly closes it and restores focus appropriately
+- Test focus behavior with multiple levels of menus/submenus
+- Test that auto-focus doesn't interfere with ALT+key navigation patterns
+- Test integration with screen readers and accessibility tools
 
 **Reasons why this task is necessary:**
-- Space key is a standard shortcut for toggling checked items in list controls across different UI frameworks
-- The functionality should be contained within `GuiVirtualTextList` since checked state is specific to this control and its subclasses
-- Using the existing keyboard event handling pattern ensures consistency with the rest of the codebase
-- The `ITextItemView` interface already provides all necessary functionality for querying and modifying checked states
-- Keeping the implementation simple without helper functions reduces complexity and maintenance overhead
+- GuiDateComboBox currently requires users to click or manually focus the dropdown content before keyboard interaction works, creating poor user experience
+- Adding ESC key handling to the submenu ensures consistent behavior regardless of focus state
+- The autoFocusDropDown parameter provides a clean, opt-in mechanism that doesn't break existing controls
+- This enhancement aligns with standard UI patterns where date pickers and similar controls automatically focus their dropdown content
+- The implementation leverages existing GacUI focus management infrastructure, ensuring consistency with the framework
 
 **Support evidences:**
-- `GuiSelectableListControl` already demonstrates the pattern for keyboard event handling in its constructor with `focusableComposition->GetEventReceiver()->keyDown.AttachMethod`
-- The `ITextItemView` interface provides `GetChecked` and `SetChecked` methods specifically for this purpose
-- The existing `ItemChecked` event in `GuiVirtualTextList` is designed to be fired when item checked states change
-- The pattern of using `PushEditing`/`PopEditing` is established throughout the list control implementation for item modifications
-- The `OnBulletSelectedChanged` method in `DefaultTextListItemTemplate` shows the correct pattern for modifying item checked states through the item provider
-
-### Task 1-2: Add Unit Test Case for Space Key Toggle Functionality
-
-Create a new test case named `CheckItemsByKey` within the existing `GuiVirtualTextList_TestCases` framework to thoroughly test the space key toggle functionality with snapshot verification.
-
-**What to be done:**
-- Add a new test case `CheckItemsByKey` to the `GuiVirtualTextList_TestCases` template function
-- Create test scenarios that verify space key functionality in both Check and Radio view modes
-- Implement test steps that select items, press space key, and verify checked state changes
-- Use the existing GacUI unit test framework patterns for keyboard input simulation
-- Create visual snapshots to verify the UI updates correctly after space key presses
-- Test various selection and checked state combinations as outlined in the previous task
-- Follow the existing test structure and naming conventions used in `GuiVirtualTextList_Template.cpp`
-
-**What to test in Unit Test:**
-- All the space key functionality scenarios described in Task 1-1
-- Visual snapshot verification to ensure UI updates correctly
-- Proper event firing sequence verification
-- Integration with existing list control test infrastructure
-- Verification that space key doesn't interfere with other test cases
-
-**What to test manually:**
-- Review test output and snapshots to ensure they capture the expected behavior
-- Manual validation of test case execution to ensure comprehensive coverage
-
-**Reasons why this task is necessary:**
-- The existing test framework for `GuiVirtualTextList` already provides the infrastructure for testing list control behavior
-- Snapshot testing ensures that visual changes are captured and can be reviewed for correctness
-- Having automated tests for the space key functionality prevents regression when other parts of the codebase change
-- Following the existing test patterns ensures consistency with the project's testing approach
-
-**Support evidences:**
-- The existing `GuiVirtualTextList_TestCases` function in `TestControls_List_GuiVirtualTextList_Template.cpp` shows the established pattern for testing list control functionality
-- The test framework includes keyboard simulation capabilities through the `UnitTestRemoteProtocol` interface
-- The existing test cases demonstrate how to verify item states and UI updates through snapshots
-- The pattern of testing different view modes (Check, Radio) is already established in the existing tests
+- GuiComboBoxBase already inherits from GuiMenuButton which has submenu management capabilities
+- The existing focus management and event handling infrastructure in GacUI provides the necessary foundation
+- GacUI's focus management system through `GetEventReceiver()` and `SetFocus()` is well-established
+- The pattern of attaching keyboard handlers to submenu compositions is already used for ESC handling in GuiComboBoxBase
+- GuiDateComboBox's implementation shows it creates a GuiDatePicker in its submenu, which would benefit from immediate focus
+- The existing GuiDateComboBox test infrastructure demonstrates that keyboard interaction with the dropdown is expected behavior
 
 # !!!FINISHED!!!
