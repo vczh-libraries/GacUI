@@ -163,31 +163,54 @@ namespace gacui_unittest_template
 
 		TEST_CASE(L"CheckItemsByKey")
 		{
-			GacUIUnitTest_SetGuiMainProxy([=](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			auto assertChecked = [](auto ...checkedArgs)
 			{
-				protocol->OnNextIdleFrame(L"Ready", [=]()
+				if constexpr(sizeof...(checkedArgs) > 0)
+				{
+					vint checkeds[] = { checkedArgs... };
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiVirtualTextList>(window, L"list");
+					auto textItemView = dynamic_cast<list::ITextItemView*>(listControl->GetItemProvider()->RequestView(WString::Unmanaged(list::ITextItemView::Identifier)));
+
+					for (vint i = 0; i < listControl->GetItemProvider()->Count(); i++)
+					{
+						bool expected = collections::From(checkeds).Any([=](vint a) { return a == i; });
+						TEST_ASSERT(textItemView->GetChecked(i) == expected);
+					}
+				}
+			};
+
+			GacUIUnitTest_SetGuiMainProxy([&](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Ready", [&, protocol]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto listControl = FindObjectByName<GuiVirtualTextList>(window, L"list");
 					listControl->SetView(TextListView::Check);
 					listControl->SetFocused();
 					InitializeItems(window, 5);
+
+					assertChecked();
+					protocol->KeyPress(VKEY::KEY_SPACE);
+					assertChecked();
 				});
-				protocol->OnNextIdleFrame(L"5 Items", [=]()
+				protocol->OnNextIdleFrame(L"5 Items", [&, protocol]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto listControl = FindObjectByName<GuiSelectableListControl>(window, L"list");
 					listControl->SetSelected(2, true);
 				});
-				protocol->OnNextIdleFrame(L"Selected index 2", [=]()
+				protocol->OnNextIdleFrame(L"Selected 3rd", [&, protocol]()
 				{
 					protocol->KeyPress(VKEY::KEY_SPACE);
+					assertChecked(2);
 				});
-				protocol->OnNextIdleFrame(L"[SPACE] to Check", [=]()
+				protocol->OnNextIdleFrame(L"[SPACE] to Check", [&, protocol]()
 				{
 					protocol->KeyPress(VKEY::KEY_SPACE);
+					assertChecked();
 				});
-				protocol->OnNextIdleFrame(L"[SPACE] to Uncheck", [=]()
+				protocol->OnNextIdleFrame(L"[SPACE] to Uncheck", [&, protocol]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					window->Hide();
