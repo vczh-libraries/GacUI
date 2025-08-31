@@ -281,9 +281,9 @@ GuiCommonDatePickerLook
 					auto dayMutexController = new GuiSelectableButton::MutexGroupController;
 					AddComponent(dayMutexController);
 
-					for (vint i = 0; i < DaysOfWeek; i++)
+					for (vint j = 0; j < DayRows; j++)
 					{
-						for (vint j = 0; j < DayRows; j++)
+						for (vint i = 0; i < DaysOfWeek; i++)
 						{
 							GuiCellComposition* cell = new GuiCellComposition;
 							dayTable->AddChild(cell);
