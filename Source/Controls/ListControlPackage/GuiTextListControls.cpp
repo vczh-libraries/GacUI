@@ -332,6 +332,11 @@ GuiTextList
 				ItemTemplateChanged.AttachMethod(this, &GuiVirtualTextList::OnItemTemplateChanged);
 				ItemChecked.SetAssociatedComposition(boundsComposition);
 
+				if (focusableComposition)
+				{
+					focusableComposition->GetEventReceiver()->keyDown.AttachMethod(this, &GuiVirtualTextList::OnKeyDown);
+				}
+
 				SetView(TextListView::Text);
 			}
 
@@ -369,6 +374,48 @@ GuiTextList
 				default:;
 				}
 				view = _view;
+			}
+
+			void GuiVirtualTextList::OnKeyDown(compositions::GuiGraphicsComposition* sender, compositions::GuiKeyEventArgs& arguments)
+			{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::controls::GuiVirtualTextList::OnKeyDown(GuiGraphicsComposition*, GuiKeyEventArgs&)#"
+				if (arguments.code == VKEY::KEY_SPACE && !arguments.ctrl && !arguments.shift && !arguments.alt)
+				{
+					const auto& selectedItems = GetSelectedItems();
+					if (selectedItems.Count() > 0)
+					{
+						if (auto textItemView = dynamic_cast<list::ITextItemView*>(itemProvider->RequestView(WString::Unmanaged(list::ITextItemView::Identifier))))
+						{
+							bool hasUnchecked = false;
+							for (vint i = 0; i < selectedItems.Count(); i++)
+							{
+								if (!textItemView->GetChecked(selectedItems[i]))
+								{
+									hasUnchecked = true;
+									break;
+								}
+							}
+							
+							itemProvider->PushEditing();
+							for (vint i = 0; i < selectedItems.Count(); i++)
+							{
+								vint itemIndex = selectedItems[i];
+								if (textItemView->GetChecked(itemIndex) != hasUnchecked)
+								{
+									textItemView->SetChecked(itemIndex, hasUnchecked);
+							
+									GuiItemEventArgs eventArgs;
+									eventArgs.itemIndex = itemIndex;
+									ItemChecked.Execute(eventArgs);
+								}
+							}
+							CHECK_ERROR(itemProvider->PopEditing(), ERROR_MESSAGE_PREFIX L"PushEditing and PopEditing calls are not paired.");
+							
+							arguments.handled = true;
+						}
+					}
+				}
+#undef ERROR_MESSAGE_PREFIX
 			}
 
 /***********************************************************************

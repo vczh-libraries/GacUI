@@ -26,7 +26,7 @@ This phrase focuses on implementing space key handling directly in `GuiVirtualTe
 
 The space key handling will register a key event handler in the constructor, similar to how `GuiSelectableListControl` handles its keyboard events. The logic will be straightforward: examine all selected items through the `ITextItemView` interface, determine the target state (check all if any are unchecked, uncheck all if all are checked), and update each selected item accordingly.
 
-### Task 1-1: Add Space Key Handler to GuiVirtualTextList
+### Task 1-1: Add Space Key Handler to GuiVirtualTextList [PROCESSED]
 
 Implement space key handling directly in `GuiVirtualTextList` by adding a key event handler that toggles the checked state of all selected items based on their current state.
 

@@ -161,6 +161,47 @@ namespace gacui_unittest_template
 				);
 		});
 
+		TEST_CASE(L"CheckItemsByKey")
+		{
+			GacUIUnitTest_SetGuiMainProxy([=](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+			{
+				protocol->OnNextIdleFrame(L"Ready", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					if(setTextListView)
+					{
+						auto listControl = FindObjectByName<GuiVirtualTextList>(window, L"list");
+						listControl->SetView(TextListView::Check);
+					}
+					InitializeItems(window, 5);
+				});
+				protocol->OnNextIdleFrame(L"5 Items", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					auto listControl = FindObjectByName<GuiSelectableListControl>(window, L"list");
+					listControl->SetSelected(2, true);
+				});
+				protocol->OnNextIdleFrame(L"Selected index 2", [=]()
+				{
+					protocol->KeyPress(VKEY::KEY_SPACE);
+				});
+				protocol->OnNextIdleFrame(L"[SPACE] to Check", [=]()
+				{
+					protocol->KeyPress(VKEY::KEY_SPACE);
+				});
+				protocol->OnNextIdleFrame(L"[SPACE] to Uncheck", [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					window->Hide();
+				});
+			});
+			GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+				WString::Unmanaged(L"Controls/List/") + pathFragment + WString::Unmanaged(L"/CheckItemsByKey"),
+				WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+				resourceXml
+				);
+		});
+
 		GuiTextListItemTemplate_TestCases(
 			resourceXml,
 			pathFragment,

@@ -170,6 +170,7 @@ GuiVirtualTextList
 
 				void													OnStyleInstalled(vint itemIndex, ItemStyle* style, bool refreshPropertiesOnly)override;
 				void													OnItemTemplateChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+				void													OnKeyDown(compositions::GuiGraphicsComposition* sender, compositions::GuiKeyEventArgs& arguments);
 			public:
 				/// <summary>Create a Text list control in virtual mode.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
