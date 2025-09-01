@@ -1853,6 +1853,16 @@ Helper Functions
 		extern INativeCursor*				GetCursorFromHitTest(INativeWindowListener::HitTestResult hitTestResult, INativeResourceService* resourceService);
 
 		/// <summary>
+		/// General implementation of INativeWindowListener::Moving
+		/// </summary>
+		/// <param name="window">The native window.</param>
+		/// <param name="minWindowSize">The minimum window size.</param>
+		/// <param name="bounds">Pass this argument directly.</param>
+		/// <param name="fixSizeOnly">Pass this argument directly.</param>
+		/// <param name="draggingBorder">Pass this argument directly.</param>
+		extern void							NativeWindowListener_Moving(INativeWindow* window, NativeSize minWindowSize, NativeRect& bounds, bool fixSizeOnly, bool draggingBorder);
+
+		/// <summary>
 		/// A helper function calling multiple <see cref="INativeWindowListener::HitTest"/>.
 		/// </summary>
 		/// <returns>The hit test result.</returns>

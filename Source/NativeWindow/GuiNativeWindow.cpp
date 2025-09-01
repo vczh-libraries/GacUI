@@ -412,5 +412,46 @@ Helper Functions
 				return nullptr;
 			}
 		}
+
+		void NativeWindowListener_Moving(INativeWindow* window, NativeSize minWindowSize, NativeRect& bounds, bool fixSizeOnly, bool draggingBorder)
+		{
+			NativeRect oldBounds = window->GetBounds();
+			if (bounds.Width() < minWindowSize.x)
+			{
+				if (fixSizeOnly)
+				{
+					if (bounds.Width() < minWindowSize.x)
+					{
+						bounds.x2 = bounds.x1 + minWindowSize.x;
+					}
+				}
+				else if (oldBounds.x1 != bounds.x1)
+				{
+					bounds.x1 = oldBounds.x2 - minWindowSize.x;
+				}
+				else if (oldBounds.x2 != bounds.x2)
+				{
+					bounds.x2 = oldBounds.x1 + minWindowSize.x;
+				}
+			}
+			if (bounds.Height() < minWindowSize.y)
+			{
+				if (fixSizeOnly)
+				{
+					if (bounds.Height() < minWindowSize.y)
+					{
+						bounds.y2 = bounds.y1 + minWindowSize.y;
+					}
+				}
+				else if (oldBounds.y1 != bounds.y1)
+				{
+					bounds.y1 = oldBounds.y2 - minWindowSize.y;
+				}
+				else if (oldBounds.y2 != bounds.y2)
+				{
+					bounds.y2 = oldBounds.y1 + minWindowSize.y;
+				}
+			}
+		}
 	}
 }
