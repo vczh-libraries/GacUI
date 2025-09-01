@@ -58,7 +58,7 @@ UnitTestSnapshotDomNode
 		{
 			if (element == L"")
 			{
-				dom = L"Element of: " + itow(renderingDom->id);
+				element = L"Element of: " + itow(renderingDom->id);
 			}
 			return element;
 		}
