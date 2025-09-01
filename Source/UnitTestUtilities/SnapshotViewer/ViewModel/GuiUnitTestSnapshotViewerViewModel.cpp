@@ -10,6 +10,66 @@ namespace vl::presentation::unittest
 	using namespace vl::presentation::remoteprotocol;
 
 /***********************************************************************
+UnitTestSnapshotDomNode
+***********************************************************************/
+
+	class UnitTestSnapshotDomNode : public Object, public virtual IUnitTestSnapshotDomNode
+	{
+	protected:
+		Ptr<RenderingDom>					renderingDom;
+		WString								name;
+		WString								dom;
+		WString								element;
+		List<Ptr<UnitTestSnapshotDomNode>>	children;
+
+	public:
+		UnitTestSnapshotDomNode(Ptr<RenderingDom> _renderingDom)
+			: renderingDom(_renderingDom)
+		{
+			if (renderingDom->children)
+			{
+				for (auto child : *renderingDom->children.Obj())
+				{
+					children.Add(Ptr(new UnitTestSnapshotDomNode(child)));
+				}
+			}
+		}
+
+		WString GetName() override
+		{
+			return itow(renderingDom->id);
+		}
+
+		vint GetDomID() override
+		{
+			return renderingDom->id;
+		}
+
+		WString GetDomAsJsonText() override
+		{
+			if (dom == L"")
+			{
+				dom = L"Dom of: " + itow(renderingDom->id);
+			}
+			return dom;
+		}
+
+		WString GetElementAsJsonText() override
+		{
+			if (element == L"")
+			{
+				dom = L"Element of: " + itow(renderingDom->id);
+			}
+			return element;
+		}
+
+		LazyList<Ptr<IUnitTestSnapshotDomNode>> GetChildren() override
+		{
+			return From(children).Cast<IUnitTestSnapshotDomNode>();
+		}
+	};
+
+/***********************************************************************
 UnitTestSnapshotFrame
 ***********************************************************************/
 
@@ -17,18 +77,20 @@ UnitTestSnapshotFrame
 	{
 		friend const remoteprotocol::UnitTest_RenderingFrame& GetRenderingFrame(Ptr<IUnitTestSnapshotFrame> frame);
 	protected:
-		vint						index;
-		UnitTest_RenderingFrame		frame;
-		WString						elements;
-		WString						commands;
-		WString						dom;
-		JsonFormatting				formatting;
+		vint							index;
+		UnitTest_RenderingFrame			frame;
+		Ptr< UnitTestSnapshotDomNode>	domRoot;
+		WString							elements;
+		WString							commands;
+		WString							dom;
+		JsonFormatting					formatting;
 
 	public:
 		UnitTestSnapshotFrame(vint _index, UnitTest_RenderingFrame _frame)
 			: index(_index)
 			, frame(_frame)
 		{
+			domRoot = Ptr(new UnitTestSnapshotDomNode(frame.root));
 			formatting.spaceAfterColon = true;
 			formatting.spaceAfterComma = true;
 			formatting.crlf = true;
@@ -63,6 +125,11 @@ UnitTestSnapshotFrame
 				dom = JsonToString(ConvertCustomTypeToJson(frame.root), formatting);
 			}
 			return dom;
+		}
+
+		Ptr<IUnitTestSnapshotDomNode> GetDom() override
+		{
+			return domRoot;
 		}
 	};
 
