@@ -341,14 +341,14 @@ GuiMenuButton
 
 			void GuiMenuButton::OnSubMenuWindowOpened(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
-				SubMenuOpeningChanged.Execute(GetNotifyEventArguments());
 				TypedControlTemplateObject(true)->SetSubMenuOpening(true);
+				SubMenuOpeningChanged.Execute(GetNotifyEventArguments());
 			}
 
 			void GuiMenuButton::OnSubMenuWindowClosed(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
-				SubMenuOpeningChanged.Execute(GetNotifyEventArguments());
 				TypedControlTemplateObject(true)->SetSubMenuOpening(false);
+				SubMenuOpeningChanged.Execute(GetNotifyEventArguments());
 			}
 
 			void GuiMenuButton::OnMouseEnter(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)

@@ -355,10 +355,11 @@ GuiFileDialogBase
 				return fileName;
 			}
 
-			void GuiFileDialogBase::SetFileName(const WString& value)				
+			void GuiFileDialogBase::SetFileName(const WString& value)
 			{
 				if (fileName != value)
 				{
+					fileName = value;
 					FileNameChanged.Execute(GuiEventArgs());
 				}
 			}

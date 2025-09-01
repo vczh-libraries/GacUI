@@ -5881,6 +5881,9 @@ namespace darkskin
                 <this>.SetNamedObject("buttonArrow", buttonArrow);
             }
             {
+                (buttonArrow.AutoSelection = false);
+            }
+            {
                 (buttonArrow.AutoFocus = false);
             }
             (<precompile>14 = buttonArrow.BoundsComposition);
@@ -15245,6 +15248,9 @@ namespace darkskin
                 <this>.SetNamedObject("buttonArrow", buttonArrow);
             }
             {
+                (buttonArrow.AutoSelection = false);
+            }
+            {
                 (buttonArrow.AutoFocus = false);
             }
             (<precompile>9 = buttonArrow.BoundsComposition);
@@ -18779,6 +18785,9 @@ namespace darkskin
             {
                 (buttonArrow = new (::presentation::controls::GuiSelectableButton*)(::presentation::theme::ThemeName::CheckBox));
                 <this>.SetNamedObject("buttonArrow", buttonArrow);
+            }
+            {
+                (buttonArrow.AutoSelection = false);
             }
             {
                 (buttonArrow.AutoFocus = false);
@@ -30604,6 +30613,9 @@ namespace darkskin
             {
                 (buttonArrow = new (::presentation::controls::GuiSelectableButton*)(::presentation::theme::ThemeName::CheckBox));
                 <this>.SetNamedObject("buttonArrow", buttonArrow);
+            }
+            {
+                (buttonArrow.AutoSelection = false);
             }
             {
                 (buttonArrow.AutoFocus = false);
