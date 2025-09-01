@@ -11785,7 +11785,7 @@
     },
     {
       "frameId": 24,
-      "frameName": "Set 1999",
+      "frameName": "[UP] + [ENTER] -> 1999-1-1",
       "windowSize": {
         "bounds": {
           "x1": {"value": 352},
@@ -14410,7 +14410,7 @@
             "ElementDesc_SolidBackground",
             {
               "id": 374,
-              "backgroundColor": "#00000000",
+              "backgroundColor": "#3399FF",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
@@ -14440,7 +14440,7 @@
             "ElementDesc_SolidBackground",
             {
               "id": 376,
-              "backgroundColor": "#3399FF",
+              "backgroundColor": "#00000000",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
@@ -18652,7 +18652,7 @@
             "ElementDesc_SolidBackground",
             {
               "id": 374,
-              "backgroundColor": "#00000000",
+              "backgroundColor": "#3399FF",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
@@ -18682,7 +18682,7 @@
             "ElementDesc_SolidBackground",
             {
               "id": 376,
-              "backgroundColor": "#3399FF",
+              "backgroundColor": "#00000000",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
@@ -21088,7 +21088,7 @@
     },
     {
       "frameId": 37,
-      "frameName": "Set December",
+      "frameName": "[END] + [ENTER] -> 1999-12-1",
       "windowSize": {
         "bounds": {
           "x1": {"value": 352},
@@ -23683,7 +23683,7 @@
             "ElementDesc_SolidBackground",
             {
               "id": 374,
-              "backgroundColor": "#00000000",
+              "backgroundColor": "#3399FF",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
@@ -23713,7 +23713,7 @@
             "ElementDesc_SolidBackground",
             {
               "id": 376,
-              "backgroundColor": "#3399FF",
+              "backgroundColor": "#00000000",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
@@ -23803,7 +23803,7 @@
             "ElementDesc_SolidBackground",
             {
               "id": 400,
-              "backgroundColor": "#3399FF",
+              "backgroundColor": "#00000000",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
@@ -24073,7 +24073,7 @@
             "ElementDesc_SolidBackground",
             {
               "id": 418,
-              "backgroundColor": "#00000000",
+              "backgroundColor": "#3399FF",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
@@ -28285,7 +28285,7 @@
             "ElementDesc_SolidBackground",
             {
               "id": 374,
-              "backgroundColor": "#00000000",
+              "backgroundColor": "#3399FF",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
@@ -28315,7 +28315,7 @@
             "ElementDesc_SolidBackground",
             {
               "id": 376,
-              "backgroundColor": "#3399FF",
+              "backgroundColor": "#00000000",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
@@ -28405,7 +28405,7 @@
             "ElementDesc_SolidBackground",
             {
               "id": 400,
-              "backgroundColor": "#3399FF",
+              "backgroundColor": "#00000000",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]
@@ -28675,7 +28675,7 @@
             "ElementDesc_SolidBackground",
             {
               "id": 418,
-              "backgroundColor": "#00000000",
+              "backgroundColor": "#3399FF",
               "shape": {"shapeType": "Rectangle", "radiusX": 0, "radiusY": 0}
             }
           ]

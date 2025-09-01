@@ -126,7 +126,12 @@ TEST_FILE
 				});
 				protocol->OnNextIdleFrame(L"[UP]", [=]()
 				{
+					auto window = GetApplication()->GetMainWindow();
+					auto dateCombo = FindObjectByName<GuiDateComboBox>(window, L"dateCombo");
+					auto datePicker = dateCombo->GetDatePicker();
 					protocol->KeyPress(VKEY::KEY_RETURN);
+					TEST_ASSERT(datePicker->GetDate() == DateTime::FromDateTime(1999, 1, 1));
+					TEST_ASSERT(dateCombo->GetSelectedDate() == DateTime::FromDateTime(2000, 1, 1));
 				});
 				protocol->OnNextIdleFrame(L"[ENTER] -> 1999-1-1", [=]()
 				{
@@ -142,7 +147,12 @@ TEST_FILE
 				});
 				protocol->OnNextIdleFrame(L"[END]", [=]()
 				{
+					auto window = GetApplication()->GetMainWindow();
+					auto dateCombo = FindObjectByName<GuiDateComboBox>(window, L"dateCombo");
+					auto datePicker = dateCombo->GetDatePicker();
 					protocol->KeyPress(VKEY::KEY_RETURN);
+					TEST_ASSERT(datePicker->GetDate() == DateTime::FromDateTime(1999, 12, 1));
+					TEST_ASSERT(dateCombo->GetSelectedDate() == DateTime::FromDateTime(2000, 1, 1));
 				});
 				protocol->OnNextIdleFrame(L"[ENTER] -> 1999-12-1", [=]()
 				{
@@ -204,12 +214,12 @@ TEST_FILE
 					auto window = GetApplication()->GetMainWindow();
 					auto dateCombo = FindObjectByName<GuiDateComboBox>(window, L"dateCombo");
 					auto datePicker = dateCombo->GetDatePicker();
-					auto look = FindObjectByName<templates::GuiCommonDatePickerLook>(datePicker->TypedControlTemplateObject(false), L"look");
-					look->GetYearCombo()->SetSelectedIndex(look->GetYearCombo()->GetSelectedIndex() - 1);
+					protocol->KeyPress(VKEY::KEY_UP);
+					protocol->KeyPress(VKEY::KEY_RETURN);
 					TEST_ASSERT(datePicker->GetDate() == DateTime::FromDateTime(1999, 1, 1));
 					TEST_ASSERT(dateCombo->GetSelectedDate() == DateTime::FromDateTime(2000, 1, 1));
 				});
-				protocol->OnNextIdleFrame(L"Set 1999", [=]()
+				protocol->OnNextIdleFrame(L"[UP] + [ENTER] -> 1999-1-1", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto dateCombo = FindObjectByName<GuiDateComboBox>(window, L"dateCombo");
@@ -223,12 +233,12 @@ TEST_FILE
 					auto window = GetApplication()->GetMainWindow();
 					auto dateCombo = FindObjectByName<GuiDateComboBox>(window, L"dateCombo");
 					auto datePicker = dateCombo->GetDatePicker();
-					auto look = FindObjectByName<templates::GuiCommonDatePickerLook>(datePicker->TypedControlTemplateObject(false), L"look");
-					look->GetMonthCombo()->SetSelectedIndex(11);
+					protocol->KeyPress(VKEY::KEY_END);
+					protocol->KeyPress(VKEY::KEY_RETURN);
 					TEST_ASSERT(datePicker->GetDate() == DateTime::FromDateTime(1999, 12, 1));
 					TEST_ASSERT(dateCombo->GetSelectedDate() == DateTime::FromDateTime(2000, 1, 1));
 				});
-				protocol->OnNextIdleFrame(L"Set December", [=]()
+				protocol->OnNextIdleFrame(L"[END] + [ENTER] -> 1999-12-1", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto dateCombo = FindObjectByName<GuiDateComboBox>(window, L"dateCombo");
