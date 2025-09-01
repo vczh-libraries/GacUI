@@ -94,6 +94,22 @@ namespace vl::presentation::remote_renderer
 	void GuiRemoteRendererSingle::Moving(NativeRect& bounds, bool fixSizeOnly, bool draggingBorder)
 	{
 		NativeWindowListener_Moving(window, suggestedMinSize, bounds, fixSizeOnly, draggingBorder);
+		if (draggingBorder)
+		{
+			auto config = GetWindowSizingConfig();
+			auto dx1 = config.clientBounds.x1 - config.bounds.x1;
+			auto dy1 = config.clientBounds.y1 - config.bounds.y1;
+			auto dx2 = config.clientBounds.x2 - config.bounds.x2;
+			auto dy2 = config.clientBounds.y2 - config.bounds.y2;
+
+			config.bounds = bounds;
+			config.clientBounds.x1 = config.bounds.x1 + dx1;
+			config.clientBounds.y1 = config.bounds.y1 + dy1;
+			config.clientBounds.x2 = config.bounds.x2 + dx2;
+			config.clientBounds.y2 = config.bounds.y2 + dy2;
+
+			events->OnWindowBoundsUpdated(config);
+		}
 	}
 
 	void GuiRemoteRendererSingle::Moved()
