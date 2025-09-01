@@ -9,6 +9,16 @@ namespace vl::presentation::unittest
 	using namespace glr::json;
 	using namespace vl::presentation::remoteprotocol;
 
+	JsonFormatting GetJsonFormatting()
+	{
+		JsonFormatting formatting;
+		formatting.spaceAfterColon = true;
+		formatting.spaceAfterComma = true;
+		formatting.crlf = true;
+		formatting.compact = true;
+		return formatting;
+	}
+
 /***********************************************************************
 UnitTestSnapshotDomNode
 ***********************************************************************/
@@ -77,7 +87,9 @@ UnitTestSnapshotDomNode
 		{
 			if (dom == L"")
 			{
-				dom = L"Dom of: " + itow(renderingDom->id);
+				RenderingDom copy = *renderingDom.Obj();
+				copy.children = nullptr;
+				dom = JsonToString(ConvertCustomTypeToJson(copy), GetJsonFormatting());
 			}
 			return dom;
 		}
@@ -86,7 +98,19 @@ UnitTestSnapshotDomNode
 		{
 			if (element == L"")
 			{
-				element = L"Element of: " + itow(renderingDom->id);
+				element = L"null";
+				if (renderingDom->content.element && frame.elements)
+				{
+					vint index = frame.elements->Keys().IndexOf(renderingDom->content.element.Value());
+					if (index != -1)
+					{
+						auto elementVariant = frame.elements->Values()[index];
+						elementVariant.Apply([&](auto desc)
+						{
+							element = JsonToString(ConvertCustomTypeToJson(desc), GetJsonFormatting());
+						});
+					}
+				}
 			}
 			return element;
 		}
@@ -112,7 +136,6 @@ UnitTestSnapshotFrame
 		WString							elements;
 		WString							commands;
 		WString							dom;
-		JsonFormatting					formatting;
 
 	public:
 		UnitTestSnapshotFrame(vint _index, UnitTest_RenderingTrace& _trace, UnitTest_RenderingFrame _frame)
@@ -121,10 +144,6 @@ UnitTestSnapshotFrame
 			, frame(_frame)
 		{
 			domRoot = Ptr(new UnitTestSnapshotDomNode(trace, frame, frame.root));
-			formatting.spaceAfterColon = true;
-			formatting.spaceAfterComma = true;
-			formatting.crlf = true;
-			formatting.compact = true;
 		}
 
 		WString GetName() override
@@ -143,7 +162,7 @@ UnitTestSnapshotFrame
 		{
 			if (elements == L"")
 			{
-				elements = JsonToString(ConvertCustomTypeToJson(frame.elements), formatting);
+				elements = JsonToString(ConvertCustomTypeToJson(frame.elements), GetJsonFormatting());
 			}
 			return elements;
 		}
@@ -152,7 +171,7 @@ UnitTestSnapshotFrame
 		{
 			if (dom == L"")
 			{
-				dom = JsonToString(ConvertCustomTypeToJson(frame.root), formatting);
+				dom = JsonToString(ConvertCustomTypeToJson(frame.root), GetJsonFormatting());
 			}
 			return dom;
 		}
