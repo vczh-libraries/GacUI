@@ -6,6 +6,7 @@ namespace gaclib_controls
 	using namespace vl;
 	using namespace vl::collections;
 	using namespace vl::filesystem;
+	using namespace vl::glr::json;
 	using namespace vl::presentation;
 	using namespace vl::presentation::elements;
 	using namespace vl::presentation::compositions;
@@ -248,14 +249,12 @@ Helper Functions
 		vint h = frame.windowSize.clientBounds.Height().value;
 		auto focusComposition = new GuiBoundsComposition;
 		{
-			focusComposition->SetExpectedBounds(Rect({ 5,5 }, { w + 2,h + 2 }));
-			auto element = Ptr(GuiFocusRectangleElement::Create());
-			focusComposition->SetOwnedElement(element);
+			focusComposition->SetExpectedBounds(Rect({ 5,5 }, { w + 4,h + 4 }));
 		}
 		auto canvasComposition = new GuiBoundsComposition;
 		{
 			focusComposition->AddChild(canvasComposition);
-			canvasComposition->SetExpectedBounds(Rect({ 1,1 }, { w,h }));
+			canvasComposition->SetExpectedBounds(Rect({ 2,2 }, { w,h }));
 		}
 
 		if (frame.root && frame.root->children)
@@ -279,6 +278,7 @@ UnitTestSnapshotViewerAppWindow
 		{
 			SafeDeleteComposition(rootComposition);
 			rootComposition = nullptr;
+			highlightComposition = nullptr;
 		}
 
 		auto nodeObj = treeViewFileNodes->GetSelectedItem();
@@ -296,9 +296,44 @@ UnitTestSnapshotViewerAppWindow
 		}
 	}
 
+	void UnitTestSnapshotViewerAppWindow::treeViewDom_SelectionChanged(GuiGraphicsComposition* sender, GuiEventArgs& arguments)
+	{
+		if (rootComposition)
+		{
+			if (auto domNode = treeViewDom->GetSelectedItem().GetSharedPtr().Cast<IUnitTestSnapshotDomNode>())
+			{
+				remoteprotocol::RenderingDom renderingDom;
+				remoteprotocol::ConvertJsonToCustomType(JsonParse(domNode->GetDomAsJsonText(), jsonParser), renderingDom);
+				if (!highlightComposition)
+				{
+					highlightComposition = new GuiBoundsComposition;
+					auto element = Ptr(GuiSolidBorderElement::Create());
+					element->SetColor(Color(255, 255, 0));
+					highlightComposition->SetOwnedElement(element);
+					rootComposition->AddChild(highlightComposition);
+				}
+				highlightComposition->SetExpectedBounds(Rect(
+					renderingDom.content.bounds.x1 + 1,
+					renderingDom.content.bounds.y1 + 1,
+					renderingDom.content.bounds.x2 + 3,
+					renderingDom.content.bounds.y2 + 3
+				));
+			}
+			else
+			{
+				if (highlightComposition)
+				{
+					SafeDeleteComposition(highlightComposition);
+					highlightComposition = nullptr;
+				}
+			}
+		}
+	}
+
 	UnitTestSnapshotViewerAppWindow::UnitTestSnapshotViewerAppWindow(Ptr<UnitTestSnapshotViewerViewModel> viewModel)
 		: UnitTestSnapshotViewerWindow(viewModel)
 	{
 		textListFrames->SelectionChanged.AttachMethod(this, &UnitTestSnapshotViewerAppWindow::textListFrames_SelectionChanged);
+		treeViewDom->SelectionChanged.AttachMethod(this, &UnitTestSnapshotViewerAppWindow::treeViewDom_SelectionChanged);
 	}
 }
