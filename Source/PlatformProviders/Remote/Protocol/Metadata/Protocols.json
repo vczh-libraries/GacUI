@@ -850,6 +850,22 @@
         },
         "response": null
     }, {
+        "$ast": "MessageDecl",
+        "attributes": [{
+            "$ast": "Attribute",
+            "cppType": "",
+            "name": "@DropRepeat"
+        }],
+        "name": "WindowNotifyMinSize",
+        "request": {
+            "$ast": "MessageRequest",
+            "type": {
+                "$ast": "ReferenceType",
+                "name": "NativeSize"
+            }
+        },
+        "response": null
+    }, {
         "$ast": "EventDecl",
         "attributes": [{
             "$ast": "Attribute",

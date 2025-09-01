@@ -81,6 +81,7 @@ struct WindowShowing
 
 [@DropRepeat] message WindowNotifyActivate  {}
 [@DropRepeat] message WindowNotifyShow      { request: WindowShowing; }
+[@DropRepeat] message WindowNotifyMinSize   { request: NativeSize; }
 
 [@DropRepeat] event WindowBoundsUpdated     { request: WindowSizingConfig; }
 [@DropRepeat] event WindowActivatedUpdated  { request: bool; }

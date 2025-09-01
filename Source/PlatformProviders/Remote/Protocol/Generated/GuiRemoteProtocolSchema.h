@@ -527,6 +527,7 @@ namespace vl::presentation::remoteprotocol
 	HANDLER(WindowNotifySetClientSize, ::vl::presentation::NativeSize, void, REQ, NORES, DROPREP)\
 	HANDLER(WindowNotifyActivate, void, void, NOREQ, NORES, DROPREP)\
 	HANDLER(WindowNotifyShow, ::vl::presentation::remoteprotocol::WindowShowing, void, REQ, NORES, DROPREP)\
+	HANDLER(WindowNotifyMinSize, ::vl::presentation::NativeSize, void, REQ, NORES, DROPREP)\
 	HANDLER(IOUpdateGlobalShortcutKey, ::vl::Ptr<::vl::collections::List<::vl::presentation::remoteprotocol::GlobalShortcutKey>>, void, REQ, NORES, NODROP)\
 	HANDLER(IORequireCapture, void, void, NOREQ, NORES, NODROP)\
 	HANDLER(IOReleaseCapture, void, void, NOREQ, NORES, NODROP)\

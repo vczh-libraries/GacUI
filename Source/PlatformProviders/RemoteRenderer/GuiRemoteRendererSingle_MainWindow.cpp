@@ -156,4 +156,9 @@ namespace vl::presentation::remote_renderer
 			}
 		}
 	}
+
+	void GuiRemoteRendererSingle::RequestWindowNotifyMinSize(const NativeSize& arguments)
+	{
+		CHECK_FAIL(L"Not Implemented!");
+	}
 }
