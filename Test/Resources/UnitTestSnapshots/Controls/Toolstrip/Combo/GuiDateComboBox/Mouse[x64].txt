@@ -27,9 +27,6 @@ namespace gacuisrc_unittest
         var self : ::gacuisrc_unittest::MainWindow* = null of (::gacuisrc_unittest::MainWindow*);
 
         @cpp:Protected
-        var dateCombo : ::presentation::controls::GuiDateComboBox* = null of (::presentation::controls::GuiDateComboBox*);
-
-        @cpp:Protected
         var <precompile>0 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
@@ -37,6 +34,9 @@ namespace gacuisrc_unittest
 
         @cpp:Protected
         var <precompile>2 : ::presentation::compositions::GuiGraphicsComposition* = null of (::presentation::compositions::GuiGraphicsComposition*);
+
+        @cpp:Protected
+        var dateCombo : ::presentation::controls::GuiDateComboBox* = null of (::presentation::controls::GuiDateComboBox*);
 
         @cpp:Protected
         func <gacuisrc_unittest-MainWindow>Initialize(<this> : ::gacuisrc_unittest::MainWindow*) : (::system::Void)
@@ -56,19 +56,19 @@ namespace gacuisrc_unittest
                 (dateCombo = new (::presentation::controls::GuiDateComboBox*)(::presentation::theme::ThemeName::DateComboBox));
                 <this>.SetNamedObject("dateCombo", dateCombo);
             }
+            {
+                (dateCombo.SelectedDate = (cast (::system::DateTime) "2000-01-01 00:00:00.000"));
+            }
             (<precompile>1 = dateCombo.DatePicker);
             {
                 (<precompile>1.DateLocale = (cast (::system::Locale) "en-US"));
             }
+            {
+                (dateCombo.Alt = "X");
+            }
             (<precompile>0 = dateCombo.BoundsComposition);
             {
                 (<precompile>0.PreferredMinSize = {x : 160; y : 20;} of (::presentation::Size));
-            }
-            {
-                (dateCombo.SelectedDate = (cast (::system::DateTime) "2000-01-01 00:00:00.000"));
-            }
-            {
-                (dateCombo.Alt = "X");
             }
             {
                 self.AddChild(dateCombo);

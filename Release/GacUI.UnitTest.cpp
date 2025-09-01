@@ -509,6 +509,16 @@ void GacUIUnitTest_Start_WithResourceAsText(const WString& appName, Nullable<Uni
 #undef ERROR_MESSAGE_PREFIX
 }
 
+void GacUIUnitTest_PrintErrors(GuiResourceError::List& errors)
+{
+	for (auto&& error : errors)
+	{
+		TEST_PRINT(L"Error in resource: " + error.location.resourcePath);
+		TEST_PRINT(L"  ROW: " + itow(error.position.row) + L", COLUMN: " + itow(error.position.column));
+		TEST_PRINT(L"  REASON: " + error.message);
+	}
+}
+
 Ptr<GuiResource> GacUIUnitTest_CompileAndLoad(const WString& xmlResource)
 {
 #define ERROR_MESSAGE_PREFIX L"GacUIUnitTest_CompileAndLoad(const WString&)#"
@@ -518,10 +528,18 @@ Ptr<GuiResource> GacUIUnitTest_CompileAndLoad(const WString& xmlResource)
 		auto resourcePath = (GetUnitTestFrameworkConfig().resourceFolder / L"Resource.xml").GetFullPath();
 		auto parser = GetParserManager()->GetParser<glr::xml::XmlDocument>(L"XML");
 		auto xml = parser->Parse({ WString::Empty,resourcePath }, xmlResource, errors);
-		CHECK_ERROR(xml && errors.Count() == 0, ERROR_MESSAGE_PREFIX L"Failed to parse XML resource.");
+		if(!xml || errors.Count()> 0)
+		{
+			GacUIUnitTest_PrintErrors(errors);
+			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Failed to parse XML resource.");
+		}
 
 		resource = GuiResource::LoadFromXml(xml, resourcePath, GetFolderPath(resourcePath), errors);
-		CHECK_ERROR(resource && errors.Count() == 0, ERROR_MESSAGE_PREFIX L"Failed to load XML resource.");
+		if (!resource || errors.Count() > 0)
+		{
+			GacUIUnitTest_PrintErrors(errors);
+			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Failed to load XML resource.");
+		}
 	}
 
 	auto precompiledFolder = resource->Precompile(
@@ -533,7 +551,11 @@ Ptr<GuiResource> GacUIUnitTest_CompileAndLoad(const WString& xmlResource)
 		nullptr,
 		errors
 		);
-	CHECK_ERROR(precompiledFolder && errors.Count() == 0, ERROR_MESSAGE_PREFIX L"Failed to precompile XML resource.");
+	if (!precompiledFolder || errors.Count() > 0)
+	{
+		GacUIUnitTest_PrintErrors(errors);
+		CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Failed to precompile XML resource.");
+	}
 
 	auto compiledWorkflow = precompiledFolder->GetValueByPath(WString::Unmanaged(L"Workflow/InstanceClass")).Cast<GuiInstanceCompiledWorkflow>();
 	CHECK_ERROR(compiledWorkflow, ERROR_MESSAGE_PREFIX L"Failed to compile generated Workflow script.");

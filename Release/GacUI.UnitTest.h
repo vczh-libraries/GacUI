@@ -1392,6 +1392,7 @@ UnitTestRemoteProtocol
 
 		bool LogRenderingResult()
 		{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol_Logging<TProtocol>::ProcessRemoteEvents()#"
 			if (auto lastFrame = this->TryGetLastRenderingFrameAndReset())
 			{
 				candidateFrame = lastFrame;
@@ -1419,12 +1420,15 @@ UnitTestRemoteProtocol
 					idlingCounter++;
 					if (idlingCounter == 100)
 					{
-						TEST_PRINT(L"The last frame didn't trigger UI updating. The action registered by OnNextIdleFrame should always make any element or layout to change.");
-						TEST_ASSERT(idlingCounter < 100);
+						CHECK_ERROR(
+							idlingCounter < 100,
+							ERROR_MESSAGE_PREFIX L"The last frame didn't trigger UI updating. The action registered by OnNextIdleFrame should always make any element or layout to change."
+							);
 					}
 				}
 			}
 			return false;
+#undef ERROR_MESSAGE_PREFIX
 		}
 
 	public:
@@ -1566,6 +1570,8 @@ IGuiRemoteProtocol
 
 	protected:
 
+		bool								frameExecuting = false;
+
 		void ProcessRemoteEvents() override
 		{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::unittest::UnitTestRemoteProtocol::ProcessRemoteEvents()#"
@@ -1574,6 +1580,7 @@ IGuiRemoteProtocol
 				if (LogRenderingResult())
 				{
 					auto [name, func] = processRemoteEvents[nextEventIndex];
+					CHECK_ERROR(!frameExecuting, ERROR_MESSAGE_PREFIX L"The action registered by OnNextIdleFrame should not call any blocking function, consider using InvokeInMainThread.");
 					vl::unittest::UnitTest::PrintMessage(L"Execute idle frame[" + (name ? name.Value() : itow(nextEventIndex)) + L"]", vl::unittest::UnitTest::MessageKind::Info);
 					CHECK_ERROR(lastFrameIndex != loggedTrace.frames->Count() - 1, ERROR_MESSAGE_PREFIX L"No rendering occured after the last idle frame.");
 					lastFrameIndex = loggedTrace.frames->Count() - 1;
@@ -1583,7 +1590,9 @@ IGuiRemoteProtocol
 						auto&& lastFrame = (*loggedTrace.frames.Obj())[loggedTrace.frames->Count() - 1];
 						lastFrame.frameName = name;
 					}
+					frameExecuting = true;
 					func();
+					frameExecuting = false;
 					nextEventIndex++;
 				}
 			}

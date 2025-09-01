@@ -63,6 +63,9 @@ namespace gacuisrc_unittest
             {
                 (<precompile>1.DateLocale = (cast (::system::Locale) "en-US"));
             }
+            {
+                (dateCombo.Alt = "X");
+            }
             (<precompile>0 = dateCombo.BoundsComposition);
             {
                 (<precompile>0.PreferredMinSize = {x : 160; y : 20;} of (::presentation::Size));

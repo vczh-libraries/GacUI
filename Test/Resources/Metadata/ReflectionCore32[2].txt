@@ -2178,6 +2178,8 @@ class presentation::controls::GuiBindableTreeView::ItemSourceNode : presentation
 }
 
 class presentation::controls::GuiButton : presentation::controls::GuiControl {
+    event AfterClicked : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^;
+    event BeforeClicked : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^;
     event Clicked : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^;
 
     property AutoFocus : system::Boolean { get:GetAutoFocus set:SetAutoFocus }
@@ -2218,9 +2220,7 @@ class presentation::controls::GuiColorDialog : presentation::controls::GuiDialog
 }
 
 class presentation::controls::GuiComboBoxBase : presentation::controls::GuiMenuButton {
-    function TypedControlTemplateObject(ensureExists : system::Boolean) : presentation::templates::GuiComboBoxTemplate*;
-
-    constructor (themeName : presentation::theme::ThemeName) : presentation::controls::GuiComboBoxBase*;
+    constructor (themeName : presentation::theme::ThemeName, _autoFocusDropdown : system::Boolean) : presentation::controls::GuiComboBoxBase*;
 }
 
 class presentation::controls::GuiComboBoxListControl : presentation::controls::GuiComboBoxBase {

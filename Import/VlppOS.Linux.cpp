@@ -23,6 +23,11 @@ static_assert(false, "Do not build this file for Windows applications.");
 
 namespace vl
 {
+	namespace stream
+	{
+		extern Ptr<IFileStreamImpl>		CreateOSFileStreamImpl(const WString& fileName, FileStream::AccessRight accessRight);
+	}
+
 	namespace filesystem
 	{
 		using namespace collections;
@@ -234,6 +239,11 @@ LinuxFileSystemImpl
 				AString oldFileName = wtoa(folderPath.GetFullPath());
 				AString newFileName = wtoa((folderPath.GetFolder() / newName).GetFullPath());
 				return rename(oldFileName.Buffer(), newFileName.Buffer()) == 0;
+			}
+
+			Ptr<stream::IFileStreamImpl> GetFileStreamImpl(const WString& fileName, stream::FileStream::AccessRight accessRight) const override
+			{
+				return stream::CreateOSFileStreamImpl(fileName, accessRight);
 			}
 		};
 

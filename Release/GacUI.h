@@ -14184,8 +14184,12 @@ Buttons
 				GuiButton(theme::ThemeName themeName);
 				~GuiButton();
 
-				/// <summary>Mouse click event.</summary>
+				/// <summary>Mouse click event, but raised before Clicked. This event is for pre-UI effects.</summary>
+				compositions::GuiNotifyEvent			BeforeClicked;
+				/// <summary>Mouse click event. This event is for executing the actual task assigned with the button.</summary>
 				compositions::GuiNotifyEvent			Clicked;
+				/// <summary>Mouse click event, but raised after Clicked. This event is for post-UI effects.</summary>
+				compositions::GuiNotifyEvent			AfterClicked;
 
 				/// <summary>Test is the <see cref="Clicked"/> event raised when left mouse button up.</summary>
 				/// <returns>Returns true if this event is raised when left mouse button up</returns>
@@ -14255,7 +14259,7 @@ Buttons
 				bool									autoSelection = true;
 				bool									isSelected = false;
 
-				void									OnClicked(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+				void									OnAfterClicked(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 			public:
 				/// <summary>Create a control with a specified default theme.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
@@ -15506,6 +15510,7 @@ GuiVirtualTextList
 
 				void													OnStyleInstalled(vint itemIndex, ItemStyle* style, bool refreshPropertiesOnly)override;
 				void													OnItemTemplateChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+				void													OnKeyDown(compositions::GuiGraphicsComposition* sender, compositions::GuiKeyEventArgs& arguments);
 			public:
 				/// <summary>Create a Text list control in virtual mode.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
@@ -18197,7 +18202,7 @@ MenuButton
 				void									OnSubMenuWindowOpened(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void									OnSubMenuWindowClosed(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void									OnMouseEnter(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
-				void									OnClicked(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+				void									OnBeforeClicked(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 
 				virtual IGuiMenuService::Direction		GetSubMenuDirection();
 
@@ -18327,14 +18332,24 @@ ComboBox Base
 			{
 				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(ComboBoxTemplate, GuiMenuButton)
 			protected:
-				
+
+				compositions::IGuiAltActionHost*			GetActivatingAltHost()override;
 				IGuiMenuService::Direction					GetSubMenuDirection()override;
 				void										OnCachedBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+				void										OnKeyDown(compositions::GuiGraphicsComposition* sender, compositions::GuiKeyEventArgs& arguments);
+				void										OnAfterSubMenuOpening(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+
+			private:
+				bool										autoFocusDropdown;
+				
 			public:
 				/// <summary>Create a control with a specified default theme.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
-				GuiComboBoxBase(theme::ThemeName themeName);
+				/// <param name="_autoFocusDropdown">Whether to automatically focus the dropdown when it opens.</param>
+				GuiComboBoxBase(theme::ThemeName themeName, bool _autoFocusDropdown);
 				~GuiComboBoxBase();
+
+				IDescriptable*								QueryService(const WString& identifier) override;
 			};
 
 /***********************************************************************
