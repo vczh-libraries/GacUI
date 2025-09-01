@@ -159,6 +159,9 @@ namespace vl::presentation::remote_renderer
 
 	void GuiRemoteRendererSingle::RequestWindowNotifyMinSize(const NativeSize& arguments)
 	{
-		CHECK_FAIL(L"Not Implemented!");
+		auto clientSize = window->GetClientSize();
+		auto size = window->GetBounds().GetSize();
+		suggestedMinSize.x = arguments.x + size.x - clientSize.x;
+		suggestedMinSize.y = arguments.y + size.y - clientSize.y;
 	}
 }

@@ -30,6 +30,7 @@ namespace vl::presentation::remote_renderer
 
 		bool									updatingBounds = false;
 		remoteprotocol::WindowSizingConfig		windowSizingConfig;
+		NativeSize								suggestedMinSize;
 
 		remoteprotocol::ScreenConfig			GetScreenConfig(INativeScreen* screen);
 		remoteprotocol::WindowSizingConfig		GetWindowSizingConfig();
@@ -42,6 +43,7 @@ namespace vl::presentation::remote_renderer
 		void									AfterClosing() override;
 		void									Closed() override;
 
+		void									Moving(NativeRect& bounds, bool fixSizeOnly, bool draggingBorder) override;
 		void									Moved() override;
 		void									DpiChanged(bool preparing) override;
 		void									RenderingAsActivated() override;
