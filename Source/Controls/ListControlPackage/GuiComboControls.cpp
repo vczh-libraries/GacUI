@@ -20,6 +20,12 @@ GuiComboBoxBase
 			{
 			}
 
+			compositions::IGuiAltActionHost* GuiComboBoxBase::GetActivatingAltHost()
+			{
+				// When the combo box is opened by an Alt action, it will hot continue into the dropdown
+				return GuiSelectableButton::GetActivatingAltHost();
+			}
+
 			IGuiMenuService::Direction GuiComboBoxBase::GetSubMenuDirection()
 			{
 				return IGuiMenuService::Horizontal;
@@ -67,6 +73,19 @@ GuiComboBoxBase
 
 			GuiComboBoxBase::~GuiComboBoxBase()
 			{
+			} 
+
+			IDescriptable* GuiComboBoxBase::QueryService(const WString& identifier)
+			{
+				if (identifier == IGuiMenuService::Identifier)
+				{
+					// Stop cascading menu behavior if the combo box is put in another combo box dropdown
+					return nullptr;
+				}
+				else
+				{
+					return GuiMenuButton::QueryService(identifier);
+				}
 			}
 
 /***********************************************************************

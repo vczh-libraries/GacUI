@@ -28,12 +28,13 @@ ComboBox Base
 			{
 				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(ComboBoxTemplate, GuiMenuButton)
 			protected:
-				
+
+				compositions::IGuiAltActionHost*			GetActivatingAltHost()override;
 				IGuiMenuService::Direction					GetSubMenuDirection()override;
 				void										OnCachedBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void										OnKeyDown(compositions::GuiGraphicsComposition* sender, compositions::GuiKeyEventArgs& arguments);
 				void										OnAfterSubMenuOpening(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
-			
+
 			private:
 				bool										autoFocusDropdown;
 				
@@ -43,6 +44,8 @@ ComboBox Base
 				/// <param name="_autoFocusDropdown">Whether to automatically focus the dropdown when it opens.</param>
 				GuiComboBoxBase(theme::ThemeName themeName, bool _autoFocusDropdown);
 				~GuiComboBoxBase();
+
+				IDescriptable*								QueryService(const WString& identifier) override;
 			};
 
 /***********************************************************************
