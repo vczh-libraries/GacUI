@@ -1153,9 +1153,10 @@ GuiPopup
 
 			void GuiPopup::OnKeyDown(compositions::GuiGraphicsComposition* sender, compositions::GuiKeyEventArgs& arguments)
 			{
-				if (!arguments.handled)
+				if (arguments.code == VKEY::KEY_SPACE && !arguments.ctrl && !arguments.shift && !arguments.alt)
 				{
 					Hide();
+					arguments.handled = true;
 				}
 			}
 

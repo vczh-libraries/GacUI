@@ -34,16 +34,10 @@ GuiComboBoxBase
 
 			void GuiComboBoxBase::OnKeyDown(compositions::GuiGraphicsComposition* sender, compositions::GuiKeyEventArgs& arguments)
 			{
-				if (!arguments.autoRepeatKeyDown)
+				if (arguments.code == VKEY::KEY_SPACE && !arguments.ctrl && !arguments.shift && !arguments.alt)
 				{
-					switch (arguments.code)
-					{
-					case VKEY::KEY_ESCAPE:
-						GetSubMenu()->Hide();
-						arguments.handled = true;
-						break;
-					default:;
-					}
+					GetSubMenu()->Hide();
+					arguments.handled = true;
 				}
 			}
 
@@ -68,9 +62,6 @@ GuiComboBoxBase
 				if (autoFocusDropdown)
 				{
 					AfterSubMenuOpening.AttachMethod(this, &GuiComboBoxBase::OnAfterSubMenuOpening);
-					
-					// Attach OnKeyDown to submenu's focusable composition for consistent ESC handling
-					GetSubMenu()->GetFocusableComposition()->GetEventReceiver()->keyDown.AttachMethod(this, &GuiComboBoxBase::OnKeyDown);
 				}
 			}
 
