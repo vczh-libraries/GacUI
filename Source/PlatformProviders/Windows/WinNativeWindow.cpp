@@ -1211,6 +1211,11 @@ WindowsForm
 					}
 				}
 
+				void SuggestMinClientSize(NativeSize size)override
+				{
+					// Ignored
+				}
+
 				WString GetTitle()override
 				{
 					return title;

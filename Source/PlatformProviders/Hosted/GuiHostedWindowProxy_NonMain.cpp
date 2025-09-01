@@ -69,6 +69,11 @@ GuiNonMainHostedWindowProxy
 				return { bounds.LeftTop(),{{w},{h}} };
 			}
 
+			void SuggestMinClientSize(NativeSize size) override
+			{
+				// Ignored
+			}
+
 			void UpdateBounds() override
 			{
 			}

@@ -297,6 +297,15 @@ GuiRemoteWindow (INativeWindow)
 		return bounds;
 	}
 
+	void GuiRemoteWindow::SuggestMinClientSize(NativeSize size)
+	{
+		if (suggestedMinClientSize != size)
+		{
+			suggestedMinClientSize = size;
+			remoteMessages.RequestWindowNotifyMinSize(suggestedMinClientSize);
+		}
+	}
+
 	WString GuiRemoteWindow::GetTitle()
 	{
 		return styleTitle;

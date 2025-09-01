@@ -150,6 +150,11 @@ INativeWindow
 			/// </summary>
 			/// <returns>The client bounds in screen space.</returns>
 			virtual NativeRect			GetClientBoundsInScreen()=0;
+			/// <summary>
+			/// Suggest a minimum client size for the window. This is extra information for some platform provider. A native platform provide can just ignore it.
+			/// </summary>
+			/// <param name="size">The minimum client size.</param>
+			virtual void				SuggestMinClientSize(NativeSize size) = 0;
 			
 			/// <summary>
 			/// Get the title of the window. A title will be displayed as a name of this window.

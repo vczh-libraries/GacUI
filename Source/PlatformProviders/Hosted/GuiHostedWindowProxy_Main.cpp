@@ -65,6 +65,11 @@ GuiMainHostedWindowProxy
 				return { {},bounds.GetSize() };
 			}
 
+			void SuggestMinClientSize(NativeSize size) override
+			{
+				nativeWindow->SuggestMinClientSize(size);
+			}
+
 			void UpdateBounds() override
 			{
 				nativeWindow->SetClientSize(data->wmWindow.bounds.GetSize());

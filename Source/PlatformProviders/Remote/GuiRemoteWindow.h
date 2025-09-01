@@ -35,6 +35,7 @@ GuiRemoteWindow
 
 		bool												controllerDisconnected = false;
 		remoteprotocol::WindowSizingConfig					remoteWindowSizingConfig;
+		NativeSize											suggestedMinClientSize;
 		bool												sizingConfigInvalidated = false;
 		double												scalingX = 1;
 		double												scalingY = 1;
@@ -95,6 +96,7 @@ GuiRemoteWindow
 		NativeSize						GetClientSize() override;
 		void							SetClientSize(NativeSize size) override;
 		NativeRect						GetClientBoundsInScreen() override;
+		void							SuggestMinClientSize(NativeSize size) override;
 		WString							GetTitle() override;
 		void							SetTitle(const WString& title) override;
 		INativeCursor*					GetWindowCursor() override;

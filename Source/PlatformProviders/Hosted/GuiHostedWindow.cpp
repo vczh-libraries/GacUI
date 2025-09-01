@@ -13,12 +13,14 @@ GuiHostedWindow
 		{
 			proxy = CreateMainHostedWindowProxy(this, controller->nativeWindow);
 			proxy->CheckAndSyncProperties();
+			proxy->SuggestMinClientSize(suggestedMinClientSize);
 		}
 
 		void GuiHostedWindow::BecomeNonMainWindow()
 		{
 			proxy = CreateNonMainHostedWindowProxy(this, controller->nativeWindow);
 			proxy->CheckAndSyncProperties();
+			proxy->SuggestMinClientSize(suggestedMinClientSize);
 		}
 
 		void GuiHostedWindow::BecomeFocusedWindow()
@@ -116,6 +118,12 @@ GuiHostedWindow
 		NativeRect GuiHostedWindow::GetClientBoundsInScreen()
 		{
 			return GetBounds();
+		}
+
+		void GuiHostedWindow::SuggestMinClientSize(NativeSize size)
+		{
+			suggestedMinClientSize = size;
+			proxy->SuggestMinClientSize(suggestedMinClientSize);
 		}
 
 		WString GuiHostedWindow::GetTitle()

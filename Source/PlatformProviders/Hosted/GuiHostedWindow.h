@@ -64,6 +64,7 @@ Proxy
 			virtual void			CheckAndSyncProperties() = 0;
 
 			virtual NativeRect		FixBounds(const NativeRect& bounds) = 0;
+			virtual void			SuggestMinClientSize(NativeSize size) = 0;
 			virtual void			UpdateBounds() = 0;
 			virtual void			UpdateTitle() = 0;
 			virtual void			UpdateIcon() = 0;
@@ -107,6 +108,7 @@ GuiHostedWindow
 			friend class GuiHostedController;
 		protected:
 			Ptr<IGuiHostedWindowProxy>		proxy;
+			NativeSize						suggestedMinClientSize;
 
 			void							BecomeMainWindow();
 			void							BecomeNonMainWindow();
@@ -134,6 +136,7 @@ GuiHostedWindow
 			NativeSize						GetClientSize() override;
 			void							SetClientSize(NativeSize size) override;
 			NativeRect						GetClientBoundsInScreen() override;
+			void							SuggestMinClientSize(NativeSize size) override;
 			WString							GetTitle() override;
 			void							SetTitle(const WString& title) override;
 			INativeCursor*					GetWindowCursor() override;

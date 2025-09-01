@@ -36,6 +36,11 @@ GuiPlaceholderHostedWindowProxy
 				return bounds;
 			}
 
+			void SuggestMinClientSize(NativeSize size) override
+			{
+				// Ignored
+			}
+
 			void UpdateBounds() override
 			{
 			}
