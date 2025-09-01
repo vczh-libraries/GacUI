@@ -213,7 +213,7 @@ GuiDateComboBox
 			}
 
 			GuiDateComboBox::GuiDateComboBox(theme::ThemeName themeName)
-				:GuiComboBoxBase(themeName)
+				:GuiComboBoxBase(themeName, true)
 			{
 				SelectedDateChanged.SetAssociatedComposition(GetBoundsComposition());
 				

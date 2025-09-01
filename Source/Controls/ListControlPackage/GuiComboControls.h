@@ -32,10 +32,16 @@ ComboBox Base
 				IGuiMenuService::Direction					GetSubMenuDirection()override;
 				void										OnCachedBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void										OnKeyDown(compositions::GuiGraphicsComposition* sender, compositions::GuiKeyEventArgs& arguments);
+				void										OnAfterSubMenuOpening(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+			
+			private:
+				bool										autoFocusDropdown;
+				
 			public:
 				/// <summary>Create a control with a specified default theme.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
-				GuiComboBoxBase(theme::ThemeName themeName);
+				/// <param name="_autoFocusDropdown">Whether to automatically focus the dropdown when it opens.</param>
+				GuiComboBoxBase(theme::ThemeName themeName, bool _autoFocusDropdown);
 				~GuiComboBoxBase();
 			};
 

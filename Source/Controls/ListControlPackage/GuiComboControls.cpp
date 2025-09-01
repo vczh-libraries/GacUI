@@ -47,14 +47,31 @@ GuiComboBoxBase
 				}
 			}
 
-			GuiComboBoxBase::GuiComboBoxBase(theme::ThemeName themeName)
+			void GuiComboBoxBase::OnAfterSubMenuOpening(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+			{
+				if (autoFocusDropdown && GetSubMenu())
+				{
+					GetSubMenu()->SetFocused();
+				}
+			}
+
+			GuiComboBoxBase::GuiComboBoxBase(theme::ThemeName themeName, bool _autoFocusDropdown)
 				:GuiMenuButton(themeName)
+				, autoFocusDropdown(_autoFocusDropdown)
 			{
 				CreateSubMenu();
 				SetCascadeAction(false);
 
 				boundsComposition->CachedBoundsChanged.AttachMethod(this, &GuiComboBoxBase::OnCachedBoundsChanged);
 				boundsComposition->GetEventReceiver()->keyDown.AttachMethod(this, &GuiComboBoxBase::OnKeyDown);
+				
+				if (autoFocusDropdown)
+				{
+					AfterSubMenuOpening.AttachMethod(this, &GuiComboBoxBase::OnAfterSubMenuOpening);
+					
+					// Attach OnKeyDown to submenu's focusable composition for consistent ESC handling
+					GetSubMenu()->GetFocusableComposition()->GetEventReceiver()->keyDown.AttachMethod(this, &GuiComboBoxBase::OnKeyDown);
+				}
 			}
 
 			GuiComboBoxBase::~GuiComboBoxBase()
@@ -66,7 +83,7 @@ GuiComboButton
 ***********************************************************************/
 
 			GuiComboButton::GuiComboButton(theme::ThemeName themeName, GuiControl* _dropdownControl)
-				:GuiComboBoxBase(themeName)
+				:GuiComboBoxBase(themeName, false)
 				, dropdownControl(_dropdownControl)
 			{
 				dropdownControl->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
@@ -247,7 +264,7 @@ GuiComboBoxListControl
 			}
 
 			GuiComboBoxListControl::GuiComboBoxListControl(theme::ThemeName themeName, GuiSelectableListControl* _containedListControl)
-				:GuiComboBoxBase(themeName)
+				:GuiComboBoxBase(themeName, false)
 				, containedListControl(_containedListControl)
 			{
 				TextChanged.AttachMethod(this, &GuiComboBoxListControl::OnTextChanged);

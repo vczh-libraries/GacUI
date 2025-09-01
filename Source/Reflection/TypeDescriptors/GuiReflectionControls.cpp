@@ -1125,7 +1125,7 @@ Type Declaration (Class)
 
 			BEGIN_CLASS_MEMBER(GuiComboBoxBase)
 				CLASS_MEMBER_BASE(GuiMenuButton)
-				CONTROL_CONSTRUCTOR_CONTROLT_TEMPLATE(GuiComboBoxBase)
+				CONTROL_CONSTRUCTOR_CONTROLT_TEMPLATE_INHERITANCE_2(GuiComboBoxBase, bool, _autoFocusDropdown)
 			END_CLASS_MEMBER(GuiComboBoxBase)
 
 			BEGIN_CLASS_MEMBER(GuiComboButton)
