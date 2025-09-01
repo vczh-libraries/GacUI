@@ -4463,6 +4463,8 @@ class presentation::controls::GuiColorDialog : presentation::controls::GuiDialog
 }
 
 class presentation::controls::GuiComboBoxBase : presentation::controls::GuiMenuButton {
+    function TypedControlTemplateObject(ensureExists : system::Boolean) : presentation::templates::GuiComboBoxTemplate*;
+
     constructor (themeName : presentation::theme::ThemeName, _autoFocusDropdown : system::Boolean) : presentation::controls::GuiComboBoxBase*;
 }
 
