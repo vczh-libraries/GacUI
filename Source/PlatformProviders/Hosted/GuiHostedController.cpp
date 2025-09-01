@@ -151,23 +151,21 @@ GuiHostedController::INativeWindowListener
 			if (mainWindow)
 			{
 				auto windowBounds = nativeWindow->GetBounds();
-				auto clientBounds = nativeWindow->GetClientBoundsInScreen();
-				auto w = clientBounds.Width().value - windowBounds.Width().value;
-				auto h = clientBounds.Height().value - windowBounds.Height().value;
-
 				NativeRect mainBounds;
-				mainBounds.x2 = bounds.Width().value - w;
-				mainBounds.y2 = bounds.Height().value - h;
+				mainBounds.x1 = bounds.x1 - windowBounds.x1;
+				mainBounds.y1 = bounds.y1 - windowBounds.y1;
+				mainBounds.x2 = bounds.x2 - windowBounds.x1;
+				mainBounds.y2 = bounds.y2 - windowBounds.y1;
 
 				for (auto listener : mainWindow->listeners)
 				{
 					listener->Moving(mainBounds, fixSizeOnly, draggingBorder);
 				}
 
-				bounds.x1.value += mainBounds.x1.value;
-				bounds.y1.value += mainBounds.y1.value;
-				bounds.x2.value = bounds.x1.value + mainBounds.Width().value + w;
-				bounds.y2.value = bounds.y1.value + mainBounds.Height().value + h;
+				bounds.x1 = mainBounds.x1 + windowBounds.x1;
+				bounds.y1 = mainBounds.y1 + windowBounds.y1;
+				bounds.x2 = mainBounds.x2 + windowBounds.x1;
+				bounds.y2 = mainBounds.y2 + windowBounds.y1;
 			}
 		}
 
