@@ -668,6 +668,7 @@ GuiGraphicsHost
 							auto height = bounds.Height() > preferred.y ? bounds.Height() : preferred.y;
 							controlHost->UpdateClientSizeAfterRendering(preferred, Size(width, height));
 							windowComposition->Layout_UpdateBounds({ width,height });
+							hostRecord.nativeWindow->SuggestMinClientSize(hostRecord.nativeWindow->Convert(windowComposition->GetCachedMinSize()));
 							supressPaint = false;
 						}
 					}

@@ -103,6 +103,10 @@ GuiRemoteWindow (events)
 
 		if (remote->applicationRunning)
 		{
+			if (suggestedMinClientSize != NativeSize{ {0},{0} })
+			{
+				remoteMessages.RequestWindowNotifyMinSize(suggestedMinClientSize);
+			}
 			remoteMessages.RequestWindowNotifySetTitle(styleTitle);
 			remoteMessages.RequestWindowNotifySetEnabled(styleEnabled);
 			remoteMessages.RequestWindowNotifySetTopMost(styleTopMost);
