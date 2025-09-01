@@ -88,6 +88,7 @@
           Text-str="WindowTitle()"
           ClientSize="x:1920 y:1080"
           >
+          <att.BoundsComposition-set PreferredMinSize="x:1920 y:1080"/>
           <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="5" MinSizeLimitation="LimitToElementAndChildren">
             <att.Rows>
               <_>composeType:Percentage percentage:1.0</_>
@@ -131,18 +132,68 @@
                 <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
                 <att.Pages>
                   <TabPage Text="Rendering">
-                    <ScrollContainer ref.Name="scRendering" VerticalAlwaysVisible="false" HorizontalAlwaysVisible="false">
-                      <att.BoundsComposition-set AlignmentToParent="left:5 top:5 right:5 bottom:5"/>
-                    </ScrollContainer>
+                    <Table CellPadding="5" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
+                      <att.Rows>
+                        <_>composeType:Percentage percentage:1.0</_>
+                      </att.Rows>
+                      <att.Columns>
+                        <_>composeType:Percentage percentage:1.0</_>
+                        <_>composeType:Absolute absolute:400</_>
+                      </att.Columns>
+                      <ColumnSplitter ColumnsToTheLeft="1"/>
+
+                      <Cell Site="row:0 column:0">
+                        <ScrollContainer ref.Name="scRendering" VerticalAlwaysVisible="false" HorizontalAlwaysVisible="false">
+                          <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+                        </ScrollContainer>
+                      </Cell>
+
+                      <Cell Site="row:0 column:1">
+                        <Table CellPadding="5" BorderVisible="false" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
+                          <att.Rows>
+                            <_>composeType:Percentage percentage:1.0</_>
+                            <_>composeType:Absolute absolute:400</_>
+                          </att.Rows>
+                          <att.Columns>
+                            <_>composeType:Percentage percentage:1.0</_>
+                          </att.Columns>
+                          <RowSplitter RowsToTheTop="1"/>
+
+                          <Cell Site="row:0 column:0">
+                            <GuiBindableTreeView HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
+                              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+                            </GuiBindableTreeView>
+                          </Cell>
+
+                          <Cell Site="row:1 column:0" PreferredMinSize="x:300 y:300">
+                            <Tab>
+                              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+                              <att.Pages>
+                                <TabPage Text="DOM Node">
+                                  <MultilineTextBox Readonly="true" VerticalAlwaysVisible="false" HorizontalAlwaysVisible="false">
+                                    <att.BoundsComposition-set AlignmentToParent="left:5 top:5 right:5 bottom:5"/>
+                                  </MultilineTextBox>
+                                </TabPage>
+                                <TabPage Text="Element">
+                                  <MultilineTextBox Readonly="true" VerticalAlwaysVisible="false" HorizontalAlwaysVisible="false">
+                                    <att.BoundsComposition-set AlignmentToParent="left:5 top:5 right:5 bottom:5"/>
+                                  </MultilineTextBox>
+                                </TabPage>
+                              </att.Pages>
+                            </Tab>
+                          </Cell>
+                        </Table>
+                      </Cell>
+                    </Table>
                   </TabPage>
                   <TabPage Text="DOM">
-                    <MultilineTextBox VerticalAlwaysVisible="false" HorizontalAlwaysVisible="false">
+                    <MultilineTextBox Readonly="true" VerticalAlwaysVisible="false" HorizontalAlwaysVisible="false">
                       <att.BoundsComposition-set AlignmentToParent="left:5 top:5 right:5 bottom:5"/>
                       <att.Text-bind>(cast (IUnitTestSnapshotFrame^) textListFrames.SelectedItem).DomAsJsonText ?? ''</att.Text-bind>
                     </MultilineTextBox>
                   </TabPage>
                   <TabPage Text="Elements">
-                    <MultilineTextBox VerticalAlwaysVisible="false" HorizontalAlwaysVisible="false">
+                    <MultilineTextBox Readonly="true" VerticalAlwaysVisible="false" HorizontalAlwaysVisible="false">
                       <att.BoundsComposition-set AlignmentToParent="left:5 top:5 right:5 bottom:5"/>
                       <att.Text-bind>(cast (IUnitTestSnapshotFrame^) textListFrames.SelectedItem).ElementsAsJsonText ?? ''</att.Text-bind>
                     </MultilineTextBox>
