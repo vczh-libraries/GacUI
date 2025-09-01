@@ -152,6 +152,29 @@ namespace gaclib_controls
         File = 1,
     }
 
+    interface IUnitTestSnapshotDomNode
+    {
+        func GetName() : (string);
+
+        prop Name : string{GetName}
+
+        func GetDomID() : (int);
+
+        prop DomID : int{GetDomID}
+
+        func GetDomAsJsonText() : (string);
+
+        prop DomAsJsonText : string{GetDomAsJsonText}
+
+        func GetElementAsJsonText() : (string);
+
+        prop ElementAsJsonText : string{GetElementAsJsonText}
+
+        func GetChildren() : (IUnitTestSnapshotDomNode^{});
+
+        prop Children : IUnitTestSnapshotDomNode^{}{GetChildren}
+    }
+
     interface IUnitTestSnapshotFrame
     {
         func GetName() : (string);
@@ -165,6 +188,10 @@ namespace gaclib_controls
         func GetDomAsJsonText() : (string);
 
         prop DomAsJsonText : string{GetDomAsJsonText}
+
+        func GetDom() : (IUnitTestSnapshotDomNode^);
+
+        prop Dom : IUnitTestSnapshotDomNode^{GetDom}
     }
 
     interface IUnitTestSnapshotFileNode
