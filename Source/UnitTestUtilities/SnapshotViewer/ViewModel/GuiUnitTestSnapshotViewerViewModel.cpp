@@ -16,6 +16,7 @@ UnitTestSnapshotDomNode
 	class UnitTestSnapshotDomNode : public Object, public virtual IUnitTestSnapshotDomNode
 	{
 	protected:
+		UnitTest_RenderingFrame&			frame;
 		Ptr<RenderingDom>					renderingDom;
 		WString								name;
 		WString								dom;
@@ -23,14 +24,15 @@ UnitTestSnapshotDomNode
 		List<Ptr<UnitTestSnapshotDomNode>>	children;
 
 	public:
-		UnitTestSnapshotDomNode(Ptr<RenderingDom> _renderingDom)
-			: renderingDom(_renderingDom)
+		UnitTestSnapshotDomNode(UnitTest_RenderingFrame& _frame, Ptr<RenderingDom> _renderingDom)
+			: frame(_frame)
+			, renderingDom(_renderingDom)
 		{
 			if (renderingDom->children)
 			{
 				for (auto child : *renderingDom->children.Obj())
 				{
-					children.Add(Ptr(new UnitTestSnapshotDomNode(child)));
+					children.Add(Ptr(new UnitTestSnapshotDomNode(frame, child)));
 				}
 			}
 		}
@@ -90,7 +92,7 @@ UnitTestSnapshotFrame
 			: index(_index)
 			, frame(_frame)
 		{
-			domRoot = Ptr(new UnitTestSnapshotDomNode(frame.root));
+			domRoot = Ptr(new UnitTestSnapshotDomNode(frame, frame.root));
 			formatting.spaceAfterColon = true;
 			formatting.spaceAfterComma = true;
 			formatting.crlf = true;
