@@ -192,7 +192,7 @@ MenuButton
 				void									OnSubMenuWindowOpened(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void									OnSubMenuWindowClosed(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void									OnMouseEnter(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
-				void									OnClicked(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+				void									OnBeforeClicked(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 
 				virtual IGuiMenuService::Direction		GetSubMenuDirection();
 

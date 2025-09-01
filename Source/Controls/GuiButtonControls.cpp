@@ -42,7 +42,9 @@ GuiButton
 				{
 					GuiControl::OnActiveAlt();
 				}
+				BeforeClicked.Execute(GetNotifyEventArguments());
 				Clicked.Execute(GetNotifyEventArguments());
+				AfterClicked.Execute(GetNotifyEventArguments());
 			}
 
 			bool GuiButton::IsTabAvailable()
@@ -100,7 +102,9 @@ GuiButton
 						eventSource = eventSource->GetParent();
 					}
 				}
+				BeforeClicked.Execute(GetNotifyEventArguments());
 				Clicked.Execute(GetNotifyEventArguments());
+				AfterClicked.Execute(GetNotifyEventArguments());
 			}
 
 			void GuiButton::OnLeftButtonDown(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments)
@@ -332,7 +336,7 @@ GuiSelectableButton
 				TypedControlTemplateObject(true)->SetSelected(isSelected);
 			}
 
-			void GuiSelectableButton::OnClicked(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+			void GuiSelectableButton::OnAfterClicked(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
 				if(autoSelection)
 				{
@@ -347,7 +351,7 @@ GuiSelectableButton
 				AutoSelectionChanged.SetAssociatedComposition(boundsComposition);
 				SelectedChanged.SetAssociatedComposition(boundsComposition);
 
-				Clicked.AttachMethod(this, &GuiSelectableButton::OnClicked);
+				AfterClicked.AttachMethod(this, &GuiSelectableButton::OnAfterClicked);
 			}
 			
 			GuiSelectableButton::~GuiSelectableButton()

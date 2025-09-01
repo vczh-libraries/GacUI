@@ -55,8 +55,12 @@ Buttons
 				GuiButton(theme::ThemeName themeName);
 				~GuiButton();
 
-				/// <summary>Mouse click event.</summary>
+				/// <summary>Mouse click event, but raised before Clicked. This event is for pre-UI effects.</summary>
+				compositions::GuiNotifyEvent			BeforeClicked;
+				/// <summary>Mouse click event. This event is for executing the actual task assigned with the button.</summary>
 				compositions::GuiNotifyEvent			Clicked;
+				/// <summary>Mouse click event, but raised after Clicked. This event is for post-UI effects.</summary>
+				compositions::GuiNotifyEvent			AfterClicked;
 
 				/// <summary>Test is the <see cref="Clicked"/> event raised when left mouse button up.</summary>
 				/// <returns>Returns true if this event is raised when left mouse button up</returns>
@@ -126,7 +130,7 @@ Buttons
 				bool									autoSelection = true;
 				bool									isSelected = false;
 
-				void									OnClicked(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+				void									OnAfterClicked(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 			public:
 				/// <summary>Create a control with a specified default theme.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>

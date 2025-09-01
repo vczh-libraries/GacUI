@@ -425,7 +425,7 @@ GuiBindableRibbonGalleryList
 							}
 							backgroundButton->SetAutoFocus(false);
 							backgroundButton->SetAutoSelection(false);
-							backgroundButton->Clicked.AttachLambda([=, this](GuiGraphicsComposition* sender, GuiEventArgs& arguments)
+							backgroundButton->BeforeClicked.AttachLambda([=, this](GuiGraphicsComposition* sender, GuiEventArgs& arguments)
 							{
 								auto groupIndex = groupStack->GetStackItems().IndexOf(dynamic_cast<GuiStackItemComposition*>(groupTemplate->GetParent()));
 								auto itemIndex = groupItemFlow->GetFlowItems().IndexOf(dynamic_cast<GuiFlowItemComposition*>(groupItemTemplate->GetParent()));
