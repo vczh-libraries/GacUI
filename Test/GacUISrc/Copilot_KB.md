@@ -199,3 +199,146 @@ The architecture clearly supports adding new platforms:
 - Each platform would provide its own controller, resource manager, and renderer implementations
 
 The entry point pattern `Setup[Platform][Renderer][Mode]()` provides a consistent API for initializing GacUI across all supported platforms and modes.
+
+## ASK
+
+It seems `Raw` platform only interacts with the Native OS feature without bringing up `GuiApplication`. Could you explain in non-Raw platforms. how does `GuiApplication` initialized? And for native platforms, how does renderer initialized?
+
+### Insight
+
+You're absolutely correct about the Raw mode distinction. Let me clarify the two key initialization processes: **GuiApplication initialization** for non-Raw platforms and **renderer initialization** for all native platforms.
+
+**GuiApplication Initialization Process (Non-Raw Platforms)**
+
+In Standard and Hosted modes, the `GuiApplication` initialization occurs in `GuiApplicationInitialize()` and follows this specific sequence:
+
+**Phase 1: Foundation Services Setup**
+1. **Theme System** - `theme::InitializeTheme()` initializes the theming infrastructure
+2. **Reflection System** - `GetGlobalTypeManager()->Load()` loads type metadata (unless skipped in unit tests)
+3. **Plugin Manager** - `GetPluginManager()->Load(true, true)` loads all registered plugins
+4. **Input Timer** - `GetCurrentController()->InputService()->StartTimer()` starts the GUI input timer
+5. **Async Schedulers** - Registers `UIThreadAsyncScheduler` for main thread and `OtherThreadAsyncScheduler` for background threads
+6. **Utilities** - `GuiInitializeUtilities()` initializes additional utility systems
+
+**Phase 2: GuiApplication Instance Creation**
+The critical difference from Raw mode happens here in `GuiApplicationInitialize()`:
+```cpp
+{
+    GuiApplication app;  // Creates GuiApplication instance on stack
+    application = &app;  // Sets global application pointer
+    GuiMain();          // Calls user-defined GuiMain()
+}
+application = nullptr;  // Clears global application pointer
+```
+
+**Phase 3: GuiApplication Constructor Behavior**
+The `GuiApplication` constructor performs these essential tasks:
+1. **Locale Setup** - Initializes with `Locale::UserDefault()`
+2. **Global Shortcut Manager** - Creates `GuiGlobalShortcutKeyManager` for system-wide shortcuts
+3. **Controller Listener** - Registers itself as `INativeControllerListener` to receive clipboard and shortcut events
+4. **Window Management** - Initializes collections for tracking windows and popups
+5. **Tooltip System** - Prepares shared tooltip infrastructure
+
+**GuiApplication Service Responsibilities**
+
+The `GuiApplication` instance provides these essential services:
+- **Window Registration** - `RegisterWindow()` and `UnregisterWindow()` for window lifecycle management  
+- **Event Coordination** - `ClipboardUpdated()` broadcasts clipboard changes to all windows
+- **Global Shortcuts** - `GlobalShortcutKeyActivated()` handles system-wide shortcut keys
+- **Async Operations** - Thread-safe `InvokeInMainThread()`, `InvokeAsync()`, `DelayExecute()` methods
+- **Tooltip Management** - `ShowTooltip()` and `CloseTooltip()` for shared tooltip system
+- **Application Lifecycle** - `Run()` method starts the main message loop
+
+**Renderer Initialization Process (All Native Platforms)**
+
+The renderer initialization occurs in platform-specific `RendererMain*()` functions before calling `GuiApplicationMain()`. This is the same for both Raw and non-Raw modes:
+
+**Phase 1: Resource Manager Creation**
+```cpp
+// For Direct2D
+elements_windows_d2d::WindowsDirect2DResourceManager resourceManager;
+elements_windows_d2d::SetWindowsDirect2DResourceManager(&resourceManager);
+
+// For GDI  
+elements_windows_gdi::WindowsGDIResourceManager resourceManager;
+elements_windows_gdi::SetWindowsGDIResourceManager(&resourceManager);
+```
+
+**Phase 2: Controller Integration**
+The resource manager is registered as a native controller listener:
+```cpp
+windows::GetWindowsNativeController()->CallbackService()->InstallListener(&resourceManager);
+```
+
+**Phase 3: Graphics Resource Manager Setup**
+For hosted scenarios, an additional wrapper is created:
+```cpp
+auto hostedResourceManager = hostedController ? 
+    new GuiHostedGraphicsResourceManager(hostedController, &resourceManager) : nullptr;
+SetGuiGraphicsResourceManager(
+    hostedResourceManager ? hostedResourceManager : &resourceManager);
+```
+
+**Phase 4: Element Renderer Registration**
+This is where all graphics element renderers are registered with the system:
+```cpp
+// Direct2D renderers
+elements_windows_d2d::GuiFocusRectangleElementRenderer::Register();
+elements_windows_d2d::GuiSolidBorderElementRenderer::Register();
+elements_windows_d2d::Gui3DBorderElementRenderer::Register();
+elements_windows_d2d::Gui3DSplitterElementRenderer::Register();
+elements_windows_d2d::GuiSolidBackgroundElementRenderer::Register();
+elements_windows_d2d::GuiGradientBackgroundElementRenderer::Register();
+elements_windows_d2d::GuiInnerShadowElementRenderer::Register();
+elements_windows_d2d::GuiSolidLabelElementRenderer::Register();
+elements_windows_d2d::GuiImageFrameElementRenderer::Register();
+elements_windows_d2d::GuiPolygonElementRenderer::Register();
+elements_windows_d2d::GuiColorizedTextElementRenderer::Register();
+elements_windows_d2d::GuiDirect2DElementRenderer::Register();
+elements::GuiDocumentElement::GuiDocumentElementRenderer::Register();
+```
+
+**Element Renderer Registration Mechanism**
+
+Each renderer registration follows this pattern in the `Register()` static method:
+```cpp
+static void Register()
+{
+    auto manager = GetGuiGraphicsResourceManager();
+    CHECK_ERROR(manager != nullptr, L"SetGuiGraphicsResourceManager must be called before registering element renderers.");
+    manager->RegisterRendererFactory(TElement::GetElementType(), Ptr(new typename TRenderer::Factory));
+}
+```
+
+**Phase 5: Platform-Specific Resource Management**
+Each platform has specialized resource management:
+
+**Direct2D Resource Management:**
+- **Cached Allocators** - `CachedSolidBrushAllocator`, `CachedLinearBrushAllocator`, `CachedTextFormatAllocator`, `CachedCharMeasurerAllocator`
+- **Render Targets** - `WindowsDirect2DRenderTarget` per native window
+- **Object Providers** - `WinDirect2DApplicationDirect2DObjectProvider` for D2D/DirectWrite factories
+- **Hardware Acceleration** - D3D11 device creation with WARP fallback
+
+**GDI Resource Management:**
+- **Cached Allocators** - `CachedPenAllocator`, `CachedBrushAllocator`, `CachedFontAllocator`, `CachedCharMeasurerAllocator`
+- **Render Targets** - `WindowsGDIRenderTarget` per native window  
+- **Object Providers** - `WinGDIApplicationGDIObjectProvider` for MLang font linking
+- **Buffer Management** - Optimized bitmap buffers with repainting strategies
+
+**Key Differences: Raw vs Non-Raw**
+
+**Raw Mode (`GuiRawInitialize()`):**
+- Skips `GuiApplication` creation entirely
+- Calls `GuiMain()` directly without application framework
+- No window management, tooltips, global shortcuts, or application services
+- Only provides basic renderer and type system initialization
+- Suitable for custom applications that need direct control
+
+**Non-Raw Mode (`GuiApplicationInitialize()`):**
+- Creates full `GuiApplication` instance with all services
+- Provides complete window management and application lifecycle
+- Includes clipboard integration, global shortcuts, tooltips
+- Offers thread-safe async operations and event coordination
+- Standard choice for typical GUI applications
+
+The renderer initialization is identical for both modes - only the application framework layer differs.
