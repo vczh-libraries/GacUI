@@ -80,6 +80,8 @@ You must offer the same command line argument to `Core` and then `Rendering_Win3
 - `Rendering_Win32` starts a renderer-only process handles `Core`'s requests.
 - One of `/Pipe` or `/Http` should be offered to both projects so that they can connect to each other.
 
+![Run GacUI Remotely](GacUIRemote.gif)
+
 #### HTML
 
 By running `Core` with `/Http`, you can even [run GacUI in a browser](https://github.com/vczh-libraries/GacJS)!
