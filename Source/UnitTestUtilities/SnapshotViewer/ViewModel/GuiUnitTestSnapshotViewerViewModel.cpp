@@ -143,7 +143,6 @@ UnitTestSnapshotFrame
 			, trace(_trace)
 			, frame(_frame)
 		{
-			domRoot = Ptr(new UnitTestSnapshotDomNode(trace, frame, frame.root));
 		}
 
 		WString GetName() override
@@ -178,6 +177,10 @@ UnitTestSnapshotFrame
 
 		Ptr<IUnitTestSnapshotDomNode> GetDom() override
 		{
+			if (!domRoot)
+			{
+				domRoot = Ptr(new UnitTestSnapshotDomNode(trace, frame, frame.root));
+			}
 			return domRoot;
 		}
 	};

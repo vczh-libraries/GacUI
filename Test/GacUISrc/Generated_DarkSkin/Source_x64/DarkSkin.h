@@ -1169,13 +1169,13 @@ namespace darkskin
 		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_32;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_33;
 		::vl::Ptr<::vl::presentation::elements::GuiImageFrameElement> __vwsn_precompile_34;
-		::vl::presentation::compositions::GuiBoundsComposition* container;
-		::vl::presentation::compositions::GuiTableComposition* frameTable;
-		::vl::presentation::compositions::GuiTableComposition* contentTable;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_35;
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_36;
 		::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement> __vwsn_precompile_37;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_38;
+		::vl::presentation::compositions::GuiBoundsComposition* container;
+		::vl::presentation::compositions::GuiTableComposition* frameTable;
+		::vl::presentation::compositions::GuiTableComposition* contentTable;
 		void __vwsn_darkskin_CustomFrameWindowTemplate_Initialize(::darkskin::CustomFrameWindowTemplate* __vwsn_this_);
 	public:
 		CustomFrameWindowTemplateConstructor();

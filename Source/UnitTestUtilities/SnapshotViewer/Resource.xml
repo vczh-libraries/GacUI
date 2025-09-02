@@ -98,7 +98,7 @@
           Text-str="WindowTitle()"
           ClientSize="x:1920 y:1080"
           >
-          <att.BoundsComposition-set PreferredMinSize="x:1920 y:1080"/>
+          <att.BoundsComposition-set PreferredMinSize="x:800 y:600"/>
           <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="5" MinSizeLimitation="LimitToElementAndChildren">
             <att.Rows>
               <_>composeType:Percentage percentage:1.0</_>
@@ -107,6 +107,7 @@
               <_>composeType:Absolute absolute:200</_>
               <_>composeType:Absolute absolute:100</_>
               <_>composeType:Absolute absolute:200</_>
+              <_>composeType:Absolute absolute:100</_>
               <_>composeType:Percentage percentage:1.0</_>
             </att.Columns>
             <ColumnSplitter ColumnsToTheLeft="2"/>
@@ -122,7 +123,7 @@
               </BindableTreeView>
             </Cell>
 
-            <Cell Site="row:0 column:2">
+            <Cell Site="row:0 column:2 columnSpan:2">
               <Tab>
                 <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
                 <att.Pages>
@@ -137,7 +138,7 @@
               </Tab>
             </Cell>
 
-            <Cell Site="row:0 column:3">
+            <Cell Site="row:0 column:4">
               <Tab>
                 <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
                 <att.Pages>
@@ -148,7 +149,8 @@
                       </att.Rows>
                       <att.Columns>
                         <_>composeType:Percentage percentage:1.0</_>
-                        <_>composeType:Absolute absolute:400</_>
+                        <_>composeType:Absolute absolute:200</_>
+                        <_>composeType:Absolute absolute:200</_>
                       </att.Columns>
                       <ColumnSplitter ColumnsToTheLeft="1"/>
 
@@ -158,11 +160,12 @@
                         </ScrollContainer>
                       </Cell>
 
-                      <Cell Site="row:0 column:1">
+                      <Cell Site="row:0 column:1 columnSpan:2">
                         <Table CellPadding="5" BorderVisible="false" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
                           <att.Rows>
                             <_>composeType:Percentage percentage:1.0</_>
-                            <_>composeType:Absolute absolute:400</_>
+                            <_>composeType:Absolute absolute:200</_>
+                            <_>composeType:Absolute absolute:200</_>
                           </att.Rows>
                           <att.Columns>
                             <_>composeType:Percentage percentage:1.0</_>
@@ -178,7 +181,7 @@
                             </GuiBindableTreeView>
                           </Cell>
 
-                          <Cell Site="row:1 column:0" PreferredMinSize="x:300 y:300">
+                          <Cell Site="row:1 column:0 rowSpan:2">
                             <Tab>
                               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
                               <att.Pages>
