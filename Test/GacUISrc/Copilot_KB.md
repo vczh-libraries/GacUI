@@ -342,3 +342,196 @@ Each platform has specialized resource management:
 - Standard choice for typical GUI applications
 
 The renderer initialization is identical for both modes - only the application framework layer differs.
+
+## ASK
+
+Explain how remote mode works. It looks like remote mode is always working with hosted mode. But the underlying renderer could change.
+
+Also explain how remote mode works with unit test.
+
+### Insight
+
+You're absolutely correct that remote mode always works with hosted mode. The remote mode implements a sophisticated architecture that separates rendering logic from platform-specific implementation, enabling cross-platform compatibility and advanced testing capabilities.
+
+**Remote Mode Architecture Overview**
+
+Remote mode operates through a layered controller hierarchy:
+1. **GuiRemoteController** - Implements platform-agnostic native controller interface
+2. **GuiHostedController** - Wraps the remote controller to provide window management
+3. **Protocol Layer** - `IGuiRemoteProtocol` abstracts the communication mechanism
+4. **Resource Managers** - Dual-layer system for graphics resource management
+
+**Remote Mode Entry Point and Initialization**
+
+The remote mode initialization follows this specific sequence in `SetupRemoteNativeController()`:
+
+**Controller Stack Setup:**
+```cpp
+GuiRemoteController remoteController(protocol);
+GuiHostedController hostedController(&remoteController);
+```
+
+**Resource Manager Hierarchy:**
+```cpp
+GuiRemoteGraphicsResourceManager remoteResourceManager(&remoteController, &hostedController);
+GuiHostedGraphicsResourceManager hostedResourceManager(&hostedController, &remoteResourceManager);
+```
+
+**Service Registration:**
+```cpp
+SetNativeController(&hostedController);  // Hosted controller is the public interface
+SetGuiGraphicsResourceManager(&hostedResourceManager);
+SetHostedApplication(hostedController.GetHostedApplication());
+```
+
+**Initialization Sequence:**
+```cpp
+remoteController.Initialize();     // Sets up protocol communication
+remoteResourceManager.Initialize(); // Sets up remote graphics system
+hostedController.Initialize();     // Creates native window host
+GuiApplicationMain();              // Runs standard application framework
+```
+
+**Why Remote Mode Always Uses Hosted Mode**
+
+Remote mode inherently requires hosted mode because:
+
+1. **Window Abstraction** - Remote mode has no real native windows, only virtual windows managed through protocol messages
+2. **Event Virtualization** - All input events (mouse, keyboard) come through protocol messages rather than OS events
+3. **Rendering Abstraction** - Graphics commands are serialized and sent through protocol rather than directly rendered
+4. **Resource Simulation** - Fonts, cursors, screens are simulated based on protocol configuration
+
+The `GuiHostedController` provides the necessary abstraction layer to make virtual windows behave like real windows to the GacUI framework.
+
+**Remote Controller Services Implementation**
+
+The `GuiRemoteController` implements all native controller services through protocol communication:
+
+**Resource Service:**
+- `GetSystemCursor()` - Creates `GuiRemoteCursor` objects based on protocol cursor types
+- `GetDefaultFont()` - Returns font from remote configuration
+- `EnumerateFonts()` - Uses font list from protocol configuration
+
+**Input Service:**
+- `IsKeyPressing()` / `IsKeyToggled()` - Queries remote system through `RequestIOIsKeyPressing` / `RequestIOIsKeyToggled`
+- `RegisterGlobalShortcutKey()` - Manages hotkeys through protocol update messages
+- `StartTimer()` / `StopTimer()` - Controls remote timer state
+
+**Screen Service:**
+- Provides single virtual screen based on `remoteScreenConfig` from protocol
+- Screen bounds and scaling come from protocol configuration rather than OS query
+
+**Window Service:**
+- All windows are `GuiRemoteWindow` instances managed through protocol messages
+- Window operations (show, hide, move, resize) send protocol messages
+- Window events are triggered by incoming protocol messages
+
+**Protocol Communication Layer**
+
+The remote mode uses `IGuiRemoteProtocol` interface for bidirectional communication:
+
+**Outgoing Messages (Controller ? Remote):**
+- `RequestControllerGetFontConfig` - Queries available fonts
+- `RequestControllerGetScreenConfig` - Queries screen configuration
+- `RequestWindowNotifySetTitle` - Updates window title
+- `RequestIOIsKeyPressing` - Checks key state
+- `RequestRendererCreated` - Notifies renderer creation
+
+**Incoming Events (Remote ? Controller):**
+- `OnControllerConnect` / `OnControllerDisconnect` - Connection lifecycle
+- `OnIOKeyDown` / `OnIOKeyUp` - Input events
+- `OnIOMouseMoving` / `OnIOButtonDown` - Mouse events
+- `OnWindowBoundsUpdated` - Window state changes
+
+**Remote Mode with Unit Testing**
+
+Remote mode provides sophisticated unit testing capabilities through specialized protocol implementations:
+
+**Unit Test Protocol Architecture:**
+
+The unit test system uses a mixin pattern to compose protocol functionality:
+```cpp
+using UnitTestRemoteProtocolFeatures = Mixin<
+    UnitTestRemoteProtocolBase,
+    UnitTestRemoteProtocol_MainWindow,
+    UnitTestRemoteProtocol_IO,
+    UnitTestRemoteProtocol_Rendering,
+    UnitTestRemoteProtocol_Logging,
+    UnitTestRemoteProtocol_IOCommands
+>::Type;
+```
+
+**Testing Protocol Components:**
+
+1. **UnitTestRemoteProtocol_MainWindow** - Simulates main window behavior with configurable bounds, style, and state
+2. **UnitTestRemoteProtocol_IO** - Captures and replays input events (keyboard, mouse, shortcuts)
+3. **UnitTestRemoteProtocol_Rendering** - Records all rendering commands and frame states
+4. **UnitTestRemoteProtocol_Logging** - Logs test execution with frame-by-frame analysis
+5. **UnitTestRemoteProtocol_IOCommands** - Provides high-level testing commands (`LClick`, `KeyPress`, `MouseMove`)
+
+**Unit Test Execution Flow:**
+```cpp
+TEST_CASE(L"TestWindowBehavior")
+{
+    GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
+    {
+        protocol->OnNextIdleFrame(L"Ready", [=]()
+        {
+            // Perform actions and verify results
+        });
+        protocol->OnNextIdleFrame(L"Action performed", [=]()
+        {
+            auto window = GetApplication()->GetMainWindow();
+            window->Hide();
+        });
+    });
+    GacUIUnitTest_StartFast_WithResourceAsText<darkskin::Theme>(
+        WString::Unmanaged(L"Controls/TestCase"),
+        WString::Unmanaged(L"gacuisrc_unittest::MainWindow"),
+        resourceXml
+    );
+});
+```
+
+**Frame-Based Testing System:**
+
+The unit test framework operates on a frame-based system:
+- Each `OnNextIdleFrame` represents one rendering frame
+- The protocol logs all rendering commands, DOM changes, and element states per frame
+- Frame names provide descriptive labels for test phases
+- The last frame always closes the main window to terminate the test
+
+**Underlying Renderer Flexibility**
+
+While remote mode abstracts away platform details, it can work with different underlying renderers:
+
+**Renderer Abstraction Layer:**
+- `GuiRemoteGraphicsResourceManager` - Translates graphics operations to protocol messages
+- Element renderers are registered normally but their output goes through protocol serialization
+- Rendering commands are captured and can be replayed or analyzed
+
+**Protocol Renderer Types:**
+The protocol defines renderer types that map to actual element renderers:
+```cpp
+enum class RendererType
+{
+    FocusRectangle, SolidBorder, SinkBorder, SinkSplitter,
+    SolidBackground, GradientBackground, InnerShadow,
+    SolidLabel, ImageFrame, Polygon, Raw
+}
+```
+
+**Rendering Command Flow:**
+1. GacUI elements call standard renderer methods
+2. `GuiRemoteGraphicsResourceManager` intercepts calls
+3. Rendering data is serialized to protocol messages
+4. Remote protocol can replay, analyze, or forward to actual renderers
+5. For unit tests, rendering is logged for verification
+
+**Cross-Platform Testing:**
+- Unit tests run using remote mode can verify behavior independently of actual renderer
+- The same test can validate behavior across different platforms
+- Rendering output can be compared for visual regression testing
+- Protocol messages provide deterministic, reproducible test environments
+
+This architecture enables GacUI to achieve platform independence while maintaining full compatibility with the existing framework and providing comprehensive testing capabilities.
