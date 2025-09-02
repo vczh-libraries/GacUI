@@ -405,6 +405,7 @@ namespace gaclib_controls
 			}
 			domSource = domSource->GetParent();
 		}
+		if (ids.Count() == 0)return;
 
 		auto treeNode = treeViewDom->GetNodeRootProvider()->GetRootNode();
 		for (auto id : From(ids).Reverse())
@@ -426,6 +427,11 @@ namespace gaclib_controls
 			CHECK_FAIL(L"Target tree node not found.");
 		NEXT_NODE:;
 		}
+
+		auto view = dynamic_cast<tree::INodeItemView*>(treeViewDom->GetItemProvider()->RequestView(tree::INodeItemView::Identifier));
+		vint index = view->CalculateNodeVisibilityIndex(treeNode.Obj());
+		treeViewDom->SetSelected(index, true);
+		treeViewDom->EnsureItemVisible(index);
 	}
 
 	void UnitTestSnapshotViewerAppWindow::OnKeyUp(GuiGraphicsComposition* sender, GuiKeyEventArgs& arguments)
