@@ -70,11 +70,15 @@
 ## Steps for Draft
 
 - Your goal is to complete a draft document for the knowledge base in `Copilot_KB.md`.
+- Extra information is provided in the `# Draft` section in the LATEST chat message.
 - Make a `# DRAFT-LOCATION` section, you need to describe which part you would like to update in the knowledge base.
   - It will be a new topic under the `Design Explanation` section of a project in `Index.md` of the knowledge base.
 - Make a `# DRAFT-TITLE` section, you need to make a comprehensive but short title for the draft document.
 - Make a `# DRAFT-CONTENT` section, you need to complete the content of the draft document here.
 - The draft document is completedly based on the source code of the project, and all findings in the `# DOCUMENT REQUEST` section.
+  - You must not miss any details, you must use every single point mentioned in the document.
+  - Since `# DOCUMENT REQUEST` is organized as multiple rounds of questions and answers, it cannot be just directly used as a document. You must reorganize them.
+  - Similar knowledges under the same categories might be spread in different answers, pay attention to them, bring a well-organized document.
 
 ## Steps for Improve
 
