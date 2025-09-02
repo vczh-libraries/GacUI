@@ -1,5 +1,4 @@
 #include "GuiUnitTestSnapshotViewerApp.h"
-#include "../../../PlatformProviders/Remote/GuiRemoteProtocol.h"
 
 namespace gaclib_controls
 {
@@ -285,6 +284,25 @@ namespace gaclib_controls
 	UnitTestSnapshotViewerAppWindow
 	***********************************************************************/
 
+	void UnitTestSnapshotViewerAppWindow::Highlight(GuiBoundsComposition*& target, remoteprotocol::RenderingDom& renderingDom, Color color)
+	{
+		if (!target)
+		{
+			target = new GuiBoundsComposition;
+			target->SetTransparentToMouse(true);
+			auto element = Ptr(GuiSolidBorderElement::Create());
+			element->SetColor(color);
+			target->SetOwnedElement(element);
+			rootComposition->AddChild(target);
+		}
+		target->SetExpectedBounds(Rect(
+			renderingDom.content.bounds.x1 + 1,
+			renderingDom.content.bounds.y1 + 1,
+			renderingDom.content.bounds.x2 + 3,
+			renderingDom.content.bounds.y2 + 3
+		));
+	}
+
 	void UnitTestSnapshotViewerAppWindow::textListFrames_SelectionChanged(GuiGraphicsComposition* sender, GuiEventArgs& arguments)
 	{
 		if (rootComposition)
@@ -311,6 +329,7 @@ namespace gaclib_controls
 			rootComposition->GetEventReceiver()->mouseEnter.AttachMethod(this, &UnitTestSnapshotViewerAppWindow::rootComposition_MouseEnter);
 			rootComposition->GetEventReceiver()->mouseLeave.AttachMethod(this, &UnitTestSnapshotViewerAppWindow::rootComopsition_MouseLeave);
 			rootComposition->GetEventReceiver()->mouseMove.AttachMethod(this, &UnitTestSnapshotViewerAppWindow::rootComposition_MouseMove);
+			rootComposition->GetEventReceiver()->leftButtonDown.AttachMethod(this, &UnitTestSnapshotViewerAppWindow::rootComposition_LeftButtonDown);
 		}
 	}
 
@@ -322,20 +341,7 @@ namespace gaclib_controls
 			{
 				remoteprotocol::RenderingDom renderingDom;
 				remoteprotocol::ConvertJsonToCustomType(JsonParse(domNode->GetDomAsJsonText(), jsonParser), renderingDom);
-				if (!selectedComposition)
-				{
-					selectedComposition = new GuiBoundsComposition;
-					auto element = Ptr(GuiSolidBorderElement::Create());
-					element->SetColor(Color(255, 255, 0));
-					selectedComposition->SetOwnedElement(element);
-					rootComposition->AddChild(selectedComposition);
-				}
-				selectedComposition->SetExpectedBounds(Rect(
-					renderingDom.content.bounds.x1 + 1,
-					renderingDom.content.bounds.y1 + 1,
-					renderingDom.content.bounds.x2 + 3,
-					renderingDom.content.bounds.y2 + 3
-				));
+				Highlight(selectedComposition, renderingDom, Color(255, 255, 0));
 			}
 			else
 			{
@@ -370,21 +376,32 @@ namespace gaclib_controls
 			auto domProp = domSource->GetInternalProperty(DomProp::PropertyName).Cast<DomProp>();
 			if (domProp)
 			{
-				if (!highlightComposition)
-				{
-					highlightComposition = new GuiBoundsComposition;
-					auto element = Ptr(GuiSolidBorderElement::Create());
-					element->SetColor(Color(255, 0, 0));
-					highlightComposition->SetOwnedElement(element);
-					rootComposition->AddChild(highlightComposition);
-				}
-				highlightComposition->SetExpectedBounds(Rect(
-					domProp->dom->content.bounds.x1 + 1,
-					domProp->dom->content.bounds.y1 + 1,
-					domProp->dom->content.bounds.x2 + 3,
-					domProp->dom->content.bounds.y2 + 3
-				));
+				Highlight(highlightComposition, *domProp->dom.Obj(), Color(255, 0, 0));
 				return;
+			}
+			domSource = domSource->GetParent();
+		}
+	}
+
+	void UnitTestSnapshotViewerAppWindow::rootComposition_LeftButtonDown(vl::presentation::compositions::GuiGraphicsComposition* sender, vl::presentation::compositions::GuiMouseEventArgs& arguments)
+	{
+		if (!arguments.ctrl) return;
+		auto domSource = arguments.compositionSource;
+		while (domSource)
+		{
+			auto domProp = domSource->GetInternalProperty(DomProp::PropertyName).Cast<DomProp>();
+			if (domProp) break;
+			domSource = domSource->GetParent();
+		}
+
+		List<vint> ids;
+		while (domSource)
+		{
+			auto domProp = domSource->GetInternalProperty(DomProp::PropertyName).Cast<DomProp>();
+			if (domProp)
+			{
+				if (domProp->dom->id == -1) break;
+				ids.Add(domProp->dom->id);
 			}
 			domSource = domSource->GetParent();
 		}
