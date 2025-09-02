@@ -363,6 +363,31 @@ namespace gaclib_controls
 
 	void UnitTestSnapshotViewerAppWindow::rootComposition_MouseMove(GuiGraphicsComposition* sender, GuiMouseEventArgs& arguments)
 	{
+		if (!arguments.ctrl) return;
+		auto domSource = arguments.compositionSource;
+		while (domSource)
+		{
+			auto domProp = domSource->GetInternalProperty(DomProp::PropertyName).Cast<DomProp>();
+			if (domProp)
+			{
+				if (!highlightComposition)
+				{
+					highlightComposition = new GuiBoundsComposition;
+					auto element = Ptr(GuiSolidBorderElement::Create());
+					element->SetColor(Color(255, 0, 0));
+					highlightComposition->SetOwnedElement(element);
+					rootComposition->AddChild(highlightComposition);
+				}
+				highlightComposition->SetExpectedBounds(Rect(
+					domProp->dom->content.bounds.x1 + 1,
+					domProp->dom->content.bounds.y1 + 1,
+					domProp->dom->content.bounds.x2 + 3,
+					domProp->dom->content.bounds.y2 + 3
+				));
+				return;
+			}
+			domSource = domSource->GetParent();
+		}
 	}
 
 	void UnitTestSnapshotViewerAppWindow::OnKeyUp(GuiGraphicsComposition* sender, GuiKeyEventArgs& arguments)
