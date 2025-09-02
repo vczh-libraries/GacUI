@@ -62,3 +62,41 @@ This GUI library provides the following features:
 
 https://gankra.github.io/blah/text-hates-you/  
 https://lord.io/text-editing-hates-you-too/
+
+### Remote Protocol Support
+
+GacUI Remote Protocol enables Core and Renderer to run in different process in any programming language. It is current under development, but if you are interested in it, there are demos to try.
+
+All text box related controls are not supported yet, but they are on the way!
+
+#### NamedPipe and Http
+
+In **GacUISrc.sln** there are two projects:
+- [RemotingTest_Core.vcxproj](https://github.com/vczh-libraries/GacUI/tree/master/Test/GacUISrc/RemotingTest_Core)
+- [RemotingTest_Rendering_Win32.vcxproj](https://github.com/vczh-libraries/GacUI/tree/master/Test/GacUISrc/RemotingTest_Rendering_Win32)
+
+You must offer the same command line argument to `Core` and then `Rendering_Win32` to play with the demo.
+- `Core` starts a GacUI process but delegates all rendering work to a remote process.
+- `Rendering_Win32` starts a renderer-only process handles `Core`'s requests.
+- One of `/Pipe` or `/Http` should be offered to both projects so that they can connect to each other.
+
+#### HTML
+
+By running `Core` with `/Http`, you can even [run GacUI in a browser](https://github.com/vczh-libraries/GacJS)!
+
+![Run GacUI in a Broswer](GacUIHtml1.gif)
+
+#### Unit Test
+
+With the power from Remote Protocol, you could make GacUI running and writing down snapshots as a trace of all UI activities.
+Check out [UnitTest.vcxproj](https://github.com/vczh-libraries/GacUI/tree/master/Test/GacUISrc/UnitTest)!
+
+After running all test cases (actually don't need to do that as all snapshots are already checked in),
+check out [UnitTestViewer.vcxproj](https://github.com/vczh-libraries/GacUI/tree/master/Test/GacUISrc/UnitTestViewer)!
+
+Unit test facility and the viewer are released to the [Release repo](https://github.com/vczh-libraries/Release/tree/master/Import) in:
+- GacUI.UnitTest.(h|cpp)
+- GacUI.UnitTest.UI(h|cpp)
+- GacUI.UnitTest.UIReflection(h|cpp): only needed when you run GacUI.UnitTest.UI.cpp without `VCZH_DEBUG_NO_REFLECTION` compiler option.
+
+![SnapshotViewer](GacUISnapshotViewer.gif)
