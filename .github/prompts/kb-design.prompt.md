@@ -47,9 +47,18 @@
   - The core part.
   - Whether there are multiple branches of cases, find all of them.
   - Whether there are recursive calls, find the structure.
-- Explain the architecture, organization of components, execution flows, design patterns (if applicable) in details about the design and the architecture.
-- You are writing all of this so that, when you need to change it in the future, you know how to do.
-- You should keep the content compact. When you refer to the source code, do not include code snippets. Say the function name, and if the function is big, a little bit more to locate the code in it.
+- Explain in details about the design and:
+  - architecture
+  - organization of components
+  - execution flows
+  - design patterns (if applicable)
+- Each point you mention should provide proof from the source code.
+- When listing cases from a choice, try your best to include all of them.
+- You are writing all of this so that, when you need to change it in the future, you know what to change.
+- You should keep the content compact.
+  - When you refer to the source code, do not include code snippets.
+  - Say the function name, and if the function is big, a little bit more to locate the code in it.
+  - Do not use line number as source codes are subject to change rapidly.
 
 ## Steps for Ask
 
