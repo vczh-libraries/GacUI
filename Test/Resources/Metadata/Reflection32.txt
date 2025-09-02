@@ -1988,6 +1988,25 @@ interface gaclib_controls::IDialogStringsStrings : system::Interface {
     constructor (proxy : system::InterfaceProxy^) : gaclib_controls::IDialogStringsStrings^;
 }
 
+@FullName:gaclib_controls::IUnitTestSnapshotDomNode
+interface gaclib_controls::IUnitTestSnapshotDomNode : system::Interface {
+    property Children : system::Enumerable<gaclib_controls::IUnitTestSnapshotDomNode^>^ { get:GetChildren }
+    property DomAsJsonText : system::String { get:GetDomAsJsonText }
+    property DomID : system::Int32 { get:GetDomID }
+    property ElementAsJsonText : system::String { get:GetElementAsJsonText }
+    property Name : system::String { get:GetName }
+
+    function GetChildren() : system::Enumerable<gaclib_controls::IUnitTestSnapshotDomNode^>^;
+    function GetDomAsJsonText() : system::String;
+    function GetDomID() : system::Int32;
+    function GetElementAsJsonText() : system::String;
+    function GetName() : system::String;
+
+    @InvokeTemplate:::vl::reflection::description::ValueInterfaceProxy<::gaclib_controls::IUnitTestSnapshotDomNode>::Create($Arguments)
+    @ClosureTemplate:::vl::Func<$Func>(&::vl::reflection::description::ValueInterfaceProxy<::gaclib_controls::IUnitTestSnapshotDomNode>::Create)
+    constructor (proxy : system::InterfaceProxy^) : gaclib_controls::IUnitTestSnapshotDomNode^;
+}
+
 @FullName:gaclib_controls::IUnitTestSnapshotFileNode
 interface gaclib_controls::IUnitTestSnapshotFileNode : system::Interface {
     property Children : system::Enumerable<gaclib_controls::IUnitTestSnapshotFileNode^>^ { get:GetChildren }
@@ -2008,10 +2027,12 @@ interface gaclib_controls::IUnitTestSnapshotFileNode : system::Interface {
 
 @FullName:gaclib_controls::IUnitTestSnapshotFrame
 interface gaclib_controls::IUnitTestSnapshotFrame : system::Interface {
+    property Dom : gaclib_controls::IUnitTestSnapshotDomNode^ { get:GetDom }
     property DomAsJsonText : system::String { get:GetDomAsJsonText }
     property ElementsAsJsonText : system::String { get:GetElementsAsJsonText }
     property Name : system::String { get:GetName }
 
+    function GetDom() : gaclib_controls::IUnitTestSnapshotDomNode^;
     function GetDomAsJsonText() : system::String;
     function GetElementsAsJsonText() : system::String;
     function GetName() : system::String;
@@ -2216,15 +2237,33 @@ class gaclib_controls::UnitTestSnapshotViewerWindowConstructor : system::Referen
     property __vwsn_precompile_11 : presentation::controls::GuiTab*;
     property __vwsn_precompile_12 : presentation::compositions::GuiBoundsComposition*;
     property __vwsn_precompile_13 : presentation::controls::GuiTabPage*;
-    property __vwsn_precompile_14 : presentation::compositions::GuiBoundsComposition*;
-    property __vwsn_precompile_15 : presentation::controls::GuiTabPage*;
-    property __vwsn_precompile_16 : presentation::controls::GuiMultilineTextBox*;
+    property __vwsn_precompile_14 : presentation::compositions::GuiTableComposition*;
+    property __vwsn_precompile_15 : presentation::compositions::GuiColumnSplitterComposition*;
+    property __vwsn_precompile_16 : presentation::compositions::GuiCellComposition*;
     property __vwsn_precompile_17 : presentation::compositions::GuiBoundsComposition*;
-    property __vwsn_precompile_18 : presentation::controls::GuiTabPage*;
-    property __vwsn_precompile_19 : presentation::controls::GuiMultilineTextBox*;
+    property __vwsn_precompile_18 : presentation::compositions::GuiCellComposition*;
+    property __vwsn_precompile_19 : presentation::compositions::GuiTableComposition*;
     property __vwsn_precompile_2 : presentation::compositions::GuiColumnSplitterComposition*;
-    property __vwsn_precompile_20 : presentation::compositions::GuiBoundsComposition*;
+    property __vwsn_precompile_20 : presentation::compositions::GuiRowSplitterComposition*;
+    property __vwsn_precompile_21 : presentation::compositions::GuiCellComposition*;
+    property __vwsn_precompile_22 : presentation::compositions::GuiBoundsComposition*;
+    property __vwsn_precompile_23 : presentation::compositions::GuiCellComposition*;
+    property __vwsn_precompile_24 : presentation::controls::GuiTab*;
+    property __vwsn_precompile_25 : presentation::compositions::GuiBoundsComposition*;
+    property __vwsn_precompile_26 : presentation::controls::GuiTabPage*;
+    property __vwsn_precompile_27 : presentation::controls::GuiMultilineTextBox*;
+    property __vwsn_precompile_28 : presentation::compositions::GuiBoundsComposition*;
+    property __vwsn_precompile_29 : presentation::controls::GuiTabPage*;
     property __vwsn_precompile_3 : presentation::compositions::GuiCellComposition*;
+    property __vwsn_precompile_30 : presentation::controls::GuiMultilineTextBox*;
+    property __vwsn_precompile_31 : presentation::compositions::GuiBoundsComposition*;
+    property __vwsn_precompile_32 : presentation::controls::GuiTabPage*;
+    property __vwsn_precompile_33 : presentation::controls::GuiMultilineTextBox*;
+    property __vwsn_precompile_34 : presentation::compositions::GuiBoundsComposition*;
+    property __vwsn_precompile_35 : presentation::controls::GuiTabPage*;
+    property __vwsn_precompile_36 : presentation::controls::GuiMultilineTextBox*;
+    property __vwsn_precompile_37 : presentation::compositions::GuiBoundsComposition*;
+    property __vwsn_precompile_38 : presentation::compositions::GuiBoundsComposition*;
     property __vwsn_precompile_4 : presentation::compositions::GuiBoundsComposition*;
     property __vwsn_precompile_5 : presentation::compositions::GuiCellComposition*;
     property __vwsn_precompile_6 : presentation::controls::GuiTab*;
@@ -2234,6 +2273,7 @@ class gaclib_controls::UnitTestSnapshotViewerWindowConstructor : system::Referen
     property scRendering : presentation::controls::GuiScrollContainer*;
     property self : gaclib_controls::UnitTestSnapshotViewerWindow*;
     property textListFrames : presentation::controls::GuiBindableTextList*;
+    property treeViewDom : presentation::controls::GuiBindableTreeView*;
     property treeViewFileNodes : presentation::controls::GuiBindableTreeView*;
 
     function __vwsn_gaclib_controls_UnitTestSnapshotViewerWindow_Initialize(__vwsn_this_ : gaclib_controls::UnitTestSnapshotViewerWindow*) : system::Void;
@@ -3023,6 +3063,7 @@ interface presentation::INativeWindow : system::Interface {
     function ShowMaximized() : system::Void;
     function ShowMinimized() : system::Void;
     function ShowRestored() : system::Void;
+    function SuggestMinClientSize(size : presentation::NativeSize) : system::Void;
 
 }
 

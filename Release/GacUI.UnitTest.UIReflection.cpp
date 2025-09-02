@@ -38,6 +38,7 @@ namespace vl
 		namespace description
 		{
 #ifndef VCZH_DEBUG_NO_REFLECTION
+			IMPL_CPP_TYPE_INFO(gaclib_controls::IUnitTestSnapshotDomNode)
 			IMPL_CPP_TYPE_INFO(gaclib_controls::IUnitTestSnapshotFileNode)
 			IMPL_CPP_TYPE_INFO(gaclib_controls::IUnitTestSnapshotFrame)
 			IMPL_CPP_TYPE_INFO(gaclib_controls::IUnitTestSnapshotViewerStringsStrings)
@@ -49,6 +50,20 @@ namespace vl
 
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 #define _ ,
+			BEGIN_INTERFACE_MEMBER(::gaclib_controls::IUnitTestSnapshotDomNode)
+				CLASS_MEMBER_BASE(::vl::reflection::IDescriptable)
+				CLASS_MEMBER_METHOD(GetChildren, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(GetDomAsJsonText, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(GetDomID, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(GetElementAsJsonText, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(GetName, NO_PARAMETER)
+				CLASS_MEMBER_PROPERTY_READONLY(Children, GetChildren)
+				CLASS_MEMBER_PROPERTY_READONLY(DomAsJsonText, GetDomAsJsonText)
+				CLASS_MEMBER_PROPERTY_READONLY(DomID, GetDomID)
+				CLASS_MEMBER_PROPERTY_READONLY(ElementAsJsonText, GetElementAsJsonText)
+				CLASS_MEMBER_PROPERTY_READONLY(Name, GetName)
+			END_INTERFACE_MEMBER(::gaclib_controls::IUnitTestSnapshotDomNode)
+
 			BEGIN_INTERFACE_MEMBER(::gaclib_controls::IUnitTestSnapshotFileNode)
 				CLASS_MEMBER_BASE(::vl::reflection::IDescriptable)
 				CLASS_MEMBER_METHOD(GetChildren, NO_PARAMETER)
@@ -64,9 +79,11 @@ namespace vl
 
 			BEGIN_INTERFACE_MEMBER(::gaclib_controls::IUnitTestSnapshotFrame)
 				CLASS_MEMBER_BASE(::vl::reflection::IDescriptable)
+				CLASS_MEMBER_METHOD(GetDom, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(GetDomAsJsonText, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(GetElementsAsJsonText, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(GetName, NO_PARAMETER)
+				CLASS_MEMBER_PROPERTY_READONLY(Dom, GetDom)
 				CLASS_MEMBER_PROPERTY_READONLY(DomAsJsonText, GetDomAsJsonText)
 				CLASS_MEMBER_PROPERTY_READONLY(ElementsAsJsonText, GetElementsAsJsonText)
 				CLASS_MEMBER_PROPERTY_READONLY(Name, GetName)
@@ -131,7 +148,25 @@ namespace vl
 				CLASS_MEMBER_FIELD(__vwsn_precompile_19)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_2)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_20)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_21)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_22)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_23)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_24)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_25)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_26)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_27)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_28)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_29)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_3)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_30)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_31)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_32)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_33)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_34)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_35)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_36)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_37)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_38)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_4)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_5)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_6)
@@ -142,6 +177,7 @@ namespace vl
 				CLASS_MEMBER_FIELD(scRendering)
 				CLASS_MEMBER_FIELD(self)
 				CLASS_MEMBER_FIELD(textListFrames)
+				CLASS_MEMBER_FIELD(treeViewDom)
 				CLASS_MEMBER_FIELD(treeViewFileNodes)
 			END_CLASS_MEMBER(::gaclib_controls::UnitTestSnapshotViewerWindowConstructor)
 
@@ -151,6 +187,7 @@ namespace vl
 			public:
 				void Load(ITypeManager* manager)
 				{
+					ADD_TYPE_INFO(::gaclib_controls::IUnitTestSnapshotDomNode)
 					ADD_TYPE_INFO(::gaclib_controls::IUnitTestSnapshotFileNode)
 					ADD_TYPE_INFO(::gaclib_controls::IUnitTestSnapshotFrame)
 					ADD_TYPE_INFO(::gaclib_controls::IUnitTestSnapshotViewerStringsStrings)

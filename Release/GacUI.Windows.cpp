@@ -1312,6 +1312,11 @@ WindowsForm
 					}
 				}
 
+				void SuggestMinClientSize(NativeSize size)override
+				{
+					// Ignored
+				}
+
 				WString GetTitle()override
 				{
 					return title;
@@ -1973,6 +1978,8 @@ WindowsController
 							PostQuitMessage(0);
 						}
 					}
+
+					asyncService.ExecuteAsyncTasks();
 					return skipDefaultProcedure;
 				}
 

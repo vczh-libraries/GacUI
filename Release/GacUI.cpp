@@ -4829,42 +4829,7 @@ GuiGraphicsHost
 				NativeRect oldBounds = hostRecord.nativeWindow->GetBounds();
 				minSize = windowComposition->GetCachedMinSize();
 				NativeSize minWindowSize = hostRecord.nativeWindow->Convert(minSize) + (oldBounds.GetSize() - hostRecord.nativeWindow->GetClientSize());
-				if (bounds.Width() < minWindowSize.x)
-				{
-					if (fixSizeOnly)
-					{
-						if (bounds.Width() < minWindowSize.x)
-						{
-							bounds.x2 = bounds.x1 + minWindowSize.x;
-						}
-					}
-					else if (oldBounds.x1 != bounds.x1)
-					{
-						bounds.x1 = oldBounds.x2 - minWindowSize.x;
-					}
-					else if (oldBounds.x2 != bounds.x2)
-					{
-						bounds.x2 = oldBounds.x1 + minWindowSize.x;
-					}
-				}
-				if (bounds.Height() < minWindowSize.y)
-				{
-					if (fixSizeOnly)
-					{
-						if (bounds.Height() < minWindowSize.y)
-						{
-							bounds.y2 = bounds.y1 + minWindowSize.y;
-						}
-					}
-					else if (oldBounds.y1 != bounds.y1)
-					{
-						bounds.y1 = oldBounds.y2 - minWindowSize.y;
-					}
-					else if (oldBounds.y2 != bounds.y2)
-					{
-						bounds.y2 = oldBounds.y1 + minWindowSize.y;
-					}
-				}
+				NativeWindowListener_Moving(hostRecord.nativeWindow, minWindowSize, bounds, fixSizeOnly, draggingBorder);
 			}
 
 			void GuiGraphicsHost::Moved()
@@ -5199,6 +5164,7 @@ GuiGraphicsHost
 							auto height = bounds.Height() > preferred.y ? bounds.Height() : preferred.y;
 							controlHost->UpdateClientSizeAfterRendering(preferred, Size(width, height));
 							windowComposition->Layout_UpdateBounds({ width,height });
+							hostRecord.nativeWindow->SuggestMinClientSize(hostRecord.nativeWindow->Convert(windowComposition->GetCachedMinSize()));
 							supressPaint = false;
 						}
 					}
@@ -35679,6 +35645,47 @@ Helper Functions
 				return nullptr;
 			}
 		}
+
+		void NativeWindowListener_Moving(INativeWindow* window, NativeSize minWindowSize, NativeRect& bounds, bool fixSizeOnly, bool draggingBorder)
+		{
+			NativeRect oldBounds = window->GetBounds();
+			if (bounds.Width() < minWindowSize.x)
+			{
+				if (fixSizeOnly)
+				{
+					if (bounds.Width() < minWindowSize.x)
+					{
+						bounds.x2 = bounds.x1 + minWindowSize.x;
+					}
+				}
+				else if (oldBounds.x1 != bounds.x1)
+				{
+					bounds.x1 = oldBounds.x2 - minWindowSize.x;
+				}
+				else if (oldBounds.x2 != bounds.x2)
+				{
+					bounds.x2 = oldBounds.x1 + minWindowSize.x;
+				}
+			}
+			if (bounds.Height() < minWindowSize.y)
+			{
+				if (fixSizeOnly)
+				{
+					if (bounds.Height() < minWindowSize.y)
+					{
+						bounds.y2 = bounds.y1 + minWindowSize.y;
+					}
+				}
+				else if (oldBounds.y1 != bounds.y1)
+				{
+					bounds.y1 = oldBounds.y2 - minWindowSize.y;
+				}
+				else if (oldBounds.y2 != bounds.y2)
+				{
+					bounds.y2 = oldBounds.y1 + minWindowSize.y;
+				}
+			}
+		}
 	}
 }
 
@@ -36113,23 +36120,21 @@ GuiHostedController::INativeWindowListener
 			if (mainWindow)
 			{
 				auto windowBounds = nativeWindow->GetBounds();
-				auto clientBounds = nativeWindow->GetClientBoundsInScreen();
-				auto w = clientBounds.Width().value - windowBounds.Width().value;
-				auto h = clientBounds.Height().value - windowBounds.Height().value;
-
 				NativeRect mainBounds;
-				mainBounds.x2 = bounds.Width().value - w;
-				mainBounds.y2 = bounds.Height().value - h;
+				mainBounds.x1 = bounds.x1 - windowBounds.x1;
+				mainBounds.y1 = bounds.y1 - windowBounds.y1;
+				mainBounds.x2 = bounds.x2 - windowBounds.x1;
+				mainBounds.y2 = bounds.y2 - windowBounds.y1;
 
 				for (auto listener : mainWindow->listeners)
 				{
 					listener->Moving(mainBounds, fixSizeOnly, draggingBorder);
 				}
 
-				bounds.x1.value += mainBounds.x1.value;
-				bounds.y1.value += mainBounds.y1.value;
-				bounds.x2.value = bounds.x1.value + mainBounds.Width().value + w;
-				bounds.y2.value = bounds.y1.value + mainBounds.Height().value + h;
+				bounds.x1 = mainBounds.x1 + windowBounds.x1;
+				bounds.y1 = mainBounds.y1 + windowBounds.y1;
+				bounds.x2 = mainBounds.x2 + windowBounds.x1;
+				bounds.y2 = mainBounds.y2 + windowBounds.y1;
 			}
 		}
 
@@ -37275,12 +37280,14 @@ GuiHostedWindow
 		{
 			proxy = CreateMainHostedWindowProxy(this, controller->nativeWindow);
 			proxy->CheckAndSyncProperties();
+			proxy->SuggestMinClientSize(suggestedMinClientSize);
 		}
 
 		void GuiHostedWindow::BecomeNonMainWindow()
 		{
 			proxy = CreateNonMainHostedWindowProxy(this, controller->nativeWindow);
 			proxy->CheckAndSyncProperties();
+			proxy->SuggestMinClientSize(suggestedMinClientSize);
 		}
 
 		void GuiHostedWindow::BecomeFocusedWindow()
@@ -37378,6 +37385,12 @@ GuiHostedWindow
 		NativeRect GuiHostedWindow::GetClientBoundsInScreen()
 		{
 			return GetBounds();
+		}
+
+		void GuiHostedWindow::SuggestMinClientSize(NativeSize size)
+		{
+			suggestedMinClientSize = size;
+			proxy->SuggestMinClientSize(suggestedMinClientSize);
 		}
 
 		WString GuiHostedWindow::GetTitle()
@@ -37831,6 +37844,11 @@ GuiMainHostedWindowProxy
 				return { {},bounds.GetSize() };
 			}
 
+			void SuggestMinClientSize(NativeSize size) override
+			{
+				nativeWindow->SuggestMinClientSize(size);
+			}
+
 			void UpdateBounds() override
 			{
 				nativeWindow->SetClientSize(data->wmWindow.bounds.GetSize());
@@ -38059,6 +38077,11 @@ GuiNonMainHostedWindowProxy
 				return { bounds.LeftTop(),{{w},{h}} };
 			}
 
+			void SuggestMinClientSize(NativeSize size) override
+			{
+				// Ignored
+			}
+
 			void UpdateBounds() override
 			{
 			}
@@ -38240,6 +38263,11 @@ GuiPlaceholderHostedWindowProxy
 			NativeRect FixBounds(const NativeRect& bounds) override
 			{
 				return bounds;
+			}
+
+			void SuggestMinClientSize(NativeSize size) override
+			{
+				// Ignored
 			}
 
 			void UpdateBounds() override
@@ -41906,6 +41934,10 @@ GuiRemoteWindow (events)
 
 		if (remote->applicationRunning)
 		{
+			if (suggestedMinClientSize != NativeSize{ {0},{0} })
+			{
+				remoteMessages.RequestWindowNotifyMinSize(suggestedMinClientSize);
+			}
 			remoteMessages.RequestWindowNotifySetTitle(styleTitle);
 			remoteMessages.RequestWindowNotifySetEnabled(styleEnabled);
 			remoteMessages.RequestWindowNotifySetTopMost(styleTopMost);
@@ -42098,6 +42130,15 @@ GuiRemoteWindow (INativeWindow)
 		bounds.x2.value += remoteWindowSizingConfig.bounds.x1.value;
 		bounds.y2.value += remoteWindowSizingConfig.bounds.y1.value;
 		return bounds;
+	}
+
+	void GuiRemoteWindow::SuggestMinClientSize(NativeSize size)
+	{
+		if (suggestedMinClientSize != size)
+		{
+			suggestedMinClientSize = size;
+			remoteMessages.RequestWindowNotifyMinSize(suggestedMinClientSize);
+		}
 	}
 
 	WString GuiRemoteWindow::GetTitle()
@@ -44683,6 +44724,27 @@ namespace vl::presentation::remote_renderer
 	{
 	}
 
+	void GuiRemoteRendererSingle::Moving(NativeRect& bounds, bool fixSizeOnly, bool draggingBorder)
+	{
+		NativeWindowListener_Moving(window, suggestedMinSize, bounds, fixSizeOnly, draggingBorder);
+		if (draggingBorder)
+		{
+			auto config = GetWindowSizingConfig();
+			auto dx1 = config.clientBounds.x1 - config.bounds.x1;
+			auto dy1 = config.clientBounds.y1 - config.bounds.y1;
+			auto dx2 = config.clientBounds.x2 - config.bounds.x2;
+			auto dy2 = config.clientBounds.y2 - config.bounds.y2;
+
+			config.bounds = bounds;
+			config.clientBounds.x1 = config.bounds.x1 + dx1;
+			config.clientBounds.y1 = config.bounds.y1 + dy1;
+			config.clientBounds.x2 = config.bounds.x2 + dx2;
+			config.clientBounds.y2 = config.bounds.y2 + dy2;
+
+			events->OnWindowBoundsUpdated(config);
+		}
+	}
+
 	void GuiRemoteRendererSingle::Moved()
 	{
 		UpdateConfigsIfNecessary();
@@ -45162,6 +45224,14 @@ namespace vl::presentation::remote_renderer
 				break;
 			}
 		}
+	}
+
+	void GuiRemoteRendererSingle::RequestWindowNotifyMinSize(const NativeSize& arguments)
+	{
+		auto clientSize = window->GetClientSize();
+		auto size = window->GetBounds().GetSize();
+		suggestedMinSize.x = arguments.x + size.x - clientSize.x;
+		suggestedMinSize.y = arguments.y + size.y - clientSize.y;
 	}
 }
 

@@ -467,6 +467,7 @@ Type Declaration
 				CLASS_MEMBER_PROPERTY_FAST(TitleBar)
 				CLASS_MEMBER_PROPERTY_FAST(TopMost)
 
+				CLASS_MEMBER_METHOD(SuggestMinClientSize, { L"size" })
 				CLASS_MEMBER_METHOD(EnableCustomFrameMode, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(DisableCustomFrameMode, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(IsCustomFrameModeEnabled, NO_PARAMETER)

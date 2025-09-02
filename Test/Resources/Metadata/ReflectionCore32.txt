@@ -780,6 +780,7 @@ interface presentation::INativeWindow : system::Interface {
     function ShowMaximized() : system::Void;
     function ShowMinimized() : system::Void;
     function ShowRestored() : system::Void;
+    function SuggestMinClientSize(size : presentation::NativeSize) : system::Void;
 
 }
 

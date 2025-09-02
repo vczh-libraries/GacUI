@@ -627,6 +627,7 @@ IGuiRemoteProtocolMessages (Window)
 		void RequestWindowNotifySetIconVisible(const bool& arguments) override		{ styleConfig.iconVisible = arguments;		this->GetEvents()->OnWindowBoundsUpdated(sizingConfig); }
 		void RequestWindowNotifySetTitleBar(const bool& arguments) override			{ styleConfig.titleBar = arguments;			this->GetEvents()->OnWindowBoundsUpdated(sizingConfig); }
 		void RequestWindowNotifyActivate() override									{ styleConfig.activated = true; }
+		void RequestWindowNotifyMinSize(const NativeSize& arguments) override		{}
 	
 		void RequestWindowNotifyShow(const WindowShowing& arguments) override
 		{

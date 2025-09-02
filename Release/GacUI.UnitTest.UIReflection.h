@@ -51,6 +51,7 @@ namespace vl
 		namespace description
 		{
 #ifndef VCZH_DEBUG_NO_REFLECTION
+			DECL_TYPE_INFO(::gaclib_controls::IUnitTestSnapshotDomNode)
 			DECL_TYPE_INFO(::gaclib_controls::IUnitTestSnapshotFileNode)
 			DECL_TYPE_INFO(::gaclib_controls::IUnitTestSnapshotFrame)
 			DECL_TYPE_INFO(::gaclib_controls::IUnitTestSnapshotViewerStringsStrings)
@@ -61,6 +62,29 @@ namespace vl
 			DECL_TYPE_INFO(::gaclib_controls::UnitTestSnapshotViewerWindowConstructor)
 
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
+
+			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(::gaclib_controls::IUnitTestSnapshotDomNode)
+				::vl::collections::LazyList<::vl::Ptr<::gaclib_controls::IUnitTestSnapshotDomNode>> GetChildren() override
+				{
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetChildren);
+				}
+				::vl::WString GetDomAsJsonText() override
+				{
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetDomAsJsonText);
+				}
+				::vl::vint GetDomID() override
+				{
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetDomID);
+				}
+				::vl::WString GetElementAsJsonText() override
+				{
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetElementAsJsonText);
+				}
+				::vl::WString GetName() override
+				{
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetName);
+				}
+			END_INTERFACE_PROXY(::gaclib_controls::IUnitTestSnapshotDomNode)
 
 			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(::gaclib_controls::IUnitTestSnapshotFileNode)
 				::vl::collections::LazyList<::vl::Ptr<::gaclib_controls::IUnitTestSnapshotFileNode>> GetChildren() override
@@ -86,6 +110,10 @@ namespace vl
 			END_INTERFACE_PROXY(::gaclib_controls::IUnitTestSnapshotFileNode)
 
 			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(::gaclib_controls::IUnitTestSnapshotFrame)
+				::vl::Ptr<::gaclib_controls::IUnitTestSnapshotDomNode> GetDom() override
+				{
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetDom);
+				}
 				::vl::WString GetDomAsJsonText() override
 				{
 					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetDomAsJsonText);
