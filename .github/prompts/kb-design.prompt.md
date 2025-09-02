@@ -91,6 +91,7 @@
 - Create a file according to the hyperlink and add it to the `KnowledgeBase` project.
 - The title of the document is in the `# DRAFT-TITLE` section.
 - The content must be exactly and precisely the content under `# DRAFT-CONTENT`. But do not copy the `# DRAFT-CONTENT` title itself.
+- Keep `Copilot_KB.md` unchanged.
 
 # for Copilot with Agent mode in Visual Studio
 
