@@ -405,6 +405,27 @@ namespace gaclib_controls
 			}
 			domSource = domSource->GetParent();
 		}
+
+		auto treeNode = treeViewDom->GetNodeRootProvider()->GetRootNode();
+		for (auto id : From(ids).Reverse())
+		{
+			treeNode->SetExpanding(true);
+			vint index = -1;
+			for (vint i = 0; i < treeNode->GetChildCount(); i++)
+			{
+				auto childNode = treeNode->GetChild(i);
+				if (auto domNode = treeViewDom->GetNodeRootProvider()->GetBindingValue(childNode.Obj()).GetSharedPtr().Cast<IUnitTestSnapshotDomNode>())
+				{
+					if (domNode->GetDomID() == id)
+					{
+						treeNode = childNode;
+						goto NEXT_NODE;
+					}
+				}
+			}
+			CHECK_FAIL(L"Target tree node not found.");
+		NEXT_NODE:;
+		}
 	}
 
 	void UnitTestSnapshotViewerAppWindow::OnKeyUp(GuiGraphicsComposition* sender, GuiKeyEventArgs& arguments)
