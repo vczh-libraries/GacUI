@@ -307,6 +307,10 @@ namespace gaclib_controls
 		{
 			rootComposition = BuildRootComposition(GetRenderingTrace(node), GetRenderingFrame(frame));
 			scRendering->GetContainerComposition()->AddChild(rootComposition);
+
+			rootComposition->GetEventReceiver()->mouseEnter.AttachMethod(this, &UnitTestSnapshotViewerAppWindow::rootComposition_MouseEnter);
+			rootComposition->GetEventReceiver()->mouseLeave.AttachMethod(this, &UnitTestSnapshotViewerAppWindow::rootComopsition_MouseLeave);
+			rootComposition->GetEventReceiver()->mouseMove.AttachMethod(this, &UnitTestSnapshotViewerAppWindow::rootComposition_MouseMove);
 		}
 	}
 
@@ -344,10 +348,39 @@ namespace gaclib_controls
 		}
 	}
 
+	void UnitTestSnapshotViewerAppWindow::rootComposition_MouseEnter(GuiGraphicsComposition* sender, GuiEventArgs& arguments)
+	{
+	}
+
+	void UnitTestSnapshotViewerAppWindow::rootComopsition_MouseLeave(GuiGraphicsComposition* sender, GuiEventArgs& arguments)
+	{
+		if (highlightComposition)
+		{
+			SafeDeleteComposition(highlightComposition);
+			highlightComposition = nullptr;
+		}
+	}
+
+	void UnitTestSnapshotViewerAppWindow::rootComposition_MouseMove(GuiGraphicsComposition* sender, GuiMouseEventArgs& arguments)
+	{
+	}
+
+	void UnitTestSnapshotViewerAppWindow::OnKeyUp(GuiGraphicsComposition* sender, GuiKeyEventArgs& arguments)
+	{
+		if (arguments.code == VKEY::KEY_CONTROL && highlightComposition)
+		{
+			SafeDeleteComposition(highlightComposition);
+			highlightComposition = nullptr;
+		}
+	}
+
 	UnitTestSnapshotViewerAppWindow::UnitTestSnapshotViewerAppWindow(Ptr<UnitTestSnapshotViewerViewModel> viewModel)
 		: UnitTestSnapshotViewerWindow(viewModel)
 	{
 		textListFrames->SelectionChanged.AttachMethod(this, &UnitTestSnapshotViewerAppWindow::textListFrames_SelectionChanged);
 		treeViewDom->SelectionChanged.AttachMethod(this, &UnitTestSnapshotViewerAppWindow::treeViewDom_SelectionChanged);
+
+		SetFocusableComposition(GetBoundsComposition());
+		GetFocusableComposition()->GetEventReceiver()->keyUp.AttachMethod(this, &UnitTestSnapshotViewerAppWindow::OnKeyUp);
 	}
 }
