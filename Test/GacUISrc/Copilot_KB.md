@@ -1,4 +1,4 @@
-# !!!KNOWLEDGE BASE!!!
+﻿# !!!KNOWLEDGE BASE!!!
 
 # DOCUMENT REQUEST
 
@@ -13,12 +13,12 @@ The GacUI initialization process follows a well-defined layered architecture tha
 **Entry Point Flow**
 
 The initialization starts at the platform-specific entry point (WinMain on Windows) and follows this path:
-1. `WinMain` (or platform main) ? `SetupWindowsDirect2DRenderer()` 
-2. `SetupWindowsDirect2DRenderer()` ? `SetupWindowsDirect2DRendererInternal(false, false)`
-3. `SetupWindowsDirect2DRendererInternal()` ? `RendererMainDirect2D(nullptr, false)`
-4. `RendererMainDirect2D()` ? `GuiApplicationMain()`
-5. `GuiApplicationMain()` ? `GuiApplicationInitialize()`
-6. `GuiApplicationInitialize()` ? Creates `GuiApplication` instance and calls `GuiMain()`
+1. `WinMain` (or platform main) → `SetupWindowsDirect2DRenderer()` 
+2. `SetupWindowsDirect2DRenderer()` → `SetupWindowsDirect2DRendererInternal(false, false)`
+3. `SetupWindowsDirect2DRendererInternal()` → `RendererMainDirect2D(nullptr, false)`
+4. `RendererMainDirect2D()` → `GuiApplicationMain()`
+5. `GuiApplicationMain()` → `GuiApplicationInitialize()`
+6. `GuiApplicationInitialize()` → Creates `GuiApplication` instance and calls `GuiMain()`
 
 **Platform and Renderer Detection**
 
@@ -137,6 +137,12 @@ The codebase is architected for cross-platform support with clear separation:
 **Remote Rendering Platform:**
 - `SetupRemoteNativeController(IGuiRemoteProtocol*)` - Platform-agnostic remote rendering over custom protocol
 
+**Linux Platform (Not Implemented in This Repo):**
+- `SetupGtkRenderer()` - GTK application entry point (implementation in separate repository)
+
+**macOS Platform (Not Implemented in This Repo):**
+- `SetupOSXCoreGraphicsRenderer()` - Core Graphics application entry point (implementation in separate repository)
+
 **Key Differences Between Entry Points**
 
 **Standard vs Hosted vs Raw Modes:**
@@ -179,8 +185,8 @@ CoInitializeEx(NULL, COINIT_MULTITHREADED);
 **Controller Architecture Differences**
 
 Each platform uses different controller strategies:
-- **Direct2D/GDI**: `WindowsController` ? optional `GuiHostedController` wrapper ? renderer-specific listeners
-- **Remote**: `GuiRemoteController` ? `GuiHostedController` ? `GuiRemoteGraphicsResourceManager`
+- **Direct2D/GDI**: `WindowsController` → optional `GuiHostedController` wrapper → renderer-specific listeners
+- **Remote**: `GuiRemoteController` → `GuiHostedController` → `GuiRemoteGraphicsResourceManager`
 - **Code Generation**: `GacGenNativeController` for compile-time generation
 
 **Resource Manager Specialization**
@@ -430,14 +436,14 @@ The `GuiRemoteController` implements all native controller services through prot
 
 The remote mode uses `IGuiRemoteProtocol` interface for bidirectional communication:
 
-**Outgoing Messages (Controller ? Remote):**
+**Outgoing Messages (Controller → Remote):**
 - `RequestControllerGetFontConfig` - Queries available fonts
 - `RequestControllerGetScreenConfig` - Queries screen configuration
 - `RequestWindowNotifySetTitle` - Updates window title
 - `RequestIOIsKeyPressing` - Checks key state
 - `RequestRendererCreated` - Notifies renderer creation
 
-**Incoming Events (Remote ? Controller):**
+**Incoming Events (Remote → Controller):**
 - `OnControllerConnect` / `OnControllerDisconnect` - Connection lifecycle
 - `OnIOKeyDown` / `OnIOKeyUp` - Input events
 - `OnIOMouseMoving` / `OnIOButtonDown` - Mouse events
@@ -536,9 +542,15 @@ enum class RendererType
 
 This architecture enables GacUI to achieve platform independence while maintaining full compatibility with the existing framework and providing comprehensive testing capabilities.
 
-## DRAFT
+## IMPROVE
 
-Complete a "Initialization of GacUI on different Platforms" document.
+GacUI also supports Linux and macOS, but the code is not in this repo. You can still see a entry point function declared without implementation. You should also mention it.
+
+The actual purpose of hosted mode is to run the whole application in only one native OS window. All sub windows and menus will be just rendered, unlike non-hosted mode all sub windows and menus are also native OS windows.
+
+Specifically point out that raw mode are GacUI without `GuiApplication` and surely `GuiWIndow`.
+
+Need to mention where are graphics elements registered
 
 # DRAFT-LOCATION
 
@@ -554,50 +566,54 @@ GacUI implements a sophisticated multi-platform initialization system that provi
 
 ## Platform Support Overview
 
-GacUI currently supports four main platform/rendering configurations:
+GacUI is designed to support multiple platforms with different rendering backends:
 
 1. **Windows Direct2D** - Modern Windows graphics using Direct2D and DirectWrite with hardware acceleration
 2. **Windows GDI** - Legacy Windows graphics using traditional GDI for compatibility with older systems  
-3. **Remote Rendering** - Platform-agnostic remote rendering over network protocols for testing and distributed applications
-4. **Hosted Mode** - Embedded rendering within existing applications across all platforms
+3. **Linux GTK** - Linux platform support with GTK rendering (declared as `SetupGtkRenderer()` but implementation in separate repository)
+4. **macOS Cocoa** - macOS platform support with Core Graphics rendering (declared as `SetupOSXCoreGraphicsRenderer()` but implementation in separate repository)
+5. **Remote Rendering** - Platform-agnostic remote rendering over network protocols for testing and distributed applications
+6. **Code Generation** - Special mode for compile-time code generation (GacGen)
 
-The architecture is designed for extensibility, with clear separation between platform-specific implementations and the core framework. Future platforms (Linux/GTK, macOS/Cocoa, mobile platforms) can be added following the established patterns.
+The actual Linux and macOS implementations are maintained in separate repositories, but the entry points are declared in this codebase to maintain API consistency. The architecture is designed for extensibility, with clear separation between platform-specific implementations and the core framework.
 
 ## Entry Point Architecture
 
 The initialization system uses a consistent naming pattern for entry points: `Setup[Platform][Renderer][Mode]()`. Each combination provides different capabilities:
 
 ### Standard Mode Entry Points
-- `SetupWindowsDirect2DRenderer()` - Full Direct2D application with complete framework
-- `SetupWindowsGDIRenderer()` - Full GDI application with complete framework
+- `SetupWindowsDirect2DRenderer()` - Full Direct2D application with complete framework and native OS windows
+- `SetupWindowsGDIRenderer()` - Full GDI application with complete framework and native OS windows
+- `SetupGtkRenderer()` - Full Linux/GTK application (implementation in separate repository)
+- `SetupOSXCoreGraphicsRenderer()` - Full macOS application (implementation in separate repository)
 - `SetupRemoteNativeController(protocol)` - Full remote application with protocol communication
 
-Standard mode provides the complete GacUI application framework including window management, event handling, tooltips, global shortcuts, and all system services.
+Standard mode provides the complete GacUI application framework including `GuiApplication`, native window management for each GacUI window, event handling, tooltips, global shortcuts, and all system services.
 
 ### Hosted Mode Entry Points  
-- `SetupHostedWindowsDirect2DRenderer()` - Direct2D embedded within existing applications
-- `SetupHostedWindowsGDIRenderer()` - GDI embedded within existing applications
+- `SetupHostedWindowsDirect2DRenderer()` - Direct2D embedded within a single native OS window
+- `SetupHostedWindowsGDIRenderer()` - GDI embedded within a single native OS window
 
-Hosted mode embeds GacUI within existing applications by wrapping the native controller with `GuiHostedController`. This allows sharing window handles with host applications while providing full GacUI functionality.
+Hosted mode runs the entire GacUI application within only one native OS window. All GacUI sub-windows, dialogs, and menus are rendered as graphics rather than creating additional native OS windows. This is achieved by wrapping the native controller with `GuiHostedController`, which provides window abstraction while sharing the host application's window handle.
 
 ### Raw Mode Entry Points
-- `SetupRawWindowsDirect2DRenderer()` - Direct2D with minimal framework
-- `SetupRawWindowsGDIRenderer()` - GDI with minimal framework
+- `SetupRawWindowsDirect2DRenderer()` - Direct2D rendering without `GuiApplication` or `GuiWindow`
+- `SetupRawWindowsGDIRenderer()` - GDI rendering without `GuiApplication` or `GuiWindow`
 
-Raw mode provides minimal rendering capabilities without the application framework. It calls `GuiRawMain()` instead of the full application initialization, suitable for custom applications requiring direct control over initialization.
+Raw mode provides minimal rendering capabilities without the application framework. It completely bypasses `GuiApplication` and `GuiWindow` creation, calling `GuiRawMain()` instead of the full application initialization. This mode is suitable for custom applications that need direct control over initialization and only require graphics rendering capabilities.
 
 ## Initialization Flow
 
 The initialization process follows a consistent six-phase sequence from platform entry point to user code:
 
 ### Phase 1: Platform Entry Point
-The process begins at platform-specific entry points (`WinMain` on Windows) which immediately delegate to the appropriate setup function based on desired renderer and mode.
+The process begins at platform-specific entry points (`WinMain` on Windows, `main` on Linux) which immediately delegate to the appropriate setup function based on desired renderer and mode.
 
 ### Phase 2: Setup Function Routing
 Setup functions route to internal implementation functions:
-- `SetupWindowsDirect2DRenderer()` ? `SetupWindowsDirect2DRendererInternal(false, false)`
-- `SetupHostedWindowsDirect2DRenderer()` ? `SetupWindowsDirect2DRendererInternal(true, false)`  
-- `SetupRawWindowsDirect2DRenderer()` ? `SetupWindowsDirect2DRendererInternal(false, true)`
+- `SetupWindowsDirect2DRenderer()` → `SetupWindowsDirect2DRendererInternal(false, false)`
+- `SetupHostedWindowsDirect2DRenderer()` → `SetupWindowsDirect2DRendererInternal(true, false)`  
+- `SetupRawWindowsDirect2DRenderer()` → `SetupWindowsDirect2DRendererInternal(false, true)`
 
 ### Phase 3: Renderer Main Functions
 Internal setup functions call platform-specific renderer main functions:
@@ -606,8 +622,8 @@ Internal setup functions call platform-specific renderer main functions:
 
 ### Phase 4: Application vs Raw Initialization
 Renderer main functions branch based on mode:
-- **Standard/Hosted Mode**: `GuiApplicationMain()` ? `GuiApplicationInitialize()` 
-- **Raw Mode**: `GuiRawInitialize()` ? `GuiRawMain()`
+- **Standard/Hosted Mode**: `GuiApplicationMain()` → `GuiApplicationInitialize()` 
+- **Raw Mode**: `GuiRawInitialize()` → `GuiRawMain()`
 
 ### Phase 5: Framework Setup (Non-Raw Only)
 `GuiApplicationInitialize()` performs comprehensive framework initialization:
@@ -683,13 +699,14 @@ SetGuiGraphicsResourceManager(
 ```
 
 ### Element Renderer Registration
-All graphics element renderers register with the resource manager through static `Register()` methods:
+All graphics element renderers register with the resource manager through static `Register()` methods in the renderer main functions. The registration occurs in `RendererMainDirect2D()` and `RendererMainGDI()` before calling the application initialization:
+
 - Focus rectangles, borders, backgrounds, shadows
 - Text labels, images, polygons  
 - Specialized renderers like `GuiDirect2DElementRenderer` for custom graphics
 - Document elements for rich text rendering
 
-Each renderer follows the factory pattern:
+Each renderer follows the factory pattern defined in `GuiGraphicsResourceManager.h`:
 ```cpp
 static void Register()
 {
@@ -698,6 +715,8 @@ static void Register()
                                    Ptr(new typename TRenderer::Factory));
 }
 ```
+
+The registration mechanism uses the `GuiElementRendererBase` template which provides the `Register()` static method that calls `GetGuiGraphicsResourceManager()->RegisterRendererFactory()` to bind element types to renderer factories.
 
 ## Service Registration and Dependencies
 
@@ -723,6 +742,8 @@ Remote mode always operates through hosted mode with a layered controller archit
 2. **GuiHostedController** - Wrapper providing window management abstraction
 3. **Protocol Layer** - `IGuiRemoteProtocol` interface for communication abstraction
 
+Remote mode inherently requires hosted mode because it has no real native windows, only virtual windows managed through protocol messages, and all rendering occurs within a single host window.
+
 ### Protocol Communication
 The remote controller implements all native controller services through bidirectional protocol communication:
 
@@ -746,8 +767,8 @@ Remote mode enables sophisticated unit testing through specialized protocol impl
 The initialization system includes comprehensive error handling and fallback mechanisms:
 
 ### Hardware/Software Fallbacks
-- **Direct2D 1.1 ? Direct2D 1.0**: Falls back if D3D11 device creation fails
-- **Hardware ? WARP**: Attempts hardware acceleration first, then software rendering
+- **Direct2D 1.1 → Direct2D 1.0**: Falls back if D3D11 device creation fails
+- **Hardware → WARP**: Attempts hardware acceleration first, then software rendering
 - **Debug vs Release**: Debug builds include detailed error checking, release builds tolerate failures gracefully
 
 ### Unit Test Accommodations
