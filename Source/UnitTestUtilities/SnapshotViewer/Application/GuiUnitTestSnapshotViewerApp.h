@@ -7,6 +7,7 @@ namespace gaclib_controls
 	protected:
 		vl::glr::json::Parser										jsonParser;
 		vl::presentation::compositions::GuiBoundsComposition*		rootComposition = nullptr;
+		vl::presentation::compositions::GuiBoundsComposition*		selectedComposition = nullptr;
 		vl::presentation::compositions::GuiBoundsComposition*		highlightComposition = nullptr;
 
 		void textListFrames_SelectionChanged(vl::presentation::compositions::GuiGraphicsComposition* sender, vl::presentation::compositions::GuiEventArgs& arguments);

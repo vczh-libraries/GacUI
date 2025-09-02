@@ -14,10 +14,20 @@ namespace gaclib_controls
 	using namespace vl::presentation::unittest;
 	using namespace gaclib_controls;
 
-/***********************************************************************
-Helper Functions
-***********************************************************************/
-	
+	class DomProp : public Object
+	{
+	public:
+		static const WString				PropertyName;
+
+		Ptr<remoteprotocol::RenderingDom>	dom;
+	};
+
+	const WString DomProp::PropertyName = WString::Unmanaged(L"DomID");
+
+	/***********************************************************************
+	Helper Functions
+	***********************************************************************/
+
 	Alignment GetAlignment(remoteprotocol::ElementHorizontalAlignment alignment)
 	{
 		switch (alignment)
@@ -47,7 +57,10 @@ Helper Functions
 		Ptr<remoteprotocol::RenderingDom> dom,
 		vint& cursorCounter)
 	{
+		auto domProp = Ptr(new DomProp);
+		domProp->dom = dom;
 		auto bounds = new GuiBoundsComposition;
+		bounds->SetInternalProperty(DomProp::PropertyName, domProp);
 		container->AddChild(bounds);
 
 		bounds->SetExpectedBounds(Rect({ dom->content.bounds.x1 - x,dom->content.bounds.y1 - y }, { dom->content.bounds.Width(),dom->content.bounds.Height() }));
@@ -101,135 +114,135 @@ Helper Functions
 			switch (trace.createdElements->Get(dom->content.element.Value()))
 			{
 			case remoteprotocol::RendererType::FocusRectangle:
-				{
-					auto element = Ptr(GuiFocusRectangleElement::Create());
-					bounds->SetOwnedElement(element);
-				}
-				break;
+			{
+				auto element = Ptr(GuiFocusRectangleElement::Create());
+				bounds->SetOwnedElement(element);
+			}
+			break;
 			case remoteprotocol::RendererType::Raw:
 				// Do Nothing
 				break;
 			case remoteprotocol::RendererType::SolidBorder:
-				{
-					auto element = Ptr(GuiSolidBorderElement::Create());
-					bounds->SetOwnedElement(element);
-					auto& desc = frame.elements->Get(dom->content.element.Value()).Get<remoteprotocol::ElementDesc_SolidBorder>();
+			{
+				auto element = Ptr(GuiSolidBorderElement::Create());
+				bounds->SetOwnedElement(element);
+				auto& desc = frame.elements->Get(dom->content.element.Value()).Get<remoteprotocol::ElementDesc_SolidBorder>();
 
-					element->SetColor(desc.borderColor);
-					element->SetShape(desc.shape);
-				}
-				break;
+				element->SetColor(desc.borderColor);
+				element->SetShape(desc.shape);
+			}
+			break;
 			case remoteprotocol::RendererType::SinkBorder:
-				{
-					auto element = Ptr(Gui3DBorderElement::Create());
-					bounds->SetOwnedElement(element);
-					auto& desc = frame.elements->Get(dom->content.element.Value()).Get<remoteprotocol::ElementDesc_SinkBorder>();
+			{
+				auto element = Ptr(Gui3DBorderElement::Create());
+				bounds->SetOwnedElement(element);
+				auto& desc = frame.elements->Get(dom->content.element.Value()).Get<remoteprotocol::ElementDesc_SinkBorder>();
 
-					element->SetColors(desc.leftTopColor, desc.rightBottomColor);
-				}
-				break;
+				element->SetColors(desc.leftTopColor, desc.rightBottomColor);
+			}
+			break;
 			case remoteprotocol::RendererType::SinkSplitter:
-				{
-					auto element = Ptr(Gui3DSplitterElement::Create());
-					bounds->SetOwnedElement(element);
-					auto& desc = frame.elements->Get(dom->content.element.Value()).Get<remoteprotocol::ElementDesc_SinkSplitter>();
+			{
+				auto element = Ptr(Gui3DSplitterElement::Create());
+				bounds->SetOwnedElement(element);
+				auto& desc = frame.elements->Get(dom->content.element.Value()).Get<remoteprotocol::ElementDesc_SinkSplitter>();
 
-					element->SetColors(desc.leftTopColor, desc.rightBottomColor);
-					element->SetDirection(desc.direction);
-				}
-				break;
+				element->SetColors(desc.leftTopColor, desc.rightBottomColor);
+				element->SetDirection(desc.direction);
+			}
+			break;
 			case remoteprotocol::RendererType::SolidBackground:
-				{
-					auto element = Ptr(GuiSolidBackgroundElement::Create());
-					bounds->SetOwnedElement(element);
-					auto& desc = frame.elements->Get(dom->content.element.Value()).Get<remoteprotocol::ElementDesc_SolidBackground>();
+			{
+				auto element = Ptr(GuiSolidBackgroundElement::Create());
+				bounds->SetOwnedElement(element);
+				auto& desc = frame.elements->Get(dom->content.element.Value()).Get<remoteprotocol::ElementDesc_SolidBackground>();
 
-					element->SetColor(desc.backgroundColor);
-					element->SetShape(desc.shape);
-				}
-				break;
+				element->SetColor(desc.backgroundColor);
+				element->SetShape(desc.shape);
+			}
+			break;
 			case remoteprotocol::RendererType::GradientBackground:
-				{
-					auto element = Ptr(GuiGradientBackgroundElement::Create());
-					bounds->SetOwnedElement(element);
-					auto& desc = frame.elements->Get(dom->content.element.Value()).Get<remoteprotocol::ElementDesc_GradientBackground>();
+			{
+				auto element = Ptr(GuiGradientBackgroundElement::Create());
+				bounds->SetOwnedElement(element);
+				auto& desc = frame.elements->Get(dom->content.element.Value()).Get<remoteprotocol::ElementDesc_GradientBackground>();
 
-					element->SetColors(desc.leftTopColor, desc.rightBottomColor);
-					element->SetDirection(desc.direction);
-					element->SetShape(desc.shape);
-				}
-				break;
+				element->SetColors(desc.leftTopColor, desc.rightBottomColor);
+				element->SetDirection(desc.direction);
+				element->SetShape(desc.shape);
+			}
+			break;
 			case remoteprotocol::RendererType::InnerShadow:
-				{
-					auto element = Ptr(GuiInnerShadowElement::Create());
-					bounds->SetOwnedElement(element);
-					auto& desc = frame.elements->Get(dom->content.element.Value()).Get<remoteprotocol::ElementDesc_InnerShadow>();
+			{
+				auto element = Ptr(GuiInnerShadowElement::Create());
+				bounds->SetOwnedElement(element);
+				auto& desc = frame.elements->Get(dom->content.element.Value()).Get<remoteprotocol::ElementDesc_InnerShadow>();
 
-					element->SetColor(desc.shadowColor);
-					element->SetThickness(desc.thickness);
-				}
-				break;
+				element->SetColor(desc.shadowColor);
+				element->SetThickness(desc.thickness);
+			}
+			break;
 			case remoteprotocol::RendererType::SolidLabel:
-				{
-					auto element = Ptr(GuiSolidLabelElement::Create());
-					bounds->SetOwnedElement(element);
-					auto& desc = frame.elements->Get(dom->content.element.Value()).Get<remoteprotocol::ElementDesc_SolidLabel>();
+			{
+				auto element = Ptr(GuiSolidLabelElement::Create());
+				bounds->SetOwnedElement(element);
+				auto& desc = frame.elements->Get(dom->content.element.Value()).Get<remoteprotocol::ElementDesc_SolidLabel>();
 
-					element->SetColor(desc.textColor);
-					element->SetAlignments(GetAlignment(desc.horizontalAlignment), GetAlignment(desc.verticalAlignment));
-					element->SetWrapLine(desc.wrapLine);
-					element->SetWrapLineHeightCalculation(desc.wrapLineHeightCalculation);
-					element->SetEllipse(desc.ellipse);
-					element->SetMultiline(desc.multiline);
-					element->SetFont(desc.font.Value());
-					element->SetText(desc.text.Value());
-				}
-				break;
+				element->SetColor(desc.textColor);
+				element->SetAlignments(GetAlignment(desc.horizontalAlignment), GetAlignment(desc.verticalAlignment));
+				element->SetWrapLine(desc.wrapLine);
+				element->SetWrapLineHeightCalculation(desc.wrapLineHeightCalculation);
+				element->SetEllipse(desc.ellipse);
+				element->SetMultiline(desc.multiline);
+				element->SetFont(desc.font.Value());
+				element->SetText(desc.text.Value());
+			}
+			break;
 			case remoteprotocol::RendererType::Polygon:
+			{
+				auto element = Ptr(GuiPolygonElement::Create());
+				bounds->SetOwnedElement(element);
+				auto& desc = frame.elements->Get(dom->content.element.Value()).Get<remoteprotocol::ElementDesc_Polygon>();
+
+				element->SetSize(desc.size);
+				element->SetBorderColor(desc.borderColor);
+				element->SetBackgroundColor(desc.backgroundColor);
+
+				if (desc.points && desc.points->Count() > 0)
 				{
-					auto element = Ptr(GuiPolygonElement::Create());
-					bounds->SetOwnedElement(element);
-					auto& desc = frame.elements->Get(dom->content.element.Value()).Get<remoteprotocol::ElementDesc_Polygon>();
-
-					element->SetSize(desc.size);
-					element->SetBorderColor(desc.borderColor);
-					element->SetBackgroundColor(desc.backgroundColor);
-
-					if (desc.points && desc.points->Count() > 0)
-					{
-						element->SetPoints(&desc.points->Get(0), desc.points->Count());
-					}
+					element->SetPoints(&desc.points->Get(0), desc.points->Count());
 				}
-				break;
+			}
+			break;
 			case remoteprotocol::RendererType::ImageFrame:
+			{
+				auto element = Ptr(GuiImageFrameElement::Create());
+				bounds->SetOwnedElement(element);
+				auto& desc = frame.elements->Get(dom->content.element.Value()).Get<remoteprotocol::ElementDesc_ImageFrame>();
+
+				element->SetAlignments(GetAlignment(desc.horizontalAlignment), GetAlignment(desc.verticalAlignment));
+				element->SetStretch(desc.stretch);
+				element->SetEnabled(desc.enabled);
+
+				if (desc.imageId)
 				{
-					auto element = Ptr(GuiImageFrameElement::Create());
-					bounds->SetOwnedElement(element);
-					auto& desc = frame.elements->Get(dom->content.element.Value()).Get<remoteprotocol::ElementDesc_ImageFrame>();
-
-					element->SetAlignments(GetAlignment(desc.horizontalAlignment), GetAlignment(desc.verticalAlignment));
-					element->SetStretch(desc.stretch);
-					element->SetEnabled(desc.enabled);
-
-					if (desc.imageId)
+					vint index = trace.imageCreations->Keys().IndexOf(desc.imageId.Value());
+					if (index != -1)
 					{
-						vint index = trace.imageCreations->Keys().IndexOf(desc.imageId.Value());
-						if (index != -1)
-						{
-							auto binary = trace.imageCreations->Values()[index].imageData;
-							binary->SeekFromBegin(0);
-							element->SetImage(GetCurrentController()->ImageService()->CreateImageFromStream(*binary.Obj()), desc.imageFrame);
-						}
+						auto binary = trace.imageCreations->Values()[index].imageData;
+						binary->SeekFromBegin(0);
+						element->SetImage(GetCurrentController()->ImageService()->CreateImageFromStream(*binary.Obj()), desc.imageFrame);
 					}
 				}
-				break;
+			}
+			break;
 			default:
 				CHECK_FAIL(L"This element is not supported yet.");
 				break;
 			}
 		}
 
-		if(dom->children)
+		if (dom->children)
 		{
 			for (auto child : *dom->children.Obj())
 			{
@@ -242,7 +255,7 @@ Helper Functions
 			cursorCounter--;
 		}
 	}
-	
+
 	GuiBoundsComposition* BuildRootComposition(const remoteprotocol::UnitTest_RenderingTrace& trace, const remoteprotocol::UnitTest_RenderingFrame& frame)
 	{
 		vint w = frame.windowSize.clientBounds.Width().value;
@@ -268,9 +281,9 @@ Helper Functions
 		return focusComposition;
 	}
 
-/***********************************************************************
-UnitTestSnapshotViewerAppWindow
-***********************************************************************/
+	/***********************************************************************
+	UnitTestSnapshotViewerAppWindow
+	***********************************************************************/
 
 	void UnitTestSnapshotViewerAppWindow::textListFrames_SelectionChanged(GuiGraphicsComposition* sender, GuiEventArgs& arguments)
 	{
@@ -278,6 +291,7 @@ UnitTestSnapshotViewerAppWindow
 		{
 			SafeDeleteComposition(rootComposition);
 			rootComposition = nullptr;
+			selectedComposition = nullptr;
 			highlightComposition = nullptr;
 		}
 
@@ -304,15 +318,15 @@ UnitTestSnapshotViewerAppWindow
 			{
 				remoteprotocol::RenderingDom renderingDom;
 				remoteprotocol::ConvertJsonToCustomType(JsonParse(domNode->GetDomAsJsonText(), jsonParser), renderingDom);
-				if (!highlightComposition)
+				if (!selectedComposition)
 				{
-					highlightComposition = new GuiBoundsComposition;
+					selectedComposition = new GuiBoundsComposition;
 					auto element = Ptr(GuiSolidBorderElement::Create());
 					element->SetColor(Color(255, 255, 0));
-					highlightComposition->SetOwnedElement(element);
-					rootComposition->AddChild(highlightComposition);
+					selectedComposition->SetOwnedElement(element);
+					rootComposition->AddChild(selectedComposition);
 				}
-				highlightComposition->SetExpectedBounds(Rect(
+				selectedComposition->SetExpectedBounds(Rect(
 					renderingDom.content.bounds.x1 + 1,
 					renderingDom.content.bounds.y1 + 1,
 					renderingDom.content.bounds.x2 + 3,
@@ -321,10 +335,10 @@ UnitTestSnapshotViewerAppWindow
 			}
 			else
 			{
-				if (highlightComposition)
+				if (selectedComposition)
 				{
-					SafeDeleteComposition(highlightComposition);
-					highlightComposition = nullptr;
+					SafeDeleteComposition(selectedComposition);
+					selectedComposition = nullptr;
 				}
 			}
 		}
