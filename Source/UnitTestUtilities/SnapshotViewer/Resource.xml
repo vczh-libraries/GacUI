@@ -111,7 +111,7 @@
               <_>composeType:Percentage percentage:1.0</_>
             </att.Columns>
             <ColumnSplitter ColumnsToTheLeft="2"/>
-            <ColumnSplitter ColumnsToTheLeft="3"/>
+            <ColumnSplitter ColumnsToTheLeft="4"/>
 
             <Cell Site="row:0 column:0 columnSpan:2">
               <BindableTreeView ref.Name="treeViewFileNodes" env.ItemType="IUnitTestSnapshotFileNode^" VerticalAlwaysVisible="false" HorizontalAlwaysVisible="false">

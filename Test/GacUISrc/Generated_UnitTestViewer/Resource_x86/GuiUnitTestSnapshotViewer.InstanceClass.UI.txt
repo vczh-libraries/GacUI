@@ -198,7 +198,7 @@ namespace gaclib_controls
             }
             (<precompile>2 = new (::presentation::compositions::GuiColumnSplitterComposition*)());
             {
-                (<precompile>2.ColumnsToTheLeft = 3 of (::system::Int32));
+                (<precompile>2.ColumnsToTheLeft = 4 of (::system::Int32));
             }
             {
                 <precompile>0.AddChild(<precompile>2);
