@@ -59,6 +59,7 @@
   - When you refer to the source code, do not include code snippets.
   - Say the function name, and if the function is big, a little bit more to locate the code in it.
   - Do not use line number as source codes are subject to change rapidly.
+  - The document is for understanding the source code, so you must keep mentioning names instead of using a too high-level abstraction language.
 
 ## Steps for Ask
 
@@ -79,6 +80,7 @@
   - You must not miss any details, you must use every single point mentioned in the document.
   - Since `# DOCUMENT REQUEST` is organized as multiple rounds of questions and answers, it cannot be just directly used as a document. You must reorganize them.
   - Similar knowledges under the same categories might be spread in different answers, pay attention to them, bring a well-organized document.
+  - The document is for understanding the source code, so you must keep mentioning names instead of using a too high-level abstraction language.
 
 ## Steps for Improve
 
