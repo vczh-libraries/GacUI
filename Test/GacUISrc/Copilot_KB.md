@@ -143,6 +143,70 @@ All platforms converge on the same async processing model:
 
 The key insight is that while the platform-specific `INativeWindowService` implementations handle low-level event processing differently, the high-level `GuiApplication` and modal window behaviors remain consistent across all platforms through careful abstraction and delegation patterns.
 
+## IMPROVE
+
+Explain why `ShowModal` can block without blocking user operation
+
+### Insight
+
+The `ShowModal` function creates an apparent "blocking" behavior for the calling code while maintaining full user interaction capabilities through a sophisticated event-driven architecture. Here's how this is achieved:
+
+## Modal Window Non-Blocking Mechanism
+
+### Event-Driven Callback System
+`GuiWindow::ShowModal` does not actually block the calling thread. Instead, it:
+- Immediately shows the modal window and returns control to the message loop
+- Uses the `WindowReadyToClose` event to execute the completion callback asynchronously
+- The calling code appears "blocked" because execution continues only when the callback is invoked
+
+### Owner Window Disabling Pattern
+The modal behavior is achieved through selective window disabling:
+- `owner->SetEnabled(false)` disables user interaction with the owner window
+- The modal window remains fully interactive through `Show()`
+- Parent-child relationship is established via `GetNativeWindow()->SetParent(owner->GetNativeWindow())`
+- This creates visual modal behavior while maintaining event processing
+
+### Message Loop Continuation
+The underlying message loop (`INativeWindowService::RunOneCycle`) continues processing:
+- User input events are still processed normally
+- Timer events and async operations continue executing
+- Only the disabled owner window rejects user interaction
+- The modal window and all other enabled windows remain responsive
+
+### Callback-Based Completion
+When the modal window closes, the cleanup process is entirely asynchronous:
+```cpp
+container->handler = WindowReadyToClose.AttachLambda([=, this](GuiGraphicsComposition* sender, GuiEventArgs& arguments)
+{
+    callback();  // Execute user callback
+    GetNativeWindow()->SetParent(nullptr);
+    owner->SetEnabled(true);  // Re-enable owner
+    owner->SetFocused();
+    // Cleanup modal records
+});
+```
+
+### Async Operations Integration
+`ShowModalAsync` demonstrates the true non-blocking nature:
+- Returns an `IFuture` immediately
+- The future is completed when the modal closes
+- Enables modern async/await patterns in client code
+- Proves that no actual thread blocking occurs
+
+### Platform-Specific Event Processing
+The modal system works seamlessly across all platforms because:
+- **Windows Native**: Win32 message pump continues processing `WM_*` messages
+- **Hosted Mode**: Virtual window manager continues processing events within the host window
+- **Remote Mode**: Protocol event processing continues normally
+
+### Memory Management During Modal Operations
+The system handles object lifetime carefully during modal operations:
+- Uses `GetDisposedFlag()` to detect if the window is destroyed during modal operation
+- Employs `InvokeInMainThread` to safely detach event handlers
+- Ensures proper cleanup even if the modal window is deleted unexpectedly
+
+This architecture allows `ShowModal` to provide traditional blocking semantics to application code while maintaining the responsiveness and event-driven nature required for modern GUI applications.
+
 ## DRAFT
 
 The title would be "Main window and modal window"
@@ -208,11 +272,37 @@ The Windows implementation follows traditional Win32 message pump patterns:
 
 ## Modal Window System
 
-### Core Modal Architecture
+### Non-Blocking Modal Architecture
 
-Modal windows are implemented through window ownership chains and event management:
+Modal windows in GacUI provide traditional blocking semantics without actually blocking the underlying event processing system. This is achieved through an event-driven callback architecture:
 
-**Modal Record Structure:**
+**Event-Driven Completion**: `ShowModal` returns immediately after setting up the modal state and relies on the `WindowReadyToClose` event to execute completion callbacks asynchronously.
+
+**Selective Window Disabling**: Modal behavior is created by disabling the owner window (`owner->SetEnabled(false)`) while keeping the modal window and message loop fully operational.
+
+**Continuous Message Processing**: The underlying `INativeWindowService::RunOneCycle` continues processing all events, timers, and async operations normally, ensuring the application remains responsive.
+
+### Modal Window Variants
+
+**ShowModal(owner, callback):**
+- Basic modal behavior with custom completion callback
+- Owner window disabled until modal closes
+- Establishes parent-child relationship and focus management
+
+**ShowModalAndDelete(owner, callback):**
+- Combines modal behavior with automatic cleanup via `DeleteAfterProcessingAllEvents`
+- Provides optional separate callback for deletion completion
+- Ensures proper resource cleanup after modal completion
+
+**ShowModalAsync(owner):**
+- Returns `IFuture` for async/await pattern integration
+- Demonstrates the truly non-blocking nature of the modal system
+- Enables modern asynchronous programming patterns
+
+### Modal Record Management
+
+The system tracks modal window chains through `ShowModalRecord` structures:
+
 ```cpp
 struct ShowModalRecord {
     GuiWindow* origin;   // Root window that started modal chain
@@ -220,28 +310,7 @@ struct ShowModalRecord {
 };
 ```
 
-**Modal Window Setup:**
-- Disables owner window with `SetEnabled(false)`
-- Establishes parent-child relationship via `SetParent()`
-- Attaches cleanup callback to `WindowReadyToClose` event
-- Maintains modal chain through `ShowModalRecord`
-
-### Modal Window Variants
-
-**ShowModal(owner, callback):**
-- Basic modal behavior with custom completion callback
-- Owner window disabled until modal closes
-- Focus management and window relationships established
-
-**ShowModalAndDelete(owner, callback):**
-- Combines modal behavior with automatic cleanup
-- Calls `DeleteAfterProcessingAllEvents()` after modal completion
-- Provides optional separate callback for deletion completion
-
-**ShowModalAsync(owner):**
-- Returns `IFuture` for async/await pattern integration
-- Enables modern asynchronous programming patterns
-- Modal completion signals the future's promise
+This enables nested modal windows and proper cleanup when modal chains are established.
 
 ### Hosted Mode Modal Considerations
 
@@ -250,23 +319,40 @@ In hosted mode, modal windows receive special handling in `GuiWindow::BeforeClos
 - Active modal windows are either hidden or focused instead of allowing main window closure
 - Prevents premature application termination while modal dialogs are active
 
+## Cross-Platform Event Processing
+
+### Platform-Specific Message Handling
+
+Despite different underlying implementations, modal windows work consistently across all platforms:
+
+**Windows Native**: Win32 message pump continues processing `WM_*` messages while owner windows are disabled, allowing modal windows to remain interactive.
+
+**Hosted Mode**: Virtual window manager continues processing events within the host window, with coordinate transformation handling multiple virtual windows.
+
+**Remote Mode**: Protocol event processing continues normally, with modal state managed through the protocol abstraction layer.
+
+### Memory Management During Modal Operations
+
+The system handles object lifetime carefully during modal operations:
+- Uses `GetDisposedFlag()` to detect window destruction during modal operation
+- Employs `InvokeInMainThread` for safe event handler cleanup
+- Ensures proper resource management even if modal windows are unexpectedly destroyed
+
+### Async Operations Integration
+
+Modal windows integrate seamlessly with GacUI's async infrastructure:
+- Timer callbacks continue through `CallbackService.InvokeGlobalTimer()`
+- Async task execution proceeds via `asyncService.ExecuteAsyncTasks()`
+- All platforms maintain consistent async processing during modal operations
+
 ## Cross-Platform Consistency
 
-Despite platform-specific implementations, all platforms maintain consistent behavior through:
+The architecture successfully abstracts platform differences while providing rich windowing capabilities:
 
-**Unified Event Processing:**
-- Timer callbacks through `CallbackService.InvokeGlobalTimer()`
-- Async task execution via `asyncService.ExecuteAsyncTasks()`
-- Consistent event delegation patterns
+**Unified Modal API**: Same modal window interface across all platforms with identical semantics and behavior patterns.
 
-**Window Lifecycle Management:**
-- Same modal window API across all platforms
-- Consistent parent-child window relationships
-- Unified focus and activation management
+**Consistent Event Processing**: All platforms maintain responsive user interfaces through continued message loop processing during modal operations.
 
-**Exit Condition Handling:**
-- Platform-specific triggers mapped to common exit conditions
-- Graceful application shutdown across all modes
-- Modal window cleanup during application termination
+**Platform-Optimized Implementation**: Each platform uses its optimal event processing mechanism while maintaining the same high-level behavior.
 
-The architecture successfully abstracts platform differences while providing rich windowing capabilities, enabling developers to create sophisticated GUI applications that work consistently across Windows native, hosted, and remote environments.
+This design enables developers to create sophisticated GUI applications with complex modal dialog patterns that work consistently across Windows native, hosted, and remote environments while maintaining the responsiveness expected in modern applications.
