@@ -72,4 +72,63 @@ Most elements follow this standard pattern:
 5. **Multi-paragraph Layout**: Calculates paragraph positions and handles viewport clipping for large documents
 6. **Complex State Management**: Tracks caret position, selection ranges, and text editing operations across multiple paragraphs
 
-The key difference is that `GuiDocumentElement` delegates most rendering to the graphics layout provider's paragraph system, while simple elements directly manage primitive rendering operations.Understanding these intricacies provides valuable insight into effectively leveraging and extending the GacUI framework for custom GUI element development.
+The key difference is that `GuiDocumentElement` delegates most rendering to the graphics layout provider's paragraph system, while simple elements directly manage primitive rendering operations.
+
+## ASK
+
+If I want to add a new element today, how many things should I do to make it available on all mentioned platforms? Assuming the structure like `GuiSolidLabel` instead of `GuiDocumentElement`.
+
+### Insight
+
+To add a new element similar to `GuiSolidLabel`, you need to implement **5 major components** and register them in **4 different platform entry points**:
+
+**Core Implementation Requirements:**
+
+1. **Element Class Declaration** (1 file):
+   - Create `GuiNewElement` inheriting from `GuiElementBase<GuiNewElement>` in `GuiGraphicsElement.h`
+   - Define `ElementTypeName = L"NewElement"`
+   - Add property fields and accessor methods that call `InvokeOnElementStateChanged()`
+   - Implement constructor with default values
+
+2. **Element Implementation** (1 file):
+   - Implement property accessors in `GuiGraphicsElement.cpp`
+   - Each setter should compare old and new values, then call `InvokeOnElementStateChanged()`
+
+3. **Windows Direct2D Renderer** (declared in header, implemented in separate file):
+   - Create `GuiNewElementRenderer` in `elements_windows_d2d` namespace
+   - Inherit from `GuiElementRendererBase<GuiNewElement, GuiNewElementRenderer, IWindowsDirect2DRenderTarget>`
+   - Implement `InitializeInternal()`, `FinalizeInternal()`, `RenderTargetChangedInternal()`, `Render()`, `OnElementStateChanged()`
+   - Add to `GuiGraphicsRenderersWindowsDirect2D.h`
+
+4. **Windows GDI Renderer** (declared in header, implemented in separate file):
+   - Create `GuiNewElementRenderer` in `elements_windows_gdi` namespace
+   - Inherit from `GuiElementRendererBase<GuiNewElement, GuiNewElementRenderer, IWindowsGDIRenderTarget>`
+   - Implement same methods as Direct2D version but using GDI APIs
+   - Add to `GuiGraphicsRenderersWindowsGDI.h`
+
+5. **Remote Protocol Renderer** (declared in header, implemented in separate file):
+   - Create `GuiNewElementRenderer` in `elements_remoteprotocol` namespace
+   - Inherit from `GuiRemoteProtocolElementRenderer<GuiNewElement, GuiNewElementRenderer, remoteprotocol::RendererType::NewElement>`
+   - Implement `SendUpdateElementMessages()` to serialize element properties
+   - Add to `GuiRemoteGraphics_BasicElements.h`
+
+**Platform Registration Requirements:**
+
+Each renderer must be registered in platform-specific entry points by adding calls to `RendererClass::Register()`:
+
+1. **Windows Direct2D**: Add `elements_windows_d2d::GuiNewElementRenderer::Register()` in `RendererMainDirect2D()` function
+2. **Windows GDI**: Add `elements_windows_gdi::GuiNewElementRenderer::Register()` in `RendererMainGDI()` function
+3. **Remote Mode**: Add `elements_remoteprotocol::GuiNewElementRenderer::Register()` in `GuiRemoteGraphicsResourceManager::Initialize()`
+4. **Hosted Mode**: Automatically uses the native platform's registration, no additional code needed
+
+**Protocol Extensions** (if using Remote Mode):
+- Add new `RendererType::NewElement` enum value in remote protocol
+- Define `ElementDesc_NewElement` structure for properties
+- Implement protocol message handling in remote renderer
+
+**Total Implementation Scope:**
+- **9-11 files** to modify (element class, 3 renderers, 3-4 registration points, optional protocol files)
+- **4 different namespaces** to implement renderers
+- **4 registration calls** in platform entry points
+
+The element becomes available across all platforms once all renderer implementations are complete and registered in their respective platform initialization functions.
