@@ -88,6 +88,7 @@
 ## Steps for Execute
 
 - Follow `# DRAFT-LOCATION` to add a new topic under the `Design Explanation` section of a project in `Index.md` of the knowledge base.
+- Use bullet points for the description of the topic to cover the most important points so that it will be easy to identify in the future if this topic is relevant to a work to do.
 - Create a file according to the hyperlink and add it to the `KnowledgeBase` project.
 - The title of the document is in the `# DRAFT-TITLE` section.
 - The content must be exactly and precisely the content under `# DRAFT-CONTENT`. But do not copy the `# DRAFT-CONTENT` title itself.
