@@ -741,23 +741,34 @@ GuiDocumentCommonInterface
 				WString paragraph;
 				bool empty = true;
 
-				while (!reader.IsEnd())
+				if (config.doubleLineBreaksBetweenParagraph.Value())
 				{
-					WString line = reader.ReadLine();
-					if (empty)
+					while (!reader.IsEnd())
 					{
-						paragraph += line;
-						empty = false;
+						WString line = reader.ReadLine();
+						if (empty)
+						{
+							paragraph += line;
+							empty = false;
+						}
+						else if (line != L"")
+						{
+							paragraph += L"\r\n" + line;
+						}
+						else
+						{
+							paragraphTexts.Add(paragraph);
+							paragraph = L"";
+							empty = true;
+						}
 					}
-					else if (line != L"")
+				}
+				else
+				{
+					while (!reader.IsEnd())
 					{
-						paragraph += L"\r\n" + line;
-					}
-					else
-					{
-						paragraphTexts.Add(paragraph);
-						paragraph = L"";
-						empty = true;
+						WString line = reader.ReadLine();
+						paragraphTexts.Add(line);
 					}
 				}
 
@@ -769,7 +780,7 @@ GuiDocumentCommonInterface
 
 			void GuiDocumentCommonInterface::UserInput_FormatDocument(Ptr<DocumentModel> model)
 			{
-				// TODO: cancel alignment if paragraphMode != Paragraph
+				// TODO: cancel alignments and styles if pasteAsPlainText
 				// TODO: flatten paragraphs or lines if necessary
 			}
 
@@ -1191,7 +1202,14 @@ GuiDocumentCommonInterface
 				if (editMode == GuiDocumentEditMode::Editable)
 				{
 					auto reader = GetCurrentController()->ClipboardService()->ReadClipboard();
-					return reader->ContainsText() || reader->ContainsDocument() || reader->ContainsImage();
+					if (config.pasteAsPlainText)
+					{
+						return reader->ContainsText();
+					}
+					else
+					{
+						return reader->ContainsText() || reader->ContainsDocument() || reader->ContainsImage();
+					}
 				}
 				return false;
 			}
@@ -1202,7 +1220,10 @@ GuiDocumentCommonInterface
 				auto writer = GetCurrentController()->ClipboardService()->WriteClipboard();
 				auto model = GetSelectionModel();
 				writer->SetText(UserInput_ConvertDocumentToText(model));
-				writer->SetDocument(model);
+				if (!config.pasteAsPlainText)
+				{
+					writer->SetDocument(model);
+				}
 				writer->Submit();
 				SetSelectionText(L"");
 				return true;
@@ -1214,7 +1235,10 @@ GuiDocumentCommonInterface
 				auto writer = GetCurrentController()->ClipboardService()->WriteClipboard();
 				auto model = GetSelectionModel();
 				writer->SetText(UserInput_ConvertDocumentToText(model));
-				writer->SetDocument(model);
+				if (!config.pasteAsPlainText)
+				{
+					writer->SetDocument(model);
+				}
 				writer->Submit();
 				return true;
 			}
@@ -1223,7 +1247,7 @@ GuiDocumentCommonInterface
 			{
 				if (!CanPaste()) return false;
 				auto reader = GetCurrentController()->ClipboardService()->ReadClipboard();
-				if (reader->ContainsDocument())
+				if (reader->ContainsDocument() && !config.pasteAsPlainText)
 				{
 					if (auto document = reader->GetDocument())
 					{
@@ -1236,7 +1260,7 @@ GuiDocumentCommonInterface
 					SetSelectionText(reader->GetText());
 					return true;
 				}
-				if (reader->ContainsImage())
+				if (reader->ContainsImage() && !config.pasteAsPlainText)
 				{
 					if (auto image = reader->GetImage())
 					{
