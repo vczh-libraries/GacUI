@@ -80,13 +80,14 @@ document_operation_visitors::SerializeRunVisitor
 									{
 										writer.Text(run->text.Sub(last - begin, end - last));
 									}
-									last = reading + 1;
+									last = reading;
 								}
 							}
 
 							if (tag)
 							{
 								writer.Element(tag);
+								last++;
 							}
 							else if (c == 0)
 							{
