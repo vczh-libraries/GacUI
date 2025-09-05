@@ -71,6 +71,8 @@ GuiDocumentConfig
 				/// <summary>When it is true, when removing a line break from a document due to paragraphMode, insert a extra space.</summary>
 				Nullable<bool>							spaceForFlattenedLineBreak;
 
+				auto operator<=>(const GuiDocumentConfig&) const = default;
+
 				static GuiDocumentConfig				GetDocumentLabelDefaultConfig();
 				static GuiDocumentConfig				GetDocumentViewerDefaultConfig();
 				static GuiDocumentConfig				GetSinglelineTextBoxDefaultConfig();

@@ -2502,7 +2502,7 @@ class presentation::controls::GuiDocumentCommonInterface : system::ReferenceType
     property CaretEnd : presentation::TextPos { get:GetCaretEnd }
     property Document : presentation::DocumentModel^ { get:GetDocument set:SetDocument }
     property DocumentItems : system::ReadonlyDictionary<system::String, presentation::controls::GuiDocumentItem^>^ { get:GetDocumentItems }
-    property EditMode : presentation::controls::GuiDocumentCommonInterface::EditMode { get:GetEditMode set:SetEditMode }
+    property EditMode : presentation::controls::GuiDocumentEditMode { get:GetEditMode set:SetEditMode }
     property Modified : system::Boolean { get:GetModified event:ModifiedChanged }
     property SelectionModel : presentation::DocumentModel^ { get:GetSelectionModel set:SetSelectionModel event:SelectionChanged }
     property SelectionText : system::String { get:GetSelectionText set:SetSelectionText event:SelectionChanged }
@@ -2530,7 +2530,7 @@ class presentation::controls::GuiDocumentCommonInterface : system::ReferenceType
     function GetCaretEnd() : presentation::TextPos;
     function GetDocument() : presentation::DocumentModel^;
     function GetDocumentItems() : system::ReadonlyDictionary<system::String, presentation::controls::GuiDocumentItem^>^;
-    function GetEditMode() : presentation::controls::GuiDocumentCommonInterface::EditMode;
+    function GetEditMode() : presentation::controls::GuiDocumentEditMode;
     function GetModified() : system::Boolean;
     function GetSelectionModel() : presentation::DocumentModel^;
     function GetSelectionText() : system::String;
@@ -2545,7 +2545,7 @@ class presentation::controls::GuiDocumentCommonInterface : system::ReferenceType
     function SelectAll() : system::Void;
     function SetCaret(begin : presentation::TextPos, end : presentation::TextPos) : system::Void;
     function SetDocument(value : presentation::DocumentModel^) : system::Void;
-    function SetEditMode(value : presentation::controls::GuiDocumentCommonInterface::EditMode) : system::Void;
+    function SetEditMode(value : presentation::controls::GuiDocumentEditMode) : system::Void;
     function SetParagraphAlignment(begin : presentation::TextPos, end : presentation::TextPos, alignment : presentation::Alignment?) : system::Void;
     function SetParagraphAlignments(begin : presentation::TextPos, end : presentation::TextPos, alignments : system::ReadonlyList<presentation::Alignment?>^) : system::Void;
     function SetSelectionModel(value : presentation::DocumentModel^) : system::Void;
@@ -2558,7 +2558,18 @@ class presentation::controls::GuiDocumentCommonInterface : system::ReferenceType
 }
 
 @ValueType
-enum presentation::controls::GuiDocumentCommonInterface::EditMode {
+struct presentation::controls::GuiDocumentConfig {
+    property autoExpand : system::Boolean?;
+    property doubleLineBreaksBetweenParagraph : system::Boolean?;
+    property paragraphMode : presentation::controls::GuiDocumentParagraphMode?;
+    property paragraphPadding : system::Boolean?;
+    property pasteAsPlainText : system::Boolean?;
+    property spaceForFlattenedLineBreak : system::Boolean?;
+    property wrapLine : system::Boolean?;
+}
+
+@ValueType
+enum presentation::controls::GuiDocumentEditMode {
     Editable = 2,
     Selectable = 1,
     ViewOnly = 0,
@@ -2576,14 +2587,25 @@ class presentation::controls::GuiDocumentItem : system::ReferenceType {
 
 class presentation::controls::GuiDocumentLabel : presentation::controls::GuiControl, presentation::controls::GuiDocumentCommonInterface {
     function TypedControlTemplateObject(ensureExists : system::Boolean) : presentation::templates::GuiDocumentLabelTemplate*;
+    function TypedControlTemplateObject(ensureExists : system::Boolean) : presentation::templates::GuiDocumentLabelTemplate*;
 
     constructor (themeName : presentation::theme::ThemeName) : presentation::controls::GuiDocumentLabel*;
+    constructor (themeName : presentation::theme::ThemeName, config : presentation::controls::GuiDocumentConfig) : presentation::controls::GuiDocumentLabel*;
+}
+
+@ValueType
+enum presentation::controls::GuiDocumentParagraphMode {
+    Multiline = 1,
+    Paragraph = 2,
+    Singleline = 0,
 }
 
 class presentation::controls::GuiDocumentViewer : presentation::controls::GuiScrollContainer, presentation::controls::GuiDocumentCommonInterface {
     function TypedControlTemplateObject(ensureExists : system::Boolean) : presentation::templates::GuiDocumentViewerTemplate*;
+    function TypedControlTemplateObject(ensureExists : system::Boolean) : presentation::templates::GuiDocumentViewerTemplate*;
 
     constructor (themeName : presentation::theme::ThemeName) : presentation::controls::GuiDocumentViewer*;
+    constructor (themeName : presentation::theme::ThemeName, config : presentation::controls::GuiDocumentConfig) : presentation::controls::GuiDocumentViewer*;
 }
 
 class presentation::controls::GuiFileDialogBase : presentation::controls::GuiDialogBase {
