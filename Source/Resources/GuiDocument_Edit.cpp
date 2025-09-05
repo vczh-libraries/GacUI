@@ -36,44 +36,47 @@ DocumentModel::EditRangeOperations
 
 		Ptr<DocumentModel> DocumentModel::CopyDocument(TextPos begin, TextPos end, bool deepCopy)
 		{
-			// check caret range
-			RunRangeMap runRanges;
-			if(!CheckEditRange(begin, end, runRanges)) return nullptr;
-
-			// get ranges
-			for(vint i=begin.row+1;i<end.row;i++)
-			{
-				GetRunRange(paragraphs[i].Obj(), runRanges);
-			}
-
 			auto newDocument = Ptr(new DocumentModel);
 
-			// copy paragraphs
-			if(begin.row==end.row)
+			if (begin != end || paragraphs.Count() > 0)
 			{
-				newDocument->paragraphs.Add(CopyRunRecursively(paragraphs[begin.row].Obj(), runRanges, begin.column, end.column, deepCopy).Cast<DocumentParagraphRun>());
-			}
-			else
-			{
-				for(vint i=begin.row;i<=end.row;i++)
+				// check caret range
+				RunRangeMap runRanges;
+				if (!CheckEditRange(begin, end, runRanges)) return nullptr;
+
+				// get ranges
+				for (vint i = begin.row + 1; i < end.row; i++)
 				{
-					Ptr<DocumentParagraphRun> paragraph=paragraphs[i];
-					RunRange range=runRanges[paragraph.Obj()];
-					if(i==begin.row)
+					GetRunRange(paragraphs[i].Obj(), runRanges);
+				}
+
+				// copy paragraphs
+				if (begin.row == end.row)
+				{
+					newDocument->paragraphs.Add(CopyRunRecursively(paragraphs[begin.row].Obj(), runRanges, begin.column, end.column, deepCopy).Cast<DocumentParagraphRun>());
+				}
+				else
+				{
+					for (vint i = begin.row; i <= end.row; i++)
 					{
-						newDocument->paragraphs.Add(CopyRunRecursively(paragraph.Obj(), runRanges, begin.column, range.end, deepCopy).Cast<DocumentParagraphRun>());
-					}
-					else if(i==end.row)
-					{
-						newDocument->paragraphs.Add(CopyRunRecursively(paragraph.Obj(), runRanges, range.start, end.column, deepCopy).Cast<DocumentParagraphRun>());
-					}
-					else if(deepCopy)
-					{
-						newDocument->paragraphs.Add(CopyRunRecursively(paragraph.Obj(), runRanges, range.start, range.end, deepCopy).Cast<DocumentParagraphRun>());
-					}
-					else
-					{
-						newDocument->paragraphs.Add(paragraph);
+						Ptr<DocumentParagraphRun> paragraph = paragraphs[i];
+						RunRange range = runRanges[paragraph.Obj()];
+						if (i == begin.row)
+						{
+							newDocument->paragraphs.Add(CopyRunRecursively(paragraph.Obj(), runRanges, begin.column, range.end, deepCopy).Cast<DocumentParagraphRun>());
+						}
+						else if (i == end.row)
+						{
+							newDocument->paragraphs.Add(CopyRunRecursively(paragraph.Obj(), runRanges, range.start, end.column, deepCopy).Cast<DocumentParagraphRun>());
+						}
+						else if (deepCopy)
+						{
+							newDocument->paragraphs.Add(CopyRunRecursively(paragraph.Obj(), runRanges, range.start, range.end, deepCopy).Cast<DocumentParagraphRun>());
+						}
+						else
+						{
+							newDocument->paragraphs.Add(paragraph);
+						}
 					}
 				}
 			}
@@ -117,14 +120,21 @@ DocumentModel::EditRangeOperations
 
 		Ptr<DocumentModel> DocumentModel::CopyDocument()
 		{
-			// determine run ranges
-			RunRangeMap runRanges;
-			vint lastParagraphIndex = paragraphs.Count() - 1;
-			GetRunRange(paragraphs[lastParagraphIndex].Obj(), runRanges);
-			
-			TextPos begin(0, 0);
-			TextPos end(lastParagraphIndex, runRanges[paragraphs[lastParagraphIndex].Obj()].end);
-			return CopyDocument(begin, end, true);
+			if (paragraphs.Count() == 0)
+			{
+				return CopyDocument({ 0,0 }, { 0,0 }, true);
+			}
+			else
+			{
+				// determine run ranges
+				RunRangeMap runRanges;
+				vint lastParagraphIndex = paragraphs.Count() - 1;
+				GetRunRange(paragraphs[lastParagraphIndex].Obj(), runRanges);
+
+				TextPos begin(0, 0);
+				TextPos end(lastParagraphIndex, runRanges[paragraphs[lastParagraphIndex].Obj()].end);
+				return CopyDocument(begin, end, true);
+			}
 		}
 
 		bool DocumentModel::CutParagraph(TextPos position)

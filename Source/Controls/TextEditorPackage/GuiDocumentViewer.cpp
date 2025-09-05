@@ -769,6 +769,8 @@ GuiDocumentCommonInterface
 
 			void GuiDocumentCommonInterface::UserInput_FormatDocument(Ptr<DocumentModel> model)
 			{
+				// TODO: cancel alignment if paragraphMode != Paragraph
+				// TODO: flatten paragraphs or lines if necessary
 			}
 
 			GuiDocumentCommonInterface::GuiDocumentCommonInterface(const GuiDocumentConfig& _config)
@@ -806,6 +808,7 @@ GuiDocumentCommonInterface
 
 			void GuiDocumentCommonInterface::SetDocument(Ptr<DocumentModel> value)
 			{
+				value = value ? value->CopyDocument() : nullptr;
 				SetActiveHyperlink(0);
 				ClearUndoRedo();
 				NotifyModificationSaved();
@@ -1157,6 +1160,7 @@ GuiDocumentCommonInterface
 
 			void GuiDocumentCommonInterface::SetSelectionModel(Ptr<DocumentModel> value)
 			{
+				value = value ? value->CopyDocument() : nullptr;
 				UserInput_FormatDocument(value);
 				TextPos begin=documentElement->GetCaretBegin();
 				TextPos end=documentElement->GetCaretEnd();
