@@ -2,7 +2,7 @@
 
 ## Goal and Constraints
 
-- All mentioned `Copilot_*.md` files belong to the current solution.
+- All mentioned `Copilot_*.md` files belong to the current solution, working as temporary files. Do not look for them in the knowledge base.
 - All instructions in `Copilot_Execution.md` should have been applied to the source code, your goal is to test it.
 - You must ensure the source code compiles.
 - You must ensure all tests pass.

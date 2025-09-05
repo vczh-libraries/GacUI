@@ -2,7 +2,7 @@
 
 ## Goal and Constraints
 
-- All mentioned `Copilot_*.md` files belong to the current solution.
+- All mentioned `Copilot_*.md` files belong to the current solution, working as temporary files. Do not look for them in the knowledge base.
 - Your goal is to finish a design document in `Copilot_Task.md` to address a problem.
 - You are only allowed to update `Copilot_Task.md` and add `[PROCESSED]` mark in `Copilot_Scrum.md`.
 - You are not allowed to modify any other files.
