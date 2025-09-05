@@ -378,7 +378,6 @@ GuiPredefinedInstanceLoadersPlugin
 						ADD_VIRTUAL_CONTROL		(RadioButton,				GuiSelectableButton,			RadioButton											);
 						ADD_VIRTUAL_CONTROL		(HScroll,					GuiScroll,						HScroll												);
 						ADD_VIRTUAL_CONTROL		(VScroll,					GuiScroll,						VScroll												);
-						ADD_VIRTUAL_CONTROL		(DocumentTextBox,			GuiDocumentLabel,				DocumentTextBox										);
 						ADD_VIRTUAL_CONTROL_F	(HTracker,					GuiScroll,						HTracker,				InitializeTrackerProgressBar);
 						ADD_VIRTUAL_CONTROL_F	(VTracker,					GuiScroll,						VTracker,				InitializeTrackerProgressBar);
 						ADD_VIRTUAL_CONTROL_F	(ProgressBar,				GuiScroll,						ProgressBar,			InitializeTrackerProgressBar);

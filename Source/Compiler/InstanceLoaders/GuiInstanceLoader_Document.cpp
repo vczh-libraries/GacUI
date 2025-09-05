@@ -282,6 +282,11 @@ Initialization
 				manager->SetLoader(Ptr(new GuiDocumentItemInstanceLoader));
 				manager->SetLoader(Ptr(new GuiDocumentViewerInstanceLoader));
 				manager->SetLoader(Ptr(new GuiDocumentLabelInstanceLoader));
+				manager->CreateVirtualType(GlobalStringKey::Get(description::TypeInfo<GuiDocumentLabel>::content.typeName),
+					Ptr(new GuiDocumentInstanceLoaderBase<GuiTemplateControlInstanceLoader<GuiDocumentLabel>>(
+						L"presentation::controls::GuiDocumentTextBox",
+						theme::ThemeName::DocumentTextBox
+					)));
 			}
 		}
 	}
