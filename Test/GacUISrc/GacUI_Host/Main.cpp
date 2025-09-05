@@ -35,10 +35,10 @@ void GuiMain()
 {
 #ifdef VCZH_64
 #define DARKSKIN_BINARY			L"../GacUISrc/Generated_DarkSkin/Resource_x64/DarkSkin.UI.bin"
-#define FULLCONTROLTEST_BINARY	L"../GacUISrc/Generated_FullControlTest/Resource_x64/Demo.UI.bin"
+#define FULLCONTROLTEST_BINARY	L"../GacUISrc/Generated_FullControlTest/Resource_x64/FullControlTest.UI.bin"
 #else
 #define DARKSKIN_BINARY			L"../GacUISrc/Generated_DarkSkin/Resource_x86/DarkSkin.UI.bin"
-#define FULLCONTROLTEST_BINARY	L"../GacUISrc/Generated_FullControlTest/Resource_x86/Demo.UI.bin"
+#define FULLCONTROLTEST_BINARY	L"../GacUISrc/Generated_FullControlTest/Resource_x86/FullControlTest.UI.bin"
 #endif
 	LoadGuiFakeDialogServiceUITypes();
 	{
