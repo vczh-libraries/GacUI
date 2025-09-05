@@ -2,7 +2,6 @@
 
 ## Goal and Constraints
 
-- All mentioned `Copilot_*.md` files belong to the current solution, working as temporary files. Do not look for them in the knowledge base.
 - Your goal is to finish a planning document in `Copilot_Planning.md` to address a problem from `Copilot_Task.md`.
 - You are only allowed to update `Copilot_Planning.md`.
 - You are not allowed to modify any other files.
@@ -56,6 +55,8 @@
 - Find out the `Accessing Knowledge Base` section, read `Index.md` of `KnowledgeBase` project in the current solution.
 - Before generating any code, if the file is changed, read it. Not all changes come from you, I will edit the file too. Do not generate code based on out-dated version in your memory.
 - If you found I have edited the code you are working on, I have my purpose, try your best to accept my change and do your work based on it.
+- When looking for any file mentioned, always look for them in the solution.
+  - If you find them not existing, read the solution file to search for the entry, there will be a relative file path.
 
 # Leveraging the Knowledge Base
 
