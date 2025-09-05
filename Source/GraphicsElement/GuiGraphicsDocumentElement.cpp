@@ -430,7 +430,7 @@ GuiDocumentElement::GuiDocumentElementRenderer
 				if (element->document && element->document->paragraphs.Count() > 0)
 				{
 					vint defaultSize = GetCurrentController()->ResourceService()->GetDefaultFont().size;
-					paragraphDistance = defaultSize;
+					paragraphDistance = element->paragraphPadding ? defaultSize : 0;
 					vint defaultHeight = defaultSize;
 
 					paragraphCaches.Resize(element->document->paragraphs.Count());
@@ -824,6 +824,28 @@ GuiDocumentElement
 				document=value;
 				InvokeOnElementStateChanged();
 				SetCaret(TextPos(), TextPos(), false);
+			}
+
+			bool GuiDocumentElement::GetParagraphPadding()
+			{
+				return paragraphPadding;
+			}
+
+			void GuiDocumentElement::SetParagraphPadding(bool value)
+			{
+				paragraphPadding = value;
+				InvokeOnElementStateChanged();
+			}
+
+			bool GuiDocumentElement::GetWrapLine()
+			{
+				return wrapLine;
+			}
+
+			void GuiDocumentElement::SetWrapLine(bool value)
+			{
+				wrapLine = value;
+				InvokeOnElementStateChanged();
 			}
 
 			TextPos GuiDocumentElement::GetCaretBegin()

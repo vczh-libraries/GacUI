@@ -131,6 +131,8 @@ Rich Content Document (element)
 			protected:
 				Ptr<DocumentModel>							document;
 				ICallback*									callback = nullptr;
+				bool										paragraphPadding = true;
+				bool										wrapLine = true;
 				TextPos										caretBegin;
 				TextPos										caretEnd;
 				bool										caretVisible;
@@ -154,6 +156,20 @@ Rich Content Document (element)
 				/// <summary>Set the document. When a document is set to this element, modifying the document without invoking <see cref="NotifyParagraphUpdated"/> will lead to undefined behavior.</summary>
 				/// <param name="value">The document.</param>
 				void										SetDocument(Ptr<DocumentModel> value);
+				/// <summary>Get whether paddings are inserted between paragraphs.</summary>
+				/// <returns>Returns true if paddings are inserted between paragraphs.</returns>
+				bool										GetParagraphPadding();
+				/// <summary>Set whether paddings are inserted between paragraphs</summary>
+				/// <param name="value">Set to true so that paddings are inserted between paragraphs.</param>
+				void										SetParagraphPadding(bool value);
+
+				/// <summary>Get line wrapping.</summary>
+				/// <returns>Return true if there is automatic line wrapping.</returns>
+				bool										GetWrapLine();
+				/// <summary>Set line wrapping.</summary>
+				/// <param name="value">Set to true so that there is automatic line wrapping.</param>
+				void										SetWrapLine(bool value);
+
 				/// <summary>
 				/// Get the begin position of the selection area.
 				/// </summary>

@@ -290,6 +290,7 @@ GuiDocumentCommonInterface
 
 				documentElement = GuiDocumentElement::Create();
 				documentElement->SetCallback(this);
+				documentElement->SetParagraphPadding(config.paragraphPadding);
 
 				documentComposition = new GuiBoundsComposition;
 				documentComposition->SetOwnedElement(Ptr(documentElement));
