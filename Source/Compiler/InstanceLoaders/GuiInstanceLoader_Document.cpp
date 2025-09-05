@@ -199,7 +199,7 @@ GuiDocumentInstanceLoaderBase
 					{
 						return GuiInstancePropertyInfo::CollectionWithParent(TypeInfoRetriver<Ptr<GuiDocumentItem>>::CreateTypeInfo());
 					}
-					else if(propertyInfo.propertyName == _Behavior)
+					else if(propertyInfo.propertyName == _Behavior && this->CanCreate(propertyInfo.typeInfo))
 					{
 						auto info = GuiInstancePropertyInfo::Assign(TypeInfoRetriver<GuiDocumentConfig>::CreateTypeInfo());
 						info->usage = GuiInstancePropertyInfo::ConstructorArgument;
