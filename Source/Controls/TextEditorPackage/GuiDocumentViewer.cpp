@@ -1184,6 +1184,7 @@ GuiDocumentCommonInterface
 				if (!CanCut())return false;
 				auto writer = GetCurrentController()->ClipboardService()->WriteClipboard();
 				auto model = GetSelectionModel();
+				writer->SetText(model->GetText(true));
 				writer->SetDocument(model);
 				writer->Submit();
 				SetSelectionText(L"");
@@ -1195,6 +1196,7 @@ GuiDocumentCommonInterface
 				if (!CanCopy()) return false;
 				auto writer = GetCurrentController()->ClipboardService()->WriteClipboard();
 				auto model = GetSelectionModel();
+				writer->SetText(model->GetText(true));
 				writer->SetDocument(model);
 				writer->Submit();
 				return true;

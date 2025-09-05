@@ -1,4 +1,5 @@
 #include "GuiFakeClipboardService.h"
+#include "../../Resources/GuiDocumentClipboard.h"
 
 namespace vl
 {
@@ -69,7 +70,13 @@ FakeClipboardWriter
 
 			void SetDocument(Ptr<DocumentModel> value) override
 			{
-				if (reader) reader->document = value;
+				if (reader)
+				{
+					if (!reader->text) reader->text = value->GetText(true);
+					if (!reader->image) reader->image = GetImageFromSingleImageDocument(value);
+					reader->document = value;
+					ModifyDocumentForClipboard(reader->document);
+				}
 			}
 
 			void SetImage(Ptr<INativeImage> value) override

@@ -130,31 +130,17 @@ WindowsClipboardWriter
 
 			void WindowsClipboardWriter::SetDocument(Ptr<DocumentModel> value)
 			{
-				documentData = value;
 				if (!textData)
 				{
-					textData = documentData->GetText(true);
+					textData = value->GetText(true);
 				}
 
-				if (!imageData && documentData->paragraphs.Count() == 1)
+				if (!imageData)
 				{
-					Ptr<DocumentContainerRun> container = documentData->paragraphs[0];
-					while (container)
-					{
-						if (container->runs.Count() != 1) goto FAILED;
-						if (auto imageRun = container->runs[0].Cast<DocumentImageRun>())
-						{
-							imageData = imageRun->image;
-							break;
-						}
-						else
-						{
-							container = container->runs[0].Cast<DocumentContainerRun>();
-						}
-					}
-				FAILED:;
+					imageData = GetImageFromSingleImageDocument(value);
 				}
 
+				documentData = value;
 				ModifyDocumentForClipboard(documentData);
 			}
 

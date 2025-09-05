@@ -108,6 +108,25 @@ namespace vl
 			}
 		}
 
+		Ptr<INativeImage> GetImageFromSingleImageDocument(Ptr<DocumentModel> model)
+		{
+			if (model->paragraphs.Count() != 1) return nullptr;
+			Ptr<DocumentContainerRun> container = model->paragraphs[0];
+			while (container)
+			{
+				if (container->runs.Count() != 1) return nullptr;
+				if (auto imageRun = container->runs[0].Cast<DocumentImageRun>())
+				{
+					return imageRun->image;
+				}
+				else
+				{
+					container = container->runs[0].Cast<DocumentContainerRun>();
+				}
+			}
+			return nullptr;
+		}
+
 		Ptr<DocumentModel> LoadDocumentFromClipboardStream(stream::IStream& clipboardStream)
 		{
 			auto tempResource = Ptr(new GuiResource);
