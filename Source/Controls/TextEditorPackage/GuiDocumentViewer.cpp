@@ -755,7 +755,18 @@ GuiDocumentCommonInterface
 						}
 						else if (line != L"")
 						{
-							paragraph += L"\r\n" + line;
+							if (config.paragraphMode == GuiDocumentParagraphMode::Paragraph)
+							{
+								paragraph += L"\r\n" + line;
+							}
+							else if(config.spaceForFlattenedLineBreak)
+							{
+								paragraph += L" " + line;
+							}
+							else
+							{
+								paragraph += line;
+							}
 						}
 						else
 						{
@@ -777,6 +788,23 @@ GuiDocumentCommonInterface
 				if (!empty)
 				{
 					paragraphTexts.Add(paragraph);
+				}
+
+				if (config.paragraphMode == GuiDocumentParagraphMode::Singleline)
+				{
+					auto line = stream::GenerateToStream([&](stream::StreamWriter& writer)
+					{
+						for(auto [paragraph, index] : indexed(paragraphTexts))
+						{
+							if (index > 0 && config.spaceForFlattenedLineBreak)
+							{
+								writer.WriteChar(L' ');
+							}
+							writer.WriteString(paragraph);
+						}
+					});
+					paragraphTexts.Clear();
+					paragraphTexts.Add(line);
 				}
 			}
 

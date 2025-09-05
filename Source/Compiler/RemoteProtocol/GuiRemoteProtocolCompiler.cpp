@@ -717,7 +717,7 @@ GenerateRemoteProtocolHeaderFile
 					auto type = stream::GenerateToStream([&](stream::TextWriter& writer)
 					{
 						GuiRpPrintTypeVisitor visitor(symbols, config, writer);
-					eventDecl->request->type->Accept(&visitor);
+						eventDecl->request->type->Accept(&visitor);
 					});
 					if (!eventTypes.Contains(type))
 					{
