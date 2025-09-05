@@ -80,7 +80,7 @@ document_operation_visitors::SerializeRunVisitor
 									{
 										writer.Text(run->text.Sub(last - begin, end - last));
 									}
-									last = reading;
+									last = reading + 1;
 								}
 							}
 
