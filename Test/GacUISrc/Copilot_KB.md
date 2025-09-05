@@ -91,8 +91,8 @@ Interactive drag (splitter): `GuiTableSplitterCompositionBase::OnMouseMoveHelper
 10. Adding a New Composition (Integration Steps)
 A new layout container should:
 - Choose classification: 
-  * If parent will directly set child bounds (children are passive slots) derive child items from `GuiGraphicsComposition_Controlled` and container from `GuiGraphicsComposition_Trivial` or `_Specialized` depending on whether it wants to participate in parent min-size accumulation.
-  * If container computes its own min size from children, derive from `_Trivial` or `_Specialized` and implement the three layout virtuals.
+  * If parent will directly set child bounds (children are passive slots) derive child items from `GuiGraphicsComposition_Controlled` and container from `GuiGraphicsComposition_Trivial` or `GuiGraphicsComposition__Specialized` depending on whether it wants to participate in parent min-size accumulation.
+  * If container computes its own min size from children, derive from `GuiGraphicsComposition__Trivial` or `GuiGraphicsComposition__Specialized` and implement the three layout virtuals.
 - Store any container-specific invalidation flags; set them inside overridden `OnCompositionStateChanged()`.
 - Override `Layout_CalculateMinSize()`:
   * Use `Layout_CalculateMinSizeHelper()` when standard accumulation (preferred + element + children + margin) suffices, then augment if needed.
