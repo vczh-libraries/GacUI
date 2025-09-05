@@ -838,6 +838,69 @@ GuiDocumentCommonInterface
 						model->styles.Clear();
 					}
 				}
+
+				if (model->paragraphs.Count() == 0)
+				{
+					return;
+				}
+
+				if (config.paragraphMode != GuiDocumentParagraphMode::Paragraph)
+				{
+					List<Ptr<DocumentContainerRun>> containers;
+					for (auto paragraph : model->paragraphs)
+					{
+						containers.Add(paragraph);
+					}
+
+					for (vint i = 0; i < containers.Count(); i++)
+					{
+						auto container = containers[i];
+						for (auto run : container->runs)
+						{
+							if (auto subContainer = run.Cast<DocumentContainerRun>())
+							{
+								containers.Add(subContainer);
+							}
+							else if (auto textRun = run.Cast<DocumentTextRun>())
+							{
+								textRun->text = stream::GenerateToStream([&](stream::StreamWriter& writer)
+								{
+									for (vint j = 0; j < textRun->text.Length(); j++)
+									{
+										if (textRun->text[j] == L'\n')
+										{
+											if (config.spaceForFlattenedLineBreak)
+											{
+												writer.WriteChar(L' ');
+											}
+										}
+										else if (textRun->text[j] != L'\r')
+										{
+											writer.WriteChar(textRun->text[j]);
+										}
+									}
+								});
+							}
+						}
+					}
+				}
+
+				if (config.paragraphMode == GuiDocumentParagraphMode::Singleline)
+				{
+					auto firstParagraph = model->paragraphs[0];
+					for(auto paragraph:From(model->paragraphs).Skip(1))
+					{
+						if (config.spaceForFlattenedLineBreak)
+						{
+							auto textRun = Ptr(new DocumentTextRun);
+							textRun->text = WString::Unmanaged(L" ");
+							firstParagraph->runs.Add(textRun);
+						}
+						CopyFrom(firstParagraph->runs, paragraph->runs, true);
+					}
+					model->paragraphs.Clear();
+					model->paragraphs.Add(firstParagraph);
+				}
 			}
 
 			GuiDocumentCommonInterface::GuiDocumentCommonInterface(const GuiDocumentConfig& _config)
