@@ -180,57 +180,57 @@ GuiDocumentCommonInterface
 				switch (code)
 				{
 				case VKEY::KEY_UP:
-				{
-					TextPos newCaret = documentElement->CalculateCaret(currentCaret, IGuiGraphicsParagraph::CaretMoveUp, frontSide);
-					Move(newCaret, shift, frontSide);
-				}
-				break;
+					{
+						TextPos newCaret = documentElement->CalculateCaret(currentCaret, IGuiGraphicsParagraph::CaretMoveUp, frontSide);
+						Move(newCaret, shift, frontSide);
+					}
+					break;
 				case VKEY::KEY_DOWN:
-				{
-					TextPos newCaret = documentElement->CalculateCaret(currentCaret, IGuiGraphicsParagraph::CaretMoveDown, frontSide);
-					Move(newCaret, shift, frontSide);
-				}
-				break;
+					{
+						TextPos newCaret = documentElement->CalculateCaret(currentCaret, IGuiGraphicsParagraph::CaretMoveDown, frontSide);
+						Move(newCaret, shift, frontSide);
+					}
+					break;
 				case VKEY::KEY_LEFT:
-				{
-					TextPos newCaret = documentElement->CalculateCaret(currentCaret, IGuiGraphicsParagraph::CaretMoveLeft, frontSide);
-					Move(newCaret, shift, frontSide);
-				}
-				break;
+					{
+						TextPos newCaret = documentElement->CalculateCaret(currentCaret, IGuiGraphicsParagraph::CaretMoveLeft, frontSide);
+						Move(newCaret, shift, frontSide);
+					}
+					break;
 				case VKEY::KEY_RIGHT:
-				{
-					TextPos newCaret = documentElement->CalculateCaret(currentCaret, IGuiGraphicsParagraph::CaretMoveRight, frontSide);
-					Move(newCaret, shift, frontSide);
-				}
-				break;
+					{
+						TextPos newCaret = documentElement->CalculateCaret(currentCaret, IGuiGraphicsParagraph::CaretMoveRight, frontSide);
+						Move(newCaret, shift, frontSide);
+					}
+					break;
 				case VKEY::KEY_HOME:
-				{
-					TextPos newCaret = documentElement->CalculateCaret(currentCaret, IGuiGraphicsParagraph::CaretLineFirst, frontSide);
-					if (newCaret == currentCaret)
 					{
-						newCaret = documentElement->CalculateCaret(currentCaret, IGuiGraphicsParagraph::CaretFirst, frontSide);
+						TextPos newCaret = documentElement->CalculateCaret(currentCaret, IGuiGraphicsParagraph::CaretLineFirst, frontSide);
+						if (newCaret == currentCaret)
+						{
+							newCaret = documentElement->CalculateCaret(currentCaret, IGuiGraphicsParagraph::CaretFirst, frontSide);
+						}
+						Move(newCaret, shift, frontSide);
 					}
-					Move(newCaret, shift, frontSide);
-				}
-				break;
+					break;
 				case VKEY::KEY_END:
-				{
-					TextPos newCaret = documentElement->CalculateCaret(currentCaret, IGuiGraphicsParagraph::CaretLineLast, frontSide);
-					if (newCaret == currentCaret)
 					{
-						newCaret = documentElement->CalculateCaret(currentCaret, IGuiGraphicsParagraph::CaretLast, frontSide);
+						TextPos newCaret = documentElement->CalculateCaret(currentCaret, IGuiGraphicsParagraph::CaretLineLast, frontSide);
+						if (newCaret == currentCaret)
+						{
+							newCaret = documentElement->CalculateCaret(currentCaret, IGuiGraphicsParagraph::CaretLast, frontSide);
+						}
+						Move(newCaret, shift, frontSide);
 					}
-					Move(newCaret, shift, frontSide);
-				}
 				break;
-				case VKEY::KEY_PRIOR:
-				{
-				}
-				break;
+					case VKEY::KEY_PRIOR:
+					{
+					}
+					break;
 				case VKEY::KEY_NEXT:
-				{
-				}
-				break;
+					{
+					}
+					break;
 				case VKEY::KEY_BACK:
 					if (editMode == GuiDocumentEditMode::Editable)
 					{
