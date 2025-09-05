@@ -15,7 +15,7 @@ namespace vl
 GuiDocumentConfig
 ***********************************************************************/
 
-			GuiDocumentConfig GetDocumentLabelDefaultConfig()
+			GuiDocumentConfig GuiDocumentConfig::GetDocumentLabelDefaultConfig()
 			{
 				GuiDocumentConfig config;
 				config.autoExpand = true;
@@ -28,7 +28,7 @@ GuiDocumentConfig
 				return config;
 			}
 
-			GuiDocumentConfig GetDocumentViewerDefaultConfig()
+			GuiDocumentConfig GuiDocumentConfig::GetDocumentViewerDefaultConfig()
 			{
 				GuiDocumentConfig config;
 				config.autoExpand = false;
@@ -41,7 +41,7 @@ GuiDocumentConfig
 				return config;
 			}
 
-			GuiDocumentConfig GetSinglelineTextBoxDefaultConfig()
+			GuiDocumentConfig GuiDocumentConfig::GetSinglelineTextBoxDefaultConfig()
 			{
 				GuiDocumentConfig config;
 				config.autoExpand = false;
@@ -54,7 +54,7 @@ GuiDocumentConfig
 				return config;
 			}
 
-			GuiDocumentConfig GetMultilineTextBoxDefaultConfig()
+			GuiDocumentConfig GuiDocumentConfig::GetMultilineTextBoxDefaultConfig()
 			{
 				GuiDocumentConfig config;
 				config.autoExpand = false;
@@ -67,15 +67,17 @@ GuiDocumentConfig
 				return config;
 			}
 
-			void OverrideConfig(GuiDocumentConfig& toOverride, const GuiDocumentConfig& newConfig)
+			GuiDocumentConfig GuiDocumentConfig::OverrideConfig(const GuiDocumentConfig& toOverride, const GuiDocumentConfig& newConfig)
 			{
-				if (newConfig.autoExpand) toOverride.autoExpand = newConfig.autoExpand;
-				if (newConfig.pasteAsPlainText) toOverride.pasteAsPlainText = newConfig.pasteAsPlainText;
-				if (newConfig.wrapLine) toOverride.wrapLine = newConfig.wrapLine;
-				if (newConfig.paragraphMode) toOverride.paragraphMode = newConfig.paragraphMode;
-				if (newConfig.paragraphPadding) toOverride.paragraphPadding = newConfig.paragraphPadding;
-				if (newConfig.doubleLineBreaksBetweenParagraph) toOverride.doubleLineBreaksBetweenParagraph = newConfig.doubleLineBreaksBetweenParagraph;
-				if (newConfig.spaceForFlattenedLineBreak) toOverride.spaceForFlattenedLineBreak = newConfig.spaceForFlattenedLineBreak;
+				GuiDocumentConfig result;
+				if (newConfig.autoExpand) result.autoExpand = newConfig.autoExpand;
+				if (newConfig.pasteAsPlainText) result.pasteAsPlainText = newConfig.pasteAsPlainText;
+				if (newConfig.wrapLine) result.wrapLine = newConfig.wrapLine;
+				if (newConfig.paragraphMode) result.paragraphMode = newConfig.paragraphMode;
+				if (newConfig.paragraphPadding) result.paragraphPadding = newConfig.paragraphPadding;
+				if (newConfig.doubleLineBreaksBetweenParagraph) result.doubleLineBreaksBetweenParagraph = newConfig.doubleLineBreaksBetweenParagraph;
+				if (newConfig.spaceForFlattenedLineBreak) result.spaceForFlattenedLineBreak = newConfig.spaceForFlattenedLineBreak;
+				return result;
 			}
 
 /***********************************************************************
@@ -728,8 +730,18 @@ GuiDocumentCommonInterface
 
 			//================ basic
 
-			GuiDocumentCommonInterface::GuiDocumentCommonInterface()
+			GuiDocumentCommonInterface::GuiDocumentCommonInterface(const GuiDocumentConfig& _config)
+				: config(_config)
 			{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::controls::GuiDocumentCommonInterface::GuiDocumentCommonInterface(const GuiDocumentConfig&)#"
+				CHECK_ERROR(config.autoExpand, ERROR_MESSAGE_PREFIX L"GuiDocumentConfig::autoExpand should not be empty.");
+				CHECK_ERROR(config.pasteAsPlainText, ERROR_MESSAGE_PREFIX L"GuiDocumentConfig::pasteAsPlainText should not be empty.");
+				CHECK_ERROR(config.wrapLine, ERROR_MESSAGE_PREFIX L"GuiDocumentConfig::wrapLine should not be empty.");
+				CHECK_ERROR(config.paragraphMode, ERROR_MESSAGE_PREFIX L"GuiDocumentConfig::paragraphMode should not be empty.");
+				CHECK_ERROR(config.paragraphPadding, ERROR_MESSAGE_PREFIX L"GuiDocumentConfig::paragraphPadding should not be empty.");
+				CHECK_ERROR(config.doubleLineBreaksBetweenParagraph, ERROR_MESSAGE_PREFIX L"GuiDocumentConfig::doubleLineBreaksBetweenParagraph should not be empty.");
+				CHECK_ERROR(config.spaceForFlattenedLineBreak, ERROR_MESSAGE_PREFIX L"GuiDocumentConfig::spaceForFlattenedLineBreak should not be empty.");
+
 				undoRedoProcessor = Ptr(new GuiDocumentUndoRedoProcessor);
 
 				internalShortcutKeyManager = Ptr(new GuiShortcutKeyManager);
@@ -739,6 +751,7 @@ GuiDocumentCommonInterface
 				AddShortcutCommand(VKEY::KEY_X, Func<bool()>(this, &GuiDocumentCommonInterface::Cut));
 				AddShortcutCommand(VKEY::KEY_C, Func<bool()>(this, &GuiDocumentCommonInterface::Copy));
 				AddShortcutCommand(VKEY::KEY_V, Func<bool()>(this, &GuiDocumentCommonInterface::Paste));
+#undef ERROR_MESSAGE_PREFIX
 			}
 
 			GuiDocumentCommonInterface::~GuiDocumentCommonInterface()
@@ -1318,8 +1331,9 @@ GuiDocumentViewer
 				}
 			}
 
-			GuiDocumentViewer::GuiDocumentViewer(theme::ThemeName themeName)
-				:GuiScrollContainer(themeName)
+			GuiDocumentViewer::GuiDocumentViewer(theme::ThemeName themeName, const GuiDocumentConfig& _config)
+				: GuiScrollContainer(themeName)
+				, GuiDocumentCommonInterface(GuiDocumentConfig::OverrideConfig(GuiDocumentConfig::GetDocumentViewerDefaultConfig(), _config))
 			{
 				SetAcceptTabInput(true);
 				SetFocusableComposition(boundsComposition);
@@ -1370,8 +1384,9 @@ GuiDocumentLabel
 				OnFontChanged();
 			}
 
-			GuiDocumentLabel::GuiDocumentLabel(theme::ThemeName themeName)
-				:GuiControl(themeName)
+			GuiDocumentLabel::GuiDocumentLabel(theme::ThemeName themeName, const GuiDocumentConfig& _config)
+				: GuiControl(themeName)
+				, GuiDocumentCommonInterface(GuiDocumentConfig::OverrideConfig(GuiDocumentConfig::GetDocumentLabelDefaultConfig(), _config))
 			{
 				SetAcceptTabInput(true);
 				SetFocusableComposition(boundsComposition);

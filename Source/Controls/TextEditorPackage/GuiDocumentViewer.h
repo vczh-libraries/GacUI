@@ -50,7 +50,7 @@ GuiDocumentConfig
 				Paragraph,
 			};
 
-			/// <summary>Control of editor behavior.</summary>
+			/// <summary>Control of editing and rendering behavior.</summary>
 			struct GuiDocumentConfig
 			{
 				/// <summary>For GuiDocumentLabel only. When it is true, or when wrapLine is true, or when paragraphMode is not Singleline, the control automatically expands to display all content.</summary>
@@ -75,7 +75,7 @@ GuiDocumentConfig
 				static GuiDocumentConfig				GetDocumentViewerDefaultConfig();
 				static GuiDocumentConfig				GetSinglelineTextBoxDefaultConfig();
 				static GuiDocumentConfig				GetMultilineTextBoxDefaultConfig();
-				static void								OverrideConfig(GuiDocumentConfig& toOverride, const GuiDocumentConfig& newConfig);
+				static GuiDocumentConfig				OverrideConfig(const GuiDocumentConfig& toOverride, const GuiDocumentConfig& newConfig);
 			};
 
 /***********************************************************************
@@ -113,6 +113,7 @@ GuiDocumentCommonInterface
 			{
 				typedef collections::Dictionary<WString, Ptr<GuiDocumentItem>>		DocumentItemMap;
 			protected:
+				GuiDocumentConfig							config;
 				Ptr<DocumentModel>							baselineDocument;
 				DocumentItemMap								documentItems;
 				GuiControl*									documentControl = nullptr;
@@ -178,7 +179,7 @@ GuiDocumentCommonInterface
 				void										OnFinishRender()override;
 				Size										OnRenderEmbeddedObject(const WString& name, const Rect& location)override;
 			public:
-				GuiDocumentCommonInterface();
+				GuiDocumentCommonInterface(const GuiDocumentConfig& _config);
 				~GuiDocumentCommonInterface();
 
 				/// <summary>Active hyperlink changed event.</summary>
@@ -419,7 +420,8 @@ GuiDocumentViewer
 			public:
 				/// <summary>Create a control with a specified style provider.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
-				GuiDocumentViewer(theme::ThemeName themeName);
+				/// <param name="_config">(Optional): configuration of document editing and rendering behavior.</param>
+				GuiDocumentViewer(theme::ThemeName themeName, const GuiDocumentConfig& _config = {});
 				~GuiDocumentViewer();
 
 				const WString&								GetText()override;
@@ -440,7 +442,8 @@ GuiDocumentViewer
 			public:
 				/// <summary>Create a control with a specified default theme.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
-				GuiDocumentLabel(theme::ThemeName themeName);
+				/// <param name="_config">(Optional): configuration of document editing and rendering behavior.</param>
+				GuiDocumentLabel(theme::ThemeName themeName, const GuiDocumentConfig& _config = {});
 				~GuiDocumentLabel();
 				
 				const WString&								GetText()override;
