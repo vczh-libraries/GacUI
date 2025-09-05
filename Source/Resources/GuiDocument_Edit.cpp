@@ -105,7 +105,7 @@ DocumentModel::EditRangeOperations
 						newDocument->styles.Add(styleName, style);
 					}
 
-					if(!styleNames.Contains(style->parentStyleName))
+					if(!styleNames.Contains(style->parentStyleName) && style->parentStyleName != WString::Empty)
 					{
 						styleNames.Add(style->parentStyleName);
 					}
