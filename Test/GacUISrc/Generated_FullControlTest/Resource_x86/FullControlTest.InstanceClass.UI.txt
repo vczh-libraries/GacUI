@@ -13020,7 +13020,7 @@ namespace demo
                 <this>.SetNamedObject("document", document);
             }
             {
-                (document.EditMode = Editable of (::presentation::controls::GuiDocumentCommonInterface::EditMode));
+                (document.EditMode = Editable of (::presentation::controls::GuiDocumentEditMode));
             }
             (<precompile>2 = document.BoundsComposition);
             {
@@ -15985,9 +15985,9 @@ namespace demo
         prop EditModeCommand : ToolstripCommand*{GetEditModeCommand : EditModeCommandChanged}
 
         @cpp:Private
-        func SetEditMode(editMode : DocumentCommonInterface::EditMode) : (void)
+        func SetEditMode(editMode : GuiDocumentEditMode) : (void)
         {
-            var command = (editMode == DocumentCommonInterface::EditMode::ViewOnly) ? commandViewOnly : (editMode == DocumentCommonInterface::EditMode::Selectable) ? commandSelectable : commandEditable;
+            var command = (editMode == GuiDocumentEditMode::ViewOnly) ? commandViewOnly : (editMode == GuiDocumentEditMode::Selectable) ? commandSelectable : commandEditable;
             (document.EditMode = editMode);
             (commandViewOnly.Selected = (command == commandViewOnly));
             (commandSelectable.Selected = (command == commandSelectable));
@@ -16057,7 +16057,7 @@ namespace demo
         @cpp:Private
         func HasEditableCursor() : (bool)
         {
-            return (document.EditMode == DocumentCommonInterface::EditMode::Editable);
+            return (document.EditMode == GuiDocumentEditMode::Editable);
         }
 
         @cpp:Private
@@ -30653,7 +30653,7 @@ namespace demo
                 <this>.SetNamedObject("documentBox", documentBox);
             }
             {
-                (documentBox.EditMode = Editable of (::presentation::controls::GuiDocumentCommonInterface::EditMode));
+                (documentBox.EditMode = Editable of (::presentation::controls::GuiDocumentEditMode));
             }
             {
                 (documentBox.Text = "Edit me!");
@@ -31336,7 +31336,7 @@ namespace demo
                 (<precompile>2 = new (::presentation::controls::GuiDocumentLabel*)(::presentation::theme::ThemeName::DocumentTextBox));
             }
             {
-                (<precompile>2.EditMode = Editable of (::presentation::controls::GuiDocumentCommonInterface::EditMode));
+                (<precompile>2.EditMode = Editable of (::presentation::controls::GuiDocumentEditMode));
             }
             (<precompile>3 = <precompile>2.BoundsComposition);
             {
@@ -31362,7 +31362,7 @@ namespace demo
                 (<precompile>5 = new (::presentation::controls::GuiDocumentViewer*)(::presentation::theme::ThemeName::DocumentViewer));
             }
             {
-                (<precompile>5.EditMode = Editable of (::presentation::controls::GuiDocumentCommonInterface::EditMode));
+                (<precompile>5.EditMode = Editable of (::presentation::controls::GuiDocumentEditMode));
             }
             (<precompile>6 = <precompile>5.BoundsComposition);
             {
@@ -31385,7 +31385,7 @@ namespace demo
                 (<precompile>8 = new (::presentation::controls::GuiDocumentLabel*)(::presentation::theme::ThemeName::DocumentLabel));
             }
             {
-                (<precompile>8.EditMode = Editable of (::presentation::controls::GuiDocumentCommonInterface::EditMode));
+                (<precompile>8.EditMode = Editable of (::presentation::controls::GuiDocumentEditMode));
             }
             (<precompile>9 = <precompile>8.BoundsComposition);
             {

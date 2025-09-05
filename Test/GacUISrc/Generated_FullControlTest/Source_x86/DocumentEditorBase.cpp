@@ -51,9 +51,9 @@ namespace demo
 		}
 	}
 
-	void DocumentEditorBase::SetEditMode(::vl::presentation::controls::GuiDocumentCommonInterface::EditMode editMode)
+	void DocumentEditorBase::SetEditMode(::vl::presentation::controls::GuiDocumentEditMode editMode)
 	{
-		auto command = ((editMode == ::vl::presentation::controls::GuiDocumentCommonInterface::EditMode::ViewOnly) ? this->commandViewOnly : ((editMode == ::vl::presentation::controls::GuiDocumentCommonInterface::EditMode::Selectable) ? this->commandSelectable : this->commandEditable));
+		auto command = ((editMode == ::vl::presentation::controls::GuiDocumentEditMode::ViewOnly) ? this->commandViewOnly : ((editMode == ::vl::presentation::controls::GuiDocumentEditMode::Selectable) ? this->commandSelectable : this->commandEditable));
 		::vl::__vwsn::This(this->document)->SetEditMode(editMode);
 		::vl::__vwsn::This(this->commandViewOnly)->SetSelected((command == this->commandViewOnly));
 		::vl::__vwsn::This(this->commandSelectable)->SetSelected((command == this->commandSelectable));
@@ -102,7 +102,7 @@ namespace demo
 
 	bool DocumentEditorBase::HasEditableCursor()
 	{
-		return (::vl::__vwsn::This(this->document)->GetEditMode() == ::vl::presentation::controls::GuiDocumentCommonInterface::EditMode::Editable);
+		return (::vl::__vwsn::This(this->document)->GetEditMode() == ::vl::presentation::controls::GuiDocumentEditMode::Editable);
 	}
 
 	bool DocumentEditorBase::HasEditableHyperlink(bool forEdit)
@@ -214,7 +214,7 @@ namespace demo
 
 	void DocumentEditorBase::__vwsn_instance_ctor_()
 	{
-		this->SetEditMode(::vl::presentation::controls::GuiDocumentCommonInterface::EditMode::Editable);
+		this->SetEditMode(::vl::presentation::controls::GuiDocumentEditMode::Editable);
 	}
 
 	DocumentEditorBase::~DocumentEditorBase()

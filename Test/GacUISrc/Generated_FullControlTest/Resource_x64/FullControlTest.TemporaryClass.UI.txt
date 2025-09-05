@@ -1131,7 +1131,7 @@ namespace demo
         prop EditModeCommand : ToolstripCommand*{GetEditModeCommand : EditModeCommandChanged}
 
         @cpp:Private
-        func SetEditMode(editMode : DocumentCommonInterface::EditMode) : (void)
+        func SetEditMode(editMode : GuiDocumentEditMode) : (void)
         {
             raise "Not Implemented";
         }

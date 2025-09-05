@@ -125,7 +125,7 @@ namespace demo
 		void SetEditModeCommand(::vl::presentation::controls::GuiToolstripCommand* __vwsn_value_);
 		::vl::Event<void()> EditModeCommandChanged;
 	private:
-		void SetEditMode(::vl::presentation::controls::GuiDocumentCommonInterface::EditMode editMode);
+		void SetEditMode(::vl::presentation::controls::GuiDocumentEditMode editMode);
 	protected:
 		::vl::presentation::controls::GuiToolstripCommand* SelectAlignmentCommand();
 	private:

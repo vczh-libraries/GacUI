@@ -7,11 +7,11 @@
           prop EditModeCommand : ToolstripCommand* = null {const}
     
           @cpp:Private
-          func SetEditMode(editMode: DocumentCommonInterface::EditMode) : void
+          func SetEditMode(editMode: GuiDocumentEditMode) : void
           {
             var command =
-              editMode == DocumentCommonInterface::EditMode::ViewOnly ? commandViewOnly :
-              editMode == DocumentCommonInterface::EditMode::Selectable ? commandSelectable :
+              editMode == GuiDocumentEditMode::ViewOnly ? commandViewOnly :
+              editMode == GuiDocumentEditMode::Selectable ? commandSelectable :
               commandEditable;
 
             document.EditMode = editMode;
@@ -49,7 +49,7 @@
           @cpp:Private
           func HasEditableCursor() : bool
           {
-            return document.EditMode == DocumentCommonInterface::EditMode::Editable;
+            return document.EditMode == GuiDocumentEditMode::Editable;
           }
       
           @cpp:Private
