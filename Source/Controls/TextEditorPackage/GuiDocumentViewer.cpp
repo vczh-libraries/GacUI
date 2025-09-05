@@ -1548,7 +1548,7 @@ GuiDocumentLabel
 				auto result = config;
 				if (!result.autoExpand.Value())
 				{
-					if (result.wrapLine.Value() || result.paragraphMode.Value() != GuiDocumentParagraphMode::Paragraph)
+					if (result.wrapLine.Value() || result.paragraphMode.Value() != GuiDocumentParagraphMode::Singleline)
 					{
 						result.autoExpand = true;
 					}
