@@ -180,6 +180,13 @@ GuiDocumentCommonInterface
 				void										OnStartRender()override;
 				void										OnFinishRender()override;
 				Size										OnRenderEmbeddedObject(const WString& name, const Rect& location)override;
+
+			protected:
+
+				WString										UserInput_ConvertDocumentToText(Ptr<DocumentModel> model);
+				void										UserInput_FormatText(const WString& text, collections::List<WString>& paragraphTexts);
+				void										UserInput_FormatDocument(Ptr<DocumentModel> model);
+
 			public:
 				GuiDocumentCommonInterface(const GuiDocumentConfig& _config);
 				~GuiDocumentCommonInterface();

@@ -730,6 +730,47 @@ GuiDocumentCommonInterface
 
 			//================ basic
 
+			WString GuiDocumentCommonInterface::UserInput_ConvertDocumentToText(Ptr<DocumentModel> model)
+			{
+				return model->GetText(true);
+			}
+
+			void GuiDocumentCommonInterface::UserInput_FormatText(const WString& text, collections::List<WString>& paragraphTexts)
+			{
+				stream::StringReader reader(text);
+				WString paragraph;
+				bool empty = true;
+
+				while (!reader.IsEnd())
+				{
+					WString line = reader.ReadLine();
+					if (empty)
+					{
+						paragraph += line;
+						empty = false;
+					}
+					else if (line != L"")
+					{
+						paragraph += L"\r\n" + line;
+					}
+					else
+					{
+						paragraphTexts.Add(paragraph);
+						paragraph = L"";
+						empty = true;
+					}
+				}
+
+				if (!empty)
+				{
+					paragraphTexts.Add(paragraph);
+				}
+			}
+
+			void GuiDocumentCommonInterface::UserInput_FormatDocument(Ptr<DocumentModel> model)
+			{
+			}
+
 			GuiDocumentCommonInterface::GuiDocumentCommonInterface(const GuiDocumentConfig& _config)
 				: config(_config)
 			{
@@ -1077,54 +1118,25 @@ GuiDocumentCommonInterface
 				}
 
 				Ptr<DocumentModel> model=documentElement->GetDocument()->CopyDocument(begin, end, false);
-				return model->GetText(true);
+				return UserInput_ConvertDocumentToText(model);
 			}
 
 			void GuiDocumentCommonInterface::SetSelectionText(const WString& value)
 			{
-				List<WString> paragraphs;
+				List<WString> paragraphTexts;
+				UserInput_FormatText(value, paragraphTexts);
+
+				TextPos begin = documentElement->GetCaretBegin();
+				TextPos end = documentElement->GetCaretEnd();
+				if (begin > end)
 				{
-					stream::StringReader reader(value);
-					WString paragraph;
-					bool empty=true;
-
-					while(!reader.IsEnd())
-					{
-						WString line=reader.ReadLine();
-						if(empty)
-						{
-							paragraph+=line;
-							empty=false;
-						}
-						else if(line!=L"")
-						{
-							paragraph+=L"\r\n"+line;
-						}
-						else
-						{
-							paragraphs.Add(paragraph);
-							paragraph=L"";
-							empty=true;
-						}
-					}
-
-					if(!empty)
-					{
-						paragraphs.Add(paragraph);
-					}
-				}
-
-				TextPos begin=documentElement->GetCaretBegin();
-				TextPos end=documentElement->GetCaretEnd();
-				if(begin>end)
-				{
-					TextPos temp=begin;
-					begin=end;
-					end=temp;
+					TextPos temp = begin;
+					begin = end;
+					end = temp;
 				}
 
 				Array<WString> text;
-				CopyFrom(text, paragraphs);
+				CopyFrom(text, paragraphTexts);
 				EditText(begin, end, documentElement->IsCaretEndPreferFrontSide(), text);
 			}
 
@@ -1145,6 +1157,7 @@ GuiDocumentCommonInterface
 
 			void GuiDocumentCommonInterface::SetSelectionModel(Ptr<DocumentModel> value)
 			{
+				UserInput_FormatDocument(value);
 				TextPos begin=documentElement->GetCaretBegin();
 				TextPos end=documentElement->GetCaretEnd();
 				if(begin>end)
@@ -1184,7 +1197,7 @@ GuiDocumentCommonInterface
 				if (!CanCut())return false;
 				auto writer = GetCurrentController()->ClipboardService()->WriteClipboard();
 				auto model = GetSelectionModel();
-				writer->SetText(model->GetText(true));
+				writer->SetText(UserInput_ConvertDocumentToText(model));
 				writer->SetDocument(model);
 				writer->Submit();
 				SetSelectionText(L"");
@@ -1196,7 +1209,7 @@ GuiDocumentCommonInterface
 				if (!CanCopy()) return false;
 				auto writer = GetCurrentController()->ClipboardService()->WriteClipboard();
 				auto model = GetSelectionModel();
-				writer->SetText(model->GetText(true));
+				writer->SetText(UserInput_ConvertDocumentToText(model));
 				writer->SetDocument(model);
 				writer->Submit();
 				return true;
@@ -1351,8 +1364,7 @@ GuiDocumentViewer
 
 			const WString& GuiDocumentViewer::GetText()
 			{
-				text=documentElement->GetDocument()->GetText(true);
-				return text;
+				return UserInput_ConvertDocumentToText(documentElement->GetDocument());
 			}
 
 			void GuiDocumentViewer::SetText(const WString& value)
@@ -1401,8 +1413,7 @@ GuiDocumentLabel
 
 			const WString& GuiDocumentLabel::GetText()
 			{
-				text=documentElement->GetDocument()->GetText(true);
-				return text;
+				return UserInput_ConvertDocumentToText(documentElement->GetDocument());
 			}
 
 			void GuiDocumentLabel::SetText(const WString& value)
