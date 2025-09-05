@@ -277,7 +277,7 @@ GuiDocumentElement::GuiDocumentElementRenderer
 				if(!cache)
 				{
 					cache=Ptr(new ParagraphCache);
-					cache->fullText=paragraph->GetText(false);
+					cache->fullText=paragraph->GetTextForCaret();
 					paragraphCaches[paragraphIndex]=cache;
 				}
 

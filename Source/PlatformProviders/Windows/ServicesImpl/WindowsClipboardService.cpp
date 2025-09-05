@@ -132,7 +132,7 @@ WindowsClipboardWriter
 			{
 				if (!textData)
 				{
-					textData = value->GetText(true);
+					textData = value->GetTextForReading(WString::Unmanaged(L"\r\n\r\n"));
 				}
 
 				if (!imageData)

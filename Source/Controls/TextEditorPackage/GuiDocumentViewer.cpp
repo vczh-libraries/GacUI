@@ -732,7 +732,7 @@ GuiDocumentCommonInterface
 
 			WString GuiDocumentCommonInterface::UserInput_ConvertDocumentToText(Ptr<DocumentModel> model)
 			{
-				return model->GetText(true);
+				return model->GetTextForReading(WString::Unmanaged(config.doubleLineBreaksBetweenParagraph ? L"\r\n\r\n" : L"\r\n"));
 			}
 
 			void GuiDocumentCommonInterface::UserInput_FormatText(const WString& text, collections::List<WString>& paragraphTexts)
@@ -902,7 +902,7 @@ GuiDocumentCommonInterface
 				{
 					documentElement->EditRun(begin, end, model, copy);
 					paragraphCount=model->paragraphs.Count();
-					lastParagraphLength=paragraphCount==0?0:model->paragraphs[paragraphCount-1]->GetText(false).Length();
+					lastParagraphLength=paragraphCount==0?0:model->paragraphs[paragraphCount-1]->GetTextForCaret().Length();
 				});
 			}
 
@@ -1102,7 +1102,7 @@ GuiDocumentCommonInterface
 				Ptr<DocumentParagraphRun> lastParagraph=documentElement->GetDocument()->paragraphs[lastIndex];
 
 				TextPos begin(0, 0);
-				TextPos end(lastIndex, lastParagraph->GetText(false).Length());
+				TextPos end(lastIndex, lastParagraph->GetTextForCaret().Length());
 				SetCaret(begin, end);
 			}
 
@@ -1364,7 +1364,8 @@ GuiDocumentViewer
 
 			const WString& GuiDocumentViewer::GetText()
 			{
-				return UserInput_ConvertDocumentToText(documentElement->GetDocument());
+				text = UserInput_ConvertDocumentToText(documentElement->GetDocument());
+				return text;
 			}
 
 			void GuiDocumentViewer::SetText(const WString& value)
@@ -1413,7 +1414,8 @@ GuiDocumentLabel
 
 			const WString& GuiDocumentLabel::GetText()
 			{
-				return UserInput_ConvertDocumentToText(documentElement->GetDocument());
+				text = UserInput_ConvertDocumentToText(documentElement->GetDocument());
+				return text;
 			}
 
 			void GuiDocumentLabel::SetText(const WString& value)

@@ -594,7 +594,9 @@ Type Declaration
 
 				CLASS_MEMBER_FIELD(alignment)
 
-				CLASS_MEMBER_METHOD_OVERLOAD(GetText, {L"skipNonTextContent"}, WString(DocumentParagraphRun::*)(bool))
+				CLASS_MEMBER_METHOD(GetTextForCaret, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(GetTextForReading, NO_PARAMETER)
+				CLASS_MEMBER_METHOD_OVERLOAD(ConvertToText, {L"forCaret"}, WString(DocumentParagraphRun::*)(bool))
 			END_CLASS_MEMBER(DocumentParagraphRun)
 
 			BEGIN_CLASS_MEMBER(DocumentStyle)
@@ -611,7 +613,9 @@ Type Declaration
 				CLASS_MEMBER_FIELD(paragraphs)
 				CLASS_MEMBER_FIELD(styles)
 
-				CLASS_MEMBER_METHOD_OVERLOAD(GetText, {L"skipNonTextContent"}, WString(DocumentModel::*)(bool))
+				CLASS_MEMBER_METHOD(GetTextForCaret, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(GetTextForReading, { L"paragraphDelimiter" })
+				CLASS_MEMBER_METHOD_OVERLOAD(ConvertToText, { L"forCaret" _ L"paragraphDelimiter"}, WString(DocumentModel::*)(bool, const WString&))
 				CLASS_MEMBER_STATIC_METHOD(LoadFromXml, {L"resource" _ L"xml" _ L"workingDirectory" _ L"errors"})
 				CLASS_MEMBER_METHOD_OVERLOAD(SaveToXml, NO_PARAMETER, Ptr<XmlDocument>(DocumentModel::*)())
 			END_CLASS_MEMBER(DocumentModel)

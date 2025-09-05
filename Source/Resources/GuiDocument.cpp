@@ -47,11 +47,11 @@ ExtractTextVisitor
 			{
 			public:
 				stream::TextWriter&				writer;
-				bool							skipNonTextContent;
+				bool							forCaret;
 
-				ExtractTextVisitor(stream::TextWriter& _writer, bool _skipNonTextContent)
+				ExtractTextVisitor(stream::TextWriter& _writer, bool _forCaret)
 					:writer(_writer)
-					,skipNonTextContent(_skipNonTextContent)
+					, forCaret(_forCaret)
 				{
 				}
 
@@ -90,7 +90,7 @@ ExtractTextVisitor
 
 				void Visit(DocumentImageRun* run)override
 				{
-					if(!skipNonTextContent)
+					if(forCaret)
 					{
 						VisitContent(run);
 					}
@@ -98,7 +98,7 @@ ExtractTextVisitor
 
 				void Visit(DocumentEmbeddedObjectRun* run)override
 				{
-					if(!skipNonTextContent)
+					if(forCaret)
 					{
 						VisitContent(run);
 					}
@@ -116,17 +116,27 @@ ExtractTextVisitor
 DocumentParagraphRun
 ***********************************************************************/
 
-		WString DocumentParagraphRun::GetText(bool skipNonTextContent)
+		WString DocumentParagraphRun::GetTextForCaret()
+		{
+			return ConvertToText(true);
+		}
+
+		WString DocumentParagraphRun::GetTextForReading()
+		{
+			return ConvertToText(false);
+		}
+
+		WString DocumentParagraphRun::ConvertToText(bool forCaret)
 		{
 			return GenerateToStream([&](StreamWriter& writer)
 			{
-				GetText(writer, skipNonTextContent);
+				ConvertToText(writer, forCaret);
 			});
 		}
 
-		void DocumentParagraphRun::GetText(stream::TextWriter& writer, bool skipNonTextContent)
+		void DocumentParagraphRun::ConvertToText(stream::TextWriter& writer, bool forCaret)
 		{
-			ExtractTextVisitor visitor(writer, skipNonTextContent);
+			ExtractTextVisitor visitor(writer, forCaret);
 			Accept(&visitor);
 		}
 
@@ -336,24 +346,34 @@ DocumentModel
 			return GetStyle(sp, context);
 		}
 
-		WString DocumentModel::GetText(bool skipNonTextContent)
+		WString DocumentModel::GetTextForCaret()
+		{
+			return ConvertToText(true, WString::Unmanaged(L"\r\n\r\n"));
+		}
+
+		WString DocumentModel::GetTextForReading(const WString& paragraphDelimiter)
+		{
+			return ConvertToText(false, paragraphDelimiter);
+		}
+
+		WString DocumentModel::ConvertToText(bool forCaret, const WString& paragraphDelimiter)
 		{
 			return GenerateToStream([&](StreamWriter& writer)
 			{
-				GetText(writer, skipNonTextContent);
+				ConvertToText(writer, forCaret, paragraphDelimiter);
 			});
 		}
 
-		void DocumentModel::GetText(stream::TextWriter& writer, bool skipNonTextContent)
+		void DocumentModel::ConvertToText(stream::TextWriter& writer, bool forCaret, const WString& paragraphDelimiter)
 		{
 			// TODO: (enumerable) Linq:Aggregate
 			for(vint i=0;i<paragraphs.Count();i++)
 			{
 				Ptr<DocumentParagraphRun> paragraph=paragraphs[i];
-				paragraph->GetText(writer, skipNonTextContent);
+				paragraph->ConvertToText(writer, forCaret);
 				if(i<paragraphs.Count()-1)
 				{
-					writer.WriteString(L"\r\n\r\n");
+					writer.WriteString(paragraphDelimiter);
 				}
 			}
 		}

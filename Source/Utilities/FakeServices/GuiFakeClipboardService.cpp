@@ -72,7 +72,7 @@ FakeClipboardWriter
 			{
 				if (reader)
 				{
-					if (!reader->text) reader->text = value->GetText(true);
+					if (!reader->text) reader->text = value->GetTextForReading(WString::Unmanaged(L"\r\n\r\n"));;
 					if (!reader->image) reader->image = GetImageFromSingleImageDocument(value);
 					reader->document = value;
 					ModifyDocumentForClipboard(reader->document);

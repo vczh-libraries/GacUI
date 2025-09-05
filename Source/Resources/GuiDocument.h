@@ -255,8 +255,10 @@ Rich Content Document (run)
 
 			void							Accept(IVisitor* visitor)override{visitor->Visit(this);}
 
-			WString							GetText(bool skipNonTextContent);
-			void							GetText(stream::TextWriter& writer, bool skipNonTextContent);
+			WString							GetTextForCaret();
+			WString							GetTextForReading();
+			WString							ConvertToText(bool forCaret);
+			void							ConvertToText(stream::TextWriter& writer, bool forCaret);
 		};
 
 /***********************************************************************
@@ -335,8 +337,10 @@ Rich Content Document (model)
 			ResolvedStyle							GetStyle(Ptr<DocumentStyleProperties> sp, const ResolvedStyle& context);
 			ResolvedStyle							GetStyle(const WString& styleName, const ResolvedStyle& context);
 
-			WString									GetText(bool skipNonTextContent);
-			void									GetText(stream::TextWriter& writer, bool skipNonTextContent);
+			WString									GetTextForCaret();
+			WString									GetTextForReading(const WString& paragraphDelimiter);
+			WString									ConvertToText(bool forCaret, const WString& paragraphDelimiter);
+			void									ConvertToText(stream::TextWriter& writer, bool forCaret, const WString& paragraphDelimiter);
 			
 			bool									CheckEditRange(TextPos begin, TextPos end, RunRangeMap& relatedRanges);
 			Ptr<DocumentModel>						CopyDocument(TextPos begin, TextPos end, bool deepCopy);
