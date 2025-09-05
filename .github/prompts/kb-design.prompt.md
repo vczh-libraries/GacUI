@@ -60,6 +60,7 @@
   - Say the function name, and if the function is big, a little bit more to locate the code in it.
   - Do not use line number as source codes are subject to change rapidly.
   - The document is for understanding the source code, so you must keep mentioning names instead of using a too high-level abstraction language.
+- Code references must be wrapped in either single or triple reference quots.
 
 ## Steps for Ask
 
@@ -67,6 +68,7 @@
 - The finding I would like you to clarify is in the `# Ask` section in the LATEST chat message.
 - I will point out that what you are wrong about, what I still do not understand, where you should need to go deeper.
 - You will have to answer my question in `### Insight` of `## ASK`, and fix `## TOPIC` under `# DOCUMENT REQUEST` if there is anything wrong.
+- Code references must be wrapped in either single or triple reference quots.
 
 ## Steps for Draft
 
@@ -85,11 +87,13 @@
   - Since `# DOCUMENT REQUEST` is organized as multiple rounds of questions and answers, it cannot be just directly used as a document. You must reorganize them.
   - Similar knowledges under the same categories might be spread in different answers, pay attention to them, bring a well-organized document.
   - The document is for understanding the source code, so you must keep mentioning names instead of using a too high-level abstraction language.
+- Code references must be wrapped in either single or triple reference quots.
 
 ## Steps for Improve
 
 - Your goal is to update `# DRAFT-*` based on my suggestion.
 - The suggestion is in the `# Improve` section in the LATEST chat message.
+- Code references must be wrapped in either single or triple reference quots.
 
 ## Steps for Execute
 
