@@ -799,7 +799,15 @@ GuiDocumentCommonInterface
 							paragraph->alignment.Reset();
 						}
 					}
-					model->styles.Clear();
+
+					if (baselineDocument)
+					{
+						CopyFrom(model->styles, baselineDocument->styles);
+					}
+					else
+					{
+						model->styles.Clear();
+					}
 				}
 			}
 
