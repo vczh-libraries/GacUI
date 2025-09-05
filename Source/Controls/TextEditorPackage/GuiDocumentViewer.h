@@ -448,6 +448,8 @@ GuiDocumentViewer
 				void										UpdateDisplayFont()override;
 				Point										GetDocumentViewPosition()override;
 				void										EnsureRectVisible(Rect bounds)override;
+
+				static GuiDocumentConfig					FixConfig(const GuiDocumentConfig& config);
 			public:
 				/// <summary>Create a control with a specified style provider.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
@@ -470,6 +472,8 @@ GuiDocumentViewer
 			protected:
 
 				void										UpdateDisplayFont()override;
+
+				static GuiDocumentConfig					FixConfig(const GuiDocumentConfig& config);
 			public:
 				/// <summary>Create a control with a specified default theme.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>

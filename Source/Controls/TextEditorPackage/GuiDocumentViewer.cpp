@@ -1483,9 +1483,16 @@ GuiDocumentViewer
 				}
 			}
 
+			GuiDocumentConfig GuiDocumentViewer::FixConfig(const GuiDocumentConfig& config)
+			{
+				auto result = config;
+				result.autoExpand = false;
+				return config;
+			}
+
 			GuiDocumentViewer::GuiDocumentViewer(theme::ThemeName themeName, const GuiDocumentConfig& _config)
 				: GuiScrollContainer(themeName)
-				, GuiDocumentCommonInterface(GuiDocumentConfig::OverrideConfig(GuiDocumentConfig::GetDocumentViewerDefaultConfig(), _config))
+				, GuiDocumentCommonInterface(FixConfig(GuiDocumentConfig::OverrideConfig(GuiDocumentConfig::GetDocumentViewerDefaultConfig(), _config)))
 			{
 				SetAcceptTabInput(true);
 				SetFocusableComposition(boundsComposition);
@@ -1536,9 +1543,22 @@ GuiDocumentLabel
 				OnFontChanged();
 			}
 
+			GuiDocumentConfig GuiDocumentLabel::FixConfig(const GuiDocumentConfig& config)
+			{
+				auto result = config;
+				if (!result.autoExpand.Value())
+				{
+					if (result.wrapLine.Value() || result.paragraphMode.Value() != GuiDocumentParagraphMode::Paragraph)
+					{
+						result.autoExpand = true;
+					}
+				}
+				return result;
+			}
+
 			GuiDocumentLabel::GuiDocumentLabel(theme::ThemeName themeName, const GuiDocumentConfig& _config)
 				: GuiControl(themeName)
-				, GuiDocumentCommonInterface(GuiDocumentConfig::OverrideConfig(GuiDocumentConfig::GetDocumentLabelDefaultConfig(), _config))
+				, GuiDocumentCommonInterface(FixConfig(GuiDocumentConfig::OverrideConfig(GuiDocumentConfig::GetDocumentLabelDefaultConfig(), _config)))
 			{
 				SetAcceptTabInput(true);
 				SetFocusableComposition(boundsComposition);
