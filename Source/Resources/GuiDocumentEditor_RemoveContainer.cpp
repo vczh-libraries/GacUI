@@ -150,6 +150,28 @@ ClearStyleVisitor		: Remove all styles that intersect with the specified range
 					RemoveContainer(run);
 				}
 			};
+
+			class ConvertToPlainTextVisitor : public ClearStyleVisitor
+			{
+			public:
+				ConvertToPlainTextVisitor(RunRangeMap& _runRanges, vint _start, vint _end)
+					:ClearStyleVisitor(_runRanges, _start, _end)
+				{
+				}
+
+				void Visit(DocumentHyperlinkRun* run)override
+				{
+					RemoveContainer(run);
+				}
+
+				void Visit(DocumentImageRun* run)override
+				{
+				}
+
+				void Visit(DocumentEmbeddedObjectRun* run)override
+				{
+				}
+			};
 		}
 		using namespace document_operation_visitors;
 
@@ -170,6 +192,12 @@ ClearStyleVisitor		: Remove all styles that intersect with the specified range
 			void ClearStyle(DocumentParagraphRun* run, RunRangeMap& runRanges, vint start, vint end)
 			{
 				ClearStyleVisitor visitor(runRanges, start, end);
+				run->Accept(&visitor);
+			}
+
+			void ConvertToPlainText(DocumentParagraphRun* run, RunRangeMap& runRanges, vint start, vint end)
+			{
+				ConvertToPlainTextVisitor visitor(runRanges, start, end);
 				run->Accept(&visitor);
 			}
 		}

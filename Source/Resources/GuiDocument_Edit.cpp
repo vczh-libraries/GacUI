@@ -560,7 +560,19 @@ DocumentModel::ClearStyle
 		}
 
 /***********************************************************************
-DocumentModel::ClearStyle
+DocumentModel::ConvertToPlainText
+***********************************************************************/
+
+		bool DocumentModel::ConvertToPlainText(TextPos begin, TextPos end)
+		{
+			return EditContainer(begin, end, [=](DocumentParagraphRun* paragraph, RunRangeMap& runRanges, vint start, vint end)
+			{
+				document_editor::ConvertToPlainText(paragraph, runRanges, start, end);
+			});
+		}
+
+/***********************************************************************
+DocumentModel::Summarize
 ***********************************************************************/
 
 		Ptr<DocumentStyleProperties> DocumentModel::SummarizeStyle(TextPos begin, TextPos end)

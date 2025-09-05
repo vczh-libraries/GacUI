@@ -792,7 +792,12 @@ GuiDocumentCommonInterface
 
 						TextPos begin(0, 0);
 						TextPos end(lastParagraphIndex, runRanges[model->paragraphs[lastParagraphIndex].Obj()].end);
-						model->ClearStyle(begin, end);
+						model->ConvertToPlainText(begin, end);
+
+						for (auto paragraph : model->paragraphs)
+						{
+							paragraph->alignment.Reset();
+						}
 					}
 					model->styles.Clear();
 				}

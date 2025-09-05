@@ -361,6 +361,7 @@ Rich Content Document (model)
 			bool									RemoveStyleName(TextPos begin, TextPos end);
 			bool									RenameStyle(const WString& oldStyleName, const WString& newStyleName);
 			bool									ClearStyle(TextPos begin, TextPos end);
+			bool									ConvertToPlainText(TextPos begin, TextPos end);
 			Ptr<DocumentStyleProperties>			SummarizeStyle(TextPos begin, TextPos end);
 			Nullable<WString>						SummarizeStyleName(TextPos begin, TextPos end);
 			Nullable<Alignment>						SummarizeParagraphAlignment(TextPos begin, TextPos end);
