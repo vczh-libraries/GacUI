@@ -39,16 +39,16 @@ Generic orchestration lives in `GuiGraphicsComposition_Layout.cpp`:
 - `ForceCalculateSizeImmediately()` triggers a synchronous pass (min size then bounds) starting at this node (used e.g. after splitter drag in `GuiTableSplitterCompositionBase::OnMouseMoveHelper`).
 
 3. Rendering vs Layout
-Rendering (`GuiGraphicsComposition::Render`) only uses `cachedBounds`; it never recalculates layout. Layout must be up to date before a render pass that needs new geometry; this is ensured by explicit calls (`ForceCalculateSizeImmediately`) from controls altering layout-affecting properties (e.g. table splitter drag, dynamic size adjustments) and by higher-level window size updates (host logic calls into compositions to recalc when client size changes). Thus layout is pull-driven (explicit recalculation) with invalidation flags prompting the next calculation.
+Rendering (`GuiGraphicsComposition::Render`) only uses `cachedBounds`; it never recalculates layout. `InvokeOnCompositionStateChanged()` does NOT perform layout; it only marks invalidation flags on the affected compositions (and requests a render from the host). The primary mechanism that performs (and repeats if necessary) layout recomputation is `GuiGraphicsHost::Render`: the host render loop keeps calling itself; on each iteration, if any composition (or window) is flagged invalid, the host triggers a full layout pass for the window before traversing to render. This repeats until no layout-invalid flags remain, ensuring geometry is settled. `ForceCalculateSizeImmediately()` is therefore an optimization / special-case tool for immediate synchronous feedback (e.g. interactive splitter drag) but not required for normal property changes; without calling it, the next host render cycle will still recompute layout automatically.
 
 4. When a Layout is Triggered
 A composition invalidates itself (and schedules a future render) by calling `InvokeOnCompositionStateChanged()` (publicly surfaced indirectly through many property setters). Sources:
 - Hierarchy mutations: `InsertChild`, `RemoveChild`, `MoveChild` call `InvokeOnCompositionStateChanged()`.
 - Property setters: `SetInternalMargin`, `SetPreferredMinSize`, `SetVisible`, `SetMinSizeLimitation`, etc. each call `InvokeOnCompositionStateChanged()` (sometimes with `forceRequestRender` for visibility changes).
 - Owned element changes: `SetOwnedElement` resets renderer target then invalidates.
-- Container-specific state changes: e.g. `GuiTableComposition::SetRowOption`, `SetColumnOption`, `SetCellPadding`, `SetBorderVisible`, `SetRowsAndColumns`; `GuiStackComposition::SetDirection`, `SetPadding`, `EnsureVisible`; `GuiFlowComposition::SetRowPadding`, `SetAxis`, etc.; each ends with `InvokeOnCompositionStateChanged()`.
+- Container-specific state changes: e.g. `GuiTableComposition::SetRowOption`, `GuiTableComposition::SetColumnOption`, `GuiTableComposition::SetCellPadding`, `GuiTableComposition::SetBorderVisible`, `GuiTableComposition::SetRowsAndColumns`; `GuiStackComposition::SetDirection`, `GuiStackComposition::SetPadding`, `GuiStackComposition::EnsureVisible`; `GuiFlowComposition::SetRowPadding`, `GuiFlowComposition::SetAxis`, etc.; each ends with `InvokeOnCompositionStateChanged()`.
 - Child min size changes propagate upward: item compositions attach to `CachedMinSizeChanged` (e.g. `GuiCellComposition` / `GuiStackItemComposition`) to set parent layout invalid flags (`layout_invalid = true`).
-Actual recomputation happens when: (a) an explicit `ForceCalculateSizeImmediately()` is called (e.g. table splitter drag, programmatic size enforcement); (b) a higher level container (host / window) decides to recalc (e.g. during resize); (c) some containers lazily recalc inside their own `Layout_CalculateMinSize()` when a local `layout_invalid` flag is seen (table / stack / flow patterns).
+Actual recomputation happens when: (a) the host render loop (`GuiGraphicsHost::Render`) sees any invalidation flag and performs a full window layout pass (repeating until stable), or (b) an explicit `ForceCalculateSizeImmediately()` is called for immediate synchronous recalculation (mainly interactive scenarios), or (c) higher level window size changes force the host to invalidate and then recompute in the next render iteration, or (d) inside certain containers that lazily recompute sub-layouts when their virtual methods are invoked during the host-driven pass. Thus the normal path is host-driven; `ForceCalculateSizeImmediately()` is optional.
 
 5. Three Classification Subclasses
 - `GuiGraphicsComposition_Trivial`: Free-standing container; responsible for computing children min sizes and bounds itself using the standard helper. (E.g. `GuiBoundsComposition`, `GuiTableComposition`, `GuiStackComposition`, `GuiFlowComposition`, `GuiSharedSizeRootComposition` derive from or through classes that ultimately inherit this.)
@@ -82,11 +82,11 @@ Counting distinct layout algorithms (excluding leaf/item helper compositions):
 
 9. Layout Trigger Sequence (Detailed)
 Example: Changing a column percentage in a table:
-- `GuiTableComposition::SetColumnOption` stores new option then calls `InvokeOnCompositionStateChanged()`.
-- That sets `layout_invalid = true` (via `GuiTableComposition::OnCompositionStateChanged()`), and if attached to a host, schedules a render (`GuiGraphicsHost::RequestRender()` inside `InvokeOnCompositionStateChanged`).
-- Before next visual usage requiring accurate geometry: `Layout_CalculateMinSize()` sees `layout_invalid`, recomputes row/column base sizes (`Layout_UpdateCellBoundsInternal`), then on bounds calculation `Layout_CalculateBounds()` (if size changed or first pass) updates cell rectangles & each `GuiCellComposition` via `Layout_SetCellBounds()`.
-- Rendering traverses compositions; each cell’s children now render with correct updated `cachedBounds`.
-Interactive drag (splitter): `GuiTableSplitterCompositionBase::OnMouseMoveHelper` adjusts adjacent Absolute sizes, calls parent setters (each invalidates) and immediately `ForceCalculateSizeImmediately()` to keep UI responsive.
+- `GuiTableComposition::SetColumnOption` stores new option then calls `InvokeOnCompositionStateChanged()` (flagging invalid state; no immediate layout work is done here).
+- `InvokeOnCompositionStateChanged()` causes the host to be requested for a render; on the next `GuiGraphicsHost::Render` iteration the host detects invalid layout flags and performs the full window layout pass before painting. If further invalidations arise during that pass, the host will loop additional render/layout cycles until stable.
+- Internally the first layout pass for the invalid table sees `layout_invalid`, recomputes row/column base sizes (`Layout_UpdateCellBoundsInternal` and related helpers). On bounds calculation `Layout_CalculateBounds()` (within the same host-driven cycle) it updates cell rectangles & each `GuiCellComposition` via `Layout_SetCellBounds()`.
+- Rendering traversal then uses the updated `cachedBounds`.
+Interactive drag (splitter): `GuiTableSplitterCompositionBase::OnMouseMoveHelper` adjusts adjacent Absolute sizes, calls parent setters (each invalidates) and may call `ForceCalculateSizeImmediately()` to obtain immediate synchronous recalculation between host frames for smoother drag feedback (though the host loop would eventually catch up even without it).
 
 10. Adding a New Composition (Integration Steps)
 A new layout container should:
@@ -129,3 +129,15 @@ A new layout container should:
 - Controlled items neutral layout overrides: in `GuiGraphicsComposition_Controlled` overridden `Layout_CalculateMinSize`, `Layout_CalculateBounds` simply return cached values.
 
 This captures the end-to-end architecture, triggers, classification semantics, bidirectional constraints, available built-in layout families, and integration steps for extending the system.
+
+## ASK
+
+In `3. Rendering vs Layout`, `GuiGraphicsComposition::Render` does only use `cachedBounds`, but the saying around `ForceCalculateSizeImmediately` is incorrect. The fact is that `InvokeOnCompositionStateChanged` is just setting a flag, `GuiGraphicsHost::Render` (a function that keep being called repeatedly until everything is settled down) will trigger the layout of the whole window if anything is flagged.
+
+### Insight
+
+Clarification Added
+- The previous explanation implied `ForceCalculateSizeImmediately()` was a primary mechanism to ensure layout is updated before rendering. This has been corrected in points 3, 4, and 9 above.
+- Correct Flow: Property / structural changes call `InvokeOnCompositionStateChanged()`, which ONLY sets invalidation flags (and may request a render). The real layout recomputation is performed inside the host render loop `GuiGraphicsHost::Render`, which repeatedly executes: (detect flags) -> (perform full window layout pass) -> (render) until no compositions remain invalid.
+- Role of `ForceCalculateSizeImmediately()`: It is an auxiliary, synchronous shortcut used mainly for interactive operations (e.g., splitter dragging) where immediate recomputation inside the same input event handler improves responsiveness. Omitting it would not break correctness; the next host render cycle would still perform the needed layout.
+- The updated sections (3, 4, 9) now explicitly describe: (a) invalidation via `InvokeOnCompositionStateChanged()`, (b) host-driven iterative layout resolution, (c) optional nature of `ForceCalculateSizeImmediately()`.

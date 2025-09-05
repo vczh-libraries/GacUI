@@ -2,6 +2,7 @@
 
 ## Goal and Constraints
 
+- All mentioned `Copilot_*.md` files belong to the current solution.
 - Your goal is to finish a planning document in `Copilot_Planning.md` to address a problem from `Copilot_Task.md`.
 - You are only allowed to update `Copilot_Planning.md`.
 - You are not allowed to modify any other files.

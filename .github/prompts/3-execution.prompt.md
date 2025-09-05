@@ -2,6 +2,7 @@
 
 ## Goal and Constraints
 
+- All mentioned `Copilot_*.md` files belong to the current solution.
 - Your goal is to finish an execution document in `Copilot_Execution.md` from `Copilot_Planning.md`.
 - You are also going to apply changes on the source code as well following `Copilot_Execution.md`.
 
