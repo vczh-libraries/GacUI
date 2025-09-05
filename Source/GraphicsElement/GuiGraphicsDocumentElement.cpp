@@ -349,47 +349,52 @@ GuiDocumentElement::GuiDocumentElementRenderer
 					element->callback->OnStartRender();
 				}
 				renderTarget->PushClipper(bounds, element);
-				if(!renderTarget->IsClipperCoverWholeTarget())
+				if (!renderTarget->IsClipperCoverWholeTarget())
 				{
-					vint maxWidth=bounds.Width();
-					Rect clipper=renderTarget->GetClipper();
-					vint cx=bounds.Left();
-					vint cy=bounds.Top();
-					vint y1=clipper.Top()-bounds.Top();
-					vint y2=y1+clipper.Height();
-					vint y=0;
+					vint maxWidth = bounds.Width();
+					Rect clipper = renderTarget->GetClipper();
+					vint cx = bounds.Left();
+					vint cy = bounds.Top();
+					vint y1 = clipper.Top() - bounds.Top();
+					vint y2 = y1 + clipper.Height();
+					vint y = 0;
 
-					lastMaxWidth=maxWidth;
+					lastMaxWidth = maxWidth;
 
 					// TODO: (enumerable) foreach
-					for(vint i=0;i<paragraphHeights.Count();i++)
+					vint paragraphCount = paragraphHeights.Count();
+					if (paragraphCount > element->document->paragraphs.Count())
 					{
-						vint paragraphHeight=paragraphHeights[i];
-						if(y+paragraphHeight<=y1)
+						paragraphCount = element->document->paragraphs.Count();
+					}
+					for (vint i = 0; i < paragraphCount; i++)
+					{
+						vint paragraphHeight = paragraphHeights[i];
+						if (y + paragraphHeight <= y1)
 						{
-							y+=paragraphHeight+paragraphDistance;
+							y += paragraphHeight + paragraphDistance;
 							continue;
 						}
-						else if(y>=y2)
+						else if (y >= y2)
 						{
 							break;
 						}
 						else
 						{
-							Ptr<DocumentParagraphRun> paragraph=element->document->paragraphs[i];
-							Ptr<ParagraphCache> cache=paragraphCaches[i];
-							bool created=cache && cache->graphicsParagraph;
-							cache=EnsureAndGetCache(i, true);
-							if(!created && i==lastCaret.row && element->caretVisible)
+							Ptr<DocumentParagraphRun> paragraph = element->document->paragraphs[i];
+							Ptr<ParagraphCache> cache = paragraphCaches[i];
+							bool created = cache && cache->graphicsParagraph;
+							cache = EnsureAndGetCache(i, true);
+							if (!created && i == lastCaret.row && element->caretVisible)
 							{
 								cache->graphicsParagraph->OpenCaret(lastCaret.column, lastCaretColor, lastCaretFrontSide);
 							}
 
-							paragraphHeight=cache->graphicsParagraph->GetHeight();
+							paragraphHeight = cache->graphicsParagraph->GetHeight();
 
 							renderingParagraph = i;
 							renderingParagraphOffset = Point(cx - bounds.x1, cy + y - bounds.y1);
-							cache->graphicsParagraph->Render(Rect(Point(cx, cy+y), Size(maxWidth, paragraphHeight)));
+							cache->graphicsParagraph->Render(Rect(Point(cx, cy + y), Size(maxWidth, paragraphHeight)));
 							renderingParagraph = -1;
 
 							bool resized = false;
@@ -410,7 +415,7 @@ GuiDocumentElement::GuiDocumentElementRenderer
 							}
 						}
 
-						y+=paragraphHeight+paragraphDistance;
+						y += paragraphHeight + paragraphDistance;
 					}
 				}
 				renderTarget->PopClipper(element);

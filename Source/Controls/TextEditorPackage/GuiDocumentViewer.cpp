@@ -732,7 +732,7 @@ GuiDocumentCommonInterface
 
 			WString GuiDocumentCommonInterface::UserInput_ConvertDocumentToText(Ptr<DocumentModel> model)
 			{
-				return model->GetTextForReading(WString::Unmanaged(config.doubleLineBreaksBetweenParagraph ? L"\r\n\r\n" : L"\r\n"));
+				return model->GetTextForReading(WString::Unmanaged(config.doubleLineBreaksBetweenParagraph.Value() ? L"\r\n\r\n" : L"\r\n"));
 			}
 
 			void GuiDocumentCommonInterface::UserInput_FormatText(const WString& text, collections::List<WString>& paragraphTexts)
