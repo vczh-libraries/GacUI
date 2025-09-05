@@ -71,10 +71,8 @@
 
 ## Steps for Draft
 
-- Your goal is to complete a draft document for the knowledge base in `Copilot_KB.md`.
-  - Keep `# DOCUMENT REQUEST` unchanged, do not edit anything in it.
-  - Instead, you have to read `# DOCUMENT REQUEST` carefully.
-  - Reorganize all the information you got and append it following the steps below.
+- Your goal is to complete a draft document for the knowledge base in `Copilot_KB.md`, append the draft after the file.
+- Keep `# DOCUMENT REQUEST` unchanged, do not edit anything in it. Instead, you have to read `# DOCUMENT REQUEST` carefully.
 - Extra information is provided in the `# Draft` section in the LATEST chat message.
 - Make a `# DRAFT-LOCATION` section, you need to describe which part you would like to update in the knowledge base.
   - It will be a new topic under the `Design Explanation` section of a project in `Index.md` of the knowledge base.
@@ -85,7 +83,10 @@
   - You must not miss any details, you must use every single point mentioned in the document.
   - Since `# DOCUMENT REQUEST` is organized as multiple rounds of questions and answers, it cannot be just directly used as a document. You must reorganize them.
   - Similar knowledges under the same categories might be spread in different answers, pay attention to them, bring a well-organized document.
+- Quality of the draft:
   - The document is for understanding the source code, so you must keep mentioning names instead of using a too high-level abstraction language.
+  - You must use everything in `# DOCUMENT REQUEST`. Do not just make a summarize, `# DOCUMENT REQUEST` is already a summarize.
+  - Multiple levels of `#` markdown topic containing bullet points are favored.
 
 ## Steps for Improve
 
