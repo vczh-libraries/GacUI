@@ -21,6 +21,7 @@ GuiInstanceLoader_Document.cpp
 		default: GuiControl*, GuiGraphicsComposition*
 	GuiDocumentViewer, GuiDocumentLable
 		default: Ptr<GuiDocumentItem>
+		ctor: Behavior(GuiDocumentConfig)
 GuiInstanceLoader_List.cpp
 	GuiComboBox
 		ctor: ListControl(GuiListControl*)

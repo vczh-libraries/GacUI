@@ -6,19 +6,58 @@
         <Table CellPadding="5" MinSizeLimitation="LimitToElementAndChildren" AlignmentToParent="left:0 top:0 right:0 bottom:0">
           <att.Rows>
             <_>composeType:MinSize</_>
+            <_>composeType:MinSize</_>
             <_>composeType:Percentage percentage:1.0</_>
           </att.Rows>
           <att.Columns>
             <_>composeType:Percentage percentage:1.0</_>
+            <_>composeType:Percentage percentage:1.0</_>
           </att.Columns>
+
           <Cell Site="row:0 column:0">
+            <Label Text="Document"/>
+          </Cell>
+          <Cell Site="row:0 column:1">
+            <Label Text="TextBox"/>
+          </Cell>
+
+          <Cell Site="row:1 column:0">
             <DocumentTextBox EditMode="Editable">
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
             </DocumentTextBox>
           </Cell>
-          <Cell Site="row:1 column:0">
+          <Cell Site="row:2 column:0">
             <DocumentViewer EditMode="Editable">
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+            </DocumentViewer>
+          </Cell>
+
+          <Cell Site="row:1 column:1">
+            <DocumentTextBox EditMode="Editable">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+              <att.Behavior>
+                autoExpand:false
+                pasteAsPlainText:true
+                wrapLine:false
+                paragraphMode:Singleline
+                paragraphPadding:false
+                doubleLineBreaksBetweenParagraph:false
+                spaceForFlattenedLineBreak:false
+              </att.Behavior>
+            </DocumentTextBox>
+          </Cell>
+          <Cell Site="row:2 column:1">
+            <DocumentViewer EditMode="Editable">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+              <att.Behavior>
+                autoExpand:false
+                pasteAsPlainText:true
+                wrapLine:false
+                paragraphMode:Multiline
+                paragraphPadding:false
+                doubleLineBreaksBetweenParagraph:false
+                spaceForFlattenedLineBreak:false
+              </att.Behavior>
             </DocumentViewer>
           </Cell>
         </Table>

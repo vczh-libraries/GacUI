@@ -165,6 +165,18 @@ GuiDocumentInstanceLoaderBase
 			private:
 				using TypeInfo = typename TBaseType::TypeInfo;
 
+			protected:
+				GlobalStringKey					_Behavior;
+
+				void AddAdditionalArguments(types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, IGuiInstanceLoader::ArgumentMap& arguments, GuiResourceError::List& errors, Ptr<WfNewClassExpression> createControl)override
+				{
+					vint indexBehavior = arguments.Keys().IndexOf(_Behavior);
+					if (indexBehavior != -1)
+					{
+						createControl->arguments.Add(arguments.GetByIndex(indexBehavior)[0].expression);
+					}
+				}
+
 			public:
 				using PropertyInfo = IGuiInstanceLoader::PropertyInfo;
 				using ArgumentMap = IGuiInstanceLoader::ArgumentMap;
@@ -172,6 +184,7 @@ GuiDocumentInstanceLoaderBase
 				GuiDocumentInstanceLoaderBase(const WString& _typeName, theme::ThemeName themeName)
 					:TBaseType(_typeName, themeName)
 				{
+					_Behavior = GlobalStringKey::Get(L"Behavior");
 				}
 
 				void GetPropertyNames(GuiResourcePrecompileContext& precompileContext, const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
@@ -185,6 +198,12 @@ GuiDocumentInstanceLoaderBase
 					if (propertyInfo.propertyName == GlobalStringKey::Empty)
 					{
 						return GuiInstancePropertyInfo::CollectionWithParent(TypeInfoRetriver<Ptr<GuiDocumentItem>>::CreateTypeInfo());
+					}
+					else if(propertyInfo.propertyName == _Behavior)
+					{
+						auto info = GuiInstancePropertyInfo::Assign(TypeInfoRetriver<GuiDocumentConfig>::CreateTypeInfo());
+						info->usage = GuiInstancePropertyInfo::ConstructorArgument;
+						return info;
 					}
 					return TBaseType::GetPropertyType(precompileContext, propertyInfo);
 				}
