@@ -95,7 +95,9 @@ class presentation::DocumentModel : system::ReferenceType {
     property paragraphs : system::List<presentation::DocumentParagraphRun^>^ { get }
     property styles : system::Dictionary<system::String, presentation::DocumentStyle^>^ { get }
 
-    function GetText(skipNonTextContent : system::Boolean) : system::String;
+    function ConvertToText(forCaret : system::Boolean, paragraphDelimiter : system::String) : system::String;
+    function GetTextForCaret() : system::String;
+    function GetTextForReading(paragraphDelimiter : system::String) : system::String;
     static function LoadFromXml(resource : presentation::GuiResourceItem^, xml : system::XmlDocument^, workingDirectory : presentation::GuiResourcePathResolver^, errors : system::List<presentation::GuiResourceError>^) : presentation::DocumentModel^;
     function SaveToXml() : system::XmlDocument^;
 
@@ -105,7 +107,9 @@ class presentation::DocumentModel : system::ReferenceType {
 class presentation::DocumentParagraphRun : presentation::DocumentContainerRun {
     property alignment : presentation::Alignment?;
 
-    function GetText(skipNonTextContent : system::Boolean) : system::String;
+    function ConvertToText(forCaret : system::Boolean) : system::String;
+    function GetTextForCaret() : system::String;
+    function GetTextForReading() : system::String;
 
     constructor () : presentation::DocumentParagraphRun^;
 }
