@@ -80,6 +80,28 @@ GuiDocumentConfig
 				static GuiDocumentConfig				OverrideConfig(const GuiDocumentConfig& toOverride, const GuiDocumentConfig& newConfig);
 			};
 
+			struct GuiDocumentConfigEvaluated
+			{
+				bool									autoExpand;
+				bool									pasteAsPlainText;
+				bool									wrapLine;
+				GuiDocumentParagraphMode				paragraphMode;
+				bool									paragraphPadding;
+				bool									doubleLineBreaksBetweenParagraph;
+				bool									spaceForFlattenedLineBreak;
+
+				GuiDocumentConfigEvaluated(const GuiDocumentConfig& config)
+					: autoExpand(config.autoExpand.Value())
+					, pasteAsPlainText(config.pasteAsPlainText.Value())
+					, wrapLine(config.wrapLine.Value())
+					, paragraphMode(config.paragraphMode.Value())
+					, paragraphPadding(config.paragraphPadding.Value())
+					, doubleLineBreaksBetweenParagraph(config.doubleLineBreaksBetweenParagraph.Value())
+					, spaceForFlattenedLineBreak(config.spaceForFlattenedLineBreak.Value())
+				{
+				}
+			};
+
 /***********************************************************************
 GuiDocumentCommonInterface
 ***********************************************************************/
@@ -115,7 +137,7 @@ GuiDocumentCommonInterface
 			{
 				typedef collections::Dictionary<WString, Ptr<GuiDocumentItem>>		DocumentItemMap;
 			protected:
-				GuiDocumentConfig							config;
+				GuiDocumentConfigEvaluated					config;
 				Ptr<DocumentModel>							baselineDocument;
 				DocumentItemMap								documentItems;
 				GuiControl*									documentControl = nullptr;

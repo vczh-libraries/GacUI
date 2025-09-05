@@ -1,5 +1,6 @@
 #include "GuiDocumentViewer.h"
 #include "../../Application/GraphicsHost/GuiGraphicsHost.h"
+#include "../../Resources/GuiDocumentEditor.h"
 
 namespace vl
 {
@@ -732,7 +733,7 @@ GuiDocumentCommonInterface
 
 			WString GuiDocumentCommonInterface::UserInput_ConvertDocumentToText(Ptr<DocumentModel> model)
 			{
-				return model->GetTextForReading(WString::Unmanaged(config.doubleLineBreaksBetweenParagraph.Value() ? L"\r\n\r\n" : L"\r\n"));
+				return model->GetTextForReading(WString::Unmanaged(config.doubleLineBreaksBetweenParagraph ? L"\r\n\r\n" : L"\r\n"));
 			}
 
 			void GuiDocumentCommonInterface::UserInput_FormatText(const WString& text, collections::List<WString>& paragraphTexts)
@@ -741,7 +742,7 @@ GuiDocumentCommonInterface
 				WString paragraph;
 				bool empty = true;
 
-				if (config.doubleLineBreaksBetweenParagraph.Value())
+				if (config.doubleLineBreaksBetweenParagraph)
 				{
 					while (!reader.IsEnd())
 					{
@@ -780,24 +781,27 @@ GuiDocumentCommonInterface
 
 			void GuiDocumentCommonInterface::UserInput_FormatDocument(Ptr<DocumentModel> model)
 			{
-				// TODO: cancel alignments and styles if pasteAsPlainText
-				// TODO: flatten paragraphs or lines if necessary
+				if (!model) return;
+				if (config.pasteAsPlainText)
+				{
+					if (model->paragraphs.Count() > 0)
+					{
+						RunRangeMap runRanges;
+						vint lastParagraphIndex = model->paragraphs.Count() - 1;
+						document_editor::GetRunRange(model->paragraphs[lastParagraphIndex].Obj(), runRanges);
+
+						TextPos begin(0, 0);
+						TextPos end(lastParagraphIndex, runRanges[model->paragraphs[lastParagraphIndex].Obj()].end);
+						model->ClearStyle(begin, end);
+					}
+					model->styles.Clear();
+				}
 			}
 
 			GuiDocumentCommonInterface::GuiDocumentCommonInterface(const GuiDocumentConfig& _config)
 				: config(_config)
 			{
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::controls::GuiDocumentCommonInterface::GuiDocumentCommonInterface(const GuiDocumentConfig&)#"
-				CHECK_ERROR(config.autoExpand, ERROR_MESSAGE_PREFIX L"GuiDocumentConfig::autoExpand should not be empty.");
-				CHECK_ERROR(config.pasteAsPlainText, ERROR_MESSAGE_PREFIX L"GuiDocumentConfig::pasteAsPlainText should not be empty.");
-				CHECK_ERROR(config.wrapLine, ERROR_MESSAGE_PREFIX L"GuiDocumentConfig::wrapLine should not be empty.");
-				CHECK_ERROR(config.paragraphMode, ERROR_MESSAGE_PREFIX L"GuiDocumentConfig::paragraphMode should not be empty.");
-				CHECK_ERROR(config.paragraphPadding, ERROR_MESSAGE_PREFIX L"GuiDocumentConfig::paragraphPadding should not be empty.");
-				CHECK_ERROR(config.doubleLineBreaksBetweenParagraph, ERROR_MESSAGE_PREFIX L"GuiDocumentConfig::doubleLineBreaksBetweenParagraph should not be empty.");
-				CHECK_ERROR(config.spaceForFlattenedLineBreak, ERROR_MESSAGE_PREFIX L"GuiDocumentConfig::spaceForFlattenedLineBreak should not be empty.");
-
 				undoRedoProcessor = Ptr(new GuiDocumentUndoRedoProcessor);
-
 				internalShortcutKeyManager = Ptr(new GuiShortcutKeyManager);
 				AddShortcutCommand(VKEY::KEY_Z, Func<bool()>(this, &GuiDocumentCommonInterface::Undo));
 				AddShortcutCommand(VKEY::KEY_Y, Func<bool()>(this, &GuiDocumentCommonInterface::Redo));
@@ -805,7 +809,6 @@ GuiDocumentCommonInterface
 				AddShortcutCommand(VKEY::KEY_X, Func<bool()>(this, &GuiDocumentCommonInterface::Cut));
 				AddShortcutCommand(VKEY::KEY_C, Func<bool()>(this, &GuiDocumentCommonInterface::Copy));
 				AddShortcutCommand(VKEY::KEY_V, Func<bool()>(this, &GuiDocumentCommonInterface::Paste));
-#undef ERROR_MESSAGE_PREFIX
 			}
 
 			GuiDocumentCommonInterface::~GuiDocumentCommonInterface()
@@ -820,6 +823,7 @@ GuiDocumentCommonInterface
 			void GuiDocumentCommonInterface::SetDocument(Ptr<DocumentModel> value)
 			{
 				value = value ? value->CopyDocument() : nullptr;
+				UserInput_FormatDocument(value);
 				SetActiveHyperlink(0);
 				ClearUndoRedo();
 				NotifyModificationSaved();
