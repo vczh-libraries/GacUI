@@ -37,5 +37,8 @@
     <Xml Include="Resources\ResourceRawElement.xml">
       <Filter>Resource Files</Filter>
     </Xml>
+    <Xml Include="Resources\ResourceDocument.xml">
+      <Filter>Resource Files</Filter>
+    </Xml>
   </ItemGroup>
 </Project>

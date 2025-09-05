@@ -69,7 +69,7 @@ GuiDocumentConfig
 
 			GuiDocumentConfig GuiDocumentConfig::OverrideConfig(const GuiDocumentConfig& toOverride, const GuiDocumentConfig& newConfig)
 			{
-				GuiDocumentConfig result;
+				GuiDocumentConfig result = toOverride;
 				if (newConfig.autoExpand) result.autoExpand = newConfig.autoExpand;
 				if (newConfig.pasteAsPlainText) result.pasteAsPlainText = newConfig.pasteAsPlainText;
 				if (newConfig.wrapLine) result.wrapLine = newConfig.wrapLine;
