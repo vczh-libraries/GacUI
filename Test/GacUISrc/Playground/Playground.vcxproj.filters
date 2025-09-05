@@ -40,5 +40,13 @@
     <Xml Include="Resources\ResourceDocument.xml">
       <Filter>Resource Files</Filter>
     </Xml>
+    <Xml Include="Resources\Document.xml">
+      <Filter>Resource Files</Filter>
+    </Xml>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Resources\Gaclib.png">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>

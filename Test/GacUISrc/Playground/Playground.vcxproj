@@ -184,9 +184,13 @@
     <ClInclude Include="..\GacUI_Compiler\ResourceCompiler.h" />
   </ItemGroup>
   <ItemGroup>
+    <Xml Include="Resources\Document.xml" />
     <Xml Include="Resources\Resource.xml" />
     <Xml Include="Resources\ResourceDocument.xml" />
     <Xml Include="Resources\ResourceRawElement.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Resources\Gaclib.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

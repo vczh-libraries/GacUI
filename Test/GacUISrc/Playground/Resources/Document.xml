@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Doc>
+  <Content>
+    <p align="Center">
+      <div style="Title">
+        <b>Controls Embedded in Document</b>
+      </div>
+    </p>
+    <p>
+      <div style="Body">
+        <nop>Hi, our valued GacUI users:</nop>
+      </div>
+    </p>
+    <p>
+      <div style="Body">
+        <nop>This is a rich text document. There are many features in a document. For example, an </nop>
+        <img source="res://EmbeddedDocument/Gaclib" width="250" height="100"/>
+        <nop> can be embedded inside a document and adjust its size.</nop>
+      </div>
+    </p>
+    <p>
+      <div style="Body">
+        <nop>Obviously, embedding a </nop>
+        <a href="http://www.gaclib.net">http://www.gaclib.net</a>
+        <nop> is also a feature. You can try to click on it and see what happens.</nop>
+      </div>
+    </p>
+    <p>
+      <div style="Body">
+        <nop>Hope you like this powerful tools. Thank you.</nop>
+      </div>
+    </p>
+  </Content>
+  <Styles>
+    <Style name="Content">
+      <face>Segoe UI</face>
+    </Style>
+    <Style name="Title" parent="Content">
+      <size>24</size>
+      <b>true</b>
+      <color>#0080FF</color>
+    </Style>
+    <Style name="Body" parent="Content">
+      <size>14</size>
+    </Style>
+  </Styles>
+</Doc>
