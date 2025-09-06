@@ -163,9 +163,9 @@ Layout Engine
 				/// <returns>Returns true if this operation succeeded.</returns>
 				virtual bool								ResetInlineObject(vint start, vint length)=0;
 
-				/// <summary>Get the layouted height of the text. The result depends on rich styled text and the two important properties that can be set using <see cref="SetWrapLine"/> and <see cref="SetMaxWidth"/>.</summary>
-				/// <returns>The layouted height.</returns>
-				virtual vint								GetHeight()=0;
+				/// <summary>Get the layouted size of the text. The result depends on rich styled text and the two important properties that can be set using <see cref="SetWrapLine"/> and <see cref="SetMaxWidth"/>.</summary>
+				/// <returns>The layouted size.</returns>
+				virtual Size								GetSize()=0;
 				/// <summary>Make the caret visible so that it will be rendered in the paragraph.</summary>
 				/// <returns>Returns true if this operation succeeded.</returns>
 				/// <param name="caret">The caret.</param>

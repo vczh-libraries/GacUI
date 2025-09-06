@@ -1338,7 +1338,8 @@ UniscribeParagraph
 ***********************************************************************/
 
 			UniscribeParagraph::UniscribeParagraph()
-				:lastAvailableWidth(-1)
+				:wrapLine(true)
+				,lastAvailableWidth(-1)
 				,paragraphAlignment(Alignment::Left)
 				,built(false)
 			{

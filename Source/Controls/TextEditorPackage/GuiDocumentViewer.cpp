@@ -1468,19 +1468,37 @@ GuiDocumentViewer
 			void GuiDocumentViewer::EnsureRectVisible(Rect bounds)
 			{
 				Rect viewBounds=GetViewBounds();
-				vint offset=0;
-				if(bounds.y1<viewBounds.y1)
 				{
-					offset=bounds.y1-viewBounds.y1;
-				}
-				else if(bounds.y2>viewBounds.y2)
-				{
-					offset=bounds.y2-viewBounds.y2;
-				}
+					vint offset = 0;
+					if (bounds.x1 < viewBounds.x1)
+					{
+						offset = bounds.x1 - viewBounds.x1;
+					}
+					else if (bounds.x2 > viewBounds.x2)
+					{
+						offset = bounds.x2 - viewBounds.x2;
+					}
 
-				if (auto scroll = GetVerticalScroll())
+					if (auto scroll = GetHorizontalScroll())
+					{
+						scroll->SetPosition(viewBounds.x1 + offset);
+					}
+				}
 				{
-					scroll->SetPosition(viewBounds.y1 + offset);
+					vint offset = 0;
+					if (bounds.y1 < viewBounds.y1)
+					{
+						offset = bounds.y1 - viewBounds.y1;
+					}
+					else if (bounds.y2 > viewBounds.y2)
+					{
+						offset = bounds.y2 - viewBounds.y2;
+					}
+
+					if (auto scroll = GetVerticalScroll())
+					{
+						scroll->SetPosition(viewBounds.y1 + offset);
+					}
 				}
 			}
 

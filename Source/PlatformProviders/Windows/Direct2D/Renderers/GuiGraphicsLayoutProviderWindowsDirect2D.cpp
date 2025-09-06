@@ -717,11 +717,13 @@ WindowsDirect2DParagraph (Formatting)
 					return false;
 				}
 
-				vint GetHeight()override
+				Size GetSize()override
 				{
 					DWRITE_TEXT_METRICS metrics;
 					textLayout->GetMetrics(&metrics);
-					return (vint)ceil(metrics.height);
+					return Size(
+						(wrapLine ? 0 : (vint)ceil(metrics.widthIncludingTrailingWhitespace)),
+						(vint)ceil(metrics.height));
 				}
 
 /***********************************************************************
@@ -1131,7 +1133,7 @@ WindowsDirect2DParagraph (Caret)
 				{
 					PrepareFormatData();
 					if(!IsValidCaret(caret)) return Rect();
-					if(paragraphText.Length()==0) return Rect(Point(0, 0), Size(0, GetHeight()));
+					if(paragraphText.Length()==0) return Rect(Point(0, 0), Size(0, GetSize().y));
 
 					vint frontLineIndex=-1;
 					vint backLineIndex=-1;

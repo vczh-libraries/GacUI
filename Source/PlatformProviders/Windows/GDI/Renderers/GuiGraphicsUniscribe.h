@@ -284,6 +284,7 @@ UniscribeParagraph
 				//***************************** Uniscribe Data
 				List<Ptr<UniscribeLine>>		lines;
 				//***************************** Layout Data
+				bool							wrapLine;
 				vint							lastAvailableWidth;
 				Rect							bounds;
 

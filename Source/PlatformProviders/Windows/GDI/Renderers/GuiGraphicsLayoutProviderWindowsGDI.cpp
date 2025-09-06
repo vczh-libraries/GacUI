@@ -93,12 +93,18 @@ WindowsGDIParagraph
 
 				bool GetWrapLine()override
 				{
-					return true;
+					return paragraph->wrapLine;
 				}
 
 				void SetWrapLine(bool value)override
 				{
 					CHECK_ERROR(value, L"vl::presentation::elements_windows_gdi::WindowsGDIParagraph::SetWrapLine(bool)#Non-wrapline not implemented.");
+					if (paragraph->wrapLine != value)
+					{
+						paragraph->wrapLine = value;
+						paragraph->BuildUniscribeData(renderTarget->GetDC());
+						paragraph->Layout(paragraph->lastAvailableWidth, paragraph->paragraphAlignment);
+					}
 				}
 
 				vint GetMaxWidth()override
@@ -230,10 +236,12 @@ WindowsGDIParagraph
 					return false;
 				}
 
-				vint GetHeight()override
+				Size GetSize()override
 				{
 					PrepareUniscribeData();
-					return paragraph->bounds.Height();
+					return Size(
+						(paragraph->wrapLine ? 0 : paragraph->bounds.Width()),
+						paragraph->bounds.Height());
 				}
 
 				bool OpenCaret(vint _caret, Color _color, bool _frontSide)override
