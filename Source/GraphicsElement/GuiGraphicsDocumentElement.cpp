@@ -430,7 +430,7 @@ GuiDocumentElement::GuiDocumentElementRenderer
 
 			void GuiDocumentElement::GuiDocumentElementRenderer::OnElementStateChanged()
 			{
-				cachedTotalSize = { 0,0 };
+				cachedTotalSize = { 1,1 };
 				if (element->document && element->document->paragraphs.Count() > 0)
 				{
 					vint defaultHeight = GetCurrentController()->ResourceService()->GetDefaultFont().size;
@@ -483,7 +483,7 @@ GuiDocumentElement::GuiDocumentElementRenderer
 					paragraphSizes.Resize(paragraphCount);
 
 					vint defaultHeight = GetCurrentController()->ResourceService()->GetDefaultFont().size;
-					cachedTotalSize = { 0,0 };
+					cachedTotalSize = { 1,1 };
 
 					for (vint i = 0; i < paragraphCount; i++)
 					{
@@ -512,7 +512,13 @@ GuiDocumentElement::GuiDocumentElementRenderer
 							paragraphCaches[i] = oldCaches[i - (newCount - oldCount)];
 							paragraphSizes[i] = oldSizes[i - (newCount - oldCount)];
 						}
-						cachedTotalSize.y += paragraphSizes[i].y + paragraphDistance;
+
+						auto cachedSize = paragraphSizes[i];
+						if (cachedTotalSize.x < cachedSize.x)
+						{
+							cachedTotalSize.x = cachedSize.x;
+						}
+						cachedTotalSize.y += cachedSize.y + paragraphDistance;
 					}
 					if (paragraphCount > 0)
 					{
@@ -537,6 +543,7 @@ GuiDocumentElement::GuiDocumentElementRenderer
 							}
 						}
 					}
+					minSize = cachedTotalSize;
 				}
 			}
 

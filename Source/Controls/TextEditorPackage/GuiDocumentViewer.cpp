@@ -1517,8 +1517,8 @@ GuiDocumentViewer
 				SetFocusableComposition(boundsComposition);
 				InstallDocumentViewer(this, containerComposition->GetParent(), containerComposition, boundsComposition, focusableComposition);
 
-				SetExtendToFullWidth(true);
-				SetHorizontalAlwaysVisible(false);
+				SetExtendToFullWidth(config.wrapLine);
+				SetHorizontalAlwaysVisible(!config.wrapLine);
 			}
 
 			GuiDocumentViewer::~GuiDocumentViewer()
