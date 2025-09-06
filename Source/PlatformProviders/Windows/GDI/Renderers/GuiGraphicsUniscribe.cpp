@@ -1140,6 +1140,7 @@ UniscribeLine
 
 					while (startRun < scriptRuns.Count())
 					{
+						vint lastCompletedRunOffset = 0;
 						vint currentWidth = 0;
 						bool firstRun = true;
 						// search for a range to fit in the given width
@@ -1153,14 +1154,23 @@ UniscribeLine
 
 							if (charLength == run->length - lastRunOffset)
 							{
+								lastCompletedRunOffset = lastRunOffset;
 								lastRun = i + 1;
 								lastRunOffset = 0;
 								currentWidth += charAdvances;
 							}
 							else
 							{
-								lastRun = i;
-								lastRunOffset = lastRunOffset + charLength;
+								if (lastRunOffset == 0 && charLength == 0)
+								{
+									lastRun--;
+									lastRunOffset = lastCompletedRunOffset;
+								}
+								else
+								{
+									lastRun = i;
+									lastRunOffset = lastRunOffset + charLength;
+								}
 								break;
 							}
 						}
