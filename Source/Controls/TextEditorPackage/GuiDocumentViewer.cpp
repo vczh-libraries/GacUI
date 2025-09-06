@@ -1564,7 +1564,9 @@ GuiDocumentLabel
 
 			Point GuiDocumentLabel::GetDocumentViewPosition()
 			{
-				return{ -documentContainer->GetCachedBounds().x1,0 };
+				// when autoExpand is true, the document does not move in containerComposition
+				// when autoExpand is not false, the document does not move in documentContainer
+				return{ 0,0 };
 			}
 
 			void GuiDocumentLabel::EnsureRectVisible(Rect bounds)
@@ -1604,6 +1606,7 @@ GuiDocumentLabel
 				}
 				expectedBounds.x2 = expectedBounds.x1;
 				documentContainer->SetExpectedBounds(expectedBounds);
+				documentContainer->ForceCalculateSizeImmediately();
 			}
 
 			void GuiDocumentLabel::scrollingContainer_CachedBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
