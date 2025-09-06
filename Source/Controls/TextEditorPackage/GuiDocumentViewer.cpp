@@ -1562,6 +1562,11 @@ GuiDocumentLabel
 				OnFontChanged();
 			}
 
+			void GuiDocumentLabel::documentContainer_CachedMinSizeChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+			{
+				scrollingContainer->SetPreferredMinSize({ 0,documentContainer->GetCachedMinSize().y });
+			}
+
 			GuiDocumentConfig GuiDocumentLabel::FixConfig(const GuiDocumentConfig& config)
 			{
 				auto result = config;
@@ -1581,7 +1586,25 @@ GuiDocumentLabel
 			{
 				SetAcceptTabInput(true);
 				SetFocusableComposition(boundsComposition);
-				InstallDocumentViewer(this, containerComposition, containerComposition, boundsComposition, focusableComposition);
+
+				if (config.autoExpand)
+				{
+					InstallDocumentViewer(this, containerComposition, containerComposition, boundsComposition, focusableComposition);
+				}
+				else
+				{
+					scrollingContainer = new GuiBoundsComposition();
+					scrollingContainer->SetAlignmentToParent(Margin(0, 0, 0, 0));
+					containerComposition->AddChild(scrollingContainer);
+
+					documentContainer = new GuiBoundsComposition();
+					documentContainer->SetAlignmentToParent(Margin(-1, 0, -1, 0));
+					documentContainer->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
+					scrollingContainer->AddChild(documentContainer);
+
+					documentContainer->CachedBoundsChanged.AttachMethod(this, &GuiDocumentLabel::documentContainer_CachedMinSizeChanged);
+					InstallDocumentViewer(this, containerComposition, documentContainer, boundsComposition, focusableComposition);
+				}
 			}
 
 			GuiDocumentLabel::~GuiDocumentLabel()

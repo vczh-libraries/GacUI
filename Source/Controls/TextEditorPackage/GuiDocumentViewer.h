@@ -470,8 +470,11 @@ GuiDocumentViewer
 			{
 				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(DocumentLabelTemplate, GuiControl)
 			protected:
+				compositions::GuiBoundsComposition*			scrollingContainer = nullptr;
+				compositions::GuiBoundsComposition*			documentContainer = nullptr;
 
 				void										UpdateDisplayFont()override;
+				void										documentContainer_CachedMinSizeChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 
 				static GuiDocumentConfig					FixConfig(const GuiDocumentConfig& config);
 			public:
