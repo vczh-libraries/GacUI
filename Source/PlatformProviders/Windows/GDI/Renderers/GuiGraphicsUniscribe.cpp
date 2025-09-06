@@ -651,7 +651,7 @@ UniscribeTextRun
 				return SumHeight();
 			}
 
-			void UniscribeTextRun::SearchForLineBreak(vint tempStart, vint maxWidth, bool firstRun, vint& charLength, vint& charAdvances)
+			void UniscribeTextRun::SearchForLineBreak(vint tempStart, bool wrapLine, vint maxWidth, bool firstRun, vint& charLength, vint& charAdvances)
 			{
 				vint width=0;
 				charLength=0;
@@ -660,7 +660,7 @@ UniscribeTextRun
 				{
 					if(i==length || scriptItem->charLogattrs[i+(startFromLine-scriptItem->startFromLine)].fSoftBreak==TRUE)
 					{
-						if(width<=maxWidth || (firstRun && charLength==0))
+						if(!wrapLine || width<=maxWidth || (firstRun && charLength==0))
 						{
 							charLength=i-tempStart;
 							charAdvances=width;
@@ -843,9 +843,9 @@ UniscribeEmbeddedObjectRun
 				return 0;
 			}
 
-			void UniscribeEmbeddedObjectRun::SearchForLineBreak(vint tempStart, vint maxWidth, bool firstRun, vint& charLength, vint& charAdvances)
+			void UniscribeEmbeddedObjectRun::SearchForLineBreak(vint tempStart, bool wrapLine, vint maxWidth, bool firstRun, vint& charLength, vint& charAdvances)
 			{
-				if (firstRun || properties.size.x <= maxWidth)
+				if (firstRun || !wrapLine || properties.size.x <= maxWidth)
 				{
 					charLength = length - tempStart;
 					charAdvances = properties.size.x;
@@ -1112,17 +1112,17 @@ UniscribeLine
 				return false;
 			}
 
-			void UniscribeLine::Layout(vint availableWidth, Alignment alignment, vint top, vint& totalHeight)
+			void UniscribeLine::Layout(bool wrapLine, vint availableWidth, Alignment alignment, vint top, vint& totalHeight)
 			{
-				vint cx=0;
-				vint cy=top;
+				vint cx = 0;
+				vint cy = top;
 				virtualLines.Clear();
-				if(scriptRuns.Count()==0)
+				if (scriptRuns.Count() == 0)
 				{
 					// if this line doesn't contains any run, skip and render a blank line
-					vint height=(vint)(documentFragments[0]->fontStyle.size*1.5);
-					bounds=Rect(Point(cx, cy), Size(0, height));
-					cy+=height;
+					vint height = (vint)(documentFragments[0]->fontStyle.size * 1.5);
+					bounds = Rect(Point(cx, cy), Size(0, height));
+					cy += height;
 				}
 				else
 				{
@@ -1132,122 +1132,122 @@ UniscribeLine
 					}
 
 					// render this line into lines with auto line wrapping
-					vint startRun=0;
-					vint startRunOffset=0;
-					vint lastRun=0;
-					vint lastRunOffset=0;
-					vint currentWidth=0;
+					vint startRun = 0;
+					vint startRunOffset = 0;
+					vint lastRun = 0;
+					vint lastRunOffset = 0;
+					vint currentWidth = 0;
 
-					while(startRun<scriptRuns.Count())
+					while (startRun < scriptRuns.Count())
 					{
-						vint currentWidth=0;
-						bool firstRun=true;
+						vint currentWidth = 0;
+						bool firstRun = true;
 						// search for a range to fit in the given width
-						for(vint i=startRun;i<scriptRuns.Count();i++)
+						for (vint i = startRun; i < scriptRuns.Count(); i++)
 						{
-							vint charLength=0;
-							vint charAdvances=0;
-							UniscribeRun* run=scriptRuns[i].Obj();
-							run->SearchForLineBreak(lastRunOffset, availableWidth-currentWidth, firstRun, charLength, charAdvances);
-							firstRun=false;
+							vint charLength = 0;
+							vint charAdvances = 0;
+							UniscribeRun* run = scriptRuns[i].Obj();
+							run->SearchForLineBreak(lastRunOffset, wrapLine, availableWidth - currentWidth, firstRun, charLength, charAdvances);
+							firstRun = false;
 
-							if(charLength==run->length-lastRunOffset)
+							if (charLength == run->length - lastRunOffset)
 							{
-								lastRun=i+1;
-								lastRunOffset=0;
-								currentWidth+=charAdvances;
+								lastRun = i + 1;
+								lastRunOffset = 0;
+								currentWidth += charAdvances;
 							}
 							else
 							{
-								lastRun=i;
-								lastRunOffset=lastRunOffset+charLength;
+								lastRun = i;
+								lastRunOffset = lastRunOffset + charLength;
 								break;
 							}
 						}
 
 						// if the range is empty, than this should be the end of line, ignore it
-						if(startRun<lastRun || (startRun==lastRun && startRunOffset<lastRunOffset))
+						if (startRun < lastRun || (startRun == lastRun && startRunOffset < lastRunOffset))
 						{
 							// calculate the max line height in this range;
-							vint availableLastRun=lastRun<scriptRuns.Count()-1?lastRun:scriptRuns.Count()-1;
-							vint maxHeight=0;
-							vint maxTextHeight=0;
-							for(vint i=startRun;i<=availableLastRun;i++)
+							vint availableLastRun = lastRun < scriptRuns.Count() - 1 ? lastRun : scriptRuns.Count() - 1;
+							vint maxHeight = 0;
+							vint maxTextHeight = 0;
+							for (vint i = startRun; i <= availableLastRun; i++)
 							{
-								if(i==lastRun && lastRunOffset==0)
+								if (i == lastRun && lastRunOffset == 0)
 								{
 									break;
 								}
 								{
-									vint size=scriptRuns[i]->SumHeight();
-									if(maxHeight<size) maxHeight=size;
+									vint size = scriptRuns[i]->SumHeight();
+									if (maxHeight < size) maxHeight = size;
 								}
 								{
-									vint size=scriptRuns[i]->SumTextHeight();
-									if(maxTextHeight<size) maxTextHeight=size;
+									vint size = scriptRuns[i]->SumTextHeight();
+									if (maxTextHeight < size) maxTextHeight = size;
 								}
 							}
 
 							// determine the rendering order for all runs inside this range
-							Array<BYTE> levels(availableLastRun-startRun+1);
+							Array<BYTE> levels(availableLastRun - startRun + 1);
 							Array<int> runVisualToLogical(levels.Count());
 							Array<int> runLogicalToVisual(levels.Count());
-							for(vint i=startRun;i<=availableLastRun;i++)
+							for (vint i = startRun; i <= availableLastRun; i++)
 							{
-								levels[i-startRun]=scriptRuns[i]->scriptItem->scriptItem.a.s.uBidiLevel;
+								levels[i - startRun] = scriptRuns[i]->scriptItem->scriptItem.a.s.uBidiLevel;
 							}
 							ScriptLayout((int)levels.Count(), &levels[0], &runVisualToLogical[0], &runLogicalToVisual[0]);
 
 							// render all runs inside this range
-							vint startRunFragmentCount=-1;
-							for(vint i=startRun;i<=availableLastRun;i++)
+							vint startRunFragmentCount = -1;
+							for (vint i = startRun; i <= availableLastRun; i++)
 							{
-								vint runIndex=runVisualToLogical[i-startRun]+startRun;
-								UniscribeRun* run=scriptRuns[runIndex].Obj();
-								vint start=runIndex==startRun?startRunOffset:0;
-								vint end=runIndex==lastRun?lastRunOffset:run->length;
-								vint length=end-start;
+								vint runIndex = runVisualToLogical[i - startRun] + startRun;
+								UniscribeRun* run = scriptRuns[runIndex].Obj();
+								vint start = runIndex == startRun ? startRunOffset : 0;
+								vint end = runIndex == lastRun ? lastRunOffset : run->length;
+								vint length = end - start;
 
-								if(runIndex==startRun)
+								if (runIndex == startRun)
 								{
-									startRunFragmentCount=run->fragmentBounds.Count();
+									startRunFragmentCount = run->fragmentBounds.Count();
 								}
 
 								UniscribeRun::RunFragmentBounds fragmentBounds;
-								fragmentBounds.startFromRun=start;
-								fragmentBounds.length=length;
-								fragmentBounds.bounds=Rect(
-									Point(cx, cy+maxHeight-run->SumHeight()),
+								fragmentBounds.startFromRun = start;
+								fragmentBounds.length = length;
+								fragmentBounds.bounds = Rect(
+									Point(cx, cy + maxHeight - run->SumHeight()),
 									Size(run->SumWidth(start, length), run->SumHeight())
-									);
+								);
 								run->fragmentBounds.Add(fragmentBounds);
 
-								cx+=run->SumWidth(start, length);
+								cx += run->SumWidth(start, length);
 							}
 
 							// adjust alignment
-							vint cxOffset=0;
-							switch(alignment)
+							vint cxOffset = 0;
+							switch (alignment)
 							{
 							case Alignment::Center:
-								cxOffset=(availableWidth-cx)/2;
+								cxOffset = (availableWidth - cx) / 2;
 								break;
 							case Alignment::Right:
-								cxOffset=availableWidth-cx;
+								cxOffset = availableWidth - cx;
 								break;
 							}
 
 							// shift all bounds using alignment
-							if(cxOffset!=0)
+							if (cxOffset != 0)
 							{
-								for(vint i=startRun;i<=availableLastRun;i++)
+								for (vint i = startRun; i <= availableLastRun; i++)
 								{
-									UniscribeRun* run=scriptRuns[i].Obj();
-									for(vint j=(i==startRun?startRunFragmentCount:0);j<run->fragmentBounds.Count();j++)
+									UniscribeRun* run = scriptRuns[i].Obj();
+									for (vint j = (i == startRun ? startRunFragmentCount : 0); j < run->fragmentBounds.Count(); j++)
 									{
-										UniscribeRun::RunFragmentBounds& fragmentBounds=run->fragmentBounds[j];
-										fragmentBounds.bounds.x1+=cxOffset;
-										fragmentBounds.bounds.x2+=cxOffset;
+										UniscribeRun::RunFragmentBounds& fragmentBounds = run->fragmentBounds[j];
+										fragmentBounds.bounds.x1 += cxOffset;
+										fragmentBounds.bounds.x2 += cxOffset;
 									}
 								}
 							}
@@ -1255,71 +1255,71 @@ UniscribeLine
 							// create a virtual line
 							{
 								auto virtualLine = Ptr(new UniscribeVirtualLine);
-								virtualLine->firstRunIndex=startRun;
-								virtualLine->firstRunBoundsIndex=startRunFragmentCount;
-								virtualLine->lastRunIndex=availableLastRun;
-								virtualLine->lastRunBoundsIndex=scriptRuns[availableLastRun]->fragmentBounds.Count()-1;
+								virtualLine->firstRunIndex = startRun;
+								virtualLine->firstRunBoundsIndex = startRunFragmentCount;
+								virtualLine->lastRunIndex = availableLastRun;
+								virtualLine->lastRunBoundsIndex = scriptRuns[availableLastRun]->fragmentBounds.Count() - 1;
 
-								UniscribeRun* firstRun=scriptRuns[virtualLine->firstRunIndex].Obj();
-								UniscribeRun* lastRun=scriptRuns[virtualLine->lastRunIndex].Obj();
-								UniscribeRun::RunFragmentBounds& firstBounds=firstRun->fragmentBounds[virtualLine->firstRunBoundsIndex];
-								UniscribeRun::RunFragmentBounds& lastBounds=lastRun->fragmentBounds[virtualLine->lastRunBoundsIndex];
-								
-								virtualLine->startFromLine=firstRun->startFromLine+firstBounds.startFromRun;
-								virtualLine->length=lastRun->startFromLine+lastBounds.startFromRun+lastBounds.length-virtualLine->startFromLine;
-								virtualLine->runText=lineText.Buffer()+virtualLine->startFromLine;
+								UniscribeRun* firstRun = scriptRuns[virtualLine->firstRunIndex].Obj();
+								UniscribeRun* lastRun = scriptRuns[virtualLine->lastRunIndex].Obj();
+								UniscribeRun::RunFragmentBounds& firstBounds = firstRun->fragmentBounds[virtualLine->firstRunBoundsIndex];
+								UniscribeRun::RunFragmentBounds& lastBounds = lastRun->fragmentBounds[virtualLine->lastRunBoundsIndex];
 
-								bool updateBounds=false;
-								for(vint i=startRun;i<=availableLastRun;i++)
+								virtualLine->startFromLine = firstRun->startFromLine + firstBounds.startFromRun;
+								virtualLine->length = lastRun->startFromLine + lastBounds.startFromRun + lastBounds.length - virtualLine->startFromLine;
+								virtualLine->runText = lineText.Buffer() + virtualLine->startFromLine;
+
+								bool updateBounds = false;
+								for (vint i = startRun; i <= availableLastRun; i++)
 								{
-									UniscribeRun* run=scriptRuns[i].Obj();
-									for(vint j=(i==startRun?startRunFragmentCount:0);j<run->fragmentBounds.Count();j++)
+									UniscribeRun* run = scriptRuns[i].Obj();
+									for (vint j = (i == startRun ? startRunFragmentCount : 0); j < run->fragmentBounds.Count(); j++)
 									{
-										UniscribeRun::RunFragmentBounds& fragmentBounds=run->fragmentBounds[j];
-										if(updateBounds)
+										UniscribeRun::RunFragmentBounds& fragmentBounds = run->fragmentBounds[j];
+										if (updateBounds)
 										{
-											if(virtualLine->bounds.x1>fragmentBounds.bounds.x1) virtualLine->bounds.x1=fragmentBounds.bounds.x1;
-											if(virtualLine->bounds.x2<fragmentBounds.bounds.x2) virtualLine->bounds.x2=fragmentBounds.bounds.x2;
-											if(virtualLine->bounds.y1>fragmentBounds.bounds.y1) virtualLine->bounds.y1=fragmentBounds.bounds.y1;
-											if(virtualLine->bounds.y2<fragmentBounds.bounds.y2) virtualLine->bounds.y2=fragmentBounds.bounds.y2;
+											if (virtualLine->bounds.x1 > fragmentBounds.bounds.x1) virtualLine->bounds.x1 = fragmentBounds.bounds.x1;
+											if (virtualLine->bounds.x2 < fragmentBounds.bounds.x2) virtualLine->bounds.x2 = fragmentBounds.bounds.x2;
+											if (virtualLine->bounds.y1 > fragmentBounds.bounds.y1) virtualLine->bounds.y1 = fragmentBounds.bounds.y1;
+											if (virtualLine->bounds.y2 < fragmentBounds.bounds.y2) virtualLine->bounds.y2 = fragmentBounds.bounds.y2;
 										}
 										else
 										{
-											virtualLine->bounds=fragmentBounds.bounds;
-											updateBounds=true;
+											virtualLine->bounds = fragmentBounds.bounds;
+											updateBounds = true;
 										}
 									}
 								}
 								virtualLines.Add(virtualLine);
 							}
 
-							cx=0;
-							cy+=(vint)(maxHeight + maxTextHeight*0.5);
+							cx = 0;
+							cy += (vint)(maxHeight + maxTextHeight * 0.5);
 						}
 
-						startRun=lastRun;
-						startRunOffset=lastRunOffset;
+						startRun = lastRun;
+						startRunOffset = lastRunOffset;
 					}
 
 					// calculate line bounds
-					vint minX=0;
-					vint minY=top;
-					vint maxX=0;
-					vint maxY=top;
+					vint minX = 0;
+					vint minY = top;
+					vint maxX = 0;
+					vint maxY = top;
 					for (auto run : scriptRuns)
 					{
 						for (auto fragmentBounds : run->fragmentBounds)
 						{
-							Rect bounds=fragmentBounds.bounds;
-							if(minX>bounds.Left()) minX=bounds.Left();
-							if(minY>bounds.Top()) minX=bounds.Top();
-							if(maxX<bounds.Right()) maxX=bounds.Right();
-							if(maxY<bounds.Bottom()) maxY=bounds.Bottom();
+							Rect bounds = fragmentBounds.bounds;
+							if (minX > bounds.Left()) minX = bounds.Left();
+							if (minY > bounds.Top()) minX = bounds.Top();
+							if (maxX < bounds.Right()) maxX = bounds.Right();
+							if (maxY < bounds.Bottom()) maxY = bounds.Bottom();
 						}
 					}
-					bounds=Rect(minX, minY, maxX, maxY);
+					bounds = Rect(minX, minY, maxX, maxY);
 				}
-				totalHeight=cy;
+				totalHeight = cy;
 			}
 
 			void UniscribeLine::Render(UniscribeRun::IRendererCallback* callback, vint offsetX, vint offsetY, bool renderBackground)
@@ -1338,7 +1338,7 @@ UniscribeParagraph
 ***********************************************************************/
 
 			UniscribeParagraph::UniscribeParagraph()
-				:wrapLine(true)
+				:lastWrapLine(true)
 				,lastAvailableWidth(-1)
 				,paragraphAlignment(Alignment::Left)
 				,built(false)
@@ -1451,48 +1451,54 @@ UniscribeParagraph (Initialization)
 				return true;
 			}
 
-			void UniscribeParagraph::Layout(vint availableWidth, Alignment alignment)
+			void UniscribeParagraph::Layout(bool wrapLine, vint availableWidth, Alignment alignment)
 			{
-				if(lastAvailableWidth==availableWidth && paragraphAlignment==alignment)
+				if (lastWrapLine == wrapLine && lastAvailableWidth == availableWidth && paragraphAlignment == alignment)
 				{
 					return;
 				}
-				lastAvailableWidth=availableWidth;
-				paragraphAlignment=alignment;
+				lastWrapLine = wrapLine;
+				lastAvailableWidth = availableWidth;
+				paragraphAlignment = alignment;
 
-				vint cy=0;
+				if (lastAvailableWidth == -1)
+				{
+					return;
+				}
+
+				vint cy = 0;
 				for (auto line : lines)
 				{
-					line->Layout(availableWidth, alignment, cy, cy);
+					line->Layout(wrapLine, availableWidth, alignment, cy, cy);
 				}
 
 				// calculate paragraph bounds
-				vint minX=0;
-				vint minY=0;
-				vint maxX=0;
-				vint maxY=0;
+				vint minX = 0;
+				vint minY = 0;
+				vint maxX = 0;
+				vint maxY = 0;
 				for (auto line : lines)
 				{
-					Rect bounds=line->bounds;
-					if(minX>bounds.Left()) minX=bounds.Left();
-					if(minY>bounds.Top()) minX=bounds.Top();
-					if(maxX<bounds.Right()) maxX=bounds.Right();
-					if(maxY<bounds.Bottom()) maxY=bounds.Bottom();
+					Rect bounds = line->bounds;
+					if (minX > bounds.Left()) minX = bounds.Left();
+					if (minY > bounds.Top()) minX = bounds.Top();
+					if (maxX < bounds.Right()) maxX = bounds.Right();
+					if (maxY < bounds.Bottom()) maxY = bounds.Bottom();
 				}
 
-				vint offsetY=0;
+				vint offsetY = 0;
 				for (auto line : lines)
 				{
 					for (auto fragment : line->documentFragments)
 					{
-						vint size=fragment->fontStyle.size/3;
-						if(size>offsetY)
+						vint size = fragment->fontStyle.size / 3;
+						if (size > offsetY)
 						{
-							offsetY=size;
+							offsetY = size;
 						}
 					}
 				}
-				bounds=Rect(minX, minY, maxX, maxY+offsetY);
+				bounds = Rect(minX, minY, maxX, maxY + offsetY);
 			}
 
 			void UniscribeParagraph::Render(UniscribeRun::IRendererCallback* callback, bool renderBackground)

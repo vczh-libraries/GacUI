@@ -37,10 +37,10 @@ WindowsGDIParagraph
 
 				void PrepareUniscribeData()
 				{
-					if(paragraph->BuildUniscribeData(renderTarget->GetDC()))
+					if (paragraph->BuildUniscribeData(renderTarget->GetDC()))
 					{
-						vint width=paragraph->lastAvailableWidth==-1?65536:paragraph->lastAvailableWidth;
-						paragraph->Layout(width, paragraph->paragraphAlignment);
+						vint width = paragraph->lastAvailableWidth == -1 ? 65536 : paragraph->lastAvailableWidth;
+						paragraph->Layout(paragraph->lastWrapLine, width, paragraph->paragraphAlignment);
 					}
 				}
 
@@ -93,17 +93,13 @@ WindowsGDIParagraph
 
 				bool GetWrapLine()override
 				{
-					return paragraph->wrapLine;
+					return paragraph->lastWrapLine;
 				}
 
 				void SetWrapLine(bool value)override
 				{
-					if (paragraph->wrapLine != value)
-					{
-						paragraph->wrapLine = value;
-						paragraph->BuildUniscribeData(renderTarget->GetDC());
-						paragraph->Layout(paragraph->lastAvailableWidth, paragraph->paragraphAlignment);
-					}
+					paragraph->BuildUniscribeData(renderTarget->GetDC());
+					paragraph->Layout(value, paragraph->lastAvailableWidth, paragraph->paragraphAlignment);
 				}
 
 				vint GetMaxWidth()override
@@ -114,7 +110,7 @@ WindowsGDIParagraph
 				void SetMaxWidth(vint value)override
 				{
 					paragraph->BuildUniscribeData(renderTarget->GetDC());
-					paragraph->Layout(value, paragraph->paragraphAlignment);
+					paragraph->Layout(paragraph->lastWrapLine, value, paragraph->paragraphAlignment);
 				}
 
 				Alignment GetParagraphAlignment()override
@@ -125,7 +121,7 @@ WindowsGDIParagraph
 				void SetParagraphAlignment(Alignment value)override
 				{
 					paragraph->BuildUniscribeData(renderTarget->GetDC());
-					paragraph->Layout(paragraph->lastAvailableWidth, value);
+					paragraph->Layout(paragraph->lastWrapLine, paragraph->lastAvailableWidth, value);
 				}
 
 				bool SetFont(vint start, vint length, const WString& value)override
@@ -239,7 +235,7 @@ WindowsGDIParagraph
 				{
 					PrepareUniscribeData();
 					return Size(
-						(paragraph->wrapLine ? 0 : paragraph->bounds.Width()),
+						(paragraph->lastWrapLine ? 0 : paragraph->bounds.Width()),
 						paragraph->bounds.Height());
 				}
 

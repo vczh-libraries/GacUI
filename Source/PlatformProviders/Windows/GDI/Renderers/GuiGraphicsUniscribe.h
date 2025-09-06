@@ -169,7 +169,7 @@ UniscribeRun
 				virtual vint					SumWidth(vint charStart, vint charLength)=0;
 				virtual vint					SumHeight()=0;
 				virtual vint					SumTextHeight()=0;
-				virtual void					SearchForLineBreak(vint tempStart, vint maxWidth, bool firstRun, vint& charLength, vint& charAdvances)=0;
+				virtual void					SearchForLineBreak(vint tempStart, bool wrapLine, vint maxWidth, bool firstRun, vint& charLength, vint& charAdvances)=0;
 				virtual void					Render(IRendererCallback* callback, vint fragmentBoundsIndex, vint offsetX, vint offsetY, bool renderBackground)=0;
 			};
 
@@ -197,7 +197,7 @@ UniscribeTextRun
 				vint							SumWidth(vint charStart, vint charLength)override;
 				vint							SumHeight()override;
 				vint							SumTextHeight()override;
-				void							SearchForLineBreak(vint tempStart, vint maxWidth, bool firstRun, vint& charLength, vint& charAdvances)override;
+				void							SearchForLineBreak(vint tempStart, bool wrapLine, vint maxWidth, bool firstRun, vint& charLength, vint& charAdvances)override;
 				void							Render(IRendererCallback* callback, vint fragmentBoundsIndex, vint offsetX, vint offsetY, bool renderBackground)override;
 			};
 
@@ -218,7 +218,7 @@ UniscribeElementRun
 				vint							SumWidth(vint charStart, vint charLength)override;
 				vint							SumHeight()override;
 				vint							SumTextHeight()override;
-				void							SearchForLineBreak(vint tempStart, vint maxWidth, bool firstRun, vint& charLength, vint& charAdvances)override;
+				void							SearchForLineBreak(vint tempStart, bool wrapLine, vint maxWidth, bool firstRun, vint& charLength, vint& charAdvances)override;
 				void							Render(IRendererCallback* callback, vint fragmentBoundsIndex, vint offsetX, vint offsetY, bool renderBackground)override;
 			};
 
@@ -265,7 +265,7 @@ UniscribeLine
 
 				void							ClearUniscribeData();
 				bool							BuildUniscribeData(WinDC* dc);
-				void							Layout(vint availableWidth, Alignment alignment, vint top, vint& totalHeight);
+				void							Layout(bool wrapLine, vint availableWidth, Alignment alignment, vint top, vint& totalHeight);
 				void							Render(UniscribeRun::IRendererCallback* callback, vint offsetX, vint offsetY, bool renderBackground);
 			};
 
@@ -284,7 +284,7 @@ UniscribeParagraph
 				//***************************** Uniscribe Data
 				List<Ptr<UniscribeLine>>		lines;
 				//***************************** Layout Data
-				bool							wrapLine;
+				bool							lastWrapLine;
 				vint							lastAvailableWidth;
 				Rect							bounds;
 
@@ -293,7 +293,7 @@ UniscribeParagraph
 
 				void							ClearUniscribeData();
 				bool							BuildUniscribeData(WinDC* dc);
-				void							Layout(vint availableWidth, Alignment alignment);
+				void							Layout(bool wrapLine, vint availableWidth, Alignment alignment);
 				void							Render(UniscribeRun::IRendererCallback* callback, bool renderBackground);
 
 				void							SearchFragment(vint start, vint length, vint& fs, vint& ss, vint& fe, vint& se);
