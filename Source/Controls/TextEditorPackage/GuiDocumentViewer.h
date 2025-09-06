@@ -194,8 +194,8 @@ GuiDocumentCommonInterface
 				void										OnMouseUp(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments);
 				void										OnMouseLeave(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 
-				virtual Point								GetDocumentViewPosition();
-				virtual void								EnsureRectVisible(Rect bounds);
+				virtual Point								GetDocumentViewPosition() = 0;
+				virtual void								EnsureRectVisible(Rect bounds) = 0;
 
 				//================ callback
 

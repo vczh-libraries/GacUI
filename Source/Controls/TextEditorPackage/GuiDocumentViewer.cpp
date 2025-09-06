@@ -687,15 +687,6 @@ GuiDocumentCommonInterface
 				SetActiveHyperlink(nullptr);
 			}
 
-			Point GuiDocumentCommonInterface::GetDocumentViewPosition()
-			{
-				return Point(0, 0);
-			}
-
-			void GuiDocumentCommonInterface::EnsureRectVisible(Rect bounds)
-			{
-			}
-
 			//================ callback
 
 			void GuiDocumentCommonInterface::OnStartRender()
@@ -1462,7 +1453,8 @@ GuiDocumentViewer
 
 			Point GuiDocumentViewer::GetDocumentViewPosition()
 			{
-				return GetViewBounds().LeftTop();
+				// the document does not move in containerComposition
+				return { 0,0 };
 			}
 
 			void GuiDocumentViewer::EnsureRectVisible(Rect bounds)
