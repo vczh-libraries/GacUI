@@ -162,7 +162,6 @@ Rich Content Document (element)
 				/// <summary>Set whether paddings are inserted between paragraphs</summary>
 				/// <param name="value">Set to true so that paddings are inserted between paragraphs.</param>
 				void										SetParagraphPadding(bool value);
-
 				/// <summary>Get line wrapping.</summary>
 				/// <returns>Return true if there is automatic line wrapping.</returns>
 				bool										GetWrapLine();

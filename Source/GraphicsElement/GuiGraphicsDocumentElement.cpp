@@ -271,37 +271,38 @@ GuiDocumentElement::GuiDocumentElementRenderer
 
 			Ptr<GuiDocumentElement::GuiDocumentElementRenderer::ParagraphCache> GuiDocumentElement::GuiDocumentElementRenderer::EnsureAndGetCache(vint paragraphIndex, bool createParagraph)
 			{
-				if(paragraphIndex<0 || paragraphIndex>=paragraphCaches.Count()) return 0;
-				Ptr<DocumentParagraphRun> paragraph=element->document->paragraphs[paragraphIndex];
-				Ptr<ParagraphCache> cache=paragraphCaches[paragraphIndex];
-				if(!cache)
+				if (paragraphIndex < 0 || paragraphIndex >= paragraphCaches.Count()) return 0;
+				Ptr<DocumentParagraphRun> paragraph = element->document->paragraphs[paragraphIndex];
+				Ptr<ParagraphCache> cache = paragraphCaches[paragraphIndex];
+				if (!cache)
 				{
-					cache=Ptr(new ParagraphCache);
-					cache->fullText=paragraph->GetTextForCaret();
-					paragraphCaches[paragraphIndex]=cache;
+					cache = Ptr(new ParagraphCache);
+					cache->fullText = paragraph->GetTextForCaret();
+					paragraphCaches[paragraphIndex] = cache;
 				}
 
-				if(createParagraph)
+				if (createParagraph)
 				{
-					if(!cache->graphicsParagraph)
+					if (!cache->graphicsParagraph)
 					{
-						cache->graphicsParagraph=layoutProvider->CreateParagraph(cache->fullText, renderTarget, this);
+						cache->graphicsParagraph = layoutProvider->CreateParagraph(cache->fullText, renderTarget, this);
 						cache->graphicsParagraph->SetParagraphAlignment(paragraph->alignment ? paragraph->alignment.Value() : Alignment::Left);
+						cache->graphicsParagraph->SetWrapLine(element->wrapLine);
 						SetPropertiesVisitor::SetProperty(element->document.Obj(), this, cache, paragraph, cache->selectionBegin, cache->selectionEnd);
 					}
-					if(cache->graphicsParagraph->GetMaxWidth()!=lastMaxWidth)
+					if (cache->graphicsParagraph->GetMaxWidth() != lastMaxWidth)
 					{
 						cache->graphicsParagraph->SetMaxWidth(lastMaxWidth);
 					}
 
-					vint paragraphHeight=paragraphHeights[paragraphIndex];
-					vint height=cache->graphicsParagraph->GetHeight();
-					if(paragraphHeight!=height)
+					vint paragraphHeight = paragraphHeights[paragraphIndex];
+					vint height = cache->graphicsParagraph->GetHeight();
+					if (paragraphHeight != height)
 					{
-						cachedTotalHeight+=height-paragraphHeight;
-						paragraphHeight=height;
-						paragraphHeights[paragraphIndex]=paragraphHeight;
-						minSize=Size(0, cachedTotalHeight);
+						cachedTotalHeight += height - paragraphHeight;
+						paragraphHeight = height;
+						paragraphHeights[paragraphIndex] = paragraphHeight;
+						minSize = Size(0, cachedTotalHeight);
 					}
 				}
 

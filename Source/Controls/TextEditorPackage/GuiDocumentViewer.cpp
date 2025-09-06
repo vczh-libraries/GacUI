@@ -291,6 +291,7 @@ GuiDocumentCommonInterface
 				documentElement = GuiDocumentElement::Create();
 				documentElement->SetCallback(this);
 				documentElement->SetParagraphPadding(config.paragraphPadding);
+				documentElement->SetWrapLine(config.wrapLine);
 
 				documentComposition = new GuiBoundsComposition;
 				documentComposition->SetOwnedElement(Ptr(documentElement));

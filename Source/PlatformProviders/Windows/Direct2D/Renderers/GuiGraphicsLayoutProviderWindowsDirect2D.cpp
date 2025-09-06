@@ -528,11 +528,11 @@ WindowsDirect2DParagraph (Formatting)
 
 				void SetWrapLine(bool value)override
 				{
-					if(wrapLine!=value)
+					if (wrapLine != value)
 					{
-						wrapLine=value;
-						textLayout->SetWordWrapping(value?DWRITE_WORD_WRAPPING_WRAP:DWRITE_WORD_WRAPPING_NO_WRAP);
-						formatDataAvailable=false;
+						wrapLine = value;
+						textLayout->SetWordWrapping(value ? DWRITE_WORD_WRAPPING_WRAP : DWRITE_WORD_WRAPPING_NO_WRAP);
+						formatDataAvailable = false;
 					}
 				}
 

@@ -11,6 +11,7 @@
           <att.Rows>
             <_>composeType:MinSize</_>
             <_>composeType:MinSize</_>
+            <_>composeType:MinSize</_>
             <_>composeType:Percentage percentage:1.0</_>
           </att.Rows>
           <att.Columns>
@@ -19,10 +20,16 @@
           </att.Columns>
 
           <Cell Site="row:0 column:0">
-            <Label Text="Document"/>
+            <Label Text="GetDocumentLabelDefaultConfig()"/>
           </Cell>
           <Cell Site="row:0 column:1">
-            <Label Text="TextBox"/>
+            <Label Text="GetSinglelineTextBoxDefaultConfig()"/>
+          </Cell>
+          <Cell Site="row:2 column:0">
+            <Label Text="GetDocumentViewerDefaultConfig()"/>
+          </Cell>
+          <Cell Site="row:2 column:1">
+            <Label Text="GetMultilineTextBoxDefaultConfig()"/>
           </Cell>
 
           <Cell Site="row:1 column:0">
@@ -30,7 +37,7 @@
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:-1"/>
             </DocumentTextBox>
           </Cell>
-          <Cell Site="row:2 column:0">
+          <Cell Site="row:3 column:0">
             <DocumentViewer EditMode="Editable" Document-uri="res://EmbeddedDocument/Document">
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
             </DocumentViewer>
@@ -50,7 +57,7 @@
               </att.Behavior>
             </DocumentTextBox>
           </Cell>
-          <Cell Site="row:2 column:1">
+          <Cell Site="row:3 column:1">
             <DocumentViewer EditMode="Editable" Document-uri="res://EmbeddedDocument/Document">
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
               <att.Behavior>

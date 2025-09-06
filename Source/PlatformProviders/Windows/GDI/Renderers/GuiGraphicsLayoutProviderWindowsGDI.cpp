@@ -98,6 +98,7 @@ WindowsGDIParagraph
 
 				void SetWrapLine(bool value)override
 				{
+					CHECK_ERROR(value, L"vl::presentation::elements_windows_gdi::WindowsGDIParagraph::SetWrapLine(bool)#Non-wrapline not implemented.");
 				}
 
 				vint GetMaxWidth()override
