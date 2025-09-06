@@ -474,6 +474,8 @@ GuiDocumentViewer
 				compositions::GuiBoundsComposition*			documentContainer = nullptr;
 
 				void										UpdateDisplayFont()override;
+				Point										GetDocumentViewPosition()override;
+				void										EnsureRectVisible(Rect bounds)override;
 				void										documentContainer_CachedMinSizeChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 
 				static GuiDocumentConfig					FixConfig(const GuiDocumentConfig& config);

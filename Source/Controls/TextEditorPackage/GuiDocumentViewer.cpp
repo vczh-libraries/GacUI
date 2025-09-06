@@ -1562,6 +1562,50 @@ GuiDocumentLabel
 				OnFontChanged();
 			}
 
+			Point GuiDocumentLabel::GetDocumentViewPosition()
+			{
+				return{ -documentContainer->GetCachedBounds().x1,0 };
+			}
+
+			void GuiDocumentLabel::EnsureRectVisible(Rect bounds)
+			{
+				vint documentWidth = documentContainer->GetCachedBounds().Width();
+				vint scrollingWidth = scrollingContainer->GetCachedBounds().Width();
+				if (documentWidth <= scrollingWidth)
+				{
+					documentContainer->SetExpectedBounds({});
+					return;
+				}
+
+				vint x1 = -documentContainer->GetCachedBounds().x1;
+				vint x2 = x1 + scrollingWidth;
+				vint offset = 0;
+
+				if (bounds.x1 < x1)
+				{
+					offset = bounds.x1 - x1;
+				}
+				else if (bounds.x2 > x2)
+				{
+					offset = bounds.x2 - x2;
+				}
+
+				auto expectedBounds = documentContainer->GetExpectedBounds();
+				expectedBounds.x1 -= offset;
+				expectedBounds.x2 -= offset;
+
+				if (expectedBounds.x1 > 0)
+				{
+					expectedBounds.x1 = 0;
+				}
+				else if (expectedBounds.x1 + documentWidth < scrollingWidth)
+				{
+					expectedBounds.x1 = scrollingWidth - documentWidth;
+				}
+				expectedBounds.x2 = expectedBounds.x1;
+				documentContainer->SetExpectedBounds(expectedBounds);
+			}
+
 			void GuiDocumentLabel::documentContainer_CachedMinSizeChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
 				scrollingContainer->SetPreferredMinSize({ 0,documentContainer->GetCachedMinSize().y });
@@ -1598,7 +1642,6 @@ GuiDocumentLabel
 					containerComposition->AddChild(scrollingContainer);
 
 					documentContainer = new GuiBoundsComposition();
-					documentContainer->SetAlignmentToParent(Margin(-1, 0, -1, 0));
 					documentContainer->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 					scrollingContainer->AddChild(documentContainer);
 
