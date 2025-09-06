@@ -1606,6 +1606,16 @@ GuiDocumentLabel
 				documentContainer->SetExpectedBounds(expectedBounds);
 			}
 
+			void GuiDocumentLabel::scrollingContainer_CachedBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+			{
+				Rect bounds = scrollingContainer->GetCachedBounds();
+				vint x1 = documentContainer->GetCachedBounds().x1;
+				vint offset = -x1 - bounds.x1;
+				bounds.x1 += offset;
+				bounds.x2 += offset;
+				EnsureRectVisible(bounds);
+			}
+
 			void GuiDocumentLabel::documentContainer_CachedMinSizeChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
 				scrollingContainer->SetPreferredMinSize({ 0,documentContainer->GetCachedMinSize().y });
@@ -1645,6 +1655,7 @@ GuiDocumentLabel
 					documentContainer->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 					scrollingContainer->AddChild(documentContainer);
 
+					scrollingContainer->CachedBoundsChanged.AttachMethod(this, &GuiDocumentLabel::scrollingContainer_CachedBoundsChanged);
 					documentContainer->CachedBoundsChanged.AttachMethod(this, &GuiDocumentLabel::documentContainer_CachedMinSizeChanged);
 					InstallDocumentViewer(this, containerComposition, documentContainer, boundsComposition, focusableComposition);
 				}

@@ -476,6 +476,7 @@ GuiDocumentViewer
 				void										UpdateDisplayFont()override;
 				Point										GetDocumentViewPosition()override;
 				void										EnsureRectVisible(Rect bounds)override;
+				void										scrollingContainer_CachedBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void										documentContainer_CachedMinSizeChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 
 				static GuiDocumentConfig					FixConfig(const GuiDocumentConfig& config);
