@@ -1188,6 +1188,14 @@ GuiDocumentCommonInterface
 				});
 			}
 
+			void GuiDocumentCommonInterface::ConvertToPlainText(TextPos begin, TextPos end)
+			{
+				EditStyleInternal(begin, end, [=, this](TextPos begin, TextPos end)
+				{
+					documentElement->ConvertToPlainText(begin, end);
+				});
+			}
+
 			Ptr<DocumentStyleProperties> GuiDocumentCommonInterface::SummarizeStyle(TextPos begin, TextPos end)
 			{
 				if (begin>end)

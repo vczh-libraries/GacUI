@@ -343,6 +343,10 @@ GuiDocumentCommonInterface
 				/// <param name="begin">The begin position of the range.</param>
 				/// <param name="end">The end position of the range.</param>
 				void										ClearStyle(TextPos begin, TextPos end);
+				/// <summary>Clear all styles and remove non-text contents in a specified range.</summary>
+				/// <param name="begin">The begin position of the range.</param>
+				/// <param name="end">The end position of the range.</param>
+				void										ConvertToPlainText(TextPos begin, TextPos end);
 				/// <summary>Summarize the text style in a specified range.</summary>
 				/// <returns>The text style summary.</returns>
 				/// <param name="begin">The begin position of the range.</param>
