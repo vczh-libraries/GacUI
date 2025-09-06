@@ -13113,6 +13113,10 @@ Rich Content Document (element)
 				/// <param name="begin">The begin position of the range.</param>
 				/// <param name="end">The end position of the range.</param>
 				void										ClearStyle(TextPos begin, TextPos end);
+				/// <summary>Clear all styles and remove non-text contents in a specified range.</summary>
+				/// <param name="begin">The begin position of the range.</param>
+				/// <param name="end">The end position of the range.</param>
+				void										ConvertToPlainText(TextPos begin, TextPos end);
 				/// <summary>Summarize the text style in a specified range.</summary>
 				/// <returns>The text style summary.</returns>
 				/// <param name="begin">The begin position of the range.</param>
@@ -16851,8 +16855,8 @@ GuiDocumentCommonInterface
 				void										OnMouseUp(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments);
 				void										OnMouseLeave(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 
-				virtual Point								GetDocumentViewPosition();
-				virtual void								EnsureRectVisible(Rect bounds);
+				virtual Point								GetDocumentViewPosition() = 0;
+				virtual void								EnsureRectVisible(Rect bounds) = 0;
 
 				//================ callback
 
@@ -16862,7 +16866,14 @@ GuiDocumentCommonInterface
 
 			protected:
 
+				void										UserInput_FixForPlainText(Ptr<DocumentModel> model, vint beginParagraph, vint endParagraph);
+				void										UserInput_FixForSingleline(collections::List<WString>& paragraphTexts);
+				void										UserInput_FixForSingleline(Ptr<DocumentModel> model);
+				void										UserInput_FixForNonParagraph(WString& text);
+				void										UserInput_FixForNonParagraph(Ptr<DocumentParagraphRun> paragraph);
+
 				WString										UserInput_ConvertDocumentToText(Ptr<DocumentModel> model);
+				void										UserInput_FormatText(collections::List<WString>& paragraphTexts);
 				void										UserInput_FormatText(const WString& text, collections::List<WString>& paragraphTexts);
 				void										UserInput_FormatDocument(Ptr<DocumentModel> model);
 
@@ -16993,6 +17004,10 @@ GuiDocumentCommonInterface
 				/// <param name="begin">The begin position of the range.</param>
 				/// <param name="end">The end position of the range.</param>
 				void										ClearStyle(TextPos begin, TextPos end);
+				/// <summary>Clear all styles and remove non-text contents in a specified range.</summary>
+				/// <param name="begin">The begin position of the range.</param>
+				/// <param name="end">The end position of the range.</param>
+				void										ConvertToPlainText(TextPos begin, TextPos end);
 				/// <summary>Summarize the text style in a specified range.</summary>
 				/// <returns>The text style summary.</returns>
 				/// <param name="begin">The begin position of the range.</param>

@@ -1621,6 +1621,7 @@ UnitTest
 				case FailureMode::Copilot:
 					PrintMessage(L"Failures cause immediate exit.", MessageKind::Info);
 					break;
+				default:;
 				}
 
 				auto current = testHead;

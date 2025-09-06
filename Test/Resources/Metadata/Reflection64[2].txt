@@ -4803,6 +4803,7 @@ class presentation::controls::GuiDocumentCommonInterface : system::ReferenceType
     function CanUndo() : system::Boolean;
     function ClearStyle(begin : presentation::TextPos, end : presentation::TextPos) : system::Void;
     function ClearUndoRedo() : system::Void;
+    function ConvertToPlainText(begin : presentation::TextPos, end : presentation::TextPos) : system::Void;
     function Copy() : system::Boolean;
     function Cut() : system::Boolean;
     function EditHyperlink(paragraphIndex : system::Int64, begin : system::Int64, end : system::Int64, reference : system::String, normalStyleName : system::String, activeStyleName : system::String) : system::Void;
@@ -6615,6 +6616,7 @@ class presentation::elements::GuiDocumentElement : presentation::elements::IGuiG
     function CalculateCaret(comparingCaret : presentation::TextPos, position : presentation::elements::IGuiGraphicsParagraph::CaretRelativePosition, preferFrontSide : system::Boolean) : presentation::TextPos;
     function CalculateCaretFromPoint(point : presentation::Point) : presentation::TextPos;
     function ClearStyle(begin : presentation::TextPos, end : presentation::TextPos) : system::Void;
+    function ConvertToPlainText(begin : presentation::TextPos, end : presentation::TextPos) : system::Void;
     function EditImage(begin : presentation::TextPos, end : presentation::TextPos, image : presentation::GuiImageData^) : system::Void;
     function EditImage(paragraphIndex : presentation::TextPos, begin : presentation::TextPos, end : presentation::GuiImageData^) : system::Void;
     function EditRun(begin : presentation::TextPos, end : presentation::TextPos, model : presentation::DocumentModel^, copy : system::Boolean) : system::Void;

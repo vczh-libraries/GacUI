@@ -18697,15 +18697,6 @@ GuiDocumentCommonInterface
 				SetActiveHyperlink(nullptr);
 			}
 
-			Point GuiDocumentCommonInterface::GetDocumentViewPosition()
-			{
-				return Point(0, 0);
-			}
-
-			void GuiDocumentCommonInterface::EnsureRectVisible(Rect bounds)
-			{
-			}
-
 			//================ callback
 
 			void GuiDocumentCommonInterface::OnStartRender()
@@ -18743,9 +18734,118 @@ GuiDocumentCommonInterface
 
 			//================ basic
 
+			void GuiDocumentCommonInterface::UserInput_FixForPlainText(Ptr<DocumentModel> model, vint beginParagraph, vint endParagraph)
+			{
+				if (beginParagraph > endParagraph) return;
+
+				RunRangeMap runRanges;
+				document_editor::GetRunRange(model->paragraphs[endParagraph].Obj(), runRanges);
+
+				TextPos begin(beginParagraph, 0);
+				TextPos end(endParagraph, runRanges[model->paragraphs[endParagraph].Obj()].end);
+				model->ConvertToPlainText(begin, end);
+
+				for (vint i = beginParagraph; i <= endParagraph; i++)
+				{
+					model->paragraphs[i]->alignment.Reset();
+				}
+			}
+
+			void GuiDocumentCommonInterface::UserInput_FixForSingleline(collections::List<WString>& paragraphTexts)
+			{
+				auto line = stream::GenerateToStream([&](stream::StreamWriter& writer)
+				{
+					for(auto [paragraph, index] : indexed(paragraphTexts))
+					{
+						if (index > 0 && config.spaceForFlattenedLineBreak)
+						{
+							writer.WriteChar(L' ');
+						}
+						writer.WriteString(paragraph);
+					}
+				});
+				paragraphTexts.Clear();
+				paragraphTexts.Add(line);
+			}
+
+			void GuiDocumentCommonInterface::UserInput_FixForSingleline(Ptr<DocumentModel> model)
+			{
+				auto firstParagraph = model->paragraphs[0];
+				for (auto paragraph : From(model->paragraphs).Skip(1))
+				{
+					if (config.spaceForFlattenedLineBreak)
+					{
+						auto textRun = Ptr(new DocumentTextRun);
+						textRun->text = WString::Unmanaged(L" ");
+						firstParagraph->runs.Add(textRun);
+					}
+					CopyFrom(firstParagraph->runs, paragraph->runs, true);
+				}
+				model->paragraphs.Clear();
+				model->paragraphs.Add(firstParagraph);
+			}
+
+			void GuiDocumentCommonInterface::UserInput_FixForNonParagraph(WString& text)
+			{
+				text = stream::GenerateToStream([&](stream::StreamWriter& writer)
+				{
+					for (vint j = 0; j < text.Length(); j++)
+					{
+						if (text[j] == L'\n')
+						{
+							if (config.spaceForFlattenedLineBreak)
+							{
+								writer.WriteChar(L' ');
+							}
+						}
+						else if (text[j] != L'\r')
+						{
+							writer.WriteChar(text[j]);
+						}
+					}
+				});
+			}
+
+			void GuiDocumentCommonInterface::UserInput_FixForNonParagraph(Ptr<DocumentParagraphRun> paragraph)
+			{
+				List<Ptr<DocumentContainerRun>> containers;
+				containers.Add(paragraph);
+
+				for (vint i = 0; i < containers.Count(); i++)
+				{
+					auto container = containers[i];
+					for (auto run : container->runs)
+					{
+						if (auto subContainer = run.Cast<DocumentContainerRun>())
+						{
+							containers.Add(subContainer);
+						}
+						else if (auto textRun = run.Cast<DocumentTextRun>())
+						{
+							UserInput_FixForNonParagraph(textRun->text);
+						}
+					}
+				}
+			}
+
 			WString GuiDocumentCommonInterface::UserInput_ConvertDocumentToText(Ptr<DocumentModel> model)
 			{
 				return model->GetTextForReading(WString::Unmanaged(config.doubleLineBreaksBetweenParagraph ? L"\r\n\r\n" : L"\r\n"));
+			}
+
+			void GuiDocumentCommonInterface::UserInput_FormatText(collections::List<WString>& paragraphTexts)
+			{
+				if (config.paragraphMode != GuiDocumentParagraphMode::Paragraph)
+				{
+					for (vint i = 0; i < paragraphTexts.Count(); i++)
+					{
+						UserInput_FixForNonParagraph(paragraphTexts[i]);
+					}
+				}
+				if (config.paragraphMode == GuiDocumentParagraphMode::Singleline)
+				{
+					UserInput_FixForSingleline(paragraphTexts);
+				}
 			}
 
 			void GuiDocumentCommonInterface::UserInput_FormatText(const WString& text, collections::List<WString>& paragraphTexts)
@@ -18800,22 +18900,9 @@ GuiDocumentCommonInterface
 				{
 					paragraphTexts.Add(paragraph);
 				}
-
 				if (config.paragraphMode == GuiDocumentParagraphMode::Singleline)
 				{
-					auto line = stream::GenerateToStream([&](stream::StreamWriter& writer)
-					{
-						for(auto [paragraph, index] : indexed(paragraphTexts))
-						{
-							if (index > 0 && config.spaceForFlattenedLineBreak)
-							{
-								writer.WriteChar(L' ');
-							}
-							writer.WriteString(paragraph);
-						}
-					});
-					paragraphTexts.Clear();
-					paragraphTexts.Add(line);
+					UserInput_FixForSingleline(paragraphTexts);
 				}
 			}
 
@@ -18824,21 +18911,7 @@ GuiDocumentCommonInterface
 				if (!model) return;
 				if (config.pasteAsPlainText)
 				{
-					if (model->paragraphs.Count() > 0)
-					{
-						RunRangeMap runRanges;
-						vint lastParagraphIndex = model->paragraphs.Count() - 1;
-						document_editor::GetRunRange(model->paragraphs[lastParagraphIndex].Obj(), runRanges);
-
-						TextPos begin(0, 0);
-						TextPos end(lastParagraphIndex, runRanges[model->paragraphs[lastParagraphIndex].Obj()].end);
-						model->ConvertToPlainText(begin, end);
-
-						for (auto paragraph : model->paragraphs)
-						{
-							paragraph->alignment.Reset();
-						}
-					}
+					UserInput_FixForPlainText(model, 0, model->paragraphs.Count() - 1);
 
 					if (baselineDocument)
 					{
@@ -18857,60 +18930,14 @@ GuiDocumentCommonInterface
 
 				if (config.paragraphMode != GuiDocumentParagraphMode::Paragraph)
 				{
-					List<Ptr<DocumentContainerRun>> containers;
 					for (auto paragraph : model->paragraphs)
 					{
-						containers.Add(paragraph);
-					}
-
-					for (vint i = 0; i < containers.Count(); i++)
-					{
-						auto container = containers[i];
-						for (auto run : container->runs)
-						{
-							if (auto subContainer = run.Cast<DocumentContainerRun>())
-							{
-								containers.Add(subContainer);
-							}
-							else if (auto textRun = run.Cast<DocumentTextRun>())
-							{
-								textRun->text = stream::GenerateToStream([&](stream::StreamWriter& writer)
-								{
-									for (vint j = 0; j < textRun->text.Length(); j++)
-									{
-										if (textRun->text[j] == L'\n')
-										{
-											if (config.spaceForFlattenedLineBreak)
-											{
-												writer.WriteChar(L' ');
-											}
-										}
-										else if (textRun->text[j] != L'\r')
-										{
-											writer.WriteChar(textRun->text[j]);
-										}
-									}
-								});
-							}
-						}
+						UserInput_FixForNonParagraph(paragraph);
 					}
 				}
-
 				if (config.paragraphMode == GuiDocumentParagraphMode::Singleline)
 				{
-					auto firstParagraph = model->paragraphs[0];
-					for(auto paragraph:From(model->paragraphs).Skip(1))
-					{
-						if (config.spaceForFlattenedLineBreak)
-						{
-							auto textRun = Ptr(new DocumentTextRun);
-							textRun->text = WString::Unmanaged(L" ");
-							firstParagraph->runs.Add(textRun);
-						}
-						CopyFrom(firstParagraph->runs, paragraph->runs, true);
-					}
-					model->paragraphs.Clear();
-					model->paragraphs.Add(firstParagraph);
+					UserInput_FixForSingleline(model);
 				}
 			}
 
@@ -19027,11 +19054,44 @@ GuiDocumentCommonInterface
 
 			void GuiDocumentCommonInterface::NotifyParagraphUpdated(vint index, vint oldCount, vint newCount, bool updatedText)
 			{
-				documentElement->NotifyParagraphUpdated(index, oldCount, newCount, updatedText);
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::controls::GuiDocumentCommonInterface::NotifyParagraphUpdated(vint, vint, vint, bool)#"
+				auto model = documentElement->GetDocument();
+				if (config.paragraphMode == GuiDocumentParagraphMode::Singleline)
+				{
+					CHECK_ERROR(model->paragraphs.Count() <= 1, ERROR_MESSAGE_PREFIX L"In Singleline mode, there should be no more than 1 paragraphs in the document.");
+				}
+
+				if (0 <= index && index + newCount <= model->paragraphs.Count())
+				{
+					if (config.pasteAsPlainText && updatedText)
+					{
+						UserInput_FixForPlainText(model, index, index + newCount - 1);
+						if (baselineDocument)
+						{
+							CopyFrom(model->styles, baselineDocument->styles);
+						}
+						else
+						{
+							model->styles.Clear();
+						}
+					}
+
+					if (config.paragraphMode != GuiDocumentParagraphMode::Paragraph)
+					{
+						for (vint i = index; i < index + newCount; i++)
+						{
+							UserInput_FixForNonParagraph(model->paragraphs[i]);
+						}
+					}
+
+					documentElement->NotifyParagraphUpdated(index, oldCount, newCount, updatedText);
+				}
+#undef ERROR_MESSAGE_PREFIX
 			}
 
 			void GuiDocumentCommonInterface::EditRun(TextPos begin, TextPos end, Ptr<DocumentModel> model, bool copy)
 			{
+				UserInput_FormatDocument(model);
 				EditTextInternal(begin, end, [=, this](TextPos begin, TextPos end, vint& paragraphCount, vint& lastParagraphLength)
 				{
 					documentElement->EditRun(begin, end, model, copy);
@@ -19044,14 +19104,26 @@ GuiDocumentCommonInterface
 			{
 				EditTextInternal(begin, end, [=, this, &text](TextPos begin, TextPos end, vint& paragraphCount, vint& lastParagraphLength)
 				{
-					documentElement->EditText(begin, end, frontSide, text);
-					paragraphCount=text.Count();
-					lastParagraphLength=paragraphCount==0?0:text[paragraphCount-1].Length();
+					Array<WString> updatedText;
+					bool useUpdatedText = config.paragraphMode != GuiDocumentParagraphMode::Paragraph;
+					if (useUpdatedText)
+					{
+						List<WString> paragraphTexts;
+						CopyFrom(paragraphTexts, text);
+						UserInput_FormatText(paragraphTexts);
+						CopyFrom(updatedText, paragraphTexts);
+					}
+
+					const Array<WString>& textToUse = useUpdatedText ? updatedText : text;
+					documentElement->EditText(begin, end, frontSide, textToUse);
+					paragraphCount = textToUse.Count();
+					lastParagraphLength = paragraphCount == 0 ? 0 : textToUse[paragraphCount - 1].Length();
 				});
 			}
 
 			void GuiDocumentCommonInterface::EditStyle(TextPos begin, TextPos end, Ptr<DocumentStyleProperties> style)
 			{
+				if (config.pasteAsPlainText) return;
 				EditStyleInternal(begin, end, [=, this](TextPos begin, TextPos end)
 				{
 					documentElement->EditStyle(begin, end, style);
@@ -19060,6 +19132,7 @@ GuiDocumentCommonInterface
 
 			void GuiDocumentCommonInterface::EditImage(TextPos begin, TextPos end, Ptr<GuiImageData> image)
 			{
+				if (config.pasteAsPlainText) return;
 				EditTextInternal(begin, end, [=, this](TextPos begin, TextPos end, vint& paragraphCount, vint& lastParagraphLength)
 				{
 					documentElement->EditImage(begin, end, image);
@@ -19070,6 +19143,7 @@ GuiDocumentCommonInterface
 
 			void GuiDocumentCommonInterface::EditHyperlink(vint paragraphIndex, vint begin, vint end, const WString& reference, const WString& normalStyleName, const WString& activeStyleName)
 			{
+				if (config.pasteAsPlainText) return;
 				EditStyleInternal(TextPos(paragraphIndex, begin), TextPos(paragraphIndex, end), [=, this](TextPos begin, TextPos end)
 				{
 					documentElement->EditHyperlink(begin.row, begin.column, end.column, reference, normalStyleName, activeStyleName);
@@ -19078,6 +19152,7 @@ GuiDocumentCommonInterface
 
 			void GuiDocumentCommonInterface::RemoveHyperlink(vint paragraphIndex, vint begin, vint end)
 			{
+				if (config.pasteAsPlainText) return;
 				EditStyleInternal(TextPos(paragraphIndex, begin), TextPos(paragraphIndex, end), [=, this](TextPos begin, TextPos end)
 				{
 					documentElement->RemoveHyperlink(begin.row, begin.column, end.column);
@@ -19086,6 +19161,7 @@ GuiDocumentCommonInterface
 
 			void GuiDocumentCommonInterface::EditStyleName(TextPos begin, TextPos end, const WString& styleName)
 			{
+				if (config.pasteAsPlainText) return;
 				EditStyleInternal(begin, end, [=, this](TextPos begin, TextPos end)
 				{
 					documentElement->EditStyleName(begin, end, styleName);
@@ -19094,6 +19170,7 @@ GuiDocumentCommonInterface
 
 			void GuiDocumentCommonInterface::RemoveStyleName(TextPos begin, TextPos end)
 			{
+				if (config.pasteAsPlainText) return;
 				EditStyleInternal(begin, end, [=, this](TextPos begin, TextPos end)
 				{
 					documentElement->RemoveStyleName(begin, end);
@@ -19102,6 +19179,7 @@ GuiDocumentCommonInterface
 
 			void GuiDocumentCommonInterface::RenameStyle(const WString& oldStyleName, const WString& newStyleName)
 			{
+				if (config.pasteAsPlainText) return;
 				documentElement->RenameStyle(oldStyleName, newStyleName);
 
 				// submit redo-undo
@@ -19113,9 +19191,18 @@ GuiDocumentCommonInterface
 
 			void GuiDocumentCommonInterface::ClearStyle(TextPos begin, TextPos end)
 			{
+				if (config.pasteAsPlainText) return;
 				EditStyleInternal(begin, end, [=, this](TextPos begin, TextPos end)
 				{
 					documentElement->ClearStyle(begin, end);
+				});
+			}
+
+			void GuiDocumentCommonInterface::ConvertToPlainText(TextPos begin, TextPos end)
+			{
+				EditStyleInternal(begin, end, [=, this](TextPos begin, TextPos end)
+				{
+					documentElement->ConvertToPlainText(begin, end);
 				});
 			}
 
@@ -19472,7 +19559,8 @@ GuiDocumentViewer
 
 			Point GuiDocumentViewer::GetDocumentViewPosition()
 			{
-				return GetViewBounds().LeftTop();
+				// the document does not move in containerComposition
+				return { 0,0 };
 			}
 
 			void GuiDocumentViewer::EnsureRectVisible(Rect bounds)
@@ -33847,6 +33935,25 @@ GuiDocumentElement
 					}
 
 					if (document->ClearStyle(begin, end))
+					{
+						elementRenderer->NotifyParagraphUpdated(begin.row, end.row - begin.row + 1, end.row - begin.row + 1, false);
+					}
+					InvokeOnCompositionStateChanged();
+				}
+			}
+
+			void GuiDocumentElement::ConvertToPlainText(TextPos begin, TextPos end)
+			{
+				if (auto elementRenderer = renderer.Cast<GuiDocumentElementRenderer>())
+				{
+					if (begin > end)
+					{
+						TextPos temp = begin;
+						begin = end;
+						end = temp;
+					}
+
+					if (document->ConvertToPlainText(begin, end))
 					{
 						elementRenderer->NotifyParagraphUpdated(begin.row, end.row - begin.row + 1, end.row - begin.row + 1, false);
 					}
