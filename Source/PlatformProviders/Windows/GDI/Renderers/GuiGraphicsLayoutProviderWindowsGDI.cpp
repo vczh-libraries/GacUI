@@ -259,6 +259,31 @@ WindowsGDIParagraph
 					return true;
 				}
 
+				bool IsCaretBoundsFromTextRun(vint caret, bool caretFrontSide)
+				{
+					if (!paragraph->IsValidCaret(caret)) return false;
+
+					vint frontLine = 0;
+					vint backLine = 0;
+					paragraph->GetLineIndexFromTextPos(caret, frontLine, backLine);
+					if (frontLine == -1 || backLine == -1) return false;
+
+					vint lineIndex = caretFrontSide ? frontLine : backLine;
+					lineIndex = lineIndex < 0 ? 0 : lineIndex > paragraph->lines.Count() - 1 ? paragraph->lines.Count() - 1 : lineIndex;
+					Ptr<UniscribeLine> line = paragraph->lines[caretFrontSide ? frontLine : backLine];
+
+					vint frontRun = -1;
+					vint backRun = -1;
+					paragraph->GetRunIndexFromTextPos(caret, lineIndex, frontRun, backRun);
+					if (frontRun == -1 || backRun == -1) return false;
+
+					vint runIndex = caretFrontSide ? frontRun : backRun;
+					runIndex = runIndex < 0 ? 0 : runIndex > line->scriptRuns.Count() - 1 ? line->scriptRuns.Count() - 1 : runIndex;
+					Ptr<UniscribeRun> run = line->scriptRuns[runIndex];
+
+					return run.Cast<UniscribeTextRun>();
+				}
+
 				void Render(Rect bounds)override
 				{
 					PrepareUniscribeData();
@@ -269,17 +294,17 @@ WindowsGDIParagraph
 					paragraph->Render(this, false);
 					paragraphDC = 0;
 
-					if(caret!=-1)
+					if (caret != -1)
 					{
-						Rect caretBounds=GetCaretBounds(caret, caretFrontSide);
-						vint x=caretBounds.x1+bounds.x1;
-						vint y1=caretBounds.y1+bounds.y1;
-						vint y2=y1+(vint)(caretBounds.Height()*1.5);
+						Rect caretBounds = GetCaretBounds(caret, caretFrontSide);
+						vint x = caretBounds.x1 + bounds.x1;
+						vint y1 = caretBounds.y1 + bounds.y1;
+						vint y2 = y1 + (vint)(caretBounds.Height() * (IsCaretBoundsFromTextRun(caret, caretFrontSide) ? 1.5 : 1));
 
-						WinDC* dc=renderTarget->GetDC();
+						WinDC* dc = renderTarget->GetDC();
 						dc->SetPen(caretPen);
-						dc->MoveTo(x-1, y1);
-						dc->LineTo(x-1, y2);
+						dc->MoveTo(x - 1, y1);
+						dc->LineTo(x - 1, y2);
 						dc->MoveTo(x, y1);
 						dc->LineTo(x, y2);
 					}

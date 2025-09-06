@@ -1998,114 +1998,125 @@ UniscribeParagraph (Caret Helper)
 
 			Rect UniscribeParagraph::GetCaretBoundsWithLine(vint caret, vint lineIndex, vint virtualLineIndex, bool frontSide)
 			{
-				Ptr<UniscribeLine> line=lines[lineIndex];
-				if(line->startFromParagraph<=caret && caret<=line->startFromParagraph+line->lineText.Length())
+				Ptr<UniscribeLine> line = lines[lineIndex];
+				if (line->startFromParagraph <= caret && caret <= line->startFromParagraph + line->lineText.Length())
 				{
-					if(line->lineText==L"") return line->bounds;
-					Ptr<UniscribeVirtualLine> virtualLine=line->virtualLines[virtualLineIndex];
+					if (line->lineText == L"") return line->bounds;
+					Ptr<UniscribeVirtualLine> virtualLine = line->virtualLines[virtualLineIndex];
 
-					for(vint i=virtualLine->firstRunIndex;i<=virtualLine->lastRunIndex;i++)
+					for (vint i = virtualLine->firstRunIndex; i <= virtualLine->lastRunIndex; i++)
 					{
-						Ptr<UniscribeRun> run=line->scriptRuns[i];
-						if(Ptr<UniscribeTextRun> textRun=run.Cast<UniscribeTextRun>())
+						Ptr<UniscribeRun> run = line->scriptRuns[i];
+						vint firstBounds = i == virtualLine->firstRunIndex ? virtualLine->firstRunBoundsIndex : 0;
+						vint lastBounds = i == virtualLine->lastRunIndex ? virtualLine->lastRunBoundsIndex : run->fragmentBounds.Count() - 1;
+
+						for (vint j = firstBounds; j <= lastBounds; j++)
 						{
-							vint firstBounds=i==virtualLine->firstRunIndex?virtualLine->firstRunBoundsIndex:0;
-							vint lastBounds=i==virtualLine->lastRunIndex?virtualLine->lastRunBoundsIndex:run->fragmentBounds.Count()-1;
-					
-							for(vint j=firstBounds;j<=lastBounds;j++)
+							UniscribeRun::RunFragmentBounds& bounds = run->fragmentBounds[j];
+							vint boundsStart = line->startFromParagraph + run->startFromLine + bounds.startFromRun;
+							if (boundsStart == caret)
 							{
-								UniscribeRun::RunFragmentBounds& bounds=run->fragmentBounds[j];
-								vint boundsStart=line->startFromParagraph+run->startFromLine+bounds.startFromRun;
-								if(boundsStart==caret)
+								if (!frontSide || i == virtualLine->firstRunIndex && j == virtualLine->firstRunBoundsIndex)
 								{
-									if(!frontSide || i==virtualLine->firstRunIndex && j==virtualLine->firstRunBoundsIndex)
+									if (run->scriptItem->scriptItem.a.fRTL)
 									{
-										if(run->scriptItem->scriptItem.a.fRTL)
-										{
-											return Rect(bounds.bounds.x2, bounds.bounds.y1, bounds.bounds.x2, bounds.bounds.y2);
-										}
-										else
-										{
-											return Rect(bounds.bounds.x1, bounds.bounds.y1, bounds.bounds.x1, bounds.bounds.y2);
-										}
+										return Rect(bounds.bounds.x2, bounds.bounds.y1, bounds.bounds.x2, bounds.bounds.y2);
+									}
+									else
+									{
+										return Rect(bounds.bounds.x1, bounds.bounds.y1, bounds.bounds.x1, bounds.bounds.y2);
 									}
 								}
-								else if(caret==boundsStart+bounds.length)
+							}
+							else if (caret == boundsStart + bounds.length)
+							{
+								if (frontSide || i == virtualLine->lastRunIndex && j == virtualLine->lastRunBoundsIndex)
 								{
-									if(frontSide || i==virtualLine->lastRunIndex && j==virtualLine->lastRunBoundsIndex)
+									if (run->scriptItem->scriptItem.a.fRTL)
 									{
-										if(run->scriptItem->scriptItem.a.fRTL)
-										{
-											return Rect(bounds.bounds.x1, bounds.bounds.y1, bounds.bounds.x1, bounds.bounds.y2);
-										}
-										else
-										{
-											return Rect(bounds.bounds.x2, bounds.bounds.y1, bounds.bounds.x2, bounds.bounds.y2);
-										}
+										return Rect(bounds.bounds.x1, bounds.bounds.y1, bounds.bounds.x1, bounds.bounds.y2);
+									}
+									else
+									{
+										return Rect(bounds.bounds.x2, bounds.bounds.y1, bounds.bounds.x2, bounds.bounds.y2);
 									}
 								}
-								else if(boundsStart<caret && caret<boundsStart+bounds.length)
+							}
+							else if (boundsStart < caret && caret < boundsStart + bounds.length)
+							{
+								if (Ptr<UniscribeTextRun> textRun = run.Cast<UniscribeTextRun>())
 								{
-									vint accumulatedWidth=0;
-									vint lastRunChar=bounds.startFromRun;
-									for(vint i=0;i<=bounds.length;i++)
+									vint accumulatedWidth = 0;
+									vint lastRunChar = bounds.startFromRun;
+									for (vint i = 0; i <= bounds.length; i++)
 									{
-										vint charIndex=bounds.startFromRun+i;
-										vint newLastRunChar=lastRunChar;
-										if(i>0)
+										vint charIndex = bounds.startFromRun + i;
+										vint newLastRunChar = lastRunChar;
+										if (i > 0)
 										{
-											if(i==bounds.length)
+											if (i == bounds.length)
 											{
-												newLastRunChar=charIndex;
+												newLastRunChar = charIndex;
 											}
 											else
 											{
-												WORD cluster1=textRun->wholeGlyph.charCluster[charIndex-1];
-												WORD cluster2=textRun->wholeGlyph.charCluster[charIndex];
-												if(cluster1!=cluster2)
+												WORD cluster1 = textRun->wholeGlyph.charCluster[charIndex - 1];
+												WORD cluster2 = textRun->wholeGlyph.charCluster[charIndex];
+												if (cluster1 != cluster2)
 												{
-													newLastRunChar=charIndex;
+													newLastRunChar = charIndex;
 												}
 											}
 										}
 
-										if(newLastRunChar!=lastRunChar)
+										if (newLastRunChar != lastRunChar)
 										{
-											WORD glyph1=0;
-											WORD glyph2=0;
-											if(run->scriptItem->scriptItem.a.fRTL)
+											WORD glyph1 = 0;
+											WORD glyph2 = 0;
+											if (run->scriptItem->scriptItem.a.fRTL)
 											{
-												glyph2=textRun->wholeGlyph.charCluster[lastRunChar]+1;
-												glyph1=newLastRunChar==run->length?0:textRun->wholeGlyph.charCluster[newLastRunChar]+1;
+												glyph2 = textRun->wholeGlyph.charCluster[lastRunChar] + 1;
+												glyph1 = newLastRunChar == run->length ? 0 : textRun->wholeGlyph.charCluster[newLastRunChar] + 1;
 											}
 											else
 											{
-												glyph1=textRun->wholeGlyph.charCluster[lastRunChar];
-												glyph2=newLastRunChar==run->length?(WORD)textRun->wholeGlyph.glyphs.Count():textRun->wholeGlyph.charCluster[newLastRunChar];
+												glyph1 = textRun->wholeGlyph.charCluster[lastRunChar];
+												glyph2 = newLastRunChar == run->length ? (WORD)textRun->wholeGlyph.glyphs.Count() : textRun->wholeGlyph.charCluster[newLastRunChar];
 											}
 
-											vint glyphWidth=0;
-											for(WORD g=glyph1;g<glyph2;g++)
+											vint glyphWidth = 0;
+											for (WORD g = glyph1; g < glyph2; g++)
 											{
-												glyphWidth+=textRun->wholeGlyph.glyphAdvances[g];
+												glyphWidth += textRun->wholeGlyph.glyphAdvances[g];
 											}
-											accumulatedWidth+=glyphWidth;
-											lastRunChar=newLastRunChar;
+											accumulatedWidth += glyphWidth;
+											lastRunChar = newLastRunChar;
 
-											if(line->startFromParagraph+run->startFromLine+lastRunChar==caret)
+											if (line->startFromParagraph + run->startFromLine + lastRunChar == caret)
 											{
-												vint x=0;
-												if(run->scriptItem->scriptItem.a.fRTL)
+												vint x = 0;
+												if (run->scriptItem->scriptItem.a.fRTL)
 												{
-													x=bounds.bounds.x2-accumulatedWidth;
+													x = bounds.bounds.x2 - accumulatedWidth;
 												}
 												else
 												{
-													x=bounds.bounds.x1+accumulatedWidth;
+													x = bounds.bounds.x1 + accumulatedWidth;
 												}
 												return Rect(x, bounds.bounds.y1, x, bounds.bounds.y2);
 											}
 										}
+									}
+								}
+								else
+								{
+									if (frontSide == !run->scriptItem->scriptItem.a.fRTL)
+									{
+										return Rect(bounds.bounds.x1, bounds.bounds.y1, bounds.bounds.x1, bounds.bounds.y2);
+									}
+									else
+									{
+										return Rect(bounds.bounds.x2, bounds.bounds.y1, bounds.bounds.x2, bounds.bounds.y2);
 									}
 								}
 							}
