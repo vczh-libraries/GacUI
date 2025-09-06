@@ -1,5 +1,6 @@
 #include "GuiGraphicsWindowsGDI.h"
 #include "GuiGraphicsRenderersWindowsGDI.h"
+#include "GuiGraphicsTextRenderersWindowsGDI.h"
 #include "GuiGraphicsLayoutProviderWindowsGDI.h"
 #include "..\..\WinNativeWindow.h"
 #include "..\..\..\Hosted\GuiHostedController.h"

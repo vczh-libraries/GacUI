@@ -1,5 +1,6 @@
 #include "GuiGraphicsWindowsDirect2D.h"
 #include "GuiGraphicsRenderersWindowsDirect2D.h"
+#include "GuiGraphicsTextRenderersWindowsDirect2D.h"
 #include "GuiGraphicsLayoutProviderWindowsDirect2D.h"
 #include "..\..\ServicesImpl\WindowsImageService.h"
 #include "..\..\WinNativeWindow.h"
