@@ -311,6 +311,7 @@ UniscribeParagraph
 				void							GetLineIndexFromTextPos(vint textPos, vint& frontLine, vint& backLine);
 				void							GetVirtualLineIndexFromTextPos(vint textPos, vint lineIndex, vint& frontLine, vint& backLine);
 				void							GetItemIndexFromTextPos(vint textPos, vint lineIndex, vint& frontItem, vint& backItem);
+				void							GetRunIndexFromTextPos(vint textPos, vint lineIndex, vint& frontRun, vint& backRun);
 				Rect							GetCaretBoundsWithLine(vint caret, vint lineIndex, vint virtualLineIndex, bool frontSide);
 				vint							GetCaretFromXWithTextRunBounds(vint x, vint lineIndex, vint runIndex, vint runBoundsIndex);
 				vint							GetCaretFromXWithLine(vint x, vint lineIndex, vint virtualLineIndex);

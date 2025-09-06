@@ -1951,6 +1951,51 @@ UniscribeParagraph (Caret Helper)
 				}
 			}
 
+			void UniscribeParagraph::GetRunIndexFromTextPos(vint textPos, vint lineIndex, vint& frontRun, vint& backRun)
+			{
+				frontRun = -1;
+				backRun = -1;
+				if (!IsValidTextPos(textPos)) return;
+				if (lineIndex < 0 || lineIndex >= lines.Count()) return;
+
+				Ptr<UniscribeLine> line = lines[lineIndex];
+				vint start = 0;
+				vint end = line->scriptRuns.Count() - 1;
+				while (start <= end)
+				{
+					vint middle = (start + end) / 2;
+					Ptr<UniscribeRun> run = line->scriptRuns[middle];
+					vint lineStart = line->startFromParagraph + run->startFromLine;
+					vint lineEnd = line->startFromParagraph + run->startFromLine + run->length;
+					if (textPos < lineStart)
+					{
+						end = middle - 1;
+					}
+					else if (textPos > lineEnd)
+					{
+						start = middle + 1;
+					}
+					else if (textPos == lineStart)
+					{
+						frontRun = middle == 0 ? 0 : middle - 1;
+						backRun = middle;
+						return;
+					}
+					else if (textPos == lineEnd)
+					{
+						frontRun = middle;
+						backRun = middle == line->scriptItems.Count() - 1 ? middle : middle + 1;
+						return;
+					}
+					else
+					{
+						frontRun = middle;
+						backRun = middle;
+						return;
+					}
+				}
+			}
+
 			Rect UniscribeParagraph::GetCaretBoundsWithLine(vint caret, vint lineIndex, vint virtualLineIndex, bool frontSide)
 			{
 				Ptr<UniscribeLine> line=lines[lineIndex];
@@ -2441,51 +2486,68 @@ UniscribeParagraph (Caret)
 
 			vint UniscribeParagraph::GetNearestCaretFromTextPos(vint textPos, bool frontSide)
 			{
-				if(!IsValidTextPos(textPos)) return -1;
-				vint frontLine=0;
-				vint backLine=0;
+				if (!IsValidTextPos(textPos)) return -1;
+				vint frontLine = 0;
+				vint backLine = 0;
 				GetLineIndexFromTextPos(textPos, frontLine, backLine);
-				if(frontLine==-1 || backLine==-1) return -1;
-				if(frontLine!=backLine)
+				if (frontLine == -1 || backLine == -1) return -1;
+				if (frontLine != backLine)
 				{
-					return frontSide?textPos-1:textPos+1;
+					return frontSide ? textPos - 1 : textPos + 1;
 				}
 
-				Ptr<UniscribeLine> line=lines[frontLine];
-				if(textPos==line->startFromParagraph || textPos==line->startFromParagraph+line->lineText.Length())
+				Ptr<UniscribeLine> line = lines[frontLine];
+				if (textPos == line->startFromParagraph || textPos == line->startFromParagraph + line->lineText.Length())
 				{
 					return textPos;
 				}
 
-				vint frontItem=-1;
-				vint backItem=-1;
-				GetItemIndexFromTextPos(textPos, frontLine, frontItem, backItem);
-				if(frontItem==-1 || backItem==-1) return -1;
-				if(frontItem!=backItem) return textPos;
-				
-				Ptr<UniscribeItem> item=line->scriptItems[frontItem];
-				vint lineTextPos=textPos-line->startFromParagraph;
-				if(lineTextPos==item->startFromLine) return textPos;
-				if(lineTextPos==item->startFromLine+item->length) return textPos;
-
-				vint itemTextPos=lineTextPos-item->startFromLine;
-				if(item->charLogattrs[itemTextPos].fCharStop) return textPos;
-
-				if(frontSide)
+				vint frontRun = -1;
+				vint backRun = -1;
+				GetRunIndexFromTextPos(textPos, frontLine, frontRun, backRun);
+				if (frontRun == -1 || backRun == -1) return -1;
+				if (frontRun != backRun)
 				{
-					for(vint i=itemTextPos-1;i>=0;i--)
+					return textPos;
+				}
+
+				Ptr<UniscribeRun> run = line->scriptRuns[frontRun];
+				if (auto objectRun = run.Cast<UniscribeEmbeddedObjectRun>())
+				{
+					return frontSide
+						? line->startFromParagraph + run->startFromLine
+						: line->startFromParagraph + run->startFromLine + run->length
+						;
+				}
+				vint lineTextPos = textPos - line->startFromParagraph;
+				if (lineTextPos == run->startFromLine) return textPos;
+				if (lineTextPos == run->startFromLine + run->length) return textPos;
+
+				auto item = run->scriptItem;
+				vint itemTextPos = lineTextPos - item->startFromLine;
+				if (item->charLogattrs[itemTextPos].fCharStop) return textPos;
+
+				if (frontSide)
+				{
+					for (vint i = itemTextPos - 1; i >= 0; i--)
 					{
-						if(item->charLogattrs[i].fCharStop) return i+line->startFromParagraph+item->startFromLine;
+						if (item->charLogattrs[i].fCharStop)
+						{
+							return i + line->startFromParagraph + item->startFromLine;
+						}
 					}
-					return line->startFromParagraph+item->startFromLine;
+					return line->startFromParagraph + item->startFromLine;
 				}
 				else
 				{
-					for(vint i=itemTextPos+1;i<item->length;i++)
+					for (vint i = itemTextPos + 1; i < item->length; i++)
 					{
-						if(item->charLogattrs[i].fCharStop) return i+line->startFromParagraph+item->startFromLine;
+						if (item->charLogattrs[i].fCharStop)
+						{
+							return i + line->startFromParagraph + item->startFromLine;
+						}
 					}
-					return line->startFromParagraph+item->startFromLine+item->length;
+					return line->startFromParagraph + item->startFromLine + item->length;
 				}
 			}
 
