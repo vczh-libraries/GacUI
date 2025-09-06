@@ -1571,6 +1571,7 @@ GuiDocumentLabel
 
 			void GuiDocumentLabel::EnsureRectVisible(Rect bounds)
 			{
+				if (!scrollingContainer) return;
 				vint documentWidth = documentContainer->GetCachedBounds().Width();
 				vint scrollingWidth = scrollingContainer->GetCachedBounds().Width();
 				if (documentWidth <= scrollingWidth)
