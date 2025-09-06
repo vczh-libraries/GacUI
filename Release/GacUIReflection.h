@@ -416,9 +416,11 @@ Type List (Controls)
 			F(presentation::controls::GalleryPos)\
 			F(presentation::controls::list::GalleryGroup)\
 			F(presentation::controls::list::GroupedDataSource)\
+			F(presentation::controls::GuiDocumentEditMode)\
+			F(presentation::controls::GuiDocumentParagraphMode)\
+			F(presentation::controls::GuiDocumentConfig)\
 			F(presentation::controls::GuiDocumentItem)\
 			F(presentation::controls::GuiDocumentCommonInterface)\
-			F(presentation::controls::GuiDocumentCommonInterface::EditMode)\
 			F(presentation::controls::GuiTextBoxCommonInterface)\
 			F(presentation::controls::list::IDataGridContext)\
 			F(presentation::controls::list::IDataVisualizerFactory)\

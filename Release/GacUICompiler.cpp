@@ -8142,6 +8142,18 @@ GuiDocumentInstanceLoaderBase
 			private:
 				using TypeInfo = typename TBaseType::TypeInfo;
 
+			protected:
+				GlobalStringKey					_Behavior;
+
+				void AddAdditionalArguments(types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, IGuiInstanceLoader::ArgumentMap& arguments, GuiResourceError::List& errors, Ptr<WfNewClassExpression> createControl)override
+				{
+					vint indexBehavior = arguments.Keys().IndexOf(_Behavior);
+					if (indexBehavior != -1)
+					{
+						createControl->arguments.Add(arguments.GetByIndex(indexBehavior)[0].expression);
+					}
+				}
+
 			public:
 				using PropertyInfo = IGuiInstanceLoader::PropertyInfo;
 				using ArgumentMap = IGuiInstanceLoader::ArgumentMap;
@@ -8149,6 +8161,7 @@ GuiDocumentInstanceLoaderBase
 				GuiDocumentInstanceLoaderBase(const WString& _typeName, theme::ThemeName themeName)
 					:TBaseType(_typeName, themeName)
 				{
+					_Behavior = GlobalStringKey::Get(L"Behavior");
 				}
 
 				void GetPropertyNames(GuiResourcePrecompileContext& precompileContext, const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
@@ -8162,6 +8175,12 @@ GuiDocumentInstanceLoaderBase
 					if (propertyInfo.propertyName == GlobalStringKey::Empty)
 					{
 						return GuiInstancePropertyInfo::CollectionWithParent(TypeInfoRetriver<Ptr<GuiDocumentItem>>::CreateTypeInfo());
+					}
+					else if(propertyInfo.propertyName == _Behavior && this->CanCreate(propertyInfo.typeInfo))
+					{
+						auto info = GuiInstancePropertyInfo::Assign(TypeInfoRetriver<GuiDocumentConfig>::CreateTypeInfo());
+						info->usage = GuiInstancePropertyInfo::ConstructorArgument;
+						return info;
 					}
 					return TBaseType::GetPropertyType(precompileContext, propertyInfo);
 				}
@@ -8240,6 +8259,11 @@ Initialization
 				manager->SetLoader(Ptr(new GuiDocumentItemInstanceLoader));
 				manager->SetLoader(Ptr(new GuiDocumentViewerInstanceLoader));
 				manager->SetLoader(Ptr(new GuiDocumentLabelInstanceLoader));
+				manager->CreateVirtualType(GlobalStringKey::Get(description::TypeInfo<GuiDocumentLabel>::content.typeName),
+					Ptr(new GuiDocumentInstanceLoaderBase<GuiTemplateControlInstanceLoader<GuiDocumentLabel>>(
+						L"presentation::controls::GuiDocumentTextBox",
+						theme::ThemeName::DocumentTextBox
+					)));
 			}
 		}
 	}
@@ -8763,6 +8787,7 @@ GuiInstanceLoader_Document.cpp
 		default: GuiControl*, GuiGraphicsComposition*
 	GuiDocumentViewer, GuiDocumentLable
 		default: Ptr<GuiDocumentItem>
+		ctor: Behavior(GuiDocumentConfig)
 GuiInstanceLoader_List.cpp
 	GuiComboBox
 		ctor: ListControl(GuiListControl*)
@@ -9118,7 +9143,6 @@ GuiPredefinedInstanceLoadersPlugin
 						ADD_VIRTUAL_CONTROL		(RadioButton,				GuiSelectableButton,			RadioButton											);
 						ADD_VIRTUAL_CONTROL		(HScroll,					GuiScroll,						HScroll												);
 						ADD_VIRTUAL_CONTROL		(VScroll,					GuiScroll,						VScroll												);
-						ADD_VIRTUAL_CONTROL		(DocumentTextBox,			GuiDocumentLabel,				DocumentTextBox										);
 						ADD_VIRTUAL_CONTROL_F	(HTracker,					GuiScroll,						HTracker,				InitializeTrackerProgressBar);
 						ADD_VIRTUAL_CONTROL_F	(VTracker,					GuiScroll,						VTracker,				InitializeTrackerProgressBar);
 						ADD_VIRTUAL_CONTROL_F	(ProgressBar,				GuiScroll,						ProgressBar,			InitializeTrackerProgressBar);
@@ -11266,7 +11290,7 @@ GenerateRemoteProtocolHeaderFile
 					auto type = stream::GenerateToStream([&](stream::TextWriter& writer)
 					{
 						GuiRpPrintTypeVisitor visitor(symbols, config, writer);
-					eventDecl->request->type->Accept(&visitor);
+						eventDecl->request->type->Accept(&visitor);
 					});
 					if (!eventTypes.Contains(type))
 					{

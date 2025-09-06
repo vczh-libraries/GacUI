@@ -18023,6 +18023,75 @@ namespace vl
 			using namespace compositions;
 
 /***********************************************************************
+GuiDocumentConfig
+***********************************************************************/
+
+			GuiDocumentConfig GuiDocumentConfig::GetDocumentLabelDefaultConfig()
+			{
+				GuiDocumentConfig config;
+				config.autoExpand = true;
+				config.pasteAsPlainText = false;
+				config.wrapLine = true;
+				config.paragraphMode = GuiDocumentParagraphMode::Paragraph;
+				config.paragraphPadding = true;
+				config.doubleLineBreaksBetweenParagraph = true;
+				config.spaceForFlattenedLineBreak = false;
+				return config;
+			}
+
+			GuiDocumentConfig GuiDocumentConfig::GetDocumentViewerDefaultConfig()
+			{
+				GuiDocumentConfig config;
+				config.autoExpand = false;
+				config.pasteAsPlainText = false;
+				config.wrapLine = true;
+				config.paragraphMode = GuiDocumentParagraphMode::Paragraph;
+				config.paragraphPadding = true;
+				config.doubleLineBreaksBetweenParagraph = true;
+				config.spaceForFlattenedLineBreak = false;
+				return config;
+			}
+
+			GuiDocumentConfig GuiDocumentConfig::GetSinglelineTextBoxDefaultConfig()
+			{
+				GuiDocumentConfig config;
+				config.autoExpand = false;
+				config.pasteAsPlainText = true;
+				config.wrapLine = false;
+				config.paragraphMode = GuiDocumentParagraphMode::Singleline;
+				config.paragraphPadding = false;
+				config.doubleLineBreaksBetweenParagraph = false;
+				config.spaceForFlattenedLineBreak = false;
+				return config;
+			}
+
+			GuiDocumentConfig GuiDocumentConfig::GetMultilineTextBoxDefaultConfig()
+			{
+				GuiDocumentConfig config;
+				config.autoExpand = false;
+				config.pasteAsPlainText = true;
+				config.wrapLine = false;
+				config.paragraphMode = GuiDocumentParagraphMode::Multiline;
+				config.paragraphPadding = false;
+				config.doubleLineBreaksBetweenParagraph = false;
+				config.spaceForFlattenedLineBreak = false;
+				return config;
+			}
+
+			GuiDocumentConfig GuiDocumentConfig::OverrideConfig(const GuiDocumentConfig& toOverride, const GuiDocumentConfig& newConfig)
+			{
+				GuiDocumentConfig result = toOverride;
+				if (newConfig.autoExpand) result.autoExpand = newConfig.autoExpand;
+				if (newConfig.pasteAsPlainText) result.pasteAsPlainText = newConfig.pasteAsPlainText;
+				if (newConfig.wrapLine) result.wrapLine = newConfig.wrapLine;
+				if (newConfig.paragraphMode) result.paragraphMode = newConfig.paragraphMode;
+				if (newConfig.paragraphPadding) result.paragraphPadding = newConfig.paragraphPadding;
+				if (newConfig.doubleLineBreaksBetweenParagraph) result.doubleLineBreaksBetweenParagraph = newConfig.doubleLineBreaksBetweenParagraph;
+				if (newConfig.spaceForFlattenedLineBreak) result.spaceForFlattenedLineBreak = newConfig.spaceForFlattenedLineBreak;
+				return result;
+			}
+
+/***********************************************************************
 GuiDocumentItem
 ***********************************************************************/
 
@@ -18107,65 +18176,65 @@ GuiDocumentCommonInterface
 
 			bool GuiDocumentCommonInterface::ProcessKey(VKEY code, bool shift, bool ctrl)
 			{
-				if(IGuiShortcutKeyItem* item=internalShortcutKeyManager->TryGetShortcut(ctrl, shift, false, code))
+				if (IGuiShortcutKeyItem* item = internalShortcutKeyManager->TryGetShortcut(ctrl, shift, false, code))
 				{
 					GuiEventArgs arguments(documentControl->GetBoundsComposition());
 					item->Executed.Execute(arguments);
 					return true;
 				}
 
-				TextPos currentCaret=documentElement->GetCaretEnd();
-				bool frontSide=documentElement->IsCaretEndPreferFrontSide();
-				TextPos begin=documentElement->GetCaretBegin();
-				TextPos end=documentElement->GetCaretEnd();
+				TextPos currentCaret = documentElement->GetCaretEnd();
+				bool frontSide = documentElement->IsCaretEndPreferFrontSide();
+				TextPos begin = documentElement->GetCaretBegin();
+				TextPos end = documentElement->GetCaretEnd();
 
-				switch(code)
+				switch (code)
 				{
 				case VKEY::KEY_UP:
 					{
-						TextPos newCaret=documentElement->CalculateCaret(currentCaret, IGuiGraphicsParagraph::CaretMoveUp, frontSide);
+						TextPos newCaret = documentElement->CalculateCaret(currentCaret, IGuiGraphicsParagraph::CaretMoveUp, frontSide);
 						Move(newCaret, shift, frontSide);
 					}
 					break;
 				case VKEY::KEY_DOWN:
 					{
-						TextPos newCaret=documentElement->CalculateCaret(currentCaret, IGuiGraphicsParagraph::CaretMoveDown, frontSide);
+						TextPos newCaret = documentElement->CalculateCaret(currentCaret, IGuiGraphicsParagraph::CaretMoveDown, frontSide);
 						Move(newCaret, shift, frontSide);
 					}
 					break;
 				case VKEY::KEY_LEFT:
 					{
-						TextPos newCaret=documentElement->CalculateCaret(currentCaret, IGuiGraphicsParagraph::CaretMoveLeft, frontSide);
+						TextPos newCaret = documentElement->CalculateCaret(currentCaret, IGuiGraphicsParagraph::CaretMoveLeft, frontSide);
 						Move(newCaret, shift, frontSide);
 					}
 					break;
 				case VKEY::KEY_RIGHT:
 					{
-						TextPos newCaret=documentElement->CalculateCaret(currentCaret, IGuiGraphicsParagraph::CaretMoveRight, frontSide);
+						TextPos newCaret = documentElement->CalculateCaret(currentCaret, IGuiGraphicsParagraph::CaretMoveRight, frontSide);
 						Move(newCaret, shift, frontSide);
 					}
 					break;
 				case VKEY::KEY_HOME:
 					{
-						TextPos newCaret=documentElement->CalculateCaret(currentCaret, IGuiGraphicsParagraph::CaretLineFirst, frontSide);
-						if(newCaret==currentCaret)
+						TextPos newCaret = documentElement->CalculateCaret(currentCaret, IGuiGraphicsParagraph::CaretLineFirst, frontSide);
+						if (newCaret == currentCaret)
 						{
-							newCaret=documentElement->CalculateCaret(currentCaret, IGuiGraphicsParagraph::CaretFirst, frontSide);
+							newCaret = documentElement->CalculateCaret(currentCaret, IGuiGraphicsParagraph::CaretFirst, frontSide);
 						}
 						Move(newCaret, shift, frontSide);
 					}
 					break;
 				case VKEY::KEY_END:
 					{
-						TextPos newCaret=documentElement->CalculateCaret(currentCaret, IGuiGraphicsParagraph::CaretLineLast, frontSide);
-						if(newCaret==currentCaret)
+						TextPos newCaret = documentElement->CalculateCaret(currentCaret, IGuiGraphicsParagraph::CaretLineLast, frontSide);
+						if (newCaret == currentCaret)
 						{
-							newCaret=documentElement->CalculateCaret(currentCaret, IGuiGraphicsParagraph::CaretLast, frontSide);
+							newCaret = documentElement->CalculateCaret(currentCaret, IGuiGraphicsParagraph::CaretLast, frontSide);
 						}
 						Move(newCaret, shift, frontSide);
 					}
-					break;
-				case VKEY::KEY_PRIOR:
+				break;
+					case VKEY::KEY_PRIOR:
 					{
 					}
 					break;
@@ -18174,9 +18243,9 @@ GuiDocumentCommonInterface
 					}
 					break;
 				case VKEY::KEY_BACK:
-					if(editMode==Editable)
+					if (editMode == GuiDocumentEditMode::Editable)
 					{
-						if(begin==end)
+						if (begin == end)
 						{
 							ProcessKey(VKEY::KEY_LEFT, true, false);
 						}
@@ -18186,9 +18255,9 @@ GuiDocumentCommonInterface
 					}
 					break;
 				case VKEY::KEY_DELETE:
-					if(editMode==Editable)
+					if (editMode == GuiDocumentEditMode::Editable)
 					{
-						if(begin==end)
+						if (begin == end)
 						{
 							ProcessKey(VKEY::KEY_RIGHT, true, false);
 						}
@@ -18198,12 +18267,12 @@ GuiDocumentCommonInterface
 					}
 					break;
 				case VKEY::KEY_RETURN:
-					if(editMode==Editable)
+					if (editMode == GuiDocumentEditMode::Editable)
 					{
-						if(ctrl)
+						if (ctrl)
 						{
 							Array<WString> text(1);
-							text[0]=L"\r\n";
+							text[0] = L"\r\n";
 							EditText(documentElement->GetCaretBegin(), documentElement->GetCaretEnd(), documentElement->IsCaretEndPreferFrontSide(), text);
 						}
 						else
@@ -18231,6 +18300,8 @@ GuiDocumentCommonInterface
 
 				documentElement = GuiDocumentElement::Create();
 				documentElement->SetCallback(this);
+				documentElement->SetParagraphPadding(config.paragraphPadding);
+				documentElement->SetWrapLine(config.wrapLine);
 
 				documentComposition = new GuiBoundsComposition;
 				documentComposition->SetOwnedElement(Ptr(documentElement));
@@ -18413,9 +18484,9 @@ GuiDocumentCommonInterface
 
 			void GuiDocumentCommonInterface::OnCaretNotify(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
-				if(documentControl->GetVisuallyEnabled())
+				if (documentControl->GetVisuallyEnabled())
 				{
-					if(editMode!=ViewOnly)
+					if (editMode != GuiDocumentEditMode::ViewOnly)
 					{
 						documentElement->SetCaretVisible(!documentElement->GetCaretVisible());
 					}
@@ -18424,9 +18495,9 @@ GuiDocumentCommonInterface
 
 			void GuiDocumentCommonInterface::OnGotFocus(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
-				if(documentControl->GetVisuallyEnabled())
+				if (documentControl->GetVisuallyEnabled())
 				{
-					if(editMode!=ViewOnly)
+					if (editMode != GuiDocumentEditMode::ViewOnly)
 					{
 						documentElement->SetCaretVisible(true);
 						UpdateCaretPoint();
@@ -18444,13 +18515,13 @@ GuiDocumentCommonInterface
 
 			void GuiDocumentCommonInterface::OnKeyDown(compositions::GuiGraphicsComposition* sender, compositions::GuiKeyEventArgs& arguments)
 			{
-				if(documentControl->GetVisuallyEnabled())
+				if (documentControl->GetVisuallyEnabled())
 				{
-					if(editMode!=ViewOnly)
+					if (editMode != GuiDocumentEditMode::ViewOnly)
 					{
-						if(ProcessKey(arguments.code, arguments.shift, arguments.ctrl))
+						if (ProcessKey(arguments.code, arguments.shift, arguments.ctrl))
 						{
-							arguments.handled=true;
+							arguments.handled = true;
 						}
 					}
 				}
@@ -18460,7 +18531,7 @@ GuiDocumentCommonInterface
 			{
 				if (documentControl->GetVisuallyEnabled())
 				{
-					if (editMode == Editable &&
+					if (editMode == GuiDocumentEditMode::Editable &&
 						arguments.code != (wchar_t)VKEY::KEY_ESCAPE &&
 						arguments.code != (wchar_t)VKEY::KEY_BACK &&
 						arguments.code != (wchar_t)VKEY::KEY_RETURN &&
@@ -18509,7 +18580,7 @@ GuiDocumentCommonInterface
 				{
 					switch(editMode)
 					{
-					case ViewOnly:
+					case GuiDocumentEditMode::ViewOnly:
 						{
 							auto package = documentElement->GetHyperlinkFromPoint({ x, y });
 							bool handCursor = false;
@@ -18546,8 +18617,8 @@ GuiDocumentCommonInterface
 							}
 						}
 						break;
-					case Selectable:
-					case Editable:
+					case GuiDocumentEditMode::Selectable:
+					case GuiDocumentEditMode::Editable:
 						if(dragging)
 						{
 							TextPos caret=documentElement->CalculateCaretFromPoint(Point(x, y));
@@ -18569,11 +18640,11 @@ GuiDocumentCommonInterface
 				{
 					switch(editMode)
 					{
-					case ViewOnly:
+					case GuiDocumentEditMode::ViewOnly:
 						SetActiveHyperlink(documentElement->GetHyperlinkFromPoint({ x, y }));
 						break;
-					case Selectable:
-					case Editable:
+					case GuiDocumentEditMode::Selectable:
+					case GuiDocumentEditMode::Editable:
 						{
 							documentControl->SetFocused();
 							TextPos caret=documentElement->CalculateCaretFromPoint(Point(x, y));
@@ -18600,7 +18671,7 @@ GuiDocumentCommonInterface
 					dragging=false;
 					switch(editMode)
 					{
-					case ViewOnly:
+					case GuiDocumentEditMode::ViewOnly:
 						{
 							auto package = documentElement->GetHyperlinkFromPoint({ x, y });
 							if(activeHyperlinks)
@@ -18672,10 +18743,181 @@ GuiDocumentCommonInterface
 
 			//================ basic
 
-			GuiDocumentCommonInterface::GuiDocumentCommonInterface()
+			WString GuiDocumentCommonInterface::UserInput_ConvertDocumentToText(Ptr<DocumentModel> model)
+			{
+				return model->GetTextForReading(WString::Unmanaged(config.doubleLineBreaksBetweenParagraph ? L"\r\n\r\n" : L"\r\n"));
+			}
+
+			void GuiDocumentCommonInterface::UserInput_FormatText(const WString& text, collections::List<WString>& paragraphTexts)
+			{
+				stream::StringReader reader(text);
+				WString paragraph;
+				bool empty = true;
+
+				if (config.doubleLineBreaksBetweenParagraph)
+				{
+					while (!reader.IsEnd())
+					{
+						WString line = reader.ReadLine();
+						if (empty)
+						{
+							paragraph += line;
+							empty = false;
+						}
+						else if (line != L"")
+						{
+							if (config.paragraphMode == GuiDocumentParagraphMode::Paragraph)
+							{
+								paragraph += L"\r\n" + line;
+							}
+							else if(config.spaceForFlattenedLineBreak)
+							{
+								paragraph += L" " + line;
+							}
+							else
+							{
+								paragraph += line;
+							}
+						}
+						else
+						{
+							paragraphTexts.Add(paragraph);
+							paragraph = L"";
+							empty = true;
+						}
+					}
+				}
+				else
+				{
+					while (!reader.IsEnd())
+					{
+						WString line = reader.ReadLine();
+						paragraphTexts.Add(line);
+					}
+				}
+
+				if (!empty)
+				{
+					paragraphTexts.Add(paragraph);
+				}
+
+				if (config.paragraphMode == GuiDocumentParagraphMode::Singleline)
+				{
+					auto line = stream::GenerateToStream([&](stream::StreamWriter& writer)
+					{
+						for(auto [paragraph, index] : indexed(paragraphTexts))
+						{
+							if (index > 0 && config.spaceForFlattenedLineBreak)
+							{
+								writer.WriteChar(L' ');
+							}
+							writer.WriteString(paragraph);
+						}
+					});
+					paragraphTexts.Clear();
+					paragraphTexts.Add(line);
+				}
+			}
+
+			void GuiDocumentCommonInterface::UserInput_FormatDocument(Ptr<DocumentModel> model)
+			{
+				if (!model) return;
+				if (config.pasteAsPlainText)
+				{
+					if (model->paragraphs.Count() > 0)
+					{
+						RunRangeMap runRanges;
+						vint lastParagraphIndex = model->paragraphs.Count() - 1;
+						document_editor::GetRunRange(model->paragraphs[lastParagraphIndex].Obj(), runRanges);
+
+						TextPos begin(0, 0);
+						TextPos end(lastParagraphIndex, runRanges[model->paragraphs[lastParagraphIndex].Obj()].end);
+						model->ConvertToPlainText(begin, end);
+
+						for (auto paragraph : model->paragraphs)
+						{
+							paragraph->alignment.Reset();
+						}
+					}
+
+					if (baselineDocument)
+					{
+						CopyFrom(model->styles, baselineDocument->styles);
+					}
+					else
+					{
+						model->styles.Clear();
+					}
+				}
+
+				if (model->paragraphs.Count() == 0)
+				{
+					return;
+				}
+
+				if (config.paragraphMode != GuiDocumentParagraphMode::Paragraph)
+				{
+					List<Ptr<DocumentContainerRun>> containers;
+					for (auto paragraph : model->paragraphs)
+					{
+						containers.Add(paragraph);
+					}
+
+					for (vint i = 0; i < containers.Count(); i++)
+					{
+						auto container = containers[i];
+						for (auto run : container->runs)
+						{
+							if (auto subContainer = run.Cast<DocumentContainerRun>())
+							{
+								containers.Add(subContainer);
+							}
+							else if (auto textRun = run.Cast<DocumentTextRun>())
+							{
+								textRun->text = stream::GenerateToStream([&](stream::StreamWriter& writer)
+								{
+									for (vint j = 0; j < textRun->text.Length(); j++)
+									{
+										if (textRun->text[j] == L'\n')
+										{
+											if (config.spaceForFlattenedLineBreak)
+											{
+												writer.WriteChar(L' ');
+											}
+										}
+										else if (textRun->text[j] != L'\r')
+										{
+											writer.WriteChar(textRun->text[j]);
+										}
+									}
+								});
+							}
+						}
+					}
+				}
+
+				if (config.paragraphMode == GuiDocumentParagraphMode::Singleline)
+				{
+					auto firstParagraph = model->paragraphs[0];
+					for(auto paragraph:From(model->paragraphs).Skip(1))
+					{
+						if (config.spaceForFlattenedLineBreak)
+						{
+							auto textRun = Ptr(new DocumentTextRun);
+							textRun->text = WString::Unmanaged(L" ");
+							firstParagraph->runs.Add(textRun);
+						}
+						CopyFrom(firstParagraph->runs, paragraph->runs, true);
+					}
+					model->paragraphs.Clear();
+					model->paragraphs.Add(firstParagraph);
+				}
+			}
+
+			GuiDocumentCommonInterface::GuiDocumentCommonInterface(const GuiDocumentConfig& _config)
+				: config(_config)
 			{
 				undoRedoProcessor = Ptr(new GuiDocumentUndoRedoProcessor);
-
 				internalShortcutKeyManager = Ptr(new GuiShortcutKeyManager);
 				AddShortcutCommand(VKEY::KEY_Z, Func<bool()>(this, &GuiDocumentCommonInterface::Undo));
 				AddShortcutCommand(VKEY::KEY_Y, Func<bool()>(this, &GuiDocumentCommonInterface::Redo));
@@ -18696,6 +18938,8 @@ GuiDocumentCommonInterface
 
 			void GuiDocumentCommonInterface::SetDocument(Ptr<DocumentModel> value)
 			{
+				value = value ? value->CopyDocument() : nullptr;
+				UserInput_FormatDocument(value);
 				SetActiveHyperlink(0);
 				ClearUndoRedo();
 				NotifyModificationSaved();
@@ -18792,7 +19036,7 @@ GuiDocumentCommonInterface
 				{
 					documentElement->EditRun(begin, end, model, copy);
 					paragraphCount=model->paragraphs.Count();
-					lastParagraphLength=paragraphCount==0?0:model->paragraphs[paragraphCount-1]->GetText(false).Length();
+					lastParagraphLength=paragraphCount==0?0:model->paragraphs[paragraphCount-1]->GetTextForCaret().Length();
 				});
 			}
 
@@ -18960,26 +19204,26 @@ GuiDocumentCommonInterface
 				return activeHyperlinks ? activeHyperlinks->hyperlinks[0]->reference : L"";
 			}
 
-			GuiDocumentCommonInterface::EditMode GuiDocumentCommonInterface::GetEditMode()
+			GuiDocumentEditMode GuiDocumentCommonInterface::GetEditMode()
 			{
 				return editMode;
 			}
 
-			void GuiDocumentCommonInterface::SetEditMode(EditMode value)
+			void GuiDocumentCommonInterface::SetEditMode(GuiDocumentEditMode value)
 			{
-				if(activeHyperlinks)
+				if (activeHyperlinks)
 				{
 					SetActiveHyperlink(nullptr);
 				}
 
-				editMode=value;
-				if(editMode==ViewOnly)
+				editMode = value;
+				if (editMode == GuiDocumentEditMode::ViewOnly)
 				{
 					UpdateCursor(nullptr);
 				}
 				else
 				{
-					INativeCursor* cursor=GetCurrentController()->ResourceService()->GetSystemCursor(INativeCursor::IBeam);
+					INativeCursor* cursor = GetCurrentController()->ResourceService()->GetSystemCursor(INativeCursor::IBeam);
 					UpdateCursor(cursor);
 				}
 			}
@@ -18992,7 +19236,7 @@ GuiDocumentCommonInterface
 				Ptr<DocumentParagraphRun> lastParagraph=documentElement->GetDocument()->paragraphs[lastIndex];
 
 				TextPos begin(0, 0);
-				TextPos end(lastIndex, lastParagraph->GetText(false).Length());
+				TextPos end(lastIndex, lastParagraph->GetTextForCaret().Length());
 				SetCaret(begin, end);
 			}
 
@@ -19008,54 +19252,25 @@ GuiDocumentCommonInterface
 				}
 
 				Ptr<DocumentModel> model=documentElement->GetDocument()->CopyDocument(begin, end, false);
-				return model->GetText(true);
+				return UserInput_ConvertDocumentToText(model);
 			}
 
 			void GuiDocumentCommonInterface::SetSelectionText(const WString& value)
 			{
-				List<WString> paragraphs;
+				List<WString> paragraphTexts;
+				UserInput_FormatText(value, paragraphTexts);
+
+				TextPos begin = documentElement->GetCaretBegin();
+				TextPos end = documentElement->GetCaretEnd();
+				if (begin > end)
 				{
-					stream::StringReader reader(value);
-					WString paragraph;
-					bool empty=true;
-
-					while(!reader.IsEnd())
-					{
-						WString line=reader.ReadLine();
-						if(empty)
-						{
-							paragraph+=line;
-							empty=false;
-						}
-						else if(line!=L"")
-						{
-							paragraph+=L"\r\n"+line;
-						}
-						else
-						{
-							paragraphs.Add(paragraph);
-							paragraph=L"";
-							empty=true;
-						}
-					}
-
-					if(!empty)
-					{
-						paragraphs.Add(paragraph);
-					}
-				}
-
-				TextPos begin=documentElement->GetCaretBegin();
-				TextPos end=documentElement->GetCaretEnd();
-				if(begin>end)
-				{
-					TextPos temp=begin;
-					begin=end;
-					end=temp;
+					TextPos temp = begin;
+					begin = end;
+					end = temp;
 				}
 
 				Array<WString> text;
-				CopyFrom(text, paragraphs);
+				CopyFrom(text, paragraphTexts);
 				EditText(begin, end, documentElement->IsCaretEndPreferFrontSide(), text);
 			}
 
@@ -19076,6 +19291,8 @@ GuiDocumentCommonInterface
 
 			void GuiDocumentCommonInterface::SetSelectionModel(Ptr<DocumentModel> value)
 			{
+				value = value ? value->CopyDocument() : nullptr;
+				UserInput_FormatDocument(value);
 				TextPos begin=documentElement->GetCaretBegin();
 				TextPos end=documentElement->GetCaretEnd();
 				if(begin>end)
@@ -19092,7 +19309,7 @@ GuiDocumentCommonInterface
 
 			bool GuiDocumentCommonInterface::CanCut()
 			{
-				return editMode==Editable && documentElement->GetCaretBegin()!=documentElement->GetCaretEnd();
+				return editMode == GuiDocumentEditMode::Editable && documentElement->GetCaretBegin() != documentElement->GetCaretEnd();
 			}
 
 			bool GuiDocumentCommonInterface::CanCopy()
@@ -19102,10 +19319,17 @@ GuiDocumentCommonInterface
 
 			bool GuiDocumentCommonInterface::CanPaste()
 			{
-				if (editMode == Editable)
+				if (editMode == GuiDocumentEditMode::Editable)
 				{
 					auto reader = GetCurrentController()->ClipboardService()->ReadClipboard();
-					return reader->ContainsText() || reader->ContainsDocument() || reader->ContainsImage();
+					if (config.pasteAsPlainText)
+					{
+						return reader->ContainsText();
+					}
+					else
+					{
+						return reader->ContainsText() || reader->ContainsDocument() || reader->ContainsImage();
+					}
 				}
 				return false;
 			}
@@ -19115,7 +19339,11 @@ GuiDocumentCommonInterface
 				if (!CanCut())return false;
 				auto writer = GetCurrentController()->ClipboardService()->WriteClipboard();
 				auto model = GetSelectionModel();
-				writer->SetDocument(model);
+				writer->SetText(UserInput_ConvertDocumentToText(model));
+				if (!config.pasteAsPlainText)
+				{
+					writer->SetDocument(model);
+				}
 				writer->Submit();
 				SetSelectionText(L"");
 				return true;
@@ -19126,7 +19354,11 @@ GuiDocumentCommonInterface
 				if (!CanCopy()) return false;
 				auto writer = GetCurrentController()->ClipboardService()->WriteClipboard();
 				auto model = GetSelectionModel();
-				writer->SetDocument(model);
+				writer->SetText(UserInput_ConvertDocumentToText(model));
+				if (!config.pasteAsPlainText)
+				{
+					writer->SetDocument(model);
+				}
 				writer->Submit();
 				return true;
 			}
@@ -19135,7 +19367,7 @@ GuiDocumentCommonInterface
 			{
 				if (!CanPaste()) return false;
 				auto reader = GetCurrentController()->ClipboardService()->ReadClipboard();
-				if (reader->ContainsDocument())
+				if (reader->ContainsDocument() && !config.pasteAsPlainText)
 				{
 					if (auto document = reader->GetDocument())
 					{
@@ -19148,7 +19380,7 @@ GuiDocumentCommonInterface
 					SetSelectionText(reader->GetText());
 					return true;
 				}
-				if (reader->ContainsImage())
+				if (reader->ContainsImage() && !config.pasteAsPlainText)
 				{
 					if (auto image = reader->GetImage())
 					{
@@ -19164,12 +19396,12 @@ GuiDocumentCommonInterface
 
 			bool GuiDocumentCommonInterface::CanUndo()
 			{
-				return editMode==Editable && undoRedoProcessor->CanUndo();
+				return editMode == GuiDocumentEditMode::Editable && undoRedoProcessor->CanUndo();
 			}
 
 			bool GuiDocumentCommonInterface::CanRedo()
 			{
-				return editMode==Editable && undoRedoProcessor->CanRedo();
+				return editMode == GuiDocumentEditMode::Editable && undoRedoProcessor->CanRedo();
 			}
 
 			void GuiDocumentCommonInterface::ClearUndoRedo()
@@ -19246,31 +19478,57 @@ GuiDocumentViewer
 			void GuiDocumentViewer::EnsureRectVisible(Rect bounds)
 			{
 				Rect viewBounds=GetViewBounds();
-				vint offset=0;
-				if(bounds.y1<viewBounds.y1)
 				{
-					offset=bounds.y1-viewBounds.y1;
-				}
-				else if(bounds.y2>viewBounds.y2)
-				{
-					offset=bounds.y2-viewBounds.y2;
-				}
+					vint offset = 0;
+					if (bounds.x1 < viewBounds.x1)
+					{
+						offset = bounds.x1 - viewBounds.x1;
+					}
+					else if (bounds.x2 > viewBounds.x2)
+					{
+						offset = bounds.x2 - viewBounds.x2;
+					}
 
-				if (auto scroll = GetVerticalScroll())
+					if (auto scroll = GetHorizontalScroll())
+					{
+						scroll->SetPosition(viewBounds.x1 + offset);
+					}
+				}
 				{
-					scroll->SetPosition(viewBounds.y1 + offset);
+					vint offset = 0;
+					if (bounds.y1 < viewBounds.y1)
+					{
+						offset = bounds.y1 - viewBounds.y1;
+					}
+					else if (bounds.y2 > viewBounds.y2)
+					{
+						offset = bounds.y2 - viewBounds.y2;
+					}
+
+					if (auto scroll = GetVerticalScroll())
+					{
+						scroll->SetPosition(viewBounds.y1 + offset);
+					}
 				}
 			}
 
-			GuiDocumentViewer::GuiDocumentViewer(theme::ThemeName themeName)
-				:GuiScrollContainer(themeName)
+			GuiDocumentConfig GuiDocumentViewer::FixConfig(const GuiDocumentConfig& config)
+			{
+				auto result = config;
+				result.autoExpand = false;
+				return config;
+			}
+
+			GuiDocumentViewer::GuiDocumentViewer(theme::ThemeName themeName, const GuiDocumentConfig& _config)
+				: GuiScrollContainer(themeName)
+				, GuiDocumentCommonInterface(FixConfig(GuiDocumentConfig::OverrideConfig(GuiDocumentConfig::GetDocumentViewerDefaultConfig(), _config)))
 			{
 				SetAcceptTabInput(true);
 				SetFocusableComposition(boundsComposition);
 				InstallDocumentViewer(this, containerComposition->GetParent(), containerComposition, boundsComposition, focusableComposition);
 
-				SetExtendToFullWidth(true);
-				SetHorizontalAlwaysVisible(false);
+				SetExtendToFullWidth(config.wrapLine);
+				SetHorizontalAlwaysVisible(!config.wrapLine);
 			}
 
 			GuiDocumentViewer::~GuiDocumentViewer()
@@ -19279,7 +19537,7 @@ GuiDocumentViewer
 
 			const WString& GuiDocumentViewer::GetText()
 			{
-				text=documentElement->GetDocument()->GetText(true);
+				text = UserInput_ConvertDocumentToText(documentElement->GetDocument());
 				return text;
 			}
 
@@ -19314,12 +19572,107 @@ GuiDocumentLabel
 				OnFontChanged();
 			}
 
-			GuiDocumentLabel::GuiDocumentLabel(theme::ThemeName themeName)
-				:GuiControl(themeName)
+			Point GuiDocumentLabel::GetDocumentViewPosition()
+			{
+				// when autoExpand is true, the document does not move in containerComposition
+				// when autoExpand is not false, the document does not move in documentContainer
+				return{ 0,0 };
+			}
+
+			void GuiDocumentLabel::EnsureRectVisible(Rect bounds)
+			{
+				if (!scrollingContainer) return;
+				vint documentWidth = documentContainer->GetCachedBounds().Width();
+				vint scrollingWidth = scrollingContainer->GetCachedBounds().Width();
+				if (documentWidth <= scrollingWidth)
+				{
+					documentContainer->SetExpectedBounds({});
+					return;
+				}
+
+				vint x1 = -documentContainer->GetCachedBounds().x1;
+				vint x2 = x1 + scrollingWidth;
+				vint offset = 0;
+
+				if (bounds.x1 < x1)
+				{
+					offset = bounds.x1 - x1;
+				}
+				else if (bounds.x2 > x2)
+				{
+					offset = bounds.x2 - x2;
+				}
+
+				auto expectedBounds = documentContainer->GetExpectedBounds();
+				expectedBounds.x1 -= offset;
+				expectedBounds.x2 -= offset;
+
+				if (expectedBounds.x1 > 0)
+				{
+					expectedBounds.x1 = 0;
+				}
+				else if (expectedBounds.x1 + documentWidth < scrollingWidth)
+				{
+					expectedBounds.x1 = scrollingWidth - documentWidth;
+				}
+				expectedBounds.x2 = expectedBounds.x1;
+				documentContainer->SetExpectedBounds(expectedBounds);
+				documentContainer->ForceCalculateSizeImmediately();
+			}
+
+			void GuiDocumentLabel::scrollingContainer_CachedBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+			{
+				Rect bounds = scrollingContainer->GetCachedBounds();
+				vint x1 = documentContainer->GetCachedBounds().x1;
+				vint offset = -x1 - bounds.x1;
+				bounds.x1 += offset;
+				bounds.x2 += offset;
+				EnsureRectVisible(bounds);
+			}
+
+			void GuiDocumentLabel::documentContainer_CachedMinSizeChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+			{
+				scrollingContainer->SetPreferredMinSize({ 0,documentContainer->GetCachedMinSize().y });
+			}
+
+			GuiDocumentConfig GuiDocumentLabel::FixConfig(const GuiDocumentConfig& config)
+			{
+				auto result = config;
+				if (!result.autoExpand.Value())
+				{
+					if (result.wrapLine.Value() || result.paragraphMode.Value() != GuiDocumentParagraphMode::Singleline)
+					{
+						result.autoExpand = true;
+					}
+				}
+				return result;
+			}
+
+			GuiDocumentLabel::GuiDocumentLabel(theme::ThemeName themeName, const GuiDocumentConfig& _config)
+				: GuiControl(themeName)
+				, GuiDocumentCommonInterface(FixConfig(GuiDocumentConfig::OverrideConfig(GuiDocumentConfig::GetDocumentLabelDefaultConfig(), _config)))
 			{
 				SetAcceptTabInput(true);
 				SetFocusableComposition(boundsComposition);
-				InstallDocumentViewer(this, containerComposition, containerComposition, boundsComposition, focusableComposition);
+
+				if (config.autoExpand)
+				{
+					InstallDocumentViewer(this, containerComposition, containerComposition, boundsComposition, focusableComposition);
+				}
+				else
+				{
+					scrollingContainer = new GuiBoundsComposition();
+					scrollingContainer->SetAlignmentToParent(Margin(0, 0, 0, 0));
+					containerComposition->AddChild(scrollingContainer);
+
+					documentContainer = new GuiBoundsComposition();
+					documentContainer->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
+					scrollingContainer->AddChild(documentContainer);
+
+					scrollingContainer->CachedBoundsChanged.AttachMethod(this, &GuiDocumentLabel::scrollingContainer_CachedBoundsChanged);
+					documentContainer->CachedBoundsChanged.AttachMethod(this, &GuiDocumentLabel::documentContainer_CachedMinSizeChanged);
+					InstallDocumentViewer(this, containerComposition, documentContainer, boundsComposition, focusableComposition);
+				}
 			}
 
 			GuiDocumentLabel::~GuiDocumentLabel()
@@ -19328,7 +19681,7 @@ GuiDocumentLabel
 
 			const WString& GuiDocumentLabel::GetText()
 			{
-				text=documentElement->GetDocument()->GetText(true);
+				text = UserInput_ConvertDocumentToText(documentElement->GetDocument());
 				return text;
 			}
 
@@ -32633,38 +32986,42 @@ GuiDocumentElement::GuiDocumentElementRenderer
 
 			Ptr<GuiDocumentElement::GuiDocumentElementRenderer::ParagraphCache> GuiDocumentElement::GuiDocumentElementRenderer::EnsureAndGetCache(vint paragraphIndex, bool createParagraph)
 			{
-				if(paragraphIndex<0 || paragraphIndex>=paragraphCaches.Count()) return 0;
-				Ptr<DocumentParagraphRun> paragraph=element->document->paragraphs[paragraphIndex];
-				Ptr<ParagraphCache> cache=paragraphCaches[paragraphIndex];
-				if(!cache)
+				if (paragraphIndex < 0 || paragraphIndex >= paragraphCaches.Count()) return 0;
+				Ptr<DocumentParagraphRun> paragraph = element->document->paragraphs[paragraphIndex];
+				Ptr<ParagraphCache> cache = paragraphCaches[paragraphIndex];
+				if (!cache)
 				{
-					cache=Ptr(new ParagraphCache);
-					cache->fullText=paragraph->GetText(false);
-					paragraphCaches[paragraphIndex]=cache;
+					cache = Ptr(new ParagraphCache);
+					cache->fullText = paragraph->GetTextForCaret();
+					paragraphCaches[paragraphIndex] = cache;
 				}
 
-				if(createParagraph)
+				if (createParagraph)
 				{
-					if(!cache->graphicsParagraph)
+					if (!cache->graphicsParagraph)
 					{
-						cache->graphicsParagraph=layoutProvider->CreateParagraph(cache->fullText, renderTarget, this);
+						cache->graphicsParagraph = layoutProvider->CreateParagraph(cache->fullText, renderTarget, this);
 						cache->graphicsParagraph->SetParagraphAlignment(paragraph->alignment ? paragraph->alignment.Value() : Alignment::Left);
+						cache->graphicsParagraph->SetWrapLine(element->wrapLine);
 						SetPropertiesVisitor::SetProperty(element->document.Obj(), this, cache, paragraph, cache->selectionBegin, cache->selectionEnd);
 					}
-					if(cache->graphicsParagraph->GetMaxWidth()!=lastMaxWidth)
+					if (cache->graphicsParagraph->GetMaxWidth() != lastMaxWidth)
 					{
 						cache->graphicsParagraph->SetMaxWidth(lastMaxWidth);
 					}
 
-					vint paragraphHeight=paragraphHeights[paragraphIndex];
-					vint height=cache->graphicsParagraph->GetHeight();
-					if(paragraphHeight!=height)
+					Size cachedSize = paragraphSizes[paragraphIndex];
+					Size realSize = cache->graphicsParagraph->GetSize();
+					if (cachedTotalSize.x < realSize.x)
 					{
-						cachedTotalHeight+=height-paragraphHeight;
-						paragraphHeight=height;
-						paragraphHeights[paragraphIndex]=paragraphHeight;
-						minSize=Size(0, cachedTotalHeight);
+						cachedTotalSize.x = realSize.x;
 					}
+					if (cachedSize.y != realSize.y)
+					{
+						cachedTotalSize.y += realSize.y - cachedSize.y;
+					}
+					paragraphSizes[paragraphIndex] = realSize;
+					minSize = cachedTotalSize;
 				}
 
 				return cache;
@@ -32672,18 +33029,18 @@ GuiDocumentElement::GuiDocumentElementRenderer
 
 			bool GuiDocumentElement::GuiDocumentElementRenderer::GetParagraphIndexFromPoint(Point point, vint& top, vint& index)
 			{
-				vint y=0;
+				vint y = 0;
 				// TODO: (enumerable) foreach
-				for(vint i=0;i<paragraphHeights.Count();i++)
+				for (vint i = 0; i < paragraphSizes.Count(); i++)
 				{
-					vint paragraphHeight=paragraphHeights[i];
-					vint nextY=y+paragraphHeight+paragraphDistance;
-					top=y;
-					index=i;
+					vint paragraphHeight = paragraphSizes[i].y;
+					vint nextY = y + paragraphHeight + paragraphDistance;
+					top = y;
+					index = i;
 
-					if(nextY<=point.y)
+					if (nextY <= point.y)
 					{
-						y=nextY;
+						y = nextY;
 						continue;
 					}
 					else
@@ -32697,7 +33054,6 @@ GuiDocumentElement::GuiDocumentElementRenderer
 			GuiDocumentElement::GuiDocumentElementRenderer::GuiDocumentElementRenderer()
 				:paragraphDistance(0)
 				,lastMaxWidth(-1)
-				,cachedTotalHeight(0)
 				,layoutProvider(GetGuiGraphicsResourceManager()->GetLayoutProvider())
 				,lastCaret(-1, -1)
 				,lastCaretFrontSide(false)
@@ -32711,47 +33067,52 @@ GuiDocumentElement::GuiDocumentElementRenderer
 					element->callback->OnStartRender();
 				}
 				renderTarget->PushClipper(bounds, element);
-				if(!renderTarget->IsClipperCoverWholeTarget())
+				if (!renderTarget->IsClipperCoverWholeTarget())
 				{
-					vint maxWidth=bounds.Width();
-					Rect clipper=renderTarget->GetClipper();
-					vint cx=bounds.Left();
-					vint cy=bounds.Top();
-					vint y1=clipper.Top()-bounds.Top();
-					vint y2=y1+clipper.Height();
-					vint y=0;
+					vint maxWidth = bounds.Width();
+					Rect clipper = renderTarget->GetClipper();
+					vint cx = bounds.Left();
+					vint cy = bounds.Top();
+					vint y1 = clipper.Top() - bounds.Top();
+					vint y2 = y1 + clipper.Height();
+					vint y = 0;
 
-					lastMaxWidth=maxWidth;
+					lastMaxWidth = maxWidth;
 
 					// TODO: (enumerable) foreach
-					for(vint i=0;i<paragraphHeights.Count();i++)
+					vint paragraphCount = paragraphSizes.Count();
+					if (paragraphCount > element->document->paragraphs.Count())
 					{
-						vint paragraphHeight=paragraphHeights[i];
-						if(y+paragraphHeight<=y1)
+						paragraphCount = element->document->paragraphs.Count();
+					}
+					for (vint i = 0; i < paragraphCount; i++)
+					{
+						Size cachedSize = paragraphSizes[i];
+						if (y + cachedSize.y <= y1)
 						{
-							y+=paragraphHeight+paragraphDistance;
+							y += cachedSize.y + paragraphDistance;
 							continue;
 						}
-						else if(y>=y2)
+						else if (y >= y2)
 						{
 							break;
 						}
 						else
 						{
-							Ptr<DocumentParagraphRun> paragraph=element->document->paragraphs[i];
-							Ptr<ParagraphCache> cache=paragraphCaches[i];
-							bool created=cache && cache->graphicsParagraph;
-							cache=EnsureAndGetCache(i, true);
-							if(!created && i==lastCaret.row && element->caretVisible)
+							Ptr<DocumentParagraphRun> paragraph = element->document->paragraphs[i];
+							Ptr<ParagraphCache> cache = paragraphCaches[i];
+							bool created = cache && cache->graphicsParagraph;
+							cache = EnsureAndGetCache(i, true);
+							if (!created && i == lastCaret.row && element->caretVisible)
 							{
 								cache->graphicsParagraph->OpenCaret(lastCaret.column, lastCaretColor, lastCaretFrontSide);
 							}
 
-							paragraphHeight=cache->graphicsParagraph->GetHeight();
+							cachedSize = cache->graphicsParagraph->GetSize();
 
 							renderingParagraph = i;
 							renderingParagraphOffset = Point(cx - bounds.x1, cy + y - bounds.y1);
-							cache->graphicsParagraph->Render(Rect(Point(cx, cy+y), Size(maxWidth, paragraphHeight)));
+							cache->graphicsParagraph->Render(Rect(Point(cx, cy + y), Size(maxWidth, cachedSize.y)));
 							renderingParagraph = -1;
 
 							bool resized = false;
@@ -32772,7 +33133,7 @@ GuiDocumentElement::GuiDocumentElementRenderer
 							}
 						}
 
-						y+=paragraphHeight+paragraphDistance;
+						y += cachedSize.y + paragraphDistance;
 					}
 				}
 				renderTarget->PopClipper(element);
@@ -32784,38 +33145,36 @@ GuiDocumentElement::GuiDocumentElementRenderer
 
 			void GuiDocumentElement::GuiDocumentElementRenderer::OnElementStateChanged()
 			{
+				cachedTotalSize = { 1,1 };
 				if (element->document && element->document->paragraphs.Count() > 0)
 				{
-					vint defaultSize = GetCurrentController()->ResourceService()->GetDefaultFont().size;
-					paragraphDistance = defaultSize;
-					vint defaultHeight = defaultSize;
+					vint defaultHeight = GetCurrentController()->ResourceService()->GetDefaultFont().size;
+					paragraphDistance = element->paragraphPadding ? defaultHeight : 0;
 
 					paragraphCaches.Resize(element->document->paragraphs.Count());
-					paragraphHeights.Resize(element->document->paragraphs.Count());
+					paragraphSizes.Resize(element->document->paragraphs.Count());
 					
 					for (vint i = 0; i < paragraphCaches.Count(); i++)
 					{
 						paragraphCaches[i] = 0;
 					}
-					for (vint i = 0; i < paragraphHeights.Count(); i++)
+					for (vint i = 0; i < paragraphSizes.Count(); i++)
 					{
-						paragraphHeights[i] = defaultHeight;
+						paragraphSizes[i] = { 0,defaultHeight };
 					}
 
-					cachedTotalHeight = paragraphHeights.Count() * (defaultHeight + paragraphDistance);
-					if (paragraphHeights.Count()>0)
+					cachedTotalSize.y = paragraphSizes.Count() * (defaultHeight + paragraphDistance);
+					if (paragraphSizes.Count()>0)
 					{
-						cachedTotalHeight -= paragraphDistance;
+						cachedTotalSize.y -= paragraphDistance;
 					}
-					minSize = Size(0, cachedTotalHeight);
 				}
 				else
 				{
 					paragraphCaches.Resize(0);
-					paragraphHeights.Resize(0);
-					cachedTotalHeight = 0;
-					minSize = Size(0, 0);
+					paragraphSizes.Resize(0);
 				}
+				minSize = cachedTotalSize;
 
 				nameCallbackIdMap.Clear();
 				freeCallbackIds.Clear();
@@ -32834,24 +33193,24 @@ GuiDocumentElement::GuiDocumentElementRenderer
 					CopyFrom(oldCaches, paragraphCaches);
 					paragraphCaches.Resize(paragraphCount);
 
-					ParagraphHeightArray oldHeights;
-					CopyFrom(oldHeights, paragraphHeights);
-					paragraphHeights.Resize(paragraphCount);
+					ParagraphSizeArray oldSizes;
+					CopyFrom(oldSizes, paragraphSizes);
+					paragraphSizes.Resize(paragraphCount);
 
 					vint defaultHeight = GetCurrentController()->ResourceService()->GetDefaultFont().size;
-					cachedTotalHeight = 0;
+					cachedTotalSize = { 1,1 };
 
 					for (vint i = 0; i < paragraphCount; i++)
 					{
 						if (i < index)
 						{
 							paragraphCaches[i] = oldCaches[i];
-							paragraphHeights[i] = oldHeights[i];
+							paragraphSizes[i] = oldSizes[i];
 						}
 						else if (i < index + newCount)
 						{
 							paragraphCaches[i] = 0;
-							paragraphHeights[i] = defaultHeight;
+							paragraphSizes[i] = { 0,defaultHeight };
 							if (!updatedText && i < index + oldCount)
 							{
 								auto cache = oldCaches[i];
@@ -32860,19 +33219,25 @@ GuiDocumentElement::GuiDocumentElementRenderer
 									cache->graphicsParagraph = 0;
 								}
 								paragraphCaches[i] = cache;
-								paragraphHeights[i] = oldHeights[i];
+								paragraphSizes[i] = oldSizes[i];
 							}
 						}
 						else
 						{
 							paragraphCaches[i] = oldCaches[i - (newCount - oldCount)];
-							paragraphHeights[i] = oldHeights[i - (newCount - oldCount)];
+							paragraphSizes[i] = oldSizes[i - (newCount - oldCount)];
 						}
-						cachedTotalHeight += paragraphHeights[i] + paragraphDistance;
+
+						auto cachedSize = paragraphSizes[i];
+						if (cachedTotalSize.x < cachedSize.x)
+						{
+							cachedTotalSize.x = cachedSize.x;
+						}
+						cachedTotalSize.y += cachedSize.y + paragraphDistance;
 					}
 					if (paragraphCount > 0)
 					{
-						cachedTotalHeight -= paragraphDistance;
+						cachedTotalSize.y -= paragraphDistance;
 					}
 
 					if (updatedText)
@@ -32893,6 +33258,7 @@ GuiDocumentElement::GuiDocumentElementRenderer
 							}
 						}
 					}
+					minSize = cachedTotalSize;
 				}
 			}
 
@@ -32999,45 +33365,45 @@ GuiDocumentElement::GuiDocumentElementRenderer
 			TextPos GuiDocumentElement::GuiDocumentElementRenderer::CalculateCaret(TextPos comparingCaret, IGuiGraphicsParagraph::CaretRelativePosition position, bool& preferFrontSide)
 			{
 				if (!renderTarget) return comparingCaret;
-				Ptr<ParagraphCache> cache=EnsureAndGetCache(comparingCaret.row, true);
-				if(cache)
+				Ptr<ParagraphCache> cache = EnsureAndGetCache(comparingCaret.row, true);
+				if (cache)
 				{
-					switch(position)
+					switch (position)
 					{
 					case IGuiGraphicsParagraph::CaretFirst:
 						{
-							preferFrontSide=false;
-							vint caret=cache->graphicsParagraph->GetCaret(0, IGuiGraphicsParagraph::CaretFirst, preferFrontSide);
+							preferFrontSide = false;
+							vint caret = cache->graphicsParagraph->GetCaret(0, IGuiGraphicsParagraph::CaretFirst, preferFrontSide);
 							return TextPos(comparingCaret.row, caret);
 						}
 					case IGuiGraphicsParagraph::CaretLast:
 						{
-							preferFrontSide=true;
-							vint caret=cache->graphicsParagraph->GetCaret(0, IGuiGraphicsParagraph::CaretLast, preferFrontSide);
+							preferFrontSide = true;
+							vint caret = cache->graphicsParagraph->GetCaret(0, IGuiGraphicsParagraph::CaretLast, preferFrontSide);
 							return TextPos(comparingCaret.row, caret);
 						}
 					case IGuiGraphicsParagraph::CaretLineFirst:
 						{
-							preferFrontSide=false;
-							vint caret=cache->graphicsParagraph->GetCaret(comparingCaret.column, IGuiGraphicsParagraph::CaretLineFirst, preferFrontSide);
+							preferFrontSide = false;
+							vint caret = cache->graphicsParagraph->GetCaret(comparingCaret.column, IGuiGraphicsParagraph::CaretLineFirst, preferFrontSide);
 							return TextPos(comparingCaret.row, caret);
 						}
 					case IGuiGraphicsParagraph::CaretLineLast:
 						{
-							preferFrontSide=true;
-							vint caret=cache->graphicsParagraph->GetCaret(comparingCaret.column, IGuiGraphicsParagraph::CaretLineLast, preferFrontSide);
+							preferFrontSide = true;
+							vint caret = cache->graphicsParagraph->GetCaret(comparingCaret.column, IGuiGraphicsParagraph::CaretLineLast, preferFrontSide);
 							return TextPos(comparingCaret.row, caret);
 						}
 					case IGuiGraphicsParagraph::CaretMoveUp:
 						{
-							vint caret=cache->graphicsParagraph->GetCaret(comparingCaret.column, IGuiGraphicsParagraph::CaretMoveUp, preferFrontSide);
-							if(caret==comparingCaret.column && comparingCaret.row>0)
+							vint caret = cache->graphicsParagraph->GetCaret(comparingCaret.column, IGuiGraphicsParagraph::CaretMoveUp, preferFrontSide);
+							if (caret == comparingCaret.column && comparingCaret.row > 0)
 							{
-								Rect caretBounds=cache->graphicsParagraph->GetCaretBounds(comparingCaret.column, preferFrontSide);
-								Ptr<ParagraphCache> anotherCache=EnsureAndGetCache(comparingCaret.row-1, true);
-								vint height=anotherCache->graphicsParagraph->GetHeight();
-								caret=anotherCache->graphicsParagraph->GetCaretFromPoint(Point(caretBounds.x1, height));
-								return TextPos(comparingCaret.row-1, caret);
+								Rect caretBounds = cache->graphicsParagraph->GetCaretBounds(comparingCaret.column, preferFrontSide);
+								Ptr<ParagraphCache> anotherCache = EnsureAndGetCache(comparingCaret.row - 1, true);
+								vint height = anotherCache->graphicsParagraph->GetSize().y;
+								caret = anotherCache->graphicsParagraph->GetCaretFromPoint(Point(caretBounds.x1, height));
+								return TextPos(comparingCaret.row - 1, caret);
 							}
 							else
 							{
@@ -33046,13 +33412,13 @@ GuiDocumentElement::GuiDocumentElementRenderer
 						}
 					case IGuiGraphicsParagraph::CaretMoveDown:
 						{
-							vint caret=cache->graphicsParagraph->GetCaret(comparingCaret.column, IGuiGraphicsParagraph::CaretMoveDown, preferFrontSide);
-							if(caret==comparingCaret.column && comparingCaret.row<paragraphCaches.Count()-1)
+							vint caret = cache->graphicsParagraph->GetCaret(comparingCaret.column, IGuiGraphicsParagraph::CaretMoveDown, preferFrontSide);
+							if (caret == comparingCaret.column && comparingCaret.row < paragraphCaches.Count() - 1)
 							{
-								Rect caretBounds=cache->graphicsParagraph->GetCaretBounds(comparingCaret.column, preferFrontSide);
-								Ptr<ParagraphCache> anotherCache=EnsureAndGetCache(comparingCaret.row+1, true);
-								caret=anotherCache->graphicsParagraph->GetCaretFromPoint(Point(caretBounds.x1, 0));
-								return TextPos(comparingCaret.row+1, caret);
+								Rect caretBounds = cache->graphicsParagraph->GetCaretBounds(comparingCaret.column, preferFrontSide);
+								Ptr<ParagraphCache> anotherCache = EnsureAndGetCache(comparingCaret.row + 1, true);
+								caret = anotherCache->graphicsParagraph->GetCaretFromPoint(Point(caretBounds.x1, 0));
+								return TextPos(comparingCaret.row + 1, caret);
 							}
 							else
 							{
@@ -33061,13 +33427,13 @@ GuiDocumentElement::GuiDocumentElementRenderer
 						}
 					case IGuiGraphicsParagraph::CaretMoveLeft:
 						{
-							preferFrontSide=false;
-							vint caret=cache->graphicsParagraph->GetCaret(comparingCaret.column, IGuiGraphicsParagraph::CaretMoveLeft, preferFrontSide);
-							if(caret==comparingCaret.column && comparingCaret.row>0)
+							preferFrontSide = false;
+							vint caret = cache->graphicsParagraph->GetCaret(comparingCaret.column, IGuiGraphicsParagraph::CaretMoveLeft, preferFrontSide);
+							if (caret == comparingCaret.column && comparingCaret.row > 0)
 							{
-								Ptr<ParagraphCache> anotherCache=EnsureAndGetCache(comparingCaret.row-1, true);
-								caret=anotherCache->graphicsParagraph->GetCaret(0, IGuiGraphicsParagraph::CaretLast, preferFrontSide);
-								return TextPos(comparingCaret.row-1, caret);
+								Ptr<ParagraphCache> anotherCache = EnsureAndGetCache(comparingCaret.row - 1, true);
+								caret = anotherCache->graphicsParagraph->GetCaret(0, IGuiGraphicsParagraph::CaretLast, preferFrontSide);
+								return TextPos(comparingCaret.row - 1, caret);
 							}
 							else
 							{
@@ -33076,13 +33442,13 @@ GuiDocumentElement::GuiDocumentElementRenderer
 						}
 					case IGuiGraphicsParagraph::CaretMoveRight:
 						{
-							preferFrontSide=true;
-							vint caret=cache->graphicsParagraph->GetCaret(comparingCaret.column, IGuiGraphicsParagraph::CaretMoveRight, preferFrontSide);
-							if(caret==comparingCaret.column && comparingCaret.row<paragraphCaches.Count()-1)
+							preferFrontSide = true;
+							vint caret = cache->graphicsParagraph->GetCaret(comparingCaret.column, IGuiGraphicsParagraph::CaretMoveRight, preferFrontSide);
+							if (caret == comparingCaret.column && comparingCaret.row < paragraphCaches.Count() - 1)
 							{
-								Ptr<ParagraphCache> anotherCache=EnsureAndGetCache(comparingCaret.row+1, true);
-								caret=anotherCache->graphicsParagraph->GetCaret(0, IGuiGraphicsParagraph::CaretFirst, preferFrontSide);
-								return TextPos(comparingCaret.row+1, caret);
+								Ptr<ParagraphCache> anotherCache = EnsureAndGetCache(comparingCaret.row + 1, true);
+								caret = anotherCache->graphicsParagraph->GetCaret(0, IGuiGraphicsParagraph::CaretFirst, preferFrontSide);
+								return TextPos(comparingCaret.row + 1, caret);
 							}
 							else
 							{
@@ -33112,21 +33478,21 @@ GuiDocumentElement::GuiDocumentElementRenderer
 			Rect GuiDocumentElement::GuiDocumentElementRenderer::GetCaretBounds(TextPos caret, bool frontSide)
 			{
 				if (!renderTarget) return Rect();
-				Ptr<ParagraphCache> cache=EnsureAndGetCache(caret.row, true);
-				if(cache)
+				Ptr<ParagraphCache> cache = EnsureAndGetCache(caret.row, true);
+				if (cache)
 				{
-					Rect bounds=cache->graphicsParagraph->GetCaretBounds(caret.column, frontSide);
-					if(bounds!=Rect())
+					Rect bounds = cache->graphicsParagraph->GetCaretBounds(caret.column, frontSide);
+					if (bounds != Rect())
 					{
-						vint y=0;
-						for(vint i=0;i<caret.row;i++)
+						vint y = 0;
+						for (vint i = 0; i < caret.row; i++)
 						{
 							EnsureAndGetCache(i, true);
-							y+=paragraphHeights[i]+paragraphDistance;
+							y += paragraphSizes[i].y + paragraphDistance;
 						}
 
-						bounds.y1+=y;
-						bounds.y2+=y;
+						bounds.y1 += y;
+						bounds.y2 += y;
 						return bounds;
 					}
 				}
@@ -33181,6 +33547,28 @@ GuiDocumentElement
 				document=value;
 				InvokeOnElementStateChanged();
 				SetCaret(TextPos(), TextPos(), false);
+			}
+
+			bool GuiDocumentElement::GetParagraphPadding()
+			{
+				return paragraphPadding;
+			}
+
+			void GuiDocumentElement::SetParagraphPadding(bool value)
+			{
+				paragraphPadding = value;
+				InvokeOnElementStateChanged();
+			}
+
+			bool GuiDocumentElement::GetWrapLine()
+			{
+				return wrapLine;
+			}
+
+			void GuiDocumentElement::SetWrapLine(bool value)
+			{
+				wrapLine = value;
+				InvokeOnElementStateChanged();
 			}
 
 			TextPos GuiDocumentElement::GetCaretBegin()
@@ -45882,11 +46270,11 @@ ExtractTextVisitor
 			{
 			public:
 				stream::TextWriter&				writer;
-				bool							skipNonTextContent;
+				bool							forCaret;
 
-				ExtractTextVisitor(stream::TextWriter& _writer, bool _skipNonTextContent)
+				ExtractTextVisitor(stream::TextWriter& _writer, bool _forCaret)
 					:writer(_writer)
-					,skipNonTextContent(_skipNonTextContent)
+					, forCaret(_forCaret)
 				{
 				}
 
@@ -45925,7 +46313,7 @@ ExtractTextVisitor
 
 				void Visit(DocumentImageRun* run)override
 				{
-					if(!skipNonTextContent)
+					if(forCaret)
 					{
 						VisitContent(run);
 					}
@@ -45933,7 +46321,7 @@ ExtractTextVisitor
 
 				void Visit(DocumentEmbeddedObjectRun* run)override
 				{
-					if(!skipNonTextContent)
+					if(forCaret)
 					{
 						VisitContent(run);
 					}
@@ -45951,17 +46339,27 @@ ExtractTextVisitor
 DocumentParagraphRun
 ***********************************************************************/
 
-		WString DocumentParagraphRun::GetText(bool skipNonTextContent)
+		WString DocumentParagraphRun::GetTextForCaret()
+		{
+			return ConvertToText(true);
+		}
+
+		WString DocumentParagraphRun::GetTextForReading()
+		{
+			return ConvertToText(false);
+		}
+
+		WString DocumentParagraphRun::ConvertToText(bool forCaret)
 		{
 			return GenerateToStream([&](StreamWriter& writer)
 			{
-				GetText(writer, skipNonTextContent);
+				ConvertToText(writer, forCaret);
 			});
 		}
 
-		void DocumentParagraphRun::GetText(stream::TextWriter& writer, bool skipNonTextContent)
+		void DocumentParagraphRun::ConvertToText(stream::TextWriter& writer, bool forCaret)
 		{
-			ExtractTextVisitor visitor(writer, skipNonTextContent);
+			ExtractTextVisitor visitor(writer, forCaret);
 			Accept(&visitor);
 		}
 
@@ -46171,24 +46569,34 @@ DocumentModel
 			return GetStyle(sp, context);
 		}
 
-		WString DocumentModel::GetText(bool skipNonTextContent)
+		WString DocumentModel::GetTextForCaret()
+		{
+			return ConvertToText(true, WString::Unmanaged(L"\r\n\r\n"));
+		}
+
+		WString DocumentModel::GetTextForReading(const WString& paragraphDelimiter)
+		{
+			return ConvertToText(false, paragraphDelimiter);
+		}
+
+		WString DocumentModel::ConvertToText(bool forCaret, const WString& paragraphDelimiter)
 		{
 			return GenerateToStream([&](StreamWriter& writer)
 			{
-				GetText(writer, skipNonTextContent);
+				ConvertToText(writer, forCaret, paragraphDelimiter);
 			});
 		}
 
-		void DocumentModel::GetText(stream::TextWriter& writer, bool skipNonTextContent)
+		void DocumentModel::ConvertToText(stream::TextWriter& writer, bool forCaret, const WString& paragraphDelimiter)
 		{
 			// TODO: (enumerable) Linq:Aggregate
 			for(vint i=0;i<paragraphs.Count();i++)
 			{
 				Ptr<DocumentParagraphRun> paragraph=paragraphs[i];
-				paragraph->GetText(writer, skipNonTextContent);
+				paragraph->ConvertToText(writer, forCaret);
 				if(i<paragraphs.Count()-1)
 				{
-					writer.WriteString(L"\r\n\r\n");
+					writer.WriteString(paragraphDelimiter);
 				}
 			}
 		}
@@ -46304,6 +46712,25 @@ namespace vl
 			{
 				paragraph->Accept(&visitor);
 			}
+		}
+
+		Ptr<INativeImage> GetImageFromSingleImageDocument(Ptr<DocumentModel> model)
+		{
+			if (model->paragraphs.Count() != 1) return nullptr;
+			Ptr<DocumentContainerRun> container = model->paragraphs[0];
+			while (container)
+			{
+				if (container->runs.Count() != 1) return nullptr;
+				if (auto imageRun = container->runs[0].Cast<DocumentImageRun>())
+				{
+					return imageRun->image;
+				}
+				else
+				{
+					container = container->runs[0].Cast<DocumentContainerRun>();
+				}
+			}
+			return nullptr;
 		}
 
 		Ptr<DocumentModel> LoadDocumentFromClipboardStream(stream::IStream& clipboardStream)
@@ -48167,7 +48594,7 @@ Calculate range informations for each run object
 }
 
 /***********************************************************************
-.\RESOURCES\GUIDOCUMENTEDITOR_LOCALEHYPERLINK.CPP
+.\RESOURCES\GUIDOCUMENTEDITOR_LOCATEHYPERLINK.CPP
 ***********************************************************************/
 
 namespace vl
@@ -48320,7 +48747,7 @@ Get the hyperlink run that contains the specified position
 }
 
 /***********************************************************************
-.\RESOURCES\GUIDOCUMENTEDITOR_LOCALESTYLE.CPP
+.\RESOURCES\GUIDOCUMENTEDITOR_LOCATESTYLE.CPP
 ***********************************************************************/
 
 namespace vl
@@ -48587,6 +49014,28 @@ ClearStyleVisitor		: Remove all styles that intersect with the specified range
 					RemoveContainer(run);
 				}
 			};
+
+			class ConvertToPlainTextVisitor : public ClearStyleVisitor
+			{
+			public:
+				ConvertToPlainTextVisitor(RunRangeMap& _runRanges, vint _start, vint _end)
+					:ClearStyleVisitor(_runRanges, _start, _end)
+				{
+				}
+
+				void Visit(DocumentHyperlinkRun* run)override
+				{
+					RemoveContainer(run);
+				}
+
+				void Visit(DocumentImageRun* run)override
+				{
+				}
+
+				void Visit(DocumentEmbeddedObjectRun* run)override
+				{
+				}
+			};
 		}
 		using namespace document_operation_visitors;
 
@@ -48607,6 +49056,12 @@ ClearStyleVisitor		: Remove all styles that intersect with the specified range
 			void ClearStyle(DocumentParagraphRun* run, RunRangeMap& runRanges, vint start, vint end)
 			{
 				ClearStyleVisitor visitor(runRanges, start, end);
+				run->Accept(&visitor);
+			}
+
+			void ConvertToPlainText(DocumentParagraphRun* run, RunRangeMap& runRanges, vint start, vint end)
+			{
+				ConvertToPlainTextVisitor visitor(runRanges, start, end);
 				run->Accept(&visitor);
 			}
 		}
@@ -49201,44 +49656,47 @@ DocumentModel::EditRangeOperations
 
 		Ptr<DocumentModel> DocumentModel::CopyDocument(TextPos begin, TextPos end, bool deepCopy)
 		{
-			// check caret range
-			RunRangeMap runRanges;
-			if(!CheckEditRange(begin, end, runRanges)) return nullptr;
-
-			// get ranges
-			for(vint i=begin.row+1;i<end.row;i++)
-			{
-				GetRunRange(paragraphs[i].Obj(), runRanges);
-			}
-
 			auto newDocument = Ptr(new DocumentModel);
 
-			// copy paragraphs
-			if(begin.row==end.row)
+			if (begin != end || paragraphs.Count() > 0)
 			{
-				newDocument->paragraphs.Add(CopyRunRecursively(paragraphs[begin.row].Obj(), runRanges, begin.column, end.column, deepCopy).Cast<DocumentParagraphRun>());
-			}
-			else
-			{
-				for(vint i=begin.row;i<=end.row;i++)
+				// check caret range
+				RunRangeMap runRanges;
+				if (!CheckEditRange(begin, end, runRanges)) return nullptr;
+
+				// get ranges
+				for (vint i = begin.row + 1; i < end.row; i++)
 				{
-					Ptr<DocumentParagraphRun> paragraph=paragraphs[i];
-					RunRange range=runRanges[paragraph.Obj()];
-					if(i==begin.row)
+					GetRunRange(paragraphs[i].Obj(), runRanges);
+				}
+
+				// copy paragraphs
+				if (begin.row == end.row)
+				{
+					newDocument->paragraphs.Add(CopyRunRecursively(paragraphs[begin.row].Obj(), runRanges, begin.column, end.column, deepCopy).Cast<DocumentParagraphRun>());
+				}
+				else
+				{
+					for (vint i = begin.row; i <= end.row; i++)
 					{
-						newDocument->paragraphs.Add(CopyRunRecursively(paragraph.Obj(), runRanges, begin.column, range.end, deepCopy).Cast<DocumentParagraphRun>());
-					}
-					else if(i==end.row)
-					{
-						newDocument->paragraphs.Add(CopyRunRecursively(paragraph.Obj(), runRanges, range.start, end.column, deepCopy).Cast<DocumentParagraphRun>());
-					}
-					else if(deepCopy)
-					{
-						newDocument->paragraphs.Add(CopyRunRecursively(paragraph.Obj(), runRanges, range.start, range.end, deepCopy).Cast<DocumentParagraphRun>());
-					}
-					else
-					{
-						newDocument->paragraphs.Add(paragraph);
+						Ptr<DocumentParagraphRun> paragraph = paragraphs[i];
+						RunRange range = runRanges[paragraph.Obj()];
+						if (i == begin.row)
+						{
+							newDocument->paragraphs.Add(CopyRunRecursively(paragraph.Obj(), runRanges, begin.column, range.end, deepCopy).Cast<DocumentParagraphRun>());
+						}
+						else if (i == end.row)
+						{
+							newDocument->paragraphs.Add(CopyRunRecursively(paragraph.Obj(), runRanges, range.start, end.column, deepCopy).Cast<DocumentParagraphRun>());
+						}
+						else if (deepCopy)
+						{
+							newDocument->paragraphs.Add(CopyRunRecursively(paragraph.Obj(), runRanges, range.start, range.end, deepCopy).Cast<DocumentParagraphRun>());
+						}
+						else
+						{
+							newDocument->paragraphs.Add(paragraph);
+						}
 					}
 				}
 			}
@@ -49270,7 +49728,7 @@ DocumentModel::EditRangeOperations
 						newDocument->styles.Add(styleName, style);
 					}
 
-					if(!styleNames.Contains(style->parentStyleName))
+					if(!styleNames.Contains(style->parentStyleName) && style->parentStyleName != WString::Empty)
 					{
 						styleNames.Add(style->parentStyleName);
 					}
@@ -49282,14 +49740,21 @@ DocumentModel::EditRangeOperations
 
 		Ptr<DocumentModel> DocumentModel::CopyDocument()
 		{
-			// determine run ranges
-			RunRangeMap runRanges;
-			vint lastParagraphIndex = paragraphs.Count() - 1;
-			GetRunRange(paragraphs[lastParagraphIndex].Obj(), runRanges);
-			
-			TextPos begin(0, 0);
-			TextPos end(lastParagraphIndex, runRanges[paragraphs[lastParagraphIndex].Obj()].end);
-			return CopyDocument(begin, end, true);
+			if (paragraphs.Count() == 0)
+			{
+				return CopyDocument({ 0,0 }, { 0,0 }, true);
+			}
+			else
+			{
+				// determine run ranges
+				RunRangeMap runRanges;
+				vint lastParagraphIndex = paragraphs.Count() - 1;
+				GetRunRange(paragraphs[lastParagraphIndex].Obj(), runRanges);
+
+				TextPos begin(0, 0);
+				TextPos end(lastParagraphIndex, runRanges[paragraphs[lastParagraphIndex].Obj()].end);
+				return CopyDocument(begin, end, true);
+			}
 		}
 
 		bool DocumentModel::CutParagraph(TextPos position)
@@ -49715,7 +50180,19 @@ DocumentModel::ClearStyle
 		}
 
 /***********************************************************************
-DocumentModel::ClearStyle
+DocumentModel::ConvertToPlainText
+***********************************************************************/
+
+		bool DocumentModel::ConvertToPlainText(TextPos begin, TextPos end)
+		{
+			return EditContainer(begin, end, [=](DocumentParagraphRun* paragraph, RunRangeMap& runRanges, vint start, vint end)
+			{
+				document_editor::ConvertToPlainText(paragraph, runRanges, start, end);
+			});
+		}
+
+/***********************************************************************
+DocumentModel::Summarize
 ***********************************************************************/
 
 		Ptr<DocumentStyleProperties> DocumentModel::SummarizeStyle(TextPos begin, TextPos end)
@@ -50460,6 +50937,7 @@ document_operation_visitors::SerializeRunVisitor
 							if (tag)
 							{
 								writer.Element(tag);
+								last++;
 							}
 							else if (c == 0)
 							{
@@ -53644,7 +54122,13 @@ FakeClipboardWriter
 
 			void SetDocument(Ptr<DocumentModel> value) override
 			{
-				if (reader) reader->document = value;
+				if (reader)
+				{
+					if (!reader->text) reader->text = value->GetTextForReading(WString::Unmanaged(L"\r\n\r\n"));;
+					if (!reader->image) reader->image = GetImageFromSingleImageDocument(value);
+					reader->document = value;
+					ModifyDocumentForClipboard(reader->document);
+				}
 			}
 
 			void SetImage(Ptr<INativeImage> value) override

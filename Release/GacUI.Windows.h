@@ -481,6 +481,54 @@ Renderers
 				void							OnElementStateChanged()override;
 			};
 
+			class GuiDirect2DElementRenderer : public GuiElementRendererBase<GuiDirect2DElement, GuiDirect2DElementRenderer, IWindowsDirect2DRenderTarget>
+			{
+				friend class GuiElementRendererBase<GuiDirect2DElement, GuiDirect2DElementRenderer, IWindowsDirect2DRenderTarget>;
+
+			protected:
+
+				void					InitializeInternal();
+				void					FinalizeInternal();
+				void					RenderTargetChangedInternal(IWindowsDirect2DRenderTarget* oldRenderTarget, IWindowsDirect2DRenderTarget* newRenderTarget);
+			public:
+				GuiDirect2DElementRenderer();
+				~GuiDirect2DElementRenderer();
+
+				void					Render(Rect bounds)override;
+				void					OnElementStateChanged()override;
+			};
+		}
+	}
+}
+
+#endif
+
+/***********************************************************************
+.\DIRECT2D\RENDERERS\GUIGRAPHICSTEXTRENDERERSWINDOWSDIRECT2D.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI::Native Window::Direct2D Provider for Windows Implementation::Renderer
+
+Interfaces:
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_ELEMENTS_GUIGRAPHICSTEXTRENDERERSWINDOWSDIRECT2D
+#define VCZH_PRESENTATION_ELEMENTS_GUIGRAPHICSTEXTRENDERERSWINDOWSDIRECT2D
+
+
+namespace vl
+{
+	namespace presentation
+	{
+		namespace elements_windows_d2d
+		{
+
+/***********************************************************************
+Renderers
+***********************************************************************/
+
 			class GuiColorizedTextElementRenderer : public GuiElementRendererBase<GuiColorizedTextElement, GuiColorizedTextElementRenderer, IWindowsDirect2DRenderTarget>, protected GuiColorizedTextElement::ICallback
 			{
 				friend class GuiElementRendererBase<GuiColorizedTextElement, GuiColorizedTextElementRenderer, IWindowsDirect2DRenderTarget>;
@@ -525,23 +573,6 @@ Renderers
 				void					FinalizeInternal();
 				void					RenderTargetChangedInternal(IWindowsDirect2DRenderTarget* oldRenderTarget, IWindowsDirect2DRenderTarget* newRenderTarget);
 			public:
-				void					Render(Rect bounds)override;
-				void					OnElementStateChanged()override;
-			};
-
-			class GuiDirect2DElementRenderer : public GuiElementRendererBase<GuiDirect2DElement, GuiDirect2DElementRenderer, IWindowsDirect2DRenderTarget>
-			{
-				friend class GuiElementRendererBase<GuiDirect2DElement, GuiDirect2DElementRenderer, IWindowsDirect2DRenderTarget>;
-
-			protected:
-
-				void					InitializeInternal();
-				void					FinalizeInternal();
-				void					RenderTargetChangedInternal(IWindowsDirect2DRenderTarget* oldRenderTarget, IWindowsDirect2DRenderTarget* newRenderTarget);
-			public:
-				GuiDirect2DElementRenderer();
-				~GuiDirect2DElementRenderer();
-
 				void					Render(Rect bounds)override;
 				void					OnElementStateChanged()override;
 			};
@@ -1345,6 +1376,7 @@ UniscribeParagraph
 				//***************************** Uniscribe Data
 				List<Ptr<UniscribeLine>>		lines;
 				//***************************** Layout Data
+				bool							wrapLine;
 				vint							lastAvailableWidth;
 				Rect							bounds;
 
@@ -1710,6 +1742,54 @@ Renderers
 				void							OnElementStateChanged()override;
 			};
 
+			class GuiGDIElementRenderer : public GuiElementRendererBase<GuiGDIElement, GuiGDIElementRenderer, IWindowsGDIRenderTarget>
+			{
+				friend class GuiElementRendererBase<GuiGDIElement, GuiGDIElementRenderer, IWindowsGDIRenderTarget>;
+
+			protected:
+
+				void					InitializeInternal();
+				void					FinalizeInternal();
+				void					RenderTargetChangedInternal(IWindowsGDIRenderTarget* oldRenderTarget, IWindowsGDIRenderTarget* newRenderTarget);
+			public:
+				GuiGDIElementRenderer();
+				~GuiGDIElementRenderer();
+
+				void					Render(Rect bounds)override;
+				void					OnElementStateChanged()override;
+			};
+		}
+	}
+}
+
+#endif
+
+/***********************************************************************
+.\GDI\RENDERERS\GUIGRAPHICSTEXTRENDERERSWINDOWSGDI.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI::Native Window::GDI Provider for Windows Implementation::Renderer
+
+Interfaces:
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_ELEMENTS_GUIGRAPHICSTEXTRENDERERSWINDOWSGDI
+#define VCZH_PRESENTATION_ELEMENTS_GUIGRAPHICSTEXTRENDERERSWINDOWSGDI
+
+
+namespace vl
+{
+	namespace presentation
+	{
+		namespace elements_windows_gdi
+		{
+
+/***********************************************************************
+Renderers
+***********************************************************************/
+
 			class GuiColorizedTextElementRenderer : public GuiElementRendererBase<GuiColorizedTextElement, GuiColorizedTextElementRenderer, IWindowsGDIRenderTarget>, protected GuiColorizedTextElement::ICallback
 			{
 				friend class GuiElementRendererBase<GuiColorizedTextElement, GuiColorizedTextElementRenderer, IWindowsGDIRenderTarget>;
@@ -1748,23 +1828,6 @@ Renderers
 				void					FinalizeInternal();
 				void					RenderTargetChangedInternal(IWindowsGDIRenderTarget* oldRenderTarget, IWindowsGDIRenderTarget* newRenderTarget);
 			public:
-				void					Render(Rect bounds)override;
-				void					OnElementStateChanged()override;
-			};
-
-			class GuiGDIElementRenderer : public GuiElementRendererBase<GuiGDIElement, GuiGDIElementRenderer, IWindowsGDIRenderTarget>
-			{
-				friend class GuiElementRendererBase<GuiGDIElement, GuiGDIElementRenderer, IWindowsGDIRenderTarget>;
-
-			protected:
-
-				void					InitializeInternal();
-				void					FinalizeInternal();
-				void					RenderTargetChangedInternal(IWindowsGDIRenderTarget* oldRenderTarget, IWindowsGDIRenderTarget* newRenderTarget);
-			public:
-				GuiGDIElementRenderer();
-				~GuiGDIElementRenderer();
-
 				void					Render(Rect bounds)override;
 				void					OnElementStateChanged()override;
 			};

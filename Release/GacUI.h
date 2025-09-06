@@ -2058,9 +2058,9 @@ Layout Engine
 				/// <returns>Returns true if this operation succeeded.</returns>
 				virtual bool								ResetInlineObject(vint start, vint length)=0;
 
-				/// <summary>Get the layouted height of the text. The result depends on rich styled text and the two important properties that can be set using <see cref="SetWrapLine"/> and <see cref="SetMaxWidth"/>.</summary>
-				/// <returns>The layouted height.</returns>
-				virtual vint								GetHeight()=0;
+				/// <summary>Get the layouted size of the text. The result depends on rich styled text and the two important properties that can be set using <see cref="SetWrapLine"/> and <see cref="SetMaxWidth"/>.</summary>
+				/// <returns>The layouted size.</returns>
+				virtual Size								GetSize()=0;
 				/// <summary>Make the caret visible so that it will be rendered in the paragraph.</summary>
 				/// <returns>Returns true if this operation succeeded.</returns>
 				/// <param name="caret">The caret.</param>
@@ -12037,8 +12037,10 @@ Rich Content Document (run)
 
 			void							Accept(IVisitor* visitor)override{visitor->Visit(this);}
 
-			WString							GetText(bool skipNonTextContent);
-			void							GetText(stream::TextWriter& writer, bool skipNonTextContent);
+			WString							GetTextForCaret();
+			WString							GetTextForReading();
+			WString							ConvertToText(bool forCaret);
+			void							ConvertToText(stream::TextWriter& writer, bool forCaret);
 		};
 
 /***********************************************************************
@@ -12117,8 +12119,10 @@ Rich Content Document (model)
 			ResolvedStyle							GetStyle(Ptr<DocumentStyleProperties> sp, const ResolvedStyle& context);
 			ResolvedStyle							GetStyle(const WString& styleName, const ResolvedStyle& context);
 
-			WString									GetText(bool skipNonTextContent);
-			void									GetText(stream::TextWriter& writer, bool skipNonTextContent);
+			WString									GetTextForCaret();
+			WString									GetTextForReading(const WString& paragraphDelimiter);
+			WString									ConvertToText(bool forCaret, const WString& paragraphDelimiter);
+			void									ConvertToText(stream::TextWriter& writer, bool forCaret, const WString& paragraphDelimiter);
 			
 			bool									CheckEditRange(TextPos begin, TextPos end, RunRangeMap& relatedRanges);
 			Ptr<DocumentModel>						CopyDocument(TextPos begin, TextPos end, bool deepCopy);
@@ -12139,6 +12143,7 @@ Rich Content Document (model)
 			bool									RemoveStyleName(TextPos begin, TextPos end);
 			bool									RenameStyle(const WString& oldStyleName, const WString& newStyleName);
 			bool									ClearStyle(TextPos begin, TextPos end);
+			bool									ConvertToPlainText(TextPos begin, TextPos end);
 			Ptr<DocumentStyleProperties>			SummarizeStyle(TextPos begin, TextPos end);
 			Nullable<WString>						SummarizeStyleName(TextPos begin, TextPos end);
 			Nullable<Alignment>						SummarizeParagraphAlignment(TextPos begin, TextPos end);
@@ -12905,7 +12910,7 @@ Rich Content Document (element)
 					};
 
 					typedef collections::Array<Ptr<ParagraphCache>>		ParagraphCacheArray;
-					typedef collections::Array<vint>					ParagraphHeightArray;
+					typedef collections::Array<Size>					ParagraphSizeArray;
 
 				private:
 
@@ -12913,10 +12918,10 @@ Rich Content Document (element)
 				protected:
 					vint									paragraphDistance;
 					vint									lastMaxWidth;
-					vint									cachedTotalHeight;
+					Size									cachedTotalSize;
 					IGuiGraphicsLayoutProvider*				layoutProvider;
 					ParagraphCacheArray						paragraphCaches;
-					ParagraphHeightArray					paragraphHeights;
+					ParagraphSizeArray						paragraphSizes;
 
 					TextPos									lastCaret;
 					Color									lastCaretColor;
@@ -12953,6 +12958,8 @@ Rich Content Document (element)
 			protected:
 				Ptr<DocumentModel>							document;
 				ICallback*									callback = nullptr;
+				bool										paragraphPadding = true;
+				bool										wrapLine = true;
 				TextPos										caretBegin;
 				TextPos										caretEnd;
 				bool										caretVisible;
@@ -12976,6 +12983,19 @@ Rich Content Document (element)
 				/// <summary>Set the document. When a document is set to this element, modifying the document without invoking <see cref="NotifyParagraphUpdated"/> will lead to undefined behavior.</summary>
 				/// <param name="value">The document.</param>
 				void										SetDocument(Ptr<DocumentModel> value);
+				/// <summary>Get whether paddings are inserted between paragraphs.</summary>
+				/// <returns>Returns true if paddings are inserted between paragraphs.</returns>
+				bool										GetParagraphPadding();
+				/// <summary>Set whether paddings are inserted between paragraphs</summary>
+				/// <param name="value">Set to true so that paddings are inserted between paragraphs.</param>
+				void										SetParagraphPadding(bool value);
+				/// <summary>Get line wrapping.</summary>
+				/// <returns>Return true if there is automatic line wrapping.</returns>
+				bool										GetWrapLine();
+				/// <summary>Set line wrapping.</summary>
+				/// <param name="value">Set to true so that there is automatic line wrapping.</param>
+				void										SetWrapLine(bool value);
+
 				/// <summary>
 				/// Get the begin position of the selection area.
 				/// </summary>
@@ -16662,6 +16682,84 @@ namespace vl
 		{
 
 /***********************************************************************
+GuiDocumentConfig
+***********************************************************************/
+			
+			/// <summary>Represents the edit mode.</summary>
+			enum class GuiDocumentEditMode
+			{
+				/// <summary>View the rich text only.</summary>
+				ViewOnly,
+				/// <summary>The rich text is selectable.</summary>
+				Selectable,
+				/// <summary>The rich text is editable.</summary>
+				Editable,
+			};
+
+			/// <summary>Represents the paragraph mode.</summary>
+			enum class GuiDocumentParagraphMode
+			{
+				/// <summary>Only one paragraph is allowed, only one line in a paragraph is allowed.</summary>
+				Singleline,
+				/// <summary>Only one line in a paragraph is allowed.</summary>
+				Multiline,
+				/// <summary>No constraint.</summary>
+				Paragraph,
+			};
+
+			/// <summary>Control of editing and rendering behavior.</summary>
+			struct GuiDocumentConfig
+			{
+				/// <summary>For GuiDocumentLabel only. When it is true, or when wrapLine is true, or when paragraphMode is not Singleline, the control automatically expands to display all content.</summary>
+				Nullable<bool>							autoExpand;
+				/// <summary>When it is true, the defaut copy paste behavior ignores RTF format.</summary>
+				Nullable<bool>							pasteAsPlainText;
+				/// <summary>When it is true, document automatically wraps if the width of the control is not enough.</summary>
+				Nullable<bool>							wrapLine;
+				/// <summary>Control the paragraph and line behavior</summary>
+				Nullable<GuiDocumentParagraphMode>		paragraphMode;
+				/// <summary>Insert the space of a default font between paragraphs.</summary>
+				Nullable<bool>							paragraphPadding;
+				/// <summary>When it is true:
+				///  double CrLf will be used between paragraphs, when the document converts to plain text.
+				///  only double CrLf will be recognized as paragraph breaks, when the document converts from plain text.
+				/// </summary>
+				Nullable<bool>							doubleLineBreaksBetweenParagraph;
+				/// <summary>When it is true, when removing a line break from a document due to paragraphMode, insert a extra space.</summary>
+				Nullable<bool>							spaceForFlattenedLineBreak;
+
+				auto operator<=>(const GuiDocumentConfig&) const = default;
+
+				static GuiDocumentConfig				GetDocumentLabelDefaultConfig();
+				static GuiDocumentConfig				GetDocumentViewerDefaultConfig();
+				static GuiDocumentConfig				GetSinglelineTextBoxDefaultConfig();
+				static GuiDocumentConfig				GetMultilineTextBoxDefaultConfig();
+				static GuiDocumentConfig				OverrideConfig(const GuiDocumentConfig& toOverride, const GuiDocumentConfig& newConfig);
+			};
+
+			struct GuiDocumentConfigEvaluated
+			{
+				bool									autoExpand;
+				bool									pasteAsPlainText;
+				bool									wrapLine;
+				GuiDocumentParagraphMode				paragraphMode;
+				bool									paragraphPadding;
+				bool									doubleLineBreaksBetweenParagraph;
+				bool									spaceForFlattenedLineBreak;
+
+				GuiDocumentConfigEvaluated(const GuiDocumentConfig& config)
+					: autoExpand(config.autoExpand.Value())
+					, pasteAsPlainText(config.pasteAsPlainText.Value())
+					, wrapLine(config.wrapLine.Value())
+					, paragraphMode(config.paragraphMode.Value())
+					, paragraphPadding(config.paragraphPadding.Value())
+					, doubleLineBreaksBetweenParagraph(config.doubleLineBreaksBetweenParagraph.Value())
+					, spaceForFlattenedLineBreak(config.spaceForFlattenedLineBreak.Value())
+				{
+				}
+			};
+
+/***********************************************************************
 GuiDocumentCommonInterface
 ***********************************************************************/
 
@@ -16695,18 +16793,8 @@ GuiDocumentCommonInterface
 				, public Description<GuiDocumentCommonInterface>
 			{
 				typedef collections::Dictionary<WString, Ptr<GuiDocumentItem>>		DocumentItemMap;
-			public:
-				/// <summary>Represents the edit mode.</summary>
-				enum EditMode
-				{
-					/// <summary>View the rich text only.</summary>
-					ViewOnly,
-					/// <summary>The rich text is selectable.</summary>
-					Selectable,
-					/// <summary>The rich text is editable.</summary>
-					Editable,
-				};
 			protected:
+				GuiDocumentConfigEvaluated					config;
 				Ptr<DocumentModel>							baselineDocument;
 				DocumentItemMap								documentItems;
 				GuiControl*									documentControl = nullptr;
@@ -16721,7 +16809,7 @@ GuiDocumentCommonInterface
 
 				Ptr<DocumentHyperlinkRun::Package>			activeHyperlinks;
 				bool										dragging = false;
-				EditMode									editMode = EditMode::ViewOnly;
+				GuiDocumentEditMode							editMode = GuiDocumentEditMode::ViewOnly;
 
 				Ptr<GuiDocumentUndoRedoProcessor>			undoRedoProcessor;
 				Ptr<compositions::GuiShortcutKeyManager>	internalShortcutKeyManager;
@@ -16771,8 +16859,15 @@ GuiDocumentCommonInterface
 				void										OnStartRender()override;
 				void										OnFinishRender()override;
 				Size										OnRenderEmbeddedObject(const WString& name, const Rect& location)override;
+
+			protected:
+
+				WString										UserInput_ConvertDocumentToText(Ptr<DocumentModel> model);
+				void										UserInput_FormatText(const WString& text, collections::List<WString>& paragraphTexts);
+				void										UserInput_FormatDocument(Ptr<DocumentModel> model);
+
 			public:
-				GuiDocumentCommonInterface();
+				GuiDocumentCommonInterface(const GuiDocumentConfig& _config);
 				~GuiDocumentCommonInterface();
 
 				/// <summary>Active hyperlink changed event.</summary>
@@ -16931,10 +17026,10 @@ GuiDocumentCommonInterface
 				WString										GetActiveHyperlinkReference();
 				/// <summary>Get the edit mode of this control.</summary>
 				/// <returns>The edit mode.</returns>
-				EditMode									GetEditMode();
+				GuiDocumentEditMode							GetEditMode();
 				/// <summary>Set the edit mode of this control.</summary>
 				/// <param name="value">The edit mode.</param>
-				void										SetEditMode(EditMode value);
+				void										SetEditMode(GuiDocumentEditMode value);
 
 				//================ selection operations
 
@@ -17010,10 +17105,13 @@ GuiDocumentViewer
 				void										UpdateDisplayFont()override;
 				Point										GetDocumentViewPosition()override;
 				void										EnsureRectVisible(Rect bounds)override;
+
+				static GuiDocumentConfig					FixConfig(const GuiDocumentConfig& config);
 			public:
 				/// <summary>Create a control with a specified style provider.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
-				GuiDocumentViewer(theme::ThemeName themeName);
+				/// <param name="_config">(Optional): configuration of document editing and rendering behavior.</param>
+				GuiDocumentViewer(theme::ThemeName themeName, const GuiDocumentConfig& _config = {});
 				~GuiDocumentViewer();
 
 				const WString&								GetText()override;
@@ -17029,12 +17127,21 @@ GuiDocumentViewer
 			{
 				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(DocumentLabelTemplate, GuiControl)
 			protected:
+				compositions::GuiBoundsComposition*			scrollingContainer = nullptr;
+				compositions::GuiBoundsComposition*			documentContainer = nullptr;
 
 				void										UpdateDisplayFont()override;
+				Point										GetDocumentViewPosition()override;
+				void										EnsureRectVisible(Rect bounds)override;
+				void										scrollingContainer_CachedBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+				void										documentContainer_CachedMinSizeChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+
+				static GuiDocumentConfig					FixConfig(const GuiDocumentConfig& config);
 			public:
 				/// <summary>Create a control with a specified default theme.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
-				GuiDocumentLabel(theme::ThemeName themeName);
+				/// <param name="_config">(Optional): configuration of document editing and rendering behavior.</param>
+				GuiDocumentLabel(theme::ThemeName themeName, const GuiDocumentConfig& _config = {});
 				~GuiDocumentLabel();
 				
 				const WString&								GetText()override;
@@ -25016,6 +25123,7 @@ namespace vl
 	namespace presentation
 	{
 		extern void					ModifyDocumentForClipboard(Ptr<DocumentModel> model);
+		extern Ptr<INativeImage>	GetImageFromSingleImageDocument(Ptr<DocumentModel> model);
 		extern Ptr<DocumentModel>	LoadDocumentFromClipboardStream(stream::IStream& clipboardStream);
 		extern void					SaveDocumentToClipboardStream(Ptr<DocumentModel> model, stream::IStream& clipboardStream);
 
@@ -25071,6 +25179,7 @@ namespace vl
 			extern void									RemoveHyperlink(DocumentParagraphRun* run, RunRangeMap& runRanges, vint start, vint end);
 			extern void									RemoveStyleName(DocumentParagraphRun* run, RunRangeMap& runRanges, vint start, vint end);
 			extern void									ClearStyle(DocumentParagraphRun* run, RunRangeMap& runRanges, vint start, vint end);
+			extern void									ConvertToPlainText(DocumentParagraphRun* run, RunRangeMap& runRanges, vint start, vint end);
 			extern Ptr<DocumentStyleProperties>			SummarizeStyle(DocumentParagraphRun* run, RunRangeMap& runRanges, DocumentModel* model, vint start, vint end);
 			extern Nullable<WString>					SummarizeStyleName(DocumentParagraphRun* run, RunRangeMap& runRanges, DocumentModel* model, vint start, vint end);
 			extern void									AggregateStyle(Ptr<DocumentStyleProperties>& dst, Ptr<DocumentStyleProperties> src);

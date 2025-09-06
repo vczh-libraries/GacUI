@@ -4326,6 +4326,8 @@ class presentation::elements::GuiDocumentElement : presentation::elements::IGuiG
     property CaretEnd : presentation::TextPos { get:GetCaretEnd }
     property CaretVisible : system::Boolean { get:GetCaretVisible set:SetCaretVisible }
     property Document : presentation::DocumentModel^ { get:GetDocument set:SetDocument }
+    property ParagraphPadding : system::Boolean { get:GetParagraphPadding set:SetParagraphPadding }
+    property WrapLine : system::Boolean { get:GetWrapLine set:SetWrapLine }
 
     function CalculateCaret(comparingCaret : presentation::TextPos, position : presentation::elements::IGuiGraphicsParagraph::CaretRelativePosition, preferFrontSide : system::Boolean) : presentation::TextPos;
     function CalculateCaretFromPoint(point : presentation::Point) : presentation::TextPos;
@@ -4343,6 +4345,8 @@ class presentation::elements::GuiDocumentElement : presentation::elements::IGuiG
     function GetCaretVisible() : system::Boolean;
     function GetDocument() : presentation::DocumentModel^;
     function GetHyperlinkFromPoint(point : presentation::Point) : presentation::DocumentHyperlinkRun::Package^;
+    function GetParagraphPadding() : system::Boolean;
+    function GetWrapLine() : system::Boolean;
     function IsCaretEndPreferFrontSide() : system::Boolean;
     function NotifyParagraphUpdated(index : system::Int32, oldCount : system::Int32, newCount : system::Int32, updatedText : system::Boolean) : system::Void;
     function RemoveHyperlink(paragraphIndex : system::Int32, begin : system::Int32, end : system::Int32) : system::Void;
@@ -4353,6 +4357,8 @@ class presentation::elements::GuiDocumentElement : presentation::elements::IGuiG
     function SetCaretVisible(value : system::Boolean) : system::Void;
     function SetDocument(value : presentation::DocumentModel^) : system::Void;
     function SetParagraphAlignment(begin : presentation::TextPos, end : presentation::TextPos, alignments : system::ReadonlyList<presentation::Alignment?>^) : system::Void;
+    function SetParagraphPadding(value : system::Boolean) : system::Void;
+    function SetWrapLine(value : system::Boolean) : system::Void;
     function SummarizeParagraphAlignment(begin : presentation::TextPos, end : presentation::TextPos) : presentation::Alignment?;
     function SummarizeStyle(begin : presentation::TextPos, end : presentation::TextPos) : presentation::DocumentStyleProperties^;
     function SummarizeStyleName(begin : presentation::TextPos, end : presentation::TextPos) : system::String?;

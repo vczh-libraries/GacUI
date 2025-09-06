@@ -3467,11 +3467,11 @@ WindowsDirect2DParagraph (Formatting)
 
 				void SetWrapLine(bool value)override
 				{
-					if(wrapLine!=value)
+					if (wrapLine != value)
 					{
-						wrapLine=value;
-						textLayout->SetWordWrapping(value?DWRITE_WORD_WRAPPING_WRAP:DWRITE_WORD_WRAPPING_NO_WRAP);
-						formatDataAvailable=false;
+						wrapLine = value;
+						textLayout->SetWordWrapping(value ? DWRITE_WORD_WRAPPING_WRAP : DWRITE_WORD_WRAPPING_NO_WRAP);
+						formatDataAvailable = false;
 					}
 				}
 
@@ -3656,11 +3656,13 @@ WindowsDirect2DParagraph (Formatting)
 					return false;
 				}
 
-				vint GetHeight()override
+				Size GetSize()override
 				{
 					DWRITE_TEXT_METRICS metrics;
 					textLayout->GetMetrics(&metrics);
-					return (vint)ceil(metrics.height);
+					return Size(
+						(wrapLine ? 0 : (vint)ceil(metrics.widthIncludingTrailingWhitespace)),
+						(vint)ceil(metrics.height));
 				}
 
 /***********************************************************************
@@ -4070,7 +4072,7 @@ WindowsDirect2DParagraph (Caret)
 				{
 					PrepareFormatData();
 					if(!IsValidCaret(caret)) return Rect();
-					if(paragraphText.Length()==0) return Rect(Point(0, 0), Size(0, GetHeight()));
+					if(paragraphText.Length()==0) return Rect(Point(0, 0), Size(0, GetSize().y));
 
 					vint frontLineIndex=-1;
 					vint backLineIndex=-1;
@@ -5443,6 +5445,78 @@ GuiPolygonElementRenderer
 			}
 
 /***********************************************************************
+GuiDirect2DElementRenderer
+***********************************************************************/
+
+			void GuiDirect2DElementRenderer::InitializeInternal()
+			{
+			}
+
+			void GuiDirect2DElementRenderer::FinalizeInternal()
+			{
+			}
+
+			void GuiDirect2DElementRenderer::RenderTargetChangedInternal(IWindowsDirect2DRenderTarget* oldRenderTarget, IWindowsDirect2DRenderTarget* newRenderTarget)
+			{
+				IDWriteFactory* fdw=GetWindowsDirect2DObjectProvider()->GetDirectWriteFactory();
+				ID2D1Factory* fd2d=GetWindowsDirect2DObjectProvider()->GetDirect2DFactory();
+				if(oldRenderTarget)
+				{
+					GuiDirect2DElementEventArgs arguments(element, oldRenderTarget->GetDirect2DRenderTarget(), fdw, fd2d, Rect());
+					element->BeforeRenderTargetChanged.Execute(arguments);
+				}
+				if(newRenderTarget)
+				{
+					GuiDirect2DElementEventArgs arguments(element, newRenderTarget->GetDirect2DRenderTarget(), fdw, fd2d, Rect());
+					element->AfterRenderTargetChanged.Execute(arguments);
+				}
+			}
+
+			GuiDirect2DElementRenderer::GuiDirect2DElementRenderer()
+			{
+			}
+
+			GuiDirect2DElementRenderer::~GuiDirect2DElementRenderer()
+			{
+			}
+			
+			void GuiDirect2DElementRenderer::Render(Rect bounds)
+			{
+				if(renderTarget)
+				{
+					IDWriteFactory* fdw=GetWindowsDirect2DObjectProvider()->GetDirectWriteFactory();
+					ID2D1Factory* fd2d=GetWindowsDirect2DObjectProvider()->GetDirect2DFactory();
+					renderTarget->PushClipper(bounds, element);
+					if(!renderTarget->IsClipperCoverWholeTarget())
+					{
+						ID2D1RenderTarget* rt=renderTarget->GetDirect2DRenderTarget();
+						GuiDirect2DElementEventArgs arguments(element, rt, fdw, fd2d, bounds);
+						element->Rendering.Execute(arguments);
+					}
+					renderTarget->PopClipper(element);
+				}
+			}
+
+			void GuiDirect2DElementRenderer::OnElementStateChanged()
+			{
+			}
+		}
+	}
+}
+
+/***********************************************************************
+.\DIRECT2D\RENDERERS\GUIGRAPHICSTEXTRENDERERSWINDOWSDIRECT2D.CPP
+***********************************************************************/
+
+namespace vl
+{
+	namespace presentation
+	{
+		namespace elements_windows_d2d
+		{
+			using namespace collections;
+
+/***********************************************************************
 GuiColorizedTextElementRenderer
 ***********************************************************************/
 
@@ -5688,63 +5762,6 @@ GuiColorizedTextElementRenderer
 						CreateCaretBrush(renderTarget);
 					}
 				}
-			}
-
-/***********************************************************************
-GuiDirect2DElementRenderer
-***********************************************************************/
-
-			void GuiDirect2DElementRenderer::InitializeInternal()
-			{
-			}
-
-			void GuiDirect2DElementRenderer::FinalizeInternal()
-			{
-			}
-
-			void GuiDirect2DElementRenderer::RenderTargetChangedInternal(IWindowsDirect2DRenderTarget* oldRenderTarget, IWindowsDirect2DRenderTarget* newRenderTarget)
-			{
-				IDWriteFactory* fdw=GetWindowsDirect2DObjectProvider()->GetDirectWriteFactory();
-				ID2D1Factory* fd2d=GetWindowsDirect2DObjectProvider()->GetDirect2DFactory();
-				if(oldRenderTarget)
-				{
-					GuiDirect2DElementEventArgs arguments(element, oldRenderTarget->GetDirect2DRenderTarget(), fdw, fd2d, Rect());
-					element->BeforeRenderTargetChanged.Execute(arguments);
-				}
-				if(newRenderTarget)
-				{
-					GuiDirect2DElementEventArgs arguments(element, newRenderTarget->GetDirect2DRenderTarget(), fdw, fd2d, Rect());
-					element->AfterRenderTargetChanged.Execute(arguments);
-				}
-			}
-
-			GuiDirect2DElementRenderer::GuiDirect2DElementRenderer()
-			{
-			}
-
-			GuiDirect2DElementRenderer::~GuiDirect2DElementRenderer()
-			{
-			}
-			
-			void GuiDirect2DElementRenderer::Render(Rect bounds)
-			{
-				if(renderTarget)
-				{
-					IDWriteFactory* fdw=GetWindowsDirect2DObjectProvider()->GetDirectWriteFactory();
-					ID2D1Factory* fd2d=GetWindowsDirect2DObjectProvider()->GetDirect2DFactory();
-					renderTarget->PushClipper(bounds, element);
-					if(!renderTarget->IsClipperCoverWholeTarget())
-					{
-						ID2D1RenderTarget* rt=renderTarget->GetDirect2DRenderTarget();
-						GuiDirect2DElementEventArgs arguments(element, rt, fdw, fd2d, bounds);
-						element->Rendering.Execute(arguments);
-					}
-					renderTarget->PopClipper(element);
-				}
-			}
-
-			void GuiDirect2DElementRenderer::OnElementStateChanged()
-			{
 			}
 		}
 	}
@@ -8812,11 +8829,18 @@ WindowsGDIParagraph
 
 				bool GetWrapLine()override
 				{
-					return true;
+					return paragraph->wrapLine;
 				}
 
 				void SetWrapLine(bool value)override
 				{
+					CHECK_ERROR(value, L"vl::presentation::elements_windows_gdi::WindowsGDIParagraph::SetWrapLine(bool)#Non-wrapline not implemented.");
+					if (paragraph->wrapLine != value)
+					{
+						paragraph->wrapLine = value;
+						paragraph->BuildUniscribeData(renderTarget->GetDC());
+						paragraph->Layout(paragraph->lastAvailableWidth, paragraph->paragraphAlignment);
+					}
 				}
 
 				vint GetMaxWidth()override
@@ -8948,10 +8972,12 @@ WindowsGDIParagraph
 					return false;
 				}
 
-				vint GetHeight()override
+				Size GetSize()override
 				{
 					PrepareUniscribeData();
-					return paragraph->bounds.Height();
+					return Size(
+						(paragraph->wrapLine ? 0 : paragraph->bounds.Width()),
+						paragraph->bounds.Height());
 				}
 
 				bool OpenCaret(vint _caret, Color _color, bool _frontSide)override
@@ -9900,6 +9926,65 @@ GuiPolygonElementRenderer
 			}
 
 /***********************************************************************
+GuiGDIElementRenderer
+***********************************************************************/
+
+			void GuiGDIElementRenderer::InitializeInternal()
+			{
+			}
+
+			void GuiGDIElementRenderer::FinalizeInternal()
+			{
+			}
+
+			void GuiGDIElementRenderer::RenderTargetChangedInternal(IWindowsGDIRenderTarget* oldRenderTarget, IWindowsGDIRenderTarget* newRenderTarget)
+			{
+			}
+
+			GuiGDIElementRenderer::GuiGDIElementRenderer()
+			{
+			}
+
+			GuiGDIElementRenderer::~GuiGDIElementRenderer()
+			{
+			}
+			
+			void GuiGDIElementRenderer::Render(Rect bounds)
+			{
+				if(renderTarget)
+				{
+					renderTarget->PushClipper(bounds, element);
+					if(!renderTarget->IsClipperCoverWholeTarget())
+					{
+						WinDC* dc=renderTarget->GetDC();
+						GuiGDIElementEventArgs arguments(element, dc, bounds);
+						element->Rendering.Execute(arguments);
+					}
+					renderTarget->PopClipper(element);
+				}
+			}
+
+			void GuiGDIElementRenderer::OnElementStateChanged()
+			{
+			}
+		}
+	}
+}
+
+/***********************************************************************
+.\GDI\RENDERERS\GUIGRAPHICSTEXTRENDERERSWINDOWSGDI.CPP
+***********************************************************************/
+
+namespace vl
+{
+	namespace presentation
+	{
+		namespace elements_windows_gdi
+		{
+			using namespace windows;
+			using namespace collections;
+
+/***********************************************************************
 GuiColorizedTextElementRenderer
 ***********************************************************************/
 
@@ -10094,49 +10179,6 @@ GuiColorizedTextElementRenderer
 					oldCaretColor=caretColor;
 					caretPen=resourceManager->CreateGdiPen(oldCaretColor);
 				}
-			}
-
-/***********************************************************************
-GuiGDIElementRenderer
-***********************************************************************/
-
-			void GuiGDIElementRenderer::InitializeInternal()
-			{
-			}
-
-			void GuiGDIElementRenderer::FinalizeInternal()
-			{
-			}
-
-			void GuiGDIElementRenderer::RenderTargetChangedInternal(IWindowsGDIRenderTarget* oldRenderTarget, IWindowsGDIRenderTarget* newRenderTarget)
-			{
-			}
-
-			GuiGDIElementRenderer::GuiGDIElementRenderer()
-			{
-			}
-
-			GuiGDIElementRenderer::~GuiGDIElementRenderer()
-			{
-			}
-			
-			void GuiGDIElementRenderer::Render(Rect bounds)
-			{
-				if(renderTarget)
-				{
-					renderTarget->PushClipper(bounds, element);
-					if(!renderTarget->IsClipperCoverWholeTarget())
-					{
-						WinDC* dc=renderTarget->GetDC();
-						GuiGDIElementEventArgs arguments(element, dc, bounds);
-						element->Rendering.Execute(arguments);
-					}
-					renderTarget->PopClipper(element);
-				}
-			}
-
-			void GuiGDIElementRenderer::OnElementStateChanged()
-			{
 			}
 		}
 	}
@@ -11483,7 +11525,8 @@ UniscribeParagraph
 ***********************************************************************/
 
 			UniscribeParagraph::UniscribeParagraph()
-				:lastAvailableWidth(-1)
+				:wrapLine(true)
+				,lastAvailableWidth(-1)
 				,paragraphAlignment(Alignment::Left)
 				,built(false)
 			{
@@ -13262,31 +13305,17 @@ WindowsClipboardWriter
 
 			void WindowsClipboardWriter::SetDocument(Ptr<DocumentModel> value)
 			{
-				documentData = value;
 				if (!textData)
 				{
-					textData = documentData->GetText(true);
+					textData = value->GetTextForReading(WString::Unmanaged(L"\r\n\r\n"));
 				}
 
-				if (!imageData && documentData->paragraphs.Count() == 1)
+				if (!imageData)
 				{
-					Ptr<DocumentContainerRun> container = documentData->paragraphs[0];
-					while (container)
-					{
-						if (container->runs.Count() != 1) goto FAILED;
-						if (auto imageRun = container->runs[0].Cast<DocumentImageRun>())
-						{
-							imageData = imageRun->image;
-							break;
-						}
-						else
-						{
-							container = container->runs[0].Cast<DocumentContainerRun>();
-						}
-					}
-				FAILED:;
+					imageData = GetImageFromSingleImageDocument(value);
 				}
 
+				documentData = value;
 				ModifyDocumentForClipboard(documentData);
 			}
 
