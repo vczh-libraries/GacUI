@@ -206,6 +206,8 @@ GuiDocumentCommonInterface
 			protected:
 
 				WString										UserInput_ConvertDocumentToText(Ptr<DocumentModel> model);
+				void										UserInput_FixForSingleline(collections::List<WString>& paragraphTexts);
+				void										UserInput_FormatText(collections::List<WString>& paragraphTexts);
 				void										UserInput_FormatText(const WString& text, collections::List<WString>& paragraphTexts);
 				void										UserInput_FormatDocument(Ptr<DocumentModel> model);
 
