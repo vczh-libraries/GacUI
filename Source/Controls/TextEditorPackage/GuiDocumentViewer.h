@@ -205,8 +205,13 @@ GuiDocumentCommonInterface
 
 			protected:
 
-				WString										UserInput_ConvertDocumentToText(Ptr<DocumentModel> model);
+				void										UserInput_FixForPlainText(Ptr<DocumentModel> model, vint beginParagraph, vint endParagraph);
 				void										UserInput_FixForSingleline(collections::List<WString>& paragraphTexts);
+				void										UserInput_FixForSingleline(Ptr<DocumentModel> model);
+				void										UserInput_FixForNonParagraph(WString& text);
+				void										UserInput_FixForNonParagraph(Ptr<DocumentParagraphRun> paragraph);
+
+				WString										UserInput_ConvertDocumentToText(Ptr<DocumentModel> model);
 				void										UserInput_FormatText(collections::List<WString>& paragraphTexts);
 				void										UserInput_FormatText(const WString& text, collections::List<WString>& paragraphTexts);
 				void										UserInput_FormatDocument(Ptr<DocumentModel> model);
