@@ -735,9 +735,9 @@ GuiDocumentCommonInterface
 				TextPos end(endParagraph, runRanges[model->paragraphs[endParagraph].Obj()].end);
 				model->ConvertToPlainText(begin, end);
 
-				for (auto paragraph : model->paragraphs)
+				for (vint i = beginParagraph; i <= endParagraph; i++)
 				{
-					paragraph->alignment.Reset();
+					model->paragraphs[i]->alignment.Reset();
 				}
 			}
 
@@ -1044,11 +1044,44 @@ GuiDocumentCommonInterface
 
 			void GuiDocumentCommonInterface::NotifyParagraphUpdated(vint index, vint oldCount, vint newCount, bool updatedText)
 			{
-				documentElement->NotifyParagraphUpdated(index, oldCount, newCount, updatedText);
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::controls::GuiDocumentCommonInterface::NotifyParagraphUpdated(vint, vint, vint, bool)#"
+				auto model = documentElement->GetDocument();
+				if (config.paragraphMode == GuiDocumentParagraphMode::Singleline)
+				{
+					CHECK_ERROR(model->paragraphs.Count() <= 1, ERROR_MESSAGE_PREFIX L"In Singleline mode, there should be no more than 1 paragraphs in the document.");
+				}
+
+				if (0 <= index && index + newCount <= model->paragraphs.Count())
+				{
+					if (config.pasteAsPlainText && updatedText)
+					{
+						UserInput_FixForPlainText(model, index, index + newCount - 1);
+						if (baselineDocument)
+						{
+							CopyFrom(model->styles, baselineDocument->styles);
+						}
+						else
+						{
+							model->styles.Clear();
+						}
+					}
+
+					if (config.paragraphMode != GuiDocumentParagraphMode::Paragraph)
+					{
+						for (vint i = index; i < index + newCount; i++)
+						{
+							UserInput_FixForNonParagraph(model->paragraphs[i]);
+						}
+					}
+
+					documentElement->NotifyParagraphUpdated(index, oldCount, newCount, updatedText);
+				}
+#undef ERROR_MESSAGE_PREFIX
 			}
 
 			void GuiDocumentCommonInterface::EditRun(TextPos begin, TextPos end, Ptr<DocumentModel> model, bool copy)
 			{
+				UserInput_FormatDocument(model);
 				EditTextInternal(begin, end, [=, this](TextPos begin, TextPos end, vint& paragraphCount, vint& lastParagraphLength)
 				{
 					documentElement->EditRun(begin, end, model, copy);
@@ -1080,6 +1113,7 @@ GuiDocumentCommonInterface
 
 			void GuiDocumentCommonInterface::EditStyle(TextPos begin, TextPos end, Ptr<DocumentStyleProperties> style)
 			{
+				if (config.pasteAsPlainText) return;
 				EditStyleInternal(begin, end, [=, this](TextPos begin, TextPos end)
 				{
 					documentElement->EditStyle(begin, end, style);
@@ -1088,6 +1122,7 @@ GuiDocumentCommonInterface
 
 			void GuiDocumentCommonInterface::EditImage(TextPos begin, TextPos end, Ptr<GuiImageData> image)
 			{
+				if (config.pasteAsPlainText) return;
 				EditTextInternal(begin, end, [=, this](TextPos begin, TextPos end, vint& paragraphCount, vint& lastParagraphLength)
 				{
 					documentElement->EditImage(begin, end, image);
@@ -1098,6 +1133,7 @@ GuiDocumentCommonInterface
 
 			void GuiDocumentCommonInterface::EditHyperlink(vint paragraphIndex, vint begin, vint end, const WString& reference, const WString& normalStyleName, const WString& activeStyleName)
 			{
+				if (config.pasteAsPlainText) return;
 				EditStyleInternal(TextPos(paragraphIndex, begin), TextPos(paragraphIndex, end), [=, this](TextPos begin, TextPos end)
 				{
 					documentElement->EditHyperlink(begin.row, begin.column, end.column, reference, normalStyleName, activeStyleName);
@@ -1106,6 +1142,7 @@ GuiDocumentCommonInterface
 
 			void GuiDocumentCommonInterface::RemoveHyperlink(vint paragraphIndex, vint begin, vint end)
 			{
+				if (config.pasteAsPlainText) return;
 				EditStyleInternal(TextPos(paragraphIndex, begin), TextPos(paragraphIndex, end), [=, this](TextPos begin, TextPos end)
 				{
 					documentElement->RemoveHyperlink(begin.row, begin.column, end.column);
@@ -1114,6 +1151,7 @@ GuiDocumentCommonInterface
 
 			void GuiDocumentCommonInterface::EditStyleName(TextPos begin, TextPos end, const WString& styleName)
 			{
+				if (config.pasteAsPlainText) return;
 				EditStyleInternal(begin, end, [=, this](TextPos begin, TextPos end)
 				{
 					documentElement->EditStyleName(begin, end, styleName);
@@ -1122,6 +1160,7 @@ GuiDocumentCommonInterface
 
 			void GuiDocumentCommonInterface::RemoveStyleName(TextPos begin, TextPos end)
 			{
+				if (config.pasteAsPlainText) return;
 				EditStyleInternal(begin, end, [=, this](TextPos begin, TextPos end)
 				{
 					documentElement->RemoveStyleName(begin, end);
@@ -1130,6 +1169,7 @@ GuiDocumentCommonInterface
 
 			void GuiDocumentCommonInterface::RenameStyle(const WString& oldStyleName, const WString& newStyleName)
 			{
+				if (config.pasteAsPlainText) return;
 				documentElement->RenameStyle(oldStyleName, newStyleName);
 
 				// submit redo-undo
@@ -1141,6 +1181,7 @@ GuiDocumentCommonInterface
 
 			void GuiDocumentCommonInterface::ClearStyle(TextPos begin, TextPos end)
 			{
+				if (config.pasteAsPlainText) return;
 				EditStyleInternal(begin, end, [=, this](TextPos begin, TextPos end)
 				{
 					documentElement->ClearStyle(begin, end);
