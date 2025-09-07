@@ -515,24 +515,6 @@ class darkskin::MenuSplitterTemplateConstructor : system::ReferenceType {
     constructor () : darkskin::MenuSplitterTemplateConstructor^;
 }
 
-@FullName:darkskin::MultilineTextBoxTemplate
-class darkskin::MultilineTextBoxTemplate : presentation::templates::GuiMultilineTextBoxTemplate, darkskin::MultilineTextBoxTemplateConstructor {
-    constructor () : darkskin::MultilineTextBoxTemplate*;
-}
-
-@FullName:darkskin::MultilineTextBoxTemplateConstructor
-class darkskin::MultilineTextBoxTemplateConstructor : system::ReferenceType {
-    property __vwsn_precompile_0 : presentation::compositions::GuiBoundsComposition*;
-    property __vwsn_precompile_1 : presentation::elements::GuiSolidBorderElement^;
-    property __vwsn_precompile_2 : presentation::elements::GuiSolidBackgroundElement^;
-    property look : presentation::templates::GuiCommonScrollViewLook*;
-    property self : darkskin::MultilineTextBoxTemplate*;
-
-    function __vwsn_darkskin_MultilineTextBoxTemplate_Initialize(__vwsn_this_ : darkskin::MultilineTextBoxTemplate*) : system::Void;
-
-    constructor () : darkskin::MultilineTextBoxTemplateConstructor^;
-}
-
 @FullName:darkskin::ProgressBarTemplate
 class darkskin::ProgressBarTemplate : presentation::templates::GuiScrollTemplate, darkskin::ProgressBarTemplateConstructor {
     constructor () : darkskin::ProgressBarTemplate*;
@@ -1047,24 +1029,6 @@ class darkskin::ShortcutKeyTemplateConstructor : system::ReferenceType {
     function __vwsn_darkskin_ShortcutKeyTemplate_Initialize(__vwsn_this_ : darkskin::ShortcutKeyTemplate*) : system::Void;
 
     constructor () : darkskin::ShortcutKeyTemplateConstructor^;
-}
-
-@FullName:darkskin::SinglelineTextBoxTemplate
-class darkskin::SinglelineTextBoxTemplate : presentation::templates::GuiSinglelineTextBoxTemplate, darkskin::SinglelineTextBoxTemplateConstructor {
-    constructor () : darkskin::SinglelineTextBoxTemplate*;
-}
-
-@FullName:darkskin::SinglelineTextBoxTemplateConstructor
-class darkskin::SinglelineTextBoxTemplateConstructor : system::ReferenceType {
-    property __vwsn_precompile_0 : presentation::compositions::GuiBoundsComposition*;
-    property __vwsn_precompile_1 : presentation::elements::GuiSolidBorderElement^;
-    property __vwsn_precompile_2 : presentation::elements::GuiSolidBackgroundElement^;
-    property container : presentation::compositions::GuiBoundsComposition*;
-    property self : darkskin::SinglelineTextBoxTemplate*;
-
-    function __vwsn_darkskin_SinglelineTextBoxTemplate_Initialize(__vwsn_this_ : darkskin::SinglelineTextBoxTemplate*) : system::Void;
-
-    constructor () : darkskin::SinglelineTextBoxTemplateConstructor^;
 }
 
 @FullName:darkskin::SystemFrameWindowTemplate
@@ -4791,7 +4755,6 @@ class presentation::controls::GuiDocumentCommonInterface : system::ReferenceType
     property DocumentItems : system::ReadonlyDictionary<system::String, presentation::controls::GuiDocumentItem^>^ { get:GetDocumentItems }
     property EditMode : presentation::controls::GuiDocumentEditMode { get:GetEditMode set:SetEditMode }
     property Modified : system::Boolean { get:GetModified event:ModifiedChanged }
-    property PasswordChar : system::Char { get:GetPasswordChar set:SetPasswordChar }
     property SelectionModel : presentation::DocumentModel^ { get:GetSelectionModel set:SetSelectionModel event:SelectionChanged }
     property SelectionText : system::String { get:GetSelectionText set:SetSelectionText event:SelectionChanged }
 
@@ -4821,7 +4784,6 @@ class presentation::controls::GuiDocumentCommonInterface : system::ReferenceType
     function GetDocumentItems() : system::ReadonlyDictionary<system::String, presentation::controls::GuiDocumentItem^>^;
     function GetEditMode() : presentation::controls::GuiDocumentEditMode;
     function GetModified() : system::Boolean;
-    function GetPasswordChar() : system::Char;
     function GetSelectionModel() : presentation::DocumentModel^;
     function GetSelectionText() : system::String;
     function NotifyModificationSaved() : system::Void;
@@ -4838,7 +4800,6 @@ class presentation::controls::GuiDocumentCommonInterface : system::ReferenceType
     function SetEditMode(value : presentation::controls::GuiDocumentEditMode) : system::Void;
     function SetParagraphAlignment(begin : presentation::TextPos, end : presentation::TextPos, alignment : presentation::Alignment?) : system::Void;
     function SetParagraphAlignments(begin : presentation::TextPos, end : presentation::TextPos, alignments : system::ReadonlyList<presentation::Alignment?>^) : system::Void;
-    function SetPasswordChar(value : system::Char) : system::Void;
     function SetSelectionModel(value : presentation::DocumentModel^) : system::Void;
     function SetSelectionText(value : system::String) : system::Void;
     function SummarizeParagraphAlignment(begin : presentation::TextPos, end : presentation::TextPos) : presentation::Alignment?;
@@ -5201,10 +5162,12 @@ class presentation::controls::GuiMessageDialog : presentation::controls::GuiDial
     constructor () : presentation::controls::GuiMessageDialog*;
 }
 
-class presentation::controls::GuiMultilineTextBox : presentation::controls::GuiScrollView, presentation::controls::GuiTextBoxCommonInterface {
-    function TypedControlTemplateObject(ensureExists : system::Boolean) : presentation::templates::GuiMultilineTextBoxTemplate*;
+class presentation::controls::GuiMultilineTextBox : presentation::controls::GuiDocumentViewer {
+    function TypedControlTemplateObject(ensureExists : system::Boolean) : presentation::templates::GuiDocumentViewerTemplate*;
+    function TypedControlTemplateObject(ensureExists : system::Boolean) : presentation::templates::GuiDocumentViewerTemplate*;
 
     constructor (themeName : presentation::theme::ThemeName) : presentation::controls::GuiMultilineTextBox*;
+    constructor (themeName : presentation::theme::ThemeName, config : presentation::controls::GuiDocumentConfig) : presentation::controls::GuiMultilineTextBox*;
 }
 
 class presentation::controls::GuiOpenFileDialog : presentation::controls::GuiFileDialogBase {
@@ -5493,14 +5456,16 @@ class presentation::controls::GuiSelectableListControl : presentation::controls:
     constructor (themeName : presentation::theme::ThemeName, itemProvider : presentation::controls::list::IItemProvider*) : presentation::controls::GuiSelectableListControl*;
 }
 
-class presentation::controls::GuiSinglelineTextBox : presentation::controls::GuiControl, presentation::controls::GuiTextBoxCommonInterface {
+class presentation::controls::GuiSinglelineTextBox : presentation::controls::GuiDocumentLabel {
     property PasswordChar : system::Char { get:GetPasswordChar set:SetPasswordChar }
 
     function GetPasswordChar() : system::Char;
     function SetPasswordChar(value : system::Char) : system::Void;
-    function TypedControlTemplateObject(ensureExists : system::Boolean) : presentation::templates::GuiSinglelineTextBoxTemplate*;
+    function TypedControlTemplateObject(ensureExists : system::Boolean) : presentation::templates::GuiDocumentLabelTemplate*;
+    function TypedControlTemplateObject(ensureExists : system::Boolean) : presentation::templates::GuiDocumentLabelTemplate*;
 
     constructor (themeName : presentation::theme::ThemeName) : presentation::controls::GuiSinglelineTextBox*;
+    constructor (themeName : presentation::theme::ThemeName, config : presentation::controls::GuiDocumentConfig) : presentation::controls::GuiSinglelineTextBox*;
 }
 
 class presentation::controls::GuiTab : presentation::controls::GuiControl {
@@ -5525,71 +5490,6 @@ class presentation::controls::GuiTabPage : presentation::controls::GuiCustomCont
     function GetOwnerTab() : presentation::controls::GuiTab*;
 
     constructor (themeName : presentation::theme::ThemeName) : presentation::controls::GuiTabPage*;
-}
-
-class presentation::controls::GuiTextBoxCommonInterface : system::ReferenceType {
-    event ModifiedChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
-        Modified,
-    }
-    event SelectionChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
-        SelectionText,
-        CaretBegin,
-        CaretEnd,
-        CaretSmall,
-        CaretLarge,
-    }
-    event UndoRedoChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^;
-
-    property CaretBegin : presentation::TextPos { get:GetCaretBegin event:SelectionChanged }
-    property CaretEnd : presentation::TextPos { get:GetCaretEnd event:SelectionChanged }
-    property CaretLarge : presentation::TextPos { get:GetCaretLarge event:SelectionChanged }
-    property CaretSmall : presentation::TextPos { get:GetCaretSmall event:SelectionChanged }
-    property EditVersion : system::UInt32 { get:GetEditVersion }
-    property MaxHeight : system::Int32 { get:GetMaxHeight }
-    property MaxWidth : system::Int32 { get:GetMaxWidth }
-    property Modified : system::Boolean { get:GetModified event:ModifiedChanged }
-    property Readonly : system::Boolean { get:GetReadonly set:SetReadonly }
-    property RowCount : system::Int32 { get:GetRowCount }
-    property RowHeight : system::Int32 { get:GetRowHeight }
-    property SelectionText : system::String { get:GetSelectionText set:SetSelectionText event:SelectionChanged }
-
-    function CanCopy() : system::Boolean;
-    function CanCut() : system::Boolean;
-    function CanPaste() : system::Boolean;
-    function CanRedo() : system::Boolean;
-    function CanUndo() : system::Boolean;
-    function ClearUndoRedo() : system::Void;
-    function Copy() : system::Boolean;
-    function Cut() : system::Boolean;
-    function GetCaretBegin() : presentation::TextPos;
-    function GetCaretEnd() : presentation::TextPos;
-    function GetCaretLarge() : presentation::TextPos;
-    function GetCaretSmall() : presentation::TextPos;
-    function GetEditVersion() : system::UInt32;
-    function GetFragmentText(start : presentation::TextPos, end : presentation::TextPos) : system::String;
-    function GetMaxHeight() : system::Int32;
-    function GetMaxWidth() : system::Int32;
-    function GetModified() : system::Boolean;
-    function GetNearestTextPos(point : presentation::Point) : presentation::TextPos;
-    function GetPointFromTextPos(pos : presentation::TextPos) : presentation::Point;
-    function GetReadonly() : system::Boolean;
-    function GetRectFromTextPos(pos : presentation::TextPos) : presentation::Rect;
-    function GetRowCount() : system::Int32;
-    function GetRowHeight() : system::Int32;
-    function GetRowText(row : system::Int32) : system::String;
-    function GetRowWidth(row : system::Int32) : system::Int32;
-    function GetSelectionText() : system::String;
-    function GetTextPosFromPoint(point : presentation::Point) : presentation::TextPos;
-    function NotifyModificationSaved() : system::Void;
-    function Paste() : system::Boolean;
-    function Redo() : system::Boolean;
-    function Select(begin : presentation::TextPos, end : presentation::TextPos) : system::Void;
-    function SelectAll() : system::Void;
-    function SetReadonly(value : system::Boolean) : system::Void;
-    function SetSelectionText(value : system::String) : system::Void;
-    function SetSelectionTextAsKeyInput(value : system::String) : system::Void;
-    function Undo() : system::Boolean;
-
 }
 
 class presentation::controls::GuiTextList : presentation::controls::GuiVirtualTextList {
@@ -6565,48 +6465,6 @@ enum presentation::elements::Gui3DSplitterElement::Direction {
     Vertical = 1,
 }
 
-class presentation::elements::GuiColorizedTextElement : presentation::elements::IGuiGraphicsElement {
-    property CaretBegin : presentation::TextPos { get:GetCaretBegin set:SetCaretBegin }
-    property CaretColor : presentation::Color { get:GetCaretColor set:SetCaretColor }
-    property CaretEnd : presentation::TextPos { get:GetCaretEnd set:SetCaretEnd }
-    property CaretVisible : system::Boolean { get:GetCaretVisible set:SetCaretVisible }
-    property Colors : system::ReadonlyList<presentation::elements::text::ColorEntry>^ { get:GetColors set:SetColors }
-    property Focused : system::Boolean { get:GetFocused set:SetFocused }
-    property Font : presentation::FontProperties { get:GetFont set:SetFont }
-    property Lines : presentation::elements::text::TextLines* { get:GetLines }
-    property PasswordChar : system::Char { get:GetPasswordChar set:SetPasswordChar }
-    property ViewPosition : presentation::Point { get:GetViewPosition set:SetViewPosition }
-    property VisuallyEnabled : system::Boolean { get:GetVisuallyEnabled set:SetVisuallyEnabled }
-
-    function GetCaretBegin() : presentation::TextPos;
-    function GetCaretColor() : presentation::Color;
-    function GetCaretEnd() : presentation::TextPos;
-    function GetCaretVisible() : system::Boolean;
-    function GetColors() : system::ReadonlyList<presentation::elements::text::ColorEntry>^;
-    function GetFocused() : system::Boolean;
-    function GetFont() : presentation::FontProperties;
-    @InvokeTemplate:::vl::reflection::description::GuiColorizedTextElement_GetLines($This, $Arguments)
-    @ClosureTemplate:::vl::Func<$Func>($This, &::vl::reflection::description::GuiColorizedTextElement_GetLines)
-    function GetLines() : presentation::elements::text::TextLines*;
-    function GetPasswordChar() : system::Char;
-    function GetViewPosition() : presentation::Point;
-    function GetVisuallyEnabled() : system::Boolean;
-    function SetCaretBegin(value : presentation::TextPos) : system::Void;
-    function SetCaretColor(value : presentation::Color) : system::Void;
-    function SetCaretEnd(value : presentation::TextPos) : system::Void;
-    function SetCaretVisible(value : system::Boolean) : system::Void;
-    function SetColors(value : system::ReadonlyList<presentation::elements::text::ColorEntry>^) : system::Void;
-    function SetFocused(value : system::Boolean) : system::Void;
-    function SetFont(value : presentation::FontProperties) : system::Void;
-    function SetPasswordChar(value : system::Char) : system::Void;
-    function SetViewPosition(value : presentation::Point) : system::Void;
-    function SetVisuallyEnabled(value : system::Boolean) : system::Void;
-
-    @InvokeTemplate:::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiColorizedTextElement>($Arguments)
-    @ClosureTemplate:::vl::Func<$Func>(&::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiColorizedTextElement>)
-    constructor () : presentation::elements::GuiColorizedTextElement^;
-}
-
 class presentation::elements::GuiDocumentElement : presentation::elements::IGuiGraphicsElement {
     property CaretBegin : presentation::TextPos { get:GetCaretBegin }
     property CaretColor : presentation::Color { get:GetCaretColor set:SetCaretColor }
@@ -6846,52 +6704,6 @@ enum presentation::elements::IGuiGraphicsParagraph::CaretRelativePosition {
     CaretMoveLeft = 4,
     CaretMoveRight = 5,
     CaretMoveUp = 6,
-}
-
-@ValueType
-struct presentation::elements::text::ColorEntry {
-    property normal : presentation::elements::text::ColorItem;
-    property selectedFocused : presentation::elements::text::ColorItem;
-    property selectedUnfocused : presentation::elements::text::ColorItem;
-}
-
-@ValueType
-struct presentation::elements::text::ColorItem {
-    property background : presentation::Color;
-    property text : presentation::Color;
-}
-
-class presentation::elements::text::TextLines : system::ReferenceType {
-    property Count : system::Int32 { get:GetCount }
-    property MaxHeight : system::Int32 { get:GetMaxHeight }
-    property MaxWidth : system::Int32 { get:GetMaxWidth }
-    property PasswordChar : system::Char { get:GetPasswordChar set:SetPasswordChar }
-    property RowHeight : system::Int32 { get:GetRowHeight }
-    property TabSpaceCount : system::Int32 { get:GetTabSpaceCount set:SetTabSpaceCount }
-
-    function Clear() : system::Void;
-    function ClearMeasurement() : system::Void;
-    function GetCount() : system::Int32;
-    function GetMaxHeight() : system::Int32;
-    function GetMaxWidth() : system::Int32;
-    function GetPasswordChar() : system::Char;
-    function GetPointFromTextPos(pos : presentation::TextPos) : presentation::Point;
-    function GetRectFromTextPos(pos : presentation::TextPos) : presentation::Rect;
-    function GetRowHeight() : system::Int32;
-    function GetRowWidth(row : system::Int32) : system::Int32;
-    function GetTabSpaceCount() : system::Int32;
-    function GetText() : system::String;
-    function GetText(start : presentation::TextPos, end : presentation::TextPos) : system::String;
-    function GetTextPosFromPoint(point : presentation::Point) : presentation::TextPos;
-    function IsAvailable(pos : presentation::TextPos) : system::Boolean;
-    function MeasureRow(row : system::Int32) : system::Void;
-    function Modify(start : presentation::TextPos, end : presentation::TextPos, input : system::String) : presentation::TextPos;
-    function Normalize(pos : presentation::TextPos) : presentation::TextPos;
-    function RemoveLines(start : system::Int32, end : system::Int32) : system::Boolean;
-    function SetPasswordChar(value : system::Char) : system::Void;
-    function SetTabSpaceCount(value : system::Int32) : system::Void;
-    function SetText(value : system::String) : system::Void;
-
 }
 
 class presentation::helper_types::LocalizedStrings : system::ReferenceType {
@@ -7305,31 +7117,6 @@ class presentation::templates::GuiMenuTemplate : presentation::templates::GuiWin
     constructor () : presentation::templates::GuiMenuTemplate*;
 }
 
-class presentation::templates::GuiMultilineTextBoxTemplate : presentation::templates::GuiScrollViewTemplate {
-    event CaretColorChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
-        CaretColor,
-    }
-    event CommandsChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
-        Commands,
-    }
-    event TextColorChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
-        TextColor,
-    }
-
-    property CaretColor : presentation::Color { get:GetCaretColor set:SetCaretColor event:CaretColorChanged }
-    property Commands : presentation::controls::ITextBoxCommandExecutor* { get:GetCommands set:SetCommands event:CommandsChanged }
-    property TextColor : presentation::elements::text::ColorEntry { get:GetTextColor set:SetTextColor event:TextColorChanged }
-
-    function GetCaretColor() : presentation::Color;
-    function GetCommands() : presentation::controls::ITextBoxCommandExecutor*;
-    function GetTextColor() : presentation::elements::text::ColorEntry;
-    function SetCaretColor(value : presentation::Color) : system::Void;
-    function SetCommands(value : presentation::controls::ITextBoxCommandExecutor*) : system::Void;
-    function SetTextColor(value : presentation::elements::text::ColorEntry) : system::Void;
-
-    constructor () : presentation::templates::GuiMultilineTextBoxTemplate*;
-}
-
 class presentation::templates::GuiRibbonButtonsTemplate : presentation::templates::GuiControlTemplate {
     event IconButtonTemplateChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
         IconButtonTemplate,
@@ -7640,25 +7427,6 @@ class presentation::templates::GuiSelectableButtonTemplate : presentation::templ
     function SetSelected(value : system::Boolean) : system::Void;
 
     constructor () : presentation::templates::GuiSelectableButtonTemplate*;
-}
-
-class presentation::templates::GuiSinglelineTextBoxTemplate : presentation::templates::GuiControlTemplate {
-    event CaretColorChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
-        CaretColor,
-    }
-    event TextColorChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
-        TextColor,
-    }
-
-    property CaretColor : presentation::Color { get:GetCaretColor set:SetCaretColor event:CaretColorChanged }
-    property TextColor : presentation::elements::text::ColorEntry { get:GetTextColor set:SetTextColor event:TextColorChanged }
-
-    function GetCaretColor() : presentation::Color;
-    function GetTextColor() : presentation::elements::text::ColorEntry;
-    function SetCaretColor(value : presentation::Color) : system::Void;
-    function SetTextColor(value : presentation::elements::text::ColorEntry) : system::Void;
-
-    constructor () : presentation::templates::GuiSinglelineTextBoxTemplate*;
 }
 
 class presentation::templates::GuiTabTemplate : presentation::templates::GuiControlTemplate {
@@ -8017,9 +7785,9 @@ enum presentation::theme::ThemeName {
     CustomFrameWindow = 3,
     DateComboBox = 59,
     DatePicker = 58,
-    DocumentLabel = 15,
-    DocumentTextBox = 16,
-    DocumentViewer = 14,
+    DocumentLabel = 14,
+    DocumentTextBox = 15,
+    DocumentViewer = 12,
     GroupBox = 9,
     HScroll = 60,
     HTracker = 62,
@@ -8031,7 +7799,7 @@ enum presentation::theme::ThemeName {
     MenuBarButton = 27,
     MenuItemButton = 28,
     MenuSplitter = 26,
-    MultilineTextBox = 12,
+    MultilineTextBox = 13,
     ProgressBar = 64,
     RadioButton = 57,
     RadioTextListItem = 23,
@@ -8056,7 +7824,7 @@ enum presentation::theme::ThemeName {
     RibbonToolstrips = 42,
     ScrollView = 8,
     ShortcutKey = 7,
-    SinglelineTextBox = 13,
+    SinglelineTextBox = 16,
     SystemFrameWindow = 2,
     Tab = 10,
     TextList = 19,
@@ -8099,7 +7867,7 @@ class presentation::theme::ThemeTemplates : presentation::controls::GuiInstanceR
     property MenuBarButton : system::Function<presentation::templates::GuiToolstripButtonTemplate*, system::Object>^;
     property MenuItemButton : system::Function<presentation::templates::GuiToolstripButtonTemplate*, system::Object>^;
     property MenuSplitter : system::Function<presentation::templates::GuiControlTemplate*, system::Object>^;
-    property MultilineTextBox : system::Function<presentation::templates::GuiMultilineTextBoxTemplate*, system::Object>^;
+    property MultilineTextBox : system::Function<presentation::templates::GuiDocumentViewerTemplate*, system::Object>^;
     property Name : system::String;
     property PreferCustomFrameWindow : system::Boolean?;
     property ProgressBar : system::Function<presentation::templates::GuiScrollTemplate*, system::Object>^;
@@ -8126,7 +7894,7 @@ class presentation::theme::ThemeTemplates : presentation::controls::GuiInstanceR
     property RibbonToolstrips : system::Function<presentation::templates::GuiRibbonToolstripsTemplate*, system::Object>^;
     property ScrollView : system::Function<presentation::templates::GuiScrollViewTemplate*, system::Object>^;
     property ShortcutKey : system::Function<presentation::templates::GuiLabelTemplate*, system::Object>^;
-    property SinglelineTextBox : system::Function<presentation::templates::GuiSinglelineTextBoxTemplate*, system::Object>^;
+    property SinglelineTextBox : system::Function<presentation::templates::GuiDocumentLabelTemplate*, system::Object>^;
     property SystemFrameWindow : system::Function<presentation::templates::GuiWindowTemplate*, system::Object>^;
     property Tab : system::Function<presentation::templates::GuiTabTemplate*, system::Object>^;
     property TextList : system::Function<presentation::templates::GuiTextListTemplate*, system::Object>^;
