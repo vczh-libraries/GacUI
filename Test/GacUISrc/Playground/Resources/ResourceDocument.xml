@@ -23,7 +23,22 @@
             <Label Text="GetDocumentLabelDefaultConfig()"/>
           </Cell>
           <Cell Site="row:0 column:1">
-            <Label Text="GetSinglelineTextBoxDefaultConfig()"/>
+            <Table MinSizeLimitation="LimitToElementAndChildren" AlignmentToParent="left:0 top:0 right:0 bottom:0">
+              <att.Rows>
+                <_>composeType:MinSize</_>
+              </att.Rows>
+              <att.Columns>
+                <_>composeType:MinSize</_>
+                <_>composeType:Percentage percentage:1.0</_>
+                <_>composeType:MinSize</_>
+              </att.Columns>
+              <Cell Site="row:0 column:0">
+                <Label Text="GetSinglelineTextBoxDefaultConfig()"/>
+              </Cell>
+              <Cell Site="row:0 column:2">
+                <CheckBox ref.Name="checkBoxPasswordChar" Text="PasswordChar(*)"/>
+              </Cell>
+            </Table>
           </Cell>
           <Cell Site="row:2 column:0">
             <Label Text="GetDocumentViewerDefaultConfig()"/>
@@ -55,6 +70,7 @@
                 doubleLineBreaksBetweenParagraph:false
                 spaceForFlattenedLineBreak:false
               </att.Behavior>
+              <att.PasswordChar-bind>cast char (checkBoxPasswordChar.Selected ? '*' : '')</att.PasswordChar-bind>
             </DocumentTextBox>
           </Cell>
           <Cell Site="row:3 column:1">
