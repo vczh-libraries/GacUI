@@ -973,16 +973,6 @@ GuiDocumentCommonInterface
 				documentElement->SetDocument(value);
 			}
 
-			wchar_t GuiDocumentCommonInterface::GetPasswordChar()
-			{
-				return documentElement->GetPasswordChar();
-			}
-
-			void GuiDocumentCommonInterface::SetPasswordChar(wchar_t value)
-			{
-				documentElement->SetPasswordChar(value);
-			}
-
 			//================ document items
 
 			bool GuiDocumentCommonInterface::AddDocumentItem(Ptr<GuiDocumentItem> value)
@@ -1636,6 +1626,19 @@ GuiDocumentViewer
 			}
 
 /***********************************************************************
+GuiMultilineTextBox
+***********************************************************************/
+
+			GuiMultilineTextBox::GuiMultilineTextBox(theme::ThemeName themeName, const GuiDocumentConfig& _config)
+				: GuiDocumentViewer(themeName, FixConfig(GuiDocumentConfig::OverrideConfig(GuiDocumentConfig::GetMultilineTextBoxDefaultConfig(), _config)))
+			{
+			}
+
+			GuiMultilineTextBox::~GuiMultilineTextBox()
+			{
+			}
+
+/***********************************************************************
 GuiDocumentLabel
 ***********************************************************************/
 
@@ -1777,6 +1780,29 @@ GuiDocumentLabel
 			{
 				SelectAll();
 				SetSelectionText(value);
+			}
+
+/***********************************************************************
+GuiSinglelineTextBox
+***********************************************************************/
+
+			GuiSinglelineTextBox::GuiSinglelineTextBox(theme::ThemeName themeName, const GuiDocumentConfig& _config)
+				: GuiDocumentLabel(themeName, FixConfig(GuiDocumentConfig::OverrideConfig(GuiDocumentConfig::GetSinglelineTextBoxDefaultConfig(), _config)))
+			{
+			}
+
+			GuiSinglelineTextBox::~GuiSinglelineTextBox()
+			{
+			}
+
+			wchar_t GuiSinglelineTextBox::GetPasswordChar()
+			{
+				return documentElement->GetPasswordChar();
+			}
+
+			void GuiSinglelineTextBox::SetPasswordChar(wchar_t value)
+			{
+				documentElement->SetPasswordChar(value);
 			}
 		}
 	}
