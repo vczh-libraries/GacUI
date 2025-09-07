@@ -1110,7 +1110,7 @@ Class (::gaclib_controls::UnitTestSnapshotViewerWindowConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_27)->SetVerticalAlwaysVisible(false);
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_27)->SetReadonly(true);
+			::vl::__vwsn::This(this->__vwsn_precompile_27)->SetEditMode(::vl::presentation::controls::GuiDocumentEditMode::Selectable);
 		}
 		(this->__vwsn_precompile_28 = ::vl::__vwsn::This(this->__vwsn_precompile_27)->GetBoundsComposition());
 		{
@@ -1139,7 +1139,7 @@ Class (::gaclib_controls::UnitTestSnapshotViewerWindowConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_30)->SetVerticalAlwaysVisible(false);
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_30)->SetReadonly(true);
+			::vl::__vwsn::This(this->__vwsn_precompile_30)->SetEditMode(::vl::presentation::controls::GuiDocumentEditMode::Selectable);
 		}
 		(this->__vwsn_precompile_31 = ::vl::__vwsn::This(this->__vwsn_precompile_30)->GetBoundsComposition());
 		{
@@ -1191,7 +1191,7 @@ Class (::gaclib_controls::UnitTestSnapshotViewerWindowConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_33)->SetVerticalAlwaysVisible(false);
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_33)->SetReadonly(true);
+			::vl::__vwsn::This(this->__vwsn_precompile_33)->SetEditMode(::vl::presentation::controls::GuiDocumentEditMode::Selectable);
 		}
 		(this->__vwsn_precompile_34 = ::vl::__vwsn::This(this->__vwsn_precompile_33)->GetBoundsComposition());
 		{
@@ -1220,7 +1220,7 @@ Class (::gaclib_controls::UnitTestSnapshotViewerWindowConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_36)->SetVerticalAlwaysVisible(false);
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_36)->SetReadonly(true);
+			::vl::__vwsn::This(this->__vwsn_precompile_36)->SetEditMode(::vl::presentation::controls::GuiDocumentEditMode::Selectable);
 		}
 		(this->__vwsn_precompile_37 = ::vl::__vwsn::This(this->__vwsn_precompile_36)->GetBoundsComposition());
 		{

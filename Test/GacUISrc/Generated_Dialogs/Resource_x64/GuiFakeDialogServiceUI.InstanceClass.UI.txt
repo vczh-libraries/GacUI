@@ -2996,7 +2996,7 @@ namespace gaclib_controls
                 var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
                 {
                     (textBox.Text = ViewModel.GetDisplayString(self.GetSelectedFiles()));
-                    textBox.Select({row : 0; column : 0;}, {row : 0; column : 0;});
+                    textBox.SetCaret({row : 0; column : 0;}, {row : 0; column : 0;});
                 };
                 attach(dataGrid.SelectionChanged, <event-handler>);
             }
@@ -3785,7 +3785,7 @@ namespace gaclib_controls
                 self.AddChild(<precompile>0);
             }
             {
-                (textBox.Readonly = ViewModel.FontMustExist);
+                (textBox.EditMode = ViewModel.FontMustExist ? Selectable : Editable);
             }
             {
                 (textList.ItemSource = ViewModel.FontList);
@@ -4191,7 +4191,7 @@ namespace gaclib_controls
         func InitValue(value : string) : (void)
         {
             (textBox.Text = value);
-            textBox.Select({row : 0; column : 0;}, {row : 0; column : 0;});
+            textBox.SetCaret({row : 0; column : 0;}, {row : 0; column : 0;});
             UpdateSelectedIndex();
         }
 
@@ -4802,7 +4802,7 @@ namespace gaclib_controls
         func InitValue(value : int) : (void)
         {
             (textBox.Text = (cast (string) value));
-            textBox.Select({row : 0; column : 0;}, {row : 0; column : 0;});
+            textBox.SetCaret({row : 0; column : 0;}, {row : 0; column : 0;});
             UpdateSelectedIndex();
         }
 

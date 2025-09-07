@@ -467,6 +467,7 @@ Closures
 	void __vwsnf35_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		::vl::__vwsn::This(__vwsnthis_0->textBox)->SetText(::vl::__vwsn::This(__vwsnthis_0->ViewModel.Obj())->GetDisplayString(::vl::__vwsn::This(__vwsnthis_0->self)->GetSelectedFiles()));
+		::vl::__vwsn::This(__vwsnthis_0->textBox)->SetCaret([&](){ ::vl::presentation::TextPos __vwsn_temp__; __vwsn_temp__.row = static_cast<::vl::vint>(0); __vwsn_temp__.column = static_cast<::vl::vint>(0); return __vwsn_temp__; }(), [&](){ ::vl::presentation::TextPos __vwsn_temp__; __vwsn_temp__.row = static_cast<::vl::vint>(0); __vwsn_temp__.column = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
 	}
 
 	//-------------------------------------------------------------------
@@ -6958,6 +6959,9 @@ Class (::gaclib_controls::FontNameControlConstructor)
 			::vl::__vwsn::This(this->self)->AddChild(this->__vwsn_precompile_0);
 		}
 		{
+			::vl::__vwsn::This(this->textBox)->SetEditMode((::vl::__vwsn::This(this->ViewModel.Obj())->GetFontMustExist() ? ::vl::presentation::controls::GuiDocumentEditMode::Selectable : ::vl::presentation::controls::GuiDocumentEditMode::Editable));
+		}
+		{
 			::vl::__vwsn::This(this->textList)->SetItemSource(::vl::Ptr<::vl::reflection::description::IValueEnumerable>(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueReadonlyList>(::vl::__vwsn::This(this->ViewModel.Obj())->GetFontList())));
 		}
 		{
@@ -7051,6 +7055,7 @@ Class (::gaclib_controls::FontNameControl)
 	void FontNameControl::InitValue(const ::vl::WString& value)
 	{
 		::vl::__vwsn::This(this->textBox)->SetText(value);
+		::vl::__vwsn::This(this->textBox)->SetCaret([&](){ ::vl::presentation::TextPos __vwsn_temp__; __vwsn_temp__.row = static_cast<::vl::vint>(0); __vwsn_temp__.column = static_cast<::vl::vint>(0); return __vwsn_temp__; }(), [&](){ ::vl::presentation::TextPos __vwsn_temp__; __vwsn_temp__.row = static_cast<::vl::vint>(0); __vwsn_temp__.column = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
 		this->UpdateSelectedIndex();
 	}
 
@@ -7280,6 +7285,7 @@ Class (::gaclib_controls::FontSizeControl)
 	void FontSizeControl::InitValue(::vl::vint value)
 	{
 		::vl::__vwsn::This(this->textBox)->SetText(::vl::__vwsn::ToString(value));
+		::vl::__vwsn::This(this->textBox)->SetCaret([&](){ ::vl::presentation::TextPos __vwsn_temp__; __vwsn_temp__.row = static_cast<::vl::vint>(0); __vwsn_temp__.column = static_cast<::vl::vint>(0); return __vwsn_temp__; }(), [&](){ ::vl::presentation::TextPos __vwsn_temp__; __vwsn_temp__.row = static_cast<::vl::vint>(0); __vwsn_temp__.column = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
 		this->UpdateSelectedIndex();
 	}
 

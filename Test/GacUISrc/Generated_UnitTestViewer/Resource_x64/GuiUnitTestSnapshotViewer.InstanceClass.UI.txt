@@ -445,7 +445,7 @@ namespace gaclib_controls
                 (<precompile>27.VerticalAlwaysVisible = false);
             }
             {
-                (<precompile>27.Readonly = true);
+                (<precompile>27.EditMode = Selectable of (::presentation::controls::GuiDocumentEditMode));
             }
             (<precompile>28 = <precompile>27.BoundsComposition);
             {
@@ -474,7 +474,7 @@ namespace gaclib_controls
                 (<precompile>30.VerticalAlwaysVisible = false);
             }
             {
-                (<precompile>30.Readonly = true);
+                (<precompile>30.EditMode = Selectable of (::presentation::controls::GuiDocumentEditMode));
             }
             (<precompile>31 = <precompile>30.BoundsComposition);
             {
@@ -526,7 +526,7 @@ namespace gaclib_controls
                 (<precompile>33.VerticalAlwaysVisible = false);
             }
             {
-                (<precompile>33.Readonly = true);
+                (<precompile>33.EditMode = Selectable of (::presentation::controls::GuiDocumentEditMode));
             }
             (<precompile>34 = <precompile>33.BoundsComposition);
             {
@@ -555,7 +555,7 @@ namespace gaclib_controls
                 (<precompile>36.VerticalAlwaysVisible = false);
             }
             {
-                (<precompile>36.Readonly = true);
+                (<precompile>36.EditMode = Selectable of (::presentation::controls::GuiDocumentEditMode));
             }
             (<precompile>37 = <precompile>36.BoundsComposition);
             {

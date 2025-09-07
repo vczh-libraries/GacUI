@@ -1,4 +1,4 @@
-﻿================================(1/142)================================
+﻿================================(1/138)================================
 module <constructor>darkskin::Theme;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -426,10 +426,10 @@ namespace darkskin
                 (<precompile>0.PreferCustomFrameWindow = true);
             }
             {
-                (<precompile>0.MultilineTextBox = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiMultilineTextBoxTemplate*)
+                (<precompile>0.MultilineTextBox = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiDocumentViewerTemplate*)
                 {
                     {
-                        return new (::darkskin::MultilineTextBoxTemplate*)();
+                        return new (::darkskin::DocumentViewerTemplate*)();
                     }
                 });
             }
@@ -474,10 +474,10 @@ namespace darkskin
                 });
             }
             {
-                (<precompile>0.SinglelineTextBox = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiSinglelineTextBoxTemplate*)
+                (<precompile>0.SinglelineTextBox = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiDocumentLabelTemplate*)
                 {
                     {
-                        return new (::darkskin::SinglelineTextBoxTemplate*)();
+                        return new (::darkskin::DocumentTextBoxTemplate*)();
                     }
                 });
             }
@@ -516,7 +516,7 @@ namespace darkskin
     }
 }
 
-================================(2/142)================================
+================================(2/138)================================
 module <instance>darkskin::Theme;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -557,7 +557,7 @@ namespace darkskin
     }
 }
 
-================================(3/142)================================
+================================(3/138)================================
 module <constructor>darkskin::ButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -1182,7 +1182,7 @@ namespace darkskin
     }
 }
 
-================================(4/142)================================
+================================(4/138)================================
 module <instance>darkskin::ButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -1223,7 +1223,7 @@ namespace darkskin
     }
 }
 
-================================(5/142)================================
+================================(5/138)================================
 module <constructor>darkskin::CheckBoxTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -2142,7 +2142,7 @@ namespace darkskin
     }
 }
 
-================================(6/142)================================
+================================(6/138)================================
 module <instance>darkskin::CheckBoxTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -2183,7 +2183,7 @@ namespace darkskin
     }
 }
 
-================================(7/142)================================
+================================(7/138)================================
 module <constructor>darkskin::RadioButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -3050,7 +3050,7 @@ namespace darkskin
     }
 }
 
-================================(8/142)================================
+================================(8/138)================================
 module <instance>darkskin::RadioButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -3091,7 +3091,7 @@ namespace darkskin
     }
 }
 
-================================(9/142)================================
+================================(9/138)================================
 module <constructor>darkskin::DocumentLabelTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -3150,7 +3150,7 @@ namespace darkskin
     }
 }
 
-================================(10/142)================================
+================================(10/138)================================
 module <instance>darkskin::DocumentLabelTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -3191,7 +3191,7 @@ namespace darkskin
     }
 }
 
-================================(11/142)================================
+================================(11/138)================================
 module <constructor>darkskin::DocumentTextBoxTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -3378,7 +3378,7 @@ namespace darkskin
     }
 }
 
-================================(12/142)================================
+================================(12/138)================================
 module <instance>darkskin::DocumentTextBoxTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -3419,7 +3419,7 @@ namespace darkskin
     }
 }
 
-================================(13/142)================================
+================================(13/138)================================
 module <constructor>darkskin::DocumentViewerTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -3625,7 +3625,7 @@ namespace darkskin
     }
 }
 
-================================(14/142)================================
+================================(14/138)================================
 module <instance>darkskin::DocumentViewerTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -3666,7 +3666,7 @@ namespace darkskin
     }
 }
 
-================================(15/142)================================
+================================(15/138)================================
 module <constructor>darkskin::ComboBoxTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -4672,7 +4672,7 @@ namespace darkskin
     }
 }
 
-================================(16/142)================================
+================================(16/138)================================
 module <instance>darkskin::ComboBoxTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -4713,7 +4713,7 @@ namespace darkskin
     }
 }
 
-================================(17/142)================================
+================================(17/138)================================
 module <constructor>darkskin::ExpandingDecoratorTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -5380,7 +5380,7 @@ namespace darkskin
     }
 }
 
-================================(18/142)================================
+================================(18/138)================================
 module <instance>darkskin::ExpandingDecoratorTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -5421,7 +5421,7 @@ namespace darkskin
     }
 }
 
-================================(19/142)================================
+================================(19/138)================================
 module <constructor>darkskin::ItemBackgroundTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -5597,7 +5597,7 @@ namespace darkskin
     }
 }
 
-================================(20/142)================================
+================================(20/138)================================
 module <instance>darkskin::ItemBackgroundTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -5638,7 +5638,7 @@ namespace darkskin
     }
 }
 
-================================(21/142)================================
+================================(21/138)================================
 module <constructor>darkskin::ListViewColumnHeaderTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -6992,7 +6992,7 @@ namespace darkskin
     }
 }
 
-================================(22/142)================================
+================================(22/138)================================
 module <instance>darkskin::ListViewColumnHeaderTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -7033,7 +7033,7 @@ namespace darkskin
     }
 }
 
-================================(23/142)================================
+================================(23/138)================================
 module <constructor>darkskin::ListViewTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -7258,7 +7258,7 @@ namespace darkskin
     }
 }
 
-================================(24/142)================================
+================================(24/138)================================
 module <instance>darkskin::ListViewTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -7299,7 +7299,7 @@ namespace darkskin
     }
 }
 
-================================(25/142)================================
+================================(25/138)================================
 module <constructor>darkskin::TextListTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -7526,7 +7526,7 @@ namespace darkskin
     }
 }
 
-================================(26/142)================================
+================================(26/138)================================
 module <instance>darkskin::TextListTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -7567,7 +7567,7 @@ namespace darkskin
     }
 }
 
-================================(27/142)================================
+================================(27/138)================================
 module <constructor>darkskin::TreeViewTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -7786,7 +7786,7 @@ namespace darkskin
     }
 }
 
-================================(28/142)================================
+================================(28/138)================================
 module <instance>darkskin::TreeViewTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -7827,7 +7827,7 @@ namespace darkskin
     }
 }
 
-================================(29/142)================================
+================================(29/138)================================
 module <constructor>darkskin::DateButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -8096,7 +8096,7 @@ namespace darkskin
     }
 }
 
-================================(30/142)================================
+================================(30/138)================================
 module <instance>darkskin::DateButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -8137,7 +8137,7 @@ namespace darkskin
     }
 }
 
-================================(31/142)================================
+================================(31/138)================================
 module <constructor>darkskin::DatePickerTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -8580,7 +8580,7 @@ namespace darkskin
     }
 }
 
-================================(32/142)================================
+================================(32/138)================================
 module <instance>darkskin::DatePickerTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -8621,7 +8621,7 @@ namespace darkskin
     }
 }
 
-================================(33/142)================================
+================================(33/138)================================
 module <constructor>darkskin::GroupBoxTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -9050,7 +9050,7 @@ namespace darkskin
     }
 }
 
-================================(34/142)================================
+================================(34/138)================================
 module <instance>darkskin::GroupBoxTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -9091,7 +9091,7 @@ namespace darkskin
     }
 }
 
-================================(35/142)================================
+================================(35/138)================================
 module <constructor>darkskin::LabelTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -9381,7 +9381,7 @@ namespace darkskin
     }
 }
 
-================================(36/142)================================
+================================(36/138)================================
 module <instance>darkskin::LabelTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -9422,7 +9422,7 @@ namespace darkskin
     }
 }
 
-================================(37/142)================================
+================================(37/138)================================
 module <constructor>darkskin::ShortcutKeyTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -9740,7 +9740,7 @@ namespace darkskin
     }
 }
 
-================================(38/142)================================
+================================(38/138)================================
 module <instance>darkskin::ShortcutKeyTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -9781,7 +9781,7 @@ namespace darkskin
     }
 }
 
-================================(39/142)================================
+================================(39/138)================================
 module <constructor>darkskin::RibbonSplitArrowTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -10477,7 +10477,7 @@ namespace darkskin
     }
 }
 
-================================(40/142)================================
+================================(40/138)================================
 module <instance>darkskin::RibbonSplitArrowTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -10518,7 +10518,7 @@ namespace darkskin
     }
 }
 
-================================(41/142)================================
+================================(41/138)================================
 module <constructor>darkskin::RibbonButtonsTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -10561,7 +10561,7 @@ namespace darkskin
     }
 }
 
-================================(42/142)================================
+================================(42/138)================================
 module <instance>darkskin::RibbonButtonsTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -10602,7 +10602,7 @@ namespace darkskin
     }
 }
 
-================================(43/142)================================
+================================(43/138)================================
 module <constructor>darkskin::RibbonGalleryDropdownButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -10982,7 +10982,7 @@ namespace darkskin
     }
 }
 
-================================(44/142)================================
+================================(44/138)================================
 module <instance>darkskin::RibbonGalleryDropdownButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -11023,7 +11023,7 @@ namespace darkskin
     }
 }
 
-================================(45/142)================================
+================================(45/138)================================
 module <constructor>darkskin::RibbonGalleryItemListTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -11071,7 +11071,7 @@ namespace darkskin
     }
 }
 
-================================(46/142)================================
+================================(46/138)================================
 module <instance>darkskin::RibbonGalleryItemListTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -11112,7 +11112,7 @@ namespace darkskin
     }
 }
 
-================================(47/142)================================
+================================(47/138)================================
 module <constructor>darkskin::RibbonGalleryTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -11632,7 +11632,7 @@ namespace darkskin
     }
 }
 
-================================(48/142)================================
+================================(48/138)================================
 module <instance>darkskin::RibbonGalleryTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -11673,7 +11673,7 @@ namespace darkskin
     }
 }
 
-================================(49/142)================================
+================================(49/138)================================
 module <constructor>darkskin::RibbonGroupExpandButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -11924,7 +11924,7 @@ namespace darkskin
     }
 }
 
-================================(50/142)================================
+================================(50/138)================================
 module <instance>darkskin::RibbonGroupExpandButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -11965,7 +11965,7 @@ namespace darkskin
     }
 }
 
-================================(51/142)================================
+================================(51/138)================================
 module <constructor>darkskin::RibbonGroupMenuTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -12195,7 +12195,7 @@ namespace darkskin
     }
 }
 
-================================(52/142)================================
+================================(52/138)================================
 module <instance>darkskin::RibbonGroupMenuTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -12236,7 +12236,7 @@ namespace darkskin
     }
 }
 
-================================(53/142)================================
+================================(53/138)================================
 module <constructor>darkskin::RibbonGroupTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -12666,7 +12666,7 @@ namespace darkskin
     }
 }
 
-================================(54/142)================================
+================================(54/138)================================
 module <instance>darkskin::RibbonGroupTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -12707,7 +12707,7 @@ namespace darkskin
     }
 }
 
-================================(55/142)================================
+================================(55/138)================================
 module <constructor>darkskin::RibbonIconLabelTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -13038,7 +13038,7 @@ namespace darkskin
     }
 }
 
-================================(56/142)================================
+================================(56/138)================================
 module <instance>darkskin::RibbonIconLabelTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -13079,7 +13079,7 @@ namespace darkskin
     }
 }
 
-================================(57/142)================================
+================================(57/138)================================
 module <constructor>darkskin::RibbonLargeButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -13906,7 +13906,7 @@ namespace darkskin
     }
 }
 
-================================(58/142)================================
+================================(58/138)================================
 module <instance>darkskin::RibbonLargeButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -13947,7 +13947,7 @@ namespace darkskin
     }
 }
 
-================================(59/142)================================
+================================(59/138)================================
 module <constructor>darkskin::RibbonLargeDropdownButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -15048,7 +15048,7 @@ namespace darkskin
     }
 }
 
-================================(60/142)================================
+================================(60/138)================================
 module <instance>darkskin::RibbonLargeDropdownButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -15089,7 +15089,7 @@ namespace darkskin
     }
 }
 
-================================(61/142)================================
+================================(61/138)================================
 module <constructor>darkskin::RibbonLargeSplitButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -15944,7 +15944,7 @@ namespace darkskin
     }
 }
 
-================================(62/142)================================
+================================(62/138)================================
 module <instance>darkskin::RibbonLargeSplitButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -15985,7 +15985,7 @@ namespace darkskin
     }
 }
 
-================================(63/142)================================
+================================(63/138)================================
 module <constructor>darkskin::RibbonSmallButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -16798,7 +16798,7 @@ namespace darkskin
     }
 }
 
-================================(64/142)================================
+================================(64/138)================================
 module <instance>darkskin::RibbonSmallButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -16839,7 +16839,7 @@ namespace darkskin
     }
 }
 
-================================(65/142)================================
+================================(65/138)================================
 module <constructor>darkskin::RibbonSmallDropdownButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -17931,7 +17931,7 @@ namespace darkskin
     }
 }
 
-================================(66/142)================================
+================================(66/138)================================
 module <instance>darkskin::RibbonSmallDropdownButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -17972,7 +17972,7 @@ namespace darkskin
     }
 }
 
-================================(67/142)================================
+================================(67/138)================================
 module <constructor>darkskin::RibbonSmallIconLabelTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -18559,7 +18559,7 @@ namespace darkskin
     }
 }
 
-================================(68/142)================================
+================================(68/138)================================
 module <instance>darkskin::RibbonSmallIconLabelTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -18600,7 +18600,7 @@ namespace darkskin
     }
 }
 
-================================(69/142)================================
+================================(69/138)================================
 module <constructor>darkskin::RibbonSmallSplitButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -19644,7 +19644,7 @@ namespace darkskin
     }
 }
 
-================================(70/142)================================
+================================(70/138)================================
 module <instance>darkskin::RibbonSmallSplitButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -19685,7 +19685,7 @@ namespace darkskin
     }
 }
 
-================================(71/142)================================
+================================(71/138)================================
 module <constructor>darkskin::RibbonToolstripHeaderTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -19903,7 +19903,7 @@ namespace darkskin
     }
 }
 
-================================(72/142)================================
+================================(72/138)================================
 module <instance>darkskin::RibbonToolstripHeaderTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -19944,7 +19944,7 @@ namespace darkskin
     }
 }
 
-================================(73/142)================================
+================================(73/138)================================
 module <constructor>darkskin::RibbonToolstripMenuTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -20165,7 +20165,7 @@ namespace darkskin
     }
 }
 
-================================(74/142)================================
+================================(74/138)================================
 module <instance>darkskin::RibbonToolstripMenuTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -20206,7 +20206,7 @@ namespace darkskin
     }
 }
 
-================================(75/142)================================
+================================(75/138)================================
 module <constructor>darkskin::RibbonToolstripsTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -20249,7 +20249,7 @@ namespace darkskin
     }
 }
 
-================================(76/142)================================
+================================(76/138)================================
 module <instance>darkskin::RibbonToolstripsTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -20290,7 +20290,7 @@ namespace darkskin
     }
 }
 
-================================(77/142)================================
+================================(77/138)================================
 module <constructor>darkskin::BottomScrollButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -20560,7 +20560,7 @@ namespace darkskin
     }
 }
 
-================================(78/142)================================
+================================(78/138)================================
 module <instance>darkskin::BottomScrollButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -20601,7 +20601,7 @@ namespace darkskin
     }
 }
 
-================================(79/142)================================
+================================(79/138)================================
 module <constructor>darkskin::HScrollHandleTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -20755,7 +20755,7 @@ namespace darkskin
     }
 }
 
-================================(80/142)================================
+================================(80/138)================================
 module <instance>darkskin::HScrollHandleTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -20796,7 +20796,7 @@ namespace darkskin
     }
 }
 
-================================(81/142)================================
+================================(81/138)================================
 module <constructor>darkskin::HScrollTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -21290,7 +21290,7 @@ namespace darkskin
     }
 }
 
-================================(82/142)================================
+================================(82/138)================================
 module <instance>darkskin::HScrollTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -21340,7 +21340,7 @@ namespace darkskin
     }
 }
 
-================================(83/142)================================
+================================(83/138)================================
 module <constructor>darkskin::HTrackerTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -21687,7 +21687,7 @@ namespace darkskin
     }
 }
 
-================================(84/142)================================
+================================(84/138)================================
 module <instance>darkskin::HTrackerTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -21735,7 +21735,7 @@ namespace darkskin
     }
 }
 
-================================(85/142)================================
+================================(85/138)================================
 module <constructor>darkskin::LeftScrollButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -22005,7 +22005,7 @@ namespace darkskin
     }
 }
 
-================================(86/142)================================
+================================(86/138)================================
 module <instance>darkskin::LeftScrollButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -22046,7 +22046,7 @@ namespace darkskin
     }
 }
 
-================================(87/142)================================
+================================(87/138)================================
 module <constructor>darkskin::ProgressBarTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -22265,7 +22265,7 @@ namespace darkskin
     }
 }
 
-================================(88/142)================================
+================================(88/138)================================
 module <instance>darkskin::ProgressBarTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -22306,7 +22306,7 @@ namespace darkskin
     }
 }
 
-================================(89/142)================================
+================================(89/138)================================
 module <constructor>darkskin::RightScrollButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -22576,7 +22576,7 @@ namespace darkskin
     }
 }
 
-================================(90/142)================================
+================================(90/138)================================
 module <instance>darkskin::RightScrollButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -22617,7 +22617,7 @@ namespace darkskin
     }
 }
 
-================================(91/142)================================
+================================(91/138)================================
 module <constructor>darkskin::ScrollViewTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -22729,7 +22729,7 @@ namespace darkskin
     }
 }
 
-================================(92/142)================================
+================================(92/138)================================
 module <instance>darkskin::ScrollViewTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -22770,7 +22770,7 @@ namespace darkskin
     }
 }
 
-================================(93/142)================================
+================================(93/138)================================
 module <constructor>darkskin::TopScrollButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -23040,7 +23040,7 @@ namespace darkskin
     }
 }
 
-================================(94/142)================================
+================================(94/138)================================
 module <instance>darkskin::TopScrollButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -23081,7 +23081,7 @@ namespace darkskin
     }
 }
 
-================================(95/142)================================
+================================(95/138)================================
 module <constructor>darkskin::VScrollHandleTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -23235,7 +23235,7 @@ namespace darkskin
     }
 }
 
-================================(96/142)================================
+================================(96/138)================================
 module <instance>darkskin::VScrollHandleTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -23276,7 +23276,7 @@ namespace darkskin
     }
 }
 
-================================(97/142)================================
+================================(97/138)================================
 module <constructor>darkskin::VScrollTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -23770,7 +23770,7 @@ namespace darkskin
     }
 }
 
-================================(98/142)================================
+================================(98/138)================================
 module <instance>darkskin::VScrollTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -23820,7 +23820,7 @@ namespace darkskin
     }
 }
 
-================================(99/142)================================
+================================(99/138)================================
 module <constructor>darkskin::VTrackerTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -24167,7 +24167,7 @@ namespace darkskin
     }
 }
 
-================================(100/142)================================
+================================(100/138)================================
 module <instance>darkskin::VTrackerTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -24215,7 +24215,7 @@ namespace darkskin
     }
 }
 
-================================(101/142)================================
+================================(101/138)================================
 module <constructor>darkskin::TabHeaderButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -24962,7 +24962,7 @@ namespace darkskin
     }
 }
 
-================================(102/142)================================
+================================(102/138)================================
 module <instance>darkskin::TabHeaderButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -25045,7 +25045,7 @@ namespace darkskin
     }
 }
 
-================================(103/142)================================
+================================(103/138)================================
 module <constructor>darkskin::TabHeaderTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -25351,7 +25351,7 @@ namespace darkskin
     }
 }
 
-================================(104/142)================================
+================================(104/138)================================
 module <instance>darkskin::TabHeaderTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -25424,7 +25424,7 @@ namespace darkskin
     }
 }
 
-================================(105/142)================================
+================================(105/138)================================
 module <constructor>darkskin::TabTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -25891,7 +25891,7 @@ namespace darkskin
     }
 }
 
-================================(106/142)================================
+================================(106/138)================================
 module <instance>darkskin::TabTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -25977,482 +25977,7 @@ namespace darkskin
     }
 }
 
-================================(107/142)================================
-module <constructor>darkskin::MultilineTextBoxTemplate;
-using presentation::controls::Gui*;
-using presentation::elements::Gui*Element;
-using presentation::compositions::Gui*Composition;
-using presentation::compositions::Gui*;
-using presentation::templates::Gui*;
-using system::*;
-using system::reflection::*;
-using presentation::*;
-using presentation::Gui*;
-using presentation::controls::*;
-using presentation::controls::list::*;
-using presentation::controls::tree::*;
-using presentation::elements::*;
-using presentation::elements::Gui*;
-using presentation::elements::text::*;
-using presentation::compositions::*;
-using presentation::templates::*;
-using presentation::theme::*;
-
-namespace darkskin
-{
-    class MultilineTextBoxTemplateConstructor
-    {
-        @cpp:Protected
-        var self : ::darkskin::MultilineTextBoxTemplate* = null of (::darkskin::MultilineTextBoxTemplate*);
-
-        @cpp:Protected
-        var <precompile>0 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
-
-        @cpp:Protected
-        var <precompile>1 : ::presentation::elements::GuiSolidBorderElement^ = null of (::presentation::elements::GuiSolidBorderElement^);
-
-        @cpp:Protected
-        var <precompile>2 : ::presentation::elements::GuiSolidBackgroundElement^ = null of (::presentation::elements::GuiSolidBackgroundElement^);
-
-        @cpp:Protected
-        var look : ::presentation::templates::GuiCommonScrollViewLook* = null of (::presentation::templates::GuiCommonScrollViewLook*);
-
-        @cpp:Protected
-        func <darkskin-MultilineTextBoxTemplate>Initialize(<this> : ::darkskin::MultilineTextBoxTemplate*) : (::system::Void)
-        {
-            (self = <this>);
-            {
-                (self.CaretColor = (cast (::presentation::Color) "#FFFFFF"));
-            }
-            {
-                (self.TextColor = {normal : {text : (cast (Color) "#FFFFFF"); background : (cast (Color) "#00000000");}; selectedFocused : {text : (cast (Color) "#FFFFFF"); background : (cast (Color) "#007ACC");}; selectedUnfocused : {text : (cast (Color) "#FFFFFF"); background : (cast (Color) "#007ACC");};} of (::presentation::elements::text::ColorEntry));
-            }
-            {
-                (self.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
-            }
-            (<precompile>0 = new (::presentation::compositions::GuiBoundsComposition*)());
-            {
-                (<precompile>0.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
-            }
-            {
-                (<precompile>0.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
-            }
-            (<precompile>1 = new (::presentation::elements::GuiSolidBorderElement^)());
-            {
-                (<precompile>0.OwnedElement = <precompile>1);
-            }
-            (look = new (::presentation::templates::GuiCommonScrollViewLook*)(20 of (::system::Int64)));
-            <this>.SetNamedObject("look", look);
-            {
-                (look.VScrollTemplate = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiScrollTemplate*)
-                {
-                    {
-                        return new (::darkskin::VScrollTemplate*)();
-                    }
-                });
-            }
-            {
-                (look.HScrollTemplate = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiScrollTemplate*)
-                {
-                    {
-                        return new (::darkskin::HScrollTemplate*)();
-                    }
-                });
-            }
-            {
-                (look.AlignmentToParent = {left : 1; top : 1; right : 1; bottom : 1;} of (::presentation::Margin));
-            }
-            {
-                <precompile>0.AddChild(look);
-            }
-            {
-                self.AddChild(<precompile>0);
-            }
-            (<precompile>2 = new (::presentation::elements::GuiSolidBackgroundElement^)());
-            {
-                (<precompile>2.Color = (cast (::presentation::Color) "#252526"));
-            }
-            {
-                (self.OwnedElement = <precompile>2);
-            }
-            {
-                var <created-subscription> = new (::system::Subscription^)
-                {
-                    var <bind-cache>0 : ::darkskin::MultilineTextBoxTemplate* = null of (::darkskin::MultilineTextBoxTemplate*);
-
-                    var <bind-cache>1 : ::darkskin::MultilineTextBoxTemplate* = null of (::darkskin::MultilineTextBoxTemplate*);
-
-                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
-
-                    var <bind-handler>1_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
-
-                    var <bind-opened> : ::system::Boolean = false;
-
-                    var <bind-closed> : ::system::Boolean = false;
-
-                    func <bind-activator>() : (::system::Void)
-                    {
-                        var <bind-activator-result> = (cast (Color) (!<bind-cache>0.VisuallyEnabled) ? "#434346" : <bind-cache>1.Focused ? "#1C97EA" : "#54545C") of (::presentation::Color);
-                        ValueChanged(<bind-activator-result>);
-                    }
-
-                    func <bind-callback>0_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
-                    {
-                        <bind-activator>();
-                    }
-
-                    func <bind-callback>1_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
-                    {
-                        <bind-activator>();
-                    }
-
-                    override func Open() : (::system::Boolean)
-                    {
-                        if ((!<bind-opened>))
-                        {
-                            (<bind-opened> = true);
-                            (<bind-cache>0 = (self ?? null of (::darkskin::MultilineTextBoxTemplate*)));
-                            (<bind-cache>1 = (self ?? null of (::darkskin::MultilineTextBoxTemplate*)));
-                            (<bind-handler>0_0 = (attach(<bind-cache>0.VisuallyEnabledChanged, <bind-callback>0_0) ?? null));
-                            (<bind-handler>1_0 = (attach(<bind-cache>1.FocusedChanged, <bind-callback>1_0) ?? null));
-                            return true;
-                        }
-                        return false;
-                    }
-
-                    override func Update() : (::system::Boolean)
-                    {
-                        if ((<bind-opened> and (!<bind-closed>)))
-                        {
-                            <bind-activator>();
-                            return true;
-                        }
-                        return false;
-                    }
-
-                    override func Close() : (::system::Boolean)
-                    {
-                        if ((!<bind-closed>))
-                        {
-                            (<bind-closed> = true);
-                            if (<bind-handler>0_0 is not null)
-                            {
-                                detach(<bind-cache>0.VisuallyEnabledChanged, <bind-handler>0_0);
-                                (<bind-handler>0_0 = null);
-                            }
-                            if (<bind-handler>1_0 is not null)
-                            {
-                                detach(<bind-cache>1.FocusedChanged, <bind-handler>1_0);
-                                (<bind-handler>1_0 = null);
-                            }
-                            (<bind-cache>0 = null of (::darkskin::MultilineTextBoxTemplate*));
-                            (<bind-cache>1 = null of (::darkskin::MultilineTextBoxTemplate*));
-                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
-                            (<bind-handler>1_0 = null of (::system::reflection::EventHandler^));
-                            return true;
-                        }
-                        return false;
-                    }
-                };
-                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
-                {
-                    var <old> = <precompile>1.Color;
-                    var <new> = (cast (::presentation::Color) <value>);
-                    if ((<old> == <new>))
-                    {
-                        return;
-                    }
-                    (<precompile>1.Color = <new>);
-                });
-                <this>.AddSubscription(<created-subscription>);
-            }
-            {
-                (self.ContainerComposition = look.ContainerComposition);
-            }
-            {
-                (self.HorizontalScroll = look.HScroll);
-            }
-            {
-                (self.VerticalScroll = look.VScroll);
-            }
-        }
-
-        new ()
-        {
-        }
-    }
-}
-
-================================(108/142)================================
-module <instance>darkskin::MultilineTextBoxTemplate;
-using presentation::controls::Gui*;
-using presentation::elements::Gui*Element;
-using presentation::compositions::Gui*Composition;
-using presentation::compositions::Gui*;
-using presentation::templates::Gui*;
-using system::*;
-using system::reflection::*;
-using presentation::*;
-using presentation::Gui*;
-using presentation::controls::*;
-using presentation::controls::list::*;
-using presentation::controls::tree::*;
-using presentation::elements::*;
-using presentation::elements::Gui*;
-using presentation::elements::text::*;
-using presentation::compositions::*;
-using presentation::templates::*;
-using presentation::theme::*;
-
-namespace darkskin
-{
-    @cpp:Friend(typeof(MultilineTextBoxTemplateConstructor))
-    class MultilineTextBoxTemplate : ::presentation::templates::GuiMultilineTextBoxTemplate, MultilineTextBoxTemplateConstructor
-    {
-        new* ()
-        {
-            var <resource> = ::presentation::IGuiResourceManager::GetResourceManager().GetResourceFromClassName("darkskin::MultilineTextBoxTemplate");
-            var <resolver> = new (::presentation::GuiResourcePathResolver^)(<resource>, <resource>.WorkingDirectory);
-            this.SetResourceResolver(<resolver>);
-            this.<darkskin-MultilineTextBoxTemplate>Initialize(this);
-        }
-
-        delete
-        {
-            FinalizeInstanceRecursively(this of (::presentation::templates::GuiTemplate*));
-        }
-    }
-}
-
-================================(109/142)================================
-module <constructor>darkskin::SinglelineTextBoxTemplate;
-using presentation::controls::Gui*;
-using presentation::elements::Gui*Element;
-using presentation::compositions::Gui*Composition;
-using presentation::compositions::Gui*;
-using presentation::templates::Gui*;
-using system::*;
-using system::reflection::*;
-using presentation::*;
-using presentation::Gui*;
-using presentation::controls::*;
-using presentation::controls::list::*;
-using presentation::controls::tree::*;
-using presentation::elements::*;
-using presentation::elements::Gui*;
-using presentation::elements::text::*;
-using presentation::compositions::*;
-using presentation::templates::*;
-using presentation::theme::*;
-
-namespace darkskin
-{
-    class SinglelineTextBoxTemplateConstructor
-    {
-        @cpp:Protected
-        var self : ::darkskin::SinglelineTextBoxTemplate* = null of (::darkskin::SinglelineTextBoxTemplate*);
-
-        @cpp:Protected
-        var <precompile>0 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
-
-        @cpp:Protected
-        var <precompile>1 : ::presentation::elements::GuiSolidBorderElement^ = null of (::presentation::elements::GuiSolidBorderElement^);
-
-        @cpp:Protected
-        var <precompile>2 : ::presentation::elements::GuiSolidBackgroundElement^ = null of (::presentation::elements::GuiSolidBackgroundElement^);
-
-        @cpp:Protected
-        var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
-
-        @cpp:Protected
-        func <darkskin-SinglelineTextBoxTemplate>Initialize(<this> : ::darkskin::SinglelineTextBoxTemplate*) : (::system::Void)
-        {
-            (self = <this>);
-            {
-                (self.CaretColor = (cast (::presentation::Color) "#FFFFFF"));
-            }
-            {
-                (self.TextColor = {normal : {text : (cast (Color) "#FFFFFF"); background : (cast (Color) "#00000000");}; selectedFocused : {text : (cast (Color) "#FFFFFF"); background : (cast (Color) "#007ACC");}; selectedUnfocused : {text : (cast (Color) "#FFFFFF"); background : (cast (Color) "#007ACC");};} of (::presentation::elements::text::ColorEntry));
-            }
-            {
-                (self.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
-            }
-            (<precompile>0 = new (::presentation::compositions::GuiBoundsComposition*)());
-            {
-                (<precompile>0.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
-            }
-            {
-                (<precompile>0.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
-            }
-            (<precompile>1 = new (::presentation::elements::GuiSolidBorderElement^)());
-            {
-                (<precompile>0.OwnedElement = <precompile>1);
-            }
-            (container = new (::presentation::compositions::GuiBoundsComposition*)());
-            <this>.SetNamedObject("container", container);
-            {
-                (container.AlignmentToParent = {left : 1; top : 1; right : 1; bottom : 1;} of (::presentation::Margin));
-            }
-            {
-                (container.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
-            }
-            {
-                <precompile>0.AddChild(container);
-            }
-            {
-                self.AddChild(<precompile>0);
-            }
-            (<precompile>2 = new (::presentation::elements::GuiSolidBackgroundElement^)());
-            {
-                (<precompile>2.Color = (cast (::presentation::Color) "#252526"));
-            }
-            {
-                (self.OwnedElement = <precompile>2);
-            }
-            {
-                var <created-subscription> = new (::system::Subscription^)
-                {
-                    var <bind-cache>0 : ::darkskin::SinglelineTextBoxTemplate* = null of (::darkskin::SinglelineTextBoxTemplate*);
-
-                    var <bind-cache>1 : ::darkskin::SinglelineTextBoxTemplate* = null of (::darkskin::SinglelineTextBoxTemplate*);
-
-                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
-
-                    var <bind-handler>1_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
-
-                    var <bind-opened> : ::system::Boolean = false;
-
-                    var <bind-closed> : ::system::Boolean = false;
-
-                    func <bind-activator>() : (::system::Void)
-                    {
-                        var <bind-activator-result> = (cast (Color) (!<bind-cache>0.VisuallyEnabled) ? "#434346" : <bind-cache>1.Focused ? "#1C97EA" : "#54545C") of (::presentation::Color);
-                        ValueChanged(<bind-activator-result>);
-                    }
-
-                    func <bind-callback>0_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
-                    {
-                        <bind-activator>();
-                    }
-
-                    func <bind-callback>1_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
-                    {
-                        <bind-activator>();
-                    }
-
-                    override func Open() : (::system::Boolean)
-                    {
-                        if ((!<bind-opened>))
-                        {
-                            (<bind-opened> = true);
-                            (<bind-cache>0 = (self ?? null of (::darkskin::SinglelineTextBoxTemplate*)));
-                            (<bind-cache>1 = (self ?? null of (::darkskin::SinglelineTextBoxTemplate*)));
-                            (<bind-handler>0_0 = (attach(<bind-cache>0.VisuallyEnabledChanged, <bind-callback>0_0) ?? null));
-                            (<bind-handler>1_0 = (attach(<bind-cache>1.FocusedChanged, <bind-callback>1_0) ?? null));
-                            return true;
-                        }
-                        return false;
-                    }
-
-                    override func Update() : (::system::Boolean)
-                    {
-                        if ((<bind-opened> and (!<bind-closed>)))
-                        {
-                            <bind-activator>();
-                            return true;
-                        }
-                        return false;
-                    }
-
-                    override func Close() : (::system::Boolean)
-                    {
-                        if ((!<bind-closed>))
-                        {
-                            (<bind-closed> = true);
-                            if (<bind-handler>0_0 is not null)
-                            {
-                                detach(<bind-cache>0.VisuallyEnabledChanged, <bind-handler>0_0);
-                                (<bind-handler>0_0 = null);
-                            }
-                            if (<bind-handler>1_0 is not null)
-                            {
-                                detach(<bind-cache>1.FocusedChanged, <bind-handler>1_0);
-                                (<bind-handler>1_0 = null);
-                            }
-                            (<bind-cache>0 = null of (::darkskin::SinglelineTextBoxTemplate*));
-                            (<bind-cache>1 = null of (::darkskin::SinglelineTextBoxTemplate*));
-                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
-                            (<bind-handler>1_0 = null of (::system::reflection::EventHandler^));
-                            return true;
-                        }
-                        return false;
-                    }
-                };
-                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
-                {
-                    var <old> = <precompile>1.Color;
-                    var <new> = (cast (::presentation::Color) <value>);
-                    if ((<old> == <new>))
-                    {
-                        return;
-                    }
-                    (<precompile>1.Color = <new>);
-                });
-                <this>.AddSubscription(<created-subscription>);
-            }
-            {
-                (self.ContainerComposition = container);
-            }
-        }
-
-        new ()
-        {
-        }
-    }
-}
-
-================================(110/142)================================
-module <instance>darkskin::SinglelineTextBoxTemplate;
-using presentation::controls::Gui*;
-using presentation::elements::Gui*Element;
-using presentation::compositions::Gui*Composition;
-using presentation::compositions::Gui*;
-using presentation::templates::Gui*;
-using system::*;
-using system::reflection::*;
-using presentation::*;
-using presentation::Gui*;
-using presentation::controls::*;
-using presentation::controls::list::*;
-using presentation::controls::tree::*;
-using presentation::elements::*;
-using presentation::elements::Gui*;
-using presentation::elements::text::*;
-using presentation::compositions::*;
-using presentation::templates::*;
-using presentation::theme::*;
-
-namespace darkskin
-{
-    @cpp:Friend(typeof(SinglelineTextBoxTemplateConstructor))
-    class SinglelineTextBoxTemplate : ::presentation::templates::GuiSinglelineTextBoxTemplate, SinglelineTextBoxTemplateConstructor
-    {
-        new* ()
-        {
-            var <resource> = ::presentation::IGuiResourceManager::GetResourceManager().GetResourceFromClassName("darkskin::SinglelineTextBoxTemplate");
-            var <resolver> = new (::presentation::GuiResourcePathResolver^)(<resource>, <resource>.WorkingDirectory);
-            this.SetResourceResolver(<resolver>);
-            this.<darkskin-SinglelineTextBoxTemplate>Initialize(this);
-        }
-
-        delete
-        {
-            FinalizeInstanceRecursively(this of (::presentation::templates::GuiTemplate*));
-        }
-    }
-}
-
-================================(111/142)================================
+================================(107/138)================================
 module <constructor>darkskin::MenuBarButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -26864,7 +26389,7 @@ namespace darkskin
     }
 }
 
-================================(112/142)================================
+================================(108/138)================================
 module <instance>darkskin::MenuBarButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -26905,7 +26430,7 @@ namespace darkskin
     }
 }
 
-================================(113/142)================================
+================================(109/138)================================
 module <constructor>darkskin::MenuItemButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -28169,7 +27694,7 @@ namespace darkskin
     }
 }
 
-================================(114/142)================================
+================================(110/138)================================
 module <instance>darkskin::MenuItemButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -28210,7 +27735,7 @@ namespace darkskin
     }
 }
 
-================================(115/142)================================
+================================(111/138)================================
 module <constructor>darkskin::MenuSplitterTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -28289,7 +27814,7 @@ namespace darkskin
     }
 }
 
-================================(116/142)================================
+================================(112/138)================================
 module <instance>darkskin::MenuSplitterTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -28330,7 +27855,7 @@ namespace darkskin
     }
 }
 
-================================(117/142)================================
+================================(113/138)================================
 module <constructor>darkskin::ToolstripSplitArrowTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -28755,7 +28280,7 @@ namespace darkskin
     }
 }
 
-================================(118/142)================================
+================================(114/138)================================
 module <instance>darkskin::ToolstripSplitArrowTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -28796,7 +28321,7 @@ namespace darkskin
     }
 }
 
-================================(119/142)================================
+================================(115/138)================================
 module <constructor>darkskin::ToolstripButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -29330,7 +28855,7 @@ namespace darkskin
     }
 }
 
-================================(120/142)================================
+================================(116/138)================================
 module <instance>darkskin::ToolstripButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -29371,7 +28896,7 @@ namespace darkskin
     }
 }
 
-================================(121/142)================================
+================================(117/138)================================
 module <constructor>darkskin::ToolstripDropdownButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -30184,7 +29709,7 @@ namespace darkskin
     }
 }
 
-================================(122/142)================================
+================================(118/138)================================
 module <instance>darkskin::ToolstripDropdownButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -30225,7 +29750,7 @@ namespace darkskin
     }
 }
 
-================================(123/142)================================
+================================(119/138)================================
 module <constructor>darkskin::ToolstripInMenuTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -30295,7 +29820,7 @@ namespace darkskin
     }
 }
 
-================================(124/142)================================
+================================(120/138)================================
 module <instance>darkskin::ToolstripInMenuTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -30336,7 +29861,7 @@ namespace darkskin
     }
 }
 
-================================(125/142)================================
+================================(121/138)================================
 module <constructor>darkskin::ToolstripMenuTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -30429,7 +29954,7 @@ namespace darkskin
     }
 }
 
-================================(126/142)================================
+================================(122/138)================================
 module <instance>darkskin::ToolstripMenuTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -30470,7 +29995,7 @@ namespace darkskin
     }
 }
 
-================================(127/142)================================
+================================(123/138)================================
 module <constructor>darkskin::ToolstripSplitButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -31235,7 +30760,7 @@ namespace darkskin
     }
 }
 
-================================(128/142)================================
+================================(124/138)================================
 module <instance>darkskin::ToolstripSplitButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -31276,7 +30801,7 @@ namespace darkskin
     }
 }
 
-================================(129/142)================================
+================================(125/138)================================
 module <constructor>darkskin::ToolstripSplitterInMenuTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -31355,7 +30880,7 @@ namespace darkskin
     }
 }
 
-================================(130/142)================================
+================================(126/138)================================
 module <instance>darkskin::ToolstripSplitterInMenuTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -31396,7 +30921,7 @@ namespace darkskin
     }
 }
 
-================================(131/142)================================
+================================(127/138)================================
 module <constructor>darkskin::ToolstripSplitterTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -31478,7 +31003,7 @@ namespace darkskin
     }
 }
 
-================================(132/142)================================
+================================(128/138)================================
 module <instance>darkskin::ToolstripSplitterTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -31519,7 +31044,7 @@ namespace darkskin
     }
 }
 
-================================(133/142)================================
+================================(129/138)================================
 module <constructor>darkskin::ToolstripTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -31589,7 +31114,7 @@ namespace darkskin
     }
 }
 
-================================(134/142)================================
+================================(130/138)================================
 module <instance>darkskin::ToolstripTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -31630,7 +31155,7 @@ namespace darkskin
     }
 }
 
-================================(135/142)================================
+================================(131/138)================================
 module <constructor>darkskin::CustomControlTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -31673,7 +31198,7 @@ namespace darkskin
     }
 }
 
-================================(136/142)================================
+================================(132/138)================================
 module <instance>darkskin::CustomControlTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -31714,7 +31239,7 @@ namespace darkskin
     }
 }
 
-================================(137/142)================================
+================================(133/138)================================
 module <constructor>darkskin::CustomFrameWindowTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -34176,7 +33701,7 @@ namespace darkskin
     }
 }
 
-================================(138/142)================================
+================================(134/138)================================
 module <instance>darkskin::CustomFrameWindowTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -34217,7 +33742,7 @@ namespace darkskin
     }
 }
 
-================================(139/142)================================
+================================(135/138)================================
 module <constructor>darkskin::SystemFrameWindowTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -34290,7 +33815,7 @@ namespace darkskin
     }
 }
 
-================================(140/142)================================
+================================(136/138)================================
 module <instance>darkskin::SystemFrameWindowTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -34331,7 +33856,7 @@ namespace darkskin
     }
 }
 
-================================(141/142)================================
+================================(137/138)================================
 module <constructor>darkskin::TooltipTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -34424,7 +33949,7 @@ namespace darkskin
     }
 }
 
-================================(142/142)================================
+================================(138/138)================================
 module <instance>darkskin::TooltipTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;

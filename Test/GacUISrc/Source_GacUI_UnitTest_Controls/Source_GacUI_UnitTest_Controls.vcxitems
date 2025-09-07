@@ -25,4 +25,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\UnitTestUtilities\SnapshotViewer\Source\GuiUnitTestSnapshotViewerResource.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\UnitTestUtilities\SnapshotViewer\ViewModel\GuiUnitTestSnapshotViewerViewModel.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <Xml Include="$(MSBuildThisFileDirectory)..\..\..\Source\UnitTestUtilities\SnapshotViewer\Resource.xml" />
+  </ItemGroup>
 </Project>

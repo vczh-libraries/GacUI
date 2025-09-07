@@ -39,4 +39,7 @@
       <UniqueIdentifier>{b5622c4a-12d9-41f1-933b-4dd0321a5fa2}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
+  <ItemGroup>
+    <Xml Include="$(MSBuildThisFileDirectory)..\..\..\Source\UnitTestUtilities\SnapshotViewer\Resource.xml" />
+  </ItemGroup>
 </Project>
