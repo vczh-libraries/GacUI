@@ -11,7 +11,6 @@ namespace vl
 			using namespace presentation::controls;
 			using namespace presentation::controls::list;
 			using namespace presentation::controls::tree;
-			using namespace presentation::elements::text;
 			using namespace presentation::theme;
 
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
