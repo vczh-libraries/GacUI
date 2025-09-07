@@ -261,10 +261,6 @@ namespace vl_workflow_global
 	struct __vwsnf311_DarkSkin_darkskin_TabTemplateConstructor___vwsn_darkskin_TabTemplate_Initialize_;
 	struct __vwsnf312_DarkSkin_darkskin_TabTemplateConstructor___vwsn_darkskin_TabTemplate_Initialize_;
 	struct __vwsnf313_DarkSkin_darkskin_TabTemplateConstructor___vwsn_darkskin_TabTemplate_Initialize_;
-	struct __vwsnf314_DarkSkin_darkskin_MultilineTextBoxTemplateConstructor___vwsn_darkskin_MultilineTextBoxTemplate_Initialize_;
-	struct __vwsnf315_DarkSkin_darkskin_MultilineTextBoxTemplateConstructor___vwsn_darkskin_MultilineTextBoxTemplate_Initialize_;
-	struct __vwsnf316_DarkSkin_darkskin_MultilineTextBoxTemplateConstructor___vwsn_darkskin_MultilineTextBoxTemplate_Initialize_;
-	struct __vwsnf317_DarkSkin_darkskin_SinglelineTextBoxTemplateConstructor___vwsn_darkskin_SinglelineTextBoxTemplate_Initialize_;
 	struct __vwsnf318_DarkSkin_darkskin_MenuBarButtonTemplateConstructor___vwsn_darkskin_MenuBarButtonTemplate_Initialize_;
 	struct __vwsnf319_DarkSkin_darkskin_MenuBarButtonTemplateConstructor___vwsn_darkskin_MenuBarButtonTemplate_Initialize_;
 	struct __vwsnf31_DarkSkin_darkskin_ThemeConstructor___vwsn_darkskin_Theme_Initialize_;
@@ -515,8 +511,6 @@ namespace vl_workflow_global
 	class __vwsnc189_DarkSkin_darkskin_TabTemplateConstructor___vwsn_darkskin_TabTemplate_Initialize__vl_reflection_description_IValueSubscription;
 	class __vwsnc18_DarkSkin_darkskin_RadioButtonTemplateConstructor___vwsn_darkskin_RadioButtonTemplate_Initialize__vl_reflection_description_IValueSubscription;
 	class __vwsnc190_DarkSkin_darkskin_TabTemplateConstructor___vwsn_darkskin_TabTemplate_Initialize__vl_reflection_description_IValueSubscription;
-	class __vwsnc191_DarkSkin_darkskin_MultilineTextBoxTemplateConstructor___vwsn_darkskin_MultilineTextBoxTemplate_Initialize__vl_reflection_description_IValueSubscription;
-	class __vwsnc192_DarkSkin_darkskin_SinglelineTextBoxTemplateConstructor___vwsn_darkskin_SinglelineTextBoxTemplate_Initialize__vl_reflection_description_IValueSubscription;
 	class __vwsnc193_DarkSkin_darkskin_MenuBarButtonTemplateConstructor___vwsn_darkskin_MenuBarButtonTemplate_Initialize__vl_reflection_description_IValueSubscription;
 	class __vwsnc194_DarkSkin_darkskin_MenuBarButtonTemplateConstructor___vwsn_darkskin_MenuBarButtonTemplate_Initialize__vl_reflection_description_IValueSubscription;
 	class __vwsnc195_DarkSkin_darkskin_MenuBarButtonTemplateConstructor___vwsn_darkskin_MenuBarButtonTemplate_Initialize__vl_reflection_description_IValueSubscription;
@@ -721,8 +715,6 @@ namespace darkskin
 	class MenuItemButtonTemplate;
 	class MenuSplitterTemplateConstructor;
 	class MenuSplitterTemplate;
-	class MultilineTextBoxTemplateConstructor;
-	class MultilineTextBoxTemplate;
 	class ProgressBarTemplateConstructor;
 	class ProgressBarTemplate;
 	class RadioButtonTemplateConstructor;
@@ -771,8 +763,6 @@ namespace darkskin
 	class ScrollViewTemplate;
 	class ShortcutKeyTemplateConstructor;
 	class ShortcutKeyTemplate;
-	class SinglelineTextBoxTemplateConstructor;
-	class SinglelineTextBoxTemplate;
 	class SystemFrameWindowTemplateConstructor;
 	class SystemFrameWindowTemplate;
 	class TabHeaderButtonTemplateConstructor;
@@ -2037,41 +2027,6 @@ namespace darkskin
 		~MenuSplitterTemplate();
 	};
 
-	class MultilineTextBoxTemplateConstructor : public ::vl::Object, public ::vl::reflection::Description<MultilineTextBoxTemplateConstructor>
-	{
-		friend class ::vl_workflow_global::__vwsnc191_DarkSkin_darkskin_MultilineTextBoxTemplateConstructor___vwsn_darkskin_MultilineTextBoxTemplate_Initialize__vl_reflection_description_IValueSubscription;
-		friend struct ::vl_workflow_global::__vwsnf314_DarkSkin_darkskin_MultilineTextBoxTemplateConstructor___vwsn_darkskin_MultilineTextBoxTemplate_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf315_DarkSkin_darkskin_MultilineTextBoxTemplateConstructor___vwsn_darkskin_MultilineTextBoxTemplate_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf316_DarkSkin_darkskin_MultilineTextBoxTemplateConstructor___vwsn_darkskin_MultilineTextBoxTemplate_Initialize_;
-#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<MultilineTextBoxTemplateConstructor>;
-#endif
-	protected:
-		::darkskin::MultilineTextBoxTemplate* self;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_0;
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_1;
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_2;
-		::vl::presentation::templates::GuiCommonScrollViewLook* look;
-		void __vwsn_darkskin_MultilineTextBoxTemplate_Initialize(::darkskin::MultilineTextBoxTemplate* __vwsn_this_);
-	public:
-		MultilineTextBoxTemplateConstructor();
-	};
-
-	class MultilineTextBoxTemplate : public ::vl::presentation::templates::GuiMultilineTextBoxTemplate, public ::darkskin::MultilineTextBoxTemplateConstructor, public ::vl::reflection::Description<MultilineTextBoxTemplate>
-	{
-		friend class ::darkskin::MultilineTextBoxTemplateConstructor;
-		friend class ::vl_workflow_global::__vwsnc191_DarkSkin_darkskin_MultilineTextBoxTemplateConstructor___vwsn_darkskin_MultilineTextBoxTemplate_Initialize__vl_reflection_description_IValueSubscription;
-		friend struct ::vl_workflow_global::__vwsnf314_DarkSkin_darkskin_MultilineTextBoxTemplateConstructor___vwsn_darkskin_MultilineTextBoxTemplate_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf315_DarkSkin_darkskin_MultilineTextBoxTemplateConstructor___vwsn_darkskin_MultilineTextBoxTemplate_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf316_DarkSkin_darkskin_MultilineTextBoxTemplateConstructor___vwsn_darkskin_MultilineTextBoxTemplate_Initialize_;
-#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<MultilineTextBoxTemplate>;
-#endif
-	public:
-		MultilineTextBoxTemplate();
-		~MultilineTextBoxTemplate();
-	};
-
 	class ProgressBarTemplateConstructor : public ::vl::Object, public ::vl::reflection::Description<ProgressBarTemplateConstructor>
 	{
 		friend class ::vl_workflow_global::__vwsnc167_DarkSkin_darkskin_ProgressBarTemplateConstructor___vwsn_darkskin_ProgressBarTemplate_Initialize__vl_reflection_description_IValueSubscription;
@@ -3248,36 +3203,6 @@ namespace darkskin
 		~ShortcutKeyTemplate();
 	};
 
-	class SinglelineTextBoxTemplateConstructor : public ::vl::Object, public ::vl::reflection::Description<SinglelineTextBoxTemplateConstructor>
-	{
-		friend class ::vl_workflow_global::__vwsnc192_DarkSkin_darkskin_SinglelineTextBoxTemplateConstructor___vwsn_darkskin_SinglelineTextBoxTemplate_Initialize__vl_reflection_description_IValueSubscription;
-		friend struct ::vl_workflow_global::__vwsnf317_DarkSkin_darkskin_SinglelineTextBoxTemplateConstructor___vwsn_darkskin_SinglelineTextBoxTemplate_Initialize_;
-#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<SinglelineTextBoxTemplateConstructor>;
-#endif
-	protected:
-		::darkskin::SinglelineTextBoxTemplate* self;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_0;
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_1;
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_2;
-		::vl::presentation::compositions::GuiBoundsComposition* container;
-		void __vwsn_darkskin_SinglelineTextBoxTemplate_Initialize(::darkskin::SinglelineTextBoxTemplate* __vwsn_this_);
-	public:
-		SinglelineTextBoxTemplateConstructor();
-	};
-
-	class SinglelineTextBoxTemplate : public ::vl::presentation::templates::GuiSinglelineTextBoxTemplate, public ::darkskin::SinglelineTextBoxTemplateConstructor, public ::vl::reflection::Description<SinglelineTextBoxTemplate>
-	{
-		friend class ::darkskin::SinglelineTextBoxTemplateConstructor;
-		friend class ::vl_workflow_global::__vwsnc192_DarkSkin_darkskin_SinglelineTextBoxTemplateConstructor___vwsn_darkskin_SinglelineTextBoxTemplate_Initialize__vl_reflection_description_IValueSubscription;
-		friend struct ::vl_workflow_global::__vwsnf317_DarkSkin_darkskin_SinglelineTextBoxTemplateConstructor___vwsn_darkskin_SinglelineTextBoxTemplate_Initialize_;
-#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<SinglelineTextBoxTemplate>;
-#endif
-	public:
-		SinglelineTextBoxTemplate();
-		~SinglelineTextBoxTemplate();
-	};
 
 	class SystemFrameWindowTemplateConstructor : public ::vl::Object, public ::vl::reflection::Description<SystemFrameWindowTemplateConstructor>
 	{
@@ -6387,42 +6312,6 @@ Closures
 		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
 	};
 
-	struct __vwsnf314_DarkSkin_darkskin_MultilineTextBoxTemplateConstructor___vwsn_darkskin_MultilineTextBoxTemplate_Initialize_
-	{
-		::darkskin::MultilineTextBoxTemplateConstructor* __vwsnthis_0;
-
-		__vwsnf314_DarkSkin_darkskin_MultilineTextBoxTemplateConstructor___vwsn_darkskin_MultilineTextBoxTemplate_Initialize_(::darkskin::MultilineTextBoxTemplateConstructor* __vwsnctorthis_0);
-
-		::vl::presentation::templates::GuiScrollTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
-	};
-
-	struct __vwsnf315_DarkSkin_darkskin_MultilineTextBoxTemplateConstructor___vwsn_darkskin_MultilineTextBoxTemplate_Initialize_
-	{
-		::darkskin::MultilineTextBoxTemplateConstructor* __vwsnthis_0;
-
-		__vwsnf315_DarkSkin_darkskin_MultilineTextBoxTemplateConstructor___vwsn_darkskin_MultilineTextBoxTemplate_Initialize_(::darkskin::MultilineTextBoxTemplateConstructor* __vwsnctorthis_0);
-
-		::vl::presentation::templates::GuiScrollTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
-	};
-
-	struct __vwsnf316_DarkSkin_darkskin_MultilineTextBoxTemplateConstructor___vwsn_darkskin_MultilineTextBoxTemplate_Initialize_
-	{
-		::darkskin::MultilineTextBoxTemplateConstructor* __vwsnthis_0;
-
-		__vwsnf316_DarkSkin_darkskin_MultilineTextBoxTemplateConstructor___vwsn_darkskin_MultilineTextBoxTemplate_Initialize_(::darkskin::MultilineTextBoxTemplateConstructor* __vwsnctorthis_0);
-
-		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
-	};
-
-	struct __vwsnf317_DarkSkin_darkskin_SinglelineTextBoxTemplateConstructor___vwsn_darkskin_SinglelineTextBoxTemplate_Initialize_
-	{
-		::darkskin::SinglelineTextBoxTemplateConstructor* __vwsnthis_0;
-
-		__vwsnf317_DarkSkin_darkskin_SinglelineTextBoxTemplateConstructor___vwsn_darkskin_SinglelineTextBoxTemplate_Initialize_(::darkskin::SinglelineTextBoxTemplateConstructor* __vwsnctorthis_0);
-
-		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
-	};
-
 	struct __vwsnf318_DarkSkin_darkskin_MenuBarButtonTemplateConstructor___vwsn_darkskin_MenuBarButtonTemplate_Initialize_
 	{
 		::darkskin::MenuBarButtonTemplateConstructor* __vwsnthis_0;
@@ -7278,15 +7167,6 @@ Closures
 		::vl::presentation::templates::GuiRibbonGalleryTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
 	};
 
-	struct __vwsnf50_DarkSkin_darkskin_ThemeConstructor___vwsn_darkskin_Theme_Initialize_
-	{
-		::darkskin::ThemeConstructor* __vwsnthis_0;
-
-		__vwsnf50_DarkSkin_darkskin_ThemeConstructor___vwsn_darkskin_Theme_Initialize_(::darkskin::ThemeConstructor* __vwsnctorthis_0);
-
-		::vl::presentation::templates::GuiMultilineTextBoxTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
-	};
-
 	struct __vwsnf51_DarkSkin_darkskin_ThemeConstructor___vwsn_darkskin_Theme_Initialize_
 	{
 		::darkskin::ThemeConstructor* __vwsnthis_0;
@@ -7330,15 +7210,6 @@ Closures
 		__vwsnf55_DarkSkin_darkskin_ThemeConstructor___vwsn_darkskin_Theme_Initialize_(::darkskin::ThemeConstructor* __vwsnctorthis_0);
 
 		::vl::presentation::templates::GuiScrollTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
-	};
-
-	struct __vwsnf56_DarkSkin_darkskin_ThemeConstructor___vwsn_darkskin_Theme_Initialize_
-	{
-		::darkskin::ThemeConstructor* __vwsnthis_0;
-
-		__vwsnf56_DarkSkin_darkskin_ThemeConstructor___vwsn_darkskin_Theme_Initialize_(::darkskin::ThemeConstructor* __vwsnctorthis_0);
-
-		::vl::presentation::templates::GuiSinglelineTextBoxTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
 	};
 
 	struct __vwsnf57_DarkSkin_darkskin_ThemeConstructor___vwsn_darkskin_Theme_Initialize_
@@ -9750,48 +9621,6 @@ Closures
 
 		::darkskin::TabTemplate* __vwsn_bind_cache_0 = nullptr;
 		::vl::presentation::controls::GuiRibbonTabPage* __vwsn_bind_cache_1 = nullptr;
-		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
-		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_1_0;
-		bool __vwsn_bind_opened_ = false;
-		bool __vwsn_bind_closed_ = false;
-		void __vwsn_bind_activator_();
-		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
-		void __vwsn_bind_callback_1_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
-		bool Open() override;
-		bool Update() override;
-		bool Close() override;
-	};
-
-	class __vwsnc191_DarkSkin_darkskin_MultilineTextBoxTemplateConstructor___vwsn_darkskin_MultilineTextBoxTemplate_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
-	{
-	public:
-		::darkskin::MultilineTextBoxTemplateConstructor* __vwsnthis_0;
-
-		__vwsnc191_DarkSkin_darkskin_MultilineTextBoxTemplateConstructor___vwsn_darkskin_MultilineTextBoxTemplate_Initialize__vl_reflection_description_IValueSubscription(::darkskin::MultilineTextBoxTemplateConstructor* __vwsnctorthis_0);
-
-		::darkskin::MultilineTextBoxTemplate* __vwsn_bind_cache_0 = nullptr;
-		::darkskin::MultilineTextBoxTemplate* __vwsn_bind_cache_1 = nullptr;
-		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
-		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_1_0;
-		bool __vwsn_bind_opened_ = false;
-		bool __vwsn_bind_closed_ = false;
-		void __vwsn_bind_activator_();
-		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
-		void __vwsn_bind_callback_1_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
-		bool Open() override;
-		bool Update() override;
-		bool Close() override;
-	};
-
-	class __vwsnc192_DarkSkin_darkskin_SinglelineTextBoxTemplateConstructor___vwsn_darkskin_SinglelineTextBoxTemplate_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
-	{
-	public:
-		::darkskin::SinglelineTextBoxTemplateConstructor* __vwsnthis_0;
-
-		__vwsnc192_DarkSkin_darkskin_SinglelineTextBoxTemplateConstructor___vwsn_darkskin_SinglelineTextBoxTemplate_Initialize__vl_reflection_description_IValueSubscription(::darkskin::SinglelineTextBoxTemplateConstructor* __vwsnctorthis_0);
-
-		::darkskin::SinglelineTextBoxTemplate* __vwsn_bind_cache_0 = nullptr;
-		::darkskin::SinglelineTextBoxTemplate* __vwsn_bind_cache_1 = nullptr;
 		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
 		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_1_0;
 		bool __vwsn_bind_opened_ = false;
