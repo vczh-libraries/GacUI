@@ -3,7 +3,8 @@
     <Instance ref.CodeBehind="false" ref.Class="gaclib_controls::FontNameControl">
       <ref.LocalizedStrings Name="Strings" Class="gaclib_controls::DialogStrings" Default="true"/>
       <ref.Parameter Name="ViewModel" Class="presentation::ICommonFontDialogViewModel"/>
-      <ref.Members><![CDATA[
+      <ref.Members>
+            <![CDATA[
         prop Value : string = "" {}
         prop Legal : bool = false {}
 
@@ -20,7 +21,7 @@
         func InitValue(value: string) : void
         {
           textBox.Text = value;
-          textBox.Select({row:0 column:0}, {row:0 column:0});
+          textBox.SetCaret({row:0 column:0}, {row:0 column:0});
           UpdateSelectedIndex();
         }
       ]]></ref.Members>
@@ -42,7 +43,7 @@
             </att.Columns>
 
             <Cell Site="row:0 column:0">
-              <SinglelineTextBox ref.Name="textBox" Readonly-eval="ViewModel.FontMustExist" Alt="F">
+              <SinglelineTextBox ref.Name="textBox" EditMode-eval="ViewModel.FontMustExist ? Selectable : Editable" Alt="F">
                 <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
               </SinglelineTextBox>
             </Cell>
@@ -69,7 +70,8 @@
   <Instance name="FontSizeControlComponent">
     <Instance ref.CodeBehind="false" ref.Class="gaclib_controls::FontSizeControl">
       <ref.LocalizedStrings Name="Strings" Class="gaclib_controls::DialogStrings" Default="true"/>
-      <ref.Members><![CDATA[
+      <ref.Members>
+            <![CDATA[
         prop SizeList : int[] = {8 9 10 11 12 14 16 18 20 22 24 26 28 36 48 72} {const, not observe}
         prop Value : int = 0 {}
         prop Legal : bool = false {}
@@ -87,7 +89,7 @@
         func InitValue(value: int) : void
         {
           textBox.Text = cast string value;
-          textBox.Select({row:0 column:0}, {row:0 column:0});
+          textBox.SetCaret({row:0 column:0}, {row:0 column:0});
           UpdateSelectedIndex();
         }
       ]]></ref.Members>

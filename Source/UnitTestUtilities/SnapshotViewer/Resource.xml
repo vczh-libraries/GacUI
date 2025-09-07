@@ -186,13 +186,13 @@
                               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
                               <att.Pages>
                                 <TabPage Text="DOM Node">
-                                  <MultilineTextBox Readonly="true" VerticalAlwaysVisible="false" HorizontalAlwaysVisible="false">
+                                  <MultilineTextBox EditMode="Selectable" VerticalAlwaysVisible="false" HorizontalAlwaysVisible="false">
                                     <att.BoundsComposition-set AlignmentToParent="left:5 top:5 right:5 bottom:5"/>
                                     <att.Text-bind>(cast (IUnitTestSnapshotDomNode^) treeViewDom.SelectedItem).DomAsJsonText ?? ''</att.Text-bind>
                                   </MultilineTextBox>
                                 </TabPage>
                                 <TabPage Text="Element">
-                                  <MultilineTextBox Readonly="true" VerticalAlwaysVisible="false" HorizontalAlwaysVisible="false">
+                                  <MultilineTextBox EditMode="Selectable" VerticalAlwaysVisible="false" HorizontalAlwaysVisible="false">
                                     <att.BoundsComposition-set AlignmentToParent="left:5 top:5 right:5 bottom:5"/>
                                     <att.Text-bind>(cast (IUnitTestSnapshotDomNode^) treeViewDom.SelectedItem).ElementAsJsonText ?? ''</att.Text-bind>
                                   </MultilineTextBox>
@@ -205,13 +205,13 @@
                     </Table>
                   </TabPage>
                   <TabPage Text="DOM">
-                    <MultilineTextBox Readonly="true" VerticalAlwaysVisible="false" HorizontalAlwaysVisible="false">
+                    <MultilineTextBox EditMode="Selectable" VerticalAlwaysVisible="false" HorizontalAlwaysVisible="false">
                       <att.BoundsComposition-set AlignmentToParent="left:5 top:5 right:5 bottom:5"/>
                       <att.Text-bind>(cast (IUnitTestSnapshotFrame^) textListFrames.SelectedItem).DomAsJsonText ?? ''</att.Text-bind>
                     </MultilineTextBox>
                   </TabPage>
                   <TabPage Text="Elements">
-                    <MultilineTextBox Readonly="true" VerticalAlwaysVisible="false" HorizontalAlwaysVisible="false">
+                    <MultilineTextBox EditMode="Selectable" VerticalAlwaysVisible="false" HorizontalAlwaysVisible="false">
                       <att.BoundsComposition-set AlignmentToParent="left:5 top:5 right:5 bottom:5"/>
                       <att.Text-bind>(cast (IUnitTestSnapshotFrame^) textListFrames.SelectedItem).ElementsAsJsonText ?? ''</att.Text-bind>
                     </MultilineTextBox>
