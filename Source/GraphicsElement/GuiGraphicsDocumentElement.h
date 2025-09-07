@@ -130,6 +130,7 @@ Rich Content Document (element)
 
 			protected:
 				Ptr<DocumentModel>							document;
+				wchar_t										passwordChar;
 				ICallback*									callback = nullptr;
 				bool										paragraphPadding = true;
 				bool										wrapLine = true;
@@ -168,6 +169,12 @@ Rich Content Document (element)
 				/// <summary>Set line wrapping.</summary>
 				/// <param name="value">Set to true so that there is automatic line wrapping.</param>
 				void										SetWrapLine(bool value);
+				/// <summary>Get the password char. A password char is a character that replaces every characters in the document while rendering.</summary>
+				/// <returns>Returns the passwrd char. 0 means no password char.</returns>
+				wchar_t										GetPasswordChar();
+				/// <summary>Set the password char.</summary>
+				/// <param name="value">Set to 0 to remove the password char.</param>
+				void										SetPasswordChar(wchar_t value);
 
 				/// <summary>
 				/// Get the begin position of the selection area.

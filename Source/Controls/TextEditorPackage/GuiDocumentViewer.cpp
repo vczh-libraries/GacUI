@@ -973,6 +973,16 @@ GuiDocumentCommonInterface
 				documentElement->SetDocument(value);
 			}
 
+			wchar_t GuiDocumentCommonInterface::GetPasswordChar()
+			{
+				return documentElement->GetPasswordChar();
+			}
+
+			void GuiDocumentCommonInterface::SetPasswordChar(wchar_t value)
+			{
+				documentElement->SetPasswordChar(value);
+			}
+
 			//================ document items
 
 			bool GuiDocumentCommonInterface::AddDocumentItem(Ptr<GuiDocumentItem> value)

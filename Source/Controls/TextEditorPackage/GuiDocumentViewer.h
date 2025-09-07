@@ -239,6 +239,13 @@ GuiDocumentCommonInterface
 				/// <param name="value">The document.</param>
 				void										SetDocument(Ptr<DocumentModel> value);
 
+				/// <summary>Get the password char. A password char is a character that replaces every characters in the document while rendering.</summary>
+				/// <returns>Returns the passwrd char. 0 means no password char.</returns>
+				wchar_t										GetPasswordChar();
+				/// <summary>Set the password char.</summary>
+				/// <param name="value">Set to 0 to remove the password char.</param>
+				void										SetPasswordChar(wchar_t value);
+
 				//================ document items
 
 				/// <summary>Add a document item. The name of the document item will display in the position of the &lt;object&gt; element with the same name in the document.</summary>

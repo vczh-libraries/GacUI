@@ -1305,6 +1305,7 @@ Type Declaration (Class)
 
 			BEGIN_CLASS_MEMBER(GuiDocumentCommonInterface)
 				CLASS_MEMBER_PROPERTY_FAST(Document)
+				CLASS_MEMBER_PROPERTY_FAST(PasswordChar)
 				CLASS_MEMBER_PROPERTY_FAST(EditMode)
 
 				CLASS_MEMBER_GUIEVENT(ActiveHyperlinkChanged)

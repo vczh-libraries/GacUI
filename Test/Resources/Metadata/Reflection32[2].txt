@@ -4791,6 +4791,7 @@ class presentation::controls::GuiDocumentCommonInterface : system::ReferenceType
     property DocumentItems : system::ReadonlyDictionary<system::String, presentation::controls::GuiDocumentItem^>^ { get:GetDocumentItems }
     property EditMode : presentation::controls::GuiDocumentEditMode { get:GetEditMode set:SetEditMode }
     property Modified : system::Boolean { get:GetModified event:ModifiedChanged }
+    property PasswordChar : system::Char { get:GetPasswordChar set:SetPasswordChar }
     property SelectionModel : presentation::DocumentModel^ { get:GetSelectionModel set:SetSelectionModel event:SelectionChanged }
     property SelectionText : system::String { get:GetSelectionText set:SetSelectionText event:SelectionChanged }
 
@@ -4820,6 +4821,7 @@ class presentation::controls::GuiDocumentCommonInterface : system::ReferenceType
     function GetDocumentItems() : system::ReadonlyDictionary<system::String, presentation::controls::GuiDocumentItem^>^;
     function GetEditMode() : presentation::controls::GuiDocumentEditMode;
     function GetModified() : system::Boolean;
+    function GetPasswordChar() : system::Char;
     function GetSelectionModel() : presentation::DocumentModel^;
     function GetSelectionText() : system::String;
     function NotifyModificationSaved() : system::Void;
@@ -4836,6 +4838,7 @@ class presentation::controls::GuiDocumentCommonInterface : system::ReferenceType
     function SetEditMode(value : presentation::controls::GuiDocumentEditMode) : system::Void;
     function SetParagraphAlignment(begin : presentation::TextPos, end : presentation::TextPos, alignment : presentation::Alignment?) : system::Void;
     function SetParagraphAlignments(begin : presentation::TextPos, end : presentation::TextPos, alignments : system::ReadonlyList<presentation::Alignment?>^) : system::Void;
+    function SetPasswordChar(value : system::Char) : system::Void;
     function SetSelectionModel(value : presentation::DocumentModel^) : system::Void;
     function SetSelectionText(value : system::String) : system::Void;
     function SummarizeParagraphAlignment(begin : presentation::TextPos, end : presentation::TextPos) : presentation::Alignment?;
@@ -6611,6 +6614,7 @@ class presentation::elements::GuiDocumentElement : presentation::elements::IGuiG
     property CaretVisible : system::Boolean { get:GetCaretVisible set:SetCaretVisible }
     property Document : presentation::DocumentModel^ { get:GetDocument set:SetDocument }
     property ParagraphPadding : system::Boolean { get:GetParagraphPadding set:SetParagraphPadding }
+    property PasswordChar : system::Char { get:GetPasswordChar set:SetPasswordChar }
     property WrapLine : system::Boolean { get:GetWrapLine set:SetWrapLine }
 
     function CalculateCaret(comparingCaret : presentation::TextPos, position : presentation::elements::IGuiGraphicsParagraph::CaretRelativePosition, preferFrontSide : system::Boolean) : presentation::TextPos;
@@ -6631,6 +6635,7 @@ class presentation::elements::GuiDocumentElement : presentation::elements::IGuiG
     function GetDocument() : presentation::DocumentModel^;
     function GetHyperlinkFromPoint(point : presentation::Point) : presentation::DocumentHyperlinkRun::Package^;
     function GetParagraphPadding() : system::Boolean;
+    function GetPasswordChar() : system::Char;
     function GetWrapLine() : system::Boolean;
     function IsCaretEndPreferFrontSide() : system::Boolean;
     function NotifyParagraphUpdated(index : system::Int32, oldCount : system::Int32, newCount : system::Int32, updatedText : system::Boolean) : system::Void;
@@ -6643,6 +6648,7 @@ class presentation::elements::GuiDocumentElement : presentation::elements::IGuiG
     function SetDocument(value : presentation::DocumentModel^) : system::Void;
     function SetParagraphAlignment(begin : presentation::TextPos, end : presentation::TextPos, alignments : system::ReadonlyList<presentation::Alignment?>^) : system::Void;
     function SetParagraphPadding(value : system::Boolean) : system::Void;
+    function SetPasswordChar(value : system::Char) : system::Void;
     function SetWrapLine(value : system::Boolean) : system::Void;
     function SummarizeParagraphAlignment(begin : presentation::TextPos, end : presentation::TextPos) : presentation::Alignment?;
     function SummarizeStyle(begin : presentation::TextPos, end : presentation::TextPos) : presentation::DocumentStyleProperties^;

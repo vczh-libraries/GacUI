@@ -807,7 +807,8 @@ GuiDocumentElement
 			}
 
 			GuiDocumentElement::GuiDocumentElement()
-				:caretVisible(false)
+				:passwordChar(0)
+				,caretVisible(false)
 				,caretFrontSide(false)
 			{
 			}
@@ -854,6 +855,20 @@ GuiDocumentElement
 			{
 				wrapLine = value;
 				InvokeOnElementStateChanged();
+			}
+
+			wchar_t GuiDocumentElement::GetPasswordChar()
+			{
+				return passwordChar;
+			}
+
+			void GuiDocumentElement::SetPasswordChar(wchar_t value)
+			{
+				if(passwordChar!=value)
+				{
+					passwordChar=value;
+					InvokeOnElementStateChanged();
+				}
 			}
 
 			TextPos GuiDocumentElement::GetCaretBegin()
