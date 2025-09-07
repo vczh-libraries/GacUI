@@ -285,7 +285,18 @@ GuiDocumentElement::GuiDocumentElementRenderer
 				{
 					if (!cache->graphicsParagraph)
 					{
-						cache->graphicsParagraph = layoutProvider->CreateParagraph(cache->fullText, renderTarget, this);
+						auto paragraphText = cache->fullText;
+						if (element->passwordChar)
+						{
+							Array<wchar_t> passwordText(paragraphText.Length() + 1);
+							for (vint i = 0; i < paragraphText.Length(); i++)
+							{
+								passwordText[i] = element->passwordChar;
+							}
+							passwordText[paragraphText.Length()] = 0;
+							paragraphText = &passwordText[0];
+						}
+						cache->graphicsParagraph = layoutProvider->CreateParagraph(paragraphText, renderTarget, this);
 						cache->graphicsParagraph->SetParagraphAlignment(paragraph->alignment ? paragraph->alignment.Value() : Alignment::Left);
 						cache->graphicsParagraph->SetWrapLine(element->wrapLine);
 						SetPropertiesVisitor::SetProperty(element->document.Obj(), this, cache, paragraph, cache->selectionBegin, cache->selectionEnd);
