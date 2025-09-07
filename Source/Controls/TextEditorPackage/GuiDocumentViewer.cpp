@@ -1632,6 +1632,7 @@ GuiMultilineTextBox
 			GuiMultilineTextBox::GuiMultilineTextBox(theme::ThemeName themeName, const GuiDocumentConfig& _config)
 				: GuiDocumentViewer(themeName, FixConfig(GuiDocumentConfig::OverrideConfig(GuiDocumentConfig::GetMultilineTextBoxDefaultConfig(), _config)))
 			{
+				SetEditMode(GuiDocumentEditMode::Editable);
 			}
 
 			GuiMultilineTextBox::~GuiMultilineTextBox()
@@ -1789,6 +1790,7 @@ GuiSinglelineTextBox
 			GuiSinglelineTextBox::GuiSinglelineTextBox(theme::ThemeName themeName, const GuiDocumentConfig& _config)
 				: GuiDocumentLabel(themeName, FixConfig(GuiDocumentConfig::OverrideConfig(GuiDocumentConfig::GetSinglelineTextBoxDefaultConfig(), _config)))
 			{
+				SetEditMode(GuiDocumentEditMode::Editable);
 			}
 
 			GuiSinglelineTextBox::~GuiSinglelineTextBox()
