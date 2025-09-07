@@ -173,10 +173,6 @@ UniscribeRun
 				virtual void					Render(IRendererCallback* callback, vint fragmentBoundsIndex, vint offsetX, vint offsetY, bool renderBackground)=0;
 			};
 
-/***********************************************************************
-UniscribeTextRun
-***********************************************************************/
-
 			class UniscribeTextRun : public UniscribeRun
 			{
 			public:
@@ -200,10 +196,6 @@ UniscribeTextRun
 				void							SearchForLineBreak(vint tempStart, bool wrapLine, vint maxWidth, bool firstRun, vint& charLength, vint& charAdvances)override;
 				void							Render(IRendererCallback* callback, vint fragmentBoundsIndex, vint offsetX, vint offsetY, bool renderBackground)override;
 			};
-
-/***********************************************************************
-UniscribeElementRun
-***********************************************************************/
 
 			class UniscribeEmbeddedObjectRun : public UniscribeRun
 			{
@@ -245,6 +237,21 @@ UniscribeVirtualLine
 
 /***********************************************************************
 UniscribeLine
+
+Styles and embedded objects cut the whole line into multiple UniscribeFragment
+Uniscribe cut the whole line into multiple UniscribeItem
+Both of them making multiple UniscribeRun
+Any UniscribeTextRun will not cross multiple UniscribeFragment or UniscribeItem
+Any UniscribeEmbeddedObjectRun will be exactly one UniscribeFragment
+
+During layout given wrapLine/availableWidth/alignment
+Multiple UniscribeVirtualLine will be created
+One UniscribeTextRun may cross multiple UniscribeVirtualLine when a long word is broken into lines
+UniscribeEmbeddedObjectRun will not cross multiple UniscribeVirtualLine
+
+In UniscribeTextRun, wchar_t and glyph are in multiple-to-multiple relationship
+After generating glyphs, which are things to render, layout is performed on glyphs
+UniscribeEmbeddedObjectRun will be treated as a single glyph
 ***********************************************************************/
 
 			class UniscribeLine : public Object
