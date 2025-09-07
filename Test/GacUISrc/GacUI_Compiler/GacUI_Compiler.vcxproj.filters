@@ -84,9 +84,6 @@
     <Xml Include="..\..\Resources\App\DarkSkin\Template_Tab.xml">
       <Filter>Resource Files\DarkSkin</Filter>
     </Xml>
-    <Xml Include="..\..\Resources\App\DarkSkin\Template_TextBox.xml">
-      <Filter>Resource Files\DarkSkin</Filter>
-    </Xml>
     <Xml Include="..\..\Resources\App\DarkSkin\Template_Toolstrip.xml">
       <Filter>Resource Files\DarkSkin</Filter>
     </Xml>

@@ -196,7 +196,6 @@
     <Xml Include="..\..\Resources\App\DarkSkin\Template_Ribbon.xml" />
     <Xml Include="..\..\Resources\App\DarkSkin\Template_Scroll.xml" />
     <Xml Include="..\..\Resources\App\DarkSkin\Template_Tab.xml" />
-    <Xml Include="..\..\Resources\App\DarkSkin\Template_TextBox.xml" />
     <Xml Include="..\..\Resources\App\DarkSkin\Template_Toolstrip.xml" />
     <Xml Include="..\..\Resources\App\DarkSkin\Template_Window.xml" />
     <Xml Include="..\..\Resources\App\FullControlTest\AnimationTabPage.xml" />
