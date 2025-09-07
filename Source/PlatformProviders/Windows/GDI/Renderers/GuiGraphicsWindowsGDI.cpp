@@ -1,6 +1,5 @@
 #include "GuiGraphicsWindowsGDI.h"
 #include "GuiGraphicsRenderersWindowsGDI.h"
-#include "GuiGraphicsTextRenderersWindowsGDI.h"
 #include "GuiGraphicsLayoutProviderWindowsGDI.h"
 #include "..\..\WinNativeWindow.h"
 #include "..\..\..\Hosted\GuiHostedController.h"
@@ -133,64 +132,6 @@ CachedResourceAllocator
 				Ptr<WinFont> CreateInternal(const FontProperties& value)
 				{
 					return CreateGdiFont(value);
-				}
-			};
-
-			class CachedCharMeasurerAllocator : public GuiCachedResourceAllocatorBase<CachedCharMeasurerAllocator, FontProperties, Ptr<text::CharMeasurer>>
-			{
-			protected:
-				class GdiCharMeasurer : public text::CharMeasurer
-				{
-				protected:
-					Ptr<WinFont>			font;
-					vint					size;
-
-					Size MeasureInternal(text::UnicodeCodePoint codePoint, IGuiGraphicsRenderTarget* renderTarget)
-					{
-						if (renderTarget)
-						{
-							WindowsGDIRenderTarget* gdiRenderTarget = dynamic_cast<WindowsGDIRenderTarget*>(renderTarget);
-							WinDC* dc = gdiRenderTarget->GetDC();
-							dc->SetFont(font);
-
-							vint count = text::UTF16SPFirst(codePoint.characters[0]) && text::UTF16SPSecond(codePoint.characters[1]) ? 2 : 1;
-							SIZE size = dc->MeasureBuffer(codePoint.characters, count, -1);
-							return Size(size.cx, size.cy);
-						}
-						else
-						{
-							return Size(0, 0);
-						}
-					}
-
-					vint MeasureWidthInternal(text::UnicodeCodePoint codePoint, IGuiGraphicsRenderTarget* renderTarget)
-					{
-						return MeasureInternal(codePoint, renderTarget).x;
-					}
-
-					vint GetRowHeightInternal(IGuiGraphicsRenderTarget* renderTarget)
-					{
-						if (renderTarget)
-						{
-							return MeasureInternal({ L' ' }, renderTarget).y;
-						}
-						else
-						{
-							return size;
-						}
-					}
-				public:
-					GdiCharMeasurer(Ptr<WinFont> _font, vint _size)
-						: text::CharMeasurer(_size)
-						, size(_size)
-						, font(_font)
-					{
-					}
-				};
-			public:
-				Ptr<text::CharMeasurer> CreateInternal(const FontProperties& value)
-				{
-					return Ptr(new GdiCharMeasurer(CachedFontAllocator::CreateGdiFont(value), value.size));
 				}
 			};
 
@@ -372,16 +313,6 @@ WindowsGDIResourceManager
 					fonts.Destroy(fontProperties);
 				}
 
-				Ptr<elements::text::CharMeasurer> CreateCharMeasurer(const FontProperties& fontProperties)override
-				{
-					return charMeasurers.Create(fontProperties);
-				}
-
-				void DestroyCharMeasurer(const FontProperties& fontProperties)override
-				{
-					charMeasurers.Destroy(fontProperties);
-				}
-
 				Ptr<windows::WinBitmap> GetBitmap(INativeImageFrame* frame, bool enabled)override
 				{
 					Ptr<INativeImageFrameCache> cache = frame->GetCache(this);
@@ -478,7 +409,6 @@ void RendererMainGDI(GuiHostedController* hostedController, bool raw)
 		elements_windows_gdi::GuiSolidLabelElementRenderer::Register();
 		elements_windows_gdi::GuiImageFrameElementRenderer::Register();
 		elements_windows_gdi::GuiPolygonElementRenderer::Register();
-		elements_windows_gdi::GuiColorizedTextElementRenderer::Register();
 		elements_windows_gdi::GuiGDIElementRenderer::Register();
 		elements::GuiDocumentElement::GuiDocumentElementRenderer::Register();
 

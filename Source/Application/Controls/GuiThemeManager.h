@@ -159,11 +159,11 @@ Theme Names
 			F(ControlTemplate,				GroupBox)					\
 			F(TabTemplate,					Tab)						\
 			F(ComboBoxTemplate,				ComboBox)					\
-			F(MultilineTextBoxTemplate,		MultilineTextBox)			\
-			F(SinglelineTextBoxTemplate,	SinglelineTextBox)			\
 			F(DocumentViewerTemplate,		DocumentViewer)				\
+			F(DocumentViewerTemplate,		MultilineTextBox)			\
 			F(DocumentLabelTemplate,		DocumentLabel)				\
 			F(DocumentLabelTemplate,		DocumentTextBox)			\
+			F(DocumentLabelTemplate,	S	inglelineTextBox)			\
 			F(ListViewTemplate,				ListView)					\
 			F(TreeViewTemplate,				TreeView)					\
 			F(TextListTemplate,				TextList)					\

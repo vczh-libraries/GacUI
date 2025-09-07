@@ -88,8 +88,6 @@ Functionality
 				virtual void								DestroyGdiBrush(Color color)=0;
 				virtual Ptr<windows::WinFont>				CreateGdiFont(const FontProperties& fontProperties)=0;
 				virtual void								DestroyGdiFont(const FontProperties& fontProperties)=0;
-				virtual Ptr<elements::text::CharMeasurer>	CreateCharMeasurer(const FontProperties& fontProperties)=0;
-				virtual void								DestroyCharMeasurer(const FontProperties& fontProperties)=0;
 
 				virtual Ptr<windows::WinBitmap>				GetBitmap(INativeImageFrame* frame, bool enabled)=0;
 				virtual void								DestroyBitmapCache(INativeImageFrame* frame)=0;

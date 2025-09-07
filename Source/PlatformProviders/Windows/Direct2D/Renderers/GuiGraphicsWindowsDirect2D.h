@@ -113,8 +113,6 @@ Functionality
 			public:
 				virtual Direct2DTextFormatPackage*			CreateDirect2DTextFormat(const FontProperties& fontProperties)=0;
 				virtual void								DestroyDirect2DTextFormat(const FontProperties& fontProperties)=0;
-				virtual Ptr<elements::text::CharMeasurer>	CreateDirect2DCharMeasurer(const FontProperties& fontProperties)=0;
-				virtual void								DestroyDirect2DCharMeasurer(const FontProperties& fontProperties)=0;
 			};
 
 			extern IWindowsDirect2DResourceManager*			GetWindowsDirect2DResourceManager();

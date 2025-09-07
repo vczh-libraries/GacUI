@@ -154,7 +154,6 @@ Templates
 		{
 
 #define GUI_CONTROL_TEMPLATE_DECL(F)\
-			F(GuiSinglelineTextBoxTemplate,		GuiControlTemplate)			\
 			F(GuiDocumentLabelTemplate,			GuiControlTemplate)			\
 			F(GuiMenuTemplate,					GuiWindowTemplate)			\
 			F(GuiButtonTemplate,				GuiControlTemplate)			\
@@ -164,7 +163,6 @@ Templates
 			F(GuiComboBoxTemplate,				GuiToolstripButtonTemplate)	\
 			F(GuiScrollTemplate,				GuiControlTemplate)			\
 			F(GuiScrollViewTemplate,			GuiControlTemplate)			\
-			F(GuiMultilineTextBoxTemplate,		GuiScrollViewTemplate)		\
 			F(GuiDocumentViewerTemplate,		GuiScrollViewTemplate)		\
 			F(GuiListControlTemplate,			GuiScrollViewTemplate)		\
 			F(GuiTextListTemplate,				GuiListControlTemplate)		\
@@ -194,10 +192,6 @@ Templates
 /***********************************************************************
 Control Template
 ***********************************************************************/
-
-#define GuiSinglelineTextBoxTemplate_PROPERTIES(F)\
-				F(GuiSinglelineTextBoxTemplate, elements::text::ColorEntry, TextColor, {})\
-				F(GuiSinglelineTextBoxTemplate, Color, CaretColor, {})\
 
 #define GuiDocumentLabelTemplate_PROPERTIES(F)\
 				F(GuiDocumentLabelTemplate, Ptr<DocumentModel>, BaselineDocument, {})\
@@ -235,11 +229,6 @@ Control Template
 #define GuiScrollViewTemplate_PROPERTIES(F)\
 				F(GuiScrollViewTemplate, controls::GuiScroll*, HorizontalScroll, nullptr)\
 				F(GuiScrollViewTemplate, controls::GuiScroll*, VerticalScroll, nullptr)\
-
-#define GuiMultilineTextBoxTemplate_PROPERTIES(F)\
-				F(GuiMultilineTextBoxTemplate, controls::ITextBoxCommandExecutor*, Commands, nullptr)\
-				F(GuiMultilineTextBoxTemplate, elements::text::ColorEntry, TextColor, {})\
-				F(GuiMultilineTextBoxTemplate, Color, CaretColor, {})\
 
 #define GuiDocumentViewerTemplate_PROPERTIES(F)\
 				F(GuiDocumentViewerTemplate, Ptr<DocumentModel>, BaselineDocument, {})\
