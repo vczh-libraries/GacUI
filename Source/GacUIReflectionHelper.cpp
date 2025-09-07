@@ -120,15 +120,6 @@ External Functions (Basic)
 			}
 
 /***********************************************************************
-External Functions (Elements)
-***********************************************************************/
-
-			text::TextLines* GuiColorizedTextElement_GetLines(GuiColorizedTextElement* thisObject)
-			{
-				return &thisObject->GetLines();
-			}
-
-/***********************************************************************
 External Functions (Compositions)
 ***********************************************************************/
 

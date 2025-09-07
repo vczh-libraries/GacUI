@@ -29,7 +29,6 @@ Interfaces:
 #include "ListControlPackage/GuiBindableDataGrid.h"
 #include "ListControlPackage/GuiDataGridExtensions.h"
 
-#include "TextEditorPackage/GuiTextControls.h"
 #include "TextEditorPackage/GuiDocumentViewer.h"
 
 #include "ToolstripPackage/GuiMenuControls.h"

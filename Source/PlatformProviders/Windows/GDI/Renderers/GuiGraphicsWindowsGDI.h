@@ -9,7 +9,7 @@ Interfaces:
 #ifndef VCZH_PRESENTATION_ELEMENTS_GUIGRAPHICSWINDOWSGDI
 #define VCZH_PRESENTATION_ELEMENTS_GUIGRAPHICSWINDOWSGDI
 
-#include "..\..\..\..\GraphicsElement\GuiGraphicsTextElement.h"
+#include "..\..\..\..\GraphicsElement\GuiGraphicsElement.h"
 #include "..\..\..\..\GraphicsElement\GuiGraphicsDocumentElement.h"
 #include "..\..\..\..\Application\GraphicsCompositions\GuiGraphicsEventReceiver.h"
 #include "..\WinGDI.h"

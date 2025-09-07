@@ -544,7 +544,6 @@ WindowsGDIResourceManager
 				Ptr<WindowsDirect2DLayoutProvider>					layoutProvider;
 
 				CachedTextFormatAllocator							textFormats;
-				CachedCharMeasurerAllocator							charMeasurers;
 			public:
 				WindowsDirect2DResourceManager()
 				{

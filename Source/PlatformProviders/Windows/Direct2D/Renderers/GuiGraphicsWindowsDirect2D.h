@@ -9,7 +9,7 @@ Interfaces:
 #ifndef VCZH_PRESENTATION_ELEMENTS_GUIGRAPHICSWINDOWSDIRECT2D
 #define VCZH_PRESENTATION_ELEMENTS_GUIGRAPHICSWINDOWSDIRECT2D
 
-#include "..\..\..\..\GraphicsElement\GuiGraphicsTextElement.h"
+#include "..\..\..\..\GraphicsElement\GuiGraphicsElement.h"
 #include "..\..\..\..\GraphicsElement\GuiGraphicsDocumentElement.h"
 #include "..\..\..\..\Application\GraphicsCompositions\GuiGraphicsEventReceiver.h"
 #include <d2d1_1.h>

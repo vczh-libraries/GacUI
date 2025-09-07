@@ -163,7 +163,7 @@ Theme Names
 			F(DocumentViewerTemplate,		MultilineTextBox)			\
 			F(DocumentLabelTemplate,		DocumentLabel)				\
 			F(DocumentLabelTemplate,		DocumentTextBox)			\
-			F(DocumentLabelTemplate,	S	inglelineTextBox)			\
+			F(DocumentLabelTemplate,		SinglelineTextBox)			\
 			F(ListViewTemplate,				ListView)					\
 			F(TreeViewTemplate,				TreeView)					\
 			F(TextListTemplate,				TextList)					\

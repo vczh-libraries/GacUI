@@ -9,7 +9,7 @@ Interfaces:
 #ifndef VCZH_PRESENTATION_GUIREMOTEGRAPHICS_BASICELEMENTS
 #define VCZH_PRESENTATION_GUIREMOTEGRAPHICS_BASICELEMENTS
 
-#include "../../GraphicsElement/GuiGraphicsTextElement.h"
+#include "../../GraphicsElement/GuiGraphicsElement.h"
 #include "../../GraphicsElement/GuiGraphicsDocumentElement.h"
 #include "GuiRemoteGraphics.h"
 
@@ -199,22 +199,6 @@ namespace vl::presentation::elements_remoteprotocol
 	public:
 		GuiPolygonElementRenderer();
 
-		void							SendUpdateElementMessages(bool fullContent) override;
-	};
-
-	class GuiColorizedTextElementRenderer : public GuiRemoteProtocolElementRenderer<GuiColorizedTextElement, GuiColorizedTextElementRenderer, remoteprotocol::RendererType::UnsupportedColorizedText>, protected GuiColorizedTextElement::ICallback
-	{
-		friend class GuiElementRendererBase<GuiColorizedTextElement, GuiColorizedTextElementRenderer, GuiRemoteGraphicsRenderTarget>;
-		using TBase = GuiRemoteProtocolElementRenderer<GuiColorizedTextElement, GuiColorizedTextElementRenderer, remoteprotocol::RendererType::UnsupportedColorizedText>;
-	protected:
-		void							ColorChanged() override;
-		void							FontChanged() override;
-		void							InitializeInternal();
-		void							FinalizeInternal();
-	public:
-		GuiColorizedTextElementRenderer();
-
-		void							OnElementStateChanged() override;
 		void							SendUpdateElementMessages(bool fullContent) override;
 	};
 }

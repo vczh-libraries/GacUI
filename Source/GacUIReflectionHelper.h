@@ -9,7 +9,7 @@ GacUI Reflection Helper
 #define VCZH_PRESENTATION_GACUIREFLECTIONHELPER
 
 #include "Resources/GuiResourceManager.h"
-#include "GraphicsElement/GuiGraphicsTextElement.h"
+#include "GraphicsElement/GuiGraphicsElement.h"
 #include "GraphicsElement/GuiGraphicsDocumentElement.h"
 #include "GraphicsComposition/IncludeAll.h"
 #include "Application/GraphicsHost/GuiGraphicsHost.h"
@@ -90,7 +90,6 @@ External Functions
 			{
 				return Ptr(T::Create());
 			}
-			extern presentation::elements::text::TextLines*					GuiColorizedTextElement_GetLines(presentation::elements::GuiColorizedTextElement* thisObject);
 
 			extern void														GuiTableComposition_SetRows(presentation::compositions::GuiTableComposition* thisObject, vint value);
 			extern void														GuiTableComposition_SetColumns(presentation::compositions::GuiTableComposition* thisObject, vint value);

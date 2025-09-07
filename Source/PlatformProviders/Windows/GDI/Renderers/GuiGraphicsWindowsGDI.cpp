@@ -228,7 +228,6 @@ WindowsGDIResourceManager
 				CachedPenAllocator							pens;
 				CachedBrushAllocator						brushes;
 				CachedFontAllocator							fonts;
-				CachedCharMeasurerAllocator					charMeasurers;
 				ImageCacheList								imageCaches;
 			public:
 				WindowsGDIResourceManager()

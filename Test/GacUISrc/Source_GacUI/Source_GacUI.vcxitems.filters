@@ -22,6 +22,9 @@
     <Filter Include="Controls\ListControlPackage\DataSource">
       <UniqueIdentifier>{f9301ceb-63ea-4bc4-9674-870d2a8b5a8e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Controls\TextEditorPackage\EditorCallback">
+      <UniqueIdentifier>{2e09d8fb-92e7-4880-baab-a7da287c5a4e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\GuiButtonControls.cpp">
@@ -144,6 +147,9 @@
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ListControlPackage\DataSourceImpl_INodeProvider_MemoryNodeProvider.cpp">
       <Filter>Controls\ListControlPackage\DataSource</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\TextEditorPackage\EditorCallback\GuiTextUndoRedo.cpp">
+      <Filter>Controls\TextEditorPackage\EditorCallback</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -283,6 +289,9 @@
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ListControlPackage\DataSourceImpl_INodeProvider_MemoryNodeProvider.h">
       <Filter>Controls\ListControlPackage\DataSource</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\TextEditorPackage\EditorCallback\GuiTextUndoRedo.h">
+      <Filter>Controls\TextEditorPackage\EditorCallback</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

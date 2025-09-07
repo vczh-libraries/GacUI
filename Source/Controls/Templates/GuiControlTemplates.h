@@ -9,7 +9,7 @@ Interfaces:
 #ifndef VCZH_PRESENTATION_CONTROLS_TEMPLATES_GUICONTROLTEMPLATES
 #define VCZH_PRESENTATION_CONTROLS_TEMPLATES_GUICONTROLTEMPLATES
 
-#include "../../GraphicsElement/GuiGraphicsTextElement.h"
+#include "../../GraphicsElement/GuiGraphicsElement.h"
 #include "../../Application/Controls/GuiThemeManager.h"
 #include "../../GraphicsComposition/IncludeForward.h"
 
