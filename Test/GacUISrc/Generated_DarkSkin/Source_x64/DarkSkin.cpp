@@ -3984,70 +3984,6 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf314_DarkSkin_darkskin_MultilineTextBoxTemplateConstructor___vwsn_darkskin_MultilineTextBoxTemplate_Initialize_::__vwsnf314_DarkSkin_darkskin_MultilineTextBoxTemplateConstructor___vwsn_darkskin_MultilineTextBoxTemplate_Initialize_(::darkskin::MultilineTextBoxTemplateConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	::vl::presentation::templates::GuiScrollTemplate* __vwsnf314_DarkSkin_darkskin_MultilineTextBoxTemplateConstructor___vwsn_darkskin_MultilineTextBoxTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
-	{
-		{
-			return static_cast<::vl::presentation::templates::GuiScrollTemplate*>(new ::darkskin::VScrollTemplate());
-		}
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf315_DarkSkin_darkskin_MultilineTextBoxTemplateConstructor___vwsn_darkskin_MultilineTextBoxTemplate_Initialize_::__vwsnf315_DarkSkin_darkskin_MultilineTextBoxTemplateConstructor___vwsn_darkskin_MultilineTextBoxTemplate_Initialize_(::darkskin::MultilineTextBoxTemplateConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	::vl::presentation::templates::GuiScrollTemplate* __vwsnf315_DarkSkin_darkskin_MultilineTextBoxTemplateConstructor___vwsn_darkskin_MultilineTextBoxTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
-	{
-		{
-			return static_cast<::vl::presentation::templates::GuiScrollTemplate*>(new ::darkskin::HScrollTemplate());
-		}
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf316_DarkSkin_darkskin_MultilineTextBoxTemplateConstructor___vwsn_darkskin_MultilineTextBoxTemplate_Initialize_::__vwsnf316_DarkSkin_darkskin_MultilineTextBoxTemplateConstructor___vwsn_darkskin_MultilineTextBoxTemplate_Initialize_(::darkskin::MultilineTextBoxTemplateConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf316_DarkSkin_darkskin_MultilineTextBoxTemplateConstructor___vwsn_darkskin_MultilineTextBoxTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_1.Obj())->GetColor();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_1.Obj())->SetColor(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf317_DarkSkin_darkskin_SinglelineTextBoxTemplateConstructor___vwsn_darkskin_SinglelineTextBoxTemplate_Initialize_::__vwsnf317_DarkSkin_darkskin_SinglelineTextBoxTemplateConstructor___vwsn_darkskin_SinglelineTextBoxTemplate_Initialize_(::darkskin::SinglelineTextBoxTemplateConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf317_DarkSkin_darkskin_SinglelineTextBoxTemplateConstructor___vwsn_darkskin_SinglelineTextBoxTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_1.Obj())->GetColor();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_1.Obj())->SetColor(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
 	__vwsnf318_DarkSkin_darkskin_MenuBarButtonTemplateConstructor___vwsn_darkskin_MenuBarButtonTemplate_Initialize_::__vwsnf318_DarkSkin_darkskin_MenuBarButtonTemplateConstructor___vwsn_darkskin_MenuBarButtonTemplate_Initialize_(::darkskin::MenuBarButtonTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
@@ -5633,20 +5569,6 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf50_DarkSkin_darkskin_ThemeConstructor___vwsn_darkskin_Theme_Initialize_::__vwsnf50_DarkSkin_darkskin_ThemeConstructor___vwsn_darkskin_Theme_Initialize_(::darkskin::ThemeConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	::vl::presentation::templates::GuiMultilineTextBoxTemplate* __vwsnf50_DarkSkin_darkskin_ThemeConstructor___vwsn_darkskin_Theme_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
-	{
-		{
-			return static_cast<::vl::presentation::templates::GuiMultilineTextBoxTemplate*>(new ::darkskin::MultilineTextBoxTemplate());
-		}
-	}
-
-	//-------------------------------------------------------------------
-
 	__vwsnf51_DarkSkin_darkskin_ThemeConstructor___vwsn_darkskin_Theme_Initialize_::__vwsnf51_DarkSkin_darkskin_ThemeConstructor___vwsn_darkskin_Theme_Initialize_(::darkskin::ThemeConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
@@ -5712,20 +5634,6 @@ Closures
 	{
 		{
 			return static_cast<::vl::presentation::templates::GuiScrollTemplate*>(new ::darkskin::HTrackerTemplate());
-		}
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf56_DarkSkin_darkskin_ThemeConstructor___vwsn_darkskin_Theme_Initialize_::__vwsnf56_DarkSkin_darkskin_ThemeConstructor___vwsn_darkskin_Theme_Initialize_(::darkskin::ThemeConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	::vl::presentation::templates::GuiSinglelineTextBoxTemplate* __vwsnf56_DarkSkin_darkskin_ThemeConstructor___vwsn_darkskin_Theme_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
-	{
-		{
-			return static_cast<::vl::presentation::templates::GuiSinglelineTextBoxTemplate*>(new ::darkskin::SinglelineTextBoxTemplate());
 		}
 	}
 
@@ -13667,160 +13575,6 @@ Closures
 			}
 			(__vwsn_bind_cache_0 = static_cast<::darkskin::TabTemplate*>(nullptr));
 			(__vwsn_bind_cache_1 = static_cast<::vl::presentation::controls::GuiRibbonTabPage*>(nullptr));
-			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			(__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			return true;
-		}
-		return false;
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnc191_DarkSkin_darkskin_MultilineTextBoxTemplateConstructor___vwsn_darkskin_MultilineTextBoxTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc191_DarkSkin_darkskin_MultilineTextBoxTemplateConstructor___vwsn_darkskin_MultilineTextBoxTemplate_Initialize__vl_reflection_description_IValueSubscription(::darkskin::MultilineTextBoxTemplateConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-		this->__vwsn_bind_cache_0 = static_cast<::darkskin::MultilineTextBoxTemplate*>(nullptr);
-		this->__vwsn_bind_cache_1 = static_cast<::darkskin::MultilineTextBoxTemplate*>(nullptr);
-		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
-		this->__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
-		this->__vwsn_bind_opened_ = false;
-		this->__vwsn_bind_closed_ = false;
-	}
-
-	void __vwsnc191_DarkSkin_darkskin_MultilineTextBoxTemplateConstructor___vwsn_darkskin_MultilineTextBoxTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
-	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>(((! ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetVisuallyEnabled()) ? ::vl::WString::Unmanaged(L"#434346") : (::vl::__vwsn::This(__vwsn_bind_cache_1)->GetFocused() ? ::vl::WString::Unmanaged(L"#1C97EA") : ::vl::WString::Unmanaged(L"#54545C"))));
-		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
-	}
-
-	void __vwsnc191_DarkSkin_darkskin_MultilineTextBoxTemplateConstructor___vwsn_darkskin_MultilineTextBoxTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
-	{
-		this->__vwsn_bind_activator_();
-	}
-
-	void __vwsnc191_DarkSkin_darkskin_MultilineTextBoxTemplateConstructor___vwsn_darkskin_MultilineTextBoxTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
-	{
-		this->__vwsn_bind_activator_();
-	}
-
-	bool __vwsnc191_DarkSkin_darkskin_MultilineTextBoxTemplateConstructor___vwsn_darkskin_MultilineTextBoxTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
-	{
-		if ((! __vwsn_bind_opened_))
-		{
-			(__vwsn_bind_opened_ = true);
-			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::darkskin::MultilineTextBoxTemplate*>(nullptr); } }());
-			(__vwsn_bind_cache_1 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::darkskin::MultilineTextBoxTemplate*>(nullptr); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->VisuallyEnabledChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc191_DarkSkin_darkskin_MultilineTextBoxTemplateConstructor___vwsn_darkskin_MultilineTextBoxTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->FocusedChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc191_DarkSkin_darkskin_MultilineTextBoxTemplateConstructor___vwsn_darkskin_MultilineTextBoxTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			return true;
-		}
-		return false;
-	}
-
-	bool __vwsnc191_DarkSkin_darkskin_MultilineTextBoxTemplateConstructor___vwsn_darkskin_MultilineTextBoxTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
-	{
-		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
-		{
-			this->__vwsn_bind_activator_();
-			return true;
-		}
-		return false;
-	}
-
-	bool __vwsnc191_DarkSkin_darkskin_MultilineTextBoxTemplateConstructor___vwsn_darkskin_MultilineTextBoxTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
-	{
-		if ((! __vwsn_bind_closed_))
-		{
-			(__vwsn_bind_closed_ = true);
-			if (static_cast<bool>(__vwsn_bind_handler_0_0))
-			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->VisuallyEnabledChanged, __vwsn_bind_handler_0_0);
-				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			}
-			if (static_cast<bool>(__vwsn_bind_handler_1_0))
-			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_1)->FocusedChanged, __vwsn_bind_handler_1_0);
-				(__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			}
-			(__vwsn_bind_cache_0 = static_cast<::darkskin::MultilineTextBoxTemplate*>(nullptr));
-			(__vwsn_bind_cache_1 = static_cast<::darkskin::MultilineTextBoxTemplate*>(nullptr));
-			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			(__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			return true;
-		}
-		return false;
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnc192_DarkSkin_darkskin_SinglelineTextBoxTemplateConstructor___vwsn_darkskin_SinglelineTextBoxTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc192_DarkSkin_darkskin_SinglelineTextBoxTemplateConstructor___vwsn_darkskin_SinglelineTextBoxTemplate_Initialize__vl_reflection_description_IValueSubscription(::darkskin::SinglelineTextBoxTemplateConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-		this->__vwsn_bind_cache_0 = static_cast<::darkskin::SinglelineTextBoxTemplate*>(nullptr);
-		this->__vwsn_bind_cache_1 = static_cast<::darkskin::SinglelineTextBoxTemplate*>(nullptr);
-		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
-		this->__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
-		this->__vwsn_bind_opened_ = false;
-		this->__vwsn_bind_closed_ = false;
-	}
-
-	void __vwsnc192_DarkSkin_darkskin_SinglelineTextBoxTemplateConstructor___vwsn_darkskin_SinglelineTextBoxTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
-	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>(((! ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetVisuallyEnabled()) ? ::vl::WString::Unmanaged(L"#434346") : (::vl::__vwsn::This(__vwsn_bind_cache_1)->GetFocused() ? ::vl::WString::Unmanaged(L"#1C97EA") : ::vl::WString::Unmanaged(L"#54545C"))));
-		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
-	}
-
-	void __vwsnc192_DarkSkin_darkskin_SinglelineTextBoxTemplateConstructor___vwsn_darkskin_SinglelineTextBoxTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
-	{
-		this->__vwsn_bind_activator_();
-	}
-
-	void __vwsnc192_DarkSkin_darkskin_SinglelineTextBoxTemplateConstructor___vwsn_darkskin_SinglelineTextBoxTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
-	{
-		this->__vwsn_bind_activator_();
-	}
-
-	bool __vwsnc192_DarkSkin_darkskin_SinglelineTextBoxTemplateConstructor___vwsn_darkskin_SinglelineTextBoxTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
-	{
-		if ((! __vwsn_bind_opened_))
-		{
-			(__vwsn_bind_opened_ = true);
-			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::darkskin::SinglelineTextBoxTemplate*>(nullptr); } }());
-			(__vwsn_bind_cache_1 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::darkskin::SinglelineTextBoxTemplate*>(nullptr); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->VisuallyEnabledChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc192_DarkSkin_darkskin_SinglelineTextBoxTemplateConstructor___vwsn_darkskin_SinglelineTextBoxTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->FocusedChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc192_DarkSkin_darkskin_SinglelineTextBoxTemplateConstructor___vwsn_darkskin_SinglelineTextBoxTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			return true;
-		}
-		return false;
-	}
-
-	bool __vwsnc192_DarkSkin_darkskin_SinglelineTextBoxTemplateConstructor___vwsn_darkskin_SinglelineTextBoxTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
-	{
-		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
-		{
-			this->__vwsn_bind_activator_();
-			return true;
-		}
-		return false;
-	}
-
-	bool __vwsnc192_DarkSkin_darkskin_SinglelineTextBoxTemplateConstructor___vwsn_darkskin_SinglelineTextBoxTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
-	{
-		if ((! __vwsn_bind_closed_))
-		{
-			(__vwsn_bind_closed_ = true);
-			if (static_cast<bool>(__vwsn_bind_handler_0_0))
-			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->VisuallyEnabledChanged, __vwsn_bind_handler_0_0);
-				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			}
-			if (static_cast<bool>(__vwsn_bind_handler_1_0))
-			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_1)->FocusedChanged, __vwsn_bind_handler_1_0);
-				(__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			}
-			(__vwsn_bind_cache_0 = static_cast<::darkskin::SinglelineTextBoxTemplate*>(nullptr));
-			(__vwsn_bind_cache_1 = static_cast<::darkskin::SinglelineTextBoxTemplate*>(nullptr));
 			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			(__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			return true;
@@ -27905,99 +27659,6 @@ Class (::darkskin::MenuSplitterTemplate)
 	}
 
 /***********************************************************************
-Class (::darkskin::MultilineTextBoxTemplateConstructor)
-***********************************************************************/
-
-	void MultilineTextBoxTemplateConstructor::__vwsn_darkskin_MultilineTextBoxTemplate_Initialize(::darkskin::MultilineTextBoxTemplate* __vwsn_this_)
-	{
-		(this->self = __vwsn_this_);
-		{
-			::vl::__vwsn::This(this->self)->SetCaretColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#FFFFFF")));
-		}
-		{
-			::vl::__vwsn::This(this->self)->SetTextColor([&](){ ::vl::presentation::elements::text::ColorEntry __vwsn_temp__; __vwsn_temp__.normal = [&](){ ::vl::presentation::elements::text::ColorItem __vwsn_temp__; __vwsn_temp__.text = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#FFFFFF")); __vwsn_temp__.background = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#00000000")); return __vwsn_temp__; }(); __vwsn_temp__.selectedFocused = [&](){ ::vl::presentation::elements::text::ColorItem __vwsn_temp__; __vwsn_temp__.text = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#FFFFFF")); __vwsn_temp__.background = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#007ACC")); return __vwsn_temp__; }(); __vwsn_temp__.selectedUnfocused = [&](){ ::vl::presentation::elements::text::ColorItem __vwsn_temp__; __vwsn_temp__.text = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#FFFFFF")); __vwsn_temp__.background = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#007ACC")); return __vwsn_temp__; }(); return __vwsn_temp__; }());
-		}
-		{
-			::vl::__vwsn::This(this->self)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
-		}
-		(this->__vwsn_precompile_0 = new ::vl::presentation::compositions::GuiBoundsComposition());
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint64_t>(0L); __vwsn_temp__.top = static_cast<::vl::vint64_t>(0L); __vwsn_temp__.right = static_cast<::vl::vint64_t>(0L); __vwsn_temp__.bottom = static_cast<::vl::vint64_t>(0L); return __vwsn_temp__; }());
-		}
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
-		}
-		(this->__vwsn_precompile_1 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiSolidBorderElement>()));
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_1));
-		}
-		(this->look = new ::vl::presentation::templates::GuiCommonScrollViewLook(static_cast<::vl::vint64_t>(20L)));
-		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"look"), ::vl::__vwsn::Box(this->look));
-		{
-			::vl::__vwsn::This(this->look)->SetVScrollTemplate(vl::Func(::vl_workflow_global::__vwsnf314_DarkSkin_darkskin_MultilineTextBoxTemplateConstructor___vwsn_darkskin_MultilineTextBoxTemplate_Initialize_(this)));
-		}
-		{
-			::vl::__vwsn::This(this->look)->SetHScrollTemplate(vl::Func(::vl_workflow_global::__vwsnf315_DarkSkin_darkskin_MultilineTextBoxTemplateConstructor___vwsn_darkskin_MultilineTextBoxTemplate_Initialize_(this)));
-		}
-		{
-			::vl::__vwsn::This(this->look)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint64_t>(1L); __vwsn_temp__.top = static_cast<::vl::vint64_t>(1L); __vwsn_temp__.right = static_cast<::vl::vint64_t>(1L); __vwsn_temp__.bottom = static_cast<::vl::vint64_t>(1L); return __vwsn_temp__; }());
-		}
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_0)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->look));
-		}
-		{
-			::vl::__vwsn::This(this->self)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_0));
-		}
-		(this->__vwsn_precompile_2 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiSolidBackgroundElement>()));
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_2.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#252526")));
-		}
-		{
-			::vl::__vwsn::This(this->self)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_2));
-		}
-		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc191_DarkSkin_darkskin_MultilineTextBoxTemplateConstructor___vwsn_darkskin_MultilineTextBoxTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf316_DarkSkin_darkskin_MultilineTextBoxTemplateConstructor___vwsn_darkskin_MultilineTextBoxTemplate_Initialize_(this)));
-			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
-		}
-		{
-			::vl::__vwsn::This(this->self)->SetContainerComposition(::vl::__vwsn::This(this->look)->GetContainerComposition());
-		}
-		{
-			::vl::__vwsn::This(this->self)->SetHorizontalScroll(::vl::__vwsn::This(this->look)->GetHScroll());
-		}
-		{
-			::vl::__vwsn::This(this->self)->SetVerticalScroll(::vl::__vwsn::This(this->look)->GetVScroll());
-		}
-	}
-
-	MultilineTextBoxTemplateConstructor::MultilineTextBoxTemplateConstructor()
-		: self(static_cast<::darkskin::MultilineTextBoxTemplate*>(nullptr))
-		, __vwsn_precompile_0(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
-		, __vwsn_precompile_1(::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement>())
-		, __vwsn_precompile_2(::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>())
-		, look(static_cast<::vl::presentation::templates::GuiCommonScrollViewLook*>(nullptr))
-	{
-	}
-
-/***********************************************************************
-Class (::darkskin::MultilineTextBoxTemplate)
-***********************************************************************/
-
-	MultilineTextBoxTemplate::MultilineTextBoxTemplate()
-	{
-		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString::Unmanaged(L"darkskin::MultilineTextBoxTemplate"));
-		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
-		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
-		::vl::__vwsn::This(this)->__vwsn_darkskin_MultilineTextBoxTemplate_Initialize(this);
-	}
-
-	MultilineTextBoxTemplate::~MultilineTextBoxTemplate()
-	{
-		this->FinalizeInstanceRecursively(static_cast<::vl::presentation::templates::GuiTemplate*>(this));
-	}
-
-/***********************************************************************
 Class (::darkskin::ProgressBarTemplateConstructor)
 ***********************************************************************/
 
@@ -31253,90 +30914,6 @@ Class (::darkskin::ShortcutKeyTemplate)
 	}
 
 /***********************************************************************
-Class (::darkskin::SinglelineTextBoxTemplateConstructor)
-***********************************************************************/
-
-	void SinglelineTextBoxTemplateConstructor::__vwsn_darkskin_SinglelineTextBoxTemplate_Initialize(::darkskin::SinglelineTextBoxTemplate* __vwsn_this_)
-	{
-		(this->self = __vwsn_this_);
-		{
-			::vl::__vwsn::This(this->self)->SetCaretColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#FFFFFF")));
-		}
-		{
-			::vl::__vwsn::This(this->self)->SetTextColor([&](){ ::vl::presentation::elements::text::ColorEntry __vwsn_temp__; __vwsn_temp__.normal = [&](){ ::vl::presentation::elements::text::ColorItem __vwsn_temp__; __vwsn_temp__.text = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#FFFFFF")); __vwsn_temp__.background = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#00000000")); return __vwsn_temp__; }(); __vwsn_temp__.selectedFocused = [&](){ ::vl::presentation::elements::text::ColorItem __vwsn_temp__; __vwsn_temp__.text = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#FFFFFF")); __vwsn_temp__.background = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#007ACC")); return __vwsn_temp__; }(); __vwsn_temp__.selectedUnfocused = [&](){ ::vl::presentation::elements::text::ColorItem __vwsn_temp__; __vwsn_temp__.text = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#FFFFFF")); __vwsn_temp__.background = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#007ACC")); return __vwsn_temp__; }(); return __vwsn_temp__; }());
-		}
-		{
-			::vl::__vwsn::This(this->self)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
-		}
-		(this->__vwsn_precompile_0 = new ::vl::presentation::compositions::GuiBoundsComposition());
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint64_t>(0L); __vwsn_temp__.top = static_cast<::vl::vint64_t>(0L); __vwsn_temp__.right = static_cast<::vl::vint64_t>(0L); __vwsn_temp__.bottom = static_cast<::vl::vint64_t>(0L); return __vwsn_temp__; }());
-		}
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
-		}
-		(this->__vwsn_precompile_1 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiSolidBorderElement>()));
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_1));
-		}
-		(this->container = new ::vl::presentation::compositions::GuiBoundsComposition());
-		::vl::__vwsn::This(__vwsn_this_)->SetNamedObject(::vl::WString::Unmanaged(L"container"), ::vl::__vwsn::Box(this->container));
-		{
-			::vl::__vwsn::This(this->container)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint64_t>(1L); __vwsn_temp__.top = static_cast<::vl::vint64_t>(1L); __vwsn_temp__.right = static_cast<::vl::vint64_t>(1L); __vwsn_temp__.bottom = static_cast<::vl::vint64_t>(1L); return __vwsn_temp__; }());
-		}
-		{
-			::vl::__vwsn::This(this->container)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
-		}
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_0)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->container));
-		}
-		{
-			::vl::__vwsn::This(this->self)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_0));
-		}
-		(this->__vwsn_precompile_2 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiSolidBackgroundElement>()));
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_2.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#252526")));
-		}
-		{
-			::vl::__vwsn::This(this->self)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_2));
-		}
-		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc192_DarkSkin_darkskin_SinglelineTextBoxTemplateConstructor___vwsn_darkskin_SinglelineTextBoxTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf317_DarkSkin_darkskin_SinglelineTextBoxTemplateConstructor___vwsn_darkskin_SinglelineTextBoxTemplate_Initialize_(this)));
-			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
-		}
-		{
-			::vl::__vwsn::This(this->self)->SetContainerComposition(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->container));
-		}
-	}
-
-	SinglelineTextBoxTemplateConstructor::SinglelineTextBoxTemplateConstructor()
-		: self(static_cast<::darkskin::SinglelineTextBoxTemplate*>(nullptr))
-		, __vwsn_precompile_0(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
-		, __vwsn_precompile_1(::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement>())
-		, __vwsn_precompile_2(::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>())
-		, container(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
-	{
-	}
-
-/***********************************************************************
-Class (::darkskin::SinglelineTextBoxTemplate)
-***********************************************************************/
-
-	SinglelineTextBoxTemplate::SinglelineTextBoxTemplate()
-	{
-		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString::Unmanaged(L"darkskin::SinglelineTextBoxTemplate"));
-		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
-		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
-		::vl::__vwsn::This(this)->__vwsn_darkskin_SinglelineTextBoxTemplate_Initialize(this);
-	}
-
-	SinglelineTextBoxTemplate::~SinglelineTextBoxTemplate()
-	{
-		this->FinalizeInstanceRecursively(static_cast<::vl::presentation::templates::GuiTemplate*>(this));
-	}
-
-/***********************************************************************
 Class (::darkskin::SystemFrameWindowTemplateConstructor)
 ***********************************************************************/
 
@@ -32117,9 +31694,6 @@ Class (::darkskin::ThemeConstructor)
 			(::vl::__vwsn::This(this->__vwsn_precompile_0)->PreferCustomFrameWindow = ::vl::Nullable<bool>(true));
 		}
 		{
-			(::vl::__vwsn::This(this->__vwsn_precompile_0)->MultilineTextBox = vl::Func(::vl_workflow_global::__vwsnf50_DarkSkin_darkskin_ThemeConstructor___vwsn_darkskin_Theme_Initialize_(this)));
-		}
-		{
 			(::vl::__vwsn::This(this->__vwsn_precompile_0)->Tab = vl::Func(::vl_workflow_global::__vwsnf51_DarkSkin_darkskin_ThemeConstructor___vwsn_darkskin_Theme_Initialize_(this)));
 		}
 		{
@@ -32133,9 +31707,6 @@ Class (::darkskin::ThemeConstructor)
 		}
 		{
 			(::vl::__vwsn::This(this->__vwsn_precompile_0)->HTracker = vl::Func(::vl_workflow_global::__vwsnf55_DarkSkin_darkskin_ThemeConstructor___vwsn_darkskin_Theme_Initialize_(this)));
-		}
-		{
-			(::vl::__vwsn::This(this->__vwsn_precompile_0)->SinglelineTextBox = vl::Func(::vl_workflow_global::__vwsnf56_DarkSkin_darkskin_ThemeConstructor___vwsn_darkskin_Theme_Initialize_(this)));
 		}
 		{
 			(::vl::__vwsn::This(this->__vwsn_precompile_0)->CustomControl = vl::Func(::vl_workflow_global::__vwsnf57_DarkSkin_darkskin_ThemeConstructor___vwsn_darkskin_Theme_Initialize_(this)));

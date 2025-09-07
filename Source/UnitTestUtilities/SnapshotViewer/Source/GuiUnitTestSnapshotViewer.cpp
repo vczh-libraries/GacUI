@@ -1109,9 +1109,6 @@ Class (::gaclib_controls::UnitTestSnapshotViewerWindowConstructor)
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_27)->SetVerticalAlwaysVisible(false);
 		}
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_27)->SetReadonly(true);
-		}
 		(this->__vwsn_precompile_28 = ::vl::__vwsn::This(this->__vwsn_precompile_27)->GetBoundsComposition());
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_28)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(5); __vwsn_temp__.top = static_cast<::vl::vint>(5); __vwsn_temp__.right = static_cast<::vl::vint>(5); __vwsn_temp__.bottom = static_cast<::vl::vint>(5); return __vwsn_temp__; }());
@@ -1137,9 +1134,6 @@ Class (::gaclib_controls::UnitTestSnapshotViewerWindowConstructor)
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_30)->SetVerticalAlwaysVisible(false);
-		}
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_30)->SetReadonly(true);
 		}
 		(this->__vwsn_precompile_31 = ::vl::__vwsn::This(this->__vwsn_precompile_30)->GetBoundsComposition());
 		{
@@ -1190,9 +1184,6 @@ Class (::gaclib_controls::UnitTestSnapshotViewerWindowConstructor)
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_33)->SetVerticalAlwaysVisible(false);
 		}
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_33)->SetReadonly(true);
-		}
 		(this->__vwsn_precompile_34 = ::vl::__vwsn::This(this->__vwsn_precompile_33)->GetBoundsComposition());
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_34)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(5); __vwsn_temp__.top = static_cast<::vl::vint>(5); __vwsn_temp__.right = static_cast<::vl::vint>(5); __vwsn_temp__.bottom = static_cast<::vl::vint>(5); return __vwsn_temp__; }());
@@ -1218,9 +1209,6 @@ Class (::gaclib_controls::UnitTestSnapshotViewerWindowConstructor)
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_36)->SetVerticalAlwaysVisible(false);
-		}
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_36)->SetReadonly(true);
 		}
 		(this->__vwsn_precompile_37 = ::vl::__vwsn::This(this->__vwsn_precompile_36)->GetBoundsComposition());
 		{
