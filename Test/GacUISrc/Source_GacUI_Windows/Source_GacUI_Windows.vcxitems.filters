@@ -78,12 +78,6 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Windows\GDI\Renderers\GuiGraphicsLayoutProviderWindowsGDI.cpp">
       <Filter>PlatformProviders\Windows\GDI\Renderers</Filter>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Windows\Direct2D\Renderers\GuiGraphicsTextRenderersWindowsDirect2D.cpp">
-      <Filter>PlatformProviders\Windows\Direct2D\Renderers</Filter>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Windows\GDI\Renderers\GuiGraphicsTextRenderersWindowsGDI.cpp">
-      <Filter>PlatformProviders\Windows\GDI\Renderers</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Windows\WinNativeDpiAwareness.h">
@@ -138,12 +132,6 @@
       <Filter>PlatformProviders\Windows\GDI\Renderers</Filter>
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Windows\GDI\Renderers\GuiGraphicsWindowsGDI.h">
-      <Filter>PlatformProviders\Windows\GDI\Renderers</Filter>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Windows\Direct2D\Renderers\GuiGraphicsTextRenderersWindowsDirect2D.h">
-      <Filter>PlatformProviders\Windows\Direct2D\Renderers</Filter>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Windows\GDI\Renderers\GuiGraphicsTextRenderersWindowsGDI.h">
       <Filter>PlatformProviders\Windows\GDI\Renderers</Filter>
     </ClInclude>
   </ItemGroup>
