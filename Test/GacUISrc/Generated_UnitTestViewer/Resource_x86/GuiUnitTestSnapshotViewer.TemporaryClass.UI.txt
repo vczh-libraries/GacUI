@@ -181,14 +181,6 @@ namespace gaclib_controls
 
         prop Name : string{GetName}
 
-        func GetElementsAsJsonText() : (string);
-
-        prop ElementsAsJsonText : string{GetElementsAsJsonText}
-
-        func GetDomAsJsonText() : (string);
-
-        prop DomAsJsonText : string{GetDomAsJsonText}
-
         func GetDom() : (IUnitTestSnapshotDomNode^);
 
         prop Dom : IUnitTestSnapshotDomNode^{GetDom}

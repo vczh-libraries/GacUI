@@ -133,9 +133,6 @@ UnitTestSnapshotFrame
 		UnitTest_RenderingTrace&		trace;
 		UnitTest_RenderingFrame			frame;
 		Ptr<UnitTestSnapshotDomNode>	domRoot;
-		WString							elements;
-		WString							commands;
-		WString							dom;
 
 	public:
 		UnitTestSnapshotFrame(vint _index, UnitTest_RenderingTrace& _trace, UnitTest_RenderingFrame _frame)
@@ -155,24 +152,6 @@ UnitTestSnapshotFrame
 			{
 				return itow(index);
 			}
-		}
-
-		WString GetElementsAsJsonText() override
-		{
-			if (elements == L"")
-			{
-				elements = JsonToString(ConvertCustomTypeToJson(frame.elements), GetJsonFormatting());
-			}
-			return elements;
-		}
-
-		WString GetDomAsJsonText() override
-		{
-			if (dom == L"")
-			{
-				dom = JsonToString(ConvertCustomTypeToJson(frame.root), GetJsonFormatting());
-			}
-			return dom;
 		}
 
 		Ptr<IUnitTestSnapshotDomNode> GetDom() override

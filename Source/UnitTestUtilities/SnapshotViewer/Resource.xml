@@ -44,8 +44,6 @@
       interface IUnitTestSnapshotFrame
       {
         prop Name: string {const, not observe}
-        prop ElementsAsJsonText: string {const, not observe}
-        prop DomAsJsonText: string {const, not observe}
         prop Dom: IUnitTestSnapshotDomNode^ {const, not observe}
       }
 
@@ -203,18 +201,6 @@
                         </Table>
                       </Cell>
                     </Table>
-                  </TabPage>
-                  <TabPage Text="DOM">
-                    <MultilineTextBox EditMode="Selectable" VerticalAlwaysVisible="false" HorizontalAlwaysVisible="false">
-                      <att.BoundsComposition-set AlignmentToParent="left:5 top:5 right:5 bottom:5"/>
-                      <att.Text-bind>(cast (IUnitTestSnapshotFrame^) textListFrames.SelectedItem).DomAsJsonText ?? ''</att.Text-bind>
-                    </MultilineTextBox>
-                  </TabPage>
-                  <TabPage Text="Elements">
-                    <MultilineTextBox EditMode="Selectable" VerticalAlwaysVisible="false" HorizontalAlwaysVisible="false">
-                      <att.BoundsComposition-set AlignmentToParent="left:5 top:5 right:5 bottom:5"/>
-                      <att.Text-bind>(cast (IUnitTestSnapshotFrame^) textListFrames.SelectedItem).ElementsAsJsonText ?? ''</att.Text-bind>
-                    </MultilineTextBox>
                   </TabPage>
                 </att.Pages>
               </Tab>
