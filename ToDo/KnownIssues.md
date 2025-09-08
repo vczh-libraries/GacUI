@@ -75,7 +75,6 @@
 - FakeDialogService
   - message box disable `X` button if `Cancel` is not in the button list or `OK` is the only button.
 - GDI
-  - Big cursor of document empty line (GDI)
   - In hosted mode, non-main window doesn't shrink when moving back to low DPI monitor.
 - IME re-composing:
   - When Japanese IME is active, pressing SPACE on a select text gives me another chance to re-compose it. Figure out how it work and implement it.

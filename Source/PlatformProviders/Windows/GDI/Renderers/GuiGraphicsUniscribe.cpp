@@ -1120,9 +1120,9 @@ UniscribeLine
 				if (scriptRuns.Count() == 0)
 				{
 					// if this line doesn't contains any run, skip and render a blank line
-					vint height = (vint)(documentFragments[0]->fontStyle.size * 1.5);
-					bounds = Rect(Point(cx, cy), Size(0, height));
-					cy += height;
+					vint minHeight = documentFragments[0]->fontStyle.size;
+					bounds = Rect(Point(cx, cy), Size(0, minHeight));
+					cy += minHeight;
 				}
 				else
 				{

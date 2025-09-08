@@ -261,6 +261,7 @@ WindowsGDIParagraph
 
 				bool IsCaretBoundsFromTextRun(vint caret, bool caretFrontSide)
 				{
+					if (paragraph->lines.Count() == 1 && paragraph->lines[0]->scriptRuns.Count() == 0) return true;
 					if (!paragraph->IsValidCaret(caret)) return false;
 
 					vint frontLine = 0;
