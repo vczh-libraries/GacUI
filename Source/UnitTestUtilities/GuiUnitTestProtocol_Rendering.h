@@ -458,19 +458,43 @@ IGuiRemoteProtocolMessages (Elements - SolidLabel)
 						{
 							// width of the text is 0
 							// insert a line break when there is no space horizontally
-							textHeight = 4 + size * From(lines)
-								.Select([columns = width / size](const WString& line)
+							vint totalLines = 0;
+							for (auto&& line : lines)
+							{
+								if (line.Length() == 0)
 								{
-									if (columns == 0)
+									totalLines++;
+									continue;
+								}
+
+								double accumulatedWidth = 0;
+								for (vint i = 0; i < line.Length(); i++)
+								{
+									auto c = line[i];
+									auto w = (c < 128 ? 0.6 : 1) * size;
+									if (accumulatedWidth + w > width)
 									{
-										return line.Length();
+										if (accumulatedWidth == 0)
+										{
+											totalLines++;
+										}
+										else
+										{
+											totalLines++;
+											accumulatedWidth = w;
+										}
 									}
 									else
 									{
-										return (line.Length() + columns - 1) / columns;
+										accumulatedWidth += w;
 									}
-								})
-								.template Aggregate<vint>(0, [](auto a, auto b) { return a + b; });
+								}
+								if (accumulatedWidth > 0)
+								{
+									totalLines++;
+								}
+							}
+							textHeight = 4 + size * totalLines;
 						}
 						else
 						{
