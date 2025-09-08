@@ -11,7 +11,7 @@ TEST_FILE
 
   <Instance name="MainWindowResource">
     <Instance ref.Class="gacuisrc_unittest::MainWindow">
-      <Window ref.Name="self" Text="GuiRibbonButtons" ClientSize="x:480 y:320">
+      <Window ref.Name="self" Text="GuiRibbonButtons" ClientSize="x:320 y:240">
         <ToolstripCommand ref.Name="commandCert" Text="Cert" LargeImage-uri="res://ListViewImages/LargeImages/Cert" Image-uri="res://ListViewImages/SmallImages/Cert"/>
         <ToolstripCommand ref.Name="commandData" Text="Data" LargeImage-uri="res://ListViewImages/LargeImages/Data" Image-uri="res://ListViewImages/SmallImages/Data"/>
         <ToolstripCommand ref.Name="commandLink" Text="Link" LargeImage-uri="res://ListViewImages/LargeImages/Link" Image-uri="res://ListViewImages/SmallImages/Link"/>
@@ -157,7 +157,7 @@ TEST_FILE
 		{
 			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
 			{
-				TestReactiveView(protocol, L"Ready", 160, 480, 40, [=]()
+				TestReactiveView(protocol, L"Ready", 160, 320, 40, [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					window->Hide();
@@ -232,30 +232,30 @@ TEST_FILE
 				protocol->OnNextIdleFrame(ClickBlankFrameName, [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
+					window->SetClientSize({ 240,window->GetClientSize().y });
+				});
+
+				clickButtonFrames(L"Width = 240", L"buttonCert");
+				clickButtonFrames(ClickBlankFrameName, L"buttonData");
+				clickSplitButtonFrames(ClickBlankFrameName, L"buttonLink", false);
+				
+				protocol->OnNextIdleFrame(ClickBlankFrameName, [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
+					window->SetClientSize({ 160,window->GetClientSize().y });
+				});
+
+				clickButtonFrames(L"Width = 160", L"buttonCert");
+				clickButtonFrames(ClickBlankFrameName, L"buttonData");
+				clickSplitButtonFrames(ClickBlankFrameName, L"buttonLink", false);
+				
+				protocol->OnNextIdleFrame(ClickBlankFrameName, [=]()
+				{
+					auto window = GetApplication()->GetMainWindow();
 					window->SetClientSize({ 320,window->GetClientSize().y });
 				});
-
-				clickButtonFrames(L"Width = 320", L"buttonCert");
-				clickButtonFrames(ClickBlankFrameName, L"buttonData");
-				clickSplitButtonFrames(ClickBlankFrameName, L"buttonLink", false);
 				
-				protocol->OnNextIdleFrame(ClickBlankFrameName, [=]()
-				{
-					auto window = GetApplication()->GetMainWindow();
-					window->SetClientSize({ 200,window->GetClientSize().y });
-				});
-
-				clickButtonFrames(L"Width = 200", L"buttonCert");
-				clickButtonFrames(ClickBlankFrameName, L"buttonData");
-				clickSplitButtonFrames(ClickBlankFrameName, L"buttonLink", false);
-				
-				protocol->OnNextIdleFrame(ClickBlankFrameName, [=]()
-				{
-					auto window = GetApplication()->GetMainWindow();
-					window->SetClientSize({ 480,window->GetClientSize().y });
-				});
-				
-				protocol->OnNextIdleFrame(L"Width = 480", [=]()
+				protocol->OnNextIdleFrame(L"Width = 320", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					window->Hide();
