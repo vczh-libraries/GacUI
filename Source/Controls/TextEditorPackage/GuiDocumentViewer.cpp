@@ -296,7 +296,7 @@ GuiDocumentCommonInterface
 				documentComposition = new GuiBoundsComposition;
 				documentComposition->SetOwnedElement(Ptr(documentElement));
 				documentComposition->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElement);
-				documentComposition->SetAlignmentToParent(Margin(5, 5, 5, 5));
+				documentComposition->SetAlignmentToParent(Margin(2, 2, 2, 2));
 				_container->AddChild(documentComposition);
 				ReplaceMouseArea(_mouseArea);
 
