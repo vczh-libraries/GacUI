@@ -63,7 +63,7 @@ TEST_FILE
         {
           var index = item == -1 ? list.Items.Count + 1 : item;
           var listViewItem = new ListViewItem^();
-          listViewItem.Text = $"$(name) $(index)";
+          listViewItem.Text = $"$(name) No.$(index)";
           listViewItem.SubItems.Add($"1st:$(index * 1)");
           listViewItem.SubItems.Add($"2nd:$(index * 2)");
           listViewItem.SubItems.Add($"3rd:$(index * 3)");
@@ -184,7 +184,7 @@ TEST_FILE
         {
           var index = item == -1 ? items.Count + 1 : item;
           var listViewItem = new ListViewData^();
-          listViewItem.Id = $"$(name) $(index)";
+          listViewItem.Id = $"$(name) No.$(index)";
           listViewItem.First = $"1st:$(index * 1)";
           listViewItem.Second = $"2nd:$(index * 2)";
           listViewItem.Third = $"3rd:$(index * 3)";

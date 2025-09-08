@@ -1031,7 +1031,7 @@ GuiHostedController::INativeWindowService
 
 			SettingHostedWindowsBeforeRunning();
 			wmManager->needRefresh = true;
-			if (unittest::UnitTest::GetFailureMode() == unittest::UnitTest::FailureMode::NotRunning)
+			if (unittest::UnitTest::GetFailureMode() == unittest::UnitTest::FailureMode::NotRunning || unittest::UnitTest::GetFailureMode() == unittest::UnitTest::FailureMode::Debug)
 			{
 				nativeController->WindowService()->Run(nativeWindow);
 			}

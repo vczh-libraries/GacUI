@@ -11,7 +11,7 @@ TEST_FILE
 
   <Instance name="MainWindowResource">
     <Instance ref.Class="gacuisrc_unittest::MainWindow">
-      <Window ref.Name="self" Text="GuiRibbonTab" ClientSize="x:480 y:320">
+      <Window ref.Name="self" Text="GuiRibbonTab" ClientSize="x:240 y:240">
         <RibbonTab ref.Name="tab">
           <att.BoundsComposition-set AlignmentToParent="left:0 top:5 right:0 bottom:-1"/>
           <att.Pages>
@@ -53,7 +53,7 @@ TEST_FILE
 		{
 			GacUIUnitTest_SetGuiMainProxy([](UnitTestRemoteProtocol* protocol, IUnitTestContext*)
 			{
-				TestReactiveView(protocol, L"Ready", 160, 480, 40, [=]()
+				TestReactiveView(protocol, L"Ready", 140, 240, 20, [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					window->Hide();
@@ -73,9 +73,9 @@ TEST_FILE
 				protocol->OnNextIdleFrame(L"Ready", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
-					window->SetClientSize({ 240,window->GetClientSize().y });
+					window->SetClientSize({ 180,window->GetClientSize().y });
 				});
-				protocol->OnNextIdleFrame(L"Width [240]", [=]()
+				protocol->OnNextIdleFrame(L"Width [180]", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto group = FindObjectByName<GuiRibbonGroup>(window, L"group1");
@@ -103,9 +103,9 @@ TEST_FILE
 				protocol->OnNextIdleFrame(L"Click Title", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
-					window->SetClientSize({ 480,window->GetClientSize().y });
+					window->SetClientSize({ 240,window->GetClientSize().y });
 				});
-				protocol->OnNextIdleFrame(L"Width [480]", [=]()
+				protocol->OnNextIdleFrame(L"Width [240]", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					window->Hide();
@@ -149,9 +149,9 @@ TEST_FILE
 				protocol->OnNextIdleFrame(L"Ready", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
-					window->SetClientSize({ 240,window->GetClientSize().y });
+					window->SetClientSize({ 180,window->GetClientSize().y });
 				});
-				protocol->OnNextIdleFrame(L"Width [240]", [=]()
+				protocol->OnNextIdleFrame(L"Width [180]", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					auto group = FindObjectByName<GuiRibbonGroup>(window, L"group1");
@@ -174,9 +174,9 @@ TEST_FILE
 				protocol->OnNextIdleFrame(L"Click Title", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
-					window->SetClientSize({ 480,window->GetClientSize().y });
+					window->SetClientSize({ 240,window->GetClientSize().y });
 				});
-				protocol->OnNextIdleFrame(L"Width [480]", [=]()
+				protocol->OnNextIdleFrame(L"Width [240]", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
 					window->Hide();

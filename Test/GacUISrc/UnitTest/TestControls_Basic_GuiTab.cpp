@@ -96,7 +96,7 @@ TEST_FILE
 				protocol->OnNextIdleFrame(L"Show Options", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
-					protocol->LClick({ { {140}, {50} } });
+					protocol->LClick({ { {100}, {50} } });
 					auto tab = FindObjectByName<GuiTab>(window, L"tab");
 					auto tabPage = FindObjectByName<GuiTabPage>(window, L"tabPageLabel");
 					TEST_ASSERT(tab->GetSelectedPage() == tabPage);
@@ -104,7 +104,7 @@ TEST_FILE
 				protocol->OnNextIdleFrame(L"Click Label", [=]()
 				{
 					auto window = GetApplication()->GetMainWindow();
-					protocol->LClick({ { {50}, {50} } });
+					protocol->LClick({ { {40}, {50} } });
 					auto tab = FindObjectByName<GuiTab>(window, L"tab");
 					auto tabPage = FindObjectByName<GuiTabPage>(window, L"tabPageOptions");
 					TEST_ASSERT(tab->GetSelectedPage() == tabPage);

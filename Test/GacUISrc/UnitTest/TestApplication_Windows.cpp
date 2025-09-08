@@ -150,7 +150,7 @@ TEST_FILE
 				createTwoWindows(protocol);
 				protocol->OnNextIdleFrame(L"Created two SubWindows", [&, protocol]()
 				{
-					auto location = protocol->LocationOf(subWindowA, 0.5, 0.0, 0, 15);
+					auto location = protocol->LocationOf(subWindowA, 0.2, 0.0, 0, 15);
 					protocol->_LDown(location);
 				});
 				protocol->OnNextIdleFrame(L"Begin Dragging", [&, protocol]()
