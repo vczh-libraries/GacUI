@@ -195,8 +195,6 @@ Functionality
 			public:
 				virtual Direct2DTextFormatPackage*			CreateDirect2DTextFormat(const FontProperties& fontProperties)=0;
 				virtual void								DestroyDirect2DTextFormat(const FontProperties& fontProperties)=0;
-				virtual Ptr<elements::text::CharMeasurer>	CreateDirect2DCharMeasurer(const FontProperties& fontProperties)=0;
-				virtual void								DestroyDirect2DCharMeasurer(const FontProperties& fontProperties)=0;
 			};
 
 			extern IWindowsDirect2DResourceManager*			GetWindowsDirect2DResourceManager();
@@ -494,85 +492,6 @@ Renderers
 				GuiDirect2DElementRenderer();
 				~GuiDirect2DElementRenderer();
 
-				void					Render(Rect bounds)override;
-				void					OnElementStateChanged()override;
-			};
-		}
-	}
-}
-
-#endif
-
-/***********************************************************************
-.\DIRECT2D\RENDERERS\GUIGRAPHICSTEXTRENDERERSWINDOWSDIRECT2D.H
-***********************************************************************/
-/***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-GacUI::Native Window::Direct2D Provider for Windows Implementation::Renderer
-
-Interfaces:
-***********************************************************************/
-
-#ifndef VCZH_PRESENTATION_ELEMENTS_GUIGRAPHICSTEXTRENDERERSWINDOWSDIRECT2D
-#define VCZH_PRESENTATION_ELEMENTS_GUIGRAPHICSTEXTRENDERERSWINDOWSDIRECT2D
-
-
-namespace vl
-{
-	namespace presentation
-	{
-		namespace elements_windows_d2d
-		{
-
-/***********************************************************************
-Renderers
-***********************************************************************/
-
-			class GuiColorizedTextElementRenderer : public GuiElementRendererBase<GuiColorizedTextElement, GuiColorizedTextElementRenderer, IWindowsDirect2DRenderTarget>, protected GuiColorizedTextElement::ICallback
-			{
-				friend class GuiElementRendererBase<GuiColorizedTextElement, GuiColorizedTextElementRenderer, IWindowsDirect2DRenderTarget>;
-
-			public:
-				struct ColorItemResource
-				{
-					Color						text;
-					ID2D1SolidColorBrush*		textBrush;
-					Color						background;
-					ID2D1SolidColorBrush*		backgroundBrush;
-				};
-
-				struct ColorEntryResource
-				{
-					ColorItemResource			normal;
-					ColorItemResource			selectedFocused;
-					ColorItemResource			selectedUnfocused;
-
-					std::partial_ordering		operator<=>(const ColorEntryResource&) const { return std::partial_ordering::unordered; }
-					bool						operator==(const ColorEntryResource& value) const { return false; }
-				};
-
-				typedef collections::Array<ColorEntryResource>			ColorArray;
-			protected:
-				FontProperties					oldFont;
-				Direct2DTextFormatPackage*		textFormat;
-				ColorArray						colors;
-				Color							oldCaretColor;
-				ID2D1SolidColorBrush*			caretBrush;
-				
-				void					CreateTextBrush(IWindowsDirect2DRenderTarget* _renderTarget);
-				void					DestroyTextBrush(IWindowsDirect2DRenderTarget* _renderTarget);
-				void					CreateCaretBrush(IWindowsDirect2DRenderTarget* _renderTarget);
-				void					DestroyCaretBrush(IWindowsDirect2DRenderTarget* _renderTarget);
-
-				void					ColorChanged();
-				void					FontChanged();
-				text::CharMeasurer*		GetCharMeasurer();
-
-				void					InitializeInternal();
-				void					FinalizeInternal();
-				void					RenderTargetChangedInternal(IWindowsDirect2DRenderTarget* oldRenderTarget, IWindowsDirect2DRenderTarget* newRenderTarget);
-			public:
 				void					Render(Rect bounds)override;
 				void					OnElementStateChanged()override;
 			};
@@ -1265,10 +1184,6 @@ UniscribeRun
 				virtual void					Render(IRendererCallback* callback, vint fragmentBoundsIndex, vint offsetX, vint offsetY, bool renderBackground)=0;
 			};
 
-/***********************************************************************
-UniscribeTextRun
-***********************************************************************/
-
 			class UniscribeTextRun : public UniscribeRun
 			{
 			public:
@@ -1292,10 +1207,6 @@ UniscribeTextRun
 				void							SearchForLineBreak(vint tempStart, bool wrapLine, vint maxWidth, bool firstRun, vint& charLength, vint& charAdvances)override;
 				void							Render(IRendererCallback* callback, vint fragmentBoundsIndex, vint offsetX, vint offsetY, bool renderBackground)override;
 			};
-
-/***********************************************************************
-UniscribeElementRun
-***********************************************************************/
 
 			class UniscribeEmbeddedObjectRun : public UniscribeRun
 			{
@@ -1337,6 +1248,21 @@ UniscribeVirtualLine
 
 /***********************************************************************
 UniscribeLine
+
+Styles and embedded objects cut the whole line into multiple UniscribeFragment
+Uniscribe cut the whole line into multiple UniscribeItem
+Both of them making multiple UniscribeRun
+Any UniscribeTextRun will not cross multiple UniscribeFragment or UniscribeItem
+Any UniscribeEmbeddedObjectRun will be exactly one UniscribeFragment
+
+During layout given wrapLine/availableWidth/alignment
+Multiple UniscribeVirtualLine will be created
+One UniscribeTextRun may cross multiple UniscribeVirtualLine when a long word is broken into lines
+UniscribeEmbeddedObjectRun will not cross multiple UniscribeVirtualLine
+
+In UniscribeTextRun, wchar_t and glyph are in multiple-to-multiple relationship
+After generating glyphs, which are things to render, layout is performed on glyphs
+UniscribeEmbeddedObjectRun will be treated as a single glyph
 ***********************************************************************/
 
 			class UniscribeLine : public Object
@@ -1515,8 +1441,6 @@ Functionality
 				virtual void								DestroyGdiBrush(Color color)=0;
 				virtual Ptr<windows::WinFont>				CreateGdiFont(const FontProperties& fontProperties)=0;
 				virtual void								DestroyGdiFont(const FontProperties& fontProperties)=0;
-				virtual Ptr<elements::text::CharMeasurer>	CreateCharMeasurer(const FontProperties& fontProperties)=0;
-				virtual void								DestroyCharMeasurer(const FontProperties& fontProperties)=0;
 
 				virtual Ptr<windows::WinBitmap>				GetBitmap(INativeImageFrame* frame, bool enabled)=0;
 				virtual void								DestroyBitmapCache(INativeImageFrame* frame)=0;
@@ -1756,79 +1680,6 @@ Renderers
 				GuiGDIElementRenderer();
 				~GuiGDIElementRenderer();
 
-				void					Render(Rect bounds)override;
-				void					OnElementStateChanged()override;
-			};
-		}
-	}
-}
-
-#endif
-
-/***********************************************************************
-.\GDI\RENDERERS\GUIGRAPHICSTEXTRENDERERSWINDOWSGDI.H
-***********************************************************************/
-/***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-GacUI::Native Window::GDI Provider for Windows Implementation::Renderer
-
-Interfaces:
-***********************************************************************/
-
-#ifndef VCZH_PRESENTATION_ELEMENTS_GUIGRAPHICSTEXTRENDERERSWINDOWSGDI
-#define VCZH_PRESENTATION_ELEMENTS_GUIGRAPHICSTEXTRENDERERSWINDOWSGDI
-
-
-namespace vl
-{
-	namespace presentation
-	{
-		namespace elements_windows_gdi
-		{
-
-/***********************************************************************
-Renderers
-***********************************************************************/
-
-			class GuiColorizedTextElementRenderer : public GuiElementRendererBase<GuiColorizedTextElement, GuiColorizedTextElementRenderer, IWindowsGDIRenderTarget>, protected GuiColorizedTextElement::ICallback
-			{
-				friend class GuiElementRendererBase<GuiColorizedTextElement, GuiColorizedTextElementRenderer, IWindowsGDIRenderTarget>;
-
-			public:
-				struct ColorItemResource
-				{
-					Color						text;
-					Color						background;
-					Ptr<windows::WinBrush>		backgroundBrush;
-				};
-
-				struct ColorEntryResource
-				{
-					ColorItemResource			normal;
-					ColorItemResource			selectedFocused;
-					ColorItemResource			selectedUnfocused;
-
-					std::partial_ordering		operator<=>(const ColorEntryResource&) const { return std::partial_ordering::unordered; }
-					bool						operator==(const ColorEntryResource& value){return false;}
-				};
-
-				typedef collections::Array<ColorEntryResource>			ColorArray;
-			protected:
-				FontProperties			oldFont;
-				Ptr<windows::WinFont>	font;
-				ColorArray				colors;
-				Color					oldCaretColor;
-				Ptr<windows::WinPen>	caretPen;
-
-				void					DestroyColors();
-				void					ColorChanged();
-				void					FontChanged();
-
-				void					InitializeInternal();
-				void					FinalizeInternal();
-				void					RenderTargetChangedInternal(IWindowsGDIRenderTarget* oldRenderTarget, IWindowsGDIRenderTarget* newRenderTarget);
-			public:
 				void					Render(Rect bounds)override;
 				void					OnElementStateChanged()override;
 			};

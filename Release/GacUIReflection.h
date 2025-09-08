@@ -213,9 +213,6 @@ Type List (Elements)
 			F(presentation::elements::ElementShape)\
 			F(presentation::elements::Gui3DSplitterElement::Direction)\
 			F(presentation::elements::GuiGradientBackgroundElement::Direction)\
-			F(presentation::elements::text::TextLines)\
-			F(presentation::elements::text::ColorItem)\
-			F(presentation::elements::text::ColorEntry)\
 
 #define GUIREFLECTIONELEMENT_CLASS_TYPELIST(F)\
 			F(presentation::elements::GuiFocusRectangleElement)\
@@ -228,7 +225,6 @@ Type List (Elements)
 			F(presentation::elements::GuiSolidLabelElement)\
 			F(presentation::elements::GuiImageFrameElement)\
 			F(presentation::elements::GuiPolygonElement)\
-			F(presentation::elements::GuiColorizedTextElement)\
 			F(presentation::elements::GuiDocumentElement)\
 
 #define GUIREFLECTIONELEMENT_TYPELIST(F)\
@@ -421,7 +417,6 @@ Type List (Controls)
 			F(presentation::controls::GuiDocumentConfig)\
 			F(presentation::controls::GuiDocumentItem)\
 			F(presentation::controls::GuiDocumentCommonInterface)\
-			F(presentation::controls::GuiTextBoxCommonInterface)\
 			F(presentation::controls::list::IDataGridContext)\
 			F(presentation::controls::list::IDataVisualizerFactory)\
 			F(presentation::controls::list::IDataVisualizer)\

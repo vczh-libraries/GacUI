@@ -8,7 +8,6 @@ DEVELOPER: Zihan Chen(vczh)
 #include "VlppOS.h"
 #include "Vlpp.h"
 #include "VlppRegex.h"
-#include "VlppParser.h"
 
 /***********************************************************************
 .\GUITYPES.H
@@ -1524,6 +1523,107 @@ MemoryNodeRootProvider
 }
 
 #endif
+
+/***********************************************************************
+.\CONTROLS\TEXTEDITORPACKAGE\GUIDOCUMENTCONFIG.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI::Control System
+
+Interfaces:
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_CONTROLS_GUIDOCUMENTCONFIG
+#define VCZH_PRESENTATION_CONTROLS_GUIDOCUMENTCONFIG
+
+
+namespace vl
+{
+	namespace presentation
+	{
+		namespace controls
+		{
+
+/***********************************************************************
+GuiDocumentConfig
+***********************************************************************/
+			
+			/// <summary>Represents the edit mode.</summary>
+			enum class GuiDocumentEditMode
+			{
+				/// <summary>View the rich text only.</summary>
+				ViewOnly,
+				/// <summary>The rich text is selectable.</summary>
+				Selectable,
+				/// <summary>The rich text is editable.</summary>
+				Editable,
+			};
+
+			/// <summary>Represents the paragraph mode.</summary>
+			enum class GuiDocumentParagraphMode
+			{
+				/// <summary>Only one paragraph is allowed, only one line in a paragraph is allowed.</summary>
+				Singleline,
+				/// <summary>Only one line in a paragraph is allowed.</summary>
+				Multiline,
+				/// <summary>No constraint.</summary>
+				Paragraph,
+			};
+
+			/// <summary>Control of editing and rendering behavior.</summary>
+			struct GuiDocumentConfig
+			{
+				/// <summary>For GuiDocumentLabel only. When it is true, or when wrapLine is true, or when paragraphMode is not Singleline, the control automatically expands to display all content.</summary>
+				Nullable<bool>							autoExpand;
+				/// <summary>When it is true, the defaut copy paste behavior ignores RTF format.</summary>
+				Nullable<bool>							pasteAsPlainText;
+				/// <summary>When it is true, document automatically wraps if the width of the control is not enough.</summary>
+				Nullable<bool>							wrapLine;
+				/// <summary>Control the paragraph and line behavior</summary>
+				Nullable<GuiDocumentParagraphMode>		paragraphMode;
+				/// <summary>Insert the space of a default font between paragraphs.</summary>
+				Nullable<bool>							paragraphPadding;
+				/// <summary>When it is true:
+				///  double CrLf will be used between paragraphs, when the document converts to plain text.
+				///  only double CrLf will be recognized as paragraph breaks, when the document converts from plain text.
+				/// </summary>
+				Nullable<bool>							doubleLineBreaksBetweenParagraph;
+				/// <summary>When it is true, when removing a line break from a document due to paragraphMode, insert a extra space.</summary>
+				Nullable<bool>							spaceForFlattenedLineBreak;
+
+				auto operator<=>(const GuiDocumentConfig&) const = default;
+
+				static GuiDocumentConfig				GetDocumentLabelDefaultConfig();
+				static GuiDocumentConfig				GetDocumentViewerDefaultConfig();
+				static GuiDocumentConfig				GetSinglelineTextBoxDefaultConfig();
+				static GuiDocumentConfig				GetMultilineTextBoxDefaultConfig();
+				static GuiDocumentConfig				OverrideConfig(const GuiDocumentConfig& toOverride, const GuiDocumentConfig& newConfig);
+			};
+
+/***********************************************************************
+GuiDocumentConfigEvaluated
+***********************************************************************/
+
+			struct GuiDocumentConfigEvaluated
+			{
+				bool									autoExpand;
+				bool									pasteAsPlainText;
+				bool									wrapLine;
+				GuiDocumentParagraphMode				paragraphMode;
+				bool									paragraphPadding;
+				bool									doubleLineBreaksBetweenParagraph;
+				bool									spaceForFlattenedLineBreak;
+
+				GuiDocumentConfigEvaluated(const GuiDocumentConfig& config);
+			};
+		}
+	}
+}
+
+#endif
+
 
 /***********************************************************************
 .\GRAPHICSCOMPOSITION\GUIGRAPHICSAXIS.H
@@ -9909,11 +10009,11 @@ Theme Names
 			F(ControlTemplate,				GroupBox)					\
 			F(TabTemplate,					Tab)						\
 			F(ComboBoxTemplate,				ComboBox)					\
-			F(MultilineTextBoxTemplate,		MultilineTextBox)			\
-			F(SinglelineTextBoxTemplate,	SinglelineTextBox)			\
 			F(DocumentViewerTemplate,		DocumentViewer)				\
+			F(DocumentViewerTemplate,		MultilineTextBox)			\
 			F(DocumentLabelTemplate,		DocumentLabel)				\
 			F(DocumentLabelTemplate,		DocumentTextBox)			\
+			F(DocumentLabelTemplate,		SinglelineTextBox)			\
 			F(ListViewTemplate,				ListView)					\
 			F(TreeViewTemplate,				TreeView)					\
 			F(TextListTemplate,				TextList)					\
@@ -12824,970 +12924,6 @@ Elements
 #endif
 
 /***********************************************************************
-.\GRAPHICSELEMENT\GUIGRAPHICSDOCUMENTELEMENT.H
-***********************************************************************/
-/***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-GacUI::Element System
-
-Interfaces:
-***********************************************************************/
-
-#ifndef VCZH_PRESENTATION_ELEMENTS_GUIGRAPHICSDOCUMENTELEMENT
-#define VCZH_PRESENTATION_ELEMENTS_GUIGRAPHICSDOCUMENTELEMENT
-
-
-namespace vl
-{
-	namespace presentation
-	{
-		namespace elements
-		{
-
-			namespace visitors
-			{
-				class SetPropertiesVisitor;
-			}
-
-/***********************************************************************
-Rich Content Document (element)
-***********************************************************************/
-
-			/// <summary>Defines a rich text document element for rendering complex styled document.</summary>
-			class GuiDocumentElement : public GuiElementBase<GuiDocumentElement>
-			{
-				friend class GuiElementBase<GuiDocumentElement>;
-				static constexpr const wchar_t* ElementTypeName = L"RichDocument";
-			public:
-				/// <summary>Callback interface for this element.</summary>
-				class ICallback : public virtual IDescriptable, public Description<ICallback>
-				{
-				public:
-					/// <summary>Called when the rendering is started.</summary>
-					virtual void							OnStartRender() = 0;
-
-					/// <summary>Called when the rendering is finished.</summary>
-					virtual void							OnFinishRender() = 0;
-
-					/// <summary>Called when an embedded object is being rendered.</summary>
-					/// <returns>Returns the new size of the rendered embedded object.</returns>
-					/// <param name="name">The name of the embedded object</param>
-					/// <param name="location">The location of the embedded object, relative to the left-top corner of this element.</param>
-					virtual Size							OnRenderEmbeddedObject(const WString& name, const Rect& location) = 0;
-				};
-
-				class GuiDocumentElementRenderer : public GuiElementRendererBase<GuiDocumentElement, GuiDocumentElementRenderer, IGuiGraphicsRenderTarget>, private IGuiGraphicsParagraphCallback
-				{
-					friend class visitors::SetPropertiesVisitor;
-					friend class GuiElementRendererBase<GuiDocumentElement, GuiDocumentElementRenderer, IGuiGraphicsRenderTarget>;
-				protected:
-					struct EmbeddedObject
-					{
-						WString								name;
-						Size								size;
-						vint								start;
-						bool								resized = false;
-					};
-
-					typedef collections::Dictionary<vint, Ptr<EmbeddedObject>>		IdEmbeddedObjectMap;
-					typedef collections::Dictionary<WString, vint>					NameIdMap;
-					typedef collections::List<vint>									FreeIdList;
-
-					struct ParagraphCache
-					{
-						WString								fullText;
-						Ptr<IGuiGraphicsParagraph>			graphicsParagraph;
-						IdEmbeddedObjectMap					embeddedObjects;
-						vint								selectionBegin;
-						vint								selectionEnd;
-
-						ParagraphCache()
-							:selectionBegin(-1)
-							,selectionEnd(-1)
-						{
-						}
-					};
-
-					typedef collections::Array<Ptr<ParagraphCache>>		ParagraphCacheArray;
-					typedef collections::Array<Size>					ParagraphSizeArray;
-
-				private:
-
-					Size									OnRenderInlineObject(vint callbackId, Rect location)override;
-				protected:
-					vint									paragraphDistance;
-					vint									lastMaxWidth;
-					Size									cachedTotalSize;
-					IGuiGraphicsLayoutProvider*				layoutProvider;
-					ParagraphCacheArray						paragraphCaches;
-					ParagraphSizeArray						paragraphSizes;
-
-					TextPos									lastCaret;
-					Color									lastCaretColor;
-					bool									lastCaretFrontSide;
-
-					NameIdMap								nameCallbackIdMap;
-					FreeIdList								freeCallbackIds;
-					vint									usedCallbackIds = 0;
-
-					vint									renderingParagraph = -1;
-					Point									renderingParagraphOffset;
-
-					void									InitializeInternal();
-					void									FinalizeInternal();
-					void									RenderTargetChangedInternal(IGuiGraphicsRenderTarget* oldRenderTarget, IGuiGraphicsRenderTarget* newRenderTarget);
-					Ptr<ParagraphCache>						EnsureAndGetCache(vint paragraphIndex, bool createParagraph);
-					bool									GetParagraphIndexFromPoint(Point point, vint& top, vint& index);
-				public:
-					GuiDocumentElementRenderer();
-
-					void									Render(Rect bounds)override;
-					void									OnElementStateChanged()override;
-					void									NotifyParagraphUpdated(vint index, vint oldCount, vint newCount, bool updatedText);
-					Ptr<DocumentHyperlinkRun::Package>		GetHyperlinkFromPoint(Point point);
-
-					void									OpenCaret(TextPos caret, Color color, bool frontSide);
-					void									CloseCaret(TextPos caret);
-					void									SetSelection(TextPos begin, TextPos end);
-					TextPos									CalculateCaret(TextPos comparingCaret, IGuiGraphicsParagraph::CaretRelativePosition position, bool& preferFrontSide);
-					TextPos									CalculateCaretFromPoint(Point point);
-					Rect									GetCaretBounds(TextPos caret, bool frontSide);
-				};
-
-			protected:
-				Ptr<DocumentModel>							document;
-				ICallback*									callback = nullptr;
-				bool										paragraphPadding = true;
-				bool										wrapLine = true;
-				TextPos										caretBegin;
-				TextPos										caretEnd;
-				bool										caretVisible;
-				bool										caretFrontSide;
-				Color										caretColor;
-
-				void										UpdateCaret();
-
-				GuiDocumentElement();
-			public:
-				/// <summary>Get the callback.</summary>
-				/// <returns>The callback.</returns>
-				ICallback*									GetCallback();
-				/// <summary>Set the callback.</summary>
-				/// <param name="value">The callback.</param>
-				void										SetCallback(ICallback* value);
-				
-				/// <summary>Get the document.</summary>
-				/// <returns>The document.</returns>
-				Ptr<DocumentModel>							GetDocument();
-				/// <summary>Set the document. When a document is set to this element, modifying the document without invoking <see cref="NotifyParagraphUpdated"/> will lead to undefined behavior.</summary>
-				/// <param name="value">The document.</param>
-				void										SetDocument(Ptr<DocumentModel> value);
-				/// <summary>Get whether paddings are inserted between paragraphs.</summary>
-				/// <returns>Returns true if paddings are inserted between paragraphs.</returns>
-				bool										GetParagraphPadding();
-				/// <summary>Set whether paddings are inserted between paragraphs</summary>
-				/// <param name="value">Set to true so that paddings are inserted between paragraphs.</param>
-				void										SetParagraphPadding(bool value);
-				/// <summary>Get line wrapping.</summary>
-				/// <returns>Return true if there is automatic line wrapping.</returns>
-				bool										GetWrapLine();
-				/// <summary>Set line wrapping.</summary>
-				/// <param name="value">Set to true so that there is automatic line wrapping.</param>
-				void										SetWrapLine(bool value);
-
-				/// <summary>
-				/// Get the begin position of the selection area.
-				/// </summary>
-				/// <returns>The begin position of the selection area.</returns>
-				TextPos										GetCaretBegin();
-				/// <summary>
-				/// Get the end position of the selection area.
-				/// </summary>
-				/// <returns>The end position of the selection area.</returns>
-				TextPos										GetCaretEnd();
-				/// <summary>
-				/// Get the prefer side for the caret.
-				/// </summary>
-				/// <returns>Returns true if the caret is rendered for the front side.</returns>
-				bool										IsCaretEndPreferFrontSide();
-				/// <summary>
-				/// Set the end position of the selection area.
-				/// </summary>
-				/// <param name="begin">The begin position of the selection area.</param>
-				/// <param name="end">The end position of the selection area.</param>
-				/// <param name="frontSide">Set to true to show the caret for the character before it. This argument is ignored if begin and end are the same.</param>
-				void										SetCaret(TextPos begin, TextPos end, bool frontSide);
-				/// <summary>
-				/// Get the caret visibility.
-				/// </summary>
-				/// <returns>Returns true if the caret will be rendered.</returns>
-				bool										GetCaretVisible();
-				/// <summary>
-				/// Set the caret visibility.
-				/// </summary>
-				/// <param name="value">True if the caret will be rendered.</param>
-				void										SetCaretVisible(bool value);
-				/// <summary>
-				/// Get the color of the caret.
-				/// </summary>
-				/// <returns>The color of the caret.</returns>
-				Color										GetCaretColor();
-				/// <summary>
-				/// Set the color of the caret.
-				/// </summary>
-				/// <param name="value">The color of the caret.</param>
-				void										SetCaretColor(Color value);
-
-				/// <summary>Calculate a caret using a specified comparing caret and a relative position.</summary>
-				/// <returns>The calculated caret.</returns>
-				/// <param name="comparingCaret">The comparing caret.</param>
-				/// <param name="position">The relative position.</param>
-				/// <param name="preferFrontSide">Specify the side for the comparingCaret. Retrive the suggested side for the new caret. If the return caret equals compareCaret, this output is ignored.</param>
-				TextPos										CalculateCaret(TextPos comparingCaret, IGuiGraphicsParagraph::CaretRelativePosition position, bool& preferFrontSide);
-				/// <summary>Calculate a caret using a specified point.</summary>
-				/// <returns>The calculated caret.</returns>
-				/// <param name="point">The specified point.</param>
-				TextPos										CalculateCaretFromPoint(Point point);
-				/// <summary>Get the bounds of a caret.</summary>
-				/// <returns>The bounds.</returns>
-				/// <param name="caret">The caret.</param>
-				/// <param name="frontSide">Set to true to get the bounds for the character before it.</param>
-				Rect										GetCaretBounds(TextPos caret, bool frontSide);
-
-				/// <summary>Notify that some paragraphs are updated.</summary>
-				/// <param name="index">The start paragraph index.</param>
-				/// <param name="oldCount">The number of paragraphs to be updated.</param>
-				/// <param name="newCount">The number of updated paragraphs.</param>
-				/// <param name="updatedText">Set to true to notify that the text is updated.</param>
-				void										NotifyParagraphUpdated(vint index, vint oldCount, vint newCount, bool updatedText);
-				/// <summary>Edit run in a specified range.</summary>
-				/// <param name="begin">The begin position of the range.</param>
-				/// <param name="end">The end position of the range.</param>
-				/// <param name="model">The new run.</param>
-				/// <param name="copy">Set to true to copy the model before editing. Otherwise, objects inside the model will be used directly</param>
-				void										EditRun(TextPos begin, TextPos end, Ptr<DocumentModel> model, bool copy);
-				/// <summary>Edit text in a specified range.</summary>
-				/// <param name="begin">The begin position of the range.</param>
-				/// <param name="end">The end position of the range.</param>
-				/// <param name="frontSide">Set to true to use the text style in front of the specified range.</param>
-				/// <param name="text">The new text.</param>
-				void										EditText(TextPos begin, TextPos end, bool frontSide, const collections::Array<WString>& text);
-				/// <summary>Edit style in a specified range.</summary>
-				/// <param name="begin">The begin position of the range.</param>
-				/// <param name="end">The end position of the range.</param>
-				/// <param name="style">The new style.</param>
-				void										EditStyle(TextPos begin, TextPos end, Ptr<DocumentStyleProperties> style);
-				/// <summary>Edit image in a specified range.</summary>
-				/// <param name="begin">The begin position of the range.</param>
-				/// <param name="end">The end position of the range.</param>
-				/// <param name="image">The new image.</param>
-				void										EditImage(TextPos begin, TextPos end, Ptr<GuiImageData> image);
-				/// <summary>Set hyperlink in a specified range.</summary>
-				/// <param name="paragraphIndex">The index of the paragraph to edit.</param>
-				/// <param name="begin">The begin position of the range.</param>
-				/// <param name="end">The end position of the range.</param>
-				/// <param name="reference">The reference of the hyperlink.</param>
-				/// <param name="normalStyleName">The normal style name of the hyperlink.</param>
-				/// <param name="activeStyleName">The active style name of the hyperlink.</param>
-				void										EditHyperlink(vint paragraphIndex, vint begin, vint end, const WString& reference, const WString& normalStyleName=DocumentModel::NormalLinkStyleName, const WString& activeStyleName=DocumentModel::ActiveLinkStyleName);
-				/// <summary>Remove hyperlink in a specified range.</summary>
-				/// <param name="paragraphIndex">The index of the paragraph to edit.</param>
-				/// <param name="begin">The begin position of the range.</param>
-				/// <param name="end">The end position of the range.</param>
-				void										RemoveHyperlink(vint paragraphIndex, vint begin, vint end);
-				/// <summary>Edit style name in a specified range.</summary>
-				/// <param name="begin">The begin position of the range.</param>
-				/// <param name="end">The end position of the range.</param>
-				/// <param name="styleName">The new style name.</param>
-				void										EditStyleName(TextPos begin, TextPos end, const WString& styleName);
-				/// <summary>Remove style name in a specified range.</summary>
-				/// <param name="begin">The begin position of the range.</param>
-				/// <param name="end">The end position of the range.</param>
-				void										RemoveStyleName(TextPos begin, TextPos end);
-				/// <summary>Rename a style.</summary>
-				/// <param name="oldStyleName">The name of the style.</param>
-				/// <param name="newStyleName">The new name.</param>
-				void										RenameStyle(const WString& oldStyleName, const WString& newStyleName);
-				/// <summary>Clear all styles in a specified range.</summary>
-				/// <param name="begin">The begin position of the range.</param>
-				/// <param name="end">The end position of the range.</param>
-				void										ClearStyle(TextPos begin, TextPos end);
-				/// <summary>Clear all styles and remove non-text contents in a specified range.</summary>
-				/// <param name="begin">The begin position of the range.</param>
-				/// <param name="end">The end position of the range.</param>
-				void										ConvertToPlainText(TextPos begin, TextPos end);
-				/// <summary>Summarize the text style in a specified range.</summary>
-				/// <returns>The text style summary.</returns>
-				/// <param name="begin">The begin position of the range.</param>
-				/// <param name="end">The end position of the range.</param>
-				Ptr<DocumentStyleProperties>				SummarizeStyle(TextPos begin, TextPos end);
-				/// <summary>Summarize the style name in a specified range.</summary>
-				/// <returns>The style name summary.</returns>
-				/// <param name="begin">The begin position of the range.</param>
-				/// <param name="end">The end position of the range.</param>
-				Nullable<WString>							SummarizeStyleName(TextPos begin, TextPos end);
-				/// <summary>Set the alignment of paragraphs in a specified range.</summary>
-				/// <param name="begin">The begin position of the range.</param>
-				/// <param name="end">The end position of the range.</param>
-				/// <param name="alignments">The alignment for each paragraph.</param>
-				void										SetParagraphAlignment(TextPos begin, TextPos end, const collections::Array<Nullable<Alignment>>& alignments);
-				/// <summary>Summarize the text alignment in a specified range.</summary>
-				/// <returns>The text alignment summary.</returns>
-				/// <param name="begin">The begin position of the range.</param>
-				/// <param name="end">The end position of the range.</param>
-				Nullable<Alignment>							SummarizeParagraphAlignment(TextPos begin, TextPos end);
-
-				/// <summary>Get hyperlink from point.</summary>
-				/// <returns>Corressponding hyperlink id. Returns -1 indicates that the point is not in a hyperlink.</returns>
-				/// <param name="point">The point to get the hyperlink id.</param>
-				Ptr<DocumentHyperlinkRun::Package>			GetHyperlinkFromPoint(Point point);
-			};
-		}
-	}
-}
-
-#endif
-
-/***********************************************************************
-.\GRAPHICSELEMENT\GUIGRAPHICSTEXTELEMENT.H
-***********************************************************************/
-/***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-GacUI::Element System
-
-Interfaces:
-***********************************************************************/
-
-#ifndef VCZH_PRESENTATION_ELEMENTS_GUIGRAPHICSTEXTELEMENT
-#define VCZH_PRESENTATION_ELEMENTS_GUIGRAPHICSTEXTELEMENT
-
-
-namespace vl
-{
-	namespace presentation
-	{
-		namespace elements
-		{
-			class GuiColorizedTextElement;
-
-/***********************************************************************
-Colorized Plain Text (model)
-***********************************************************************/
-
-			namespace text
-			{
-				/// <summary>
-				/// Represents the extra information of a character to display.
-				/// </summary>
-				struct CharAtt
-				{
-					/// <summary>
-					/// The distance from the head of the line to the right side of this character in pixel.
-					/// </summary>
-					vuint32_t						rightOffset;
-					/// <summary>
-					/// The color index of the character. Use [M:vl.presentation.elements.GuiColorizedTextElement.GetColors] and [M:vl.presentation.elements.GuiColorizedTextElement.SetColors] to access the color table.
-					/// </summary>
-					vuint32_t						colorIndex;
-				};
-				
-				/// <summary>
-				/// Represents a line of characters.
-				/// </summary>
-				struct TextLine
-				{
-					static const vint				BlockSize=32;
-					static const vint				MaxWidth=0xFFFF;
-					
-					/// <summary>
-					/// A character buffer starts from the first character of this line.
-					/// </summary>
-					wchar_t*						text;
-					/// <summary>
-					/// A extra information buffer starts from the first character of this line.
-					/// </summary>
-					CharAtt*						att;
-					/// <summary>
-					/// The number of available <see cref="CharAtt::rightOffset"/> in the buffer.
-					/// </summary>
-					vint								availableOffsetCount;
-					/// <summary>
-					/// The number of elements in the allocated buffer memory.
-					/// </summary>
-					vint								bufferLength;
-					/// <summary>
-					/// The number of available characters in the buffer.
-					/// </summary>
-					vint								dataLength;
-					/// <summary>
-					/// The internal lexical analyzer state of a colorizer when it parses to the end of this line. -1 means that this state is not available.
-					/// </summary>
-					vint								lexerFinalState;
-					/// <summary>
-					/// The internal context sensitive state of a colorizer when it parses to the end of this line. -1 means that this state is not available.
-					/// </summary>
-					vint								contextFinalState;
-
-					TextLine();
-					~TextLine();
-
-					static vint						CalculateBufferLength(vint dataLength);
-
-					std::partial_ordering			operator<=>(const TextLine&) const { return std::partial_ordering::unordered; }
-					bool							operator==(const TextLine& value) const { return false; }
-
-					/// <summary>
-					/// Initialize the <see cref="TextLine"/> instance to be an empty line.
-					/// </summary>
-					void							Initialize();
-					/// <summary>
-					/// Release all resources used in this line.
-					/// </summary>
-					void							Finalize();
-					/// <summary>
-					/// Test is the line initialized.
-					/// </summary>
-					/// <returns>Returns true if the line is initialized.</returns>
-					bool							IsReady();
-					/// <summary>
-					/// Modify the characters in the line by replacing characters.
-					/// </summary>
-					/// <returns>Returns true if the modification succeeded.</returns>
-					/// <param name="start">The position of the first character to be replaced.</param>
-					/// <param name="count">The number of characters to be replaced.</param>
-					/// <param name="input">The buffer to the characters to write into this line.</param>
-					/// <param name="inputCount">The numbers of the characters to write into this line.</param>
-					bool							Modify(vint start, vint count, const wchar_t* input, vint inputCount);
-					/// <summary>
-					/// Split a text line into two by the position. The current line contains characters before this position. This function returns a new text line contains characters after this position.
-					/// </summary>
-					/// <returns>The new text line.</returns>
-					/// <param name="index">.</param>
-					TextLine						Split(vint index);
-					/// <summary>
-					/// Append a text line after the this text line, and finalize the input text line.
-					/// </summary>
-					/// <param name="line">The text line that contains all characters and color indices to append and be finalized.</param>
-					void							AppendAndFinalize(TextLine& line);
-				};
-
-#if defined VCZH_MSVC
-				/// <summary>Test if a wchar_t is the first character of a surrogate pair.</summary>
-				/// <param name="c">The character to test.</param>
-				/// <returns>Returns true if it is the first character of a surrogate pair.</returns>
-				inline bool UTF16SPFirst(wchar_t c)
-				{
-					return 0xD800 <= c && c < 0xDC00;
-				}
-
-				/// <summary>Test if a wchar_t is the second character of a surrogate pair.</summary>
-				/// <param name="c">The character to test.</param>
-				/// <returns>Returns true if it is the second character of a surrogate pair.</returns>
-				inline bool UTF16SPSecond(wchar_t c)
-				{
-					return 0xDC00 <= c && c < 0xDFFF;
-				}
-#endif
-
-				/// <summary>
-				/// A unicode code point.
-				/// In Windows, when the first character is not the leading character of a surrogate pair, the second character is ignored.
-				/// In other platforms which treat wchar_t as a UTF-32 character, the second character is ignored.
-				/// </summary>
-				struct UnicodeCodePoint
-				{
-#if defined VCZH_MSVC
-					wchar_t							characters[2];
-
-					UnicodeCodePoint(wchar_t c) :characters{ c,0 } {}
-					UnicodeCodePoint(wchar_t c1, wchar_t c2) :characters{ c1,c2 } {}
-#elif defined VCZH_GCC
-					wchar_t							character;
-
-					UnicodeCodePoint(wchar_t c) :character(c) {}
-#endif
-
-					vuint32_t GetCodePoint()const
-					{
-#if defined VCZH_MSVC
-						if (UTF16SPFirst(characters[0]) && UTF16SPSecond(characters[1]))
-						{
-							return (wchar_t)(characters[0] - 0xD800) * 0x400 + (wchar_t)(characters[1] - 0xDC00) + 0x10000;
-						}
-						else
-						{
-							return (vuint32_t)characters[0];
-						}
-#elif defined VCZH_GCC
-						return (vuint32_t)character;
-#endif
-					}
-				};
-
-				/// <summary>
-				/// An abstract class for character size measuring in differect rendering technology.
-				/// </summary>
-				class CharMeasurer : public virtual IDescriptable
-				{
-				protected:
-					IGuiGraphicsRenderTarget*		oldRenderTarget = nullptr;
-					vint							rowHeight;
-					vint							widths[65536];
-					
-					/// <summary>
-					/// Measure the width of a character.
-					/// </summary>
-					/// <returns>The width in pixel.</returns>
-					/// <param name="codePoint">The unicode code point to measure.</param>
-					/// <param name="renderTarget">The render target which the character is going to be rendered. This is a pure virtual member function to be overrided.</param>
-					virtual vint					MeasureWidthInternal(UnicodeCodePoint codePoint, IGuiGraphicsRenderTarget* renderTarget)=0;
-					/// <summary>
-					/// Measure the height of a character.
-					/// </summary>
-					/// <returns>The height in pixel.</returns>
-					/// <param name="renderTarget">The render target which the character is going to be rendered.</param>
-					virtual vint					GetRowHeightInternal(IGuiGraphicsRenderTarget* renderTarget)=0;
-				public:
-
-					/// <summary>
-					/// Initialize a character measurer.
-					/// </summary>
-					/// <param name="_rowHeight">The default character height in pixel before the character measurer is binded to a render target.</param>
-					CharMeasurer(vint _rowHeight);
-					~CharMeasurer();
-
-					/// <summary>
-					/// Bind a render target to this character measurer.
-					/// </summary>
-					/// <param name="value">The render target to bind.</param>
-					void							SetRenderTarget(IGuiGraphicsRenderTarget* value);
-					/// <summary>
-					/// Measure the width of a character using the binded render target.
-					/// </summary>
-					/// <returns>The width of a character, in pixel.</returns>
-					/// <param name="codePoint">The unicode code point to measure.</param>
-					vint							MeasureWidth(UnicodeCodePoint codePoint);
-					/// <summary>
-					/// Measure the height of a character.
-					/// </summary>
-					/// <returns>The height of a character, in pixel.</returns>
-					vint							GetRowHeight();
-				};
-
-				/// <summary>
-				/// A class to maintain multiple lines of text buffer.
-				/// </summary>
-				class TextLines : public Object, public Description<TextLines>
-				{
-					typedef collections::List<TextLine>		TextLineList;
-				protected:
-					GuiColorizedTextElement*		ownerElement;
-					TextLineList					lines;
-					CharMeasurer*					charMeasurer;
-					IGuiGraphicsRenderTarget*		renderTarget;
-					vint							tabWidth;
-					vint							tabSpaceCount;
-					wchar_t							passwordChar;
-				public:
-					TextLines(GuiColorizedTextElement* _ownerElement);
-					~TextLines();
-
-					/// <summary>
-					/// Returns the number of text lines.
-					/// </summary>
-					/// <returns>The number of text lines.</returns>
-					vint							GetCount();
-					/// <summary>
-					/// Returns the text line of a specified row number.
-					/// </summary>
-					/// <returns>The related text line object.</returns>
-					/// <param name="row">The specified row number.</param>
-					TextLine&						GetLine(vint row);
-					/// <summary>
-					/// Returns the binded <see cref="CharMeasurer"/>.
-					/// </summary>
-					/// <returns>The binded <see cref="CharMeasurer"/>.</returns>
-					CharMeasurer*					GetCharMeasurer();
-					/// <summary>
-					/// Binded a <see cref="CharMeasurer"/>.
-					/// </summary>
-					/// <param name="value">The <see cref="CharMeasurer"/> to bind.</param>
-					void							SetCharMeasurer(CharMeasurer* value);
-					/// <summary>
-					/// Returns the binded <see cref="IGuiGraphicsRenderTarget"/>.
-					/// </summary>
-					/// <returns>The binded <see cref="IGuiGraphicsRenderTarget"/>.</returns>
-					IGuiGraphicsRenderTarget*		GetRenderTarget();
-					/// <summary>
-					/// Binded a <see cref="IGuiGraphicsRenderTarget"/>.
-					/// </summary>
-					/// <param name="value">The <see cref="IGuiGraphicsRenderTarget"/> to bind.</param>
-					void							SetRenderTarget(IGuiGraphicsRenderTarget* value);
-					/// <summary>
-					/// Returns a string from a specified range of the text lines.
-					/// </summary>
-					/// <returns>The string.</returns>
-					/// <param name="start">The start position.</param>
-					/// <param name="end">The end position.</param>
-					WString							GetText(TextPos start, TextPos end);
-					/// <summary>
-					/// Returns the whole string in the text lines.
-					/// </summary>
-					/// <returns>The string.</returns>
-					WString							GetText();
-					/// <summary>
-					/// Set the string to the text lines. This operation will modified every <see cref="TextLine"/> objects.
-					/// </summary>
-					/// <param name="value">The string to set into the text lines.</param>
-					void							SetText(const WString& value);
-					
-					/// <summary>
-					/// Remove text lines in a specified range.
-					/// </summary>
-					/// <returns>Returns true if this operation succeeded.</returns>
-					/// <param name="start">The first row number.</param>
-					/// <param name="count">The number of text lines to be removed.</param>
-					bool							RemoveLines(vint start, vint count);
-					/// <summary>
-					/// Test is a text position available in the text lines.
-					/// </summary>
-					/// <returns>Returns true if this position is available.</returns>
-					/// <param name="pos">The text position to test.</param>
-					bool							IsAvailable(TextPos pos);
-					/// <summary>
-					/// Normalize a text position to be available.
-					/// </summary>
-					/// <returns>The normalized text position.</returns>
-					/// <param name="pos">The text position to normalize.</param>
-					TextPos							Normalize(TextPos pos);
-					/// <summary>
-					/// Modify some text lines by replacing characters.
-					/// </summary>
-					/// <returns>The new end position.</returns>
-					/// <param name="start">The start position of the range of characters to be replaced.</param>
-					/// <param name="end">The end position of the range of characters to be replaced.</param>
-					/// <param name="inputs">The buffer to the string buffers to replace into the text lines.</param>
-					/// <param name="inputCounts">The numbers of characters for each string buffer.</param>
-					/// <param name="rows">The number of string buffers.</param>
-					TextPos							Modify(TextPos start, TextPos end, const wchar_t** inputs, vint* inputCounts, vint rows);
-					/// <summary>
-					/// Modify some text lines by replacing characters.
-					/// </summary>
-					/// <returns>The new end position.</returns>
-					/// <param name="start">The start position of the range of characters to be replaced.</param>
-					/// <param name="end">The end position of the range of characters to be replaced.</param>
-					/// <param name="input">The buffer to the string to replace into the text lines.</param>
-					/// <param name="inputCount">The number of characters to replace into the text lines.</param>
-					TextPos							Modify(TextPos start, TextPos end, const wchar_t* input, vint inputCount);
-					/// <summary>
-					/// Modify some text lines by replacing characters.
-					/// </summary>
-					/// <returns>The new end position.</returns>
-					/// <param name="start">The start position of the range of characters to be replaced.</param>
-					/// <param name="end">The end position of the range of characters to be replaced.</param>
-					/// <param name="input">The string to replace into the text lines.</param>
-					TextPos							Modify(TextPos start, TextPos end, const wchar_t* input);
-					/// <summary>
-					/// Modify some text lines by replacing characters.
-					/// </summary>
-					/// <returns>The new end position.</returns>
-					/// <param name="start">The start position of the range of characters to be replaced.</param>
-					/// <param name="end">The end position of the range of characters to be replaced.</param>
-					/// <param name="input">The string to replace into the text lines.</param>
-					TextPos							Modify(TextPos start, TextPos end, const WString& input);
-					/// <summary>
-					/// Remove every text lines.
-					/// </summary>
-					void							Clear();
-					
-					/// <summary>
-					/// Clear all cached <see cref="CharAtt::rightOffset"/>.
-					/// </summary>
-					void							ClearMeasurement();
-					/// <summary>
-					/// Returns the number of spaces to replace a tab character for rendering.
-					/// </summary>
-					/// <returns>The number of spaces to replace a tab character for rendering.</returns>
-					vint							GetTabSpaceCount();
-					/// <summary>
-					/// Set the number of spaces to replace a tab character for rendering.
-					/// </summary>
-					/// <param name="value">The number of spaces to replace a tab character for rendering.</param>
-					void							SetTabSpaceCount(vint value);
-					/// <summary>
-					/// Measure all characters in a specified row.
-					/// </summary>
-					/// <param name="row">The specified row number.</param>
-					void							MeasureRow(vint row);
-					/// <summary>
-					/// Returns the width of a specified row.
-					/// </summary>
-					/// <returns>The width of a specified row, in pixel.</returns>
-					/// <param name="row">The specified row number.</param>
-					vint							GetRowWidth(vint row);
-					/// <summary>
-					/// Returns the height of a row.
-					/// </summary>
-					/// <returns>The height of a row, in pixel.</returns>
-					vint							GetRowHeight();
-					/// <summary>
-					/// Returns the total width of the text lines.
-					/// </summary>
-					/// <returns>The width of the text lines, in pixel.</returns>
-					vint							GetMaxWidth();
-					/// <summary>
-					/// Returns the total height of the text lines.
-					/// </summary>
-					/// <returns>The height of the text lines, in pixel.</returns>
-					vint							GetMaxHeight();
-					/// <summary>
-					/// Get the text position near to specified point.
-					/// </summary>
-					/// <returns>The text position.</returns>
-					/// <param name="point">The specified point, in pixel.</param>
-					TextPos							GetTextPosFromPoint(Point point);
-					/// <summary>
-					/// Get the point of a specified text position.
-					/// </summary>
-					/// <returns>The point, in pixel. Returns (-1, -1) if the text position is not available.</returns>
-					/// <param name="pos">The specified text position.</param>
-					Point							GetPointFromTextPos(TextPos pos);
-					/// <summary>
-					/// Get the bounds of a specified text position.
-					/// </summary>
-					/// <returns>The bounds, in pixel. Returns (-1, -1, -1, -1) if the text position is not available.</returns>
-					/// <param name="pos">The specified text position.</param>
-					Rect							GetRectFromTextPos(TextPos pos);
-					/// <summary>
-					/// Get the password mode displaying character.
-					/// </summary>
-					/// <returns>The password mode displaying character. Returns L'\0' means the password mode is not activated.</returns>
-					wchar_t							GetPasswordChar();
-					/// <summary>
-					/// Set the password mode displaying character.
-					/// </summary>
-					/// <param name="value">The password mode displaying character. Set to L'\0' to deactivate the password mode.</param>
-					void							SetPasswordChar(wchar_t value);
-				};
-				
-				/// <summary>
-				/// Represents colors of a character.
-				/// </summary>
-				struct ColorItem
-				{
-					/// <summary>
-					/// Text color.
-					/// </summary>
-					Color							text;
-					/// <summary>
-					/// Background color.
-					/// </summary>
-					Color							background;
-
-					GUI_DEFINE_COMPARE_OPERATORS(ColorItem)
-				};
-				
-				/// <summary>
-				/// Represents color entry in a color table. Use [M:vl.presentation.elements.GuiColorizedTextElement.GetColors] and [M:vl.presentation.elements.GuiColorizedTextElement.SetColors] to access the color table.
-				/// </summary>
-				struct ColorEntry
-				{
-					/// <summary>
-					/// Colors in normal state.
-					/// </summary>
-					ColorItem						normal;
-					/// <summary>
-					/// Colors in focused and selected state.
-					/// </summary>
-					ColorItem						selectedFocused;
-					/// <summary>
-					/// Colors in not focused and selected state.
-					/// </summary>
-					ColorItem						selectedUnfocused;
-
-					GUI_DEFINE_COMPARE_OPERATORS(ColorEntry)
-				};
-			}
-
-/***********************************************************************
-Colorized Plain Text (element)
-***********************************************************************/
-			
-			/// <summary>
-			/// Defines a text element with separate color configuration for each character.
-			/// </summary>
-			class GuiColorizedTextElement : public GuiElementBase<GuiColorizedTextElement>
-			{
-				friend class GuiElementBase<GuiColorizedTextElement>;
-				friend class text::TextLines;
-
-				typedef collections::Array<text::ColorEntry>			ColorArray;
-				static constexpr const wchar_t*							ElementTypeName = L"ColorizedText";
-			public:
-				/// <summary>
-				/// An callback interface. Member functions will be called when colors or fonts of a <see cref="GuiColorizedTextElement"/> changed.
-				/// </summary>
-				class ICallback : public virtual IDescriptable, public Description<ICallback>
-				{
-				public:
-					/// <summary>
-					/// Called when the color table of a <see cref="GuiColorizedTextElement"/> changed.
-					/// </summary>
-					virtual void					ColorChanged()=0;
-					/// <summary>
-					/// Called when the font configuration of a <see cref="GuiColorizedTextElement"/> changed.
-					/// </summary>
-					virtual void					FontChanged()=0;
-				};
-			protected:
-				ICallback*							callback;
-				ColorArray							colors;
-				FontProperties						font;
-				Point								viewPosition;
-				bool								isVisuallyEnabled;
-				bool								isFocused;
-
-				TextPos								caretBegin;
-				TextPos								caretEnd;
-				bool								caretVisible;
-				Color								caretColor;
-
-				text::TextLines						lines;
-
-				GuiColorizedTextElement();
-			public:
-				/// <summary>
-				/// Get the internal <see cref="text::TextLines"/> object that stores all characters and colors.
-				/// </summary>
-				/// <returns>The internal <see cref="text::TextLines"/> object.</returns>
-				text::TextLines&					GetLines();
-				/// <summary>
-				/// Get the binded callback object.
-				/// </summary>
-				/// <returns>The binded callback object.</returns>
-				ICallback*							GetCallback();
-				/// <summary>
-				/// Bind a callback object.
-				/// </summary>
-				/// <param name="value">The callback object to bind.</param>
-				void								SetCallback(ICallback* value);
-				
-				/// <summary>
-				/// Get the binded color table. Use <see cref="text::CharAtt::colorIndex"/> to use colors in this color table.
-				/// </summary>
-				/// <returns>The binded color table.</returns>
-				const ColorArray&					GetColors();
-				/// <summary>
-				/// Bind a color table. Use <see cref="text::CharAtt::colorIndex"/> to use colors in this color table. <see cref="ICallback::ColorChanged"/> will be called.
-				/// </summary>
-				/// <param name="value">The color table to bind.</param>
-				void								SetColors(const ColorArray& value);
-				/// <summary>
-				/// Reset color of all characters
-				/// </summary>
-				/// <param name="index">Color index of all characters.</param>
-				void								ResetTextColorIndex(vint index);
-				/// <summary>
-				/// Get the font configuration for all characters.
-				/// </summary>
-				/// <returns>The font configuration.</returns>
-				const FontProperties&				GetFont();
-				/// <summary>
-				/// Set the font configuration for all characters. <see cref="ICallback::FontChanged"/> will be called.
-				/// </summary>
-				/// <param name="value">The font configuration.</param>
-				void								SetFont(const FontProperties& value);
-				/// <summary>
-				/// Get the password mode displaying character.
-				/// </summary>
-				/// <returns>The password mode displaying character. Returns L'\0' means the password mode is not activated.</returns>
-				wchar_t								GetPasswordChar();
-				/// <summary>
-				/// Set the password mode displaying character.
-				/// </summary>
-				/// <param name="value">The password mode displaying character. Set to L'\0' to deactivate the password mode.</param>
-				void								SetPasswordChar(wchar_t value);
-				/// <summary>
-				/// Get the left-top position of the visible bounds of characters.
-				/// </summary>
-				/// <returns>The left-top position of the visible bounds of characters.</returns>
-				Point								GetViewPosition();
-				/// <summary>
-				/// Set the left-top position of the visible bounds of characters.
-				/// </summary>
-				/// <param name="value">The left-top position of the visible bounds of characters.</param>
-				void								SetViewPosition(Point value);
-				/// <summary>
-				/// Get the enabling state.
-				/// </summary>
-				/// <returns>Returns true if the element will be rendered as an enabled element.</returns>
-				bool								GetVisuallyEnabled();
-				/// <summary>
-				/// Set the enabling state.
-				/// </summary>
-				/// <param name="value">True if the element will be rendered as an enabled element.</param>
-				void								SetVisuallyEnabled(bool value);
-				/// <summary>
-				/// Get the focused state.
-				/// </summary>
-				/// <returns>Returns true if the element will be rendered as a focused element.</returns>
-				bool								GetFocused();
-				/// <summary>
-				/// Set the focused state.
-				/// </summary>
-				/// <param name="value">True if the element will be rendered as a focused element.</param>
-				void								SetFocused(bool value);
-				
-				/// <summary>
-				/// Get the begin position of the selection area.
-				/// </summary>
-				/// <returns>The begin position of the selection area.</returns>
-				TextPos								GetCaretBegin();
-				/// <summary>
-				/// Set the begin position of the selection area.
-				/// </summary>
-				/// <param name="value">The begin position of the selection area.</param>
-				void								SetCaretBegin(TextPos value);
-				/// <summary>
-				/// Get the end position of the selection area.
-				/// </summary>
-				/// <returns>The end position of the selection area.</returns>
-				TextPos								GetCaretEnd();
-				/// <summary>
-				/// Set the end position of the selection area.
-				/// </summary>
-				/// <param name="value">The end position of the selection area.</param>
-				void								SetCaretEnd(TextPos value);
-				/// <summary>
-				/// Get the caret visibility.
-				/// </summary>
-				/// <returns>Returns true if the caret will be rendered.</returns>
-				bool								GetCaretVisible();
-				/// <summary>
-				/// Set the caret visibility.
-				/// </summary>
-				/// <param name="value">True if the caret will be rendered.</param>
-				void								SetCaretVisible(bool value);
-				/// <summary>
-				/// Get the color of the caret.
-				/// </summary>
-				/// <returns>The color of the caret.</returns>
-				Color								GetCaretColor();
-				/// <summary>
-				/// Set the color of the caret.
-				/// </summary>
-				/// <param name="value">The color of the caret.</param>
-				void								SetCaretColor(Color value);
-			};
-		}
-	}
-}
-
-#endif
-
-/***********************************************************************
 .\CONTROLS\TEMPLATES\GUICONTROLTEMPLATES.H
 ***********************************************************************/
 /***********************************************************************
@@ -13943,7 +13079,6 @@ Templates
 		{
 
 #define GUI_CONTROL_TEMPLATE_DECL(F)\
-			F(GuiSinglelineTextBoxTemplate,		GuiControlTemplate)			\
 			F(GuiDocumentLabelTemplate,			GuiControlTemplate)			\
 			F(GuiMenuTemplate,					GuiWindowTemplate)			\
 			F(GuiButtonTemplate,				GuiControlTemplate)			\
@@ -13953,7 +13088,6 @@ Templates
 			F(GuiComboBoxTemplate,				GuiToolstripButtonTemplate)	\
 			F(GuiScrollTemplate,				GuiControlTemplate)			\
 			F(GuiScrollViewTemplate,			GuiControlTemplate)			\
-			F(GuiMultilineTextBoxTemplate,		GuiScrollViewTemplate)		\
 			F(GuiDocumentViewerTemplate,		GuiScrollViewTemplate)		\
 			F(GuiListControlTemplate,			GuiScrollViewTemplate)		\
 			F(GuiTextListTemplate,				GuiListControlTemplate)		\
@@ -13983,10 +13117,6 @@ Templates
 /***********************************************************************
 Control Template
 ***********************************************************************/
-
-#define GuiSinglelineTextBoxTemplate_PROPERTIES(F)\
-				F(GuiSinglelineTextBoxTemplate, elements::text::ColorEntry, TextColor, {})\
-				F(GuiSinglelineTextBoxTemplate, Color, CaretColor, {})\
 
 #define GuiDocumentLabelTemplate_PROPERTIES(F)\
 				F(GuiDocumentLabelTemplate, Ptr<DocumentModel>, BaselineDocument, {})\
@@ -14024,11 +13154,6 @@ Control Template
 #define GuiScrollViewTemplate_PROPERTIES(F)\
 				F(GuiScrollViewTemplate, controls::GuiScroll*, HorizontalScroll, nullptr)\
 				F(GuiScrollViewTemplate, controls::GuiScroll*, VerticalScroll, nullptr)\
-
-#define GuiMultilineTextBoxTemplate_PROPERTIES(F)\
-				F(GuiMultilineTextBoxTemplate, controls::ITextBoxCommandExecutor*, Commands, nullptr)\
-				F(GuiMultilineTextBoxTemplate, elements::text::ColorEntry, TextColor, {})\
-				F(GuiMultilineTextBoxTemplate, Color, CaretColor, {})\
 
 #define GuiDocumentViewerTemplate_PROPERTIES(F)\
 				F(GuiDocumentViewerTemplate, Ptr<DocumentModel>, BaselineDocument, {})\
@@ -16071,2076 +15196,6 @@ namespace vl
 			/// <returns>The registered object. Returns null if it does not exist.</returns>
 			/// <param name="name">The name of the theme.</param>
 			extern Ptr<ThemeTemplates>			UnregisterTheme(const WString& name);
-		}
-	}
-}
-
-#endif
-
-/***********************************************************************
-.\CONTROLS\TEXTEDITORPACKAGE\EDITORCALLBACK\GUITEXTGENERALOPERATIONS.H
-***********************************************************************/
-/***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-GacUI::Control System
-
-Interfaces:
-***********************************************************************/
-
-#ifndef VCZH_PRESENTATION_CONTROLS_GUITEXTGENERALOPERATIONS
-#define VCZH_PRESENTATION_CONTROLS_GUITEXTGENERALOPERATIONS
-
-
-namespace vl
-{
-	namespace presentation
-	{
-		namespace controls
-		{
-
-/***********************************************************************
-Common Operations
-***********************************************************************/
-			
-			/// <summary>An text edit callback for text box controls.</summary>
-			class ICommonTextEditCallback : public virtual IDescriptable, public Description<ICommonTextEditCallback>
-			{
-			public:
-				/// <summary>Callback data for text editing preview.</summary>
-				struct TextEditPreviewStruct
-				{
-					/// <summary>The start position of the selection before replacing. This field can be modified.</summary>
-					TextPos								originalStart;
-					/// <summary>The end position of the selection before replacing. This field can be modified.</summary>
-					TextPos								originalEnd;
-					/// <summary>The text of the selection before replacing.</summary>
-					WString								originalText;
-					/// <summary>The text of the selection after replacing. This field can be modified.</summary>
-					WString								inputText;
-					/// <summary>The base edit version.</summary>
-					vuint								editVersion = 0;
-					/// <summary>True if this modification is raised by the keyboard.</summary>
-					bool								keyInput = false;
-				};
-
-				/// <summary>Callback data for text editing.</summary>
-				struct TextEditNotifyStruct
-				{
-					/// <summary>The start position of the selection before replacing.</summary>
-					TextPos								originalStart;
-					/// <summary>The end position of the selection before replacing.</summary>
-					TextPos								originalEnd;
-					/// <summary>The text of the selection before replacing.</summary>
-					WString								originalText;
-					/// <summary>The start position of the selection after replacing.</summary>
-					TextPos								inputStart;
-					/// <summary>The end position of the selection after replacing.</summary>
-					TextPos								inputEnd;
-					/// <summary>The text of the selection after replacing.</summary>
-					WString								inputText;
-					/// <summary>The created edit version.</summary>
-					vuint								editVersion = 0;
-					/// <summary>True if this modification is raised by the keyboard.</summary>
-					bool								keyInput = false;
-				};
-				
-				/// <summary>Callback data for text caret changing.</summary>
-				struct TextCaretChangedStruct
-				{
-					/// <summary>The start position of the selection before caret changing.</summary>
-					TextPos								oldBegin;
-					/// <summary>The end position of the selection before caret changing.</summary>
-					TextPos								oldEnd;
-					/// <summary>The start position of the selection after caret changing.</summary>
-					TextPos								newBegin;
-					/// <summary>The end position of the selection after caret changing.</summary>
-					TextPos								newEnd;
-					/// <summary>The current edit version.</summary>
-					vuint								editVersion = 0;
-				};
-
-				/// <summary>Called when the callback is attached to a text box control.</summary>
-				/// <param name="element">The element that used in the text box control.</param>
-				/// <param name="elementModifyLock">The lock that pretect the element.</param>
-				/// <param name="ownerComposition">The owner composition of this element.</param>
-				/// <param name="editVersion">The current edit version.</param>
-				virtual void							Attach(elements::GuiColorizedTextElement* element, SpinLock& elementModifyLock, compositions::GuiGraphicsComposition* ownerComposition, vuint editVersion)=0;
-				/// <summary>Called when the callback is detached from a text box control.</summary>
-				virtual void							Detach()=0;
-				/// <summary>Called before the text is edited.</summary>
-				/// <param name="arguments">The data for this callback.</param>
-				virtual void							TextEditPreview(TextEditPreviewStruct& arguments)=0;
-				/// <summary>Called after the text is edited and before the caret is changed.</summary>
-				/// <param name="arguments">The data for this callback.</param>
-				virtual void							TextEditNotify(const TextEditNotifyStruct& arguments)=0;
-				/// <summary>Called after the caret is changed.</summary>
-				/// <param name="arguments">The data for this callback.</param>
-				virtual void							TextCaretChanged(const TextCaretChangedStruct& arguments)=0;
-				/// <summary>Called after the text is edited and after the caret is changed.</summary>
-				/// <param name="editVersion">The current edit version.</param>
-				virtual void							TextEditFinished(vuint editVersion)=0;
-			};
-		}
-	}
-}
-
-#endif
-
-/***********************************************************************
-.\CONTROLS\TEXTEDITORPACKAGE\EDITORCALLBACK\GUITEXTAUTOCOMPLETE.H
-***********************************************************************/
-/***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-GacUI::Control System
-
-Interfaces:
-***********************************************************************/
-
-#ifndef VCZH_PRESENTATION_CONTROLS_GUITEXTAUTOCOMPLETE
-#define VCZH_PRESENTATION_CONTROLS_GUITEXTAUTOCOMPLETE
-
-
-namespace vl
-{
-	namespace presentation
-	{
-		namespace controls
-		{
-
-/***********************************************************************
-GuiTextBoxAutoCompleteBase
-***********************************************************************/
-			
-			/// <summary>The base class of text box auto complete controller.</summary>
-			class GuiTextBoxAutoCompleteBase : public Object, public virtual ICommonTextEditCallback
-			{
-			public:
-				/// <summary>Represents an auto complete candidate item.</summary>
-				struct AutoCompleteItem
-				{
-					/// <summary>Tag object for any purpose, e.g., data binding.</summary>
-					description::Value								tag;
-					/// <summary>Display text for the item.</summary>
-					WString											text;
-				};
-
-				/// <summary>Auto complete control provider.</summary>
-				class IAutoCompleteControlProvider : public virtual Interface
-				{
-				public:
-					/// <summary>Get the auto complete control that will be installed in a popup to show candidate items.</summary>
-					/// <returns>The auto complete control.</returns>
-					virtual GuiControl*								GetAutoCompleteControl() = 0;
-
-					/// <summary>Get the list control storing candidate items.</summary>
-					/// <returns>The list control. It should be inside the auto complete control, or the auto complete control itself.</returns>
-					virtual GuiSelectableListControl*				GetListControl() = 0;
-
-					/// <summary>Store candidate items in the list control.</summary>
-					/// <param name="items">Candidate items.</param>
-					virtual void									SetSortedContent(const collections::List<AutoCompleteItem>& items) = 0;
-
-					/// <summary>Get the numbers of all stored candidate items.</summary>
-					/// <returns>The number of all stored candidate items.</returns>
-					virtual vint									GetItemCount() = 0;
-
-					/// <summary>Get the text of a specified item.</summary>
-					/// <param name="index">The index of the item.</param>
-					/// <returns>The text of the item.</returns>
-					virtual WString									GetItemText(vint index) = 0;
-				};
-
-				class TextListControlProvider : public Object, public virtual IAutoCompleteControlProvider
-				{
-				protected:
-					GuiTextList*									autoCompleteList;
-
-				public:
-					TextListControlProvider(TemplateProperty<templates::GuiTextListTemplate> controlTemplate = {});
-					~TextListControlProvider();
-
-					GuiControl*										GetAutoCompleteControl()override;
-					GuiSelectableListControl*						GetListControl()override;
-					void											SetSortedContent(const collections::List<AutoCompleteItem>& items)override;
-					vint											GetItemCount()override;
-					WString											GetItemText(vint index)override;
-				};
-
-			protected:
-				elements::GuiColorizedTextElement*					element;
-				SpinLock*											elementModifyLock;
-				compositions::GuiGraphicsComposition*				ownerComposition;
-				GuiPopup*											autoCompletePopup;
-				Ptr<IAutoCompleteControlProvider>					autoCompleteControlProvider;
-				TextPos												autoCompleteStartPosition;
-
-				bool												IsPrefix(const WString& prefix, const WString& candidate);
-			public:
-				/// <summary>Create an auto complete.</summary>
-				/// <param name="_autoCompleteControlProvider">A auto complete control provider. Set to null to use a default one.</param>
-				GuiTextBoxAutoCompleteBase(Ptr<IAutoCompleteControlProvider> _autoCompleteControlProvider = nullptr);
-				~GuiTextBoxAutoCompleteBase();
-
-				void												Attach(elements::GuiColorizedTextElement* _element, SpinLock& _elementModifyLock, compositions::GuiGraphicsComposition* _ownerComposition, vuint editVersion)override;
-				void												Detach()override;
-				void												TextEditPreview(TextEditPreviewStruct& arguments)override;
-				void												TextEditNotify(const TextEditNotifyStruct& arguments)override;
-				void												TextCaretChanged(const TextCaretChangedStruct& arguments)override;
-				void												TextEditFinished(vuint editVersion)override;
-
-				/// <summary>Get the list state.</summary>
-				/// <returns>Returns true if the list is visible.</returns>
-				bool												IsListOpening();
-				/// <summary>Notify the list to be visible.</summary>
-				/// <param name="startPosition">The text position to show the list.</param>
-				void												OpenList(TextPos startPosition);
-				/// <summary>Notify the list to be invisible.</summary>
-				void												CloseList();
-				/// <summary>Set the content of the list.</summary>
-				/// <param name="items">The content of the list.</param>
-				void												SetListContent(const collections::List<AutoCompleteItem>& items);
-				/// <summary>Get the last start position when the list is opened.</summary>
-				/// <returns>The start position.</returns>
-				TextPos												GetListStartPosition();
-				/// <summary>Select the previous item.</summary>
-				/// <returns>Returns true if this operation succeeded.</returns>
-				bool												SelectPreviousListItem();
-				/// <summary>Select the next item.</summary>
-				/// <returns>Returns true if this operation succeeded.</returns>
-				bool												SelectNextListItem();
-				/// <summary>Apply the selected item into the text box.</summary>
-				/// <returns>Returns true if this operation succeeded.</returns>
-				bool												ApplySelectedListItem();
-				/// <summary>Get the selected item.</summary>
-				/// <returns>The text of the selected item. Returns empty if there is no selected item.</returns>
-				WString												GetSelectedListItem();
-				/// <summary>Highlight a candidate item in the list.</summary>
-				/// <param name="editingText">The text to match an item.</param>
-				void												HighlightList(const WString& editingText);
-			};
-		}
-	}
-}
-
-#endif
-
-/***********************************************************************
-.\CONTROLS\TEXTEDITORPACKAGE\EDITORCALLBACK\GUITEXTCOLORIZER.H
-***********************************************************************/
-/***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-GacUI::Control System
-
-Interfaces:
-***********************************************************************/
-
-#ifndef VCZH_PRESENTATION_CONTROLS_GUITEXTCOLORIZER
-#define VCZH_PRESENTATION_CONTROLS_GUITEXTCOLORIZER
-
-
-namespace vl
-{
-	namespace presentation
-	{
-		namespace controls
-		{
-
-/***********************************************************************
-GuiTextBoxColorizerBase
-***********************************************************************/
-			
-			/// <summary>The base class of text box colorizer.</summary>
-			class GuiTextBoxColorizerBase : public Object, public virtual ICommonTextEditCallback
-			{
-			public:
-				typedef collections::Array<elements::text::ColorEntry>			ColorArray;
-			protected:
-				elements::GuiColorizedTextElement*			element;
-				SpinLock*									elementModifyLock;
-				volatile vint								colorizedLineCount;
-				volatile bool								isColorizerRunning;
-				volatile bool								isFinalizing;
-				SpinLock									colorizerRunningEvent;
-
-				static void									ColorizerThreadProc(void* argument);
-
-				void										StartColorizer();
-				void										StopColorizer(bool forever);
-				void										StopColorizerForever();
-			public:
-				/// <summary>Create a colorrizer.</summary>
-				GuiTextBoxColorizerBase();
-				~GuiTextBoxColorizerBase();
-
-				void										Attach(elements::GuiColorizedTextElement* _element, SpinLock& _elementModifyLock, compositions::GuiGraphicsComposition* _ownerComposition, vuint editVersion)override;
-				void										Detach()override;
-				void										TextEditPreview(TextEditPreviewStruct& arguments)override;
-				void										TextEditNotify(const TextEditNotifyStruct& arguments)override;
-				void										TextCaretChanged(const TextCaretChangedStruct& arguments)override;
-				void										TextEditFinished(vuint editVersion)override;
-				void										RestartColorizer();
-
-				/// <summary>Get the lexical analyzer start state for the first line.</summary>
-				/// <returns>The lexical analyzer start state for the first line.</returns>
-				virtual vint								GetLexerStartState()=0;
-				/// <summary>Get the context sensitive start state for the first line.</summary>
-				/// <returns>The context sensitive start state for the first line.</returns>
-				virtual vint								GetContextStartState()=0;
-				/// <summary>Colorizer one line with a start state.</summary>
-				/// <param name="lineIndex">Line index.</param>
-				/// <param name="text">Text buffer.</param>
-				/// <param name="colors">Color index buffer. The index should be in [0 .. [M:vl.presentation.controls.GuiTextBoxColorizerBase.GetColors]()-1].</param>
-				/// <param name="length">The length of the buffer.</param>
-				/// <param name="lexerState">The lexical analyzer state for this line. After executing this function, the new value of this argument indicates the new state.</param>
-				/// <param name="contextState">The context sensitive state for this line. After executing this function, the new value of this argument indicates the new state.</param>
-				virtual void								ColorizeLineWithCRLF(vint lineIndex, const wchar_t* text, vuint32_t* colors, vint length, vint& lexerState, vint& contextState)=0;
-				/// <summary>Get the supported colors ordered by their indices.</summary>
-				/// <returns>The supported colors ordered by their indices.</returns>
-				virtual const ColorArray&					GetColors()=0;
-			};
-
-/***********************************************************************
-GuiTextBoxRegexColorizer
-***********************************************************************/
-
-			/// <summary>Regex based colorizer.</summary>
-			class GuiTextBoxRegexColorizer : public GuiTextBoxColorizerBase
-			{
-			protected:
-				Ptr<regex::RegexLexer>										lexer;
-				Ptr<regex::RegexLexerColorizer>								colorizer;
-				void*														colorizerArgument[1] { nullptr };
-				ColorArray													colors;
-
-				elements::text::ColorEntry									defaultColor;
-				collections::List<WString>									tokenRegexes;
-				collections::List<elements::text::ColorEntry>				tokenColors;
-				collections::List<elements::text::ColorEntry>				extraTokenColors;
-
-				static void													ColorizerProc(void* argument, vint start, vint length, vint token);
-			public:
-				/// <summary>Create the colorizer.</summary>
-				GuiTextBoxRegexColorizer();
-				~GuiTextBoxRegexColorizer();
-
-				/// <summary>Get the default color.</summary>
-				/// <returns>The default color.</returns>
-				elements::text::ColorEntry									GetDefaultColor();
-				/// <summary>Get all regular expressions for tokens.</summary>
-				/// <returns>All regular expressions for tokens.</returns>
-				collections::List<WString>&									GetTokenRegexes();
-				/// <summary>Get all colors for tokens.</summary>
-				/// <returns>All colors for tokens.</returns>
-				collections::List<elements::text::ColorEntry>&				GetTokenColors();
-				/// <summary>Get all colors for extra tokens.</summary>
-				/// <returns>All colors for extra tokens.</returns>
-				collections::List<elements::text::ColorEntry>&				GetExtraTokenColors();
-				/// <summary>Get the first token index for the first extra token.</summary>
-				/// <returns>The first token index for the first extra token. Returns -1 if this operation failed.</returns>
-				vint														GetExtraTokenIndexStart();
-				
-				/// <summary>Set the default color. Call [M:vl.presentation.controls.GuiTextBoxRegexColorizer.Setup] after finishing all configuration.</summary>
-				/// <returns>Returns the token index of this token. Returns -1 if this operation failed.</returns>
-				/// <param name="value">The default color.</param>
-				bool														SetDefaultColor(elements::text::ColorEntry value);
-				/// <summary>Add a token type. Call [M:vl.presentation.controls.GuiTextBoxRegexColorizer.Setup] after finishing all configuration.</summary>
-				/// <returns>Returns the token index of this token. Returns -1 if this operation failed.</returns>
-				/// <param name="regex">The regular expression for this token type.</param>
-				/// <param name="color">The color for this token type.</param>
-				vint														AddToken(const WString& regex, elements::text::ColorEntry color);
-				/// <summary>Add an extra  token type. Call [M:vl.presentation.controls.GuiTextBoxRegexColorizer.Setup] after finishing all configuration.</summary>
-				/// <returns>Returns the extra token index of this token. The token index for this token is regex-token-count + extra-token-index Returns -1 if this operation failed.</returns>
-				/// <param name="color">The color for this token type.</param>
-				vint														AddExtraToken(elements::text::ColorEntry color);
-				/// <summary>Clear all token color settings.</summary>
-				void														ClearTokens();
-				/// <summary>Setup the colorizer. After that, the colorizer cannot be changed.</summary>
-				void														Setup();
-				/// <summary>Callback function to set context sensitive state and change token accordingly.</summary>
-				/// <param name="lineIndex">Line index.</param>
-				/// <param name="text">Text buffer.</param>
-				/// <param name="start">The start position of the token.</param>
-				/// <param name="length">The length of the token.</param>
-				/// <param name="token">The token type. After executing this function, the new value of this argument indicates the new token type.</param>
-				/// <param name="contextState">The context sensitive state. After executing this function, the new value of this argument indicates the new state.</param>
-				virtual void												ColorizeTokenContextSensitive(vint lineIndex, const wchar_t* text, vint start, vint length, vint& token, vint& contextState);
-
-				vint														GetLexerStartState()override;
-				vint														GetContextStartState()override;
-				void														ColorizeLineWithCRLF(vint lineIndex, const wchar_t* text, vuint32_t* colors, vint length, vint& lexerState, vint& contextState)override;
-				const ColorArray&											GetColors()override;
-			};
-		}
-	}
-}
-
-#endif
-
-/***********************************************************************
-.\CONTROLS\TEXTEDITORPACKAGE\EDITORCALLBACK\GUITEXTUNDOREDO.H
-***********************************************************************/
-/***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-GacUI::Control System
-
-Interfaces:
-***********************************************************************/
-
-#ifndef VCZH_PRESENTATION_CONTROLS_GUITEXTUNDOREDO
-#define VCZH_PRESENTATION_CONTROLS_GUITEXTUNDOREDO
-
-
-namespace vl
-{
-	namespace presentation
-	{
-		namespace controls
-		{
-			class GuiTextBoxCommonInterface;
-
-/***********************************************************************
-Undo Redo
-***********************************************************************/
-
-			class GuiGeneralUndoRedoProcessor : public Object
-			{
-			protected:
-				class IEditStep : public Interface
-				{
-				public:
-					virtual void							Undo()=0;
-					virtual void							Redo()=0;
-				};
-				friend class collections::ArrayBase<Ptr<IEditStep>>;
-
-			protected:
-				collections::List<Ptr<IEditStep>>			steps;
-				vint										firstFutureStep;
-				vint										savedStep;
-				bool										performingUndoRedo;
-
-				void										PushStep(Ptr<IEditStep> step);
-			public:
-				GuiGeneralUndoRedoProcessor();
-				~GuiGeneralUndoRedoProcessor();
-
-				Event<void()>								UndoRedoChanged;
-				Event<void()>								ModifiedChanged;
-
-				bool										CanUndo();
-				bool										CanRedo();
-				void										ClearUndoRedo();
-				bool										GetModified();
-				void										NotifyModificationSaved();
-				bool										Undo();
-				bool										Redo();
-			};
-
-/***********************************************************************
-Undo Redo (Text)
-***********************************************************************/
-
-			class GuiTextBoxUndoRedoProcessor : public GuiGeneralUndoRedoProcessor, public ICommonTextEditCallback
-			{
-			protected:
-				class EditStep : public Object, public IEditStep
-				{
-				public:
-					GuiTextBoxUndoRedoProcessor*			processor;
-					TextEditNotifyStruct					arguments;
-					
-					void									Undo();
-					void									Redo();
-				};
-
-				compositions::GuiGraphicsComposition*		ownerComposition;
-			public:
-				GuiTextBoxUndoRedoProcessor();
-				~GuiTextBoxUndoRedoProcessor();
-
-				void										Attach(elements::GuiColorizedTextElement* element, SpinLock& elementModifyLock, compositions::GuiGraphicsComposition* _ownerComposition, vuint editVersion)override;
-				void										Detach()override;
-				void										TextEditPreview(TextEditPreviewStruct& arguments)override;
-				void										TextEditNotify(const TextEditNotifyStruct& arguments)override;
-				void										TextCaretChanged(const TextCaretChangedStruct& arguments)override;
-				void										TextEditFinished(vuint editVersion)override;
-			};
-
-/***********************************************************************
-Undo Redo (Document)
-***********************************************************************/
-
-			class GuiDocumentUndoRedoProcessor : public GuiGeneralUndoRedoProcessor
-			{
-			public:
-				struct ReplaceModelStruct
-				{
-					TextPos									originalStart;
-					TextPos									originalEnd;
-					Ptr<DocumentModel>						originalModel;
-					TextPos									inputStart;
-					TextPos									inputEnd;
-					Ptr<DocumentModel>						inputModel;
-
-					ReplaceModelStruct()
-					{
-					}
-				};
-
-				struct RenameStyleStruct
-				{
-					WString									oldStyleName;
-					WString									newStyleName;
-
-					RenameStyleStruct()
-					{
-					}
-				};
-
-				struct SetAlignmentStruct
-				{
-					vint									start;
-					vint									end;
-					collections::Array<Nullable<Alignment>>	originalAlignments;
-					collections::Array<Nullable<Alignment>>	inputAlignments;
-				};
-
-			protected:
-				elements::GuiDocumentElement*				element;
-				compositions::GuiGraphicsComposition*		ownerComposition;
-				
-				class ReplaceModelStep : public Object, public IEditStep
-				{
-				public:
-					GuiDocumentUndoRedoProcessor*			processor;
-					ReplaceModelStruct						arguments;
-					
-					void									Undo();
-					void									Redo();
-				};
-
-				class RenameStyleStep : public Object, public IEditStep
-				{
-				public:
-					GuiDocumentUndoRedoProcessor*			processor;
-					RenameStyleStruct						arguments;
-					
-					void									Undo();
-					void									Redo();
-				};
-
-				class SetAlignmentStep : public Object, public IEditStep
-				{
-				public:
-					GuiDocumentUndoRedoProcessor*			processor;
-					Ptr<SetAlignmentStruct>					arguments;
-					
-					void									Undo();
-					void									Redo();
-				};
-			public:
-
-				GuiDocumentUndoRedoProcessor();
-				~GuiDocumentUndoRedoProcessor();
-
-				void										Setup(elements::GuiDocumentElement* _element, compositions::GuiGraphicsComposition* _ownerComposition);
-				void										OnReplaceModel(const ReplaceModelStruct& arguments);
-				void										OnRenameStyle(const RenameStyleStruct& arguments);
-				void										OnSetAlignment(Ptr<SetAlignmentStruct> arguments);
-			};
-		}
-	}
-}
-
-#endif
-
-/***********************************************************************
-.\CONTROLS\TEXTEDITORPACKAGE\GUIDOCUMENTVIEWER.H
-***********************************************************************/
-/***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-GacUI::Control System
-
-Interfaces:
-***********************************************************************/
-
-#ifndef VCZH_PRESENTATION_CONTROLS_GUIDOCUMENTVIEWER
-#define VCZH_PRESENTATION_CONTROLS_GUIDOCUMENTVIEWER
-
-
-namespace vl
-{
-	namespace presentation
-	{
-		namespace compositions
-		{
-			class GuiShortcutKeyManager;
-		}
-
-		namespace controls
-		{
-
-/***********************************************************************
-GuiDocumentConfig
-***********************************************************************/
-			
-			/// <summary>Represents the edit mode.</summary>
-			enum class GuiDocumentEditMode
-			{
-				/// <summary>View the rich text only.</summary>
-				ViewOnly,
-				/// <summary>The rich text is selectable.</summary>
-				Selectable,
-				/// <summary>The rich text is editable.</summary>
-				Editable,
-			};
-
-			/// <summary>Represents the paragraph mode.</summary>
-			enum class GuiDocumentParagraphMode
-			{
-				/// <summary>Only one paragraph is allowed, only one line in a paragraph is allowed.</summary>
-				Singleline,
-				/// <summary>Only one line in a paragraph is allowed.</summary>
-				Multiline,
-				/// <summary>No constraint.</summary>
-				Paragraph,
-			};
-
-			/// <summary>Control of editing and rendering behavior.</summary>
-			struct GuiDocumentConfig
-			{
-				/// <summary>For GuiDocumentLabel only. When it is true, or when wrapLine is true, or when paragraphMode is not Singleline, the control automatically expands to display all content.</summary>
-				Nullable<bool>							autoExpand;
-				/// <summary>When it is true, the defaut copy paste behavior ignores RTF format.</summary>
-				Nullable<bool>							pasteAsPlainText;
-				/// <summary>When it is true, document automatically wraps if the width of the control is not enough.</summary>
-				Nullable<bool>							wrapLine;
-				/// <summary>Control the paragraph and line behavior</summary>
-				Nullable<GuiDocumentParagraphMode>		paragraphMode;
-				/// <summary>Insert the space of a default font between paragraphs.</summary>
-				Nullable<bool>							paragraphPadding;
-				/// <summary>When it is true:
-				///  double CrLf will be used between paragraphs, when the document converts to plain text.
-				///  only double CrLf will be recognized as paragraph breaks, when the document converts from plain text.
-				/// </summary>
-				Nullable<bool>							doubleLineBreaksBetweenParagraph;
-				/// <summary>When it is true, when removing a line break from a document due to paragraphMode, insert a extra space.</summary>
-				Nullable<bool>							spaceForFlattenedLineBreak;
-
-				auto operator<=>(const GuiDocumentConfig&) const = default;
-
-				static GuiDocumentConfig				GetDocumentLabelDefaultConfig();
-				static GuiDocumentConfig				GetDocumentViewerDefaultConfig();
-				static GuiDocumentConfig				GetSinglelineTextBoxDefaultConfig();
-				static GuiDocumentConfig				GetMultilineTextBoxDefaultConfig();
-				static GuiDocumentConfig				OverrideConfig(const GuiDocumentConfig& toOverride, const GuiDocumentConfig& newConfig);
-			};
-
-			struct GuiDocumentConfigEvaluated
-			{
-				bool									autoExpand;
-				bool									pasteAsPlainText;
-				bool									wrapLine;
-				GuiDocumentParagraphMode				paragraphMode;
-				bool									paragraphPadding;
-				bool									doubleLineBreaksBetweenParagraph;
-				bool									spaceForFlattenedLineBreak;
-
-				GuiDocumentConfigEvaluated(const GuiDocumentConfig& config)
-					: autoExpand(config.autoExpand.Value())
-					, pasteAsPlainText(config.pasteAsPlainText.Value())
-					, wrapLine(config.wrapLine.Value())
-					, paragraphMode(config.paragraphMode.Value())
-					, paragraphPadding(config.paragraphPadding.Value())
-					, doubleLineBreaksBetweenParagraph(config.doubleLineBreaksBetweenParagraph.Value())
-					, spaceForFlattenedLineBreak(config.spaceForFlattenedLineBreak.Value())
-				{
-				}
-			};
-
-/***********************************************************************
-GuiDocumentCommonInterface
-***********************************************************************/
-
-			class GuiDocumentCommonInterface;
-
-			/// <summary>Embedded object in a document.</summary>
-			class GuiDocumentItem : public Object, public Description<GuiDocumentItem>
-			{
-				friend class GuiDocumentCommonInterface;
-			protected:
-				bool										visible = false;
-				WString										name;
-				compositions::GuiBoundsComposition*			container;
-				bool										owned = false;
-			public:
-				GuiDocumentItem(const WString& _name);
-				~GuiDocumentItem();
-				
-				/// <summary>Get the container for all embedded controls and compositions in this item.</summary>
-				/// <returns>The container.</returns>
-				compositions::GuiGraphicsComposition*		GetContainer();
-
-				/// <summary>Get the name of the document item.</summary>
-				/// <returns>The name.</returns>
-				WString										GetName();
-			};
-			
-			/// <summary>Document displayer control common interface for displaying <see cref="DocumentModel"/>.</summary>
-			class GuiDocumentCommonInterface abstract
-				: protected virtual elements::GuiDocumentElement::ICallback
-				, public Description<GuiDocumentCommonInterface>
-			{
-				typedef collections::Dictionary<WString, Ptr<GuiDocumentItem>>		DocumentItemMap;
-			protected:
-				GuiDocumentConfigEvaluated					config;
-				Ptr<DocumentModel>							baselineDocument;
-				DocumentItemMap								documentItems;
-				GuiControl*									documentControl = nullptr;
-				elements::GuiDocumentElement*				documentElement = nullptr;
-				compositions::GuiBoundsComposition*			documentComposition = nullptr;
-
-				compositions::GuiGraphicsComposition*		documentMouseArea = nullptr;
-				Ptr<compositions::IGuiGraphicsEventHandler>	onMouseMoveHandler;
-				Ptr<compositions::IGuiGraphicsEventHandler>	onMouseDownHandler;
-				Ptr<compositions::IGuiGraphicsEventHandler>	onMouseUpHandler;
-				Ptr<compositions::IGuiGraphicsEventHandler>	onMouseLeaveHandler;
-
-				Ptr<DocumentHyperlinkRun::Package>			activeHyperlinks;
-				bool										dragging = false;
-				GuiDocumentEditMode							editMode = GuiDocumentEditMode::ViewOnly;
-
-				Ptr<GuiDocumentUndoRedoProcessor>			undoRedoProcessor;
-				Ptr<compositions::GuiShortcutKeyManager>	internalShortcutKeyManager;
-
-			protected:
-				void										InvokeUndoRedoChanged();
-				void										InvokeModifiedChanged();
-				void										UpdateCaretPoint();
-				void										EnsureDocumentRectVisible(Rect bounds);
-				void										Move(TextPos caret, bool shift, bool frontSide);
-				bool										ProcessKey(VKEY code, bool shift, bool ctrl);
-				void										InstallDocumentViewer(
-																GuiControl* _sender,
-																compositions::GuiGraphicsComposition* _mouseArea,
-																compositions::GuiGraphicsComposition* _container,
-																compositions::GuiGraphicsComposition* eventComposition,
-																compositions::GuiGraphicsComposition* focusableComposition
-																);
-				void										ReplaceMouseArea(compositions::GuiGraphicsComposition* _mouseArea);
-
-				void										SetActiveHyperlink(Ptr<DocumentHyperlinkRun::Package> package);
-				void										ActivateActiveHyperlink(bool activate);
-				void										AddShortcutCommand(VKEY key, const Func<void()>& eventHandler);
-				void										EditTextInternal(TextPos begin, TextPos end, const Func<void(TextPos, TextPos, vint&, vint&)>& editor);
-				void										EditStyleInternal(TextPos begin, TextPos end, const Func<void(TextPos, TextPos)>& editor);
-				
-				void										MergeBaselineAndDefaultFont(Ptr<DocumentModel> document);
-				void										OnFontChanged();
-				void										OnCaretNotify(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
-				void										OnGotFocus(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
-				void										OnLostFocus(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
-				void										OnKeyDown(compositions::GuiGraphicsComposition* sender, compositions::GuiKeyEventArgs& arguments);
-				void										OnCharInput(compositions::GuiGraphicsComposition* sender, compositions::GuiCharEventArgs& arguments);
-
-				void										UpdateCursor(INativeCursor* cursor);
-				Point										GetMouseOffset();
-				void										OnMouseMove(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments);
-				void										OnMouseDown(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments);
-				void										OnMouseUp(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments);
-				void										OnMouseLeave(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
-
-				virtual Point								GetDocumentViewPosition() = 0;
-				virtual void								EnsureRectVisible(Rect bounds) = 0;
-
-				//================ callback
-
-				void										OnStartRender()override;
-				void										OnFinishRender()override;
-				Size										OnRenderEmbeddedObject(const WString& name, const Rect& location)override;
-
-			protected:
-
-				void										UserInput_FixForPlainText(Ptr<DocumentModel> model, vint beginParagraph, vint endParagraph);
-				void										UserInput_FixForSingleline(collections::List<WString>& paragraphTexts);
-				void										UserInput_FixForSingleline(Ptr<DocumentModel> model);
-				void										UserInput_FixForNonParagraph(WString& text);
-				void										UserInput_FixForNonParagraph(Ptr<DocumentParagraphRun> paragraph);
-
-				WString										UserInput_ConvertDocumentToText(Ptr<DocumentModel> model);
-				void										UserInput_FormatText(collections::List<WString>& paragraphTexts);
-				void										UserInput_FormatText(const WString& text, collections::List<WString>& paragraphTexts);
-				void										UserInput_FormatDocument(Ptr<DocumentModel> model);
-
-			public:
-				GuiDocumentCommonInterface(const GuiDocumentConfig& _config);
-				~GuiDocumentCommonInterface();
-
-				/// <summary>Active hyperlink changed event.</summary>
-				compositions::GuiNotifyEvent				ActiveHyperlinkChanged;
-				/// <summary>Active hyperlink executed event.</summary>
-				compositions::GuiNotifyEvent				ActiveHyperlinkExecuted;
-
-				/// <summary>Selection changed event.</summary>
-				compositions::GuiNotifyEvent				SelectionChanged;
-				/// <summary>Undo redo status changed event.</summary>
-				compositions::GuiNotifyEvent				UndoRedoChanged;
-				/// <summary>Modified status changed event.</summary>
-				compositions::GuiNotifyEvent				ModifiedChanged;
-				
-				/// <summary>Get the document.</summary>
-				/// <returns>The document.</returns>
-				Ptr<DocumentModel>							GetDocument();
-				/// <summary>Set the document. When a document is set to this element, modifying the document without invoking <see cref="NotifyParagraphUpdated"/> will lead to undefined behavior.</summary>
-				/// <param name="value">The document.</param>
-				void										SetDocument(Ptr<DocumentModel> value);
-
-				//================ document items
-
-				/// <summary>Add a document item. The name of the document item will display in the position of the &lt;object&gt; element with the same name in the document.</summary>
-				/// <param name="value">The document item.</param>
-				/// <returns>Returns true if this operation succeeded.</returns>
-				bool										AddDocumentItem(Ptr<GuiDocumentItem> value);
-
-				/// <summary>Remove a document item.</summary>
-				/// <param name="value">The document item.</param>
-				/// <returns>Returns true if this operation succeeded.</returns>
-				bool										RemoveDocumentItem(Ptr<GuiDocumentItem> value);
-
-				/// <summary>Get all document items.</summary>
-				/// <returns>All document items.</returns>
-				const DocumentItemMap&						GetDocumentItems();
-
-				//================ caret operations
-
-				/// <summary>
-				/// Get the begin position of the selection area.
-				/// </summary>
-				/// <returns>The begin position of the selection area.</returns>
-				TextPos										GetCaretBegin();
-				/// <summary>
-				/// Get the end position of the selection area.
-				/// </summary>
-				/// <returns>The end position of the selection area.</returns>
-				TextPos										GetCaretEnd();
-				/// <summary>
-				/// Set the end position of the selection area.
-				/// </summary>
-				/// <param name="begin">The begin position of the selection area.</param>
-				/// <param name="end">The end position of the selection area.</param>
-				void										SetCaret(TextPos begin, TextPos end);
-				/// <summary>Calculate a caret using a specified point.</summary>
-				/// <returns>The calculated caret.</returns>
-				/// <param name="point">The specified point.</param>
-				TextPos										CalculateCaretFromPoint(Point point);
-				/// <summary>Get the bounds of a caret.</summary>
-				/// <returns>The bounds.</returns>
-				/// <param name="caret">The caret.</param>
-				/// <param name="frontSide">Set to true to get the bounds for the character before it.</param>
-				Rect										GetCaretBounds(TextPos caret, bool frontSide);
-
-				//================ editing operations
-
-				/// <summary>Notify that some paragraphs are updated.</summary>
-				/// <param name="index">The start paragraph index.</param>
-				/// <param name="oldCount">The number of paragraphs to be updated.</param>
-				/// <param name="newCount">The number of updated paragraphs.</param>
-				/// <param name="updatedText">Set to true to notify that the text is updated.</param>
-				void										NotifyParagraphUpdated(vint index, vint oldCount, vint newCount, bool updatedText);
-				/// <summary>Edit run in a specified range.</summary>
-				/// <param name="begin">The begin position of the range.</param>
-				/// <param name="end">The end position of the range.</param>
-				/// <param name="model">The new run.</param>
-				/// <param name="copy">Set to true to copy the model before editing. Otherwise, objects inside the model will be used directly</param>
-				void										EditRun(TextPos begin, TextPos end, Ptr<DocumentModel> model, bool copy);
-				/// <summary>Edit text in a specified range.</summary>
-				/// <param name="begin">The begin position of the range.</param>
-				/// <param name="end">The end position of the range.</param>
-				/// <param name="frontSide">Set to true to use the text style in front of the specified range.</param>
-				/// <param name="text">The new text.</param>
-				void										EditText(TextPos begin, TextPos end, bool frontSide, const collections::Array<WString>& text);
-				/// <summary>Edit style in a specified range.</summary>
-				/// <param name="begin">The begin position of the range.</param>
-				/// <param name="end">The end position of the range.</param>
-				/// <param name="style">The new style.</param>
-				void										EditStyle(TextPos begin, TextPos end, Ptr<DocumentStyleProperties> style);
-				/// <summary>Edit image in a specified range.</summary>
-				/// <param name="begin">The begin position of the range.</param>
-				/// <param name="end">The end position of the range.</param>
-				/// <param name="image">The new image.</param>
-				void										EditImage(TextPos begin, TextPos end, Ptr<GuiImageData> image);
-				/// <summary>Set hyperlink in a specified range.</summary>
-				/// <param name="paragraphIndex">The index of the paragraph to edit.</param>
-				/// <param name="begin">The begin position of the range.</param>
-				/// <param name="end">The end position of the range.</param>
-				/// <param name="reference">The reference of the hyperlink.</param>
-				/// <param name="normalStyleName">The normal style name of the hyperlink.</param>
-				/// <param name="activeStyleName">The active style name of the hyperlink.</param>
-				void										EditHyperlink(vint paragraphIndex, vint begin, vint end, const WString& reference, const WString& normalStyleName=DocumentModel::NormalLinkStyleName, const WString& activeStyleName=DocumentModel::ActiveLinkStyleName);
-				/// <summary>Remove hyperlink in a specified range.</summary>
-				/// <param name="paragraphIndex">The index of the paragraph to edit.</param>
-				/// <param name="begin">The begin position of the range.</param>
-				/// <param name="end">The end position of the range.</param>
-				void										RemoveHyperlink(vint paragraphIndex, vint begin, vint end);
-				/// <summary>Edit style name in a specified range.</summary>
-				/// <param name="begin">The begin position of the range.</param>
-				/// <param name="end">The end position of the range.</param>
-				/// <param name="styleName">The new style name.</param>
-				void										EditStyleName(TextPos begin, TextPos end, const WString& styleName);
-				/// <summary>Remove style name in a specified range.</summary>
-				/// <param name="begin">The begin position of the range.</param>
-				/// <param name="end">The end position of the range.</param>
-				void										RemoveStyleName(TextPos begin, TextPos end);
-				/// <summary>Rename a style.</summary>
-				/// <param name="oldStyleName">The name of the style.</param>
-				/// <param name="newStyleName">The new name.</param>
-				void										RenameStyle(const WString& oldStyleName, const WString& newStyleName);
-				/// <summary>Clear all styles in a specified range.</summary>
-				/// <param name="begin">The begin position of the range.</param>
-				/// <param name="end">The end position of the range.</param>
-				void										ClearStyle(TextPos begin, TextPos end);
-				/// <summary>Clear all styles and remove non-text contents in a specified range.</summary>
-				/// <param name="begin">The begin position of the range.</param>
-				/// <param name="end">The end position of the range.</param>
-				void										ConvertToPlainText(TextPos begin, TextPos end);
-				/// <summary>Summarize the text style in a specified range.</summary>
-				/// <returns>The text style summary.</returns>
-				/// <param name="begin">The begin position of the range.</param>
-				/// <param name="end">The end position of the range.</param>
-				Ptr<DocumentStyleProperties>				SummarizeStyle(TextPos begin, TextPos end);
-				/// <summary>Summarize the style name in a specified range.</summary>
-				/// <returns>The style name summary.</returns>
-				/// <param name="begin">The begin position of the range.</param>
-				/// <param name="end">The end position of the range.</param>
-				Nullable<WString>							SummarizeStyleName(TextPos begin, TextPos end);
-				/// <summary>Set the alignment of paragraphs in a specified range.</summary>
-				/// <param name="begin">The begin position of the range.</param>
-				/// <param name="end">The end position of the range.</param>
-				/// <param name="alignments">The alignment for each paragraph.</param>
-				void										SetParagraphAlignments(TextPos begin, TextPos end, const collections::Array<Nullable<Alignment>>& alignments);
-				/// <summary>Set the alignment of paragraphs in a specified range.</summary>
-				/// <param name="begin">The begin position of the range.</param>
-				/// <param name="end">The end position of the range.</param>
-				/// <param name="alignment">The alignment for each paragraph.</param>
-				void										SetParagraphAlignment(TextPos begin, TextPos end, Nullable<Alignment> alignment);
-				/// <summary>Summarize the text alignment in a specified range.</summary>
-				/// <returns>The text alignment summary.</returns>
-				/// <param name="begin">The begin position of the range.</param>
-				/// <param name="end">The end position of the range.</param>
-				Nullable<Alignment>							SummarizeParagraphAlignment(TextPos begin, TextPos end);
-
-				//================ editing control
-
-				/// <summary>Get the href attribute of the active hyperlink.</summary>
-				/// <returns>The href attribute of the active hyperlink.</returns>
-				WString										GetActiveHyperlinkReference();
-				/// <summary>Get the edit mode of this control.</summary>
-				/// <returns>The edit mode.</returns>
-				GuiDocumentEditMode							GetEditMode();
-				/// <summary>Set the edit mode of this control.</summary>
-				/// <param name="value">The edit mode.</param>
-				void										SetEditMode(GuiDocumentEditMode value);
-
-				//================ selection operations
-
-				/// <summary>Select all text.</summary>
-				void										SelectAll();
-				/// <summary>Get the selected text.</summary>
-				/// <returns>The selected text.</returns>
-				WString										GetSelectionText();
-				/// <summary>Set the selected text.</summary>
-				/// <param name="value">The selected text.</param>
-				void										SetSelectionText(const WString& value);
-				/// <summary>Get the selected model.</summary>
-				/// <returns>The selected model.</returns>
-				Ptr<DocumentModel>							GetSelectionModel();
-				/// <summary>Set the selected model.</summary>
-				/// <param name="value">The selected model.</param>
-				void										SetSelectionModel(Ptr<DocumentModel> value);
-
-				//================ clipboard operations
-
-				/// <summary>Test can the selection be cut.</summary>
-				/// <returns>Returns true if the selection can be cut.</returns>
-				bool										CanCut();
-				/// <summary>Test can the selection be copied.</summary>
-				/// <returns>Returns true if the selection can be cut.</returns>
-				bool										CanCopy();
-				/// <summary>Test can the content in the clipboard be pasted.</summary>
-				/// <returns>Returns true if the content in the clipboard can be pasted.</returns>
-				bool										CanPaste();
-				/// <summary>Cut the selection text.</summary>
-				/// <returns>Returns true if this operation succeeded.</returns>
-				bool										Cut();
-				/// <summary>Copy the selection text.</summary>
-				/// <returns>Returns true if this operation succeeded.</returns>
-				bool										Copy();
-				/// <summary>Paste the content from the clipboard and replace the selected text.</summary>
-				/// <returns>Returns true if this operation succeeded.</returns>
-				bool										Paste();
-
-				//================ undo redo control
-
-				/// <summary>Test can undo.</summary>
-				/// <returns>Returns true if this action can be performed.</returns>
-				bool										CanUndo();
-				/// <summary>Test can redo.</summary>
-				/// <returns>Returns true if this action can be performed.</returns>
-				bool										CanRedo();
-				/// <summary>Clear all undo and redo information.</summary>
-				void										ClearUndoRedo();
-				/// <summary>Test is the text box modified.</summary>
-				/// <returns>Returns true if the text box is modified.</returns>
-				bool										GetModified();
-				/// <summary>Notify the text box that the current status is considered saved.</summary>
-				void										NotifyModificationSaved();
-				/// <summary>Perform the undo action.</summary>
-				/// <returns>Returns true if this operation succeeded.</returns>
-				bool										Undo();
-				/// <summary>Perform the redo action.</summary>
-				/// <returns>Returns true if this operation succeeded.</returns>
-				bool										Redo();
-			};
-
-/***********************************************************************
-GuiDocumentViewer
-***********************************************************************/
-			
-			/// <summary>Scrollable document viewer for displaying <see cref="DocumentModel"/>.</summary>
-			class GuiDocumentViewer : public GuiScrollContainer, public GuiDocumentCommonInterface, public Description<GuiDocumentViewer>
-			{
-				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(DocumentViewerTemplate, GuiScrollContainer)
-			protected:
-
-				void										UpdateDisplayFont()override;
-				Point										GetDocumentViewPosition()override;
-				void										EnsureRectVisible(Rect bounds)override;
-
-				static GuiDocumentConfig					FixConfig(const GuiDocumentConfig& config);
-			public:
-				/// <summary>Create a control with a specified style provider.</summary>
-				/// <param name="themeName">The theme name for retriving a default control template.</param>
-				/// <param name="_config">(Optional): configuration of document editing and rendering behavior.</param>
-				GuiDocumentViewer(theme::ThemeName themeName, const GuiDocumentConfig& _config = {});
-				~GuiDocumentViewer();
-
-				const WString&								GetText()override;
-				void										SetText(const WString& value)override;
-			};
-
-/***********************************************************************
-GuiDocumentViewer
-***********************************************************************/
-			
-			/// <summary>Static document viewer for displaying <see cref="DocumentModel"/>.</summary>
-			class GuiDocumentLabel : public GuiControl, public GuiDocumentCommonInterface, public Description<GuiDocumentLabel>
-			{
-				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(DocumentLabelTemplate, GuiControl)
-			protected:
-				compositions::GuiBoundsComposition*			scrollingContainer = nullptr;
-				compositions::GuiBoundsComposition*			documentContainer = nullptr;
-
-				void										UpdateDisplayFont()override;
-				Point										GetDocumentViewPosition()override;
-				void										EnsureRectVisible(Rect bounds)override;
-				void										scrollingContainer_CachedBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
-				void										documentContainer_CachedMinSizeChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
-
-				static GuiDocumentConfig					FixConfig(const GuiDocumentConfig& config);
-			public:
-				/// <summary>Create a control with a specified default theme.</summary>
-				/// <param name="themeName">The theme name for retriving a default control template.</param>
-				/// <param name="_config">(Optional): configuration of document editing and rendering behavior.</param>
-				GuiDocumentLabel(theme::ThemeName themeName, const GuiDocumentConfig& _config = {});
-				~GuiDocumentLabel();
-				
-				const WString&								GetText()override;
-				void										SetText(const WString& value)override;
-			};
-		}
-	}
-}
-
-#endif
-
-
-/***********************************************************************
-.\CONTROLS\TEXTEDITORPACKAGE\GUITEXTCOMMONINTERFACE.H
-***********************************************************************/
-/***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-GacUI::Control System
-
-Interfaces:
-***********************************************************************/
-
-#ifndef VCZH_PRESENTATION_CONTROLS_GUITEXTCOMMONINTERFACE
-#define VCZH_PRESENTATION_CONTROLS_GUITEXTCOMMONINTERFACE
-
-
-namespace vl
-{
-	namespace presentation
-	{
-		namespace compositions
-		{
-			class GuiShortcutKeyManager;
-		}
-
-		namespace controls
-		{
-
-/***********************************************************************
-Common Interface
-***********************************************************************/
-
-			/// <summary>Common interface for text box controls.</summary>
-			class GuiTextBoxCommonInterface abstract : public Description<GuiTextBoxCommonInterface>
-			{
-				typedef collections::Array<elements::text::ColorEntry>			ColorArray;
-			protected:
-				class ICallback : public virtual IDescriptable, public Description<ICallback>
-				{
-				public:
-					virtual TextPos									GetLeftWord(TextPos pos)=0;
-					virtual TextPos									GetRightWord(TextPos pos)=0;
-					virtual void									GetWord(TextPos pos, TextPos& begin, TextPos& end)=0;
-					virtual vint									GetPageRows()=0;
-					virtual bool									BeforeModify(TextPos start, TextPos end, const WString& originalText, WString& inputText)=0;
-					virtual void									AfterModify(TextPos originalStart, TextPos originalEnd, const WString& originalText, TextPos inputStart, TextPos inputEnd, const WString& inputText)=0;
-					virtual void									ScrollToView(Point point)=0;
-					virtual vint									GetTextMargin()=0;
-				};
-
-				class DefaultCallback : public Object, public ICallback, public Description<DefaultCallback>
-				{
-				protected:
-					elements::GuiColorizedTextElement*				textElement;
-					compositions::GuiGraphicsComposition*			textComposition;
-					bool											readonly;
-				public:
-					DefaultCallback(elements::GuiColorizedTextElement* _textElement, compositions::GuiGraphicsComposition* _textComposition);
-					~DefaultCallback();
-
-					TextPos											GetLeftWord(TextPos pos)override;
-					TextPos											GetRightWord(TextPos pos)override;
-					void											GetWord(TextPos pos, TextPos& begin, TextPos& end)override;
-					vint											GetPageRows()override;
-					bool											BeforeModify(TextPos start, TextPos end, const WString& originalText, WString& inputText)override;
-				};
-			private:
-				elements::GuiColorizedTextElement*					textElement;
-				compositions::GuiGraphicsComposition*				textComposition;
-				vuint												editVersion;
-				GuiControl*											textControl;
-				ICallback*											callback;
-				bool												dragging;
-				bool												readonly;
-				Ptr<GuiTextBoxColorizerBase>						colorizer;
-				Ptr<GuiTextBoxAutoCompleteBase>						autoComplete;
-				Ptr<GuiTextBoxUndoRedoProcessor>					undoRedoProcessor;
-
-				bool												filledDefaultColors = false;
-				ColorArray											defaultColors;
-
-				SpinLock											elementModifyLock;
-				collections::List<Ptr<ICommonTextEditCallback>>		textEditCallbacks;
-				Ptr<compositions::GuiShortcutKeyManager>			internalShortcutKeyManager;
-				bool												preventEnterDueToAutoComplete;
-
-				void												InvokeUndoRedoChanged();
-				void												InvokeModifiedChanged();
-				void												UpdateCaretPoint();
-				void												Move(TextPos pos, bool shift);
-				void												Modify(TextPos start, TextPos end, const WString& input, bool asKeyInput);
-				bool												ProcessKey(VKEY code, bool shift, bool ctrl);
-					
-				void												OnGotFocus(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
-				void												OnLostFocus(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
-				void												OnCaretNotify(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
-
-				void												OnLeftButtonDown(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments);
-				void												OnLeftButtonUp(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments);
-				void												OnMouseMove(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments);
-				void												OnKeyDown(compositions::GuiGraphicsComposition* sender, compositions::GuiKeyEventArgs& arguments);
-				void												OnCharInput(compositions::GuiGraphicsComposition* sender, compositions::GuiCharEventArgs& arguments);
-
-			protected:
-
-				void												Install(elements::GuiColorizedTextElement* _textElement, compositions::GuiGraphicsComposition* _textComposition, GuiControl* _textControl, compositions::GuiGraphicsComposition* eventComposition, compositions::GuiGraphicsComposition* focusableComposition);
-				ICallback*											GetCallback();
-				void												SetCallback(ICallback* value);
-				bool												AttachTextEditCallback(Ptr<ICommonTextEditCallback> value);
-				bool												DetachTextEditCallback(Ptr<ICommonTextEditCallback> value);
-				void												AddShortcutCommand(VKEY key, const Func<void()>& eventHandler);
-				elements::GuiColorizedTextElement*					GetTextElement();
-				void												UnsafeSetText(const WString& value);
-
-			public:
-				GuiTextBoxCommonInterface();
-				~GuiTextBoxCommonInterface();
-
-				/// <summary>Selection changed event.</summary>
-				compositions::GuiNotifyEvent						SelectionChanged;
-				/// <summary>Undo redo status changed event.</summary>
-				compositions::GuiNotifyEvent						UndoRedoChanged;
-				/// <summary>Modified status changed event.</summary>
-				compositions::GuiNotifyEvent						ModifiedChanged;
-
-				//================ clipboard operations
-
-				/// <summary>Test can the selection be cut.</summary>
-				/// <returns>Returns true if the selection can be cut.</returns>
-				bool												CanCut();
-				/// <summary>Test can the selection be copied.</summary>
-				/// <returns>Returns true if the selection can be cut.</returns>
-				bool												CanCopy();
-				/// <summary>Test can the content in the clipboard be pasted.</summary>
-				/// <returns>Returns true if the content in the clipboard can be pasted.</returns>
-				bool												CanPaste();
-				/// <summary>Cut the selection text.</summary>
-				/// <returns>Returns true if this operation succeeded.</returns>
-				bool												Cut();
-				/// <summary>Copy the selection text.</summary>
-				/// <returns>Returns true if this operation succeeded.</returns>
-				bool												Copy();
-				/// <summary>Paste the content from the clipboard and replace the selected text.</summary>
-				/// <returns>Returns true if this operation succeeded.</returns>
-				bool												Paste();
-
-				//================ editing control
-
-				/// <summary>Get the readonly mode.</summary>
-				/// <returns>Returns true if the text box is readonly.</returns>
-				bool												GetReadonly();
-				/// <summary>Set the readonly mode.</summary>
-				/// <param name="value">Set to true to make the texg box readonly.</param>
-				void												SetReadonly(bool value);
-
-				//================ text operations
-
-				/// <summary>Select all text.</summary>
-				void												SelectAll();
-				/// <summary>Select (highlight) a part of text.</summary>
-				/// <param name="begin">The begin position.</param>
-				/// <param name="end">The end position. This is also the caret position.</param>
-				void												Select(TextPos begin, TextPos end);
-				/// <summary>Get the selected text.</summary>
-				/// <returns>The selected text.</returns>
-				WString												GetSelectionText();
-				/// <summary>Set the selected text.</summary>
-				/// <param name="value">The selected text.</param>
-				void												SetSelectionText(const WString& value);
-				/// <summary>Set the selected text and let to text box treat this changing as input by the keyboard.</summary>
-				/// <param name="value">The selected text.</param>
-				void												SetSelectionTextAsKeyInput(const WString& value);
-				
-				/// <summary>Get the text from a specified row number.</summary>
-				/// <returns>The text from a specified row number.</returns>
-				/// <param name="row">The specified row number.</param>
-				WString												GetRowText(vint row);
-				/// <summary>Get the number of rows.</summary>
-				/// <returns>The number of rows.</returns>
-				vint												GetRowCount();
-				/// <summary>Get the text from a specified range.</summary>
-				/// <returns>The text from a specified range.</returns>
-				/// <param name="start">The specified start position.</param>
-				/// <param name="end">The specified end position.</param>
-				WString												GetFragmentText(TextPos start, TextPos end);
-
-				/// <summary>Get the begin text position of the selection.</summary>
-				/// <returns>The begin text position of the selection.</returns>
-				TextPos												GetCaretBegin();
-				/// <summary>Get the end text position of the selection.</summary>
-				/// <returns>The end text position of the selection.</returns>
-				TextPos												GetCaretEnd();
-				/// <summary>Get the left-top text position of the selection.</summary>
-				/// <returns>The left-top text position of the selection.</returns>
-				TextPos												GetCaretSmall();
-				/// <summary>Get the right-bottom text position of the selection.</summary>
-				/// <returns>The right-bottom text position of the selection.</returns>
-				TextPos												GetCaretLarge();
-
-				//================ position query
-
-				/// <summary>Get the width of a row.</summary>
-				/// <returns>The width of a row in pixel.</returns>
-				/// <param name="row">The specified row number</param>
-				vint												GetRowWidth(vint row);
-				/// <summary>Get the height of a row.</summary>
-				/// <returns>The height of a row in pixel.</returns>
-				vint												GetRowHeight();
-				/// <summary>Get the maximum width of all rows.</summary>
-				/// <returns>The maximum width of all rows.</returns>
-				vint												GetMaxWidth();
-				/// <summary>Get the total height of all rows.</summary>
-				/// <returns>The total height of all rows.</returns>
-				vint												GetMaxHeight();
-				/// <summary>Get the nearest position of a character from a specified display position.</summary>
-				/// <returns>Get the nearest position of a character.</returns>
-				/// <param name="point">The specified display position.</param>
-				TextPos												GetTextPosFromPoint(Point point);
-				/// <summary>Get the display position of a character from a specified text position.</summary>
-				/// <returns>Get the display position of a character.</returns>
-				/// <param name="pos">The specified text position.</param>
-				Point												GetPointFromTextPos(TextPos pos);
-				/// <summary>Get the display bounds of a character from a specified text position.</summary>
-				/// <returns>Get the display bounds of a character.</returns>
-				/// <param name="pos">The specified text position.</param>
-				Rect												GetRectFromTextPos(TextPos pos);
-				/// <summary>Get the nearest text position from a specified display position.</summary>
-				/// <returns>Get the nearest text position.</returns>
-				/// <param name="point">The specified display position.</param>
-				TextPos												GetNearestTextPos(Point point);
-
-				//================ colorizing
-
-				/// <summary>Get the current colorizer.</summary>
-				/// <returns>The current colorizer.</returns>
-				Ptr<GuiTextBoxColorizerBase>						GetColorizer();
-				/// <summary>Set the current colorizer.</summary>
-				/// <param name="value">The current colorizer.</param>
-				void												SetColorizer(Ptr<GuiTextBoxColorizerBase> value);
-
-				//================ auto complete
-
-				/// <summary>Get the current auto complete controller.</summary>
-				/// <returns>The current auto complete controller.</returns>
-				Ptr<GuiTextBoxAutoCompleteBase>						GetAutoComplete();
-				/// <summary>Set the current auto complete controller.</summary>
-				/// <param name="value">The current auto complete controller.</param>
-				void												SetAutoComplete(Ptr<GuiTextBoxAutoCompleteBase> value);
-
-				//================ undo redo control
-
-				/// <summary>Get the current edit version. When the control is modified, the edit version increased. Calling <see cref="NotifyModificationSaved"/> will not reset the edit version.</summary>
-				/// <returns>The current edit version.</returns>
-				vuint												GetEditVersion();
-				/// <summary>Test can undo.</summary>
-				/// <returns>Returns true if this action can be performed.</returns>
-				bool												CanUndo();
-				/// <summary>Test can redo.</summary>
-				/// <returns>Returns true if this action can be performed.</returns>
-				bool												CanRedo();
-				/// <summary>Clear all undo and redo information.</summary>
-				void												ClearUndoRedo();
-				/// <summary>Test is the text box modified.</summary>
-				/// <returns>Returns true if the text box is modified.</returns>
-				bool												GetModified();
-				/// <summary>Notify the text box that the current status is considered saved.</summary>
-				void												NotifyModificationSaved();
-				/// <summary>Perform the undo action.</summary>
-				/// <returns>Returns true if this operation succeeded.</returns>
-				bool												Undo();
-				/// <summary>Perform the redo action.</summary>
-				/// <returns>Returns true if this operation succeeded.</returns>
-				bool												Redo();
-			};
-		}
-	}
-}
-
-#endif
-
-/***********************************************************************
-.\CONTROLS\TEXTEDITORPACKAGE\GUITEXTCONTROLS.H
-***********************************************************************/
-/***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-GacUI::Control System
-
-Interfaces:
-***********************************************************************/
-
-#ifndef VCZH_PRESENTATION_CONTROLS_GUITEXTCONTROLS
-#define VCZH_PRESENTATION_CONTROLS_GUITEXTCONTROLS
-
-
-namespace vl
-{
-	namespace presentation
-	{
-		namespace controls
-		{
-
-/***********************************************************************
-MultilineTextBox
-***********************************************************************/
-
-			/// <summary>Multiline text box control.</summary>
-			class GuiMultilineTextBox : public GuiScrollView, public GuiTextBoxCommonInterface, public Description<GuiMultilineTextBox>
-			{
-				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(MultilineTextBoxTemplate, GuiScrollView)
-			public:
-				static const vint							TextMargin=3;
-
-				class CommandExecutor : public Object, public ITextBoxCommandExecutor
-				{
-				protected:
-					GuiMultilineTextBox*					textBox;
-
-				public:
-					CommandExecutor(GuiMultilineTextBox* _textBox);
-					~CommandExecutor();
-
-					void									UnsafeSetText(const WString& value)override;
-				};
-
-			protected:
-				class TextElementOperatorCallback : public GuiTextBoxCommonInterface::DefaultCallback, public Description<TextElementOperatorCallback>
-				{
-				protected:
-					GuiMultilineTextBox*					textControl;
-				public:
-					TextElementOperatorCallback(GuiMultilineTextBox* _textControl);
-
-					void									AfterModify(TextPos originalStart, TextPos originalEnd, const WString& originalText, TextPos inputStart, TextPos inputEnd, const WString& inputText)override;
-					void									ScrollToView(Point point)override;
-					vint									GetTextMargin()override;
-				};
-
-			protected:
-				Ptr<TextElementOperatorCallback>			callback;
-				Ptr<CommandExecutor>						commandExecutor;
-				elements::GuiColorizedTextElement*			textElement = nullptr;
-				compositions::GuiBoundsComposition*			textComposition = nullptr;
-
-				void										UpdateVisuallyEnabled()override;
-				void										UpdateDisplayFont()override;
-				void										OnRenderTargetChanged(elements::IGuiGraphicsRenderTarget* renderTarget)override;
-				Size										QueryFullSize()override;
-				void										UpdateView(Rect viewBounds)override;
-				void										CalculateViewAndSetScroll();
-				void										OnBoundsMouseButtonDown(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments);
-			public:
-				/// <summary>Create a control with a specified style provider.</summary>
-				/// <param name="themeName">The theme name for retriving a default control template.</param>
-				GuiMultilineTextBox(theme::ThemeName themeName);
-				~GuiMultilineTextBox();
-
-				const WString&								GetText()override;
-				void										SetText(const WString& value)override;
-			};
-
-/***********************************************************************
-SinglelineTextBox
-***********************************************************************/
-			
-			/// <summary>Single text box control.</summary>
-			class GuiSinglelineTextBox : public GuiControl, public GuiTextBoxCommonInterface, public Description<GuiSinglelineTextBox>
-			{
-				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(SinglelineTextBoxTemplate, GuiControl)
-			public:
-				static const vint							TextMargin=2;
-				
-			protected:
-				class TextElementOperatorCallback : public GuiTextBoxCommonInterface::DefaultCallback, public Description<TextElementOperatorCallback>
-				{
-				public:
-					TextElementOperatorCallback(GuiSinglelineTextBox* _textControl);
-
-					bool									BeforeModify(TextPos start, TextPos end, const WString& originalText, WString& inputText)override;
-					void									AfterModify(TextPos originalStart, TextPos originalEnd, const WString& originalText, TextPos inputStart, TextPos inputEnd, const WString& inputText)override;
-					void									ScrollToView(Point point)override;
-					vint									GetTextMargin()override;
-				};
-
-			protected:
-				Ptr<TextElementOperatorCallback>			callback;
-				elements::GuiColorizedTextElement*			textElement = nullptr;
-				compositions::GuiTableComposition*			textCompositionTable = nullptr;
-				compositions::GuiCellComposition*			textComposition = nullptr;
-				
-				void										UpdateVisuallyEnabled()override;
-				void										UpdateDisplayFont()override;
-				void										RearrangeTextElement();
-				void										OnRenderTargetChanged(elements::IGuiGraphicsRenderTarget* renderTarget)override;
-				void										OnBoundsMouseButtonDown(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments);
-			public:
-				/// <summary>Create a control with a specified style provider.</summary>
-				/// <param name="themeName">The theme name for retriving a default control template.</param>
-				GuiSinglelineTextBox(theme::ThemeName themeName);
-				~GuiSinglelineTextBox();
-
-				const WString&								GetText()override;
-				void										SetText(const WString& value)override;
-
-				/// <summary>
-				/// Get the password mode displaying character.
-				/// </summary>
-				/// <returns>The password mode displaying character. Returns L'\0' means the password mode is not activated.</returns>
-				wchar_t										GetPasswordChar();
-				/// <summary>
-				/// Set the password mode displaying character.
-				/// </summary>
-				/// <param name="value">The password mode displaying character. Set to L'\0' to deactivate the password mode.</param>
-				void										SetPasswordChar(wchar_t value);
-			};
-		}
-	}
-}
-
-#endif
-
-/***********************************************************************
-.\CONTROLS\TEXTEDITORPACKAGE\LANGUAGESERVICE\GUILANGUAGEOPERATIONS.H
-***********************************************************************/
-/***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-GacUI::Control System
-
-Interfaces:
-***********************************************************************/
-
-#ifndef VCZH_PRESENTATION_CONTROLS_GUILANGUAGEOPERATIONS
-#define VCZH_PRESENTATION_CONTROLS_GUILANGUAGEOPERATIONS
-
-
-namespace vl
-{
-	namespace presentation
-	{
-		namespace controls
-		{
-
-/***********************************************************************
-ParsingInput
-***********************************************************************/
-
-			class RepeatingParsingExecutor;
-
-			/// <summary>A data structure storing the parsing input for text box control.</summary>
-			struct RepeatingParsingInput
-			{
-				/// <summary>The text box edit version of the code.</summary>
-				vuint													editVersion = 0;
-				/// <summary>The code.</summary>
-				WString													code;
-			};
-
-/***********************************************************************
-ParsingOutput
-***********************************************************************/
-
-			/// <summary>A data structure storing the parsing result for text box control.</summary>
-			struct RepeatingParsingOutput
-			{
-				/// <summary>The parsed syntax tree.</summary>
-				Ptr<parsing::ParsingTreeObject>							node;
-				/// <summary>The text box edit version of the code.</summary>
-				vuint													editVersion = 0;
-				/// <summary>The code.</summary>
-				WString													code;
-				/// <summary>The cache created from [T:vl.presentation.controls.RepeatingParsingExecutor.IParsingAnalyzer].</summary>
-				Ptr<DescriptableObject>									cache;
-			};
-
-/***********************************************************************
-PartialParsingOutput
-***********************************************************************/
-			
-			/// <summary>A data structure storing the parsing result for partial updating when a text box control is modified.</summary>
-			struct RepeatingPartialParsingOutput
-			{
-				/// <summary>The input data.</summary>
-				RepeatingParsingOutput									input;
-				/// <summary>The rule name that can parse the code of the selected context.</summary>
-				WString													rule;
-				/// <summary>Range of the original context in the input.</summary>
-				parsing::ParsingTextRange								originalRange;
-				/// <summary>The original context in the syntax tree.</summary>
-				Ptr<parsing::ParsingTreeObject>							originalNode;
-				/// <summary>The modified context in the syntax tree.</summary>
-				Ptr<parsing::ParsingTreeObject>							modifiedNode;
-				/// <summary>The modified code of the selected context.</summary>
-				WString													modifiedCode;
-			};
-
-/***********************************************************************
-PartialParsingOutput
-***********************************************************************/
-
-			/// <summary>A data structure storing the information for a candidate item.</summary>
-			struct ParsingCandidateItem
-			{
-				/// <summary>Semantic id.</summary>
-				vint													semanticId = -1;
-				/// <summary>Display name.</summary>
-				WString													name;
-				/// <summary>Tag object for any purpose, e.g., data binding.</summary>
-				description::Value										tag;
-			};
-
-/***********************************************************************
-ParsingContext
-***********************************************************************/
-
-			/// <summary>A data structure storing the context of a token.</summary>
-			struct ParsingTokenContext
-			{
-				/// <summary>Token syntax tree for the selected token.</summary>
-				parsing::ParsingTreeToken*								foundToken = nullptr;
-				/// <summary>The object syntax tree parent of the token.</summary>
-				parsing::ParsingTreeObject*								tokenParent = nullptr;
-				/// <summary>Type of the parent.</summary>
-				WString													type;
-				/// <summary>Field of the parent that contains the token.</summary>
-				WString													field;
-				/// <summary>All acceptable semantic ids.</summary>
-				Ptr<collections::List<vint>>							acceptableSemanticIds;
-
-				static bool												RetriveContext(ParsingTokenContext& output, parsing::ParsingTreeNode* foundNode, RepeatingParsingExecutor* executor);
-				static bool												RetriveContext(ParsingTokenContext& output, parsing::ParsingTextPos pos, parsing::ParsingTreeObject* rootNode, RepeatingParsingExecutor* executor);
-				static bool												RetriveContext(ParsingTokenContext& output, parsing::ParsingTextRange range, parsing::ParsingTreeObject* rootNode, RepeatingParsingExecutor* executor);
-			};
-
-/***********************************************************************
-RepeatingParsingExecutor
-***********************************************************************/
-
-			/// <summary>Repeating parsing executor.</summary>
-			class RepeatingParsingExecutor : public RepeatingTaskExecutor<RepeatingParsingInput>, public Description<RepeatingParsingExecutor>
-			{
-			public:
-				/// <summary>Callback.</summary>
-				class ICallback : public virtual Interface
-				{
-				public:
-					/// <summary>Callback when a parsing task is finished.</summary>
-					/// <param name="output">the result of the parsing.</param>
-					virtual void											OnParsingFinishedAsync(const RepeatingParsingOutput& output)=0;
-					/// <summary>Callback when <see cref="RepeatingParsingExecutor"/> requires enabling or disabling automatically repeating calling to the SubmitTask function.</summary>
-					/// <param name="enabled">Set to true to require an automatically repeating calling to the SubmitTask function</param>
-					virtual void											RequireAutoSubmitTask(bool enabled)=0;
-				};
-
-				/// <summary>Parsing analyzer.</summary>
-				class IParsingAnalyzer : public virtual Interface
-				{
-				private:
-					parsing::ParsingTreeNode*								ToParent(parsing::ParsingTreeNode* node, const RepeatingPartialParsingOutput* output);
-					parsing::ParsingTreeObject*								ToChild(parsing::ParsingTreeObject* node, const RepeatingPartialParsingOutput* output);
-					Ptr<parsing::ParsingTreeNode>							ToChild(Ptr<parsing::ParsingTreeNode> node, const RepeatingPartialParsingOutput* output);
-
-				protected:
-					/// <summary>Get a syntax tree node's parent when the whole tree is in a partial modified state. You should use this function instead of ParsingTreeNode::GetParent when implementing this interface.</summary>
-					/// <returns>Returns the parent node.</returns>
-					/// <param name="node">The node.</param>
-					/// <param name="output">The partial parsing output, which describes how the whole tree is partial modified.</param>
-					parsing::ParsingTreeNode*								GetParent(parsing::ParsingTreeNode* node, const RepeatingPartialParsingOutput* output);
-					/// <summary>Get a syntax tree node's member when the whole tree is in a partial modified state. You should use this function instead of ParsingTreeObject::GetMember when implementing this interface.</summary>
-					/// <returns>Returns the member node.</returns>
-					/// <param name="node">The node.</param>
-					/// <param name="name">The name of the member.</param>
-					/// <param name="output">The partial parsing output, which describes how the whole tree is partial modified.</param>
-					Ptr<parsing::ParsingTreeNode>							GetMember(parsing::ParsingTreeObject* node, const WString& name, const RepeatingPartialParsingOutput* output);
-					/// <summary>Get a syntax tree node's item when the whole tree is in a partial modified state. You should use this function instead of ParsingTreeArray::GetItem when implementing this interface.</summary>
-					/// <returns>Returns the item node.</returns>
-					/// <param name="node">The node.</param>
-					/// <param name="index">The index of the item.</param>
-					/// <param name="output">The partial parsing output, which describes how the whole tree is partial modified.</param>
-					Ptr<parsing::ParsingTreeNode>							GetItem(parsing::ParsingTreeArray* node, vint index, const RepeatingPartialParsingOutput* output);
-
-				public:
-					/// <summary>Called when a <see cref="RepeatingParsingExecutor"/> is created.</summary>
-					/// <param name="executor">The releated <see cref="RepeatingParsingExecutor"/>.</param>
-					virtual void											Attach(RepeatingParsingExecutor* executor) = 0;
-
-					/// <summary>Called when a <see cref="RepeatingParsingExecutor"/> is destroyed.</summary>
-					/// <param name="executor">The releated <see cref="RepeatingParsingExecutor"/>.</param>
-					virtual void											Detach(RepeatingParsingExecutor* executor) = 0;
-
-					/// <summary>Called when a new parsing result is produced. A parsing analyzer can create a cache to be attached to the output containing anything necessary. This function does not run in UI thread.</summary>
-					/// <param name="output">The new parsing result.</param>
-					/// <returns>The created cache object, which can be null.</returns>
-					virtual Ptr<DescriptableObject>							CreateCacheAsync(const RepeatingParsingOutput& output) = 0;
-
-					/// <summary>Called when an semantic id for a token is needed. If an semantic id is returned, a context sensitive color can be assigned to this token. This functio does not run in UI thread, but it will only be called (for several times) after the cache object is initialized.</summary>
-					/// <param name="tokenContext">The token context.</param>
-					/// <param name="output">The current parsing result.</param>
-					/// <returns>The semantic id.</returns>
-					virtual vint											GetSemanticIdForTokenAsync(const ParsingTokenContext& tokenContext, const RepeatingParsingOutput& output) = 0;
-
-					/// <summary>Called when multiple auto complete candidate items for a token is needed. If nothing is written into the "candidateItems" parameter and the grammar also doesn't provide static candidate items, nothing will popup. This functio does not run in UI thread, but it will only be called (for several times) after the cache object is initialized.</summary>
-					/// <param name="tokenContext">The token context.</param>
-					/// <param name="partialOutput">The partial parsing result. It contains the current parsing result, and an incremental parsing result. If the calculation of candidate items are is very context sensitive, then you should be very careful when traversing the syntax tree, by carefully looking at the "originalNode" and the "modifiedNode" in the "partialOutput" parameter.</param>
-					/// <param name="candidateItems">The candidate items.</param>
-					virtual void											GetCandidateItemsAsync(const ParsingTokenContext& tokenContext, const RepeatingPartialParsingOutput& partialOutput, collections::List<ParsingCandidateItem>& candidateItems) = 0;					
-
-					/// <summary>Create a tag object for a candidate item without a tag object. An candidate item without a tag maybe created by calling <see cref="GetCandidateItemsAsync"/> or any token marked by a @Candidate attribute in the grammar.</summary>
-					/// <param name="item">The candidate item.</param>
-					/// <returns>The tag object. In most of the case this object is used for data binding or any other purpose when you want to customize the auto complete control. Returns null if the specified [T.vl.presentation.controls.GuiTextBoxAutoCompleteBase.IAutoCompleteControlProvider] can handle null tag correctly.</returns>
-					virtual description::Value								CreateTagForCandidateItem(ParsingCandidateItem& item) = 0;
-				};
-
-				/// <summary>A base class for implementing a callback.</summary>
-				class CallbackBase : public virtual ICallback, public virtual ICommonTextEditCallback
-				{
-				private:
-					bool													callbackAutoPushing;
-					elements::GuiColorizedTextElement*						callbackElement;
-					SpinLock*												callbackElementModifyLock;
-
-				protected:
-					Ptr<RepeatingParsingExecutor>							parsingExecutor;
-
-				public:
-					CallbackBase(Ptr<RepeatingParsingExecutor> _parsingExecutor);
-					~CallbackBase();
-
-					void													RequireAutoSubmitTask(bool enabled)override;
-					void													Attach(elements::GuiColorizedTextElement* _element, SpinLock& _elementModifyLock, compositions::GuiGraphicsComposition* _ownerComposition, vuint editVersion)override;
-					void													Detach()override;
-					void													TextEditPreview(TextEditPreviewStruct& arguments)override;
-					void													TextEditNotify(const TextEditNotifyStruct& arguments)override;
-					void													TextCaretChanged(const TextCaretChangedStruct& arguments)override;
-					void													TextEditFinished(vuint editVersion)override;
-				};
-
-				struct TokenMetaData
-				{
-					vint													tableTokenIndex;
-					vint													lexerTokenIndex;
-					vint													defaultColorIndex;
-					bool													hasContextColor;
-					bool													hasAutoComplete;
-					bool													isCandidate;
-					WString													unescapedRegexText;
-				};
-
-				struct FieldMetaData
-				{
-					vint													colorIndex;
-					Ptr<collections::List<vint>>							semantics;
-				};
-			private:
-				Ptr<parsing::tabling::ParsingGeneralParser>					grammarParser;
-				WString														grammarRule;
-				Ptr<IParsingAnalyzer>										analyzer;
-				collections::List<ICallback*>								callbacks;
-				collections::List<ICallback*>								activatedCallbacks;
-				ICallback*													autoPushingCallback;
-
-				typedef collections::Pair<WString, WString>					FieldDesc;
-				collections::Dictionary<WString, vint>						tokenIndexMap;
-				collections::SortedList<WString>							semanticIndexMap;
-				collections::Dictionary<vint, TokenMetaData>				tokenMetaDatas;
-				collections::Dictionary<FieldDesc, FieldMetaData>			fieldMetaDatas;
-
-			protected:
-
-				void														Execute(const RepeatingParsingInput& input)override;
-				void														PrepareMetaData();
-
-				/// <summary>Called when semantic analyzing is needed. It is encouraged to set the "cache" fields in "context" argument. If there is an <see cref="RepeatingParsingExecutor::IParsingAnalyzer"/> binded to the <see cref="RepeatingParsingExecutor"/>, this function can be automatically done.</summary>
-				/// <param name="context">The parsing result.</param>
-				virtual void												OnContextFinishedAsync(RepeatingParsingOutput& context);
-			public:
-				/// <summary>Initialize the parsing executor.</summary>
-				/// <param name="_grammarParser">Parser generated from a grammar.</param>
-				/// <param name="_grammarRule">The rule name to parse a complete code.</param>
-				/// <param name="_analyzer">The parsing analyzer to create semantic metadatas, it can be null.</param>
-				RepeatingParsingExecutor(Ptr<parsing::tabling::ParsingGeneralParser> _grammarParser, const WString& _grammarRule, Ptr<IParsingAnalyzer> _analyzer = 0);
-				~RepeatingParsingExecutor();
-				
-				/// <summary>Get the internal parser that parse the text.</summary>
-				/// <returns>The internal parser.</returns>
-				Ptr<parsing::tabling::ParsingGeneralParser>					GetParser();
-				/// <summary>Detach callback.</summary>
-				/// <returns>Returns true if this operation succeeded.</returns>
-				/// <param name="value">The callback.</param>
-				bool														AttachCallback(ICallback* value);
-				/// <summary>Detach callback.</summary>
-				/// <returns>Returns true if this operation succeeded.</returns>
-				/// <param name="value">The callback.</param>
-				bool														DetachCallback(ICallback* value);
-				/// <summary>Activate a callback. Activating a callback means that the callback owner has an ability to watch a text box modification, e.g., an attached <see cref="ICommonTextEditCallback"/> that is also an <see cref="ICallback"/>. The <see cref="RepeatingParsingExecutor"/> may require one of the activated callback to push code for parsing automatically via a call to <see cref="ICallback::RequireAutoSubmitTask"/>.</summary>
-				/// <returns>Returns true if this operation succeeded.</returns>
-				/// <param name="value">The callback.</param>
-				bool														ActivateCallback(ICallback* value);
-				/// <summary>Deactivate a callback. See <see cref="ActivateCallback"/> for deatils.</summary>
-				/// <returns>Returns true if this operation succeeded.</returns>
-				/// <param name="value">The callback.</param>
-				bool														DeactivateCallback(ICallback* value);
-				/// <summary>Get the parsing analyzer.</summary>
-				/// <returns>The parsing analyzer.</returns>
-				Ptr<IParsingAnalyzer>										GetAnalyzer();
-
-				vint														GetTokenIndex(const WString& tokenName);
-				vint														GetSemanticId(const WString& name);
-				WString														GetSemanticName(vint id);
-				const TokenMetaData&										GetTokenMetaData(vint regexTokenIndex);
-				const FieldMetaData&										GetFieldMetaData(const WString& type, const WString& field);
-
-				Ptr<parsing::tabling::ParsingTable::AttributeInfo>			GetAttribute(vint index, const WString& name, vint argumentCount);
-				Ptr<parsing::tabling::ParsingTable::AttributeInfo>			GetColorAttribute(vint index);
-				Ptr<parsing::tabling::ParsingTable::AttributeInfo>			GetContextColorAttribute(vint index);
-				Ptr<parsing::tabling::ParsingTable::AttributeInfo>			GetSemanticAttribute(vint index);
-				Ptr<parsing::tabling::ParsingTable::AttributeInfo>			GetCandidateAttribute(vint index);
-				Ptr<parsing::tabling::ParsingTable::AttributeInfo>			GetAutoCompleteAttribute(vint index);
-
-				/*
-				@Color(ColorName)
-					field:	color of the token field when the token type is marked with @ContextColor
-					token:	color of the token
-				@ContextColor()
-					token:	the color of the token may be changed if the token field is marked with @Color or @Semantic
-				@Semantic(Type1, Type2, ...)
-					field:	After resolved symbols for this field, only types of symbols that specified in the arguments are acceptable.
-				@Candidate()
-					token:	when the token can be available after the editing caret, than it will be in the auto complete list.
-				@AutoComplete()
-					token:	when the token is editing, an auto complete list will appear if possible
-				*/
-			};
-		}
-	}
-}
-
-#endif
-
-/***********************************************************************
-.\CONTROLS\TEXTEDITORPACKAGE\LANGUAGESERVICE\GUILANGUAGEAUTOCOMPLETE.H
-***********************************************************************/
-/***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-GacUI::Control System
-
-Interfaces:
-***********************************************************************/
-
-#ifndef VCZH_PRESENTATION_CONTROLS_GUILANGUAGEAUTOCOMPLETE
-#define VCZH_PRESENTATION_CONTROLS_GUILANGUAGEAUTOCOMPLETE
-
-namespace vl
-{
-	namespace presentation
-	{
-		namespace controls
-		{
-
-/***********************************************************************
-GuiGrammarAutoComplete
-***********************************************************************/
-			
-			/// <summary>Grammar based auto complete controller.</summary>
-			class GuiGrammarAutoComplete
-				: public GuiTextBoxAutoCompleteBase
-				, protected RepeatingParsingExecutor::CallbackBase
-				, private RepeatingTaskExecutor<RepeatingParsingOutput>
-			{
-			public:
-
-				/// <summary>The auto complete list data.</summary>
-				struct AutoCompleteData : ParsingTokenContext
-				{
-					/// <summary>Available candidate tokens (in lexer token index).</summary>
-					collections::List<vint>							candidates;
-					/// <summary>Available candidate tokens (in lexer token index) that marked with @AutoCompleteCandidate().</summary>
-					collections::List<vint>							shownCandidates;
-					/// <summary>Candidate items.</summary>
-					collections::List<ParsingCandidateItem>			candidateItems;
-					/// <summary>The start position of the editing token in global coordination.</summary>
-					TextPos											startPosition;
-				};
-
-				/// <summary>The analysed data from an input code.</summary>
-				struct AutoCompleteContext : RepeatingPartialParsingOutput
-				{
-					/// <summary>The edit version of modified code.</summary>
-					vuint											modifiedEditVersion = 0;
-					/// <summary>The analysed auto complete list data.</summary>
-					Ptr<AutoCompleteData>							autoComplete;
-				};
-			private:
-				Ptr<parsing::tabling::ParsingGeneralParser>			grammarParser;
-				collections::SortedList<WString>					leftRecursiveRules;
-				bool												editing;
-
-				SpinLock											editTraceLock;
-				collections::List<TextEditNotifyStruct>				editTrace;
-
-				SpinLock											contextLock;
-				AutoCompleteContext									context;
-				
-				void												Attach(elements::GuiColorizedTextElement* _element, SpinLock& _elementModifyLock, compositions::GuiGraphicsComposition* _ownerComposition, vuint editVersion)override;
-				void												Detach()override;
-				void												TextEditPreview(TextEditPreviewStruct& arguments)override;
-				void												TextEditNotify(const TextEditNotifyStruct& arguments)override;
-				void												TextCaretChanged(const TextCaretChangedStruct& arguments)override;
-				void												TextEditFinished(vuint editVersion)override;
-				void												OnParsingFinishedAsync(const RepeatingParsingOutput& output)override;
-				void												CollectLeftRecursiveRules();
-
-				vint												UnsafeGetEditTraceIndex(vuint editVersion);
-				TextPos												ChooseCorrectTextPos(TextPos pos, const regex::RegexTokens& tokens);
-				void												ExecuteRefresh(AutoCompleteContext& newContext);
-
-				bool												NormalizeTextPos(AutoCompleteContext& newContext, elements::text::TextLines& lines, TextPos& pos);
-				void												ExecuteEdit(AutoCompleteContext& newContext);
-
-				void												DeleteFutures(collections::List<parsing::tabling::ParsingState::Future*>& futures);
-				regex::RegexToken*									TraverseTransitions(
-																		parsing::tabling::ParsingState& state,
-																		parsing::tabling::ParsingTransitionCollector& transitionCollector,
-																		TextPos stopPosition,
-																		collections::List<parsing::tabling::ParsingState::Future*>& nonRecoveryFutures,
-																		collections::List<parsing::tabling::ParsingState::Future*>& recoveryFutures
-																		);
-				regex::RegexToken*									SearchValidInputToken(
-																		parsing::tabling::ParsingState& state,
-																		parsing::tabling::ParsingTransitionCollector& transitionCollector,
-																		TextPos stopPosition,
-																		AutoCompleteContext& newContext,
-																		collections::SortedList<vint>& tableTokenIndices
-																		);
-
-				TextPos												GlobalTextPosToModifiedTextPos(AutoCompleteContext& newContext, TextPos pos);
-				TextPos												ModifiedTextPosToGlobalTextPos(AutoCompleteContext& newContext, TextPos pos);
-				void												ExecuteCalculateList(AutoCompleteContext& newContext);
-
-				void												Execute(const RepeatingParsingOutput& input)override;
-				void												PostList(const AutoCompleteContext& newContext, bool byGlobalCorrection);
-				void												Initialize();
-			protected:
-
-				/// <summary>Called when the context of the code is selected. It is encouraged to set the "candidateItems" field in "context.autoComplete" during the call. If there is an <see cref="RepeatingParsingExecutor::IParsingAnalyzer"/> binded to the <see cref="RepeatingParsingExecutor"/>, this function can be automatically done.</summary>
-				/// <param name="context">The selected context.</param>
-				virtual void										OnContextFinishedAsync(AutoCompleteContext& context);
-
-				/// <summary>Call this function in the derived class's destructor when it overrided <see cref="OnContextFinishedAsync"/>.</summary>
-				void												EnsureAutoCompleteFinished();
-			public:
-				/// <summary>Create the auto complete controller with a created parsing executor.</summary>
-				/// <param name="_parsingExecutor">The parsing executor.</param>
-				GuiGrammarAutoComplete(Ptr<RepeatingParsingExecutor> _parsingExecutor);
-				/// <summary>Create the auto complete controller with a specified grammar and start rule to create a <see cref="RepeatingParsingExecutor"/>.</summary>
-				/// <param name="_grammarParser">Parser generated from a grammar.</param>
-				/// <param name="_grammarRule"></param>
-				GuiGrammarAutoComplete(Ptr<parsing::tabling::ParsingGeneralParser> _grammarParser, const WString& _grammarRule);
-				~GuiGrammarAutoComplete();
-
-				/// <summary>Get the internal parsing executor.</summary>
-				/// <returns>The parsing executor.</returns>
-				Ptr<RepeatingParsingExecutor>						GetParsingExecutor();
-			};
-		}
-	}
-}
-
-#endif
-
-/***********************************************************************
-.\CONTROLS\TEXTEDITORPACKAGE\LANGUAGESERVICE\GUILANGUAGECOLORIZER.H
-***********************************************************************/
-/***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-GacUI::Control System
-
-Interfaces:
-***********************************************************************/
-
-#ifndef VCZH_PRESENTATION_CONTROLS_GUILANGUAGECOLORIZER
-#define VCZH_PRESENTATION_CONTROLS_GUILANGUAGECOLORIZER
-
-
-namespace vl
-{
-	namespace presentation
-	{
-		namespace controls
-		{
-
-/***********************************************************************
-GuiGrammarColorizer
-***********************************************************************/
-
-			/// <summary>Grammar based colorizer.</summary>
-			class GuiGrammarColorizer : public GuiTextBoxRegexColorizer, protected RepeatingParsingExecutor::CallbackBase
-			{
-				typedef collections::Pair<WString, WString>					FieldDesc;
-				typedef collections::Dictionary<FieldDesc, vint>			FieldContextColors;
-				typedef collections::Dictionary<FieldDesc, vint>			FieldSemanticColors;
-				typedef elements::text::ColorEntry							ColorEntry;
-			public:
-				/// <summary>Context for doing semantic colorizing.</summary>
-				struct SemanticColorizeContext : ParsingTokenContext
-				{
-					/// <summary>Output semantic id that comes from one the argument in the @Semantic attribute.</summary>
-					vint													semanticId;
-				};
-			private:
-				collections::Dictionary<WString, ColorEntry>				colorSettings;
-				collections::Dictionary<vint, vint>							semanticColorMap;
-
-				SpinLock													contextLock;
-				RepeatingParsingOutput										context;
-
-				void														OnParsingFinishedAsync(const RepeatingParsingOutput& output)override;
-			protected:
-				/// <summary>Called when the node is parsed successfully before restarting colorizing.</summary>
-				/// <param name="context">The result of the parsing.</param>
-				virtual void												OnContextFinishedAsync(const RepeatingParsingOutput& context);
-
-				void														Attach(elements::GuiColorizedTextElement* _element, SpinLock& _elementModifyLock, compositions::GuiGraphicsComposition* _ownerComposition, vuint editVersion)override;
-				void														Detach()override;
-				void														TextEditPreview(TextEditPreviewStruct& arguments)override;
-				void														TextEditNotify(const TextEditNotifyStruct& arguments)override;
-				void														TextCaretChanged(const TextCaretChangedStruct& arguments)override;
-				void														TextEditFinished(vuint editVersion)override;
-
-				/// <summary>Called when a @SemanticColor attribute in a grammar is activated during colorizing to determine a color for the token. If there is an <see cref="RepeatingParsingExecutor::IParsingAnalyzer"/> binded to the <see cref="RepeatingParsingExecutor"/>, this function can be automatically done.</summary>
-				/// <param name="context">Context for doing semantic colorizing.</param>
-				/// <param name="input">The corressponding result from the <see cref="RepeatingParsingExecutor"/>.</param>
-				virtual void												OnSemanticColorize(SemanticColorizeContext& context, const RepeatingParsingOutput& input);
-
-				/// <summary>Call this function in the derived class's destructor when it overrided <see cref="OnSemanticColorize"/>.</summary>
-				void														EnsureColorizerFinished();
-			public:
-				/// <summary>Create the colorizer with a created parsing executor.</summary>
-				/// <param name="_parsingExecutor">The parsing executor.</param>
-				GuiGrammarColorizer(Ptr<RepeatingParsingExecutor> _parsingExecutor);
-				/// <summary>Create the colorizer with a specified grammar and start rule to create a <see cref="RepeatingParsingExecutor"/>.</summary>
-				/// <param name="_grammarParser">Parser generated from a grammar.</param>
-				/// <param name="_grammarRule"></param>
-				GuiGrammarColorizer(Ptr<parsing::tabling::ParsingGeneralParser> _grammarParser, const WString& _grammarRule);
-				~GuiGrammarColorizer();
-
-				/// <summary>Reset all color settings.</summary>
-				void														BeginSetColors();
-				/// <summary>Get all color names.</summary>
-				/// <returns>All color names.</returns>
-				const collections::SortedList<WString>&						GetColorNames();
-				/// <summary>Get the color for a token theme name (@Color or @ContextColor("theme-name") in the grammar).</summary>
-				/// <returns>The color.</returns>
-				/// <param name="name">The token theme name.</param>
-				ColorEntry													GetColor(const WString& name);
-				/// <summary>Set a color for a token theme name (@Color or @ContextColor("theme-name") in the grammar).</summary>
-				/// <param name="name">The token theme name.</param>
-				/// <param name="entry">The color.</param>
-				void														SetColor(const WString& name, const ColorEntry& entry);
-				/// <summary>Set a color for a token theme name (@Color or @ContextColor("theme-name") in the grammar).</summary>
-				/// <param name="name">The token theme name.</param>
-				/// <param name="color">The color.</param>
-				void														SetColor(const WString& name, const Color& color);
-				/// <summary>Submit all color settings.</summary>
-				void														EndSetColors();
-				void														ColorizeTokenContextSensitive(vint lineIndex, const wchar_t* text, vint start, vint length, vint& token, vint& contextState)override;
-
-				/// <summary>Get the internal parsing executor.</summary>
-				/// <returns>The parsing executor.</returns>
-				Ptr<RepeatingParsingExecutor>								GetParsingExecutor();
-			};
 		}
 	}
 }
@@ -21949,6 +19004,1012 @@ Ribbon Gallery List
 
 
 /***********************************************************************
+.\GRAPHICSELEMENT\GUIGRAPHICSDOCUMENTELEMENT.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI::Element System
+
+Interfaces:
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_ELEMENTS_GUIGRAPHICSDOCUMENTELEMENT
+#define VCZH_PRESENTATION_ELEMENTS_GUIGRAPHICSDOCUMENTELEMENT
+
+
+namespace vl
+{
+	namespace presentation
+	{
+		namespace elements
+		{
+			class IGuiDocumentElementCallback;
+			class GuiDocumentElementRenderer;
+
+/***********************************************************************
+Rich Content Document (element)
+***********************************************************************/
+
+			/// <summary>Defines a rich text document element for rendering complex styled document.</summary>
+			class GuiDocumentElement : public GuiElementBase<GuiDocumentElement>
+			{
+				friend class GuiElementBase<GuiDocumentElement>;
+				static constexpr const wchar_t* ElementTypeName = L"RichDocument";
+			protected:
+				Ptr<DocumentModel>							document;
+				wchar_t										passwordChar;
+				IGuiDocumentElementCallback*				callback = nullptr;
+				bool										paragraphPadding = true;
+				bool										wrapLine = true;
+				TextPos										caretBegin;
+				TextPos										caretEnd;
+				bool										caretVisible;
+				bool										caretFrontSide;
+				Color										caretColor;
+
+				void										UpdateCaret();
+
+				GuiDocumentElement();
+			public:
+				/// <summary>Get the callback.</summary>
+				/// <returns>The callback.</returns>
+				IGuiDocumentElementCallback*				GetCallback();
+				/// <summary>Set the callback.</summary>
+				/// <param name="value">The callback.</param>
+				void										SetCallback(IGuiDocumentElementCallback* value);
+				
+				/// <summary>Get the document.</summary>
+				/// <returns>The document.</returns>
+				Ptr<DocumentModel>							GetDocument();
+				/// <summary>Set the document. When a document is set to this element, modifying the document without invoking <see cref="NotifyParagraphUpdated"/> will lead to undefined behavior.</summary>
+				/// <param name="value">The document.</param>
+				void										SetDocument(Ptr<DocumentModel> value);
+				/// <summary>Get whether paddings are inserted between paragraphs.</summary>
+				/// <returns>Returns true if paddings are inserted between paragraphs.</returns>
+				bool										GetParagraphPadding();
+				/// <summary>Set whether paddings are inserted between paragraphs</summary>
+				/// <param name="value">Set to true so that paddings are inserted between paragraphs.</param>
+				void										SetParagraphPadding(bool value);
+				/// <summary>Get line wrapping.</summary>
+				/// <returns>Return true if there is automatic line wrapping.</returns>
+				bool										GetWrapLine();
+				/// <summary>Set line wrapping.</summary>
+				/// <param name="value">Set to true so that there is automatic line wrapping.</param>
+				void										SetWrapLine(bool value);
+				/// <summary>Get the password char. A password char is a character that replaces every characters in the document while rendering.</summary>
+				/// <returns>Returns the passwrd char. 0 means no password char.</returns>
+				wchar_t										GetPasswordChar();
+				/// <summary>Set the password char.</summary>
+				/// <param name="value">Set to 0 to remove the password char.</param>
+				void										SetPasswordChar(wchar_t value);
+
+				/// <summary>
+				/// Get the begin position of the selection area.
+				/// </summary>
+				/// <returns>The begin position of the selection area.</returns>
+				TextPos										GetCaretBegin();
+				/// <summary>
+				/// Get the end position of the selection area.
+				/// </summary>
+				/// <returns>The end position of the selection area.</returns>
+				TextPos										GetCaretEnd();
+				/// <summary>
+				/// Get the prefer side for the caret.
+				/// </summary>
+				/// <returns>Returns true if the caret is rendered for the front side.</returns>
+				bool										IsCaretEndPreferFrontSide();
+				/// <summary>
+				/// Set the end position of the selection area.
+				/// </summary>
+				/// <param name="begin">The begin position of the selection area.</param>
+				/// <param name="end">The end position of the selection area.</param>
+				/// <param name="frontSide">Set to true to show the caret for the character before it. This argument is ignored if begin and end are the same.</param>
+				void										SetCaret(TextPos begin, TextPos end, bool frontSide);
+				/// <summary>
+				/// Get the caret visibility.
+				/// </summary>
+				/// <returns>Returns true if the caret will be rendered.</returns>
+				bool										GetCaretVisible();
+				/// <summary>
+				/// Set the caret visibility.
+				/// </summary>
+				/// <param name="value">True if the caret will be rendered.</param>
+				void										SetCaretVisible(bool value);
+				/// <summary>
+				/// Get the color of the caret.
+				/// </summary>
+				/// <returns>The color of the caret.</returns>
+				Color										GetCaretColor();
+				/// <summary>
+				/// Set the color of the caret.
+				/// </summary>
+				/// <param name="value">The color of the caret.</param>
+				void										SetCaretColor(Color value);
+
+				/// <summary>Calculate a caret using a specified comparing caret and a relative position.</summary>
+				/// <returns>The calculated caret.</returns>
+				/// <param name="comparingCaret">The comparing caret.</param>
+				/// <param name="position">The relative position.</param>
+				/// <param name="preferFrontSide">Specify the side for the comparingCaret. Retrive the suggested side for the new caret. If the return caret equals compareCaret, this output is ignored.</param>
+				TextPos										CalculateCaret(TextPos comparingCaret, IGuiGraphicsParagraph::CaretRelativePosition position, bool& preferFrontSide);
+				/// <summary>Calculate a caret using a specified point.</summary>
+				/// <returns>The calculated caret.</returns>
+				/// <param name="point">The specified point.</param>
+				TextPos										CalculateCaretFromPoint(Point point);
+				/// <summary>Get the bounds of a caret.</summary>
+				/// <returns>The bounds.</returns>
+				/// <param name="caret">The caret.</param>
+				/// <param name="frontSide">Set to true to get the bounds for the character before it.</param>
+				Rect										GetCaretBounds(TextPos caret, bool frontSide);
+
+				/// <summary>Notify that some paragraphs are updated.</summary>
+				/// <param name="index">The start paragraph index.</param>
+				/// <param name="oldCount">The number of paragraphs to be updated.</param>
+				/// <param name="newCount">The number of updated paragraphs.</param>
+				/// <param name="updatedText">Set to true to notify that the text is updated.</param>
+				void										NotifyParagraphUpdated(vint index, vint oldCount, vint newCount, bool updatedText);
+				/// <summary>Edit run in a specified range.</summary>
+				/// <param name="begin">The begin position of the range.</param>
+				/// <param name="end">The end position of the range.</param>
+				/// <param name="model">The new run.</param>
+				/// <param name="copy">Set to true to copy the model before editing. Otherwise, objects inside the model will be used directly</param>
+				void										EditRun(TextPos begin, TextPos end, Ptr<DocumentModel> model, bool copy);
+				/// <summary>Edit text in a specified range.</summary>
+				/// <param name="begin">The begin position of the range.</param>
+				/// <param name="end">The end position of the range.</param>
+				/// <param name="frontSide">Set to true to use the text style in front of the specified range.</param>
+				/// <param name="text">The new text.</param>
+				void										EditText(TextPos begin, TextPos end, bool frontSide, const collections::Array<WString>& text);
+				/// <summary>Edit style in a specified range.</summary>
+				/// <param name="begin">The begin position of the range.</param>
+				/// <param name="end">The end position of the range.</param>
+				/// <param name="style">The new style.</param>
+				void										EditStyle(TextPos begin, TextPos end, Ptr<DocumentStyleProperties> style);
+				/// <summary>Edit image in a specified range.</summary>
+				/// <param name="begin">The begin position of the range.</param>
+				/// <param name="end">The end position of the range.</param>
+				/// <param name="image">The new image.</param>
+				void										EditImage(TextPos begin, TextPos end, Ptr<GuiImageData> image);
+				/// <summary>Set hyperlink in a specified range.</summary>
+				/// <param name="paragraphIndex">The index of the paragraph to edit.</param>
+				/// <param name="begin">The begin position of the range.</param>
+				/// <param name="end">The end position of the range.</param>
+				/// <param name="reference">The reference of the hyperlink.</param>
+				/// <param name="normalStyleName">The normal style name of the hyperlink.</param>
+				/// <param name="activeStyleName">The active style name of the hyperlink.</param>
+				void										EditHyperlink(vint paragraphIndex, vint begin, vint end, const WString& reference, const WString& normalStyleName=DocumentModel::NormalLinkStyleName, const WString& activeStyleName=DocumentModel::ActiveLinkStyleName);
+				/// <summary>Remove hyperlink in a specified range.</summary>
+				/// <param name="paragraphIndex">The index of the paragraph to edit.</param>
+				/// <param name="begin">The begin position of the range.</param>
+				/// <param name="end">The end position of the range.</param>
+				void										RemoveHyperlink(vint paragraphIndex, vint begin, vint end);
+				/// <summary>Edit style name in a specified range.</summary>
+				/// <param name="begin">The begin position of the range.</param>
+				/// <param name="end">The end position of the range.</param>
+				/// <param name="styleName">The new style name.</param>
+				void										EditStyleName(TextPos begin, TextPos end, const WString& styleName);
+				/// <summary>Remove style name in a specified range.</summary>
+				/// <param name="begin">The begin position of the range.</param>
+				/// <param name="end">The end position of the range.</param>
+				void										RemoveStyleName(TextPos begin, TextPos end);
+				/// <summary>Rename a style.</summary>
+				/// <param name="oldStyleName">The name of the style.</param>
+				/// <param name="newStyleName">The new name.</param>
+				void										RenameStyle(const WString& oldStyleName, const WString& newStyleName);
+				/// <summary>Clear all styles in a specified range.</summary>
+				/// <param name="begin">The begin position of the range.</param>
+				/// <param name="end">The end position of the range.</param>
+				void										ClearStyle(TextPos begin, TextPos end);
+				/// <summary>Clear all styles and remove non-text contents in a specified range.</summary>
+				/// <param name="begin">The begin position of the range.</param>
+				/// <param name="end">The end position of the range.</param>
+				void										ConvertToPlainText(TextPos begin, TextPos end);
+				/// <summary>Summarize the text style in a specified range.</summary>
+				/// <returns>The text style summary.</returns>
+				/// <param name="begin">The begin position of the range.</param>
+				/// <param name="end">The end position of the range.</param>
+				Ptr<DocumentStyleProperties>				SummarizeStyle(TextPos begin, TextPos end);
+				/// <summary>Summarize the style name in a specified range.</summary>
+				/// <returns>The style name summary.</returns>
+				/// <param name="begin">The begin position of the range.</param>
+				/// <param name="end">The end position of the range.</param>
+				Nullable<WString>							SummarizeStyleName(TextPos begin, TextPos end);
+				/// <summary>Set the alignment of paragraphs in a specified range.</summary>
+				/// <param name="begin">The begin position of the range.</param>
+				/// <param name="end">The end position of the range.</param>
+				/// <param name="alignments">The alignment for each paragraph.</param>
+				void										SetParagraphAlignment(TextPos begin, TextPos end, const collections::Array<Nullable<Alignment>>& alignments);
+				/// <summary>Summarize the text alignment in a specified range.</summary>
+				/// <returns>The text alignment summary.</returns>
+				/// <param name="begin">The begin position of the range.</param>
+				/// <param name="end">The end position of the range.</param>
+				Nullable<Alignment>							SummarizeParagraphAlignment(TextPos begin, TextPos end);
+
+				/// <summary>Get hyperlink from point.</summary>
+				/// <returns>Corressponding hyperlink id. Returns -1 indicates that the point is not in a hyperlink.</returns>
+				/// <param name="point">The point to get the hyperlink id.</param>
+				Ptr<DocumentHyperlinkRun::Package>			GetHyperlinkFromPoint(Point point);
+			};
+		}
+	}
+}
+
+#endif
+
+/***********************************************************************
+.\CONTROLS\TEXTEDITORPACKAGE\EDITORCALLBACK\GUITEXTUNDOREDO.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI::Control System
+
+Interfaces:
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_CONTROLS_GUITEXTUNDOREDO
+#define VCZH_PRESENTATION_CONTROLS_GUITEXTUNDOREDO
+
+
+namespace vl
+{
+	namespace presentation
+	{
+		namespace controls
+		{
+
+/***********************************************************************
+Undo Redo
+***********************************************************************/
+
+			class GuiGeneralUndoRedoProcessor : public Object
+			{
+			protected:
+				class IEditStep : public Interface
+				{
+				public:
+					virtual void							Undo()=0;
+					virtual void							Redo()=0;
+				};
+				friend class collections::ArrayBase<Ptr<IEditStep>>;
+
+			protected:
+				collections::List<Ptr<IEditStep>>			steps;
+				vint										firstFutureStep;
+				vint										savedStep;
+				bool										performingUndoRedo;
+
+				void										PushStep(Ptr<IEditStep> step);
+			public:
+				GuiGeneralUndoRedoProcessor();
+				~GuiGeneralUndoRedoProcessor();
+
+				Event<void()>								UndoRedoChanged;
+				Event<void()>								ModifiedChanged;
+
+				bool										CanUndo();
+				bool										CanRedo();
+				void										ClearUndoRedo();
+				bool										GetModified();
+				void										NotifyModificationSaved();
+				bool										Undo();
+				bool										Redo();
+			};
+
+/***********************************************************************
+Undo Redo (Document)
+***********************************************************************/
+
+			class GuiDocumentUndoRedoProcessor : public GuiGeneralUndoRedoProcessor
+			{
+			public:
+				struct ReplaceModelStruct
+				{
+					TextPos									originalStart;
+					TextPos									originalEnd;
+					Ptr<DocumentModel>						originalModel;
+					TextPos									inputStart;
+					TextPos									inputEnd;
+					Ptr<DocumentModel>						inputModel;
+
+					ReplaceModelStruct()
+					{
+					}
+				};
+
+				struct RenameStyleStruct
+				{
+					WString									oldStyleName;
+					WString									newStyleName;
+
+					RenameStyleStruct()
+					{
+					}
+				};
+
+				struct SetAlignmentStruct
+				{
+					vint									start;
+					vint									end;
+					collections::Array<Nullable<Alignment>>	originalAlignments;
+					collections::Array<Nullable<Alignment>>	inputAlignments;
+				};
+
+			protected:
+				elements::GuiDocumentElement*				element;
+				compositions::GuiGraphicsComposition*		ownerComposition;
+				
+				class ReplaceModelStep : public Object, public IEditStep
+				{
+				public:
+					GuiDocumentUndoRedoProcessor*			processor;
+					ReplaceModelStruct						arguments;
+					
+					void									Undo();
+					void									Redo();
+				};
+
+				class RenameStyleStep : public Object, public IEditStep
+				{
+				public:
+					GuiDocumentUndoRedoProcessor*			processor;
+					RenameStyleStruct						arguments;
+					
+					void									Undo();
+					void									Redo();
+				};
+
+				class SetAlignmentStep : public Object, public IEditStep
+				{
+				public:
+					GuiDocumentUndoRedoProcessor*			processor;
+					Ptr<SetAlignmentStruct>					arguments;
+					
+					void									Undo();
+					void									Redo();
+				};
+			public:
+
+				GuiDocumentUndoRedoProcessor();
+				~GuiDocumentUndoRedoProcessor();
+
+				void										Setup(elements::GuiDocumentElement* _element, compositions::GuiGraphicsComposition* _ownerComposition);
+				void										OnReplaceModel(const ReplaceModelStruct& arguments);
+				void										OnRenameStyle(const RenameStyleStruct& arguments);
+				void										OnSetAlignment(Ptr<SetAlignmentStruct> arguments);
+			};
+		}
+	}
+}
+
+#endif
+
+/***********************************************************************
+.\GRAPHICSELEMENT\GUIGRAPHICSDOCUMENTRENDERER.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI::Element System
+
+Interfaces:
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_ELEMENTS_GUIGRAPHICSDOCUMENTRENDERER
+#define VCZH_PRESENTATION_ELEMENTS_GUIGRAPHICSDOCUMENTRENDERER
+
+
+namespace vl
+{
+	namespace presentation
+	{
+		namespace elements
+		{
+
+			namespace visitors
+			{
+				class SetPropertiesVisitor;
+			}
+
+/***********************************************************************
+Rich Content Document (element)
+***********************************************************************/
+
+			/// <summary>Callback interface for this element.</summary>
+			class IGuiDocumentElementCallback : public virtual IDescriptable, public Description<IGuiDocumentElementCallback>
+			{
+			public:
+				/// <summary>Called when the rendering is started.</summary>
+				virtual void							OnStartRender() = 0;
+
+				/// <summary>Called when the rendering is finished.</summary>
+				virtual void							OnFinishRender() = 0;
+
+				/// <summary>Called when an embedded object is being rendered.</summary>
+				/// <returns>Returns the new size of the rendered embedded object.</returns>
+				/// <param name="name">The name of the embedded object</param>
+				/// <param name="location">The location of the embedded object, relative to the left-top corner of this element.</param>
+				virtual Size							OnRenderEmbeddedObject(const WString& name, const Rect& location) = 0;
+			};
+
+			class GuiDocumentElementRenderer : public GuiElementRendererBase<GuiDocumentElement, GuiDocumentElementRenderer, IGuiGraphicsRenderTarget>, private IGuiGraphicsParagraphCallback
+			{
+				friend class visitors::SetPropertiesVisitor;
+				friend class GuiElementRendererBase<GuiDocumentElement, GuiDocumentElementRenderer, IGuiGraphicsRenderTarget>;
+			protected:
+				struct EmbeddedObject
+				{
+					WString								name;
+					Size								size;
+					vint								start;
+					bool								resized = false;
+				};
+
+				typedef collections::Dictionary<vint, Ptr<EmbeddedObject>>		IdEmbeddedObjectMap;
+				typedef collections::Dictionary<WString, vint>					NameIdMap;
+				typedef collections::List<vint>									FreeIdList;
+
+				struct ParagraphCache
+				{
+					WString								fullText;
+					Ptr<IGuiGraphicsParagraph>			graphicsParagraph;
+					IdEmbeddedObjectMap					embeddedObjects;
+					vint								selectionBegin;
+					vint								selectionEnd;
+
+					ParagraphCache()
+						:selectionBegin(-1)
+						,selectionEnd(-1)
+					{
+					}
+				};
+
+				typedef collections::Array<Ptr<ParagraphCache>>		ParagraphCacheArray;
+				typedef collections::Array<Size>					ParagraphSizeArray;
+
+			private:
+
+				Size									OnRenderInlineObject(vint callbackId, Rect location)override;
+			protected:
+				vint									paragraphDistance;
+				vint									lastMaxWidth;
+				Size									cachedTotalSize;
+				IGuiGraphicsLayoutProvider*				layoutProvider;
+				ParagraphCacheArray						paragraphCaches;
+				ParagraphSizeArray						paragraphSizes;
+
+				TextPos									lastCaret;
+				Color									lastCaretColor;
+				bool									lastCaretFrontSide;
+
+				NameIdMap								nameCallbackIdMap;
+				FreeIdList								freeCallbackIds;
+				vint									usedCallbackIds = 0;
+
+				vint									renderingParagraph = -1;
+				Point									renderingParagraphOffset;
+
+				void									InitializeInternal();
+				void									FinalizeInternal();
+				void									RenderTargetChangedInternal(IGuiGraphicsRenderTarget* oldRenderTarget, IGuiGraphicsRenderTarget* newRenderTarget);
+				Ptr<ParagraphCache>						EnsureAndGetCache(vint paragraphIndex, bool createParagraph);
+				bool									GetParagraphIndexFromPoint(Point point, vint& top, vint& index);
+			public:
+				GuiDocumentElementRenderer();
+
+				void									Render(Rect bounds)override;
+				void									OnElementStateChanged()override;
+				void									NotifyParagraphUpdated(vint index, vint oldCount, vint newCount, bool updatedText);
+				Ptr<DocumentHyperlinkRun::Package>		GetHyperlinkFromPoint(Point point);
+
+				void									OpenCaret(TextPos caret, Color color, bool frontSide);
+				void									CloseCaret(TextPos caret);
+				void									SetSelection(TextPos begin, TextPos end);
+				TextPos									CalculateCaret(TextPos comparingCaret, IGuiGraphicsParagraph::CaretRelativePosition position, bool& preferFrontSide);
+				TextPos									CalculateCaretFromPoint(Point point);
+				Rect									GetCaretBounds(TextPos caret, bool frontSide);
+			};
+		}
+	}
+}
+
+#endif
+
+/***********************************************************************
+.\CONTROLS\TEXTEDITORPACKAGE\GUIDOCUMENTCOMMONINTERFACE.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI::Control System
+
+Interfaces:
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_CONTROLS_GUIDOCUMENTCOMMONINTERFACE
+#define VCZH_PRESENTATION_CONTROLS_GUIDOCUMENTCOMMONINTERFACE
+
+
+namespace vl
+{
+	namespace presentation
+	{
+		namespace compositions
+		{
+			class GuiShortcutKeyManager;
+		}
+
+		namespace controls
+		{
+			class GuiDocumentCommonInterface;
+
+/***********************************************************************
+GuiDocumentItem
+***********************************************************************/
+
+			/// <summary>Embedded object in a document.</summary>
+			class GuiDocumentItem : public Object, public Description<GuiDocumentItem>
+			{
+				friend class GuiDocumentCommonInterface;
+			protected:
+				bool										visible = false;
+				WString										name;
+				compositions::GuiBoundsComposition*			container;
+				bool										owned = false;
+			public:
+				GuiDocumentItem(const WString& _name);
+				~GuiDocumentItem();
+				
+				/// <summary>Get the container for all embedded controls and compositions in this item.</summary>
+				/// <returns>The container.</returns>
+				compositions::GuiGraphicsComposition*		GetContainer();
+
+				/// <summary>Get the name of the document item.</summary>
+				/// <returns>The name.</returns>
+				WString										GetName();
+			};
+
+/***********************************************************************
+GuiDocumentCommonInterface
+***********************************************************************/
+			
+			/// <summary>Document displayer control common interface for displaying <see cref="DocumentModel"/>.</summary>
+			class GuiDocumentCommonInterface abstract
+				: protected virtual elements::IGuiDocumentElementCallback
+				, public Description<GuiDocumentCommonInterface>
+			{
+				typedef collections::Dictionary<WString, Ptr<GuiDocumentItem>>		DocumentItemMap;
+			protected:
+				GuiDocumentConfigEvaluated					config;
+				Ptr<DocumentModel>							baselineDocument;
+				DocumentItemMap								documentItems;
+				GuiControl*									documentControl = nullptr;
+				elements::GuiDocumentElement*				documentElement = nullptr;
+				compositions::GuiBoundsComposition*			documentComposition = nullptr;
+
+				compositions::GuiGraphicsComposition*		documentMouseArea = nullptr;
+				Ptr<compositions::IGuiGraphicsEventHandler>	onMouseMoveHandler;
+				Ptr<compositions::IGuiGraphicsEventHandler>	onMouseDownHandler;
+				Ptr<compositions::IGuiGraphicsEventHandler>	onMouseUpHandler;
+				Ptr<compositions::IGuiGraphicsEventHandler>	onMouseLeaveHandler;
+
+				Ptr<DocumentHyperlinkRun::Package>			activeHyperlinks;
+				bool										dragging = false;
+				GuiDocumentEditMode							editMode = GuiDocumentEditMode::ViewOnly;
+
+				Ptr<GuiDocumentUndoRedoProcessor>			undoRedoProcessor;
+				Ptr<compositions::GuiShortcutKeyManager>	internalShortcutKeyManager;
+
+			protected:
+				void										InvokeUndoRedoChanged();
+				void										InvokeModifiedChanged();
+				void										UpdateCaretPoint();
+				void										EnsureDocumentRectVisible(Rect bounds);
+				void										Move(TextPos caret, bool shift, bool frontSide);
+				bool										ProcessKey(VKEY code, bool shift, bool ctrl);
+				void										InstallDocumentViewer(
+																GuiControl* _sender,
+																compositions::GuiGraphicsComposition* _mouseArea,
+																compositions::GuiGraphicsComposition* _container,
+																compositions::GuiGraphicsComposition* eventComposition,
+																compositions::GuiGraphicsComposition* focusableComposition
+																);
+				void										ReplaceMouseArea(compositions::GuiGraphicsComposition* _mouseArea);
+
+				void										SetActiveHyperlink(Ptr<DocumentHyperlinkRun::Package> package);
+				void										ActivateActiveHyperlink(bool activate);
+				void										AddShortcutCommand(VKEY key, const Func<void()>& eventHandler);
+				void										EditTextInternal(TextPos begin, TextPos end, const Func<void(TextPos, TextPos, vint&, vint&)>& editor);
+				void										EditStyleInternal(TextPos begin, TextPos end, const Func<void(TextPos, TextPos)>& editor);
+				
+				void										MergeBaselineAndDefaultFont(Ptr<DocumentModel> document);
+				void										OnFontChanged();
+				void										OnCaretNotify(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+				void										OnGotFocus(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+				void										OnLostFocus(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+				void										OnKeyDown(compositions::GuiGraphicsComposition* sender, compositions::GuiKeyEventArgs& arguments);
+				void										OnCharInput(compositions::GuiGraphicsComposition* sender, compositions::GuiCharEventArgs& arguments);
+
+				void										UpdateCursor(INativeCursor* cursor);
+				Point										GetMouseOffset();
+				void										OnMouseMove(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments);
+				void										OnMouseDown(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments);
+				void										OnMouseUp(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments);
+				void										OnMouseLeave(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+
+				virtual Point								GetDocumentViewPosition() = 0;
+				virtual void								EnsureRectVisible(Rect bounds) = 0;
+
+				//================ callback
+
+				void										OnStartRender()override;
+				void										OnFinishRender()override;
+				Size										OnRenderEmbeddedObject(const WString& name, const Rect& location)override;
+
+			protected:
+
+				void										UserInput_FixForPlainText(Ptr<DocumentModel> model, vint beginParagraph, vint endParagraph);
+				void										UserInput_FixForSingleline(collections::List<WString>& paragraphTexts);
+				void										UserInput_FixForSingleline(Ptr<DocumentModel> model);
+				void										UserInput_FixForNonParagraph(WString& text);
+				void										UserInput_FixForNonParagraph(Ptr<DocumentParagraphRun> paragraph);
+
+				WString										UserInput_ConvertDocumentToText(Ptr<DocumentModel> model);
+				void										UserInput_FormatText(collections::List<WString>& paragraphTexts);
+				void										UserInput_FormatText(const WString& text, collections::List<WString>& paragraphTexts);
+				void										UserInput_FormatDocument(Ptr<DocumentModel> model);
+
+			public:
+				GuiDocumentCommonInterface(const GuiDocumentConfig& _config);
+				~GuiDocumentCommonInterface();
+
+				/// <summary>Active hyperlink changed event.</summary>
+				compositions::GuiNotifyEvent				ActiveHyperlinkChanged;
+				/// <summary>Active hyperlink executed event.</summary>
+				compositions::GuiNotifyEvent				ActiveHyperlinkExecuted;
+
+				/// <summary>Selection changed event.</summary>
+				compositions::GuiNotifyEvent				SelectionChanged;
+				/// <summary>Undo redo status changed event.</summary>
+				compositions::GuiNotifyEvent				UndoRedoChanged;
+				/// <summary>Modified status changed event.</summary>
+				compositions::GuiNotifyEvent				ModifiedChanged;
+				
+				/// <summary>Get the document.</summary>
+				/// <returns>The document.</returns>
+				Ptr<DocumentModel>							GetDocument();
+				/// <summary>Set the document. When a document is set to this element, modifying the document without invoking <see cref="NotifyParagraphUpdated"/> will lead to undefined behavior.</summary>
+				/// <param name="value">The document.</param>
+				void										SetDocument(Ptr<DocumentModel> value);
+
+				//================ document items
+
+				/// <summary>Add a document item. The name of the document item will display in the position of the &lt;object&gt; element with the same name in the document.</summary>
+				/// <param name="value">The document item.</param>
+				/// <returns>Returns true if this operation succeeded.</returns>
+				bool										AddDocumentItem(Ptr<GuiDocumentItem> value);
+
+				/// <summary>Remove a document item.</summary>
+				/// <param name="value">The document item.</param>
+				/// <returns>Returns true if this operation succeeded.</returns>
+				bool										RemoveDocumentItem(Ptr<GuiDocumentItem> value);
+
+				/// <summary>Get all document items.</summary>
+				/// <returns>All document items.</returns>
+				const DocumentItemMap&						GetDocumentItems();
+
+				//================ caret operations
+
+				/// <summary>
+				/// Get the begin position of the selection area.
+				/// </summary>
+				/// <returns>The begin position of the selection area.</returns>
+				TextPos										GetCaretBegin();
+				/// <summary>
+				/// Get the end position of the selection area.
+				/// </summary>
+				/// <returns>The end position of the selection area.</returns>
+				TextPos										GetCaretEnd();
+				/// <summary>
+				/// Set the end position of the selection area.
+				/// </summary>
+				/// <param name="begin">The begin position of the selection area.</param>
+				/// <param name="end">The end position of the selection area.</param>
+				void										SetCaret(TextPos begin, TextPos end);
+				/// <summary>Calculate a caret using a specified point.</summary>
+				/// <returns>The calculated caret.</returns>
+				/// <param name="point">The specified point.</param>
+				TextPos										CalculateCaretFromPoint(Point point);
+				/// <summary>Get the bounds of a caret.</summary>
+				/// <returns>The bounds.</returns>
+				/// <param name="caret">The caret.</param>
+				/// <param name="frontSide">Set to true to get the bounds for the character before it.</param>
+				Rect										GetCaretBounds(TextPos caret, bool frontSide);
+
+				//================ editing operations
+
+				/// <summary>Notify that some paragraphs are updated.</summary>
+				/// <param name="index">The start paragraph index.</param>
+				/// <param name="oldCount">The number of paragraphs to be updated.</param>
+				/// <param name="newCount">The number of updated paragraphs.</param>
+				/// <param name="updatedText">Set to true to notify that the text is updated.</param>
+				void										NotifyParagraphUpdated(vint index, vint oldCount, vint newCount, bool updatedText);
+				/// <summary>Edit run in a specified range.</summary>
+				/// <param name="begin">The begin position of the range.</param>
+				/// <param name="end">The end position of the range.</param>
+				/// <param name="model">The new run.</param>
+				/// <param name="copy">Set to true to copy the model before editing. Otherwise, objects inside the model will be used directly</param>
+				void										EditRun(TextPos begin, TextPos end, Ptr<DocumentModel> model, bool copy);
+				/// <summary>Edit text in a specified range.</summary>
+				/// <param name="begin">The begin position of the range.</param>
+				/// <param name="end">The end position of the range.</param>
+				/// <param name="frontSide">Set to true to use the text style in front of the specified range.</param>
+				/// <param name="text">The new text.</param>
+				void										EditText(TextPos begin, TextPos end, bool frontSide, const collections::Array<WString>& text);
+				/// <summary>Edit style in a specified range.</summary>
+				/// <param name="begin">The begin position of the range.</param>
+				/// <param name="end">The end position of the range.</param>
+				/// <param name="style">The new style.</param>
+				void										EditStyle(TextPos begin, TextPos end, Ptr<DocumentStyleProperties> style);
+				/// <summary>Edit image in a specified range.</summary>
+				/// <param name="begin">The begin position of the range.</param>
+				/// <param name="end">The end position of the range.</param>
+				/// <param name="image">The new image.</param>
+				void										EditImage(TextPos begin, TextPos end, Ptr<GuiImageData> image);
+				/// <summary>Set hyperlink in a specified range.</summary>
+				/// <param name="paragraphIndex">The index of the paragraph to edit.</param>
+				/// <param name="begin">The begin position of the range.</param>
+				/// <param name="end">The end position of the range.</param>
+				/// <param name="reference">The reference of the hyperlink.</param>
+				/// <param name="normalStyleName">The normal style name of the hyperlink.</param>
+				/// <param name="activeStyleName">The active style name of the hyperlink.</param>
+				void										EditHyperlink(vint paragraphIndex, vint begin, vint end, const WString& reference, const WString& normalStyleName=DocumentModel::NormalLinkStyleName, const WString& activeStyleName=DocumentModel::ActiveLinkStyleName);
+				/// <summary>Remove hyperlink in a specified range.</summary>
+				/// <param name="paragraphIndex">The index of the paragraph to edit.</param>
+				/// <param name="begin">The begin position of the range.</param>
+				/// <param name="end">The end position of the range.</param>
+				void										RemoveHyperlink(vint paragraphIndex, vint begin, vint end);
+				/// <summary>Edit style name in a specified range.</summary>
+				/// <param name="begin">The begin position of the range.</param>
+				/// <param name="end">The end position of the range.</param>
+				/// <param name="styleName">The new style name.</param>
+				void										EditStyleName(TextPos begin, TextPos end, const WString& styleName);
+				/// <summary>Remove style name in a specified range.</summary>
+				/// <param name="begin">The begin position of the range.</param>
+				/// <param name="end">The end position of the range.</param>
+				void										RemoveStyleName(TextPos begin, TextPos end);
+				/// <summary>Rename a style.</summary>
+				/// <param name="oldStyleName">The name of the style.</param>
+				/// <param name="newStyleName">The new name.</param>
+				void										RenameStyle(const WString& oldStyleName, const WString& newStyleName);
+				/// <summary>Clear all styles in a specified range.</summary>
+				/// <param name="begin">The begin position of the range.</param>
+				/// <param name="end">The end position of the range.</param>
+				void										ClearStyle(TextPos begin, TextPos end);
+				/// <summary>Clear all styles and remove non-text contents in a specified range.</summary>
+				/// <param name="begin">The begin position of the range.</param>
+				/// <param name="end">The end position of the range.</param>
+				void										ConvertToPlainText(TextPos begin, TextPos end);
+				/// <summary>Summarize the text style in a specified range.</summary>
+				/// <returns>The text style summary.</returns>
+				/// <param name="begin">The begin position of the range.</param>
+				/// <param name="end">The end position of the range.</param>
+				Ptr<DocumentStyleProperties>				SummarizeStyle(TextPos begin, TextPos end);
+				/// <summary>Summarize the style name in a specified range.</summary>
+				/// <returns>The style name summary.</returns>
+				/// <param name="begin">The begin position of the range.</param>
+				/// <param name="end">The end position of the range.</param>
+				Nullable<WString>							SummarizeStyleName(TextPos begin, TextPos end);
+				/// <summary>Set the alignment of paragraphs in a specified range.</summary>
+				/// <param name="begin">The begin position of the range.</param>
+				/// <param name="end">The end position of the range.</param>
+				/// <param name="alignments">The alignment for each paragraph.</param>
+				void										SetParagraphAlignments(TextPos begin, TextPos end, const collections::Array<Nullable<Alignment>>& alignments);
+				/// <summary>Set the alignment of paragraphs in a specified range.</summary>
+				/// <param name="begin">The begin position of the range.</param>
+				/// <param name="end">The end position of the range.</param>
+				/// <param name="alignment">The alignment for each paragraph.</param>
+				void										SetParagraphAlignment(TextPos begin, TextPos end, Nullable<Alignment> alignment);
+				/// <summary>Summarize the text alignment in a specified range.</summary>
+				/// <returns>The text alignment summary.</returns>
+				/// <param name="begin">The begin position of the range.</param>
+				/// <param name="end">The end position of the range.</param>
+				Nullable<Alignment>							SummarizeParagraphAlignment(TextPos begin, TextPos end);
+
+				//================ editing control
+
+				/// <summary>Get the href attribute of the active hyperlink.</summary>
+				/// <returns>The href attribute of the active hyperlink.</returns>
+				WString										GetActiveHyperlinkReference();
+				/// <summary>Get the edit mode of this control.</summary>
+				/// <returns>The edit mode.</returns>
+				GuiDocumentEditMode							GetEditMode();
+				/// <summary>Set the edit mode of this control.</summary>
+				/// <param name="value">The edit mode.</param>
+				void										SetEditMode(GuiDocumentEditMode value);
+
+				//================ selection operations
+
+				/// <summary>Select all text.</summary>
+				void										SelectAll();
+				/// <summary>Get the selected text.</summary>
+				/// <returns>The selected text.</returns>
+				WString										GetSelectionText();
+				/// <summary>Set the selected text.</summary>
+				/// <param name="value">The selected text.</param>
+				void										SetSelectionText(const WString& value);
+				/// <summary>Get the selected model.</summary>
+				/// <returns>The selected model.</returns>
+				Ptr<DocumentModel>							GetSelectionModel();
+				/// <summary>Set the selected model.</summary>
+				/// <param name="value">The selected model.</param>
+				void										SetSelectionModel(Ptr<DocumentModel> value);
+
+				//================ clipboard operations
+
+				/// <summary>Test can the selection be cut.</summary>
+				/// <returns>Returns true if the selection can be cut.</returns>
+				bool										CanCut();
+				/// <summary>Test can the selection be copied.</summary>
+				/// <returns>Returns true if the selection can be cut.</returns>
+				bool										CanCopy();
+				/// <summary>Test can the content in the clipboard be pasted.</summary>
+				/// <returns>Returns true if the content in the clipboard can be pasted.</returns>
+				bool										CanPaste();
+				/// <summary>Cut the selection text.</summary>
+				/// <returns>Returns true if this operation succeeded.</returns>
+				bool										Cut();
+				/// <summary>Copy the selection text.</summary>
+				/// <returns>Returns true if this operation succeeded.</returns>
+				bool										Copy();
+				/// <summary>Paste the content from the clipboard and replace the selected text.</summary>
+				/// <returns>Returns true if this operation succeeded.</returns>
+				bool										Paste();
+
+				//================ undo redo control
+
+				/// <summary>Test can undo.</summary>
+				/// <returns>Returns true if this action can be performed.</returns>
+				bool										CanUndo();
+				/// <summary>Test can redo.</summary>
+				/// <returns>Returns true if this action can be performed.</returns>
+				bool										CanRedo();
+				/// <summary>Clear all undo and redo information.</summary>
+				void										ClearUndoRedo();
+				/// <summary>Test is the text box modified.</summary>
+				/// <returns>Returns true if the text box is modified.</returns>
+				bool										GetModified();
+				/// <summary>Notify the text box that the current status is considered saved.</summary>
+				void										NotifyModificationSaved();
+				/// <summary>Perform the undo action.</summary>
+				/// <returns>Returns true if this operation succeeded.</returns>
+				bool										Undo();
+				/// <summary>Perform the redo action.</summary>
+				/// <returns>Returns true if this operation succeeded.</returns>
+				bool										Redo();
+			};
+		}
+	}
+}
+
+#endif
+
+
+/***********************************************************************
+.\CONTROLS\TEXTEDITORPACKAGE\GUIDOCUMENTVIEWER.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI::Control System
+
+Interfaces:
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_CONTROLS_GUIDOCUMENTVIEWER
+#define VCZH_PRESENTATION_CONTROLS_GUIDOCUMENTVIEWER
+
+
+namespace vl
+{
+	namespace presentation
+	{
+		namespace controls
+		{
+
+/***********************************************************************
+GuiDocumentViewer
+***********************************************************************/
+			
+			/// <summary>Scrollable document viewer for displaying <see cref="DocumentModel"/>.</summary>
+			class GuiDocumentViewer : public GuiScrollContainer, public GuiDocumentCommonInterface, public Description<GuiDocumentViewer>
+			{
+				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(DocumentViewerTemplate, GuiScrollContainer)
+			protected:
+
+				void										UpdateDisplayFont()override;
+				Point										GetDocumentViewPosition()override;
+				void										EnsureRectVisible(Rect bounds)override;
+
+				static GuiDocumentConfig					FixConfig(const GuiDocumentConfig& config);
+			public:
+				/// <summary>Create a control with a specified style provider.</summary>
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
+				/// <param name="_config">(Optional): configuration of document editing and rendering behavior.</param>
+				GuiDocumentViewer(theme::ThemeName themeName, const GuiDocumentConfig& _config = {});
+				~GuiDocumentViewer();
+
+				const WString&								GetText()override;
+				void										SetText(const WString& value)override;
+			};
+
+			/// <summary>Scrollable text box for displaying multiple lines of text.</summary>
+			class GuiMultilineTextBox : public GuiDocumentViewer, public Description<GuiMultilineTextBox>
+			{
+			public:
+				/// <summary>Create a control with a specified style provider.</summary>
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
+				/// <param name="_config">(Optional): configuration of document editing and rendering behavior.</param>
+				GuiMultilineTextBox(theme::ThemeName themeName, const GuiDocumentConfig& _config = {});
+				~GuiMultilineTextBox();
+			};
+
+/***********************************************************************
+GuiDocumentLabel
+***********************************************************************/
+			
+			/// <summary>Static document viewer for displaying <see cref="DocumentModel"/>.</summary>
+			class GuiDocumentLabel : public GuiControl, public GuiDocumentCommonInterface, public Description<GuiDocumentLabel>
+			{
+				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(DocumentLabelTemplate, GuiControl)
+			protected:
+				compositions::GuiBoundsComposition*			scrollingContainer = nullptr;
+				compositions::GuiBoundsComposition*			documentContainer = nullptr;
+
+				void										UpdateDisplayFont()override;
+				Point										GetDocumentViewPosition()override;
+				void										EnsureRectVisible(Rect bounds)override;
+				void										scrollingContainer_CachedBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+				void										documentContainer_CachedMinSizeChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+
+				static GuiDocumentConfig					FixConfig(const GuiDocumentConfig& config);
+			public:
+				/// <summary>Create a control with a specified default theme.</summary>
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
+				/// <param name="_config">(Optional): configuration of document editing and rendering behavior.</param>
+				GuiDocumentLabel(theme::ThemeName themeName, const GuiDocumentConfig& _config = {});
+				~GuiDocumentLabel();
+				
+				const WString&								GetText()override;
+				void										SetText(const WString& value)override;
+			};
+
+			/// <summary>Scrollable text box for displaying single line of text.</summary>
+			class GuiSinglelineTextBox : public GuiDocumentLabel, public Description<GuiSinglelineTextBox>
+			{
+			public:
+				/// <summary>Create a control with a specified style provider.</summary>
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
+				/// <param name="_config">(Optional): configuration of document editing and rendering behavior.</param>
+				GuiSinglelineTextBox(theme::ThemeName themeName, const GuiDocumentConfig& _config = {});
+				~GuiSinglelineTextBox();
+
+				/// <summary>Get the password char. A password char is a character that replaces every characters in the document while rendering.</summary>
+				/// <returns>Returns the passwrd char. 0 means no password char.</returns>
+				wchar_t										GetPasswordChar();
+				/// <summary>Set the password char.</summary>
+				/// <param name="value">Set to 0 to remove the password char.</param>
+				void										SetPasswordChar(wchar_t value);
+			};
+		}
+	}
+}
+
+#endif
+
+
+/***********************************************************************
 .\CONTROLS\INCLUDEALL.H
 ***********************************************************************/
 /***********************************************************************
@@ -23365,22 +21426,6 @@ namespace vl::presentation::elements_remoteprotocol
 	public:
 		GuiPolygonElementRenderer();
 
-		void							SendUpdateElementMessages(bool fullContent) override;
-	};
-
-	class GuiColorizedTextElementRenderer : public GuiRemoteProtocolElementRenderer<GuiColorizedTextElement, GuiColorizedTextElementRenderer, remoteprotocol::RendererType::UnsupportedColorizedText>, protected GuiColorizedTextElement::ICallback
-	{
-		friend class GuiElementRendererBase<GuiColorizedTextElement, GuiColorizedTextElementRenderer, GuiRemoteGraphicsRenderTarget>;
-		using TBase = GuiRemoteProtocolElementRenderer<GuiColorizedTextElement, GuiColorizedTextElementRenderer, remoteprotocol::RendererType::UnsupportedColorizedText>;
-	protected:
-		void							ColorChanged() override;
-		void							FontChanged() override;
-		void							InitializeInternal();
-		void							FinalizeInternal();
-	public:
-		GuiColorizedTextElementRenderer();
-
-		void							OnElementStateChanged() override;
 		void							SendUpdateElementMessages(bool fullContent) override;
 	};
 }
@@ -26081,7 +24126,6 @@ External Functions
 			{
 				return Ptr(T::Create());
 			}
-			extern presentation::elements::text::TextLines*					GuiColorizedTextElement_GetLines(presentation::elements::GuiColorizedTextElement* thisObject);
 
 			extern void														GuiTableComposition_SetRows(presentation::compositions::GuiTableComposition* thisObject, vint value);
 			extern void														GuiTableComposition_SetColumns(presentation::compositions::GuiTableComposition* thisObject, vint value);

@@ -1,5 +1,6 @@
 #include "GuiRemoteController.h"
 #include "GuiRemoteGraphics_BasicElements.h"
+#include "../../GraphicsElement/GuiGraphicsDocumentRenderer.h"
 #include "../Hosted/GuiHostedController.h"
 #include "../../Application/GraphicsHost/GuiGraphicsHost.h"
 

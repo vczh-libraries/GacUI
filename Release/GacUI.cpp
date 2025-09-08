@@ -131,15 +131,6 @@ External Functions (Basic)
 			}
 
 /***********************************************************************
-External Functions (Elements)
-***********************************************************************/
-
-			text::TextLines* GuiColorizedTextElement_GetLines(GuiColorizedTextElement* thisObject)
-			{
-				return &thisObject->GetLines();
-			}
-
-/***********************************************************************
 External Functions (Compositions)
 ***********************************************************************/
 
@@ -18009,7 +18000,7 @@ namespace vl
 }
 
 /***********************************************************************
-.\CONTROLS\TEXTEDITORPACKAGE\GUIDOCUMENTVIEWER.CPP
+.\CONTROLS\TEXTEDITORPACKAGE\GUIDOCUMENTCOMMONINTERFACE.CPP
 ***********************************************************************/
 
 namespace vl
@@ -18021,75 +18012,6 @@ namespace vl
 			using namespace collections;
 			using namespace elements;
 			using namespace compositions;
-
-/***********************************************************************
-GuiDocumentConfig
-***********************************************************************/
-
-			GuiDocumentConfig GuiDocumentConfig::GetDocumentLabelDefaultConfig()
-			{
-				GuiDocumentConfig config;
-				config.autoExpand = true;
-				config.pasteAsPlainText = false;
-				config.wrapLine = true;
-				config.paragraphMode = GuiDocumentParagraphMode::Paragraph;
-				config.paragraphPadding = true;
-				config.doubleLineBreaksBetweenParagraph = true;
-				config.spaceForFlattenedLineBreak = false;
-				return config;
-			}
-
-			GuiDocumentConfig GuiDocumentConfig::GetDocumentViewerDefaultConfig()
-			{
-				GuiDocumentConfig config;
-				config.autoExpand = false;
-				config.pasteAsPlainText = false;
-				config.wrapLine = true;
-				config.paragraphMode = GuiDocumentParagraphMode::Paragraph;
-				config.paragraphPadding = true;
-				config.doubleLineBreaksBetweenParagraph = true;
-				config.spaceForFlattenedLineBreak = false;
-				return config;
-			}
-
-			GuiDocumentConfig GuiDocumentConfig::GetSinglelineTextBoxDefaultConfig()
-			{
-				GuiDocumentConfig config;
-				config.autoExpand = false;
-				config.pasteAsPlainText = true;
-				config.wrapLine = false;
-				config.paragraphMode = GuiDocumentParagraphMode::Singleline;
-				config.paragraphPadding = false;
-				config.doubleLineBreaksBetweenParagraph = false;
-				config.spaceForFlattenedLineBreak = false;
-				return config;
-			}
-
-			GuiDocumentConfig GuiDocumentConfig::GetMultilineTextBoxDefaultConfig()
-			{
-				GuiDocumentConfig config;
-				config.autoExpand = false;
-				config.pasteAsPlainText = true;
-				config.wrapLine = false;
-				config.paragraphMode = GuiDocumentParagraphMode::Multiline;
-				config.paragraphPadding = false;
-				config.doubleLineBreaksBetweenParagraph = false;
-				config.spaceForFlattenedLineBreak = false;
-				return config;
-			}
-
-			GuiDocumentConfig GuiDocumentConfig::OverrideConfig(const GuiDocumentConfig& toOverride, const GuiDocumentConfig& newConfig)
-			{
-				GuiDocumentConfig result = toOverride;
-				if (newConfig.autoExpand) result.autoExpand = newConfig.autoExpand;
-				if (newConfig.pasteAsPlainText) result.pasteAsPlainText = newConfig.pasteAsPlainText;
-				if (newConfig.wrapLine) result.wrapLine = newConfig.wrapLine;
-				if (newConfig.paragraphMode) result.paragraphMode = newConfig.paragraphMode;
-				if (newConfig.paragraphPadding) result.paragraphPadding = newConfig.paragraphPadding;
-				if (newConfig.doubleLineBreaksBetweenParagraph) result.doubleLineBreaksBetweenParagraph = newConfig.doubleLineBreaksBetweenParagraph;
-				if (newConfig.spaceForFlattenedLineBreak) result.spaceForFlattenedLineBreak = newConfig.spaceForFlattenedLineBreak;
-				return result;
-			}
 
 /***********************************************************************
 GuiDocumentItem
@@ -18306,7 +18228,7 @@ GuiDocumentCommonInterface
 				documentComposition = new GuiBoundsComposition;
 				documentComposition->SetOwnedElement(Ptr(documentElement));
 				documentComposition->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElement);
-				documentComposition->SetAlignmentToParent(Margin(5, 5, 5, 5));
+				documentComposition->SetAlignmentToParent(Margin(2, 2, 2, 2));
 				_container->AddChild(documentComposition);
 				ReplaceMouseArea(_mouseArea);
 
@@ -19529,6 +19451,120 @@ GuiDocumentCommonInterface
 					return false;
 				}
 			}
+		}
+	}
+}
+
+
+/***********************************************************************
+.\CONTROLS\TEXTEDITORPACKAGE\GUIDOCUMENTCONFIG.CPP
+***********************************************************************/
+
+namespace vl
+{
+	namespace presentation
+	{
+		namespace controls
+		{
+/***********************************************************************
+GuiDocumentConfig
+***********************************************************************/
+
+			GuiDocumentConfig GuiDocumentConfig::GetDocumentLabelDefaultConfig()
+			{
+				GuiDocumentConfig config;
+				config.autoExpand = true;
+				config.pasteAsPlainText = false;
+				config.wrapLine = true;
+				config.paragraphMode = GuiDocumentParagraphMode::Paragraph;
+				config.paragraphPadding = true;
+				config.doubleLineBreaksBetweenParagraph = true;
+				config.spaceForFlattenedLineBreak = false;
+				return config;
+			}
+
+			GuiDocumentConfig GuiDocumentConfig::GetDocumentViewerDefaultConfig()
+			{
+				GuiDocumentConfig config;
+				config.autoExpand = false;
+				config.pasteAsPlainText = false;
+				config.wrapLine = true;
+				config.paragraphMode = GuiDocumentParagraphMode::Paragraph;
+				config.paragraphPadding = true;
+				config.doubleLineBreaksBetweenParagraph = true;
+				config.spaceForFlattenedLineBreak = false;
+				return config;
+			}
+
+			GuiDocumentConfig GuiDocumentConfig::GetSinglelineTextBoxDefaultConfig()
+			{
+				GuiDocumentConfig config;
+				config.autoExpand = false;
+				config.pasteAsPlainText = true;
+				config.wrapLine = false;
+				config.paragraphMode = GuiDocumentParagraphMode::Singleline;
+				config.paragraphPadding = false;
+				config.doubleLineBreaksBetweenParagraph = false;
+				config.spaceForFlattenedLineBreak = false;
+				return config;
+			}
+
+			GuiDocumentConfig GuiDocumentConfig::GetMultilineTextBoxDefaultConfig()
+			{
+				GuiDocumentConfig config;
+				config.autoExpand = false;
+				config.pasteAsPlainText = true;
+				config.wrapLine = false;
+				config.paragraphMode = GuiDocumentParagraphMode::Multiline;
+				config.paragraphPadding = false;
+				config.doubleLineBreaksBetweenParagraph = false;
+				config.spaceForFlattenedLineBreak = false;
+				return config;
+			}
+
+			GuiDocumentConfig GuiDocumentConfig::OverrideConfig(const GuiDocumentConfig& toOverride, const GuiDocumentConfig& newConfig)
+			{
+				GuiDocumentConfig result = toOverride;
+				if (newConfig.autoExpand) result.autoExpand = newConfig.autoExpand;
+				if (newConfig.pasteAsPlainText) result.pasteAsPlainText = newConfig.pasteAsPlainText;
+				if (newConfig.wrapLine) result.wrapLine = newConfig.wrapLine;
+				if (newConfig.paragraphMode) result.paragraphMode = newConfig.paragraphMode;
+				if (newConfig.paragraphPadding) result.paragraphPadding = newConfig.paragraphPadding;
+				if (newConfig.doubleLineBreaksBetweenParagraph) result.doubleLineBreaksBetweenParagraph = newConfig.doubleLineBreaksBetweenParagraph;
+				if (newConfig.spaceForFlattenedLineBreak) result.spaceForFlattenedLineBreak = newConfig.spaceForFlattenedLineBreak;
+				return result;
+			}
+
+/***********************************************************************
+GuiDocumentConfigEvaluated
+***********************************************************************/
+
+			GuiDocumentConfigEvaluated::GuiDocumentConfigEvaluated(const GuiDocumentConfig& config)
+				: autoExpand(config.autoExpand.Value())
+				, pasteAsPlainText(config.pasteAsPlainText.Value())
+				, wrapLine(config.wrapLine.Value())
+				, paragraphMode(config.paragraphMode.Value())
+				, paragraphPadding(config.paragraphPadding.Value())
+				, doubleLineBreaksBetweenParagraph(config.doubleLineBreaksBetweenParagraph.Value())
+				, spaceForFlattenedLineBreak(config.spaceForFlattenedLineBreak.Value())
+			{
+			}
+		}
+	}
+}
+
+
+/***********************************************************************
+.\CONTROLS\TEXTEDITORPACKAGE\GUIDOCUMENTVIEWER.CPP
+***********************************************************************/
+
+namespace vl
+{
+	namespace presentation
+	{
+		namespace controls
+		{
+			using namespace compositions;
 
 /***********************************************************************
 GuiDocumentViewer
@@ -19633,6 +19669,20 @@ GuiDocumentViewer
 			{
 				SelectAll();
 				SetSelectionText(value);
+			}
+
+/***********************************************************************
+GuiMultilineTextBox
+***********************************************************************/
+
+			GuiMultilineTextBox::GuiMultilineTextBox(theme::ThemeName themeName, const GuiDocumentConfig& _config)
+				: GuiDocumentViewer(themeName, FixConfig(GuiDocumentConfig::OverrideConfig(GuiDocumentConfig::GetMultilineTextBoxDefaultConfig(), _config)))
+			{
+				SetEditMode(GuiDocumentEditMode::Editable);
+			}
+
+			GuiMultilineTextBox::~GuiMultilineTextBox()
+			{
 			}
 
 /***********************************************************************
@@ -19778,2063 +19828,34 @@ GuiDocumentLabel
 				SelectAll();
 				SetSelectionText(value);
 			}
-		}
-	}
-}
-
-
-/***********************************************************************
-.\CONTROLS\TEXTEDITORPACKAGE\GUITEXTCOMMONINTERFACE.CPP
-***********************************************************************/
-#include <math.h>
-
-namespace vl
-{
-	namespace presentation
-	{
-		namespace controls
-		{
-			using namespace elements;
-			using namespace elements::text;
-			using namespace compositions;
-
-/***********************************************************************
-GuiTextBoxCommonInterface::DefaultCallback
-***********************************************************************/
-
-			GuiTextBoxCommonInterface::DefaultCallback::DefaultCallback(elements::GuiColorizedTextElement* _textElement, compositions::GuiGraphicsComposition* _textComposition)
-				:textElement(_textElement)
-				,textComposition(_textComposition)
-			{
-			}
-
-			GuiTextBoxCommonInterface::DefaultCallback::~DefaultCallback()
-			{
-			}
-
-			TextPos GuiTextBoxCommonInterface::DefaultCallback::GetLeftWord(TextPos pos)
-			{
-				return pos;
-			}
-
-			TextPos GuiTextBoxCommonInterface::DefaultCallback::GetRightWord(TextPos pos)
-			{
-				return pos;
-			}
-
-			void GuiTextBoxCommonInterface::DefaultCallback::GetWord(TextPos pos, TextPos& begin, TextPos& end)
-			{
-				begin=pos;
-				end=pos;
-			}
-
-			vint GuiTextBoxCommonInterface::DefaultCallback::GetPageRows()
-			{
-				return textComposition->GetCachedBounds().Height()/textElement->GetLines().GetRowHeight();
-			}
-
-			bool GuiTextBoxCommonInterface::DefaultCallback::BeforeModify(TextPos start, TextPos end, const WString& originalText, WString& inputText)
-			{
-				return true;
-			}
-
-/***********************************************************************
-GuiTextBoxCommonInterface
-***********************************************************************/
-			
-			void GuiTextBoxCommonInterface::InvokeUndoRedoChanged()
-			{
-				UndoRedoChanged.Execute(textControl->GetNotifyEventArguments());
-			}
-
-			void GuiTextBoxCommonInterface::InvokeModifiedChanged()
-			{
-				ModifiedChanged.Execute(textControl->GetNotifyEventArguments());
-			}
-
-			void GuiTextBoxCommonInterface::UpdateCaretPoint()
-			{
-				GuiGraphicsHost* host=textComposition->GetRelatedGraphicsHost();
-				if(host)
-				{
-					Rect caret=textElement->GetLines().GetRectFromTextPos(textElement->GetCaretEnd());
-					Point view=textElement->GetViewPosition();
-					vint x=caret.x1-view.x;
-					vint y=caret.y2-view.y;
-					host->SetCaretPoint(Point(x, y), textComposition);
-				}
-			}
-
-			void GuiTextBoxCommonInterface::Move(TextPos pos, bool shift)
-			{
-				TextPos oldBegin = textElement->GetCaretBegin();
-				TextPos oldEnd = textElement->GetCaretEnd();
-
-#if defined VCZH_MSVC
-				if (0 <= pos.row && pos.row < textElement->GetLines().GetCount())
-				{
-					TextLine& line = textElement->GetLines().GetLine(pos.row);
-					if (pos.column > 0 && UTF16SPFirst(line.text[pos.column - 1]) && UTF16SPSecond(line.text[pos.column]))
-					{
-						if (pos < oldBegin)
-						{
-							pos.column--;
-						}
-						else if (pos > oldBegin)
-						{
-							pos.column++;
-						}
-					}
-				}
-#endif
-
-				pos = textElement->GetLines().Normalize(pos);
-				if (!shift)
-				{
-					textElement->SetCaretBegin(pos);
-				}
-				textElement->SetCaretEnd(pos);
-				if (textControl)
-				{
-					GuiGraphicsHost* host = textComposition->GetRelatedGraphicsHost();
-					if (host)
-					{
-						if (host->GetFocusedComposition() == textControl->GetFocusableComposition())
-						{
-							textElement->SetCaretVisible(true);
-						}
-					}
-				}
-
-				Rect bounds = textElement->GetLines().GetRectFromTextPos(pos);
-				Rect view = Rect(textElement->GetViewPosition(), textComposition->GetCachedBounds().GetSize());
-				Point viewPoint = view.LeftTop();
-
-				if (view.x2 > view.x1 && view.y2 > view.y1)
-				{
-					if (bounds.x1 < view.x1)
-					{
-						viewPoint.x = bounds.x1;
-					}
-					else if (bounds.x2 > view.x2)
-					{
-						viewPoint.x = bounds.x2 - view.Width();
-					}
-					if (bounds.y1 < view.y1)
-					{
-						viewPoint.y = bounds.y1;
-					}
-					else if (bounds.y2 > view.y2)
-					{
-						viewPoint.y = bounds.y2 - view.Height();
-					}
-				}
-
-				callback->ScrollToView(viewPoint);
-				UpdateCaretPoint();
-
-				TextPos newBegin = textElement->GetCaretBegin();
-				TextPos newEnd = textElement->GetCaretEnd();
-				if (oldBegin != newBegin || oldEnd != newEnd)
-				{
-					ICommonTextEditCallback::TextCaretChangedStruct arguments;
-					arguments.oldBegin = oldBegin;
-					arguments.oldEnd = oldEnd;
-					arguments.newBegin = newBegin;
-					arguments.newEnd = newEnd;
-					arguments.editVersion = editVersion;
-					// TODO: (enumerable) foreach
-					for (vint i = 0; i < textEditCallbacks.Count(); i++)
-					{
-						textEditCallbacks[i]->TextCaretChanged(arguments);
-					}
-					SelectionChanged.Execute(textControl->GetNotifyEventArguments());
-				}
-			}
-
-			void GuiTextBoxCommonInterface::Modify(TextPos start, TextPos end, const WString& input, bool asKeyInput)
-			{
-				if(start>end)
-				{
-					TextPos temp=start;
-					start=end;
-					end=temp;
-				}
-				TextPos originalStart=start;
-				TextPos originalEnd=end;
-				WString originalText=textElement->GetLines().GetText(start, end);
-				WString inputText=input;
-				if(callback->BeforeModify(start, end, originalText, inputText))
-				{
-					{
-						ICommonTextEditCallback::TextEditPreviewStruct arguments;
-						arguments.originalStart=originalStart;
-						arguments.originalEnd=originalEnd;
-						arguments.originalText=originalText;
-						arguments.inputText=inputText;
-						arguments.editVersion=editVersion;
-						arguments.keyInput=asKeyInput;
-						// TODO: (enumerable) foreach
-						for(vint i=0;i<textEditCallbacks.Count();i++)
-						{
-							textEditCallbacks[i]->TextEditPreview(arguments);
-						}
-						
-						inputText=arguments.inputText;
-						if(originalStart!=arguments.originalStart || originalEnd!=arguments.originalEnd)
-						{
-							originalStart=arguments.originalStart;
-							originalEnd=arguments.originalEnd;
-							originalText=textElement->GetLines().GetText(originalStart, originalEnd);
-							start=originalStart;
-							end=originalEnd;
-						}
-					}
-
-					SPIN_LOCK(elementModifyLock)
-					{
-						end=textElement->GetLines().Modify(start, end, inputText);
-					}
-					callback->AfterModify(originalStart, originalEnd, originalText, start, end, inputText);
-					
-					editVersion++;
-					{
-						ICommonTextEditCallback::TextEditNotifyStruct arguments;
-						arguments.originalStart=originalStart;
-						arguments.originalEnd=originalEnd;
-						arguments.originalText=originalText;
-						arguments.inputStart=start;
-						arguments.inputEnd=end;
-						arguments.inputText=inputText;
-						arguments.editVersion=editVersion;
-						arguments.keyInput=asKeyInput;
-						// TODO: (enumerable) foreach
-						for(vint i=0;i<textEditCallbacks.Count();i++)
-						{
-							textEditCallbacks[i]->TextEditNotify(arguments);
-						}
-					}
-
-					Move(end, false);
-					
-					// TODO: (enumerable) foreach
-					for(vint i=0;i<textEditCallbacks.Count();i++)
-					{
-						textEditCallbacks[i]->TextEditFinished(editVersion);
-					}
-
-					textControl->TextChanged.Execute(textControl->GetNotifyEventArguments());
-				}
-			}
-
-			bool GuiTextBoxCommonInterface::ProcessKey(VKEY code, bool shift, bool ctrl)
-			{
-				if(IGuiShortcutKeyItem* item=internalShortcutKeyManager->TryGetShortcut(ctrl, shift, false, code))
-				{
-					GuiEventArgs arguments(textControl->GetBoundsComposition());
-					item->Executed.Execute(arguments);
-					return true;
-				}
-
-				TextPos begin=textElement->GetCaretBegin();
-				TextPos end=textElement->GetCaretEnd();
-				switch(code)
-				{
-				case VKEY::KEY_ESCAPE:
-					if(autoComplete && autoComplete->IsListOpening() && !shift && !ctrl)
-					{
-						autoComplete->CloseList();
-						return true;
-					}
-					break;
-				case VKEY::KEY_RETURN:
-					if(autoComplete && autoComplete->IsListOpening() && !shift && !ctrl)
-					{
-						if(autoComplete->ApplySelectedListItem())
-						{
-							preventEnterDueToAutoComplete=true;
-							return true;
-						}
-					}
-					break;
-				case VKEY::KEY_UP:
-					if(autoComplete && autoComplete->IsListOpening() && !shift && !ctrl)
-					{
-						autoComplete->SelectPreviousListItem();
-					}
-					else
-					{
-						end.row--;
-						Move(end, shift);
-					}
-					return true;
-				case VKEY::KEY_DOWN:
-					if(autoComplete && autoComplete->IsListOpening() && !shift && !ctrl)
-					{
-						autoComplete->SelectNextListItem();
-					}
-					else
-					{
-						end.row++;
-						Move(end, shift);
-					}
-					return true;
-				case VKEY::KEY_LEFT:
-					{
-						if(ctrl)
-						{
-							Move(callback->GetLeftWord(end), shift);
-						}
-						else
-						{
-							if(end.column==0)
-							{
-								if(end.row>0)
-								{
-									end.row--;
-									end=textElement->GetLines().Normalize(end);
-									end.column=textElement->GetLines().GetLine(end.row).dataLength;
-								}
-							}
-							else
-							{
-								end.column--;
-							}
-							Move(end, shift);
-						}
-					}
-					return true;
-				case VKEY::KEY_RIGHT:
-					{
-						if(ctrl)
-						{
-							Move(callback->GetRightWord(end), shift);
-						}
-						else
-						{
-							if(end.column==textElement->GetLines().GetLine(end.row).dataLength)
-							{
-								if(end.row<textElement->GetLines().GetCount()-1)
-								{
-									end.row++;
-									end.column=0;
-								}
-							}
-							else
-							{
-								end.column++;
-							}
-							Move(end, shift);
-						}
-					}
-					return true;
-				case VKEY::KEY_HOME:
-					{
-						if(ctrl)
-						{
-							Move(TextPos(0, 0), shift);
-						}
-						else
-						{
-							end.column=0;
-							Move(end, shift);
-						}
-					}
-					return true;
-				case VKEY::KEY_END:
-					{
-						if(ctrl)
-						{
-							end.row=textElement->GetLines().GetCount()-1;
-						}
-						end.column=textElement->GetLines().GetLine(end.row).dataLength;
-						Move(end, shift);
-					}
-					return true;
-				case VKEY::KEY_PRIOR:
-					{
-						end.row-=callback->GetPageRows();
-						Move(end, shift);
-					}
-					return true;
-				case VKEY::KEY_NEXT:
-					{
-						end.row+=callback->GetPageRows();
-						Move(end, shift);
-					}
-					return true;
-				case VKEY::KEY_BACK:
-					if(!readonly)
-					{
-						if(ctrl && !shift)
-						{
-							ProcessKey(VKEY::KEY_LEFT, true, true);
-							ProcessKey(VKEY::KEY_BACK, false, false);
-						}
-						else if(!ctrl && shift)
-						{
-							ProcessKey(VKEY::KEY_UP, true, false);
-							ProcessKey(VKEY::KEY_BACK, false, false);
-						}
-						else
-						{
-							if(begin==end)
-							{
-								ProcessKey(VKEY::KEY_LEFT, true, false);
-							}
-							SetSelectionTextAsKeyInput(L"");
-						}
-						return true;
-					}
-					break;
-				case VKEY::KEY_DELETE:
-					if(!readonly)
-					{
-						if(ctrl && !shift)
-						{
-							ProcessKey(VKEY::KEY_RIGHT, true, true);
-							ProcessKey(VKEY::KEY_DELETE, false, false);
-						}
-						else if(!ctrl && shift)
-						{
-							ProcessKey(VKEY::KEY_DOWN, true, false);
-							ProcessKey(VKEY::KEY_DELETE, false, false);
-						}
-						else
-						{
-							if(begin==end)
-							{
-								ProcessKey(VKEY::KEY_RIGHT, true, false);
-							}
-							SetSelectionTextAsKeyInput(L"");
-						}
-						return true;
-					}
-					break;
-				default:;
-				}
-				return false;
-			}
-
-			void GuiTextBoxCommonInterface::OnGotFocus(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
-			{
-				textElement->SetFocused(true);
-				textElement->SetCaretVisible(true);
-				UpdateCaretPoint();
-			}
-
-			void GuiTextBoxCommonInterface::OnLostFocus(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
-			{
-				textElement->SetFocused(false);
-				textElement->SetCaretVisible(false);
-			}
-
-			void GuiTextBoxCommonInterface::OnCaretNotify(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
-			{
-				textElement->SetCaretVisible(!textElement->GetCaretVisible());
-			}
-
-			void GuiTextBoxCommonInterface::OnLeftButtonDown(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments)
-			{
-				if(textControl->GetVisuallyEnabled() && arguments.compositionSource==arguments.eventSource)
-				{
-					dragging=true;
-					TextPos pos=GetNearestTextPos(Point(arguments.x, arguments.y));
-					Move(pos, arguments.shift);
-				}
-			}
-
-			void GuiTextBoxCommonInterface::OnLeftButtonUp(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments)
-			{
-				if(textControl->GetVisuallyEnabled() && arguments.compositionSource==arguments.eventSource)
-				{
-					dragging=false;
-				}
-			}
-
-			void GuiTextBoxCommonInterface::OnMouseMove(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments)
-			{
-				if(textControl->GetVisuallyEnabled() && arguments.compositionSource==arguments.eventSource)
-				{
-					if(dragging)
-					{
-						TextPos pos=GetNearestTextPos(Point(arguments.x, arguments.y));
-						Move(pos, true);
-					}
-				}
-			}
-
-			void GuiTextBoxCommonInterface::OnKeyDown(compositions::GuiGraphicsComposition* sender, compositions::GuiKeyEventArgs& arguments)
-			{
-				if(textControl->GetVisuallyEnabled() && arguments.compositionSource==arguments.eventSource)
-				{
-					if(ProcessKey(arguments.code, arguments.shift, arguments.ctrl))
-					{
-						arguments.handled=true;
-					}
-				}
-			}
-
-			void GuiTextBoxCommonInterface::OnCharInput(compositions::GuiGraphicsComposition* sender, compositions::GuiCharEventArgs& arguments)
-			{
-				if (preventEnterDueToAutoComplete)
-				{
-					preventEnterDueToAutoComplete = false;
-					if (arguments.code == (wchar_t)VKEY::KEY_RETURN)
-					{
-						return;
-					}
-				}
-				if (textControl->GetVisuallyEnabled() && arguments.compositionSource == arguments.eventSource)
-				{
-					if (!readonly &&
-						arguments.code != (wchar_t)VKEY::KEY_ESCAPE &&
-						arguments.code != (wchar_t)VKEY::KEY_BACK &&
-						(arguments.code != (wchar_t)VKEY::KEY_TAB || textControl->GetAcceptTabInput()) &&
-						!arguments.ctrl)
-					{
-						SetSelectionTextAsKeyInput(WString::FromChar(arguments.code));
-					}
-				}
-			}
-
-			void GuiTextBoxCommonInterface::Install(
-				elements::GuiColorizedTextElement* _textElement,
-				compositions::GuiGraphicsComposition* _textComposition,
-				GuiControl* _textControl,
-				compositions::GuiGraphicsComposition* eventComposition,
-				compositions::GuiGraphicsComposition* focusableComposition
-			)
-			{
-				textElement=_textElement;
-				textComposition=_textComposition;
-				textControl=_textControl;
-				textComposition->SetAssociatedCursor(GetCurrentController()->ResourceService()->GetSystemCursor(INativeCursor::IBeam));
-				SelectionChanged.SetAssociatedComposition(eventComposition);
-				UndoRedoChanged.SetAssociatedComposition(eventComposition);
-				ModifiedChanged.SetAssociatedComposition(eventComposition);
-
-				undoRedoProcessor->UndoRedoChanged.Add(this, &GuiTextBoxCommonInterface::InvokeUndoRedoChanged);
-				undoRedoProcessor->ModifiedChanged.Add(this, &GuiTextBoxCommonInterface::InvokeModifiedChanged);
-
-				focusableComposition->GetEventReceiver()->gotFocus.AttachMethod(this, &GuiTextBoxCommonInterface::OnGotFocus);
-				focusableComposition->GetEventReceiver()->lostFocus.AttachMethod(this, &GuiTextBoxCommonInterface::OnLostFocus);
-				focusableComposition->GetEventReceiver()->caretNotify.AttachMethod(this, &GuiTextBoxCommonInterface::OnCaretNotify);
-				textComposition->GetEventReceiver()->leftButtonDown.AttachMethod(this, &GuiTextBoxCommonInterface::OnLeftButtonDown);
-				textComposition->GetEventReceiver()->leftButtonUp.AttachMethod(this, &GuiTextBoxCommonInterface::OnLeftButtonUp);
-				textComposition->GetEventReceiver()->mouseMove.AttachMethod(this, &GuiTextBoxCommonInterface::OnMouseMove);
-				focusableComposition->GetEventReceiver()->keyDown.AttachMethod(this, &GuiTextBoxCommonInterface::OnKeyDown);
-				focusableComposition->GetEventReceiver()->charInput.AttachMethod(this, &GuiTextBoxCommonInterface::OnCharInput);
-
-				// TODO: (enumerable) foreach
-				for(vint i=0;i<textEditCallbacks.Count();i++)
-				{
-					textEditCallbacks[i]->Attach(textElement, elementModifyLock, textComposition ,editVersion);
-				}
-			}
-			
-			GuiTextBoxCommonInterface::ICallback* GuiTextBoxCommonInterface::GetCallback()
-			{
-				return callback;
-			}
-
-			void GuiTextBoxCommonInterface::SetCallback(ICallback* value)
-			{
-				callback=value;
-			}
-
-			bool GuiTextBoxCommonInterface::AttachTextEditCallback(Ptr<ICommonTextEditCallback> value)
-			{
-				if(textEditCallbacks.Contains(value.Obj()))
-				{
-					return false;
-				}
-				else
-				{
-					textEditCallbacks.Add(value);
-					if(textElement)
-					{
-						value->Attach(textElement, elementModifyLock, textComposition, editVersion);
-					}
-					return true;
-				}
-			}
-
-			bool GuiTextBoxCommonInterface::DetachTextEditCallback(Ptr<ICommonTextEditCallback> value)
-			{
-				if(textEditCallbacks.Remove(value.Obj()))
-				{
-					value->Detach();
-					return true;
-				}
-				else
-				{
-					return false;
-				}
-			}
-
-			void GuiTextBoxCommonInterface::AddShortcutCommand(VKEY key, const Func<void()>& eventHandler)
-			{
-				IGuiShortcutKeyItem* item=internalShortcutKeyManager->CreateNewShortcut(true, false, false, key);
-				item->Executed.AttachLambda([=](GuiGraphicsComposition* sender, GuiEventArgs& arguments)
-				{
-					eventHandler();
-				});
-			}
-
-			elements::GuiColorizedTextElement* GuiTextBoxCommonInterface::GetTextElement()
-			{
-				return textElement;
-			}
-
-			void GuiTextBoxCommonInterface::UnsafeSetText(const WString& value)
-			{
-				if(textElement)
-				{
-					TextPos end;
-					if(textElement->GetLines().GetCount()>0)
-					{
-						end.row=textElement->GetLines().GetCount()-1;
-						end.column=textElement->GetLines().GetLine(end.row).dataLength;
-					}
-					Modify(TextPos(), end, value, false);
-				}
-			}
-
-			GuiTextBoxCommonInterface::GuiTextBoxCommonInterface()
-				:textElement(0)
-				,textComposition(0)
-				,editVersion(0)
-				,textControl(0)
-				,callback(0)
-				,dragging(false)
-				,readonly(false)
-				,preventEnterDueToAutoComplete(false)
-			{
-				undoRedoProcessor=Ptr(new GuiTextBoxUndoRedoProcessor);
-				AttachTextEditCallback(undoRedoProcessor);
-
-				internalShortcutKeyManager=Ptr(new GuiShortcutKeyManager);
-				AddShortcutCommand(VKEY::KEY_Z, Func<bool()>(this, &GuiTextBoxCommonInterface::Undo));
-				AddShortcutCommand(VKEY::KEY_Y, Func<bool()>(this, &GuiTextBoxCommonInterface::Redo));
-				AddShortcutCommand(VKEY::KEY_A, Func<void()>(this, &GuiTextBoxCommonInterface::SelectAll));
-				AddShortcutCommand(VKEY::KEY_X, Func<bool()>(this, &GuiTextBoxCommonInterface::Cut));
-				AddShortcutCommand(VKEY::KEY_C, Func<bool()>(this, &GuiTextBoxCommonInterface::Copy));
-				AddShortcutCommand(VKEY::KEY_V, Func<bool()>(this, &GuiTextBoxCommonInterface::Paste));
-			}
-
-			GuiTextBoxCommonInterface::~GuiTextBoxCommonInterface()
-			{
-				if(colorizer)
-				{
-					DetachTextEditCallback(colorizer);
-					colorizer=0;
-				}
-				if(undoRedoProcessor)
-				{
-					DetachTextEditCallback(undoRedoProcessor);
-					undoRedoProcessor=0;
-				}
-
-				// TODO: (enumerable) foreach
-				for(vint i=0;i<textEditCallbacks.Count();i++)
-				{
-					textEditCallbacks[i]->Detach();
-				}
-				textEditCallbacks.Clear();
-			}
-
-			//================ clipboard operations
-
-			bool GuiTextBoxCommonInterface::CanCut()
-			{
-				return !readonly && textElement->GetCaretBegin()!=textElement->GetCaretEnd() && textElement->GetPasswordChar()==L'\0';
-			}
-
-			bool GuiTextBoxCommonInterface::CanCopy()
-			{
-				return textElement->GetCaretBegin()!=textElement->GetCaretEnd() && textElement->GetPasswordChar()==L'\0';
-			}
-
-			bool GuiTextBoxCommonInterface::CanPaste()
-			{
-				if (!readonly && textElement->GetPasswordChar() == L'\0')
-				{
-					auto reader = GetCurrentController()->ClipboardService()->ReadClipboard();
-					return reader->ContainsText();
-				}
-				return false;
-			}
-
-			bool GuiTextBoxCommonInterface::Cut()
-			{
-				if (!CanCut()) return false;
-				auto writer = GetCurrentController()->ClipboardService()->WriteClipboard();
-				writer->SetText(GetSelectionText());
-				writer->Submit();
-				SetSelectionText(L"");
-				return true;
-			}
-
-			bool GuiTextBoxCommonInterface::Copy()
-			{
-				if (!CanCopy()) return false;
-				auto writer = GetCurrentController()->ClipboardService()->WriteClipboard();
-				writer->SetText(GetSelectionText());
-				writer->Submit();
-				return true;
-			}
-
-			bool GuiTextBoxCommonInterface::Paste()
-			{
-				if (!CanPaste()) return false;
-				auto reader = GetCurrentController()->ClipboardService()->ReadClipboard();
-				SetSelectionText(reader->GetText());
-				return true;
-			}
-			
-			//================ editing control
-			
-			bool GuiTextBoxCommonInterface::GetReadonly()
-			{
-				return readonly;
-			}
-
-			void GuiTextBoxCommonInterface::SetReadonly(bool value)
-			{
-				readonly=value;
-			}
-
-			//================ text operations
-
-			void GuiTextBoxCommonInterface::Select(TextPos begin, TextPos end)
-			{
-				Move(begin, false);
-				Move(end, true);
-			}
-
-			void GuiTextBoxCommonInterface::SelectAll()
-			{
-				vint row=textElement->GetLines().GetCount()-1;
-				Move(TextPos(0, 0), false);
-				Move(TextPos(row, textElement->GetLines().GetLine(row).dataLength), true);
-			}
-
-			WString GuiTextBoxCommonInterface::GetSelectionText()
-			{
-				TextPos selectionBegin=textElement->GetCaretBegin()<textElement->GetCaretEnd()?textElement->GetCaretBegin():textElement->GetCaretEnd();
-				TextPos selectionEnd=textElement->GetCaretBegin()>textElement->GetCaretEnd()?textElement->GetCaretBegin():textElement->GetCaretEnd();
-				return textElement->GetLines().GetText(selectionBegin, selectionEnd);
-			}
-
-			void GuiTextBoxCommonInterface::SetSelectionText(const WString& value)
-			{
-				Modify(textElement->GetCaretBegin(), textElement->GetCaretEnd(), value, false);
-			}
-
-			void GuiTextBoxCommonInterface::SetSelectionTextAsKeyInput(const WString& value)
-			{
-				Modify(textElement->GetCaretBegin(), textElement->GetCaretEnd(), value, true);
-			}
-
-			WString GuiTextBoxCommonInterface::GetRowText(vint row)
-			{
-				TextPos start=textElement->GetLines().Normalize(TextPos(row, 0));
-				TextPos end=TextPos(start.row, textElement->GetLines().GetLine(start.row).dataLength);
-				return GetFragmentText(start, end);
-			}
-
-			vint GuiTextBoxCommonInterface::GetRowCount()
-			{
-				return textElement->GetLines().GetCount();
-			}
-
-			WString GuiTextBoxCommonInterface::GetFragmentText(TextPos start, TextPos end)
-			{
-				start=textElement->GetLines().Normalize(start);
-				end=textElement->GetLines().Normalize(end);
-				return textElement->GetLines().GetText(start, end);
-			}
-
-			TextPos GuiTextBoxCommonInterface::GetCaretBegin()
-			{
-				return textElement->GetCaretBegin();
-			}
-
-			TextPos GuiTextBoxCommonInterface::GetCaretEnd()
-			{
-				return textElement->GetCaretEnd();
-			}
-
-			TextPos GuiTextBoxCommonInterface::GetCaretSmall()
-			{
-				TextPos c1=GetCaretBegin();
-				TextPos c2=GetCaretEnd();
-				return c1<c2?c1:c2;
-			}
-
-			TextPos GuiTextBoxCommonInterface::GetCaretLarge()
-			{
-				TextPos c1=GetCaretBegin();
-				TextPos c2=GetCaretEnd();
-				return c1>c2?c1:c2;
-			}
-
-			//================ position query
-				
-			vint GuiTextBoxCommonInterface::GetRowWidth(vint row)
-			{
-				return textElement->GetLines().GetRowWidth(row);
-			}
-
-			vint GuiTextBoxCommonInterface::GetRowHeight()
-			{
-				return textElement->GetLines().GetRowHeight();
-			}
-
-			vint GuiTextBoxCommonInterface::GetMaxWidth()
-			{
-				return textElement->GetLines().GetMaxWidth();
-			}
-
-			vint GuiTextBoxCommonInterface::GetMaxHeight()
-			{
-				return textElement->GetLines().GetMaxHeight();
-			}
-
-			TextPos GuiTextBoxCommonInterface::GetTextPosFromPoint(Point point)
-			{
-				Point view=textElement->GetViewPosition();
-				return textElement->GetLines().GetTextPosFromPoint(Point(point.x+view.x, point.y+view.y));
-			}
-
-			Point GuiTextBoxCommonInterface::GetPointFromTextPos(TextPos pos)
-			{
-				Point view=textElement->GetViewPosition();
-				Point result=textElement->GetLines().GetPointFromTextPos(pos);
-				return Point(result.x-view.x, result.y-view.y);
-			}
-
-			Rect GuiTextBoxCommonInterface::GetRectFromTextPos(TextPos pos)
-			{
-				Point view=textElement->GetViewPosition();
-				Rect result=textElement->GetLines().GetRectFromTextPos(pos);
-				return Rect(Point(result.x1-view.x, result.y1-view.y), result.GetSize());
-			}
-
-			TextPos GuiTextBoxCommonInterface::GetNearestTextPos(Point point)
-			{
-				Point viewPosition=textElement->GetViewPosition();
-				Point mousePosition=Point(point.x+viewPosition.x, point.y+viewPosition.y);
-				TextPos pos=textElement->GetLines().GetTextPosFromPoint(mousePosition);
-				if(pos.column<textElement->GetLines().GetLine(pos.row).dataLength)
-				{
-					Rect rect=textElement->GetLines().GetRectFromTextPos(pos);
-					if(abs((int)(rect.x1-mousePosition.x))>=abs((int)(rect.x2-1-mousePosition.x)))
-					{
-						pos.column++;
-					}
-				}
-				return pos;
-			}
-
-			//================ colorizing
-
-			Ptr<GuiTextBoxColorizerBase> GuiTextBoxCommonInterface::GetColorizer()
-			{
-				return colorizer;
-			}
-
-			void GuiTextBoxCommonInterface::SetColorizer(Ptr<GuiTextBoxColorizerBase> value)
-			{
-				if (!filledDefaultColors)
-				{
-					filledDefaultColors = true;
-					CopyFrom(defaultColors, GetTextElement()->GetColors());
-				}
-
-				if(colorizer)
-				{
-					DetachTextEditCallback(colorizer);
-				}
-				colorizer=value;
-				if(colorizer)
-				{
-					AttachTextEditCallback(colorizer);
-					GetTextElement()->SetColors(colorizer->GetColors());
-				}
-				else
-				{
-					GetTextElement()->SetColors(defaultColors);
-					GetTextElement()->ResetTextColorIndex(0);
-				}
-			}
-
-			//================ auto complete
-
-			Ptr<GuiTextBoxAutoCompleteBase> GuiTextBoxCommonInterface::GetAutoComplete()
-			{
-				return autoComplete;
-			}
-
-			void GuiTextBoxCommonInterface::SetAutoComplete(Ptr<GuiTextBoxAutoCompleteBase> value)
-			{
-				if(autoComplete)
-				{
-					DetachTextEditCallback(autoComplete);
-				}
-				autoComplete=value;
-				if(autoComplete)
-				{
-					AttachTextEditCallback(autoComplete);
-				}
-			}
-
-			//================ undo redo control
-
-			vuint GuiTextBoxCommonInterface::GetEditVersion()
-			{
-				return editVersion;
-			}
-
-			bool GuiTextBoxCommonInterface::CanUndo()
-			{
-				return !readonly && undoRedoProcessor->CanUndo();
-			}
-
-			bool GuiTextBoxCommonInterface::CanRedo()
-			{
-				return !readonly && undoRedoProcessor->CanRedo();
-			}
-
-			void GuiTextBoxCommonInterface::ClearUndoRedo()
-			{
-				undoRedoProcessor->ClearUndoRedo();
-			}
-
-			bool GuiTextBoxCommonInterface::GetModified()
-			{
-				return undoRedoProcessor->GetModified();
-			}
-
-			void GuiTextBoxCommonInterface::NotifyModificationSaved()
-			{
-				undoRedoProcessor->NotifyModificationSaved();
-			}
-
-			bool GuiTextBoxCommonInterface::Undo()
-			{
-				if(CanUndo())
-				{
-					return undoRedoProcessor->Undo();
-				}
-				else
-				{
-					return false;
-				}
-			}
-
-			bool GuiTextBoxCommonInterface::Redo()
-			{
-				if(CanRedo())
-				{
-					return undoRedoProcessor->Redo();
-				}
-				else
-				{
-					return false;
-				}
-			}
-		}
-	}
-}
-
-/***********************************************************************
-.\CONTROLS\TEXTEDITORPACKAGE\GUITEXTCONTROLS.CPP
-***********************************************************************/
-
-namespace vl
-{
-	namespace presentation
-	{
-		namespace controls
-		{
-			using namespace elements;
-			using namespace elements::text;
-			using namespace compositions;
-			using namespace collections;
-
-/***********************************************************************
-GuiMultilineTextBox::DefaultTextElementOperatorCallback
-***********************************************************************/
-
-			GuiMultilineTextBox::TextElementOperatorCallback::TextElementOperatorCallback(GuiMultilineTextBox* _textControl)
-				:GuiTextBoxCommonInterface::DefaultCallback(
-					_textControl->textElement,
-					_textControl->textComposition
-					)
-				,textControl(_textControl)
-			{
-			}
-
-			void GuiMultilineTextBox::TextElementOperatorCallback::AfterModify(TextPos originalStart, TextPos originalEnd, const WString& originalText, TextPos inputStart, TextPos inputEnd, const WString& inputText)
-			{
-				textControl->CalculateView();
-			}
-			
-			void GuiMultilineTextBox::TextElementOperatorCallback::ScrollToView(Point point)
-			{
-				point.x+=TextMargin;
-				point.y+=TextMargin;
-				Point oldPoint = textControl->GetViewPosition();
-				vint marginX=0;
-				vint marginY=0;
-				if(oldPoint.x<point.x)
-				{
-					marginX=TextMargin;
-				}
-				else if(oldPoint.x>point.x)
-				{
-					marginX=-TextMargin;
-				}
-				if(oldPoint.y<point.y)
-				{
-					marginY=TextMargin;
-				}
-				else if(oldPoint.y>point.y)
-				{
-					marginY=-TextMargin;
-				}
-				textControl->SetViewPosition(Point(point.x + marginX, point.y + marginY));
-			}
-
-			vint GuiMultilineTextBox::TextElementOperatorCallback::GetTextMargin()
-			{
-				return TextMargin;
-			}
-
-/***********************************************************************
-GuiMultilineTextBox::CommandExecutor
-***********************************************************************/
-
-			GuiMultilineTextBox::CommandExecutor::CommandExecutor(GuiMultilineTextBox* _textBox)
-				:textBox(_textBox)
-			{
-			}
-
-			GuiMultilineTextBox::CommandExecutor::~CommandExecutor()
-			{
-			}
-
-			void GuiMultilineTextBox::CommandExecutor::UnsafeSetText(const WString& value)
-			{
-				textBox->UnsafeSetText(value);
-			}
-
-/***********************************************************************
-GuiMultilineTextBox
-***********************************************************************/
-
-			void GuiMultilineTextBox::BeforeControlTemplateUninstalled_()
-			{
-				auto ct = TypedControlTemplateObject(false);
-				if (!ct) return;
-
-				ct->SetCommands(nullptr);
-			}
-
-			void GuiMultilineTextBox::AfterControlTemplateInstalled_(bool initialize)
-			{
-				auto ct = TypedControlTemplateObject(true);
-				Array<ColorEntry> colors(1);
-				colors[0] = ct->GetTextColor();
-				textElement->SetColors(colors);
-				textElement->SetCaretColor(ct->GetCaretColor());
-				ct->SetCommands(commandExecutor.Obj());
-			}
-
-			void GuiMultilineTextBox::UpdateVisuallyEnabled()
-			{
-				GuiControl::UpdateVisuallyEnabled();
-				textElement->SetVisuallyEnabled(GetVisuallyEnabled());
-			}
-
-			void GuiMultilineTextBox::UpdateDisplayFont()
-			{
-				GuiControl::UpdateDisplayFont();
-				textElement->SetFont(GetDisplayFont());
-				CalculateViewAndSetScroll();
-			}
-
-			void GuiMultilineTextBox::OnRenderTargetChanged(elements::IGuiGraphicsRenderTarget* renderTarget)
-			{
-				CalculateViewAndSetScroll();
-				GuiScrollView::OnRenderTargetChanged(renderTarget);
-			}
-
-			Size GuiMultilineTextBox::QueryFullSize()
-			{
-				TextLines& lines = textElement->GetLines();
-				return Size(lines.GetMaxWidth() + TextMargin * 2, lines.GetMaxHeight() + TextMargin * 2);
-			}
-
-			void GuiMultilineTextBox::UpdateView(Rect viewBounds)
-			{
-				textElement->SetViewPosition(viewBounds.LeftTop() - Size(TextMargin, TextMargin));
-			}
-
-			void GuiMultilineTextBox::CalculateViewAndSetScroll()
-			{
-				auto ct = TypedControlTemplateObject(true);
-				CalculateView();
-				vint smallMove = textElement->GetLines().GetRowHeight();
-				vint bigMove = smallMove * 5;
-
-				if (auto scroll = ct->GetHorizontalScroll())
-				{
-					scroll->SetSmallMove(smallMove);
-					scroll->SetBigMove(bigMove);
-				}
-
-				if (auto scroll = ct->GetVerticalScroll())
-				{
-					scroll->SetSmallMove(smallMove);
-					scroll->SetBigMove(bigMove);
-				}
-			}
-
-			void GuiMultilineTextBox::OnBoundsMouseButtonDown(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments)
-			{
-				if(GetVisuallyEnabled())
-				{
-					SetFocused();
-				}
-			}
-
-			GuiMultilineTextBox::GuiMultilineTextBox(theme::ThemeName themeName)
-				:GuiScrollView(themeName)
-			{
-				textElement = GuiColorizedTextElement::Create();
-				textElement->SetFont(GetDisplayFont());
-
-				textComposition = new GuiBoundsComposition;
-				textComposition->SetAlignmentToParent(Margin(0, 0, 0, 0));
-				textComposition->SetOwnedElement(Ptr(textElement));
-				containerComposition->AddChild(textComposition);
-
-				callback = Ptr(new TextElementOperatorCallback(this));
-				commandExecutor = Ptr(new CommandExecutor(this));
-
-				SetAcceptTabInput(true);
-				SetFocusableComposition(boundsComposition);
-				Install(textElement, textComposition, this, boundsComposition, focusableComposition);
-				SetCallback(callback.Obj());
-
-				boundsComposition->GetEventReceiver()->leftButtonDown.AttachMethod(this, &GuiMultilineTextBox::OnBoundsMouseButtonDown);
-				boundsComposition->GetEventReceiver()->middleButtonDown.AttachMethod(this, &GuiMultilineTextBox::OnBoundsMouseButtonDown);
-				boundsComposition->GetEventReceiver()->rightButtonDown.AttachMethod(this, &GuiMultilineTextBox::OnBoundsMouseButtonDown);
-			}
-
-			GuiMultilineTextBox::~GuiMultilineTextBox()
-			{
-			}
-
-			const WString& GuiMultilineTextBox::GetText()
-			{
-				text = textElement->GetLines().GetText();
-				return text;
-			}
-
-			void GuiMultilineTextBox::SetText(const WString& value)
-			{
-				UnsafeSetText(value);
-				textElement->SetCaretBegin(TextPos(0, 0));
-				textElement->SetCaretEnd(TextPos(0, 0));
-				CalculateView();
-			}
-
-/***********************************************************************
-GuiSinglelineTextBox::DefaultTextElementOperatorCallback
-***********************************************************************/
-
-			GuiSinglelineTextBox::TextElementOperatorCallback::TextElementOperatorCallback(GuiSinglelineTextBox* _textControl)
-				:GuiTextBoxCommonInterface::DefaultCallback(
-					_textControl->textElement,
-					_textControl->textComposition
-					)
-			{
-			}
-
-			bool GuiSinglelineTextBox::TextElementOperatorCallback::BeforeModify(TextPos start, TextPos end, const WString& originalText, WString& inputText)
-			{
-				vint length = inputText.Length();
-				const wchar_t* input = inputText.Buffer();
-				for (vint i = 0; i < length; i++)
-				{
-					if (*input == 0 || *input == L'\r' || *input == L'\n')
-					{
-						length = i;
-						break;
-					}
-				}
-				if (length != inputText.Length())
-				{
-					if (length == 0)
-					{
-						// if the first line is empty after adjustment
-						// the input should just be canceled
-						// to prevent from making noise in undo
-						return false;
-					}
-					inputText = inputText.Left(length);
-				}
-				return true;
-			}
-
-			void GuiSinglelineTextBox::TextElementOperatorCallback::AfterModify(TextPos originalStart, TextPos originalEnd, const WString& originalText, TextPos inputStart, TextPos inputEnd, const WString& inputText)
-			{
-			}
-			
-			void GuiSinglelineTextBox::TextElementOperatorCallback::ScrollToView(Point point)
-			{
-				vint newX=point.x;
-				vint oldX=textElement->GetViewPosition().x;
-				vint marginX=0;
-				if(oldX<newX)
-				{
-					marginX=TextMargin;
-				}
-				else if(oldX>newX)
-				{
-					marginX=-TextMargin;
-				}
-
-				newX+=marginX;
-				vint minX=-TextMargin;
-				vint maxX=textElement->GetLines().GetMaxWidth()+TextMargin-textComposition->GetCachedBounds().Width();
-				if(newX>=maxX)
-				{
-					newX=maxX-1;
-				}
-				if(newX<minX)
-				{
-					newX=minX;
-				}
-				textElement->SetViewPosition(Point(newX, -TextMargin));
-			}
-
-			vint GuiSinglelineTextBox::TextElementOperatorCallback::GetTextMargin()
-			{
-				return TextMargin;
-			}
 
 /***********************************************************************
 GuiSinglelineTextBox
 ***********************************************************************/
 
-			void GuiSinglelineTextBox::BeforeControlTemplateUninstalled_()
+			GuiSinglelineTextBox::GuiSinglelineTextBox(theme::ThemeName themeName, const GuiDocumentConfig& _config)
+				: GuiDocumentLabel(themeName, FixConfig(GuiDocumentConfig::OverrideConfig(GuiDocumentConfig::GetSinglelineTextBoxDefaultConfig(), _config)))
 			{
-			}
-
-			void GuiSinglelineTextBox::AfterControlTemplateInstalled_(bool initialize)
-			{
-				auto ct = TypedControlTemplateObject(true);
-				Array<ColorEntry> colors(1);
-				colors[0] = ct->GetTextColor();
-				textElement->SetColors(colors);
-				textElement->SetCaretColor(ct->GetCaretColor());
-			}
-
-			void GuiSinglelineTextBox::UpdateVisuallyEnabled()
-			{
-				GuiControl::UpdateVisuallyEnabled();
-				textElement->SetVisuallyEnabled(GetVisuallyEnabled());
-			}
-
-			void GuiSinglelineTextBox::UpdateDisplayFont()
-			{
-				GuiControl::UpdateDisplayFont();
-				textElement->SetFont(GetDisplayFont());
-				RearrangeTextElement();
-			}
-
-			void GuiSinglelineTextBox::RearrangeTextElement()
-			{
-				textCompositionTable->SetRowOption(
-					1,
-					GuiCellOption::AbsoluteOption(
-						textElement->GetLines().GetRowHeight() + 2 * TextMargin)
-				);
-			}
-
-			void GuiSinglelineTextBox::OnRenderTargetChanged(elements::IGuiGraphicsRenderTarget* renderTarget)
-			{
-				GuiControl::OnRenderTargetChanged(renderTarget);
-				RearrangeTextElement();
-			}
-
-			void GuiSinglelineTextBox::OnBoundsMouseButtonDown(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments)
-			{
-				if(GetVisuallyEnabled())
-				{
-					SetFocused();
-				}
-			}
-
-			GuiSinglelineTextBox::GuiSinglelineTextBox(theme::ThemeName themeName)
-				:GuiControl(themeName)
-			{
-				textElement = GuiColorizedTextElement::Create();
-				textElement->SetFont(GetDisplayFont());
-				textElement->SetViewPosition(Point(-GuiSinglelineTextBox::TextMargin, -GuiSinglelineTextBox::TextMargin));
-
-				textCompositionTable = new GuiTableComposition;
-				textCompositionTable->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
-				textCompositionTable->SetAlignmentToParent(Margin(0, 0, 0, 0));
-				textCompositionTable->SetRowsAndColumns(3, 1);
-				textCompositionTable->SetRowOption(0, GuiCellOption::PercentageOption(0.5));
-				textCompositionTable->SetRowOption(1, GuiCellOption::AbsoluteOption(0));
-				textCompositionTable->SetRowOption(2, GuiCellOption::PercentageOption(0.5));
-				textCompositionTable->SetColumnOption(0, GuiCellOption::PercentageOption(1.0));
-				containerComposition->AddChild(textCompositionTable);
-
-				textComposition = new GuiCellComposition;
-				textComposition->SetOwnedElement(Ptr(textElement));
-				textCompositionTable->AddChild(textComposition);
-				textComposition->SetSite(1, 0, 1, 1);
-
-				callback = Ptr(new TextElementOperatorCallback(this));
-				SetAcceptTabInput(true);
-				SetFocusableComposition(boundsComposition);
-				Install(textElement, textComposition, this, boundsComposition, focusableComposition);
-				SetCallback(callback.Obj());
-
-				boundsComposition->GetEventReceiver()->leftButtonDown.AttachMethod(this, &GuiSinglelineTextBox::OnBoundsMouseButtonDown);
-				boundsComposition->GetEventReceiver()->middleButtonDown.AttachMethod(this, &GuiSinglelineTextBox::OnBoundsMouseButtonDown);
-				boundsComposition->GetEventReceiver()->rightButtonDown.AttachMethod(this, &GuiSinglelineTextBox::OnBoundsMouseButtonDown);
+				SetEditMode(GuiDocumentEditMode::Editable);
 			}
 
 			GuiSinglelineTextBox::~GuiSinglelineTextBox()
 			{
 			}
 
-			const WString& GuiSinglelineTextBox::GetText()
-			{
-				text = textElement->GetLines().GetText();
-				return text;
-			}
-
-			void GuiSinglelineTextBox::SetText(const WString& value)
-			{
-				UnsafeSetText(value);
-				textElement->SetCaretBegin(TextPos(0, 0));
-				textElement->SetCaretEnd(TextPos(0, 0));
-			}
-
 			wchar_t GuiSinglelineTextBox::GetPasswordChar()
 			{
-				return textElement->GetPasswordChar();
+				return documentElement->GetPasswordChar();
 			}
 
 			void GuiSinglelineTextBox::SetPasswordChar(wchar_t value)
 			{
-				textElement->SetPasswordChar(value);
+				documentElement->SetPasswordChar(value);
 			}
 		}
 	}
 }
 
-/***********************************************************************
-.\CONTROLS\TEXTEDITORPACKAGE\EDITORCALLBACK\GUITEXTAUTOCOMPLETE.CPP
-***********************************************************************/
-
-namespace vl
-{
-	namespace presentation
-	{
-		namespace controls
-		{
-			using namespace collections;
-
-/***********************************************************************
-GuiTextBoxAutoCompleteBase::TextListControlProvider
-***********************************************************************/
-
-			GuiTextBoxAutoCompleteBase::TextListControlProvider::TextListControlProvider(TemplateProperty<templates::GuiTextListTemplate> controlTemplate)
-			{
-				autoCompleteList = new GuiTextList(theme::ThemeName::TextList);
-				if (controlTemplate)
-				{
-					autoCompleteList->SetControlTemplate(controlTemplate);
-				}
-				autoCompleteList->SetHorizontalAlwaysVisible(false);
-				autoCompleteList->SetVerticalAlwaysVisible(false);
-			}
-
-			GuiTextBoxAutoCompleteBase::TextListControlProvider::~TextListControlProvider()
-			{
-			}
-
-			GuiControl* GuiTextBoxAutoCompleteBase::TextListControlProvider::GetAutoCompleteControl()
-			{
-				return autoCompleteList;
-			}
-
-			GuiSelectableListControl* GuiTextBoxAutoCompleteBase::TextListControlProvider::GetListControl()
-			{
-				return autoCompleteList;
-			}
-
-			void GuiTextBoxAutoCompleteBase::TextListControlProvider::SetSortedContent(const collections::List<AutoCompleteItem>& items)
-			{
-				autoCompleteList->GetItems().Clear();
-				for (auto item : items)
-				{
-					autoCompleteList->GetItems().Add(Ptr(new list::TextItem(item.text)));
-				}
-			}
-
-			vint GuiTextBoxAutoCompleteBase::TextListControlProvider::GetItemCount()
-			{
-				return autoCompleteList->GetItems().Count();
-			}
-
-			WString GuiTextBoxAutoCompleteBase::TextListControlProvider::GetItemText(vint index)
-			{
-				return autoCompleteList->GetItems()[index]->GetText();
-			}
-
-/***********************************************************************
-GuiTextBoxAutoCompleteBase
-***********************************************************************/
-
-			bool GuiTextBoxAutoCompleteBase::IsPrefix(const WString& prefix, const WString& candidate)
-			{
-				if(candidate.Length()>=prefix.Length())
-				{
-					if(INVLOC.Compare(prefix, candidate.Sub(0, prefix.Length()), Locale::IgnoreCase)==0)
-					{
-						return true;
-					}
-				}
-				return false;
-			}
-
-			GuiTextBoxAutoCompleteBase::GuiTextBoxAutoCompleteBase(Ptr<IAutoCompleteControlProvider> _autoCompleteControlProvider)
-				:element(0)
-				, elementModifyLock(0)
-				, ownerComposition(0)
-				, autoCompleteControlProvider(_autoCompleteControlProvider)
-			{
-				if (!autoCompleteControlProvider)
-				{
-					autoCompleteControlProvider = Ptr(new TextListControlProvider);
-				}
-				autoCompleteControlProvider->GetAutoCompleteControl()->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
-
-				autoCompletePopup = new GuiPopup(theme::ThemeName::Menu);
-				autoCompletePopup->AddChild(autoCompleteControlProvider->GetAutoCompleteControl());
-			}
-
-			GuiTextBoxAutoCompleteBase::~GuiTextBoxAutoCompleteBase()
-			{
-				delete autoCompletePopup;
-			}
-
-			void GuiTextBoxAutoCompleteBase::Attach(elements::GuiColorizedTextElement* _element, SpinLock& _elementModifyLock, compositions::GuiGraphicsComposition* _ownerComposition, vuint editVersion)
-			{
-				if(_element)
-				{
-					SPIN_LOCK(_elementModifyLock)
-					{
-						element=_element;
-						elementModifyLock=&_elementModifyLock;
-						ownerComposition=_ownerComposition;
-					}
-				}
-			}
-
-			void GuiTextBoxAutoCompleteBase::Detach()
-			{
-				if(element && elementModifyLock)
-				{
-					SPIN_LOCK(*elementModifyLock)
-					{
-						element=0;
-						elementModifyLock=0;
-					}
-				}
-			}
-
-			void GuiTextBoxAutoCompleteBase::TextEditPreview(TextEditPreviewStruct& arguments)
-			{
-			}
-
-			void GuiTextBoxAutoCompleteBase::TextEditNotify(const TextEditNotifyStruct& arguments)
-			{
-				if(element && elementModifyLock)
-				{
-					if(IsListOpening())
-					{
-						TextPos begin=GetListStartPosition();
-						TextPos end=arguments.inputEnd;
-						WString editingText=element->GetLines().GetText(begin, end);
-						HighlightList(editingText);
-					}
-				}
-			}
-
-			void GuiTextBoxAutoCompleteBase::TextCaretChanged(const TextCaretChangedStruct& arguments)
-			{
-			}
-
-			void GuiTextBoxAutoCompleteBase::TextEditFinished(vuint editVersion)
-			{
-			}
-
-			bool GuiTextBoxAutoCompleteBase::IsListOpening()
-			{
-				return autoCompletePopup->GetOpening();
-			}
-
-			void GuiTextBoxAutoCompleteBase::OpenList(TextPos startPosition)
-			{
-				if(element && elementModifyLock)
-				{
-					autoCompleteStartPosition=startPosition;
-					Rect bounds=element->GetLines().GetRectFromTextPos(startPosition);
-					Point viewPosition=element->GetViewPosition();
-					GuiControl* ownerControl=ownerComposition->GetRelatedControl();
-					Rect compositionBounds=ownerComposition->GetGlobalBounds();
-					Rect controlBounds=ownerControl->GetBoundsComposition()->GetGlobalBounds();
-					vint px=compositionBounds.x1-controlBounds.x1-viewPosition.x;
-					vint py=compositionBounds.y1-controlBounds.y1-viewPosition.y;
-					bounds.x1+=px;
-					bounds.x2+=px;
-					bounds.y1+=py+5;
-					bounds.y2+=py+5;
-					autoCompletePopup->ShowPopup(ownerControl, bounds, true);
-				}
-			}
-
-			void GuiTextBoxAutoCompleteBase::CloseList()
-			{
-				autoCompletePopup->Close();
-			}
-
-			void GuiTextBoxAutoCompleteBase::SetListContent(const collections::List<AutoCompleteItem>& items)
-			{
-				if(items.Count()==0)
-				{
-					CloseList();
-				}
-
-				List<AutoCompleteItem> sortedItems;
-				CopyFrom(
-					sortedItems,
-					From(items)
-						.OrderBy([](const AutoCompleteItem& a, const AutoCompleteItem& b)
-						{
-							return INVLOC.Compare(a.text, b.text, Locale::IgnoreCase) <=> 0;
-						})
-					);
-
-				autoCompleteControlProvider->SetSortedContent(sortedItems);
-				autoCompleteControlProvider->GetAutoCompleteControl()->GetBoundsComposition()->SetPreferredMinSize(Size(200, 200));
-			}
-
-			TextPos GuiTextBoxAutoCompleteBase::GetListStartPosition()
-			{
-				return autoCompleteStartPosition;
-			}
-
-			bool GuiTextBoxAutoCompleteBase::SelectPreviousListItem()
-			{
-				if(!IsListOpening()) return false;
-				if(autoCompleteControlProvider->GetListControl()->GetSelectedItems().Count()==0)
-				{
-					autoCompleteControlProvider->GetListControl()->SetSelected(0, true);
-				}
-				else
-				{
-					vint index=autoCompleteControlProvider->GetListControl()->GetSelectedItems()[0];
-					if (index > 0) index--;
-					autoCompleteControlProvider->GetListControl()->SetSelected(index, true);
-					autoCompleteControlProvider->GetListControl()->EnsureItemVisible(index);
-				}
-				return true;
-			}
-
-			bool GuiTextBoxAutoCompleteBase::SelectNextListItem()
-			{
-				if(!IsListOpening()) return false;
-				if (autoCompleteControlProvider->GetListControl()->GetSelectedItems().Count() == 0)
-				{
-					autoCompleteControlProvider->GetListControl()->SetSelected(0, true);
-				}
-				else
-				{
-					vint index = autoCompleteControlProvider->GetListControl()->GetSelectedItems()[0];
-					if (index < autoCompleteControlProvider->GetItemCount() - 1) index++;
-					autoCompleteControlProvider->GetListControl()->SetSelected(index, true);
-					autoCompleteControlProvider->GetListControl()->EnsureItemVisible(index);
-				}
-				return true;
-			}
-
-			bool GuiTextBoxAutoCompleteBase::ApplySelectedListItem()
-			{
-				if(!IsListOpening()) return false;
-				if(!ownerComposition) return false;
-				const auto& selectedItems = autoCompleteControlProvider->GetListControl()->GetSelectedItems();
-				if (selectedItems.Count() == 0) return false;
-				GuiTextBoxCommonInterface* ci=dynamic_cast<GuiTextBoxCommonInterface*>(ownerComposition->GetRelatedControl());
-				if(!ci) return false;
-
-				vint index = selectedItems[0];
-				WString selectedItem = autoCompleteControlProvider->GetItemText(index);
-				TextPos begin = autoCompleteStartPosition;
-				TextPos end = ci->GetCaretEnd();
-				ci->Select(begin, end);
-				ci->SetSelectionText(selectedItem);
-				CloseList();
-				return true;
-			}
-
-			WString GuiTextBoxAutoCompleteBase::GetSelectedListItem()
-			{
-				if(!IsListOpening()) return L"";
-				const auto& selectedItems = autoCompleteControlProvider->GetListControl()->GetSelectedItems();
-				if (selectedItems.Count() == 0) return L"";
-				vint index = selectedItems[0];
-				return autoCompleteControlProvider->GetItemText(index);
-			}
-
-			void GuiTextBoxAutoCompleteBase::HighlightList(const WString& editingText)
-			{
-				if(IsListOpening())
-				{
-					vint first=0;
-					vint last = autoCompleteControlProvider->GetItemCount() - 1;
-					vint selected=-1;
-
-					while (first <= last)
-					{
-						vint middle = (first + last) / 2;
-						WString text = autoCompleteControlProvider->GetItemText(middle);
-						if (IsPrefix(editingText, text))
-						{
-							selected = middle;
-							break;
-						}
-
-						vint result = INVLOC.Compare(editingText, text, Locale::IgnoreCase);
-						if (result <= 0)
-						{
-							last = middle - 1;
-						}
-						else
-						{
-							first = middle + 1;
-						}
-					}
-
-					while(selected>0)
-					{
-						WString text = autoCompleteControlProvider->GetItemText(selected - 1);
-						if (IsPrefix(editingText, text))
-						{
-							selected--;
-						}
-						else
-						{
-							break;
-						}
-					}
-
-					if(selected!=-1)
-					{
-						autoCompleteControlProvider->GetListControl()->SetSelected(selected, true);
-						autoCompleteControlProvider->GetListControl()->EnsureItemVisible(selected);
-					}
-				}
-			}
-		}
-	}
-}
-
-/***********************************************************************
-.\CONTROLS\TEXTEDITORPACKAGE\EDITORCALLBACK\GUITEXTCOLORIZER.CPP
-***********************************************************************/
-
-namespace vl
-{
-	namespace presentation
-	{
-		namespace controls
-		{
-			using namespace elements;
-			using namespace elements::text;
-
-/***********************************************************************
-GuiTextBoxColorizerBase
-***********************************************************************/
-
-			void GuiTextBoxColorizerBase::ColorizerThreadProc(void* argument)
-			{
-				GuiTextBoxColorizerBase* colorizer=(GuiTextBoxColorizerBase*)argument;
-				while(!colorizer->isFinalizing)
-				{
-					vint lineIndex=-1;
-					wchar_t* text=0;
-					vuint32_t* colors=0;
-					vint length=0;
-					vint lexerState=-1;
-					vint contextState=-1;
-
-					SPIN_LOCK(*colorizer->elementModifyLock)
-					{
-						if(colorizer->colorizedLineCount>=colorizer->element->GetLines().GetCount())
-						{
-							colorizer->isColorizerRunning=false;
-							goto CANCEL_COLORIZING;
-						}
-
-						lineIndex=colorizer->colorizedLineCount++;
-						TextLine& line=colorizer->element->GetLines().GetLine(lineIndex);
-						length=line.dataLength;
-						text=new wchar_t[length+2];
-						colors=new vuint32_t[length+2];
-						memcpy(text, line.text, sizeof(wchar_t)*length);
-						text[length]=L'\r';
-						text[length+1]=L'\n';
-						lexerState=lineIndex==0?colorizer->GetLexerStartState():colorizer->element->GetLines().GetLine(lineIndex-1).lexerFinalState;
-						contextState=lineIndex==0?colorizer->GetContextStartState():colorizer->element->GetLines().GetLine(lineIndex-1).contextFinalState;
-					}
-
-					colorizer->ColorizeLineWithCRLF(lineIndex, text, colors, length+2, lexerState, contextState);
-
-					SPIN_LOCK(*colorizer->elementModifyLock)
-					{
-						if(lineIndex<colorizer->colorizedLineCount && lineIndex<colorizer->element->GetLines().GetCount())
-						{
-							TextLine& line=colorizer->element->GetLines().GetLine(lineIndex);
-							line.lexerFinalState=lexerState;
-							line.contextFinalState=contextState;
-							for(vint i=0;i<length;i++)
-							{
-								line.att[i].colorIndex=colors[i];
-							}
-						}
-						delete[] text;
-						delete[] colors;
-					}
-				}
-			CANCEL_COLORIZING:
-				colorizer->colorizerRunningEvent.Leave();
-			}
-
-			void GuiTextBoxColorizerBase::StartColorizer()
-			{
-				if(!isColorizerRunning)
-				{
-					isColorizerRunning=true;
-					colorizerRunningEvent.Enter();
-					ThreadPoolLite::Queue(&GuiTextBoxColorizerBase::ColorizerThreadProc, this);
-				}
-			}
-
-			void GuiTextBoxColorizerBase::StopColorizer(bool forever)
-			{
-				isFinalizing=true;
-				colorizerRunningEvent.Enter();
-				colorizerRunningEvent.Leave();
-				colorizedLineCount=0;
-				if(!forever)
-				{
-					isFinalizing=false;
-				}
-			}
-
-			void GuiTextBoxColorizerBase::StopColorizerForever()
-			{
-				StopColorizer(true);
-			}
-
-			GuiTextBoxColorizerBase::GuiTextBoxColorizerBase()
-				:element(0)
-				,elementModifyLock(0)
-				,colorizedLineCount(0)
-				,isColorizerRunning(false)
-				,isFinalizing(false)
-			{
-			}
-
-			GuiTextBoxColorizerBase::~GuiTextBoxColorizerBase()
-			{
-				StopColorizerForever();
-			}
-
-			void GuiTextBoxColorizerBase::Attach(elements::GuiColorizedTextElement* _element, SpinLock& _elementModifyLock, compositions::GuiGraphicsComposition* _ownerComposition, vuint editVersion)
-			{
-				if(_element)
-				{
-					SPIN_LOCK(_elementModifyLock)
-					{
-						element=_element;
-						elementModifyLock=&_elementModifyLock;
-						StartColorizer();
-					}
-				}
-			}
-
-			void GuiTextBoxColorizerBase::Detach()
-			{
-				if(element && elementModifyLock)
-				{
-					StopColorizer(false);
-					SPIN_LOCK(*elementModifyLock)
-					{
-						element=0;
-						elementModifyLock=0;
-					}
-				}
-			}
-
-			void GuiTextBoxColorizerBase::TextEditPreview(TextEditPreviewStruct& arguments)
-			{
-			}
-
-			void GuiTextBoxColorizerBase::TextEditNotify(const TextEditNotifyStruct& arguments)
-			{
-				if(element && elementModifyLock)
-				{
-					SPIN_LOCK(*elementModifyLock)
-					{
-						vint line
-							=arguments.originalStart.row<arguments.originalEnd.row
-							?arguments.originalStart.row
-							:arguments.originalEnd.row;
-						if(colorizedLineCount>line)
-						{
-							colorizedLineCount=line;
-						}
-						StartColorizer();
-					}
-				}
-			}
-
-			void GuiTextBoxColorizerBase::TextCaretChanged(const TextCaretChangedStruct& arguments)
-			{
-			}
-
-			void GuiTextBoxColorizerBase::TextEditFinished(vuint editVersion)
-			{
-			}
-
-			void GuiTextBoxColorizerBase::RestartColorizer()
-			{
-				if(element && elementModifyLock)
-				{
-					SPIN_LOCK(*elementModifyLock)
-					{
-						colorizedLineCount=0;
-						StartColorizer();
-					}
-				}
-			}
-
-/***********************************************************************
-GuiTextBoxRegexColorizer
-***********************************************************************/
-
-			struct GuiTextBoxRegexColorizerProcData
-			{
-				GuiTextBoxRegexColorizer*		colorizer;
-				vint							lineIndex;
-				const wchar_t*					text;
-				vuint32_t*						colors;
-				vint							contextState;
-			};
-
-			void GuiTextBoxRegexColorizer::ColorizerProc(void* argument, vint start, vint length, vint token)
-			{
-				GuiTextBoxRegexColorizerProcData& data=**(GuiTextBoxRegexColorizerProcData**)argument;
-				data.colorizer->ColorizeTokenContextSensitive(data.lineIndex, data.text, start, length, token, data.contextState);
-				for(vint i=0;i<length;i++)
-				{
-					data.colors[start+i]=(int)token+1;
-				}
-			}
-
-			GuiTextBoxRegexColorizer::GuiTextBoxRegexColorizer()
-			{
-				colors.Resize(1);
-			}
-
-			GuiTextBoxRegexColorizer::~GuiTextBoxRegexColorizer()
-			{
-				StopColorizerForever();
-			}
-
-			elements::text::ColorEntry GuiTextBoxRegexColorizer::GetDefaultColor()
-			{
-				return defaultColor;
-			}
-
-			collections::List<WString>& GuiTextBoxRegexColorizer::GetTokenRegexes()
-			{
-				return tokenRegexes;
-			}
-
-			collections::List<elements::text::ColorEntry>& GuiTextBoxRegexColorizer::GetTokenColors()
-			{
-				return tokenColors;
-			}
-
-			collections::List<elements::text::ColorEntry>& GuiTextBoxRegexColorizer::GetExtraTokenColors()
-			{
-				return extraTokenColors;
-			}
-
-			vint GuiTextBoxRegexColorizer::GetExtraTokenIndexStart()
-			{
-				if(lexer)
-				{
-					return tokenColors.Count();
-				}
-				else
-				{
-					return -1;
-				}
-			}
-
-			bool GuiTextBoxRegexColorizer::SetDefaultColor(elements::text::ColorEntry value)
-			{
-				if(lexer)
-				{
-					return false;
-				}
-				else
-				{
-					defaultColor=value;
-					return true;
-				}
-			}
-
-			vint GuiTextBoxRegexColorizer::AddToken(const WString& regex, elements::text::ColorEntry color)
-			{
-				if(lexer)
-				{
-					return -1;
-				}
-				else
-				{
-					tokenRegexes.Add(regex);
-					tokenColors.Add(color);
-					return tokenColors.Count()-1;
-				}
-			}
-
-			vint GuiTextBoxRegexColorizer::AddExtraToken(elements::text::ColorEntry color)
-			{
-				if(lexer)
-				{
-					return -1;
-				}
-				else
-				{
-					extraTokenColors.Add(color);
-					return extraTokenColors.Count()-1;
-				}
-			}
-
-			void GuiTextBoxRegexColorizer::ClearTokens()
-			{
-				tokenRegexes.Clear();
-				tokenColors.Clear();
-				extraTokenColors.Clear();
-				lexer=0;
-			}
-
-			void GuiTextBoxRegexColorizer::Setup()
-			{
-				if (lexer || tokenRegexes.Count() == 0)
-				{
-					colors.Resize(1);
-					colors[0] = defaultColor;
-				}
-				else
-				{
-					lexer = Ptr(new regex::RegexLexer(tokenRegexes));
-					colors.Resize(1 + tokenRegexes.Count() + extraTokenColors.Count());
-					colors[0] = defaultColor;
-					for (vint i = 0; i < tokenColors.Count(); i++)
-					{
-						colors[i + 1] = tokenColors[i];
-					}
-					for (vint i = 0; i < extraTokenColors.Count(); i++)
-					{
-						colors[i + 1 + tokenColors.Count()] = extraTokenColors[i];
-					}
-					{
-						regex::RegexProc proc;
-						proc.colorizeProc = &GuiTextBoxRegexColorizer::ColorizerProc;
-						proc.argument = colorizerArgument;
-						colorizer = Ptr(new regex::RegexLexerColorizer(lexer->Colorize(proc)));
-					}
-				}
-			}
-
-			void GuiTextBoxRegexColorizer::ColorizeTokenContextSensitive(vint lineIndex, const wchar_t* text, vint start, vint length, vint& token, vint& contextState)
-			{
-			}
-
-			vint GuiTextBoxRegexColorizer::GetLexerStartState()
-			{
-				return lexer?colorizer->GetStartState():-1;
-			}
-
-			vint GuiTextBoxRegexColorizer::GetContextStartState()
-			{
-				return 0;
-			}
-
-			void GuiTextBoxRegexColorizer::ColorizeLineWithCRLF(vint lineIndex, const wchar_t* text, vuint32_t* colors, vint length, vint& lexerState, vint& contextState)
-			{
-				memset(colors, 0, sizeof(*colors)*length);
-				if (lexer)
-				{
-					GuiTextBoxRegexColorizerProcData data;
-					data.colorizer = this;
-					data.lineIndex = lineIndex;
-					data.text = text;
-					data.colors = colors;
-					data.contextState = contextState;
-
-					regex::RegexLexerColorizer::InternalState internalState;
-					internalState.currentState = lexerState;
-					colorizer->SetInternalState(internalState);
-					colorizerArgument[0] = &data;
-					colorizer->Colorize(text, length);
-
-					lexerState = colorizer->GetInternalState().currentState;
-					contextState = data.contextState;
-				}
-				else
-				{
-					lexerState = -1;
-					contextState = -1;
-				}
-			}
-
-			const GuiTextBoxRegexColorizer::ColorArray& GuiTextBoxRegexColorizer::GetColors()
-			{
-				return colors;
-			}
-		}
-	}
-}
 
 /***********************************************************************
 .\CONTROLS\TEXTEDITORPACKAGE\EDITORCALLBACK\GUITEXTUNDOREDO.CPP
@@ -21847,7 +19868,6 @@ namespace vl
 		namespace controls
 		{
 			using namespace elements;
-			using namespace elements::text;
 			using namespace compositions;
 
 /***********************************************************************
@@ -21943,75 +19963,6 @@ GuiGeneralUndoRedoProcessor
 				UndoRedoChanged();
 				ModifiedChanged();
 				return true;
-			}
-
-/***********************************************************************
-GuiTextBoxUndoRedoProcessor::EditStep
-***********************************************************************/
-
-			void GuiTextBoxUndoRedoProcessor::EditStep::Undo()
-			{
-				GuiTextBoxCommonInterface* ci=dynamic_cast<GuiTextBoxCommonInterface*>(processor->ownerComposition->GetRelatedControl());
-				if(ci)
-				{
-					ci->Select(arguments.inputStart, arguments.inputEnd);
-					ci->SetSelectionText(arguments.originalText);
-					ci->Select(arguments.originalStart, arguments.originalEnd);
-				}
-			}
-
-			void GuiTextBoxUndoRedoProcessor::EditStep::Redo()
-			{
-				GuiTextBoxCommonInterface* ci=dynamic_cast<GuiTextBoxCommonInterface*>(processor->ownerComposition->GetRelatedControl());
-				if(ci)
-				{
-					ci->Select(arguments.originalStart, arguments.originalEnd);
-					ci->SetSelectionText(arguments.inputText);
-					ci->Select(arguments.inputStart, arguments.inputEnd);
-				}
-			}
-
-/***********************************************************************
-GuiTextBoxUndoRedoProcessor
-***********************************************************************/
-
-			GuiTextBoxUndoRedoProcessor::GuiTextBoxUndoRedoProcessor()
-				:ownerComposition(0)
-			{
-			}
-
-			GuiTextBoxUndoRedoProcessor::~GuiTextBoxUndoRedoProcessor()
-			{
-			}
-
-			void GuiTextBoxUndoRedoProcessor::Attach(elements::GuiColorizedTextElement* element, SpinLock& elementModifyLock, compositions::GuiGraphicsComposition* _ownerComposition, vuint editVersion)
-			{
-				ownerComposition=_ownerComposition;
-			}
-
-			void GuiTextBoxUndoRedoProcessor::Detach()
-			{
-				ClearUndoRedo();
-			}
-
-			void GuiTextBoxUndoRedoProcessor::TextEditPreview(TextEditPreviewStruct& arguments)
-			{
-			}
-
-			void GuiTextBoxUndoRedoProcessor::TextEditNotify(const TextEditNotifyStruct& arguments)
-			{
-				auto step=Ptr(new EditStep);
-				step->processor=this;
-				step->arguments=arguments;
-				PushStep(step);
-			}
-
-			void GuiTextBoxUndoRedoProcessor::TextCaretChanged(const TextCaretChangedStruct& arguments)
-			{
-			}
-
-			void GuiTextBoxUndoRedoProcessor::TextEditFinished(vuint editVersion)
-			{
 			}
 
 /***********************************************************************
@@ -22124,1807 +20075,6 @@ GuiDocumentUndoRedoProcessor
 				step->processor=this;
 				step->arguments=arguments;
 				PushStep(step);
-			}
-		}
-	}
-}
-
-/***********************************************************************
-.\CONTROLS\TEXTEDITORPACKAGE\LANGUAGESERVICE\GUILANGUAGEAUTOCOMPLETE.CPP
-***********************************************************************/
-
-namespace vl
-{
-	namespace presentation
-	{
-		namespace controls
-		{
-			using namespace elements;
-			using namespace regex;
-			using namespace parsing;
-			using namespace parsing::tabling;
-			using namespace collections;
-
-/***********************************************************************
-GuiGrammarAutoComplete
-***********************************************************************/
-
-			void GuiGrammarAutoComplete::Attach(elements::GuiColorizedTextElement* _element, SpinLock& _elementModifyLock, compositions::GuiGraphicsComposition* _ownerComposition, vuint editVersion)
-			{
-				GuiTextBoxAutoCompleteBase::Attach(_element, _elementModifyLock, _ownerComposition, editVersion);
-				RepeatingParsingExecutor::CallbackBase::Attach(_element, _elementModifyLock, _ownerComposition, editVersion);
-			}
-
-			void GuiGrammarAutoComplete::Detach()
-			{
-				GuiTextBoxAutoCompleteBase::Detach();
-				RepeatingParsingExecutor::CallbackBase::Detach();
-				if(element && elementModifyLock)
-				{
-					EnsureAutoCompleteFinished();
-				}
-			}
-
-			void GuiGrammarAutoComplete::TextEditPreview(TextEditPreviewStruct& arguments)
-			{
-				GuiTextBoxAutoCompleteBase::TextEditPreview(arguments);
-				RepeatingParsingExecutor::CallbackBase::TextEditPreview(arguments);
-
-				if(element && elementModifyLock)
-				{
-					if(IsListOpening() && arguments.keyInput && arguments.originalText==L"" && arguments.inputText!=L"")
-					{
-						WString selectedItem=GetSelectedListItem();
-						if(selectedItem!=L"")
-						{
-							TextPos begin=GetListStartPosition();
-							TextPos end=arguments.originalStart;
-							WString editingText=element->GetLines().GetText(begin, end);
-							editingText+=arguments.inputText;
-							if(grammarParser->GetTable()->GetLexer().Walk().IsClosedToken(editingText))
-							{
-								arguments.originalStart=begin;
-								arguments.inputText=selectedItem+arguments.inputText;
-								CloseList();
-							}
-						}
-					}
-				}
-			}
-
-			void GuiGrammarAutoComplete::TextEditNotify(const TextEditNotifyStruct& arguments)
-			{
-				GuiTextBoxAutoCompleteBase::TextEditNotify(arguments);
-				RepeatingParsingExecutor::CallbackBase::TextEditNotify(arguments);
-				if(element && elementModifyLock)
-				{
-					editing=true;
-					SPIN_LOCK(editTraceLock)
-					{
-						editTrace.Add(arguments);
-					}
-				}
-			}
-
-			void GuiGrammarAutoComplete::TextCaretChanged(const TextCaretChangedStruct& arguments)
-			{
-				GuiTextBoxAutoCompleteBase::TextCaretChanged(arguments);
-				RepeatingParsingExecutor::CallbackBase::TextCaretChanged(arguments);
-				if(element && elementModifyLock)
-				{
-					SPIN_LOCK(editTraceLock)
-					{
-						// queue a fake TextEditNotifyStruct
-						// a fake struct can be detected by (trace.originalText==L"" && trace.inputText==L"")
-						TextEditNotifyStruct trace;
-						trace.editVersion=arguments.editVersion;
-						trace.originalStart=arguments.oldBegin;
-						trace.originalEnd=arguments.oldEnd;
-						trace.inputStart=arguments.newBegin;
-						trace.inputEnd=arguments.newEnd;
-
-						// ensure trace.originalStart<=trace.originalEnd
-						if(trace.originalStart>trace.originalEnd)
-						{
-							TextPos temp=trace.originalStart;
-							trace.originalStart=trace.originalEnd;
-							trace.originalEnd=temp;
-						}
-						// ensure trace.inputStart<=trace.inputEnd
-						if(trace.inputStart>trace.inputEnd)
-						{
-							TextPos temp=trace.inputStart;
-							trace.inputStart=trace.inputEnd;
-							trace.inputEnd=temp;
-						}
-						editTrace.Add(trace);
-					}
-
-					SPIN_LOCK(contextLock)
-					{
-						if(context.input.node)
-						{
-							if(editing)
-							{
-								// if the current caret changing is caused by editing
-								// submit a task with valid editVersion and invalid node and code
-								RepeatingParsingOutput input;
-								input.editVersion=context.input.editVersion;
-								SubmitTask(input);
-							}
-							else if(context.input.editVersion == arguments.editVersion)
-							{
-								// if the current caret changing is not caused by editing
-								// submit a task with the previous input
-								SubmitTask(context.input);
-							}
-						}
-					}
-				}
-			}
-
-			void GuiGrammarAutoComplete::TextEditFinished(vuint editVersion)
-			{
-				GuiTextBoxAutoCompleteBase::TextEditFinished(editVersion);
-				RepeatingParsingExecutor::CallbackBase::TextEditFinished(editVersion);
-				if(element && elementModifyLock)
-				{
-					editing=false;
-				}
-			}
-
-			void GuiGrammarAutoComplete::OnParsingFinishedAsync(const RepeatingParsingOutput& arguments)
-			{
-				if(element && elementModifyLock)
-				{
-					GetApplication()->InvokeInMainThread(ownerComposition->GetRelatedControlHost(), [=, this]()
-					{
-						// submit a task if the RepeatingParsingExecutor notices a new parsing result
-						SubmitTask(arguments);
-					});
-				}
-			}
-
-			void GuiGrammarAutoComplete::CollectLeftRecursiveRules()
-			{
-				leftRecursiveRules.Clear();
-				Ptr<ParsingGeneralParser> parser=parsingExecutor->GetParser();
-				Ptr<ParsingTable> table=parser->GetTable();
-				vint stateCount=table->GetStateCount();
-				vint tokenCount=table->GetTokenCount();
-				for(vint i=0;i<stateCount;i++)
-				{
-					for(vint j=0;j<tokenCount;j++)
-					{
-						Ptr<ParsingTable::TransitionBag> bag=table->GetTransitionBag(i, j);
-						if(bag)
-						{
-							for (auto item : bag->transitionItems)
-							{
-								for (auto ins : item->instructions)
-								{
-									if(ins.instructionType==ParsingTable::Instruction::LeftRecursiveReduce)
-									{
-										if(!leftRecursiveRules.Contains(ins.creatorRule))
-										{
-											leftRecursiveRules.Add(ins.creatorRule);
-										}
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-
-			vint GuiGrammarAutoComplete::UnsafeGetEditTraceIndex(vuint editVersion)
-			{
-				// get the index of the latest TextEditNotifyStruct of a specified edit version
-				// this function should be called inside SPIN_LOCK(editTraceLock)
-				// perform a binary search
-				vint start = 0;
-				vint end = editTrace.Count() - 1;
-				while (start <= end)
-				{
-					vint middle = (start + end) / 2;
-					TextEditNotifyStruct& trace = editTrace[middle];
-
-					if (editVersion<trace.editVersion)
-					{
-						end = middle - 1;
-					}
-					else if (editVersion>trace.editVersion)
-					{
-						start = middle + 1;
-					}
-					else
-					{
-						// if multiple TextEditNotifyStruct is found, choose the latest one
-						while (middle < editTrace.Count() - 1)
-						{
-							if (editTrace[middle + 1].editVersion == editTrace[middle].editVersion)
-							{
-								middle++;
-							}
-							else
-							{
-								break;
-							}
-						}
-						return middle;
-					}
-				}
-				return -1;
-			}
-
-			TextPos GuiGrammarAutoComplete::ChooseCorrectTextPos(TextPos pos, const regex::RegexTokens& tokens)
-			{
-				Ptr<ParsingTable> table=grammarParser->GetTable();
-				RegexToken lastToken;
-				lastToken.reading=0;
-
-				for (auto token : tokens)
-				{
-					// we treat "class| Name" as editing the first token
-					if(TextPos(token.rowEnd, token.columnEnd+1)>=pos)
-					{
-						if(table->GetTableTokenIndex(token.token)!=-1 && lastToken.reading)
-						{
-							pos=TextPos(lastToken.rowStart, lastToken.columnStart);
-						}
-						break;
-					}
-					lastToken=token;
-				}
-				return pos;
-			}
-
-			void GuiGrammarAutoComplete::ExecuteRefresh(AutoCompleteContext& newContext)
-			{
-				// process the input of a task is submitted not by text editing
-				// find the text selection by the edit version of the input
-				TextPos startPos, endPos;
-				{
-					SPIN_LOCK(editTraceLock)
-					{
-						vint traceIndex = UnsafeGetEditTraceIndex(newContext.input.editVersion);
-						if (traceIndex == -1) return;
-
-						TextEditNotifyStruct& trace = editTrace[traceIndex];
-						startPos = trace.inputStart;
-						endPos = trace.inputEnd;
-					}
-
-					const RegexLexer& lexer = grammarParser->GetTable()->GetLexer();
-					RegexTokens tokens = lexer.Parse(newContext.input.code);
-					startPos = ChooseCorrectTextPos(startPos, tokens);
-				}
-
-				// locate the deepest node using the text selection
-				ParsingTextPos start(startPos.row, startPos.column);
-				ParsingTextPos end(endPos.row, endPos.column);
-				ParsingTextRange range(start, end);
-				ParsingTreeNode* found = newContext.input.node->FindDeepestNode(range);
-				ParsingTreeObject* selectedNode = 0;
-
-				// if the location failed, choose the root node
-				if (!found || startPos == TextPos(0, 0))
-				{
-					found = newContext.input.node.Obj();
-				}
-
-				if (!selectedNode)
-				{
-					// from the deepest node, traverse towards the root node
-					// find the deepest node whose created rule is a left recursive rule and whose parent is not
-					ParsingTreeObject* lrec = 0;
-					ParsingTreeNode* current = found;
-					while (current)
-					{
-						ParsingTreeObject* obj = dynamic_cast<ParsingTreeObject*>(current);
-						if (obj)
-						{
-							for (auto rule : obj->GetCreatorRules())
-							{
-								if (leftRecursiveRules.Contains(rule))
-								{
-									lrec = obj;
-									break;
-								}
-							}
-							if (obj && lrec && lrec != obj)
-							{
-								selectedNode = lrec;
-								break;
-							}
-						}
-						current = current->GetParent();
-					}
-				}
-
-				if (!selectedNode)
-				{
-					// if there is no left recursive rule that creates the deepest node and all indirect parents
-					// choose the deepest ParsingTreeObject
-					ParsingTreeNode* current = found;
-					while (current)
-					{
-						ParsingTreeObject* obj = dynamic_cast<ParsingTreeObject*>(current);
-						if (obj)
-						{
-							selectedNode = obj;
-							break;
-						}
-						current = current->GetParent();
-					}
-				}
-
-				if (selectedNode)
-				{
-					// get the code range of the selected node
-					start = selectedNode->GetCodeRange().start;
-					end = selectedNode->GetCodeRange().end;
-
-					// get all properties from the selected node
-					newContext.rule = selectedNode->GetCreatorRules()[selectedNode->GetCreatorRules().Count() - 1];
-					newContext.originalRange = selectedNode->GetCodeRange();
-					newContext.originalNode = Ptr(selectedNode);
-					newContext.modifiedNode = newContext.originalNode;
-					newContext.modifiedEditVersion = newContext.input.editVersion;
-
-					// get the corresponding code of the selected node
-					if (start.index >= 0 && end.index >= 0)
-					{
-						newContext.modifiedCode = newContext.input.code.Sub(start.index, end.index - start.index + 1).Buffer();
-					}
-				}
-			}
-
-			bool GuiGrammarAutoComplete::NormalizeTextPos(AutoCompleteContext& newContext, elements::text::TextLines& lines, TextPos& pos)
-			{
-				// get the start position
-				TextPos start(newContext.originalRange.start.row, newContext.originalRange.start.column);
-
-				// get the end position of the end of lines
-				TextPos end
-					= lines.GetCount() <= 1
-					? TextPos(start.row, start.column + lines.GetLine(0).dataLength)
-					: TextPos(start.row + lines.GetCount() - 1, lines.GetLine(lines.GetCount() - 1).dataLength)
-					;
-
-				if (start <= pos && pos <= end)
-				{
-					// if the pos is inside the range
-					// normalize the pos to a new coordinate that the beginning position of lines is (row=0, column=0)
-					pos.row -= start.row;
-					if (pos.row == 0)
-					{
-						pos.column -= start.column;
-					}
-					return true;
-				}
-				else
-				{
-					return false;
-				}
-			}
-
-			void GuiGrammarAutoComplete::ExecuteEdit(AutoCompleteContext& newContext)
-			{
-				// process the input of a task that is submitted by text editing
-				// this function make an approximiation to the context if the RepeatingParsingExecutor is not fast enough
-				// copy all TextEditNotifyStruct that is caused by a text editing before (and including) the edit version of the input
-				List<TextEditNotifyStruct> usedTrace;
-				{
-					SPIN_LOCK(editTraceLock)
-					{
-						CopyFrom(
-							usedTrace,
-							From(editTrace)
-							.Where([&newContext](const TextEditNotifyStruct& value)
-								{
-									return (value.originalText != L"" || value.inputText != L"") && value.editVersion > newContext.modifiedEditVersion;
-								})
-						);
-					}
-				}
-
-				// apply all modification to get the new modifiedCode
-				bool failed = false;
-				if (usedTrace.Count() > 0)
-				{
-					if (usedTrace[0].editVersion != newContext.modifiedEditVersion + 1)
-					{
-						// failed if any TextEditNotifyStruct is missing 
-						failed = true;
-					}
-					else
-					{
-						// initialize a TextLines with the latest modifiedCode
-						text::TextLines lines(nullptr);
-						lines.SetText(newContext.modifiedCode);
-						for (auto trace : usedTrace)
-						{
-							// apply a modification to lines
-							TextPos start = trace.originalStart;
-							TextPos end = trace.originalEnd;
-
-							// only if the modification is meaningful
-							if (NormalizeTextPos(newContext, lines, start) && NormalizeTextPos(newContext, lines, end))
-							{
-								lines.Modify(start, end, trace.inputText);
-							}
-							else
-							{
-								// otherwise, failed
-								failed = true;
-								break;
-							}
-						}
-
-						if (!failed)
-						{
-							newContext.modifiedCode = lines.GetText();
-						}
-					}
-				}
-
-				if (failed)
-				{
-					// clear originalNode to notify that the current context goes wrong
-					newContext.originalNode = 0;
-				}
-
-				if (usedTrace.Count() > 0)
-				{
-					// update the edit version
-					newContext.modifiedEditVersion = usedTrace[usedTrace.Count() - 1].editVersion;
-				}
-			}
-
-			void GuiGrammarAutoComplete::DeleteFutures(collections::List<parsing::tabling::ParsingState::Future*>& futures)
-			{
-				// delete all futures and clear the list
-				for (auto future : futures)
-				{
-					delete future;
-				}
-				futures.Clear();
-			}
-
-			regex::RegexToken* GuiGrammarAutoComplete::TraverseTransitions(
-				parsing::tabling::ParsingState& state,
-				parsing::tabling::ParsingTransitionCollector& transitionCollector,
-				TextPos stopPosition,
-				collections::List<parsing::tabling::ParsingState::Future*>& nonRecoveryFutures,
-				collections::List<parsing::tabling::ParsingState::Future*>& recoveryFutures
-				)
-			{
-				const List<ParsingState::TransitionResult>& transitions = transitionCollector.GetTransitions();
-				for (vint index = 0; index < transitions.Count(); index++)
-				{
-					const ParsingState::TransitionResult& transition = transitions[index];
-					switch (transition.transitionType)
-					{
-					case ParsingState::TransitionResult::AmbiguityBegin:
-						break;
-					case ParsingState::TransitionResult::AmbiguityBranch:
-						// ambiguity branches are not nested
-						// tokens in different braches are the same
-						// so we only need to run one branch, and skip the others
-						index = transitionCollector.GetAmbiguityEndFromBegin(transitionCollector.GetAmbiguityBeginFromBranch(index));
-						break;
-					case ParsingState::TransitionResult::AmbiguityEnd:
-						break;
-					case ParsingState::TransitionResult::ExecuteInstructions:
-						{
-							// test does the token reach the stop position
-							if (transition.token)
-							{
-								// we treat "A|B" as editing A if token A is endless, otherwise treated as editing B
-								TextPos tokenEnd(transition.token->rowEnd, transition.token->columnEnd + 1);
-
-								// if the caret is not at the end of the token
-								if (tokenEnd > stopPosition)
-								{
-									// stop the traversing and return the editing token
-									return transition.token;
-								}
-								else if (tokenEnd == stopPosition)
-								{
-									// if the caret is at the end of the token, and it is a closed token
-									// e.g. identifier is not a closed token, string is a closed token
-									if (!grammarParser->GetTable()->GetLexer().Walk().IsClosedToken(transition.token->reading, transition.token->length))
-									{
-										// stop the traversing and return the editing token
-										return transition.token;
-									}
-								}
-							}
-
-							// traverse the PDA using the token specified in the current transition
-							vint tableTokenIndex = transition.tableTokenIndex;
-							List<ParsingState::Future*> possibilities;
-							if (recoveryFutures.Count() > 0)
-							{
-								for (auto future : recoveryFutures)
-								{
-									state.Explore(tableTokenIndex, future, possibilities);
-								}
-							}
-							else
-							{
-								for (auto future : nonRecoveryFutures)
-								{
-									state.Explore(tableTokenIndex, future, possibilities);
-								}
-							}
-
-							// delete duplicated futures
-							List<ParsingState::Future*> selectedPossibilities;
-							for (vint i = 0; i < possibilities.Count(); i++)
-							{
-								ParsingState::Future* candidateFuture = possibilities[i];
-								bool duplicated = false;
-								for (auto future : selectedPossibilities)
-								{
-									if (
-										candidateFuture->currentState == future->currentState &&
-										candidateFuture->reduceStateCount == future->reduceStateCount &&
-										candidateFuture->shiftStates.Count() == future->shiftStates.Count()
-										)
-									{
-										bool same = true;
-										for (vint j = 0; j < future->shiftStates.Count(); j++)
-										{
-											if (candidateFuture->shiftStates[i] != future->shiftStates[i])
-											{
-												same = false;
-												break;
-											}
-										}
-
-										if ((duplicated = same))
-										{
-											break;
-										}
-									}
-								}
-
-								if (duplicated)
-								{
-									delete candidateFuture;
-								}
-								else
-								{
-									selectedPossibilities.Add(candidateFuture);
-								}
-							}
-
-							// step forward
-							if (transition.token || transition.tableTokenIndex == ParsingTable::TokenBegin)
-							{
-								DeleteFutures(nonRecoveryFutures);
-								DeleteFutures(recoveryFutures);
-								CopyFrom(nonRecoveryFutures, selectedPossibilities);
-							}
-							else
-							{
-								DeleteFutures(recoveryFutures);
-								CopyFrom(recoveryFutures, selectedPossibilities);
-							}
-						}
-						break;
-					default:;
-					}
-				}
-				return 0;
-			}
-
-			regex::RegexToken* GuiGrammarAutoComplete::SearchValidInputToken(
-				parsing::tabling::ParsingState& state,
-				parsing::tabling::ParsingTransitionCollector& transitionCollector,
-				TextPos stopPosition,
-				AutoCompleteContext& newContext,
-				collections::SortedList<vint>& tableTokenIndices
-				)
-			{
-				// initialize the PDA state
-				state.Reset(newContext.rule);
-				List<ParsingState::Future*> nonRecoveryFutures, recoveryFutures;
-				nonRecoveryFutures.Add(state.ExploreCreateRootFuture());
-
-				// traverse the PDA until it reach the stop position
-				// nonRecoveryFutures store the state when the last token (existing) is reached
-				// recoveryFutures store the state when the last token (inserted by error recovery) is reached
-				RegexToken* token = TraverseTransitions(state, transitionCollector, stopPosition, nonRecoveryFutures, recoveryFutures);
-
-				// explore all possibilities from the last token before the stop position
-				List<ParsingState::Future*> possibilities;
-				for (vint i = 0; i < nonRecoveryFutures.Count(); i++)
-				{
-					state.Explore(ParsingTable::NormalReduce, nonRecoveryFutures[i], nonRecoveryFutures);
-					state.Explore(ParsingTable::LeftRecursiveReduce, nonRecoveryFutures[i], nonRecoveryFutures);
-				}
-				for (auto future : nonRecoveryFutures)
-				{
-					vint count = state.GetTable()->GetTokenCount();
-					for (vint i = ParsingTable::UserTokenStart; i < count; i++)
-					{
-						state.Explore(i, future, possibilities);
-					}
-				}
-
-				// get all possible tokens that marked using @AutoCompleteCandidate
-				for (auto future : possibilities)
-				{
-					if (!tableTokenIndices.Contains(future->selectedToken))
-					{
-						tableTokenIndices.Add(future->selectedToken);
-					}
-				}
-
-				// release all data
-				DeleteFutures(possibilities);
-				DeleteFutures(nonRecoveryFutures);
-				DeleteFutures(recoveryFutures);
-
-				// return the editing token
-				return token;
-			}
-
-			TextPos GuiGrammarAutoComplete::GlobalTextPosToModifiedTextPos(AutoCompleteContext& newContext, TextPos pos)
-			{
-				pos.row-=newContext.originalRange.start.row;
-				if(pos.row==0)
-				{
-					pos.column-=newContext.originalRange.start.column;
-				}
-				return pos;
-			}
-
-			TextPos GuiGrammarAutoComplete::ModifiedTextPosToGlobalTextPos(AutoCompleteContext& newContext, TextPos pos)
-			{
-				if(pos.row==0)
-				{
-					pos.column+=newContext.originalRange.start.column;
-				}
-				pos.row+=newContext.originalRange.start.row;
-				return pos;
-			}
-
-			void GuiGrammarAutoComplete::ExecuteCalculateList(AutoCompleteContext& newContext)
-			{
-				// calcuate the content of the auto complete list
-				// it is sad that, because the parser's algorithm is too complex
-				// we need to reparse and track the internal state of the PDA(push-down automaton) here.
-				// initialize the PDA
-				ParsingState state(newContext.modifiedCode, grammarParser->GetTable());
-				state.Reset(newContext.rule);
-
-				// prepare to get all transitions
-				ParsingTransitionCollector collector;
-				List<Ptr<ParsingError>> errors;
-
-				// reparse and get all transitions during parsing
-				if (grammarParser->Parse(state, collector, errors))
-				{
-					// if modifiedNode is not prepared (the task is submitted because of text editing)
-					// use the transition to build the syntax tree
-					if (!newContext.modifiedNode)
-					{
-						ParsingTreeBuilder builder;
-						builder.Reset();
-						bool succeeded = true;
-						for (auto transition : collector.GetTransitions())
-						{
-							if (!(succeeded = builder.Run(transition)))
-							{
-								break;
-							}
-						}
-
-						if (succeeded)
-						{
-							Ptr<ParsingTreeNode> parsedNode = builder.GetNode();
-							newContext.modifiedNode = parsedNode.Cast<ParsingTreeObject>();
-							newContext.modifiedNode->InitializeQueryCache();
-						}
-					}
-
-					if (newContext.modifiedNode)
-					{
-						// get the latest text editing trace
-						TextEditNotifyStruct trace;
-						SPIN_LOCK(editTraceLock)
-						{
-							vint index = UnsafeGetEditTraceIndex(newContext.modifiedEditVersion);
-							if (index == -1)
-							{
-								return;
-							}
-							else
-							{
-								trace = editTrace[index];
-							}
-						}
-
-						// calculate the stop position for PDA traversing
-						TextPos stopPosition = GlobalTextPosToModifiedTextPos(newContext, trace.inputStart);
-
-						// find all possible token before the current caret using the PDA
-						auto autoComplete = Ptr(new AutoCompleteData);
-						SortedList<vint> tableTokenIndices;
-						RegexToken* editingToken = SearchValidInputToken(state, collector, stopPosition, newContext, tableTokenIndices);
-
-						// collect all auto complete types
-						{
-							// collect all keywords that can be put into the auto complete list
-							for (auto token : tableTokenIndices)
-							{
-								vint regexToken = token - ParsingTable::UserTokenStart;
-								if (regexToken >= 0)
-								{
-									autoComplete->candidates.Add(regexToken);
-									if (parsingExecutor->GetTokenMetaData(regexToken).isCandidate)
-									{
-										autoComplete->shownCandidates.Add(regexToken);
-									}
-								}
-							}
-
-							// calculate the arranged stopPosition
-							if (editingToken)
-							{
-								TextPos tokenPos(editingToken->rowStart, editingToken->columnStart);
-								if (tokenPos < stopPosition)
-								{
-									stopPosition = tokenPos;
-								}
-							}
-
-							// calculate the start/end position for PDA traversing
-							TextPos startPos, endPos;
-							{
-								startPos = ModifiedTextPosToGlobalTextPos(newContext, stopPosition);
-								autoComplete->startPosition = startPos;
-								endPos = trace.inputEnd;
-								if (newContext.modifiedNode != newContext.originalNode)
-								{
-									startPos = GlobalTextPosToModifiedTextPos(newContext, startPos);
-									endPos = GlobalTextPosToModifiedTextPos(newContext, endPos);
-								}
-								if (startPos<endPos && endPos.column>0)
-								{
-									endPos.column--;
-								}
-							}
-
-							// calculate the auto complete type
-							if (editingToken && parsingExecutor->GetTokenMetaData(editingToken->token).hasAutoComplete)
-							{
-								ParsingTextRange range(ParsingTextPos(startPos.row, startPos.column), ParsingTextPos(endPos.row, endPos.column));
-								AutoCompleteData::RetriveContext(*autoComplete.Obj(), range, newContext.modifiedNode.Obj(), parsingExecutor.Obj());
-							}
-						}
-						newContext.autoComplete = autoComplete;
-					}
-				}
-			}
-
-			void GuiGrammarAutoComplete::Execute(const RepeatingParsingOutput& input)
-			{
-				SPIN_LOCK(contextLock)
-				{
-					if(input.editVersion<context.input.editVersion)
-					{
-						return;
-					}
-				}
-				AutoCompleteContext newContext;
-				bool byGlobalCorrection=false;
-
-				if(input.node)
-				{
-					newContext.input=input;
-					ExecuteRefresh(newContext);
-					byGlobalCorrection=true;
-				}
-				else
-				{
-					SPIN_LOCK(contextLock)
-					{
-						newContext=context;
-						newContext.modifiedNode=0;
-						newContext.autoComplete=0;
-					}
-					if(newContext.originalNode)
-					{
-						ExecuteEdit(newContext);
-					}
-				}
-
-				if(newContext.originalNode)
-				{
-					ExecuteCalculateList(newContext);
-				}
-
-				SPIN_LOCK(contextLock)
-				{
-					context=newContext;
-				}
-				if(newContext.modifiedNode)
-				{
-					OnContextFinishedAsync(context);
-					GetApplication()->InvokeInMainThread(ownerComposition->GetRelatedControlHost(), [=, this]()
-					{
-						PostList(newContext, byGlobalCorrection);
-					});
-				}
-			}
-
-			void GuiGrammarAutoComplete::PostList(const AutoCompleteContext& newContext, bool byGlobalCorrection)
-			{
-				bool openList = true;			// true: make the list visible
-				bool keepListState = false;		// true: don't change the list visibility
-				Ptr<AutoCompleteData> autoComplete = newContext.autoComplete;
-
-				// if failed to get the auto complete list, close
-				if (!autoComplete)
-				{
-					openList = false;
-				}
-				if (openList)
-				{
-					if (autoComplete->shownCandidates.Count() + autoComplete->candidateItems.Count() == 0)
-					{
-						openList = false;
-					}
-				}
-
-				TextPos startPosition, endPosition;
-				WString editingText;
-				if (openList)
-				{
-					SPIN_LOCK(editTraceLock)
-					{
-						// if the edit version is invalid, cancel
-						vint traceIndex = UnsafeGetEditTraceIndex(newContext.modifiedEditVersion);
-						if (traceIndex == -1)
-						{
-							return;
-						}
-						// an edit version has two trace at most, for text change and caret change, here we peak the text change
-						if (traceIndex > 0 && editTrace[traceIndex - 1].editVersion == context.modifiedEditVersion)
-						{
-							traceIndex--;
-						}
-						// if the edit version is not created by keyboard input, close
-						if (traceIndex >= 0)
-						{
-							TextEditNotifyStruct& trace = editTrace[traceIndex];
-							if (!trace.keyInput)
-							{
-								openList = false;
-							}
-						}
-
-						// scan all traces from the calculation's edit version until now
-						if (openList)
-						{
-							keepListState = true;
-							startPosition = autoComplete->startPosition;
-							endPosition = editTrace[editTrace.Count() - 1].inputEnd;
-							for (vint i = traceIndex; i < editTrace.Count(); i++)
-							{
-								TextEditNotifyStruct& trace = editTrace[i];
-								// if there are no text change trace until now, don't change the list
-								if (trace.originalText != L"" || trace.inputText != L"")
-								{
-									keepListState = false;
-								}
-								// if the edit position goes before the start position of the auto complete, refresh
-								if (trace.inputEnd <= startPosition)
-								{
-									openList = false;
-									break;
-								}
-							}
-						}
-
-						if (traceIndex > 0)
-						{
-							editTrace.RemoveRange(0, traceIndex);
-						}
-					}
-				}
-
-				// if there is a global correction send to the UI thread but the list is not opening, cancel
-				if (byGlobalCorrection && !IsListOpening())
-				{
-					return;
-				}
-
-				// if the input text from the start position to the current position crosses a token, close
-				if (openList && element)
-				{
-					editingText = element->GetLines().GetText(startPosition, endPosition);
-					if (grammarParser->GetTable()->GetLexer().Walk().IsClosedToken(editingText))
-					{
-						openList = false;
-					}
-				}
-
-				// calculate the content of the list
-				if (autoComplete && ((!keepListState && openList) || IsListOpening()))
-				{
-					SortedList<WString> itemKeys;
-					List<ParsingCandidateItem> itemValues;
-
-					// copy all candidate keywords
-					for (auto token : autoComplete->shownCandidates)
-					{
-						WString literal = parsingExecutor->GetTokenMetaData(token).unescapedRegexText;
-						if (literal != L"" && !itemKeys.Contains(literal))
-						{
-							ParsingCandidateItem item;
-							item.name = literal;
-							item.semanticId = -1;
-							itemValues.Insert(itemKeys.Add(literal), item);
-						}
-					}
-
-					// copy all candidate symbols
-					if (autoComplete->acceptableSemanticIds)
-					{
-						for (auto item : autoComplete->candidateItems)
-						{
-							if (autoComplete->acceptableSemanticIds->Contains(item.semanticId))
-							{
-								// add all acceptable display of a symbol
-								// because a symbol can has multiple representation in different places
-								if (item.name != L"" && !itemKeys.Contains(item.name))
-								{
-									itemValues.Insert(itemKeys.Add(item.name), item);
-								}
-							}
-						}
-					}
-
-					// fill the list
-					List<GuiTextBoxAutoCompleteBase::AutoCompleteItem> candidateItems;
-					for (vint i = 0; i < itemValues.Count(); i++)
-					{
-						auto& item = itemValues[i];
-						if (item.tag.IsNull())
-						{
-							if (auto analyzer = parsingExecutor->GetAnalyzer())
-							{
-								item.tag = analyzer->CreateTagForCandidateItem(item);
-							}
-						}
-
-						GuiTextBoxAutoCompleteBase::AutoCompleteItem candidateItem;
-						candidateItem.text = item.name;
-						candidateItem.tag = item.tag;
-						candidateItems.Add(candidateItem);
-					}
-					SetListContent(candidateItems);
-				}
-
-				// set the list state
-				if (!keepListState)
-				{
-					if (openList)
-					{
-						OpenList(startPosition);
-					}
-					else
-					{
-						CloseList();
-					}
-				}
-
-				if (IsListOpening())
-				{
-					HighlightList(editingText);
-				}
-			}
-
-			void GuiGrammarAutoComplete::Initialize()
-			{
-				grammarParser=CreateAutoRecoverParser(parsingExecutor->GetParser()->GetTable());
-				CollectLeftRecursiveRules();
-				parsingExecutor->AttachCallback(this);
-			}
-
-			void GuiGrammarAutoComplete::OnContextFinishedAsync(AutoCompleteContext& context)
-			{
-				if (auto analyzer = parsingExecutor->GetAnalyzer())
-				{
-					if (context.autoComplete && context.autoComplete->acceptableSemanticIds)
-					{
-						analyzer->GetCandidateItemsAsync(*context.autoComplete.Obj(), context, context.autoComplete->candidateItems);
-					}
-				}
-			}
-
-			void GuiGrammarAutoComplete::EnsureAutoCompleteFinished()
-			{
-				parsingExecutor->EnsureTaskFinished();
-				SPIN_LOCK(contextLock)
-				{
-					context = AutoCompleteContext();
-				}
-			}
-
-			GuiGrammarAutoComplete::GuiGrammarAutoComplete(Ptr<RepeatingParsingExecutor> _parsingExecutor)
-				:RepeatingParsingExecutor::CallbackBase(_parsingExecutor)
-				,editing(false)
-			{
-				Initialize();
-			}
-
-			GuiGrammarAutoComplete::GuiGrammarAutoComplete(Ptr<parsing::tabling::ParsingGeneralParser> _grammarParser, const WString& _grammarRule)
-				:RepeatingParsingExecutor::CallbackBase(Ptr(new RepeatingParsingExecutor(_grammarParser, _grammarRule)))
-				,editing(false)
-			{
-				Initialize();
-			}
-
-			GuiGrammarAutoComplete::~GuiGrammarAutoComplete()
-			{
-				EnsureAutoCompleteFinished();
-				parsingExecutor->DetachCallback(this);
-			}
-
-			Ptr<RepeatingParsingExecutor> GuiGrammarAutoComplete::GetParsingExecutor()
-			{
-				return parsingExecutor;
-			}
-		}
-	}
-}
-
-/***********************************************************************
-.\CONTROLS\TEXTEDITORPACKAGE\LANGUAGESERVICE\GUILANGUAGECOLORIZER.CPP
-***********************************************************************/
-
-namespace vl
-{
-	namespace presentation
-	{
-		namespace controls
-		{
-			using namespace elements;
-			using namespace parsing;
-			using namespace parsing::tabling;
-			using namespace collections;
-			using namespace theme;
-
-/***********************************************************************
-GuiGrammarColorizer
-***********************************************************************/
-
-			void GuiGrammarColorizer::OnParsingFinishedAsync(const RepeatingParsingOutput& output)
-			{
-				SPIN_LOCK(contextLock)
-				{
-					context=output;
-					OnContextFinishedAsync(context);
-				}
-				RestartColorizer();
-			}
-
-			void GuiGrammarColorizer::OnContextFinishedAsync(const RepeatingParsingOutput& context)
-			{
-			}
-
-			void GuiGrammarColorizer::Attach(elements::GuiColorizedTextElement* _element, SpinLock& _elementModifyLock, compositions::GuiGraphicsComposition* _ownerComposition, vuint editVersion)
-			{
-				GuiTextBoxRegexColorizer::Attach(_element, _elementModifyLock, _ownerComposition, editVersion);
-				RepeatingParsingExecutor::CallbackBase::Attach(_element, _elementModifyLock, _ownerComposition, editVersion);
-			}
-
-			void GuiGrammarColorizer::Detach()
-			{
-				GuiTextBoxRegexColorizer::Detach();
-				RepeatingParsingExecutor::CallbackBase::Detach();
-				if(element && elementModifyLock)
-				{
-					parsingExecutor->EnsureTaskFinished();
-					StopColorizer(false);
-				}
-			}
-
-			void GuiGrammarColorizer::TextEditPreview(TextEditPreviewStruct& arguments)
-			{
-				GuiTextBoxRegexColorizer::TextEditPreview(arguments);
-				RepeatingParsingExecutor::CallbackBase::TextEditPreview(arguments);
-			}
-
-			void GuiGrammarColorizer::TextEditNotify(const TextEditNotifyStruct& arguments)
-			{
-				GuiTextBoxRegexColorizer::TextEditNotify(arguments);
-				RepeatingParsingExecutor::CallbackBase::TextEditNotify(arguments);
-			}
-
-			void GuiGrammarColorizer::TextCaretChanged(const TextCaretChangedStruct& arguments)
-			{
-				GuiTextBoxRegexColorizer::TextCaretChanged(arguments);
-				RepeatingParsingExecutor::CallbackBase::TextCaretChanged(arguments);
-			}
-
-			void GuiGrammarColorizer::TextEditFinished(vuint editVersion)
-			{
-				GuiTextBoxRegexColorizer::TextEditFinished(editVersion);
-				RepeatingParsingExecutor::CallbackBase::TextEditFinished(editVersion);
-			}
-
-			void GuiGrammarColorizer::OnSemanticColorize(SemanticColorizeContext& context, const RepeatingParsingOutput& input)
-			{
-				if (auto analyzer = parsingExecutor->GetAnalyzer())
-				{
-					auto semanticId = analyzer->GetSemanticIdForTokenAsync(context, input);
-					if(semanticId!=-1)
-					{
-						context.semanticId=semanticId;
-					}
-				}
-			}
-
-			void GuiGrammarColorizer::EnsureColorizerFinished()
-			{
-				parsingExecutor->EnsureTaskFinished();
-				StopColorizerForever();
-				SPIN_LOCK(contextLock)
-				{
-					context=RepeatingParsingOutput();
-				}
-			}
-
-			GuiGrammarColorizer::GuiGrammarColorizer(Ptr<RepeatingParsingExecutor> _parsingExecutor)
-				:RepeatingParsingExecutor::CallbackBase(_parsingExecutor)
-			{
-				parsingExecutor->AttachCallback(this);
-				BeginSetColors();
-			}
-
-			GuiGrammarColorizer::GuiGrammarColorizer(Ptr<parsing::tabling::ParsingGeneralParser> _grammarParser, const WString& _grammarRule)
-				:RepeatingParsingExecutor::CallbackBase(Ptr(new RepeatingParsingExecutor(_grammarParser, _grammarRule)))
-			{
-				parsingExecutor->AttachCallback(this);
-				BeginSetColors();
-			}
-
-			GuiGrammarColorizer::~GuiGrammarColorizer()
-			{
-				EnsureColorizerFinished();
-				parsingExecutor->DetachCallback(this);
-			}
-
-			void GuiGrammarColorizer::BeginSetColors()
-			{
-				ClearTokens();
-				colorSettings.Clear();
-
-				text::ColorEntry entry;
-				{
-					entry.normal.text = Color(0, 0, 0);
-					entry.normal.background = Color(0, 0, 0, 0);
-					entry.selectedFocused.text = Color(255, 255, 255);
-					entry.selectedFocused.background = Color(51, 153, 255);
-					entry.selectedUnfocused.text = Color(255, 255, 255);
-					entry.selectedUnfocused.background = Color(51, 153, 255);
-				}
-
-				SetDefaultColor(entry);
-				colorSettings.Add(L"Default", entry);
-			}
-
-			const collections::SortedList<WString>& GuiGrammarColorizer::GetColorNames()
-			{
-				return colorSettings.Keys();
-			}
-
-			GuiGrammarColorizer::ColorEntry GuiGrammarColorizer::GetColor(const WString& name)
-			{
-				vint index=colorSettings.Keys().IndexOf(name);
-				return index==-1?GetDefaultColor():colorSettings.Values().Get(index);
-			}
-
-			void GuiGrammarColorizer::SetColor(const WString& name, const ColorEntry& entry)
-			{
-				colorSettings.Set(name, entry);
-			}
-
-			void GuiGrammarColorizer::SetColor(const WString& name, const Color& color)
-			{
-				text::ColorEntry entry=GetDefaultColor();
-				entry.normal.text=color;
-				SetColor(name, entry);
-			}
-
-			void GuiGrammarColorizer::EndSetColors()
-			{
-				SortedList<WString> tokenColors;
-				Ptr<ParsingTable> table=parsingExecutor->GetParser()->GetTable();
-				semanticColorMap.Clear();
-
-				vint tokenCount=table->GetTokenCount();
-				for(vint token=ParsingTable::UserTokenStart;token<tokenCount;token++)
-				{
-					const ParsingTable::TokenInfo& tokenInfo=table->GetTokenInfo(token);
-					const RepeatingParsingExecutor::TokenMetaData& md=parsingExecutor->GetTokenMetaData(token-ParsingTable::UserTokenStart);
-					if(md.defaultColorIndex==-1)
-					{
-						AddToken(tokenInfo.regex, GetDefaultColor());
-					}
-					else
-					{
-						WString name=parsingExecutor->GetSemanticName(md.defaultColorIndex);
-						vint color=AddToken(tokenInfo.regex, GetColor(name));
-						semanticColorMap.Set(md.defaultColorIndex, color);
-						tokenColors.Add(name);
-					}
-				}
-
-				for (auto [color, index] : indexed(colorSettings.Keys()))
-				{
-					if(!tokenColors.Contains(color))
-					{
-						vint semanticId=parsingExecutor->GetSemanticId(color);
-						if(semanticId!=-1)
-						{
-							vint tokenId=AddExtraToken(colorSettings.Values().Get(index));
-							vint color=tokenId+tokenCount-ParsingTable::UserTokenStart;
-							semanticColorMap.Set(semanticId, color);
-						}
-					}
-				}
-				Setup();
-			}
-
-			void GuiGrammarColorizer::ColorizeTokenContextSensitive(vint lineIndex, const wchar_t* text, vint start, vint length, vint& token, vint& contextState)
-			{
-				SPIN_LOCK(contextLock)
-				{
-					ParsingTreeObject* node=context.node.Obj();
-					if(node && token!=-1 && parsingExecutor->GetTokenMetaData(token).hasContextColor)
-					{
-						ParsingTextPos pos(lineIndex, start);
-						SemanticColorizeContext scContext;
-						if(SemanticColorizeContext::RetriveContext(scContext, pos, node, parsingExecutor.Obj()))
-						{
-							const RepeatingParsingExecutor::FieldMetaData& md=parsingExecutor->GetFieldMetaData(scContext.type, scContext.field);
-							vint semantic=md.colorIndex;
-							scContext.semanticId=-1;
-
-							if(scContext.acceptableSemanticIds)
-							{
-								OnSemanticColorize(scContext, context);
-								if(md.semantics->Contains(scContext.semanticId))
-								{
-									semantic=scContext.semanticId;
-								}
-							}
-
-							if(semantic!=-1)
-							{
-								vint index=semanticColorMap.Keys().IndexOf(semantic);
-								if(index!=-1)
-								{
-									token=semanticColorMap.Values()[index];
-								}
-							}
-						}
-					}
-				}
-			}
-
-			Ptr<RepeatingParsingExecutor> GuiGrammarColorizer::GetParsingExecutor()
-			{
-				return parsingExecutor;
-			}
-		}
-	}
-}
-
-/***********************************************************************
-.\CONTROLS\TEXTEDITORPACKAGE\LANGUAGESERVICE\GUILANGUAGEOPERATIONS.CPP
-***********************************************************************/
-
-namespace vl
-{
-	namespace presentation
-	{
-		namespace controls
-		{
-			using namespace collections;
-			using namespace parsing;
-			using namespace parsing::tabling;
-			using namespace regex_internal;
-
-/***********************************************************************
-ParsingContext
-***********************************************************************/
-
-			bool ParsingTokenContext::RetriveContext(ParsingTokenContext& output, parsing::ParsingTreeNode* foundNode, RepeatingParsingExecutor* executor)
-			{
-				ParsingTreeToken* foundToken=dynamic_cast<ParsingTreeToken*>(foundNode);
-				if(!foundToken) return false;
-				ParsingTreeObject* tokenParent=dynamic_cast<ParsingTreeObject*>(foundNode->GetParent());
-				if(!tokenParent) return false;
-				vint index=tokenParent->GetMembers().Values().IndexOf(foundNode);
-				if(index==-1) return false;
-
-				WString type=tokenParent->GetType();
-				WString field=tokenParent->GetMembers().Keys().Get(index);
-				const RepeatingParsingExecutor::FieldMetaData& md=executor->GetFieldMetaData(type, field);
-
-				output.foundToken=foundToken;
-				output.tokenParent=tokenParent;
-				output.type=type;
-				output.field=field;
-				output.acceptableSemanticIds=md.semantics;
-				return true;
-			}
-
-			bool ParsingTokenContext::RetriveContext(ParsingTokenContext& output, parsing::ParsingTextPos pos, parsing::ParsingTreeObject* rootNode, RepeatingParsingExecutor* executor)
-			{
-				ParsingTreeNode* foundNode=rootNode->FindDeepestNode(pos);
-				if(!foundNode) return false;
-				return RetriveContext(output, foundNode, executor);
-			}
-
-			bool ParsingTokenContext::RetriveContext(ParsingTokenContext& output, parsing::ParsingTextRange range, ParsingTreeObject* rootNode, RepeatingParsingExecutor* executor)
-			{
-				ParsingTreeNode* foundNode=rootNode->FindDeepestNode(range);
-				if(!foundNode) return false;
-				return RetriveContext(output, foundNode, executor);
-			}
-
-/***********************************************************************
-RepeatingParsingExecutor::IParsingAnalyzer
-***********************************************************************/
-
-		parsing::ParsingTreeNode* RepeatingParsingExecutor::IParsingAnalyzer::ToParent(parsing::ParsingTreeNode* node, const RepeatingPartialParsingOutput* output)
-		{
-			if (!output || !output->modifiedNode) return node;
-			return node == output->modifiedNode.Obj()
-				? output->originalNode.Obj()
-				: node;
-		}
-
-		parsing::ParsingTreeObject* RepeatingParsingExecutor::IParsingAnalyzer::ToChild(parsing::ParsingTreeObject* node, const RepeatingPartialParsingOutput* output)
-		{
-			if (!output || !output->modifiedNode) return node;
-			return node == output->originalNode.Obj()
-				? output->modifiedNode.Obj()
-				: node;
-		}
-
-		Ptr<parsing::ParsingTreeNode> RepeatingParsingExecutor::IParsingAnalyzer::ToChild(Ptr<parsing::ParsingTreeNode> node, const RepeatingPartialParsingOutput* output)
-		{
-			if (!output) return node;
-			return node == output->originalNode
-				? output->modifiedNode.Cast<ParsingTreeNode>()
-				: node;
-		}
-
-		parsing::ParsingTreeNode* RepeatingParsingExecutor::IParsingAnalyzer::GetParent(parsing::ParsingTreeNode* node, const RepeatingPartialParsingOutput* output)
-		{
-			return ToParent(node, output)->GetParent();
-		}
-
-		Ptr<parsing::ParsingTreeNode> RepeatingParsingExecutor::IParsingAnalyzer::GetMember(parsing::ParsingTreeObject* node, const WString& name, const RepeatingPartialParsingOutput* output)
-		{
-			return ToChild(ToChild(node, output)->GetMember(name), output);
-		}
-
-		Ptr<parsing::ParsingTreeNode> RepeatingParsingExecutor::IParsingAnalyzer::GetItem(parsing::ParsingTreeArray* node, vint index, const RepeatingPartialParsingOutput* output)
-		{
-			return ToChild(node->GetItem(index), output);
-		}
-
-/***********************************************************************
-RepeatingParsingExecutor::CallbackBase
-***********************************************************************/
-
-			RepeatingParsingExecutor::CallbackBase::CallbackBase(Ptr<RepeatingParsingExecutor> _parsingExecutor)
-				:parsingExecutor(_parsingExecutor)
-				,callbackAutoPushing(false)
-				,callbackElement(0)
-				,callbackElementModifyLock(0)
-			{
-			}
-
-			RepeatingParsingExecutor::CallbackBase::~CallbackBase()
-			{
-			}
-
-			void RepeatingParsingExecutor::CallbackBase::RequireAutoSubmitTask(bool enabled)
-			{
-				callbackAutoPushing=enabled;
-			}
-
-			void RepeatingParsingExecutor::CallbackBase::Attach(elements::GuiColorizedTextElement* _element, SpinLock& _elementModifyLock, compositions::GuiGraphicsComposition* _ownerComposition, vuint editVersion)
-			{
-				if(_element)
-				{
-					SPIN_LOCK(_elementModifyLock)
-					{
-						callbackElement=_element;
-						callbackElementModifyLock=&_elementModifyLock;
-					}
-				}
-				
-				parsingExecutor->ActivateCallback(this);
-				if(callbackElement && callbackElementModifyLock && callbackAutoPushing)
-				{
-					SPIN_LOCK(*callbackElementModifyLock)
-					{
-						RepeatingParsingInput input;
-						input.editVersion=editVersion;
-						input.code=callbackElement->GetLines().GetText();
-						parsingExecutor->SubmitTask(input);
-					}
-				}
-			}
-
-			void RepeatingParsingExecutor::CallbackBase::Detach()
-			{
-				if(callbackElement && callbackElementModifyLock)
-				{
-					SPIN_LOCK(*callbackElementModifyLock)
-					{
-						callbackElement=0;
-						callbackElementModifyLock=0;
-					}
-				}
-				
-				parsingExecutor->DeactivateCallback(this);
-			}
-
-			void RepeatingParsingExecutor::CallbackBase::TextEditPreview(TextEditPreviewStruct& arguments)
-			{
-			}
-
-			void RepeatingParsingExecutor::CallbackBase::TextEditNotify(const TextEditNotifyStruct& arguments)
-			{
-			}
-
-			void RepeatingParsingExecutor::CallbackBase::TextCaretChanged(const TextCaretChangedStruct& arguments)
-			{
-			}
-
-			void RepeatingParsingExecutor::CallbackBase::TextEditFinished(vuint editVersion)
-			{
-				if(callbackElement && callbackElementModifyLock && callbackAutoPushing)
-				{
-					SPIN_LOCK(*callbackElementModifyLock)
-					{
-						RepeatingParsingInput input;
-						input.editVersion=editVersion;
-						input.code=callbackElement->GetLines().GetText();
-						parsingExecutor->SubmitTask(input);
-					}
-				}
-			}
-
-/***********************************************************************
-RepeatingParsingExecutor
-***********************************************************************/
-
-			void RepeatingParsingExecutor::Execute(const RepeatingParsingInput& input)
-			{
-				List<Ptr<ParsingError>> errors;
-				Ptr<ParsingTreeObject> node=grammarParser->Parse(input.code, grammarRule, errors).Cast<ParsingTreeObject>();
-				if(node)
-				{
-					node->InitializeQueryCache();
-				}
-
-				RepeatingParsingOutput result;
-				result.node=node;
-				result.editVersion=input.editVersion;
-				result.code=input.code;
-				if(node)
-				{
-					OnContextFinishedAsync(result);
-					for (auto callback : callbacks)
-					{
-						callback->OnParsingFinishedAsync(result);
-					}
-				}
-			}
-
-			void RepeatingParsingExecutor::PrepareMetaData()
-			{
-				Ptr<ParsingTable> table=grammarParser->GetTable();
-				tokenIndexMap.Clear();
-				semanticIndexMap.Clear();
-				tokenMetaDatas.Clear();
-				fieldMetaDatas.Clear();
-
-				Dictionary<vint, Ptr<ParsingTable::AttributeInfo>> tokenColorAtts, tokenContextColorAtts, tokenCandidateAtts, tokenAutoCompleteAtts;
-				Dictionary<FieldDesc, Ptr<ParsingTable::AttributeInfo>> fieldColorAtts, fieldSemanticAtts;
-
-				{
-					vint tokenCount=table->GetTokenCount();
-					for(vint token=ParsingTable::UserTokenStart;token<tokenCount;token++)
-					{
-						const ParsingTable::TokenInfo& tokenInfo=table->GetTokenInfo(token);
-						vint tokenIndex=token-ParsingTable::UserTokenStart;
-						tokenIndexMap.Add(tokenInfo.name, tokenIndex);
-
-						if(Ptr<ParsingTable::AttributeInfo> att=GetColorAttribute(tokenInfo.attributeIndex))
-						{
-							tokenColorAtts.Add(tokenIndex, att);
-						}
-						if(Ptr<ParsingTable::AttributeInfo> att=GetContextColorAttribute(tokenInfo.attributeIndex))
-						{
-							tokenContextColorAtts.Add(tokenIndex, att);
-						}
-						if(Ptr<ParsingTable::AttributeInfo> att=GetCandidateAttribute(tokenInfo.attributeIndex))
-						{
-							tokenCandidateAtts.Add(tokenIndex, att);
-						}
-						if(Ptr<ParsingTable::AttributeInfo> att=GetAutoCompleteAttribute(tokenInfo.attributeIndex))
-						{
-							tokenAutoCompleteAtts.Add(tokenIndex, att);
-						}
-					}
-				}
-				{
-					vint fieldCount=table->GetTreeFieldInfoCount();
-					for(vint field=0;field<fieldCount;field++)
-					{
-						const ParsingTable::TreeFieldInfo& fieldInfo=table->GetTreeFieldInfo(field);
-						FieldDesc fieldDesc(fieldInfo.type, fieldInfo.field);
-
-						if(Ptr<ParsingTable::AttributeInfo> att=GetColorAttribute(fieldInfo.attributeIndex))
-						{
-							fieldColorAtts.Add(fieldDesc, att);
-						}
-						if(Ptr<ParsingTable::AttributeInfo> att=GetSemanticAttribute(fieldInfo.attributeIndex))
-						{
-							fieldSemanticAtts.Add(fieldDesc, att);
-						}
-					}
-				}
-
-				for (auto att :
-					From(tokenColorAtts.Values())
-						.Concat(tokenContextColorAtts.Values())
-						.Concat(fieldColorAtts.Values())
-						.Concat(fieldSemanticAtts.Values())
-					)
-				{
-					for (auto argument : att->arguments)
-					{
-						if(!semanticIndexMap.Contains(argument))
-						{
-							semanticIndexMap.Add(argument);
-						}
-					}
-				}
-
-				vint index=0;
-				for (auto tokenIndex : tokenIndexMap.Values())
-				{
-					TokenMetaData md;
-					md.tableTokenIndex=tokenIndex+ParsingTable::UserTokenStart;
-					md.lexerTokenIndex=tokenIndex;
-					md.defaultColorIndex=-1;
-					md.hasContextColor=false;
-					md.hasAutoComplete=false;
-					md.isCandidate=false;
-
-					if((index=tokenColorAtts.Keys().IndexOf(tokenIndex))!=-1)
-					{
-						md.defaultColorIndex=semanticIndexMap.IndexOf(tokenColorAtts.Values()[index]->arguments[0]);
-					}
-					md.hasContextColor=tokenContextColorAtts.Keys().Contains(tokenIndex);
-					md.hasAutoComplete=tokenAutoCompleteAtts.Keys().Contains(tokenIndex);
-					if ((md.isCandidate = tokenCandidateAtts.Keys().Contains(tokenIndex)))
-					{
-						const ParsingTable::TokenInfo& tokenInfo = table->GetTokenInfo(md.tableTokenIndex);
-						auto regex = wtou32(tokenInfo.regex);
-						if (IsRegexEscapedLiteralString(regex))
-						{
-							md.unescapedRegexText = u32tow(UnescapeTextForRegex(regex));
-						}
-						else
-						{
-							md.isCandidate = false;
-						}
-					}
-
-					tokenMetaDatas.Add(tokenIndex, md);
-				}
-				{
-					vint fieldCount=table->GetTreeFieldInfoCount();
-					for(vint field=0;field<fieldCount;field++)
-					{
-						const ParsingTable::TreeFieldInfo& fieldInfo=table->GetTreeFieldInfo(field);
-						FieldDesc fieldDesc(fieldInfo.type, fieldInfo.field);
-
-						FieldMetaData md;
-						md.colorIndex=-1;
-
-						if((index=fieldColorAtts.Keys().IndexOf(fieldDesc))!=-1)
-						{
-							md.colorIndex=semanticIndexMap.IndexOf(fieldColorAtts.Values()[index]->arguments[0]);
-						}
-						if((index=fieldSemanticAtts.Keys().IndexOf(fieldDesc))!=-1)
-						{
-							md.semantics=Ptr(new List<vint>);
-							for (auto argument : fieldSemanticAtts.Values()[index]->arguments)
-							{
-								md.semantics->Add(semanticIndexMap.IndexOf(argument));
-							}
-						}
-
-						fieldMetaDatas.Add(fieldDesc, md);
-					}
-				}
-			}
-
-			void RepeatingParsingExecutor::OnContextFinishedAsync(RepeatingParsingOutput& context)
-			{
-				if(analyzer)
-				{
-					context.cache = analyzer->CreateCacheAsync(context);
-				}
-			}
-
-			RepeatingParsingExecutor::RepeatingParsingExecutor(Ptr<parsing::tabling::ParsingGeneralParser> _grammarParser, const WString& _grammarRule, Ptr<IParsingAnalyzer> _analyzer)
-				:grammarParser(_grammarParser)
-				,grammarRule(_grammarRule)
-				,analyzer(_analyzer)
-				,autoPushingCallback(0)
-			{
-				PrepareMetaData();
-				if (analyzer)
-				{
-					analyzer->Attach(this);
-				}
-			}
-
-			RepeatingParsingExecutor::~RepeatingParsingExecutor()
-			{
-				EnsureTaskFinished();
-				if (analyzer)
-				{
-					analyzer->Detach(this);
-				}
-			}
-
-			Ptr<parsing::tabling::ParsingGeneralParser> RepeatingParsingExecutor::GetParser()
-			{
-				return grammarParser;
-			}
-
-			bool RepeatingParsingExecutor::AttachCallback(ICallback* value)
-			{
-				if(!value) return false;
-				if(callbacks.Contains(value)) return false;
-				callbacks.Add(value);
-				return true;
-			}
-
-			bool RepeatingParsingExecutor::DetachCallback(ICallback* value)
-			{
-				if(!value) return false;
-				if(!callbacks.Contains(value)) return false;
-				DeactivateCallback(value);
-				callbacks.Remove(value);
-				return true;
-			}
-
-			bool RepeatingParsingExecutor::ActivateCallback(ICallback* value)
-			{
-				if(!value) return false;
-				if(!callbacks.Contains(value)) return false;
-				if(activatedCallbacks.Contains(value)) return false;
-				activatedCallbacks.Add(value);
-
-				if(!autoPushingCallback)
-				{
-					autoPushingCallback=value;
-					autoPushingCallback->RequireAutoSubmitTask(true);
-				}
-				return true;
-			}
-
-			bool RepeatingParsingExecutor::DeactivateCallback(ICallback* value)
-			{
-				if(!value) return false;
-				if(!callbacks.Contains(value)) return false;
-				if(!activatedCallbacks.Contains(value)) return false;
-
-				if(autoPushingCallback==value)
-				{
-					autoPushingCallback->RequireAutoSubmitTask(false);
-					autoPushingCallback=0;
-				}
-				activatedCallbacks.Remove(value);
-				if(!autoPushingCallback && activatedCallbacks.Count()>0)
-				{
-					autoPushingCallback=activatedCallbacks[0];
-					autoPushingCallback->RequireAutoSubmitTask(true);
-				}
-				return true;
-			}
-
-			Ptr<RepeatingParsingExecutor::IParsingAnalyzer> RepeatingParsingExecutor::GetAnalyzer()
-			{
-				return analyzer;
-			}
-
-			vint RepeatingParsingExecutor::GetTokenIndex(const WString& tokenName)
-			{
-				vint index=tokenIndexMap.Keys().IndexOf(tokenName);
-				return index==-1?-1:tokenIndexMap.Values()[index];
-			}
-
-			vint RepeatingParsingExecutor::GetSemanticId(const WString& name)
-			{
-				return semanticIndexMap.IndexOf(name);
-			}
-
-			WString RepeatingParsingExecutor::GetSemanticName(vint id)
-			{
-				return 0<=id&&id<semanticIndexMap.Count()?semanticIndexMap[id]:L"";
-			}
-
-			const RepeatingParsingExecutor::TokenMetaData& RepeatingParsingExecutor::GetTokenMetaData(vint regexTokenIndex)
-			{
-				return tokenMetaDatas[regexTokenIndex];
-			}
-
-			const RepeatingParsingExecutor::FieldMetaData& RepeatingParsingExecutor::GetFieldMetaData(const WString& type, const WString& field)
-			{
-				return fieldMetaDatas[FieldDesc(type, field)];
-			}
-
-			Ptr<parsing::tabling::ParsingTable::AttributeInfo> RepeatingParsingExecutor::GetAttribute(vint index, const WString& name, vint argumentCount)
-			{
-				if(index!=-1)
-				{
-					Ptr<ParsingTable::AttributeInfo> att=grammarParser->GetTable()->GetAttributeInfo(index)->FindFirst(name);
-					if(att && (argumentCount==-1 || att->arguments.Count()==argumentCount))
-					{
-						return att;
-					}
-				}
-				return 0;
-			}
-
-			Ptr<parsing::tabling::ParsingTable::AttributeInfo> RepeatingParsingExecutor::GetColorAttribute(vint index)
-			{
-				return GetAttribute(index, L"Color", 1);
-			}
-
-			Ptr<parsing::tabling::ParsingTable::AttributeInfo> RepeatingParsingExecutor::GetContextColorAttribute(vint index)
-			{
-				return GetAttribute(index, L"ContextColor", 0);
-			}
-
-			Ptr<parsing::tabling::ParsingTable::AttributeInfo> RepeatingParsingExecutor::GetSemanticAttribute(vint index)
-			{
-				return GetAttribute(index, L"Semantic", -1);
-			}
-
-			Ptr<parsing::tabling::ParsingTable::AttributeInfo> RepeatingParsingExecutor::GetCandidateAttribute(vint index)
-			{
-				return GetAttribute(index, L"Candidate", 0);
-			}
-
-			Ptr<parsing::tabling::ParsingTable::AttributeInfo> RepeatingParsingExecutor::GetAutoCompleteAttribute(vint index)
-			{
-				return GetAttribute(index, L"AutoComplete", 0);
 			}
 		}
 	}
@@ -31835,6 +27985,7 @@ GuiStackItemComposition
 /***********************************************************************
 .\GRAPHICSCOMPOSITION\GUIGRAPHICSTABLECOMPOSITION.CPP
 ***********************************************************************/
+#include <math.h>
 
 namespace vl
 {
@@ -32813,781 +28964,6 @@ namespace vl
 		{
 
 /***********************************************************************
-SetPropertiesVisitor
-***********************************************************************/
-
-			namespace visitors
-			{
-				class SetPropertiesVisitor : public Object, public DocumentRun::IVisitor
-				{
-					typedef GuiDocumentElement::GuiDocumentElementRenderer	Renderer;
-					typedef DocumentModel::ResolvedStyle					ResolvedStyle;
-				public:
-					vint							start;
-					vint							length;
-					vint							selectionBegin;
-					vint							selectionEnd;
-					List<ResolvedStyle>				styles;
-
-					DocumentModel*					model;
-					Renderer*						renderer;
-					Ptr<Renderer::ParagraphCache>	cache;
-					IGuiGraphicsParagraph*			paragraph;
-
-					SetPropertiesVisitor(DocumentModel* _model, Renderer* _renderer, Ptr<Renderer::ParagraphCache> _cache, vint _selectionBegin, vint _selectionEnd)
-						:start(0)
-						,length(0)
-						,model(_model)
-						,renderer(_renderer)
-						,cache(_cache)
-						,paragraph(_cache->graphicsParagraph.Obj())
-						,selectionBegin(_selectionBegin)
-						,selectionEnd(_selectionEnd)
-					{
-						ResolvedStyle style;
-						style=model->GetStyle(DocumentModel::DefaultStyleName, style);
-						styles.Add(style);
-					}
-
-					void VisitContainer(DocumentContainerRun* run)
-					{
-						for (auto subRun : run->runs)
-						{
-							subRun->Accept(this);
-						}
-					}
-
-					void ApplyStyle(vint start, vint length, const ResolvedStyle& style)
-					{
-						paragraph->SetFont(start, length, style.style.fontFamily);
-						paragraph->SetSize(start, length, style.style.size);
-						paragraph->SetStyle(start, length, 
-							(IGuiGraphicsParagraph::TextStyle)
-							( (style.style.bold?IGuiGraphicsParagraph::Bold:0)
-							| (style.style.italic?IGuiGraphicsParagraph::Italic:0)
-							| (style.style.underline?IGuiGraphicsParagraph::Underline:0)
-							| (style.style.strikeline?IGuiGraphicsParagraph::Strikeline:0)
-							));
-					}
-
-					void ApplyColor(vint start, vint length, const ResolvedStyle& style)
-					{
-						paragraph->SetColor(start, length, style.color);
-						paragraph->SetBackgroundColor(start, length, style.backgroundColor);
-					}
-
-					void Visit(DocumentTextRun* run)override
-					{
-						length=run->GetRepresentationText().Length();
-						if(length>0)
-						{
-							ResolvedStyle style=styles[styles.Count()-1];
-							ApplyStyle(start, length, style);
-							ApplyColor(start, length, style);
-
-							vint styleStart=start;
-							vint styleEnd=styleStart+length;
-							if(styleStart<selectionEnd && selectionBegin<styleEnd)
-							{
-								vint s2=styleStart>selectionBegin?styleStart:selectionBegin;
-								vint s3=selectionEnd<styleEnd?selectionEnd:styleEnd;
-
-								if(s2<s3)
-								{
-									ResolvedStyle selectionStyle=model->GetStyle(DocumentModel::SelectionStyleName, style);
-									ApplyColor(s2, s3-s2, selectionStyle);
-								}
-							}
-						}
-						start+=length;
-					}
-
-					void Visit(DocumentStylePropertiesRun* run)override
-					{
-						ResolvedStyle style=styles[styles.Count()-1];
-						style=model->GetStyle(run->style, style);
-						styles.Add(style);
-						VisitContainer(run);
-						styles.RemoveAt(styles.Count()-1);
-					}
-
-					void Visit(DocumentStyleApplicationRun* run)override
-					{
-						ResolvedStyle style=styles[styles.Count()-1];
-						style=model->GetStyle(run->styleName, style);
-						styles.Add(style);
-						VisitContainer(run);
-						styles.RemoveAt(styles.Count()-1);
-					}
-
-					void Visit(DocumentHyperlinkRun* run)override
-					{
-						ResolvedStyle style=styles[styles.Count()-1];
-						style=model->GetStyle(run->styleName, style);
-						styles.Add(style);
-						VisitContainer(run);
-						styles.RemoveAt(styles.Count()-1);
-					}
-
-					void Visit(DocumentImageRun* run)override
-					{
-						length=run->GetRepresentationText().Length();
-
-						auto element=Ptr(GuiImageFrameElement::Create());
-						element->SetImage(run->image, run->frameIndex);
-						element->SetStretch(true);
-
-						IGuiGraphicsParagraph::InlineObjectProperties properties;
-						properties.size=run->size;
-						properties.baseline=run->baseline;
-						properties.breakCondition=IGuiGraphicsParagraph::Alone;
-						properties.backgroundImage = element;
-
-						paragraph->SetInlineObject(start, length, properties);
-
-						if(start<selectionEnd && selectionBegin<start+length)
-						{
-							ResolvedStyle style=styles[styles.Count()-1];
-							ResolvedStyle selectionStyle=model->GetStyle(DocumentModel::SelectionStyleName, style);
-							ApplyColor(start, length, selectionStyle);
-						}
-						start+=length;
-					}
-
-					void Visit(DocumentEmbeddedObjectRun* run)override
-					{
-						length=run->GetRepresentationText().Length();
-
-						IGuiGraphicsParagraph::InlineObjectProperties properties;
-						properties.breakCondition=IGuiGraphicsParagraph::Alone;
-
-						if (run->name != L"")
-						{
-							vint index = renderer->nameCallbackIdMap.Keys().IndexOf(run->name);
-							if (index != -1)
-							{
-								auto id = renderer->nameCallbackIdMap.Values()[index];
-								index = cache->embeddedObjects.Keys().IndexOf(id);
-								if (index != -1)
-								{
-									auto eo = cache->embeddedObjects.Values()[index];
-									if (eo->start == start)
-									{
-										properties.size = eo->size;
-										properties.callbackId = id;
-									}
-								}
-							}
-							else
-							{
-								auto eo = Ptr(new Renderer::EmbeddedObject);
-								eo->name = run->name;
-								eo->size = Size(0, 0);
-								eo->start = start;
-
-								vint id = -1;
-								vint count = renderer->freeCallbackIds.Count();
-								if (count > 0)
-								{
-									id = renderer->freeCallbackIds[count - 1];
-									renderer->freeCallbackIds.RemoveAt(count - 1);
-								}
-								else
-								{
-									id = renderer->usedCallbackIds++;
-								}
-
-								renderer->nameCallbackIdMap.Add(eo->name, id);
-								cache->embeddedObjects.Add(id, eo);
-								properties.callbackId = id;
-							}
-						}
-
-						paragraph->SetInlineObject(start, length, properties);
-
-						if(start<selectionEnd && selectionBegin<start+length)
-						{
-							ResolvedStyle style=styles[styles.Count()-1];
-							ResolvedStyle selectionStyle=model->GetStyle(DocumentModel::SelectionStyleName, style);
-							ApplyColor(start, length, selectionStyle);
-						}
-						start+=length;
-					}
-
-					void Visit(DocumentParagraphRun* run)override
-					{
-						VisitContainer(run);
-					}
-
-					static vint SetProperty(DocumentModel* model, Renderer* renderer, Ptr<Renderer::ParagraphCache> cache, Ptr<DocumentParagraphRun> run, vint selectionBegin, vint selectionEnd)
-					{
-						SetPropertiesVisitor visitor(model, renderer, cache, selectionBegin, selectionEnd);
-						run->Accept(&visitor);
-						return visitor.length;
-					}
-				};
-			}
-			using namespace visitors;
-
-/***********************************************************************
-GuiDocumentElement::GuiDocumentElementRenderer
-***********************************************************************/
-
-			Size GuiDocumentElement::GuiDocumentElementRenderer::OnRenderInlineObject(vint callbackId, Rect location)
-			{
-				if (element->callback)
-				{
-					auto cache = paragraphCaches[renderingParagraph];
-					auto relativeLocation = Rect(Point(location.x1 + renderingParagraphOffset.x, location.y1 + renderingParagraphOffset.y), location.GetSize());
-					auto eo = cache->embeddedObjects[callbackId];
-					auto size = element->callback->OnRenderEmbeddedObject(eo->name, relativeLocation);
-					eo->resized = eo->size != size;
-					eo->size = size;
-					return eo->size;
-				}
-				else
-				{
-					return Size();
-				}
-			}
-
-			void GuiDocumentElement::GuiDocumentElementRenderer::InitializeInternal()
-			{
-			}
-
-			void GuiDocumentElement::GuiDocumentElementRenderer::FinalizeInternal()
-			{
-			}
-
-			void GuiDocumentElement::GuiDocumentElementRenderer::RenderTargetChangedInternal(IGuiGraphicsRenderTarget* oldRenderTarget, IGuiGraphicsRenderTarget* newRenderTarget)
-			{
-				// TODO: (enumerable) foreach
-				for(vint i=0;i<paragraphCaches.Count();i++)
-				{
-					ParagraphCache* cache=paragraphCaches[i].Obj();
-					if(cache)
-					{
-						cache->graphicsParagraph=0;
-					}
-				}
-			}
-
-			Ptr<GuiDocumentElement::GuiDocumentElementRenderer::ParagraphCache> GuiDocumentElement::GuiDocumentElementRenderer::EnsureAndGetCache(vint paragraphIndex, bool createParagraph)
-			{
-				if (paragraphIndex < 0 || paragraphIndex >= paragraphCaches.Count()) return 0;
-				Ptr<DocumentParagraphRun> paragraph = element->document->paragraphs[paragraphIndex];
-				Ptr<ParagraphCache> cache = paragraphCaches[paragraphIndex];
-				if (!cache)
-				{
-					cache = Ptr(new ParagraphCache);
-					cache->fullText = paragraph->GetTextForCaret();
-					paragraphCaches[paragraphIndex] = cache;
-				}
-
-				if (createParagraph)
-				{
-					if (!cache->graphicsParagraph)
-					{
-						cache->graphicsParagraph = layoutProvider->CreateParagraph(cache->fullText, renderTarget, this);
-						cache->graphicsParagraph->SetParagraphAlignment(paragraph->alignment ? paragraph->alignment.Value() : Alignment::Left);
-						cache->graphicsParagraph->SetWrapLine(element->wrapLine);
-						SetPropertiesVisitor::SetProperty(element->document.Obj(), this, cache, paragraph, cache->selectionBegin, cache->selectionEnd);
-					}
-					if (cache->graphicsParagraph->GetMaxWidth() != lastMaxWidth)
-					{
-						cache->graphicsParagraph->SetMaxWidth(lastMaxWidth);
-					}
-
-					Size cachedSize = paragraphSizes[paragraphIndex];
-					Size realSize = cache->graphicsParagraph->GetSize();
-					if (cachedTotalSize.x < realSize.x)
-					{
-						cachedTotalSize.x = realSize.x;
-					}
-					if (cachedSize.y != realSize.y)
-					{
-						cachedTotalSize.y += realSize.y - cachedSize.y;
-					}
-					paragraphSizes[paragraphIndex] = realSize;
-					minSize = cachedTotalSize;
-				}
-
-				return cache;
-			}
-
-			bool GuiDocumentElement::GuiDocumentElementRenderer::GetParagraphIndexFromPoint(Point point, vint& top, vint& index)
-			{
-				vint y = 0;
-				// TODO: (enumerable) foreach
-				for (vint i = 0; i < paragraphSizes.Count(); i++)
-				{
-					vint paragraphHeight = paragraphSizes[i].y;
-					vint nextY = y + paragraphHeight + paragraphDistance;
-					top = y;
-					index = i;
-
-					if (nextY <= point.y)
-					{
-						y = nextY;
-						continue;
-					}
-					else
-					{
-						break;
-					}
-				}
-				return true;
-			}
-
-			GuiDocumentElement::GuiDocumentElementRenderer::GuiDocumentElementRenderer()
-				:paragraphDistance(0)
-				,lastMaxWidth(-1)
-				,layoutProvider(GetGuiGraphicsResourceManager()->GetLayoutProvider())
-				,lastCaret(-1, -1)
-				,lastCaretFrontSide(false)
-			{
-			}
-
-			void GuiDocumentElement::GuiDocumentElementRenderer::Render(Rect bounds)
-			{
-				if (element->callback)
-				{
-					element->callback->OnStartRender();
-				}
-				renderTarget->PushClipper(bounds, element);
-				if (!renderTarget->IsClipperCoverWholeTarget())
-				{
-					vint maxWidth = bounds.Width();
-					Rect clipper = renderTarget->GetClipper();
-					vint cx = bounds.Left();
-					vint cy = bounds.Top();
-					vint y1 = clipper.Top() - bounds.Top();
-					vint y2 = y1 + clipper.Height();
-					vint y = 0;
-
-					lastMaxWidth = maxWidth;
-
-					// TODO: (enumerable) foreach
-					vint paragraphCount = paragraphSizes.Count();
-					if (paragraphCount > element->document->paragraphs.Count())
-					{
-						paragraphCount = element->document->paragraphs.Count();
-					}
-					for (vint i = 0; i < paragraphCount; i++)
-					{
-						Size cachedSize = paragraphSizes[i];
-						if (y + cachedSize.y <= y1)
-						{
-							y += cachedSize.y + paragraphDistance;
-							continue;
-						}
-						else if (y >= y2)
-						{
-							break;
-						}
-						else
-						{
-							Ptr<DocumentParagraphRun> paragraph = element->document->paragraphs[i];
-							Ptr<ParagraphCache> cache = paragraphCaches[i];
-							bool created = cache && cache->graphicsParagraph;
-							cache = EnsureAndGetCache(i, true);
-							if (!created && i == lastCaret.row && element->caretVisible)
-							{
-								cache->graphicsParagraph->OpenCaret(lastCaret.column, lastCaretColor, lastCaretFrontSide);
-							}
-
-							cachedSize = cache->graphicsParagraph->GetSize();
-
-							renderingParagraph = i;
-							renderingParagraphOffset = Point(cx - bounds.x1, cy + y - bounds.y1);
-							cache->graphicsParagraph->Render(Rect(Point(cx, cy + y), Size(maxWidth, cachedSize.y)));
-							renderingParagraph = -1;
-
-							bool resized = false;
-							// TODO: (enumerable) foreach
-							for (vint j = 0; j < cache->embeddedObjects.Count(); j++)
-							{
-								auto eo = cache->embeddedObjects.Values()[j];
-								if (eo->resized)
-								{
-									eo->resized = false;
-									resized = true;
-								}
-							}
-
-							if (resized)
-							{
-								cache->graphicsParagraph = 0;
-							}
-						}
-
-						y += cachedSize.y + paragraphDistance;
-					}
-				}
-				renderTarget->PopClipper(element);
-				if (element->callback)
-				{
-					element->callback->OnFinishRender();
-				}
-			}
-
-			void GuiDocumentElement::GuiDocumentElementRenderer::OnElementStateChanged()
-			{
-				cachedTotalSize = { 1,1 };
-				if (element->document && element->document->paragraphs.Count() > 0)
-				{
-					vint defaultHeight = GetCurrentController()->ResourceService()->GetDefaultFont().size;
-					paragraphDistance = element->paragraphPadding ? defaultHeight : 0;
-
-					paragraphCaches.Resize(element->document->paragraphs.Count());
-					paragraphSizes.Resize(element->document->paragraphs.Count());
-					
-					for (vint i = 0; i < paragraphCaches.Count(); i++)
-					{
-						paragraphCaches[i] = 0;
-					}
-					for (vint i = 0; i < paragraphSizes.Count(); i++)
-					{
-						paragraphSizes[i] = { 0,defaultHeight };
-					}
-
-					cachedTotalSize.y = paragraphSizes.Count() * (defaultHeight + paragraphDistance);
-					if (paragraphSizes.Count()>0)
-					{
-						cachedTotalSize.y -= paragraphDistance;
-					}
-				}
-				else
-				{
-					paragraphCaches.Resize(0);
-					paragraphSizes.Resize(0);
-				}
-				minSize = cachedTotalSize;
-
-				nameCallbackIdMap.Clear();
-				freeCallbackIds.Clear();
-				usedCallbackIds = 0;
-			}
-
-			void GuiDocumentElement::GuiDocumentElementRenderer::NotifyParagraphUpdated(vint index, vint oldCount, vint newCount, bool updatedText)
-			{
-				if (0 <= index && index < paragraphCaches.Count() && 0 <= oldCount && index + oldCount <= paragraphCaches.Count() && 0 <= newCount)
-				{
-					vint paragraphCount = element->document->paragraphs.Count();
-					CHECK_ERROR(updatedText || oldCount == newCount, L"GuiDocumentlement::GuiDocumentElementRenderer::NotifyParagraphUpdated(vint, vint, vint, bool)#Illegal values of oldCount and newCount.");
-					CHECK_ERROR(paragraphCount - paragraphCaches.Count() == newCount - oldCount, L"GuiDocumentElement::GuiDocumentElementRenderer::NotifyParagraphUpdated(vint, vint, vint, bool)#Illegal values of oldCount and newCount.");
-
-					ParagraphCacheArray oldCaches;
-					CopyFrom(oldCaches, paragraphCaches);
-					paragraphCaches.Resize(paragraphCount);
-
-					ParagraphSizeArray oldSizes;
-					CopyFrom(oldSizes, paragraphSizes);
-					paragraphSizes.Resize(paragraphCount);
-
-					vint defaultHeight = GetCurrentController()->ResourceService()->GetDefaultFont().size;
-					cachedTotalSize = { 1,1 };
-
-					for (vint i = 0; i < paragraphCount; i++)
-					{
-						if (i < index)
-						{
-							paragraphCaches[i] = oldCaches[i];
-							paragraphSizes[i] = oldSizes[i];
-						}
-						else if (i < index + newCount)
-						{
-							paragraphCaches[i] = 0;
-							paragraphSizes[i] = { 0,defaultHeight };
-							if (!updatedText && i < index + oldCount)
-							{
-								auto cache = oldCaches[i];
-								if(cache)
-								{
-									cache->graphicsParagraph = 0;
-								}
-								paragraphCaches[i] = cache;
-								paragraphSizes[i] = oldSizes[i];
-							}
-						}
-						else
-						{
-							paragraphCaches[i] = oldCaches[i - (newCount - oldCount)];
-							paragraphSizes[i] = oldSizes[i - (newCount - oldCount)];
-						}
-
-						auto cachedSize = paragraphSizes[i];
-						if (cachedTotalSize.x < cachedSize.x)
-						{
-							cachedTotalSize.x = cachedSize.x;
-						}
-						cachedTotalSize.y += cachedSize.y + paragraphDistance;
-					}
-					if (paragraphCount > 0)
-					{
-						cachedTotalSize.y -= paragraphDistance;
-					}
-
-					if (updatedText)
-					{
-						vint count = oldCount < newCount ? oldCount : newCount;
-						for (vint i = 0; i < count; i++)
-						{
-							if (auto cache = oldCaches[index + i])
-							{
-								// TODO: (enumerable) foreach on dictionary
-								for (vint j = 0; j < cache->embeddedObjects.Count(); j++)
-								{
-									auto id = cache->embeddedObjects.Keys()[j];
-									auto name = cache->embeddedObjects.Values()[j]->name;
-									nameCallbackIdMap.Remove(name);
-									freeCallbackIds.Add(id);
-								}
-							}
-						}
-					}
-					minSize = cachedTotalSize;
-				}
-			}
-
-			Ptr<DocumentHyperlinkRun::Package> GuiDocumentElement::GuiDocumentElementRenderer::GetHyperlinkFromPoint(Point point)
-			{
-				if (!renderTarget) return nullptr;
-				vint top=0;
-				vint index=-1;
-				if(GetParagraphIndexFromPoint(point, top, index))
-				{
-					Ptr<ParagraphCache> cache=EnsureAndGetCache(index, true);
-					Point paragraphPoint(point.x, point.y-top);
-
-					vint start=-1;
-					vint length=0;
-					if(cache->graphicsParagraph->GetInlineObjectFromPoint(paragraphPoint, start, length))
-					{
-						return element->document->GetHyperlink(index, start, start+length);
-					}
-
-					vint caret=cache->graphicsParagraph->GetCaretFromPoint(paragraphPoint);
-					return element->document->GetHyperlink(index, caret, caret);
-				}
-				return nullptr;
-			}
-
-			void GuiDocumentElement::GuiDocumentElementRenderer::OpenCaret(TextPos caret, Color color, bool frontSide)
-			{
-				CloseCaret(caret);
-				lastCaret=caret;
-				lastCaretColor=color;
-				lastCaretFrontSide=frontSide;
-
-				Ptr<ParagraphCache> cache=paragraphCaches[lastCaret.row];
-				if(cache && cache->graphicsParagraph)
-				{
-					cache->graphicsParagraph->OpenCaret(lastCaret.column, lastCaretColor, lastCaretFrontSide);
-				}
-			}
-
-			void GuiDocumentElement::GuiDocumentElementRenderer::CloseCaret(TextPos caret)
-			{
-				if(lastCaret!=TextPos(-1, -1))
-				{
-					if(0<=lastCaret.row && lastCaret.row<paragraphCaches.Count())
-					{
-						Ptr<ParagraphCache> cache=paragraphCaches[lastCaret.row];
-						if(cache && cache->graphicsParagraph)
-						{
-							cache->graphicsParagraph->CloseCaret();
-						}
-					}
-				}
-				lastCaret=caret;
-			}
-
-			void GuiDocumentElement::GuiDocumentElementRenderer::SetSelection(TextPos begin, TextPos end)
-			{
-				if(begin>end)
-				{
-					TextPos t=begin;
-					begin=end;
-					end=t;
-				}
-				if(begin==end)
-				{
-					begin=TextPos(-1, -1);
-					end=TextPos(-1, -1);
-				}
-
-				if (!renderTarget) return;
-				// TODO: (enumerable) foreach:indexed
-				for(vint i=0;i<paragraphCaches.Count();i++)
-				{
-					if(begin.row<=i && i<=end.row)
-					{
-						Ptr<ParagraphCache> cache=EnsureAndGetCache(i, false);
-						vint newBegin=i==begin.row?begin.column:0;
-						vint newEnd=i==end.row?end.column:cache->fullText.Length();
-
-						if(cache->selectionBegin!=newBegin || cache->selectionEnd!=newEnd)
-						{
-							cache->selectionBegin=newBegin;
-							cache->selectionEnd=newEnd;
-							NotifyParagraphUpdated(i, 1, 1, false);
-						}
-					}
-					else
-					{
-						Ptr<ParagraphCache> cache=paragraphCaches[i];
-						if(cache)
-						{
-							if(cache->selectionBegin!=-1 || cache->selectionEnd!=-1)
-							{
-								cache->selectionBegin=-1;
-								cache->selectionEnd=-1;
-								NotifyParagraphUpdated(i, 1, 1, false);
-							}
-						}
-					}
-				}
-			}
-
-			TextPos GuiDocumentElement::GuiDocumentElementRenderer::CalculateCaret(TextPos comparingCaret, IGuiGraphicsParagraph::CaretRelativePosition position, bool& preferFrontSide)
-			{
-				if (!renderTarget) return comparingCaret;
-				Ptr<ParagraphCache> cache = EnsureAndGetCache(comparingCaret.row, true);
-				if (cache)
-				{
-					switch (position)
-					{
-					case IGuiGraphicsParagraph::CaretFirst:
-						{
-							preferFrontSide = false;
-							vint caret = cache->graphicsParagraph->GetCaret(0, IGuiGraphicsParagraph::CaretFirst, preferFrontSide);
-							return TextPos(comparingCaret.row, caret);
-						}
-					case IGuiGraphicsParagraph::CaretLast:
-						{
-							preferFrontSide = true;
-							vint caret = cache->graphicsParagraph->GetCaret(0, IGuiGraphicsParagraph::CaretLast, preferFrontSide);
-							return TextPos(comparingCaret.row, caret);
-						}
-					case IGuiGraphicsParagraph::CaretLineFirst:
-						{
-							preferFrontSide = false;
-							vint caret = cache->graphicsParagraph->GetCaret(comparingCaret.column, IGuiGraphicsParagraph::CaretLineFirst, preferFrontSide);
-							return TextPos(comparingCaret.row, caret);
-						}
-					case IGuiGraphicsParagraph::CaretLineLast:
-						{
-							preferFrontSide = true;
-							vint caret = cache->graphicsParagraph->GetCaret(comparingCaret.column, IGuiGraphicsParagraph::CaretLineLast, preferFrontSide);
-							return TextPos(comparingCaret.row, caret);
-						}
-					case IGuiGraphicsParagraph::CaretMoveUp:
-						{
-							vint caret = cache->graphicsParagraph->GetCaret(comparingCaret.column, IGuiGraphicsParagraph::CaretMoveUp, preferFrontSide);
-							if (caret == comparingCaret.column && comparingCaret.row > 0)
-							{
-								Rect caretBounds = cache->graphicsParagraph->GetCaretBounds(comparingCaret.column, preferFrontSide);
-								Ptr<ParagraphCache> anotherCache = EnsureAndGetCache(comparingCaret.row - 1, true);
-								vint height = anotherCache->graphicsParagraph->GetSize().y;
-								caret = anotherCache->graphicsParagraph->GetCaretFromPoint(Point(caretBounds.x1, height));
-								return TextPos(comparingCaret.row - 1, caret);
-							}
-							else
-							{
-								return TextPos(comparingCaret.row, caret);
-							}
-						}
-					case IGuiGraphicsParagraph::CaretMoveDown:
-						{
-							vint caret = cache->graphicsParagraph->GetCaret(comparingCaret.column, IGuiGraphicsParagraph::CaretMoveDown, preferFrontSide);
-							if (caret == comparingCaret.column && comparingCaret.row < paragraphCaches.Count() - 1)
-							{
-								Rect caretBounds = cache->graphicsParagraph->GetCaretBounds(comparingCaret.column, preferFrontSide);
-								Ptr<ParagraphCache> anotherCache = EnsureAndGetCache(comparingCaret.row + 1, true);
-								caret = anotherCache->graphicsParagraph->GetCaretFromPoint(Point(caretBounds.x1, 0));
-								return TextPos(comparingCaret.row + 1, caret);
-							}
-							else
-							{
-								return TextPos(comparingCaret.row, caret);
-							}
-						}
-					case IGuiGraphicsParagraph::CaretMoveLeft:
-						{
-							preferFrontSide = false;
-							vint caret = cache->graphicsParagraph->GetCaret(comparingCaret.column, IGuiGraphicsParagraph::CaretMoveLeft, preferFrontSide);
-							if (caret == comparingCaret.column && comparingCaret.row > 0)
-							{
-								Ptr<ParagraphCache> anotherCache = EnsureAndGetCache(comparingCaret.row - 1, true);
-								caret = anotherCache->graphicsParagraph->GetCaret(0, IGuiGraphicsParagraph::CaretLast, preferFrontSide);
-								return TextPos(comparingCaret.row - 1, caret);
-							}
-							else
-							{
-								return TextPos(comparingCaret.row, caret);
-							}
-						}
-					case IGuiGraphicsParagraph::CaretMoveRight:
-						{
-							preferFrontSide = true;
-							vint caret = cache->graphicsParagraph->GetCaret(comparingCaret.column, IGuiGraphicsParagraph::CaretMoveRight, preferFrontSide);
-							if (caret == comparingCaret.column && comparingCaret.row < paragraphCaches.Count() - 1)
-							{
-								Ptr<ParagraphCache> anotherCache = EnsureAndGetCache(comparingCaret.row + 1, true);
-								caret = anotherCache->graphicsParagraph->GetCaret(0, IGuiGraphicsParagraph::CaretFirst, preferFrontSide);
-								return TextPos(comparingCaret.row + 1, caret);
-							}
-							else
-							{
-								return TextPos(comparingCaret.row, caret);
-							}
-						}
-					}
-				}
-				return comparingCaret;
-			}
-
-			TextPos GuiDocumentElement::GuiDocumentElementRenderer::CalculateCaretFromPoint(Point point)
-			{
-				if (!renderTarget) return TextPos(-1, -1);
-				vint top=0;
-				vint index=-1;
-				if(GetParagraphIndexFromPoint(point, top, index))
-				{
-					Ptr<ParagraphCache> cache=EnsureAndGetCache(index, true);
-					Point paragraphPoint(point.x, point.y-top);
-					vint caret=cache->graphicsParagraph->GetCaretFromPoint(paragraphPoint);
-					return TextPos(index, caret);
-				}
-				return TextPos(-1, -1);
-			}
-
-			Rect GuiDocumentElement::GuiDocumentElementRenderer::GetCaretBounds(TextPos caret, bool frontSide)
-			{
-				if (!renderTarget) return Rect();
-				Ptr<ParagraphCache> cache = EnsureAndGetCache(caret.row, true);
-				if (cache)
-				{
-					Rect bounds = cache->graphicsParagraph->GetCaretBounds(caret.column, frontSide);
-					if (bounds != Rect())
-					{
-						vint y = 0;
-						for (vint i = 0; i < caret.row; i++)
-						{
-							EnsureAndGetCache(i, true);
-							y += paragraphSizes[i].y + paragraphDistance;
-						}
-
-						bounds.y1 += y;
-						bounds.y2 += y;
-						return bounds;
-					}
-				}
-				return Rect();
-			}
-
-/***********************************************************************
 GuiDocumentElement
 ***********************************************************************/
 
@@ -33610,17 +28986,18 @@ GuiDocumentElement
 			}
 
 			GuiDocumentElement::GuiDocumentElement()
-				:caretVisible(false)
+				:passwordChar(0)
+				,caretVisible(false)
 				,caretFrontSide(false)
 			{
 			}
 
-			GuiDocumentElement::ICallback* GuiDocumentElement::GetCallback()
+			IGuiDocumentElementCallback* GuiDocumentElement::GetCallback()
 			{
 				return callback;
 			}
 
-			void GuiDocumentElement::SetCallback(ICallback* value)
+			void GuiDocumentElement::SetCallback(IGuiDocumentElementCallback* value)
 			{
 				callback = value;
 			}
@@ -33657,6 +29034,20 @@ GuiDocumentElement
 			{
 				wrapLine = value;
 				InvokeOnElementStateChanged();
+			}
+
+			wchar_t GuiDocumentElement::GetPasswordChar()
+			{
+				return passwordChar;
+			}
+
+			void GuiDocumentElement::SetPasswordChar(wchar_t value)
+			{
+				if(passwordChar!=value)
+				{
+					passwordChar=value;
+					InvokeOnElementStateChanged();
+				}
 			}
 
 			TextPos GuiDocumentElement::GetCaretBegin()
@@ -34041,6 +29432,811 @@ GuiDocumentElement
 					return elementRenderer->GetHyperlinkFromPoint(point);
 				}
 				return nullptr;
+			}
+		}
+	}
+}
+
+/***********************************************************************
+.\GRAPHICSELEMENT\GUIGRAPHICSDOCUMENTRENDERER.CPP
+***********************************************************************/
+
+namespace vl
+{
+	using namespace collections;
+
+	namespace presentation
+	{
+		namespace elements
+		{
+
+/***********************************************************************
+SetPropertiesVisitor
+***********************************************************************/
+
+			namespace visitors
+			{
+				class SetPropertiesVisitor : public Object, public DocumentRun::IVisitor
+				{
+					typedef GuiDocumentElementRenderer						Renderer;
+					typedef DocumentModel::ResolvedStyle					ResolvedStyle;
+				public:
+					vint							start;
+					vint							length;
+					vint							selectionBegin;
+					vint							selectionEnd;
+					List<ResolvedStyle>				styles;
+
+					DocumentModel*					model;
+					Renderer*						renderer;
+					Ptr<Renderer::ParagraphCache>	cache;
+					IGuiGraphicsParagraph*			paragraph;
+
+					SetPropertiesVisitor(DocumentModel* _model, Renderer* _renderer, Ptr<Renderer::ParagraphCache> _cache, vint _selectionBegin, vint _selectionEnd)
+						:start(0)
+						,length(0)
+						,model(_model)
+						,renderer(_renderer)
+						,cache(_cache)
+						,paragraph(_cache->graphicsParagraph.Obj())
+						,selectionBegin(_selectionBegin)
+						,selectionEnd(_selectionEnd)
+					{
+						ResolvedStyle style;
+						style=model->GetStyle(DocumentModel::DefaultStyleName, style);
+						styles.Add(style);
+					}
+
+					void VisitContainer(DocumentContainerRun* run)
+					{
+						for (auto subRun : run->runs)
+						{
+							subRun->Accept(this);
+						}
+					}
+
+					void ApplyStyle(vint start, vint length, const ResolvedStyle& style)
+					{
+						paragraph->SetFont(start, length, style.style.fontFamily);
+						paragraph->SetSize(start, length, style.style.size);
+						paragraph->SetStyle(start, length, 
+							(IGuiGraphicsParagraph::TextStyle)
+							( (style.style.bold?IGuiGraphicsParagraph::Bold:0)
+							| (style.style.italic?IGuiGraphicsParagraph::Italic:0)
+							| (style.style.underline?IGuiGraphicsParagraph::Underline:0)
+							| (style.style.strikeline?IGuiGraphicsParagraph::Strikeline:0)
+							));
+					}
+
+					void ApplyColor(vint start, vint length, const ResolvedStyle& style)
+					{
+						paragraph->SetColor(start, length, style.color);
+						paragraph->SetBackgroundColor(start, length, style.backgroundColor);
+					}
+
+					void Visit(DocumentTextRun* run)override
+					{
+						length=run->GetRepresentationText().Length();
+						if(length>0)
+						{
+							ResolvedStyle style=styles[styles.Count()-1];
+							ApplyStyle(start, length, style);
+							ApplyColor(start, length, style);
+
+							vint styleStart=start;
+							vint styleEnd=styleStart+length;
+							if(styleStart<selectionEnd && selectionBegin<styleEnd)
+							{
+								vint s2=styleStart>selectionBegin?styleStart:selectionBegin;
+								vint s3=selectionEnd<styleEnd?selectionEnd:styleEnd;
+
+								if(s2<s3)
+								{
+									ResolvedStyle selectionStyle=model->GetStyle(DocumentModel::SelectionStyleName, style);
+									ApplyColor(s2, s3-s2, selectionStyle);
+								}
+							}
+						}
+						start+=length;
+					}
+
+					void Visit(DocumentStylePropertiesRun* run)override
+					{
+						ResolvedStyle style=styles[styles.Count()-1];
+						style=model->GetStyle(run->style, style);
+						styles.Add(style);
+						VisitContainer(run);
+						styles.RemoveAt(styles.Count()-1);
+					}
+
+					void Visit(DocumentStyleApplicationRun* run)override
+					{
+						ResolvedStyle style=styles[styles.Count()-1];
+						style=model->GetStyle(run->styleName, style);
+						styles.Add(style);
+						VisitContainer(run);
+						styles.RemoveAt(styles.Count()-1);
+					}
+
+					void Visit(DocumentHyperlinkRun* run)override
+					{
+						ResolvedStyle style=styles[styles.Count()-1];
+						style=model->GetStyle(run->styleName, style);
+						styles.Add(style);
+						VisitContainer(run);
+						styles.RemoveAt(styles.Count()-1);
+					}
+
+					void Visit(DocumentImageRun* run)override
+					{
+						length=run->GetRepresentationText().Length();
+
+						auto element=Ptr(GuiImageFrameElement::Create());
+						element->SetImage(run->image, run->frameIndex);
+						element->SetStretch(true);
+
+						IGuiGraphicsParagraph::InlineObjectProperties properties;
+						properties.size=run->size;
+						properties.baseline=run->baseline;
+						properties.breakCondition=IGuiGraphicsParagraph::Alone;
+						properties.backgroundImage = element;
+
+						paragraph->SetInlineObject(start, length, properties);
+
+						if(start<selectionEnd && selectionBegin<start+length)
+						{
+							ResolvedStyle style=styles[styles.Count()-1];
+							ResolvedStyle selectionStyle=model->GetStyle(DocumentModel::SelectionStyleName, style);
+							ApplyColor(start, length, selectionStyle);
+						}
+						start+=length;
+					}
+
+					void Visit(DocumentEmbeddedObjectRun* run)override
+					{
+						length=run->GetRepresentationText().Length();
+
+						IGuiGraphicsParagraph::InlineObjectProperties properties;
+						properties.breakCondition=IGuiGraphicsParagraph::Alone;
+
+						if (run->name != L"")
+						{
+							vint index = renderer->nameCallbackIdMap.Keys().IndexOf(run->name);
+							if (index != -1)
+							{
+								auto id = renderer->nameCallbackIdMap.Values()[index];
+								index = cache->embeddedObjects.Keys().IndexOf(id);
+								if (index != -1)
+								{
+									auto eo = cache->embeddedObjects.Values()[index];
+									if (eo->start == start)
+									{
+										properties.size = eo->size;
+										properties.callbackId = id;
+									}
+								}
+							}
+							else
+							{
+								auto eo = Ptr(new Renderer::EmbeddedObject);
+								eo->name = run->name;
+								eo->size = Size(0, 0);
+								eo->start = start;
+
+								vint id = -1;
+								vint count = renderer->freeCallbackIds.Count();
+								if (count > 0)
+								{
+									id = renderer->freeCallbackIds[count - 1];
+									renderer->freeCallbackIds.RemoveAt(count - 1);
+								}
+								else
+								{
+									id = renderer->usedCallbackIds++;
+								}
+
+								renderer->nameCallbackIdMap.Add(eo->name, id);
+								cache->embeddedObjects.Add(id, eo);
+								properties.callbackId = id;
+							}
+						}
+
+						paragraph->SetInlineObject(start, length, properties);
+
+						if(start<selectionEnd && selectionBegin<start+length)
+						{
+							ResolvedStyle style=styles[styles.Count()-1];
+							ResolvedStyle selectionStyle=model->GetStyle(DocumentModel::SelectionStyleName, style);
+							ApplyColor(start, length, selectionStyle);
+						}
+						start+=length;
+					}
+
+					void Visit(DocumentParagraphRun* run)override
+					{
+						VisitContainer(run);
+					}
+
+					static vint SetProperty(DocumentModel* model, Renderer* renderer, Ptr<Renderer::ParagraphCache> cache, Ptr<DocumentParagraphRun> run, vint selectionBegin, vint selectionEnd)
+					{
+						SetPropertiesVisitor visitor(model, renderer, cache, selectionBegin, selectionEnd);
+						run->Accept(&visitor);
+						return visitor.length;
+					}
+				};
+			}
+			using namespace visitors;
+
+/***********************************************************************
+GuiDocumentElementRenderer
+***********************************************************************/
+
+			Size GuiDocumentElementRenderer::OnRenderInlineObject(vint callbackId, Rect location)
+			{
+				if (auto callback = element->GetCallback())
+				{
+					auto cache = paragraphCaches[renderingParagraph];
+					auto relativeLocation = Rect(Point(location.x1 + renderingParagraphOffset.x, location.y1 + renderingParagraphOffset.y), location.GetSize());
+					auto eo = cache->embeddedObjects[callbackId];
+					auto size = callback->OnRenderEmbeddedObject(eo->name, relativeLocation);
+					eo->resized = eo->size != size;
+					eo->size = size;
+					return eo->size;
+				}
+				else
+				{
+					return Size();
+				}
+			}
+
+			void GuiDocumentElementRenderer::InitializeInternal()
+			{
+			}
+
+			void GuiDocumentElementRenderer::FinalizeInternal()
+			{
+			}
+
+			void GuiDocumentElementRenderer::RenderTargetChangedInternal(IGuiGraphicsRenderTarget* oldRenderTarget, IGuiGraphicsRenderTarget* newRenderTarget)
+			{
+				// TODO: (enumerable) foreach
+				for(vint i=0;i<paragraphCaches.Count();i++)
+				{
+					ParagraphCache* cache=paragraphCaches[i].Obj();
+					if(cache)
+					{
+						cache->graphicsParagraph=0;
+					}
+				}
+			}
+
+			Ptr<GuiDocumentElementRenderer::ParagraphCache> GuiDocumentElementRenderer::EnsureAndGetCache(vint paragraphIndex, bool createParagraph)
+			{
+				if (paragraphIndex < 0 || paragraphIndex >= paragraphCaches.Count()) return 0;
+				Ptr<DocumentParagraphRun> paragraph = element->GetDocument()->paragraphs[paragraphIndex];
+				Ptr<ParagraphCache> cache = paragraphCaches[paragraphIndex];
+				if (!cache)
+				{
+					cache = Ptr(new ParagraphCache);
+					cache->fullText = paragraph->GetTextForCaret();
+					paragraphCaches[paragraphIndex] = cache;
+				}
+
+				if (createParagraph)
+				{
+					if (!cache->graphicsParagraph)
+					{
+						auto paragraphText = cache->fullText;
+						if (auto passwordChar = element->GetPasswordChar())
+						{
+							Array<wchar_t> passwordText(paragraphText.Length() + 1);
+							for (vint i = 0; i < paragraphText.Length(); i++)
+							{
+								passwordText[i] = passwordChar;
+							}
+							passwordText[paragraphText.Length()] = 0;
+							paragraphText = &passwordText[0];
+						}
+						cache->graphicsParagraph = layoutProvider->CreateParagraph(paragraphText, renderTarget, this);
+						cache->graphicsParagraph->SetParagraphAlignment(paragraph->alignment ? paragraph->alignment.Value() : Alignment::Left);
+						cache->graphicsParagraph->SetWrapLine(element->GetWrapLine());
+						SetPropertiesVisitor::SetProperty(element->GetDocument().Obj(), this, cache, paragraph, cache->selectionBegin, cache->selectionEnd);
+					}
+					if (cache->graphicsParagraph->GetMaxWidth() != lastMaxWidth)
+					{
+						cache->graphicsParagraph->SetMaxWidth(lastMaxWidth);
+					}
+
+					Size cachedSize = paragraphSizes[paragraphIndex];
+					Size realSize = cache->graphicsParagraph->GetSize();
+					if (cachedTotalSize.x < realSize.x)
+					{
+						cachedTotalSize.x = realSize.x;
+					}
+					if (cachedSize.y != realSize.y)
+					{
+						cachedTotalSize.y += realSize.y - cachedSize.y;
+					}
+					paragraphSizes[paragraphIndex] = realSize;
+					minSize = cachedTotalSize;
+				}
+
+				return cache;
+			}
+
+			bool GuiDocumentElementRenderer::GetParagraphIndexFromPoint(Point point, vint& top, vint& index)
+			{
+				vint y = 0;
+				// TODO: (enumerable) foreach
+				for (vint i = 0; i < paragraphSizes.Count(); i++)
+				{
+					vint paragraphHeight = paragraphSizes[i].y;
+					vint nextY = y + paragraphHeight + paragraphDistance;
+					top = y;
+					index = i;
+
+					if (nextY <= point.y)
+					{
+						y = nextY;
+						continue;
+					}
+					else
+					{
+						break;
+					}
+				}
+				return true;
+			}
+
+			GuiDocumentElementRenderer::GuiDocumentElementRenderer()
+				:paragraphDistance(0)
+				,lastMaxWidth(-1)
+				,layoutProvider(GetGuiGraphicsResourceManager()->GetLayoutProvider())
+				,lastCaret(-1, -1)
+				,lastCaretFrontSide(false)
+			{
+			}
+
+			void GuiDocumentElementRenderer::Render(Rect bounds)
+			{
+				if (auto callback = element->GetCallback())
+				{
+					callback->OnStartRender();
+				}
+				renderTarget->PushClipper(bounds, element);
+				if (!renderTarget->IsClipperCoverWholeTarget())
+				{
+					vint maxWidth = bounds.Width();
+					Rect clipper = renderTarget->GetClipper();
+					vint cx = bounds.Left();
+					vint cy = bounds.Top();
+					vint y1 = clipper.Top() - bounds.Top();
+					vint y2 = y1 + clipper.Height();
+					vint y = 0;
+
+					lastMaxWidth = maxWidth;
+
+					// TODO: (enumerable) foreach
+					vint paragraphCount = paragraphSizes.Count();
+					auto document = element->GetDocument();
+					if (paragraphCount > document->paragraphs.Count())
+					{
+						paragraphCount = document->paragraphs.Count();
+					}
+					for (vint i = 0; i < paragraphCount; i++)
+					{
+						Size cachedSize = paragraphSizes[i];
+						if (y + cachedSize.y <= y1)
+						{
+							y += cachedSize.y + paragraphDistance;
+							continue;
+						}
+						else if (y >= y2)
+						{
+							break;
+						}
+						else
+						{
+							Ptr<DocumentParagraphRun> paragraph = document->paragraphs[i];
+							Ptr<ParagraphCache> cache = paragraphCaches[i];
+							bool created = cache && cache->graphicsParagraph;
+							cache = EnsureAndGetCache(i, true);
+							if (!created && i == lastCaret.row && element->GetCaretVisible())
+							{
+								cache->graphicsParagraph->OpenCaret(lastCaret.column, lastCaretColor, lastCaretFrontSide);
+							}
+
+							cachedSize = cache->graphicsParagraph->GetSize();
+
+							renderingParagraph = i;
+							renderingParagraphOffset = Point(cx - bounds.x1, cy + y - bounds.y1);
+							cache->graphicsParagraph->Render(Rect(Point(cx, cy + y), Size(maxWidth, cachedSize.y)));
+							renderingParagraph = -1;
+
+							bool resized = false;
+							// TODO: (enumerable) foreach
+							for (vint j = 0; j < cache->embeddedObjects.Count(); j++)
+							{
+								auto eo = cache->embeddedObjects.Values()[j];
+								if (eo->resized)
+								{
+									eo->resized = false;
+									resized = true;
+								}
+							}
+
+							if (resized)
+							{
+								cache->graphicsParagraph = 0;
+							}
+						}
+
+						y += cachedSize.y + paragraphDistance;
+					}
+				}
+				renderTarget->PopClipper(element);
+				if (auto callback = element->GetCallback())
+				{
+					callback->OnFinishRender();
+				}
+			}
+
+			void GuiDocumentElementRenderer::OnElementStateChanged()
+			{
+				cachedTotalSize = { 1,1 };
+				auto document = element->GetDocument();
+				if (document && document->paragraphs.Count() > 0)
+				{
+					vint defaultHeight = GetCurrentController()->ResourceService()->GetDefaultFont().size;
+					paragraphDistance = element->GetParagraphPadding() ? defaultHeight : 0;
+
+					paragraphCaches.Resize(document->paragraphs.Count());
+					paragraphSizes.Resize(document->paragraphs.Count());
+					
+					for (vint i = 0; i < paragraphCaches.Count(); i++)
+					{
+						paragraphCaches[i] = 0;
+					}
+					for (vint i = 0; i < paragraphSizes.Count(); i++)
+					{
+						paragraphSizes[i] = { 0,defaultHeight };
+					}
+
+					cachedTotalSize.y = paragraphSizes.Count() * (defaultHeight + paragraphDistance);
+					if (paragraphSizes.Count()>0)
+					{
+						cachedTotalSize.y -= paragraphDistance;
+					}
+				}
+				else
+				{
+					paragraphCaches.Resize(0);
+					paragraphSizes.Resize(0);
+				}
+				minSize = cachedTotalSize;
+
+				nameCallbackIdMap.Clear();
+				freeCallbackIds.Clear();
+				usedCallbackIds = 0;
+			}
+
+			void GuiDocumentElementRenderer::NotifyParagraphUpdated(vint index, vint oldCount, vint newCount, bool updatedText)
+			{
+				if (0 <= index && index < paragraphCaches.Count() && 0 <= oldCount && index + oldCount <= paragraphCaches.Count() && 0 <= newCount)
+				{
+					vint paragraphCount = element->GetDocument()->paragraphs.Count();
+					CHECK_ERROR(updatedText || oldCount == newCount, L"GuiDocumentlement::GuiDocumentElementRenderer::NotifyParagraphUpdated(vint, vint, vint, bool)#Illegal values of oldCount and newCount.");
+					CHECK_ERROR(paragraphCount - paragraphCaches.Count() == newCount - oldCount, L"GuiDocumentElementRenderer::NotifyParagraphUpdated(vint, vint, vint, bool)#Illegal values of oldCount and newCount.");
+
+					ParagraphCacheArray oldCaches;
+					CopyFrom(oldCaches, paragraphCaches);
+					paragraphCaches.Resize(paragraphCount);
+
+					ParagraphSizeArray oldSizes;
+					CopyFrom(oldSizes, paragraphSizes);
+					paragraphSizes.Resize(paragraphCount);
+
+					vint defaultHeight = GetCurrentController()->ResourceService()->GetDefaultFont().size;
+					cachedTotalSize = { 1,1 };
+
+					for (vint i = 0; i < paragraphCount; i++)
+					{
+						if (i < index)
+						{
+							paragraphCaches[i] = oldCaches[i];
+							paragraphSizes[i] = oldSizes[i];
+						}
+						else if (i < index + newCount)
+						{
+							paragraphCaches[i] = 0;
+							paragraphSizes[i] = { 0,defaultHeight };
+							if (!updatedText && i < index + oldCount)
+							{
+								auto cache = oldCaches[i];
+								if(cache)
+								{
+									cache->graphicsParagraph = 0;
+								}
+								paragraphCaches[i] = cache;
+								paragraphSizes[i] = oldSizes[i];
+							}
+						}
+						else
+						{
+							paragraphCaches[i] = oldCaches[i - (newCount - oldCount)];
+							paragraphSizes[i] = oldSizes[i - (newCount - oldCount)];
+						}
+
+						auto cachedSize = paragraphSizes[i];
+						if (cachedTotalSize.x < cachedSize.x)
+						{
+							cachedTotalSize.x = cachedSize.x;
+						}
+						cachedTotalSize.y += cachedSize.y + paragraphDistance;
+					}
+					if (paragraphCount > 0)
+					{
+						cachedTotalSize.y -= paragraphDistance;
+					}
+
+					if (updatedText)
+					{
+						vint count = oldCount < newCount ? oldCount : newCount;
+						for (vint i = 0; i < count; i++)
+						{
+							if (auto cache = oldCaches[index + i])
+							{
+								// TODO: (enumerable) foreach on dictionary
+								for (vint j = 0; j < cache->embeddedObjects.Count(); j++)
+								{
+									auto id = cache->embeddedObjects.Keys()[j];
+									auto name = cache->embeddedObjects.Values()[j]->name;
+									nameCallbackIdMap.Remove(name);
+									freeCallbackIds.Add(id);
+								}
+							}
+						}
+					}
+					minSize = cachedTotalSize;
+				}
+			}
+
+			Ptr<DocumentHyperlinkRun::Package> GuiDocumentElementRenderer::GetHyperlinkFromPoint(Point point)
+			{
+				if (!renderTarget) return nullptr;
+				vint top=0;
+				vint index=-1;
+				if(GetParagraphIndexFromPoint(point, top, index))
+				{
+					auto document = element->GetDocument();
+					Ptr<ParagraphCache> cache=EnsureAndGetCache(index, true);
+					Point paragraphPoint(point.x, point.y-top);
+
+					vint start=-1;
+					vint length=0;
+					if(cache->graphicsParagraph->GetInlineObjectFromPoint(paragraphPoint, start, length))
+					{
+						return document->GetHyperlink(index, start, start+length);
+					}
+
+					vint caret=cache->graphicsParagraph->GetCaretFromPoint(paragraphPoint);
+					return document->GetHyperlink(index, caret, caret);
+				}
+				return nullptr;
+			}
+
+			void GuiDocumentElementRenderer::OpenCaret(TextPos caret, Color color, bool frontSide)
+			{
+				CloseCaret(caret);
+				lastCaret=caret;
+				lastCaretColor=color;
+				lastCaretFrontSide=frontSide;
+
+				Ptr<ParagraphCache> cache=paragraphCaches[lastCaret.row];
+				if(cache && cache->graphicsParagraph)
+				{
+					cache->graphicsParagraph->OpenCaret(lastCaret.column, lastCaretColor, lastCaretFrontSide);
+				}
+			}
+
+			void GuiDocumentElementRenderer::CloseCaret(TextPos caret)
+			{
+				if(lastCaret!=TextPos(-1, -1))
+				{
+					if(0<=lastCaret.row && lastCaret.row<paragraphCaches.Count())
+					{
+						Ptr<ParagraphCache> cache=paragraphCaches[lastCaret.row];
+						if(cache && cache->graphicsParagraph)
+						{
+							cache->graphicsParagraph->CloseCaret();
+						}
+					}
+				}
+				lastCaret=caret;
+			}
+
+			void GuiDocumentElementRenderer::SetSelection(TextPos begin, TextPos end)
+			{
+				if(begin>end)
+				{
+					TextPos t=begin;
+					begin=end;
+					end=t;
+				}
+				if(begin==end)
+				{
+					begin=TextPos(-1, -1);
+					end=TextPos(-1, -1);
+				}
+
+				if (!renderTarget) return;
+				// TODO: (enumerable) foreach:indexed
+				for(vint i=0;i<paragraphCaches.Count();i++)
+				{
+					if(begin.row<=i && i<=end.row)
+					{
+						Ptr<ParagraphCache> cache=EnsureAndGetCache(i, false);
+						vint newBegin=i==begin.row?begin.column:0;
+						vint newEnd=i==end.row?end.column:cache->fullText.Length();
+
+						if(cache->selectionBegin!=newBegin || cache->selectionEnd!=newEnd)
+						{
+							cache->selectionBegin=newBegin;
+							cache->selectionEnd=newEnd;
+							NotifyParagraphUpdated(i, 1, 1, false);
+						}
+					}
+					else
+					{
+						Ptr<ParagraphCache> cache=paragraphCaches[i];
+						if(cache)
+						{
+							if(cache->selectionBegin!=-1 || cache->selectionEnd!=-1)
+							{
+								cache->selectionBegin=-1;
+								cache->selectionEnd=-1;
+								NotifyParagraphUpdated(i, 1, 1, false);
+							}
+						}
+					}
+				}
+			}
+
+			TextPos GuiDocumentElementRenderer::CalculateCaret(TextPos comparingCaret, IGuiGraphicsParagraph::CaretRelativePosition position, bool& preferFrontSide)
+			{
+				if (!renderTarget) return comparingCaret;
+				Ptr<ParagraphCache> cache = EnsureAndGetCache(comparingCaret.row, true);
+				if (cache)
+				{
+					switch (position)
+					{
+					case IGuiGraphicsParagraph::CaretFirst:
+						{
+							preferFrontSide = false;
+							vint caret = cache->graphicsParagraph->GetCaret(0, IGuiGraphicsParagraph::CaretFirst, preferFrontSide);
+							return TextPos(comparingCaret.row, caret);
+						}
+					case IGuiGraphicsParagraph::CaretLast:
+						{
+							preferFrontSide = true;
+							vint caret = cache->graphicsParagraph->GetCaret(0, IGuiGraphicsParagraph::CaretLast, preferFrontSide);
+							return TextPos(comparingCaret.row, caret);
+						}
+					case IGuiGraphicsParagraph::CaretLineFirst:
+						{
+							preferFrontSide = false;
+							vint caret = cache->graphicsParagraph->GetCaret(comparingCaret.column, IGuiGraphicsParagraph::CaretLineFirst, preferFrontSide);
+							return TextPos(comparingCaret.row, caret);
+						}
+					case IGuiGraphicsParagraph::CaretLineLast:
+						{
+							preferFrontSide = true;
+							vint caret = cache->graphicsParagraph->GetCaret(comparingCaret.column, IGuiGraphicsParagraph::CaretLineLast, preferFrontSide);
+							return TextPos(comparingCaret.row, caret);
+						}
+					case IGuiGraphicsParagraph::CaretMoveUp:
+						{
+							vint caret = cache->graphicsParagraph->GetCaret(comparingCaret.column, IGuiGraphicsParagraph::CaretMoveUp, preferFrontSide);
+							if (caret == comparingCaret.column && comparingCaret.row > 0)
+							{
+								Rect caretBounds = cache->graphicsParagraph->GetCaretBounds(comparingCaret.column, preferFrontSide);
+								Ptr<ParagraphCache> anotherCache = EnsureAndGetCache(comparingCaret.row - 1, true);
+								vint height = anotherCache->graphicsParagraph->GetSize().y;
+								caret = anotherCache->graphicsParagraph->GetCaretFromPoint(Point(caretBounds.x1, height));
+								return TextPos(comparingCaret.row - 1, caret);
+							}
+							else
+							{
+								return TextPos(comparingCaret.row, caret);
+							}
+						}
+					case IGuiGraphicsParagraph::CaretMoveDown:
+						{
+							vint caret = cache->graphicsParagraph->GetCaret(comparingCaret.column, IGuiGraphicsParagraph::CaretMoveDown, preferFrontSide);
+							if (caret == comparingCaret.column && comparingCaret.row < paragraphCaches.Count() - 1)
+							{
+								Rect caretBounds = cache->graphicsParagraph->GetCaretBounds(comparingCaret.column, preferFrontSide);
+								Ptr<ParagraphCache> anotherCache = EnsureAndGetCache(comparingCaret.row + 1, true);
+								caret = anotherCache->graphicsParagraph->GetCaretFromPoint(Point(caretBounds.x1, 0));
+								return TextPos(comparingCaret.row + 1, caret);
+							}
+							else
+							{
+								return TextPos(comparingCaret.row, caret);
+							}
+						}
+					case IGuiGraphicsParagraph::CaretMoveLeft:
+						{
+							preferFrontSide = false;
+							vint caret = cache->graphicsParagraph->GetCaret(comparingCaret.column, IGuiGraphicsParagraph::CaretMoveLeft, preferFrontSide);
+							if (caret == comparingCaret.column && comparingCaret.row > 0)
+							{
+								Ptr<ParagraphCache> anotherCache = EnsureAndGetCache(comparingCaret.row - 1, true);
+								caret = anotherCache->graphicsParagraph->GetCaret(0, IGuiGraphicsParagraph::CaretLast, preferFrontSide);
+								return TextPos(comparingCaret.row - 1, caret);
+							}
+							else
+							{
+								return TextPos(comparingCaret.row, caret);
+							}
+						}
+					case IGuiGraphicsParagraph::CaretMoveRight:
+						{
+							preferFrontSide = true;
+							vint caret = cache->graphicsParagraph->GetCaret(comparingCaret.column, IGuiGraphicsParagraph::CaretMoveRight, preferFrontSide);
+							if (caret == comparingCaret.column && comparingCaret.row < paragraphCaches.Count() - 1)
+							{
+								Ptr<ParagraphCache> anotherCache = EnsureAndGetCache(comparingCaret.row + 1, true);
+								caret = anotherCache->graphicsParagraph->GetCaret(0, IGuiGraphicsParagraph::CaretFirst, preferFrontSide);
+								return TextPos(comparingCaret.row + 1, caret);
+							}
+							else
+							{
+								return TextPos(comparingCaret.row, caret);
+							}
+						}
+					}
+				}
+				return comparingCaret;
+			}
+
+			TextPos GuiDocumentElementRenderer::CalculateCaretFromPoint(Point point)
+			{
+				if (!renderTarget) return TextPos(-1, -1);
+				vint top=0;
+				vint index=-1;
+				if(GetParagraphIndexFromPoint(point, top, index))
+				{
+					Ptr<ParagraphCache> cache=EnsureAndGetCache(index, true);
+					Point paragraphPoint(point.x, point.y-top);
+					vint caret=cache->graphicsParagraph->GetCaretFromPoint(paragraphPoint);
+					return TextPos(index, caret);
+				}
+				return TextPos(-1, -1);
+			}
+
+			Rect GuiDocumentElementRenderer::GetCaretBounds(TextPos caret, bool frontSide)
+			{
+				if (!renderTarget) return Rect();
+				Ptr<ParagraphCache> cache = EnsureAndGetCache(caret.row, true);
+				if (cache)
+				{
+					Rect bounds = cache->graphicsParagraph->GetCaretBounds(caret.column, frontSide);
+					if (bounds != Rect())
+					{
+						vint y = 0;
+						for (vint i = 0; i < caret.row; i++)
+						{
+							EnsureAndGetCache(i, true);
+							y += paragraphSizes[i].y + paragraphDistance;
+						}
+
+						bounds.y1 += y;
+						bounds.y2 += y;
+						return bounds;
+					}
+				}
+				return Rect();
 			}
 		}
 	}
@@ -34844,885 +31040,6 @@ GuiGraphicsResourceManager
 		}
 	}
 }
-
-/***********************************************************************
-.\GRAPHICSELEMENT\GUIGRAPHICSTEXTELEMENT.CPP
-***********************************************************************/
-
-namespace vl
-{
-	using namespace collections;
-
-	namespace presentation
-	{
-		namespace elements
-		{
-			namespace text
-			{
-
-/***********************************************************************
-text::TextLine
-***********************************************************************/
-
-				TextLine::TextLine()
-					:text(0)
-					,att(0)
-					,availableOffsetCount(0)
-					,bufferLength(0)
-					,dataLength(0)
-					,lexerFinalState(-1)
-					,contextFinalState(-1)
-				{
-				}
-
-				TextLine::~TextLine()
-				{
-				}
-
-				vint TextLine::CalculateBufferLength(vint dataLength)
-				{
-					if(dataLength<1)dataLength=1;
-					vint bufferLength=dataLength-dataLength%BlockSize;
-					if(bufferLength<dataLength)
-					{
-						bufferLength+=BlockSize;
-					}
-					return bufferLength;
-				}
-
-				void TextLine::Initialize()
-				{
-					Finalize();
-					text=new wchar_t[BlockSize];
-					att=new CharAtt[BlockSize];
-					bufferLength=BlockSize;
-
-					memset(text, 0, sizeof(wchar_t)*bufferLength);
-					memset(att, 0, sizeof(CharAtt)*bufferLength);
-				}
-
-				void TextLine::Finalize()
-				{
-					if(text)
-					{
-						delete[] text;
-						text=0;
-					}
-					if(att)
-					{
-						delete[] att;
-						att=0;
-					}
-					availableOffsetCount=0;
-					bufferLength=0;
-					dataLength=0;
-				}
-
-				bool TextLine::IsReady()
-				{
-					return text && att;
-				}
-
-				bool TextLine::Modify(vint start, vint count, const wchar_t* input, vint inputCount)
-				{
-					if(!text || !att || start<0 || count<0 || start+count>dataLength || inputCount<0) return false;
-
-					vint newDataLength=dataLength-count+inputCount;
-					vint newBufferLength=CalculateBufferLength(newDataLength);
-					if(newBufferLength!=bufferLength)
-					{
-						wchar_t* newText=new wchar_t[newBufferLength];
-						memcpy(newText, text, start*sizeof(wchar_t));
-						memcpy(newText+start, input, inputCount*sizeof(wchar_t));
-						memcpy(newText+start+inputCount, text+start+count, (dataLength-start-count)*sizeof(wchar_t));
-
-						CharAtt* newAtt=new CharAtt[newBufferLength];
-						memcpy(newAtt, att, start*sizeof(CharAtt));
-						memset(newAtt+start, 0, inputCount*sizeof(CharAtt));
-						memcpy(newAtt+start+inputCount, att+start+count, (dataLength-start-count)*sizeof(CharAtt));
-
-						delete[] text;
-						delete[] att;
-						text=newText;
-						att=newAtt;
-					}
-					else
-					{
-						memmove(text+start+inputCount, text+start+count, (dataLength-start-count)*sizeof(wchar_t));
-						memmove(att+start+inputCount, att+start+count, (dataLength-start-count)*sizeof(CharAtt));
-						memcpy(text+start, input, inputCount*sizeof(wchar_t));
-						memset(att+start, 0, inputCount*sizeof(CharAtt));
-					}
-					dataLength=newDataLength;
-					bufferLength=newBufferLength;
-					if(availableOffsetCount>start)
-					{
-						availableOffsetCount=start;
-					}
-
-					return true;
-				}
-
-				TextLine TextLine::Split(vint index)
-				{
-					if(index<0 || index>dataLength) return TextLine();
-					vint count=dataLength-index;
-					TextLine line;
-					line.Initialize();
-					line.Modify(0, 0, text+index, count);
-					memcpy(line.att, att+index, count*sizeof(CharAtt));
-					Modify(index, count, L"", 0);
-					return line;
-				}
-
-				void TextLine::AppendAndFinalize(TextLine& line)
-				{
-					vint oldDataLength=dataLength;
-					Modify(oldDataLength, 0, line.text, line.dataLength);
-					memcpy(att+oldDataLength, line.att, line.dataLength*sizeof(CharAtt));
-					line.Finalize();
-				}
-
-/***********************************************************************
-text::CharMeasurer
-***********************************************************************/
-
-				CharMeasurer::CharMeasurer(vint _rowHeight)
-					:rowHeight(_rowHeight)
-				{
-					memset(widths, 0, sizeof(widths));
-				}
-
-				CharMeasurer::~CharMeasurer()
-				{
-				}
-
-				void CharMeasurer::SetRenderTarget(IGuiGraphicsRenderTarget* value)
-				{
-					if(oldRenderTarget!=value)
-					{
-						oldRenderTarget=value;
-						rowHeight=GetRowHeightInternal(oldRenderTarget);
-						memset(widths, 0, sizeof(widths));
-					}
-				}
-
-				vint CharMeasurer::MeasureWidth(UnicodeCodePoint codePoint)
-				{
-					vuint32_t index = codePoint.GetCodePoint();
-					if (0 <= index && index < 65536)
-					{
-						vint w = widths[index];
-						if (w == 0)
-						{
-							widths[index] = w = MeasureWidthInternal(codePoint, oldRenderTarget);
-						}
-						return w;
-					}
-					else if (index < 0x110000)
-					{
-						return MeasureWidthInternal(codePoint, oldRenderTarget);
-					}
-					else
-					{
-						return 0;
-					}
-				}
-
-				vint CharMeasurer::GetRowHeight()
-				{
-					return rowHeight;
-				}
-
-/***********************************************************************
-text::TextLines
-***********************************************************************/
-
-				TextLines::TextLines(GuiColorizedTextElement* _ownerElement)
-					:ownerElement(_ownerElement)
-					,charMeasurer(0)
-					,renderTarget(0)
-					,tabWidth(1)
-					,tabSpaceCount(4)
-					,passwordChar(L'\0')
-				{
-					TextLine line;
-					line.Initialize();
-					lines.Add(line);
-				}
-
-				TextLines::~TextLines()
-				{
-					RemoveLines(0, lines.Count());
-				}
-
-				//--------------------------------------------------------
-
-				vint TextLines::GetCount()
-				{
-					return lines.Count();
-				}
-
-				TextLine& TextLines::GetLine(vint row)
-				{
-					return lines[row];
-				}
-
-				CharMeasurer* TextLines::GetCharMeasurer()
-				{
-					return charMeasurer;
-				}
-
-				void TextLines::SetCharMeasurer(CharMeasurer* value)
-				{
-					charMeasurer=value;
-					if(charMeasurer) charMeasurer->SetRenderTarget(renderTarget);
-					ClearMeasurement();
-				}
-
-				IGuiGraphicsRenderTarget* TextLines::GetRenderTarget()
-				{
-					return renderTarget;
-				}
-
-				void TextLines::SetRenderTarget(IGuiGraphicsRenderTarget* value)
-				{
-					renderTarget=value;
-					if(charMeasurer) charMeasurer->SetRenderTarget(renderTarget);
-					ClearMeasurement();
-				}
-
-				WString TextLines::GetText(TextPos start, TextPos end)
-				{
-					if(!IsAvailable(start) || !IsAvailable(end) || start>end) return L"";
-
-					if(start.row==end.row)
-					{
-						return WString::CopyFrom(lines[start.row].text+start.column, end.column-start.column);
-					}
-
-					vint count=0;
-					for(vint i=start.row+1;i<end.row;i++)
-					{
-						count+=lines[i].dataLength;
-					}
-					count+=lines[start.row].dataLength-start.column;
-					count+=end.column;
-
-					Array<wchar_t> buffer;
-					buffer.Resize(count+(end.row-start.row)*2);
-					wchar_t* writing=&buffer[0];
-
-					for(vint i=start.row;i<=end.row;i++)
-					{
-						wchar_t* text=lines[i].text;
-						vint chars=0;
-						if(i==start.row)
-						{
-							text+=start.column;
-							chars=lines[i].dataLength-start.column;
-						}
-						else if(i==end.row)
-						{
-							chars=end.column;
-						}
-						else
-						{
-							chars=lines[i].dataLength;
-						}
-
-						if(i!=start.row)
-						{
-							*writing++=L'\r';
-							*writing++=L'\n';
-						}
-						memcpy(writing, text, chars*sizeof(wchar_t));
-						writing+=chars;
-					}
-					return WString::CopyFrom(&buffer[0], buffer.Count());
-				}
-
-				WString TextLines::GetText()
-				{
-					return GetText(TextPos(0, 0), TextPos(lines.Count()-1, lines[lines.Count()-1].dataLength));
-				}
-
-				void TextLines::SetText(const WString& value)
-				{
-					Modify(TextPos(0, 0), TextPos(lines.Count()-1, lines[lines.Count()-1].dataLength), value);
-				}
-
-				//--------------------------------------------------------
-
-				bool TextLines::RemoveLines(vint start, vint count)
-				{
-					if(start<0 || count<0 || start+count>lines.Count()) return false;
-					for(vint i=start+count-1;i>=start;i--)
-					{
-						lines[i].Finalize();
-					}
-					lines.RemoveRange(start, count);
-					return true;
-				}
-
-				bool TextLines::IsAvailable(TextPos pos)
-				{
-					return 0<=pos.row && pos.row<lines.Count() && 0<=pos.column && pos.column<=lines[pos.row].dataLength;
-				}
-
-				TextPos TextLines::Normalize(TextPos pos)
-				{
-					if(pos.row<0)
-					{
-						return TextPos(0, 0);
-					}
-					else if(pos.row>=lines.Count())
-					{
-						return TextPos(lines.Count()-1, lines[lines.Count()-1].dataLength);
-					}
-					else
-					{
-						TextLine& line=lines[pos.row];
-						if(pos.column<0)
-						{
-							return TextPos(pos.row, 0);
-						}
-						else if(pos.column>line.dataLength)
-						{
-							return TextPos(pos.row, line.dataLength);
-						}
-						else
-						{
-							return pos;
-						}
-					}
-				}
-
-				TextPos TextLines::Modify(TextPos start, TextPos end, const wchar_t** inputs, vint* inputCounts, vint rows)
-				{
-					if(!IsAvailable(start) || !IsAvailable(end) || start>end) return TextPos(-1, -1);
-					if (ownerElement)
-					{
-						ownerElement->InvokeOnElementStateChanged();
-					}
-
-					if(rows==1)
-					{
-						if(start.row==end.row)
-						{
-							lines[start.row].Modify(start.column, end.column-start.column, inputs[0], inputCounts[0]);
-						}
-						else
-						{
-							if(end.row-start.row>1)
-							{
-								RemoveLines(start.row+1, end.row-start.row-1);
-							}
-							vint modifyCount=lines[start.row].dataLength-start.column+end.column;
-							lines[start.row].AppendAndFinalize(lines[start.row+1]);
-							lines.RemoveAt(start.row+1);
-							lines[start.row].Modify(start.column, modifyCount, inputs[0], inputCounts[0]);
-						}
-						return TextPos(start.row, start.column+inputCounts[0]);
-					}
-
-					if(start.row==end.row)
-					{
-						TextLine newLine=lines[start.row].Split(end.column);
-						lines.Insert(start.row+1, newLine);
-						end=TextPos(start.row+1, 0);
-					}
-
-					vint oldMiddleLines=end.row-start.row-1;
-					vint newMiddleLines=rows-2;
-					if(oldMiddleLines<newMiddleLines)
-					{
-						for(vint i=oldMiddleLines;i<newMiddleLines;i++)
-						{
-							TextLine line;
-							line.Initialize();
-							lines.Insert(end.row, line);
-						}
-					}
-					else if(oldMiddleLines>newMiddleLines)
-					{
-						RemoveLines(start.row+newMiddleLines+1, oldMiddleLines-newMiddleLines);
-					}
-					end.row+=newMiddleLines-oldMiddleLines;
-
-					lines[start.row].Modify(start.column, lines[start.row].dataLength-start.column, inputs[0], inputCounts[0]);
-					lines[end.row].Modify(0, end.column, inputs[rows-1], inputCounts[rows-1]);
-					for(vint i=1;i<rows-1;i++)
-					{
-						lines[start.row+i].Modify(0, lines[start.row+i].dataLength, inputs[i], inputCounts[i]);
-					}
-					return TextPos(end.row, inputCounts[rows-1]);
-				}
-
-				TextPos TextLines::Modify(TextPos start, TextPos end, const wchar_t* input, vint inputCount)
-				{
-					List<const wchar_t*> inputs;
-					List<vint> inputCounts;
-					const wchar_t* previous=input;
-					const wchar_t* current=input;
-
-					while(true)
-					{
-						if(current==input+inputCount)
-						{
-							inputs.Add(previous);
-							inputCounts.Add(current-previous);
-							break;
-						}
-						else if(*current==L'\r' || *current==L'\n')
-						{
-							inputs.Add(previous);
-							inputCounts.Add(current-previous);
-							previous=current+(current[1]==L'\n'?2:1);
-							current=previous;
-						}
-						else
-						{
-							current++;
-						}
-					}
-
-					return Modify(start, end, &inputs[0], &inputCounts[0], inputs.Count());
-				}
-
-				TextPos TextLines::Modify(TextPos start, TextPos end, const wchar_t* input)
-				{
-					return Modify(start, end, input, wcslen(input));
-				}
-
-				TextPos TextLines::Modify(TextPos start, TextPos end, const WString& input)
-				{
-					return Modify(start, end, input.Buffer(), input.Length());
-				}
-
-				void TextLines::Clear()
-				{
-					RemoveLines(0, lines.Count());
-					TextLine line;
-					line.Initialize();
-					lines.Add(line);
-					if (ownerElement)
-					{
-						ownerElement->InvokeOnElementStateChanged();
-					}
-				}
-
-				//--------------------------------------------------------
-
-				void TextLines::ClearMeasurement()
-				{
-					for (vint i = 0; i < lines.Count(); i++)
-					{
-						lines[i].availableOffsetCount = 0;
-					}
-
-					tabWidth = tabSpaceCount * (charMeasurer ? charMeasurer->MeasureWidth({ L' ' }) : 1);
-					if (tabWidth == 0)
-					{
-						tabWidth = 1;
-					}
-
-					if (ownerElement)
-					{
-						ownerElement->InvokeOnElementStateChanged();
-					}
-				}
-
-				vint TextLines::GetTabSpaceCount()
-				{
-					return tabSpaceCount;
-				}
-
-				void TextLines::SetTabSpaceCount(vint value)
-				{
-					if(value<1) value=1;
-					if(tabSpaceCount!=value)
-					{
-						tabSpaceCount=value;
-						ClearMeasurement();
-					}
-				}
-
-				void TextLines::MeasureRow(vint row)
-				{
-					TextLine& line = lines[row];
-					vint offset = 0;
-					if (line.availableOffsetCount)
-					{
-						offset = line.att[line.availableOffsetCount - 1].rightOffset;
-					}
-					for (vint i = line.availableOffsetCount; i < line.dataLength; i++)
-					{
-						CharAtt& att = line.att[i];
-						wchar_t c = line.text[i];
-						vint width = 0;
-						vint passwordWidth = 0;
-						if (passwordChar)
-						{
-							passwordWidth = charMeasurer ? charMeasurer->MeasureWidth({ passwordChar }) : 1;
-						}
-
-						if (c == L'\t')
-						{
-							width = tabWidth - offset % tabWidth;
-						}
-#if defined VCZH_MSVC
-						else if (UTF16SPFirst(c) && (i + 1 < line.dataLength) && UTF16SPSecond(line.text[i + 1]))
-						{
-							width = passwordChar ? passwordWidth : (charMeasurer ? charMeasurer->MeasureWidth({ c, line.text[i + 1] }) : 1);
-							offset += width;
-							att.rightOffset = (int)offset;
-							line.att[i + 1].rightOffset = (int)offset;
-							i++;
-							continue;
-						}
-#endif
-						else
-						{
-							width = passwordChar ? passwordWidth : (charMeasurer ? charMeasurer->MeasureWidth({ c }) : 1);
-						}
-						offset += width;
-						att.rightOffset = (int)offset;
-					}
-					line.availableOffsetCount = line.dataLength;
-				}
-
-				vint TextLines::GetRowWidth(vint row)
-				{
-					if(row<0 || row>=lines.Count()) return -1;
-					TextLine& line=lines[row];
-					if(line.dataLength==0)
-					{
-						return 0;
-					}
-					else
-					{
-						MeasureRow(row);
-						return line.att[line.dataLength-1].rightOffset;
-					}
-				}
-
-				vint TextLines::GetRowHeight()
-				{
-					return charMeasurer ? charMeasurer->GetRowHeight() : 1;
-				}
-
-				vint TextLines::GetMaxWidth()
-				{
-					vint width=0;
-					for(vint i=0;i<lines.Count();i++)
-					{
-						vint rowWidth=GetRowWidth(i);
-						if(width<rowWidth)
-						{
-							width=rowWidth;
-						}
-					}
-					return width;
-				}
-
-				vint TextLines::GetMaxHeight()
-				{
-					return lines.Count() * GetRowHeight();
-				}
-
-				TextPos TextLines::GetTextPosFromPoint(Point point)
-				{
-					vint h = GetRowHeight();
-					if(point.y<0)
-					{
-						point.y=0;
-					}
-					else if(point.y>=h*lines.Count())
-					{
-						point.y=h*lines.Count()-1;
-					}
-
-					vint row=point.y/h;
-					if(point.x<0)
-					{
-						return TextPos(row, 0);
-					}
-					else if(point.x>=GetRowWidth(row))
-					{
-						return TextPos(row, lines[row].dataLength);
-					}
-					TextLine& line=lines[row];
-
-					vint i1=0, i2=line.dataLength;
-					vint p1=0, p2=line.att[line.dataLength-1].rightOffset;
-					while(i2-i1>1)
-					{
-						vint i=(i1+i2)/2;
-						vint p=i==0?0:line.att[i-1].rightOffset;
-						if(point.x<p)
-						{
-							i2=i;
-							p2=p;
-						}
-						else
-						{
-							i1=i;
-							p1=p;
-						}
-					}
-#if defined VCZH_MSVC
-					if (UTF16SPSecond(line.text[i1]) && i1 > 0 && UTF16SPFirst(line.text[i1 - 1]))
-					{
-						i1--;
-					}
-#endif
-					return TextPos(row, i1);
-				}
-
-				Point TextLines::GetPointFromTextPos(TextPos pos)
-				{
-					if(IsAvailable(pos))
-					{
-						vint y = pos.row * GetRowHeight();
-						if(pos.column==0)
-						{
-							return Point(0, y);
-						}
-						else
-						{
-							MeasureRow(pos.row);
-							TextLine& line=lines[pos.row];
-							return Point(line.att[pos.column-1].rightOffset, y);
-						}
-					}
-					else
-					{
-						return Point(-1, -1);
-					}
-				}
-
-				Rect TextLines::GetRectFromTextPos(TextPos pos)
-				{
-					Point point=GetPointFromTextPos(pos);
-					if(point==Point(-1, -1))
-					{
-						return Rect(-1, -1, -1, -1);
-					}
-					else
-					{
-						vint h = GetRowHeight();
-						TextLine& line=lines[pos.row];
-						if(pos.column==line.dataLength)
-						{
-							return Rect(point, Size(h/2, h));
-						}
-						else
-						{
-							return Rect(point, Size(line.att[pos.column].rightOffset-point.x, h));
-						}
-					}
-				}
-
-				//--------------------------------------------------------
-
-				wchar_t TextLines::GetPasswordChar()
-				{
-					return passwordChar;
-				}
-
-				void TextLines::SetPasswordChar(wchar_t value)
-				{
-					passwordChar=value;
-					ClearMeasurement();
-				}
-			}
-
-			using namespace text;
-
-/***********************************************************************
-GuiColorizedTextElement
-***********************************************************************/
-
-			GuiColorizedTextElement::GuiColorizedTextElement()
-				:callback(0)
-				,isVisuallyEnabled(true)
-				,isFocused(false)
-				,caretVisible(false)
-				,lines(this)
-			{
-			}
-
-			text::TextLines& GuiColorizedTextElement::GetLines()
-			{
-				return lines;
-			}
-
-			GuiColorizedTextElement::ICallback* GuiColorizedTextElement::GetCallback()
-			{
-				return callback;
-			}
-
-			void GuiColorizedTextElement::SetCallback(ICallback* value)
-			{
-				callback=value;
-				if(!callback)
-				{
-					lines.SetCharMeasurer(0);
-				}
-			}
-
-			const GuiColorizedTextElement::ColorArray& GuiColorizedTextElement::GetColors()
-			{
-				return colors;
-			}
-
-			void GuiColorizedTextElement::SetColors(const ColorArray& value)
-			{
-				CopyFrom(colors, value);
-				if(callback) callback->ColorChanged();
-				InvokeOnElementStateChanged();
-			}
-
-			void GuiColorizedTextElement::ResetTextColorIndex(vint index)
-			{
-				vint lineCount = lines.GetCount();
-				for (vint i = 0; i < lineCount; i++)
-				{
-					auto& line = lines.GetLine(i);
-					line.lexerFinalState = -1;
-					line.contextFinalState = -1;
-					for (vint j = 0; j < line.dataLength; j++)
-					{
-						line.att[j].colorIndex = (vuint32_t)index;
-					}
-				}
-			}
-
-			const FontProperties& GuiColorizedTextElement::GetFont()
-			{
-				return font;
-			}
-
-			void GuiColorizedTextElement::SetFont(const FontProperties& value)
-			{
-				if(font!=value)
-				{
-					font=value;
-					if(callback)
-					{
-						callback->FontChanged();
-					}
-					InvokeOnElementStateChanged();
-				}
-			}
-
-			wchar_t GuiColorizedTextElement::GetPasswordChar()
-			{
-				return lines.GetPasswordChar();
-			}
-
-			void GuiColorizedTextElement::SetPasswordChar(wchar_t value)
-			{
-				if(lines.GetPasswordChar()!=value)
-				{
-					lines.SetPasswordChar(value);
-					InvokeOnElementStateChanged();
-				}
-			}
-
-			Point GuiColorizedTextElement::GetViewPosition()
-			{
-				return viewPosition;
-			}
-
-			void GuiColorizedTextElement::SetViewPosition(Point value)
-			{
-				if(viewPosition!=value)
-				{
-					viewPosition=value;
-					InvokeOnElementStateChanged();
-				}
-			}
-
-			bool GuiColorizedTextElement::GetVisuallyEnabled()
-			{
-				return isVisuallyEnabled;
-			}
-
-			void GuiColorizedTextElement::SetVisuallyEnabled(bool value)
-			{
-				if(isVisuallyEnabled!=value)
-				{
-					isVisuallyEnabled=value;
-					InvokeOnElementStateChanged();
-				}
-			}
-
-			bool GuiColorizedTextElement::GetFocused()
-			{
-				return isFocused;
-			}
-
-			void GuiColorizedTextElement::SetFocused(bool value)
-			{
-				if(isFocused!=value)
-				{
-					isFocused=value;
-					InvokeOnElementStateChanged();
-				}
-			}
-
-			TextPos GuiColorizedTextElement::GetCaretBegin()
-			{
-				return caretBegin;
-			}
-
-			void GuiColorizedTextElement::SetCaretBegin(TextPos value)
-			{
-				caretBegin=value;
-				InvokeOnElementStateChanged();
-			}
-
-			TextPos GuiColorizedTextElement::GetCaretEnd()
-			{
-				return caretEnd;
-			}
-
-			void GuiColorizedTextElement::SetCaretEnd(TextPos value)
-			{
-				caretEnd=value;
-				InvokeOnElementStateChanged();
-			}
-
-			bool GuiColorizedTextElement::GetCaretVisible()
-			{
-				return caretVisible;
-			}
-
-			void GuiColorizedTextElement::SetCaretVisible(bool value)
-			{
-				caretVisible=value;
-				InvokeOnElementStateChanged();
-			}
-
-			Color GuiColorizedTextElement::GetCaretColor()
-			{
-				return caretColor;
-			}
-
-			void GuiColorizedTextElement::SetCaretColor(Color value)
-			{
-				if(caretColor!=value)
-				{
-					caretColor=value;
-					InvokeOnElementStateChanged();
-				}
-			}
-		}
-	}
-}
-
 
 /***********************************************************************
 .\NATIVEWINDOW\GUINATIVEWINDOW.CPP
@@ -40010,8 +35327,7 @@ GuiRemoteGraphicsResourceManager
 		elements_remoteprotocol::GuiSolidLabelElementRenderer::Register();
 		elements_remoteprotocol::GuiImageFrameElementRenderer::Register();
 		elements_remoteprotocol::GuiPolygonElementRenderer::Register();
-		elements_remoteprotocol::GuiColorizedTextElementRenderer::Register();
-		elements::GuiDocumentElement::GuiDocumentElementRenderer::Register();
+		elements::GuiDocumentElementRenderer::Register();
 	}
 
 	void GuiRemoteGraphicsResourceManager::Finalize()
@@ -40631,55 +35947,6 @@ GuiPolygonElementRenderer
 		arguments.points = Ptr(new List<Point>);
 		CopyFrom(*arguments.points.Obj(), element->GetPointsArray());
 		renderTarget->GetRemoteMessages().RequestRendererUpdateElement_Polygon(arguments);
-	}
-
-/***********************************************************************
-GuiColorizedTextElementRenderer
-***********************************************************************/
-
-	void GuiColorizedTextElementRenderer::ColorChanged()
-	{
-	}
-
-	void GuiColorizedTextElementRenderer::FontChanged()
-	{
-	}
-
-	void GuiColorizedTextElementRenderer::InitializeInternal()
-	{
-		TBase::InitializeInternal();
-		element->SetCallback(this);
-	}
-
-	void GuiColorizedTextElementRenderer::FinalizeInternal()
-	{
-		element->SetCallback(nullptr);
-		TBase::FinalizeInternal();
-	}
-
-	GuiColorizedTextElementRenderer::GuiColorizedTextElementRenderer()
-	{
-	}
-
-	void GuiColorizedTextElementRenderer::OnElementStateChanged()
-	{
-		TBase::OnElementStateChanged();
-	}
-
-	void GuiColorizedTextElementRenderer::SendUpdateElementMessages(bool fullContent)
-	{
-		// Lines
-		// Colors
-		// Font
-		// PasswordChar
-		// ViewPosition
-		// VisuallyEnabled
-		// Focused
-		// CaretBegin
-		// CaretEnd
-		// CaretVisible
-		// CaretColor
-		CHECK_FAIL(L"Not Implemented!");
 	}
 }
 
@@ -56055,7 +51322,7 @@ Closures
 	void __vwsnf35_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		::vl::__vwsn::This(__vwsnthis_0->textBox)->SetText(::vl::__vwsn::This(__vwsnthis_0->ViewModel.Obj())->GetDisplayString(::vl::__vwsn::This(__vwsnthis_0->self)->GetSelectedFiles()));
-		::vl::__vwsn::This(__vwsnthis_0->textBox)->Select([&](){ ::vl::presentation::TextPos __vwsn_temp__; __vwsn_temp__.row = static_cast<::vl::vint>(0); __vwsn_temp__.column = static_cast<::vl::vint>(0); return __vwsn_temp__; }(), [&](){ ::vl::presentation::TextPos __vwsn_temp__; __vwsn_temp__.row = static_cast<::vl::vint>(0); __vwsn_temp__.column = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
+		::vl::__vwsn::This(__vwsnthis_0->textBox)->SetCaret([&](){ ::vl::presentation::TextPos __vwsn_temp__; __vwsn_temp__.row = static_cast<::vl::vint>(0); __vwsn_temp__.column = static_cast<::vl::vint>(0); return __vwsn_temp__; }(), [&](){ ::vl::presentation::TextPos __vwsn_temp__; __vwsn_temp__.row = static_cast<::vl::vint>(0); __vwsn_temp__.column = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
 	}
 
 	//-------------------------------------------------------------------
@@ -62547,7 +57814,7 @@ Class (::gaclib_controls::FontNameControlConstructor)
 			::vl::__vwsn::This(this->self)->AddChild(this->__vwsn_precompile_0);
 		}
 		{
-			::vl::__vwsn::This(this->textBox)->SetReadonly(::vl::__vwsn::This(this->ViewModel.Obj())->GetFontMustExist());
+			::vl::__vwsn::This(this->textBox)->SetEditMode((::vl::__vwsn::This(this->ViewModel.Obj())->GetFontMustExist() ? ::vl::presentation::controls::GuiDocumentEditMode::Selectable : ::vl::presentation::controls::GuiDocumentEditMode::Editable));
 		}
 		{
 			::vl::__vwsn::This(this->textList)->SetItemSource(::vl::Ptr<::vl::reflection::description::IValueEnumerable>(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueReadonlyList>(::vl::__vwsn::This(this->ViewModel.Obj())->GetFontList())));
@@ -62643,7 +57910,7 @@ Class (::gaclib_controls::FontNameControl)
 	void FontNameControl::InitValue(const ::vl::WString& value)
 	{
 		::vl::__vwsn::This(this->textBox)->SetText(value);
-		::vl::__vwsn::This(this->textBox)->Select([&](){ ::vl::presentation::TextPos __vwsn_temp__; __vwsn_temp__.row = static_cast<::vl::vint>(0); __vwsn_temp__.column = static_cast<::vl::vint>(0); return __vwsn_temp__; }(), [&](){ ::vl::presentation::TextPos __vwsn_temp__; __vwsn_temp__.row = static_cast<::vl::vint>(0); __vwsn_temp__.column = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
+		::vl::__vwsn::This(this->textBox)->SetCaret([&](){ ::vl::presentation::TextPos __vwsn_temp__; __vwsn_temp__.row = static_cast<::vl::vint>(0); __vwsn_temp__.column = static_cast<::vl::vint>(0); return __vwsn_temp__; }(), [&](){ ::vl::presentation::TextPos __vwsn_temp__; __vwsn_temp__.row = static_cast<::vl::vint>(0); __vwsn_temp__.column = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
 		this->UpdateSelectedIndex();
 	}
 
@@ -62873,7 +58140,7 @@ Class (::gaclib_controls::FontSizeControl)
 	void FontSizeControl::InitValue(::vl::vint value)
 	{
 		::vl::__vwsn::This(this->textBox)->SetText(::vl::__vwsn::ToString(value));
-		::vl::__vwsn::This(this->textBox)->Select([&](){ ::vl::presentation::TextPos __vwsn_temp__; __vwsn_temp__.row = static_cast<::vl::vint>(0); __vwsn_temp__.column = static_cast<::vl::vint>(0); return __vwsn_temp__; }(), [&](){ ::vl::presentation::TextPos __vwsn_temp__; __vwsn_temp__.row = static_cast<::vl::vint>(0); __vwsn_temp__.column = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
+		::vl::__vwsn::This(this->textBox)->SetCaret([&](){ ::vl::presentation::TextPos __vwsn_temp__; __vwsn_temp__.row = static_cast<::vl::vint>(0); __vwsn_temp__.column = static_cast<::vl::vint>(0); return __vwsn_temp__; }(), [&](){ ::vl::presentation::TextPos __vwsn_temp__; __vwsn_temp__.row = static_cast<::vl::vint>(0); __vwsn_temp__.column = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
 		this->UpdateSelectedIndex();
 	}
 

@@ -10,7 +10,6 @@ Interfaces:
 #define VCZH_PRESENTATION_GUIREMOTEGRAPHICS_BASICELEMENTS
 
 #include "../../GraphicsElement/GuiGraphicsElement.h"
-#include "../../GraphicsElement/GuiGraphicsDocumentRenderer.h"
 #include "GuiRemoteGraphics.h"
 
 namespace vl::presentation::elements_remoteprotocol
