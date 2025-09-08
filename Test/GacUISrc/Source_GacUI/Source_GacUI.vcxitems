@@ -38,6 +38,8 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\Templates\GuiControlTemplates.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\Templates\GuiThemeStyleFactory.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\TextEditorPackage\EditorCallback\GuiTextUndoRedo.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\TextEditorPackage\GuiDocumentCommonInterface.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\TextEditorPackage\GuiDocumentConfig.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\TextEditorPackage\GuiDocumentViewer.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ToolstripPackage\GuiMenuControls.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ToolstripPackage\GuiRibbonControls.cpp" />
@@ -87,6 +89,8 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\Templates\GuiControlTemplates.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\Templates\GuiThemeStyleFactory.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\TextEditorPackage\EditorCallback\GuiTextUndoRedo.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\TextEditorPackage\GuiDocumentCommonInterface.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\TextEditorPackage\GuiDocumentConfig.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\TextEditorPackage\GuiDocumentViewer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ToolstripPackage\GuiMenuControls.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ToolstripPackage\GuiRibbonControls.h" />

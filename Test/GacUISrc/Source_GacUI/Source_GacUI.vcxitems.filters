@@ -151,6 +151,12 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\TextEditorPackage\EditorCallback\GuiTextUndoRedo.cpp">
       <Filter>Controls\TextEditorPackage\EditorCallback</Filter>
     </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\TextEditorPackage\GuiDocumentCommonInterface.cpp">
+      <Filter>Controls\TextEditorPackage</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\TextEditorPackage\GuiDocumentConfig.cpp">
+      <Filter>Controls\TextEditorPackage</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\GuiButtonControls.h">
@@ -292,6 +298,12 @@
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\TextEditorPackage\EditorCallback\GuiTextUndoRedo.h">
       <Filter>Controls\TextEditorPackage\EditorCallback</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\TextEditorPackage\GuiDocumentCommonInterface.h">
+      <Filter>Controls\TextEditorPackage</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\TextEditorPackage\GuiDocumentConfig.h">
+      <Filter>Controls\TextEditorPackage</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
