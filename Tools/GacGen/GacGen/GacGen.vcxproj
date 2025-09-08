@@ -167,7 +167,6 @@
     <ClInclude Include="..\..\..\Import\Vlpp.h" />
     <ClInclude Include="..\..\..\Import\VlppGlrParser.h" />
     <ClInclude Include="..\..\..\Import\VlppOS.h" />
-    <ClInclude Include="..\..\..\Import\VlppParser.h" />
     <ClInclude Include="..\..\..\Import\VlppReflection.h" />
     <ClInclude Include="..\..\..\Import\VlppRegex.h" />
     <ClInclude Include="..\..\..\Import\VlppWorkflowCompiler.h" />
@@ -206,7 +205,6 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\..\Import\VlppOS.Windows.cpp" />
-    <ClCompile Include="..\..\..\Import\VlppParser.cpp" />
     <ClCompile Include="..\..\..\Import\VlppReflection.cpp" />
     <ClCompile Include="..\..\..\Import\VlppRegex.cpp" />
     <ClCompile Include="..\..\..\Import\VlppWorkflowCompiler.cpp">

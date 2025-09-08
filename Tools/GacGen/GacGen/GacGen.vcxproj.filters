@@ -42,9 +42,6 @@
     <ClInclude Include="..\..\..\Import\VlppWorkflowRuntime.h">
       <Filter>Import</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Import\VlppParser.h">
-      <Filter>Import</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Import\VlppReflection.h">
       <Filter>Import</Filter>
     </ClInclude>
@@ -93,9 +90,6 @@
       <Filter>Import</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Import\VlppOS.cpp">
-      <Filter>Import</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Import\VlppParser.cpp">
       <Filter>Import</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Import\Vlpp.Linux.cpp">

@@ -43,12 +43,6 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Import\VlppOS.Windows.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Import\VlppParser.cpp">
-      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">/bigobj %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/bigobj %(AdditionalOptions)</AdditionalOptions>
-    </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Import\VlppReflection.cpp">
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
@@ -72,7 +66,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Import\Vlpp.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Import\VlppGlrParser.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Import\VlppOS.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Import\VlppParser.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Import\VlppReflection.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Import\VlppRegex.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Import\VlppWorkflowLibrary.h" />
