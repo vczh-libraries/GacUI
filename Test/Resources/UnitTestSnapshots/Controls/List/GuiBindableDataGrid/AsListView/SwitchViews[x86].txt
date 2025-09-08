@@ -351,7 +351,7 @@ namespace gacuisrc_unittest
         {
             var index = (item == (-1)) ? (items.Count + 1) : item;
             var listViewItem = new (ListViewData^)();
-            (listViewItem.Id = ((("" & name) & " ") & index));
+            (listViewItem.Id = ((("" & name) & " No.") & index));
             (listViewItem.First = ("1st:" & (index * 1)));
             (listViewItem.Second = ("2nd:" & (index * 2)));
             (listViewItem.Third = ("3rd:" & (index * 3)));
