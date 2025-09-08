@@ -3,6 +3,7 @@
 #include "GuiGraphicsLayoutProviderWindowsGDI.h"
 #include "..\..\WinNativeWindow.h"
 #include "..\..\..\Hosted\GuiHostedController.h"
+#include "..\..\..\..\GraphicsElement\GuiGraphicsDocumentRenderer.h"
 
 namespace vl
 {
@@ -409,7 +410,7 @@ void RendererMainGDI(GuiHostedController* hostedController, bool raw)
 		elements_windows_gdi::GuiImageFrameElementRenderer::Register();
 		elements_windows_gdi::GuiPolygonElementRenderer::Register();
 		elements_windows_gdi::GuiGDIElementRenderer::Register();
-		elements::GuiDocumentElement::GuiDocumentElementRenderer::Register();
+		elements::GuiDocumentElementRenderer::Register();
 
 		if (hostedController) hostedController->Initialize();
 		if (raw)

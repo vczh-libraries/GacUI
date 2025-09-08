@@ -388,7 +388,7 @@ GuiRemoteGraphicsResourceManager
 		elements_remoteprotocol::GuiSolidLabelElementRenderer::Register();
 		elements_remoteprotocol::GuiImageFrameElementRenderer::Register();
 		elements_remoteprotocol::GuiPolygonElementRenderer::Register();
-		elements::GuiDocumentElement::GuiDocumentElementRenderer::Register();
+		elements::GuiDocumentElementRenderer::Register();
 	}
 
 	void GuiRemoteGraphicsResourceManager::Finalize()

@@ -12,6 +12,7 @@ Interfaces:
 #include "GuiDocumentConfig.h"
 #include "EditorCallback/GuiTextUndoRedo.h"
 #include "../GuiContainerControls.h"
+#include "../../GraphicsElement/GuiGraphicsDocumentRenderer.h"
 
 namespace vl
 {
@@ -24,7 +25,6 @@ namespace vl
 
 		namespace controls
 		{
-
 			class GuiDocumentCommonInterface;
 
 /***********************************************************************
@@ -59,7 +59,7 @@ GuiDocumentCommonInterface
 			
 			/// <summary>Document displayer control common interface for displaying <see cref="DocumentModel"/>.</summary>
 			class GuiDocumentCommonInterface abstract
-				: protected virtual elements::GuiDocumentElement::ICallback
+				: protected virtual elements::IGuiDocumentElementCallback
 				, public Description<GuiDocumentCommonInterface>
 			{
 				typedef collections::Dictionary<WString, Ptr<GuiDocumentItem>>		DocumentItemMap;

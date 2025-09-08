@@ -4,6 +4,7 @@
 #include "..\..\ServicesImpl\WindowsImageService.h"
 #include "..\..\WinNativeWindow.h"
 #include "..\..\..\Hosted\GuiHostedController.h"
+#include "..\..\..\..\GraphicsElement\GuiGraphicsDocumentRenderer.h"
 #include <math.h>
 
 namespace vl
@@ -672,7 +673,7 @@ void RendererMainDirect2D(GuiHostedController* hostedController, bool raw)
 		elements_windows_d2d::GuiImageFrameElementRenderer::Register();
 		elements_windows_d2d::GuiPolygonElementRenderer::Register();
 		elements_windows_d2d::GuiDirect2DElementRenderer::Register();
-		elements::GuiDocumentElement::GuiDocumentElementRenderer::Register();
+		elements::GuiDocumentElementRenderer::Register();
 
 		if (hostedController) hostedController->Initialize();
 		if (raw)
