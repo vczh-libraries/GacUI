@@ -64,9 +64,9 @@
 ========================================
 4
 ========================================
-{"id": 84, "diffType": "Modified", "content": {"hitTestResult": null, "cursor": null, "element": 21, "bounds": {"x1": 8, "y1": 36, "x2": 208, "y2": 56}, "validArea": {"x1": 8, "y1": 36, "x2": 208, "y2": 56}}, "children": null}
-{"id": 88, "diffType": "Modified", "content": {"hitTestResult": null, "cursor": null, "element": 22, "bounds": {"x1": 8, "y1": 36, "x2": 208, "y2": 56}, "validArea": {"x1": 8, "y1": 36, "x2": 208, "y2": 56}}, "children": null}
-{"id": 96, "diffType": "Modified", "content": {"hitTestResult": null, "cursor": null, "element": 24, "bounds": {"x1": 12, "y1": 38, "x2": 204, "y2": 54}, "validArea": {"x1": 12, "y1": 38, "x2": 204, "y2": 54}}, "children": null}
+{"id": 84, "diffType": "Modified", "content": {"hitTestResult": null, "cursor": null, "element": 21, "bounds": {"x1": 8, "y1": 36, "x2": 131, "y2": 56}, "validArea": {"x1": 8, "y1": 36, "x2": 131, "y2": 56}}, "children": null}
+{"id": 88, "diffType": "Modified", "content": {"hitTestResult": null, "cursor": null, "element": 22, "bounds": {"x1": 8, "y1": 36, "x2": 131, "y2": 56}, "validArea": {"x1": 8, "y1": 36, "x2": 131, "y2": 56}}, "children": null}
+{"id": 96, "diffType": "Modified", "content": {"hitTestResult": null, "cursor": null, "element": 24, "bounds": {"x1": 12, "y1": 38, "x2": 127, "y2": 54}, "validArea": {"x1": 12, "y1": 38, "x2": 127, "y2": 54}}, "children": null}
 ========================================
 5
 ========================================
@@ -74,7 +74,7 @@
 6
 ========================================
 {"id": 88, "diffType": "Modified", "content": null, "children": [92]}
-{"id": 92, "diffType": "Created", "content": {"hitTestResult": null, "cursor": null, "element": 23, "bounds": {"x1": 9, "y1": 37, "x2": 207, "y2": 55}, "validArea": {"x1": 9, "y1": 37, "x2": 207, "y2": 55}}, "children": [96]}
+{"id": 92, "diffType": "Created", "content": {"hitTestResult": null, "cursor": null, "element": 23, "bounds": {"x1": 9, "y1": 37, "x2": 130, "y2": 55}, "validArea": {"x1": 9, "y1": 37, "x2": 130, "y2": 55}}, "children": [96]}
 ========================================
 7
 ========================================
@@ -87,10 +87,10 @@
 ========================================
 10
 ========================================
-{"id": 84, "diffType": "Modified", "content": {"hitTestResult": null, "cursor": null, "element": 21, "bounds": {"x1": 8, "y1": 36, "x2": 112, "y2": 56}, "validArea": {"x1": 8, "y1": 36, "x2": 112, "y2": 56}}, "children": null}
-{"id": 88, "diffType": "Modified", "content": {"hitTestResult": null, "cursor": null, "element": 22, "bounds": {"x1": 8, "y1": 36, "x2": 112, "y2": 56}, "validArea": {"x1": 8, "y1": 36, "x2": 112, "y2": 56}}, "children": null}
-{"id": 92, "diffType": "Modified", "content": {"hitTestResult": null, "cursor": null, "element": 23, "bounds": {"x1": 9, "y1": 37, "x2": 111, "y2": 55}, "validArea": {"x1": 9, "y1": 37, "x2": 111, "y2": 55}}, "children": null}
-{"id": 96, "diffType": "Modified", "content": {"hitTestResult": null, "cursor": null, "element": 24, "bounds": {"x1": 12, "y1": 38, "x2": 108, "y2": 54}, "validArea": {"x1": 12, "y1": 38, "x2": 108, "y2": 54}}, "children": null}
+{"id": 84, "diffType": "Modified", "content": {"hitTestResult": null, "cursor": null, "element": 21, "bounds": {"x1": 8, "y1": 36, "x2": 73, "y2": 56}, "validArea": {"x1": 8, "y1": 36, "x2": 73, "y2": 56}}, "children": null}
+{"id": 88, "diffType": "Modified", "content": {"hitTestResult": null, "cursor": null, "element": 22, "bounds": {"x1": 8, "y1": 36, "x2": 73, "y2": 56}, "validArea": {"x1": 8, "y1": 36, "x2": 73, "y2": 56}}, "children": null}
+{"id": 92, "diffType": "Modified", "content": {"hitTestResult": null, "cursor": null, "element": 23, "bounds": {"x1": 9, "y1": 37, "x2": 72, "y2": 55}, "validArea": {"x1": 9, "y1": 37, "x2": 72, "y2": 55}}, "children": null}
+{"id": 96, "diffType": "Modified", "content": {"hitTestResult": null, "cursor": null, "element": 24, "bounds": {"x1": 12, "y1": 38, "x2": 69, "y2": 54}, "validArea": {"x1": 12, "y1": 38, "x2": 69, "y2": 54}}, "children": null}
 ========================================
 11
 ========================================

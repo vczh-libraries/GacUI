@@ -64,7 +64,7 @@ namespace gacuisrc_unittest
         {
             (self = <this>);
             {
-                (self.ClientSize = {x : 480; y : 320;} of (::presentation::Size));
+                (self.ClientSize = {x : 240; y : 240;} of (::presentation::Size));
             }
             {
                 (self.Text = "GuiRibbonTab");
