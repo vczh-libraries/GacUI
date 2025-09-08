@@ -57,6 +57,18 @@
 - Features with no plan in unit test:
   - `GuiControl`
     - `QueryService` and `AddService`
+- Accessibility (has workaround)
+  - Cannot scroll `GuiScrollView`, key operations needed and also need to be disabled for `GuiListControl` because it has already defined item selection keys.
+  - Active top level menus (in a menu bar) without `Alt` property assigned.
+    - Investigate about menu bar accepting tab actions. It appears on Windows tab menu buttons could have focus.
+    - When a menu bar is activated by `[TAB]`, keep pressing `[TAB]` will go through all menu buttons and pass it to the next control after ending.
+    - When a menu is activated by `[TAB]`, keep pressing `[TAB]` will go through all menu buttons and repeat, until `[ESC]`.
+    - `[SPACE]` or `[ENTER]` selects a highlighted menu button when tabbing.
+  - `GuiVirtualListView` cannot operate column headers by key.
+- `GuiRemoteController` Reconnecting
+  - Test sending disconnect or other events when `Submit()` is pending on the event.
+    - Especially during the first connection, it is observed in GacJS that when it is the first renderer and failed during connection ballbacks, Core can't respond to other renderers again.
+  - Support failure injection in unit test, making `UnitTestRemoteProtocol::Submit()` returns `true` to its `disconnected` parameter.
 
 ## Depriorized
 
@@ -65,3 +77,5 @@
 - GDI
   - Big cursor of document empty line (GDI)
   - In hosted mode, non-main window doesn't shrink when moving back to low DPI monitor.
+- IME re-composing:
+  - When Japanese IME is active, pressing SPACE on a select text gives me another chance to re-compose it. Figure out how it work and implement it.
