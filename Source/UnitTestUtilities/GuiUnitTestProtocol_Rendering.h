@@ -475,12 +475,18 @@ IGuiRemoteProtocolMessages (Elements - SolidLabel)
 						else
 						{
 							// width of the text is width of the longest line
-							textWidth = size * From(lines)
+							textWidth = (vint)(size * From(lines)
 								.Select([](const WString& line)
 								{
-									return line.Length();
+									double sum = 0;
+									for (vint i = 0; i < line.Length(); i++)
+									{
+										auto c = line[i];
+										sum += (c < 128 ? 0.6 : 1);
+									}
+									return sum;
 								})
-								.Max();
+								.Max());
 							textHeight = 4 + size * lines.Count();
 						}
 
