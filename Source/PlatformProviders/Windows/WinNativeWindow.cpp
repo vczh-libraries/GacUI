@@ -1878,7 +1878,10 @@ WindowsController
 						}
 					}
 
-					asyncService.ExecuteAsyncTasks();
+					if (uMsg == WM_MOVING || uMsg == WM_SIZING)
+					{
+						asyncService.ExecuteAsyncTasks();
+					}
 					return skipDefaultProcedure;
 				}
 
