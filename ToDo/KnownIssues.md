@@ -43,8 +43,8 @@
   - `GetListItemLocation`.
   - `GuiToolstripMenuBar/Cascade/ClickSubMenu`'s `Hover on File/New` try to avoid specifying relative coordinate just because half of the menu item is covered.
   - Tests that affected by text measuring:
-    - `TestApplication_Window.cpp`: `Dragging`.
-    - `TestControls_Basic_GuiTab.cpp`: `Natigation`.
+    - `TestApplication_Window.cpp`: `Dragging`, `ShowModal` (locating window title)
+    - `TestControls_Basic_GuiTab.cpp`: `Natigation` (locating tab page header)
     - `TestControls_CoreApplication_GuiLabel.cpp`: `GuiLabel`.
       - Asserted a label size.
     - `TestControls_List_GuiVirtualListView.cpp`

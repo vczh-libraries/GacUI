@@ -264,7 +264,7 @@ TEST_FILE
 				});
 				protocol->OnNextIdleFrame(L"Create SubWindowB via ShowModal", [&, protocol]()
 				{
-					auto location = protocol->LocationOf(subWindowA, 0.5, 0.0, 0, 15);
+					auto location = protocol->LocationOf(subWindowA, 0.2, 0.0, 0, 15);
 					protocol->_LDown(location);
 					location.x.value -= 50;
 					location.y.value -= 25;
@@ -274,7 +274,7 @@ TEST_FILE
 				});
 				protocol->OnNextIdleFrame(L"Drag SubWindowA", [&, protocol]()
 				{
-					auto location = protocol->LocationOf(subWindowB, 0.5, 0.0, 0, 15);
+					auto location = protocol->LocationOf(subWindowB, 0.2, 0.0, 0, 15);
 					protocol->_LDown(location);
 					location.x.value -= 50;
 					location.y.value -= 25;
@@ -289,7 +289,7 @@ TEST_FILE
 				});
 				protocol->OnNextIdleFrame(L"Close SubWindowB", [&, protocol]()
 				{
-					auto location = protocol->LocationOf(subWindowA, 0.5, 0.0, 0, 15);
+					auto location = protocol->LocationOf(subWindowA, 0.2, 0.0, 0, 15);
 					protocol->_LDown(location);
 					location.x.value -= 50;
 					location.y.value -= 25;
