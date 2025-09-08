@@ -42,6 +42,15 @@
 - Stop hard-coding coordinates:
   - `GetListItemLocation`.
   - `GuiToolstripMenuBar/Cascade/ClickSubMenu`'s `Hover on File/New` try to avoid specifying relative coordinate just because half of the menu item is covered.
+  - Tests that affected by text measuring:
+    - `TestApplication_Window.cpp`: `Dragging`.
+    - `TestControls_Basic_GuiTab.cpp`: `Natigation`.
+    - `TestControls_CoreApplication_GuiLabel.cpp`: `GuiLabel`.
+      - Asserted a label size.
+    - `TestControls_List_GuiVirtualListView.cpp`
+      - Shrinks of text size causing 100 items to be displayed without a scroll bar in List mode. Making it more causes a stack overflow while disposing Json objects. Fixed to have more text in each item.
+    - `TestControls_Ribbon_GuiRibbonGroup.cpp`
+      - Need size to make ribbon groups collapsed.
 - Compositions created or moved under the cursor, proper mouse events are not triggered.
   - `(H|V)(Tracker|Scroll)/Mouse`
     - when `Drag to Center` the handler should be highlighted, because the mouse is right above the handler.
