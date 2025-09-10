@@ -17,11 +17,8 @@ namespace vl
 	{
 		namespace elements
 		{
-			class IGuiDocumentElementCallback;
-			class GuiDocumentElementRenderer;
-
 /***********************************************************************
-Rich Content Document (element)
+GuiDocumentElement
 ***********************************************************************/
 
 			/// <summary>Defines a rich text document element for rendering complex styled document.</summary>
@@ -41,6 +38,7 @@ Rich Content Document (element)
 				bool										caretFrontSide;
 				Color										caretColor;
 
+				Ptr<IGuiDocumentElementRenderer>			GetElementRenderer();
 				void										UpdateCaret();
 
 				GuiDocumentElement();

@@ -189,8 +189,8 @@ Helpers
 				}
 			};
 
-			template<typename TElement, typename TRenderer, typename TRenderTarget>
-			class GuiElementRendererBase : public Object, public IGuiGraphicsRenderer
+			template<typename TElement, typename TRenderer, typename TRenderTarget, typename BaseInterfaceType = IGuiGraphicsRenderer>
+			class GuiElementRendererBase : public Object, public virtual BaseInterfaceType
 			{
 			public:
 				class Factory : public Object, public IGuiGraphicsRendererFactory

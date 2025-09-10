@@ -1,4 +1,4 @@
-#include "GuiGraphicsDocumentRenderer.h"
+#include "GuiGraphicsDocumentElement.h"
 
 namespace vl
 {
@@ -13,22 +13,28 @@ namespace vl
 GuiDocumentElement
 ***********************************************************************/
 
+			Ptr<IGuiDocumentElementRenderer> GuiDocumentElement::GetElementRenderer()
+			{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::elements::GetElementRenderer()#"
+				auto elementRenderer = renderer.Cast<IGuiDocumentElementRenderer>();
+				CHECK_ERROR(elementRenderer, ERROR_MESSAGE_PREFIX L"The registered renderer for GuiDocumentElement must implement IGuiDocumentElementRenderer.");
+				return elementRenderer;
+#undef ERROR_MESSAGE_PREFIX
+			}
+
 			void GuiDocumentElement::UpdateCaret()
 			{
-				auto elementRenderer = renderer.Cast<GuiDocumentElementRenderer>();
-				if (elementRenderer)
+				auto elementRenderer = GetElementRenderer();
+				elementRenderer->SetSelection(caretBegin, caretEnd);
+				if (caretVisible)
 				{
-					elementRenderer->SetSelection(caretBegin, caretEnd);
-					if (caretVisible)
-					{
-						elementRenderer->OpenCaret(caretEnd, caretColor, caretFrontSide);
-					}
-					else
-					{
-						elementRenderer->CloseCaret(caretEnd);
-					}
-					InvokeOnCompositionStateChanged();
+					elementRenderer->OpenCaret(caretEnd, caretColor, caretFrontSide);
 				}
+				else
+				{
+					elementRenderer->CloseCaret(caretEnd);
+				}
+				InvokeOnCompositionStateChanged();
 			}
 
 			GuiDocumentElement::GuiDocumentElement()
@@ -154,330 +160,254 @@ GuiDocumentElement
 
 			TextPos GuiDocumentElement::CalculateCaret(TextPos comparingCaret, IGuiGraphicsParagraph::CaretRelativePosition position, bool& preferFrontSide)
 			{
-				if (auto elementRenderer = renderer.Cast<GuiDocumentElementRenderer>())
-				{
-					TextPos caret=elementRenderer->CalculateCaret(comparingCaret, position, preferFrontSide);
-					return caret.column==-1?comparingCaret:caret;
-				}
-				else
-				{
-					return comparingCaret;
-				}
+				TextPos caret = GetElementRenderer()->CalculateCaret(comparingCaret, position, preferFrontSide);
+				return caret.column == -1 ? comparingCaret : caret;
 			}
 
 			TextPos GuiDocumentElement::CalculateCaretFromPoint(Point point)
 			{
-				if (auto elementRenderer = renderer.Cast<GuiDocumentElementRenderer>())
-				{
-					return elementRenderer->CalculateCaretFromPoint(point);
-				}
-				else
-				{
-					return TextPos(0, 0);
-				}
+				return GetElementRenderer()->CalculateCaretFromPoint(point);
 			}
 
 			Rect GuiDocumentElement::GetCaretBounds(TextPos caret, bool frontSide)
 			{
-				if (auto elementRenderer = renderer.Cast<GuiDocumentElementRenderer>())
-				{
-					return elementRenderer->GetCaretBounds(caret, frontSide);
-				}
-				else
-				{
-					return Rect();
-				}
+				return GetElementRenderer()->GetCaretBounds(caret, frontSide);
 			}
 			
 			void GuiDocumentElement::NotifyParagraphUpdated(vint index, vint oldCount, vint newCount, bool updatedText)
 			{
-				if (auto elementRenderer = renderer.Cast<GuiDocumentElementRenderer>())
-				{
-					elementRenderer->NotifyParagraphUpdated(index, oldCount, newCount, updatedText);
-					InvokeOnCompositionStateChanged();
-				}
+				GetElementRenderer()->NotifyParagraphUpdated(index, oldCount, newCount, updatedText);
+				InvokeOnCompositionStateChanged();
 			}
 
 			void GuiDocumentElement::EditRun(TextPos begin, TextPos end, Ptr<DocumentModel> model, bool copy)
 			{
-				if (auto elementRenderer = renderer.Cast<GuiDocumentElementRenderer>())
+				if (begin > end)
 				{
-					if (begin > end)
-					{
-						TextPos temp = begin;
-						begin = end;
-						end = temp;
-					}
-
-					vint newRows = document->EditRun(begin, end, model, copy);
-					if (newRows != -1)
-					{
-						elementRenderer->NotifyParagraphUpdated(begin.row, end.row - begin.row + 1, newRows, true);
-					}
-					InvokeOnCompositionStateChanged();
+					TextPos temp = begin;
+					begin = end;
+					end = temp;
 				}
+
+				vint newRows = document->EditRun(begin, end, model, copy);
+				if (newRows != -1)
+				{
+					GetElementRenderer()->NotifyParagraphUpdated(begin.row, end.row - begin.row + 1, newRows, true);
+				}
+				InvokeOnCompositionStateChanged();
 			}
 
 			void GuiDocumentElement::EditText(TextPos begin, TextPos end, bool frontSide, const collections::Array<WString>& text)
 			{
-				if (auto elementRenderer = renderer.Cast<GuiDocumentElementRenderer>())
+				if (begin > end)
 				{
-					if (begin > end)
-					{
-						TextPos temp = begin;
-						begin = end;
-						end = temp;
-					}
-
-					vint newRows = document->EditText(begin, end, frontSide, text);
-					if (newRows != -1)
-					{
-						elementRenderer->NotifyParagraphUpdated(begin.row, end.row - begin.row + 1, newRows, true);
-					}
-					InvokeOnCompositionStateChanged();
+					TextPos temp = begin;
+					begin = end;
+					end = temp;
 				}
+
+				vint newRows = document->EditText(begin, end, frontSide, text);
+				if (newRows != -1)
+				{
+					GetElementRenderer()->NotifyParagraphUpdated(begin.row, end.row - begin.row + 1, newRows, true);
+				}
+				InvokeOnCompositionStateChanged();
 			}
 
 			void GuiDocumentElement::EditStyle(TextPos begin, TextPos end, Ptr<DocumentStyleProperties> style)
 			{
-				if (auto elementRenderer = renderer.Cast<GuiDocumentElementRenderer>())
+				if (begin > end)
 				{
-					if (begin > end)
-					{
-						TextPos temp = begin;
-						begin = end;
-						end = temp;
-					}
-
-					if (document->EditStyle(begin, end, style))
-					{
-						elementRenderer->NotifyParagraphUpdated(begin.row, end.row - begin.row + 1, end.row - begin.row + 1, false);
-					}
-					InvokeOnCompositionStateChanged();
+					TextPos temp = begin;
+					begin = end;
+					end = temp;
 				}
+
+				if (document->EditStyle(begin, end, style))
+				{
+					GetElementRenderer()->NotifyParagraphUpdated(begin.row, end.row - begin.row + 1, end.row - begin.row + 1, false);
+				}
+				InvokeOnCompositionStateChanged();
 			}
 
 			void GuiDocumentElement::EditImage(TextPos begin, TextPos end, Ptr<GuiImageData> image)
 			{
-				if (auto elementRenderer = renderer.Cast<GuiDocumentElementRenderer>())
+				if (begin > end)
 				{
-					if (begin > end)
-					{
-						TextPos temp = begin;
-						begin = end;
-						end = temp;
-					}
-
-					if (document->EditImage(begin, end, image))
-					{
-						elementRenderer->NotifyParagraphUpdated(begin.row, end.row - begin.row + 1, 1, true);
-					}
-					InvokeOnCompositionStateChanged();
+					TextPos temp = begin;
+					begin = end;
+					end = temp;
 				}
+
+				if (document->EditImage(begin, end, image))
+				{
+					GetElementRenderer()->NotifyParagraphUpdated(begin.row, end.row - begin.row + 1, 1, true);
+				}
+				InvokeOnCompositionStateChanged();
 			}
 
 			void GuiDocumentElement::EditHyperlink(vint paragraphIndex, vint begin, vint end, const WString& reference, const WString& normalStyleName, const WString& activeStyleName)
 			{
-				if (auto elementRenderer = renderer.Cast<GuiDocumentElementRenderer>())
+				if (begin > end)
 				{
-					if (begin > end)
-					{
-						vint temp = begin;
-						begin = end;
-						end = temp;
-					}
-
-					if (document->EditHyperlink(paragraphIndex, begin, end, reference, normalStyleName, activeStyleName))
-					{
-						elementRenderer->NotifyParagraphUpdated(paragraphIndex, 1, 1, false);
-					}
-					InvokeOnCompositionStateChanged();
+					vint temp = begin;
+					begin = end;
+					end = temp;
 				}
+
+				if (document->EditHyperlink(paragraphIndex, begin, end, reference, normalStyleName, activeStyleName))
+				{
+					GetElementRenderer()->NotifyParagraphUpdated(paragraphIndex, 1, 1, false);
+				}
+				InvokeOnCompositionStateChanged();
 			}
 
 			void GuiDocumentElement::RemoveHyperlink(vint paragraphIndex, vint begin, vint end)
 			{
-				if (auto elementRenderer = renderer.Cast<GuiDocumentElementRenderer>())
+				if (begin > end)
 				{
-					if (begin > end)
-					{
-						vint temp = begin;
-						begin = end;
-						end = temp;
-					}
-
-					if (document->RemoveHyperlink(paragraphIndex, begin, end))
-					{
-						elementRenderer->NotifyParagraphUpdated(paragraphIndex, 1, 1, false);
-					}
-					InvokeOnCompositionStateChanged();
+					vint temp = begin;
+					begin = end;
+					end = temp;
 				}
+
+				if (document->RemoveHyperlink(paragraphIndex, begin, end))
+				{
+					GetElementRenderer()->NotifyParagraphUpdated(paragraphIndex, 1, 1, false);
+				}
+				InvokeOnCompositionStateChanged();
 			}
 
 			void GuiDocumentElement::EditStyleName(TextPos begin, TextPos end, const WString& styleName)
 			{
-				if (auto elementRenderer = renderer.Cast<GuiDocumentElementRenderer>())
+				if (begin > end)
 				{
-					if (begin > end)
-					{
-						TextPos temp = begin;
-						begin = end;
-						end = temp;
-					}
-
-					if (document->EditStyleName(begin, end, styleName))
-					{
-						elementRenderer->NotifyParagraphUpdated(begin.row, end.row - begin.row + 1, end.row - begin.row + 1, false);
-					}
-					InvokeOnCompositionStateChanged();
+					TextPos temp = begin;
+					begin = end;
+					end = temp;
 				}
+
+				if (document->EditStyleName(begin, end, styleName))
+				{
+					GetElementRenderer()->NotifyParagraphUpdated(begin.row, end.row - begin.row + 1, end.row - begin.row + 1, false);
+				}
+				InvokeOnCompositionStateChanged();
 			}
 
 			void GuiDocumentElement::RemoveStyleName(TextPos begin, TextPos end)
 			{
-				if (auto elementRenderer = renderer.Cast<GuiDocumentElementRenderer>())
+				if (begin > end)
 				{
-					if (begin > end)
-					{
-						TextPos temp = begin;
-						begin = end;
-						end = temp;
-					}
-
-					if (document->RemoveStyleName(begin, end))
-					{
-						elementRenderer->NotifyParagraphUpdated(begin.row, end.row - begin.row + 1, end.row - begin.row + 1, false);
-					}
-					InvokeOnCompositionStateChanged();
+					TextPos temp = begin;
+					begin = end;
+					end = temp;
 				}
+
+				if (document->RemoveStyleName(begin, end))
+				{
+					GetElementRenderer()->NotifyParagraphUpdated(begin.row, end.row - begin.row + 1, end.row - begin.row + 1, false);
+				}
+				InvokeOnCompositionStateChanged();
 			}
 
 			void GuiDocumentElement::RenameStyle(const WString& oldStyleName, const WString& newStyleName)
 			{
-				if (auto elementRenderer = renderer.Cast<GuiDocumentElementRenderer>())
-				{
-					document->RenameStyle(oldStyleName, newStyleName);
-				}
+				document->RenameStyle(oldStyleName, newStyleName);
 			}
 
 			void GuiDocumentElement::ClearStyle(TextPos begin, TextPos end)
 			{
-				if (auto elementRenderer = renderer.Cast<GuiDocumentElementRenderer>())
+				if (begin > end)
 				{
-					if (begin > end)
-					{
-						TextPos temp = begin;
-						begin = end;
-						end = temp;
-					}
-
-					if (document->ClearStyle(begin, end))
-					{
-						elementRenderer->NotifyParagraphUpdated(begin.row, end.row - begin.row + 1, end.row - begin.row + 1, false);
-					}
-					InvokeOnCompositionStateChanged();
+					TextPos temp = begin;
+					begin = end;
+					end = temp;
 				}
+
+				if (document->ClearStyle(begin, end))
+				{
+					GetElementRenderer()->NotifyParagraphUpdated(begin.row, end.row - begin.row + 1, end.row - begin.row + 1, false);
+				}
+				InvokeOnCompositionStateChanged();
 			}
 
 			void GuiDocumentElement::ConvertToPlainText(TextPos begin, TextPos end)
 			{
-				if (auto elementRenderer = renderer.Cast<GuiDocumentElementRenderer>())
+				if (begin > end)
 				{
-					if (begin > end)
-					{
-						TextPos temp = begin;
-						begin = end;
-						end = temp;
-					}
-
-					if (document->ConvertToPlainText(begin, end))
-					{
-						elementRenderer->NotifyParagraphUpdated(begin.row, end.row - begin.row + 1, end.row - begin.row + 1, false);
-					}
-					InvokeOnCompositionStateChanged();
+					TextPos temp = begin;
+					begin = end;
+					end = temp;
 				}
+
+				if (document->ConvertToPlainText(begin, end))
+				{
+					GetElementRenderer()->NotifyParagraphUpdated(begin.row, end.row - begin.row + 1, end.row - begin.row + 1, false);
+				}
+				InvokeOnCompositionStateChanged();
 			}
 
 			Ptr<DocumentStyleProperties> GuiDocumentElement::SummarizeStyle(TextPos begin, TextPos end)
 			{
-				if (auto elementRenderer = renderer.Cast<GuiDocumentElementRenderer>())
+				if (begin > end)
 				{
-					if (begin > end)
-					{
-						TextPos temp = begin;
-						begin = end;
-						end = temp;
-					}
-
-					return document->SummarizeStyle(begin, end);
+					TextPos temp = begin;
+					begin = end;
+					end = temp;
 				}
-				return nullptr;
+
+				return document->SummarizeStyle(begin, end);
 			}
 
 			Nullable<WString> GuiDocumentElement::SummarizeStyleName(TextPos begin, TextPos end)
 			{
-				if (auto elementRenderer = renderer.Cast<GuiDocumentElementRenderer>())
+				if (begin > end)
 				{
-					if (begin > end)
-					{
-						TextPos temp = begin;
-						begin = end;
-						end = temp;
-					}
-
-					return document->SummarizeStyleName(begin, end);
+					TextPos temp = begin;
+					begin = end;
+					end = temp;
 				}
-				return {};
+
+				return document->SummarizeStyleName(begin, end);
 			}
 
 			void GuiDocumentElement::SetParagraphAlignment(TextPos begin, TextPos end, const collections::Array<Nullable<Alignment>>& alignments)
 			{
-				if (auto elementRenderer = renderer.Cast<GuiDocumentElementRenderer>())
+				vint first = begin.row;
+				vint last = end.row;
+				if (first > last)
 				{
-					vint first = begin.row;
-					vint last = end.row;
-					if (first > last)
-					{
-						vint temp = first;
-						first = last;
-						last = temp;
-					}
-
-					if (0 <= first && first < document->paragraphs.Count() && 0 <= last && last < document->paragraphs.Count() && last - first + 1 == alignments.Count())
-					{
-						for (vint i = first; i <= last; i++)
-						{
-							document->paragraphs[i]->alignment = alignments[i - first];
-						}
-						elementRenderer->NotifyParagraphUpdated(first, alignments.Count(), alignments.Count(), false);
-					}
-					InvokeOnCompositionStateChanged();
+					vint temp = first;
+					first = last;
+					last = temp;
 				}
+
+				if (0 <= first && first < document->paragraphs.Count() && 0 <= last && last < document->paragraphs.Count() && last - first + 1 == alignments.Count())
+				{
+					for (vint i = first; i <= last; i++)
+					{
+						document->paragraphs[i]->alignment = alignments[i - first];
+					}
+					GetElementRenderer()->NotifyParagraphUpdated(first, alignments.Count(), alignments.Count(), false);
+				}
+				InvokeOnCompositionStateChanged();
 			}
 
 			Nullable<Alignment> GuiDocumentElement::SummarizeParagraphAlignment(TextPos begin, TextPos end)
 			{
-				if (auto elementRenderer = renderer.Cast<GuiDocumentElementRenderer>())
+				if (begin > end)
 				{
-					if (begin > end)
-					{
-						TextPos temp = begin;
-						begin = end;
-						end = temp;
-					}
-
-					return document->SummarizeParagraphAlignment(begin, end);
+					TextPos temp = begin;
+					begin = end;
+					end = temp;
 				}
-				return {};
+
+				return document->SummarizeParagraphAlignment(begin, end);
 			}
 
 			Ptr<DocumentHyperlinkRun::Package> GuiDocumentElement::GetHyperlinkFromPoint(Point point)
 			{
-				if (auto elementRenderer = renderer.Cast<GuiDocumentElementRenderer>())
-				{
-					return elementRenderer->GetHyperlinkFromPoint(point);
-				}
-				return nullptr;
+				return GetElementRenderer()->GetHyperlinkFromPoint(point);
 			}
 		}
 	}

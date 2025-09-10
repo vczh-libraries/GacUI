@@ -10,6 +10,7 @@ Interfaces:
 #define VCZH_PRESENTATION_ELEMENTS_GUIGRAPHICSDOCUMENTINTERFACES
 
 #include "GuiGraphicsElementInterfaces.h"
+#include "../Resources/GuiDocument.h"
 
 namespace vl
 {
@@ -19,7 +20,7 @@ namespace vl
 		{
 
 /***********************************************************************
-Layout Engine
+IGuiGraphicsParagraph
 ***********************************************************************/
 
 			class IGuiGraphicsParagraph;
@@ -215,6 +216,10 @@ Layout Engine
 				virtual bool								IsValidTextPos(vint textPos)=0;
 			};
 
+/***********************************************************************
+IGuiGraphicsLayoutProvider
+***********************************************************************/
+
 			/// <summary>Paragraph callback</summary>
 			class IGuiGraphicsParagraphCallback : public IDescriptable, public Description<IGuiGraphicsParagraphCallback>
 			{
@@ -236,6 +241,40 @@ Layout Engine
 				/// <param name="callback">A callback to receive necessary information when the paragraph is being rendered.</param>
 				/// <returns>The created paragraph object.</returns>
 				virtual Ptr<IGuiGraphicsParagraph>			CreateParagraph(const WString& text, IGuiGraphicsRenderTarget* renderTarget, IGuiGraphicsParagraphCallback* callback)=0;
+			};
+
+/***********************************************************************
+IGuiDocumentElementRenderer
+***********************************************************************/
+
+			/// <summary>Callback interface for this element.</summary>
+			class IGuiDocumentElementCallback : public virtual IDescriptable, public Description<IGuiDocumentElementCallback>
+			{
+			public:
+				/// <summary>Called when the rendering is started.</summary>
+				virtual void							OnStartRender() = 0;
+
+				/// <summary>Called when the rendering is finished.</summary>
+				virtual void							OnFinishRender() = 0;
+
+				/// <summary>Called when an embedded object is being rendered.</summary>
+				/// <returns>Returns the new size of the rendered embedded object.</returns>
+				/// <param name="name">The name of the embedded object</param>
+				/// <param name="location">The location of the embedded object, relative to the left-top corner of this element.</param>
+				virtual Size							OnRenderEmbeddedObject(const WString& name, const Rect& location) = 0;
+			};
+
+			class IGuiDocumentElementRenderer : public virtual IGuiGraphicsRenderer
+			{
+			public:
+				virtual void									NotifyParagraphUpdated(vint index, vint oldCount, vint newCount, bool updatedText) = 0;
+				virtual Ptr<DocumentHyperlinkRun::Package>		GetHyperlinkFromPoint(Point point) = 0;
+				virtual void									OpenCaret(TextPos caret, Color color, bool frontSide) = 0;
+				virtual void									CloseCaret(TextPos caret) = 0;
+				virtual void									SetSelection(TextPos begin, TextPos end) = 0;
+				virtual TextPos									CalculateCaret(TextPos comparingCaret, IGuiGraphicsParagraph::CaretRelativePosition position, bool& preferFrontSide) = 0;
+				virtual TextPos									CalculateCaretFromPoint(Point point) = 0;
+				virtual Rect									GetCaretBounds(TextPos caret, bool frontSide) = 0;
 			};
 		}
 	}
