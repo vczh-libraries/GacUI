@@ -1,0 +1,33 @@
+<Resource>
+  <Folder name="EmbeddedDocument">
+    <Image content="File" name="Gaclib">Gaclib.png</Image>
+    <Doc content="File" name="Document">Document.xml</Doc>
+  </Folder>
+  <Instance name="MainWindowResource">
+    <Instance ref.CodeBehind="false" ref.Class="demo::TestWindow" xmlns:demo="demo::*">
+      <Window ref.Name="self" Text="Document" ClientSize="x:800 y:600">
+        <att.BoundsComposition-set PreferredMinSize="x:800 y:600"/>
+        <Table CellPadding="5" MinSizeLimitation="LimitToElementAndChildren" AlignmentToParent="left:0 top:0 right:0 bottom:0">
+          <att.Rows>
+            <_>composeType:MinSize</_>
+            <_>composeType:Percentage percentage:1.0</_>
+          </att.Rows>
+          <att.Columns>
+            <_>composeType:MinSize</_>
+            <_>composeType:Percentage percentage:1.0</_>
+          </att.Columns>
+
+          <Cell Site="row:0 column:0">
+            <Button Text="Load Big Json"/>
+          </Cell>
+
+          <Cell Site="row:1 column:0 columnSpan:2">
+            <MultilineTextBox EditMode="Editable" Document-uri="res://EmbeddedDocument/Document">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+            </MultilineTextBox>
+          </Cell>
+        </Table>
+      </Window>
+    </Instance>
+  </Instance>
+</Resource>
