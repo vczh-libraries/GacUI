@@ -59,13 +59,13 @@
           </Cell>
 
           <Cell Site="row:1 column:1">
-            <SinglelineTextBox EditMode="Editable" Document-uri="res://EmbeddedDocument/Document">
+            <SinglelineTextBox Document-uri="res://EmbeddedDocument/Document">
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:-1"/>
               <att.PasswordChar-bind>cast char (checkBoxPasswordChar.Selected ? '*' : '')</att.PasswordChar-bind>
             </SinglelineTextBox>
           </Cell>
           <Cell Site="row:3 column:1">
-            <MultilineTextBox EditMode="Editable" Document-uri="res://EmbeddedDocument/Document">
+            <MultilineTextBox Document-uri="res://EmbeddedDocument/Document">
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
             </MultilineTextBox>
           </Cell>

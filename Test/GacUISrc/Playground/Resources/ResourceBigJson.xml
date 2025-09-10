@@ -1,8 +1,4 @@
 <Resource>
-  <Folder name="EmbeddedDocument">
-    <Image content="File" name="Gaclib">Gaclib.png</Image>
-    <Doc content="File" name="Document">Document.xml</Doc>
-  </Folder>
   <Instance name="MainWindowResource">
     <Instance ref.CodeBehind="false" ref.Class="demo::TestWindow" xmlns:demo="demo::*">
       <Window ref.Name="self" Text="Document" ClientSize="x:800 y:600">
@@ -18,11 +14,15 @@
           </att.Columns>
 
           <Cell Site="row:0 column:0">
-            <Button Text="Load Big Json"/>
+            <Button Text="Load Big Json">
+              <ev.Clicked-eval><![CDATA[{
+                textBox.Text = (new Playground^()).LoadBigJson();
+              }]]></ev.Clicked-eval>
+            </Button>
           </Cell>
 
           <Cell Site="row:1 column:0 columnSpan:2">
-            <MultilineTextBox EditMode="Editable" Document-uri="res://EmbeddedDocument/Document">
+            <MultilineTextBox ref.Name="textBox">
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
             </MultilineTextBox>
           </Cell>

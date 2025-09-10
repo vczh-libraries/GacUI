@@ -17,14 +17,54 @@ class Playground : public Object, public Description<Playground>
 public:
 	WString LoadBigJson()
 	{
+		auto exePath = FilePath(GetApplication()->GetExecutablePath()).GetFolder();
 #ifdef VCZH_64
-		FilePath path = L"../../Playground/Resources/BigJson.json";
+		auto jsonPath = exePath / L"../../Playground/Resources/BigJson.json";
 #else
-		FilePath path = L"../Playground/Resources/BigJson.json";
+		auto jsonPath = exePath / L"../Playground/Resources/BigJson.json";
 #endif
-		return File(path).ReadAllTextByBom();
+		return File(jsonPath).ReadAllTextByBom();
 	}
 };
+
+namespace vl::reflection::description
+{
+#define PLAYGROUND_TYPE_LIST(F)	\
+	F(Playground)\
+
+	PLAYGROUND_TYPE_LIST(DECL_TYPE_INFO)
+	PLAYGROUND_TYPE_LIST(IMPL_CPP_TYPE_INFO)
+
+#define _ ,
+	BEGIN_CLASS_MEMBER(Playground)
+		CLASS_MEMBER_CONSTRUCTOR(Ptr<Playground>(), NO_PARAMETER)
+		CLASS_MEMBER_METHOD(LoadBigJson, NO_PARAMETER)
+	END_CLASS_MEMBER(Playground)
+
+#undef _
+
+	class PlaygroundTypeLoader : public Object, public ITypeLoader
+	{
+	public:
+		void Load(ITypeManager* manager)
+		{
+			PLAYGROUND_TYPE_LIST(ADD_TYPE_INFO)
+		}
+
+		void Unload(ITypeManager* manager)
+		{
+		}
+	};
+
+	bool LoadPlaygroundTypes()
+	{
+		if (auto manager = GetGlobalTypeManager())
+		{
+			return manager->AddTypeLoader(Ptr(new PlaygroundTypeLoader));
+		}
+		return false;
+	}
+}
 
 namespace vl::presentation::description
 {
@@ -100,6 +140,7 @@ void GuiMain()
 {
 	TestWindowsKeyName();
 	LoadDarkSkinTypes();
+	LoadPlaygroundTypes();
 
 	List<WString> names;
 	names.Add(L"ResourceBigJson");
