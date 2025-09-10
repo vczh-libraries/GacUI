@@ -247,23 +247,6 @@ IGuiGraphicsLayoutProvider
 IGuiDocumentElementRenderer
 ***********************************************************************/
 
-			/// <summary>Callback interface for this element.</summary>
-			class IGuiDocumentElementCallback : public virtual IDescriptable, public Description<IGuiDocumentElementCallback>
-			{
-			public:
-				/// <summary>Called when the rendering is started.</summary>
-				virtual void							OnStartRender() = 0;
-
-				/// <summary>Called when the rendering is finished.</summary>
-				virtual void							OnFinishRender() = 0;
-
-				/// <summary>Called when an embedded object is being rendered.</summary>
-				/// <returns>Returns the new size of the rendered embedded object.</returns>
-				/// <param name="name">The name of the embedded object</param>
-				/// <param name="location">The location of the embedded object, relative to the left-top corner of this element.</param>
-				virtual Size							OnRenderEmbeddedObject(const WString& name, const Rect& location) = 0;
-			};
-
 			class IGuiDocumentElementRenderer : public virtual IGuiGraphicsRenderer
 			{
 			public:
