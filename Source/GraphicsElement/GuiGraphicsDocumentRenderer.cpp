@@ -322,7 +322,7 @@ GuiDocumentParagraphCache
 				freeCallbackIds.Clear();
 				usedCallbackIds = 0;
 
-				auto document = element->GetDocument();
+				auto document = element ? element->GetDocument() : nullptr;
 				if (document && document->paragraphs.Count() > 0)
 				{
 					paragraphCaches.Resize(0);
@@ -461,6 +461,10 @@ GuiDocumentParagraphCache
 				auto& cachedSize = paragraphSizes[paragraphIndex];
 				Size oldSize = cachedSize.cachedSize;
 				Size newSize = cache->graphicsParagraph->GetSize();
+				if(newSize.y < defaultHeight)
+				{
+					newSize.y = defaultHeight;
+				}
 				cachedSize.cachedSize = newSize;
 				return newSize.y - oldSize.y;
 			}
