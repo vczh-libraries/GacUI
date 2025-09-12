@@ -128,7 +128,7 @@ GuiDocumentElementRenderer
 				void									InitializeInternal();
 				void									FinalizeInternal();
 				void									RenderTargetChangedInternal(IGuiGraphicsRenderTarget* oldRenderTarget, IGuiGraphicsRenderTarget* newRenderTarget);
-				Ptr<pg::ParagraphCache>					EnsureAndGetCache(vint paragraphIndex, bool createParagraph);
+				Ptr<pg::ParagraphCache>					EnsureParagraph(vint paragraphIndex);
 				void									FixMinSize();
 			public:
 				GuiDocumentElementRenderer();
