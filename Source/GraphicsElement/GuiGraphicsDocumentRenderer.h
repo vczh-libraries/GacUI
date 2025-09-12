@@ -66,6 +66,7 @@ GuiDocumentParagraphCache
 				GuiDocumentElement*						element = nullptr;
 				IGuiGraphicsRenderTarget*				renderTarget = nullptr;
 				IGuiGraphicsLayoutProvider*				layoutProvider = nullptr;
+				vint									defaultHeight = 0;
 				pg::ParagraphCacheArray					paragraphCaches;
 				pg::ParagraphSizeArray					paragraphSizes;
 				vint									validCachedTops = 0;
@@ -83,6 +84,8 @@ GuiDocumentParagraphCache
 				Size									GetParagraphSize(vint paragraphIndex);
 				vint									GetParagraphTop(vint paragraphIndex, vint paragraphDistance);
 				void									InvalidCachedTops(vint firstParagraphIndex);
+
+				vint									ResetCache();
 			};
 
 /***********************************************************************

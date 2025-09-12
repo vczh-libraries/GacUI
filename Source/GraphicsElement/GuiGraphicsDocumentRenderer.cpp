@@ -231,6 +231,7 @@ GuiDocumentParagraphCache
 
 			GuiDocumentParagraphCache::GuiDocumentParagraphCache()
 				: layoutProvider(GetGuiGraphicsResourceManager()->GetLayoutProvider())
+				, defaultHeight(GetCurrentController()->ResourceService()->GetDefaultFont().size)
 			{
 			}
 
@@ -307,6 +308,30 @@ GuiDocumentParagraphCache
 			void GuiDocumentParagraphCache::InvalidCachedTops(vint firstParagraphIndex)
 			{
 				validCachedTops = firstParagraphIndex;
+			}
+
+			vint GuiDocumentParagraphCache::ResetCache()
+			{
+				auto document = element->GetDocument();
+				if (document && document->paragraphs.Count() > 0)
+				{
+					paragraphCaches.Resize(0);
+					paragraphCaches.Resize(document->paragraphs.Count());
+					paragraphSizes.Resize(document->paragraphs.Count());
+
+					for (vint i = 0; i < paragraphSizes.Count(); i++)
+					{
+						paragraphSizes[i] = { 0,{ 0,defaultHeight } };
+					}
+
+					return document->paragraphs.Count() * defaultHeight;
+				}
+				else
+				{
+					paragraphCaches.Resize(0);
+					paragraphSizes.Resize(0);
+					return 0;
+				}
 			}
 
 /***********************************************************************
@@ -518,40 +543,21 @@ GuiDocumentElementRenderer
 
 			void GuiDocumentElementRenderer::OnElementStateChanged()
 			{
-				lastTotalSize = { 1,1 };
-				auto document = element->GetDocument();
-				if (document && document->paragraphs.Count() > 0)
-				{
-					vint defaultHeight = GetCurrentController()->ResourceService()->GetDefaultFont().size;
-
-					paragraphCaches.Resize(document->paragraphs.Count());
-					paragraphSizes.Resize(document->paragraphs.Count());
-
-					for (vint i = 0; i < paragraphCaches.Count(); i++)
-					{
-						paragraphCaches[i] = 0;
-					}
-					for (vint i = 0; i < paragraphSizes.Count(); i++)
-					{
-						paragraphSizes[i] = { 0,defaultHeight };
-					}
-
-					lastTotalSize.y = paragraphSizes.Count() * (defaultHeight + paragraphDistance);
-					if (paragraphSizes.Count() > 0)
-					{
-						lastTotalSize.y -= paragraphDistance;
-					}
-				}
-				else
-				{
-					paragraphCaches.Resize(0);
-					paragraphSizes.Resize(0);
-				}
-				minSize = lastTotalSize;
+				lastTotalWidth = 0;
+				lastTotalHeightWithoutParagraphDistance = pgCache.ResetCache();
 
 				nameCallbackIdMap.Clear();
 				freeCallbackIds.Clear();
 				usedCallbackIds = 0;
+
+				minSize = { lastTotalWidth,lastTotalHeightWithoutParagraphDistance };
+				if (pgCache.GetParagraphCount() > 0)
+				{
+					minSize.y += paragraphDistance * (pgCache.GetParagraphCount() - 1);
+				}
+
+				if (minSize.x < 1) minSize.x = 1;
+				if (minSize.y < 1) minSize.y = 1;
 			}
 
 			void GuiDocumentElementRenderer::NotifyParagraphUpdated(vint index, vint oldCount, vint newCount, bool updatedText)
