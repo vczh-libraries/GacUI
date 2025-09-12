@@ -42,23 +42,22 @@ GuiDocumentParagraphCache
 
 				struct ParagraphCache
 				{
-					Nullable<WString>					fullText;				// when fullText is null, all members below are invalid except cachedTop and cachedSize
+					Nullable<WString>					fullText;				// when fullText is null, all members below are invalid
 					Ptr<IGuiGraphicsParagraph>			graphicsParagraph;
 					IdEmbeddedObjectMap					embeddedObjects;
-					vint								selectionBegin;
-					vint								selectionEnd;
+					vint								selectionBegin = -1;
+					vint								selectionEnd = -1;
+				};
 
-					vint								cachedTop = 0;			// invalid after GuiDocumentParagraphCache::validCachedTops-th ParagraphCache
+				struct ParagraphSize
+				{
+					// invalid after GuiDocumentParagraphCache::validCachedTops-th ParagraphCache
+					vint								cachedTopWithoutParagraphDistance = 0;
 					Size								cachedSize;
-
-					ParagraphCache()
-						:selectionBegin(-1)
-						, selectionEnd(-1)
-					{
-					}
 				};
 
 				typedef collections::Array<Ptr<ParagraphCache>>		ParagraphCacheArray;
+				typedef collections::Array<ParagraphSize>			ParagraphSizeArray;
 			}
 
 			class GuiDocumentParagraphCache : public Object
@@ -68,6 +67,7 @@ GuiDocumentParagraphCache
 				IGuiGraphicsRenderTarget*				renderTarget = nullptr;
 				IGuiGraphicsLayoutProvider*				layoutProvider = nullptr;
 				pg::ParagraphCacheArray					paragraphCaches;
+				pg::ParagraphSizeArray					paragraphSizes;
 				vint									validCachedTops = 0;
 
 			public:
@@ -79,6 +79,8 @@ GuiDocumentParagraphCache
 
 				Ptr<pg::ParagraphCache>					TryGetParagraphCache(vint paragraphIndex);
 				Ptr<pg::ParagraphCache>					GetParagraphCache(vint paragraphIndex, bool requireParagraph);
+				pg::ParagraphSize						GetParagraphSize(vint paragraphIndex, bool requireCachedTop);
+				void									InvalidCachedTops(vint firstParagraphIndex);
 			};
 
 /***********************************************************************

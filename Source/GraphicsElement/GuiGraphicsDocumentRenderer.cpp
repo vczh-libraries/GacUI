@@ -271,6 +271,35 @@ GuiDocumentParagraphCache
 #undef ERROR_MESSAGE_PREFIX
 			}
 
+			pg::ParagraphSize GuiDocumentParagraphCache::GetParagraphSize(vint paragraphIndex, bool requireCachedTop)
+			{
+				if (requireCachedTop && paragraphIndex < validCachedTops)
+				{
+					vint currentTop = 0;
+					if (validCachedTops > 0)
+					{
+						auto size = paragraphSizes[validCachedTops - 1];
+						currentTop = size.cachedTopWithoutParagraphDistance + size.cachedSize.y;
+					}
+
+					for (vint i = validCachedTops; i <= paragraphIndex; i++)
+					{
+						auto& size = paragraphSizes[i];
+						size.cachedTopWithoutParagraphDistance = currentTop;
+						currentTop += size.cachedSize.y;
+					}
+
+					validCachedTops = paragraphIndex + 1;
+				}
+
+				return paragraphSizes[paragraphIndex];
+			}
+
+			void GuiDocumentParagraphCache::InvalidCachedTops(vint firstParagraphIndex)
+			{
+				validCachedTops = firstParagraphIndex;
+			}
+
 /***********************************************************************
 GuiDocumentElementRenderer
 ***********************************************************************/
@@ -812,11 +841,10 @@ GuiDocumentElementRenderer
 					Rect bounds = cache->graphicsParagraph->GetCaretBounds(caret.column, frontSide);
 					if (bounds != Rect())
 					{
-						vint y = 0;
-						for (vint i = 0; i < caret.row; i++)
+						vint y = pgCache.GetParagraphSize(caret.row, true).cachedTopWithoutParagraphDistance;
+						if (caret.row > 0)
 						{
-							EnsureAndGetCache(i, true);
-							y += paragraphSizes[i].y + paragraphDistance;
+							y += (caret.row - 1) * paragraphDistance;
 						}
 
 						bounds.y1 += y;
