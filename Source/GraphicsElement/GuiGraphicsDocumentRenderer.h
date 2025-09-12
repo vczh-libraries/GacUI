@@ -62,17 +62,24 @@ GuiDocumentParagraphCache
 
 			class GuiDocumentParagraphCache : public Object
 			{
+				friend class visitors::SetPropertiesVisitor;
 			protected:
+				IGuiGraphicsParagraphCallback*			callback = nullptr;
 				GuiDocumentElement*						element = nullptr;
 				IGuiGraphicsRenderTarget*				renderTarget = nullptr;
 				IGuiGraphicsLayoutProvider*				layoutProvider = nullptr;
 				vint									defaultHeight = 0;
+
 				pg::ParagraphCacheArray					paragraphCaches;
 				pg::ParagraphSizeArray					paragraphSizes;
 				vint									validCachedTops = 0;
 
+				pg::NameIdMap							nameCallbackIdMap;
+				pg::FreeIdList							freeCallbackIds;
+				vint									usedCallbackIds = 0;
+
 			public:
-				GuiDocumentParagraphCache();
+				GuiDocumentParagraphCache(IGuiGraphicsParagraphCallback* _callback);
 				~GuiDocumentParagraphCache();
 
 				void									Initialize(GuiDocumentElement* _element);
@@ -88,7 +95,7 @@ GuiDocumentParagraphCache
 
 				vint									ResetCache();																// returns total height
 				vint									ResetCache(vint index, vint oldCount, vint newCount, bool updatedText);		// returns the diff of total height
-				vint									EnsureParagraph(vint paragraphIndex);										// returns the diff of total height
+				vint									EnsureParagraph(vint paragraphIndex, vint maxWidth);						// returns the diff of total height
 				vint									GetParagraphFromY(vint y, vint paragraphDistance);
 			};
 
@@ -100,7 +107,6 @@ GuiDocumentElementRenderer
 				: public GuiElementRendererBase<GuiDocumentElement, GuiDocumentElementRenderer, IGuiGraphicsRenderTarget, IGuiDocumentElementRenderer>
 				, private virtual IGuiGraphicsParagraphCallback
 			{
-				friend class visitors::SetPropertiesVisitor;
 				friend class GuiElementRendererBase<GuiDocumentElement, GuiDocumentElementRenderer, IGuiGraphicsRenderTarget, IGuiDocumentElementRenderer>;
 			protected:
 
@@ -117,10 +123,6 @@ GuiDocumentElementRenderer
 				TextPos									lastCaret{ -1,-1 };
 				bool									lastCaretFrontSide = false;
 				Color									lastCaretColor;
-
-				pg::NameIdMap							nameCallbackIdMap;
-				pg::FreeIdList							freeCallbackIds;
-				vint									usedCallbackIds = 0;
 
 				vint									renderingParagraph = -1;
 				Point									renderingParagraphOffset;
