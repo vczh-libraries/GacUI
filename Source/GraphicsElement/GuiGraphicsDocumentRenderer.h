@@ -42,7 +42,7 @@ GuiDocumentParagraphCache
 
 				struct ParagraphCache
 				{
-					Nullable<WString>					fullText;				// when fullText is null, all members below are invalid
+					WString								fullText;
 					Ptr<IGuiGraphicsParagraph>			graphicsParagraph;
 					IdEmbeddedObjectMap					embeddedObjects;
 					vint								selectionBegin = -1;
@@ -82,10 +82,12 @@ GuiDocumentParagraphCache
 				Ptr<pg::ParagraphCache>					TryGetParagraphCache(vint paragraphIndex);
 				Ptr<pg::ParagraphCache>					GetParagraphCache(vint paragraphIndex, bool requireParagraph);
 				Size									GetParagraphSize(vint paragraphIndex);
+				vint									GetParagraphTopWithoutParagraphDistance(vint paragraphIndex);
 				vint									GetParagraphTop(vint paragraphIndex, vint paragraphDistance);
 				void									InvalidCachedTops(vint firstParagraphIndex);
 
 				vint									ResetCache();
+				vint									ResetCache(vint index, vint oldCount, vint newCount, bool updatedText);
 			};
 
 /***********************************************************************
@@ -126,6 +128,7 @@ GuiDocumentElementRenderer
 				void									RenderTargetChangedInternal(IGuiGraphicsRenderTarget* oldRenderTarget, IGuiGraphicsRenderTarget* newRenderTarget);
 				Ptr<pg::ParagraphCache>					EnsureAndGetCache(vint paragraphIndex, bool createParagraph);
 				bool									GetParagraphIndexFromPoint(Point point, vint& top, vint& index);
+				void									FixMinSize();
 			public:
 				GuiDocumentElementRenderer();
 
