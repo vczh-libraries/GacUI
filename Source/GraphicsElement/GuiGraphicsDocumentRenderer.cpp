@@ -401,6 +401,17 @@ GuiDocumentParagraphCache
 				}
 			}
 
+			vint GuiDocumentParagraphCache::EnsureParagraph(vint paragraphIndex)
+			{
+				CHECK_FAIL(L"Not Implemented!");
+			}
+
+			vint GuiDocumentParagraphCache::GetParagraphFromY(vint y, vint paragraphDistance)
+			{
+				// TODO: perform binary search while considering validCachedTops
+				CHECK_FAIL(L"Not Implemented!");
+			}
+
 /***********************************************************************
 GuiDocumentElementRenderer
 ***********************************************************************/
@@ -545,66 +556,56 @@ GuiDocumentElementRenderer
 					vint cy = bounds.Top();
 					vint y1 = clipper.Top() - bounds.Top();
 					vint y2 = y1 + clipper.Height();
-					vint y = 0;
 
 					lastMaxWidth = maxWidth;
 
 					// TODO: (enumerable) foreach
-					vint paragraphCount = paragraphSizes.Count();
+					vint paragraphCount = pgCache.GetParagraphCount();
 					auto document = element->GetDocument();
 					if (paragraphCount > document->paragraphs.Count())
 					{
 						paragraphCount = document->paragraphs.Count();
 					}
-					for (vint i = 0; i < paragraphCount; i++)
+
+					vint startParagraph = pgCache.GetParagraphFromY(y1, paragraphDistance);
+					for (vint i = startParagraph; i < paragraphCount; i++)
 					{
-						Size cachedSize = paragraphSizes[i];
-						if (y + cachedSize.y <= y1)
+						Ptr<DocumentParagraphRun> paragraph = document->paragraphs[i];
+						auto cache = pgCache.TryGetParagraphCache(i);
+						bool paragraphAlreadyCreated = cache && cache->graphicsParagraph;
+
+						lastTotalHeightWithoutParagraphDistance += pgCache.EnsureParagraph(i);
+						cache = pgCache.GetParagraphCache(i, true);
+						if (!paragraphAlreadyCreated && i == lastCaret.row && element->GetCaretVisible())
 						{
-							y += cachedSize.y + paragraphDistance;
-							continue;
+							cache->graphicsParagraph->OpenCaret(lastCaret.column, lastCaretColor, lastCaretFrontSide);
 						}
-						else if (y >= y2)
+
+						vint y = pgCache.GetParagraphTop(i, paragraphDistance);
+						if (y >= y2)
 						{
 							break;
 						}
-						else
+
+						renderingParagraph = i;
+						renderingParagraphOffset = Point(cx - bounds.x1, cy + y - bounds.y1);
+						cache->graphicsParagraph->Render(Rect(Point(cx, cy + y), Size(maxWidth, pgCache.GetParagraphSize(i).y)));
+						renderingParagraph = -1;
+
+						bool resized = false;
+						for(auto eo: cache->embeddedObjects.Values())
 						{
-							Ptr<DocumentParagraphRun> paragraph = document->paragraphs[i];
-							auto cache = paragraphCaches[i];
-							bool created = cache && cache->graphicsParagraph;
-							cache = EnsureAndGetCache(i, true);
-							if (!created && i == lastCaret.row && element->GetCaretVisible())
+							if (eo->resized)
 							{
-								cache->graphicsParagraph->OpenCaret(lastCaret.column, lastCaretColor, lastCaretFrontSide);
-							}
-
-							cachedSize = cache->graphicsParagraph->GetSize();
-
-							renderingParagraph = i;
-							renderingParagraphOffset = Point(cx - bounds.x1, cy + y - bounds.y1);
-							cache->graphicsParagraph->Render(Rect(Point(cx, cy + y), Size(maxWidth, cachedSize.y)));
-							renderingParagraph = -1;
-
-							bool resized = false;
-							// TODO: (enumerable) foreach
-							for (vint j = 0; j < cache->embeddedObjects.Count(); j++)
-							{
-								auto eo = cache->embeddedObjects.Values()[j];
-								if (eo->resized)
-								{
-									eo->resized = false;
-									resized = true;
-								}
-							}
-
-							if (resized)
-							{
-								cache->graphicsParagraph = 0;
+								eo->resized = false;
+								resized = true;
 							}
 						}
 
-						y += cachedSize.y + paragraphDistance;
+						if (resized)
+						{
+							cache->graphicsParagraph = 0;
+						}
 					}
 				}
 				renderTarget->PopClipper(element);
@@ -612,6 +613,7 @@ GuiDocumentElementRenderer
 				{
 					callback->OnFinishRender();
 				}
+				FixMinSize();
 			}
 
 			void GuiDocumentElementRenderer::NotifyParagraphPaddingUpdated(bool value)
@@ -734,32 +736,39 @@ GuiDocumentElementRenderer
 				}
 
 				if (!renderTarget) return;
-				// TODO: (enumerable) foreach:indexed
-				for (vint i = 0; i < paragraphCaches.Count(); i++)
+				vint paragraphCount = pgCache.GetParagraphCount();
+				for (vint i = 0; i < paragraphCount; i++)
 				{
 					if (begin.row <= i && i <= end.row)
 					{
-						auto cache = EnsureAndGetCache(i, false);
-						vint newBegin = i == begin.row ? begin.column : 0;
-						vint newEnd = i == end.row ? end.column : cache->fullText.Length();
-
-						if (cache->selectionBegin != newBegin || cache->selectionEnd != newEnd)
+						if (auto cache = pgCache.TryGetParagraphCache(i))
 						{
-							cache->selectionBegin = newBegin;
-							cache->selectionEnd = newEnd;
-							NotifyParagraphUpdated(i, 1, 1, false);
+							vint newBegin = i == begin.row ? begin.column : 0;
+							vint newEnd = i == end.row ? end.column : cache->fullText.Length();
+
+							if (cache->selectionBegin != newBegin || cache->selectionEnd != newEnd)
+							{
+								cache->selectionBegin = newBegin;
+								cache->selectionEnd = newEnd;
+								if (cache->graphicsParagraph)
+								{
+									NotifyParagraphUpdated(i, 1, 1, false);
+								}
+							}
 						}
 					}
 					else
 					{
-						auto cache = paragraphCaches[i];
-						if (cache)
+						if (auto cache = pgCache.TryGetParagraphCache(i))
 						{
 							if (cache->selectionBegin != -1 || cache->selectionEnd != -1)
 							{
 								cache->selectionBegin = -1;
 								cache->selectionEnd = -1;
-								NotifyParagraphUpdated(i, 1, 1, false);
+								if (cache->graphicsParagraph)
+								{
+									NotifyParagraphUpdated(i, 1, 1, false);
+								}
 							}
 						}
 					}
