@@ -42,12 +42,14 @@ GuiDocumentParagraphCache
 
 				struct ParagraphCache
 				{
-					WString								fullText;
+					Nullable<WString>					fullText;				// when fullText is null, all members below are invalid except cachedTop and cachedSize
 					Ptr<IGuiGraphicsParagraph>			graphicsParagraph;
 					IdEmbeddedObjectMap					embeddedObjects;
 					vint								selectionBegin;
 					vint								selectionEnd;
-					Size								size;
+
+					vint								cachedTop = 0;			// invalid after GuiDocumentParagraphCache::validCachedTops-th ParagraphCache
+					Size								cachedSize;
 
 					ParagraphCache()
 						:selectionBegin(-1)
@@ -66,6 +68,7 @@ GuiDocumentParagraphCache
 				IGuiGraphicsRenderTarget*				renderTarget = nullptr;
 				IGuiGraphicsLayoutProvider*				layoutProvider = nullptr;
 				pg::ParagraphCacheArray					paragraphCaches;
+				vint									validCachedTops = 0;
 
 			public:
 				GuiDocumentParagraphCache();
@@ -73,6 +76,9 @@ GuiDocumentParagraphCache
 
 				void									Initialize(GuiDocumentElement* _element);
 				void									RenderTargetChanged(IGuiGraphicsRenderTarget* oldRenderTarget, IGuiGraphicsRenderTarget* newRenderTarget);
+
+				Ptr<pg::ParagraphCache>					TryGetParagraphCache(vint paragraphIndex);
+				Ptr<pg::ParagraphCache>					GetParagraphCache(vint paragraphIndex, bool requireParagraph);
 			};
 
 /***********************************************************************

@@ -246,6 +246,29 @@ GuiDocumentParagraphCache
 			void GuiDocumentParagraphCache::RenderTargetChanged(IGuiGraphicsRenderTarget* oldRenderTarget, IGuiGraphicsRenderTarget* newRenderTarget)
 			{
 				renderTarget = newRenderTarget;
+				// TODO: (enumerable) foreach
+				for (vint i = 0; i < paragraphCaches.Count(); i++)
+				{
+					if (auto cache = paragraphCaches[i].Obj())
+					{
+						cache->graphicsParagraph = 0;
+					}
+				}
+			}
+
+			Ptr<pg::ParagraphCache> GuiDocumentParagraphCache::TryGetParagraphCache(vint paragraphIndex)
+			{
+				if (paragraphIndex < 0 || paragraphIndex >= paragraphCaches.Count()) return nullptr;
+				return paragraphCaches[paragraphIndex];
+			}
+
+			Ptr<pg::ParagraphCache> GuiDocumentParagraphCache::GetParagraphCache(vint paragraphIndex, bool requireParagraph)
+			{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::elements::GuiDocumentParagraphCache::GetParagraphCache(vint)#"
+				auto cache = paragraphCaches[paragraphIndex];
+				CHECK_ERROR(cache && (!requireParagraph || cache->graphicsParagraph), ERROR_MESSAGE_PREFIX L"The specified paragraph is not created.");
+				return cache;
+#undef ERROR_MESSAGE_PREFIX
 			}
 
 /***********************************************************************
@@ -256,7 +279,7 @@ GuiDocumentElementRenderer
 			{
 				if (auto callback = element->GetCallback())
 				{
-					auto cache = paragraphCaches[renderingParagraph];
+					auto cache = pgCache.GetParagraphCache(renderingParagraph, true);
 					auto relativeLocation = Rect(Point(location.x1 + renderingParagraphOffset.x, location.y1 + renderingParagraphOffset.y), location.GetSize());
 					auto eo = cache->embeddedObjects[callbackId];
 					auto size = callback->OnRenderEmbeddedObject(eo->name, relativeLocation);
@@ -280,14 +303,7 @@ GuiDocumentElementRenderer
 
 			void GuiDocumentElementRenderer::RenderTargetChangedInternal(IGuiGraphicsRenderTarget* oldRenderTarget, IGuiGraphicsRenderTarget* newRenderTarget)
 			{
-				// TODO: (enumerable) foreach
-				for (vint i = 0; i < paragraphCaches.Count(); i++)
-				{
-					if (auto cache = paragraphCaches[i].Obj())
-					{
-						cache->graphicsParagraph = 0;
-					}
-				}
+				pgCache.RenderTargetChanged(oldRenderTarget, newRenderTarget);
 			}
 
 			Ptr<pg::ParagraphCache> GuiDocumentElementRenderer::EnsureAndGetCache(vint paragraphIndex, bool createParagraph)
@@ -467,7 +483,7 @@ GuiDocumentElementRenderer
 
 					paragraphCaches.Resize(document->paragraphs.Count());
 					paragraphSizes.Resize(document->paragraphs.Count());
-					
+
 					for (vint i = 0; i < paragraphCaches.Count(); i++)
 					{
 						paragraphCaches[i] = 0;
@@ -478,7 +494,7 @@ GuiDocumentElementRenderer
 					}
 
 					lastTotalSize.y = paragraphSizes.Count() * (defaultHeight + paragraphDistance);
-					if (paragraphSizes.Count()>0)
+					if (paragraphSizes.Count() > 0)
 					{
 						lastTotalSize.y -= paragraphDistance;
 					}
@@ -528,7 +544,7 @@ GuiDocumentElementRenderer
 							if (!updatedText && i < index + oldCount)
 							{
 								auto cache = oldCaches[i];
-								if(cache)
+								if (cache)
 								{
 									cache->graphicsParagraph = 0;
 								}
@@ -579,22 +595,22 @@ GuiDocumentElementRenderer
 			Ptr<DocumentHyperlinkRun::Package> GuiDocumentElementRenderer::GetHyperlinkFromPoint(Point point)
 			{
 				if (!renderTarget) return nullptr;
-				vint top=0;
-				vint index=-1;
-				if(GetParagraphIndexFromPoint(point, top, index))
+				vint top = 0;
+				vint index = -1;
+				if (GetParagraphIndexFromPoint(point, top, index))
 				{
 					auto document = element->GetDocument();
-					auto cache=EnsureAndGetCache(index, true);
-					Point paragraphPoint(point.x, point.y-top);
+					auto cache = EnsureAndGetCache(index, true);
+					Point paragraphPoint(point.x, point.y - top);
 
-					vint start=-1;
-					vint length=0;
-					if(cache->graphicsParagraph->GetInlineObjectFromPoint(paragraphPoint, start, length))
+					vint start = -1;
+					vint length = 0;
+					if (cache->graphicsParagraph->GetInlineObjectFromPoint(paragraphPoint, start, length))
 					{
-						return document->GetHyperlink(index, start, start+length);
+						return document->GetHyperlink(index, start, start + length);
 					}
 
-					vint caret=cache->graphicsParagraph->GetCaretFromPoint(paragraphPoint);
+					vint caret = cache->graphicsParagraph->GetCaretFromPoint(paragraphPoint);
 					return document->GetHyperlink(index, caret, caret);
 				}
 				return nullptr;
@@ -603,12 +619,12 @@ GuiDocumentElementRenderer
 			void GuiDocumentElementRenderer::OpenCaret(TextPos caret, Color color, bool frontSide)
 			{
 				CloseCaret(caret);
-				lastCaret=caret;
-				lastCaretColor=color;
-				lastCaretFrontSide=frontSide;
+				lastCaret = caret;
+				lastCaretColor = color;
+				lastCaretFrontSide = frontSide;
 
-				auto cache=paragraphCaches[lastCaret.row];
-				if(cache && cache->graphicsParagraph)
+				auto cache = pgCache.TryGetParagraphCache(lastCaret.row);
+				if (cache && cache->graphicsParagraph)
 				{
 					cache->graphicsParagraph->OpenCaret(lastCaret.column, lastCaretColor, lastCaretFrontSide);
 				}
@@ -616,60 +632,57 @@ GuiDocumentElementRenderer
 
 			void GuiDocumentElementRenderer::CloseCaret(TextPos caret)
 			{
-				if(lastCaret!=TextPos(-1, -1))
+				if (lastCaret != TextPos(-1, -1))
 				{
-					if(0<=lastCaret.row && lastCaret.row<paragraphCaches.Count())
+					auto cache = pgCache.TryGetParagraphCache(lastCaret.row);
+					if (cache && cache->graphicsParagraph)
 					{
-						auto cache=paragraphCaches[lastCaret.row];
-						if(cache && cache->graphicsParagraph)
-						{
-							cache->graphicsParagraph->CloseCaret();
-						}
+						cache->graphicsParagraph->CloseCaret();
 					}
 				}
-				lastCaret=caret;
+				lastCaret = caret;
 			}
 
 			void GuiDocumentElementRenderer::SetSelection(TextPos begin, TextPos end)
 			{
-				if(begin>end)
+				if (begin > end)
 				{
-					TextPos t=begin;
-					begin=end;
-					end=t;
+					TextPos t = begin;
+					begin = end;
+					end = t;
 				}
-				if(begin==end)
+				if (begin == end)
 				{
-					begin=TextPos(-1, -1);
-					end=TextPos(-1, -1);
+					begin = TextPos(-1, -1);
+					end = TextPos(-1, -1);
 				}
 
 				if (!renderTarget) return;
 				// TODO: (enumerable) foreach:indexed
-				for(vint i=0;i<paragraphCaches.Count();i++)
+				for (vint i = 0; i < paragraphCaches.Count(); i++)
 				{
-					if(begin.row<=i && i<=end.row)
+					if (begin.row <= i && i <= end.row)
 					{
-						auto cache=EnsureAndGetCache(i, false);
-						vint newBegin=i==begin.row?begin.column:0;
-						vint newEnd=i==end.row?end.column:cache->fullText.Length();
+						auto cache = EnsureAndGetCache(i, false);
+						vint newBegin = i == begin.row ? begin.column : 0;
+						vint newEnd = i == end.row ? end.column : cache->fullText.Length();
 
-						if(cache->selectionBegin!=newBegin || cache->selectionEnd!=newEnd)
+						if (cache->selectionBegin != newBegin || cache->selectionEnd != newEnd)
 						{
-							cache->selectionBegin=newBegin;
-							cache->selectionEnd=newEnd;
+							cache->selectionBegin = newBegin;
+							cache->selectionEnd = newEnd;
 							NotifyParagraphUpdated(i, 1, 1, false);
 						}
 					}
 					else
 					{
-						auto cache=paragraphCaches[i];
-						if(cache)
+						auto cache = paragraphCaches[i];
+						if (cache)
 						{
-							if(cache->selectionBegin!=-1 || cache->selectionEnd!=-1)
+							if (cache->selectionBegin != -1 || cache->selectionEnd != -1)
 							{
-								cache->selectionBegin=-1;
-								cache->selectionEnd=-1;
+								cache->selectionBegin = -1;
+								cache->selectionEnd = -1;
 								NotifyParagraphUpdated(i, 1, 1, false);
 							}
 						}
@@ -778,13 +791,13 @@ GuiDocumentElementRenderer
 			TextPos GuiDocumentElementRenderer::CalculateCaretFromPoint(Point point)
 			{
 				if (!renderTarget) return TextPos(-1, -1);
-				vint top=0;
-				vint index=-1;
-				if(GetParagraphIndexFromPoint(point, top, index))
+				vint top = 0;
+				vint index = -1;
+				if (GetParagraphIndexFromPoint(point, top, index))
 				{
-					auto cache=EnsureAndGetCache(index, true);
-					Point paragraphPoint(point.x, point.y-top);
-					vint caret=cache->graphicsParagraph->GetCaretFromPoint(paragraphPoint);
+					auto cache = EnsureAndGetCache(index, true);
+					Point paragraphPoint(point.x, point.y - top);
+					vint caret = cache->graphicsParagraph->GetCaretFromPoint(paragraphPoint);
 					return TextPos(index, caret);
 				}
 				return TextPos(-1, -1);
