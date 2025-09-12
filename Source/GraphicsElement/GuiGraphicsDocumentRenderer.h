@@ -77,9 +77,11 @@ GuiDocumentParagraphCache
 				void									Initialize(GuiDocumentElement* _element);
 				void									RenderTargetChanged(IGuiGraphicsRenderTarget* oldRenderTarget, IGuiGraphicsRenderTarget* newRenderTarget);
 
+				vint									GetParagraphCount();
 				Ptr<pg::ParagraphCache>					TryGetParagraphCache(vint paragraphIndex);
 				Ptr<pg::ParagraphCache>					GetParagraphCache(vint paragraphIndex, bool requireParagraph);
-				pg::ParagraphSize						GetParagraphSize(vint paragraphIndex, bool requireCachedTop);
+				Size									GetParagraphSize(vint paragraphIndex);
+				vint									GetParagraphTop(vint paragraphIndex, vint paragraphDistance);
 				void									InvalidCachedTops(vint firstParagraphIndex);
 			};
 
@@ -101,7 +103,8 @@ GuiDocumentElementRenderer
 			protected:
 				vint									paragraphDistance = 0;
 				vint									lastMaxWidth = -1;
-				Size									lastTotalSize{ -1,-1 };
+				vint									lastTotalWidth = 0;
+				vint									lastTotalHeightWithoutParagraphDistance = 0;
 				GuiDocumentParagraphCache				pgCache;
 
 				TextPos									lastCaret{ -1,-1 };

@@ -256,6 +256,11 @@ GuiDocumentParagraphCache
 				}
 			}
 
+			vint GuiDocumentParagraphCache::GetParagraphCount()
+			{
+				return paragraphCaches.Count();
+			}
+
 			Ptr<pg::ParagraphCache> GuiDocumentParagraphCache::TryGetParagraphCache(vint paragraphIndex)
 			{
 				if (paragraphIndex < 0 || paragraphIndex >= paragraphCaches.Count()) return nullptr;
@@ -271,9 +276,14 @@ GuiDocumentParagraphCache
 #undef ERROR_MESSAGE_PREFIX
 			}
 
-			pg::ParagraphSize GuiDocumentParagraphCache::GetParagraphSize(vint paragraphIndex, bool requireCachedTop)
+			Size GuiDocumentParagraphCache::GetParagraphSize(vint paragraphIndex)
 			{
-				if (requireCachedTop && paragraphIndex < validCachedTops)
+				return paragraphSizes[paragraphIndex].cachedSize;
+			}
+
+			vint GuiDocumentParagraphCache::GetParagraphTop(vint paragraphIndex, vint paragraphDistance)
+			{
+				if (paragraphIndex < validCachedTops)
 				{
 					vint currentTop = 0;
 					if (validCachedTops > 0)
@@ -291,8 +301,7 @@ GuiDocumentParagraphCache
 
 					validCachedTops = paragraphIndex + 1;
 				}
-
-				return paragraphSizes[paragraphIndex];
+				return paragraphSizes[paragraphIndex].cachedTopWithoutParagraphDistance + (paragraphIndex == 0 ? 0 : (paragraphIndex - 1) * paragraphDistance;
 			}
 
 			void GuiDocumentParagraphCache::InvalidCachedTops(vint firstParagraphIndex)
@@ -775,7 +784,7 @@ GuiDocumentElementRenderer
 					case IGuiGraphicsParagraph::CaretMoveDown:
 						{
 							vint caret = cache->graphicsParagraph->GetCaret(comparingCaret.column, IGuiGraphicsParagraph::CaretMoveDown, preferFrontSide);
-							if (caret == comparingCaret.column && comparingCaret.row < paragraphCaches.Count() - 1)
+							if (caret == comparingCaret.column && comparingCaret.row < pgCache.GetParagraphCount() - 1)
 							{
 								Rect caretBounds = cache->graphicsParagraph->GetCaretBounds(comparingCaret.column, preferFrontSide);
 								auto anotherCache = EnsureAndGetCache(comparingCaret.row + 1, true);
@@ -806,7 +815,7 @@ GuiDocumentElementRenderer
 						{
 							preferFrontSide = true;
 							vint caret = cache->graphicsParagraph->GetCaret(comparingCaret.column, IGuiGraphicsParagraph::CaretMoveRight, preferFrontSide);
-							if (caret == comparingCaret.column && comparingCaret.row < paragraphCaches.Count() - 1)
+							if (caret == comparingCaret.column && comparingCaret.row < pgCache.GetParagraphCount() - 1)
 							{
 								auto anotherCache = EnsureAndGetCache(comparingCaret.row + 1, true);
 								caret = anotherCache->graphicsParagraph->GetCaret(0, IGuiGraphicsParagraph::CaretFirst, preferFrontSide);
@@ -846,12 +855,7 @@ GuiDocumentElementRenderer
 					Rect bounds = cache->graphicsParagraph->GetCaretBounds(caret.column, frontSide);
 					if (bounds != Rect())
 					{
-						vint y = pgCache.GetParagraphSize(caret.row, true).cachedTopWithoutParagraphDistance;
-						if (caret.row > 0)
-						{
-							y += (caret.row - 1) * paragraphDistance;
-						}
-
+						vint y = pgCache.GetParagraphTop(caret.row, paragraphDistance);
 						bounds.y1 += y;
 						bounds.y2 += y;
 						return bounds;
