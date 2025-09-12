@@ -47,6 +47,7 @@ GuiDocumentParagraphCache
 					IdEmbeddedObjectMap					embeddedObjects;
 					vint								selectionBegin;
 					vint								selectionEnd;
+					Size								size;
 
 					ParagraphCache()
 						:selectionBegin(-1)
@@ -56,12 +57,22 @@ GuiDocumentParagraphCache
 				};
 
 				typedef collections::Array<Ptr<ParagraphCache>>		ParagraphCacheArray;
-				typedef collections::Array<Size>					ParagraphSizeArray;
 			}
 
 			class GuiDocumentParagraphCache : public Object
 			{
+			protected:
+				GuiDocumentElement*						element = nullptr;
+				IGuiGraphicsRenderTarget*				renderTarget = nullptr;
+				IGuiGraphicsLayoutProvider*				layoutProvider = nullptr;
+				pg::ParagraphCacheArray					paragraphCaches;
+
 			public:
+				GuiDocumentParagraphCache();
+				~GuiDocumentParagraphCache();
+
+				void									Initialize(GuiDocumentElement* _element);
+				void									RenderTargetChanged(IGuiGraphicsRenderTarget* oldRenderTarget, IGuiGraphicsRenderTarget* newRenderTarget);
 			};
 
 /***********************************************************************
@@ -80,16 +91,14 @@ GuiDocumentElementRenderer
 
 				Size									OnRenderInlineObject(vint callbackId, Rect location)override;
 			protected:
-				vint									paragraphDistance;
-				vint									lastMaxWidth;
-				Size									cachedTotalSize;
-				IGuiGraphicsLayoutProvider*				layoutProvider;
-				pg::ParagraphCacheArray					paragraphCaches;
-				pg::ParagraphSizeArray					paragraphSizes;
+				vint									paragraphDistance = 0;
+				vint									lastMaxWidth = -1;
+				Size									lastTotalSize{ -1,-1 };
+				GuiDocumentParagraphCache				pgCache;
 
-				TextPos									lastCaret;
+				TextPos									lastCaret{ -1,-1 };
+				bool									lastCaretFrontSide = false;
 				Color									lastCaretColor;
-				bool									lastCaretFrontSide;
 
 				pg::NameIdMap							nameCallbackIdMap;
 				pg::FreeIdList							freeCallbackIds;

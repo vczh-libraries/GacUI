@@ -229,6 +229,25 @@ SetPropertiesVisitor
 GuiDocumentParagraphCache
 ***********************************************************************/
 
+			GuiDocumentParagraphCache::GuiDocumentParagraphCache()
+				: layoutProvider(GetGuiGraphicsResourceManager()->GetLayoutProvider())
+			{
+			}
+
+			GuiDocumentParagraphCache::~GuiDocumentParagraphCache()
+			{
+			}
+
+			void GuiDocumentParagraphCache::Initialize(GuiDocumentElement* _element)
+			{
+				element = _element;
+			}
+
+			void GuiDocumentParagraphCache::RenderTargetChanged(IGuiGraphicsRenderTarget* oldRenderTarget, IGuiGraphicsRenderTarget* newRenderTarget)
+			{
+				renderTarget = newRenderTarget;
+			}
+
 /***********************************************************************
 GuiDocumentElementRenderer
 ***********************************************************************/
@@ -310,16 +329,16 @@ GuiDocumentElementRenderer
 
 					Size cachedSize = paragraphSizes[paragraphIndex];
 					Size realSize = cache->graphicsParagraph->GetSize();
-					if (cachedTotalSize.x < realSize.x)
+					if (lastTotalSize.x < realSize.x)
 					{
-						cachedTotalSize.x = realSize.x;
+						lastTotalSize.x = realSize.x;
 					}
 					if (cachedSize.y != realSize.y)
 					{
-						cachedTotalSize.y += realSize.y - cachedSize.y;
+						lastTotalSize.y += realSize.y - cachedSize.y;
 					}
 					paragraphSizes[paragraphIndex] = realSize;
-					minSize = cachedTotalSize;
+					minSize = lastTotalSize;
 				}
 
 				return cache;
@@ -350,11 +369,6 @@ GuiDocumentElementRenderer
 			}
 
 			GuiDocumentElementRenderer::GuiDocumentElementRenderer()
-				:paragraphDistance(0)
-				,lastMaxWidth(-1)
-				,layoutProvider(GetGuiGraphicsResourceManager()->GetLayoutProvider())
-				,lastCaret(-1, -1)
-				,lastCaretFrontSide(false)
 			{
 			}
 
@@ -444,7 +458,7 @@ GuiDocumentElementRenderer
 
 			void GuiDocumentElementRenderer::OnElementStateChanged()
 			{
-				cachedTotalSize = { 1,1 };
+				lastTotalSize = { 1,1 };
 				auto document = element->GetDocument();
 				if (document && document->paragraphs.Count() > 0)
 				{
@@ -463,10 +477,10 @@ GuiDocumentElementRenderer
 						paragraphSizes[i] = { 0,defaultHeight };
 					}
 
-					cachedTotalSize.y = paragraphSizes.Count() * (defaultHeight + paragraphDistance);
+					lastTotalSize.y = paragraphSizes.Count() * (defaultHeight + paragraphDistance);
 					if (paragraphSizes.Count()>0)
 					{
-						cachedTotalSize.y -= paragraphDistance;
+						lastTotalSize.y -= paragraphDistance;
 					}
 				}
 				else
@@ -474,7 +488,7 @@ GuiDocumentElementRenderer
 					paragraphCaches.Resize(0);
 					paragraphSizes.Resize(0);
 				}
-				minSize = cachedTotalSize;
+				minSize = lastTotalSize;
 
 				nameCallbackIdMap.Clear();
 				freeCallbackIds.Clear();
@@ -498,7 +512,7 @@ GuiDocumentElementRenderer
 					paragraphSizes.Resize(paragraphCount);
 
 					vint defaultHeight = GetCurrentController()->ResourceService()->GetDefaultFont().size;
-					cachedTotalSize = { 1,1 };
+					lastTotalSize = { 1,1 };
 
 					for (vint i = 0; i < paragraphCount; i++)
 					{
@@ -529,15 +543,15 @@ GuiDocumentElementRenderer
 						}
 
 						auto cachedSize = paragraphSizes[i];
-						if (cachedTotalSize.x < cachedSize.x)
+						if (lastTotalSize.x < cachedSize.x)
 						{
-							cachedTotalSize.x = cachedSize.x;
+							lastTotalSize.x = cachedSize.x;
 						}
-						cachedTotalSize.y += cachedSize.y + paragraphDistance;
+						lastTotalSize.y += cachedSize.y + paragraphDistance;
 					}
 					if (paragraphCount > 0)
 					{
-						cachedTotalSize.y -= paragraphDistance;
+						lastTotalSize.y -= paragraphDistance;
 					}
 
 					if (updatedText)
@@ -558,7 +572,7 @@ GuiDocumentElementRenderer
 							}
 						}
 					}
-					minSize = cachedTotalSize;
+					minSize = lastTotalSize;
 				}
 			}
 
