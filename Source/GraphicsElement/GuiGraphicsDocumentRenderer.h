@@ -123,17 +123,18 @@ GuiDocumentElementRenderer
 			public:
 				GuiDocumentElementRenderer();
 
-				void									Render(Rect bounds)override;
-				void									OnElementStateChanged()override;
-				void									NotifyParagraphUpdated(vint index, vint oldCount, vint newCount, bool updatedText);
-				Ptr<DocumentHyperlinkRun::Package>		GetHyperlinkFromPoint(Point point);
+				void									Render(Rect bounds) override;
+				void									OnElementStateChanged() override;
+				void									NotifyParagraphPaddingUpdated(bool value) override;
+				void									NotifyParagraphUpdated(vint index, vint oldCount, vint newCount, bool updatedText) override;
+				Ptr<DocumentHyperlinkRun::Package>		GetHyperlinkFromPoint(Point point) override;
 
-				void									OpenCaret(TextPos caret, Color color, bool frontSide);
-				void									CloseCaret(TextPos caret);
-				void									SetSelection(TextPos begin, TextPos end);
-				TextPos									CalculateCaret(TextPos comparingCaret, IGuiGraphicsParagraph::CaretRelativePosition position, bool& preferFrontSide);
-				TextPos									CalculateCaretFromPoint(Point point);
-				Rect									GetCaretBounds(TextPos caret, bool frontSide);
+				void									OpenCaret(TextPos caret, Color color, bool frontSide) override;
+				void									CloseCaret(TextPos caret) override;
+				void									SetSelection(TextPos begin, TextPos end) override;
+				TextPos									CalculateCaret(TextPos comparingCaret, IGuiGraphicsParagraph::CaretRelativePosition position, bool& preferFrontSide) override;
+				TextPos									CalculateCaretFromPoint(Point point) override;
+				Rect									GetCaretBounds(TextPos caret, bool frontSide) override;
 			};
 		}
 	}

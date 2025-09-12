@@ -501,6 +501,12 @@ GuiDocumentElementRenderer
 				}
 			}
 
+			void GuiDocumentElementRenderer::NotifyParagraphPaddingUpdated(bool value)
+			{
+				vint defaultHeight = GetCurrentController()->ResourceService()->GetDefaultFont().size;
+				paragraphDistance = element->GetParagraphPadding() ? defaultHeight : 0;
+			}
+
 			void GuiDocumentElementRenderer::OnElementStateChanged()
 			{
 				lastTotalSize = { 1,1 };
@@ -508,7 +514,6 @@ GuiDocumentElementRenderer
 				if (document && document->paragraphs.Count() > 0)
 				{
 					vint defaultHeight = GetCurrentController()->ResourceService()->GetDefaultFont().size;
-					paragraphDistance = element->GetParagraphPadding() ? defaultHeight : 0;
 
 					paragraphCaches.Resize(document->paragraphs.Count());
 					paragraphSizes.Resize(document->paragraphs.Count());
