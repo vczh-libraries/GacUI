@@ -17,7 +17,6 @@ SetPropertiesVisitor
 			{
 				class SetPropertiesVisitor : public Object, public DocumentRun::IVisitor
 				{
-					typedef GuiDocumentElementRenderer						Renderer;
 					typedef DocumentModel::ResolvedStyle					ResolvedStyle;
 				public:
 					vint							start;
@@ -27,11 +26,11 @@ SetPropertiesVisitor
 					List<ResolvedStyle>				styles;
 
 					DocumentModel*					model;
-					Renderer*						renderer;
-					Ptr<Renderer::ParagraphCache>	cache;
+					GuiDocumentElementRenderer*		renderer;
+					Ptr<pg::ParagraphCache>			cache;
 					IGuiGraphicsParagraph*			paragraph;
 
-					SetPropertiesVisitor(DocumentModel* _model, Renderer* _renderer, Ptr<Renderer::ParagraphCache> _cache, vint _selectionBegin, vint _selectionEnd)
+					SetPropertiesVisitor(DocumentModel* _model, GuiDocumentElementRenderer* _renderer, Ptr<pg::ParagraphCache> _cache, vint _selectionBegin, vint _selectionEnd)
 						:start(0)
 						,length(0)
 						,model(_model)
@@ -177,7 +176,7 @@ SetPropertiesVisitor
 							}
 							else
 							{
-								auto eo = Ptr(new Renderer::EmbeddedObject);
+								auto eo = Ptr(new pg::EmbeddedObject);
 								eo->name = run->name;
 								eo->size = Size(0, 0);
 								eo->start = start;
@@ -216,7 +215,7 @@ SetPropertiesVisitor
 						VisitContainer(run);
 					}
 
-					static vint SetProperty(DocumentModel* model, Renderer* renderer, Ptr<Renderer::ParagraphCache> cache, Ptr<DocumentParagraphRun> run, vint selectionBegin, vint selectionEnd)
+					static vint SetProperty(DocumentModel* model, GuiDocumentElementRenderer* renderer, auto cache, Ptr<DocumentParagraphRun> run, vint selectionBegin, vint selectionEnd)
 					{
 						SetPropertiesVisitor visitor(model, renderer, cache, selectionBegin, selectionEnd);
 						run->Accept(&visitor);
@@ -225,6 +224,10 @@ SetPropertiesVisitor
 				};
 			}
 			using namespace visitors;
+
+/***********************************************************************
+GuiDocumentParagraphCache
+***********************************************************************/
 
 /***********************************************************************
 GuiDocumentElementRenderer
@@ -259,24 +262,23 @@ GuiDocumentElementRenderer
 			void GuiDocumentElementRenderer::RenderTargetChangedInternal(IGuiGraphicsRenderTarget* oldRenderTarget, IGuiGraphicsRenderTarget* newRenderTarget)
 			{
 				// TODO: (enumerable) foreach
-				for(vint i=0;i<paragraphCaches.Count();i++)
+				for (vint i = 0; i < paragraphCaches.Count(); i++)
 				{
-					ParagraphCache* cache=paragraphCaches[i].Obj();
-					if(cache)
+					if (auto cache = paragraphCaches[i].Obj())
 					{
-						cache->graphicsParagraph=0;
+						cache->graphicsParagraph = 0;
 					}
 				}
 			}
 
-			Ptr<GuiDocumentElementRenderer::ParagraphCache> GuiDocumentElementRenderer::EnsureAndGetCache(vint paragraphIndex, bool createParagraph)
+			Ptr<pg::ParagraphCache> GuiDocumentElementRenderer::EnsureAndGetCache(vint paragraphIndex, bool createParagraph)
 			{
 				if (paragraphIndex < 0 || paragraphIndex >= paragraphCaches.Count()) return 0;
 				Ptr<DocumentParagraphRun> paragraph = element->GetDocument()->paragraphs[paragraphIndex];
-				Ptr<ParagraphCache> cache = paragraphCaches[paragraphIndex];
+				auto cache = paragraphCaches[paragraphIndex];
 				if (!cache)
 				{
-					cache = Ptr(new ParagraphCache);
+					cache = Ptr(new pg::ParagraphCache);
 					cache->fullText = paragraph->GetTextForCaret();
 					paragraphCaches[paragraphIndex] = cache;
 				}
@@ -397,7 +399,7 @@ GuiDocumentElementRenderer
 						else
 						{
 							Ptr<DocumentParagraphRun> paragraph = document->paragraphs[i];
-							Ptr<ParagraphCache> cache = paragraphCaches[i];
+							auto cache = paragraphCaches[i];
 							bool created = cache && cache->graphicsParagraph;
 							cache = EnsureAndGetCache(i, true);
 							if (!created && i == lastCaret.row && element->GetCaretVisible())
@@ -487,11 +489,11 @@ GuiDocumentElementRenderer
 					CHECK_ERROR(updatedText || oldCount == newCount, L"GuiDocumentlement::GuiDocumentElementRenderer::NotifyParagraphUpdated(vint, vint, vint, bool)#Illegal values of oldCount and newCount.");
 					CHECK_ERROR(paragraphCount - paragraphCaches.Count() == newCount - oldCount, L"GuiDocumentElementRenderer::NotifyParagraphUpdated(vint, vint, vint, bool)#Illegal values of oldCount and newCount.");
 
-					ParagraphCacheArray oldCaches;
+					pg::ParagraphCacheArray oldCaches;
 					CopyFrom(oldCaches, paragraphCaches);
 					paragraphCaches.Resize(paragraphCount);
 
-					ParagraphSizeArray oldSizes;
+					pg::ParagraphSizeArray oldSizes;
 					CopyFrom(oldSizes, paragraphSizes);
 					paragraphSizes.Resize(paragraphCount);
 
@@ -568,7 +570,7 @@ GuiDocumentElementRenderer
 				if(GetParagraphIndexFromPoint(point, top, index))
 				{
 					auto document = element->GetDocument();
-					Ptr<ParagraphCache> cache=EnsureAndGetCache(index, true);
+					auto cache=EnsureAndGetCache(index, true);
 					Point paragraphPoint(point.x, point.y-top);
 
 					vint start=-1;
@@ -591,7 +593,7 @@ GuiDocumentElementRenderer
 				lastCaretColor=color;
 				lastCaretFrontSide=frontSide;
 
-				Ptr<ParagraphCache> cache=paragraphCaches[lastCaret.row];
+				auto cache=paragraphCaches[lastCaret.row];
 				if(cache && cache->graphicsParagraph)
 				{
 					cache->graphicsParagraph->OpenCaret(lastCaret.column, lastCaretColor, lastCaretFrontSide);
@@ -604,7 +606,7 @@ GuiDocumentElementRenderer
 				{
 					if(0<=lastCaret.row && lastCaret.row<paragraphCaches.Count())
 					{
-						Ptr<ParagraphCache> cache=paragraphCaches[lastCaret.row];
+						auto cache=paragraphCaches[lastCaret.row];
 						if(cache && cache->graphicsParagraph)
 						{
 							cache->graphicsParagraph->CloseCaret();
@@ -634,7 +636,7 @@ GuiDocumentElementRenderer
 				{
 					if(begin.row<=i && i<=end.row)
 					{
-						Ptr<ParagraphCache> cache=EnsureAndGetCache(i, false);
+						auto cache=EnsureAndGetCache(i, false);
 						vint newBegin=i==begin.row?begin.column:0;
 						vint newEnd=i==end.row?end.column:cache->fullText.Length();
 
@@ -647,7 +649,7 @@ GuiDocumentElementRenderer
 					}
 					else
 					{
-						Ptr<ParagraphCache> cache=paragraphCaches[i];
+						auto cache=paragraphCaches[i];
 						if(cache)
 						{
 							if(cache->selectionBegin!=-1 || cache->selectionEnd!=-1)
@@ -664,7 +666,7 @@ GuiDocumentElementRenderer
 			TextPos GuiDocumentElementRenderer::CalculateCaret(TextPos comparingCaret, IGuiGraphicsParagraph::CaretRelativePosition position, bool& preferFrontSide)
 			{
 				if (!renderTarget) return comparingCaret;
-				Ptr<ParagraphCache> cache = EnsureAndGetCache(comparingCaret.row, true);
+				auto cache = EnsureAndGetCache(comparingCaret.row, true);
 				if (cache)
 				{
 					switch (position)
@@ -699,7 +701,7 @@ GuiDocumentElementRenderer
 							if (caret == comparingCaret.column && comparingCaret.row > 0)
 							{
 								Rect caretBounds = cache->graphicsParagraph->GetCaretBounds(comparingCaret.column, preferFrontSide);
-								Ptr<ParagraphCache> anotherCache = EnsureAndGetCache(comparingCaret.row - 1, true);
+								auto anotherCache = EnsureAndGetCache(comparingCaret.row - 1, true);
 								vint height = anotherCache->graphicsParagraph->GetSize().y;
 								caret = anotherCache->graphicsParagraph->GetCaretFromPoint(Point(caretBounds.x1, height));
 								return TextPos(comparingCaret.row - 1, caret);
@@ -715,7 +717,7 @@ GuiDocumentElementRenderer
 							if (caret == comparingCaret.column && comparingCaret.row < paragraphCaches.Count() - 1)
 							{
 								Rect caretBounds = cache->graphicsParagraph->GetCaretBounds(comparingCaret.column, preferFrontSide);
-								Ptr<ParagraphCache> anotherCache = EnsureAndGetCache(comparingCaret.row + 1, true);
+								auto anotherCache = EnsureAndGetCache(comparingCaret.row + 1, true);
 								caret = anotherCache->graphicsParagraph->GetCaretFromPoint(Point(caretBounds.x1, 0));
 								return TextPos(comparingCaret.row + 1, caret);
 							}
@@ -730,7 +732,7 @@ GuiDocumentElementRenderer
 							vint caret = cache->graphicsParagraph->GetCaret(comparingCaret.column, IGuiGraphicsParagraph::CaretMoveLeft, preferFrontSide);
 							if (caret == comparingCaret.column && comparingCaret.row > 0)
 							{
-								Ptr<ParagraphCache> anotherCache = EnsureAndGetCache(comparingCaret.row - 1, true);
+								auto anotherCache = EnsureAndGetCache(comparingCaret.row - 1, true);
 								caret = anotherCache->graphicsParagraph->GetCaret(0, IGuiGraphicsParagraph::CaretLast, preferFrontSide);
 								return TextPos(comparingCaret.row - 1, caret);
 							}
@@ -745,7 +747,7 @@ GuiDocumentElementRenderer
 							vint caret = cache->graphicsParagraph->GetCaret(comparingCaret.column, IGuiGraphicsParagraph::CaretMoveRight, preferFrontSide);
 							if (caret == comparingCaret.column && comparingCaret.row < paragraphCaches.Count() - 1)
 							{
-								Ptr<ParagraphCache> anotherCache = EnsureAndGetCache(comparingCaret.row + 1, true);
+								auto anotherCache = EnsureAndGetCache(comparingCaret.row + 1, true);
 								caret = anotherCache->graphicsParagraph->GetCaret(0, IGuiGraphicsParagraph::CaretFirst, preferFrontSide);
 								return TextPos(comparingCaret.row + 1, caret);
 							}
@@ -766,7 +768,7 @@ GuiDocumentElementRenderer
 				vint index=-1;
 				if(GetParagraphIndexFromPoint(point, top, index))
 				{
-					Ptr<ParagraphCache> cache=EnsureAndGetCache(index, true);
+					auto cache=EnsureAndGetCache(index, true);
 					Point paragraphPoint(point.x, point.y-top);
 					vint caret=cache->graphicsParagraph->GetCaretFromPoint(paragraphPoint);
 					return TextPos(index, caret);
@@ -777,7 +779,7 @@ GuiDocumentElementRenderer
 			Rect GuiDocumentElementRenderer::GetCaretBounds(TextPos caret, bool frontSide)
 			{
 				if (!renderTarget) return Rect();
-				Ptr<ParagraphCache> cache = EnsureAndGetCache(caret.row, true);
+				auto cache = EnsureAndGetCache(caret.row, true);
 				if (cache)
 				{
 					Rect bounds = cache->graphicsParagraph->GetCaretBounds(caret.column, frontSide);

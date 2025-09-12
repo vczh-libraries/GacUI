@@ -23,16 +23,11 @@ namespace vl
 			}
 
 /***********************************************************************
-GuiDocumentElementRenderer
+GuiDocumentParagraphCache
 ***********************************************************************/
 
-			class GuiDocumentElementRenderer
-				: public GuiElementRendererBase<GuiDocumentElement, GuiDocumentElementRenderer, IGuiGraphicsRenderTarget, IGuiDocumentElementRenderer>
-				, private virtual IGuiGraphicsParagraphCallback
+			namespace pg
 			{
-				friend class visitors::SetPropertiesVisitor;
-				friend class GuiElementRendererBase<GuiDocumentElement, GuiDocumentElementRenderer, IGuiGraphicsRenderTarget, IGuiDocumentElementRenderer>;
-			protected:
 				struct EmbeddedObject
 				{
 					WString								name;
@@ -41,9 +36,9 @@ GuiDocumentElementRenderer
 					bool								resized = false;
 				};
 
-				typedef collections::Dictionary<vint, Ptr<EmbeddedObject>>		IdEmbeddedObjectMap;
 				typedef collections::Dictionary<WString, vint>					NameIdMap;
 				typedef collections::List<vint>									FreeIdList;
+				typedef collections::Dictionary<vint, Ptr<EmbeddedObject>>		IdEmbeddedObjectMap;
 
 				struct ParagraphCache
 				{
@@ -55,13 +50,31 @@ GuiDocumentElementRenderer
 
 					ParagraphCache()
 						:selectionBegin(-1)
-						,selectionEnd(-1)
+						, selectionEnd(-1)
 					{
 					}
 				};
 
 				typedef collections::Array<Ptr<ParagraphCache>>		ParagraphCacheArray;
 				typedef collections::Array<Size>					ParagraphSizeArray;
+			}
+
+			class GuiDocumentParagraphCache : public Object
+			{
+			public:
+			};
+
+/***********************************************************************
+GuiDocumentElementRenderer
+***********************************************************************/
+
+			class GuiDocumentElementRenderer
+				: public GuiElementRendererBase<GuiDocumentElement, GuiDocumentElementRenderer, IGuiGraphicsRenderTarget, IGuiDocumentElementRenderer>
+				, private virtual IGuiGraphicsParagraphCallback
+			{
+				friend class visitors::SetPropertiesVisitor;
+				friend class GuiElementRendererBase<GuiDocumentElement, GuiDocumentElementRenderer, IGuiGraphicsRenderTarget, IGuiDocumentElementRenderer>;
+			protected:
 
 			private:
 
@@ -71,15 +84,15 @@ GuiDocumentElementRenderer
 				vint									lastMaxWidth;
 				Size									cachedTotalSize;
 				IGuiGraphicsLayoutProvider*				layoutProvider;
-				ParagraphCacheArray						paragraphCaches;
-				ParagraphSizeArray						paragraphSizes;
+				pg::ParagraphCacheArray					paragraphCaches;
+				pg::ParagraphSizeArray					paragraphSizes;
 
 				TextPos									lastCaret;
 				Color									lastCaretColor;
 				bool									lastCaretFrontSide;
 
-				NameIdMap								nameCallbackIdMap;
-				FreeIdList								freeCallbackIds;
+				pg::NameIdMap							nameCallbackIdMap;
+				pg::FreeIdList							freeCallbackIds;
 				vint									usedCallbackIds = 0;
 
 				vint									renderingParagraph = -1;
@@ -88,7 +101,7 @@ GuiDocumentElementRenderer
 				void									InitializeInternal();
 				void									FinalizeInternal();
 				void									RenderTargetChangedInternal(IGuiGraphicsRenderTarget* oldRenderTarget, IGuiGraphicsRenderTarget* newRenderTarget);
-				Ptr<ParagraphCache>						EnsureAndGetCache(vint paragraphIndex, bool createParagraph);
+				Ptr<pg::ParagraphCache>					EnsureAndGetCache(vint paragraphIndex, bool createParagraph);
 				bool									GetParagraphIndexFromPoint(Point point, vint& top, vint& index);
 			public:
 				GuiDocumentElementRenderer();
