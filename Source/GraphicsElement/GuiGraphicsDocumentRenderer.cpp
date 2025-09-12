@@ -501,30 +501,6 @@ GuiDocumentElementRenderer
 				return cache;
 			}
 
-			bool GuiDocumentElementRenderer::GetParagraphIndexFromPoint(Point point, vint& top, vint& index)
-			{
-				vint y = 0;
-				// TODO: (enumerable) foreach
-				for (vint i = 0; i < paragraphSizes.Count(); i++)
-				{
-					vint paragraphHeight = paragraphSizes[i].y;
-					vint nextY = y + paragraphHeight + paragraphDistance;
-					top = y;
-					index = i;
-
-					if (nextY <= point.y)
-					{
-						y = nextY;
-						continue;
-					}
-					else
-					{
-						break;
-					}
-				}
-				return true;
-			}
-
 			void GuiDocumentElementRenderer::FixMinSize()
 			{
 				minSize = { lastTotalWidth,lastTotalHeightWithoutParagraphDistance };
@@ -673,25 +649,22 @@ GuiDocumentElementRenderer
 			Ptr<DocumentHyperlinkRun::Package> GuiDocumentElementRenderer::GetHyperlinkFromPoint(Point point)
 			{
 				if (!renderTarget) return nullptr;
-				vint top = 0;
-				vint index = -1;
-				if (GetParagraphIndexFromPoint(point, top, index))
+				vint index = pgCache.GetParagraphFromY(point.y, paragraphDistance);
+				vint top = pgCache.GetParagraphTop(index, paragraphDistance);
+
+				auto document = element->GetDocument();
+				auto cache = EnsureAndGetCache(index, true);
+				Point paragraphPoint(point.x, point.y - top);
+
+				vint start = -1;
+				vint length = 0;
+				if (cache->graphicsParagraph->GetInlineObjectFromPoint(paragraphPoint, start, length))
 				{
-					auto document = element->GetDocument();
-					auto cache = EnsureAndGetCache(index, true);
-					Point paragraphPoint(point.x, point.y - top);
-
-					vint start = -1;
-					vint length = 0;
-					if (cache->graphicsParagraph->GetInlineObjectFromPoint(paragraphPoint, start, length))
-					{
-						return document->GetHyperlink(index, start, start + length);
-					}
-
-					vint caret = cache->graphicsParagraph->GetCaretFromPoint(paragraphPoint);
-					return document->GetHyperlink(index, caret, caret);
+					return document->GetHyperlink(index, start, start + length);
 				}
-				return nullptr;
+
+				vint caret = cache->graphicsParagraph->GetCaretFromPoint(paragraphPoint);
+				return document->GetHyperlink(index, caret, caret);
 			}
 
 			void GuiDocumentElementRenderer::OpenCaret(TextPos caret, Color color, bool frontSide)
@@ -876,16 +849,13 @@ GuiDocumentElementRenderer
 			TextPos GuiDocumentElementRenderer::CalculateCaretFromPoint(Point point)
 			{
 				if (!renderTarget) return TextPos(-1, -1);
-				vint top = 0;
-				vint index = -1;
-				if (GetParagraphIndexFromPoint(point, top, index))
-				{
-					auto cache = EnsureAndGetCache(index, true);
-					Point paragraphPoint(point.x, point.y - top);
-					vint caret = cache->graphicsParagraph->GetCaretFromPoint(paragraphPoint);
-					return TextPos(index, caret);
-				}
-				return TextPos(-1, -1);
+				vint index = pgCache.GetParagraphFromY(point.y, paragraphDistance);
+				vint top = pgCache.GetParagraphTop(index, paragraphDistance);
+
+				auto cache = EnsureAndGetCache(index, true);
+				Point paragraphPoint(point.x, point.y - top);
+				vint caret = cache->graphicsParagraph->GetCaretFromPoint(paragraphPoint);
+				return TextPos(index, caret);
 			}
 
 			Rect GuiDocumentElementRenderer::GetCaretBounds(TextPos caret, bool frontSide)
