@@ -461,7 +461,7 @@ GuiDocumentParagraphCache
 					newSize.y = defaultHeight;
 				}
 				cachedSize.cachedSize = newSize;
-				if (oldSize.y != newSize.y)
+				if (oldSize.y != newSize.y && validCachedTops > paragraphIndex + 1)
 				{
 					validCachedTops = paragraphIndex + 1;
 				}
@@ -542,6 +542,7 @@ GuiDocumentElementRenderer
 			void GuiDocumentElementRenderer::InitializeInternal()
 			{
 				pgCache.Initialize(element);
+				NotifyParagraphPaddingUpdated(element->GetParagraphPadding());
 			}
 
 			void GuiDocumentElementRenderer::FinalizeInternal()
