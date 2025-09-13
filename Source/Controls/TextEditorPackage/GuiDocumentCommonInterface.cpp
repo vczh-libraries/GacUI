@@ -1270,6 +1270,7 @@ GuiDocumentCommonInterface
 				}, true);
 
 				SetCaret(begin, begin);
+				EnsureDocumentRectVisible(documentElement->GetCaretBounds(begin, true));
 			}
 
 			void GuiDocumentCommonInterface::LoadDocumentAndClearUndoRedo(Ptr<DocumentModel> document, bool copy)
@@ -1289,6 +1290,7 @@ GuiDocumentCommonInterface
 				}, true);
 
 				SetCaret(begin, begin);
+				EnsureDocumentRectVisible(documentElement->GetCaretBounds(begin, true));
 			}
 
 			//================ selection operations
