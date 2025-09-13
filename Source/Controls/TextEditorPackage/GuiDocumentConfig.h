@@ -64,6 +64,8 @@ GuiDocumentConfig
 				Nullable<bool>							doubleLineBreaksBetweenParagraph;
 				/// <summary>When it is true, when removing a line break from a document due to paragraphMode, insert a extra space.</summary>
 				Nullable<bool>							spaceForFlattenedLineBreak;
+				/// <summary>Delete <see cref="IGuiGraphicsParagraph"/> cache immediately when it is scrolled out of the view.</summary>
+				Nullable<bool>							paragraphRecycle;
 
 				auto operator<=>(const GuiDocumentConfig&) const = default;
 
@@ -87,6 +89,7 @@ GuiDocumentConfigEvaluated
 				bool									paragraphPadding;
 				bool									doubleLineBreaksBetweenParagraph;
 				bool									spaceForFlattenedLineBreak;
+				bool									paragraphRecycle;
 
 				GuiDocumentConfigEvaluated(const GuiDocumentConfig& config);
 			};

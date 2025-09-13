@@ -19,7 +19,9 @@ GuiDocumentConfig
 				config.paragraphMode = GuiDocumentParagraphMode::Paragraph;
 				config.paragraphPadding = true;
 				config.doubleLineBreaksBetweenParagraph = true;
+
 				config.spaceForFlattenedLineBreak = false;
+				config.paragraphRecycle = false;
 				return config;
 			}
 
@@ -32,7 +34,9 @@ GuiDocumentConfig
 				config.paragraphMode = GuiDocumentParagraphMode::Paragraph;
 				config.paragraphPadding = true;
 				config.doubleLineBreaksBetweenParagraph = true;
+
 				config.spaceForFlattenedLineBreak = false;
+				config.paragraphRecycle = true;
 				return config;
 			}
 
@@ -45,7 +49,9 @@ GuiDocumentConfig
 				config.paragraphMode = GuiDocumentParagraphMode::Singleline;
 				config.paragraphPadding = false;
 				config.doubleLineBreaksBetweenParagraph = false;
+
 				config.spaceForFlattenedLineBreak = false;
+				config.paragraphRecycle = true;
 				return config;
 			}
 
@@ -58,7 +64,9 @@ GuiDocumentConfig
 				config.paragraphMode = GuiDocumentParagraphMode::Multiline;
 				config.paragraphPadding = false;
 				config.doubleLineBreaksBetweenParagraph = false;
+
 				config.spaceForFlattenedLineBreak = false;
+				config.paragraphRecycle = true;
 				return config;
 			}
 
@@ -72,6 +80,7 @@ GuiDocumentConfig
 				if (newConfig.paragraphPadding) result.paragraphPadding = newConfig.paragraphPadding;
 				if (newConfig.doubleLineBreaksBetweenParagraph) result.doubleLineBreaksBetweenParagraph = newConfig.doubleLineBreaksBetweenParagraph;
 				if (newConfig.spaceForFlattenedLineBreak) result.spaceForFlattenedLineBreak = newConfig.spaceForFlattenedLineBreak;
+				if (newConfig.paragraphRecycle) result.paragraphRecycle = newConfig.paragraphRecycle;
 				return result;
 			}
 
@@ -87,6 +96,7 @@ GuiDocumentConfigEvaluated
 				, paragraphPadding(config.paragraphPadding.Value())
 				, doubleLineBreaksBetweenParagraph(config.doubleLineBreaksBetweenParagraph.Value())
 				, spaceForFlattenedLineBreak(config.spaceForFlattenedLineBreak.Value())
+				, paragraphRecycle(config.paragraphRecycle.Value())
 			{
 			}
 		}

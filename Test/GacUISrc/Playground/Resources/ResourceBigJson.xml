@@ -1,6 +1,20 @@
 <Resource>
   <Instance name="MainWindowResource">
     <Instance ref.CodeBehind="false" ref.Class="demo::TestWindow" xmlns:demo="demo::*">
+      <ref.Members><![CDATA[
+        var bigJson : string = "";
+      ]]></ref.Members>
+      <ref.Ctor><![CDATA[{
+        GuiApplication::GetApplication().InvokeAsync(func(): void
+        {
+          bigJson = (new Playground^()).LoadBigJson();
+          GuiApplication::GetApplication().InvokeInMainThread(GuiApplication::GetApplication().MainWindow, func(): void
+          {
+            buttonLoadBigJson.Enabled = true;
+            buttonLoadBigJson.Text = "Load Big Json";
+          });
+        });
+      }]]></ref.Ctor>
       <Window ref.Name="self" Text="Document" ClientSize="x:800 y:600">
         <att.BoundsComposition-set PreferredMinSize="x:800 y:600"/>
         <Table CellPadding="5" MinSizeLimitation="LimitToElementAndChildren" AlignmentToParent="left:0 top:0 right:0 bottom:0">
@@ -14,9 +28,10 @@
           </att.Columns>
 
           <Cell Site="row:0 column:0">
-            <Button Text="Load Big Json">
+            <Button ref.Name="buttonLoadBigJson" Text="Load Big Json (reading file ...)" Enabled="false">
               <ev.Clicked-eval><![CDATA[{
-                textBox.Text = (new Playground^()).LoadBigJson();
+                textBox.LoadTextAndClearUndoRedo(self.bigJson);
+                buttonLoadBigJson.Text = $"$(buttonLoadBigJson.Text) (loaded)";
               }]]></ev.Clicked-eval>
             </Button>
           </Cell>

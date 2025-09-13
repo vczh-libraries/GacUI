@@ -250,6 +250,7 @@ IGuiDocumentElementRenderer
 			class IGuiDocumentElementRenderer : public virtual IGuiGraphicsRenderer
 			{
 			public:
+				virtual void									NotifyParagraphPaddingUpdated(bool value) = 0;
 				virtual void									NotifyParagraphUpdated(vint index, vint oldCount, vint newCount, bool updatedText) = 0;
 				virtual Ptr<DocumentHyperlinkRun::Package>		GetHyperlinkFromPoint(Point point) = 0;
 				virtual void									OpenCaret(TextPos caret, Color color, bool frontSide) = 0;
