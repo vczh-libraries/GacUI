@@ -285,7 +285,7 @@ GuiDocumentParagraphCache
 
 			vint GuiDocumentParagraphCache::GetParagraphTopWithoutParagraphDistance(vint paragraphIndex)
 			{
-				if (paragraphIndex < validCachedTops)
+				if (paragraphIndex >= validCachedTops)
 				{
 					vint currentTop = 0;
 					if (validCachedTops > 0)
@@ -308,7 +308,7 @@ GuiDocumentParagraphCache
 
 			vint GuiDocumentParagraphCache::GetParagraphTop(vint paragraphIndex, vint paragraphDistance)
 			{
-				return GetParagraphTopWithoutParagraphDistance(paragraphIndex) + (paragraphIndex == 0 ? 0 : (paragraphIndex - 1) * paragraphDistance);
+				return GetParagraphTopWithoutParagraphDistance(paragraphIndex) + paragraphIndex * paragraphDistance;
 			}
 
 			void GuiDocumentParagraphCache::InvalidCachedTops(vint firstParagraphIndex)
@@ -471,8 +471,51 @@ GuiDocumentParagraphCache
 
 			vint GuiDocumentParagraphCache::GetParagraphFromY(vint y, vint paragraphDistance)
 			{
-				// TODO: perform binary search while considering validCachedTops
-				CHECK_FAIL(L"Not Implemented!");
+				auto document = element ? element->GetDocument() : nullptr;
+				if (!document || document->paragraphs.Count() == 0) return -1;
+
+				vint start = 0;
+				vint end = paragraphSizes.Count() - 1;
+
+				if (0 < validCachedTops && validCachedTops < paragraphSizes.Count())
+				{
+					vint index = validCachedTops - 1;
+					vint top = GetParagraphTop(index, paragraphDistance);
+					auto size = paragraphSizes[index].cachedSize;
+					if (y < top)
+					{
+						if (index < 1) return 0;
+						end = index - 1;
+					}
+					else if (y < top + size.y)
+					{
+						return index;
+					}
+					else
+					{
+						start = validCachedTops;
+					}
+				}
+
+				while (start < end)
+				{
+					vint mid = (start + end) / 2;
+					vint top = GetParagraphTop(mid, paragraphDistance);
+					auto size = paragraphSizes[mid].cachedSize;
+					if (y < top)
+					{
+						end = mid - 1;
+					}
+					else if (y < top + size.y)
+					{
+						return mid;
+					}
+					else
+					{
+						start = mid + 1;
+					}
+				}
+				return start;
 			}
 
 /***********************************************************************
