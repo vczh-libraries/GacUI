@@ -1022,7 +1022,7 @@ GuiDocumentCommonInterface
 
 			void GuiDocumentCommonInterface::EditRun(TextPos begin, TextPos end, Ptr<DocumentModel> model, bool copy, bool skipFormatting)
 			{
-				if (skipFormatting)
+				if (!skipFormatting)
 				{
 					UserInput_FormatDocument(model);
 				}
