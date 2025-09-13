@@ -51,7 +51,7 @@ GuiDocumentParagraphCache
 
 				struct ParagraphSize
 				{
-					// invalid after GuiDocumentParagraphCache::validCachedTops-th ParagraphCache
+					// cached tops are valid for indices < GuiDocumentParagraphCache::validCachedTops; invalid starting from validCachedTops (i.e., indices >= validCachedTops)
 					vint								cachedTopWithoutParagraphDistance = 0;
 					Size								cachedSize;
 				};
