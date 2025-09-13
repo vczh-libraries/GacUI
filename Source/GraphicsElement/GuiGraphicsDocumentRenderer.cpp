@@ -311,11 +311,6 @@ GuiDocumentParagraphCache
 				return GetParagraphTopWithoutParagraphDistance(paragraphIndex) + paragraphIndex * paragraphDistance;
 			}
 
-			void GuiDocumentParagraphCache::InvalidCachedTops(vint firstParagraphIndex)
-			{
-				validCachedTops = firstParagraphIndex;
-			}
-
 			vint GuiDocumentParagraphCache::ResetCache()
 			{
 				nameCallbackIdMap.Clear();
@@ -466,6 +461,10 @@ GuiDocumentParagraphCache
 					newSize.y = defaultHeight;
 				}
 				cachedSize.cachedSize = newSize;
+				if (oldSize.y != newSize.y)
+				{
+					validCachedTops = paragraphIndex + 1;
+				}
 				return newSize.y - oldSize.y;
 			}
 
