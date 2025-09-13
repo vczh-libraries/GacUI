@@ -217,19 +217,34 @@ GuiDocumentCommonInterface
 				/// <param name="oldCount">The number of paragraphs to be updated.</param>
 				/// <param name="newCount">The number of updated paragraphs.</param>
 				/// <param name="updatedText">Set to true to notify that the text is updated.</param>
-				void										NotifyParagraphUpdated(vint index, vint oldCount, vint newCount, bool updatedText);
+				/// <param name="skipFormatting">
+				/// Set to true to skip verifying and formatting affected paragraphs.
+				/// Formatting will be needed when pasteAsPlainText == true or paragraphMode != Paragraph.
+				/// If you are sure that the updated paragraphs are already formatted correctly, you can set this parameter to true to improve performance.
+				/// </param>
+				void										NotifyParagraphUpdated(vint index, vint oldCount, vint newCount, bool updatedText, bool skipFormatting = false);
 				/// <summary>Edit run in a specified range.</summary>
 				/// <param name="begin">The begin position of the range.</param>
 				/// <param name="end">The end position of the range.</param>
 				/// <param name="model">The new run.</param>
 				/// <param name="copy">Set to true to copy the model before editing. Otherwise, objects inside the model will be used directly</param>
-				void										EditRun(TextPos begin, TextPos end, Ptr<DocumentModel> model, bool copy);
+				/// <param name="skipFormatting">
+				/// Set to true to skip verifying and formatting the content of the model argument.
+				/// Formatting will be needed when pasteAsPlainText == true or paragraphMode != Paragraph.
+				/// If you are sure that the content of the model argument are already formatted correctly, you can set this parameter to true to improve performance.
+				/// </param>
+				void										EditRun(TextPos begin, TextPos end, Ptr<DocumentModel> model, bool copy, bool skipFormatting = false);
 				/// <summary>Edit text in a specified range.</summary>
 				/// <param name="begin">The begin position of the range.</param>
 				/// <param name="end">The end position of the range.</param>
 				/// <param name="frontSide">Set to true to use the text style in front of the specified range.</param>
 				/// <param name="text">The new text.</param>
-				void										EditText(TextPos begin, TextPos end, bool frontSide, const collections::Array<WString>& text);
+				/// <param name="skipFormatting">
+				/// Set to true to skip verifying and formatting the content of the text argument.
+				/// Formatting will be needed when pasteAsPlainText == true or paragraphMode != Paragraph.
+				/// If you are sure that the content of the text argument are already formatted correctly, you can set this parameter to true to improve performance.
+				/// </param>
+				void										EditText(TextPos begin, TextPos end, bool frontSide, const collections::Array<WString>& text, bool skipFormatting = false);
 				/// <summary>Edit style in a specified range.</summary>
 				/// <param name="begin">The begin position of the range.</param>
 				/// <param name="end">The end position of the range.</param>

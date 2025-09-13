@@ -973,9 +973,9 @@ GuiDocumentCommonInterface
 
 			//================ editing operations
 
-			void GuiDocumentCommonInterface::NotifyParagraphUpdated(vint index, vint oldCount, vint newCount, bool updatedText)
+			void GuiDocumentCommonInterface::NotifyParagraphUpdated(vint index, vint oldCount, vint newCount, bool updatedText, bool skipFormatting)
 			{
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::controls::GuiDocumentCommonInterface::NotifyParagraphUpdated(vint, vint, vint, bool)#"
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::controls::GuiDocumentCommonInterface::NotifyParagraphUpdated(vint, vint, vint, bool, bool)#"
 				auto model = documentElement->GetDocument();
 				if (config.paragraphMode == GuiDocumentParagraphMode::Singleline)
 				{
@@ -986,7 +986,10 @@ GuiDocumentCommonInterface
 				{
 					if (config.pasteAsPlainText && updatedText)
 					{
-						UserInput_FixForPlainText(model, index, index + newCount - 1);
+						if(!skipFormatting)
+						{
+							UserInput_FixForPlainText(model, index, index + newCount - 1);
+						}
 						if (baselineDocument)
 						{
 							CopyFrom(model->styles, baselineDocument->styles);
@@ -997,7 +1000,7 @@ GuiDocumentCommonInterface
 						}
 					}
 
-					if (config.paragraphMode != GuiDocumentParagraphMode::Paragraph)
+					if (config.paragraphMode != GuiDocumentParagraphMode::Paragraph && !skipFormatting)
 					{
 						for (vint i = index; i < index + newCount; i++)
 						{
@@ -1010,9 +1013,12 @@ GuiDocumentCommonInterface
 #undef ERROR_MESSAGE_PREFIX
 			}
 
-			void GuiDocumentCommonInterface::EditRun(TextPos begin, TextPos end, Ptr<DocumentModel> model, bool copy)
+			void GuiDocumentCommonInterface::EditRun(TextPos begin, TextPos end, Ptr<DocumentModel> model, bool copy, bool skipFormatting)
 			{
-				UserInput_FormatDocument(model);
+				if (skipFormatting)
+				{
+					UserInput_FormatDocument(model);
+				}
 				EditTextInternal(begin, end, [=, this](TextPos begin, TextPos end, vint& paragraphCount, vint& lastParagraphLength)
 				{
 					documentElement->EditRun(begin, end, model, copy);
@@ -1021,12 +1027,12 @@ GuiDocumentCommonInterface
 				});
 			}
 
-			void GuiDocumentCommonInterface::EditText(TextPos begin, TextPos end, bool frontSide, const collections::Array<WString>& text)
+			void GuiDocumentCommonInterface::EditText(TextPos begin, TextPos end, bool frontSide, const collections::Array<WString>& text, bool skipFormatting)
 			{
 				EditTextInternal(begin, end, [=, this, &text](TextPos begin, TextPos end, vint& paragraphCount, vint& lastParagraphLength)
 				{
 					Array<WString> updatedText;
-					bool useUpdatedText = config.paragraphMode != GuiDocumentParagraphMode::Paragraph;
+					bool useUpdatedText = config.paragraphMode != GuiDocumentParagraphMode::Paragraph && !skipFormatting;
 					if (useUpdatedText)
 					{
 						List<WString> paragraphTexts;
@@ -1279,7 +1285,7 @@ GuiDocumentCommonInterface
 
 				Array<WString> text;
 				CopyFrom(text, paragraphTexts);
-				EditText(begin, end, documentElement->IsCaretEndPreferFrontSide(), text);
+				EditText(begin, end, documentElement->IsCaretEndPreferFrontSide(), text, true);
 			}
 
 			Ptr<DocumentModel> GuiDocumentCommonInterface::GetSelectionModel()
@@ -1310,7 +1316,7 @@ GuiDocumentCommonInterface
 					end=temp;
 				}
 
-				EditRun(begin, end, value, true);
+				EditRun(begin, end, value, true, true);
 			}
 
 			//================ clipboard operations
