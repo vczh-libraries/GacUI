@@ -1242,6 +1242,14 @@ GuiDocumentCommonInterface
 				}
 			}
 
+			void GuiDocumentCommonInterface::LoadTextAndClearUndoRedo(const WString& text)
+			{
+			}
+
+			void GuiDocumentCommonInterface::LoadDocumentAndClearUndoRedo(Ptr<DocumentModel> document)
+			{
+			}
+
 			//================ selection operations
 
 			void GuiDocumentCommonInterface::SelectAll()

@@ -326,6 +326,12 @@ GuiDocumentCommonInterface
 				/// <summary>Set the edit mode of this control.</summary>
 				/// <param name="value">The edit mode.</param>
 				void										SetEditMode(GuiDocumentEditMode value);
+				/// <summary>Replace the content with a text and clear undo/redo records.</summary>
+				/// <param name="text">The text to replace with.</param>
+				void										LoadTextAndClearUndoRedo(const WString& text);
+				/// <summary>Replace the content with a document and clear undo/redo records.</summary>
+				/// <param name="document">The document to replace with.</param>
+				void										LoadDocumentAndClearUndoRedo(Ptr<DocumentModel> document);
 
 				//================ selection operations
 

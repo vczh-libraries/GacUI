@@ -2525,10 +2525,10 @@ class presentation::controls::GuiDocumentCommonInterface : system::ReferenceType
     function Cut() : system::Boolean;
     function EditHyperlink(paragraphIndex : system::Int32, begin : system::Int32, end : system::Int32, reference : system::String, normalStyleName : system::String, activeStyleName : system::String) : system::Void;
     function EditImage(begin : presentation::TextPos, end : presentation::TextPos, image : presentation::GuiImageData^) : system::Void;
-    function EditRun(begin : presentation::TextPos, end : presentation::TextPos, model : presentation::DocumentModel^, copy : system::Boolean) : system::Void;
+    function EditRun(begin : presentation::TextPos, end : presentation::TextPos, model : presentation::DocumentModel^, copy : system::Boolean, skipFormatting : system::Boolean) : system::Void;
     function EditStyle(begin : presentation::TextPos, end : presentation::TextPos, style : presentation::DocumentStyleProperties^) : system::Void;
     function EditStyleName(begin : presentation::TextPos, end : presentation::TextPos, styleName : system::String) : system::Void;
-    function EditText(begin : presentation::TextPos, end : presentation::TextPos, frontSide : system::Boolean, text : system::ReadonlyList<system::String>^) : system::Void;
+    function EditText(begin : presentation::TextPos, end : presentation::TextPos, frontSide : system::Boolean, text : system::ReadonlyList<system::String>^, skipFormatting : system::Boolean) : system::Void;
     function GetActiveHyperlinkReference() : system::String;
     function GetCaretBegin() : presentation::TextPos;
     function GetCaretBounds(caret : presentation::TextPos, frontSide : system::Boolean) : presentation::Rect;
@@ -2539,8 +2539,10 @@ class presentation::controls::GuiDocumentCommonInterface : system::ReferenceType
     function GetModified() : system::Boolean;
     function GetSelectionModel() : presentation::DocumentModel^;
     function GetSelectionText() : system::String;
+    function LoadDocumentAndClearUndoRedo(document : presentation::DocumentModel^) : system::Void;
+    function LoadTextAndClearUndoRedo(text : system::String) : system::Void;
     function NotifyModificationSaved() : system::Void;
-    function NotifyParagraphUpdated(index : system::Int32, oldCount : system::Int32, newCount : system::Int32, updatedText : system::Boolean) : system::Void;
+    function NotifyParagraphUpdated(index : system::Int32, oldCount : system::Int32, newCount : system::Int32, updatedText : system::Boolean, skipFormatting : system::Boolean) : system::Void;
     function Paste() : system::Boolean;
     function Redo() : system::Boolean;
     function RemoveDocumentItem(value : presentation::controls::GuiDocumentItem^) : system::Boolean;

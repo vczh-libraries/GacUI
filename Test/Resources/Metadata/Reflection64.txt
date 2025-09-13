@@ -1992,13 +1992,9 @@ interface gaclib_controls::IUnitTestSnapshotFileNode : system::Interface {
 @FullName:gaclib_controls::IUnitTestSnapshotFrame
 interface gaclib_controls::IUnitTestSnapshotFrame : system::Interface {
     property Dom : gaclib_controls::IUnitTestSnapshotDomNode^ { get:GetDom }
-    property DomAsJsonText : system::String { get:GetDomAsJsonText }
-    property ElementsAsJsonText : system::String { get:GetElementsAsJsonText }
     property Name : system::String { get:GetName }
 
     function GetDom() : gaclib_controls::IUnitTestSnapshotDomNode^;
-    function GetDomAsJsonText() : system::String;
-    function GetElementsAsJsonText() : system::String;
     function GetName() : system::String;
 
     @InvokeTemplate:::vl::reflection::description::ValueInterfaceProxy<::gaclib_controls::IUnitTestSnapshotFrame>::Create($Arguments)
@@ -2221,13 +2217,7 @@ class gaclib_controls::UnitTestSnapshotViewerWindowConstructor : system::Referen
     property __vwsn_precompile_3 : presentation::compositions::GuiCellComposition*;
     property __vwsn_precompile_30 : presentation::controls::GuiMultilineTextBox*;
     property __vwsn_precompile_31 : presentation::compositions::GuiBoundsComposition*;
-    property __vwsn_precompile_32 : presentation::controls::GuiTabPage*;
-    property __vwsn_precompile_33 : presentation::controls::GuiMultilineTextBox*;
-    property __vwsn_precompile_34 : presentation::compositions::GuiBoundsComposition*;
-    property __vwsn_precompile_35 : presentation::controls::GuiTabPage*;
-    property __vwsn_precompile_36 : presentation::controls::GuiMultilineTextBox*;
-    property __vwsn_precompile_37 : presentation::compositions::GuiBoundsComposition*;
-    property __vwsn_precompile_38 : presentation::compositions::GuiBoundsComposition*;
+    property __vwsn_precompile_32 : presentation::compositions::GuiBoundsComposition*;
     property __vwsn_precompile_4 : presentation::compositions::GuiBoundsComposition*;
     property __vwsn_precompile_5 : presentation::compositions::GuiCellComposition*;
     property __vwsn_precompile_6 : presentation::controls::GuiTab*;
@@ -4772,10 +4762,10 @@ class presentation::controls::GuiDocumentCommonInterface : system::ReferenceType
     function Cut() : system::Boolean;
     function EditHyperlink(paragraphIndex : system::Int64, begin : system::Int64, end : system::Int64, reference : system::String, normalStyleName : system::String, activeStyleName : system::String) : system::Void;
     function EditImage(begin : presentation::TextPos, end : presentation::TextPos, image : presentation::GuiImageData^) : system::Void;
-    function EditRun(begin : presentation::TextPos, end : presentation::TextPos, model : presentation::DocumentModel^, copy : system::Boolean) : system::Void;
+    function EditRun(begin : presentation::TextPos, end : presentation::TextPos, model : presentation::DocumentModel^, copy : system::Boolean, skipFormatting : system::Boolean) : system::Void;
     function EditStyle(begin : presentation::TextPos, end : presentation::TextPos, style : presentation::DocumentStyleProperties^) : system::Void;
     function EditStyleName(begin : presentation::TextPos, end : presentation::TextPos, styleName : system::String) : system::Void;
-    function EditText(begin : presentation::TextPos, end : presentation::TextPos, frontSide : system::Boolean, text : system::ReadonlyList<system::String>^) : system::Void;
+    function EditText(begin : presentation::TextPos, end : presentation::TextPos, frontSide : system::Boolean, text : system::ReadonlyList<system::String>^, skipFormatting : system::Boolean) : system::Void;
     function GetActiveHyperlinkReference() : system::String;
     function GetCaretBegin() : presentation::TextPos;
     function GetCaretBounds(caret : presentation::TextPos, frontSide : system::Boolean) : presentation::Rect;
@@ -4786,8 +4776,10 @@ class presentation::controls::GuiDocumentCommonInterface : system::ReferenceType
     function GetModified() : system::Boolean;
     function GetSelectionModel() : presentation::DocumentModel^;
     function GetSelectionText() : system::String;
+    function LoadDocumentAndClearUndoRedo(document : presentation::DocumentModel^) : system::Void;
+    function LoadTextAndClearUndoRedo(text : system::String) : system::Void;
     function NotifyModificationSaved() : system::Void;
-    function NotifyParagraphUpdated(index : system::Int64, oldCount : system::Int64, newCount : system::Int64, updatedText : system::Boolean) : system::Void;
+    function NotifyParagraphUpdated(index : system::Int64, oldCount : system::Int64, newCount : system::Int64, updatedText : system::Boolean, skipFormatting : system::Boolean) : system::Void;
     function Paste() : system::Boolean;
     function Redo() : system::Boolean;
     function RemoveDocumentItem(value : presentation::controls::GuiDocumentItem^) : system::Boolean;

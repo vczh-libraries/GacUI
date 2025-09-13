@@ -30,7 +30,7 @@
           <Cell Site="row:0 column:0">
             <Button ref.Name="buttonLoadBigJson" Text="Load Big Json (reading file ...)" Enabled="false">
               <ev.Clicked-eval><![CDATA[{
-                textBox.Text = self.bigJson;
+                textBox.LoadTextAndClearUndoRedo(self.bigJson);
                 buttonLoadBigJson.Text = $"$(buttonLoadBigJson.Text) (loaded)";
               }]]></ev.Clicked-eval>
             </Button>
