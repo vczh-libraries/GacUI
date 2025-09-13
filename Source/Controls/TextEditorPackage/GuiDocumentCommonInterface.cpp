@@ -305,7 +305,7 @@ GuiDocumentCommonInterface
 				});
 			}
 
-			void GuiDocumentCommonInterface::EditTextInternal(TextPos begin, TextPos end, const Func<void(TextPos, TextPos, vint&, vint&)>& editor)
+			void GuiDocumentCommonInterface::EditTextInternal(TextPos begin, TextPos end, const Func<void(TextPos, TextPos, vint&, vint&)>& editor, bool clearUndoRedo)
 			{
 				// save run before editing
 				if(begin>end)
@@ -342,18 +342,25 @@ GuiDocumentCommonInterface
 					UpdateCaretPoint();
 					SelectionChanged.Execute(documentControl->GetNotifyEventArguments());
 
-					// save run after editing
-					Ptr<DocumentModel> inputModel=documentElement->GetDocument()->CopyDocument(begin, caret, true);
+					if (clearUndoRedo)
+					{
+						undoRedoProcessor->ClearUndoRedo();
+					}
+					else
+					{
+						// save run after editing
+						Ptr<DocumentModel> inputModel = documentElement->GetDocument()->CopyDocument(begin, caret, true);
 
-					// submit redo-undo
-					GuiDocumentUndoRedoProcessor::ReplaceModelStruct arguments;
-					arguments.originalStart=begin;
-					arguments.originalEnd=end;
-					arguments.originalModel=originalModel;
-					arguments.inputStart=begin;
-					arguments.inputEnd=caret;
-					arguments.inputModel=inputModel;
-					undoRedoProcessor->OnReplaceModel(arguments);
+						// submit redo-undo
+						GuiDocumentUndoRedoProcessor::ReplaceModelStruct arguments;
+						arguments.originalStart = begin;
+						arguments.originalEnd = end;
+						arguments.originalModel = originalModel;
+						arguments.inputStart = begin;
+						arguments.inputEnd = caret;
+						arguments.inputModel = inputModel;
+						undoRedoProcessor->OnReplaceModel(arguments);
+					}
 				}
 			}
 
@@ -1244,18 +1251,52 @@ GuiDocumentCommonInterface
 
 			void GuiDocumentCommonInterface::LoadTextAndClearUndoRedo(const WString& text)
 			{
+				vint lastIndex = documentElement->GetDocument()->paragraphs.Count() - 1;
+				Ptr<DocumentParagraphRun> lastParagraph = documentElement->GetDocument()->paragraphs[lastIndex];
+
+				TextPos begin(0, 0);
+				TextPos end(lastIndex, lastParagraph->GetTextForCaret().Length());
+
+				List<WString> paragraphTexts;
+				UserInput_FormatText(text, paragraphTexts);
+				Array<WString> paragraphLines;
+				CopyFrom(paragraphLines, paragraphTexts);
+
+				EditTextInternal(begin, end, [=, this, &paragraphLines](TextPos begin, TextPos end, vint& paragraphCount, vint& lastParagraphLength)
+				{
+					documentElement->EditText(begin, end, true, paragraphLines);
+					paragraphCount = paragraphLines.Count();
+					lastParagraphLength = paragraphCount == 0 ? 0 : paragraphLines[paragraphCount - 1].Length();
+				}, true);
+
+				SetCaret(begin, begin);
 			}
 
-			void GuiDocumentCommonInterface::LoadDocumentAndClearUndoRedo(Ptr<DocumentModel> document)
+			void GuiDocumentCommonInterface::LoadDocumentAndClearUndoRedo(Ptr<DocumentModel> document, bool copy)
 			{
+				vint lastIndex = documentElement->GetDocument()->paragraphs.Count() - 1;
+				Ptr<DocumentParagraphRun> lastParagraph = documentElement->GetDocument()->paragraphs[lastIndex];
+
+				TextPos begin(0, 0);
+				TextPos end(lastIndex, lastParagraph->GetTextForCaret().Length());
+
+				document = document ? document->CopyDocument() : nullptr;
+				EditTextInternal(begin, end, [=, this](TextPos begin, TextPos end, vint& paragraphCount, vint& lastParagraphLength)
+				{
+					documentElement->EditRun(begin, end, document, false);
+					paragraphCount = document->paragraphs.Count();
+					lastParagraphLength = paragraphCount == 0 ? 0 : document->paragraphs[paragraphCount - 1]->GetTextForCaret().Length();
+				}, true);
+
+				SetCaret(begin, begin);
 			}
 
 			//================ selection operations
 
 			void GuiDocumentCommonInterface::SelectAll()
 			{
-				vint lastIndex=documentElement->GetDocument()->paragraphs.Count()-1;
-				Ptr<DocumentParagraphRun> lastParagraph=documentElement->GetDocument()->paragraphs[lastIndex];
+				vint lastIndex = documentElement->GetDocument()->paragraphs.Count() - 1;
+				Ptr<DocumentParagraphRun> lastParagraph = documentElement->GetDocument()->paragraphs[lastIndex];
 
 				TextPos begin(0, 0);
 				TextPos end(lastIndex, lastParagraph->GetTextForCaret().Length());

@@ -103,7 +103,7 @@ GuiDocumentCommonInterface
 				void										SetActiveHyperlink(Ptr<DocumentHyperlinkRun::Package> package);
 				void										ActivateActiveHyperlink(bool activate);
 				void										AddShortcutCommand(VKEY key, const Func<void()>& eventHandler);
-				void										EditTextInternal(TextPos begin, TextPos end, const Func<void(TextPos, TextPos, vint&, vint&)>& editor);
+				void										EditTextInternal(TextPos begin, TextPos end, const Func<void(TextPos, TextPos, vint&, vint&)>& editor, bool clearUndoRedo = false);
 				void										EditStyleInternal(TextPos begin, TextPos end, const Func<void(TextPos, TextPos)>& editor);
 				
 				void										MergeBaselineAndDefaultFont(Ptr<DocumentModel> document);
@@ -331,7 +331,8 @@ GuiDocumentCommonInterface
 				void										LoadTextAndClearUndoRedo(const WString& text);
 				/// <summary>Replace the content with a document and clear undo/redo records.</summary>
 				/// <param name="document">The document to replace with.</param>
-				void										LoadDocumentAndClearUndoRedo(Ptr<DocumentModel> document);
+				/// <param name="copy">Set to true to copy the model before editing. Otherwise, objects inside the model will be used directly</param>
+				void										LoadDocumentAndClearUndoRedo(Ptr<DocumentModel> document, bool copy);
 
 				//================ selection operations
 
