@@ -1281,7 +1281,7 @@ GuiDocumentCommonInterface
 				TextPos begin(0, 0);
 				TextPos end(lastIndex, lastParagraph->GetTextForCaret().Length());
 
-				document = document ? document->CopyDocument() : nullptr;
+				document = copy ? (document ? document->CopyDocument() : nullptr) : document;
 				EditTextInternal(begin, end, [=, this](TextPos begin, TextPos end, vint& paragraphCount, vint& lastParagraphLength)
 				{
 					documentElement->EditRun(begin, end, document, false);
