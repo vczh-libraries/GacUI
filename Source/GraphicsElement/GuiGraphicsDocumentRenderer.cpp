@@ -557,6 +557,11 @@ GuiDocumentElementRenderer
 			Ptr<pg::ParagraphCache> GuiDocumentElementRenderer::EnsureParagraph(vint paragraphIndex)
 			{
 				lastTotalHeightWithoutParagraphDistance += pgCache.EnsureParagraph(paragraphIndex, lastMaxWidth);
+				vint width = pgCache.GetParagraphSize(paragraphIndex).x;
+				if (lastTotalWidth < width)
+				{
+					lastTotalWidth = width;
+				}
 				FixMinSize();
 				return pgCache.GetParagraphCache(paragraphIndex, true);
 			}
@@ -678,6 +683,15 @@ GuiDocumentElementRenderer
 				CHECK_ERROR(updatedText || oldCount == newCount, ERROR_MESSAGE_PREFIX L"updatedText must be true if oldCount is not equal to newCount.");
 				CHECK_ERROR(newParagraphCount - oldParagraphCount == newCount - oldCount, ERROR_MESSAGE_PREFIX L"newCount - oldCount does not reflect the actual paragraph count changing.");
 
+				for (vint i = 0; i < oldCount; i++)
+				{
+					vint width = pgCache.GetParagraphSize(index + i).x;
+					if (lastTotalWidth == width)
+					{
+						lastTotalWidth = 0;
+						break;
+					}
+				}
 				lastTotalHeightWithoutParagraphDistance += pgCache.ResetCache(index, oldCount, newCount, updatedText);
 				FixMinSize();
 #undef ERROR_MESSAGE_PREFIX
