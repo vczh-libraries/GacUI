@@ -542,6 +542,7 @@ GuiDocumentElementRenderer
 
 			void GuiDocumentElementRenderer::InitializeInternal()
 			{
+				pgCache.Initialize(element);
 			}
 
 			void GuiDocumentElementRenderer::FinalizeInternal()
