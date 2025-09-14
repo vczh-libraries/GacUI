@@ -543,11 +543,11 @@ WindowsDirect2DParagraph (Formatting)
 
 				void SetMaxWidth(vint value)override
 				{
-					if(maxWidth!=value)
+					if (maxWidth != value)
 					{
-						maxWidth=value;
-						textLayout->SetMaxWidth(value==-1?65536:(FLOAT)value);
-						formatDataAvailable=false;
+						maxWidth = value;
+						textLayout->SetMaxWidth(value == -1 ? 65536 : (FLOAT)value);
+						formatDataAvailable = false;
 					}
 				}
 
@@ -568,18 +568,21 @@ WindowsDirect2DParagraph (Formatting)
 
 				void SetParagraphAlignment(Alignment value)override
 				{
-					formatDataAvailable=false;
-					switch(value)
+					if (GetParagraphAlignment() != value)
 					{
-					case Alignment::Left:
-						textLayout->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_LEADING);
-						break;
-					case Alignment::Center:
-						textLayout->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
-						break;
-					case Alignment::Right:
-						textLayout->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_TRAILING);
-						break;
+						formatDataAvailable = false;
+						switch (value)
+						{
+						case Alignment::Left:
+							textLayout->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_LEADING);
+							break;
+						case Alignment::Center:
+							textLayout->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
+							break;
+						case Alignment::Right:
+							textLayout->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_TRAILING);
+							break;
+						}
 					}
 				}
 

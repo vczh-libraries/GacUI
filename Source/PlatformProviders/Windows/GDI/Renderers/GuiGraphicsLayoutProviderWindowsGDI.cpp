@@ -98,8 +98,11 @@ WindowsGDIParagraph
 
 				void SetWrapLine(bool value)override
 				{
-					paragraph->BuildUniscribeData(renderTarget->GetDC());
-					paragraph->Layout(value, paragraph->lastAvailableWidth, paragraph->paragraphAlignment);
+					if (paragraph->lastWrapLine != value)
+					{
+						paragraph->BuildUniscribeData(renderTarget->GetDC());
+						paragraph->Layout(value, paragraph->lastAvailableWidth, paragraph->paragraphAlignment);
+					}
 				}
 
 				vint GetMaxWidth()override
@@ -109,8 +112,11 @@ WindowsGDIParagraph
 
 				void SetMaxWidth(vint value)override
 				{
-					paragraph->BuildUniscribeData(renderTarget->GetDC());
-					paragraph->Layout(paragraph->lastWrapLine, value, paragraph->paragraphAlignment);
+					if (paragraph->lastAvailableWidth != value)
+					{
+						paragraph->BuildUniscribeData(renderTarget->GetDC());
+						paragraph->Layout(paragraph->lastWrapLine, value, paragraph->paragraphAlignment);
+					}
 				}
 
 				Alignment GetParagraphAlignment()override
@@ -120,8 +126,11 @@ WindowsGDIParagraph
 
 				void SetParagraphAlignment(Alignment value)override
 				{
-					paragraph->BuildUniscribeData(renderTarget->GetDC());
-					paragraph->Layout(paragraph->lastWrapLine, paragraph->lastAvailableWidth, value);
+					if (paragraph->paragraphAlignment != value)
+					{
+						paragraph->BuildUniscribeData(renderTarget->GetDC());
+						paragraph->Layout(paragraph->lastWrapLine, paragraph->lastAvailableWidth, value);
+					}
 				}
 
 				bool SetFont(vint start, vint length, const WString& value)override
