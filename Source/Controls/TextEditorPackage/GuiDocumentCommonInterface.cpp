@@ -684,6 +684,7 @@ GuiDocumentCommonInterface
 				while (*record.end != '\r' && *record.end != '\n' && *record.end != '\0') record.end++;
 				record.next = record.end;
 				while (*record.next != '\n' && *record.next != '\0') record.next++;
+				if (*record.next == '\n') record.next++;
 			}
 
 			WString FetchLineRecord_Get(const FetchLineRecord& flr, const wchar_t* buffer, const WString& text)
@@ -809,17 +810,13 @@ GuiDocumentCommonInterface
 
 			void GuiDocumentCommonInterface::UserInput_FormatText(const WString& text, collections::List<WString>& paragraphTexts, const GuiDocumentConfigEvaluated& config)
 			{
-				stream::StringReader reader(text);
-				WString paragraph;
-				bool empty = true;
-
 				if (config.doubleLineBreaksBetweenParagraph)
 				{
 					const wchar_t* buffer = text.Buffer();
 					auto flr = FetchLineRecord_Init(buffer);
 					FetchLineRecord_Next(flr);
 					bool remaining = false;
-					while (!*flr.next)
+					while (*flr.begin)
 					{
 						paragraphTexts.Add(stream::GenerateToStream([&](stream::StreamWriter& writer)
 						{
@@ -840,6 +837,7 @@ GuiDocumentCommonInterface
 								if (!*flrFragmentLast.next)
 								{
 									SubmitFragment(true);
+									flr = FetchLineRecord_Init(flrFragmentLast.next);
 									remaining = false;
 									return;
 								}
@@ -876,6 +874,7 @@ GuiDocumentCommonInterface
 				}
 				else
 				{
+					stream::StringReader reader(text);
 					while (!reader.IsEnd())
 					{
 						WString line = reader.ReadLine();
@@ -883,10 +882,6 @@ GuiDocumentCommonInterface
 					}
 				}
 
-				if (!empty)
-				{
-					paragraphTexts.Add(paragraph);
-				}
 				if (config.paragraphMode == GuiDocumentParagraphMode::Singleline)
 				{
 					UserInput_JoinParagraphs(paragraphTexts, config.spaceForFlattenedLineBreak);
