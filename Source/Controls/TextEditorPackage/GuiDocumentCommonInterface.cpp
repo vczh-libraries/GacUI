@@ -817,6 +817,7 @@ GuiDocumentCommonInterface
 				{
 					const wchar_t* buffer = text.Buffer();
 					auto flr = FetchLineRecord_Init(buffer);
+					FetchLineRecord_Next(flr);
 					bool remaining = false;
 					while (!*flr.next)
 					{
@@ -824,11 +825,11 @@ GuiDocumentCommonInterface
 						{
 							auto flrFragmentFirst = flr;
 							auto flrFragmentLast = flrFragmentFirst;
-							auto SubmitFragment = [&]()
+							auto SubmitFragment = [&](bool endingEmptyLines)
 							{
 								auto flrFragment = FetchLineRecord_Join(flrFragmentFirst, flrFragmentLast);
 								writer.WriteString(FetchLineRecord_Get(flrFragment, buffer, text));
-								if (flrFragment.end != flrFragment.next)
+								if (flrFragment.end != flrFragment.next && endingEmptyLines)
 								{
 									writer.WriteString(L"\r\n");
 								}
@@ -838,13 +839,32 @@ GuiDocumentCommonInterface
 							{
 								if (!*flrFragmentLast.next)
 								{
-									SubmitFragment();
-									flr = FetchLineRecord_Init(flrFragmentLast.next);
+									SubmitFragment(true);
+									remaining = false;
 									return;
 								}
 
-								auto flrNext1 = FetchLineRecord_Init(flrFragmentLast.next);
-								CHECK_FAIL(L"Not Implemented!");
+								auto flrNext = FetchLineRecord_Init(flrFragmentLast.next);
+								FetchLineRecord_Next(flrNext);
+								if (flrNext.end == flrNext.begin)
+								{
+									SubmitFragment(false);
+									flr = FetchLineRecord_Init(flrNext.next);
+									FetchLineRecord_Next(flr);
+									remaining = true;
+									return;
+								}
+
+								if (flrFragmentLast.next - flrFragmentLast.end == 2)
+								{
+									flrFragmentLast = flrNext;
+								}
+								else
+								{
+									SubmitFragment(true);
+									flrFragmentFirst = flrNext;
+									flrFragmentLast = flrNext;
+								}
 							}
 						}));
 					}
