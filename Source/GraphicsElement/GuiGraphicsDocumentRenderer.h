@@ -42,8 +42,10 @@ GuiDocumentParagraphCache
 
 				struct ParagraphCache
 				{
-					WString								fullText;
 					Ptr<IGuiGraphicsParagraph>			graphicsParagraph;
+					bool								outdatedStyles = true;
+
+					WString								fullText;
 					IdEmbeddedObjectMap					embeddedObjects;
 					vint								selectionBegin = -1;
 					vint								selectionEnd = -1;

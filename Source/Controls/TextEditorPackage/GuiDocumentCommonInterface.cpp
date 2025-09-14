@@ -662,7 +662,37 @@ GuiDocumentCommonInterface
 
 			//================ basic
 
-			void GuiDocumentCommonInterface::UserInput_FixForPlainText(Ptr<DocumentModel> model, vint beginParagraph, vint endParagraph)
+			struct FetchLineRecord
+			{
+				const wchar_t*			begin = nullptr;
+				const wchar_t*			end = nullptr;
+				const wchar_t*			next = nullptr;
+			};
+
+			FetchLineRecord FetchLineRecord_Init(const wchar_t* text)
+			{
+				return { text,text,nullptr };
+			}
+
+			FetchLineRecord FetchLineRecord_Join(const FetchLineRecord& flr1, const FetchLineRecord& flr2)
+			{
+				return { flr1.begin, flr2.end, flr2.next };
+			}
+
+			void FetchLineRecord_Next(FetchLineRecord& record)
+			{
+				while (*record.end != '\r' && *record.end != '\n' && *record.end != '\0') record.end++;
+				record.next = record.end;
+				while (*record.next != '\n' && *record.next != '\0') record.next++;
+				if (*record.next == '\n') record.next++;
+			}
+
+			WString FetchLineRecord_Get(const FetchLineRecord& flr, const wchar_t* buffer, const WString& text)
+			{
+				return text.Sub(flr.begin - buffer, flr.end - flr.begin);
+			}
+
+			void GuiDocumentCommonInterface::UserInput_ConvertToPlainText(Ptr<DocumentModel> model, vint beginParagraph, vint endParagraph)
 			{
 				if (beginParagraph > endParagraph) return;
 
@@ -679,13 +709,13 @@ GuiDocumentCommonInterface
 				}
 			}
 
-			void GuiDocumentCommonInterface::UserInput_FixForSingleline(collections::List<WString>& paragraphTexts)
+			void GuiDocumentCommonInterface::UserInput_JoinParagraphs(collections::List<WString>& paragraphTexts, bool spaceForFlattenedLineBreak)
 			{
 				auto line = stream::GenerateToStream([&](stream::StreamWriter& writer)
 				{
 					for(auto [paragraph, index] : indexed(paragraphTexts))
 					{
-						if (index > 0 && config.spaceForFlattenedLineBreak)
+						if (index > 0 && spaceForFlattenedLineBreak)
 						{
 							writer.WriteChar(L' ');
 						}
@@ -696,12 +726,12 @@ GuiDocumentCommonInterface
 				paragraphTexts.Add(line);
 			}
 
-			void GuiDocumentCommonInterface::UserInput_FixForSingleline(Ptr<DocumentModel> model)
+			void GuiDocumentCommonInterface::UserInput_JoinParagraphs(Ptr<DocumentModel> model, bool spaceForFlattenedLineBreak)
 			{
 				auto firstParagraph = model->paragraphs[0];
 				for (auto paragraph : From(model->paragraphs).Skip(1))
 				{
-					if (config.spaceForFlattenedLineBreak)
+					if (spaceForFlattenedLineBreak)
 					{
 						auto textRun = Ptr(new DocumentTextRun);
 						textRun->text = WString::Unmanaged(L" ");
@@ -713,28 +743,35 @@ GuiDocumentCommonInterface
 				model->paragraphs.Add(firstParagraph);
 			}
 
-			void GuiDocumentCommonInterface::UserInput_FixForNonParagraph(WString& text)
+			void GuiDocumentCommonInterface::UserInput_JoinLinesInsideParagraph(WString& text, bool spaceForFlattenedLineBreak)
 			{
+				const wchar_t* buffer = text.Buffer();
+				auto flr = FetchLineRecord_Init(buffer);
+				FetchLineRecord_Next(flr);
+				if (!*flr.next)
+				{
+					text = FetchLineRecord_Get(flr, buffer, text);
+					return;
+				}
+
 				text = stream::GenerateToStream([&](stream::StreamWriter& writer)
 				{
-					for (vint j = 0; j < text.Length(); j++)
+					writer.WriteString(FetchLineRecord_Get(flr, buffer, text));
+					while (!*flr.next)
 					{
-						if (text[j] == L'\n')
+						if (spaceForFlattenedLineBreak)
 						{
-							if (config.spaceForFlattenedLineBreak)
-							{
-								writer.WriteChar(L' ');
-							}
+							writer.WriteChar(L' ');
 						}
-						else if (text[j] != L'\r')
-						{
-							writer.WriteChar(text[j]);
-						}
+
+						flr = FetchLineRecord_Init(flr.next);
+						FetchLineRecord_Next(flr);
+						writer.WriteString(FetchLineRecord_Get(flr, buffer, text));
 					}
 				});
 			}
 
-			void GuiDocumentCommonInterface::UserInput_FixForNonParagraph(Ptr<DocumentParagraphRun> paragraph)
+			void GuiDocumentCommonInterface::UserInput_JoinLinesInsideParagraph(Ptr<DocumentParagraphRun> paragraph, bool spaceForFlattenedLineBreak)
 			{
 				List<Ptr<DocumentContainerRun>> containers;
 				containers.Add(paragraph);
@@ -750,73 +787,94 @@ GuiDocumentCommonInterface
 						}
 						else if (auto textRun = run.Cast<DocumentTextRun>())
 						{
-							UserInput_FixForNonParagraph(textRun->text);
+							UserInput_JoinLinesInsideParagraph(textRun->text, spaceForFlattenedLineBreak);
 						}
 					}
 				}
 			}
 
-			WString GuiDocumentCommonInterface::UserInput_ConvertDocumentToText(Ptr<DocumentModel> model)
-			{
-				return model->GetTextForReading(WString::Unmanaged(config.doubleLineBreaksBetweenParagraph ? L"\r\n\r\n" : L"\r\n"));
-			}
-
-			void GuiDocumentCommonInterface::UserInput_FormatText(collections::List<WString>& paragraphTexts)
+			void GuiDocumentCommonInterface::UserInput_FormatText(collections::List<WString>& paragraphTexts, const GuiDocumentConfigEvaluated& config)
 			{
 				if (config.paragraphMode != GuiDocumentParagraphMode::Paragraph)
 				{
 					for (vint i = 0; i < paragraphTexts.Count(); i++)
 					{
-						UserInput_FixForNonParagraph(paragraphTexts[i]);
+						UserInput_JoinLinesInsideParagraph(paragraphTexts[i], config.spaceForFlattenedLineBreak);
 					}
 				}
 				if (config.paragraphMode == GuiDocumentParagraphMode::Singleline)
 				{
-					UserInput_FixForSingleline(paragraphTexts);
+					UserInput_JoinParagraphs(paragraphTexts, config.spaceForFlattenedLineBreak);
 				}
 			}
 
-			void GuiDocumentCommonInterface::UserInput_FormatText(const WString& text, collections::List<WString>& paragraphTexts)
+			void GuiDocumentCommonInterface::UserInput_FormatText(const WString& text, collections::List<WString>& paragraphTexts, const GuiDocumentConfigEvaluated& config)
 			{
-				stream::StringReader reader(text);
-				WString paragraph;
-				bool empty = true;
-
 				if (config.doubleLineBreaksBetweenParagraph)
 				{
-					while (!reader.IsEnd())
+					const wchar_t* buffer = text.Buffer();
+					auto flr = FetchLineRecord_Init(buffer);
+					FetchLineRecord_Next(flr);
+					bool remaining = false;
+					while (*flr.begin)
 					{
-						WString line = reader.ReadLine();
-						if (empty)
+						paragraphTexts.Add(stream::GenerateToStream([&](stream::StreamWriter& writer)
 						{
-							paragraph += line;
-							empty = false;
-						}
-						else if (line != L"")
-						{
-							if (config.paragraphMode == GuiDocumentParagraphMode::Paragraph)
+							auto flrFragmentFirst = flr;
+							auto flrFragmentLast = flrFragmentFirst;
+							auto SubmitFragment = [&](bool endingEmptyLines)
 							{
-								paragraph += L"\r\n" + line;
-							}
-							else if(config.spaceForFlattenedLineBreak)
+								auto flrFragment = FetchLineRecord_Join(flrFragmentFirst, flrFragmentLast);
+								writer.WriteString(FetchLineRecord_Get(flrFragment, buffer, text));
+								if (flrFragment.end != flrFragment.next && endingEmptyLines)
+								{
+									writer.WriteString(L"\r\n");
+								}
+							};
+
+							while (true)
 							{
-								paragraph += L" " + line;
+								if (!*flrFragmentLast.next)
+								{
+									SubmitFragment(true);
+									flr = FetchLineRecord_Init(flrFragmentLast.next);
+									remaining = false;
+									return;
+								}
+
+								auto flrNext = FetchLineRecord_Init(flrFragmentLast.next);
+								FetchLineRecord_Next(flrNext);
+								if (flrNext.end == flrNext.begin)
+								{
+									SubmitFragment(false);
+									flr = FetchLineRecord_Init(flrNext.next);
+									FetchLineRecord_Next(flr);
+									remaining = true;
+									return;
+								}
+
+								if (flrFragmentLast.next - flrFragmentLast.end == 2)
+								{
+									flrFragmentLast = flrNext;
+								}
+								else
+								{
+									SubmitFragment(true);
+									flrFragmentFirst = flrNext;
+									flrFragmentLast = flrNext;
+								}
 							}
-							else
-							{
-								paragraph += line;
-							}
-						}
-						else
-						{
-							paragraphTexts.Add(paragraph);
-							paragraph = L"";
-							empty = true;
-						}
+						}));
+					}
+
+					if (remaining)
+					{
+						paragraphTexts.Add(WString::Empty);
 					}
 				}
 				else
 				{
+					stream::StringReader reader(text);
 					while (!reader.IsEnd())
 					{
 						WString line = reader.ReadLine();
@@ -824,22 +882,18 @@ GuiDocumentCommonInterface
 					}
 				}
 
-				if (!empty)
-				{
-					paragraphTexts.Add(paragraph);
-				}
 				if (config.paragraphMode == GuiDocumentParagraphMode::Singleline)
 				{
-					UserInput_FixForSingleline(paragraphTexts);
+					UserInput_JoinParagraphs(paragraphTexts, config.spaceForFlattenedLineBreak);
 				}
 			}
 
-			void GuiDocumentCommonInterface::UserInput_FormatDocument(Ptr<DocumentModel> model)
+			void GuiDocumentCommonInterface::UserInput_FormatDocument(Ptr<DocumentModel> model, Ptr<DocumentModel> baselineDocument, const GuiDocumentConfigEvaluated& config)
 			{
 				if (!model) return;
 				if (config.pasteAsPlainText)
 				{
-					UserInput_FixForPlainText(model, 0, model->paragraphs.Count() - 1);
+					UserInput_ConvertToPlainText(model, 0, model->paragraphs.Count() - 1);
 
 					if (baselineDocument)
 					{
@@ -860,13 +914,18 @@ GuiDocumentCommonInterface
 				{
 					for (auto paragraph : model->paragraphs)
 					{
-						UserInput_FixForNonParagraph(paragraph);
+						UserInput_JoinLinesInsideParagraph(paragraph, config.spaceForFlattenedLineBreak);
 					}
 				}
 				if (config.paragraphMode == GuiDocumentParagraphMode::Singleline)
 				{
-					UserInput_FixForSingleline(model);
+					UserInput_JoinParagraphs(model, config.spaceForFlattenedLineBreak);
 				}
+			}
+
+			WString GuiDocumentCommonInterface::UserInput_ConvertDocumentToText(Ptr<DocumentModel> model)
+			{
+				return model->GetTextForReading(WString::Unmanaged(config.doubleLineBreaksBetweenParagraph ? L"\r\n\r\n" : L"\r\n"));
 			}
 
 			GuiDocumentCommonInterface::GuiDocumentCommonInterface(const GuiDocumentConfig& _config)
@@ -894,7 +953,7 @@ GuiDocumentCommonInterface
 			void GuiDocumentCommonInterface::SetDocument(Ptr<DocumentModel> value)
 			{
 				value = value ? value->CopyDocument() : nullptr;
-				UserInput_FormatDocument(value);
+				UserInput_FormatDocument(value, baselineDocument, config);
 				SetActiveHyperlink(0);
 				ClearUndoRedo();
 				NotifyModificationSaved();
@@ -995,7 +1054,7 @@ GuiDocumentCommonInterface
 					{
 						if(!skipFormatting)
 						{
-							UserInput_FixForPlainText(model, index, index + newCount - 1);
+							UserInput_ConvertToPlainText(model, index, index + newCount - 1);
 						}
 						if (baselineDocument)
 						{
@@ -1011,7 +1070,7 @@ GuiDocumentCommonInterface
 					{
 						for (vint i = index; i < index + newCount; i++)
 						{
-							UserInput_FixForNonParagraph(model->paragraphs[i]);
+							UserInput_JoinLinesInsideParagraph(model->paragraphs[i], config.spaceForFlattenedLineBreak);
 						}
 					}
 
@@ -1022,9 +1081,9 @@ GuiDocumentCommonInterface
 
 			void GuiDocumentCommonInterface::EditRun(TextPos begin, TextPos end, Ptr<DocumentModel> model, bool copy, bool skipFormatting)
 			{
-				if (skipFormatting)
+				if (!skipFormatting)
 				{
-					UserInput_FormatDocument(model);
+					UserInput_FormatDocument(model, baselineDocument, config);
 				}
 				EditTextInternal(begin, end, [=, this](TextPos begin, TextPos end, vint& paragraphCount, vint& lastParagraphLength)
 				{
@@ -1044,7 +1103,7 @@ GuiDocumentCommonInterface
 					{
 						List<WString> paragraphTexts;
 						CopyFrom(paragraphTexts, text);
-						UserInput_FormatText(paragraphTexts);
+						UserInput_FormatText(paragraphTexts, config);
 						CopyFrom(updatedText, paragraphTexts);
 					}
 
@@ -1258,7 +1317,7 @@ GuiDocumentCommonInterface
 				TextPos end(lastIndex, lastParagraph->GetTextForCaret().Length());
 
 				List<WString> paragraphTexts;
-				UserInput_FormatText(text, paragraphTexts);
+				UserInput_FormatText(text, paragraphTexts, config);
 				Array<WString> paragraphLines;
 				CopyFrom(paragraphLines, paragraphTexts);
 
@@ -1323,7 +1382,7 @@ GuiDocumentCommonInterface
 			void GuiDocumentCommonInterface::SetSelectionText(const WString& value)
 			{
 				List<WString> paragraphTexts;
-				UserInput_FormatText(value, paragraphTexts);
+				UserInput_FormatText(value, paragraphTexts, config);
 
 				TextPos begin = documentElement->GetCaretBegin();
 				TextPos end = documentElement->GetCaretEnd();
@@ -1357,7 +1416,7 @@ GuiDocumentCommonInterface
 			void GuiDocumentCommonInterface::SetSelectionModel(Ptr<DocumentModel> value)
 			{
 				value = value ? value->CopyDocument() : nullptr;
-				UserInput_FormatDocument(value);
+				UserInput_FormatDocument(value, baselineDocument, config);
 				TextPos begin=documentElement->GetCaretBegin();
 				TextPos end=documentElement->GetCaretEnd();
 				if(begin>end)

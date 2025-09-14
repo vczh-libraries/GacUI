@@ -25,6 +25,11 @@
   - `delete this;` eventually calls `SuspendThread` on the thread itself, making all following clean up code skipped.
   - Windows confirmed, Linux need to test.
 - TODO in `GuiRemoteWindow::OnControllerConnect`.
+- `GuiDocumentViewer`
+  - Loading super large text without empty line (~0.2M lines) too slow
+    - Demo: `Test\Resources\UnitTestSnapshots\Controls\Ribbon\GuiRibbonButtons\Dropdowns.json`
+    - Paragraph mode plus no empty line causing the whole text loaded into one single `IGuiGraphicsParagraph`.
+    - Root cause in `IDWriteTextLayout::GetMetrics`, taking most of the time.
 
 ## Remote Protocol
 - `GuiRemoteGraphicsRenderTarget::fontHeights` could be moved to `GuiRemoteGraphicsResourceManager` as the measuring should not be different.
