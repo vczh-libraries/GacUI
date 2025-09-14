@@ -480,7 +480,7 @@ GuiDocumentParagraphCache
 				vint start = 0;
 				vint end = paragraphSizes.Count() - 1;
 
-				if (0 < validCachedTops && validCachedTops < paragraphSizes.Count())
+				if (0 < validCachedTops && validCachedTops <= paragraphSizes.Count())
 				{
 					vint index = validCachedTops - 1;
 					vint top = GetParagraphTop(index, paragraphDistance);
@@ -496,11 +496,12 @@ GuiDocumentParagraphCache
 					}
 					else
 					{
+						if (index >= paragraphSizes.Count() - 1) return paragraphSizes.Count() - 1;
 						start = validCachedTops;
 					}
 				}
 
-				if (start >= end) return start;
+				if (start >= end) return end;
 				while (true)
 				{
 					vint mid = (start + end) / 2;
