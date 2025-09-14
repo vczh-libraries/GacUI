@@ -662,6 +662,30 @@ GuiDocumentCommonInterface
 
 			//================ basic
 
+			struct FetchLineRecord
+			{
+				const wchar_t*			begin = nullptr;
+				const wchar_t*			end = nullptr;
+				const wchar_t*			next = nullptr;
+			};
+
+			FetchLineRecord FetchLineRecord_Init(const wchar_t* text)
+			{
+				return { text,text,nullptr };
+			}
+
+			void FetchLineRecord_Next(FetchLineRecord& record)
+			{
+				while (*record.end != '\r' && *record.end != '\n' && *record.end != '\0') record.end++;
+				record.next = record.end;
+				while (*record.next != '\n' && *record.next != '\0') record.next++;
+			}
+
+			WString FetchLineRecord_Get(const FetchLineRecord& flr, const wchar_t* buffer, const WString& text)
+			{
+				return text.Sub(flr.begin - buffer, flr.end - flr.begin);
+			}
+
 			void GuiDocumentCommonInterface::UserInput_ConvertToPlainText(Ptr<DocumentModel> model, vint beginParagraph, vint endParagraph)
 			{
 				if (beginParagraph > endParagraph) return;
@@ -716,37 +740,27 @@ GuiDocumentCommonInterface
 			void GuiDocumentCommonInterface::UserInput_JoinLinesInsideParagraph(WString& text)
 			{
 				const wchar_t* buffer = text.Buffer();
-				const wchar_t* begin = buffer;
-				const wchar_t* end = begin;
-				const wchar_t* next = nullptr;
-				
-				while (*end != '\r' && *end != '\n' && *end != '\0') end++;
-				next = end;
-				while (*next != '\n' && *next != '\0') next++;
-				if (!*next)
+				auto flr = FetchLineRecord_Init(buffer);
+				FetchLineRecord_Next(flr);
+				if (!*flr.next)
 				{
-					text = text.Left(end - begin);
+					text = FetchLineRecord_Get(flr, buffer, text);
 					return;
 				}
 
 				text = stream::GenerateToStream([&](stream::StreamWriter& writer)
 				{
-					writer.WriteString(text.Left(end - begin));
-					while (!*next)
+					writer.WriteString(FetchLineRecord_Get(flr, buffer, text));
+					while (!*flr.next)
 					{
 						if (config.spaceForFlattenedLineBreak)
 						{
 							writer.WriteChar(L' ');
 						}
 
-						begin = next;
-						end = begin;
-						next = nullptr;
-
-						while (*end != '\r' && *end != '\n' && *end != '\0') end++;
-						next = end;
-						while (*next != '\n' && *next != '\0') next++;
-						writer.WriteString(text.Left(end - begin));
+						flr = FetchLineRecord_Init(flr.next);
+						FetchLineRecord_Next(flr);
+						writer.WriteString(FetchLineRecord_Get(flr, buffer, text));
 					}
 				});
 			}
