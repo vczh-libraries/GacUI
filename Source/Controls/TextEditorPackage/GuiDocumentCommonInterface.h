@@ -129,18 +129,20 @@ GuiDocumentCommonInterface
 				void										OnFinishRender()override;
 				Size										OnRenderEmbeddedObject(const WString& name, const Rect& location)override;
 
+			public:
+
+				static void									UserInput_ConvertToPlainText(Ptr<DocumentModel> model, vint beginParagraph, vint endParagraph);
+				static void									UserInput_JoinParagraphs(collections::List<WString>& paragraphTexts, bool spaceForFlattenedLineBreak);
+				static void									UserInput_JoinParagraphs(Ptr<DocumentModel> model, bool spaceForFlattenedLineBreak);
+				static void									UserInput_JoinLinesInsideParagraph(WString& text, bool spaceForFlattenedLineBreak);
+				static void									UserInput_JoinLinesInsideParagraph(Ptr<DocumentParagraphRun> paragraph, bool spaceForFlattenedLineBreak);
+				static void									UserInput_FormatText(collections::List<WString>& paragraphTexts, const GuiDocumentConfigEvaluated& config);
+				static void									UserInput_FormatText(const WString& text, collections::List<WString>& paragraphTexts, const GuiDocumentConfigEvaluated& config);
+				static void									UserInput_FormatDocument(Ptr<DocumentModel> model, Ptr<DocumentModel> baselineDocument, const GuiDocumentConfigEvaluated& config);
+
 			protected:
 
-				void										UserInput_ConvertToPlainText(Ptr<DocumentModel> model, vint beginParagraph, vint endParagraph);
-				void										UserInput_JoinParagraphs(collections::List<WString>& paragraphTexts);
-				void										UserInput_JoinParagraphs(Ptr<DocumentModel> model);
-				void										UserInput_JoinLinesInsideParagraph(WString& text);
-				void										UserInput_JoinLinesInsideParagraph(Ptr<DocumentParagraphRun> paragraph);
-
 				WString										UserInput_ConvertDocumentToText(Ptr<DocumentModel> model);
-				void										UserInput_FormatText(collections::List<WString>& paragraphTexts);
-				void										UserInput_FormatText(const WString& text, collections::List<WString>& paragraphTexts);
-				void										UserInput_FormatDocument(Ptr<DocumentModel> model);
 
 			public:
 				GuiDocumentCommonInterface(const GuiDocumentConfig& _config);
