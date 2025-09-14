@@ -1,37 +1,45 @@
 # Known Issues
 
-## Core
+## ToDo
 
 - Replace `LoadLibrary` with `GetModuleHandle` in `EnableCrossKernelCrashing`.
 - `GuiVirtualRepeatCompositionBase`.
   - Eliminate double `ForceCalculateSizeImmediately()` calls in `TestCompositions_VirtualRepeat.cpp` (TODO) and related files.
+- TODO in `GuiRemoteProtocolAsyncChannelSerializer<TPackage>::ChannelThreadProc`.
+- TODO in `GuiRemoteWindow::OnControllerConnect`.
+- Bindable list control (optional)
+  - When a property referenced by `<att.XXXProperty>` is updated, the list item is not refreshed.
+    - Need to find a way to listen to the event.
+- `controller(Unr|R)elatedPlugins` in `IGuiPlugin(Manager)?` lower dependency safety.
+  - Change `GUI_PLUGIN_NAME` to `GUI_PLUGIN_CONTROLLER_(UN)RELATED`.
+  - Remove the two parameters from `IGuiPlugin`, the macro above already specified it clear enough.
+  - Unrelated plugins are not allowed to depend on related plugins.
+
+## Known Issues
+
 - FakeDialogService
   - `FakeDialogServiceBase::ShowModalDialogAndDelete` place the window in the center of `owner` instead of the screen.
   - Specify multiple extensions in one filter, exactly like Win32 API.
   - Extensions not applied before checking file existance.
 - Expanding collapsing tree nodes cause the whole list to rebuild, which glitch during multiple passes of layout.
   - Only affected items need to rebuild.
-- Bindable list control (optional)
-  - When a property referenced by `<att.XXXProperty>` is updated, the list item is not refreshed.
-    - Need to find a way to listen to the event.
 - For all list controls, adding item could cause flashing during rendering for about 1 flame.
   - If this issue is solved, remove document in `Breaking changes from 1.0` and `List Controls`.
-- `controller(Unr|R)elatedPlugins` in `IGuiPlugin(Manager)?` lower dependency safety.
-  - Change `GUI_PLUGIN_NAME` to `GUI_PLUGIN_CONTROLLER_(UN)RELATED`.
-  - Remove the two parameters from `IGuiPlugin`, the macro above already specified it clear enough.
-  - Unrelated plugins are not allowed to depend on related plugins.
-- TODO in `GuiRemoteProtocolAsyncChannelSerializer<TPackage>::ChannelThreadProc`.
 - `ProceduredThread` and `LambdaThread` cause small memory leak.
   - `delete this;` eventually calls `SuspendThread` on the thread itself, making all following clean up code skipped.
   - Windows confirmed, Linux need to test.
-- TODO in `GuiRemoteWindow::OnControllerConnect`.
-- `GuiDocumentViewer`
-  - Loading super large text without empty line (~0.2M lines) too slow
-    - Demo: `Test\Resources\UnitTestSnapshots\Controls\Ribbon\GuiRibbonButtons\Dropdowns.json`
-    - Paragraph mode plus no empty line causing the whole text loaded into one single `IGuiGraphicsParagraph`.
-    - Root cause in `IDWriteTextLayout::GetMetrics`, taking most of the time.
+- `GuiDocumentViewer` loading super large text into one single paragraph (~0.2M lines) too slow
+  - Demo: `https://github.com/vczh-libraries/GacUI/blob/master/Test/Resources/UnitTestSnapshots/Controls/Ribbon/GuiRibbonButtons/Dropdowns.json`
+  - **Paragraph mode** plus **doubleLineBreaksBetweenParagraph==true** plus **no empty line** causing the whole text loaded into one single `IGuiGraphicsParagraph`.
+    - This is the default configuration for `GuiDocumentViewer` and `GuiDocumentLabel`, it could be changed with the `Behavior` property in XML.
+  - Root cause in `IDWriteTextLayout::GetMetrics`, taking most of the time.
+  - When loading super big content to the control while you don't need user to undo to the previous state:
+    - To load such text into `GuiMultilineTextBox` uses `LoadTextAndClearUndoRedo`.
+    - To load prepared large document into `GuiDocumentViewer` uses `LoadDocumentAndClearUndoRedo`.
+    - Future editing still work with undo.
 
 ## Remote Protocol
+
 - `GuiRemoteGraphicsRenderTarget::fontHeights` could be moved to `GuiRemoteGraphicsResourceManager` as the measuring should not be different.
 - `RemotingTest_Rendering_Win32`
   - Clicking `Fatal Error` in `RemotingTest_Rendering_Win32 /Pipe` sometimes hang.
