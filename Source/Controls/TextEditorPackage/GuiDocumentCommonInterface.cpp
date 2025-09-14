@@ -662,7 +662,7 @@ GuiDocumentCommonInterface
 
 			//================ basic
 
-			void GuiDocumentCommonInterface::UserInput_FixForPlainText(Ptr<DocumentModel> model, vint beginParagraph, vint endParagraph)
+			void GuiDocumentCommonInterface::UserInput_ConvertToPlainText(Ptr<DocumentModel> model, vint beginParagraph, vint endParagraph)
 			{
 				if (beginParagraph > endParagraph) return;
 
@@ -679,7 +679,7 @@ GuiDocumentCommonInterface
 				}
 			}
 
-			void GuiDocumentCommonInterface::UserInput_FixForSingleline(collections::List<WString>& paragraphTexts)
+			void GuiDocumentCommonInterface::UserInput_JoinParagraphs(collections::List<WString>& paragraphTexts)
 			{
 				auto line = stream::GenerateToStream([&](stream::StreamWriter& writer)
 				{
@@ -696,7 +696,7 @@ GuiDocumentCommonInterface
 				paragraphTexts.Add(line);
 			}
 
-			void GuiDocumentCommonInterface::UserInput_FixForSingleline(Ptr<DocumentModel> model)
+			void GuiDocumentCommonInterface::UserInput_JoinParagraphs(Ptr<DocumentModel> model)
 			{
 				auto firstParagraph = model->paragraphs[0];
 				for (auto paragraph : From(model->paragraphs).Skip(1))
@@ -713,7 +713,7 @@ GuiDocumentCommonInterface
 				model->paragraphs.Add(firstParagraph);
 			}
 
-			void GuiDocumentCommonInterface::UserInput_FixForNonParagraph(WString& text)
+			void GuiDocumentCommonInterface::UserInput_JoinLinesInsideParagraph(WString& text)
 			{
 				text = stream::GenerateToStream([&](stream::StreamWriter& writer)
 				{
@@ -734,7 +734,7 @@ GuiDocumentCommonInterface
 				});
 			}
 
-			void GuiDocumentCommonInterface::UserInput_FixForNonParagraph(Ptr<DocumentParagraphRun> paragraph)
+			void GuiDocumentCommonInterface::UserInput_JoinLinesInsideParagraph(Ptr<DocumentParagraphRun> paragraph)
 			{
 				List<Ptr<DocumentContainerRun>> containers;
 				containers.Add(paragraph);
@@ -750,7 +750,7 @@ GuiDocumentCommonInterface
 						}
 						else if (auto textRun = run.Cast<DocumentTextRun>())
 						{
-							UserInput_FixForNonParagraph(textRun->text);
+							UserInput_JoinLinesInsideParagraph(textRun->text);
 						}
 					}
 				}
@@ -767,12 +767,12 @@ GuiDocumentCommonInterface
 				{
 					for (vint i = 0; i < paragraphTexts.Count(); i++)
 					{
-						UserInput_FixForNonParagraph(paragraphTexts[i]);
+						UserInput_JoinLinesInsideParagraph(paragraphTexts[i]);
 					}
 				}
 				if (config.paragraphMode == GuiDocumentParagraphMode::Singleline)
 				{
-					UserInput_FixForSingleline(paragraphTexts);
+					UserInput_JoinParagraphs(paragraphTexts);
 				}
 			}
 
@@ -830,7 +830,7 @@ GuiDocumentCommonInterface
 				}
 				if (config.paragraphMode == GuiDocumentParagraphMode::Singleline)
 				{
-					UserInput_FixForSingleline(paragraphTexts);
+					UserInput_JoinParagraphs(paragraphTexts);
 				}
 			}
 
@@ -839,7 +839,7 @@ GuiDocumentCommonInterface
 				if (!model) return;
 				if (config.pasteAsPlainText)
 				{
-					UserInput_FixForPlainText(model, 0, model->paragraphs.Count() - 1);
+					UserInput_ConvertToPlainText(model, 0, model->paragraphs.Count() - 1);
 
 					if (baselineDocument)
 					{
@@ -860,12 +860,12 @@ GuiDocumentCommonInterface
 				{
 					for (auto paragraph : model->paragraphs)
 					{
-						UserInput_FixForNonParagraph(paragraph);
+						UserInput_JoinLinesInsideParagraph(paragraph);
 					}
 				}
 				if (config.paragraphMode == GuiDocumentParagraphMode::Singleline)
 				{
-					UserInput_FixForSingleline(model);
+					UserInput_JoinParagraphs(model);
 				}
 			}
 
@@ -995,7 +995,7 @@ GuiDocumentCommonInterface
 					{
 						if(!skipFormatting)
 						{
-							UserInput_FixForPlainText(model, index, index + newCount - 1);
+							UserInput_ConvertToPlainText(model, index, index + newCount - 1);
 						}
 						if (baselineDocument)
 						{
@@ -1011,7 +1011,7 @@ GuiDocumentCommonInterface
 					{
 						for (vint i = index; i < index + newCount; i++)
 						{
-							UserInput_FixForNonParagraph(model->paragraphs[i]);
+							UserInput_JoinLinesInsideParagraph(model->paragraphs[i]);
 						}
 					}
 

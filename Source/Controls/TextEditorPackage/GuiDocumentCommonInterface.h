@@ -131,11 +131,11 @@ GuiDocumentCommonInterface
 
 			protected:
 
-				void										UserInput_FixForPlainText(Ptr<DocumentModel> model, vint beginParagraph, vint endParagraph);
-				void										UserInput_FixForSingleline(collections::List<WString>& paragraphTexts);
-				void										UserInput_FixForSingleline(Ptr<DocumentModel> model);
-				void										UserInput_FixForNonParagraph(WString& text);
-				void										UserInput_FixForNonParagraph(Ptr<DocumentParagraphRun> paragraph);
+				void										UserInput_ConvertToPlainText(Ptr<DocumentModel> model, vint beginParagraph, vint endParagraph);
+				void										UserInput_JoinParagraphs(collections::List<WString>& paragraphTexts);
+				void										UserInput_JoinParagraphs(Ptr<DocumentModel> model);
+				void										UserInput_JoinLinesInsideParagraph(WString& text);
+				void										UserInput_JoinLinesInsideParagraph(Ptr<DocumentParagraphRun> paragraph);
 
 				WString										UserInput_ConvertDocumentToText(Ptr<DocumentModel> model);
 				void										UserInput_FormatText(collections::List<WString>& paragraphTexts);
