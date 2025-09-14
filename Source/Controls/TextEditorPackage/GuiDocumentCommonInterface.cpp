@@ -715,21 +715,38 @@ GuiDocumentCommonInterface
 
 			void GuiDocumentCommonInterface::UserInput_JoinLinesInsideParagraph(WString& text)
 			{
+				const wchar_t* buffer = text.Buffer();
+				const wchar_t* begin = buffer;
+				const wchar_t* end = begin;
+				const wchar_t* next = nullptr;
+				
+				while (*end != '\r' && *end != '\n' && *end != '\0') end++;
+				next = end;
+				while (*next != '\n' && *next != '\0') next++;
+				if (!*next)
+				{
+					text = text.Left(end - begin);
+					return;
+				}
+
 				text = stream::GenerateToStream([&](stream::StreamWriter& writer)
 				{
-					for (vint j = 0; j < text.Length(); j++)
+					writer.WriteString(text.Left(end - begin));
+					while (!*next)
 					{
-						if (text[j] == L'\n')
+						if (config.spaceForFlattenedLineBreak)
 						{
-							if (config.spaceForFlattenedLineBreak)
-							{
-								writer.WriteChar(L' ');
-							}
+							writer.WriteChar(L' ');
 						}
-						else if (text[j] != L'\r')
-						{
-							writer.WriteChar(text[j]);
-						}
+
+						begin = next;
+						end = begin;
+						next = nullptr;
+
+						while (*end != '\r' && *end != '\n' && *end != '\0') end++;
+						next = end;
+						while (*next != '\n' && *next != '\0') next++;
+						writer.WriteString(text.Left(end - begin));
 					}
 				});
 			}
