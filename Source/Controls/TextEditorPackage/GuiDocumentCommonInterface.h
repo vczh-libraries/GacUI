@@ -12,7 +12,6 @@ Interfaces:
 #include "GuiDocumentConfig.h"
 #include "EditorCallback/GuiTextUndoRedo.h"
 #include "../GuiContainerControls.h"
-#include "../../GraphicsElement/GuiGraphicsDocumentRenderer.h"
 
 namespace vl
 {

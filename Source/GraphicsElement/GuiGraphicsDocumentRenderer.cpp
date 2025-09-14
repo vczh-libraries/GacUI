@@ -254,6 +254,7 @@ GuiDocumentParagraphCache
 					if (auto cache = paragraphCaches[i].Obj())
 					{
 						cache->graphicsParagraph = nullptr;
+						cache->outdatedStyles = true;
 					}
 				}
 			}
@@ -273,7 +274,7 @@ GuiDocumentParagraphCache
 			{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::elements::GuiDocumentParagraphCache::GetParagraphCache(vint)#"
 				auto cache = paragraphCaches[paragraphIndex];
-				CHECK_ERROR(cache && (!requireParagraph || cache->graphicsParagraph), ERROR_MESSAGE_PREFIX L"The specified paragraph is not created.");
+				CHECK_ERROR(cache && (!requireParagraph || (cache->graphicsParagraph && !cache->outdatedStyles)), ERROR_MESSAGE_PREFIX L"The specified paragraph is not created.");
 				return cache;
 #undef ERROR_MESSAGE_PREFIX
 			}
@@ -371,7 +372,7 @@ GuiDocumentParagraphCache
 						}
 						else if (auto cache = paragraphCaches[index + i])
 						{
-							cache->graphicsParagraph = nullptr;
+							cache->outdatedStyles = true;
 						}
 					}
 					return 0;
@@ -444,12 +445,15 @@ GuiDocumentParagraphCache
 						paragraphText = &passwordText[0];
 					}
 					cache->graphicsParagraph = layoutProvider->CreateParagraph(paragraphText, renderTarget, callback);
+					cache->outdatedStyles = true;
+				}
+
+				if (cache->outdatedStyles)
+				{
+					cache->outdatedStyles = false;
+					SetPropertiesVisitor::SetProperty(element->GetDocument().Obj(), this, cache, paragraph, cache->selectionBegin, cache->selectionEnd);
 					cache->graphicsParagraph->SetParagraphAlignment(paragraph->alignment ? paragraph->alignment.Value() : Alignment::Left);
 					cache->graphicsParagraph->SetWrapLine(element->GetWrapLine());
-					SetPropertiesVisitor::SetProperty(element->GetDocument().Obj(), this, cache, paragraph, cache->selectionBegin, cache->selectionEnd);
-				}
-				if (cache->graphicsParagraph->GetMaxWidth() != maxWidth)
-				{
 					cache->graphicsParagraph->SetMaxWidth(maxWidth);
 				}
 
@@ -486,17 +490,19 @@ GuiDocumentParagraphCache
 						if (index < 1) return 0;
 						end = index - 1;
 					}
-					else if (y < top + size.y)
+					else if (y < top + size.y + paragraphDistance)
 					{
 						return index;
 					}
 					else
 					{
+						if (index > paragraphSizes.Count() - 1) return paragraphSizes.Count() - 1;
 						start = validCachedTops;
 					}
 				}
 
-				while (start < end)
+				if (start >= end) return start;
+				while (true)
 				{
 					vint mid = (start + end) / 2;
 					vint top = GetParagraphTop(mid, paragraphDistance);
@@ -504,17 +510,18 @@ GuiDocumentParagraphCache
 					if (y < top)
 					{
 						end = mid - 1;
+						if (start >= end) return start;
 					}
-					else if (y < top + size.y)
+					else if (y < top + size.y + paragraphDistance)
 					{
 						return mid;
 					}
 					else
 					{
 						start = mid + 1;
+						if (start >= end) return end;
 					}
 				}
-				return start;
 			}
 
 /***********************************************************************
@@ -585,6 +592,7 @@ GuiDocumentElementRenderer
 
 			void GuiDocumentElementRenderer::Render(Rect bounds)
 			{
+				List<vint> paragraphsToReset;
 				if (auto callback = element->GetCallback())
 				{
 					callback->OnStartRender();
@@ -645,7 +653,7 @@ GuiDocumentElementRenderer
 
 						if (resized)
 						{
-							cache->graphicsParagraph = 0;
+							paragraphsToReset.Add(i);
 						}
 					}
 				}
@@ -655,6 +663,11 @@ GuiDocumentElementRenderer
 					callback->OnFinishRender();
 				}
 				FixMinSize();
+
+				for(auto p:paragraphsToReset)
+				{
+					NotifyParagraphUpdated(p, 1, 1, false);
+				}
 			}
 
 			void GuiDocumentElementRenderer::NotifyParagraphPaddingUpdated(bool value)
