@@ -496,7 +496,6 @@ GuiDocumentParagraphCache
 					}
 					else
 					{
-						if (index > paragraphSizes.Count() - 1) return paragraphSizes.Count() - 1;
 						start = validCachedTops;
 					}
 				}
