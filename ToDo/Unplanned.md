@@ -119,6 +119,7 @@
 - 3D Chart control based on Meta3DElement.
 - GIF player.
 - video player.
+- Mermaid graph rendering.
 
 ## Porting to New Platforms
 
