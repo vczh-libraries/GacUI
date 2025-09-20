@@ -108,21 +108,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RemotingTest_Core", "Remoti
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RemotingTest_Rendering_Win32", "RemotingTest_Rendering_Win32\RemotingTest_Rendering_Win32.vcxproj", "{E016B58A-A7A7-4EF5-A64E-B6F86AF159BE}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "@Copilot", "@Copilot", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
-	ProjectSection(SolutionItems) = preProject
-		copilotExecute.ps1 = copilotExecute.ps1
-		copilotPrepare.ps1 = copilotPrepare.ps1
-		Copilot_Execution.md = Copilot_Execution.md
-		Copilot_Planning.md = Copilot_Planning.md
-		Copilot_Task.md = Copilot_Task.md
-		Copilot_Scrum.md = Copilot_Scrum.md
-		Copilot_KB.md = Copilot_KB.md
-	EndProjectSection
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "KnowledgeBase", "..\..\..\Tools\Copilot\KnowledgeBase\KnowledgeBase.vcxitems", "{D178E490-7C2B-43FA-A8B3-A3BED748EB38}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "@CopilotExternal", "@CopilotExternal", "{A3BDF97F-9582-42DC-B1BF-76F43708E6D7}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -346,7 +331,6 @@ Global
 		{9E9FF655-8AF4-4FD2-A709-2F2B84F2CC63} = {1A152782-BECB-4D33-AD39-F54D3B234262}
 		{337E0972-C4CE-4863-916E-C1CD395DA085} = {1F207079-CD21-4802-8331-B391E27F6C0A}
 		{E016B58A-A7A7-4EF5-A64E-B6F86AF159BE} = {1F207079-CD21-4802-8331-B391E27F6C0A}
-		{D178E490-7C2B-43FA-A8B3-A3BED748EB38} = {A3BDF97F-9582-42DC-B1BF-76F43708E6D7}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {23701A6D-5A6A-4396-9B46-EC3D6DD7B20F}
@@ -406,7 +390,6 @@ Global
 		Source_Import\Source_Import.vcxitems*{bf177697-a8b5-4580-87e7-de77c0a29c9f}*SharedItemsImports = 4
 		Source_Import_Reflection\Source_Import_Reflection.vcxitems*{bf177697-a8b5-4580-87e7-de77c0a29c9f}*SharedItemsImports = 4
 		Source_GacUI\Source_GacUI.vcxitems*{cf702b13-73b3-47f2-8afc-89d1c25b007e}*SharedItemsImports = 9
-		..\..\..\Tools\Copilot\KnowledgeBase\KnowledgeBase.vcxitems*{d178e490-7c2b-43fa-a8b3-a3bed748eb38}*SharedItemsImports = 9
 		Source_GacUI_Utilities_Reflection\Source_GacUI_Utilities_Reflection.vcxitems*{d56c7df2-c673-4cbe-99ec-26f3d91790af}*SharedItemsImports = 9
 		Source_GacUI_CoreApplication\Source_GacUI_CoreApplication.vcxitems*{e2f1d033-808d-4d82-8fbc-ebce0f1cc11c}*SharedItemsImports = 9
 		Source_GacUI_Utilities_Controls\Source_GacUI_Utilities_Controls.vcxitems*{f8037bfa-7d7d-4811-bc87-df033ea38ab7}*SharedItemsImports = 4
