@@ -24,7 +24,7 @@ You will need to also read the GuiDocumentConfig and GuiDocumentConfigEvaluated 
 
 # TASKS
 
-- [ ] TASK No.1: Create TestDocumentConfig Test File with Empty TEST_CATEGORY Sections
+- [x] TASK No.1: Create TestDocumentConfig Test File with Empty TEST_CATEGORY Sections
 - [ ] TASK No.2: Implement UserInput_ConvertToPlainText Tests
 - [ ] TASK No.3: Implement UserInput_JoinParagraphs(List<WString>&) Tests
 - [ ] TASK No.4: Implement UserInput_JoinParagraphs(DocumentModel) Tests
