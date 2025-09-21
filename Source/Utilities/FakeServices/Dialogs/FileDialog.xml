@@ -13,7 +13,7 @@
         ${
           for (item in dataGrid.SelectedItems)
           {
-            var file = ViewModel.Files[item] as IFileDialogFile^;
+            var file = dataGrid.ItemProvider.GetBindingValue(item) as IFileDialogFile^;
             if (file is not null)
             {
               $Yield file;
@@ -184,7 +184,7 @@
                   ]]></ev.SelectionChanged-eval>
                   <ev.ItemLeftButtonDoubleClick-eval><![CDATA[
                     {
-                      var file = ViewModel.Files[arguments.itemIndex];
+                      var file = dataGrid.ItemProvider.GetBindingValue(arguments.itemIndex) as IFileDialogFile^;
                       var selection = ViewModel.ParseDisplayString(ViewModel.GetDisplayString({file}));
                       GuiApplication::GetApplication().InvokeInMainThread(self.RelatedControlHost, func():void
                       {

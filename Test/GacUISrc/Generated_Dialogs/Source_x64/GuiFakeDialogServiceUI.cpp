@@ -479,7 +479,7 @@ Closures
 
 	void __vwsnf36_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiItemMouseEventArgs* arguments) const
 	{
-		auto file = ::vl::__vwsn::This(__vwsnthis_0->ViewModel.Obj())->GetFiles()[::vl::__vwsn::This(arguments)->itemIndex];
+		auto file = ::vl::__vwsn::UnboxWeak<::vl::Ptr<::vl::presentation::IFileDialogFile>>(::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0->dataGrid)->GetItemProvider())->GetBindingValue(::vl::__vwsn::This(arguments)->itemIndex));
 		auto selection = ::vl::__vwsn::This(__vwsnthis_0->ViewModel.Obj())->ParseDisplayString(::vl::__vwsn::This(__vwsnthis_0->ViewModel.Obj())->GetDisplayString(::vl::reflection::description::GetLazyList<::vl::Ptr<::vl::presentation::IFileDialogFile>>((::vl::__vwsn::CreateList().Add(file)).list)));
 		::vl::__vwsn::This(::vl::presentation::controls::GetApplication())->InvokeInMainThread(::vl::__vwsn::This(__vwsnthis_0->self)->GetRelatedControlHost(), vl::Func(::vl_workflow_global::__vwsnf37_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize__(selection, __vwsnthis_0)));
 	}
@@ -2541,7 +2541,7 @@ Closures
 					if ((__vwsn_co_state_ == static_cast<::vl::vint64_t>(3L)))
 					{
 						(__vwsn_co1_item = ::vl::__vwsn::Unbox<::vl::vint64_t>(::vl::__vwsn::This(__vwsn_co3_for_enumerator_item.Obj())->GetCurrent()));
-						(__vwsn_co0_file = ::vl::Ptr<::vl::presentation::IFileDialogFile>(::vl::__vwsn::This(__vwsnthis_0->GetViewModel().Obj())->GetFiles()[__vwsn_co1_item]));
+						(__vwsn_co0_file = ::vl::__vwsn::UnboxWeak<::vl::Ptr<::vl::presentation::IFileDialogFile>>(::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0->dataGrid)->GetItemProvider())->GetBindingValue(__vwsn_co1_item)));
 						if (static_cast<bool>(__vwsn_co0_file))
 						{
 							this->SetStatus(::vl::reflection::description::CoroutineStatus::Waiting);

@@ -3003,7 +3003,7 @@ namespace gaclib_controls
             {
                 var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiItemMouseEventArgs*) : (::system::Void)
                 {
-                    var file = ViewModel.Files[arguments.itemIndex];
+                    var file = (dataGrid.ItemProvider.GetBindingValue(arguments.itemIndex) as (IFileDialogFile^));
                     var selection = ViewModel.ParseDisplayString(ViewModel.GetDisplayString({file;}));
                     GuiApplication::GetApplication().InvokeInMainThread(self.RelatedControlHost, func () : (void)
                     {
@@ -3477,7 +3477,7 @@ namespace gaclib_controls
                                 if ((<co-state> == 3))
                                 {
                                     (<co1>item = (cast (::system::Int32) <co3-for-enumerator>item.GetCurrent()));
-                                    (<co0>file = (ViewModel.Files[<co1>item] as (IFileDialogFile^)));
+                                    (<co0>file = (dataGrid.ItemProvider.GetBindingValue(<co1>item) as (IFileDialogFile^)));
                                     if (<co0>file is not null)
                                     {
                                         SetStatus(Waiting);
