@@ -132,7 +132,7 @@ GuiDocumentCommonInterface
 			public:
 
 				/// <summary>
-				/// Convert selected paragraphs to plain text, all styles, images and embedded objects will be removed.
+				/// Convert selected paragraphs to plain text, all alignments, styles, images and embedded objects will be removed.
 				/// </summary>
 				/// <param name="model">The document to convert.</param>
 				/// <param name="beginParagraph">The first paragraph to convert.</param>
@@ -179,8 +179,8 @@ GuiDocumentCommonInterface
 
 				/// <summary>
 				/// Text will be first breaks into paragraphs.
-				/// When <see cref="GuiDocumentConfigEvaluated::spaceForFlattenedLineBreak"/> is true, each two consecutive line breaks will be considered as a paragraph break.
-				/// When <see cref="GuiDocumentConfigEvaluated::spaceForFlattenedLineBreak"/> is false, each line break will be considered as a paragraph break.
+				/// When <see cref="GuiDocumentConfigEvaluated::doubleLineBreaksBetweenParagraph"/> is true, each two consecutive line breaks will be considered as a paragraph break.
+				/// When <see cref="GuiDocumentConfigEvaluated::doubleLineBreaksBetweenParagraph"/> is false, each line break will be considered as a paragraph break.
 				/// 
 				/// When paragraphMode is Paragraph, nothing happens.
 				/// When paragraphMode is Multiline, it removes line breaks in each paragraph.
