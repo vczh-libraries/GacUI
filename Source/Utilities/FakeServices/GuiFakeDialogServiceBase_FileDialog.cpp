@@ -780,7 +780,7 @@ FakeDialogServiceBase
 			vm->defaultExtension = defaultExtension;
 
 			Regex regexFilterExt(L"/*.[^*?]+");
-			Regex regexWildcard(L"[*? ]");
+			Regex regexWildcard(L"[*?;]");
 			vint filterStart = 0;
 			while (true)
 			{
@@ -821,20 +821,25 @@ FakeDialogServiceBase
 
 				auto regexFilter = stream::GenerateToStream([&](stream::TextWriter& writer)
 				{
-					writer.WriteChar(L'^');
+					writer.WriteString(L"^(");
 					List<Ptr<RegexMatch>> matches;
 					regexWildcard.Cut(filterItem->filter, false, matches);
 					for (auto match : matches)
 					{
 						if (match->Success())
 						{
-							if (match->Result().Value() == WString::Unmanaged(L"*"))
+							auto wildcard = match->Result().Value()[0];
+							switch (wildcard)
 							{
+							case L'*':
 								writer.WriteString(WString::Unmanaged(L"/.*"));
-							}
-							else
-							{
+								break;
+							case L'?':
 								writer.WriteString(WString::Unmanaged(L"/."));
+								break;
+							case L';':
+								writer.WriteString(WString::Unmanaged(L"|"));
+								break;
 							}
 						}
 						else
@@ -842,7 +847,7 @@ FakeDialogServiceBase
 							writer.WriteString(u32tow(regex_internal::EscapeTextForRegex(wtou32(match->Result().Value()))));
 						}
 					}
-					writer.WriteChar(L'$');
+					writer.WriteString(L")$");
 				});
 				filterItem->regexFilter = Ptr(new Regex(regexFilter));
 
