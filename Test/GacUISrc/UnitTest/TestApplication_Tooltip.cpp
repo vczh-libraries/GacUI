@@ -1,5 +1,6 @@
 #include "TestControls.h"
 
+using namespace vl::feature_injection;
 using namespace gacui_unittest_template;
 
 namespace vl
@@ -7,18 +8,14 @@ namespace vl
 	extern IDateTimeImpl* GetOSDateTimeImpl();
 }
 
-class TooltipTimer : protected vl::IDateTimeImpl
+class TooltipTimer : protected FeatureImpl<vl::IDateTimeImpl>
 {
 private:
-	vl::IDateTimeImpl*		osImpl = nullptr;
 	vl::DateTime			currentTime;
 	
 public:
 	TooltipTimer()
 	{
-		// Store the current DateTime implementation before injection
-		osImpl = vl::GetOSDateTimeImpl();
-		
 		// Initialize controlled time to 2000-1-1 0:0:0:000
 		currentTime = vl::DateTime::FromDateTime(2000, 1, 1, 0, 0, 0, 0);
 		
@@ -31,7 +28,7 @@ public:
 		try
 		{
 			// Restore original DateTime implementation
-			vl::InjectDateTimeImpl(nullptr);
+			vl::EjectDateTimeImpl(nullptr);
 		}
 		catch (...)
 		{
@@ -54,12 +51,12 @@ protected:
 	vl::DateTime FromDateTime(vint _year, vint _month, vint _day, vint _hour, vint _minute, vint _second, vint _milliseconds) override
 	{
 		// Delegate to original implementation for proper DateTime construction
-		return osImpl->FromDateTime(_year, _month, _day, _hour, _minute, _second, _milliseconds);
+		return Previous()->FromDateTime(_year, _month, _day, _hour, _minute, _second, _milliseconds);
 	}
 	
 	vl::DateTime FromOSInternal(vuint64_t osInternal) override
 	{
-		return osImpl->FromOSInternal(osInternal);
+		return Previous()->FromOSInternal(osInternal);
 	}
 	
 	vuint64_t LocalTime() override
@@ -69,27 +66,27 @@ protected:
 	
 	vuint64_t UtcTime() override
 	{
-		return osImpl->LocalToUtcTime(currentTime.osInternal);
+		return Previous()->LocalToUtcTime(currentTime.osInternal);
 	}
 	
 	vuint64_t LocalToUtcTime(vuint64_t osInternal) override
 	{
-		return osImpl->LocalToUtcTime(osInternal);
+		return Previous()->LocalToUtcTime(osInternal);
 	}
 	
 	vuint64_t UtcToLocalTime(vuint64_t osInternal) override
 	{
-		return osImpl->UtcToLocalTime(osInternal);
+		return Previous()->UtcToLocalTime(osInternal);
 	}
 	
 	vuint64_t Forward(vuint64_t osInternal, vuint64_t milliseconds) override
 	{
-		return osImpl->Forward(osInternal, milliseconds);
+		return Previous()->Forward(osInternal, milliseconds);
 	}
 	
 	vuint64_t Backward(vuint64_t osInternal, vuint64_t milliseconds) override
 	{
-		return osImpl->Backward(osInternal, milliseconds);
+		return Previous()->Backward(osInternal, milliseconds);
 	}
 };
 

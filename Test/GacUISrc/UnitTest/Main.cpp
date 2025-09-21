@@ -166,7 +166,8 @@ void SetGuiMainProxy(const Func<void()>& proxy)
 template<typename T>
 int UnitTestMain(int argc, T* argv[])
 {
-	InjectLocaleImpl(GetDefaultLocaleImpl());
+	EnUsLocaleImpl unitTestLocaleImpl;
+	InjectLocaleImpl(&unitTestLocaleImpl);
 	UnitTestFrameworkConfig config;
 	config.snapshotFolder = unittest_framework_tests::GetTestSnapshotPath();
 	config.resourceFolder = unittest_framework_tests::GetTestDataPath();
@@ -174,6 +175,7 @@ int UnitTestMain(int argc, T* argv[])
 	GacUIUnitTest_Initialize(&config);
 	int result = UnitTest::RunAndDisposeTests(argc, argv);
 	GacUIUnitTest_Finalize();
+	EjectLocaleImpl(nullptr);
 	return result;
 }
 
