@@ -80,7 +80,7 @@ namespace vl
 DateTime
 ***********************************************************************/
 
-	class LinuxDateTimeImpl : public Object, public virtual IDateTimeImpl
+	class LinuxDateTimeImpl : public feature_injection::FeatureImpl<IDateTimeImpl>
 	{
 	public:
 
@@ -197,10 +197,9 @@ DateTime
 		}
 	};
 
-	LinuxDateTimeImpl osDateTimeImpl;
-
 	IDateTimeImpl* GetOSDateTimeImpl()
 	{
+		static LinuxDateTimeImpl osDateTimeImpl;
 		return &osDateTimeImpl;
 	}
 }
