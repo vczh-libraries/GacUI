@@ -1,0 +1,58 @@
+{
+    // global settings in `%appdata%\Code\User\settings.json`
+    // editor
+    "editor.insertSpaces": true,
+    "editor.tabSize": 4,
+    "editor.detectIndentation": true,
+    "[cpp][h]": {
+        "editor.insertSpaces": false,
+        "editor.tabSize": 4
+    },
+    "[md]": {
+        "editor.insertSpaces": true,
+        "editor.tabSize": 2
+    },
+    // search
+    "search.exclude": {
+        "Release/**": true
+    },
+    "search.useIgnoreFiles": false,
+    "search.useGlobalIgnoreFiles": false,
+    // UI
+    "git.openRepositoryInParentFolders": "always",
+    "terminal.integrated.defaultProfile.windows": "PowerShell",
+    "workbench.secondarySideBar.defaultVisibility": "visible",
+    // copilot
+    "github.copilot.nextEditSuggestions.enabled": true,
+    "github.copilot.chat.agent.thinkingTool": true,
+    "chat.agent.maxRequests": 9999,
+    "chat.tools.terminal.autoApprove": {
+        "yarn": true,
+        "npm": true,
+        "npx vitest run": true,
+        "cd": true,
+        "findstr": true,
+        "Test-Path": true,
+        "rm": false,
+        "rmdir": false,
+        "del": false,
+        "kill": false,
+        "curl": false,
+        "wget": false,
+        "eval": false,
+        "chmod": false,
+        "chown": false,
+        "/^Set-Location\\b/i": true,
+        "/^Select-String\\b/i": true,
+        "/^Remove-Item\\b/i": false,
+        "/^Stop-Process\\b/i": false,
+        "/^Invoke-WebRequest\\b/i": false,
+        "/^Invoke-Expression\\b/i": false,
+        "/^Get-Acl\\b/i": false,
+        "/^Set-Acl\\b/i": false,
+        "/^New-Item\\b/i": false,
+        "/^Copy-Item\\b/i": false,
+        "/^Move-Item\\b/i": false,
+        "/\\bcopilot(Prepare|Build|Execute)\\.ps1\\b/i": true
+    }
+}
