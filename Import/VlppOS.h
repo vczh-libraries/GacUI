@@ -149,6 +149,10 @@ Licensed under https://github.com/vczh-libraries/License
 
 namespace vl
 {
+/***********************************************************************
+Locale
+***********************************************************************/
+
 	/// <summary>Locale awared operations. Macro "INVLOC" is a shortcut to get a invariant locale.</summary>
 	/// <remarks>
 	/// <p>
@@ -406,8 +410,12 @@ namespace vl
 
 #define INVLOC vl::Locale::Invariant()
 
+/***********************************************************************
+ILocaleImpl
+***********************************************************************/
+
 	/// <summary>Platform-specific locale implementation interface.</summary>
-	class ILocaleImpl : public virtual Interface
+	class ILocaleImpl : public virtual feature_injection::IFeatureImpl
 	{
 	public:
 		virtual Locale							Invariant() const = 0;
@@ -445,8 +453,51 @@ namespace vl
 		virtual bool							EndsWith(const WString& localeName, const WString& text, const WString& find, Locale::Normalization normalization) const = 0;
 	};
 	
-	extern ILocaleImpl*							GetDefaultLocaleImpl();
 	extern void									InjectLocaleImpl(ILocaleImpl* impl);
+	extern void									EjectLocaleImpl(ILocaleImpl* impl);
+
+/***********************************************************************
+EnUsLocaleImpl
+***********************************************************************/
+
+	/// <summary>A platform independent implementation that only supports en-US.</summary>
+	class EnUsLocaleImpl : public feature_injection::FeatureImpl<ILocaleImpl>
+	{
+	public:
+		Locale									Invariant() const override;
+		Locale									SystemDefault() const override;
+		Locale									UserDefault() const override;
+		void									Enumerate(collections::List<Locale>& locales) const override;
+
+		void									GetShortDateFormats(const WString& localeName, collections::List<WString>& formats) const override;
+		void									GetLongDateFormats(const WString& localeName, collections::List<WString>& formats) const override;
+		void									GetYearMonthDateFormats(const WString& localeName, collections::List<WString>& formats) const override;
+		void									GetLongTimeFormats(const WString& localeName, collections::List<WString>& formats) const override;
+		void									GetShortTimeFormats(const WString& localeName, collections::List<WString>& formats) const override;
+
+		WString									FormatDate(const WString& localeName, const WString& format, DateTime date) const override;
+		WString									FormatTime(const WString& localeName, const WString& format, DateTime time) const override;
+		WString									FormatNumber(const WString& localeName, const WString& number) const override;
+		WString									FormatCurrency(const WString& localeName, const WString& currency) const override;
+
+		WString									GetShortDayOfWeekName(const WString& localeName, vint dayOfWeek) const override;
+		WString									GetLongDayOfWeekName(const WString& localeName, vint dayOfWeek) const override;
+		WString									GetShortMonthName(const WString& localeName, vint month) const override;
+		WString									GetLongMonthName(const WString& localeName, vint month) const override;
+
+		WString									ToLower(const WString& localeName, const WString& str) const override;
+		WString									ToUpper(const WString& localeName, const WString& str) const override;
+		WString									ToLinguisticLower(const WString& localeName, const WString& str) const override;
+		WString									ToLinguisticUpper(const WString& localeName, const WString& str) const override;
+
+		vint									Compare(const WString& localeName, const WString& s1, const WString& s2, Locale::Normalization normalization) const override;
+		vint									CompareOrdinal(const WString& s1, const WString& s2) const override;
+		vint									CompareOrdinalIgnoreCase(const WString& s1, const WString& s2) const override;
+		collections::Pair<vint, vint>			FindFirst(const WString& localeName, const WString& text, const WString& find, Locale::Normalization normalization) const override;
+		collections::Pair<vint, vint>			FindLast(const WString& localeName, const WString& text, const WString& find, Locale::Normalization normalization) const override;
+		bool									StartsWith(const WString& localeName, const WString& text, const WString& find, Locale::Normalization normalization) const override;
+		bool									EndsWith(const WString& localeName, const WString& text, const WString& find, Locale::Normalization normalization) const override;
+	};
 }
 
 #endif
@@ -2620,7 +2671,7 @@ namespace vl
 		};
 
 		/// <summary>Platform-specific file system implementation interface.</summary>
-		class IFileSystemImpl : public virtual Interface
+		class IFileSystemImpl : public virtual feature_injection::IFeatureImpl
 		{
 		public:
 			// FilePath operations
@@ -2646,6 +2697,7 @@ namespace vl
 		};
 
 		extern void InjectFileSystemImpl(IFileSystemImpl* impl);
+		extern void EjectFileSystemImpl(IFileSystemImpl* impl);
 	}
 }
 

@@ -38,7 +38,7 @@ namespace vl
 WindowsFileSystemImpl
 ***********************************************************************/
 
-		class WindowsFileSystemImpl : public Object, public virtual IFileSystemImpl
+		class WindowsFileSystemImpl : public feature_injection::FeatureImpl<IFileSystemImpl>
 		{
 		public:
 			void Initialize(WString& fullPath) const override
@@ -267,10 +267,9 @@ WindowsFileSystemImpl
 			}
 		};
 
-		WindowsFileSystemImpl osFileSystemImpl;
-
 		IFileSystemImpl* GetOSFileSystemImpl()
 		{
+			static WindowsFileSystemImpl osFileSystemImpl;
 			return &osFileSystemImpl;
 		}
 	}
@@ -711,7 +710,7 @@ Locale Helper Functions
 WindowsLocaleImpl
 ***********************************************************************/
 
-	class WindowsLocaleImpl : public Object, public ILocaleImpl
+	class WindowsLocaleImpl : public feature_injection::FeatureImpl<ILocaleImpl>
 	{
 	public:
 		Locale Invariant() const override
@@ -898,10 +897,9 @@ WindowsLocaleImpl
 		}
 	};
 
-	WindowsLocaleImpl windowsLocaleImpl;
-
 	ILocaleImpl* GetOSLocaleImpl()
 	{
+		static WindowsLocaleImpl windowsLocaleImpl;
 		return &windowsLocaleImpl;
 	}
 
