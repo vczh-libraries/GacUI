@@ -142,6 +142,9 @@ DocumentParagraphRun
 
 /***********************************************************************
 DocumentModel
+
+If a style has a parent style, undefined style properties are inherited recursively.
+If any style property is still undefined after inheritance, the value of DefaultStyleName will be picked up during rendering.
 ***********************************************************************/
 
 		const wchar_t* DocumentModel::DefaultStyleName		= L"#Default";
@@ -152,58 +155,78 @@ DocumentModel
 
 		DocumentModel::DocumentModel()
 		{
+			if (GetCurrentController())
 			{
-				FontProperties font=GetCurrentController()->ResourceService()->GetDefaultFont();
-				auto sp=Ptr(new DocumentStyleProperties);
-				sp->face=font.fontFamily;
-				sp->size=DocumentFontSize((double)font.size, false);
-				sp->color=Color();
-				sp->backgroundColor=Color(0, 0, 0, 0);
-				sp->bold=font.bold;
-				sp->italic=font.italic;
-				sp->underline=font.underline;
-				sp->strikeline=font.strikeline;
-				sp->antialias=font.antialias;
-				sp->verticalAntialias=font.verticalAntialias;
+				FontProperties font = GetCurrentController()->ResourceService()->GetDefaultFont();
+				auto sp = Ptr(new DocumentStyleProperties);
+				sp->face = font.fontFamily;
+				sp->size = DocumentFontSize((double)font.size, false);
+				sp->color = Color();
+				sp->backgroundColor = Color(0, 0, 0, 0);
+				sp->bold = font.bold;
+				sp->italic = font.italic;
+				sp->underline = font.underline;
+				sp->strikeline = font.strikeline;
+				sp->antialias = font.antialias;
+				sp->verticalAntialias = font.verticalAntialias;
 
 				auto style = Ptr(new DocumentStyle);
-				style->styles=sp;
+				style->styles = sp;
 				styles.Add(L"#Default", style);
 			}
+			else
 			{
 				auto sp = Ptr(new DocumentStyleProperties);
-				sp->color=Color(255, 255, 255);
-				sp->backgroundColor=Color(51, 153, 255);
+				sp->face = WString::Unmanaged(L"Times New Roman");
+				sp->size = DocumentFontSize(8, false);
+				sp->color = Color();
+				sp->backgroundColor = Color(0, 0, 0, 0);
+				sp->bold = false;
+				sp->italic = false;
+				sp->underline = false;
+				sp->strikeline = false;
+				sp->antialias = false;
+				sp->verticalAntialias = false;
 
 				auto style = Ptr(new DocumentStyle);
-				style->styles=sp;
+				style->styles = sp;
+				styles.Add(L"#Default", style);
+			}
+
+			{
+				auto sp = Ptr(new DocumentStyleProperties);
+				sp->color = Color(255, 255, 255);
+				sp->backgroundColor = Color(51, 153, 255);
+
+				auto style = Ptr(new DocumentStyle);
+				style->styles = sp;
 				styles.Add(L"#Selection", style);
 			}
 			{
 				auto sp = Ptr(new DocumentStyleProperties);
 
 				auto style = Ptr(new DocumentStyle);
-				style->styles=sp;
+				style->styles = sp;
 				styles.Add(L"#Context", style);
 			}
 			{
 				auto sp = Ptr(new DocumentStyleProperties);
-				sp->color=Color(0, 0, 255);
-				sp->underline=true;
+				sp->color = Color(0, 0, 255);
+				sp->underline = true;
 
 				auto style = Ptr(new DocumentStyle);
-				style->parentStyleName=L"#Context";
-				style->styles=sp;
+				style->parentStyleName = L"#Context";
+				style->styles = sp;
 				styles.Add(L"#NormalLink", style);
 			}
 			{
 				auto sp = Ptr(new DocumentStyleProperties);
-				sp->color=Color(255, 128, 0);
-				sp->underline=true;
+				sp->color = Color(255, 128, 0);
+				sp->underline = true;
 
 				auto style = Ptr(new DocumentStyle);
-				style->parentStyleName=L"#Context";
-				style->styles=sp;
+				style->parentStyleName = L"#Context";
+				style->styles = sp;
 				styles.Add(L"#ActiveLink", style);
 			}
 		}
