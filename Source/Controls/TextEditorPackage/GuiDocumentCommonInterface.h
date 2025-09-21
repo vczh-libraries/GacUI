@@ -131,13 +131,81 @@ GuiDocumentCommonInterface
 
 			public:
 
+				/// <summary>
+				/// Convert selected paragraphs to plain text, all styles, images and embedded objects will be removed.
+				/// </summary>
+				/// <param name="model">The document to convert.</param>
+				/// <param name="beginParagraph">The first paragraph to convert.</param>
+				/// <param name="endParagraph">The last paragraph to convert.</param>
 				static void									UserInput_ConvertToPlainText(Ptr<DocumentModel> model, vint beginParagraph, vint endParagraph);
+
+				/// <summary>
+				/// Concatinate multiple paragraphs to one paragraph.
+				/// </summary>
+				/// <param name="paragraphTexts">The paragraphs to update. When the function finishes, it is replaced with the result.</param>
+				/// <param name="spaceForFlattenedLineBreak">Set to true to add a space between paragraphs.</param>
 				static void									UserInput_JoinParagraphs(collections::List<WString>& paragraphTexts, bool spaceForFlattenedLineBreak);
+
+				/// <summary>
+				/// Concatinate multiple paragraphs to one paragraph.
+				/// </summary>
+				/// <param name="model">The document to update.</param>
+				/// <param name="spaceForFlattenedLineBreak">Set to true to add <see cref="DocumentTextRun"/> of a space between paragraphs.</param>
 				static void									UserInput_JoinParagraphs(Ptr<DocumentModel> model, bool spaceForFlattenedLineBreak);
+
+				/// <summary>
+				/// Remove all line breaks.
+				/// </summary>
+				/// <param name="text">The paragraph to update. When the function finishes, it is replaced with the result.</param>
+				/// <param name="spaceForFlattenedLineBreak">Set to true to replace line breaks with spaces.</param>
 				static void									UserInput_JoinLinesInsideParagraph(WString& text, bool spaceForFlattenedLineBreak);
+
+				/// <summary>
+				/// Remove all line breaks.
+				/// </summary>
+				/// <param name="paragraph">The paragraph to update.</param>
+				/// <param name="spaceForFlattenedLineBreak">Set to true to replace line breaks with <see cref="DocumentTextRun"/> of a space.</param>
 				static void									UserInput_JoinLinesInsideParagraph(Ptr<DocumentParagraphRun> paragraph, bool spaceForFlattenedLineBreak);
+
+				/// <summary>
+				/// When paragraphMode is Paragraph, nothing happens.
+				/// When paragraphMode is Multiline, it removes line breaks in each paragraph.
+				/// When paragraphMode is Singleline, it removes line breaks in each paragraph and concatinate all paragraphs to one paragraph
+				/// <see cref="GuiDocumentConfigEvaluated::spaceForFlattenedLineBreak"/> is considered during joining.
+				/// </summary>
+				/// <param name="paragraphTexts">The paragraphs to update. When the function finishes, it is replaced with the result.</param>
+				/// <param name="config">Configuration of behavior.</param>
 				static void									UserInput_FormatText(collections::List<WString>& paragraphTexts, const GuiDocumentConfigEvaluated& config);
+
+				/// <summary>
+				/// Text will be first breaks into paragraphs.
+				/// When <see cref="GuiDocumentConfigEvaluated::spaceForFlattenedLineBreak"/> is true, each two consecutive line breaks will be considered as a paragraph break.
+				/// When <see cref="GuiDocumentConfigEvaluated::spaceForFlattenedLineBreak"/> is false, each line break will be considered as a paragraph break.
+				/// 
+				/// When paragraphMode is Paragraph, nothing happens.
+				/// When paragraphMode is Multiline, it removes line breaks in each paragraph.
+				/// When paragraphMode is Singleline, it removes line breaks in each paragraph and concatinate all paragraphs to one paragraph
+				/// <see cref="GuiDocumentConfigEvaluated::spaceForFlattenedLineBreak"/> is considered during joining.
+				/// </summary>
+				/// <param name="text">The text as input.</param>
+				/// <param name="paragraphTexts">Formatted paragraphs</param>
+				/// <param name="config">Configuration of behavior.</param>
 				static void									UserInput_FormatText(const WString& text, collections::List<WString>& paragraphTexts, const GuiDocumentConfigEvaluated& config);
+
+				/// <summary>
+				/// When <see cref="GuiDocumentConfigEvaluated::pasteAsPlainText"/> is true:
+				///   Apply <see cref="UserInput_ConvertToPlainText"/>.
+				///   Remove all style definitions.
+				///   If there is a baseline document, copy all style definition from it.
+				/// 
+				/// When paragraphMode is Paragraph, nothing happens.
+				/// When paragraphMode is Multiline, it removes line breaks in each paragraph.
+				/// When paragraphMode is Singleline, it removes line breaks in each paragraph and concatinate all paragraphs to one paragraph
+				/// <see cref="GuiDocumentConfigEvaluated::spaceForFlattenedLineBreak"/> is considered during joining.
+				/// </summary>
+				/// <param name="model">The document to update. When the function finishes, it is replaced with the result.</param>
+				/// <param name="baselineDocument">A baseline document for predefined styles.</param>
+				/// <param name="config">Configuration of behavior.</param>
 				static void									UserInput_FormatDocument(Ptr<DocumentModel> model, Ptr<DocumentModel> baselineDocument, const GuiDocumentConfigEvaluated& config);
 
 			protected:

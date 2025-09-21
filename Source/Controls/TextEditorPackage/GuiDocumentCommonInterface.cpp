@@ -828,7 +828,14 @@ GuiDocumentCommonInterface
 								writer.WriteString(FetchLineRecord_Get(flrFragment, buffer, text));
 								if (flrFragment.end != flrFragment.next && endingEmptyLines)
 								{
-									writer.WriteString(L"\r\n");
+									if (config.paragraphMode == GuiDocumentParagraphMode::Paragraph)
+									{
+										writer.WriteString(L"\r\n");
+									}
+									else if (config.spaceForFlattenedLineBreak)
+									{
+										writer.WriteChar(L' ');
+									}
 								}
 							};
 
