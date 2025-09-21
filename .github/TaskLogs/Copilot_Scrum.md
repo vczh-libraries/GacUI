@@ -16,6 +16,12 @@ THere are 8 functions but you only created 5+1 tasks, I would like to create ded
 
 In the first task, you will have to create 8 empty `TEST_CATEGORY`. And in each actual test case implement task, fill each TEST_CATEGORY.
 
+## UPDATE
+
+Carefully look through the source code of the 8 functions in `GuiDocumentCommonInterface.cpp`, find out what they are actually doing, update your best guessing to the document, before we can really design test cases.
+
+You will need to also read the GuiDocumentConfig and GuiDocumentConfigEvaluated class to have a better understanding.
+
 # TASKS
 
 - [ ] TASK No.1: Create TestDocumentConfig Test File with Empty TEST_CATEGORY Sections
@@ -65,206 +71,222 @@ Setting up the complete test file structure with all 8 categories ensures that e
 
 ## TASK No.2: Implement UserInput_ConvertToPlainText Tests
 
-Implement comprehensive test cases for the `UserInput_ConvertToPlainText` static method that removes formatting and converts document ranges to plain text.
+Implement comprehensive test cases for the `UserInput_ConvertToPlainText` static method that strips all formatting from specified paragraph ranges and resets alignment properties.
 
 ### what to be done
 
 - Fill the `UserInput_ConvertToPlainText` TEST_CATEGORY with complete test cases
-- Create test cases that verify the method correctly removes formatting from specified paragraph ranges
-- Test edge cases like empty ranges, single paragraph, multiple paragraphs
-- Test that paragraph alignments are properly reset
-- Verify the method handles invalid ranges gracefully (beginParagraph > endParagraph)
-- Create helper functions to build test DocumentModel instances with various formatting
-- Test both simple text content and complex formatted content scenarios
+- Test the method's core functionality: calls `DocumentModel::ConvertToPlainText(begin, end)` to remove all formatting from the specified range
+- Test that all paragraph alignments are reset to default (null) within the specified range
+- Test edge cases: invalid ranges (beginParagraph > endParagraph returns early), single paragraph, multiple paragraphs
+- Test that paragraphs outside the specified range remain unchanged
+- Create helper functions to build test DocumentModel instances with various formatting, styles, and alignment settings
+- Verify the method calculates proper TextPos range using the last paragraph's run ranges
 
 ### how to test it
 
 - Unit tests will verify that formatted DocumentModel paragraphs are converted to plain text correctly
-- Tests will confirm that paragraph alignment properties are reset after conversion
-- Boundary condition tests will ensure the method handles edge cases properly
+- Tests will confirm that paragraph alignment properties are reset to null after conversion
+- Boundary condition tests will ensure the method handles edge cases properly (early return for invalid ranges)
 - Tests will verify the method doesn't modify paragraphs outside the specified range
+- Tests will verify proper TextPos calculation for the end position using run ranges
 
 ### rationale
 
-`UserInput_ConvertToPlainText` is a core text processing function that strips formatting from documents. Comprehensive testing ensures this fundamental operation works correctly across all scenarios, as formatting removal is critical for copy/paste operations and text export functionality.
+`UserInput_ConvertToPlainText` is a fundamental text processing function that strips all formatting from documents. It's used internally by `UserInput_FormatDocument` when `pasteAsPlainText` is enabled. Comprehensive testing ensures this core operation works correctly for copy/paste operations and document cleaning functionality.
 
 ## TASK No.3: Implement UserInput_JoinParagraphs(List<WString>&) Tests
 
-Implement test cases for the `UserInput_JoinParagraphs(collections::List<WString>& paragraphTexts, bool spaceForFlattenedLineBreak)` overload that joins string paragraphs.
+Implement test cases for the `UserInput_JoinParagraphs(collections::List<WString>& paragraphTexts, bool spaceForFlattenedLineBreak)` overload that concatenates all string paragraphs into a single paragraph.
 
 ### what to be done
 
 - Fill the `UserInput_JoinParagraphs_ListWString` TEST_CATEGORY with complete test cases
-- Test the string list overload that joins string paragraphs with optional space insertion
-- Verify proper handling of the `spaceForFlattenedLineBreak` parameter
-- Test empty paragraph lists and single paragraph scenarios
-- Test multiple paragraphs with various text content
-- Test paragraphs with different line ending patterns
-- Verify the result is a single combined paragraph in the list
+- Test the core functionality: concatenates all paragraphs in the list into one single paragraph, with optional space insertion between them
+- Test the `spaceForFlattenedLineBreak` parameter: when true, inserts a space between each paragraph (except before the first)
+- Test edge cases: empty list, single paragraph, multiple paragraphs with various content
+- Test with different paragraph content: empty strings, whitespace-only, normal text, special characters
+- Verify the list is properly modified: cleared and replaced with the single joined paragraph
+- Test that the joining preserves paragraph content exactly (no line processing within paragraphs)
 
 ### how to test it
 
 - Unit tests will verify string paragraphs are joined correctly with and without spaces
-- Tests will confirm the `spaceForFlattenedLineBreak` parameter behavior
-- Edge case tests will handle empty and single-item scenarios
-- Tests will verify the original list is properly modified to contain the joined result
+- Tests will confirm the `spaceForFlattenedLineBreak` parameter behavior (spaces only between paragraphs, not before first)
+- Edge case tests will handle empty and single-item scenarios  
+- Tests will verify the original list is properly modified to contain exactly one joined result
+- Content preservation tests will ensure no unexpected text modifications occur
 
 ### rationale
 
-This specific overload handles string-based paragraph joining which is fundamental for text processing. Testing this overload separately from the DocumentModel version ensures both APIs work correctly and consistently, which is crucial for maintaining data integrity during text manipulation.
+This string-based paragraph joining is fundamental for text processing operations. The method is used by other UserInput functions and needs to work correctly for both single-line mode processing and general text manipulation. Testing the exact space insertion logic is critical for maintaining predictable text formatting behavior.
 
 ## TASK No.4: Implement UserInput_JoinParagraphs(DocumentModel) Tests
 
-Implement test cases for the `UserInput_JoinParagraphs(Ptr<DocumentModel> model, bool spaceForFlattenedLineBreak)` overload that joins DocumentModel paragraphs.
+Implement test cases for the `UserInput_JoinParagraphs(Ptr<DocumentModel> model, bool spaceForFlattenedLineBreak)` overload that merges all paragraphs in a DocumentModel into the first paragraph.
 
 ### what to be done
 
 - Fill the `UserInput_JoinParagraphs_DocumentModel` TEST_CATEGORY with complete test cases
-- Test the DocumentModel overload that joins paragraph runs with optional space insertion
-- Verify proper handling of the `spaceForFlattenedLineBreak` parameter
-- Test single and multiple paragraph scenarios
-- Test various DocumentModel content types including text runs and formatted content
-- Ensure the DocumentModel variant properly merges runs from multiple paragraphs into the first paragraph
-- Verify that the document structure remains valid after joining
+- Test the core functionality: merges all paragraph runs from subsequent paragraphs into the first paragraph, with optional space insertion
+- Test the `spaceForFlattenedLineBreak` parameter: when true, inserts a space TextRun between merged paragraphs
+- Test various DocumentModel structures: single paragraph, multiple paragraphs with different run types (text, formatting, etc.)
+- Test that all runs from subsequent paragraphs are copied into the first paragraph using `CopyFrom(firstParagraph->runs, paragraph->runs, true)`
+- Verify the document structure after joining: only the first paragraph remains, all others are removed
+- Test that the space insertion creates proper DocumentTextRun objects with L" " content
 
 ### how to test it
 
 - Unit tests will confirm DocumentModel paragraphs are merged properly with run content preserved
-- Tests will verify the `spaceForFlattenedLineBreak` parameter behavior in the DocumentModel context
-- Structure validation tests will ensure the resulting DocumentModel maintains integrity
-- Tests will verify that only the first paragraph remains and contains all merged content
+- Tests will verify the `spaceForFlattenedLineBreak` parameter creates proper space TextRuns between merged content
+- Structure validation tests will ensure the resulting DocumentModel contains only the first paragraph with all runs merged
+- Tests will verify that run copying preserves all formatting and content from source paragraphs
+- Tests will confirm proper DocumentTextRun creation for space insertion
 
 ### rationale
 
-The DocumentModel overload handles complex document structure merging, which is more sophisticated than simple string joining. Testing this separately ensures proper handling of formatted content, runs, and document structure integrity during paragraph consolidation operations.
+The DocumentModel overload handles complex document structure merging, preserving all formatting while consolidating paragraphs. This is more sophisticated than simple string joining and is crucial for maintaining rich text formatting during paragraph consolidation operations like single-line mode conversion.
 
 ## TASK No.5: Implement UserInput_JoinLinesInsideParagraph(WString&) Tests
 
-Implement test cases for the `UserInput_JoinLinesInsideParagraph(WString& text, bool spaceForFlattenedLineBreak)` overload that flattens line breaks within text strings.
+Implement test cases for the `UserInput_JoinLinesInsideParagraph(WString& text, bool spaceForFlattenedLineBreak)` overload that flattens line breaks within a single text string.
 
 ### what to be done
 
 - Fill the `UserInput_JoinLinesInsideParagraph_WString` TEST_CATEGORY with complete test cases
-- Test the WString overload that joins lines within a text string
-- Verify proper line break flattening with and without space insertion
-- Test various line break scenarios including Windows (\r\n), Unix (\n), and Mac (\r) line endings
-- Test mixed line ending formats within the same string
-- Verify the method handles empty strings and single-line content properly
-- Test strings with only line breaks and no other content
+- Test the core functionality: processes line breaks using FetchLineRecord system to join lines within the text
+- Test the `spaceForFlattenedLineBreak` parameter: when true, inserts a space character where line breaks are removed
+- Test various line break scenarios: Windows (\r\n), Unix (\n), Mac (\r), and mixed line endings
+- Test edge cases: single line text (early return with no processing), empty strings, text with only line breaks
+- Test the FetchLineRecord parsing logic: properly identifies line boundaries and handles different line ending formats
+- Verify that the text string is modified in place to contain the flattened result
+- Test that when no line breaks exist (`!*flr.next` after first line), the method returns early
 
 ### how to test it
 
-- Unit tests will verify line breaks are properly flattened within text strings
-- Line ending format tests will ensure cross-platform compatibility
-- Tests will verify the `spaceForFlattenedLineBreak` parameter functions correctly
-- Edge case tests will handle various string content scenarios
+- Unit tests will verify line breaks are properly flattened within text strings using the FetchLineRecord system
+- Line ending format tests will ensure cross-platform compatibility (Windows, Unix, Mac line endings)
+- Tests will verify the `spaceForFlattenedLineBreak` parameter functions correctly (space insertion vs. direct joining)
+- Edge case tests will handle single-line content (early return), empty strings, and line-break-only content
+- Tests will verify proper in-place string modification
 
 ### rationale
 
-Line joining within text strings is crucial for text normalization and display formatting. The string-based overload needs thorough testing to ensure it handles all line ending formats correctly and maintains cross-platform compatibility for text processing operations.
+Line joining within text strings is crucial for text normalization and display formatting. The FetchLineRecord-based implementation needs thorough testing to ensure it handles all line ending formats correctly and maintains cross-platform compatibility. This function is used by higher-level text processing operations.
 
 ## TASK No.6: Implement UserInput_JoinLinesInsideParagraph(DocumentParagraphRun) Tests
 
-Implement test cases for the `UserInput_JoinLinesInsideParagraph(Ptr<DocumentParagraphRun> paragraph, bool spaceForFlattenedLineBreak)` overload that processes paragraph runs recursively.
+Implement test cases for the `UserInput_JoinLinesInsideParagraph(Ptr<DocumentParagraphRun> paragraph, bool spaceForFlattenedLineBreak)` overload that recursively processes all text runs within a paragraph container.
 
 ### what to be done
 
 - Fill the `UserInput_JoinLinesInsideParagraph_DocumentParagraphRun` TEST_CATEGORY with complete test cases
-- Test the DocumentParagraphRun overload that processes all text runs within a paragraph container
-- Test nested container runs to ensure the recursive processing works correctly
-- Verify line break flattening within text runs embedded in the paragraph structure
-- Test various paragraph structures including simple and complex nested runs
-- Ensure the method properly traverses and processes all text runs in the hierarchy
-- Test paragraphs with mixed content types (text runs, container runs, etc.)
+- Test the recursive container traversal: uses a queue-based approach to process all DocumentContainerRun objects
+- Test that DocumentTextRun objects are processed by calling the WString overload of UserInput_JoinLinesInsideParagraph
+- Test nested container structures: verify the method properly handles deeply nested DocumentContainerRun hierarchies  
+- Test various paragraph structures: simple text runs, mixed content (text + container runs), deeply nested containers
+- Test that the traversal queue correctly processes all containers and their child runs
+- Verify that line flattening is applied to all text runs found in the container hierarchy
+- Test the `spaceForFlattenedLineBreak` parameter propagation to the WString processing function
 
 ### how to test it
 
-- Unit tests will confirm paragraph runs are processed recursively for nested containers
-- Structure traversal tests will verify all text runs are properly processed
-- Tests will verify the `spaceForFlattenedLineBreak` parameter functions correctly in document context
-- Complex structure tests will ensure proper handling of deeply nested run hierarchies
+- Unit tests will confirm paragraph runs are processed recursively using the queue-based container traversal
+- Structure traversal tests will verify all text runs are properly found and processed in complex nested hierarchies
+- Tests will verify the `spaceForFlattenedLineBreak` parameter is correctly passed to the WString processing function
+- Integration tests will ensure proper coordination between container traversal and text run processing
+- Tests will verify that DocumentContainerRun and DocumentTextRun types are handled correctly
 
 ### rationale
 
-The recursive nature of the DocumentParagraphRun overload requires thorough testing to ensure all nested text runs are processed correctly. This is critical for maintaining document structure integrity while performing line joining operations on complex formatted content.
+The recursive nature of the DocumentParagraphRun overload requires thorough testing to ensure all nested text runs are processed correctly. This queue-based traversal system is critical for maintaining document structure integrity while performing line joining operations on complex formatted content with arbitrary nesting levels.
 
 ## TASK No.7: Implement UserInput_FormatText(List<WString>&) Tests
 
-Implement test cases for the `UserInput_FormatText(collections::List<WString>& paragraphTexts, const GuiDocumentConfigEvaluated& config)` overload that formats paragraph text lists.
+Implement test cases for the `UserInput_FormatText(collections::List<WString>& paragraphTexts, const GuiDocumentConfigEvaluated& config)` overload that applies paragraph mode formatting to text lists.
 
 ### what to be done
 
 - Fill the `UserInput_FormatText_ListWString` TEST_CATEGORY with complete test cases
-- Test the List<WString> overload that formats paragraph text lists according to configuration
-- Verify behavior with different `GuiDocumentParagraphMode` values (Paragraph, Multiline, Singleline)
-- Test the `spaceForFlattenedLineBreak` configuration parameter
-- Create test configurations representing different document formatting scenarios
-- Test with multiple paragraphs and various line break patterns within each paragraph
-- Verify proper interaction with UserInput_JoinLinesInsideParagraph and UserInput_JoinParagraphs
+- Test the paragraph mode logic: when config.paragraphMode != Paragraph, calls UserInput_JoinLinesInsideParagraph on each paragraph
+- Test the single-line mode logic: when config.paragraphMode == Singleline, calls UserInput_JoinParagraphs after line joining
+- Test all three GuiDocumentParagraphMode values: Paragraph (no processing), Multiline (line joining only), Singleline (line joining + paragraph joining)
+- Test the `config.spaceForFlattenedLineBreak` parameter propagation to both line and paragraph joining functions
+- Test various paragraph configurations and content scenarios
+- Create GuiDocumentConfigEvaluated test configurations for each paragraph mode
+- Test that Paragraph mode leaves the list unchanged, while other modes apply appropriate transformations
 
 ### how to test it
 
-- Unit tests will verify text formatting according to different paragraph modes
-- Configuration-driven tests will ensure proper handling of various document settings
-- Integration tests will verify the coordination between different formatting options
-- Tests will confirm the list is properly modified according to configuration
+- Unit tests will verify text formatting according to different paragraph modes using the exact config-driven logic
+- Configuration-driven tests will ensure proper handling of GuiDocumentConfigEvaluated settings for each mode
+- Integration tests will verify the correct sequencing: line joining first (if needed), then paragraph joining (if needed)
+- Tests will confirm the list is properly modified according to the configuration mode
+- Parameter propagation tests will verify spaceForFlattenedLineBreak is passed correctly to sub-functions
 
 ### rationale
 
-Text formatting based on configuration is essential for adapting content to different document types and user preferences. Testing this overload separately ensures the string-based formatting logic works correctly for all configuration combinations.
+This function implements the core paragraph mode formatting logic used throughout the document system. Testing all three paragraph modes ensures the configuration-driven text processing works correctly for different document types (single-line textboxes, multi-line textboxes, full rich text documents). The sequential processing (lines first, then paragraphs) needs verification.
 
 ## TASK No.8: Implement UserInput_FormatText(WString to List<WString>&) Tests
 
-Implement test cases for the `UserInput_FormatText(const WString& text, collections::List<WString>& paragraphTexts, const GuiDocumentConfigEvaluated& config)` overload that splits and formats text.
+Implement test cases for the `UserInput_FormatText(const WString& text, collections::List<WString>& paragraphTexts, const GuiDocumentConfigEvaluated& config)` overload that parses text into paragraphs and applies formatting.
 
 ### what to be done
 
 - Fill the `UserInput_FormatText_WStringToList` TEST_CATEGORY with complete test cases
-- Test the single WString overload that splits text into paragraphs and formats them
-- Verify behavior with the `doubleLineBreaksBetweenParagraph` configuration option
-- Test various input text patterns with different line break combinations
-- Test complex text with multiple paragraphs and various line break patterns
-- Verify proper paragraph detection and splitting logic
-- Test interaction with paragraph mode settings after splitting
+- Test the double line break paragraph detection: when config.doubleLineBreaksBetweenParagraph is true, uses complex FetchLineRecord logic to detect paragraph boundaries
+- Test the simple line-by-line parsing: when config.doubleLineBreaksBetweenParagraph is false, uses StringReader to split by single line breaks
+- Test the complex double line break logic: detects empty lines as paragraph separators, handles fragments and ending empty lines
+- Test the single-line mode application: calls UserInput_JoinParagraphs after paragraph parsing when config.paragraphMode == Singleline
+- Test various input text patterns: single lines, multiple lines, double line breaks, mixed line ending formats
+- Test the FetchLineRecord fragment processing: properly handles line grouping and empty line detection
+- Test edge cases: empty text, text ending with line breaks, text with only line breaks
 
 ### how to test it
 
-- Unit tests will verify text splitting into paragraphs according to configuration
-- Line break processing tests will confirm double line break paragraph detection works correctly
-- Integration tests will verify the coordination between splitting and formatting operations
-- Tests will ensure the output list contains properly formatted paragraphs
+- Unit tests will verify text splitting into paragraphs according to the doubleLineBreaksBetweenParagraph configuration
+- Line break processing tests will confirm double line break paragraph detection works correctly using FetchLineRecord logic
+- Simple parsing tests will verify StringReader-based line splitting for single line break mode
+- Integration tests will verify the coordination between paragraph parsing and single-line mode processing
+- Fragment processing tests will ensure complex line grouping logic works correctly
+- Edge case tests will handle various text boundary conditions
 
 ### rationale
 
-The text-to-paragraphs conversion is a complex operation that requires sophisticated line break analysis. Testing this overload separately ensures the splitting logic works correctly and integrates properly with the formatting engine for different document configurations.
+The text-to-paragraphs conversion implements sophisticated paragraph detection logic that differs significantly based on configuration. The double line break detection using FetchLineRecord is complex and requires thorough testing. This function is critical for paste operations and text import functionality where paragraph boundaries must be correctly identified.
 
 ## TASK No.9: Implement UserInput_FormatDocument Tests
 
 ## TASK No.9: Implement UserInput_FormatDocument Tests
 
-Implement test cases for `UserInput_FormatDocument` method that applies comprehensive formatting to entire document models.
+Implement test cases for `UserInput_FormatDocument` method that applies comprehensive configuration-driven formatting to entire DocumentModel instances.
 
 ### what to be done
 
 - Fill the `UserInput_FormatDocument` TEST_CATEGORY with complete test cases
-- Test document formatting using baseline document comparison
-- Verify the method properly applies GuiDocumentConfigEvaluated settings to document models
-- Test scenarios where baseline document is provided vs null baseline
-- Test various document structures including complex nested runs and multiple paragraphs
-- Verify integration with other UserInput methods called internally
-- Test performance considerations with reasonably sized documents
-- Ensure proper handling of document model copying and modification
+- Test the null safety check: method returns early if model is null
+- Test the pasteAsPlainText processing: when config.pasteAsPlainText is true, calls UserInput_ConvertToPlainText on entire document and handles style copying from baseline
+- Test baseline document style handling: copies styles from baselineDocument when provided, clears styles when baseline is null
+- Test the empty document check: method returns early if model has no paragraphs after plain text conversion
+- Test paragraph mode processing: applies UserInput_JoinLinesInsideParagraph to all paragraphs when config.paragraphMode != Paragraph
+- Test single-line mode processing: calls UserInput_JoinParagraphs on the entire model when config.paragraphMode == Singleline
+- Test the sequential processing order: plain text conversion → style handling → empty check → line joining → paragraph joining
+- Test various GuiDocumentConfigEvaluated configurations and DocumentModel structures
+- Test integration with all other UserInput methods called internally
 
 ### how to test it
 
-- Unit tests will verify complete document formatting using various configuration settings
-- Baseline comparison tests will ensure proper handling of reference documents
-- Performance tests will verify the method handles reasonably sized documents efficiently
-- Integration tests will confirm proper coordination with other UserInput methods
+- Unit tests will verify complete document formatting using various configuration settings with the exact processing sequence
+- Baseline comparison tests will ensure proper handling of style copying vs clearing based on baseline presence
+- Configuration integration tests will verify proper coordination with all called UserInput methods
+- Null safety and edge case tests will ensure proper handling of null models and empty documents
+- Sequential processing tests will verify the correct order of operations is maintained
+- Style management tests will confirm proper baseline document style handling
 
 ### rationale
 
-`UserInput_FormatDocument` is the highest-level formatting method that orchestrates the entire document formatting process. Comprehensive testing ensures this central method correctly applies all formatting rules and maintains document consistency, as it's likely used by high-level editor operations like paste and import functions.
+`UserInput_FormatDocument` is the highest-level formatting orchestrator that coordinates all other UserInput methods to apply comprehensive document formatting. It implements the complete document processing pipeline used by paste operations and document loading. Testing this integration point ensures all formatting rules work together correctly and in the proper sequence.
 
 # Impact to the Knowledge Base
 
