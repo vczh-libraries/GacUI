@@ -557,6 +557,18 @@ TEST_FILE
 				false
 			},
 			{
+				L"SingleLineBreak with space",
+				L"\r\n",
+				L" ",
+				true
+			},
+			{
+				L"SingleLineBreak without space",
+				L"\r\n",
+				L"",
+				false
+			},
+			{
 				L"SingleCharacter with space",
 				L"X",
 				L"X",
