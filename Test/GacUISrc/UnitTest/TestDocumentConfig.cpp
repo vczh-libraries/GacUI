@@ -1177,7 +1177,243 @@ TEST_FILE
 		});
 	});
 
-	TEST_CATEGORY(L"UserInput_FormatText_WStringToList")
+	TEST_CATEGORY(L"UserInput_FormatText_WStringToList (Single Line Breaking Mode)")
+	{
+		GuiDocumentConfig defaultConfig;
+		defaultConfig.autoExpand = false;
+		defaultConfig.pasteAsPlainText = false;
+		defaultConfig.wrapLine = true;
+		defaultConfig.paragraphMode = GuiDocumentParagraphMode::Paragraph;
+		defaultConfig.paragraphPadding = true;
+		defaultConfig.doubleLineBreaksBetweenParagraph = true;
+		defaultConfig.spaceForFlattenedLineBreak = false;
+		defaultConfig.paragraphRecycle = true;
+
+		TEST_CATEGORY(L"Basic Line Breaking Tests")
+		{
+			TEST_CASE(L"Single Line Without Line Breaks")
+			{
+				GuiDocumentConfig config = defaultConfig;
+				config.doubleLineBreaksBetweenParagraph = false;
+				config.paragraphMode = GuiDocumentParagraphMode::Paragraph;
+				GuiDocumentConfigEvaluated evalConfig(config);
+
+				collections::List<WString> paragraphTexts;
+				WString inputText = L"Single line of text";
+				
+				GuiDocumentCommonInterface::UserInput_FormatText(inputText, paragraphTexts, evalConfig);
+				
+				TEST_ASSERT(paragraphTexts.Count() == 1);
+				TEST_ASSERT(paragraphTexts[0] == L"Single line of text");
+			});
+
+			TEST_CASE(L"Windows Line Endings (\\r\\n)")
+			{
+				GuiDocumentConfig config = defaultConfig;
+				config.doubleLineBreaksBetweenParagraph = false;
+				config.paragraphMode = GuiDocumentParagraphMode::Paragraph;
+				GuiDocumentConfigEvaluated evalConfig(config);
+
+				collections::List<WString> paragraphTexts;
+				WString inputText = L"Line 1\r\nLine 2\r\nLine 3";
+				
+				GuiDocumentCommonInterface::UserInput_FormatText(inputText, paragraphTexts, evalConfig);
+				
+				TEST_ASSERT(paragraphTexts.Count() == 3);
+				TEST_ASSERT(paragraphTexts[0] == L"Line 1");
+				TEST_ASSERT(paragraphTexts[1] == L"Line 2");
+				TEST_ASSERT(paragraphTexts[2] == L"Line 3");
+			});
+
+			TEST_CASE(L"Unix Line Endings (\\n)")
+			{
+				GuiDocumentConfig config = defaultConfig;
+				config.doubleLineBreaksBetweenParagraph = false;
+				config.paragraphMode = GuiDocumentParagraphMode::Paragraph;
+				GuiDocumentConfigEvaluated evalConfig(config);
+
+				collections::List<WString> paragraphTexts;
+				WString inputText = L"Line 1\nLine 2\nLine 3";
+				
+				GuiDocumentCommonInterface::UserInput_FormatText(inputText, paragraphTexts, evalConfig);
+				
+				TEST_ASSERT(paragraphTexts.Count() == 3);
+				TEST_ASSERT(paragraphTexts[0] == L"Line 1");
+				TEST_ASSERT(paragraphTexts[1] == L"Line 2");
+				TEST_ASSERT(paragraphTexts[2] == L"Line 3");
+			});
+
+			TEST_CASE(L"Mixed Line Endings")
+			{
+				GuiDocumentConfig config = defaultConfig;
+				config.doubleLineBreaksBetweenParagraph = false;
+				config.paragraphMode = GuiDocumentParagraphMode::Paragraph;
+				GuiDocumentConfigEvaluated evalConfig(config);
+
+				collections::List<WString> paragraphTexts;
+				WString inputText = L"Line 1\r\nLine 2\nLine 3\nLine 4";
+				
+				GuiDocumentCommonInterface::UserInput_FormatText(inputText, paragraphTexts, evalConfig);
+				
+				TEST_ASSERT(paragraphTexts.Count() == 4);
+				TEST_ASSERT(paragraphTexts[0] == L"Line 1");
+				TEST_ASSERT(paragraphTexts[1] == L"Line 2");
+				TEST_ASSERT(paragraphTexts[2] == L"Line 3");
+				TEST_ASSERT(paragraphTexts[3] == L"Line 4");
+			});
+		});
+
+		TEST_CATEGORY(L"Edge Case Tests")
+		{
+			TEST_CASE(L"Empty Input")
+			{
+				GuiDocumentConfig config = defaultConfig;
+				config.doubleLineBreaksBetweenParagraph = false;
+				config.paragraphMode = GuiDocumentParagraphMode::Paragraph;
+				GuiDocumentConfigEvaluated evalConfig(config);
+
+				collections::List<WString> paragraphTexts;
+				WString inputText = L"";
+				
+				GuiDocumentCommonInterface::UserInput_FormatText(inputText, paragraphTexts, evalConfig);
+				
+				TEST_ASSERT(paragraphTexts.Count() == 0);
+			});
+
+			TEST_CASE(L"Only Line Breaks")
+			{
+				GuiDocumentConfig config = defaultConfig;
+				config.doubleLineBreaksBetweenParagraph = false;
+				config.paragraphMode = GuiDocumentParagraphMode::Paragraph;
+				GuiDocumentConfigEvaluated evalConfig(config);
+
+				collections::List<WString> paragraphTexts;
+				WString inputText = L"\n\n\n";
+				
+				GuiDocumentCommonInterface::UserInput_FormatText(inputText, paragraphTexts, evalConfig);
+				
+				TEST_ASSERT(paragraphTexts.Count() == 4);
+				TEST_ASSERT(paragraphTexts[0] == L"");
+				TEST_ASSERT(paragraphTexts[1] == L"");
+				TEST_ASSERT(paragraphTexts[2] == L"");
+				TEST_ASSERT(paragraphTexts[3] == L"");
+			});
+
+			TEST_CASE(L"Text Ending With Line Break")
+			{
+				GuiDocumentConfig config = defaultConfig;
+				config.doubleLineBreaksBetweenParagraph = false;
+				config.paragraphMode = GuiDocumentParagraphMode::Paragraph;
+				GuiDocumentConfigEvaluated evalConfig(config);
+
+				collections::List<WString> paragraphTexts;
+				WString inputText = L"Line 1\nLine 2\n";
+				
+				GuiDocumentCommonInterface::UserInput_FormatText(inputText, paragraphTexts, evalConfig);
+				
+				TEST_ASSERT(paragraphTexts.Count() == 3);
+				TEST_ASSERT(paragraphTexts[0] == L"Line 1");
+				TEST_ASSERT(paragraphTexts[1] == L"Line 2");
+				TEST_ASSERT(paragraphTexts[2] == L"");
+			});
+
+			TEST_CASE(L"Consecutive Line Breaks")
+			{
+				GuiDocumentConfig config = defaultConfig;
+				config.doubleLineBreaksBetweenParagraph = false;
+				config.paragraphMode = GuiDocumentParagraphMode::Paragraph;
+				GuiDocumentConfigEvaluated evalConfig(config);
+
+				collections::List<WString> paragraphTexts;
+				WString inputText = L"Line 1\n\nLine 2\n\n\nLine 3";
+				
+				GuiDocumentCommonInterface::UserInput_FormatText(inputText, paragraphTexts, evalConfig);
+				
+				TEST_ASSERT(paragraphTexts.Count() == 6);
+				TEST_ASSERT(paragraphTexts[0] == L"Line 1");
+				TEST_ASSERT(paragraphTexts[1] == L"");
+				TEST_ASSERT(paragraphTexts[2] == L"Line 2");
+				TEST_ASSERT(paragraphTexts[3] == L"");
+				TEST_ASSERT(paragraphTexts[4] == L"");
+				TEST_ASSERT(paragraphTexts[5] == L"Line 3");
+			});
+		});
+
+		TEST_CATEGORY(L"Paragraph Mode Tests")
+		{
+			TEST_CASE(L"Paragraph Mode - No Post-Processing")
+			{
+				GuiDocumentConfig config = defaultConfig;
+				config.doubleLineBreaksBetweenParagraph = false;
+				config.paragraphMode = GuiDocumentParagraphMode::Paragraph;
+				GuiDocumentConfigEvaluated evalConfig(config);
+
+				collections::List<WString> paragraphTexts;
+				WString inputText = L"Line 1\nLine 2\nLine 3";
+				
+				GuiDocumentCommonInterface::UserInput_FormatText(inputText, paragraphTexts, evalConfig);
+				
+				TEST_ASSERT(paragraphTexts.Count() == 3);
+				TEST_ASSERT(paragraphTexts[0] == L"Line 1");
+				TEST_ASSERT(paragraphTexts[1] == L"Line 2");
+				TEST_ASSERT(paragraphTexts[2] == L"Line 3");
+			});
+
+			TEST_CASE(L"Multiline Mode - With Line Joining")
+			{
+				GuiDocumentConfig config = defaultConfig;
+				config.doubleLineBreaksBetweenParagraph = false;
+				config.paragraphMode = GuiDocumentParagraphMode::Multiline;
+				GuiDocumentConfigEvaluated evalConfig(config);
+
+				collections::List<WString> paragraphTexts;
+				WString inputText = L"Line 1\nLine 2\nLine 3";
+				
+				GuiDocumentCommonInterface::UserInput_FormatText(inputText, paragraphTexts, evalConfig);
+				
+				TEST_ASSERT(paragraphTexts.Count() == 3);
+				TEST_ASSERT(paragraphTexts[0] == L"Line 1");
+				TEST_ASSERT(paragraphTexts[1] == L"Line 2");
+				TEST_ASSERT(paragraphTexts[2] == L"Line 3");
+			});
+
+			TEST_CASE(L"Singleline Mode - Without Space")
+			{
+				GuiDocumentConfig config = defaultConfig;
+				config.doubleLineBreaksBetweenParagraph = false;
+				config.paragraphMode = GuiDocumentParagraphMode::Singleline;
+				config.spaceForFlattenedLineBreak = false;
+				GuiDocumentConfigEvaluated evalConfig(config);
+
+				collections::List<WString> paragraphTexts;
+				WString inputText = L"Line 1\nLine 2\nLine 3";
+				
+				GuiDocumentCommonInterface::UserInput_FormatText(inputText, paragraphTexts, evalConfig);
+				
+				TEST_ASSERT(paragraphTexts.Count() == 1);
+				TEST_ASSERT(paragraphTexts[0] == L"Line 1Line 2Line 3");
+			});
+
+			TEST_CASE(L"Singleline Mode - With Space")
+			{
+				GuiDocumentConfig config = defaultConfig;
+				config.doubleLineBreaksBetweenParagraph = false;
+				config.paragraphMode = GuiDocumentParagraphMode::Singleline;
+				config.spaceForFlattenedLineBreak = true;
+				GuiDocumentConfigEvaluated evalConfig(config);
+
+				collections::List<WString> paragraphTexts;
+				WString inputText = L"Line 1\nLine 2\nLine 3";
+				
+				GuiDocumentCommonInterface::UserInput_FormatText(inputText, paragraphTexts, evalConfig);
+				
+				TEST_ASSERT(paragraphTexts.Count() == 1);
+				TEST_ASSERT(paragraphTexts[0] == L"Line 1 Line 2 Line 3");
+			});
+		});
+	});
+
+	TEST_CATEGORY(L"UserInput_FormatText_WStringToList (Double Line Breaking Mode)")
 	{
 		// Tests for string to list formatting conversion
 		// Will be implemented in subsequent task

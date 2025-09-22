@@ -47,7 +47,7 @@ I would like you to split Task No.8 into 2 tasks. The first task create test cas
 - [x] TASK No.5: Implement UserInput_JoinLinesInsideParagraph(WString&) Tests
 - [x] TASK No.6: Implement UserInput_JoinLinesInsideParagraph(DocumentParagraphRun) Tests
 - [x] TASK No.7: Implement UserInput_FormatText(List<WString>&) Tests
-- [ ] TASK No.8: Implement UserInput_FormatText(WString to List<WString>&) Tests - Simple Line Breaking Mode
+- [x] TASK No.8: Implement UserInput_FormatText(WString to List<WString>&) Tests - Simple Line Breaking Mode
 - [ ] TASK No.9: Implement UserInput_FormatText(WString to List<WString>&) Tests - Double Line Breaking Mode
 - [ ] TASK No.10: Implement UserInput_FormatDocument Tests
 
