@@ -34,6 +34,10 @@ Task No.2 and No.4 are completed test cases that run against DocumentModel. They
 
 You need to use the same approach on incomplete test cases that also run against DocumentModel or DocumentParagraphRun
 
+## UPDATE
+
+I would like you to split Task No.8 into 2 tasks. The first task create test cases for when doubleLineBreaksBetweenParagraph is false, and following one for true.
+
 # TASKS
 
 - [x] TASK No.1: Create TestDocumentConfig Test File with Empty TEST_CATEGORY Sections
@@ -43,8 +47,9 @@ You need to use the same approach on incomplete test cases that also run against
 - [x] TASK No.5: Implement UserInput_JoinLinesInsideParagraph(WString&) Tests
 - [x] TASK No.6: Implement UserInput_JoinLinesInsideParagraph(DocumentParagraphRun) Tests
 - [x] TASK No.7: Implement UserInput_FormatText(List<WString>&) Tests
-- [ ] TASK No.8: Implement UserInput_FormatText(WString to List<WString>&) Tests
-- [ ] TASK No.9: Implement UserInput_FormatDocument Tests
+- [ ] TASK No.8: Implement UserInput_FormatText(WString to List<WString>&) Tests - Simple Line Breaking Mode
+- [ ] TASK No.9: Implement UserInput_FormatText(WString to List<WString>&) Tests - Double Line Breaking Mode
+- [ ] TASK No.10: Implement UserInput_FormatDocument Tests
 
 ## TASK No.1: Create TestDocumentConfig Test File with Empty TEST_CATEGORY Sections
 
@@ -247,35 +252,63 @@ Implement test cases for the `UserInput_FormatText(collections::List<WString>& p
 
 This function implements the core paragraph mode formatting logic used throughout the document system. Testing all three paragraph modes ensures the configuration-driven text processing works correctly for different document types (single-line textboxes, multi-line textboxes, full rich text documents). The sequential processing order (lines first, then paragraphs) needs verification for proper integration.
 
-## TASK No.8: Implement UserInput_FormatText(WString to List<WString>&) Tests
+## TASK No.8: Implement UserInput_FormatText(WString to List<WString>&) Tests - Simple Line Breaking Mode
 
-Implement test cases for the `UserInput_FormatText(const WString& text, collections::List<WString>& paragraphTexts, const GuiDocumentConfigEvaluated& config)` overload that parses text into paragraphs and applies formatting.
+Implement test cases for the `UserInput_FormatText(const WString& text, collections::List<WString>& paragraphTexts, const GuiDocumentConfigEvaluated& config)` overload when `doubleLineBreaksBetweenParagraph` is false, focusing on simple line-by-line paragraph parsing.
 
 ### what to be done
 
-- Fill the `UserInput_FormatText_WStringToList` TEST_CATEGORY with complete test cases
-- Test the paragraph detection logic: when config.doubleLineBreaksBetweenParagraph is true, uses complex FetchLineRecord logic to detect double line breaks as paragraph separators
+- Fill the `UserInput_FormatText_WStringToList` TEST_CATEGORY with test cases specifically for when `config.doubleLineBreaksBetweenParagraph` is false
 - Test the simple line-by-line parsing: when config.doubleLineBreaksBetweenParagraph is false, uses StringReader to split by each line break as paragraph separator
-- Test the complex double line break logic: detects empty lines as paragraph separators, handles fragment joining and ending empty lines
+- Test various input text patterns with simple line breaking: single lines, multiple lines with different line ending formats (\r\n, \n, \r)
 - Test the single-line mode application: calls UserInput_JoinParagraphs after paragraph parsing when config.paragraphMode == Singleline
-- Test various input text patterns: single lines, multiple lines, double line breaks, mixed line ending formats
-- Test the FetchLineRecord fragment processing: proper line grouping, empty line detection, and fragment submission
-- Test edge cases: empty text, text ending with line breaks, text with only line breaks, remaining empty paragraph handling
+- Test edge cases for simple mode: empty text, text ending with line breaks, text with only line breaks
+- Create GuiDocumentConfigEvaluated test configurations with doubleLineBreaksBetweenParagraph set to false and various paragraphMode values
+- Verify proper StringReader-based splitting where every line break creates a new paragraph
 
 ### how to test it
 
-- Paragraph detection tests will verify text splitting according to the doubleLineBreaksBetweenParagraph configuration
-- Double line break processing tests will confirm complex FetchLineRecord logic works correctly for paragraph boundary detection
 - Simple parsing tests will verify StringReader-based line splitting when doubleLineBreaksBetweenParagraph is false
-- Fragment processing tests will ensure complex line grouping and empty line detection logic works correctly
-- Single-line mode tests will verify UserInput_JoinParagraphs is called when config.paragraphMode == Singleline
-- Edge case tests will handle various text boundary conditions and empty content scenarios
+- Line ending format tests will ensure cross-platform compatibility (Windows, Unix, Mac line endings) with simple parsing
+- Single-line mode tests will verify UserInput_JoinParagraphs is called when config.paragraphMode == Singleline with simple input
+- Edge case tests will handle various text boundary conditions and empty content scenarios in simple mode
+- Configuration tests will verify proper behavior with doubleLineBreaksBetweenParagraph explicitly set to false
 
 ### rationale
 
-The text-to-paragraphs conversion implements sophisticated paragraph detection logic that differs significantly based on the doubleLineBreaksBetweenParagraph configuration. The complex FetchLineRecord-based double line break detection requires thorough testing. This function is critical for paste operations and text import functionality where paragraph boundaries must be correctly identified based on line break patterns.
+Testing the simple line breaking mode separately ensures the basic StringReader-based parsing is thoroughly validated. This mode is commonly used in scenarios where every line break should create a new paragraph, such as in simple text input controls. Separating this from the complex double line break logic allows for focused testing of the simpler parsing behavior.
 
-## TASK No.9: Implement UserInput_FormatDocument Tests
+## TASK No.9: Implement UserInput_FormatText(WString to List<WString>&) Tests - Double Line Breaking Mode
+
+Implement test cases for the `UserInput_FormatText(const WString& text, collections::List<WString>& paragraphTexts, const GuiDocumentConfigEvaluated& config)` overload when `doubleLineBreaksBetweenParagraph` is true, focusing on complex double line break paragraph detection.
+
+### what to be done
+
+- Fill the `UserInput_FormatText_WStringToList` TEST_CATEGORY with additional test cases specifically for when `config.doubleLineBreaksBetweenParagraph` is true
+- Test the complex double line break logic: detects empty lines as paragraph separators, handles fragment joining and ending empty lines
+- Test the FetchLineRecord fragment processing: proper line grouping, empty line detection, and fragment submission
+- Test various input text patterns with double line breaking: text with single line breaks (should be joined), text with double line breaks (should create paragraphs), mixed patterns
+- Test complex scenarios: multiple consecutive empty lines, paragraphs with different line ending formats, text ending with empty lines
+- Test the single-line mode application: calls UserInput_JoinParagraphs after paragraph parsing when config.paragraphMode == Singleline
+- Create GuiDocumentConfigEvaluated test configurations with doubleLineBreaksBetweenParagraph set to true and various paragraphMode values
+- Test edge cases: empty text, text with only empty lines, remaining empty paragraph handling
+
+### how to test it
+
+- Double line break processing tests will confirm complex FetchLineRecord logic works correctly for paragraph boundary detection
+- Fragment processing tests will ensure complex line grouping and empty line detection logic works correctly
+- Empty line detection tests will verify that single empty lines create paragraph breaks while single line breaks within paragraphs are preserved
+- Complex pattern tests will verify proper handling of mixed single and double line breaks in the same text
+- Single-line mode tests will verify UserInput_JoinParagraphs is called when config.paragraphMode == Singleline with complex input
+- Edge case tests will handle complex text boundary conditions and multiple empty line scenarios
+
+### rationale
+
+The complex double line break detection implements sophisticated paragraph boundary logic that requires separate focused testing. This mode is commonly used in rich text scenarios where paragraph breaks are indicated by empty lines, allowing single line breaks to be preserved within paragraphs. The FetchLineRecord-based processing with fragment handling needs thorough validation to ensure correct paragraph detection in complex text patterns.
+
+## TASK No.10: Implement UserInput_FormatDocument Tests
+
+## TASK No.10: Implement UserInput_FormatDocument Tests
 
 Implement test cases for `UserInput_FormatDocument` method that applies comprehensive configuration-driven formatting to entire DocumentModel instances.
 
@@ -298,6 +331,14 @@ Implement test cases for `UserInput_FormatDocument` method that applies comprehe
 - Array-driven null safety tests will verify proper early return behavior for null models across multiple test scenarios
 - Plain text conversion tests will verify UserInput_ConvertToPlainText is called with correct range (0, paragraphs.Count() - 1) using varied test configurations
 - Style management tests will confirm proper baseline style copying vs clearing based on baseline presence through multiple test cases
+- Empty document tests will verify early return when no paragraphs remain after processing using predefined test scenarios
+- Sequential processing tests will verify the exact order of operations is maintained across the test array
+- Configuration integration tests will verify proper coordination with all called UserInput methods using varied configurations
+- Comprehensive integration tests will ensure all formatting rules work together correctly through array-driven test scenarios
+
+### rationale
+
+`UserInput_FormatDocument` is the highest-level formatting orchestrator that coordinates all other UserInput methods to apply comprehensive document formatting. It implements the complete document processing pipeline used by paste operations and document loading. Testing this integration point ensures all formatting rules work together correctly and in the proper sequence, especially the style management and sequential processing logic.
 - Empty document tests will verify early return when no paragraphs remain after processing using predefined test scenarios
 - Sequential processing tests will verify the exact order of operations is maintained across the test array
 - Configuration integration tests will verify proper coordination with all called UserInput methods using varied configurations
