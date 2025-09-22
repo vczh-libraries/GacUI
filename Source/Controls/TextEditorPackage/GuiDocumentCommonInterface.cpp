@@ -757,7 +757,7 @@ GuiDocumentCommonInterface
 				text = stream::GenerateToStream([&](stream::StreamWriter& writer)
 				{
 					writer.WriteString(FetchLineRecord_Get(flr, buffer, text));
-					while (!*flr.next)
+					while (*flr.next)
 					{
 						if (spaceForFlattenedLineBreak)
 						{
