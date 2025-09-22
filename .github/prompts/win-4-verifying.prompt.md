@@ -97,6 +97,18 @@ You need to locate listed files in `TaskLogs.vcxitems`.
   - If it is defined in the standard C++ library or third-party library, use the full name.
   - If it is defined in the source code, use the full name if there is ambiguity, and then mention the file containing its definition.
 
+## Unit Test Projects to Execute
+
+- `UnitTest`
+
+### Calling copilotBuild.ps1 and copilotExecute.ps1
+
+This solution is in `Test\GacUISrc`, after `ls` to this folder, scripts will be accessible with:
+- `& ..\..\.github\TaskLogs\copilotBuild.ps1`
+  - Check out `Compile the Solution` for usage of this script.
+- `& ..\..\.github\TaskLogs\copilotExecute.ps1`. 
+  - Check out `Verifying your code edit` for usage of this script.
+
 # Compile the Solution
 
 - In `Unit Test Projects to Execute` section there are multiple project names.
@@ -119,14 +131,4 @@ You need to locate listed files in `TaskLogs.vcxitems`.
   - Compiler the whole solution. Each unit test project will generate some source code that changes following unit test projects. That's why you need to compile before each execution.
   - Execute `copilotExecute.ps1 -Executable <PROJECT-NAME>`. `<PROJECT-NAME>` is the project name in the list.
 - You must keep fixing the code until all errors are eliminated.
-
-## Unit Test Projects to Execute
-
-- `UnitTest`
-
-### Calling copilotBuild.ps1 and copilotExecute.ps1
-
-This solution is in `Test\GacUISrc`, after `ls` to this folder, scripts will be accessible with:
-- `& ..\..\.github\TaskLogs\copilotBuild.ps1`
-- `& ..\..\.github\TaskLogs\copilotExecute.ps1`
 
