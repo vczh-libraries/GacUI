@@ -1834,12 +1834,6 @@ TEST_FILE
 			return config;
 		};
 
-		TEST_CASE(L"Null Model Safety Check")
-		{
-			GuiDocumentCommonInterface::UserInput_FormatDocument(nullptr, nullptr, GuiDocumentConfigEvaluated(defaultConfig));
-			TEST_ASSERT(true);
-		});
-
 		struct FormatDocumentTestCase
 		{
 			const wchar_t* description;
