@@ -22,6 +22,8 @@
 - If there is a `# Problem` section: it means you are on a fresh start.
   - Find and execute `copilotPrepare.ps1` to clean up everything from the last run.
   - After `copilotPrepare.ps1` finishes, copy precisely my problem description in `# Problem` from the LATEST chat message under a `# PROBLEM DESCRIPTION`.
+    - If the problem description is empty:
+      - Find the first incomplete task in `Copilot_Scrum.md`, and follow the intruction below to process that task.
     - If the problem description is like `Complete task No.X`:
       - Locate the specific task in `Copilot_Scrum.md`.
       - There is a bullet list of all tasks at the beginning of `# TASKS`. Mark the specific task as being processed by changing `[ ]` to `[x]`.
