@@ -1065,13 +1065,14 @@ TEST_FILE
 				GuiDocumentCommonInterface::UserInput_FormatText(emptyList2, evalConfig2);
 				TEST_ASSERT(emptyList2.Count() == 0);
 				
-				// Test Singleline mode
+				// Test Singleline mode - UserInput_JoinParagraphs creates one empty string from empty list
 				GuiDocumentConfig config3 = defaultConfig;
 				config3.paragraphMode = GuiDocumentParagraphMode::Singleline;
 				GuiDocumentConfigEvaluated evalConfig3(config3);
 				collections::List<WString> emptyList3;
 				GuiDocumentCommonInterface::UserInput_FormatText(emptyList3, evalConfig3);
-				TEST_ASSERT(emptyList3.Count() == 0);
+				TEST_ASSERT(emptyList3.Count() == 1);
+				TEST_ASSERT(emptyList3[0] == L"");
 			});
 
 			TEST_CASE(L"Single Paragraph Structure")
