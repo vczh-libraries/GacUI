@@ -25,7 +25,7 @@
   - In side the `Filter` tag there is the solution explorer folder.
   - Edit that `*.filters` file to include the source file.
 
-## Unit Test Projects to Execute
+## Unit Test Projects to Work with
 
 - `UnitTest`
 
@@ -45,7 +45,7 @@ This solution is in `Test\GacUISrc`, after `ls` to this folder, scripts will be 
 
 # Verifying your code edit
 
-- In `Unit Test Projects to Execute` section there are multiple project names.
+- In `Unit Test Projects to Work with` section there are multiple project names.
 - These projects are all `*.vcxproj` files. Locate them. In the parent folder there must be a `*.sln` file. That is the solution the compile.
 - You must move the current working directory to the folder containing the `*.sln` file.
   - The `ls` command helps.

@@ -95,7 +95,7 @@ You need to locate listed files in `TaskLogs.vcxitems`.
   - If it is defined in the standard C++ library or third-party library, use the full name.
   - If it is defined in the source code, use the full name if there is ambiguity, and then mention the file containing its definition.
 
-## Unit Test Projects to Execute
+## Unit Test Projects to Work with
 
 - `UnitTest`
 
