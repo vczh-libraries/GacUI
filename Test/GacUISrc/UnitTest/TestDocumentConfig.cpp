@@ -437,8 +437,159 @@ TEST_FILE
 
 	TEST_CATEGORY(L"UserInput_JoinParagraphs_DocumentModel")
 	{
-		// Tests for DocumentModel paragraph joining
-		// Will be implemented in subsequent task
+		TEST_CASE(L"Single Paragraph Should Remain Unchanged")
+		{
+			auto inputXml = LR"XML(<Doc><Content><p><nop>Only one paragraph</nop></p></Content></Doc>)XML";
+			auto expectedXml = LR"XML(<Doc><Content><p><nop>Only one paragraph</nop></p></Content><Styles/></Doc>)XML";
+			
+			auto model = LoadDoc(inputXml);
+			GuiDocumentCommonInterface::UserInput_JoinParagraphs(model, false);
+			auto actualXml = SaveDoc(model);
+			
+			TEST_PRINT(L"Expected: " + WString::Unmanaged(expectedXml));
+			TEST_PRINT(L"Actual: " + actualXml);
+			TEST_ASSERT(expectedXml == actualXml);
+		});
+
+		TEST_CASE(L"Two Simple Paragraphs Without Spaces")
+		{
+			auto inputXml = LR"XML(<Doc><Content><p><nop>First paragraph</nop></p><p><nop>Second paragraph</nop></p></Content></Doc>)XML";
+			auto expectedXml = LR"XML(<Doc><Content><p><nop>First paragraph</nop><nop>Second paragraph</nop></p></Content><Styles/></Doc>)XML";
+			
+			auto model = LoadDoc(inputXml);
+			GuiDocumentCommonInterface::UserInput_JoinParagraphs(model, false);
+			auto actualXml = SaveDoc(model);
+			
+			TEST_PRINT(L"Expected: " + WString::Unmanaged(expectedXml));
+			TEST_PRINT(L"Actual: " + actualXml);
+			TEST_ASSERT(expectedXml == actualXml);
+		});
+
+		TEST_CASE(L"Two Simple Paragraphs With Spaces")
+		{
+			auto inputXml = LR"XML(<Doc><Content><p><nop>First paragraph</nop></p><p><nop>Second paragraph</nop></p></Content></Doc>)XML";
+			auto expectedXml = LR"XML(<Doc><Content><p><nop>First paragraph</nop><sp/><nop>Second paragraph</nop></p></Content><Styles/></Doc>)XML";
+			
+			auto model = LoadDoc(inputXml);
+			GuiDocumentCommonInterface::UserInput_JoinParagraphs(model, true);
+			auto actualXml = SaveDoc(model);
+			
+			TEST_PRINT(L"Expected: " + WString::Unmanaged(expectedXml));
+			TEST_PRINT(L"Actual: " + actualXml);
+			TEST_ASSERT(expectedXml == actualXml);
+		});
+
+		TEST_CASE(L"Multiple Paragraphs Without Spaces")
+		{
+			auto inputXml = LR"XML(<Doc><Content><p><nop>First</nop></p><p><nop>Second</nop></p><p><nop>Third</nop></p></Content></Doc>)XML";
+			auto expectedXml = LR"XML(<Doc><Content><p><nop>First</nop><nop>Second</nop><nop>Third</nop></p></Content><Styles/></Doc>)XML";
+			
+			auto model = LoadDoc(inputXml);
+			GuiDocumentCommonInterface::UserInput_JoinParagraphs(model, false);
+			auto actualXml = SaveDoc(model);
+			
+			TEST_PRINT(L"Expected: " + WString::Unmanaged(expectedXml));
+			TEST_PRINT(L"Actual: " + actualXml);
+			TEST_ASSERT(expectedXml == actualXml);
+		});
+
+		TEST_CASE(L"Multiple Paragraphs With Spaces")
+		{
+			auto inputXml = LR"XML(<Doc><Content><p><nop>First</nop></p><p><nop>Second</nop></p><p><nop>Third</nop></p></Content></Doc>)XML";
+			auto expectedXml = LR"XML(<Doc><Content><p><nop>First</nop><sp/><nop>Second</nop><sp/><nop>Third</nop></p></Content><Styles/></Doc>)XML";
+			
+			auto model = LoadDoc(inputXml);
+			GuiDocumentCommonInterface::UserInput_JoinParagraphs(model, true);
+			auto actualXml = SaveDoc(model);
+			
+			TEST_PRINT(L"Expected: " + WString::Unmanaged(expectedXml));
+			TEST_PRINT(L"Actual: " + actualXml);
+			TEST_ASSERT(expectedXml == actualXml);
+		});
+
+		TEST_CASE(L"Formatted Text Without Spaces")
+		{
+			auto inputXml = LR"XML(<Doc><Content><p><b><nop>Bold text</nop></b></p><p><i><nop>Italic text</nop></i></p></Content></Doc>)XML";
+			auto expectedXml = LR"XML(<Doc><Content><p><b><nop>Bold text</nop></b><i><nop>Italic text</nop></i></p></Content><Styles/></Doc>)XML";
+			
+			auto model = LoadDoc(inputXml);
+			GuiDocumentCommonInterface::UserInput_JoinParagraphs(model, false);
+			auto actualXml = SaveDoc(model);
+			
+			TEST_PRINT(L"Expected: " + WString::Unmanaged(expectedXml));
+			TEST_PRINT(L"Actual: " + actualXml);
+			TEST_ASSERT(expectedXml == actualXml);
+		});
+
+		TEST_CASE(L"Formatted Text With Spaces")
+		{
+			auto inputXml = LR"XML(<Doc><Content><p><b><nop>Bold text</nop></b></p><p><i><nop>Italic text</nop></i></p></Content></Doc>)XML";
+			auto expectedXml = LR"XML(<Doc><Content><p><b><nop>Bold text</nop></b><sp/><i><nop>Italic text</nop></i></p></Content><Styles/></Doc>)XML";
+			
+			auto model = LoadDoc(inputXml);
+			GuiDocumentCommonInterface::UserInput_JoinParagraphs(model, true);
+			auto actualXml = SaveDoc(model);
+			
+			TEST_PRINT(L"Expected: " + WString::Unmanaged(expectedXml));
+			TEST_PRINT(L"Actual: " + actualXml);
+			TEST_ASSERT(expectedXml == actualXml);
+		});
+
+		TEST_CASE(L"Empty Paragraphs Mixed With Content")
+		{
+			auto inputXml = LR"XML(<Doc><Content><p><nop>First</nop></p><p></p><p><nop>Third</nop></p></Content></Doc>)XML";
+			auto expectedXml = LR"XML(<Doc><Content><p><nop>First</nop><sp/><sp/><nop>Third</nop></p></Content><Styles/></Doc>)XML";
+			
+			auto model = LoadDoc(inputXml);
+			GuiDocumentCommonInterface::UserInput_JoinParagraphs(model, true);
+			auto actualXml = SaveDoc(model);
+			
+			TEST_PRINT(L"Expected: " + WString::Unmanaged(expectedXml));
+			TEST_PRINT(L"Actual: " + actualXml);
+			TEST_ASSERT(expectedXml == actualXml);
+		});
+
+		TEST_CASE(L"Complex Nested Formatting With Styles")
+		{
+			auto inputXml = LR"XML(<Doc><Content><p><div style="Title"><b><nop>Styled title</nop></b></div></p><p><nop>Regular paragraph</nop></p></Content><Styles><Style name="Title"><size>1.5x</size><b>true</b></Style></Styles></Doc>)XML";
+			auto expectedXml = LR"XML(<Doc><Content><p><div style="Title"><b><nop>Styled title</nop></b></div><sp/><nop>Regular paragraph</nop></p></Content><Styles><Style name="Title"><size>1.5x</size><b>true</b></Style></Styles></Doc>)XML";
+			
+			auto model = LoadDoc(inputXml);
+			GuiDocumentCommonInterface::UserInput_JoinParagraphs(model, true);
+			auto actualXml = SaveDoc(model);
+			
+			TEST_PRINT(L"Expected: " + WString::Unmanaged(expectedXml));
+			TEST_PRINT(L"Actual: " + actualXml);
+			TEST_ASSERT(expectedXml == actualXml);
+		});
+
+		TEST_CASE(L"Mixed Content Types With Images")
+		{
+			auto inputXml = LR"XML(<Doc><Content><p><nop>Text content</nop></p><p><img width="16" height="16" baseline="-1" frameIndex="0" source="test.png"/></p></Content></Doc>)XML";
+			auto expectedXml = LR"XML(<Doc><Content><p><nop>Text content</nop><sp/><img width="16" height="16" baseline="-1" frameIndex="0" source="test.png"/></p></Content><Styles/></Doc>)XML";
+			
+			auto model = LoadDoc(inputXml);
+			GuiDocumentCommonInterface::UserInput_JoinParagraphs(model, true);
+			auto actualXml = SaveDoc(model);
+			
+			TEST_PRINT(L"Expected: " + WString::Unmanaged(expectedXml));
+			TEST_PRINT(L"Actual: " + actualXml);
+			TEST_ASSERT(expectedXml == actualXml);
+		});
+
+		TEST_CASE(L"Embedded Objects")
+		{
+			auto inputXml = LR"XML(<Doc><Content><p><nop>Before object</nop></p><p><object name="TestObject"/></p><p><nop>After object</nop></p></Content></Doc>)XML";
+			auto expectedXml = LR"XML(<Doc><Content><p><nop>Before object</nop><sp/><object name="TestObject"/><sp/><nop>After object</nop></p></Content><Styles/></Doc>)XML";
+			
+			auto model = LoadDoc(inputXml);
+			GuiDocumentCommonInterface::UserInput_JoinParagraphs(model, true);
+			auto actualXml = SaveDoc(model);
+			
+			TEST_PRINT(L"Expected: " + WString::Unmanaged(expectedXml));
+			TEST_PRINT(L"Actual: " + actualXml);
+			TEST_ASSERT(expectedXml == actualXml);
+		});
 	});
 
 	TEST_CATEGORY(L"UserInput_JoinLinesInsideParagraph_WString")
