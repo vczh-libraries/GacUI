@@ -722,8 +722,177 @@ TEST_FILE
 
 	TEST_CATEGORY(L"UserInput_JoinLinesInsideParagraph_DocumentParagraphRun")
 	{
-		// Tests for DocumentParagraphRun line joining
-		// Will be implemented in subsequent task
+		struct DocumentParagraphRunTestCase
+		{
+			const wchar_t* name;           // Test case description
+			const wchar_t* inputXml;       // Input XML with line breaks in text runs
+			const wchar_t* expectedXml;    // Expected XML after line break processing
+			bool spaceForFlattenedLineBreak; // Parameter value to pass to function
+		};
+
+		DocumentParagraphRunTestCase testCases[] = {
+			// Simple structure tests
+			{
+				L"SingleTextRun WithLineBreak",
+				LR"XML(<Doc><Content><p><nop>Line1<br/>Line2</nop></p></Content><Styles/></Doc>)XML",
+				LR"XML(<Doc><Content><p><nop>Line1 Line2</nop></p></Content><Styles/></Doc>)XML",
+				true
+			},
+			{
+				L"MultipleTextRuns SameLevel",
+				LR"XML(<Doc><Content><p><nop>First<br/>Part</nop><nop>Second<br/>Part</nop></p></Content><Styles/></Doc>)XML",
+				LR"XML(<Doc><Content><p><nop>First Part</nop><nop>Second Part</nop></p></Content><Styles/></Doc>)XML",
+				true
+			},
+			{
+				L"EmptyTextRuns MixedWithContent",
+				LR"XML(<Doc><Content><p><nop></nop><nop>Content<br/>Here</nop><nop></nop></p></Content><Styles/></Doc>)XML",
+				LR"XML(<Doc><Content><p><nop></nop><nop>Content Here</nop><nop></nop></p></Content><Styles/></Doc>)XML",
+				true
+			},
+			
+			// Single-level container tests
+			{
+				L"BoldContainer WithTextRun",
+				LR"XML(<Doc><Content><p><b><nop>Bold<br/>Text</nop></b></p></Content><Styles/></Doc>)XML",
+				LR"XML(<Doc><Content><p><b><nop>Bold Text</nop></b></p></Content><Styles/></Doc>)XML",
+				true
+			},
+			{
+				L"ItalicContainer WithTextRun",
+				LR"XML(<Doc><Content><p><i><nop>Italic<br/>Text</nop></i></p></Content><Styles/></Doc>)XML",
+				LR"XML(<Doc><Content><p><i><nop>Italic Text</nop></i></p></Content><Styles/></Doc>)XML",
+				true
+			},
+			{
+				L"StyledContainer WithTextRun",
+				LR"XML(<Doc><Content><p><div style="Title"><nop>Styled<br/>Text</nop></div></p></Content><Styles><s name="Title"/></Styles></Doc>)XML",
+				LR"XML(<Doc><Content><p><div style="Title"><nop>Styled Text</nop></div></p></Content><Styles><s name="Title"/></Styles></Doc>)XML",
+				true
+			},
+			{
+				L"MixedDirectAndContainer",
+				LR"XML(<Doc><Content><p><nop>Direct<br/>Text</nop><b><nop>Bold<br/>Text</nop></b></p></Content><Styles/></Doc>)XML",
+				LR"XML(<Doc><Content><p><nop>Direct Text</nop><b><nop>Bold Text</nop></b></p></Content><Styles/></Doc>)XML",
+				true
+			},
+			
+			// Multi-level nested container tests
+			{
+				L"TwoLevelNesting BoldItalic",
+				LR"XML(<Doc><Content><p><b><i><nop>Bold<br/>Italic</nop></i></b></p></Content><Styles/></Doc>)XML",
+				LR"XML(<Doc><Content><p><b><i><nop>Bold Italic</nop></i></b></p></Content><Styles/></Doc>)XML",
+				true
+			},
+			{
+				L"ThreeLevelNesting DivBoldItalic",
+				LR"XML(<Doc><Content><p><div><b><i><nop>Deep<br/>Nested</nop></i></b></div></p></Content><Styles/></Doc>)XML",
+				LR"XML(<Doc><Content><p><div><b><i><nop>Deep Nested</nop></i></b></div></p></Content><Styles/></Doc>)XML",
+				true
+			},
+			{
+				L"ComplexNesting MultipleSiblings",
+				LR"XML(<Doc><Content><p><div><b><nop>Bold<br/>Part</nop></b><i><nop>Italic<br/>Part</nop></i></div></p></Content><Styles/></Doc>)XML",
+				LR"XML(<Doc><Content><p><div><b><nop>Bold Part</nop></b><i><nop>Italic Part</nop></i></div></p></Content><Styles/></Doc>)XML",
+				true
+			},
+			
+			// Multiple container siblings tests
+			{
+				L"AdjacentContainers BoldItalic",
+				LR"XML(<Doc><Content><p><b><nop>Bold<br/>Text</nop></b><i><nop>Italic<br/>Text</nop></i></p></Content><Styles/></Doc>)XML",
+				LR"XML(<Doc><Content><p><b><nop>Bold Text</nop></b><i><nop>Italic Text</nop></i></p></Content><Styles/></Doc>)XML",
+				true
+			},
+			{
+				L"MixedWithDirectText StartMiddleEnd",
+				LR"XML(<Doc><Content><p><nop>Start<br/>Text</nop><b><nop>Bold<br/>Middle</nop></b><nop>End<br/>Text</nop></p></Content><Styles/></Doc>)XML",
+				LR"XML(<Doc><Content><p><nop>Start Text</nop><b><nop>Bold Middle</nop></b><nop>End Text</nop></p></Content><Styles/></Doc>)XML",
+				true
+			},
+			
+			// Complex document element tests
+			{
+				L"WithImageElement",
+				LR"XML(<Doc><Content><p><nop>Before<br/>Image</nop><img width="16" height="16" source="test.png"/><nop>After<br/>Image</nop></p></Content><Styles/></Doc>)XML",
+				LR"XML(<Doc><Content><p><nop>Before Image</nop><img width="16" height="16" source="test.png"/><nop>After Image</nop></p></Content><Styles/></Doc>)XML",
+				true
+			},
+			{
+				L"WithObjectElement",
+				LR"XML(<Doc><Content><p><nop>Before<br/>Object</nop><object name="TestObject"/><nop>After<br/>Object</nop></p></Content><Styles/></Doc>)XML",
+				LR"XML(<Doc><Content><p><nop>Before Object</nop><object name="TestObject"/><nop>After Object</nop></p></Content><Styles/></Doc>)XML",
+				true
+			},
+			{
+				L"WithHyperlinkElement",
+				LR"XML(<Doc><Content><p><a href="http://example.com"><nop>Link<br/>Text</nop></a></p></Content><Styles/></Doc>)XML",
+				LR"XML(<Doc><Content><p><a href="http://example.com"><nop>Link Text</nop></a></p></Content><Styles/></Doc>)XML",
+				true
+			},
+			
+			// Edge cases
+			{
+				L"EmptyContainers WithContent",
+				LR"XML(<Doc><Content><p><b></b><nop>Content<br/>After</nop></p></Content><Styles/></Doc>)XML",
+				LR"XML(<Doc><Content><p><b></b><nop>Content After</nop></p></Content><Styles/></Doc>)XML",
+				true
+			},
+			{
+				L"NestedEmptyContainers",
+				LR"XML(<Doc><Content><p><div><b></b></div><nop>Text<br/>Here</nop></p></Content><Styles/></Doc>)XML",
+				LR"XML(<Doc><Content><p><div><b></b></div><nop>Text Here</nop></p></Content><Styles/></Doc>)XML",
+				true
+			},
+			{
+				L"OnlyContainers NoText",
+				LR"XML(<Doc><Content><p><b></b><i></i></p></Content><Styles/></Doc>)XML",
+				LR"XML(<Doc><Content><p><b></b><i></i></p></Content><Styles/></Doc>)XML",
+				true
+			},
+			
+			// spaceForFlattenedLineBreak = false tests
+			{
+				L"SimpleText WithoutSpace",
+				LR"XML(<Doc><Content><p><nop>Line1<br/>Line2</nop></p></Content><Styles/></Doc>)XML",
+				LR"XML(<Doc><Content><p><nop>Line1Line2</nop></p></Content><Styles/></Doc>)XML",
+				false
+			},
+			{
+				L"NestedContainers WithoutSpace",
+				LR"XML(<Doc><Content><p><b><i><nop>Deep<br/>Text</nop></i></b></p></Content><Styles/></Doc>)XML",
+				LR"XML(<Doc><Content><p><b><i><nop>DeepText</nop></i></b></p></Content><Styles/></Doc>)XML",
+				false
+			}
+		};
+
+		auto xs = FromArray(testCases);
+		for (auto [testCase, index] : indexed(xs))
+		{
+			TEST_CASE(WString::Unmanaged(testCase.name))
+			{
+				// Load document from input XML
+				auto inputModel = LoadDoc(testCase.inputXml);
+				TEST_ASSERT(inputModel->paragraphs.Count() == 1);
+				
+				// Get the first paragraph for testing
+				auto paragraph = inputModel->paragraphs[0];
+				
+				// Apply the function under test
+				GuiDocumentCommonInterface::UserInput_JoinLinesInsideParagraph(paragraph, testCase.spaceForFlattenedLineBreak);
+				
+				// Save processed document to XML
+				auto actualXml = SaveDoc(inputModel);
+				
+				// Compare results
+				if (actualXml != testCase.expectedXml)
+				{
+					TEST_PRINT(WString::Unmanaged(L"Expected XML:") + testCase.expectedXml);
+					TEST_PRINT(L"Actual XML:" + actualXml);
+				}
+				TEST_ASSERT(actualXml == testCase.expectedXml);
+			});
+		}
 	});
 
 	TEST_CATEGORY(L"UserInput_FormatText_ListWString")
