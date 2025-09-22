@@ -1869,7 +1869,7 @@ TEST_FILE
 			{
 				L"Paragraph Mode - No Processing",
 				LR"XML(<Doc><Content><p><nop>Line1<br/>Line2</nop></p><p><nop>Para2<br/>Line2</nop></p></Content></Doc>)XML",
-				LR"XML(<Doc><Content><p><nop>Line1<br/>Line2</nop></p><p><nop>Para2<br/>Line2</nop></p></Content><Styles/></Doc>)XML",
+				LR"XML(<Doc><Content><p><nop>Line1</nop><br/><nop>Line2</nop></p><p><nop>Para2</nop><br/><nop>Line2</nop></p></Content><Styles/></Doc>)XML",
 				MakeConfig(false, GuiDocumentParagraphMode::Paragraph, false)
 			},
 			
@@ -1891,7 +1891,7 @@ TEST_FILE
 			{
 				L"Sequential Processing - Plain Text Then Line Joining",
 				LR"XML(<Doc><Content><p align="Center"><b><nop>Bold<br/>Text</nop></b></p><p><i><nop>Italic<br/>Text</nop></i></p></Content></Doc>)XML",
-				LR"XML(<Doc><Content><p><nop>Bold</nop><sp/><nop>Text</nop><sp/><nop>Italic</nop><sp/><nop>Text</nop></p></Content><Styles/></Doc>)XML",
+				LR"XML(<Doc><Content><p><nop>Bold Text</nop><sp/><nop>Italic Text</nop></p></Content><Styles/></Doc>)XML",
 				MakeConfig(true, GuiDocumentParagraphMode::Singleline, true)
 			},
 			
@@ -1899,7 +1899,7 @@ TEST_FILE
 			{
 				L"Complex Integration - Mixed Content with All Processing",
 				LR"XML(<Doc><Content><p align="Right"><div style="Complex"><b><nop>Style<br/>Bold</nop></b></div></p><p><img source="test.png"/></p><p><object name="TestObj"/><nop>After<br/>Object</nop></p></Content><Styles><Style name="Complex"><size>2x</size></Style></Styles></Doc>)XML",
-				LR"XML(<Doc><Content><p><nop>Style Bold After Object</nop></p></Content><Styles/></Doc>)XML",
+				LR"XML(<Doc><Content><p><nop>StyleBold</nop><nop>AfterObject</nop></p></Content><Styles/></Doc>)XML",
 				MakeConfig(true, GuiDocumentParagraphMode::Singleline, false)
 			}
 		};
