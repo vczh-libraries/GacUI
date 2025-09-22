@@ -4776,7 +4776,7 @@ class presentation::controls::GuiDocumentCommonInterface : system::ReferenceType
     function GetModified() : system::Boolean;
     function GetSelectionModel() : presentation::DocumentModel^;
     function GetSelectionText() : system::String;
-    function LoadDocumentAndClearUndoRedo(document : presentation::DocumentModel^) : system::Void;
+    function LoadDocumentAndClearUndoRedo(document : presentation::DocumentModel^, copy : system::Boolean) : system::Void;
     function LoadTextAndClearUndoRedo(text : system::String) : system::Void;
     function NotifyModificationSaved() : system::Void;
     function NotifyParagraphUpdated(index : system::Int32, oldCount : system::Int32, newCount : system::Int32, updatedText : system::Boolean, skipFormatting : system::Boolean) : system::Void;

@@ -18306,7 +18306,7 @@ GuiDocumentCommonInterface
 				});
 			}
 
-			void GuiDocumentCommonInterface::EditTextInternal(TextPos begin, TextPos end, const Func<void(TextPos, TextPos, vint&, vint&)>& editor)
+			void GuiDocumentCommonInterface::EditTextInternal(TextPos begin, TextPos end, const Func<void(TextPos, TextPos, vint&, vint&)>& editor, bool clearUndoRedo)
 			{
 				// save run before editing
 				if(begin>end)
@@ -18343,18 +18343,25 @@ GuiDocumentCommonInterface
 					UpdateCaretPoint();
 					SelectionChanged.Execute(documentControl->GetNotifyEventArguments());
 
-					// save run after editing
-					Ptr<DocumentModel> inputModel=documentElement->GetDocument()->CopyDocument(begin, caret, true);
+					if (clearUndoRedo)
+					{
+						undoRedoProcessor->ClearUndoRedo();
+					}
+					else
+					{
+						// save run after editing
+						Ptr<DocumentModel> inputModel = documentElement->GetDocument()->CopyDocument(begin, caret, true);
 
-					// submit redo-undo
-					GuiDocumentUndoRedoProcessor::ReplaceModelStruct arguments;
-					arguments.originalStart=begin;
-					arguments.originalEnd=end;
-					arguments.originalModel=originalModel;
-					arguments.inputStart=begin;
-					arguments.inputEnd=caret;
-					arguments.inputModel=inputModel;
-					undoRedoProcessor->OnReplaceModel(arguments);
+						// submit redo-undo
+						GuiDocumentUndoRedoProcessor::ReplaceModelStruct arguments;
+						arguments.originalStart = begin;
+						arguments.originalEnd = end;
+						arguments.originalModel = originalModel;
+						arguments.inputStart = begin;
+						arguments.inputEnd = caret;
+						arguments.inputModel = inputModel;
+						undoRedoProcessor->OnReplaceModel(arguments);
+					}
 				}
 			}
 
@@ -18656,7 +18663,37 @@ GuiDocumentCommonInterface
 
 			//================ basic
 
-			void GuiDocumentCommonInterface::UserInput_FixForPlainText(Ptr<DocumentModel> model, vint beginParagraph, vint endParagraph)
+			struct FetchLineRecord
+			{
+				const wchar_t*			begin = nullptr;
+				const wchar_t*			end = nullptr;
+				const wchar_t*			next = nullptr;
+			};
+
+			FetchLineRecord FetchLineRecord_Init(const wchar_t* text)
+			{
+				return { text,text,nullptr };
+			}
+
+			FetchLineRecord FetchLineRecord_Join(const FetchLineRecord& flr1, const FetchLineRecord& flr2)
+			{
+				return { flr1.begin, flr2.end, flr2.next };
+			}
+
+			void FetchLineRecord_Next(FetchLineRecord& record)
+			{
+				while (*record.end != '\n' && *record.end != '\0') record.end++;
+				record.next = record.end;
+				while (record.end > record.begin && record.end[-1] == L'\r') record.end--;
+				if (*record.next == '\n') record.next++;
+			}
+
+			WString FetchLineRecord_Get(const FetchLineRecord& flr, const wchar_t* buffer, const WString& text)
+			{
+				return text.Sub(flr.begin - buffer, flr.end - flr.begin);
+			}
+
+			void GuiDocumentCommonInterface::UserInput_ConvertToPlainText(Ptr<DocumentModel> model, vint beginParagraph, vint endParagraph)
 			{
 				if (beginParagraph > endParagraph) return;
 
@@ -18673,13 +18710,13 @@ GuiDocumentCommonInterface
 				}
 			}
 
-			void GuiDocumentCommonInterface::UserInput_FixForSingleline(collections::List<WString>& paragraphTexts)
+			void GuiDocumentCommonInterface::UserInput_JoinParagraphs(collections::List<WString>& paragraphTexts, bool spaceForFlattenedLineBreak)
 			{
 				auto line = stream::GenerateToStream([&](stream::StreamWriter& writer)
 				{
 					for(auto [paragraph, index] : indexed(paragraphTexts))
 					{
-						if (index > 0 && config.spaceForFlattenedLineBreak)
+						if (index > 0 && spaceForFlattenedLineBreak)
 						{
 							writer.WriteChar(L' ');
 						}
@@ -18690,12 +18727,12 @@ GuiDocumentCommonInterface
 				paragraphTexts.Add(line);
 			}
 
-			void GuiDocumentCommonInterface::UserInput_FixForSingleline(Ptr<DocumentModel> model)
+			void GuiDocumentCommonInterface::UserInput_JoinParagraphs(Ptr<DocumentModel> model, bool spaceForFlattenedLineBreak)
 			{
 				auto firstParagraph = model->paragraphs[0];
 				for (auto paragraph : From(model->paragraphs).Skip(1))
 				{
-					if (config.spaceForFlattenedLineBreak)
+					if (spaceForFlattenedLineBreak)
 					{
 						auto textRun = Ptr(new DocumentTextRun);
 						textRun->text = WString::Unmanaged(L" ");
@@ -18707,28 +18744,40 @@ GuiDocumentCommonInterface
 				model->paragraphs.Add(firstParagraph);
 			}
 
-			void GuiDocumentCommonInterface::UserInput_FixForNonParagraph(WString& text)
+			void GuiDocumentCommonInterface::UserInput_JoinLinesInsideParagraph(WString& text, bool spaceForFlattenedLineBreak)
 			{
+				const wchar_t* buffer = text.Buffer();
+				auto flr = FetchLineRecord_Init(buffer);
+				FetchLineRecord_Next(flr);
+				if (!*flr.next)
+				{
+					bool addSpace = flr.end < flr.next && flr.next[-1] != L'\r' && spaceForFlattenedLineBreak;
+					text = FetchLineRecord_Get(flr, buffer, text);
+					if (addSpace)
+					{
+						text += WString::Unmanaged(L" ");
+					}
+					return;
+				}
+
 				text = stream::GenerateToStream([&](stream::StreamWriter& writer)
 				{
-					for (vint j = 0; j < text.Length(); j++)
+					writer.WriteString(FetchLineRecord_Get(flr, buffer, text));
+					while (*flr.end)
 					{
-						if (text[j] == L'\n')
+						if (spaceForFlattenedLineBreak)
 						{
-							if (config.spaceForFlattenedLineBreak)
-							{
-								writer.WriteChar(L' ');
-							}
+							writer.WriteChar(L' ');
 						}
-						else if (text[j] != L'\r')
-						{
-							writer.WriteChar(text[j]);
-						}
+
+						flr = FetchLineRecord_Init(flr.next);
+						FetchLineRecord_Next(flr);
+						writer.WriteString(FetchLineRecord_Get(flr, buffer, text));
 					}
 				});
 			}
 
-			void GuiDocumentCommonInterface::UserInput_FixForNonParagraph(Ptr<DocumentParagraphRun> paragraph)
+			void GuiDocumentCommonInterface::UserInput_JoinLinesInsideParagraph(Ptr<DocumentParagraphRun> paragraph, bool spaceForFlattenedLineBreak)
 			{
 				List<Ptr<DocumentContainerRun>> containers;
 				containers.Add(paragraph);
@@ -18744,73 +18793,101 @@ GuiDocumentCommonInterface
 						}
 						else if (auto textRun = run.Cast<DocumentTextRun>())
 						{
-							UserInput_FixForNonParagraph(textRun->text);
+							UserInput_JoinLinesInsideParagraph(textRun->text, spaceForFlattenedLineBreak);
 						}
 					}
 				}
 			}
 
-			WString GuiDocumentCommonInterface::UserInput_ConvertDocumentToText(Ptr<DocumentModel> model)
-			{
-				return model->GetTextForReading(WString::Unmanaged(config.doubleLineBreaksBetweenParagraph ? L"\r\n\r\n" : L"\r\n"));
-			}
-
-			void GuiDocumentCommonInterface::UserInput_FormatText(collections::List<WString>& paragraphTexts)
+			void GuiDocumentCommonInterface::UserInput_FormatText(collections::List<WString>& paragraphTexts, const GuiDocumentConfigEvaluated& config)
 			{
 				if (config.paragraphMode != GuiDocumentParagraphMode::Paragraph)
 				{
 					for (vint i = 0; i < paragraphTexts.Count(); i++)
 					{
-						UserInput_FixForNonParagraph(paragraphTexts[i]);
+						UserInput_JoinLinesInsideParagraph(paragraphTexts[i], config.spaceForFlattenedLineBreak);
 					}
 				}
 				if (config.paragraphMode == GuiDocumentParagraphMode::Singleline)
 				{
-					UserInput_FixForSingleline(paragraphTexts);
+					UserInput_JoinParagraphs(paragraphTexts, config.spaceForFlattenedLineBreak);
 				}
 			}
 
-			void GuiDocumentCommonInterface::UserInput_FormatText(const WString& text, collections::List<WString>& paragraphTexts)
+			void GuiDocumentCommonInterface::UserInput_FormatText(const WString& text, collections::List<WString>& paragraphTexts, const GuiDocumentConfigEvaluated& config)
 			{
-				stream::StringReader reader(text);
-				WString paragraph;
-				bool empty = true;
-
 				if (config.doubleLineBreaksBetweenParagraph)
 				{
-					while (!reader.IsEnd())
+					const wchar_t* buffer = text.Buffer();
+					auto flr = FetchLineRecord_Init(buffer);
+					FetchLineRecord_Next(flr);
+					bool remaining = false;
+					while (*flr.begin)
 					{
-						WString line = reader.ReadLine();
-						if (empty)
+						paragraphTexts.Add(stream::GenerateToStream([&](stream::StreamWriter& writer)
 						{
-							paragraph += line;
-							empty = false;
-						}
-						else if (line != L"")
-						{
-							if (config.paragraphMode == GuiDocumentParagraphMode::Paragraph)
+							auto flrFragmentFirst = flr;
+							auto flrFragmentLast = flrFragmentFirst;
+							auto SubmitFragment = [&](bool endingEmptyLines)
 							{
-								paragraph += L"\r\n" + line;
-							}
-							else if(config.spaceForFlattenedLineBreak)
+								auto flrFragment = FetchLineRecord_Join(flrFragmentFirst, flrFragmentLast);
+								writer.WriteString(FetchLineRecord_Get(flrFragment, buffer, text));
+								if (flrFragment.end != flrFragment.next && endingEmptyLines)
+								{
+									if (config.paragraphMode == GuiDocumentParagraphMode::Paragraph)
+									{
+										writer.WriteString(L"\r\n");
+									}
+									else if (config.spaceForFlattenedLineBreak)
+									{
+										writer.WriteChar(L' ');
+									}
+								}
+							};
+
+							while (true)
 							{
-								paragraph += L" " + line;
+								if (!*flrFragmentLast.next)
+								{
+									SubmitFragment(true);
+									flr = FetchLineRecord_Init(flrFragmentLast.next);
+									remaining = false;
+									return;
+								}
+
+								auto flrNext = FetchLineRecord_Init(flrFragmentLast.next);
+								FetchLineRecord_Next(flrNext);
+								if (flrNext.end == flrNext.begin)
+								{
+									SubmitFragment(false);
+									flr = FetchLineRecord_Init(flrNext.next);
+									FetchLineRecord_Next(flr);
+									remaining = true;
+									return;
+								}
+
+								if (flrFragmentLast.next - flrFragmentLast.end == 2)
+								{
+									flrFragmentLast = flrNext;
+								}
+								else
+								{
+									SubmitFragment(true);
+									flrFragmentFirst = flrNext;
+									flrFragmentLast = flrNext;
+								}
 							}
-							else
-							{
-								paragraph += line;
-							}
-						}
-						else
-						{
-							paragraphTexts.Add(paragraph);
-							paragraph = L"";
-							empty = true;
-						}
+						}));
+					}
+
+					if (remaining)
+					{
+						paragraphTexts.Add(WString::Empty);
 					}
 				}
 				else
 				{
+					stream::StringReader reader(text);
 					while (!reader.IsEnd())
 					{
 						WString line = reader.ReadLine();
@@ -18818,22 +18895,18 @@ GuiDocumentCommonInterface
 					}
 				}
 
-				if (!empty)
-				{
-					paragraphTexts.Add(paragraph);
-				}
 				if (config.paragraphMode == GuiDocumentParagraphMode::Singleline)
 				{
-					UserInput_FixForSingleline(paragraphTexts);
+					UserInput_JoinParagraphs(paragraphTexts, config.spaceForFlattenedLineBreak);
 				}
 			}
 
-			void GuiDocumentCommonInterface::UserInput_FormatDocument(Ptr<DocumentModel> model)
+			void GuiDocumentCommonInterface::UserInput_FormatDocument(Ptr<DocumentModel> model, Ptr<DocumentModel> baselineDocument, const GuiDocumentConfigEvaluated& config)
 			{
 				if (!model) return;
 				if (config.pasteAsPlainText)
 				{
-					UserInput_FixForPlainText(model, 0, model->paragraphs.Count() - 1);
+					UserInput_ConvertToPlainText(model, 0, model->paragraphs.Count() - 1);
 
 					if (baselineDocument)
 					{
@@ -18854,13 +18927,18 @@ GuiDocumentCommonInterface
 				{
 					for (auto paragraph : model->paragraphs)
 					{
-						UserInput_FixForNonParagraph(paragraph);
+						UserInput_JoinLinesInsideParagraph(paragraph, config.spaceForFlattenedLineBreak);
 					}
 				}
 				if (config.paragraphMode == GuiDocumentParagraphMode::Singleline)
 				{
-					UserInput_FixForSingleline(model);
+					UserInput_JoinParagraphs(model, config.spaceForFlattenedLineBreak);
 				}
+			}
+
+			WString GuiDocumentCommonInterface::UserInput_ConvertDocumentToText(Ptr<DocumentModel> model)
+			{
+				return model->GetTextForReading(WString::Unmanaged(config.doubleLineBreaksBetweenParagraph ? L"\r\n\r\n" : L"\r\n"));
 			}
 
 			GuiDocumentCommonInterface::GuiDocumentCommonInterface(const GuiDocumentConfig& _config)
@@ -18888,7 +18966,7 @@ GuiDocumentCommonInterface
 			void GuiDocumentCommonInterface::SetDocument(Ptr<DocumentModel> value)
 			{
 				value = value ? value->CopyDocument() : nullptr;
-				UserInput_FormatDocument(value);
+				UserInput_FormatDocument(value, baselineDocument, config);
 				SetActiveHyperlink(0);
 				ClearUndoRedo();
 				NotifyModificationSaved();
@@ -18974,9 +19052,9 @@ GuiDocumentCommonInterface
 
 			//================ editing operations
 
-			void GuiDocumentCommonInterface::NotifyParagraphUpdated(vint index, vint oldCount, vint newCount, bool updatedText)
+			void GuiDocumentCommonInterface::NotifyParagraphUpdated(vint index, vint oldCount, vint newCount, bool updatedText, bool skipFormatting)
 			{
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::controls::GuiDocumentCommonInterface::NotifyParagraphUpdated(vint, vint, vint, bool)#"
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::controls::GuiDocumentCommonInterface::NotifyParagraphUpdated(vint, vint, vint, bool, bool)#"
 				auto model = documentElement->GetDocument();
 				if (config.paragraphMode == GuiDocumentParagraphMode::Singleline)
 				{
@@ -18987,7 +19065,10 @@ GuiDocumentCommonInterface
 				{
 					if (config.pasteAsPlainText && updatedText)
 					{
-						UserInput_FixForPlainText(model, index, index + newCount - 1);
+						if(!skipFormatting)
+						{
+							UserInput_ConvertToPlainText(model, index, index + newCount - 1);
+						}
 						if (baselineDocument)
 						{
 							CopyFrom(model->styles, baselineDocument->styles);
@@ -18998,11 +19079,11 @@ GuiDocumentCommonInterface
 						}
 					}
 
-					if (config.paragraphMode != GuiDocumentParagraphMode::Paragraph)
+					if (config.paragraphMode != GuiDocumentParagraphMode::Paragraph && !skipFormatting)
 					{
 						for (vint i = index; i < index + newCount; i++)
 						{
-							UserInput_FixForNonParagraph(model->paragraphs[i]);
+							UserInput_JoinLinesInsideParagraph(model->paragraphs[i], config.spaceForFlattenedLineBreak);
 						}
 					}
 
@@ -19011,9 +19092,12 @@ GuiDocumentCommonInterface
 #undef ERROR_MESSAGE_PREFIX
 			}
 
-			void GuiDocumentCommonInterface::EditRun(TextPos begin, TextPos end, Ptr<DocumentModel> model, bool copy)
+			void GuiDocumentCommonInterface::EditRun(TextPos begin, TextPos end, Ptr<DocumentModel> model, bool copy, bool skipFormatting)
 			{
-				UserInput_FormatDocument(model);
+				if (!skipFormatting)
+				{
+					UserInput_FormatDocument(model, baselineDocument, config);
+				}
 				EditTextInternal(begin, end, [=, this](TextPos begin, TextPos end, vint& paragraphCount, vint& lastParagraphLength)
 				{
 					documentElement->EditRun(begin, end, model, copy);
@@ -19022,17 +19106,17 @@ GuiDocumentCommonInterface
 				});
 			}
 
-			void GuiDocumentCommonInterface::EditText(TextPos begin, TextPos end, bool frontSide, const collections::Array<WString>& text)
+			void GuiDocumentCommonInterface::EditText(TextPos begin, TextPos end, bool frontSide, const collections::Array<WString>& text, bool skipFormatting)
 			{
 				EditTextInternal(begin, end, [=, this, &text](TextPos begin, TextPos end, vint& paragraphCount, vint& lastParagraphLength)
 				{
 					Array<WString> updatedText;
-					bool useUpdatedText = config.paragraphMode != GuiDocumentParagraphMode::Paragraph;
+					bool useUpdatedText = config.paragraphMode != GuiDocumentParagraphMode::Paragraph && !skipFormatting;
 					if (useUpdatedText)
 					{
 						List<WString> paragraphTexts;
 						CopyFrom(paragraphTexts, text);
-						UserInput_FormatText(paragraphTexts);
+						UserInput_FormatText(paragraphTexts, config);
 						CopyFrom(updatedText, paragraphTexts);
 					}
 
@@ -19237,12 +19321,56 @@ GuiDocumentCommonInterface
 				}
 			}
 
+			void GuiDocumentCommonInterface::LoadTextAndClearUndoRedo(const WString& text)
+			{
+				vint lastIndex = documentElement->GetDocument()->paragraphs.Count() - 1;
+				Ptr<DocumentParagraphRun> lastParagraph = documentElement->GetDocument()->paragraphs[lastIndex];
+
+				TextPos begin(0, 0);
+				TextPos end(lastIndex, lastParagraph->GetTextForCaret().Length());
+
+				List<WString> paragraphTexts;
+				UserInput_FormatText(text, paragraphTexts, config);
+				Array<WString> paragraphLines;
+				CopyFrom(paragraphLines, paragraphTexts);
+
+				EditTextInternal(begin, end, [=, this, &paragraphLines](TextPos begin, TextPos end, vint& paragraphCount, vint& lastParagraphLength)
+				{
+					documentElement->EditText(begin, end, true, paragraphLines);
+					paragraphCount = paragraphLines.Count();
+					lastParagraphLength = paragraphCount == 0 ? 0 : paragraphLines[paragraphCount - 1].Length();
+				}, true);
+
+				SetCaret(begin, begin);
+				EnsureDocumentRectVisible(documentElement->GetCaretBounds(begin, true));
+			}
+
+			void GuiDocumentCommonInterface::LoadDocumentAndClearUndoRedo(Ptr<DocumentModel> document, bool copy)
+			{
+				vint lastIndex = documentElement->GetDocument()->paragraphs.Count() - 1;
+				Ptr<DocumentParagraphRun> lastParagraph = documentElement->GetDocument()->paragraphs[lastIndex];
+
+				TextPos begin(0, 0);
+				TextPos end(lastIndex, lastParagraph->GetTextForCaret().Length());
+
+				document = copy ? (document ? document->CopyDocument() : nullptr) : document;
+				EditTextInternal(begin, end, [=, this](TextPos begin, TextPos end, vint& paragraphCount, vint& lastParagraphLength)
+				{
+					documentElement->EditRun(begin, end, document, false);
+					paragraphCount = document->paragraphs.Count();
+					lastParagraphLength = paragraphCount == 0 ? 0 : document->paragraphs[paragraphCount - 1]->GetTextForCaret().Length();
+				}, true);
+
+				SetCaret(begin, begin);
+				EnsureDocumentRectVisible(documentElement->GetCaretBounds(begin, true));
+			}
+
 			//================ selection operations
 
 			void GuiDocumentCommonInterface::SelectAll()
 			{
-				vint lastIndex=documentElement->GetDocument()->paragraphs.Count()-1;
-				Ptr<DocumentParagraphRun> lastParagraph=documentElement->GetDocument()->paragraphs[lastIndex];
+				vint lastIndex = documentElement->GetDocument()->paragraphs.Count() - 1;
+				Ptr<DocumentParagraphRun> lastParagraph = documentElement->GetDocument()->paragraphs[lastIndex];
 
 				TextPos begin(0, 0);
 				TextPos end(lastIndex, lastParagraph->GetTextForCaret().Length());
@@ -19267,7 +19395,7 @@ GuiDocumentCommonInterface
 			void GuiDocumentCommonInterface::SetSelectionText(const WString& value)
 			{
 				List<WString> paragraphTexts;
-				UserInput_FormatText(value, paragraphTexts);
+				UserInput_FormatText(value, paragraphTexts, config);
 
 				TextPos begin = documentElement->GetCaretBegin();
 				TextPos end = documentElement->GetCaretEnd();
@@ -19280,7 +19408,7 @@ GuiDocumentCommonInterface
 
 				Array<WString> text;
 				CopyFrom(text, paragraphTexts);
-				EditText(begin, end, documentElement->IsCaretEndPreferFrontSide(), text);
+				EditText(begin, end, documentElement->IsCaretEndPreferFrontSide(), text, true);
 			}
 
 			Ptr<DocumentModel> GuiDocumentCommonInterface::GetSelectionModel()
@@ -19301,7 +19429,7 @@ GuiDocumentCommonInterface
 			void GuiDocumentCommonInterface::SetSelectionModel(Ptr<DocumentModel> value)
 			{
 				value = value ? value->CopyDocument() : nullptr;
-				UserInput_FormatDocument(value);
+				UserInput_FormatDocument(value, baselineDocument, config);
 				TextPos begin=documentElement->GetCaretBegin();
 				TextPos end=documentElement->GetCaretEnd();
 				if(begin>end)
@@ -19311,7 +19439,7 @@ GuiDocumentCommonInterface
 					end=temp;
 				}
 
-				EditRun(begin, end, value, true);
+				EditRun(begin, end, value, true, true);
 			}
 
 			//================ clipboard operations
@@ -19479,7 +19607,9 @@ GuiDocumentConfig
 				config.paragraphMode = GuiDocumentParagraphMode::Paragraph;
 				config.paragraphPadding = true;
 				config.doubleLineBreaksBetweenParagraph = true;
+
 				config.spaceForFlattenedLineBreak = false;
+				config.paragraphRecycle = false;
 				return config;
 			}
 
@@ -19492,7 +19622,9 @@ GuiDocumentConfig
 				config.paragraphMode = GuiDocumentParagraphMode::Paragraph;
 				config.paragraphPadding = true;
 				config.doubleLineBreaksBetweenParagraph = true;
+
 				config.spaceForFlattenedLineBreak = false;
+				config.paragraphRecycle = true;
 				return config;
 			}
 
@@ -19505,7 +19637,9 @@ GuiDocumentConfig
 				config.paragraphMode = GuiDocumentParagraphMode::Singleline;
 				config.paragraphPadding = false;
 				config.doubleLineBreaksBetweenParagraph = false;
+
 				config.spaceForFlattenedLineBreak = false;
+				config.paragraphRecycle = true;
 				return config;
 			}
 
@@ -19518,7 +19652,9 @@ GuiDocumentConfig
 				config.paragraphMode = GuiDocumentParagraphMode::Multiline;
 				config.paragraphPadding = false;
 				config.doubleLineBreaksBetweenParagraph = false;
+
 				config.spaceForFlattenedLineBreak = false;
+				config.paragraphRecycle = true;
 				return config;
 			}
 
@@ -19532,6 +19668,7 @@ GuiDocumentConfig
 				if (newConfig.paragraphPadding) result.paragraphPadding = newConfig.paragraphPadding;
 				if (newConfig.doubleLineBreaksBetweenParagraph) result.doubleLineBreaksBetweenParagraph = newConfig.doubleLineBreaksBetweenParagraph;
 				if (newConfig.spaceForFlattenedLineBreak) result.spaceForFlattenedLineBreak = newConfig.spaceForFlattenedLineBreak;
+				if (newConfig.paragraphRecycle) result.paragraphRecycle = newConfig.paragraphRecycle;
 				return result;
 			}
 
@@ -19547,6 +19684,7 @@ GuiDocumentConfigEvaluated
 				, paragraphPadding(config.paragraphPadding.Value())
 				, doubleLineBreaksBetweenParagraph(config.doubleLineBreaksBetweenParagraph.Value())
 				, spaceForFlattenedLineBreak(config.spaceForFlattenedLineBreak.Value())
+				, paragraphRecycle(config.paragraphRecycle.Value())
 			{
 			}
 		}
@@ -28967,10 +29105,19 @@ namespace vl
 GuiDocumentElement
 ***********************************************************************/
 
+			Ptr<IGuiDocumentElementRenderer> GuiDocumentElement::GetElementRenderer()
+			{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::elements::GetElementRenderer()#"
+				if (!renderer) return nullptr;
+				auto elementRenderer = renderer.Cast<IGuiDocumentElementRenderer>();
+				CHECK_ERROR(elementRenderer, ERROR_MESSAGE_PREFIX L"The registered renderer for GuiDocumentElement must implement IGuiDocumentElementRenderer.");
+				return elementRenderer;
+#undef ERROR_MESSAGE_PREFIX
+			}
+
 			void GuiDocumentElement::UpdateCaret()
 			{
-				auto elementRenderer = renderer.Cast<GuiDocumentElementRenderer>();
-				if (elementRenderer)
+				if (auto elementRenderer = GetElementRenderer())
 				{
 					elementRenderer->SetSelection(caretBegin, caretEnd);
 					if (caretVisible)
@@ -29021,8 +29168,15 @@ GuiDocumentElement
 
 			void GuiDocumentElement::SetParagraphPadding(bool value)
 			{
-				paragraphPadding = value;
-				InvokeOnElementStateChanged();
+				if (paragraphPadding != value)
+				{
+					paragraphPadding = value;
+					if (auto elementRenderer = GetElementRenderer())
+					{
+						elementRenderer->NotifyParagraphPaddingUpdated(paragraphPadding);
+						InvokeOnCompositionStateChanged();
+					}
+				}
 			}
 
 			bool GuiDocumentElement::GetWrapLine()
@@ -29108,44 +29262,35 @@ GuiDocumentElement
 
 			TextPos GuiDocumentElement::CalculateCaret(TextPos comparingCaret, IGuiGraphicsParagraph::CaretRelativePosition position, bool& preferFrontSide)
 			{
-				if (auto elementRenderer = renderer.Cast<GuiDocumentElementRenderer>())
+				if (auto elementRenderer = GetElementRenderer())
 				{
-					TextPos caret=elementRenderer->CalculateCaret(comparingCaret, position, preferFrontSide);
-					return caret.column==-1?comparingCaret:caret;
+					TextPos caret = elementRenderer->CalculateCaret(comparingCaret, position, preferFrontSide);
+					return caret.column == -1 ? comparingCaret : caret;
 				}
-				else
-				{
-					return comparingCaret;
-				}
+				return {};
 			}
 
 			TextPos GuiDocumentElement::CalculateCaretFromPoint(Point point)
 			{
-				if (auto elementRenderer = renderer.Cast<GuiDocumentElementRenderer>())
+				if (auto elementRenderer = GetElementRenderer())
 				{
 					return elementRenderer->CalculateCaretFromPoint(point);
 				}
-				else
-				{
-					return TextPos(0, 0);
-				}
+				return {};
 			}
 
 			Rect GuiDocumentElement::GetCaretBounds(TextPos caret, bool frontSide)
 			{
-				if (auto elementRenderer = renderer.Cast<GuiDocumentElementRenderer>())
+				if (auto elementRenderer = GetElementRenderer())
 				{
 					return elementRenderer->GetCaretBounds(caret, frontSide);
 				}
-				else
-				{
-					return Rect();
-				}
+				return {};
 			}
 			
 			void GuiDocumentElement::NotifyParagraphUpdated(vint index, vint oldCount, vint newCount, bool updatedText)
 			{
-				if (auto elementRenderer = renderer.Cast<GuiDocumentElementRenderer>())
+				if (auto elementRenderer = GetElementRenderer())
 				{
 					elementRenderer->NotifyParagraphUpdated(index, oldCount, newCount, updatedText);
 					InvokeOnCompositionStateChanged();
@@ -29154,284 +29299,269 @@ GuiDocumentElement
 
 			void GuiDocumentElement::EditRun(TextPos begin, TextPos end, Ptr<DocumentModel> model, bool copy)
 			{
-				if (auto elementRenderer = renderer.Cast<GuiDocumentElementRenderer>())
+				if (begin > end)
 				{
-					if (begin > end)
-					{
-						TextPos temp = begin;
-						begin = end;
-						end = temp;
-					}
+					TextPos temp = begin;
+					begin = end;
+					end = temp;
+				}
 
-					vint newRows = document->EditRun(begin, end, model, copy);
-					if (newRows != -1)
+				vint newRows = document->EditRun(begin, end, model, copy);
+				if (newRows != -1)
+				{
+					if (auto elementRenderer = GetElementRenderer())
 					{
 						elementRenderer->NotifyParagraphUpdated(begin.row, end.row - begin.row + 1, newRows, true);
+						InvokeOnCompositionStateChanged();
 					}
-					InvokeOnCompositionStateChanged();
 				}
 			}
 
 			void GuiDocumentElement::EditText(TextPos begin, TextPos end, bool frontSide, const collections::Array<WString>& text)
 			{
-				if (auto elementRenderer = renderer.Cast<GuiDocumentElementRenderer>())
+				if (begin > end)
 				{
-					if (begin > end)
-					{
-						TextPos temp = begin;
-						begin = end;
-						end = temp;
-					}
+					TextPos temp = begin;
+					begin = end;
+					end = temp;
+				}
 
-					vint newRows = document->EditText(begin, end, frontSide, text);
-					if (newRows != -1)
+				vint newRows = document->EditText(begin, end, frontSide, text);
+				if (newRows != -1)
+				{
+					if (auto elementRenderer = GetElementRenderer())
 					{
 						elementRenderer->NotifyParagraphUpdated(begin.row, end.row - begin.row + 1, newRows, true);
+						InvokeOnCompositionStateChanged();
 					}
-					InvokeOnCompositionStateChanged();
 				}
 			}
 
 			void GuiDocumentElement::EditStyle(TextPos begin, TextPos end, Ptr<DocumentStyleProperties> style)
 			{
-				if (auto elementRenderer = renderer.Cast<GuiDocumentElementRenderer>())
+				if (begin > end)
 				{
-					if (begin > end)
-					{
-						TextPos temp = begin;
-						begin = end;
-						end = temp;
-					}
+					TextPos temp = begin;
+					begin = end;
+					end = temp;
+				}
 
-					if (document->EditStyle(begin, end, style))
+				if (document->EditStyle(begin, end, style))
+				{
+					if (auto elementRenderer = GetElementRenderer())
 					{
 						elementRenderer->NotifyParagraphUpdated(begin.row, end.row - begin.row + 1, end.row - begin.row + 1, false);
+						InvokeOnCompositionStateChanged();
 					}
-					InvokeOnCompositionStateChanged();
 				}
 			}
 
 			void GuiDocumentElement::EditImage(TextPos begin, TextPos end, Ptr<GuiImageData> image)
 			{
-				if (auto elementRenderer = renderer.Cast<GuiDocumentElementRenderer>())
+				if (begin > end)
 				{
-					if (begin > end)
-					{
-						TextPos temp = begin;
-						begin = end;
-						end = temp;
-					}
+					TextPos temp = begin;
+					begin = end;
+					end = temp;
+				}
 
-					if (document->EditImage(begin, end, image))
+				if (document->EditImage(begin, end, image))
+				{
+					if (auto elementRenderer = GetElementRenderer())
 					{
 						elementRenderer->NotifyParagraphUpdated(begin.row, end.row - begin.row + 1, 1, true);
+						InvokeOnCompositionStateChanged();
 					}
-					InvokeOnCompositionStateChanged();
 				}
 			}
 
 			void GuiDocumentElement::EditHyperlink(vint paragraphIndex, vint begin, vint end, const WString& reference, const WString& normalStyleName, const WString& activeStyleName)
 			{
-				if (auto elementRenderer = renderer.Cast<GuiDocumentElementRenderer>())
+				if (begin > end)
 				{
-					if (begin > end)
-					{
-						vint temp = begin;
-						begin = end;
-						end = temp;
-					}
+					vint temp = begin;
+					begin = end;
+					end = temp;
+				}
 
-					if (document->EditHyperlink(paragraphIndex, begin, end, reference, normalStyleName, activeStyleName))
+				if (document->EditHyperlink(paragraphIndex, begin, end, reference, normalStyleName, activeStyleName))
+				{
+					if (auto elementRenderer = GetElementRenderer())
 					{
 						elementRenderer->NotifyParagraphUpdated(paragraphIndex, 1, 1, false);
+						InvokeOnCompositionStateChanged();
 					}
-					InvokeOnCompositionStateChanged();
 				}
 			}
 
 			void GuiDocumentElement::RemoveHyperlink(vint paragraphIndex, vint begin, vint end)
 			{
-				if (auto elementRenderer = renderer.Cast<GuiDocumentElementRenderer>())
+				if (begin > end)
 				{
-					if (begin > end)
-					{
-						vint temp = begin;
-						begin = end;
-						end = temp;
-					}
+					vint temp = begin;
+					begin = end;
+					end = temp;
+				}
 
-					if (document->RemoveHyperlink(paragraphIndex, begin, end))
+				if (document->RemoveHyperlink(paragraphIndex, begin, end))
+				{
+					if (auto elementRenderer = GetElementRenderer())
 					{
 						elementRenderer->NotifyParagraphUpdated(paragraphIndex, 1, 1, false);
+						InvokeOnCompositionStateChanged();
 					}
-					InvokeOnCompositionStateChanged();
 				}
 			}
 
 			void GuiDocumentElement::EditStyleName(TextPos begin, TextPos end, const WString& styleName)
 			{
-				if (auto elementRenderer = renderer.Cast<GuiDocumentElementRenderer>())
+				if (begin > end)
 				{
-					if (begin > end)
-					{
-						TextPos temp = begin;
-						begin = end;
-						end = temp;
-					}
+					TextPos temp = begin;
+					begin = end;
+					end = temp;
+				}
 
-					if (document->EditStyleName(begin, end, styleName))
+				if (document->EditStyleName(begin, end, styleName))
+				{
+					if (auto elementRenderer = GetElementRenderer())
 					{
 						elementRenderer->NotifyParagraphUpdated(begin.row, end.row - begin.row + 1, end.row - begin.row + 1, false);
+						InvokeOnCompositionStateChanged();
 					}
-					InvokeOnCompositionStateChanged();
 				}
 			}
 
 			void GuiDocumentElement::RemoveStyleName(TextPos begin, TextPos end)
 			{
-				if (auto elementRenderer = renderer.Cast<GuiDocumentElementRenderer>())
+				if (begin > end)
 				{
-					if (begin > end)
-					{
-						TextPos temp = begin;
-						begin = end;
-						end = temp;
-					}
+					TextPos temp = begin;
+					begin = end;
+					end = temp;
+				}
 
-					if (document->RemoveStyleName(begin, end))
+				if (document->RemoveStyleName(begin, end))
+				{
+					if (auto elementRenderer = GetElementRenderer())
 					{
 						elementRenderer->NotifyParagraphUpdated(begin.row, end.row - begin.row + 1, end.row - begin.row + 1, false);
+						InvokeOnCompositionStateChanged();
 					}
-					InvokeOnCompositionStateChanged();
 				}
 			}
 
 			void GuiDocumentElement::RenameStyle(const WString& oldStyleName, const WString& newStyleName)
 			{
-				if (auto elementRenderer = renderer.Cast<GuiDocumentElementRenderer>())
-				{
-					document->RenameStyle(oldStyleName, newStyleName);
-				}
+				document->RenameStyle(oldStyleName, newStyleName);
 			}
 
 			void GuiDocumentElement::ClearStyle(TextPos begin, TextPos end)
 			{
-				if (auto elementRenderer = renderer.Cast<GuiDocumentElementRenderer>())
+				if (begin > end)
 				{
-					if (begin > end)
-					{
-						TextPos temp = begin;
-						begin = end;
-						end = temp;
-					}
+					TextPos temp = begin;
+					begin = end;
+					end = temp;
+				}
 
-					if (document->ClearStyle(begin, end))
+				if (document->ClearStyle(begin, end))
+				{
+					if (auto elementRenderer = GetElementRenderer())
 					{
 						elementRenderer->NotifyParagraphUpdated(begin.row, end.row - begin.row + 1, end.row - begin.row + 1, false);
+						InvokeOnCompositionStateChanged();
 					}
-					InvokeOnCompositionStateChanged();
 				}
 			}
 
 			void GuiDocumentElement::ConvertToPlainText(TextPos begin, TextPos end)
 			{
-				if (auto elementRenderer = renderer.Cast<GuiDocumentElementRenderer>())
+				if (begin > end)
 				{
-					if (begin > end)
-					{
-						TextPos temp = begin;
-						begin = end;
-						end = temp;
-					}
+					TextPos temp = begin;
+					begin = end;
+					end = temp;
+				}
 
-					if (document->ConvertToPlainText(begin, end))
+				if (document->ConvertToPlainText(begin, end))
+				{
+					if (auto elementRenderer = GetElementRenderer())
 					{
 						elementRenderer->NotifyParagraphUpdated(begin.row, end.row - begin.row + 1, end.row - begin.row + 1, false);
+						InvokeOnCompositionStateChanged();
 					}
-					InvokeOnCompositionStateChanged();
 				}
 			}
 
 			Ptr<DocumentStyleProperties> GuiDocumentElement::SummarizeStyle(TextPos begin, TextPos end)
 			{
-				if (auto elementRenderer = renderer.Cast<GuiDocumentElementRenderer>())
+				if (begin > end)
 				{
-					if (begin > end)
-					{
-						TextPos temp = begin;
-						begin = end;
-						end = temp;
-					}
-
-					return document->SummarizeStyle(begin, end);
+					TextPos temp = begin;
+					begin = end;
+					end = temp;
 				}
-				return nullptr;
+
+				return document->SummarizeStyle(begin, end);
 			}
 
 			Nullable<WString> GuiDocumentElement::SummarizeStyleName(TextPos begin, TextPos end)
 			{
-				if (auto elementRenderer = renderer.Cast<GuiDocumentElementRenderer>())
+				if (begin > end)
 				{
-					if (begin > end)
-					{
-						TextPos temp = begin;
-						begin = end;
-						end = temp;
-					}
-
-					return document->SummarizeStyleName(begin, end);
+					TextPos temp = begin;
+					begin = end;
+					end = temp;
 				}
-				return {};
+
+				return document->SummarizeStyleName(begin, end);
 			}
 
 			void GuiDocumentElement::SetParagraphAlignment(TextPos begin, TextPos end, const collections::Array<Nullable<Alignment>>& alignments)
 			{
-				if (auto elementRenderer = renderer.Cast<GuiDocumentElementRenderer>())
+				vint first = begin.row;
+				vint last = end.row;
+				if (first > last)
 				{
-					vint first = begin.row;
-					vint last = end.row;
-					if (first > last)
-					{
-						vint temp = first;
-						first = last;
-						last = temp;
-					}
+					vint temp = first;
+					first = last;
+					last = temp;
+				}
 
-					if (0 <= first && first < document->paragraphs.Count() && 0 <= last && last < document->paragraphs.Count() && last - first + 1 == alignments.Count())
+				if (0 <= first && first < document->paragraphs.Count() && 0 <= last && last < document->paragraphs.Count() && last - first + 1 == alignments.Count())
+				{
+					for (vint i = first; i <= last; i++)
 					{
-						for (vint i = first; i <= last; i++)
-						{
-							document->paragraphs[i]->alignment = alignments[i - first];
-						}
-						elementRenderer->NotifyParagraphUpdated(first, alignments.Count(), alignments.Count(), false);
+						document->paragraphs[i]->alignment = alignments[i - first];
 					}
-					InvokeOnCompositionStateChanged();
+					if (auto elementRenderer = GetElementRenderer())
+					{
+						elementRenderer->NotifyParagraphUpdated(first, alignments.Count(), alignments.Count(), false);
+						InvokeOnCompositionStateChanged();
+					}
 				}
 			}
 
 			Nullable<Alignment> GuiDocumentElement::SummarizeParagraphAlignment(TextPos begin, TextPos end)
 			{
-				if (auto elementRenderer = renderer.Cast<GuiDocumentElementRenderer>())
+				if (begin > end)
 				{
-					if (begin > end)
-					{
-						TextPos temp = begin;
-						begin = end;
-						end = temp;
-					}
-
-					return document->SummarizeParagraphAlignment(begin, end);
+					TextPos temp = begin;
+					begin = end;
+					end = temp;
 				}
-				return {};
+
+				return document->SummarizeParagraphAlignment(begin, end);
 			}
 
 			Ptr<DocumentHyperlinkRun::Package> GuiDocumentElement::GetHyperlinkFromPoint(Point point)
 			{
-				if (auto elementRenderer = renderer.Cast<GuiDocumentElementRenderer>())
+				if (auto elementRenderer = GetElementRenderer())
 				{
 					return elementRenderer->GetHyperlinkFromPoint(point);
 				}
-				return nullptr;
+				return {};
 			}
 		}
 	}
@@ -29458,7 +29588,6 @@ SetPropertiesVisitor
 			{
 				class SetPropertiesVisitor : public Object, public DocumentRun::IVisitor
 				{
-					typedef GuiDocumentElementRenderer						Renderer;
 					typedef DocumentModel::ResolvedStyle					ResolvedStyle;
 				public:
 					vint							start;
@@ -29468,22 +29597,22 @@ SetPropertiesVisitor
 					List<ResolvedStyle>				styles;
 
 					DocumentModel*					model;
-					Renderer*						renderer;
-					Ptr<Renderer::ParagraphCache>	cache;
+					GuiDocumentParagraphCache*		paragraphCache;
+					Ptr<pg::ParagraphCache>			cache;
 					IGuiGraphicsParagraph*			paragraph;
 
-					SetPropertiesVisitor(DocumentModel* _model, Renderer* _renderer, Ptr<Renderer::ParagraphCache> _cache, vint _selectionBegin, vint _selectionEnd)
-						:start(0)
-						,length(0)
-						,model(_model)
-						,renderer(_renderer)
-						,cache(_cache)
-						,paragraph(_cache->graphicsParagraph.Obj())
-						,selectionBegin(_selectionBegin)
-						,selectionEnd(_selectionEnd)
+					SetPropertiesVisitor(DocumentModel* _model, GuiDocumentParagraphCache* _paragraphCache, Ptr<pg::ParagraphCache> _cache, vint _selectionBegin, vint _selectionEnd)
+						: start(0)
+						, length(0)
+						, model(_model)
+						, paragraphCache(_paragraphCache)
+						, cache(_cache)
+						, paragraph(_cache->graphicsParagraph.Obj())
+						, selectionBegin(_selectionBegin)
+						, selectionEnd(_selectionEnd)
 					{
 						ResolvedStyle style;
-						style=model->GetStyle(DocumentModel::DefaultStyleName, style);
+						style = model->GetStyle(DocumentModel::DefaultStyleName, style);
 						styles.Add(style);
 					}
 
@@ -29499,12 +29628,12 @@ SetPropertiesVisitor
 					{
 						paragraph->SetFont(start, length, style.style.fontFamily);
 						paragraph->SetSize(start, length, style.style.size);
-						paragraph->SetStyle(start, length, 
+						paragraph->SetStyle(start, length,
 							(IGuiGraphicsParagraph::TextStyle)
-							( (style.style.bold?IGuiGraphicsParagraph::Bold:0)
-							| (style.style.italic?IGuiGraphicsParagraph::Italic:0)
-							| (style.style.underline?IGuiGraphicsParagraph::Underline:0)
-							| (style.style.strikeline?IGuiGraphicsParagraph::Strikeline:0)
+							((style.style.bold ? IGuiGraphicsParagraph::Bold : 0)
+							| (style.style.italic ? IGuiGraphicsParagraph::Italic : 0)
+							| (style.style.underline ? IGuiGraphicsParagraph::Underline : 0)
+							| (style.style.strikeline ? IGuiGraphicsParagraph::Strikeline : 0)
 							));
 					}
 
@@ -29516,95 +29645,95 @@ SetPropertiesVisitor
 
 					void Visit(DocumentTextRun* run)override
 					{
-						length=run->GetRepresentationText().Length();
-						if(length>0)
+						length = run->GetRepresentationText().Length();
+						if (length > 0)
 						{
-							ResolvedStyle style=styles[styles.Count()-1];
+							ResolvedStyle style = styles[styles.Count() - 1];
 							ApplyStyle(start, length, style);
 							ApplyColor(start, length, style);
 
-							vint styleStart=start;
-							vint styleEnd=styleStart+length;
-							if(styleStart<selectionEnd && selectionBegin<styleEnd)
+							vint styleStart = start;
+							vint styleEnd = styleStart + length;
+							if (styleStart < selectionEnd && selectionBegin < styleEnd)
 							{
-								vint s2=styleStart>selectionBegin?styleStart:selectionBegin;
-								vint s3=selectionEnd<styleEnd?selectionEnd:styleEnd;
+								vint s2 = styleStart > selectionBegin ? styleStart : selectionBegin;
+								vint s3 = selectionEnd < styleEnd ? selectionEnd : styleEnd;
 
-								if(s2<s3)
+								if (s2 < s3)
 								{
-									ResolvedStyle selectionStyle=model->GetStyle(DocumentModel::SelectionStyleName, style);
-									ApplyColor(s2, s3-s2, selectionStyle);
+									ResolvedStyle selectionStyle = model->GetStyle(DocumentModel::SelectionStyleName, style);
+									ApplyColor(s2, s3 - s2, selectionStyle);
 								}
 							}
 						}
-						start+=length;
+						start += length;
 					}
 
 					void Visit(DocumentStylePropertiesRun* run)override
 					{
-						ResolvedStyle style=styles[styles.Count()-1];
-						style=model->GetStyle(run->style, style);
+						ResolvedStyle style = styles[styles.Count() - 1];
+						style = model->GetStyle(run->style, style);
 						styles.Add(style);
 						VisitContainer(run);
-						styles.RemoveAt(styles.Count()-1);
+						styles.RemoveAt(styles.Count() - 1);
 					}
 
 					void Visit(DocumentStyleApplicationRun* run)override
 					{
-						ResolvedStyle style=styles[styles.Count()-1];
-						style=model->GetStyle(run->styleName, style);
+						ResolvedStyle style = styles[styles.Count() - 1];
+						style = model->GetStyle(run->styleName, style);
 						styles.Add(style);
 						VisitContainer(run);
-						styles.RemoveAt(styles.Count()-1);
+						styles.RemoveAt(styles.Count() - 1);
 					}
 
 					void Visit(DocumentHyperlinkRun* run)override
 					{
-						ResolvedStyle style=styles[styles.Count()-1];
-						style=model->GetStyle(run->styleName, style);
+						ResolvedStyle style = styles[styles.Count() - 1];
+						style = model->GetStyle(run->styleName, style);
 						styles.Add(style);
 						VisitContainer(run);
-						styles.RemoveAt(styles.Count()-1);
+						styles.RemoveAt(styles.Count() - 1);
 					}
 
 					void Visit(DocumentImageRun* run)override
 					{
-						length=run->GetRepresentationText().Length();
+						length = run->GetRepresentationText().Length();
 
-						auto element=Ptr(GuiImageFrameElement::Create());
+						auto element = Ptr(GuiImageFrameElement::Create());
 						element->SetImage(run->image, run->frameIndex);
 						element->SetStretch(true);
 
 						IGuiGraphicsParagraph::InlineObjectProperties properties;
-						properties.size=run->size;
-						properties.baseline=run->baseline;
-						properties.breakCondition=IGuiGraphicsParagraph::Alone;
+						properties.size = run->size;
+						properties.baseline = run->baseline;
+						properties.breakCondition = IGuiGraphicsParagraph::Alone;
 						properties.backgroundImage = element;
 
 						paragraph->SetInlineObject(start, length, properties);
 
-						if(start<selectionEnd && selectionBegin<start+length)
+						if (start < selectionEnd && selectionBegin < start + length)
 						{
-							ResolvedStyle style=styles[styles.Count()-1];
-							ResolvedStyle selectionStyle=model->GetStyle(DocumentModel::SelectionStyleName, style);
+							ResolvedStyle style = styles[styles.Count() - 1];
+							ResolvedStyle selectionStyle = model->GetStyle(DocumentModel::SelectionStyleName, style);
 							ApplyColor(start, length, selectionStyle);
 						}
-						start+=length;
+						start += length;
 					}
 
 					void Visit(DocumentEmbeddedObjectRun* run)override
 					{
-						length=run->GetRepresentationText().Length();
+						length = run->GetRepresentationText().Length();
 
 						IGuiGraphicsParagraph::InlineObjectProperties properties;
-						properties.breakCondition=IGuiGraphicsParagraph::Alone;
+						properties.breakCondition = IGuiGraphicsParagraph::Alone;
 
 						if (run->name != L"")
 						{
-							vint index = renderer->nameCallbackIdMap.Keys().IndexOf(run->name);
+							vint index = paragraphCache->nameCallbackIdMap.Keys().IndexOf(run->name);
 							if (index != -1)
 							{
-								auto id = renderer->nameCallbackIdMap.Values()[index];
+								auto id = paragraphCache->nameCallbackIdMap.Values()[index];
 								index = cache->embeddedObjects.Keys().IndexOf(id);
 								if (index != -1)
 								{
@@ -29618,24 +29747,24 @@ SetPropertiesVisitor
 							}
 							else
 							{
-								auto eo = Ptr(new Renderer::EmbeddedObject);
+								auto eo = Ptr(new pg::EmbeddedObject);
 								eo->name = run->name;
 								eo->size = Size(0, 0);
 								eo->start = start;
 
 								vint id = -1;
-								vint count = renderer->freeCallbackIds.Count();
+								vint count = paragraphCache->freeCallbackIds.Count();
 								if (count > 0)
 								{
-									id = renderer->freeCallbackIds[count - 1];
-									renderer->freeCallbackIds.RemoveAt(count - 1);
+									id = paragraphCache->freeCallbackIds[count - 1];
+									paragraphCache->freeCallbackIds.RemoveAt(count - 1);
 								}
 								else
 								{
-									id = renderer->usedCallbackIds++;
+									id = paragraphCache->usedCallbackIds++;
 								}
 
-								renderer->nameCallbackIdMap.Add(eo->name, id);
+								paragraphCache->nameCallbackIdMap.Add(eo->name, id);
 								cache->embeddedObjects.Add(id, eo);
 								properties.callbackId = id;
 							}
@@ -29643,13 +29772,13 @@ SetPropertiesVisitor
 
 						paragraph->SetInlineObject(start, length, properties);
 
-						if(start<selectionEnd && selectionBegin<start+length)
+						if (start < selectionEnd && selectionBegin < start + length)
 						{
-							ResolvedStyle style=styles[styles.Count()-1];
-							ResolvedStyle selectionStyle=model->GetStyle(DocumentModel::SelectionStyleName, style);
+							ResolvedStyle style = styles[styles.Count() - 1];
+							ResolvedStyle selectionStyle = model->GetStyle(DocumentModel::SelectionStyleName, style);
 							ApplyColor(start, length, selectionStyle);
 						}
-						start+=length;
+						start += length;
 					}
 
 					void Visit(DocumentParagraphRun* run)override
@@ -29657,15 +29786,314 @@ SetPropertiesVisitor
 						VisitContainer(run);
 					}
 
-					static vint SetProperty(DocumentModel* model, Renderer* renderer, Ptr<Renderer::ParagraphCache> cache, Ptr<DocumentParagraphRun> run, vint selectionBegin, vint selectionEnd)
+					static vint SetProperty(DocumentModel* model, GuiDocumentParagraphCache* paragraphCache, Ptr<pg::ParagraphCache> cache, Ptr<DocumentParagraphRun> run, vint selectionBegin, vint selectionEnd)
 					{
-						SetPropertiesVisitor visitor(model, renderer, cache, selectionBegin, selectionEnd);
+						SetPropertiesVisitor visitor(model, paragraphCache, cache, selectionBegin, selectionEnd);
 						run->Accept(&visitor);
 						return visitor.length;
 					}
 				};
 			}
 			using namespace visitors;
+
+/***********************************************************************
+GuiDocumentParagraphCache
+***********************************************************************/
+
+			GuiDocumentParagraphCache::GuiDocumentParagraphCache(IGuiGraphicsParagraphCallback* _callback)
+				: callback(_callback)
+				, layoutProvider(GetGuiGraphicsResourceManager()->GetLayoutProvider())
+				, defaultHeight(GetCurrentController()->ResourceService()->GetDefaultFont().size)
+			{
+			}
+
+			GuiDocumentParagraphCache::~GuiDocumentParagraphCache()
+			{
+			}
+
+			void GuiDocumentParagraphCache::Initialize(GuiDocumentElement* _element)
+			{
+				element = _element;
+			}
+
+			void GuiDocumentParagraphCache::RenderTargetChanged(IGuiGraphicsRenderTarget* oldRenderTarget, IGuiGraphicsRenderTarget* newRenderTarget)
+			{
+				renderTarget = newRenderTarget;
+				// TODO: (enumerable) foreach
+				for (vint i = 0; i < paragraphCaches.Count(); i++)
+				{
+					if (auto cache = paragraphCaches[i].Obj())
+					{
+						cache->graphicsParagraph = nullptr;
+						cache->outdatedStyles = true;
+					}
+				}
+			}
+
+			vint GuiDocumentParagraphCache::GetParagraphCount()
+			{
+				return paragraphCaches.Count();
+			}
+
+			Ptr<pg::ParagraphCache> GuiDocumentParagraphCache::TryGetParagraphCache(vint paragraphIndex)
+			{
+				if (paragraphIndex < 0 || paragraphIndex >= paragraphCaches.Count()) return nullptr;
+				return paragraphCaches[paragraphIndex];
+			}
+
+			Ptr<pg::ParagraphCache> GuiDocumentParagraphCache::GetParagraphCache(vint paragraphIndex, bool requireParagraph)
+			{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::elements::GuiDocumentParagraphCache::GetParagraphCache(vint)#"
+				auto cache = paragraphCaches[paragraphIndex];
+				CHECK_ERROR(cache && (!requireParagraph || (cache->graphicsParagraph && !cache->outdatedStyles)), ERROR_MESSAGE_PREFIX L"The specified paragraph is not created.");
+				return cache;
+#undef ERROR_MESSAGE_PREFIX
+			}
+
+			Size GuiDocumentParagraphCache::GetParagraphSize(vint paragraphIndex)
+			{
+				return paragraphSizes[paragraphIndex].cachedSize;
+			}
+
+			vint GuiDocumentParagraphCache::GetParagraphTopWithoutParagraphDistance(vint paragraphIndex)
+			{
+				if (paragraphIndex >= validCachedTops)
+				{
+					vint currentTop = 0;
+					if (validCachedTops > 0)
+					{
+						auto size = paragraphSizes[validCachedTops - 1];
+						currentTop = size.cachedTopWithoutParagraphDistance + size.cachedSize.y;
+					}
+
+					for (vint i = validCachedTops; i <= paragraphIndex; i++)
+					{
+						auto& size = paragraphSizes[i];
+						size.cachedTopWithoutParagraphDistance = currentTop;
+						currentTop += size.cachedSize.y;
+					}
+
+					validCachedTops = paragraphIndex + 1;
+				}
+				return paragraphSizes[paragraphIndex].cachedTopWithoutParagraphDistance;
+			}
+
+			vint GuiDocumentParagraphCache::GetParagraphTop(vint paragraphIndex, vint paragraphDistance)
+			{
+				return GetParagraphTopWithoutParagraphDistance(paragraphIndex) + paragraphIndex * paragraphDistance;
+			}
+
+			vint GuiDocumentParagraphCache::ResetCache()
+			{
+				nameCallbackIdMap.Clear();
+				freeCallbackIds.Clear();
+				usedCallbackIds = 0;
+
+				auto document = element ? element->GetDocument() : nullptr;
+				if (document && document->paragraphs.Count() > 0)
+				{
+					paragraphCaches.Resize(0);
+					paragraphCaches.Resize(document->paragraphs.Count());
+					paragraphSizes.Resize(document->paragraphs.Count());
+
+					for (vint i = 0; i < paragraphSizes.Count(); i++)
+					{
+						paragraphSizes[i] = { (i * defaultHeight),{0,defaultHeight}};
+					}
+
+					validCachedTops = document->paragraphs.Count();
+					return document->paragraphs.Count() * defaultHeight;
+				}
+				else
+				{
+					paragraphCaches.Resize(0);
+					paragraphSizes.Resize(0);
+					validCachedTops = 0;
+					return 0;
+				}
+			}
+
+			vint GuiDocumentParagraphCache::ResetCache(vint index, vint oldCount, vint newCount, bool updatedText)
+			{
+				if (updatedText)
+				{
+					for (vint i = 0; i < oldCount; i++)
+					{
+						if (auto cache = paragraphCaches[i + index])
+						{
+							// TODO: (enumerable) foreach on dictionary
+							for (vint j = 0; j < cache->embeddedObjects.Count(); j++)
+							{
+								auto id = cache->embeddedObjects.Keys()[j];
+								auto name = cache->embeddedObjects.Values()[j]->name;
+								nameCallbackIdMap.Remove(name);
+								freeCallbackIds.Add(id);
+							}
+						}
+					}
+				}
+
+				if (oldCount == newCount)
+				{
+					for (vint i = 0; i < oldCount; i++)
+					{
+						if (updatedText)
+						{
+							paragraphCaches[index + i] = nullptr;
+						}
+						else if (auto cache = paragraphCaches[index + i])
+						{
+							cache->outdatedStyles = true;
+						}
+					}
+					return 0;
+				}
+				else
+				{
+					pg::ParagraphCacheArray oldCaches;
+					pg::ParagraphSizeArray oldSizes;
+
+					CopyFrom(oldCaches, paragraphCaches);
+					CopyFrom(oldSizes, paragraphSizes);
+
+					vint paragraphCount = element->GetDocument()->paragraphs.Count();
+					paragraphCaches.Resize(paragraphCount);
+					paragraphSizes.Resize(paragraphCount);
+
+					vint paragraphTop = GetParagraphTopWithoutParagraphDistance(index);
+					for (vint i = 0; i < paragraphCount; i++)
+					{
+						if (i < index)
+						{
+							paragraphCaches[i] = oldCaches[i];
+							paragraphSizes[i] = oldSizes[i];
+						}
+						else if (i < index + newCount)
+						{
+							// updateText must be true, ensured in GuiDocumentElementRenderer::NotifyParagraphUpdated
+							paragraphCaches[i] = nullptr;
+							paragraphSizes[i] = { (paragraphTop + (i - index) * defaultHeight),{0,defaultHeight} };
+						}
+						else
+						{
+							paragraphCaches[i] = oldCaches[i - (newCount - oldCount)];
+							paragraphSizes[i] = oldSizes[i - (newCount - oldCount)];
+						}
+					}
+					validCachedTops = index + newCount;
+
+					vint oldUpdatedTotalHeight = 0;
+					for (vint i = 0; i < oldCount; i++)
+					{
+						oldUpdatedTotalHeight += oldSizes[index + i].cachedSize.y;
+					}
+					return newCount * defaultHeight - oldUpdatedTotalHeight;
+				}
+			}
+
+			vint GuiDocumentParagraphCache::EnsureParagraph(vint paragraphIndex, vint maxWidth)
+			{
+				auto paragraph = element->GetDocument()->paragraphs[paragraphIndex];
+				auto cache = paragraphCaches[paragraphIndex];
+				if (!cache)
+				{
+					cache = Ptr(new pg::ParagraphCache);
+					cache->fullText = paragraph->GetTextForCaret();
+					paragraphCaches[paragraphIndex] = cache;
+				}
+
+				if (!cache->graphicsParagraph)
+				{
+					auto paragraphText = cache->fullText;
+					if (auto passwordChar = element->GetPasswordChar())
+					{
+						Array<wchar_t> passwordText(paragraphText.Length() + 1);
+						for (vint i = 0; i < paragraphText.Length(); i++)
+						{
+							passwordText[i] = passwordChar;
+						}
+						passwordText[paragraphText.Length()] = 0;
+						paragraphText = &passwordText[0];
+					}
+					cache->graphicsParagraph = layoutProvider->CreateParagraph(paragraphText, renderTarget, callback);
+					cache->outdatedStyles = true;
+				}
+
+				if (cache->outdatedStyles)
+				{
+					cache->outdatedStyles = false;
+					SetPropertiesVisitor::SetProperty(element->GetDocument().Obj(), this, cache, paragraph, cache->selectionBegin, cache->selectionEnd);
+					cache->graphicsParagraph->SetParagraphAlignment(paragraph->alignment ? paragraph->alignment.Value() : Alignment::Left);
+					cache->graphicsParagraph->SetWrapLine(element->GetWrapLine());
+					cache->graphicsParagraph->SetMaxWidth(maxWidth);
+				}
+
+				auto& cachedSize = paragraphSizes[paragraphIndex];
+				Size oldSize = cachedSize.cachedSize;
+				Size newSize = cache->graphicsParagraph->GetSize();
+				if(newSize.y < defaultHeight)
+				{
+					newSize.y = defaultHeight;
+				}
+				cachedSize.cachedSize = newSize;
+				if (oldSize.y != newSize.y && validCachedTops > paragraphIndex + 1)
+				{
+					validCachedTops = paragraphIndex + 1;
+				}
+				return newSize.y - oldSize.y;
+			}
+
+			vint GuiDocumentParagraphCache::GetParagraphFromY(vint y, vint paragraphDistance)
+			{
+				auto document = element ? element->GetDocument() : nullptr;
+				if (!document || document->paragraphs.Count() == 0) return -1;
+
+				vint start = 0;
+				vint end = paragraphSizes.Count() - 1;
+
+				if (0 < validCachedTops && validCachedTops <= paragraphSizes.Count())
+				{
+					vint index = validCachedTops - 1;
+					vint top = GetParagraphTop(index, paragraphDistance);
+					auto size = paragraphSizes[index].cachedSize;
+					if (y < top)
+					{
+						if (index < 1) return 0;
+						end = index - 1;
+					}
+					else if (y < top + size.y + paragraphDistance)
+					{
+						return index;
+					}
+					else
+					{
+						if (index >= paragraphSizes.Count() - 1) return paragraphSizes.Count() - 1;
+						start = validCachedTops;
+					}
+				}
+
+				if (start >= end) return end;
+				while (true)
+				{
+					vint mid = (start + end) / 2;
+					vint top = GetParagraphTop(mid, paragraphDistance);
+					auto size = paragraphSizes[mid].cachedSize;
+					if (y < top)
+					{
+						end = mid - 1;
+						if (start >= end) return start;
+					}
+					else if (y < top + size.y + paragraphDistance)
+					{
+						return mid;
+					}
+					else
+					{
+						start = mid + 1;
+						if (start >= end) return end;
+					}
+				}
+			}
 
 /***********************************************************************
 GuiDocumentElementRenderer
@@ -29675,7 +30103,7 @@ GuiDocumentElementRenderer
 			{
 				if (auto callback = element->GetCallback())
 				{
-					auto cache = paragraphCaches[renderingParagraph];
+					auto cache = pgCache.GetParagraphCache(renderingParagraph, true);
 					auto relativeLocation = Rect(Point(location.x1 + renderingParagraphOffset.x, location.y1 + renderingParagraphOffset.y), location.GetSize());
 					auto eo = cache->embeddedObjects[callbackId];
 					auto size = callback->OnRenderEmbeddedObject(eo->name, relativeLocation);
@@ -29691,6 +30119,8 @@ GuiDocumentElementRenderer
 
 			void GuiDocumentElementRenderer::InitializeInternal()
 			{
+				pgCache.Initialize(element);
+				NotifyParagraphPaddingUpdated(element->GetParagraphPadding());
 			}
 
 			void GuiDocumentElementRenderer::FinalizeInternal()
@@ -29699,106 +30129,41 @@ GuiDocumentElementRenderer
 
 			void GuiDocumentElementRenderer::RenderTargetChangedInternal(IGuiGraphicsRenderTarget* oldRenderTarget, IGuiGraphicsRenderTarget* newRenderTarget)
 			{
-				// TODO: (enumerable) foreach
-				for(vint i=0;i<paragraphCaches.Count();i++)
-				{
-					ParagraphCache* cache=paragraphCaches[i].Obj();
-					if(cache)
-					{
-						cache->graphicsParagraph=0;
-					}
-				}
+				pgCache.RenderTargetChanged(oldRenderTarget, newRenderTarget);
 			}
 
-			Ptr<GuiDocumentElementRenderer::ParagraphCache> GuiDocumentElementRenderer::EnsureAndGetCache(vint paragraphIndex, bool createParagraph)
+			Ptr<pg::ParagraphCache> GuiDocumentElementRenderer::EnsureParagraph(vint paragraphIndex)
 			{
-				if (paragraphIndex < 0 || paragraphIndex >= paragraphCaches.Count()) return 0;
-				Ptr<DocumentParagraphRun> paragraph = element->GetDocument()->paragraphs[paragraphIndex];
-				Ptr<ParagraphCache> cache = paragraphCaches[paragraphIndex];
-				if (!cache)
+				lastTotalHeightWithoutParagraphDistance += pgCache.EnsureParagraph(paragraphIndex, lastMaxWidth);
+				vint width = pgCache.GetParagraphSize(paragraphIndex).x;
+				if (lastTotalWidth < width)
 				{
-					cache = Ptr(new ParagraphCache);
-					cache->fullText = paragraph->GetTextForCaret();
-					paragraphCaches[paragraphIndex] = cache;
+					lastTotalWidth = width;
 				}
-
-				if (createParagraph)
-				{
-					if (!cache->graphicsParagraph)
-					{
-						auto paragraphText = cache->fullText;
-						if (auto passwordChar = element->GetPasswordChar())
-						{
-							Array<wchar_t> passwordText(paragraphText.Length() + 1);
-							for (vint i = 0; i < paragraphText.Length(); i++)
-							{
-								passwordText[i] = passwordChar;
-							}
-							passwordText[paragraphText.Length()] = 0;
-							paragraphText = &passwordText[0];
-						}
-						cache->graphicsParagraph = layoutProvider->CreateParagraph(paragraphText, renderTarget, this);
-						cache->graphicsParagraph->SetParagraphAlignment(paragraph->alignment ? paragraph->alignment.Value() : Alignment::Left);
-						cache->graphicsParagraph->SetWrapLine(element->GetWrapLine());
-						SetPropertiesVisitor::SetProperty(element->GetDocument().Obj(), this, cache, paragraph, cache->selectionBegin, cache->selectionEnd);
-					}
-					if (cache->graphicsParagraph->GetMaxWidth() != lastMaxWidth)
-					{
-						cache->graphicsParagraph->SetMaxWidth(lastMaxWidth);
-					}
-
-					Size cachedSize = paragraphSizes[paragraphIndex];
-					Size realSize = cache->graphicsParagraph->GetSize();
-					if (cachedTotalSize.x < realSize.x)
-					{
-						cachedTotalSize.x = realSize.x;
-					}
-					if (cachedSize.y != realSize.y)
-					{
-						cachedTotalSize.y += realSize.y - cachedSize.y;
-					}
-					paragraphSizes[paragraphIndex] = realSize;
-					minSize = cachedTotalSize;
-				}
-
-				return cache;
+				FixMinSize();
+				return pgCache.GetParagraphCache(paragraphIndex, true);
 			}
 
-			bool GuiDocumentElementRenderer::GetParagraphIndexFromPoint(Point point, vint& top, vint& index)
+			void GuiDocumentElementRenderer::FixMinSize()
 			{
-				vint y = 0;
-				// TODO: (enumerable) foreach
-				for (vint i = 0; i < paragraphSizes.Count(); i++)
+				minSize = { lastTotalWidth,lastTotalHeightWithoutParagraphDistance };
+				if (pgCache.GetParagraphCount() > 0)
 				{
-					vint paragraphHeight = paragraphSizes[i].y;
-					vint nextY = y + paragraphHeight + paragraphDistance;
-					top = y;
-					index = i;
-
-					if (nextY <= point.y)
-					{
-						y = nextY;
-						continue;
-					}
-					else
-					{
-						break;
-					}
+					minSize.y += paragraphDistance * (pgCache.GetParagraphCount() - 1);
 				}
-				return true;
+
+				if (minSize.x < 1) minSize.x = 1;
+				if (minSize.y < 1) minSize.y = 1;
 			}
 
 			GuiDocumentElementRenderer::GuiDocumentElementRenderer()
-				:paragraphDistance(0)
-				,lastMaxWidth(-1)
-				,layoutProvider(GetGuiGraphicsResourceManager()->GetLayoutProvider())
-				,lastCaret(-1, -1)
-				,lastCaretFrontSide(false)
+				: pgCache(this)
 			{
 			}
 
 			void GuiDocumentElementRenderer::Render(Rect bounds)
 			{
+				List<vint> paragraphsToReset;
 				if (auto callback = element->GetCallback())
 				{
 					callback->OnStartRender();
@@ -29812,66 +30177,55 @@ GuiDocumentElementRenderer
 					vint cy = bounds.Top();
 					vint y1 = clipper.Top() - bounds.Top();
 					vint y2 = y1 + clipper.Height();
-					vint y = 0;
 
 					lastMaxWidth = maxWidth;
 
 					// TODO: (enumerable) foreach
-					vint paragraphCount = paragraphSizes.Count();
+					vint paragraphCount = pgCache.GetParagraphCount();
 					auto document = element->GetDocument();
 					if (paragraphCount > document->paragraphs.Count())
 					{
 						paragraphCount = document->paragraphs.Count();
 					}
-					for (vint i = 0; i < paragraphCount; i++)
+
+					vint startParagraph = pgCache.GetParagraphFromY(y1, paragraphDistance);
+					for (vint i = startParagraph; i < paragraphCount; i++)
 					{
-						Size cachedSize = paragraphSizes[i];
-						if (y + cachedSize.y <= y1)
+						Ptr<DocumentParagraphRun> paragraph = document->paragraphs[i];
+						auto cache = pgCache.TryGetParagraphCache(i);
+						bool paragraphAlreadyCreated = cache && cache->graphicsParagraph;
+
+						cache = EnsureParagraph(i);
+						if (!paragraphAlreadyCreated && i == lastCaret.row && element->GetCaretVisible())
 						{
-							y += cachedSize.y + paragraphDistance;
-							continue;
+							cache->graphicsParagraph->OpenCaret(lastCaret.column, lastCaretColor, lastCaretFrontSide);
 						}
-						else if (y >= y2)
+
+						vint y = pgCache.GetParagraphTop(i, paragraphDistance);
+						if (y >= y2)
 						{
 							break;
 						}
-						else
+
+						renderingParagraph = i;
+						renderingParagraphOffset = Point(cx - bounds.x1, cy + y - bounds.y1);
+						cache->graphicsParagraph->Render(Rect(Point(cx, cy + y), Size(maxWidth, pgCache.GetParagraphSize(i).y)));
+						renderingParagraph = -1;
+
+						bool resized = false;
+						for(auto eo: cache->embeddedObjects.Values())
 						{
-							Ptr<DocumentParagraphRun> paragraph = document->paragraphs[i];
-							Ptr<ParagraphCache> cache = paragraphCaches[i];
-							bool created = cache && cache->graphicsParagraph;
-							cache = EnsureAndGetCache(i, true);
-							if (!created && i == lastCaret.row && element->GetCaretVisible())
+							if (eo->resized)
 							{
-								cache->graphicsParagraph->OpenCaret(lastCaret.column, lastCaretColor, lastCaretFrontSide);
-							}
-
-							cachedSize = cache->graphicsParagraph->GetSize();
-
-							renderingParagraph = i;
-							renderingParagraphOffset = Point(cx - bounds.x1, cy + y - bounds.y1);
-							cache->graphicsParagraph->Render(Rect(Point(cx, cy + y), Size(maxWidth, cachedSize.y)));
-							renderingParagraph = -1;
-
-							bool resized = false;
-							// TODO: (enumerable) foreach
-							for (vint j = 0; j < cache->embeddedObjects.Count(); j++)
-							{
-								auto eo = cache->embeddedObjects.Values()[j];
-								if (eo->resized)
-								{
-									eo->resized = false;
-									resized = true;
-								}
-							}
-
-							if (resized)
-							{
-								cache->graphicsParagraph = 0;
+								eo->resized = false;
+								resized = true;
 							}
 						}
 
-						y += cachedSize.y + paragraphDistance;
+						if (resized)
+						{
+							paragraphsToReset.Add(i);
+						}
 					}
 				}
 				renderTarget->PopClipper(element);
@@ -29879,161 +30233,84 @@ GuiDocumentElementRenderer
 				{
 					callback->OnFinishRender();
 				}
+				FixMinSize();
+
+				for(auto p:paragraphsToReset)
+				{
+					NotifyParagraphUpdated(p, 1, 1, false);
+				}
+			}
+
+			void GuiDocumentElementRenderer::NotifyParagraphPaddingUpdated(bool value)
+			{
+				vint defaultHeight = GetCurrentController()->ResourceService()->GetDefaultFont().size;
+				paragraphDistance = element->GetParagraphPadding() ? defaultHeight : 0;
 			}
 
 			void GuiDocumentElementRenderer::OnElementStateChanged()
 			{
-				cachedTotalSize = { 1,1 };
-				auto document = element->GetDocument();
-				if (document && document->paragraphs.Count() > 0)
-				{
-					vint defaultHeight = GetCurrentController()->ResourceService()->GetDefaultFont().size;
-					paragraphDistance = element->GetParagraphPadding() ? defaultHeight : 0;
-
-					paragraphCaches.Resize(document->paragraphs.Count());
-					paragraphSizes.Resize(document->paragraphs.Count());
-					
-					for (vint i = 0; i < paragraphCaches.Count(); i++)
-					{
-						paragraphCaches[i] = 0;
-					}
-					for (vint i = 0; i < paragraphSizes.Count(); i++)
-					{
-						paragraphSizes[i] = { 0,defaultHeight };
-					}
-
-					cachedTotalSize.y = paragraphSizes.Count() * (defaultHeight + paragraphDistance);
-					if (paragraphSizes.Count()>0)
-					{
-						cachedTotalSize.y -= paragraphDistance;
-					}
-				}
-				else
-				{
-					paragraphCaches.Resize(0);
-					paragraphSizes.Resize(0);
-				}
-				minSize = cachedTotalSize;
-
-				nameCallbackIdMap.Clear();
-				freeCallbackIds.Clear();
-				usedCallbackIds = 0;
+				lastTotalWidth = 0;
+				lastTotalHeightWithoutParagraphDistance = pgCache.ResetCache();
+				FixMinSize();
 			}
 
 			void GuiDocumentElementRenderer::NotifyParagraphUpdated(vint index, vint oldCount, vint newCount, bool updatedText)
 			{
-				if (0 <= index && index < paragraphCaches.Count() && 0 <= oldCount && index + oldCount <= paragraphCaches.Count() && 0 <= newCount)
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::elements::GuiDocumentElementRenderer::NotifyParagraphUpdated(vint, vint, vint, bool)#"
+				vint oldParagraphCount = pgCache.GetParagraphCount();
+				vint newParagraphCount = element->GetDocument()->paragraphs.Count();
+
+				CHECK_ERROR(oldCount >= 0, ERROR_MESSAGE_PREFIX L"oldCount cannot be negative.");
+				CHECK_ERROR(newCount >= 0, ERROR_MESSAGE_PREFIX L"newCount cannot be negative.");
+				CHECK_ERROR(0 <= index && index + oldCount <= oldParagraphCount, ERROR_MESSAGE_PREFIX L"index + oldCount is out of range.");
+				CHECK_ERROR(0 <= index && index + newCount <= newParagraphCount, ERROR_MESSAGE_PREFIX L"index + newCount is out of range.");
+				CHECK_ERROR(updatedText || oldCount == newCount, ERROR_MESSAGE_PREFIX L"updatedText must be true if oldCount is not equal to newCount.");
+				CHECK_ERROR(newParagraphCount - oldParagraphCount == newCount - oldCount, ERROR_MESSAGE_PREFIX L"newCount - oldCount does not reflect the actual paragraph count changing.");
+
+				for (vint i = 0; i < oldCount; i++)
 				{
-					vint paragraphCount = element->GetDocument()->paragraphs.Count();
-					CHECK_ERROR(updatedText || oldCount == newCount, L"GuiDocumentlement::GuiDocumentElementRenderer::NotifyParagraphUpdated(vint, vint, vint, bool)#Illegal values of oldCount and newCount.");
-					CHECK_ERROR(paragraphCount - paragraphCaches.Count() == newCount - oldCount, L"GuiDocumentElementRenderer::NotifyParagraphUpdated(vint, vint, vint, bool)#Illegal values of oldCount and newCount.");
-
-					ParagraphCacheArray oldCaches;
-					CopyFrom(oldCaches, paragraphCaches);
-					paragraphCaches.Resize(paragraphCount);
-
-					ParagraphSizeArray oldSizes;
-					CopyFrom(oldSizes, paragraphSizes);
-					paragraphSizes.Resize(paragraphCount);
-
-					vint defaultHeight = GetCurrentController()->ResourceService()->GetDefaultFont().size;
-					cachedTotalSize = { 1,1 };
-
-					for (vint i = 0; i < paragraphCount; i++)
+					vint width = pgCache.GetParagraphSize(index + i).x;
+					if (lastTotalWidth == width)
 					{
-						if (i < index)
-						{
-							paragraphCaches[i] = oldCaches[i];
-							paragraphSizes[i] = oldSizes[i];
-						}
-						else if (i < index + newCount)
-						{
-							paragraphCaches[i] = 0;
-							paragraphSizes[i] = { 0,defaultHeight };
-							if (!updatedText && i < index + oldCount)
-							{
-								auto cache = oldCaches[i];
-								if(cache)
-								{
-									cache->graphicsParagraph = 0;
-								}
-								paragraphCaches[i] = cache;
-								paragraphSizes[i] = oldSizes[i];
-							}
-						}
-						else
-						{
-							paragraphCaches[i] = oldCaches[i - (newCount - oldCount)];
-							paragraphSizes[i] = oldSizes[i - (newCount - oldCount)];
-						}
-
-						auto cachedSize = paragraphSizes[i];
-						if (cachedTotalSize.x < cachedSize.x)
-						{
-							cachedTotalSize.x = cachedSize.x;
-						}
-						cachedTotalSize.y += cachedSize.y + paragraphDistance;
+						lastTotalWidth = 0;
+						break;
 					}
-					if (paragraphCount > 0)
-					{
-						cachedTotalSize.y -= paragraphDistance;
-					}
-
-					if (updatedText)
-					{
-						vint count = oldCount < newCount ? oldCount : newCount;
-						for (vint i = 0; i < count; i++)
-						{
-							if (auto cache = oldCaches[index + i])
-							{
-								// TODO: (enumerable) foreach on dictionary
-								for (vint j = 0; j < cache->embeddedObjects.Count(); j++)
-								{
-									auto id = cache->embeddedObjects.Keys()[j];
-									auto name = cache->embeddedObjects.Values()[j]->name;
-									nameCallbackIdMap.Remove(name);
-									freeCallbackIds.Add(id);
-								}
-							}
-						}
-					}
-					minSize = cachedTotalSize;
 				}
+				lastTotalHeightWithoutParagraphDistance += pgCache.ResetCache(index, oldCount, newCount, updatedText);
+				FixMinSize();
+#undef ERROR_MESSAGE_PREFIX
 			}
 
 			Ptr<DocumentHyperlinkRun::Package> GuiDocumentElementRenderer::GetHyperlinkFromPoint(Point point)
 			{
 				if (!renderTarget) return nullptr;
-				vint top=0;
-				vint index=-1;
-				if(GetParagraphIndexFromPoint(point, top, index))
+				vint index = pgCache.GetParagraphFromY(point.y, paragraphDistance);
+				vint top = pgCache.GetParagraphTop(index, paragraphDistance);
+
+				auto document = element->GetDocument();
+				auto cache = EnsureParagraph(index);
+				Point paragraphPoint(point.x, point.y - top);
+
+				vint start = -1;
+				vint length = 0;
+				if (cache->graphicsParagraph->GetInlineObjectFromPoint(paragraphPoint, start, length))
 				{
-					auto document = element->GetDocument();
-					Ptr<ParagraphCache> cache=EnsureAndGetCache(index, true);
-					Point paragraphPoint(point.x, point.y-top);
-
-					vint start=-1;
-					vint length=0;
-					if(cache->graphicsParagraph->GetInlineObjectFromPoint(paragraphPoint, start, length))
-					{
-						return document->GetHyperlink(index, start, start+length);
-					}
-
-					vint caret=cache->graphicsParagraph->GetCaretFromPoint(paragraphPoint);
-					return document->GetHyperlink(index, caret, caret);
+					return document->GetHyperlink(index, start, start + length);
 				}
-				return nullptr;
+
+				vint caret = cache->graphicsParagraph->GetCaretFromPoint(paragraphPoint);
+				return document->GetHyperlink(index, caret, caret);
 			}
 
 			void GuiDocumentElementRenderer::OpenCaret(TextPos caret, Color color, bool frontSide)
 			{
 				CloseCaret(caret);
-				lastCaret=caret;
-				lastCaretColor=color;
-				lastCaretFrontSide=frontSide;
+				lastCaret = caret;
+				lastCaretColor = color;
+				lastCaretFrontSide = frontSide;
 
-				Ptr<ParagraphCache> cache=paragraphCaches[lastCaret.row];
-				if(cache && cache->graphicsParagraph)
+				auto cache = pgCache.TryGetParagraphCache(lastCaret.row);
+				if (cache && cache->graphicsParagraph)
 				{
 					cache->graphicsParagraph->OpenCaret(lastCaret.column, lastCaretColor, lastCaretFrontSide);
 				}
@@ -30041,61 +30318,65 @@ GuiDocumentElementRenderer
 
 			void GuiDocumentElementRenderer::CloseCaret(TextPos caret)
 			{
-				if(lastCaret!=TextPos(-1, -1))
+				if (lastCaret != TextPos(-1, -1))
 				{
-					if(0<=lastCaret.row && lastCaret.row<paragraphCaches.Count())
+					auto cache = pgCache.TryGetParagraphCache(lastCaret.row);
+					if (cache && cache->graphicsParagraph)
 					{
-						Ptr<ParagraphCache> cache=paragraphCaches[lastCaret.row];
-						if(cache && cache->graphicsParagraph)
-						{
-							cache->graphicsParagraph->CloseCaret();
-						}
+						cache->graphicsParagraph->CloseCaret();
 					}
 				}
-				lastCaret=caret;
+				lastCaret = caret;
 			}
 
 			void GuiDocumentElementRenderer::SetSelection(TextPos begin, TextPos end)
 			{
-				if(begin>end)
+				if (begin > end)
 				{
-					TextPos t=begin;
-					begin=end;
-					end=t;
+					TextPos t = begin;
+					begin = end;
+					end = t;
 				}
-				if(begin==end)
+				if (begin == end)
 				{
-					begin=TextPos(-1, -1);
-					end=TextPos(-1, -1);
+					begin = TextPos(-1, -1);
+					end = TextPos(-1, -1);
 				}
 
 				if (!renderTarget) return;
-				// TODO: (enumerable) foreach:indexed
-				for(vint i=0;i<paragraphCaches.Count();i++)
+				vint paragraphCount = pgCache.GetParagraphCount();
+				for (vint i = 0; i < paragraphCount; i++)
 				{
-					if(begin.row<=i && i<=end.row)
+					if (begin.row <= i && i <= end.row)
 					{
-						Ptr<ParagraphCache> cache=EnsureAndGetCache(i, false);
-						vint newBegin=i==begin.row?begin.column:0;
-						vint newEnd=i==end.row?end.column:cache->fullText.Length();
-
-						if(cache->selectionBegin!=newBegin || cache->selectionEnd!=newEnd)
+						if (auto cache = pgCache.TryGetParagraphCache(i))
 						{
-							cache->selectionBegin=newBegin;
-							cache->selectionEnd=newEnd;
-							NotifyParagraphUpdated(i, 1, 1, false);
+							vint newBegin = i == begin.row ? begin.column : 0;
+							vint newEnd = i == end.row ? end.column : cache->fullText.Length();
+
+							if (cache->selectionBegin != newBegin || cache->selectionEnd != newEnd)
+							{
+								cache->selectionBegin = newBegin;
+								cache->selectionEnd = newEnd;
+								if (cache->graphicsParagraph)
+								{
+									NotifyParagraphUpdated(i, 1, 1, false);
+								}
+							}
 						}
 					}
 					else
 					{
-						Ptr<ParagraphCache> cache=paragraphCaches[i];
-						if(cache)
+						if (auto cache = pgCache.TryGetParagraphCache(i))
 						{
-							if(cache->selectionBegin!=-1 || cache->selectionEnd!=-1)
+							if (cache->selectionBegin != -1 || cache->selectionEnd != -1)
 							{
-								cache->selectionBegin=-1;
-								cache->selectionEnd=-1;
-								NotifyParagraphUpdated(i, 1, 1, false);
+								cache->selectionBegin = -1;
+								cache->selectionEnd = -1;
+								if (cache->graphicsParagraph)
+								{
+									NotifyParagraphUpdated(i, 1, 1, false);
+								}
 							}
 						}
 					}
@@ -30105,8 +30386,7 @@ GuiDocumentElementRenderer
 			TextPos GuiDocumentElementRenderer::CalculateCaret(TextPos comparingCaret, IGuiGraphicsParagraph::CaretRelativePosition position, bool& preferFrontSide)
 			{
 				if (!renderTarget) return comparingCaret;
-				Ptr<ParagraphCache> cache = EnsureAndGetCache(comparingCaret.row, true);
-				if (cache)
+				if (auto cache = EnsureParagraph(comparingCaret.row))
 				{
 					switch (position)
 					{
@@ -30140,7 +30420,7 @@ GuiDocumentElementRenderer
 							if (caret == comparingCaret.column && comparingCaret.row > 0)
 							{
 								Rect caretBounds = cache->graphicsParagraph->GetCaretBounds(comparingCaret.column, preferFrontSide);
-								Ptr<ParagraphCache> anotherCache = EnsureAndGetCache(comparingCaret.row - 1, true);
+								auto anotherCache = EnsureParagraph(comparingCaret.row - 1);
 								vint height = anotherCache->graphicsParagraph->GetSize().y;
 								caret = anotherCache->graphicsParagraph->GetCaretFromPoint(Point(caretBounds.x1, height));
 								return TextPos(comparingCaret.row - 1, caret);
@@ -30153,10 +30433,10 @@ GuiDocumentElementRenderer
 					case IGuiGraphicsParagraph::CaretMoveDown:
 						{
 							vint caret = cache->graphicsParagraph->GetCaret(comparingCaret.column, IGuiGraphicsParagraph::CaretMoveDown, preferFrontSide);
-							if (caret == comparingCaret.column && comparingCaret.row < paragraphCaches.Count() - 1)
+							if (caret == comparingCaret.column && comparingCaret.row < pgCache.GetParagraphCount() - 1)
 							{
 								Rect caretBounds = cache->graphicsParagraph->GetCaretBounds(comparingCaret.column, preferFrontSide);
-								Ptr<ParagraphCache> anotherCache = EnsureAndGetCache(comparingCaret.row + 1, true);
+								auto anotherCache = EnsureParagraph(comparingCaret.row + 1);
 								caret = anotherCache->graphicsParagraph->GetCaretFromPoint(Point(caretBounds.x1, 0));
 								return TextPos(comparingCaret.row + 1, caret);
 							}
@@ -30171,7 +30451,7 @@ GuiDocumentElementRenderer
 							vint caret = cache->graphicsParagraph->GetCaret(comparingCaret.column, IGuiGraphicsParagraph::CaretMoveLeft, preferFrontSide);
 							if (caret == comparingCaret.column && comparingCaret.row > 0)
 							{
-								Ptr<ParagraphCache> anotherCache = EnsureAndGetCache(comparingCaret.row - 1, true);
+								auto anotherCache = EnsureParagraph(comparingCaret.row - 1);
 								caret = anotherCache->graphicsParagraph->GetCaret(0, IGuiGraphicsParagraph::CaretLast, preferFrontSide);
 								return TextPos(comparingCaret.row - 1, caret);
 							}
@@ -30184,9 +30464,9 @@ GuiDocumentElementRenderer
 						{
 							preferFrontSide = true;
 							vint caret = cache->graphicsParagraph->GetCaret(comparingCaret.column, IGuiGraphicsParagraph::CaretMoveRight, preferFrontSide);
-							if (caret == comparingCaret.column && comparingCaret.row < paragraphCaches.Count() - 1)
+							if (caret == comparingCaret.column && comparingCaret.row < pgCache.GetParagraphCount() - 1)
 							{
-								Ptr<ParagraphCache> anotherCache = EnsureAndGetCache(comparingCaret.row + 1, true);
+								auto anotherCache = EnsureParagraph(comparingCaret.row + 1);
 								caret = anotherCache->graphicsParagraph->GetCaret(0, IGuiGraphicsParagraph::CaretFirst, preferFrontSide);
 								return TextPos(comparingCaret.row + 1, caret);
 							}
@@ -30203,34 +30483,25 @@ GuiDocumentElementRenderer
 			TextPos GuiDocumentElementRenderer::CalculateCaretFromPoint(Point point)
 			{
 				if (!renderTarget) return TextPos(-1, -1);
-				vint top=0;
-				vint index=-1;
-				if(GetParagraphIndexFromPoint(point, top, index))
-				{
-					Ptr<ParagraphCache> cache=EnsureAndGetCache(index, true);
-					Point paragraphPoint(point.x, point.y-top);
-					vint caret=cache->graphicsParagraph->GetCaretFromPoint(paragraphPoint);
-					return TextPos(index, caret);
-				}
-				return TextPos(-1, -1);
+				vint index = pgCache.GetParagraphFromY(point.y, paragraphDistance);
+				vint top = pgCache.GetParagraphTop(index, paragraphDistance);
+
+				auto cache = EnsureParagraph(index);
+				Point paragraphPoint(point.x, point.y - top);
+				vint caret = cache->graphicsParagraph->GetCaretFromPoint(paragraphPoint);
+				return TextPos(index, caret);
 			}
 
 			Rect GuiDocumentElementRenderer::GetCaretBounds(TextPos caret, bool frontSide)
 			{
 				if (!renderTarget) return Rect();
-				Ptr<ParagraphCache> cache = EnsureAndGetCache(caret.row, true);
+				auto cache = EnsureParagraph(caret.row);
 				if (cache)
 				{
 					Rect bounds = cache->graphicsParagraph->GetCaretBounds(caret.column, frontSide);
 					if (bounds != Rect())
 					{
-						vint y = 0;
-						for (vint i = 0; i < caret.row; i++)
-						{
-							EnsureAndGetCache(i, true);
-							y += paragraphSizes[i].y + paragraphDistance;
-						}
-
+						vint y = pgCache.GetParagraphTop(caret.row, paragraphDistance);
 						bounds.y1 += y;
 						bounds.y2 += y;
 						return bounds;
@@ -32812,7 +33083,7 @@ GuiHostedController::INativeWindowService
 
 			SettingHostedWindowsBeforeRunning();
 			wmManager->needRefresh = true;
-			if (unittest::UnitTest::GetFailureMode() == unittest::UnitTest::FailureMode::NotRunning)
+			if (unittest::UnitTest::GetFailureMode() == unittest::UnitTest::FailureMode::NotRunning || unittest::UnitTest::GetFailureMode() == unittest::UnitTest::FailureMode::Debug)
 			{
 				nativeController->WindowService()->Run(nativeWindow);
 			}
@@ -41739,6 +42010,9 @@ DocumentParagraphRun
 
 /***********************************************************************
 DocumentModel
+
+If a style has a parent style, undefined style properties are inherited recursively.
+If any style property is still undefined after inheritance, the value of DefaultStyleName will be picked up during rendering.
 ***********************************************************************/
 
 		const wchar_t* DocumentModel::DefaultStyleName		= L"#Default";
@@ -41749,58 +42023,78 @@ DocumentModel
 
 		DocumentModel::DocumentModel()
 		{
+			if (GetCurrentController())
 			{
-				FontProperties font=GetCurrentController()->ResourceService()->GetDefaultFont();
-				auto sp=Ptr(new DocumentStyleProperties);
-				sp->face=font.fontFamily;
-				sp->size=DocumentFontSize((double)font.size, false);
-				sp->color=Color();
-				sp->backgroundColor=Color(0, 0, 0, 0);
-				sp->bold=font.bold;
-				sp->italic=font.italic;
-				sp->underline=font.underline;
-				sp->strikeline=font.strikeline;
-				sp->antialias=font.antialias;
-				sp->verticalAntialias=font.verticalAntialias;
+				FontProperties font = GetCurrentController()->ResourceService()->GetDefaultFont();
+				auto sp = Ptr(new DocumentStyleProperties);
+				sp->face = font.fontFamily;
+				sp->size = DocumentFontSize((double)font.size, false);
+				sp->color = Color();
+				sp->backgroundColor = Color(0, 0, 0, 0);
+				sp->bold = font.bold;
+				sp->italic = font.italic;
+				sp->underline = font.underline;
+				sp->strikeline = font.strikeline;
+				sp->antialias = font.antialias;
+				sp->verticalAntialias = font.verticalAntialias;
 
 				auto style = Ptr(new DocumentStyle);
-				style->styles=sp;
+				style->styles = sp;
 				styles.Add(L"#Default", style);
 			}
+			else
 			{
 				auto sp = Ptr(new DocumentStyleProperties);
-				sp->color=Color(255, 255, 255);
-				sp->backgroundColor=Color(51, 153, 255);
+				sp->face = WString::Unmanaged(L"Times New Roman");
+				sp->size = DocumentFontSize(8, false);
+				sp->color = Color();
+				sp->backgroundColor = Color(0, 0, 0, 0);
+				sp->bold = false;
+				sp->italic = false;
+				sp->underline = false;
+				sp->strikeline = false;
+				sp->antialias = false;
+				sp->verticalAntialias = false;
 
 				auto style = Ptr(new DocumentStyle);
-				style->styles=sp;
+				style->styles = sp;
+				styles.Add(L"#Default", style);
+			}
+
+			{
+				auto sp = Ptr(new DocumentStyleProperties);
+				sp->color = Color(255, 255, 255);
+				sp->backgroundColor = Color(51, 153, 255);
+
+				auto style = Ptr(new DocumentStyle);
+				style->styles = sp;
 				styles.Add(L"#Selection", style);
 			}
 			{
 				auto sp = Ptr(new DocumentStyleProperties);
 
 				auto style = Ptr(new DocumentStyle);
-				style->styles=sp;
+				style->styles = sp;
 				styles.Add(L"#Context", style);
 			}
 			{
 				auto sp = Ptr(new DocumentStyleProperties);
-				sp->color=Color(0, 0, 255);
-				sp->underline=true;
+				sp->color = Color(0, 0, 255);
+				sp->underline = true;
 
 				auto style = Ptr(new DocumentStyle);
-				style->parentStyleName=L"#Context";
-				style->styles=sp;
+				style->parentStyleName = L"#Context";
+				style->styles = sp;
 				styles.Add(L"#NormalLink", style);
 			}
 			{
 				auto sp = Ptr(new DocumentStyleProperties);
-				sp->color=Color(255, 128, 0);
-				sp->underline=true;
+				sp->color = Color(255, 128, 0);
+				sp->underline = true;
 
 				auto style = Ptr(new DocumentStyle);
-				style->parentStyleName=L"#Context";
-				style->styles=sp;
+				style->parentStyleName = L"#Context";
+				style->styles = sp;
 				styles.Add(L"#ActiveLink", style);
 			}
 		}
@@ -46272,53 +46566,66 @@ document_operation_visitors::SerializeRunVisitor
 
 				void Visit(DocumentTextRun* run)override
 				{
-					if (run->text != L"")
+					auto begin = run->text.Buffer();
+					auto end = begin + run->text.Length();
+					while (*begin == L'\r') begin++;
+					while (end > begin && end[-1] == L'\r') end--;
+					if (begin == end) return;
+
+					auto beginWithTag = *begin == L'\n' || *begin == L' ' || *begin == L'\t';
+					auto endWithTag = end > begin && (end[-1] == L'\n' || end[-1] == L' ' || end[-1] == L'\t');
+					auto wrappedByNop = !beginWithTag || !endWithTag;
+					auto writer = wrappedByNop ? XmlElementWriter(parent).Element(L"nop") : XmlElementWriter(parent);
+
+					auto reading = begin;
+					auto last = reading;
+					while (true)
 					{
-						auto writer = XmlElementWriter(parent).Element(L"nop");
-						auto begin = run->text.Buffer();
-						auto reading = begin;
-						auto last = reading;
-						while (true)
+						auto c = *reading;
+						const wchar_t* tag = nullptr;
+
+						switch (c)
 						{
-							const wchar_t* tag = nullptr;
-							auto c = *reading;
-							switch (c)
+						case L'\n':
+							tag = L"br";
+							break;
+						case L' ':
+							if (!wrappedByNop && (reading == begin || reading == end - 1))
 							{
-							case L'\n':
-								tag = L"br";
-								break;
-							case L' ':
 								tag = L"sp";
-								break;
-							case L'\t':
+							}
+							break;
+						case L'\t':
+							if (!wrappedByNop && (reading == begin || reading == end - 1))
+							{
 								tag = L"tab";
-								break;
 							}
-
-							if (tag || c == 0)
-							{
-								if (reading > last)
-								{
-									auto end = reading[-1] == L'\r' ? reading - 1 : reading;
-									if (end > last)
-									{
-										writer.Text(run->text.Sub(last - begin, end - last));
-									}
-									last = reading;
-								}
-							}
-
-							if (tag)
-							{
-								writer.Element(tag);
-								last++;
-							}
-							else if (c == 0)
-							{
-								break;
-							}
-							reading++;
+							break;
 						}
+
+						if (tag || reading == end)
+						{
+							if (reading > last)
+							{
+								auto end = reading[-1] == L'\r' ? reading - 1 : reading;
+								if (end > last)
+								{
+									writer.Text(run->text.Sub(last - begin, end - last));
+								}
+								last = reading;
+							}
+						}
+
+						if (tag)
+						{
+							writer.Element(tag);
+							last++;
+						}
+						else if (reading == end)
+						{
+							break;
+						}
+						reading++;
 					}
 				}
 
@@ -50437,7 +50744,7 @@ FakeDialogServiceBase
 			vm->defaultExtension = defaultExtension;
 
 			Regex regexFilterExt(L"/*.[^*?]+");
-			Regex regexWildcard(L"[*? ]");
+			Regex regexWildcard(L"[*?;]");
 			vint filterStart = 0;
 			while (true)
 			{
@@ -50478,20 +50785,25 @@ FakeDialogServiceBase
 
 				auto regexFilter = stream::GenerateToStream([&](stream::TextWriter& writer)
 				{
-					writer.WriteChar(L'^');
+					writer.WriteString(L"^(");
 					List<Ptr<RegexMatch>> matches;
 					regexWildcard.Cut(filterItem->filter, false, matches);
 					for (auto match : matches)
 					{
 						if (match->Success())
 						{
-							if (match->Result().Value() == WString::Unmanaged(L"*"))
+							auto wildcard = match->Result().Value()[0];
+							switch (wildcard)
 							{
+							case L'*':
 								writer.WriteString(WString::Unmanaged(L"/.*"));
-							}
-							else
-							{
+								break;
+							case L'?':
 								writer.WriteString(WString::Unmanaged(L"/."));
+								break;
+							case L';':
+								writer.WriteString(WString::Unmanaged(L"|"));
+								break;
 							}
 						}
 						else
@@ -50499,7 +50811,7 @@ FakeDialogServiceBase
 							writer.WriteString(u32tow(regex_internal::EscapeTextForRegex(wtou32(match->Result().Value()))));
 						}
 					}
-					writer.WriteChar(L'$');
+					writer.WriteString(L")$");
 				});
 				filterItem->regexFilter = Ptr(new Regex(regexFilter));
 
@@ -51334,7 +51646,7 @@ Closures
 
 	void __vwsnf36_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiItemMouseEventArgs* arguments) const
 	{
-		auto file = ::vl::__vwsn::This(__vwsnthis_0->ViewModel.Obj())->GetFiles()[::vl::__vwsn::This(arguments)->itemIndex];
+		auto file = ::vl::__vwsn::UnboxWeak<::vl::Ptr<::vl::presentation::IFileDialogFile>>(::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0->dataGrid)->GetItemProvider())->GetBindingValue(::vl::__vwsn::This(arguments)->itemIndex));
 		auto selection = ::vl::__vwsn::This(__vwsnthis_0->ViewModel.Obj())->ParseDisplayString(::vl::__vwsn::This(__vwsnthis_0->ViewModel.Obj())->GetDisplayString(::vl::reflection::description::GetLazyList<::vl::Ptr<::vl::presentation::IFileDialogFile>>((::vl::__vwsn::CreateList().Add(file)).list)));
 		::vl::__vwsn::This(::vl::presentation::controls::GetApplication())->InvokeInMainThread(::vl::__vwsn::This(__vwsnthis_0->self)->GetRelatedControlHost(), vl::Func(::vl_workflow_global::__vwsnf37_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize__(selection, __vwsnthis_0)));
 	}
@@ -53396,7 +53708,7 @@ Closures
 					if ((__vwsn_co_state_ == static_cast<::vl::vint>(3)))
 					{
 						(__vwsn_co1_item = ::vl::__vwsn::Unbox<::vl::vint>(::vl::__vwsn::This(__vwsn_co3_for_enumerator_item.Obj())->GetCurrent()));
-						(__vwsn_co0_file = ::vl::Ptr<::vl::presentation::IFileDialogFile>(::vl::__vwsn::This(__vwsnthis_0->GetViewModel().Obj())->GetFiles()[__vwsn_co1_item]));
+						(__vwsn_co0_file = ::vl::__vwsn::UnboxWeak<::vl::Ptr<::vl::presentation::IFileDialogFile>>(::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0->dataGrid)->GetItemProvider())->GetBindingValue(__vwsn_co1_item)));
 						if (static_cast<bool>(__vwsn_co0_file))
 						{
 							this->SetStatus(::vl::reflection::description::CoroutineStatus::Waiting);

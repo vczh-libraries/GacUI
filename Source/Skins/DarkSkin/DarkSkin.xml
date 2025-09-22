@@ -9,7 +9,6 @@
   <Folder name="Ribbon" content="Link">Template_Ribbon.xml</Folder>
   <Folder name="Button" content="Link">Template_Button.xml</Folder>
   <Folder name="Document" content="Link">Template_Document.xml</Folder>
-  <Folder name="TextBox" content="Link">Template_TextBox.xml</Folder>
   <Folder name="Scroll" content="Link">Template_Scroll.xml</Folder>
   <Folder name="List" content="Link">Template_List.xml</Folder>
   <Folder name="Misc" content="Link">Template_Misc.xml</Folder>

@@ -101,7 +101,7 @@
           <Cell ref.Name="afterHeadersContainer" Site="row:0 column:2"/>
 
           <Cell Site="row:0 column:1">
-            <RepeatFlow ref.Name="header" AlignmentToParent="left:0 top:0 right:0 bottom:0" ExtraMargin="left:2 top:2 right:2 bottom:0">
+            <RepeatFlow ref.Name="header" AlignmentToParent="left:0 top:-1 right:0 bottom:0" ExtraMargin="left:2 top:2 right:2 bottom:0">
               <att.ItemTemplate>darkskin::TabHeaderTemplate</att.ItemTemplate>
               <att.ItemSource-bind>self.TabPages</att.ItemSource-bind>
               <ev.ItemInserted-eval>

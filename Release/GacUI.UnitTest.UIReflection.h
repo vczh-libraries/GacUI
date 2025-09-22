@@ -114,14 +114,6 @@ namespace vl
 				{
 					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetDom);
 				}
-				::vl::WString GetDomAsJsonText() override
-				{
-					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetDomAsJsonText);
-				}
-				::vl::WString GetElementsAsJsonText() override
-				{
-					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetElementsAsJsonText);
-				}
 				::vl::WString GetName() override
 				{
 					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetName);

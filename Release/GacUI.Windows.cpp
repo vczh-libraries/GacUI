@@ -3485,11 +3485,11 @@ WindowsDirect2DParagraph (Formatting)
 
 				void SetMaxWidth(vint value)override
 				{
-					if(maxWidth!=value)
+					if (maxWidth != value)
 					{
-						maxWidth=value;
-						textLayout->SetMaxWidth(value==-1?65536:(FLOAT)value);
-						formatDataAvailable=false;
+						maxWidth = value;
+						textLayout->SetMaxWidth(value == -1 ? 65536 : (FLOAT)value);
+						formatDataAvailable = false;
 					}
 				}
 
@@ -3510,18 +3510,21 @@ WindowsDirect2DParagraph (Formatting)
 
 				void SetParagraphAlignment(Alignment value)override
 				{
-					formatDataAvailable=false;
-					switch(value)
+					if (GetParagraphAlignment() != value)
 					{
-					case Alignment::Left:
-						textLayout->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_LEADING);
-						break;
-					case Alignment::Center:
-						textLayout->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
-						break;
-					case Alignment::Right:
-						textLayout->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_TRAILING);
-						break;
+						formatDataAvailable = false;
+						switch (value)
+						{
+						case Alignment::Left:
+							textLayout->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_LEADING);
+							break;
+						case Alignment::Center:
+							textLayout->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
+							break;
+						case Alignment::Right:
+							textLayout->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_TRAILING);
+							break;
+						}
 					}
 				}
 
@@ -8504,8 +8507,11 @@ WindowsGDIParagraph
 
 				void SetWrapLine(bool value)override
 				{
-					paragraph->BuildUniscribeData(renderTarget->GetDC());
-					paragraph->Layout(value, paragraph->lastAvailableWidth, paragraph->paragraphAlignment);
+					if (paragraph->lastWrapLine != value)
+					{
+						paragraph->BuildUniscribeData(renderTarget->GetDC());
+						paragraph->Layout(value, paragraph->lastAvailableWidth, paragraph->paragraphAlignment);
+					}
 				}
 
 				vint GetMaxWidth()override
@@ -8515,8 +8521,11 @@ WindowsGDIParagraph
 
 				void SetMaxWidth(vint value)override
 				{
-					paragraph->BuildUniscribeData(renderTarget->GetDC());
-					paragraph->Layout(paragraph->lastWrapLine, value, paragraph->paragraphAlignment);
+					if (paragraph->lastAvailableWidth != value)
+					{
+						paragraph->BuildUniscribeData(renderTarget->GetDC());
+						paragraph->Layout(paragraph->lastWrapLine, value, paragraph->paragraphAlignment);
+					}
 				}
 
 				Alignment GetParagraphAlignment()override
@@ -8526,8 +8535,11 @@ WindowsGDIParagraph
 
 				void SetParagraphAlignment(Alignment value)override
 				{
-					paragraph->BuildUniscribeData(renderTarget->GetDC());
-					paragraph->Layout(paragraph->lastWrapLine, paragraph->lastAvailableWidth, value);
+					if (paragraph->paragraphAlignment != value)
+					{
+						paragraph->BuildUniscribeData(renderTarget->GetDC());
+						paragraph->Layout(paragraph->lastWrapLine, paragraph->lastAvailableWidth, value);
+					}
 				}
 
 				bool SetFont(vint start, vint length, const WString& value)override
@@ -8667,6 +8679,7 @@ WindowsGDIParagraph
 
 				bool IsCaretBoundsFromTextRun(vint caret, bool caretFrontSide)
 				{
+					if (paragraph->lines.Count() == 1 && paragraph->lines[0]->scriptRuns.Count() == 0) return true;
 					if (!paragraph->IsValidCaret(caret)) return false;
 
 					vint frontLine = 0;
@@ -10784,9 +10797,9 @@ UniscribeLine
 				if (scriptRuns.Count() == 0)
 				{
 					// if this line doesn't contains any run, skip and render a blank line
-					vint height = (vint)(documentFragments[0]->fontStyle.size * 1.5);
-					bounds = Rect(Point(cx, cy), Size(0, height));
-					cy += height;
+					vint minHeight = documentFragments[0]->fontStyle.size;
+					bounds = Rect(Point(cx, cy), Size(0, minHeight));
+					cy += minHeight;
 				}
 				else
 				{

@@ -1089,7 +1089,7 @@ IGuiRemoteProtocolMessages (Elements - SolidLabel)
 						vint textWidth = 0;
 						vint textHeight = 0;
 
-						collections::List<vint> lines;
+						collections::List<WString> lines;
 						{
 							collections::List<Ptr<regex::RegexMatch>> matches;
 							regexCrLf.Split(text, true, matches);
@@ -1097,30 +1097,32 @@ IGuiRemoteProtocolMessages (Elements - SolidLabel)
 							if (matches.Count() == 0)
 							{
 								// when there is no text, measure a space
-								lines.Add(1);
+								lines.Add(WString::Unmanaged(L" "));
+							}
+							else if (arguments.multiline)
+							{
+								// add all lines, and if any line is empty, measure a space
+								for (auto match : matches)
+								{
+									auto line = match->Result().Value();
+									lines.Add(line.Length() ? line : WString::Unmanaged(L" "));
+								}
 							}
 							else
 							{
-								auto normalizedLines = 
-									From(matches)
-										.Select([](auto&& match) { return match->Result().Length(); })
-										.Select([](vint length) { return length ? length : 1; })
-									;
-								if (arguments.multiline)
+								lines.Add(stream::GenerateToStream([&](stream::TextWriter& writer)
 								{
-									// calculate text as multiple lines
-									CopyFrom(
-										lines,
-										normalizedLines
-										);
-								}
-								else
+									for (auto [match, index] : indexed(matches))
+									{
+										if (index > 0) writer.WriteChar(L' ');
+										auto line = match->Result().Value();
+										writer.WriteString(line);
+									}
+								}));
+								if(lines[0].Length() == 0)
 								{
-									// calculate text as single line, insert a space between each line
-									lines.Add(
-										normalizedLines
-											.template Aggregate<vint>(-1, [](auto a, auto b) { return a + b + 1; })
-										);
+									// when there is no text, measure a space
+									lines[0] = WString::Unmanaged(L" ");
 								}
 							}
 						}
@@ -1129,24 +1131,59 @@ IGuiRemoteProtocolMessages (Elements - SolidLabel)
 						{
 							// width of the text is 0
 							// insert a line break when there is no space horizontally
-							textHeight = 4 + size * From(lines)
-								.Select([columns = width / size](vint length)
+							vint totalLines = 0;
+							for (auto&& line : lines)
+							{
+								if (line.Length() == 0)
 								{
-									if (columns == 0)
+									totalLines++;
+									continue;
+								}
+
+								double accumulatedWidth = 0;
+								for (vint i = 0; i < line.Length(); i++)
+								{
+									auto c = line[i];
+									auto w = (c < 128 ? 0.6 : 1) * size;
+									if (accumulatedWidth + w > width)
 									{
-										return length;
+										if (accumulatedWidth == 0)
+										{
+											totalLines++;
+										}
+										else
+										{
+											totalLines++;
+											accumulatedWidth = w;
+										}
 									}
 									else
 									{
-										return (length + columns - 1) / columns;
+										accumulatedWidth += w;
 									}
-								})
-								.template Aggregate<vint>(0, [](auto a, auto b) { return a + b; });
+								}
+								if (accumulatedWidth > 0)
+								{
+									totalLines++;
+								}
+							}
+							textHeight = 4 + size * totalLines;
 						}
 						else
 						{
 							// width of the text is width of the longest line
-							textWidth = size * From(lines).Max();
+							textWidth = (vint)(size * From(lines)
+								.Select([](const WString& line)
+								{
+									double sum = 0;
+									for (vint i = 0; i < line.Length(); i++)
+									{
+										auto c = line[i];
+										sum += (c < 128 ? 0.6 : 1);
+									}
+									return sum;
+								})
+								.Max());
 							textHeight = 4 + size * lines.Count();
 						}
 
