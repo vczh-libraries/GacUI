@@ -747,19 +747,19 @@ TEST_FILE
 			{
 				L"SingleTextRun WithLineBreak",
 				LR"XML(<Doc><Content><p><nop>Line1<br/>Line2</nop></p></Content><Styles/></Doc>)XML",
-				LR"XML(<Doc><Content><p><nop>Line1 Line2</nop></p></Content><Styles/></Doc>)XML",
+				LR"XML(<Doc><Content><p><nop>Line1</nop><sp/><nop>Line2</nop></p></Content><Styles/></Doc>)XML",
 				true
 			},
 			{
 				L"MultipleTextRuns SameLevel",
 				LR"XML(<Doc><Content><p><nop>First<br/>Part</nop><nop>Second<br/>Part</nop></p></Content><Styles/></Doc>)XML",
-				LR"XML(<Doc><Content><p><nop>First Part</nop><nop>Second Part</nop></p></Content><Styles/></Doc>)XML",
+				LR"XML(<Doc><Content><p><nop>First</nop><sp/><nop>Part</nop><nop>Second</nop><sp/><nop>Part</nop></p></Content><Styles/></Doc>)XML",
 				true
 			},
 			{
 				L"EmptyTextRuns MixedWithContent",
 				LR"XML(<Doc><Content><p><nop></nop><nop>Content<br/>Here</nop><nop></nop></p></Content><Styles/></Doc>)XML",
-				LR"XML(<Doc><Content><p><nop></nop><nop>Content Here</nop><nop></nop></p></Content><Styles/></Doc>)XML",
+				LR"XML(<Doc><Content><p><nop>Content</nop><sp/><nop>Here</nop></p></Content><Styles/></Doc>)XML",
 				true
 			},
 			
@@ -767,25 +767,25 @@ TEST_FILE
 			{
 				L"BoldContainer WithTextRun",
 				LR"XML(<Doc><Content><p><b><nop>Bold<br/>Text</nop></b></p></Content><Styles/></Doc>)XML",
-				LR"XML(<Doc><Content><p><b><nop>Bold Text</nop></b></p></Content><Styles/></Doc>)XML",
+				LR"XML(<Doc><Content><p><b><nop>Bold</nop><sp/><nop>Text</nop></b></p></Content><Styles/></Doc>)XML",
 				true
 			},
 			{
 				L"ItalicContainer WithTextRun",
 				LR"XML(<Doc><Content><p><i><nop>Italic<br/>Text</nop></i></p></Content><Styles/></Doc>)XML",
-				LR"XML(<Doc><Content><p><i><nop>Italic Text</nop></i></p></Content><Styles/></Doc>)XML",
+				LR"XML(<Doc><Content><p><i><nop>Italic</nop><sp/><nop>Text</nop></i></p></Content><Styles/></Doc>)XML",
 				true
 			},
 			{
 				L"StyledContainer WithTextRun",
-				LR"XML(<Doc><Content><p><div style="Title"><nop>Styled<br/>Text</nop></div></p></Content><Styles><s name="Title"/></Styles></Doc>)XML",
-				LR"XML(<Doc><Content><p><div style="Title"><nop>Styled Text</nop></div></p></Content><Styles><s name="Title"/></Styles></Doc>)XML",
+				LR"XML(<Doc><Content><p><div style="Title"><nop>Styled<br/>Text</nop></div></p></Content><Styles><Style name="Title"/></Styles></Doc>)XML",
+				LR"XML(<Doc><Content><p><div style="Title"><nop>Styled</nop><sp/><nop>Text</nop></div></p></Content><Styles><Style name="Title"/></Styles></Doc>)XML",
 				true
 			},
 			{
 				L"MixedDirectAndContainer",
 				LR"XML(<Doc><Content><p><nop>Direct<br/>Text</nop><b><nop>Bold<br/>Text</nop></b></p></Content><Styles/></Doc>)XML",
-				LR"XML(<Doc><Content><p><nop>Direct Text</nop><b><nop>Bold Text</nop></b></p></Content><Styles/></Doc>)XML",
+				LR"XML(<Doc><Content><p><nop>Direct</nop><sp/><nop>Text</nop><b><nop>Bold</nop><sp/><nop>Text</nop></b></p></Content><Styles/></Doc>)XML",
 				true
 			},
 			
@@ -793,19 +793,19 @@ TEST_FILE
 			{
 				L"TwoLevelNesting BoldItalic",
 				LR"XML(<Doc><Content><p><b><i><nop>Bold<br/>Italic</nop></i></b></p></Content><Styles/></Doc>)XML",
-				LR"XML(<Doc><Content><p><b><i><nop>Bold Italic</nop></i></b></p></Content><Styles/></Doc>)XML",
+				LR"XML(<Doc><Content><p><b><i><nop>Bold</nop><sp/><nop>Italic</nop></i></b></p></Content><Styles/></Doc>)XML",
 				true
 			},
 			{
 				L"ThreeLevelNesting DivBoldItalic",
 				LR"XML(<Doc><Content><p><div><b><i><nop>Deep<br/>Nested</nop></i></b></div></p></Content><Styles/></Doc>)XML",
-				LR"XML(<Doc><Content><p><div><b><i><nop>Deep Nested</nop></i></b></div></p></Content><Styles/></Doc>)XML",
+				LR"XML(<Doc><Content><p><b><i><nop>Deep</nop><sp/><nop>Nested</nop></i></b></p></Content><Styles/></Doc>)XML",
 				true
 			},
 			{
 				L"ComplexNesting MultipleSiblings",
 				LR"XML(<Doc><Content><p><div><b><nop>Bold<br/>Part</nop></b><i><nop>Italic<br/>Part</nop></i></div></p></Content><Styles/></Doc>)XML",
-				LR"XML(<Doc><Content><p><div><b><nop>Bold Part</nop></b><i><nop>Italic Part</nop></i></div></p></Content><Styles/></Doc>)XML",
+				LR"XML(<Doc><Content><p><b><nop>Bold</nop><sp/><nop>Part</nop></b><i><nop>Italic</nop><sp/><nop>Part</nop></i></p></Content><Styles/></Doc>)XML",
 				true
 			},
 			
@@ -813,13 +813,13 @@ TEST_FILE
 			{
 				L"AdjacentContainers BoldItalic",
 				LR"XML(<Doc><Content><p><b><nop>Bold<br/>Text</nop></b><i><nop>Italic<br/>Text</nop></i></p></Content><Styles/></Doc>)XML",
-				LR"XML(<Doc><Content><p><b><nop>Bold Text</nop></b><i><nop>Italic Text</nop></i></p></Content><Styles/></Doc>)XML",
+				LR"XML(<Doc><Content><p><b><nop>Bold</nop><sp/><nop>Text</nop></b><i><nop>Italic</nop><sp/><nop>Text</nop></i></p></Content><Styles/></Doc>)XML",
 				true
 			},
 			{
 				L"MixedWithDirectText StartMiddleEnd",
 				LR"XML(<Doc><Content><p><nop>Start<br/>Text</nop><b><nop>Bold<br/>Middle</nop></b><nop>End<br/>Text</nop></p></Content><Styles/></Doc>)XML",
-				LR"XML(<Doc><Content><p><nop>Start Text</nop><b><nop>Bold Middle</nop></b><nop>End Text</nop></p></Content><Styles/></Doc>)XML",
+				LR"XML(<Doc><Content><p><nop>Start</nop><sp/><nop>Text</nop><b><nop>Bold</nop><sp/><nop>Middle</nop></b><nop>End</nop><sp/><nop>Text</nop></p></Content><Styles/></Doc>)XML",
 				true
 			},
 			
@@ -827,19 +827,19 @@ TEST_FILE
 			{
 				L"WithImageElement",
 				LR"XML(<Doc><Content><p><nop>Before<br/>Image</nop><img width="16" height="16" source="test.png"/><nop>After<br/>Image</nop></p></Content><Styles/></Doc>)XML",
-				LR"XML(<Doc><Content><p><nop>Before Image</nop><img width="16" height="16" source="test.png"/><nop>After Image</nop></p></Content><Styles/></Doc>)XML",
+				LR"XML(<Doc><Content><p><nop>Before</nop><sp/><nop>Image</nop><img width="16" height="16" baseline="-1" frameIndex="0" source="test.png"/><nop>After</nop><sp/><nop>Image</nop></p></Content><Styles/></Doc>)XML",
 				true
 			},
 			{
 				L"WithObjectElement",
 				LR"XML(<Doc><Content><p><nop>Before<br/>Object</nop><object name="TestObject"/><nop>After<br/>Object</nop></p></Content><Styles/></Doc>)XML",
-				LR"XML(<Doc><Content><p><nop>Before Object</nop><object name="TestObject"/><nop>After Object</nop></p></Content><Styles/></Doc>)XML",
+				LR"XML(<Doc><Content><p><nop>Before</nop><sp/><nop>Object</nop><object name="TestObject"/><nop>After</nop><sp/><nop>Object</nop></p></Content><Styles/></Doc>)XML",
 				true
 			},
 			{
 				L"WithHyperlinkElement",
 				LR"XML(<Doc><Content><p><a href="http://example.com"><nop>Link<br/>Text</nop></a></p></Content><Styles/></Doc>)XML",
-				LR"XML(<Doc><Content><p><a href="http://example.com"><nop>Link Text</nop></a></p></Content><Styles/></Doc>)XML",
+				LR"XML(<Doc><Content><p><a href="http://example.com"><nop>Link</nop><sp/><nop>Text</nop></a></p></Content><Styles/></Doc>)XML",
 				true
 			},
 			
@@ -847,19 +847,19 @@ TEST_FILE
 			{
 				L"EmptyContainers WithContent",
 				LR"XML(<Doc><Content><p><b></b><nop>Content<br/>After</nop></p></Content><Styles/></Doc>)XML",
-				LR"XML(<Doc><Content><p><b></b><nop>Content After</nop></p></Content><Styles/></Doc>)XML",
+				LR"XML(<Doc><Content><p><b/><nop>Content</nop><sp/><nop>After</nop></p></Content><Styles/></Doc>)XML",
 				true
 			},
 			{
 				L"NestedEmptyContainers",
 				LR"XML(<Doc><Content><p><div><b></b></div><nop>Text<br/>Here</nop></p></Content><Styles/></Doc>)XML",
-				LR"XML(<Doc><Content><p><div><b></b></div><nop>Text Here</nop></p></Content><Styles/></Doc>)XML",
+				LR"XML(<Doc><Content><p><b/><nop>Text</nop><sp/><nop>Here</nop></p></Content><Styles/></Doc>)XML",
 				true
 			},
 			{
 				L"OnlyContainers NoText",
 				LR"XML(<Doc><Content><p><b></b><i></i></p></Content><Styles/></Doc>)XML",
-				LR"XML(<Doc><Content><p><b></b><i></i></p></Content><Styles/></Doc>)XML",
+				LR"XML(<Doc><Content><p><b/><i/></p></Content><Styles/></Doc>)XML",
 				true
 			},
 			
@@ -867,13 +867,13 @@ TEST_FILE
 			{
 				L"SimpleText WithoutSpace",
 				LR"XML(<Doc><Content><p><nop>Line1<br/>Line2</nop></p></Content><Styles/></Doc>)XML",
-				LR"XML(<Doc><Content><p><nop>Line1Line2</nop></p></Content><Styles/></Doc>)XML",
+				LR"XML(<Doc><Content><p><nop>Line1</nop><nop>Line2</nop></p></Content><Styles/></Doc>)XML",
 				false
 			},
 			{
 				L"NestedContainers WithoutSpace",
 				LR"XML(<Doc><Content><p><b><i><nop>Deep<br/>Text</nop></i></b></p></Content><Styles/></Doc>)XML",
-				LR"XML(<Doc><Content><p><b><i><nop>DeepText</nop></i></b></p></Content><Styles/></Doc>)XML",
+				LR"XML(<Doc><Content><p><b><i><nop>Deep</nop><nop>Text</nop></i></b></p></Content><Styles/></Doc>)XML",
 				false
 			}
 		};
