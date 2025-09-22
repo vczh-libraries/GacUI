@@ -296,8 +296,143 @@ TEST_FILE
 
 	TEST_CATEGORY(L"UserInput_JoinParagraphs_ListWString")
 	{
-		// Tests for string list paragraph joining  
-		// Will be implemented in subsequent task
+		TEST_CASE(L"Empty List")
+		{
+			List<WString> paragraphs;
+			GuiDocumentCommonInterface::UserInput_JoinParagraphs(paragraphs, false);
+			TEST_ASSERT(paragraphs.Count() == 1);
+			TEST_ASSERT(paragraphs[0] == L"");
+		});
+
+		TEST_CASE(L"Single Paragraph Without Spaces")
+		{
+			List<WString> paragraphs;
+			paragraphs.Add(L"Single paragraph content");
+			GuiDocumentCommonInterface::UserInput_JoinParagraphs(paragraphs, false);
+			TEST_ASSERT(paragraphs.Count() == 1);
+			TEST_ASSERT(paragraphs[0] == L"Single paragraph content");
+		});
+
+		TEST_CASE(L"Single Paragraph With Spaces Flag")
+		{
+			List<WString> paragraphs;
+			paragraphs.Add(L"Single paragraph content");
+			GuiDocumentCommonInterface::UserInput_JoinParagraphs(paragraphs, true);
+			TEST_ASSERT(paragraphs.Count() == 1);
+			TEST_ASSERT(paragraphs[0] == L"Single paragraph content");
+		});
+
+		TEST_CASE(L"Two Paragraphs Without Spaces")
+		{
+			List<WString> paragraphs;
+			paragraphs.Add(L"First");
+			paragraphs.Add(L"Second");
+			GuiDocumentCommonInterface::UserInput_JoinParagraphs(paragraphs, false);
+			TEST_ASSERT(paragraphs.Count() == 1);
+			TEST_ASSERT(paragraphs[0] == L"FirstSecond");
+		});
+
+		TEST_CASE(L"Two Paragraphs With Spaces")
+		{
+			List<WString> paragraphs;
+			paragraphs.Add(L"First");
+			paragraphs.Add(L"Second");
+			GuiDocumentCommonInterface::UserInput_JoinParagraphs(paragraphs, true);
+			TEST_ASSERT(paragraphs.Count() == 1);
+			TEST_ASSERT(paragraphs[0] == L"First Second");
+		});
+
+		TEST_CASE(L"Multiple Paragraphs Without Spaces")
+		{
+			List<WString> paragraphs;
+			paragraphs.Add(L"First");
+			paragraphs.Add(L"Second");
+			paragraphs.Add(L"Third");
+			paragraphs.Add(L"Fourth");
+			GuiDocumentCommonInterface::UserInput_JoinParagraphs(paragraphs, false);
+			TEST_ASSERT(paragraphs.Count() == 1);
+			TEST_ASSERT(paragraphs[0] == L"FirstSecondThirdFourth");
+		});
+
+		TEST_CASE(L"Multiple Paragraphs With Spaces")
+		{
+			List<WString> paragraphs;
+			paragraphs.Add(L"First");
+			paragraphs.Add(L"Second");
+			paragraphs.Add(L"Third");
+			paragraphs.Add(L"Fourth");
+			GuiDocumentCommonInterface::UserInput_JoinParagraphs(paragraphs, true);
+			TEST_ASSERT(paragraphs.Count() == 1);
+			TEST_ASSERT(paragraphs[0] == L"First Second Third Fourth");
+		});
+
+		TEST_CASE(L"Empty String Paragraphs Without Spaces")
+		{
+			List<WString> paragraphs;
+			paragraphs.Add(L"First");
+			paragraphs.Add(L"");
+			paragraphs.Add(L"Third");
+			GuiDocumentCommonInterface::UserInput_JoinParagraphs(paragraphs, false);
+			TEST_ASSERT(paragraphs.Count() == 1);
+			TEST_ASSERT(paragraphs[0] == L"FirstThird");
+		});
+
+		TEST_CASE(L"Empty String Paragraphs With Spaces")
+		{
+			List<WString> paragraphs;
+			paragraphs.Add(L"First");
+			paragraphs.Add(L"");
+			paragraphs.Add(L"Third");
+			GuiDocumentCommonInterface::UserInput_JoinParagraphs(paragraphs, true);
+			TEST_ASSERT(paragraphs.Count() == 1);
+			TEST_ASSERT(paragraphs[0] == L"First  Third");
+		});
+
+		TEST_CASE(L"All Empty Strings Without Spaces")
+		{
+			List<WString> paragraphs;
+			paragraphs.Add(L"");
+			paragraphs.Add(L"");
+			paragraphs.Add(L"");
+			GuiDocumentCommonInterface::UserInput_JoinParagraphs(paragraphs, false);
+			TEST_ASSERT(paragraphs.Count() == 1);
+			TEST_ASSERT(paragraphs[0] == L"");
+		});
+
+		TEST_CASE(L"All Empty Strings With Spaces")
+		{
+			List<WString> paragraphs;
+			paragraphs.Add(L"");
+			paragraphs.Add(L"");
+			paragraphs.Add(L"");
+			GuiDocumentCommonInterface::UserInput_JoinParagraphs(paragraphs, true);
+			TEST_ASSERT(paragraphs.Count() == 1);
+			TEST_ASSERT(paragraphs[0] == L"  ");
+		});
+
+		TEST_CASE(L"Mixed Content Without Spaces")
+		{
+			List<WString> paragraphs;
+			paragraphs.Add(L"Hello");
+			paragraphs.Add(L"");
+			paragraphs.Add(L"World");
+			paragraphs.Add(L"!");
+			GuiDocumentCommonInterface::UserInput_JoinParagraphs(paragraphs, false);
+			TEST_ASSERT(paragraphs.Count() == 1);
+			TEST_ASSERT(paragraphs[0] == L"HelloWorld!");
+		});
+
+		TEST_CASE(L"Mixed Content With Spaces")
+		{
+			List<WString> paragraphs;
+			paragraphs.Add(L"Hello");
+			paragraphs.Add(L"");
+			paragraphs.Add(L"World");
+			paragraphs.Add(L"!");
+			GuiDocumentCommonInterface::UserInput_JoinParagraphs(paragraphs, true);
+			TEST_ASSERT(paragraphs.Count() == 1);
+			TEST_ASSERT(paragraphs[0] == L"Hello  World !");
+		});
 	});
 
 	TEST_CATEGORY(L"UserInput_JoinParagraphs_DocumentModel")
