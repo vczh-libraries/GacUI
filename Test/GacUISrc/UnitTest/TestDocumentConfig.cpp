@@ -707,10 +707,6 @@ TEST_FILE
 		{
 			TEST_CASE(WString::Unmanaged(testCase.name))
 			{
-				if (testCase.name == L"StandaloneCarriageReturns NotLineBreaks with space")
-				{
-					int a = 0;
-				}
 				WString text = testCase.input;
 				GuiDocumentCommonInterface::UserInput_JoinLinesInsideParagraph(text, testCase.spaceForFlattenedLineBreak);
 				WString expectedText = testCase.expected;
