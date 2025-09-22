@@ -681,9 +681,9 @@ GuiDocumentCommonInterface
 
 			void FetchLineRecord_Next(FetchLineRecord& record)
 			{
-				while (*record.end != '\r' && *record.end != '\n' && *record.end != '\0') record.end++;
+				while (*record.end != '\n' && *record.end != '\0') record.end++;
 				record.next = record.end;
-				while (*record.next != '\n' && *record.next != '\0') record.next++;
+				while (record.end > record.begin && record.end[-1] == L'\r') record.end--;
 				if (*record.next == '\n') record.next++;
 			}
 

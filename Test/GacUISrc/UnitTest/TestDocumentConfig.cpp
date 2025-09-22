@@ -523,215 +523,205 @@ TEST_FILE
 
 	TEST_CATEGORY(L"UserInput_JoinLinesInsideParagraph_WString")
 	{
-		TEST_CASE(L"SingleLine_NoLineBreaks")
+		struct TestCase
 		{
-			WString text = L"Hello World";
-			GuiDocumentCommonInterface::UserInput_JoinLinesInsideParagraph(text, true);
-			WString expectedText = L"Hello World";
-			if (text != expectedText) TEST_PRINT(text);
-			TEST_ASSERT(text == expectedText);
-			
-			WString text2 = L"Hello World";
-			GuiDocumentCommonInterface::UserInput_JoinLinesInsideParagraph(text2, false);
-			WString expectedText2 = L"Hello World";
-			if (text2 != expectedText2) TEST_PRINT(text2);
-			TEST_ASSERT(text2 == expectedText2);
-		});
+			const wchar_t* name;
+			const wchar_t* input;
+			const wchar_t* expected;
+			bool spaceForFlattenedLineBreak;
+		};
 
-		TEST_CASE(L"EmptyString")
-		{
-			WString text = L"";
-			GuiDocumentCommonInterface::UserInput_JoinLinesInsideParagraph(text, true);
-			WString expectedText = L"";
-			if (text != expectedText) TEST_PRINT(text);
-			TEST_ASSERT(text == expectedText);
-			
-			WString text2 = L"";
-			GuiDocumentCommonInterface::UserInput_JoinLinesInsideParagraph(text2, false);
-			WString expectedText2 = L"";
-			if (text2 != expectedText2) TEST_PRINT(text2);
-			TEST_ASSERT(text2 == expectedText2);
-		});
+		TestCase testCases[] = {
+			{
+				L"SingleLine NoLineBreaks with space",
+				L"Hello World",
+				L"Hello World",
+				true
+			},
+			{
+				L"SingleLine NoLineBreaks without space",
+				L"Hello World",
+				L"Hello World",
+				false
+			},
+			{
+				L"EmptyString with space",
+				L"",
+				L"",
+				true
+			},
+			{
+				L"EmptyString without space",
+				L"",
+				L"",
+				false
+			},
+			{
+				L"SingleCharacter with space",
+				L"X",
+				L"X",
+				true
+			},
+			{
+				L"SingleCharacter without space",
+				L"X",
+				L"X",
+				false
+			},
+			{
+				L"TwoLines UnixFormat with space",
+				L"First Line\nSecond Line",
+				L"First Line Second Line",
+				true
+			},
+			{
+				L"TwoLines UnixFormat without space",
+				L"First Line\nSecond Line",
+				L"First LineSecond Line",
+				false
+			},
+			{
+				L"TwoLines WindowsFormat with space",
+				L"First Line\r\nSecond Line",
+				L"First Line Second Line",
+				true
+			},
+			{
+				L"TwoLines WindowsFormat without space",
+				L"First Line\r\nSecond Line",
+				L"First LineSecond Line",
+				false
+			},
+			{
+				L"TwoLines MultipleCarriageReturns with space",
+				L"First Line\r\r\nSecond Line",
+				L"First Line Second Line",
+				true
+			},
+			{
+				L"TwoLines MultipleCarriageReturns without space",
+				L"First Line\r\r\r\nSecond Line",
+				L"First LineSecond Line",
+				false
+			},
+			{
+				L"ThreeLines MixedFormats with space",
+				L"Line1\nLine2\r\nLine3",
+				L"Line1 Line2 Line3",
+				true
+			},
+			{
+				L"ThreeLines MixedFormats without space",
+				L"Line1\r\r\nLine2\nLine3",
+				L"Line1Line2Line3",
+				false
+			},
+			{
+				L"StandaloneCarriageReturns NotLineBreaks with space",
+				L"Text\rWith\rCarriage\rReturns",
+				L"Text\rWith\rCarriage\rReturns",
+				true
+			},
+			{
+				L"StandaloneCarriageReturns NotLineBreaks without space",
+				L"Text\rWith\rCarriage\rReturns",
+				L"Text\rWith\rCarriage\rReturns",
+				false
+			},
+			{
+				L"MixedStandaloneAndValidLineBreaks with space",
+				L"Line1\rNot\rBreak\nLine2\r\nLine3",
+				L"Line1\rNot\rBreak Line2 Line3",
+				true
+			},
+			{
+				L"MixedStandaloneAndValidLineBreaks without space",
+				L"Line1\rNot\rBreak\nLine2\r\nLine3",
+				L"Line1\rNot\rBreakLine2Line3",
+				false
+			},
+			{
+				L"TrailingCarriageReturn with space",
+				L"Text with trailing CR\r",
+				L"Text with trailing CR",
+				true
+			},
+			{
+				L"TrailingCarriageReturn without space",
+				L"Text with trailing CR\r",
+				L"Text with trailing CR",
+				false
+			},
+			{
+				L"ConsecutiveLineBreaks with space",
+				L"Line1\n\nLine3",
+				L"Line1  Line3",
+				true
+			},
+			{
+				L"ConsecutiveLineBreaks without space",
+				L"Line1\r\n\r\nLine3",
+				L"Line1Line3",
+				false
+			},
+			{
+				L"OnlyLineBreaks with space",
+				L"\n\r\n\n",
+				L"   ",
+				true
+			},
+			{
+				L"OnlyLineBreaks without space",
+				L"\n\r\n\n",
+				L"",
+				false
+			},
+			{
+				L"TextEndingWithLineBreaks with space",
+				L"Content\n\r\n",
+				L"Content  ",
+				true
+			},
+			{
+				L"TextEndingWithLineBreaks without space",
+				L"Content\n\r\n",
+				L"Content",
+				false
+			},
+			{
+				L"TextStartingWithLineBreaks with space",
+				L"\n\r\nContent",
+				L"  Content",
+				true
+			},
+			{
+				L"TextStartingWithLineBreaks without space",
+				L"\n\r\nContent",
+				L"Content",
+				false
+			}
+		};
 
-		TEST_CASE(L"SingleCharacter")
+		auto xs = FromArray(testCases);
+		for (auto [testCase, index] : indexed(xs))
 		{
-			WString text = L"X";
-			GuiDocumentCommonInterface::UserInput_JoinLinesInsideParagraph(text, true);
-			WString expectedText = L"X";
-			if (text != expectedText) TEST_PRINT(text);
-			TEST_ASSERT(text == expectedText);
-			
-			WString text2 = L"X";
-			GuiDocumentCommonInterface::UserInput_JoinLinesInsideParagraph(text2, false);
-			WString expectedText2 = L"X";
-			if (text2 != expectedText2) TEST_PRINT(text2);
-			TEST_ASSERT(text2 == expectedText2);
-		});
-
-		TEST_CASE(L"TwoLines_UnixFormat")
-		{
-			WString text = L"First Line\nSecond Line";
-			GuiDocumentCommonInterface::UserInput_JoinLinesInsideParagraph(text, true);
-			WString expectedText = L"First Line Second Line";
-			if (text != expectedText) TEST_PRINT(text);
-			TEST_ASSERT(text == expectedText);
-			
-			WString text2 = L"First Line\nSecond Line";
-			GuiDocumentCommonInterface::UserInput_JoinLinesInsideParagraph(text2, false);
-			WString expectedText2 = L"First LineSecond Line";
-			if (text2 != expectedText2) TEST_PRINT(text2);
-			TEST_ASSERT(text2 == expectedText2);
-		});
-
-		TEST_CASE(L"TwoLines_WindowsFormat")
-		{
-			WString text = L"First Line\r\nSecond Line";
-			GuiDocumentCommonInterface::UserInput_JoinLinesInsideParagraph(text, true);
-			WString expectedText = L"First Line Second Line";
-			if (text != expectedText) TEST_PRINT(text);
-			TEST_ASSERT(text == expectedText);
-			
-			WString text2 = L"First Line\r\nSecond Line";
-			GuiDocumentCommonInterface::UserInput_JoinLinesInsideParagraph(text2, false);
-			WString expectedText2 = L"First LineSecond Line";
-			if (text2 != expectedText2) TEST_PRINT(text2);
-			TEST_ASSERT(text2 == expectedText2);
-		});
-
-		TEST_CASE(L"TwoLines_MultipleCarriageReturns")
-		{
-			WString text = L"First Line\r\r\nSecond Line";
-			GuiDocumentCommonInterface::UserInput_JoinLinesInsideParagraph(text, true);
-			WString expectedText = L"First Line Second Line";
-			if (text != expectedText) TEST_PRINT(text);
-			TEST_ASSERT(text == expectedText);
-			
-			WString text2 = L"First Line\r\r\r\nSecond Line";
-			GuiDocumentCommonInterface::UserInput_JoinLinesInsideParagraph(text2, false);
-			WString expectedText2 = L"First LineSecond Line";
-			if (text2 != expectedText2) TEST_PRINT(text2);
-			TEST_ASSERT(text2 == expectedText2);
-		});
-
-		TEST_CASE(L"ThreeLines_MixedFormats")
-		{
-			WString text = L"Line1\nLine2\r\nLine3";
-			GuiDocumentCommonInterface::UserInput_JoinLinesInsideParagraph(text, true);
-			WString expectedText = L"Line1 Line2 Line3";
-			if (text != expectedText) TEST_PRINT(text);
-			TEST_ASSERT(text == expectedText);
-			
-			WString text2 = L"Line1\r\r\nLine2\nLine3";
-			GuiDocumentCommonInterface::UserInput_JoinLinesInsideParagraph(text2, false);
-			WString expectedText2 = L"Line1Line2Line3";
-			if (text2 != expectedText2) TEST_PRINT(text2);
-			TEST_ASSERT(text2 == expectedText2);
-		});
-
-		TEST_CASE(L"StandaloneCarriageReturns_NotLineBreaks")
-		{
-			WString text = L"Text\rWith\rCarriage\rReturns";
-			GuiDocumentCommonInterface::UserInput_JoinLinesInsideParagraph(text, true);
-			WString expectedText = L"Text\rWith\rCarriage\rReturns";
-			if (text != expectedText) TEST_PRINT(text);
-			TEST_ASSERT(text == expectedText);
-			
-			WString text2 = L"Text\rWith\rCarriage\rReturns";
-			GuiDocumentCommonInterface::UserInput_JoinLinesInsideParagraph(text2, false);
-			WString expectedText2 = L"Text\rWith\rCarriage\rReturns";
-			if (text2 != expectedText2) TEST_PRINT(text2);
-			TEST_ASSERT(text2 == expectedText2);
-		});
-
-		TEST_CASE(L"MixedStandaloneAndValidLineBreaks")
-		{
-			WString text = L"Line1\rNot\rBreak\nLine2\r\nLine3";
-			GuiDocumentCommonInterface::UserInput_JoinLinesInsideParagraph(text, true);
-			WString expectedText = L"Line1\rNot\rBreak Line2 Line3";
-			if (text != expectedText) TEST_PRINT(text);
-			TEST_ASSERT(text == expectedText);
-			
-			WString text2 = L"Line1\rNot\rBreak\nLine2\r\nLine3";
-			GuiDocumentCommonInterface::UserInput_JoinLinesInsideParagraph(text2, false);
-			WString expectedText2 = L"Line1\rNot\rBreakLine2Line3";
-			if (text2 != expectedText2) TEST_PRINT(text2);
-			TEST_ASSERT(text2 == expectedText2);
-		});
-
-		TEST_CASE(L"TrailingCarriageReturn")
-		{
-			WString text = L"Text with trailing CR\r";
-			GuiDocumentCommonInterface::UserInput_JoinLinesInsideParagraph(text, true);
-			WString expectedText = L"Text with trailing CR\r";
-			if (text != expectedText) TEST_PRINT(text);
-			TEST_ASSERT(text == expectedText);
-			
-			WString text2 = L"Text with trailing CR\r";
-			GuiDocumentCommonInterface::UserInput_JoinLinesInsideParagraph(text2, false);
-			WString expectedText2 = L"Text with trailing CR\r";
-			if (text2 != expectedText2) TEST_PRINT(text2);
-			TEST_ASSERT(text2 == expectedText2);
-		});
-
-		TEST_CASE(L"ConsecutiveLineBreaks")
-		{
-			WString text = L"Line1\n\nLine3";
-			GuiDocumentCommonInterface::UserInput_JoinLinesInsideParagraph(text, true);
-			WString expectedText = L"Line1  Line3";
-			if (text != expectedText) TEST_PRINT(text);
-			TEST_ASSERT(text == expectedText);
-			
-			WString text2 = L"Line1\r\n\r\nLine3";
-			GuiDocumentCommonInterface::UserInput_JoinLinesInsideParagraph(text2, false);
-			WString expectedText2 = L"Line1Line3";
-			if (text2 != expectedText2) TEST_PRINT(text2);
-			TEST_ASSERT(text2 == expectedText2);
-		});
-
-		TEST_CASE(L"OnlyLineBreaks")
-		{
-			WString text = L"\n\r\n\n";
-			GuiDocumentCommonInterface::UserInput_JoinLinesInsideParagraph(text, true);
-			WString expectedText = L"   ";
-			if (text != expectedText) TEST_PRINT(text);
-			TEST_ASSERT(text == expectedText);
-			
-			WString text2 = L"\n\r\n\n";
-			GuiDocumentCommonInterface::UserInput_JoinLinesInsideParagraph(text2, false);
-			WString expectedText2 = L"";
-			if (text2 != expectedText2) TEST_PRINT(text2);
-			TEST_ASSERT(text2 == expectedText2);
-		});
-
-		TEST_CASE(L"TextEndingWithLineBreaks")
-		{
-			WString text = L"Content\n\r\n";
-			GuiDocumentCommonInterface::UserInput_JoinLinesInsideParagraph(text, true);
-			WString expectedText = L"Content  ";
-			if (text != expectedText) TEST_PRINT(text);
-			TEST_ASSERT(text == expectedText);
-			
-			WString text2 = L"Content\n\r\n";
-			GuiDocumentCommonInterface::UserInput_JoinLinesInsideParagraph(text2, false);
-			WString expectedText2 = L"Content";
-			if (text2 != expectedText2) TEST_PRINT(text2);
-			TEST_ASSERT(text2 == expectedText2);
-		});
-
-		TEST_CASE(L"TextStartingWithLineBreaks")
-		{
-			WString text = L"\n\r\nContent";
-			GuiDocumentCommonInterface::UserInput_JoinLinesInsideParagraph(text, true);
-			WString expectedText = L"  Content";
-			if (text != expectedText) TEST_PRINT(text);
-			TEST_ASSERT(text == expectedText);
-			
-			WString text2 = L"\n\r\nContent";
-			GuiDocumentCommonInterface::UserInput_JoinLinesInsideParagraph(text2, false);
-			WString expectedText2 = L"Content";
-			if (text2 != expectedText2) TEST_PRINT(text2);
-			TEST_ASSERT(text2 == expectedText2);
-		});
+			TEST_CASE(WString::Unmanaged(testCase.name))
+			{
+				if (testCase.name == L"StandaloneCarriageReturns NotLineBreaks with space")
+				{
+					int a = 0;
+				}
+				WString text = testCase.input;
+				GuiDocumentCommonInterface::UserInput_JoinLinesInsideParagraph(text, testCase.spaceForFlattenedLineBreak);
+				WString expectedText = testCase.expected;
+				if (text != expectedText)
+				{
+					TEST_PRINT(L"Expected: " + expectedText);
+					TEST_PRINT(L"Actual: " + text);
+				}
+				TEST_ASSERT(text == expectedText);
+			});
+		}
 	});
 
 	TEST_CATEGORY(L"UserInput_JoinLinesInsideParagraph_DocumentParagraphRun")
