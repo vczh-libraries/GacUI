@@ -28,6 +28,12 @@ The first task has been finished, do not touch it.
 
 All methods for testing now have comments on it, describing its behavior. Read them carefully and redesign test cases.
 
+## UPDATE
+
+Task No.2 and No.4 are completed test cases that run against DocumentModel. They are directed to organize using the array-loop-TEST_CASE approach.
+
+You need to use the same approach on incomplete test cases that also run against DocumentModel or DocumentParagraphRun
+
 # TASKS
 
 - [x] TASK No.1: Create TestDocumentConfig Test File with Empty TEST_CATEGORY Sections
@@ -188,7 +194,9 @@ Implement test cases for the `UserInput_JoinLinesInsideParagraph(Ptr<DocumentPar
 
 ### what to be done
 
-- Fill the `UserInput_JoinLinesInsideParagraph_DocumentParagraphRun` TEST_CATEGORY with complete test cases
+- Fill the `UserInput_JoinLinesInsideParagraph_DocumentParagraphRun` TEST_CATEGORY with complete test cases using the array-loop-TEST_CASE approach
+- Create an array of test scenario data structures containing: paragraph description, input DocumentParagraphRun setup data, expected text content after processing, and spaceForFlattenedLineBreak parameter
+- Use a loop to iterate through the test scenarios, with each iteration creating a separate TEST_CASE using the array data
 - Test the recursive container traversal: uses a List-based queue to process all DocumentContainerRun objects starting with the paragraph
 - Test DocumentTextRun processing: verify calls to the WString overload of UserInput_JoinLinesInsideParagraph for each text run found
 - Test nested container structures: verify proper handling of deeply nested DocumentContainerRun hierarchies
@@ -199,12 +207,12 @@ Implement test cases for the `UserInput_JoinLinesInsideParagraph(Ptr<DocumentPar
 
 ### how to test it
 
-- Unit tests will confirm paragraph runs are processed using the List-based queue traversal
-- Container traversal tests will verify all DocumentContainerRun objects are properly found and added to the queue
-- Text run processing tests will verify DocumentTextRun objects are correctly identified and processed
-- Parameter propagation tests will verify `spaceForFlattenedLineBreak` is correctly passed to the WString function
-- Nested structure tests will ensure complex document hierarchies are handled correctly
-- Integration tests will ensure proper coordination between container traversal and text run processing
+- Array-driven unit tests will confirm paragraph runs are processed using the List-based queue traversal across multiple test scenarios
+- Container traversal tests will verify all DocumentContainerRun objects are properly found and added to the queue using varied test data
+- Text run processing tests will verify DocumentTextRun objects are correctly identified and processed through multiple test configurations
+- Parameter propagation tests will verify `spaceForFlattenedLineBreak` is correctly passed to the WString function across test scenarios
+- Nested structure tests will ensure complex document hierarchies are handled correctly using predefined test cases
+- Integration tests will ensure proper coordination between container traversal and text run processing across the test array
 
 ### rationale
 
@@ -273,7 +281,9 @@ Implement test cases for `UserInput_FormatDocument` method that applies comprehe
 
 ### what to be done
 
-- Fill the `UserInput_FormatDocument` TEST_CATEGORY with complete test cases
+- Fill the `UserInput_FormatDocument` TEST_CATEGORY with complete test cases using the array-loop-TEST_CASE approach
+- Create an array of test scenario data structures containing: test description, input DocumentModel setup data, GuiDocumentConfigEvaluated configuration, baseline DocumentModel setup (optional), and expected document state after processing
+- Use a loop to iterate through the test scenarios, with each iteration creating a separate TEST_CASE using the array data
 - Test the null safety check: method returns early if model is null
 - Test the pasteAsPlainText processing: when config.pasteAsPlainText is true, calls UserInput_ConvertToPlainText on entire document (0 to paragraphs.Count() - 1) and handles style management
 - Test baseline document style handling: when baselineDocument exists, copies styles using CopyFrom; when null, clears all styles
@@ -285,13 +295,13 @@ Implement test cases for `UserInput_FormatDocument` method that applies comprehe
 
 ### how to test it
 
-- Null safety tests will verify proper early return behavior for null models
-- Plain text conversion tests will verify UserInput_ConvertToPlainText is called with correct range (0, paragraphs.Count() - 1)
-- Style management tests will confirm proper baseline style copying vs clearing based on baseline presence
-- Empty document tests will verify early return when no paragraphs remain after processing
-- Sequential processing tests will verify the exact order of operations is maintained
-- Configuration integration tests will verify proper coordination with all called UserInput methods
-- Comprehensive integration tests will ensure all formatting rules work together correctly
+- Array-driven null safety tests will verify proper early return behavior for null models across multiple test scenarios
+- Plain text conversion tests will verify UserInput_ConvertToPlainText is called with correct range (0, paragraphs.Count() - 1) using varied test configurations
+- Style management tests will confirm proper baseline style copying vs clearing based on baseline presence through multiple test cases
+- Empty document tests will verify early return when no paragraphs remain after processing using predefined test scenarios
+- Sequential processing tests will verify the exact order of operations is maintained across the test array
+- Configuration integration tests will verify proper coordination with all called UserInput methods using varied configurations
+- Comprehensive integration tests will ensure all formatting rules work together correctly through array-driven test scenarios
 
 ### rationale
 
