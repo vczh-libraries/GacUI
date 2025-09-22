@@ -49,7 +49,7 @@ I would like you to split Task No.8 into 2 tasks. The first task create test cas
 - [x] TASK No.7: Implement UserInput_FormatText(List<WString>&) Tests
 - [x] TASK No.8: Implement UserInput_FormatText(WString to List<WString>&) Tests - Simple Line Breaking Mode
 - [x] TASK No.9: Implement UserInput_FormatText(WString to List<WString>&) Tests - Double Line Breaking Mode
-- [ ] TASK No.10: Implement UserInput_FormatDocument Tests
+- [x] TASK No.10: Implement UserInput_FormatDocument Tests
 
 ## TASK No.1: Create TestDocumentConfig Test File with Empty TEST_CATEGORY Sections
 

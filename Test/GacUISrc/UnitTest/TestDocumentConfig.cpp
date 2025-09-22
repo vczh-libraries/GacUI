@@ -1815,7 +1815,111 @@ TEST_FILE
 
 	TEST_CATEGORY(L"UserInput_FormatDocument")
 	{
-		// Tests for comprehensive document formatting
-		// Will be implemented in subsequent task
+		GuiDocumentConfig defaultConfig;
+		defaultConfig.autoExpand = false;
+		defaultConfig.pasteAsPlainText = false;
+		defaultConfig.wrapLine = true;
+		defaultConfig.paragraphMode = GuiDocumentParagraphMode::Paragraph;
+		defaultConfig.paragraphPadding = true;
+		defaultConfig.doubleLineBreaksBetweenParagraph = true;
+		defaultConfig.spaceForFlattenedLineBreak = false;
+		defaultConfig.paragraphRecycle = true;
+
+		auto MakeConfig = [&](bool pasteAsPlainText, GuiDocumentParagraphMode paragraphMode, bool spaceForFlattenedLineBreak) -> GuiDocumentConfig
+		{
+			GuiDocumentConfig config = defaultConfig;
+			config.pasteAsPlainText = pasteAsPlainText;
+			config.paragraphMode = paragraphMode;
+			config.spaceForFlattenedLineBreak = spaceForFlattenedLineBreak;
+			return config;
+		};
+
+		TEST_CASE(L"Null Model Safety Check")
+		{
+			GuiDocumentCommonInterface::UserInput_FormatDocument(nullptr, nullptr, GuiDocumentConfigEvaluated(defaultConfig));
+			TEST_ASSERT(true);
+		});
+
+		struct FormatDocumentTestCase
+		{
+			const wchar_t* description;
+			const wchar_t* inputXml;
+			const wchar_t* expectedXml;
+			GuiDocumentConfig config;
+		};
+
+		FormatDocumentTestCase testCases[] = {
+			// Plain text conversion tests
+			{
+				L"Plain Text Mode - Complex Formatting Removal",
+				LR"XML(<Doc><Content><p align="Center"><div style="Title"><b><i>Complex</i></b></div></p><p><u>Formatted</u></p></Content><Styles><Style name="Title"><size>1.5x</size></Style></Styles></Doc>)XML",
+				LR"XML(<Doc><Content><p><nop>Complex</nop></p><p><nop>Formatted</nop></p></Content><Styles/></Doc>)XML",
+				MakeConfig(true, GuiDocumentParagraphMode::Paragraph, false)
+			},
+			
+			// Empty document after conversion
+			{
+				L"Empty Document After Plain Text Conversion",
+				LR"XML(<Doc><Content><p><img source="test.png"/></p></Content></Doc>)XML",
+				LR"XML(<Doc><Content><p/></Content><Styles/></Doc>)XML",
+				MakeConfig(true, GuiDocumentParagraphMode::Paragraph, false)
+			},
+			
+			// Paragraph mode tests
+			{
+				L"Paragraph Mode - No Processing",
+				LR"XML(<Doc><Content><p><nop>Line1<br/>Line2</nop></p><p><nop>Para2<br/>Line2</nop></p></Content></Doc>)XML",
+				LR"XML(<Doc><Content><p><nop>Line1<br/>Line2</nop></p><p><nop>Para2<br/>Line2</nop></p></Content><Styles/></Doc>)XML",
+				MakeConfig(false, GuiDocumentParagraphMode::Paragraph, false)
+			},
+			
+			{
+				L"Multiline Mode - Line Joining Only",
+				LR"XML(<Doc><Content><p><nop>Line1<br/>Line2</nop></p><p><nop>Para2<br/>Line2</nop></p></Content></Doc>)XML",
+				LR"XML(<Doc><Content><p><nop>Line1</nop><sp/><nop>Line2</nop></p><p><nop>Para2</nop><sp/><nop>Line2</nop></p></Content><Styles/></Doc>)XML",
+				MakeConfig(false, GuiDocumentParagraphMode::Multiline, true)
+			},
+			
+			{
+				L"Singleline Mode - Complete Joining",
+				LR"XML(<Doc><Content><p><nop>Line1<br/>Line2</nop></p><p><nop>Para2<br/>Line2</nop></p></Content></Doc>)XML",
+				LR"XML(<Doc><Content><p><nop>Line1</nop><sp/><nop>Line2</nop><sp/><nop>Para2</nop><sp/><nop>Line2</nop></p></Content><Styles/></Doc>)XML",
+				MakeConfig(false, GuiDocumentParagraphMode::Singleline, true)
+			},
+			
+			// Sequential processing tests
+			{
+				L"Sequential Processing - Plain Text Then Line Joining",
+				LR"XML(<Doc><Content><p align="Center"><b><nop>Bold<br/>Text</nop></b></p><p><i><nop>Italic<br/>Text</nop></i></p></Content></Doc>)XML",
+				LR"XML(<Doc><Content><p><nop>Bold</nop><sp/><nop>Text</nop><sp/><nop>Italic</nop><sp/><nop>Text</nop></p></Content><Styles/></Doc>)XML",
+				MakeConfig(true, GuiDocumentParagraphMode::Singleline, true)
+			},
+			
+			// Integration tests
+			{
+				L"Complex Integration - Mixed Content with All Processing",
+				LR"XML(<Doc><Content><p align="Right"><div style="Complex"><b><nop>Style<br/>Bold</nop></b></div></p><p><img source="test.png"/></p><p><object name="TestObj"/><nop>After<br/>Object</nop></p></Content><Styles><Style name="Complex"><size>2x</size></Style></Styles></Doc>)XML",
+				LR"XML(<Doc><Content><p><nop>Style Bold After Object</nop></p></Content><Styles/></Doc>)XML",
+				MakeConfig(true, GuiDocumentParagraphMode::Singleline, false)
+			}
+		};
+
+		auto xs = FromArray(testCases);
+		for (auto [testCase, index] : indexed(xs))
+		{
+			TEST_CASE(WString::Unmanaged(testCase.description))
+			{
+				auto model = LoadDoc(testCase.inputXml);
+				GuiDocumentCommonInterface::UserInput_FormatDocument(model, nullptr, GuiDocumentConfigEvaluated(testCase.config));
+				auto actualXml = SaveDoc(model);
+				
+				if (testCase.expectedXml != actualXml)
+				{
+					TEST_PRINT(WString::Unmanaged(L"Expected: ") + testCase.expectedXml);
+					TEST_PRINT(L"Actual: " + actualXml);
+				}
+				TEST_ASSERT(testCase.expectedXml == actualXml);
+			});
+		}
 	});
 }
