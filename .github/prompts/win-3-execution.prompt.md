@@ -48,7 +48,9 @@
 
 - Compile the solution and fix all compile errors.
 - Run the unit test once.
-- Do not worry about test failures. You are good if the code compiles.
+  - If none of your test cases are executed, figure out why and fix it.
+  - If all test cases pass, ensure there is a `# !!!VERIFIED!!!` mark at the end of `Copilot_Execution.md`.
+  - If any test case failed, you can just stop here and leave.
 
 # General Instruction
 
