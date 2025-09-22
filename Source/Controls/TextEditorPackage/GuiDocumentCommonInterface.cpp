@@ -750,7 +750,12 @@ GuiDocumentCommonInterface
 				FetchLineRecord_Next(flr);
 				if (!*flr.next)
 				{
+					bool addSpace = flr.end < flr.next && flr.next[-1] != L'\r' && spaceForFlattenedLineBreak;
 					text = FetchLineRecord_Get(flr, buffer, text);
+					if (addSpace)
+					{
+						text += WString::Unmanaged(L" ");
+					}
 					return;
 				}
 
