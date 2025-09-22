@@ -150,8 +150,148 @@ TEST_FILE
 
 	TEST_CATEGORY(L"UserInput_ConvertToPlainText")
 	{
-		// Tests for plain text conversion functionality
-		// Will be implemented in subsequent task
+		// Test Case 1: Basic formatting removal with alignment reset
+		auto inputXml1 = LR"XML(
+<Doc>
+  <Content>
+    <p align="Center">
+      <div style="Title">
+        <b><i><u>Formatted text content</u></i></b>
+      </div>
+    </p>
+    <p>
+      <nop>Plain paragraph</nop>
+    </p>
+  </Content>
+  <Styles>
+    <Style name="Title">
+      <size>1.5x</size>
+      <color>#0080FF</color>
+    </Style>
+  </Styles>
+</Doc>
+)XML";
+
+		// Test Case 2: Multi-paragraph range conversion (convert middle paragraph only)
+		auto inputXml2 = LR"XML(
+<Doc>
+  <Content>
+    <p align="Right">
+      <b>First paragraph with formatting</b>
+    </p>
+    <p align="Center">
+      <div style="Title">
+        <i>Middle paragraph to convert</i>
+      </div>
+    </p>
+    <p align="Left">
+      <u>Last paragraph with formatting</u>
+    </p>
+  </Content>
+  <Styles>
+    <Style name="Title">
+      <size>1.5x</size>
+      <color>#0080FF</color>
+    </Style>
+  </Styles>
+</Doc>
+)XML";
+
+		// Test Case 3: Images and embedded objects removal
+		auto inputXml3 = LR"XML(
+<Doc>
+  <Content>
+    <p align="Center">
+      <nop>Text before </nop><img source="test.png"/><nop> and after image</nop><br/>
+      <object name="TestObject"/><nop> with embedded object</nop>
+    </p>
+  </Content>
+</Doc>
+)XML";
+
+		// Test Case 4: Invalid range (beginParagraph > endParagraph) - no changes
+		auto inputXml4 = LR"XML(
+<Doc>
+  <Content>
+    <p align="Center">
+      <b>This should remain unchanged</b>
+    </p>
+    <p align="Right">
+      <i>This should also remain unchanged</i>
+    </p>
+  </Content>
+</Doc>
+)XML";
+
+		// Test Case 5: Single paragraph document
+		auto inputXml5 = LR"XML(
+<Doc>
+  <Content>
+    <p align="Left">
+      <div style="Complex">
+        <b><i>Single paragraph with complex formatting</i></b>
+      </div>
+    </p>
+  </Content>
+  <Styles>
+    <Style name="Complex">
+      <size>2x</size>
+      <color>#FF0000</color>
+    </Style>
+  </Styles>
+</Doc>
+)XML";
+
+		// Expected outputs after conversion
+		const wchar_t* inputXmls[] = { inputXml1, inputXml2, inputXml3, inputXml4, inputXml5 };
+		const wchar_t* expectedXmls[] = {
+			// Case 1: Both paragraphs converted, alignment reset
+			LR"XML(<Doc><Content><p><nop>Formatted text content</nop></p><p><nop>Plain paragraph</nop></p></Content><Styles><Style name="Title"><size>1.5x</size><color>#0080FF</color></Style></Styles></Doc>)XML",
+			
+			// Case 2: Only middle paragraph converted
+			LR"XML(<Doc><Content><p align="Right"><b><nop>First paragraph with formatting</nop></b></p><p><nop>Middle paragraph to convert</nop></p><p align="Left"><u><nop>Last paragraph with formatting</nop></u></p></Content><Styles><Style name="Title"><size>1.5x</size><color>#0080FF</color></Style></Styles></Doc>)XML",
+			
+			// Case 3: Images and objects removed, alignment reset
+			LR"XML(<Doc><Content><p><nop>Text before  and after image<br/> with embedded object</nop></p></Content><Styles/></Doc>)XML",
+			
+			// Case 4: No changes due to invalid range
+			LR"XML(<Doc><Content><p align="Center"><b><nop>This should remain unchanged</nop></b></p><p align="Right"><i><nop>This should also remain unchanged</nop></i></p></Content><Styles/></Doc>)XML",
+			
+			// Case 5: Single paragraph converted
+			LR"XML(<Doc><Content><p><nop>Single paragraph with complex formatting</nop></p></Content><Styles><Style name="Complex"><size>2x</size><color>#FF0000</color></Style></Styles></Doc>)XML"
+		};
+
+		// Test parameters: beginParagraph, endParagraph pairs
+		struct TestParams { vint begin, end; };
+		const TestParams testParams[] = {
+			{0, 1},  // Case 1: Convert all paragraphs
+			{1, 1},  // Case 2: Convert only middle paragraph
+			{0, 0},  // Case 3: Convert single paragraph
+			{1, 0},  // Case 4: Invalid range (begin > end)
+			{0, 0}   // Case 5: Convert single paragraph document
+		};
+
+		// Execute test cases with individual TEST_CASE for each scenario
+		auto xs = FromArray(inputXmls);
+		for (auto [inputXml, index] : indexed(xs))
+		{
+			TEST_CASE(L"Case " + itow(index + 1))
+			{
+				auto expectedXml = expectedXmls[index];
+				auto params = testParams[index];
+				
+				auto model = LoadDoc(inputXml);
+				GuiDocumentCommonInterface::UserInput_ConvertToPlainText(model, params.begin, params.end);
+				auto actualXml = SaveDoc(model);
+				
+				if (expectedXml != actualXml)
+				{
+					TEST_PRINT(WString::Unmanaged(L"Expected: ") + expectedXml);
+					TEST_PRINT(L"Actual: " + actualXml);
+				}
+				TEST_ASSERT(expectedXml == actualXml);
+			});
+		}
 	});
 
 	TEST_CATEGORY(L"UserInput_JoinParagraphs_ListWString")

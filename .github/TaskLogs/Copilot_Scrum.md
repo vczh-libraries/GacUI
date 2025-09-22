@@ -31,7 +31,7 @@ All methods for testing now have comments on it, describing its behavior. Read t
 # TASKS
 
 - [x] TASK No.1: Create TestDocumentConfig Test File with Empty TEST_CATEGORY Sections
-- [ ] TASK No.2: Implement UserInput_ConvertToPlainText Tests
+- [x] TASK No.2: Implement UserInput_ConvertToPlainText Tests
 - [ ] TASK No.3: Implement UserInput_JoinParagraphs(List<WString>&) Tests
 - [ ] TASK No.4: Implement UserInput_JoinParagraphs(DocumentModel) Tests
 - [ ] TASK No.5: Implement UserInput_JoinLinesInsideParagraph(WString&) Tests
