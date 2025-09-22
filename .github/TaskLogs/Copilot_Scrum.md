@@ -42,7 +42,7 @@ You need to use the same approach on incomplete test cases that also run against
 - [x] TASK No.4: Implement UserInput_JoinParagraphs(DocumentModel) Tests
 - [x] TASK No.5: Implement UserInput_JoinLinesInsideParagraph(WString&) Tests
 - [x] TASK No.6: Implement UserInput_JoinLinesInsideParagraph(DocumentParagraphRun) Tests
-- [ ] TASK No.7: Implement UserInput_FormatText(List<WString>&) Tests
+- [x] TASK No.7: Implement UserInput_FormatText(List<WString>&) Tests
 - [ ] TASK No.8: Implement UserInput_FormatText(WString to List<WString>&) Tests
 - [ ] TASK No.9: Implement UserInput_FormatDocument Tests
 

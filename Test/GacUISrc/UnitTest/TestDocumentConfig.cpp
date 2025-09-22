@@ -909,8 +909,271 @@ TEST_FILE
 
 	TEST_CATEGORY(L"UserInput_FormatText_ListWString")
 	{
-		// Tests for string list formatting
-		// Will be implemented in subsequent task
+		GuiDocumentConfig defaultConfig;
+		defaultConfig.autoExpand = false;
+		defaultConfig.pasteAsPlainText = false;
+		defaultConfig.wrapLine = true;
+		defaultConfig.paragraphMode = GuiDocumentParagraphMode::Paragraph;
+		defaultConfig.paragraphPadding = true;
+		defaultConfig.doubleLineBreaksBetweenParagraph = true;
+		defaultConfig.spaceForFlattenedLineBreak = false;
+		defaultConfig.paragraphRecycle = true;
+
+		TEST_CATEGORY(L"Paragraph Mode")
+		{
+			TEST_CASE(L"Basic Behavior - No Processing")
+			{
+				GuiDocumentConfig config = defaultConfig;
+				config.paragraphMode = GuiDocumentParagraphMode::Paragraph;
+				config.spaceForFlattenedLineBreak = false;
+				GuiDocumentConfigEvaluated evalConfig(config);
+
+				collections::List<WString> paragraphs;
+				paragraphs.Add(L"First paragraph\r\nwith line break");
+				paragraphs.Add(L"Second paragraph\r\nwith line break");
+				paragraphs.Add(L"Third paragraph");
+
+				GuiDocumentCommonInterface::UserInput_FormatText(paragraphs, evalConfig);
+				
+				// Paragraph mode should leave everything unchanged
+				TEST_ASSERT(paragraphs.Count() == 3);
+				TEST_ASSERT(paragraphs[0] == L"First paragraph\r\nwith line break");
+				TEST_ASSERT(paragraphs[1] == L"Second paragraph\r\nwith line break");
+				TEST_ASSERT(paragraphs[2] == L"Third paragraph");
+			});
+
+			TEST_CASE(L"With spaceForFlattenedLineBreak True")
+			{
+				GuiDocumentConfig config = defaultConfig;
+				config.paragraphMode = GuiDocumentParagraphMode::Paragraph;
+				config.spaceForFlattenedLineBreak = true;
+				GuiDocumentConfigEvaluated evalConfig(config);
+
+				collections::List<WString> paragraphs;
+				paragraphs.Add(L"First paragraph\r\nwith line break");
+				paragraphs.Add(L"Second paragraph\r\nwith line break");
+
+				GuiDocumentCommonInterface::UserInput_FormatText(paragraphs, evalConfig);
+				
+				// Paragraph mode should still leave everything unchanged regardless of spaceForFlattenedLineBreak
+				TEST_ASSERT(paragraphs.Count() == 2);
+				TEST_ASSERT(paragraphs[0] == L"First paragraph\r\nwith line break");
+				TEST_ASSERT(paragraphs[1] == L"Second paragraph\r\nwith line break");
+			});
+		});
+
+		TEST_CATEGORY(L"Multiline Mode")
+		{
+			TEST_CASE(L"Basic Behavior - Line Joining Only")
+			{
+				GuiDocumentConfig config = defaultConfig;
+				config.paragraphMode = GuiDocumentParagraphMode::Multiline;
+				config.spaceForFlattenedLineBreak = false;
+				GuiDocumentConfigEvaluated evalConfig(config);
+
+				collections::List<WString> paragraphs;
+				paragraphs.Add(L"First paragraph\r\nwith line break");
+				paragraphs.Add(L"Second paragraph\r\nwith line break");
+				paragraphs.Add(L"Third paragraph");
+				
+				GuiDocumentCommonInterface::UserInput_FormatText(paragraphs, evalConfig);
+				
+				// Multiline mode should join lines within each paragraph but keep paragraphs separate
+				TEST_ASSERT(paragraphs.Count() == 3);
+				TEST_ASSERT(paragraphs[0] == L"First paragraphwith line break");
+				TEST_ASSERT(paragraphs[1] == L"Second paragraphwith line break");
+				TEST_ASSERT(paragraphs[2] == L"Third paragraph");
+			});
+
+			TEST_CASE(L"With Spaces - spaceForFlattenedLineBreak True")
+			{
+				GuiDocumentConfig config = defaultConfig;
+				config.paragraphMode = GuiDocumentParagraphMode::Multiline;
+				config.spaceForFlattenedLineBreak = true;
+				GuiDocumentConfigEvaluated evalConfig(config);
+
+				collections::List<WString> paragraphs;
+				paragraphs.Add(L"First\r\nSecond");
+				paragraphs.Add(L"Third\r\nFourth");
+				
+				GuiDocumentCommonInterface::UserInput_FormatText(paragraphs, evalConfig);
+				
+				// Should add spaces when joining lines within paragraphs
+				TEST_ASSERT(paragraphs.Count() == 2);
+				TEST_ASSERT(paragraphs[0] == L"First Second");
+				TEST_ASSERT(paragraphs[1] == L"Third Fourth");
+			});
+		});
+
+		TEST_CATEGORY(L"Singleline Mode")
+		{
+			TEST_CASE(L"Basic Behavior - Line and Paragraph Joining")
+			{
+				GuiDocumentConfig config = defaultConfig;
+				config.paragraphMode = GuiDocumentParagraphMode::Singleline;
+				config.spaceForFlattenedLineBreak = false;
+				GuiDocumentConfigEvaluated evalConfig(config);
+
+				collections::List<WString> paragraphs;
+				paragraphs.Add(L"First paragraph\r\nwith line break");
+				paragraphs.Add(L"Second paragraph\r\nwith line break");
+				paragraphs.Add(L"Third paragraph");
+				
+				GuiDocumentCommonInterface::UserInput_FormatText(paragraphs, evalConfig);
+				
+				// Singleline mode should join lines AND join all paragraphs into one
+				TEST_ASSERT(paragraphs.Count() == 1);
+				TEST_ASSERT(paragraphs[0] == L"First paragraphwith line breakSecond paragraphwith line breakThird paragraph");
+			});
+
+			TEST_CASE(L"With Spaces - spaceForFlattenedLineBreak True")
+			{
+				GuiDocumentConfig config = defaultConfig;
+				config.paragraphMode = GuiDocumentParagraphMode::Singleline;
+				config.spaceForFlattenedLineBreak = true;
+				GuiDocumentConfigEvaluated evalConfig(config);
+
+				collections::List<WString> paragraphs;
+				paragraphs.Add(L"First\r\nSecond");
+				paragraphs.Add(L"Third\r\nFourth");
+				
+				GuiDocumentCommonInterface::UserInput_FormatText(paragraphs, evalConfig);
+				
+				// Should add spaces when joining lines AND when joining paragraphs
+				TEST_ASSERT(paragraphs.Count() == 1);
+				TEST_ASSERT(paragraphs[0] == L"First Second Third Fourth");
+			});
+		});
+
+		TEST_CATEGORY(L"Edge Cases")
+		{
+			TEST_CASE(L"Empty List - All Modes")
+			{
+				// Test Paragraph mode
+				GuiDocumentConfig config1 = defaultConfig;
+				config1.paragraphMode = GuiDocumentParagraphMode::Paragraph;
+				GuiDocumentConfigEvaluated evalConfig1(config1);
+				collections::List<WString> emptyList1;
+				GuiDocumentCommonInterface::UserInput_FormatText(emptyList1, evalConfig1);
+				TEST_ASSERT(emptyList1.Count() == 0);
+				
+				// Test Multiline mode
+				GuiDocumentConfig config2 = defaultConfig;
+				config2.paragraphMode = GuiDocumentParagraphMode::Multiline;
+				GuiDocumentConfigEvaluated evalConfig2(config2);
+				collections::List<WString> emptyList2;
+				GuiDocumentCommonInterface::UserInput_FormatText(emptyList2, evalConfig2);
+				TEST_ASSERT(emptyList2.Count() == 0);
+				
+				// Test Singleline mode
+				GuiDocumentConfig config3 = defaultConfig;
+				config3.paragraphMode = GuiDocumentParagraphMode::Singleline;
+				GuiDocumentConfigEvaluated evalConfig3(config3);
+				collections::List<WString> emptyList3;
+				GuiDocumentCommonInterface::UserInput_FormatText(emptyList3, evalConfig3);
+				TEST_ASSERT(emptyList3.Count() == 0);
+			});
+
+			TEST_CASE(L"Single Paragraph Structure")
+			{
+				GuiDocumentConfig config = defaultConfig;
+				config.paragraphMode = GuiDocumentParagraphMode::Singleline;
+				config.spaceForFlattenedLineBreak = true;
+				GuiDocumentConfigEvaluated evalConfig(config);
+
+				collections::List<WString> paragraphs;
+				paragraphs.Add(L"Only one\r\nparagraph");
+				
+				GuiDocumentCommonInterface::UserInput_FormatText(paragraphs, evalConfig);
+				
+				// Should still result in one paragraph with joined lines
+				TEST_ASSERT(paragraphs.Count() == 1);
+				TEST_ASSERT(paragraphs[0] == L"Only one paragraph");
+			});
+
+			TEST_CASE(L"Mixed Paragraph Content")
+			{
+				GuiDocumentConfig config = defaultConfig;
+				config.paragraphMode = GuiDocumentParagraphMode::Singleline;
+				config.spaceForFlattenedLineBreak = true;
+				GuiDocumentConfigEvaluated evalConfig(config);
+
+				collections::List<WString> paragraphs;
+				paragraphs.Add(L"First");
+				paragraphs.Add(L"");
+				paragraphs.Add(L"Third\r\nWith line break");
+				paragraphs.Add(L"   ");
+				
+				GuiDocumentCommonInterface::UserInput_FormatText(paragraphs, evalConfig);
+				
+				// Should join all paragraphs including empty and whitespace ones
+				TEST_ASSERT(paragraphs.Count() == 1);
+				TEST_ASSERT(paragraphs[0] == L"First  Third With line break    ");
+			});
+		});
+
+		TEST_CATEGORY(L"Paragraph Structure Interaction")
+		{
+			TEST_CASE(L"Multiple Paragraphs with Multiline Mode")
+			{
+				GuiDocumentConfig config = defaultConfig;
+				config.paragraphMode = GuiDocumentParagraphMode::Multiline;
+				config.spaceForFlattenedLineBreak = false;
+				GuiDocumentConfigEvaluated evalConfig(config);
+
+				collections::List<WString> paragraphs;
+				paragraphs.Add(L"Para1\r\nLine2");
+				paragraphs.Add(L"Para2\r\nLine2");
+				paragraphs.Add(L"Para3\r\nLine2");
+				paragraphs.Add(L"Para4");
+				paragraphs.Add(L"Para5\r\nLine2\r\nLine3");
+				
+				GuiDocumentCommonInterface::UserInput_FormatText(paragraphs, evalConfig);
+				
+				// Should join lines within each paragraph but preserve paragraph structure
+				TEST_ASSERT(paragraphs.Count() == 5);
+				TEST_ASSERT(paragraphs[0] == L"Para1Line2");
+				TEST_ASSERT(paragraphs[1] == L"Para2Line2");
+				TEST_ASSERT(paragraphs[2] == L"Para3Line2");
+				TEST_ASSERT(paragraphs[3] == L"Para4");
+				TEST_ASSERT(paragraphs[4] == L"Para5Line2Line3");
+			});
+
+			TEST_CASE(L"Sequential Processing Order Verification")
+			{
+				GuiDocumentConfig config = defaultConfig;
+				config.paragraphMode = GuiDocumentParagraphMode::Singleline;
+				config.spaceForFlattenedLineBreak = true;
+				GuiDocumentConfigEvaluated evalConfig(config);
+
+				collections::List<WString> paragraphs;
+				paragraphs.Add(L"Para1\r\nLine2");
+				paragraphs.Add(L"Para2\r\nLine2");
+				paragraphs.Add(L"Para3");
+				
+				// Create a copy for manual verification of sequential processing
+				collections::List<WString> manualProcess;
+				CopyFrom(manualProcess, paragraphs);
+				
+				// Manual step 1: Apply line joining to each paragraph
+				for (vint i = 0; i < manualProcess.Count(); i++)
+				{
+					GuiDocumentCommonInterface::UserInput_JoinLinesInsideParagraph(manualProcess[i], true);
+				}
+				
+				// Manual step 2: Apply paragraph joining
+				GuiDocumentCommonInterface::UserInput_JoinParagraphs(manualProcess, true);
+				
+				// Test the actual function
+				GuiDocumentCommonInterface::UserInput_FormatText(paragraphs, evalConfig);
+				
+				// Should match manual sequential processing
+				TEST_ASSERT(paragraphs.Count() == 1);
+				TEST_ASSERT(manualProcess.Count() == 1);
+				TEST_ASSERT(paragraphs[0] == manualProcess[0]);
+				TEST_ASSERT(paragraphs[0] == L"Para1 Line2 Para2 Line2 Para3");
+			});
+		});
 	});
 
 	TEST_CATEGORY(L"UserInput_FormatText_WStringToList")
