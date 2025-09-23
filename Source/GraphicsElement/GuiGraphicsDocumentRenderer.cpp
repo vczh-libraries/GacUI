@@ -524,7 +524,7 @@ GuiDocumentParagraphCache
 				}
 			}
 
-			void GuiDocumentParagraphCache::ReleaseParagraph(vint index, vint count)
+			void GuiDocumentParagraphCache::ReleaseParagraphs(vint index, vint count)
 			{
 				for (vint i = 0; i < count; i++)
 				{
@@ -600,6 +600,86 @@ GuiDocumentElementRenderer
 
 				if (minSize.x < 1) minSize.x = 1;
 				if (minSize.y < 1) minSize.y = 1;
+			}
+
+			void GuiDocumentElementRenderer::UpdateRenderRange(vint index, vint oldCount, vint newCount)
+			{
+				// Range adjustment logic for paragraph recycling
+				if (previousRenderBegin != -1)
+				{
+					// Handle the three cases for range adjustment when text is actually updated
+					vint prevEnd = previousRenderBegin + previousRenderCount;
+					vint oldEnd = index + oldCount;
+					
+					if (previousRenderBegin + previousRenderCount <= index)
+					{
+						// Case 1: Previous range is completely before the updated area - no adjustment needed
+					}
+					else if (previousRenderBegin >= oldEnd)
+					{
+						// Case 2: Previous range is completely after the updated area - adjust begin position
+						previousRenderBegin += (newCount - oldCount);
+					}
+					else
+					{
+						// Case 3: Previous range overlaps with updated area - use union approach
+						vint newBegin = previousRenderBegin < index ? previousRenderBegin : index;
+						vint unionEnd = prevEnd > oldEnd ? prevEnd : oldEnd;
+						vint newCountAdjustment = unionEnd - newBegin + (newCount - oldCount);
+						
+						previousRenderBegin = newBegin;
+						previousRenderCount = newCountAdjustment;
+					}
+					
+					// Reset to invalid state when count becomes 0 (per UPDATE guidance)
+					if (previousRenderCount <= 0)
+					{
+						previousRenderBegin = -1;
+						previousRenderCount = 0;
+					}
+				}
+			}
+
+			void GuiDocumentElementRenderer::UpdateRenderRangeAndCleanUp(vint currentBegin, vint currentCount)
+			{
+				// Apply recycling logic if we have valid previous range
+				if (previousRenderBegin != -1 && element->GetParagraphRecycle())
+				{
+					if (currentBegin == -1)
+					{
+						// Release everything when no paragraphs are currently visible
+						pgCache.ReleaseParagraphs(previousRenderBegin, previousRenderCount);
+					}
+					else
+					{
+						vint prevEnd = previousRenderBegin + previousRenderCount;
+						vint currEnd = currentBegin + currentCount;
+						
+						// Release paragraphs before current range
+						if (previousRenderBegin < currentBegin)
+						{
+							vint releaseEnd = prevEnd < currentBegin ? prevEnd : currentBegin;
+							pgCache.ReleaseParagraphs(previousRenderBegin, releaseEnd - previousRenderBegin);
+						}
+						
+						// Release paragraphs after current range
+						if (prevEnd > currEnd)
+						{
+							vint releaseBegin = currEnd > previousRenderBegin ? currEnd : previousRenderBegin;
+							pgCache.ReleaseParagraphs(releaseBegin, prevEnd - releaseBegin);
+						}
+					}
+				}
+				
+				// Update tracking variables for next render cycle
+				previousRenderBegin = currentBegin;
+				previousRenderCount = currentCount;
+				
+				// Reset to invalid state when no paragraphs are visible (per UPDATE guidance)
+				if (previousRenderCount == 0)
+				{
+					previousRenderBegin = -1;
+				}
 			}
 
 			GuiDocumentElementRenderer::GuiDocumentElementRenderer()
@@ -707,44 +787,7 @@ GuiDocumentElementRenderer
 						}
 					}
 					
-					// Apply recycling logic if we have valid previous range
-					if (previousRenderBegin != -1)
-					{
-						if (currentBegin == -1)
-						{
-							// Release everything when no paragraphs are currently visible
-							pgCache.ReleaseParagraph(previousRenderBegin, previousRenderCount);
-						}
-						else
-						{
-							vint prevEnd = previousRenderBegin + previousRenderCount;
-							vint currEnd = currentBegin + currentCount;
-							
-							// Release paragraphs before current range
-							if (previousRenderBegin < currentBegin)
-							{
-								vint releaseEnd = prevEnd < currentBegin ? prevEnd : currentBegin;
-								pgCache.ReleaseParagraph(previousRenderBegin, releaseEnd - previousRenderBegin);
-							}
-							
-							// Release paragraphs after current range
-							if (prevEnd > currEnd)
-							{
-								vint releaseBegin = currEnd > previousRenderBegin ? currEnd : previousRenderBegin;
-								pgCache.ReleaseParagraph(releaseBegin, prevEnd - releaseBegin);
-							}
-						}
-					}
-					
-					// Update tracking variables for next render cycle
-					previousRenderBegin = currentBegin;
-					previousRenderCount = currentCount;
-					
-					// Reset to invalid state when no paragraphs are visible (per UPDATE guidance)
-					if (previousRenderCount == 0)
-					{
-						previousRenderBegin = -1;
-					}
+					UpdateRenderRangeAndCleanUp(currentBegin, currentCount);
 				}
 
 				FixMinSize();
@@ -793,39 +836,10 @@ GuiDocumentElementRenderer
 				lastTotalHeightWithoutParagraphDistance += pgCache.ResetCache(index, oldCount, newCount, updatedText);
 				FixMinSize();
 
-				// Range adjustment logic for paragraph recycling
-				if (updatedText && previousRenderBegin != -1)
+				// Update render range if text was actually updated
+				if (updatedText)
 				{
-					// Handle the three cases for range adjustment when text is actually updated
-					vint prevEnd = previousRenderBegin + previousRenderCount;
-					vint oldEnd = index + oldCount;
-					
-					if (previousRenderBegin + previousRenderCount <= index)
-					{
-						// Case 1: Previous range is completely before the updated area - no adjustment needed
-					}
-					else if (previousRenderBegin >= oldEnd)
-					{
-						// Case 2: Previous range is completely after the updated area - adjust begin position
-						previousRenderBegin += (newCount - oldCount);
-					}
-					else
-					{
-						// Case 3: Previous range overlaps with updated area - use union approach
-						vint newBegin = previousRenderBegin < index ? previousRenderBegin : index;
-						vint unionEnd = prevEnd > oldEnd ? prevEnd : oldEnd;
-						vint newCountAdjustment = unionEnd - newBegin + (newCount - oldCount);
-						
-						previousRenderBegin = newBegin;
-						previousRenderCount = newCountAdjustment;
-					}
-					
-					// Reset to invalid state when count becomes 0 (per UPDATE guidance)
-					if (previousRenderCount <= 0)
-					{
-						previousRenderBegin = -1;
-						previousRenderCount = 0;
-					}
+					UpdateRenderRange(index, oldCount, newCount);
 				}
 
 #undef ERROR_MESSAGE_PREFIX

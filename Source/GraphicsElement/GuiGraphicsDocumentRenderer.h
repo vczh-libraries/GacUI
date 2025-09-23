@@ -98,7 +98,7 @@ GuiDocumentParagraphCache
 				vint									ResetCache(vint index, vint oldCount, vint newCount, bool updatedText);		// returns the diff of total height
 				vint									EnsureParagraph(vint paragraphIndex, vint maxWidth);						// returns the diff of total height
 				vint									GetParagraphFromY(vint y, vint paragraphDistance);
-				void									ReleaseParagraph(vint index, vint count);
+				void									ReleaseParagraphs(vint index, vint count);
 			};
 
 /***********************************************************************
@@ -137,6 +137,9 @@ GuiDocumentElementRenderer
 				void									RenderTargetChangedInternal(IGuiGraphicsRenderTarget* oldRenderTarget, IGuiGraphicsRenderTarget* newRenderTarget);
 				Ptr<pg::ParagraphCache>					EnsureParagraph(vint paragraphIndex);
 				void									FixMinSize();
+				void									UpdateRenderRange(vint index, vint oldCount, vint newCount);
+				void									UpdateRenderRangeAndCleanUp(vint currentBegin, vint currentCount);
+
 			public:
 				GuiDocumentElementRenderer();
 

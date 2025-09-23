@@ -143,7 +143,7 @@ void GuiMain()
 	LoadPlaygroundTypes();
 
 	List<WString> names;
-	names.Add(L"ResourceDocument");
+	names.Add(L"ResourceBigJson");
 
 	Group<WString, WString> deps;
 
