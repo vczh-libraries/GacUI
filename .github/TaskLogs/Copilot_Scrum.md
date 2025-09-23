@@ -17,6 +17,45 @@ I think the first 2 task can be merged, and that task should also update reflect
 InvokeOnElementStateChanged is not needed, please document this so that you don't forget in the next phrase
 CLASS_MEMBER_PROPERTY_GET/SET does not exist. please read the knowledge base and find out what to do, and find out the file that implementing GuiDocumentElement reflection and checkout out all existing members
 
+## UPDATE
+
+For task 2, you need to take a step further, think about:
+
+- How to define initial values of the range
+- NotifyParagraphUpdated will be called multiple times between two Render, it indicates that document has been changed. Does it affect the range?
+- How to actually release a IGuiGraphicsParagraph? I would like to keep all statistics data remain available, since they are important in locating between caret/paragraph/pixel position
+
+## UPDATE
+
+For the range expression I have an idea:
+- previousRenderBegin, default -1
+- previousRenderCount, default 0
+if "begin" is -1 it means these two value is invalid.
+
+documentUpdatedSinceLastRender is not a good idea, hasValidPreviousRange can just be removed because we can check if begin is -1.
+
+When NotifyParagraphUpdated, it means (index, oldCount) is updated to (index, newCount).
+When updated text is true, they will be deleted anyway. You will have to check the overlapped between (begin, count), (index, oldCount) and (index, newCount).
+When updated text is false, paragraphs will be kept anyway, nothing needs to do.
+
+The NotifyParagraphUpdated means part of consecutive paragraphs are changed. Paragraphs before index and paragraphs after index+oldCount-1 are not touched, but the middle part may be changed and the number of paragraphs may be changed too.
+I would like you to track (begin, count) with (index, oldCount, newCount), so that the (begin, count) still mean those paragraphs that are previously rendered. Both begin and count may be changed.
+
+For example, if begin is after the updated range, begin will be changed according to the difference of newCount and oldCount.
+If (begin,count) is before index, leave it.
+If they have overlapped...you need to now find the reasonable way for me
+
+## UPDATE
+
+Actually when updatedText is false, nothing needs to be done, and newCount and oldCOunt will be guaranteed equal.
+We only need to care about when updatedText is true.
+
+Since we don't know which paragraphs are replaced or what, when updatedText is true and the two range overlapps, we can extend (begin,count) to its union with (index, oldCount) first, and then extend the range according to newCount, by count+=newCount-oldCount.
+
+## UPDATE
+
+No test is needed as unit test does not cover this control yet.
+
 # TASKS
 
 - [x] TASK No.1: Add ParagraphRecycle Property to GuiDocumentElement and Connect to Configuration System
@@ -43,16 +82,7 @@ Add a ParagraphRecycle property to the GuiDocumentElement class, positioned righ
 
 ### how to test it
 
-- Verify the property can be set and retrieved correctly
-- Ensure the property maintains its value across multiple get/set operations
-- Test that the default value is false when the element is newly created
-- Create unit tests that verify the paragraphRecycle value is correctly passed from config to the document element
-- Test that changing the configuration properly updates the document element property
-- Verify that different document controls (viewer, label, etc.) correctly propagate the setting
-- Ensure the property flows correctly from GuiDocumentConfig through GuiDocumentConfigEvaluated to the element
-- Test reflection functionality to ensure the property is properly exposed and accessible using CLASS_MEMBER_PROPERTY_FAST
-- Verify that existing functionality is not affected by the addition of this property
-- NOTE: No testing needed for element state change notifications since InvokeOnElementStateChanged is not required
+No testing is needed as unit test does not cover this control yet.
 
 ### rationale
 
@@ -60,31 +90,41 @@ Merging these tasks makes sense because they are tightly coupled - the property 
 
 ## TASK No.2: Implement Paragraph Recycling Logic in GuiDocumentElementRenderer::Render
 
-Implement the core paragraph recycling functionality in the GuiDocumentElementRenderer::Render method. This involves tracking which paragraphs are currently visible during rendering and releasing IGuiGraphicsParagraph instances that were rendered in the previous frame but are no longer visible.
+Implement the core paragraph recycling functionality in the GuiDocumentElementRenderer::Render method. This involves tracking which paragraphs are currently visible during rendering and releasing IGuiGraphicsParagraph instances that were rendered in the previous frame but are no longer visible, while preserving all statistics data for position calculations. The implementation must handle dynamic document updates between renders by tracking range adjustments through NotifyParagraphUpdated calls.
 
 ### what to be done
 
-- Add member variables to GuiDocumentElementRenderer to track the range of consecutive visible paragraphs from the previous render
-- In the Render method, determine the current range of consecutive visible paragraphs (startParagraph to endParagraph)
-- After rendering is complete, if element->GetParagraphRecycle() is true, compare the current visible range with the previous visible range
-- For paragraphs that were visible in the previous render but are not visible in the current render, release their IGuiGraphicsParagraph instances
-- Update the tracking variables to store the current visible range for the next render cycle
+- Add member variables to GuiDocumentElementRenderer to track the range of consecutive visible paragraphs from the previous render:
+  - `vint previousRenderBegin` initialized to -1 (indicating invalid/uninitialized range)
+  - `vint previousRenderCount` initialized to 0 (when begin is -1, this is also invalid)
+- In the Render method, determine the current range of consecutive visible paragraphs (currentBegin, currentCount)
+- Handle NotifyParagraphUpdated calls between renders by implementing range adjustment logic:
+  - When NotifyParagraphUpdated(index, oldCount, newCount, updatedText) is called, adjust previousRenderBegin and previousRenderCount if they are valid (begin != -1)
+  - If updatedText is false, no adjustment is needed (newCount == oldCount is guaranteed)
+  - If updatedText is true, handle the three cases:
+    - Case 1: If previousRenderBegin + previousRenderCount <= index (range is before the updated area), no adjustment needed
+    - Case 2: If previousRenderBegin >= index + oldCount (range is after the updated area), adjust previousRenderBegin by (newCount - oldCount)
+    - Case 3: If there is overlap between [previousRenderBegin, previousRenderBegin + previousRenderCount) and [index, index + oldCount):
+      - Extend the tracked range to the union of the two ranges: set new begin to min(previousRenderBegin, index) and calculate the union range
+      - Then extend the count according to the paragraph count change: count += (newCount - oldCount)
+- After rendering is complete, if element->GetParagraphRecycle() is true and previousRenderBegin != -1:
+  - Compare the current visible range [currentBegin, currentBegin + currentCount) with the previous range [previousRenderBegin, previousRenderBegin + previousRenderCount)
+  - For paragraphs that were in the previous range but not in the current range, release their IGuiGraphicsParagraph instances
+  - IMPORTANT: Only release the graphicsParagraph object itself, preserve all statistics data (paragraph bounds, line information, etc.) that may be needed for caret/paragraph/pixel position calculations
+  - Consider implementing a selective release mechanism that keeps essential measurement data while freeing rendering resources
+- Update the tracking variables to store the current visible range for the next render cycle:
+  - Set previousRenderBegin to currentBegin
+  - Set previousRenderCount to currentCount
 - Ensure the recycling logic only affects paragraphs that were actually rendered (have graphicsParagraph instances)
-- Handle edge cases like the first render, empty documents, or when all paragraphs fit in the view
+- Handle edge cases like the first render (begin == -1), empty documents, or when all paragraphs fit in the view
 
 ### how to test it
 
-- Unit tests that verify paragraphs outside the visible range are properly recycled when paragraphRecycle is true
-- Test that paragraphs are not recycled when paragraphRecycle is false
-- Verify that visible paragraphs are never recycled, even when recycling is enabled
-- Test scrolling scenarios where different paragraphs become visible/invisible
-- Ensure recycling works correctly with various document sizes and viewport configurations
-- Test edge cases like single paragraph documents, empty documents, and documents smaller than the viewport
-- Verify that recycled paragraphs are properly recreated when they become visible again
+No testing is needed as unit test does not cover this control yet.
 
 ### rationale
 
-This is the core implementation that provides the memory optimization benefit of paragraph recycling. By tracking the consecutive visible paragraph range between renders, the system can identify which paragraph graphics objects are no longer needed and can be safely released. This reduces memory usage for large documents where only a small portion is visible at any time. The implementation respects the recycling setting and only affects non-visible paragraphs, ensuring rendering quality is maintained.
+This enhanced implementation addresses the sophisticated challenge of maintaining accurate paragraph range tracking across dynamic document updates. The use of (previousRenderBegin, previousRenderCount) with begin=-1 as the invalid indicator provides a clean and efficient way to track state without additional boolean flags. The simplified handling of NotifyParagraphUpdated calls focuses only on the updatedText=true case, since updatedText=false guarantees newCount==oldCount and requires no adjustment. The three-case analysis (before, after, overlapping) covers all possible scenarios for paragraph updates when text is actually changed. For overlapping cases, the union-then-adjust approach ensures that the tracked range encompasses all potentially affected paragraphs while maintaining accurate count tracking through the newCount-oldCount adjustment. This approach provides robust memory optimization while maintaining the integrity of position-dependent operations that rely on statistical data.
 
 # Impact to the Knowledge Base
 
