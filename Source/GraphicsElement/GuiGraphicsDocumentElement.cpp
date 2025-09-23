@@ -112,6 +112,16 @@ GuiDocumentElement
 				}
 			}
 
+			bool GuiDocumentElement::GetParagraphRecycle()
+			{
+				return paragraphRecycle;
+			}
+
+			void GuiDocumentElement::SetParagraphRecycle(bool value)
+			{
+				paragraphRecycle = value;
+			}
+
 			TextPos GuiDocumentElement::GetCaretBegin()
 			{
 				return caretBegin;

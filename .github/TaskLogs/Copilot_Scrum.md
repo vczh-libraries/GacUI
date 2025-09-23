@@ -19,7 +19,7 @@ CLASS_MEMBER_PROPERTY_GET/SET does not exist. please read the knowledge base and
 
 # TASKS
 
-- [ ] TASK No.1: Add ParagraphRecycle Property to GuiDocumentElement and Connect to Configuration System
+- [x] TASK No.1: Add ParagraphRecycle Property to GuiDocumentElement and Connect to Configuration System
 - [ ] TASK No.2: Implement Paragraph Recycling Logic in GuiDocumentElementRenderer::Render
 
 ## TASK No.1: Add ParagraphRecycle Property to GuiDocumentElement and Connect to Configuration System

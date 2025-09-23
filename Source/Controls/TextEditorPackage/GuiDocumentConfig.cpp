@@ -51,7 +51,7 @@ GuiDocumentConfig
 				config.doubleLineBreaksBetweenParagraph = false;
 
 				config.spaceForFlattenedLineBreak = false;
-				config.paragraphRecycle = true;
+				config.paragraphRecycle = false;
 				return config;
 			}
 

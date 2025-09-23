@@ -223,6 +223,7 @@ GuiDocumentCommonInterface
 				documentElement->SetCallback(this);
 				documentElement->SetParagraphPadding(config.paragraphPadding);
 				documentElement->SetWrapLine(config.wrapLine);
+				documentElement->SetParagraphRecycle(config.paragraphRecycle);
 
 				documentComposition = new GuiBoundsComposition;
 				documentComposition->SetOwnedElement(Ptr(documentElement));

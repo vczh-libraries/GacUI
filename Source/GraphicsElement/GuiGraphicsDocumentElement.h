@@ -50,6 +50,7 @@ GuiDocumentElement
 			protected:
 				Ptr<DocumentModel>							document;
 				wchar_t										passwordChar;
+				bool										paragraphRecycle = false;
 				IGuiDocumentElementCallback*				callback = nullptr;
 				bool										paragraphPadding = true;
 				bool										wrapLine = true;
@@ -95,6 +96,12 @@ GuiDocumentElement
 				/// <summary>Set the password char.</summary>
 				/// <param name="value">Set to 0 to remove the password char.</param>
 				void										SetPasswordChar(wchar_t value);
+				/// <summary>Get whether rendering resources are proactively released to lower memory consumption.</summary>
+				/// <returns>Returns true if paragraph rendering resources are recycled.</returns>
+				bool										GetParagraphRecycle();
+				/// <summary>Set whether rendering resources are proactively released to lower memory consumption.</summary>
+				/// <param name="value">Set to true to enable recycling of paragraph rendering resources.</param>
+				void										SetParagraphRecycle(bool value);
 
 				/// <summary>
 				/// Get the begin position of the selection area.
