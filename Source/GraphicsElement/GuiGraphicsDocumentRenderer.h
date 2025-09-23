@@ -98,6 +98,7 @@ GuiDocumentParagraphCache
 				vint									ResetCache(vint index, vint oldCount, vint newCount, bool updatedText);		// returns the diff of total height
 				vint									EnsureParagraph(vint paragraphIndex, vint maxWidth);						// returns the diff of total height
 				vint									GetParagraphFromY(vint y, vint paragraphDistance);
+				void									ReleaseParagraph(vint index, vint count);
 			};
 
 /***********************************************************************
@@ -120,6 +121,9 @@ GuiDocumentElementRenderer
 				vint									lastTotalWidth = 0;
 				vint									lastTotalHeightWithoutParagraphDistance = 0;
 				GuiDocumentParagraphCache				pgCache;
+
+				vint									previousRenderBegin = -1;	// -1 indicates invalid/uninitialized range
+				vint									previousRenderCount = 0;	// Invalid when begin == -1
 
 				TextPos									lastCaret{ -1,-1 };
 				bool									lastCaretFrontSide = false;

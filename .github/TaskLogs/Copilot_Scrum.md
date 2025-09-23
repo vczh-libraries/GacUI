@@ -59,7 +59,7 @@ No test is needed as unit test does not cover this control yet.
 # TASKS
 
 - [x] TASK No.1: Add ParagraphRecycle Property to GuiDocumentElement and Connect to Configuration System
-- [ ] TASK No.2: Implement Paragraph Recycling Logic in GuiDocumentElementRenderer::Render
+- [x] TASK No.2: Implement Paragraph Recycling Logic in GuiDocumentElementRenderer::Render
 
 ## TASK No.1: Add ParagraphRecycle Property to GuiDocumentElement and Connect to Configuration System
 
