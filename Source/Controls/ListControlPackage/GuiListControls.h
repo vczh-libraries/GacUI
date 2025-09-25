@@ -3,7 +3,108 @@ Vczh Library++ 3.0
 Developer: Zihan Chen(vczh)
 GacUI::Control System
 
-Interfaces:
+GetItemProvider and View Interfaces:
+
+	GuiListControl
+		l.GetItemProvider() -> IItemProvider
+			Count(): Get numbers of items
+			GetTextValue(itemIndex): Get text representation of an item
+			GetBindingValue(itemIndex): Get boxed value of an item
+		dynamic_cast<IMyView*>(l.GetItemProvider()->RequestView(WString::Unmanaged((IMyView::Identifier)))
+			Access a more detailed view interface for GuiListControl (accessing items in rendering order)
+
+	GuiVirtualTextList
+		list::ITextItemView (item provider)
+			GetChecked(itemIndex)/SetChecked(itemIndex, bool): Checked state of an item
+	
+	GuiVirtualListView
+		list::IListViewItemView (item provider)
+			GetSmallImage(itemIndex)/GetLargeImage(itemIndex)/GetText(itemIndex)/GetSubItem(itemIndex, subItemIndex): Access list view item data
+			GetDataColumnCount()/GetDataColumn(index): Access a user-defined projection of text and sub items
+			GetColumnCount()/GetColumnText(index): Access column header data
+		ListViewColumnItemArranger::IColumnItemView interface
+			GetColumnSize(index)/SetColumnSize(index, value): Access column header size
+			GetDropdownPopup(index): Access a drop down menu attached to a column header
+			GetSortingState(index): Access sorting state of a column header, this is rendering effect only, it does not necessarily reflect the item order
+
+	GuiVirtualTreeListControl
+		tree::INodeItemView (item provider, also accessible by GetNodeItemView())
+			RequestNode(index): Convert item index to Ptr<INodeProvider>
+			CalculateNodeVisibilityIndex(node): Convert INodeProvider* to index (-1 if collapsed by any ancestor)
+		l.GetNodeRootProvider() -> tree::INodeRootProvider
+			GetRootNode(): Get the root node (root node is not rendered, its children are the top-level nodes)
+			GetTextValue(node): Get text representation of a node
+			GetBindingValue(node): Get boxed value of a node
+		dynamic_cast<IMyView*>(l.GetNodeRootProvider()->RequestView(WString::Unmanaged((IMyView::Identifier)))
+			Access a more detailed view interface for GuiVirtualTreeListControl (accessing nodes in logical tree structure)
+
+	GuiVirtualTreeView
+		tree::ITreeViewItemView (node provider)
+			GetNodeImage(node): Accessing tree view node data
+
+	GuiVirtualDataGrid
+		list::IDataGridView (item provider)
+			GetBindingCellValue(row, column)/SetBindingCellValue(row, column, value): Access cell data, it must be writable if an editor factory is assigned for the column
+			GetCellSpan: no effect, merging cells is not supported yet
+		The item provider of the data grid represents items in rendering order, which means it only contains items that passed all filters, sorted by the assigned sorter
+		
+
+List Controls and View Implementations:
+	GuiTextList: list::TextItemProvider						(BindingValue: Ptr<TextItem>)
+	GuiListView: list::ListViewItemProvider					(BindingValue: Ptr<ListViewItem>)
+	GuiBindableTextList: GuiBindableTextList::ItemSource	(BindingValue: description::Value in ItemSource)
+	GuiBindableListView: GuiBindableListView::ItemSource	(BindingValue: description::Value in ItemSource)
+	GuiVirtualTreeListControl: tree::NodeItemProvider
+	GuiBindableDataGrid: list::DataProvider
+
+Tree Controls and View Implementations:
+	GuiTreeView: tree::TreeViewItemRootProvider				(BindingValue: Ptr<TreeViewItem>)
+	GuiBindableTreeView: GuiBindableTreeView::ItemSource	(BindingValue: description::Value in ItemSource)
+
+Manipulate Items
+	GuiTextList
+		GetItems(): Writable list of Ptr<TextItem>
+		GetSelectedItem(): The selected Ptr<TextItem> (null if multiple or none selected)
+	GuiListView
+		GetDataColumns(): Writable list of data column indices
+		GetColumns(): Writable list of Ptr<ListViewColumn>
+		GetItems(): Writable list of Ptr<ListViewItem>
+		GetSelectedItem(): The selected Ptr<ListViewItem> (null if multiple or none selected)
+	GuiTreeView
+		Nodes(): A tree of Ptr<MemoryNodeProvider>
+			GetRootNode(): Ptr<INodeProvider> of the root node
+			GetMemoryNode(node): Convert INodeProvider* to MemoryNodeProvider*
+				MemoryNodeProvider::Children(): Writable list of Ptr<MemoryNodeProvider>
+				MemoryNodeProvider::GetData()/SetData(value): Access actual data of a node (must be Ptr<TreeViewItem>)
+	GuiBindableTextList
+		GetItemSource()/SetItemSource(value): An enumerable object representing all items
+			If it implements IValueReadonlyList, the implementation will be more efficient
+			If it implements IValueObservableList, changing the list will update the list control automatically
+		GetSelectedItem(): The selected description::Value (null if multiple or none selected)
+		NotifyItemDataModified(start, count): Call this function if properties inside any item is changed, when there is no update to the item source
+	GuiBindableListView
+		GetDataColumns(): Writable list of data column indices
+		GetColumns(): Writable list of Ptr<ListViewColumn>
+		GetItemSource()/SetItemSource(value): An enumerable object representing all items
+			If it implements IValueReadonlyList, the implementation will be more efficient
+			If it implements IValueObservableList, changing the list will update the list control automatically
+		GetSelectedItem(): The selected description::Value (null if multiple or none selected)
+		NotifyItemDataModified(start, count): Call this function if properties inside any item is changed, when there is no update to the item source
+	GuiBindableTreeView
+		Constructor argument reverseMappingProperty: Represents a property of the node data in the item source, for accessing Ptr<INodeProvider> for this node
+		GetItemSource()/SetItemSource(value): An object for the root node
+			If its Children property implements IValueReadonlyList, the implementation will be more efficient
+			If its Children property implements IValueObservableList, changing the list will update the tree view automatically
+		GetSelectedItem(): The selected description::Value (null if multiple or none selected)
+		NotifyNodeDataModified(value): Call this function if properties inside any node data is changed, it requires reverseMappingProperty to exists
+			there is no way to notify children changes if its Children property does not implement IValueObservableList
+	GuiBindableDataGrid
+		GetItemSource()/SetItemSource(value): An enumerable object representing all rows
+			If it implements IValueReadonlyList, the implementation will be more efficient
+			If it implements IValueObservableList, changing the list will update the data grid automatically
+		GetSelectedCell(): The selected description::Value for the cell
+		SelectCell(value, openEditor): Select a cell, and open its editor if openEditor == true
+
 ***********************************************************************/
 
 #ifndef VCZH_PRESENTATION_CONTROLS_GUILISTCONTROLS

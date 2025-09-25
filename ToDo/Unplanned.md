@@ -85,6 +85,7 @@
       - Extends to `list::DataProvider`.
     - `tree::TreeViewItemRootProvider` vs `GuiBindableTreeView::ItemSource`.
   - `GuiBindableDataGrid`:
+    - `IDataGridView::GetColumnSpan`.
     - Add customizable row visualizer.
     - The default (or `nullptr`) row visualizer displays cell visualizer and editor.
   - `GuiBindableTreeDataGrid`:
