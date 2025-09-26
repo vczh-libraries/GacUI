@@ -237,19 +237,6 @@ DefaultTreeItemTemplate
 			}
 		}
 	}
-
-	namespace collections
-	{
-		namespace randomaccess_internal
-		{
-			template<>
-			struct RandomAccessable<presentation::controls::tree::MemoryNodeProvider>
-			{
-				static const bool							CanRead = true;
-				static const bool							CanResize = false;
-			};
-		}
-	}
 }
 
 #endif
