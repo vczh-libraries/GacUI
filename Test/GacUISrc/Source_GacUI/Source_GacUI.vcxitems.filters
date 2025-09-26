@@ -181,6 +181,9 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ListControlPackage\GuiDataGridExtensions.cpp">
       <Filter>Controls\ListControlPackage\DataGrid</Filter>
     </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ListControlPackage\ItemProvider_Binding.cpp">
+      <Filter>Controls\ListControlPackage\ItemProvider</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\GuiButtonControls.h">
@@ -343,6 +346,9 @@
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ListControlPackage\GuiDataGridInterfaces.h">
       <Filter>Controls\ListControlPackage\DataGrid</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ListControlPackage\ItemProvider_Binding.h">
+      <Filter>Controls\ListControlPackage\ItemProvider</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
