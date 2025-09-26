@@ -31,6 +31,9 @@
     <Filter Include="Controls\ListControlPackage\ItemTemplate">
       <UniqueIdentifier>{3ae6de83-333a-4276-9394-91e9f0ce7f4f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Controls\ListControlPackage\DataGrid">
+      <UniqueIdentifier>{d633f2f5-9a20-4568-af78-daedb799a38d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\GuiButtonControls.cpp">
@@ -52,15 +55,6 @@
       <Filter>Controls\ListControlPackage</Filter>
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ListControlPackage\GuiComboControls.cpp">
-      <Filter>Controls\ListControlPackage</Filter>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ListControlPackage\GuiDataGridControls.cpp">
-      <Filter>Controls\ListControlPackage</Filter>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ListControlPackage\GuiDataGridExtensions.cpp">
-      <Filter>Controls\ListControlPackage</Filter>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ListControlPackage\GuiBindableDataGrid.cpp">
       <Filter>Controls\ListControlPackage</Filter>
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ListControlPackage\GuiListControlItemArrangers.cpp">
@@ -178,6 +172,15 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ListControlPackage\ItemTemplate_IListViewItemView.cpp">
       <Filter>Controls\ListControlPackage\ItemTemplate</Filter>
     </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ListControlPackage\GuiBindableDataGrid.cpp">
+      <Filter>Controls\ListControlPackage\DataGrid</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ListControlPackage\GuiDataGridControls.cpp">
+      <Filter>Controls\ListControlPackage\DataGrid</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ListControlPackage\GuiDataGridExtensions.cpp">
+      <Filter>Controls\ListControlPackage\DataGrid</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\GuiButtonControls.h">
@@ -205,18 +208,6 @@
       <Filter>Controls\ListControlPackage</Filter>
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ListControlPackage\GuiComboControls.h">
-      <Filter>Controls\ListControlPackage</Filter>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ListControlPackage\GuiDataGridControls.h">
-      <Filter>Controls\ListControlPackage</Filter>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ListControlPackage\GuiDataGridExtensions.h">
-      <Filter>Controls\ListControlPackage</Filter>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ListControlPackage\GuiDataGridInterfaces.h">
-      <Filter>Controls\ListControlPackage</Filter>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ListControlPackage\GuiBindableDataGrid.h">
       <Filter>Controls\ListControlPackage</Filter>
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ListControlPackage\GuiListControlItemArrangers.h">
@@ -340,6 +331,18 @@
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ListControlPackage\ItemTemplate_IListViewItemView.h">
       <Filter>Controls\ListControlPackage\ItemTemplate</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ListControlPackage\GuiBindableDataGrid.h">
+      <Filter>Controls\ListControlPackage\DataGrid</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ListControlPackage\GuiDataGridControls.h">
+      <Filter>Controls\ListControlPackage\DataGrid</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ListControlPackage\GuiDataGridExtensions.h">
+      <Filter>Controls\ListControlPackage\DataGrid</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ListControlPackage\GuiDataGridInterfaces.h">
+      <Filter>Controls\ListControlPackage\DataGrid</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

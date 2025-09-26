@@ -362,10 +362,10 @@ Type List (Controls)
 			F(presentation::controls::list::DataReverseSorter)\
 			F(presentation::controls::list::DataColumn)\
 			F(presentation::controls::list::DataProvider)\
-			F(presentation::controls::GuiBindableTextList::ItemSource)\
-			F(presentation::controls::GuiBindableListView::ItemSource)\
-			F(presentation::controls::GuiBindableTreeView::ItemSourceNode)\
-			F(presentation::controls::GuiBindableTreeView::ItemSource)\
+			F(presentation::controls::TextItemBindableProvider)\
+			F(presentation::controls::ListViewItemBindableProvider)\
+			F(presentation::controls::TreeViewItemBindableRootProviderNode)\
+			F(presentation::controls::TreeViewItemBindableRootProvider)\
 
 #define GUIREFLECTIONCONTROLS_CLASS_TYPELIST(F)\
 			F(presentation::controls::GuiControl)\

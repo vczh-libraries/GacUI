@@ -52,14 +52,14 @@ GetItemProvider and View Interfaces:
 List Controls and View Implementations:
 	GuiTextList: list::TextItemProvider						(BindingValue: Ptr<TextItem>)
 	GuiListView: list::ListViewItemProvider					(BindingValue: Ptr<ListViewItem>)
-	GuiBindableTextList: GuiBindableTextList::ItemSource	(BindingValue: description::Value in ItemSource)
-	GuiBindableListView: GuiBindableListView::ItemSource	(BindingValue: description::Value in ItemSource)
+	GuiBindableTextList: TextItemBindableProvider	(BindingValue: description::Value in ItemSource)
+	GuiBindableListView: ListViewItemBindableProvider	(BindingValue: description::Value in ItemSource)
 	GuiVirtualTreeListControl: tree::NodeItemProvider
 	GuiBindableDataGrid: list::DataProvider
 
 Tree Controls and View Implementations:
 	GuiTreeView: tree::TreeViewItemRootProvider				(BindingValue: Ptr<TreeViewItem>)
-	GuiBindableTreeView: GuiBindableTreeView::ItemSource	(BindingValue: description::Value in ItemSource)
+	GuiBindableTreeView: TreeViewItemBindableRootProvider	(BindingValue: description::Value in ItemSource)
 
 Manipulate Items
 	GuiTextList

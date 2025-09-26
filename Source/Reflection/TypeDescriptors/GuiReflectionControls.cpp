@@ -731,25 +731,25 @@ Type Declaration (Extra)
 				CLASS_MEMBER_BASE(IDataProcessorCallback)
 			END_CLASS_MEMBER(DataProvider)
 
-			BEGIN_CLASS_MEMBER(GuiBindableTextList::ItemSource)
+			BEGIN_CLASS_MEMBER(TextItemBindableProvider)
 				CLASS_MEMBER_BASE(ItemProviderBase)
 				CLASS_MEMBER_BASE(ITextItemView)
-			END_CLASS_MEMBER(GuiBindableTextList::ItemSource)
+			END_CLASS_MEMBER(TextItemBindableProvider)
 
-			BEGIN_CLASS_MEMBER(GuiBindableListView::ItemSource)
+			BEGIN_CLASS_MEMBER(ListViewItemBindableProvider)
 				CLASS_MEMBER_BASE(ItemProviderBase)
 				CLASS_MEMBER_BASE(IListViewItemView)
 				CLASS_MEMBER_BASE(IColumnItemView)
-			END_CLASS_MEMBER(GuiBindableListView::ItemSource)
+			END_CLASS_MEMBER(ListViewItemBindableProvider)
 
-			BEGIN_CLASS_MEMBER(GuiBindableTreeView::ItemSourceNode)
+			BEGIN_CLASS_MEMBER(TreeViewItemBindableRootProviderNode)
 				CLASS_MEMBER_BASE(INodeProvider)
-			END_CLASS_MEMBER(GuiBindableTreeView::ItemSourceNode)
+			END_CLASS_MEMBER(TreeViewItemBindableRootProviderNode)
 
-			BEGIN_CLASS_MEMBER(GuiBindableTreeView::ItemSource)
+			BEGIN_CLASS_MEMBER(TreeViewItemBindableRootProvider)
 				CLASS_MEMBER_BASE(NodeRootProviderBase)
 				CLASS_MEMBER_BASE(ITreeViewItemView)
-			END_CLASS_MEMBER(GuiBindableTreeView::ItemSource)
+			END_CLASS_MEMBER(TreeViewItemBindableRootProvider)
 
 /***********************************************************************
 Type Declaration (Class)
