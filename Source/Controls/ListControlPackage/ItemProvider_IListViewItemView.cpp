@@ -6,7 +6,7 @@ namespace vl::presentation::controls::list
 	using namespace reflection::description;
 
 	const wchar_t* const IListViewItemView::Identifier = L"vl::presentation::controls::list::IListViewItemView";
-	const wchar_t* const IColumnItemView::Identifier = L"vl::presentation::controls::list::ListViewColumnItemArranger::IColumnItemView";
+	const wchar_t* const IColumnItemView::Identifier = L"vl::presentation::controls::list::IColumnItemView";
 
 /***********************************************************************
 ListViewSubItems
