@@ -2069,9 +2069,6 @@ class presentation::controls::GuiBindableListView : presentation::controls::GuiV
     constructor (themeName : presentation::theme::ThemeName) : presentation::controls::GuiBindableListView*;
 }
 
-class presentation::controls::GuiBindableListView::ItemSource : presentation::controls::list::ItemProviderBase, presentation::controls::list::IListViewItemView, presentation::controls::list::ListViewColumnItemArranger::IColumnItemView {
-}
-
 class presentation::controls::GuiBindableRibbonGalleryList : presentation::controls::GuiRibbonGallery, presentation::controls::list::GroupedDataSource {
     event ItemApplied : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiItemEventArgs*>^;
     event ItemTemplateChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
@@ -2139,9 +2136,6 @@ class presentation::controls::GuiBindableTextList : presentation::controls::GuiV
     constructor (themeName : presentation::theme::ThemeName) : presentation::controls::GuiBindableTextList*;
 }
 
-class presentation::controls::GuiBindableTextList::ItemSource : presentation::controls::list::ItemProviderBase, presentation::controls::list::ITextItemView {
-}
-
 class presentation::controls::GuiBindableTreeView : presentation::controls::GuiVirtualTreeView {
     event ChildrenPropertyChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
         ChildrenProperty,
@@ -2174,12 +2168,6 @@ class presentation::controls::GuiBindableTreeView : presentation::controls::GuiV
 
     constructor (themeName : presentation::theme::ThemeName) : presentation::controls::GuiBindableTreeView*;
     constructor (themeName : presentation::theme::ThemeName, reverseMappingProperty : system::Function<system::Object, system::Object, system::Object, system::Boolean>^) : presentation::controls::GuiBindableTreeView*;
-}
-
-class presentation::controls::GuiBindableTreeView::ItemSource : presentation::controls::tree::NodeRootProviderBase, presentation::controls::tree::ITreeViewItemView {
-}
-
-class presentation::controls::GuiBindableTreeView::ItemSourceNode : presentation::controls::tree::INodeProvider {
 }
 
 class presentation::controls::GuiButton : presentation::controls::GuiControl {
@@ -3590,6 +3578,9 @@ interface presentation::controls::ITextBoxCommandExecutor : system::Interface {
 
 }
 
+class presentation::controls::ListViewItemBindableProvider : presentation::controls::list::ItemProviderBase, presentation::controls::list::IListViewItemView, presentation::controls::list::IColumnItemView {
+}
+
 @ValueType
 enum presentation::controls::ListViewView {
     BigIcon = 0,
@@ -3617,12 +3608,21 @@ enum presentation::controls::TabPageOrder {
     Unknown = 0,
 }
 
+class presentation::controls::TextItemBindableProvider : presentation::controls::list::ItemProviderBase, presentation::controls::list::ITextItemView {
+}
+
 @ValueType
 enum presentation::controls::TextListView {
     Check = 1,
     Radio = 2,
     Text = 0,
     Unknown = 3,
+}
+
+class presentation::controls::TreeViewItemBindableNode : presentation::controls::tree::INodeProvider {
+}
+
+class presentation::controls::TreeViewItemBindableRootProvider : presentation::controls::tree::NodeRootProviderBase, presentation::controls::tree::ITreeViewItemView {
 }
 
 class presentation::controls::list::CellBorderVisualizerTemplate : presentation::templates::GuiGridVisualizerTemplate {
@@ -3712,7 +3712,7 @@ class presentation::controls::list::DataOrFilter : presentation::controls::list:
     constructor () : presentation::controls::list::DataOrFilter^;
 }
 
-class presentation::controls::list::DataProvider : presentation::controls::list::ItemProviderBase, presentation::controls::list::IListViewItemView, presentation::controls::list::ListViewColumnItemArranger::IColumnItemView, presentation::controls::list::IDataGridView, presentation::controls::list::IDataProcessorCallback {
+class presentation::controls::list::DataProvider : presentation::controls::list::ItemProviderBase, presentation::controls::list::IListViewItemView, presentation::controls::list::IColumnItemView, presentation::controls::list::IDataGridView, presentation::controls::list::IDataProcessorCallback {
 }
 
 class presentation::controls::list::DataReverseSorter : presentation::controls::list::DataSorterBase {
@@ -3790,6 +3790,28 @@ class presentation::controls::list::GroupedDataSource : system::ReferenceType {
 
 class presentation::controls::list::HyperlinkVisualizerTemplate : presentation::controls::list::SubColumnVisualizerTemplate {
     constructor () : presentation::controls::list::HyperlinkVisualizerTemplate*;
+}
+
+interface presentation::controls::list::IColumnItemView : system::Interface {
+    function AttachCallback(value : presentation::controls::list::IColumnItemViewCallback*) : system::Boolean;
+    function DetachCallback(value : presentation::controls::list::IColumnItemViewCallback*) : system::Boolean;
+    function GetColumnSize(index : system::Int64) : system::Int64;
+    function GetDropdownPopup(index : system::Int64) : presentation::controls::GuiMenu*;
+    @InvokeTemplate:::vl::presentation::controls::QueryServiceHelper<::vl::presentation::controls::list::IColumnItemView>::GetIdentifier($Arguments)
+    @ClosureTemplate:::vl::Func<$Func>(&::vl::presentation::controls::QueryServiceHelper<::vl::presentation::controls::list::IColumnItemView>::GetIdentifier)
+    static function GetIdentifier() : system::String;
+    function GetSortingState(index : system::Int64) : presentation::controls::ColumnSortingState;
+    function SetColumnSize(index : system::Int64, value : system::Int64) : system::Void;
+
+    @InvokeTemplate:::vl::reflection::description::ValueInterfaceProxy<IColumnItemView>::Create($Arguments)
+    @ClosureTemplate:::vl::Func<$Func>(&::vl::reflection::description::ValueInterfaceProxy<IColumnItemView>::Create)
+    constructor (proxy : system::InterfaceProxy^) : presentation::controls::list::IColumnItemView^;
+}
+
+class presentation::controls::list::IColumnItemViewCallback : system::ReferenceType {
+    function OnColumnChanged(needToRefreshItems : system::Boolean) : system::Void;
+    function OnColumnRebuilt() : system::Void;
+
 }
 
 interface presentation::controls::list::IDataEditor : system::Interface {
@@ -3982,28 +4004,6 @@ class presentation::controls::list::ListViewColumnItemArranger : presentation::c
     constructor () : presentation::controls::list::ListViewColumnItemArranger^;
 }
 
-interface presentation::controls::list::ListViewColumnItemArranger::IColumnItemView : system::Interface {
-    function AttachCallback(value : presentation::controls::list::ListViewColumnItemArranger::IColumnItemViewCallback*) : system::Boolean;
-    function DetachCallback(value : presentation::controls::list::ListViewColumnItemArranger::IColumnItemViewCallback*) : system::Boolean;
-    function GetColumnSize(index : system::Int64) : system::Int64;
-    function GetDropdownPopup(index : system::Int64) : presentation::controls::GuiMenu*;
-    @InvokeTemplate:::vl::presentation::controls::QueryServiceHelper<::vl::presentation::controls::list::ListViewColumnItemArranger::IColumnItemView>::GetIdentifier($Arguments)
-    @ClosureTemplate:::vl::Func<$Func>(&::vl::presentation::controls::QueryServiceHelper<::vl::presentation::controls::list::ListViewColumnItemArranger::IColumnItemView>::GetIdentifier)
-    static function GetIdentifier() : system::String;
-    function GetSortingState(index : system::Int64) : presentation::controls::ColumnSortingState;
-    function SetColumnSize(index : system::Int64, value : system::Int64) : system::Void;
-
-    @InvokeTemplate:::vl::reflection::description::ValueInterfaceProxy<ListViewColumnItemArranger::IColumnItemView>::Create($Arguments)
-    @ClosureTemplate:::vl::Func<$Func>(&::vl::reflection::description::ValueInterfaceProxy<ListViewColumnItemArranger::IColumnItemView>::Create)
-    constructor (proxy : system::InterfaceProxy^) : presentation::controls::list::ListViewColumnItemArranger::IColumnItemView^;
-}
-
-class presentation::controls::list::ListViewColumnItemArranger::IColumnItemViewCallback : system::ReferenceType {
-    function OnColumnChanged(needToRefreshItems : system::Boolean) : system::Void;
-    function OnColumnRebuilt() : system::Void;
-
-}
-
 class presentation::controls::list::ListViewItem : system::ReferenceType {
     property LargeImage : presentation::GuiImageData^ { get:GetLargeImage set:SetLargeImage }
     property SmallImage : presentation::GuiImageData^ { get:GetSmallImage set:SetSmallImage }
@@ -4024,7 +4024,7 @@ class presentation::controls::list::ListViewItem : system::ReferenceType {
     constructor () : presentation::controls::list::ListViewItem^;
 }
 
-class presentation::controls::list::ListViewItemProvider : presentation::controls::list::IItemProvider, presentation::controls::list::IListViewItemView, presentation::controls::list::ListViewColumnItemArranger::IColumnItemView {
+class presentation::controls::list::ListViewItemProvider : presentation::controls::list::IItemProvider, presentation::controls::list::IListViewItemView, presentation::controls::list::IColumnItemView {
 }
 
 class presentation::controls::list::MainColumnVisualizerTemplate : presentation::templates::GuiGridVisualizerTemplate {
@@ -4227,6 +4227,7 @@ class presentation::elements::GuiDocumentElement : presentation::elements::IGuiG
     property CaretVisible : system::Boolean { get:GetCaretVisible set:SetCaretVisible }
     property Document : presentation::DocumentModel^ { get:GetDocument set:SetDocument }
     property ParagraphPadding : system::Boolean { get:GetParagraphPadding set:SetParagraphPadding }
+    property ParagraphRecycle : system::Boolean { get:GetParagraphRecycle set:SetParagraphRecycle }
     property PasswordChar : system::Char { get:GetPasswordChar set:SetPasswordChar }
     property WrapLine : system::Boolean { get:GetWrapLine set:SetWrapLine }
 
@@ -4248,6 +4249,7 @@ class presentation::elements::GuiDocumentElement : presentation::elements::IGuiG
     function GetDocument() : presentation::DocumentModel^;
     function GetHyperlinkFromPoint(point : presentation::Point) : presentation::DocumentHyperlinkRun::Package^;
     function GetParagraphPadding() : system::Boolean;
+    function GetParagraphRecycle() : system::Boolean;
     function GetPasswordChar() : system::Char;
     function GetWrapLine() : system::Boolean;
     function IsCaretEndPreferFrontSide() : system::Boolean;
@@ -4261,6 +4263,7 @@ class presentation::elements::GuiDocumentElement : presentation::elements::IGuiG
     function SetDocument(value : presentation::DocumentModel^) : system::Void;
     function SetParagraphAlignment(begin : presentation::TextPos, end : presentation::TextPos, alignments : system::ReadonlyList<presentation::Alignment?>^) : system::Void;
     function SetParagraphPadding(value : system::Boolean) : system::Void;
+    function SetParagraphRecycle(value : system::Boolean) : system::Void;
     function SetPasswordChar(value : system::Char) : system::Void;
     function SetWrapLine(value : system::Boolean) : system::Void;
     function SummarizeParagraphAlignment(begin : presentation::TextPos, end : presentation::TextPos) : presentation::Alignment?;
