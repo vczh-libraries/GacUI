@@ -113,7 +113,6 @@ namespace vl
 				{
 					typedef collections::Array<compositions::GuiCellComposition*>	SubItemCellList;
 					typedef collections::Array<elements::GuiSolidLabelElement*>		SubItemTestList;
-					typedef ListViewColumnItemArranger::IColumnItemView				IColumnItemView;
 				protected:
 					IColumnItemView*						columnItemView = nullptr;
 					elements::GuiImageFrameElement*			image = nullptr;

@@ -33,6 +33,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ListControlPackage\GuiListViewItemTemplates.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ListControlPackage\GuiTextListControls.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ListControlPackage\GuiTreeViewControls.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ListControlPackage\ItemProvider_IListViewItemView.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ListControlPackage\ItemProvider_ITextItemView.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ListControlPackage\ItemProvider_ITreeViewItemView.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ListControlPackage\ItemTemplate_ITextItemView.cpp" />
@@ -88,6 +89,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ListControlPackage\GuiListViewItemTemplates.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ListControlPackage\GuiTextListControls.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ListControlPackage\GuiTreeViewControls.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ListControlPackage\ItemProvider_IListViewItemView.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ListControlPackage\ItemProvider_ITextItemView.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ListControlPackage\ItemProvider_ITreeViewItemView.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ListControlPackage\ItemTemplate_ITextItemView.h" />

@@ -175,6 +175,9 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ListControlPackage\ItemTemplate_ITreeViewItemView.cpp">
       <Filter>Controls\ListControlPackage\ItemTemplate</Filter>
     </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ListControlPackage\ItemProvider_IListViewItemView.cpp">
+      <Filter>Controls\ListControlPackage\ItemProvider</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\GuiButtonControls.h">
@@ -334,6 +337,9 @@
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ListControlPackage\ItemTemplate_ITreeViewItemView.h">
       <Filter>Controls\ListControlPackage\ItemTemplate</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ListControlPackage\ItemProvider_IListViewItemView.h">
+      <Filter>Controls\ListControlPackage\ItemProvider</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

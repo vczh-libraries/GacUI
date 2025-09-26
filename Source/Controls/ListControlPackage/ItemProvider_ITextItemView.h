@@ -13,7 +13,11 @@ Interfaces:
 
 namespace vl::presentation::controls::list
 {
-	class TextItemProvider;
+	class ITextItemProviderCallback : public virtual IDescriptable, public Description<ITextItemProviderCallback>
+	{
+	public:
+		virtual void								OnItemCheckedChanged(vint itemIndex) = 0;
+	};
 
 /***********************************************************************
 ITextItemView
@@ -39,6 +43,8 @@ ITextItemView
 /***********************************************************************
 TextItem
 ***********************************************************************/
+
+	class TextItemProvider;
 
 	/// <summary>Text item. This is the item data structure for [T:vl.presentation.controls.list.TextItemProvider].</summary>
 	class TextItem : public Object, public Description<TextItem>
@@ -80,12 +86,6 @@ TextItem
 /***********************************************************************
 TextItemProvider
 ***********************************************************************/
-
-	class ITextItemProviderCallback : public virtual IDescriptable, public Description<ITextItemProviderCallback>
-	{
-	public:
-		virtual void								OnItemCheckedChanged(vint itemIndex) = 0;
-	};
 
 	/// <summary>Item provider for <see cref="GuiVirtualTextList"/> or <see cref="GuiSelectableListControl"/>.</summary>
 	class TextItemProvider
