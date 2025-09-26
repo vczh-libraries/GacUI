@@ -668,7 +668,7 @@ DetailListViewItemTemplate
 
 				void DetailListViewItemTemplate::OnInitialize()
 				{
-					columnItemView = dynamic_cast<ListViewColumnItemArranger::IColumnItemView*>(listControl->GetItemProvider()->RequestView(WString::Unmanaged(ListViewColumnItemArranger::IColumnItemView::Identifier)));
+					columnItemView = dynamic_cast<IColumnItemView*>(listControl->GetItemProvider()->RequestView(WString::Unmanaged(IColumnItemView::Identifier)));
 
 					{
 						textTable = new GuiTableComposition;

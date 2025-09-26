@@ -185,10 +185,10 @@ GuiBindableListView
 					: public list::ItemProviderBase
 					, protected virtual list::IListViewItemProvider
 					, public virtual list::IListViewItemView
-					, public virtual list::ListViewColumnItemArranger::IColumnItemView
+					, public virtual list::IColumnItemView
 					, public Description<ItemSource>
 				{
-					typedef collections::List<list::ListViewColumnItemArranger::IColumnItemViewCallback*>		ColumnItemViewCallbackList;
+					typedef collections::List<list::IColumnItemViewCallback*>		ColumnItemViewCallbackList;
 				protected:
 					list::ListViewDataColumns						dataColumns;
 					list::ListViewColumns							columns;
@@ -240,8 +240,8 @@ GuiBindableListView
 
 					// ===================== list::ListViewColumnItemArranger::IColumnItemView =====================
 						
-					bool											AttachCallback(list::ListViewColumnItemArranger::IColumnItemViewCallback* value)override;
-					bool											DetachCallback(list::ListViewColumnItemArranger::IColumnItemViewCallback* value)override;
+					bool											AttachCallback(list::IColumnItemViewCallback* value)override;
+					bool											DetachCallback(list::IColumnItemViewCallback* value)override;
 					vint											GetColumnSize(vint index)override;
 					void											SetColumnSize(vint index, vint value)override;
 					GuiMenu*										GetDropdownPopup(vint index)override;

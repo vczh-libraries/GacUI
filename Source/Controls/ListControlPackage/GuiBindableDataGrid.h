@@ -325,7 +325,7 @@ DataProvider
 				class DataProvider
 					: public virtual ItemProviderBase
 					, public virtual IListViewItemView
-					, public virtual ListViewColumnItemArranger::IColumnItemView
+					, public virtual IColumnItemView
 					, public virtual IDataGridView
 					, public virtual IDataProcessorCallback
 					, public virtual IListViewItemProvider
@@ -334,7 +334,7 @@ DataProvider
 					friend class DataColumn;
 					friend class DataColumns;
 					friend class controls::GuiBindableDataGrid;
-					typedef collections::List<ListViewColumnItemArranger::IColumnItemViewCallback*>		ColumnItemViewCallbackList;
+					typedef collections::List<IColumnItemViewCallback*>		ColumnItemViewCallbackList;
 				protected:
 					ListViewDataColumns										dataColumns;
 					DataColumns												columns;
@@ -397,8 +397,8 @@ DataProvider
 					
 					// ===================== list::ListViewColumnItemArranger::IColumnItemView =====================
 						
-					bool												AttachCallback(ListViewColumnItemArranger::IColumnItemViewCallback* value)override;
-					bool												DetachCallback(ListViewColumnItemArranger::IColumnItemViewCallback* value)override;
+					bool												AttachCallback(IColumnItemViewCallback* value)override;
+					bool												DetachCallback(IColumnItemViewCallback* value)override;
 					vint												GetColumnSize(vint index)override;
 					void												SetColumnSize(vint index, vint value)override;
 					GuiMenu*											GetDropdownPopup(vint index)override;

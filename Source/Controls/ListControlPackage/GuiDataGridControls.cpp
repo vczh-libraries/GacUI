@@ -708,7 +708,7 @@ GuiVirtualDataGrid
 				:GuiVirtualListView(themeName, _itemProvider)
 			{
 				listViewItemView = dynamic_cast<IListViewItemView*>(_itemProvider->RequestView(WString::Unmanaged(IListViewItemView::Identifier)));
-				columnItemView = dynamic_cast<ListViewColumnItemArranger::IColumnItemView*>(_itemProvider->RequestView(WString::Unmanaged(ListViewColumnItemArranger::IColumnItemView::Identifier)));
+				columnItemView = dynamic_cast<IColumnItemView*>(_itemProvider->RequestView(WString::Unmanaged(IColumnItemView::Identifier)));
 				dataGridView = dynamic_cast<IDataGridView*>(_itemProvider->RequestView(WString::Unmanaged(IDataGridView::Identifier)));
 
 				{

@@ -399,9 +399,9 @@ GuiBindableListView::ItemSource
 				{
 					return (IListViewItemView*)this;
 				}
-				else if (identifier == ListViewColumnItemArranger::IColumnItemView::Identifier)
+				else if (identifier == IColumnItemView::Identifier)
 				{
-					return (ListViewColumnItemArranger::IColumnItemView*)this;
+					return (IColumnItemView*)this;
 				}
 				else
 				{
@@ -488,7 +488,7 @@ GuiBindableListView::ItemSource
 
 			// ===================== list::ListViewColumnItemArranger::IColumnItemView =====================
 
-			bool GuiBindableListView::ItemSource::AttachCallback(ListViewColumnItemArranger::IColumnItemViewCallback* value)
+			bool GuiBindableListView::ItemSource::AttachCallback(IColumnItemViewCallback* value)
 			{
 				if(columnItemViewCallbacks.Contains(value))
 				{
@@ -501,7 +501,7 @@ GuiBindableListView::ItemSource
 				}
 			}
 
-			bool GuiBindableListView::ItemSource::DetachCallback(ListViewColumnItemArranger::IColumnItemViewCallback* value)
+			bool GuiBindableListView::ItemSource::DetachCallback(IColumnItemViewCallback* value)
 			{
 				vint index = columnItemViewCallbacks.IndexOf(value);
 				if (index == -1)

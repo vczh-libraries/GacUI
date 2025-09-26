@@ -785,9 +785,9 @@ DataProvider
 					{
 						return (IListViewItemView*)this;
 					}
-					else if (identifier == ListViewColumnItemArranger::IColumnItemView::Identifier)
+					else if (identifier == IColumnItemView::Identifier)
 					{
-						return (ListViewColumnItemArranger::IColumnItemView*)this;
+						return (IColumnItemView*)this;
 					}
 					else if (identifier == IDataGridView::Identifier)
 					{
@@ -852,7 +852,7 @@ DataProvider
 
 				// ===================== list::ListViewColumnItemArranger::IColumnItemView =====================
 
-				bool DataProvider::AttachCallback(ListViewColumnItemArranger::IColumnItemViewCallback* value)
+				bool DataProvider::AttachCallback(IColumnItemViewCallback* value)
 				{
 					if (columnItemViewCallbacks.Contains(value))
 					{
@@ -865,7 +865,7 @@ DataProvider
 					}
 				}
 
-				bool DataProvider::DetachCallback(ListViewColumnItemArranger::IColumnItemViewCallback* value)
+				bool DataProvider::DetachCallback(IColumnItemViewCallback* value)
 				{
 					vint index = columnItemViewCallbacks.IndexOf(value);
 					if (index == -1)

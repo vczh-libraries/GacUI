@@ -891,12 +891,12 @@ Interface Proxy (Controls)
 
 			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(presentation::controls::list::IColumnItemView)
 
-				bool AttachCallback(presentation::controls::list::ListViewColumnItemArranger::IColumnItemViewCallback* value)override
+				bool AttachCallback(presentation::controls::list::IColumnItemViewCallback* value)override
 				{
 					INVOKEGET_INTERFACE_PROXY(AttachCallback, value);
 				}
 
-				bool DetachCallback(presentation::controls::list::ListViewColumnItemArranger::IColumnItemViewCallback* value)override
+				bool DetachCallback(presentation::controls::list::IColumnItemViewCallback* value)override
 				{
 					INVOKEGET_INTERFACE_PROXY(DetachCallback, value);
 				}

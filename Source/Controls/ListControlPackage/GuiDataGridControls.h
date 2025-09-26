@@ -81,7 +81,7 @@ GuiVirtualDataGrid
 				friend class list::DefaultDataGridItemTemplate;
 			protected:
 				list::IListViewItemView*								listViewItemView = nullptr;
-				list::ListViewColumnItemArranger::IColumnItemView*		columnItemView = nullptr;
+				list::IColumnItemView*									columnItemView = nullptr;
 				list::IDataGridView*									dataGridView = nullptr;
 				Ptr<list::IDataVisualizerFactory>						defaultMainColumnVisualizerFactory;
 				Ptr<list::IDataVisualizerFactory>						defaultSubColumnVisualizerFactory;
