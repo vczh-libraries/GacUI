@@ -25,6 +25,9 @@
     <Filter Include="Controls\TextEditorPackage\EditorCallback">
       <UniqueIdentifier>{2e09d8fb-92e7-4880-baab-a7da287c5a4e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Controls\ListControlPackage\ItemProvider">
+      <UniqueIdentifier>{6958eb59-9a70-4151-beae-ebdb1a0a894d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\GuiButtonControls.cpp">

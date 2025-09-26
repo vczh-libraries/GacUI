@@ -9,7 +9,7 @@ Interfaces:
 #ifndef VCZH_PRESENTATION_CONTROLS_GUIDATAGRIDINTERFACES
 #define VCZH_PRESENTATION_CONTROLS_GUIDATAGRIDINTERFACES
 
-#include "GuiListViewControls.h"
+#include "GuiListControls.h"
 
 namespace vl
 {
