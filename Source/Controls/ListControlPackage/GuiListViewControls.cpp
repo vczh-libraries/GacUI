@@ -1,5 +1,4 @@
 #include "GuiListViewControls.h"
-#include "GuiListViewItemTemplates.h"
 #include "../Templates/GuiThemeStyleFactory.h"
 
 namespace vl

@@ -10,7 +10,7 @@ Interfaces:
 #define VCZH_PRESENTATION_CONTROLS_GUIDATAGRIDCONTROLS
 
 #include "GuiDataGridInterfaces.h"
-#include "GuiListViewItemTemplates.h"
+#include "GuiListViewControls.h"
 
 namespace vl
 {

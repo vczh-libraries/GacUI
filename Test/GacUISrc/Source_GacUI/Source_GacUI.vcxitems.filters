@@ -72,9 +72,6 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ListControlPackage\GuiListViewControls.cpp">
       <Filter>Controls\ListControlPackage</Filter>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ListControlPackage\GuiListViewItemTemplates.cpp">
-      <Filter>Controls\ListControlPackage</Filter>
-    </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ListControlPackage\GuiTextListControls.cpp">
       <Filter>Controls\ListControlPackage</Filter>
     </ClCompile>
@@ -178,6 +175,9 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ListControlPackage\ItemProvider_IListViewItemView.cpp">
       <Filter>Controls\ListControlPackage\ItemProvider</Filter>
     </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ListControlPackage\ItemTemplate_IListViewItemView.cpp">
+      <Filter>Controls\ListControlPackage\ItemTemplate</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\GuiButtonControls.h">
@@ -226,9 +226,6 @@
       <Filter>Controls\ListControlPackage</Filter>
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ListControlPackage\GuiListViewControls.h">
-      <Filter>Controls\ListControlPackage</Filter>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ListControlPackage\GuiListViewItemTemplates.h">
       <Filter>Controls\ListControlPackage</Filter>
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ListControlPackage\GuiTextListControls.h">
@@ -340,6 +337,9 @@
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ListControlPackage\ItemProvider_IListViewItemView.h">
       <Filter>Controls\ListControlPackage\ItemProvider</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ListControlPackage\ItemTemplate_IListViewItemView.h">
+      <Filter>Controls\ListControlPackage\ItemTemplate</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

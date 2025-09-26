@@ -10,6 +10,7 @@ Interfaces:
 #define VCZH_PRESENTATION_CONTROLS_GUILISTVIEWCONTROLS
 
 #include "ItemProvider_IListViewItemView.h"
+#include "ItemTemplate_IListViewItemView.h"
 #include "GuiListControlItemArrangers.h"
 
 namespace vl
