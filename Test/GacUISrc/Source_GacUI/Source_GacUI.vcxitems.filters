@@ -28,6 +28,9 @@
     <Filter Include="Controls\ListControlPackage\ItemProvider">
       <UniqueIdentifier>{6958eb59-9a70-4151-beae-ebdb1a0a894d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Controls\ListControlPackage\ItemTemplate">
+      <UniqueIdentifier>{3ae6de83-333a-4276-9394-91e9f0ce7f4f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\GuiButtonControls.cpp">
@@ -159,6 +162,12 @@
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\TextEditorPackage\GuiDocumentConfig.cpp">
       <Filter>Controls\TextEditorPackage</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ListControlPackage\ItemProvider_ITextItemView.cpp">
+      <Filter>Controls\ListControlPackage\ItemProvider</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ListControlPackage\ItemTemplate_ITextItemView.cpp">
+      <Filter>Controls\ListControlPackage\ItemTemplate</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -307,6 +316,12 @@
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\TextEditorPackage\GuiDocumentConfig.h">
       <Filter>Controls\TextEditorPackage</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ListControlPackage\ItemProvider_ITextItemView.h">
+      <Filter>Controls\ListControlPackage\ItemProvider</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ListControlPackage\ItemTemplate_ITextItemView.h">
+      <Filter>Controls\ListControlPackage\ItemTemplate</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

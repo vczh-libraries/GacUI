@@ -1,8 +1,5 @@
 #include "GuiTextListControls.h"
 #include "GuiListControlItemArrangers.h"
-#include "../GuiButtonControls.h"
-#include "../Templates/GuiThemeStyleFactory.h"
-#include "../../GraphicsComposition/GuiGraphicsTableComposition.h"
 
 namespace vl
 {
@@ -15,282 +12,8 @@ namespace vl
 			using namespace compositions;
 			using namespace reflection::description;
 
-			namespace list
-			{
-				const wchar_t* const ITextItemView::Identifier = L"vl::presentation::controls::list::ITextItemView";
-
 /***********************************************************************
-DefaultTextListItemTemplate
-***********************************************************************/
-
-				TemplateProperty<DefaultTextListItemTemplate::BulletStyle> DefaultTextListItemTemplate::CreateBulletStyle()
-				{
-					return {};
-				}
-
-				void DefaultTextListItemTemplate::OnInitialize()
-				{
-					SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
-
-					textElement = GuiSolidLabelElement::Create();
-					textElement->SetAlignments(Alignment::Left, Alignment::Center);
-
-					GuiBoundsComposition* textComposition = new GuiBoundsComposition;
-					textComposition->SetOwnedElement(Ptr(textElement));
-					textComposition->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElement);
-
-					if (auto bulletStyleController = CreateBulletStyle())
-					{
-						bulletButton = new GuiSelectableButton(theme::ThemeName::Unknown);
-						bulletButton->SetAutoFocus(false);
-						bulletButton->SetControlTemplate(bulletStyleController);
-						bulletButton->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
-						bulletButton->SelectedChanged.AttachMethod(this, &DefaultTextListItemTemplate::OnBulletSelectedChanged);
-
-						GuiTableComposition* table = new GuiTableComposition;
-						AddChild(table);
-						table->SetAlignmentToParent(Margin(0, 0, 0, 0));
-						table->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
-						table->SetRowsAndColumns(1, 2);
-						table->SetRowOption(0, GuiCellOption::PercentageOption(1.0));
-						table->SetColumnOption(0, GuiCellOption::MinSizeOption());
-						table->SetColumnOption(1, GuiCellOption::PercentageOption(1.0));
-						{
-							GuiCellComposition* cell = new GuiCellComposition;
-							table->AddChild(cell);
-							cell->SetSite(0, 0, 1, 1);
-							cell->AddChild(bulletButton->GetBoundsComposition());
-						}
-						{
-							GuiCellComposition* cell = new GuiCellComposition;
-							table->AddChild(cell);
-							cell->SetSite(0, 1, 1, 1);
-							cell->AddChild(textComposition);
-							textComposition->SetAlignmentToParent(Margin(0, 0, 0, 0));
-						}
-					}
-					else
-					{
-						AddChild(textComposition);
-						textComposition->SetAlignmentToParent(Margin(5, 2, 0, 2));
-					}
-
-					FontChanged.AttachMethod(this, &DefaultTextListItemTemplate::OnFontChanged);
-					TextChanged.AttachMethod(this, &DefaultTextListItemTemplate::OnTextChanged);
-					TextColorChanged.AttachMethod(this, &DefaultTextListItemTemplate::OnTextColorChanged);
-					CheckedChanged.AttachMethod(this, &DefaultTextListItemTemplate::OnCheckedChanged);
-
-					FontChanged.Execute(compositions::GuiEventArgs(this));
-					TextChanged.Execute(compositions::GuiEventArgs(this));
-					TextColorChanged.Execute(compositions::GuiEventArgs(this));
-					CheckedChanged.Execute(compositions::GuiEventArgs(this));
-				}
-
-				void DefaultTextListItemTemplate::OnRefresh()
-				{
-				}
-
-				void DefaultTextListItemTemplate::OnFontChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
-				{
-					textElement->SetFont(GetFont());
-				}
-
-				void DefaultTextListItemTemplate::OnTextChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
-				{
-					textElement->SetText(GetText());
-				}
-
-				void DefaultTextListItemTemplate::OnTextColorChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
-				{
-					textElement->SetColor(GetTextColor());
-				}
-
-				void DefaultTextListItemTemplate::OnCheckedChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
-				{
-					if (bulletButton)
-					{
-						supressEdit = true;
-						bulletButton->SetSelected(GetChecked());
-						supressEdit = false;
-					}
-				}
-
-				void DefaultTextListItemTemplate::OnBulletSelectedChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
-				{
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::controls::list::DefaultTextListItemTemplate::OnBulletSelectedChanged(GuiGraphicsComposition*, GuiEventArgs&)#"
-					if (!supressEdit)
-					{
-						if (auto textItemView = dynamic_cast<ITextItemView*>(listControl->GetItemProvider()->RequestView(WString::Unmanaged(ITextItemView::Identifier))))
-						{
-							listControl->GetItemProvider()->PushEditing();
-							textItemView->SetChecked(GetIndex(), bulletButton->GetSelected());
-							CHECK_ERROR(listControl->GetItemProvider()->PopEditing(), ERROR_MESSAGE_PREFIX L"BeginEditListItem and EndEditListItem calls are not paired.");
-						}
-					}
-#undef ERROR_MESSAGE_PREFIX
-				}
-
-				DefaultTextListItemTemplate::DefaultTextListItemTemplate()
-				{
-				}
-
-				DefaultTextListItemTemplate::~DefaultTextListItemTemplate()
-				{
-				}
-
-/***********************************************************************
-DefaultCheckTextListItemTemplate
-***********************************************************************/
-
-				TemplateProperty<DefaultTextListItemTemplate::BulletStyle> DefaultCheckTextListItemTemplate::CreateBulletStyle()
-				{
-					if (auto textList = dynamic_cast<GuiVirtualTextList*>(listControl))
-					{
-						auto style = textList->TypedControlTemplateObject(true)->GetCheckBulletTemplate();
-						if (style) return style;
-					}
-					return theme::GetCurrentTheme()->CreateStyle(theme::ThemeName::CheckTextListItem);
-				}
-
-/***********************************************************************
-DefaultRadioTextListItemTemplate
-***********************************************************************/
-
-				TemplateProperty<DefaultTextListItemTemplate::BulletStyle> DefaultRadioTextListItemTemplate::CreateBulletStyle()
-				{
-					if (auto textList = dynamic_cast<GuiVirtualTextList*>(listControl))
-					{
-						auto style = textList->TypedControlTemplateObject(true)->GetRadioBulletTemplate();
-						if (style) return style;
-					}
-					return theme::GetCurrentTheme()->CreateStyle(theme::ThemeName::RadioTextListItem);
-				}
-
-/***********************************************************************
-TextItem
-***********************************************************************/
-
-				void TextItem::NotifyUpdate(bool raiseCheckEvent)
-				{
-					if (owner)
-					{
-						vint index = owner->IndexOf(this);
-						owner->InvokeOnItemModified(index, 1, 1, false);
-
-						if (raiseCheckEvent)
-						{
-							GuiItemEventArgs arguments;
-							arguments.itemIndex = index;
-							owner->listControl->ItemChecked.Execute(arguments);
-						}
-					}
-				}
-
-				TextItem::TextItem()
-					:owner(0)
-					, checked(false)
-				{
-				}
-
-				TextItem::TextItem(const WString& _text, bool _checked)
-					:owner(0)
-					, text(_text)
-					, checked(_checked)
-				{
-				}
-
-				TextItem::~TextItem()
-				{
-				}
-
-				const WString& TextItem::GetText()
-				{
-					return text;
-				}
-
-				void TextItem::SetText(const WString& value)
-				{
-					if (text != value)
-					{
-						text = value;
-						NotifyUpdate(false);
-					}
-				}
-
-				bool TextItem::GetChecked()
-				{
-					return checked;
-				}
-
-				void TextItem::SetChecked(bool value)
-				{
-					if (checked != value)
-					{
-						checked = value;
-						NotifyUpdate(true);
-					}
-				}
-
-/***********************************************************************
-TextItemProvider
-***********************************************************************/
-
-				void TextItemProvider::AfterInsert(vint item, const Ptr<TextItem>& value)
-				{
-					ListProvider<Ptr<TextItem>>::AfterInsert(item, value);
-					value->owner = this;
-				}
-
-				void TextItemProvider::BeforeRemove(vint item, const Ptr<TextItem>& value)
-				{
-					value->owner = 0;
-					ListProvider<Ptr<TextItem>>::BeforeRemove(item, value);
-				}
-
-				WString TextItemProvider::GetTextValue(vint itemIndex)
-				{
-					return Get(itemIndex)->GetText();
-				}
-
-				description::Value TextItemProvider::GetBindingValue(vint itemIndex)
-				{
-					return Value::From(Get(itemIndex));
-				}
-
-				bool TextItemProvider::GetChecked(vint itemIndex)
-				{
-					return Get(itemIndex)->GetChecked();
-				}
-
-				void TextItemProvider::SetChecked(vint itemIndex, bool value)
-				{
-					return Get(itemIndex)->SetChecked(value);
-				}
-
-				TextItemProvider::TextItemProvider()
-					:listControl(0)
-				{
-				}
-
-				TextItemProvider::~TextItemProvider()
-				{
-				}
-
-				IDescriptable* TextItemProvider::RequestView(const WString& identifier)
-				{
-					if (identifier == ITextItemView::Identifier)
-					{
-						return (ITextItemView*)this;
-					}
-					else
-					{
-						return nullptr;
-					}
-				}
-			}
-
-/***********************************************************************
-GuiTextList
+GuiVirtualTextList
 ***********************************************************************/
 
 			void GuiVirtualTextList::BeforeControlTemplateUninstalled_()
@@ -422,11 +145,17 @@ GuiTextList
 GuiTextList
 ***********************************************************************/
 
+			void GuiTextList::OnItemCheckedChanged(vint itemIndex)
+			{
+				GuiItemEventArgs eventArgs;
+				eventArgs.itemIndex = itemIndex;
+				ItemChecked.Execute(eventArgs);
+			}
+
 			GuiTextList::GuiTextList(theme::ThemeName themeName)
-				:GuiVirtualTextList(themeName, new list::TextItemProvider)
+				:GuiVirtualTextList(themeName, new list::TextItemProvider(this))
 			{
 				items=dynamic_cast<list::TextItemProvider*>(itemProvider.Obj());
-				items->listControl=this;
 			}
 
 			GuiTextList::~GuiTextList()

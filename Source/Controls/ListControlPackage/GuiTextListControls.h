@@ -9,7 +9,8 @@ Interfaces:
 #ifndef VCZH_PRESENTATION_CONTROLS_GUITEXTLISTCONTROLS
 #define VCZH_PRESENTATION_CONTROLS_GUITEXTLISTCONTROLS
 
-#include "GuiListControls.h"
+#include "ItemProvider_ITextItemView.h"
+#include "ItemTemplate_ITextItemView.h"
 
 namespace vl
 {
@@ -17,137 +18,6 @@ namespace vl
 	{
 		namespace controls
 		{
-			class GuiVirtualTextList;
-			class GuiTextList;
-
-			namespace list
-			{
-
-/***********************************************************************
-DefaultTextListItemTemplate
-***********************************************************************/
-
-				/// <summary>The required <see cref="GuiListControl::IItemProvider"/> view for <see cref="GuiVirtualTextList"/>.</summary>
-				class ITextItemView : public virtual IDescriptable, public Description<ITextItemView>
-				{
-				public:
-					/// <summary>The identifier for this view.</summary>
-					static const wchar_t* const				Identifier;
-
-					/// <summary>Get the check state of an item.</summary>
-					/// <returns>The check state of an item.</returns>
-					/// <param name="itemIndex">The index of an item.</param>
-					virtual bool							GetChecked(vint itemIndex) = 0;
-					/// <summary>Set the check state of an item without invoving any UI action.</summary>
-					/// <param name="itemIndex">The index of an item.</param>
-					/// <param name="value">The new check state.</param>
-					virtual void							SetChecked(vint itemIndex, bool value) = 0;
-				};
-
-				class DefaultTextListItemTemplate : public PredefinedListItemTemplate<templates::GuiTextListItemTemplate>
-				{
-				protected:
-					using BulletStyle = templates::GuiControlTemplate;
-
-					GuiSelectableButton*					bulletButton = nullptr;
-					elements::GuiSolidLabelElement*			textElement = nullptr;
-					bool									supressEdit = false;
-
-					virtual TemplateProperty<BulletStyle>	CreateBulletStyle();
-					void									OnInitialize()override;
-					void									OnRefresh()override;
-					void									OnFontChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
-					void									OnTextChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
-					void									OnTextColorChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
-					void									OnCheckedChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
-					void									OnBulletSelectedChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
-				public:
-					DefaultTextListItemTemplate();
-					~DefaultTextListItemTemplate();
-				};
-
-				class DefaultCheckTextListItemTemplate : public DefaultTextListItemTemplate
-				{
-				protected:
-					TemplateProperty<BulletStyle>			CreateBulletStyle()override;
-				public:
-				};
-
-				class DefaultRadioTextListItemTemplate : public DefaultTextListItemTemplate
-				{
-				protected:
-					TemplateProperty<BulletStyle>			CreateBulletStyle()override;
-				public:
-				};
-
-/***********************************************************************
-TextItemProvider
-***********************************************************************/
-
-				class TextItemProvider;
-
-				/// <summary>Text item. This is the item data structure for [T:vl.presentation.controls.list.TextItemProvider].</summary>
-				class TextItem : public Object, public Description<TextItem>
-				{
-					friend class TextItemProvider;
-				protected:
-					TextItemProvider*							owner;
-					WString										text;
-					bool										checked;
-
-					void										NotifyUpdate(bool raiseCheckEvent);
-				public:
-					/// <summary>Create an empty text item.</summary>
-					TextItem();
-					/// <summary>Create a text item with specified text and check state.</summary>
-					/// <param name="_text">The text.</param>
-					/// <param name="_checked">The check state.</param>
-					TextItem(const WString& _text, bool _checked=false);
-					~TextItem();
-
-					std::strong_ordering operator<=>(const TextItem& value) const { return text <=> value.text; }
-					bool operator==(const TextItem& value) const { return text == value.text; }
-					
-					/// <summary>Get the text of this item.</summary>
-					/// <returns>The text of this item.</returns>
-					const WString&								GetText();
-					/// <summary>Set the text of this item.</summary>
-					/// <param name="value">The text of this item.</param>
-					void										SetText(const WString& value);
-
-					/// <summary>Get the check state of this item.</summary>
-					/// <returns>The check state of this item.</returns>
-					bool										GetChecked();
-					/// <summary>Set the check state of this item.</summary>
-					/// <param name="value">The check state of this item.</param>
-					void										SetChecked(bool value);
-				};
-
-				/// <summary>Item provider for <see cref="GuiVirtualTextList"/> or <see cref="GuiSelectableListControl"/>.</summary>
-				class TextItemProvider
-					: public ListProvider<Ptr<TextItem>>
-					, protected ITextItemView
-					, public Description<TextItemProvider>
-				{
-					friend class TextItem;
-					friend class vl::presentation::controls::GuiTextList;
-				protected:
-					GuiTextList*								listControl;
-
-					void										AfterInsert(vint item, const Ptr<TextItem>& value)override;
-					void										BeforeRemove(vint item, const Ptr<TextItem>& value)override;
-
-					WString										GetTextValue(vint itemIndex)override;
-					description::Value							GetBindingValue(vint itemIndex)override;
-					bool										GetChecked(vint itemIndex)override;
-					void										SetChecked(vint itemIndex, bool value)override;
-				public:
-					TextItemProvider();
-					~TextItemProvider();
-
-					IDescriptable*								RequestView(const WString& identifier)override;
-				};
-			}
 
 /***********************************************************************
 GuiVirtualTextList
@@ -194,10 +64,15 @@ GuiTextList
 ***********************************************************************/
 			
 			/// <summary>Text list control.</summary>
-			class GuiTextList : public GuiVirtualTextList, public Description<GuiTextList>
+			class GuiTextList
+				: public GuiVirtualTextList
+				, protected virtual list::ITextItemProviderCallback
+				, public Description<GuiTextList>
 			{
 			protected:
 				list::TextItemProvider*									items;
+
+				void													OnItemCheckedChanged(vint itemIndex) override;
 			public:
 				/// <summary>Create a Text list control.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
