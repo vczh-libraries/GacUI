@@ -742,9 +742,9 @@ Type Declaration (Extra)
 				CLASS_MEMBER_BASE(IColumnItemView)
 			END_CLASS_MEMBER(ListViewItemBindableProvider)
 
-			BEGIN_CLASS_MEMBER(TreeViewItemBindableRootProviderNode)
+			BEGIN_CLASS_MEMBER(TreeViewItemBindableNode)
 				CLASS_MEMBER_BASE(INodeProvider)
-			END_CLASS_MEMBER(TreeViewItemBindableRootProviderNode)
+			END_CLASS_MEMBER(TreeViewItemBindableNode)
 
 			BEGIN_CLASS_MEMBER(TreeViewItemBindableRootProvider)
 				CLASS_MEMBER_BASE(NodeRootProviderBase)

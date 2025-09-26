@@ -364,7 +364,7 @@ Type List (Controls)
 			F(presentation::controls::list::DataProvider)\
 			F(presentation::controls::TextItemBindableProvider)\
 			F(presentation::controls::ListViewItemBindableProvider)\
-			F(presentation::controls::TreeViewItemBindableRootProviderNode)\
+			F(presentation::controls::TreeViewItemBindableNode)\
 			F(presentation::controls::TreeViewItemBindableRootProvider)\
 
 #define GUIREFLECTIONCONTROLS_CLASS_TYPELIST(F)\
