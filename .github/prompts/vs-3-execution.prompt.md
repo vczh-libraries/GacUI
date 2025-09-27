@@ -140,7 +140,7 @@ You need to locate listed files in `TaskLogs.vcxitems`.
 This solution is in `Test\GacUISrc`, after `ls` to this folder, scripts will be accessible with:
 - `& ..\..\.github\TaskLogs\copilotBuild.ps1`
   - Check out `Compile the Solution` for usage of this script.
-- `& ..\..\.github\TaskLogs\copilotExecute.ps1`. 
+- `& ..\..\.github\TaskLogs\copilotExecute.ps1 -Executable <The-Test-Project-Name>`. 
   - Check out `Verifying your code edit` for usage of this script.
 
 # Compile the Solution
