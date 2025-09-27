@@ -63,12 +63,13 @@
     - Check out `Unit Test Projects to Work with`
     - Fix those paths, they must be absolute paths, update `Copilot_Execution.md` accordingly.
     - Execute the commands in what you just updated.
-  - If there is any compilation error, address all of them, and run the compiling commands again, until there is no error.
-  - For every attempt of fixing the source code:
-    - Explain why the original change did not work.
-    - Explain what you need to do.
-    - Explain why you think it would solve the build break or test break.
-    - Log these in `Copilot_Execution.md`, with section `## Fixing attempt No.<attempt_number>` in `# FIXING ATTEMPTS`.
+  - If there is any compilation error, address all of them.
+    - For every attempt of fixing the source code:
+      - Explain why the original change did not work.
+      - Explain what you need to do.
+      - Explain why you think it would solve the build break or test break.
+      - Log these in `Copilot_Execution.md`, with section `## Fixing attempt No.<attempt_number>` in `# FIXING ATTEMPTS`.
+    - Go back to `Step 5. Make Sure the Code Compiles`
     
 ## Step 6. Execute the Unit Test, Report, Ignore Test Failures
 

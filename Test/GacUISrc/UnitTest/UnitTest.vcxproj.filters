@@ -58,6 +58,9 @@
     <Filter Include="Source Files\Controls\Application">
       <UniqueIdentifier>{33233d69-b50c-4706-a1bd-d42b921c8ab1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\ItemProviders">
+      <UniqueIdentifier>{7784d18a-9d4d-41ca-8bc8-d174d9f3361f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
