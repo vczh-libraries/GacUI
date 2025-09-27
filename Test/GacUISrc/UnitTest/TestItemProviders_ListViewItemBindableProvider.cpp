@@ -1,0 +1,54 @@
+#include "TestItemProviders.h"
+
+using namespace gacui_unittest_template;
+
+TEST_FILE
+{
+	TEST_CASE(L"SimpleItemAddition")
+	{
+		// Setup: Create callback log and mock objects
+		List<WString> callbackLog;
+		MockItemProviderCallback itemCallback(callbackLog);
+		MockColumnItemViewCallback columnCallback(callbackLog);
+		
+		// Create ListViewItemBindableProvider and attach callbacks
+		auto provider = Ptr(new ListViewItemBindableProvider());
+		provider->AttachCallback(&itemCallback);
+		provider->AttachCallback(&columnCallback);
+		
+		// Create 3 columns for 3 WString members
+		auto& columns = provider->GetColumns();
+		columns.Add(Ptr(new ListViewColumn(L"Name", 100)));
+		columns.Add(Ptr(new ListViewColumn(L"Title", 100)));
+		columns.Add(Ptr(new ListViewColumn(L"Description", 100)));
+		
+		auto& dataColumns = provider->GetDataColumns();
+		dataColumns.Add(Ptr(new ListViewDataColumn(BindableItem::Prop_name(), L"Name")));
+		dataColumns.Add(Ptr(new ListViewDataColumn(BindableItem::Prop_title(), L"Title")));
+		dataColumns.Add(Ptr(new ListViewDataColumn(BindableItem::Prop_desc(), L"Description")));
+		
+		// Set text property
+		dataColumns[0]->SetText(L"Name");
+		dataColumns[1]->SetText(L"Title");
+		dataColumns[2]->SetText(L"Description");
+		
+		// Create ObservableList<Ptr<BindableItem>> and set as item source
+		auto items = Ptr(new ObservableList<Ptr<BindableItem>>());
+		provider->SetItemSource(BoxParameter(items));
+		
+		// Action: Add one BindableItem to the list
+		auto item = Ptr(new BindableItem());
+		item->name = L"Test Name";
+		item->title = L"Test Title";
+		item->desc = L"Test Description";
+		items->Add(item);
+		
+		// Verification: Use helper function for better diagnostics
+		const wchar_t* expected[] = {
+			L"OnAttached(provider=valid)",
+			L"OnItemModified(start=0, count=0, newCount=0, itemReferenceUpdated=true)",
+			L"OnItemModified(start=0, count=0, newCount=1, itemReferenceUpdated=true)"
+		};
+		AssertCallbacks(callbackLog, expected);
+	});
+}

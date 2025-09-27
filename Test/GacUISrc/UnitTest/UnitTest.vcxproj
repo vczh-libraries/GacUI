@@ -261,8 +261,11 @@
     <ClCompile Include="TestRemote_UnitTestFramework_Async.cpp" />
     <ClCompile Include="TestResource.cpp" />
     <ClCompile Include="TestItemProviders_TextItemProvider.cpp" />
+    <ClCompile Include="TestItemProviders_TextItemBindableProvider.cpp" />
     <ClCompile Include="TestItemProviders_ListViewItemProvider.cpp" />
+    <ClCompile Include="TestItemProviders_ListViewItemBindableProvider.cpp" />
     <ClCompile Include="TestItemProviders_TreeViewItemRootProvider.cpp" />
+    <ClCompile Include="TestItemProviders_TreeViewItemBindableNode.cpp" />
     <ClCompile Include="TestItemProviders.cpp" />
   </ItemGroup>
   <ItemGroup>

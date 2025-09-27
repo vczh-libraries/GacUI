@@ -309,10 +309,19 @@
     <ClCompile Include="TestItemProviders_TextItemProvider.cpp">
       <Filter>Source Files\ItemProviders</Filter>
     </ClCompile>
+    <ClCompile Include="TestItemProviders_TextItemBindableProvider.cpp">
+      <Filter>Source Files\ItemProviders</Filter>
+    </ClCompile>
     <ClCompile Include="TestItemProviders_ListViewItemProvider.cpp">
       <Filter>Source Files\ItemProviders</Filter>
     </ClCompile>
+    <ClCompile Include="TestItemProviders_ListViewItemBindableProvider.cpp">
+      <Filter>Source Files\ItemProviders</Filter>
+    </ClCompile>
     <ClCompile Include="TestItemProviders_TreeViewItemRootProvider.cpp">
+      <Filter>Source Files\ItemProviders</Filter>
+    </ClCompile>
+    <ClCompile Include="TestItemProviders_TreeViewItemBindableNode.cpp">
       <Filter>Source Files\ItemProviders</Filter>
     </ClCompile>
     <ClCompile Include="TestItemProviders.cpp">
