@@ -14,6 +14,10 @@ Prepare unit test for `TextItemProvider` class.
     - `IItemProviderCallback`
     - You must find a way to record the callback execution orders, and in a test case, do something, and verify the record.
 
+## UPDATE
+
+TestItemProviders.h offers utility for testing item providers. Checkout the sample test case and refresh Task No.2
+
 # TASKS
 
 - [x] TASK No.1: Create Empty Test File and Project Integration
@@ -48,43 +52,43 @@ Create the test file `TestItemProviders_TextItemProvider.cpp` with proper basic 
 
 This task establishes the proper foundation for TextItemProvider testing by creating the test file with correct structure and project integration. Creating the file in the right location and properly integrating it into both the project file and filters ensures it will be built and appears in the correct location in Visual Studio's Solution Explorer. The basic structure with proper includes and namespaces follows the established pattern seen in other test files like TestControls_Basic_GuiScroll_Tracker.cpp. This foundation task is essential before implementing actual test cases, as it ensures the development environment is properly configured and the file can be compiled successfully. Since there are no existing ItemProvider tests, the ItemProviders filter already exists but is empty, making this the first test file for this category.
 
-## TASK No.2: Implement Callback Testing Infrastructure and Test Cases
+## TASK No.2: Implement Comprehensive TextItemProvider Test Cases
 
-Implement comprehensive test cases for TextItemProvider callback functionality by creating mock callback classes to record callback invocations and testing various scenarios of item manipulation to verify that both ITextItemProviderCallback and IItemProviderCallback are executed in the correct order with proper parameters.
+Implement comprehensive test cases for TextItemProvider callback functionality using the existing testing utilities in `TestItemProviders.h`. The existing infrastructure provides `MockItemProviderCallback`, `MockTextItemProviderCallback`, and `AssertCallbacks()` helper function for verifying callback execution sequences.
 
 ### what to be done
 
-- Create mock callback classes to record callback execution:
-  - `MockTextItemProviderCallback` implementing `ITextItemProviderCallback` with a record of `OnItemCheckedChanged` calls storing item index and call sequence
-  - `MockItemProviderCallback` implementing `IItemProviderCallback` with records of `OnAttached` and `OnItemModified` calls storing all parameters (start, count, newCount, itemReferenceUpdated) and call sequence
-  - Each mock should maintain a call history with sequence numbers to verify execution order
-  - Provide methods to clear the history and access call records for verification
-- Implement test cases in a `TEST_CATEGORY(L"TextItemProvider")`:
-  - **Item Insertion/Removal Tests**: Test that `OnItemModified` is called correctly when items are added to or removed from the provider using Add(), Insert(), RemoveAt() methods
+- Expand the existing `TestItemProviders_TextItemProvider.cpp` file with comprehensive test cases using the available testing utilities:
+  - Include `#include "TestItemProviders.h"` to access `MockItemProviderCallback`, `MockTextItemProviderCallback`, `AssertCallbacks()`, and `PrintCallbacks()` utilities
+  - Use the existing `gacui_unittest_template` namespace which contains the mock classes and helper functions
+- Implement test cases following the established pattern from the sample test case:
+  - **Item Insertion/Removal Tests**: Test that `OnItemModified` is called correctly when items are added to or removed from the provider using Add(), Insert(), RemoveAt(), Clear() methods
   - **Item Property Change Tests**: Test that both `OnItemModified` and `OnItemCheckedChanged` are called when `TextItem::SetChecked()` changes an item's check state
   - **Text Change Tests**: Test that `OnItemModified` is called when `TextItem::SetText()` changes an item's text content
-  - **Multiple Callback Registration**: Test that multiple `IItemProviderCallback` objects can be registered via `AttachCallback()` and all receive notifications
-  - **Callback Attachment/Detachment**: Test `AttachCallback` and `DetachCallback` methods work correctly and `OnAttached` is called appropriately
+  - **Multiple Item Operations**: Test batch operations and verify correct callback sequences with proper start/count/newCount parameters
   - **Provider Method Tests**: Test `SetChecked(itemIndex, value)` and `GetChecked(itemIndex)` methods work correctly and trigger appropriate callbacks
+  - **Callback Attachment/Detachment**: Test `AttachCallback` and `DetachCallback` methods and verify `OnAttached` is called appropriately
   - **Edge Case Tests**: Test behavior with invalid indices, setting identical values (should not trigger callbacks), and operations on empty providers
-- For each test case:
-  - Create a `TextItemProvider` with the mock callbacks attached
+- For each test case, follow the established pattern:
+  - Create `List<WString> callbackLog` to record callback execution
+  - Create `MockTextItemProviderCallback textCallback(callbackLog)` and `MockItemProviderCallback itemCallback(callbackLog)`
+  - Create `TextItemProvider` and attach callbacks using constructor parameter and `AttachCallback()`
   - Perform operations on the provider or individual TextItem objects
-  - Verify the callback history matches the expected sequence and parameters using `TEST_ASSERT`
-  - Validate that callback parameters are correct (proper indices, counts, and flags)
-  - Ensure callbacks are invoked in the expected order when multiple callbacks should be triggered
+  - Use `AssertCallbacks(callbackLog, expected)` with string array to verify the callback sequence matches expectations
+  - Leverage `PrintCallbacks()` for diagnostic output when tests fail
 
 ### how to test it
 
 - Build and run the UnitTest project to execute all TextItemProvider test cases
-- Verify all test cases pass and properly validate callback behavior
-- Test that mock classes correctly capture all expected callback invocations with accurate parameters
+- Verify all test cases pass and properly validate callback behavior using the `AssertCallbacks()` helper function
+- Test that the existing mock classes correctly capture all expected callback invocations with accurate string representations of parameters
 - Ensure that callbacks are only triggered when values actually change (no spurious callbacks)
-- Validate that multiple attached callbacks all receive proper notifications
+- Validate that multiple attached callbacks all receive proper notifications in the correct sequence
+- Use the diagnostic capabilities of `PrintCallbacks()` to troubleshoot any test failures
 
 ### rationale
 
-This task addresses the core requirement of testing callback execution order and parameters for TextItemProvider operations. The TextItemProvider class inherits from ListProvider<Ptr<TextItem>> and implements ITextItemView, making it a central component in the item provider system that requires thorough callback testing. By creating dedicated mock callback classes, we can precisely track when callbacks are invoked and verify they happen at the right times with correct parameters. The test cases cover the main scenarios where callbacks should be triggered: item modifications through the provider interface, property changes on individual TextItem objects, and provider-level operations. Testing both ITextItemProviderCallback (specific to text items) and IItemProviderCallback (general item provider interface) ensures complete coverage of the callback system. The mock-based approach allows for detailed verification of callback sequences and parameters, which is essential for validating the contract between TextItemProvider and its consumers (like GuiVirtualTextList). This comprehensive testing approach follows the unit testing framework patterns shown in the knowledge base and ensures the reliability of the callback mechanism that list controls depend on for maintaining UI consistency.
+This task leverages the existing robust testing infrastructure in `TestItemProviders.h` rather than reinventing mock callback functionality. The existing `MockItemProviderCallback` and `MockTextItemProviderCallback` classes already provide comprehensive logging of callback invocations with formatted string representations of all parameters. The `AssertCallbacks()` helper function provides clear diagnostic output when tests fail, showing both expected and actual callback sequences. This approach is more efficient and consistent with the existing codebase patterns. The sample test case demonstrates the correct pattern for setting up providers, attaching callbacks, performing operations, and verifying results. By following this established pattern, we ensure consistency with existing test infrastructure and can focus on comprehensive test coverage of TextItemProvider functionality rather than building testing utilities. The string-based callback logging approach makes test assertions readable and debugging straightforward when callback sequences don't match expectations.
 
 # Impact to the Knowledge Base
 
@@ -107,13 +111,14 @@ Item providers in GacUI use callback interfaces to notify list controls of data 
 
 ### Unit Testing Item Provider Infrastructure
 
-When testing item provider classes, establish proper test infrastructure following these patterns:
+When testing item provider classes, use the existing infrastructure in `TestItemProviders.h`:
 
-- Create separate mock classes for each callback interface to isolate testing concerns
-- Maintain call history with sequence numbers to verify callback execution order across multiple callback types
+- Use `MockItemProviderCallback` and `MockTextItemProviderCallback` classes that automatically log callback invocations to a `List<WString>`
+- Leverage `AssertCallbacks(callbackLog, expected)` helper function to verify callback sequences with clear diagnostic output
+- Use `PrintCallbacks()` for debugging when callback sequences don't match expectations
+- Follow the established pattern: create callback log, attach mock callbacks, perform operations, verify with AssertCallbacks()
+- String-based callback logging provides readable test assertions and clear parameter representation
 - Use `TEST_CATEGORY` organization to group related item provider tests logically
-- Include tests for provider methods, individual item property changes, and multi-callback scenarios
-- Verify that callbacks contain correct parameters matching the actual data changes performed
-- Test attachment and detachment of callbacks to ensure proper lifecycle management
+- Test attachment and detachment of callbacks to ensure proper lifecycle management and `OnAttached` invocation
 
 # !!!FINISHED!!!
