@@ -14,12 +14,14 @@
 
 ## Step 2. Compile
 
-- Your goal is to verify if they are good enough. You need to compiler the whole solution.
+- Your goal is to verify if they are good enough. You need to compile the whole solution.
+- Check out `TOOLING/COMPILE` in `Copilot_Execution.md` and run the commands, it should compile the solution.
 - Fix the code to avoid all compile errors.
 - If there is any compile warning, only fix warnings that caused by your code change. Do no fix any other warnings.
 
 ## Step 3. Run Unit Test
 
+- Check out `TOOLING/TEST` in `Copilot_Execution.md` and run the commands, it should run the unit tests.
 - Run the unit test and see if they passed. If anything is good, you will only see test files and test cases that are executed.
   - Make sure added test cases are actually executed.
   - When all test cases pass, there will be a summarizing about how many test cases are executed. Otherwise it crashed.
@@ -28,7 +30,6 @@
     - In any test case, `TEST_PRINT` would help.
     - In other source code, `vl::console::Console::WriteLine` would help. In `Vlpp` project, you should `#include` `Console.h`. In other projects, the `Console` class should just be available.
     - When added logging are not longer necessary, you should remove all of them.
-- Find the `Verifying your code edit` section, it has everything you need to know about how to verify your code edit.
 
 ## Step 4. Fix Failed Test Cases
 
