@@ -46,7 +46,7 @@ namespace gacui_unittest_template
 		TEST_ASSERT(matches);
 	}
 
-	class MockItemProviderCallback : public IItemProviderCallback  
+	class MockItemProviderCallback : public Object, public virtual IItemProviderCallback
 	{
 		List<WString>& callbackLog;
 	public:
@@ -65,7 +65,7 @@ namespace gacui_unittest_template
 		}
 	};
 
-	class MockTextItemProviderCallback : public ITextItemProviderCallback
+	class MockTextItemProviderCallback : public Object, public virtual ITextItemProviderCallback
 	{
 		List<WString>& callbackLog;
 	public:
