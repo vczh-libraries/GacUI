@@ -4,6 +4,20 @@ using namespace gacui_unittest_template;
 
 TEST_FILE
 {
+	auto InitProvider = [](Ptr<TreeViewItemBindableRootProvider> provider)
+	{
+		// Set text property first
+		provider->textProperty = BindableItem::Prop_name();
+		provider->childrenProperty = BindableItem::Prop_children();
+
+		// Create a root BindableItem and set as item source
+		auto rootItem = Ptr(new BindableItem());
+		rootItem->name = L"Root Item";
+		provider->SetItemSource(BoxValue(rootItem));
+
+		return rootItem;
+	};
+
 	TEST_CASE(L"SimpleItemAddition")
 	{
 		// Setup: Create callback log and mock objects
@@ -12,15 +26,7 @@ TEST_FILE
 		
 		// Create TreeViewItemBindableRootProvider and attach callbacks
 		auto provider = Ptr(new TreeViewItemBindableRootProvider());
-		
-		// Set text property first
-		provider->textProperty = BindableItem::Prop_name();
-		provider->childrenProperty = BindableItem::Prop_children();
-		
-		// Create a root BindableItem and set as item source
-		auto rootItem = Ptr(new BindableItem());
-		rootItem->name = L"Root Item";
-		provider->SetItemSource(BoxValue(rootItem));
+		auto rootItem = InitProvider(provider);
 		provider->AttachCallback(&nodeCallback);
 		
 		// Action: Add another BindableItem to its children

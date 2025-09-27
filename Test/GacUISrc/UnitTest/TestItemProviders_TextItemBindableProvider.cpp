@@ -4,6 +4,15 @@ using namespace gacui_unittest_template;
 
 TEST_FILE
 {
+	auto InitProvider = [](Ptr<TextItemBindableProvider> provider, ObservableList<Ptr<BindableItem>>& items)
+	{
+		// Set text property first
+		provider->textProperty = BindableItem::Prop_name();
+
+		// Set item source
+		provider->SetItemSource(UnboxValue<Ptr<IValueEnumerable>>(BoxParameter(items)));
+	};
+
 	TEST_CASE(L"SimpleItemAddition")
 	{
 		// Setup: Create callback log and mock objects
@@ -12,13 +21,10 @@ TEST_FILE
 		
 		// Create TextItemBindableProvider and attach callbacks
 		auto provider = Ptr(new TextItemBindableProvider());
-		
-		// Set text property first
-		provider->textProperty = BindableItem::Prop_name();
-		
+
 		// Create ObservableList<Ptr<BindableItem>> and set as item source
 		ObservableList<Ptr<BindableItem>> items;
-		provider->SetItemSource(UnboxValue<Ptr<IValueEnumerable>>(BoxParameter(items)));
+		InitProvider(provider, items);
 		provider->AttachCallback(&itemCallback);
 		
 		// Action: Add one BindableItem to the list

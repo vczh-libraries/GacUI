@@ -4,6 +4,28 @@ using namespace gacui_unittest_template;
 
 TEST_FILE
 {
+	auto InitProvider = [](Ptr<ListViewItemBindableProvider> provider, ObservableList<Ptr<BindableItem>>& items)
+	{
+		// Create 3 columns for 3 WString members
+		auto& columns = provider->GetColumns();
+		columns.Add(Ptr(new ListViewColumn(L"Name", 100)));
+		columns.Add(Ptr(new ListViewColumn(L"Title", 100)));
+		columns.Add(Ptr(new ListViewColumn(L"Description", 100)));
+
+		// Set text properties for the columns
+		columns[0]->SetTextProperty(BindableItem::Prop_name());
+		columns[1]->SetTextProperty(BindableItem::Prop_title());
+		columns[2]->SetTextProperty(BindableItem::Prop_desc());
+
+		// Add data column indices to display columns 1 and 2 (0 is the main text column)
+		auto& dataColumns = provider->GetDataColumns();
+		dataColumns.Add(1);
+		dataColumns.Add(2);
+
+		// Set item source
+		provider->SetItemSource(UnboxValue<Ptr<IValueEnumerable>>(BoxParameter(items)));
+	};
+
 	TEST_CASE(L"SimpleItemAddition")
 	{
 		// Setup: Create callback log and mock objects
@@ -14,25 +36,9 @@ TEST_FILE
 		// Create ListViewItemBindableProvider and attach callbacks
 		auto provider = Ptr(new ListViewItemBindableProvider());
 		
-		// Create 3 columns for 3 WString members
-		auto& columns = provider->GetColumns();
-		columns.Add(Ptr(new ListViewColumn(L"Name", 100)));
-		columns.Add(Ptr(new ListViewColumn(L"Title", 100)));
-		columns.Add(Ptr(new ListViewColumn(L"Description", 100)));
-		
-		// Set text properties for the columns
-		columns[0]->SetTextProperty(BindableItem::Prop_name());
-		columns[1]->SetTextProperty(BindableItem::Prop_title());
-		columns[2]->SetTextProperty(BindableItem::Prop_desc());
-		
-		// Add data column indices to display columns 1 and 2 (0 is the main text column)
-		auto& dataColumns = provider->GetDataColumns();
-		dataColumns.Add(1);
-		dataColumns.Add(2);
-		
 		// Create ObservableList<Ptr<BindableItem>> and set as item source
 		ObservableList<Ptr<BindableItem>> items;
-		provider->SetItemSource(UnboxValue<Ptr<IValueEnumerable>>(BoxParameter(items)));
+		InitProvider(provider, items);
 		static_cast<IItemProvider*>(provider.Obj())->AttachCallback(&itemCallback);
 		provider->AttachCallback(&columnCallback);
 		
