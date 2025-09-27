@@ -280,6 +280,7 @@
     <ClInclude Include="TestCompositions.h" />
     <ClInclude Include="TestControls.h" />
     <ClInclude Include="TestControls_List.h" />
+    <ClInclude Include="TestItemProviders.h" />
     <ClInclude Include="TestControls_Ribbon.h" />
     <ClInclude Include="TestRemote.h" />
     <ClInclude Include="TestRemote_GraphicsHost_Shared.h" />

@@ -341,6 +341,9 @@
     <ClInclude Include="TestControls_Ribbon.h">
       <Filter>Source Files\Controls\Ribbon</Filter>
     </ClInclude>
+    <ClInclude Include="TestItemProviders.h">
+      <Filter>Source Files\ItemProviders</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="..\..\Resources\UnitTestResources\cake.jpeg">
