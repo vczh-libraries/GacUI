@@ -1,4 +1,5 @@
 #include "../../../Source/Controls/ListControlPackage/ItemProvider_ITextItemView.h"
+#include "../../../Source/Controls/ListControlPackage/ItemProvider_IListViewItemView.h"
 
 using namespace vl;
 using namespace vl::unittest;
@@ -74,6 +75,23 @@ namespace gacui_unittest_template
 		void OnItemCheckedChanged(vint itemIndex) override
 		{
 			callbackLog.Add(L"OnItemCheckedChanged(itemIndex=" + itow(itemIndex) + L")");
+		}
+	};
+
+	class MockColumnItemViewCallback : public Object, public virtual IColumnItemViewCallback
+	{
+		List<WString>& callbackLog;
+	public:
+		MockColumnItemViewCallback(List<WString>& log) : callbackLog(log) {}
+
+		void OnColumnRebuilt() override
+		{
+			callbackLog.Add(L"OnColumnRebuilt()");
+		}
+
+		void OnColumnChanged(bool needToRefreshItems) override
+		{
+			callbackLog.Add(L"OnColumnChanged(needToRefreshItems=" + WString::Unmanaged(needToRefreshItems ? L"true" : L"false") + L")");
 		}
 	};
 }
