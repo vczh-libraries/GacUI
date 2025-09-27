@@ -263,6 +263,7 @@
     <ClCompile Include="TestItemProviders_TextItemProvider.cpp" />
     <ClCompile Include="TestItemProviders_ListViewItemProvider.cpp" />
     <ClCompile Include="TestItemProviders_TreeViewItemRootProvider.cpp" />
+    <ClCompile Include="TestItemProviders.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Lib_GacUI_App_Reflection\Lib_GacUI_App_Reflection.vcxproj">

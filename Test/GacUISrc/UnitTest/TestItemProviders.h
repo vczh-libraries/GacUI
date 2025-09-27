@@ -57,87 +57,45 @@ namespace gacui_unittest_template
 	{
 		List<WString>& callbackLog;
 	public:
-		MockItemProviderCallback(List<WString>& log) : callbackLog(log) {}
+		MockItemProviderCallback(List<WString>& log);
 
-		void OnAttached(IItemProvider* provider) override
-		{
-			callbackLog.Add(provider ? L"OnAttached(provider=valid)" : L"OnAttached(provider=null)");
-		}
-
-		void OnItemModified(vint start, vint count, vint newCount, bool itemReferenceUpdated) override
-		{
-			callbackLog.Add(L"OnItemModified(start=" + itow(start) + L", count=" + itow(count) + 
-						   L", newCount=" + itow(newCount) + L", itemReferenceUpdated=" + 
-						   (itemReferenceUpdated ? L"true" : L"false") + L")");
-		}
+		void OnAttached(IItemProvider* provider) override;
+		void OnItemModified(vint start, vint count, vint newCount, bool itemReferenceUpdated) override;
 	};
 
 	class MockTextItemProviderCallback : public Object, public virtual ITextItemProviderCallback
 	{
 		List<WString>& callbackLog;
 	public:
-		MockTextItemProviderCallback(List<WString>& log) : callbackLog(log) {}
+		MockTextItemProviderCallback(List<WString>& log);
 
-		void OnItemCheckedChanged(vint itemIndex) override
-		{
-			callbackLog.Add(L"OnItemCheckedChanged(itemIndex=" + itow(itemIndex) + L")");
-		}
+		void OnItemCheckedChanged(vint itemIndex) override;
 	};
 
 	class MockColumnItemViewCallback : public Object, public virtual IColumnItemViewCallback
 	{
 		List<WString>& callbackLog;
 	public:
-		MockColumnItemViewCallback(List<WString>& log) : callbackLog(log) {}
+		MockColumnItemViewCallback(List<WString>& log);
 
-		void OnColumnRebuilt() override
-		{
-			callbackLog.Add(L"OnColumnRebuilt()");
-		}
-
-		void OnColumnChanged(bool needToRefreshItems) override
-		{
-			callbackLog.Add(L"OnColumnChanged(needToRefreshItems=" + WString::Unmanaged(needToRefreshItems ? L"true" : L"false") + L")");
-		}
+		void OnColumnRebuilt() override;
+		void OnColumnChanged(bool needToRefreshItems) override;
 	};
 
 	class MockNodeProviderCallback : public Object, public virtual INodeProviderCallback
 	{
 		List<WString>& callbackLog;
 	public:
-		MockNodeProviderCallback(List<WString>& log) : callbackLog(log) {}
+		MockNodeProviderCallback(List<WString>& log);
 
-		void OnAttached(INodeRootProvider* provider) override
-		{
-			callbackLog.Add(provider ? L"OnAttached(provider=valid)" : L"OnAttached(provider=null)");
-		}
-
-		void OnBeforeItemModified(INodeProvider* parentNode, vint start, vint count, vint newCount, bool itemReferenceUpdated) override
-		{
-			callbackLog.Add(L"OnBeforeItemModified(start=" + itow(start) + L", count=" + itow(count) + 
-						   L", newCount=" + itow(newCount) + L", itemReferenceUpdated=" + 
-						   (itemReferenceUpdated ? L"true" : L"false") + L")");
-		}
-
-		void OnAfterItemModified(INodeProvider* parentNode, vint start, vint count, vint newCount, bool itemReferenceUpdated) override
-		{
-			callbackLog.Add(L"OnAfterItemModified(start=" + itow(start) + L", count=" + itow(count) + 
-						   L", newCount=" + itow(newCount) + L", itemReferenceUpdated=" + 
-						   (itemReferenceUpdated ? L"true" : L"false") + L")");
-		}
-
-		void OnItemExpanded(INodeProvider* node) override
-		{
-			callbackLog.Add(L"OnItemExpanded()");
-		}
-
-		void OnItemCollapsed(INodeProvider* node) override
-		{
-			callbackLog.Add(L"OnItemCollapsed()");
-		}
+		void OnAttached(INodeRootProvider* provider) override;
+		void OnBeforeItemModified(INodeProvider* parentNode, vint start, vint count, vint newCount, bool itemReferenceUpdated) override;
+		void OnAfterItemModified(INodeProvider* parentNode, vint start, vint count, vint newCount, bool itemReferenceUpdated) override;
+		void OnItemExpanded(INodeProvider* node) override;
+		void OnItemCollapsed(INodeProvider* node) override;
 	};
 
-	class BindableItem : public Object
+	class BindableItem : public Object, public ::vl::reflection::Description<BindableItem>
 	{
 	public:
 		WString											name;
@@ -191,4 +149,11 @@ namespace gacui_unittest_template
 			};
 		}
 	};
+}
+
+namespace vl::reflection::description
+{
+#ifndef VCZH_DEBUG_NO_REFLECTION
+	DECL_TYPE_INFO(gacui_unittest_template::BindableItem)
+#endif
 }
