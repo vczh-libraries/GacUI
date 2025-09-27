@@ -22,15 +22,15 @@ TEST_FILE
 		columns.Add(Ptr(new ListViewColumn(L"Title", 100)));
 		columns.Add(Ptr(new ListViewColumn(L"Description", 100)));
 		
-		auto& dataColumns = provider->GetDataColumns();
-		dataColumns.Add(Ptr(new ListViewDataColumn(BindableItem::Prop_name(), L"Name")));
-		dataColumns.Add(Ptr(new ListViewDataColumn(BindableItem::Prop_title(), L"Title")));
-		dataColumns.Add(Ptr(new ListViewDataColumn(BindableItem::Prop_desc(), L"Description")));
+		// Set text properties for the columns
+		columns[0]->SetTextProperty(BindableItem::Prop_name());
+		columns[1]->SetTextProperty(BindableItem::Prop_title());
+		columns[2]->SetTextProperty(BindableItem::Prop_desc());
 		
-		// Set text property
-		dataColumns[0]->SetText(L"Name");
-		dataColumns[1]->SetText(L"Title");
-		dataColumns[2]->SetText(L"Description");
+		// Add data column indices to display columns 1 and 2 (0 is the main text column)
+		auto& dataColumns = provider->GetDataColumns();
+		dataColumns.Add(1);
+		dataColumns.Add(2);
 		
 		// Create ObservableList<Ptr<BindableItem>> and set as item source
 		auto items = Ptr(new ObservableList<Ptr<BindableItem>>());
@@ -46,6 +46,7 @@ TEST_FILE
 		// Verification: Use helper function for better diagnostics
 		const wchar_t* expected[] = {
 			L"OnAttached(provider=valid)",
+			L"OnColumnRebuilt()",
 			L"OnItemModified(start=0, count=0, newCount=0, itemReferenceUpdated=true)",
 			L"OnItemModified(start=0, count=0, newCount=1, itemReferenceUpdated=true)"
 		};

@@ -1,10 +1,12 @@
 #include "../../../Source/Controls/ListControlPackage/ItemProvider_ITextItemView.h"
 #include "../../../Source/Controls/ListControlPackage/ItemProvider_IListViewItemView.h"
 #include "../../../Source/Controls/ListControlPackage/ItemProvider_ITreeViewItemView.h"
+#include "../../../Source/Controls/ListControlPackage/ItemProvider_Binding.h"
 
 using namespace vl;
 using namespace vl::unittest;
 using namespace vl::collections;
+using namespace vl::presentation::controls;
 using namespace vl::presentation::controls::list;
 using namespace vl::presentation::controls::tree;
 using namespace vl::reflection::description;
