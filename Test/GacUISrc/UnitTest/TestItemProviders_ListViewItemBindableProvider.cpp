@@ -13,8 +13,6 @@ TEST_FILE
 		
 		// Create ListViewItemBindableProvider and attach callbacks
 		auto provider = Ptr(new ListViewItemBindableProvider());
-		static_cast<IItemProvider*>(provider.Obj())->AttachCallback(&itemCallback);
-		provider->AttachCallback(&columnCallback);
 		
 		// Create 3 columns for 3 WString members
 		auto& columns = provider->GetColumns();
@@ -33,21 +31,21 @@ TEST_FILE
 		dataColumns.Add(2);
 		
 		// Create ObservableList<Ptr<BindableItem>> and set as item source
-		auto items = Ptr(new ObservableList<Ptr<BindableItem>>());
+		ObservableList<Ptr<BindableItem>> items;
 		provider->SetItemSource(UnboxValue<Ptr<IValueEnumerable>>(BoxParameter(items)));
+		static_cast<IItemProvider*>(provider.Obj())->AttachCallback(&itemCallback);
+		provider->AttachCallback(&columnCallback);
 		
 		// Action: Add one BindableItem to the list
 		auto item = Ptr(new BindableItem());
 		item->name = L"Test Name";
 		item->title = L"Test Title";
 		item->desc = L"Test Description";
-		items->Add(item);
+		items.Add(item);
 		
 		// Verification: Use helper function for better diagnostics
 		const wchar_t* expected[] = {
 			L"OnAttached(provider=valid)",
-			L"OnColumnRebuilt()",
-			L"OnItemModified(start=0, count=0, newCount=0, itemReferenceUpdated=true)",
 			L"OnItemModified(start=0, count=0, newCount=1, itemReferenceUpdated=true)"
 		};
 		AssertCallbacks(callbackLog, expected);

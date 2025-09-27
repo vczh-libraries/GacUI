@@ -321,7 +321,7 @@
     <ClCompile Include="TestItemProviders_TreeViewItemRootProvider.cpp">
       <Filter>Source Files\ItemProviders</Filter>
     </ClCompile>
-    <ClCompile Include="TestItemProviders_TreeViewItemBindableNode.cpp">
+    <ClCompile Include="TestItemProviders_TreeViewItemBindableRootProvider.cpp">
       <Filter>Source Files\ItemProviders</Filter>
     </ClCompile>
     <ClCompile Include="TestItemProviders.cpp">

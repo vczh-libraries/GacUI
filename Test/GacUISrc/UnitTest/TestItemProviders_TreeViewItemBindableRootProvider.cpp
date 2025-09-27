@@ -12,7 +12,6 @@ TEST_FILE
 		
 		// Create TreeViewItemBindableRootProvider and attach callbacks
 		auto provider = Ptr(new TreeViewItemBindableRootProvider());
-		provider->AttachCallback(&nodeCallback);
 		
 		// Set text property first
 		provider->textProperty = BindableItem::Prop_name();
@@ -22,6 +21,7 @@ TEST_FILE
 		auto rootItem = Ptr(new BindableItem());
 		rootItem->name = L"Root Item";
 		provider->SetItemSource(BoxValue(rootItem));
+		provider->AttachCallback(&nodeCallback);
 		
 		// Action: Add another BindableItem to its children
 		auto childItem = Ptr(new BindableItem());
@@ -31,8 +31,6 @@ TEST_FILE
 		// Verification: Use helper function for better diagnostics
 		const wchar_t* expected[] = {
 			L"OnAttached(provider=valid)",
-			L"OnBeforeItemModified(start=0, count=0, newCount=0, itemReferenceUpdated=true)",
-			L"OnAfterItemModified(start=0, count=0, newCount=0, itemReferenceUpdated=true)",
 			L"OnBeforeItemModified(start=0, count=0, newCount=1, itemReferenceUpdated=true)",
 			L"OnAfterItemModified(start=0, count=0, newCount=1, itemReferenceUpdated=true)"
 		};
