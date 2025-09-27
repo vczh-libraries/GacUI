@@ -309,6 +309,12 @@
     <ClCompile Include="TestItemProviders_TextItemProvider.cpp">
       <Filter>Source Files\ItemProviders</Filter>
     </ClCompile>
+    <ClCompile Include="TestItemProviders_ListViewItemProvider.cpp">
+      <Filter>Source Files\ItemProviders</Filter>
+    </ClCompile>
+    <ClCompile Include="TestItemProviders_TreeViewItemRootProvider.cpp">
+      <Filter>Source Files\ItemProviders</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="TestCompositions.h">

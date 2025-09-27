@@ -1,10 +1,12 @@
 #include "../../../Source/Controls/ListControlPackage/ItemProvider_ITextItemView.h"
 #include "../../../Source/Controls/ListControlPackage/ItemProvider_IListViewItemView.h"
+#include "../../../Source/Controls/ListControlPackage/ItemProvider_ITreeViewItemView.h"
 
 using namespace vl;
 using namespace vl::unittest;
 using namespace vl::collections;
 using namespace vl::presentation::controls::list;
+using namespace vl::presentation::controls::tree;
 
 namespace gacui_unittest_template
 {
@@ -92,6 +94,42 @@ namespace gacui_unittest_template
 		void OnColumnChanged(bool needToRefreshItems) override
 		{
 			callbackLog.Add(L"OnColumnChanged(needToRefreshItems=" + WString::Unmanaged(needToRefreshItems ? L"true" : L"false") + L")");
+		}
+	};
+
+	class MockNodeProviderCallback : public Object, public virtual INodeProviderCallback
+	{
+		List<WString>& callbackLog;
+	public:
+		MockNodeProviderCallback(List<WString>& log) : callbackLog(log) {}
+
+		void OnAttached(INodeRootProvider* provider) override
+		{
+			callbackLog.Add(provider ? L"OnAttached(provider=valid)" : L"OnAttached(provider=null)");
+		}
+
+		void OnBeforeItemModified(INodeProvider* parentNode, vint start, vint count, vint newCount, bool itemReferenceUpdated) override
+		{
+			callbackLog.Add(L"OnBeforeItemModified(start=" + itow(start) + L", count=" + itow(count) + 
+						   L", newCount=" + itow(newCount) + L", itemReferenceUpdated=" + 
+						   (itemReferenceUpdated ? L"true" : L"false") + L")");
+		}
+
+		void OnAfterItemModified(INodeProvider* parentNode, vint start, vint count, vint newCount, bool itemReferenceUpdated) override
+		{
+			callbackLog.Add(L"OnAfterItemModified(start=" + itow(start) + L", count=" + itow(count) + 
+						   L", newCount=" + itow(newCount) + L", itemReferenceUpdated=" + 
+						   (itemReferenceUpdated ? L"true" : L"false") + L")");
+		}
+
+		void OnItemExpanded(INodeProvider* node) override
+		{
+			callbackLog.Add(L"OnItemExpanded()");
+		}
+
+		void OnItemCollapsed(INodeProvider* node) override
+		{
+			callbackLog.Add(L"OnItemCollapsed()");
 		}
 	};
 }

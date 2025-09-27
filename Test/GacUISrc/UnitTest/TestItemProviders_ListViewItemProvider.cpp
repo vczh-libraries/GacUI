@@ -8,15 +8,17 @@ TEST_FILE
 	{
 		// Setup: Create callback log and mock objects
 		List<WString> callbackLog;
-		MockTextItemProviderCallback textCallback(callbackLog);
 		MockItemProviderCallback itemCallback(callbackLog);
+		MockColumnItemViewCallback columnCallback(callbackLog);
 		
-		// Create TextItemProvider and attach callbacks
-		auto provider = Ptr(new TextItemProvider(&textCallback));
-		provider->AttachCallback(&itemCallback);
+		// Create ListViewItemProvider and attach callbacks
+		auto provider = Ptr(new ListViewItemProvider);
+		static_cast<IItemProvider*>(provider.Obj())->AttachCallback(&itemCallback);
+		provider->AttachCallback(&columnCallback);
 		
-		// Action: Add one TextItem
-		auto item = Ptr(new TextItem(L"Test Item", false));
+		// Action: Add one ListViewItem
+		auto item = Ptr(new ListViewItem);
+		item->SetText(L"Test Item");
 		provider->Add(item);
 		
 		// Verification: Use helper function for better diagnostics
