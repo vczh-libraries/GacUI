@@ -16,7 +16,7 @@ Prepare unit test for `TextItemProvider` class.
 
 # TASKS
 
-- [ ] TASK No.1: Create Empty Test File and Project Integration
+- [x] TASK No.1: Create Empty Test File and Project Integration
 - [ ] TASK No.2: Implement Callback Testing Infrastructure and Test Cases
 
 ## TASK No.1: Create Empty Test File and Project Integration

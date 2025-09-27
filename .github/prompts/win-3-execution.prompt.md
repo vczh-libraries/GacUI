@@ -28,8 +28,9 @@
   - If `Copilot_Execution.md` only has a title, you are on a fresh start.
     - Add the `# TOOLING` and fill sub sections in this format, check out `Unit Test Projects to Work with` for details.
       - `## COMPILE`
-        - `cd <the folder containing the solution, it must be absolute path>`
-        - `& <the path to copilotBuild.ps1, it must be absolute path>`
+        - If `copilotBuild.ps1` is not mentioned in `Compile the Solution`, just copy the instructions from that section here, otherwise:
+          - `cd <the folder containing the solution, it must be absolute path>`
+          - `& <the path to copilotBuild.ps1, it must be absolute path>`
       - `## TEST`
         - `cd <the folder containing the solution, it must be absolute path>`
         - `& <the path to copilotExecute.ps1, it must be absolute path> <arguments for copilotExecute.ps1>`
