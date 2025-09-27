@@ -94,7 +94,50 @@ MockNodeProviderCallback
 BindableItem
 ***********************************************************************/
 
-	// Static member implementations are kept in header since they're templates
+	ItemProperty<WString> BindableItem::Prop_name()
+	{
+		return [](const reflection::description::Value& value) -> WString
+		{
+			auto item = UnboxValue<Ptr<BindableItem>>(value);
+			return item->name;
+		};
+	}
+
+	ItemProperty<WString> BindableItem::Prop_title()
+	{
+		return [](const reflection::description::Value& value) -> WString
+		{
+			auto item = UnboxValue<Ptr<BindableItem>>(value);
+			return item->title;
+		};
+	}
+
+	ItemProperty<WString> BindableItem::Prop_desc()
+	{
+		return [](const reflection::description::Value& value) -> WString
+		{
+			auto item = UnboxValue<Ptr<BindableItem>>(value);
+			return item->desc;
+		};
+	}
+
+	ItemProperty<bool> BindableItem::Prop_checked()
+	{
+		return [](const reflection::description::Value& value) -> bool
+		{
+			auto item = UnboxValue<Ptr<BindableItem>>(value);
+			return item->checked;
+		};
+	}
+
+	ItemProperty<Ptr<reflection::description::IValueEnumerable>> BindableItem::Prop_children()
+	{
+		return [](const reflection::description::Value& value) -> Ptr<reflection::description::IValueEnumerable>
+		{
+			auto item = UnboxValue<Ptr<BindableItem>>(value);
+			return UnboxValue<Ptr<IValueObservableList>>(BoxParameter(item->children));
+		};
+	}
 
 }
 
@@ -103,8 +146,12 @@ namespace vl::reflection::description
 #ifndef VCZH_DEBUG_NO_REFLECTION
 
 	BEGIN_CLASS_MEMBER(::gacui_unittest_template::BindableItem)
-		CLASS_MEMBER_BASE(::vl::reflection::DescriptableObject)
 		CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::gacui_unittest_template::BindableItem>(), NO_PARAMETER)
+		CLASS_MEMBER_FIELD(name)
+		CLASS_MEMBER_FIELD(title)
+		CLASS_MEMBER_FIELD(desc)
+		CLASS_MEMBER_FIELD(checked)
+		CLASS_MEMBER_FIELD(children)
 	END_CLASS_MEMBER(::gacui_unittest_template::BindableItem)
 
 #endif

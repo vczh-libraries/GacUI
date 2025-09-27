@@ -15,7 +15,7 @@ using ItemProperty = vl::presentation::ItemProperty<T>;
 namespace gacui_unittest_template
 {
 	template<vint Count>
-	static void PrintCallbacks(List<WString>& expecteds, const wchar_t* (&actuals)[Count])
+	void PrintCallbacks(List<WString>& expecteds, const wchar_t* (&actuals)[Count])
 	{
 		TEST_PRINT(L"Expected: (" + itow(expecteds.Count()) + L")");
 		for (vint i = 0; i < expecteds.Count(); i++)
@@ -31,7 +31,7 @@ namespace gacui_unittest_template
 	}
 
 	template<vint Count>
-	static void AssertCallbacks(List<WString>& callbackLog, const wchar_t* (&expected)[Count])
+	void AssertCallbacks(List<WString>& callbackLog, const wchar_t* (&expected)[Count])
 	{
 		bool matches = (callbackLog.Count() == Count);
 		if (matches)
@@ -104,50 +104,11 @@ namespace gacui_unittest_template
 		bool											checked = false;
 		ObservableList<Ptr<BindableItem>>				children;
 
-		static ItemProperty<WString> Prop_name()
-		{
-			return [](const reflection::description::Value& value) -> WString
-			{
-				auto item = UnboxValue<Ptr<BindableItem>>(value);
-				return item->name;
-			};
-		}
-
-		static ItemProperty<WString> Prop_title()
-		{
-			return [](const reflection::description::Value& value) -> WString
-			{
-				auto item = UnboxValue<Ptr<BindableItem>>(value);
-				return item->title;
-			};
-		}
-
-		static ItemProperty<WString> Prop_desc()
-		{
-			return [](const reflection::description::Value& value) -> WString
-			{
-				auto item = UnboxValue<Ptr<BindableItem>>(value);
-				return item->desc;
-			};
-		}
-
-		static ItemProperty<bool> Prop_checked()
-		{
-			return [](const reflection::description::Value& value) -> bool
-			{
-				auto item = UnboxValue<Ptr<BindableItem>>(value);
-				return item->checked;
-			};
-		}
-
-		static ItemProperty<Ptr<reflection::description::IValueEnumerable>> Prop_children()
-		{
-			return [](const reflection::description::Value& value) -> Ptr<reflection::description::IValueEnumerable>
-			{
-				auto item = UnboxValue<Ptr<BindableItem>>(value);
-				return UnboxValue<Ptr<IValueObservableList>>(BoxParameter(item->children));
-			};
-		}
+		static ItemProperty<WString> Prop_name();
+		static ItemProperty<WString> Prop_title();
+		static ItemProperty<WString> Prop_desc();
+		static ItemProperty<bool> Prop_checked();
+		static ItemProperty<Ptr<reflection::description::IValueEnumerable>> Prop_children();
 	};
 }
 
