@@ -13,7 +13,7 @@ TEST_FILE
 		
 		// Create ListViewItemBindableProvider and attach callbacks
 		auto provider = Ptr(new ListViewItemBindableProvider());
-		provider->AttachCallback(&itemCallback);
+		static_cast<IItemProvider*>(provider.Obj())->AttachCallback(&itemCallback);
 		provider->AttachCallback(&columnCallback);
 		
 		// Create 3 columns for 3 WString members
@@ -34,7 +34,7 @@ TEST_FILE
 		
 		// Create ObservableList<Ptr<BindableItem>> and set as item source
 		auto items = Ptr(new ObservableList<Ptr<BindableItem>>());
-		provider->SetItemSource(BoxParameter(items));
+		provider->SetItemSource(UnboxValue<Ptr<IValueEnumerable>>(BoxParameter(items)));
 		
 		// Action: Add one BindableItem to the list
 		auto item = Ptr(new BindableItem());

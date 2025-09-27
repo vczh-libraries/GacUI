@@ -19,7 +19,7 @@ TEST_FILE
 		
 		// Create ObservableList<Ptr<BindableItem>> and set as item source
 		auto items = Ptr(new ObservableList<Ptr<BindableItem>>());
-		provider->SetItemSource(BoxParameter(items));
+		provider->SetItemSource(UnboxValue<Ptr<IValueEnumerable>>(BoxParameter(items)));
 		
 		// Action: Add one BindableItem to the list
 		auto item = Ptr(new BindableItem());

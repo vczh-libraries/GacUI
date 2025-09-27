@@ -17,7 +17,7 @@ TEST_FILE
 		// Action: Create MemoryNodeProvider with TreeViewItem data and add it to root provider
 		auto item = Ptr(new TreeViewItem(nullptr, L"Test Item"));
 		auto node = Ptr(new MemoryNodeProvider(item));
-		provider->GetRootNode().Cast<MemoryNodeProvider>()->Children().Add(node);
+		provider->GetMemoryNode(provider->GetRootNode().Obj())->Children().Add(node);
 		
 		// Verification: Use helper function for better diagnostics
 		const wchar_t* expected[] = {
