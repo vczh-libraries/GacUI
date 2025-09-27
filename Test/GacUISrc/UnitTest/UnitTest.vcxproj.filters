@@ -306,6 +306,9 @@
     <ClCompile Include="TestApplication_Dialog_Message.cpp">
       <Filter>Source Files\Controls\Application</Filter>
     </ClCompile>
+    <ClCompile Include="TestItemProviders_TextItemProvider.cpp">
+      <Filter>Source Files\ItemProviders</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="TestCompositions.h">

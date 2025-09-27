@@ -260,6 +260,7 @@
     <ClCompile Include="TestRemote_UnitTestFramework.cpp" />
     <ClCompile Include="TestRemote_UnitTestFramework_Async.cpp" />
     <ClCompile Include="TestResource.cpp" />
+    <ClCompile Include="TestItemProviders_TextItemProvider.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Lib_GacUI_App_Reflection\Lib_GacUI_App_Reflection.vcxproj">
