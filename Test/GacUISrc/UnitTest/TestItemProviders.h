@@ -7,6 +7,10 @@ using namespace vl::unittest;
 using namespace vl::collections;
 using namespace vl::presentation::controls::list;
 using namespace vl::presentation::controls::tree;
+using namespace vl::reflection::description;
+
+template<typename T>
+using ItemProperty = vl::presentation::ItemProperty<T>;
 
 namespace gacui_unittest_template
 {
@@ -130,6 +134,61 @@ namespace gacui_unittest_template
 		void OnItemCollapsed(INodeProvider* node) override
 		{
 			callbackLog.Add(L"OnItemCollapsed()");
+		}
+	};
+
+	class BindableItem : public Object
+	{
+	public:
+		WString											name;
+		WString											title;
+		WString											desc;
+		bool											checked = false;
+		ObservableList<Ptr<BindableItem>>				children;
+
+		static ItemProperty<WString> Prop_name()
+		{
+			return [](const reflection::description::Value& value) -> WString
+			{
+				auto item = UnboxValue<Ptr<BindableItem>>(value);
+				return item->name;
+			};
+		}
+
+		static ItemProperty<WString> Prop_title()
+		{
+			return [](const reflection::description::Value& value) -> WString
+			{
+				auto item = UnboxValue<Ptr<BindableItem>>(value);
+				return item->title;
+			};
+		}
+
+		static ItemProperty<WString> Prop_desc()
+		{
+			return [](const reflection::description::Value& value) -> WString
+			{
+				auto item = UnboxValue<Ptr<BindableItem>>(value);
+				return item->desc;
+			};
+		}
+
+		static ItemProperty<bool> Prop_checked()
+		{
+			return [](const reflection::description::Value& value) -> bool
+			{
+				auto item = UnboxValue<Ptr<BindableItem>>(value);
+				return item->checked;
+			};
+		}
+
+		static ItemProperty<Ptr<reflection::description::IValueEnumerable>> Prop_children()
+		{
+			return [](const reflection::description::Value& value) -> Ptr<reflection::description::IValueEnumerable>
+			{
+				auto item = UnboxValue<Ptr<BindableItem>>(value);
+				return UnboxValue<Ptr<IValueObservableList>>(BoxParameter(item->children));
+			};
 		}
 	};
 }
