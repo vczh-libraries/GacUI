@@ -88,7 +88,7 @@ TextItemBindableProvider
 
 			class TextItemBindableProvider
 				: public list::ItemProviderBase
-				, protected list::ITextItemView
+				, public virtual list::ITextItemView
 				, public Description<TextItemBindableProvider>
 			{
 			protected:

@@ -90,7 +90,7 @@ TextItemProvider
 	/// <summary>Item provider for <see cref="GuiVirtualTextList"/> or <see cref="GuiSelectableListControl"/>.</summary>
 	class TextItemProvider
 		: public ListProvider<Ptr<TextItem>>
-		, public ITextItemView
+		, public virtual ITextItemView
 		, public Description<TextItemProvider>
 	{
 		friend class TextItem;
@@ -101,10 +101,14 @@ TextItemProvider
 		void										AfterInsert(vint item, const Ptr<TextItem>& value)override;
 		void										BeforeRemove(vint item, const Ptr<TextItem>& value)override;
 
+	public:
+		// ===================== list::ITextItemView =====================
+
 		WString										GetTextValue(vint itemIndex)override;
 		description::Value							GetBindingValue(vint itemIndex)override;
 		bool										GetChecked(vint itemIndex)override;
 		void										SetChecked(vint itemIndex, bool value)override;
+
 	public:
 		TextItemProvider(ITextItemProviderCallback* _itemProviderCallback);
 		~TextItemProvider();
