@@ -74,6 +74,15 @@ TextItem
 TextItemProvider
 ***********************************************************************/
 
+	void TextItemProvider::BeforeInsert(vint item, const Ptr<TextItem>& value)
+	{
+		// Check if this item is already in the provider
+		if (value->owner)
+		{
+			throw ArgumentException(L"The TextItem is already belog to a TextItemProvider.", L"vl::presentation::controls::list::TextItemProvider::BeforeInsert", L"value");
+		}
+	}
+
 	void TextItemProvider::AfterInsert(vint item, const Ptr<TextItem>& value)
 	{
 		ListProvider<Ptr<TextItem>>::AfterInsert(item, value);
@@ -98,11 +107,19 @@ TextItemProvider
 
 	bool TextItemProvider::GetChecked(vint itemIndex)
 	{
+		if (itemIndex < 0 || itemIndex >= Count())
+		{
+			throw ArgumentException(L"Index out of range.", L"vl::presentation::controls::list::TextItemProvider::GetChecked", L"itemIndex");
+		}
 		return Get(itemIndex)->GetChecked();
 	}
 
 	void TextItemProvider::SetChecked(vint itemIndex, bool value)
 	{
+		if (itemIndex < 0 || itemIndex >= Count())
+		{
+			throw ArgumentException(L"Index out of range.", L"vl::presentation::controls::list::TextItemProvider::SetChecked", L"itemIndex");
+		}
 		return Get(itemIndex)->SetChecked(value);
 	}
 

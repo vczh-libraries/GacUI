@@ -112,6 +112,12 @@ namespace gacui_unittest_template
 		static ItemProperty<bool> Prop_checked();
 		static ItemProperty<Ptr<reflection::description::IValueEnumerable>> Prop_children();
 	};
+
+/***********************************************************************
+Helper Functions
+***********************************************************************/
+
+	Ptr<TextItem> CreateTextItem(const WString& text, bool checked = false);
 }
 
 namespace vl::reflection::description

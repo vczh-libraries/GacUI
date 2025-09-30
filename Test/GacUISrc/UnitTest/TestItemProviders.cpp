@@ -139,6 +139,15 @@ BindableItem
 		};
 	}
 
+/***********************************************************************
+Helper Functions
+***********************************************************************/
+
+	Ptr<TextItem> CreateTextItem(const WString& text, bool checked)
+	{
+		return Ptr(new TextItem(text, checked));
+	}
+
 }
 
 namespace vl::reflection::description

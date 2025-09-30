@@ -30,7 +30,7 @@ It is good that you already figured out what to test, but I want you to add the 
 
 # TASKS
 
-- [ ] TASK No.1: Create comprehensive unit test plan for TextItemProvider
+- [x] TASK No.1: Create comprehensive unit test plan for TextItemProvider
 - [ ] TASK No.2: Create comprehensive unit test plan for TextItemBindableProvider  
 - [ ] TASK No.3: Create comprehensive unit test plan for ListViewItemProvider
 - [ ] TASK No.4: Create comprehensive unit test plan for ListViewItemBindableProvider
