@@ -62,32 +62,20 @@
 
 ## Step 5. Make Sure the Code Compiles
 
-- Check out `TOOLING/COMPILE` in `Copilot_Execution.md` and run the commands, it should compile the solution.
-  - If you find any path in the commands is not correct:
-    - Check out `Unit Test Projects to Work with`
-    - Fix those paths, they must be absolute paths, update `Copilot_Execution.md` accordingly.
-    - Execute the commands in what you just updated.
-  - If there is any compilation error, address all of them.
-    - For every attempt of fixing the source code:
-      - Explain why the original change did not work.
-      - Explain what you need to do.
-      - Explain why you think it would solve the build break or test break.
-      - Log these in `Copilot_Execution.md`, with section `## Fixing attempt No.<attempt_number>` in `# FIXING ATTEMPTS`.
-    - Go back to `Step 5. Make Sure the Code Compiles`
+- Check out `TOOLING/COMPILE` in `Copilot_Execution.md` and run the commands, it should compile the solution. If there is any compilation error, address all of them:
+  - If there is any compile warning, only fix warnings that caused by your code change. Do no fix any other warnings.
+  - If there is any compile error, you need to carefully identify, is the issue in the callee side or the caller side. Check out similar code before making a decision.
+  - For every attempt of fixing the source code:
+    - Explain why the original change did not work.
+    - Explain what you need to do.
+    - Explain why you think it would solve the build break or test break.
+    - Log these in `Copilot_Execution.md`, with section `## Fixing attempt No.<attempt_number>` in `# FIXING ATTEMPTS`.
+  - Go back to `Step 5. Make Sure the Code Compiles`
     
-## Step 6. Execute the Unit Test, Report, Ignore Test Failures
+## Step 6. Finishing after Code Compiles
 
-- Check out `TOOLING/TEST` in `Copilot_Execution.md` and run the commands, it should run the unit tests.
-  - If you find any path in the commands is not correct:
-    - Check out `Unit Test Projects to Work with`
-    - Fix those paths, they must be absolute paths, update `Copilot_Execution.md` accordingly.
-    - Execute the commands in what you just updated.
-  - If there is no test failure:
-    - Add `# !!!VERIFIED!!!` at the end of `Copilot_Execution.md`.
-  - If there is any test failure:
-    - Say big bold "TEST FAILURE FOUND" to me in chat, and stop, I will handle it later myself.
-    - DO NOT fix any test failure.
-  
+- DO NOT run any test yet, it will be finished in future tasks.
+
 # General Instruction
 
 - You are on Windows running in Visual Studio.
