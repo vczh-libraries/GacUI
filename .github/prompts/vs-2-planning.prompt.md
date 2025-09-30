@@ -1,5 +1,8 @@
 # Planning
 
+- Checkout `Accessing Log Files and PowerShell Scripts` for context about mentioned `*.md` and `*.ps1` files.
+  - All `*.md` and `*.ps1` files should already be existing, you should not create any new files.
+
 ## Goal and Constraints
 
 - Your goal is to finish a planning document in `Copilot_Planning.md` to address a problem from `Copilot_Task.md`.

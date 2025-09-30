@@ -1,5 +1,8 @@
 # Verifying
 
+- Checkout `Accessing Log Files and PowerShell Scripts` for context about mentioned `*.md` and `*.ps1` files.
+  - All `*.md` and `*.ps1` files should already be existing, you should not create any new files.
+
 ## Goal and Constraints
 
 - All instructions in `Copilot_Execution.md` should have been applied to the source code, your goal is to test it.

@@ -1,5 +1,8 @@
 # Scrum
 
+- Checkout `Accessing Log Files and PowerShell Scripts` for context about mentioned `*.md` and `*.ps1` files.
+  - All `*.md` and `*.ps1` files should already be existing, you should not create any new files.
+
 ## Goal and Constraints
 
 - Your goal is to finish a design document in `Copilot_Scrum.md` to address a problem.
