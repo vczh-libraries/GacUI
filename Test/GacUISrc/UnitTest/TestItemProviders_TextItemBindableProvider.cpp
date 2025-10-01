@@ -216,6 +216,35 @@ TEST_FILE
 			};
 			AssertCallbacks(callbackLog, expected);
 		});
+
+		TEST_CASE(L"ObservableListRemoveRange")
+		{
+			List<WString> callbackLog;
+			MockItemProviderCallback itemCallback(callbackLog);
+			
+			auto provider = Ptr(new TextItemBindableProvider());
+			ObservableList<Ptr<BindableItem>> items;
+			InitProvider(provider, items);
+			provider->AttachCallback(&itemCallback);
+			
+			// Add 5 items
+			for (vint i = 0; i < 5; i++)
+			{
+				auto item = Ptr(new BindableItem());
+				item->name = L"Item " + itow(i);
+				items.Add(item);
+			}
+			
+			callbackLog.Clear();
+			
+			// Test RemoveRange - remove 3 items starting from index 1
+			items.RemoveRange(1, 3);
+			
+			const wchar_t* expected[] = {
+				L"OnItemModified(start=1, count=3, newCount=0, itemReferenceUpdated=true)"
+			};
+			AssertCallbacks(callbackLog, expected);
+		});
 	});
 
 	TEST_CATEGORY(L"InterfaceMethodValidation")
@@ -226,11 +255,8 @@ TEST_FILE
 			ObservableList<Ptr<BindableItem>> items;
 			InitProvider(provider, items);
 			
-			// Test RequestView functionality
-			auto textView = provider->RequestView(ITextItemView::Identifier);
-			TEST_ASSERT(textView);
-			
-			auto textItemView = dynamic_cast<ITextItemView*>(textView);
+			// Test RequestView functionality - merge RequestView and dynamic_cast in one line
+			auto textItemView = dynamic_cast<ITextItemView*>(provider->RequestView(ITextItemView::Identifier));
 			TEST_ASSERT(textItemView);
 			
 			// Verify it's the same object
@@ -247,8 +273,7 @@ TEST_FILE
 			InitProvider(provider, items);
 			provider->AttachCallback(&itemCallback);
 			
-			auto textView = provider->RequestView(ITextItemView::Identifier);
-			auto textItemView = dynamic_cast<ITextItemView*>(textView);
+			auto textItemView = dynamic_cast<ITextItemView*>(provider->RequestView(ITextItemView::Identifier));
 			
 			auto item = Ptr(new BindableItem());
 			item->name = L"TestItem";
@@ -276,8 +301,7 @@ TEST_FILE
 			ObservableList<Ptr<BindableItem>> items;
 			InitProvider(provider, items);
 			
-			auto textView = provider->RequestView(ITextItemView::Identifier);
-			auto textItemView = dynamic_cast<ITextItemView*>(textView);
+			auto textItemView = dynamic_cast<ITextItemView*>(provider->RequestView(ITextItemView::Identifier));
 			
 			auto item = Ptr(new BindableItem());
 			item->name = L"TestItem";
@@ -356,8 +380,7 @@ TEST_FILE
 			TEST_EXCEPTION(provider->GetChecked(1), ArgumentException, [](const ArgumentException&) {});
 			
 			// Test interface methods with invalid indices
-			auto textView = provider->RequestView(ITextItemView::Identifier);
-			auto textItemView = dynamic_cast<ITextItemView*>(textView);
+			auto textItemView = dynamic_cast<ITextItemView*>(provider->RequestView(ITextItemView::Identifier));
 			TEST_EXCEPTION(textItemView->GetChecked(-1), ArgumentException, [](const ArgumentException&) {});
 			TEST_EXCEPTION(textItemView->GetChecked(1), ArgumentException, [](const ArgumentException&) {});
 			TEST_EXCEPTION(textItemView->SetChecked(-1, true), ArgumentException, [](const ArgumentException&) {});

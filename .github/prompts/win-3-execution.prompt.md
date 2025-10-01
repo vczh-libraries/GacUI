@@ -60,7 +60,7 @@
 
 - Apply all instructions in `Copilot_Execution.md` to the source code.
 
-## Step 5. Make Sure the Code Compiles
+## Step 5. Make Sure the Code Compiles but DO NOT Run Unit Test
 
 - Check out `TOOLING/COMPILE` in `Copilot_Execution.md` and run the commands, it should compile the solution. If there is any compilation error, address all of them:
   - If there is any compile warning, only fix warnings that caused by your code change. Do no fix any other warnings.
