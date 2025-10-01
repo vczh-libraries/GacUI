@@ -32,25 +32,24 @@
 
 # Unit Test Projects to Work with
 
-- `UnitTest`
-
-## Calling copilotBuild.ps1 and copilotExecute.ps1
-
-This solution is in `Test\GacUISrc`, after `ls` to this folder, scripts will be accessible with:
-- `& ..\..\.github\TaskLogs\copilotBuild.ps1`
-  - Check out `Compile the Solution` for usage of this script.
-- `& ..\..\.github\TaskLogs\copilotExecute.ps1 -Executable <The-Test-Project-Name>`. 
-  - Check out `Executing Unit Test` for usage of this script.
-
 ## Compile the Solution
 
-- Just let Visual Studio Code to compile the solution.
+- Just let Visual Studio Code to compile the solution, the `Build Unit Tests` should have been configured in `tasks.json`.
+  - This task only copmile without running.
+  - Run the task and wait for the task to finish, and check:
+    - If you can't find the terminal for this task, it means there is no error.
 - If Visual Studio Code is not well configured, you must warn me in chat with BIG BOLD TEXT and stop immediately.
 - DO NOT use msbuild by yourself.
 
 ## Executing Unit Test
 
-- Just let Visual Studio Code to run the unit test.
+- Just let Visual Studio Code to run the unit test, the `Run Unit Tests` should have been configured in `tasks.json`.
+  - This task run the unit test without compiling. You are fine if you already compile the unit test.
+  - Run the task and wait for the task to finish, and check:
+    - If you can't find the terminal for this task, it means there is no error.
+    - If the task finishes but leaving a terminal:
+      - When any test fails, you should be indicated as the return value for the process will be non-zero.
+      - When all test cases pass, there will be a summarizing about how many test cases are executed. Otherwise it crashed.
 - If Visual Studio Code is not well configured, you must warn me in chat with BIG BOLD TEXT and stop immediately.
 - DO NOT call executables or scripts yourself.
 

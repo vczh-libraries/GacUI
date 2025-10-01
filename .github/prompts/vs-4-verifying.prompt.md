@@ -32,7 +32,6 @@
 - Check out `Executing Unit Test` for details about compiling the solution but DO NOT run unit test. If there is any compilation error, address all of them:
 - Run the unit test and see if they passed. If anything is good, you will only see test files and test cases that are executed.
   - Make sure added test cases are actually executed.
-  - When all test cases pass, there will be a summarizing about how many test cases are executed. Otherwise it crashed.
   - If any test case fails on a test assertion, the content of `TEST_ASSERT` or other macros will be printed to the output.
   - If any test case crashes, the failed test case will be the last one printed. In this case, you might need to add logging to the code.
     - In any test case, `TEST_PRINT` would help.
@@ -128,5 +127,6 @@ This solution is in `Test\GacUISrc`, after `ls` to this folder, scripts will be 
 - You must verify your code by executing each project in order. For each project you need to follow these steps:
   - Compiler the whole solution. Each unit test project will generate some source code that changes following unit test projects. That's why you need to compile before each execution.
   - Execute `copilotExecute.ps1 -Executable <PROJECT-NAME>`. `<PROJECT-NAME>` is the project name in the list.
+    - When all test cases pass, there will be a summarizing about how many test cases are executed. Otherwise it crashed.
 - You must keep fixing the code until all errors are eliminated.
 

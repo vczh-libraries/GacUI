@@ -32,7 +32,6 @@
 - Check out `Executing Unit Test` for details about compiling the solution but DO NOT run unit test. If there is any compilation error, address all of them:
 - Run the unit test and see if they passed. If anything is good, you will only see test files and test cases that are executed.
   - Make sure added test cases are actually executed.
-  - When all test cases pass, there will be a summarizing about how many test cases are executed. Otherwise it crashed.
   - If any test case fails on a test assertion, the content of `TEST_ASSERT` or other macros will be printed to the output.
   - If any test case crashes, the failed test case will be the last one printed. In this case, you might need to add logging to the code.
     - In any test case, `TEST_PRINT` would help.
@@ -108,25 +107,24 @@ You need to locate listed files in `TaskLogs.vcxitems`.
 
 # Unit Test Projects to Work with
 
-- `UnitTest`
-
-## Calling copilotBuild.ps1 and copilotExecute.ps1
-
-This solution is in `Test\GacUISrc`, after `ls` to this folder, scripts will be accessible with:
-- `& ..\..\.github\TaskLogs\copilotBuild.ps1`
-  - Check out `Compile the Solution` for usage of this script.
-- `& ..\..\.github\TaskLogs\copilotExecute.ps1 -Executable <The-Test-Project-Name>`. 
-  - Check out `Executing Unit Test` for usage of this script.
-
 ## Compile the Solution
 
-- Just let Visual Studio Code to compile the solution.
+- Just let Visual Studio Code to compile the solution, the `Build Unit Tests` should have been configured in `tasks.json`.
+  - This task only copmile without running.
+  - Run the task and wait for the task to finish, and check:
+    - If you can't find the terminal for this task, it means there is no error.
 - If Visual Studio Code is not well configured, you must warn me in chat with BIG BOLD TEXT and stop immediately.
 - DO NOT use msbuild by yourself.
 
 ## Executing Unit Test
 
-- Just let Visual Studio Code to run the unit test.
+- Just let Visual Studio Code to run the unit test, the `Run Unit Tests` should have been configured in `tasks.json`.
+  - This task run the unit test without compiling. You are fine if you already compile the unit test.
+  - Run the task and wait for the task to finish, and check:
+    - If you can't find the terminal for this task, it means there is no error.
+    - If the task finishes but leaving a terminal:
+      - When any test fails, you should be indicated as the return value for the process will be non-zero.
+      - When all test cases pass, there will be a summarizing about how many test cases are executed. Otherwise it crashed.
 - If Visual Studio Code is not well configured, you must warn me in chat with BIG BOLD TEXT and stop immediately.
 - DO NOT call executables or scripts yourself.
 
