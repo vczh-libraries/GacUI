@@ -3,7 +3,7 @@
 - Find out the `Accessing Knowledge Base` section. Understand the organization of the knowledge base.
 - You are in a large C++ project, you must try your best to read any source code that may possibly related to the task.
 - Follow the chat message to implement the task.
-- After any code change, find the `Verifying your code edit` section, it has everything you need to know about how to verify your code edit.
+- After any code change, find the `Executing Unit Test` section, it has everything you need to know about how to verify your code edit.
 
 # General Instruction
 
@@ -25,25 +25,25 @@
   - In side the `Filter` tag there is the solution explorer folder.
   - Edit that `*.filters` file to include the source file.
 
-## Unit Test Projects to Work with
+# Unit Test Projects to Work with
 
 - `UnitTest`
 
-### Calling copilotBuild.ps1 and copilotExecute.ps1
+## Calling copilotBuild.ps1 and copilotExecute.ps1
 
 This solution is in `Test\GacUISrc`, after `ls` to this folder, scripts will be accessible with:
 - `& ..\..\.github\TaskLogs\copilotBuild.ps1`
   - Check out `Compile the Solution` for usage of this script.
 - `& ..\..\.github\TaskLogs\copilotExecute.ps1 -Executable <The-Test-Project-Name>`. 
-  - Check out `Verifying your code edit` for usage of this script.
+  - Check out `Executing Unit Test` for usage of this script.
 
-# Compile the Solution
+## Compile the Solution
 
 - Just let Visual Studio to compile the solution.
 - DO NOT use msbuild by yourself.
 - You must keep fixing the code until all errors are eliminated.
 
-# Verifying your code edit
+## Executing Unit Test
 
 - In `Unit Test Projects to Work with` section there are multiple project names.
 - These projects are all `*.vcxproj` files. Locate them. In the parent folder there must be a `*.sln` file. That is the solution the compile.

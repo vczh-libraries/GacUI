@@ -68,13 +68,11 @@
   - For every attempt of fixing the source code:
     - Explain why the original change did not work.
     - Explain what you need to do.
-    - Explain why you think it would solve the build break or test break.
+    - Explain why you think it would solve the build break.
     - Log these in `Copilot_Execution.md`, with section `## Fixing attempt No.<attempt_number>` in `# FIXING ATTEMPTS`.
   - Go back to `Step 5. Make Sure the Code Compiles`
-    
-## Step 6. Finishing after Code Compiles
-
-- DO NOT run any test yet, it will be finished in future tasks.
+- When the code compiles:
+  - DO NOT run any tests, the code will be verified in future tasks.
 
 # General Instruction
 
@@ -122,25 +120,25 @@ You need to locate listed files in `TaskLogs.vcxitems`.
   - If it is defined in the standard C++ library or third-party library, use the full name.
   - If it is defined in the source code, use the full name if there is ambiguity, and then mention the file containing its definition.
 
-## Unit Test Projects to Work with
+# Unit Test Projects to Work with
 
 - `UnitTest`
 
-### Calling copilotBuild.ps1 and copilotExecute.ps1
+## Calling copilotBuild.ps1 and copilotExecute.ps1
 
 This solution is in `Test\GacUISrc`, after `ls` to this folder, scripts will be accessible with:
 - `& ..\..\.github\TaskLogs\copilotBuild.ps1`
   - Check out `Compile the Solution` for usage of this script.
 - `& ..\..\.github\TaskLogs\copilotExecute.ps1 -Executable <The-Test-Project-Name>`. 
-  - Check out `Verifying your code edit` for usage of this script.
+  - Check out `Executing Unit Test` for usage of this script.
 
-# Compile the Solution
+## Compile the Solution
 
 - Just let Visual Studio to compile the solution.
 - DO NOT use msbuild by yourself.
 - You must keep fixing the code until all errors are eliminated.
 
-# Verifying your code edit
+## Executing Unit Test
 
 - In `Unit Test Projects to Work with` section there are multiple project names.
 - These projects are all `*.vcxproj` files. Locate them. In the parent folder there must be a `*.sln` file. That is the solution the compile.

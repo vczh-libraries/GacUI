@@ -38,7 +38,7 @@ Summarize the findings about my philosophy in making test cases for TextItemProv
 # TASKS
 
 - [x] TASK No.1: Create comprehensive unit test plan for TextItemProvider
-- [ ] TASK No.2: Create comprehensive unit test plan for TextItemBindableProvider  
+- [x] TASK No.2: Create comprehensive unit test plan for TextItemBindableProvider  
 - [ ] TASK No.3: Create comprehensive unit test plan for ListViewItemProvider
 - [ ] TASK No.4: Create comprehensive unit test plan for ListViewItemBindableProvider
 - [ ] TASK No.5: Create comprehensive unit test plan for TreeViewItemRootProvider
