@@ -1,10 +1,23 @@
 {
     "version": "2.0.0",
+    "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared",
+        "clear": true,
+        "close": false,
+        "showReuseMessage": false
+    },
+    "runOptions": {
+        "runOn": "default"
+    },
     "tasks": [
         {
             "label": "Build Unit Tests",
             "type": "shell",
             "windows": {
+                "problemMatcher": "$msCompile",
                 "command": "powershell.exe",
                 "args": [
                     "-ExecutionPolicy", "Bypass",
@@ -17,20 +30,7 @@
             "options": {
                 "cwd": "${workspaceFolder}/Test/GacUISrc"
             },
-            "group": "build",
-            "presentation": {
-                "echo": true,
-                "reveal": "always",
-                "focus": false,
-                "panel": "shared",
-                "clear": true,
-                "close": false,
-                "showReuseMessage": false
-            },
-            "problemMatcher": "$msCompile",
-            "runOptions": {
-                "runOn": "default"
-            }
+            "group": "build"
         },
         {
             "label": "Run Unit Tests",
@@ -52,18 +52,6 @@
             "group": {
                 "kind": "test",
                 "isDefault": true
-            },
-            "presentation": {
-                "echo": true,
-                "reveal": "always",
-                "focus": false,
-                "panel": "shared",
-                "clear": true,
-                "close": false,
-                "showReuseMessage": false
-            },
-            "runOptions": {
-                "runOn": "default"
             }
         },
         {
