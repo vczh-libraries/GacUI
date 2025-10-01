@@ -1,0 +1,79 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build Unit Tests",
+            "type": "shell",
+            "windows": {
+                "command": "powershell.exe",
+                "args": [
+                    "-ExecutionPolicy", "Bypass",
+                    "-File", "${workspaceFolder}/.github/TaskLogs/copilotBuild.ps1"
+                ]
+            },
+            "linux": {
+                "command": "false"
+            },
+            "options": {
+                "cwd": "${workspaceFolder}/Test/GacUISrc"
+            },
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared",
+                "close": true
+            },
+            "problemMatcher": "$msCompile",
+            "runOptions": {
+                "runOn": "default"
+            }
+        },
+        {
+            "label": "Run Unit Tests",
+            "type": "shell",
+            "windows": {
+                "command": "powershell.exe",
+                "args": [
+                    "-ExecutionPolicy", "Bypass",
+                    "-File", "${workspaceFolder}/.github/TaskLogs/copilotExecute.ps1",
+                    "-Executable", "UnitTest"
+                ]
+            },
+            "linux": {
+                "command": "false"
+            },
+            "options": {
+                "cwd": "${workspaceFolder}/Test/GacUISrc"
+            },
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            },
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": true,
+                "panel": "shared",
+                "close": true
+            },
+            "dependsOn": "Build Unit Tests",
+            "runOptions": {
+                "runOn": "default"
+            }
+        },
+        {
+            "label": "Build and Run Unit Tests",
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "Build Unit Tests",
+                "Run Unit Tests"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        }
+    ]
+}
