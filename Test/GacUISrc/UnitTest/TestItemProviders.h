@@ -14,6 +14,9 @@ using namespace vl::reflection::description;
 template<typename T>
 using ItemProperty = vl::presentation::ItemProperty<T>;
 
+template<typename T>
+using WritableItemProperty = vl::presentation::WritableItemProperty<T>;
+
 namespace gacui_unittest_template
 {
 	template<vint Count>
@@ -109,7 +112,7 @@ namespace gacui_unittest_template
 		static ItemProperty<WString> Prop_name();
 		static ItemProperty<WString> Prop_title();
 		static ItemProperty<WString> Prop_desc();
-		static ItemProperty<bool> Prop_checked();
+		static WritableItemProperty<bool> Prop_checked();
 		static ItemProperty<Ptr<reflection::description::IValueEnumerable>> Prop_children();
 	};
 

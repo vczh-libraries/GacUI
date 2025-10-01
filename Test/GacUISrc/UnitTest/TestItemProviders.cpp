@@ -121,12 +121,20 @@ BindableItem
 		};
 	}
 
-	ItemProperty<bool> BindableItem::Prop_checked()
+	WritableItemProperty<bool> BindableItem::Prop_checked()
 	{
-		return [](const reflection::description::Value& value) -> bool
+		return [](const reflection::description::Value& value, bool newValue, bool isWrite) -> bool
 		{
 			auto item = UnboxValue<Ptr<BindableItem>>(value);
-			return item->checked;
+			if (isWrite)
+			{
+				item->checked = newValue;
+				return newValue;
+			}
+			else
+			{
+				return item->checked;
+			}
 		};
 	}
 
