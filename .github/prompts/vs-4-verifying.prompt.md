@@ -127,6 +127,6 @@ This solution is in `Test\GacUISrc`, after `ls` to this folder, scripts will be 
 - You must verify your code by executing each project in order. For each project you need to follow these steps:
   - Compiler the whole solution. Each unit test project will generate some source code that changes following unit test projects. That's why you need to compile before each execution.
   - Execute `copilotExecute.ps1 -Executable <PROJECT-NAME>`. `<PROJECT-NAME>` is the project name in the list.
-    - When all test cases pass, there will be a summarizing about how many test cases are executed. Otherwise it crashed.
+    - When all test cases pass, there will be a summarizing about how many test cases are executed. Otherwise it crashed at the last showing test case.
 - You must keep fixing the code until all errors are eliminated.
 

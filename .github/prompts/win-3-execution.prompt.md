@@ -119,20 +119,15 @@ You need to locate listed files in `TaskLogs.vcxitems`.
 
 - Just let Visual Studio Code to compile the solution, the `Build Unit Tests` should have been configured in `tasks.json`.
   - This task only copmile without running.
-  - Run the task and wait for the task to finish, and check:
-    - If you can't find the terminal for this task, it means there is no error.
 - If Visual Studio Code is not well configured, you must warn me in chat with BIG BOLD TEXT and stop immediately.
 - DO NOT use msbuild by yourself.
 
 ## Executing Unit Test
 
 - Just let Visual Studio Code to run the unit test, the `Run Unit Tests` should have been configured in `tasks.json`.
-  - This task run the unit test without compiling. You are fine if you already compile the unit test.
-  - Run the task and wait for the task to finish, and check:
-    - If you can't find the terminal for this task, it means there is no error.
-    - If the task finishes but leaving a terminal:
-      - When any test fails, you should be indicated as the return value for the process will be non-zero.
-      - When all test cases pass, there will be a summarizing about how many test cases are executed. Otherwise it crashed.
+  - If you updated any source files, you should build the unit test before running it, check out `Compile the Solution` for details.
+  - Run the `Run Unit Tests` task.
+  - When all test cases pass, there will be a summarizing about how many test cases are executed. Otherwise it crashed at the last showing test case.
 - If Visual Studio Code is not well configured, you must warn me in chat with BIG BOLD TEXT and stop immediately.
 - DO NOT call executables or scripts yourself.
 

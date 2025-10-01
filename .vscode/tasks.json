@@ -20,10 +20,12 @@
             "group": "build",
             "presentation": {
                 "echo": true,
-                "reveal": "silent",
+                "reveal": "always",
                 "focus": false,
                 "panel": "shared",
-                "close": true
+                "clear": true,
+                "close": false,
+                "showReuseMessage": false
             },
             "problemMatcher": "$msCompile",
             "runOptions": {
@@ -53,10 +55,12 @@
             },
             "presentation": {
                 "echo": true,
-                "reveal": "silent",
+                "reveal": "always",
                 "focus": false,
                 "panel": "shared",
-                "close": true
+                "clear": true,
+                "close": false,
+                "showReuseMessage": false
             },
             "runOptions": {
                 "runOn": "default"
