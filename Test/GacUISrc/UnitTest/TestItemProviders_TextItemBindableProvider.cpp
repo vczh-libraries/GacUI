@@ -102,18 +102,11 @@ TEST_FILE
 		{
 			List<WString> callbackLog;
 			MockItemProviderCallback itemCallback(callbackLog);
-			MockTextItemProviderCallback textCallback(callbackLog);
 			
 			auto provider = Ptr(new TextItemBindableProvider());
 			ObservableList<Ptr<BindableItem>> items;
 			InitProvider(provider, items, true);
 			provider->AttachCallback(&itemCallback);
-			
-			// Attach text callback for checked change notifications
-			auto textView = provider->RequestView(ITextItemView::Identifier);
-			auto textItemView = dynamic_cast<ITextItemView*>(textView);
-			TEST_ASSERT(textItemView);
-			textItemView->AttachCallback(&textCallback);
 			
 			auto item = Ptr(new BindableItem());
 			item->name = L"TestItem";
@@ -130,7 +123,7 @@ TEST_FILE
 			TEST_ASSERT(provider->GetChecked(0) == true);
 			
 			const wchar_t* expected[] = {
-				L"OnItemCheckedChanged(itemIndex=0)"
+				L"OnItemModified(start=0, count=1, newCount=1, itemReferenceUpdated=false)"
 			};
 			AssertCallbacks(callbackLog, expected);
 		});
@@ -248,7 +241,6 @@ TEST_FILE
 		{
 			List<WString> callbackLog;
 			MockItemProviderCallback itemCallback(callbackLog);
-			MockTextItemProviderCallback textCallback(callbackLog);
 			
 			auto provider = Ptr(new TextItemBindableProvider());
 			ObservableList<Ptr<BindableItem>> items;
@@ -257,7 +249,6 @@ TEST_FILE
 			
 			auto textView = provider->RequestView(ITextItemView::Identifier);
 			auto textItemView = dynamic_cast<ITextItemView*>(textView);
-			textItemView->AttachCallback(&textCallback);
 			
 			auto item = Ptr(new BindableItem());
 			item->name = L"TestItem";
@@ -274,7 +265,7 @@ TEST_FILE
 			TEST_ASSERT(item->checked == true);
 			
 			const wchar_t* expected[] = {
-				L"OnItemCheckedChanged(itemIndex=0)"
+				L"OnItemModified(start=0, count=1, newCount=1, itemReferenceUpdated=false)"
 			};
 			AssertCallbacks(callbackLog, expected);
 		});
@@ -310,18 +301,16 @@ TEST_FILE
 		{
 			List<WString> callbackLog;
 			MockItemProviderCallback itemCallback(callbackLog);
-			MockTextItemProviderCallback textCallback(callbackLog);
 			
 			auto provider = Ptr(new TextItemBindableProvider());
 			ObservableList<Ptr<BindableItem>> items;
 			InitProvider(provider, items);
 			
-			// Attach both callback types
+			// Attach callback
 			provider->AttachCallback(&itemCallback);
 			
 			auto textView = provider->RequestView(ITextItemView::Identifier);
 			auto textItemView = dynamic_cast<ITextItemView*>(textView);
-			textItemView->AttachCallback(&textCallback);
 			
 			auto item = Ptr(new BindableItem());
 			item->name = L"TestItem";
@@ -339,16 +328,11 @@ TEST_FILE
 		{
 			List<WString> callbackLog;
 			MockItemProviderCallback itemCallback(callbackLog);
-			MockTextItemProviderCallback textCallback(callbackLog);
 			
 			auto provider = Ptr(new TextItemBindableProvider());
 			ObservableList<Ptr<BindableItem>> items;
 			InitProvider(provider, items);
 			provider->AttachCallback(&itemCallback);
-			
-			auto textView = provider->RequestView(ITextItemView::Identifier);
-			auto textItemView = dynamic_cast<ITextItemView*>(textView);
-			textItemView->AttachCallback(&textCallback);
 			
 			auto item = Ptr(new BindableItem());
 			item->name = L"TestItem";
@@ -357,11 +341,11 @@ TEST_FILE
 			
 			callbackLog.Clear();
 			
-			// Change checked state - should trigger text callback but not item callback
+			// Change checked state - should trigger item callback
 			provider->SetChecked(0, true);
 			
 			const wchar_t* expected[] = {
-				L"OnItemCheckedChanged(itemIndex=0)"
+				L"OnItemModified(start=0, count=1, newCount=1, itemReferenceUpdated=false)"
 			};
 			AssertCallbacks(callbackLog, expected);
 		});
@@ -370,32 +354,26 @@ TEST_FILE
 		{
 			List<WString> callbackLog;
 			MockItemProviderCallback itemCallback(callbackLog);
-			MockTextItemProviderCallback textCallback(callbackLog);
 			
 			auto provider = Ptr(new TextItemBindableProvider());
 			ObservableList<Ptr<BindableItem>> items;
 			InitProvider(provider, items);
 			provider->AttachCallback(&itemCallback);
 			
-			auto textView = provider->RequestView(ITextItemView::Identifier);
-			auto textItemView = dynamic_cast<ITextItemView*>(textView);
-			textItemView->AttachCallback(&textCallback);
-			
 			auto item = Ptr(new BindableItem());
 			item->name = L"TestItem";
 			item->checked = false;
 			items.Add(item);
 			
-			// Detach text callback
-			textItemView->DetachCallback(&textCallback);
+			// Detach item callback
+			provider->DetachCallback(&itemCallback);
 			
 			callbackLog.Clear();
 			
-			// Change checked state - should not trigger text callback
+			// Change checked state - should not trigger item callback since it's detached
 			provider->SetChecked(0, true);
 			
-			// No callbacks should fire since text callback is detached
-			// For empty array, we skip the AssertCallbacks call to avoid zero-size array issue
+			// No callbacks should fire since item callback is detached
 			TEST_ASSERT(callbackLog.Count() == 0);
 		});
 	});
