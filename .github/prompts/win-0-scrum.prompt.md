@@ -36,7 +36,7 @@
   - Follow my update to change the design document.
 - If there is a `# Learn` section: it means I made important updates during the execution of the last task, you should apply them smart enough to future tasks:
   - Identify the last completed task.
-  - There will be multiple `# UPDATE` section in `Copilot_Task.md`, `Copilot_Planning.md` and `Copilot_Execution.md`.
+  - There will be multiple `# UPDATE` or `# FIXING ATTEMPTS` sections in `Copilot_Task.md`, `Copilot_Planning.md` and `Copilot_Execution.md`.
   - These 3 files recorded how you interpreted the last completed task, and how I wanted you to adjust your understanding.
   - Find out what you can learn from the updates, about my philosophy and preferences.
   - Check all future tasks, apply what you have learned, and adjust your approach accordingly.
