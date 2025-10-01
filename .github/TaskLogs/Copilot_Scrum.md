@@ -35,6 +35,11 @@ You have finished the first task, details is logged in #file:Copilot_Task.md  an
 
 Summarize the findings about my philosophy in making test cases for TextItemProvider from all the "UPDATE", and adjust unfinished tasks
 
+## UPDATE
+
+#file:win-0-scrum.prompt.md 
+Actually I want to use TEST_ERROR instead of TEST_EXCEPTION for all index out of bound testings. And the implementation should use CHECK_ERROR (or calls into any function that already use CHECK_ERROR, like `Get` for container types).
+
 # TASKS
 
 - [x] TASK No.1: Create comprehensive unit test plan for TextItemProvider
@@ -46,7 +51,7 @@ Summarize the findings about my philosophy in making test cases for TextItemProv
 
 ## Testing Philosophy Summary
 
-Based on the completed TextItemProvider task and your feedback updates, the testing philosophy emphasizes:
+Based on the completed TextItemProvider and TextItemBindableProvider tasks and your feedback updates, the testing philosophy emphasizes:
 
 **Focus on Behavioral Testing, Not Internal State:**
 - Avoid testing provider content directly (Count(), Get()) as these are ensured by other tests
@@ -56,8 +61,8 @@ Based on the completed TextItemProvider task and your feedback updates, the test
 **Minimal Test Infrastructure:**
 - Use existing mock callbacks without creating complex assertion frameworks
 - Avoid unnecessary helper classes like `AssertCallbackSequence` - test names provide sufficient context  
-- Simple helper functions (like `CreateTextItem`) are sufficient for reducing duplication
-- Callback verification through direct log comparison is adequate
+- Simple helper functions (like `CreateTextItem`, `InitProvider`) are sufficient for reducing duplication
+- Callback verification through direct log comparison using `AssertCallbacks` is adequate
 
 **Quality Through Practical Edge Cases:**
 - Test realistic scenarios like duplicate item handling with proper fixes to source code
@@ -65,17 +70,28 @@ Based on the completed TextItemProvider task and your feedback updates, the test
 - Avoid performance stress tests - focus on correctness testing
 - Remove unrealistic tests like provider destruction without actual verification
 - Test actual user operations like `RemoveRange` in bulk operations
+- Always merge RequestView and dynamic_cast in the same line for clarity
 
 **Callback-Centric Testing:**
 - Verify callback sequences and coordination between multiple callback interfaces
 - Test callback behavior before/after provider attachment
 - Ensure proper callback detachment behavior
 - Focus on callback parameter correctness and ordering
+- Use `TEST_ERROR` for out-of-bounds operations (implementations should use CHECK_ERROR or call functions like `Get` that use CHECK_ERROR)
 
 **Interface Validation:**
 - Test both direct method calls and interface method equivalence
 - Verify RequestView functionality and interface polymorphism
 - Test error handling through interface methods (invalid indices, etc.)
+
+**MockCallback Usage Guidelines:**
+- Only use MockTextItemProviderCallback when the provider actually supports ITextItemProviderCallback
+- TextItemBindableProvider only supports IItemProviderCallback - MockTextItemProviderCallback should not be used
+- SetChecked operations in bindable providers trigger OnItemModified, not text-specific callbacks
+
+**Empty ItemSource Handling:**
+- EmptyItemSourceScenarios should expect only OnAttached callback, not OnItemModified
+- Setting ItemSource to empty ObservableList should not trigger OnItemModified callback
 
 This philosophy prioritizes practical, maintainable tests that verify the provider's contract and behavior rather than implementation details.
 
@@ -119,13 +135,7 @@ The TextItemProvider is a container for TextItem objects that implements both II
 - Test provider reset scenarios (clear all items) and verify comprehensive cleanup
 - Test TextItem lifecycle: creation, addition, modification, removal, destruction
 
-**Test Case Design Quality:**
-- Create test fixtures with pre-populated providers for complex scenarios
-- Use parameterized tests for different TextItem property combinations
-- Implement callback verification helpers to ensure correct parameters and ordering
-- Create stress tests with large numbers of items to verify performance and stability
-- Use RAII patterns to ensure proper cleanup in all test scenarios
-- Implement helper methods for common operations (create item, verify callbacks, cleanup)
+
 
 ### rationale
 
@@ -212,7 +222,7 @@ The ListViewItemProvider manages ListViewItem objects and implements IListViewIt
 - Test column operations (add, remove, resize) with IColumnItemViewCallback notifications
 - Test IListViewItemView interface methods (GetSmallImage, GetLargeImage, GetText, GetSubItem)
 - Test IColumnItemView interface methods and their callback behavior
-- Test RequestView functionality for both interfaces
+- Test RequestView functionality for both interfaces (merge RequestView and dynamic_cast)
 
 **Column and Item Integration:**
 - Test column-item relationship scenarios (adding items with various subitem counts)
@@ -222,11 +232,12 @@ The ListViewItemProvider manages ListViewItem objects and implements IListViewIt
 - Test interface method equivalence between direct access and interface calls
 
 **Edge Cases:**
-- Test subitem access with invalid column indices
-- Test column operations with invalid parameters (negative sizes, invalid indices)
+- Use `TEST_ERROR` for subitem access with invalid column indices
+- Use `TEST_ERROR` for column operations with invalid parameters (negative sizes, invalid indices)
 - Test item operations with null/empty text and image references
-- Test GetSubItem beyond available subitems and verify safe fallback behavior
+- Use `TEST_ERROR` for GetSubItem beyond available subitems instead of expecting safe fallback
 - Test callback ordering when simultaneous item and column operations occur
+- Test RemoveRange operations in addition to individual removals
 
 ### rationale
 
@@ -254,28 +265,29 @@ The ListViewItemBindableProvider is a bindable version for ListView that works w
 
 **Core Functionality Tests:**
 - Test property binding setup for text and image properties with various configurations
-- Test SetItemSource with ObservableList and verify callback propagation
-- Test item property changes through bindings trigger appropriate callbacks
+- Test SetItemSource with ObservableList and verify callback propagation (only OnItemModified, not text-specific callbacks)
+- Test item property changes through bindings trigger OnItemModified callbacks
 - Test column operations coordination with bindable data
 - Test IListViewItemView interface methods through property bindings
 - Test IColumnItemView interface methods in bindable context
-- Test RequestView functionality for bindable ListView provider
+- Test RequestView functionality for bindable ListView provider (merge RequestView and dynamic_cast)
 
 **Bindable ListView Integration:**
 - Test image property binding (large/small) with user-defined item types
 - Test subitem access through property bindings and column mappings
 - Test ObservableList changes coordinated with column structure changes
 - Test manual property change notifications for ListView-specific scenarios
-- Test callback coordination between ObservableList and both callback interfaces
+- Test callback coordination using only IItemProviderCallback and IColumnItemViewCallback (no MockListViewItemProviderCallback if it doesn't exist)
 - Test property binding with items that have varying subitem properties
+- Test RemoveRange operations on ObservableList and verify callback behavior
 
 **Edge Cases:**
 - Test image property bindings with null/invalid references
-- Test property bindings for subitems beyond available properties
+- Use `TEST_ERROR` for property bindings for subitems beyond available properties
 - Test column operations when bindable items lack expected properties
-- Test SetItemSource transitions (null to non-null, complex to simple)
+- Test SetItemSource transitions (null to non-null, complex to simple) - empty ItemSource should only trigger OnAttached
 - Test callback detachment scenarios in bindable ListView context
-- Test UpdateBindingProperties coordination with existing column configurations
+- Use `TEST_ERROR` for out-of-bounds operations instead of graceful handling
 
 ### rationale
 
@@ -309,7 +321,7 @@ The TreeViewItemRootProvider manages hierarchical TreeViewItem data through Memo
 - Test OnItemExpanded and OnItemCollapsed callback behavior
 - Test node removal and callback notification
 - Test GetMemoryNode and tree navigation interface methods
-- Test RequestView functionality for INodeRootProvider
+- Test RequestView functionality for INodeRootProvider (merge RequestView and dynamic_cast)
 
 **Tree Structure Operations:**
 - Test adding child nodes to existing nodes and verify callback sequences
@@ -318,14 +330,15 @@ The TreeViewItemRootProvider manages hierarchical TreeViewItem data through Memo
 - Test Before/After callback pairs coordination and ordering
 - Test callback detachment scenarios during tree operations
 - Test tree structure modifications during expansion/collapse operations
+- Test RemoveRange operations on tree nodes if applicable
 
 **Edge Cases:**
 - Test expanding nodes that have no children vs nodes with children
 - Test removing expanded nodes and verify proper state cleanup
 - Test expansion/collapse of already expanded/collapsed nodes
-- Test node operations with invalid node references
+- Use `TEST_ERROR` for node operations with invalid node references
 - Test rapid expansion/collapse sequences and callback ordering
-- Test tree modification during callback execution scenarios
+- Use `TEST_ERROR` for out-of-bounds tree operations instead of graceful handling
 
 ### rationale
 
@@ -336,34 +349,17 @@ TreeViewItemRootProvider introduces hierarchical data management with expansion 
 - Emphasize edge cases around expansion state and node removal scenarios
 - Verify interface contracts for tree navigation methods
 - This establishes patterns for testing hierarchical data providers that will be used in bindable tree testing
-- Test tree navigation at boundaries (root node, leaf nodes, invalid indices)
-- Test GetChildCount on leaf nodes vs parent nodes
-- Test parent-child relationship consistency after complex tree manipulations
-- Test MemoryNodeProvider lifecycle management during tree restructuring
-- Test node addition to expanded vs collapsed parents
-- Test simultaneous tree modifications from multiple sources
-- Test tree structure validation after each major operation
-- Test TreeViewItem data consistency when nodes are moved or removed
 
-**Test Case Design Quality:**
-- Create test fixtures with pre-built tree structures of various shapes (balanced, skewed, deep)
-- Implement tree validation helpers to verify structural integrity after operations
-- Use recursive test patterns to verify tree operations at all levels
-- Create callback verification systems that track Before/After pairs and expansion state changes
-- Implement stress tests with large tree structures and frequent modifications
-- Use parameterized tests for different tree topology configurations
-- Create helper methods for common tree building and navigation patterns
-- Implement visualization helpers for debugging complex tree state issues
 
 ### rationale
 
-TreeViewItemRootProvider manages complex hierarchical data structures:
-- Tree topology changes require careful callback management
-- Node expansion state affects visibility and requires separate callbacks
-- Parent-child relationships must be maintained correctly
-- MemoryNodeProvider integration adds another layer of complexity
-- Tree-based controls are commonly used and require robust hierarchical data management
-- The callback sequence for tree modifications (Before/After) is critical for UI updates
+TreeViewItemRootProvider introduces hierarchical data management with expansion state tracking. Following the established testing philosophy:
+- Focus on callback behavior for tree operations rather than internal tree structure storage
+- Test practical tree scenarios like expansion state management and node lifecycle
+- Use existing mock callback infrastructure to verify callback sequences
+- Emphasize edge cases around expansion state and node removal scenarios
+- Verify interface contracts for tree navigation methods
+- This establishes patterns for testing hierarchical data providers that will be used in bindable tree testing
 
 ## TASK No.6: Create comprehensive unit test plan for TreeViewItemBindableRootProvider
 
@@ -382,29 +378,30 @@ The TreeViewItemBindableRootProvider is the most complex provider, combining hie
 
 **Core Functionality Tests:**
 - Test property binding setup for textProperty, imageProperty, and childrenProperty
-- Test SetItemSource with hierarchical bindable data and verify callback sequences
+- Test SetItemSource with hierarchical bindable data and verify callback sequences (only OnItemModified for structure changes)
 - Test childrenProperty binding with nested ObservableList structures
 - Test node expansion/collapse operations with bindable data coordination
-- Test property changes in bindable items trigger appropriate tree callbacks
+- Test property changes in bindable items trigger OnItemModified callbacks (not tree-specific callbacks if they don't exist)
 - Test TreeViewItemBindableNode creation and parent-child relationship management
 - Test UpdateBindingProperties coordination with tree structure
-- Test interface methods for tree navigation through property bindings
+- Test interface methods for tree navigation through property bindings (merge RequestView and dynamic_cast)
 
 **Hierarchical Binding Scenarios:**
 - Test multi-level ObservableList changes and their callback propagation
 - Test childrenProperty modifications and their impact on tree structure
 - Test expansion state coordination when underlying data structure changes
 - Test parent item property changes affecting child node visibility/structure
-- Test callback coordination between tree callbacks and ObservableList callbacks
+- Test callback coordination using only existing callback interfaces
 - Test manual notification scenarios for hierarchical property changes
+- Test RemoveRange operations on hierarchical ObservableList structures
 
 **Edge Cases:**
-- Test childrenProperty with null or empty child collections
-- Test property binding with missing or invalid childrenProperty
+- Test childrenProperty with null or empty child collections - empty should only trigger OnAttached
+- Use `TEST_ERROR` for property binding with missing or invalid childrenProperty
 - Test SetItemSource transitions between different hierarchical structures
 - Test expansion state when childrenProperty changes dynamically
 - Test callback detachment scenarios during tree structure modifications
-- Test property changes in collapsed vs expanded node contexts
+- Use `TEST_ERROR` for out-of-bounds operations in hierarchical context
 
 ### rationale
 
