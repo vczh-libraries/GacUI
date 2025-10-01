@@ -107,19 +107,11 @@ TextItemProvider
 
 	bool TextItemProvider::GetChecked(vint itemIndex)
 	{
-		if (itemIndex < 0 || itemIndex >= Count())
-		{
-			throw ArgumentException(L"Index out of range.", L"vl::presentation::controls::list::TextItemProvider::GetChecked", L"itemIndex");
-		}
 		return Get(itemIndex)->GetChecked();
 	}
 
 	void TextItemProvider::SetChecked(vint itemIndex, bool value)
 	{
-		if (itemIndex < 0 || itemIndex >= Count())
-		{
-			throw ArgumentException(L"Index out of range.", L"vl::presentation::controls::list::TextItemProvider::SetChecked", L"itemIndex");
-		}
 		return Get(itemIndex)->SetChecked(value);
 	}
 

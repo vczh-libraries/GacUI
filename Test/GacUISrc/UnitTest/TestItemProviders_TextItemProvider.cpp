@@ -319,11 +319,11 @@ TEST_FILE
 			
 			auto textView = dynamic_cast<ITextItemView*>(provider.Obj());
 			
-			// Test invalid indices - should throw or return safe values
-			TEST_EXCEPTION(textView->GetChecked(-1), ArgumentException, [](const ArgumentException&) {});
-			TEST_EXCEPTION(textView->GetChecked(1), ArgumentException, [](const ArgumentException&) {});
-			TEST_EXCEPTION(textView->SetChecked(-1, true), ArgumentException, [](const ArgumentException&) {});
-			TEST_EXCEPTION(textView->SetChecked(1, true), ArgumentException, [](const ArgumentException&) {});
+			// Test invalid indices - should trigger CHECK_ERROR
+			TEST_ERROR(textView->GetChecked(-1));
+			TEST_ERROR(textView->GetChecked(1));
+			TEST_ERROR(textView->SetChecked(-1, true));
+			TEST_ERROR(textView->SetChecked(1, true));
 		});
 		
 		TEST_CASE(L"NullAndEmptyTextHandling")

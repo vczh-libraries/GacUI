@@ -107,14 +107,7 @@ TextItemBindableProvider
 
 			WString TextItemBindableProvider::GetTextValue(vint itemIndex)
 			{
-				if (itemSource)
-				{
-					if (0 <= itemIndex && itemIndex < itemSource->GetCount())
-					{
-						return ReadProperty(itemSource->Get(itemIndex), textProperty);
-					}
-				}
-				return L"";
+				return ReadProperty(itemSource->Get(itemIndex), textProperty);
 			}
 			
 			IDescriptable* TextItemBindableProvider::RequestView(const WString& identifier)
@@ -133,41 +126,21 @@ TextItemBindableProvider
 
 			description::Value TextItemBindableProvider::GetBindingValue(vint itemIndex)
 			{
-				if (itemSource)
-				{
-					if (0 <= itemIndex && itemIndex < itemSource->GetCount())
-					{
-						return itemSource->Get(itemIndex);
-					}
-				}
-				return Value();
+				return itemSource->Get(itemIndex);
 			}
 					
 			// ===================== list::TextItemStyleProvider::ITextItemView =====================
 			
 			bool TextItemBindableProvider::GetChecked(vint itemIndex)
 			{
-				if (itemSource)
-				{
-					if (0 <= itemIndex && itemIndex < itemSource->GetCount())
-					{
-						return ReadProperty(itemSource->Get(itemIndex), checkedProperty);
-					}
-				}
-				return false;
+				return ReadProperty(itemSource->Get(itemIndex), checkedProperty);
 			}
 			
 			void TextItemBindableProvider::SetChecked(vint itemIndex, bool value)
 			{
-				if (itemSource)
-				{
-					if (0 <= itemIndex && itemIndex < itemSource->GetCount())
-					{
-						auto thisValue = itemSource->Get(itemIndex);
-						WriteProperty(thisValue, checkedProperty, value);
-						InvokeOnItemModified(itemIndex, 1, 1, false);
-					}
-				}
+				auto thisValue = itemSource->Get(itemIndex);
+				WriteProperty(thisValue, checkedProperty, value);
+				InvokeOnItemModified(itemIndex, 1, 1, false);
 			}
 
 /***********************************************************************

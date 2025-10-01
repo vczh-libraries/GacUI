@@ -339,7 +339,8 @@ TEST_FILE
 			TEST_ASSERT(provider->Count() == 0);
 			
 			const wchar_t* expected[] = {
-				L"OnAttached(provider=valid)"
+				L"OnAttached(provider=valid)",
+				L"OnItemModified(start=0, count=0, newCount=0, itemReferenceUpdated=true)"
 			};
 			AssertCallbacks(callbackLog, expected);
 		});
@@ -373,18 +374,18 @@ TEST_FILE
 			item->name = L"TestItem";
 			items.Add(item);
 			
-			// Test out-of-bounds access - should throw ArgumentException
-			TEST_EXCEPTION(provider->GetTextValue(-1), ArgumentException, [](const ArgumentException&) {});
-			TEST_EXCEPTION(provider->GetTextValue(1), ArgumentException, [](const ArgumentException&) {}); // Beyond available items
-			TEST_EXCEPTION(provider->GetChecked(-1), ArgumentException, [](const ArgumentException&) {});
-			TEST_EXCEPTION(provider->GetChecked(1), ArgumentException, [](const ArgumentException&) {});
+			// Test out-of-bounds access - should trigger CHECK_ERROR
+			TEST_ERROR(provider->GetTextValue(-1));
+			TEST_ERROR(provider->GetTextValue(1)); // Beyond available items
+			TEST_ERROR(provider->GetChecked(-1));
+			TEST_ERROR(provider->GetChecked(1));
 			
 			// Test interface methods with invalid indices
 			auto textItemView = dynamic_cast<ITextItemView*>(provider->RequestView(ITextItemView::Identifier));
-			TEST_EXCEPTION(textItemView->GetChecked(-1), ArgumentException, [](const ArgumentException&) {});
-			TEST_EXCEPTION(textItemView->GetChecked(1), ArgumentException, [](const ArgumentException&) {});
-			TEST_EXCEPTION(textItemView->SetChecked(-1, true), ArgumentException, [](const ArgumentException&) {});
-			TEST_EXCEPTION(textItemView->SetChecked(1, true), ArgumentException, [](const ArgumentException&) {});
+			TEST_ERROR(textItemView->GetChecked(-1));
+			TEST_ERROR(textItemView->GetChecked(1));
+			TEST_ERROR(textItemView->SetChecked(-1, true));
+			TEST_ERROR(textItemView->SetChecked(1, true));
 		});
 
 		TEST_CASE(L"NullItemInObservableList")
