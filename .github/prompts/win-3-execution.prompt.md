@@ -11,9 +11,6 @@
 ## Copilot_Planning.md Structure
 
 - `# !!!EXECUTION!!!`: This file always begin with this title.
-- `# TOOLING`:
-  - `## COMPILE`.
-  - `## TEST`.
 - `# UPDATES`: An exact copy of the problem description I gave you.
   - `## UPDATE`: There could be multiple occurrences. Each one has an exact copy of the update description I gave you.
 - `# IMPROVEMENT PLAN`.
@@ -29,15 +26,6 @@
   - Follow my update to change the execution document and the source code.
 - If there is nothing:
   - If `Copilot_Execution.md` only has a title, you are on a fresh start.
-    - Add the `# TOOLING` and fill sub sections in this format, check out `Unit Test Projects to Work with` for details.
-      - `## COMPILE`
-        - If `copilotBuild.ps1` is not mentioned in `Compile the Solution`, just copy the instructions from that section here, otherwise:
-          - `cd <the folder containing the solution, it must be absolute path>`
-          - `& <the path to copilotBuild.ps1, it must be absolute path>`
-      - `## TEST`
-        - `cd <the folder containing the solution, it must be absolute path>`
-        - `& <the path to copilotExecute.ps1, it must be absolute path> <arguments for copilotExecute.ps1>`
-        - If there are multiple test projects, repeat the `copilotExecute.ps1` call for each test project.
   - If there is a `# !!!FINISHED!!!` mark in `Copilot_Execution.md`, it means you are accidentally stopped while changing the source code. Please continue your work.
   - If there is no `# !!!FINISHED!!!` mark in `Copilot_Execution.md`, it means you are accidentally stopped while finishing the document. Please continue your work.
 
@@ -62,7 +50,7 @@
 
 ## Step 5. Make Sure the Code Compiles but DO NOT Run Unit Test
 
-- Check out `TOOLING/COMPILE` in `Copilot_Execution.md` and run the commands, it should compile the solution. If there is any compilation error, address all of them:
+- Check out `Compile the Solution` for details about compiling the solution but DO NOT run unit test. If there is any compilation error, address all of them:
   - If there is any compile warning, only fix warnings that caused by your code change. Do no fix any other warnings.
   - If there is any compile error, you need to carefully identify, is the issue in the callee side or the caller side. Check out similar code before making a decision.
   - For every attempt of fixing the source code:
@@ -139,24 +127,13 @@ This solution is in `Test\GacUISrc`, after `ls` to this folder, scripts will be 
 
 ## Compile the Solution
 
-- In `Unit Test Projects to Work with` section there are multiple project names.
-- These projects are all `*.vcxproj` files. Locate them. In the parent folder there must be a `*.sln` file. That is the solution the compile.
-- You must move the current working directory to the folder containing the `*.sln` file.
-  - The `ls` command helps.
-  - This must be done because `copilotBuild.ps1` searches `*.sln` from the working directory, otherwise it will fail.
-- Execute `copilotBuild.ps1`.
+- Just let Visual Studio Code to compile the solution.
+- If Visual Studio Code is not well configured, you must warn me in chat with BIG BOLD TEXT and stop immediately.
 - DO NOT use msbuild by yourself.
-- You must keep fixing the code until all errors are eliminated.
 
 ## Executing Unit Test
 
-- In `Unit Test Projects to Work with` section there are multiple project names.
-- These projects are all `*.vcxproj` files. Locate them. In the parent folder there must be a `*.sln` file. That is the solution the compile.
-- You must move the current working directory to the folder containing the `*.sln` file.
-  - The `ls` command helps.
-  - This must be done because `copilotExecute.ps1` searches `*.sln` from the working directory, otherwise it will fail.
-- You must verify your code by executing each project in order. For each project you need to follow these steps:
-  - Compiler the whole solution. Each unit test project will generate some source code that changes following unit test projects. That's why you need to compile before each execution.
-  - Execute `copilotExecute.ps1 -Executable <PROJECT-NAME>`. `<PROJECT-NAME>` is the project name in the list.
-- You must keep fixing the code until all errors are eliminated.
+- Just let Visual Studio Code to run the unit test.
+- If Visual Studio Code is not well configured, you must warn me in chat with BIG BOLD TEXT and stop immediately.
+- DO NOT call executables or scripts yourself.
 

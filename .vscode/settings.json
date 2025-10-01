@@ -26,6 +26,7 @@
     "github.copilot.nextEditSuggestions.enabled": true,
     "github.copilot.chat.agent.thinkingTool": true,
     "chat.agent.maxRequests": 9999,
+    "task.allowAutomaticTasks": "on",
     "chat.tools.terminal.autoApprove": {
         "yarn": true,
         "npm": true,

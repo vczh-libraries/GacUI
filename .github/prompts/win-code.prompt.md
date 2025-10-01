@@ -3,7 +3,7 @@
 - Find out the `Accessing Knowledge Base` section. Understand the organization of the knowledge base.
 - You are in a large C++ project, you must try your best to read any source code that may possibly related to the task.
 - Follow the chat message to implement the task.
-- After any code change, find the `Executing Unit Test` section, it has everything you need to know about how to verify your code edit.
+- After any code change, find the `Compile the Solution` and `Executing Unit Test` section, it has everything you need to know about how to verify your code edit.
 
 # General Instruction
 
@@ -44,24 +44,13 @@ This solution is in `Test\GacUISrc`, after `ls` to this folder, scripts will be 
 
 ## Compile the Solution
 
-- In `Unit Test Projects to Work with` section there are multiple project names.
-- These projects are all `*.vcxproj` files. Locate them. In the parent folder there must be a `*.sln` file. That is the solution the compile.
-- You must move the current working directory to the folder containing the `*.sln` file.
-  - The `ls` command helps.
-  - This must be done because `copilotBuild.ps1` searches `*.sln` from the working directory, otherwise it will fail.
-- Execute `copilotBuild.ps1`.
+- Just let Visual Studio Code to compile the solution.
+- If Visual Studio Code is not well configured, you must warn me in chat with BIG BOLD TEXT and stop immediately.
 - DO NOT use msbuild by yourself.
-- You must keep fixing the code until all errors are eliminated.
 
 ## Executing Unit Test
 
-- In `Unit Test Projects to Work with` section there are multiple project names.
-- These projects are all `*.vcxproj` files. Locate them. In the parent folder there must be a `*.sln` file. That is the solution the compile.
-- You must move the current working directory to the folder containing the `*.sln` file.
-  - The `ls` command helps.
-  - This must be done because `copilotExecute.ps1` searches `*.sln` from the working directory, otherwise it will fail.
-- You must verify your code by executing each project in order. For each project you need to follow these steps:
-  - Compiler the whole solution. Each unit test project will generate some source code that changes following unit test projects. That's why you need to compile before each execution.
-  - Execute `copilotExecute.ps1 -Executable <PROJECT-NAME>`. `<PROJECT-NAME>` is the project name in the list.
-- You must keep fixing the code until all errors are eliminated.
+- Just let Visual Studio Code to run the unit test.
+- If Visual Studio Code is not well configured, you must warn me in chat with BIG BOLD TEXT and stop immediately.
+- DO NOT call executables or scripts yourself.
 
