@@ -67,7 +67,7 @@ TEST_FILE
 			ObservableList<Ptr<BindableItem>> items;
 			
 			InitProvider(provider, items);
-			provider->AttachCallback(&itemCallback);
+			static_cast<IItemProvider*>(provider.Obj())->AttachCallback(&itemCallback);
 			
 			auto item = Ptr(new BindableItem());
 			item->name = L"TestName";
@@ -89,7 +89,7 @@ TEST_FILE
 			auto provider = Ptr(new ListViewItemBindableProvider());
 			ObservableList<Ptr<BindableItem>> items;
 			InitProvider(provider, items);
-			provider->AttachCallback(&itemCallback);
+			static_cast<IItemProvider*>(provider.Obj())->AttachCallback(&itemCallback);
 			
 			auto item = Ptr(new BindableItem());
 			item->name = L"Name1";
@@ -114,7 +114,7 @@ TEST_FILE
 			columns.Add(Ptr(new ListViewColumn(L"Extra", 100)));
 			columns[3]->SetTextProperty(BindableItem::Prop_name());
 			
-			provider->AttachCallback(&itemCallback);
+			static_cast<IItemProvider*>(provider.Obj())->AttachCallback(&itemCallback);
 			
 			auto item = Ptr(new BindableItem());
 			item->name = L"N";
@@ -186,7 +186,7 @@ TEST_FILE
 			TEST_ASSERT(provider->GetSubItem(0, 0) == L"");
 			TEST_ASSERT(provider->GetSubItem(0, 1) == L"");
 		});
-	}
+	});
 
 	TEST_CATEGORY(L"ColumnManagementIntegration")
 	{
@@ -389,7 +389,7 @@ TEST_FILE
 			
 			TEST_ASSERT(columns.Count() == 3);
 		});
-	}
+	});
 
 	TEST_CATEGORY(L"ObservableListIntegration")
 	{
@@ -413,7 +413,7 @@ TEST_FILE
 			items.Add(item);
 			
 			provider->SetItemSource(UnboxValue<Ptr<IValueEnumerable>>(BoxParameter(items)));
-			provider->AttachCallback(&itemCallback);
+			static_cast<IItemProvider*>(provider.Obj())->AttachCallback(&itemCallback);
 			
 			const wchar_t* expected[] = {
 				L"OnAttached(provider=valid)"
@@ -437,7 +437,7 @@ TEST_FILE
 			item1->name = L"First";
 			items1.Add(item1);
 			
-			provider->AttachCallback(&itemCallback);
+			static_cast<IItemProvider*>(provider.Obj())->AttachCallback(&itemCallback);
 			
 			callbackLog.Clear();
 			
@@ -465,7 +465,7 @@ TEST_FILE
 			auto provider = Ptr(new ListViewItemBindableProvider());
 			ObservableList<Ptr<BindableItem>> items;
 			InitProvider(provider, items);
-			provider->AttachCallback(&itemCallback);
+			static_cast<IItemProvider*>(provider.Obj())->AttachCallback(&itemCallback);
 			
 			auto item1 = Ptr(new BindableItem());
 			item1->name = L"Item1";
@@ -493,7 +493,7 @@ TEST_FILE
 			auto provider = Ptr(new ListViewItemBindableProvider());
 			ObservableList<Ptr<BindableItem>> items;
 			InitProvider(provider, items);
-			provider->AttachCallback(&itemCallback);
+			static_cast<IItemProvider*>(provider.Obj())->AttachCallback(&itemCallback);
 			
 			auto item1 = Ptr(new BindableItem());
 			item1->name = L"Item1";
@@ -522,7 +522,7 @@ TEST_FILE
 			auto provider = Ptr(new ListViewItemBindableProvider());
 			ObservableList<Ptr<BindableItem>> items;
 			InitProvider(provider, items);
-			provider->AttachCallback(&itemCallback);
+			static_cast<IItemProvider*>(provider.Obj())->AttachCallback(&itemCallback);
 			
 			for (vint i = 0; i < 5; i++)
 			{
@@ -553,7 +553,7 @@ TEST_FILE
 			auto provider = Ptr(new ListViewItemBindableProvider());
 			ObservableList<Ptr<BindableItem>> items;
 			InitProvider(provider, items);
-			provider->AttachCallback(&itemCallback);
+			static_cast<IItemProvider*>(provider.Obj())->AttachCallback(&itemCallback);
 			
 			auto item = Ptr(new BindableItem());
 			item->name = L"Original";
@@ -572,7 +572,7 @@ TEST_FILE
 			
 			TEST_ASSERT(provider->GetText(0) == L"Modified");
 		});
-	}
+	});
 
 	TEST_CATEGORY(L"DualCallbackSystem")
 	{
@@ -678,7 +678,7 @@ TEST_FILE
 			
 			TEST_ASSERT(callbackLog.Count() == 0);
 		});
-	}
+	});
 
 	TEST_CATEGORY(L"InterfaceMethodValidation")
 	{
@@ -798,7 +798,7 @@ TEST_FILE
 			provider->SetColumnSize(1, 175);
 			TEST_ASSERT(columnView->GetColumnSize(1) == 175);
 		});
-	}
+	});
 
 	TEST_CATEGORY(L"EdgeCasesAndErrorHandling")
 	{
@@ -858,7 +858,7 @@ TEST_FILE
 			ObservableList<Ptr<BindableItem>> items;
 			
 			InitProvider(provider, items);
-			provider->AttachCallback(&itemCallback);
+			static_cast<IItemProvider*>(provider.Obj())->AttachCallback(&itemCallback);
 			
 			const wchar_t* expected[] = {
 				L"OnAttached(provider=valid)"
@@ -875,7 +875,7 @@ TEST_FILE
 			auto provider = Ptr(new ListViewItemBindableProvider());
 			ObservableList<Ptr<BindableItem>> items;
 			InitProvider(provider, items);
-			provider->AttachCallback(&itemCallback);
+			static_cast<IItemProvider*>(provider.Obj())->AttachCallback(&itemCallback);
 			
 			auto item = Ptr(new BindableItem());
 			item->name = L"Test";
@@ -945,5 +945,5 @@ TEST_FILE
 			TEST_ERROR(provider->GetDataColumn(-1));
 			TEST_ERROR(provider->GetDataColumn(2));
 		});
-	}
+	});
 }
