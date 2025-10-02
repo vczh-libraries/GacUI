@@ -121,6 +121,8 @@ Helper Functions
 ***********************************************************************/
 
 	Ptr<TextItem> CreateTextItem(const WString& text, bool checked = false);
+	Ptr<ListViewItem> CreateListViewItem(const WString& text);
+	Ptr<ListViewColumn> CreateListViewColumn(const WString& text, vint size = 100);
 }
 
 namespace vl::reflection::description

@@ -156,6 +156,18 @@ Helper Functions
 		return Ptr(new TextItem(text, checked));
 	}
 
+	Ptr<ListViewItem> CreateListViewItem(const WString& text)
+	{
+		auto item = Ptr(new ListViewItem);
+		item->SetText(text);
+		return item;
+	}
+
+	Ptr<ListViewColumn> CreateListViewColumn(const WString& text, vint size)
+	{
+		return Ptr(new ListViewColumn(text, size));
+	}
+
 }
 
 namespace vl::reflection::description
