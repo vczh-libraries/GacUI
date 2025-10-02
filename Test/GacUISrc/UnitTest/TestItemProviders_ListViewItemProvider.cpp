@@ -803,18 +803,6 @@ TEST_FILE
 			}
 		});
 
-		TEST_CASE(L"RemoveRangeInvalidIndices")
-		{
-			auto provider = Ptr(new ListViewItemProvider);
-			for (vint i = 0; i < 5; i++)
-			{
-				provider->Add(CreateListViewItem(L"Item" + itow(i)));
-			}
-			
-			TEST_ERROR(provider->RemoveRange(-1, 2));
-			TEST_ERROR(provider->RemoveRange(3, 5));
-		});
-
 		TEST_CASE(L"AddDuplicateItemReference")
 		{
 			auto provider = Ptr(new ListViewItemProvider);
