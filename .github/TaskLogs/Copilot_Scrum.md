@@ -59,7 +59,7 @@ Update unfinished tasks if there are conflict with this
 - [x] TASK No.1: Create comprehensive unit test plan for TextItemProvider
 - [x] TASK No.2: Create comprehensive unit test plan for TextItemBindableProvider  
 - [x] TASK No.3: Create comprehensive unit test plan for ListViewItemProvider
-- [ ] TASK No.4: Create comprehensive unit test plan for ListViewItemBindableProvider
+- [x] TASK No.4: Create comprehensive unit test plan for ListViewItemBindableProvider
 - [ ] TASK No.5: Create comprehensive unit test plan for TreeViewItemRootProvider
 - [ ] TASK No.6: Create comprehensive unit test plan for TreeViewItemBindableRootProvider
 
