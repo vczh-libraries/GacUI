@@ -47,6 +47,13 @@ For all bindable version of providers, it is not possible to detect if a `Value`
 
 Please check unfinished task and update them
 
+## UPDATE
+
+#file:win-0-scrum.prompt.md 
+When testing duplicated object error, use TEST_EXCEPTION. When testing index out of range error, use TEST_ERROR. The first one is for throwing exceptions, the second one is for catching CHECK_ERROR or CHECK_FAIL.
+
+Update unfinished tasks if there are conflict with this
+
 # TASKS
 
 - [x] TASK No.1: Create comprehensive unit test plan for TextItemProvider
@@ -72,7 +79,8 @@ Based on the completed TextItemProvider, TextItemBindableProvider, and ListViewI
 - Callback verification through direct log comparison using `AssertCallbacks` is adequate
 
 **Quality Through Practical Edge Cases:**
-- Test realistic scenarios like duplicate item handling with CHECK_ERROR (detected via TEST_ERROR)
+- Test realistic scenarios like duplicate item handling using TEST_EXCEPTION (for throwing exceptions)
+- Use TEST_ERROR for index out of range errors (implementations should use CHECK_ERROR or CHECK_FAIL)
 - Focus on callback coordination and detachment scenarios that reflect real usage
 - Avoid performance stress tests - focus on correctness testing
 - Remove unrealistic tests like provider destruction without actual verification
@@ -84,7 +92,8 @@ Based on the completed TextItemProvider, TextItemBindableProvider, and ListViewI
 - Test callback behavior before/after provider attachment
 - Ensure proper callback detachment behavior
 - Focus on callback parameter correctness and ordering
-- Use `TEST_ERROR` for out-of-bounds operations (implementations should use CHECK_ERROR or call functions like `Get` that use CHECK_ERROR)
+- Use TEST_ERROR for out-of-bounds operations (implementations should use CHECK_ERROR or CHECK_FAIL)
+- Use TEST_EXCEPTION for duplicate object errors (implementations throw exceptions)
 - Verify specific callback types trigger for operations (e.g., OnColumnRebuilt for column additions)
 
 **Interface Validation:**
@@ -111,9 +120,9 @@ Based on the completed TextItemProvider, TextItemBindableProvider, and ListViewI
 - Use BoxValue<T>() syntax instead of Value::From() for boxing values
 
 **Duplicate Detection Rules:**
-- Concrete providers (TextItemProvider, ListViewItemProvider, TreeViewItemRootProvider): Test duplicate item detection
+- Concrete providers (TextItemProvider, ListViewItemProvider, TreeViewItemRootProvider): Test duplicate item detection using TEST_EXCEPTION
 - Bindable providers (TextItemBindableProvider, TreeViewItemBindableRootProvider): Skip duplicate item detection (Value objects)
-- ListViewItemBindableProvider: Skip duplicate item detection, but still test duplicate column detection (columns are concrete ListViewColumn objects)
+- ListViewItemBindableProvider: Skip duplicate item detection, but still test duplicate column detection using TEST_EXCEPTION (columns are concrete ListViewColumn objects)
 
 This philosophy prioritizes practical, maintainable tests that verify the provider's contract and behavior rather than implementation details.
 
@@ -305,12 +314,12 @@ The ListViewItemBindableProvider is a bindable version for ListView that works w
 - Skip testing duplicate bindable items (Value objects cannot be reliably detected as duplicates)
 
 **Edge Cases:**
-- Use `TEST_ERROR` for property bindings for subitems beyond available properties
+- Use `TEST_ERROR` for property bindings for subitems beyond available properties (index out of range)
 - Test column operations when bindable items lack expected properties
 - Test SetItemSource transitions (null to non-null, complex to simple) - empty ItemSource should only trigger OnAttached
 - Test callback detachment scenarios in bindable ListView context
-- Use `TEST_ERROR` for out-of-bounds operations instead of graceful handling
-- Test adding duplicate columns (should trigger CHECK_ERROR detected by TEST_ERROR per Task No.3 learnings)
+- Use `TEST_ERROR` for out-of-bounds operations (index out of range)
+- Use `TEST_EXCEPTION` for adding duplicate columns (duplicates throw exceptions)
 
 ### rationale
 
@@ -357,22 +366,23 @@ The TreeViewItemRootProvider manages hierarchical TreeViewItem data through Memo
 - Test callback detachment scenarios during tree operations
 - Test tree structure modifications during expansion/collapse operations
 - Test RemoveRange operations on tree nodes if applicable
-- Test adding duplicate TreeViewItem nodes (should trigger CHECK_ERROR detected by TEST_ERROR per Task No.3 learnings)
+- Use `TEST_EXCEPTION` for adding duplicate TreeViewItem nodes (duplicates throw exceptions)
 
 **Edge Cases:**
 - Test expanding nodes that have no children vs nodes with children
 - Test removing expanded nodes and verify proper state cleanup
 - Test expansion/collapse of already expanded/collapsed nodes
-- Use `TEST_ERROR` for node operations with invalid node references
+- Use `TEST_ERROR` for node operations with invalid node references (index out of range)
 - Test rapid expansion/collapse sequences and callback ordering
-- Use `TEST_ERROR` for out-of-bounds tree operations instead of graceful handling
+- Use `TEST_ERROR` for out-of-bounds tree operations (index out of range)
 
 ### rationale
 
 TreeViewItemRootProvider introduces hierarchical data management with expansion state tracking. Following the established testing philosophy including Task No.3 learnings:
 - Focus on callback behavior for tree operations rather than internal tree structure storage
 - Skip image-related method testing as it's impractical to create image objects in unit tests (lesson from Task No.3)
-- Test duplicate TreeViewItem node detection to ensure CHECK_ERROR is triggered (lesson from Task No.3)
+- Use TEST_EXCEPTION for duplicate TreeViewItem node detection (duplicates throw exceptions)
+- Use TEST_ERROR for out-of-bounds operations (index out of range)
 - Test practical tree scenarios like expansion state management and node lifecycle
 - Use existing mock callback infrastructure to verify callback sequences
 - Emphasize edge cases around expansion state and node removal scenarios
@@ -428,11 +438,11 @@ The TreeViewItemBindableRootProvider is the most complex provider, combining hie
 
 **Edge Cases:**
 - Test childrenProperty with null or empty child collections - empty should only trigger OnAttached
-- Use `TEST_ERROR` for property binding with missing or invalid childrenProperty
+- Use `TEST_ERROR` for property binding with missing or invalid childrenProperty (index out of range)
 - Test SetItemSource transitions between different hierarchical structures
 - Test expansion state when childrenProperty changes dynamically
 - Test callback detachment scenarios during tree structure modifications
-- Use `TEST_ERROR` for out-of-bounds operations in hierarchical context
+- Use `TEST_ERROR` for out-of-bounds operations in hierarchical context (index out of range)
 
 ### rationale
 
@@ -440,6 +450,7 @@ TreeViewItemBindableRootProvider represents the culmination of provider pattern 
 - Focus on callback behavior for hierarchical operations rather than internal tree storage
 - Skip image property testing as it's impractical to create image objects in unit tests (lesson from Task No.3)
 - Skip duplicate item detection as bindable items are Value objects that cannot be reliably detected as duplicates
+- Use TEST_ERROR for out-of-bounds operations (index out of range)
 - Test practical scenarios like childrenProperty binding and expansion state coordination
 - Use minimal test infrastructure leveraging existing mock callbacks
 - Emphasize edge cases around hierarchical data binding that reflect real usage
