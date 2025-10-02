@@ -40,6 +40,13 @@ Summarize the findings about my philosophy in making test cases for TextItemProv
 #file:win-0-scrum.prompt.md 
 Actually I want to use TEST_ERROR instead of TEST_EXCEPTION for all index out of bound testings. And the implementation should use CHECK_ERROR (or calls into any function that already use CHECK_ERROR, like `Get` for container types).
 
+## UPDATE
+
+#file:win-0-scrum.prompt.md 
+For all bindable version of providers, it is not possible to detect if a `Value` has been added before. But at least for ListViewItemBindableProvider, ListViewColumn still need to assume unique.
+
+Please check unfinished task and update them
+
 # TASKS
 
 - [x] TASK No.1: Create comprehensive unit test plan for TextItemProvider
@@ -51,7 +58,7 @@ Actually I want to use TEST_ERROR instead of TEST_EXCEPTION for all index out of
 
 ## Testing Philosophy Summary
 
-Based on the completed TextItemProvider and TextItemBindableProvider tasks and your feedback updates, the testing philosophy emphasizes:
+Based on the completed TextItemProvider, TextItemBindableProvider, and ListViewItemProvider tasks and your feedback updates, the testing philosophy emphasizes:
 
 **Focus on Behavioral Testing, Not Internal State:**
 - Avoid testing provider content directly (Count(), Get()) as these are ensured by other tests
@@ -61,11 +68,11 @@ Based on the completed TextItemProvider and TextItemBindableProvider tasks and y
 **Minimal Test Infrastructure:**
 - Use existing mock callbacks without creating complex assertion frameworks
 - Avoid unnecessary helper classes like `AssertCallbackSequence` - test names provide sufficient context  
-- Simple helper functions (like `CreateTextItem`, `InitProvider`) are sufficient for reducing duplication
+- Simple helper functions (like `CreateTextItem`, `CreateListViewItem`, `CreateListViewColumn`) are sufficient for reducing duplication
 - Callback verification through direct log comparison using `AssertCallbacks` is adequate
 
 **Quality Through Practical Edge Cases:**
-- Test realistic scenarios like duplicate item handling with proper fixes to source code
+- Test realistic scenarios like duplicate item handling with CHECK_ERROR (detected via TEST_ERROR)
 - Focus on callback coordination and detachment scenarios that reflect real usage
 - Avoid performance stress tests - focus on correctness testing
 - Remove unrealistic tests like provider destruction without actual verification
@@ -78,20 +85,35 @@ Based on the completed TextItemProvider and TextItemBindableProvider tasks and y
 - Ensure proper callback detachment behavior
 - Focus on callback parameter correctness and ordering
 - Use `TEST_ERROR` for out-of-bounds operations (implementations should use CHECK_ERROR or call functions like `Get` that use CHECK_ERROR)
+- Verify specific callback types trigger for operations (e.g., OnColumnRebuilt for column additions)
 
 **Interface Validation:**
 - Test both direct method calls and interface method equivalence
 - Verify RequestView functionality and interface polymorphism
 - Test error handling through interface methods (invalid indices, etc.)
+- Skip interface methods that are impractical to test (GetSmallImage, GetLargeImage, GetDropdownPopup)
 
 **MockCallback Usage Guidelines:**
 - Only use MockTextItemProviderCallback when the provider actually supports ITextItemProviderCallback
 - TextItemBindableProvider only supports IItemProviderCallback - MockTextItemProviderCallback should not be used
 - SetChecked operations in bindable providers trigger OnItemModified, not text-specific callbacks
+- For dual-callback providers (like ListViewItemProvider), use both IItemProviderCallback and IColumnItemViewCallback mocks
 
 **Empty ItemSource Handling:**
 - EmptyItemSourceScenarios should expect only OnAttached callback, not OnItemModified
 - Setting ItemSource to empty ObservableList should not trigger OnItemModified callback
+
+**Pragmatic Test Scope (from Task No.3):**
+- Skip testing methods that require complex object creation (images, dropdown popups)
+- Test duplicate detection for concrete objects (TextItem, ListViewItem, ListViewColumn, TreeViewItem nodes) - adding same instance twice should fail with CHECK_ERROR
+- Skip duplicate detection for bindable providers' Value objects - they cannot be reliably detected as duplicates
+- Exception: ListViewItemBindableProvider columns are still ListViewColumn objects and should be tested for duplicates
+- Use BoxValue<T>() syntax instead of Value::From() for boxing values
+
+**Duplicate Detection Rules:**
+- Concrete providers (TextItemProvider, ListViewItemProvider, TreeViewItemRootProvider): Test duplicate item detection
+- Bindable providers (TextItemBindableProvider, TreeViewItemBindableRootProvider): Skip duplicate item detection (Value objects)
+- ListViewItemBindableProvider: Skip duplicate item detection, but still test duplicate column detection (columns are concrete ListViewColumn objects)
 
 This philosophy prioritizes practical, maintainable tests that verify the provider's contract and behavior rather than implementation details.
 
@@ -255,45 +277,48 @@ The ListViewItemBindableProvider is a bindable version for ListView that works w
 ### what to be done
 
 - Expand the existing `TestItemProviders_ListViewItemBindableProvider.cpp` file with comprehensive test cases
-- Test property binding mechanism for images (largeImageProperty, smallImageProperty) and text
+- Test property binding mechanism for text properties (skip image properties as they're hard to test)
 - Test ObservableList integration with ListView-specific data and callback propagation
 - Test column management coordination with property bindings
 - Test dual callback system for both item changes and column changes
 - Test interface methods through property bindings for ListView scenarios
+- Test duplicate item detection if the provider supports it
 
 ### how to test it
 
 **Core Functionality Tests:**
-- Test property binding setup for text and image properties with various configurations
+- Test property binding setup for text properties with various configurations (skip image testing per Task No.3 learnings)
 - Test SetItemSource with ObservableList and verify callback propagation (only OnItemModified, not text-specific callbacks)
 - Test item property changes through bindings trigger OnItemModified callbacks
-- Test column operations coordination with bindable data
-- Test IListViewItemView interface methods through property bindings
-- Test IColumnItemView interface methods in bindable context
+- Test column operations coordination with bindable data - verify OnColumnRebuilt triggers for column additions
+- Test IListViewItemView interface methods through property bindings (skip GetSmallImage/GetLargeImage)
+- Test IColumnItemView interface methods in bindable context (skip GetDropdownPopup)
 - Test RequestView functionality for bindable ListView provider (merge RequestView and dynamic_cast)
 
 **Bindable ListView Integration:**
-- Test image property binding (large/small) with user-defined item types
 - Test subitem access through property bindings and column mappings
 - Test ObservableList changes coordinated with column structure changes
 - Test manual property change notifications for ListView-specific scenarios
-- Test callback coordination using only IItemProviderCallback and IColumnItemViewCallback (no MockListViewItemProviderCallback if it doesn't exist)
+- Test callback coordination using only IItemProviderCallback and IColumnItemViewCallback
 - Test property binding with items that have varying subitem properties
 - Test RemoveRange operations on ObservableList and verify callback behavior
+- Skip testing duplicate bindable items (Value objects cannot be reliably detected as duplicates)
 
 **Edge Cases:**
-- Test image property bindings with null/invalid references
 - Use `TEST_ERROR` for property bindings for subitems beyond available properties
 - Test column operations when bindable items lack expected properties
 - Test SetItemSource transitions (null to non-null, complex to simple) - empty ItemSource should only trigger OnAttached
 - Test callback detachment scenarios in bindable ListView context
 - Use `TEST_ERROR` for out-of-bounds operations instead of graceful handling
+- Test adding duplicate columns (should trigger CHECK_ERROR detected by TEST_ERROR per Task No.3 learnings)
 
 ### rationale
 
-ListViewItemBindableProvider combines ListView multi-column functionality with data binding complexity. Following the established testing philosophy:
+ListViewItemBindableProvider combines ListView multi-column functionality with data binding complexity. Following the established testing philosophy including Task No.3 learnings:
 - Focus on callback behavior and property binding mechanisms rather than internal storage
-- Test practical scenarios like image property binding and subitem access patterns
+- Skip image property testing as it's impractical to create image objects in unit tests (lesson from Task No.3)
+- Test duplicate detection for columns only (lesson from Task No.3) - bindable items cannot be tested for duplicates as Value objects cannot be reliably detected
+- Verify callback sequences, especially OnColumnRebuilt for column operations (lesson from Task No.3)
 - Use minimal test infrastructure with existing mock callbacks
 - Emphasize edge cases that reflect real ListView data binding usage
 - Verify interface method contracts work correctly through property bindings
@@ -310,7 +335,8 @@ The TreeViewItemRootProvider manages hierarchical TreeViewItem data through Memo
 - Test tree expansion/collapse operations and callback sequences
 - Test INodeProviderCallback notifications for tree structure changes
 - Test node lifecycle management (creation, addition, removal)
-- Test interface methods for tree navigation and data access
+- Test interface methods for tree navigation and data access (skip image-related methods)
+- Test duplicate node detection if applicable
 
 ### how to test it
 
@@ -320,7 +346,7 @@ The TreeViewItemRootProvider manages hierarchical TreeViewItem data through Memo
 - Test node expansion/collapse operations and verify callback pairs (Before/After)
 - Test OnItemExpanded and OnItemCollapsed callback behavior
 - Test node removal and callback notification
-- Test GetMemoryNode and tree navigation interface methods
+- Test GetMemoryNode and tree navigation interface methods (skip image retrieval methods per Task No.3 learnings)
 - Test RequestView functionality for INodeRootProvider (merge RequestView and dynamic_cast)
 
 **Tree Structure Operations:**
@@ -331,6 +357,7 @@ The TreeViewItemRootProvider manages hierarchical TreeViewItem data through Memo
 - Test callback detachment scenarios during tree operations
 - Test tree structure modifications during expansion/collapse operations
 - Test RemoveRange operations on tree nodes if applicable
+- Test adding duplicate TreeViewItem nodes (should trigger CHECK_ERROR detected by TEST_ERROR per Task No.3 learnings)
 
 **Edge Cases:**
 - Test expanding nodes that have no children vs nodes with children
@@ -342,8 +369,10 @@ The TreeViewItemRootProvider manages hierarchical TreeViewItem data through Memo
 
 ### rationale
 
-TreeViewItemRootProvider introduces hierarchical data management with expansion state tracking. Following the established testing philosophy:
+TreeViewItemRootProvider introduces hierarchical data management with expansion state tracking. Following the established testing philosophy including Task No.3 learnings:
 - Focus on callback behavior for tree operations rather than internal tree structure storage
+- Skip image-related method testing as it's impractical to create image objects in unit tests (lesson from Task No.3)
+- Test duplicate TreeViewItem node detection to ensure CHECK_ERROR is triggered (lesson from Task No.3)
 - Test practical tree scenarios like expansion state management and node lifecycle
 - Use existing mock callback infrastructure to verify callback sequences
 - Emphasize edge cases around expansion state and node removal scenarios
@@ -363,7 +392,7 @@ TreeViewItemRootProvider introduces hierarchical data management with expansion 
 
 ## TASK No.6: Create comprehensive unit test plan for TreeViewItemBindableRootProvider
 
-The TreeViewItemBindableRootProvider is the most complex provider, combining hierarchical tree structure with data binding. It uses TreeViewItemBindableNode for bindable hierarchical data and supports property bindings for text, images, and children relationships.
+The TreeViewItemBindableRootProvider is the most complex provider, combining hierarchical tree structure with data binding. It uses TreeViewItemBindableNode for bindable hierarchical data and supports property bindings for text and children relationships.
 
 ### what to be done
 
@@ -372,19 +401,20 @@ The TreeViewItemBindableRootProvider is the most complex provider, combining hie
 - Test ObservableList integration at multiple tree hierarchy levels
 - Test expansion state management coordination with bindable data changes
 - Test callback behavior for tree structure changes through data binding
-- Test interface methods for hierarchical navigation in bindable context
+- Test interface methods for hierarchical navigation in bindable context (skip image-related methods)
+- Test duplicate item detection if applicable
 
 ### how to test it
 
 **Core Functionality Tests:**
-- Test property binding setup for textProperty, imageProperty, and childrenProperty
+- Test property binding setup for textProperty and childrenProperty (skip imageProperty per Task No.3 learnings)
 - Test SetItemSource with hierarchical bindable data and verify callback sequences (only OnItemModified for structure changes)
 - Test childrenProperty binding with nested ObservableList structures
 - Test node expansion/collapse operations with bindable data coordination
 - Test property changes in bindable items trigger OnItemModified callbacks (not tree-specific callbacks if they don't exist)
 - Test TreeViewItemBindableNode creation and parent-child relationship management
 - Test UpdateBindingProperties coordination with tree structure
-- Test interface methods for tree navigation through property bindings (merge RequestView and dynamic_cast)
+- Test interface methods for tree navigation through property bindings (merge RequestView and dynamic_cast, skip image-related methods)
 
 **Hierarchical Binding Scenarios:**
 - Test multi-level ObservableList changes and their callback propagation
@@ -394,6 +424,7 @@ The TreeViewItemBindableRootProvider is the most complex provider, combining hie
 - Test callback coordination using only existing callback interfaces
 - Test manual notification scenarios for hierarchical property changes
 - Test RemoveRange operations on hierarchical ObservableList structures
+- Skip testing duplicate bindable items in the tree structure (Value objects cannot be reliably detected as duplicates)
 
 **Edge Cases:**
 - Test childrenProperty with null or empty child collections - empty should only trigger OnAttached
@@ -405,8 +436,10 @@ The TreeViewItemBindableRootProvider is the most complex provider, combining hie
 
 ### rationale
 
-TreeViewItemBindableRootProvider represents the culmination of provider pattern complexity combining tree hierarchy with data binding. Following the established testing philosophy:
+TreeViewItemBindableRootProvider represents the culmination of provider pattern complexity combining tree hierarchy with data binding. Following the established testing philosophy including Task No.3 learnings:
 - Focus on callback behavior for hierarchical operations rather than internal tree storage
+- Skip image property testing as it's impractical to create image objects in unit tests (lesson from Task No.3)
+- Skip duplicate item detection as bindable items are Value objects that cannot be reliably detected as duplicates
 - Test practical scenarios like childrenProperty binding and expansion state coordination
 - Use minimal test infrastructure leveraging existing mock callbacks
 - Emphasize edge cases around hierarchical data binding that reflect real usage
