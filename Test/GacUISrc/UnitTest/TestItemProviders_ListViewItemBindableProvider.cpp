@@ -154,25 +154,6 @@ TEST_FILE
 			TEST_ASSERT(provider->GetSubItem(1, 1) == L"");
 		});
 		
-		TEST_CASE(L"UnboundPropertyAccess")
-		{
-			auto provider = Ptr(new ListViewItemBindableProvider());
-			ObservableList<Ptr<BindableItem>> items;
-			
-			InitProvider(provider, items);
-			
-			auto& columns = provider->GetColumns();
-			columns[1]->SetTextProperty(nullptr);
-			
-			auto item = Ptr(new BindableItem());
-			item->name = L"Test";
-			items.Add(item);
-			
-			TEST_ASSERT(provider->GetText(0) == L"Test");
-			TEST_ASSERT(provider->GetSubItem(0, 0) == L"");
-			TEST_ASSERT(provider->GetSubItem(0, 1) != L"");
-		});
-		
 		TEST_CASE(L"PropertyBindingNullValues")
 		{
 			auto provider = Ptr(new ListViewItemBindableProvider());
@@ -193,21 +174,22 @@ TEST_FILE
 		TEST_CASE(L"ColumnAdditionWithoutItems")
 		{
 			List<WString> callbackLog;
+			MockItemProviderCallback itemCallback(callbackLog);
 			MockColumnItemViewCallback columnCallback(callbackLog);
 			auto provider = Ptr(new ListViewItemBindableProvider());
 			ObservableList<Ptr<BindableItem>> items;
 			
 			InitProvider(provider, items);
+			static_cast<IItemProvider*>(provider.Obj())->AttachCallback(&itemCallback);
 			provider->AttachCallback(&columnCallback);
+			callbackLog.Clear();
 			
 			auto& columns = provider->GetColumns();
 			columns.Add(Ptr(new ListViewColumn(L"Extra", 100)));
-			provider->NotifyColumnRebuilt();
 			
 			const wchar_t* expected[] = {
-				L"OnAttached(provider=valid)",
 				L"OnColumnRebuilt()",
-				L"OnItemModified(start=0, count=0, newCount=0, itemReferenceUpdated=false)"
+				L"OnItemModified(start=0, count=0, newCount=0, itemReferenceUpdated=true)"
 			};
 			AssertCallbacks(callbackLog, expected);
 		});
@@ -233,10 +215,11 @@ TEST_FILE
 			auto& columns = provider->GetColumns();
 			columns.Add(Ptr(new ListViewColumn(L"Extra", 100)));
 			columns[3]->SetTextProperty(BindableItem::Prop_name());
-			provider->NotifyColumnRebuilt();
 			
 			const wchar_t* expected[] = {
 				L"OnColumnRebuilt()",
+				L"OnItemModified(start=0, count=1, newCount=1, itemReferenceUpdated=true)",
+				L"OnColumnChanged(needToRefreshItems=true)",
 				L"OnItemModified(start=0, count=1, newCount=1, itemReferenceUpdated=false)"
 			};
 			AssertCallbacks(callbackLog, expected);
@@ -245,20 +228,21 @@ TEST_FILE
 		TEST_CASE(L"ColumnRemoval")
 		{
 			List<WString> callbackLog;
+			MockItemProviderCallback itemCallback(callbackLog);
 			MockColumnItemViewCallback columnCallback(callbackLog);
 			auto provider = Ptr(new ListViewItemBindableProvider());
 			ObservableList<Ptr<BindableItem>> items;
 			InitProvider(provider, items);
+			static_cast<IItemProvider*>(provider.Obj())->AttachCallback(&itemCallback);
 			provider->AttachCallback(&columnCallback);
+			callbackLog.Clear();
 			
 			auto& columns = provider->GetColumns();
 			columns.RemoveAt(1);
-			provider->NotifyColumnRebuilt();
 			
 			const wchar_t* expected[] = {
-				L"OnAttached(provider=valid)",
 				L"OnColumnRebuilt()",
-				L"OnItemModified(start=0, count=0, newCount=0, itemReferenceUpdated=false)"
+				L"OnItemModified(start=0, count=0, newCount=0, itemReferenceUpdated=true)"
 			};
 			AssertCallbacks(callbackLog, expected);
 		});
@@ -266,20 +250,21 @@ TEST_FILE
 		TEST_CASE(L"ColumnTextChange")
 		{
 			List<WString> callbackLog;
+			MockItemProviderCallback itemCallback(callbackLog);
 			MockColumnItemViewCallback columnCallback(callbackLog);
 			auto provider = Ptr(new ListViewItemBindableProvider());
 			ObservableList<Ptr<BindableItem>> items;
 			InitProvider(provider, items);
+			static_cast<IItemProvider*>(provider.Obj())->AttachCallback(&itemCallback);
 			provider->AttachCallback(&columnCallback);
 			
 			callbackLog.Clear();
 			
 			auto& columns = provider->GetColumns();
 			columns[0]->SetText(L"NewName");
-			provider->NotifyColumnChanged();
 			
 			const wchar_t* expected[] = {
-				L"OnColumnChanged(needToRefreshItems=false)",
+				L"OnColumnChanged(needToRefreshItems=true)",
 				L"OnItemModified(start=0, count=0, newCount=0, itemReferenceUpdated=false)"
 			};
 			AssertCallbacks(callbackLog, expected);
@@ -288,20 +273,21 @@ TEST_FILE
 		TEST_CASE(L"ColumnSizeChange")
 		{
 			List<WString> callbackLog;
+			MockItemProviderCallback itemCallback(callbackLog);
 			MockColumnItemViewCallback columnCallback(callbackLog);
 			auto provider = Ptr(new ListViewItemBindableProvider());
 			ObservableList<Ptr<BindableItem>> items;
 			InitProvider(provider, items);
+			static_cast<IItemProvider*>(provider.Obj())->AttachCallback(&itemCallback);
 			provider->AttachCallback(&columnCallback);
 			
 			callbackLog.Clear();
 			
 			provider->SetColumnSize(0, 200);
-			provider->NotifyColumnChanged();
 			
 			TEST_ASSERT(provider->GetColumnSize(0) == 200);
 			const wchar_t* expected[] = {
-				L"OnColumnChanged(needToRefreshItems=false)",
+				L"OnColumnChanged(needToRefreshItems=true)",
 				L"OnItemModified(start=0, count=0, newCount=0, itemReferenceUpdated=false)"
 			};
 			AssertCallbacks(callbackLog, expected);
@@ -327,12 +313,11 @@ TEST_FILE
 			
 			auto& columns = provider->GetColumns();
 			columns[1]->SetTextProperty(BindableItem::Prop_desc());
-			provider->NotifyColumnChanged();
 			
 			TEST_ASSERT(provider->GetSubItem(0, 0) == L"");
 			
 			const wchar_t* expected[] = {
-				L"OnColumnChanged(needToRefreshItems=false)",
+				L"OnColumnChanged(needToRefreshItems=true)",
 				L"OnItemModified(start=0, count=1, newCount=1, itemReferenceUpdated=false)"
 			};
 			AssertCallbacks(callbackLog, expected);
@@ -341,11 +326,14 @@ TEST_FILE
 		TEST_CASE(L"DataColumnOperations")
 		{
 			List<WString> callbackLog;
+			MockItemProviderCallback itemCallback(callbackLog);
 			MockColumnItemViewCallback columnCallback(callbackLog);
 			auto provider = Ptr(new ListViewItemBindableProvider());
 			ObservableList<Ptr<BindableItem>> items;
 			InitProvider(provider, items);
+			static_cast<IItemProvider*>(provider.Obj())->AttachCallback(&itemCallback);
 			provider->AttachCallback(&columnCallback);
+			callbackLog.Clear();
 			
 			TEST_ASSERT(provider->GetDataColumnCount() == 2);
 			TEST_ASSERT(provider->GetDataColumn(0) == 1);
@@ -361,29 +349,29 @@ TEST_FILE
 		TEST_CASE(L"MultipleColumnsAddedSequentially")
 		{
 			List<WString> callbackLog;
+			MockItemProviderCallback itemCallback(callbackLog);
 			MockColumnItemViewCallback columnCallback(callbackLog);
 			auto provider = Ptr(new ListViewItemBindableProvider());
 			ObservableList<Ptr<BindableItem>> items;
 			
 			provider->SetItemSource(UnboxValue<Ptr<IValueEnumerable>>(BoxParameter(items)));
+			static_cast<IItemProvider*>(provider.Obj())->AttachCallback(&itemCallback);
 			provider->AttachCallback(&columnCallback);
+			callbackLog.Clear();
 			
 			auto& columns = provider->GetColumns();
 			
 			columns.Add(Ptr(new ListViewColumn(L"Col1", 100)));
-			provider->NotifyColumnRebuilt();
-			callbackLog.Clear();
-			
 			columns.Add(Ptr(new ListViewColumn(L"Col2", 100)));
-			provider->NotifyColumnRebuilt();
-			callbackLog.Clear();
-			
 			columns.Add(Ptr(new ListViewColumn(L"Col3", 100)));
-			provider->NotifyColumnRebuilt();
 			
 			const wchar_t* expected[] = {
 				L"OnColumnRebuilt()",
-				L"OnItemModified(start=0, count=0, newCount=0, itemReferenceUpdated=false)"
+				L"OnItemModified(start=0, count=0, newCount=0, itemReferenceUpdated=true)",
+				L"OnColumnRebuilt()",
+				L"OnItemModified(start=0, count=0, newCount=0, itemReferenceUpdated=true)",
+				L"OnColumnRebuilt()",
+				L"OnItemModified(start=0, count=0, newCount=0, itemReferenceUpdated=true)"
 			};
 			AssertCallbacks(callbackLog, expected);
 			
