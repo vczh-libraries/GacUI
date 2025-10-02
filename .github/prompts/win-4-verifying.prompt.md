@@ -17,7 +17,9 @@
 
 ## Step 2. Compile
 
-- Check out `Compile the Solution` for details about compiling the solution but DO NOT run unit test. If there is any compilation error, address all of them:
+- Check out `Compile the Solution` for details about compiling the solution but DO NOT run unit test yet.
+  - `Compile the Solution` is the only way to build the project. DO NOT call any other tools or scripts.
+- If there is any compilation error, address all of them:
   - If there is any compile warning, only fix warnings that caused by your code change. Do no fix any other warnings.
   - If there is any compile error, you need to carefully identify, is the issue in the callee side or the caller side. Check out similar code before making a decision.
   - For every attempt of fixing the source code:
@@ -29,7 +31,9 @@
 
 ## Step 3. Run Unit Test
 
-- Check out `Executing Unit Test` for details about compiling the solution but DO NOT run unit test. If there is any compilation error, address all of them:
+- Check out `Executing Unit Test` for details about compiling the solution. 
+  - `Executing Unit Test` is the only way to run the unit test. DO NOT call any other tools or scripts.
+- If there is any compilation error, address all of them:
 - Run the unit test and see if they passed. If anything is good, you will only see test files and test cases that are executed.
   - Make sure added test cases are actually executed.
   - If any test case fails on a test assertion, the content of `TEST_ASSERT` or other macros will be printed to the output.
@@ -41,6 +45,9 @@
 ## Step 4. Fix Failed Test Cases
 
 - If there are failed test cases, fix the code to make it work.
+  - If you are thinking about the possibility of running against an old version of compiled unit test, you must be awared that:
+    - By following `Compile the Solution` and when there is no error, the compiling should be successful.
+    - If the executable timestamp is not updated, it could mean no source code is changed, so the incremental build just skipped the build.
 - You must carefully identify, if the cause is in the source code or in the failed test. In most of the cases, the cause is in the source code.
   - You can reference to `Copilot_Task.md` and `Copilot_Planning.md` for more details before making a decision, about fixing the test case or the source code.
 - DO NOT delete any test case.
@@ -114,6 +121,7 @@ You need to locate listed files in `TaskLogs.vcxitems`.
   - This task only copmile without running.
 - If Visual Studio Code is not well configured, you must warn me in chat with BIG BOLD TEXT and stop immediately.
 - DO NOT use msbuild by yourself.
+- DO NOT modify `tasks.json`.
 
 ## Executing Unit Test
 
@@ -123,4 +131,5 @@ You need to locate listed files in `TaskLogs.vcxitems`.
   - When all test cases pass, there will be a summarizing about how many test cases are executed. Otherwise it crashed at the last showing test case.
 - If Visual Studio Code is not well configured, you must warn me in chat with BIG BOLD TEXT and stop immediately.
 - DO NOT call executables or scripts yourself.
+- DO NOT modify `tasks.json`.
 

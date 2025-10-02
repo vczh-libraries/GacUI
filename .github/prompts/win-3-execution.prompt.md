@@ -121,6 +121,7 @@ You need to locate listed files in `TaskLogs.vcxitems`.
   - This task only copmile without running.
 - If Visual Studio Code is not well configured, you must warn me in chat with BIG BOLD TEXT and stop immediately.
 - DO NOT use msbuild by yourself.
+- DO NOT modify `tasks.json`.
 
 ## Executing Unit Test
 
@@ -130,4 +131,5 @@ You need to locate listed files in `TaskLogs.vcxitems`.
   - When all test cases pass, there will be a summarizing about how many test cases are executed. Otherwise it crashed at the last showing test case.
 - If Visual Studio Code is not well configured, you must warn me in chat with BIG BOLD TEXT and stop immediately.
 - DO NOT call executables or scripts yourself.
+- DO NOT modify `tasks.json`.
 
