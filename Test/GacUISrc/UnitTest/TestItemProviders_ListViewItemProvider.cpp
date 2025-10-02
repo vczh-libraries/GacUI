@@ -44,7 +44,7 @@ TEST_FILE
 			provider->Add(item1);
 			
 			auto item2 = CreateListViewItem(L"Item2");
-			item2->SetTag(Value::From(42));
+			item2->SetTag(BoxValue<vint>(42));
 			provider->Add(item2);
 			
 			auto item3 = CreateListViewItem(L"Item3");
@@ -132,11 +132,11 @@ TEST_FILE
 			static_cast<IItemProvider*>(provider.Obj())->AttachCallback(&itemCallback);
 			
 			auto item = CreateListViewItem(L"Item");
-			item->SetTag(Value::From(100));
+			item->SetTag(BoxValue<vint>(100));
 			provider->Add(item);
 			
 			callbackLog.Clear();
-			item->SetTag(Value::From(200));
+			item->SetTag(BoxValue<vint>(200));
 			
 			const wchar_t* expected[] = {
 				L"OnItemModified(start=0, count=1, newCount=1, itemReferenceUpdated=false)"
@@ -188,7 +188,7 @@ TEST_FILE
 			
 			callbackLog.Clear();
 			item->SetText(L"NewText");
-			item->SetTag(Value::From(123));
+			item->SetTag(BoxValue<vint>(123));
 			
 			const wchar_t* expected[] = {
 				L"OnItemModified(start=0, count=1, newCount=1, itemReferenceUpdated=false)",
@@ -333,7 +333,10 @@ TEST_FILE
 			provider->Add(CreateListViewItem(L"Item"));
 			
 			callbackLog.Clear();
-			column->SetTextProperty(ItemProperty<WString>(L"Property"));
+			column->SetTextProperty([](const Value& value)
+			{
+				return WString::Unmanaged(L"TestProperty");
+			});
 			
 			const wchar_t* expected[] = {
 				L"OnColumnChanged(needToRefreshItems=true)",
@@ -557,9 +560,11 @@ TEST_FILE
 			callbackLog.Clear();
 			provider->GetColumns().Add(CreateListViewColumn(L"Col"));
 			
-			TEST_ASSERT(callbackLog.Count() == 2);
-			TEST_ASSERT(callbackLog[0].IndexOf(L"OnColumnRebuilt") >= 0);
-			TEST_ASSERT(callbackLog[1].IndexOf(L"OnItemModified") >= 0);
+			const wchar_t* expected[] = {
+				L"OnColumnRebuilt()",
+				L"OnItemModified(start=0, count=0, newCount=0, itemReferenceUpdated=false)"
+			};
+			AssertCallbacks(callbackLog, expected);
 		});
 
 		TEST_CASE(L"ItemPropertyChangeAfterRemoval")
@@ -831,7 +836,7 @@ TEST_FILE
 			
 			auto item = CreateListViewItem(L"Original");
 			item->SetText(L"Modified");
-			item->SetTag(Value::From(100));
+			item->SetTag(BoxValue<vint>(100));
 			item->GetSubItems().Add(L"Sub1");
 			item->GetSubItems().Add(L"Sub2");
 			
