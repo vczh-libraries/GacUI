@@ -413,8 +413,17 @@ TEST_FILE
 			callbackLog.Clear();
 			
 			static_cast<IItemProvider*>(provider.Obj())->DetachCallback(&itemCallback);
+			
+			// Detachment triggers OnAttached(provider=null)
+			const wchar_t* expectedDetach[] = {
+				L"OnAttached(provider=null)"
+			};
+			AssertCallbacks(callbackLog, expectedDetach);
+			
+			callbackLog.Clear();
 			provider->Add(CreateListViewItem(L"Item2"));
 			
+			// After detachment, no more callbacks should be triggered
 			TEST_ASSERT(callbackLog.Count() == 0);
 		});
 
