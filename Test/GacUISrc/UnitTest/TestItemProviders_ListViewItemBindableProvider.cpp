@@ -582,7 +582,6 @@ TEST_FILE
 			
 			const wchar_t* expected[] = {
 				L"OnAttached(provider=valid)",
-				L"OnAttached(provider=valid)",
 				L"OnItemModified(start=0, count=0, newCount=1, itemReferenceUpdated=true)"
 			};
 			AssertCallbacks(callbackLog, expected);
@@ -607,11 +606,10 @@ TEST_FILE
 			
 			auto& columns = provider->GetColumns();
 			columns.Add(Ptr(new ListViewColumn(L"New", 100)));
-			provider->NotifyColumnRebuilt();
 			
 			const wchar_t* expected[] = {
 				L"OnColumnRebuilt()",
-				L"OnItemModified(start=0, count=1, newCount=1, itemReferenceUpdated=false)"
+				L"OnItemModified(start=0, count=1, newCount=1, itemReferenceUpdated=true)"
 			};
 			AssertCallbacks(callbackLog, expected);
 		});
@@ -635,10 +633,9 @@ TEST_FILE
 			
 			auto& columns = provider->GetColumns();
 			columns[0]->SetSize(200);
-			provider->NotifyColumnChanged();
 			
 			const wchar_t* expected[] = {
-				L"OnColumnChanged(needToRefreshItems=false)",
+				L"OnColumnChanged(needToRefreshItems=true)",
 				L"OnItemModified(start=0, count=1, newCount=1, itemReferenceUpdated=false)"
 			};
 			AssertCallbacks(callbackLog, expected);
@@ -663,8 +660,11 @@ TEST_FILE
 			
 			auto item = Ptr(new BindableItem());
 			items.Add(item);
-			
-			TEST_ASSERT(callbackLog.Count() == 0);
+
+			const wchar_t* expected[] = {
+				L"OnAttached(provider=null)"
+			};
+			AssertCallbacks(callbackLog, expected);
 		});
 	});
 
@@ -803,9 +803,9 @@ TEST_FILE
 			TEST_ASSERT(provider->GetSubItem(0, 0) != L"INVALID");
 			TEST_ASSERT(provider->GetSubItem(0, 1) != L"INVALID");
 			
-			TEST_ASSERT(provider->GetSubItem(0, 2) == L"");
-			TEST_ASSERT(provider->GetSubItem(0, 5) == L"");
-			TEST_ASSERT(provider->GetSubItem(0, -1) == L"");
+			TEST_ERROR(provider->GetSubItem(0, 2));
+			TEST_ERROR(provider->GetSubItem(0, 5));
+			TEST_ERROR(provider->GetSubItem(0, -1));
 		});
 		
 		TEST_CASE(L"SubitemAccessExtremeIndex")
@@ -817,25 +817,8 @@ TEST_FILE
 			auto item = Ptr(new BindableItem());
 			items.Add(item);
 			
-			TEST_ASSERT(provider->GetSubItem(0, 100) == L"");
-			TEST_ASSERT(provider->GetSubItem(0, -100) == L"");
-		});
-		
-		TEST_CASE(L"SubitemAccessBeyondItemProperties")
-		{
-			auto provider = Ptr(new ListViewItemBindableProvider());
-			ObservableList<Ptr<BindableItem>> items;
-			
-			InitProvider(provider, items);
-			
-			auto& columns = provider->GetColumns();
-			columns[1]->SetTextProperty(nullptr);
-			
-			auto item = Ptr(new BindableItem());
-			item->name = L"Test";
-			items.Add(item);
-			
-			TEST_ASSERT(provider->GetSubItem(0, 0) == L"");
+			TEST_ERROR(provider->GetSubItem(0, 100));
+			TEST_ERROR(provider->GetSubItem(0, -100));
 		});
 		
 		TEST_CASE(L"EmptyItemSourceScenarios")

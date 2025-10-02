@@ -107,7 +107,10 @@ TextItemBindableProvider
 
 			WString TextItemBindableProvider::GetTextValue(vint itemIndex)
 			{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::controls::TextItemBindableProvider::GetTextValue(vint)#"
+				CHECK_ERROR(itemSource, ERROR_MESSAGE_PREFIX L"ItemSource is not set.");
 				return ReadProperty(itemSource->Get(itemIndex), textProperty);
+#undef ERROR_MESSAGE_PREFIX
 			}
 			
 			IDescriptable* TextItemBindableProvider::RequestView(const WString& identifier)
@@ -316,50 +319,35 @@ ListViewItemBindableProvider
 
 			Ptr<GuiImageData> ListViewItemBindableProvider::GetSmallImage(vint itemIndex)
 			{
-				if (itemSource)
-				{
-					if (0 <= itemIndex && itemIndex < itemSource->GetCount())
-					{
-						return ReadProperty(itemSource->Get(itemIndex), smallImageProperty);
-					}
-				}
-				return nullptr;
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::controls::ListViewItemBindableProvider::GetSmallImage(vint)#"
+				CHECK_ERROR(itemSource, ERROR_MESSAGE_PREFIX L"ItemSource is not set.");
+				return ReadProperty(itemSource->Get(itemIndex), smallImageProperty);
+#undef ERROR_MESSAGE_PREFIX
 			}
 
 			Ptr<GuiImageData> ListViewItemBindableProvider::GetLargeImage(vint itemIndex)
 			{
-				if (itemSource)
-				{
-					if (0 <= itemIndex && itemIndex < itemSource->GetCount())
-					{
-						return ReadProperty(itemSource->Get(itemIndex), largeImageProperty);
-					}
-				}
-				return nullptr;
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::controls::ListViewItemBindableProvider::GetLargeImage(vint)#"
+				CHECK_ERROR(itemSource, ERROR_MESSAGE_PREFIX L"ItemSource is not set.");
+				return ReadProperty(itemSource->Get(itemIndex), largeImageProperty);
+#undef ERROR_MESSAGE_PREFIX
 			}
 
 			WString ListViewItemBindableProvider::GetText(vint itemIndex)
 			{
-				if (itemSource)
-				{
-					if (0 <= itemIndex && itemIndex < itemSource->GetCount() && columns.Count()>0)
-					{
-						return ReadProperty(itemSource->Get(itemIndex), columns[0]->GetTextProperty());
-					}
-				}
-				return L"";
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::controls::ListViewItemBindableProvider::GetText(vint)#"
+				CHECK_ERROR(itemSource, ERROR_MESSAGE_PREFIX L"ItemSource is not set.");
+				return ReadProperty(itemSource->Get(itemIndex), columns[0]->GetTextProperty());
+#undef ERROR_MESSAGE_PREFIX
 			}
 
 			WString ListViewItemBindableProvider::GetSubItem(vint itemIndex, vint index)
 			{
-				if (itemSource)
-				{
-					if (0 <= itemIndex && itemIndex < itemSource->GetCount() && 0 <= index && index < columns.Count() - 1)
-					{
-						return ReadProperty(itemSource->Get(itemIndex), columns[index + 1]->GetTextProperty());
-					}
-				}
-				return L"";
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::controls::ListViewItemBindableProvider::GetSubItem(vint, vint)#"
+				CHECK_ERROR(itemSource, ERROR_MESSAGE_PREFIX L"ItemSource is not set.");
+				CHECK_ERROR(index != -1, ERROR_MESSAGE_PREFIX L"column index cannot be -1, use GetText(itemIndex) instead.");
+				return ReadProperty(itemSource->Get(itemIndex), columns[index + 1]->GetTextProperty());
+#undef ERROR_MESSAGE_PREFIX
 			}
 
 			vint ListViewItemBindableProvider::GetDataColumnCount()
@@ -420,46 +408,22 @@ ListViewItemBindableProvider
 
 			vint ListViewItemBindableProvider::GetColumnSize(vint index)
 			{
-				if (index < 0 || index >= columns.Count())
-				{
-					return 0;
-				}
-				else
-				{
-					return columns[index]->GetSize();
-				}
+				return columns[index]->GetSize();
 			}
 
 			void ListViewItemBindableProvider::SetColumnSize(vint index, vint value)
 			{
-				if (index >= 0 && index < columns.Count())
-				{
-					columns[index]->SetSize(value);
-				}
+				columns[index]->SetSize(value);
 			}
 
 			GuiMenu* ListViewItemBindableProvider::GetDropdownPopup(vint index)
 			{
-				if (index < 0 || index >= columns.Count())
-				{
-					return 0;
-				}
-				else
-				{
-					return columns[index]->GetDropdownPopup();
-				}
+				return columns[index]->GetDropdownPopup();
 			}
 
 			ColumnSortingState ListViewItemBindableProvider::GetSortingState(vint index)
 			{
-				if (index < 0 || index >= columns.Count())
-				{
-					return ColumnSortingState::NotSorted;
-				}
-				else
-				{
-					return columns[index]->GetSortingState();
-				}
+				return columns[index]->GetSortingState();
 			}
 
 /***********************************************************************
