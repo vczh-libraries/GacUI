@@ -42,6 +42,7 @@
 
 - If there are failed test cases, fix the code to make it work.
 - You must carefully identify, if the cause is in the source code or in the failed test. In most of the cases, the cause is in the source code.
+  - You can reference to `Copilot_Task.md` and `Copilot_Planning.md` for more details before making a decision, about fixing the test case or the source code.
 - DO NOT delete any test case.
 - For every attempt of fixing the source code:
   - Explain why the original change did not work.
