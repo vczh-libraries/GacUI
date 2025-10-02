@@ -236,6 +236,15 @@ ListViewColumns
 		itemProvider->NotifyColumnChanged();
 	}
 
+	void ListViewColumns::BeforeInsert(vint index, const Ptr<ListViewColumn>& value)
+	{
+		// Check if this column is already in the provider
+		if (value->owner)
+		{
+			throw ArgumentException(L"The ListViewColumn is already belong to a ListViewColumns.", L"vl::presentation::controls::list::ListViewColumns::BeforeInsert", L"value");
+		}
+	}
+
 	void ListViewColumns::AfterInsert(vint index, const Ptr<ListViewColumn>& value)
 	{
 		collections::ObservableListBase<Ptr<ListViewColumn>>::AfterInsert(index, value);
@@ -265,6 +274,15 @@ ListViewColumns
 /***********************************************************************
 ListViewItemProvider
 ***********************************************************************/
+
+	void ListViewItemProvider::BeforeInsert(vint index, const Ptr<ListViewItem>& value)
+	{
+		// Check if this item is already in the provider
+		if (value->owner)
+		{
+			throw ArgumentException(L"The ListViewItem is already belong to a ListViewItemProvider.", L"vl::presentation::controls::list::ListViewItemProvider::BeforeInsert", L"value");
+		}
+	}
 
 	void ListViewItemProvider::AfterInsert(vint index, const Ptr<ListViewItem>& value)
 	{

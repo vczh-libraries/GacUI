@@ -822,7 +822,7 @@ TEST_FILE
 			
 			provider->Add(item);
 			
-			TEST_ERROR(provider->Add(item));
+			TEST_EXCEPTION(provider->Add(item), ArgumentException, [](const ArgumentException&) {});
 		});
 
 		TEST_CASE(L"AddDuplicateColumnReference")
@@ -832,7 +832,7 @@ TEST_FILE
 			
 			provider->GetColumns().Add(column);
 			
-			TEST_ERROR(provider->GetColumns().Add(column));
+			TEST_EXCEPTION(provider->GetColumns().Add(column), ArgumentException, [](const ArgumentException&) {});
 		});
 
 		TEST_CASE(L"PropertyChangeBeforeAttachment")

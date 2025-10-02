@@ -282,6 +282,7 @@ ListViewColumns
 
 		void											NotifyColumnRebuilt(vint column);
 		void											NotifyColumnChanged(vint column, bool needToRefreshItems);
+		void											BeforeInsert(vint index, const Ptr<ListViewColumn>& value)override;
 		void											AfterInsert(vint index, const Ptr<ListViewColumn>& value)override;
 		void											BeforeRemove(vint index, const Ptr<ListViewColumn>& value)override;
 		void											NotifyUpdateInternal(vint start, vint count, vint newCount)override;
@@ -311,6 +312,7 @@ ListViewItemProvider
 		ListViewColumns										columns;
 		ColumnItemViewCallbackList							columnItemViewCallbacks;
 
+		void												BeforeInsert(vint index, const Ptr<ListViewItem>& value)override;
 		void												AfterInsert(vint index, const Ptr<ListViewItem>& value)override;
 		void												BeforeRemove(vint index, const Ptr<ListViewItem>& value)override;
 
