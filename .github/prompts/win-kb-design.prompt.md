@@ -105,11 +105,14 @@
 # General Instruction
 
 - You are on Windows running in Visual Studio Code.
-- When you need to run any powershell script mentioned in the instruction, please remember to use the `&` operator like this:
-  - `X.ps1`: invalid command.
-  - `..\X.ps1`: valid command but it doesn't work with you.
-  - `& X.ps1` or `& ..\X.ps1`: good.
-  
+- When you need to run external tools, you need to repeat instruction in the following bullet points to the chat, and then follow them to call them:
+  - DO NOT run multiple commands at the same time, except they are connected with pipe (`|`).
+  - DO NOT call `msbuild` or other executable files by yourself.
+  - DO NOT create any new file unless explicitly directed.
+  - MUST run any powershell script in this format: `& absolute-path.ps1 parameters...`.
+  - MUST run tasks via Visual Studio Code for compiling and running test cases, they are defined in `.vscode/tasks.json`, DO NOT change this file.
+  - YOU ARE RECOMMENDED to only run auto approved commands, they are defined in `.vscode/settings.json`, DO NOT change this file.
+
 - Before saying anything, say "Yes, vczh!". I use it to make sure instruction files are taking effect.
 - Find out the `Accessing Knowledge Base` section, read `Index.md` of `KnowledgeBase` project in the current solution.
 - Before generating any code, if the file is changed, read it. Not all changes come from you, I will edit the file too. Do not generate code based on out-dated version in your memory.
