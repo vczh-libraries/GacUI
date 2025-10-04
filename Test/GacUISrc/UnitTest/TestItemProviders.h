@@ -89,11 +89,12 @@ namespace gacui_unittest_template
 
 	class MockNodeProviderCallback : public Object, public virtual INodeProviderCallback
 	{
+		INodeRootProvider* provider = nullptr;
 		List<WString>& callbackLog;
 	public:
 		MockNodeProviderCallback(List<WString>& log);
 
-		void OnAttached(INodeRootProvider* provider) override;
+		void OnAttached(INodeRootProvider* _provider) override;
 		void OnBeforeItemModified(INodeProvider* parentNode, vint start, vint count, vint newCount, bool itemReferenceUpdated) override;
 		void OnAfterItemModified(INodeProvider* parentNode, vint start, vint count, vint newCount, bool itemReferenceUpdated) override;
 		void OnItemExpanded(INodeProvider* node) override;

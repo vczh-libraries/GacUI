@@ -61,23 +61,28 @@ MockNodeProviderCallback
 
 	MockNodeProviderCallback::MockNodeProviderCallback(List<WString>& log) : callbackLog(log) {}
 
-	void MockNodeProviderCallback::OnAttached(INodeRootProvider* provider)
+	void MockNodeProviderCallback::OnAttached(INodeRootProvider* _provider)
 	{
+		provider = _provider;
 		callbackLog.Add(provider ? L"OnAttached(provider=valid)" : L"OnAttached(provider=null)");
 	}
 
 	void MockNodeProviderCallback::OnBeforeItemModified(INodeProvider* parentNode, vint start, vint count, vint newCount, bool itemReferenceUpdated)
 	{
-		callbackLog.Add(L"OnBeforeItemModified(start=" + itow(start) + L", count=" + itow(count) + 
-					   L", newCount=" + itow(newCount) + L", itemReferenceUpdated=" + 
-					   (itemReferenceUpdated ? L"true" : L"false") + L")");
+		auto parentName = provider->GetRootNode() == parentNode ? L"[ROOT]" : provider->GetTextValue(parentNode);
+		callbackLog.Add(parentName + L"->" +
+						L"OnBeforeItemModified(start=" + itow(start) + L", count=" + itow(count) + 
+						L", newCount=" + itow(newCount) + L", itemReferenceUpdated=" + 
+						(itemReferenceUpdated ? L"true" : L"false") + L")");
 	}
 
 	void MockNodeProviderCallback::OnAfterItemModified(INodeProvider* parentNode, vint start, vint count, vint newCount, bool itemReferenceUpdated)
 	{
-		callbackLog.Add(L"OnAfterItemModified(start=" + itow(start) + L", count=" + itow(count) + 
-					   L", newCount=" + itow(newCount) + L", itemReferenceUpdated=" + 
-					   (itemReferenceUpdated ? L"true" : L"false") + L")");
+		auto parentName = provider->GetRootNode() == parentNode ? L"[ROOT]" : provider->GetTextValue(parentNode);
+		callbackLog.Add(parentName + L"->" +
+						L"OnAfterItemModified(start=" + itow(start) + L", count=" + itow(count) + 
+						L", newCount=" + itow(newCount) + L", itemReferenceUpdated=" + 
+						(itemReferenceUpdated ? L"true" : L"false") + L")");
 	}
 
 	void MockNodeProviderCallback::OnItemExpanded(INodeProvider* node)
