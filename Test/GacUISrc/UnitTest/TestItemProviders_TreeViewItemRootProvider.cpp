@@ -1,4 +1,5 @@
 #include "TestItemProviders.h"
+#include "../../../Source/Reflection/TypeDescriptors/GuiReflectionPlugin.h"
 
 using namespace gacui_unittest_template;
 
@@ -715,8 +716,8 @@ TEST_FILE
 			
 			// Get binding value (tag) through INodeRootProvider interface
 			auto nodeRootProvider = dynamic_cast<INodeRootProvider*>(provider.Obj());
-			auto tag = nodeRootProvider->GetBindingValue(node.Obj());
-			TEST_ASSERT(UnboxValue<vint>(tag) == 12345);
+			auto item2 = UnboxValue<Ptr<TreeViewItem>>(nodeRootProvider->GetBindingValue(node.Obj()));
+			TEST_ASSERT(UnboxValue<vint>(item2->tag) == 12345);
 		});
 	});
 
