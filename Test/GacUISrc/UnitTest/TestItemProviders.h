@@ -123,6 +123,8 @@ Helper Functions
 	Ptr<TextItem> CreateTextItem(const WString& text, bool checked = false);
 	Ptr<ListViewItem> CreateListViewItem(const WString& text);
 	Ptr<ListViewColumn> CreateListViewColumn(const WString& text, vint size = 100);
+	// Helper function to create MemoryNodeProvider with TreeViewItem (null image)
+	Ptr<MemoryNodeProvider> CreateTreeViewItem(const WString& text);
 }
 
 namespace vl::reflection::description

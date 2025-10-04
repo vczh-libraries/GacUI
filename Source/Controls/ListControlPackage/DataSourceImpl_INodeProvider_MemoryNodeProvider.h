@@ -36,7 +36,6 @@ MemoryNodeProvider
 
 			void						OnBeforeChildModified(vint start, vint count, vint newCount);
 			void						OnAfterChildModified(vint start, vint count, vint newCount);
-			bool						QueryInsert(vint index, Ptr<MemoryNodeProvider> const& child)override;
 			bool						QueryRemove(vint index, Ptr<MemoryNodeProvider> const& child)override;
 			void						BeforeInsert(vint index, Ptr<MemoryNodeProvider> const& child)override;
 			void						BeforeRemove(vint index, Ptr<MemoryNodeProvider> const& child)override;

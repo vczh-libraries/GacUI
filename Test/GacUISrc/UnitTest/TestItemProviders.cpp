@@ -168,6 +168,14 @@ Helper Functions
 		return Ptr(new ListViewColumn(text, size));
 	}
 
+	Ptr<MemoryNodeProvider> CreateTreeViewItem(const WString& text)
+	{
+		// Always pass nullptr for image since creating GuiImageData is impractical in unit tests
+		// TreeViewItem and MemoryNodeProvider must work together, so create both at once
+		auto item = Ptr(new TreeViewItem(nullptr, text));
+		return Ptr(new MemoryNodeProvider(item));
+	}
+
 }
 
 namespace vl::reflection::description
