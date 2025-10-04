@@ -8,6 +8,13 @@
 - Your goal is to finish an execution document in `Copilot_Execution.md` according to `Copilot_Task.md` and `Copilot_Planning.md`.
 - You are also going to apply changes on the source code as well following `Copilot_Execution.md`.
 
+⚠️ **CRITICAL RULE FOR IMPROVEMENT PLAN SECTION:**:
+When copying code from Copilot_Planning.md to Copilot_Execution.md:
+- ❌ WRONG: "Replace file with comprehensive test suite including: [list]"
+- ✅ CORRECT: Copy the ENTIRE code block with all test cases verbatim
+- You MUST include the complete, executable code that will be applied to files
+- NO SUMMARIES, NO PLACEHOLDERS, NO "refer to Planning", NO LISTS
+
 ## Copilot_Planning.md Structure
 
 - `# !!!EXECUTION!!!`: This file always begin with this title.
@@ -35,14 +42,24 @@
 - All changes you need to made is already in `Copilot_Planning.md`, but it contains many explanations.
 - Read `Copilot_Planning.md`, copy the following parts to `Copilot_Execution.md`:
   - `# IMPROVEMENT PLAN`
-    - Only include actual code changes. Do not include any explanations or comments around them.
+    - Copy EVERY code block exactly as written
+    - If Planning has 1000 lines of test code, Execution must have those same 1000 lines
+    - Remove only the explanatory text between code blocks
+    - Keep ALL actual code
   - `# TEST PLAN`
-    - Only include actual code changes. Do not include any explanations or comments around them.
-  - You must copy all code changes to `Copilot_Execution.md`. Do not use placeholder text like "refer to Copilot_Planning.md" - always include the full code changes directly.
+    - Copy EVERY code block exactly as written
+    - If Planning has 1000 lines of test code, Execution must have those same 1000 lines
+    - Remove only the explanatory text between code blocks
+    - Keep ALL actual code
   - DO NOT copy `# UPDATES` from `Copilot_Planning.md` to `Copilot_Execution.md`. The `# UPDATES` in `Copilot_Execution.md` is for update requests for `Copilot_Execution.md` and the actual source code.
 
 ## Step 3. Mark the Completion
 
+- Self-check your Copilot_Execution.md:
+  - [ ] Can someone copy-paste ONLY from Execution.md and apply all changes? (No need to refer to Planning.md)
+  - [ ] Does every STEP show the complete code to write, not just describe it?
+  - [ ] Is there any phrase like "including:", "such as:", "etc.", "refer to"? (If yes, you did it wrong!)
+  - [ ] Count lines of code in Planning.md STEP X vs Execution.md STEP X - are they similar?
 - Ensure there is a `# !!!FINISHED!!!` mark at the end of `Copilot_Execution.md` to indicate the document reaches the end.
 
 ## Step 4. Finish the Source Code
