@@ -305,7 +305,7 @@ TEST_FILE
 			
 			// Verify OnItemExpanded callback fires
 			const wchar_t* expected[] = {
-				L"OnItemExpanded()"
+				L"Node->OnItemExpanded()"
 			};
 			AssertCallbacks(callbackLog, expected);
 		});
@@ -330,7 +330,7 @@ TEST_FILE
 			
 			// Verify OnItemCollapsed callback fires
 			const wchar_t* expected[] = {
-				L"OnItemCollapsed()"
+				L"Node->OnItemCollapsed()"
 			};
 			AssertCallbacks(callbackLog, expected);
 		});
@@ -397,7 +397,7 @@ TEST_FILE
 			
 			// Verify callback fires even though there are no children
 			const wchar_t* expected[] = {
-				L"OnItemExpanded()"
+				L"Leaf->OnItemExpanded()"
 			};
 			AssertCallbacks(callbackLog, expected);
 		});
@@ -454,10 +454,10 @@ TEST_FILE
 			
 			// Verify all callbacks fire in correct order
 			const wchar_t* expected[] = {
-				L"OnItemExpanded()",
-				L"OnItemCollapsed()",
-				L"OnItemExpanded()",
-				L"OnItemCollapsed()"
+				L"Node->OnItemExpanded()",
+				L"Node->OnItemCollapsed()",
+				L"Node->OnItemExpanded()",
+				L"Node->OnItemCollapsed()"
 			};
 			AssertCallbacks(callbackLog, expected);
 		});
@@ -781,12 +781,12 @@ TEST_FILE
 			const wchar_t* expected[] = {
 				L"[ROOT]->OnBeforeItemModified(start=0, count=0, newCount=1, itemReferenceUpdated=true)",
 				L"[ROOT]->OnAfterItemModified(start=0, count=0, newCount=1, itemReferenceUpdated=true)",
-				L"OnItemExpanded()",
+				L"Parent->OnItemExpanded()",
 				L"Parent->OnBeforeItemModified(start=0, count=0, newCount=1, itemReferenceUpdated=true)",
 				L"Parent->OnAfterItemModified(start=0, count=0, newCount=1, itemReferenceUpdated=true)",
 				L"[ROOT]->OnBeforeItemModified(start=0, count=1, newCount=1, itemReferenceUpdated=false)",
 				L"[ROOT]->OnAfterItemModified(start=0, count=1, newCount=1, itemReferenceUpdated=false)",
-				L"OnItemCollapsed()",
+				L"Parent->OnItemCollapsed()",
 				L"[ROOT]->OnBeforeItemModified(start=0, count=1, newCount=0, itemReferenceUpdated=true)",
 				L"[ROOT]->OnAfterItemModified(start=0, count=1, newCount=0, itemReferenceUpdated=true)"
 			};

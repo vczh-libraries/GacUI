@@ -87,12 +87,14 @@ MockNodeProviderCallback
 
 	void MockNodeProviderCallback::OnItemExpanded(INodeProvider* node)
 	{
-		callbackLog.Add(L"OnItemExpanded()");
+		auto nodeName = provider->GetRootNode() == node ? L"[ROOT]" : provider->GetTextValue(node);
+		callbackLog.Add(nodeName + L"->OnItemExpanded()");
 	}
 
 	void MockNodeProviderCallback::OnItemCollapsed(INodeProvider* node)
 	{
-		callbackLog.Add(L"OnItemCollapsed()");
+		auto nodeName = provider->GetRootNode() == node ? L"[ROOT]" : provider->GetTextValue(node);
+		callbackLog.Add(nodeName + L"->OnItemCollapsed()");
 	}
 
 /***********************************************************************
