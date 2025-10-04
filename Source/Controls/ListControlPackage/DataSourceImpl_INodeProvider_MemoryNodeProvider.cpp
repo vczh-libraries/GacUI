@@ -197,14 +197,8 @@ MemoryNodeProvider
 
 	Ptr<INodeProvider> MemoryNodeProvider::GetChild(vint index)
 	{
-		if (0 <= index && index < childCount)
-		{
-			return children[index];
-		}
-		else
-		{
-			return nullptr;
-		}
+		CHECK_ERROR(index >= 0 && index < childCount, L"MemoryNodeProvider::GetChild(vint)#Argument index not in range.");
+		return children[index];
 	}
 
 /***********************************************************************
