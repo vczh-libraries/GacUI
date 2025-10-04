@@ -66,7 +66,7 @@ In the remaining tasks, in each test file, all test cases must use the same set 
 - [x] TASK No.3: Create comprehensive unit test plan for ListViewItemProvider
 - [x] TASK No.4: Create comprehensive unit test plan for ListViewItemBindableProvider
 - [x] TASK No.5: Create comprehensive unit test plan for TreeViewItemRootProvider
-- [ ] TASK No.6: Create comprehensive unit test plan for TreeViewItemBindableRootProvider
+- [x] TASK No.6: Create comprehensive unit test plan for TreeViewItemBindableRootProvider
 
 ## Testing Philosophy Summary
 
