@@ -59,6 +59,11 @@ Update unfinished tasks if there are conflict with this
 #file:win-0-scrum.prompt.md 
 In the remaining tasks, in each test file, all test cases must use the same set of callback objects, and clear the logs after calling InitProvider or calling AttachCallback (except that it is testing against AttachCallback). And remember that DetachCallback also fires `OnAttached(provider=nullptr)`
 
+## UPDATE
+
+#file:win-0-scrum.prompt.md 
+In TASK No.6, it creates multiple test categories. Split each test category to a new task to replace TASK No.6
+
 # TASKS
 
 - [x] TASK No.1: Create comprehensive unit test plan for TextItemProvider
@@ -66,7 +71,9 @@ In the remaining tasks, in each test file, all test cases must use the same set 
 - [x] TASK No.3: Create comprehensive unit test plan for ListViewItemProvider
 - [x] TASK No.4: Create comprehensive unit test plan for ListViewItemBindableProvider
 - [x] TASK No.5: Create comprehensive unit test plan for TreeViewItemRootProvider
-- [x] TASK No.6: Create comprehensive unit test plan for TreeViewItemBindableRootProvider
+- [ ] TASK No.6: Test core functionality for TreeViewItemBindableRootProvider
+- [ ] TASK No.7: Test hierarchical binding scenarios for TreeViewItemBindableRootProvider
+- [ ] TASK No.8: Test edge cases for TreeViewItemBindableRootProvider
 
 ## Testing Philosophy Summary
 
@@ -409,31 +416,15 @@ TreeViewItemRootProvider introduces hierarchical data management with expansion 
 - Verify interface contracts for tree navigation methods
 - This establishes patterns for testing hierarchical data providers that will be used in bindable tree testing
 
-## TASK No.6: Create comprehensive unit test plan for TreeViewItemBindableRootProvider
+## TASK No.6: Test core functionality for TreeViewItemBindableRootProvider
 
-The TreeViewItemBindableRootProvider is the most complex provider, combining hierarchical tree structure with data binding. It uses TreeViewItemBindableNode for bindable hierarchical data and supports property bindings for text and children relationships.
+The TreeViewItemBindableRootProvider is the most complex provider, combining hierarchical tree structure with data binding. This task focuses on testing the core functionality of property binding setup, basic tree operations, and interface methods.
 
 ### what to be done
 
-- Expand the existing `TestItemProviders_TreeViewItemBindableRootProvider.cpp` file with comprehensive test cases
+- Expand the existing `TestItemProviders_TreeViewItemBindableRootProvider.cpp` file with test cases for core functionality
 - Each test case must create its own callbackLog and callback objects for isolation and robustness
 - Clear callback logs after SetItemSource calls (except when testing SetItemSource behavior itself)
-- Test hierarchical property binding with childrenProperty for tree structure
-- Test ObservableList integration at multiple tree hierarchy levels
-- Test expansion state management coordination with bindable data changes
-- Test callback behavior for tree structure changes through data binding
-- Test interface methods for hierarchical navigation in bindable context (skip image-related methods)
-- Test duplicate item detection if applicable
-- Test DetachCallback behavior and verify it fires `OnAttached(provider=nullptr)`
-
-### how to test it
-
-**Test Infrastructure:**
-- Each test case must create its own callbackLog and MockNodeProviderCallback objects at the beginning
-- This ensures test isolation and prevents state pollution if tests fail (critical lesson from Task No.5)
-- Clear callback logs after SetItemSource in each test case (except when testing SetItemSource itself)
-
-**Core Functionality Tests:**
 - Test property binding setup for textProperty and childrenProperty (skip imageProperty per Task No.3 learnings)
 - Test SetItemSource with hierarchical bindable data and verify callback sequences (only OnItemModified for structure changes)
 - Test childrenProperty binding with nested ObservableList structures
@@ -443,17 +434,100 @@ The TreeViewItemBindableRootProvider is the most complex provider, combining hie
 - Test UpdateBindingProperties coordination with tree structure
 - Test interface methods for tree navigation through property bindings (merge RequestView and dynamic_cast, skip image-related methods)
 
-**Hierarchical Binding Scenarios:**
-- Test multi-level ObservableList changes and their callback propagation
-- Test childrenProperty modifications and their impact on tree structure
-- Test expansion state coordination when underlying data structure changes
+### how to test it
+
+**Test Infrastructure:**
+- Each test case must create its own callbackLog and MockNodeProviderCallback objects at the beginning
+- This ensures test isolation and prevents state pollution if tests fail (critical lesson from Task No.5)
+- Clear callback logs after SetItemSource in each test case (except when testing SetItemSource itself)
+
+**Core Functionality Tests:**
+- Test property binding setup for textProperty and childrenProperty configurations
+- Test SetItemSource with various hierarchical data structures and verify OnItemModified callbacks
+- Test childrenProperty binding establishes correct parent-child relationships
+- Test node expansion operations trigger proper callbacks
+- Test node collapse operations trigger proper callbacks
+- Test property changes in bound items trigger OnItemModified (verify no tree-specific callbacks fire if they don't exist)
+- Test TreeViewItemBindableNode lifecycle and relationship management
+- Test UpdateBindingProperties updates tree structure correctly
+- Test INodeRootProvider interface methods through property bindings (merge RequestView and dynamic_cast)
+- Skip image-related interface methods (lesson from Task No.3)
+- Test GetMemoryNode and tree navigation methods with bindable data
+
+### rationale
+
+TreeViewItemBindableRootProvider is the most complex provider pattern combining tree hierarchy with data binding. Breaking it into focused tasks ensures thorough testing while maintaining manageable scope. This first task establishes core functionality:
+- Property binding mechanisms are fundamental to all subsequent testing
+- Basic tree operations need solid verification before testing complex scenarios
+- Interface method validation ensures the provider contract works correctly
+- Following established testing philosophy:
+  - Focus on callback behavior for operations rather than internal storage
+  - Skip image property testing (impractical in unit tests - lesson from Task No.3)
+  - Use minimal test infrastructure leveraging existing mock callbacks
+  - Each test case creates its own callback objects for isolation (critical lesson from Task No.5)
+  - Clear callback logs after SetItemSource for clean verification (except when testing SetItemSource itself)
+- This task establishes the foundation for hierarchical binding scenarios and edge cases in subsequent tasks
+
+## TASK No.7: Test hierarchical binding scenarios for TreeViewItemBindableRootProvider
+
+This task focuses on testing complex hierarchical scenarios with multi-level data structures, dynamic structure changes, and callback coordination across tree levels.
+
+### what to be done
+
+- Continue expanding `TestItemProviders_TreeViewItemBindableRootProvider.cpp` with hierarchical binding scenario test cases
+- Each test case must create its own callbackLog and callback objects for isolation and robustness
+- Clear callback logs after SetItemSource calls (except when testing SetItemSource behavior itself)
+- Test multi-level ObservableList changes and their callback propagation through tree hierarchy
+- Test childrenProperty modifications and their impact on tree structure at various levels
+- Test expansion state coordination when underlying data structure changes dynamically
 - Test parent item property changes affecting child node visibility/structure
-- Test callback coordination using only existing callback interfaces
+- Test callback coordination using only existing callback interfaces across tree levels
 - Test manual notification scenarios for hierarchical property changes
 - Test RemoveRange operations on hierarchical ObservableList structures
 - Skip testing duplicate bindable items in the tree structure (Value objects cannot be reliably detected as duplicates)
 
-**Edge Cases:**
+### how to test it
+
+**Test Infrastructure:**
+- Each test case must create its own callbackLog and MockNodeProviderCallback objects at the beginning
+- Clear callback logs after SetItemSource to isolate verification (except when testing SetItemSource itself)
+
+**Hierarchical Binding Scenarios:**
+- Test adding items to nested ObservableList at different tree levels and verify callbacks propagate correctly
+- Test removing items from nested ObservableList and verify callback sequences across levels
+- Test modifying childrenProperty at various tree depths and verify structure updates
+- Test parent node expansion when child ObservableList changes dynamically
+- Test parent item property changes (text, etc.) and verify child nodes remain consistent
+- Test multi-level callback coordination - verify proper callback ordering when changes occur at different levels
+- Test manual UpdateBindingProperties at specific tree nodes and verify callbacks
+- Test RemoveRange on ObservableList with children and verify hierarchical cleanup callbacks
+- Test nested ObservableList replacement (changing entire childrenProperty collection)
+- Test expansion state persistence across data structure modifications
+
+### rationale
+
+Hierarchical binding scenarios represent the core complexity of TreeViewItemBindableRootProvider. Separating these tests into a dedicated task allows focused verification of multi-level data binding:
+- Multi-level ObservableList coordination is critical for real tree view usage
+- Dynamic structure changes need thorough validation to ensure callback propagation works correctly
+- Expansion state coordination with data changes is a common source of bugs
+- Following established testing philosophy:
+  - Focus on callback behavior across tree hierarchy levels
+  - Skip duplicate item detection (Value objects cannot be reliably detected - lesson from Task No.3)
+  - Test practical scenarios like nested list modifications that reflect real usage
+  - Use minimal test infrastructure with existing mock callbacks
+  - Each test case creates its own callback objects for isolation (critical lesson from Task No.5)
+  - Clear callback logs after SetItemSource for clean verification
+- This task builds upon the core functionality from Task No.6 and prepares for edge case testing in Task No.8
+
+## TASK No.8: Test edge cases for TreeViewItemBindableRootProvider
+
+This task focuses on testing edge cases, error handling, boundary conditions, and cleanup scenarios for TreeViewItemBindableRootProvider to ensure robustness.
+
+### what to be done
+
+- Complete `TestItemProviders_TreeViewItemBindableRootProvider.cpp` with edge case and error handling test cases
+- Each test case must create its own callbackLog and callback objects for isolation and robustness
+- Clear callback logs after SetItemSource calls (except when testing SetItemSource behavior itself)
 - Test childrenProperty with null or empty child collections - empty should only trigger OnAttached
 - Use `TEST_ERROR` for property binding with missing or invalid childrenProperty (index out of range)
 - Test SetItemSource transitions between different hierarchical structures
@@ -461,21 +535,46 @@ The TreeViewItemBindableRootProvider is the most complex provider, combining hie
 - Test callback detachment scenarios during tree structure modifications - verify DetachCallback fires `OnAttached(provider=nullptr)`
 - Use `TEST_ERROR` for out-of-bounds operations in hierarchical context (index out of range)
 
+### how to test it
+
+**Test Infrastructure:**
+- Each test case must create its own callbackLog and MockNodeProviderCallback objects at the beginning
+- Clear callback logs after SetItemSource to isolate verification (except when testing SetItemSource itself)
+
+**Edge Cases:**
+- Test SetItemSource with null childrenProperty and verify safe handling
+- Test SetItemSource with empty childrenProperty ObservableList - verify only OnAttached fires, no OnItemModified
+- Use `TEST_ERROR` for accessing nodes when childrenProperty is missing or invalid (index out of range)
+- Test SetItemSource transition from null to non-null hierarchical structure
+- Test SetItemSource transition from complex hierarchy to simple flat structure
+- Test SetItemSource transition from simple to complex hierarchy
+- Test SetItemSource with circular reference detection (if applicable)
+- Test expansion state behavior when childrenProperty becomes empty dynamically
+- Test expansion operation on node with null children
+- Test DetachCallback during active tree operations - verify `OnAttached(provider=nullptr)` fires correctly
+- Test DetachCallback after expansion state changes - verify proper cleanup
+- Use `TEST_ERROR` for node operations with invalid indices (out of range)
+- Use `TEST_ERROR` for expansion/collapse on invalid node references (out of range)
+- Test rapid SetItemSource changes and verify proper cleanup between transitions
+- Test property binding with items that have inconsistent childrenProperty types
+
 ### rationale
 
-TreeViewItemBindableRootProvider represents the culmination of provider pattern complexity combining tree hierarchy with data binding. Following the established testing philosophy including Task No.3 and Task No.5 learnings:
-- Focus on callback behavior for hierarchical operations rather than internal tree storage
-- Skip image property testing as it's impractical to create image objects in unit tests (lesson from Task No.3)
-- Skip duplicate item detection as bindable items are Value objects that cannot be reliably detected as duplicates
-- Use TEST_ERROR for out-of-bounds operations (index out of range)
-- Test practical scenarios like childrenProperty binding and expansion state coordination
-- Use minimal test infrastructure leveraging existing mock callbacks
-- **Each test case creates its own callback objects for isolation and maintainability** (critical lesson from Task No.5)
-- Clear callback logs after SetItemSource to isolate test case verification (except when testing SetItemSource itself)
-- Test DetachCallback behavior to verify proper cleanup including `OnAttached(provider=nullptr)` notification
-- Emphasize edge cases around hierarchical data binding that reflect real usage
-- Verify interface method contracts work correctly through property bindings across tree levels
-- This completes the provider testing pattern progression from simple (TextItemProvider) to complex hierarchical data binding
+Edge case testing completes the comprehensive test coverage for TreeViewItemBindableRootProvider by verifying robustness and error handling:
+- Null and empty childrenProperty handling is critical for safe operation
+- SetItemSource transitions cover common usage patterns and ensure proper cleanup
+- Callback detachment scenarios verify proper resource management
+- Following established testing philosophy:
+  - Use TEST_ERROR for out-of-bounds operations (index out of range)
+  - Use TEST_ERROR for invalid property bindings
+  - Empty ItemSource should only trigger OnAttached, not OnItemModified (lesson from Task No.2)
+  - Test DetachCallback fires `OnAttached(provider=nullptr)` for proper cleanup
+  - Focus on practical edge cases that could occur in real applications
+  - Use minimal test infrastructure with existing mock callbacks
+  - Each test case creates its own callback objects for isolation (critical lesson from Task No.5)
+  - Clear callback logs after SetItemSource for clean verification
+- This task completes the provider testing pattern progression from simple (TextItemProvider) to complex hierarchical data binding
+- With this task complete, all six provider types have comprehensive test coverage
 
 # Impact to the Knowledge Base
 
