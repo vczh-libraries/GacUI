@@ -77,7 +77,7 @@ In TASK No.6, it creates multiple test categories. Split each test category to a
 
 ## Testing Philosophy Summary
 
-Based on the completed TextItemProvider, TextItemBindableProvider, and ListViewItemProvider tasks and your feedback updates, the testing philosophy emphasizes:
+Based on the completed TextItemProvider, TextItemBindableProvider, ListViewItemProvider, and TreeViewItemBindableRootProvider tasks and your feedback updates, the testing philosophy emphasizes:
 
 **Focus on Behavioral Testing, Not Internal State:**
 - Avoid testing provider content directly (Count(), Get()) as these are ensured by other tests
@@ -127,6 +127,14 @@ Based on the completed TextItemProvider, TextItemBindableProvider, and ListViewI
 **Empty ItemSource Handling:**
 - EmptyItemSourceScenarios should expect only OnAttached callback, not OnItemModified
 - Setting ItemSource to empty ObservableList should not trigger OnItemModified callback
+
+**Eager Child Preparation (from Task No.6):**
+- `SetItemSource` in TreeViewItemBindableRootProvider EAGERLY prepares children immediately, not lazily
+- When SetItemSource is called, callbacks will show `newCount=<actual child count>`, not `newCount=0`
+- This applies to all levels of the hierarchy - child nodes are prepared immediately when accessed
+- `UpdateBindingProperties` maintains child counts during unprepare/re-prepare cycles
+- Callback parameters (`count` and `newCount`) reflect actual prepared child counts, not zero
+- Don't assume implementation behavior - verify actual behavior first when designing tests
 
 **Pragmatic Test Scope (from Task No.3):**
 - Skip testing methods that require complex object creation (images, dropdown popups)
@@ -494,14 +502,22 @@ This task focuses on testing complex hierarchical scenarios with multi-level dat
 
 **Hierarchical Binding Scenarios:**
 - Test adding items to nested ObservableList at different tree levels and verify callbacks propagate correctly
+  - **Important**: Account for eager child preparation - expect actual child counts in callbacks, not zero
 - Test removing items from nested ObservableList and verify callback sequences across levels
+  - **Important**: Callback parameters will show actual counts before/after removal due to eager preparation
 - Test modifying childrenProperty at various tree depths and verify structure updates
+  - **Important**: When structure changes, callbacks show actual prepared child counts
 - Test parent node expansion when child ObservableList changes dynamically
+  - **Important**: Children are already prepared eagerly, so expansion mainly affects visual state
 - Test parent item property changes (text, etc.) and verify child nodes remain consistent
 - Test multi-level callback coordination - verify proper callback ordering when changes occur at different levels
+  - **Important**: All child counts in callbacks reflect eager preparation at each level
 - Test manual UpdateBindingProperties at specific tree nodes and verify callbacks
+  - **Important**: Expect maintained child counts during unprepare/re-prepare cycles (e.g., `count=2, newCount=2`)
 - Test RemoveRange on ObservableList with children and verify hierarchical cleanup callbacks
+  - **Important**: Callback parameters reflect actual prepared child counts being removed
 - Test nested ObservableList replacement (changing entire childrenProperty collection)
+  - **Important**: Callbacks show old count and new count reflecting actual prepared children
 - Test expansion state persistence across data structure modifications
 
 ### rationale
@@ -517,7 +533,11 @@ Hierarchical binding scenarios represent the core complexity of TreeViewItemBind
   - Use minimal test infrastructure with existing mock callbacks
   - Each test case creates its own callback objects for isolation (critical lesson from Task No.5)
   - Clear callback logs after SetItemSource for clean verification
+  - **Account for eager child preparation in all test expectations** (critical lesson from Task No.6)
+  - Callback parameters (`count`, `newCount`) reflect actual prepared child counts at all hierarchy levels
+  - Don't assume lazy preparation - the implementation prepares children eagerly
 - This task builds upon the core functionality from Task No.6 and prepares for edge case testing in Task No.8
+- The eager preparation behavior discovered in Task No.6 is fundamental to understanding hierarchical callback sequences
 
 ## TASK No.8: Test edge cases for TreeViewItemBindableRootProvider
 
@@ -543,19 +563,26 @@ This task focuses on testing edge cases, error handling, boundary conditions, an
 
 **Edge Cases:**
 - Test SetItemSource with null childrenProperty and verify safe handling
+  - **Important**: With null children, expect `newCount=0` due to no children to prepare eagerly
 - Test SetItemSource with empty childrenProperty ObservableList - verify only OnAttached fires, no OnItemModified
+  - **Important**: Empty ObservableList results in `newCount=0` in callbacks (nothing to prepare)
 - Use `TEST_ERROR` for accessing nodes when childrenProperty is missing or invalid (index out of range)
 - Test SetItemSource transition from null to non-null hierarchical structure
+  - **Important**: Callbacks show `count=0, newCount=<actual child count>` due to eager preparation of new structure
 - Test SetItemSource transition from complex hierarchy to simple flat structure
+  - **Important**: Callbacks show `count=<old child count>, newCount=<new child count>` reflecting eager preparation
 - Test SetItemSource transition from simple to complex hierarchy
+  - **Important**: Both old and new child counts reflected in callbacks due to eager preparation
 - Test SetItemSource with circular reference detection (if applicable)
 - Test expansion state behavior when childrenProperty becomes empty dynamically
+  - **Important**: When children are cleared, expect `count=<old count>, newCount=0`
 - Test expansion operation on node with null children
 - Test DetachCallback during active tree operations - verify `OnAttached(provider=nullptr)` fires correctly
 - Test DetachCallback after expansion state changes - verify proper cleanup
 - Use `TEST_ERROR` for node operations with invalid indices (out of range)
 - Use `TEST_ERROR` for expansion/collapse on invalid node references (out of range)
 - Test rapid SetItemSource changes and verify proper cleanup between transitions
+  - **Important**: Each SetItemSource eagerly prepares children, so rapid changes show actual counts at each step
 - Test property binding with items that have inconsistent childrenProperty types
 
 ### rationale
@@ -573,8 +600,13 @@ Edge case testing completes the comprehensive test coverage for TreeViewItemBind
   - Use minimal test infrastructure with existing mock callbacks
   - Each test case creates its own callback objects for isolation (critical lesson from Task No.5)
   - Clear callback logs after SetItemSource for clean verification
+  - **All callback expectations must account for eager child preparation** (critical lesson from Task No.6)
+  - Empty childrenProperty results in `newCount=0`, non-empty results in actual prepared counts
+  - SetItemSource transitions show accurate before/after child counts due to eager preparation
+  - The eager preparation behavior is crucial for understanding edge case callback sequences
 - This task completes the provider testing pattern progression from simple (TextItemProvider) to complex hierarchical data binding
 - With this task complete, all six provider types have comprehensive test coverage
+- The learnings about eager preparation ensure edge case tests have accurate expectations about callback behavior
 
 # Impact to the Knowledge Base
 
