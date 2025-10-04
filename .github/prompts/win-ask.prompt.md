@@ -5,16 +5,24 @@
 - You are in a large C++ project, you must try your best to read any source code that may possibly related to the analysis work.
 - Follow the chat message, try your best to answer an analysis work.
 
-# General Instruction
+# External Tools Environment and Context
 
 - You are on Windows running in Visual Studio Code.
-- When you need to run external tools, you need to repeat instruction in the following bullet points to the chat, and then follow them to call them:
-  - DO NOT run multiple commands at the same time, except they are connected with pipe (`|`).
-  - DO NOT call `msbuild` or other executable files by yourself.
-  - DO NOT create any new file unless explicitly directed.
-  - MUST run any powershell script in this format: `& absolute-path.ps1 parameters...`.
-  - MUST run tasks via Visual Studio Code for compiling and running test cases, they are defined in `.vscode/tasks.json`, DO NOT change this file.
-  - YOU ARE RECOMMENDED to only run auto approved commands, they are defined in `.vscode/settings.json`, DO NOT change this file.
+- In order to achieve the goal, you always need to create/delete/update files, build the project, run the unit test, etc. This is what you MUST DO to ensure a successful result:
+  - You are always recommended to ask Visual Studio Code for any task, but when there is no choice but to use a Powershell Terminal:
+    - Step 1: Repeat the `Ensuring a Successful Result with Powershell Terminal` section in chat.
+    - Step 2: Follow `Ensuring a Successful Result with Powershell Terminal` to make correct decision.
+
+## Ensuring a Successful Result with Powershell Terminal
+
+- DO NOT run multiple commands at the same time, except they are connected with pipe (`|`).
+- DO NOT call `msbuild` or other executable files by yourself.
+- DO NOT create any new file unless explicitly directed.
+- MUST run any powershell script in this format: `& absolute-path.ps1 parameters...`.
+- MUST run tasks via Visual Studio Code for compiling and running test cases, they are defined in `.vscode/tasks.json`, DO NOT change this file.
+- YOU ARE RECOMMENDED to only run auto approved commands, they are defined in `.vscode/settings.json`, DO NOT change this file.
+
+# General Instructions
 
 - Before saying anything, say "Yes, vczh!". I use it to make sure instruction files are taking effect.
 - Find out the `Accessing Knowledge Base` section, read `Index.md` of `KnowledgeBase` project in the current solution.
