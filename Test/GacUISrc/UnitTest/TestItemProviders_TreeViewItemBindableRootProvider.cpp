@@ -107,14 +107,14 @@ TEST_FILE
 			auto rootItem = CreateBindableTree(L"Root", 3);
 			provider->SetItemSource(BoxValue(rootItem));
 			
-			// SetItemSource only fires callbacks for root, children not prepared yet
+			// SetItemSource eagerly prepares children, so newCount reflects child count
 			const wchar_t* expected[] = {
-				L"[ROOT]->OnBeforeItemModified(start=0, count=0, newCount=0, itemReferenceUpdated=true)",
-				L"[ROOT]->OnAfterItemModified(start=0, count=0, newCount=0, itemReferenceUpdated=true)"
+				L"[ROOT]->OnBeforeItemModified(start=0, count=0, newCount=3, itemReferenceUpdated=true)",
+				L"[ROOT]->OnAfterItemModified(start=0, count=0, newCount=3, itemReferenceUpdated=true)"
 			};
 			AssertCallbacks(callbackLog, expected);
 			
-			// Access children to trigger preparation
+			// Verify children are accessible
 			auto root = provider->GetRootNode();
 			TEST_ASSERT(root->GetChildCount() == 3);
 			TEST_ASSERT(provider->GetTextValue(root->GetChild(0).Obj()) == L"Root.Child1");
@@ -171,10 +171,10 @@ TEST_FILE
 			
 			provider->SetItemSource(BoxValue(rootItem));
 			
-			// Only root callbacks fire
+			// SetItemSource eagerly prepares children at root level (newCount=2)
 			const wchar_t* expected[] = {
-				L"[ROOT]->OnBeforeItemModified(start=0, count=0, newCount=0, itemReferenceUpdated=true)",
-				L"[ROOT]->OnAfterItemModified(start=0, count=0, newCount=0, itemReferenceUpdated=true)"
+				L"[ROOT]->OnBeforeItemModified(start=0, count=0, newCount=2, itemReferenceUpdated=true)",
+				L"[ROOT]->OnAfterItemModified(start=0, count=0, newCount=2, itemReferenceUpdated=true)"
 			};
 			AssertCallbacks(callbackLog, expected);
 			
@@ -207,10 +207,10 @@ TEST_FILE
 			auto rootItem2 = CreateBindableTree(L"Root2", 3);
 			provider->SetItemSource(BoxValue(rootItem2));
 			
-			// Verify replacement callbacks
+			// Verify replacement callbacks (count=2 from old tree, newCount=3 from new tree)
 			const wchar_t* expected[] = {
-				L"[ROOT]->OnBeforeItemModified(start=0, count=0, newCount=0, itemReferenceUpdated=true)",
-				L"[ROOT]->OnAfterItemModified(start=0, count=0, newCount=0, itemReferenceUpdated=true)"
+				L"[ROOT]->OnBeforeItemModified(start=0, count=2, newCount=3, itemReferenceUpdated=true)",
+				L"[ROOT]->OnAfterItemModified(start=0, count=2, newCount=3, itemReferenceUpdated=true)"
 			};
 			AssertCallbacks(callbackLog, expected);
 			
@@ -557,12 +557,12 @@ TEST_FILE
 			provider->GetRootNode()->GetChildCount(); // Prepare children
 			callbackLog.Clear();
 			
-			// UpdateBindingProperties with updateChildrenProperty=true
+			// UpdateBindingProperties with updateChildrenProperty=true unprepares and re-prepares children
 			provider->UpdateBindingProperties(true);
 			
 			const wchar_t* expected[] = {
-				L"[ROOT]->OnBeforeItemModified(start=0, count=0, newCount=0, itemReferenceUpdated=true)",
-				L"[ROOT]->OnAfterItemModified(start=0, count=0, newCount=0, itemReferenceUpdated=true)"
+				L"[ROOT]->OnBeforeItemModified(start=0, count=2, newCount=2, itemReferenceUpdated=true)",
+				L"[ROOT]->OnAfterItemModified(start=0, count=2, newCount=2, itemReferenceUpdated=true)"
 			};
 			AssertCallbacks(callbackLog, expected);
 			
@@ -583,12 +583,12 @@ TEST_FILE
 			provider->SetItemSource(BoxValue(rootItem));
 			callbackLog.Clear();
 			
-			// UpdateBindingProperties with updateChildrenProperty=false
+			// UpdateBindingProperties with updateChildrenProperty=false (children already prepared)
 			provider->UpdateBindingProperties(false);
 			
 			const wchar_t* expected[] = {
-				L"[ROOT]->OnBeforeItemModified(start=0, count=0, newCount=0, itemReferenceUpdated=false)",
-				L"[ROOT]->OnAfterItemModified(start=0, count=0, newCount=0, itemReferenceUpdated=false)"
+				L"[ROOT]->OnBeforeItemModified(start=0, count=2, newCount=2, itemReferenceUpdated=false)",
+				L"[ROOT]->OnAfterItemModified(start=0, count=2, newCount=2, itemReferenceUpdated=false)"
 			};
 			AssertCallbacks(callbackLog, expected);
 		});
