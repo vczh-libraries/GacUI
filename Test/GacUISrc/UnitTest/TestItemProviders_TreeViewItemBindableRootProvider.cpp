@@ -37,8 +37,8 @@ TEST_FILE
 		// Verification: Use helper function for better diagnostics
 		const wchar_t* expected[] = {
 			L"OnAttached(provider=valid)",
-			L"OnBeforeItemModified(start=0, count=0, newCount=1, itemReferenceUpdated=true)",
-			L"OnAfterItemModified(start=0, count=0, newCount=1, itemReferenceUpdated=true)"
+			L"[ROOT]->OnBeforeItemModified(start=0, count=0, newCount=1, itemReferenceUpdated=true)",
+			L"[ROOT]->OnAfterItemModified(start=0, count=0, newCount=1, itemReferenceUpdated=true)"
 		};
 		AssertCallbacks(callbackLog, expected);
 	});

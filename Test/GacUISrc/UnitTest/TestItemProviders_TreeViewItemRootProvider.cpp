@@ -23,8 +23,8 @@ TEST_FILE
 		// Verification: Use helper function for better diagnostics
 		const wchar_t* expected[] = {
 			L"OnAttached(provider=valid)",
-			L"OnBeforeItemModified(start=0, count=0, newCount=1, itemReferenceUpdated=true)",
-			L"OnAfterItemModified(start=0, count=0, newCount=1, itemReferenceUpdated=true)"
+			L"[ROOT]->OnBeforeItemModified(start=0, count=0, newCount=1, itemReferenceUpdated=true)",
+			L"[ROOT]->OnAfterItemModified(start=0, count=0, newCount=1, itemReferenceUpdated=true)"
 		};
 		AssertCallbacks(callbackLog, expected);
 	});
@@ -61,8 +61,8 @@ TEST_FILE
 			
 			// Verify Before/After callbacks with itemReferenceUpdated=true (structural change)
 			const wchar_t* expected[] = {
-				L"OnBeforeItemModified(start=0, count=0, newCount=1, itemReferenceUpdated=true)",
-				L"OnAfterItemModified(start=0, count=0, newCount=1, itemReferenceUpdated=true)"
+				L"[ROOT]->OnBeforeItemModified(start=0, count=0, newCount=1, itemReferenceUpdated=true)",
+				L"[ROOT]->OnAfterItemModified(start=0, count=0, newCount=1, itemReferenceUpdated=true)"
 			};
 			AssertCallbacks(callbackLog, expected);
 		});
@@ -88,12 +88,12 @@ TEST_FILE
 			
 			// Verify three pairs of Before/After callbacks
 			const wchar_t* expected[] = {
-				L"OnBeforeItemModified(start=0, count=0, newCount=1, itemReferenceUpdated=true)",
-				L"OnAfterItemModified(start=0, count=0, newCount=1, itemReferenceUpdated=true)",
-				L"OnBeforeItemModified(start=1, count=0, newCount=1, itemReferenceUpdated=true)",
-				L"OnAfterItemModified(start=1, count=0, newCount=1, itemReferenceUpdated=true)",
-				L"OnBeforeItemModified(start=2, count=0, newCount=1, itemReferenceUpdated=true)",
-				L"OnAfterItemModified(start=2, count=0, newCount=1, itemReferenceUpdated=true)"
+				L"[ROOT]->OnBeforeItemModified(start=0, count=0, newCount=1, itemReferenceUpdated=true)",
+				L"[ROOT]->OnAfterItemModified(start=0, count=0, newCount=1, itemReferenceUpdated=true)",
+				L"[ROOT]->OnBeforeItemModified(start=1, count=0, newCount=1, itemReferenceUpdated=true)",
+				L"[ROOT]->OnAfterItemModified(start=1, count=0, newCount=1, itemReferenceUpdated=true)",
+				L"[ROOT]->OnBeforeItemModified(start=2, count=0, newCount=1, itemReferenceUpdated=true)",
+				L"[ROOT]->OnAfterItemModified(start=2, count=0, newCount=1, itemReferenceUpdated=true)"
 			};
 			AssertCallbacks(callbackLog, expected);
 		});
@@ -118,8 +118,8 @@ TEST_FILE
 			
 			// Verify Before/After callbacks for removal
 			const wchar_t* expected[] = {
-				L"OnBeforeItemModified(start=0, count=1, newCount=0, itemReferenceUpdated=true)",
-				L"OnAfterItemModified(start=0, count=1, newCount=0, itemReferenceUpdated=true)"
+				L"[ROOT]->OnBeforeItemModified(start=0, count=1, newCount=0, itemReferenceUpdated=true)",
+				L"[ROOT]->OnAfterItemModified(start=0, count=1, newCount=0, itemReferenceUpdated=true)"
 			};
 			AssertCallbacks(callbackLog, expected);
 		});
@@ -149,10 +149,10 @@ TEST_FILE
 			// Note: Base class calls BeforeRemove once per item with original indices (1,2,3),
 			// then AfterRemove once for the entire range
 			const wchar_t* expected[] = {
-				L"OnBeforeItemModified(start=1, count=1, newCount=0, itemReferenceUpdated=true)",
-				L"OnBeforeItemModified(start=2, count=1, newCount=0, itemReferenceUpdated=true)",
-				L"OnBeforeItemModified(start=3, count=1, newCount=0, itemReferenceUpdated=true)",
-				L"OnAfterItemModified(start=1, count=3, newCount=0, itemReferenceUpdated=true)"
+				L"[ROOT]->OnBeforeItemModified(start=1, count=1, newCount=0, itemReferenceUpdated=true)",
+				L"[ROOT]->OnBeforeItemModified(start=2, count=1, newCount=0, itemReferenceUpdated=true)",
+				L"[ROOT]->OnBeforeItemModified(start=3, count=1, newCount=0, itemReferenceUpdated=true)",
+				L"[ROOT]->OnAfterItemModified(start=1, count=3, newCount=0, itemReferenceUpdated=true)"
 			};
 			AssertCallbacks(callbackLog, expected);
 		});
@@ -180,12 +180,12 @@ TEST_FILE
 			
 			// Verify three pairs of callbacks (one for parent, two for children)
 			const wchar_t* expected[] = {
-				L"OnBeforeItemModified(start=0, count=0, newCount=1, itemReferenceUpdated=true)",
-				L"OnAfterItemModified(start=0, count=0, newCount=1, itemReferenceUpdated=true)",
-				L"OnBeforeItemModified(start=0, count=0, newCount=1, itemReferenceUpdated=true)",
-				L"OnAfterItemModified(start=0, count=0, newCount=1, itemReferenceUpdated=true)",
-				L"OnBeforeItemModified(start=1, count=0, newCount=1, itemReferenceUpdated=true)",
-				L"OnAfterItemModified(start=1, count=0, newCount=1, itemReferenceUpdated=true)"
+				L"[ROOT]->OnBeforeItemModified(start=0, count=0, newCount=1, itemReferenceUpdated=true)",
+				L"[ROOT]->OnAfterItemModified(start=0, count=0, newCount=1, itemReferenceUpdated=true)",
+				L"Parent1->OnBeforeItemModified(start=0, count=0, newCount=1, itemReferenceUpdated=true)",
+				L"Parent1->OnAfterItemModified(start=0, count=0, newCount=1, itemReferenceUpdated=true)",
+				L"Parent1->OnBeforeItemModified(start=1, count=0, newCount=1, itemReferenceUpdated=true)",
+				L"Parent1->OnAfterItemModified(start=1, count=0, newCount=1, itemReferenceUpdated=true)"
 			};
 			AssertCallbacks(callbackLog, expected);
 		});
@@ -210,8 +210,8 @@ TEST_FILE
 			
 			// Verify callbacks fire for child addition
 			const wchar_t* expected[] = {
-				L"OnBeforeItemModified(start=0, count=0, newCount=1, itemReferenceUpdated=true)",
-				L"OnAfterItemModified(start=0, count=0, newCount=1, itemReferenceUpdated=true)"
+				L"Parent->OnBeforeItemModified(start=0, count=0, newCount=1, itemReferenceUpdated=true)",
+				L"Parent->OnAfterItemModified(start=0, count=0, newCount=1, itemReferenceUpdated=true)"
 			};
 			AssertCallbacks(callbackLog, expected);
 		});
@@ -241,8 +241,8 @@ TEST_FILE
 			// Verify single Before/After pair for parent removal
 			// Children are implicitly removed, not separately notified
 			const wchar_t* expected[] = {
-				L"OnBeforeItemModified(start=0, count=1, newCount=0, itemReferenceUpdated=true)",
-				L"OnAfterItemModified(start=0, count=1, newCount=0, itemReferenceUpdated=true)"
+				L"[ROOT]->OnBeforeItemModified(start=0, count=1, newCount=0, itemReferenceUpdated=true)",
+				L"[ROOT]->OnAfterItemModified(start=0, count=1, newCount=0, itemReferenceUpdated=true)"
 			};
 			AssertCallbacks(callbackLog, expected);
 		});
@@ -271,14 +271,14 @@ TEST_FILE
 			
 			// Verify four pairs of callbacks (one per level)
 			const wchar_t* expected[] = {
-				L"OnBeforeItemModified(start=0, count=0, newCount=1, itemReferenceUpdated=true)",
-				L"OnAfterItemModified(start=0, count=0, newCount=1, itemReferenceUpdated=true)",
-				L"OnBeforeItemModified(start=0, count=0, newCount=1, itemReferenceUpdated=true)",
-				L"OnAfterItemModified(start=0, count=0, newCount=1, itemReferenceUpdated=true)",
-				L"OnBeforeItemModified(start=0, count=0, newCount=1, itemReferenceUpdated=true)",
-				L"OnAfterItemModified(start=0, count=0, newCount=1, itemReferenceUpdated=true)",
-				L"OnBeforeItemModified(start=0, count=0, newCount=1, itemReferenceUpdated=true)",
-				L"OnAfterItemModified(start=0, count=0, newCount=1, itemReferenceUpdated=true)"
+				L"[ROOT]->OnBeforeItemModified(start=0, count=0, newCount=1, itemReferenceUpdated=true)",
+				L"[ROOT]->OnAfterItemModified(start=0, count=0, newCount=1, itemReferenceUpdated=true)",
+				L"Level1->OnBeforeItemModified(start=0, count=0, newCount=1, itemReferenceUpdated=true)",
+				L"Level1->OnAfterItemModified(start=0, count=0, newCount=1, itemReferenceUpdated=true)",
+				L"Level2->OnBeforeItemModified(start=0, count=0, newCount=1, itemReferenceUpdated=true)",
+				L"Level2->OnAfterItemModified(start=0, count=0, newCount=1, itemReferenceUpdated=true)",
+				L"Level3->OnBeforeItemModified(start=0, count=0, newCount=1, itemReferenceUpdated=true)",
+				L"Level3->OnAfterItemModified(start=0, count=0, newCount=1, itemReferenceUpdated=true)"
 			};
 			AssertCallbacks(callbackLog, expected);
 		});
@@ -423,8 +423,8 @@ TEST_FILE
 			
 			// Verify Before/After callbacks fire normally
 			const wchar_t* expected[] = {
-				L"OnBeforeItemModified(start=0, count=0, newCount=1, itemReferenceUpdated=true)",
-				L"OnAfterItemModified(start=0, count=0, newCount=1, itemReferenceUpdated=true)"
+				L"Parent->OnBeforeItemModified(start=0, count=0, newCount=1, itemReferenceUpdated=true)",
+				L"Parent->OnAfterItemModified(start=0, count=0, newCount=1, itemReferenceUpdated=true)"
 			};
 			AssertCallbacks(callbackLog, expected);
 			
@@ -488,8 +488,8 @@ TEST_FILE
 			
 			// Verify Before/After callbacks with itemReferenceUpdated=false (data change only)
 			const wchar_t* expected[] = {
-				L"OnBeforeItemModified(start=0, count=1, newCount=1, itemReferenceUpdated=false)",
-				L"OnAfterItemModified(start=0, count=1, newCount=1, itemReferenceUpdated=false)"
+				L"[ROOT]->OnBeforeItemModified(start=0, count=1, newCount=1, itemReferenceUpdated=false)",
+				L"[ROOT]->OnAfterItemModified(start=0, count=1, newCount=1, itemReferenceUpdated=false)"
 			};
 			AssertCallbacks(callbackLog, expected);
 		});
@@ -513,8 +513,8 @@ TEST_FILE
 			
 			// Verify Before/After callbacks with itemReferenceUpdated=false
 			const wchar_t* expected[] = {
-				L"OnBeforeItemModified(start=0, count=1, newCount=1, itemReferenceUpdated=false)",
-				L"OnAfterItemModified(start=0, count=1, newCount=1, itemReferenceUpdated=false)"
+				L"[ROOT]->OnBeforeItemModified(start=0, count=1, newCount=1, itemReferenceUpdated=false)",
+				L"[ROOT]->OnAfterItemModified(start=0, count=1, newCount=1, itemReferenceUpdated=false)"
 			};
 			AssertCallbacks(callbackLog, expected);
 		});
@@ -566,8 +566,8 @@ TEST_FILE
 			
 			// Verify callbacks fire after manual notification
 			const wchar_t* expected[] = {
-				L"OnBeforeItemModified(start=0, count=1, newCount=1, itemReferenceUpdated=false)",
-				L"OnAfterItemModified(start=0, count=1, newCount=1, itemReferenceUpdated=false)"
+				L"[ROOT]->OnBeforeItemModified(start=0, count=1, newCount=1, itemReferenceUpdated=false)",
+				L"[ROOT]->OnAfterItemModified(start=0, count=1, newCount=1, itemReferenceUpdated=false)"
 			};
 			AssertCallbacks(callbackLog, expected);
 		});
@@ -595,10 +595,10 @@ TEST_FILE
 			
 			// Verify callbacks fire twice (once from SetData, once from UpdateTreeViewData)
 			const wchar_t* expected[] = {
-				L"OnBeforeItemModified(start=0, count=1, newCount=1, itemReferenceUpdated=false)",
-				L"OnAfterItemModified(start=0, count=1, newCount=1, itemReferenceUpdated=false)",
-				L"OnBeforeItemModified(start=0, count=1, newCount=1, itemReferenceUpdated=false)",
-				L"OnAfterItemModified(start=0, count=1, newCount=1, itemReferenceUpdated=false)"
+				L"[ROOT]->OnBeforeItemModified(start=0, count=1, newCount=1, itemReferenceUpdated=false)",
+				L"[ROOT]->OnAfterItemModified(start=0, count=1, newCount=1, itemReferenceUpdated=false)",
+				L"[ROOT]->OnBeforeItemModified(start=0, count=1, newCount=1, itemReferenceUpdated=false)",
+				L"[ROOT]->OnAfterItemModified(start=0, count=1, newCount=1, itemReferenceUpdated=false)"
 			};
 			AssertCallbacks(callbackLog, expected);
 		});
@@ -743,12 +743,12 @@ TEST_FILE
 			
 			// Verify each operation has Before followed immediately by After
 			const wchar_t* expected[] = {
-				L"OnBeforeItemModified(start=0, count=0, newCount=1, itemReferenceUpdated=true)",
-				L"OnAfterItemModified(start=0, count=0, newCount=1, itemReferenceUpdated=true)",
-				L"OnBeforeItemModified(start=1, count=0, newCount=1, itemReferenceUpdated=true)",
-				L"OnAfterItemModified(start=1, count=0, newCount=1, itemReferenceUpdated=true)",
-				L"OnBeforeItemModified(start=0, count=1, newCount=0, itemReferenceUpdated=true)",
-				L"OnAfterItemModified(start=0, count=1, newCount=0, itemReferenceUpdated=true)"
+				L"[ROOT]->OnBeforeItemModified(start=0, count=0, newCount=1, itemReferenceUpdated=true)",
+				L"[ROOT]->OnAfterItemModified(start=0, count=0, newCount=1, itemReferenceUpdated=true)",
+				L"[ROOT]->OnBeforeItemModified(start=1, count=0, newCount=1, itemReferenceUpdated=true)",
+				L"[ROOT]->OnAfterItemModified(start=1, count=0, newCount=1, itemReferenceUpdated=true)",
+				L"[ROOT]->OnBeforeItemModified(start=0, count=1, newCount=0, itemReferenceUpdated=true)",
+				L"[ROOT]->OnAfterItemModified(start=0, count=1, newCount=0, itemReferenceUpdated=true)"
 			};
 			AssertCallbacks(callbackLog, expected);
 		});
@@ -779,16 +779,16 @@ TEST_FILE
 			
 			// Verify exact callback sequence
 			const wchar_t* expected[] = {
-				L"OnBeforeItemModified(start=0, count=0, newCount=1, itemReferenceUpdated=true)",
-				L"OnAfterItemModified(start=0, count=0, newCount=1, itemReferenceUpdated=true)",
+				L"[ROOT]->OnBeforeItemModified(start=0, count=0, newCount=1, itemReferenceUpdated=true)",
+				L"[ROOT]->OnAfterItemModified(start=0, count=0, newCount=1, itemReferenceUpdated=true)",
 				L"OnItemExpanded()",
-				L"OnBeforeItemModified(start=0, count=0, newCount=1, itemReferenceUpdated=true)",
-				L"OnAfterItemModified(start=0, count=0, newCount=1, itemReferenceUpdated=true)",
-				L"OnBeforeItemModified(start=0, count=1, newCount=1, itemReferenceUpdated=false)",
-				L"OnAfterItemModified(start=0, count=1, newCount=1, itemReferenceUpdated=false)",
+				L"Parent->OnBeforeItemModified(start=0, count=0, newCount=1, itemReferenceUpdated=true)",
+				L"Parent->OnAfterItemModified(start=0, count=0, newCount=1, itemReferenceUpdated=true)",
+				L"[ROOT]->OnBeforeItemModified(start=0, count=1, newCount=1, itemReferenceUpdated=false)",
+				L"[ROOT]->OnAfterItemModified(start=0, count=1, newCount=1, itemReferenceUpdated=false)",
 				L"OnItemCollapsed()",
-				L"OnBeforeItemModified(start=0, count=1, newCount=0, itemReferenceUpdated=true)",
-				L"OnAfterItemModified(start=0, count=1, newCount=0, itemReferenceUpdated=true)"
+				L"[ROOT]->OnBeforeItemModified(start=0, count=1, newCount=0, itemReferenceUpdated=true)",
+				L"[ROOT]->OnAfterItemModified(start=0, count=1, newCount=0, itemReferenceUpdated=true)"
 			};
 			AssertCallbacks(callbackLog, expected);
 		});
@@ -909,8 +909,8 @@ TEST_FILE
 			
 			// Verify callbacks fire normally
 			const wchar_t* expected[] = {
-				L"OnBeforeItemModified(start=0, count=0, newCount=1, itemReferenceUpdated=true)",
-				L"OnAfterItemModified(start=0, count=0, newCount=1, itemReferenceUpdated=true)"
+				L"[ROOT]->OnBeforeItemModified(start=0, count=0, newCount=1, itemReferenceUpdated=true)",
+				L"[ROOT]->OnAfterItemModified(start=0, count=0, newCount=1, itemReferenceUpdated=true)"
 			};
 			AssertCallbacks(callbackLog, expected);
 		});
