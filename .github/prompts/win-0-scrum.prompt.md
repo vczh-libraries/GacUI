@@ -130,8 +130,9 @@ This guidance is for accessing following files mentioned in this instruction:
 - `Copilot_Planning.md`
 - `Copilot_Execution.md`
 - `Copilot_KB.md`
-- `copilotExecute.ps1`
 - `copilotPrepare.ps1`
+- `copilotBuild.ps1`
+- `copilotExecute.ps1`
 
 If you are running in Visual Studio, you will find the `TaskLogs` project in the current solution.
 Otherwise, locate the `TaskLogs` project in `REPO-ROOT/.github/TaskLogs/TaskLogs.vcxitems`.
