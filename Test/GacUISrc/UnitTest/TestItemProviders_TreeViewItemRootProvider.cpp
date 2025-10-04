@@ -4,12 +4,35 @@ using namespace gacui_unittest_template;
 
 TEST_FILE
 {
-	// Shared test infrastructure - reused across all test cases
-	List<WString> callbackLog;
-	MockNodeProviderCallback nodeCallback(callbackLog);
-	
+	TEST_CASE(L"SimpleItemAddition")
+	{
+		// Setup: Create callback log and mock objects
+		List<WString> callbackLog;
+		MockNodeProviderCallback nodeCallback(callbackLog);
+		
+		// Create TreeViewItemRootProvider and attach callbacks
+		auto provider = Ptr(new TreeViewItemRootProvider);
+		provider->AttachCallback(&nodeCallback);
+		
+		// Action: Create MemoryNodeProvider with TreeViewItem data and add it to root provider
+		auto item = Ptr(new TreeViewItem(nullptr, L"Test Item"));
+		auto node = Ptr(new MemoryNodeProvider(item));
+		provider->GetMemoryNode(provider->GetRootNode().Obj())->Children().Add(node);
+		
+		// Verification: Use helper function for better diagnostics
+		const wchar_t* expected[] = {
+			L"OnAttached(provider=valid)",
+			L"OnBeforeItemModified(start=0, count=0, newCount=1, itemReferenceUpdated=true)",
+			L"OnAfterItemModified(start=0, count=0, newCount=1, itemReferenceUpdated=true)"
+		};
+		AssertCallbacks(callbackLog, expected);
+	});
+
 	TEST_CASE(L"AttachCallback")
 	{
+		List<WString> callbackLog;
+		MockNodeProviderCallback nodeCallback(callbackLog);
+		
 		auto provider = Ptr(new TreeViewItemRootProvider);
 		provider->AttachCallback(&nodeCallback);
 		
@@ -24,6 +47,9 @@ TEST_FILE
 	{
 		TEST_CASE(L"AddSingleNodeToRoot")
 		{
+			List<WString> callbackLog;
+			MockNodeProviderCallback nodeCallback(callbackLog);
+			
 			auto provider = Ptr(new TreeViewItemRootProvider);
 			provider->AttachCallback(&nodeCallback);
 			callbackLog.Clear();  // Clear after attach
@@ -42,6 +68,9 @@ TEST_FILE
 
 		TEST_CASE(L"AddMultipleNodesToRoot")
 		{
+			List<WString> callbackLog;
+			MockNodeProviderCallback nodeCallback(callbackLog);
+			
 			auto provider = Ptr(new TreeViewItemRootProvider);
 			provider->AttachCallback(&nodeCallback);
 			callbackLog.Clear();
@@ -70,6 +99,9 @@ TEST_FILE
 
 		TEST_CASE(L"RemoveSingleNode")
 		{
+			List<WString> callbackLog;
+			MockNodeProviderCallback nodeCallback(callbackLog);
+			
 			auto provider = Ptr(new TreeViewItemRootProvider);
 			provider->AttachCallback(&nodeCallback);
 			callbackLog.Clear();
@@ -93,6 +125,9 @@ TEST_FILE
 
 		TEST_CASE(L"RemoveRangeOfNodes")
 		{
+			List<WString> callbackLog;
+			MockNodeProviderCallback nodeCallback(callbackLog);
+			
 			auto provider = Ptr(new TreeViewItemRootProvider);
 			provider->AttachCallback(&nodeCallback);
 			callbackLog.Clear();
@@ -122,6 +157,9 @@ TEST_FILE
 	{
 		TEST_CASE(L"MultiLevelTreeConstruction")
 		{
+			List<WString> callbackLog;
+			MockNodeProviderCallback nodeCallback(callbackLog);
+			
 			auto provider = Ptr(new TreeViewItemRootProvider);
 			provider->AttachCallback(&nodeCallback);
 			callbackLog.Clear();
@@ -149,6 +187,9 @@ TEST_FILE
 
 		TEST_CASE(L"AddChildToExistingNode")
 		{
+			List<WString> callbackLog;
+			MockNodeProviderCallback nodeCallback(callbackLog);
+			
 			auto provider = Ptr(new TreeViewItemRootProvider);
 			provider->AttachCallback(&nodeCallback);
 			callbackLog.Clear();
@@ -172,6 +213,9 @@ TEST_FILE
 
 		TEST_CASE(L"RemoveNodeWithChildren")
 		{
+			List<WString> callbackLog;
+			MockNodeProviderCallback nodeCallback(callbackLog);
+			
 			auto provider = Ptr(new TreeViewItemRootProvider);
 			provider->AttachCallback(&nodeCallback);
 			callbackLog.Clear();
@@ -200,6 +244,9 @@ TEST_FILE
 
 		TEST_CASE(L"DeepTreeConstruction")
 		{
+			List<WString> callbackLog;
+			MockNodeProviderCallback nodeCallback(callbackLog);
+			
 			auto provider = Ptr(new TreeViewItemRootProvider);
 			provider->AttachCallback(&nodeCallback);
 			callbackLog.Clear();
@@ -236,6 +283,9 @@ TEST_FILE
 	{
 		TEST_CASE(L"ExpandNode")
 		{
+			List<WString> callbackLog;
+			MockNodeProviderCallback nodeCallback(callbackLog);
+			
 			auto provider = Ptr(new TreeViewItemRootProvider);
 			provider->AttachCallback(&nodeCallback);
 			callbackLog.Clear();
@@ -257,6 +307,9 @@ TEST_FILE
 
 		TEST_CASE(L"CollapseNode")
 		{
+			List<WString> callbackLog;
+			MockNodeProviderCallback nodeCallback(callbackLog);
+			
 			auto provider = Ptr(new TreeViewItemRootProvider);
 			provider->AttachCallback(&nodeCallback);
 			callbackLog.Clear();
@@ -279,6 +332,9 @@ TEST_FILE
 
 		TEST_CASE(L"ExpandAlreadyExpandedNode")
 		{
+			List<WString> callbackLog;
+			MockNodeProviderCallback nodeCallback(callbackLog);
+			
 			auto provider = Ptr(new TreeViewItemRootProvider);
 			provider->AttachCallback(&nodeCallback);
 			callbackLog.Clear();
@@ -293,12 +349,14 @@ TEST_FILE
 			node->SetExpanding(true);
 			
 			// Verify no callback fires (already expanded)
-			const wchar_t* expected[] = {};
-			AssertCallbacks(callbackLog, expected);
+			TEST_ASSERT(callbackLog.Count() == 0);
 		});
 
 		TEST_CASE(L"CollapseAlreadyCollapsedNode")
 		{
+			List<WString> callbackLog;
+			MockNodeProviderCallback nodeCallback(callbackLog);
+			
 			auto provider = Ptr(new TreeViewItemRootProvider);
 			provider->AttachCallback(&nodeCallback);
 			callbackLog.Clear();
@@ -312,12 +370,14 @@ TEST_FILE
 			node->SetExpanding(false);
 			
 			// Verify no callback fires (already collapsed)
-			const wchar_t* expected[] = {};
-			AssertCallbacks(callbackLog, expected);
+			TEST_ASSERT(callbackLog.Count() == 0);
 		});
 
 		TEST_CASE(L"ExpandLeafNode")
 		{
+			List<WString> callbackLog;
+			MockNodeProviderCallback nodeCallback(callbackLog);
+			
 			auto provider = Ptr(new TreeViewItemRootProvider);
 			provider->AttachCallback(&nodeCallback);
 			callbackLog.Clear();
@@ -339,6 +399,9 @@ TEST_FILE
 
 		TEST_CASE(L"ModifyChildrenWhileExpanded")
 		{
+			List<WString> callbackLog;
+			MockNodeProviderCallback nodeCallback(callbackLog);
+			
 			auto provider = Ptr(new TreeViewItemRootProvider);
 			provider->AttachCallback(&nodeCallback);
 			callbackLog.Clear();
@@ -366,6 +429,9 @@ TEST_FILE
 
 		TEST_CASE(L"RapidExpansionCollapse")
 		{
+			List<WString> callbackLog;
+			MockNodeProviderCallback nodeCallback(callbackLog);
+			
 			auto provider = Ptr(new TreeViewItemRootProvider);
 			provider->AttachCallback(&nodeCallback);
 			callbackLog.Clear();
@@ -396,6 +462,9 @@ TEST_FILE
 	{
 		TEST_CASE(L"UpdateTreeViewDataTriggersCallbacks")
 		{
+			List<WString> callbackLog;
+			MockNodeProviderCallback nodeCallback(callbackLog);
+			
 			auto provider = Ptr(new TreeViewItemRootProvider);
 			provider->AttachCallback(&nodeCallback);
 			callbackLog.Clear();
@@ -422,6 +491,9 @@ TEST_FILE
 
 		TEST_CASE(L"NotifyDataModifiedTriggersCallbacks")
 		{
+			List<WString> callbackLog;
+			MockNodeProviderCallback nodeCallback(callbackLog);
+			
 			auto provider = Ptr(new TreeViewItemRootProvider);
 			provider->AttachCallback(&nodeCallback);
 			callbackLog.Clear();
@@ -444,6 +516,9 @@ TEST_FILE
 
 		TEST_CASE(L"ModifyPropertiesWithoutUpdate")
 		{
+			List<WString> callbackLog;
+			MockNodeProviderCallback nodeCallback(callbackLog);
+			
 			auto provider = Ptr(new TreeViewItemRootProvider);
 			provider->AttachCallback(&nodeCallback);
 			callbackLog.Clear();
@@ -459,12 +534,14 @@ TEST_FILE
 			item->tag = BoxValue<vint>(42);
 			
 			// Verify NO callbacks fire (manual notification required)
-			const wchar_t* expected[] = {};
-			AssertCallbacks(callbackLog, expected);
+			TEST_ASSERT(callbackLog.Count() == 0);
 		});
 
 		TEST_CASE(L"ModifyPropertiesThenUpdate")
 		{
+			List<WString> callbackLog;
+			MockNodeProviderCallback nodeCallback(callbackLog);
+			
 			auto provider = Ptr(new TreeViewItemRootProvider);
 			provider->AttachCallback(&nodeCallback);
 			callbackLog.Clear();
@@ -492,6 +569,9 @@ TEST_FILE
 
 		TEST_CASE(L"SetTreeViewDataAndUpdate")
 		{
+			List<WString> callbackLog;
+			MockNodeProviderCallback nodeCallback(callbackLog);
+			
 			auto provider = Ptr(new TreeViewItemRootProvider);
 			provider->AttachCallback(&nodeCallback);
 			callbackLog.Clear();
@@ -521,6 +601,9 @@ TEST_FILE
 	{
 		TEST_CASE(L"RequestViewITreeViewItemView")
 		{
+			List<WString> callbackLog;
+			MockNodeProviderCallback nodeCallback(callbackLog);
+			
 			auto provider = Ptr(new TreeViewItemRootProvider);
 			provider->AttachCallback(&nodeCallback);
 			callbackLog.Clear();
@@ -537,22 +620,23 @@ TEST_FILE
 
 		TEST_CASE(L"RequestViewINodeRootProvider")
 		{
+			List<WString> callbackLog;
+			MockNodeProviderCallback nodeCallback(callbackLog);
+			
 			auto provider = Ptr(new TreeViewItemRootProvider);
 			provider->AttachCallback(&nodeCallback);
 			callbackLog.Clear();
 			
-			// Test RequestView with INodeRootProvider identifier
-			auto nodeRootProvider = provider->RequestView(INodeRootProvider::Identifier);
-			TEST_ASSERT(nodeRootProvider != nullptr);
-			
-			// Merge with dynamic_cast test
+			// Test dynamic_cast to INodeRootProvider (no RequestView identifier available)
 			auto castedProvider = dynamic_cast<INodeRootProvider*>(provider.Obj());
 			TEST_ASSERT(castedProvider != nullptr);
-			TEST_ASSERT(nodeRootProvider == castedProvider);
 		});
 
 		TEST_CASE(L"GetMemoryNodeReturnsCorrectNode")
 		{
+			List<WString> callbackLog;
+			MockNodeProviderCallback nodeCallback(callbackLog);
+			
 			auto provider = Ptr(new TreeViewItemRootProvider);
 			provider->AttachCallback(&nodeCallback);
 			callbackLog.Clear();
@@ -573,6 +657,9 @@ TEST_FILE
 
 		TEST_CASE(L"GetRootNodeReturnsRoot")
 		{
+			List<WString> callbackLog;
+			MockNodeProviderCallback nodeCallback(callbackLog);
+			
 			auto provider = Ptr(new TreeViewItemRootProvider);
 			provider->AttachCallback(&nodeCallback);
 			callbackLog.Clear();
@@ -588,6 +675,9 @@ TEST_FILE
 
 		TEST_CASE(L"GetTextValueRetrievesText")
 		{
+			List<WString> callbackLog;
+			MockNodeProviderCallback nodeCallback(callbackLog);
+			
 			auto provider = Ptr(new TreeViewItemRootProvider);
 			provider->AttachCallback(&nodeCallback);
 			callbackLog.Clear();
@@ -596,13 +686,17 @@ TEST_FILE
 			auto node = CreateTreeViewItem(L"Test Text");
 			provider->GetMemoryNode(provider->GetRootNode().Obj())->Children().Add(node);
 			
-			// Get text value through ITreeViewItemView interface
-			auto text = provider->GetTextValue(node.Obj());
+			// Get text value through INodeRootProvider interface
+			auto nodeRootProvider = dynamic_cast<INodeRootProvider*>(provider.Obj());
+			auto text = nodeRootProvider->GetTextValue(node.Obj());
 			TEST_ASSERT(text == L"Test Text");
 		});
 
 		TEST_CASE(L"GetBindingValueRetrievesTag")
 		{
+			List<WString> callbackLog;
+			MockNodeProviderCallback nodeCallback(callbackLog);
+			
 			auto provider = Ptr(new TreeViewItemRootProvider);
 			provider->AttachCallback(&nodeCallback);
 			callbackLog.Clear();
@@ -613,8 +707,9 @@ TEST_FILE
 			item->tag = BoxValue<vint>(12345);
 			provider->GetMemoryNode(provider->GetRootNode().Obj())->Children().Add(node);
 			
-			// Get binding value (tag) through ITreeViewItemView interface
-			auto tag = provider->GetBindingValue(node.Obj());
+			// Get binding value (tag) through INodeRootProvider interface
+			auto nodeRootProvider = dynamic_cast<INodeRootProvider*>(provider.Obj());
+			auto tag = nodeRootProvider->GetBindingValue(node.Obj());
 			TEST_ASSERT(UnboxValue<vint>(tag) == 12345);
 		});
 	});
@@ -623,6 +718,9 @@ TEST_FILE
 	{
 		TEST_CASE(L"BeforeAfterCallbackPairsAlwaysTogether")
 		{
+			List<WString> callbackLog;
+			MockNodeProviderCallback nodeCallback(callbackLog);
+			
 			auto provider = Ptr(new TreeViewItemRootProvider);
 			provider->AttachCallback(&nodeCallback);
 			callbackLog.Clear();
@@ -650,6 +748,9 @@ TEST_FILE
 
 		TEST_CASE(L"CallbackOrderingMultipleOperations")
 		{
+			List<WString> callbackLog;
+			MockNodeProviderCallback nodeCallback(callbackLog);
+			
 			auto provider = Ptr(new TreeViewItemRootProvider);
 			provider->AttachCallback(&nodeCallback);
 			callbackLog.Clear();
@@ -687,6 +788,9 @@ TEST_FILE
 
 		TEST_CASE(L"DetachCallbackFiresOnAttachedNull")
 		{
+			List<WString> callbackLog;
+			MockNodeProviderCallback nodeCallback(callbackLog);
+			
 			auto provider = Ptr(new TreeViewItemRootProvider);
 			provider->AttachCallback(&nodeCallback);
 			callbackLog.Clear();
@@ -703,6 +807,9 @@ TEST_FILE
 
 		TEST_CASE(L"NoCallbacksAfterDetach")
 		{
+			List<WString> callbackLog;
+			MockNodeProviderCallback nodeCallback(callbackLog);
+			
 			auto provider = Ptr(new TreeViewItemRootProvider);
 			provider->AttachCallback(&nodeCallback);
 			provider->DetachCallback(&nodeCallback);
@@ -715,8 +822,7 @@ TEST_FILE
 			provider->UpdateTreeViewData(node.Obj());
 			
 			// Verify NO callbacks fire
-			const wchar_t* expected[] = {};
-			AssertCallbacks(callbackLog, expected);
+			TEST_ASSERT(callbackLog.Count() == 0);
 		});
 	});
 
@@ -724,6 +830,9 @@ TEST_FILE
 	{
 		TEST_CASE(L"AddDuplicateNodeThrowsException")
 		{
+			List<WString> callbackLog;
+			MockNodeProviderCallback nodeCallback(callbackLog);
+			
 			auto provider = Ptr(new TreeViewItemRootProvider);
 			provider->AttachCallback(&nodeCallback);
 			callbackLog.Clear();
@@ -747,6 +856,9 @@ TEST_FILE
 
 		TEST_CASE(L"AddNodeToMultipleParentsThrowsException")
 		{
+			List<WString> callbackLog;
+			MockNodeProviderCallback nodeCallback(callbackLog);
+			
 			auto provider = Ptr(new TreeViewItemRootProvider);
 			provider->AttachCallback(&nodeCallback);
 			callbackLog.Clear();
@@ -771,6 +883,9 @@ TEST_FILE
 
 		TEST_CASE(L"AddNodeAfterRemoving")
 		{
+			List<WString> callbackLog;
+			MockNodeProviderCallback nodeCallback(callbackLog);
+			
 			auto provider = Ptr(new TreeViewItemRootProvider);
 			provider->AttachCallback(&nodeCallback);
 			callbackLog.Clear();
@@ -795,6 +910,9 @@ TEST_FILE
 
 		TEST_CASE(L"GetChildWithInvalidIndex")
 		{
+			List<WString> callbackLog;
+			MockNodeProviderCallback nodeCallback(callbackLog);
+			
 			auto provider = Ptr(new TreeViewItemRootProvider);
 			provider->AttachCallback(&nodeCallback);
 			callbackLog.Clear();
@@ -811,6 +929,9 @@ TEST_FILE
 
 		TEST_CASE(L"RemoveNonexistentNodeHasNoEffect")
 		{
+			List<WString> callbackLog;
+			MockNodeProviderCallback nodeCallback(callbackLog);
+			
 			auto provider = Ptr(new TreeViewItemRootProvider);
 			provider->AttachCallback(&nodeCallback);
 			callbackLog.Clear();
@@ -827,6 +948,9 @@ TEST_FILE
 
 		TEST_CASE(L"EmptyTreeOperations")
 		{
+			List<WString> callbackLog;
+			MockNodeProviderCallback nodeCallback(callbackLog);
+			
 			auto provider = Ptr(new TreeViewItemRootProvider);
 			provider->AttachCallback(&nodeCallback);
 			callbackLog.Clear();
@@ -840,12 +964,14 @@ TEST_FILE
 			TEST_ERROR(rootNode->GetChild(0));
 			
 			// Verify no callbacks fired
-			const wchar_t* expected[] = {};
-			AssertCallbacks(callbackLog, expected);
+			TEST_ASSERT(callbackLog.Count() == 0);
 		});
 
 		TEST_CASE(L"DeepTreeNavigation")
 		{
+			List<WString> callbackLog;
+			MockNodeProviderCallback nodeCallback(callbackLog);
+			
 			auto provider = Ptr(new TreeViewItemRootProvider);
 			provider->AttachCallback(&nodeCallback);
 			callbackLog.Clear();
@@ -867,7 +993,7 @@ TEST_FILE
 			vint levelCount = 0;
 			while (node->GetParent() != nullptr)
 			{
-				node = provider->GetMemoryNode(node->GetParent());
+				node = Ptr(provider->GetMemoryNode(node->GetParent().Obj()));
 				levelCount++;
 			}
 			
