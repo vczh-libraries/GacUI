@@ -38,7 +38,8 @@
     - Only include actual code changes. Do not include any explanations or comments around them.
   - `# TEST PLAN`
     - Only include actual code changes. Do not include any explanations or comments around them.
-- DO NOT copy `# UPDATES` from `Copilot_Planning.md` to `Copilot_Execution.md`. The `# UPDATES` in `Copilot_Execution.md` is for update requests for `Copilot_Execution.md` and the actual source code.
+  - You must copy all code changes to `Copilot_Execution.md`. Do not use placeholder text like "refer to Copilot_Planning.md" - always include the full code changes directly.
+  - DO NOT copy `# UPDATES` from `Copilot_Planning.md` to `Copilot_Execution.md`. The `# UPDATES` in `Copilot_Execution.md` is for update requests for `Copilot_Execution.md` and the actual source code.
 
 ## Step 3. Mark the Completion
 
