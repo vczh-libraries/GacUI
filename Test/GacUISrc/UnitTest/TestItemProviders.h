@@ -20,18 +20,18 @@ using WritableItemProperty = vl::presentation::WritableItemProperty<T>;
 namespace gacui_unittest_template
 {
 	template<vint Count>
-	void PrintCallbacks(List<WString>& actuals, const wchar_t* (&expecteds)[Count])
+	void PrintCallbacks(List<WString>& callbackLog, const wchar_t* (&expected)[Count])
 	{
-		TEST_PRINT(L"Actual: (" + itow(actuals.Count()) + L")");
-		for (vint i = 0; i < actuals.Count(); i++)
+		TEST_PRINT(L"Actual: (" + itow(callbackLog.Count()) + L")");
+		for (vint i = 0; i < callbackLog.Count(); i++)
 		{
-			TEST_PRINT(L"  " + actuals[i]);
+			TEST_PRINT(L"  " + callbackLog[i]);
 		}
 
 		TEST_PRINT(L"Expected: (" + itow(Count) + L")");
 		for (vint i = 0; i < Count; i++)
 		{
-			TEST_PRINT(L"  " + WString::Unmanaged(expecteds[i]));
+			TEST_PRINT(L"  " + WString::Unmanaged(expected[i]));
 		}
 	}
 
