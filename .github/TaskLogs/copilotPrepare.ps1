@@ -1,5 +1,9 @@
 # Prepare Copilot workspace files
 
+param(
+    [switch]$Backup
+)
+
 # Create or override the markdown files with the specified content
 $filesToOverride = @{
     "Copilot_Planning.md" = "# !!!PLANNING!!!"
@@ -37,21 +41,32 @@ if ($filesToBackup.Count -gt 0) {
     }
 }
 
-# Create each markdown file with the specified content
-foreach ($file in $filesToOverride.GetEnumerator()) {
-    $filePath = "$PSScriptRoot\$($file.Key)"
-    Write-Host "Creating/overriding $($file.Key)..."
-    $file.Value | Out-File -FilePath $filePath -Encoding UTF8
-}
-
-# Create files only if they don't exist
-foreach ($file in $filesToCreate.GetEnumerator()) {
-    $filePath = "$PSScriptRoot\$($file.Key)"
-    if (-not (Test-Path $filePath)) {
-        Write-Host "Creating $($file.Key)..."
+if ($Backup) {
+    # Delete all files in $filesToOverride
+    foreach ($file in $filesToOverride.GetEnumerator()) {
+        $filePath = "$PSScriptRoot\$($file.Key)"
+        if (Test-Path $filePath) {
+            Write-Host "Deleting $($file.Key)..."
+            Remove-Item -Path $filePath -Force
+        }
+    }
+} else {
+    # Create each markdown file with the specified content
+    foreach ($file in $filesToOverride.GetEnumerator()) {
+        $filePath = "$PSScriptRoot\$($file.Key)"
+        Write-Host "Creating/overriding $($file.Key)..."
         $file.Value | Out-File -FilePath $filePath -Encoding UTF8
-    } else {
-        Write-Host "Skipping $($file.Key) (already exists)..."
+    }
+
+    # Create files only if they don't exist
+    foreach ($file in $filesToCreate.GetEnumerator()) {
+        $filePath = "$PSScriptRoot\$($file.Key)"
+        if (-not (Test-Path $filePath)) {
+            Write-Host "Creating $($file.Key)..."
+            $file.Value | Out-File -FilePath $filePath -Encoding UTF8
+        } else {
+            Write-Host "Skipping $($file.Key) (already exists)..."
+        }
     }
 }
 
