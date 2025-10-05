@@ -1318,4 +1318,846 @@ TEST_FILE
 			TEST_ASSERT(grandchild1->GetChildCount() == 1);
 		});
 	});
+
+	TEST_CATEGORY(L"EmptyAndNullScenarios")
+	{
+		TEST_CASE(L"SetItemSourceWithEmptyChildren")
+		{
+			List<WString> callbackLog;
+			MockNodeProviderCallback nodeCallback(callbackLog);
+			
+			auto provider = Ptr(new TreeViewItemBindableRootProvider());
+			InitProvider(provider);
+			provider->AttachCallback(&nodeCallback);
+			callbackLog.Clear();
+			
+			// Create root with explicitly empty children ObservableList
+			auto rootItem = Ptr(new BindableItem());
+			rootItem->name = L"RootWithEmptyChildren";
+			// rootItem->children is already initialized as empty ObservableList
+			
+			provider->SetItemSource(BoxValue(rootItem));
+			
+			// SetItemSource with empty children should show newCount=0 due to no children to prepare eagerly
+			const wchar_t* expected[] = {
+				L"[ROOT]->OnBeforeItemModified(start=0, count=0, newCount=0, itemReferenceUpdated=true)",
+				L"[ROOT]->OnAfterItemModified(start=0, count=0, newCount=0, itemReferenceUpdated=true)"
+			};
+			AssertCallbacks(callbackLog, expected);
+			
+			// Verify root node has no children
+			auto rootNode = provider->GetRootNode();
+			TEST_ASSERT(rootNode->GetChildCount() == 0);
+			TEST_ASSERT(provider->GetTextValue(rootNode.Obj()) == L"RootWithEmptyChildren");
+		});
+
+		TEST_CASE(L"ExpandNodeWithNoChildren")
+		{
+			List<WString> callbackLog;
+			MockNodeProviderCallback nodeCallback(callbackLog);
+			
+			auto provider = Ptr(new TreeViewItemBindableRootProvider());
+			InitProvider(provider);
+			
+			auto rootItem = Ptr(new BindableItem());
+			rootItem->name = L"EmptyRoot";
+			provider->SetItemSource(BoxValue(rootItem));
+			provider->AttachCallback(&nodeCallback);
+			
+			auto rootNode = provider->GetRootNode();
+			rootNode->GetChildCount();
+			callbackLog.Clear();
+			
+			// Expand node with no children should complete safely
+			rootNode->SetExpanding(true);
+			
+			// Expansion callback should fire even for empty node
+			const wchar_t* expected[] = {
+				L"[ROOT]->OnItemExpanded()"
+			};
+			AssertCallbacks(callbackLog, expected);
+			
+			TEST_ASSERT(rootNode->GetExpanding() == true);
+			TEST_ASSERT(rootNode->GetChildCount() == 0);
+		});
+
+		TEST_CASE(L"AccessChildrenOfEmptyNode")
+		{
+			List<WString> callbackLog;
+			MockNodeProviderCallback nodeCallback(callbackLog);
+			
+			auto provider = Ptr(new TreeViewItemBindableRootProvider());
+			InitProvider(provider);
+			
+			auto rootItem = Ptr(new BindableItem());
+			rootItem->name = L"EmptyRoot";
+			provider->SetItemSource(BoxValue(rootItem));
+			provider->AttachCallback(&nodeCallback);
+			
+			auto rootNode = provider->GetRootNode();
+			TEST_ASSERT(rootNode->GetChildCount() == 0);
+			
+			// Accessing child at index 0 should trigger TEST_ERROR (out of bounds)
+			TEST_ERROR(rootNode->GetChild(0));
+			TEST_ERROR(rootNode->GetChild(-1));
+			TEST_ERROR(rootNode->GetChild(100));
+		});
+	});
+
+	TEST_CATEGORY(L"SetItemSourceTransitions")
+	{
+		TEST_CASE(L"TransitionFromNullToHierarchy")
+		{
+			List<WString> callbackLog;
+			MockNodeProviderCallback nodeCallback(callbackLog);
+			
+			auto provider = Ptr(new TreeViewItemBindableRootProvider());
+			InitProvider(provider);
+			provider->AttachCallback(&nodeCallback);
+			
+			// Initial state: no ItemSource set
+			auto rootNode = provider->GetRootNode();
+			TEST_ASSERT(rootNode->GetChildCount() == 0);
+			callbackLog.Clear();
+			
+			// Set ItemSource to multi-level tree
+			auto rootItem = CreateMultiLevelTree(L"NewRoot", 3, 2);
+			provider->SetItemSource(BoxValue(rootItem));
+			
+			// Transition shows count=0 (was empty) to newCount=3 (eager preparation of new children)
+			const wchar_t* expected[] = {
+				L"[ROOT]->OnBeforeItemModified(start=0, count=0, newCount=3, itemReferenceUpdated=true)",
+				L"[ROOT]->OnAfterItemModified(start=0, count=0, newCount=3, itemReferenceUpdated=true)"
+			};
+			AssertCallbacks(callbackLog, expected);
+			
+			// Verify new hierarchy is fully accessible
+			TEST_ASSERT(rootNode->GetChildCount() == 3);
+			TEST_ASSERT(provider->GetTextValue(rootNode.Obj()) == L"NewRoot");
+		});
+
+		TEST_CASE(L"TransitionFromHierarchyToNull")
+		{
+			List<WString> callbackLog;
+			MockNodeProviderCallback nodeCallback(callbackLog);
+			
+			auto provider = Ptr(new TreeViewItemBindableRootProvider());
+			InitProvider(provider);
+			
+			// Start with populated tree
+			auto rootItem = CreateMultiLevelTree(L"Root", 3, 2);
+			provider->SetItemSource(BoxValue(rootItem));
+			provider->AttachCallback(&nodeCallback);
+			
+			auto rootNode = provider->GetRootNode();
+			rootNode->GetChildCount();
+			callbackLog.Clear();
+			
+			// Clear ItemSource
+			provider->SetItemSource(Value());
+			
+			// Transition shows count=3 (old children) to newCount=0 (cleared)
+			const wchar_t* expected[] = {
+				L"[ROOT]->OnBeforeItemModified(start=0, count=3, newCount=0, itemReferenceUpdated=true)",
+				L"[ROOT]->OnAfterItemModified(start=0, count=3, newCount=0, itemReferenceUpdated=true)"
+			};
+			AssertCallbacks(callbackLog, expected);
+			
+			// Verify root is now empty
+			TEST_ASSERT(rootNode->GetChildCount() == 0);
+		});
+
+		TEST_CASE(L"TransitionComplexToSimple")
+		{
+			List<WString> callbackLog;
+			MockNodeProviderCallback nodeCallback(callbackLog);
+			
+			auto provider = Ptr(new TreeViewItemBindableRootProvider());
+			InitProvider(provider);
+			
+			// Start with multi-level tree (3 children, each with 2 grandchildren)
+			auto rootItem1 = CreateMultiLevelTree(L"ComplexRoot", 3, 2);
+			provider->SetItemSource(BoxValue(rootItem1));
+			provider->AttachCallback(&nodeCallback);
+			
+			auto rootNode = provider->GetRootNode();
+			rootNode->GetChildCount();
+			callbackLog.Clear();
+			
+			// Replace with simple flat tree (2 children, no grandchildren)
+			auto rootItem2 = CreateBindableTree(L"SimpleRoot", 2);
+			provider->SetItemSource(BoxValue(rootItem2));
+			
+			// Callbacks show old count=3 to new count=2 due to eager preparation
+			const wchar_t* expected[] = {
+				L"[ROOT]->OnBeforeItemModified(start=0, count=3, newCount=2, itemReferenceUpdated=true)",
+				L"[ROOT]->OnAfterItemModified(start=0, count=3, newCount=2, itemReferenceUpdated=true)"
+			};
+			AssertCallbacks(callbackLog, expected);
+			
+			// Verify new structure
+			TEST_ASSERT(rootNode->GetChildCount() == 2);
+			TEST_ASSERT(provider->GetTextValue(rootNode.Obj()) == L"SimpleRoot");
+			
+			// Verify children have no grandchildren
+			auto child1 = rootNode->GetChild(0);
+			TEST_ASSERT(child1->GetChildCount() == 0);
+		});
+
+		TEST_CASE(L"TransitionSimpleToComplex")
+		{
+			List<WString> callbackLog;
+			MockNodeProviderCallback nodeCallback(callbackLog);
+			
+			auto provider = Ptr(new TreeViewItemBindableRootProvider());
+			InitProvider(provider);
+			
+			// Start with simple flat tree
+			auto rootItem1 = CreateBindableTree(L"SimpleRoot", 2);
+			provider->SetItemSource(BoxValue(rootItem1));
+			provider->AttachCallback(&nodeCallback);
+			
+			auto rootNode = provider->GetRootNode();
+			rootNode->GetChildCount();
+			callbackLog.Clear();
+			
+			// Replace with complex multi-level tree
+			auto rootItem2 = CreateMultiLevelTree(L"ComplexRoot", 3, 2);
+			provider->SetItemSource(BoxValue(rootItem2));
+			
+			// Callbacks show old count=2 to new count=3 due to eager preparation
+			const wchar_t* expected[] = {
+				L"[ROOT]->OnBeforeItemModified(start=0, count=2, newCount=3, itemReferenceUpdated=true)",
+				L"[ROOT]->OnAfterItemModified(start=0, count=2, newCount=3, itemReferenceUpdated=true)"
+			};
+			AssertCallbacks(callbackLog, expected);
+			
+			// Verify new structure
+			TEST_ASSERT(rootNode->GetChildCount() == 3);
+			TEST_ASSERT(provider->GetTextValue(rootNode.Obj()) == L"ComplexRoot");
+			
+			// Verify children have grandchildren
+			auto child1 = rootNode->GetChild(0);
+			TEST_ASSERT(child1->GetChildCount() == 2);
+		});
+
+		TEST_CASE(L"RapidConsecutiveTransitions")
+		{
+			List<WString> callbackLog;
+			MockNodeProviderCallback nodeCallback(callbackLog);
+			
+			auto provider = Ptr(new TreeViewItemBindableRootProvider());
+			InitProvider(provider);
+			provider->AttachCallback(&nodeCallback);
+			
+			auto rootNode = provider->GetRootNode();
+			
+			// First transition: null -> tree1
+			auto tree1 = CreateBindableTree(L"Tree1", 2);
+			provider->SetItemSource(BoxValue(tree1));
+			callbackLog.Clear();
+			
+			// Second transition: tree1 -> tree2
+			auto tree2 = CreateBindableTree(L"Tree2", 3);
+			provider->SetItemSource(BoxValue(tree2));
+			
+			// Third transition: tree2 -> tree3
+			auto tree3 = CreateMultiLevelTree(L"Tree3", 2, 2);
+			provider->SetItemSource(BoxValue(tree3));
+			
+			// Should complete without crashes, proper cleanup at each step
+			TEST_ASSERT(rootNode->GetChildCount() == 2);
+			TEST_ASSERT(provider->GetTextValue(rootNode.Obj()) == L"Tree3");
+			
+			// Verify final structure is accessible
+			auto child1 = rootNode->GetChild(0);
+			TEST_ASSERT(child1->GetChildCount() == 2);
+		});
+	});
+
+	TEST_CATEGORY(L"ExpansionStateEdgeCases")
+	{
+		TEST_CASE(L"ExpansionStateWithDynamicClear")
+		{
+			List<WString> callbackLog;
+			MockNodeProviderCallback nodeCallback(callbackLog);
+			
+			auto provider = Ptr(new TreeViewItemBindableRootProvider());
+			InitProvider(provider);
+			
+			auto rootItem = CreateBindableTree(L"Root", 3);
+			provider->SetItemSource(BoxValue(rootItem));
+			provider->AttachCallback(&nodeCallback);
+			
+			auto rootNode = provider->GetRootNode();
+			rootNode->GetChildCount();
+			callbackLog.Clear();
+			
+			// Expand the root node
+			rootNode->SetExpanding(true);
+			TEST_ASSERT(rootNode->GetExpanding() == true);
+			callbackLog.Clear();
+			
+			// Clear all children dynamically
+			rootItem->children.Clear();
+			
+			// Clear() fires ONE callback pair showing count=3 to newCount=0
+			const wchar_t* expected[] = {
+				L"[ROOT]->OnBeforeItemModified(start=0, count=3, newCount=0, itemReferenceUpdated=true)",
+				L"[ROOT]->OnAfterItemModified(start=0, count=3, newCount=0, itemReferenceUpdated=true)"
+			};
+			AssertCallbacks(callbackLog, expected);
+			
+			// Expansion state persists even with no children
+			TEST_ASSERT(rootNode->GetExpanding() == true);
+			TEST_ASSERT(rootNode->GetChildCount() == 0);
+		});
+
+		TEST_CASE(L"CollapseAndReexpandEmptyNode")
+		{
+			List<WString> callbackLog;
+			MockNodeProviderCallback nodeCallback(callbackLog);
+			
+			auto provider = Ptr(new TreeViewItemBindableRootProvider());
+			InitProvider(provider);
+			
+			auto rootItem = CreateBindableTree(L"Root", 3);
+			provider->SetItemSource(BoxValue(rootItem));
+			provider->AttachCallback(&nodeCallback);
+			
+			auto rootNode = provider->GetRootNode();
+			rootNode->GetChildCount();
+			
+			// Expand then clear children
+			rootNode->SetExpanding(true);
+			rootItem->children.Clear();
+			callbackLog.Clear();
+			
+			// Collapse the empty node
+			rootNode->SetExpanding(false);
+			
+			const wchar_t* collapsedExpected[] = {
+				L"[ROOT]->OnItemCollapsed()"
+			};
+			AssertCallbacks(callbackLog, collapsedExpected);
+			TEST_ASSERT(rootNode->GetExpanding() == false);
+			callbackLog.Clear();
+			
+			// Re-expand the empty node
+			rootNode->SetExpanding(true);
+			
+			const wchar_t* expandedExpected[] = {
+				L"[ROOT]->OnItemExpanded()"
+			};
+			AssertCallbacks(callbackLog, expandedExpected);
+			TEST_ASSERT(rootNode->GetExpanding() == true);
+			TEST_ASSERT(rootNode->GetChildCount() == 0);
+		});
+
+		TEST_CASE(L"ExpandNodeThenModifyChildren")
+		{
+			List<WString> callbackLog;
+			MockNodeProviderCallback nodeCallback(callbackLog);
+			
+			auto provider = Ptr(new TreeViewItemBindableRootProvider());
+			InitProvider(provider);
+			
+			auto rootItem = CreateBindableTree(L"Root", 2);
+			provider->SetItemSource(BoxValue(rootItem));
+			provider->AttachCallback(&nodeCallback);
+			
+			auto rootNode = provider->GetRootNode();
+			rootNode->GetChildCount();
+			
+			// Expand the node
+			rootNode->SetExpanding(true);
+			callbackLog.Clear();
+			
+			// Add a child
+			auto newChild = Ptr(new BindableItem());
+			newChild->name = L"Root.Child3";
+			rootItem->children.Add(newChild);
+			
+			// Each Add() fires ONE callback pair
+			const wchar_t* addExpected[] = {
+				L"[ROOT]->OnBeforeItemModified(start=2, count=0, newCount=1, itemReferenceUpdated=true)",
+				L"[ROOT]->OnAfterItemModified(start=2, count=0, newCount=1, itemReferenceUpdated=true)"
+			};
+			AssertCallbacks(callbackLog, addExpected);
+			callbackLog.Clear();
+			
+			// Remove a child
+			rootItem->children.RemoveAt(0);
+			
+			// RemoveAt() fires ONE callback pair
+			const wchar_t* removeExpected[] = {
+				L"[ROOT]->OnBeforeItemModified(start=0, count=1, newCount=0, itemReferenceUpdated=true)",
+				L"[ROOT]->OnAfterItemModified(start=0, count=1, newCount=0, itemReferenceUpdated=true)"
+			};
+			AssertCallbacks(callbackLog, removeExpected);
+			
+			// Expansion state maintained throughout
+			TEST_ASSERT(rootNode->GetExpanding() == true);
+			TEST_ASSERT(rootNode->GetChildCount() == 2);
+		});
+	});
+
+	TEST_CATEGORY(L"CallbackDetachment")
+	{
+		TEST_CASE(L"DetachDuringTreeModification")
+		{
+			List<WString> callbackLog;
+			MockNodeProviderCallback nodeCallback(callbackLog);
+			
+			auto provider = Ptr(new TreeViewItemBindableRootProvider());
+			InitProvider(provider);
+			
+			auto rootItem = CreateBindableTree(L"Root", 3);
+			provider->SetItemSource(BoxValue(rootItem));
+			provider->AttachCallback(&nodeCallback);
+			
+			auto rootNode = provider->GetRootNode();
+			rootNode->GetChildCount();
+			callbackLog.Clear();
+			
+			// Start modification
+			auto newChild = Ptr(new BindableItem());
+			newChild->name = L"Root.Child4";
+			rootItem->children.Add(newChild);
+			callbackLog.Clear();
+			
+			// Detach callback
+			provider->DetachCallback(&nodeCallback);
+			
+			// Verify detachment callback
+			const wchar_t* detachExpected[] = {
+				L"OnAttached(provider=nullptr)"
+			};
+			AssertCallbacks(callbackLog, detachExpected);
+			callbackLog.Clear();
+			
+			// Further modifications should not fire callbacks
+			auto anotherChild = Ptr(new BindableItem());
+			anotherChild->name = L"Root.Child5";
+			rootItem->children.Add(anotherChild);
+			
+			TEST_ASSERT(callbackLog.Count() == 0);
+			
+			// Tree structure still valid
+			TEST_ASSERT(rootNode->GetChildCount() == 5);
+		});
+
+		TEST_CASE(L"DetachAfterExpansionChanges")
+		{
+			List<WString> callbackLog;
+			MockNodeProviderCallback nodeCallback(callbackLog);
+			
+			auto provider = Ptr(new TreeViewItemBindableRootProvider());
+			InitProvider(provider);
+			
+			auto rootItem = CreateMultiLevelTree(L"Root", 2, 2);
+			provider->SetItemSource(BoxValue(rootItem));
+			provider->AttachCallback(&nodeCallback);
+			
+			auto rootNode = provider->GetRootNode();
+			rootNode->GetChildCount();
+			auto child1 = rootNode->GetChild(0);
+			child1->GetChildCount();
+			
+			// Expand some nodes
+			rootNode->SetExpanding(true);
+			child1->SetExpanding(true);
+			callbackLog.Clear();
+			
+			// Detach callback
+			provider->DetachCallback(&nodeCallback);
+			
+			// Verify detachment
+			const wchar_t* detachExpected[] = {
+				L"OnAttached(provider=nullptr)"
+			};
+			AssertCallbacks(callbackLog, detachExpected);
+			
+			// Expansion state preserved
+			TEST_ASSERT(rootNode->GetExpanding() == true);
+			TEST_ASSERT(child1->GetExpanding() == true);
+			
+			// Tree structure intact
+			TEST_ASSERT(rootNode->GetChildCount() == 2);
+			TEST_ASSERT(child1->GetChildCount() == 2);
+		});
+
+		TEST_CASE(L"ReattachAfterDetachment")
+		{
+			List<WString> callbackLog;
+			MockNodeProviderCallback nodeCallback(callbackLog);
+			
+			auto provider = Ptr(new TreeViewItemBindableRootProvider());
+			InitProvider(provider);
+			
+			auto rootItem = CreateBindableTree(L"Root", 2);
+			provider->SetItemSource(BoxValue(rootItem));
+			
+			// First attach
+			provider->AttachCallback(&nodeCallback);
+			const wchar_t* attachExpected[] = {
+				L"OnAttached(provider=valid)"
+			};
+			AssertCallbacks(callbackLog, attachExpected);
+			callbackLog.Clear();
+			
+			// Detach
+			provider->DetachCallback(&nodeCallback);
+			const wchar_t* detachExpected[] = {
+				L"OnAttached(provider=nullptr)"
+			};
+			AssertCallbacks(callbackLog, detachExpected);
+			callbackLog.Clear();
+			
+			// Reattach
+			provider->AttachCallback(&nodeCallback);
+			AssertCallbacks(callbackLog, attachExpected);
+			
+			// Verify callbacks work after reattach
+			auto rootNode = provider->GetRootNode();
+			rootNode->GetChildCount();
+			callbackLog.Clear();
+			
+			auto newChild = Ptr(new BindableItem());
+			newChild->name = L"Root.Child3";
+			rootItem->children.Add(newChild);
+			
+			const wchar_t* modifyExpected[] = {
+				L"[ROOT]->OnBeforeItemModified(start=2, count=0, newCount=1, itemReferenceUpdated=true)",
+				L"[ROOT]->OnAfterItemModified(start=2, count=0, newCount=1, itemReferenceUpdated=true)"
+			};
+			AssertCallbacks(callbackLog, modifyExpected);
+		});
+
+		TEST_CASE(L"DetachWithMultipleLevelsPrepared")
+		{
+			List<WString> callbackLog;
+			MockNodeProviderCallback nodeCallback(callbackLog);
+			
+			auto provider = Ptr(new TreeViewItemBindableRootProvider());
+			InitProvider(provider);
+			
+			// Create 4-level tree
+			auto rootItem = CreateMultiLevelTree(L"Root", 2, 1);
+			auto child1Item = rootItem->children[0];
+			auto grandchild1Item = child1Item->children[0];
+			auto greatGrandchild = Ptr(new BindableItem());
+			greatGrandchild->name = L"Root.Child1.GrandChild1.GreatGrandChild1";
+			grandchild1Item->children.Add(greatGrandchild);
+			
+			provider->SetItemSource(BoxValue(rootItem));
+			provider->AttachCallback(&nodeCallback);
+			
+			// Prepare all 4 levels
+			auto rootNode = provider->GetRootNode();
+			rootNode->GetChildCount();
+			auto child1 = rootNode->GetChild(0);
+			child1->GetChildCount();
+			auto grandchild1 = child1->GetChild(0);
+			grandchild1->GetChildCount();
+			callbackLog.Clear();
+			
+			// Detach with deep hierarchy
+			provider->DetachCallback(&nodeCallback);
+			
+			const wchar_t* detachExpected[] = {
+				L"OnAttached(provider=nullptr)"
+			};
+			AssertCallbacks(callbackLog, detachExpected);
+			
+			// All nodes remain accessible
+			TEST_ASSERT(rootNode->GetChildCount() == 2);
+			TEST_ASSERT(child1->GetChildCount() == 1);
+			TEST_ASSERT(grandchild1->GetChildCount() == 1);
+		});
+	});
+
+	TEST_CATEGORY(L"InvalidOperations")
+	{
+		TEST_CASE(L"InvalidChildIndex")
+		{
+			List<WString> callbackLog;
+			MockNodeProviderCallback nodeCallback(callbackLog);
+			
+			auto provider = Ptr(new TreeViewItemBindableRootProvider());
+			InitProvider(provider);
+			
+			auto rootItem = CreateBindableTree(L"Root", 3);
+			provider->SetItemSource(BoxValue(rootItem));
+			provider->AttachCallback(&nodeCallback);
+			
+			auto rootNode = provider->GetRootNode();
+			rootNode->GetChildCount();
+			
+			// Test various out-of-bounds indices
+			TEST_ERROR(rootNode->GetChild(-1));
+			TEST_ERROR(rootNode->GetChild(3));
+			TEST_ERROR(rootNode->GetChild(100));
+			
+			// Valid index should work
+			auto child1 = rootNode->GetChild(0);
+			TEST_ASSERT(child1 != nullptr);
+			TEST_ASSERT(provider->GetTextValue(child1.Obj()) == L"Root.Child1");
+		});
+
+		TEST_CASE(L"InvalidNodeOperations")
+		{
+			List<WString> callbackLog;
+			MockNodeProviderCallback nodeCallback(callbackLog);
+			
+			auto provider = Ptr(new TreeViewItemBindableRootProvider());
+			InitProvider(provider);
+			
+			auto rootItem = CreateMultiLevelTree(L"Root", 2, 2);
+			provider->SetItemSource(BoxValue(rootItem));
+			provider->AttachCallback(&nodeCallback);
+			
+			auto rootNode = provider->GetRootNode();
+			rootNode->GetChildCount();
+			auto child1 = rootNode->GetChild(0);
+			child1->GetChildCount();
+			
+			// Try to access grandchild with invalid index
+			TEST_ERROR(child1->GetChild(-1));
+			TEST_ERROR(child1->GetChild(2));
+			TEST_ERROR(child1->GetChild(50));
+			
+			// Valid access should work
+			auto grandchild1 = child1->GetChild(0);
+			TEST_ASSERT(grandchild1 != nullptr);
+			TEST_ASSERT(provider->GetTextValue(grandchild1.Obj()) == L"Root.Child1.GrandChild1");
+		});
+	});
+
+	TEST_CATEGORY(L"PropertyBindingEdgeCases")
+	{
+		TEST_CASE(L"NullTextProperty")
+		{
+			List<WString> callbackLog;
+			MockNodeProviderCallback nodeCallback(callbackLog);
+			
+			auto provider = Ptr(new TreeViewItemBindableRootProvider());
+			InitProvider(provider);
+			
+			auto rootItem = Ptr(new BindableItem());
+			// name is default initialized to empty string, not null
+			// This tests empty string handling
+			provider->SetItemSource(BoxValue(rootItem));
+			provider->AttachCallback(&nodeCallback);
+			
+			auto rootNode = provider->GetRootNode();
+			
+			// GetTextValue should handle empty name gracefully
+			auto textValue = provider->GetTextValue(rootNode.Obj());
+			TEST_ASSERT(textValue == L"");
+		});
+
+		TEST_CASE(L"UpdateBindingPropertiesEdgeCases")
+		{
+			List<WString> callbackLog;
+			MockNodeProviderCallback nodeCallback(callbackLog);
+			
+			auto provider = Ptr(new TreeViewItemBindableRootProvider());
+			InitProvider(provider);
+			
+			// Create tree where some nodes have empty children
+			auto rootItem = CreateBindableTree(L"Root", 2);
+			// First child has children, second child has empty children
+			auto child1Item = rootItem->children[0];
+			child1Item->children.Add(Ptr(new BindableItem()));
+			child1Item->children[0]->name = L"Root.Child1.GrandChild1";
+			
+			provider->SetItemSource(BoxValue(rootItem));
+			provider->AttachCallback(&nodeCallback);
+			
+			auto rootNode = provider->GetRootNode();
+			rootNode->GetChildCount();
+			auto child1 = rootNode->GetChild(0);
+			child1->GetChildCount();
+			auto child2 = rootNode->GetChild(1);
+			child2->GetChildCount();
+			callbackLog.Clear();
+			
+			// UpdateBindingProperties should handle mixed scenarios
+			provider->UpdateBindingProperties(true);
+			
+			// Only root-level callbacks (not recursive)
+			const wchar_t* expected[] = {
+				L"[ROOT]->OnBeforeItemModified(start=0, count=2, newCount=2, itemReferenceUpdated=true)",
+				L"[ROOT]->OnAfterItemModified(start=0, count=2, newCount=2, itemReferenceUpdated=true)"
+			};
+			AssertCallbacks(callbackLog, expected);
+			
+			// Verify structure intact
+			TEST_ASSERT(rootNode->GetChildCount() == 2);
+			TEST_ASSERT(child1->GetChildCount() == 1);
+			TEST_ASSERT(child2->GetChildCount() == 0);
+		});
+	});
+
+	TEST_CATEGORY(L"ObservableListOperationPatterns")
+	{
+		TEST_CASE(L"ClearFollowedByAdds")
+		{
+			List<WString> callbackLog;
+			MockNodeProviderCallback nodeCallback(callbackLog);
+			
+			auto provider = Ptr(new TreeViewItemBindableRootProvider());
+			InitProvider(provider);
+			
+			auto rootItem = CreateBindableTree(L"Root", 3);
+			provider->SetItemSource(BoxValue(rootItem));
+			provider->AttachCallback(&nodeCallback);
+			
+			auto rootNode = provider->GetRootNode();
+			rootNode->GetChildCount();
+			callbackLog.Clear();
+			
+			// Clear all children
+			rootItem->children.Clear();
+			
+			// Clear() fires ONE callback pair
+			const wchar_t* clearExpected[] = {
+				L"[ROOT]->OnBeforeItemModified(start=0, count=3, newCount=0, itemReferenceUpdated=true)",
+				L"[ROOT]->OnAfterItemModified(start=0, count=3, newCount=0, itemReferenceUpdated=true)"
+			};
+			AssertCallbacks(callbackLog, clearExpected);
+			TEST_ASSERT(rootNode->GetChildCount() == 0);
+			callbackLog.Clear();
+			
+			// Add new children one by one - each Add() fires ONE callback pair
+			auto newChild1 = Ptr(new BindableItem());
+			newChild1->name = L"Root.NewChild1";
+			rootItem->children.Add(newChild1);
+			
+			const wchar_t* add1Expected[] = {
+				L"[ROOT]->OnBeforeItemModified(start=0, count=0, newCount=1, itemReferenceUpdated=true)",
+				L"[ROOT]->OnAfterItemModified(start=0, count=0, newCount=1, itemReferenceUpdated=true)"
+			};
+			AssertCallbacks(callbackLog, add1Expected);
+			callbackLog.Clear();
+			
+			auto newChild2 = Ptr(new BindableItem());
+			newChild2->name = L"Root.NewChild2";
+			rootItem->children.Add(newChild2);
+			
+			const wchar_t* add2Expected[] = {
+				L"[ROOT]->OnBeforeItemModified(start=1, count=0, newCount=1, itemReferenceUpdated=true)",
+				L"[ROOT]->OnAfterItemModified(start=1, count=0, newCount=1, itemReferenceUpdated=true)"
+			};
+			AssertCallbacks(callbackLog, add2Expected);
+			
+			// Verify final state
+			TEST_ASSERT(rootNode->GetChildCount() == 2);
+			TEST_ASSERT(provider->GetTextValue(rootNode->GetChild(0).Obj()) == L"Root.NewChild1");
+			TEST_ASSERT(provider->GetTextValue(rootNode->GetChild(1).Obj()) == L"Root.NewChild2");
+		});
+
+		TEST_CASE(L"RemoveRangeBoundaries")
+		{
+			List<WString> callbackLog;
+			MockNodeProviderCallback nodeCallback(callbackLog);
+			
+			auto provider = Ptr(new TreeViewItemBindableRootProvider());
+			InitProvider(provider);
+			
+			auto rootItem = CreateBindableTree(L"Root", 10);
+			provider->SetItemSource(BoxValue(rootItem));
+			provider->AttachCallback(&nodeCallback);
+			
+			auto rootNode = provider->GetRootNode();
+			rootNode->GetChildCount();
+			callbackLog.Clear();
+			
+			// RemoveRange at start
+			rootItem->children.RemoveRange(0, 3);
+			
+			const wchar_t* removeStartExpected[] = {
+				L"[ROOT]->OnBeforeItemModified(start=0, count=3, newCount=0, itemReferenceUpdated=true)",
+				L"[ROOT]->OnAfterItemModified(start=0, count=3, newCount=0, itemReferenceUpdated=true)"
+			};
+			AssertCallbacks(callbackLog, removeStartExpected);
+			TEST_ASSERT(rootNode->GetChildCount() == 7);
+			callbackLog.Clear();
+			
+			// RemoveRange in middle
+			rootItem->children.RemoveRange(2, 2);
+			
+			const wchar_t* removeMiddleExpected[] = {
+				L"[ROOT]->OnBeforeItemModified(start=2, count=2, newCount=0, itemReferenceUpdated=true)",
+				L"[ROOT]->OnAfterItemModified(start=2, count=2, newCount=0, itemReferenceUpdated=true)"
+			};
+			AssertCallbacks(callbackLog, removeMiddleExpected);
+			TEST_ASSERT(rootNode->GetChildCount() == 5);
+			callbackLog.Clear();
+			
+			// RemoveRange at end
+			rootItem->children.RemoveRange(3, 2);
+			
+			const wchar_t* removeEndExpected[] = {
+				L"[ROOT]->OnBeforeItemModified(start=3, count=2, newCount=0, itemReferenceUpdated=true)",
+				L"[ROOT]->OnAfterItemModified(start=3, count=2, newCount=0, itemReferenceUpdated=true)"
+			};
+			AssertCallbacks(callbackLog, removeEndExpected);
+			TEST_ASSERT(rootNode->GetChildCount() == 3);
+		});
+
+		TEST_CASE(L"MixedOperations")
+		{
+			List<WString> callbackLog;
+			MockNodeProviderCallback nodeCallback(callbackLog);
+			
+			auto provider = Ptr(new TreeViewItemBindableRootProvider());
+			InitProvider(provider);
+			
+			auto rootItem = CreateBindableTree(L"Root", 3);
+			provider->SetItemSource(BoxValue(rootItem));
+			provider->AttachCallback(&nodeCallback);
+			
+			auto rootNode = provider->GetRootNode();
+			rootNode->GetChildCount();
+			callbackLog.Clear();
+			
+			// Sequence: Add, RemoveAt, Add, RemoveRange, Add
+			// Each operation fires exactly ONE callback pair
+			
+			// Add
+			auto newChild1 = Ptr(new BindableItem());
+			newChild1->name = L"Root.NewChild1";
+			rootItem->children.Add(newChild1);
+			TEST_ASSERT(callbackLog.Count() == 2);
+			callbackLog.Clear();
+			
+			// RemoveAt
+			rootItem->children.RemoveAt(0);
+			TEST_ASSERT(callbackLog.Count() == 2);
+			callbackLog.Clear();
+			
+			// Add
+			auto newChild2 = Ptr(new BindableItem());
+			newChild2->name = L"Root.NewChild2";
+			rootItem->children.Add(newChild2);
+			TEST_ASSERT(callbackLog.Count() == 2);
+			callbackLog.Clear();
+			
+			// RemoveRange
+			rootItem->children.RemoveRange(1, 2);
+			TEST_ASSERT(callbackLog.Count() == 2);
+			callbackLog.Clear();
+			
+			// Add
+			auto newChild3 = Ptr(new BindableItem());
+			newChild3->name = L"Root.NewChild3";
+			rootItem->children.Add(newChild3);
+			TEST_ASSERT(callbackLog.Count() == 2);
+			
+			// Verify final structure is correct
+			TEST_ASSERT(rootNode->GetChildCount() == 3);
+		});
+	});
 }
