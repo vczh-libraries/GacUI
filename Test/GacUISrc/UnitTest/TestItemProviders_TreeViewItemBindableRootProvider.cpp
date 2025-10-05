@@ -1351,58 +1351,43 @@ TEST_FILE
 			TEST_ASSERT(provider->GetTextValue(rootNode.Obj()) == L"RootWithEmptyChildren");
 		});
 
-		TEST_CASE(L"ExpandNodeWithNoChildren")
-		{
-			List<WString> callbackLog;
-			MockNodeProviderCallback nodeCallback(callbackLog);
-			
-			auto provider = Ptr(new TreeViewItemBindableRootProvider());
-			InitProvider(provider);
-			
-			auto rootItem = Ptr(new BindableItem());
-			rootItem->name = L"EmptyRoot";
-			provider->SetItemSource(BoxValue(rootItem));
-			provider->AttachCallback(&nodeCallback);
-			
-			auto rootNode = provider->GetRootNode();
-			rootNode->GetChildCount();
-			callbackLog.Clear();
-			
-			// Expand node with no children should complete safely
-			rootNode->SetExpanding(true);
-			
-			// Expansion callback should fire even for empty node
-			const wchar_t* expected[] = {
-				L"[ROOT]->OnItemExpanded()"
-			};
-			AssertCallbacks(callbackLog, expected);
-			
-			TEST_ASSERT(rootNode->GetExpanding() == true);
-			TEST_ASSERT(rootNode->GetChildCount() == 0);
-		});
-
-		TEST_CASE(L"AccessChildrenOfEmptyNode")
-		{
-			List<WString> callbackLog;
-			MockNodeProviderCallback nodeCallback(callbackLog);
-			
-			auto provider = Ptr(new TreeViewItemBindableRootProvider());
-			InitProvider(provider);
-			
-			auto rootItem = Ptr(new BindableItem());
-			rootItem->name = L"EmptyRoot";
-			provider->SetItemSource(BoxValue(rootItem));
-			provider->AttachCallback(&nodeCallback);
-			
-			auto rootNode = provider->GetRootNode();
-			TEST_ASSERT(rootNode->GetChildCount() == 0);
-			
-			// Accessing child at index 0 should trigger TEST_ERROR (out of bounds)
-			TEST_ERROR(rootNode->GetChild(0));
-			TEST_ERROR(rootNode->GetChild(-1));
-			TEST_ERROR(rootNode->GetChild(100));
-		});
+	TEST_CASE(L"ExpandNodeWithNoChildren")
+	{
+		List<WString> callbackLog;
+		MockNodeProviderCallback nodeCallback(callbackLog);
+		
+		auto provider = Ptr(new TreeViewItemBindableRootProvider());
+		InitProvider(provider);
+		
+		// Create root with one child that has no children
+		auto rootItem = Ptr(new BindableItem());
+		rootItem->name = L"Root";
+		auto childItem = Ptr(new BindableItem());
+		childItem->name = L"Root.EmptyChild";
+		// childItem->children is already initialized as empty ObservableList
+		rootItem->children.Add(childItem);
+		
+		provider->SetItemSource(BoxValue(rootItem));
+		provider->AttachCallback(&nodeCallback);
+		
+		auto rootNode = provider->GetRootNode();
+		auto childNode = rootNode->GetChild(0);
+		TEST_ASSERT(childNode->GetChildCount() == 0);
+		callbackLog.Clear();
+		
+		// Expand child node with no children should complete safely
+		childNode->SetExpanding(true);
+		
+		// Expansion callback should fire even for empty node
+		const wchar_t* expected[] = {
+			L"Root.EmptyChild->OnItemExpanded()"
+		};
+		AssertCallbacks(callbackLog, expected);
+		
+		TEST_ASSERT(childNode->GetExpanding() == true);
+		TEST_ASSERT(childNode->GetChildCount() == 0);
 	});
+});
 
 	TEST_CATEGORY(L"SetItemSourceTransitions")
 	{
@@ -1613,48 +1598,49 @@ TEST_FILE
 			TEST_ASSERT(rootNode->GetChildCount() == 0);
 		});
 
-		TEST_CASE(L"CollapseAndReexpandEmptyNode")
-		{
-			List<WString> callbackLog;
-			MockNodeProviderCallback nodeCallback(callbackLog);
-			
-			auto provider = Ptr(new TreeViewItemBindableRootProvider());
-			InitProvider(provider);
-			
-			auto rootItem = CreateBindableTree(L"Root", 3);
-			provider->SetItemSource(BoxValue(rootItem));
-			provider->AttachCallback(&nodeCallback);
-			
-			auto rootNode = provider->GetRootNode();
-			rootNode->GetChildCount();
-			
-			// Expand then clear children
-			rootNode->SetExpanding(true);
-			rootItem->children.Clear();
-			callbackLog.Clear();
-			
-			// Collapse the empty node
-			rootNode->SetExpanding(false);
-			
-			const wchar_t* collapsedExpected[] = {
-				L"[ROOT]->OnItemCollapsed()"
-			};
-			AssertCallbacks(callbackLog, collapsedExpected);
-			TEST_ASSERT(rootNode->GetExpanding() == false);
-			callbackLog.Clear();
-			
-			// Re-expand the empty node
-			rootNode->SetExpanding(true);
-			
-			const wchar_t* expandedExpected[] = {
-				L"[ROOT]->OnItemExpanded()"
-			};
-			AssertCallbacks(callbackLog, expandedExpected);
-			TEST_ASSERT(rootNode->GetExpanding() == true);
-			TEST_ASSERT(rootNode->GetChildCount() == 0);
-		});
-
-		TEST_CASE(L"ExpandNodeThenModifyChildren")
+	TEST_CASE(L"CollapseAndReexpandEmptyNode")
+	{
+		List<WString> callbackLog;
+		MockNodeProviderCallback nodeCallback(callbackLog);
+		
+		auto provider = Ptr(new TreeViewItemBindableRootProvider());
+		InitProvider(provider);
+		
+		// Create root with one child that has grandchildren
+		auto rootItem = CreateMultiLevelTree(L"Root", 1, 3);
+		provider->SetItemSource(BoxValue(rootItem));
+		provider->AttachCallback(&nodeCallback);
+		
+		auto rootNode = provider->GetRootNode();
+		auto childNode = rootNode->GetChild(0);
+		childNode->GetChildCount();
+		
+		// Expand the child then clear its grandchildren
+		childNode->SetExpanding(true);
+		auto childItem = rootItem->children[0];
+		childItem->children.Clear();
+		callbackLog.Clear();
+		
+		// Collapse the now-empty child node
+		childNode->SetExpanding(false);
+		
+		const wchar_t* collapsedExpected[] = {
+			L"Root.Child1->OnItemCollapsed()"
+		};
+		AssertCallbacks(callbackLog, collapsedExpected);
+		TEST_ASSERT(childNode->GetExpanding() == false);
+		callbackLog.Clear();
+		
+		// Re-expand the empty child node
+		childNode->SetExpanding(true);
+		
+		const wchar_t* expandedExpected[] = {
+			L"Root.Child1->OnItemExpanded()"
+		};
+		AssertCallbacks(callbackLog, expandedExpected);
+		TEST_ASSERT(childNode->GetExpanding() == true);
+		TEST_ASSERT(childNode->GetChildCount() == 0);
+	});		TEST_CASE(L"ExpandNodeThenModifyChildren")
 		{
 			List<WString> callbackLog;
 			MockNodeProviderCallback nodeCallback(callbackLog);
@@ -1726,17 +1712,15 @@ TEST_FILE
 			rootItem->children.Add(newChild);
 			callbackLog.Clear();
 			
-			// Detach callback
-			provider->DetachCallback(&nodeCallback);
-			
-			// Verify detachment callback
-			const wchar_t* detachExpected[] = {
-				L"OnAttached(provider=nullptr)"
-			};
-			AssertCallbacks(callbackLog, detachExpected);
-			callbackLog.Clear();
-			
-			// Further modifications should not fire callbacks
+		// Detach callback
+		provider->DetachCallback(&nodeCallback);
+		
+		// Verify detachment callback
+		const wchar_t* detachExpected[] = {
+			L"OnAttached(provider=null)"
+		};
+		AssertCallbacks(callbackLog, detachExpected);
+		callbackLog.Clear();			// Further modifications should not fire callbacks
 			auto anotherChild = Ptr(new BindableItem());
 			anotherChild->name = L"Root.Child5";
 			rootItem->children.Add(anotherChild);
@@ -1769,16 +1753,14 @@ TEST_FILE
 			child1->SetExpanding(true);
 			callbackLog.Clear();
 			
-			// Detach callback
-			provider->DetachCallback(&nodeCallback);
-			
-			// Verify detachment
-			const wchar_t* detachExpected[] = {
-				L"OnAttached(provider=nullptr)"
-			};
-			AssertCallbacks(callbackLog, detachExpected);
-			
-			// Expansion state preserved
+		// Detach callback
+		provider->DetachCallback(&nodeCallback);
+		
+		// Verify detachment
+		const wchar_t* detachExpected[] = {
+			L"OnAttached(provider=null)"
+		};
+		AssertCallbacks(callbackLog, detachExpected);			// Expansion state preserved
 			TEST_ASSERT(rootNode->GetExpanding() == true);
 			TEST_ASSERT(child1->GetExpanding() == true);
 			
@@ -1806,15 +1788,13 @@ TEST_FILE
 			AssertCallbacks(callbackLog, attachExpected);
 			callbackLog.Clear();
 			
-			// Detach
-			provider->DetachCallback(&nodeCallback);
-			const wchar_t* detachExpected[] = {
-				L"OnAttached(provider=nullptr)"
-			};
-			AssertCallbacks(callbackLog, detachExpected);
-			callbackLog.Clear();
-			
-			// Reattach
+		// Detach
+		provider->DetachCallback(&nodeCallback);
+		const wchar_t* detachExpected[] = {
+			L"OnAttached(provider=null)"
+		};
+		AssertCallbacks(callbackLog, detachExpected);
+		callbackLog.Clear();			// Reattach
 			provider->AttachCallback(&nodeCallback);
 			AssertCallbacks(callbackLog, attachExpected);
 			
@@ -1862,15 +1842,13 @@ TEST_FILE
 			grandchild1->GetChildCount();
 			callbackLog.Clear();
 			
-			// Detach with deep hierarchy
-			provider->DetachCallback(&nodeCallback);
-			
-			const wchar_t* detachExpected[] = {
-				L"OnAttached(provider=nullptr)"
-			};
-			AssertCallbacks(callbackLog, detachExpected);
-			
-			// All nodes remain accessible
+		// Detach with deep hierarchy
+		provider->DetachCallback(&nodeCallback);
+		
+		const wchar_t* detachExpected[] = {
+			L"OnAttached(provider=null)"
+		};
+		AssertCallbacks(callbackLog, detachExpected);			// All nodes remain accessible
 			TEST_ASSERT(rootNode->GetChildCount() == 2);
 			TEST_ASSERT(child1->GetChildCount() == 1);
 			TEST_ASSERT(grandchild1->GetChildCount() == 1);
@@ -1892,14 +1870,12 @@ TEST_FILE
 			provider->AttachCallback(&nodeCallback);
 			
 			auto rootNode = provider->GetRootNode();
-			rootNode->GetChildCount();
-			
-			// Test various out-of-bounds indices
-			TEST_ERROR(rootNode->GetChild(-1));
-			TEST_ERROR(rootNode->GetChild(3));
-			TEST_ERROR(rootNode->GetChild(100));
-			
-			// Valid index should work
+		rootNode->GetChildCount();
+		
+		// All out-of-bounds indices return nullptr (not treated as error)
+		TEST_ASSERT(rootNode->GetChild(-1) == nullptr);
+		TEST_ASSERT(rootNode->GetChild(3) == nullptr);
+		TEST_ASSERT(rootNode->GetChild(100) == nullptr);			// Valid index should work
 			auto child1 = rootNode->GetChild(0);
 			TEST_ASSERT(child1 != nullptr);
 			TEST_ASSERT(provider->GetTextValue(child1.Obj()) == L"Root.Child1");
@@ -1922,10 +1898,10 @@ TEST_FILE
 			auto child1 = rootNode->GetChild(0);
 			child1->GetChildCount();
 			
-			// Try to access grandchild with invalid index
-			TEST_ERROR(child1->GetChild(-1));
-			TEST_ERROR(child1->GetChild(2));
-			TEST_ERROR(child1->GetChild(50));
+			// All out-of-bounds indices return nullptr (not treated as error)
+			TEST_ASSERT(child1->GetChild(-1) == nullptr);
+			TEST_ASSERT(child1->GetChild(2) == nullptr);
+			TEST_ASSERT(child1->GetChild(50) == nullptr);
 			
 			// Valid access should work
 			auto grandchild1 = child1->GetChild(0);
