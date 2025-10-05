@@ -9526,6 +9526,8 @@ Licensed under https://github.com/vczh-libraries/License
 
 namespace vl
 {
+	extern bool MatchWildcardNaive(const wchar_t* wildcard, const wchar_t* text, bool caseSensitive);
+
 	namespace unittest
 	{
 		using UnitTestFileProc = void(*)();

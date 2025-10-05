@@ -8567,11 +8567,6 @@ MemoryNodeProvider::NodeCollection
 		}
 	}
 
-	bool MemoryNodeProvider::NodeCollection::QueryInsert(vint index, Ptr<MemoryNodeProvider> const& child)
-	{
-		return child->parent == 0;
-	}
-
 	bool MemoryNodeProvider::NodeCollection::QueryRemove(vint index, Ptr<MemoryNodeProvider> const& child)
 	{
 		return child->parent == ownerProvider;
@@ -8579,6 +8574,15 @@ MemoryNodeProvider::NodeCollection
 
 	void MemoryNodeProvider::NodeCollection::BeforeInsert(vint index, Ptr<MemoryNodeProvider> const& child)
 	{
+		// Check if this node is already in a provider
+		if (child->parent)
+		{
+			throw ArgumentException(
+				L"The MemoryNodeProvider is already belong to a parent node.",
+				L"vl::presentation::controls::tree::MemoryNodeProvider::NodeCollection::BeforeInsert",
+				L"child"
+			);
+		}
 		OnBeforeChildModified(index, 0, 1);
 		child->parent = ownerProvider;
 	}
@@ -8718,14 +8722,8 @@ MemoryNodeProvider
 
 	Ptr<INodeProvider> MemoryNodeProvider::GetChild(vint index)
 	{
-		if (0 <= index && index < childCount)
-		{
-			return children[index];
-		}
-		else
-		{
-			return nullptr;
-		}
+		CHECK_ERROR(index >= 0 && index < childCount, L"MemoryNodeProvider::GetChild(vint)#Argument index not in range.");
+		return children[index];
 	}
 
 /***********************************************************************
@@ -9641,9 +9639,9 @@ DataProvider
 					{
 						return (IListViewItemView*)this;
 					}
-					else if (identifier == ListViewColumnItemArranger::IColumnItemView::Identifier)
+					else if (identifier == IColumnItemView::Identifier)
 					{
-						return (ListViewColumnItemArranger::IColumnItemView*)this;
+						return (IColumnItemView*)this;
 					}
 					else if (identifier == IDataGridView::Identifier)
 					{
@@ -9708,7 +9706,7 @@ DataProvider
 
 				// ===================== list::ListViewColumnItemArranger::IColumnItemView =====================
 
-				bool DataProvider::AttachCallback(ListViewColumnItemArranger::IColumnItemViewCallback* value)
+				bool DataProvider::AttachCallback(IColumnItemViewCallback* value)
 				{
 					if (columnItemViewCallbacks.Contains(value))
 					{
@@ -9721,7 +9719,7 @@ DataProvider
 					}
 				}
 
-				bool DataProvider::DetachCallback(ListViewColumnItemArranger::IColumnItemViewCallback* value)
+				bool DataProvider::DetachCallback(IColumnItemViewCallback* value)
 				{
 					vint index = columnItemViewCallbacks.IndexOf(value);
 					if (index == -1)
@@ -9974,172 +9972,13 @@ namespace vl
 			using namespace templates;
 
 /***********************************************************************
-GuiBindableTextList::ItemSource
-***********************************************************************/
-
-			GuiBindableTextList::ItemSource::ItemSource()
-			{
-			}
-
-			GuiBindableTextList::ItemSource::~ItemSource()
-			{
-				if (itemChangedEventHandler)
-				{
-					auto ol = itemSource.Cast<IValueObservableList>();
-					ol->ItemChanged.Remove(itemChangedEventHandler);
-				}
-			}
-
-			Ptr<description::IValueEnumerable> GuiBindableTextList::ItemSource::GetItemSource()
-			{
-				return itemSource;
-			}
-
-			void GuiBindableTextList::ItemSource::SetItemSource(Ptr<description::IValueEnumerable> _itemSource)
-			{
-				vint oldCount = 0;
-				if (itemSource)
-				{
-					oldCount = itemSource->GetCount();
-				}
-				if (itemChangedEventHandler)
-				{
-					auto ol = itemSource.Cast<IValueObservableList>();
-					ol->ItemChanged.Remove(itemChangedEventHandler);
-				}
-
-				itemSource = nullptr;
-				itemChangedEventHandler = nullptr;
-
-				if (_itemSource)
-				{
-					if (auto ol = _itemSource.Cast<IValueObservableList>())
-					{
-						itemSource = ol;
-						itemChangedEventHandler = ol->ItemChanged.Add([this](vint start, vint oldCount, vint newCount)
-						{
-							InvokeOnItemModified(start, oldCount, newCount, true);
-						});
-					}
-					else if (auto rl = _itemSource.Cast<IValueReadonlyList>())
-					{
-						itemSource = rl;
-					}
-					else
-					{
-						itemSource = IValueList::Create(GetLazyList<Value>(_itemSource));
-					}
-				}
-
-				InvokeOnItemModified(0, oldCount, itemSource ? itemSource->GetCount() : 0, true);
-			}
-
-			description::Value GuiBindableTextList::ItemSource::Get(vint index)
-			{
-				if (!itemSource) return Value();
-				return itemSource->Get(index);
-			}
-
-			void GuiBindableTextList::ItemSource::UpdateBindingProperties()
-			{
-				InvokeOnItemModified(0, Count(), Count(), false);
-			}
-
-			bool GuiBindableTextList::ItemSource::NotifyUpdate(vint start, vint count, bool itemReferenceUpdated)
-			{
-				if (!itemSource) return false;
-				if (start<0 || start >= itemSource->GetCount() || count <= 0 || start + count > itemSource->GetCount())
-				{
-					return false;
-				}
-				else
-				{
-					InvokeOnItemModified(start, count, count, itemReferenceUpdated);
-					return true;
-				}
-			}
-
-			// ===================== GuiListControl::IItemProvider =====================
-			
-			vint GuiBindableTextList::ItemSource::Count()
-			{
-				if (!itemSource) return 0;
-				return itemSource->GetCount();
-			}
-
-			WString GuiBindableTextList::ItemSource::GetTextValue(vint itemIndex)
-			{
-				if (itemSource)
-				{
-					if (0 <= itemIndex && itemIndex < itemSource->GetCount())
-					{
-						return ReadProperty(itemSource->Get(itemIndex), textProperty);
-					}
-				}
-				return L"";
-			}
-			
-			IDescriptable* GuiBindableTextList::ItemSource::RequestView(const WString& identifier)
-			{
-				if (identifier == ITextItemView::Identifier)
-				{
-					return (ITextItemView*)this;
-				}
-				else
-				{
-					return 0;
-				}
-			}
-					
-			// ===================== GuiListControl::IItemBindingView =====================
-
-			description::Value GuiBindableTextList::ItemSource::GetBindingValue(vint itemIndex)
-			{
-				if (itemSource)
-				{
-					if (0 <= itemIndex && itemIndex < itemSource->GetCount())
-					{
-						return itemSource->Get(itemIndex);
-					}
-				}
-				return Value();
-			}
-					
-			// ===================== list::TextItemStyleProvider::ITextItemView =====================
-			
-			bool GuiBindableTextList::ItemSource::GetChecked(vint itemIndex)
-			{
-				if (itemSource)
-				{
-					if (0 <= itemIndex && itemIndex < itemSource->GetCount())
-					{
-						return ReadProperty(itemSource->Get(itemIndex), checkedProperty);
-					}
-				}
-				return false;
-			}
-			
-			void GuiBindableTextList::ItemSource::SetChecked(vint itemIndex, bool value)
-			{
-				if (itemSource)
-				{
-					if (0 <= itemIndex && itemIndex < itemSource->GetCount())
-					{
-						auto thisValue = itemSource->Get(itemIndex);
-						WriteProperty(thisValue, checkedProperty, value);
-						InvokeOnItemModified(itemIndex, 1, 1, false);
-					}
-				}
-			}
-
-/***********************************************************************
 GuiBindableTextList
 ***********************************************************************/
 
 			GuiBindableTextList::GuiBindableTextList(theme::ThemeName themeName)
-				:GuiVirtualTextList(themeName, new ItemSource)
+				:GuiVirtualTextList(themeName, new TextItemBindableProvider)
 			{
-				itemSource = dynamic_cast<ItemSource*>(GetItemProvider());
+				itemSource = dynamic_cast<TextItemBindableProvider*>(GetItemProvider());
 
 				TextPropertyChanged.SetAssociatedComposition(boundsComposition);
 				TextPropertyChanged.SetAssociatedComposition(boundsComposition);
@@ -10202,332 +10041,13 @@ GuiBindableTextList
 			}
 
 /***********************************************************************
-GuiBindableListView::ItemSource
-***********************************************************************/
-
-			GuiBindableListView::ItemSource::ItemSource()
-				:columns(this)
-				, dataColumns(this)
-			{
-			}
-
-			GuiBindableListView::ItemSource::~ItemSource()
-			{
-				if (itemChangedEventHandler)
-				{
-					auto ol = itemSource.Cast<IValueObservableList>();
-					ol->ItemChanged.Remove(itemChangedEventHandler);
-				}
-			}
-
-			Ptr<description::IValueEnumerable> GuiBindableListView::ItemSource::GetItemSource()
-			{
-				return itemSource;
-			}
-
-			void GuiBindableListView::ItemSource::SetItemSource(Ptr<description::IValueEnumerable> _itemSource)
-			{
-				vint oldCount = 0;
-				if (itemSource)
-				{
-					oldCount = itemSource->GetCount();
-				}
-				if (itemChangedEventHandler)
-				{
-					auto ol = itemSource.Cast<IValueObservableList>();
-					ol->ItemChanged.Remove(itemChangedEventHandler);
-				}
-
-				itemSource = nullptr;
-				itemChangedEventHandler = nullptr;
-
-				if (_itemSource)
-				{
-					if (auto ol = _itemSource.Cast<IValueObservableList>())
-					{
-						itemSource = ol;
-						itemChangedEventHandler = ol->ItemChanged.Add([this](vint start, vint oldCount, vint newCount)
-						{
-							InvokeOnItemModified(start, oldCount, newCount, true);
-						});
-					}
-					else if (auto rl = _itemSource.Cast<IValueReadonlyList>())
-					{
-						itemSource = rl;
-					}
-					else
-					{
-						itemSource = IValueList::Create(GetLazyList<Value>(_itemSource));
-					}
-				}
-
-				InvokeOnItemModified(0, oldCount, itemSource ? itemSource->GetCount() : 0, true);
-			}
-
-			description::Value GuiBindableListView::ItemSource::Get(vint index)
-			{
-				if (!itemSource) return Value();
-				return itemSource->Get(index);
-			}
-
-			void GuiBindableListView::ItemSource::UpdateBindingProperties()
-			{
-				InvokeOnItemModified(0, Count(), Count(), false);
-			}
-
-			bool GuiBindableListView::ItemSource::NotifyUpdate(vint start, vint count, bool itemReferenceUpdated)
-			{
-				if (!itemSource) return false;
-				if (start<0 || start >= itemSource->GetCount() || count <= 0 || start + count > itemSource->GetCount())
-				{
-					return false;
-				}
-				else
-				{
-					InvokeOnItemModified(start, count, count, itemReferenceUpdated);
-					return true;
-				}
-			}
-
-			list::ListViewDataColumns& GuiBindableListView::ItemSource::GetDataColumns()
-			{
-				return dataColumns;
-			}
-
-			list::ListViewColumns& GuiBindableListView::ItemSource::GetColumns()
-			{
-				return columns;
-			}
-					
-			// ===================== list::IListViewItemProvider =====================
-
-			void GuiBindableListView::ItemSource::RebuildAllItems()
-			{
-				InvokeOnItemModified(0, Count(), Count(), true);
-			}
-
-			void GuiBindableListView::ItemSource::RefreshAllItems()
-			{
-				InvokeOnItemModified(0, Count(), Count(), false);
-			}
-
-			void GuiBindableListView::ItemSource::NotifyColumnRebuilt()
-			{
-				for (auto callback : columnItemViewCallbacks)
-				{
-					callback->OnColumnRebuilt();
-				}
-				RebuildAllItems();
-			}
-
-			void GuiBindableListView::ItemSource::NotifyColumnChanged()
-			{
-				for (auto callback : columnItemViewCallbacks)
-				{
-					callback->OnColumnChanged(true);
-				}
-				RefreshAllItems();
-			}
-
-			// ===================== GuiListControl::IItemProvider =====================
-
-			vint GuiBindableListView::ItemSource::Count()
-			{
-				if (!itemSource) return 0;
-				return itemSource->GetCount();
-			}
-
-			WString GuiBindableListView::ItemSource::GetTextValue(vint itemIndex)
-			{
-				return GetText(itemIndex);
-			}
-
-			description::Value GuiBindableListView::ItemSource::GetBindingValue(vint itemIndex)
-			{
-				if (itemSource)
-				{
-					if (0 <= itemIndex && itemIndex < itemSource->GetCount())
-					{
-						return itemSource->Get(itemIndex);
-					}
-				}
-				return Value();
-			}
-
-			IDescriptable* GuiBindableListView::ItemSource::RequestView(const WString& identifier)
-			{
-				if (identifier == IListViewItemView::Identifier)
-				{
-					return (IListViewItemView*)this;
-				}
-				else if (identifier == ListViewColumnItemArranger::IColumnItemView::Identifier)
-				{
-					return (ListViewColumnItemArranger::IColumnItemView*)this;
-				}
-				else
-				{
-					return 0;
-				}
-			}
-
-			// ===================== list::ListViewItemStyleProvider::IListViewItemView =====================
-
-			Ptr<GuiImageData> GuiBindableListView::ItemSource::GetSmallImage(vint itemIndex)
-			{
-				if (itemSource)
-				{
-					if (0 <= itemIndex && itemIndex < itemSource->GetCount())
-					{
-						return ReadProperty(itemSource->Get(itemIndex), smallImageProperty);
-					}
-				}
-				return nullptr;
-			}
-
-			Ptr<GuiImageData> GuiBindableListView::ItemSource::GetLargeImage(vint itemIndex)
-			{
-				if (itemSource)
-				{
-					if (0 <= itemIndex && itemIndex < itemSource->GetCount())
-					{
-						return ReadProperty(itemSource->Get(itemIndex), largeImageProperty);
-					}
-				}
-				return nullptr;
-			}
-
-			WString GuiBindableListView::ItemSource::GetText(vint itemIndex)
-			{
-				if (itemSource)
-				{
-					if (0 <= itemIndex && itemIndex < itemSource->GetCount() && columns.Count()>0)
-					{
-						return ReadProperty(itemSource->Get(itemIndex), columns[0]->GetTextProperty());
-					}
-				}
-				return L"";
-			}
-
-			WString GuiBindableListView::ItemSource::GetSubItem(vint itemIndex, vint index)
-			{
-				if (itemSource)
-				{
-					if (0 <= itemIndex && itemIndex < itemSource->GetCount() && 0 <= index && index < columns.Count() - 1)
-					{
-						return ReadProperty(itemSource->Get(itemIndex), columns[index + 1]->GetTextProperty());
-					}
-				}
-				return L"";
-			}
-
-			vint GuiBindableListView::ItemSource::GetDataColumnCount()
-			{
-				return dataColumns.Count();
-			}
-
-			vint GuiBindableListView::ItemSource::GetDataColumn(vint index)
-			{
-				return dataColumns[index];
-			}
-
-			vint GuiBindableListView::ItemSource::GetColumnCount()
-			{
-				return columns.Count();
-			}
-
-			WString GuiBindableListView::ItemSource::GetColumnText(vint index)
-			{
-				if (index < 0 || index >= columns.Count())
-				{
-					return L"";
-				}
-				else
-				{
-					return columns[index]->GetText();
-				}
-			}
-
-			// ===================== list::ListViewColumnItemArranger::IColumnItemView =====================
-
-			bool GuiBindableListView::ItemSource::AttachCallback(ListViewColumnItemArranger::IColumnItemViewCallback* value)
-			{
-				if(columnItemViewCallbacks.Contains(value))
-				{
-					return false;
-				}
-				else
-				{
-					columnItemViewCallbacks.Add(value);
-					return true;
-				}
-			}
-
-			bool GuiBindableListView::ItemSource::DetachCallback(ListViewColumnItemArranger::IColumnItemViewCallback* value)
-			{
-				vint index = columnItemViewCallbacks.IndexOf(value);
-				if (index == -1)
-				{
-					return false;
-				}
-				else
-				{
-					columnItemViewCallbacks.Remove(value);
-					return true;
-				}
-			}
-
-			vint GuiBindableListView::ItemSource::GetColumnSize(vint index)
-			{
-				if (index < 0 || index >= columns.Count())
-				{
-					return 0;
-				}
-				else
-				{
-					return columns[index]->GetSize();
-				}
-			}
-
-			void GuiBindableListView::ItemSource::SetColumnSize(vint index, vint value)
-			{
-				if (index >= 0 && index < columns.Count())
-				{
-					columns[index]->SetSize(value);
-				}
-			}
-
-			GuiMenu* GuiBindableListView::ItemSource::GetDropdownPopup(vint index)
-			{
-				if (index < 0 || index >= columns.Count())
-				{
-					return 0;
-				}
-				else
-				{
-					return columns[index]->GetDropdownPopup();
-				}
-			}
-
-			ColumnSortingState GuiBindableListView::ItemSource::GetSortingState(vint index)
-			{
-				if (index < 0 || index >= columns.Count())
-				{
-					return ColumnSortingState::NotSorted;
-				}
-				else
-				{
-					return columns[index]->GetSortingState();
-				}
-			}
-
-/***********************************************************************
 GuiBindableListView
 ***********************************************************************/
 
 			GuiBindableListView::GuiBindableListView(theme::ThemeName themeName)
-				:GuiVirtualListView(themeName, new ItemSource)
+				:GuiVirtualListView(themeName, new ListViewItemBindableProvider)
 			{
-				itemSource = dynamic_cast<ItemSource*>(GetItemProvider());
+				itemSource = dynamic_cast<ListViewItemBindableProvider*>(GetItemProvider());
 
 				LargeImagePropertyChanged.SetAssociatedComposition(boundsComposition);
 				SmallImagePropertyChanged.SetAssociatedComposition(boundsComposition);
@@ -10600,313 +10120,13 @@ GuiBindableListView
 			}
 
 /***********************************************************************
-GuiBindableTreeView::ItemSourceNode
-***********************************************************************/
-
-			Ptr<description::IValueReadonlyList> GuiBindableTreeView::ItemSourceNode::PrepareValueList(const description::Value& inputItemSource)
-			{
-				if (auto value = ReadProperty(inputItemSource, rootProvider->childrenProperty))
-				{
-					if (auto ol = value.Cast<IValueObservableList>())
-					{
-						return ol;
-					}
-					else if (auto rl = value.Cast<IValueReadonlyList>())
-					{
-						return rl;
-					}
-					else
-					{
-						return IValueList::Create(GetLazyList<Value>(value));
-					}
-				}
-				else
-				{
-					return IValueList::Create();
-				}
-			}
-
-			void GuiBindableTreeView::ItemSourceNode::PrepareChildren(Ptr<description::IValueReadonlyList> newValueList)
-			{
-				if (!childrenVirtualList)
-				{
-					childrenVirtualList = newValueList;
-					if (auto ol = childrenVirtualList.Cast<IValueObservableList>())
-					{
-						itemChangedEventHandler = ol->ItemChanged.Add([this](vint start, vint oldCount, vint newCount)
-						{
-							callback->OnBeforeItemModified(this, start, oldCount, newCount, true);
-							children.RemoveRange(start, oldCount);
-							for (vint i = 0; i < newCount; i++)
-							{
-								Value value = childrenVirtualList->Get(start + i);
-								auto node = Ptr(new ItemSourceNode(value, this));
-								children.Insert(start + i, node);
-							}
-							callback->OnAfterItemModified(this, start, oldCount, newCount, true);
-						});
-					}
-
-					vint count = childrenVirtualList->GetCount();
-					for (vint i = 0; i < count; i++)
-					{
-						Value value = childrenVirtualList->Get(i);
-						auto node = Ptr(new ItemSourceNode(value, this));
-						children.Add(node);
-					}
-				}
-			}
-
-			void GuiBindableTreeView::ItemSourceNode::UnprepareChildren()
-			{
-				if (itemChangedEventHandler)
-				{
-					auto ol = childrenVirtualList.Cast<IValueObservableList>();
-					ol->ItemChanged.Remove(itemChangedEventHandler);
-					itemChangedEventHandler = nullptr;
-				}
-				childrenVirtualList = nullptr;
-				for (auto node : children)
-				{
-					node->UnprepareChildren();
-				}
-				children.Clear();
-			}
-
-			void GuiBindableTreeView::ItemSourceNode::PrepareReverseMapping()
-			{
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::controls::GuiBindableTreeView::ItemSourceNode::PrepareReverseMapping()#"
-				if (rootProvider->reverseMappingProperty && !itemSource.IsNull())
-				{
-					auto oldValue = ReadProperty(itemSource, rootProvider->reverseMappingProperty);
-					CHECK_ERROR(oldValue.IsNull(), ERROR_MESSAGE_PREFIX L"The reverse mapping property of an item has been unexpectedly changed.");
-					WriteProperty(itemSource, rootProvider->reverseMappingProperty, Value::From(this));
-				}
-#undef ERROR_MESSAGE_PREFIX
-			}
-
-			void GuiBindableTreeView::ItemSourceNode::UnprepareReverseMapping()
-			{
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::controls::GuiBindableTreeView::ItemSourceNode::PrepareReverseMapping()#"
-				if (rootProvider->reverseMappingProperty && !itemSource.IsNull())
-				{
-					auto oldValue = ReadProperty(itemSource, rootProvider->reverseMappingProperty);
-					CHECK_ERROR(oldValue.GetRawPtr() == this, ERROR_MESSAGE_PREFIX L"The reverse mapping property of an item has been unexpectedly changed.");
-					WriteProperty(itemSource, rootProvider->reverseMappingProperty, {});
-				}
-#undef ERROR_MESSAGE_PREFIX
-			}
-
-			GuiBindableTreeView::ItemSourceNode::ItemSourceNode(const description::Value& _itemSource, ItemSourceNode* _parent)
-				:itemSource(_itemSource)
-				, rootProvider(_parent->rootProvider)
-				, parent(_parent)
-				, callback(_parent->callback)
-			{
-				PrepareReverseMapping();
-			}
-
-			GuiBindableTreeView::ItemSourceNode::ItemSourceNode(ItemSource* _rootProvider)
-				:rootProvider(_rootProvider)
-				, parent(nullptr)
-				, callback(_rootProvider)
-			{
-			}
-
-			GuiBindableTreeView::ItemSourceNode::~ItemSourceNode()
-			{
-				UnprepareReverseMapping();
-				if (itemChangedEventHandler)
-				{
-					auto ol = childrenVirtualList.Cast<IValueObservableList>();
-					ol->ItemChanged.Remove(itemChangedEventHandler);
-				}
-			}
-
-			description::Value GuiBindableTreeView::ItemSourceNode::GetItemSource()
-			{
-				return itemSource;
-			}
-
-			void GuiBindableTreeView::ItemSourceNode::SetItemSource(const description::Value& _itemSource)
-			{
-				auto newVirtualList = PrepareValueList(_itemSource);
-				vint oldCount = childrenVirtualList ? childrenVirtualList->GetCount() : 0;
-				vint newCount = newVirtualList->GetCount();
-
-				callback->OnBeforeItemModified(this, 0, oldCount, newCount, true);
-				UnprepareChildren();
-				UnprepareReverseMapping();
-				itemSource = _itemSource;
-				PrepareReverseMapping();
-				PrepareChildren(newVirtualList);
-				callback->OnAfterItemModified(this, 0, oldCount, newCount, true);
-			}
-
-			bool GuiBindableTreeView::ItemSourceNode::GetExpanding()
-			{
-				return this == rootProvider->rootNode.Obj() ? true : expanding;
-			}
-
-			void GuiBindableTreeView::ItemSourceNode::SetExpanding(bool value)
-			{
-				if (this != rootProvider->rootNode.Obj() && expanding != value)
-				{
-					expanding = value;
-					if (expanding)
-					{
-						callback->OnItemExpanded(this);
-					}
-					else
-					{
-						callback->OnItemCollapsed(this);
-					}
-				}
-			}
-
-			vint GuiBindableTreeView::ItemSourceNode::CalculateTotalVisibleNodes()
-			{
-				if (!GetExpanding())
-				{
-					return 1;
-				}
-
-				if (!childrenVirtualList)
-				{
-					PrepareChildren(PrepareValueList(itemSource));
-				}
-				vint count = 1;
-				for (auto child : children)
-				{
-					count += child->CalculateTotalVisibleNodes();
-				}
-				return count;
-			}
-
-			void GuiBindableTreeView::ItemSourceNode::NotifyDataModified()
-			{
-				if (parent)
-				{
-					vint index = parent->children.IndexOf(this);
-					callback->OnBeforeItemModified(parent, index, 1, 1, false);
-					callback->OnAfterItemModified(parent, index, 1, 1, false);
-				}
-			}
-
-			vint GuiBindableTreeView::ItemSourceNode::GetChildCount()
-			{
-				if (!childrenVirtualList)
-				{
-					PrepareChildren(PrepareValueList(itemSource));
-				}
-				return children.Count();
-			}
-
-			Ptr<tree::INodeProvider> GuiBindableTreeView::ItemSourceNode::GetParent()
-			{
-				return Ptr(parent);
-			}
-
-			Ptr<tree::INodeProvider> GuiBindableTreeView::ItemSourceNode::GetChild(vint index)
-			{
-				if (!childrenVirtualList)
-				{
-					PrepareChildren(PrepareValueList(itemSource));
-				}
-				if (0 <= index && index < children.Count())
-				{
-					return children[index];
-				}
-				return nullptr;
-			}
-
-/***********************************************************************
-GuiBindableTreeView::ItemSource
-***********************************************************************/
-
-			GuiBindableTreeView::ItemSource::ItemSource()
-			{
-				rootNode = Ptr(new ItemSourceNode(this));
-			}
-
-			GuiBindableTreeView::ItemSource::~ItemSource()
-			{
-			}
-
-			description::Value GuiBindableTreeView::ItemSource::GetItemSource()
-			{
-				return rootNode->GetItemSource();
-			}
-
-			void GuiBindableTreeView::ItemSource::SetItemSource(const description::Value& _itemSource)
-			{
-				rootNode->SetItemSource(_itemSource);
-			}
-
-			void GuiBindableTreeView::ItemSource::UpdateBindingProperties(bool updateChildrenProperty)
-			{
-				vint oldCount = rootNode->GetChildCount();
-				if (updateChildrenProperty)
-				{
-					rootNode->UnprepareChildren();
-				}
-				vint newCount = rootNode->GetChildCount();
-				OnBeforeItemModified(rootNode.Obj(), 0, oldCount, newCount, updateChildrenProperty);
-				OnAfterItemModified(rootNode.Obj(), 0, oldCount, newCount, updateChildrenProperty);
-			}
-
-			// ===================== tree::INodeRootProvider =====================
-
-			Ptr<tree::INodeProvider> GuiBindableTreeView::ItemSource::GetRootNode()
-			{
-				return rootNode;
-			}
-
-			WString GuiBindableTreeView::ItemSource::GetTextValue(tree::INodeProvider* node)
-			{
-				return ReadProperty(GetBindingValue(node), textProperty);
-			}
-
-			description::Value GuiBindableTreeView::ItemSource::GetBindingValue(tree::INodeProvider* node)
-			{
-				if (auto itemSourceNode = dynamic_cast<ItemSourceNode*>(node))
-				{
-					return itemSourceNode->GetItemSource();
-				}
-				return Value();
-			}
-
-			IDescriptable* GuiBindableTreeView::ItemSource::RequestView(const WString& identifier)
-			{
-				if(identifier==ITreeViewItemView::Identifier)
-				{
-					return (ITreeViewItemView*)this;
-				}
-				else
-				{
-					return 0;
-				}
-			}
-
-			// ===================== tree::ITreeViewItemView =====================
-
-			Ptr<GuiImageData> GuiBindableTreeView::ItemSource::GetNodeImage(tree::INodeProvider* node)
-			{
-				if (auto itemSourceNode = dynamic_cast<ItemSourceNode*>(node))
-				{
-					return ReadProperty(itemSourceNode->GetItemSource(), imageProperty);
-				}
-				return nullptr;
-			}
-
-/***********************************************************************
 GuiBindableTreeView
 ***********************************************************************/
 
 			GuiBindableTreeView::GuiBindableTreeView(theme::ThemeName themeName, WritableItemProperty<description::Value> reverseMappingProperty)
-				:GuiVirtualTreeView(themeName, Ptr(new ItemSource))
+				:GuiVirtualTreeView(themeName, Ptr(new TreeViewItemBindableRootProvider))
 			{
-				itemSource = dynamic_cast<ItemSource*>(GetNodeRootProvider());
+				itemSource = dynamic_cast<TreeViewItemBindableRootProvider*>(GetNodeRootProvider());
 				itemSource->reverseMappingProperty = reverseMappingProperty;
 
 				TextPropertyChanged.SetAssociatedComposition(boundsComposition);
@@ -10986,7 +10206,7 @@ GuiBindableTreeView
 				Value result;
 				if (auto node = nodeItemView->RequestNode(index))
 				{
-					if (auto itemSourceNode = node.Cast<ItemSourceNode>())
+					if (auto itemSourceNode = node.Cast<TreeViewItemBindableNode>())
 					{
 						result = itemSourceNode->GetItemSource();
 					}
@@ -12092,7 +11312,7 @@ GuiVirtualDataGrid
 				:GuiVirtualListView(themeName, _itemProvider)
 			{
 				listViewItemView = dynamic_cast<IListViewItemView*>(_itemProvider->RequestView(WString::Unmanaged(IListViewItemView::Identifier)));
-				columnItemView = dynamic_cast<ListViewColumnItemArranger::IColumnItemView*>(_itemProvider->RequestView(WString::Unmanaged(ListViewColumnItemArranger::IColumnItemView::Identifier)));
+				columnItemView = dynamic_cast<IColumnItemView*>(_itemProvider->RequestView(WString::Unmanaged(IColumnItemView::Identifier)));
 				dataGridView = dynamic_cast<IDataGridView*>(_itemProvider->RequestView(WString::Unmanaged(IDataGridView::Identifier)));
 
 				{
@@ -13955,8 +13175,6 @@ GuiListViewBase
 
 			namespace list
 			{
-
-				const wchar_t* const IListViewItemView::Identifier = L"vl::presentation::controls::list::IListViewItemView";
 				
 /***********************************************************************
 ListViewColumnItemArranger::ColumnItemViewCallback
@@ -14007,8 +13225,6 @@ ListViewColumnItemArranger::ColumnItemArrangerRepeatComposition
 /***********************************************************************
 ListViewColumnItemArranger
 ***********************************************************************/
-
-				const wchar_t* const ListViewColumnItemArranger::IColumnItemView::Identifier = L"vl::presentation::controls::list::ListViewColumnItemArranger::IColumnItemView";
 
 				void ListViewColumnItemArranger::OnViewLocationChanged(compositions::GuiGraphicsComposition* composition, compositions::GuiEventArgs& arguments)
 				{
@@ -14280,476 +13496,6 @@ ListViewColumnItemArranger
 				{
 					return columnHeaderSplitters;
 				}
-
-/***********************************************************************
-ListViewSubItems
-***********************************************************************/
-
-				void ListViewSubItems::NotifyUpdateInternal(vint start, vint count, vint newCount)
-				{
-					owner->NotifyUpdate();
-				}
-
-/***********************************************************************
-ListViewItem
-***********************************************************************/
-
-				void ListViewItem::NotifyUpdate()
-				{
-					if (owner)
-					{
-						vint index = owner->IndexOf(this);
-						owner->InvokeOnItemModified(index, 1, 1, false);
-					}
-				}
-
-				ListViewItem::ListViewItem()
-					:owner(0)
-				{
-					subItems.owner = this;
-				}
-
-				ListViewSubItems& ListViewItem::GetSubItems()
-				{
-					return subItems;
-				}
-
-				Ptr<GuiImageData> ListViewItem::GetSmallImage()
-				{
-					return smallImage;
-				}
-
-				void ListViewItem::SetSmallImage(Ptr<GuiImageData> value)
-				{
-					smallImage = value;
-					NotifyUpdate();
-				}
-
-				Ptr<GuiImageData> ListViewItem::GetLargeImage()
-				{
-					return largeImage;
-				}
-				
-				void ListViewItem::SetLargeImage(Ptr<GuiImageData> value)
-				{
-					largeImage = value;
-					NotifyUpdate();
-				}
-
-				const WString& ListViewItem::GetText()
-				{
-					return text;
-				}
-
-				void ListViewItem::SetText(const WString& value)
-				{
-					text = value;
-					NotifyUpdate();
-				}
-
-				description::Value ListViewItem::GetTag()
-				{
-					return tag;
-				}
-
-				void ListViewItem::SetTag(const description::Value& value)
-				{
-					tag = value;
-					NotifyUpdate();
-				}
-
-/***********************************************************************
-ListViewColumn
-***********************************************************************/
-
-				void ListViewColumn::NotifyRebuilt()
-				{
-					if (owner)
-					{
-						vint index = owner->IndexOf(this);
-						if (index != -1)
-						{
-							owner->NotifyColumnRebuilt(index);
-						}
-					}
-				}
-
-				void ListViewColumn::NotifyChanged(bool needToRefreshItems)
-				{
-					if (owner)
-					{
-						vint index = owner->IndexOf(this);
-						if (index != -1)
-						{
-							owner->NotifyColumnChanged(index, needToRefreshItems);
-						}
-					}
-				}
-
-				ListViewColumn::ListViewColumn(const WString& _text, vint _size)
-					:text(_text)
-					,size(_size)
-				{
-				}
-
-				ListViewColumn::~ListViewColumn()
-				{
-					if (dropdownPopup && ownPopup)
-					{
-						SafeDeleteControl(dropdownPopup);
-					}
-				}
-
-				const WString& ListViewColumn::GetText()
-				{
-					return text;
-				}
-
-				void ListViewColumn::SetText(const WString& value)
-				{
-					if (text != value)
-					{
-						text = value;
-						NotifyChanged(false);
-					}
-				}
-
-				ItemProperty<WString> ListViewColumn::GetTextProperty()
-				{
-					return textProperty;
-				}
-
-				void ListViewColumn::SetTextProperty(const ItemProperty<WString>& value)
-				{
-					textProperty = value;
-					NotifyChanged(true);
-				}
-
-				vint ListViewColumn::GetSize()
-				{
-					return size;
-				}
-
-				void ListViewColumn::SetSize(vint value)
-				{
-					if (size != value)
-					{
-						size = value;
-						NotifyChanged(true);
-					}
-				}
-
-				bool ListViewColumn::GetOwnPopup()
-				{
-					return ownPopup;
-				}
-
-				void ListViewColumn::SetOwnPopup(bool value)
-				{
-					ownPopup = value;
-				}
-
-				GuiMenu* ListViewColumn::GetDropdownPopup()
-				{
-					return dropdownPopup;
-				}
-
-				void ListViewColumn::SetDropdownPopup(GuiMenu* value)
-				{
-					if (dropdownPopup != value)
-					{
-						dropdownPopup = value;
-						NotifyChanged(false);
-					}
-				}
-
-				ColumnSortingState ListViewColumn::GetSortingState()
-				{
-					return sortingState;
-				}
-
-				void ListViewColumn::SetSortingState(ColumnSortingState value)
-				{
-					if (sortingState != value)
-					{
-						sortingState = value;
-						NotifyChanged(false);
-					}
-				}
-
-/***********************************************************************
-ListViewDataColumns
-***********************************************************************/
-
-				void ListViewDataColumns::NotifyUpdateInternal(vint start, vint count, vint newCount)
-				{
-					itemProvider->RefreshAllItems();
-				}
-
-				ListViewDataColumns::ListViewDataColumns(IListViewItemProvider* _itemProvider)
-					:itemProvider(_itemProvider)
-				{
-				}
-
-				ListViewDataColumns::~ListViewDataColumns()
-				{
-				}
-
-/***********************************************************************
-ListViewColumns
-***********************************************************************/
-
-				void ListViewColumns::NotifyColumnRebuilt(vint column)
-				{
-					NotifyUpdate(column, 1);
-				}
-
-				void ListViewColumns::NotifyColumnChanged(vint column, bool needToRefreshItems)
-				{
-					itemProvider->NotifyColumnChanged();
-				}
-
-				void ListViewColumns::AfterInsert(vint index, const Ptr<ListViewColumn>& value)
-				{
-					collections::ObservableListBase<Ptr<ListViewColumn>>::AfterInsert(index, value);
-					value->owner = this;
-				}
-
-				void ListViewColumns::BeforeRemove(vint index, const Ptr<ListViewColumn>& value)
-				{
-					value->owner = 0;
-					collections::ObservableListBase<Ptr<ListViewColumn>>::BeforeRemove(index, value);
-				}
-
-				void ListViewColumns::NotifyUpdateInternal(vint start, vint count, vint newCount)
-				{
-					itemProvider->NotifyColumnRebuilt();
-				}
-
-				ListViewColumns::ListViewColumns(IListViewItemProvider* _itemProvider)
-					:itemProvider(_itemProvider)
-				{
-				}
-
-				ListViewColumns::~ListViewColumns()
-				{
-				}
-
-/***********************************************************************
-ListViewItemProvider
-***********************************************************************/
-
-				void ListViewItemProvider::AfterInsert(vint index, const Ptr<ListViewItem>& value)
-				{
-					ListProvider<Ptr<ListViewItem>>::AfterInsert(index, value);
-					value->owner = this;
-				}
-
-				void ListViewItemProvider::BeforeRemove(vint index, const Ptr<ListViewItem>& value)
-				{
-					value->owner = 0;
-					ListProvider<Ptr<ListViewItem>>::AfterInsert(index, value);
-				}
-
-				void ListViewItemProvider::RebuildAllItems()
-				{
-					InvokeOnItemModified(0, Count(), Count(), true);
-				}
-
-				void ListViewItemProvider::RefreshAllItems()
-				{
-					InvokeOnItemModified(0, Count(), Count(), false);
-				}
-
-				void ListViewItemProvider::NotifyColumnRebuilt()
-				{
-					for (auto callback : columnItemViewCallbacks)
-					{
-						callback->OnColumnRebuilt();
-					}
-					RefreshAllItems();
-				}
-
-				void ListViewItemProvider::NotifyColumnChanged()
-				{
-					for (auto callback : columnItemViewCallbacks)
-					{
-						callback->OnColumnChanged(true);
-					}
-					RefreshAllItems();
-				}
-
-				ListViewItemProvider::ListViewItemProvider()
-					:columns(this)
-					, dataColumns(this)
-				{
-				}
-
-				ListViewItemProvider::~ListViewItemProvider()
-				{
-				}
-
-				WString ListViewItemProvider::GetTextValue(vint itemIndex)
-				{
-					return GetText(itemIndex);
-				}
-
-				description::Value ListViewItemProvider::GetBindingValue(vint itemIndex)
-				{
-					return Value::From(Get(itemIndex));
-				}
-
-				IDescriptable* ListViewItemProvider::RequestView(const WString& identifier)
-				{
-					if (identifier == IListViewItemView::Identifier)
-					{
-						return (IListViewItemView*)this;
-					}
-					else if (identifier == ListViewColumnItemArranger::IColumnItemView::Identifier)
-					{
-						return (ListViewColumnItemArranger::IColumnItemView*)this;
-					}
-					else
-					{
-						return 0;
-					}
-				}
-
-				Ptr<GuiImageData> ListViewItemProvider::GetSmallImage(vint itemIndex)
-				{
-					return Get(itemIndex)->smallImage;
-				}
-
-				Ptr<GuiImageData> ListViewItemProvider::GetLargeImage(vint itemIndex)
-				{
-					return Get(itemIndex)->largeImage;
-				}
-
-				WString ListViewItemProvider::GetText(vint itemIndex)
-				{
-					return Get(itemIndex)->text;
-				}
-
-				WString ListViewItemProvider::GetSubItem(vint itemIndex, vint index)
-				{
-					Ptr<ListViewItem> item=Get(itemIndex);
-					if(index<0 || index>=item->GetSubItems().Count())
-					{
-						return L"";
-					}
-					else
-					{
-						return item->GetSubItems()[index];
-					}
-				}
-
-				vint ListViewItemProvider::GetDataColumnCount()
-				{
-					return dataColumns.Count();
-				}
-
-				vint ListViewItemProvider::GetDataColumn(vint index)
-				{
-					return dataColumns[index];
-				}
-
-				vint ListViewItemProvider::GetColumnCount()
-				{
-					return columns.Count();
-				}
-
-				WString ListViewItemProvider::GetColumnText(vint index)
-				{
-					if (index<0 || index >= columns.Count())
-					{
-						return L"";
-					}
-					else
-					{
-						return columns[index]->GetText();
-					}
-				}
-
-				bool ListViewItemProvider::AttachCallback(ListViewColumnItemArranger::IColumnItemViewCallback* value)
-				{
-					if(columnItemViewCallbacks.Contains(value))
-					{
-						return false;
-					}
-					else
-					{
-						columnItemViewCallbacks.Add(value);
-						return true;
-					}
-				}
-
-				bool ListViewItemProvider::DetachCallback(ListViewColumnItemArranger::IColumnItemViewCallback* value)
-				{
-					vint index=columnItemViewCallbacks.IndexOf(value);
-					if(index==-1)
-					{
-						return false;
-					}
-					else
-					{
-						columnItemViewCallbacks.Remove(value);
-						return true;
-					}
-				}
-
-				vint ListViewItemProvider::GetColumnSize(vint index)
-				{
-					if(index<0 || index>=columns.Count())
-					{
-						return 0;
-					}
-					else
-					{
-						return columns[index]->GetSize();
-					}
-				}
-
-				void ListViewItemProvider::SetColumnSize(vint index, vint value)
-				{
-					if(index>=0 && index<columns.Count())
-					{
-						columns[index]->SetSize(value);
-					}
-				}
-
-				GuiMenu* ListViewItemProvider::GetDropdownPopup(vint index)
-				{
-					if(index<0 || index>=columns.Count())
-					{
-						return 0;
-					}
-					else
-					{
-						return columns[index]->GetDropdownPopup();
-					}
-				}
-
-				ColumnSortingState ListViewItemProvider::GetSortingState(vint index)
-				{
-					if (index < 0 || index >= columns.Count())
-					{
-						return ColumnSortingState::NotSorted;
-					}
-					else
-					{
-						return columns[index]->GetSortingState();
-					}
-				}
-
-				ListViewDataColumns& ListViewItemProvider::GetDataColumns()
-				{
-					return dataColumns;
-				}
-
-				ListViewColumns& ListViewItemProvider::GetColumns()
-				{
-					return columns;
-				}
 			}
 
 /***********************************************************************
@@ -14877,791 +13623,6 @@ GuiListView
 }
 
 /***********************************************************************
-.\CONTROLS\LISTCONTROLPACKAGE\GUILISTVIEWITEMTEMPLATES.CPP
-***********************************************************************/
-
-namespace vl
-{
-	namespace presentation
-	{
-		namespace controls
-		{
-			using namespace elements;
-			using namespace compositions;
-			using namespace collections;
-			using namespace reflection::description;
-
-			namespace list
-			{
-
-/***********************************************************************
-DefaultListViewItemTemplate
-***********************************************************************/
-
-				DefaultListViewItemTemplate::DefaultListViewItemTemplate()
-				{
-					SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
-				}
-
-				DefaultListViewItemTemplate::~DefaultListViewItemTemplate()
-				{
-				}
-
-/***********************************************************************
-BigIconListViewItemTemplate
-***********************************************************************/
-
-				void BigIconListViewItemTemplate::OnInitialize()
-				{
-					{
-						auto table = new GuiTableComposition;
-						AddChild(table);
-						table->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
-						table->SetRowsAndColumns(2, 3);
-						table->SetRowOption(0, GuiCellOption::MinSizeOption());
-						table->SetRowOption(1, GuiCellOption::MinSizeOption());
-						table->SetColumnOption(0, GuiCellOption::PercentageOption(0.5));
-						table->SetColumnOption(1, GuiCellOption::MinSizeOption());
-						table->SetColumnOption(2, GuiCellOption::PercentageOption(0.5));
-						table->SetAlignmentToParent(Margin(0, 0, 0, 0));
-						table->SetCellPadding(5);
-						{
-							auto cell = new GuiCellComposition;
-							table->AddChild(cell);
-							cell->SetSite(0, 1, 1, 1);
-							cell->SetPreferredMinSize(Size(32, 32));
-
-							image = GuiImageFrameElement::Create();
-							image->SetStretch(true);
-							cell->SetOwnedElement(Ptr(image));
-						}
-						{
-							auto cell = new GuiCellComposition;
-							table->AddChild(cell);
-							cell->SetMinSizeLimitation(GuiGraphicsComposition::NoLimit);
-							cell->SetSite(1, 0, 1, 3);
-							cell->SetPreferredMinSize(Size(64, 40));
-
-							text = GuiSolidLabelElement::Create();
-							text->SetAlignments(Alignment::Center, Alignment::Top);
-							text->SetWrapLine(true);
-							text->SetEllipse(true);
-							cell->SetOwnedElement(Ptr(text));
-						}
-					}
-
-					FontChanged.AttachMethod(this, &BigIconListViewItemTemplate::OnFontChanged);
-					FontChanged.Execute(compositions::GuiEventArgs(this));
-				}
-
-				void BigIconListViewItemTemplate::OnRefresh()
-				{
-					if (auto listView = dynamic_cast<GuiVirtualListView*>(listControl))
-					{
-						auto itemIndex = GetIndex();
-						if (auto view = dynamic_cast<IListViewItemView*>(listView->GetItemProvider()->RequestView(WString::Unmanaged(IListViewItemView::Identifier))))
-						{
-							auto imageData = view->GetLargeImage(itemIndex);
-							if (imageData)
-							{
-								image->SetImage(imageData->GetImage(), imageData->GetFrameIndex());
-							}
-							else
-							{
-								image->SetImage(nullptr);
-							}
-							text->SetText(view->GetText(itemIndex));
-							text->SetColor(listView->TypedControlTemplateObject(true)->GetPrimaryTextColor());
-						}
-					}
-				}
-
-				void BigIconListViewItemTemplate::OnFontChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
-				{
-					text->SetFont(GetFont());
-				}
-
-				BigIconListViewItemTemplate::BigIconListViewItemTemplate()
-				{
-				}
-
-				BigIconListViewItemTemplate::~BigIconListViewItemTemplate()
-				{
-				}
-
-/***********************************************************************
-SmallIconListViewItemTemplate
-***********************************************************************/
-
-				void SmallIconListViewItemTemplate::OnInitialize()
-				{
-					{
-						auto table = new GuiTableComposition;
-						AddChild(table);
-						table->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
-						table->SetRowsAndColumns(3, 2);
-						table->SetRowOption(0, GuiCellOption::PercentageOption(0.5));
-						table->SetRowOption(1, GuiCellOption::MinSizeOption());
-						table->SetRowOption(2, GuiCellOption::PercentageOption(0.5));
-						table->SetColumnOption(0, GuiCellOption::MinSizeOption());
-						table->SetColumnOption(1, GuiCellOption::MinSizeOption());
-						table->SetAlignmentToParent(Margin(0, 0, 0, 0));
-						table->SetCellPadding(2);
-						{
-							GuiCellComposition* cell = new GuiCellComposition;
-							table->AddChild(cell);
-							cell->SetSite(1, 0, 1, 1);
-							cell->SetPreferredMinSize(Size(16, 16));
-
-							image = GuiImageFrameElement::Create();
-							image->SetStretch(true);
-							cell->SetOwnedElement(Ptr(image));
-						}
-						{
-							GuiCellComposition* cell = new GuiCellComposition;
-							table->AddChild(cell);
-							cell->SetSite(0, 1, 3, 1);
-							cell->SetPreferredMinSize(Size(192, 0));
-
-							text = GuiSolidLabelElement::Create();
-							text->SetAlignments(Alignment::Left, Alignment::Center);
-							text->SetEllipse(true);
-							cell->SetOwnedElement(Ptr(text));
-						}
-					}
-
-					FontChanged.AttachMethod(this, &SmallIconListViewItemTemplate::OnFontChanged);
-					FontChanged.Execute(compositions::GuiEventArgs(this));
-				}
-
-				void SmallIconListViewItemTemplate::OnRefresh()
-				{
-					if (auto listView = dynamic_cast<GuiVirtualListView*>(listControl))
-					{
-						auto itemIndex = GetIndex();
-						if (auto view = dynamic_cast<IListViewItemView*>(listView->GetItemProvider()->RequestView(WString::Unmanaged(IListViewItemView::Identifier))))
-						{
-							auto imageData = view->GetSmallImage(itemIndex);
-							if (imageData)
-							{
-								image->SetImage(imageData->GetImage(), imageData->GetFrameIndex());
-							}
-							else
-							{
-								image->SetImage(nullptr);
-							}
-							text->SetText(view->GetText(itemIndex));
-							text->SetColor(listView->TypedControlTemplateObject(true)->GetPrimaryTextColor());
-						}
-					}
-				}
-
-				void SmallIconListViewItemTemplate::OnFontChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
-				{
-					text->SetFont(GetFont());
-				}
-
-				SmallIconListViewItemTemplate::SmallIconListViewItemTemplate()
-				{
-				}
-
-				SmallIconListViewItemTemplate::~SmallIconListViewItemTemplate()
-				{
-				}
-
-/***********************************************************************
-ListListViewItemTemplate
-***********************************************************************/
-
-				void ListListViewItemTemplate::OnInitialize()
-				{
-					{
-						auto table = new GuiTableComposition;
-						AddChild(table);
-						table->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
-						table->SetRowsAndColumns(3, 2);
-						table->SetRowOption(0, GuiCellOption::PercentageOption(0.5));
-						table->SetRowOption(1, GuiCellOption::MinSizeOption());
-						table->SetRowOption(2, GuiCellOption::PercentageOption(0.5));
-						table->SetColumnOption(0, GuiCellOption::MinSizeOption());
-						table->SetColumnOption(1, GuiCellOption::MinSizeOption());
-						table->SetAlignmentToParent(Margin(0, 0, 0, 0));
-						table->SetCellPadding(2);
-						{
-							auto cell = new GuiCellComposition;
-							table->AddChild(cell);
-							cell->SetSite(1, 0, 1, 1);
-							cell->SetPreferredMinSize(Size(16, 16));
-
-							image = GuiImageFrameElement::Create();
-							image->SetStretch(true);
-							cell->SetOwnedElement(Ptr(image));
-						}
-						{
-							auto cell = new GuiCellComposition;
-							table->AddChild(cell);
-							cell->SetSite(0, 1, 3, 1);
-
-							auto textBounds = new GuiBoundsComposition;
-							cell->AddChild(textBounds);
-							textBounds->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElement);
-							textBounds->SetAlignmentToParent(Margin(0, 0, 16, 0));
-
-							text = GuiSolidLabelElement::Create();
-							text->SetAlignments(Alignment::Left, Alignment::Center);
-							textBounds->SetOwnedElement(Ptr(text));
-						}
-					}
-
-					FontChanged.AttachMethod(this, &ListListViewItemTemplate::OnFontChanged);
-					FontChanged.Execute(compositions::GuiEventArgs(this));
-				}
-
-				void ListListViewItemTemplate::OnRefresh()
-				{
-					if (auto listView = dynamic_cast<GuiVirtualListView*>(listControl))
-					{
-						auto itemIndex = GetIndex();
-						if (auto view = dynamic_cast<IListViewItemView*>(listView->GetItemProvider()->RequestView(WString::Unmanaged(IListViewItemView::Identifier))))
-						{
-							auto imageData = view->GetSmallImage(itemIndex);
-							if (imageData)
-							{
-								image->SetImage(imageData->GetImage(), imageData->GetFrameIndex());
-							}
-							else
-							{
-								image->SetImage(nullptr);
-							}
-							text->SetText(view->GetText(itemIndex));
-							text->SetColor(listView->TypedControlTemplateObject(true)->GetPrimaryTextColor());
-						}
-					}
-				}
-
-				void ListListViewItemTemplate::OnFontChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
-				{
-					text->SetFont(GetFont());
-				}
-
-				ListListViewItemTemplate::ListListViewItemTemplate()
-				{
-				}
-
-				ListListViewItemTemplate::~ListListViewItemTemplate()
-				{
-				}
-
-/***********************************************************************
-TileListViewItemTemplate
-***********************************************************************/
-
-				elements::GuiSolidLabelElement* TileListViewItemTemplate::CreateTextElement(vint textRow)
-				{
-					auto cell = new GuiCellComposition;
-					textTable->AddChild(cell);
-					cell->SetSite(textRow + 1, 0, 1, 1);
-
-					auto textElement = Ptr(GuiSolidLabelElement::Create());
-					textElement->SetAlignments(Alignment::Left, Alignment::Center);
-					textElement->SetEllipse(true);
-					cell->SetOwnedElement(textElement);
-					return textElement.Obj();
-				}
-
-				void TileListViewItemTemplate::ResetTextTable(vint dataColumnCount)
-				{
-					if (text && dataTexts.Count() == dataColumnCount) return;
-					for (vint i = textTable->Children().Count() - 1; i >= 0; i--)
-					{
-						if (auto cell = dynamic_cast<GuiCellComposition*>(textTable->Children()[i]))
-						{
-							SafeDeleteComposition(cell);
-						}
-					}
-
-					{
-						vint textRows = dataColumnCount + 1;
-						textTable->SetRowsAndColumns(textRows + 2, 1);
-						textTable->SetRowOption(0, GuiCellOption::PercentageOption(0.5));
-						for (vint i = 0; i < textRows; i++)
-						{
-							textTable->SetRowOption(i + 1, GuiCellOption::MinSizeOption());
-						}
-						textTable->SetRowOption(textRows + 1, GuiCellOption::PercentageOption(0.5));
-						textTable->SetColumnOption(0, GuiCellOption::PercentageOption(1.0));
-					}
-
-					text = CreateTextElement(0);
-					text->SetFont(GetFont());
-					{
-						dataTexts.Resize(dataColumnCount);
-						for (vint i = 0; i < dataColumnCount; i++)
-						{
-							dataTexts[i] = CreateTextElement(i + 1);
-							dataTexts[i]->SetFont(GetFont());
-						}
-					}
-				}
-
-				void TileListViewItemTemplate::OnInitialize()
-				{
-					{
-						auto table = new GuiTableComposition;
-						AddChild(table);
-						table->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
-						table->SetRowsAndColumns(3, 2);
-						table->SetRowOption(0, GuiCellOption::PercentageOption(0.5));
-						table->SetRowOption(1, GuiCellOption::MinSizeOption());
-						table->SetRowOption(2, GuiCellOption::PercentageOption(0.5));
-						table->SetColumnOption(0, GuiCellOption::MinSizeOption());
-						table->SetColumnOption(1, GuiCellOption::MinSizeOption());
-						table->SetAlignmentToParent(Margin(0, 0, 0, 0));
-						table->SetCellPadding(4);
-						{
-							auto cell = new GuiCellComposition;
-							table->AddChild(cell);
-							cell->SetSite(1, 0, 1, 1);
-							cell->SetPreferredMinSize(Size(32, 32));
-
-							image = GuiImageFrameElement::Create();
-							image->SetStretch(true);
-							cell->SetOwnedElement(Ptr(image));
-						}
-						{
-							auto cell = new GuiCellComposition;
-							table->AddChild(cell);
-							cell->SetSite(0, 1, 3, 1);
-							cell->SetPreferredMinSize(Size(224, 0));
-
-							textTable = new GuiTableComposition;
-							textTable->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
-							textTable->SetCellPadding(1);
-							textTable->SetAlignmentToParent(Margin(0, 0, 0, 0));
-							cell->AddChild(textTable);
-						}
-					}
-
-					ResetTextTable(0);
-					FontChanged.AttachMethod(this, &TileListViewItemTemplate::OnFontChanged);
-					FontChanged.Execute(compositions::GuiEventArgs(this));
-				}
-
-				void TileListViewItemTemplate::OnRefresh()
-				{
-					if (auto listView = dynamic_cast<GuiVirtualListView*>(listControl))
-					{
-						auto itemIndex = GetIndex();
-						if (auto view = dynamic_cast<IListViewItemView*>(listView->GetItemProvider()->RequestView(WString::Unmanaged(IListViewItemView::Identifier))))
-						{
-							auto imageData = view->GetLargeImage(itemIndex);
-							if (imageData)
-							{
-								image->SetImage(imageData->GetImage(), imageData->GetFrameIndex());
-							}
-							else
-							{
-								image->SetImage(nullptr);
-							}
-
-							vint subColumnCount = view->GetColumnCount() - 1;
-							vint dataColumnCount = view->GetDataColumnCount();
-							if (dataColumnCount > subColumnCount) dataColumnCount = subColumnCount;
-							if (dataColumnCount < 0) dataColumnCount = 0;
-							ResetTextTable(dataColumnCount);
-
-							text->SetText(view->GetText(itemIndex));
-							text->SetColor(listView->TypedControlTemplateObject(true)->GetPrimaryTextColor());
-							for (vint i = 0; i < dataColumnCount; i++)
-							{
-								dataTexts[i]->SetText(view->GetSubItem(itemIndex, view->GetDataColumn(i)));
-								dataTexts[i]->SetColor(listView->TypedControlTemplateObject(true)->GetSecondaryTextColor());
-							}
-						}
-					}
-				}
-
-				void TileListViewItemTemplate::OnFontChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
-				{
-					if (text) text->SetFont(GetFont());
-					for (auto dataText : dataTexts)
-					{
-						dataText->SetFont(GetFont());
-					}
-				}
-
-				TileListViewItemTemplate::TileListViewItemTemplate()
-				{
-				}
-
-				TileListViewItemTemplate::~TileListViewItemTemplate()
-				{
-				}
-
-/***********************************************************************
-InformationListViewItemTemplate
-***********************************************************************/
-
-				void InformationListViewItemTemplate::ResetTextTable(vint dataColumnCount)
-				{
-					if (dataTexts.Count() == dataColumnCount) return;
-					for (vint i = textTable->Children().Count() - 1; i >= 0; i--)
-					{
-						if (auto cell = dynamic_cast<GuiCellComposition*>(textTable->Children()[i]))
-						{
-							SafeDeleteComposition(cell);
-						}
-					}
-
-					{
-						textTable->SetRowsAndColumns(dataColumnCount + 2, 1);
-						textTable->SetRowOption(0, GuiCellOption::PercentageOption(0.5));
-						for (vint i = 0; i < dataColumnCount; i++)
-						{
-							textTable->SetRowOption(i + 1, GuiCellOption::MinSizeOption());
-						}
-						textTable->SetRowOption(dataColumnCount + 1, GuiCellOption::PercentageOption(0.5));
-						textTable->SetColumnOption(0, GuiCellOption::PercentageOption(1.0));
-					}
-
-					columnTexts.Resize(dataColumnCount);
-					dataTexts.Resize(dataColumnCount);
-
-					for (vint i = 0; i < dataColumnCount; i++)
-					{
-						auto cell = new GuiCellComposition;
-						textTable->AddChild(cell);
-						cell->SetSite(i + 1, 0, 1, 1);
-
-						auto dataTable = new GuiTableComposition;
-						dataTable->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
-						dataTable->SetRowsAndColumns(1, 2);
-						dataTable->SetRowOption(0, GuiCellOption::MinSizeOption());
-						dataTable->SetColumnOption(0, GuiCellOption::MinSizeOption());
-						dataTable->SetColumnOption(1, GuiCellOption::PercentageOption(1.0));
-						dataTable->SetAlignmentToParent(Margin(0, 0, 0, 0));
-						cell->AddChild(dataTable);
-						{
-							auto cell = new GuiCellComposition;
-							dataTable->AddChild(cell);
-							cell->SetSite(0, 0, 1, 1);
-
-							columnTexts[i] = GuiSolidLabelElement::Create();
-							columnTexts[i]->SetFont(GetFont());
-							cell->SetOwnedElement(Ptr(columnTexts[i]));
-						}
-						{
-							auto cell = new GuiCellComposition;
-							dataTable->AddChild(cell);
-							cell->SetSite(0, 1, 1, 1);
-
-							dataTexts[i] = GuiSolidLabelElement::Create();
-							dataTexts[i]->SetFont(GetFont());
-							dataTexts[i]->SetEllipse(true);
-							cell->SetOwnedElement(Ptr(dataTexts[i]));
-						}
-					}
-				}
-
-				void InformationListViewItemTemplate::OnInitialize()
-				{
-					{
-						bottomLine = GuiSolidBackgroundElement::Create();
-						bottomLineComposition = new GuiBoundsComposition;
-						bottomLineComposition->SetOwnedElement(Ptr(bottomLine));
-						bottomLineComposition->SetAlignmentToParent(Margin(8, -1, 8, 0));
-						bottomLineComposition->SetPreferredMinSize(Size(0, 1));
-						AddChild(bottomLineComposition);
-
-						auto table = new GuiTableComposition;
-						AddChild(table);
-						table->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
-						table->SetRowsAndColumns(3, 3);
-						table->SetRowOption(0, GuiCellOption::PercentageOption(0.5));
-						table->SetRowOption(1, GuiCellOption::MinSizeOption());
-						table->SetRowOption(2, GuiCellOption::PercentageOption(0.5));
-						table->SetColumnOption(0, GuiCellOption::MinSizeOption());
-						table->SetColumnOption(1, GuiCellOption::PercentageOption(1.0));
-						table->SetColumnOption(2, GuiCellOption::MinSizeOption());
-						table->SetAlignmentToParent(Margin(0, 0, 0, 0));
-						table->SetCellPadding(4);
-						{
-							auto cell = new GuiCellComposition;
-							table->AddChild(cell);
-							cell->SetSite(1, 0, 1, 1);
-							cell->SetPreferredMinSize(Size(32, 32));
-
-							image = GuiImageFrameElement::Create();
-							image->SetStretch(true);
-							cell->SetOwnedElement(Ptr(image));
-						}
-						{
-							auto cell = new GuiCellComposition;
-							table->AddChild(cell);
-							cell->SetSite(0, 1, 3, 1);
-
-							text = GuiSolidLabelElement::Create();
-							text->SetEllipse(true);
-							cell->SetOwnedElement(Ptr(text));
-						}
-						{
-							auto cell = new GuiCellComposition;
-							table->AddChild(cell);
-							cell->SetSite(0, 2, 3, 1);
-							cell->SetPreferredMinSize(Size(224, 0));
-
-							textTable = new GuiTableComposition;
-							textTable->SetCellPadding(4);
-							textTable->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
-							textTable->SetAlignmentToParent(Margin(0, 0, 0, 0));
-							cell->AddChild(textTable);
-						}
-					}
-
-					FontChanged.AttachMethod(this, &InformationListViewItemTemplate::OnFontChanged);
-					FontChanged.Execute(compositions::GuiEventArgs(this));
-				}
-
-				void InformationListViewItemTemplate::OnRefresh()
-				{
-					if (auto listView = dynamic_cast<GuiVirtualListView*>(listControl))
-					{
-						auto itemIndex = GetIndex();
-						if (auto view = dynamic_cast<IListViewItemView*>(listView->GetItemProvider()->RequestView(WString::Unmanaged(IListViewItemView::Identifier))))
-						{
-							auto imageData = view->GetLargeImage(itemIndex);
-							if (imageData)
-							{
-								image->SetImage(imageData->GetImage(), imageData->GetFrameIndex());
-							}
-							else
-							{
-								image->SetImage(nullptr);
-							}
-							text->SetText(view->GetText(itemIndex));
-							text->SetColor(listView->TypedControlTemplateObject(true)->GetPrimaryTextColor());
-							bottomLine->SetColor(listView->TypedControlTemplateObject(true)->GetItemSeparatorColor());
-
-							vint subColumnCount = view->GetColumnCount() - 1;
-							vint dataColumnCount = view->GetDataColumnCount();
-							if (dataColumnCount > subColumnCount) dataColumnCount = subColumnCount;
-							if (dataColumnCount < 0) dataColumnCount = 0;
-							ResetTextTable(dataColumnCount);
-							for (vint i = 0; i < dataColumnCount; i++)
-							{
-								{
-									columnTexts[i]->SetText(view->GetColumnText(view->GetDataColumn(i) + 1) + L": ");
-									columnTexts[i]->SetColor(listView->TypedControlTemplateObject(true)->GetSecondaryTextColor());
-								}
-								{
-									dataTexts[i]->SetText(view->GetSubItem(itemIndex, view->GetDataColumn(i)));
-									dataTexts[i]->SetColor(listView->TypedControlTemplateObject(true)->GetPrimaryTextColor());
-								}
-							}
-						}
-					}
-				}
-
-				void InformationListViewItemTemplate::OnFontChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
-				{
-					{
-						auto font = GetFont();
-						font.size = (vint)(font.size * 1.2);
-						text->SetFont(font);
-					}
-
-					for (auto columnText : columnTexts)
-					{
-						columnText->SetFont(GetFont());
-					}
-					for (auto dataText : dataTexts)
-					{
-						dataText->SetFont(GetFont());
-					}
-				}
-
-				InformationListViewItemTemplate::InformationListViewItemTemplate()
-				{
-				}
-
-				InformationListViewItemTemplate::~InformationListViewItemTemplate()
-				{
-				}
-
-/***********************************************************************
-DetailListViewItemTemplate
-***********************************************************************/
-
-				void DetailListViewItemTemplate::UpdateSubItemSize()
-				{
-					if (auto view = dynamic_cast<IListViewItemView*>(listControl->GetItemProvider()->RequestView(WString::Unmanaged(IListViewItemView::Identifier))))
-					{
-						if (columnItemView)
-						{
-							vint columnCount = view->GetColumnCount();
-							if (columnCount > textTable->GetColumns())
-							{
-								columnCount = textTable->GetColumns();
-							}
-							for (vint i = 0; i < columnCount; i++)
-							{
-								textTable->SetColumnOption(i, GuiCellOption::AbsoluteOption(columnItemView->GetColumnSize(i)));
-							}
-						}
-					}
-				}
-
-				void DetailListViewItemTemplate::ResetTextTable(vint subColumnCount)
-				{
-					if (subItemCells.Count() == subColumnCount) return;
-
-					for (auto cell : subItemCells)
-					{
-						SafeDeleteComposition(cell);
-					}
-					subItemCells.Resize(subColumnCount);
-					subItemTexts.Resize(subColumnCount);
-
-					textTable->SetRowsAndColumns(1, subColumnCount + 1);
-					for (vint i = 0; i < subColumnCount; i++)
-					{
-						auto cell = new GuiCellComposition;
-						textTable->AddChild(cell);
-						cell->SetSite(0, i + 1, 1, 1);
-
-						auto textBounds = new GuiBoundsComposition;
-						cell->AddChild(textBounds);
-						textBounds->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElement);
-						textBounds->SetAlignmentToParent(Margin(8, 0, 8, 0));
-
-						auto subText = GuiSolidLabelElement::Create();
-						subText->SetAlignments(Alignment::Left, Alignment::Center);
-						subText->SetFont(GetFont());
-						subText->SetEllipse(true);
-						textBounds->SetOwnedElement(Ptr(subText));
-
-						subItemCells[i] = cell;
-						subItemTexts[i] = subText;
-					}
-				}
-
-				void DetailListViewItemTemplate::OnInitialize()
-				{
-					columnItemView = dynamic_cast<ListViewColumnItemArranger::IColumnItemView*>(listControl->GetItemProvider()->RequestView(WString::Unmanaged(ListViewColumnItemArranger::IColumnItemView::Identifier)));
-
-					{
-						textTable = new GuiTableComposition;
-						textTable->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
-						textTable->SetAlignmentToParent(Margin(0, 0, 0, 0));
-						textTable->SetRowsAndColumns(1, 1);
-						textTable->SetRowOption(0, GuiCellOption::MinSizeOption());
-						textTable->SetColumnOption(0, GuiCellOption::AbsoluteOption(0));
-						AddChild(textTable);
-						{
-							auto cell = new GuiCellComposition;
-							textTable->AddChild(cell);
-							cell->SetSite(0, 0, 1, 1);
-
-							auto table = new GuiTableComposition;
-							cell->AddChild(table);
-							table->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
-							table->SetRowsAndColumns(3, 2);
-							table->SetRowOption(0, GuiCellOption::PercentageOption(0.5));
-							table->SetRowOption(1, GuiCellOption::MinSizeOption());
-							table->SetRowOption(2, GuiCellOption::PercentageOption(0.5));
-							table->SetColumnOption(0, GuiCellOption::MinSizeOption());
-							table->SetColumnOption(1, GuiCellOption::PercentageOption(1.0));
-							table->SetAlignmentToParent(Margin(0, 0, 0, 0));
-							table->SetCellPadding(2);
-							{
-								auto cell = new GuiCellComposition;
-								table->AddChild(cell);
-								cell->SetSite(1, 0, 1, 1);
-								cell->SetPreferredMinSize(Size(16, 16));
-
-								image = GuiImageFrameElement::Create();
-								image->SetStretch(true);
-								cell->SetOwnedElement(Ptr(image));
-							}
-							{
-								auto cell = new GuiCellComposition;
-								table->AddChild(cell);
-								cell->SetSite(0, 1, 3, 1);
-
-								auto textBounds = new GuiBoundsComposition;
-								cell->AddChild(textBounds);
-								textBounds->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElement);
-								textBounds->SetAlignmentToParent(Margin(0, 0, 8, 0));
-
-								text = GuiSolidLabelElement::Create();
-								text->SetAlignments(Alignment::Left, Alignment::Center);
-								text->SetFont(GetFont());
-								text->SetEllipse(true);
-								textBounds->SetOwnedElement(Ptr(text));
-							}
-						}
-					}
-
-					FontChanged.AttachMethod(this, &DetailListViewItemTemplate::OnFontChanged);
-					FontChanged.Execute(compositions::GuiEventArgs(this));
-				}
-
-				void DetailListViewItemTemplate::OnRefresh()
-				{
-					if (auto listView = dynamic_cast<GuiVirtualListView*>(listControl))
-					{
-						auto itemIndex = GetIndex();
-						if (auto view = dynamic_cast<IListViewItemView*>(listView->GetItemProvider()->RequestView(WString::Unmanaged(IListViewItemView::Identifier))))
-						{
-							vint subColumnCount = view->GetColumnCount() - 1;
-							if (subColumnCount < 0) subColumnCount = 0;
-							ResetTextTable(subColumnCount);
-
-							auto imageData = view->GetSmallImage(itemIndex);
-							if (imageData)
-							{
-								image->SetImage(imageData->GetImage(), imageData->GetFrameIndex());
-							}
-							else
-							{
-								image->SetImage(0);
-							}
-
-							text->SetText(view->GetText(itemIndex));
-							text->SetColor(listView->TypedControlTemplateObject(true)->GetPrimaryTextColor());
-
-							for (vint i = 0; i < subColumnCount; i++)
-							{
-								subItemTexts[i]->SetText(view->GetSubItem(itemIndex, i));
-								subItemTexts[i]->SetColor(listView->TypedControlTemplateObject(true)->GetSecondaryTextColor());
-							}
-						}
-					}
-					UpdateSubItemSize();
-				}
-
-				void DetailListViewItemTemplate::OnFontChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
-				{
-					text->SetFont(GetFont());
-					for (auto subText : subItemTexts)
-					{
-						subText->SetFont(GetFont());
-					}
-				}
-
-				DetailListViewItemTemplate::DetailListViewItemTemplate()
-				{
-				}
-
-				DetailListViewItemTemplate::~DetailListViewItemTemplate()
-				{
-				}
-			}
-		}
-	}
-}
-
-/***********************************************************************
 .\CONTROLS\LISTCONTROLPACKAGE\GUITEXTLISTCONTROLS.CPP
 ***********************************************************************/
 
@@ -15676,282 +13637,8 @@ namespace vl
 			using namespace compositions;
 			using namespace reflection::description;
 
-			namespace list
-			{
-				const wchar_t* const ITextItemView::Identifier = L"vl::presentation::controls::list::ITextItemView";
-
 /***********************************************************************
-DefaultTextListItemTemplate
-***********************************************************************/
-
-				TemplateProperty<DefaultTextListItemTemplate::BulletStyle> DefaultTextListItemTemplate::CreateBulletStyle()
-				{
-					return {};
-				}
-
-				void DefaultTextListItemTemplate::OnInitialize()
-				{
-					SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
-
-					textElement = GuiSolidLabelElement::Create();
-					textElement->SetAlignments(Alignment::Left, Alignment::Center);
-
-					GuiBoundsComposition* textComposition = new GuiBoundsComposition;
-					textComposition->SetOwnedElement(Ptr(textElement));
-					textComposition->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElement);
-
-					if (auto bulletStyleController = CreateBulletStyle())
-					{
-						bulletButton = new GuiSelectableButton(theme::ThemeName::Unknown);
-						bulletButton->SetAutoFocus(false);
-						bulletButton->SetControlTemplate(bulletStyleController);
-						bulletButton->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
-						bulletButton->SelectedChanged.AttachMethod(this, &DefaultTextListItemTemplate::OnBulletSelectedChanged);
-
-						GuiTableComposition* table = new GuiTableComposition;
-						AddChild(table);
-						table->SetAlignmentToParent(Margin(0, 0, 0, 0));
-						table->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
-						table->SetRowsAndColumns(1, 2);
-						table->SetRowOption(0, GuiCellOption::PercentageOption(1.0));
-						table->SetColumnOption(0, GuiCellOption::MinSizeOption());
-						table->SetColumnOption(1, GuiCellOption::PercentageOption(1.0));
-						{
-							GuiCellComposition* cell = new GuiCellComposition;
-							table->AddChild(cell);
-							cell->SetSite(0, 0, 1, 1);
-							cell->AddChild(bulletButton->GetBoundsComposition());
-						}
-						{
-							GuiCellComposition* cell = new GuiCellComposition;
-							table->AddChild(cell);
-							cell->SetSite(0, 1, 1, 1);
-							cell->AddChild(textComposition);
-							textComposition->SetAlignmentToParent(Margin(0, 0, 0, 0));
-						}
-					}
-					else
-					{
-						AddChild(textComposition);
-						textComposition->SetAlignmentToParent(Margin(5, 2, 0, 2));
-					}
-
-					FontChanged.AttachMethod(this, &DefaultTextListItemTemplate::OnFontChanged);
-					TextChanged.AttachMethod(this, &DefaultTextListItemTemplate::OnTextChanged);
-					TextColorChanged.AttachMethod(this, &DefaultTextListItemTemplate::OnTextColorChanged);
-					CheckedChanged.AttachMethod(this, &DefaultTextListItemTemplate::OnCheckedChanged);
-
-					FontChanged.Execute(compositions::GuiEventArgs(this));
-					TextChanged.Execute(compositions::GuiEventArgs(this));
-					TextColorChanged.Execute(compositions::GuiEventArgs(this));
-					CheckedChanged.Execute(compositions::GuiEventArgs(this));
-				}
-
-				void DefaultTextListItemTemplate::OnRefresh()
-				{
-				}
-
-				void DefaultTextListItemTemplate::OnFontChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
-				{
-					textElement->SetFont(GetFont());
-				}
-
-				void DefaultTextListItemTemplate::OnTextChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
-				{
-					textElement->SetText(GetText());
-				}
-
-				void DefaultTextListItemTemplate::OnTextColorChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
-				{
-					textElement->SetColor(GetTextColor());
-				}
-
-				void DefaultTextListItemTemplate::OnCheckedChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
-				{
-					if (bulletButton)
-					{
-						supressEdit = true;
-						bulletButton->SetSelected(GetChecked());
-						supressEdit = false;
-					}
-				}
-
-				void DefaultTextListItemTemplate::OnBulletSelectedChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
-				{
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::controls::list::DefaultTextListItemTemplate::OnBulletSelectedChanged(GuiGraphicsComposition*, GuiEventArgs&)#"
-					if (!supressEdit)
-					{
-						if (auto textItemView = dynamic_cast<ITextItemView*>(listControl->GetItemProvider()->RequestView(WString::Unmanaged(ITextItemView::Identifier))))
-						{
-							listControl->GetItemProvider()->PushEditing();
-							textItemView->SetChecked(GetIndex(), bulletButton->GetSelected());
-							CHECK_ERROR(listControl->GetItemProvider()->PopEditing(), ERROR_MESSAGE_PREFIX L"BeginEditListItem and EndEditListItem calls are not paired.");
-						}
-					}
-#undef ERROR_MESSAGE_PREFIX
-				}
-
-				DefaultTextListItemTemplate::DefaultTextListItemTemplate()
-				{
-				}
-
-				DefaultTextListItemTemplate::~DefaultTextListItemTemplate()
-				{
-				}
-
-/***********************************************************************
-DefaultCheckTextListItemTemplate
-***********************************************************************/
-
-				TemplateProperty<DefaultTextListItemTemplate::BulletStyle> DefaultCheckTextListItemTemplate::CreateBulletStyle()
-				{
-					if (auto textList = dynamic_cast<GuiVirtualTextList*>(listControl))
-					{
-						auto style = textList->TypedControlTemplateObject(true)->GetCheckBulletTemplate();
-						if (style) return style;
-					}
-					return theme::GetCurrentTheme()->CreateStyle(theme::ThemeName::CheckTextListItem);
-				}
-
-/***********************************************************************
-DefaultRadioTextListItemTemplate
-***********************************************************************/
-
-				TemplateProperty<DefaultTextListItemTemplate::BulletStyle> DefaultRadioTextListItemTemplate::CreateBulletStyle()
-				{
-					if (auto textList = dynamic_cast<GuiVirtualTextList*>(listControl))
-					{
-						auto style = textList->TypedControlTemplateObject(true)->GetRadioBulletTemplate();
-						if (style) return style;
-					}
-					return theme::GetCurrentTheme()->CreateStyle(theme::ThemeName::RadioTextListItem);
-				}
-
-/***********************************************************************
-TextItem
-***********************************************************************/
-
-				void TextItem::NotifyUpdate(bool raiseCheckEvent)
-				{
-					if (owner)
-					{
-						vint index = owner->IndexOf(this);
-						owner->InvokeOnItemModified(index, 1, 1, false);
-
-						if (raiseCheckEvent)
-						{
-							GuiItemEventArgs arguments;
-							arguments.itemIndex = index;
-							owner->listControl->ItemChecked.Execute(arguments);
-						}
-					}
-				}
-
-				TextItem::TextItem()
-					:owner(0)
-					, checked(false)
-				{
-				}
-
-				TextItem::TextItem(const WString& _text, bool _checked)
-					:owner(0)
-					, text(_text)
-					, checked(_checked)
-				{
-				}
-
-				TextItem::~TextItem()
-				{
-				}
-
-				const WString& TextItem::GetText()
-				{
-					return text;
-				}
-
-				void TextItem::SetText(const WString& value)
-				{
-					if (text != value)
-					{
-						text = value;
-						NotifyUpdate(false);
-					}
-				}
-
-				bool TextItem::GetChecked()
-				{
-					return checked;
-				}
-
-				void TextItem::SetChecked(bool value)
-				{
-					if (checked != value)
-					{
-						checked = value;
-						NotifyUpdate(true);
-					}
-				}
-
-/***********************************************************************
-TextItemProvider
-***********************************************************************/
-
-				void TextItemProvider::AfterInsert(vint item, const Ptr<TextItem>& value)
-				{
-					ListProvider<Ptr<TextItem>>::AfterInsert(item, value);
-					value->owner = this;
-				}
-
-				void TextItemProvider::BeforeRemove(vint item, const Ptr<TextItem>& value)
-				{
-					value->owner = 0;
-					ListProvider<Ptr<TextItem>>::BeforeRemove(item, value);
-				}
-
-				WString TextItemProvider::GetTextValue(vint itemIndex)
-				{
-					return Get(itemIndex)->GetText();
-				}
-
-				description::Value TextItemProvider::GetBindingValue(vint itemIndex)
-				{
-					return Value::From(Get(itemIndex));
-				}
-
-				bool TextItemProvider::GetChecked(vint itemIndex)
-				{
-					return Get(itemIndex)->GetChecked();
-				}
-
-				void TextItemProvider::SetChecked(vint itemIndex, bool value)
-				{
-					return Get(itemIndex)->SetChecked(value);
-				}
-
-				TextItemProvider::TextItemProvider()
-					:listControl(0)
-				{
-				}
-
-				TextItemProvider::~TextItemProvider()
-				{
-				}
-
-				IDescriptable* TextItemProvider::RequestView(const WString& identifier)
-				{
-					if (identifier == ITextItemView::Identifier)
-					{
-						return (ITextItemView*)this;
-					}
-					else
-					{
-						return nullptr;
-					}
-				}
-			}
-
-/***********************************************************************
-GuiTextList
+GuiVirtualTextList
 ***********************************************************************/
 
 			void GuiVirtualTextList::BeforeControlTemplateUninstalled_()
@@ -16083,11 +13770,17 @@ GuiTextList
 GuiTextList
 ***********************************************************************/
 
+			void GuiTextList::OnItemCheckedChanged(vint itemIndex)
+			{
+				GuiItemEventArgs eventArgs;
+				eventArgs.itemIndex = itemIndex;
+				ItemChecked.Execute(eventArgs);
+			}
+
 			GuiTextList::GuiTextList(theme::ThemeName themeName)
-				:GuiVirtualTextList(themeName, new list::TextItemProvider)
+				:GuiVirtualTextList(themeName, new list::TextItemProvider(this))
 			{
 				items=dynamic_cast<list::TextItemProvider*>(itemProvider.Obj());
-				items->listControl=this;
 			}
 
 			GuiTextList::~GuiTextList()
@@ -16302,114 +13995,6 @@ GuiVirtualTreeListControl
 				return nodeItemProvider->GetRoot().Obj();
 			}
 
-			namespace tree
-			{
-
-/***********************************************************************
-TreeViewItem
-***********************************************************************/
-
-				const wchar_t* const ITreeViewItemView::Identifier = L"vl::presentation::controls::tree::ITreeViewItemView";
-
-				TreeViewItem::TreeViewItem()
-				{
-				}
-
-				TreeViewItem::TreeViewItem(const Ptr<GuiImageData>& _image, const WString& _text)
-					:image(_image)
-					,text(_text)
-				{
-				}
-
-/***********************************************************************
-TreeViewItemRootProvider
-***********************************************************************/
-
-				Ptr<GuiImageData> TreeViewItemRootProvider::GetNodeImage(INodeProvider* node)
-				{
-					MemoryNodeProvider* memoryNode=dynamic_cast<MemoryNodeProvider*>(node);
-					if(memoryNode)
-					{
-						Ptr<TreeViewItem> data=memoryNode->GetData().Cast<TreeViewItem>();
-						if(data)
-						{
-							return data->image;
-						}
-					}
-					return 0;
-				}
-
-				WString TreeViewItemRootProvider::GetTextValue(INodeProvider* node)
-				{
-					MemoryNodeProvider* memoryNode = dynamic_cast<MemoryNodeProvider*>(node);
-					if (memoryNode)
-					{
-						Ptr<TreeViewItem> data = memoryNode->GetData().Cast<TreeViewItem>();
-						if (data)
-						{
-							return data->text;
-						}
-					}
-					return L"";
-				}
-
-				description::Value TreeViewItemRootProvider::GetBindingValue(INodeProvider* node)
-				{
-					return Value::From(GetTreeViewData(node));
-				}
-
-				TreeViewItemRootProvider::TreeViewItemRootProvider()
-				{
-				}
-
-				TreeViewItemRootProvider::~TreeViewItemRootProvider()
-				{
-				}
-
-				IDescriptable* TreeViewItemRootProvider::RequestView(const WString& identifier)
-				{
-					if(identifier==ITreeViewItemView::Identifier)
-					{
-						return (ITreeViewItemView*)this;
-					}
-					else
-					{
-						return MemoryNodeRootProvider::RequestView(identifier);
-					}
-				}
-
-				Ptr<TreeViewItem> TreeViewItemRootProvider::GetTreeViewData(INodeProvider* node)
-				{
-					MemoryNodeProvider* memoryNode=GetMemoryNode(node);
-					if(memoryNode)
-					{
-						return memoryNode->GetData().Cast<TreeViewItem>();
-					}
-					else
-					{
-						return 0;
-					}
-				}
-
-				void TreeViewItemRootProvider::SetTreeViewData(INodeProvider* node, Ptr<TreeViewItem> value)
-				{
-					MemoryNodeProvider* memoryNode=GetMemoryNode(node);
-					if(memoryNode)
-					{
-						memoryNode->SetData(value);
-					}
-				}
-				
-				void TreeViewItemRootProvider::UpdateTreeViewData(INodeProvider* node)
-				{
-					MemoryNodeProvider* memoryNode=GetMemoryNode(node);
-					if(memoryNode)
-					{
-						memoryNode->NotifyDataModified();
-					}
-				}
-			}
-
 /***********************************************************************
 GuiVirtualTreeView
 ***********************************************************************/
@@ -16551,173 +14136,2614 @@ GuiTreeView
 				}
 				return result;
 			}
+		}
+	}
+}
 
-			namespace tree
+/***********************************************************************
+.\CONTROLS\LISTCONTROLPACKAGE\ITEMPROVIDER_BINDING.CPP
+***********************************************************************/
+
+namespace vl
+{
+	namespace presentation
+	{
+		namespace controls
+		{
+			using namespace collections;
+			using namespace list;
+			using namespace tree;
+			using namespace reflection::description;
+
+/***********************************************************************
+TextItemBindableProvider
+***********************************************************************/
+
+			TextItemBindableProvider::TextItemBindableProvider()
 			{
+			}
+
+			TextItemBindableProvider::~TextItemBindableProvider()
+			{
+				if (itemChangedEventHandler)
+				{
+					auto ol = itemSource.Cast<IValueObservableList>();
+					ol->ItemChanged.Remove(itemChangedEventHandler);
+				}
+			}
+
+			Ptr<description::IValueEnumerable> TextItemBindableProvider::GetItemSource()
+			{
+				return itemSource;
+			}
+
+			void TextItemBindableProvider::SetItemSource(Ptr<description::IValueEnumerable> _itemSource)
+			{
+				vint oldCount = 0;
+				if (itemSource)
+				{
+					oldCount = itemSource->GetCount();
+				}
+				if (itemChangedEventHandler)
+				{
+					auto ol = itemSource.Cast<IValueObservableList>();
+					ol->ItemChanged.Remove(itemChangedEventHandler);
+				}
+
+				itemSource = nullptr;
+				itemChangedEventHandler = nullptr;
+
+				if (_itemSource)
+				{
+					if (auto ol = _itemSource.Cast<IValueObservableList>())
+					{
+						itemSource = ol;
+						itemChangedEventHandler = ol->ItemChanged.Add([this](vint start, vint oldCount, vint newCount)
+						{
+							InvokeOnItemModified(start, oldCount, newCount, true);
+						});
+					}
+					else if (auto rl = _itemSource.Cast<IValueReadonlyList>())
+					{
+						itemSource = rl;
+					}
+					else
+					{
+						itemSource = IValueList::Create(GetLazyList<Value>(_itemSource));
+					}
+				}
+
+				InvokeOnItemModified(0, oldCount, itemSource ? itemSource->GetCount() : 0, true);
+			}
+
+			description::Value TextItemBindableProvider::Get(vint index)
+			{
+				if (!itemSource) return Value();
+				return itemSource->Get(index);
+			}
+
+			void TextItemBindableProvider::UpdateBindingProperties()
+			{
+				InvokeOnItemModified(0, Count(), Count(), false);
+			}
+
+			bool TextItemBindableProvider::NotifyUpdate(vint start, vint count, bool itemReferenceUpdated)
+			{
+				if (!itemSource) return false;
+				if (start<0 || start >= itemSource->GetCount() || count <= 0 || start + count > itemSource->GetCount())
+				{
+					return false;
+				}
+				else
+				{
+					InvokeOnItemModified(start, count, count, itemReferenceUpdated);
+					return true;
+				}
+			}
+
+			// ===================== GuiListControl::IItemProvider =====================
+			
+			vint TextItemBindableProvider::Count()
+			{
+				if (!itemSource) return 0;
+				return itemSource->GetCount();
+			}
+
+			WString TextItemBindableProvider::GetTextValue(vint itemIndex)
+			{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::controls::TextItemBindableProvider::GetTextValue(vint)#"
+				CHECK_ERROR(itemSource, ERROR_MESSAGE_PREFIX L"ItemSource is not set.");
+				return ReadProperty(itemSource->Get(itemIndex), textProperty);
+#undef ERROR_MESSAGE_PREFIX
+			}
+			
+			IDescriptable* TextItemBindableProvider::RequestView(const WString& identifier)
+			{
+				if (identifier == ITextItemView::Identifier)
+				{
+					return (ITextItemView*)this;
+				}
+				else
+				{
+					return 0;
+				}
+			}
+					
+			// ===================== GuiListControl::IItemBindingView =====================
+
+			description::Value TextItemBindableProvider::GetBindingValue(vint itemIndex)
+			{
+				return itemSource->Get(itemIndex);
+			}
+					
+			// ===================== list::TextItemStyleProvider::ITextItemView =====================
+			
+			bool TextItemBindableProvider::GetChecked(vint itemIndex)
+			{
+				return ReadProperty(itemSource->Get(itemIndex), checkedProperty);
+			}
+			
+			void TextItemBindableProvider::SetChecked(vint itemIndex, bool value)
+			{
+				auto thisValue = itemSource->Get(itemIndex);
+				WriteProperty(thisValue, checkedProperty, value);
+				InvokeOnItemModified(itemIndex, 1, 1, false);
+			}
+
+/***********************************************************************
+ListViewItemBindableProvider
+***********************************************************************/
+
+			ListViewItemBindableProvider::ListViewItemBindableProvider()
+				:columns(this)
+				, dataColumns(this)
+			{
+			}
+
+			ListViewItemBindableProvider::~ListViewItemBindableProvider()
+			{
+				if (itemChangedEventHandler)
+				{
+					auto ol = itemSource.Cast<IValueObservableList>();
+					ol->ItemChanged.Remove(itemChangedEventHandler);
+				}
+			}
+
+			Ptr<description::IValueEnumerable> ListViewItemBindableProvider::GetItemSource()
+			{
+				return itemSource;
+			}
+
+			void ListViewItemBindableProvider::SetItemSource(Ptr<description::IValueEnumerable> _itemSource)
+			{
+				vint oldCount = 0;
+				if (itemSource)
+				{
+					oldCount = itemSource->GetCount();
+				}
+				if (itemChangedEventHandler)
+				{
+					auto ol = itemSource.Cast<IValueObservableList>();
+					ol->ItemChanged.Remove(itemChangedEventHandler);
+				}
+
+				itemSource = nullptr;
+				itemChangedEventHandler = nullptr;
+
+				if (_itemSource)
+				{
+					if (auto ol = _itemSource.Cast<IValueObservableList>())
+					{
+						itemSource = ol;
+						itemChangedEventHandler = ol->ItemChanged.Add([this](vint start, vint oldCount, vint newCount)
+						{
+							InvokeOnItemModified(start, oldCount, newCount, true);
+						});
+					}
+					else if (auto rl = _itemSource.Cast<IValueReadonlyList>())
+					{
+						itemSource = rl;
+					}
+					else
+					{
+						itemSource = IValueList::Create(GetLazyList<Value>(_itemSource));
+					}
+				}
+
+				InvokeOnItemModified(0, oldCount, itemSource ? itemSource->GetCount() : 0, true);
+			}
+
+			description::Value ListViewItemBindableProvider::Get(vint index)
+			{
+				if (!itemSource) return Value();
+				return itemSource->Get(index);
+			}
+
+			void ListViewItemBindableProvider::UpdateBindingProperties()
+			{
+				InvokeOnItemModified(0, Count(), Count(), false);
+			}
+
+			bool ListViewItemBindableProvider::NotifyUpdate(vint start, vint count, bool itemReferenceUpdated)
+			{
+				if (!itemSource) return false;
+				if (start<0 || start >= itemSource->GetCount() || count <= 0 || start + count > itemSource->GetCount())
+				{
+					return false;
+				}
+				else
+				{
+					InvokeOnItemModified(start, count, count, itemReferenceUpdated);
+					return true;
+				}
+			}
+
+			list::ListViewDataColumns& ListViewItemBindableProvider::GetDataColumns()
+			{
+				return dataColumns;
+			}
+
+			list::ListViewColumns& ListViewItemBindableProvider::GetColumns()
+			{
+				return columns;
+			}
+					
+			// ===================== list::IListViewItemProvider =====================
+
+			void ListViewItemBindableProvider::RebuildAllItems()
+			{
+				InvokeOnItemModified(0, Count(), Count(), true);
+			}
+
+			void ListViewItemBindableProvider::RefreshAllItems()
+			{
+				InvokeOnItemModified(0, Count(), Count(), false);
+			}
+
+			void ListViewItemBindableProvider::NotifyColumnRebuilt()
+			{
+				for (auto callback : columnItemViewCallbacks)
+				{
+					callback->OnColumnRebuilt();
+				}
+				RebuildAllItems();
+			}
+
+			void ListViewItemBindableProvider::NotifyColumnChanged()
+			{
+				for (auto callback : columnItemViewCallbacks)
+				{
+					callback->OnColumnChanged(true);
+				}
+				RefreshAllItems();
+			}
+
+			// ===================== GuiListControl::IItemProvider =====================
+
+			vint ListViewItemBindableProvider::Count()
+			{
+				if (!itemSource) return 0;
+				return itemSource->GetCount();
+			}
+
+			WString ListViewItemBindableProvider::GetTextValue(vint itemIndex)
+			{
+				return GetText(itemIndex);
+			}
+
+			description::Value ListViewItemBindableProvider::GetBindingValue(vint itemIndex)
+			{
+				if (itemSource)
+				{
+					if (0 <= itemIndex && itemIndex < itemSource->GetCount())
+					{
+						return itemSource->Get(itemIndex);
+					}
+				}
+				return Value();
+			}
+
+			IDescriptable* ListViewItemBindableProvider::RequestView(const WString& identifier)
+			{
+				if (identifier == IListViewItemView::Identifier)
+				{
+					return (IListViewItemView*)this;
+				}
+				else if (identifier == IColumnItemView::Identifier)
+				{
+					return (IColumnItemView*)this;
+				}
+				else
+				{
+					return 0;
+				}
+			}
+
+			// ===================== list::ListViewItemStyleProvider::IListViewItemView =====================
+
+			Ptr<GuiImageData> ListViewItemBindableProvider::GetSmallImage(vint itemIndex)
+			{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::controls::ListViewItemBindableProvider::GetSmallImage(vint)#"
+				CHECK_ERROR(itemSource, ERROR_MESSAGE_PREFIX L"ItemSource is not set.");
+				return ReadProperty(itemSource->Get(itemIndex), smallImageProperty);
+#undef ERROR_MESSAGE_PREFIX
+			}
+
+			Ptr<GuiImageData> ListViewItemBindableProvider::GetLargeImage(vint itemIndex)
+			{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::controls::ListViewItemBindableProvider::GetLargeImage(vint)#"
+				CHECK_ERROR(itemSource, ERROR_MESSAGE_PREFIX L"ItemSource is not set.");
+				return ReadProperty(itemSource->Get(itemIndex), largeImageProperty);
+#undef ERROR_MESSAGE_PREFIX
+			}
+
+			WString ListViewItemBindableProvider::GetText(vint itemIndex)
+			{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::controls::ListViewItemBindableProvider::GetText(vint)#"
+				CHECK_ERROR(itemSource, ERROR_MESSAGE_PREFIX L"ItemSource is not set.");
+				return ReadProperty(itemSource->Get(itemIndex), columns[0]->GetTextProperty());
+#undef ERROR_MESSAGE_PREFIX
+			}
+
+			WString ListViewItemBindableProvider::GetSubItem(vint itemIndex, vint index)
+			{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::controls::ListViewItemBindableProvider::GetSubItem(vint, vint)#"
+				CHECK_ERROR(itemSource, ERROR_MESSAGE_PREFIX L"ItemSource is not set.");
+				CHECK_ERROR(index != -1, ERROR_MESSAGE_PREFIX L"column index cannot be -1, use GetText(itemIndex) instead.");
+				return ReadProperty(itemSource->Get(itemIndex), columns[index + 1]->GetTextProperty());
+#undef ERROR_MESSAGE_PREFIX
+			}
+
+			vint ListViewItemBindableProvider::GetDataColumnCount()
+			{
+				return dataColumns.Count();
+			}
+
+			vint ListViewItemBindableProvider::GetDataColumn(vint index)
+			{
+				return dataColumns[index];
+			}
+
+			vint ListViewItemBindableProvider::GetColumnCount()
+			{
+				return columns.Count();
+			}
+
+			WString ListViewItemBindableProvider::GetColumnText(vint index)
+			{
+				if (index < 0 || index >= columns.Count())
+				{
+					return L"";
+				}
+				else
+				{
+					return columns[index]->GetText();
+				}
+			}
+
+			// ===================== list::ListViewColumnItemArranger::IColumnItemView =====================
+
+			bool ListViewItemBindableProvider::AttachCallback(IColumnItemViewCallback* value)
+			{
+				if(columnItemViewCallbacks.Contains(value))
+				{
+					return false;
+				}
+				else
+				{
+					columnItemViewCallbacks.Add(value);
+					return true;
+				}
+			}
+
+			bool ListViewItemBindableProvider::DetachCallback(IColumnItemViewCallback* value)
+			{
+				vint index = columnItemViewCallbacks.IndexOf(value);
+				if (index == -1)
+				{
+					return false;
+				}
+				else
+				{
+					columnItemViewCallbacks.Remove(value);
+					return true;
+				}
+			}
+
+			vint ListViewItemBindableProvider::GetColumnSize(vint index)
+			{
+				return columns[index]->GetSize();
+			}
+
+			void ListViewItemBindableProvider::SetColumnSize(vint index, vint value)
+			{
+				columns[index]->SetSize(value);
+			}
+
+			GuiMenu* ListViewItemBindableProvider::GetDropdownPopup(vint index)
+			{
+				return columns[index]->GetDropdownPopup();
+			}
+
+			ColumnSortingState ListViewItemBindableProvider::GetSortingState(vint index)
+			{
+				return columns[index]->GetSortingState();
+			}
+
+/***********************************************************************
+TreeViewItemBindableNode
+***********************************************************************/
+
+			Ptr<description::IValueReadonlyList> TreeViewItemBindableNode::PrepareValueList(const description::Value& inputItemSource)
+			{
+				if (auto value = ReadProperty(inputItemSource, rootProvider->childrenProperty))
+				{
+					if (auto ol = value.Cast<IValueObservableList>())
+					{
+						return ol;
+					}
+					else if (auto rl = value.Cast<IValueReadonlyList>())
+					{
+						return rl;
+					}
+					else
+					{
+						return IValueList::Create(GetLazyList<Value>(value));
+					}
+				}
+				else
+				{
+					return IValueList::Create();
+				}
+			}
+
+			void TreeViewItemBindableNode::PrepareChildren(Ptr<description::IValueReadonlyList> newValueList)
+			{
+				if (!childrenVirtualList)
+				{
+					childrenVirtualList = newValueList;
+					if (auto ol = childrenVirtualList.Cast<IValueObservableList>())
+					{
+						itemChangedEventHandler = ol->ItemChanged.Add([this](vint start, vint oldCount, vint newCount)
+						{
+							callback->OnBeforeItemModified(this, start, oldCount, newCount, true);
+							children.RemoveRange(start, oldCount);
+							for (vint i = 0; i < newCount; i++)
+							{
+								Value value = childrenVirtualList->Get(start + i);
+								auto node = Ptr(new TreeViewItemBindableNode(value, this));
+								children.Insert(start + i, node);
+							}
+							callback->OnAfterItemModified(this, start, oldCount, newCount, true);
+						});
+					}
+
+					vint count = childrenVirtualList->GetCount();
+					for (vint i = 0; i < count; i++)
+					{
+						Value value = childrenVirtualList->Get(i);
+						auto node = Ptr(new TreeViewItemBindableNode(value, this));
+						children.Add(node);
+					}
+				}
+			}
+
+			void TreeViewItemBindableNode::UnprepareChildren()
+			{
+				if (itemChangedEventHandler)
+				{
+					auto ol = childrenVirtualList.Cast<IValueObservableList>();
+					ol->ItemChanged.Remove(itemChangedEventHandler);
+					itemChangedEventHandler = nullptr;
+				}
+				childrenVirtualList = nullptr;
+				for (auto node : children)
+				{
+					node->UnprepareChildren();
+				}
+				children.Clear();
+			}
+
+			void TreeViewItemBindableNode::PrepareReverseMapping()
+			{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::controls::TreeViewItemBindableNode::PrepareReverseMapping()#"
+				if (rootProvider->reverseMappingProperty && !itemSource.IsNull())
+				{
+					auto oldValue = ReadProperty(itemSource, rootProvider->reverseMappingProperty);
+					CHECK_ERROR(oldValue.IsNull(), ERROR_MESSAGE_PREFIX L"The reverse mapping property of an item has been unexpectedly changed.");
+					WriteProperty(itemSource, rootProvider->reverseMappingProperty, Value::From(this));
+				}
+#undef ERROR_MESSAGE_PREFIX
+			}
+
+			void TreeViewItemBindableNode::UnprepareReverseMapping()
+			{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::controls::TreeViewItemBindableNode::PrepareReverseMapping()#"
+				if (rootProvider->reverseMappingProperty && !itemSource.IsNull())
+				{
+					auto oldValue = ReadProperty(itemSource, rootProvider->reverseMappingProperty);
+					CHECK_ERROR(oldValue.GetRawPtr() == this, ERROR_MESSAGE_PREFIX L"The reverse mapping property of an item has been unexpectedly changed.");
+					WriteProperty(itemSource, rootProvider->reverseMappingProperty, {});
+				}
+#undef ERROR_MESSAGE_PREFIX
+			}
+
+			TreeViewItemBindableNode::TreeViewItemBindableNode(const description::Value& _itemSource, TreeViewItemBindableNode* _parent)
+				:itemSource(_itemSource)
+				, rootProvider(_parent->rootProvider)
+				, parent(_parent)
+				, callback(_parent->callback)
+			{
+				PrepareReverseMapping();
+			}
+
+			TreeViewItemBindableNode::TreeViewItemBindableNode(TreeViewItemBindableRootProvider* _rootProvider)
+				:rootProvider(_rootProvider)
+				, parent(nullptr)
+				, callback(_rootProvider)
+			{
+			}
+
+			TreeViewItemBindableNode::~TreeViewItemBindableNode()
+			{
+				UnprepareReverseMapping();
+				if (itemChangedEventHandler)
+				{
+					auto ol = childrenVirtualList.Cast<IValueObservableList>();
+					ol->ItemChanged.Remove(itemChangedEventHandler);
+				}
+			}
+
+			description::Value TreeViewItemBindableNode::GetItemSource()
+			{
+				return itemSource;
+			}
+
+			void TreeViewItemBindableNode::SetItemSource(const description::Value& _itemSource)
+			{
+				auto newVirtualList = PrepareValueList(_itemSource);
+				vint oldCount = childrenVirtualList ? childrenVirtualList->GetCount() : 0;
+				vint newCount = newVirtualList->GetCount();
+
+				callback->OnBeforeItemModified(this, 0, oldCount, newCount, true);
+				UnprepareChildren();
+				UnprepareReverseMapping();
+				itemSource = _itemSource;
+				PrepareReverseMapping();
+				PrepareChildren(newVirtualList);
+				callback->OnAfterItemModified(this, 0, oldCount, newCount, true);
+			}
+
+			bool TreeViewItemBindableNode::GetExpanding()
+			{
+				return this == rootProvider->rootNode.Obj() ? true : expanding;
+			}
+
+			void TreeViewItemBindableNode::SetExpanding(bool value)
+			{
+				if (this != rootProvider->rootNode.Obj() && expanding != value)
+				{
+					expanding = value;
+					if (expanding)
+					{
+						callback->OnItemExpanded(this);
+					}
+					else
+					{
+						callback->OnItemCollapsed(this);
+					}
+				}
+			}
+
+			vint TreeViewItemBindableNode::CalculateTotalVisibleNodes()
+			{
+				if (!GetExpanding())
+				{
+					return 1;
+				}
+
+				if (!childrenVirtualList)
+				{
+					PrepareChildren(PrepareValueList(itemSource));
+				}
+				vint count = 1;
+				for (auto child : children)
+				{
+					count += child->CalculateTotalVisibleNodes();
+				}
+				return count;
+			}
+
+			void TreeViewItemBindableNode::NotifyDataModified()
+			{
+				if (parent)
+				{
+					vint index = parent->children.IndexOf(this);
+					callback->OnBeforeItemModified(parent, index, 1, 1, false);
+					callback->OnAfterItemModified(parent, index, 1, 1, false);
+				}
+			}
+
+			vint TreeViewItemBindableNode::GetChildCount()
+			{
+				if (!childrenVirtualList)
+				{
+					PrepareChildren(PrepareValueList(itemSource));
+				}
+				return children.Count();
+			}
+
+			Ptr<tree::INodeProvider> TreeViewItemBindableNode::GetParent()
+			{
+				return Ptr(parent);
+			}
+
+			Ptr<tree::INodeProvider> TreeViewItemBindableNode::GetChild(vint index)
+			{
+				if (!childrenVirtualList)
+				{
+					PrepareChildren(PrepareValueList(itemSource));
+				}
+				if (0 <= index && index < children.Count())
+				{
+					return children[index];
+				}
+				return nullptr;
+			}
+
+/***********************************************************************
+TreeViewItemBindableRootProvider
+***********************************************************************/
+
+			TreeViewItemBindableRootProvider::TreeViewItemBindableRootProvider()
+			{
+				rootNode = Ptr(new TreeViewItemBindableNode(this));
+			}
+
+			TreeViewItemBindableRootProvider::~TreeViewItemBindableRootProvider()
+			{
+			}
+
+			description::Value TreeViewItemBindableRootProvider::GetItemSource()
+			{
+				return rootNode->GetItemSource();
+			}
+
+			void TreeViewItemBindableRootProvider::SetItemSource(const description::Value& _itemSource)
+			{
+				rootNode->SetItemSource(_itemSource);
+			}
+
+			void TreeViewItemBindableRootProvider::UpdateBindingProperties(bool updateChildrenProperty)
+			{
+				vint oldCount = rootNode->GetChildCount();
+				if (updateChildrenProperty)
+				{
+					rootNode->UnprepareChildren();
+				}
+				vint newCount = rootNode->GetChildCount();
+				OnBeforeItemModified(rootNode.Obj(), 0, oldCount, newCount, updateChildrenProperty);
+				OnAfterItemModified(rootNode.Obj(), 0, oldCount, newCount, updateChildrenProperty);
+			}
+
+			// ===================== tree::INodeRootProvider =====================
+
+			Ptr<tree::INodeProvider> TreeViewItemBindableRootProvider::GetRootNode()
+			{
+				return rootNode;
+			}
+
+			WString TreeViewItemBindableRootProvider::GetTextValue(tree::INodeProvider* node)
+			{
+				return ReadProperty(GetBindingValue(node), textProperty);
+			}
+
+			description::Value TreeViewItemBindableRootProvider::GetBindingValue(tree::INodeProvider* node)
+			{
+				if (auto itemSourceNode = dynamic_cast<TreeViewItemBindableNode*>(node))
+				{
+					return itemSourceNode->GetItemSource();
+				}
+				return Value();
+			}
+
+			IDescriptable* TreeViewItemBindableRootProvider::RequestView(const WString& identifier)
+			{
+				if(identifier==ITreeViewItemView::Identifier)
+				{
+					return (ITreeViewItemView*)this;
+				}
+				else
+				{
+					return 0;
+				}
+			}
+
+			// ===================== tree::ITreeViewItemView =====================
+
+			Ptr<GuiImageData> TreeViewItemBindableRootProvider::GetNodeImage(tree::INodeProvider* node)
+			{
+				if (auto itemSourceNode = dynamic_cast<TreeViewItemBindableNode*>(node))
+				{
+					return ReadProperty(itemSourceNode->GetItemSource(), imageProperty);
+				}
+				return nullptr;
+			}
+		}
+	}
+}
+
+
+/***********************************************************************
+.\CONTROLS\LISTCONTROLPACKAGE\ITEMPROVIDER_ILISTVIEWITEMVIEW.CPP
+***********************************************************************/
+
+namespace vl::presentation::controls::list
+{
+	using namespace collections;
+	using namespace reflection::description;
+
+	const wchar_t* const IListViewItemView::Identifier = L"vl::presentation::controls::list::IListViewItemView";
+	const wchar_t* const IColumnItemView::Identifier = L"vl::presentation::controls::list::IColumnItemView";
+
+/***********************************************************************
+ListViewSubItems
+***********************************************************************/
+
+	void ListViewSubItems::NotifyUpdateInternal(vint start, vint count, vint newCount)
+	{
+		owner->NotifyUpdate();
+	}
+
+/***********************************************************************
+ListViewItem
+***********************************************************************/
+
+	void ListViewItem::NotifyUpdate()
+	{
+		if (owner)
+		{
+			vint index = owner->IndexOf(this);
+			owner->InvokeOnItemModified(index, 1, 1, false);
+		}
+	}
+
+	ListViewItem::ListViewItem()
+		:owner(0)
+	{
+		subItems.owner = this;
+	}
+
+	ListViewSubItems& ListViewItem::GetSubItems()
+	{
+		return subItems;
+	}
+
+	Ptr<GuiImageData> ListViewItem::GetSmallImage()
+	{
+		return smallImage;
+	}
+
+	void ListViewItem::SetSmallImage(Ptr<GuiImageData> value)
+	{
+		smallImage = value;
+		NotifyUpdate();
+	}
+
+	Ptr<GuiImageData> ListViewItem::GetLargeImage()
+	{
+		return largeImage;
+	}
+	
+	void ListViewItem::SetLargeImage(Ptr<GuiImageData> value)
+	{
+		largeImage = value;
+		NotifyUpdate();
+	}
+
+	const WString& ListViewItem::GetText()
+	{
+		return text;
+	}
+
+	void ListViewItem::SetText(const WString& value)
+	{
+		text = value;
+		NotifyUpdate();
+	}
+
+	description::Value ListViewItem::GetTag()
+	{
+		return tag;
+	}
+
+	void ListViewItem::SetTag(const description::Value& value)
+	{
+		tag = value;
+		NotifyUpdate();
+	}
+
+/***********************************************************************
+ListViewColumn
+***********************************************************************/
+
+	void ListViewColumn::NotifyRebuilt()
+	{
+		if (owner)
+		{
+			vint index = owner->IndexOf(this);
+			if (index != -1)
+			{
+				owner->NotifyColumnRebuilt(index);
+			}
+		}
+	}
+
+	void ListViewColumn::NotifyChanged(bool needToRefreshItems)
+	{
+		if (owner)
+		{
+			vint index = owner->IndexOf(this);
+			if (index != -1)
+			{
+				owner->NotifyColumnChanged(index, needToRefreshItems);
+			}
+		}
+	}
+
+	ListViewColumn::ListViewColumn(const WString& _text, vint _size)
+		:text(_text)
+		,size(_size)
+	{
+	}
+
+	ListViewColumn::~ListViewColumn()
+	{
+		if (dropdownPopup && ownPopup)
+		{
+			SafeDeleteControl(dropdownPopup);
+		}
+	}
+
+	const WString& ListViewColumn::GetText()
+	{
+		return text;
+	}
+
+	void ListViewColumn::SetText(const WString& value)
+	{
+		if (text != value)
+		{
+			text = value;
+			NotifyChanged(false);
+		}
+	}
+
+	ItemProperty<WString> ListViewColumn::GetTextProperty()
+	{
+		return textProperty;
+	}
+
+	void ListViewColumn::SetTextProperty(const ItemProperty<WString>& value)
+	{
+		textProperty = value;
+		NotifyChanged(true);
+	}
+
+	vint ListViewColumn::GetSize()
+	{
+		return size;
+	}
+
+	void ListViewColumn::SetSize(vint value)
+	{
+		if (size != value)
+		{
+			size = value;
+			NotifyChanged(true);
+		}
+	}
+
+	bool ListViewColumn::GetOwnPopup()
+	{
+		return ownPopup;
+	}
+
+	void ListViewColumn::SetOwnPopup(bool value)
+	{
+		ownPopup = value;
+	}
+
+	GuiMenu* ListViewColumn::GetDropdownPopup()
+	{
+		return dropdownPopup;
+	}
+
+	void ListViewColumn::SetDropdownPopup(GuiMenu* value)
+	{
+		if (dropdownPopup != value)
+		{
+			dropdownPopup = value;
+			NotifyChanged(false);
+		}
+	}
+
+	ColumnSortingState ListViewColumn::GetSortingState()
+	{
+		return sortingState;
+	}
+
+	void ListViewColumn::SetSortingState(ColumnSortingState value)
+	{
+		if (sortingState != value)
+		{
+			sortingState = value;
+			NotifyChanged(false);
+		}
+	}
+
+/***********************************************************************
+ListViewDataColumns
+***********************************************************************/
+
+	void ListViewDataColumns::NotifyUpdateInternal(vint start, vint count, vint newCount)
+	{
+		itemProvider->RefreshAllItems();
+	}
+
+	ListViewDataColumns::ListViewDataColumns(IListViewItemProvider* _itemProvider)
+		:itemProvider(_itemProvider)
+	{
+	}
+
+	ListViewDataColumns::~ListViewDataColumns()
+	{
+	}
+
+/***********************************************************************
+ListViewColumns
+***********************************************************************/
+
+	void ListViewColumns::NotifyColumnRebuilt(vint column)
+	{
+		NotifyUpdate(column, 1);
+	}
+
+	void ListViewColumns::NotifyColumnChanged(vint column, bool needToRefreshItems)
+	{
+		itemProvider->NotifyColumnChanged();
+	}
+
+	void ListViewColumns::BeforeInsert(vint index, const Ptr<ListViewColumn>& value)
+	{
+		// Check if this column is already in the provider
+		if (value->owner)
+		{
+			throw ArgumentException(L"The ListViewColumn is already belong to a ListViewColumns.", L"vl::presentation::controls::list::ListViewColumns::BeforeInsert", L"value");
+		}
+	}
+
+	void ListViewColumns::AfterInsert(vint index, const Ptr<ListViewColumn>& value)
+	{
+		collections::ObservableListBase<Ptr<ListViewColumn>>::AfterInsert(index, value);
+		value->owner = this;
+	}
+
+	void ListViewColumns::BeforeRemove(vint index, const Ptr<ListViewColumn>& value)
+	{
+		value->owner = 0;
+		collections::ObservableListBase<Ptr<ListViewColumn>>::BeforeRemove(index, value);
+	}
+
+	void ListViewColumns::NotifyUpdateInternal(vint start, vint count, vint newCount)
+	{
+		itemProvider->NotifyColumnRebuilt();
+	}
+
+	ListViewColumns::ListViewColumns(IListViewItemProvider* _itemProvider)
+		:itemProvider(_itemProvider)
+	{
+	}
+
+	ListViewColumns::~ListViewColumns()
+	{
+	}
+
+/***********************************************************************
+ListViewItemProvider
+***********************************************************************/
+
+	void ListViewItemProvider::BeforeInsert(vint index, const Ptr<ListViewItem>& value)
+	{
+		// Check if this item is already in the provider
+		if (value->owner)
+		{
+			throw ArgumentException(L"The ListViewItem is already belong to a ListViewItemProvider.", L"vl::presentation::controls::list::ListViewItemProvider::BeforeInsert", L"value");
+		}
+	}
+
+	void ListViewItemProvider::AfterInsert(vint index, const Ptr<ListViewItem>& value)
+	{
+		ListProvider<Ptr<ListViewItem>>::AfterInsert(index, value);
+		value->owner = this;
+	}
+
+	void ListViewItemProvider::BeforeRemove(vint index, const Ptr<ListViewItem>& value)
+	{
+		value->owner = 0;
+		ListProvider<Ptr<ListViewItem>>::AfterInsert(index, value);
+	}
+
+	void ListViewItemProvider::RebuildAllItems()
+	{
+		InvokeOnItemModified(0, Count(), Count(), true);
+	}
+
+	void ListViewItemProvider::RefreshAllItems()
+	{
+		InvokeOnItemModified(0, Count(), Count(), false);
+	}
+
+	void ListViewItemProvider::NotifyColumnRebuilt()
+	{
+		for (auto callback : columnItemViewCallbacks)
+		{
+			callback->OnColumnRebuilt();
+		}
+		RefreshAllItems();
+	}
+
+	void ListViewItemProvider::NotifyColumnChanged()
+	{
+		for (auto callback : columnItemViewCallbacks)
+		{
+			callback->OnColumnChanged(true);
+		}
+		RefreshAllItems();
+	}
+
+	ListViewItemProvider::ListViewItemProvider()
+		:columns(this)
+		, dataColumns(this)
+	{
+	}
+
+	ListViewItemProvider::~ListViewItemProvider()
+	{
+	}
+
+	WString ListViewItemProvider::GetTextValue(vint itemIndex)
+	{
+		return GetText(itemIndex);
+	}
+
+	description::Value ListViewItemProvider::GetBindingValue(vint itemIndex)
+	{
+		return Value::From(Get(itemIndex));
+	}
+
+	IDescriptable* ListViewItemProvider::RequestView(const WString& identifier)
+	{
+		if (identifier == IListViewItemView::Identifier)
+		{
+			return (IListViewItemView*)this;
+		}
+		else if (identifier == IColumnItemView::Identifier)
+		{
+			return (IColumnItemView*)this;
+		}
+		else
+		{
+			return 0;
+		}
+	}
+
+	Ptr<GuiImageData> ListViewItemProvider::GetSmallImage(vint itemIndex)
+	{
+		return Get(itemIndex)->smallImage;
+	}
+
+	Ptr<GuiImageData> ListViewItemProvider::GetLargeImage(vint itemIndex)
+	{
+		return Get(itemIndex)->largeImage;
+	}
+
+	WString ListViewItemProvider::GetText(vint itemIndex)
+	{
+		return Get(itemIndex)->text;
+	}
+
+	WString ListViewItemProvider::GetSubItem(vint itemIndex, vint index)
+	{
+#define ERROR_MESSAGE_PREFIX L"ListViewItemProvider::GetSubItem(vint, vint)#"
+		CHECK_ERROR(0 <= index && index < columns.Count() - 1, ERROR_MESSAGE_PREFIX L"Sub item index out of range.");
+		Ptr<ListViewItem> item = Get(itemIndex);
+		if (index < 0 || index >= item->GetSubItems().Count())
+		{
+			return WString::Empty;
+		}
+		else
+		{
+			return item->GetSubItems()[index];
+		}
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	vint ListViewItemProvider::GetDataColumnCount()
+	{
+		return dataColumns.Count();
+	}
+
+	vint ListViewItemProvider::GetDataColumn(vint index)
+	{
+		return dataColumns[index];
+	}
+
+	vint ListViewItemProvider::GetColumnCount()
+	{
+		return columns.Count();
+	}
+
+	WString ListViewItemProvider::GetColumnText(vint index)
+	{
+		if (index<0 || index >= columns.Count())
+		{
+			return L"";
+		}
+		else
+		{
+			return columns[index]->GetText();
+		}
+	}
+
+	bool ListViewItemProvider::AttachCallback(IColumnItemViewCallback* value)
+	{
+		if(columnItemViewCallbacks.Contains(value))
+		{
+			return false;
+		}
+		else
+		{
+			columnItemViewCallbacks.Add(value);
+			return true;
+		}
+	}
+
+	bool ListViewItemProvider::DetachCallback(IColumnItemViewCallback* value)
+	{
+		vint index=columnItemViewCallbacks.IndexOf(value);
+		if(index==-1)
+		{
+			return false;
+		}
+		else
+		{
+			columnItemViewCallbacks.Remove(value);
+			return true;
+		}
+	}
+
+	vint ListViewItemProvider::GetColumnSize(vint index)
+	{
+		if(index<0 || index>=columns.Count())
+		{
+			return 0;
+		}
+		else
+		{
+			return columns[index]->GetSize();
+		}
+	}
+
+	void ListViewItemProvider::SetColumnSize(vint index, vint value)
+	{
+		if(index>=0 && index<columns.Count())
+		{
+			columns[index]->SetSize(value);
+		}
+	}
+
+	GuiMenu* ListViewItemProvider::GetDropdownPopup(vint index)
+	{
+		if(index<0 || index>=columns.Count())
+		{
+			return 0;
+		}
+		else
+		{
+			return columns[index]->GetDropdownPopup();
+		}
+	}
+
+	ColumnSortingState ListViewItemProvider::GetSortingState(vint index)
+	{
+		if (index < 0 || index >= columns.Count())
+		{
+			return ColumnSortingState::NotSorted;
+		}
+		else
+		{
+			return columns[index]->GetSortingState();
+		}
+	}
+
+	ListViewDataColumns& ListViewItemProvider::GetDataColumns()
+	{
+		return dataColumns;
+	}
+
+	ListViewColumns& ListViewItemProvider::GetColumns()
+	{
+		return columns;
+	}
+}
+
+/***********************************************************************
+.\CONTROLS\LISTCONTROLPACKAGE\ITEMPROVIDER_ITEXTITEMVIEW.CPP
+***********************************************************************/
+
+namespace vl::presentation::controls::list
+{
+	using namespace collections;
+	using namespace reflection::description;
+
+	const wchar_t* const ITextItemView::Identifier = L"vl::presentation::controls::list::ITextItemView";
+
+/***********************************************************************
+TextItem
+***********************************************************************/
+
+	void TextItem::NotifyUpdate(bool raiseCheckEvent)
+	{
+		if (owner)
+		{
+			vint index = owner->IndexOf(this);
+			owner->InvokeOnItemModified(index, 1, 1, false);
+
+			if (raiseCheckEvent)
+			{
+				owner->itemProviderCallback->OnItemCheckedChanged(index);
+			}
+		}
+	}
+
+	TextItem::TextItem()
+		:owner(0)
+		, checked(false)
+	{
+	}
+
+	TextItem::TextItem(const WString& _text, bool _checked)
+		:owner(0)
+		, text(_text)
+		, checked(_checked)
+	{
+	}
+
+	TextItem::~TextItem()
+	{
+	}
+
+	const WString& TextItem::GetText()
+	{
+		return text;
+	}
+
+	void TextItem::SetText(const WString& value)
+	{
+		if (text != value)
+		{
+			text = value;
+			NotifyUpdate(false);
+		}
+	}
+
+	bool TextItem::GetChecked()
+	{
+		return checked;
+	}
+
+	void TextItem::SetChecked(bool value)
+	{
+		if (checked != value)
+		{
+			checked = value;
+			NotifyUpdate(true);
+		}
+	}
+
+/***********************************************************************
+TextItemProvider
+***********************************************************************/
+
+	void TextItemProvider::BeforeInsert(vint item, const Ptr<TextItem>& value)
+	{
+		// Check if this item is already in the provider
+		if (value->owner)
+		{
+			throw ArgumentException(L"The TextItem is already belog to a TextItemProvider.", L"vl::presentation::controls::list::TextItemProvider::BeforeInsert", L"value");
+		}
+	}
+
+	void TextItemProvider::AfterInsert(vint item, const Ptr<TextItem>& value)
+	{
+		ListProvider<Ptr<TextItem>>::AfterInsert(item, value);
+		value->owner = this;
+	}
+
+	void TextItemProvider::BeforeRemove(vint item, const Ptr<TextItem>& value)
+	{
+		value->owner = 0;
+		ListProvider<Ptr<TextItem>>::BeforeRemove(item, value);
+	}
+
+	WString TextItemProvider::GetTextValue(vint itemIndex)
+	{
+		return Get(itemIndex)->GetText();
+	}
+
+	description::Value TextItemProvider::GetBindingValue(vint itemIndex)
+	{
+		return Value::From(Get(itemIndex));
+	}
+
+	bool TextItemProvider::GetChecked(vint itemIndex)
+	{
+		return Get(itemIndex)->GetChecked();
+	}
+
+	void TextItemProvider::SetChecked(vint itemIndex, bool value)
+	{
+		return Get(itemIndex)->SetChecked(value);
+	}
+
+	TextItemProvider::TextItemProvider(ITextItemProviderCallback* _itemProviderCallback)
+		:itemProviderCallback(_itemProviderCallback)
+	{
+	}
+
+	TextItemProvider::~TextItemProvider()
+	{
+	}
+
+	IDescriptable* TextItemProvider::RequestView(const WString& identifier)
+	{
+		if (identifier == ITextItemView::Identifier)
+		{
+			return (ITextItemView*)this;
+		}
+		else
+		{
+			return nullptr;
+		}
+	}
+}
+
+/***********************************************************************
+.\CONTROLS\LISTCONTROLPACKAGE\ITEMPROVIDER_ITREEVIEWITEMVIEW.CPP
+***********************************************************************/
+
+namespace vl::presentation::controls::tree
+{
+	using namespace reflection::description;
+
+	const wchar_t* const ITreeViewItemView::Identifier = L"vl::presentation::controls::tree::ITreeViewItemView";
+
+/***********************************************************************
+TreeViewItem
+***********************************************************************/
+
+	TreeViewItem::TreeViewItem()
+	{
+	}
+
+	TreeViewItem::TreeViewItem(const Ptr<GuiImageData>& _image, const WString& _text)
+		:image(_image)
+		,text(_text)
+	{
+	}
+
+/***********************************************************************
+TreeViewItemRootProvider
+***********************************************************************/
+
+	Ptr<GuiImageData> TreeViewItemRootProvider::GetNodeImage(INodeProvider* node)
+	{
+		MemoryNodeProvider* memoryNode=dynamic_cast<MemoryNodeProvider*>(node);
+		if(memoryNode)
+		{
+			Ptr<TreeViewItem> data=memoryNode->GetData().Cast<TreeViewItem>();
+			if(data)
+			{
+				return data->image;
+			}
+		}
+		return 0;
+	}
+
+	WString TreeViewItemRootProvider::GetTextValue(INodeProvider* node)
+	{
+		MemoryNodeProvider* memoryNode = dynamic_cast<MemoryNodeProvider*>(node);
+		if (memoryNode)
+		{
+			Ptr<TreeViewItem> data = memoryNode->GetData().Cast<TreeViewItem>();
+			if (data)
+			{
+				return data->text;
+			}
+		}
+		return L"";
+	}
+
+	description::Value TreeViewItemRootProvider::GetBindingValue(INodeProvider* node)
+	{
+		return Value::From(GetTreeViewData(node));
+	}
+
+	TreeViewItemRootProvider::TreeViewItemRootProvider()
+	{
+	}
+
+	TreeViewItemRootProvider::~TreeViewItemRootProvider()
+	{
+	}
+
+	IDescriptable* TreeViewItemRootProvider::RequestView(const WString& identifier)
+	{
+		if(identifier==ITreeViewItemView::Identifier)
+		{
+			return (ITreeViewItemView*)this;
+		}
+		else
+		{
+			return MemoryNodeRootProvider::RequestView(identifier);
+		}
+	}
+
+	Ptr<TreeViewItem> TreeViewItemRootProvider::GetTreeViewData(INodeProvider* node)
+	{
+		MemoryNodeProvider* memoryNode=GetMemoryNode(node);
+		if(memoryNode)
+		{
+			return memoryNode->GetData().Cast<TreeViewItem>();
+		}
+		else
+		{
+			return 0;
+		}
+	}
+
+	void TreeViewItemRootProvider::SetTreeViewData(INodeProvider* node, Ptr<TreeViewItem> value)
+	{
+		MemoryNodeProvider* memoryNode=GetMemoryNode(node);
+		if(memoryNode)
+		{
+			memoryNode->SetData(value);
+		}
+	}
+	
+	void TreeViewItemRootProvider::UpdateTreeViewData(INodeProvider* node)
+	{
+		MemoryNodeProvider* memoryNode=GetMemoryNode(node);
+		if(memoryNode)
+		{
+			memoryNode->NotifyDataModified();
+		}
+	}
+}
+
+/***********************************************************************
+.\CONTROLS\LISTCONTROLPACKAGE\ITEMTEMPLATE_ILISTVIEWITEMVIEW.CPP
+***********************************************************************/
+
+namespace vl::presentation::controls::list
+{
+	using namespace elements;
+	using namespace compositions;
+	using namespace collections;
+	using namespace reflection::description;
+
+/***********************************************************************
+DefaultListViewItemTemplate
+***********************************************************************/
+
+	DefaultListViewItemTemplate::DefaultListViewItemTemplate()
+	{
+		SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
+	}
+
+	DefaultListViewItemTemplate::~DefaultListViewItemTemplate()
+	{
+	}
+
+/***********************************************************************
+BigIconListViewItemTemplate
+***********************************************************************/
+
+	void BigIconListViewItemTemplate::OnInitialize()
+	{
+		{
+			auto table = new GuiTableComposition;
+			AddChild(table);
+			table->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
+			table->SetRowsAndColumns(2, 3);
+			table->SetRowOption(0, GuiCellOption::MinSizeOption());
+			table->SetRowOption(1, GuiCellOption::MinSizeOption());
+			table->SetColumnOption(0, GuiCellOption::PercentageOption(0.5));
+			table->SetColumnOption(1, GuiCellOption::MinSizeOption());
+			table->SetColumnOption(2, GuiCellOption::PercentageOption(0.5));
+			table->SetAlignmentToParent(Margin(0, 0, 0, 0));
+			table->SetCellPadding(5);
+			{
+				auto cell = new GuiCellComposition;
+				table->AddChild(cell);
+				cell->SetSite(0, 1, 1, 1);
+				cell->SetPreferredMinSize(Size(32, 32));
+
+				image = GuiImageFrameElement::Create();
+				image->SetStretch(true);
+				cell->SetOwnedElement(Ptr(image));
+			}
+			{
+				auto cell = new GuiCellComposition;
+				table->AddChild(cell);
+				cell->SetMinSizeLimitation(GuiGraphicsComposition::NoLimit);
+				cell->SetSite(1, 0, 1, 3);
+				cell->SetPreferredMinSize(Size(64, 40));
+
+				text = GuiSolidLabelElement::Create();
+				text->SetAlignments(Alignment::Center, Alignment::Top);
+				text->SetWrapLine(true);
+				text->SetEllipse(true);
+				cell->SetOwnedElement(Ptr(text));
+			}
+		}
+
+		FontChanged.AttachMethod(this, &BigIconListViewItemTemplate::OnFontChanged);
+		FontChanged.Execute(compositions::GuiEventArgs(this));
+	}
+
+	void BigIconListViewItemTemplate::OnRefresh()
+	{
+		if (auto view = dynamic_cast<IListViewItemView*>(listControl->GetItemProvider()->RequestView(WString::Unmanaged(IListViewItemView::Identifier))))
+		{
+			auto itemIndex = GetIndex();
+			auto imageData = view->GetLargeImage(itemIndex);
+			if (imageData)
+			{
+				image->SetImage(imageData->GetImage(), imageData->GetFrameIndex());
+			}
+			else
+			{
+				image->SetImage(nullptr);
+			}
+			text->SetText(view->GetText(itemIndex));
+
+			if (auto controlTemplate = dynamic_cast<templates::GuiListViewTemplate*>(listControl->TypedControlTemplateObject(true)))
+			{
+				text->SetColor(controlTemplate->GetPrimaryTextColor());
+			}
+		}
+	}
+
+	void BigIconListViewItemTemplate::OnFontChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+	{
+		text->SetFont(GetFont());
+	}
+
+	BigIconListViewItemTemplate::BigIconListViewItemTemplate()
+	{
+	}
+
+	BigIconListViewItemTemplate::~BigIconListViewItemTemplate()
+	{
+	}
+
+/***********************************************************************
+SmallIconListViewItemTemplate
+***********************************************************************/
+
+	void SmallIconListViewItemTemplate::OnInitialize()
+	{
+		{
+			auto table = new GuiTableComposition;
+			AddChild(table);
+			table->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
+			table->SetRowsAndColumns(3, 2);
+			table->SetRowOption(0, GuiCellOption::PercentageOption(0.5));
+			table->SetRowOption(1, GuiCellOption::MinSizeOption());
+			table->SetRowOption(2, GuiCellOption::PercentageOption(0.5));
+			table->SetColumnOption(0, GuiCellOption::MinSizeOption());
+			table->SetColumnOption(1, GuiCellOption::MinSizeOption());
+			table->SetAlignmentToParent(Margin(0, 0, 0, 0));
+			table->SetCellPadding(2);
+			{
+				GuiCellComposition* cell = new GuiCellComposition;
+				table->AddChild(cell);
+				cell->SetSite(1, 0, 1, 1);
+				cell->SetPreferredMinSize(Size(16, 16));
+
+				image = GuiImageFrameElement::Create();
+				image->SetStretch(true);
+				cell->SetOwnedElement(Ptr(image));
+			}
+			{
+				GuiCellComposition* cell = new GuiCellComposition;
+				table->AddChild(cell);
+				cell->SetSite(0, 1, 3, 1);
+				cell->SetPreferredMinSize(Size(192, 0));
+
+				text = GuiSolidLabelElement::Create();
+				text->SetAlignments(Alignment::Left, Alignment::Center);
+				text->SetEllipse(true);
+				cell->SetOwnedElement(Ptr(text));
+			}
+		}
+
+		FontChanged.AttachMethod(this, &SmallIconListViewItemTemplate::OnFontChanged);
+		FontChanged.Execute(compositions::GuiEventArgs(this));
+	}
+
+	void SmallIconListViewItemTemplate::OnRefresh()
+	{
+		if (auto view = dynamic_cast<IListViewItemView*>(listControl->GetItemProvider()->RequestView(WString::Unmanaged(IListViewItemView::Identifier))))
+		{
+			auto itemIndex = GetIndex();
+			auto imageData = view->GetSmallImage(itemIndex);
+			if (imageData)
+			{
+				image->SetImage(imageData->GetImage(), imageData->GetFrameIndex());
+			}
+			else
+			{
+				image->SetImage(nullptr);
+			}
+			text->SetText(view->GetText(itemIndex));
+
+			if (auto controlTemplate = dynamic_cast<templates::GuiListViewTemplate*>(listControl->TypedControlTemplateObject(true)))
+			{
+				text->SetColor(controlTemplate->GetPrimaryTextColor());
+			}
+		}
+	}
+
+	void SmallIconListViewItemTemplate::OnFontChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+	{
+		text->SetFont(GetFont());
+	}
+
+	SmallIconListViewItemTemplate::SmallIconListViewItemTemplate()
+	{
+	}
+
+	SmallIconListViewItemTemplate::~SmallIconListViewItemTemplate()
+	{
+	}
+
+/***********************************************************************
+ListListViewItemTemplate
+***********************************************************************/
+
+	void ListListViewItemTemplate::OnInitialize()
+	{
+		{
+			auto table = new GuiTableComposition;
+			AddChild(table);
+			table->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
+			table->SetRowsAndColumns(3, 2);
+			table->SetRowOption(0, GuiCellOption::PercentageOption(0.5));
+			table->SetRowOption(1, GuiCellOption::MinSizeOption());
+			table->SetRowOption(2, GuiCellOption::PercentageOption(0.5));
+			table->SetColumnOption(0, GuiCellOption::MinSizeOption());
+			table->SetColumnOption(1, GuiCellOption::MinSizeOption());
+			table->SetAlignmentToParent(Margin(0, 0, 0, 0));
+			table->SetCellPadding(2);
+			{
+				auto cell = new GuiCellComposition;
+				table->AddChild(cell);
+				cell->SetSite(1, 0, 1, 1);
+				cell->SetPreferredMinSize(Size(16, 16));
+
+				image = GuiImageFrameElement::Create();
+				image->SetStretch(true);
+				cell->SetOwnedElement(Ptr(image));
+			}
+			{
+				auto cell = new GuiCellComposition;
+				table->AddChild(cell);
+				cell->SetSite(0, 1, 3, 1);
+
+				auto textBounds = new GuiBoundsComposition;
+				cell->AddChild(textBounds);
+				textBounds->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElement);
+				textBounds->SetAlignmentToParent(Margin(0, 0, 16, 0));
+
+				text = GuiSolidLabelElement::Create();
+				text->SetAlignments(Alignment::Left, Alignment::Center);
+				textBounds->SetOwnedElement(Ptr(text));
+			}
+		}
+
+		FontChanged.AttachMethod(this, &ListListViewItemTemplate::OnFontChanged);
+		FontChanged.Execute(compositions::GuiEventArgs(this));
+	}
+
+	void ListListViewItemTemplate::OnRefresh()
+	{
+		if (auto view = dynamic_cast<IListViewItemView*>(listControl->GetItemProvider()->RequestView(WString::Unmanaged(IListViewItemView::Identifier))))
+		{
+			auto itemIndex = GetIndex();
+			auto imageData = view->GetSmallImage(itemIndex);
+			if (imageData)
+			{
+				image->SetImage(imageData->GetImage(), imageData->GetFrameIndex());
+			}
+			else
+			{
+				image->SetImage(nullptr);
+			}
+			text->SetText(view->GetText(itemIndex));
+
+			if (auto controlTemplate = dynamic_cast<templates::GuiListViewTemplate*>(listControl->TypedControlTemplateObject(true)))
+			{
+				text->SetColor(controlTemplate->GetPrimaryTextColor());
+			}
+		}
+	}
+
+	void ListListViewItemTemplate::OnFontChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+	{
+		text->SetFont(GetFont());
+	}
+
+	ListListViewItemTemplate::ListListViewItemTemplate()
+	{
+	}
+
+	ListListViewItemTemplate::~ListListViewItemTemplate()
+	{
+	}
+
+/***********************************************************************
+TileListViewItemTemplate
+***********************************************************************/
+
+	elements::GuiSolidLabelElement* TileListViewItemTemplate::CreateTextElement(vint textRow)
+	{
+		auto cell = new GuiCellComposition;
+		textTable->AddChild(cell);
+		cell->SetSite(textRow + 1, 0, 1, 1);
+
+		auto textElement = Ptr(GuiSolidLabelElement::Create());
+		textElement->SetAlignments(Alignment::Left, Alignment::Center);
+		textElement->SetEllipse(true);
+		cell->SetOwnedElement(textElement);
+		return textElement.Obj();
+	}
+
+	void TileListViewItemTemplate::ResetTextTable(vint dataColumnCount)
+	{
+		if (text && dataTexts.Count() == dataColumnCount) return;
+		for (vint i = textTable->Children().Count() - 1; i >= 0; i--)
+		{
+			if (auto cell = dynamic_cast<GuiCellComposition*>(textTable->Children()[i]))
+			{
+				SafeDeleteComposition(cell);
+			}
+		}
+
+		{
+			vint textRows = dataColumnCount + 1;
+			textTable->SetRowsAndColumns(textRows + 2, 1);
+			textTable->SetRowOption(0, GuiCellOption::PercentageOption(0.5));
+			for (vint i = 0; i < textRows; i++)
+			{
+				textTable->SetRowOption(i + 1, GuiCellOption::MinSizeOption());
+			}
+			textTable->SetRowOption(textRows + 1, GuiCellOption::PercentageOption(0.5));
+			textTable->SetColumnOption(0, GuiCellOption::PercentageOption(1.0));
+		}
+
+		text = CreateTextElement(0);
+		text->SetFont(GetFont());
+		{
+			dataTexts.Resize(dataColumnCount);
+			for (vint i = 0; i < dataColumnCount; i++)
+			{
+				dataTexts[i] = CreateTextElement(i + 1);
+				dataTexts[i]->SetFont(GetFont());
+			}
+		}
+	}
+
+	void TileListViewItemTemplate::OnInitialize()
+	{
+		{
+			auto table = new GuiTableComposition;
+			AddChild(table);
+			table->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
+			table->SetRowsAndColumns(3, 2);
+			table->SetRowOption(0, GuiCellOption::PercentageOption(0.5));
+			table->SetRowOption(1, GuiCellOption::MinSizeOption());
+			table->SetRowOption(2, GuiCellOption::PercentageOption(0.5));
+			table->SetColumnOption(0, GuiCellOption::MinSizeOption());
+			table->SetColumnOption(1, GuiCellOption::MinSizeOption());
+			table->SetAlignmentToParent(Margin(0, 0, 0, 0));
+			table->SetCellPadding(4);
+			{
+				auto cell = new GuiCellComposition;
+				table->AddChild(cell);
+				cell->SetSite(1, 0, 1, 1);
+				cell->SetPreferredMinSize(Size(32, 32));
+
+				image = GuiImageFrameElement::Create();
+				image->SetStretch(true);
+				cell->SetOwnedElement(Ptr(image));
+			}
+			{
+				auto cell = new GuiCellComposition;
+				table->AddChild(cell);
+				cell->SetSite(0, 1, 3, 1);
+				cell->SetPreferredMinSize(Size(224, 0));
+
+				textTable = new GuiTableComposition;
+				textTable->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
+				textTable->SetCellPadding(1);
+				textTable->SetAlignmentToParent(Margin(0, 0, 0, 0));
+				cell->AddChild(textTable);
+			}
+		}
+
+		ResetTextTable(0);
+		FontChanged.AttachMethod(this, &TileListViewItemTemplate::OnFontChanged);
+		FontChanged.Execute(compositions::GuiEventArgs(this));
+	}
+
+	void TileListViewItemTemplate::OnRefresh()
+	{
+		if (auto view = dynamic_cast<IListViewItemView*>(listControl->GetItemProvider()->RequestView(WString::Unmanaged(IListViewItemView::Identifier))))
+		{
+			auto itemIndex = GetIndex();
+			auto imageData = view->GetLargeImage(itemIndex);
+			if (imageData)
+			{
+				image->SetImage(imageData->GetImage(), imageData->GetFrameIndex());
+			}
+			else
+			{
+				image->SetImage(nullptr);
+			}
+
+			vint subColumnCount = view->GetColumnCount() - 1;
+			vint dataColumnCount = view->GetDataColumnCount();
+			if (dataColumnCount > subColumnCount) dataColumnCount = subColumnCount;
+			if (dataColumnCount < 0) dataColumnCount = 0;
+			ResetTextTable(dataColumnCount);
+
+			text->SetText(view->GetText(itemIndex));
+			for (vint i = 0; i < dataColumnCount; i++)
+			{
+				dataTexts[i]->SetText(view->GetSubItem(itemIndex, view->GetDataColumn(i)));
+			}
+
+			if (auto controlTemplate = dynamic_cast<templates::GuiListViewTemplate*>(listControl->TypedControlTemplateObject(true)))
+			{
+				text->SetColor(controlTemplate->GetPrimaryTextColor());
+				for (vint i = 0; i < dataColumnCount; i++)
+				{
+					dataTexts[i]->SetText(view->GetSubItem(itemIndex, view->GetDataColumn(i)));
+					dataTexts[i]->SetColor(controlTemplate->GetSecondaryTextColor());
+				}
+			}
+		}
+	}
+
+	void TileListViewItemTemplate::OnFontChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+	{
+		if (text) text->SetFont(GetFont());
+		for (auto dataText : dataTexts)
+		{
+			dataText->SetFont(GetFont());
+		}
+	}
+
+	TileListViewItemTemplate::TileListViewItemTemplate()
+	{
+	}
+
+	TileListViewItemTemplate::~TileListViewItemTemplate()
+	{
+	}
+
+/***********************************************************************
+InformationListViewItemTemplate
+***********************************************************************/
+
+	void InformationListViewItemTemplate::ResetTextTable(vint dataColumnCount)
+	{
+		if (dataTexts.Count() == dataColumnCount) return;
+		for (vint i = textTable->Children().Count() - 1; i >= 0; i--)
+		{
+			if (auto cell = dynamic_cast<GuiCellComposition*>(textTable->Children()[i]))
+			{
+				SafeDeleteComposition(cell);
+			}
+		}
+
+		{
+			textTable->SetRowsAndColumns(dataColumnCount + 2, 1);
+			textTable->SetRowOption(0, GuiCellOption::PercentageOption(0.5));
+			for (vint i = 0; i < dataColumnCount; i++)
+			{
+				textTable->SetRowOption(i + 1, GuiCellOption::MinSizeOption());
+			}
+			textTable->SetRowOption(dataColumnCount + 1, GuiCellOption::PercentageOption(0.5));
+			textTable->SetColumnOption(0, GuiCellOption::PercentageOption(1.0));
+		}
+
+		columnTexts.Resize(dataColumnCount);
+		dataTexts.Resize(dataColumnCount);
+
+		for (vint i = 0; i < dataColumnCount; i++)
+		{
+			auto cell = new GuiCellComposition;
+			textTable->AddChild(cell);
+			cell->SetSite(i + 1, 0, 1, 1);
+
+			auto dataTable = new GuiTableComposition;
+			dataTable->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
+			dataTable->SetRowsAndColumns(1, 2);
+			dataTable->SetRowOption(0, GuiCellOption::MinSizeOption());
+			dataTable->SetColumnOption(0, GuiCellOption::MinSizeOption());
+			dataTable->SetColumnOption(1, GuiCellOption::PercentageOption(1.0));
+			dataTable->SetAlignmentToParent(Margin(0, 0, 0, 0));
+			cell->AddChild(dataTable);
+			{
+				auto cell = new GuiCellComposition;
+				dataTable->AddChild(cell);
+				cell->SetSite(0, 0, 1, 1);
+
+				columnTexts[i] = GuiSolidLabelElement::Create();
+				columnTexts[i]->SetFont(GetFont());
+				cell->SetOwnedElement(Ptr(columnTexts[i]));
+			}
+			{
+				auto cell = new GuiCellComposition;
+				dataTable->AddChild(cell);
+				cell->SetSite(0, 1, 1, 1);
+
+				dataTexts[i] = GuiSolidLabelElement::Create();
+				dataTexts[i]->SetFont(GetFont());
+				dataTexts[i]->SetEllipse(true);
+				cell->SetOwnedElement(Ptr(dataTexts[i]));
+			}
+		}
+	}
+
+	void InformationListViewItemTemplate::OnInitialize()
+	{
+		{
+			bottomLine = GuiSolidBackgroundElement::Create();
+			bottomLineComposition = new GuiBoundsComposition;
+			bottomLineComposition->SetOwnedElement(Ptr(bottomLine));
+			bottomLineComposition->SetAlignmentToParent(Margin(8, -1, 8, 0));
+			bottomLineComposition->SetPreferredMinSize(Size(0, 1));
+			AddChild(bottomLineComposition);
+
+			auto table = new GuiTableComposition;
+			AddChild(table);
+			table->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
+			table->SetRowsAndColumns(3, 3);
+			table->SetRowOption(0, GuiCellOption::PercentageOption(0.5));
+			table->SetRowOption(1, GuiCellOption::MinSizeOption());
+			table->SetRowOption(2, GuiCellOption::PercentageOption(0.5));
+			table->SetColumnOption(0, GuiCellOption::MinSizeOption());
+			table->SetColumnOption(1, GuiCellOption::PercentageOption(1.0));
+			table->SetColumnOption(2, GuiCellOption::MinSizeOption());
+			table->SetAlignmentToParent(Margin(0, 0, 0, 0));
+			table->SetCellPadding(4);
+			{
+				auto cell = new GuiCellComposition;
+				table->AddChild(cell);
+				cell->SetSite(1, 0, 1, 1);
+				cell->SetPreferredMinSize(Size(32, 32));
+
+				image = GuiImageFrameElement::Create();
+				image->SetStretch(true);
+				cell->SetOwnedElement(Ptr(image));
+			}
+			{
+				auto cell = new GuiCellComposition;
+				table->AddChild(cell);
+				cell->SetSite(0, 1, 3, 1);
+
+				text = GuiSolidLabelElement::Create();
+				text->SetEllipse(true);
+				cell->SetOwnedElement(Ptr(text));
+			}
+			{
+				auto cell = new GuiCellComposition;
+				table->AddChild(cell);
+				cell->SetSite(0, 2, 3, 1);
+				cell->SetPreferredMinSize(Size(224, 0));
+
+				textTable = new GuiTableComposition;
+				textTable->SetCellPadding(4);
+				textTable->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
+				textTable->SetAlignmentToParent(Margin(0, 0, 0, 0));
+				cell->AddChild(textTable);
+			}
+		}
+
+		FontChanged.AttachMethod(this, &InformationListViewItemTemplate::OnFontChanged);
+		FontChanged.Execute(compositions::GuiEventArgs(this));
+	}
+
+	void InformationListViewItemTemplate::OnRefresh()
+	{
+		if (auto view = dynamic_cast<IListViewItemView*>(listControl->GetItemProvider()->RequestView(WString::Unmanaged(IListViewItemView::Identifier))))
+		{
+			auto itemIndex = GetIndex();
+			auto imageData = view->GetLargeImage(itemIndex);
+			if (imageData)
+			{
+				image->SetImage(imageData->GetImage(), imageData->GetFrameIndex());
+			}
+			else
+			{
+				image->SetImage(nullptr);
+			}
+			text->SetText(view->GetText(itemIndex));
+
+			vint subColumnCount = view->GetColumnCount() - 1;
+			vint dataColumnCount = view->GetDataColumnCount();
+			if (dataColumnCount > subColumnCount) dataColumnCount = subColumnCount;
+			if (dataColumnCount < 0) dataColumnCount = 0;
+			ResetTextTable(dataColumnCount);
+			for (vint i = 0; i < dataColumnCount; i++)
+			{
+				columnTexts[i]->SetText(view->GetColumnText(view->GetDataColumn(i) + 1) + L": ");
+				dataTexts[i]->SetText(view->GetSubItem(itemIndex, view->GetDataColumn(i)));
+			}
+
+			if (auto controlTemplate = dynamic_cast<templates::GuiListViewTemplate*>(listControl->TypedControlTemplateObject(true)))
+			{
+				text->SetColor(controlTemplate->GetPrimaryTextColor());
+				bottomLine->SetColor(controlTemplate->GetItemSeparatorColor());
+				for (vint i = 0; i < dataColumnCount; i++)
+				{
+					columnTexts[i]->SetColor(controlTemplate->GetSecondaryTextColor());
+					dataTexts[i]->SetColor(controlTemplate->GetPrimaryTextColor());
+				}
+			}
+		}
+	}
+
+	void InformationListViewItemTemplate::OnFontChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+	{
+		{
+			auto font = GetFont();
+			font.size = (vint)(font.size * 1.2);
+			text->SetFont(font);
+		}
+
+		for (auto columnText : columnTexts)
+		{
+			columnText->SetFont(GetFont());
+		}
+		for (auto dataText : dataTexts)
+		{
+			dataText->SetFont(GetFont());
+		}
+	}
+
+	InformationListViewItemTemplate::InformationListViewItemTemplate()
+	{
+	}
+
+	InformationListViewItemTemplate::~InformationListViewItemTemplate()
+	{
+	}
+
+/***********************************************************************
+DetailListViewItemTemplate
+***********************************************************************/
+
+	void DetailListViewItemTemplate::UpdateSubItemSize()
+	{
+		if (auto view = dynamic_cast<IListViewItemView*>(listControl->GetItemProvider()->RequestView(WString::Unmanaged(IListViewItemView::Identifier))))
+		{
+			if (columnItemView)
+			{
+				vint columnCount = view->GetColumnCount();
+				if (columnCount > textTable->GetColumns())
+				{
+					columnCount = textTable->GetColumns();
+				}
+				for (vint i = 0; i < columnCount; i++)
+				{
+					textTable->SetColumnOption(i, GuiCellOption::AbsoluteOption(columnItemView->GetColumnSize(i)));
+				}
+			}
+		}
+	}
+
+	void DetailListViewItemTemplate::ResetTextTable(vint subColumnCount)
+	{
+		if (subItemCells.Count() == subColumnCount) return;
+
+		for (auto cell : subItemCells)
+		{
+			SafeDeleteComposition(cell);
+		}
+		subItemCells.Resize(subColumnCount);
+		subItemTexts.Resize(subColumnCount);
+
+		textTable->SetRowsAndColumns(1, subColumnCount + 1);
+		for (vint i = 0; i < subColumnCount; i++)
+		{
+			auto cell = new GuiCellComposition;
+			textTable->AddChild(cell);
+			cell->SetSite(0, i + 1, 1, 1);
+
+			auto textBounds = new GuiBoundsComposition;
+			cell->AddChild(textBounds);
+			textBounds->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElement);
+			textBounds->SetAlignmentToParent(Margin(8, 0, 8, 0));
+
+			auto subText = GuiSolidLabelElement::Create();
+			subText->SetAlignments(Alignment::Left, Alignment::Center);
+			subText->SetFont(GetFont());
+			subText->SetEllipse(true);
+			textBounds->SetOwnedElement(Ptr(subText));
+
+			subItemCells[i] = cell;
+			subItemTexts[i] = subText;
+		}
+	}
+
+	void DetailListViewItemTemplate::OnInitialize()
+	{
+		columnItemView = dynamic_cast<IColumnItemView*>(listControl->GetItemProvider()->RequestView(WString::Unmanaged(IColumnItemView::Identifier)));
+
+		{
+			textTable = new GuiTableComposition;
+			textTable->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
+			textTable->SetAlignmentToParent(Margin(0, 0, 0, 0));
+			textTable->SetRowsAndColumns(1, 1);
+			textTable->SetRowOption(0, GuiCellOption::MinSizeOption());
+			textTable->SetColumnOption(0, GuiCellOption::AbsoluteOption(0));
+			AddChild(textTable);
+			{
+				auto cell = new GuiCellComposition;
+				textTable->AddChild(cell);
+				cell->SetSite(0, 0, 1, 1);
+
+				auto table = new GuiTableComposition;
+				cell->AddChild(table);
+				table->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
+				table->SetRowsAndColumns(3, 2);
+				table->SetRowOption(0, GuiCellOption::PercentageOption(0.5));
+				table->SetRowOption(1, GuiCellOption::MinSizeOption());
+				table->SetRowOption(2, GuiCellOption::PercentageOption(0.5));
+				table->SetColumnOption(0, GuiCellOption::MinSizeOption());
+				table->SetColumnOption(1, GuiCellOption::PercentageOption(1.0));
+				table->SetAlignmentToParent(Margin(0, 0, 0, 0));
+				table->SetCellPadding(2);
+				{
+					auto cell = new GuiCellComposition;
+					table->AddChild(cell);
+					cell->SetSite(1, 0, 1, 1);
+					cell->SetPreferredMinSize(Size(16, 16));
+
+					image = GuiImageFrameElement::Create();
+					image->SetStretch(true);
+					cell->SetOwnedElement(Ptr(image));
+				}
+				{
+					auto cell = new GuiCellComposition;
+					table->AddChild(cell);
+					cell->SetSite(0, 1, 3, 1);
+
+					auto textBounds = new GuiBoundsComposition;
+					cell->AddChild(textBounds);
+					textBounds->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElement);
+					textBounds->SetAlignmentToParent(Margin(0, 0, 8, 0));
+
+					text = GuiSolidLabelElement::Create();
+					text->SetAlignments(Alignment::Left, Alignment::Center);
+					text->SetFont(GetFont());
+					text->SetEllipse(true);
+					textBounds->SetOwnedElement(Ptr(text));
+				}
+			}
+		}
+
+		FontChanged.AttachMethod(this, &DetailListViewItemTemplate::OnFontChanged);
+		FontChanged.Execute(compositions::GuiEventArgs(this));
+	}
+
+	void DetailListViewItemTemplate::OnRefresh()
+	{
+		if (auto view = dynamic_cast<IListViewItemView*>(listControl->GetItemProvider()->RequestView(WString::Unmanaged(IListViewItemView::Identifier))))
+		{
+			auto itemIndex = GetIndex();
+			vint subColumnCount = view->GetColumnCount() - 1;
+			if (subColumnCount < 0) subColumnCount = 0;
+			ResetTextTable(subColumnCount);
+
+			auto imageData = view->GetSmallImage(itemIndex);
+			if (imageData)
+			{
+				image->SetImage(imageData->GetImage(), imageData->GetFrameIndex());
+			}
+			else
+			{
+				image->SetImage(0);
+			}
+
+			text->SetText(view->GetText(itemIndex));
+			for (vint i = 0; i < subColumnCount; i++)
+			{
+				subItemTexts[i]->SetText(view->GetSubItem(itemIndex, i));
+			}
+
+			if (auto controlTemplate = dynamic_cast<templates::GuiListViewTemplate*>(listControl->TypedControlTemplateObject(true)))
+			{
+				text->SetColor(controlTemplate->GetPrimaryTextColor());
+				for (vint i = 0; i < subColumnCount; i++)
+				{
+					subItemTexts[i]->SetColor(controlTemplate->GetSecondaryTextColor());
+				}
+			}
+		}
+		UpdateSubItemSize();
+	}
+
+	void DetailListViewItemTemplate::OnFontChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+	{
+		text->SetFont(GetFont());
+		for (auto subText : subItemTexts)
+		{
+			subText->SetFont(GetFont());
+		}
+	}
+
+	DetailListViewItemTemplate::DetailListViewItemTemplate()
+	{
+	}
+
+	DetailListViewItemTemplate::~DetailListViewItemTemplate()
+	{
+	}
+}
+
+/***********************************************************************
+.\CONTROLS\LISTCONTROLPACKAGE\ITEMTEMPLATE_ITEXTITEMVIEW.CPP
+***********************************************************************/
+
+namespace vl::presentation::controls::list
+{
+	using namespace collections;
+	using namespace elements;
+	using namespace compositions;
+	using namespace reflection::description;
+
+/***********************************************************************
+DefaultTextListItemTemplate
+***********************************************************************/
+
+	TemplateProperty<DefaultTextListItemTemplate::BulletStyle> DefaultTextListItemTemplate::CreateBulletStyle()
+	{
+		return {};
+	}
+
+	void DefaultTextListItemTemplate::OnInitialize()
+	{
+		SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
+
+		textElement = GuiSolidLabelElement::Create();
+		textElement->SetAlignments(Alignment::Left, Alignment::Center);
+
+		GuiBoundsComposition* textComposition = new GuiBoundsComposition;
+		textComposition->SetOwnedElement(Ptr(textElement));
+		textComposition->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElement);
+
+		if (auto bulletStyleController = CreateBulletStyle())
+		{
+			bulletButton = new GuiSelectableButton(theme::ThemeName::Unknown);
+			bulletButton->SetAutoFocus(false);
+			bulletButton->SetControlTemplate(bulletStyleController);
+			bulletButton->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
+			bulletButton->SelectedChanged.AttachMethod(this, &DefaultTextListItemTemplate::OnBulletSelectedChanged);
+
+			GuiTableComposition* table = new GuiTableComposition;
+			AddChild(table);
+			table->SetAlignmentToParent(Margin(0, 0, 0, 0));
+			table->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
+			table->SetRowsAndColumns(1, 2);
+			table->SetRowOption(0, GuiCellOption::PercentageOption(1.0));
+			table->SetColumnOption(0, GuiCellOption::MinSizeOption());
+			table->SetColumnOption(1, GuiCellOption::PercentageOption(1.0));
+			{
+				GuiCellComposition* cell = new GuiCellComposition;
+				table->AddChild(cell);
+				cell->SetSite(0, 0, 1, 1);
+				cell->AddChild(bulletButton->GetBoundsComposition());
+			}
+			{
+				GuiCellComposition* cell = new GuiCellComposition;
+				table->AddChild(cell);
+				cell->SetSite(0, 1, 1, 1);
+				cell->AddChild(textComposition);
+				textComposition->SetAlignmentToParent(Margin(0, 0, 0, 0));
+			}
+		}
+		else
+		{
+			AddChild(textComposition);
+			textComposition->SetAlignmentToParent(Margin(5, 2, 0, 2));
+		}
+
+		FontChanged.AttachMethod(this, &DefaultTextListItemTemplate::OnFontChanged);
+		TextChanged.AttachMethod(this, &DefaultTextListItemTemplate::OnTextChanged);
+		TextColorChanged.AttachMethod(this, &DefaultTextListItemTemplate::OnTextColorChanged);
+		CheckedChanged.AttachMethod(this, &DefaultTextListItemTemplate::OnCheckedChanged);
+
+		FontChanged.Execute(compositions::GuiEventArgs(this));
+		TextChanged.Execute(compositions::GuiEventArgs(this));
+		TextColorChanged.Execute(compositions::GuiEventArgs(this));
+		CheckedChanged.Execute(compositions::GuiEventArgs(this));
+	}
+
+	void DefaultTextListItemTemplate::OnRefresh()
+	{
+	}
+
+	void DefaultTextListItemTemplate::OnFontChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+	{
+		textElement->SetFont(GetFont());
+	}
+
+	void DefaultTextListItemTemplate::OnTextChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+	{
+		textElement->SetText(GetText());
+	}
+
+	void DefaultTextListItemTemplate::OnTextColorChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+	{
+		textElement->SetColor(GetTextColor());
+	}
+
+	void DefaultTextListItemTemplate::OnCheckedChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+	{
+		if (bulletButton)
+		{
+			supressEdit = true;
+			bulletButton->SetSelected(GetChecked());
+			supressEdit = false;
+		}
+	}
+
+	void DefaultTextListItemTemplate::OnBulletSelectedChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::controls::list::DefaultTextListItemTemplate::OnBulletSelectedChanged(GuiGraphicsComposition*, GuiEventArgs&)#"
+		if (!supressEdit)
+		{
+			if (auto textItemView = dynamic_cast<ITextItemView*>(listControl->GetItemProvider()->RequestView(WString::Unmanaged(ITextItemView::Identifier))))
+			{
+				listControl->GetItemProvider()->PushEditing();
+				textItemView->SetChecked(GetIndex(), bulletButton->GetSelected());
+				CHECK_ERROR(listControl->GetItemProvider()->PopEditing(), ERROR_MESSAGE_PREFIX L"BeginEditListItem and EndEditListItem calls are not paired.");
+			}
+		}
+#undef ERROR_MESSAGE_PREFIX
+	}
+
+	DefaultTextListItemTemplate::DefaultTextListItemTemplate()
+	{
+	}
+
+	DefaultTextListItemTemplate::~DefaultTextListItemTemplate()
+	{
+	}
+
+/***********************************************************************
+DefaultCheckTextListItemTemplate
+***********************************************************************/
+
+	TemplateProperty<DefaultTextListItemTemplate::BulletStyle> DefaultCheckTextListItemTemplate::CreateBulletStyle()
+	{
+		if (auto controlTemplate = dynamic_cast<templates::GuiTextListTemplate*>(listControl->TypedControlTemplateObject(true)))
+		{
+			auto style = controlTemplate->GetCheckBulletTemplate();
+			if (style) return style;
+		}
+		return theme::GetCurrentTheme()->CreateStyle(theme::ThemeName::CheckTextListItem);
+	}
+
+/***********************************************************************
+DefaultRadioTextListItemTemplate
+***********************************************************************/
+
+	TemplateProperty<DefaultTextListItemTemplate::BulletStyle> DefaultRadioTextListItemTemplate::CreateBulletStyle()
+	{
+		if (auto controlTemplate = dynamic_cast<templates::GuiTextListTemplate*>(listControl->TypedControlTemplateObject(true)))
+		{
+			auto style = controlTemplate->GetRadioBulletTemplate();
+			if (style) return style;
+		}
+		return theme::GetCurrentTheme()->CreateStyle(theme::ThemeName::RadioTextListItem);
+	}
+}
+
+/***********************************************************************
+.\CONTROLS\LISTCONTROLPACKAGE\ITEMTEMPLATE_ITREEVIEWITEMVIEW.CPP
+***********************************************************************/
+
+namespace vl::presentation::controls::tree
+{
+	using namespace elements;
+	using namespace compositions;
+	using namespace reflection::description;
 
 /***********************************************************************
 DefaultTreeItemTemplate
 ***********************************************************************/
 
-				void DefaultTreeItemTemplate::OnInitialize()
-				{
-					SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
+	void DefaultTreeItemTemplate::OnInitialize()
+	{
+		SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 
-					table = new GuiTableComposition;
-					AddChild(table);
-					table->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
-					table->SetRowsAndColumns(3, 4);
-					table->SetRowOption(0, GuiCellOption::PercentageOption(0.5));
-					table->SetRowOption(1, GuiCellOption::MinSizeOption());
-					table->SetRowOption(2, GuiCellOption::PercentageOption(0.5));
-					table->SetColumnOption(0, GuiCellOption::AbsoluteOption(0));
-					table->SetColumnOption(1, GuiCellOption::MinSizeOption());
-					table->SetColumnOption(2, GuiCellOption::MinSizeOption());
-					table->SetColumnOption(3, GuiCellOption::MinSizeOption());
-					table->SetAlignmentToParent(Margin(0, 0, 0, 0));
-					table->SetCellPadding(2);
+		table = new GuiTableComposition;
+		AddChild(table);
+		table->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
+		table->SetRowsAndColumns(3, 4);
+		table->SetRowOption(0, GuiCellOption::PercentageOption(0.5));
+		table->SetRowOption(1, GuiCellOption::MinSizeOption());
+		table->SetRowOption(2, GuiCellOption::PercentageOption(0.5));
+		table->SetColumnOption(0, GuiCellOption::AbsoluteOption(0));
+		table->SetColumnOption(1, GuiCellOption::MinSizeOption());
+		table->SetColumnOption(2, GuiCellOption::MinSizeOption());
+		table->SetColumnOption(3, GuiCellOption::MinSizeOption());
+		table->SetAlignmentToParent(Margin(0, 0, 0, 0));
+		table->SetCellPadding(2);
+		{
+			GuiCellComposition* cell = new GuiCellComposition;
+			table->AddChild(cell);
+			cell->SetSite(0, 1, 3, 1);
+			cell->SetPreferredMinSize(Size(16, 16));
+
+			expandingButton = new GuiSelectableButton(theme::ThemeName::TreeItemExpander);
+			if (auto controlTemplate = dynamic_cast<templates::GuiTreeViewTemplate*>(listControl->TypedControlTemplateObject(true)))
+			{
+				if (auto expanderStyle = controlTemplate->GetExpandingDecoratorTemplate())
+				{
+					expandingButton->SetControlTemplate(expanderStyle);
+				}
+			}
+			expandingButton->SetAutoFocus(false);
+			expandingButton->SetAutoSelection(false);
+			expandingButton->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
+			expandingButton->GetBoundsComposition()->GetEventReceiver()->leftButtonDoubleClick.AttachMethod(this, &DefaultTreeItemTemplate::OnExpandingButtonDoubleClick);
+			expandingButton->Clicked.AttachMethod(this, &DefaultTreeItemTemplate::OnExpandingButtonClicked);
+			cell->AddChild(expandingButton->GetBoundsComposition());
+		}
+		{
+			GuiCellComposition* cell = new GuiCellComposition;
+			table->AddChild(cell);
+			cell->SetSite(1, 2, 1, 1);
+			cell->SetPreferredMinSize(Size(16, 16));
+
+			imageElement = GuiImageFrameElement::Create();
+			imageElement->SetStretch(true);
+			cell->SetOwnedElement(Ptr(imageElement));
+		}
+		{
+			GuiCellComposition* cell = new GuiCellComposition;
+			table->AddChild(cell);
+			cell->SetSite(0, 3, 3, 1);
+			cell->SetPreferredMinSize(Size(192, 0));
+
+			textElement = GuiSolidLabelElement::Create();
+			textElement->SetAlignments(Alignment::Left, Alignment::Center);
+			textElement->SetEllipse(true);
+			cell->SetOwnedElement(Ptr(textElement));
+		}
+
+		FontChanged.AttachMethod(this, &DefaultTreeItemTemplate::OnFontChanged);
+		TextChanged.AttachMethod(this, &DefaultTreeItemTemplate::OnTextChanged);
+		TextColorChanged.AttachMethod(this, &DefaultTreeItemTemplate::OnTextColorChanged);
+		ExpandingChanged.AttachMethod(this, &DefaultTreeItemTemplate::OnExpandingChanged);
+		ExpandableChanged.AttachMethod(this, &DefaultTreeItemTemplate::OnExpandableChanged);
+		LevelChanged.AttachMethod(this, &DefaultTreeItemTemplate::OnLevelChanged);
+		ImageChanged.AttachMethod(this, &DefaultTreeItemTemplate::OnImageChanged);
+
+		FontChanged.Execute(compositions::GuiEventArgs(this));
+		TextChanged.Execute(compositions::GuiEventArgs(this));
+		TextColorChanged.Execute(compositions::GuiEventArgs(this));
+		ExpandingChanged.Execute(compositions::GuiEventArgs(this));
+		ExpandableChanged.Execute(compositions::GuiEventArgs(this));
+		LevelChanged.Execute(compositions::GuiEventArgs(this));
+		ImageChanged.Execute(compositions::GuiEventArgs(this));
+	}
+
+	void DefaultTreeItemTemplate::OnRefresh()
+	{
+	}
+
+	void DefaultTreeItemTemplate::OnFontChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+	{
+		textElement->SetFont(GetFont());
+	}
+
+	void DefaultTreeItemTemplate::OnTextChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+	{
+		textElement->SetText(GetText());
+	}
+
+	void DefaultTreeItemTemplate::OnTextColorChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+	{
+		textElement->SetColor(GetTextColor());
+	}
+
+	void DefaultTreeItemTemplate::OnExpandingChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+	{
+		expandingButton->SetSelected(GetExpanding());
+	}
+
+	void DefaultTreeItemTemplate::OnExpandableChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+	{
+		expandingButton->SetVisible(GetExpandable());
+	}
+
+	void DefaultTreeItemTemplate::OnLevelChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+	{
+		table->SetColumnOption(0, GuiCellOption::AbsoluteOption(GetLevel() * 12));
+	}
+
+	void DefaultTreeItemTemplate::OnImageChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+	{
+		if (auto imageData = GetImage())
+		{
+			imageElement->SetImage(imageData->GetImage(), imageData->GetFrameIndex());
+		}
+		else
+		{
+			imageElement->SetImage(nullptr);
+		}
+	}
+
+	void DefaultTreeItemTemplate::OnExpandingButtonDoubleClick(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments)
+	{
+		arguments.handled = true;
+	}
+
+	void DefaultTreeItemTemplate::OnExpandingButtonClicked(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+	{
+		if (expandingButton->GetVisuallyEnabled())
+		{
+			if (auto view = dynamic_cast<INodeItemView*>(listControl->GetItemProvider()->RequestView(WString::Unmanaged(INodeItemView::Identifier))))
+			{
+				vint index = listControl->GetArranger()->GetVisibleIndex(this);
+				if (index != -1)
+				{
+					if (auto node = view->RequestNode(index))
 					{
-						GuiCellComposition* cell = new GuiCellComposition;
-						table->AddChild(cell);
-						cell->SetSite(0, 1, 3, 1);
-						cell->SetPreferredMinSize(Size(16, 16));
-
-						expandingButton = new GuiSelectableButton(theme::ThemeName::TreeItemExpander);
-						if (auto treeView = dynamic_cast<GuiVirtualTreeView*>(listControl))
-						{
-							if (auto expanderStyle = treeView->TypedControlTemplateObject(true)->GetExpandingDecoratorTemplate())
-							{
-								expandingButton->SetControlTemplate(expanderStyle);
-							}
-						}
-						expandingButton->SetAutoFocus(false);
-						expandingButton->SetAutoSelection(false);
-						expandingButton->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
-						expandingButton->GetBoundsComposition()->GetEventReceiver()->leftButtonDoubleClick.AttachMethod(this, &DefaultTreeItemTemplate::OnExpandingButtonDoubleClick);
-						expandingButton->Clicked.AttachMethod(this, &DefaultTreeItemTemplate::OnExpandingButtonClicked);
-						cell->AddChild(expandingButton->GetBoundsComposition());
+						bool expanding = node->GetExpanding();
+						node->SetExpanding(!expanding);
 					}
-					{
-						GuiCellComposition* cell = new GuiCellComposition;
-						table->AddChild(cell);
-						cell->SetSite(1, 2, 1, 1);
-						cell->SetPreferredMinSize(Size(16, 16));
-
-						imageElement = GuiImageFrameElement::Create();
-						imageElement->SetStretch(true);
-						cell->SetOwnedElement(Ptr(imageElement));
-					}
-					{
-						GuiCellComposition* cell = new GuiCellComposition;
-						table->AddChild(cell);
-						cell->SetSite(0, 3, 3, 1);
-						cell->SetPreferredMinSize(Size(192, 0));
-
-						textElement = GuiSolidLabelElement::Create();
-						textElement->SetAlignments(Alignment::Left, Alignment::Center);
-						textElement->SetEllipse(true);
-						cell->SetOwnedElement(Ptr(textElement));
-					}
-
-					FontChanged.AttachMethod(this, &DefaultTreeItemTemplate::OnFontChanged);
-					TextChanged.AttachMethod(this, &DefaultTreeItemTemplate::OnTextChanged);
-					TextColorChanged.AttachMethod(this, &DefaultTreeItemTemplate::OnTextColorChanged);
-					ExpandingChanged.AttachMethod(this, &DefaultTreeItemTemplate::OnExpandingChanged);
-					ExpandableChanged.AttachMethod(this, &DefaultTreeItemTemplate::OnExpandableChanged);
-					LevelChanged.AttachMethod(this, &DefaultTreeItemTemplate::OnLevelChanged);
-					ImageChanged.AttachMethod(this, &DefaultTreeItemTemplate::OnImageChanged);
-
-					FontChanged.Execute(compositions::GuiEventArgs(this));
-					TextChanged.Execute(compositions::GuiEventArgs(this));
-					TextColorChanged.Execute(compositions::GuiEventArgs(this));
-					ExpandingChanged.Execute(compositions::GuiEventArgs(this));
-					ExpandableChanged.Execute(compositions::GuiEventArgs(this));
-					LevelChanged.Execute(compositions::GuiEventArgs(this));
-					ImageChanged.Execute(compositions::GuiEventArgs(this));
-				}
-
-				void DefaultTreeItemTemplate::OnRefresh()
-				{
-				}
-
-				void DefaultTreeItemTemplate::OnFontChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
-				{
-					textElement->SetFont(GetFont());
-				}
-
-				void DefaultTreeItemTemplate::OnTextChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
-				{
-					textElement->SetText(GetText());
-				}
-
-				void DefaultTreeItemTemplate::OnTextColorChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
-				{
-					textElement->SetColor(GetTextColor());
-				}
-
-				void DefaultTreeItemTemplate::OnExpandingChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
-				{
-					expandingButton->SetSelected(GetExpanding());
-				}
-
-				void DefaultTreeItemTemplate::OnExpandableChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
-				{
-					expandingButton->SetVisible(GetExpandable());
-				}
-
-				void DefaultTreeItemTemplate::OnLevelChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
-				{
-					table->SetColumnOption(0, GuiCellOption::AbsoluteOption(GetLevel() * 12));
-				}
-
-				void DefaultTreeItemTemplate::OnImageChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
-				{
-					if (auto imageData = GetImage())
-					{
-						imageElement->SetImage(imageData->GetImage(), imageData->GetFrameIndex());
-					}
-					else
-					{
-						imageElement->SetImage(nullptr);
-					}
-				}
-
-				void DefaultTreeItemTemplate::OnExpandingButtonDoubleClick(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments)
-				{
-					arguments.handled = true;
-				}
-
-				void DefaultTreeItemTemplate::OnExpandingButtonClicked(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
-				{
-					if (expandingButton->GetVisuallyEnabled())
-					{
-						if (auto treeControl = dynamic_cast<GuiVirtualTreeListControl*>(listControl))
-						{
-							if (auto view = treeControl->GetNodeItemView())
-							{
-								vint index = treeControl->GetArranger()->GetVisibleIndex(this);
-								if (index != -1)
-								{
-									if (auto node = view->RequestNode(index))
-									{
-										bool expanding = node->GetExpanding();
-										node->SetExpanding(!expanding);
-									}
-								}
-							}
-						}
-					}
-				}
-
-				DefaultTreeItemTemplate::DefaultTreeItemTemplate()
-				{
-				}
-
-				DefaultTreeItemTemplate::~DefaultTreeItemTemplate()
-				{
 				}
 			}
 		}
+	}
+
+	DefaultTreeItemTemplate::DefaultTreeItemTemplate()
+	{
+	}
+
+	DefaultTreeItemTemplate::~DefaultTreeItemTemplate()
+	{
 	}
 }
 
@@ -18224,6 +18250,7 @@ GuiDocumentCommonInterface
 				documentElement->SetCallback(this);
 				documentElement->SetParagraphPadding(config.paragraphPadding);
 				documentElement->SetWrapLine(config.wrapLine);
+				documentElement->SetParagraphRecycle(config.paragraphRecycle);
 
 				documentComposition = new GuiBoundsComposition;
 				documentComposition->SetOwnedElement(Ptr(documentElement));
@@ -19639,7 +19666,7 @@ GuiDocumentConfig
 				config.doubleLineBreaksBetweenParagraph = false;
 
 				config.spaceForFlattenedLineBreak = false;
-				config.paragraphRecycle = true;
+				config.paragraphRecycle = false;
 				return config;
 			}
 
@@ -29204,6 +29231,16 @@ GuiDocumentElement
 				}
 			}
 
+			bool GuiDocumentElement::GetParagraphRecycle()
+			{
+				return paragraphRecycle;
+			}
+
+			void GuiDocumentElement::SetParagraphRecycle(bool value)
+			{
+				paragraphRecycle = value;
+			}
+
 			TextPos GuiDocumentElement::GetCaretBegin()
 			{
 				return caretBegin;
@@ -30095,6 +30132,23 @@ GuiDocumentParagraphCache
 				}
 			}
 
+			void GuiDocumentParagraphCache::ReleaseParagraphs(vint index, vint count)
+			{
+				for (vint i = 0; i < count; i++)
+				{
+					vint paragraphIndex = index + i;
+					if (paragraphIndex >= 0 && paragraphIndex < paragraphCaches.Count())
+					{
+						auto cache = paragraphCaches[paragraphIndex];
+						if (cache) // Check if cache itself is null per UPDATE guidance
+						{
+							cache->graphicsParagraph = nullptr; // Release only the rendering object
+							// Preserve all other data: fullText, embeddedObjects, selectionBegin/selectionEnd
+						}
+					}
+				}
+			}
+
 /***********************************************************************
 GuiDocumentElementRenderer
 ***********************************************************************/
@@ -30154,6 +30208,86 @@ GuiDocumentElementRenderer
 
 				if (minSize.x < 1) minSize.x = 1;
 				if (minSize.y < 1) minSize.y = 1;
+			}
+
+			void GuiDocumentElementRenderer::UpdateRenderRange(vint index, vint oldCount, vint newCount)
+			{
+				// Range adjustment logic for paragraph recycling
+				if (previousRenderBegin != -1)
+				{
+					// Handle the three cases for range adjustment when text is actually updated
+					vint prevEnd = previousRenderBegin + previousRenderCount;
+					vint oldEnd = index + oldCount;
+					
+					if (previousRenderBegin + previousRenderCount <= index)
+					{
+						// Case 1: Previous range is completely before the updated area - no adjustment needed
+					}
+					else if (previousRenderBegin >= oldEnd)
+					{
+						// Case 2: Previous range is completely after the updated area - adjust begin position
+						previousRenderBegin += (newCount - oldCount);
+					}
+					else
+					{
+						// Case 3: Previous range overlaps with updated area - use union approach
+						vint newBegin = previousRenderBegin < index ? previousRenderBegin : index;
+						vint unionEnd = prevEnd > oldEnd ? prevEnd : oldEnd;
+						vint newCountAdjustment = unionEnd - newBegin + (newCount - oldCount);
+						
+						previousRenderBegin = newBegin;
+						previousRenderCount = newCountAdjustment;
+					}
+					
+					// Reset to invalid state when count becomes 0 (per UPDATE guidance)
+					if (previousRenderCount <= 0)
+					{
+						previousRenderBegin = -1;
+						previousRenderCount = 0;
+					}
+				}
+			}
+
+			void GuiDocumentElementRenderer::UpdateRenderRangeAndCleanUp(vint currentBegin, vint currentCount)
+			{
+				// Apply recycling logic if we have valid previous range
+				if (previousRenderBegin != -1 && element->GetParagraphRecycle())
+				{
+					if (currentBegin == -1)
+					{
+						// Release everything when no paragraphs are currently visible
+						pgCache.ReleaseParagraphs(previousRenderBegin, previousRenderCount);
+					}
+					else
+					{
+						vint prevEnd = previousRenderBegin + previousRenderCount;
+						vint currEnd = currentBegin + currentCount;
+						
+						// Release paragraphs before current range
+						if (previousRenderBegin < currentBegin)
+						{
+							vint releaseEnd = prevEnd < currentBegin ? prevEnd : currentBegin;
+							pgCache.ReleaseParagraphs(previousRenderBegin, releaseEnd - previousRenderBegin);
+						}
+						
+						// Release paragraphs after current range
+						if (prevEnd > currEnd)
+						{
+							vint releaseBegin = currEnd > previousRenderBegin ? currEnd : previousRenderBegin;
+							pgCache.ReleaseParagraphs(releaseBegin, prevEnd - releaseBegin);
+						}
+					}
+				}
+				
+				// Update tracking variables for next render cycle
+				previousRenderBegin = currentBegin;
+				previousRenderCount = currentCount;
+				
+				// Reset to invalid state when no paragraphs are visible (per UPDATE guidance)
+				if (previousRenderCount == 0)
+				{
+					previousRenderBegin = -1;
+				}
 			}
 
 			GuiDocumentElementRenderer::GuiDocumentElementRenderer()
@@ -30233,6 +30367,37 @@ GuiDocumentElementRenderer
 				{
 					callback->OnFinishRender();
 				}
+
+				// Paragraph recycling logic
+				if (element->GetParagraphRecycle())
+				{
+					// Calculate current visible range (currentBegin, currentCount)
+					vint currentBegin = -1;
+					vint currentCount = 0;
+					
+					// Determine currentBegin using existing GetParagraphFromY logic
+					Rect clipper = renderTarget->GetClipper();
+					vint y1 = clipper.Top() - bounds.Top();
+					vint y2 = y1 + clipper.Height();
+					
+					if (y1 < y2) // Only if there's visible area
+					{
+						currentBegin = pgCache.GetParagraphFromY(y1, paragraphDistance);
+						if (currentBegin != -1)
+						{
+							// Count consecutive visible paragraphs
+							vint y = pgCache.GetParagraphTop(currentBegin, paragraphDistance);
+							for (vint i = currentBegin; i < pgCache.GetParagraphCount() && y < y2; i++)
+							{
+								currentCount++;
+								y += pgCache.GetParagraphSize(i).y + paragraphDistance;
+							}
+						}
+					}
+					
+					UpdateRenderRangeAndCleanUp(currentBegin, currentCount);
+				}
+
 				FixMinSize();
 
 				for(auto p:paragraphsToReset)
@@ -30278,6 +30443,13 @@ GuiDocumentElementRenderer
 				}
 				lastTotalHeightWithoutParagraphDistance += pgCache.ResetCache(index, oldCount, newCount, updatedText);
 				FixMinSize();
+
+				// Update render range if text was actually updated
+				if (updatedText)
+				{
+					UpdateRenderRange(index, oldCount, newCount);
+				}
+
 #undef ERROR_MESSAGE_PREFIX
 			}
 

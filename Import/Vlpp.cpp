@@ -1374,8 +1374,107 @@ Licensed under https://github.com/vczh-libraries/License
 ***********************************************************************/
 
 
+#ifdef VCZH_GCC
+#define _wcsnicmp wcsncasecmp
+#endif
+
 namespace vl
 {
+
+/***********************************************************************
+MatchWildcardNaive
+***********************************************************************/
+
+	static vint WildcardNextToken(const wchar_t*& wildcard)
+	{
+		wchar_t c = *wildcard;
+		if (c == L'\0')
+		{
+			return -3;
+		}
+		else if (c == L'?')
+		{
+			wildcard++;
+			return -2;
+		}
+		else if (c == L'*')
+		{
+			vint questionCount = 0;
+			while (true)
+			{
+				if (c == L'?')
+				{
+					questionCount++;
+				}
+				else if (c != L'*')
+				{
+					break;
+				}
+				c = *++wildcard;
+			}
+			return questionCount;
+		}
+		else
+		{
+			while (c != L'\0' && c != L'?' && c != L'*')
+			{
+				c = *++wildcard;
+			}
+			return -1;
+		}
+	}
+
+	bool MatchWildcardNaive(const wchar_t* wildcard, const wchar_t* text, bool caseSensitive)
+	{
+#define ERROR_MESSAGE_PREFIX L"vl::MatchWildcardNaive(const wchar_t*, const wchar_t*, bool)#"
+		CHECK_ERROR(wildcard != nullptr, ERROR_MESSAGE_PREFIX L"wildcard cannot be nullptr");
+		CHECK_ERROR(text != nullptr, ERROR_MESSAGE_PREFIX L"text cannot be nullptr");
+		
+		while (true)
+		{
+			const wchar_t* tokenStart = wildcard;
+			vint tokenType = WildcardNextToken(wildcard);
+
+			switch (tokenType)
+			{
+			case -3:
+				return *text == L'\0';
+			case -2:
+				if (*text == L'\0') return false;
+				text++;
+				break;
+			case -1:
+				{
+					vint literalLen = wildcard - tokenStart;
+					vint cmpResult = caseSensitive
+						? wcsncmp(tokenStart, text, literalLen)
+						: _wcsnicmp(tokenStart, text, literalLen);
+					if (cmpResult != 0) return false;
+					text += literalLen;
+				}
+				break;
+			default:
+				{
+					vint minSkip = tokenType;
+					for (vint i = 0; i < minSkip; i++)
+					{
+						if (*text++ == L'\0') return false;
+					}
+
+					while (true)
+					{
+						if (MatchWildcardNaive(wildcard, text, caseSensitive))
+						{
+							return true;
+						}
+						if (*text++ == L'\0') return false;
+					}
+				}
+			}
+		}
+#undef ERROR_MESSAGE_PREFIX
+	}
+
 	namespace unittest
 	{
 		using namespace vl::console;
@@ -1643,25 +1742,27 @@ UnitTest
 					if (_Fs.Count() > 0)
 					{
 						skipped = true;
-						for (auto fileName : From(_Fs))
+						
+						// Extract the filename from the full path
+						const char* fullPath = current->fileName;
+						const char* fileNameStart = fullPath;
+						for (const char* p = fullPath; *p != '\0'; p++)
 						{
-							if (current->fileName == fileName)
+							if (*p == '/' || *p == '\\')
+							{
+								fileNameStart = p + 1;
+							}
+						}
+						auto currentFileName = atow(AString::Unmanaged(fileNameStart));
+						
+						// Check if any wildcard pattern matches the filename
+						for (auto pattern : From(_Fs))
+						{
+							auto widePattern = atow(pattern);
+							if (MatchWildcardNaive(widePattern.Buffer(), currentFileName.Buffer(), false))
 							{
 								skipped = false;
 								break;
-							}
-							else
-							{
-								vint len = (vint)strlen(current->fileName);
-								if (len > fileName.Length())
-								{
-									char delimiter = current->fileName[len - fileName.Length() - 1];
-									if ((delimiter == L'/' || delimiter == L'\\') && current->fileName + (len - fileName.Length()) == fileName)
-									{
-										skipped = false;
-										break;
-									}
-								}
 							}
 						}
 					}

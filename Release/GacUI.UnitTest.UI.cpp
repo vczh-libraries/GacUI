@@ -439,7 +439,7 @@ namespace gaclib_controls
 		NEXT_NODE:;
 		}
 
-		auto view = dynamic_cast<tree::INodeItemView*>(treeViewDom->GetItemProvider()->RequestView(tree::INodeItemView::Identifier));
+		auto view = dynamic_cast<tree::INodeItemView*>(treeViewDom->GetItemProvider()->RequestView(WString::Unmanaged(tree::INodeItemView::Identifier)));
 		vint index = view->CalculateNodeVisibilityIndex(treeNode.Obj());
 		treeViewDom->SetSelected(index, true);
 		treeViewDom->EnsureItemVisible(index);
