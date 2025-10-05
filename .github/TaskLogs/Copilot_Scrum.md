@@ -554,12 +554,15 @@ This task focuses on testing edge cases, error handling, boundary conditions, an
 - Test expansion state when childrenProperty changes dynamically
 - Test callback detachment scenarios during tree structure modifications - verify DetachCallback fires `OnAttached(provider=nullptr)`
 - Use `TEST_ERROR` for out-of-bounds operations in hierarchical context (index out of range)
+- **CRITICAL**: Access children via `item->children[i]` directly - do NOT use `UnboxValue` for direct ObservableList subscript access
+- **CRITICAL**: When replacing ObservableList contents, use Clear() then Add() in a loop - assignment operator is deleted
 
 ### how to test it
 
 **Test Infrastructure:**
 - Each test case must create its own callbackLog and MockNodeProviderCallback objects at the beginning
 - Clear callback logs after SetItemSource to isolate verification (except when testing SetItemSource itself)
+- If creating helper lambdas, ensure proper capture of other lambdas (C++ doesn't implicitly capture lambdas)
 
 **Edge Cases:**
 - Test SetItemSource with null childrenProperty and verify safe handling
@@ -575,7 +578,8 @@ This task focuses on testing edge cases, error handling, boundary conditions, an
   - **Important**: Both old and new child counts reflected in callbacks due to eager preparation
 - Test SetItemSource with circular reference detection (if applicable)
 - Test expansion state behavior when childrenProperty becomes empty dynamically
-  - **Important**: When children are cleared, expect `count=<old count>, newCount=0`
+  - **Important**: When children are cleared via ObservableList.Clear(), expect ONE callback pair: `count=<old count>, newCount=0`
+  - **Important**: ObservableList operations fire INDIVIDUAL callbacks, not batched - Clear() = 1 pair, each Add() = 1 pair
 - Test expansion operation on node with null children
 - Test DetachCallback during active tree operations - verify `OnAttached(provider=nullptr)` fires correctly
 - Test DetachCallback after expansion state changes - verify proper cleanup
@@ -584,6 +588,9 @@ This task focuses on testing edge cases, error handling, boundary conditions, an
 - Test rapid SetItemSource changes and verify proper cleanup between transitions
   - **Important**: Each SetItemSource eagerly prepares children, so rapid changes show actual counts at each step
 - Test property binding with items that have inconsistent childrenProperty types
+- Test dynamic childrenProperty modification (if applicable)
+  - **Important**: If using ObservableList operations, each operation fires individual callbacks - not atomic
+  - **Important**: Cannot assign ObservableList with `=` operator - must use Clear() then Add() loop
 
 ### rationale
 
@@ -591,7 +598,7 @@ Edge case testing completes the comprehensive test coverage for TreeViewItemBind
 - Null and empty childrenProperty handling is critical for safe operation
 - SetItemSource transitions cover common usage patterns and ensure proper cleanup
 - Callback detachment scenarios verify proper resource management
-- Following established testing philosophy:
+- Following established testing philosophy including all learnings from Task No.7:
   - Use TEST_ERROR for out-of-bounds operations (index out of range)
   - Use TEST_ERROR for invalid property bindings
   - Empty ItemSource should only trigger OnAttached, not OnItemModified (lesson from Task No.2)
@@ -604,9 +611,14 @@ Edge case testing completes the comprehensive test coverage for TreeViewItemBind
   - Empty childrenProperty results in `newCount=0`, non-empty results in actual prepared counts
   - SetItemSource transitions show accurate before/after child counts due to eager preparation
   - The eager preparation behavior is crucial for understanding edge case callback sequences
+  - **Type system: `item->children[i]` returns element directly, NOT a Value object** (critical lesson from Task No.7)
+  - **Do NOT use UnboxValue for direct ObservableList subscript access** (critical lesson from Task No.7)
+  - **ObservableList operations fire individual callbacks, never batched** (critical lesson from Task No.7)
+  - **ObservableList cannot be assigned with `=`, must use Clear()+Add() loop** (critical lesson from Task No.7)
+  - **Lambda capture: explicitly capture other lambdas, not automatic** (critical lesson from Task No.7)
 - This task completes the provider testing pattern progression from simple (TextItemProvider) to complex hierarchical data binding
 - With this task complete, all six provider types have comprehensive test coverage
-- The learnings about eager preparation ensure edge case tests have accurate expectations about callback behavior
+- The learnings about eager preparation, type system, and ObservableList behavior ensure edge case tests have accurate expectations and correct implementation
 
 # Impact to the Knowledge Base
 
