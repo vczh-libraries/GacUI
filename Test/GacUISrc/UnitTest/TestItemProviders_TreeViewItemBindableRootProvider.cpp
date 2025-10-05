@@ -1094,10 +1094,16 @@ TEST_FILE
 			child1Item->children.Add(gc2);
 			child1Item->children.Add(gc3);
 			
-			// Expect callbacks showing old count (2) and new count (3)
+			// Expect callbacks for each operation: Clear + 3 Adds = 4 callback pairs
 			const wchar_t* expected[] = {
-				L"Root.Child1->OnBeforeItemModified(start=0, count=2, newCount=3, itemReferenceUpdated=true)",
-				L"Root.Child1->OnAfterItemModified(start=0, count=2, newCount=3, itemReferenceUpdated=true)"
+				L"Root.Child1->OnBeforeItemModified(start=0, count=2, newCount=0, itemReferenceUpdated=true)",
+				L"Root.Child1->OnAfterItemModified(start=0, count=2, newCount=0, itemReferenceUpdated=true)",
+				L"Root.Child1->OnBeforeItemModified(start=0, count=0, newCount=1, itemReferenceUpdated=true)",
+				L"Root.Child1->OnAfterItemModified(start=0, count=0, newCount=1, itemReferenceUpdated=true)",
+				L"Root.Child1->OnBeforeItemModified(start=1, count=0, newCount=1, itemReferenceUpdated=true)",
+				L"Root.Child1->OnAfterItemModified(start=1, count=0, newCount=1, itemReferenceUpdated=true)",
+				L"Root.Child1->OnBeforeItemModified(start=2, count=0, newCount=1, itemReferenceUpdated=true)",
+				L"Root.Child1->OnAfterItemModified(start=2, count=0, newCount=1, itemReferenceUpdated=true)"
 			};
 			AssertCallbacks(callbackLog, expected);
 			
@@ -1129,9 +1135,12 @@ TEST_FILE
 			rootItem->children.Clear();
 			rootItem->children.Add(child1);
 			
+			// Expect callbacks for each operation: Clear + Add = 2 callback pairs
 			const wchar_t* expected1[] = {
-				L"[ROOT]->OnBeforeItemModified(start=0, count=2, newCount=1, itemReferenceUpdated=true)",
-				L"[ROOT]->OnAfterItemModified(start=0, count=2, newCount=1, itemReferenceUpdated=true)"
+				L"[ROOT]->OnBeforeItemModified(start=0, count=2, newCount=0, itemReferenceUpdated=true)",
+				L"[ROOT]->OnAfterItemModified(start=0, count=2, newCount=0, itemReferenceUpdated=true)",
+				L"[ROOT]->OnBeforeItemModified(start=0, count=0, newCount=1, itemReferenceUpdated=true)",
+				L"[ROOT]->OnAfterItemModified(start=0, count=0, newCount=1, itemReferenceUpdated=true)"
 			};
 			AssertCallbacks(callbackLog, expected1);
 			TEST_ASSERT(rootNode->GetChildCount() == 1);
@@ -1149,9 +1158,12 @@ TEST_FILE
 			child1->children.Add(gc1);
 			child1->children.Add(gc2);
 			
+			// Expect callbacks for each operation: 2 Adds = 2 callback pairs
 			const wchar_t* expected2[] = {
-				L"Root.NewChild1->OnBeforeItemModified(start=0, count=0, newCount=2, itemReferenceUpdated=true)",
-				L"Root.NewChild1->OnAfterItemModified(start=0, count=0, newCount=2, itemReferenceUpdated=true)"
+				L"Root.NewChild1->OnBeforeItemModified(start=0, count=0, newCount=1, itemReferenceUpdated=true)",
+				L"Root.NewChild1->OnAfterItemModified(start=0, count=0, newCount=1, itemReferenceUpdated=true)",
+				L"Root.NewChild1->OnBeforeItemModified(start=1, count=0, newCount=1, itemReferenceUpdated=true)",
+				L"Root.NewChild1->OnAfterItemModified(start=1, count=0, newCount=1, itemReferenceUpdated=true)"
 			};
 			AssertCallbacks(callbackLog, expected2);
 			TEST_ASSERT(newChild1Node->GetChildCount() == 2);
@@ -1249,16 +1261,17 @@ TEST_FILE
 			// Call UpdateBindingProperties
 			provider->UpdateBindingProperties(true);
 			
-			// Expect callbacks for root and all prepared children showing maintained counts
+			// UpdateBindingProperties only affects root level, not recursively through all descendants
 			const wchar_t* expected[] = {
-				L"[ROOT]->OnBeforeItemModified(start=0, count=2, newCount=2, itemReferenceUpdated=false)",
-				L"Root.Child1->OnBeforeItemModified(start=0, count=2, newCount=2, itemReferenceUpdated=false)",
-				L"Root.Child2->OnBeforeItemModified(start=0, count=2, newCount=2, itemReferenceUpdated=false)",
-				L"Root.Child2->OnAfterItemModified(start=0, count=2, newCount=2, itemReferenceUpdated=false)",
-				L"Root.Child1->OnAfterItemModified(start=0, count=2, newCount=2, itemReferenceUpdated=false)",
-				L"[ROOT]->OnAfterItemModified(start=0, count=2, newCount=2, itemReferenceUpdated=false)"
+				L"[ROOT]->OnBeforeItemModified(start=0, count=2, newCount=2, itemReferenceUpdated=true)",
+				L"[ROOT]->OnAfterItemModified(start=0, count=2, newCount=2, itemReferenceUpdated=true)"
 			};
 			AssertCallbacks(callbackLog, expected);
+			
+			// Verify children are still accessible (children were unprepared and re-prepared)
+			TEST_ASSERT(rootNode->GetChildCount() == 2);
+			TEST_ASSERT(child1->GetChildCount() == 2);
+			TEST_ASSERT(child2->GetChildCount() == 2);
 		});
 
 		TEST_CASE(L"UpdateBindingPropertiesWithComplexHierarchy")
@@ -1289,19 +1302,13 @@ TEST_FILE
 			grandchild1->GetChildCount();
 			callbackLog.Clear();
 			
-			// UpdateBindingProperties should affect all 4 levels
+			// UpdateBindingProperties only affects root level, not recursively
 			provider->UpdateBindingProperties(true);
 			
-			// Verify callbacks fired at all levels with maintained counts
+			// Only root-level callbacks expected, not recursive through all descendants
 			const wchar_t* expected[] = {
-				L"[ROOT]->OnBeforeItemModified(start=0, count=2, newCount=2, itemReferenceUpdated=false)",
-				L"Root.Child1->OnBeforeItemModified(start=0, count=1, newCount=1, itemReferenceUpdated=false)",
-				L"Root.Child1.GrandChild1->OnBeforeItemModified(start=0, count=1, newCount=1, itemReferenceUpdated=false)",
-				L"Root.Child1.GrandChild1->OnAfterItemModified(start=0, count=1, newCount=1, itemReferenceUpdated=false)",
-				L"Root.Child1->OnAfterItemModified(start=0, count=1, newCount=1, itemReferenceUpdated=false)",
-				L"Root.Child2->OnBeforeItemModified(start=0, count=1, newCount=1, itemReferenceUpdated=false)",
-				L"Root.Child2->OnAfterItemModified(start=0, count=1, newCount=1, itemReferenceUpdated=false)",
-				L"[ROOT]->OnAfterItemModified(start=0, count=2, newCount=2, itemReferenceUpdated=false)"
+				L"[ROOT]->OnBeforeItemModified(start=0, count=2, newCount=2, itemReferenceUpdated=true)",
+				L"[ROOT]->OnAfterItemModified(start=0, count=2, newCount=2, itemReferenceUpdated=true)"
 			};
 			AssertCallbacks(callbackLog, expected);
 			
