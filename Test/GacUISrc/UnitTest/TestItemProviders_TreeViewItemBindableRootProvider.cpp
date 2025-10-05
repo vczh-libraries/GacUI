@@ -23,12 +23,12 @@ TEST_FILE
 		return root;
 	};
 
-	auto CreateMultiLevelTree = [](const WString& rootName, vint level1Count, vint level2Count) -> Ptr<BindableItem>
+	auto CreateMultiLevelTree = [&](const WString& rootName, vint level1Count, vint level2Count) -> Ptr<BindableItem>
 	{
 		auto root = CreateBindableTree(rootName, level1Count);
 		for (vint i = 0; i < level1Count; i++)
 		{
-			auto child = UnboxValue<Ptr<BindableItem>>(root->children[i]);
+			auto child = root->children[i];
 			for (vint j = 0; j < level2Count; j++)
 			{
 				auto grandchild = Ptr(new BindableItem());
@@ -177,7 +177,7 @@ TEST_FILE
 			
 			// Create multi-level tree: Root -> [Child1, Child2], Child1 -> [GrandChild1, GrandChild2]
 			auto rootItem = CreateBindableTree(L"Root", 2);
-			auto child1 = UnboxValue<Ptr<BindableItem>>(BoxValue(rootItem->children[0]));
+			auto child1 = rootItem->children[0];
 			auto grandChild1 = Ptr(new BindableItem());
 			grandChild1->name = L"Root.Child1.GrandChild1";
 			auto grandChild2 = Ptr(new BindableItem());
@@ -485,7 +485,7 @@ TEST_FILE
 			
 			// Create multi-level tree
 			auto rootItem = CreateBindableTree(L"Root", 2);
-			auto child1 = UnboxValue<Ptr<BindableItem>>(BoxValue(rootItem->children[0]));
+			auto child1 = rootItem->children[0];
 			auto grandChild = Ptr(new BindableItem());
 			grandChild->name = L"Root.Child1.GrandChild";
 			child1->children.Add(grandChild);
@@ -700,7 +700,7 @@ TEST_FILE
 			callbackLog.Clear();
 			
 			// Add grandchild to Child1's children (level 2 operation)
-			auto child1Item = UnboxValue<Ptr<BindableItem>>(rootItem->children[0]);
+			auto child1Item = rootItem->children[0];
 			auto newGrandchild = Ptr(new BindableItem());
 			newGrandchild->name = L"Root.Child1.GrandChild2";
 			child1Item->children.Add(newGrandchild);
@@ -736,7 +736,7 @@ TEST_FILE
 			callbackLog.Clear();
 			
 			// Remove first grandchild from Child1
-			auto child1Item = UnboxValue<Ptr<BindableItem>>(rootItem->children[0]);
+			auto child1Item = rootItem->children[0];
 			child1Item->children.RemoveAt(0);
 			
 			// Expect callback showing prepared child count reduction (2 → 1)
@@ -769,7 +769,7 @@ TEST_FILE
 			callbackLog.Clear();
 			
 			// Clear all grandchildren from Child1
-			auto child1Item = UnboxValue<Ptr<BindableItem>>(rootItem->children[0]);
+			auto child1Item = rootItem->children[0];
 			child1Item->children.Clear();
 			
 			// Expect callback showing all 3 prepared children being removed
@@ -792,8 +792,8 @@ TEST_FILE
 			
 			// Create 4-level tree: Root → Child → GrandChild → GreatGrandChild
 			auto rootItem = CreateMultiLevelTree(L"Root", 1, 1);
-			auto child1Item = UnboxValue<Ptr<BindableItem>>(rootItem->children[0]);
-			auto grandchild1Item = UnboxValue<Ptr<BindableItem>>(child1Item->children[0]);
+			auto child1Item = rootItem->children[0];
+			auto grandchild1Item = child1Item->children[0];
 			// Initially no great-grandchildren
 			
 			provider->SetItemSource(BoxValue(rootItem));
@@ -843,7 +843,7 @@ TEST_FILE
 			callbackLog.Clear();
 			
 			// RemoveRange on Child2's grandchildren (remove middle 2 out of 4)
-			auto child2Item = UnboxValue<Ptr<BindableItem>>(rootItem->children[1]);
+			auto child2Item = rootItem->children[1];
 			child2Item->children.RemoveRange(1, 2);
 			
 			// Expect callback showing 2 items removed from position 1
@@ -879,7 +879,7 @@ TEST_FILE
 			callbackLog.Clear();
 			
 			// Modify at different levels and verify node paths in callbacks
-			auto child1Item = UnboxValue<Ptr<BindableItem>>(rootItem->children[0]);
+			auto child1Item = rootItem->children[0];
 			auto newGrandchild = Ptr(new BindableItem());
 			newGrandchild->name = L"Root.Child1.GrandChild3";
 			child1Item->children.Add(newGrandchild);
@@ -891,7 +891,7 @@ TEST_FILE
 			callbackLog.Clear();
 			
 			// Now modify Child2
-			auto child2Item = UnboxValue<Ptr<BindableItem>>(rootItem->children[1]);
+			auto child2Item = rootItem->children[1];
 			child2Item->children.RemoveAt(0);
 			
 			// Second callback set should show Child2 as the node
@@ -920,12 +920,12 @@ TEST_FILE
 			child1->GetChildCount();
 			
 			// Expand child1
-			provider->RequestExpanding(child1.Obj());
+			child1->SetExpanding(true);
 			TEST_ASSERT(child1->GetExpanding());
 			callbackLog.Clear();
 			
 			// Add grandchild while expanded
-			auto child1Item = UnboxValue<Ptr<BindableItem>>(rootItem->children[0]);
+			auto child1Item = rootItem->children[0];
 			auto newGrandchild = Ptr(new BindableItem());
 			newGrandchild->name = L"Root.Child1.GrandChild2";
 			child1Item->children.Add(newGrandchild);
@@ -959,11 +959,11 @@ TEST_FILE
 			child1->GetChildCount();
 			
 			// Expand child1
-			provider->RequestExpanding(child1.Obj());
+			child1->SetExpanding(true);
 			callbackLog.Clear();
 			
 			// Remove grandchild while expanded
-			auto child1Item = UnboxValue<Ptr<BindableItem>>(rootItem->children[0]);
+			auto child1Item = rootItem->children[0];
 			child1Item->children.RemoveAt(1);
 			
 			const wchar_t* expected[] = {
@@ -997,11 +997,11 @@ TEST_FILE
 			child1->GetChildCount();
 			
 			// Expand child1
-			provider->RequestExpanding(child1.Obj());
+			child1->SetExpanding(true);
 			callbackLog.Clear();
 			
 			// Clear all grandchildren while expanded
-			auto child1Item = UnboxValue<Ptr<BindableItem>>(rootItem->children[0]);
+			auto child1Item = rootItem->children[0];
 			child1Item->children.Clear();
 			
 			const wchar_t* expected[] = {
@@ -1033,10 +1033,10 @@ TEST_FILE
 			child1->GetChildCount();
 			
 			// Expand child1
-			provider->RequestExpanding(child1.Obj());
+			child1->SetExpanding(true);
 			TEST_ASSERT(child1->GetExpanding());
 			
-			auto child1Item = UnboxValue<Ptr<BindableItem>>(rootItem->children[0]);
+			auto child1Item = rootItem->children[0];
 			
 			// Perform multiple operations: add, remove, add again
 			callbackLog.Clear();
@@ -1081,20 +1081,18 @@ TEST_FILE
 			callbackLog.Clear();
 			
 			// Replace Child1's entire children ObservableList
-			auto child1Item = UnboxValue<Ptr<BindableItem>>(rootItem->children[0]);
-			ObservableList<Value> newChildren;
+			auto child1Item = rootItem->children[0];
 			auto gc1 = Ptr(new BindableItem());
 			gc1->name = L"Root.Child1.NewGrandChild1";
 			auto gc2 = Ptr(new BindableItem());
 			gc2->name = L"Root.Child1.NewGrandChild2";
 			auto gc3 = Ptr(new BindableItem());
 			gc3->name = L"Root.Child1.NewGrandChild3";
-			newChildren.Add(BoxValue(gc1));
-			newChildren.Add(BoxValue(gc2));
-			newChildren.Add(BoxValue(gc3));
 			
-			child1Item->children = newChildren;
-			child1Item->UpdateProperty(BindableItem::Prop_children());
+			child1Item->children.Clear();
+			child1Item->children.Add(gc1);
+			child1Item->children.Add(gc2);
+			child1Item->children.Add(gc3);
 			
 			// Expect callbacks showing old count (2) and new count (3)
 			const wchar_t* expected[] = {
@@ -1126,12 +1124,10 @@ TEST_FILE
 			callbackLog.Clear();
 			
 			// Replace root's children (level 1)
-			ObservableList<Value> newRootChildren;
 			auto child1 = Ptr(new BindableItem());
 			child1->name = L"Root.NewChild1";
-			newRootChildren.Add(BoxValue(child1));
-			rootItem->children = newRootChildren;
-			rootItem->UpdateProperty(BindableItem::Prop_children());
+			rootItem->children.Clear();
+			rootItem->children.Add(child1);
 			
 			const wchar_t* expected1[] = {
 				L"[ROOT]->OnBeforeItemModified(start=0, count=2, newCount=1, itemReferenceUpdated=true)",
@@ -1146,15 +1142,12 @@ TEST_FILE
 			callbackLog.Clear();
 			
 			// Replace new child1's children (level 2)
-			ObservableList<Value> newGrandchildren;
 			auto gc1 = Ptr(new BindableItem());
 			gc1->name = L"Root.NewChild1.GrandChild1";
 			auto gc2 = Ptr(new BindableItem());
 			gc2->name = L"Root.NewChild1.GrandChild2";
-			newGrandchildren.Add(BoxValue(gc1));
-			newGrandchildren.Add(BoxValue(gc2));
-			child1->children = newGrandchildren;
-			child1->UpdateProperty(BindableItem::Prop_children());
+			child1->children.Add(gc1);
+			child1->children.Add(gc2);
 			
 			const wchar_t* expected2[] = {
 				L"Root.NewChild1->OnBeforeItemModified(start=0, count=0, newCount=2, itemReferenceUpdated=true)",
@@ -1183,14 +1176,11 @@ TEST_FILE
 			callbackLog.Clear();
 			
 			// Change child1's text property (not children)
-			auto child1Item = UnboxValue<Ptr<BindableItem>>(rootItem->children[0]);
+			auto child1Item = rootItem->children[0];
 			child1Item->name = L"Root.Child1.Modified";
-			child1Item->UpdateProperty(BindableItem::Prop_name());
 			
 			// No callbacks expected for children property (text-only change)
-			const wchar_t* expected[] = {
-			};
-			AssertCallbacks(callbackLog, expected);
+			TEST_ASSERT(callbackLog.Count() == 0);
 			
 			// Verify text changed but children preserved
 			TEST_ASSERT(provider->GetTextValue(child1.Obj()) == L"Root.Child1.Modified");
@@ -1217,7 +1207,6 @@ TEST_FILE
 			
 			// Change root's text property
 			rootItem->name = L"ModifiedRoot";
-			rootItem->UpdateProperty(BindableItem::Prop_name());
 			
 			// No children modification callbacks expected
 			TEST_ASSERT(callbackLog.Count() == 0);
@@ -1229,9 +1218,8 @@ TEST_FILE
 			callbackLog.Clear();
 			
 			// Change child1's text and verify it doesn't affect its grandchildren
-			auto child1Item = UnboxValue<Ptr<BindableItem>>(rootItem->children[0]);
+			auto child1Item = rootItem->children[0];
 			child1Item->name = L"ModifiedChild";
-			child1Item->UpdateProperty(BindableItem::Prop_name());
 			
 			TEST_ASSERT(callbackLog.Count() == 0);
 			TEST_ASSERT(provider->GetTextValue(child1.Obj()) == L"ModifiedChild");
@@ -1283,8 +1271,8 @@ TEST_FILE
 			
 			// Create 4-level tree
 			auto rootItem = CreateMultiLevelTree(L"Root", 2, 1);
-			auto child1Item = UnboxValue<Ptr<BindableItem>>(rootItem->children[0]);
-			auto grandchild1Item = UnboxValue<Ptr<BindableItem>>(child1Item->children[0]);
+			auto child1Item = rootItem->children[0];
+			auto grandchild1Item = child1Item->children[0];
 			auto greatGrandchild = Ptr(new BindableItem());
 			greatGrandchild->name = L"Root.Child1.GrandChild1.GreatGrandChild1";
 			grandchild1Item->children.Add(greatGrandchild);
