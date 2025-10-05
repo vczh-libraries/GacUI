@@ -11,6 +11,8 @@ The following data types are preferred:
 - Use `atomic_vint` for atomic integers, it is a rename of `std::atomic<vint>`.
 - Use `DateTime` for date times.
 
+[Learning of Coding Preference](./Learning.md)
+
 ## Vlpp
 
 Files from Import:
