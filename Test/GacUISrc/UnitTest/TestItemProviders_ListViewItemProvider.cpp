@@ -639,6 +639,7 @@ TEST_FILE
 			
 			provider->GetColumns().Add(CreateListViewColumn(L"Col1"));
 			provider->GetColumns().Add(CreateListViewColumn(L"Col2"));
+			provider->GetColumns().Add(CreateListViewColumn(L"Col3"));
 			
 			provider->GetDataColumns().Add(0);
 			provider->GetDataColumns().Add(1);
@@ -692,6 +693,10 @@ TEST_FILE
 		TEST_CASE(L"GetSubItemMethodEquivalence")
 		{
 			auto provider = Ptr(new ListViewItemProvider);
+			provider->GetColumns().Add(CreateListViewColumn(L"Col1"));
+			provider->GetColumns().Add(CreateListViewColumn(L"Col2"));
+			provider->GetColumns().Add(CreateListViewColumn(L"Col3"));
+			provider->GetColumns().Add(CreateListViewColumn(L"Col4"));
 			auto view = static_cast<IListViewItemView*>(provider.Obj());
 			
 			auto item = CreateListViewItem(L"Main");
@@ -726,14 +731,17 @@ TEST_FILE
 		TEST_CASE(L"InvalidSubitemIndex")
 		{
 			auto provider = Ptr(new ListViewItemProvider);
+			provider->GetColumns().Add(CreateListViewColumn(L"Col1"));
+			provider->GetColumns().Add(CreateListViewColumn(L"Col2"));
+			provider->GetColumns().Add(CreateListViewColumn(L"Col3"));
 			auto item = CreateListViewItem(L"Item");
 			item->GetSubItems().Add(L"Sub0");
 			item->GetSubItems().Add(L"Sub1");
 			provider->Add(item);
 			
-			TEST_ASSERT(provider->GetSubItem(0, -1) == L"");
-			TEST_ASSERT(provider->GetSubItem(0, 2) == L"");
-			TEST_ASSERT(provider->GetSubItem(0, 999) == L"");
+			TEST_ERROR(provider->GetSubItem(0, -1));
+			TEST_ERROR(provider->GetSubItem(0, 2));
+			TEST_ERROR(provider->GetSubItem(0, 999));
 		});
 
 		TEST_CASE(L"InvalidColumnIndex")
@@ -783,6 +791,10 @@ TEST_FILE
 			auto provider = Ptr(new ListViewItemProvider);
 			provider->GetColumns().Add(CreateListViewColumn(L"Col1"));
 			provider->GetColumns().Add(CreateListViewColumn(L"Col2"));
+			provider->GetColumns().Add(CreateListViewColumn(L"Col3"));
+			provider->GetColumns().Add(CreateListViewColumn(L"Col4"));
+			provider->GetColumns().Add(CreateListViewColumn(L"Col5"));
+			provider->GetColumns().Add(CreateListViewColumn(L"Col6"));
 			
 			auto item = CreateListViewItem(L"Main");
 			for (vint i = 0; i < 5; i++)

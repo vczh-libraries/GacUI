@@ -377,15 +377,18 @@ ListViewItemProvider
 
 	WString ListViewItemProvider::GetSubItem(vint itemIndex, vint index)
 	{
-		Ptr<ListViewItem> item=Get(itemIndex);
-		if(index<0 || index>=item->GetSubItems().Count())
+#define ERROR_MESSAGE_PREFIX L"ListViewItemProvider::GetSubItem(vint, vint)#"
+		CHECK_ERROR(0 <= index && index < columns.Count() - 1, ERROR_MESSAGE_PREFIX L"Sub item index out of range.");
+		Ptr<ListViewItem> item = Get(itemIndex);
+		if (index < 0 || index >= item->GetSubItems().Count())
 		{
-			return L"";
+			return WString::Empty;
 		}
 		else
 		{
 			return item->GetSubItems()[index];
 		}
+#undef ERROR_MESSAGE_PREFIX
 	}
 
 	vint ListViewItemProvider::GetDataColumnCount()
