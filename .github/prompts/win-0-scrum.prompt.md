@@ -13,6 +13,7 @@
 
 - `# !!!SCRUM!!!`: This file always begin with this title.
 - `# DESIGN REQUEST`: An exact copy of the problem description I gave you.
+- `# UPDATES`:
   - `## UPDATE`: There could be multiple occurrences. Each one has an exact copy of the update description I gave you.
 - `# TASKS`:
   - A bullet list of all tasks, each task is in the format of `- [ ] TASK No.X: The Task Title`.
@@ -34,12 +35,7 @@
 - If there is an `# Update` section: it means I am going to propose some change to `Copilot_Scrum.md`.
   - Copy precisely my problem description in `# Update` from the LATEST chat message to the `# DESIGN REQUEST` section, with a new sub-section `## UPDATE`.
   - Follow my update to change the design document.
-- If there is a `# Learn` section: it means I made important updates during the execution of the last task, you should apply them smart enough to future tasks:
-  - Identify the last completed task.
-  - There will be multiple `# UPDATE` or `# FIXING ATTEMPTS` sections in `Copilot_Task.md`, `Copilot_Planning.md` and `Copilot_Execution.md`.
-  - These 3 files recorded how you interpreted the last completed task, and how I wanted you to adjust your understanding.
-  - Find out what you can learn from the updates, about my philosophy and preferences.
-  - Check all future tasks, apply what you have learned, and adjust your approach accordingly.
+- If there is a `# Learn` section: it means I made important updates during the execution of the last task, you should apply them smart enough to future tasks. Find the `Optional Step for Learning` section for more instruction.
 - If there is nothing: it means you are accidentally stopped. Please continue your work.
 
 ## Step 2. Understand the Goal and Quality Requirement
@@ -85,6 +81,27 @@
 ## Step 5. Mark the Completion
 
 - Ensure there is a `# !!!FINISHED!!!` mark at the end of `Copilot_Scrum.md` to indicate the document reaches the end.
+
+## (Optional) Step 6. Learning (only when # Learn appears in the LATEST chat message)
+
+- Ignore this section if there is no `# Learn` in the LATEST chat message
+
+### Step 6.1
+
+- Identify the last completed task.
+
+### Step 6.2
+
+- There will be multiple `# UPDATE` or `# FIXING ATTEMPTS` sections in `Copilot_Task.md`,   `Copilot_Planning.md` and `Copilot_Execution.md`.
+- These 3 files recorded how you interpreted the last completed task, and how I wanted you to adjust  your understanding.
+- Find out what you can learn from the updates, about my philosophy and preferences.
+- Check all future tasks, apply what you have learned, and adjust your approach accordingly.
+
+### Step 6.3
+
+- Compare existing source code with `Copilot_Execution.md`, finding what is changed. All differences you find will be me editing the code after the task is finished. Carefully read through the changes, understand my tastes and preferences about the source code.
+- If there is no `# !!!VERIFIED!!!` in `Copilot_Execution.md`, it means you failed to deliver the task, either the code did not compile or some test cases failed. My edit will also reflects the final solution to the task.
+- Add your finding to `Copilot_Execution.md` at the very end with the topic `# Comparing to User Edit`.
 
 # External Tools Environment and Context
 

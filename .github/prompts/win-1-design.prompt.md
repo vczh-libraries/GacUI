@@ -15,6 +15,7 @@
 
 - `# !!!TASK!!!`: This file always begin with this title.
 - `# PROBLEM DESCRIPTION`: An exact copy of the problem description I gave you.
+- `# UPDATES`:
   - `## UPDATE`: There could be multiple occurrences. Each one has an exact copy of the update description I gave you.
 - `# INSIGHTS AND REASONING`.
 

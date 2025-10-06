@@ -10,7 +10,7 @@
 ## Copilot_Planning.md Structure
 
 - `# !!!EXECUTION!!!`: This file always begin with this title.
-- `# UPDATES`: An exact copy of the problem description I gave you.
+- `# UPDATES`:
   - `## UPDATE`: There could be multiple occurrences. Each one has an exact copy of the update description I gave you.
 - `# IMPROVEMENT PLAN`.
 - `# TEST PLAN`.
