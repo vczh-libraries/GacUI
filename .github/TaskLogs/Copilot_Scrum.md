@@ -6,6 +6,14 @@ GuiListControl takes a pure data structure list::IItemProvider, converting it to
 
 Similarily, a tree view control takes tree::INodeRootProvider. But in the end, a tree view is just a list control rendering all expanded tree items. So a tree view control needs to convert tree:INodeRootProvider to list::IItemProvider in order to construct its base class. tree::NodeItemProvider do this job.
 
+## UPDATE
+
+You will also need to run some test for expanding/collapsing/changing children container to an invisible node, which should not affect tree::NodeItemProvider in anyway
+
+## UPDATE
+
+Just to clarify, since the test subject is tree::NodeItemProvider, so the only callback you need to keep tracking to is IItemProviderCallback
+
 Obviously, a tree::NodeItemProvider represents all expanded tree::INodeProvider nodes, which are managed by INodeRootProvider. The root node can be retrived via INodeRootProvider::GetRootNode. A tree::INodeProvider is either expanded or collapsed, controlled by GetExpanding and SetExpanding. If a node is collapsed, all sub tree are invisible to tree::NodeItemProvider. You must be also awared that the root node itself does not appear in tree::NodeItemProvider.
 
 tree::INodeItemView offered a way to convert any visible tree::INodeProvide to its order in tree::NodeItemProvider (actually tree::NodeItemProvider implements this interface). Currently, in tree::INodeRootProvider, CanGetNodeByVisibleIndex and GetNodeByVisibleIndex is not in used so you can ignore it. tree::INodeProvider::CalculateTotalVisibleNodes calculates the number of all visible nodes including itself.
@@ -99,13 +107,20 @@ Implement test categories covering these scenarios:
 - Test that adding/removing nodes to/from expanded parents correctly updates visible indices
 - Test that modifications to collapsed subtrees don't affect visible indices of the parent tree
 
+**Operations on Invisible Nodes:**
+- Test that expanding a node that is currently invisible (its parent is collapsed) does not trigger any callbacks to `tree::NodeItemProvider`
+- Test that collapsing a node that is currently invisible (its parent is collapsed) does not trigger any callbacks to `tree::NodeItemProvider`
+- Test that adding/removing children to/from an invisible node (in a collapsed subtree) does not affect `Count()` of `tree::NodeItemProvider`
+- Test that the expand state of invisible nodes is preserved (when parent is later expanded, the previously expanded invisible node's children become visible)
+- Test that multiple structural changes to collapsed subtrees do not cause any `OnItemModified` events on `tree::NodeItemProvider`
+- Verify that when a collapsed parent containing modified invisible nodes is expanded, the correct structure is reflected in visible indices
+
 ### how to test it
 
 All test cases should:
 - Create a `TreeViewItemRootProvider` and wrap it with `NodeItemProvider`
 - Build various tree structures using `CreateTreeViewItem` helper
-- Use `MockItemProviderCallback` to monitor `OnItemModified` events from the `NodeItemProvider` side
-- Use `MockNodeProviderCallback` to monitor tree structure changes from the underlying provider
+- Use `MockItemProviderCallback` to monitor `OnItemModified` events from the `NodeItemProvider` (since `tree::NodeItemProvider` implements `list::IItemProvider`, only `IItemProviderCallback` is relevant for testing)
 - Verify `Count()`, `RequestNode()`, and `CalculateNodeVisibilityIndex()` return expected values
 - Use `SetExpanding()` on nodes to test expand/collapse scenarios
 - Clear callback logs between test phases to isolate specific behaviors
@@ -136,6 +151,20 @@ Evidence from implementation:
 - `CalculateNodeVisibilityIndexInternal()` returns -2 for nodes in collapsed subtrees
 - `OnItemExpanded/OnItemCollapsed()` calls `InvokeOnItemModified()` to notify listeners about visible range changes
 - The root node is explicitly excluded (visible indices start from root's children)
+
+**Why Test Operations on Invisible Nodes:**
+
+Testing operations on invisible nodes is critical because `tree::NodeItemProvider` should be completely unaware of and unaffected by changes in collapsed subtrees. This is important for:
+
+1. **Performance**: If `NodeItemProvider` reacts to every change in invisible nodes, it would waste CPU cycles recalculating indices for nodes that aren't displayed
+2. **Correctness**: The `Count()` and visible indices should only reflect what's actually visible, not the state of hidden subtrees
+3. **Event Discipline**: `OnItemModified` callbacks should only fire when the visible list actually changes, not when invisible nodes are modified
+4. **State Preservation**: The tree structure maintains expand/collapse states even when nodes are invisible, so when a parent is later expanded, the child's previous state should be honored
+
+This behavior is implemented through:
+- `OnItemExpanded/OnItemCollapsed()` checking `CalculateNodeVisibilityIndex()` before invoking callbacks
+- The visibility check returns -1 for nodes in collapsed subtrees, preventing callback propagation
+- The underlying `INodeRootProvider` managing the full tree structure independently of what's visible
 
 This task should be completed before Task 3 because understanding the index mapping is essential for verifying that data retrieval operates on the correct nodes.
 
