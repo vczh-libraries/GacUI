@@ -24,6 +24,9 @@
 - Compact version of table's colummns and rows property so that they could also be written in attributes.
 - `<eval Eval="expression"/>` tags.
 - `<ez:Layout/>`
+  - Thought: AlignInSecondLevel, when it is true, some top/bottom/left/right might be able to sync by creating a Table and some Cells.
+    - For example, Rights in multiple Tops/Bottoms.
+    - A solution when the structure do not sync, some might need to be converted to Cell with non-unit span.
   - `xmlns:ez` by default:
     - `presentation::composition::easy_layout::GuiEasy*Composition`
     - `presentation::composition::easy_layout::GuiEasy*Layout`
@@ -49,7 +52,7 @@
 - Consider `-ani` binding, create an animation controller object that change the binded property, with predefined interpolation and other stuff.
   - All types that can do interpolation are value types, consider following formats:
     - "NAME:initial value"
-    - "NAME(initial value in expression)"
+    - "NAME(initial value from expression)"
     - Need to be consistent with animation object
   - Consider multiple `-ani` batch control, state configuration and transition, story board, connection to animation coroutine, etc.
 - Facade (if `<ez:Layout/>` is implemented without the idea of facade, this would be canceled)
