@@ -6,18 +6,6 @@ GuiListControl takes a pure data structure list::IItemProvider, converting it to
 
 Similarily, a tree view control takes tree::INodeRootProvider. But in the end, a tree view is just a list control rendering all expanded tree items. So a tree view control needs to convert tree:INodeRootProvider to list::IItemProvider in order to construct its base class. tree::NodeItemProvider do this job.
 
-## UPDATE
-
-You will also need to run some test for expanding/collapsing/changing children container to an invisible node, which should not affect tree::NodeItemProvider in anyway
-
-## UPDATE
-
-Just to clarify, since the test subject is tree::NodeItemProvider, so the only callback you need to keep tracking to is IItemProviderCallback
-
-## UPDATE
-
-Keep task 3 using TreeViewItemRootProvider only, you can create a task 4 for integration with TreeViewItemBindableRootProvider. But at the moment, both NodeItemProvider and TreeViewItemBindableRootProvider are tested, you can just make a few (or maybe just one or two) simple cases in task 4
-
 Obviously, a tree::NodeItemProvider represents all expanded tree::INodeProvider nodes, which are managed by INodeRootProvider. The root node can be retrived via INodeRootProvider::GetRootNode. A tree::INodeProvider is either expanded or collapsed, controlled by GetExpanding and SetExpanding. If a node is collapsed, all sub tree are invisible to tree::NodeItemProvider. You must be also awared that the root node itself does not appear in tree::NodeItemProvider.
 
 tree::INodeItemView offered a way to convert any visible tree::INodeProvide to its order in tree::NodeItemProvider (actually tree::NodeItemProvider implements this interface). Currently, in tree::INodeRootProvider, CanGetNodeByVisibleIndex and GetNodeByVisibleIndex is not in used so you can ignore it. tree::INodeProvider::CalculateTotalVisibleNodes calculates the number of all visible nodes including itself.
@@ -37,6 +25,20 @@ You will need to create 4 tasks:
 You can refer to every TestItemProviders_*.cpp for knowledges and operations and API usage for related classes and interfaces, and how I want you to organize test cases.
 
 You do not need to implement INodeRootProvider by yourself, you can just use TreeViewItemRootProvider and TreeViewItemBindableRootProvider. As they have been tested already, they can release your work to help focusing on tree::NodeItemProvider which is being tested
+
+# UPDATES
+
+## UPDATE
+
+You will also need to run some test for expanding/collapsing/changing children container to an invisible node, which should not affect tree::NodeItemProvider in anyway
+
+## UPDATE
+
+Just to clarify, since the test subject is tree::NodeItemProvider, so the only callback you need to keep tracking to is IItemProviderCallback
+
+## UPDATE
+
+Keep task 3 using TreeViewItemRootProvider only, you can create a task 4 for integration with TreeViewItemBindableRootProvider. But at the moment, both NodeItemProvider and TreeViewItemBindableRootProvider are tested, you can just make a few (or maybe just one or two) simple cases in task 4
 
 # TASKS
 
