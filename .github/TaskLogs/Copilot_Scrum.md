@@ -2,638 +2,230 @@
 
 # DESIGN REQUEST
 
-There are 6 test files naming after TestItemProviders_*.cpp for:
-- TextItemProvider
-- TextItemBindableProvider
-- ListViewItemProvider
-- ListViewItemBindableProvider
-- TreeViewItemRootProvider
-- TreeViewItemBindableRootProvider
+GuiListControl takes a pure data structure list::IItemProvider, converting it to an interactable and renderable control. Sub classes of GuiListControl requires the list::IItemProvider to offer more features via RequestView.
 
-Different list controls has different requirements about what a set of IXXXView interfaces need to be implemented, they are predefined implementations.
+Similarily, a tree view control takes tree::INodeRootProvider. But in the end, a tree view is just a list control rendering all expanded tree items. So a tree view control needs to convert tree:INodeRootProvider to list::IItemProvider in order to construct its base class. tree::NodeItemProvider do this job.
 
-A XProvider is a container of a dedicated item type. When anything is changed, the XProvider shoot callbacks
+Obviously, a tree::NodeItemProvider represents all expanded tree::INodeProvider nodes, which are managed by INodeRootProvider. The root node can be retrived via INodeRootProvider::GetRootNode. A tree::INodeProvider is either expanded or collapsed, controlled by GetExpanding and SetExpanding. If a node is collapsed, all sub tree are invisible to tree::NodeItemProvider. You must be also awared that the root node itself does not appear in tree::NodeItemProvider.
 
-A XBindableProvider works like a XProvider except that the item type is user defined. So it can only track item changing in the container, it doesn't track properties changing in an item. But it still offers methods so that users can do the property changing callback by themselves.
+tree::INodeItemView offered a way to convert any visible tree::INodeProvide to its order in tree::NodeItemProvider (actually tree::NodeItemProvider implements this interface). Currently, in tree::INodeRootProvider, CanGetNodeByVisibleIndex and GetNodeByVisibleIndex is not in used so you can ignore it. tree::INodeProvider::CalculateTotalVisibleNodes calculates the number of all visible nodes including itself.
 
-Each test file already has a simple test case, and you can notice how items are updated in each provider and what callbacks are expected to happen.
+In this task, you need to pay attention to two category of tree::NodeItemProvider:
+- To test the order between visible index and the node, they are dynamically changed after any node is expanded or collapsed
+- To test list::IItemProvider retriving data offered by tree::INodeProvider, for example, GetTextValue and GetBindingValue and others.
 
-You will need to make 6 tasks, each for a test plan for each provider, in the order how I listed.
+Two implementation of tree::INodeRootProvider itself has been tested in TestItemProviders_TreeViewItem(Bindable)?RootProvider.cpp.
 
-## UPDATE
+You will need to create 3 tasks:
+- Create a TestItemProviders_NodeItemProvider.cpp in UnitTest project, put it in the Source Files solution explorer folder
+- Design and implement test cases for the first category
+- Design and implement test cases for the second category
 
-#file:win-0-scrum.prompt.md 
-It is good that you already figured out what to test, but I want you to add the following things:
+You can refer to every TestItemProviders_*.cpp for knowledges and operations and API usage for related classes and interfaces, and how I want you to organize test cases.
 
-- In TextItemBindableProvider, it looks like the `Prop_checked` function is creating a `ItemProperty` instead of `WritableItemProperty`, you can just update it.
-- In each provider, you mentioned what to test, but you didn't mention how to ensure code coverage and how to test corner cases. Please also pay attention to the quality of test case design. I would like you to think more about test case design.
-
-## UPDATE
-
-#file:win-0-scrum.prompt.md 
-You have finished the first task, details is logged in #file:Copilot_Task.md  and #file:Copilot_Planning.md . In those files you can see how you original worked out a plan and how I made adjustments.
-
-Summarize the findings about my philosophy in making test cases for TextItemProvider from all the "UPDATE", and adjust unfinished tasks
-
-## UPDATE
-
-#file:win-0-scrum.prompt.md 
-Actually I want to use TEST_ERROR instead of TEST_EXCEPTION for all index out of bound testings. And the implementation should use CHECK_ERROR (or calls into any function that already use CHECK_ERROR, like `Get` for container types).
-
-## UPDATE
-
-#file:win-0-scrum.prompt.md 
-For all bindable version of providers, it is not possible to detect if a `Value` has been added before. But at least for ListViewItemBindableProvider, ListViewColumn still need to assume unique.
-
-Please check unfinished task and update them
-
-## UPDATE
-
-#file:win-0-scrum.prompt.md 
-When testing duplicated object error, use TEST_EXCEPTION. When testing index out of range error, use TEST_ERROR. The first one is for throwing exceptions, the second one is for catching CHECK_ERROR or CHECK_FAIL.
-
-Update unfinished tasks if there are conflict with this
-
-## UPDATE
-
-#file:win-0-scrum.prompt.md 
-In the remaining tasks, in each test file, all test cases must use the same set of callback objects, and clear the logs after calling InitProvider or calling AttachCallback (except that it is testing against AttachCallback). And remember that DetachCallback also fires `OnAttached(provider=nullptr)`
-
-## UPDATE
-
-#file:win-0-scrum.prompt.md 
-In TASK No.6, it creates multiple test categories. Split each test category to a new task to replace TASK No.6
+You do not need to implement INodeRootProvider by yourself, you can just use TreeViewItemRootProvider. As it has been tested already, it can release your work to help focusing on tree::NodeItemProvider which is being tested
 
 # TASKS
 
-- [x] TASK No.1: Create comprehensive unit test plan for TextItemProvider
-- [x] TASK No.2: Create comprehensive unit test plan for TextItemBindableProvider  
-- [x] TASK No.3: Create comprehensive unit test plan for ListViewItemProvider
-- [x] TASK No.4: Create comprehensive unit test plan for ListViewItemBindableProvider
-- [x] TASK No.5: Create comprehensive unit test plan for TreeViewItemRootProvider
-- [x] TASK No.6: Test core functionality for TreeViewItemBindableRootProvider
-- [x] TASK No.7: Test hierarchical binding scenarios for TreeViewItemBindableRootProvider
-- [x] TASK No.8: Test edge cases for TreeViewItemBindableRootProvider
+- [ ] TASK No.1: Create TestItemProviders_NodeItemProvider.cpp and Add to Project
+- [ ] TASK No.2: Implement Test Cases for Visible Index and Node Mapping
+- [ ] TASK No.3: Implement Test Cases for IItemProvider Data Retrieval
 
-## Testing Philosophy Summary
+## TASK No.1: Create TestItemProviders_NodeItemProvider.cpp and Add to Project
 
-Based on the completed TextItemProvider, TextItemBindableProvider, ListViewItemProvider, and TreeViewItemBindableRootProvider tasks and your feedback updates, the testing philosophy emphasizes:
-
-**Focus on Behavioral Testing, Not Internal State:**
-- Avoid testing provider content directly (Count(), Get()) as these are ensured by other tests
-- Focus on callback behavior and interface contracts rather than internal storage verification
-- Skip testing private/inaccessible fields like `owner` - focus on observable behavior
-
-**Minimal Test Infrastructure:**
-- Use existing mock callbacks without creating complex assertion frameworks
-- Avoid unnecessary helper classes like `AssertCallbackSequence` - test names provide sufficient context  
-- Simple helper functions (like `CreateTextItem`, `CreateListViewItem`, `CreateListViewColumn`) are sufficient for reducing duplication
-- Callback verification through direct log comparison using `AssertCallbacks` is adequate
-
-**Quality Through Practical Edge Cases:**
-- Test realistic scenarios like duplicate item handling using TEST_EXCEPTION (for throwing exceptions)
-- Use TEST_ERROR for index out of range errors (implementations should use CHECK_ERROR or CHECK_FAIL)
-- Focus on callback coordination and detachment scenarios that reflect real usage
-- Avoid performance stress tests - focus on correctness testing
-- Remove unrealistic tests like provider destruction without actual verification
-- Test actual user operations like `RemoveRange` in bulk operations
-- Always merge RequestView and dynamic_cast in the same line for clarity
-
-**Callback-Centric Testing:**
-- Verify callback sequences and coordination between multiple callback interfaces
-- Test callback behavior before/after provider attachment
-- Ensure proper callback detachment behavior
-- Focus on callback parameter correctness and ordering
-- Use TEST_ERROR for out-of-bounds operations (implementations should use CHECK_ERROR or CHECK_FAIL)
-- Use TEST_EXCEPTION for duplicate object errors (implementations throw exceptions)
-- Verify specific callback types trigger for operations (e.g., OnColumnRebuilt for column additions)
-
-**Interface Validation:**
-- Test both direct method calls and interface method equivalence
-- Verify RequestView functionality and interface polymorphism
-- Test error handling through interface methods (invalid indices, etc.)
-- Skip interface methods that are impractical to test (GetSmallImage, GetLargeImage, GetDropdownPopup)
-
-**MockCallback Usage Guidelines:**
-- Only use MockTextItemProviderCallback when the provider actually supports ITextItemProviderCallback
-- TextItemBindableProvider only supports IItemProviderCallback - MockTextItemProviderCallback should not be used
-- SetChecked operations in bindable providers trigger OnItemModified, not text-specific callbacks
-- For dual-callback providers (like ListViewItemProvider), use both IItemProviderCallback and IColumnItemViewCallback mocks
-- **CRITICAL: Each test case must create its own callbackLog and callback objects for isolation and robustness**
-- Do NOT share callback objects across test cases - this prevents state pollution when tests fail and improves maintainability
-- Clear callback logs after InitProvider or AttachCallback calls (except when testing AttachCallback behavior itself)
-- DetachCallback fires `OnAttached(provider=nullptr)` callback
-
-**Empty ItemSource Handling:**
-- EmptyItemSourceScenarios should expect only OnAttached callback, not OnItemModified
-- Setting ItemSource to empty ObservableList should not trigger OnItemModified callback
-
-**Eager Child Preparation (from Task No.6):**
-- `SetItemSource` in TreeViewItemBindableRootProvider EAGERLY prepares children immediately, not lazily
-- When SetItemSource is called, callbacks will show `newCount=<actual child count>`, not `newCount=0`
-- This applies to all levels of the hierarchy - child nodes are prepared immediately when accessed
-- `UpdateBindingProperties` maintains child counts during unprepare/re-prepare cycles
-- Callback parameters (`count` and `newCount`) reflect actual prepared child counts, not zero
-- Don't assume implementation behavior - verify actual behavior first when designing tests
-
-**Pragmatic Test Scope (from Task No.3):**
-- Skip testing methods that require complex object creation (images, dropdown popups)
-- Test duplicate detection for concrete objects (TextItem, ListViewItem, ListViewColumn, TreeViewItem nodes) - adding same instance twice should fail with CHECK_ERROR
-- Skip duplicate detection for bindable providers' Value objects - they cannot be reliably detected as duplicates
-- Exception: ListViewItemBindableProvider columns are still ListViewColumn objects and should be tested for duplicates
-- Use BoxValue<T>() syntax instead of Value::From() for boxing values
-
-**Duplicate Detection Rules:**
-- Concrete providers (TextItemProvider, ListViewItemProvider, TreeViewItemRootProvider): Test duplicate item detection using TEST_EXCEPTION
-- Bindable providers (TextItemBindableProvider, TreeViewItemBindableRootProvider): Skip duplicate item detection (Value objects)
-- ListViewItemBindableProvider: Skip duplicate item detection, but still test duplicate column detection using TEST_EXCEPTION (columns are concrete ListViewColumn objects)
-
-This philosophy prioritizes practical, maintainable tests that verify the provider's contract and behavior rather than implementation details.
-
-## TASK No.1: Create comprehensive unit test plan for TextItemProvider
-
-The TextItemProvider is a container for TextItem objects that implements both IItemProvider and ITextItemView interfaces. It manages TextItems with text and check states, providing callbacks when items are modified or checked state changes.
+This task establishes the infrastructure for testing `tree::NodeItemProvider` by creating a new test file and integrating it into the UnitTest project build system.
 
 ### what to be done
 
-- Expand the existing `TestItemProviders_TextItemProvider.cpp` file with comprehensive test cases
-- Cover all lifecycle scenarios: creation, addition, removal, modification of TextItems
-- Test callback mechanisms for both `IItemProviderCallback` (OnItemModified, OnAttached) and `ITextItemProviderCallback` (OnItemCheckedChanged)
-- Test TextItem property changes (text and checked state) and verify they trigger proper callbacks
-- Test edge cases like multiple additions, batch operations, invalid operations
-- Test interaction between TextItem and TextItemProvider through the owner relationship
-- Verify proper cleanup when items are removed from the provider
+- Create `TestItemProviders_NodeItemProvider.cpp` in `Test\GacUISrc\UnitTest\` directory
+- Add basic test file structure with necessary includes:
+  - Include `TestItemProviders.h`
+  - Include `tree::NodeItemProvider` header
+  - Use proper namespaces (`gacui_unittest_template`)
+- Add a simple smoke test to verify the file compiles and the basic setup works:
+  - Create a `TEST_FILE` block
+  - Add a simple test case that constructs a `NodeItemProvider` with a `TreeViewItemRootProvider`
+  - Verify basic operations like `Count()` return expected values
+- Update `UnitTest.vcxproj` to include the new `.cpp` file in the `<ClCompile>` section after `TestItemProviders_TreeViewItemBindableRootProvider.cpp`
+- Update `UnitTest.vcxproj.filters` to place the file in the "Source Files" filter group, following the pattern of other `TestItemProviders_*.cpp` files
 
 ### how to test it
 
-**Core Functionality Tests:**
-- Test item addition with various TextItem configurations (empty, with text, with checked state)
-- Test item removal and verify callbacks and cleanup
-- Test TextItem.SetText() and TextItem.SetChecked() and verify OnItemModified callbacks
-- Test TextItem.SetChecked() specifically triggers OnItemCheckedChanged callback
-- Test bulk operations like adding multiple items and verify callback sequences
-- Test provider destruction and verify proper cleanup
-- Test ITextItemView interface methods (GetChecked, SetChecked) through the provider
-- Test RequestView method returns correct interface
-
-**Code Coverage and Corner Cases:**
-- Test TextItem creation with null/empty text and verify safe handling
-- Test adding the same TextItem instance multiple times and verify error handling or deduplication
-- Test removing non-existent items and verify graceful error handling
-- Test TextItem property changes before and after being added to provider
-- Test callback detachment scenarios and verify no callbacks fire after detachment
-- Test concurrent modifications if applicable (rapid add/remove sequences)
-- Test provider with maximum capacity scenarios and boundary conditions
-- Test TextItem owner field management: verify proper setting/clearing during add/remove
-- Test callback parameter validation: ensure correct item indices and change types
-- Test ITextItemProviderCallback vs IItemProviderCallback coordination and ordering
-- Test provider reset scenarios (clear all items) and verify comprehensive cleanup
-- Test TextItem lifecycle: creation, addition, modification, removal, destruction
-
-
+- Build the UnitTest project to ensure the new file compiles without errors
+- Run the smoke test case to verify:
+  - The `NodeItemProvider` can be constructed with a `TreeViewItemRootProvider`
+  - Basic API calls like `Count()` work correctly
+  - The file is properly integrated into the test suite
 
 ### rationale
 
-TextItemProvider is foundational for text-based list controls like GuiVirtualTextList. The existing test only covers basic item addition. A comprehensive test plan is needed because:
-- TextItemProvider has dual callback interfaces that need coordination testing
-- The TextItem-TextItemProvider relationship through the owner field is critical for proper callbacks
-- Property changes in TextItem need to propagate correctly to the provider's callbacks
-- This is the simplest provider pattern, so understanding it thoroughly will help with more complex providers
+This task must come first as it establishes the foundation for all subsequent testing work. Without the test file created and properly integrated into the build system, no actual test cases can be written or executed.
 
-## TASK No.2: Create comprehensive unit test plan for TextItemBindableProvider
+The smoke test ensures that:
+- The file is correctly added to both the project file and filters file
+- All necessary headers and dependencies are properly included
+- The basic `NodeItemProvider` construction and API work as expected
 
-The TextItemBindableProvider is a bindable version that works with user-defined item types through property bindings. It implements ITextItemView and manages an ObservableList, with property mappings for text and checked states. This task also includes fixing the `Prop_checked` function to create a `WritableItemProperty` instead of `ItemProperty`.
+Evidence from codebase:
+- All other `TestItemProviders_*.cpp` files follow this pattern (seen in `TestItemProviders_TextItemProvider.cpp`, `TestItemProviders_TreeViewItemRootProvider.cpp`, etc.)
+- The project structure requires both `.vcxproj` and `.vcxproj.filters` to be updated for new source files
+- The `tree::NodeItemProvider` class is defined in `Source\Controls\ListControlPackage\DataSourceImpl_IItemProvider_NodeItemProvider.h`
+
+## TASK No.2: Implement Test Cases for Visible Index and Node Mapping
+
+This task implements comprehensive test cases for the core functionality of `tree::NodeItemProvider`: the bidirectional mapping between visible indices and tree nodes, which changes dynamically with expand/collapse operations.
 
 ### what to be done
 
-- Fix `Prop_checked` function in TextItemBindableProvider to create `WritableItemProperty` instead of `ItemProperty`
-- Expand the existing `TestItemProviders_TextItemBindableProvider.cpp` file with comprehensive test cases
-- Test property binding mechanism for text and checked state mappings
-- Test ObservableList integration and callback propagation from list changes to provider callbacks
-- Test user-defined item type scenarios with various property configurations
-- Test interface methods through ITextItemView for bindable scenarios
-- Test callback coordination between ObservableList callbacks and provider callbacks
+Implement test categories covering these scenarios:
+
+**Basic Index Mapping:**
+- Test `RequestNode(vint index)` with a flat list of nodes (all at root level, all collapsed)
+- Test `RequestNode(vint index)` with a simple expanded hierarchy (1-2 levels deep)
+- Test `CalculateNodeVisibilityIndex(INodeProvider* node)` returns correct indices for visible nodes
+- Test `CalculateNodeVisibilityIndex(INodeProvider* node)` returns -1 for nodes in collapsed subtrees
+- Verify that the root node itself is excluded from visible indices (requesting index 0 should return the first child of root)
+
+**Expand/Collapse Dynamics:**
+- Test that expanding a collapsed node correctly increases `Count()` and adjusts visible indices of subsequent nodes
+- Test that collapsing an expanded node correctly decreases `Count()` and adjusts visible indices
+- Test visible index calculations with partially expanded multi-level trees (some branches expanded, others collapsed)
+- Test that expanding/collapsing nested nodes correctly updates the entire visible index range
+- Verify that `OnItemModified` callbacks from the `IItemProvider` interface are triggered with correct parameters during expand/collapse
+
+**Edge Cases and Complex Scenarios:**
+- Test `RequestNode` with invalid indices (negative, beyond count)
+- Test visible indices in a deeply nested tree (4+ levels) with mixed expand/collapse states
+- Test that adding/removing nodes to/from expanded parents correctly updates visible indices
+- Test that modifications to collapsed subtrees don't affect visible indices of the parent tree
 
 ### how to test it
 
-**Core Functionality Tests:**
-- Test item addition through ObservableList with property binding verification
-- Test item removal through ObservableList and verify callback sequences
-- Test property changes in user-defined items through property bindings
-- Test ITextItemView interface methods (GetChecked/SetChecked) through property bindings
-- Test RequestView functionality for bindable provider
-- Test WritableItemProperty vs ItemProperty behavior after the fix
+All test cases should:
+- Create a `TreeViewItemRootProvider` and wrap it with `NodeItemProvider`
+- Build various tree structures using `CreateTreeViewItem` helper
+- Use `MockItemProviderCallback` to monitor `OnItemModified` events from the `NodeItemProvider` side
+- Use `MockNodeProviderCallback` to monitor tree structure changes from the underlying provider
+- Verify `Count()`, `RequestNode()`, and `CalculateNodeVisibilityIndex()` return expected values
+- Use `SetExpanding()` on nodes to test expand/collapse scenarios
+- Clear callback logs between test phases to isolate specific behaviors
+- Use `AssertCallbacks()` to verify correct callback sequences
 
-**Bindable-Specific Scenarios:**
-- Test user-defined item types with different property combinations
-- Test property binding setup and teardown scenarios
-- Test ObservableList direct manipulation vs provider method differences
-- Test property change notifications propagating correctly through bindings
-- Test callback coordination between ObservableList and ITextItemProviderCallback
-- Test property binding with null/invalid user item scenarios
-
-**Edge Cases and Error Handling:**
-- Test invalid property bindings and graceful error handling
-- Test user item property changes without proper binding setup
-- Test ObservableList operations with invalid indices
-- Test property binding with items that don't support required properties
-- Test callback detachment scenarios in bindable context
-- Test interface method calls on empty or invalid bindable providers
-
-**Callback and Interface Testing:**
-- Verify ObservableList change notifications trigger proper provider callbacks
-- Test dual callback system coordination (IItemProviderCallback + ITextItemProviderCallback)
-- Test property binding updates trigger OnItemCheckedChanged appropriately
-- Test interface method equivalence between direct property access and ITextItemView methods
-- Test callback parameter accuracy for bindable item operations
+Each test category should be organized under `TEST_CATEGORY` blocks with descriptive names like "BasicIndexMapping", "ExpandCollapseDynamics", "EdgeCases", etc.
 
 ### rationale
 
-TextItemBindableProvider represents the bridge between user-defined data models and GacUI's provider system. The existing bug in `Prop_checked` creating `ItemProperty` instead of `WritableItemProperty` prevents proper checked state modification. A comprehensive test plan is needed because:
-- The property binding mechanism is fundamental to data-driven UI scenarios
-- ObservableList integration needs verification to ensure callback propagation works correctly  
-- The WritableItemProperty fix needs validation to ensure bidirectional property binding
-- This pattern will be repeated in ListView and TreeView bindable providers
-- Following the established testing philosophy: focus on callback behavior, avoid internal state testing, use minimal infrastructure, and emphasize practical edge cases that reflect real usage scenarios
+This task focuses on the most fundamental responsibility of `NodeItemProvider`: converting a hierarchical tree structure into a flat list of visible items. This mapping is dynamic and complex because:
 
-## TASK No.3: Create comprehensive unit test plan for ListViewItemProvider
+1. **Core Responsibility**: The primary purpose of `NodeItemProvider` is to make tree nodes accessible as a flat list for `GuiListControl`, which is evidenced by its implementation of both `list::ItemProviderBase` and `tree::INodeItemView`
 
-The ListViewItemProvider manages ListViewItem objects and implements IListViewItemView and IColumnItemView interfaces. It supports images, text, subitems, and column management for ListView controls.
+2. **Complex State Management**: The implementation in `DataSourceImpl_IItemProvider_NodeItemProvider.cpp` shows sophisticated logic in:
+   - `GetNodeByOffset()` - recursively traversing only expanded nodes
+   - `OnItemExpanded/OnItemCollapsed()` - updating visible ranges when state changes
+   - `CalculateNodeVisibilityIndexInternal()` - handling visibility checks and parent expansion states
+
+3. **Dynamic Behavior**: The visible index mapping changes whenever:
+   - A node is expanded or collapsed (via `SetExpanding()`)
+   - Child nodes are added or removed from expanded parents
+   - Any structural modification occurs in the visible portion of the tree
+
+4. **Foundation for Data Retrieval**: The data retrieval functionality (Task 3) depends entirely on correct index-to-node mapping, making this task prerequisite knowledge for understanding the complete behavior
+
+Evidence from implementation:
+- `RequestNode()` uses `GetNodeByOffset()` which only traverses expanded nodes
+- `CalculateNodeVisibilityIndexInternal()` returns -2 for nodes in collapsed subtrees
+- `OnItemExpanded/OnItemCollapsed()` calls `InvokeOnItemModified()` to notify listeners about visible range changes
+- The root node is explicitly excluded (visible indices start from root's children)
+
+This task should be completed before Task 3 because understanding the index mapping is essential for verifying that data retrieval operates on the correct nodes.
+
+## TASK No.3: Implement Test Cases for IItemProvider Data Retrieval
+
+This task implements test cases to verify that `tree::NodeItemProvider` correctly retrieves and exposes data from underlying `tree::INodeProvider` nodes through the `list::IItemProvider` interface.
 
 ### what to be done
 
-- Expand the existing `TestItemProviders_ListViewItemProvider.cpp` file with comprehensive test cases
-- Test ListViewItem lifecycle operations (add, remove, modify) and callback behavior
-- Test column management through IColumnItemView interface operations and callbacks
-- Test dual callback system coordination (IItemProviderCallback + IColumnItemViewCallback)
-- Test interface methods for item data access (IListViewItemView) and column operations
-- Test subitem access patterns and edge cases
+Implement test categories covering these scenarios:
+
+**Basic Data Retrieval:**
+- Test `Count()` returns correct number of visible nodes (excluding root) for various tree structures
+- Test `GetTextValue(vint itemIndex)` retrieves correct text from visible nodes
+- Test `GetBindingValue(vint itemIndex)` retrieves correct binding values from visible nodes
+- Test `RequestView(identifier)` returns the `INodeItemView` interface when requested
+- Test `RequestView(identifier)` delegates to underlying root provider for other view types
+- Verify `GetRoot()` returns the correct `INodeRootProvider` instance
+
+**Data Retrieval After Structural Changes:**
+- Test that `GetTextValue()` returns correct values after nodes are expanded
+- Test that `GetTextValue()` returns correct values after nodes are collapsed
+- Test that `GetBindingValue()` returns correct values after tree modifications (add/remove nodes)
+- Test that indices correctly map to the right nodes after expand/collapse operations
+- Verify that data retrieval for out-of-bounds indices returns empty/default values
+
+**Integration with Underlying Root Provider:**
+- Test that `NodeItemProvider` correctly delegates `GetTextValue()` to the root provider's `GetTextValue(INodeProvider*)`
+- Test that `NodeItemProvider` correctly delegates `GetBindingValue()` to the root provider's `GetBindingValue(INodeProvider*)`
+- Test that both `TreeViewItemRootProvider` and `TreeViewItemBindableRootProvider` work correctly as underlying providers
+- Verify that the data returned matches what would be obtained by directly calling methods on the root provider with the corresponding node
+
+**Callback Integration:**
+- Test that `AttachCallback()` properly registers `IItemProviderCallback`
+- Test that callbacks receive `OnItemModified` events when expand/collapse changes visible items
+- Verify callback parameters (start, count, newCount, itemReferenceUpdated) are correct
+- Test that data retrieval works correctly in callback handlers
 
 ### how to test it
 
-**Core Functionality Tests:**
-- Test ListViewItem addition/removal with callback verification
-- Test ListViewItem property changes (text, images, subitems) and callback sequences
-- Test column operations (add, remove, resize) with IColumnItemViewCallback notifications
-- Test IListViewItemView interface methods (GetSmallImage, GetLargeImage, GetText, GetSubItem)
-- Test IColumnItemView interface methods and their callback behavior
-- Test RequestView functionality for both interfaces (merge RequestView and dynamic_cast)
+All test cases should:
+- Create a `TreeViewItemRootProvider` with various tree structures
+- Wrap it with `NodeItemProvider`
+- Use `MockItemProviderCallback` to monitor `IItemProvider` events
+- Build trees with known text values and binding values
+- Call `GetTextValue()` and `GetBindingValue()` with various indices
+- Verify returned values match expected data from the underlying nodes
+- Test `Count()` against manually calculated visible node counts
+- Use `RequestView()` to obtain `INodeItemView` and verify it's the same object
+- Test expand/collapse operations and verify data retrieval still works correctly
+- Use `SetExpanding()` to change visibility and verify `Count()` updates accordingly
 
-**Column and Item Integration:**
-- Test column-item relationship scenarios (adding items with various subitem counts)
-- Test column removal impact on existing item subitems
-- Test dual callback coordination when both items and columns change
-- Test callback detachment scenarios for both callback types
-- Test interface method equivalence between direct access and interface calls
-
-**Edge Cases:**
-- Use `TEST_ERROR` for subitem access with invalid column indices
-- Use `TEST_ERROR` for column operations with invalid parameters (negative sizes, invalid indices)
-- Test item operations with null/empty text and image references
-- Use `TEST_ERROR` for GetSubItem beyond available subitems instead of expecting safe fallback
-- Test callback ordering when simultaneous item and column operations occur
-- Test RemoveRange operations in addition to individual removals
+Each test category should be organized under `TEST_CATEGORY` blocks with descriptive names like "BasicDataRetrieval", "DataRetrievalAfterChanges", "RootProviderIntegration", "CallbackIntegration", etc.
 
 ### rationale
 
-ListViewItemProvider extends TextItemProvider concepts with multi-column data and dual callback interfaces. Following the established testing philosophy:
-- Focus on callback behavior rather than internal state (avoid testing Count(), column storage details)
-- Use minimal test infrastructure leveraging existing mock callbacks
-- Test practical edge cases like subitem access beyond column bounds
-- Verify interface method contracts and callback coordination
-- This provider pattern establishes the foundation for ListView bindable testing
+This task verifies that `NodeItemProvider` correctly fulfills its role as an adapter between the tree structure (`INodeRootProvider`) and the list interface (`IItemProvider`). While Task 2 ensures the index-to-node mapping works correctly, this task ensures that:
 
-## TASK No.4: Create comprehensive unit test plan for ListViewItemBindableProvider
+1. **Interface Contract**: The `IItemProvider` interface methods (`Count()`, `GetTextValue()`, `GetBindingValue()`, `RequestView()`) are correctly implemented and delegate to the underlying `INodeRootProvider` for the right nodes
 
-The ListViewItemBindableProvider is a bindable version for ListView that works with user-defined item types through property bindings. It implements multiple interfaces including IListViewItemView and IColumnItemView, managing both data binding and column structures.
+2. **Data Integrity**: The data retrieved through list indices matches the data stored in the corresponding tree nodes, demonstrating that the adapter pattern is working correctly
 
-### what to be done
+3. **Dynamic Consistency**: After tree structure changes (expand/collapse, add/remove nodes), the data retrieval still works correctly with updated indices
 
-- Expand the existing `TestItemProviders_ListViewItemBindableProvider.cpp` file with comprehensive test cases
-- Test property binding mechanism for text properties (skip image properties as they're hard to test)
-- Test ObservableList integration with ListView-specific data and callback propagation
-- Test column management coordination with property bindings
-- Test dual callback system for both item changes and column changes
-- Test interface methods through property bindings for ListView scenarios
-- Test duplicate item detection if the provider supports it
+4. **Real Usage Pattern**: This tests how `GuiVirtualTreeListControl` and similar controls actually use `NodeItemProvider` - they rely on these data retrieval methods to render items
 
-### how to test it
+Evidence from implementation:
+- `GetTextValue(vint itemIndex)` calls `RequestNode(itemIndex)` and then `root->GetTextValue(node.Obj())`
+- `GetBindingValue(vint itemIndex)` follows the same delegation pattern
+- `Count()` calculates visible nodes using `root->GetRootNode()->CalculateTotalVisibleNodes() - 1` (excluding root)
+- `RequestView()` returns `INodeItemView` interface or delegates to root provider
+- The class implements both `ItemProviderBase` and `INodeItemView`, making it a bridge between tree and list abstractions
 
-**Core Functionality Tests:**
-- Test property binding setup for text properties with various configurations (skip image testing per Task No.3 learnings)
-- Test SetItemSource with ObservableList and verify callback propagation (only OnItemModified, not text-specific callbacks)
-- Test item property changes through bindings trigger OnItemModified callbacks
-- Test column operations coordination with bindable data - verify OnColumnRebuilt triggers for column additions
-- Test IListViewItemView interface methods through property bindings (skip GetSmallImage/GetLargeImage)
-- Test IColumnItemView interface methods in bindable context (skip GetDropdownPopup)
-- Test RequestView functionality for bindable ListView provider (merge RequestView and dynamic_cast)
+This task should come after Task 2 because:
+- It builds upon the index mapping verified in Task 2
+- Understanding how indices map to nodes is prerequisite to verifying data retrieval
+- The test cases naturally reference concepts tested in Task 2 (like what counts as a "visible node")
 
-**Bindable ListView Integration:**
-- Test subitem access through property bindings and column mappings
-- Test ObservableList changes coordinated with column structure changes
-- Test manual property change notifications for ListView-specific scenarios
-- Test callback coordination using only IItemProviderCallback and IColumnItemViewCallback
-- Test property binding with items that have varying subitem properties
-- Test RemoveRange operations on ObservableList and verify callback behavior
-- Skip testing duplicate bindable items (Value objects cannot be reliably detected as duplicates)
-
-**Edge Cases:**
-- Use `TEST_ERROR` for property bindings for subitems beyond available properties (index out of range)
-- Test column operations when bindable items lack expected properties
-- Test SetItemSource transitions (null to non-null, complex to simple) - empty ItemSource should only trigger OnAttached
-- Test callback detachment scenarios in bindable ListView context
-- Use `TEST_ERROR` for out-of-bounds operations (index out of range)
-- Use `TEST_EXCEPTION` for adding duplicate columns (duplicates throw exceptions)
-
-### rationale
-
-ListViewItemBindableProvider combines ListView multi-column functionality with data binding complexity. Following the established testing philosophy including Task No.3 learnings:
-- Focus on callback behavior and property binding mechanisms rather than internal storage
-- Skip image property testing as it's impractical to create image objects in unit tests (lesson from Task No.3)
-- Test duplicate detection for columns only (lesson from Task No.3) - bindable items cannot be tested for duplicates as Value objects cannot be reliably detected
-- Verify callback sequences, especially OnColumnRebuilt for column operations (lesson from Task No.3)
-- Use minimal test infrastructure with existing mock callbacks
-- Emphasize edge cases that reflect real ListView data binding usage
-- Verify interface method contracts work correctly through property bindings
-- This builds upon TextItemBindableProvider patterns with ListView-specific multi-column complexity
-
-## TASK No.5: Create comprehensive unit test plan for TreeViewItemRootProvider
-
-The TreeViewItemRootProvider manages hierarchical TreeViewItem data through MemoryNodeProvider nodes. It implements INodeRootProvider and uses the node-based tree structure for representing hierarchical data.
-
-### what to be done
-
-- Expand the existing `TestItemProviders_TreeViewItemRootProvider.cpp` file with comprehensive test cases
-- Each test case must create its own callbackLog and callback objects for isolation and robustness
-- Clear callback logs after AttachCallback calls (except when testing AttachCallback behavior itself)
-- Test hierarchical node operations and their callback behavior
-- Test tree expansion/collapse operations and callback sequences
-- Test INodeProviderCallback notifications for tree structure changes
-- Test node lifecycle management (creation, addition, removal)
-- Test interface methods for tree navigation and data access (skip image-related methods)
-- Test duplicate node detection if applicable
-- Test DetachCallback behavior and verify it fires `OnAttached(provider=nullptr)`
-
-### how to test it
-
-**Test Infrastructure:**
-- Each test case must create its own callbackLog and MockNodeProviderCallback objects at the beginning
-- This ensures test isolation and prevents state pollution if tests fail
-- Clear callback logs after AttachCallback in each test case (except when testing AttachCallback itself)
-
-**Core Functionality Tests:**
-- Test MemoryNodeProvider node addition to root and verify callback sequences
-- Test multi-level tree construction with parent-child relationships
-- Test node expansion/collapse operations and verify callback pairs (Before/After)
-- Test OnItemExpanded and OnItemCollapsed callback behavior
-- Test node removal and callback notification
-- Test GetMemoryNode and tree navigation interface methods (skip image retrieval methods per Task No.3 learnings)
-- Test RequestView functionality for INodeRootProvider (merge RequestView and dynamic_cast)
-
-**Tree Structure Operations:**
-- Test adding child nodes to existing nodes and verify callback sequences
-- Test removing nodes with children and verify proper cleanup
-- Test expansion state changes and their callback behavior
-- Test Before/After callback pairs coordination and ordering
-- Test callback detachment scenarios during tree operations - verify DetachCallback fires `OnAttached(provider=nullptr)`
-- Test tree structure modifications during expansion/collapse operations
-- Test RemoveRange operations on tree nodes if applicable
-- Use `TEST_EXCEPTION` for adding duplicate TreeViewItem nodes (duplicates throw exceptions)
-
-**Edge Cases:**
-- Test expanding nodes that have no children vs nodes with children
-- Test removing expanded nodes and verify proper state cleanup
-- Test expansion/collapse of already expanded/collapsed nodes
-- Use `TEST_ERROR` for node operations with invalid node references (index out of range)
-- Test rapid expansion/collapse sequences and callback ordering
-- Use `TEST_ERROR` for out-of-bounds tree operations (index out of range)
-
-### rationale
-
-TreeViewItemRootProvider introduces hierarchical data management with expansion state tracking. Following the established testing philosophy including Task No.3 learnings:
-- Focus on callback behavior for tree operations rather than internal tree structure storage
-- Skip image-related method testing as it's impractical to create image objects in unit tests (lesson from Task No.3)
-- Use TEST_EXCEPTION for duplicate TreeViewItem node detection (duplicates throw exceptions)
-- Use TEST_ERROR for out-of-bounds operations (index out of range)
-- Test practical tree scenarios like expansion state management and node lifecycle
-- Use existing mock callback infrastructure to verify callback sequences
-- **Each test case creates its own callback objects for isolation and maintainability** (critical lesson from Task No.5)
-- Clear callback logs after AttachCallback to isolate test case verification (except when testing AttachCallback itself)
-- Test DetachCallback behavior to verify proper cleanup including `OnAttached(provider=nullptr)` notification
-- Emphasize edge cases around expansion state and node removal scenarios
-- Verify interface contracts for tree navigation methods
-- This establishes patterns for testing hierarchical data providers that will be used in bindable tree testing
-
-## TASK No.6: Test core functionality for TreeViewItemBindableRootProvider
-
-The TreeViewItemBindableRootProvider is the most complex provider, combining hierarchical tree structure with data binding. This task focuses on testing the core functionality of property binding setup, basic tree operations, and interface methods.
-
-### what to be done
-
-- Expand the existing `TestItemProviders_TreeViewItemBindableRootProvider.cpp` file with test cases for core functionality
-- Each test case must create its own callbackLog and callback objects for isolation and robustness
-- Clear callback logs after SetItemSource calls (except when testing SetItemSource behavior itself)
-- Test property binding setup for textProperty and childrenProperty (skip imageProperty per Task No.3 learnings)
-- Test SetItemSource with hierarchical bindable data and verify callback sequences (only OnItemModified for structure changes)
-- Test childrenProperty binding with nested ObservableList structures
-- Test node expansion/collapse operations with bindable data coordination
-- Test property changes in bindable items trigger OnItemModified callbacks (not tree-specific callbacks if they don't exist)
-- Test TreeViewItemBindableNode creation and parent-child relationship management
-- Test UpdateBindingProperties coordination with tree structure
-- Test interface methods for tree navigation through property bindings (merge RequestView and dynamic_cast, skip image-related methods)
-
-### how to test it
-
-**Test Infrastructure:**
-- Each test case must create its own callbackLog and MockNodeProviderCallback objects at the beginning
-- This ensures test isolation and prevents state pollution if tests fail (critical lesson from Task No.5)
-- Clear callback logs after SetItemSource in each test case (except when testing SetItemSource itself)
-
-**Core Functionality Tests:**
-- Test property binding setup for textProperty and childrenProperty configurations
-- Test SetItemSource with various hierarchical data structures and verify OnItemModified callbacks
-- Test childrenProperty binding establishes correct parent-child relationships
-- Test node expansion operations trigger proper callbacks
-- Test node collapse operations trigger proper callbacks
-- Test property changes in bound items trigger OnItemModified (verify no tree-specific callbacks fire if they don't exist)
-- Test TreeViewItemBindableNode lifecycle and relationship management
-- Test UpdateBindingProperties updates tree structure correctly
-- Test INodeRootProvider interface methods through property bindings (merge RequestView and dynamic_cast)
-- Skip image-related interface methods (lesson from Task No.3)
-- Test GetMemoryNode and tree navigation methods with bindable data
-
-### rationale
-
-TreeViewItemBindableRootProvider is the most complex provider pattern combining tree hierarchy with data binding. Breaking it into focused tasks ensures thorough testing while maintaining manageable scope. This first task establishes core functionality:
-- Property binding mechanisms are fundamental to all subsequent testing
-- Basic tree operations need solid verification before testing complex scenarios
-- Interface method validation ensures the provider contract works correctly
-- Following established testing philosophy:
-  - Focus on callback behavior for operations rather than internal storage
-  - Skip image property testing (impractical in unit tests - lesson from Task No.3)
-  - Use minimal test infrastructure leveraging existing mock callbacks
-  - Each test case creates its own callback objects for isolation (critical lesson from Task No.5)
-  - Clear callback logs after SetItemSource for clean verification (except when testing SetItemSource itself)
-- This task establishes the foundation for hierarchical binding scenarios and edge cases in subsequent tasks
-
-## TASK No.7: Test hierarchical binding scenarios for TreeViewItemBindableRootProvider
-
-This task focuses on testing complex hierarchical scenarios with multi-level data structures, dynamic structure changes, and callback coordination across tree levels.
-
-### what to be done
-
-- Continue expanding `TestItemProviders_TreeViewItemBindableRootProvider.cpp` with hierarchical binding scenario test cases
-- Each test case must create its own callbackLog and callback objects for isolation and robustness
-- Clear callback logs after SetItemSource calls (except when testing SetItemSource behavior itself)
-- Test multi-level ObservableList changes and their callback propagation through tree hierarchy
-- Test childrenProperty modifications and their impact on tree structure at various levels
-- Test expansion state coordination when underlying data structure changes dynamically
-- Test parent item property changes affecting child node visibility/structure
-- Test callback coordination using only existing callback interfaces across tree levels
-- Test manual notification scenarios for hierarchical property changes
-- Test RemoveRange operations on hierarchical ObservableList structures
-- Skip testing duplicate bindable items in the tree structure (Value objects cannot be reliably detected as duplicates)
-
-### how to test it
-
-**Test Infrastructure:**
-- Each test case must create its own callbackLog and MockNodeProviderCallback objects at the beginning
-- Clear callback logs after SetItemSource to isolate verification (except when testing SetItemSource itself)
-
-**Hierarchical Binding Scenarios:**
-- Test adding items to nested ObservableList at different tree levels and verify callbacks propagate correctly
-  - **Important**: Account for eager child preparation - expect actual child counts in callbacks, not zero
-- Test removing items from nested ObservableList and verify callback sequences across levels
-  - **Important**: Callback parameters will show actual counts before/after removal due to eager preparation
-- Test modifying childrenProperty at various tree depths and verify structure updates
-  - **Important**: When structure changes, callbacks show actual prepared child counts
-- Test parent node expansion when child ObservableList changes dynamically
-  - **Important**: Children are already prepared eagerly, so expansion mainly affects visual state
-- Test parent item property changes (text, etc.) and verify child nodes remain consistent
-- Test multi-level callback coordination - verify proper callback ordering when changes occur at different levels
-  - **Important**: All child counts in callbacks reflect eager preparation at each level
-- Test manual UpdateBindingProperties at specific tree nodes and verify callbacks
-  - **Important**: Expect maintained child counts during unprepare/re-prepare cycles (e.g., `count=2, newCount=2`)
-- Test RemoveRange on ObservableList with children and verify hierarchical cleanup callbacks
-  - **Important**: Callback parameters reflect actual prepared child counts being removed
-- Test nested ObservableList replacement (changing entire childrenProperty collection)
-  - **Important**: Callbacks show old count and new count reflecting actual prepared children
-- Test expansion state persistence across data structure modifications
-
-### rationale
-
-Hierarchical binding scenarios represent the core complexity of TreeViewItemBindableRootProvider. Separating these tests into a dedicated task allows focused verification of multi-level data binding:
-- Multi-level ObservableList coordination is critical for real tree view usage
-- Dynamic structure changes need thorough validation to ensure callback propagation works correctly
-- Expansion state coordination with data changes is a common source of bugs
-- Following established testing philosophy:
-  - Focus on callback behavior across tree hierarchy levels
-  - Skip duplicate item detection (Value objects cannot be reliably detected - lesson from Task No.3)
-  - Test practical scenarios like nested list modifications that reflect real usage
-  - Use minimal test infrastructure with existing mock callbacks
-  - Each test case creates its own callback objects for isolation (critical lesson from Task No.5)
-  - Clear callback logs after SetItemSource for clean verification
-  - **Account for eager child preparation in all test expectations** (critical lesson from Task No.6)
-  - Callback parameters (`count`, `newCount`) reflect actual prepared child counts at all hierarchy levels
-  - Don't assume lazy preparation - the implementation prepares children eagerly
-- This task builds upon the core functionality from Task No.6 and prepares for edge case testing in Task No.8
-- The eager preparation behavior discovered in Task No.6 is fundamental to understanding hierarchical callback sequences
-
-## TASK No.8: Test edge cases for TreeViewItemBindableRootProvider
-
-This task focuses on testing edge cases, error handling, boundary conditions, and cleanup scenarios for TreeViewItemBindableRootProvider to ensure robustness.
-
-### what to be done
-
-- Complete `TestItemProviders_TreeViewItemBindableRootProvider.cpp` with edge case and error handling test cases
-- Each test case must create its own callbackLog and callback objects for isolation and robustness
-- Clear callback logs after SetItemSource calls (except when testing SetItemSource behavior itself)
-- Test childrenProperty with null or empty child collections - empty should only trigger OnAttached
-- Use `TEST_ERROR` for property binding with missing or invalid childrenProperty (index out of range)
-- Test SetItemSource transitions between different hierarchical structures
-- Test expansion state when childrenProperty changes dynamically
-- Test callback detachment scenarios during tree structure modifications - verify DetachCallback fires `OnAttached(provider=nullptr)`
-- Use `TEST_ERROR` for out-of-bounds operations in hierarchical context (index out of range)
-- **CRITICAL**: Access children via `item->children[i]` directly - do NOT use `UnboxValue` for direct ObservableList subscript access
-- **CRITICAL**: When replacing ObservableList contents, use Clear() then Add() in a loop - assignment operator is deleted
-
-### how to test it
-
-**Test Infrastructure:**
-- Each test case must create its own callbackLog and MockNodeProviderCallback objects at the beginning
-- Clear callback logs after SetItemSource to isolate verification (except when testing SetItemSource itself)
-- If creating helper lambdas, ensure proper capture of other lambdas (C++ doesn't implicitly capture lambdas)
-
-**Edge Cases:**
-- Test SetItemSource with null childrenProperty and verify safe handling
-  - **Important**: With null children, expect `newCount=0` due to no children to prepare eagerly
-- Test SetItemSource with empty childrenProperty ObservableList - verify only OnAttached fires, no OnItemModified
-  - **Important**: Empty ObservableList results in `newCount=0` in callbacks (nothing to prepare)
-- Use `TEST_ERROR` for accessing nodes when childrenProperty is missing or invalid (index out of range)
-- Test SetItemSource transition from null to non-null hierarchical structure
-  - **Important**: Callbacks show `count=0, newCount=<actual child count>` due to eager preparation of new structure
-- Test SetItemSource transition from complex hierarchy to simple flat structure
-  - **Important**: Callbacks show `count=<old child count>, newCount=<new child count>` reflecting eager preparation
-- Test SetItemSource transition from simple to complex hierarchy
-  - **Important**: Both old and new child counts reflected in callbacks due to eager preparation
-- Test SetItemSource with circular reference detection (if applicable)
-- Test expansion state behavior when childrenProperty becomes empty dynamically
-  - **Important**: When children are cleared via ObservableList.Clear(), expect ONE callback pair: `count=<old count>, newCount=0`
-  - **Important**: ObservableList operations fire INDIVIDUAL callbacks, not batched - Clear() = 1 pair, each Add() = 1 pair
-- Test expansion operation on node with null children
-- Test DetachCallback during active tree operations - verify `OnAttached(provider=nullptr)` fires correctly
-- Test DetachCallback after expansion state changes - verify proper cleanup
-- Use `TEST_ERROR` for node operations with invalid indices (out of range)
-- Use `TEST_ERROR` for expansion/collapse on invalid node references (out of range)
-- Test rapid SetItemSource changes and verify proper cleanup between transitions
-  - **Important**: Each SetItemSource eagerly prepares children, so rapid changes show actual counts at each step
-- Test property binding with items that have inconsistent childrenProperty types
-- Test dynamic childrenProperty modification (if applicable)
-  - **Important**: If using ObservableList operations, each operation fires individual callbacks - not atomic
-  - **Important**: Cannot assign ObservableList with `=` operator - must use Clear() then Add() loop
-
-### rationale
-
-Edge case testing completes the comprehensive test coverage for TreeViewItemBindableRootProvider by verifying robustness and error handling:
-- Null and empty childrenProperty handling is critical for safe operation
-- SetItemSource transitions cover common usage patterns and ensure proper cleanup
-- Callback detachment scenarios verify proper resource management
-- Following established testing philosophy including all learnings from Task No.7:
-  - Use TEST_ERROR for out-of-bounds operations (index out of range)
-  - Use TEST_ERROR for invalid property bindings
-  - Empty ItemSource should only trigger OnAttached, not OnItemModified (lesson from Task No.2)
-  - Test DetachCallback fires `OnAttached(provider=nullptr)` for proper cleanup
-  - Focus on practical edge cases that could occur in real applications
-  - Use minimal test infrastructure with existing mock callbacks
-  - Each test case creates its own callback objects for isolation (critical lesson from Task No.5)
-  - Clear callback logs after SetItemSource for clean verification
-  - **All callback expectations must account for eager child preparation** (critical lesson from Task No.6)
-  - Empty childrenProperty results in `newCount=0`, non-empty results in actual prepared counts
-  - SetItemSource transitions show accurate before/after child counts due to eager preparation
-  - The eager preparation behavior is crucial for understanding edge case callback sequences
-  - **Type system: `item->children[i]` returns element directly, NOT a Value object** (critical lesson from Task No.7)
-  - **Do NOT use UnboxValue for direct ObservableList subscript access** (critical lesson from Task No.7)
-  - **ObservableList operations fire individual callbacks, never batched** (critical lesson from Task No.7)
-  - **ObservableList cannot be assigned with `=`, must use Clear()+Add() loop** (critical lesson from Task No.7)
-  - **Lambda capture: explicitly capture other lambdas, not automatic** (critical lesson from Task No.7)
-- This task completes the provider testing pattern progression from simple (TextItemProvider) to complex hierarchical data binding
-- With this task complete, all six provider types have comprehensive test coverage
-- The learnings about eager preparation, type system, and ObservableList behavior ensure edge case tests have accurate expectations and correct implementation
+However, the tasks are largely independent in implementation and could be developed in parallel if needed, as they test different aspects of the same class.
 
 # Impact to the Knowledge Base
 
 ## GacUI
 
-The comprehensive testing of ItemProvider classes may require additions to the knowledge base regarding:
+No significant changes needed to the knowledge base. The testing of `tree::NodeItemProvider` follows established patterns and doesn't introduce new design concepts or APIs that need documentation. The class itself is an implementation detail of the tree view control system, and its behavior is well-defined by its interfaces (`list::ItemProviderBase` and `tree::INodeItemView`).
 
-- **ItemProvider Pattern**: A new section explaining the ItemProvider architecture, the difference between concrete providers (like TextItemProvider) and bindable providers (like TextItemBindableProvider), and how they integrate with different list controls.
+If anything needs to be added in the future, it would be under a potential "Choosing APIs" section for tree controls explaining:
+- When to use `NodeItemProvider` directly (rarely, as it's typically managed by `GuiVirtualTreeListControl`)
+- The relationship between `INodeRootProvider`, `NodeItemProvider`, and `GuiVirtualTreeListControl`
 
-- **Data Binding in List Controls**: Documentation about property binding mechanisms, ObservableList integration, and manual notification patterns for user-defined item types.
-
-- **Callback Coordination**: Explanation of how multiple callback interfaces work together (IItemProviderCallback, ITextItemProviderCallback, IColumnItemViewCallback, INodeProviderCallback) and their invocation sequences.
-
-- **Tree Provider Architecture**: Details about the hierarchical data management through MemoryNodeProvider and TreeViewItemBindableNode, including expansion state management and parent-child relationship maintenance.
-
-However, most of the implementation details can be understood from the source code, so the knowledge base should focus on high-level patterns and design decisions rather than implementation specifics.
+However, since this is an implementation detail rather than a user-facing API, documentation in the knowledge base is not critical at this time.
 
 # !!!FINISHED!!!
