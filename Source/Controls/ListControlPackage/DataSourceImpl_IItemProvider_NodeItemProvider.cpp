@@ -169,24 +169,6 @@ NodeItemProvider
 		return -1;
 	}
 
-	vint NodeItemProvider::CalculateNodeVisibilityIndex(INodeProvider* node)
-	{
-		vint result = CalculateNodeVisibilityIndexInternal(node);
-		return result < 0 ? -1 : result;
-	}
-
-	Ptr<INodeProvider> NodeItemProvider::RequestNode(vint index)
-	{
-		if(root->CanGetNodeByVisibleIndex())
-		{
-			return root->GetNodeByVisibleIndex(index+1);
-		}
-		else
-		{
-			return GetNodeByOffset(root->GetRootNode(), index+1);
-		}
-	}
-
 	NodeItemProvider::NodeItemProvider(Ptr<INodeRootProvider> _root)
 		:root(_root)
 	{
@@ -201,6 +183,24 @@ NodeItemProvider
 	Ptr<INodeRootProvider> NodeItemProvider::GetRoot()
 	{
 		return root;
+	}
+
+	Ptr<INodeProvider> NodeItemProvider::RequestNode(vint index)
+	{
+		if (root->CanGetNodeByVisibleIndex())
+		{
+			return root->GetNodeByVisibleIndex(index + 1);
+		}
+		else
+		{
+			return GetNodeByOffset(root->GetRootNode(), index + 1);
+		}
+	}
+
+	vint NodeItemProvider::CalculateNodeVisibilityIndex(INodeProvider* node)
+	{
+		vint result = CalculateNodeVisibilityIndexInternal(node);
+		return result < 0 ? -1 : result;
 	}
 
 	vint NodeItemProvider::Count()

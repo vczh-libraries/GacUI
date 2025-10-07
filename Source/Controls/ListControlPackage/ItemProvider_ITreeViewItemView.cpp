@@ -24,57 +24,12 @@ TreeViewItem
 TreeViewItemRootProvider
 ***********************************************************************/
 
-	Ptr<GuiImageData> TreeViewItemRootProvider::GetNodeImage(INodeProvider* node)
-	{
-		MemoryNodeProvider* memoryNode=dynamic_cast<MemoryNodeProvider*>(node);
-		if(memoryNode)
-		{
-			Ptr<TreeViewItem> data=memoryNode->GetData().Cast<TreeViewItem>();
-			if(data)
-			{
-				return data->image;
-			}
-		}
-		return 0;
-	}
-
-	WString TreeViewItemRootProvider::GetTextValue(INodeProvider* node)
-	{
-		MemoryNodeProvider* memoryNode = dynamic_cast<MemoryNodeProvider*>(node);
-		if (memoryNode)
-		{
-			Ptr<TreeViewItem> data = memoryNode->GetData().Cast<TreeViewItem>();
-			if (data)
-			{
-				return data->text;
-			}
-		}
-		return L"";
-	}
-
-	description::Value TreeViewItemRootProvider::GetBindingValue(INodeProvider* node)
-	{
-		return Value::From(GetTreeViewData(node));
-	}
-
 	TreeViewItemRootProvider::TreeViewItemRootProvider()
 	{
 	}
 
 	TreeViewItemRootProvider::~TreeViewItemRootProvider()
 	{
-	}
-
-	IDescriptable* TreeViewItemRootProvider::RequestView(const WString& identifier)
-	{
-		if(identifier==ITreeViewItemView::Identifier)
-		{
-			return (ITreeViewItemView*)this;
-		}
-		else
-		{
-			return MemoryNodeRootProvider::RequestView(identifier);
-		}
 	}
 
 	Ptr<TreeViewItem> TreeViewItemRootProvider::GetTreeViewData(INodeProvider* node)
@@ -105,6 +60,51 @@ TreeViewItemRootProvider
 		if(memoryNode)
 		{
 			memoryNode->NotifyDataModified();
+		}
+	}
+
+	Ptr<GuiImageData> TreeViewItemRootProvider::GetNodeImage(INodeProvider* node)
+	{
+		MemoryNodeProvider* memoryNode = dynamic_cast<MemoryNodeProvider*>(node);
+		if (memoryNode)
+		{
+			Ptr<TreeViewItem> data = memoryNode->GetData().Cast<TreeViewItem>();
+			if (data)
+			{
+				return data->image;
+			}
+		}
+		return 0;
+	}
+
+	WString TreeViewItemRootProvider::GetTextValue(INodeProvider* node)
+	{
+		MemoryNodeProvider* memoryNode = dynamic_cast<MemoryNodeProvider*>(node);
+		if (memoryNode)
+		{
+			Ptr<TreeViewItem> data = memoryNode->GetData().Cast<TreeViewItem>();
+			if (data)
+			{
+				return data->text;
+			}
+		}
+		return L"";
+	}
+
+	description::Value TreeViewItemRootProvider::GetBindingValue(INodeProvider* node)
+	{
+		return Value::From(GetTreeViewData(node));
+	}
+
+	IDescriptable* TreeViewItemRootProvider::RequestView(const WString& identifier)
+	{
+		if (identifier == ITreeViewItemView::Identifier)
+		{
+			return (ITreeViewItemView*)this;
+		}
+		else
+		{
+			return MemoryNodeRootProvider::RequestView(identifier);
 		}
 	}
 }

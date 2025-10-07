@@ -32,9 +32,11 @@ TEST_FILE
 		TEST_ASSERT(nodeItemProvider->GetTextValue(0) == L"Node1");
 		TEST_ASSERT(nodeItemProvider->GetTextValue(1) == L"Node2");
 		
-		// Verify node retrieval
+		// Verify node retrieval through INodeItemView interface
 		auto retrievedNode = nodeItemProvider->RequestNode(0);
 		TEST_ASSERT(retrievedNode != nullptr);
+		
+		// Verify GetTextValue on root provider through INodeRootProvider interface
 		TEST_ASSERT(rootProvider->GetTextValue(retrievedNode.Obj()) == L"Node1");
 		
 		// Verify root provider retrieval

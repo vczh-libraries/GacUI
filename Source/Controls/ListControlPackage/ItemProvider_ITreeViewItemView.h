@@ -66,17 +66,10 @@ TreeViewItemRootProvider
 		, public virtual ITreeViewItemView
 		, public Description<TreeViewItemRootProvider>
 	{
-	protected:
-
-		Ptr<GuiImageData>				GetNodeImage(INodeProvider* node)override;
-		WString							GetTextValue(INodeProvider* node)override;
-		description::Value				GetBindingValue(INodeProvider* node)override;
 	public:
 		/// <summary>Create a item root provider.</summary>
 		TreeViewItemRootProvider();
 		~TreeViewItemRootProvider();
-
-		IDescriptable*					RequestView(const WString& identifier)override;
 
 		/// <summary>Get the <see cref="TreeViewItem"/> object from a node.</summary>
 		/// <returns>The <see cref="TreeViewItem"/> object.</returns>
@@ -89,6 +82,16 @@ TreeViewItemRootProvider
 		/// <summary>Notify the tree view control that the node is changed. This is required when content in a <see cref="TreeViewItem"/> is modified, but both <see cref="SetTreeViewData"/> or [M:vl.presentation.controls.tree.MemoryNodeProvider.SetData] are not called.</summary>
 		/// <param name="node">The node.</param>
 		void							UpdateTreeViewData(INodeProvider* node);
+
+		// ===================== list::ITreeViewItemView =====================
+
+		Ptr<GuiImageData>				GetNodeImage(INodeProvider* node)override;
+		WString							GetTextValue(INodeProvider* node)override;
+		description::Value				GetBindingValue(INodeProvider* node)override;
+
+		// ===================== list::IItemProvider =====================
+
+		IDescriptable*					RequestView(const WString& identifier)override;
 	};
 }
 

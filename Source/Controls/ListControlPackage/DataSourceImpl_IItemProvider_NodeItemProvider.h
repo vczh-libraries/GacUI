@@ -58,9 +58,7 @@ NodeItemProvider
 		void							OnItemExpanded(INodeProvider* node)override;
 		void							OnItemCollapsed(INodeProvider* node)override;
 		vint							CalculateNodeVisibilityIndexInternal(INodeProvider* node);
-		vint							CalculateNodeVisibilityIndex(INodeProvider* node)override;
 		
-		Ptr<INodeProvider>				RequestNode(vint index)override;
 	public:
 		/// <summary>Create an item provider using a node root provider.</summary>
 		/// <param name="_root">The node root provider.</param>
@@ -70,6 +68,14 @@ NodeItemProvider
 		/// <summary>Get the owned node root provider.</summary>
 		/// <returns>The node root provider.</returns>
 		Ptr<INodeRootProvider>			GetRoot();
+
+		// ===================== list::INodeItemView =====================
+
+		Ptr<INodeProvider>				RequestNode(vint index)override;
+		vint							CalculateNodeVisibilityIndex(INodeProvider* node)override;
+
+		// ===================== list::IItemProvider =====================
+
 		vint							Count()override;
 		WString							GetTextValue(vint itemIndex)override;
 		description::Value				GetBindingValue(vint itemIndex)override;
