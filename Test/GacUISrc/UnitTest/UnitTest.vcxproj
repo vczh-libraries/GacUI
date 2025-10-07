@@ -266,6 +266,7 @@
     <ClCompile Include="TestItemProviders_ListViewItemBindableProvider.cpp" />
     <ClCompile Include="TestItemProviders_TreeViewItemRootProvider.cpp" />
     <ClCompile Include="TestItemProviders_TreeViewItemBindableRootProvider.cpp" />
+    <ClCompile Include="TestItemProviders_NodeItemProvider.cpp" />
     <ClCompile Include="TestItemProviders.cpp" />
   </ItemGroup>
   <ItemGroup>

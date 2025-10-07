@@ -42,7 +42,7 @@ Keep task 3 using TreeViewItemRootProvider only, you can create a task 4 for int
 
 # TASKS
 
-- [ ] TASK No.1: Create TestItemProviders_NodeItemProvider.cpp and Add to Project
+- [x] TASK No.1: Create TestItemProviders_NodeItemProvider.cpp and Add to Project
 - [ ] TASK No.2: Implement Test Cases for Visible Index and Node Mapping
 - [ ] TASK No.3: Implement Test Cases for IItemProvider Data Retrieval with TreeViewItemRootProvider
 - [ ] TASK No.4: Add Simple Integration Test Cases with TreeViewItemBindableRootProvider
