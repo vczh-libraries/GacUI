@@ -92,16 +92,25 @@
 
 ### Step 6.2
 
-- There will be multiple `# UPDATE` or `# FIXING ATTEMPTS` sections in `Copilot_Task.md`,   `Copilot_Planning.md` and `Copilot_Execution.md`.
-- These 3 files recorded how you interpreted the last completed task, and how I wanted you to adjust  your understanding.
-- Find out what you can learn from the updates, about my philosophy and preferences.
-- Check all future tasks, apply what you have learned, and adjust your approach accordingly.
+- Read through `Copilot_Execution.md`. There may be some fixing attempts, that were done by you.
+- Compare existing source code with `Copilot_Execution.md`, finding what is changed.
+  - During comparing, you need to take into consideration of the fixing attempts, as sometimes you didn't update the main content of the document.
+- Identify all differences between the document and the source code:
+  - If it is caused by any fixing attempts, ignore it.
+  - If any fixing attempt was reverted:
+    - It may be canceled by a further fixing attemp, ignore it.
+    - Otherwise it was a user edit.
+  - Any other difference is a user edit.
+- If there is no `# !!!VERIFIED!!!` in `Copilot_Execution.md`, it means you failed to deliver the task, either the code did not compile or some test cases failed. My edit will also reflects the final solution to the task.
+- Carefully read through and analyse all user edits, understand my tastes and preferences about the source code.
+- Add your finding to `Copilot_Execution.md` at the very end with the topic `# Comparing to User Edit`.
 
 ### Step 6.3
 
-- Compare existing source code with `Copilot_Execution.md`, finding what is changed. All differences you find will be me editing the code after the task is finished. Carefully read through the changes, understand my tastes and preferences about the source code.
-- If there is no `# !!!VERIFIED!!!` in `Copilot_Execution.md`, it means you failed to deliver the task, either the code did not compile or some test cases failed. My edit will also reflects the final solution to the task.
-- Add your finding to `Copilot_Execution.md` at the very end with the topic `# Comparing to User Edit`.
+- There will be multiple `# UPDATES` or `# FIXING ATTEMPTS` or `# Comparing to User Edit` sections in `Copilot_Task.md`, `Copilot_Planning.md` and `Copilot_Execution.md`.
+- These 3 files recorded how you interpreted the last completed task, and how I wanted you to adjust  your understanding.
+- Find out what you can learn from the updates, about my philosophy and preferences.
+- Check all future tasks, apply what you have learned, and adjust your approach accordingly.
 
 # External Tools Environment and Context
 
