@@ -133,6 +133,11 @@ All test cases should:
 - Use `SetExpanding()` on nodes to test expand/collapse scenarios
 - Clear callback logs between test phases to isolate specific behaviors
 - Use `AssertCallbacks()` to verify correct callback sequences
+- **Code Style (from Task 1 learning):**
+  - Call methods directly without explicit interface casting unless the compiler requires it
+  - Add comments specifying which interface provides each method being tested (e.g., "// Verify operation through INodeItemView interface")
+  - Use blank lines between conceptually different test operations for clarity
+  - Prioritize simple, direct code over defensive over-engineering
 
 Each test category should be organized under `TEST_CATEGORY` blocks with descriptive names like "BasicIndexMapping", "ExpandCollapseDynamics", "EdgeCases", etc.
 
@@ -223,6 +228,11 @@ All test cases should:
 - Use `RequestView()` to obtain `INodeItemView` and verify it's the same object
 - Test expand/collapse operations and verify data retrieval still works correctly
 - Use `SetExpanding()` to change visibility and verify `Count()` updates accordingly
+- **Code Style (from Task 1 learning):**
+  - Call methods directly without explicit interface casting unless the compiler requires it
+  - Add comments specifying which interface provides each method (e.g., "// Retrieve data through IItemProvider interface")
+  - Use blank lines to separate different phases of testing (setup, operation, verification)
+  - Keep code simple and direct—avoid premature complexity
 
 Each test category should be organized under `TEST_CATEGORY` blocks with descriptive names like "BasicDataRetrieval", "DataRetrievalAfterChanges", "TreeViewItemRootProviderIntegration", "CallbackIntegration", etc.
 
@@ -281,6 +291,10 @@ Create a simple test case:
 - Verify basic operations: `Count()`, `GetTextValue()`, `GetBindingValue()`
 - Expand one node and verify the visible count increases and data retrieval works
 - Collapse the node and verify the visible count decreases
+- **Code Style (from Task 1 learning):**
+  - Use direct method calls without interface casting
+  - Add interface-specific comments for clarity
+  - Keep test simple since both components are already thoroughly tested
 
 Organize under a `TEST_CATEGORY` block named "TreeViewItemBindableRootProviderIntegration" or similar.
 
