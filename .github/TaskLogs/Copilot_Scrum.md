@@ -44,15 +44,22 @@ Keep task 3 using TreeViewItemRootProvider only, you can create a task 4 for int
 
 I believe we can split Task No.3 into smaller tasks. I would like to keep any task to only add a few hundreds of code. Maybe one task for each test category
 
+## UPDATE
+
+I believe we can split Task No.2 into smaller tasks. I would like to keep any task to only add a few hundreds of code. Maybe one task for each test category
+
 # TASKS
 
 - [x] TASK No.1: Create TestItemProviders_NodeItemProvider.cpp and Add to Project
-- [ ] TASK No.2: Implement Test Cases for Visible Index and Node Mapping
-- [ ] TASK No.3: Implement Test Cases for Basic IItemProvider Data Retrieval
-- [ ] TASK No.4: Implement Test Cases for Data Retrieval After Structural Changes
-- [ ] TASK No.5: Implement Test Cases for TreeViewItemRootProvider Integration
-- [ ] TASK No.6: Implement Test Cases for Callback Integration
-- [ ] TASK No.7: Add Simple Integration Test Cases with TreeViewItemBindableRootProvider
+- [ ] TASK No.2: Implement Test Cases for Basic Index Mapping
+- [ ] TASK No.3: Implement Test Cases for Expand/Collapse Dynamics
+- [ ] TASK No.4: Implement Test Cases for Edge Cases and Complex Scenarios
+- [ ] TASK No.5: Implement Test Cases for Operations on Invisible Nodes
+- [ ] TASK No.6: Implement Test Cases for Basic IItemProvider Data Retrieval
+- [ ] TASK No.7: Implement Test Cases for Data Retrieval After Structural Changes
+- [ ] TASK No.8: Implement Test Cases for TreeViewItemRootProvider Integration
+- [ ] TASK No.9: Implement Test Cases for Callback Integration
+- [ ] TASK No.10: Add Simple Integration Test Cases with TreeViewItemBindableRootProvider
 
 ## TASK No.1: Create TestItemProviders_NodeItemProvider.cpp and Add to Project
 
@@ -94,101 +101,231 @@ Evidence from codebase:
 - The project structure requires both `.vcxproj` and `.vcxproj.filters` to be updated for new source files
 - The `tree::NodeItemProvider` class is defined in `Source\Controls\ListControlPackage\DataSourceImpl_IItemProvider_NodeItemProvider.h`
 
-## TASK No.2: Implement Test Cases for Visible Index and Node Mapping
+## TASK No.2: Implement Test Cases for Basic Index Mapping
 
-This task implements comprehensive test cases for the core functionality of `tree::NodeItemProvider`: the bidirectional mapping between visible indices and tree nodes, which changes dynamically with expand/collapse operations.
+This task implements test cases for the most fundamental aspect of `tree::NodeItemProvider`: the basic bidirectional mapping between visible indices and tree nodes in static (non-changing) tree structures.
 
 ### what to be done
 
-Implement test categories covering these scenarios:
+Implement a test category "BasicIndexMapping" covering these scenarios:
 
-**Basic Index Mapping:**
 - Test `RequestNode(vint index)` with a flat list of nodes (all at root level, all collapsed)
 - Test `RequestNode(vint index)` with a simple expanded hierarchy (1-2 levels deep)
-- Test `CalculateNodeVisibilityIndex(INodeProvider* node)` returns correct indices for visible nodes
+- Test `CalculateNodeVisibilityIndex(INodeProvider* node)` returns correct indices for visible nodes in a flat tree
+- Test `CalculateNodeVisibilityIndex(INodeProvider* node)` returns correct indices for visible nodes in a simple expanded hierarchy
 - Test `CalculateNodeVisibilityIndex(INodeProvider* node)` returns -1 for nodes in collapsed subtrees
 - Verify that the root node itself is excluded from visible indices (requesting index 0 should return the first child of root)
+- Test `Count()` returns correct value for flat trees
+- Test `Count()` returns correct value for simple hierarchies with some expanded nodes
 
-**Expand/Collapse Dynamics:**
-- Test that expanding a collapsed node correctly increases `Count()` and adjusts visible indices of subsequent nodes
-- Test that collapsing an expanded node correctly decreases `Count()` and adjusts visible indices
-- Test visible index calculations with partially expanded multi-level trees (some branches expanded, others collapsed)
-- Test that expanding/collapsing nested nodes correctly updates the entire visible index range
-- Verify that `OnItemModified` callbacks from the `IItemProvider` interface are triggered with correct parameters during expand/collapse
-
-**Edge Cases and Complex Scenarios:**
-- Test `RequestNode` with invalid indices (negative, beyond count)
-- Test visible indices in a deeply nested tree (4+ levels) with mixed expand/collapse states
-- Test that adding/removing nodes to/from expanded parents correctly updates visible indices
-- Test that modifications to collapsed subtrees don't affect visible indices of the parent tree
-
-**Operations on Invisible Nodes:**
-- Test that expanding a node that is currently invisible (its parent is collapsed) does not trigger any callbacks to `tree::NodeItemProvider`
-- Test that collapsing a node that is currently invisible (its parent is collapsed) does not trigger any callbacks to `tree::NodeItemProvider`
-- Test that adding/removing children to/from an invisible node (in a collapsed subtree) does not affect `Count()` of `tree::NodeItemProvider`
-- Test that the expand state of invisible nodes is preserved (when parent is later expanded, the previously expanded invisible node's children become visible)
-- Test that multiple structural changes to collapsed subtrees do not cause any `OnItemModified` events on `tree::NodeItemProvider`
-- Verify that when a collapsed parent containing modified invisible nodes is expanded, the correct structure is reflected in visible indices
+This task should add approximately 100-150 lines of test code.
 
 ### how to test it
 
 All test cases should:
 - Create a `TreeViewItemRootProvider` and wrap it with `NodeItemProvider`
-- Build various tree structures using `CreateTreeViewItem` helper
+- Build simple tree structures (2-3 levels max) using `CreateTreeViewItem` helper
 - Use `MockItemProviderCallback` to monitor `OnItemModified` events from the `NodeItemProvider` (since `tree::NodeItemProvider` implements `list::IItemProvider`, only `IItemProviderCallback` is relevant for testing)
 - Verify `Count()`, `RequestNode()`, and `CalculateNodeVisibilityIndex()` return expected values
-- Use `SetExpanding()` on nodes to test expand/collapse scenarios
-- Clear callback logs between test phases to isolate specific behaviors
-- Use `AssertCallbacks()` to verify correct callback sequences
+- Test with static tree structures (no expand/collapse operations during testing)
 - **Code Style (from Task 1 learning):**
   - Call methods directly without explicit interface casting unless the compiler requires it
   - Add comments specifying which interface provides each method being tested (e.g., "// Verify operation through INodeItemView interface")
   - Use blank lines between conceptually different test operations for clarity
   - Prioritize simple, direct code over defensive over-engineering
 
-Each test category should be organized under `TEST_CATEGORY` blocks with descriptive names like "BasicIndexMapping", "ExpandCollapseDynamics", "EdgeCases", etc.
+Organize under a `TEST_CATEGORY` block named "BasicIndexMapping".
 
 ### rationale
 
-This task focuses on the most fundamental responsibility of `NodeItemProvider`: converting a hierarchical tree structure into a flat list of visible items. This mapping is dynamic and complex because:
+This task establishes the foundation for all index mapping tests by focusing only on static scenarios:
 
 1. **Core Responsibility**: The primary purpose of `NodeItemProvider` is to make tree nodes accessible as a flat list for `GuiListControl`, which is evidenced by its implementation of both `list::ItemProviderBase` and `tree::INodeItemView`
 
-2. **Complex State Management**: The implementation in `DataSourceImpl_IItemProvider_NodeItemProvider.cpp` shows sophisticated logic in:
-   - `GetNodeByOffset()` - recursively traversing only expanded nodes
-   - `OnItemExpanded/OnItemCollapsed()` - updating visible ranges when state changes
-   - `CalculateNodeVisibilityIndexInternal()` - handling visibility checks and parent expansion states
+2. **Manageable Scope**: By limiting to static tree structures (no expand/collapse during the test), this task adds only ~100-150 lines of code, making it easier to review and debug
 
-3. **Dynamic Behavior**: The visible index mapping changes whenever:
-   - A node is expanded or collapsed (via `SetExpanding()`)
-   - Child nodes are added or removed from expanded parents
-   - Any structural modification occurs in the visible portion of the tree
-
-4. **Foundation for Data Retrieval**: The data retrieval functionality (Task 3) depends entirely on correct index-to-node mapping, making this task prerequisite knowledge for understanding the complete behavior
+3. **Foundation for Dynamic Tests**: Later tasks will build on these basic tests by adding expand/collapse dynamics
 
 Evidence from implementation:
-- `RequestNode()` uses `GetNodeByOffset()` which only traverses expanded nodes
+- `RequestNode()` uses `GetNodeByOffset()` which recursively traverses only expanded nodes
 - `CalculateNodeVisibilityIndexInternal()` returns -2 for nodes in collapsed subtrees
-- `OnItemExpanded/OnItemCollapsed()` calls `InvokeOnItemModified()` to notify listeners about visible range changes
 - The root node is explicitly excluded (visible indices start from root's children)
 
-**Why Test Operations on Invisible Nodes:**
+This task should be completed first (after Task 1) because understanding the basic index mapping is essential for all subsequent tests.
 
-Testing operations on invisible nodes is critical because `tree::NodeItemProvider` should be completely unaware of and unaffected by changes in collapsed subtrees. This is important for:
+## TASK No.3: Implement Test Cases for Expand/Collapse Dynamics
+
+This task implements test cases for the dynamic behavior of `tree::NodeItemProvider`: how the visible index mapping changes when nodes are expanded or collapsed.
+
+### what to be done
+
+Implement a test category "ExpandCollapseDynamics" covering these scenarios:
+
+- Test that expanding a collapsed node correctly increases `Count()` and adjusts visible indices of subsequent nodes
+- Test that collapsing an expanded node correctly decreases `Count()` and adjusts visible indices
+- Test visible index calculations with partially expanded multi-level trees (some branches expanded, others collapsed)
+- Test that expanding/collapsing nested nodes correctly updates the entire visible index range
+- Verify that `OnItemModified` callbacks from the `IItemProvider` interface are triggered with correct parameters during expand/collapse
+- Test expanding a node at the beginning, middle, and end of the visible list
+- Test collapsing a node at the beginning, middle, and end of the visible list
+- Test multiple expand/collapse operations in sequence and verify indices remain consistent
+
+This task should add approximately 150-200 lines of test code.
+
+### how to test it
+
+All test cases should:
+- Create a `TreeViewItemRootProvider` and wrap it with `NodeItemProvider`
+- Build tree structures (2-3 levels) using `CreateTreeViewItem` helper
+- Use `MockItemProviderCallback` to monitor `OnItemModified` events from the `NodeItemProvider`
+- Record initial `Count()` and node positions
+- Use `SetExpanding()` on nodes to test expand/collapse scenarios
+- Verify `Count()`, `RequestNode()`, and `CalculateNodeVisibilityIndex()` return updated values after each operation
+- Clear callback logs between test phases to isolate specific behaviors
+- Use `AssertCallbacks()` to verify correct callback sequences with correct parameters (start, count, newCount)
+- **Code Style (from Task 1 learning):**
+  - Call methods directly without explicit interface casting unless the compiler requires it
+  - Add comments specifying which interface provides each method being tested
+  - Use blank lines between conceptually different test operations for clarity
+  - Prioritize simple, direct code over defensive over-engineering
+
+Organize under a `TEST_CATEGORY` block named "ExpandCollapseDynamics".
+
+### rationale
+
+This task verifies the dynamic behavior that makes `NodeItemProvider` useful in real applications:
+
+1. **Real-World Usage**: Tree controls constantly expand and collapse nodes in response to user actions, so this dynamic behavior is critical
+
+2. **Complex State Management**: The implementation in `DataSourceImpl_IItemProvider_NodeItemProvider.cpp` shows sophisticated logic in:
+   - `OnItemExpanded/OnItemCollapsed()` - updating visible ranges when state changes
+   - `InvokeOnItemModified()` - notifying listeners about visible range changes
+
+3. **Event-Driven Architecture**: Controls depend on `OnItemModified` callbacks to know when to refresh, so correct callback parameters are essential
+
+4. **Builds on Task 2**: Task 2 verified basic mapping works; this task verifies it updates correctly with state changes
+
+Evidence from implementation:
+- `OnItemExpanded/OnItemCollapsed()` calls `InvokeOnItemModified()` to notify listeners about visible range changes
+- Parameters to callbacks are carefully calculated based on the position and size of the expanded/collapsed subtree
+
+This task should come after Task 2 because it builds on the foundation of static index mapping.
+
+## TASK No.4: Implement Test Cases for Edge Cases and Complex Scenarios
+
+This task implements test cases for edge cases and complex scenarios in `tree::NodeItemProvider`, ensuring robust behavior in unusual or extreme conditions.
+
+### what to be done
+
+Implement a test category "EdgeCasesAndComplexScenarios" covering these scenarios:
+
+- Test `RequestNode` with invalid indices (negative, beyond count) - should handle gracefully
+- Test `CalculateNodeVisibilityIndex` with null node pointer
+- Test `CalculateNodeVisibilityIndex` with a node that doesn't belong to the tree
+- Test visible indices in a deeply nested tree (4+ levels) with mixed expand/collapse states
+- Test that adding/removing nodes to/from expanded parents correctly updates visible indices
+- Test that modifications to collapsed subtrees don't affect visible indices of the parent tree
+- Test expand/collapse operations on trees with many nodes (stress test with 50+ nodes)
+- Test a tree where all nodes are collapsed (only root's children visible)
+- Test a tree where all nodes are fully expanded (all levels visible)
+
+This task should add approximately 100-150 lines of test code.
+
+### how to test it
+
+All test cases should:
+- Create a `TreeViewItemRootProvider` and wrap it with `NodeItemProvider`
+- Build various tree structures including deeply nested trees (4+ levels) and trees with many nodes
+- Use `MockItemProviderCallback` to monitor `OnItemModified` events
+- Test boundary conditions and invalid inputs
+- Verify that adding/removing children to expanded nodes triggers correct callbacks and index updates
+- Verify that operations on collapsed subtrees don't affect the visible list
+- Use `AssertCallbacks()` to verify correct callback sequences
+- **Code Style (from Task 1 learning):**
+  - Call methods directly without explicit interface casting unless the compiler requires it
+  - Add comments specifying which interface provides each method being tested
+  - Use blank lines between conceptually different test operations for clarity
+  - Prioritize simple, direct code over defensive over-engineering
+
+Organize under a `TEST_CATEGORY` block named "EdgeCasesAndComplexScenarios".
+
+### rationale
+
+This task ensures robustness and correctness in edge cases:
+
+1. **Error Handling**: Real applications may pass invalid indices or null pointers, so the implementation must handle these gracefully without crashing
+
+2. **Scalability**: Testing with deeply nested trees and many nodes ensures the implementation scales to real-world tree sizes
+
+3. **Completeness**: This task covers scenarios not covered in Tasks 2 and 3, ensuring comprehensive test coverage
+
+Evidence from implementation:
+- `RequestNode()` uses `GetNodeByOffset()` which must handle invalid indices
+- Adding/removing children triggers callbacks through the `INodeRootProvider` interface
+- Collapsed subtrees are explicitly excluded from visible index calculations
+
+This task should come after Tasks 2 and 3 because it tests edge cases on top of the basic and dynamic functionality verified in those tasks.
+
+## TASK No.5: Implement Test Cases for Operations on Invisible Nodes
+
+This task implements test cases to verify that operations on invisible nodes (in collapsed subtrees) do not affect `tree::NodeItemProvider` in any way, ensuring correct isolation between visible and invisible portions of the tree.
+
+### what to be done
+
+Implement a test category "OperationsOnInvisibleNodes" covering these scenarios:
+
+- Test that expanding a node that is currently invisible (its parent is collapsed) does not trigger any callbacks to `tree::NodeItemProvider`
+- Test that collapsing a node that is currently invisible (its parent is collapsed) does not trigger any callbacks to `tree::NodeItemProvider`
+- Test that adding/removing children to/from an invisible node (in a collapsed subtree) does not affect `Count()` of `tree::NodeItemProvider`
+- Test that the expand state of invisible nodes is preserved (when parent is later expanded, the previously expanded invisible node's children become visible)
+- Test that multiple structural changes to collapsed subtrees do not cause any `OnItemModified` events on `tree::NodeItemProvider`
+- Verify that when a collapsed parent containing modified invisible nodes is expanded, the correct structure is reflected in visible indices
+- Test that `CalculateNodeVisibilityIndex()` returns -1 for nodes in invisible subtrees regardless of their own expand state
+
+This task should add approximately 100-150 lines of test code.
+
+### how to test it
+
+All test cases should:
+- Create a `TreeViewItemRootProvider` and wrap it with `NodeItemProvider`
+- Build tree structures (3-4 levels) using `CreateTreeViewItem` helper
+- Use `MockItemProviderCallback` to monitor `OnItemModified` events
+- Collapse parent nodes to create invisible subtrees
+- Perform operations on invisible nodes:
+  - Expand/collapse invisible nodes via `SetExpanding()`
+  - Add/remove children to invisible nodes
+  - Modify properties of invisible nodes
+- Verify that no callbacks are triggered and `Count()` doesn't change
+- Clear callback logs to ensure isolation
+- Later expand the parent and verify the invisible operations had the expected effect on the tree structure
+- **Code Style (from Task 1 learning):**
+  - Call methods directly without explicit interface casting unless the compiler requires it
+  - Add comments specifying which interface provides each method being tested
+  - Use blank lines between conceptually different test operations for clarity
+  - Prioritize simple, direct code over defensive over-engineering
+
+Organize under a `TEST_CATEGORY` block named "OperationsOnInvisibleNodes".
+
+### rationale
+
+Testing operations on invisible nodes is critical because `tree::NodeItemProvider` should be completely unaware of and unaffected by changes in collapsed subtrees:
 
 1. **Performance**: If `NodeItemProvider` reacts to every change in invisible nodes, it would waste CPU cycles recalculating indices for nodes that aren't displayed
+
 2. **Correctness**: The `Count()` and visible indices should only reflect what's actually visible, not the state of hidden subtrees
+
 3. **Event Discipline**: `OnItemModified` callbacks should only fire when the visible list actually changes, not when invisible nodes are modified
+
 4. **State Preservation**: The tree structure maintains expand/collapse states even when nodes are invisible, so when a parent is later expanded, the child's previous state should be honored
 
-This behavior is implemented through:
+Evidence from implementation:
 - `OnItemExpanded/OnItemCollapsed()` checking `CalculateNodeVisibilityIndex()` before invoking callbacks
 - The visibility check returns -1 for nodes in collapsed subtrees, preventing callback propagation
 - The underlying `INodeRootProvider` managing the full tree structure independently of what's visible
 
-This task should be completed before Task 3 because understanding the index mapping is essential for verifying that data retrieval operates on the correct nodes.
+This task should come after Tasks 2, 3, and 4 because it tests a specific isolation concern that builds on understanding of basic mapping, dynamics, and edge cases.
 
-## TASK No.3: Implement Test Cases for Basic IItemProvider Data Retrieval
+## TASK No.6: Implement Test Cases for Basic IItemProvider Data Retrieval
 
 This task implements basic test cases to verify that `tree::NodeItemProvider` correctly retrieves and exposes data from underlying `tree::INodeProvider` nodes through the `list::IItemProvider` interface, using `TreeViewItemRootProvider` as the underlying provider.
 
@@ -245,9 +382,9 @@ Evidence from implementation:
 - `Count()` calculates visible nodes using `root->GetRootNode()->CalculateTotalVisibleNodes() - 1`
 - `RequestView()` checks the identifier and returns `this` for `INodeItemView::Identifier` or delegates to root provider
 
-This task should come after Task 2 because it relies on the index-to-node mapping being correct. However, it only tests the simplest cases to keep the scope manageable.
+This task should come after Tasks 2-5 because it relies on the index-to-node mapping being correct. However, it only tests the simplest cases to keep the scope manageable.
 
-## TASK No.4: Implement Test Cases for Data Retrieval After Structural Changes
+## TASK No.7: Implement Test Cases for Data Retrieval After Structural Changes
 
 This task implements test cases to verify that data retrieval through `tree::NodeItemProvider` works correctly after dynamic structural changes to the tree, such as expanding/collapsing nodes.
 
@@ -306,9 +443,9 @@ Evidence from implementation:
 - `GetNodeByOffset()` recalculates the node-to-index mapping based on current expand states
 - The visible node count changes dynamically with `CalculateTotalVisibleNodes()`
 
-This task should come after Task 3 because it extends basic data retrieval with dynamic scenarios, building on the foundation of static tests.
+This task should come after Task 6 because it extends basic data retrieval with dynamic scenarios, building on the foundation of static tests.
 
-## TASK No.5: Implement Test Cases for TreeViewItemRootProvider Integration
+## TASK No.8: Implement Test Cases for TreeViewItemRootProvider Integration
 
 This task implements test cases to verify that `tree::NodeItemProvider` correctly integrates with and delegates to `TreeViewItemRootProvider`, ensuring the adapter pattern works correctly.
 
@@ -365,9 +502,9 @@ Evidence from implementation:
 - `GetRoot()` simply returns the `root` member variable
 - No data caching logic exists in the implementation
 
-This task should come after Tasks 3 and 4 because it verifies that the data retrieval tested in those tasks actually works through proper delegation, not through some coincidental behavior.
+This task should come after Tasks 6 and 7 because it verifies that the data retrieval tested in those tasks actually works through proper delegation, not through some coincidental behavior.
 
-## TASK No.6: Implement Test Cases for Callback Integration
+## TASK No.9: Implement Test Cases for Callback Integration
 
 This task implements test cases to verify that `tree::NodeItemProvider` correctly manages `IItemProviderCallback` instances and fires appropriate events when the visible node set changes.
 
@@ -431,13 +568,13 @@ Evidence from implementation:
   - `newCount`: New visible count after expansion/collapse
   - `itemReferenceUpdated`: Always false for expand/collapse
 
-This task should come after Tasks 3, 4, and 5 because:
-- It assumes basic data retrieval works (Task 3)
-- It assumes structural changes work (Task 4)
-- It may involve verifying delegation to root provider (Task 5)
+This task should come after Tasks 6, 7, and 8 because:
+- It assumes basic data retrieval works (Task 6)
+- It assumes structural changes work (Task 7)
+- It may involve verifying delegation to root provider (Task 8)
 - It's a higher-level integration concern that builds on lower-level functionality
 
-## TASK No.7: Add Simple Integration Test Cases with TreeViewItemBindableRootProvider
+## TASK No.10: Add Simple Integration Test Cases with TreeViewItemBindableRootProvider
 
 This task adds a few simple test cases to verify that `tree::NodeItemProvider` works correctly with `TreeViewItemBindableRootProvider` as the underlying provider. Since both `NodeItemProvider` and `TreeViewItemBindableRootProvider` have been thoroughly tested individually, this task only needs to verify basic integration.
 
@@ -493,7 +630,7 @@ Evidence from implementation:
 
 This task should come last because:
 - It depends on the test infrastructure established in Task 1
-- It can reference patterns from Task 3 for data retrieval testing
+- It can reference patterns from Task 6 for data retrieval testing
 - It's the least critical task and can be simplified if time is limited
 
 # Impact to the Knowledge Base
