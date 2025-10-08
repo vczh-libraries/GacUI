@@ -52,7 +52,7 @@ I believe we can split Task No.2 into smaller tasks. I would like to keep any ta
 
 - [x] TASK No.1: Create TestItemProviders_NodeItemProvider.cpp and Add to Project
 - [x] TASK No.2: Implement Test Cases for Basic Index Mapping
-- [ ] TASK No.3: Implement Test Cases for Expand/Collapse Dynamics
+- [x] TASK No.3: Implement Test Cases for Expand/Collapse Dynamics
 - [ ] TASK No.4: Implement Test Cases for Edge Cases and Complex Scenarios
 - [ ] TASK No.5: Implement Test Cases for Operations on Invisible Nodes
 - [ ] TASK No.6: Implement Test Cases for Basic IItemProvider Data Retrieval
@@ -183,11 +183,13 @@ All test cases should:
 - Verify `Count()`, `RequestNode()`, and `CalculateNodeVisibilityIndex()` return updated values after each operation
 - Clear callback logs between test phases to isolate specific behaviors
 - Use `AssertCallbacks()` to verify correct callback sequences with correct parameters (start, count, newCount)
-- **Code Style (from Task 1 learning):**
+- **Code Style (from Task 1 & 2 learnings):**
   - Call methods directly without explicit interface casting unless the compiler requires it
   - Add comments specifying which interface provides each method being tested
   - Use blank lines between conceptually different test operations for clarity
   - Prioritize simple, direct code over defensive over-engineering
+  - Use `AssertItems` helper with `const wchar_t*` arrays for compact and readable verification of visible node sequences
+  - For empty lists, directly assert `Count() == 0` rather than using helper functions
 
 Organize under a `TEST_CATEGORY` block named "ExpandCollapseDynamics".
 
@@ -241,11 +243,13 @@ All test cases should:
 - Verify that adding/removing children to expanded nodes triggers correct callbacks and index updates
 - Verify that operations on collapsed subtrees don't affect the visible list
 - Use `AssertCallbacks()` to verify correct callback sequences
-- **Code Style (from Task 1 learning):**
+- **Code Style (from Task 1 & 2 learnings):**
   - Call methods directly without explicit interface casting unless the compiler requires it
   - Add comments specifying which interface provides each method being tested
   - Use blank lines between conceptually different test operations for clarity
   - Prioritize simple, direct code over defensive over-engineering
+  - Use `AssertItems` helper with `const wchar_t*` arrays for verifying visible node sequences
+  - Always add boundary checks to public API methods that take index parameters
 
 Organize under a `TEST_CATEGORY` block named "EdgeCasesAndComplexScenarios".
 
@@ -298,11 +302,12 @@ All test cases should:
 - Verify that no callbacks are triggered and `Count()` doesn't change
 - Clear callback logs to ensure isolation
 - Later expand the parent and verify the invisible operations had the expected effect on the tree structure
-- **Code Style (from Task 1 learning):**
+- **Code Style (from Task 1 & 2 learnings):**
   - Call methods directly without explicit interface casting unless the compiler requires it
   - Add comments specifying which interface provides each method being tested
   - Use blank lines between conceptually different test operations for clarity
   - Prioritize simple, direct code over defensive over-engineering
+  - Use `AssertItems` helper with `const wchar_t*` arrays for verifying visible node sequences
 
 Organize under a `TEST_CATEGORY` block named "OperationsOnInvisibleNodes".
 
@@ -356,11 +361,12 @@ All test cases should:
 - Test `Count()` against manually calculated visible node counts
 - Use `RequestView()` with different identifiers and verify return values
 - Call `GetRoot()` and verify it returns the original root provider
-- **Code Style (from Task 1 learning):**
+- **Code Style (from Task 1 & 2 learnings):**
   - Call methods directly without explicit interface casting unless the compiler requires it
   - Add comments specifying which interface provides each method (e.g., "// Retrieve data through IItemProvider interface")
   - Use blank lines to separate different test operations
   - Keep code simple and direct
+  - Use `AssertItems` helper when verifying sequences of text values
 
 Organize under a `TEST_CATEGORY` block named "BasicDataRetrieval".
 
@@ -419,10 +425,11 @@ All test cases should:
   - `GetTextValue()` at indices that were in the collapsed range are now different nodes
   - `GetTextValue()` for nodes outside the collapsed range remain correct
 - Perform multiple expand/collapse operations in sequence and verify consistency
-- **Code Style (from Task 1 learning):**
+- **Code Style (from Task 1 & 2 learnings):**
   - Call methods directly without explicit interface casting
   - Add comments to clarify which phase of testing is happening
   - Use blank lines between setup, operation, and verification phases
+  - Use `AssertItems` helper to verify sequences of visible node text values
 
 Organize under a `TEST_CATEGORY` block named "DataRetrievalAfterStructuralChanges".
 
@@ -477,10 +484,11 @@ All test cases should:
 - Modify tree item data directly (e.g., `treeItem->SetText(L"New Text")`)
 - Retrieve the value again through `NodeItemProvider` and verify it reflects the change
 - Call `GetRoot()` and verify it's the same object as the original root provider
-- **Code Style (from Task 1 learning):**
+- **Code Style (from Task 1 & 2 learnings):**
   - Call methods directly without explicit interface casting
   - Add comments explaining the delegation verification approach
   - Use clear variable names for root provider, node provider, and nodes
+  - Use `AssertItems` helper when verifying sequences of visible node text values
 
 Organize under a `TEST_CATEGORY` block named "TreeViewItemRootProviderIntegration".
 
@@ -540,10 +548,11 @@ All test cases should:
 - Clear callback logs between test phases to isolate specific behaviors
 - Test detaching callbacks and verify events stop being received
 - In some test cases, call `GetTextValue()` from within the callback to verify data retrieval works during event handling
-- **Code Style (from Task 1 learning):**
+- **Code Style (from Task 1 & 2 learnings):**
   - Call methods directly without explicit interface casting
   - Add comments explaining what callbacks are expected for each operation
   - Use blank lines to separate different test phases
+  - Use `AssertItems` helper when verifying visible node sequences
 
 Organize under a `TEST_CATEGORY` block named "CallbackIntegration".
 
@@ -596,15 +605,16 @@ The test should be minimal, just demonstrating that the two components work toge
 ### how to test it
 
 Create a simple test case:
-- Build a tree using `CreateBindableTreeViewItem` helper
+- Build a tree using bindable items (refer to Task 8's helper creation patterns)
 - Create `TreeViewItemBindableRootProvider` and wrap with `NodeItemProvider`
 - Verify basic operations: `Count()`, `GetTextValue()`, `GetBindingValue()`
 - Expand one node and verify the visible count increases and data retrieval works
 - Collapse the node and verify the visible count decreases
-- **Code Style (from Task 1 learning):**
+- **Code Style (from Task 1 & 2 learnings):**
   - Use direct method calls without interface casting
   - Add interface-specific comments for clarity
   - Keep test simple since both components are already thoroughly tested
+  - Use `AssertItems` helper for verifying visible node sequences
 
 Organize under a `TEST_CATEGORY` block named "TreeViewItemBindableRootProviderIntegration" or similar.
 
