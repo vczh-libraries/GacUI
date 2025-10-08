@@ -187,7 +187,11 @@ NodeItemProvider
 
 	Ptr<INodeProvider> NodeItemProvider::RequestNode(vint index)
 	{
-		if (root->CanGetNodeByVisibleIndex())
+		if (index < 0 || index >= Count())
+		{
+			return nullptr;
+		}
+		else if (root->CanGetNodeByVisibleIndex())
 		{
 			return root->GetNodeByVisibleIndex(index + 1);
 		}
