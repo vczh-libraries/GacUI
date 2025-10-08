@@ -97,6 +97,7 @@
   - During comparing, you need to take into consideration of the fixing attempts, as sometimes you didn't update the main content of the document.
 - Identify all differences between the document and the source code:
   - If it is caused by any fixing attempts, ignore it.
+  - If it is caused by any `# UPDATE`, ignore it.
   - If any fixing attempt was reverted:
     - It may be canceled by a further fixing attemp, ignore it.
     - Otherwise it was a user edit.
@@ -104,6 +105,7 @@
 - If there is no `# !!!VERIFIED!!!` in `Copilot_Execution.md`, it means you failed to deliver the task, either the code did not compile or some test cases failed. My edit will also reflects the final solution to the task.
 - Carefully read through and analyse all user edits, understand my tastes and preferences about the source code.
 - Add your finding to `Copilot_Execution.md` at the very end with the topic `# Comparing to User Edit`.
+  - If every changes are ignored by the rule above, or if you can't find any user edit, just write `No user edit found`.
 
 ### Step 6.3
 
