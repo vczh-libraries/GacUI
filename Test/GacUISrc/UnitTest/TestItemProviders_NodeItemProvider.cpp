@@ -1779,4 +1779,387 @@ TEST_FILE
 			TEST_ASSERT(nodeItemProvider->CalculateNodeVisibilityIndex(grandchild.Obj()) == 3);
 		});
 	});
+
+	TEST_CATEGORY(L"BasicDataRetrieval")
+	{
+		TEST_CASE(L"GetBindingValueValidIndices")
+		{
+			// Setup: Create root provider with simple tree structure
+			auto rootProvider = Ptr(new TreeViewItemRootProvider);
+			auto node1 = CreateTreeViewItem(L"Node1");
+			auto node2 = CreateTreeViewItem(L"Node2");
+			auto node3 = CreateTreeViewItem(L"Node3");
+			auto node4 = CreateTreeViewItem(L"Node4");
+			
+			auto rootMemoryNode = rootProvider->GetMemoryNode(rootProvider->GetRootNode().Obj());
+			rootMemoryNode->Children().Add(node1);
+			rootMemoryNode->Children().Add(node2);
+			rootMemoryNode->Children().Add(node3);
+			
+			// Add a child to node2 and expand it to have more visible nodes
+			auto node2MemoryNode = rootProvider->GetMemoryNode(node2.Obj());
+			node2MemoryNode->Children().Add(node4);
+			node2->SetExpanding(true); // Expand node2 to show node4
+			
+			// Create NodeItemProvider
+			auto nodeItemProvider = Ptr(new NodeItemProvider(rootProvider));
+			
+			// Verify Count() through IItemProvider interface - should have 4 visible nodes
+			TEST_ASSERT(nodeItemProvider->Count() == 4);
+			
+			// Verify GetBindingValue() through IItemProvider interface for first position
+			auto binding0 = nodeItemProvider->GetBindingValue(0);
+			auto node0 = nodeItemProvider->RequestNode(0);
+			auto expectedBinding0 = rootProvider->GetBindingValue(node0.Obj());
+			// Both should return the same binding value
+			TEST_ASSERT(binding0.GetRawPtr() == expectedBinding0.GetRawPtr());
+			
+			// Verify GetBindingValue() for middle position (index 1)
+			auto binding1 = nodeItemProvider->GetBindingValue(1);
+			auto node1Retrieved = nodeItemProvider->RequestNode(1);
+			auto expectedBinding1 = rootProvider->GetBindingValue(node1Retrieved.Obj());
+			TEST_ASSERT(binding1.GetRawPtr() == expectedBinding1.GetRawPtr());
+			
+			// Verify GetBindingValue() for another middle position (index 2)
+			auto binding2 = nodeItemProvider->GetBindingValue(2);
+			auto node2Retrieved = nodeItemProvider->RequestNode(2);
+			auto expectedBinding2 = rootProvider->GetBindingValue(node2Retrieved.Obj());
+			TEST_ASSERT(binding2.GetRawPtr() == expectedBinding2.GetRawPtr());
+			
+			// Verify GetBindingValue() for last position
+			auto binding3 = nodeItemProvider->GetBindingValue(3);
+			auto node3Retrieved = nodeItemProvider->RequestNode(3);
+			auto expectedBinding3 = rootProvider->GetBindingValue(node3Retrieved.Obj());
+			TEST_ASSERT(binding3.GetRawPtr() == expectedBinding3.GetRawPtr());
+		});
+
+		TEST_CASE(L"GetBindingValueAfterExpandCollapse")
+		{
+			// Setup: Create hierarchical tree structure
+			auto rootProvider = Ptr(new TreeViewItemRootProvider);
+			auto parent = CreateTreeViewItem(L"Parent");
+			auto child1 = CreateTreeViewItem(L"Child1");
+			auto child2 = CreateTreeViewItem(L"Child2");
+			auto grandchild = CreateTreeViewItem(L"Grandchild");
+			
+			auto rootMemoryNode = rootProvider->GetMemoryNode(rootProvider->GetRootNode().Obj());
+			rootMemoryNode->Children().Add(parent);
+			
+			auto parentMemoryNode = rootProvider->GetMemoryNode(parent.Obj());
+			parentMemoryNode->Children().Add(child1);
+			parentMemoryNode->Children().Add(child2);
+			
+			auto child1MemoryNode = rootProvider->GetMemoryNode(child1.Obj());
+			child1MemoryNode->Children().Add(grandchild);
+			
+			// Initially all collapsed - only parent visible
+			auto nodeItemProvider = Ptr(new NodeItemProvider(rootProvider));
+			
+			// Verify initial state through IItemProvider interface
+			TEST_ASSERT(nodeItemProvider->Count() == 1);
+			auto initialBinding = nodeItemProvider->GetBindingValue(0);
+			auto initialNode = nodeItemProvider->RequestNode(0);
+			auto expectedInitial = rootProvider->GetBindingValue(initialNode.Obj());
+			TEST_ASSERT(initialBinding.GetRawPtr() == expectedInitial.GetRawPtr());
+			
+			// Expand parent to show children
+			parent->SetExpanding(true);
+			
+			// Verify expanded state through IItemProvider interface - now 3 visible nodes
+			TEST_ASSERT(nodeItemProvider->Count() == 3);
+			
+			// Verify GetBindingValue() for all visible nodes after expansion
+			for (vint i = 0; i < 3; i++)
+			{
+				auto binding = nodeItemProvider->GetBindingValue(i);
+				auto node = nodeItemProvider->RequestNode(i);
+				auto expected = rootProvider->GetBindingValue(node.Obj());
+				TEST_ASSERT(binding.GetRawPtr() == expected.GetRawPtr());
+			}
+			
+			// Expand child1 to show grandchild
+			child1->SetExpanding(true);
+			
+			// Verify further expanded state through IItemProvider interface - now 4 visible nodes
+			TEST_ASSERT(nodeItemProvider->Count() == 4);
+			
+			// Verify GetBindingValue() for all visible nodes including grandchild
+			for (vint i = 0; i < 4; i++)
+			{
+				auto binding = nodeItemProvider->GetBindingValue(i);
+				auto node = nodeItemProvider->RequestNode(i);
+				auto expected = rootProvider->GetBindingValue(node.Obj());
+				TEST_ASSERT(binding.GetRawPtr() == expected.GetRawPtr());
+			}
+			
+			// Collapse parent back
+			parent->SetExpanding(false);
+			
+			// Verify collapsed state through IItemProvider interface - back to 1 visible node
+			TEST_ASSERT(nodeItemProvider->Count() == 1);
+			auto finalBinding = nodeItemProvider->GetBindingValue(0);
+			auto finalNode = nodeItemProvider->RequestNode(0);
+			auto expectedFinal = rootProvider->GetBindingValue(finalNode.Obj());
+			TEST_ASSERT(finalBinding.GetRawPtr() == expectedFinal.GetRawPtr());
+		});
+
+		TEST_CASE(L"RequestViewWithNodeItemView")
+		{
+			// Setup: Create simple tree
+			auto rootProvider = Ptr(new TreeViewItemRootProvider);
+			auto node1 = CreateTreeViewItem(L"Node1");
+			
+			auto rootMemoryNode = rootProvider->GetMemoryNode(rootProvider->GetRootNode().Obj());
+			rootMemoryNode->Children().Add(node1);
+			
+			auto nodeItemProvider = Ptr(new NodeItemProvider(rootProvider));
+			
+			// Request INodeItemView through IItemProvider interface
+			auto view = nodeItemProvider->RequestView(WString::Unmanaged(INodeItemView::Identifier));
+			
+			// Verify the view is returned (not nullptr)
+			TEST_ASSERT(view != nullptr);
+			
+			// Verify it can be cast to INodeItemView
+			auto nodeView = dynamic_cast<INodeItemView*>(view);
+			TEST_ASSERT(nodeView != nullptr);
+			
+			// Verify the view actually works by calling a method on it
+			auto retrievedNode = nodeView->RequestNode(0);
+			TEST_ASSERT(retrievedNode != nullptr);
+			TEST_ASSERT(rootProvider->GetTextValue(retrievedNode.Obj()) == L"Node1");
+		});
+
+		TEST_CASE(L"RequestViewWithUnknownIdentifier")
+		{
+			// Setup: Create simple tree
+			auto rootProvider = Ptr(new TreeViewItemRootProvider);
+			auto node1 = CreateTreeViewItem(L"Node1");
+			
+			auto rootMemoryNode = rootProvider->GetMemoryNode(rootProvider->GetRootNode().Obj());
+			rootMemoryNode->Children().Add(node1);
+			
+			auto nodeItemProvider = Ptr(new NodeItemProvider(rootProvider));
+			
+			// Request unknown view type through IItemProvider interface
+			auto view = nodeItemProvider->RequestView(L"UnknownViewIdentifier");
+			
+			// Verify it returns nullptr (TreeViewItemRootProvider doesn't support arbitrary identifiers)
+			TEST_ASSERT(view == nullptr);
+		});
+	});
+
+	TEST_CATEGORY(L"IntegrationAndCallbacks")
+	{
+		TEST_CASE(L"DataMatchesDelegatedCalls")
+		{
+			// Setup: Create tree with multiple nodes
+			auto rootProvider = Ptr(new TreeViewItemRootProvider);
+			auto node1 = CreateTreeViewItem(L"Node1");
+			auto node2 = CreateTreeViewItem(L"Node2");
+			auto child1 = CreateTreeViewItem(L"Child1");
+			
+			auto rootMemoryNode = rootProvider->GetMemoryNode(rootProvider->GetRootNode().Obj());
+			rootMemoryNode->Children().Add(node1);
+			rootMemoryNode->Children().Add(node2);
+			
+			auto node1MemoryNode = rootProvider->GetMemoryNode(node1.Obj());
+			node1MemoryNode->Children().Add(child1);
+			
+			node1->SetExpanding(true); // Expand to show child1
+			
+			auto nodeItemProvider = Ptr(new NodeItemProvider(rootProvider));
+			
+			// Verify 3 visible nodes
+			TEST_ASSERT(nodeItemProvider->Count() == 3);
+			
+			// For each visible node, verify data matches between NodeItemProvider and direct root provider calls
+			for (vint i = 0; i < 3; i++)
+			{
+				// Get data through NodeItemProvider (IItemProvider interface)
+				auto textFromProvider = nodeItemProvider->GetTextValue(i);
+				auto bindingFromProvider = nodeItemProvider->GetBindingValue(i);
+				
+				// Get the node through NodeItemProvider (INodeItemView interface)
+				auto node = nodeItemProvider->RequestNode(i);
+				TEST_ASSERT(node != nullptr);
+				
+				// Get data directly from root provider (INodeRootProvider interface)
+				auto textDirect = rootProvider->GetTextValue(node.Obj());
+				auto bindingDirect = rootProvider->GetBindingValue(node.Obj());
+				
+				// Verify both approaches return identical data
+				TEST_ASSERT(textFromProvider == textDirect);
+				TEST_ASSERT(bindingFromProvider.GetRawPtr() == bindingDirect.GetRawPtr());
+			}
+		});
+
+		TEST_CASE(L"DynamicDataUpdatesReflected")
+		{
+			// Setup: Create tree with nodes
+			auto rootProvider = Ptr(new TreeViewItemRootProvider);
+			auto node1 = CreateTreeViewItem(L"Original1");
+			auto node2 = CreateTreeViewItem(L"Original2");
+			auto node3 = CreateTreeViewItem(L"Original3");
+			
+			auto rootMemoryNode = rootProvider->GetMemoryNode(rootProvider->GetRootNode().Obj());
+			rootMemoryNode->Children().Add(node1);
+			rootMemoryNode->Children().Add(node2);
+			rootMemoryNode->Children().Add(node3);
+			
+			auto nodeItemProvider = Ptr(new NodeItemProvider(rootProvider));
+			
+			// Verify initial text values through IItemProvider interface
+			TEST_ASSERT(nodeItemProvider->GetTextValue(0) == L"Original1");
+			TEST_ASSERT(nodeItemProvider->GetTextValue(1) == L"Original2");
+			TEST_ASSERT(nodeItemProvider->GetTextValue(2) == L"Original3");
+			
+			// Modify the underlying tree items directly
+			node1->GetData().Cast<TreeViewItem>()->text = L"Modified1";
+			node2->GetData().Cast<TreeViewItem>()->text = L"Modified2";
+			node3->GetData().Cast<TreeViewItem>()->text = L"Modified3";
+			
+			// Verify changes are immediately reflected through NodeItemProvider (no caching)
+			TEST_ASSERT(nodeItemProvider->GetTextValue(0) == L"Modified1");
+			TEST_ASSERT(nodeItemProvider->GetTextValue(1) == L"Modified2");
+			TEST_ASSERT(nodeItemProvider->GetTextValue(2) == L"Modified3");
+			
+			// Modify again to be thorough
+			node2->GetData().Cast<TreeViewItem>()->text = L"SecondModification";
+			TEST_ASSERT(nodeItemProvider->GetTextValue(1) == L"SecondModification");
+		});
+
+		TEST_CASE(L"MultipleCallbacksReceiveEvents")
+		{
+			// Setup: Create tree structure
+			auto rootProvider = Ptr(new TreeViewItemRootProvider);
+			auto parent = CreateTreeViewItem(L"Parent");
+			auto child1 = CreateTreeViewItem(L"Child1");
+			auto child2 = CreateTreeViewItem(L"Child2");
+			
+			auto rootMemoryNode = rootProvider->GetMemoryNode(rootProvider->GetRootNode().Obj());
+			rootMemoryNode->Children().Add(parent);
+			
+			auto parentMemoryNode = rootProvider->GetMemoryNode(parent.Obj());
+			parentMemoryNode->Children().Add(child1);
+			parentMemoryNode->Children().Add(child2);
+			
+			auto nodeItemProvider = Ptr(new NodeItemProvider(rootProvider));
+			
+			// Attach multiple callbacks
+			List<WString> callbackLog1;
+			List<WString> callbackLog2;
+			List<WString> callbackLog3;
+			MockItemProviderCallback callback1(callbackLog1);
+			MockItemProviderCallback callback2(callbackLog2);
+			MockItemProviderCallback callback3(callbackLog3);
+			
+			nodeItemProvider->AttachCallback(&callback1);
+			nodeItemProvider->AttachCallback(&callback2);
+			nodeItemProvider->AttachCallback(&callback3);
+			
+			// Clear the OnAttached callbacks
+			callbackLog1.Clear();
+			callbackLog2.Clear();
+			callbackLog3.Clear();
+			
+			// Perform an operation that triggers callbacks - expand parent
+			parent->SetExpanding(true);
+			
+			// Verify all three callbacks received the event
+			const wchar_t* expected[] = {
+				L"OnItemModified(start=1, count=0, newCount=2, itemReferenceUpdated=true)"
+			};
+			AssertCallbacks(callbackLog1, expected);
+			AssertCallbacks(callbackLog2, expected);
+			AssertCallbacks(callbackLog3, expected);
+			
+			// Clear logs and perform another operation
+			callbackLog1.Clear();
+			callbackLog2.Clear();
+			callbackLog3.Clear();
+			
+			// Add a new child
+			auto child3 = CreateTreeViewItem(L"Child3");
+			parentMemoryNode->Children().Add(child3);
+			
+			// Verify all three callbacks received the new event
+			const wchar_t* expected2[] = {
+				L"OnItemModified(start=3, count=0, newCount=1, itemReferenceUpdated=true)"
+			};
+			AssertCallbacks(callbackLog1, expected2);
+			AssertCallbacks(callbackLog2, expected2);
+			AssertCallbacks(callbackLog3, expected2);
+		});
+
+		TEST_CASE(L"DetachCallbackStopsEvents")
+		{
+			// Setup: Create tree structure
+			auto rootProvider = Ptr(new TreeViewItemRootProvider);
+			auto parent = CreateTreeViewItem(L"Parent");
+			auto child1 = CreateTreeViewItem(L"Child1");
+			auto child2 = CreateTreeViewItem(L"Child2");
+			
+			auto rootMemoryNode = rootProvider->GetMemoryNode(rootProvider->GetRootNode().Obj());
+			rootMemoryNode->Children().Add(parent);
+			
+			auto parentMemoryNode = rootProvider->GetMemoryNode(parent.Obj());
+			parentMemoryNode->Children().Add(child1);
+			parentMemoryNode->Children().Add(child2);
+			
+			auto nodeItemProvider = Ptr(new NodeItemProvider(rootProvider));
+			
+			// Attach two callbacks
+			List<WString> callbackLog1;
+			List<WString> callbackLog2;
+			MockItemProviderCallback callback1(callbackLog1);
+			MockItemProviderCallback callback2(callbackLog2);
+			
+			nodeItemProvider->AttachCallback(&callback1);
+			nodeItemProvider->AttachCallback(&callback2);
+			
+			// Clear the OnAttached callbacks
+			callbackLog1.Clear();
+			callbackLog2.Clear();
+			
+			// Perform an operation - both should receive events
+			parent->SetExpanding(true);
+			
+			// Verify both callbacks received the event
+			const wchar_t* expected1[] = {
+				L"OnItemModified(start=1, count=0, newCount=2, itemReferenceUpdated=true)"
+			};
+			AssertCallbacks(callbackLog1, expected1);
+			AssertCallbacks(callbackLog2, expected1);
+			
+			// Clear logs and detach the first callback
+			callbackLog1.Clear();
+			callbackLog2.Clear();
+			nodeItemProvider->DetachCallback(&callback1);
+			
+			// Perform another operation
+			auto child3 = CreateTreeViewItem(L"Child3");
+			parentMemoryNode->Children().Add(child3);
+			
+			// Verify only callback2 received the event
+			TEST_ASSERT(callbackLog1.Count() == 0); // callback1 should not receive events after detach
+			
+			const wchar_t* expected2[] = {
+				L"OnItemModified(start=3, count=0, newCount=1, itemReferenceUpdated=true)"
+			};
+			AssertCallbacks(callbackLog2, expected2);
+			
+			// Detach the second callback and verify no callbacks fire
+			callbackLog2.Clear();
+			nodeItemProvider->DetachCallback(&callback2);
+			
+			// Perform another operation
+			auto child4 = CreateTreeViewItem(L"Child4");
+			parentMemoryNode->Children().Add(child4);
+			
+			// Verify neither callback received events
+			TEST_ASSERT(callbackLog1.Count() == 0);
+			TEST_ASSERT(callbackLog2.Count() == 0);
+		});
+	});
 }

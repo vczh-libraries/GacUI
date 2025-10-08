@@ -72,7 +72,7 @@ It looks like Task 9 is unnecessary, please remove it. But I think the DetachCal
 - [x] TASK No.3: Implement Test Cases for Expand/Collapse Dynamics
 - [x] TASK No.4: Implement Test Cases for Edge Cases and Complex Scenarios
 - [x] TASK No.5: Implement Test Cases for Operations on Invisible Nodes
-- [ ] TASK No.6: Implement Remaining Data Retrieval and Integration Test Cases
+- [x] TASK No.6: Implement Remaining Data Retrieval and Integration Test Cases
 - [ ] TASK No.7: Add Simple Integration Test Cases with TreeViewItemBindableRootProvider
 
 ## TASK No.1: Create TestItemProviders_NodeItemProvider.cpp and Add to Project
