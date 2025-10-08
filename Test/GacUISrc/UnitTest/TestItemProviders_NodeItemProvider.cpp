@@ -1041,4 +1041,376 @@ TEST_FILE
 			TEST_ASSERT(nodeItemProvider4->Count() == 5);
 		});
 	});
+
+	TEST_CATEGORY(L"EdgeCasesAndComplexScenarios")
+	{
+		TEST_CASE(L"InvalidIndicesForDataRetrieval")
+		{
+			// Setup: Simple flat tree with 3 nodes
+			auto rootProvider = Ptr(new TreeViewItemRootProvider);
+			auto node1 = CreateTreeViewItem(L"Node1");
+			auto node2 = CreateTreeViewItem(L"Node2");
+			auto node3 = CreateTreeViewItem(L"Node3");
+			
+			auto rootMemoryNode = rootProvider->GetMemoryNode(rootProvider->GetRootNode().Obj());
+			rootMemoryNode->Children().Add(node1);
+			rootMemoryNode->Children().Add(node2);
+			rootMemoryNode->Children().Add(node3);
+			
+			auto nodeItemProvider = Ptr(new NodeItemProvider(rootProvider));
+			
+			// Verify valid indices return correct data through IItemProvider interface
+			TEST_ASSERT(nodeItemProvider->GetTextValue(0) == L"Node1");
+			TEST_ASSERT(nodeItemProvider->GetTextValue(1) == L"Node2");
+			TEST_ASSERT(nodeItemProvider->GetTextValue(2) == L"Node3");
+			
+			// Verify GetTextValue() raises errors for invalid indices through IItemProvider interface
+			TEST_ERROR(nodeItemProvider->GetTextValue(-1));
+			TEST_ERROR(nodeItemProvider->GetTextValue(3));
+			TEST_ERROR(nodeItemProvider->GetTextValue(nodeItemProvider->Count()));
+			TEST_ERROR(nodeItemProvider->GetTextValue(999));
+			
+			// Verify GetBindingValue() raises errors for invalid indices through IItemProvider interface
+			TEST_ERROR(nodeItemProvider->GetBindingValue(-1));
+			TEST_ERROR(nodeItemProvider->GetBindingValue(3));
+			TEST_ERROR(nodeItemProvider->GetBindingValue(nodeItemProvider->Count()));
+			TEST_ERROR(nodeItemProvider->GetBindingValue(999));
+		});
+
+		TEST_CASE(L"CalculateIndexForForeignNode")
+		{
+			// Setup: Create two separate tree structures
+			auto rootProviderA = Ptr(new TreeViewItemRootProvider);
+			auto nodeA1 = CreateTreeViewItem(L"TreeA-Node1");
+			auto nodeA2 = CreateTreeViewItem(L"TreeA-Node2");
+			
+			auto rootMemoryNodeA = rootProviderA->GetMemoryNode(rootProviderA->GetRootNode().Obj());
+			rootMemoryNodeA->Children().Add(nodeA1);
+			rootMemoryNodeA->Children().Add(nodeA2);
+			
+			auto rootProviderB = Ptr(new TreeViewItemRootProvider);
+			auto nodeB1 = CreateTreeViewItem(L"TreeB-Node1");
+			auto nodeB2 = CreateTreeViewItem(L"TreeB-Node2");
+			
+			auto rootMemoryNodeB = rootProviderB->GetMemoryNode(rootProviderB->GetRootNode().Obj());
+			rootMemoryNodeB->Children().Add(nodeB1);
+			rootMemoryNodeB->Children().Add(nodeB2);
+			
+			// Create NodeItemProvider for tree A
+			auto nodeItemProviderA = Ptr(new NodeItemProvider(rootProviderA));
+			
+			// Verify nodes from tree A have valid indices through INodeItemView interface
+			TEST_ASSERT(nodeItemProviderA->CalculateNodeVisibilityIndex(nodeA1.Obj()) == 0);
+			TEST_ASSERT(nodeItemProviderA->CalculateNodeVisibilityIndex(nodeA2.Obj()) == 1);
+			
+			// Verify nodes from tree B return -1 (not found) through INodeItemView interface
+			TEST_ASSERT(nodeItemProviderA->CalculateNodeVisibilityIndex(nodeB1.Obj()) == -1);
+			TEST_ASSERT(nodeItemProviderA->CalculateNodeVisibilityIndex(nodeB2.Obj()) == -1);
+		});
+
+		TEST_CASE(L"DeeplyNestedTreeIndexMapping")
+		{
+			// Setup: Create a 5-level deep tree
+			// Root -> A -> B -> C -> D -> E
+			auto rootProvider = Ptr(new TreeViewItemRootProvider);
+			auto nodeA = CreateTreeViewItem(L"A");
+			auto nodeB = CreateTreeViewItem(L"B");
+			auto nodeC = CreateTreeViewItem(L"C");
+			auto nodeD = CreateTreeViewItem(L"D");
+			auto nodeE = CreateTreeViewItem(L"E");
+			
+			auto rootMemoryNode = rootProvider->GetMemoryNode(rootProvider->GetRootNode().Obj());
+			rootMemoryNode->Children().Add(nodeA);
+			
+			auto nodeAMemoryNode = rootProvider->GetMemoryNode(nodeA.Obj());
+			nodeAMemoryNode->Children().Add(nodeB);
+			
+			auto nodeBMemoryNode = rootProvider->GetMemoryNode(nodeB.Obj());
+			nodeBMemoryNode->Children().Add(nodeC);
+			
+			auto nodeCMemoryNode = rootProvider->GetMemoryNode(nodeC.Obj());
+			nodeCMemoryNode->Children().Add(nodeD);
+			
+			auto nodeDMemoryNode = rootProvider->GetMemoryNode(nodeD.Obj());
+			nodeDMemoryNode->Children().Add(nodeE);
+			
+			// Set expansion states: A expanded, B collapsed, C and D expanded (but invisible due to B collapsed)
+			nodeA->SetExpanding(true);
+			nodeB->SetExpanding(false); // B is collapsed
+			nodeC->SetExpanding(true);  // Expanded but invisible
+			nodeD->SetExpanding(true);  // Expanded but invisible
+			
+			auto nodeItemProvider = Ptr(new NodeItemProvider(rootProvider));
+			
+			// Verify only A and B are visible through IItemProvider interface
+			const wchar_t* expected[] = {
+				L"A",
+				L"B"
+			};
+			AssertItems(nodeItemProvider, expected);
+			
+			// Verify visible nodes have correct indices through INodeItemView interface
+			TEST_ASSERT(nodeItemProvider->CalculateNodeVisibilityIndex(nodeA.Obj()) == 0);
+			TEST_ASSERT(nodeItemProvider->CalculateNodeVisibilityIndex(nodeB.Obj()) == 1);
+			
+			// Verify nodes in collapsed subtree return -1 through INodeItemView interface
+			TEST_ASSERT(nodeItemProvider->CalculateNodeVisibilityIndex(nodeC.Obj()) == -1);
+			TEST_ASSERT(nodeItemProvider->CalculateNodeVisibilityIndex(nodeD.Obj()) == -1);
+			TEST_ASSERT(nodeItemProvider->CalculateNodeVisibilityIndex(nodeE.Obj()) == -1);
+			
+			// Now expand all nodes to make the full 5-level hierarchy visible
+			nodeB->SetExpanding(true);
+			
+			const wchar_t* expectedFullyExpanded[] = {
+				L"A",
+				L"B",
+				L"C",
+				L"D",
+				L"E"
+			};
+			AssertItems(nodeItemProvider, expectedFullyExpanded);
+			
+			// Verify all nodes have correct sequential indices through INodeItemView interface
+			TEST_ASSERT(nodeItemProvider->CalculateNodeVisibilityIndex(nodeA.Obj()) == 0);
+			TEST_ASSERT(nodeItemProvider->CalculateNodeVisibilityIndex(nodeB.Obj()) == 1);
+			TEST_ASSERT(nodeItemProvider->CalculateNodeVisibilityIndex(nodeC.Obj()) == 2);
+			TEST_ASSERT(nodeItemProvider->CalculateNodeVisibilityIndex(nodeD.Obj()) == 3);
+			TEST_ASSERT(nodeItemProvider->CalculateNodeVisibilityIndex(nodeE.Obj()) == 4);
+			
+			// Verify bidirectional consistency through INodeItemView interface
+			for (vint i = 0; i < nodeItemProvider->Count(); i++)
+			{
+				auto node = nodeItemProvider->RequestNode(i);
+				TEST_ASSERT(nodeItemProvider->CalculateNodeVisibilityIndex(node.Obj()) == i);
+			}
+		});
+
+		TEST_CASE(L"DynamicChildAdditionRemoval")
+		{
+			// Setup callback logging
+			List<WString> callbackLog;
+			MockItemProviderCallback itemCallback(callbackLog);
+			
+			// Setup: Create tree with expanded parent
+			auto rootProvider = Ptr(new TreeViewItemRootProvider);
+			auto parent = CreateTreeViewItem(L"Parent");
+			auto child1 = CreateTreeViewItem(L"Child1");
+			
+			auto rootMemoryNode = rootProvider->GetMemoryNode(rootProvider->GetRootNode().Obj());
+			rootMemoryNode->Children().Add(parent);
+			
+			auto parentMemoryNode = rootProvider->GetMemoryNode(parent.Obj());
+			parentMemoryNode->Children().Add(child1);
+			
+			parent->SetExpanding(true);
+			
+			auto nodeItemProvider = Ptr(new NodeItemProvider(rootProvider));
+			nodeItemProvider->AttachCallback(&itemCallback);
+			callbackLog.Clear(); // Clear the OnAttached callback
+			
+			// Verify initial state through IItemProvider interface
+			TEST_ASSERT(nodeItemProvider->Count() == 2);
+			const wchar_t* expectedInitial[] = {
+				L"Parent",
+				L"Child1"
+			};
+			AssertItems(nodeItemProvider, expectedInitial);
+			
+			// Add a new child dynamically
+			auto child2 = CreateTreeViewItem(L"Child2");
+			parentMemoryNode->Children().Add(child2);
+			
+			// Verify Count() increased through IItemProvider interface
+			TEST_ASSERT(nodeItemProvider->Count() == 3);
+			
+			// Verify new child is visible at correct position through IItemProvider interface
+			const wchar_t* expectedAfterAdd[] = {
+				L"Parent",
+				L"Child1",
+				L"Child2"
+			};
+			AssertItems(nodeItemProvider, expectedAfterAdd);
+			
+			// Verify callback was triggered through IItemProviderCallback interface
+			const wchar_t* addCallbacks[] = {
+				L"OnItemModified(start=2, count=0, newCount=1, itemReferenceUpdated=true)"
+			};
+			AssertCallbacks(callbackLog, addCallbacks);
+			callbackLog.Clear();
+			
+			// Verify new child has correct index through INodeItemView interface
+			TEST_ASSERT(nodeItemProvider->CalculateNodeVisibilityIndex(child2.Obj()) == 2);
+			
+			// Remove the first child dynamically using INodeProvider interface
+			parentMemoryNode->Children().RemoveAt(0);
+			
+			// Verify Count() decreased through IItemProvider interface
+			TEST_ASSERT(nodeItemProvider->Count() == 2);
+			
+			// Verify remaining children through IItemProvider interface
+			const wchar_t* expectedAfterRemove[] = {
+				L"Parent",
+				L"Child2"
+			};
+			AssertItems(nodeItemProvider, expectedAfterRemove);
+			
+			// Verify callback was triggered through IItemProviderCallback interface
+			const wchar_t* removeCallbacks[] = {
+				L"OnItemModified(start=1, count=1, newCount=0, itemReferenceUpdated=true)"
+			};
+			AssertCallbacks(callbackLog, removeCallbacks);
+			
+			// Verify removed child now returns -1 through INodeItemView interface
+			TEST_ASSERT(nodeItemProvider->CalculateNodeVisibilityIndex(child1.Obj()) == -1);
+			
+			// Verify child2 index updated through INodeItemView interface
+			TEST_ASSERT(nodeItemProvider->CalculateNodeVisibilityIndex(child2.Obj()) == 1);
+		});
+
+		TEST_CASE(L"LargeTreeStressTest")
+		{
+			// Setup: Create tree with 10 top-level nodes, each with 10 children (110 nodes total when expanded)
+			auto rootProvider = Ptr(new TreeViewItemRootProvider);
+			auto rootMemoryNode = rootProvider->GetMemoryNode(rootProvider->GetRootNode().Obj());
+			
+			List<Ptr<MemoryNodeProvider>> topLevelNodes;
+			List<Ptr<MemoryNodeProvider>> allChildNodes;
+			
+			// Create 10 top-level nodes, each with 10 children
+			for (vint i = 0; i < 10; i++)
+			{
+				auto topNode = CreateTreeViewItem(WString::Unmanaged(L"Top") + itow(i));
+				rootMemoryNode->Children().Add(topNode);
+				topLevelNodes.Add(topNode);
+				
+				auto topNodeMemory = rootProvider->GetMemoryNode(topNode.Obj());
+				for (vint j = 0; j < 10; j++)
+				{
+					auto childNode = CreateTreeViewItem(WString::Unmanaged(L"Top") + itow(i) + L"-Child" + itow(j));
+					topNodeMemory->Children().Add(childNode);
+					allChildNodes.Add(childNode);
+				}
+				
+				topNode->SetExpanding(true);
+			}
+			
+			auto nodeItemProvider = Ptr(new NodeItemProvider(rootProvider));
+			
+			// Verify Count() returns correct total through IItemProvider interface
+			TEST_ASSERT(nodeItemProvider->Count() == 110); // 10 top-level + 100 children
+			
+			// Test RequestNode() at various positions through INodeItemView interface
+			// First node
+			auto firstNode = nodeItemProvider->RequestNode(0);
+			TEST_ASSERT(firstNode != nullptr);
+			TEST_ASSERT(rootProvider->GetTextValue(firstNode.Obj()) == L"Top0");
+			
+			// Middle node
+			auto middleNode = nodeItemProvider->RequestNode(55);
+			TEST_ASSERT(middleNode != nullptr);
+			
+			// Last node
+			auto lastNode = nodeItemProvider->RequestNode(109);
+			TEST_ASSERT(lastNode != nullptr);
+			TEST_ASSERT(rootProvider->GetTextValue(lastNode.Obj()) == L"Top9-Child9");
+			
+			// Test CalculateNodeVisibilityIndex() for various nodes through INodeItemView interface
+			TEST_ASSERT(nodeItemProvider->CalculateNodeVisibilityIndex(topLevelNodes[0].Obj()) == 0);
+			TEST_ASSERT(nodeItemProvider->CalculateNodeVisibilityIndex(topLevelNodes[9].Obj()) == 99); // After 9 parents and 90 children
+			TEST_ASSERT(nodeItemProvider->CalculateNodeVisibilityIndex(allChildNodes[0].Obj()) == 1);
+			TEST_ASSERT(nodeItemProvider->CalculateNodeVisibilityIndex(allChildNodes[99].Obj()) == 109);
+			
+			// Verify bidirectional consistency for sample nodes through INodeItemView interface
+			List<vint> sampleIndices;
+			sampleIndices.Add(0);
+			sampleIndices.Add(1);
+			sampleIndices.Add(11);
+			sampleIndices.Add(55);
+			sampleIndices.Add(99);
+			sampleIndices.Add(109);
+			
+			for (vint i = 0; i < sampleIndices.Count(); i++)
+			{
+				auto node = nodeItemProvider->RequestNode(sampleIndices[i]);
+				TEST_ASSERT(nodeItemProvider->CalculateNodeVisibilityIndex(node.Obj()) == sampleIndices[i]);
+			}
+		});
+
+		TEST_CASE(L"FullyExpandedVsFullyCollapsed")
+		{
+			// Setup: Create 3-level tree
+			// Root -> Parent1, Parent2
+			//   Parent1 -> Child1-1, Child1-2
+			//   Parent2 -> Child2-1, Child2-2
+			auto rootProvider = Ptr(new TreeViewItemRootProvider);
+			auto parent1 = CreateTreeViewItem(L"Parent1");
+			auto parent2 = CreateTreeViewItem(L"Parent2");
+			auto child11 = CreateTreeViewItem(L"Child1-1");
+			auto child12 = CreateTreeViewItem(L"Child1-2");
+			auto child21 = CreateTreeViewItem(L"Child2-1");
+			auto child22 = CreateTreeViewItem(L"Child2-2");
+			
+			auto rootMemoryNode = rootProvider->GetMemoryNode(rootProvider->GetRootNode().Obj());
+			rootMemoryNode->Children().Add(parent1);
+			rootMemoryNode->Children().Add(parent2);
+			
+			auto parent1MemoryNode = rootProvider->GetMemoryNode(parent1.Obj());
+			parent1MemoryNode->Children().Add(child11);
+			parent1MemoryNode->Children().Add(child12);
+			
+			auto parent2MemoryNode = rootProvider->GetMemoryNode(parent2.Obj());
+			parent2MemoryNode->Children().Add(child21);
+			parent2MemoryNode->Children().Add(child22);
+			
+			auto nodeItemProvider = Ptr(new NodeItemProvider(rootProvider));
+			
+			// Test fully collapsed state (all nodes collapsed)
+			TEST_ASSERT(nodeItemProvider->Count() == 2);
+			const wchar_t* expectedCollapsed[] = {
+				L"Parent1",
+				L"Parent2"
+			};
+			AssertItems(nodeItemProvider, expectedCollapsed);
+			
+			// Verify only top-level nodes have valid indices through INodeItemView interface
+			TEST_ASSERT(nodeItemProvider->CalculateNodeVisibilityIndex(parent1.Obj()) == 0);
+			TEST_ASSERT(nodeItemProvider->CalculateNodeVisibilityIndex(parent2.Obj()) == 1);
+			
+			// Verify grandchildren return -1 through INodeItemView interface
+			TEST_ASSERT(nodeItemProvider->CalculateNodeVisibilityIndex(child11.Obj()) == -1);
+			TEST_ASSERT(nodeItemProvider->CalculateNodeVisibilityIndex(child12.Obj()) == -1);
+			TEST_ASSERT(nodeItemProvider->CalculateNodeVisibilityIndex(child21.Obj()) == -1);
+			TEST_ASSERT(nodeItemProvider->CalculateNodeVisibilityIndex(child22.Obj()) == -1);
+			
+			// Test fully expanded state
+			parent1->SetExpanding(true);
+			parent2->SetExpanding(true);
+			
+			TEST_ASSERT(nodeItemProvider->Count() == 6);
+			const wchar_t* expectedExpanded[] = {
+				L"Parent1",
+				L"Child1-1",
+				L"Child1-2",
+				L"Parent2",
+				L"Child2-1",
+				L"Child2-2"
+			};
+			AssertItems(nodeItemProvider, expectedExpanded);
+			
+			// Verify all nodes have valid indices through INodeItemView interface
+			TEST_ASSERT(nodeItemProvider->CalculateNodeVisibilityIndex(parent1.Obj()) == 0);
+			TEST_ASSERT(nodeItemProvider->CalculateNodeVisibilityIndex(child11.Obj()) == 1);
+			TEST_ASSERT(nodeItemProvider->CalculateNodeVisibilityIndex(child12.Obj()) == 2);
+			TEST_ASSERT(nodeItemProvider->CalculateNodeVisibilityIndex(parent2.Obj()) == 3);
+			TEST_ASSERT(nodeItemProvider->CalculateNodeVisibilityIndex(child21.Obj()) == 4);
+			TEST_ASSERT(nodeItemProvider->CalculateNodeVisibilityIndex(child22.Obj()) == 5);
+			
+			// Verify bidirectional consistency through INodeItemView interface
+			for (vint i = 0; i < nodeItemProvider->Count(); i++)
+			{
+				auto node = nodeItemProvider->RequestNode(i);
+				TEST_ASSERT(nodeItemProvider->CalculateNodeVisibilityIndex(node.Obj()) == i);
+			}
+		});
+	});
 }

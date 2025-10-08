@@ -214,20 +214,20 @@ NodeItemProvider
 
 	WString NodeItemProvider::GetTextValue(vint itemIndex)
 	{
-		if (auto node = RequestNode(itemIndex))
-		{
-			return root->GetTextValue(node.Obj());
-		}
-		return L"";
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::controls::tree::NodeItemProvider::GetTextValue(vint)#"
+		CHECK_ERROR(0 <= itemIndex && itemIndex < Count(), ERROR_MESSAGE_PREFIX L"Index out of range.");
+		auto node = RequestNode(itemIndex);
+		return root->GetTextValue(node.Obj());
+#undef ERROR_MESSAGE_PREFIX
 	}
 
 	description::Value NodeItemProvider::GetBindingValue(vint itemIndex)
 	{
-		if (auto node = RequestNode(itemIndex))
-		{
-			return root->GetBindingValue(node.Obj());
-		}
-		return Value();
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::controls::tree::NodeItemProvider::GetBindingValue(vint)#"
+		CHECK_ERROR(0 <= itemIndex && itemIndex < Count(), ERROR_MESSAGE_PREFIX L"Index out of range.");
+		auto node = RequestNode(itemIndex);
+		return root->GetBindingValue(node.Obj());
+#undef ERROR_MESSAGE_PREFIX
 	}
 
 	IDescriptable* NodeItemProvider::RequestView(const WString& identifier)
