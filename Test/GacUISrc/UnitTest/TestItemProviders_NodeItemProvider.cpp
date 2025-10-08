@@ -2015,9 +2015,9 @@ TEST_FILE
 			TEST_ASSERT(nodeItemProvider->GetTextValue(2) == L"Original3");
 			
 			// Modify the underlying tree items directly
-			node1->GetData().Cast<TreeViewItem>()->text = L"Modified1";
-			node2->GetData().Cast<TreeViewItem>()->text = L"Modified2";
-			node3->GetData().Cast<TreeViewItem>()->text = L"Modified3";
+			rootProvider->GetTreeViewData(node1.Obj())->text = L"Modified1";
+			rootProvider->GetTreeViewData(node2.Obj())->text = L"Modified2";
+			rootProvider->GetTreeViewData(node3.Obj())->text = L"Modified3";
 			
 			// Verify changes are immediately reflected through NodeItemProvider (no caching)
 			TEST_ASSERT(nodeItemProvider->GetTextValue(0) == L"Modified1");
@@ -2025,7 +2025,7 @@ TEST_FILE
 			TEST_ASSERT(nodeItemProvider->GetTextValue(2) == L"Modified3");
 			
 			// Modify again to be thorough
-			node2->GetData().Cast<TreeViewItem>()->text = L"SecondModification";
+			rootProvider->GetTreeViewData(node2.Obj())->text = L"SecondModification";
 			TEST_ASSERT(nodeItemProvider->GetTextValue(1) == L"SecondModification");
 		});
 
