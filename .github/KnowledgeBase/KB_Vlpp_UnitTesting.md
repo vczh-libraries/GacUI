@@ -29,6 +29,8 @@ TEST_FILE
 }
 ```
 
+If a test case contains only one call to `TEST_ASSERT`, it can be simplified to `TEST_CASE_ASSERT(EXPRESSION-TO-VERIFY);`. The `TOPIC-NAME` becomes the condition.
+
 ## Hierarchical Organization
 
 ### TEST_FILE
