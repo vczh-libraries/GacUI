@@ -53,7 +53,7 @@ I believe we can split Task No.2 into smaller tasks. I would like to keep any ta
 - [x] TASK No.1: Create TestItemProviders_NodeItemProvider.cpp and Add to Project
 - [x] TASK No.2: Implement Test Cases for Basic Index Mapping
 - [x] TASK No.3: Implement Test Cases for Expand/Collapse Dynamics
-- [ ] TASK No.4: Implement Test Cases for Edge Cases and Complex Scenarios
+- [x] TASK No.4: Implement Test Cases for Edge Cases and Complex Scenarios
 - [ ] TASK No.5: Implement Test Cases for Operations on Invisible Nodes
 - [ ] TASK No.6: Implement Test Cases for Basic IItemProvider Data Retrieval
 - [ ] TASK No.7: Implement Test Cases for Data Retrieval After Structural Changes
