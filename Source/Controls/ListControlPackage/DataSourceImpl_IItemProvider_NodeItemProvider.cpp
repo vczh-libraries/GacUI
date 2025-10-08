@@ -147,6 +147,14 @@ NodeItemProvider
 		{
 			return -2;
 		}
+		if (index == -1)
+		{
+			// Parent returned -1, which means parent has no parent (is a root node)
+			// Check if this parent is OUR root - if not, this is a foreign node
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::controls::tree::NodeItemProvider::CalculateNodeVisibilityIndexInternal(INodeProvider*)#"
+			CHECK_ERROR(parent.Obj() == root->GetRootNode().Obj(), ERROR_MESSAGE_PREFIX L"The node does not belong to the tree associated with this NodeItemProvider.");
+#undef ERROR_MESSAGE_PREFIX
+		}
 
 		vint count = parent->GetChildCount();
 		for (vint i = 0; i < count; i++)
