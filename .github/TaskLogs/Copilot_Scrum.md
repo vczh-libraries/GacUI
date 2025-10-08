@@ -222,7 +222,7 @@ This task implements test cases for edge cases and complex scenarios in `tree::N
 Implement a test category "EdgeCasesAndComplexScenarios" covering these scenarios:
 
 - Test `RequestNode` with invalid indices (negative, beyond count) - should handle gracefully
-- Test `CalculateNodeVisibilityIndex` with null node pointer
+- Test `CalculateNodeVisibilityIndex` with null node pointer (only if the API allows it without assertion)
 - Test `CalculateNodeVisibilityIndex` with a node that doesn't belong to the tree
 - Test visible indices in a deeply nested tree (4+ levels) with mixed expand/collapse states
 - Test that adding/removing nodes to/from expanded parents correctly updates visible indices
@@ -235,21 +235,27 @@ This task should add approximately 100-150 lines of test code.
 
 ### how to test it
 
+**BEFORE WRITING ANY TEST CODE:**
+1. **Read the implementation** of the methods being tested (`RequestNode`, `CalculateNodeVisibilityIndex`, etc.) in `DataSourceImpl_IItemProvider_NodeItemProvider.cpp`
+2. **Check existing test patterns** in other `TestItemProviders_*.cpp` files to understand expected return values for edge cases
+3. **Verify actual behavior** by checking what the implementation returns for invalid inputs (e.g., `-1` vs `-2` vs `nullptr`)
+
 All test cases should:
 - Create a `TreeViewItemRootProvider` and wrap it with `NodeItemProvider`
 - Build various tree structures including deeply nested trees (4+ levels) and trees with many nodes
 - Use `MockItemProviderCallback` to monitor `OnItemModified` events
-- Test boundary conditions and invalid inputs
+- Test boundary conditions and invalid inputs **based on actual implementation behavior, not assumptions**
 - Verify that adding/removing children to expanded nodes triggers correct callbacks and index updates
 - Verify that operations on collapsed subtrees don't affect the visible list
 - Use `AssertCallbacks()` to verify correct callback sequences
-- **Code Style (from Task 1 & 2 learnings):**
+- **Code Style (from completed tasks):**
   - Call methods directly without explicit interface casting unless the compiler requires it
   - Add comments specifying which interface provides each method being tested
   - Use blank lines between conceptually different test operations for clarity
   - Prioritize simple, direct code over defensive over-engineering
   - Use `AssertItems` helper with `const wchar_t*` arrays for verifying visible node sequences
-  - Always add boundary checks to public API methods that take index parameters
+  - **IMPORTANT: Check return values from implementation before writing assertions** (e.g., `CalculateNodeVisibilityIndex()` returns `-1` for invisible nodes, not `-2`)
+  - **Avoid testing ambiguous edge cases** where the expected behavior is unclear or undocumented
 
 Organize under a `TEST_CATEGORY` block named "EdgeCasesAndComplexScenarios".
 
@@ -263,10 +269,13 @@ This task ensures robustness and correctness in edge cases:
 
 3. **Completeness**: This task covers scenarios not covered in Tasks 2 and 3, ensuring comprehensive test coverage
 
+4. **Learning from Task 3**: Avoid testing edge cases with uncertain semantics. Focus on well-defined behaviors that matter in practice.
+
 Evidence from implementation:
 - `RequestNode()` uses `GetNodeByOffset()` which must handle invalid indices
 - Adding/removing children triggers callbacks through the `INodeRootProvider` interface
 - Collapsed subtrees are explicitly excluded from visible index calculations
+- **Key insight from Task 3**: `CalculateNodeVisibilityIndex()` public method converts all negative internal results to `-1`, so tests should expect `-1` not `-2` for invisible nodes
 
 This task should come after Tasks 2 and 3 because it tests edge cases on top of the basic and dynamic functionality verified in those tasks.
 
@@ -278,36 +287,42 @@ This task implements test cases to verify that operations on invisible nodes (in
 
 Implement a test category "OperationsOnInvisibleNodes" covering these scenarios:
 
-- Test that expanding a node that is currently invisible (its parent is collapsed) does not trigger any callbacks to `tree::NodeItemProvider`
-- Test that collapsing a node that is currently invisible (its parent is collapsed) does not trigger any callbacks to `tree::NodeItemProvider`
 - Test that adding/removing children to/from an invisible node (in a collapsed subtree) does not affect `Count()` of `tree::NodeItemProvider`
 - Test that the expand state of invisible nodes is preserved (when parent is later expanded, the previously expanded invisible node's children become visible)
 - Test that multiple structural changes to collapsed subtrees do not cause any `OnItemModified` events on `tree::NodeItemProvider`
 - Verify that when a collapsed parent containing modified invisible nodes is expanded, the correct structure is reflected in visible indices
 - Test that `CalculateNodeVisibilityIndex()` returns -1 for nodes in invisible subtrees regardless of their own expand state
+- **NOTE**: Avoid testing expand/collapse operations on invisible nodes themselves, as this behavior has uncertain semantics (see learnings from Task 3)
 
 This task should add approximately 100-150 lines of test code.
 
 ### how to test it
+
+**BEFORE WRITING TESTS:**
+1. **Do NOT test** `SetExpanding()` on invisible nodes unless you first verify the expected behavior in the implementation
+2. **Focus on clear, practical scenarios** where the expected behavior is well-defined
+3. **Avoid ambiguous edge cases** like "what happens when you expand an already-collapsed invisible node"
 
 All test cases should:
 - Create a `TreeViewItemRootProvider` and wrap it with `NodeItemProvider`
 - Build tree structures (3-4 levels) using `CreateTreeViewItem` helper
 - Use `MockItemProviderCallback` to monitor `OnItemModified` events
 - Collapse parent nodes to create invisible subtrees
-- Perform operations on invisible nodes:
-  - Expand/collapse invisible nodes via `SetExpanding()`
-  - Add/remove children to invisible nodes
-  - Modify properties of invisible nodes
+- Perform **well-defined operations** on invisible nodes:
+  - Add/remove children to invisible nodes (clear expected behavior: no callbacks)
+  - Modify properties of invisible nodes (if applicable)
+  - **Consider carefully** whether to test expand/collapse of invisible nodes (learned from Task 3: this has uncertain semantics)
 - Verify that no callbacks are triggered and `Count()` doesn't change
 - Clear callback logs to ensure isolation
 - Later expand the parent and verify the invisible operations had the expected effect on the tree structure
-- **Code Style (from Task 1 & 2 learnings):**
+- **Code Style (from completed tasks):**
   - Call methods directly without explicit interface casting unless the compiler requires it
   - Add comments specifying which interface provides each method being tested
   - Use blank lines between conceptually different test operations for clarity
   - Prioritize simple, direct code over defensive over-engineering
   - Use `AssertItems` helper with `const wchar_t*` arrays for verifying visible node sequences
+  - **Focus on practical scenarios** that matter in real applications
+  - **Remove any test** that has unclear expected behavior during implementation
 
 Organize under a `TEST_CATEGORY` block named "OperationsOnInvisibleNodes".
 
@@ -323,10 +338,13 @@ Testing operations on invisible nodes is critical because `tree::NodeItemProvide
 
 4. **State Preservation**: The tree structure maintains expand/collapse states even when nodes are invisible, so when a parent is later expanded, the child's previous state should be honored
 
+5. **Learning from Task 3**: Avoid testing operations on invisible nodes where the expected behavior is not well-documented. The practical test case is: "collapse a parent with expanded children, then re-expand the parent - children should still be expanded" (already covered in `CollapseNodeWithExpandedDescendants` test from Task 3)
+
 Evidence from implementation:
 - `OnItemExpanded/OnItemCollapsed()` checking `CalculateNodeVisibilityIndex()` before invoking callbacks
 - The visibility check returns -1 for nodes in collapsed subtrees, preventing callback propagation
 - The underlying `INodeRootProvider` managing the full tree structure independently of what's visible
+- **Key learning**: The semantics of calling `SetExpanding()` on invisible nodes is implementation-dependent and not clearly documented
 
 This task should come after Tasks 2, 3, and 4 because it tests a specific isolation concern that builds on understanding of basic mapping, dynamics, and edge cases.
 
@@ -654,5 +672,66 @@ If anything needs to be added in the future, it would be under a potential "Choo
 - The relationship between `INodeRootProvider`, `NodeItemProvider`, and `GuiVirtualTreeListControl`
 
 However, since this is an implementation detail rather than a user-facing API, documentation in the knowledge base is not critical at this time.
+
+# KEY LEARNINGS APPLIED TO FUTURE TASKS
+
+Based on the completion of Task No.3 (Expand/Collapse Dynamics), the following learnings have been applied to future task descriptions:
+
+## 1. Always Verify Implementation Before Writing Tests
+
+**What happened**: In Task 3, I initially expected `CalculateNodeVisibilityIndex()` to return `-2` for invisible nodes, but it actually returns `-1`.
+
+**Applied to**: 
+- Task No.4: Added explicit instruction to read implementation first
+- Task No.4: Added reminder that public method converts all negative values to `-1`
+
+## 2. Avoid Edge Cases With Uncertain Semantics
+
+**What happened**: In Task 3, I created a test `ExpandNodeWithExpandedChildren` that tested calling `SetExpanding()` on invisible nodes. The expected behavior was unclear and I had to remove the test.
+
+**Applied to**:
+- Task No.4: Added instruction to "avoid testing ambiguous edge cases where expected behavior is unclear"
+- Task No.5: Added warning not to test expand/collapse on invisible nodes
+- Task No.5: Removed the scenarios for expanding/collapsing invisible nodes
+- Task No.5: Added note referencing the learning from Task 3
+
+## 3. Provide Clear Rationale When Removing Tests
+
+**What happened**: When I removed `ExpandNodeWithExpandedChildren`, I explained:
+- Why the test was ambiguous
+- That equivalent functionality was tested elsewhere
+- That it was better to have 6 solid tests than 7 with an ambiguous one
+
+**Applied to**:
+- All future tasks: Maintain pattern of clear explanations when tests are unclear
+- Future task instructions remind to focus on practical scenarios
+
+## 4. Read Implementation to Understand Return Values
+
+**What happened**: I should have checked `CalculateNodeVisibilityIndex()` implementation before assuming it returns `-2`.
+
+**Applied to**:
+- Task No.4: Added "BEFORE WRITING ANY TEST CODE" section
+- Task No.4: Explicit instruction to read implementation files first
+- Task No.5: Similar guidance added
+
+## 5. Quality Over Coverage
+
+**What happened**: The user accepted removal of the ambiguous test, showing that quality matters more than test count.
+
+**Applied to**:
+- All tasks: Emphasis on practical, well-defined scenarios
+- Tasks 4-5: Instructions to remove unclear tests during implementation
+- Focus shifted from "comprehensive coverage" to "meaningful coverage"
+
+## 6. Existing Test Patterns Are Your Friend
+
+**What happened**: I found the correct expected value (`-1`) by checking existing tests in `BasicIndexMapping` category.
+
+**Applied to**:
+- Task No.4: Added instruction to check existing test patterns before writing new tests
+- Reinforced the importance of learning from existing codebase
+
+These learnings ensure future tasks avoid the same mistakes and maintain high-quality, practical test coverage.
 
 # !!!FINISHED!!!
