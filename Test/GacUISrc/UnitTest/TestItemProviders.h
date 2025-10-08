@@ -58,6 +58,20 @@ namespace gacui_unittest_template
 		TEST_ASSERT(matches);
 	}
 
+	template<vint Count>
+	void AssertItems(Ptr<NodeItemProvider> provider, const wchar_t* (&expected)[Count])
+	{
+		// Build actual items list from the provider
+		List<WString> actualItems;
+		for (vint i = 0; i < provider->Count(); i++)
+		{
+			actualItems.Add(provider->GetTextValue(i));
+		}
+
+		// Compare with expected items using AssertCallbacks
+		AssertCallbacks(actualItems, expected);
+	}
+
 	class MockItemProviderCallback : public Object, public virtual IItemProviderCallback
 	{
 		List<WString>& callbackLog;
