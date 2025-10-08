@@ -1,70 +1,75 @@
 {
-    "version": "2.0.0",
-    "presentation": {
-        "echo": true,
-        "reveal": "always",
-        "focus": false,
-        "panel": "shared",
-        "clear": true,
-        "close": false,
-        "showReuseMessage": false
-    },
-    "runOptions": {
-        "runOn": "default"
-    },
-    "tasks": [
-        {
-            "label": "Build Unit Tests",
-            "type": "shell",
-            "windows": {
-                "problemMatcher": "$msCompile",
-                "command": "powershell.exe",
-                "args": [
-                    "-ExecutionPolicy", "Bypass",
-                    "-File", "${workspaceFolder}/.github/TaskLogs/copilotBuild.ps1"
-                ]
-            },
-            "linux": {
-                "command": "false"
-            },
-            "options": {
-                "cwd": "${workspaceFolder}/Test/GacUISrc"
-            },
-            "group": "build"
-        },
-        {
-            "label": "Run Unit Tests",
-            "type": "shell",
-            "windows": {
-                "command": "powershell.exe",
-                "args": [
-                    "-ExecutionPolicy", "Bypass",
-                    "-File", "${workspaceFolder}/.github/TaskLogs/copilotExecute.ps1",
-                    "-Executable", "UnitTest"
-                ]
-            },
-            "linux": {
-                "command": "false"
-            },
-            "options": {
-                "cwd": "${workspaceFolder}/Test/GacUISrc"
-            },
-            "group": {
-                "kind": "test",
-                "isDefault": true
-            }
-        },
-        {
-            "label": "Build and Run Unit Tests",
-            "dependsOrder": "sequence",
-            "dependsOn": [
-                "Build Unit Tests",
-                "Run Unit Tests"
-            ],
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            }
-        }
-    ]
+	"version": "2.0.0",
+	"presentation": {
+		"echo": true,
+		"reveal": "always",
+		"focus": false,
+		"panel": "shared",
+		"clear": true,
+		"close": false,
+		"showReuseMessage": false
+	},
+	"runOptions": {
+		"runOn": "default"
+	},
+	"tasks": [
+		{
+			"label": "Build Unit Tests",
+			"type": "shell",
+			"windows": {
+				"problemMatcher": "$msCompile",
+				"command": "powershell.exe",
+				"args": [
+					"-ExecutionPolicy",
+					"Bypass",
+					"-File",
+					"${workspaceFolder}/.github/TaskLogs/copilotBuild.ps1"
+				]
+			},
+			"linux": {
+				"command": "false"
+			},
+			"options": {
+				"cwd": "${workspaceFolder}/Test/GacUISrc"
+			},
+			"group": "build"
+		},
+		{
+			"label": "Run Unit Tests",
+			"type": "shell",
+			"windows": {
+				"command": "powershell.exe",
+				"args": [
+					"-ExecutionPolicy",
+					"Bypass",
+					"-File",
+					"${workspaceFolder}/.github/TaskLogs/copilotExecute.ps1",
+					"-Executable",
+					"UnitTest"
+				]
+			},
+			"linux": {
+				"command": "false"
+			},
+			"options": {
+				"cwd": "${workspaceFolder}/Test/GacUISrc"
+			},
+			"group": {
+				"kind": "test",
+				"isDefault": true
+			}
+		},
+		{
+			"label": "Build and Run Unit Tests",
+			"dependsOrder": "sequence",
+			"dependsOn": [
+				"Build Unit Tests",
+				"Run Unit Tests"
+			],
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			}
+		}
+	]
 }
