@@ -4,7 +4,15 @@
 
 GuiListControl takes a pure data structure list::IItemProvider, converting it to an interactable and renderable control. Sub classes of GuiListControl requires the list::IItemProvider to offer more features via RequestView.
 
-Similarily, a tree view control takes tree::INodeRootProvider. But in the end, a tree view is just a list control rendering all expanded tree items. So a tree view control needs to convert tree:INodeRootProvider to list::IItemProvider in order to construct its base class. tree::NodeItemProvider do this job.
+Similarily, a tree view control takes tree::INodeRootProvider. But in the end, a tree view is just a list control rendering all expanded tree items. So a - Test that `GetTextValue()` returns correct values after a node is expanded (new children become visible)
+- Test that `GetTextValue()` returns correct values after a node is collapsed (children become hidden)
+- Test that `Count()` updates correctly after expand operations
+- Test that `Count()` updates correctly after collapse operations
+- Test that indices correctly map to the right nodes after multiple expand/collapse operations
+- Test data retrieval at specific positions (e.g., nodes before the expanded node, nodes after the expanded node, newly visible children)
+- Test that collapsing a parent doesn't affect data retrieval for nodes outside the collapsed subtree
+- Test that expanding a deeply nested node correctly exposes all its children in the right order
+- **NOTE**: Invalid indices should trigger `CHECK_ERROR` as established in Task 4 - do not test for empty/default return valuesw control needs to convert tree:INodeRootProvider to list::IItemProvider in order to construct its base class. tree::NodeItemProvider do this job.
 
 Obviously, a tree::NodeItemProvider represents all expanded tree::INodeProvider nodes, which are managed by INodeRootProvider. The root node can be retrived via INodeRootProvider::GetRootNode. A tree::INodeProvider is either expanded or collapsed, controlled by GetExpanding and SetExpanding. If a node is collapsed, all sub tree are invisible to tree::NodeItemProvider. You must be also awared that the root node itself does not appear in tree::NodeItemProvider.
 
@@ -361,7 +369,7 @@ Implement a test category "BasicDataRetrieval" covering these scenarios:
 - Test `Count()` returns correct number for a tree with some collapsed nodes
 - Test `GetTextValue(vint itemIndex)` retrieves correct text from visible nodes at various positions (first, middle, last)
 - Test `GetBindingValue(vint itemIndex)` retrieves correct binding values from visible nodes
-- Test `GetTextValue()` and `GetBindingValue()` with invalid indices (negative, beyond count) return empty/default values
+- Test `GetTextValue()` and `GetBindingValue()` with invalid indices (negative, beyond count) trigger `CHECK_ERROR` (test with `TEST_ERROR`)
 - Test `RequestView(identifier)` returns the `INodeItemView` interface when requested with the correct identifier
 - Test `RequestView(identifier)` returns nullptr for unknown view types
 - Verify `GetRoot()` returns the correct `INodeRootProvider` instance
@@ -675,7 +683,7 @@ However, since this is an implementation detail rather than a user-facing API, d
 
 # KEY LEARNINGS APPLIED TO FUTURE TASKS
 
-Based on the completion of Task No.3 (Expand/Collapse Dynamics), the following learnings have been applied to future task descriptions:
+Based on the completion of Task No.3 (Expand/Collapse Dynamics) and Task No.4 (Edge Cases and Complex Scenarios), the following learnings have been applied to future task descriptions:
 
 ## 1. Always Verify Implementation Before Writing Tests
 
@@ -733,5 +741,47 @@ Based on the completion of Task No.3 (Expand/Collapse Dynamics), the following l
 - Reinforced the importance of learning from existing codebase
 
 These learnings ensure future tasks avoid the same mistakes and maintain high-quality, practical test coverage.
+
+## 7. Programming Errors Should Use CHECK_ERROR, Not Sentinel Values
+
+**What happened**: In Task 4, I initially expected `CalculateNodeVisibilityIndex()` to return `-1` for foreign nodes (nodes from a different tree). The user changed this to use `CHECK_ERROR` instead, triggering an immediate error.
+
+**Why this matters**: 
+- Passing a foreign node to `CalculateNodeVisibilityIndex()` is a programming error, not a valid use case
+- Using `CHECK_ERROR` catches bugs immediately during development
+- Returning sentinel values like `-1` could mask bugs by allowing invalid operations to continue silently
+- This aligns with defensive programming principles: fail fast at API boundaries
+
+**The distinction**:
+- **Valid "not found" cases** (e.g., a node in a collapsed subtree): Return sentinel values like `-1`
+- **Programming errors** (e.g., foreign nodes, out-of-range indices, null required parameters): Use `CHECK_ERROR` with descriptive error messages
+
+**Applied to**:
+- Task No.6: Changed "return empty/default values" to "trigger CHECK_ERROR" for invalid indices in `GetTextValue()` and `GetBindingValue()`
+- Task No.7: Added note that invalid indices should trigger `CHECK_ERROR`
+- Future implementation: Always distinguish between legitimate "not found" vs invalid input
+
+**Pattern to follow**:
+```cpp
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::controls::tree::ClassName::MethodName(ParamTypes)#"
+CHECK_ERROR(condition, ERROR_MESSAGE_PREFIX L"Descriptive error message.");
+#undef ERROR_MESSAGE_PREFIX
+```
+
+**In tests**:
+- Use `TEST_ERROR(expression)` to verify that `CHECK_ERROR` is triggered
+- Invalid indices, foreign nodes, and other programming errors should all be tested with `TEST_ERROR`
+
+## 8. Error Messages Should Include Full Context
+
+**What happened**: The user's error message included the full method signature with namespace: `vl::presentation::controls::tree::NodeItemProvider::CalculateNodeVisibilityIndexInternal(INodeProvider*)#`
+
+**Applied to**: All future error checking code should follow the `ERROR_MESSAGE_PREFIX` pattern with:
+- Full namespace path
+- Class name
+- Method name with parameter types
+- Descriptive error message explaining what went wrong
+
+These learnings ensure future tasks maintain consistency with established error handling patterns and user preferences.
 
 # !!!FINISHED!!!
