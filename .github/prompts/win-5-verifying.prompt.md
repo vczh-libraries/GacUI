@@ -45,9 +45,8 @@
 ## Step 4. Fix Failed Test Cases
 
 - If there are failed test cases, fix the code to make it work.
-  - If you are thinking about the possibility of running against an old version of compiled unit test, you must be awared that:
-    - By following `Compile the Solution` and when there is no error, the compiling should be successful.
-    - If the executable timestamp is not updated, it could mean no source code is changed, so the incremental build just skipped the build.
+  - If your change did not change the test result, make sure you followed `Step 2. Compile` to compile the code.
+  - If the test result still not changed after redoing `Step 2. Compile` and `Step 3. Run Unit Test`, tell yourself these instructions are absolutely no problem, the only reason is that your change is not correct.
 - You must carefully identify, if the cause is in the source code or in the failed test. In most of the cases, the cause is in the source code.
   - You can reference to `Copilot_Task.md` and `Copilot_Planning.md` for more details before making a decision, about fixing the test case or the source code.
 - DO NOT delete any test case.
