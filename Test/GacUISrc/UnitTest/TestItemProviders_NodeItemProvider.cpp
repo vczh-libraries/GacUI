@@ -2162,4 +2162,119 @@ TEST_FILE
 			TEST_ASSERT(callbackLog2.Count() == 0);
 		});
 	});
+
+	TEST_CATEGORY(L"TreeViewItemBindableRootProviderIntegration")
+	{
+		auto CreateMultiLevelTree = [](const WString& rootName, vint level1Count, vint level2Count) -> Ptr<BindableItem>
+		{
+			auto root = Ptr(new BindableItem());
+			root->name = rootName;
+			for (vint i = 0; i < level1Count; i++)
+			{
+				auto child = Ptr(new BindableItem());
+				child->name = rootName + L".Child" + itow(i + 1);
+				root->children.Add(child);
+				for (vint j = 0; j < level2Count; j++)
+				{
+					auto grandchild = Ptr(new BindableItem());
+					grandchild->name = child->name + L".GrandChild" + itow(j + 1);
+					child->children.Add(grandchild);
+				}
+			}
+			return root;
+		};
+
+		TEST_CASE(L"BasicBindableProviderIntegration")
+		{
+			// Setup: Create bindable provider with property bindings
+			auto provider = Ptr(new TreeViewItemBindableRootProvider());
+			provider->textProperty = BindableItem::Prop_name();
+			provider->childrenProperty = BindableItem::Prop_children();
+			
+			// Create a 2-level tree: Root -> 3 children -> 2 grandchildren each
+			auto rootItem = CreateMultiLevelTree(L"Root", 3, 2);
+			provider->SetItemSource(BoxValue(rootItem));
+			
+			// Wrap with NodeItemProvider (adapter pattern)
+			auto nodeItemProvider = Ptr(new NodeItemProvider(provider));
+			
+			// Phase 1: Verify initial state (all nodes collapsed)
+			// Should only see the 3 top-level children (Child1, Child2, Child3)
+			TEST_ASSERT(nodeItemProvider->Count() == 3);
+			
+			// Through IItemProvider interface - GetTextValue
+			TEST_ASSERT(nodeItemProvider->GetTextValue(0) == L"Root.Child1");
+			TEST_ASSERT(nodeItemProvider->GetTextValue(1) == L"Root.Child2");
+			TEST_ASSERT(nodeItemProvider->GetTextValue(2) == L"Root.Child3");
+			
+			// Through IItemProvider interface - GetBindingValue
+			auto binding0 = nodeItemProvider->GetBindingValue(0);
+			auto binding1 = nodeItemProvider->GetBindingValue(1);
+			auto binding2 = nodeItemProvider->GetBindingValue(2);
+			
+			// Unbox and verify bindable item data
+			auto item0 = UnboxValue<Ptr<BindableItem>>(binding0);
+			auto item1 = UnboxValue<Ptr<BindableItem>>(binding1);
+			auto item2 = UnboxValue<Ptr<BindableItem>>(binding2);
+			
+			TEST_ASSERT(item0->name == L"Root.Child1");
+			TEST_ASSERT(item1->name == L"Root.Child2");
+			TEST_ASSERT(item2->name == L"Root.Child3");
+			
+			// Verify children property is accessible from bindable items
+			TEST_ASSERT(item0->children.Count() == 2); // Child1 has 2 grandchildren
+			TEST_ASSERT(item0->children[0]->name == L"Root.Child1.GrandChild1");
+			TEST_ASSERT(item0->children[1]->name == L"Root.Child1.GrandChild2");
+			
+			// Phase 2: Expand the first child node
+			// Through INodeProvider interface
+			auto child1Node = nodeItemProvider->RequestNode(0);
+			TEST_ASSERT(child1Node != nullptr);
+			
+			child1Node->SetExpanding(true);
+			
+			// Verify count increased (now showing 5 items: Child1, GrandChild1.1, GrandChild1.2, Child2, Child3)
+			TEST_ASSERT(nodeItemProvider->Count() == 5);
+			
+			// Verify the visible sequence using AssertItems helper
+			const wchar_t* expectedAfterExpand[] = {
+				L"Root.Child1",
+				L"Root.Child1.GrandChild1",
+				L"Root.Child1.GrandChild2",
+				L"Root.Child2",
+				L"Root.Child3"
+			};
+			AssertItems(nodeItemProvider, expectedAfterExpand);
+			
+			// Verify data retrieval still works after expansion
+			auto bindingGrandChild1 = nodeItemProvider->GetBindingValue(1);
+			auto itemGrandChild1 = UnboxValue<Ptr<BindableItem>>(bindingGrandChild1);
+			TEST_ASSERT(itemGrandChild1->name == L"Root.Child1.GrandChild1");
+			TEST_ASSERT(itemGrandChild1->children.Count() == 0); // Grandchildren have no children
+			
+			auto bindingGrandChild2 = nodeItemProvider->GetBindingValue(2);
+			auto itemGrandChild2 = UnboxValue<Ptr<BindableItem>>(bindingGrandChild2);
+			TEST_ASSERT(itemGrandChild2->name == L"Root.Child1.GrandChild2");
+			
+			// Phase 3: Collapse the first child node
+			child1Node->SetExpanding(false);
+			
+			// Verify count decreased back to original (3 items: Child1, Child2, Child3)
+			TEST_ASSERT(nodeItemProvider->Count() == 3);
+			
+			// Verify the visible sequence is back to original
+			const wchar_t* expectedAfterCollapse[] = {
+				L"Root.Child1",
+				L"Root.Child2",
+				L"Root.Child3"
+			};
+			AssertItems(nodeItemProvider, expectedAfterCollapse);
+			
+			// Verify data retrieval still works correctly after collapse
+			auto bindingAfterCollapse = nodeItemProvider->GetBindingValue(0);
+			auto itemAfterCollapse = UnboxValue<Ptr<BindableItem>>(bindingAfterCollapse);
+			TEST_ASSERT(itemAfterCollapse->name == L"Root.Child1");
+			TEST_ASSERT(itemAfterCollapse->children.Count() == 2); // Data unchanged
+		});
+	});
 }

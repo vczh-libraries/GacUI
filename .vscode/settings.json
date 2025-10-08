@@ -46,6 +46,7 @@
         "/^Get-Content\\b/i": true,
         "/^Select-Object\\b/i": true,
         "/^ForEach-Object\\b/i": true,
+        "/^Measure-Object\\b/i": true,
         "/\\bcopilot(Prepare|Build|Execute)\\.ps1\\b/i": true,
         "kill": false,
         "curl": false,
