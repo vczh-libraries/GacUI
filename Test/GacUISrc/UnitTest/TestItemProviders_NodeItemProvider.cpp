@@ -2132,10 +2132,10 @@ TEST_FILE
 			AssertCallbacks(callbackLog1, expected1);
 			AssertCallbacks(callbackLog2, expected1);
 			
-			// Clear logs and detach the first callback
+			// Detach the first callback and clear logs
+			nodeItemProvider->DetachCallback(&callback1);
 			callbackLog1.Clear();
 			callbackLog2.Clear();
-			nodeItemProvider->DetachCallback(&callback1);
 			
 			// Perform another operation
 			auto child3 = CreateTreeViewItem(L"Child3");
@@ -2150,8 +2150,8 @@ TEST_FILE
 			AssertCallbacks(callbackLog2, expected2);
 			
 			// Detach the second callback and verify no callbacks fire
-			callbackLog2.Clear();
 			nodeItemProvider->DetachCallback(&callback2);
+			callbackLog2.Clear();
 			
 			// Perform another operation
 			auto child4 = CreateTreeViewItem(L"Child4");
