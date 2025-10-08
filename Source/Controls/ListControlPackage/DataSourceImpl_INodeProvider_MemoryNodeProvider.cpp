@@ -102,7 +102,7 @@ MemoryNodeProvider
 	void MemoryNodeProvider::OnChildTotalVisibleNodesChanged(vint offset)
 	{
 		totalVisibleNodeCount+=offset;
-		if(parent)
+		if(parent && parent->GetExpanding())
 		{
 			parent->OnChildTotalVisibleNodesChanged(offset);
 		}

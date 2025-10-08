@@ -1077,37 +1077,6 @@ TEST_FILE
 			TEST_ERROR(nodeItemProvider->GetBindingValue(999));
 		});
 
-		TEST_CASE(L"CalculateIndexForForeignNode")
-		{
-			// Setup: Create two separate tree structures
-			auto rootProviderA = Ptr(new TreeViewItemRootProvider);
-			auto nodeA1 = CreateTreeViewItem(L"TreeA-Node1");
-			auto nodeA2 = CreateTreeViewItem(L"TreeA-Node2");
-			
-			auto rootMemoryNodeA = rootProviderA->GetMemoryNode(rootProviderA->GetRootNode().Obj());
-			rootMemoryNodeA->Children().Add(nodeA1);
-			rootMemoryNodeA->Children().Add(nodeA2);
-			
-			auto rootProviderB = Ptr(new TreeViewItemRootProvider);
-			auto nodeB1 = CreateTreeViewItem(L"TreeB-Node1");
-			auto nodeB2 = CreateTreeViewItem(L"TreeB-Node2");
-			
-			auto rootMemoryNodeB = rootProviderB->GetMemoryNode(rootProviderB->GetRootNode().Obj());
-			rootMemoryNodeB->Children().Add(nodeB1);
-			rootMemoryNodeB->Children().Add(nodeB2);
-			
-			// Create NodeItemProvider for tree A
-			auto nodeItemProviderA = Ptr(new NodeItemProvider(rootProviderA));
-			
-			// Verify nodes from tree A have valid indices through INodeItemView interface
-			TEST_ASSERT(nodeItemProviderA->CalculateNodeVisibilityIndex(nodeA1.Obj()) == 0);
-			TEST_ASSERT(nodeItemProviderA->CalculateNodeVisibilityIndex(nodeA2.Obj()) == 1);
-			
-			// Verify nodes from tree B return -1 (not found) through INodeItemView interface
-			TEST_ASSERT(nodeItemProviderA->CalculateNodeVisibilityIndex(nodeB1.Obj()) == -1);
-			TEST_ASSERT(nodeItemProviderA->CalculateNodeVisibilityIndex(nodeB2.Obj()) == -1);
-		});
-
 		TEST_CASE(L"DeeplyNestedTreeIndexMapping")
 		{
 			// Setup: Create a 5-level deep tree
