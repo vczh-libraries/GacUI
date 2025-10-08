@@ -60,6 +60,11 @@ I believe we can split Task No.2 into smaller tasks. I would like to keep any ta
 
 Check out TestItemProviders_NodeItemProvider.cpp, check out unfinished tasks, see if any test in unfinished tasks has already been implemented, remove such tests from unfinished tasks
 
+## UPDATE
+
+Since Task 6/7/8 already partially completed, please merge it into one
+It looks like Task 9 is unnecessary, please remove it. But I think the DetachCallback needs a test case, please add it to the above merged task.
+
 # TASKS
 
 - [x] TASK No.1: Create TestItemProviders_NodeItemProvider.cpp and Add to Project
@@ -67,11 +72,8 @@ Check out TestItemProviders_NodeItemProvider.cpp, check out unfinished tasks, se
 - [x] TASK No.3: Implement Test Cases for Expand/Collapse Dynamics
 - [x] TASK No.4: Implement Test Cases for Edge Cases and Complex Scenarios
 - [x] TASK No.5: Implement Test Cases for Operations on Invisible Nodes
-- [ ] TASK No.6: Implement Test Cases for Basic IItemProvider Data Retrieval
-- [ ] TASK No.7: Implement Test Cases for Data Retrieval After Structural Changes (PARTIALLY COMPLETED - see analysis below)
-- [ ] TASK No.8: Implement Test Cases for TreeViewItemRootProvider Integration (PARTIALLY COMPLETED - see analysis below)
-- [ ] TASK No.9: Implement Test Cases for Callback Integration (LARGELY COMPLETED - see analysis below)
-- [ ] TASK No.10: Add Simple Integration Test Cases with TreeViewItemBindableRootProvider
+- [ ] TASK No.6: Implement Remaining Data Retrieval and Integration Test Cases
+- [ ] TASK No.7: Add Simple Integration Test Cases with TreeViewItemBindableRootProvider
 
 ## TASK No.1: Create TestItemProviders_NodeItemProvider.cpp and Add to Project
 
@@ -360,153 +362,42 @@ Evidence from implementation:
 
 This task should come after Tasks 2, 3, and 4 because it tests a specific isolation concern that builds on understanding of basic mapping, dynamics, and edge cases.
 
-## TASK No.6: Implement Test Cases for Basic IItemProvider Data Retrieval
+## TASK No.6: Implement Remaining Data Retrieval and Integration Test Cases
 
-This task implements basic test cases to verify that `tree::NodeItemProvider` correctly retrieves and exposes data from underlying `tree::INodeProvider` nodes through the `list::IItemProvider` interface, using `TreeViewItemRootProvider` as the underlying provider.
+This task implements all remaining test cases for data retrieval through `list::IItemProvider` interface, delegation to `TreeViewItemRootProvider`, callback management through `IItemProviderCallback`, and integration verification. Many tests have already been implemented, so this task focuses on the remaining gaps.
 
 **ANALYSIS OF ALREADY IMPLEMENTED TESTS:**
 - ✅ `Count()` is extensively tested throughout BasicIndexMapping and ExpandCollapseDynamics
 - ✅ `GetTextValue()` is tested via `AssertItems()` helper throughout all categories
+- ✅ `GetTextValue()` after expand/collapse is tested throughout ExpandCollapseDynamics via `AssertItems()`
 - ✅ `GetBindingValue()` with invalid indices is tested in EdgeCasesAndComplexScenarios::InvalidIndicesForDataRetrieval
 - ✅ `GetTextValue()` with invalid indices is tested in EdgeCasesAndComplexScenarios::InvalidIndicesForDataRetrieval
 - ✅ `GetRoot()` is tested in BasicSetupAndConstruction
+- ✅ `AttachCallback()` is used throughout all test categories
+- ✅ `OnItemModified` events on expand/collapse are verified throughout ExpandCollapseDynamics
+- ✅ Callback parameters (start, count, newCount) are verified via `AssertCallbacks()` throughout all categories
+- ✅ All previous tasks have been using `TreeViewItemRootProvider` as the underlying provider
+
+**REMAINING GAPS:**
 - ❌ `GetBindingValue()` with valid indices is NOT explicitly tested
+- ❌ `GetBindingValue()` after structural changes (expand/collapse) is NOT explicitly tested
 - ❌ `RequestView(identifier)` is NOT tested
+- ❌ **Explicit validation** that data returned via `NodeItemProvider` matches direct calls to root provider is NOT tested
+- ❌ Testing that `NodeItemProvider` doesn't cache data (always delegates) is NOT explicitly tested
+- ❌ Testing that changes to underlying tree items are reflected in `NodeItemProvider` is NOT tested
+- ❌ `DetachCallback()` functionality is NOT tested
 
 ### what to be done
 
-Implement a test category "BasicDataRetrieval" covering these **remaining** scenarios:
+Implement test cases covering the remaining scenarios organized into logical groups:
 
+**1. Basic Data Retrieval (BasicDataRetrieval category):**
 - Test `GetBindingValue(vint itemIndex)` retrieves correct binding values from visible nodes at various positions (first, middle, last)
+- Test `GetBindingValue(vint itemIndex)` returns correct values after expand/collapse operations
 - Test `RequestView(identifier)` returns the `INodeItemView` interface when requested with the correct identifier
 - Test `RequestView(identifier)` returns nullptr for unknown view types
 
-This task should add approximately 50-100 lines of test code (reduced from original scope since most tests are already implemented).
-
-### how to test it
-
-All test cases should:
-- Create a `TreeViewItemRootProvider` with simple, well-defined tree structures (2-3 levels max)
-- Wrap it with `NodeItemProvider`
-- Build trees with known text values and binding values for easy verification
-- Call `GetTextValue()` and `GetBindingValue()` with various valid and invalid indices
-- Verify returned values match expected data
-- Test `Count()` against manually calculated visible node counts
-- Use `RequestView()` with different identifiers and verify return values
-- Call `GetRoot()` and verify it returns the original root provider
-- **Code Style (from Task 1 & 2 learnings):**
-  - Call methods directly without explicit interface casting unless the compiler requires it
-  - Add comments specifying which interface provides each method (e.g., "// Retrieve data through IItemProvider interface")
-  - Use blank lines to separate different test operations
-  - Keep code simple and direct
-  - Use `AssertItems` helper when verifying sequences of text values
-
-Organize under a `TEST_CATEGORY` block named "BasicDataRetrieval".
-
-### rationale
-
-This task establishes the foundation for data retrieval testing by verifying the most basic operations:
-
-1. **Core IItemProvider Methods**: Tests the fundamental contract of `IItemProvider` - `Count()`, `GetTextValue()`, `GetBindingValue()`, and `RequestView()`
-
-2. **Static Scenarios**: Focuses on static tree structures (no expand/collapse during the test) to isolate basic data retrieval from dynamic behavior
-
-3. **Manageable Scope**: By limiting to basic scenarios, this task adds only a few hundred lines of code, making it easier to review and debug
-
-4. **Foundation for Complex Tests**: Later tasks will build on these basic tests by adding structural changes and integration aspects
-
-Evidence from implementation:
-- `GetTextValue(vint itemIndex)` calls `RequestNode(itemIndex)` and then `root->GetTextValue(node.Obj())`
-- `GetBindingValue(vint itemIndex)` follows the same delegation pattern
-- `Count()` calculates visible nodes using `root->GetRootNode()->CalculateTotalVisibleNodes() - 1`
-- `RequestView()` checks the identifier and returns `this` for `INodeItemView::Identifier` or delegates to root provider
-
-This task should come after Tasks 2-5 because it relies on the index-to-node mapping being correct. However, it only tests the simplest cases to keep the scope manageable.
-
-## TASK No.7: Implement Test Cases for Data Retrieval After Structural Changes
-
-This task implements test cases to verify that data retrieval through `tree::NodeItemProvider` works correctly after dynamic structural changes to the tree, such as expanding/collapsing nodes.
-
-**ANALYSIS OF ALREADY IMPLEMENTED TESTS:**
-- ✅ `GetTextValue()` after expand/collapse is tested throughout ExpandCollapseDynamics via `AssertItems()`
-- ✅ `Count()` updates after expand/collapse is tested throughout ExpandCollapseDynamics
-- ✅ Multiple expand/collapse operations are tested in ExpandCollapseDynamics::MultipleSequentialOperations
-- ✅ Data retrieval at specific positions is verified in all ExpandCollapseDynamics tests
-- ✅ Collapsing parent effects are tested in ExpandCollapseDynamics
-- ✅ Deeply nested expansion is tested in EdgeCasesAndComplexScenarios::DeeplyNestedTreeIndexMapping
-- ❌ `GetBindingValue()` after structural changes is NOT explicitly tested
-
-### what to be done
-
-**TASK STATUS: MOSTLY COMPLETED**
-
-The test category can be considered largely complete since `GetTextValue()` testing via `AssertItems()` already covers data retrieval after structural changes. The only remaining gap is:
-
-- Test `GetBindingValue(vint itemIndex)` returns correct binding values after expand/collapse operations
-
-**RECOMMENDATION:** This can be merged into Task No.6 as a simple additional test case since the scope is very small. Alternatively, this task can be marked as complete since data retrieval testing is comprehensively covered.
-
-This would add approximately 20-40 lines of test code if implemented separately.
-
-### how to test it
-
-All test cases should:
-- Create a `TreeViewItemRootProvider` with a multi-level tree structure (3-4 levels)
-- Wrap it with `NodeItemProvider`
-- Build trees with distinct text values at each level for easy verification
-- Record initial `Count()` and retrieve some text values as baseline
-- Use `SetExpanding(true)` on collapsed nodes and verify:
-  - `Count()` increases by the expected amount
-  - `GetTextValue()` at new indices returns correct child node values
-  - `GetTextValue()` at indices beyond the expansion point still returns correct values
-- Use `SetExpanding(false)` on expanded nodes and verify:
-  - `Count()` decreases by the expected amount
-  - `GetTextValue()` at indices that were in the collapsed range are now different nodes
-  - `GetTextValue()` for nodes outside the collapsed range remain correct
-- Perform multiple expand/collapse operations in sequence and verify consistency
-- **Code Style (from Task 1 & 2 learnings):**
-  - Call methods directly without explicit interface casting
-  - Add comments to clarify which phase of testing is happening
-  - Use blank lines between setup, operation, and verification phases
-  - Use `AssertItems` helper to verify sequences of visible node text values
-
-Organize under a `TEST_CATEGORY` block named "DataRetrievalAfterStructuralChanges".
-
-### rationale
-
-This task verifies that `NodeItemProvider`'s data retrieval remains correct when the visible node set changes dynamically:
-
-1. **Real-World Usage**: In actual tree controls, users constantly expand and collapse nodes, so data retrieval must work correctly through these state changes
-
-2. **Index Stability**: After expand/collapse, the mapping from indices to nodes changes, but each index must still return the correct data for its new node
-
-3. **Builds on Previous Tasks**: Task 2 verified that index-to-node mapping updates correctly; Task 3 verified basic data retrieval works. This task combines both aspects
-
-4. **Isolated Complexity**: By separating structural changes from integration testing, we keep each task focused and the code size manageable
-
-Evidence from implementation:
-- `OnItemExpanded/OnItemCollapsed()` in `NodeItemProvider` calls `InvokeOnItemModified()` to notify about range changes
-- `GetNodeByOffset()` recalculates the node-to-index mapping based on current expand states
-- The visible node count changes dynamically with `CalculateTotalVisibleNodes()`
-
-This task should come after Task 6 because it extends basic data retrieval with dynamic scenarios, building on the foundation of static tests.
-
-## TASK No.8: Implement Test Cases for TreeViewItemRootProvider Integration
-
-This task implements test cases to verify that `tree::NodeItemProvider` correctly integrates with and delegates to `TreeViewItemRootProvider`, ensuring the adapter pattern works correctly.
-
-**ANALYSIS OF ALREADY IMPLEMENTED TESTS:**
-- ✅ `GetRoot()` returns correct instance is tested in BasicSetupAndConstruction
-- ✅ Delegation to `root->GetTextValue(node)` is demonstrated in BasicSetupAndConstruction
-- ❌ Comprehensive delegation verification (comparing direct vs delegated calls) is NOT tested
-- ❌ Changes to underlying tree items reflected through NodeItemProvider is NOT tested
-- ❌ No data caching verification is NOT tested
-- ❌ `GetBindingValue()` delegation is NOT tested
-
-### what to be done
-
-Implement a test category "TreeViewItemRootProviderIntegration" covering these **remaining** scenarios:
-
+**2. TreeViewItemRootProvider Integration (TreeViewItemRootProviderIntegration category):**
 - Test that data returned via `NodeItemProvider` matches what would be obtained by:
   1. Using `RequestNode(index)` to get the node
   2. Directly calling `root->GetTextValue(node)` with that node
@@ -514,124 +405,82 @@ Implement a test category "TreeViewItemRootProviderIntegration" covering these *
 - Test that changes to the underlying tree items (via `TreeViewItem::SetText()`) are correctly reflected in subsequent `GetTextValue()` calls through `NodeItemProvider`
 - Verify that `NodeItemProvider` doesn't cache data but always delegates to the root provider for fresh data
 
-This task should add approximately 80-120 lines of test code (reduced from original scope).
+**3. Callback Management (CallbackManagement category):**
+- Test that `DetachCallback()` properly unregisters an `IItemProviderCallback`
+- Test that detached callbacks do not receive events after detachment
+- Test that multiple callbacks attached to the same provider all receive events
+
+This task should add approximately 200-300 lines of test code total across all categories.
 
 ### how to test it
 
-All test cases should:
+**For Basic Data Retrieval tests:**
+- Create a `TreeViewItemRootProvider` with simple, well-defined tree structures (2-3 levels max)
+- Wrap it with `NodeItemProvider`
+- Build trees with known binding values for easy verification
+- Call `GetBindingValue()` with various valid indices and verify returned values
+- Perform expand/collapse operations and verify `GetBindingValue()` returns correct values for updated visible indices
+- Use `RequestView()` with different identifiers (`INodeItemView::Identifier` and unknown ones) and verify return values
+- **Code Style:**
+  - Call methods directly without explicit interface casting unless the compiler requires it
+  - Add comments specifying which interface provides each method
+  - Use blank lines to separate different test operations
+  - Keep code simple and direct
+
+**For TreeViewItemRootProvider Integration tests:**
 - Create a `TreeViewItemRootProvider` with a simple tree (2-3 levels)
 - Wrap it with `NodeItemProvider`
 - For specific indices:
-  - Retrieve data via `nodeItemProvider->GetTextValue(index)`
+  - Retrieve data via `nodeItemProvider->GetTextValue(index)` and `nodeItemProvider->GetBindingValue(index)`
   - Use `nodeItemProvider->RequestNode(index)` to get the node
-  - Call `rootProvider->GetTextValue(node)` directly
+  - Call `rootProvider->GetTextValue(node)` and `rootProvider->GetBindingValue(node)` directly
   - Verify both approaches return the same value
 - Modify tree item data directly (e.g., `treeItem->SetText(L"New Text")`)
 - Retrieve the value again through `NodeItemProvider` and verify it reflects the change
 - Call `GetRoot()` and verify it's the same object as the original root provider
-- **Code Style (from Task 1 & 2 learnings):**
-  - Call methods directly without explicit interface casting
+- **Code Style:**
   - Add comments explaining the delegation verification approach
   - Use clear variable names for root provider, node provider, and nodes
-  - Use `AssertItems` helper when verifying sequences of visible node text values
 
-Organize under a `TEST_CATEGORY` block named "TreeViewItemRootProviderIntegration".
-
-### rationale
-
-This task verifies the correct implementation of the adapter pattern:
-
-1. **Delegation Correctness**: `NodeItemProvider` must correctly delegate to the underlying `INodeRootProvider` for all data operations, transforming index-based access to node-based access
-
-2. **No Data Caching**: Ensures `NodeItemProvider` doesn't cache data but always retrieves fresh values from the root provider
-
-3. **Reference Integrity**: Verifies that `GetRoot()` returns the correct root provider, which is important for controls that need to access the root provider directly
-
-4. **Adapter Pattern Validation**: This tests the core architectural pattern - `NodeItemProvider` is just a view over the root provider, not a data owner
-
-Evidence from implementation:
-- `GetTextValue(vint itemIndex)` implementation: `return root->GetTextValue(RequestNode(itemIndex).Obj())`
-- `GetBindingValue(vint itemIndex)` follows identical pattern
-- `GetRoot()` simply returns the `root` member variable
-- No data caching logic exists in the implementation
-
-This task should come after Tasks 6 and 7 because it verifies that the data retrieval tested in those tasks actually works through proper delegation, not through some coincidental behavior.
-
-## TASK No.9: Implement Test Cases for Callback Integration
-
-This task implements test cases to verify that `tree::NodeItemProvider` correctly manages `IItemProviderCallback` instances and fires appropriate events when the visible node set changes.
-
-**ANALYSIS OF ALREADY IMPLEMENTED TESTS:**
-- ✅ `AttachCallback()` is used throughout all test categories
-- ✅ `OnItemModified` events on expand/collapse are verified throughout ExpandCollapseDynamics
-- ✅ Callback parameters (start, count, newCount) are verified via `AssertCallbacks()` throughout all categories
-- ✅ Callback sequences for multiple operations are tested in ExpandCollapseDynamics::MultipleSequentialOperations
-- ✅ Complex callback scenarios are tested in ExpandCollapseDynamics::CallbackParametersInComplexScenarios
-- ❌ `DetachCallback()` functionality is NOT tested
-- ❌ Multiple callbacks attached to same provider is NOT tested
-- ❌ Data retrieval from within callback handler is NOT tested
-
-### what to be done
-
-**TASK STATUS: LARGELY COMPLETED**
-
-Callback integration is extensively tested throughout the existing test suite. The only remaining scenarios are:
-
-- Test that `DetachCallback()` properly unregisters an `IItemProviderCallback`
-- Test that detached callbacks do not receive events after detachment
-- Test that multiple callbacks attached to the same provider all receive events
-- Test that data retrieval (`GetTextValue`, `GetBindingValue`) works correctly when called from within a callback handler
-
-This task should add approximately 60-100 lines of test code (significantly reduced from original scope).
-
-### how to test it
-
-All test cases should:
+**For Callback Management tests:**
 - Create a `TreeViewItemRootProvider` and wrap with `NodeItemProvider`
-- Use `MockItemProviderCallback` (or similar test mock) to track callback invocations
-- Call `AttachCallback()` to register the mock
-- Perform expand/collapse operations via `SetExpanding()`
-- Verify that `OnItemModified` was called with correct parameters
-- Use `AssertCallbacks()` or similar methods to verify callback sequences
+- Use `MockItemProviderCallback` to track callback invocations
+- Attach multiple callbacks to the same provider
+- Perform expand/collapse operations and verify all callbacks receive events
+- Test detaching one callback and verify only remaining callbacks receive subsequent events
+- Use `AssertCallbacks()` to verify callback sequences
 - Clear callback logs between test phases to isolate specific behaviors
-- Test detaching callbacks and verify events stop being received
-- In some test cases, call `GetTextValue()` from within the callback to verify data retrieval works during event handling
-- **Code Style (from Task 1 & 2 learnings):**
-  - Call methods directly without explicit interface casting
+- **Code Style:**
   - Add comments explaining what callbacks are expected for each operation
   - Use blank lines to separate different test phases
-  - Use `AssertItems` helper when verifying visible node sequences
 
-Organize under a `TEST_CATEGORY` block named "CallbackIntegration".
+Organize under `TEST_CATEGORY` blocks named "BasicDataRetrieval", "TreeViewItemRootProviderIntegration", and "CallbackManagement".
 
 ### rationale
 
-This task verifies that `NodeItemProvider` correctly implements the observable pattern for list changes:
+This task consolidates all remaining data retrieval, integration, and callback testing into a single comprehensive task:
 
-1. **Event-Driven Updates**: List controls depend on `OnItemModified` events to know when to refresh their display. Testing callbacks ensures this mechanism works
+1. **Comprehensive Coverage**: Addresses all remaining gaps identified in the analysis, ensuring `tree::NodeItemProvider` is fully tested for its `list::IItemProvider` responsibilities
 
-2. **Correct Parameters**: The parameters passed to `OnItemModified` tell the control exactly which range of items changed and how, enabling efficient updates
+2. **Manageable Scope**: While this task covers multiple areas, each area has a small number of test cases (most work has already been done in previous tasks), keeping the total scope around 200-300 lines
 
-3. **Multiple Observers**: Multiple controls or components might observe the same provider, so callback management must be correct
+3. **Logical Organization**: Groups related tests into three clear categories that each address a different aspect:
+   - **BasicDataRetrieval**: Verifies the `IItemProvider` contract is correctly implemented
+   - **TreeViewItemRootProviderIntegration**: Verifies the adapter pattern works correctly
+   - **CallbackManagement**: Verifies the observable pattern works correctly
 
-4. **Callback Safety**: Data retrieval must work correctly even when called from within a callback handler, as this is a common pattern
+4. **Efficiency**: Merging these tasks avoids context switching and allows similar test infrastructure to be reused
 
 Evidence from implementation:
-- `OnItemExpanded/OnItemCollapsed()` calls `InvokeOnItemModified()` with calculated ranges
+- `GetTextValue(vint itemIndex)` and `GetBindingValue(vint itemIndex)` both call `RequestNode(itemIndex)` and delegate to `root->GetTextValue/GetBindingValue(node)`
+- `RequestView()` checks the identifier and returns `this` for `INodeItemView::Identifier` or delegates to root provider
+- `GetRoot()` simply returns the `root` member variable
 - `ItemProviderBase` base class manages callback registration through `AttachCallback/DetachCallback`
-- Parameters to `InvokeOnItemModified()` are carefully calculated:
-  - `start`: Uses `CalculateNodeVisibilityIndex()` to find where the change starts
-  - `count`: Old visible count before expansion/collapse
-  - `newCount`: New visible count after expansion/collapse
-  - `itemReferenceUpdated`: Always false for expand/collapse
+- No data caching logic exists in the implementation - all data is retrieved fresh on each call
 
-This task should come after Tasks 6, 7, and 8 because:
-- It assumes basic data retrieval works (Task 6)
-- It assumes structural changes work (Task 7)
-- It may involve verifying delegation to root provider (Task 8)
-- It's a higher-level integration concern that builds on lower-level functionality
+This task should come after Tasks 2-5 because it assumes the index-to-node mapping (tested in Tasks 2-3) and edge case handling (tested in Tasks 4-5) are already working correctly. It focuses on verifying the data access layer and integration aspects.
 
-## TASK No.10: Add Simple Integration Test Cases with TreeViewItemBindableRootProvider
+## TASK No.7: Add Simple Integration Test Cases with TreeViewItemBindableRootProvider
 
 This task adds a few simple test cases to verify that `tree::NodeItemProvider` works correctly with `TreeViewItemBindableRootProvider` as the underlying provider. Since both `NodeItemProvider` and `TreeViewItemBindableRootProvider` have been thoroughly tested individually, this task only needs to verify basic integration.
 
