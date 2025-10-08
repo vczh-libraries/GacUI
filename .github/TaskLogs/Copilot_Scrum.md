@@ -502,16 +502,19 @@ The test should be minimal, just demonstrating that the two components work toge
 ### how to test it
 
 Create a simple test case:
-- Build a tree using bindable items (refer to Task 8's helper creation patterns)
+- Build a tree using bindable items (refer to existing bindable provider test patterns)
 - Create `TreeViewItemBindableRootProvider` and wrap with `NodeItemProvider`
 - Verify basic operations: `Count()`, `GetTextValue()`, `GetBindingValue()`
 - Expand one node and verify the visible count increases and data retrieval works
 - Collapse the node and verify the visible count decreases
-- **Code Style (from Task 1 & 2 learnings):**
+- **Code Style (from completed tasks):**
   - Use direct method calls without interface casting
   - Add interface-specific comments for clarity
   - Keep test simple since both components are already thoroughly tested
   - Use `AssertItems` helper for verifying visible node sequences
+  - **Do NOT call `OnAttached()` on root provider after initial tree construction** - tree updates happen automatically (learned from Task 6)
+  - **If testing callbacks**: Remember that `DetachCallback()` calls `OnAttached(nullptr)`, so clear logs AFTER detaching, not before (learned from Task 6)
+  - **Use specialized provider APIs** when available (e.g., if `TreeViewItemBindableRootProvider` provides specialized accessors like `GetTreeViewData()`, use those instead of generic `GetData().Cast<>()` - learned from Task 6)
 
 Organize under a `TEST_CATEGORY` block named "TreeViewItemBindableRootProviderIntegration" or similar.
 
@@ -654,5 +657,72 @@ CHECK_ERROR(condition, ERROR_MESSAGE_PREFIX L"Descriptive error message.");
 - Descriptive error message explaining what went wrong
 
 These learnings ensure future tasks maintain consistency with established error handling patterns and user preferences.
+
+## 9. Tree Providers Auto-Update, Don't Call OnAttached() After Construction
+
+**What happened**: In Task 6 (Fixing Attempt No.1), I called `rootProvider->OnAttached(rootProvider->GetRootNode().Obj())` after adding nodes and modifying the tree. This caused compilation errors because:
+- `GetRootNode()` returns `INodeProvider*` but `OnAttached` expects `INodeRootProvider*` (type mismatch)
+- Looking at existing tests, they never call `OnAttached` after initial tree creation
+
+**Why this matters**:
+- Tree providers automatically handle notifications when nodes are added or modified
+- The tree updates happen automatically through the node provider's internal mechanisms
+- Calling `OnAttached()` manually is unnecessary and can cause errors
+
+**Applied to**:
+- Task No.7: Added explicit note "Do NOT call `OnAttached()` on root provider after initial tree construction"
+- Future implementation: Rely on automatic tree updates after `SetExpanding()`, adding children, or other tree modifications
+
+## 10. Use Specialized Provider APIs Over Generic GetData().Cast<>()
+
+**What happened**: In Task 6 (Fixing Attempt No.2), I used `node->GetData().Cast<TreeViewItem>()` to access the TreeViewItem data. The user pointed out that `TreeViewItemRootProvider` provides `GetTreeViewData(node)` which is cleaner and more type-safe.
+
+**Why this matters**:
+- Provider classes often provide specialized accessor methods for their specific data types
+- These specialized methods are more readable, type-safe, and follow better API design
+- They internally do the same cast but provide a cleaner interface
+
+**The pattern**:
+```cpp
+// ❌ Generic but verbose
+auto treeItem = node->GetData().Cast<TreeViewItem>();
+treeItem->text = L"New Text";
+
+// ✅ Specialized and clean
+rootProvider->GetTreeViewData(node.Obj())->text = L"New Text";
+```
+
+**Applied to**:
+- Task No.7: Added note to use specialized provider APIs when available
+- Future implementation: Always check if the provider class offers specialized accessors before falling back to `GetData().Cast<>()`
+
+## 11. Callback Lifecycle: DetachCallback() Triggers OnAttached(nullptr)
+
+**What happened**: In Task 6 (Fixing Attempt No.3), test `DetachCallbackStopsEvents` failed because I cleared callback logs BEFORE calling `DetachCallback()`. The issue was that `DetachCallback()` calls `callback->OnAttached(nullptr)` to notify the callback it's being detached, and this was being logged.
+
+**Why this matters**:
+- `AttachCallback()` calls `callback->OnAttached(provider)` to notify attachment
+- `DetachCallback()` calls `callback->OnAttached(nullptr)` to notify detachment
+- These are side effects that will appear in callback logs
+- Test sequencing must account for these lifecycle events
+
+**The correct pattern**:
+```cpp
+// ❌ Wrong order - OnAttached(null) will be in the log
+callbackLog.Clear();
+provider->DetachCallback(&callback);
+// Now callbackLog has "OnAttached(provider=null)"
+
+// ✅ Correct order - lifecycle event is cleared
+provider->DetachCallback(&callback);
+callbackLog.Clear();
+// Now callbackLog is empty and ready for new events
+```
+
+**Applied to**:
+- Task No.7: Added note about callback lifecycle if testing callbacks
+- Future implementation: Always sequence callback operations as: attach → clear → test → detach → clear
+
+These learnings from Task 6 ensure Task 7 and future implementations avoid the same mistakes and follow established patterns.
 
 # !!!FINISHED!!!
