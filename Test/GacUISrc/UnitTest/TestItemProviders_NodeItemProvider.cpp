@@ -1413,4 +1413,370 @@ TEST_FILE
 			}
 		});
 	});
+
+	TEST_CATEGORY(L"OperationsOnInvisibleNodes")
+	{
+		TEST_CASE(L"AddChildrenToCollapsedNode")
+		{
+			// Setup callback logging
+			List<WString> callbackLog;
+			MockItemProviderCallback itemCallback(callbackLog);
+			
+			// Create tree: Root -> Parent (expanded) -> Child (collapsed)
+			// INodeRootProvider interface
+			auto rootProvider = Ptr(new TreeViewItemRootProvider);
+			auto parent = CreateTreeViewItem(L"Parent");
+			auto child = CreateTreeViewItem(L"Child");
+			
+			auto rootMemoryNode = rootProvider->GetMemoryNode(rootProvider->GetRootNode().Obj());
+			rootMemoryNode->Children().Add(parent);
+			
+			auto parentMemoryNode = rootProvider->GetMemoryNode(parent.Obj());
+			parentMemoryNode->Children().Add(child);
+			
+			// Expand parent so Child is visible
+			parent->SetExpanding(true);
+			
+			// Create NodeItemProvider and attach callback
+			// IItemProvider interface
+			auto nodeItemProvider = Ptr(new NodeItemProvider(rootProvider));
+			nodeItemProvider->AttachCallback(&itemCallback);
+			callbackLog.Clear();
+			
+			// Verify initial state - Parent and Child visible, Child collapsed
+			TEST_ASSERT(nodeItemProvider->Count() == 2);
+			const wchar_t* expectedBefore[] = {
+				L"Parent",
+				L"Child"
+			};
+			AssertItems(nodeItemProvider, expectedBefore);
+			
+			// INodeItemView interface - verify Child is visible but has no visible children
+			TEST_ASSERT(nodeItemProvider->CalculateNodeVisibilityIndex(child.Obj()) == 1);
+			
+			// Add children to collapsed Child node
+			// INodeProvider interface - Children() returns collection of child nodes
+			auto childMemoryNode = rootProvider->GetMemoryNode(child.Obj());
+			auto grandchild1 = CreateTreeViewItem(L"Grandchild1");
+			auto grandchild2 = CreateTreeViewItem(L"Grandchild2");
+			childMemoryNode->Children().Add(grandchild1);
+			childMemoryNode->Children().Add(grandchild2);
+			
+			// Verify no callbacks triggered and Count unchanged
+			// IItemProvider interface
+			TEST_ASSERT(callbackLog.Count() == 0);
+			TEST_ASSERT(nodeItemProvider->Count() == 2);
+			AssertItems(nodeItemProvider, expectedBefore);
+			
+			// INodeItemView interface - verify grandchildren are invisible
+			TEST_ASSERT(nodeItemProvider->CalculateNodeVisibilityIndex(grandchild1.Obj()) == -1);
+			TEST_ASSERT(nodeItemProvider->CalculateNodeVisibilityIndex(grandchild2.Obj()) == -1);
+			
+			callbackLog.Clear();
+			
+			// Expand Child node
+			// INodeProvider interface
+			child->SetExpanding(true);
+			
+			// Verify grandchildren become visible and callback is triggered
+			// IItemProvider interface
+			TEST_ASSERT(nodeItemProvider->Count() == 4);
+			const wchar_t* expectedAfter[] = {
+				L"Parent",
+				L"Child",
+				L"Grandchild1",
+				L"Grandchild2"
+			};
+			AssertItems(nodeItemProvider, expectedAfter);
+			
+			// IItemProviderCallback interface - verify callback for expansion
+			const wchar_t* expectedCallbacks[] = {
+				L"OnItemModified(start=2, count=0, newCount=2, itemReferenceUpdated=true)"
+			};
+			AssertCallbacks(callbackLog, expectedCallbacks);
+			
+			// INodeItemView interface - verify all nodes have correct indices
+			TEST_ASSERT(nodeItemProvider->CalculateNodeVisibilityIndex(parent.Obj()) == 0);
+			TEST_ASSERT(nodeItemProvider->CalculateNodeVisibilityIndex(child.Obj()) == 1);
+			TEST_ASSERT(nodeItemProvider->CalculateNodeVisibilityIndex(grandchild1.Obj()) == 2);
+			TEST_ASSERT(nodeItemProvider->CalculateNodeVisibilityIndex(grandchild2.Obj()) == 3);
+		});
+
+		TEST_CASE(L"RemoveChildrenFromCollapsedNode")
+		{
+			// Setup callback logging
+			List<WString> callbackLog;
+			MockItemProviderCallback itemCallback(callbackLog);
+			
+			// Create tree with collapsed node that has children
+			// Root -> Parent (expanded) -> Child (collapsed with 2 grandchildren)
+			// INodeRootProvider interface
+			auto rootProvider = Ptr(new TreeViewItemRootProvider);
+			auto parent = CreateTreeViewItem(L"Parent");
+			auto child = CreateTreeViewItem(L"Child");
+			auto grandchild1 = CreateTreeViewItem(L"Grandchild1");
+			auto grandchild2 = CreateTreeViewItem(L"Grandchild2");
+			
+			auto rootMemoryNode = rootProvider->GetMemoryNode(rootProvider->GetRootNode().Obj());
+			rootMemoryNode->Children().Add(parent);
+			
+			auto parentMemoryNode = rootProvider->GetMemoryNode(parent.Obj());
+			parentMemoryNode->Children().Add(child);
+			
+			auto childMemoryNode = rootProvider->GetMemoryNode(child.Obj());
+			childMemoryNode->Children().Add(grandchild1);
+			childMemoryNode->Children().Add(grandchild2);
+			
+			// Expand parent so Child is visible (but Child remains collapsed)
+			parent->SetExpanding(true);
+			
+			// Create NodeItemProvider and attach callback
+			// IItemProvider interface
+			auto nodeItemProvider = Ptr(new NodeItemProvider(rootProvider));
+			nodeItemProvider->AttachCallback(&itemCallback);
+			callbackLog.Clear();
+			
+			// Verify initial state - only Parent and Child visible
+			TEST_ASSERT(nodeItemProvider->Count() == 2);
+			const wchar_t* expectedBefore[] = {
+				L"Parent",
+				L"Child"
+			};
+			AssertItems(nodeItemProvider, expectedBefore);
+			
+			// INodeItemView interface - verify grandchildren are invisible
+			TEST_ASSERT(nodeItemProvider->CalculateNodeVisibilityIndex(grandchild1.Obj()) == -1);
+			TEST_ASSERT(nodeItemProvider->CalculateNodeVisibilityIndex(grandchild2.Obj()) == -1);
+			
+			// Remove one grandchild from collapsed Child node
+			// INodeProvider interface - Children().RemoveAt() modifies child collection
+			childMemoryNode->Children().RemoveAt(0);
+			
+			// Verify no callbacks triggered and Count unchanged
+			// IItemProvider interface
+			TEST_ASSERT(callbackLog.Count() == 0);
+			TEST_ASSERT(nodeItemProvider->Count() == 2);
+			AssertItems(nodeItemProvider, expectedBefore);
+			
+			callbackLog.Clear();
+			
+			// Expand Child node
+			// INodeProvider interface
+			child->SetExpanding(true);
+			
+			// Verify only remaining grandchild becomes visible
+			// IItemProvider interface
+			TEST_ASSERT(nodeItemProvider->Count() == 3);
+			const wchar_t* expectedAfter[] = {
+				L"Parent",
+				L"Child",
+				L"Grandchild2"
+			};
+			AssertItems(nodeItemProvider, expectedAfter);
+			
+			// IItemProviderCallback interface - verify callback for expansion
+			const wchar_t* expectedCallbacks[] = {
+				L"OnItemModified(start=2, count=0, newCount=1, itemReferenceUpdated=true)"
+			};
+			AssertCallbacks(callbackLog, expectedCallbacks);
+			
+			// INodeItemView interface - verify correct indices
+			TEST_ASSERT(nodeItemProvider->CalculateNodeVisibilityIndex(parent.Obj()) == 0);
+			TEST_ASSERT(nodeItemProvider->CalculateNodeVisibilityIndex(child.Obj()) == 1);
+			TEST_ASSERT(nodeItemProvider->CalculateNodeVisibilityIndex(grandchild2.Obj()) == 2);
+			
+			// Verify removed grandchild remains invisible
+			TEST_ASSERT(nodeItemProvider->CalculateNodeVisibilityIndex(grandchild1.Obj()) == -1);
+		});
+
+		TEST_CASE(L"MultipleModificationsToInvisibleSubtree")
+		{
+			// Setup callback logging
+			List<WString> callbackLog;
+			MockItemProviderCallback itemCallback(callbackLog);
+			
+			// Create 4-level tree: Root -> A (expanded) -> B (collapsed) -> C -> D
+			// INodeRootProvider interface
+			auto rootProvider = Ptr(new TreeViewItemRootProvider);
+			auto nodeA = CreateTreeViewItem(L"A");
+			auto nodeB = CreateTreeViewItem(L"B");
+			auto nodeC = CreateTreeViewItem(L"C");
+			auto nodeD = CreateTreeViewItem(L"D");
+			
+			auto rootMemoryNode = rootProvider->GetMemoryNode(rootProvider->GetRootNode().Obj());
+			rootMemoryNode->Children().Add(nodeA);
+			
+			auto nodeAMemoryNode = rootProvider->GetMemoryNode(nodeA.Obj());
+			nodeAMemoryNode->Children().Add(nodeB);
+			
+			auto nodeBMemoryNode = rootProvider->GetMemoryNode(nodeB.Obj());
+			nodeBMemoryNode->Children().Add(nodeC);
+			
+			auto nodeCMemoryNode = rootProvider->GetMemoryNode(nodeC.Obj());
+			nodeCMemoryNode->Children().Add(nodeD);
+			
+			// Expand only A, so B, C, D are invisible
+			nodeA->SetExpanding(true);
+			
+			// Create NodeItemProvider and attach callback
+			// IItemProvider interface
+			auto nodeItemProvider = Ptr(new NodeItemProvider(rootProvider));
+			nodeItemProvider->AttachCallback(&itemCallback);
+			callbackLog.Clear();
+			
+			// Verify initial state - only A and B visible
+			TEST_ASSERT(nodeItemProvider->Count() == 2);
+			const wchar_t* expectedInitial[] = {
+				L"A",
+				L"B"
+			};
+			AssertItems(nodeItemProvider, expectedInitial);
+			
+			// INodeItemView interface - verify C and D are invisible
+			TEST_ASSERT(nodeItemProvider->CalculateNodeVisibilityIndex(nodeC.Obj()) == -1);
+			TEST_ASSERT(nodeItemProvider->CalculateNodeVisibilityIndex(nodeD.Obj()) == -1);
+			
+			// Perform multiple modifications on invisible nodes
+			// Add children to B (invisible subtree root)
+			auto newChildB1 = CreateTreeViewItem(L"B-Child1");
+			auto newChildB2 = CreateTreeViewItem(L"B-Child2");
+			nodeBMemoryNode->Children().Add(newChildB1);
+			nodeBMemoryNode->Children().Add(newChildB2);
+			
+			// Add children to C (deeper invisible node)
+			auto newChildC1 = CreateTreeViewItem(L"C-Child1");
+			nodeCMemoryNode->Children().Add(newChildC1);
+			
+			// Remove D from C
+			nodeCMemoryNode->Children().RemoveAt(0);
+			
+			// Verify no callbacks triggered and Count unchanged
+			// IItemProvider interface
+			TEST_ASSERT(callbackLog.Count() == 0);
+			TEST_ASSERT(nodeItemProvider->Count() == 2);
+			AssertItems(nodeItemProvider, expectedInitial);
+			
+			callbackLog.Clear();
+			
+			// Expand B
+			// INodeProvider interface
+			nodeB->SetExpanding(true);
+			
+			// Verify B's children and C become visible
+			// IItemProvider interface
+			TEST_ASSERT(nodeItemProvider->Count() == 5);
+			const wchar_t* expectedAfterExpandB[] = {
+				L"A",
+				L"B",
+				L"C",
+				L"B-Child1",
+				L"B-Child2"
+			};
+			AssertItems(nodeItemProvider, expectedAfterExpandB);
+			
+			// IItemProviderCallback interface - verify callback for B's expansion
+			const wchar_t* expectedCallbacksB[] = {
+				L"OnItemModified(start=2, count=0, newCount=3, itemReferenceUpdated=true)"
+			};
+			AssertCallbacks(callbackLog, expectedCallbacksB);
+			
+			callbackLog.Clear();
+			
+			// Expand C
+			// INodeProvider interface
+			nodeC->SetExpanding(true);
+			
+			// Verify C's new child becomes visible (D was removed)
+			// IItemProvider interface
+			TEST_ASSERT(nodeItemProvider->Count() == 6);
+			const wchar_t* expectedAfterExpandC[] = {
+				L"A",
+				L"B",
+				L"C",
+				L"C-Child1",
+				L"B-Child1",
+				L"B-Child2"
+			};
+			AssertItems(nodeItemProvider, expectedAfterExpandC);
+			
+			// IItemProviderCallback interface - verify callback for C's expansion
+			const wchar_t* expectedCallbacksC[] = {
+				L"OnItemModified(start=3, count=0, newCount=1, itemReferenceUpdated=true)"
+			};
+			AssertCallbacks(callbackLog, expectedCallbacksC);
+			
+			// INodeItemView interface - verify D remains invisible (it was removed)
+			TEST_ASSERT(nodeItemProvider->CalculateNodeVisibilityIndex(nodeD.Obj()) == -1);
+		});
+
+		TEST_CASE(L"VisibilityIndexForInvisibleNodes")
+		{
+			// Create tree with mixed expand states in invisible subtree
+			// Root -> Parent (collapsed) -> Child1 (collapsed), Child2 (expanded) -> Grandchild
+			// INodeRootProvider interface
+			auto rootProvider = Ptr(new TreeViewItemRootProvider);
+			auto parent = CreateTreeViewItem(L"Parent");
+			auto child1 = CreateTreeViewItem(L"Child1");
+			auto child2 = CreateTreeViewItem(L"Child2");
+			auto grandchild = CreateTreeViewItem(L"Grandchild");
+			
+			auto rootMemoryNode = rootProvider->GetMemoryNode(rootProvider->GetRootNode().Obj());
+			rootMemoryNode->Children().Add(parent);
+			
+			auto parentMemoryNode = rootProvider->GetMemoryNode(parent.Obj());
+			parentMemoryNode->Children().Add(child1);
+			parentMemoryNode->Children().Add(child2);
+			
+			auto child2MemoryNode = rootProvider->GetMemoryNode(child2.Obj());
+			child2MemoryNode->Children().Add(grandchild);
+			
+			// Set expand states: Child1 collapsed, Child2 expanded
+			// INodeProvider interface
+			child1->SetExpanding(false);
+			child2->SetExpanding(true);
+			
+			// Keep Parent collapsed, making all children invisible
+			parent->SetExpanding(false);
+			
+			// Create NodeItemProvider
+			// IItemProvider interface
+			auto nodeItemProvider = Ptr(new NodeItemProvider(rootProvider));
+			
+			// Verify only Parent is visible
+			TEST_ASSERT(nodeItemProvider->Count() == 1);
+			const wchar_t* expectedCollapsed[] = {
+				L"Parent"
+			};
+			AssertItems(nodeItemProvider, expectedCollapsed);
+			
+			// INodeItemView interface - verify all descendants return -1 regardless of expand state
+			TEST_ASSERT(nodeItemProvider->CalculateNodeVisibilityIndex(child1.Obj()) == -1);
+			TEST_ASSERT(nodeItemProvider->CalculateNodeVisibilityIndex(child2.Obj()) == -1);
+			TEST_ASSERT(nodeItemProvider->CalculateNodeVisibilityIndex(grandchild.Obj()) == -1);
+			
+			// Verify Parent has valid index
+			TEST_ASSERT(nodeItemProvider->CalculateNodeVisibilityIndex(parent.Obj()) == 0);
+			
+			// Expand Parent
+			// INodeProvider interface
+			parent->SetExpanding(true);
+			
+			// Verify Child1 and Child2 become visible, Grandchild also visible (Child2 is expanded)
+			// IItemProvider interface
+			TEST_ASSERT(nodeItemProvider->Count() == 4);
+			const wchar_t* expectedExpanded[] = {
+				L"Parent",
+				L"Child1",
+				L"Child2",
+				L"Grandchild"
+			};
+			AssertItems(nodeItemProvider, expectedExpanded);
+			
+			// INodeItemView interface - verify correct visibility indices
+			TEST_ASSERT(nodeItemProvider->CalculateNodeVisibilityIndex(parent.Obj()) == 0);
+			TEST_ASSERT(nodeItemProvider->CalculateNodeVisibilityIndex(child1.Obj()) == 1);
+			TEST_ASSERT(nodeItemProvider->CalculateNodeVisibilityIndex(child2.Obj()) == 2);
+			TEST_ASSERT(nodeItemProvider->CalculateNodeVisibilityIndex(grandchild.Obj()) == 3);
+		});
+	});
 }
