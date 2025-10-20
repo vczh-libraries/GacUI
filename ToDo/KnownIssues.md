@@ -28,11 +28,13 @@
 - `ProceduredThread` and `LambdaThread` cause small memory leak.
   - `delete this;` eventually calls `SuspendThread` on the thread itself, making all following clean up code skipped.
   - Windows confirmed, Linux need to test.
-- `GuiDocumentViewer` loading super large text into one single paragraph (~0.2M lines) too slow
-  - Demo: `https://github.com/vczh-libraries/GacUI/blob/master/Test/Resources/UnitTestSnapshots/Controls/Ribbon/GuiRibbonButtons/Dropdowns.json`
-  - **Paragraph mode** plus **doubleLineBreaksBetweenParagraph==true** plus **no empty line** causing the whole text loaded into one single `IGuiGraphicsParagraph`.
+- `GuiDocumentViewer`
+  - Loading super large text into one single paragraph (~0.2M lines) too slow
+      - Workaround: Change paragraph mode to multiline.
+    - Demo: `https://github.com/vczh-libraries/GacUI/blob/master/Test/Resources/UnitTestSnapshots/Controls/Ribbon/GuiRibbonButtons/Dropdowns.json`
+    - **Paragraph mode** plus **doubleLineBreaksBetweenParagraph==true** plus **no empty line** causing the whole text loaded into one single `IGuiGraphicsParagraph`.
     - This is the default configuration for `GuiDocumentViewer` and `GuiDocumentLabel`, it could be changed with the `Behavior` property in XML.
-  - Root cause in `IDWriteTextLayout::GetMetrics`, taking most of the time.
+    - Root cause in `IDWriteTextLayout::GetMetrics`, taking most of the time.
   - When loading super big content to the control while you don't need user to undo to the previous state:
     - To load such text into `GuiMultilineTextBox` uses `LoadTextAndClearUndoRedo`.
     - To load prepared large document into `GuiDocumentViewer` uses `LoadDocumentAndClearUndoRedo`.
