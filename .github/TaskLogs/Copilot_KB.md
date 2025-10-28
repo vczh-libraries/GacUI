@@ -2024,5 +2024,3 @@ Each `DataColumn` has `associatedFilter` property:
 - Filters are typically set programmatically via `DataColumn::SetFilter`
 - No built-in UI for filter configuration (user must provide custom UI)
 - `GuiBindableDataGrid::SetAdditionalFilter` allows programmatic filtering
-
-### Integration Between Systems

@@ -608,4 +608,18 @@ It provides a comprehensive testing framework, XML-to-C++ compilation, and integ
 
 [Design Explanation](./KB_GacUI_Design_ControlFocusSwitchingAndTabAltHandling.md)
 
+#### List Control Architecture
+
+- Three-layer architecture separates data management (`IItemProvider` with view system), layout arrangement (`IItemArranger` with virtual repeat composition), and visual rendering (item templates with background wrapping).
+- Item lifecycle from creation (`InstallStyle`) through property updates to destruction (`UninstallStyle`) with event translation from compositions to item-level events via `ItemCallback`.
+- Virtual repeat composition system delegates to `GuiVirtualRepeatCompositionBase` with four arranger types (free height, fixed height, fixed size multi-column, fixed height multi-column) supporting efficient virtualization.
+- Provider hierarchy includes concrete providers (holding actual data), bindable providers (wrapping observable data sources via reflection), and converter providers (transforming tree to list via `NodeItemProvider`).
+- Selection management in `GuiSelectableListControl` handles multi-selection with ctrl/shift modifiers, synchronizes with item templates, and provides keyboard navigation with special right-click behavior.
+- Specialized controls (`GuiVirtualTextList`, `GuiVirtualListView`, `GuiVirtualTreeView`, `GuiVirtualDataGrid`, combo boxes, ribbon galleries) with view-specific templates and default implementations.
+- Scroll view integration with size calculation (`QueryFullSize`), view updates (`UpdateView`), adopted size for responsive layouts, and lifecycle management (`OnRenderTargetChanged`).
+- Template and arranger coordination through `SetStyleAndArranger` process with detach/clear/update/attach phases, `PredefinedListItemTemplate` pattern, and display item background wrapping.
+- Data grid advanced features with visualizer system (cell rendering customization via decorator pattern), editor system (in-place editing with keyboard/mouse integration), sorter system (multi-level sorting with stable ordering), and filter system (row filtering with AND/OR/NOT composition).
+
+[Design Explanation](./KB_GacUI_Design_ListControlArchitecture.md)
+
 ## Experiences and Learnings
