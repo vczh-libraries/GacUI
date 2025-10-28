@@ -399,3 +399,203 @@ class PredefinedListItemTemplate : public TBase
   - Returns early if focusable composition is not eventually visible
   - Gets the graphics host from the focusable composition
   - Calls `host->SetFocus(focusableComposition)`
+
+## ASK
+
+List default item template implementation for each control if it has any
+
+### Insight
+
+Each list control sets its default item template in its constructor or in a view-setting method. Here's the complete list:
+
+#### GuiVirtualTextList Default Item Templates
+
+**Set in**: `SetView(TextListView)` method
+
+**View-Template Mapping**:
+1. **TextListView::Text**: 
+   - Template: `list::DefaultTextListItemTemplate`
+   - Arranger: `list::FixedHeightItemArranger`
+   - Location: `Source/Controls/ListControlPackage/ItemTemplate_ITextItemView.h`
+   
+2. **TextListView::Check**:
+   - Template: `list::DefaultCheckTextListItemTemplate` (derived from `DefaultTextListItemTemplate`)
+   - Arranger: `list::FixedHeightItemArranger`
+   - Overrides `CreateBulletStyle()` to create checkbox
+   
+3. **TextListView::Radio**:
+   - Template: `list::DefaultRadioTextListItemTemplate` (derived from `DefaultTextListItemTemplate`)
+   - Arranger: `list::FixedHeightItemArranger`
+   - Overrides `CreateBulletStyle()` to create radio button
+
+**Default View**: Constructor calls `SetView(TextListView::Text)`
+
+**Template Hierarchy**:
+- `DefaultTextListItemTemplate`: Base template with optional bullet (checkbox/radio)
+  - Contains `bulletButton` (optional `GuiSelectableButton`)
+  - Contains `textElement` (`GuiSolidLabelElement` for text display)
+  - Hooks property changes: `Checked`, `TextColor`, `Font`, `Text`
+  - `CreateBulletStyle()`: Returns `nullptr` for Text view (no bullet)
+- `DefaultCheckTextListItemTemplate`: Returns checkbox bullet style
+- `DefaultRadioTextListItemTemplate`: Returns radio button bullet style
+
+#### GuiVirtualListView Default Item Templates
+
+**Set in**: `SetView(ListViewView)` method
+
+**View-Template Mapping**:
+1. **ListViewView::BigIcon**:
+   - Template: `list::BigIconListViewItemTemplate`
+   - Arranger: `list::FixedSizeMultiColumnItemArranger`
+   - Contains large image and centered text
+   
+2. **ListViewView::SmallIcon**:
+   - Template: `list::SmallIconListViewItemTemplate`
+   - Arranger: `list::FixedSizeMultiColumnItemArranger`
+   - Contains small image and text
+   
+3. **ListViewView::List**:
+   - Template: `list::ListListViewItemTemplate`
+   - Arranger: `list::FixedHeightMultiColumnItemArranger`
+   - Contains small image and text in list format
+   
+4. **ListViewView::Tile**:
+   - Template: `list::TileListViewItemTemplate`
+   - Arranger: `list::FixedSizeMultiColumnItemArranger`
+   - Contains large image, main text, and data column texts
+   - Uses `GuiTableComposition` for text layout
+   
+5. **ListViewView::Information**:
+   - Template: `list::InformationListViewItemTemplate`
+   - Arranger: `list::FixedHeightItemArranger`
+   - Contains large image, main text, column headers, and data texts
+   - Uses `GuiTableComposition` for text layout with column labels
+   
+6. **ListViewView::Detail**:
+   - Template: `list::DetailListViewItemTemplate`
+   - Arranger: `list::ListViewColumnItemArranger`
+   - Contains image, main text, and sub-item texts in columns
+   - Uses `GuiTableComposition` with dynamic columns matching column count
+
+**Default View**: Constructor calls `SetView(ListViewView::Detail)`
+
+**Common Base**: All templates derive from `list::DefaultListViewItemTemplate` which derives from `PredefinedListItemTemplate<GuiListItemTemplate>`
+
+**Template Location**: All defined in `Source/Controls/ListControlPackage/ItemTemplate_IListViewItemView.h`
+
+#### GuiVirtualTreeView Default Item Template
+
+**Set in**: Constructor
+
+**Template**: `tree::DefaultTreeItemTemplate`
+- Arranger: `list::FixedHeightItemArranger`
+- Location: `Source/Controls/ListControlPackage/ItemTemplate_ITreeViewItemView.h`
+
+**Template Structure**:
+- Contains `expandingButton` (`GuiSelectableButton` for expand/collapse)
+- Contains `table` (`GuiTableComposition` for layout)
+- Contains `imageElement` (`GuiImageFrameElement` for node icon)
+- Contains `textElement` (`GuiSolidLabelElement` for node text)
+- Hooks property changes: `Expanding`, `Expandable`, `Level`, `Image`, `Text`, `TextColor`, `Font`
+- `OnLevelChanged`: Adjusts indentation based on tree level
+- Expanding button handles double-click to expand/collapse node
+
+**Base Class**: Derives from `list::PredefinedListItemTemplate<GuiTreeItemTemplate>`
+
+#### GuiVirtualDataGrid Default Item Template
+
+**Set in**: `SetViewToDefault()` method called from constructor
+
+**Template**: `list::DefaultDataGridItemTemplate`
+- Arranger: `list::ListViewColumnItemArranger`
+- Location: `Source/Controls/ListControlPackage/GuiDataGridControls.h`
+
+**Template Structure**:
+- Derives from `DefaultListViewItemTemplate`
+- Contains `textTable` (`GuiTableComposition` for cell layout)
+- Contains `dataVisualizerFactories` array (one per column)
+- Contains `dataVisualizers` array (created from factories)
+- Contains `dataCells` array (`GuiCellComposition` for each column)
+- Contains `currentEditor` (`IDataEditor*` for in-place editing)
+- Handles cell selection and editor opening via mouse events
+- `UpdateSubItemSize()`: Synchronizes cell widths with column widths
+- `NotifyOpenEditor(column, editor)`: Opens editor in specific cell
+- `NotifyCloseEditor()`: Closes current editor
+- `NotifySelectCell(column)`: Highlights selected cell with focus rectangle
+
+**Data Visualizer System**:
+- Each column has `IDataVisualizerFactory` that creates `IDataVisualizer`
+- Default visualizers defined in constructor of `GuiVirtualDataGrid`:
+  - `MainColumnVisualizerTemplate`: For first column with image and text
+  - `SubColumnVisualizerTemplate`: For other columns with text only
+  - `FocusRectangleVisualizerTemplate`: Wraps visualizer with focus indicator
+  - `CellBorderVisualizerTemplate`: Wraps visualizer with cell border
+- Factories are composed via decorator pattern
+
+#### GuiComboBoxListControl Item Template
+
+**Set in**: `SetItemTemplate(ItemStyleProperty)` method
+
+**Default Template**: None initially
+- Property `itemStyleProperty` starts as empty `TemplateProperty<GuiListItemTemplate>`
+- User must set via `SetItemTemplate()` to customize dropdown item appearance
+- When `itemStyleProperty` is null (not set):
+  - Control template's `TextVisible` is set to `true` (shows text directly)
+  - Selected item text displayed in control template instead of custom template
+- When `itemStyleProperty` is set:
+  - Control template's `TextVisible` is set to `false`
+  - Custom item template renders the selected item
+  - Calls `InstallStyleController(selectedIndex)` to create template instance
+
+**Template Lifecycle**:
+- `InstallStyleController(itemIndex)`: Creates item template instance and adds to button
+- `RemoveStyleController()`: Destroys current item template instance
+- Template synchronized with list control properties: `Text`, `Context`, `VisuallyEnabled`
+
+**Usage Pattern**: Combo box delegates to contained `GuiSelectableListControl` for dropdown list rendering, but uses separate template for displaying selected item in the collapsed state
+
+#### GuiBindableRibbonGalleryList Item Template
+
+**Set in**: `SetItemTemplate(ItemStyleProperty)` method
+
+**Default Template**: None initially
+- Property `itemStyle` starts as empty `TemplateProperty<GuiListItemTemplate>`
+- User must set via `SetItemTemplate()` to render gallery items
+- Template is forwarded to internal `itemList` (`GuiBindableTextList`)
+- Same template used for both inline gallery and dropdown menu
+
+**Template Forwarding**:
+- `SetItemTemplate(value)`: Sets `itemStyle` and calls `itemList->SetItemTemplate(value)`
+- `itemList` is a `GuiBindableTextList` configured for gallery display
+- Arranger is `GalleryItemArranger` (custom multi-column with scrolling)
+
+**Menu Rendering**:
+- Dropdown menu uses `GuiRepeatStackComposition` with `GuiRepeatFlowComposition` per group
+- Each group header created via control template's `CreateGalleryItemGroup()`
+- Each item background created via control template's `CreateGalleryItemBackground()`
+- Item template instance placed inside background button
+
+**Usage Pattern**: Ribbon gallery requires user-provided template since gallery items are highly customized (e.g., font names, colors, styles)
+
+#### Controls Without Default Item Templates
+
+**GuiRibbonButtons**:
+- Not a list control, manages a collection of ribbon button controls
+- No item template concept
+- Uses responsive view composition to layout buttons in different sizes
+
+**GuiComboButton**:
+- Not a list control, wraps arbitrary dropdown content
+- Property `dropdownControl` can be any `GuiControl`
+- No item template concept
+
+#### Summary Table
+
+| Control | Default Template | Set Location | Template Count |
+|---------|------------------|--------------|----------------|
+| `GuiVirtualTextList` | `DefaultTextListItemTemplate` | `SetView()` | 3 (Text, Check, Radio) |
+| `GuiVirtualListView` | `DetailListViewItemTemplate` | `SetView()` | 6 (BigIcon, SmallIcon, List, Tile, Information, Detail) |
+| `GuiVirtualTreeView` | `DefaultTreeItemTemplate` | Constructor | 1 |
+| `GuiVirtualDataGrid` | `DefaultDataGridItemTemplate` | `SetViewToDefault()` | 1 |
+| `GuiComboBoxListControl` | None | User sets via `SetItemTemplate()` | 0 |
+| `GuiBindableRibbonGalleryList` | None | User sets via `SetItemTemplate()` | 0 |
